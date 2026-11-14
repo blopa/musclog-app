@@ -22,7 +22,8 @@
       "percent": "% van 1RM",
       "weight": "Gewicht",
       "reps": "Herhalingen tot falen",
-      "byFormula": "Elke formule apart"
+      "byFormula": "Elke formule apart",
+      "extrapolatedNote": "* Geëxtrapoleerd. Boven {{max}} herhalingen worden de formules verder opgerekt dan het bereik dat de app voor een set vertrouwt, dus zie deze rijen alleen als een ruwe richtlijn."
     },
     "sections": [
       {

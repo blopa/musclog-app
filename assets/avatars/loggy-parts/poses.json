@@ -214,16 +214,7 @@
         "hand-r/lifting"
       ],
       "animated": {
-        "upper": [
-          "drops",
-          "arm-l",
-          "arm-r",
-          "body",
-          "dumbbell-l",
-          "hand-l",
-          "dumbbell-r",
-          "hand-r"
-        ]
+        "upper": ["drops", "arm-l", "arm-r", "body", "dumbbell-l", "hand-l", "dumbbell-r", "hand-r"]
       }
     },
     "magnify": {

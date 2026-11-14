@@ -6,7 +6,7 @@ import {
   type FormulaType,
 } from '@/utils/workoutCalculator';
 
-import { isWholeInRange, isInRange, parseToolNumber } from './toolNumbers';
+import { isInRange, isWholeInRange, parseToolNumber } from './toolNumbers';
 
 /** Reps in reserve the app accepts on a set (RIR 0 to 9). */
 export const MAX_REPS_IN_RESERVE = 9;
@@ -80,6 +80,11 @@ export interface OneRepMaxRow {
   weight: number;
   /** Reps to failure the average of the formulas gives at that load. */
   reps: number;
+  /**
+   * True above `MAX_E1RM_REPS`: the formulas are stretched past the range the app trusts for a
+   * logged set, so the page marks the figure instead of presenting it like the others.
+   */
+  extrapolated: boolean;
 }
 
 export interface OneRepMaxEstimate {
@@ -115,7 +120,9 @@ export function estimateOneRepMax({
     formulas,
     rows: ONE_REP_MAX_PERCENTAGES.map((percent) => {
       const load = (oneRepMax * percent) / 100;
-      return { percent, weight: load, reps: calculateRepsForTargetRIR(oneRepMax, load, 0) };
+      const reps = calculateRepsForTargetRIR(oneRepMax, load, 0);
+
+      return { percent, weight: load, reps, extrapolated: reps > MAX_E1RM_REPS };
     }),
   };
 }

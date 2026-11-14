@@ -9,7 +9,7 @@ import DashedButton from '@/components/theme/DashedButton';
 import type { MealType } from '@/database/models/NutritionLog';
 import { useTheme } from '@/hooks/useTheme';
 
-import { type DiaryCardsProps,DiaryFoodCard, DiaryGroupCard } from './DiaryCards';
+import { type DiaryCardsProps, DiaryFoodCard, DiaryGroupCard } from './DiaryCards';
 import {
   buildTimeSections,
   formatHourLabel,

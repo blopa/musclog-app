@@ -1,3 +1,4 @@
+import { MAX_E1RM_REPS } from '@/utils/relativeStrength';
 import { calculateAverage1RM } from '@/utils/workoutCalculator';
 
 import {
@@ -72,6 +73,16 @@ describe('estimateOneRepMax', () => {
     for (let index = 1; index < rows.length; index++) {
       expect(rows[index].weight).toBeLessThan(rows[index - 1].weight);
       expect(rows[index].reps).toBeGreaterThanOrEqual(rows[index - 1].reps);
+    }
+  });
+
+  it('marks the rows whose reps pass the trusted limit as extrapolated, and no others', () => {
+    const { rows } = estimateOneRepMax({ weight: 100, reps: 5, repsInReserve: 0 });
+    expect(rows.some((row) => row.extrapolated)).toBe(true);
+    expect(rows.some((row) => !row.extrapolated)).toBe(true);
+
+    for (const row of rows) {
+      expect(row.extrapolated).toBe(row.reps > MAX_E1RM_REPS);
     }
   });
 });

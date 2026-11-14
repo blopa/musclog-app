@@ -7,6 +7,7 @@ import MarkdownIt from 'markdown-it';
 
 import {
   BLOG_POSTS_PER_PAGE,
+  blogTagSlug,
   SAFE_CATEGORY_KEY,
   SAFE_SLUG_SEGMENT,
   totalBlogPages,
@@ -35,6 +36,13 @@ export interface BlogPostPage {
 
 export interface BlogCategoryPostPage extends BlogPostPage {
   category: string;
+}
+
+export interface BlogTagPostPage extends BlogPostPage {
+  /** The tag's URL slug, as in `/blog/tag/<slug>`. */
+  tag: string;
+  /** How the tag is written on the posts (the first spelling met, newest post first). */
+  tagLabel: string;
 }
 
 interface BlogPostFrontmatter {
@@ -123,7 +131,18 @@ function normalizeTags(value: unknown, relativePath: string): string[] {
     throw frontmatterError(relativePath, '"tags" must be an array of non-empty strings');
   }
 
-  return value.map((tag) => tag.trim());
+  const tags = value.map((tag) => tag.trim());
+  // A tag becomes a public URL (`/blog/tag/<slug>`), so one with nothing URL-safe in it (all
+  // symbols or non-Latin letters) cannot be linked to. Refuse it here, like a bad category.
+  const unlinkable = tags.find((tag) => blogTagSlug(tag) === '');
+  if (unlinkable !== undefined) {
+    throw frontmatterError(
+      relativePath,
+      `"tags" entry "${unlinkable}" has no letters or digits to build a URL from`
+    );
+  }
+
+  return tags;
 }
 
 function normalizeCategory(value: unknown, relativePath: string): string {
@@ -283,6 +302,69 @@ export async function loadBlogCategories(
   return getBlogCategories(await loadBlogPostSummaries(postsDirectory));
 }
 
+export interface BlogCategorySummary {
+  category: string;
+  postCount: number;
+}
+
+/** Every category with the number of posts filed under it, in the same order as `getBlogCategories`. */
+export async function loadBlogCategorySummaries(
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
+): Promise<BlogCategorySummary[]> {
+  const posts = await loadBlogPostSummaries(postsDirectory);
+
+  return getBlogCategories(posts).map((category) => ({
+    category,
+    postCount: posts.filter((post) => post.category === category).length,
+  }));
+}
+
+export interface BlogTagSummary {
+  /** How many posts carry the tag. */
+  postCount: number;
+  /** The tag's URL slug. */
+  tag: string;
+  /** The tag as written on the posts. */
+  label: string;
+}
+
+/**
+ * Every tag with the number of posts carrying it, alphabetical by label.
+ *
+ * Tags are free text, so they are grouped by `blogTagSlug`: "Open Source" and "open source" are one
+ * tag and one page. A post counts once per tag even if it lists two spellings of it. The label is
+ * the first spelling met walking the posts newest first, which is deterministic because
+ * `loadBlogPostSummaries` sorts them.
+ */
+export function getBlogTagSummaries(posts: BlogPostSummary[]): BlogTagSummary[] {
+  const byTag = new Map<string, BlogTagSummary>();
+
+  for (const post of posts) {
+    for (const slug of new Set(post.tags.map(blogTagSlug))) {
+      const existing = byTag.get(slug);
+      if (existing) {
+        existing.postCount += 1;
+        continue;
+      }
+
+      const label = post.tags.find((tag) => blogTagSlug(tag) === slug) ?? slug;
+      byTag.set(slug, { label, postCount: 1, tag: slug });
+    }
+  }
+
+  return [...byTag.values()].sort((left, right) => left.label.localeCompare(right.label));
+}
+
+export async function loadBlogTagSummaries(
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
+): Promise<BlogTagSummary[]> {
+  return getBlogTagSummaries(await loadBlogPostSummaries(postsDirectory));
+}
+
+export function postsWithTag(posts: BlogPostSummary[], tag: string): BlogPostSummary[] {
+  return posts.filter((post) => post.tags.some((postTag) => blogTagSlug(postTag) === tag));
+}
+
 export function paginateBlogPosts(
   posts: BlogPostSummary[],
   currentPage: number,
@@ -370,6 +452,48 @@ export async function loadBlogCategoryPage(
     category,
     ...paginateBlogPosts(categoryPosts, currentPage),
   };
+}
+
+export async function loadBlogTagPage(
+  tag: string,
+  currentPage: number,
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
+): Promise<BlogTagPostPage> {
+  if (!SAFE_CATEGORY_KEY.test(tag)) {
+    throw new Error('Invalid blog tag');
+  }
+
+  const posts = await loadBlogPostSummaries(postsDirectory);
+  const tagPosts = postsWithTag(posts, tag);
+  const summary = getBlogTagSummaries(posts).find((candidate) => candidate.tag === tag);
+  if (!summary) {
+    throw new Error(`Blog tag ${tag} does not exist`);
+  }
+
+  return {
+    tag,
+    tagLabel: summary.label,
+    ...paginateBlogPosts(tagPosts, currentPage),
+  };
+}
+
+/** Route parameters straight from Expo; see `loadBlogCategoryPageForRoute`. */
+export async function loadBlogTagPageForRoute(
+  tag: string | string[],
+  page: string | string[] = '1',
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
+): Promise<BlogTagPostPage> {
+  const [firstTag] = await loadBlogTagSummaries(postsDirectory);
+  const resolvedTag = resolveRouteParam(tag, '[tag]', firstTag?.tag ?? '');
+  if (!resolvedTag) {
+    throw new Error('Cannot render the static blog tag template without any tags');
+  }
+
+  return loadBlogTagPage(
+    resolvedTag,
+    routePageNumber(page, 'Invalid blog tag page'),
+    postsDirectory
+  );
 }
 
 /**

@@ -1,7 +1,8 @@
 import { Dumbbell, Info, Search, X } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { exerciseSearchFromQuery } from '@/components/website/exerciseSearchParam';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -240,6 +241,19 @@ export default function ExercisesPage() {
   const locale = i18n.resolvedLanguage ?? i18n.language ?? 'en-us';
 
   const [search, setSearch] = useState('');
+
+  // `/exercises?q=<name>` opens the library already searching (programs link each exercise this
+  // way). Read after hydration: the static HTML cannot know the query string, so initialising
+  // state from `window.location` would make the first client render differ from the server's.
+  useEffect(() => {
+    const fromLink = exerciseSearchFromQuery(window.location.search);
+
+    if (fromLink) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-off read of the URL after hydration
+      setSearch(fromLink);
+    }
+  }, []);
+
   const [muscleGroup, setMuscleGroup] = useState('');
   const [mechanic, setMechanic] = useState('');
 

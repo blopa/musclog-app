@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { BlogMermaid } from '@/components/website/BlogMermaid';
 import { BlogPostShare } from '@/components/website/BlogPostShare';
 import { blogPostPath } from '@/components/website/blogRoutes';
-import { BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
+import { BlogTagChip } from '@/components/website/BlogTagChip';
+import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
 import { metadataForPage, websiteCopy } from '@/components/website/websiteMetadata';
 import { BlogPostSeo } from '@/components/website/WebsiteSeo';
 import { BlogPostingJsonLd } from '@/components/website/WebsiteStructuredData';
@@ -103,17 +104,7 @@ export default function BlogPostPage() {
               <div className="mt-7 flex flex-wrap items-center gap-2" aria-label={t('tagsLabel')}>
                 <Tags className="mr-1 h-4 w-4" color={BODY_TEXT_SOFT} />
                 {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full border px-3 py-1 text-xs font-semibold"
-                    style={{
-                      backgroundColor: brand(0.09),
-                      borderColor: brand(0.24),
-                      color: BRAND_GREEN_BRIGHT,
-                    }}
-                  >
-                    {tag}
-                  </span>
+                  <BlogTagChip key={tag} tag={tag} className="px-3" />
                 ))}
               </div>
             ) : null}

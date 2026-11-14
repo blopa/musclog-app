@@ -43,6 +43,11 @@
             "topic": "Calculadora de calentamiento",
             "them": "La calculadora de calentamiento forma parte de Hevy Pro, no del plan gratuito.",
             "musclog": "Las series de calentamiento vienen integradas y son gratuitas. También puedes probar la calculadora de calentamiento en esta web."
+          },
+          {
+            "topic": "Historial de entrenamientos",
+            "them": "El historial de datos del plan gratuito se limita a 3 meses; Hevy Pro conserva todo.",
+            "musclog": "Todo tu historial se queda en tu dispositivo, sin límite de tiempo."
           }
         ],
         "import": "Musclog puede importar una exportación CSV de Hevy: Ajustes, Copias y datos, Importar entrenamientos. Asocia los nombres de los ejercicios con su propio catálogo, te pregunta por los que no puede asociar y muestra una revisión antes de guardar nada. Importar el mismo archivo dos veces no duplica las sesiones, y una importación se puede deshacer.",
@@ -54,7 +59,12 @@
         "facts": [
           {
             "topic": "Escaneo de códigos de barras",
-            "them": "El escaneo de códigos de barras es una función Premium desde el 1 de octubre de 2022, según el propio anuncio de MyFitnessPal. Los usuarios gratuitos registran los alimentos buscándolos.",
+            "them": "El escaneo de códigos de barras es una función Premium desde el 1 de octubre de 2022, según el propio anuncio de MyFitnessPal.",
+            "musclog": "El escaneo de códigos de barras es gratuito."
+          },
+          {
+            "topic": "Escaneo de códigos de barras hoy",
+            "them": "La propia página de ayuda de MyFitnessPal sigue diciendo que el escaneo de códigos de barras solo está disponible con una suscripción Premium.",
             "musclog": "El escaneo de códigos de barras es gratuito."
           }
         ],

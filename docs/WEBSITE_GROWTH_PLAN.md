@@ -1,6 +1,6 @@
 # Website growth plan: tools and articles for lifters
 
-Status: tools 1–10 and the Tools navigation shipped (2026-11-14); Search Console, blog posts and share links remain. Like `NEW_LEARNINGS_PLAN.md`, this is an active plan: update the
+Status: tools 1–10, the Tools navigation, all 15 blog posts and the routine share link shipped (2026-11-14); Search Console (manual), the workout-summary image card and verified Strong/FitNotes columns in the `/alternatives` grid remain. Like `NEW_LEARNINGS_PLAN.md`, this is an active plan: update the
 status table as phases ship, fold lasting rules into `AGENTS.md` / `docs/DESIGN.md`, and delete this file
 when it is done.
 
@@ -79,7 +79,7 @@ Notes:
   and the page leads straight into the app. Program slugs come from the template's `__title` (stable), never
   its array index. The copy comes from the locale files, so programs are translated for free.
 - #10: free tier limits as checked on 2026-11-14: Strong's free version allows 3 custom routines (its App
-  Store listing), Hevy's 4, and MyFitnessPal's barcode scanner is Premium-only. Re-check these before
+  Store listing), Hevy's 4 and MyFitnessPal's barcode scanner is Premium-only (re-confirmed 2026-11-14). Re-check these before
   publishing and date them on the page. They change.
 - #2, #4 and #5 can share one "your gym" form (bar weight, plates, unit) remembered in `localStorage` (a
   per-visitor convenience; wrap every access in try/catch).
@@ -116,9 +116,7 @@ engineering posts keep their place; post them to Hacker News with the "Show HN" 
 The `/open#workout=<payload>` bridge already works on GitHub Pages: the payload lives in the URL fragment,
 so no server ever sees it. Two follow-ups would turn sharing into free distribution:
 
-- Share a routine as an `https://musclog.app/open#workout=…` link (`encodeOpenPayload`,
-  `buildOpenHttpsUrl`) instead of clipboard text. Someone who has the app gets the import review; someone
-  who doesn't lands on the bridge page with store buttons.
+- ~~Share a routine as an `https://musclog.app/open#workout=…` link~~ (done: `WorkoutTemplateService.getShareMessage` appends it through `buildTemplateShare`).
 - Make the workout summary's share an image card drawn on the phone (the `useChartCapture` path the year
   story uses) with `musclog.app` on it, instead of plain text.
 
@@ -127,9 +125,10 @@ link opens the bridge page rather than the app until they are filled in.
 
 ## Status
 
-| Phase                               | Status                                                                                                                                                                                                         |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0. Search Console, Tools navigation | Tools navigation done (burger menu, footer); Search Console is a manual step                                                                                                                                   |
-| Tools 1–10                          | done: tools 1–7 and 9 under `/tools`, programs under `/programs`, `/alternatives/{strong,hevy,myfitnesspal}`. Not done: Strong and FitNotes columns in the `/alternatives` grid (needs verified facts per row) |
-| Blog posts (0 of 15)                | not started                                                                                                                                                                                                    |
-| Share links (optional)              | not started                                                                                                                                                                                                    |
+| Phase                               | Status                                                                                                                                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0. Search Console, Tools navigation | Tools navigation done. Search Console: musclog.app is already a verified Domain property; the only open step is submitting `sitemap.xml` (none is submitted yet, checked 2026-11-14)                     |
+| Tools 1–10                          | done. Competitor facts re-checked in a real browser on 2026-11-14 (Strong, Hevy, MyFitnessPal)                                                                                                           |
+| Blog posts (15 of 15)               | done, English only, under `app/(website)/posts/2026/11/`; categories `training`, `nutrition`, `guides` exist in all five locales                                                                         |
+| Strong and FitNotes in the grid     | not done: the grid has no "unknown" state and 8 of its ~65 rows could be sourced for either app (verified quotes: Strong App Store listing, FitNotes Google Play listing). Needs a design decision first |
+| Share links (optional)              | routine link done; the image card from the workout summary is not started                                                                                                                                |

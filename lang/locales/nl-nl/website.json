@@ -65,6 +65,14 @@
           "title": "Musclog-blog — Open-source fitness en technologie",
           "description": "Lees artikelen over Musclog, open-source ontwikkeling, privacy, fitnesstechnologie en de ideeën achter de app."
         },
+        "blogCategories": {
+          "title": "Blogcategorieën — Musclog-blog",
+          "description": "Bekijk de artikelen van de Musclog-blog per categorie: training, voeding, techniek, productupdates en meer."
+        },
+        "blogTags": {
+          "title": "Blogtags — Musclog-blog",
+          "description": "Bekijk alle tags die op de Musclog-blog worden gebruikt. Hoe groter een tag, hoe meer artikelen hem hebben."
+        },
         "tools": {
           "title": "Gratis tools en rekenmachines voor krachtsporters | Musclog",
           "description": "Gratis rekenmachines voor wie traint met gewichten: 1RM, schijven, warming-up, RPE, eiwit, calorietekort en netto koolhydraten. Met dezelfde formules als de Musclog-app."
@@ -333,6 +341,10 @@
       "tagsLabel": "Artikeltags",
       "readArticle": "Artikel lezen",
       "backToBlog": "Terug naar alle artikelen",
+      "backToCategories": "Terug naar alle categorieën",
+      "browseCategories": "Bekijken per categorie",
+      "backToTags": "Terug naar alle tags",
+      "browseTags": "Bekijken per tag",
       "englishOnlyNotice": "Sorry, blogartikelen zijn alleen in het Engels beschikbaar.",
       "share": {
         "title": "Deel dit artikel",
@@ -350,13 +362,42 @@
         "empty": "Er zijn geen artikelen gevonden in {{category}}.",
         "listLabel": "Blogartikelen over {{category}}"
       },
+      "tagPage": {
+        "eyebrow": "Bekijken per tag",
+        "title": "Artikelen met de tag {{tag}}",
+        "description": "Alle Musclog-blogartikelen met de tag {{tag}}.",
+        "empty": "Er zijn geen artikelen gevonden met de tag {{tag}}.",
+        "listLabel": "Blogartikelen met de tag {{tag}}"
+      },
+      "tagsPage": {
+        "eyebrow": "Bekijken per tag",
+        "title": "Blogtags",
+        "description": "Alle tags die op de Musclog-blog worden gebruikt. Hoe groter een tag, hoe meer artikelen hem hebben.",
+        "listLabel": "Blogtags",
+        "postCount_one": "{{count}} artikel",
+        "postCount_few": "{{count}} artikelen",
+        "postCount_many": "{{count}} artikelen",
+        "postCount_other": "{{count}} artikelen"
+      },
+      "categoriesPage": {
+        "eyebrow": "Bekijken per categorie",
+        "title": "Blogcategorieën",
+        "description": "Alle onderwerpen van de Musclog-blog, van training en voeding tot techniek en productupdates.",
+        "listLabel": "Blogcategorieën",
+        "postCount_one": "{{count}} artikel",
+        "postCount_few": "{{count}} artikelen",
+        "postCount_many": "{{count}} artikelen",
+        "postCount_other": "{{count}} artikelen"
+      },
       "categories": {
         "product-updates": "Productupdates",
         "web-development": "Webontwikkeling",
         "engineering": "Techniek",
         "retro": "Retro",
         "machine-learning": "Machinelearning",
-        "guides": "Gidsen"
+        "guides": "Gidsen",
+        "training": "Training",
+        "nutrition": "Voeding"
       }
     },
     "gameboy": {

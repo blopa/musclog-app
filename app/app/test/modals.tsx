@@ -27,8 +27,6 @@ import { CreateFoodPortionModal } from '@/components/modals/CreateFoodPortionMod
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
-import { ExternalFoodLogModal } from '@/components/modals/ExternalFoodLogModal';
-import { ExternalWorkoutPlanModal } from '@/components/modals/ExternalWorkoutPlanModal';
 import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import {
   ExerciseDataModal,
@@ -51,6 +49,8 @@ import { EditSetDetailsModal } from '@/components/modals/EditSetDetailsModal';
 import EditWorkoutMetadataModal from '@/components/modals/EditWorkoutMetadataModal';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import ExercisesModal from '@/components/modals/ExercisesModal';
+import { ExternalFoodLogModal } from '@/components/modals/ExternalFoodLogModal';
+import { ExternalWorkoutPlanModal } from '@/components/modals/ExternalWorkoutPlanModal';
 import { FilterWorkoutsModal } from '@/components/modals/FilterWorkoutsModal';
 import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from '@/components/modals/FoodNotFoundModal';

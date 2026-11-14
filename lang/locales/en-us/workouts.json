@@ -66,6 +66,7 @@
     "archiveError": "Failed to archive workout",
     "duplicateSuccess": "Workout duplicated successfully",
     "duplicateError": "Failed to duplicate workout",
+    "shareOpenLink": "Open in Musclog:",
     "delete": "Delete",
     "deleteSuccess": "Workout deleted successfully",
     "deleteError": "Failed to delete workout",

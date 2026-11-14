@@ -1,14 +1,13 @@
+import { PROGRAM_SLUGS, PROGRAM_SLUGS_BY_TEMPLATE_TITLE } from '@/components/website/programRoutes';
 import { getExerciseCatalogue } from '@/data/exerciseCatalogue';
-import workoutTemplatesData from '@/data/workoutTemplatesData.json';
 import {
   getWorkoutTemplates,
   type RawWorkoutTemplateDefinition,
   type WorkoutTemplateDifficulty,
 } from '@/data/workoutTemplates';
+import workoutTemplatesData from '@/data/workoutTemplatesData.json';
 import { PLAN_MAJOR, PLAN_SCHEMA_ID } from '@/utils/aiWorkoutPlan/contract';
 import { buildOpenHttpsUrl } from '@/utils/openLink';
-
-import { PROGRAM_SLUGS, PROGRAM_SLUGS_BY_TEMPLATE_TITLE } from '../programRoutes';
 
 export interface ProgramExercise {
   exerciseSlug: string;

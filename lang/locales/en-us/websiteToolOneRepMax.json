@@ -22,7 +22,8 @@
       "percent": "% of 1RM",
       "weight": "Weight",
       "reps": "Reps to failure",
-      "byFormula": "Each formula on its own"
+      "byFormula": "Each formula on its own",
+      "extrapolatedNote": "* Extrapolated. Above {{max}} reps the formulas are stretched past the range the app trusts for a set, so read these rows as a rough guide only."
     },
     "sections": [
       {

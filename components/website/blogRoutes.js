@@ -52,15 +52,42 @@ function blogPagePath(page) {
   return page === 1 ? '/blog' : `/blog/page/${page}`;
 }
 
+/** The page listing every category. Same prefix as the category pages, with no key after it. */
+const BLOG_CATEGORIES_PATH = '/blog/category';
+
 /** `/blog/category/retro`, `/blog/category/retro/page/2`, … */
 function blogCategoryPath(category, page = 1) {
-  const root = `/blog/category/${category}`;
+  const root = `${BLOG_CATEGORIES_PATH}/${category}`;
   return page === 1 ? root : `${root}/page/${page}`;
 }
 
 /** The listing URL for a page of all posts, or of one category. */
 function blogListingPath(page, category) {
   return category ? blogCategoryPath(category, page) : blogPagePath(page);
+}
+
+/** The page listing every tag, as a cloud. Same prefix as the tag pages, with no slug after it. */
+const BLOG_TAGS_PATH = '/blog/tag';
+
+/**
+ * The URL slug of a free-text tag: lowercase ASCII letters and digits joined by single hyphens,
+ * diacritics folded (`Café` -> `cafe`, `1RM calculator` -> `1rm-calculator`). Case variants of one
+ * tag ("Open Source", "open source") therefore share one page. Returns `''` for a tag with nothing
+ * URL-safe in it, which callers must reject rather than link to.
+ */
+function blogTagSlug(tag) {
+  return String(tag)
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/** `/blog/tag/expo`, `/blog/tag/expo/page/2`, … `tag` is already a slug (see `blogTagSlug`). */
+function blogTagPath(tag, page = 1) {
+  const root = `${BLOG_TAGS_PATH}/${tag}`;
+  return page === 1 ? root : `${root}/page/${page}`;
 }
 
 /**
@@ -74,13 +101,24 @@ function blogPagePathsAfterFirst(postCount, postsPerPage = BLOG_POSTS_PER_PAGE, 
   return Array.from({ length: pageCount - 1 }, (_, index) => blogListingPath(index + 2, category));
 }
 
+/** Every listing path of one tag AFTER the first, for the same reason as `blogPagePathsAfterFirst`. */
+function blogTagPagePathsAfterFirst(postCount, postsPerPage = BLOG_POSTS_PER_PAGE, tag) {
+  const pageCount = totalBlogPages(postCount, postsPerPage);
+  return Array.from({ length: pageCount - 1 }, (_, index) => blogTagPath(tag, index + 2));
+}
+
 module.exports = {
+  BLOG_CATEGORIES_PATH,
   BLOG_POSTS_PER_PAGE,
+  BLOG_TAGS_PATH,
   blogCategoryPath,
   blogListingPath,
   blogPagePath,
   blogPostPath,
   blogPagePathsAfterFirst,
+  blogTagPagePathsAfterFirst,
+  blogTagPath,
+  blogTagSlug,
   SAFE_CATEGORY_KEY,
   SAFE_SLUG_SEGMENT,
   totalBlogPages,

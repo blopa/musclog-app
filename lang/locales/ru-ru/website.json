@@ -65,6 +65,14 @@
           "title": "Блог Musclog — Open-source фитнес и технологии",
           "description": "Читайте статьи о Musclog, open-source разработке, приватности, фитнес-технологиях и идеях, лежащих в основе приложения."
         },
+        "blogCategories": {
+          "title": "Категории блога — Блог Musclog",
+          "description": "Статьи блога Musclog по категориям: тренировки, питание, разработка, обновления продукта и другое."
+        },
+        "blogTags": {
+          "title": "Теги блога — Блог Musclog",
+          "description": "Все теги, которые используются в блоге Musclog. Чем крупнее тег, тем больше статей его содержат."
+        },
         "tools": {
           "title": "Бесплатные инструменты и калькуляторы для тренирующихся | Musclog",
           "description": "Бесплатные калькуляторы: 1ПМ, блины, разминка, RPE, белок, дефицит калорий и чистые углеводы. Те же формулы, что и в приложении Musclog."
@@ -333,6 +341,10 @@
       "tagsLabel": "Теги статьи",
       "readArticle": "Читать статью",
       "backToBlog": "Назад ко всем статьям",
+      "backToCategories": "Назад ко всем категориям",
+      "browseCategories": "Просмотр по категориям",
+      "backToTags": "Назад ко всем тегам",
+      "browseTags": "Просмотр по тегам",
       "englishOnlyNotice": "Извините, статьи блога доступны только на английском языке.",
       "share": {
         "title": "Поделиться статьёй",
@@ -350,13 +362,42 @@
         "empty": "В категории «{{category}}» статей не найдено.",
         "listLabel": "Статьи блога в категории «{{category}}»"
       },
+      "tagPage": {
+        "eyebrow": "Просмотр по тегам",
+        "title": "Статьи с тегом «{{tag}}»",
+        "description": "Все статьи блога Musclog с тегом «{{tag}}».",
+        "empty": "Статей с тегом «{{tag}}» не найдено.",
+        "listLabel": "Статьи блога с тегом «{{tag}}»"
+      },
+      "tagsPage": {
+        "eyebrow": "Просмотр по тегам",
+        "title": "Теги блога",
+        "description": "Все теги, которые используются в блоге Musclog. Чем крупнее тег, тем больше статей его содержат.",
+        "listLabel": "Теги блога",
+        "postCount_one": "{{count}} статья",
+        "postCount_few": "{{count}} статьи",
+        "postCount_many": "{{count}} статей",
+        "postCount_other": "{{count}} статьи"
+      },
+      "categoriesPage": {
+        "eyebrow": "Просмотр по категориям",
+        "title": "Категории блога",
+        "description": "Все темы блога Musclog: от тренировок и питания до разработки и обновлений продукта.",
+        "listLabel": "Категории блога",
+        "postCount_one": "{{count}} статья",
+        "postCount_few": "{{count}} статьи",
+        "postCount_many": "{{count}} статей",
+        "postCount_other": "{{count}} статьи"
+      },
       "categories": {
         "product-updates": "Обновления продукта",
         "web-development": "Веб-разработка",
         "engineering": "Инженерия",
         "retro": "Ретро",
         "machine-learning": "Машинное обучение",
-        "guides": "Руководства"
+        "guides": "Руководства",
+        "training": "Тренировки",
+        "nutrition": "Питание"
       }
     },
     "gameboy": {

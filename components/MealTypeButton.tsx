@@ -9,10 +9,21 @@ type MealTypeButtonProps = {
   label: string;
   onPress: () => void;
   span?: number;
+  /**
+   * Share of the row this tile takes (a `flex` weight). The tile is a direct child of its row, so
+   * the row's `alignItems: stretch` makes every tile in it as tall as the tallest one.
+   */
+  flex?: number;
 };
 
 /** A meal-type tile: one neutral icon, accent on press. Meals are not color-coded. */
-export function MealTypeButton({ icon: Icon, label, onPress, span = 1 }: MealTypeButtonProps) {
+export function MealTypeButton({
+  icon: Icon,
+  label,
+  onPress,
+  span = 1,
+  flex = 1,
+}: MealTypeButtonProps) {
   const theme = useTheme();
   const [pressed, setPressed] = useState(false);
 
@@ -24,11 +35,12 @@ export function MealTypeButton({ icon: Icon, label, onPress, span = 1 }: MealTyp
         span === 2 ? 'flex-row' : 'flex-col'
       } items-center justify-center gap-2 rounded-card border border-border-default bg-bg-overlay p-3`}
       // A static style (not a `({ pressed }) => …` function): on web the function form dropped
-      // `minHeight` and `flexGrow`, so the tiles ignored their minimum height and the wide "Other"
-      // tile stayed shorter than the Snacks tile beside it. `flexGrow` fills the stretched wrapper.
+      // `minHeight`, so the tiles ignored their minimum height. Never give the tile a `flexGrow`
+      // inside a wrapper: on native, Yoga then grows it to the whole available height (the Add food
+      // sheet's tiles filled the sheet and overlapped the list below).
       style={{
+        flex,
         minHeight: theme.size['22'],
-        flexGrow: 1,
         borderColor: pressed ? theme.colors.accent.primary : theme.colors.border.default,
       }}
       onPress={onPress}

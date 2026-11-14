@@ -66,6 +66,7 @@
     "archiveError": "Archiveren van workout mislukt",
     "duplicateSuccess": "Workout succesvol gedupliceerd",
     "duplicateError": "Dupliceren van workout mislukt",
+    "shareOpenLink": "Openen in Musclog:",
     "delete": "Verwijderen",
     "deleteSuccess": "Workout succesvol verwijderd",
     "deleteError": "Verwijderen van workout mislukt",

@@ -3,6 +3,7 @@ import { join } from 'path';
 
 import {
   blogListingSeo,
+  blogTagSeo,
   fixedPageMetadata,
   fixedPageSeo,
   metadataForPage,
@@ -35,6 +36,35 @@ describe('SDK 58 website metadata', () => {
     expect(blogListingSeo(2).canonicalPath).toBe('/blog/page/2');
   });
 
+  it('gives a tag listing its own canonical path, label and a distinct title per page', () => {
+    const first = blogTagSeo(1, 'one-rep-max', 'One-rep max');
+    expect(first.canonicalPath).toBe('/blog/tag/one-rep-max');
+    expect(first.title).toContain('One-rep max');
+    expect(first.keywords).toContain('One-rep max');
+    expect(blogTagSeo(2, 'one-rep-max', 'One-rep max').canonicalPath).toBe(
+      '/blog/tag/one-rep-max/page/2'
+    );
+    expect(blogTagSeo(2, 'one-rep-max', 'One-rep max').title).not.toBe(first.title);
+  });
+
+  it('gives the tags index its own canonical path and copy in every locale', () => {
+    for (const language of ['en-us', 'es-es', 'nl-nl', 'pt-br', 'ru-ru'] as const) {
+      const seo = fixedPageSeo('blogTags', language);
+      expect(seo.canonicalPath).toBe('/blog/tag');
+      expect(seo.title).toBeTruthy();
+      expect(seo.description).toBeTruthy();
+    }
+  });
+
+  it('gives the categories index its own canonical path and copy in every locale', () => {
+    for (const language of ['en-us', 'es-es', 'nl-nl', 'pt-br', 'ru-ru'] as const) {
+      const seo = fixedPageSeo('blogCategories', language);
+      expect(seo.canonicalPath).toBe('/blog/category');
+      expect(seo.title).toBeTruthy();
+      expect(seo.description).toBeTruthy();
+    }
+  });
+
   it('preserves article metadata and uses route-level metadata exports', () => {
     const metadata = metadataForPage({
       title: 'Post',
@@ -56,7 +86,7 @@ describe('SDK 58 website metadata', () => {
       const file =
         route.path === '/'
           ? 'home'
-          : ['/blog', '/tools', '/programs'].includes(route.path)
+          : ['/blog', '/blog/category', '/blog/tag', '/tools', '/programs'].includes(route.path)
             ? `${route.path.slice(1)}/index`
             : route.path.slice(1);
       if (file === 'test') {

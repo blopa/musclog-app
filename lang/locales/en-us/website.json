@@ -65,6 +65,14 @@
           "title": "Musclog Blog — Open-Source Fitness & Technology",
           "description": "Read articles about Musclog, open-source development, privacy, fitness technology, and the ideas behind the app."
         },
+        "blogCategories": {
+          "title": "Blog Categories — Musclog Blog",
+          "description": "Browse Musclog blog articles by category: training, nutrition, engineering, product updates and more."
+        },
+        "blogTags": {
+          "title": "Blog Tags — Musclog Blog",
+          "description": "Browse every tag used on the Musclog blog. The bigger a tag, the more articles carry it."
+        },
         "tools": {
           "title": "Free Lifting Tools and Calculators | Musclog",
           "description": "Free calculators for lifters: one-rep max, plate loading, warm-up sets, RPE, protein, calorie deficit and net carbs. They use the same math as the Musclog app."
@@ -333,6 +341,10 @@
       "tagsLabel": "Post tags",
       "readArticle": "Read article",
       "backToBlog": "Back to all posts",
+      "backToCategories": "Back to all categories",
+      "browseCategories": "Browse by category",
+      "backToTags": "Back to all tags",
+      "browseTags": "Browse by tag",
       "englishOnlyNotice": "Sorry, blog posts are only available in English.",
       "share": {
         "title": "Share this post",
@@ -350,13 +362,42 @@
         "empty": "No posts were found in {{category}}.",
         "listLabel": "{{category}} blog posts"
       },
+      "tagPage": {
+        "eyebrow": "Browse by tag",
+        "title": "Posts tagged {{tag}}",
+        "description": "Every Musclog blog article tagged {{tag}}.",
+        "empty": "No posts were found with the tag {{tag}}.",
+        "listLabel": "{{tag}} blog posts"
+      },
+      "tagsPage": {
+        "eyebrow": "Browse by tag",
+        "title": "Blog tags",
+        "description": "Every tag used on the Musclog blog. The bigger a tag, the more articles carry it.",
+        "listLabel": "Blog tags",
+        "postCount_one": "{{count}} article",
+        "postCount_few": "{{count}} articles",
+        "postCount_many": "{{count}} articles",
+        "postCount_other": "{{count}} articles"
+      },
+      "categoriesPage": {
+        "eyebrow": "Browse by category",
+        "title": "Blog categories",
+        "description": "Every topic the Musclog blog covers, from training and nutrition to engineering and product updates.",
+        "listLabel": "Blog categories",
+        "postCount_one": "{{count}} article",
+        "postCount_few": "{{count}} articles",
+        "postCount_many": "{{count}} articles",
+        "postCount_other": "{{count}} articles"
+      },
       "categories": {
         "product-updates": "Product updates",
         "web-development": "Web development",
         "engineering": "Engineering",
         "retro": "Retro",
         "machine-learning": "Machine learning",
-        "guides": "Guides"
+        "guides": "Guides",
+        "training": "Training",
+        "nutrition": "Nutrition"
       }
     },
     "gameboy": {

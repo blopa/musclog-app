@@ -11,8 +11,8 @@ import {
   Download,
   Dumbbell,
   FileUp,
-  HardDrive,
   Flag,
+  HardDrive,
   Lock,
   MessageSquare,
   ScanLine,
@@ -38,11 +38,11 @@ import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
+import { isStorageUsageSupported } from '@/services/storageUsage';
 import { clearAllAppData } from '@/utils/clearAppData';
 import { authenticateForDangerousAction } from '@/utils/dangerousActionAuth';
 import { exportDatabase, importDatabase } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
-import { isStorageUsageSupported } from '@/services/storageUsage';
 
 import { BleWorkoutDataModal } from './BleWorkoutDataModal';
 import { CenteredModal } from './CenteredModal';

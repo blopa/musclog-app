@@ -43,6 +43,11 @@
             "topic": "Opwarmcalculator",
             "them": "De opwarmcalculator hoort bij Hevy Pro, niet bij het gratis abonnement.",
             "musclog": "Opwarmsets zijn ingebouwd en gratis. Je kunt de opwarmcalculator ook op deze site uitproberen."
+          },
+          {
+            "topic": "Trainingsgeschiedenis",
+            "them": "De datageschiedenis van het gratis abonnement is beperkt tot 3 maanden; Hevy Pro bewaart alles.",
+            "musclog": "Je hele geschiedenis blijft op je apparaat, zonder tijdslimiet."
           }
         ],
         "import": "Musclog kan een Hevy-CSV-export importeren: Instellingen, Back-ups en gegevens, Trainingen importeren. Het koppelt oefeningnamen aan de eigen catalogus, vraagt naar namen die het niet kan koppelen en toont een overzicht voordat er iets wordt opgeslagen. Hetzelfde bestand twee keer importeren maakt geen dubbele sessies, en een import kan ongedaan worden gemaakt.",
@@ -54,7 +59,12 @@
         "facts": [
           {
             "topic": "Barcodescannen",
-            "them": "Barcodescannen is sinds 1 oktober 2022 een Premium-functie, volgens de eigen aankondiging van MyFitnessPal. Gratis gebruikers loggen eten door te zoeken.",
+            "them": "Barcodescannen is sinds 1 oktober 2022 een Premium-functie, volgens de eigen aankondiging van MyFitnessPal.",
+            "musclog": "Barcodescannen is gratis."
+          },
+          {
+            "topic": "Barcodescannen nu",
+            "them": "De eigen helppagina van MyFitnessPal zegt nog steeds dat Barcode Scan alleen met een Premium-abonnement beschikbaar is.",
             "musclog": "Barcodescannen is gratis."
           }
         ],

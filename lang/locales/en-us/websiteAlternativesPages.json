@@ -43,6 +43,11 @@
             "topic": "Warm-up calculator",
             "them": "The warm-up calculator is part of Hevy Pro, not the free plan.",
             "musclog": "Warm-up sets are built in and free. You can also try the warm-up calculator on this site."
+          },
+          {
+            "topic": "Workout history",
+            "them": "The free plan's data history is limited to 3 months; Hevy Pro keeps all of it.",
+            "musclog": "Your whole history stays on your device, with no time limit."
           }
         ],
         "import": "Musclog can import a Hevy CSV export: Settings, Backups and data, Import workouts. It matches exercise names to its own catalogue and asks you about any it cannot match, and it shows a review before anything is saved. Importing the same file twice does not duplicate sessions, and an import can be undone.",
@@ -54,7 +59,12 @@
         "facts": [
           {
             "topic": "Barcode scanning",
-            "them": "Barcode scanning has been a Premium feature since October 1, 2022, according to MyFitnessPal's own announcement. Free users log food by searching.",
+            "them": "Barcode scanning has been a Premium feature since October 1, 2022, according to MyFitnessPal's own announcement.",
+            "musclog": "Barcode scanning is free."
+          },
+          {
+            "topic": "Barcode scanning today",
+            "them": "MyFitnessPal's own help page still says Barcode Scan is available only with a Premium subscription.",
             "musclog": "Barcode scanning is free."
           }
         ],

@@ -105,13 +105,13 @@ export function AddFoodModal({
           {showTrackByMealType ? (
             <View>
               <SectionLabel className="mb-3">{t('food.addFoodModal.trackByMealType')}</SectionLabel>
-              <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
-                {mealTypes.map((meal) => (
-                  <View
-                    key={meal.mealType}
-                    style={{ flex: 1, minWidth: '30%', maxWidth: '33.333%' }}
-                  >
+              {/* Two explicit rows, not a wrapping row of percentage-width wrappers: Yoga sizes
+                  those inconsistently, which blew the tiles up on a phone (fine on web). */}
+              <View style={{ gap: theme.spacing.gap.md }}>
+                <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+                  {mealTypes.slice(0, 3).map((meal) => (
                     <MealTypeButton
+                      key={meal.mealType}
                       icon={meal.icon}
                       label={meal.label}
                       onPress={() => {
@@ -119,15 +119,25 @@ export function AddFoodModal({
                         onClose();
                       }}
                     />
-                  </View>
-                ))}
-                <View
-                  style={{ flex: 2, minWidth: '60%', maxWidth: '66.666%', alignSelf: 'stretch' }}
-                >
+                  ))}
+                </View>
+                <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+                  {mealTypes.slice(3).map((meal) => (
+                    <MealTypeButton
+                      key={meal.mealType}
+                      icon={meal.icon}
+                      label={meal.label}
+                      onPress={() => {
+                        onMealTypeSelect?.(meal.mealType);
+                        onClose();
+                      }}
+                    />
+                  ))}
                   <MealTypeButton
                     icon={MoreHorizontal}
                     label={t('food.meals.other')}
                     span={2}
+                    flex={2}
                     onPress={() => {
                       onMealTypeSelect?.('other' as MealType);
                       onClose();

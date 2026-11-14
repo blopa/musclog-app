@@ -6,7 +6,7 @@
       "title": "Share of your one-rep max",
       "rpeColumn": "RPE {{rpe}}",
       "reps": "Reps",
-      "note": "Read across for the reps you do and down for the effort you rate the set. 100% is the one-rep max itself."
+      "note": "Read across for the reps you do and down for the effort you rate the set. The percentages come from the same averaged estimate the app uses, so even one rep at RPE 10 reads just under 100%."
     },
     "meaning": {
       "title": "What each RPE means",

@@ -277,7 +277,7 @@
       "addFoodTo": "Add food to"
     },
     "addFoodModal": {
-      "title": "Add food",
+      "title": "What did you eat?",
       "subtitle": "Choose a method to track your meal",
       "trackByMealType": "Track by meal type",
       "trackingMethod": "Tracking method",

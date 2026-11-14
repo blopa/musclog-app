@@ -25,7 +25,11 @@ type ExternalAssistantHandoffProps = {
  * behaviour is `useExternalAssistantImport`; the words are the caller's {@link ExternalHandoffCopy}.
  * The paste sheet is not drawn here: it is a modal, and the caller keeps it beside this view.
  */
-export function ExternalAssistantHandoff({ copy, handoff, children }: ExternalAssistantHandoffProps) {
+export function ExternalAssistantHandoff({
+  copy,
+  handoff,
+  children,
+}: ExternalAssistantHandoffProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();

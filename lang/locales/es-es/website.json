@@ -65,6 +65,14 @@
           "title": "Blog de Musclog — Fitness open source y tecnología",
           "description": "Lee artículos sobre Musclog, desarrollo open source, privacidad, tecnología fitness y las ideas que dan forma a la app."
         },
+        "blogCategories": {
+          "title": "Categorías del blog — Blog de Musclog",
+          "description": "Explora los artículos del blog de Musclog por categoría: entrenamiento, nutrición, ingeniería, novedades del producto y más."
+        },
+        "blogTags": {
+          "title": "Etiquetas del blog — Blog de Musclog",
+          "description": "Explora todas las etiquetas del blog de Musclog. Cuanto más grande es una etiqueta, más artículos la llevan."
+        },
         "tools": {
           "title": "Herramientas y calculadoras gratis para levantadores | Musclog",
           "description": "Calculadoras gratis para quien entrena con pesas: 1RM, discos, calentamiento, RPE, proteina, deficit calorico y carbohidratos netos. Con las mismas formulas que la app Musclog."
@@ -333,6 +341,10 @@
       "tagsLabel": "Etiquetas del artículo",
       "readArticle": "Leer artículo",
       "backToBlog": "Volver a todos los artículos",
+      "backToCategories": "Volver a todas las categorías",
+      "browseCategories": "Explorar por categoría",
+      "backToTags": "Volver a todas las etiquetas",
+      "browseTags": "Explorar por etiqueta",
       "englishOnlyNotice": "Lo sentimos, los artículos del blog solo están disponibles en inglés.",
       "share": {
         "title": "Comparte este artículo",
@@ -350,13 +362,42 @@
         "empty": "No se encontraron artículos en {{category}}.",
         "listLabel": "Artículos de blog de {{category}}"
       },
+      "tagPage": {
+        "eyebrow": "Explorar por etiqueta",
+        "title": "Artículos con la etiqueta {{tag}}",
+        "description": "Todos los artículos del blog de Musclog etiquetados con {{tag}}.",
+        "empty": "No se encontraron artículos con la etiqueta {{tag}}.",
+        "listLabel": "Artículos de blog con la etiqueta {{tag}}"
+      },
+      "tagsPage": {
+        "eyebrow": "Explorar por etiqueta",
+        "title": "Etiquetas del blog",
+        "description": "Todas las etiquetas usadas en el blog de Musclog. Cuanto más grande es una etiqueta, más artículos la llevan.",
+        "listLabel": "Etiquetas del blog",
+        "postCount_one": "{{count}} artículo",
+        "postCount_few": "{{count}} artículos",
+        "postCount_many": "{{count}} artículos",
+        "postCount_other": "{{count}} artículos"
+      },
+      "categoriesPage": {
+        "eyebrow": "Explorar por categoría",
+        "title": "Categorías del blog",
+        "description": "Todos los temas del blog de Musclog, desde entrenamiento y nutrición hasta ingeniería y novedades del producto.",
+        "listLabel": "Categorías del blog",
+        "postCount_one": "{{count}} artículo",
+        "postCount_few": "{{count}} artículos",
+        "postCount_many": "{{count}} artículos",
+        "postCount_other": "{{count}} artículos"
+      },
       "categories": {
         "product-updates": "Actualizaciones del producto",
         "web-development": "Desarrollo web",
         "engineering": "Ingeniería",
         "retro": "Retro",
         "machine-learning": "Aprendizaje automático",
-        "guides": "Guías"
+        "guides": "Guías",
+        "training": "Entrenamiento",
+        "nutrition": "Nutrición"
       }
     },
     "gameboy": {

@@ -12,10 +12,10 @@ import { getStoredBackups } from '@/database/preMigrationBackup';
 import {
   type CacheEntry,
   type ClearableStorageCategoryId,
+  isTemporaryEntry,
   planTemporaryCleanup,
   type StorageCategoryId,
   TEMPORARY_CACHE_DIRECTORIES,
-  isTemporaryEntry,
 } from '@/utils/storageUsage';
 
 export type StorageCategorySize = { id: StorageCategoryId; bytes: number };
