@@ -239,6 +239,7 @@ export function MobileMenu() {
   const menuLinks = [
     { text: t('features'), href: '/home#features' },
     { text: t('blog'), href: '/blog' },
+    { text: t('tools'), href: '/tools' },
     { text: t('calculator'), href: '/calculator' },
     { text: t('exercises'), href: '/exercises' },
     { text: t('progress'), href: '/progress' },
@@ -425,6 +426,7 @@ export function Footer() {
     { text: t('privacyPolicy'), href: '/privacy' },
     { text: t('terms'), href: '/terms' },
     { text: t('contact'), href: '/contact' },
+    { text: navT('tools'), href: '/tools' },
     { text: navT('exercises'), href: '/exercises' },
     { text: navT('gameboy'), href: '/gameboy' },
     { text: 'FAQ', href: '/faq' },
