@@ -52,17 +52,17 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 ## Screenshots
 
 <div align="center">
-  <img src="screenshots/phone/screenshot-1.png" alt="App Dashboard" width="200"/>
-  <img src="screenshots/phone/screenshot-2.png" alt="Workout Logging" width="200"/>
-  <img src="screenshots/phone/screenshot-3.png" alt="Nutrition Tracking" width="200"/>
-  <img src="screenshots/phone/screenshot-4.png" alt="Progress Charts" width="200"/>
+  <img src="screenshots/phone/screenshot-1.png" alt="Home overview" width="200"/>
+  <img src="screenshots/phone/screenshot-2.png" alt="Food diary" width="200"/>
+  <img src="screenshots/phone/screenshot-3.png" alt="Workout library" width="200"/>
+  <img src="screenshots/phone/screenshot-4.png" alt="Create workout" width="200"/>
 </div>
 
 <div align="center">
-  <img src="screenshots/phone/screenshot-5.png" alt="AI Coach Chat" width="200"/>
-  <img src="screenshots/phone/screenshot-6.png" alt="Food Search" width="200"/>
-  <img src="screenshots/phone/screenshot-7.png" alt="Cycle Tracking" width="200"/>
-  <img src="screenshots/phone/screenshot-8.png" alt="Settings" width="200"/>
+  <img src="screenshots/phone/screenshot-5.png" alt="Body metrics" width="200"/>
+  <img src="screenshots/phone/screenshot-6.png" alt="Goals management" width="200"/>
+  <img src="screenshots/phone/screenshot-7.png" alt="AI coach chat" width="200"/>
+  <img src="screenshots/phone/screenshot-8.png" alt="Backups and data" width="200"/>
 </div>
 
 ---
