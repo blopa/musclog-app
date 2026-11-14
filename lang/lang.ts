@@ -98,6 +98,8 @@ import enUsTimePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWebsite from './locales/en-us/website.json';
+import enUsWebsiteToolOneRepMax from './locales/en-us/websiteToolOneRepMax.json';
+import enUsWebsiteTools from './locales/en-us/websiteTools.json';
 import enUsWeeklyStreakCard from './locales/en-us/weeklyStreakCard.json';
 import enUsWhatsNew from './locales/en-us/whatsNew.json';
 import enUsWidgets from './locales/en-us/widgets.json';
@@ -189,6 +191,8 @@ import esEsTimePicker from './locales/es-es/timePicker.json';
 import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
 import esEsWebsite from './locales/es-es/website.json';
+import esEsWebsiteToolOneRepMax from './locales/es-es/websiteToolOneRepMax.json';
+import esEsWebsiteTools from './locales/es-es/websiteTools.json';
 import esEsWeeklyStreakCard from './locales/es-es/weeklyStreakCard.json';
 import esEsWhatsNew from './locales/es-es/whatsNew.json';
 import esEsWidgets from './locales/es-es/widgets.json';
@@ -280,6 +284,8 @@ import nlNlTimePicker from './locales/nl-nl/timePicker.json';
 import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
 import nlNlWebsite from './locales/nl-nl/website.json';
+import nlNlWebsiteToolOneRepMax from './locales/nl-nl/websiteToolOneRepMax.json';
+import nlNlWebsiteTools from './locales/nl-nl/websiteTools.json';
 import nlNlWeeklyStreakCard from './locales/nl-nl/weeklyStreakCard.json';
 import nlNlWhatsNew from './locales/nl-nl/whatsNew.json';
 import nlNlWidgets from './locales/nl-nl/widgets.json';
@@ -371,6 +377,8 @@ import ptBrTimePicker from './locales/pt-br/timePicker.json';
 import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
 import ptBrWebsite from './locales/pt-br/website.json';
+import ptBrWebsiteToolOneRepMax from './locales/pt-br/websiteToolOneRepMax.json';
+import ptBrWebsiteTools from './locales/pt-br/websiteTools.json';
 import ptBrWeeklyStreakCard from './locales/pt-br/weeklyStreakCard.json';
 import ptBrWhatsNew from './locales/pt-br/whatsNew.json';
 import ptBrWidgets from './locales/pt-br/widgets.json';
@@ -462,6 +470,8 @@ import ruRuTimePicker from './locales/ru-ru/timePicker.json';
 import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
 import ruRuWebsite from './locales/ru-ru/website.json';
+import ruRuWebsiteToolOneRepMax from './locales/ru-ru/websiteToolOneRepMax.json';
+import ruRuWebsiteTools from './locales/ru-ru/websiteTools.json';
 import ruRuWeeklyStreakCard from './locales/ru-ru/weeklyStreakCard.json';
 import ruRuWhatsNew from './locales/ru-ru/whatsNew.json';
 import ruRuWidgets from './locales/ru-ru/widgets.json';
@@ -584,6 +594,8 @@ const resources = {
       ...enUsTokenType,
       ...enUsUserMenu,
       ...enUsWebsite,
+      ...enUsWebsiteToolOneRepMax,
+      ...enUsWebsiteTools,
       ...enUsWeeklyStreakCard,
       ...enUsWhatsNew,
       ...enUsWidgets,
@@ -679,6 +691,8 @@ const resources = {
       ...esEsTokenType,
       ...esEsUserMenu,
       ...esEsWebsite,
+      ...esEsWebsiteToolOneRepMax,
+      ...esEsWebsiteTools,
       ...esEsWeeklyStreakCard,
       ...esEsWhatsNew,
       ...esEsWidgets,
@@ -774,6 +788,8 @@ const resources = {
       ...nlNlTokenType,
       ...nlNlUserMenu,
       ...nlNlWebsite,
+      ...nlNlWebsiteToolOneRepMax,
+      ...nlNlWebsiteTools,
       ...nlNlWeeklyStreakCard,
       ...nlNlWhatsNew,
       ...nlNlWidgets,
@@ -869,6 +885,8 @@ const resources = {
       ...ptBrTokenType,
       ...ptBrUserMenu,
       ...ptBrWebsite,
+      ...ptBrWebsiteToolOneRepMax,
+      ...ptBrWebsiteTools,
       ...ptBrWeeklyStreakCard,
       ...ptBrWhatsNew,
       ...ptBrWidgets,
@@ -964,6 +982,8 @@ const resources = {
       ...ruRuTokenType,
       ...ruRuUserMenu,
       ...ruRuWebsite,
+      ...ruRuWebsiteToolOneRepMax,
+      ...ruRuWebsiteTools,
       ...ruRuWeeklyStreakCard,
       ...ruRuWhatsNew,
       ...ruRuWidgets,

@@ -72,6 +72,43 @@ export function SoftwareApplicationJsonLd({ description }: { description: string
   );
 }
 
+/**
+ * WebApplication JSON-LD for a free in-browser tool (/tools/*). Free, no rating or review fields:
+ * those only ever come from real sources, and misleading structured data is penalised.
+ */
+export function WebApplicationJsonLd({
+  name,
+  description,
+  path,
+}: {
+  name: string;
+  description: string;
+  path: string;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name,
+    description,
+    url: `${SITE_ORIGIN}${path}`,
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'Any',
+    isAccessibleForFree: true,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_ORIGIN },
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdText(schema) }} />
+    </>
+  );
+}
+
 export interface FaqPageJsonLdItem {
   question: string;
   answer: string;

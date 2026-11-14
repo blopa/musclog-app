@@ -107,6 +107,86 @@
       "summary": "A Game Boy Color version of Musclog, playable in-browser."
     }
   },
+  "tools": {
+    "path": "/tools",
+    "llms": {
+      "section": "Product",
+      "title": "Lifting Tools",
+      "summary": "Free calculators for lifters: one-rep max, plates, warm-ups, RPE, protein, calorie deficit and net carbs."
+    }
+  },
+  "toolOneRepMax": {
+    "path": "/tools/one-rep-max",
+    "llms": {
+      "section": "Product",
+      "title": "One-Rep Max Calculator",
+      "summary": "Estimate your one-rep max from a set, with reps in reserve and a percentage-of-1RM table."
+    }
+  },
+  "toolPlateCalculator": {
+    "path": "/tools/plate-calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Plate Calculator",
+      "summary": "Find the plates to load on each side of the bar from the plates your gym actually has."
+    }
+  },
+  "toolStrengthLevel": {
+    "path": "/tools/strength-level",
+    "llms": {
+      "section": "Product",
+      "title": "Strength Level Checker",
+      "summary": "See which strength level a lift is at for your body weight, shown as a range, never a percentile."
+    }
+  },
+  "toolWarmUpCalculator": {
+    "path": "/tools/warm-up-calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Warm-Up Set Calculator",
+      "summary": "Warm-up sets for a working weight, each one loadable with your plates."
+    }
+  },
+  "toolRpeChart": {
+    "path": "/tools/rpe-chart",
+    "llms": {
+      "section": "Product",
+      "title": "RPE and RIR Chart",
+      "summary": "An RPE and reps-in-reserve chart with a load calculator built on the same math as the app."
+    }
+  },
+  "toolProteinCalculator": {
+    "path": "/tools/protein-calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Protein Calculator",
+      "summary": "Daily protein in grams per kilogram of body weight, by goal, from the same rules the app uses."
+    }
+  },
+  "toolCalorieDeficit": {
+    "path": "/tools/calorie-deficit",
+    "llms": {
+      "section": "Product",
+      "title": "Calorie Deficit Calculator",
+      "summary": "Daily calories for a goal weight and date, with an honest range instead of a single promise."
+    }
+  },
+  "toolNetCarbs": {
+    "path": "/tools/net-carbs",
+    "llms": {
+      "section": "Product",
+      "title": "Net Carbs vs Total Carbs",
+      "summary": "Convert between net and total carbs and see why US and EU food labels disagree."
+    }
+  },
+  "programs": {
+    "path": "/programs",
+    "llms": {
+      "section": "Product",
+      "title": "Free Workout Programs",
+      "summary": "Free workout programs with every day, exercise, set and rep, that you can open in Musclog."
+    }
+  },
   "test": {
     "path": "/test",
     "robots": "noindex, nofollow, noarchive"

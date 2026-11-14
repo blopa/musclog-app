@@ -1,0 +1,36 @@
+{
+  "websiteTools": {
+    "layout": {
+      "allTools": "Todas las herramientas",
+      "howItWorks": "Cómo funciona",
+      "sources": "Fuentes",
+      "related": "Más herramientas",
+      "ctaTitle": "Regístralo en Musclog",
+      "ctaBody": "Musclog es una app de fitness y nutrición gratuita y de código abierto. Tus datos se quedan en tu dispositivo.",
+      "sameMath": "Usa el mismo cálculo que la app Musclog.",
+      "localOnly": "Todo lo que escribes se queda en tu navegador."
+    },
+    "units": {
+      "label": "Unidades",
+      "metric": "Métrico (kg)",
+      "imperial": "Imperial (lb)",
+      "kg": "kg",
+      "lb": "lb"
+    },
+    "gym": {
+      "summary": "Tu gimnasio: barra y discos",
+      "barWeight": "Peso de la barra",
+      "plates": "Pares de discos",
+      "platesHint": "Cuántos pares de cada disco tienes. Usa 0 para un disco que tu gimnasio no tiene.",
+      "reset": "Restablecer a un gimnasio estándar",
+      "remembered": "Se recuerda solo en este navegador.",
+      "invalid": "Revisa el peso de la barra y la cantidad de discos: cada campo necesita un número."
+    },
+    "index": {
+      "title": "Herramientas gratis para quien entrena",
+      "intro": "Calculadoras que funcionan en tu navegador y usan las mismas fórmulas que la app Musclog. Nada de lo que escribes sale de la página.",
+      "programsTitle": "Programas de entrenamiento gratis",
+      "programsBody": "Programas completos con cada día, ejercicio, serie y repetición. Ábrelos en Musclog con un toque."
+    }
+  }
+}

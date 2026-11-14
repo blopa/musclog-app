@@ -64,6 +64,46 @@
         "blog": {
           "title": "Musclog-blog — Open-source fitness en technologie",
           "description": "Lees artikelen over Musclog, open-source ontwikkeling, privacy, fitnesstechnologie en de ideeën achter de app."
+        },
+        "tools": {
+          "title": "Gratis tools en rekenmachines voor krachtsporters | Musclog",
+          "description": "Gratis rekenmachines voor wie traint met gewichten: 1RM, schijven, warming-up, RPE, eiwit, calorietekort en netto koolhydraten. Met dezelfde formules als de Musclog-app."
+        },
+        "toolOneRepMax": {
+          "title": "1RM-calculator (one-rep max) | Musclog",
+          "description": "Schat je one-rep max op basis van een set van 1 tot 10 herhalingen, met herhalingen in reserve en een tabel met percentages van je 1RM."
+        },
+        "toolPlateCalculator": {
+          "title": "Schijvencalculator: wat laad je op de stang | Musclog",
+          "description": "Vul je streefgewicht in en de schijven die jouw sportschool heeft. Je krijgt de schijven voor elke kant van de stang, in kg of lb, met een eigen stanggewicht."
+        },
+        "toolStrengthLevel": {
+          "title": "Krachtniveau op basis van lichaamsgewicht | Musclog",
+          "description": "Kijk op welk krachtniveau je squat, bankdrukken, deadlift of andere oefening zit voor jouw lichaamsgewicht en geslacht. Een bereik, nooit een percentiel."
+        },
+        "toolWarmUpCalculator": {
+          "title": "Warming-upsets calculator | Musclog",
+          "description": "Warming-upsets voor je werkgewicht, beginnend met de lege stang en met schijven die je echt kunt laden."
+        },
+        "toolRpeChart": {
+          "title": "RPE- en RIR-tabel met gewichtscalculator | Musclog",
+          "description": "Een tabel met RPE en herhalingen in reserve, plus een calculator: welk gewicht hoort bij een ander herhalings- en RPE-doel op basis van een gedane set?"
+        },
+        "toolProteinCalculator": {
+          "title": "Eiwitcalculator: hoeveel eiwit per dag | Musclog",
+          "description": "Dagelijkse eiwitten in gram per kilo lichaamsgewicht voor jouw doel, begrensd op een referentiegewicht zodat een hoog gewicht de uitkomst niet opblaast."
+        },
+        "toolCalorieDeficit": {
+          "title": "Calorietekort- en streefdatumcalculator | Musclog",
+          "description": "Bereken de dagelijkse calorieen om een streefgewicht op een datum te halen, met een eerlijk bereik en een waarschuwing als het tempo te hoog is."
+        },
+        "toolNetCarbs": {
+          "title": "Netto en totale koolhydraten omrekenen | Musclog",
+          "description": "Amerikaanse etiketten tellen vezels mee in koolhydraten en Europese niet. Reken om tussen netto en totale koolhydraten."
+        },
+        "programs": {
+          "title": "Gratis trainingsschema's | Musclog",
+          "description": "Gratis schema's: push pull legs, upper lower, full body en meer. Elke dag, oefening, set en herhaling staat erbij en je opent het in Musclog."
         }
       }
     },
@@ -269,7 +309,8 @@
       "openMenu": "Menu openen",
       "closeMenu": "Menu sluiten",
       "preferences": "Voorkeuren",
-      "theme": "Thema"
+      "theme": "Thema",
+      "tools": "Tools"
     },
     "blog": {
       "eyebrow": "Uit de werkplaats",

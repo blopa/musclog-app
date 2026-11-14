@@ -64,6 +64,46 @@
         "blog": {
           "title": "Blog do Musclog — Fitness open source e tecnologia",
           "description": "Leia artigos sobre o Musclog, desenvolvimento open source, privacidade, tecnologia fitness e as ideias por trás do app."
+        },
+        "tools": {
+          "title": "Ferramentas e calculadoras gratis para quem treina | Musclog",
+          "description": "Calculadoras gratis para quem treina com pesos: 1RM, anilhas, aquecimento, RPE, proteina, deficit calorico e carboidratos liquidos. Com as mesmas contas do app Musclog."
+        },
+        "toolOneRepMax": {
+          "title": "Calculadora de 1RM (repeticao maxima) | Musclog",
+          "description": "Estime sua repeticao maxima a partir de uma serie de 1 a 10 repeticoes, com repeticoes em reserva e uma tabela de percentuais do 1RM."
+        },
+        "toolPlateCalculator": {
+          "title": "Calculadora de anilhas: o que colocar na barra | Musclog",
+          "description": "Informe a carga desejada e as anilhas da sua academia. Voce recebe as anilhas de cada lado da barra, em kg ou lb, com o peso de barra que quiser."
+        },
+        "toolStrengthLevel": {
+          "title": "Nivel de forca pelo seu peso corporal | Musclog",
+          "description": "Veja em que nivel de forca esta seu agachamento, supino, levantamento terra ou outro exercicio para o seu peso e sexo. Uma faixa, nunca um percentil."
+        },
+        "toolWarmUpCalculator": {
+          "title": "Calculadora de series de aquecimento | Musclog",
+          "description": "Series de aquecimento para sua carga de trabalho, comecando pela barra vazia e com anilhas que voce realmente consegue montar."
+        },
+        "toolRpeChart": {
+          "title": "Tabela de RPE e RIR com calculadora de carga | Musclog",
+          "description": "Tabela de RPE e repeticoes em reserva, com uma calculadora: a partir de uma serie feita, qual carga corresponde a outra meta de repeticoes e RPE."
+        },
+        "toolProteinCalculator": {
+          "title": "Calculadora de proteina: quanta proteina por dia | Musclog",
+          "description": "Proteina diaria em gramas por quilo de peso para o seu objetivo, limitada por um peso de referencia para que um peso alto nao a infle."
+        },
+        "toolCalorieDeficit": {
+          "title": "Calculadora de deficit calorico e data da meta | Musclog",
+          "description": "Calcule as calorias diarias para chegar a um peso-alvo em uma data, com uma faixa honesta e um aviso quando o ritmo e rapido demais."
+        },
+        "toolNetCarbs": {
+          "title": "Carboidratos liquidos e totais: conversor | Musclog",
+          "description": "Rotulos dos EUA contam a fibra dentro dos carboidratos e os da UE nao. Converta entre carboidratos liquidos e totais."
+        },
+        "programs": {
+          "title": "Programas de treino gratis | Musclog",
+          "description": "Programas gratis: push pull legs, upper lower, full body e mais. Cada dia, exercicio, serie e repeticao esta listado e voce abre no Musclog."
         }
       }
     },
@@ -269,7 +309,8 @@
       "openMenu": "Abrir menu",
       "closeMenu": "Fechar menu",
       "preferences": "Preferências",
-      "theme": "Tema"
+      "theme": "Tema",
+      "tools": "Ferramentas"
     },
     "blog": {
       "eyebrow": "Direto da oficina",

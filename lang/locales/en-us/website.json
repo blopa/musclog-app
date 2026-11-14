@@ -64,6 +64,46 @@
         "blog": {
           "title": "Musclog Blog — Open-Source Fitness & Technology",
           "description": "Read articles about Musclog, open-source development, privacy, fitness technology, and the ideas behind the app."
+        },
+        "tools": {
+          "title": "Free Lifting Tools and Calculators | Musclog",
+          "description": "Free calculators for lifters: one-rep max, plate loading, warm-up sets, RPE, protein, calorie deficit and net carbs. They use the same math as the Musclog app."
+        },
+        "toolOneRepMax": {
+          "title": "One-Rep Max Calculator | Musclog",
+          "description": "Estimate your one-rep max from any set of 1 to 10 reps, with reps in reserve and a percentage-of-1RM table. Same math as the Musclog app."
+        },
+        "toolPlateCalculator": {
+          "title": "Plate Calculator: What to Load on the Bar | Musclog",
+          "description": "Enter a target weight and the plates your gym has. Get the plates for each side of the bar, in kg or lb, with a custom bar weight."
+        },
+        "toolStrengthLevel": {
+          "title": "Strength Level Checker by Body Weight | Musclog",
+          "description": "Check which strength level your squat, bench press, deadlift or other lift is at for your body weight and sex. A range, never a percentile."
+        },
+        "toolWarmUpCalculator": {
+          "title": "Warm-Up Set Calculator | Musclog",
+          "description": "Get warm-up sets for your working weight, with the empty bar first and every set loadable with the plates you have."
+        },
+        "toolRpeChart": {
+          "title": "RPE and RIR Chart with Load Calculator | Musclog",
+          "description": "An RPE and reps-in-reserve chart, plus a calculator: from a set you did, what load should a different rep and RPE target be?"
+        },
+        "toolProteinCalculator": {
+          "title": "Protein Calculator: How Much Protein Per Day | Musclog",
+          "description": "Daily protein in grams per kilogram of body weight for your goal, capped at a reference weight so a high body weight does not inflate it."
+        },
+        "toolCalorieDeficit": {
+          "title": "Calorie Deficit and Goal Date Calculator | Musclog",
+          "description": "Work out daily calories to reach a goal weight by a date, with an honest range and a warning when the pace is too fast."
+        },
+        "toolNetCarbs": {
+          "title": "Net Carbs vs Total Carbs Converter | Musclog",
+          "description": "US labels count fiber inside carbohydrates and EU labels do not. Convert between net and total carbs in either direction."
+        },
+        "programs": {
+          "title": "Free Workout Programs | Musclog",
+          "description": "Free workout programs: push pull legs, upper lower, full body and more. Every day, exercise, set and rep is listed, and you can open it in Musclog."
         }
       }
     },
@@ -269,7 +309,8 @@
       "openMenu": "Open menu",
       "closeMenu": "Close menu",
       "preferences": "Preferences",
-      "theme": "Theme"
+      "theme": "Theme",
+      "tools": "Tools"
     },
     "blog": {
       "eyebrow": "From the workshop",

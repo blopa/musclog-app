@@ -1,0 +1,36 @@
+{
+  "websiteTools": {
+    "layout": {
+      "allTools": "All tools",
+      "howItWorks": "How it works",
+      "sources": "Sources",
+      "related": "More tools",
+      "ctaTitle": "Track it in Musclog",
+      "ctaBody": "Musclog is a free, open-source fitness and nutrition tracker. Your data stays on your device.",
+      "sameMath": "Uses the same calculation as the Musclog app.",
+      "localOnly": "Everything you type stays in your browser."
+    },
+    "units": {
+      "label": "Units",
+      "metric": "Metric (kg)",
+      "imperial": "Imperial (lb)",
+      "kg": "kg",
+      "lb": "lb"
+    },
+    "gym": {
+      "summary": "Your gym: bar and plates",
+      "barWeight": "Bar weight",
+      "plates": "Plate pairs",
+      "platesHint": "How many pairs of each plate you have. Use 0 for a plate your gym does not have.",
+      "reset": "Reset to a standard gym",
+      "remembered": "Remembered in this browser only.",
+      "invalid": "Check the bar weight and the plate counts: each needs a number."
+    },
+    "index": {
+      "title": "Free tools for lifters",
+      "intro": "Calculators that run in your browser and use the same math as the Musclog app. Nothing you type leaves the page.",
+      "programsTitle": "Free workout programs",
+      "programsBody": "Full programs with every day, exercise, set and rep. Open one in Musclog with a tap."
+    }
+  }
+}
