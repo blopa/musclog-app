@@ -1,6 +1,6 @@
 ---
 title: 'Push Pull Legs: a free 6-day program you can open in your app'
-date: '2026-11-14'
+date: '2026-10-26'
 category: 'training'
 description: 'The Push Pull Legs split in full: the three workouts, every exercise with sets and reps, how to run it as a six-day week, and how to open it in Musclog with one tap.'
 tags:

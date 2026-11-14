@@ -1,6 +1,6 @@
 ---
 title: 'Double progression: the simplest way to add weight every week'
-date: '2026-11-14'
+date: '2026-07-28'
 category: 'training'
 description: 'Double progression: pick a rep range, add reps until every set hits the top, then add the smallest load you can set. A worked example and how Musclog uses it.'
 tags:

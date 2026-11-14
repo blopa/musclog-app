@@ -1,6 +1,6 @@
 ---
 title: 'Warm-up sets: how many and how heavy'
-date: '2026-11-14'
+date: '2026-05-21'
 category: 'training'
 description: 'For a 100 kg squat, Musclog warms up with three sets at 40, 60 and 80 percent plus an empty-bar set. Here is the ramp, the rounding, and when to skip it.'
 tags: ['Warm-up sets', 'Squat', 'Strength training', 'Barbell', 'Musclog']

@@ -1,6 +1,6 @@
 ---
 title: 'Net carbs vs total carbs: why US and EU food labels disagree'
-date: '2026-11-14'
+date: '2026-07-02'
 category: 'nutrition'
 description: 'US and EU labels count carbohydrate differently, so the same food can show two numbers. Here is how to convert between them, with a worked example and a note on what Musclog stores.'
 tags: ['Net carbs', 'Total carbs', 'Nutrition labels', 'Fiber', 'Nutrition', 'Musclog']

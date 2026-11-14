@@ -1,6 +1,6 @@
 ---
 title: 'How to estimate your one-rep max (and why sets of 15 lie to you)'
-date: '2026-11-14'
+date: '2026-04-09'
 category: 'training'
 description: 'Estimate your one-rep max from a set of 1 to 10 reps, see how reps in reserve change the number, and learn why a set of 15 cannot tell you your top strength.'
 tags: ['Strength training', 'One-rep max', '1RM calculator', 'Reps in reserve', 'Musclog']

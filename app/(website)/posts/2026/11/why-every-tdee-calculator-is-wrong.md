@@ -1,6 +1,6 @@
 ---
 title: 'Why every TDEE calculator is wrong, and how your weight trend fixes it'
-date: '2026-11-14'
+date: '2026-06-18'
 category: 'nutrition'
 description: 'Why a TDEE formula is only an average, and how Musclog estimates your energy use from logged food and a smoothed weight trend, with its rules.'
 tags: ['TDEE', 'Calorie deficit', 'Weight trend', 'Nutrition tracking', 'Musclog']

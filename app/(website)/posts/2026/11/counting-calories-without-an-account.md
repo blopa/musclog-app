@@ -1,6 +1,6 @@
 ---
 title: 'Counting calories without an account: what food apps learn about you'
-date: '2026-11-14'
+date: '2026-09-17'
 category: 'nutrition'
 description: 'What a food log reveals, what Musclog keeps on your device, and the exact points where data leaves it: food search, optional AI, crash reports and the website.'
 tags: ['Privacy', 'Calorie counter', 'Food tracking', 'Local-first', 'Encryption', 'Musclog']

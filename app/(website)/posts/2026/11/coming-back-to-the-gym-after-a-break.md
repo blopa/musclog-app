@@ -1,6 +1,6 @@
 ---
 title: 'Coming back to the gym after a break: what weight to start with'
-date: '2026-11-14'
+date: '2026-11-10'
 category: 'training'
 description: "Start well under your old weights after a break. Here is how to pick a starting load by how long you were away, with a worked example and Musclog's numbers."
 tags: ['Returning to gym', 'Strength training', 'Detraining', 'Beginner program', 'Musclog']

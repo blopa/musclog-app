@@ -1,6 +1,6 @@
 ---
 title: 'Deload weeks: when you need one and how to run it'
-date: '2026-11-14'
+date: '2026-09-24'
 category: 'training'
 description: 'A deload week is a planned lighter week. Here is how to tell you need one, how to run it, and what Musclog changes on its own when your lifts stall.'
 tags: ['Deload week', 'Strength training', 'Progressive overload', 'Recovery', 'Musclog']

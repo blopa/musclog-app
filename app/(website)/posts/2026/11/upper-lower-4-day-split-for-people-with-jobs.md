@@ -1,6 +1,6 @@
 ---
 title: 'Upper/Lower 4-day split for people with jobs'
-date: '2026-11-14'
+date: '2026-06-04'
 category: 'training'
 description: 'The Upper/Lower 4-day split for a busy week: four workouts of about 65 minutes, a Monday-Tuesday-Thursday-Friday schedule, how to recover from a missed day, and how to open it in Musclog.'
 tags:

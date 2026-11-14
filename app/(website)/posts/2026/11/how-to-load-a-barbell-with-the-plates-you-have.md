@@ -1,6 +1,6 @@
 ---
 title: 'Your gym has the wrong plates: how to load the bar anyway'
-date: '2026-11-14'
+date: '2026-10-06'
 category: 'training'
 description: 'Load a barbell to a target weight with the plates your gym actually owns. Why plates load in pairs, how bar weight counts, and what to do when the exact weight cannot be made.'
 tags: ['Strength training', 'Barbell', 'Plate calculator', 'Gym equipment', 'Musclog']

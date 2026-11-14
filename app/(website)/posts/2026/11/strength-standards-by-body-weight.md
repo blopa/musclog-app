@@ -1,6 +1,6 @@
 ---
 title: 'Strength standards: what a good bench, squat and deadlift is for your body weight'
-date: '2026-11-14'
+date: '2026-09-10'
 category: 'training'
 description: 'There is no universal good bench or squat. Musclog grades a lift against your body weight with its own tiers. Here is how the levels work, with 80 kg figures.'
 tags: ['Strength standards', 'Bench press', 'Squat', 'Deadlift', 'Body weight', 'Musclog']

@@ -1,6 +1,6 @@
 ---
 title: 'How much protein do you actually need? By goal and body weight'
-date: '2026-11-14'
+date: '2026-05-07'
 category: 'nutrition'
 description: 'Daily protein in grams per kilogram for building muscle, getting stronger, general health, endurance and cutting, how body weight is capped, and a worked example.'
 tags: ['Protein', 'Muscle building', 'Nutrition', 'Protein calculator', 'Musclog']
