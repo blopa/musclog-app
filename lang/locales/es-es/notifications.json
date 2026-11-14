@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Entrenamiento completado",
-        "description": "{{workoutName}} completado. Quemaste {{calories}} kcal."
+        "description": "{{workoutName}} completado. Quemaste {{calories}}."
       },
       "kudosReceived": {
         "title": "Kudos Recibidos",

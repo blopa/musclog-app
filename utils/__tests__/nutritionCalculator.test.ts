@@ -3,6 +3,7 @@ import {
   ADAPTIVE_THERMOGENESIS_KCAL_PER_KG,
   bmiFromWeightAndHeightM,
   BODY_FAT_UNCERTAINTY,
+  bodyweightProtein,
   calculateBMR,
   calculateBMRKatchMcArdle,
   calculateMacros,
@@ -3468,5 +3469,36 @@ describe('protein without body fat is anchored on bodyweight, not on calories', 
       const split = calculateMacros(calories, 'strength', { weightKg: 77, heightCm: 171 });
       expect(split.proteinPct + split.carbsPct + split.fatsPct).toBe(100);
     }
+  });
+});
+
+describe('bodyweightProtein', () => {
+  it('applies the goal g/kg to the weight', () => {
+    expect(bodyweightProtein('hypertrophy', 80)).toEqual({
+      grams: 144,
+      gramsPerKg: 1.8,
+      referenceWeightKg: 80,
+    });
+  });
+
+  it('raises any goal to the deficit minimum when losing weight', () => {
+    expect(bodyweightProtein('general', 80, { weightGoal: 'lose' }).gramsPerKg).toBe(2.0);
+  });
+
+  it('caps the weight at a BMI-30 reference for the height', () => {
+    const { referenceWeightKg, grams } = bodyweightProtein('hypertrophy', 140, { heightCm: 175 });
+    expect(referenceWeightKg).toBeCloseTo(30 * 1.75 ** 2, 6);
+    expect(grams).toBe(Math.round(30 * 1.75 ** 2 * 1.8));
+  });
+
+  it('prefers the goal weight', () => {
+    expect(bodyweightProtein('hypertrophy', 100, { goalWeightKg: 80 }).referenceWeightKg).toBe(80);
+  });
+
+  it('is the protein calculateMacros uses when no body fat is given', () => {
+    const options = { weightKg: 90, heightCm: 180, weightGoal: 'lose' as const };
+    expect(calculateMacros(3000, 'general', options).protein).toBe(
+      bodyweightProtein('general', 90, options).grams
+    );
   });
 });

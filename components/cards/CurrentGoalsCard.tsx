@@ -15,6 +15,7 @@ import { Text, useWindowDimensions, View } from 'react-native';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { EatingPhaseBadge } from '@/components/EatingPhaseBadge';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -56,6 +57,7 @@ export function CurrentGoalsCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const { width: windowWidth } = useWindowDimensions();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
@@ -126,11 +128,9 @@ export function CurrentGoalsCard({
           </Text>
           <View className="flex-row items-baseline gap-1">
             <Text className="text-4xl font-bold tabular-nums text-text-primary">
-              {formatInteger(goal.calories)}
+              {formatEnergy(goal.calories)}
             </Text>
-            <Text className="text-sm font-semibold text-accent-primary">
-              {t('currentGoalsCard.kcal')}
-            </Text>
+            <Text className="text-sm font-semibold text-accent-primary">{unitLabel}</Text>
           </View>
           {goal.isDynamic ? (
             <Text

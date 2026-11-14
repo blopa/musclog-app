@@ -4,6 +4,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { getMealTypeOptions } from '@/components/nutrition/mealTypeOptions';
 import type { MealType } from '@/database/models/NutritionLog';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -63,7 +64,8 @@ export function MealEstimationScreen({
 }: MealEstimationScreenProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const grams = (value: number) => `${formatRoundedDecimal(value, 1)}${t('common.units.g')}`;
 
   const mealTypeOptions = getMealTypeOptions(theme, t);
@@ -97,7 +99,7 @@ export function MealEstimationScreen({
             {/* Total Calories */}
             <View className="mb-4">
               <Text className="text-4xl font-bold" style={{ color: theme.colors.text.primary }}>
-                {formatInteger(Math.round(totalCalories))} {t('nutrition.common.kcal')}
+                {formatEnergy(totalCalories)} {unitLabel}
               </Text>
             </View>
 
@@ -171,8 +173,7 @@ export function MealEstimationScreen({
                       {item.name}
                     </Text>
                     <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-                      {item.weight} • {formatInteger(Math.round(item.calories))}{' '}
-                      {t('nutrition.common.kcal')}
+                      {item.weight} • {formatEnergy(item.calories)} {unitLabel}
                     </Text>
                   </View>
 

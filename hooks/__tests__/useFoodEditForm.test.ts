@@ -28,8 +28,12 @@ const makeForm = (overrides: Partial<EditFormState> = {}): EditFormState =>
     ...overrides,
   }) as EditFormState;
 
-const render = ({ decimalSeparator = ',' as ',' | '.', inferredCaloriesPer100g = 0 } = {}) =>
-  renderHook(() => useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g }));
+const render = ({
+  decimalSeparator = ',' as ',' | '.',
+  inferredCaloriesPer100g = 0,
+  energyUnit = 'kcal' as 'kcal' | 'kj',
+} = {}) =>
+  renderHook(() => useFoodEditForm({ decimalSeparator, energyUnit, inferredCaloriesPer100g }));
 
 describe('useFoodEditForm', () => {
   beforeEach(() => {
@@ -68,6 +72,17 @@ describe('useFoodEditForm', () => {
     expect(mockParseMicros).toHaveBeenCalledWith({ sodium: '120' }, ',');
     expect(result.current.isEditPopUpVisible).toBe(false);
     expect(result.current.editForm).toBeNull();
+  });
+
+  it('reads a calorie field typed in kilojoules back as kilocalories', () => {
+    const { result } = render({ decimalSeparator: '.', energyUnit: 'kj' });
+
+    act(() => result.current.openEditPopUp(makeForm({ calories: '1046' })));
+    act(() => result.current.saveEditPopUp());
+
+    expect(result.current.editedOverrides?.calories).toBeCloseTo(250, 6);
+    // The other macros are never converted.
+    expect(result.current.editedOverrides?.protein).toBe(12);
   });
 
   it('drops blank text fields to undefined so they never overwrite the source food', () => {

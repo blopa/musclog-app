@@ -92,12 +92,14 @@ describe('EnergyConverter', () => {
   });
 
   it('rounds to a whole number of kcal by default', () => {
-    expect(EnergyConverter.formatCalories(1234.6)).toBe('common.amount_kcal|{"amount":"1235"}');
+    expect(EnergyConverter.formatCalories(1234.6)).toBe(
+      'common.amount_kcal|{"amount":"1235 common.energyUnit.kcal|{}"}'
+    );
   });
 
   it('keeps decimals when asked', () => {
     expect(EnergyConverter.formatCalories(1234.56, 1)).toBe(
-      'common.amount_kcal|{"amount":"1234.6"}'
+      'common.amount_kcal|{"amount":"1234.6 common.energyUnit.kcal|{}"}'
     );
   });
 });

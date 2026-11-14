@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Calculadora de carboidratos líquidos",
+    "intro": "Converta os carboidratos e as fibras de um rótulo nutricional em carboidratos totais e líquidos, e veja qual deles o seu app de registro espera.",
+    "form": {
+      "region": "De onde é o rótulo",
+      "us": "Rótulo dos EUA ou Canadá: os carboidratos incluem fibras",
+      "eu": "Rótulo da UE, Reino Unido ou similar: os carboidratos excluem fibras",
+      "carbs": "Carboidratos no rótulo",
+      "fiber": "Fibras alimentares no rótulo"
+    },
+    "problems": {
+      "carbs": "Informe os carboidratos como um número de gramas.",
+      "fiber": "Informe as fibras como um número de gramas, ou 0.",
+      "fiberTooHigh": "Em um rótulo dos EUA ou Canadá, o total de carboidratos já inclui as fibras, então as fibras não podem ser maiores que esse total. Confira os dois números."
+    },
+    "results": {
+      "net": "Carboidratos líquidos",
+      "netNote": "Carboidratos sem fibras: a parte digerível que os apps de carboidrato líquido contam.",
+      "total": "Carboidratos totais",
+      "totalNote": "Carboidratos com as fibras incluídas: o que os rótulos dos EUA imprimem e o que o Musclog guarda para um alimento.",
+      "logTitle": "O que informar",
+      "logTotal": "Em um app que conta carboidratos totais: {{value}}.",
+      "logNet": "Em um app que conta carboidratos líquidos: {{value}}."
+    },
+    "notes": {
+      "sugarAlcohols": "Os polióis (como eritritol ou maltitol) não são subtraídos aqui. Algumas pessoas também os descontam dos carboidratos líquidos; esta ferramenta não faz isso, então o valor líquido pode ficar um pouco alto em produtos que os contêm.",
+      "musclog": "O Musclog guarda os carboidratos totais com as fibras incluídas, como os rótulos dos EUA os contam. Alimentos de fontes da UE são convertidos ao serem salvos, então o diário mantém um único significado para carboidratos."
+    },
+    "sections": [
+      {
+        "title": "Por que os rótulos diferem",
+        "body": [
+          "Na UE, o carboidrato declarado é o que o corpo metaboliza, e as fibras aparecem em uma linha própria. Nos EUA e no Canadá, a linha de carboidratos totais já inclui as fibras alimentares. Por isso, o mesmo produto pode mostrar números diferentes nos dois rótulos."
+        ]
+      },
+      {
+        "title": "Totais e líquidos",
+        "body": [
+          "Os carboidratos totais incluem as fibras. Os líquidos são o total menos as fibras, a parte que o corpo digere. A ferramenta mostra os dois, porque alguns apps pedem um e outros pedem o outro."
+        ]
+      },
+      {
+        "title": "O que não é tratado",
+        "body": [
+          "Os álcoois de açúcar não são subtraídos, e a ferramenta não estima fibras de alimentos sem rótulo."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "Regulamento (UE) n.º 1169/2011, informação sobre os géneros alimentícios ao consumidor (anexo I)",
+      "fda": "FDA, A Food Labeling Guide (rotulagem de informação nutricional)"
+    }
+  }
+}

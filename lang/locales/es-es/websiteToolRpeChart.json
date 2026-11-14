@@ -1,0 +1,71 @@
+{
+  "websiteToolRpeChart": {
+    "title": "Tabla de RPE y RIR con calculadora de carga",
+    "intro": "Una tabla con qué porcentaje de tu 1RM supone cada número de repeticiones a cada RPE, qué significa el RPE en repeticiones que te quedan, y una calculadora que convierte una serie que hiciste en la carga para otra serie.",
+    "chart": {
+      "title": "Porcentaje de tu 1RM",
+      "rpeColumn": "RPE {{rpe}}",
+      "reps": "Repeticiones",
+      "note": "Lee hacia la derecha las repeticiones que haces y hacia abajo el esfuerzo que das a la serie. El 100 % es el propio 1RM."
+    },
+    "meaning": {
+      "title": "Qué significa cada RPE",
+      "rpe": "RPE",
+      "reserve": "Repeticiones en reserva",
+      "meaning": "Significado",
+      "none": "No te queda ninguna repetición. La serie terminó al fallo.",
+      "one": "Te queda una repetición.",
+      "two": "Te quedan dos repeticiones.",
+      "three": "Te quedan tres repeticiones.",
+      "four": "Te quedan cuatro repeticiones."
+    },
+    "form": {
+      "weight": "Peso levantado",
+      "reps": "Repeticiones hechas",
+      "repsHint": "Número entero, de 1 a 10",
+      "rpe": "RPE de esa serie",
+      "targetReps": "Repeticiones objetivo",
+      "targetRepsHint": "Número entero, de 1 a 10",
+      "targetRpe": "RPE objetivo"
+    },
+    "problems": {
+      "weight": "Introduce el peso que levantaste como un número mayor que 0.",
+      "reps": "Introduce las repeticiones como un número entero de 1 a 10.",
+      "targetReps": "Introduce las repeticiones objetivo como un número entero de 1 a 10."
+    },
+    "results": {
+      "oneRepMax": "1RM estimado",
+      "target": "Carga para el objetivo, exacta",
+      "targetRounded": "Redondeada para una barra con discos estándar",
+      "roundedNote": "Redondeada a los incrementos más pequeños en los que sube una barra cargada con discos estándar. Sin gimnasio, la app usa los mismos incrementos.",
+      "reps": "repeticiones",
+      "atRpe": "a RPE"
+    },
+    "sections": [
+      {
+        "title": "Qué significa el RPE",
+        "body": [
+          "El RPE, escala de esfuerzo percibido, va de 1 a 10. Una serie valorada en 10 no dejó ninguna repetición. Un RPE 9 dejó una repetición en reserva, un RPE 8 dos, y así sucesivamente.",
+          "Las repeticiones en reserva (RIR) son la misma escala escrita al revés: RPE = 10 menos RIR. La app de Musclog guarda el esfuerzo de una serie de cualquiera de las dos formas, y es el mismo número."
+        ]
+      },
+      {
+        "title": "Por qué la gente lo calcula mal",
+        "body": [
+          "Calcular cuántas repeticiones te quedaban es una habilidad, y la mayoría de las personas es menos precisa cuanto más lejos del fallo estaba la serie. Una serie que parecía dejar unas pocas repeticiones pudo dejar más o menos.",
+          "Usa la tabla como guía. Compárala con cómo salen tus series de verdad y valora el esfuerzo con honestidad al registrarlo."
+        ]
+      },
+      {
+        "title": "Cómo funcionan la tabla y la calculadora",
+        "body": [
+          "Cada celda es el porcentaje de tu 1RM que representan esas repeticiones a ese RPE. Sale de las mismas fórmulas promediadas que usa la app de Musclog para estimar una serie registrada.",
+          "La calculadora estima tu 1RM a partir de una serie que hiciste y después da la carga para otro número de repeticiones a otro RPE. La carga redondeada es la que puede formar una barra con discos estándar."
+        ]
+      }
+    ],
+    "sources": {
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

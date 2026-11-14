@@ -98,6 +98,11 @@ export function WebsiteSeo({
   );
 }
 
+/** Client-side metadata for a page the route registry cannot describe (a program, by slug). */
+export function WebsitePageSeo({ page }: { page: PageSeo }) {
+  return <PageMetadata page={page} />;
+}
+
 export interface BlogCategorySeoProps {
   canonicalPath: string;
   category: string;

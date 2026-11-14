@@ -1,0 +1,53 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "Calculadora de 1RM (repetição máxima)",
+    "intro": "Informe uma série que você fez e receba uma repetição máxima estimada, com repetições em reserva e uma tabela de cargas para cada percentual.",
+    "form": {
+      "weight": "Carga levantada",
+      "reps": "Repetições feitas",
+      "repsHint": "Número inteiro, de 1 a 10",
+      "reserve": "Repetições em reserva (opcional)",
+      "reserveHint": "Quantas repetições a mais você conseguiria fazer. Deixe vazio se foi até a falha."
+    },
+    "problems": {
+      "weight": "Informe a carga levantada como um número maior que 0.",
+      "reps": "Informe as repetições como um número inteiro de 1 a 10.",
+      "repsTooHigh": "Séries com mais de 10 repetições não dão um 1RM confiável. Uma série longa mede resistência, e toda fórmula se afasta mais da realidade quanto mais repetições precisa extrapolar. Use uma série mais pesada de 10 repetições ou menos.",
+      "reserve": "Repetições em reserva devem ser um número inteiro de 0 a 9."
+    },
+    "results": {
+      "estimate": "1RM estimado",
+      "range": "Cada fórmula sozinha dá entre {{low}} e {{high}} {{unit}}. A estimativa é a média delas.",
+      "tableTitle": "Carga em cada percentual do seu 1RM",
+      "percent": "% do 1RM",
+      "weight": "Carga",
+      "reps": "Repetições até a falha",
+      "byFormula": "Cada fórmula sozinha"
+    },
+    "sections": [
+      {
+        "title": "Como a estimativa é feita",
+        "body": [
+          "A calculadora faz a média de sete fórmulas publicadas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor e Wathen. A média suaviza as peculiaridades de cada uma, e o resultado é o mesmo número que o app Musclog mostra para uma série registrada.",
+          "As repetições em reserva são somadas às que você fez. Cinco repetições com duas em reserva contam como sete até a falha, porque era essa a distância do seu limite."
+        ]
+      },
+      {
+        "title": "Por que séries acima de 10 repetições não são confiáveis",
+        "body": [
+          "As fórmulas de 1RM funcionam melhor com poucas repetições. Quanto mais se esticam, mais se desviam, e uma série de 15 fala principalmente da sua resistência, não da sua força máxima. O app ignora essas séries nos níveis de força e nas metas, e esta página também."
+        ]
+      },
+      {
+        "title": "Como usar a tabela",
+        "body": [
+          "Cada linha é uma carga em um percentual do seu 1RM estimado, com as repetições até a falha que as mesmas fórmulas preveem. As pessoas variam muito, então use os números como ponto de partida e ajuste conforme a barra se move."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo et al. (2024), Número máximo de repetições em percentuais do 1RM (Sports Medicine)",
+      "zourdos": "Zourdos et al. (2016), Escala de PSE específica para treino de força baseada em repetições em reserva"
+    }
+  }
+}

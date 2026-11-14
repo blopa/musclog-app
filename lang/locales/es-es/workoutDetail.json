@@ -28,7 +28,7 @@
     "rir": "RIR (Reps en Reserva)",
     "rirShort": "RIR",
     "syncToHealthConnect": "Sincronizar con Health Connect",
-    "shareMessage": "Acabo de terminar un entrenamiento con un volumen de {{volume}} {{unit}} y quemé {{calories}} calorías",
+    "shareMessage": "Acabo de terminar un entrenamiento con un volumen de {{volume}} {{unit}} y quemé {{calories}}",
     "inputs": {
       "weightKg": "Peso (kg)",
       "weightLbs": "Peso (lbs)",

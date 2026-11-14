@@ -15,7 +15,7 @@
     "select": "Seleccionar...",
     "today": "Hoy",
     "none": "Ninguno",
-    "amount_kcal": "{{amount}} kcal",
+    "amount_kcal": "{{amount}}",
     "duplicateFailed": "Error al duplicar",
     "yesterday": "Ayer",
     "daysAgo": "Hace {{count}} días",
@@ -198,6 +198,10 @@
       "pasteJson": "Pegar JSON",
       "privacy": "Solo se copian las instrucciones. No se incluye nada sobre ti ni ninguna clave de API.",
       "share": "Compartir"
+    },
+    "energyUnit": {
+      "kcal": "kcal",
+      "kj": "kJ"
     }
   }
 }

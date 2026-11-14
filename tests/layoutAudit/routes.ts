@@ -499,6 +499,9 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
     unaudited: 'not scripted yet: My meals → a meal’s menu → send to phone',
   },
   'components/modals/SmartCameraModal.tsx': { fixture: 'Open Smart Camera Modal' },
+  'components/modals/StorageUsageModal.tsx': {
+    unaudited: 'not scripted yet: Settings → Backups and data → Storage (native only)',
+  },
   'components/modals/TimePickerModal.tsx': { fixture: 'Open Time Picker Modal' },
   'components/modals/TimePickerModal.web.tsx': { fixture: 'Open Time Picker Modal' },
   'components/modals/TrackSavedForLaterFoodMealModal.tsx': {

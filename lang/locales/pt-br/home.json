@@ -37,8 +37,7 @@
       "eaten": "Consumido",
       "deficit": "Déficit",
       "surplus": "Superávit",
-      "even": "Equilíbrio",
-      "kcal": "kcal"
+      "even": "Equilíbrio"
     },
     "heatmaps": {
       "lastWeeks_one": "Última semana",

@@ -1,0 +1,80 @@
+{
+  "websiteToolCalorieDeficit": {
+    "title": "Calculadora de déficit calórico y fecha objetivo",
+    "intro": "Indica un peso objetivo y una fecha para ver el objetivo diario de calorías que te lleva hasta allí, el rango en el que se mueve y si el ritmo es realista.",
+    "form": {
+      "sex": "Sexo",
+      "male": "Hombre",
+      "female": "Mujer",
+      "age": "Edad",
+      "height": "Altura",
+      "weight": "Peso actual",
+      "activity": "Nivel de actividad",
+      "goalWeight": "Peso objetivo",
+      "goalDate": "Fecha objetivo",
+      "cm": "cm",
+      "inches": "in",
+      "activity1": "Sedentario (poco o ningún ejercicio)",
+      "activity2": "Ligero (1–3 días/semana)",
+      "activity3": "Moderado (3–5 días/semana)",
+      "activity4": "Activo (6–7 días/semana)",
+      "activity5": "Muy activo (trabajo físico + entrenamiento)"
+    },
+    "problems": {
+      "age": "Introduce una edad entre 15 y 100 años.",
+      "height": "Introduce una altura dentro del rango que acepta la calculadora.",
+      "weight": "Introduce un peso dentro del rango que acepta la calculadora.",
+      "goalWeight": "Introduce un peso objetivo dentro del rango que acepta la calculadora.",
+      "goalDate": "Elige una fecha objetivo.",
+      "goalDateNotFuture": "La fecha objetivo tiene que ser posterior a hoy."
+    },
+    "results": {
+      "target": "Objetivo diario de calorías",
+      "range": "Rango: de {{low}} a {{high}}",
+      "summary": "Los números",
+      "change": "Cambio de peso",
+      "days": "Días hasta la fecha objetivo",
+      "deficit": "Déficit diario",
+      "surplus": "Superávit diario",
+      "perDay": "al día",
+      "weekly": "Ritmo semanal",
+      "perWeek": "por semana",
+      "tdee": "Gasto energético diario estimado",
+      "share": "Déficit como parte del gasto diario"
+    },
+    "notes": {
+      "noChange": "Ya estás en ese peso, no hace falta cambiar nada.",
+      "floor": "Tu objetivo quedaría por debajo del mínimo de {{floor}}, así que la página lo fija en ese valor.",
+      "laterDate": "La fecha más temprana que permite ese mínimo es el {{date}}.",
+      "floorAboveTdee": "El gasto estimado está en el mínimo o por debajo, así que no es posible un déficit. Elige un peso objetivo más alto o consulta con un profesional.",
+      "pace": "Este ritmo supera el 1 % de tu peso corporal por semana, una guía de Musclog. Un ritmo más lento suele mantenerse mejor.",
+      "deficitLarge": "Este déficit supera el 25 % de tu gasto estimado, una guía de Musclog. Un déficit menor durante más tiempo suele ser más fácil de sostener.",
+      "range": "La estimación tiene incertidumbre, así que el objetivo se muestra como rango: un 10 % de tu gasto a cada lado. Ese 10 % es una decisión de producto de Musclog, no un error medido.",
+      "thresholds": "Las guías del 1 % de ritmo y del 25 % de déficit son decisiones de producto de Musclog, no resultados de un estudio."
+    },
+    "sections": [
+      {
+        "title": "Cómo se calcula el objetivo",
+        "body": [
+          "Tu gasto energético se estima con tu sexo, edad, altura y peso (la tasa de reposo de Mifflin-St Jeor) multiplicada por tu nivel de actividad. Es la misma estimación que usa la app Musclog cuando no tiene historial de seguimiento.",
+          "El cambio de peso se convierte en energía con la regla de kilocalorías por kilo de la app y se reparte entre los días hasta tu fecha. El objetivo es ese gasto menos el déficit diario (o más, si buscas ganar peso)."
+        ]
+      },
+      {
+        "title": "Por qué la fecha es orientativa",
+        "body": [
+          "Hall et al. (2011) modelaron cómo responde el peso corporal a un cambio en la ingesta de energía. El cuerpo se adapta a lo largo de meses, así que una cifra fija de calorías por kilo es una aproximación. Pésate cada pocas semanas y ajusta."
+        ]
+      },
+      {
+        "title": "El mínimo",
+        "body": [
+          "El objetivo nunca baja del mínimo que usa la app: 1.200 kcal para mujeres y 1.500 kcal para hombres, o el 80 % de tu tasa de reposo si es más alta. Si tu fecha exige menos, la página indica la fecha más temprana que permite ese mínimo."
+        ]
+      }
+    ],
+    "sources": {
+      "hall": "Hall et al. (2011), cuantificación del efecto del desequilibrio energético sobre el peso corporal"
+    }
+  }
+}

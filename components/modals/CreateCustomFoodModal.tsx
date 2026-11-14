@@ -47,6 +47,7 @@ import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
 import { FoodService } from '@/database/services/FoodService';
 import { useFoodPortions } from '@/hooks/useFoodPortions';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -178,6 +179,8 @@ export default function CreateCustomFoodModal({
     includeAllPortionSources: true,
   });
   const { formatInteger } = useFormatAppNumber();
+  // Calories are typed in the person's energy unit and saved in kilocalories.
+  const { energyUnit, unitLabel, fromDisplay } = useEnergyUnit();
 
   const selectedPortionsOrdered = useMemo(() => {
     return selectedPortionIds
@@ -198,7 +201,13 @@ export default function CreateCustomFoodModal({
       barcode,
       imageUrl,
       isFavorite,
-      calories,
+      // Handed on in kilocalories, the unit everything downstream expects.
+      calories:
+        energyUnit === 'kcal'
+          ? calories
+          : String(
+              Math.round(fromDisplay(parseLocalizedDecimalString(calories, decimalSeparator)))
+            ),
       protein,
       carbs,
       fat,
@@ -213,7 +222,10 @@ export default function CreateCustomFoodModal({
         // Parse numeric values
         const parsedFiber = Math.max(0, parseLocalizedDecimalString(fiber, decimalSeparator));
         const nutrition = {
-          calories: Math.max(0, parseLocalizedDecimalString(calories, decimalSeparator)),
+          calories: Math.max(
+            0,
+            fromDisplay(parseLocalizedDecimalString(calories, decimalSeparator))
+          ),
           protein: Math.max(0, parseLocalizedDecimalString(protein, decimalSeparator)),
           // The DB always stores total carbs. The entered value is total or net depending on the
           // user's "include fiber in carbs" setting; normalize to total before saving.
@@ -937,9 +949,7 @@ export default function CreateCustomFoodModal({
                     backgroundColor: theme.colors.accent.primary10,
                   }}
                 >
-                  <Text className="text-xs font-medium text-accent-primary">
-                    {t('food.common.kcal')}
-                  </Text>
+                  <Text className="text-xs font-medium text-accent-primary">{unitLabel}</Text>
                 </View>
               }
               variant="default"

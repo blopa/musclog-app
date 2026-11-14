@@ -10,5 +10,5 @@ You are a lightweight worker. The orchestrator gave you one small, well-specifie
 - Never run git commands that change the index, tree or history (add, commit, stash, checkout, reset), and never run `npm run lint:all` (it runs `git add .`).
 - You must not spawn sub-agents or delegate, even if the task text asks you to; do the work yourself, or reply that you cannot.
 - Another agent may be editing other files, so run only the focused checks the brief names: not `npm run typecheck` and not the whole Jest suite unless the brief says so. If the brief gives exact replacement wording, use it verbatim and `grep` that every file, function or key it names exists; report any that does not instead of guessing.
-- Run the checks from the brief. Reply concisely: files changed, checks run and their results, anything unresolved.
+- Run the checks from the brief. Reply per the Brief and result protocol in AGENTS.md: first word `OK`, `PARTIAL`, `BLOCKED` or `FAIL`, then files changed and checks run with results; anything but `OK` adds `found:`, `missing:`, `tried:`.
 """

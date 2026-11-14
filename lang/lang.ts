@@ -98,6 +98,17 @@ import enUsTimePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWebsite from './locales/en-us/website.json';
+import enUsWebsiteAlternativesPages from './locales/en-us/websiteAlternativesPages.json';
+import enUsWebsitePrograms from './locales/en-us/websitePrograms.json';
+import enUsWebsiteToolCalorieDeficit from './locales/en-us/websiteToolCalorieDeficit.json';
+import enUsWebsiteToolNetCarbs from './locales/en-us/websiteToolNetCarbs.json';
+import enUsWebsiteToolOneRepMax from './locales/en-us/websiteToolOneRepMax.json';
+import enUsWebsiteToolPlateCalculator from './locales/en-us/websiteToolPlateCalculator.json';
+import enUsWebsiteToolProteinCalculator from './locales/en-us/websiteToolProteinCalculator.json';
+import enUsWebsiteToolRpeChart from './locales/en-us/websiteToolRpeChart.json';
+import enUsWebsiteTools from './locales/en-us/websiteTools.json';
+import enUsWebsiteToolStrengthLevel from './locales/en-us/websiteToolStrengthLevel.json';
+import enUsWebsiteToolWarmUpCalculator from './locales/en-us/websiteToolWarmUpCalculator.json';
 import enUsWeeklyStreakCard from './locales/en-us/weeklyStreakCard.json';
 import enUsWhatsNew from './locales/en-us/whatsNew.json';
 import enUsWidgets from './locales/en-us/widgets.json';
@@ -189,6 +200,17 @@ import esEsTimePicker from './locales/es-es/timePicker.json';
 import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
 import esEsWebsite from './locales/es-es/website.json';
+import esEsWebsiteAlternativesPages from './locales/es-es/websiteAlternativesPages.json';
+import esEsWebsitePrograms from './locales/es-es/websitePrograms.json';
+import esEsWebsiteToolCalorieDeficit from './locales/es-es/websiteToolCalorieDeficit.json';
+import esEsWebsiteToolNetCarbs from './locales/es-es/websiteToolNetCarbs.json';
+import esEsWebsiteToolOneRepMax from './locales/es-es/websiteToolOneRepMax.json';
+import esEsWebsiteToolPlateCalculator from './locales/es-es/websiteToolPlateCalculator.json';
+import esEsWebsiteToolProteinCalculator from './locales/es-es/websiteToolProteinCalculator.json';
+import esEsWebsiteToolRpeChart from './locales/es-es/websiteToolRpeChart.json';
+import esEsWebsiteTools from './locales/es-es/websiteTools.json';
+import esEsWebsiteToolStrengthLevel from './locales/es-es/websiteToolStrengthLevel.json';
+import esEsWebsiteToolWarmUpCalculator from './locales/es-es/websiteToolWarmUpCalculator.json';
 import esEsWeeklyStreakCard from './locales/es-es/weeklyStreakCard.json';
 import esEsWhatsNew from './locales/es-es/whatsNew.json';
 import esEsWidgets from './locales/es-es/widgets.json';
@@ -280,6 +302,17 @@ import nlNlTimePicker from './locales/nl-nl/timePicker.json';
 import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
 import nlNlWebsite from './locales/nl-nl/website.json';
+import nlNlWebsiteAlternativesPages from './locales/nl-nl/websiteAlternativesPages.json';
+import nlNlWebsitePrograms from './locales/nl-nl/websitePrograms.json';
+import nlNlWebsiteToolCalorieDeficit from './locales/nl-nl/websiteToolCalorieDeficit.json';
+import nlNlWebsiteToolNetCarbs from './locales/nl-nl/websiteToolNetCarbs.json';
+import nlNlWebsiteToolOneRepMax from './locales/nl-nl/websiteToolOneRepMax.json';
+import nlNlWebsiteToolPlateCalculator from './locales/nl-nl/websiteToolPlateCalculator.json';
+import nlNlWebsiteToolProteinCalculator from './locales/nl-nl/websiteToolProteinCalculator.json';
+import nlNlWebsiteToolRpeChart from './locales/nl-nl/websiteToolRpeChart.json';
+import nlNlWebsiteTools from './locales/nl-nl/websiteTools.json';
+import nlNlWebsiteToolStrengthLevel from './locales/nl-nl/websiteToolStrengthLevel.json';
+import nlNlWebsiteToolWarmUpCalculator from './locales/nl-nl/websiteToolWarmUpCalculator.json';
 import nlNlWeeklyStreakCard from './locales/nl-nl/weeklyStreakCard.json';
 import nlNlWhatsNew from './locales/nl-nl/whatsNew.json';
 import nlNlWidgets from './locales/nl-nl/widgets.json';
@@ -371,6 +404,17 @@ import ptBrTimePicker from './locales/pt-br/timePicker.json';
 import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
 import ptBrWebsite from './locales/pt-br/website.json';
+import ptBrWebsiteAlternativesPages from './locales/pt-br/websiteAlternativesPages.json';
+import ptBrWebsitePrograms from './locales/pt-br/websitePrograms.json';
+import ptBrWebsiteToolCalorieDeficit from './locales/pt-br/websiteToolCalorieDeficit.json';
+import ptBrWebsiteToolNetCarbs from './locales/pt-br/websiteToolNetCarbs.json';
+import ptBrWebsiteToolOneRepMax from './locales/pt-br/websiteToolOneRepMax.json';
+import ptBrWebsiteToolPlateCalculator from './locales/pt-br/websiteToolPlateCalculator.json';
+import ptBrWebsiteToolProteinCalculator from './locales/pt-br/websiteToolProteinCalculator.json';
+import ptBrWebsiteToolRpeChart from './locales/pt-br/websiteToolRpeChart.json';
+import ptBrWebsiteTools from './locales/pt-br/websiteTools.json';
+import ptBrWebsiteToolStrengthLevel from './locales/pt-br/websiteToolStrengthLevel.json';
+import ptBrWebsiteToolWarmUpCalculator from './locales/pt-br/websiteToolWarmUpCalculator.json';
 import ptBrWeeklyStreakCard from './locales/pt-br/weeklyStreakCard.json';
 import ptBrWhatsNew from './locales/pt-br/whatsNew.json';
 import ptBrWidgets from './locales/pt-br/widgets.json';
@@ -462,6 +506,17 @@ import ruRuTimePicker from './locales/ru-ru/timePicker.json';
 import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
 import ruRuWebsite from './locales/ru-ru/website.json';
+import ruRuWebsiteAlternativesPages from './locales/ru-ru/websiteAlternativesPages.json';
+import ruRuWebsitePrograms from './locales/ru-ru/websitePrograms.json';
+import ruRuWebsiteToolCalorieDeficit from './locales/ru-ru/websiteToolCalorieDeficit.json';
+import ruRuWebsiteToolNetCarbs from './locales/ru-ru/websiteToolNetCarbs.json';
+import ruRuWebsiteToolOneRepMax from './locales/ru-ru/websiteToolOneRepMax.json';
+import ruRuWebsiteToolPlateCalculator from './locales/ru-ru/websiteToolPlateCalculator.json';
+import ruRuWebsiteToolProteinCalculator from './locales/ru-ru/websiteToolProteinCalculator.json';
+import ruRuWebsiteToolRpeChart from './locales/ru-ru/websiteToolRpeChart.json';
+import ruRuWebsiteTools from './locales/ru-ru/websiteTools.json';
+import ruRuWebsiteToolStrengthLevel from './locales/ru-ru/websiteToolStrengthLevel.json';
+import ruRuWebsiteToolWarmUpCalculator from './locales/ru-ru/websiteToolWarmUpCalculator.json';
 import ruRuWeeklyStreakCard from './locales/ru-ru/weeklyStreakCard.json';
 import ruRuWhatsNew from './locales/ru-ru/whatsNew.json';
 import ruRuWidgets from './locales/ru-ru/widgets.json';
@@ -584,6 +639,17 @@ const resources = {
       ...enUsTokenType,
       ...enUsUserMenu,
       ...enUsWebsite,
+      ...enUsWebsiteAlternativesPages,
+      ...enUsWebsitePrograms,
+      ...enUsWebsiteToolCalorieDeficit,
+      ...enUsWebsiteToolNetCarbs,
+      ...enUsWebsiteToolOneRepMax,
+      ...enUsWebsiteToolPlateCalculator,
+      ...enUsWebsiteToolProteinCalculator,
+      ...enUsWebsiteToolRpeChart,
+      ...enUsWebsiteToolStrengthLevel,
+      ...enUsWebsiteToolWarmUpCalculator,
+      ...enUsWebsiteTools,
       ...enUsWeeklyStreakCard,
       ...enUsWhatsNew,
       ...enUsWidgets,
@@ -679,6 +745,17 @@ const resources = {
       ...esEsTokenType,
       ...esEsUserMenu,
       ...esEsWebsite,
+      ...esEsWebsiteAlternativesPages,
+      ...esEsWebsitePrograms,
+      ...esEsWebsiteToolCalorieDeficit,
+      ...esEsWebsiteToolNetCarbs,
+      ...esEsWebsiteToolOneRepMax,
+      ...esEsWebsiteToolPlateCalculator,
+      ...esEsWebsiteToolProteinCalculator,
+      ...esEsWebsiteToolRpeChart,
+      ...esEsWebsiteToolStrengthLevel,
+      ...esEsWebsiteToolWarmUpCalculator,
+      ...esEsWebsiteTools,
       ...esEsWeeklyStreakCard,
       ...esEsWhatsNew,
       ...esEsWidgets,
@@ -774,6 +851,17 @@ const resources = {
       ...nlNlTokenType,
       ...nlNlUserMenu,
       ...nlNlWebsite,
+      ...nlNlWebsiteAlternativesPages,
+      ...nlNlWebsitePrograms,
+      ...nlNlWebsiteToolCalorieDeficit,
+      ...nlNlWebsiteToolNetCarbs,
+      ...nlNlWebsiteToolOneRepMax,
+      ...nlNlWebsiteToolPlateCalculator,
+      ...nlNlWebsiteToolProteinCalculator,
+      ...nlNlWebsiteToolRpeChart,
+      ...nlNlWebsiteToolStrengthLevel,
+      ...nlNlWebsiteToolWarmUpCalculator,
+      ...nlNlWebsiteTools,
       ...nlNlWeeklyStreakCard,
       ...nlNlWhatsNew,
       ...nlNlWidgets,
@@ -869,6 +957,17 @@ const resources = {
       ...ptBrTokenType,
       ...ptBrUserMenu,
       ...ptBrWebsite,
+      ...ptBrWebsiteAlternativesPages,
+      ...ptBrWebsitePrograms,
+      ...ptBrWebsiteToolCalorieDeficit,
+      ...ptBrWebsiteToolNetCarbs,
+      ...ptBrWebsiteToolOneRepMax,
+      ...ptBrWebsiteToolPlateCalculator,
+      ...ptBrWebsiteToolProteinCalculator,
+      ...ptBrWebsiteToolRpeChart,
+      ...ptBrWebsiteToolStrengthLevel,
+      ...ptBrWebsiteToolWarmUpCalculator,
+      ...ptBrWebsiteTools,
       ...ptBrWeeklyStreakCard,
       ...ptBrWhatsNew,
       ...ptBrWidgets,
@@ -964,6 +1063,17 @@ const resources = {
       ...ruRuTokenType,
       ...ruRuUserMenu,
       ...ruRuWebsite,
+      ...ruRuWebsiteAlternativesPages,
+      ...ruRuWebsitePrograms,
+      ...ruRuWebsiteToolCalorieDeficit,
+      ...ruRuWebsiteToolNetCarbs,
+      ...ruRuWebsiteToolOneRepMax,
+      ...ruRuWebsiteToolPlateCalculator,
+      ...ruRuWebsiteToolProteinCalculator,
+      ...ruRuWebsiteToolRpeChart,
+      ...ruRuWebsiteToolStrengthLevel,
+      ...ruRuWebsiteToolWarmUpCalculator,
+      ...ruRuWebsiteTools,
       ...ruRuWeeklyStreakCard,
       ...ruRuWhatsNew,
       ...ruRuWidgets,

@@ -17,6 +17,7 @@ import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'rea
 
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -125,6 +126,7 @@ export const FoodItemCard = memo(function FoodItemCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const [imageError, setImageError] = useState(false);
   // Only a remote or file photo can be opened full screen; a bundled asset has no uri.
   const imageUri =
@@ -162,7 +164,15 @@ export const FoodItemCard = memo(function FoodItemCard({
   if (selectionMode) {
     trailingControl = <CardSelectionCheck selected={selected} />;
   } else if (onMorePress) {
-    trailingControl = <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />;
+    trailingControl = (
+      <MenuButton
+        size="md"
+        onPress={onMorePress}
+        className="flex-shrink-0"
+        accessibilityLabel={t('common.a11y.moreOptions')}
+        testID="food-item-menu"
+      />
+    );
   }
 
   return (
@@ -218,8 +228,8 @@ export const FoodItemCard = memo(function FoodItemCard({
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />
             <MacroItem
               icon={Flame}
-              value={calories}
-              label={t('food.common.kcal')}
+              value={toDisplay(calories)}
+              label={unitLabel}
               valueMode="integer"
               intuitiveMode={intuitiveMode}
             />

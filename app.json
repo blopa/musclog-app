@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.16.2",
+    "version": "2.16.4",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": [
@@ -51,8 +51,7 @@
         "react-native-vision-camera",
         {
           "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera",
-          "enableMicrophonePermission": true,
-          "microphonePermissionText": "Allow $(PRODUCT_NAME) to access your microphone",
+          "enableMicrophonePermission": false,
           "enableCodeScanner": true,
           "enableFrameProcessors": false
         }
@@ -162,9 +161,9 @@
                 "initialLayout": "widgets/ActivityHeatmapWidget.tsx"
               },
               "android": {
-                "minWidth": 200,
+                "minWidth": 110,
                 "minHeight": 40,
-                "targetCellWidth": 3,
+                "targetCellWidth": 2,
                 "targetCellHeight": 1,
                 "resizeMode": "none",
                 "initialLayout": "widgets/ActivityHeatmapWidget.android.tsx"
@@ -229,7 +228,7 @@
       "associatedDomains": [
         "applinks:musclog.app"
       ],
-      "buildNumber": "330",
+      "buildNumber": "332",
       "entitlements": {
         "com.apple.developer.usernotifications.time-sensitive": true
       },
@@ -264,7 +263,7 @@
           ]
         }
       ],
-      "versionCode": 330,
+      "versionCode": 332,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
         "backgroundColor": "#0d1210"
@@ -292,6 +291,7 @@
         "android.permission.health.WRITE_EXERCISE",
         "android.permission.health.WRITE_DISTANCE",
         "android.permission.health.READ_LEAN_BODY_MASS",
+        "android.permission.health.READ_STEPS",
         "android.permission.health.WRITE_LEAN_BODY_MASS",
         "android.permission.health.READ_HEALTH_DATA_HISTORY",
         "android.permission.health.READ_MENSTRUATION",
@@ -300,6 +300,14 @@
         "android.permission.health.WRITE_BASAL_BODY_TEMPERATURE",
         "android.permission.health.READ_INTERMENSTRUAL_BLEEDING",
         "android.permission.health.WRITE_INTERMENSTRUAL_BLEEDING"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "extra": {

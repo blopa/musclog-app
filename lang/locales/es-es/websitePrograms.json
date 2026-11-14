@@ -1,0 +1,57 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Programas de entrenamiento gratuitos",
+      "intro": "Programas completos con cada entrenamiento, ejercicio, serie y repetición detallados. Léelo aquí o ábrelo en Musclog con un toque y empieza a entrenar. Los pesos iniciales se sugieren según tu perfil cuando lo abres en la app.",
+      "workouts_one": "{{count}} entrenamiento",
+      "workouts_few": "{{count}} entrenamientos",
+      "workouts_many": "{{count}} entrenamientos",
+      "workouts_other": "{{count}} entrenamientos",
+      "minutes": "unos {{minutes}} min por entrenamiento",
+      "exercisesLink": "Explora la biblioteca de ejercicios"
+    },
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    },
+    "detail": {
+      "allPrograms": "Todos los programas",
+      "dayLabel": "Día {{n}}",
+      "exercise": "Ejercicio",
+      "setsReps": "Series × repeticiones",
+      "rest": "Descanso",
+      "restSeconds": "{{seconds}} s",
+      "supersetGroup": "Superserie {{group}}",
+      "openTitle": "Abre este programa en Musclog",
+      "openBody": "Esto abre el programa en la app como una revisión, así que no se guarda nada hasta que lo confirmes. Los pesos iniciales se sugieren según tu perfil, y tú eliges los días de la semana. Si todavía no tienes la app, la página siguiente tiene los enlaces de descarga.",
+      "openButton": "Abrir en Musclog",
+      "howTitle": "Cómo seguirlo",
+      "how": [
+        "Haz los entrenamientos en orden y repite el ciclo. Un entrenamiento por día de entrenamiento es la forma más sencilla; el orden importa más que el día de la semana.",
+        "Empieza con pesos que puedas levantar con buena técnica y dejando un par de repeticiones en reserva. Cuando llegues al límite superior del rango de repeticiones en todas las series, sube el peso la próxima vez.",
+        "Estos programas son ejemplos generales, no consejo médico. Si tienes una lesión o una condición de salud, consulta primero con un profesional."
+      ],
+      "notFoundTitle": "Programa no encontrado",
+      "notFoundBody": "No hay ningún programa en esta dirección.",
+      "metaTitle": "{{title}}: programa de entrenamiento gratuito"
+    },
+    "summaries": {
+      "push-pull-legs": "Tres entrenamientos: push (pecho, hombros y tríceps), pull (espalda y bíceps) y piernas. Haz los tres una vez por semana, o repítelos dos veces para la versión clásica de seis días.",
+      "upper-lower-4-day": "Cuatro entrenamientos: dos días de tren superior y dos de tren inferior, lo que entrena cada músculo dos veces por semana en un horario de cuatro días.",
+      "full-body-3-day": "Tres entrenamientos de cuerpo completo para principiantes. Cada uno incluye un ejercicio de piernas, un empuje, un tirón y algo de trabajo de brazos, así que cada músculo se entrena tres veces por semana.",
+      "phul": "Cuatro entrenamientos: dos de tren superior y dos de tren inferior. El primero de cada par es un día de fuerza con pocas repeticiones, y el segundo un día de hipertrofia con más repeticiones.",
+      "5-day-hypertrophy-split": "Cinco entrenamientos, uno por zona: pecho, espalda, hombros, piernas y brazos. Más volumen por músculo en cada sesión y una sesión intensa por músculo a la semana.",
+      "arnold-split": "Tres entrenamientos al estilo Arnold: pecho y espalda, hombros y brazos, y después piernas. Tradicionalmente el programa se hace dos veces, para seis días de entrenamiento.",
+      "bro-split": "Cinco entrenamientos, cada uno con un grupo muscular: pecho, espalda, piernas, hombros y brazos. Cada músculo recibe una sesión enfocada a la semana.",
+      "2-day-full-body": "Dos entrenamientos de cuerpo completo, A y B, para semanas en las que solo puedes entrenar dos veces. Alterna entre ellos.",
+      "3-day-strength-builder": "Tres entrenamientos centrados en series más pesadas de 4 a 8 repeticiones en sentadilla, press de banca, peso muerto y remos, con trabajo accesorio más ligero después.",
+      "classic-3-day-split": "Tres entrenamientos: pecho y tríceps, espalda y bíceps, y después piernas y hombros. Un reparto clásico para una semana de tres días.",
+      "brolic-workout": "Dos entrenamientos de tren superior, pecho y hombros, con mucho trabajo de empuje y aperturas. Más corto que la mayoría de los programas de esta lista.",
+      "cable-superset-workout": "Cinco entrenamientos avanzados (Upper A, Lower A, Arms, Upper B, Lower B) con ejercicios en polea, agrupados en superseries antagonistas, con un rango de repeticiones y un tiempo de descanso para cada ejercicio.",
+      "short-full-body-gym": "Dos entrenamientos cortos de cuerpo completo, A y B, con máquinas y peso libre del gimnasio: unos 30 minutos, 2 series por ejercicio y deliberadamente fáciles. Una buena forma de volver después de una pausa.",
+      "short-full-body-home": "Dos entrenamientos cortos de cuerpo completo, A y B, con mancuernas, una kettlebell y bandas: unos 30 minutos, 2 series por ejercicio y deliberadamente fáciles.",
+      "short-full-body-no-equipment": "Dos entrenamientos cortos de cuerpo completo, A y B, solo con tu cuerpo y una banda: unos 30 minutos, 2 series por ejercicio y deliberadamente fáciles."
+    }
+  }
+}

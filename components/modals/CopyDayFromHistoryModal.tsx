@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { Button } from '@/components/theme/Button';
 import { type RecentLoggedDay, useCopyDaySource } from '@/hooks/useCopyDaySource';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
@@ -53,7 +54,8 @@ export function CopyDayFromHistoryModal({
 }: CopyDayFromHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger, locale } = useFormatAppNumber();
+  const { locale } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
 
   const [sourceDate, setSourceDate] = useState<Date | null>(null);
   const [deselectedItemIds, setDeselectedItemIds] = useState<ReadonlySet<string>>(new Set());
@@ -153,7 +155,7 @@ export function CopyDayFromHistoryModal({
         >
           {t('food.actions.copyDayRecentDaySummary', {
             count: day.itemCount,
-            calories: formatInteger(day.calories),
+            calories: formatEnergyWithUnit(day.calories),
           })}
         </Text>
       </Pressable>
@@ -193,7 +195,7 @@ export function CopyDayFromHistoryModal({
         <Text
           style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.xs }}
         >
-          {t('food.actions.copyDayItemCalories', { calories: formatInteger(item.calories) })}
+          {t('food.actions.copyDayItemCalories', { calories: formatEnergyWithUnit(item.calories) })}
         </Text>
       </Pressable>
     );
@@ -279,7 +281,7 @@ export function CopyDayFromHistoryModal({
             >
               {t('food.actions.copyDaySelectionSummary', {
                 count: summary.itemCount,
-                calories: formatInteger(summary.calories),
+                calories: formatEnergyWithUnit(summary.calories),
               })}
             </Text>
           ) : null}

@@ -1,10 +1,9 @@
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
-import * as Sentry from '@sentry/react-native';
 
 import { DATABASE_NAME } from '@/constants/database';
-import { initializeSentry } from '@/sentry-init';
 
 import { captureBootDbFileStats } from './dbBootStats';
+import { reportMigrationFailure } from './migrationFailureReport';
 import { migrations } from './migrations';
 import { preparePreMigrationBackupBeforeAdapter } from './preMigrationCapture';
 import { schema } from './schema';
@@ -40,14 +39,7 @@ export default new SQLiteAdapter({
     },
     onError: (error: Error) => {
       console.warn('[SQLiteMigration] Migration failed', error);
-      initializeSentry();
-      Sentry.captureException(error, {
-        data: {
-          context: 'SQLiteMigration.onError',
-          fromVersion: currentDbVersion,
-          toVersion: schema.version,
-        },
-      });
+      void reportMigrationFailure(error, currentDbVersion, schema.version);
     },
     onSuccess: () => {
       console.log('[SQLiteMigration] Migration completed');

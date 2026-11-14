@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CheckCircle2, ChevronLeft, Circle } from 'lucide-react-native';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -41,6 +41,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
+import { recordPositiveMoment } from '@/services/reviewPrompt';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import type { ComebackFeel } from '@/utils/comeback/comebackState';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
@@ -81,6 +82,7 @@ export default function WeeklyReviewScreen() {
   const { data, legacy, loadError, reload } = useWeeklyReviewOverview(selectedReview, requestedDay);
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
+  const reviewMomentCountedRef = useRef(false);
   const comeback = useComebackState();
   const [panel, setPanel] = useState<ReviewPanel | null>(
     params.checkinId ? { kind: 'legacyCheckin', id: params.checkinId } : null
@@ -101,6 +103,17 @@ export default function WeeklyReviewScreen() {
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formatDate = (value: number) =>
     new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(value);
+  /** A decision that went through is a good moment to ask for a rating, once per visit. */
+  const decide = async (input: Parameters<typeof WeeklyReviewService.decide>[0]) => {
+    const result = await WeeklyReviewService.decide(input);
+    if (!reviewMomentCountedRef.current) {
+      reviewMomentCountedRef.current = true;
+      setTimeout(() => void recordPositiveMoment('weeklyReviewDecided'), 1500);
+    }
+
+    return result;
+  };
+
   /**
    * Every decision on this screen is one write followed by a reload, behind the same busy flag and
    * the same error banner. `afterSuccess` runs only once the write went through.
@@ -133,7 +146,7 @@ export default function WeeklyReviewScreen() {
 
     void run(
       () =>
-        WeeklyReviewService.decide({
+        decide({
           period: data.period,
           goalId: goal.id,
           section: 'nutrition',
@@ -154,7 +167,7 @@ export default function WeeklyReviewScreen() {
 
     void run(
       () =>
-        WeeklyReviewService.decide({
+        decide({
           period: data.period,
           goalId: goal.id,
           section: 'nutrition',
@@ -169,7 +182,7 @@ export default function WeeklyReviewScreen() {
   const reviewTraining = (decision: TrainingDecision) =>
     data &&
     run(() =>
-      WeeklyReviewService.decide({
+      decide({
         period: data.period,
         goalId: data.goal?.id,
         section: 'training',
@@ -181,7 +194,7 @@ export default function WeeklyReviewScreen() {
   const answerComebackCheckin = (week: 2 | 4, feel: ComebackFeel) =>
     data &&
     run(async () => {
-      await WeeklyReviewService.decide({
+      await decide({
         period: data.period,
         goalId: data.goal?.id,
         section: 'training',

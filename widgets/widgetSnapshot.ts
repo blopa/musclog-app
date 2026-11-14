@@ -1,5 +1,6 @@
 import type { Theme } from '@/theme';
 import { digestibleCarbs } from '@/utils/carbsConvention';
+import { energyToDisplay } from '@/utils/energyUnit';
 import { formatAppInteger } from '@/utils/formatAppNumber';
 
 // eslint-disable-next-line no-relative-import-paths/no-relative-import-paths -- Expo's initial-layout registry stubs project aliases.
@@ -110,6 +111,7 @@ export function buildNutritionWidgetSnapshot({
   palette,
   locale,
   translate,
+  energyUnit = 'kcal',
 }: {
   date: Date;
   nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
@@ -117,8 +119,13 @@ export function buildNutritionWidgetSnapshot({
   palette: WidgetPalette;
   locale: string;
   translate: (key: string) => string;
+  /** The unit calories are SHOWN in; the inputs are always kilocalories. */
+  energyUnit?: 'kcal' | 'kj';
 }): NutritionWidgetSnapshot {
   const carbs = digestibleCarbs(nutrients.carbs, nutrients.fiber);
+  const unitLabel = translate(
+    energyUnit === 'kj' ? 'common.energyUnit.kj' : 'common.energyUnit.kcal'
+  );
   const macros = [
     {
       key: 'protein',
@@ -133,10 +140,16 @@ export function buildNutritionWidgetSnapshot({
   return {
     state: 'ready',
     dateLabel: new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(date),
-    calories: formatAppInteger(locale, Math.round(nonNegative(nutrients.calories))),
+    calories: formatAppInteger(
+      locale,
+      Math.round(energyToDisplay(nonNegative(nutrients.calories), energyUnit))
+    ),
     calorieTarget: goal
-      ? `/ ${formatAppInteger(locale, Math.round(nonNegative(goal.totalCalories)))} ${translate('common.kcal')}`
-      : translate('common.kcal'),
+      ? `/ ${formatAppInteger(
+          locale,
+          Math.round(energyToDisplay(nonNegative(goal.totalCalories), energyUnit))
+        )} ${unitLabel}`
+      : unitLabel,
     calorieProgress: widgetProgress(nutrients.calories, goal?.totalCalories ?? 0),
     macros: macros.map(({ key, label, value, target }) => ({
       label: translate(label),

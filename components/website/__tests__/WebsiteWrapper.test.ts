@@ -74,6 +74,7 @@ describe('website mobile menu', () => {
     expect(links).toEqual([
       '/home#features',
       '/blog',
+      '/tools',
       '/calculator',
       '/exercises',
       '/progress',
@@ -129,6 +130,7 @@ describe('website footer', () => {
       '/privacy',
       '/terms',
       '/contact',
+      '/tools',
       '/exercises',
       '/gameboy',
       '/faq',

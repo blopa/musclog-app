@@ -1,0 +1,53 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "1RM-calculator (one-rep max)",
+    "intro": "Vul een set in die je deed en krijg een geschatte one-rep max, met herhalingen in reserve en een tabel met gewichten bij elk percentage.",
+    "form": {
+      "weight": "Getild gewicht",
+      "reps": "Gedane herhalingen",
+      "repsHint": "Geheel getal, 1 tot 10",
+      "reserve": "Herhalingen in reserve (optioneel)",
+      "reserveHint": "Hoeveel herhalingen je er nog had kunnen doen. Laat leeg als je tot falen ging."
+    },
+    "problems": {
+      "weight": "Vul het getilde gewicht in als getal boven 0.",
+      "reps": "Vul de herhalingen in als geheel getal van 1 tot 10.",
+      "repsTooHigh": "Sets van meer dan 10 herhalingen geven geen betrouwbare 1RM. Een lange set meet uithoudingsvermogen, en elke formule wijkt verder af naarmate ze meer herhalingen moet extrapoleren. Gebruik een zwaardere set van 10 herhalingen of minder.",
+      "reserve": "Herhalingen in reserve moeten een geheel getal van 0 tot 9 zijn."
+    },
+    "results": {
+      "estimate": "Geschatte 1RM",
+      "range": "Losse formules geven tussen {{low}} en {{high}} {{unit}}. De schatting is het gemiddelde.",
+      "tableTitle": "Gewicht bij elk percentage van je 1RM",
+      "percent": "% van 1RM",
+      "weight": "Gewicht",
+      "reps": "Herhalingen tot falen",
+      "byFormula": "Elke formule apart"
+    },
+    "sections": [
+      {
+        "title": "Hoe de schatting wordt gemaakt",
+        "body": [
+          "De calculator middelt zeven gepubliceerde formules: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor en Wathen. Middelen haalt de eigenaardigheden van één formule eruit, en de uitkomst is hetzelfde getal dat de Musclog-app toont voor een gelogde set.",
+          "Herhalingen in reserve worden bij je herhalingen opgeteld. Vijf herhalingen met twee in reserve telt als zeven tot falen, want zo ver zat je van je limiet."
+        ]
+      },
+      {
+        "title": "Waarom sets boven 10 herhalingen niet worden vertrouwd",
+        "body": [
+          "1RM-formules werken het best bij sets met weinig herhalingen. Hoe verder je ze oprekt, hoe meer ze afwijken, en een set van 15 zegt vooral iets over je uithoudingsvermogen, niet over je maximale kracht. De app negeert die sets voor krachtniveaus en doelen, en deze pagina ook."
+        ]
+      },
+      {
+        "title": "Zo gebruik je de tabel",
+        "body": [
+          "Elke rij is een gewicht bij een percentage van je geschatte 1RM, met de herhalingen tot falen die dezelfde formules bij dat gewicht voorspellen. Mensen verschillen veel, dus zie de getallen als startpunt en pas aan op hoe de stang beweegt."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo et al. (2024), Maximaal aantal herhalingen bij percentages van de 1RM (Sports Medicine)",
+      "zourdos": "Zourdos et al. (2016), Krachttraining-specifieke RPE-schaal op basis van herhalingen in reserve"
+    }
+  }
+}

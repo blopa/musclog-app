@@ -31,6 +31,7 @@ import type { MicrosData } from '@/database/models';
 import { FoodMealTrackingActionService } from '@/database/services/FoodMealTrackingActionService';
 import { FoodService } from '@/database/services/FoodService';
 import { useAlternateBarcodeSource } from '@/hooks/useAlternateBarcodeSource';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFoodEditForm } from '@/hooks/useFoodEditForm';
 import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
@@ -80,6 +81,7 @@ export function ScannedFoodDetailsModal({
     [i18n.resolvedLanguage, i18n.language]
   );
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
+  const { energyUnit, unitLabel, toDisplay } = useEnergyUnit();
   const { intuitiveEatingMode, alwaysAllowFoodEditing } = useSettings();
   const [amount, setAmount] = useState(100);
   const [localCanEdit, setLocalCanEdit] = useState(alwaysAllowFoodEditing);
@@ -176,7 +178,7 @@ export function ScannedFoodDetailsModal({
     acceptInferredCalories: handleAcceptInferredCalories,
     handleEditFormNumericChange,
     reset: resetEditForm,
-  } = useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g });
+  } = useFoodEditForm({ decimalSeparator, energyUnit, inferredCaloriesPer100g });
 
   const { openScanner, scanner } = useBarcodeCameraModal(visible, (data) =>
     setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
@@ -447,7 +449,7 @@ export function ScannedFoodDetailsModal({
       name: currentName,
       barcode: currentBarcode,
       description: currentDescription,
-      calories: formatAppRoundedDecimal(locale, nutritionalData.calories, 2),
+      calories: formatAppRoundedDecimal(locale, toDisplay(nutritionalData.calories), 2),
       protein: formatAppRoundedDecimal(locale, nutritionalData.protein, 2),
       carbs: formatAppRoundedDecimal(locale, nutritionalData.carbs, 2),
       fat: formatAppRoundedDecimal(locale, nutritionalData.fat, 2),
@@ -461,6 +463,7 @@ export function ScannedFoodDetailsModal({
     currentName,
     currentDescription,
     locale,
+    toDisplay,
     nutritionalData.calories,
     nutritionalData.protein,
     nutritionalData.carbs,
@@ -730,9 +733,7 @@ export function ScannedFoodDetailsModal({
                       backgroundColor: theme.colors.accent.primary10,
                     }}
                   >
-                    <Text className="text-xs font-medium text-accent-primary">
-                      {t('food.common.kcal')}
-                    </Text>
+                    <Text className="text-xs font-medium text-accent-primary">{unitLabel}</Text>
                   </View>
                 }
                 variant="default"

@@ -338,9 +338,9 @@
     "periodHint": "De zeven volledige dagen vóór je reviewdag",
     "showAll": "Alles tonen ({{count}})",
     "showFewer": "Minder tonen",
-    "reasonEmpirical": "Volgens je logboek verbruik je ongeveer {{expenditure}} kcal per dag, en je trendgewicht veranderde deze week met {{change}}. Met deze doelen blijf je op schema voor je doel.",
-    "reasonEmpiricalNoTrend": "Volgens je logboek verbruik je ongeveer {{expenditure}} kcal per dag. Met deze doelen blijf je op schema voor je doel.",
-    "reasonBaseline": "Geschat op basis van je profiel, nog niet van je logboek: ongeveer {{expenditure}} kcal per dag. Blijf voeding en gewicht loggen om het persoonlijk te maken.",
+    "reasonEmpirical": "Volgens je logboek verbruik je ongeveer {{expenditure}} per dag, en je trendgewicht veranderde deze week met {{change}}. Met deze doelen blijf je op schema voor je doel.",
+    "reasonEmpiricalNoTrend": "Volgens je logboek verbruik je ongeveer {{expenditure}} per dag. Met deze doelen blijf je op schema voor je doel.",
+    "reasonBaseline": "Geschat op basis van je profiel, nog niet van je logboek: ongeveer {{expenditure}} per dag. Blijf voeding en gewicht loggen om het persoonlijk te maken.",
     "largeChangeTitle": "Dat is een grote verandering",
     "largeChangeBody": "Je calorieën in één week met {{percent}}% aanpassen is ingrijpend en Musclog raadt het niet aan. Grote schommelingen komen meestal door maaltijden die niet gelogd zijn of een paar ongebruikelijke wegingen, dus controleer het voedingslogboek van deze week of houd je huidige doelen aan.",
     "reviewFoodLog": "Voedingslogboek bekijken",
@@ -416,7 +416,7 @@
       "comeback": "Je zit in je terugkeeropbouw, dus de progressie volgt die."
     },
     "belowFloorTitle": "Onder de minimale caloriegrens",
-    "belowFloorBody": "Dit ligt onder je minimum van {{minimum}} kcal. Je hebt de minimale caloriegrens uitgezet in de geavanceerde instellingen; zo laag gaan wordt afgeraden en kan onveilig zijn.",
+    "belowFloorBody": "Dit ligt onder je minimum van {{minimum}}. Je hebt de minimale caloriegrens uitgezet in de geavanceerde instellingen; zo laag gaan wordt afgeraden en kan onveilig zijn.",
     "estimateShort": "Schatting",
     "halfStatus": {
       "done": "{{half}} beoordeeld",
@@ -425,9 +425,9 @@
     "targetsEditor": {
       "invalidCalories": "Vul een caloriedoel boven 0 in.",
       "invalidMacro": "Vul een getal in (0 of meer).",
-      "macroTotal": "Deze macro’s tellen op tot {{kcal}} kcal.",
-      "mismatch": "Deze macro’s tellen op tot {{kcal}} kcal en dat komt niet overeen met het caloriedoel.",
-      "useMacroTotal": "{{kcal}} kcal gebruiken"
+      "macroTotal": "Deze macro’s tellen op tot {{kcal}}.",
+      "mismatch": "Deze macro’s tellen op tot {{kcal}} en dat komt niet overeen met het caloriedoel.",
+      "useMacroTotal": "{{kcal}} gebruiken"
     },
     "comebackCheckin": {
       "title": "Check-in terugkeer",

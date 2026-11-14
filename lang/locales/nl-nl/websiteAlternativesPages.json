@@ -1,0 +1,67 @@
+{
+  "websiteAlternativesPages": {
+    "shared": {
+      "title": "Musclog vs {{name}}",
+      "allComparisons": "Alle alternatieven",
+      "checked": "Feiten over {{name}} zijn gecontroleerd op {{date}}. De limieten van de gratis versie veranderen, dus open bij elke rij de bron voordat je beslist.",
+      "colTopic": "Onderwerp",
+      "colMusclog": "Musclog",
+      "source": "Bron",
+      "chooseTitle": "Welke bij jou past",
+      "importTitle": "Je trainingsgeschiedenis verplaatsen",
+      "otherApps": "Andere vergelijkingen",
+      "nonAffiliation": "Musclog is niet gelieerd aan {{name}}. Productnamen behoren toe aan hun eigenaars."
+    },
+    "apps": {
+      "strong": {
+        "intro": "Strong is een trainingslogger. Musclog logt ook trainingen en houdt daarnaast eten bij, in één gratis app met open source-code.",
+        "facts": [
+          {
+            "topic": "Gratis versie",
+            "them": "Slaat onbeperkt trainingen op, maar is beperkt tot 3 eigen routines.",
+            "musclog": "Er is geen limiet op routines en niets zit achter een abonnement."
+          },
+          {
+            "topic": "Betaald plan",
+            "them": "Strong PRO verwijdert de routinelimiet: $4.99 per maand of $29.99 per jaar (U.S. App Store-prijzen).",
+            "musclog": "Gratis en open source (GPL-3.0). Er is geen betaalde versie."
+          }
+        ],
+        "import": "Musclog kan een Strong-CSV-export importeren: Instellingen, Back-ups en gegevens, Trainingen importeren. Het koppelt oefeningnamen aan de eigen catalogus, vraagt naar namen die het niet kan koppelen en toont een overzicht voordat er iets wordt opgeslagen. Hetzelfde bestand twee keer importeren maakt geen dubbele sessies, en een import kan ongedaan worden gemaakt.",
+        "chooseThem": "Blijf bij Strong als je het al gebruikt en drie eigen routines je genoeg zijn.",
+        "chooseMusclog": "Probeer Musclog als je geen routinelimiet wilt, voedingsregistratie in dezelfde app en je gegevens op je apparaat bewaard."
+      },
+      "hevy": {
+        "intro": "Hevy is een trainingslogger met een gratis abonnement en een betaald Pro-abonnement. Musclog logt trainingen en eten in één gratis app met open source-code.",
+        "facts": [
+          {
+            "topic": "Limieten gratis abonnement",
+            "them": "Het gratis abonnement is beperkt tot 4 routines en 7 eigen oefeningen.",
+            "musclog": "Er is geen limiet op routines of eigen oefeningen."
+          },
+          {
+            "topic": "Opwarmcalculator",
+            "them": "De opwarmcalculator hoort bij Hevy Pro, niet bij het gratis abonnement.",
+            "musclog": "Opwarmsets zijn ingebouwd en gratis. Je kunt de opwarmcalculator ook op deze site uitproberen."
+          }
+        ],
+        "import": "Musclog kan een Hevy-CSV-export importeren: Instellingen, Back-ups en gegevens, Trainingen importeren. Het koppelt oefeningnamen aan de eigen catalogus, vraagt naar namen die het niet kan koppelen en toont een overzicht voordat er iets wordt opgeslagen. Hetzelfde bestand twee keer importeren maakt geen dubbele sessies, en een import kan ongedaan worden gemaakt.",
+        "chooseThem": "Blijf bij Hevy als je het al gebruikt en de limieten van het gratis abonnement je niet hinderen.",
+        "chooseMusclog": "Probeer Musclog als je geen routine- of oefeninglimieten wilt, voedingsregistratie in dezelfde app en je gegevens op je apparaat bewaard."
+      },
+      "myFitnessPal": {
+        "intro": "MyFitnessPal is een eten- en calorieëntracker. Musclog houdt ook eten bij en logt je trainingen, in één gratis app met open source-code.",
+        "facts": [
+          {
+            "topic": "Barcodescannen",
+            "them": "Barcodescannen is sinds 1 oktober 2022 een Premium-functie, volgens de eigen aankondiging van MyFitnessPal. Gratis gebruikers loggen eten door te zoeken.",
+            "musclog": "Barcodescannen is gratis."
+          }
+        ],
+        "import": "",
+        "chooseThem": "Blijf bij MyFitnessPal als je het al gebruikt, op de voedingsdatabase vertrouwt en tevreden bent met de gratis versie.",
+        "chooseMusclog": "Probeer Musclog als je gratis barcodescannen, trainingen en eten in één app wilt en je gegevens op je apparaat bewaard."
+      }
+    }
+  }
+}

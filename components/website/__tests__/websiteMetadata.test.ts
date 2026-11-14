@@ -52,8 +52,13 @@ describe('SDK 58 website metadata', () => {
     });
     const root = join(__dirname, '../../..');
     for (const route of Object.values(routes)) {
+      // A listing that has child routes is served from its folder's index file.
       const file =
-        route.path === '/' ? 'home' : route.path === '/blog' ? 'blog/index' : route.path.slice(1);
+        route.path === '/'
+          ? 'home'
+          : ['/blog', '/tools', '/programs'].includes(route.path)
+            ? `${route.path.slice(1)}/index`
+            : route.path.slice(1);
       if (file === 'test') {
         continue;
       }

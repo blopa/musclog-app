@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatLocalCalendarDayNumericIntl, parseLocalCalendarDate } from '@/utils/calendarDate';
 import type { NutritionDayShareSummary } from '@/utils/share/shareEnvelope';
@@ -18,7 +19,8 @@ interface OpticalNutritionDaySharePreviewProps {
  */
 export function OpticalNutritionDaySharePreview({ summary }: OpticalNutritionDaySharePreviewProps) {
   const { i18n, t } = useTranslation();
-  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
   return (
@@ -34,7 +36,7 @@ export function OpticalNutritionDaySharePreview({ summary }: OpticalNutritionDay
 
       <Text className="text-sm font-semibold text-text-primary">
         {t('food.meals.manageMealData.caloriesMacrosFormat', {
-          calories: formatInteger(summary.totals.calories),
+          calories: formatEnergyWithUnit(summary.totals.calories),
           carbs: formatRoundedDecimal(summary.totals.carbs, 1),
           fat: formatRoundedDecimal(summary.totals.fat, 1),
           protein: formatRoundedDecimal(summary.totals.protein, 1),

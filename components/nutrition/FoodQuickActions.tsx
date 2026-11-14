@@ -1,9 +1,10 @@
-import { ListPlus, ScanLine, Sparkles, UtensilsCrossed } from 'lucide-react-native';
+import { ListPlus, ScanLine, Search, UtensilsCrossed } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * The least room a quick action gets beside its neighbour: icon, padding and the longest word of
@@ -23,27 +24,26 @@ export function quickActionBasis(fontScale: number): number {
 }
 
 type FoodQuickActionsProps = {
-  /** The AI camera is offered only once a provider is set up. */
-  isAiConfigured: boolean;
   onScanBarcode: () => void;
-  onAiCamera: () => void;
+  onSearchFood: () => void;
   onMyMeals: () => void;
   onMoreOptions: () => void;
 };
 
 /**
- * The food diary's four ways to log: barcode, AI photo, a saved meal, everything else. Pairs of
+ * The food diary's four ways to log: barcode, search, a saved meal, everything else. The AI camera
+ * is not here: it is one tap away on the bottom bar's camera button. Pairs of
  * buttons that wrap (`flexBasis` + `flexGrow`) instead of a fixed two-column grid, so each pair
  * stays side by side while it has room and stacks into full-width buttons when it does not.
  */
 export function FoodQuickActions({
-  isAiConfigured,
   onScanBarcode,
-  onAiCamera,
+  onSearchFood,
   onMyMeals,
   onMoreOptions,
 }: FoodQuickActionsProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { fontScale } = useWindowDimensions();
   const basis = quickActionBasis(fontScale);
 
@@ -67,19 +67,18 @@ export function FoodQuickActions({
             onPress={onScanBarcode}
           />
         )}
-        {isAiConfigured
-          ? slot(
-              'ai',
-              <Button
-                label={t('food.actions.aiCamera')}
-                icon={Sparkles}
-                variant="secondaryGradient"
-                size="sm"
-                width="full"
-                onPress={onAiCamera}
-              />
-            )
-          : null}
+        {slot(
+          'search',
+          <Button
+            label={t('food.actions.searchFood')}
+            icon={Search}
+            iconColor={theme.colors.accent.secondary}
+            variant="secondaryGradient"
+            size="sm"
+            width="full"
+            onPress={onSearchFood}
+          />
+        )}
       </View>
       <View className="flex-row flex-wrap gap-2">
         {slot(

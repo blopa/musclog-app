@@ -1,0 +1,70 @@
+{
+  "websiteToolProteinCalculator": {
+    "title": "Eiwitcalculator",
+    "intro": "Vul je lichaamsgewicht, lengte en doel in en krijg een dagdoel voor eiwit in grammen, met de grammen per kilo waarop het berust.",
+    "form": {
+      "weight": "Lichaamsgewicht",
+      "height": "Lengte",
+      "goal": "Hoofddoel",
+      "deficit": "Eet je in een calorietekort?",
+      "deficitYes": "Ja, aan het afvallen",
+      "deficitNo": "Nee",
+      "goalWeight": "Doelgewicht (optioneel)",
+      "goalWeightHint": "Als je er een invult, wordt het eiwit daarop berekend in plaats van op je huidige gewicht.",
+      "cm": "cm",
+      "inches": "in"
+    },
+    "goals": {
+      "hypertrophy": "Spieropbouw",
+      "strength": "Kracht",
+      "general": "Algemene gezondheid",
+      "endurance": "Duursterkte",
+      "weightLoss": "Afvallen"
+    },
+    "problems": {
+      "weight": "Vul een lichaamsgewicht in binnen het bereik dat de calculator accepteert.",
+      "height": "Vul een lengte in binnen het bereik dat de calculator accepteert.",
+      "goalWeight": "Vul een doelgewicht in binnen het bereik dat de calculator accepteert, of laat het leeg."
+    },
+    "results": {
+      "grams": "Eiwit per dag",
+      "gramsNote": "{{perKg}} van {{reference}}",
+      "tableTitle": "Gram per kilo per doel",
+      "tableGoal": "Doel",
+      "tablePerKg": "Per kilo lichaamsgewicht"
+    },
+    "notes": {
+      "capped": "Je gewicht ligt boven het referentiegewicht van {{reference}} (BMI 30 bij jouw lengte), dus daarmee wordt gerekend. Je gewicht is {{weight}}. Zonder doelgewicht zorgt de grens ervoor dat het eiwit niet meegroeit met de vetmassa.",
+      "deficit": "Eten in een tekort brengt het minimum op {{value}}, omdat eiwit helpt om spieren te behouden terwijl je afvalt.",
+      "bodyweight": "Dit getal is gebaseerd op lichaamsgewicht. De calculator vraagt niet naar je vetpercentage, dus hij kan spier en vet niet uit elkaar houden.",
+      "spread": "Het dagtotaal telt. Verdeel het over je maaltijden zoals je wilt, in meer of minder momenten.",
+      "medical": "Algemene informatie, geen medisch advies. Heb je nierproblemen of een andere aandoening die eiwit raakt, vraag dan een arts voordat je je inname verandert."
+    },
+    "sections": [
+      {
+        "title": "Hoe het getal tot stand komt",
+        "body": [
+          "Eiwit wordt uitgedrukt in gram per kilo lichaamsgewicht, per doel: dezelfde tabel die de Musclog-app gebruikt voor dagdoelen. In een tekort gaat het naar minstens 2,0 g/kg.",
+          "Een percentage van de calorieën wordt niet gebruikt, omdat eiwit dan daalt als je minder eet, precies wanneer behoud van spier het meest telt."
+        ]
+      },
+      {
+        "title": "Waarom het gewicht een grens heeft",
+        "body": [
+          "Zonder doelgewicht gebruikt het getal je huidige gewicht, maar nooit meer dan het gewicht bij een BMI van 30 voor je lengte. Daarboven is het extra gewicht vooral geen magere massa, en eiwit voor al dat gewicht zou meer zijn dan je nodig hebt. Een doelgewicht vervangt de grens."
+        ]
+      },
+      {
+        "title": "Wat het onderzoek zegt",
+        "body": [
+          "Morton et al. (2018) bundelden studies naar krachttraining en zagen dat de spiergroei rond 1,6 g/kg per dag afvlakt, met een bovengrens van het betrouwbaarheidsinterval van ongeveer 2,2 g/kg. De getallen voor algemene gezondheid en spieropbouw liggen in die bandbreedte.",
+          "Helms et al. (2014) keken naar eiwit voor sporters die afvallen en trainen; het minimum van 2,0 g/kg in een tekort komt uit die literatuur. Het is een instelling van Musclog, geen gemeten uitkomst voor jou."
+        ]
+      }
+    ],
+    "sources": {
+      "morton": "Morton et al. (2018), meta-analyse over eiwitsuppletie en spiergroei door krachttraining",
+      "helms": "Helms et al. (2014), eiwit tijdens energierestrictie voor sporters met een fysiek doel"
+    }
+  }
+}

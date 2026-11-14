@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { BarLineChart } from '@/components/charts/BarLineChart';
 import { CorrelationPoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { getXAxisLabels } from '@/utils/chartUtils';
@@ -18,6 +19,7 @@ interface VolumeCaloriesChartProps {
 export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps) {
   const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
@@ -50,7 +52,8 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
   }
 
   const maxVol = Math.max(...data.map((d) => d.weeklyVolume), 1);
-  const maxCal = Math.max(...data.map((d) => d.dailyCalories), 1);
+  // The data stays in kcal; the chart draws the person's unit.
+  const maxCal = Math.max(...data.map((d) => toDisplay(d.dailyCalories)), 1);
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
     (x) => formatUtcNormalizedDayIntl(x, i18n.language)
@@ -79,7 +82,7 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
         data={data.map((d, i) => ({
           x: i,
           steps: d.weeklyVolume,
-          heartRate: d.dailyCalories,
+          heartRate: toDisplay(d.dailyCalories),
         }))}
         height={250}
         barSeriesLabel={t('progress.weeklyVolume')}
@@ -97,7 +100,7 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
           formatInteger(Math.round(maxCal)),
         ]}
         stepsFormatter={(v) => `${formatInteger(Math.round(v))} ${weightLabel}`}
-        heartRateFormatter={(v) => `${formatInteger(Math.round(v))} ${t('progress.kcal')}`}
+        heartRateFormatter={(v) => `${formatInteger(Math.round(v))} ${unitLabel}`}
         xAxisLabels={xAxisLabels}
       />
     </ProgressChartSection>

@@ -47,6 +47,12 @@ export const COACH_REPLY_JOURNAL = 'coachReplyJournal';
 export const COACH_RESTORED_COMPOSER = 'coachRestoredComposer';
 
 /**
+ * Device-local copy of the anonymous crash report choice ('true' | 'false'), readable when the
+ * database is not (broken migration, failed open). Rebuilt from the settings table on every read.
+ */
+export const CRASH_REPORT_CONSENT_KEY = 'crashReportConsent';
+
+/**
  * AsyncStorage key for the cached macro-logging streak state.
  * Stores JSON `{ computedDayKey, currentStreak, bestStreak }` so the streak is recomputed
  * at most once per local calendar day. See `utils/macroStreak.ts`.
@@ -81,6 +87,9 @@ export const TRAINING_SETUP_DATA = 'trainingSetupData';
 // Set when onboarding finishes for someone who chose training: the Health Connect / Health prompt
 // is held back until their first finished workout instead of interrupting the setup.
 export const HEALTH_CONNECT_PROMPT_PENDING = 'healthConnectPromptPending';
+
+// Device-local history of store-rating requests (`utils/reviewPrompt.ts`).
+export const REVIEW_PROMPT_STATE = 'reviewPromptState';
 
 // The one-time "how a set works" tip in the live workout session; set once it is dismissed.
 export const WORKOUT_FIRST_TIP_SEEN = 'workoutFirstTipSeen';

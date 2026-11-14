@@ -1,0 +1,51 @@
+<b>Musclog - Lift, Log, Repeat</b>
+
+Musclog est un suivi d'entraînement et un compteur de calories réunis dans une seule application gratuite et open source. Note tes séances de salle et tes repas, suis ta progression et garde tout sur ton téléphone : pas de compte, pas de pubs, et la saisie fonctionne hors ligne.
+
+L'application est disponible en anglais, espagnol, néerlandais, portugais (Brésil) et russe.
+
+<b>Rien n'est verrouillé</b>
+• Routines et programmes d'entraînement illimités, et tout ton historique.
+• Scanner de codes-barres, lecture des étiquettes et recherche d'aliments pour tout le monde.
+• Tous les graphiques, exports et sauvegardes sont inclus, sans abonnement.
+
+<b>Carnet d'entraînement et suivi de salle</b>
+• Note séries, répétitions et charges en quelques secondes, avec minuteur de repos, échauffement, supersets et notes par exercice.
+• Suis ton effort avec le RPE ou les répétitions en réserve (RIR).
+• Plus de 870 exercices avec photos et muscles ciblés, recherchables dans ta langue, ou ajoute les tiens.
+• Programmes prêts à l'emploi : Push Pull Legs, Haut/Bas du corps, Full Body, PHUL, splits sur 5 jours et routines courtes à la maison ou sans matériel. Ou crée le tien, hebdomadaire ou en rotation.
+• La surcharge progressive simplifiée : Musclog te propose ta prochaine charge et tes prochaines répétitions d'après ta dernière séance, et explique chaque chiffre qu'il modifie. Choisis double progression, règles linéaires ou en pourcentage, ou garde la main.
+• Calculateur de disques pour la barre et les disques de ta salle, en kg ou lb.
+• Remplace un exercice quand une machine est prise ou qu'une douleur gêne, et Musclog retient ce qu'il faut éviter.
+• Importe ton historique depuis Strong, Hevy ou FitNotes.
+
+<b>Vois ta force progresser</b>
+• Records personnels, 1RM estimé et niveaux de force pour les mouvements principaux.
+• Charge récente par muscle sur une carte du corps, et heatmap calendrier de tes séances.
+• Un bilan hebdomadaire entraînement et alimentation : tu choisis de progresser, répéter la semaine ou alléger.
+• Mode reprise : un redémarrage en douceur après une pause.
+
+<b>Compteur de calories et suivi des macros</b>
+• Journal alimentaire avec scanner de codes-barres et lecture des étiquettes nutritionnelles.
+• Recherche dans Open Food Facts et la base d'aliments USDA, ou crée tes propres aliments et repas.
+• Objectifs de calories, protéines, glucides, lipides et fibres pour perdre du gras, maintenir ton poids ou prendre du muscle.
+• Des objectifs qui s'adaptent à ta vraie tendance de poids, en kcal ou en kJ, en métrique ou en impérial.
+
+<b>Suivi du corps</b>
+• Poids, masse grasse, mensurations et humeur, avec des graphiques.
+• Suivi du cycle menstruel en option : note tes règles et tes symptômes et repère tes propres schémas. Les prévisions sont des estimations, et il n'y a aucun conseil d'entraînement selon les phases.
+• Synchronisation Health Connect pour le poids, la nutrition, les séances et les mesures corporelles.
+
+<b>De l'IA, seulement si tu le veux</b>
+• Discute avec un coach sportif, estime un repas sur photo et génère des programmes avec ta clé Gemini, OpenAI ou Claude, un modèle local, ou l'option gratuite intégrée.
+• Ou crée un programme ou décris un repas dans ChatGPT ou Claude et importe-le dans Musclog.
+• Choisis le ton du coach. Rien dans Musclog n'exige l'IA.
+
+<b>Confidentialité dès la conception</b>
+• Le poids, la masse grasse et les journaux alimentaires sont chiffrés sur ton appareil.
+• Verrouille toute l'application, ou seulement tes données de cycle, d'entraînement, d'alimentation ou de progression, avec l'empreinte digitale ou le code PIN de ton téléphone.
+• Exporte ou sauvegarde tes données, ou transfère-les vers un autre téléphone par QR codes, sans cloud.
+• Les rapports de plantage anonymes aident à corriger les bugs et se désactivent.
+• Widgets d'écran d'accueil, plusieurs thèmes de couleurs, et English, Español, Nederlands, Português (Brasil) et Русский.
+
+Lift, Log, Repeat.

@@ -13,7 +13,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { MealType, SavedForLaterGroup, SavedForLaterItem } from '@/database/models';
 import { SavedForLaterService } from '@/database/services/SavedForLaterService';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useTheme } from '@/hooks/useTheme';
 import { formatLocalCalendarDayIso, localCalendarDayDateFromDayKeyMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
@@ -48,7 +48,7 @@ export function SavedForLaterModal({
 }: SavedForLaterModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const [groups, setGroups] = useState<GroupWithNutrients[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState<GroupWithNutrients | null>(null);
@@ -173,7 +173,7 @@ export function SavedForLaterModal({
                 <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
                   <Text className="text-sm font-semibold text-accent-primary">
                     {t('common.amount_kcal', {
-                      amount: formatInteger(Math.round(item.nutrients.calories)),
+                      amount: formatEnergyWithUnit(item.nutrients.calories),
                     })}
                   </Text>
                   <Text className="text-xs text-text-secondary">
@@ -198,7 +198,7 @@ export function SavedForLaterModal({
         </View>
       );
     },
-    [formatInteger, t]
+    [formatEnergyWithUnit, t]
   );
 
   return (

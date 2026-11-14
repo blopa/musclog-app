@@ -3,6 +3,7 @@ import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -46,6 +47,7 @@ export function MealNutritionHighlightCard({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const { width: windowWidth } = useWindowDimensions();
   const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
 
@@ -109,10 +111,10 @@ export function MealNutritionHighlightCard({
                     intuitiveMode ? blurFilter(4) : undefined,
                   ]}
                 >
-                  {intuitiveMode ? '0' : formatRoundedDecimal(calories, 2)}
+                  {intuitiveMode ? '0' : formatRoundedDecimal(toDisplay(calories), 2)}
                 </Text>
                 <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                  {t('food.common.kcal')}
+                  {unitLabel}
                 </Text>
               </View>
 

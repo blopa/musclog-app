@@ -1,0 +1,73 @@
+{
+  "websiteToolStrengthLevel": {
+    "title": "Calculator voor krachtniveau",
+    "intro": "Vul je lichaamsgewicht in en een set die je hebt gedaan. Zie welk krachtniveau je geschatte één-herhalingsmaximum voor die oefening bereikt, en hoeveel elk niveau bij jouw lichaamsgewicht nodig heeft.",
+    "form": {
+      "sex": "Geslacht",
+      "sexMale": "Man",
+      "sexFemale": "Vrouw",
+      "sexOther": "Anders",
+      "bodyWeight": "Lichaamsgewicht",
+      "lift": "Oefening",
+      "perHand": "per hand",
+      "weight": "Getild gewicht",
+      "reps": "Herhalingen gedaan",
+      "repsHint": "Heel getal, 1 tot en met 10",
+      "reserve": "Herhalingen in reserve (optioneel)",
+      "reserveHint": "Hoeveel herhalingen je er nog had kunnen doen. Laat leeg als je tot falen ging."
+    },
+    "problems": {
+      "bodyWeight": "Vul je lichaamsgewicht in als een getal boven 0.",
+      "weight": "Vul het gewicht dat je tilde in als een getal boven 0.",
+      "reps": "Vul de herhalingen in als heel getal van 1 tot en met 10.",
+      "repsTooHigh": "Sets van meer dan 10 herhalingen geven geen betrouwbaar één-herhalingsmaximum. Een lange set meet uithoudingsvermogen, en elke formule wijkt verder af van de werkelijkheid naarmate hij meer herhalingen moet extrapoleren. Gebruik een zwaardere set van 10 herhalingen of minder.",
+      "reserve": "Herhalingen in reserve moet een heel getal van 0 tot en met 9 zijn."
+    },
+    "results": {
+      "level": "Krachtniveau",
+      "levels": {
+        "beginner": "Beginner",
+        "novice": "Novice",
+        "intermediate": "Gevorderd tussenniveau",
+        "advanced": "Gevorderd",
+        "elite": "Elite"
+      },
+      "range": "van {{lower}} tot {{upper}}",
+      "otherNote": "Getoond op de schaal voor mannen én de schaal voor vrouwen, omdat geen enkele tabel helemaal past.",
+      "estimate": "Geschat één-herhalingsmaximum",
+      "nextLevel": "Om {{level}} te bereiken: een geschat één-herhalingsmaximum van {{weight}} {{unit}}.",
+      "topLevel": "Deze oefening zit op het hoogste niveau. Er is geen niveau boven elite.",
+      "tableTitle": "Het één-herhalingsmaximum dat elk niveau bij jouw lichaamsgewicht nodig heeft",
+      "tableLevel": "Niveau",
+      "tableOne": "Geschat één-herhalingsmaximum",
+      "tableMale": "Schaal voor mannen",
+      "tableFemale": "Schaal voor vrouwen",
+      "tableNote": "Elk getal is het geschatte één-herhalingsmaximum voor deze oefening bij jouw lichaamsgewicht."
+    },
+    "sections": [
+      {
+        "title": "Waar het niveau naar kijkt",
+        "body": [
+          "Een niveau is je geschatte één-herhalingsmaximum gedeeld door je lichaamsgewicht, aangepast voor de oefening en het geslacht. Zwaardere mensen tillen in totaal meer, dus het lichaamsgewicht hoort bij de vergelijking.",
+          "Niveaus zijn een vuistregel van Musclog, getoetst aan openbare powerliftingresultaten van OpenPowerlifting. Ze laten zien waar een oefening op die schaal staat. Ze rangschikken je niet tegen andere mensen."
+        ]
+      },
+      {
+        "title": "Waarom geslacht en oefening de getallen veranderen",
+        "body": [
+          "De referentie voor een oefening hangt af van het lichaamsdeel dat ze belast, en in de openbare data liggen de resultaten van vrouwen lager ten opzichte van het lichaamsgewicht. Daarom gebruikt het niveau van een vrouw voor dat lichaamsdeel een lagere referentie.",
+          "Kies Anders als je het antwoord niet op één schaal wilt. Dan worden de schaal voor mannen en die voor vrouwen allebei getoond, en een bereik als ze verschillend beoordelen."
+        ]
+      },
+      {
+        "title": "Oefeningen met dumbbells",
+        "body": [
+          "Oefeningen met dumbbells worden per hand beoordeeld, omdat zowel de referentie als het gewicht dat je registreert per hand is. Vul het gewicht van één dumbbell in, niet van het paar."
+        ]
+      }
+    ],
+    "sources": {
+      "openpowerlifting": "OpenPowerlifting, openbare powerliftingresultaten"
+    }
+  }
+}

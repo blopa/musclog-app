@@ -119,19 +119,16 @@ export default function ComebackScreen() {
     subline = t('comeback.screen.endsOn', { date: dateLabel(endsAt) });
   }
 
-  const weightLine = (() => {
-    if (!progress?.weight) {
-      return null;
-    }
-
+  let weightLine: string | null = null;
+  if (progress?.weight) {
     const change = progress.weight.nowKg - progress.weight.startKg;
     const sign = signOf(change);
 
-    return t('comeback.screen.weightChange', {
+    weightLine = t('comeback.screen.weightChange', {
       change: `${sign}${formatDisplayWeightKg(locale, units, Math.abs(change))}`,
       unit: t(getWeightUnitI18nKey(units)),
     });
-  })();
+  }
 
   const toggleDepth = (target: ComebackTrackingDepth, on: boolean) =>
     run(async () => {

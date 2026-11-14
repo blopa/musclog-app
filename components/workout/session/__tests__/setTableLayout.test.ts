@@ -19,14 +19,14 @@ describe('entryLineColumns', () => {
     expect(entryLineColumns(false)).toEqual(['set', 'previous', 'weight', 'reps', 'check']);
   });
 
-  it('has no check column when compact, where it moves under the fields', () => {
-    // A header that still reserved the check column sat 56pt left of its inputs.
-    expect(entryLineColumns(true)).toEqual(['set', 'spacer', 'weight', 'reps']);
-    expect(entryLineColumns(true)).not.toContain('check');
+  it('keeps the check at the end of the entry line when compact; only "previous" moves down', () => {
+    expect(entryLineColumns(true)).toEqual(['set', 'spacer', 'weight', 'reps', 'check']);
+    expect(entryLineColumns(true)).not.toContain('previous');
   });
 
-  it('ends on the reps column when compact, so the inputs reach the row edge', () => {
-    expect(entryLineColumns(true).at(-1)).toBe('reps');
+  it('ends on the check column in both layouts, so the header lines up with the inputs', () => {
+    expect(entryLineColumns(true).at(-1)).toBe('check');
+    expect(entryLineColumns(false).at(-1)).toBe('check');
     expect(SET_TABLE_COLUMNS.check).toBeGreaterThan(0);
   });
 });

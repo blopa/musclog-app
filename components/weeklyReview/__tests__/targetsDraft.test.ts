@@ -62,3 +62,33 @@ describe('goalCaloriesFromMacros', () => {
     );
   });
 });
+
+describe('targets in kilojoules', () => {
+  it('shows the calorie target in kJ and the macros unchanged', () => {
+    const draft = targetsDraftFrom({ ...targets, totalCalories: 2400 }, 'en-US', 'kj');
+
+    expect(draft.totalCalories).toBe('10042');
+    expect(draft.protein).toBe(targetsDraftFrom(targets, 'en-US').protein);
+  });
+
+  it('keeps the exact kilocalories when the calorie field is left untouched', () => {
+    const initial = { ...targets, totalCalories: 2413 };
+    const draft = targetsDraftFrom(initial, 'en-US', 'kj');
+
+    expect(readTargetsDraft(draft, 'en-US', 'kj', 2413).targets?.totalCalories).toBe(2413);
+  });
+
+  it('converts an edited kJ target back to whole kilocalories', () => {
+    const draft = { ...targetsDraftFrom(targets, 'en-US', 'kj'), totalCalories: '10000' };
+
+    expect(
+      readTargetsDraft(draft, 'en-US', 'kj', targets.totalCalories).targets?.totalCalories
+    ).toBe(2390);
+  });
+
+  it('still rejects an empty or zero kJ target', () => {
+    const draft = { ...targetsDraftFrom(targets, 'en-US', 'kj'), totalCalories: '0' };
+
+    expect(readTargetsDraft(draft, 'en-US', 'kj').invalid).toEqual(['totalCalories']);
+  });
+});

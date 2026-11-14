@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleProp, View, ViewStyle } from 'react-native';
 
 import { WorkoutSummaryStatRow } from '@/components/WorkoutSummaryStatRow';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useTheme } from '@/hooks/useTheme';
 import { splitDurationLabel } from '@/utils/workout';
 
@@ -25,6 +26,7 @@ export function WorkoutSummaryStatsCard({
 }: WorkoutSummaryStatsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   return (
     <GenericCard variant="raised" containerStyle={containerStyle}>
       <View className="gap-6 p-6">
@@ -48,8 +50,8 @@ export function WorkoutSummaryStatsCard({
           <WorkoutSummaryStatRow
             icon={Flame}
             label={t('workoutSummary.caloriesBurned')}
-            value={caloriesBurned}
-            valueSuffix="kcal"
+            value={Math.round(toDisplay(caloriesBurned))}
+            valueSuffix={unitLabel}
             iconBgColor={theme.colors.status.error10}
             iconColor={theme.colors.status.error}
           />

@@ -1,0 +1,49 @@
+<b>Musclog - Lift, Log, Repeat</b>
+
+Musclog is a workout tracker and calorie counter in one free, open source app. Log your gym sessions and your food, follow your progress, and keep it all on your phone: no account, no ads, and logging works offline.
+
+<b>Nothing locked away</b>
+• Unlimited workout routines and plans, and your full history.
+• The barcode scanner, nutrition label scanning and food search are in the app for everyone.
+• Every chart, export and backup is included, with no subscription.
+
+<b>Workout log and gym tracker</b>
+• Log sets, reps and weight in seconds, with a rest timer, warm-up sets, supersets and notes for every exercise.
+• Track effort with RPE or reps in reserve (RIR).
+• 870+ exercises with photos and target muscles, searchable in your language, or add your own.
+• Ready-made workout plans: Push Pull Legs, Upper/Lower, Full Body, PHUL, 5-day splits and short home or no-equipment routines. Or build your own weekly or rotating program.
+• Progressive overload made simple: Musclog suggests your next weight and reps from your last session and explains every number it changes. Pick double progression, linear or percentage-based rules, or keep full control.
+• Plate calculator for your gym's bar and plates, in kg or lb, per exercise if you like.
+• Swap an exercise when a machine is busy or something hurts, and let Musclog remember what to avoid.
+• Import your history from Strong, Hevy or FitNotes.
+
+<b>See your strength grow</b>
+• Personal records, estimated 1RM and strength levels for the main lifts.
+• Recent training load per muscle on a body map, and a calendar heatmap of your workouts.
+• A Weekly Review of your training and nutrition, where you choose to progress, repeat the week or go lighter.
+• Comeback mode: an easier restart after a break.
+
+<b>Calorie counter and macro tracker</b>
+• Food diary with a barcode scanner and nutrition label scanning.
+• Search Open Food Facts and the USDA food database, or create your own foods and meals.
+• Calorie, protein, carb, fat and fiber targets for fat loss, maintenance or muscle gain.
+• Targets that adapt to your real weight trend, in kcal or kJ, metric or imperial.
+
+<b>Body tracking</b>
+• Weight, body fat, body measurements and mood, with charts.
+• Optional menstrual cycle tracking: log periods and symptoms and see your own patterns. Predictions are estimates, and there is no phase-based training advice.
+• Health Connect sync for weight, nutrition, workouts and body metrics.
+
+<b>AI, only if you want it</b>
+• Chat with a fitness coach, estimate a meal from a photo and generate workout plans using your own Gemini, OpenAI or Claude key, a local model, or the free option built into the app.
+• Or build a plan or describe a meal in ChatGPT or Claude and bring it into Musclog.
+• Choose how the coach talks to you. Nothing in Musclog requires AI.
+
+<b>Private by design</b>
+• Weight, body fat and food logs are encrypted on your device.
+• Lock the whole app, or only your cycle, workout, food or progress data, with your phone's fingerprint or PIN.
+• Export or back up your data, or move it to another phone by scanning QR codes, with no cloud.
+• Anonymous crash reports help fix bugs and can be turned off in settings.
+• Home screen widgets, several color themes, and English, Español, Nederlands, Português (Brasil) and Русский.
+
+Lift, Log, Repeat.

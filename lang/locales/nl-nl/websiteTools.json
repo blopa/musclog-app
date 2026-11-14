@@ -1,0 +1,36 @@
+{
+  "websiteTools": {
+    "layout": {
+      "allTools": "Alle tools",
+      "howItWorks": "Hoe het werkt",
+      "sources": "Bronnen",
+      "related": "Meer tools",
+      "ctaTitle": "Bijhouden in Musclog",
+      "ctaBody": "Musclog is een gratis, open-source fitness- en voedingsapp. Je gegevens blijven op je apparaat.",
+      "sameMath": "Gebruikt dezelfde berekening als de Musclog-app.",
+      "localOnly": "Alles wat je typt blijft in je browser."
+    },
+    "units": {
+      "label": "Eenheden",
+      "metric": "Metrisch (kg)",
+      "imperial": "Imperiaal (lb)",
+      "kg": "kg",
+      "lb": "lb"
+    },
+    "gym": {
+      "summary": "Jouw sportschool: stang en schijven",
+      "barWeight": "Stanggewicht",
+      "plates": "Paren schijven",
+      "platesHint": "Hoeveel paren van elke schijf je hebt. Vul 0 in voor een schijf die jouw sportschool niet heeft.",
+      "reset": "Terug naar een standaard sportschool",
+      "remembered": "Alleen onthouden in deze browser.",
+      "invalid": "Controleer het stanggewicht en het aantal schijven: elk veld heeft een getal nodig."
+    },
+    "index": {
+      "title": "Gratis tools voor krachtsporters",
+      "intro": "Rekenmachines die in je browser draaien en dezelfde formules gebruiken als de Musclog-app. Niets wat je typt verlaat de pagina.",
+      "programsTitle": "Gratis trainingsschema's",
+      "programsBody": "Volledige schema's met elke dag, oefening, set en herhaling. Open er een in Musclog met één tik."
+    }
+  }
+}

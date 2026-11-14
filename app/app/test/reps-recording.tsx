@@ -18,7 +18,6 @@ import {
   useCameraDevice,
   useCameraFormat,
   useCameraPermission,
-  useMicrophonePermission,
 } from 'react-native-vision-camera';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -161,8 +160,6 @@ export default function RepsRecordingScreen() {
 
   const { hasPermission: hasCameraPermission, requestPermission: requestCameraPermission } =
     useCameraPermission();
-  const { hasPermission: hasMicPermission, requestPermission: requestMicPermission } =
-    useMicrophonePermission();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   // startRecording before the native session is initialized fails; gate START on this.
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
@@ -231,12 +228,8 @@ export default function RepsRecordingScreen() {
       return;
     }
 
-    if (!hasMicPermission && !(await requestMicPermission())) {
-      return;
-    }
-
     setIsCameraEnabled(true);
-  }, [hasCameraPermission, hasMicPermission, requestCameraPermission, requestMicPermission]);
+  }, [hasCameraPermission, requestCameraPermission]);
 
   const clearCapturedRecordingRefs = useCallback((deleteTempFile: boolean) => {
     const tempFile = tempFileRef.current;
@@ -790,7 +783,7 @@ export default function RepsRecordingScreen() {
                   backgroundColor: '#000',
                 }}
               >
-                {hasCameraPermission && hasMicPermission && cameraDevice ? (
+                {hasCameraPermission && cameraDevice ? (
                   <VisionCamera
                     ref={cameraRef}
                     style={{ flex: 1 }}
@@ -799,7 +792,7 @@ export default function RepsRecordingScreen() {
                     fps={30}
                     isActive={true}
                     video={true}
-                    audio={true}
+                    audio={false}
                     onInitialized={() => setIsCameraInitialized(true)}
                   />
                 ) : (
@@ -807,9 +800,7 @@ export default function RepsRecordingScreen() {
                     onPress={() => void handleEnableCamera()}
                     className="flex-1 items-center justify-center"
                   >
-                    <Text className="text-text-tertiary">
-                      Tap to grant camera and microphone permissions
-                    </Text>
+                    <Text className="text-text-tertiary">Tap to grant camera permission</Text>
                   </Pressable>
                 )}
               </View>

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { SUMMARY_POSE_HEIGHT, summaryPoseFor } from '@/components/workoutSummaryPose';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useTheme } from '@/hooks/useTheme';
 import { splitDurationLabel } from '@/utils/workout';
 
@@ -140,6 +141,7 @@ export function WorkoutSummaryCelebration({
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const showLoggy = useLoggyVisible();
 
   const gradientCtaStr = theme.colors.accent.primary;
@@ -249,8 +251,8 @@ export function WorkoutSummaryCelebration({
             <StatRow
               icon={Flame}
               label={t('workoutSummary.caloriesBurned')}
-              value={String(caloriesBurned)}
-              valueSuffix="kcal"
+              value={formatEnergy(caloriesBurned)}
+              valueSuffix={unitLabel}
               iconBgColor={theme.colors.status.error10}
               iconColor={theme.colors.status.error}
               iconSize={theme.iconSize.lg}

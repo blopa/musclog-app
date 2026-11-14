@@ -13,6 +13,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
 import { MealService } from '@/database/services/MealService';
 import { syncMealPortionFromForm } from '@/database/services/syncMealPortionFromForm';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -105,6 +106,7 @@ export default function DynamicMealCreatorModal({
   const theme = useTheme();
   const { showSnackbar } = useSnackbar();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const { units } = useSettings();
 
   const [step, setStep] = useState<'builder' | 'save'>('builder');
@@ -283,7 +285,7 @@ export default function DynamicMealCreatorModal({
   const ingredientCalories = (food: Food, amount: number) => {
     const isPerServing = food.resolvedNutritionBasis === 'per_serving';
     const factor = isPerServing ? amount : amount / 100;
-    return formatRoundedDecimal((food.calories ?? 0) * factor, 0);
+    return formatEnergy((food.calories ?? 0) * factor);
   };
 
   return (
@@ -357,7 +359,7 @@ export default function DynamicMealCreatorModal({
                       ingredient={ingredient}
                       amountLabel={ingredientAmountLabel(ingredient.food, ingredient.amount)}
                       caloriesLabel={ingredientCalories(ingredient.food, ingredient.amount)}
-                      kcalLabel={t('common.kcal')}
+                      kcalLabel={unitLabel}
                       onRemove={handleRemoveIngredient}
                     />
                   ))}
@@ -400,7 +402,7 @@ export default function DynamicMealCreatorModal({
                   ingredient={ingredient}
                   amountLabel={ingredientAmountLabel(ingredient.food, ingredient.amount)}
                   caloriesLabel={ingredientCalories(ingredient.food, ingredient.amount)}
-                  kcalLabel={t('common.kcal')}
+                  kcalLabel={unitLabel}
                   onRemove={handleRemoveIngredient}
                 />
               ))}

@@ -17,8 +17,7 @@ type SmartCameraRoundButtonProps = {
 /**
  * The circular control on the camera chrome.
  *
- * It reads its own colours, so a caller that builds it outside the viewfinder's
- * `ThemeScope` still gets the pinned palette: the hook runs where the element is
+ * It reads its own colours through `useTheme()`, so the hook runs where the element is
  * rendered, not where it was constructed.
  */
 export function SmartCameraRoundButton({
@@ -36,9 +35,9 @@ export function SmartCameraRoundButton({
       disabled={disabled}
       className={`${size === 'sm' ? 'h-10 w-10' : 'h-12 w-12'} items-center justify-center rounded-full`}
       style={{
-        backgroundColor: theme.colors.background.neutralWash,
+        backgroundColor: theme.colors.background.scrim80,
         borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.background.ink10,
+        borderColor: theme.colors.overlay.alwaysWhite20,
         ...(opacity === undefined ? {} : { opacity }),
       }}
     >
@@ -53,7 +52,7 @@ export function SmartCameraTextSearchButton({ onPress }: { onPress: () => void }
 
   return (
     <SmartCameraRoundButton size="md" onPress={onPress}>
-      <Search size={theme.iconSize.lg} color={theme.colors.text.primary} />
+      <Search size={theme.iconSize.lg} color={theme.colors.text.alwaysWhite} />
     </SmartCameraRoundButton>
   );
 }
@@ -91,7 +90,7 @@ export function SmartCameraTopActions({
       {/* Close stays enabled while an action runs — if a native capture hangs, the
           user must still be able to leave the modal. */}
       <SmartCameraRoundButton onPress={onClose}>
-        <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
+        <X size={theme.iconSize.lg} color={theme.colors.text.alwaysWhite} />
       </SmartCameraRoundButton>
 
       {onFlashToggle ? (
@@ -101,9 +100,9 @@ export function SmartCameraTopActions({
           opacity={controlsLocked ? theme.colors.opacity.medium : 1}
         >
           {flashEnabled ? (
-            <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
+            <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.alwaysWhite} />
           ) : (
-            <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
+            <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.alwaysWhite} />
           )}
         </SmartCameraRoundButton>
       ) : null}
@@ -143,7 +142,7 @@ export function SmartCameraBottomActions({
         className="h-12 w-12 items-center justify-center rounded-control active:scale-95"
         style={[
           {
-            backgroundColor: theme.colors.background.neutralWash,
+            backgroundColor: theme.colors.background.scrim80,
             borderWidth: theme.borderWidth.thin,
             borderColor: theme.colors.background.ink20,
           },
@@ -152,7 +151,7 @@ export function SmartCameraBottomActions({
         disabled={controlsLocked}
         onPress={onGalleryPress}
       >
-        <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
+        <Images size={theme.iconSize.lg} color={theme.colors.text.alwaysWhite} />
       </Pressable>
 
       {/* Shutter Button. The owner decides whether there is one: barcode scanning reads
@@ -166,7 +165,7 @@ export function SmartCameraBottomActions({
           className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
           style={{
             borderWidth: theme.borderWidth.thick,
-            borderColor: theme.colors.text.primary,
+            borderColor: theme.colors.text.alwaysWhite,
             opacity: controlsLocked ? theme.colors.opacity.strong : 1,
           }}
         >
@@ -179,7 +178,7 @@ export function SmartCameraBottomActions({
           />
           <View
             className="h-16 w-16 rounded-full bg-white"
-            style={{ backgroundColor: theme.colors.text.primary }}
+            style={{ backgroundColor: theme.colors.text.alwaysWhite }}
           />
         </Pressable>
       ) : (

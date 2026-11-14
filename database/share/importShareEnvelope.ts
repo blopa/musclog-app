@@ -263,6 +263,26 @@ async function activePortionsWhere(...clauses: Q.Clause[]): Promise<FoodPortion[
     .fetch();
 }
 
+function portionCandidates(
+  row: ShareRow,
+  name: string,
+  globalsByName: Map<string, FoodPortion[]>,
+  ownedByOwnerId: Map<string, FoodPortion[]>,
+  context: ShareDedupeContext
+): FoodPortion[] | undefined {
+  const ownerType = stringValue(row.owner_type);
+  if (!ownerType) {
+    return globalsByName.get(name);
+  }
+
+  if (ownerType !== 'food') {
+    return undefined;
+  }
+
+  const reusedOwnerId = context.reusedLocalId('foods', stringValue(row.owner_id));
+  return reusedOwnerId ? ownedByOwnerId.get(reusedOwnerId) : undefined;
+}
+
 async function resolvePortions(
   rows: ShareRow[],
   context: ShareDedupeContext
@@ -302,20 +322,7 @@ async function resolvePortions(
     // unowned ones, and an owned one only the portions of the food it came in with — and only when
     // that food was REUSED, since a newly created food has no existing portions to borrow. A
     // portion owned by the meal (the share's root, always new) has no candidates at all.
-    const candidates = ((): FoodPortion[] | undefined => {
-      const ownerType = stringValue(row.owner_type);
-      if (!ownerType) {
-        return globalsByName.get(name);
-      }
-
-      if (ownerType !== 'food') {
-        return undefined;
-      }
-
-      const reusedOwnerId = context.reusedLocalId('foods', stringValue(row.owner_id));
-      return reusedOwnerId ? ownedByOwnerId.get(reusedOwnerId) : undefined;
-      // TODO: avoid IIFE
-    })();
+    const candidates = portionCandidates(row, name, globalsByName, ownedByOwnerId, context);
 
     const match = candidates?.find((portion) => portionIdentityMatches(portion, row));
     if (match) {

@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Calculadora de calentamiento",
+    "intro": "Escribe tu peso de trabajo y obtén las series de calentamiento que llevan hasta él, con los discos de cada lado de la barra cuando levantas con barra.",
+    "form": {
+      "working": "Peso de trabajo",
+      "workingHint": "El peso de la serie a la que quieres llegar.",
+      "equipmentLabel": "Equipo",
+      "equipment": {
+        "barbell": "Barra",
+        "dumbbell": "Mancuerna",
+        "machine": "Máquina o polea"
+      }
+    },
+    "problems": {
+      "working": "Escribe el peso de trabajo como un número mayor que 0 y como máximo {{max}}."
+    },
+    "results": {
+      "title": "Series de calentamiento",
+      "set": "Serie",
+      "weight": "Peso",
+      "reps": "Repeticiones",
+      "plates": "Discos por lado",
+      "working": "Serie de trabajo",
+      "target": "Objetivo",
+      "emptyBar": "Barra vacía",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Descansa unos {{seconds}} segundos entre las series de calentamiento.",
+      "barIsWarmUp": "Tu peso de trabajo está tan cerca de la barra que la propia barra es el calentamiento. Pasa directamente a tu primera serie.",
+      "noRamp": "Este peso es demasiado ligero para una escalera de calentamiento. Empieza con tu peso de trabajo.",
+      "workingNotLoadable": "Tu gimnasio no puede cargar el peso de trabajo exactamente. El calentamiento usa los pesos cargables más cercanos."
+    },
+    "sections": [
+      {
+        "title": "Cómo se construye la escalera",
+        "body": [
+          "Cada serie de calentamiento es una parte del peso de trabajo: el 40% para 5 repeticiones, el 60% para 3 y el 80% para 2. Cada una es más pesada y más corta que la anterior, así que llegas al peso de trabajo calentado sin cansarte.",
+          "En una barra, la escalera empieza con la barra vacía durante 10 repeticiones cuando la primera serie de la escalera está bastante por encima. Cada peso se redondea a lo que tus discos pueden formar, y se descarta un calentamiento a menos del 10% del peso de trabajo."
+        ]
+      },
+      {
+        "title": "Son decisiones de Musclog",
+        "body": [
+          "Los porcentajes, las repeticiones y el descanso entre series son una pauta habitual que usa Musclog. Son decisiones del producto, no resultados de un estudio. Cámbialos según cómo te sientas."
+        ]
+      },
+      {
+        "title": "Barra, mancuerna o máquina",
+        "body": [
+          "En una barra se muestran los discos de cada lado, para que cargues cada calentamiento con los discos de tu gimnasio. Las mancuernas y las máquinas no usan barra ni discos y siguen los incrementos estándar de un gimnasio típico."
+        ]
+      }
+    ]
+  }
+}

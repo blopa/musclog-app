@@ -35,7 +35,7 @@ export function YearInReviewCard() {
       return;
     }
 
-    void (async () => {
+    const decideOffer = async () => {
       try {
         const [dismissedYear, hasSession] = await Promise.all([
           SettingsService.get(SETTINGS.yearReviewDismissedYear),
@@ -47,7 +47,9 @@ export function YearInReviewCard() {
       } catch (error: unknown) {
         await handleError(error, 'yearInReviewCard');
       }
-    })();
+    };
+
+    void decideOffer();
 
     return () => {
       cancelled = true;

@@ -15,7 +15,7 @@
     "select": "Selecteer...",
     "today": "Vandaag",
     "none": "Geen",
-    "amount_kcal": "{{amount}} kcal",
+    "amount_kcal": "{{amount}}",
     "duplicateFailed": "Dupliceren mislukt",
     "yesterday": "Gisteren",
     "daysAgo": "{{count}} dagen geleden",
@@ -198,6 +198,10 @@
       "pasteJson": "JSON plakken",
       "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
       "share": "Delen"
+    },
+    "energyUnit": {
+      "kcal": "kcal",
+      "kj": "kJ"
     }
   }
 }

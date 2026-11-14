@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -30,8 +31,9 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const totalCalories = formatRoundedDecimal(
-    meals.reduce((s, m) => s + m.calories, 0),
+    toDisplay(meals.reduce((s, m) => s + m.calories, 0)),
     2
   );
 
@@ -75,7 +77,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
             {intuitiveEatingMode ? '000' : totalCalories}
           </Text>
           <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
-            {t('common.kcal')}
+            {unitLabel}
           </Text>
         </View>
       </View>
@@ -101,8 +103,8 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   intuitiveEatingMode ? blurFilter(4) : undefined,
                 ]}
               >
-                {intuitiveEatingMode ? '0' : formatRoundedDecimal(meal.calories, 2)}{' '}
-                {t('common.kcal')}
+                {intuitiveEatingMode ? '0' : formatRoundedDecimal(toDisplay(meal.calories), 2)}{' '}
+                {unitLabel}
               </Text>
             </View>
 

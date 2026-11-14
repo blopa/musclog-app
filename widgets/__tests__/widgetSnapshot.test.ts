@@ -48,7 +48,7 @@ describe('nutrition widget snapshots', () => {
   it('keeps actual totals when there is no goal without fabricating a zero target', () => {
     const snapshot = buildNutritionWidgetSnapshot({ ...input, goal: null });
     expect(snapshot.calories).toBe('900');
-    expect(snapshot.calorieTarget).toBe('common.kcal');
+    expect(snapshot.calorieTarget).toBe('common.energyUnit.kcal');
     expect(snapshot.macros.every((macro) => macro.progress === 0)).toBe(true);
   });
 
@@ -79,6 +79,17 @@ describe('nutrition widget snapshots', () => {
     );
     expect(snapshot.palette.accent).toBe('#123456');
     expect(snapshot.macros[0].label).toBe('nl:nutrition.macros.protein');
+  });
+
+  it('shows calories and the target in kilojoules without changing the inputs', () => {
+    const kcal = buildNutritionWidgetSnapshot(input);
+    const kj = buildNutritionWidgetSnapshot({ ...input, energyUnit: 'kj' });
+
+    expect(kcal.calorieTarget).toContain('common.energyUnit.kcal');
+    expect(kj.calorieTarget).toContain('common.energyUnit.kj');
+    expect(Number(kj.calories)).toBe(Math.round(Number(kcal.calories) * 4.184));
+    // Macros are grams, never converted.
+    expect(kj.macros.map((macro) => macro.value)).toEqual(kcal.macros.map((macro) => macro.value));
   });
 
   it('expires to a refresh prompt instead of relabeling yesterday’s values as current', () => {

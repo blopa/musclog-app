@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
@@ -22,6 +23,7 @@ export function BlankWorkoutStats({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const { units } = useSettings();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const theme = useTheme();
   const time = useSessionTotalTime({ startTime });
@@ -61,7 +63,7 @@ export function BlankWorkoutStats({
           {t('freeTraining.calories')}
         </Text>
         <Text className="mt-0.5 text-base font-semibold text-text-primary">
-          {formatInteger(0, { useGrouping: false })} {t('common.kcal')}
+          {formatEnergy(0)} {unitLabel}
         </Text>
       </View>
       <View className="items-center">

@@ -80,30 +80,32 @@ function publishDaily<T>(
 
 let cameraImage: Promise<string> | undefined;
 
+async function copyCameraImage(): Promise<string> {
+  if (!widgetsDirectory) {
+    return '';
+  }
+
+  const asset = await Asset.fromModule(require('../assets/camera-widget.png')).downloadAsync();
+  // Replaced once per launch rather than only when missing, so a changed artwork reaches
+  // installs that already hold the old file (a 1024px copy once broke the iOS tile for good).
+  const destination = new File(widgetsDirectory, 'smart-camera.png');
+  if (asset.localUri) {
+    if (destination.exists) {
+      destination.delete();
+    }
+
+    new File(asset.localUri).copy(destination);
+  }
+
+  // A fresh handle: the one above still reports the state from before delete() and copy().
+  const copied = new File(widgetsDirectory, 'smart-camera.png');
+
+  return copied.exists ? copied.uri : '';
+}
+
 /** The artwork's file URI, or `''` when there is none: a snapshot never carries a null. */
 function sharedCameraImage(): Promise<string> {
-  cameraImage ??= (async () => {
-    if (!widgetsDirectory) {
-      return '';
-    }
-
-    const asset = await Asset.fromModule(require('../assets/camera-widget.png')).downloadAsync();
-    // Replaced once per launch rather than only when missing, so a changed artwork reaches
-    // installs that already hold the old file (a 1024px copy once broke the iOS tile for good).
-    const destination = new File(widgetsDirectory, 'smart-camera.png');
-    if (asset.localUri) {
-      if (destination.exists) {
-        destination.delete();
-      }
-
-      new File(asset.localUri).copy(destination);
-    }
-
-    // A fresh handle: the one above still reports the state from before delete() and copy().
-    const copied = new File(widgetsDirectory, 'smart-camera.png');
-
-    return copied.exists ? copied.uri : '';
-  })().catch((error) => {
+  cameraImage ??= copyCameraImage().catch((error) => {
     cameraImage = undefined;
     void handleError(error, 'widgets.cameraArtwork', { showSnackbar: false });
     return '';
@@ -114,7 +116,7 @@ function sharedCameraImage(): Promise<string> {
 
 export function WidgetSync() {
   const { theme } = useThemeContext();
-  const { isLoading, appLockScopes } = useSettings();
+  const { isLoading, appLockScopes, energyUnit } = useSettings();
   const { i18n, t } = useTranslation();
   const today = useLocalToday();
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -147,6 +149,7 @@ export function WidgetSync() {
             palette,
             locale,
             translate: (key) => t(key),
+            energyUnit,
           }),
         };
       },
@@ -239,7 +242,7 @@ export function WidgetSync() {
     };
     // The lock decides whether the cycle widget may show the day, so a change to it must
     // re-publish at once rather than at the next foreground.
-  }, [isLoading, locale, t, theme, today, appLockScopes]);
+  }, [isLoading, locale, t, theme, today, appLockScopes, energyUnit]);
 
   return null;
 }

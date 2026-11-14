@@ -67,5 +67,15 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run build-android-web
-      - run: npx playwright install --with-deps chromium --only-shell
+      # The browser comes from Playwright's own CDN. The system packages it wants
+      # (mostly fonts) come from Ubuntu's mirrors, which fail now and then with
+      # "Temporary failure resolving", so the step is best effort and capped: with
+      # DNS down every apt call takes ~3 minutes to give up, and retrying only eats
+      # the job's timeout. The runner image already ships every library headless
+      # Chromium links against.
+      - run: npx playwright install chromium --only-shell
+      - name: Install browser system dependencies (best effort)
+        continue-on-error: true
+        timeout-minutes: 3
+        run: npx playwright install-deps chromium
       - run: npm run test:upgrade:web

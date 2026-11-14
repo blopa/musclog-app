@@ -9,6 +9,20 @@ import { getStoredEncryptionKey, storeEncryptionKey } from './encryptionKeyStora
 const encryptionKeys = new Map<string, string>();
 const encryptionKeyLoads = new Map<string, Promise<string>>();
 
+const loadOrCreateEncryptionKey = async (length: number, storageKey: string): Promise<string> => {
+  const existingEncryptionKey = await getStoredEncryptionKey(storageKey);
+  if (existingEncryptionKey) {
+    encryptionKeys.set(storageKey, existingEncryptionKey);
+    return existingEncryptionKey;
+  }
+
+  const randomWords = CryptoJS.lib.WordArray.random(length);
+  const encryption = CryptoJS.enc.Hex.stringify(randomWords);
+  await storeEncryptionKey(storageKey, encryption);
+  encryptionKeys.set(storageKey, encryption);
+  return encryption;
+};
+
 export const getEncryptionKey = async (
   length = 32,
   storageKey: string = ENCRYPTION_KEY
@@ -23,20 +37,7 @@ export const getEncryptionKey = async (
     return pending;
   }
 
-  const load = (async () => {
-    const existingEncryptionKey = await getStoredEncryptionKey(storageKey);
-    if (existingEncryptionKey) {
-      encryptionKeys.set(storageKey, existingEncryptionKey);
-      return existingEncryptionKey;
-    }
-
-    const randomWords = CryptoJS.lib.WordArray.random(length);
-    const encryption = CryptoJS.enc.Hex.stringify(randomWords);
-    await storeEncryptionKey(storageKey, encryption);
-    encryptionKeys.set(storageKey, encryption);
-    return encryption;
-    // TODO: avoid IIFE
-  })();
+  const load = loadOrCreateEncryptionKey(length, storageKey);
 
   encryptionKeyLoads.set(storageKey, load);
   try {

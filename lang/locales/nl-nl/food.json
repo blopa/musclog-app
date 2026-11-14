@@ -4,7 +4,7 @@
     "customFood": "Aangepast voedingsmiddel",
     "generic": "Generiek",
     "notAvailable": "N.v.t.",
-    "descriptionFormat": "{{brand}} • {{calories}} kcal per {{amount}} {{unit}}",
+    "descriptionFormat": "{{brand}} • {{calories}} per {{amount}} {{unit}}",
     "unitGrams": "g",
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
@@ -61,7 +61,7 @@
       "duplicateFoodDesc": "Maak een kopie om te wijzigen",
       "deleteFood": "Voedingsmiddel verwijderen",
       "deleteFoodDesc": "Verwijder dit voedingsmiddel uit je bibliotheek",
-      "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g E • {{carbs}}g K • {{fat}}g V",
+      "caloriesMacrosFormat": "{{calories}} • {{protein}}g E • {{carbs}}g K • {{fat}}g V",
       "macrosFormat": "{{protein}}g E • {{carbs}}g K • {{fat}}g V",
       "unknownFood": "Onbekend"
     },
@@ -93,7 +93,7 @@
       "description": "Voeg een aangepaste portiegrootte toe voor voedingsmiddelen"
     },
     "manageFoodData": {
-      "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g E • {{carbs}}g K • {{fat}}g V",
+      "caloriesMacrosFormat": "{{calories}} • {{protein}}g E • {{carbs}}g K • {{fat}}g V",
       "unknownFood": "Onbekend"
     },
     "header": {
@@ -139,14 +139,14 @@
       "sourceDate": "Brondatum",
       "copyDayRecentDays": "Recente dagen",
       "copyDayNoRecentDays": "Geen recente dagen met gelogd voedsel.",
-      "copyDayRecentDaySummary_one": "{{count}} item · {{calories}} kcal",
-      "copyDayRecentDaySummary_other": "{{count}} items · {{calories}} kcal",
+      "copyDayRecentDaySummary_one": "{{count}} item · {{calories}}",
+      "copyDayRecentDaySummary_other": "{{count}} items · {{calories}}",
       "copyDayItemsToCopy": "Te kopiëren items",
       "copyDaySelectAll": "Alles selecteren",
       "copyDayDeselectAll": "Alles deselecteren",
-      "copyDayItemCalories": "{{calories}} kcal",
-      "copyDaySelectionSummary_one": "{{count}} item kopiëren · {{calories}} kcal",
-      "copyDaySelectionSummary_other": "{{count}} items kopiëren · {{calories}} kcal",
+      "copyDayItemCalories": "{{calories}}",
+      "copyDaySelectionSummary_one": "{{count}} item kopiëren · {{calories}}",
+      "copyDaySelectionSummary_other": "{{count}} items kopiëren · {{calories}}",
       "copyDayTargetNotEmpty_one": "Deze dag heeft al {{count}} item. De kopie wordt hieraan toegevoegd.",
       "copyDayTargetNotEmpty_other": "Deze dag heeft al {{count}} items. De kopie wordt hieraan toegevoegd.",
       "copyDaySourceEmpty": "Er is die dag geen voedsel gelogd.",
@@ -170,7 +170,7 @@
       "splitError": "Splitsen van maaltijd mislukt",
       "scanBarcode": "Barcode scannen",
       "track": "Bijhouden",
-      "aiCamera": "AI-camera",
+      "searchFood": "Zoeken naar voeding",
       "moreFoodOptions": "Meer opties",
       "myMeals": "Mijn maaltijden",
       "delete": "Verwijderen",
@@ -245,7 +245,7 @@
         "removeFromFavorites": "Verwijderen uit favorieten",
         "removeFromFavoritesDesc": "Verwijderen uit favorietenlijst",
         "endOfHistory": "Einde van maaltijdgeschiedenis",
-        "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g E • {{carbs}}g K • {{fat}}g V",
+        "caloriesMacrosFormat": "{{calories}} • {{protein}}g E • {{carbs}}g K • {{fat}}g V",
         "unknownMeal": "Onbekende maaltijd",
         "noMeals": "Nog geen maaltijden",
         "noMealsDesc": "Maak aangepaste maaltijden om ze hier te zien"
@@ -335,9 +335,7 @@
       "200g": "Dubbele portie",
       "250g": "Grote portie"
     },
-    "common": {
-      "kcal": "kcal"
-    },
+    "common": {},
     "foodDetails": {
       "editFoodInfo": "Voedingsinfo bewerken",
       "editFoodInfoSubtitle": "Corrigeer naam, barcode of macro's als de AI ze verkeerd heeft.",
@@ -405,8 +403,8 @@
       "tryAnotherSource": "Probeer een andere bron >",
       "tryAnotherSourceNotFound": "Geen voedingswaarden gevonden van andere bronnen.",
       "caloriesTooLowTitle": "Calorieën komen niet overeen met macro's",
-      "caloriesTooLowBody": "De gerapporteerde calorieën komen niet overeen met wat de macro's suggereren. Afgeleide waarde: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Bijwerken naar {{inferred}} kcal >",
+      "caloriesTooLowBody": "De gerapporteerde calorieën komen niet overeen met wat de macro's suggereren. Afgeleide waarde: {{inferred}} / 100g.",
+      "caloriesTooLowAction": "Bijwerken naar {{inferred}} >",
       "showMoreNutrition": "Meer voedingsinformatie tonen"
     },
     "addFoodItemToMeal": {
@@ -485,7 +483,7 @@
       "onDeviceNotSupported": "Maaltijdfotoanalyse is niet beschikbaar met Apple Intelligence. Configureer OpenAI of Gemini in de Instellingen.",
       "mealLoggedSuccess": "Maaltijd bijgehouden.",
       "mealLoggingFailed": "Bijhouden van maaltijd mislukt. Probeer het opnieuw.",
-      "analysisSuccess": "{{name}}: {{kcal}} kcal, E {{protein}}g K {{carbs}}g V {{fat}}g"
+      "analysisSuccess": "{{name}}: {{kcal}}, E {{protein}}g K {{carbs}}g V {{fat}}g"
     },
     "aiNutritionContext": {
       "title": "Context toevoegen voor AI",
@@ -669,7 +667,7 @@
         "foodCount_few": "{{count}} voedingsmiddelen",
         "foodCount_many": "{{count}} voedingsmiddelen",
         "foodCount_other": "{{count}} voedingsmiddelen",
-        "item": "{{grams}} g · {{kcal}} kcal",
+        "item": "{{grams}} g · {{kcal}}",
         "remove": "{{name}} verwijderen",
         "groupTitle": "Als één maaltijd loggen",
         "groupSubtitle": "Verschijnt als één item in je dagboek",

@@ -11,6 +11,7 @@ import {
   Download,
   Dumbbell,
   FileUp,
+  HardDrive,
   Flag,
   Lock,
   MessageSquare,
@@ -41,6 +42,7 @@ import { clearAllAppData } from '@/utils/clearAppData';
 import { authenticateForDangerousAction } from '@/utils/dangerousActionAuth';
 import { exportDatabase, importDatabase } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import { isStorageUsageSupported } from '@/services/storageUsage';
 
 import { BleWorkoutDataModal } from './BleWorkoutDataModal';
 import { CenteredModal } from './CenteredModal';
@@ -61,6 +63,7 @@ import {
 import { FullScreenModal } from './FullScreenModal';
 import { LocalBackupsModal } from './LocalBackupsModal';
 import { OpticalTransferModal } from './OpticalTransferModal';
+import { StorageUsageModal } from './StorageUsageModal';
 import { WorkoutImportModal } from './WorkoutImportModal';
 
 type AdvancedDataModalProps = {
@@ -100,6 +103,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
   const [localBackupsModalVisible, setLocalBackupsModalVisible] = useState(false);
   const [opticalTransferVisible, setOpticalTransferVisible] = useSubModalVisibility(visible);
   const [workoutImportVisible, setWorkoutImportVisible] = useSubModalVisibility(visible);
+  const [storageVisible, setStorageVisible] = useSubModalVisibility(visible);
 
   // Disable encryption confirmation modal state
   const [disableEncryptionModalVisible, setDisableEncryptionModalVisible] = useState(false);
@@ -287,6 +291,14 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
               subtitle={t('settings.advancedSettings.manageLocalBackupsSubtitle')}
               onPress={() => setLocalBackupsModalVisible(true)}
             />
+            {isStorageUsageSupported() ? (
+              <SettingsCard
+                icon={<HardDrive size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.storage.title')}
+                subtitle={t('settings.advancedSettings.storageSubtitle')}
+                onPress={() => setStorageVisible(true)}
+              />
+            ) : null}
             <SettingsCard
               icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               title={t('settings.advancedSettings.importFitnessData')}
@@ -735,6 +747,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         onClose={() => setShowChatMessagesModal(false)}
       />
 
+      <StorageUsageModal visible={storageVisible} onClose={() => setStorageVisible(false)} />
       <LocalBackupsModal
         visible={localBackupsModalVisible}
         onClose={() => setLocalBackupsModalVisible(false)}

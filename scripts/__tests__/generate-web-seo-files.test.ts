@@ -7,6 +7,7 @@ const {
   blogPaginationPaths,
   discoverBlogCategoryPostCounts,
   discoverBlogPostPaths,
+  generateSitemapXml,
 } = require('../generate-web-seo-files') as {
   blogCategoryPaths: (
     categoryPostCounts: Record<string, number>,
@@ -15,6 +16,7 @@ const {
   blogPaginationPaths: (postCount: number, postsPerPage?: number) => string[];
   discoverBlogCategoryPostCounts: (postsDirectory: string) => Record<string, number>;
   discoverBlogPostPaths: (postsDirectory: string) => string[];
+  generateSitemapXml: () => string;
 };
 
 describe('generate-web-seo-files blog routes', () => {
@@ -82,5 +84,22 @@ describe('generate-web-seo-files blog routes', () => {
     expect(() => discoverBlogCategoryPostCounts(directory)).toThrow(
       'Invalid blog category in bad-category.md'
     );
+  });
+});
+
+describe('generate-web-seo-files tools and programs', () => {
+  const { PROGRAM_SLUGS } = require('../../components/website/programRoutes') as {
+    PROGRAM_SLUGS: string[];
+  };
+
+  it('lists the tools index, every tool and every program page in the sitemap', () => {
+    const sitemap = generateSitemapXml();
+    for (const routePath of ['/tools', '/tools/one-rep-max', '/tools/net-carbs', '/programs']) {
+      expect(sitemap).toContain(`<loc>https://musclog.app${routePath}</loc>`);
+    }
+
+    for (const slug of PROGRAM_SLUGS) {
+      expect(sitemap).toContain(`<loc>https://musclog.app/programs/${slug}</loc>`);
+    }
   });
 });

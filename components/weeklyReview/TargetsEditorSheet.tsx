@@ -6,7 +6,7 @@ import { BottomPopUp } from '@/components/BottomPopUp';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import type { NutritionTargets } from '@/database/services/NutritionTargetService';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 
 import { MACRO_LABEL_KEYS } from './NutritionReviewSection';
 import {
@@ -38,10 +38,12 @@ export function TargetsEditorSheet({
   onClose: () => void;
 }) {
   const { t, i18n } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergyWithUnit, unitLabel, energyUnit, toDisplay } = useEnergyUnit();
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const [draft, setDraft] = useState<TargetsDraft>(() => targetsDraftFrom(initial, locale));
-  const reading = readTargetsDraft(draft, locale);
+  const [draft, setDraft] = useState<TargetsDraft>(() =>
+    targetsDraftFrom(initial, locale, energyUnit)
+  );
+  const reading = readTargetsDraft(draft, locale, energyUnit, initial.totalCalories);
 
   return (
     <BottomPopUp
@@ -67,7 +69,7 @@ export function TargetsEditorSheet({
         {TARGET_FIELDS.map((field) => (
           <View key={field} className="gap-1">
             <TextInput
-              label={t(MACRO_LABEL_KEYS[field])}
+              label={t(MACRO_LABEL_KEYS[field], { unit: unitLabel })}
               value={draft[field]}
               onChangeText={(value) => setDraft({ ...draft, [field]: value })}
               inputMode="decimal"
@@ -96,13 +98,13 @@ export function TargetsEditorSheet({
                 reading.mismatch
                   ? 'weeklyReview.targetsEditor.mismatch'
                   : 'weeklyReview.targetsEditor.macroTotal',
-                { kcal: formatInteger(reading.macroCalories) }
+                { kcal: formatEnergyWithUnit(reading.macroCalories) }
               )}
             </Text>
             {reading.mismatch ? (
               <Button
                 label={t('weeklyReview.targetsEditor.useMacroTotal', {
-                  kcal: formatInteger(reading.macroCalories),
+                  kcal: formatEnergyWithUnit(reading.macroCalories),
                 })}
                 variant="outline"
                 size="sm"
@@ -110,7 +112,7 @@ export function TargetsEditorSheet({
                 onPress={() =>
                   setDraft({
                     ...draft,
-                    totalCalories: String(reading.macroCalories),
+                    totalCalories: String(Math.round(toDisplay(reading.macroCalories ?? 0))),
                   })
                 }
               />

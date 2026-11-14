@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { NotificationCard } from '@/components/cards/NotificationCard';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -16,6 +17,7 @@ type NotificationsModalProps = {
 export function NotificationsModal({ visible, onClose, onClearAll }: NotificationsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatEnergyWithUnit } = useEnergyUnit();
 
   const NOTIFICATIONS_DATA = [
     {
@@ -75,7 +77,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
             >
               {t('notifications.types.workoutCompleted.description', {
                 workoutName: 'Morning Run',
-                calories: 310,
+                calories: formatEnergyWithUnit(310),
               })}
             </Text>
           ),

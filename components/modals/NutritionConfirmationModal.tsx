@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { NutritionEntry } from '@/utils/coachAI';
@@ -29,6 +30,7 @@ export function NutritionConfirmationModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const insets = useAppSafeAreaInsets();
 
   const totals = useMemo(() => calculateNutritionTotals(entries), [entries]);
@@ -55,7 +57,7 @@ export function NutritionConfirmationModal({
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
             <Text className="text-xs font-medium text-text-primary">
-              {t('common.amount_kcal', { amount: formatRoundedDecimal(item.calories, 2) })}
+              {t('common.amount_kcal', { amount: formatEnergyWithUnit(item.calories) })}
             </Text>
           </View>
           <View className="flex-row justify-between">
@@ -87,7 +89,7 @@ export function NutritionConfirmationModal({
         </View>
       </View>
     ),
-    [formatRoundedDecimal, t, theme.colors.background.card]
+    [formatEnergyWithUnit, formatRoundedDecimal, t, theme.colors.background.card]
   );
 
   return (
@@ -112,7 +114,7 @@ export function NutritionConfirmationModal({
               </Text>
               <Text className="text-sm font-semibold text-text-primary">
                 {t('common.amount_kcal', {
-                  amount: formatRoundedDecimal(totals.totalCalories, 2),
+                  amount: formatEnergyWithUnit(totals.totalCalories),
                 })}
               </Text>
             </View>

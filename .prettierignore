@@ -8,3 +8,6 @@ utils/repCountingModel/*.js
 # Agent tooling (skills, settings, plans)
 .claude/
 .agents/
+
+# Written by the Open Screenshot Generator studio through scripts/google-play-phone-screenshots.js (JSON.stringify)
+screenshots/google-play/phone.osg.json

@@ -2,8 +2,8 @@
   "foodSearch": {
     "commonFoods": "Alimentos Comuns",
     "customFoodLabel": "Alimento Personalizado",
-    "foodDescriptionFormat": "{{brand}} • {{calories}} kcal",
-    "foodDescriptionPer100g": "{{brand}} • {{calories}} kcal por 100g",
+    "foodDescriptionFormat": "{{brand}} • {{calories}}",
+    "foodDescriptionPer100g": "{{brand}} • {{calories}} por 100g",
     "recentHistory": "Histórico Recente",
     "viewAll": "Ver Tudo",
     "yourFoods": "Seus Alimentos ({{count}})",

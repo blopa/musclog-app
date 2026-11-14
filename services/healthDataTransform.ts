@@ -217,7 +217,9 @@ export class EnergyConverter {
         ? formatAppInteger(locale, Math.round(kcal))
         : formatAppDecimal(locale, kcal, decimals);
 
-    return i18n.t('common.amount_kcal', { amount: num });
+    return i18n.t('common.amount_kcal', {
+      amount: `${num} ${i18n.t('common.energyUnit.kcal')}`,
+    });
   }
 }
 

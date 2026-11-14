@@ -1,0 +1,80 @@
+{
+  "websiteToolCalorieDeficit": {
+    "title": "Calorie deficit and goal date calculator",
+    "intro": "Set a goal weight and a date to see the daily calorie target that gets you there, the range it sits in and whether the pace is realistic.",
+    "form": {
+      "sex": "Sex",
+      "male": "Male",
+      "female": "Female",
+      "age": "Age",
+      "height": "Height",
+      "weight": "Current weight",
+      "activity": "Activity level",
+      "goalWeight": "Goal weight",
+      "goalDate": "Goal date",
+      "cm": "cm",
+      "inches": "in",
+      "activity1": "Sedentary (little or no exercise)",
+      "activity2": "Light Active (1–3 days/week)",
+      "activity3": "Moderately Active (3–5x/week)",
+      "activity4": "Very Active (6–7 days/week)",
+      "activity5": "Super Active (physical job + training)"
+    },
+    "problems": {
+      "age": "Enter an age between 15 and 100.",
+      "height": "Enter a height within the range the calculator accepts.",
+      "weight": "Enter a weight within the range the calculator accepts.",
+      "goalWeight": "Enter a goal weight within the range the calculator accepts.",
+      "goalDate": "Pick a goal date.",
+      "goalDateNotFuture": "The goal date must be after today."
+    },
+    "results": {
+      "target": "Daily calorie target",
+      "range": "Range: {{low}} to {{high}}",
+      "summary": "The numbers",
+      "change": "Weight change",
+      "days": "Days to the goal date",
+      "deficit": "Daily deficit",
+      "surplus": "Daily surplus",
+      "perDay": "per day",
+      "weekly": "Weekly pace",
+      "perWeek": "per week",
+      "tdee": "Estimated daily energy use",
+      "share": "Deficit as a share of daily energy use"
+    },
+    "notes": {
+      "noChange": "You are already at that weight, so no change is needed.",
+      "floor": "Your target would be below the minimum of {{floor}}, so the page sets it there.",
+      "laterDate": "The earliest date that minimum allows is {{date}}.",
+      "floorAboveTdee": "Estimated energy use is at or below the minimum, so no deficit is possible. Choose a higher goal weight or talk to a clinician.",
+      "pace": "This pace is above 1% of your body weight per week, a Musclog guideline. A slower pace usually holds up better.",
+      "deficitLarge": "This deficit is above 25% of your estimated energy use, a Musclog guideline. A smaller deficit over a longer time is usually easier to keep.",
+      "range": "The estimate is uncertain, so the target is shown as a range: 10% of your energy use either side. The 10% is a Musclog product choice, not a measured error.",
+      "thresholds": "The 1% pace and 25% deficit guidelines are Musclog product choices, not findings from a study."
+    },
+    "sections": [
+      {
+        "title": "How the target is made",
+        "body": [
+          "Your energy use is estimated from your sex, age, height and weight (the Mifflin-St Jeor resting rate) multiplied by your activity level. It is the same estimate the Musclog app uses when it has no tracking history.",
+          "The weight change is turned into energy with the app's kilocalories-per-kilogram rule and spread across the days to your goal date. The target is that energy use minus the daily deficit (or plus, for a gain)."
+        ]
+      },
+      {
+        "title": "Why the date is a guide",
+        "body": [
+          "Hall et al. (2011) modelled how body weight responds to a change in energy intake. The body adjusts over months, so a fixed number of calories per kilogram is an approximation. Weigh yourself every few weeks and adjust."
+        ]
+      },
+      {
+        "title": "The minimum",
+        "body": [
+          "The target never goes below the minimum the app uses: 1,200 kcal for women and 1,500 kcal for men, or 80% of your resting rate if that is higher. If your date needs less, the page gives the earliest date the minimum allows."
+        ]
+      }
+    ],
+    "sources": {
+      "hall": "Hall et al. (2011), quantification of the effect of energy imbalance on body weight"
+    }
+  }
+}

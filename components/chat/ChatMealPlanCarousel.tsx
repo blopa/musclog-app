@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { useCoachPersona } from '@/context/CoachPersonaContext';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -29,6 +30,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
   const { t } = useTranslation();
   const persona = useCoachPersona();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const { width: screenWidth } = useWindowDimensions();
 
   if (!meals || meals.length === 0) {
@@ -96,13 +98,13 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                   className="text-base font-semibold leading-none"
                   style={{ color: theme.colors.text.primary }}
                 >
-                  {formatRoundedDecimal(meal.calories, 2)}
+                  {formatRoundedDecimal(toDisplay(meal.calories), 2)}
                 </Text>
                 <Text
                   className="text-[10px] font-medium leading-none"
                   style={{ color: theme.colors.text.tertiary }}
                 >
-                  {t('common.kcal')}
+                  {unitLabel}
                 </Text>
               </View>
 

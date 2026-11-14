@@ -12,7 +12,6 @@ import { SMALL_SCREEN_HEIGHT, SmartCameraFrame } from '@/components/SmartCameraF
 import { SmartCameraModePicker } from '@/components/SmartCameraModePicker';
 import { Button } from '@/components/theme/Button';
 import type { CameraMode } from '@/constants/camera';
-import { ThemeScope } from '@/context/ThemeContext';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -130,7 +129,7 @@ function SmartCameraShellBody({
     return (
       <View
         className="flex-1 items-center justify-center"
-        style={{ backgroundColor: theme.colors.background.primary }}
+        style={{ backgroundColor: theme.colors.background.scrim90 }}
       >
         <Text style={{ color: theme.colors.text.alwaysWhite }}>
           {t('food.aiCamera.requestingPermission')}
@@ -143,7 +142,7 @@ function SmartCameraShellBody({
     return (
       <View
         className="flex-1 items-center justify-center px-6"
-        style={{ backgroundColor: theme.colors.background.primary }}
+        style={{ backgroundColor: theme.colors.background.scrim90 }}
       >
         <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.alwaysWhite }}>
           {t('food.aiCamera.permissionRequired')}
@@ -158,7 +157,7 @@ function SmartCameraShellBody({
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+    <View className="flex-1" style={{ backgroundColor: theme.colors.background.scrim90 }}>
       <SystemBars style="light" />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Camera Background */}
@@ -177,7 +176,7 @@ function SmartCameraShellBody({
               pointerEvents="none"
               style={[
                 StyleSheet.absoluteFill,
-                { backgroundColor: theme.colors.background.primary },
+                { backgroundColor: theme.colors.background.scrim90 },
               ]}
             />
           ) : null}
@@ -302,19 +301,12 @@ export function SmartCameraShell(props: SmartCameraShellProps) {
       showHeader={false}
     >
       {/*
-        The viewfinder is a fixed dark surface whatever the user picked: its content is
-        white-on-dark over a live preview. `ThemeScope` moves the context value and the
-        NativeWind variables together, so everything below reads the pinned palette
-        through the ordinary `useTheme()` — there is no second forced-theme mechanism.
+        The viewfinder follows the user's theme like any other screen. Its text and icons
+        use the `alwaysWhite` tokens, which stay legible over the preview in every palette.
+        Nested detail modals mount only once the camera itself is, which is what the
+        permission check preserves.
       */}
-      <ThemeScope themeId="kinetic-depth">
-        <SmartCameraShellBody {...props} />
-      </ThemeScope>
-      {/*
-        Nested detail modals are ordinary app surfaces, not camera chrome, so they sit
-        outside the scope and follow the user's theme. They are also only mounted once
-        the camera itself is, which is what the permission check preserves.
-      */}
+      <SmartCameraShellBody {...props} />
       {props.permissionGranted ? props.children : null}
     </FullScreenModal>
   );

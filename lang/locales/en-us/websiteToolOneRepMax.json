@@ -1,0 +1,53 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "One-rep max calculator",
+    "intro": "Enter a set you did and get an estimated one-rep max, with reps in reserve and a table of weights at every percentage of it.",
+    "form": {
+      "weight": "Weight lifted",
+      "reps": "Reps done",
+      "repsHint": "Whole number, 1 to 10",
+      "reserve": "Reps in reserve (optional)",
+      "reserveHint": "How many more reps you could have done. Leave empty if you went to failure."
+    },
+    "problems": {
+      "weight": "Enter the weight you lifted as a number above 0.",
+      "reps": "Enter the reps as a whole number from 1 to 10.",
+      "repsTooHigh": "Sets above 10 reps do not give a trustworthy one-rep max. A long set measures endurance, and every formula drifts further from the truth the more reps it has to extrapolate. Use a heavier set of 10 reps or fewer.",
+      "reserve": "Reps in reserve must be a whole number from 0 to 9."
+    },
+    "results": {
+      "estimate": "Estimated one-rep max",
+      "range": "Single formulas range from {{low}} to {{high}} {{unit}}. The estimate is their average.",
+      "tableTitle": "Weight at each percentage of your one-rep max",
+      "percent": "% of 1RM",
+      "weight": "Weight",
+      "reps": "Reps to failure",
+      "byFormula": "Each formula on its own"
+    },
+    "sections": [
+      {
+        "title": "How the estimate is made",
+        "body": [
+          "The calculator averages seven published formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor and Wathen. Averaging smooths out the quirks of any single one, and the result is the same number the Musclog app shows for a logged set.",
+          "Reps in reserve are added to the reps you did. Five reps with two in reserve is treated as seven reps to failure, because that is how far from your limit the set was."
+        ]
+      },
+      {
+        "title": "Why sets above 10 reps are not trusted",
+        "body": [
+          "One-rep max formulas work best on low-rep sets. The further you stretch them, the further they drift, and a set of 15 mostly tells you about your endurance, not your top strength. The app ignores those sets for strength levels and goals, and this page does the same."
+        ]
+      },
+      {
+        "title": "How to use the table",
+        "body": [
+          "Each row is a weight at a percentage of your estimated one-rep max, with the reps to failure the same formulas predict at that weight. People vary a lot, so treat the numbers as a starting point and adjust to how the bar actually moves."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo et al. (2024), Maximal number of repetitions at percentages of the one repetition maximum (Sports Medicine)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

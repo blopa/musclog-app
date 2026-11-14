@@ -1,0 +1,49 @@
+<b>Musclog - Lift, Log, Repeat</b>
+
+Musclog is een fitnesslogboek en calorieënteller in één gratis, open source app. Log je trainingen in de sportschool en je eten, volg je voortgang en houd alles op je telefoon: geen account, geen advertenties en loggen werkt offline.
+
+<b>Niets op slot</b>
+• Onbeperkt trainingsschema's en -routines, en je volledige geschiedenis.
+• De barcodescanner, het scannen van voedingsetiketten en het zoeken naar voedingsmiddelen zitten voor iedereen in de app.
+• Alle grafieken, exports en back-ups zijn inbegrepen, zonder abonnement.
+
+<b>Trainingslogboek en gym tracker</b>
+• Log sets, herhalingen en gewicht in een paar seconden, met een rusttimer, warming-upsets, supersets en notities per oefening.
+• Volg je inspanning met RPE of herhalingen in reserve (RIR).
+• 870+ oefeningen met foto's en doelspieren, doorzoekbaar in je eigen taal, of voeg je eigen oefeningen toe.
+• Kant-en-klare trainingsschema's: Push Pull Legs, Upper/Lower, Full Body, PHUL, 5-daagse splits en korte routines voor thuis of zonder materiaal. Of stel zelf een wekelijks of roterend schema samen.
+• Progressive overload eenvoudig gemaakt: Musclog stelt je volgende gewicht en herhalingen voor op basis van je laatste training en legt elk getal uit dat het aanpast. Kies dubbele progressie, lineaire of op percentages gebaseerde regels, of houd zelf de volledige controle.
+• Schijvenberekening voor de stang en schijven van jouw sportschool, in kg of lb, desgewenst per oefening.
+• Wissel een oefening als een apparaat bezet is of iets pijn doet, en laat Musclog onthouden wat je moet vermijden.
+• Importeer je geschiedenis uit Strong, Hevy of FitNotes.
+
+<b>Zie je kracht groeien</b>
+• Persoonlijke records, geschatte 1RM en krachtniveaus voor de belangrijkste oefeningen.
+• Recente trainingsbelasting per spier op een lichaamskaart en een kalenderheatmap van je trainingen.
+• Een Wekelijkse review van je training en voeding, waarin je kiest om door te groeien, de week te herhalen of rustiger aan te doen.
+• Comebackmodus: een rustigere herstart na een pauze.
+
+<b>Calorieënteller en macrotracker</b>
+• Voedingsdagboek met barcodescanner en scanner voor voedingswaardetabellen.
+• Zoek in Open Food Facts en de USDA-voedingsdatabase, of maak je eigen producten en maaltijden.
+• Doelen voor calorieën, eiwit, koolhydraten, vet en vezels om af te vallen, op gewicht te blijven of spiermassa op te bouwen.
+• Doelen die meebewegen met je werkelijke gewichtstrend, in kcal of kJ, metrisch of imperiaal.
+
+<b>Lichaam bijhouden</b>
+• Gewicht, vetpercentage, lichaamsmetingen en stemming, met grafieken.
+• Optionele cyclusregistratie: noteer menstruaties en klachten en zie je eigen patronen. Voorspellingen zijn schattingen en er is geen trainingsadvies per fase.
+• Health Connect-synchronisatie voor gewicht, voeding, trainingen en lichaamsmetingen.
+
+<b>AI, alleen als je wilt</b>
+• Chat met een fitnesscoach, schat een maaltijd in op basis van een foto en laat trainingsschema's maken met je eigen Gemini-, OpenAI- of Claude-sleutel, een lokaal model of de gratis optie in de app.
+• Of maak een schema of beschrijf een maaltijd in ChatGPT of Claude en breng het over naar Musclog.
+• Kies hoe de coach tegen je praat. Niets in Musclog vereist AI.
+
+<b>Privé door ontwerp</b>
+• Gewicht, vetpercentage en voedingslogs worden op je toestel versleuteld.
+• Vergrendel de hele app, of alleen je cyclus-, training-, voedings- of voortgangsgegevens, met de vingerafdruk of pincode van je telefoon.
+• Exporteer of maak een back-up van je gegevens, of verplaats ze naar een andere telefoon door QR-codes te scannen, zonder cloud.
+• Anonieme crashrapporten helpen fouten op te lossen en kun je in de instellingen uitzetten.
+• Widgets op het beginscherm, meerdere kleurthema's, en English, Español, Nederlands, Português (Brasil) en Русский.
+
+Lift, Log, Repeat.

@@ -1,0 +1,51 @@
+<b>Musclog - Lift, Log, Repeat</b>
+
+Musclog to dziennik treningowy i licznik kalorii w jednej otwartej aplikacji bez opłat. Zapisuj treningi na siłowni i posiłki, śledź postępy i trzymaj wszystko w telefonie: bez konta, bez reklam, a zapisywanie działa offline.
+
+Aplikacja jest dostępna w językach: angielskim, hiszpańskim, niderlandzkim, portugalskim (Brazylia) i rosyjskim.
+
+<b>Nic nie jest zablokowane</b>
+• Nieograniczona liczba planów i rutyn treningowych oraz cała historia.
+• Skaner kodów kreskowych, skanowanie etykiet żywieniowych i wyszukiwarka produktów są dla wszystkich.
+• Wszystkie wykresy, eksporty i kopie zapasowe są w cenie, bez subskrypcji.
+
+<b>Dziennik treningowy i trener na siłownię</b>
+• Zapisuj serie, powtórzenia i ciężar w kilka sekund: z timerem przerw, seriami rozgrzewkowymi, superseriami i notatkami do każdego ćwiczenia.
+• Śledź wysiłek za pomocą RPE lub powtórzeń w zapasie (RIR).
+• Ponad 870 ćwiczeń ze zdjęciami i mięśniami docelowymi, z wyszukiwaniem w Twoim języku, albo dodaj własne.
+• Gotowe plany treningowe: Push Pull Legs, Góra/Dół, Full Body, PHUL, podziały 5-dniowe oraz krótkie treningi w domu lub bez sprzętu. Możesz też ułożyć własny program tygodniowy lub rotacyjny.
+• Progresywne obciążenie w prosty sposób: Musclog podpowiada kolejny ciężar i liczbę powtórzeń na podstawie ostatniego treningu i tłumaczy każdą zmianę. Wybierz podwójną progresję, zasady liniowe lub procentowe albo zachowaj pełną kontrolę.
+• Kalkulator talerzy dla sztangi i talerzy w Twojej siłowni, w kg lub lb, osobno dla każdego ćwiczenia, jeśli chcesz.
+• Zamień ćwiczenie, gdy maszyna jest zajęta lub coś boli, a Musclog zapamięta, czego unikać.
+• Zaimportuj historię ze Strong, Hevy lub FitNotes.
+
+<b>Zobacz, jak rośnie Twoja siła</b>
+• Rekordy osobiste, szacowane 1RM i poziomy siły dla głównych bojów.
+• Ostatnie obciążenie treningowe każdej partii mięśni na mapie ciała oraz kalendarzowa mapa aktywności treningów.
+• Przegląd tygodnia z treningiem i odżywianiem, w którym sam wybierasz: progresja, powtórzenie tygodnia lub lżejszy tydzień.
+• Tryb powrotu: łagodniejszy start po przerwie.
+
+<b>Licznik kalorii i makroskładników</b>
+• Dziennik żywieniowy ze skanerem kodów kreskowych i skanowaniem etykiet żywieniowych.
+• Przeszukuj Open Food Facts i bazę produktów USDA albo twórz własne produkty i posiłki.
+• Cele kalorii, białka, węglowodanów, tłuszczów i błonnika na redukcję, utrzymanie wagi lub budowę mięśni.
+• Cele dopasowujące się do Twojego realnego trendu wagi, w kcal lub kJ, w jednostkach metrycznych lub imperialnych.
+
+<b>Śledzenie ciała</b>
+• Waga, tkanka tłuszczowa, pomiary ciała i nastrój, z wykresami.
+• Opcjonalne śledzenie cyklu menstruacyjnego: zapisuj miesiączki i objawy i obserwuj własne wzorce. Prognozy są szacunkami, a aplikacja nie daje porad treningowych zależnych od fazy cyklu.
+• Synchronizacja z Health Connect: waga, żywienie, treningi i pomiary ciała.
+
+<b>AI, tylko jeśli chcesz</b>
+• Czatuj z trenerem fitness, szacuj posiłek ze zdjęcia i generuj plany treningowe przy użyciu własnego klucza Gemini, OpenAI lub Claude, lokalnego modelu albo darmowej opcji wbudowanej w aplikację.
+• Możesz też ułożyć plan lub opisać posiłek w ChatGPT albo Claude i przenieść go do Musclog.
+• Wybierz, jak trener ma się do Ciebie zwracać. Nic w Musclog nie wymaga AI.
+
+<b>Prywatność od podstaw</b>
+• Waga, tkanka tłuszczowa i dziennik żywieniowy są szyfrowane na Twoim urządzeniu.
+• Zablokuj całą aplikację albo tylko dane o cyklu, treningach, jedzeniu lub postępach odciskiem palca albo PIN-em telefonu.
+• Eksportuj dane lub twórz kopie zapasowe albo przenieś je na inny telefon, skanując kody QR, bez chmury.
+• Anonimowe raporty o błędach pomagają je naprawiać i można je wyłączyć w ustawieniach.
+• Widżety na ekran główny, kilka motywów kolorystycznych oraz języki: angielski, hiszpański, niderlandzki, portugalski (Brazylia) i rosyjski.
+
+Lift, Log, Repeat.

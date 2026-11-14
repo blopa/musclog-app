@@ -64,7 +64,7 @@
       "targetShort": "Objetivo: {{value}}%",
       "weeklyBreakdown": "Detalhamento Semanal",
       "weekProgress": "Semana {{current}} de {{total}}",
-      "summaryIntro": "Você visou {{target}} kcal/dia, mas em média",
+      "summaryIntro": "Você visou {{target}}/dia, mas em média",
       "summaryOutro": "Apesar do resultado, você completou",
       "workoutsCount": "treinos",
       "noWorkouts": "nenhum treino",
@@ -76,7 +76,7 @@
       "activeMinutes": "Minutos Ativos",
       "vsLastWeek": "{{prefix}}{{value}}% vs semana passada",
       "adherence": "Aderência Semanal",
-      "summary": "Você visou {{targetKcal}} kcal/dia, mas em média {{actualKcal}} kcal/dia. Você completou {{workouts}} treinos.",
+      "summary": "Você visou {{targetKcal}}/dia, mas em média {{actualKcal}}/dia. Você completou {{workouts}} treinos.",
       "weightComparison": "Peso: {{actual}} / {{target}} {{unit}}",
       "insufficientData": "Você registrou peso menos de 4 vezes esta semana. As médias podem ser menos precisas.",
       "keepMacros": "Manter meus macros atuais",
@@ -103,9 +103,7 @@
         }
       }
     },
-    "common": {
-      "kcal": "kcal"
-    },
+    "common": {},
     "createMeal": {
       "estimated": "Estimado",
       "totalNutrition": "Nutrição Total"

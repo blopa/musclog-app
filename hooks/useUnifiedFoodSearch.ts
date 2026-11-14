@@ -16,6 +16,7 @@ import { gramsToDisplay } from '@/utils/unitConversion';
 import { getMassUnit, getMassUnitI18nKey } from '@/utils/units';
 import { mapUSDAFoodToUnified, type USDAFood } from '@/utils/usdaMapper';
 
+import { useEnergyUnit } from './useEnergyUnit';
 import { useFoods } from './useFoods';
 import { useSettings } from './useSettings';
 
@@ -66,6 +67,7 @@ export function useUnifiedFoodSearch({
 }: UseUnifiedFoodSearchProps) {
   const { t } = useTranslation();
   const { units, foodSearchSource } = useSettings();
+  const { formatEnergyWithUnit, energyUnit } = useEnergyUnit();
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [apiCompleted, setApiCompleted] = useState(false);
   const [firstResolvedApi, setFirstResolvedApi] = useState<'openfood' | 'usda' | null>(null);
@@ -405,7 +407,7 @@ export function useUnifiedFoodSearch({
         name: food.name,
         description: t('food.descriptionFormat', {
           brand: food.brand || t('food.customFood'),
-          calories: displayCalories,
+          calories: formatEnergyWithUnit(displayCalories),
           amount: displayAmount,
           unit: t(getMassUnitI18nKey(units)),
         }),
@@ -421,7 +423,7 @@ export function useUnifiedFoodSearch({
         _raw: food,
       };
     });
-  }, [localFoods, includeLocal, units, t]);
+  }, [localFoods, includeLocal, units, t, formatEnergyWithUnit]);
 
   // Convert API results to unified format
   const apiResultsFormatted = useMemo(() => {
@@ -436,18 +438,18 @@ export function useUnifiedFoodSearch({
           return null;
         }
 
-        return mapOpenFoodFactsProduct(product, units);
+        return mapOpenFoodFactsProduct(product, units, energyUnit);
       })
       .filter((product) => product) as UnifiedFoodResult[];
-  }, [accumulatedApiResults, includeAPI, includeOpenFood, units]);
+  }, [accumulatedApiResults, includeAPI, includeOpenFood, units, energyUnit]);
 
   const usdaResultsFormatted = useMemo(() => {
     if (!includeAPI || !includeUSDA) {
       return [];
     }
 
-    return accumulatedUsdaResults.map((food) => mapUSDAFoodToUnified(food, units));
-  }, [accumulatedUsdaResults, includeAPI, includeUSDA, units]);
+    return accumulatedUsdaResults.map((food) => mapUSDAFoodToUnified(food, units, energyUnit));
+  }, [accumulatedUsdaResults, includeAPI, includeUSDA, units, energyUnit]);
 
   // Combine and deduplicate results - updates when API completes
   const combinedResults = useMemo(() => {

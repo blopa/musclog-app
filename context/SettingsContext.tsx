@@ -128,6 +128,7 @@ const REGISTERED_SETTINGS = [
   'animatedLoggy',
   'showLoggy',
   'foodDiaryGrouping',
+  'energyUnit',
 ] as const satisfies readonly SettingName[];
 
 type RegisteredSettings = { [K in (typeof REGISTERED_SETTINGS)[number]]: SettingValue<K> };

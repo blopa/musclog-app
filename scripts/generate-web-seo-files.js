@@ -8,7 +8,7 @@
  *
  * Fixed routes are derived from components/website/websiteRoutes.json — the
  * same registry components/website/WebsiteSeo.tsx reads for titles, canonical
- * URLs and robots directives. Blog post and category sitemap paths are derived
+ * URLs and robots directives. Program page paths come from components/website/programRoutes.js. Blog post and category sitemap paths are derived
  * from the Markdown files that generate those dynamic routes, and their URL
  * shapes come from components/website/blogRoutes.js — the same module the Expo
  * Router loaders and the listing components use, so this file cannot advertise
@@ -26,6 +26,7 @@ const {
   SAFE_CATEGORY_KEY,
   SAFE_SLUG_SEGMENT,
 } = require('../components/website/blogRoutes');
+const { PROGRAM_SLUGS, programPath } = require('../components/website/programRoutes');
 const websiteRoutes = require('../components/website/websiteRoutes.json');
 
 const SITE_ORIGIN = 'https://musclog.app';
@@ -159,6 +160,9 @@ function blogCategoryPaths(categoryPostCounts, postsPerPage) {
 
 const blogCategoryPagePaths = blogCategoryPaths(blogCategoryPostCounts);
 
+// One page per bundled workout program; the slugs come from the same module the router reads.
+const programPaths = PROGRAM_SLUGS.map((slug) => programPath(slug));
+
 /**
  * Matches `absoluteUrl` in WebsiteSeo.tsx, so a page's sitemap <loc> is
  * byte-identical to the canonical URL it advertises — including the trailing
@@ -196,6 +200,7 @@ function generateRobotsTxt() {
 function generateSitemapXml() {
   const urls = [
     ...indexableRoutes.map((route) => route.path),
+    ...programPaths,
     ...blogPagePaths,
     ...blogCategoryPagePaths,
     ...blogPostPaths,
@@ -249,7 +254,7 @@ function main() {
 
   console.log(
     '[generate-web-seo-files] wrote public/robots.txt, public/sitemap.xml and public/llms.txt',
-    `(${indexableRoutes.length + blogPagePaths.length + blogCategoryPagePaths.length + blogPostPaths.length} indexable routes)`
+    `(${indexableRoutes.length + programPaths.length + blogPagePaths.length + blogCategoryPagePaths.length + blogPostPaths.length} indexable routes)`
   );
 }
 

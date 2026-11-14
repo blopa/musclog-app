@@ -2,8 +2,8 @@
   "foodSearch": {
     "commonFoods": "Veelvoorkomende items",
     "customFoodLabel": "Aangepast item",
-    "foodDescriptionFormat": "{{brand}} • {{calories}} kcal",
-    "foodDescriptionPer100g": "{{brand}} • {{calories}} kcal per 100g",
+    "foodDescriptionFormat": "{{brand}} • {{calories}}",
+    "foodDescriptionPer100g": "{{brand}} • {{calories}} per 100g",
     "recentHistory": "Recente geschiedenis",
     "viewAll": "Alles bekijken",
     "yourFoods": "Jouw items ({{count}})",

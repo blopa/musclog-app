@@ -6,6 +6,7 @@ import { UserMetricDataModal } from '@/components/modals/DataLogModal';
 import { StatStrip, type StatStripItem } from '@/components/StatStrip';
 import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useDailySteps } from '@/hooks/useDailySteps';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { computeEnergyBalance } from '@/utils/energyBalance';
@@ -54,6 +55,7 @@ export function DailyHomeFooter({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
 
   const [isMetricHistoryVisible, setIsMetricHistoryVisible] = useState(false);
 
@@ -80,7 +82,8 @@ export function DailyHomeFooter({
 
   const items: StatStripItem[] = cells.map((cell) => {
     const label = t(cell.labelKey);
-    const value = formatInteger(cell.value);
+    // Energy cells are kilocalories in the data; only the step count is a plain integer.
+    const value = cell.showsUnit ? formatEnergy(cell.value) : formatInteger(cell.value);
 
     // Steps is the one cell that goes anywhere, and this component already knows that —
     // it draws the walking icon on the same line. A generic `interactive` flag on the
@@ -91,7 +94,7 @@ export function DailyHomeFooter({
     return {
       key: cell.key,
       value,
-      unit: cell.showsUnit ? t('home.dailyStats.kcal') : undefined,
+      unit: cell.showsUnit ? unitLabel : undefined,
       label,
       valueColor: toneColor[cell.tone],
       icon: isSteps ? (

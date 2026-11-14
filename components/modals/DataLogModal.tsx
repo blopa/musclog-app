@@ -28,6 +28,7 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useChatMessageDataLogs } from '@/hooks/useChatMessageDataLogs';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useExerciseDataLogs } from '@/hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '@/hooks/useFoodDataLogs';
 import { useFoodPortionDataLogs } from '@/hooks/useFoodPortionDataLogs';
@@ -94,7 +95,8 @@ export type DataLogModalTranslations = {
   deleteTitle: string;
   deleteDesc: string;
   formatCaloriesMacros: (params: {
-    calories: number;
+    /** Already composed with the energy unit, e.g. "2,092 kJ". */
+    calories: string;
     protein: number;
     carbs: number;
     fat: number;
@@ -106,9 +108,13 @@ export type DataLogModalTranslations = {
 export function getDataLogModalTranslations(
   variant: DataLogModalVariant,
   t: TFunction,
-  options?: { units: Units }
+  options: {
+    units: Units;
+    /** Kilocalories in, the person's energy unit with its label out. */
+    formatEnergyWithUnit: (kcal: number) => string;
+  }
 ): DataLogModalTranslations {
-  const units = options?.units;
+  const units = options.units;
   const weightUnitKey = units != null ? getWeightUnitI18nKey(units) : null;
   const unitLabel = weightUnitKey != null ? t(weightUnitKey) : 'kg';
 
@@ -366,7 +372,7 @@ export function getDataLogModalTranslations(
         }
 
         return t('goalsManagement.manageGoalData.subtitleFormat', {
-          calories: Number((item.goalCalories ?? 0).toFixed(0)),
+          calories: options.formatEnergyWithUnit(item.goalCalories ?? 0),
           phase: item.goalEatingPhase ?? '',
           targetWeight: targetWeight ?? t('exerciseGoals.creation.notSet'),
           unit: targetWeight != null ? unitLabel : '',
@@ -582,6 +588,7 @@ export function DataLogModal({
   const cramped = useIsCramped();
   const { t } = useTranslation();
   const { isAiConfigured, units } = useSettings();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const { showSnackbar } = useSnackbar();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -626,7 +633,7 @@ export function DataLogModal({
     }
   }, [visible]);
 
-  const translations = getDataLogModalTranslations(variant, t, { units });
+  const translations = getDataLogModalTranslations(variant, t, { units, formatEnergyWithUnit });
 
   // Edit modal integration
   const {
@@ -1238,7 +1245,7 @@ export function DataLogModal({
               {translations.formatItemSubtitle
                 ? translations.formatItemSubtitle(item)
                 : translations.formatCaloriesMacros({
-                    calories: Number((item.calories ?? 0).toFixed(0)),
+                    calories: formatEnergyWithUnit(item.calories ?? 0),
                     protein: Number((item.protein ?? 0).toFixed(1)),
                     carbs: Number((item.carbs ?? 0).toFixed(1)),
                     fat: Number((item.fat ?? 0).toFixed(1)),

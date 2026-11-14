@@ -2,7 +2,7 @@ import { History, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { YesterdayMealData } from '@/hooks/useYesterdayMealData';
@@ -23,7 +23,7 @@ export function SameAsYesterdayCard({
 }: SameAsYesterdayCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const { intuitiveEatingMode } = useSettings();
 
   return (
@@ -126,8 +126,10 @@ export function SameAsYesterdayCard({
                 style={[{ flexShrink: 0 }, intuitiveEatingMode ? blurFilter(4) : undefined]}
               >
                 {t('foodSearch.totalWithKcal', {
-                  calories: intuitiveEatingMode ? '0' : yesterdayMealData.totalCalories,
-                  kcal: t('food.common.kcal'),
+                  calories: intuitiveEatingMode
+                    ? '0'
+                    : formatEnergy(yesterdayMealData.totalCalories),
+                  kcal: unitLabel,
                 })}
               </Text>
             </View>
@@ -172,8 +174,7 @@ export function SameAsYesterdayCard({
                     className="text-xs text-text-secondary"
                     style={[{ flexShrink: 0 }, intuitiveEatingMode ? blurFilter(4) : undefined]}
                   >
-                    {intuitiveEatingMode ? '0' : formatInteger(Math.round(item.calories))}{' '}
-                    {t('food.common.kcal')}
+                    {intuitiveEatingMode ? '0' : formatEnergy(item.calories)} {unitLabel}
                   </Text>
                 </View>
               ))}

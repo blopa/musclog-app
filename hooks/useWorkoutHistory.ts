@@ -181,7 +181,7 @@ export function useWorkoutHistory({
   templateId,
 }: UseWorkoutHistoryParams = {}): UseWorkoutHistoryResult {
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units, energyUnit } = useSettings();
   const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
 
@@ -257,7 +257,14 @@ export function useWorkoutHistory({
 
       if (groupByMonth && workoutFilters) {
         // Process with filters and group by month
-        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units, theme);
+        const validWorkouts = await processWorkouts(
+          workoutLogs,
+          workoutFilters,
+          t,
+          units,
+          theme,
+          energyUnit
+        );
         const groupedSections = groupWorkoutsByMonth(validWorkouts);
         setSections(groupedSections);
       } else {
@@ -300,6 +307,7 @@ export function useWorkoutHistory({
     initialLimit,
     t,
     units,
+    energyUnit,
     theme,
     dateFnsLocale,
     skipPRDetection,
@@ -334,7 +342,14 @@ export function useWorkoutHistory({
 
       if (groupByMonth && workoutFilters) {
         // Process with filters
-        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units, theme);
+        const validWorkouts = await processWorkouts(
+          workoutLogs,
+          workoutFilters,
+          t,
+          units,
+          theme,
+          energyUnit
+        );
 
         if (validWorkouts.length > 0) {
           // Merge with existing sections
@@ -379,6 +394,7 @@ export function useWorkoutHistory({
     groupByMonth,
     t,
     units,
+    energyUnit,
     theme,
     dateFnsLocale,
     skipPRDetection,

@@ -1,0 +1,80 @@
+{
+  "websiteToolCalorieDeficit": {
+    "title": "Calculadora de déficit calórico e data-meta",
+    "intro": "Informe um peso-meta e uma data para ver a meta diária de calorias que leva até ele, a faixa em que ela fica e se o ritmo é realista.",
+    "form": {
+      "sex": "Sexo",
+      "male": "Homem",
+      "female": "Mulher",
+      "age": "Idade",
+      "height": "Altura",
+      "weight": "Peso atual",
+      "activity": "Nível de atividade",
+      "goalWeight": "Peso-meta",
+      "goalDate": "Data-meta",
+      "cm": "cm",
+      "inches": "pol",
+      "activity1": "Sedentário (pouco ou nenhum exercício)",
+      "activity2": "Leve (1–3 dias/semana)",
+      "activity3": "Moderado (3–5x/semana)",
+      "activity4": "Ativo (6–7 dias/semana)",
+      "activity5": "Muito ativo (trabalho físico + treino)"
+    },
+    "problems": {
+      "age": "Informe uma idade entre 15 e 100 anos.",
+      "height": "Informe uma altura dentro da faixa que a calculadora aceita.",
+      "weight": "Informe um peso dentro da faixa que a calculadora aceita.",
+      "goalWeight": "Informe um peso-meta dentro da faixa que a calculadora aceita.",
+      "goalDate": "Escolha uma data-meta.",
+      "goalDateNotFuture": "A data-meta precisa ser posterior a hoje."
+    },
+    "results": {
+      "target": "Meta diária de calorias",
+      "range": "Faixa: de {{low}} a {{high}}",
+      "summary": "Os números",
+      "change": "Variação de peso",
+      "days": "Dias até a data-meta",
+      "deficit": "Déficit diário",
+      "surplus": "Superávit diário",
+      "perDay": "por dia",
+      "weekly": "Ritmo semanal",
+      "perWeek": "por semana",
+      "tdee": "Gasto energético diário estimado",
+      "share": "Déficit como parte do gasto diário"
+    },
+    "notes": {
+      "noChange": "Você já está nesse peso, não é preciso mudar nada.",
+      "floor": "Sua meta ficaria abaixo do mínimo de {{floor}}, então a página a ajusta para esse valor.",
+      "laterDate": "A data mais cedo que esse mínimo permite é {{date}}.",
+      "floorAboveTdee": "O gasto estimado está no mínimo ou abaixo dele, então um déficit não é possível. Escolha um peso-meta mais alto ou converse com um profissional de saúde.",
+      "pace": "Este ritmo passa de 1% do peso corporal por semana, uma diretriz do Musclog. Um ritmo mais lento costuma se sustentar melhor.",
+      "deficitLarge": "Este déficit passa de 25% do seu gasto estimado, uma diretriz do Musclog. Um déficit menor por mais tempo costuma ser mais fácil de manter.",
+      "range": "A estimativa tem incerteza, então a meta aparece como faixa: 10% do seu gasto para cima e para baixo. Esses 10% são uma escolha de produto do Musclog, não um erro medido.",
+      "thresholds": "As diretrizes de 1% de ritmo e 25% de déficit são escolhas de produto do Musclog, não resultados de um estudo."
+    },
+    "sections": [
+      {
+        "title": "Como a meta é calculada",
+        "body": [
+          "Seu gasto energético é estimado a partir de sexo, idade, altura e peso (a taxa de repouso de Mifflin-St Jeor) multiplicada pelo seu nível de atividade. É a mesma estimativa que o app Musclog usa quando não há histórico de registros.",
+          "A variação de peso é convertida em energia pela regra de quilocalorias por quilo do app e distribuída pelos dias até a data-meta. A meta é esse gasto menos o déficit diário (ou mais, se for ganho)."
+        ]
+      },
+      {
+        "title": "Por que a data é um guia",
+        "body": [
+          "Hall et al. (2011) modelaram como o peso corporal responde a uma mudança na ingestão de energia. O corpo se ajusta ao longo de meses, então um número fixo de calorias por quilo é uma aproximação. Pese-se a cada poucas semanas e ajuste."
+        ]
+      },
+      {
+        "title": "O mínimo",
+        "body": [
+          "A meta nunca fica abaixo do mínimo que o app usa: 1.200 kcal para mulheres e 1.500 kcal para homens, ou 80% da sua taxa de repouso se for maior. Se a sua data exigir menos, a página mostra a data mais cedo que o mínimo permite."
+        ]
+      }
+    ],
+    "sources": {
+      "hall": "Hall et al. (2011), quantificação do efeito do desequilíbrio energético sobre o peso corporal"
+    }
+  }
+}

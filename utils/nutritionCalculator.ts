@@ -1142,6 +1142,32 @@ export function proteinReferenceWeightKg(
   return weightKg;
 }
 
+export interface BodyweightProtein {
+  /** Daily protein, rounded to whole grams. */
+  grams: number;
+  /** The g/kg the goal asks for (raised to the deficit minimum when `weightGoal` is `lose`). */
+  gramsPerKg: number;
+  /** The weight the g/kg is applied to: the goal weight, else the weight capped at a BMI-30 reference. */
+  referenceWeightKg: number;
+}
+
+/**
+ * Bodyweight-based daily protein: the ONE place the g/kg rule is applied, shared by
+ * {@link calculateMacros} and the website's protein calculator so the two cannot disagree.
+ */
+export function bodyweightProtein(
+  fitnessGoal: FitnessGoal,
+  weightKg: number,
+  options: Pick<MacroOptions, 'heightCm' | 'goalWeightKg' | 'weightGoal'> = {}
+): BodyweightProtein {
+  const gramsPerKg = Math.max(
+    PROTEIN_G_PER_KG_BODYWEIGHT[fitnessGoal] ?? PROTEIN_G_PER_KG_BODYWEIGHT.general,
+    options.weightGoal === 'lose' ? PROTEIN_G_PER_KG_BODYWEIGHT_IN_DEFICIT : 0
+  );
+  const referenceWeightKg = proteinReferenceWeightKg(weightKg, options);
+  return { grams: Math.round(referenceWeightKg * gramsPerKg), gramsPerKg, referenceWeightKg };
+}
+
 /**
  * Calculate macronutrient grams from target calories.
  *
@@ -1178,12 +1204,8 @@ export function calculateMacros(
   }
 
   if (options?.weightKg !== undefined && options.weightKg > 0) {
-    const gramsPerKg = Math.max(
-      PROTEIN_G_PER_KG_BODYWEIGHT[fitnessGoal] ?? PROTEIN_G_PER_KG_BODYWEIGHT.general,
-      options.weightGoal === 'lose' ? PROTEIN_G_PER_KG_BODYWEIGHT_IN_DEFICIT : 0
-    );
-    const protein = Math.round(proteinReferenceWeightKg(options.weightKg, options) * gramsPerKg);
-    return splitAroundProtein(targetCalories, protein, carbsPct, fatsPct);
+    const { grams } = bodyweightProtein(fitnessGoal, options.weightKg, options);
+    return splitAroundProtein(targetCalories, grams, carbsPct, fatsPct);
   }
 
   return {

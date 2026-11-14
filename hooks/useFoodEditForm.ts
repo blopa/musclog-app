@@ -1,3 +1,5 @@
+import type { EnergyUnit } from '@/constants/settings';
+import { displayToEnergyKcal } from '@/utils/energyUnit';
 import { useCallback, useState } from 'react';
 
 import {
@@ -29,6 +31,8 @@ type NumericField = 'calories' | 'protein' | 'carbs' | 'fat' | 'fiber';
 
 type UseFoodEditFormParams = {
   decimalSeparator: ',' | '.';
+  /** The unit the calorie field is typed in; the overrides it produces are always kilocalories. */
+  energyUnit?: EnergyUnit;
   inferredCaloriesPer100g: number;
 };
 
@@ -42,6 +46,7 @@ type UseFoodEditFormParams = {
  */
 export function useFoodEditForm({
   decimalSeparator,
+  energyUnit = 'kcal',
   inferredCaloriesPer100g,
 }: UseFoodEditFormParams) {
   const [editedOverrides, setEditedOverrides] = useState<EditedFoodOverrides | null>(null);
@@ -66,7 +71,10 @@ export function useFoodEditForm({
       return;
     }
 
-    const cal = parseLocalizedDecimalString(editForm.calories, decimalSeparator);
+    const cal = displayToEnergyKcal(
+      parseLocalizedDecimalString(editForm.calories, decimalSeparator),
+      energyUnit
+    );
     const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
     const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
     const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
@@ -85,7 +93,7 @@ export function useFoodEditForm({
     });
     setEditForm(null);
     setIsEditPopUpVisible(false);
-  }, [editForm, decimalSeparator]);
+  }, [editForm, decimalSeparator, energyUnit]);
 
   const acceptInferredCalories = useCallback(() => {
     setEditedOverrides((prev) => ({

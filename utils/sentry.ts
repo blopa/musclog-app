@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react-native';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { initializeSentry } from '@/sentry-init';
+import { readRememberedCrashReportConsent } from '@/utils/crashReportConsent';
 import { showSnackbar } from '@/utils/snackbarService';
 
 async function checkConsentAndInitialize(): Promise<boolean> {
@@ -19,13 +20,20 @@ async function checkConsentAndInitialize(): Promise<boolean> {
 
     return true;
   } catch (_) {
-    // Initialize Sentry anyway if database is broken or something else fails
-    initializeSentry();
+    // The database is unreadable: fall back to the device-local copy of the user's choice.
+    // Never recorded (null) keeps the default, which is on.
+    const remembered = await readRememberedCrashReportConsent();
 
     // Show message to user about database issue
     showSnackbar('error', i18n.t('errors.databaseError.title'), {
       subtitle: i18n.t('errors.databaseError.description'),
     });
+
+    if (remembered === false) {
+      return false;
+    }
+
+    initializeSentry();
 
     return true;
   }

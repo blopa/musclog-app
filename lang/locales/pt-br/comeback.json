@@ -242,7 +242,7 @@
     "deficit": {
       "title": "Pronto para um pequeno déficit?",
       "body": "Você comeu na manutenção por duas semanas. Se quiser, já pode passar para um déficit leve.",
-      "numbers": "De {{from}} kcal para {{to}} kcal por dia, com {{protein}} g de proteína",
+      "numbers": "De {{from}} para {{to}} por dia, com {{protein}} g de proteína",
       "accept": "Aplicar o déficit",
       "decline": "Ficar na manutenção",
       "applied": "Suas metas foram atualizadas",

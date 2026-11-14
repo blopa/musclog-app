@@ -14,7 +14,6 @@ import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 const DEFINITION_KEYS = [
-  'account',
   'application',
   'company',
   'device',
@@ -49,7 +48,7 @@ export default function Privacy() {
   const typesCollectedItems = t('sections.collecting.typesCollected.items', {
     returnObjects: true,
   }) as string[];
-  const googleOAuthItems = t('sections.collecting.googleOAuth.items', {
+  const healthConnectItems = t('sections.collecting.healthConnect.items', {
     returnObjects: true,
   }) as string[];
   const appPermissionsItems = t('sections.collecting.appPermissions.items', {
@@ -259,16 +258,16 @@ export default function Privacy() {
                   </ul>
                 </div>
 
-                {/* Google OAuth Data */}
+                {/* Health Connect and Apple Health */}
                 <div>
                   <h3 className="mb-2 text-base font-semibold text-text-primary">
-                    {t('sections.collecting.googleOAuth.title')}
+                    {t('sections.collecting.healthConnect.title')}
                   </h3>
                   <p className="mb-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-                    {t('sections.collecting.googleOAuth.content')}
+                    {t('sections.collecting.healthConnect.content')}
                   </p>
                   <ul className="space-y-1.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
-                    {googleOAuthItems.map((item, i) => (
+                    {healthConnectItems.map((item, i) => (
                       <li key={i} className="flex gap-2">
                         <span className="mt-0.5 text-text-primary">›</span>
                         <span>{item}</span>
@@ -303,6 +302,16 @@ export default function Privacy() {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                {/* Food Databases */}
+                <div>
+                  <h3 className="mb-2 text-base font-semibold text-text-primary">
+                    {t('sections.collecting.foodData.title')}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                    {t('sections.collecting.foodData.content')}
+                  </p>
                 </div>
 
                 {/* Optional AI Providers */}
@@ -523,13 +532,13 @@ export default function Privacy() {
               </p>
             </section>
 
-            {/* Anonymous Crash Reporting Fallback */}
+            {/* Anonymous Crash Reports */}
             <section>
               <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
-                {t('sections.errorReportingFallback.title')}
+                {t('sections.crashReports.title')}
               </h2>
               <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-                {t('sections.errorReportingFallback.content')}
+                {t('sections.crashReports.content')}
               </p>
             </section>
 

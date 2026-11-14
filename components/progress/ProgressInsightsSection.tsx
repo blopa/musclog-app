@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { ProgressInsights } from '@/database/services/ProgressService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 
 interface ProgressInsightsSectionProps {
@@ -12,7 +13,8 @@ interface ProgressInsightsSectionProps {
 
 export function ProgressInsightsSection({ insights }: ProgressInsightsSectionProps) {
   const { t } = useTranslation();
-  const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const { formatDecimal } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
 
   // The unit is its own text in a centered, wrapping row: in a quarter-width cell at large text
   // "126.6 g" no longer fits, and as one string it split at the space and left a bare "g" on the
@@ -52,7 +54,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
                 {t('progress.nutritionView.calories')}
               </Text>
               <Text className="text-center text-xl font-semibold tabular-nums text-accent-primary">
-                {formatInteger(Math.round(avg.calories))} {t('progress.kcal')}
+                {formatEnergy(avg.calories)} {unitLabel}
               </Text>
             </View>
             <View className="flex-row flex-wrap">
@@ -97,7 +99,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
                   {t('progress.empiricalTdee')}
                 </Text>
                 <Text className="text-lg font-semibold tabular-nums text-accent-primary">
-                  {formatInteger(Math.round(insights.empiricalTdee))}
+                  {formatEnergy(insights.empiricalTdee)}
                 </Text>
                 <Text className="text-center text-[10px] text-text-tertiary">
                   {t('progress.basedOnRecentActivity')}
@@ -109,7 +111,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
                 {t('progress.statisticalTdee')}
               </Text>
               <Text className="text-lg font-semibold tabular-nums text-accent-secondary">
-                {formatInteger(Math.round(insights.statisticalTdee))}
+                {formatEnergy(insights.statisticalTdee)}
               </Text>
               <Text className="text-center text-[10px] text-text-tertiary">
                 {t('progress.basedOnActivityLevel')}

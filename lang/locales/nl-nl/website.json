@@ -64,6 +64,58 @@
         "blog": {
           "title": "Musclog-blog — Open-source fitness en technologie",
           "description": "Lees artikelen over Musclog, open-source ontwikkeling, privacy, fitnesstechnologie en de ideeën achter de app."
+        },
+        "tools": {
+          "title": "Gratis tools en rekenmachines voor krachtsporters | Musclog",
+          "description": "Gratis rekenmachines voor wie traint met gewichten: 1RM, schijven, warming-up, RPE, eiwit, calorietekort en netto koolhydraten. Met dezelfde formules als de Musclog-app."
+        },
+        "toolOneRepMax": {
+          "title": "1RM-calculator (one-rep max) | Musclog",
+          "description": "Schat je one-rep max op basis van een set van 1 tot 10 herhalingen, met herhalingen in reserve en een tabel met percentages van je 1RM."
+        },
+        "toolPlateCalculator": {
+          "title": "Schijvencalculator: wat laad je op de stang | Musclog",
+          "description": "Vul je streefgewicht in en de schijven die jouw sportschool heeft. Je krijgt de schijven voor elke kant van de stang, in kg of lb, met een eigen stanggewicht."
+        },
+        "toolStrengthLevel": {
+          "title": "Krachtniveau op basis van lichaamsgewicht | Musclog",
+          "description": "Kijk op welk krachtniveau je squat, bankdrukken, deadlift of andere oefening zit voor jouw lichaamsgewicht en geslacht. Een bereik, nooit een percentiel."
+        },
+        "toolWarmUpCalculator": {
+          "title": "Warming-upsets calculator | Musclog",
+          "description": "Warming-upsets voor je werkgewicht, beginnend met de lege stang en met schijven die je echt kunt laden."
+        },
+        "toolRpeChart": {
+          "title": "RPE- en RIR-tabel met gewichtscalculator | Musclog",
+          "description": "Een tabel met RPE en herhalingen in reserve, plus een calculator: welk gewicht hoort bij een ander herhalings- en RPE-doel op basis van een gedane set?"
+        },
+        "toolProteinCalculator": {
+          "title": "Eiwitcalculator: hoeveel eiwit per dag | Musclog",
+          "description": "Dagelijkse eiwitten in gram per kilo lichaamsgewicht voor jouw doel, begrensd op een referentiegewicht zodat een hoog gewicht de uitkomst niet opblaast."
+        },
+        "toolCalorieDeficit": {
+          "title": "Calorietekort- en streefdatumcalculator | Musclog",
+          "description": "Bereken de dagelijkse calorieen om een streefgewicht op een datum te halen, met een eerlijk bereik en een waarschuwing als het tempo te hoog is."
+        },
+        "toolNetCarbs": {
+          "title": "Netto en totale koolhydraten omrekenen | Musclog",
+          "description": "Amerikaanse etiketten tellen vezels mee in koolhydraten en Europese niet. Reken om tussen netto en totale koolhydraten."
+        },
+        "programs": {
+          "title": "Gratis trainingsschema's | Musclog",
+          "description": "Gratis schema's: push pull legs, upper lower, full body en meer. Elke dag, oefening, set en herhaling staat erbij en je opent het in Musclog."
+        },
+        "alternativesStrong": {
+          "title": "Musclog vs Strong | Musclog",
+          "description": "Musclog vs Strong: de gratis versie van Strong is beperkt tot 3 eigen routines. Zie wat Musclog anders doet en hoe je je Strong-geschiedenis importeert. Gegevens met datum en bron."
+        },
+        "alternativesHevy": {
+          "title": "Musclog vs Hevy | Musclog",
+          "description": "Musclog vs Hevy: het gratis plan van Hevy beperkt routines en eigen oefeningen. Zie wat Musclog anders doet en hoe je je Hevy-geschiedenis importeert. Gegevens met datum en bron."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog vs MyFitnessPal | Musclog",
+          "description": "Musclog vs MyFitnessPal: barcodescannen is daar alleen Premium en gratis in Musclog. Gegevens met datum en bron."
         }
       }
     },
@@ -269,7 +321,8 @@
       "openMenu": "Menu openen",
       "closeMenu": "Menu sluiten",
       "preferences": "Voorkeuren",
-      "theme": "Thema"
+      "theme": "Thema",
+      "tools": "Tools"
     },
     "blog": {
       "eyebrow": "Uit de werkplaats",
@@ -466,19 +519,19 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 5 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 14 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
-          "description": "Uitgebreide technische en organisatorische maatregelen beschermen uw gegevens."
+          "description": "Gevoelige gegevens worden versleuteld op uw apparaat en netwerkverzoeken gebruiken HTTPS."
         },
         "localFirst": {
           "title": "Lokale opslag",
-          "description": "Uw gegevens worden primair opgeslagen op uw apparaat, niet op onze servers."
+          "description": "Uw gegevens worden op uw apparaat opgeslagen. Musclog heeft geen accounts en geen cloudsynchronisatie."
         },
         "security": {
-          "title": "Beveiliging voorop",
-          "description": "Geavanceerde versleuteling en toegangscontroles beschermen uw informatie."
+          "title": "U houdt de controle",
+          "description": "Alleen het zoeken naar voeding, optionele AI en crashrapporten gebruiken internet, en u kunt elk daarvan uitschakelen."
         }
       },
       "intro": "Dit Privacybeleid beschrijft Ons beleid en onze procedures met betrekking tot het verzamelen, gebruiken, opslaan en openbaar maken van Uw informatie wanneer U Musclog gebruikt. Het is van toepassing op zowel de Musclog-applicatie als de Musclog-website, hoewel de categorieën gegevens die in elke context worden verwerkt verschillen. Dit Privacybeleid legt ook Uw privacyrechten uit en hoe de wet U beschermt.",
@@ -494,10 +547,6 @@
         "definitions": {
           "title": "Definities",
           "items": {
-            "account": {
-              "term": "Account",
-              "def": "betekent een uniek account dat voor u is aangemaakt om toegang te krijgen tot onze Service of delen daarvan."
-            },
             "application": {
               "term": "Applicatie",
               "def": "verwijst naar Musclog, het softwareprogramma dat door Musclog wordt aangeboden."
@@ -512,7 +561,7 @@
             },
             "personalData": {
               "term": "Persoonsgegevens",
-              "def": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken die kan worden gebruikt om u te contacteren of te identificeren."
+              "def": "betekent alle informatie die betrekking heeft op een geïdentificeerde of identificeerbare natuurlijke persoon."
             },
             "service": {
               "term": "Service",
@@ -524,7 +573,7 @@
             },
             "usageData": {
               "term": "Gebruiksgegevens",
-              "def": "Gebruiksgegevens worden automatisch verzameld bij gebruik van de Service, inclusief apparaatinformatie, IP-adres, browsertype en diagnostische gegevens."
+              "def": "betekent gegevens die automatisch worden verzameld bij gebruik van de Service, zoals browsertype, apparaatmodel of diagnostische gegevens."
             },
             "you": {
               "term": "U",
@@ -534,56 +583,63 @@
         },
         "collecting": {
           "title": "Verzamelen en gebruiken van uw Persoonsgegevens",
-          "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken die kan worden gebruikt om u te contacteren of te identificeren.",
+          "content": "Musclog is ontworpen om te werken zonder Persoonsgegevens te verzamelen. Deze sectie legt de beperkte gevallen uit waarin gegevens Uw Apparaat verlaten.",
           "typesCollected": {
             "title": "Soorten verzamelde gegevens",
-            "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken. Persoonlijk identificeerbare informatie kan onder meer omvatten:",
-            "items": ["Voor- en achternaam", "Gebruiksgegevens"]
-          },
-          "googleOAuth": {
-            "title": "Google OAuth-gegevens",
-            "content": "Onze applicatie integreert Google OAuth voor de volgende doeleinden:",
+            "content": "Musclog vraagt u niet om een account aan te maken en vraagt niet om uw naam, e-mailadres of telefoonnummer. Gegevens verlaten Uw Apparaat alleen in de volgende gevallen:",
             "items": [
-              "Om uw naam te verkrijgen ter personalisatie van uw gebruikerservaring.",
-              "Om toegang te krijgen tot Google Generative AI-mogelijkheden ter verbetering van applicatiefuncties.",
-              "Alle gegevens worden offline op uw apparaat opgeslagen en niet geüpload naar onze servers.",
-              "Wij delen uw gegevens niet met derden voor marketing of andere doeleinden.",
-              "Google OAuth is optioneel en kan worden uitgeschakeld in de applicatie-instellingen."
+              "Anonieme crashrapporten, zolang deze zijn ingeschakeld (zie \"Anonieme crashrapporten\" hieronder).",
+              "Zoekopdrachten naar voeding en gescande barcodes, verzonden naar de voedingsdatabase die u kiest (zie \"Voedingsdatabases\" hieronder).",
+              "Verzoeken die u verstuurt naar een optionele AI-functie, verzonden naar de provider die u kiest (zie \"Optionele AI-functies\" hieronder).",
+              "Gegevens die u zelf exporteert, back-upt, deelt of naar een ander apparaat verplaatst.",
+              "Gebruiksgegevens van bezoeken aan de website (zie \"Website-analyse\" hieronder)."
             ]
           },
           "usageData": {
             "title": "Gebruiksgegevens",
-            "content": "Gebruiksgegevens worden automatisch verzameld bij gebruik van de Service. Gebruiksgegevens kunnen informatie bevatten zoals het IP-adres van uw apparaat, browsertype en -versie, de pagina's van onze Service die u bezoekt, de datum en tijd van uw bezoek, de tijd besteed aan die pagina's, unieke apparaat-ID's en andere diagnostische gegevens. Wanneer u de Service benadert via een mobiel apparaat, kunnen wij automatisch bepaalde informatie verzamelen, waaronder het type mobiel apparaat, de unieke ID van uw mobiele apparaat, het IP-adres van uw mobiele apparaat, uw mobiel besturingssysteem en het type mobiele internetbrowser dat u gebruikt."
+            "content": "Gebruiksgegevens worden automatisch verzameld op de website, zoals beschreven onder \"Website-analyse\" hieronder. De Musclog-applicatie verzamelt geen Gebruiksgegevens, behalve de app-versie en het apparaatmodel in een anoniem crashrapport."
           },
           "appPermissions": {
             "title": "Informatie verzameld bij gebruik van de Applicatie",
-            "content": "Bij gebruik van onze Applicatie kunnen wij, om de functies van onze Applicatie te bieden, met uw voorafgaande toestemming verzamelen:",
+            "content": "Om haar functies te bieden kan de applicatie om de volgende toestemmingen vragen. Gegevens die via deze toestemmingen worden verkregen, blijven op Uw Apparaat, tenzij dit Privacybeleid anders vermeldt:",
             "items": [
-              "Activiteitsherkenningsgegevens om uw trainingen en fitnessactiviteiten bij te houden.",
-              "Lichaamssensorgegevens om hartslag, stappen en andere gezondheidsstatistieken te monitoren.",
-              "Internettoegang om verbinding te maken met onze servers en online functionaliteiten te bieden.",
-              "Kalendergegevens om te integreren met uw agenda en trainingen te plannen.",
-              "Toegang tot externe opslag om trainingsgegevens en andere informatie te lezen en op te slaan.",
-              "Toestemming voor opstartmeldingen om geplande taken na het opnieuw opstarten van uw apparaat te hervatten.",
-              "Toestemming voor systeemwaarschuwingsvenster om belangrijke meldingen boven andere apps weer te geven.",
-              "Trillingstoestemming voor haptische feedback tijdens trainingen en meldingen.",
-              "Wake lock-toestemming om de app actief te houden tijdens trainingen.",
-              "Gezondheidsgegevens zoals verbrande actieve calorieën, lichaamsvet, botmassa, hartslag, lengte, vetvrije massa, voeding, stappen, totale verbrande calorieën en gewicht voor uitgebreide fitnesstracking."
+              "Camera: om voedingsbarcodes en voedingslabels te scannen, maaltijdfoto's te maken en gegevens van een ander apparaat te ontvangen via QR-codes.",
+              "Health Connect of Apple Health: zie \"Health Connect en Apple Health\" hierboven.",
+              "Meldingen, exacte alarmen en opstarten voltooid: om trainings-, rusttimer-, voedings- en cyclusherinneringen op tijd te tonen, ook nadat Uw Apparaat opnieuw is opgestart.",
+              "Biometrie (vingerafdruk of gezicht): om de applicatie of onderdelen daarvan te vergrendelen, als u dit inschakelt.",
+              "Bluetooth en, op oudere Android-versies, locatie, die Android vereist voor het zoeken naar Bluetooth-apparaten: om verbinding te maken met een ondersteunde herhalingssensor. Musclog gebruikt of bewaart uw locatie niet.",
+              "Internet: voor het zoeken naar voeding, optionele AI-functies en crashrapporten.",
+              "Trillen en wake lock: voor haptische feedback en om het scherm aan te houden tijdens trainingen en timers."
             ]
           },
           "optionalAi": {
-            "title": "Optionele AI-functies en externe LLM-providers",
-            "content1": "De Musclog-applicatie kan volledig offline worden gebruikt, met uitzondering van optionele verzoeken aan externe bronnen voor voedingsgegevens. Standaard verzendt Musclog uw trainings-, voedings-, gezondheids- of profielgegevens niet naar onze servers.",
-            "content2": "Musclog biedt ook optionele AI-functies waarvoor u uw eigen provider moet configureren, zoals OpenAI, Anthropic Claude, Google Gemini, Apple Intelligence op iOS of een lokale/zelfgehoste LLM-endpoint. Deze functies blijven uitgeschakeld tenzij u ze uitdrukkelijk inschakelt.",
+            "title": "Optionele AI-functies",
+            "content1": "De Musclog-applicatie kan volledig offline worden gebruikt, met uitzondering van het zoeken naar voeding, optionele AI-functies en crashrapporten. Musclog verzendt uw trainings-, voedings-, gezondheids- of profielgegevens niet naar Onze servers, behalve wanneer u de hieronder beschreven gratis Musclog AI-optie gebruikt.",
+            "content2": "Musclog biedt optionele AI-functies. Ze blijven uitgeschakeld totdat u een provider kiest: uw eigen OpenAI-, Anthropic Claude- of Google Gemini-API-sleutel, een model op het apparaat zelf zoals Apple Intelligence op iOS, een lokale of zelfgehoste LLM-endpoint, of de gratis Musclog AI-optie.",
             "content3": "Als u ervoor kiest een AI-functie te gebruiken, worden de gegevens die u besluit te verzenden doorgestuurd naar de provider of endpoint die u configureert. Als u een zelfgehost lokaal model onder uw eigen controle gebruikt, kunnen die gegevens binnen uw eigen omgeving blijven. Als u een door een derde gehoste endpoint gebruikt, waaronder een gehoste lokale-modeldienst, kan die provider de gegevens verwerken in overeenstemming met zijn eigen voorwaarden en privacypraktijken. Musclog heeft geen controle over de manier waarop externe providers de gegevens verwerken die u naar hen verzendt.",
-            "content4": "Musclog kan ook een gratis Musclog-LLM-optie aanbieden. Wanneer u die optie gebruikt, wordt uw verzoek doorgestuurd via Cloudflare AI Gateway en vervolgens verzonden met een door Musclog beheerde gratis OpenAI- of Google Gemini-API-sleutel. Als u ervoor kiest deze functie te gebruiken, dient u te begrijpen dat uw verzoek via Cloudflare en door de downstream modelprovider die Musclog voor dat verzoek selecteert kan worden verwerkt.",
-            "content5": "Momenteel ondersteunt Musclog OpenAI, Anthropic Claude, Google Gemini, Apple Intelligence op iOS, compatibele lokale of zelfgehoste LLM-endpoints en de gratis Musclog-LLM-route. U dient de toepasselijke privacybeleidsregels te raadplegen voordat u externe providers inschakelt of de gratis optie accepteert, waaronder:",
+            "content4": "Als u de gratis Musclog AI-optie kiest, worden uw verzoeken verzonden via Cloudflare AI Gateway, dat voor Musclog wordt beheerd, en beantwoord door Google Gemini met een API-sleutel die door Musclog wordt beheerd. Een verzoek bevat alleen wat u naar de AI-functie verstuurt, zoals chatberichten, maaltijdfoto's of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft. Verzoeken kunnen gedurende beperkte tijd worden bewaard in de logboeken van de gateway om fouten en misbruik te monitoren, en worden door Cloudflare en Google verwerkt volgens hun eigen voorwaarden.",
+            "content5": "U dient de privacybeleidsregels te raadplegen van de providers die u kiest, waaronder:",
             "cloudflarePrivacyPolicy": "Privacybeleid van Cloudflare",
             "openaiPrivacyPolicy": "Privacybeleid van OpenAI",
             "anthropicPrivacyPolicy": "Privacybeleid van Anthropic",
             "googlePrivacyPolicy": "Privacybeleid van Google",
             "applePrivacyPolicy": "Privacybeleid van Apple",
             "and": "en"
+          },
+          "healthConnect": {
+            "title": "Health Connect en Apple Health",
+            "content": "Als u Musclog koppelt aan Health Connect (Android) of Apple Health (iOS), leest en schrijft de applicatie gezondheidsgegevens op Uw Apparaat, uitsluitend met de toestemmingen die u verleent:",
+            "items": [
+              "Ze kan gewicht, lengte, lichaamsvet, vetvrije massa, voeding, stappen, verbrande calorieën en basaal metabolisme lezen en, als u cyclustracking gebruikt en ervoor kiest om te importeren, gegevens over de menstruatiecyclus.",
+              "Ze kan gewicht, lengte, lichaamsvet, vetvrije massa, voeding, trainingen en loop- of hardloopafstand schrijven en, als u dat kiest, gegevens over de menstruatiecyclus.",
+              "Gezondheidsgegevens die uit Health Connect of Apple Health worden gelezen, blijven op Uw Apparaat. Musclog verzendt ze niet naar Onze servers, verkoopt ze niet en gebruikt ze niet voor reclame.",
+              "Gezondheidsgegevens worden uitsluitend gebruikt om de fitness-, voedings- en lichaamstrackingfuncties van de applicatie te bieden.",
+              "U kunt deze toestemmingen op elk moment intrekken in Health Connect of de Gezondheid-app."
+            ]
+          },
+          "foodData": {
+            "title": "Voedingsdatabases",
+            "content": "Wanneer u naar een voedingsmiddel zoekt of een barcode scant, wordt de zoektekst of barcode verzonden naar de voedingsdatabase die in de instellingen van de applicatie is geselecteerd: Open Food Facts, de USDA FoodData Central-database of de eigen voedingsdatabase van Musclog. Aan deze verzoeken zijn geen account, naam of andere persoonlijke informatie gekoppeld, maar zoals elk internetverzoek maken ze uw IP-adres bekend aan de dienst die ze ontvangt. U kunt er ook voor kiezen alleen te zoeken in de voedingsmiddelen die op Uw Apparaat zijn opgeslagen."
           }
         },
         "trainingData": {
@@ -595,39 +651,35 @@
         "useOfData": {
           "title": "Gebruik van uw Persoonsgegevens",
           "items": [
-            "Om onze Service te leveren en te onderhouden, inclusief het monitoren van het gebruik.",
-            "Om optionele AI-functies aan te bieden, uitsluitend wanneer u deze uitdrukkelijk inschakelt en uw eigen provider of endpoint configureert.",
-            "Om uw Account te beheren: om uw registratie als gebruiker van de Service te beheren.",
-            "Voor de uitvoering van een contract: de ontwikkeling, naleving en uitvoering van het aankoopcontract voor de producten of diensten die u hebt aangeschaft.",
-            "Om contact met u op te nemen via e-mail, telefoongesprekken, sms of andere gelijkwaardige vormen van elektronische communicatie.",
-            "Om u nieuws, speciale aanbiedingen en algemene informatie te bieden over andere goederen, diensten en evenementen.",
-            "Om uw verzoeken te beheren: om uw verzoeken aan ons te behandelen en te beheren.",
-            "Voor bedrijfsoverdrachten: wij kunnen uw informatie gebruiken om een fusie, afsplitsing, herstructurering, reorganisatie, ontbinding of andere verkoop of overdracht van onze activa te evalueren of uit te voeren.",
-            "Voor andere doeleinden: wij kunnen uw informatie gebruiken voor gegevensanalyse, het identificeren van gebruikstrends, het bepalen van de effectiviteit van onze promotiecampagnes en het evalueren en verbeteren van onze Service."
+            "Om de functies van de applicatie te bieden, zoals het bijhouden van trainingen, voeding en lichaamsgegevens, die op Uw Apparaat draaien.",
+            "Om de zoekopdrachten naar voeding en optionele AI-verzoeken te beantwoorden die u doet.",
+            "Om crashes en bugs te vinden en op te lossen met behulp van anonieme crashrapporten, zolang deze zijn ingeschakeld.",
+            "Om te begrijpen hoe bezoekers de website gebruiken, zoals beschreven onder \"Website-analyse\".",
+            "Om u te antwoorden wanneer u contact met Ons opneemt.",
+            "Musclog verkoopt uw gegevens niet, toont geen advertenties en gebruikt uw gegevens niet voor reclame of profilering."
           ]
         },
         "sharing": {
           "title": "Delen van uw Persoonsgegevens",
           "items": [
-            "Met Serviceproviders: wij kunnen uw persoonlijke informatie delen met Serviceproviders om het gebruik van onze Service te monitoren en te analyseren.",
-            "Voor bedrijfsoverdrachten: wij kunnen uw persoonlijke informatie delen of overdragen in verband met een fusie, verkoop van bedrijfsactiva, financiering of overname.",
-            "Met Gelieerde ondernemingen: wij kunnen uw informatie delen met onze gelieerde ondernemingen, waarbij wij eisen dat deze gelieerde ondernemingen dit Privacybeleid naleven.",
-            "Met zakelijke partners: wij kunnen uw informatie delen met onze zakelijke partners om u bepaalde producten, diensten of promoties aan te bieden.",
-            "Met andere gebruikers: wanneer u persoonlijke informatie deelt of anderszins interageert in de openbare gebieden met andere gebruikers, kan deze informatie door alle gebruikers worden bekeken.",
-            "Met uw toestemming: wij kunnen uw persoonlijke informatie voor elk ander doel openbaar maken met uw toestemming."
+            "Met de providers die u kiest: zoekopdrachten naar voeding gaan naar de voedingsdatabase die u selecteert en AI-verzoeken gaan naar de AI-provider die u configureert.",
+            "Met Serviceproviders die delen van de Service voor Ons uitvoeren: Sentry (crashrapporten), Cloudflare en Google (de gratis Musclog AI-optie), en Vercel en Google Analytics (de website).",
+            "Wanneer de wet dit vereist, zoals beschreven onder \"Openbaarmaking van uw Persoonsgegevens\".",
+            "Met uw toestemming, bijvoorbeeld wanneer u zelf gegevens exporteert of deelt.",
+            "Wij verkopen uw gegevens niet en delen ze niet met adverteerders of datahandelaren."
           ]
         },
         "retention": {
           "title": "Bewaring van uw Persoonsgegevens",
-          "content": "Musclog bewaart uw Persoonsgegevens alleen zolang als noodzakelijk is voor de doeleinden zoals uiteengezet in dit Privacybeleid. Wij bewaren en gebruiken uw Persoonsgegevens voor zover noodzakelijk om te voldoen aan onze wettelijke verplichtingen, geschillen op te lossen en onze wettelijke overeenkomsten en beleidsregels af te dwingen. Musclog bewaart ook Gebruiksgegevens voor interne analysedoeleinden. Gebruiksgegevens worden doorgaans gedurende een kortere periode bewaard, tenzij deze gegevens worden gebruikt om de beveiliging te versterken of de functionaliteit van onze Service te verbeteren, of wij wettelijk verplicht zijn deze gegevens langer te bewaren."
+          "content": "Gegevens in de applicatie blijven op Uw Apparaat totdat u ze verwijdert of de applicatie verwijdert. Anonieme crashrapporten worden door Sentry gedurende een beperkte periode bewaard en daarna verwijderd. Verzoeken die via de gratis Musclog AI-optie worden verzonden, kunnen gedurende een beperkte periode in de logboeken van de gateway worden bewaard. Website-analysegegevens worden bewaard zoals beschreven onder \"Website-analyse\"."
         },
         "transfer": {
           "title": "Overdracht van uw Persoonsgegevens",
-          "content": "Uw informatie, inclusief Persoonsgegevens, wordt verwerkt op de kantoren van Musclog en op elk andere locatie waar de bij de verwerking betrokken partijen zich bevinden. Dit betekent dat deze informatie kan worden overgedragen naar en opgeslagen op computers buiten uw staat, provincie, land of andere overheidsinstantie, waar de wetgeving inzake gegevensbescherming kan verschillen van die in uw jurisdictie. Uw instemming met dit Privacybeleid, gevolgd door uw indiening van dergelijke informatie, vertegenwoordigt uw akkoord met die overdracht. Musclog neemt alle redelijkerwijs noodzakelijke stappen om ervoor te zorgen dat uw gegevens veilig en in overeenstemming met dit Privacybeleid worden behandeld."
+          "content": "Crashrapporten, zoekopdrachten naar voeding, AI-verzoeken en website-analyses worden verwerkt door de diensten die in dit Privacybeleid worden genoemd. Deze kunnen zich buiten uw land bevinden, waar de wetgeving inzake gegevensbescherming kan verschillen van die in uw jurisdictie. Musclog neemt redelijke maatregelen om ervoor te zorgen dat deze gegevens veilig en in overeenstemming met dit Privacybeleid worden behandeld."
         },
         "deletion": {
           "title": "Uw Persoonsgegevens verwijderen",
-          "content": "U heeft het recht om de Persoonsgegevens die wij over u hebben verzameld te verwijderen of te verzoeken dat wij helpen bij het verwijderen daarvan. Onze Service kan u de mogelijkheid bieden om bepaalde informatie over u vanuit de Service te verwijderen. U kunt uw informatie op elk moment bijwerken, wijzigen of verwijderen door in te loggen op uw Account en de accountinstellingen te bezoeken. U kunt ook contact met ons opnemen om toegang te vragen tot, correctie of verwijdering van persoonlijke informatie die u ons hebt verstrekt. Houd er echter rekening mee dat wij bepaalde informatie mogelijk moeten bewaren wanneer wij een wettelijke verplichting of juridische grondslag hebben om dit te doen."
+          "content": "Omdat uw gegevens op Uw Apparaat zijn opgeslagen, kunt u ze op elk moment verwijderen: verwijder afzonderlijke items, verwijder alle gegevens via de gegevensinstellingen van de applicatie, of verwijder de applicatie. Musclog heeft geen account dat verwijderd kan worden. Als u wilt dat Wij helpen bij het verwijderen van een crashrapport of andere gegevens die Uw Apparaat hebben verlaten, neem dan per e-mail contact met Ons op."
         },
         "disclosure": {
           "title": "Openbaarmaking van uw Persoonsgegevens",
@@ -642,11 +694,11 @@
         },
         "security": {
           "title": "Beveiliging van uw Persoonsgegevens",
-          "content": "De beveiliging van uw Persoonsgegevens is belangrijk voor ons, maar onthoud dat geen enkele methode van overdracht via internet of elektronische opslag 100% veilig is. Wij passen uitgebreide technische en organisatorische maatregelen toe om uw persoonsgegevens te beschermen tegen ongeautoriseerde of onrechtmatige verwerking, evenals tegen onopzettelijk verlies, vernietiging of beschadiging. Deze maatregelen omvatten geavanceerde versleutelingsprotocollen voor gegevens tijdens overdracht en in rust, strikte toegangscontroles en regelmatige beveiligingsbeoordelingen."
+          "content": "Musclog versleutelt gevoelige gegevens op Uw Apparaat, zoals gewicht, lichaamsvet, voedingslogboeken en gegevens over de menstruatiecyclus, en de netwerkverzoeken gebruiken HTTPS. U kunt de applicatie of onderdelen daarvan ook vergrendelen met de biometrie of pincode van uw apparaat. Geen enkele methode van elektronische opslag of overdracht via internet is 100% veilig, dus Wij kunnen geen absolute beveiliging garanderen."
         },
         "childrenPrivacy": {
           "title": "Privacy van kinderen",
-          "content": "Onze Service richt zich niet op personen jonger dan 13 jaar. Wij verzamelen niet bewust persoonlijk identificeerbare informatie van personen jonger dan 13 jaar. Als u een ouder of voogd bent en weet dat uw kind ons Persoonsgegevens heeft verstrekt, neem dan contact met ons op. Als wij ons ervan bewust worden dat wij Persoonsgegevens hebben verzameld van iemand jonger dan 13 jaar zonder verificatie van ouderlijke toestemming, nemen wij maatregelen om die informatie van onze servers te verwijderen."
+          "content": "Onze Service is niet gericht op kinderen jonger dan 13 jaar en Wij verzamelen niet bewust Persoonsgegevens van hen. Als u denkt dat een kind Ons Persoonsgegevens heeft gestuurd, bijvoorbeeld per e-mail, neem dan contact met Ons op en Wij verwijderen deze."
         },
         "links": {
           "title": "Links naar andere websites",
@@ -654,15 +706,15 @@
         },
         "changes": {
           "title": "Wijzigingen in dit Privacybeleid",
-          "content": "Wij kunnen ons Privacybeleid van tijd tot tijd bijwerken. Wij stellen u op de hoogte van eventuele wijzigingen door het nieuwe Privacybeleid op deze pagina te plaatsen. Wij zullen u informeren via e-mail en/of een prominente kennisgeving op onze Service voordat de wijziging van kracht wordt en de datum \"Laatste update\" bovenaan dit Privacybeleid bijwerken. U wordt geadviseerd dit Privacybeleid periodiek te bekijken op eventuele wijzigingen."
+          "content": "Wij kunnen dit Privacybeleid van tijd tot tijd bijwerken. Wij plaatsen de nieuwe versie op deze pagina en werken de datum \"Laatst bijgewerkt\" bovenaan bij. Belangrijke wijzigingen kunnen ook in de applicatie worden aangekondigd. Wijzigingen zijn van kracht zodra ze op deze pagina worden geplaatst."
         },
         "googlePlay": {
           "title": "Gegevensveiligheidslabels van Google Play Store",
-          "content": "Onze gegevensveiligheidslabels in de Google Play Store zijn nauwkeurig afgestemd op de informatie in dit privacybeleid. Wij zijn toegewijd aan het handhaven van een hoge standaard van transparantie en het waarborgen van volledige naleving van alle vereisten en richtlijnen van de Google Play Store. De verzamelde gegevens worden uitsluitend gebruikt om de functionaliteit en functies van uw applicatie te bieden of te verbeteren, en worden onder geen enkele omstandigheid gebruikt voor doeleinden buiten dit kader, zoals marketing of verkoop aan derden. Toegang tot gebruikersgegevens is strikt gereguleerd en kan alleen plaatsvinden na het verkrijgen van expliciete toestemming van de gebruiker."
+          "content": "Het gedeelte Gegevensbeveiliging van de Google Play-vermelding van Musclog beschrijft dezelfde praktijken als dit Privacybeleid. Als u een verschil tussen beide opmerkt, laat het Ons dan weten."
         },
-        "errorReportingFallback": {
-          "title": "Anonieme crashrapportage — Uitzondering bij databasefout",
-          "content": "Musclog laat u anonieme bugrapporten in- of uitschakelen via de app-instellingen. Deze voorkeur wordt lokaal opgeslagen in de database van uw apparaat. In het zeldzame geval van een kritieke databasefout — bijvoorbeeld wanneer een databasemigratie niet voltooid kan worden — kan de app de lokale database niet raadplegen om uw voorkeur te lezen. Uitsluitend in deze specifieke omstandigheid zal Musclog één anoniem crashrapport verzenden naar onze foutopsporingsservice (Sentry) om ons te helpen het probleem te identificeren en op te lossen. Het rapport bevat geen persoonsgegevens: alleen het type fout, de versienummers van het databaseschema (voor en na de mislukte migratie), uw apparaatmodel en uw app-versie. Deze uitzondering bestaat uitsluitend om kritieke fouten te detecteren die anders voor ons onzichtbaar zouden blijven, en heeft geen invloed op de normale werking."
+        "crashReports": {
+          "title": "Anonieme crashrapporten",
+          "content": "De applicatie kan anonieme crashrapporten naar Sentry sturen, een foutopsporingsservice, zodat Wij bugs kunnen vinden en oplossen. Dit staat standaard aan en kan op elk moment worden uitgeschakeld met de schakelaar \"Anoniem foutrapport\" in Instellingen → Back-ups en gegevens. Zolang deze uit staat, verstuurt de applicatie helemaal geen crashrapporten, ook niet over databasefouten. Een rapport bevat de fout en waar die optrad, de app-versie en het apparaatmodel. Het bevat geen naam, account of e-mailadres, en niets van de trainingen, voeding of lichaamsgegevens die u bijhoudt. Rapporten over native crashes kunnen een willekeurige identificatiecode bevatten die Sentry voor de installatie aanmaakt en die niet aan u is gekoppeld. Zoals elk internetverzoek maakt een rapport uw IP-adres bekend aan Sentry; Wij gebruiken dit niet om u te identificeren."
         },
         "analytics": {
           "title": "Website-analyse",
@@ -691,8 +743,8 @@
           "items": [
             "Alle gegevens die u in de applicatie invoert, worden lokaal op uw apparaat opgeslagen.",
             "De applicatie vereist geen account en biedt geen cloudsynchronisatie.",
-            "Wij hebben geen toegang tot de gezondheids- of fitnessgegevens die in de applicatie zijn opgeslagen.",
-            "Gevoelige gegevens die door de applicatie worden opgeslagen, worden versleuteld in rust met AES."
+            "Wij hebben geen toegang tot uw trainings-, voedings-, gezondheids- of cyclusgegevens, behalve wat u zelf verstuurt via de gratis Musclog AI-optie.",
+            "Gevoelige gegevens die door de applicatie worden opgeslagen, waaronder gegevens over de menstruatiecyclus, worden versleuteld in rust met AES."
           ]
         },
         "website": {

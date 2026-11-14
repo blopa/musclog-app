@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Calculadora de anilhas",
+    "intro": "Digite o peso que você quer na barra e veja as anilhas de cada lado, usando as anilhas que a sua academia realmente tem, em kg ou lb, com a sua própria barra.",
+    "form": {
+      "target": "Peso alvo",
+      "targetHint": "O total na barra, com a barra incluída."
+    },
+    "problems": {
+      "target": "Digite o peso alvo como um número maior que 0 e no máximo {{max}} {{unit}}."
+    },
+    "results": {
+      "loaded": "Peso na barra",
+      "exact": "Sua academia consegue carregar exatamente este peso.",
+      "inexact": "Sua academia não consegue montar {{target}} exatamente. O mais pesado que ela carrega é {{below}}, e o peso carregável mais próximo é {{nearest}}.",
+      "belowBar": "Isso é mais leve que a barra ({{bar}}). Escolha um alvo mais pesado ou uma barra mais leve na sua academia.",
+      "perSide": "Anilhas de cada lado",
+      "noPlates": "Não são necessárias anilhas: só a barra já é o alvo.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Barra: {{bar}}. As anilhas são colocadas em pares, uma de cada lado."
+    },
+    "sections": [
+      {
+        "title": "Por que começar pela anilha mais pesada está errado",
+        "body": [
+          "O método comum pega a anilha mais pesada que cabe, depois a próxima, e assim por diante. Isso funciona quando a academia tem anilhas de sobra. Com anilhas limitadas pode falhar: uma academia com um par de 20, 15 e 10 kg precisa de 25 kg por lado para uma carga de 70 kg com barra de 20 kg. Se começar pela de 20, sobram 5 kg que nenhuma anilha completa. A resposta é 15 e 10 kg, que a academia consegue carregar.",
+          "Esta calculadora testa as combinações das anilhas que você informa e escolhe a carga mais pesada que não passa do alvo, usando o menor número de anilhas."
+        ]
+      },
+      {
+        "title": "As anilhas são carregadas em pares",
+        "body": [
+          "A barra recebe anilhas em pares, uma de cada lado, então cada anilha que você informa conta em pares. Uma anilha solta que não forma par não pode ser usada e fica de fora. Informe quantos pares de cada anilha você tem."
+        ]
+      },
+      {
+        "title": "Peso da barra e unidades",
+        "body": [
+          "A barra faz parte do total, então informe primeiro o peso dela. Barras olímpicas padrão pesam 20 kg (45 lb), e algumas são mais leves. Digite em kg ou lb: o app guarda os quilos e converte, então os números batem com o app Musclog."
+        ]
+      }
+    ]
+  }
+}

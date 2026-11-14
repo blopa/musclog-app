@@ -2,7 +2,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './GenericCard';
@@ -16,7 +16,7 @@ type TdeeCardProps = {
 export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
 
   return (
     <GenericCard variant="flat">
@@ -35,9 +35,9 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
 
         {/* Main TDEE value */}
         <Text className="text-3xl font-bold tabular-nums text-text-primary">
-          {formatInteger(tdeeValue)}{' '}
+          {formatEnergy(tdeeValue)}{' '}
           <Text className="text-lg font-normal text-text-secondary">
-            {t('progress.kcalPerDay')}
+            {t('progress.kcalPerDay', { unit: unitLabel })}
           </Text>
         </Text>
 

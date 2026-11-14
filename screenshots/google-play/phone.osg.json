@@ -1,0 +1,1405 @@
+{
+  "id": "musclog-google-play-phone",
+  "name": "Musclog: Google Play phone",
+  "timestamp": 0,
+  "fonts": [
+    {
+      "id": "manrope-800",
+      "family": "Manrope ExtraBold",
+      "format": "truetype",
+      "mimeType": "font/ttf"
+    },
+    {
+      "id": "manrope-600",
+      "family": "Manrope SemiBold",
+      "format": "truetype",
+      "mimeType": "font/ttf"
+    }
+  ],
+  "projectData": [
+    {
+      "id": "board-1",
+      "name": "Home",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": 270,
+            "y": 680
+          },
+          "size": {
+            "width": 1880,
+            "height": 3860
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": -26,
+            "pitch": 10,
+            "roll": 5
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/01-home.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Lift and eat in one app",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "No account, no ads. Your data stays on your phone.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "Entrena y come en una app",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Sin cuenta ni anuncios. Tus datos quedan en tu móvil.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/01-home.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Trainen en eten in één app",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Geen account of advertenties. Data blijft op je telefoon.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/01-home.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Treine e coma em um app",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Sem conta nem anúncios. Seus dados ficam no seu celular.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/01-home.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Тренировки и питание в одном приложении",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Без аккаунта и рекламы. Данные остаются на вашем телефоне.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/01-home.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "board-2",
+      "name": "Workout",
+      "position": {
+        "x": 2360,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": -84,
+            "y": 960
+          },
+          "size": {
+            "width": 2068,
+            "height": 4246
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": 26,
+            "pitch": 10,
+            "roll": -5
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/02-workout.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Log every set as you train",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Rest timer, warm-ups and a target for every set.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "Registra cada serie",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Descanso, calentamientos y un objetivo por serie.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/02-workout.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Elke set loggen",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Rusttimer, warming-ups en een doel voor elke set.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/02-workout.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Registre cada série",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Cronômetro de descanso, aquecimentos e meta por série.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/02-workout.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Записывайте каждый подход",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Таймер отдыха, разминка и цель на каждый подход.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/02-workout.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "board-3",
+      "name": "Food details",
+      "position": {
+        "x": 4720,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": 293,
+            "y": 620
+          },
+          "size": {
+            "width": 1833,
+            "height": 3764
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": -22,
+            "pitch": 8,
+            "roll": 4
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/03-food-details.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Track food your way",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Search, scan a barcode or build your own meals.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "Tu comida, a tu manera",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Busca, escanea un código de barras o crea tus comidas.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/03-food-details.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Eten loggen zoals jij wilt",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Zoeken, een barcode scannen of je eigen maaltijden maken.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/03-food-details.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Sua comida, do seu jeito",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Busque, escaneie um código de barras ou crie refeições.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/03-food-details.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Учёт еды так, как удобно вам",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Поиск, сканер штрих-кода или свои блюда.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/03-food-details.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "board-4",
+      "name": "Food diary",
+      "position": {
+        "x": 7080,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": -60,
+            "y": 840
+          },
+          "size": {
+            "width": 2021,
+            "height": 4150
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": 24,
+            "pitch": 10,
+            "roll": -4
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/04-food.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Know what you eat",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Every meal with its calories and macros.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "Sabe lo que comes",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Cada comida con sus calorías y macros.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/04-food.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Weet wat je eet",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Elke maaltijd met calorieën en macro's.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/04-food.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Saiba o que você come",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Cada refeição com suas calorias e macros.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/04-food.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Знайте, что едите",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Каждый приём пищи с калориями и макросами.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/04-food.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "board-5",
+      "name": "Progress",
+      "position": {
+        "x": 9440,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": 317,
+            "y": 592
+          },
+          "size": {
+            "width": 1786,
+            "height": 3667
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": -26,
+            "pitch": 9,
+            "roll": 5
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/05-progress.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Watch your progress",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Weight, measurements and nutrition, charted over time.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "Mira tu progreso",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Peso, medidas y nutrición en gráficas.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/05-progress.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Volg je voortgang",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Gewicht, metingen en voeding over tijd in grafieken.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/05-progress.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Acompanhe seu progresso",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Peso, medidas e nutrição em gráficos ao longo do tempo.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/05-progress.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Смотрите прогресс",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Вес, замеры и питание на графиках за любой период.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/05-progress.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "board-6",
+      "name": "Strength",
+      "position": {
+        "x": 11800,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": -37,
+            "y": 780
+          },
+          "size": {
+            "width": 1974,
+            "height": 4053
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": 22,
+            "pitch": 10,
+            "roll": -5
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/06-past-workout.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "How strong are you?",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Every workout you log, and the muscles it worked.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "¿Cuánta fuerza tienes?",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Cada entrenamiento que registras y los músculos que trabajaste.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/06-past-workout.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Hoe sterk ben je?",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Elke training die je logt, met de spieren die je trainde.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/06-past-workout.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Quão forte você é?",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Cada treino que você registra e os músculos trabalhados.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/06-past-workout.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Насколько вы сильны?",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Каждая тренировка и мышцы, которые она нагрузила.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/06-past-workout.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "board-7",
+      "name": "Weekly review",
+      "position": {
+        "x": 14160,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": 293,
+            "y": 620
+          },
+          "size": {
+            "width": 1833,
+            "height": 3764
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": -24,
+            "pitch": 8,
+            "roll": 4
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/07-weekly-review.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Review your week",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Calorie targets that follow your real weight trend.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "Revisa tu semana",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Objetivos de calorías según tu tendencia de peso real.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/07-weekly-review.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Bekijk je week",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Caloriedoelen die meebewegen met je echte gewichtstrend.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/07-weekly-review.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Revise sua semana",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Metas de calorias que seguem sua tendência real de peso.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/07-weekly-review.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Недельный обзор",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Цель по калориям, которая следует за реальным весом.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/07-weekly-review.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "board-8",
+      "name": "Plans",
+      "position": {
+        "x": 16520,
+        "y": 0
+      },
+      "size": {
+        "width": 2160,
+        "height": 3840
+      },
+      "zoom": 1,
+      "backgroundColor": "#0d1210",
+      "backgroundImage": "musclog:google-play/phone-background.svg",
+      "backgroundImageFit": "cover",
+      "backgroundImageApply": "span",
+      "elements": [
+        {
+          "id": "phone",
+          "name": "Phone",
+          "type": "device",
+          "position": {
+            "x": -84,
+            "y": 960
+          },
+          "size": {
+            "width": 2068,
+            "height": 4246
+          },
+          "rotation": 0,
+          "scale": 1,
+          "deviceType": "pixel-10-pro",
+          "styleType": "3d-studio",
+          "rotation3d": {
+            "yaw": 26,
+            "pitch": 10,
+            "roll": -4
+          },
+          "finish3d": "obsidian",
+          "screenshotObjectFit": "cover",
+          "screenshotRect": {
+            "left": 0,
+            "top": 0,
+            "width": 100,
+            "height": 100
+          },
+          "screenshotSrc": "musclog:google-play/phone/en-US/08-goals.png",
+          "shadow": {
+            "x": 0,
+            "y": 40,
+            "blur": 80,
+            "color": "rgba(0, 0, 0, 0.35)"
+          }
+        },
+        {
+          "id": "headline",
+          "name": "Headline",
+          "type": "text",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "size": {
+            "width": 1920,
+            "height": 340
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Plans for your week",
+          "fontSize": 45,
+          "color": "#ffffff",
+          "fontFamily": "Manrope ExtraBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        },
+        {
+          "id": "subheadline",
+          "name": "Subheadline",
+          "type": "text",
+          "position": {
+            "x": 160,
+            "y": 520
+          },
+          "size": {
+            "width": 1840,
+            "height": 220
+          },
+          "rotation": 0,
+          "scale": 1,
+          "content": "Nutrition and fitness goals, with weekly check-ins.",
+          "fontSize": 24,
+          "color": "#dce5de",
+          "opacity": 0.75,
+          "fontFamily": "Manrope SemiBold",
+          "fontWeight": "400",
+          "textAlign": "center",
+          "lineHeight": 1.06
+        }
+      ],
+      "localized": {
+        "es-ES": {
+          "headline": {
+            "content": "Planes para tu semana",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Objetivos de nutrición y fitness, con revisiones semanales.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/es-ES/08-goals.png"
+          }
+        },
+        "nl-NL": {
+          "headline": {
+            "content": "Schema's voor je week",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Voedings- en fitnessdoelen, met wekelijkse check-ins.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/nl-NL/08-goals.png"
+          }
+        },
+        "pt-BR": {
+          "headline": {
+            "content": "Planos para a sua semana",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Metas de nutrição e fitness, com check-ins semanais.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/pt-BR/08-goals.png"
+          }
+        },
+        "ru": {
+          "headline": {
+            "content": "Планы на неделю",
+            "origin": "manual"
+          },
+          "subheadline": {
+            "content": "Цели по питанию и тренировкам с еженедельными проверками.",
+            "origin": "manual"
+          },
+          "phone": {
+            "screenshotSrc": "musclog:google-play/phone/ru-RU/08-goals.png"
+          }
+        }
+      },
+      "localization": {
+        "baseLocale": "en-US",
+        "locales": [
+          {
+            "code": "es-ES"
+          },
+          {
+            "code": "nl-NL"
+          },
+          {
+            "code": "pt-BR"
+          },
+          {
+            "code": "ru",
+            "autoFont": false
+          }
+        ]
+      }
+    }
+  ]
+}

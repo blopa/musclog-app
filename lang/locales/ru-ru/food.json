@@ -4,7 +4,7 @@
     "customFood": "Пользовательский продукт",
     "generic": "Общий",
     "notAvailable": "Н/Д",
-    "descriptionFormat": "{{brand}} • {{calories}} ккал на {{amount}} {{unit}}",
+    "descriptionFormat": "{{brand}} • {{calories}} на {{amount}} {{unit}}",
     "unitGrams": "г",
     "unitOz": "унц",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
@@ -61,7 +61,7 @@
       "duplicateFoodDesc": "Создать копию для изменения",
       "deleteFood": "Удалить продукт",
       "deleteFoodDesc": "Удалить этот продукт из библиотеки",
-      "caloriesMacrosFormat": "{{calories}} ккал • {{protein}}г Б • {{carbs}}г У • {{fat}}г Ж",
+      "caloriesMacrosFormat": "{{calories}} • {{protein}}г Б • {{carbs}}г У • {{fat}}г Ж",
       "macrosFormat": "{{protein}}г Б • {{carbs}}г У • {{fat}}г Ж",
       "unknownFood": "Неизвестно"
     },
@@ -93,7 +93,7 @@
       "description": "Добавить пользовательский размер порции для продуктов"
     },
     "manageFoodData": {
-      "caloriesMacrosFormat": "{{calories}} ккал • {{protein}}г Б • {{carbs}}г У • {{fat}}г Ж",
+      "caloriesMacrosFormat": "{{calories}} • {{protein}}г Б • {{carbs}}г У • {{fat}}г Ж",
       "unknownFood": "Неизвестно"
     },
     "header": {
@@ -139,14 +139,14 @@
       "sourceDate": "Исходная дата",
       "copyDayRecentDays": "Недавние дни",
       "copyDayNoRecentDays": "Нет недавних дней с записанной едой.",
-      "copyDayRecentDaySummary_one": "{{count}} запись · {{calories}} ккал",
-      "copyDayRecentDaySummary_other": "{{count}} записей · {{calories}} ккал",
+      "copyDayRecentDaySummary_one": "{{count}} запись · {{calories}}",
+      "copyDayRecentDaySummary_other": "{{count}} записей · {{calories}}",
       "copyDayItemsToCopy": "Что скопировать",
       "copyDaySelectAll": "Выбрать всё",
       "copyDayDeselectAll": "Снять выбор",
-      "copyDayItemCalories": "{{calories}} ккал",
-      "copyDaySelectionSummary_one": "Копируется {{count}} запись · {{calories}} ккал",
-      "copyDaySelectionSummary_other": "Копируется {{count}} записей · {{calories}} ккал",
+      "copyDayItemCalories": "{{calories}}",
+      "copyDaySelectionSummary_one": "Копируется {{count}} запись · {{calories}}",
+      "copyDaySelectionSummary_other": "Копируется {{count}} записей · {{calories}}",
       "copyDayTargetNotEmpty_one": "В этом дне уже есть {{count}} запись. Копия будет добавлена к ней.",
       "copyDayTargetNotEmpty_other": "В этом дне уже есть {{count}} записей. Копия будет добавлена к ним.",
       "copyDaySourceEmpty": "В этот день еда не записывалась.",
@@ -170,7 +170,7 @@
       "splitError": "Не удалось разделить приём пищи",
       "scanBarcode": "Сканировать штрих-код",
       "track": "Записать",
-      "aiCamera": "ИИ-камера",
+      "searchFood": "Поиск продукта",
       "moreFoodOptions": "Дополнительные параметры",
       "myMeals": "Мои приёмы пищи",
       "delete": "Удалить",
@@ -245,7 +245,7 @@
         "removeFromFavorites": "Удалить из избранного",
         "removeFromFavoritesDesc": "Удалить из списка избранного",
         "endOfHistory": "Конец истории приёмов пищи",
-        "caloriesMacrosFormat": "{{calories}} ккал • {{protein}}г Б • {{carbs}}г У • {{fat}}г Ж",
+        "caloriesMacrosFormat": "{{calories}} • {{protein}}г Б • {{carbs}}г У • {{fat}}г Ж",
         "unknownMeal": "Неизвестный приём пищи",
         "noMeals": "Приёмов пищи пока нет",
         "noMealsDesc": "Создайте пользовательские приёмы пищи, чтобы они отображались здесь"
@@ -335,9 +335,7 @@
       "200g": "Двойная порция",
       "250g": "Большая порция"
     },
-    "common": {
-      "kcal": "ккал"
-    },
+    "common": {},
     "foodDetails": {
       "editFoodInfo": "Редактировать информацию о продукте",
       "editFoodInfoSubtitle": "Исправьте название, штрих-код или макросы, если ИИ ошибся.",
@@ -405,8 +403,8 @@
       "tryAnotherSource": "Попробовать другой источник >",
       "tryAnotherSourceNotFound": "Данные о питании из других источников не найдены.",
       "caloriesTooLowTitle": "Калории не соответствуют макросам",
-      "caloriesTooLowBody": "Указанные калории не соответствуют тому, что предполагают макросы. Вычисленное значение: {{inferred}} ккал / 100г.",
-      "caloriesTooLowAction": "Обновить до {{inferred}} ккал >",
+      "caloriesTooLowBody": "Указанные калории не соответствуют тому, что предполагают макросы. Вычисленное значение: {{inferred}} / 100г.",
+      "caloriesTooLowAction": "Обновить до {{inferred}} >",
       "showMoreNutrition": "Показать больше сведений о питании"
     },
     "addFoodItemToMeal": {
@@ -485,7 +483,7 @@
       "onDeviceNotSupported": "Анализ фото блюд недоступен в Apple Intelligence. Пожалуйста, настройте OpenAI или Gemini в Настройках.",
       "mealLoggedSuccess": "Приём пищи записан.",
       "mealLoggingFailed": "Не удалось записать приём пищи. Пожалуйста, попробуйте снова.",
-      "analysisSuccess": "{{name}}: {{kcal}} ккал, Б {{protein}}г У {{carbs}}г Ж {{fat}}г"
+      "analysisSuccess": "{{name}}: {{kcal}}, Б {{protein}}г У {{carbs}}г Ж {{fat}}г"
     },
     "aiNutritionContext": {
       "title": "Добавить контекст для ИИ",
@@ -669,7 +667,7 @@
         "foodCount_few": "{{count}} продукта",
         "foodCount_many": "{{count}} продуктов",
         "foodCount_other": "{{count}} продукта",
-        "item": "{{grams}} г · {{kcal}} ккал",
+        "item": "{{grams}} г · {{kcal}}",
         "remove": "Убрать: {{name}}",
         "groupTitle": "Записать как один приём пищи",
         "groupSubtitle": "Отобразится одной записью в дневнике",

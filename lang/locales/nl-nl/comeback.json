@@ -242,7 +242,7 @@
     "deficit": {
       "title": "Klaar voor een klein tekort?",
       "body": "Je eet al twee weken op onderhoud. Als je wilt, kun je nu naar een mild tekort.",
-      "numbers": "Van {{from}} kcal naar {{to}} kcal per dag, met {{protein}} g eiwit",
+      "numbers": "Van {{from}} naar {{to}} per dag, met {{protein}} g eiwit",
       "accept": "Tekort toepassen",
       "decline": "Op onderhoud blijven",
       "applied": "Je doelen zijn bijgewerkt",

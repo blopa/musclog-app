@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { CenteredModal } from '@/components/modals/CenteredModal';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -31,6 +32,7 @@ export function IngredientListModal({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const { height: windowHeight } = useWindowDimensions();
   const maxHeight = Math.min(360, Math.round(windowHeight * 0.5));
 
@@ -105,7 +107,9 @@ export function IngredientListModal({
                   ]}
                 >
                   {t('common.amount_kcal', {
-                    amount: intuitiveMode ? '0' : formatRoundedDecimal(ingredient.kcal, 2),
+                    amount: intuitiveMode
+                      ? `0 ${unitLabel}`
+                      : `${formatRoundedDecimal(toDisplay(ingredient.kcal), 2)} ${unitLabel}`,
                   })}
                 </Text>
               </View>

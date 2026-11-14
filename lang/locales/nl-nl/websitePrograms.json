@@ -1,0 +1,57 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Gratis trainingsprogramma's",
+      "intro": "Volledige programma's met elke training, oefening, set en herhaling uitgeschreven. Lees er hier een, of open hem met één tik in Musclog en begin met trainen. Startgewichten worden voorgesteld op basis van je eigen profiel wanneer je hem in de app opent.",
+      "workouts_one": "{{count}} training",
+      "workouts_few": "{{count}} trainingen",
+      "workouts_many": "{{count}} trainingen",
+      "workouts_other": "{{count}} trainingen",
+      "minutes": "ongeveer {{minutes}} min per training",
+      "exercisesLink": "Blader door de oefeningenbibliotheek"
+    },
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Gevorderd",
+      "advanced": "Expert"
+    },
+    "detail": {
+      "allPrograms": "Alle programma's",
+      "dayLabel": "Dag {{n}}",
+      "exercise": "Oefening",
+      "setsReps": "Sets × herhalingen",
+      "rest": "Rust",
+      "restSeconds": "{{seconds}} s",
+      "supersetGroup": "Superset {{group}}",
+      "openTitle": "Open dit programma in Musclog",
+      "openBody": "Dit opent het programma in de app als een overzicht, dus er wordt niets opgeslagen tot je bevestigt. Startgewichten worden voorgesteld op basis van je profiel, en jij kiest de weekdagen. Heb je de app nog niet, dan staan de downloadlinks op de volgende pagina.",
+      "openButton": "Openen in Musclog",
+      "howTitle": "Hoe je het doet",
+      "how": [
+        "Doe de trainingen in volgorde en herhaal de cyclus. Eén training per trainingsdag is de eenvoudigste manier; de volgorde is belangrijker dan de weekdag.",
+        "Begin met gewichten die je met goede techniek kunt tillen en waarmee je nog een paar herhalingen over hebt. Zodra je bij elke set het bovenste deel van het herhalingsbereik haalt, verhoog je het gewicht de volgende keer.",
+        "Deze programma's zijn algemene voorbeelden, geen medisch advies. Heb je een blessure of een gezondheidsprobleem, overleg dan eerst met een professional."
+      ],
+      "notFoundTitle": "Programma niet gevonden",
+      "notFoundBody": "Er staat geen programma op dit adres.",
+      "metaTitle": "{{title}}: gratis trainingsprogramma"
+    },
+    "summaries": {
+      "push-pull-legs": "Drie trainingen: push (borst, schouders en triceps), pull (rug en biceps) en benen. Doe de drie één keer per week, of loop ze twee keer door voor de klassieke versie van zes dagen.",
+      "upper-lower-4-day": "Vier trainingen: twee dagen bovenlichaam en twee dagen onderlichaam, zodat elke spier twee keer per week wordt getraind in een schema van vier dagen.",
+      "full-body-3-day": "Drie full-body trainingen voor beginners. Elk bevat een beenoefening, een drukbeweging, een trekbeweging en wat armwerk, zodat elke spier drie keer per week wordt getraind.",
+      "phul": "Vier trainingen: twee bovenlichaam en twee onderlichaam. De eerste van elk paar is een zware krachtdag met weinig herhalingen, de tweede een hypertrofiedag met meer herhalingen.",
+      "5-day-hypertrophy-split": "Vijf trainingen, elk één spiergebied: borst, rug, schouders, benen en armen. Meer volume per spier in een sessie, één zware sessie per spier per week.",
+      "arnold-split": "Drie trainingen in de Arnold-stijl: borst en rug, schouders en armen, daarna benen. De split wordt traditioneel twee keer doorlopen, voor zes trainingsdagen.",
+      "bro-split": "Vijf trainingen, elk met één spiergroep: borst, rug, benen, schouders en armen. Elke spier krijgt per week één gerichte sessie.",
+      "2-day-full-body": "Twee full-body trainingen, A en B, voor weken waarin je maar twee keer kunt trainen. Wissel ze af.",
+      "3-day-strength-builder": "Drie trainingen rond zwaardere sets van 4 tot 8 herhalingen bij squat, bankdrukken, deadlift en roeien, met lichter accessoirewerk erna.",
+      "classic-3-day-split": "Drie trainingen: borst en triceps, rug en biceps, daarna benen en schouders. Een klassieke split voor een week met drie trainingsdagen.",
+      "brolic-workout": "Twee bovenlichaamtrainingen, borst en schouders, met veel drukwerk en vliegoefeningen. Korter dan de meeste programma's hier.",
+      "cable-superset-workout": "Vijf gevorderde trainingen (Upper A, Lower A, Arms, Upper B, Lower B) met kabeloefeningen, gekoppeld in antagonistische supersets, met een herhalingsbereik en rusttijd voor elke oefening.",
+      "short-full-body-gym": "Twee korte full-body trainingen, A en B, met apparaten en vrije gewichten in de sportschool: ongeveer 30 minuten, 2 sets per oefening, bewust licht gehouden. Een goede manier om terug te komen na een pauze.",
+      "short-full-body-home": "Twee korte full-body trainingen, A en B, met dumbbells, een kettlebell en elastiekbanden: ongeveer 30 minuten, 2 sets per oefening, bewust licht gehouden.",
+      "short-full-body-no-equipment": "Twee korte full-body trainingen, A en B, met alleen je eigen lichaam en een elastiekband: ongeveer 30 minuten, 2 sets per oefening, bewust licht gehouden."
+    }
+  }
+}

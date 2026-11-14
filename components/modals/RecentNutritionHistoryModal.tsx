@@ -4,7 +4,7 @@ import { ActivityIndicator, ImageSourcePropType, ScrollView, Text, View } from '
 
 import { FoodSearchItemCard } from '@/components/cards/FoodSearchItemCard';
 import { MealType } from '@/database/models';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { type UseMealsResultBasic } from '@/hooks/useMeals';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
 import { useSettings } from '@/hooks/useSettings';
@@ -45,7 +45,7 @@ export function RecentNutritionHistoryModal({
 }: RecentNutritionHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const { units } = useSettings();
   const { recentFoods: recentFoodsRaw, isLoading } = useNutritionLogs({
     mode: 'recent',
@@ -64,7 +64,7 @@ export function RecentNutritionHistoryModal({
         name: food.name ?? '',
         description: t('food.descriptionFormat', {
           brand: food.brand || t('foodSearch.customFoodLabel'),
-          calories: formatInteger(
+          calories: formatEnergyWithUnit(
             resolveRoundedPer100gCaloriesForDisplay({
               calories: food.calories,
               protein: food.protein,
@@ -95,7 +95,7 @@ export function RecentNutritionHistoryModal({
   }, [
     recentFoodsRaw,
     t,
-    formatInteger,
+    formatEnergyWithUnit,
     units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,

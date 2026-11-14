@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
 import { MenuButton } from '@/components/theme/MenuButton';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -69,6 +70,7 @@ export function MealItemCard({
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   return (
     <GenericCard variant="flat">
       <View className="flex-row gap-x-4 p-4">
@@ -100,8 +102,7 @@ export function MealItemCard({
                 intuitiveEatingMode ? blurFilter(4) : undefined,
               ]}
             >
-              {intuitiveEatingMode ? '0' : formatRoundedDecimal(calories, 2)}{' '}
-              {t('food.common.kcal')}
+              {intuitiveEatingMode ? '0' : formatRoundedDecimal(toDisplay(calories), 2)} {unitLabel}
             </Text>
           </View>
         </View>
