@@ -67,6 +67,14 @@
       "summary": "Every category of the Musclog blog, with the number of articles in each."
     }
   },
+  "blogTags": {
+    "path": "/blog/tag",
+    "llms": {
+      "section": "Source & Extras",
+      "title": "Blog tags",
+      "summary": "Every tag used on the Musclog blog as a cloud, sized by how many articles carry it."
+    }
+  },
   "faq": {
     "path": "/faq",
     "llms": {

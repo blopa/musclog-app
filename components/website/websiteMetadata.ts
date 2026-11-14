@@ -6,7 +6,7 @@ import nl from '@/lang/locales/nl-nl/website.json';
 import pt from '@/lang/locales/pt-br/website.json';
 import ru from '@/lang/locales/ru-ru/website.json';
 
-import { blogListingPath } from './blogRoutes';
+import { blogListingPath, blogTagPath } from './blogRoutes';
 import websiteRoutes from './websiteRoutes.json';
 
 export type WebsiteSeoRouteKey = keyof typeof websiteRoutes;
@@ -120,5 +120,24 @@ export function blogListingSeo(page: number, category?: string, language = 'en-u
     canonicalPath: blogListingPath(page, category),
     category: categoryLabel,
     keywords: `${copy.seo.keywords}, ${categoryLabel}`,
+  };
+}
+
+/** SEO for one page of a tag's listing. `tagLabel` is the tag as written on the posts. */
+export function blogTagSeo(
+  page: number,
+  tag: string,
+  tagLabel: string,
+  language = 'en-us'
+): PageSeo {
+  const copy = websiteCopy(language);
+  const interpolate = (value: string) => value.replace(/{{tag}}/g, tagLabel);
+  const title = interpolate(copy.blog.tagPage.title);
+  return {
+    title: `${title}${page === 1 ? '' : ` — ${copy.blog.pageLabel.replace(/{{page}}/g, String(page))}`} | ${copy.seo.siteName}`,
+    description: interpolate(copy.blog.tagPage.description),
+    canonicalPath: blogTagPath(tag, page),
+    category: tagLabel,
+    keywords: `${copy.seo.keywords}, ${tagLabel}`,
   };
 }

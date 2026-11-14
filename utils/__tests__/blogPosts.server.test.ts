@@ -2,6 +2,8 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
+import { blogTagSlug } from '@/components/website/blogRoutes';
+
 import {
   BLOG_POSTS_PER_PAGE,
   getBlogCategories,
@@ -14,6 +16,9 @@ import {
   loadBlogPostPage,
   loadBlogPostPageForRoute,
   loadBlogPostSummaries,
+  loadBlogTagPage,
+  loadBlogTagPageForRoute,
+  loadBlogTagSummaries,
   paginateBlogPosts,
   parseBlogPostSummary,
   renderBlogPostMarkdown,
@@ -261,5 +266,76 @@ const answer: number = 42;
 
   it('rejects path traversal in post slugs', async () => {
     await expect(loadBlogPost(['..', 'secrets'])).rejects.toThrow('Invalid blog post slug');
+  });
+
+  describe('tags', () => {
+    async function tagDirectory(): Promise<string> {
+      const directory = await mkdtemp(path.join(tmpdir(), 'musclog-blog-tags-'));
+      temporaryDirectories.push(directory);
+      const post = (name: string, date: string, tags: string) =>
+        writeFile(
+          path.join(directory, `${name}.md`),
+          `---\ntitle: ${name}\ndate: ${date}\ncategory: updates\ntags: ${tags}\n---\nBody of ${name}.\n`
+        );
+      await post('c', '2026-03-01', '[Expo, "open source"]');
+      await post('b', '2026-02-01', '["Open Source", Expo, "Open-Source"]');
+      await post('a', '2026-01-01', '[Privacy]');
+      return directory;
+    }
+
+    it('counts each post once per tag and merges spelling variants', async () => {
+      const summaries = await loadBlogTagSummaries(await tagDirectory());
+
+      expect(summaries).toEqual([
+        { label: 'Expo', postCount: 2, tag: 'expo' },
+        // The first spelling met, newest post first.
+        { label: 'open source', postCount: 2, tag: 'open-source' },
+        { label: 'Privacy', postCount: 1, tag: 'privacy' },
+      ]);
+    });
+
+    it('pages one tag with only the posts that carry it', async () => {
+      const directory = await tagDirectory();
+      const page = await loadBlogTagPage('open-source', 1, directory);
+
+      expect(page.tag).toBe('open-source');
+      expect(page.tagLabel).toBe('open source');
+      expect(page.posts.map((post) => post.slug)).toEqual(['c', 'b']);
+      expect(page.totalPosts).toBe(2);
+      await expect(loadBlogTagPage('missing', 1, directory)).rejects.toThrow(
+        'Blog tag missing does not exist'
+      );
+      await expect(loadBlogTagPage('Not Safe', 1, directory)).rejects.toThrow('Invalid blog tag');
+      await expect(loadBlogTagPage('expo', 2, directory)).rejects.toThrow(
+        'Blog page 2 does not exist'
+      );
+    });
+
+    it('resolves the static route template to the first tag', async () => {
+      const page = await loadBlogTagPageForRoute('[tag]', '1', await tagDirectory());
+      expect(page.tag).toBe('expo');
+    });
+
+    it('rejects a tag with nothing URL-safe in it, since it could not be linked', () => {
+      expect(() =>
+        parseBlogPostSummary(
+          '---\ntitle: T\ndate: 2026-01-01\ncategory: updates\ntags: ["日本"]\n---\nBody',
+          'bad.md'
+        )
+      ).toThrow('has no letters or digits to build a URL from');
+    });
+
+    it('gives every tag of the shipped posts a page', async () => {
+      const posts = await loadBlogPostSummaries();
+      const summaries = await loadBlogTagSummaries();
+      const slugs = new Set(summaries.map(({ tag }) => tag));
+
+      expect(slugs.size).toBeGreaterThan(0);
+      for (const post of posts) {
+        for (const tag of post.tags) {
+          expect(slugs.has(blogTagSlug(tag))).toBe(true);
+        }
+      }
+    });
   });
 });

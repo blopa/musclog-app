@@ -124,6 +124,18 @@ export function BlogCategorySeo(props: BlogCategorySeoProps) {
   );
 }
 
+export interface BlogTagSeoProps {
+  canonicalPath: string;
+  description: string;
+  tagLabel: string;
+  title: string;
+}
+
+/** A tag listing is metadata-wise the same page as a category listing, filed under the tag's name. */
+export function BlogTagSeo({ tagLabel, ...props }: BlogTagSeoProps) {
+  return <BlogCategorySeo {...props} category={tagLabel} />;
+}
+
 export interface BlogPostSeoProps extends BlogCategorySeoProps {
   date: string;
   tags: string[];

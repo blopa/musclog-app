@@ -12,7 +12,8 @@
  * from the Markdown files that generate those dynamic routes, and their URL
  * shapes come from components/website/blogRoutes.js — the same module the Expo
  * Router loaders and the listing components use, so this file cannot advertise
- * a page the router does not build.
+ * a page the router does not build. Blog category, tag and their pagination
+ * paths are derived the same way (the tag cloud at /blog/tag is a fixed route).
  */
 const fs = require('fs');
 const projectLinks = require('../constants/projectLinks.json');
@@ -23,6 +24,9 @@ const {
   blogCategoryPath,
   blogPostPath,
   blogPagePathsAfterFirst,
+  blogTagPagePathsAfterFirst,
+  blogTagPath,
+  blogTagSlug,
   SAFE_CATEGORY_KEY,
   SAFE_SLUG_SEGMENT,
 } = require('../components/website/blogRoutes');
@@ -134,8 +138,49 @@ function discoverBlogCategoryPostCounts(postsDirectory = BLOG_POSTS_DIRECTORY) {
   );
 }
 
+/**
+ * Counts posts per tag slug. A post counts once per slug even when two of its tags share one
+ * ("Open Source" and "open source" both key `open-source`), so the count matches the listing.
+ */
+function discoverBlogTagPostCounts(postsDirectory = BLOG_POSTS_DIRECTORY) {
+  const counts = new Map();
+
+  for (const file of discoverBlogPostFiles(postsDirectory)) {
+    const relativePath = path.relative(postsDirectory, file).replaceAll('\\', '/');
+    const { tags } = matter(fs.readFileSync(file, 'utf8')).data;
+    const isValidTagList =
+      Array.isArray(tags) && tags.every((tag) => typeof tag === 'string' && tag.trim().length > 0);
+    if (!isValidTagList) {
+      throw new Error(
+        `Invalid blog tag in ${relativePath}: tags must be an array of non-empty strings`
+      );
+    }
+
+    const slugs = new Set(
+      tags.map((tag) => {
+        const slug = blogTagSlug(tag.trim());
+        if (!slug) {
+          throw new Error(
+            `Invalid blog tag in ${relativePath}: "${tag}" has no URL-safe characters`
+          );
+        }
+
+        return slug;
+      })
+    );
+    for (const slug of slugs) {
+      counts.set(slug, (counts.get(slug) ?? 0) + 1);
+    }
+  }
+
+  return Object.fromEntries(
+    [...counts.entries()].sort(([left], [right]) => left.localeCompare(right))
+  );
+}
+
 const blogPostPaths = discoverBlogPostPaths();
 const blogCategoryPostCounts = discoverBlogCategoryPostCounts();
+const blogTagPostCounts = discoverBlogTagPostCounts();
 
 function blogPaginationPaths(postCount, postsPerPage) {
   return blogPagePathsAfterFirst(postCount, postsPerPage);
@@ -159,6 +204,20 @@ function blogCategoryPaths(categoryPostCounts, postsPerPage) {
 }
 
 const blogCategoryPagePaths = blogCategoryPaths(blogCategoryPostCounts);
+
+function blogTagPaths(tagPostCounts, postsPerPage) {
+  return Object.entries(tagPostCounts)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .flatMap(([tag, postCount]) => {
+      if (!SAFE_CATEGORY_KEY.test(tag) || !Number.isInteger(postCount) || postCount < 1) {
+        throw new Error('Blog tag counts must use URL-safe tag slugs and positive integers');
+      }
+
+      return [blogTagPath(tag), ...blogTagPagePathsAfterFirst(postCount, postsPerPage, tag)];
+    });
+}
+
+const blogTagPagePaths = blogTagPaths(blogTagPostCounts);
 
 // One page per bundled workout program; the slugs come from the same module the router reads.
 const programPaths = PROGRAM_SLUGS.map((slug) => programPath(slug));
@@ -203,6 +262,7 @@ function generateSitemapXml() {
     ...programPaths,
     ...blogPagePaths,
     ...blogCategoryPagePaths,
+    ...blogTagPagePaths,
     ...blogPostPaths,
   ]
     .map((routePath) => `  <url>\n    <loc>${absoluteUrl(routePath)}</loc>\n  </url>`)
@@ -254,7 +314,7 @@ function main() {
 
   console.log(
     '[generate-web-seo-files] wrote public/robots.txt, public/sitemap.xml and public/llms.txt',
-    `(${indexableRoutes.length + programPaths.length + blogPagePaths.length + blogCategoryPagePaths.length + blogPostPaths.length} indexable routes)`
+    `(${indexableRoutes.length + programPaths.length + blogPagePaths.length + blogCategoryPagePaths.length + blogTagPagePaths.length + blogPostPaths.length} indexable routes)`
   );
 }
 
@@ -265,7 +325,9 @@ if (require.main === module) {
 module.exports = {
   blogCategoryPaths,
   blogPaginationPaths,
+  blogTagPaths,
   discoverBlogCategoryPostCounts,
   discoverBlogPostPaths,
+  discoverBlogTagPostCounts,
   generateSitemapXml,
 };

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
  * meta description in agreement.
  */
 export interface BlogListingCopy {
-  /** The translated category name, or `undefined` on the all-posts listing. */
+  /** The translated category name, or `undefined` outside a category listing. */
   categoryLabel?: string;
   description: string;
   empty: string;
@@ -19,8 +19,22 @@ export interface BlogListingCopy {
   title: string;
 }
 
-export function useBlogListingCopy(category?: string): BlogListingCopy {
+/**
+ * `category` is a category key (translated here); `tagLabel` is a tag as written on the posts, which
+ * is free text and so is shown as-is. Pass at most one of them.
+ */
+export function useBlogListingCopy(category?: string, tagLabel?: string): BlogListingCopy {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
+
+  if (tagLabel) {
+    return {
+      description: t('tagPage.description', { tag: tagLabel }),
+      empty: t('tagPage.empty', { tag: tagLabel }),
+      eyebrow: t('tagPage.eyebrow'),
+      listLabel: t('tagPage.listLabel', { tag: tagLabel }),
+      title: t('tagPage.title', { tag: tagLabel }),
+    };
+  }
 
   if (!category) {
     return {

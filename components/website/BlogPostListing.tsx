@@ -15,11 +15,14 @@ import type { BlogPostPage } from '@/utils/blogPosts.server';
 import { useBlogListingCopy } from './blogListingCopy';
 import {
   BLOG_CATEGORIES_PATH,
+  BLOG_TAGS_PATH,
   blogCategoryPath,
   blogListingPath,
   blogPostPath,
+  blogTagPath,
 } from './blogRoutes';
-import { BODY_TEXT, BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT } from './websiteColors';
+import { BlogTagChip } from './BlogTagChip';
+import { BODY_TEXT, BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT } from './websiteColors';
 
 function formatPostDate(date: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, {
@@ -83,17 +86,24 @@ function PaginationStep({
 
 interface BlogPostListingProps extends BlogPostPage {
   category?: string;
+  /** Set (with `tagLabel`) on a tag's listing; its pagination links stay under `/blog/tag/<tag>`. */
+  tag?: string;
+  tagLabel?: string;
 }
 
 export function BlogPostListing({
   category,
+  tag,
+  tagLabel,
   currentPage,
   posts,
   totalPages,
 }: BlogPostListingProps) {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const copy = useBlogListingCopy(category);
+  const copy = useBlogListingCopy(category, tagLabel);
+  const pagePath = (page: number) =>
+    tag ? blogTagPath(tag, page) : blogListingPath(page, category);
   const previousPage = currentPage > 1 ? currentPage - 1 : null;
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
   const paginationItems = getBlogPaginationItems(currentPage, totalPages);
@@ -101,24 +111,34 @@ export function BlogPostListing({
   return (
     <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-28">
       <div className="container relative z-10 mx-auto max-w-4xl px-4">
-        {category ? (
+        {category || tag ? (
           <a
-            href={BLOG_CATEGORIES_PATH}
+            href={tag ? BLOG_TAGS_PATH : BLOG_CATEGORIES_PATH}
             className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
             <ArrowLeft className="h-4 w-4" color="currentColor" />
-            {t('backToCategories')}
+            {tag ? t('backToTags') : t('backToCategories')}
           </a>
         ) : (
-          <a
-            href={BLOG_CATEGORIES_PATH}
-            className="mb-8 ml-auto flex w-fit items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
-            style={{ color: BRAND_GREEN_BRIGHT }}
-          >
-            {t('browseCategories')}
-            <ArrowRight className="h-4 w-4" color="currentColor" />
-          </a>
+          <div className="mb-8 flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
+            <a
+              href={BLOG_CATEGORIES_PATH}
+              className="inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
+              style={{ color: BRAND_GREEN_BRIGHT }}
+            >
+              {t('browseCategories')}
+              <ArrowRight className="h-4 w-4" color="currentColor" />
+            </a>
+            <a
+              href={BLOG_TAGS_PATH}
+              className="inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
+              style={{ color: BRAND_GREEN_BRIGHT }}
+            >
+              {t('browseTags')}
+              <ArrowRight className="h-4 w-4" color="currentColor" />
+            </a>
+          </div>
         )}
 
         <header className="mx-auto mb-14 max-w-3xl text-center">
@@ -185,18 +205,8 @@ export function BlogPostListing({
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
                   {post.tags.length > 0 ? (
                     <div className="flex flex-wrap items-center gap-2" aria-label={t('tagsLabel')}>
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full border px-2.5 py-1 text-xs font-semibold"
-                          style={{
-                            backgroundColor: brand(0.09),
-                            borderColor: brand(0.24),
-                            color: BRAND_GREEN_BRIGHT,
-                          }}
-                        >
-                          {tag}
-                        </span>
+                      {post.tags.map((postTag) => (
+                        <BlogTagChip key={postTag} tag={postTag} className="relative z-10 px-2.5" />
                       ))}
                     </div>
                   ) : (
@@ -222,7 +232,7 @@ export function BlogPostListing({
             aria-label={t('paginationLabel')}
           >
             <PaginationStep
-              href={previousPage == null ? null : blogListingPath(previousPage, category)}
+              href={previousPage == null ? null : pagePath(previousPage)}
               label={t('previousPage')}
               rel="prev"
               side="left"
@@ -259,7 +269,7 @@ export function BlogPostListing({
                 ) : (
                   <a
                     key={item}
-                    href={blogListingPath(item, category)}
+                    href={pagePath(item)}
                     aria-label={t('pageLabel', { page: item })}
                     className="inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-ink/10 px-3 text-sm font-bold transition hover:border-accent-bright/50 hover:bg-accent-bright/[0.12] hover:text-accent-pale"
                     style={{ color: BODY_TEXT }}
@@ -271,7 +281,7 @@ export function BlogPostListing({
             </div>
 
             <PaginationStep
-              href={nextPage == null ? null : blogListingPath(nextPage, category)}
+              href={nextPage == null ? null : pagePath(nextPage)}
               label={t('nextPage')}
               rel="next"
               side="right"

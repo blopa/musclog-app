@@ -5,10 +5,14 @@ import path from 'node:path';
 import routes from '@/components/website/websiteRoutes.json';
 import {
   BLOG_CATEGORIES_PATH,
+  BLOG_TAGS_PATH,
   blogCategoryPath,
   blogListingPath,
   blogPagePath,
   blogPagePathsAfterFirst,
+  blogTagPagePathsAfterFirst,
+  blogTagPath,
+  blogTagSlug,
   totalBlogPages,
 } from '@/components/website/blogRoutes';
 
@@ -25,6 +29,27 @@ describe('blogRoutes', () => {
     expect(BLOG_CATEGORIES_PATH).toBe('/blog/category');
     expect(blogCategoryPath('retro').startsWith(BLOG_CATEGORIES_PATH + '/')).toBe(true);
     expect(routes.blogCategories.path).toBe(BLOG_CATEGORIES_PATH);
+  });
+
+  it('names the tag index at /blog/tag, the parent of every tag page', () => {
+    expect(BLOG_TAGS_PATH).toBe('/blog/tag');
+    expect(blogTagPath('expo')).toBe('/blog/tag/expo');
+    expect(blogTagPath('expo', 3)).toBe('/blog/tag/expo/page/3');
+    expect(blogTagPagePathsAfterFirst(25, 10, 'expo')).toEqual([
+      '/blog/tag/expo/page/2',
+      '/blog/tag/expo/page/3',
+    ]);
+    expect(routes.blogTags.path).toBe(BLOG_TAGS_PATH);
+  });
+
+  it('turns a free-text tag into a URL-safe slug and merges spelling variants', () => {
+    expect(blogTagSlug('1RM calculator')).toBe('1rm-calculator');
+    expect(blogTagSlug('Open Source')).toBe(blogTagSlug('open  source'));
+    expect(blogTagSlug('Café: Reps!')).toBe('cafe-reps');
+    expect(blogTagSlug('Warm-up sets')).toBe('warm-up-sets');
+    // Nothing URL-safe to build a slug from.
+    expect(blogTagSlug('日本')).toBe('');
+    expect(blogTagSlug('!!!')).toBe('');
   });
 
   it('keeps page one at the bare path so a listing has exactly one URL', () => {
