@@ -6,7 +6,7 @@
       "title": "Porcentagem do seu 1RM",
       "rpeColumn": "RPE {{rpe}}",
       "reps": "Repetições",
-      "note": "Leia na horizontal as repetições que você faz e na vertical o esforço que você dá à série. 100% é o próprio 1RM."
+      "note": "Leia na horizontal as repetições que você faz e na vertical o esforço que você dá à série. As porcentagens vêm da mesma estimativa média que o app usa, então até uma repetição com RPE 10 aparece um pouco abaixo de 100%."
     },
     "meaning": {
       "title": "O que cada RPE significa",

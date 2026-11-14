@@ -9,7 +9,7 @@ import {
   ink,
 } from '@/components/website/websiteColors';
 
-import { COMPETITORS, type CompetitorId } from './competitors';
+import { type CompetitorId, COMPETITORS } from './competitors';
 
 interface FactCopy {
   topic: string;
@@ -51,47 +51,51 @@ export function CompetitorPage({ id }: { id: CompetitorId }) {
         <p className="mb-3 max-w-3xl text-base leading-relaxed" style={{ color: BODY_TEXT }}>
           {t(`apps.${id}.intro`)}
         </p>
-        <p className="mb-8 max-w-3xl text-sm" style={{ color: BODY_TEXT_SOFT }}>
-          {t('shared.checked', { name, date: checkedOn })}
-        </p>
+        {facts.length > 0 ? (
+          <>
+            <p className="mb-8 max-w-3xl text-sm" style={{ color: BODY_TEXT_SOFT }}>
+              {t('shared.checked', { name, date: checkedOn })}
+            </p>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead>
-              <tr style={{ color: BODY_TEXT_SOFT }}>
-                <th className="pb-2 pr-4 font-semibold">{t('shared.colTopic')}</th>
-                <th className="pb-2 pr-4 font-semibold">{name}</th>
-                <th className="pb-2 font-semibold">{t('shared.colMusclog')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {facts.map((fact, index) => (
-                <tr
-                  key={fact.topic}
-                  className="border-t align-top"
-                  style={{ borderColor: CARD_BORDER }}
-                >
-                  <td className="py-3 pr-4 font-semibold text-text-primary">{fact.topic}</td>
-                  <td className="py-3 pr-4" style={{ color: BODY_TEXT }}>
-                    {fact.them}{' '}
-                    <a
-                      href={competitor.sources[index]}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="whitespace-nowrap underline underline-offset-2"
-                      style={{ color: BRAND_GREEN_BRIGHT }}
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-left text-sm">
+                <thead>
+                  <tr style={{ color: BODY_TEXT_SOFT }}>
+                    <th className="pb-2 pr-4 font-semibold">{t('shared.colTopic')}</th>
+                    <th className="pb-2 pr-4 font-semibold">{name}</th>
+                    <th className="pb-2 font-semibold">{t('shared.colMusclog')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {facts.map((fact, index) => (
+                    <tr
+                      key={fact.topic}
+                      className="border-t align-top"
+                      style={{ borderColor: CARD_BORDER }}
                     >
-                      {t('shared.source')}
-                    </a>
-                  </td>
-                  <td className="py-3" style={{ color: BODY_TEXT }}>
-                    {fact.musclog}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      <td className="py-3 pr-4 font-semibold text-text-primary">{fact.topic}</td>
+                      <td className="py-3 pr-4" style={{ color: BODY_TEXT }}>
+                        {fact.them}{' '}
+                        <a
+                          href={competitor.sources[index]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="whitespace-nowrap underline underline-offset-2"
+                          style={{ color: BRAND_GREEN_BRIGHT }}
+                        >
+                          {t('shared.source')}
+                        </a>
+                      </td>
+                      <td className="py-3" style={{ color: BODY_TEXT }}>
+                        {fact.musclog}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : null}
 
         <section className="mt-10 max-w-3xl">
           <h2 className="mb-3 text-2xl font-bold text-text-primary">{t('shared.chooseTitle')}</h2>

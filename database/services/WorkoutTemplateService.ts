@@ -21,6 +21,7 @@ import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanReposi
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
+import { buildTemplateShare } from '@/utils/aiWorkoutPlan/templateShare';
 import { distributeWeekDays } from '@/utils/comeback/comebackSchedule';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
@@ -1408,11 +1409,14 @@ export class WorkoutTemplateService {
   }
 
   /**
-   * Build a plain-text share message for a workout template.
-   * Includes the template name, optional description, and bullet-listed exercise names.
+   * Build the share message for a workout template: its name, optional description and bullet-listed
+   * exercise names, then, when its catalogue exercises can travel, an `https://musclog.app/open#workout=…`
+   * link that opens the import review in the app (or the bridge page with the store buttons for
+   * someone without it). The list stays above the link so a recipient who cannot open it still reads
+   * the workout. Custom exercises are named in the list but never in the link (see `buildTemplateShare`).
    */
   static async getShareMessage(templateId: string): Promise<string> {
-    const { template, templateExercises } = await this.getTemplateWithDetails(templateId);
+    const { template, templateExercises, sets } = await this.getTemplateWithDetails(templateId);
     const exerciseIds = [
       ...new Set(templateExercises.map((te) => te.exerciseId).filter(Boolean)),
     ] as string[];
@@ -1426,10 +1430,27 @@ export class WorkoutTemplateService {
     const exerciseNames = templateExercises
       .map((te) => exercises.find((e) => e.id === te.exerciseId)?.name)
       .filter(Boolean) as string[];
+    const share = buildTemplateShare({
+      name: template.name ?? '',
+      description: template.description,
+      exercises: templateExercises.map((te) => ({
+        exerciseId: te.exerciseId,
+        notes: te.notes,
+        groupId: te.groupId,
+        sets: sets
+          .filter((set) => set.templateExerciseId === te.id)
+          .map((set) => ({
+            targetReps: set.targetReps,
+            restTimeAfter: set.restTimeAfter,
+            setType: set.setType,
+          })),
+      })),
+    });
     const lines = [
       template.name ?? '',
       ...(template.description ? [template.description] : []),
       ...(exerciseNames.length > 0 ? ['', ...exerciseNames.map((name) => `• ${name}`)] : []),
+      ...(share ? ['', i18n.t('workouts.shareOpenLink'), share.url] : []),
     ];
     return lines.join('\n');
   }

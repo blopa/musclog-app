@@ -111,11 +111,7 @@
         },
         "alternativesHevy": {
           "title": "Musclog vs Hevy | Musclog",
-          "description": "Musclog vs Hevy: the Hevy free plan limits routines and custom exercises. See what Musclog does differently, and how to import your Hevy history. Facts dated and sourced."
-        },
-        "alternativesMyFitnessPal": {
-          "title": "Musclog vs MyFitnessPal | Musclog",
-          "description": "Musclog vs MyFitnessPal: barcode scanning is Premium-only there and free in Musclog. Facts dated and sourced."
+          "description": "Musclog and Hevy, and how to move your Hevy workout history into Musclog: matched exercises, a review before saving, and an undo."
         }
       }
     },
@@ -356,7 +352,9 @@
         "engineering": "Engineering",
         "retro": "Retro",
         "machine-learning": "Machine learning",
-        "guides": "Guides"
+        "guides": "Guides",
+        "training": "Training",
+        "nutrition": "Nutrition"
       }
     },
     "gameboy": {

@@ -32,35 +32,11 @@
         "chooseMusclog": "Probeer Musclog als je geen routinelimiet wilt, voedingsregistratie in dezelfde app en je gegevens op je apparaat bewaard."
       },
       "hevy": {
-        "intro": "Hevy is een trainingslogger met een gratis abonnement en een betaald Pro-abonnement. Musclog logt trainingen en eten in één gratis app met open source-code.",
-        "facts": [
-          {
-            "topic": "Limieten gratis abonnement",
-            "them": "Het gratis abonnement is beperkt tot 4 routines en 7 eigen oefeningen.",
-            "musclog": "Er is geen limiet op routines of eigen oefeningen."
-          },
-          {
-            "topic": "Opwarmcalculator",
-            "them": "De opwarmcalculator hoort bij Hevy Pro, niet bij het gratis abonnement.",
-            "musclog": "Opwarmsets zijn ingebouwd en gratis. Je kunt de opwarmcalculator ook op deze site uitproberen."
-          }
-        ],
+        "intro": "Hevy is een trainingslogger. Musclog logt trainingen en eten in één gratis app met open source-code, en kan je Hevy-geschiedenis importeren.",
+        "facts": [],
         "import": "Musclog kan een Hevy-CSV-export importeren: Instellingen, Back-ups en gegevens, Trainingen importeren. Het koppelt oefeningnamen aan de eigen catalogus, vraagt naar namen die het niet kan koppelen en toont een overzicht voordat er iets wordt opgeslagen. Hetzelfde bestand twee keer importeren maakt geen dubbele sessies, en een import kan ongedaan worden gemaakt.",
-        "chooseThem": "Blijf bij Hevy als je het al gebruikt en de limieten van het gratis abonnement je niet hinderen.",
-        "chooseMusclog": "Probeer Musclog als je geen routine- of oefeninglimieten wilt, voedingsregistratie in dezelfde app en je gegevens op je apparaat bewaard."
-      },
-      "myFitnessPal": {
-        "intro": "MyFitnessPal is een eten- en calorieëntracker. Musclog houdt ook eten bij en logt je trainingen, in één gratis app met open source-code.",
-        "facts": [
-          {
-            "topic": "Barcodescannen",
-            "them": "Barcodescannen is sinds 1 oktober 2022 een Premium-functie, volgens de eigen aankondiging van MyFitnessPal. Gratis gebruikers loggen eten door te zoeken.",
-            "musclog": "Barcodescannen is gratis."
-          }
-        ],
-        "import": "",
-        "chooseThem": "Blijf bij MyFitnessPal als je het al gebruikt, op de voedingsdatabase vertrouwt en tevreden bent met de gratis versie.",
-        "chooseMusclog": "Probeer Musclog als je gratis barcodescannen, trainingen en eten in één app wilt en je gegevens op je apparaat bewaard."
+        "chooseThem": "Blijf bij Hevy als je het al gebruikt en het doet wat je nodig hebt.",
+        "chooseMusclog": "Probeer Musclog als je trainingen en eten in één gratis, open source-app wilt, met je gegevens op je apparaat bewaard."
       }
     }
   }

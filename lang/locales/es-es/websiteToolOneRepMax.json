@@ -22,7 +22,8 @@
       "percent": "% del 1RM",
       "weight": "Peso",
       "reps": "Repeticiones al fallo",
-      "byFormula": "Cada fórmula por separado"
+      "byFormula": "Cada fórmula por separado",
+      "extrapolatedNote": "* Extrapolado. Por encima de {{max}} repeticiones las fórmulas se estiran más allá del rango en el que la app confía para una serie, así que toma estas filas solo como una guía aproximada."
     },
     "sections": [
       {

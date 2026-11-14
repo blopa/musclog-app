@@ -6,7 +6,7 @@
       "title": "Deel van je één-herhalingsmaximum",
       "rpeColumn": "RPE {{rpe}}",
       "reps": "Herhalingen",
-      "note": "Lees naar rechts voor de herhalingen die je doet en naar beneden voor de inspanning die je aan de set geeft. 100% is het één-herhalingsmaximum zelf."
+      "note": "Lees naar rechts voor de herhalingen die je doet en naar beneden voor de inspanning die je aan de set geeft. De percentages komen uit dezelfde gemiddelde schatting die de app gebruikt, dus zelfs één herhaling op RPE 10 staat net onder 100%."
     },
     "meaning": {
       "title": "Wat elke RPE betekent",

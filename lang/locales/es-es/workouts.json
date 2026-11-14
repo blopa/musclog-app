@@ -66,6 +66,7 @@
     "archiveError": "Error al archivar el entrenamiento",
     "duplicateSuccess": "Entrenamiento duplicado con éxito",
     "duplicateError": "Error al duplicar el entrenamiento",
+    "shareOpenLink": "Abrir en Musclog:",
     "delete": "Eliminar",
     "deleteSuccess": "Entrenamiento eliminado con éxito",
     "deleteError": "Error al eliminar el entrenamiento",

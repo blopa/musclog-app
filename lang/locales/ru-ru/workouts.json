@@ -66,6 +66,7 @@
     "archiveError": "Не удалось архивировать тренировку",
     "duplicateSuccess": "Тренировка успешно дублирована",
     "duplicateError": "Не удалось дублировать тренировку",
+    "shareOpenLink": "Открыть в Musclog:",
     "delete": "Удалить",
     "deleteSuccess": "Тренировка успешно удалена",
     "deleteError": "Не удалось удалить тренировку",

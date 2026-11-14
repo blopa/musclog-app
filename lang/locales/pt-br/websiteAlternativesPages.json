@@ -32,35 +32,11 @@
         "chooseMusclog": "Experimente o Musclog se quiser não ter limite de rotinas, registrar a alimentação no mesmo app e manter seus dados guardados no seu dispositivo."
       },
       "hevy": {
-        "intro": "O Hevy é um registro de treinos com um plano gratuito e um plano Pro pago. O Musclog registra treinos e alimentação em um único app gratuito e de código aberto.",
-        "facts": [
-          {
-            "topic": "Limites do plano gratuito",
-            "them": "O plano gratuito é limitado a 4 rotinas e 7 exercícios personalizados.",
-            "musclog": "Não há limite de rotinas nem de exercícios personalizados."
-          },
-          {
-            "topic": "Calculadora de aquecimento",
-            "them": "A calculadora de aquecimento faz parte do Hevy Pro, não do plano gratuito.",
-            "musclog": "As séries de aquecimento são integradas e gratuitas. Você também pode testar a calculadora de aquecimento neste site."
-          }
-        ],
+        "intro": "O Hevy é um registro de treinos. O Musclog registra treinos e alimentação em um único app gratuito e de código aberto, e pode importar seu histórico do Hevy.",
+        "facts": [],
         "import": "O Musclog pode importar uma exportação CSV do Hevy: Configurações, Backups e dados, Importar treinos. Ele associa os nomes dos exercícios ao próprio catálogo, pergunta sobre os que não consegue associar e mostra uma revisão antes de salvar qualquer coisa. Importar o mesmo arquivo duas vezes não duplica as sessões, e a importação pode ser desfeita.",
-        "chooseThem": "Fique com o Hevy se você já o usa e os limites do plano gratuito não atrapalham.",
-        "chooseMusclog": "Experimente o Musclog se quiser não ter limites de rotinas ou exercícios, registrar a alimentação no mesmo app e manter seus dados guardados no seu dispositivo."
-      },
-      "myFitnessPal": {
-        "intro": "O MyFitnessPal é um rastreador de alimentos e calorias. O Musclog também registra a alimentação e os seus treinos, em um único app gratuito e de código aberto.",
-        "facts": [
-          {
-            "topic": "Leitura de código de barras",
-            "them": "A leitura de código de barras é um recurso Premium desde 1º de outubro de 2022, segundo o próprio anúncio do MyFitnessPal. Usuários gratuitos registram alimentos pesquisando.",
-            "musclog": "A leitura de código de barras é gratuita."
-          }
-        ],
-        "import": "",
-        "chooseThem": "Fique com o MyFitnessPal se você já o usa, confia na base de alimentos dele e está satisfeito com a versão gratuita.",
-        "chooseMusclog": "Experimente o Musclog se quiser leitura de código de barras gratuita, treinos e alimentação em um só app, e manter seus dados guardados no seu dispositivo."
+        "chooseThem": "Fique com o Hevy se você já o usa e ele faz o que você precisa.",
+        "chooseMusclog": "Experimente o Musclog se quiser treinos e alimentação em um único app gratuito e de código aberto, com seus dados guardados no seu dispositivo."
       }
     }
   }

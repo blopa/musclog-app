@@ -32,35 +32,11 @@
         "chooseMusclog": "Try Musclog if you want no routine limit, food tracking in the same app, and your data kept on your device."
       },
       "hevy": {
-        "intro": "Hevy is a workout logger with a free plan and a paid Pro plan. Musclog logs workouts and food in one free, open-source app.",
-        "facts": [
-          {
-            "topic": "Free plan limits",
-            "them": "The free plan is limited to 4 routines and 7 custom exercises.",
-            "musclog": "There is no limit on routines or custom exercises."
-          },
-          {
-            "topic": "Warm-up calculator",
-            "them": "The warm-up calculator is part of Hevy Pro, not the free plan.",
-            "musclog": "Warm-up sets are built in and free. You can also try the warm-up calculator on this site."
-          }
-        ],
+        "intro": "Hevy is a workout logger. Musclog logs workouts and food in one free, open-source app, and can import your Hevy history.",
+        "facts": [],
         "import": "Musclog can import a Hevy CSV export: Settings, Backups and data, Import workouts. It matches exercise names to its own catalogue and asks you about any it cannot match, and it shows a review before anything is saved. Importing the same file twice does not duplicate sessions, and an import can be undone.",
-        "chooseThem": "Stay with Hevy if you already use it and the free plan limits do not get in your way.",
-        "chooseMusclog": "Try Musclog if you want no routine or exercise limits, food tracking in the same app, and your data kept on your device."
-      },
-      "myFitnessPal": {
-        "intro": "MyFitnessPal is a food and calorie tracker. Musclog tracks food too, and logs your workouts, in one free, open-source app.",
-        "facts": [
-          {
-            "topic": "Barcode scanning",
-            "them": "Barcode scanning has been a Premium feature since October 1, 2022, according to MyFitnessPal's own announcement. Free users log food by searching.",
-            "musclog": "Barcode scanning is free."
-          }
-        ],
-        "import": "",
-        "chooseThem": "Stay with MyFitnessPal if you already use it, rely on its food database and are happy with the free version.",
-        "chooseMusclog": "Try Musclog if you want free barcode scanning, workouts and food in one app, and your data kept on your device."
+        "chooseThem": "Stay with Hevy if you already use it and it does what you need.",
+        "chooseMusclog": "Try Musclog if you want workouts and food in one free, open-source app, with your data kept on your device."
       }
     }
   }

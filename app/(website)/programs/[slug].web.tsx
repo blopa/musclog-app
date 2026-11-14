@@ -3,6 +3,7 @@ import type { GenerateMetadataFunction } from 'expo-router/server';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { exerciseSearchPath } from '@/components/website/exerciseSearchParam';
 import { PROGRAM_SLUGS, programPath } from '@/components/website/programRoutes';
 import {
   getProgram,
@@ -132,7 +133,12 @@ export default function ProgramPage() {
                       style={{ borderColor: CARD_BORDER }}
                     >
                       <td className="py-2 pr-3">
-                        <span className="font-semibold text-text-primary">{exercise.name}</span>
+                        <a
+                          href={exerciseSearchPath(exercise.name)}
+                          className="font-semibold text-text-primary underline-offset-2 hover:underline"
+                        >
+                          {exercise.name}
+                        </a>
                         {exercise.supersetGroup ? (
                           <span className="ml-2 text-xs" style={{ color: MUTED }}>
                             {t('detail.supersetGroup', { group: exercise.supersetGroup })}

@@ -12,11 +12,12 @@ import {
   ToolPanel,
   UnitsField,
 } from '@/components/website/tools/ToolFields';
-import { type ToolSection, ToolLayout } from '@/components/website/tools/ToolLayout';
+import { ToolLayout, type ToolSection } from '@/components/website/tools/ToolLayout';
 import { useToolUnits } from '@/components/website/tools/useToolState';
 import { BODY_TEXT, BODY_TEXT_SOFT, CARD_BORDER, MUTED } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { MAX_E1RM_REPS } from '@/utils/relativeStrength';
 
 export default function OneRepMaxToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolOneRepMax' });
@@ -116,11 +117,17 @@ export default function OneRepMaxToolPage() {
                         </td>
                         <td className="py-2" style={{ color: BODY_TEXT }}>
                           {formatInteger(row.reps)}
+                          {row.extrapolated ? ' *' : ''}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                {estimate.rows.some((row) => row.extrapolated) ? (
+                  <p className="mt-3 text-xs" style={{ color: BODY_TEXT_SOFT }}>
+                    {t('results.extrapolatedNote', { max: formatInteger(MAX_E1RM_REPS) })}
+                  </p>
+                ) : null}
               </ToolPanel>
               <ToolPanel title={t('results.byFormula')}>
                 <ul className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm tabular-nums sm:grid-cols-4">

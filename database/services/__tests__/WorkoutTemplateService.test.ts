@@ -1640,6 +1640,48 @@ describe('WorkoutTemplateService', () => {
     });
   });
 
+  describe('getShareMessage', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    const details = (exerciseId: string) => ({
+      template: createMockWorkoutTemplate({ id: 't1', name: 'Legs day', description: 'Heavy' }),
+      templateExercises: [{ id: 'te1', exerciseId, notes: undefined, groupId: undefined }] as any[],
+      sets: [
+        { templateExerciseId: 'te1', targetReps: 8, setType: 'normal' },
+        { templateExerciseId: 'te1', targetReps: 8, setType: 'normal' },
+      ] as any[],
+      schedule: [],
+    });
+
+    it('lists the exercises and ends with an open link for a catalogue workout', async () => {
+      jest
+        .spyOn(WorkoutTemplateService, 'getTemplateWithDetails')
+        .mockResolvedValue(details('fx-Barbell_Squat'));
+      installTables({ exercises: [{ id: 'fx-Barbell_Squat', name: 'Barbell Squat' }] });
+
+      const lines = (await WorkoutTemplateService.getShareMessage('t1')).split('\n');
+
+      expect(lines.slice(0, 4)).toEqual(['Legs day', 'Heavy', '', '• Barbell Squat']);
+      expect(lines[lines.length - 1]).toMatch(/^https:\/\/musclog\.app\/open#workout=/);
+      expect(decodeURIComponent(lines[lines.length - 1])).toContain(
+        '"exerciseSlug":"Barbell_Squat"'
+      );
+    });
+
+    it('stays plain text when no exercise can travel in a link', async () => {
+      jest
+        .spyOn(WorkoutTemplateService, 'getTemplateWithDetails')
+        .mockResolvedValue(details('custom-1'));
+      installTables({ exercises: [{ id: 'custom-1', name: 'My lift' }] });
+
+      const message = await WorkoutTemplateService.getShareMessage('t1');
+
+      expect(message).toBe('Legs day\nHeavy\n\n• My lift');
+    });
+  });
+
   describe('duplicateTemplate', () => {
     afterEach(() => {
       jest.restoreAllMocks();

@@ -27,19 +27,8 @@ export const COMPETITORS = [
     routeKey: 'alternativesHevy',
     name: 'Hevy',
     checkedOn: '2026-11-14',
-    sources: [
-      'https://help.hevyapp.com/hc/en-us/articles/35119778922263',
-      'https://help.hevyapp.com/hc/en-us/articles/35119778922263',
-    ],
+    sources: [],
     hasImport: true,
-  },
-  {
-    id: 'myFitnessPal',
-    routeKey: 'alternativesMyFitnessPal',
-    name: 'MyFitnessPal',
-    checkedOn: '2026-11-14',
-    sources: ['https://blog.myfitnesspal.com/barcode-scan-moving-to-myfitnesspal-premium/'],
-    hasImport: false,
   },
 ] as const;
 
