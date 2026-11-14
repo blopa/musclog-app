@@ -75,6 +75,10 @@ describe('generate-web-seo-files blog routes', () => {
     ]);
   });
 
+  it('lists the category index in the sitemap', () => {
+    expect(generateSitemapXml()).toContain('<loc>https://musclog.app/blog/category</loc>');
+  });
+
   it('rejects categories that cannot form stable public URLs', async () => {
     await writeFile(
       path.join(directory, 'bad-category.md'),

@@ -65,6 +65,10 @@
           "title": "Blog do Musclog — Fitness open source e tecnologia",
           "description": "Leia artigos sobre o Musclog, desenvolvimento open source, privacidade, tecnologia fitness e as ideias por trás do app."
         },
+        "blogCategories": {
+          "title": "Categorias do blog — Blog do Musclog",
+          "description": "Explore os artigos do blog do Musclog por categoria: treino, nutrição, engenharia, novidades do produto e mais."
+        },
         "tools": {
           "title": "Ferramentas e calculadoras gratis para quem treina | Musclog",
           "description": "Calculadoras gratis para quem treina com pesos: 1RM, anilhas, aquecimento, RPE, proteina, deficit calorico e carboidratos liquidos. Com as mesmas contas do app Musclog."
@@ -333,6 +337,8 @@
       "tagsLabel": "Tags do artigo",
       "readArticle": "Ler artigo",
       "backToBlog": "Voltar para todos os artigos",
+      "backToCategories": "Voltar para todas as categorias",
+      "browseCategories": "Explorar por categoria",
       "englishOnlyNotice": "Desculpe, os artigos do blog estão disponíveis apenas em inglês.",
       "share": {
         "title": "Compartilhe este artigo",
@@ -349,6 +355,16 @@
         "description": "Todos os artigos do blog do Musclog na categoria {{category}}.",
         "empty": "Nenhum artigo foi encontrado em {{category}}.",
         "listLabel": "Artigos do blog sobre {{category}}"
+      },
+      "categoriesPage": {
+        "eyebrow": "Explorar por categoria",
+        "title": "Categorias do blog",
+        "description": "Todos os temas do blog do Musclog, de treino e nutrição a engenharia e novidades do produto.",
+        "listLabel": "Categorias do blog",
+        "postCount_one": "{{count}} artigo",
+        "postCount_few": "{{count}} artigos",
+        "postCount_many": "{{count}} artigos",
+        "postCount_other": "{{count}} artigos"
       },
       "categories": {
         "product-updates": "Atualizações do produto",

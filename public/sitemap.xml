@@ -23,6 +23,9 @@
     <loc>https://musclog.app/blog</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/category</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/faq</loc>
   </url>
   <url>

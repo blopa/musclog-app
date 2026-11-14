@@ -35,6 +35,15 @@ describe('SDK 58 website metadata', () => {
     expect(blogListingSeo(2).canonicalPath).toBe('/blog/page/2');
   });
 
+  it('gives the categories index its own canonical path and copy in every locale', () => {
+    for (const language of ['en-us', 'es-es', 'nl-nl', 'pt-br', 'ru-ru'] as const) {
+      const seo = fixedPageSeo('blogCategories', language);
+      expect(seo.canonicalPath).toBe('/blog/category');
+      expect(seo.title).toBeTruthy();
+      expect(seo.description).toBeTruthy();
+    }
+  });
+
   it('preserves article metadata and uses route-level metadata exports', () => {
     const metadata = metadataForPage({
       title: 'Post',
@@ -56,7 +65,7 @@ describe('SDK 58 website metadata', () => {
       const file =
         route.path === '/'
           ? 'home'
-          : ['/blog', '/tools', '/programs'].includes(route.path)
+          : ['/blog', '/blog/category', '/tools', '/programs'].includes(route.path)
             ? `${route.path.slice(1)}/index`
             : route.path.slice(1);
       if (file === 'test') {

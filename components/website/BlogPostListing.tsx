@@ -13,7 +13,12 @@ import { getBlogPaginationItems } from '@/utils/blogPagination';
 import type { BlogPostPage } from '@/utils/blogPosts.server';
 
 import { useBlogListingCopy } from './blogListingCopy';
-import { blogCategoryPath, blogListingPath, blogPostPath } from './blogRoutes';
+import {
+  BLOG_CATEGORIES_PATH,
+  blogCategoryPath,
+  blogListingPath,
+  blogPostPath,
+} from './blogRoutes';
 import { BODY_TEXT, BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT } from './websiteColors';
 
 function formatPostDate(date: string, locale: string): string {
@@ -98,14 +103,23 @@ export function BlogPostListing({
       <div className="container relative z-10 mx-auto max-w-4xl px-4">
         {category ? (
           <a
-            href="/blog"
+            href={BLOG_CATEGORIES_PATH}
             className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
             <ArrowLeft className="h-4 w-4" color="currentColor" />
-            {t('backToBlog')}
+            {t('backToCategories')}
           </a>
-        ) : null}
+        ) : (
+          <a
+            href={BLOG_CATEGORIES_PATH}
+            className="mb-8 ml-auto flex w-fit items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
+            style={{ color: BRAND_GREEN_BRIGHT }}
+          >
+            {t('browseCategories')}
+            <ArrowRight className="h-4 w-4" color="currentColor" />
+          </a>
+        )}
 
         <header className="mx-auto mb-14 max-w-3xl text-center">
           <p className="mb-4 text-sm font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>

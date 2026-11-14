@@ -6,6 +6,7 @@ import {
   BLOG_POSTS_PER_PAGE,
   getBlogCategories,
   loadBlogCategories,
+  loadBlogCategorySummaries,
   loadBlogCategoryPage,
   loadBlogCategoryPageForRoute,
   loadBlogPost,
@@ -193,6 +194,33 @@ const answer: number = 42;
     expect(secondPage.posts).toHaveLength(1);
     expect(secondPage.posts.every((post) => post.category === 'updates')).toBe(true);
     expect(templatePage).toMatchObject({ category: 'retro', currentPage: 1, totalPosts: 1 });
+  });
+
+  it('counts posts per category and sorts the categories', async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'musclog-blog-category-counts-'));
+    temporaryDirectories.push(directory);
+    const posts: Array<[string, string]> = [
+      ['b-one.md', 'updates'],
+      ['b-two.md', 'updates'],
+      ['b-three.md', 'updates'],
+      ['a-retro.md', 'retro'],
+      ['c-nutrition.md', 'nutrition'],
+    ];
+
+    await Promise.all(
+      posts.map(([filename, category], index) =>
+        writeFile(
+          path.join(directory, filename),
+          `---\ntitle: Post ${index}\ndate: 2026-07-${String(index + 1).padStart(2, '0')}\ncategory: ${category}\ntags: []\n---\nBody.\n`
+        )
+      )
+    );
+
+    await expect(loadBlogCategorySummaries(directory)).resolves.toEqual([
+      { category: 'nutrition', postCount: 1 },
+      { category: 'retro', postCount: 1 },
+      { category: 'updates', postCount: 3 },
+    ]);
   });
 
   it('loads configured pages and handles Expo dynamic route templates', async () => {

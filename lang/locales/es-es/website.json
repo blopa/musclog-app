@@ -65,6 +65,10 @@
           "title": "Blog de Musclog — Fitness open source y tecnología",
           "description": "Lee artículos sobre Musclog, desarrollo open source, privacidad, tecnología fitness y las ideas que dan forma a la app."
         },
+        "blogCategories": {
+          "title": "Categorías del blog — Blog de Musclog",
+          "description": "Explora los artículos del blog de Musclog por categoría: entrenamiento, nutrición, ingeniería, novedades del producto y más."
+        },
         "tools": {
           "title": "Herramientas y calculadoras gratis para levantadores | Musclog",
           "description": "Calculadoras gratis para quien entrena con pesas: 1RM, discos, calentamiento, RPE, proteina, deficit calorico y carbohidratos netos. Con las mismas formulas que la app Musclog."
@@ -333,6 +337,8 @@
       "tagsLabel": "Etiquetas del artículo",
       "readArticle": "Leer artículo",
       "backToBlog": "Volver a todos los artículos",
+      "backToCategories": "Volver a todas las categorías",
+      "browseCategories": "Explorar por categoría",
       "englishOnlyNotice": "Lo sentimos, los artículos del blog solo están disponibles en inglés.",
       "share": {
         "title": "Comparte este artículo",
@@ -349,6 +355,16 @@
         "description": "Todos los artículos del blog de Musclog en la categoría {{category}}.",
         "empty": "No se encontraron artículos en {{category}}.",
         "listLabel": "Artículos de blog de {{category}}"
+      },
+      "categoriesPage": {
+        "eyebrow": "Explorar por categoría",
+        "title": "Categorías del blog",
+        "description": "Todos los temas del blog de Musclog, desde entrenamiento y nutrición hasta ingeniería y novedades del producto.",
+        "listLabel": "Categorías del blog",
+        "postCount_one": "{{count}} artículo",
+        "postCount_few": "{{count}} artículos",
+        "postCount_many": "{{count}} artículos",
+        "postCount_other": "{{count}} artículos"
       },
       "categories": {
         "product-updates": "Actualizaciones del producto",

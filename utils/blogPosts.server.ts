@@ -283,6 +283,23 @@ export async function loadBlogCategories(
   return getBlogCategories(await loadBlogPostSummaries(postsDirectory));
 }
 
+export interface BlogCategorySummary {
+  category: string;
+  postCount: number;
+}
+
+/** Every category with the number of posts filed under it, in the same order as `getBlogCategories`. */
+export async function loadBlogCategorySummaries(
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
+): Promise<BlogCategorySummary[]> {
+  const posts = await loadBlogPostSummaries(postsDirectory);
+
+  return getBlogCategories(posts).map((category) => ({
+    category,
+    postCount: posts.filter((post) => post.category === category).length,
+  }));
+}
+
 export function paginateBlogPosts(
   posts: BlogPostSummary[],
   currentPage: number,

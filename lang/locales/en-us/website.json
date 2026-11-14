@@ -65,6 +65,10 @@
           "title": "Musclog Blog — Open-Source Fitness & Technology",
           "description": "Read articles about Musclog, open-source development, privacy, fitness technology, and the ideas behind the app."
         },
+        "blogCategories": {
+          "title": "Blog Categories — Musclog Blog",
+          "description": "Browse Musclog blog articles by category: training, nutrition, engineering, product updates and more."
+        },
         "tools": {
           "title": "Free Lifting Tools and Calculators | Musclog",
           "description": "Free calculators for lifters: one-rep max, plate loading, warm-up sets, RPE, protein, calorie deficit and net carbs. They use the same math as the Musclog app."
@@ -333,6 +337,8 @@
       "tagsLabel": "Post tags",
       "readArticle": "Read article",
       "backToBlog": "Back to all posts",
+      "backToCategories": "Back to all categories",
+      "browseCategories": "Browse by category",
       "englishOnlyNotice": "Sorry, blog posts are only available in English.",
       "share": {
         "title": "Share this post",
@@ -349,6 +355,16 @@
         "description": "All Musclog blog posts filed under {{category}}.",
         "empty": "No posts were found in {{category}}.",
         "listLabel": "{{category}} blog posts"
+      },
+      "categoriesPage": {
+        "eyebrow": "Browse by category",
+        "title": "Blog categories",
+        "description": "Every topic the Musclog blog covers, from training and nutrition to engineering and product updates.",
+        "listLabel": "Blog categories",
+        "postCount_one": "{{count}} article",
+        "postCount_few": "{{count}} articles",
+        "postCount_many": "{{count}} articles",
+        "postCount_other": "{{count}} articles"
       },
       "categories": {
         "product-updates": "Product updates",

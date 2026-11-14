@@ -2,7 +2,9 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
+import routes from '@/components/website/websiteRoutes.json';
 import {
+  BLOG_CATEGORIES_PATH,
   blogCategoryPath,
   blogListingPath,
   blogPagePath,
@@ -19,6 +21,12 @@ const { blogCategoryPaths, blogPaginationPaths } =
   };
 
 describe('blogRoutes', () => {
+  it('names the category index at /blog/category, the parent of every category page', () => {
+    expect(BLOG_CATEGORIES_PATH).toBe('/blog/category');
+    expect(blogCategoryPath('retro').startsWith(BLOG_CATEGORIES_PATH + '/')).toBe(true);
+    expect(routes.blogCategories.path).toBe(BLOG_CATEGORIES_PATH);
+  });
+
   it('keeps page one at the bare path so a listing has exactly one URL', () => {
     expect(blogPagePath(1)).toBe('/blog');
     expect(blogPagePath(2)).toBe('/blog/page/2');

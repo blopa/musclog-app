@@ -52,9 +52,12 @@ function blogPagePath(page) {
   return page === 1 ? '/blog' : `/blog/page/${page}`;
 }
 
+/** The page listing every category. Same prefix as the category pages, with no key after it. */
+const BLOG_CATEGORIES_PATH = '/blog/category';
+
 /** `/blog/category/retro`, `/blog/category/retro/page/2`, … */
 function blogCategoryPath(category, page = 1) {
-  const root = `/blog/category/${category}`;
+  const root = `${BLOG_CATEGORIES_PATH}/${category}`;
   return page === 1 ? root : `${root}/page/${page}`;
 }
 
@@ -75,6 +78,7 @@ function blogPagePathsAfterFirst(postCount, postsPerPage = BLOG_POSTS_PER_PAGE, 
 }
 
 module.exports = {
+  BLOG_CATEGORIES_PATH,
   BLOG_POSTS_PER_PAGE,
   blogCategoryPath,
   blogListingPath,
