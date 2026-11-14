@@ -1,0 +1,80 @@
+{
+  "websiteToolCalorieDeficit": {
+    "title": "Calorietekort- en doeldatumcalculator",
+    "intro": "Vul een doelgewicht en een datum in en zie het dagelijkse caloriedoel dat je daarheen brengt, het bereik waarbinnen het ligt en of het tempo haalbaar is.",
+    "form": {
+      "sex": "Geslacht",
+      "male": "Man",
+      "female": "Vrouw",
+      "age": "Leeftijd",
+      "height": "Lengte",
+      "weight": "Huidig gewicht",
+      "activity": "Activiteitsniveau",
+      "goalWeight": "Doelgewicht",
+      "goalDate": "Doeldatum",
+      "cm": "cm",
+      "inches": "in",
+      "activity1": "Sedentair (weinig of geen beweging)",
+      "activity2": "Licht actief (1–3 dagen/week)",
+      "activity3": "Matig actief (3–5x/week)",
+      "activity4": "Actief (6–7 dagen/week)",
+      "activity5": "Zeer actief (fysiek werk + training)"
+    },
+    "problems": {
+      "age": "Vul een leeftijd in tussen 15 en 100 jaar.",
+      "height": "Vul een lengte in binnen het bereik dat de calculator accepteert.",
+      "weight": "Vul een gewicht in binnen het bereik dat de calculator accepteert.",
+      "goalWeight": "Vul een doelgewicht in binnen het bereik dat de calculator accepteert.",
+      "goalDate": "Kies een doeldatum.",
+      "goalDateNotFuture": "De doeldatum moet na vandaag liggen."
+    },
+    "results": {
+      "target": "Dagelijks caloriedoel",
+      "range": "Bereik: {{low}} tot {{high}}",
+      "summary": "De cijfers",
+      "change": "Gewichtsverandering",
+      "days": "Dagen tot de doeldatum",
+      "deficit": "Dagelijks tekort",
+      "surplus": "Dagelijks overschot",
+      "perDay": "per dag",
+      "weekly": "Wekelijks tempo",
+      "perWeek": "per week",
+      "tdee": "Geschat dagelijks energieverbruik",
+      "share": "Tekort als deel van je dagelijks verbruik"
+    },
+    "notes": {
+      "noChange": "Je weegt al zoveel, er is geen verandering nodig.",
+      "floor": "Je doel zou onder het minimum van {{floor}} uitkomen, dus de pagina zet het daarop.",
+      "laterDate": "De vroegste datum die dat minimum toelaat is {{date}}.",
+      "floorAboveTdee": "Het geschatte verbruik ligt op of onder het minimum, dus een tekort is niet mogelijk. Kies een hoger doelgewicht of overleg met een arts.",
+      "pace": "Dit tempo is meer dan 1% van je lichaamsgewicht per week, een richtlijn van Musclog. Langzamer houdt meestal beter stand.",
+      "deficitLarge": "Dit tekort is meer dan 25% van je geschatte verbruik, een richtlijn van Musclog. Een kleiner tekort over langere tijd is meestal makkelijker vol te houden.",
+      "range": "De schatting is onzeker, daarom wordt het doel als bereik getoond: 10% van je verbruik naar beide kanten. Die 10% is een productkeuze van Musclog, geen gemeten fout.",
+      "thresholds": "De richtlijnen van 1% tempo en 25% tekort zijn productkeuzes van Musclog, geen uitkomsten van een studie."
+    },
+    "sections": [
+      {
+        "title": "Hoe het doel tot stand komt",
+        "body": [
+          "Je energieverbruik wordt geschat uit geslacht, leeftijd, lengte en gewicht (het rustmetabolisme volgens Mifflin-St Jeor), vermenigvuldigd met je activiteitsniveau. Dit is dezelfde schatting die de Musclog-app gebruikt zonder trainingshistorie.",
+          "De gewichtsverandering wordt omgerekend naar energie met de kilocalorie-per-kilo-regel van de app, verdeeld over de dagen tot je doeldatum. Het doel is dat verbruik min het dagelijkse tekort (of plus, bij aankomen)."
+        ]
+      },
+      {
+        "title": "Waarom de datum een richtlijn is",
+        "body": [
+          "Hall et al. (2011) modelleerden hoe lichaamsgewicht reageert op een verandering in energie-inname. Het lichaam past zich over maanden aan, dus een vast aantal calorieën per kilo is een benadering. Weeg je om de paar weken en stuur bij."
+        ]
+      },
+      {
+        "title": "Het minimum",
+        "body": [
+          "Het doel zakt nooit onder het minimum dat de app gebruikt: 1.200 kcal voor vrouwen en 1.500 kcal voor mannen, of 80% van je rustmetabolisme als dat hoger is. Heeft je datum minder nodig, dan geeft de pagina de vroegste datum die het minimum toelaat."
+        ]
+      }
+    ],
+    "sources": {
+      "hall": "Hall et al. (2011), kwantificering van het effect van energie-onbalans op lichaamsgewicht"
+    }
+  }
+}

@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  type NetCarbsConvention,
-  netCarbsResult,
-} from '@/components/website/tools/netCarbsModel';
+import { type NetCarbsConvention, netCarbsResult } from '@/components/website/tools/netCarbsModel';
 import {
   ChoiceField,
   NumberField,
@@ -12,7 +9,7 @@ import {
   ToolNotice,
   ToolPanel,
 } from '@/components/website/tools/ToolFields';
-import { type ToolSection, ToolLayout } from '@/components/website/tools/ToolLayout';
+import { ToolLayout,type ToolSection } from '@/components/website/tools/ToolLayout';
 import { BODY_TEXT, BODY_TEXT_SOFT } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -89,8 +86,12 @@ export default function NetCarbsToolPage() {
               />
               <ToolPanel title={t('results.logTitle')}>
                 <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT }}>
-                  <li>{t('results.logTotal', { value: `${formatDecimal(result.totalCarbs, 1)} g` })}</li>
-                  <li>{t('results.logNet', { value: `${formatDecimal(result.netCarbs, 1)} g` })}</li>
+                  <li>
+                    {t('results.logTotal', { value: `${formatDecimal(result.totalCarbs, 1)} g` })}
+                  </li>
+                  <li>
+                    {t('results.logNet', { value: `${formatDecimal(result.netCarbs, 1)} g` })}
+                  </li>
                 </ul>
               </ToolPanel>
             </>

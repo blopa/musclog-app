@@ -13,7 +13,7 @@ import {
   ToolPanel,
   UnitsField,
 } from '@/components/website/tools/ToolFields';
-import { type ToolSection, ToolLayout } from '@/components/website/tools/ToolLayout';
+import { ToolLayout,type ToolSection } from '@/components/website/tools/ToolLayout';
 import { useToolUnits } from '@/components/website/tools/useToolState';
 import {
   BODY_TEXT,
@@ -134,7 +134,11 @@ export default function CalorieDeficitToolPage() {
               invalid={problem === 'goalWeight'}
             />
             <div className="space-y-1.5">
-              <label htmlFor="deficit-goal-date" className="text-sm font-semibold" style={{ color: BODY_TEXT }}>
+              <label
+                htmlFor="deficit-goal-date"
+                className="text-sm font-semibold"
+                style={{ color: BODY_TEXT }}
+              >
                 {t('form.goalDate')}
               </label>
               <input
@@ -145,7 +149,11 @@ export default function CalorieDeficitToolPage() {
                 aria-invalid={problem === 'goalDate' || problem === 'goalDateNotFuture'}
                 onChange={(event) => setGoalDate(event.target.value)}
                 className="w-full rounded-control border px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent-bright/40"
-                style={{ backgroundColor: INPUT_BG, borderColor: INPUT_BORDER, color: HEADING_TEXT }}
+                style={{
+                  backgroundColor: INPUT_BG,
+                  borderColor: INPUT_BORDER,
+                  color: HEADING_TEXT,
+                }}
               />
             </div>
           </div>
@@ -153,7 +161,9 @@ export default function CalorieDeficitToolPage() {
 
         <div className="flex flex-col gap-4">
           {problem ? <ToolNotice tone="warning">{t(`problems.${problem}`)}</ToolNotice> : null}
-          {plan && plan.direction === 'none' ? <ToolNotice>{t('notes.noChange')}</ToolNotice> : null}
+          {plan && plan.direction === 'none' ? (
+            <ToolNotice>{t('notes.noChange')}</ToolNotice>
+          ) : null}
           {plan && plan.direction !== 'none' ? (
             <>
               <ResultStat
@@ -175,7 +185,9 @@ export default function CalorieDeficitToolPage() {
                   </div>
                   <div>
                     <dt style={{ color: BODY_TEXT }}>{t('results.days')}</dt>
-                    <dd className="font-bold tabular-nums text-text-primary">{formatInteger(plan.days)}</dd>
+                    <dd className="font-bold tabular-nums text-text-primary">
+                      {formatInteger(plan.days)}
+                    </dd>
                   </div>
                   <div>
                     <dt style={{ color: BODY_TEXT }}>
@@ -188,7 +200,8 @@ export default function CalorieDeficitToolPage() {
                   <div>
                     <dt style={{ color: BODY_TEXT }}>{t('results.weekly')}</dt>
                     <dd className="font-bold tabular-nums text-text-primary">
-                      {formatDecimal(Math.abs(plan.weeklyChangeKg), 2)} {weightUnit} {t('results.perWeek')}
+                      {formatDecimal(Math.abs(plan.weeklyChangeKg), 2)} {weightUnit}{' '}
+                      {t('results.perWeek')}
                     </dd>
                   </div>
                   <div>

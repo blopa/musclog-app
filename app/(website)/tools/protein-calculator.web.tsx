@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  PROTEIN_GOALS,
-  proteinPlan,
-} from '@/components/website/tools/proteinCalculatorModel';
+import { PROTEIN_GOALS, proteinPlan } from '@/components/website/tools/proteinCalculatorModel';
 import {
   ChoiceField,
   NumberField,
@@ -13,7 +10,7 @@ import {
   ToolPanel,
   UnitsField,
 } from '@/components/website/tools/ToolFields';
-import { type ToolSection, ToolLayout } from '@/components/website/tools/ToolLayout';
+import { ToolLayout,type ToolSection } from '@/components/website/tools/ToolLayout';
 import { useToolUnits } from '@/components/website/tools/useToolState';
 import { BODY_TEXT, BODY_TEXT_SOFT, CARD_BORDER, MUTED } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';

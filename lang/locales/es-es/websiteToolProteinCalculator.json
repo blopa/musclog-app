@@ -1,0 +1,70 @@
+{
+  "websiteToolProteinCalculator": {
+    "title": "Calculadora de proteína",
+    "intro": "Introduce tu peso corporal, tu altura y tu objetivo para obtener una cifra diaria de proteína en gramos, con los gramos por kilo en los que se basa.",
+    "form": {
+      "weight": "Peso corporal",
+      "height": "Altura",
+      "goal": "Objetivo principal",
+      "deficit": "¿Comes en déficit calórico?",
+      "deficitYes": "Sí, en definición",
+      "deficitNo": "No",
+      "goalWeight": "Peso objetivo (opcional)",
+      "goalWeightHint": "Si indicas uno, la proteína se calcula a partir de él en lugar de tu peso actual.",
+      "cm": "cm",
+      "inches": "in"
+    },
+    "goals": {
+      "hypertrophy": "Ganar músculo",
+      "strength": "Ganar fuerza",
+      "general": "Salud general",
+      "endurance": "Resistencia",
+      "weightLoss": "Perder peso"
+    },
+    "problems": {
+      "weight": "Introduce un peso corporal dentro del rango que acepta la calculadora.",
+      "height": "Introduce una altura dentro del rango que acepta la calculadora.",
+      "goalWeight": "Introduce un peso objetivo dentro del rango que acepta la calculadora, o deja el campo vacío."
+    },
+    "results": {
+      "grams": "Proteína al día",
+      "gramsNote": "{{perKg}} sobre {{reference}}",
+      "tableTitle": "Gramos por kilo según el objetivo",
+      "tableGoal": "Objetivo",
+      "tablePerKg": "Por kilo de peso corporal"
+    },
+    "notes": {
+      "capped": "Tu peso supera el peso de referencia de {{reference}} (IMC 30 para tu altura), así que el cálculo usa ese valor. Tu peso es {{weight}}. Sin peso objetivo, el límite evita que la proteína crezca con la masa grasa.",
+      "deficit": "Comer en déficit sube el mínimo a {{value}}, porque la proteína ayuda a conservar músculo mientras pierdes grasa.",
+      "bodyweight": "Esta cifra se basa en el peso corporal. No pide el porcentaje de grasa, así que no distingue músculo de grasa.",
+      "spread": "Lo que cuenta es el total diario. Repártelo entre tus comidas como prefieras, en más o menos tomas.",
+      "medical": "Información general, no consejo médico. Si tienes problemas renales u otra condición que afecte a la proteína, consulta con un profesional sanitario antes de cambiar tu ingesta."
+    },
+    "sections": [
+      {
+        "title": "Cómo se calcula la cifra",
+        "body": [
+          "La proteína se fija en gramos por kilo de peso corporal según el objetivo: la misma tabla que usa la app Musclog para sus objetivos diarios. En déficit sube a al menos 2,0 g/kg.",
+          "No se usa un porcentaje de las calorías, porque con él la proteína baja cuando comes menos, justo cuando más importa conservar músculo."
+        ]
+      },
+      {
+        "title": "Por qué el peso tiene un límite",
+        "body": [
+          "Sin peso objetivo, la cifra usa tu peso actual, pero nunca más que el peso correspondiente a un IMC de 30 para tu altura. Por encima, la masa extra es sobre todo no magra, y la proteína para todo ese peso sería más de la que necesitas. Un peso objetivo sustituye al límite."
+        ]
+      },
+      {
+        "title": "Qué dice la investigación",
+        "body": [
+          "Morton et al. (2018) reunieron estudios de entrenamiento de fuerza y vieron que la ganancia de músculo se estabiliza en torno a 1,6 g/kg al día, con un límite superior de confianza cercano a 2,2 g/kg. Las cifras de salud general e hipertrofia caen en ese intervalo.",
+          "Helms et al. (2014) revisaron la proteína para deportistas que hacen dieta mientras entrenan; el mínimo de 2,0 g/kg en déficit procede de esa literatura. Es un ajuste de Musclog, no un resultado medido en ti."
+        ]
+      }
+    ],
+    "sources": {
+      "morton": "Morton et al. (2018), metaanálisis sobre suplementación de proteína y ganancias con entrenamiento de fuerza",
+      "helms": "Helms et al. (2014), proteína durante la restricción energética en deportistas de físico"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Netto koolhydraten-calculator",
+    "intro": "Zet de koolhydraten en vezels op een voedingsetiket om in totale en netto koolhydraten, en zie welke je tracker verwacht.",
+    "form": {
+      "region": "Waar het etiket vandaan komt",
+      "us": "Etiket uit de VS of Canada: koolhydraten bevatten vezels",
+      "eu": "Etiket uit de EU, het VK of vergelijkbaar: koolhydraten exclusief vezels",
+      "carbs": "Koolhydraten op het etiket",
+      "fiber": "Vezels op het etiket"
+    },
+    "problems": {
+      "carbs": "Vul de koolhydraten in als aantal gram.",
+      "fiber": "Vul de vezels in als aantal gram, of 0.",
+      "fiberTooHigh": "Op een etiket uit de VS of Canada bevat het koolhydraattotaal al de vezels, dus de vezels kunnen niet meer zijn dan dat totaal. Controleer de twee getallen."
+    },
+    "results": {
+      "net": "Netto koolhydraten",
+      "netNote": "Koolhydraten zonder vezels: het verteerbare deel dat een netto-tracker telt.",
+      "total": "Totale koolhydraten",
+      "totalNote": "Koolhydraten inclusief vezels: wat Amerikaanse etiketten vermelden en wat Musclog voor een voedingsmiddel opslaat.",
+      "logTitle": "Wat je invult",
+      "logTotal": "In een tracker die totale koolhydraten telt: {{value}}.",
+      "logNet": "In een tracker die netto koolhydraten telt: {{value}}."
+    },
+    "notes": {
+      "sugarAlcohols": "Suikeralcoholen (zoals erytritol of maltitol) worden hier niet afgetrokken. Sommige mensen trekken ze ook af van hun netto koolhydraten; deze calculator doet dat niet, dus het netto getal kan bij producten die ze bevatten iets te hoog uitvallen.",
+      "musclog": "Musclog slaat totale koolhydraten inclusief vezels op, zoals Amerikaanse etiketten ze tellen. Voedingsmiddelen uit EU-bronnen worden bij het opslaan omgezet, zodat het dagboek één betekenis voor koolhydraten houdt."
+    },
+    "sections": [
+      {
+        "title": "Waarom etiketten verschillen",
+        "body": [
+          "In de EU is de aangegeven koolhydraat de hoeveelheid die het lichaam verwerkt, en staan vezels op een eigen regel. In de VS en Canada bevat de regel totale koolhydraten al de voedingsvezels. Hetzelfde product kan daardoor op beide etiketten andere koolhydraatgetallen tonen."
+        ]
+      },
+      {
+        "title": "Totaal en netto",
+        "body": [
+          "Totale koolhydraten zijn inclusief vezels. Netto koolhydraten zijn het totaal min de vezels, het deel dat het lichaam verteert. De pagina toont beide, omdat sommige trackers de ene en andere de andere vragen."
+        ]
+      },
+      {
+        "title": "Wat niet wordt behandeld",
+        "body": [
+          "Suikeralcoholen worden niet afgetrokken, en de calculator schat geen vezels voor voedingsmiddelen zonder etiket."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "Verordening (EU) nr. 1169/2011, voedselinformatie voor consumenten (bijlage I)",
+      "fda": "FDA, A Food Labeling Guide (etikettering van voedingswaarden)"
+    }
+  }
+}

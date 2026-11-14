@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Calculadora de hidratos netos",
+    "intro": "Convierte los hidratos de carbono y la fibra de una etiqueta nutricional en hidratos totales y netos, y mira cuál espera tu app de seguimiento.",
+    "form": {
+      "region": "De dónde es la etiqueta",
+      "us": "Etiqueta de EE. UU. o Canadá: los hidratos incluyen la fibra",
+      "eu": "Etiqueta de la UE, Reino Unido o similar: los hidratos excluyen la fibra",
+      "carbs": "Hidratos de carbono en la etiqueta",
+      "fiber": "Fibra alimentaria en la etiqueta"
+    },
+    "problems": {
+      "carbs": "Introduce los hidratos de carbono en gramos.",
+      "fiber": "Introduce la fibra en gramos, o 0.",
+      "fiberTooHigh": "En una etiqueta de EE. UU. o Canadá, el total de hidratos ya incluye la fibra, así que la fibra no puede superar ese total. Revisa los dos números."
+    },
+    "results": {
+      "net": "Hidratos netos",
+      "netNote": "Hidratos sin fibra: la parte digerible que cuentan los rastreadores de hidratos netos.",
+      "total": "Hidratos totales",
+      "totalNote": "Hidratos con la fibra incluida: lo que imprimen las etiquetas de EE. UU. y lo que Musclog guarda para un alimento.",
+      "logTitle": "Qué introducir",
+      "logTotal": "En una app que cuenta hidratos totales: {{value}}.",
+      "logNet": "En una app que cuenta hidratos netos: {{value}}."
+    },
+    "notes": {
+      "sugarAlcohols": "Los polialcoholes (como el eritritol o el maltitol) no se restan aquí. Algunas personas también los descuentan de sus hidratos netos; esta herramienta no lo hace, así que la cifra neta puede quedarse un poco alta en productos que los contienen.",
+      "musclog": "Musclog guarda los hidratos totales con la fibra incluida, como los cuentan las etiquetas de EE. UU. Los alimentos de fuentes de la UE se convierten al guardarlos, así que el diario mantiene un único significado para los hidratos."
+    },
+    "sections": [
+      {
+        "title": "Por qué las etiquetas difieren",
+        "body": [
+          "En la UE, los hidratos declarados son los que el cuerpo metaboliza, y la fibra aparece en una línea aparte. En EE. UU. y Canadá, la línea de hidratos totales ya incluye la fibra alimentaria. Por eso, un mismo producto puede mostrar cifras distintas en cada etiqueta."
+        ]
+      },
+      {
+        "title": "Totales y netos",
+        "body": [
+          "Los hidratos totales incluyen la fibra. Los netos son el total menos la fibra, es decir, la parte que el cuerpo digiere. La herramienta muestra ambos, porque unas apps piden uno y otras el otro."
+        ]
+      },
+      {
+        "title": "Lo que no cubre",
+        "body": [
+          "No se restan los alcoholes de azúcar y la herramienta no estima la fibra de alimentos sin etiqueta."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "Reglamento (UE) n.º 1169/2011, información alimentaria facilitada al consumidor (anexo I)",
+      "fda": "FDA, guía de etiquetado nutricional (A Food Labeling Guide)"
+    }
+  }
+}

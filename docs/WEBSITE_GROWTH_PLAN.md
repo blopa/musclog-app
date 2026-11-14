@@ -1,6 +1,6 @@
 # Website growth plan: tools and articles for lifters
 
-Status: not started (written 2026-11-14). Like `NEW_LEARNINGS_PLAN.md`, this is an active plan: update the
+Status: tools 1–10 and the Tools navigation shipped (2026-11-14); Search Console, blog posts and share links remain. Like `NEW_LEARNINGS_PLAN.md`, this is an active plan: update the
 status table as phases ship, fold lasting rules into `AGENTS.md` / `docs/DESIGN.md`, and delete this file
 when it is done.
 
@@ -127,9 +127,9 @@ link opens the bridge page rather than the app until they are filled in.
 
 ## Status
 
-| Phase                               | Status      |
-| ----------------------------------- | ----------- |
-| 0. Search Console, Tools navigation | not started |
-| Tools 1–10                          | not started |
-| Blog posts (0 of 15)                | not started |
-| Share links (optional)              | not started |
+| Phase                               | Status                                                                                                                                                                                                         |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0. Search Console, Tools navigation | Tools navigation done (burger menu, footer); Search Console is a manual step                                                                                                                                   |
+| Tools 1–10                          | done: tools 1–7 and 9 under `/tools`, programs under `/programs`, `/alternatives/{strong,hevy,myfitnesspal}`. Not done: Strong and FitNotes columns in the `/alternatives` grid (needs verified facts per row) |
+| Blog posts (0 of 15)                | not started                                                                                                                                                                                                    |
+| Share links (optional)              | not started                                                                                                                                                                                                    |

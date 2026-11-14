@@ -23,6 +23,7 @@ import {
   MUTED,
   ON_BRAND,
 } from '@/components/website/websiteColors';
+import { COMPETITORS } from '@/components/website/alternatives/competitors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
 ('use client');
@@ -373,6 +374,9 @@ function InverseCell({ status, t }: { status: Status; t: (k: string) => string }
 
 export default function Alternatives() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.alternatives' });
+  const { t: comparisonsT } = useTranslation(undefined, {
+    keyPrefix: 'websiteAlternativesPages.shared',
+  });
 
   return (
     <main className="relative overflow-hidden pb-24 pt-24">
@@ -563,6 +567,24 @@ export default function Alternatives() {
               {t('conclusion.bodyAfter')}
             </p>
           </div>
+        </section>
+
+        {/* Detailed one-to-one comparisons */}
+        <section className="mt-16">
+          <h2 className="mb-3 text-xl font-bold text-text-primary">{comparisonsT('otherApps')}</h2>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+            {COMPETITORS.map((competitor) => (
+              <li key={competitor.id}>
+                <a
+                  href={`/alternatives/${competitor.id.toLowerCase()}`}
+                  className="underline underline-offset-2"
+                  style={{ color: BRAND_GREEN_BRIGHT }}
+                >
+                  {comparisonsT('title', { name: competitor.name })}
+                </a>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* CTA */}
