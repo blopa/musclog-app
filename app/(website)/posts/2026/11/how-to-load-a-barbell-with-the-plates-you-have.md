@@ -40,6 +40,8 @@ Say your gym has a 20 kg bar, one pair each of 20, 15 and 10 kg plates, and you 
 
 The result is 15 kg and 10 kg on each side. The calculator reports the same plates, with the bar line showing 20 kg.
 
+![The Plate calculator sheet for a 62.5 kg load: one 20 kg plate and one 1.25 kg plate on each side of a 20 kg bar, with "Loaded: exactly 62.5 kg"](/images/blog/2026/10/plate-calculator-sheet.webp)
+
 ## Imperial gyms
 
 The same method works in pounds. Take a 45 lb bar and a 135 lb target. That leaves 90 lb of plates, or 45 lb per side. If the gym has a pair of 45 lb plates, the answer is one 45 lb plate on each side, and the total is 45 + 2 × 45 = 135 lb.

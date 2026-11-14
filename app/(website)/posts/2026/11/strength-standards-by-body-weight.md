@@ -57,6 +57,8 @@ Only the standard versions of the main lifts are graded, so a variation does not
 
 Dumbbell lifts are graded per hand, because both the benchmark and the weight you log are per hand. Bodyweight exercises, holds and cardio get no level.
 
+![The Strength levels card showing Barbell Bench Press at Intermediate, with an estimated 1RM of 99.3 kg and 118 kg to reach Advanced](/images/blog/2026/11/track-progress-strength-levels.webp)
+
 ## Other, and why some lifts show a range
 
 Sex changes the benchmark, so an answer on one scale is not always right for everyone. If you choose Other, the app shows both the men's and the women's scale. When the two grade you differently, it shows a range, such as "Intermediate to Advanced", instead of picking one. That is a deliberate choice, because no single table fits.

@@ -34,6 +34,8 @@ Warm-up weights are rounded to something the gym can actually load. On a barbell
 
 Rounding can make two sets the same. When that happens, the duplicate is dropped. A light lift therefore gets fewer than three warm-up sets, which is intended.
 
+![The Plate calculator sheet for a 62.5 kg load: one 20 kg plate and one 1.25 kg plate on each side of a 20 kg bar, with "Loaded: exactly 62.5 kg"](/images/blog/2026/10/plate-calculator-sheet.webp)
+
 ## When to skip the ramp
 
 The app adds no warm-up in three situations:
@@ -47,6 +49,8 @@ Also, a warm-up set within 10% of the working weight is dropped. A set at 90 kg 
 ## Warm-ups do not count as work
 
 Musclog counts warm-up sets separately from working sets. They do not add to volume, personal records, or the progression rules, which look only at the working sets you performed. They are kept in the session and in calories, because they are real effort, but they never become the "previous set" the next working set is based on. The reasoning is that warm-ups are light on purpose, so counting them would pull averages down and could make a light warm-up look like a record attempt.
+
+![A bench press block in the live workout with Warm-up, Swap and Notes buttons above the set rows](/images/blog/2026/11/track-progress-log-sets.webp)
 
 ## The rules, in short
 

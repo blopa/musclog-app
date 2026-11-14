@@ -46,6 +46,9 @@ Training done inside a lighter week is left out of the history the app uses to j
 
 The app explains each automatic change next to the set it changed, in the same spirit as [my app now explains every number it changes](/blog/2026/10/my-app-now-explains-every-number-it-changes), so you can see whether a load moved because of your numbers, your plan, or your own choice.
 
+![The Why these targets sheet over a bench press set: the Double progression rule with its 8 to 12 rep range, last time and today's target](/images/blog/2026/10/session-adjusted-and-why.webp)
+![The training half of the Weekly Review: workouts, working sets and volume for the week, a personal record and the next workout to preview](/images/blog/2026/10/weekly-review-training.webp)
+
 ## Starting from a plan
 
 If you follow a fixed plan such as one of the [free programs](/programs), a deload is simply a lighter version of the same week. Run it as described above, then return to the plan at the loads you wrote down before the deload. If the plan itself is too demanding for the long run, a deload will only buy time; the fix is a lower volume or a simpler program.

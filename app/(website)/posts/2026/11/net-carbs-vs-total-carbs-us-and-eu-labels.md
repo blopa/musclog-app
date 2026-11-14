@@ -43,6 +43,8 @@ When you compare food against your goals, the app shows digestible carbs, which 
 
 Sugar alcohols such as erythritol are not subtracted from net carbs in the calculator. Some people also remove them, so the net figure can read a little high for a product that contains them.
 
+![A food's details screen showing its calories and the protein, carbs and fat tiles](/images/blog/2026/11/net-carbs-food-details.webp)
+
 ## Which number to enter
 
 Carbohydrate is the one macro where two honest label systems meet, so the mistake is easy to make and hard to notice later. A diary that quietly mixes the two will count fiber for some foods and not for others. That is why the app states one convention, converts every source to it on save, and lets you choose how your own typed numbers are read.

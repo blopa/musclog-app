@@ -32,6 +32,8 @@ Here is one set worked through by hand. You lift 100 kg for 5 reps and could hav
 
 The seven values run from 106.3 to 119.0 kg. Their average is (116.7 + 112.5 + 113.7 + 117.5 + 119.0 + 112.5 + 106.3) ÷ 7 = **114.0 kg**. That is the estimate. The calculator shows the low and high values next to it, so you can see how much the formulas disagree on the same set.
 
+![The Strength levels card showing Barbell Bench Press at Intermediate, with an estimated 1RM of 99.3 kg and 118 kg to reach Advanced](/images/blog/2026/11/track-progress-strength-levels.webp)
+
 ## Reps in reserve count as reps
 
 Reps in reserve (RIR) is how many more reps you could have done before failure. The calculator adds it to the reps you did. A set of 5 with 2 reps in reserve is calculated exactly as 7 reps taken to failure.
@@ -39,6 +41,8 @@ Reps in reserve (RIR) is how many more reps you could have done before failure. 
 Take the same 100 kg for 5 reps, but with 2 reps in reserve. The formulas now see 7 reps. The average becomes 119.6 kg, about 5.6 kg above the 114.0 kg from the set taken to failure.
 
 That gap is the reason to be honest about effort. If you enter 0 reps in reserve on a set you stopped 2 reps short of, you will underestimate your strength. Leave the field empty if you went to failure; the calculator treats empty as 0. The field accepts whole numbers from 0 to 9.
+
+![A bench press set in the live workout with 62.5 kg and 8 reps, and a row of 0, 1, 2 and 3+ reps left in the tank](/images/blog/2026/10/session-rir-quick-pick.webp)
 
 ## Why sets above 10 reps are not trusted
 

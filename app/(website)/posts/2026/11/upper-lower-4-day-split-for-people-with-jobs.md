@@ -86,6 +86,8 @@ The program does not fix weekdays, so pick the ones that fit your job. Four sess
 
 The two-day gap on the weekend gives you time to rest before the cycle starts again. Musclog lets you choose the weekdays when you open the program, so you can move the days around.
 
+![The Workouts screen with today's workout and a Preview and start button](/images/blog/2026/11/track-progress-start-workout.webp)
+
 ## When you miss a day
 
 Life with a job means some sessions will slip. The program page says to do the workouts in order and repeat the cycle. The order matters more than the weekday. If you miss Tuesday's lower session, do Lower A on your next free day, then carry on with Upper B. You do not need to double up or skip ahead.
@@ -105,6 +107,8 @@ This split suits someone who can train four times a week for about an hour, and 
 Open the [Upper/Lower 4-Day Split](/programs/upper-lower-4-day) and tap **Open in Musclog**. The app shows the program as a review, and nothing is saved until you confirm. You pick the weekdays, and the starting weights come from your profile.
 
 To look up form for any exercise in the program, use the [exercise library](/exercises). For more programs, see the [free workout programs](/programs) page.
+
+![Browse templates listing the 5-Day Hypertrophy Split, Push Pull Legs (PPL) and Upper/Lower 4-Day Split, each with its duration, exercises and sets](/images/blog/2026/11/program-browse-templates.webp)
 
 ## Start in Musclog
 

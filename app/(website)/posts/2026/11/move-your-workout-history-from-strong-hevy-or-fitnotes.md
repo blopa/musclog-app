@@ -22,6 +22,9 @@ Musclog recognises three apps: Strong, Hevy, and FitNotes. FitNotes has two expo
 4. Review the list of exercise names.
 5. Review the sessions, then save.
 
+![Backups and data settings with the Import workouts row, "From Strong, Hevy or FitNotes"](/images/blog/2026/11/import-workouts-data-settings.webp)
+![The Import workouts screen with a box to paste workout data, a note on supported formats, and Import and Cancel buttons](/images/blog/2026/11/import-workouts-paste.webp)
+
 ## Matching exercise names
 
 Musclog matches each name in the file to an exercise in its catalogue, in this order: a match you saved before, an exact name match, a table of how these apps name common lifts, and then a single unambiguous match. It never guesses between exercises that look alike.

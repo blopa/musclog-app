@@ -33,6 +33,9 @@ Finish the set, then ask one question: how many more good reps could I have done
 
 Judging how many reps you had left is a skill, and it is less accurate the further a set was from failure. Use the chart as a guide and check it against how your sets go.
 
+![A bench press set in the live workout with 62.5 kg and 8 reps, and a row of 0, 1, 2 and 3+ reps left in the tank](/images/blog/2026/10/session-rir-quick-pick.webp)
+![The Log set performance sheet with weight, reps, partial reps, reps in reserve and a difficulty (RPE) slider](/images/blog/2026/11/rpe-log-set-performance.webp)
+
 ## The chart
 
 Each cell is the share of your one-rep max that many reps at that RPE represent. Read across for the reps you did and down for the effort you rated the set.

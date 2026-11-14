@@ -35,6 +35,8 @@ The app then rounds each figure down to a load your gym can actually make. With 
 
 The app asks how long you were away and offers four bands: less than a month, one to three months, three to six months, and more than six months. The baseline is the load from your last session before the break, not your best ever. A restart never moves that baseline, so it does not compound if you restart twice.
 
+![The first Comeback questionnaire step: Welcome back, your last workout was 32 days ago, you last logged food 30 days ago, and a choice of how long the break has been with "1 to 3 months" selected](/images/blog/2026/11/comeback-setup-break.webp)
+
 ## Which numbers are ours
 
 The ramp's shape is general restart advice: start deliberately light, use a few sets, leave plenty of reps in reserve, and never double up after a miss. No study gives load percentages or schedules for it. So the percentages, the break bands and the caps above are **Musclog product choices, not results from a study**. Treat them as conservative defaults. If your own sets feel much easier than the ramp suggests, you can progress faster, and the app never goes below a load you already completed during the comeback.
@@ -50,6 +52,9 @@ Musclog's Short Full Body templates come in three versions: gym, home and no equ
 Comeback mode is opt-in. The app offers it when you have been away for a while, and nothing changes until you accept. It eases the start rather than dictating a plan: it changes the loads and the set and effort limits above, and it keeps your own exercises. It checks in with you at weeks 2 and 4, and if you tell it a week felt too hard, it holds the ramp back a week before climbing again. After week 4 the normal progression rules take over.
 
 Nutrition follows the same gentle approach: the app keeps you at maintenance for the first two weeks, then offers a modest deficit from week 2 that you can accept or decline.
+
+![Musclog's Home screen showing a Welcome back card: it has been 32 days since you last trained or logged food, with Restart gently and Not now buttons](/images/blog/2026/11/comeback-offer.webp)
+![The Comeback plan screen: your first four weeks, with sets, reps in reserve and percent of old loads per week, then an if-then cue](/images/blog/2026/11/comeback-setup-plan.webp)
 
 ## Safety
 

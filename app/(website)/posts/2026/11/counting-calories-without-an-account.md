@@ -41,6 +41,9 @@ There is a setting that reads text from a photo on the device before the AI sees
 
 **The website.** The public website uses Vercel Web Analytics, which is cookieless. Google Analytics 4 runs only after you accept it in the cookie banner. The app itself does not collect usage data.
 
+![Profile and units settings with the Food search source picker set to All](/images/blog/2026/11/privacy-food-search-source.webp)
+![AI settings listing Google Gemini and OpenAI, each with an enable switch, an API key field and a model picker](/images/blog/2026/11/privacy-ai-settings.webp)
+
 ## What this means in practice
 
 If you want the strictest setup, you can keep food search on your device only, leave AI off, and switch crash reports off. Your food log then stays on the phone, encrypted, and nothing else in the app sends your food log out. Two things still apply: the website you visit reports anonymous visit data as described above, and you can always export your own data, which takes it off the phone.

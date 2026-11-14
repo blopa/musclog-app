@@ -85,6 +85,9 @@ Open the [Push Pull Legs program](/programs/push-pull-legs) and tap **Open in Mu
 
 For more programs, see the [free workout programs](/programs) page.
 
+![Browse templates listing the 5-Day Hypertrophy Split, Push Pull Legs (PPL) and Upper/Lower 4-Day Split, each with its duration, exercises and sets](/images/blog/2026/11/program-browse-templates.webp)
+![The Workouts screen after creating the plan: a Push / Pull / Legs card, Weekly and Intermediate, with Push on Monday and Pull on Wednesday](/images/blog/2026/11/external-workout-created.webp)
+
 ## Start in Musclog
 
 [Musclog](/download) keeps the program's workouts, sets and weights in one place, so the next session starts from what you did last time.

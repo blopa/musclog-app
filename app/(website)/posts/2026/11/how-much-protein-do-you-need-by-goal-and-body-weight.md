@@ -52,6 +52,8 @@ A second case shows the cap. A 120 kg lifter at 178 cm who wants to build muscle
 
 Pick the goal closest to what you are training for this season. "Build muscle" and "Get stronger" both use 1.8 g/kg. "General health" (1.6 g/kg) is a sensible baseline if neither fits. "Endurance" (1.4 g/kg) is the lowest figure in the table.
 
+![The Set nutrition and body goals screen with a goal mode of Manual, 2000 kcal a day, an eating phase of Maintain, and protein and carbohydrate targets](/images/blog/2026/11/protein-nutrition-goals.webp)
+
 ## When the calorie budget is tight
 
 The calculator gives protein alone. Musclog's planner also has to fit carbs and fat into the rest of your calories, and it sets two limits from its own constants: protein may take at most 75% of the calorie budget, and at least 15% is kept for fat before carbs are shared out. If a protein figure would leave less than that for fat, the planner caps protein and flags it, rather than leaving fat at a sliver.

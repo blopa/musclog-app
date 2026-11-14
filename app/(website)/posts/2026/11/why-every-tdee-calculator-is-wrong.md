@@ -40,6 +40,8 @@ When you log food and weigh yourself, Musclog estimates your TDEE from those rec
 
 From the intake average and the change in stored energy, the app works out the energy you used, then adjusts it using the rates it uses for fat and lean tissue. Those rates are fixed values the app chose.
 
+![The nutrition half of the Weekly Review: current and recommended calories, protein, carbs, fat and fiber, with a note that your logs imply you burn about 2296 kcal a day](/images/blog/2026/10/weekly-review-nutrition.webp)
+
 ## Why the numbers are still estimates
 
 Even with records, the estimate has limits. Food logs are estimates of what you ate. Scale weight is a trend, not a fact. A window of 30 days can be too short for a slow change to show clearly. Musclog's calorie deficit tool shows its daily target as a range, 10% of your energy use either side of the target. The 10% is a product choice, not a measured error.
