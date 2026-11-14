@@ -3,7 +3,13 @@ import { defineConfig } from '@playwright/test';
 // Captures the images the public website ships. Run through `npm run screenshots:website`.
 export default defineConfig({
   timeout: 600000,
-  use: { headless: true },
+  use: {
+    headless: true,
+    // For a machine whose installed Chromium is not the build this Playwright version expects.
+    launchOptions: process.env.MUSCLOG_CHROMIUM_PATH
+      ? { executablePath: process.env.MUSCLOG_CHROMIUM_PATH }
+      : {},
+  },
   projects: [
     {
       name: 'themes',
