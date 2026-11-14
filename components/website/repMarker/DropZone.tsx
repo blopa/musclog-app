@@ -16,6 +16,26 @@ import { ACCENT_RED } from './chartChannels';
 
 // ── Drop zone component ─────────────────────────────────────────────────────
 
+function dropZoneBorderColor({
+  hasError,
+  isLoaded,
+  dragging,
+}: {
+  hasError: boolean;
+  isLoaded: boolean;
+  dragging: boolean;
+}): string {
+  if (hasError) {
+    return ACCENT_RED;
+  }
+
+  if (isLoaded) {
+    return BRAND_GREEN;
+  }
+
+  return dragging ? BRAND_GREEN_BRIGHT : INPUT_BORDER;
+}
+
 export function DropZone({
   accept,
   icon,
@@ -47,18 +67,7 @@ export function DropZone({
     }
   };
 
-  // TODO: avoid IIFE
-  const borderColor = (() => {
-    if (error) {
-      return ACCENT_RED;
-    }
-
-    if (isLoaded) {
-      return BRAND_GREEN;
-    }
-
-    return dragging ? BRAND_GREEN_BRIGHT : INPUT_BORDER;
-  })();
+  const borderColor = dropZoneBorderColor({ hasError: Boolean(error), isLoaded, dragging });
 
   return (
     <div

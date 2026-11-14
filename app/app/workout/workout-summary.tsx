@@ -87,8 +87,7 @@ export default function WorkoutSummaryScreen() {
   // Consumed on read, so it is offered exactly once.
   useEffect(() => {
     let cancelled = false;
-    // TODO: avoid IIFE
-    (async () => {
+    const consumeHealthPrompt = async () => {
       try {
         if ((await AsyncStorage.getItem(HEALTH_CONNECT_PROMPT_PENDING)) === 'true') {
           await AsyncStorage.removeItem(HEALTH_CONNECT_PROMPT_PENDING);
@@ -100,7 +99,9 @@ export default function WorkoutSummaryScreen() {
       } catch (e) {
         handleError(e, 'workout-summary.healthPrompt');
       }
-    })();
+    };
+
+    consumeHealthPrompt();
 
     return () => {
       cancelled = true;

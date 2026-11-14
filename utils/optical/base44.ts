@@ -38,15 +38,17 @@ const RADIX_SQ = RADIX * RADIX; // 1936
  * charCode → digit, or -1. Sized 128 because the alphabet's highest character is 'Z' (90); any
  * code point at or above the table length is rejected as out-of-alphabet.
  */
-const DIGITS = (() => {
+
+function buildDigitTable(): Int8Array {
   const table = new Int8Array(128).fill(-1);
   for (let i = 0; i < BASE44_ALPHABET.length; i++) {
     table[BASE44_ALPHABET.charCodeAt(i)] = i;
   }
 
   return table;
-  // TODO: avoid IIFE
-})();
+}
+
+const DIGITS = buildDigitTable();
 
 export function base44Encode(bytes: Uint8Array): string {
   const out: string[] = [];
