@@ -4,6 +4,8 @@
       "title": "Gratis trainingsprogramma's",
       "intro": "Volledige programma's met elke training, oefening, set en herhaling uitgeschreven. Lees er hier een, of open hem met één tik in Musclog en begin met trainen. Startgewichten worden voorgesteld op basis van je eigen profiel wanneer je hem in de app opent.",
       "workouts_one": "{{count}} training",
+      "workouts_few": "{{count}} trainingen",
+      "workouts_many": "{{count}} trainingen",
       "workouts_other": "{{count}} trainingen",
       "minutes": "ongeveer {{minutes}} min per training",
       "exercisesLink": "Blader door de oefeningenbibliotheek"

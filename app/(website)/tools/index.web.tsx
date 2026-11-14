@@ -32,7 +32,10 @@ export default function ToolsIndexPage() {
                   >
                     {stripSiteName(seo.title)}
                   </h2>
-                  <p className="mt-1 max-w-3xl text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
+                  <p
+                    className="mt-1 max-w-3xl text-sm leading-relaxed"
+                    style={{ color: BODY_TEXT }}
+                  >
                     {seo.description}
                   </p>
                 </a>

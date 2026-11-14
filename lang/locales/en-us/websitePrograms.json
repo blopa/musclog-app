@@ -4,6 +4,8 @@
       "title": "Free workout programs",
       "intro": "Complete programs with every workout, exercise, set and rep written out. Read one here, or open it in Musclog with one tap and start training. Starting weights are suggested from your own profile when you open it in the app.",
       "workouts_one": "{{count}} workout",
+      "workouts_few": "{{count}} workouts",
+      "workouts_many": "{{count}} workouts",
       "workouts_other": "{{count}} workouts",
       "minutes": "about {{minutes}} min per workout",
       "exercisesLink": "Browse the exercise library"

@@ -4,6 +4,8 @@
       "title": "Programas de entrenamiento gratuitos",
       "intro": "Programas completos con cada entrenamiento, ejercicio, serie y repetición detallados. Léelo aquí o ábrelo en Musclog con un toque y empieza a entrenar. Los pesos iniciales se sugieren según tu perfil cuando lo abres en la app.",
       "workouts_one": "{{count}} entrenamiento",
+      "workouts_few": "{{count}} entrenamientos",
+      "workouts_many": "{{count}} entrenamientos",
       "workouts_other": "{{count}} entrenamientos",
       "minutes": "unos {{minutes}} min por entrenamiento",
       "exercisesLink": "Explora la biblioteca de ejercicios"
