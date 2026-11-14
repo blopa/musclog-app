@@ -1,12 +1,12 @@
-import type { EnergyUnit } from '@/constants/settings';
-import { displayToEnergyKcal } from '@/utils/energyUnit';
 import { useCallback, useState } from 'react';
 
 import {
   type MicronutrientFormStrings,
   parseMicronutrientFormStringsToPartial,
 } from '@/components/MicronutrientsExpandableSection';
+import type { EnergyUnit } from '@/constants/settings';
 import type { EditedFoodOverrides } from '@/types/foodEditing';
+import { displayToEnergyKcal } from '@/utils/energyUnit';
 import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,

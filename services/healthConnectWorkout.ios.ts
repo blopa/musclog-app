@@ -2,7 +2,6 @@
  * Writes completed workouts to Apple Health (HKWorkout).
  */
 
-import { formatEnergyWithUnitLabel } from '@/utils/energyLabel';
 import {
   AuthorizationStatus,
   authorizationStatusFor,
@@ -15,6 +14,7 @@ import type { ObjectTypeIdentifier } from '@kingstinct/react-native-healthkit/ty
 import type { Units } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
+import { formatEnergyWithUnitLabel } from '@/utils/energyLabel';
 import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';

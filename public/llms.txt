@@ -23,7 +23,8 @@ Musclog is built and maintained in the open; the full source is on GitHub. This 
 - [Net Carbs vs Total Carbs](https://musclog.app/tools/net-carbs): Convert between net and total carbs and see why US and EU food labels disagree.
 - [Free Workout Programs](https://musclog.app/programs): Free workout programs with every day, exercise, set and rep, that you can open in Musclog.
 - [Musclog vs Strong](https://musclog.app/alternatives/strong): Honest comparison of Musclog and Strong: free routine limit, PRO pricing and importing your Strong history.
-- [Musclog vs Hevy](https://musclog.app/alternatives/hevy): Musclog and Hevy side by side, and how to import your Hevy workout history into Musclog.
+- [Musclog vs Hevy](https://musclog.app/alternatives/hevy): Honest comparison of Musclog and Hevy: free plan limits, the warm-up calculator and importing your Hevy history.
+- [Musclog vs MyFitnessPal](https://musclog.app/alternatives/myfitnesspal): Honest comparison of Musclog and MyFitnessPal: barcode scanning and what the free version includes.
 
 ## Support & Policies
 

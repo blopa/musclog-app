@@ -64,10 +64,12 @@ export async function waitForQuiet(page: Page, quietMs: number, maxMs: number): 
             clearTimeout(capTimer);
             resolve();
           };
+
           const arm = () => {
             clearTimeout(quietTimer);
             quietTimer = setTimeout(finish, quiet);
           };
+
           const observer = new MutationObserver(arm);
           observer.observe(document.documentElement, {
             subtree: true,

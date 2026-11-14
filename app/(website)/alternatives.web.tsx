@@ -12,6 +12,7 @@ import {
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { COMPETITORS } from '@/components/website/alternatives/competitors';
 import {
   BODY_TEXT_SOFT,
   BRAND_GREEN,
@@ -23,7 +24,6 @@ import {
   MUTED,
   ON_BRAND,
 } from '@/components/website/websiteColors';
-import { COMPETITORS } from '@/components/website/alternatives/competitors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
 ('use client');

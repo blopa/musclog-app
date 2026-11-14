@@ -12,7 +12,7 @@ import { fixedPageSeo } from '@/components/website/websiteMetadata';
 import websiteRoutes from '@/components/website/websiteRoutes.json';
 import { WebApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 
-import { stripSiteName, TOOLS, type ToolKey, type ToolRouteKey, toolPath } from './toolsRegistry';
+import { stripSiteName, type ToolKey, toolPath, type ToolRouteKey, TOOLS } from './toolsRegistry';
 
 export interface ToolSection {
   title: string;

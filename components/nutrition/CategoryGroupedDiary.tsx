@@ -8,7 +8,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import type { MealType } from '@/database/models/NutritionLog';
 import { useTheme } from '@/hooks/useTheme';
 
-import { type DiaryCardsProps,DiaryFoodCard, DiaryGroupCard } from './DiaryCards';
+import { type DiaryCardsProps, DiaryFoodCard, DiaryGroupCard } from './DiaryCards';
 import { type MacroTotals, MEAL_TYPES, type MealGroup, type ResolvedLogEntry } from './foodTypes';
 
 type CategoryGroupedDiaryProps = DiaryCardsProps & {

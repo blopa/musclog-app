@@ -3,13 +3,13 @@
  * Checks write permission first; skips silently if not granted or on non-Android.
  */
 
-import { formatEnergyWithUnitLabel } from '@/utils/energyLabel';
 import { Platform } from 'react-native';
 import { ExerciseSegmentType, ExerciseType, RecordingMethod } from 'react-native-health-connect';
 
 import type { Units } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
+import { formatEnergyWithUnitLabel } from '@/utils/energyLabel';
 import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';

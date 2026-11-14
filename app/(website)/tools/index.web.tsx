@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
-import { stripSiteName, TOOLS, toolPath } from '@/components/website/tools/toolsRegistry';
+import { stripSiteName, toolPath, TOOLS } from '@/components/website/tools/toolsRegistry';
 import { BODY_TEXT, BRAND_GREEN_BRIGHT, ink } from '@/components/website/websiteColors';
 import { fixedPageMetadata, fixedPageSeo } from '@/components/website/websiteMetadata';
 import websiteRoutes from '@/components/website/websiteRoutes.json';

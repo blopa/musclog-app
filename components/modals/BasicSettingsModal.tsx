@@ -63,6 +63,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
   const handleEnergyUnitChange = (next: EnergyUnit) => {
     void SettingsService.set(SETTINGS.energyUnit, next);
   };
+
   const [foodSearchMenuVisible, setFoodSearchMenuVisible] = useState(false);
   const [languageMenuVisible, setLanguageMenuVisible] = useState(false);
 
