@@ -88,5 +88,8 @@ export const TRAINING_SETUP_DATA = 'trainingSetupData';
 // is held back until their first finished workout instead of interrupting the setup.
 export const HEALTH_CONNECT_PROMPT_PENDING = 'healthConnectPromptPending';
 
+// Device-local history of store-rating requests (`utils/reviewPrompt.ts`).
+export const REVIEW_PROMPT_STATE = 'reviewPromptState';
+
 // The one-time "how a set works" tip in the live workout session; set once it is dismissed.
 export const WORKOUT_FIRST_TIP_SEEN = 'workoutFirstTipSeen';

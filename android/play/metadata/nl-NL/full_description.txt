@@ -2,6 +2,11 @@
 
 Musclog is een fitnesslogboek en calorieënteller in één gratis, open source app. Log je trainingen in de sportschool en je eten, volg je voortgang en houd alles op je telefoon: geen account, geen advertenties en loggen werkt offline.
 
+<b>Niets op slot</b>
+• Onbeperkt trainingsschema's en -routines, en je volledige geschiedenis.
+• De barcodescanner, het scannen van voedingsetiketten en het zoeken naar voedingsmiddelen zitten voor iedereen in de app.
+• Alle grafieken, exports en back-ups zijn inbegrepen, zonder abonnement.
+
 <b>Trainingslogboek en gym tracker</b>
 • Log sets, herhalingen en gewicht in een paar seconden, met een rusttimer, warming-upsets, supersets en notities per oefening.
 • Volg je inspanning met RPE of herhalingen in reserve (RIR).

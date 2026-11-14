@@ -252,6 +252,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Settings is grouped as You (profile and units), App (appearance and home, notifications, app lock), Training (workout settings, sensors), Nutrition and health (tracking preferences, cycle), AI, Data (backups and data) and About (help and feedback, what's new, terms, privacy, version). Every row opens the same screen it always did; pickers mark the current choice with a check
 - What's new: replay the newest release tour from Settings, including choices that save real preferences. The card appears when this app version has a published announcement.
 - Help & feedback: report a bug or request a feature (opens the matching GitHub issue form with the app version, platform and language pre-filled) or email support (version and device added to the message). Nothing about you or your data is included
+- Store rating: the app asks for a Play/App Store rating after the 3rd just-finished workout or Weekly Review decision, at most 3 times and at least 120 days apart (the OS may still decide not to show it), and never on web. Settings → Help & feedback has "Rate Musclog" on Android and web, which opens the Google Play listing
 - Set name, email, gender, date of birth, and avatar
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
 - Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue

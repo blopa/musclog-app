@@ -1,9 +1,10 @@
-import { Bug, Lightbulb, Mail, MessageCircle } from 'lucide-react-native';
+import { Bug, Lightbulb, Mail, MessageCircle, Star } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { GOOGLE_PLAY_URL } from '@/components/website/storeLinks';
 import { DISCORD_INVITE_URL } from '@/constants/misc';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useTheme } from '@/hooks/useTheme';
@@ -72,6 +73,18 @@ export function HelpAndFeedbackCard() {
           ),
         ]
       : []),
+    // The iOS build is TestFlight-only, so there is no public listing to rate yet. A button opens
+    // the store page (Google's guidance); only the idle-moment prompt uses `requestReview()`.
+    ...(Platform.OS === 'ios'
+      ? []
+      : [
+          item(
+            Star,
+            t('settings.helpAndFeedback.rate'),
+            t('settings.helpAndFeedback.rateHint'),
+            () => open(GOOGLE_PLAY_URL)
+          ),
+        ]),
     item(Mail, t('settings.helpAndFeedback.email'), t('settings.helpAndFeedback.emailHint'), () =>
       open(buildSupportMailto(environment()))
     ),

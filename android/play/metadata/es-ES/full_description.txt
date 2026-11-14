@@ -2,6 +2,11 @@
 
 Musclog es un registro de entrenamiento y un contador de calorías en una sola app gratuita y de código abierto. Anota tus sesiones de gimnasio y tu alimentación, sigue tu progreso y guarda todo en tu móvil: sin cuenta, sin anuncios y con registro sin conexión.
 
+<b>Nada bloqueado</b>
+• Rutinas y planes de entrenamiento ilimitados, y todo tu historial.
+• El escáner de códigos de barras, el escaneo de etiquetas nutricionales y la búsqueda de alimentos están en la app para todos.
+• Todas las gráficas, exportaciones y copias de seguridad están incluidas, sin suscripción.
+
 <b>Registro de entrenamientos y gimnasio</b>
 • Anota series, repeticiones y peso en segundos, con temporizador de descanso, series de calentamiento, superseries y notas en cada ejercicio.
 • Controla el esfuerzo con RPE o repeticiones en reserva (RIR).

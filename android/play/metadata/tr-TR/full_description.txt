@@ -1,0 +1,51 @@
+<b>Musclog - Lift, Log, Repeat</b>
+
+Musclog, tek bir ücretsiz ve açık kaynaklı uygulamada antrenman takibi ve kalori sayacıdır. Spor salonu antrenmanlarını ve yediklerini kaydet, ilerlemeni izle ve her şeyi telefonunda tut: hesap yok, reklam yok, kayıt internetsiz de çalışır.
+
+Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça.
+
+<b>Hiçbir şey kilitli değil</b>
+• Sınırsız antrenman rutini ve programı, tüm geçmişinle birlikte.
+• Barkod tarayıcı, besin etiketi tarama ve yiyecek arama herkes için uygulamada.
+• Tüm grafikler, dışa aktarma ve yedekleme abonelik olmadan dahil.
+
+<b>Antrenman günlüğü ve spor salonu takibi</b>
+• Setleri, tekrarları ve ağırlığı saniyeler içinde kaydet: dinlenme sayacı, ısınma setleri, süperset ve her egzersiz için notlarla.
+• Eforu RPE veya yedekte kalan tekrar (RIR) ile takip et.
+• Fotoğraflı ve hedef kaslı 870'ten fazla egzersiz, kendi dilinde aranabilir; ya da kendininkini ekle.
+• Hazır antrenman programları: Push Pull Legs, Üst/Alt, Full Body, PHUL, 5 günlük bölmeler ve evde ya da ekipmansız kısa rutinler. Ya da kendi haftalık veya döngüsel programını oluştur.
+• Kademeli yüklenme basitleşti: Musclog son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir ve değiştirdiği her sayıyı açıklar. Çift ilerleme, doğrusal veya yüzdeye dayalı kuralları seç ya da tam kontrolü elinde tut.
+• Salonunun bar ve plakaları için plaka hesaplayıcı, kg veya lb olarak, istersen egzersiz bazında.
+• Makine doluyken ya da bir yer ağrıyorken egzersizi değiştir; Musclog neyden kaçınacağını hatırlasın.
+• Geçmişini Strong, Hevy veya FitNotes'tan içe aktar.
+
+<b>Gücünün arttığını gör</b>
+• Kişisel rekorlar, tahmini 1RM ve ana hareketler için güç seviyeleri.
+• Vücut haritasında kas başına son antrenman yükü ve antrenmanlarının takvim ısı haritası.
+• Antrenman ve beslenmeni değerlendiren Haftalık Gözden Geçirme: ilerlemeyi, haftayı tekrarlamayı veya daha hafif geçmeyi sen seçersin.
+• Geri dönüş modu: ara sonrası daha kolay bir yeniden başlangıç.
+
+<b>Kalori sayacı ve makro takibi</b>
+• Barkod tarayıcı ve besin etiketi taramalı yemek günlüğü.
+• Open Food Facts ve USDA besin veritabanında ara ya da kendi yiyeceklerini ve öğünlerini oluştur.
+• Yağ kaybı, kilo koruma veya kas kazanımı için kalori, protein, karbonhidrat, yağ ve lif hedefleri.
+• Gerçek kilo eğilimine uyum sağlayan hedefler; kcal veya kJ, metrik veya imperial birimlerle.
+
+<b>Vücut takibi</b>
+• Kilo, vücut yağı, vücut ölçüleri ve ruh hali, grafiklerle.
+• İsteğe bağlı adet döngüsü takibi: adetleri ve belirtileri kaydet, kendi düzenini gör. Tahminler yalnızca tahmindir ve döngü evresine göre antrenman tavsiyesi verilmez.
+• Kilo, beslenme, antrenman ve vücut ölçüleri için Health Connect senkronizasyonu.
+
+<b>Yapay zekâ, yalnızca istersen</b>
+• Kendi Gemini, OpenAI veya Claude anahtarınla, yerel bir modelle ya da uygulamaya yerleşik ücretsiz seçenekle bir fitness koçuyla sohbet et, fotoğraftan öğün tahmini yap ve antrenman programı oluştur.
+• Ya da ChatGPT veya Claude'da bir program hazırla ya da bir öğünü tarif et ve Musclog'a aktar.
+• Koçun seninle nasıl konuşacağını seç. Musclog'da hiçbir şey yapay zekâ gerektirmez.
+
+<b>Tasarımdan itibaren gizli</b>
+• Kilo, vücut yağı ve yemek günlükleri cihazında şifrelenir.
+• Tüm uygulamayı ya da yalnızca döngü, antrenman, yemek veya ilerleme verilerini telefonunun parmak izi veya PIN'i ile kilitle.
+• Verilerini dışa aktar veya yedekle ya da QR kodları tarayarak bulut olmadan başka bir telefona taşı.
+• Anonim çökme raporları hataların düzeltilmesine yardımcı olur ve ayarlardan kapatılabilir.
+• Ana ekran widget'ları, birkaç renk teması ve İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça dil desteği.
+
+Lift, Log, Repeat.

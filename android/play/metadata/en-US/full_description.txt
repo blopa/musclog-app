@@ -2,6 +2,11 @@
 
 Musclog is a workout tracker and calorie counter in one free, open source app. Log your gym sessions and your food, follow your progress, and keep it all on your phone: no account, no ads, and logging works offline.
 
+<b>Nothing locked away</b>
+• Unlimited workout routines and plans, and your full history.
+• The barcode scanner, nutrition label scanning and food search are in the app for everyone.
+• Every chart, export and backup is included, with no subscription.
+
 <b>Workout log and gym tracker</b>
 • Log sets, reps and weight in seconds, with a rest timer, warm-up sets, supersets and notes for every exercise.
 • Track effort with RPE or reps in reserve (RIR).

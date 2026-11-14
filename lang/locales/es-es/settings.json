@@ -637,6 +637,8 @@
       "communityHint": "Chatea con otros usuarios de Musclog",
       "email": "Escribir a soporte",
       "emailHint": "No hace falta cuenta. La versión y el dispositivo se añaden al mensaje.",
+      "rate": "Valorar Musclog",
+      "rateHint": "Una valoración en Google Play ayuda a que otras personas encuentren la app.",
       "openFailed": "No se pudo abrir ese enlace."
     },
     "homeHeatmaps": {

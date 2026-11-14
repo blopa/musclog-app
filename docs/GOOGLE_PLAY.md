@@ -96,8 +96,21 @@ request. Captures land in `screenshots/google-play/<tablet-7|tablet-10>/` first.
 
 `npm run generate-banners` renders the promotional banner of every locale (`screenshots/banner/<locale>/banner.png`, 1920×905), and `npm run generate-banners:sync` writes each one as that locale's Play feature graphic, `metadata/<locale>/images/featureGraphic.png` (1024×500, no alpha; the banner is scaled to height and trimmed evenly at the sides, not stretched). Play keeps one feature graphic per language, so `scripts/play.sh plan` then shows an `image.upload` per locale and `up --with-images` publishes them; single images replace in place, so no clearing step is needed. Run `plan` or `check --with-images` first.
 
-Every text change covers all locales (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`, matching the languages
-the app ships) and must match what the app does. Cycle copy never promises phase-based training advice.
+Every text change covers all ten listing locales and must match what the app does. Five match the languages
+the app ships (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`). Five are listing-only for now (`de-DE`, `fr-FR`,
+`it-IT`, `pl-PL`, `tr-TR`): the app isn't translated into them yet, so each states, on its own line right
+after the opening paragraph, which languages the app is in. Update that line when the app gains a language,
+and once a listing-only locale ships in the app, it joins the screenshot and banner scripts too. The
+listing-only locales have no `images/` folder, so Play shows the default language's graphics. They don't
+exist on Play yet: create each once with `gplay listings update --locale <locale> ...` in an edit (see
+above), or `plan` fails with a 404.
+
+Play's metadata policy shapes the copy: never compare with or name another app (the factual "import your
+history from Strong, Hevy or FitNotes" line is the one exception), no "best"/"#1", no keyword lists, and no
+"free" in the title or short description. The short description must not reappear word for word in the
+full description. Comparisons belong on the website's `/alternatives` page. The "Nothing locked away"
+section (unlimited routines, the barcode scanner for everyone, no subscription) is how the listing
+positions against paywalled apps without naming them. Cycle copy never promises phase-based training advice.
 
 ## What the API cannot do
 

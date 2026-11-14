@@ -637,6 +637,8 @@
       "communityHint": "Chat met andere Musclog-gebruikers",
       "email": "Mail de support",
       "emailHint": "Geen account nodig. Versie en apparaat worden aan het bericht toegevoegd.",
+      "rate": "Beoordeel Musclog",
+      "rateHint": "Een beoordeling op Google Play helpt andere mensen de app te vinden.",
       "openFailed": "Die link kon niet worden geopend."
     },
     "homeHeatmaps": {

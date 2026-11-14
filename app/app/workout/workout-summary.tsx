@@ -30,12 +30,17 @@ import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { isCoachReplyBusy } from '@/services/coachReplyStore';
 import { startCoachReply } from '@/services/coachReplyStream';
+import { recordPositiveMoment } from '@/services/reviewPrompt';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
 import { buildWorkoutCompletedSummaryForLLM } from '@/utils/workoutAI';
+
+// Reopening an old summary must not count as a fresh finish.
+const JUST_FINISHED_WINDOW_MS = 15 * 60 * 1000;
+const REVIEW_MOMENT_DELAY_MS = 2500;
 
 export default function WorkoutSummaryScreen() {
   const theme = useTheme();
@@ -65,6 +70,19 @@ export default function WorkoutSummaryScreen() {
 
   useKeepScreenAwake('workout-feedback', isFeedbackLoading);
 
+  // A store-rating moment is a workout that was just finished, on a visit that did not also show
+  // the Health prompt, counted after the celebration has played.
+  const healthPromptShownRef = useRef(false);
+  const reviewMomentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (reviewMomentTimerRef.current) {
+        clearTimeout(reviewMomentTimerRef.current);
+      }
+    },
+    []
+  );
+
   // Onboarding holds the Health Connect / Health prompt back until a first workout is finished.
   // Consumed on read, so it is offered exactly once.
   useEffect(() => {
@@ -74,6 +92,7 @@ export default function WorkoutSummaryScreen() {
       try {
         if ((await AsyncStorage.getItem(HEALTH_CONNECT_PROMPT_PENDING)) === 'true') {
           await AsyncStorage.removeItem(HEALTH_CONNECT_PROMPT_PENDING);
+          healthPromptShownRef.current = true;
           if (!cancelled) {
             setShowHealthPrompt(true);
           }
@@ -229,6 +248,15 @@ export default function WorkoutSummaryScreen() {
 
         setShowConfetti(true);
         setIsLoading(false);
+
+        const finishedAt = completedWorkout.completedAt;
+        if (finishedAt && Date.now() - finishedAt <= JUST_FINISHED_WINDOW_MS) {
+          reviewMomentTimerRef.current = setTimeout(() => {
+            if (!healthPromptShownRef.current) {
+              void recordPositiveMoment('workoutCompleted');
+            }
+          }, REVIEW_MOMENT_DELAY_MS);
+        }
       } catch (err) {
         console.error('Error loading workout summary:', err);
         setError(err instanceof Error ? err.message : t('workout.summary.failedToLoad'));
