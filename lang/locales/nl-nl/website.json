@@ -104,6 +104,18 @@
         "programs": {
           "title": "Gratis trainingsschema's | Musclog",
           "description": "Gratis schema's: push pull legs, upper lower, full body en meer. Elke dag, oefening, set en herhaling staat erbij en je opent het in Musclog."
+        },
+        "alternativesStrong": {
+          "title": "Musclog vs Strong | Musclog",
+          "description": "Musclog vs Strong: de gratis versie van Strong is beperkt tot 3 eigen routines. Zie wat Musclog anders doet en hoe je je Strong-geschiedenis importeert. Gegevens met datum en bron."
+        },
+        "alternativesHevy": {
+          "title": "Musclog vs Hevy | Musclog",
+          "description": "Musclog vs Hevy: het gratis plan van Hevy beperkt routines en eigen oefeningen. Zie wat Musclog anders doet en hoe je je Hevy-geschiedenis importeert. Gegevens met datum en bron."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog vs MyFitnessPal | Musclog",
+          "description": "Musclog vs MyFitnessPal: barcodescannen is daar alleen Premium en gratis in Musclog. Gegevens met datum en bron."
         }
       }
     },

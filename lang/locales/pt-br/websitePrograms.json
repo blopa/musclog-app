@@ -1,0 +1,55 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Programas de treino gratuitos",
+      "intro": "Programas completos, com cada treino, exercício, série e repetição escritos. Leia um aqui ou abra no Musclog com um toque e comece a treinar. As cargas iniciais são sugeridas pelo seu próprio perfil quando você abre o programa no app.",
+      "workouts_one": "{{count}} treino",
+      "workouts_other": "{{count}} treinos",
+      "minutes": "cerca de {{minutes}} min por treino",
+      "exercisesLink": "Explore a biblioteca de exercícios"
+    },
+    "difficulty": {
+      "beginner": "Iniciante",
+      "intermediate": "Intermediário",
+      "advanced": "Avançado"
+    },
+    "detail": {
+      "allPrograms": "Todos os programas",
+      "dayLabel": "Dia {{n}}",
+      "exercise": "Exercício",
+      "setsReps": "Séries × repetições",
+      "rest": "Descanso",
+      "restSeconds": "{{seconds}} s",
+      "supersetGroup": "Superserie {{group}}",
+      "openTitle": "Abra este programa no Musclog",
+      "openBody": "Isso abre o programa no app como uma revisão, então nada é salvo até você confirmar. As cargas iniciais são sugeridas pelo seu perfil, e você escolhe os dias da semana. Se ainda não tiver o app, a próxima página tem os links de download.",
+      "openButton": "Abrir no Musclog",
+      "howTitle": "Como fazer",
+      "how": [
+        "Faça os treinos na ordem e repita o ciclo. Um treino por dia de treino é o jeito mais simples; a ordem importa mais que o dia da semana.",
+        "Comece com cargas que você consiga levantar com boa execução e com algumas repetições sobrando. Quando atingir o topo da faixa de repetições em todas as séries, aumente a carga na próxima vez.",
+        "Estes programas são exemplos gerais, não orientação médica. Se você tem alguma lesão ou condição de saúde, consulte um profissional antes."
+      ],
+      "notFoundTitle": "Programa não encontrado",
+      "notFoundBody": "Não há nenhum programa neste endereço.",
+      "metaTitle": "{{title}}: programa de treino gratuito"
+    },
+    "summaries": {
+      "push-pull-legs": "Três treinos: push (peito, ombros e tríceps), pull (costas e bíceps) e pernas. Faça os três uma vez por semana, ou repita o ciclo duas vezes para a versão clássica de seis dias.",
+      "upper-lower-4-day": "Quatro treinos: dois dias de membros superiores e dois de membros inferiores, o que treina cada músculo duas vezes por semana em uma rotina de quatro dias.",
+      "full-body-3-day": "Três treinos de corpo inteiro para iniciantes. Cada um tem um exercício de perna, um empurrão, um puxão e algum trabalho de braço, então cada músculo é treinado três vezes por semana.",
+      "phul": "Quatro treinos: dois de membros superiores e dois de inferiores. O primeiro de cada par é um dia de força, com poucas repetições, e o segundo é um dia de hipertrofia, com mais repetições.",
+      "5-day-hypertrophy-split": "Cinco treinos, uma área por dia: peito, costas, ombros, pernas e braços. Mais volume por músculo em cada sessão, com uma sessão intensa por músculo na semana.",
+      "arnold-split": "Três treinos no estilo Arnold: peito e costas, ombros e braços, e depois pernas. A divisão tradicionalmente é feita duas vezes, para seis dias de treino.",
+      "bro-split": "Cinco treinos, cada um com um grupo muscular: peito, costas, pernas, ombros e braços. Cada músculo recebe uma sessão focada por semana.",
+      "2-day-full-body": "Dois treinos de corpo inteiro, A e B, para as semanas em que você só consegue treinar duas vezes. Alterne entre eles.",
+      "3-day-strength-builder": "Três treinos montados em torno de séries mais pesadas, de 4 a 8 repetições, no agachamento, supino, levantamento terra e remadas, com exercícios complementares mais leves depois.",
+      "classic-3-day-split": "Três treinos: peito e tríceps, costas e bíceps, e depois pernas e ombros. Uma divisão clássica para uma semana de três dias.",
+      "brolic-workout": "Dois treinos de membros superiores, peito e ombros, com bastante trabalho de empurrar e de crucifixo. Mais curto que a maioria dos programas daqui.",
+      "cable-superset-workout": "Cinco treinos avançados (Upper A, Lower A, Arms, Upper B, Lower B) com exercícios na polia, em supersséries antagonistas, com uma faixa de repetições e um tempo de descanso para cada exercício.",
+      "short-full-body-gym": "Dois treinos curtos de corpo inteiro, A e B, com máquinas e pesos livres da academia: cerca de 30 minutos, 2 séries por exercício, propositalmente leves. Um bom jeito de voltar depois de uma pausa.",
+      "short-full-body-home": "Dois treinos curtos de corpo inteiro, A e B, com halteres, um kettlebell e elásticos: cerca de 30 minutos, 2 séries por exercício, propositalmente leves.",
+      "short-full-body-no-equipment": "Dois treinos curtos de corpo inteiro, A e B, só com o próprio corpo e um elástico: cerca de 30 minutos, 2 séries por exercício, propositalmente leves."
+    }
+  }
+}

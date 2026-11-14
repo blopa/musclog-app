@@ -104,6 +104,18 @@
         "programs": {
           "title": "Programas de entrenamiento gratis | Musclog",
           "description": "Programas gratis: push pull legs, torso pierna, cuerpo completo y mas. Cada dia, ejercicio, serie y repeticion esta detallado y puedes abrirlo en Musclog."
+        },
+        "alternativesStrong": {
+          "title": "Musclog vs Strong | Musclog",
+          "description": "Musclog vs Strong: la versión gratuita de Strong se limita a 3 rutinas personalizadas. Mira qué hace distinto Musclog y cómo importar tu historial de Strong. Datos fechados y con fuente."
+        },
+        "alternativesHevy": {
+          "title": "Musclog vs Hevy | Musclog",
+          "description": "Musclog vs Hevy: el plan gratuito de Hevy limita rutinas y ejercicios personalizados. Mira qué hace distinto Musclog y cómo importar tu historial de Hevy. Datos fechados y con fuente."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog vs MyFitnessPal | Musclog",
+          "description": "Musclog vs MyFitnessPal: el escáner de códigos de barras es solo Premium allí y gratis en Musclog. Datos fechados y con fuente."
         }
       }
     },

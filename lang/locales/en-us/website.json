@@ -104,6 +104,18 @@
         "programs": {
           "title": "Free Workout Programs | Musclog",
           "description": "Free workout programs: push pull legs, upper lower, full body and more. Every day, exercise, set and rep is listed, and you can open it in Musclog."
+        },
+        "alternativesStrong": {
+          "title": "Musclog vs Strong | Musclog",
+          "description": "Musclog vs Strong: Strong free version is limited to 3 custom routines. See what Musclog does differently, and how to import your Strong history. Facts dated and sourced."
+        },
+        "alternativesHevy": {
+          "title": "Musclog vs Hevy | Musclog",
+          "description": "Musclog vs Hevy: the Hevy free plan limits routines and custom exercises. See what Musclog does differently, and how to import your Hevy history. Facts dated and sourced."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog vs MyFitnessPal | Musclog",
+          "description": "Musclog vs MyFitnessPal: barcode scanning is Premium-only there and free in Musclog. Facts dated and sourced."
         }
       }
     },

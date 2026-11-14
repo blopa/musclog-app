@@ -104,6 +104,18 @@
         "programs": {
           "title": "Бесплатные программы тренировок | Musclog",
           "description": "Бесплатные программы: push pull legs, верх-низ, всё тело и другие. Все дни, упражнения, подходы и повторения расписаны, и программу можно открыть в Musclog."
+        },
+        "alternativesStrong": {
+          "title": "Musclog и Strong | Musclog",
+          "description": "Musclog и Strong: бесплатная версия Strong ограничена 3 собственными программами. Что Musclog делает иначе и как импортировать историю из Strong. Факты с датой и источником."
+        },
+        "alternativesHevy": {
+          "title": "Musclog и Hevy | Musclog",
+          "description": "Musclog и Hevy: бесплатный план Hevy ограничивает программы и собственные упражнения. Что Musclog делает иначе и как импортировать историю из Hevy. Факты с датой и источником."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog и MyFitnessPal | Musclog",
+          "description": "Musclog и MyFitnessPal: сканер штрихкодов там только в Premium, а в Musclog бесплатный. Факты с датой и источником."
         }
       }
     },

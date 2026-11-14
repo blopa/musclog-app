@@ -187,6 +187,30 @@
       "summary": "Free workout programs with every day, exercise, set and rep, that you can open in Musclog."
     }
   },
+  "alternativesStrong": {
+    "path": "/alternatives/strong",
+    "llms": {
+      "section": "Product",
+      "title": "Musclog vs Strong",
+      "summary": "Honest comparison of Musclog and Strong: free routine limit, PRO pricing and importing your Strong history."
+    }
+  },
+  "alternativesHevy": {
+    "path": "/alternatives/hevy",
+    "llms": {
+      "section": "Product",
+      "title": "Musclog vs Hevy",
+      "summary": "Honest comparison of Musclog and Hevy: free plan limits, the warm-up calculator and importing your Hevy history."
+    }
+  },
+  "alternativesMyFitnessPal": {
+    "path": "/alternatives/myfitnesspal",
+    "llms": {
+      "section": "Product",
+      "title": "Musclog vs MyFitnessPal",
+      "summary": "Honest comparison of Musclog and MyFitnessPal: barcode scanning and what the free version includes."
+    }
+  },
   "test": {
     "path": "/test",
     "robots": "noindex, nofollow, noarchive"

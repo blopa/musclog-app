@@ -11,8 +11,8 @@ import {
   type StrengthGender,
   strengthGenderFactor,
 } from '@/utils/relativeStrength';
-import { gradeStrength, type StrengthGrade, type StrengthLevel } from '@/utils/strengthLevel';
 import { STRENGTH_GRADED_EXERCISE_IDS } from '@/utils/strengthGradedLifts';
+import { gradeStrength, type StrengthGrade, type StrengthLevel } from '@/utils/strengthLevel';
 import { displayToKg } from '@/utils/unitConversion';
 import { calculateAverage1RM } from '@/utils/workoutCalculator';
 
