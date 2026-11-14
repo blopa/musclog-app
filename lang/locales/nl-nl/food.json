@@ -277,7 +277,7 @@
       "addFoodTo": "Eten toevoegen aan"
     },
     "addFoodModal": {
-      "title": "Item toevoegen",
+      "title": "Wat heb je gegeten?",
       "subtitle": "Kies een methode om je maaltijd bij te houden",
       "trackByMealType": "Bijhouden per maaltijdtype",
       "trackingMethod": "Methode",

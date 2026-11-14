@@ -111,7 +111,11 @@
         },
         "alternativesHevy": {
           "title": "Musclog и Hevy | Musclog",
-          "description": "Musclog и Hevy, а также как перенести историю тренировок из Hevy в Musclog: сопоставленные упражнения, проверка перед сохранением и отмена."
+          "description": "Musclog и Hevy: бесплатный план Hevy ограничивает программы и собственные упражнения. Что Musclog делает иначе и как импортировать историю из Hevy. Факты с датой и источником."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog и MyFitnessPal | Musclog",
+          "description": "Musclog и MyFitnessPal: сканер штрихкодов там только в Premium, а в Musclog бесплатный. Факты с датой и источником."
         }
       }
     },

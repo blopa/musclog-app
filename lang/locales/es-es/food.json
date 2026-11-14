@@ -277,7 +277,7 @@
       "addFoodTo": "Añadir comida a"
     },
     "addFoodModal": {
-      "title": "Añadir Alimento",
+      "title": "¿Qué has comido?",
       "subtitle": "Elige un método para registrar tu comida",
       "trackByMealType": "Registrar por Tipo de Comida",
       "trackingMethod": "Método de Seguimiento",

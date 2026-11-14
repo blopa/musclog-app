@@ -111,7 +111,11 @@
         },
         "alternativesHevy": {
           "title": "Musclog vs Hevy | Musclog",
-          "description": "Musclog e Hevy, e como levar seu histórico de treinos do Hevy para o Musclog: exercícios associados, uma revisão antes de salvar e a opção de desfazer."
+          "description": "Musclog vs Hevy: o plano gratuito do Hevy limita rotinas e exercícios personalizados. Veja o que o Musclog faz diferente e como importar seu histórico do Hevy. Dados com data e fonte."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog vs MyFitnessPal | Musclog",
+          "description": "Musclog vs MyFitnessPal: o leitor de código de barras é só Premium lá e gratuito no Musclog. Dados com data e fonte."
         }
       }
     },

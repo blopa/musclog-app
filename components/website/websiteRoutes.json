@@ -200,7 +200,15 @@
     "llms": {
       "section": "Product",
       "title": "Musclog vs Hevy",
-      "summary": "Musclog and Hevy side by side, and how to import your Hevy workout history into Musclog."
+      "summary": "Honest comparison of Musclog and Hevy: free plan limits, the warm-up calculator and importing your Hevy history."
+    }
+  },
+  "alternativesMyFitnessPal": {
+    "path": "/alternatives/myfitnesspal",
+    "llms": {
+      "section": "Product",
+      "title": "Musclog vs MyFitnessPal",
+      "summary": "Honest comparison of Musclog and MyFitnessPal: barcode scanning and what the free version includes."
     }
   },
   "test": {

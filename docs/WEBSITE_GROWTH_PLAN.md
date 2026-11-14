@@ -79,7 +79,7 @@ Notes:
   and the page leads straight into the app. Program slugs come from the template's `__title` (stable), never
   its array index. The copy comes from the locale files, so programs are translated for free.
 - #10: free tier limits as checked on 2026-11-14: Strong's free version allows 3 custom routines (its App
-  Store listing), Hevy's 4 and MyFitnessPal's barcode scanner is Premium-only (the last two could not be re-confirmed and were dropped, see Status). Re-check these before
+  Store listing), Hevy's 4 and MyFitnessPal's barcode scanner is Premium-only (re-confirmed 2026-11-14). Re-check these before
   publishing and date them on the page. They change.
 - #2, #4 and #5 can share one "your gym" form (bar weight, plates, unit) remembered in `localStorage` (a
   per-visitor convenience; wrap every access in try/catch).
@@ -125,10 +125,10 @@ link opens the bridge page rather than the app until they are filled in.
 
 ## Status
 
-| Phase                               | Status                                                                                                                                                                                                                                                                                      |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0. Search Console, Tools navigation | Tools navigation done (burger menu, footer); Search Console is a manual step                                                                                                                                                                                                                |
-| Tools 1–10                          | done. `/alternatives/strong` has sourced facts; `/alternatives/hevy` is an import guide only and the MyFitnessPal page was removed, because the Hevy and MyFitnessPal claims could not be confirmed (both vendors' pages sit behind bot challenges). Re-add them only with a fetched source |
-| Blog posts (15 of 15)               | done, English only, under `app/(website)/posts/2026/11/`; categories `training`, `nutrition`, `guides` exist in all five locales                                                                                                                                                            |
-| Strong and FitNotes in the grid     | not done: no per-row facts for either could be verified                                                                                                                                                                                                                                     |
-| Share links (optional)              | routine link done; the image card from the workout summary is not started                                                                                                                                                                                                                   |
+| Phase                               | Status                                                                                                                                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0. Search Console, Tools navigation | Tools navigation done. Search Console: musclog.app is already a verified Domain property; the only open step is submitting `sitemap.xml` (none is submitted yet, checked 2026-11-14)                     |
+| Tools 1–10                          | done. Competitor facts re-checked in a real browser on 2026-11-14 (Strong, Hevy, MyFitnessPal)                                                                                                           |
+| Blog posts (15 of 15)               | done, English only, under `app/(website)/posts/2026/11/`; categories `training`, `nutrition`, `guides` exist in all five locales                                                                         |
+| Strong and FitNotes in the grid     | not done: the grid has no "unknown" state and 8 of its ~65 rows could be sourced for either app (verified quotes: Strong App Store listing, FitNotes Google Play listing). Needs a design decision first |
+| Share links (optional)              | routine link done; the image card from the workout summary is not started                                                                                                                                |
