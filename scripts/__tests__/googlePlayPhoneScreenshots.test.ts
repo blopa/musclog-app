@@ -82,11 +82,18 @@ describe('google-play-phone-screenshots composer', () => {
     expect(designProblems(committed)).toEqual([]);
   });
 
-  it('covers every Play listing locale', () => {
+  it('covers every Play listing locale that carries phone screenshots', () => {
     const mapped = designLocales(committed)
       .map((locale) => PLAY_LOCALES[locale])
       .sort();
-    const listing = fs.readdirSync(METADATA_DIR).sort();
+    // The listing-only languages (de-DE, fr-FR, ...) have text but no images folder, so the
+    // design covers exactly the locales whose listing holds phone screenshots.
+    const listing = fs
+      .readdirSync(METADATA_DIR)
+      .filter((locale) =>
+        fs.existsSync(path.join(METADATA_DIR, locale, 'images', 'phoneScreenshots'))
+      )
+      .sort();
     expect(mapped).toEqual(listing);
   });
 
