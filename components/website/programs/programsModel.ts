@@ -58,7 +58,9 @@ export function listPrograms(locale: string | undefined): Program[] {
   const programs = new Map<string, Program>();
 
   definitions.forEach((definition, index) => {
-    const slug = PROGRAM_SLUGS_BY_TEMPLATE_TITLE[definition.__title ?? ''];
+    const slug = (PROGRAM_SLUGS_BY_TEMPLATE_TITLE as Record<string, string | undefined>)[
+      definition.__title ?? ''
+    ];
     if (!slug) {
       return;
     }

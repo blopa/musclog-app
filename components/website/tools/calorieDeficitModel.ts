@@ -1,5 +1,5 @@
-import type { Gender } from '@/database/models';
 import type { Units } from '@/constants/settings';
+import type { Gender } from '@/database/models';
 import {
   calculateBMR,
   calculateTDEE,
@@ -111,6 +111,14 @@ export function parseIsoDay(value: string): number | null {
   return ms;
 }
 
+function directionOf(weightChangeKg: number): CalorieDeficitPlan['direction'] {
+  if (weightChangeKg === 0) {
+    return 'none';
+  }
+
+  return weightChangeKg < 0 ? 'loss' : 'gain';
+}
+
 /** Adds whole calendar days to an ISO day. Calendar arithmetic, so no DST drift. */
 export function addIsoDays(isoDay: string, days: number): string {
   const ms = parseIsoDay(isoDay);
@@ -174,7 +182,7 @@ export function calorieDeficitPlan(input: CalorieDeficitInput): CalorieDeficitVa
   const tdee = calculateTDEE({ bmr, activityLevel: input.activityLevel });
   const minCalories = getMinCalories(input.sex, bmr);
   const weightChangeKg = goalWeightKg - currentWeightKg;
-  const direction = weightChangeKg === 0 ? 'none' : weightChangeKg < 0 ? 'loss' : 'gain';
+  const direction = directionOf(weightChangeKg);
 
   const warnings: CalorieDeficitWarning[] = [];
   if (direction === 'none') {
@@ -242,6 +250,7 @@ export function calorieDeficitPlan(input: CalorieDeficitInput): CalorieDeficitVa
   if (Math.abs(weeklyChangeKg) > PACE_WARNING_SHARE_PER_WEEK * currentWeightKg) {
     warnings.push('paceTooFast');
   }
+
   if (deficitShareOfTdee > DEFICIT_WARNING_SHARE_OF_TDEE) {
     warnings.push('deficitTooLarge');
   }

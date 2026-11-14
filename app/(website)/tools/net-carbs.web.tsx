@@ -9,7 +9,7 @@ import {
   ToolNotice,
   ToolPanel,
 } from '@/components/website/tools/ToolFields';
-import { ToolLayout,type ToolSection } from '@/components/website/tools/ToolLayout';
+import { ToolLayout, type ToolSection } from '@/components/website/tools/ToolLayout';
 import { BODY_TEXT, BODY_TEXT_SOFT } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';

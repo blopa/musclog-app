@@ -13,7 +13,7 @@ import {
   ToolPanel,
   UnitsField,
 } from '@/components/website/tools/ToolFields';
-import { ToolLayout,type ToolSection } from '@/components/website/tools/ToolLayout';
+import { ToolLayout, type ToolSection } from '@/components/website/tools/ToolLayout';
 import { useToolUnits } from '@/components/website/tools/useToolState';
 import {
   BODY_TEXT,

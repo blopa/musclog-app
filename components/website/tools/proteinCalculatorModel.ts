@@ -1,5 +1,5 @@
-import type { FitnessGoal } from '@/database/models';
 import type { Units } from '@/constants/settings';
+import type { FitnessGoal } from '@/database/models';
 import {
   bodyweightProtein,
   PROTEIN_G_PER_KG_BODYWEIGHT,
@@ -70,6 +70,7 @@ export function proteinPlan(input: ProteinInput): ProteinValidation {
   if (weightDisplay === null) {
     return { ok: false, problem: 'weight' };
   }
+
   if (heightDisplay === null) {
     return { ok: false, problem: 'height' };
   }
@@ -79,6 +80,7 @@ export function proteinPlan(input: ProteinInput): ProteinValidation {
   if (!isInRange(weightKg, MIN_WEIGHT_KG, MAX_WEIGHT_KG)) {
     return { ok: false, problem: 'weight' };
   }
+
   if (!isInRange(heightCm, MIN_HEIGHT_CM, MAX_HEIGHT_CM)) {
     return { ok: false, problem: 'height' };
   }
@@ -90,6 +92,7 @@ export function proteinPlan(input: ProteinInput): ProteinValidation {
     if (goalKg === null || !isInRange(goalKg, MIN_WEIGHT_KG, MAX_WEIGHT_KG)) {
       return { ok: false, problem: 'goalWeight' };
     }
+
     goalWeightKg = goalKg;
   }
 

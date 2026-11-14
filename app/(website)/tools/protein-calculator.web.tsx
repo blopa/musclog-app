@@ -10,7 +10,7 @@ import {
   ToolPanel,
   UnitsField,
 } from '@/components/website/tools/ToolFields';
-import { ToolLayout,type ToolSection } from '@/components/website/tools/ToolLayout';
+import { ToolLayout, type ToolSection } from '@/components/website/tools/ToolLayout';
 import { useToolUnits } from '@/components/website/tools/useToolState';
 import { BODY_TEXT, BODY_TEXT_SOFT, CARD_BORDER, MUTED } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
