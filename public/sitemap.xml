@@ -41,10 +41,94 @@
     <loc>https://musclog.app/gameboy</loc>
   </url>
   <url>
+    <loc>https://musclog.app/tools</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/one-rep-max</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/plate-calculator</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/strength-level</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/warm-up-calculator</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/rpe-chart</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/protein-calculator</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/calorie-deficit</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/tools/net-carbs</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/alternatives/strong</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/alternatives/hevy</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/push-pull-legs</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/upper-lower-4-day</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/full-body-3-day</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/phul</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/5-day-hypertrophy-split</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/arnold-split</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/bro-split</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/2-day-full-body</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/3-day-strength-builder</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/classic-3-day-split</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/brolic-workout</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/cable-superset-workout</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/short-full-body-gym</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/short-full-body-home</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/programs/short-full-body-no-equipment</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/page/2</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/page/3</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/page/4</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/category/engineering</loc>
@@ -56,10 +140,16 @@
     <loc>https://musclog.app/blog/category/machine-learning</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/category/nutrition</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/category/product-updates</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/category/retro</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/category/training</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/category/web-development</loc>
@@ -128,15 +218,60 @@
     <loc>https://musclog.app/blog/2026/11/bring-your-own-ai-log-food-and-build-workouts</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/2026/11/coming-back-to-the-gym-after-a-break</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/counting-calories-without-an-account</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/deload-weeks-when-and-how</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/double-progression-explained</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/how-much-protein-do-you-need-by-goal-and-body-weight</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/how-to-estimate-your-one-rep-max</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/how-to-load-a-barbell-with-the-plates-you-have</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/2026/11/how-to-track-gym-progress</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/2026/11/i-stopped-after-a-summer-of-travel-so-musclog-can-ease-you-back-in</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/2026/11/move-your-workout-history-from-strong-hevy-or-fitnotes</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/2026/11/my-ai-coach-can-be-dracula-but-it-cannot-change-your-numbers</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/2026/11/my-mascot-was-a-kettlebell-named-loggy-until-i-remembered-what-a-log-is</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/net-carbs-vs-total-carbs-us-and-eu-labels</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/push-pull-legs-a-free-program-you-can-open-in-your-app</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/rpe-and-rir-explained</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/strength-standards-by-body-weight</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/upper-lower-4-day-split-for-people-with-jobs</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/warm-up-sets-how-many-and-how-heavy</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/why-every-tdee-calculator-is-wrong</loc>
   </url>
 </urlset>

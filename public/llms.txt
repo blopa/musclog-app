@@ -12,6 +12,18 @@ Musclog is built and maintained in the open; the full source is on GitHub. This 
 - [Fitness & Macro Calculator](https://musclog.app/calculator): Estimate calories, macros, BMI, and FFMI, usable standalone or as a starting plan in the app.
 - [Progress Import](https://musclog.app/progress): Import a Musclog JSON export in-browser to explore weight, nutrition, workout, mood, and measurement trends.
 - [Musclog vs. Alternatives](https://musclog.app/alternatives): Honest comparison of Musclog against MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy, and other fitness/nutrition apps.
+- [Lifting Tools](https://musclog.app/tools): Free calculators for lifters: one-rep max, plates, warm-ups, RPE, protein, calorie deficit and net carbs.
+- [One-Rep Max Calculator](https://musclog.app/tools/one-rep-max): Estimate your one-rep max from a set, with reps in reserve and a percentage-of-1RM table.
+- [Plate Calculator](https://musclog.app/tools/plate-calculator): Find the plates to load on each side of the bar from the plates your gym actually has.
+- [Strength Level Checker](https://musclog.app/tools/strength-level): See which strength level a lift is at for your body weight, shown as a range, never a percentile.
+- [Warm-Up Set Calculator](https://musclog.app/tools/warm-up-calculator): Warm-up sets for a working weight, each one loadable with your plates.
+- [RPE and RIR Chart](https://musclog.app/tools/rpe-chart): An RPE and reps-in-reserve chart with a load calculator built on the same math as the app.
+- [Protein Calculator](https://musclog.app/tools/protein-calculator): Daily protein in grams per kilogram of body weight, by goal, from the same rules the app uses.
+- [Calorie Deficit Calculator](https://musclog.app/tools/calorie-deficit): Daily calories for a goal weight and date, with an honest range instead of a single promise.
+- [Net Carbs vs Total Carbs](https://musclog.app/tools/net-carbs): Convert between net and total carbs and see why US and EU food labels disagree.
+- [Free Workout Programs](https://musclog.app/programs): Free workout programs with every day, exercise, set and rep, that you can open in Musclog.
+- [Musclog vs Strong](https://musclog.app/alternatives/strong): Honest comparison of Musclog and Strong: free routine limit, PRO pricing and importing your Strong history.
+- [Musclog vs Hevy](https://musclog.app/alternatives/hevy): Musclog and Hevy side by side, and how to import your Hevy workout history into Musclog.
 
 ## Support & Policies
 
