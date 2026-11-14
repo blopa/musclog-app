@@ -53,7 +53,8 @@ export interface ProteinPlan {
   table: { goal: FitnessGoal; gramsPerKg: number }[];
 }
 
-export type ProteinValidation = { ok: true; plan: ProteinPlan } | { ok: false; problem: ProteinProblem | null };
+export type ProteinValidation =
+  { ok: true; plan: ProteinPlan } | { ok: false; problem: ProteinProblem | null };
 
 /**
  * Reads the form and computes daily protein with the app's own `bodyweightProtein`, so the page

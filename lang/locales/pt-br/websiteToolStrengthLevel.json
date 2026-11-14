@@ -1,0 +1,73 @@
+{
+  "websiteToolStrengthLevel": {
+    "title": "Calculadora de nível de força",
+    "intro": "Informe seu peso corporal e uma série que você fez. Veja em qual nível de força seu 1RM estimado chega nesse exercício e quanto cada nível exige com o seu peso corporal.",
+    "form": {
+      "sex": "Sexo",
+      "sexMale": "Masculino",
+      "sexFemale": "Feminino",
+      "sexOther": "Outro",
+      "bodyWeight": "Peso corporal",
+      "lift": "Exercício",
+      "perHand": "por mão",
+      "weight": "Carga levantada",
+      "reps": "Repetições feitas",
+      "repsHint": "Número inteiro, de 1 a 10",
+      "reserve": "Repetições em reserva (opcional)",
+      "reserveHint": "Quantas repetições a mais você conseguiria fazer. Deixe vazio se foi até a falha."
+    },
+    "problems": {
+      "bodyWeight": "Informe seu peso corporal como um número maior que 0.",
+      "weight": "Informe a carga que você levantou como um número maior que 0.",
+      "reps": "Informe as repetições como um número inteiro de 1 a 10.",
+      "repsTooHigh": "Séries com mais de 10 repetições não dão um 1RM confiável. Uma série longa mede resistência, e cada fórmula se afasta mais da realidade quanto mais repetições ela precisa extrapolar. Use uma série mais pesada, de 10 repetições ou menos.",
+      "reserve": "As repetições em reserva devem ser um número inteiro de 0 a 9."
+    },
+    "results": {
+      "level": "Nível de força",
+      "levels": {
+        "beginner": "Iniciante",
+        "novice": "Novato",
+        "intermediate": "Intermediário",
+        "advanced": "Avançado",
+        "elite": "Elite"
+      },
+      "range": "de {{lower}} a {{upper}}",
+      "otherNote": "Mostrado nas escalas masculina e feminina, porque nenhuma tabela única se encaixa.",
+      "estimate": "1RM estimado",
+      "nextLevel": "Para chegar a {{level}}: um 1RM estimado de {{weight}} {{unit}}.",
+      "topLevel": "Este exercício está no nível mais alto. Não há nível acima de elite.",
+      "tableTitle": "O 1RM que cada nível exige com o seu peso corporal",
+      "tableLevel": "Nível",
+      "tableOne": "1RM estimado",
+      "tableMale": "Escala masculina",
+      "tableFemale": "Escala feminina",
+      "tableNote": "Cada valor é o 1RM estimado deste exercício com o seu peso corporal."
+    },
+    "sections": [
+      {
+        "title": "O que o nível compara",
+        "body": [
+          "Um nível é o seu 1RM estimado dividido pelo seu peso corporal, ajustado pelo exercício e pelo sexo. Pessoas mais pesadas levantam mais no total, por isso o peso corporal entra na comparação.",
+          "Os níveis são uma regra prática do Musclog, conferida com resultados públicos de powerlifting do OpenPowerlifting. Eles mostram onde um exercício está nessa escala. Não classificam você em relação a outras pessoas."
+        ]
+      },
+      {
+        "title": "Por que o sexo e o exercício mudam os números",
+        "body": [
+          "A referência de um exercício depende da região do corpo que ele trabalha, e nos dados públicos os resultados das mulheres ficam mais baixos em relação ao peso corporal. Por isso o nível de uma mulher usa uma referência mais baixa para essa região.",
+          "Escolha Outro se não quiser a resposta em uma única escala. Mostramos as escalas masculina e feminina, e um intervalo quando elas classificam de forma diferente."
+        ]
+      },
+      {
+        "title": "Exercícios com halteres",
+        "body": [
+          "Os exercícios com halteres são classificados por mão, porque tanto a referência quanto a carga que você registra são por mão. Informe o peso de um haltere, não o do par."
+        ]
+      }
+    ],
+    "sources": {
+      "openpowerlifting": "OpenPowerlifting, resultados públicos de powerlifting"
+    }
+  }
+}

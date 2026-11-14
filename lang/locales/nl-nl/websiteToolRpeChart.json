@@ -1,0 +1,71 @@
+{
+  "websiteToolRpeChart": {
+    "title": "RPE- en RIR-tabel met beladingscalculator",
+    "intro": "Een tabel met welk deel van je één-herhalingsmaximum elk aantal herhalingen bij elke RPE is, wat RPE betekent in overgebleven herhalingen, en een calculator die een set die je deed omrekent naar de belasting voor een andere set.",
+    "chart": {
+      "title": "Deel van je één-herhalingsmaximum",
+      "rpeColumn": "RPE {{rpe}}",
+      "reps": "Herhalingen",
+      "note": "Lees naar rechts voor de herhalingen die je doet en naar beneden voor de inspanning die je aan de set geeft. 100% is het één-herhalingsmaximum zelf."
+    },
+    "meaning": {
+      "title": "Wat elke RPE betekent",
+      "rpe": "RPE",
+      "reserve": "Herhalingen in reserve",
+      "meaning": "Betekenis",
+      "none": "Geen herhalingen over. De set eindigde op falen.",
+      "one": "Nog één herhaling over.",
+      "two": "Nog twee herhalingen over.",
+      "three": "Nog drie herhalingen over.",
+      "four": "Nog vier herhalingen over."
+    },
+    "form": {
+      "weight": "Getild gewicht",
+      "reps": "Herhalingen gedaan",
+      "repsHint": "Heel getal, 1 tot en met 10",
+      "rpe": "RPE van die set",
+      "targetReps": "Doelherhalingen",
+      "targetRepsHint": "Heel getal, 1 tot en met 10",
+      "targetRpe": "Doel-RPE"
+    },
+    "problems": {
+      "weight": "Vul het gewicht dat je tilde in als een getal boven 0.",
+      "reps": "Vul de herhalingen in als heel getal van 1 tot en met 10.",
+      "targetReps": "Vul de doelherhalingen in als heel getal van 1 tot en met 10."
+    },
+    "results": {
+      "oneRepMax": "Geschat één-herhalingsmaximum",
+      "target": "Belasting voor het doel, exact",
+      "targetRounded": "Afgerond voor een stang met standaardschijven",
+      "roundedNote": "Afgerond op de kleinste stappen waarin een stang met standaardschijven omhoog kan. Zonder sportschool gebruikt de app dezelfde stappen.",
+      "reps": "herhalingen",
+      "atRpe": "bij RPE"
+    },
+    "sections": [
+      {
+        "title": "Wat RPE betekent",
+        "body": [
+          "RPE, de schaal voor de ervaren inspanning, loopt van 1 tot 10. Een set met een 10 hield geen herhalingen over. RPE 9 liet één herhaling in reserve, RPE 8 twee, en zo verder.",
+          "Herhalingen in reserve (RIR) is dezelfde schaal, andersom geschreven: RPE = 10 min RIR. De Musclog-app slaat de inspanning van een set op de ene of de andere manier op, en het is hetzelfde getal."
+        ]
+      },
+      {
+        "title": "Waarom mensen er naast zitten",
+        "body": [
+          "Inschatten hoeveel herhalingen je nog had, is een vaardigheid, en de meeste mensen zitten er minder dicht naast naarmate een set verder van falen af was. Een set die aanvoelde alsof er een paar herhalingen over waren, kan er meer of minder hebben gehad.",
+          "Gebruik de tabel als leidraad. Vergelijk hem met hoe je sets echt gaan, en geef de inspanning eerlijk aan wanneer je hem registreert."
+        ]
+      },
+      {
+        "title": "Hoe de tabel en de calculator werken",
+        "body": [
+          "Elke cel is het deel van je één-herhalingsmaximum dat zoveel herhalingen bij die RPE vertegenwoordigen. Het komt uit dezelfde gemiddelde formules die de Musclog-app gebruikt om een geregistreerde set te schatten.",
+          "De calculator schat je één-herhalingsmaximum op basis van een set die je deed en geeft dan de belasting voor een ander aantal herhalingen bij een andere RPE. De afgeronde belasting is wat een stang met standaardschijven kan maken."
+        ]
+      }
+    ],
+    "sources": {
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

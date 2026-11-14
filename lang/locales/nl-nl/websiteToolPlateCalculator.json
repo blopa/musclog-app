@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Schijvenrekenmachine",
+    "intro": "Vul het gewicht in dat je op de stang wilt en krijg de schijven per kant, met de schijven die jouw sportschool echt heeft, in kg of lb, met je eigen stang.",
+    "form": {
+      "target": "Doelgewicht",
+      "targetHint": "Het totaal op de stang, inclusief de stang."
+    },
+    "problems": {
+      "target": "Vul het doelgewicht in als een getal boven 0 en hooguit {{max}} {{unit}}."
+    },
+    "results": {
+      "loaded": "Gewicht op de stang",
+      "exact": "Jouw sportschool kan dit gewicht precies laden.",
+      "inexact": "Jouw sportschool kan {{target}} niet precies maken. Het zwaarste dat ze kan laden is {{below}}, en het dichtstbijzijnde laadbare gewicht is {{nearest}}.",
+      "belowBar": "Dat is lichter dan de stang ({{bar}}). Kies een zwaarder doel, of stel in je sportschool een lichtere stang in.",
+      "perSide": "Schijven per kant",
+      "noPlates": "Er zijn geen schijven nodig: de stang alleen is het doel.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Stang: {{bar}}. Schijven worden per paar geladen, één aan elke kant."
+    },
+    "sections": [
+      {
+        "title": "Waarom eerst de zwaarste schijf fout is",
+        "body": [
+          "De gebruikelijke methode neemt de zwaarste schijf die past, dan de volgende, enzovoort. Dat werkt als een sportschool van elke schijf genoeg heeft. Met beperkte schijven kan het misgaan: een sportschool met één paar van 20, 15 en 10 kg heeft voor 70 kg met een stang van 20 kg 25 kg per kant nodig. Begin je met de 20, dan blijft er 5 kg over die geen schijf vult. Het antwoord is 15 en 10 kg, en dat kan de sportschool wel laden.",
+          "Deze rekenmachine probeert de combinaties van de schijven die je invoert en kiest de zwaarste belasting die het doel niet overschrijdt, met zo weinig mogelijk schijven."
+        ]
+      },
+      {
+        "title": "Schijven worden per paar geladen",
+        "body": [
+          "Een stang neemt schijven per paar, één aan elke kant, dus elke schijf die je invult telt als paren. Een losse schijf die geen paar vormt, kun je niet gebruiken en blijft buiten beschouwing. Vul in hoeveel paren van elke schijf je hebt."
+        ]
+      },
+      {
+        "title": "Stanggewicht en eenheden",
+        "body": [
+          "De stang hoort bij het totaal, dus stel eerst het gewicht van je stang in. Standaard olympische stangen wegen 20 kg (45 lb), en sommige zijn lichter. Typ in kg of lb: de app slaat kilogram op en rekent om, dus de getallen komen overeen met de Musclog-app."
+        ]
+      }
+    ]
+  }
+}

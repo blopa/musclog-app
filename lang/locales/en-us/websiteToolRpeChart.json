@@ -1,0 +1,71 @@
+{
+  "websiteToolRpeChart": {
+    "title": "RPE and RIR chart with load calculator",
+    "intro": "A chart of what share of your one-rep max each number of reps is at each RPE, what RPE means in reps left, and a calculator that turns a set you did into the load for another set.",
+    "chart": {
+      "title": "Share of your one-rep max",
+      "rpeColumn": "RPE {{rpe}}",
+      "reps": "Reps",
+      "note": "Read across for the reps you do and down for the effort you rate the set. 100% is the one-rep max itself."
+    },
+    "meaning": {
+      "title": "What each RPE means",
+      "rpe": "RPE",
+      "reserve": "Reps in reserve",
+      "meaning": "Meaning",
+      "none": "No reps left. The set ended at failure.",
+      "one": "One rep left in the tank.",
+      "two": "Two reps left in the tank.",
+      "three": "Three reps left in the tank.",
+      "four": "Four reps left in the tank."
+    },
+    "form": {
+      "weight": "Weight lifted",
+      "reps": "Reps done",
+      "repsHint": "Whole number, 1 to 10",
+      "rpe": "RPE of that set",
+      "targetReps": "Target reps",
+      "targetRepsHint": "Whole number, 1 to 10",
+      "targetRpe": "Target RPE"
+    },
+    "problems": {
+      "weight": "Enter the weight you lifted as a number above 0.",
+      "reps": "Enter the reps as a whole number from 1 to 10.",
+      "targetReps": "Enter the target reps as a whole number from 1 to 10."
+    },
+    "results": {
+      "oneRepMax": "Estimated one-rep max",
+      "target": "Load for the target, exact",
+      "targetRounded": "Rounded for a bar with standard plates",
+      "roundedNote": "Rounded to the smallest steps a bar loaded with standard plates goes up in. Without a gym the app uses the same steps.",
+      "reps": "reps",
+      "atRpe": "at RPE"
+    },
+    "sections": [
+      {
+        "title": "What RPE means",
+        "body": [
+          "RPE, rate of perceived exertion, runs from 1 to 10. A set rated 10 had no reps left. RPE 9 left one rep in reserve, RPE 8 two, and so on.",
+          "Reps in reserve (RIR) is the same scale written the other way: RPE = 10 minus RIR. The Musclog app stores a set's effort either way, and the two are the same number."
+        ]
+      },
+      {
+        "title": "Why people misjudge it",
+        "body": [
+          "Judging how many reps you had left is a skill, and most people are less accurate the further a set was from failure. A set that felt like it had a few reps left may have had more or fewer.",
+          "Treat the chart as a guide. Check it against how your sets actually go, and rate effort honestly when you log it."
+        ]
+      },
+      {
+        "title": "How the chart and calculator work",
+        "body": [
+          "Each cell is the share of your one-rep max that many reps at that RPE represent. It comes from the same averaged formulas the Musclog app uses to estimate a logged set.",
+          "The calculator estimates your one-rep max from a set you did, then gives the load for a different number of reps at a different RPE. The rounded load is what a bar with standard plates can make."
+        ]
+      }
+    ],
+    "sources": {
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

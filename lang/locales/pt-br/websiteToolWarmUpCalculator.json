@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Calculadora de aquecimento",
+    "intro": "Digite seu peso de trabalho e veja as séries de aquecimento até ele, com as anilhas de cada lado da barra quando você treina com barra.",
+    "form": {
+      "working": "Peso de trabalho",
+      "workingHint": "O peso da série para a qual você está subindo.",
+      "equipmentLabel": "Equipamento",
+      "equipment": {
+        "barbell": "Barra",
+        "dumbbell": "Halter",
+        "machine": "Máquina ou cabo"
+      }
+    },
+    "problems": {
+      "working": "Digite o peso de trabalho como um número maior que 0 e no máximo {{max}}."
+    },
+    "results": {
+      "title": "Séries de aquecimento",
+      "set": "Série",
+      "weight": "Peso",
+      "reps": "Repetições",
+      "plates": "Anilhas por lado",
+      "working": "Série de trabalho",
+      "target": "Alvo",
+      "emptyBar": "Barra vazia",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Descanse cerca de {{seconds}} segundos entre as séries de aquecimento.",
+      "barIsWarmUp": "Seu peso de trabalho está tão perto da barra que a própria barra é o aquecimento. Vá direto para a primeira série.",
+      "noRamp": "Este peso é leve demais para uma escada de aquecimento. Comece no seu peso de trabalho.",
+      "workingNotLoadable": "Sua academia não consegue carregar o peso de trabalho exatamente. O aquecimento usa os pesos carregáveis mais próximos."
+    },
+    "sections": [
+      {
+        "title": "Como a escada é montada",
+        "body": [
+          "Cada série de aquecimento é uma parte do peso de trabalho: 40% para 5 repetições, 60% para 3 e 80% para 2. Cada uma é mais pesada e mais curta que a anterior, então você chega ao peso de trabalho aquecido sem ficar cansado.",
+          "Na barra, a escada começa com a barra vazia por 10 repetições quando a primeira série da escada está bem acima dela. Cada peso é arredondado para o que suas anilhas conseguem formar, e um aquecimento a menos de 10% do peso de trabalho é descartado."
+        ]
+      },
+      {
+        "title": "São escolhas do Musclog",
+        "body": [
+          "As porcentagens, as repetições e o descanso entre as séries são um protocolo comum que o Musclog usa. São escolhas do produto, não resultados de um estudo. Ajuste conforme como você se sente."
+        ]
+      },
+      {
+        "title": "Barra, halter ou máquina",
+        "body": [
+          "Na barra são mostradas as anilhas de cada lado, para você carregar cada aquecimento com as anilhas da sua academia. Halteres e máquinas não usam barra nem anilhas e seguem os incrementos padrão de uma academia típica."
+        ]
+      }
+    ]
+  }
+}

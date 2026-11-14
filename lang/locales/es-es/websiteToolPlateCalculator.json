@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Calculadora de discos",
+    "intro": "Escribe el peso que quieres en la barra y obtén los discos de cada lado, con los discos que tiene tu gimnasio de verdad, en kg o lb, con tu propia barra.",
+    "form": {
+      "target": "Peso objetivo",
+      "targetHint": "El total en la barra, incluida la barra."
+    },
+    "problems": {
+      "target": "Escribe el peso objetivo como un número mayor que 0 y como máximo {{max}} {{unit}}."
+    },
+    "results": {
+      "loaded": "Peso en la barra",
+      "exact": "Tu gimnasio puede cargar este peso exactamente.",
+      "inexact": "Tu gimnasio no puede formar {{target}} exactamente. Lo más pesado que puede cargar es {{below}}, y el peso cargable más cercano es {{nearest}}.",
+      "belowBar": "Eso es más ligero que la barra ({{bar}}). Elige un objetivo más pesado o una barra más ligera en tu gimnasio.",
+      "perSide": "Discos en cada lado",
+      "noPlates": "No hacen falta discos: la barra sola es el objetivo.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Barra: {{bar}}. Los discos se cargan en pares, uno en cada lado."
+    },
+    "sections": [
+      {
+        "title": "Por qué el disco más pesado primero es un error",
+        "body": [
+          "El método habitual toma el disco más pesado que cabe, luego el siguiente, y así sucesivamente. Funciona cuando hay muchos discos de cada tipo. Con discos limitados puede fallar: un gimnasio con un par de 20, 15 y 10 kg necesita 25 kg por lado para una carga de 70 kg con una barra de 20 kg. Si se empieza por el de 20, quedan 5 kg que ningún disco cubre. La solución es 15 y 10 kg, que el gimnasio sí puede cargar.",
+          "Esta calculadora prueba las combinaciones de los discos que introduces y elige la carga más pesada que no supera el objetivo, usando el menor número de discos."
+        ]
+      },
+      {
+        "title": "Los discos se cargan en pares",
+        "body": [
+          "Una barra lleva los discos en pares, uno a cada lado, así que cada disco que introduces cuenta por pares. Un disco suelto que no forma pareja no se puede usar y queda fuera. Escribe cuántos pares de cada disco tienes."
+        ]
+      },
+      {
+        "title": "Peso de la barra y unidades",
+        "body": [
+          "La barra forma parte del total, así que primero indica su peso. Las barras olímpicas estándar pesan 20 kg (45 lb), y algunas son más ligeras. Escribe en kg o en lb: la app guarda los kilogramos y convierte, así que los números coinciden con la app Musclog."
+        ]
+      }
+    ]
+  }
+}

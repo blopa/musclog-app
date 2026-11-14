@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Warming-up-rekenmachine",
+    "intro": "Vul je werkgewicht in en krijg de warming-upsets ernaartoe, met de schijven per kant van de stang als je met een stang traint.",
+    "form": {
+      "working": "Werkgewicht",
+      "workingHint": "Het gewicht van de set waar je naartoe bouwt.",
+      "equipmentLabel": "Materiaal",
+      "equipment": {
+        "barbell": "Stang",
+        "dumbbell": "Dumbbell",
+        "machine": "Apparaat of kabel"
+      }
+    },
+    "problems": {
+      "working": "Vul het werkgewicht in als een getal boven 0 en hooguit {{max}}."
+    },
+    "results": {
+      "title": "Warming-upsets",
+      "set": "Set",
+      "weight": "Gewicht",
+      "reps": "Herhalingen",
+      "plates": "Schijven per kant",
+      "working": "Werkset",
+      "target": "Doel",
+      "emptyBar": "Lege stang",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Rust ongeveer {{seconds}} seconden tussen de warming-upsets.",
+      "barIsWarmUp": "Je werkgewicht zit zo dicht bij de stang dat de stang zelf de warming-up is. Ga direct naar je eerste set.",
+      "noRamp": "Dit gewicht is te licht voor een warming-up-opbouw. Begin op je werkgewicht.",
+      "workingNotLoadable": "Jouw sportschool kan het werkgewicht niet precies laden. De warming-up gebruikt de dichtstbijzijnde laadbare gewichten."
+    },
+    "sections": [
+      {
+        "title": "Hoe de opbouw is gemaakt",
+        "body": [
+          "Elke warming-upset is een deel van het werkgewicht: 40% voor 5 herhalingen, 60% voor 3 en 80% voor 2. Elke set is zwaarder en korter dan de vorige, zodat je warm bij het werkgewicht aankomt zonder moe te zijn.",
+          "Op een stang begint de opbouw met de lege stang voor 10 herhalingen als de eerste opbouwset er ruim boven zit. Elk gewicht wordt afgerond op wat je schijven kunnen maken, en een warming-up binnen 10% van het werkgewicht vervalt."
+        ]
+      },
+      {
+        "title": "Dit zijn keuzes van Musclog",
+        "body": [
+          "De percentages, de herhalingen en de rust tussen de sets zijn een gangbaar schema dat Musclog gebruikt. Het zijn productkeuzes, geen resultaten uit een onderzoek. Pas ze aan op hoe je je voelt."
+        ]
+      },
+      {
+        "title": "Stang, dumbbell of apparaat",
+        "body": [
+          "Op een stang worden de schijven per kant getoond, zodat je elke warming-up met de schijven van je sportschool kunt laden. Dumbbells en apparaten gebruiken geen stang en schijven en volgen de standaardstappen van een gewone sportschool."
+        ]
+      }
+    ]
+  }
+}
