@@ -51,7 +51,8 @@ The reason is shown next to the target. The post on [how the app explains each n
 
 Effort ratings are your own estimates. If you do not rate a set, the app progresses on reps alone, which is a cruder signal, so rating a few sets a week helps.
 
-![The live workout in its Inline and Guided views, with the Double progression 8 to 12 rule shown on a bench press](/images/blog/2026/10/session-inline-vs-guided.webp)
+![The live workout in its Inline view: a bench press card with the Double progression 8 to 12 rule and its explanation](/images/blog/2026/10/session-inline-view.webp)
+![The live workout in its Guided view: a bench press set with the 62.5 kg by 8 target and last time's 60 kg by 12](/images/blog/2026/10/session-guided-view.webp)
 ![The Next time list after finishing: Barbell Bench Press suggested at 80 kg for 9 reps, last time 80 kg for 8](/images/blog/2026/11/track-progress-next-time.webp)
 
 ## What to do this week

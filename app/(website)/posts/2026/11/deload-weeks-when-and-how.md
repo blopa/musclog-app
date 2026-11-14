@@ -46,7 +46,8 @@ Training done inside a lighter week is left out of the history the app uses to j
 
 The app explains each automatic change next to the set it changed, in the same spirit as [my app now explains every number it changes](/blog/2026/10/my-app-now-explains-every-number-it-changes), so you can see whether a load moved because of your numbers, your plan, or your own choice.
 
-![The Why these targets sheet over a bench press set: the Double progression rule with its 8 to 12 rep range, last time and today's target](/images/blog/2026/10/session-adjusted-and-why.webp)
+![The Guided view of a bench press set, with a small calculator icon on the weight and reps the app set](/images/blog/2026/10/session-guided-adjusted.webp)
+![The Why these targets sheet over a bench press set: the Double progression rule with its 8 to 12 rep range, last time and today's target](/images/blog/2026/10/session-why-targets.webp)
 ![The training half of the Weekly Review: workouts, working sets and volume for the week, a personal record and the next workout to preview](/images/blog/2026/10/weekly-review-training.webp)
 
 ## Starting from a plan
