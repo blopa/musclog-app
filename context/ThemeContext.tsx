@@ -45,6 +45,23 @@ const THEME_VARIABLES = Object.fromEntries(
   ])
 ) as Record<ThemeId, ReturnType<typeof vars>>;
 
+const subscribeToNothing = () => () => {};
+
+/**
+ * `false` only while React hydrates server-rendered HTML, `true` on every client render.
+ *
+ * During hydration `useSyncExternalStore` serves server snapshots, so the theme mirror reads as
+ * empty and the provider resolves the default palette. Anything it publishes from that render
+ * would overwrite what the pre-paint script in `app/+html.tsx` already applied from the mirror.
+ */
+function useIsHydrated(): boolean {
+  return useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  );
+}
+
 function valueForTheme(themeId: ThemeId, themePreference: ThemeOption): ThemeContextValue {
   return {
     theme: THEMES[themeId],
@@ -54,17 +71,32 @@ function valueForTheme(themeId: ThemeId, themePreference: ThemeOption): ThemeCon
   };
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+/**
+ * `preferMirror` lets the web theme mirror outrank the settings row whenever it exists, not only
+ * while the row is unreadable. The website passes it: every theme change in this browser reaches
+ * the mirror (the website picker writes it, and this provider records the app's resolved theme
+ * into it), while a website write to the row can be lost before a slow database opens, which let
+ * a stale row undo the visitor's choice. `WebsiteThemeSync` copies the mirror back into the row.
+ */
+export function ThemeProvider({
+  children,
+  preferMirror = false,
+}: {
+  children: ReactNode;
+  preferMirror?: boolean;
+}) {
   const { isLoading, theme: storedPreference } = useSettings();
   const mirror = useSyncExternalStore(subscribeToThemeMirror, getThemeMirror, getServerThemeMirror);
   const systemColorScheme = useColorScheme();
+  const hydrated = useIsHydrated();
 
   // `isLoading` stays true wherever the settings table is unreadable — the
   // marketing site, where nobody has onboarded, and the first frames everywhere
   // else. On web the theme mirror carries the preference through both (see
   // `utils/themeMirror`); on native `SettingsProvider` already starts from the
   // settings mirror, so `storedPreference` is right from the first frame.
-  const themePreference = isLoading && mirror ? mirror.preference : storedPreference;
+  const themePreference =
+    mirror && (isLoading || preferMirror) ? mirror.preference : storedPreference;
   const themeId = resolveThemeId(themePreference, systemColorScheme);
   const value = useMemo(() => valueForTheme(themeId, themePreference), [themeId, themePreference]);
 
@@ -87,10 +119,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => colorScheme.set('system');
   }, [themePreference, value.themeMode]);
 
-  // Web modals portal to <body>, outside the provider View. Publish the active
-  // variables on :root and remove the inline override when this provider leaves.
+  // On web the palette lives on :root only: modals portal to <body>, outside the
+  // provider View, and the pre-paint script in `app/+html.tsx` has already put the
+  // visitor's palette there before the body rendered. Skip the hydration render,
+  // which can only resolve the default palette (see `useIsHydrated`).
   useEffect(() => {
-    if (Platform.OS !== 'web' || typeof document === 'undefined') {
+    if (Platform.OS !== 'web' || typeof document === 'undefined' || !hydrated) {
       return;
     }
 
@@ -104,15 +138,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     // Leaving the variables on :root when this provider unmounts is deliberate:
     // removing them would drop the page back to the Tailwind defaults mid-session.
-  }, [themeId]);
+  }, [hydrated, themeId]);
 
   return (
     <ThemeContext.Provider value={value}>
       <View
-        style={[
-          Platform.OS === 'web' ? { flex: 1, minHeight: '100%', width: '100%' } : { flex: 1 },
-          THEME_VARIABLES[themeId],
-        ]}
+        style={
+          // Never inline the palette on web. The static export renders this View with
+          // the default palette (it cannot read the visitor's storage), and an inline
+          // value here outranks :root for the whole page, so every statically served
+          // page showed the default theme until the bundle loaded and hydrated.
+          Platform.OS === 'web'
+            ? { flex: 1, minHeight: '100%', width: '100%' }
+            : [{ flex: 1 }, THEME_VARIABLES[themeId]]
+        }
       >
         {children}
       </View>

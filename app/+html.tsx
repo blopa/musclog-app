@@ -11,7 +11,8 @@ import ptBrWebsite from '@/lang/locales/pt-br/website.json';
 import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
 import { DEFAULT_THEME_BY_MODE } from '@/theme.registry';
 import { themeCssVariables } from '@/theme.tokens';
-import { THEME_MIRROR_STORAGE_KEY, type ThemeMirror } from '@/utils/themeMirror';
+import { THEME_MIRROR_STORAGE_KEY } from '@/utils/themeMirror';
+import { themePrepainter } from '@/utils/themePrepaint';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 /**
@@ -70,47 +71,8 @@ const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})(${JSON.stringify
   LANDING_TRANSLATIONS
 )}, ${JSON.stringify(LANDING_LANGUAGE_STORAGE_KEY)});`;
 
-/**
- * Publishes the palette on `:root` before the body renders.
- *
- * Every themed colour on the site resolves through a `--c-*` custom property,
- * so applying the right map here is what keeps the first paint from flashing the
- * wrong palette while WatermelonDB opens and `ThemeProvider` reads the stored
- * preference. A returning visitor's exact palette comes from the mirror; a first
- * visit falls back to the OS scheme, which is what a `system` preference means.
- *
- * Only the two mode defaults are inlined — the mirror carries its own map, so
- * the other four palettes never have to travel in the HTML.
- *
- * It also names the theme on `<html data-theme-id>`, which is what the stylesheet that picks the
- * Loggy image for a theme (`websiteLoggyCss`) selects on: an image cannot read the custom
- * properties above, and swapping it after hydration would flash the default green first.
- * `ThemeProvider` keeps the attribute current when the theme changes.
- */
-function themePrepainter(
-  storageKey: string,
-  fallbacks: { dark: Record<string, string>; light: Record<string, string> },
-  fallbackIds: { dark: string; light: string }
-) {
-  try {
-    const raw = localStorage.getItem(storageKey);
-    const mirrored = raw ? (JSON.parse(raw) as ThemeMirror) : null;
-    const prefersLight =
-      typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: light)').matches;
-    const variables =
-      mirrored?.variables ?? (prefersLight ? fallbacks.light : fallbacks.dark) ?? fallbacks.dark;
-
-    for (const name of Object.keys(variables)) {
-      document.documentElement.style.setProperty(name, variables[name]);
-    }
-
-    document.documentElement.setAttribute(
-      'data-theme-id',
-      mirrored?.themeId ?? (prefersLight ? fallbackIds.light : fallbackIds.dark)
-    );
-  } catch (_) {}
-}
-
+// The palette on :root before the body renders; see `utils/themePrepaint`. Only the two mode
+// defaults are inlined — the mirror carries its own map, so the other palettes never travel.
 const THEME_PREPAINT_SCRIPT = `(${themePrepainter.toString()})(${JSON.stringify(
   THEME_MIRROR_STORAGE_KEY
 )}, ${JSON.stringify({

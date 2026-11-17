@@ -3,6 +3,43 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Website pages opened in the default theme, then switched seconds later or not at all (November 2026)
+
+### Symptom
+
+A theme picked on the website applied at once, but the next page (say a blog post from `/blog`)
+loaded in the default palette, stayed that way for about ten seconds on a phone, and only then
+switched. Sometimes, on Chrome for Android, it never switched.
+
+### Cause
+
+Two separate faults.
+
+1. The pre-paint script in `app/+html.tsx` put the visitor's palette on `:root`, but `ThemeProvider`
+   also wrote the palette inline on its own wrapper `View` (NativeWind `vars()`), and the static export
+   rendered that View in the default palette, since a server render cannot read the visitor's storage.
+   An inline value on an element inside `<html>` outranks `:root` for everything below it, so every
+   statically served page showed the default theme until the bundle loaded and hydrated (seconds on a
+   phone). The hydration render made it worse: `useSyncExternalStore` serves server snapshots there,
+   so the provider resolved the default palette and its effect wrote that over `:root` too.
+2. A browser that has also used the web app opens that app's database on every website page, and
+   once it was readable its theme row outranked the website's choice. The picker's write to that row
+   is lost when the visitor leaves the page before the database finishes opening, so the stale row
+   brought the old theme back and `ThemeProvider` recorded it into the mirror, overwriting the choice.
+
+### Fix
+
+On web `ThemeProvider` puts nothing inline (the palette lives on `:root` only) and skips its
+hydration render (`useIsHydrated`), so the pre-paint script (`utils/themePrepaint.ts`) is the only
+thing that colours a static page before hydration. That script now also paints the OS default when
+storage throws, and follows the OS scheme for a `system` preference. On the website the mirror
+outranks the settings row (`<ThemeProvider preferMirror>` in `WebsiteProviders`), because every
+theme change in the browser reaches the mirror, and `WebsiteThemeSync` writes the mirror back into
+the row whenever the two disagree, so the app opens in the theme picked on the website. Pinned by
+`hooks/__tests__/useTheme.test.ts` (no inline palette in server HTML; no default palette published
+while hydrating), `utils/__tests__/themePrepaint.test.ts` and
+`components/website/__tests__/WebsiteThemeSync.test.ts`.
+
 ## Steps never synced from Health Connect on Android (November 2026)
 
 ### Symptom
