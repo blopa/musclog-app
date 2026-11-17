@@ -192,8 +192,8 @@
       "screenshotAlt": "Captura de pantalla de la app Musclog"
     },
     "screenshots": {
-      "title": "Mira Musclog en acción",
-      "description": "Una vista lenta de pantallas reales de la app. Pasa el cursor para pausar y haz clic en cualquier tarjeta para abrirla más grande.",
+      "title": "Dentro de la app",
+      "description": "Pantallas reales de Musclog. Desplázate hacia un lado o toca una para verla más grande.",
       "openSlide": "Abrir captura",
       "modalAriaLabel": "Vista previa de capturas de Musclog",
       "close": "Cerrar",
@@ -267,36 +267,36 @@
       "description": "Herramientas para registrar, planificar y revisar. Las funciones con IA son opcionales.",
       "items": {
         "aiCoach": {
-          "title": "Entrenador de IA (Loggy)",
-          "description": "Conversa con tu entrenador de IA para planes de entrenamiento personalizados, consejos de nutrición y estimación de comidas por foto."
+          "title": "Coach con IA",
+          "description": "Habla con Loggy sobre entrenamiento y comida, o estima una comida a partir de una foto. Opcional, con tu propia clave de Gemini, OpenAI o Claude."
         },
         "barcode": {
-          "title": "Lector de Código de Barras",
-          "description": "Añade productos rápidamente escaneando códigos de barras. Accede a la base de datos Open Food Facts con millones de productos."
+          "title": "Escáner de códigos de barras",
+          "description": "Escanea un producto para registrarlo desde Open Food Facts, con Nutri-Score y NOVA cuando el producto los tiene."
         },
         "checkins": {
-          "title": "Check-ins Semanales",
-          "description": "Análisis automatizado de 7 días de tu progreso con ajustes dinámicos de metas para mantenerte en el camino correcto."
+          "title": "Revisión semanal",
+          "description": "Cada semana, mira cómo fueron tu comida, tu peso y tu entrenamiento, y acepta u omite un cambio sugerido en tus objetivos."
         },
         "analytics": {
-          "title": "Análisis de Progreso",
-          "description": "Gráficos interativos para peso, grasa corporal y progreso de levantamiento. Rastrea tu TDEE con datos reales."
+          "title": "Gráficos de progreso",
+          "description": "Gráficos de peso, grasa corporal y levantamientos, y una estimación de gasto calórico a partir de tus propios registros."
         },
         "cycle": {
           "title": "Consciencia del Ciclo",
           "description": "Registra periodos y síntomas y descubre patrones en tus propios datos. Las predicciones están desactivadas hasta que las actives."
         },
         "templates": {
-          "title": "Plantillas de Entrenamiento",
-          "description": "Crea rutinas personalizadas como PPL o Superior/Inferior. Accede a una extensa biblioteca de ejercicios con enfoque muscular."
+          "title": "Planes de entrenamiento",
+          "description": "Crea rutinas como empuje/tirón/pierna o torso/pierna con una biblioteca de más de 800 ejercicios y músculos objetivo."
         },
         "healthConnect": {
           "title": "Health Connect",
           "description": "Sincroniza con Google Health Connect para compartir datos con otras apps de salud y fitness en Android."
         },
         "encryption": {
-          "title": "Almacenamiento Cifrado",
-          "description": "Tus datos sensibles de salud se cifran en reposo usando AES. Exporta en cualquier momento como JSON o Excel."
+          "title": "Almacenamiento cifrado",
+          "description": "Peso, grasa corporal y registros de comida se cifran en tu dispositivo. Exporta a JSON o Excel cuando quieras."
         }
       }
     },
@@ -318,7 +318,7 @@
       "features": "Funciones",
       "progress": "Progreso",
       "github": "GitHub",
-      "download": "Descargar Ahora",
+      "download": "Descargar",
       "calculator": "Calculadora",
       "exercises": "Ejercicios",
       "gameboy": "Game Boy",
@@ -509,8 +509,8 @@
     "storeButtons": {
       "googleTitle": "DISPONIBLE EN",
       "googleStore": "Google Play",
-      "appleTitle": "DESCARGAR EN",
-      "appleStore": "App Store",
+      "appleTitle": "UNIRSE EN",
+      "appleStore": "TestFlight",
       "comingSoon": "¡App Store próximamente!",
       "qrButton": "Mostrar códigos QR",
       "qrTitle": "Códigos QR",
@@ -518,7 +518,7 @@
       "qrGoogleLabel": "Página de instalación para Android",
       "qrAppleLabel": "Página de instalación para iOS",
       "qrGoogleAlt": "Código QR para Google Play",
-      "qrAppleAlt": "Código QR para la App Store",
+      "qrAppleAlt": "Código QR de TestFlight",
       "close": "Cerrar"
     },
     "download": {
@@ -527,7 +527,7 @@
       "title": "Descarga Musclog",
       "subtitle": "Descarga Musclog ahora y mantén tu entrenamiento, nutrición y progreso en un solo lugar privado.",
       "googleLabel": "Descargar Musclog en Google Play",
-      "appleLabel": "Descargar Musclog en la App Store"
+      "appleLabel": "Unirse a Musclog en TestFlight"
     },
     "open": {
       "title": "Abrir en Musclog",
@@ -546,7 +546,7 @@
       "github": "GitHub",
       "contact": "Contacto",
       "license": "Licencia",
-      "copyright": "Software Libre y Open Source. Construido para tu privacidad.",
+      "copyright": "Software libre y de código abierto.",
       "latestBuild": "Última versión: {{version}}"
     },
     "cookieConsent": {

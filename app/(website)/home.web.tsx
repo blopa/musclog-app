@@ -45,10 +45,10 @@ export function CTA() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
 
   return (
-    <section className="border-t px-4 py-16 md:py-20" style={SECTION_RULE}>
-      <div className="container mx-auto flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+    <section className="border-t py-16 md:py-20" style={SECTION_RULE}>
+      <div className="container mx-auto flex flex-col gap-8 px-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-xl">
-          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+          <h2 className="text-balance text-3xl font-semibold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
           <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
@@ -94,7 +94,7 @@ export function FeatureGrid() {
     <section id="features" className="border-t py-16 md:py-20" style={SECTION_RULE}>
       <div className="container mx-auto px-4">
         <div className="mb-10 max-w-2xl md:mb-12">
-          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+          <h2 className="text-balance text-3xl font-semibold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
           <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
@@ -129,7 +129,7 @@ export function MeetLoggy() {
     <section className="border-t py-16 md:py-20" style={SECTION_RULE}>
       <div className="container mx-auto flex flex-col gap-8 px-4 md:flex-row md:items-center md:justify-between md:gap-16">
         <div className="max-w-xl">
-          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+          <h2 className="text-balance text-3xl font-semibold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
           <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
@@ -150,7 +150,6 @@ export function MeetLoggy() {
 
 export function ScreenshotShowcase() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.screenshots' });
-  const [isPaused, setIsPaused] = useState(false);
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
   const [isMobileModal, setIsMobileModal] = useState(false);
 
@@ -259,23 +258,11 @@ export function ScreenshotShowcase() {
     return () => window.removeEventListener('resize', updateIsMobileModal);
   }, []);
 
-  const isTrackPaused = isPaused || activeModalIndex !== null;
-
   return (
     <section className="overflow-hidden border-t py-16 md:py-20" style={{ borderColor: ink(0.08) }}>
-      <style>{`
-        @keyframes musclog-screenshot-marquee {
-          from { transform: translate3d(0, 0, 0); }
-          to { transform: translate3d(-50%, 0, 0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .musclog-screenshot-track { animation: none !important; }
-        }
-      `}</style>
-
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-10 max-w-2xl md:mb-12">
-          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+          <h2 className="text-balance text-3xl font-semibold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
           <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
@@ -283,54 +270,37 @@ export function ScreenshotShowcase() {
           </p>
         </div>
 
-        <div>
-          <div
-            className="relative overflow-hidden py-2"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onFocusCapture={() => setIsPaused(true)}
-            onBlurCapture={() => setIsPaused(false)}
-          >
-            <div
-              className="musclog-screenshot-track flex w-max will-change-transform"
-              style={{
-                animation: 'musclog-screenshot-marquee 68s linear infinite',
-                animationPlayState: isTrackPaused ? 'paused' : 'running',
-              }}
+        <div
+          className="-mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-4 pb-4 motion-reduce:scroll-auto"
+          style={{ scrollPaddingInline: 16 }}
+        >
+          {slides.map((slide, index) => (
+            <button
+              key={slide.alt}
+              type="button"
+              onClick={() => setActiveModalIndex(index)}
+              aria-label={`${t('openSlide')} ${slide.title}`}
+              className="group flex w-[180px] shrink-0 snap-start flex-col text-left sm:w-[200px] md:w-[220px]"
             >
-              {[0, 1].map((loopIndex) => (
-                <div key={loopIndex} className="flex shrink-0 gap-5 pr-5">
-                  {slides.map((slide, index) => (
-                    <button
-                      key={`${loopIndex}-${slide.alt}`}
-                      type="button"
-                      onClick={() => setActiveModalIndex(index)}
-                      aria-label={`${t('openSlide')} ${slide.title}`}
-                      className="group flex w-[180px] shrink-0 flex-col text-left sm:w-[200px] md:w-[220px]"
-                    >
-                      <div className="rounded-sheet border border-ink/10 bg-bg-card p-1.5 transition-colors group-hover:border-ink/30">
-                        <div className="overflow-hidden rounded-card bg-bg-primary">
-                          <img
-                            src={slide.src}
-                            alt={slide.alt}
-                            className="aspect-[537/1165] w-full object-cover object-top"
-                            loading={loopIndex === 0 && index < 3 ? 'eager' : 'lazy'}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="px-1 pt-3">
-                        <p className="text-sm font-bold text-text-primary">{slide.title}</p>
-                        <p className="mt-1 text-xs leading-5" style={{ color: BODY_TEXT_SOFT }}>
-                          {slide.description}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
+              <div className="rounded-sheet border border-ink/10 bg-bg-card p-1 transition-colors group-hover:border-ink/30">
+                <div className="overflow-hidden rounded-card bg-bg-primary">
+                  <img
+                    src={slide.src}
+                    alt={slide.alt}
+                    className="aspect-[537/1165] w-full object-cover object-top"
+                    loading={index < 4 ? 'eager' : 'lazy'}
+                  />
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+
+              <div className="px-1 pt-3">
+                <p className="text-sm font-semibold text-text-primary">{slide.title}</p>
+                <p className="mt-1 text-xs leading-5" style={{ color: BODY_TEXT_SOFT }}>
+                  {slide.description}
+                </p>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -506,7 +476,7 @@ export function Themes() {
     <section id="themes" className="border-t py-16 md:py-20" style={{ borderColor: ink(0.08) }}>
       <div className="container mx-auto px-4">
         <div className="mb-10 max-w-2xl md:mb-12">
-          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+          <h2 className="text-balance text-3xl font-semibold text-text-primary md:text-4xl">
             {t('website.themes.title')}
           </h2>
           <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
@@ -542,10 +512,10 @@ export function Themes() {
           })}
         </div>
 
-        <div className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <div className="grid items-center gap-10 md:grid-cols-[auto_minmax(0,1fr)] md:gap-16">
           <div className="flex justify-center md:justify-start">
             <div
-              className="w-full max-w-[16rem] overflow-hidden rounded-sheet border"
+              className="w-full max-w-[20rem] overflow-hidden rounded-sheet border"
               style={{ borderColor: ink(0.12) }}
             >
               <img
@@ -556,9 +526,9 @@ export function Themes() {
             </div>
           </div>
 
-          <div className="space-y-5">
+          <div className="max-w-lg space-y-5">
             <div>
-              <h3 className="text-xl font-bold text-text-primary">
+              <h3 className="text-xl font-semibold text-text-primary">
                 {t(`settings.theme.options.${activeTheme.id}.label`)}
               </h3>
               <p className="mt-3 text-lg leading-relaxed text-text-primary">
@@ -569,31 +539,6 @@ export function Themes() {
             <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
               {t('website.themes.footnote')}
             </p>
-
-            <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 md:max-w-md">
-              {THEME_SHOWCASE.map((theme) => {
-                const isActive = theme.id === activeThemeId;
-
-                return (
-                  <button
-                    key={theme.id}
-                    type="button"
-                    onClick={() => setActiveThemeId(theme.id)}
-                    aria-label={t(`settings.theme.options.${theme.id}.label`)}
-                    className="overflow-hidden rounded-inner border-2 transition-colors"
-                    style={{
-                      borderColor: isActive ? theme.accent : 'transparent',
-                    }}
-                  >
-                    <img
-                      src={THEME_SCREENSHOT(theme.id)}
-                      alt=""
-                      className="aspect-[1083/2340] w-full object-cover object-top"
-                    />
-                  </button>
-                );
-              })}
-            </div>
           </div>
         </div>
       </div>
@@ -610,7 +555,7 @@ export function Hero() {
       <div className="container mx-auto px-4">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="space-y-6">
-            <h1 className="text-balance text-4xl font-bold leading-tight text-text-primary md:text-6xl lg:text-[4.25rem]">
+            <h1 className="text-balance text-4xl font-semibold leading-tight text-text-primary md:text-6xl lg:text-[4.25rem]">
               {t('title1')} {t('title2')}
             </h1>
 
@@ -633,22 +578,12 @@ export function Hero() {
                 {t('demoButton')}
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a
-                href={GITHUB_REPO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 transition-colors hover:text-text-primary"
-                style={{ color: BODY_TEXT }}
-              >
-                <Code2 className="h-4 w-4" />
-                {t('github')}
-              </a>
             </div>
           </div>
 
           <div className="flex justify-center lg:justify-end">
             <div
-              className="w-[280px] rounded-sheet border p-1.5 md:w-[320px]"
+              className="w-[280px] rounded-sheet border p-1 md:w-[320px]"
               style={{ borderColor: ink(0.2) }}
             >
               <div className="overflow-hidden rounded-card">

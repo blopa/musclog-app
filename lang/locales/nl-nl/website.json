@@ -192,8 +192,8 @@
       "screenshotAlt": "Schermafbeelding van de Musclog-app"
     },
     "screenshots": {
-      "title": "Zie Musclog in beweging",
-      "description": "Een trage weergave van echte app-schermen. Beweeg erover om te pauzeren en klik op een kaart om deze groter te openen.",
+      "title": "In de app",
+      "description": "Echte schermen van Musclog. Scroll opzij of tik op een scherm om het groter te zien.",
       "openSlide": "Screenshot openen",
       "modalAriaLabel": "Musclog screenshotvoorbeeld",
       "close": "Sluiten",
@@ -267,36 +267,36 @@
       "description": "Tools om te loggen, plannen en terug te kijken. Functies met AI zijn optioneel.",
       "items": {
         "aiCoach": {
-          "title": "AI Coach (Loggy)",
-          "description": "Chat met uw AI fitness coach voor gepersonaliseerde workoutplannen, voedingsadvies en maaltijdfoto-schatting."
+          "title": "AI-coach",
+          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel, met je eigen Gemini-, OpenAI- of Claude-sleutel."
         },
         "barcode": {
-          "title": "Barcode Scanner",
-          "description": "Voeg producten snel toe door barcodes te scannen. Toegang tot de Open Food Facts database met miljoenen producten."
+          "title": "Barcodescanner",
+          "description": "Scan een product om het te loggen via Open Food Facts, met Nutri-Score en NOVA als het product die heeft."
         },
         "checkins": {
-          "title": "Wekelijkse Check-ins",
-          "description": "Geautomatiseerde 7-daagse analyse van uw voortgang met dynamische doelaanpassingen om u op koers te houden."
+          "title": "Wekelijkse review",
+          "description": "Zie elke week hoe je eten, gewicht en training gingen, en accepteer of sla een voorgestelde aanpassing van je doelen over."
         },
         "analytics": {
-          "title": "Voortgangsanalyses",
-          "description": "Interactieve grafieken voor gewicht, lichaamsvet en lifting-voortgang. Volg uw TDEE met echte gegevens."
+          "title": "Voortgangsgrafieken",
+          "description": "Grafieken voor gewicht, vetpercentage en lifts, plus een schatting van je calorieverbruik op basis van je eigen logs."
         },
         "cycle": {
           "title": "Cyclus Bewustzijn",
           "description": "Registreer menstruaties en symptomen en zie patronen in je eigen gegevens. Voorspellingen staan uit tot je ze aanzet."
         },
         "templates": {
-          "title": "Workout Sjablonen",
-          "description": "Maak aangepaste routines zoals PPL of Bovenlichaam/Onderlichaam. Toegang tot een uitgebreide oefenbibliotheek met spierdoelgerichtheid."
+          "title": "Trainingsplannen",
+          "description": "Maak routines zoals push/pull/legs of boven-/onderlichaam met een bibliotheek van meer dan 800 oefeningen en doelspieren."
         },
         "healthConnect": {
           "title": "Health Connect",
           "description": "Synchroniseer met Google Health Connect om gegevens te delen met andere gezondheids- en fitness-apps op Android."
         },
         "encryption": {
-          "title": "Gecodeerde Opslag",
-          "description": "Uw gevoelige gezondheidsgegevens worden gecodeerd opgeslagen met AES. Exporteer op elk moment als JSON of Excel."
+          "title": "Versleutelde opslag",
+          "description": "Gewicht, vetpercentage en eetlogs worden op je apparaat versleuteld. Exporteer wanneer je wilt naar JSON of Excel."
         }
       }
     },
@@ -318,7 +318,7 @@
       "features": "Functies",
       "progress": "Voortgang",
       "github": "GitHub",
-      "download": "Nu Downloaden",
+      "download": "Downloaden",
       "calculator": "Calculator",
       "exercises": "Oefeningen",
       "gameboy": "Game Boy",
@@ -509,8 +509,8 @@
     "storeButtons": {
       "googleTitle": "VERKRIJG HET OP",
       "googleStore": "Google Play",
-      "appleTitle": "DOWNLOAD OP DE",
-      "appleStore": "App Store",
+      "appleTitle": "DOE MEE VIA",
+      "appleStore": "TestFlight",
       "comingSoon": "App Store binnenkort beschikbaar!",
       "qrButton": "QR-codes weergeven",
       "qrTitle": "QR-codes",
@@ -518,7 +518,7 @@
       "qrGoogleLabel": "Android-installatiepagina",
       "qrAppleLabel": "iOS-installatiepagina",
       "qrGoogleAlt": "QR-code voor Google Play",
-      "qrAppleAlt": "QR-code voor de App Store",
+      "qrAppleAlt": "QR-code voor TestFlight",
       "close": "Sluiten"
     },
     "download": {
@@ -527,7 +527,7 @@
       "title": "Download Musclog",
       "subtitle": "Download Musclog nu en houd je training, voeding en voortgang op een priveplek bij.",
       "googleLabel": "Download Musclog via Google Play",
-      "appleLabel": "Download Musclog via de App Store"
+      "appleLabel": "Doe mee met Musclog via TestFlight"
     },
     "open": {
       "title": "Openen in Musclog",
@@ -546,7 +546,7 @@
       "github": "GitHub",
       "contact": "Contact",
       "license": "Licentie",
-      "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy.",
+      "copyright": "Gratis open-sourcesoftware.",
       "latestBuild": "Nieuwste build: {{version}}"
     },
     "cookieConsent": {

@@ -192,8 +192,8 @@
       "screenshotAlt": "Musclog app screenshot"
     },
     "screenshots": {
-      "title": "See Musclog in motion",
-      "description": "A slow scrolling preview of real app screens. Hover to pause and click any card to open it larger.",
+      "title": "Inside the app",
+      "description": "Real screens from Musclog. Scroll sideways, or tap one to see it larger.",
       "openSlide": "Open screenshot",
       "modalAriaLabel": "Musclog screenshot preview",
       "close": "Close",
@@ -267,36 +267,36 @@
       "description": "Logging, planning and review tools. Features that use AI are optional.",
       "items": {
         "aiCoach": {
-          "title": "AI Coach (Loggy)",
-          "description": "Chat with your AI fitness coach for personalized workout plans, nutrition advice, and meal photo estimation."
+          "title": "AI coach",
+          "description": "Chat with Loggy about training and food, or estimate a meal from a photo. Optional, with your own Gemini, OpenAI or Claude key."
         },
         "barcode": {
-          "title": "Barcode Scanner",
-          "description": "Quickly add products by scanning barcodes. Access the Open Food Facts database with millions of products."
+          "title": "Barcode scanner",
+          "description": "Scan a product to log it from Open Food Facts, with Nutri-Score and NOVA where the product has them."
         },
         "checkins": {
-          "title": "Weekly Check-ins",
-          "description": "Automated 7-day analysis of your progress with dynamic goal adjustments to keep you on track."
+          "title": "Weekly Review",
+          "description": "Each week, see how your food, weight and training went, and accept or skip a suggested change to your targets."
         },
         "analytics": {
-          "title": "Progress Analytics",
-          "description": "Interactive charts for weight, body fat, and lifting progress. Track your TDEE with real data."
+          "title": "Progress charts",
+          "description": "Charts for weight, body fat and lifts, plus a calorie expenditure estimate from your own logs."
         },
         "cycle": {
-          "title": "Cycle Awareness",
+          "title": "Cycle awareness",
           "description": "Log periods and symptoms, and see patterns in your own records. Predictions stay off unless you turn them on."
         },
         "templates": {
-          "title": "Workout Templates",
-          "description": "Create custom routines like PPL or Upper/Lower. Access an extensive exercise library with muscle targeting."
+          "title": "Workout plans",
+          "description": "Build routines such as push/pull/legs or upper/lower from a library of more than 800 exercises with target muscles."
         },
         "healthConnect": {
           "title": "Health Connect",
           "description": "Sync with Google Health Connect to share data with other health and fitness apps on Android."
         },
         "encryption": {
-          "title": "Encrypted Storage",
-          "description": "Your sensitive health data is encrypted at rest using AES. Export anytime as JSON or Excel."
+          "title": "Encrypted storage",
+          "description": "Weight, body fat and food logs are encrypted on your device. Export as JSON or Excel any time."
         }
       }
     },
@@ -318,7 +318,7 @@
       "features": "Features",
       "progress": "Progress",
       "github": "GitHub",
-      "download": "Download Now",
+      "download": "Download",
       "calculator": "Calculator",
       "exercises": "Exercises",
       "gameboy": "Game Boy",
@@ -509,8 +509,8 @@
     "storeButtons": {
       "googleTitle": "GET IT ON",
       "googleStore": "Google Play",
-      "appleTitle": "DOWNLOAD ON THE",
-      "appleStore": "App Store",
+      "appleTitle": "JOIN ON",
+      "appleStore": "TestFlight",
       "comingSoon": "App Store coming soon!",
       "qrButton": "Show QR codes",
       "qrTitle": "QR codes",
@@ -518,7 +518,7 @@
       "qrGoogleLabel": "Android install page",
       "qrAppleLabel": "iOS install page",
       "qrGoogleAlt": "QR code for Google Play",
-      "qrAppleAlt": "QR code for the App Store",
+      "qrAppleAlt": "QR code for TestFlight",
       "close": "Close"
     },
     "download": {
@@ -527,7 +527,7 @@
       "title": "Download Musclog",
       "subtitle": "Download Musclog now and keep your training, nutrition, and progress in one private place.",
       "googleLabel": "Download Musclog on Google Play",
-      "appleLabel": "Download Musclog on the App Store"
+      "appleLabel": "Join Musclog on TestFlight"
     },
     "open": {
       "title": "Open in Musclog",
@@ -546,7 +546,7 @@
       "github": "Github",
       "contact": "Contact",
       "license": "License",
-      "copyright": "Free & Open Source Software. Built for your privacy.",
+      "copyright": "Free and open source software.",
       "latestBuild": "Latest build: {{version}}"
     },
     "cookieConsent": {
