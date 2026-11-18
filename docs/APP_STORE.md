@@ -6,6 +6,28 @@ with a gate before every upload, and the listing as files. It uses
 command-line client for the App Store Connect API. **It runs on Linux.** Builds stay on EAS (cloud, profile
 `production`), so no Mac and no Xcode are needed; there is no Xcode Cloud.
 
+**The part you will use most is the listing: `scripts/appstore.sh`** (text, screenshots, category, age rating,
+review contact). Building and uploading the binary is EAS's job (`npm run build-ios` / `eas submit`, as before);
+`release-ios.sh build|testflight` exist but are optional. What `release-ios.sh` still adds on top of EAS is
+`check` (the compliance gate), `submit` (stage the version with its listing and send it to App Review, using a
+build EAS already uploaded), `status` and `review`.
+
+## The usual flow, without building
+
+```
+scripts/appstore.sh new-version                     # the App Store version (app.json's) must exist; creates it if missing
+scripts/appstore.sh pull --with-settings            # once: start from what App Store Connect has (commit it, apart from review-information.json)
+scripts/appstore.sh from-listing                    # Play text -> iOS text (edit ios/appstore/listing-extra.json for subtitle/keywords/what's new first)
+scripts/appstore.sh validate && scripts/appstore.sh audit
+scripts/appstore.sh plan --with-settings            # read-only diff
+scripts/appstore.sh up --with-settings              # apply (asks)
+scripts/appstore.sh screenshots from-captures       # or put your own PNGs in ios/appstore/screenshots/<locale>/iphone|ipad
+scripts/appstore.sh screenshots plan                # validates sizes locally, then a dry run against App Store Connect
+scripts/appstore.sh screenshots up                  # replaces the sets (asks)
+scripts/release-ios.sh submit --latest --dry-run    # after EAS uploaded the build: what is still missing for review
+scripts/release-ios.sh submit --latest              # send it to App Review (asks)
+```
+
 | Script                      | Google Play counterpart      | Does                                                                                                  |
 | --------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `scripts/setup-asc.sh`      | `setup-gplay.sh`             | Installs asc (pinned, SHA-256 checked), signs in, checks the app and group.                           |
@@ -126,6 +148,8 @@ scripts/appstore.sh validate        # offline limits and other-platform lint + a
 scripts/appstore.sh audit           # App Review's metadata rules (vendored metadata-audit.py), offline
 scripts/appstore.sh plan            # repo vs App Store Connect (asc metadata push --dry-run); changes nothing
 scripts/appstore.sh up              # lint, show the plan, ask, apply (--if-exists update); --yes skips the question
+scripts/appstore.sh new-version     # create the App Store version for app.json's version if it does not exist
+scripts/appstore.sh screenshots ... # see "Screenshots" below
 ```
 
 `from-listing` (`scripts/appstore-listing-metadata.py`) keeps the Play listing the one place the store text is
@@ -147,12 +171,48 @@ Play's "Health Connect" (Android's health store) becomes "Apple Health", with a 
 result. Everything else is copied as is, so **review the iOS text before the first `up`**: the Play copy
 describes features by their Android names, and App Store text should describe only what the iOS build does.
 
-`asc metadata` does not manage screenshots, pricing, availability or the App Privacy answers. The category, age
-rating and App Review contact are opt-in scopes (`asc metadata pull --include categories,age-rating,review-information`)
-that these scripts do not use yet; set them once in App Store Connect. Text edits to a live version reach the
-store with the next submitted version, except the promotional text, which is published at once. The iOS
-screenshots are not automated: the Play phone project (`screenshots/google-play/phone.osg.json`) takes an
-iPhone `deviceType` (add its screen to `SCREEN_SHAPES` in `scripts/google-play-phone-screenshots.js`).
+**Settings scopes (`--with-settings` on `pull`, `plan`, `up`).** Adds asc's opt-in files
+`categories.json` (primary/secondary category), `age-rating.json` (the questionnaire) and
+`review-information.json` (the App Review contact and notes). `pull --with-settings` is the way to start: it
+shows you the current values, then you edit the files and `up --with-settings` pushes them (asc reads each value
+back and fails when App Store Connect disagrees). `review-information.json` holds a name, phone and email, so
+it is **gitignored** (a public repo); a demo account password is never written, only `@env:ASC_DEMO_ACCOUNT_PASSWORD`
+(Musclog needs no demo account). Set the age rating from the app's real behaviour (the compliance skill's
+"2026 age rating questions"); `asc age-rating edit --app 6761317034 --all-none` is the starting point, then
+override what applies (AI chat, health topics, user-generated content: none).
+
+**`new-version`** runs `asc versions create --if-exists skip` for `expo.version`: the listing and screenshots
+attach to an App Store version, and uploading a binary does not create one.
+
+`whatsNew` comes from `listing-extra.json` too (`{"en-US": {"whatsNew": "…"}}`); it is release copy, so rewrite
+it for each version (Apple requires it from the second version on).
+
+## Screenshots
+
+`ios/appstore/screenshots/<apple locale>/iphone/*.png` fills the `IPHONE_65` set (1242×2688 or 1284×2778 px) and
+`.../ipad/*.png` the `IPAD_PRO_3GEN_129` set (2048×2732 or 2064×2752 px), up to 10 each, in file-name order.
+
+```
+scripts/appstore.sh screenshots from-captures [--from DIR] [--locale en-US] [--kind iphone|ipad]
+scripts/appstore.sh screenshots validate    # offline: sizes, formats, duplicates (asc screenshots validate)
+scripts/appstore.sh screenshots plan        # validate, then asc's dry run (what would be deleted and uploaded)
+scripts/appstore.sh screenshots up          # asks, then REPLACES each set with the local folder
+scripts/appstore.sh screenshots list        # what App Store Connect has now
+```
+
+- `from-captures` copies the five numbered captures of the app-store suite (`screenshots/app-store/portrait-6.7/
+01-home.png … 05-settings.png`, 1284×2778; not the `modal-*` ones) into the folder for one locale. They are raw app
+  captures in the language the suite ran in, so only `en-US` is filled by default. A locale with no screenshots
+  of its own should fall back to the primary language on the store page (check in App Store Connect); copying
+  English captures into `de-DE` would show English UI under a German listing.
+- Designed marketing frames (device mockup plus caption) are the Play phone project,
+  `screenshots/google-play/phone.osg.json`; it takes an iPhone `deviceType` (add its screen to `SCREEN_SHAPES` in
+  `scripts/google-play-phone-screenshots.js`). Render those into the same folders when you want them.
+- **iPad:** `app.json` has `supportsTablet: true`, so App Store Connect asks for iPad screenshots too and there
+  are none yet (the suite has only phone projects; the Play tablet captures are 1100×1466 and 768×1024, which
+  are not accepted sizes). Either capture 2048×2732 iPad frames or decide whether the app should declare
+  iPad support (a build-config change).
+- `screenshots up` runs with `--replace --confirm` per set; `plan` shows the deletions first.
 
 ## Troubleshooting
 
@@ -173,8 +233,7 @@ iPhone `deviceType` (add its screen to `SCREEN_SHAPES` in `scripts/google-play-p
 
 ## What stays in App Store Connect
 
-Screenshots, pricing and availability, the category, the age rating questionnaire, the App Privacy
-("nutrition label") answers, the App Review contact and notes, the export compliance questions and the release
-setting. The app stores everything on the device and sends food lookups, crash reports (Sentry, can be turned
+Pricing and availability, the App Privacy ("nutrition label") answers, the export compliance questions and the
+release setting. (The category, age rating and review contact are reachable with `--with-settings`.) The app stores everything on the device and sends food lookups, crash reports (Sentry, can be turned
 off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards to
 Google Gemini; keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.

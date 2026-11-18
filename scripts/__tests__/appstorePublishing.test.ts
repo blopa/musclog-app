@@ -271,6 +271,22 @@ describe('appstore-listing-metadata.py', () => {
     ).toBe('gym,workout,macros');
   });
 
+  it('writes whatsNew from listing-extra.json and enforces its limit', () => {
+    const l = listing({ 'en-US': good });
+    const extra = path.join(l.dir, 'extra.json');
+    fs.writeFileSync(extra, JSON.stringify({ 'en-US': { whatsNew: 'Fixes and polish.' } }));
+
+    expect(convert(l, ['--extra', extra]).code).toBe(0);
+    expect(
+      JSON.parse(fs.readFileSync(path.join(l.out, 'version/9.9.9/en-US.json'), 'utf8')).whatsNew
+    ).toBe('Fixes and polish.');
+
+    fs.writeFileSync(extra, JSON.stringify({ 'en-US': { whatsNew: 'x'.repeat(4001) } }));
+    const l2 = listing({ 'en-US': good });
+
+    expect(convert(l2, ['--extra', extra]).code).not.toBe(0);
+  });
+
   it.each([
     ['names Android', { ...good, 'full_description.txt': 'Also on Android.' }, 'Android'],
     ['names Google Play', { ...good, 'short_description.txt': 'On Google Play.' }, 'Google Play'],
@@ -304,5 +320,48 @@ describe('appstore-listing-metadata.py', () => {
     const en = JSON.parse(fs.readFileSync(path.join(l.out, 'version/9.9.9/en-US.json'), 'utf8'));
     expect(en.whatsNew).toBe('Fixes');
     expect(en.description).not.toBe('old');
+  });
+});
+
+describe('appstore.sh screenshots from-captures', () => {
+  it('copies only the numbered captures into the locale folder', () => {
+    const dir = tmp();
+    const from = path.join(dir, 'captures');
+    fs.mkdirSync(from);
+    for (const f of ['01-home.png', '02-food.png', 'modal-01-open-x.png', 'notes.txt']) {
+      fs.writeFileSync(path.join(from, f), 'x');
+    }
+    const shots = path.join(dir, 'shots');
+    const r = run(
+      'bash',
+      [
+        path.join(SCRIPTS, 'appstore.sh'),
+        'screenshots',
+        'from-captures',
+        '--from',
+        from,
+        '--locale',
+        'de-DE',
+      ],
+      { MUSCLOG_APPSTORE_SHOTS: shots }
+    );
+
+    expect(r.code).toBe(0);
+    expect(fs.readdirSync(path.join(shots, 'de-DE', 'iphone')).sort()).toEqual([
+      '01-home.png',
+      '02-food.png',
+    ]);
+  });
+
+  it('refuses a source folder with no numbered captures', () => {
+    const dir = tmp();
+    const r = run(
+      'bash',
+      [path.join(SCRIPTS, 'appstore.sh'), 'screenshots', 'from-captures', '--from', dir],
+      { MUSCLOG_APPSTORE_SHOTS: path.join(dir, 'shots') }
+    );
+
+    expect(r.code).not.toBe(0);
+    expect(r.out).toContain('no NN-name.png captures');
   });
 });

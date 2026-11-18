@@ -123,3 +123,5 @@ layout-audit-report/
 # Keys themselves stay in ~/keys and are covered by *.p8 above. See docs/APP_STORE.md.
 .asc/
 ios/appstore/*.local.json
+# The App Review contact (name, phone, email) that `appstore.sh pull --with-settings` writes: personal data.
+ios/appstore/metadata/review-information.json

@@ -13,11 +13,12 @@ Field by field:
     promotionalText  short_description.txt                         (170: Play's 80 always fit)
     subtitle         ios/appstore/listing-extra.json, per Apple locale (30)
     keywords         ios/appstore/listing-extra.json, per Apple locale (100, comma-separated, no spaces)
+    whatsNew         ios/appstore/listing-extra.json, per Apple locale (4000); release copy, so rewrite it per version
     privacyPolicyUrl, supportUrl, marketingUrl   the website's own pages (websiteRoutes.json + android/play/app.json)
 
 Play has no subtitle or keywords, so those come from listing-extra.json ({"<apple locale>": {"subtitle": "...",
-"keywords": "a,b,c"}}); a locale without them leaves the field out, so App Store Connect keeps what it has (asc
-treats an omitted field as "no change"). What's new is release copy and is not touched here.
+"keywords": "a,b,c", "whatsNew": "..."}}); a locale without them leaves the field out, so App Store Connect keeps what it has (asc
+treats an omitted field as "no change"). A "whatsNew" in the same file is written to the version's What's New.
 
 Refuses to write anything when a field is over Apple's limit or the text names another platform (App Review
 2.3.10: Android, Google Play, Play Store, Wear OS ...), so a bad translation fails here and not halfway through
@@ -53,7 +54,7 @@ LOCALES = {
     "he-IL": "he", "hi-IN": "hi", "id": "id", "th": "th", "vi": "vi", "el-GR": "el", "hu-HU": "hu",
     "ro": "ro", "sk": "sk", "ca": "ca", "hr": "hr", "ms": "ms",
 }
-LIMITS = {"name": 30, "subtitle": 30, "keywords": 100, "promotionalText": 170, "description": 4000}
+LIMITS = {"name": 30, "subtitle": 30, "keywords": 100, "promotionalText": 170, "description": 4000, "whatsNew": 4000}
 
 # Other platforms by name, which App Review rejects in App Store text (2.3.10).
 OTHER_PLATFORMS = re.compile(
@@ -127,7 +128,7 @@ def build(listing_dir: Path, extra: dict):
                 continue
             fields[key] = plain_description(read(path)) if key == "description" else read(path).strip()
         mine = extra.get(apple) or {}
-        for key in ("subtitle", "keywords"):
+        for key in ("subtitle", "keywords", "whatsNew"):
             if mine.get(key):
                 fields[key] = ",".join(w.strip() for w in mine[key].split(",") if w.strip()) if key == "keywords" else mine[key].strip()
         for key, text in list(fields.items()):
@@ -145,7 +146,7 @@ def build(listing_dir: Path, extra: dict):
                 problems.append(f"{play_loc}: keywords hold whitespace; use a,b,c")
         app_info = {k: fields[k] for k in ("name", "subtitle") if k in fields}
         app_info["privacyPolicyUrl"] = privacy
-        version = {k: fields[k] for k in ("description", "keywords", "promotionalText") if k in fields}
+        version = {k: fields[k] for k in ("description", "keywords", "promotionalText", "whatsNew") if k in fields}
         version.update({"supportUrl": support, "marketingUrl": marketing})
         files[apple] = (app_info, version)
     seen = {}
