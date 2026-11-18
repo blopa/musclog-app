@@ -16,8 +16,10 @@ import { clickTopmost, localeCopy } from './layoutAudit/flowKit';
 import { selectAppLanguage } from './layoutAudit/language';
 import { bundledLocales } from './layoutAudit/locales';
 
-// Raw phone captures (`<locale>/<name>.png`) for the composer that frames them.
-const OUTPUT_ROOT = path.join('screenshots', 'google-play', 'phone');
+// Raw phone captures (`<locale>/<name>.png`) for the composer that frames them. The App Store
+// config (`playwright.app-store-phone.config.ts`) runs this same spec at an iPhone's size and
+// names its own folder through the project's `outputRoot` metadata.
+const DEFAULT_OUTPUT_ROOT = path.join('screenshots', 'google-play', 'phone');
 // The workout the demo data holds that reads as a real session (seeded names are not localized).
 const WORKOUT_NAME = 'Leg Day / Squats';
 // The workout view captured: Guided (photo hero and steppers) or Inline (the set list).
@@ -74,8 +76,9 @@ for (const locale of bundledLocales()) {
     test.use({ reducedMotion: 'reduce', locale: 'en-US', actionTimeout: 15000 });
     test.setTimeout(1800000);
 
-    test(`Capture the phone listing screens in ${locale}`, async ({ page }) => {
-      const outputDir = path.join(OUTPUT_ROOT, locale);
+    test(`Capture the phone listing screens in ${locale}`, async ({ page }, testInfo) => {
+      const outputRoot = (testInfo.project.metadata.outputRoot as string) ?? DEFAULT_OUTPUT_ROOT;
+      const outputDir = path.join(outputRoot, locale);
       fs.rmSync(outputDir, { recursive: true, force: true });
       fs.mkdirSync(outputDir, { recursive: true });
       const shot = (name: string, waitTime?: number) =>

@@ -884,7 +884,7 @@
     },
     {
       "id": "board-6",
-      "name": "Strength",
+      "name": "Muscles",
       "position": {
         "x": 11800,
         "y": 0
@@ -950,7 +950,7 @@
           },
           "rotation": 0,
           "scale": 1,
-          "content": "How strong are you?",
+          "content": "See the muscles you train",
           "fontSize": 45,
           "color": "#ffffff",
           "fontFamily": "Manrope ExtraBold",
@@ -985,7 +985,7 @@
       "localized": {
         "es-ES": {
           "headline": {
-            "content": "¿Cuánta fuerza tienes?",
+            "content": "Mira qué músculos entrenas",
             "origin": "manual"
           },
           "subheadline": {
@@ -998,7 +998,7 @@
         },
         "nl-NL": {
           "headline": {
-            "content": "Hoe sterk ben je?",
+            "content": "Zie welke spieren je traint",
             "origin": "manual"
           },
           "subheadline": {
@@ -1011,7 +1011,7 @@
         },
         "pt-BR": {
           "headline": {
-            "content": "Quão forte você é?",
+            "content": "Veja os músculos que você treina",
             "origin": "manual"
           },
           "subheadline": {
@@ -1024,7 +1024,7 @@
         },
         "ru": {
           "headline": {
-            "content": "Насколько вы сильны?",
+            "content": "Какие мышцы вы тренируете",
             "origin": "manual"
           },
           "subheadline": {

@@ -17,8 +17,12 @@ import {
   selectTheme,
 } from './helpers/screenshotSession';
 
-// The captured screens (`<project>/<name>.png`).
+// The captured screens (`<project>/<name>.png`). The App Store's iPad config
+// (`playwright.app-store-ipad.config.ts`) runs this same spec: its project names its own folder
+// through the `outputRoot` metadata and `numbered`, which prefixes each file with its position in
+// IPAD_ORDER (`01-home.png`), the form `scripts/appstore.sh screenshots from-captures` copies.
 const GOOGLE_PLAY_OUTPUT_DIR = path.join('screenshots', 'google-play');
+const IPAD_ORDER = ['home', 'workout', 'food', 'goals'];
 // The workout the demo data holds that reads as a real session; the session's first exercise is
 // the barbell squat.
 const WORKOUT_NAME = 'Leg Day / Squats';
@@ -28,11 +32,17 @@ test.describe('Google Play screenshots', () => {
   test.setTimeout(1800000);
 
   test('Capture the tablet listing screens', async ({ page }, testInfo) => {
-    const outputDir = path.join(GOOGLE_PLAY_OUTPUT_DIR, testInfo.project.name);
+    const { outputRoot, numbered } = testInfo.project.metadata as {
+      outputRoot?: string;
+      numbered?: boolean;
+    };
+    const outputDir = outputRoot ?? path.join(GOOGLE_PLAY_OUTPUT_DIR, testInfo.project.name);
     fs.rmSync(outputDir, { recursive: true, force: true });
     fs.mkdirSync(outputDir, { recursive: true });
+    const fileName = (name: string) =>
+      numbered ? `${String(IPAD_ORDER.indexOf(name) + 1).padStart(2, '0')}-${name}` : name;
     const shot = (name: string, waitTime?: number) =>
-      capture(page, path.join(outputDir, `${name}.png`), waitTime);
+      capture(page, path.join(outputDir, `${fileName(name)}.png`), waitTime);
 
     await installFixtureRoutes(page);
     await seedDemoData(page);

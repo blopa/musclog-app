@@ -237,9 +237,12 @@ cmd_screenshots() {
       use_asc_profile
       asc screenshots list --app "$(asc_app_id)" --version "$SHOT_VERSION" --output table ;;
     from-captures)
-      # Copies the numbered captures of the app-store screenshot suite (01-home.png ... 05-settings.png; not the
-      # modal-* ones) into the folder for one locale. They are raw app captures, in the language the suite ran in.
-      local from="$ROOT/screenshots/app-store/portrait-6.7" loc="en-US" kind="iphone"
+      # Copies the numbered captures (NN-name.png) of one folder into the folder for one locale and kind.
+      #   ipad:   defaults to screenshots/app-store-listing/ipad/<locale>, written by `npm run screenshots:app-store-ipad`.
+      #   iphone: needs --from. The iPhone set is normally rendered, not copied: `npm run screenshots:app-store-iphone`
+      #           writes the designed frames straight into ios/appstore/screenshots/<locale>/iphone. --from is for raw
+      #           captures only (they have no device frame and show the web layout).
+      local from="" loc="en-US" kind="iphone"
       while [[ $# -gt 0 ]]; do
         case "$1" in
           --from) from="${2:?--from needs a folder}"; shift 2 ;;
@@ -249,8 +252,14 @@ cmd_screenshots() {
         esac
       done
       [[ "$kind" == iphone || "$kind" == ipad ]] || die "--kind is iphone or ipad."
-      compgen -G "$from/[0-9][0-9]-*.png" >/dev/null || die "no NN-name.png captures in $from (run: npm run screenshots)."
+      if [[ -z "$from" ]]; then
+        [[ "$kind" == ipad ]] || die "the iphone set is rendered: run npm run screenshots:app-store-iphone (or pass --from DIR for raw captures)."
+        from="$ROOT/screenshots/app-store-listing/ipad/$loc"
+      fi
+      compgen -G "$from/[0-9][0-9]-*.png" >/dev/null || die "no NN-name.png captures in $from (run: npm run screenshots:app-store-ipad)."
       mkdir -p "$SHOTS/$loc/$kind"
+      # The folder is replaced, not merged: a file the capture no longer makes must not stay on the store.
+      rm -f "$SHOTS/$loc/$kind"/[0-9][0-9]-*.png
       cp -v "$from"/[0-9][0-9]-*.png "$SHOTS/$loc/$kind/"
       note "copied. Check them, then: scripts/appstore.sh screenshots validate" ;;
     validate)

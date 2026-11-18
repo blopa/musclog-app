@@ -18,6 +18,12 @@
 //                                                          browser window; every edit is saved back
 //                                                          into phone.osg.json until it closes
 //
+// Both modes take `--target appstore` to work on the App Store's iPhone set instead: the design is
+// screenshots/app-store-listing/iphone.osg.json (the same eight screens and captions on a 3D iPhone,
+// authored at 2568 x 5556 and rendered at 1284 x 2778), its captures are
+// screenshots/app-store-listing/iphone/<locale>/ and the images are written to
+// ios/appstore/screenshots/<apple locale>/iphone/NN-<screen>.png.
+//
 // Which CLI runs: the checkout in OSG_DIR (default ../open-screenshot-generator, built with
 // `npm install && npm run cli:build`), or, when it has no build, the published package
 // open-screenshot-generator@OSG_VERSION through npx. Rendering needs the network: the 3D phone model
@@ -30,7 +36,9 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DESIGN = path.join(ROOT, 'screenshots', 'google-play', 'phone.osg.json');
+const APP_STORE_DESIGN = path.join(ROOT, 'screenshots', 'app-store-listing', 'iphone.osg.json');
 const LISTING = path.join(ROOT, 'android', 'play', 'metadata');
+const APP_STORE_SHOTS = path.join(ROOT, 'ios', 'appstore', 'screenshots');
 const REFS_DIR = path.join(ROOT, 'screenshots');
 const REF_PREFIX = 'musclog:';
 const DEFAULT_OSG_DIR = path.join(ROOT, '..', 'open-screenshot-generator');
@@ -47,12 +55,24 @@ const PLAY_LOCALES = {
   ru: 'ru-RU',
 };
 
+// Project locale -> App Store Connect locale (its folder under ios/appstore/screenshots).
+const APP_STORE_LOCALES = {
+  'en-US': 'en-US',
+  'es-ES': 'es-ES',
+  'nl-NL': 'nl-NL',
+  'pt-BR': 'pt-BR',
+  ru: 'ru',
+};
+
 // Play's phone screenshot rules: each side 320–3840 px, the long side at most twice the short one.
 // 9:16 at 1080 px or more is what makes a listing eligible for promotion.
 const PLAY_MIN_SIDE = 320;
 const PLAY_MAX_SIDE = 3840;
 const PLAY_MAX_RATIO = 2;
 const MAX_PHONE_SCREENSHOTS = 8;
+// App Store Connect's IPHONE_65 set: 1242 x 2688 or 1284 x 2778, at most ten.
+const APP_STORE_OUTPUT = { width: 1284, height: 2778 };
+const APP_STORE_MAX_SCREENSHOTS = 10;
 // The listing images' width. The 3D phone renders in software WebGL without antialiasing, so the
 // design is authored at a multiple of this (2160 wide) and each render is scaled down to it,
 // which smooths the phone's edges.
@@ -75,6 +95,8 @@ const FONT_SOURCES = {
 // capture as it is.
 const SCREEN_SHAPES = {
   'pixel-10-pro': { width: 1280, height: 2856, cameraBottom: 0.064 },
+  // 440 x 956 pt at 3x; the Dynamic Island ends about 7% down the display.
+  'iphone-17-pro-max': { width: 1320, height: 2868, cameraBottom: 0.07 },
 };
 
 const MIME_TYPES = {
@@ -84,6 +106,75 @@ const MIME_TYPES = {
   '.webp': 'image/webp',
   '.svg': 'image/svg+xml',
 };
+
+/** Lowercase, hyphenated file name of an artboard ("Food details" -> "food-details"). */
+function slugOf(name) {
+  return String(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * What differs between the two listings this script composes. `pathFor(number, boardName, locale)`
+ * is the file one rendered board becomes (null for a language the store has no folder for) and
+ * `isManaged(name)` says which files of that folder a render owns (the ones it may delete).
+ */
+const TARGETS = {
+  play: {
+    label: 'Google Play phone',
+    store: 'Play',
+    design: DESIGN,
+    locales: PLAY_LOCALES,
+    outputWidth: OUTPUT_WIDTH,
+    maxScreenshots: MAX_PHONE_SCREENSHOTS,
+    sizeProblem: (index, outputHeight) => {
+      const short = Math.min(OUTPUT_WIDTH, outputHeight);
+      const long = Math.max(OUTPUT_WIDTH, outputHeight);
+      return short < PLAY_MIN_SIDE || long > PLAY_MAX_SIDE || long > short * PLAY_MAX_RATIO
+        ? `artboard ${index + 1} renders at ${OUTPUT_WIDTH}x${outputHeight}, which breaks Play's phone screenshot size rules`
+        : null;
+    },
+    dir: (locale) => path.join(LISTING, PLAY_LOCALES[locale], 'images', 'phoneScreenshots'),
+    pathFor: (number, boardName, locale) =>
+      PLAY_LOCALES[locale]
+        ? path.join(LISTING, PLAY_LOCALES[locale], 'images', 'phoneScreenshots', `${number}.png`)
+        : null,
+    isManaged: (name) => /^\d{2}\.png$/.test(name),
+  },
+  appstore: {
+    label: 'App Store iPhone',
+    store: 'App Store',
+    design: APP_STORE_DESIGN,
+    locales: APP_STORE_LOCALES,
+    outputWidth: APP_STORE_OUTPUT.width,
+    maxScreenshots: APP_STORE_MAX_SCREENSHOTS,
+    sizeProblem: (index, outputHeight) =>
+      outputHeight !== APP_STORE_OUTPUT.height
+        ? `artboard ${index + 1} renders at ${APP_STORE_OUTPUT.width}x${outputHeight}; the IPHONE_65 set takes ${APP_STORE_OUTPUT.width}x${APP_STORE_OUTPUT.height}`
+        : null,
+    dir: (locale) => path.join(APP_STORE_SHOTS, APP_STORE_LOCALES[locale], 'iphone'),
+    pathFor: (number, boardName, locale) =>
+      APP_STORE_LOCALES[locale]
+        ? path.join(
+            APP_STORE_SHOTS,
+            APP_STORE_LOCALES[locale],
+            'iphone',
+            `${number}-${slugOf(boardName)}.png`
+          )
+        : null,
+    isManaged: (name) => /^\d{2}-.+\.png$/.test(name),
+  },
+};
+
+function targetNamed(name = 'play') {
+  const target = TARGETS[name];
+  if (!target) {
+    throw new Error(`unknown target "${name}"; use ${Object.keys(TARGETS).join(' or ')}`);
+  }
+
+  return target;
+}
 
 function fail(message) {
   console.error(`google-play-phone-screenshots: ${message}`);
@@ -150,31 +241,28 @@ function designLocales(design) {
 }
 
 /** Why this design cannot be rendered faithfully, if it cannot; checked before a browser starts. */
-function designProblems(design) {
+function designProblems(design, target = TARGETS.play) {
   const problems = [];
   const list = boards(design);
   if (list.length === 0) {
     problems.push('the design has no artboards');
   }
 
-  if (list.length > MAX_PHONE_SCREENSHOTS) {
-    problems.push(`Play takes at most ${MAX_PHONE_SCREENSHOTS} phone screenshots`);
+  if (list.length > target.maxScreenshots) {
+    problems.push(`${target.label} takes at most ${target.maxScreenshots} screenshots`);
   }
 
   list.forEach((board, index) => {
     const { width, height } = board.size ?? {};
-    if (!(width >= OUTPUT_WIDTH) || !(height > 0)) {
-      problems.push(`artboard ${index + 1} must be at least ${OUTPUT_WIDTH} px wide`);
+    if (!(width >= target.outputWidth) || !(height > 0)) {
+      problems.push(`artboard ${index + 1} must be at least ${target.outputWidth} px wide`);
       return;
     }
 
-    const outputHeight = Math.round((height * OUTPUT_WIDTH) / width);
-    const short = Math.min(OUTPUT_WIDTH, outputHeight);
-    const long = Math.max(OUTPUT_WIDTH, outputHeight);
-    if (short < PLAY_MIN_SIDE || long > PLAY_MAX_SIDE || long > short * PLAY_MAX_RATIO) {
-      problems.push(
-        `artboard ${index + 1} renders at ${OUTPUT_WIDTH}x${outputHeight}, which breaks Play's phone screenshot size rules`
-      );
+    const outputHeight = Math.round((height * target.outputWidth) / width);
+    const sizeProblem = target.sizeProblem(index, outputHeight);
+    if (sizeProblem) {
+      problems.push(sizeProblem);
     }
   });
 
@@ -185,8 +273,8 @@ function designProblems(design) {
 
   const [base, ...others] = locales;
   for (const locale of locales) {
-    if (!PLAY_LOCALES[locale]) {
-      problems.push(`language "${locale}" has no Play locale in PLAY_LOCALES`);
+    if (!target.locales[locale]) {
+      problems.push(`language "${locale}" has no ${target.store} locale`);
     }
   }
 
@@ -226,7 +314,7 @@ function designProblems(design) {
   });
   if (missing.length > 0) {
     problems.push(
-      `missing files (captures come from npm run screenshots:google-play-phone:capture):\n${missing
+      `missing files (captures come from the capture script of this listing, see the header):\n${missing
         .map((ref) => `  ${ref}`)
         .join('\n')}`
     );
@@ -462,13 +550,13 @@ async function embedFonts(project) {
   return { ...project, fontData };
 }
 
-function readDesign() {
-  if (!fs.existsSync(DESIGN)) {
-    fail(`missing ${path.relative(ROOT, DESIGN)}`);
+function readDesign(target) {
+  if (!fs.existsSync(target.design)) {
+    fail(`missing ${path.relative(ROOT, target.design)}`);
   }
 
-  const design = JSON.parse(fs.readFileSync(DESIGN, 'utf8'));
-  const problems = designProblems(design);
+  const design = JSON.parse(fs.readFileSync(target.design, 'utf8'));
+  const problems = designProblems(design, target);
   if (problems.length > 0) {
     fail(problems.join('\n'));
   }
@@ -513,7 +601,12 @@ function osg(args) {
     process.env.OSG_VERSION ?? DEFAULT_OSG_VERSION
   );
   const browser = browserPath();
-  const full = [...runner.args, ...args, ...(browser ? ['--browser', browser] : [])];
+  const full = [
+    ...runner.args,
+    ...args,
+    ...(browser ? ['--browser', browser] : []),
+    ...(process.env.OSG_VERBOSE ? ['--verbose'] : []),
+  ];
   return { runner, full };
 }
 
@@ -521,13 +614,14 @@ function osg(args) {
  * Where a file of a one-language render goes: the CLI names it `<NN>_<artboard>_..._<W>x<H>.png`
  * (only a multi-language export prefixes the locale). Returns null for a name it does not recognise.
  */
-function listingPathFor(filename, locale) {
+function listingPathFor(filename, locale, target = TARGETS.play, design = null) {
   const match = /^(\d{2})_.+\.png$/.exec(filename);
-  if (!match || !PLAY_LOCALES[locale]) {
+  if (!match) {
     return null;
   }
 
-  return path.join(LISTING, PLAY_LOCALES[locale], 'images', 'phoneScreenshots', `${match[1]}.png`);
+  const board = design ? boards(design)[Number(match[1]) - 1] : null;
+  return target.pathFor(match[1], board?.name ?? '', locale);
 }
 
 /**
@@ -571,21 +665,25 @@ async function prepareProject(design) {
   return { work, project: await embedFonts(project), refsByHash };
 }
 
-async function render() {
-  const design = readDesign();
-  const locales = designLocales(design);
+async function render(target, only = null) {
+  const design = readDesign(target);
+  const locales = designLocales(design).filter((locale) => !only || only.includes(locale));
+  if (locales.length === 0) {
+    fail(`no language of the design matches ${only?.join(', ')}`);
+  }
+
   const count = boards(design).length;
   const { work, project } = await prepareProject(design);
   console.log(`Rendering with ${osg([]).runner.source}.`);
   const outputs = [];
   for (const locale of locales) {
     for (const written of renderLocale(projectForLocale(project, locale), work, locale)) {
-      const target = listingPathFor(written.filename, locale);
-      if (!target) {
+      const file = listingPathFor(written.filename, locale, target, design);
+      if (!file) {
         fail(`unexpected output ${written.filename}; nothing in the listing changed`);
       }
 
-      outputs.push({ source: written.path, target });
+      outputs.push({ source: written.path, target: file });
     }
   }
 
@@ -602,8 +700,8 @@ async function render() {
     images.push({
       target,
       png: await sharp(source)
-        .resize({ width: OUTPUT_WIDTH, kernel: 'lanczos3' })
-        // Play takes JPEG or 24-bit PNG without an alpha channel.
+        .resize({ width: target.outputWidth, kernel: 'lanczos3' })
+        // Both stores take opaque images (Play: JPEG or 24-bit PNG without an alpha channel).
         .flatten({ background: '#000000' })
         .png({ compressionLevel: 9 })
         .toBuffer(),
@@ -611,36 +709,36 @@ async function render() {
   }
 
   // Everything rendered: only now touch the listing, so a failure never leaves it half updated.
+  const written = new Set(images.map((image) => image.target));
   for (const locale of locales) {
-    const dir = path.join(LISTING, PLAY_LOCALES[locale], 'images', 'phoneScreenshots');
+    const dir = target.dir(locale);
     fs.mkdirSync(dir, { recursive: true });
-    // A shorter set than before must not leave the old tail behind.
+    // A different set than before must not leave the old files behind.
     for (const name of fs.readdirSync(dir)) {
-      const number = /^(\d{2})\.png$/.exec(name);
-      if (number && Number(number[1]) > count) {
+      if (target.isManaged(name) && !written.has(path.join(dir, name))) {
         fs.rmSync(path.join(dir, name));
         console.log(`removed ${path.relative(ROOT, path.join(dir, name))}`);
       }
     }
   }
 
-  for (const { target, png } of images) {
-    fs.writeFileSync(target, png);
-    console.log(`wrote ${path.relative(ROOT, target)}`);
+  for (const { target: file, png } of images) {
+    fs.writeFileSync(file, png);
+    console.log(`wrote ${path.relative(ROOT, file)}`);
   }
 
   fs.rmSync(work, { recursive: true, force: true });
 }
 
-async function studio() {
-  const design = readDesign();
+async function studio(target) {
+  const design = readDesign(target);
   const { work, project, refsByHash } = await prepareProject(design);
   const file = path.join(work, 'project.json');
   fs.writeFileSync(file, JSON.stringify(project));
   const { runner, full } = osg(['studio', '--project', file]);
   console.log(
-    `Editing ${path.relative(ROOT, DESIGN)} with ${runner.source}. Changes are saved as you make ` +
-      'them; close the window when done, then run npm run screenshots:google-play-phone:render.'
+    `Editing ${path.relative(ROOT, target.design)} with ${runner.source}. Changes are saved as you make ` +
+      'them; close the window when done, then render it again.'
   );
 
   let saved = JSON.stringify(design, null, 2);
@@ -655,10 +753,10 @@ async function studio() {
     const { design: next, embedded } = deinlineProject(project, refsByHash);
     const text = JSON.stringify(next, null, 2);
     if (text !== saved) {
-      fs.writeFileSync(DESIGN, `${text}\n`);
+      fs.writeFileSync(target.design, `${text}\n`);
       saved = text;
       console.log(
-        `saved ${path.relative(ROOT, DESIGN)}` +
+        `saved ${path.relative(ROOT, target.design)}` +
           (embedded > 0
             ? ` (${embedded} image(s) added by hand are embedded; prefer a musclog: capture path)`
             : '')
@@ -676,9 +774,12 @@ async function studio() {
 }
 
 module.exports = {
+  APP_STORE_DESIGN,
+  APP_STORE_LOCALES,
   DESIGN,
   OUTPUT_WIDTH,
   PLAY_LOCALES,
+  TARGETS,
   SCREEN_SHAPES,
   deinlineProject,
   designLocales,
@@ -692,11 +793,25 @@ module.exports = {
 };
 
 if (require.main === module) {
-  const mode = process.argv[2] ?? 'render';
+  const args = process.argv.slice(2);
+  const option = (name) => {
+    const at = args.indexOf(name);
+    return at >= 0 ? args[at + 1] : undefined;
+  };
+  const mode = args[0] && !args[0].startsWith('--') ? args[0] : 'render';
   const run = { render, studio }[mode];
   if (!run) {
     fail(`unknown mode "${mode}"; use render or studio`);
   }
 
-  run().catch((error) => fail(error.stack ?? error.message));
+  let target;
+  try {
+    target = targetNamed(option('--target'));
+  } catch (error) {
+    fail(error.message);
+  }
+
+  // --locales en-US,ru renders only those languages (a full render takes about 9 minutes).
+  const only = option('--locales')?.split(',');
+  run(target, only).catch((error) => fail(error.stack ?? error.message));
 }
