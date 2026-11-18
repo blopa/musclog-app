@@ -3,7 +3,7 @@
 #
 #   scripts/release-ios.sh check [--online] [--all-platforms]
 #   scripts/release-ios.sh build [--ipa-out FILE]
-#   scripts/release-ios.sh testflight [--group NAME] [--ipa FILE] [--skip-build] [--eas-submit] [--dry-run]
+#   scripts/release-ios.sh testflight [--group NAME[,NAME...]] [--beta-review] [--ipa FILE] [--skip-build] [--eas-submit] [--dry-run]
 #   scripts/release-ios.sh submit (--latest | --build-id ID) [--version X.Y.Z] [--yes] [--dry-run]
 #   scripts/release-ios.sh status
 #   scripts/release-ios.sh review
@@ -17,7 +17,8 @@
 #   App Store Connect to validate the key and whether the build number is above the ones already uploaded.
 # - `testflight` uploads the .ipa with `asc builds upload` (not `eas submit`, which asks for an Apple login
 #   unless EAS holds an API key; --eas-submit uses it anyway), waits for Apple to process it, then adds the
-#   build to the TestFlight group (testers only, no App Review for internal groups).
+#   build to the TestFlight group(s) (comma-separated; internal groups need no review). External groups need
+#   Beta App Review: add --beta-review to submit the build for it (asks Apple's reviewers, so opt-in).
 # - `submit` stages the version (creates it if needed, applies ios/appstore/metadata, attaches the build),
 #   runs `asc validate`, which must pass, then creates the review submission and sends it. It asks first.
 #   After approval the release follows the version's release setting in App Store Connect.
@@ -79,8 +80,9 @@ do_build() {
   need jq "Install jq."
   need unzip "Install unzip."
   cd "$ROOT"
-  # Same first step as `npm run build-ios`: strips the Xcode 26 local patch from project.pbxproj for EAS.
-  node scripts/prepare-for-eas.js
+  # Deliberately NOT scripts/prepare-for-eas.js (what `npm run build-ios` runs): it is stale. It strips the whole
+  # PBXTargetDependency section, which now holds the real ExpoWidgetsTarget dependency, and EAS's project parser
+  # then fails with "Cannot read properties of undefined". The committed project.pbxproj is what EAS builds.
   note "building $(app_version) ($(app_build_number)) with EAS profile 'production'"
   local json url
   json="$(npx --no-install eas build --platform ios --profile production --non-interactive --wait --json)"
@@ -107,11 +109,12 @@ cmd_build() {
 
 # --- testflight --------------------------------------------------------------------------------------------
 cmd_testflight() {
-  local group="" ipa="" skip_build=0 eas_submit=0 dry=0
+  local group="" ipa="" skip_build=0 eas_submit=0 dry=0 beta_review=0
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --group) group="${2:?--group needs a name}"; shift 2 ;;
       --ipa) ipa="${2:?--ipa needs a path}"; shift 2 ;;
+      --beta-review) beta_review=1; shift ;;
       --skip-build) skip_build=1; shift ;;
       --eas-submit) eas_submit=1; shift ;;
       --dry-run) dry=1; shift ;;
@@ -134,7 +137,7 @@ cmd_testflight() {
       echo "  asc builds upload --app $app --ipa $ipa --version $(app_version) --build-number $(app_build_number) --wait"
     fi
     echo "  asc builds wait --app $app --build-number $(app_build_number) --platform IOS --version $(app_version)"
-    echo "  asc builds add-groups --build-id <that build> --group \"$group\""
+    echo "  asc builds add-groups --build-id <that build> --group \"$group\"$([[ "$beta_review" -eq 1 ]] && echo ' --submit --confirm')"
     return 0
   fi
 
@@ -159,7 +162,9 @@ cmd_testflight() {
     | json_get '(d.get("data") or d).get("id", "")')"
   [[ -n "$id" ]] || die "Apple did not report the processed build; see: scripts/release-ios.sh status"
   note "build $id is processed; giving it to TestFlight group '$group'"
-  asc builds add-groups --build-id "$id" --group "$group" --output table
+  local add=(builds add-groups --build-id "$id" --group "$group")
+  [[ "$beta_review" -eq 1 ]] && add+=(--submit --confirm)
+  asc "${add[@]}" --output table
 }
 
 # --- submit ------------------------------------------------------------------------------------------------

@@ -64,14 +64,21 @@ scripts/release-ios.sh status                         # builds, TestFlight, revi
 scripts/release-ios.sh review                         # App Review's state and the next step
 ```
 
-- **`build`** runs `node scripts/prepare-for-eas.js` first (what `npm run build-ios` does; it rewrites
-  `ios/…/project.pbxproj`, so look at `git status` afterwards) and then
-  `eas build --platform ios --profile production --non-interactive --wait --json`. EAS builds iOS locally only on
-  a Mac, so there is no `--local`. It needs EAS credentials set up once (`npm run eas-login`; the first build may
-  have to be interactive).
+- **`build`** runs `eas build --platform ios --profile production --non-interactive --wait --json` on the
+  committed `project.pbxproj`. It deliberately does not run `scripts/prepare-for-eas.js` (which `npm run
+build-ios` does): that script is stale, strips the `ExpoWidgetsTarget` dependency out of the project and makes
+  EAS fail with "Cannot read properties of undefined (reading '<id>')". If that error ever shows up, `git status`
+  will show a modified `project.pbxproj`; `git checkout` it. EAS builds iOS locally only on a Mac, so there is
+  no `--local`. It needs EAS credentials set up once (`npm run eas-login`; the first build may have to be
+  interactive).
 - **`testflight`** uploads the `.ipa` with `asc builds upload` (EAS's `submit` asks for an Apple login unless EAS
   holds an API key; `--eas-submit` uses it anyway), waits for Apple to process it, then adds the build to the
-  group. Internal groups need no App Review.
+  group(s). `--group` and `testflightGroup` in `ios/appstore/app.json` take a comma-separated list
+  (`"Main Testers,Main External Testers"`). Internal groups need no review. **External groups need Beta App
+  Review**: add `--beta-review` and the script submits the build for it (`asc builds add-groups --submit
+--confirm`). App Store Connect must have the beta app information (description, feedback email, contact) and
+  "What to test" filled in once, or `asc` stops before submitting. Later builds of an approved version usually
+  reach external testers without a new review.
 - **`submit`** stages the version (creates it if needed, applies `ios/appstore/metadata`, attaches the build),
   runs `asc validate`, which must pass (age rating, privacy policy URL, screenshots, review contact, export
   compliance…), then creates the review submission and sends it. `--dry-run` stops after the validation report.

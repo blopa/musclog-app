@@ -2,7 +2,7 @@
 # One-command setup of App Store publishing on a fresh machine. Idempotent. Works on Linux: nothing here needs
 # a Mac, because the builds run on EAS.
 #
-#   scripts/setup-asc.sh [--key PATH] [--key-id ID] [--issuer-id ID] [--group NAME] [--bypass-keychain]
+#   scripts/setup-asc.sh [--key PATH] [--key-id ID] [--issuer-id ID] [--group NAME[,NAME...]] [--bypass-keychain]
 #
 # 1. installs asc (rorkai/App-Store-Connect-CLI) pinned at the version in lib/asc-common.sh, into ~/.local/bin,
 #    checked against its SHA-256 (downloaded to a temp dir first, never piped to a shell)
@@ -168,8 +168,17 @@ d["testflightGroup"] = group
 open(path, "w").write(json.dumps(d, indent=2, sort_keys=True) + "\n")
 PY
     fi
-    if [[ -n "$GROUP" ]] && printf '%s\n' "$groups" | grep -qxF "$GROUP"; then
-      ok "TestFlight group '$GROUP' (named in ios/appstore/app.json)"
+    # One name or several, comma-separated ("Main Testers,Main External Testers"): every one must exist.
+    groups_ok=0
+    if [[ -n "$GROUP" ]]; then
+      groups_ok=1
+      IFS=',' read -r -a wanted <<<"$GROUP"
+      for g in "${wanted[@]}"; do
+        printf '%s\n' "$groups" | grep -qxF "$g" || { echo "   no TestFlight group named '$g'" >&2; groups_ok=0; }
+      done
+    fi
+    if [[ "$groups_ok" -eq 1 ]]; then
+      ok "TestFlight group(s) '$GROUP' (named in ios/appstore/app.json)"
     elif [[ -z "$groups" ]]; then
       miss "a TestFlight group. Create one in App Store Connect (TestFlight -> Internal Testing -> (+)), or:
               asc testflight groups create --app $app --name \"Internal Testers\" --internal --access-all-builds
