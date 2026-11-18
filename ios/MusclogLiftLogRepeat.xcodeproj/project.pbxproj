@@ -12,13 +12,16 @@
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
-		B8F1AE44F34744E08BFCBE56 /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = A235272C25E94F31886C9903 /* index.swift */; };
-		9163099095CF4CEC9D19A546 /* Nutrition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA1338F6B1E4500A61A6256 /* Nutrition.swift */; };
-		C724E64519BA427D973CA81C /* SmartCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5530197438BA44488F814EEE /* SmartCamera.swift */; };
-		C70A754EE21D4F03A6E0E42D /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 64A4A97E3E5449CBA25A0DC0 /* ExpoWidgetsTarget.appex */; };
-		01B755026B05414AA6380E5D /* ExpoWidgetsTarget.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 1E23F6C741B3466F87F1BC81 /* ExpoWidgetsTarget.entitlements */; };
-		FA71AD73E30941E59A6520C1 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 32BB8B3AA88649B587287AF0 /* Info.plist */; };
-		7186AFF618B547C0AA555A36 /* ExpoWidgetsLayoutRegistry.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 78866D6EC4AF4DCDBA1ED63F /* ExpoWidgetsLayoutRegistry.config.json */; };
+		46F78BF4E92244FEAB65164D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 79CE519896CD401B95A72681 /* PrivacyInfo.xcprivacy */; };
+		0575CA1A70524D308BC4FCFD /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF54C29088544FA8BBF5B120 /* index.swift */; };
+		A7256ED99C484E0FA1678E25 /* Nutrition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103CD7FB45E74C40AC193F25 /* Nutrition.swift */; };
+		94B40A4A89FC4579A8F80260 /* SmartCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B887CE40B3445281F66A94 /* SmartCamera.swift */; };
+		BAFE736BAFCB43A4B5EB70FF /* ActivityHeatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F8D2F93D9E4B4981359BBE /* ActivityHeatmap.swift */; };
+		120BB192536B4990B23C69BD /* Cycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701C8F46345D416FAECF3329 /* Cycle.swift */; };
+		CF2ED36F87DB415682EFB9EA /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 26314779B81A44A0863E6E4F /* ExpoWidgetsTarget.appex */; };
+		AB9B44D25DA047F5A198AF02 /* ExpoWidgetsTarget.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 6467341735EF43F2918E11F5 /* ExpoWidgetsTarget.entitlements */; };
+		10CD6FF973A74EE4B9DEC510 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 089525027A134DC7B6D9E542 /* Info.plist */; };
+		1F551A210C8B4B6894E5040F /* ExpoWidgetsLayoutRegistry.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A5C8A4510014A83ADC6CAB1 /* ExpoWidgetsLayoutRegistry.config.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,13 +34,16 @@
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MusclogLiftLogRepeat/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = MusclogLiftLogRepeat/SceneDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* MusclogLiftLogRepeat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MusclogLiftLogRepeat-Bridging-Header.h"; path = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h"; sourceTree = "<group>"; };
-		64A4A97E3E5449CBA25A0DC0 /* ExpoWidgetsTarget.appex */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.appex"; path = "ExpoWidgetsTarget.appex"; sourceTree = BUILT_PRODUCTS_DIR; fileEncoding = undefined; lastKnownFileType = undefined; explicitFileType = wrapper.app-extension; includeInIndex = 0; };
-		A235272C25E94F31886C9903 /* index.swift */ = {isa = PBXFileReference; name = "index.swift"; path = "index.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		0DA1338F6B1E4500A61A6256 /* Nutrition.swift */ = {isa = PBXFileReference; name = "Nutrition.swift"; path = "Nutrition.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		5530197438BA44488F814EEE /* SmartCamera.swift */ = {isa = PBXFileReference; name = "SmartCamera.swift"; path = "SmartCamera.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		1E23F6C741B3466F87F1BC81 /* ExpoWidgetsTarget.entitlements */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.entitlements"; path = "ExpoWidgetsTarget.entitlements"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		32BB8B3AA88649B587287AF0 /* Info.plist */ = {isa = PBXFileReference; name = "Info.plist"; path = "Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		78866D6EC4AF4DCDBA1ED63F /* ExpoWidgetsLayoutRegistry.config.json */ = {isa = PBXFileReference; name = "ExpoWidgetsLayoutRegistry.config.json"; path = "ExpoWidgetsLayoutRegistry.config.json"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		79CE519896CD401B95A72681 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; name = "PrivacyInfo.xcprivacy"; path = "MusclogLiftLogRepeat/PrivacyInfo.xcprivacy"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		26314779B81A44A0863E6E4F /* ExpoWidgetsTarget.appex */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.appex"; path = "ExpoWidgetsTarget.appex"; sourceTree = BUILT_PRODUCTS_DIR; fileEncoding = undefined; lastKnownFileType = undefined; explicitFileType = wrapper.app-extension; includeInIndex = 0; };
+		AF54C29088544FA8BBF5B120 /* index.swift */ = {isa = PBXFileReference; name = "index.swift"; path = "index.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		103CD7FB45E74C40AC193F25 /* Nutrition.swift */ = {isa = PBXFileReference; name = "Nutrition.swift"; path = "Nutrition.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		E5B887CE40B3445281F66A94 /* SmartCamera.swift */ = {isa = PBXFileReference; name = "SmartCamera.swift"; path = "SmartCamera.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		92F8D2F93D9E4B4981359BBE /* ActivityHeatmap.swift */ = {isa = PBXFileReference; name = "ActivityHeatmap.swift"; path = "ActivityHeatmap.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		701C8F46345D416FAECF3329 /* Cycle.swift */ = {isa = PBXFileReference; name = "Cycle.swift"; path = "Cycle.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		6467341735EF43F2918E11F5 /* ExpoWidgetsTarget.entitlements */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.entitlements"; path = "ExpoWidgetsTarget.entitlements"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		089525027A134DC7B6D9E542 /* Info.plist */ = {isa = PBXFileReference; name = "Info.plist"; path = "Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		6A5C8A4510014A83ADC6CAB1 /* ExpoWidgetsLayoutRegistry.config.json */ = {isa = PBXFileReference; name = "ExpoWidgetsLayoutRegistry.config.json"; path = "ExpoWidgetsLayoutRegistry.config.json"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,7 +54,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A297385205974F9EA8C0F156 /* Frameworks */ = {
+		40EE56BE1681459985685C1A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -68,6 +74,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				79CE519896CD401B95A72681 /* PrivacyInfo.xcprivacy */,
 			);
 			name = MusclogLiftLogRepeat;
 			sourceTree = "<group>";
@@ -94,7 +101,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				AD3E2F64155A46F19DF647E8 /* ExpoWidgetsTarget */,
+				68359967E86648D98BE9F94B /* ExpoWidgetsTarget */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -105,7 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */,
-				64A4A97E3E5449CBA25A0DC0 /* ExpoWidgetsTarget.appex */,
+				26314779B81A44A0863E6E4F /* ExpoWidgetsTarget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -119,15 +126,17 @@
 			path = MusclogLiftLogRepeat/Supporting;
 			sourceTree = "<group>";
 		};
-		AD3E2F64155A46F19DF647E8 /* ExpoWidgetsTarget */ = {
+		68359967E86648D98BE9F94B /* ExpoWidgetsTarget */ = {
 			isa = PBXGroup;
 			children = (
-				1E23F6C741B3466F87F1BC81 /* ExpoWidgetsTarget.entitlements */,
-				32BB8B3AA88649B587287AF0 /* Info.plist */,
-				78866D6EC4AF4DCDBA1ED63F /* ExpoWidgetsLayoutRegistry.config.json */,
-				A235272C25E94F31886C9903 /* index.swift */,
-				0DA1338F6B1E4500A61A6256 /* Nutrition.swift */,
-				5530197438BA44488F814EEE /* SmartCamera.swift */,
+				6467341735EF43F2918E11F5 /* ExpoWidgetsTarget.entitlements */,
+				089525027A134DC7B6D9E542 /* Info.plist */,
+				6A5C8A4510014A83ADC6CAB1 /* ExpoWidgetsLayoutRegistry.config.json */,
+				AF54C29088544FA8BBF5B120 /* index.swift */,
+				103CD7FB45E74C40AC193F25 /* Nutrition.swift */,
+				E5B887CE40B3445281F66A94 /* SmartCamera.swift */,
+				92F8D2F93D9E4B4981359BBE /* ActivityHeatmap.swift */,
+				701C8F46345D416FAECF3329 /* Cycle.swift */,
 			);
 			name = ExpoWidgetsTarget;
 			path = ExpoWidgetsTarget;
@@ -146,30 +155,30 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				0FE494B9857449C7A6FE9287 /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
-				7C51BCDC0DE94C6D91279E77 /* Embed Foundation Extensions */,
-				2DEE727959EA4B42B30113E4 /* Upload Debug Symbols to Sentry */,
+				C6D864466FC241108DF4869B /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
+				2B7A76BCEEF64D2DAF2E7868 /* Embed Foundation Extensions */,
+				93E7CA34F53F41D48234C54B /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D2820FB2339B4AB6B7C547B7 /* PBXTargetDependency */,
+				713EC480A93046ABB6FF2EE6 /* PBXTargetDependency */,
 			);
 			name = MusclogLiftLogRepeat;
 			productName = MusclogLiftLogRepeat;
 			productReference = 13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C7CF5CA525014652829E51F8 /* ExpoWidgetsTarget */ = {
+		DF1E10F2E78647E1B56BD563 /* ExpoWidgetsTarget */ = {
 			isa = PBXNativeTarget;
 			name = ExpoWidgetsTarget;
 			productName = ExpoWidgetsTarget;
-			productReference = 64A4A97E3E5449CBA25A0DC0;
+			productReference = 26314779B81A44A0863E6E4F;
 			productType = "com.apple.product-type.app-extension";
-			buildConfigurationList = 5DBC93AF38CC4442BE8C899C;
+			buildConfigurationList = 90CFDD0363F845B192B8FB32;
 			buildPhases = (
-				EA75ACD8BD9749E88D7DF55D /* Sources */,
-				A297385205974F9EA8C0F156 /* Frameworks */,
+				4D0E2A8313814366AFDEF770 /* Sources */,
+				40EE56BE1681459985685C1A /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -187,7 +196,7 @@
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
 					};
-					C7CF5CA525014652829E51F8 = {
+					DF1E10F2E78647E1B56BD563 = {
 						LastSwiftMigration = 1250;
 					};
 				};
@@ -206,7 +215,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* MusclogLiftLogRepeat */,
-				C7CF5CA525014652829E51F8 /* ExpoWidgetsTarget */,
+				DF1E10F2E78647E1B56BD563 /* ExpoWidgetsTarget */,
 			);
 		};
 /* End PBXProject section */
@@ -219,6 +228,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+				46F78BF4E92244FEAB65164D /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,7 +296,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		0FE494B9857449C7A6FE9287 /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
+		C6D864466FC241108DF4869B /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -341,7 +351,7 @@ if [ \"$IS_DEBUG_BUILD\" != \"1\" ]; then
 fi
 ";
 		};
-		2DEE727959EA4B42B30113E4 /* Upload Debug Symbols to Sentry */ = {
+		93E7CA34F53F41D48234C54B /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -367,13 +377,15 @@ fi
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EA75ACD8BD9749E88D7DF55D /* Sources */ = {
+		4D0E2A8313814366AFDEF770 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B8F1AE44F34744E08BFCBE56 /* index.swift in Sources */,
-				9163099095CF4CEC9D19A546 /* Nutrition.swift in Sources */,
-				C724E64519BA427D973CA81C /* SmartCamera.swift in Sources */,
+				0575CA1A70524D308BC4FCFD /* index.swift in Sources */,
+				A7256ED99C484E0FA1678E25 /* Nutrition.swift in Sources */,
+				94B40A4A89FC4579A8F80260 /* SmartCamera.swift in Sources */,
+				BAFE736BAFCB43A4B5EB70FF /* ActivityHeatmap.swift in Sources */,
+				120BB192536B4990B23C69BD /* Cycle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,7 +423,7 @@ fi
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconKineticLight AppIconKineticShock AppIconKineticVolt AppIconKineticBlush AppIconKineticVaria";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconKineticLight AppIconKineticShock AppIconKineticVolt AppIconKineticBlush AppIconKineticVaria AppIconKineticScope";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = MusclogLiftLogRepeat/MusclogLiftLogRepeat.entitlements;
 			};
@@ -442,7 +454,7 @@ fi
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconKineticLight AppIconKineticShock AppIconKineticVolt AppIconKineticBlush AppIconKineticVaria";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconKineticLight AppIconKineticShock AppIconKineticVolt AppIconKineticBlush AppIconKineticVaria AppIconKineticScope";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = MusclogLiftLogRepeat/MusclogLiftLogRepeat.entitlements;
 			};
@@ -559,7 +571,7 @@ fi
 			};
 			name = Release;
 		};
-		062D656C8A254296AA8356C5 /* Debug */ = {
+		D1745B8EAC7A4B83AB6FF554 /* Debug */ = {
 			name = Debug;
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -567,19 +579,19 @@ fi
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				INFOPLIST_FILE = ExpoWidgetsTarget/Info.plist;
-				CURRENT_PROJECT_VERSION = "313";
+				CURRENT_PROJECT_VERSION = "334";
 				IPHONEOS_DEPLOYMENT_TARGET = "16.4";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger.ExpoWidgetsTarget";
 				GENERATE_INFOPLIST_FILE = "YES";
 				INFOPLIST_KEY_CFBundleDisplayName = ExpoWidgetsTarget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MARKETING_VERSION = "2.14.2";
+				MARKETING_VERSION = "2.16.6";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				CODE_SIGN_ENTITLEMENTS = "ExpoWidgetsTarget/ExpoWidgetsTarget.entitlements";
 				APPLICATION_EXTENSION_API_ONLY = "YES";
 			};
 		};
-		051108742C214B188AEF6DCC /* Release */ = {
+		ED9FC819FE5248658623D9B0 /* Release */ = {
 			name = Release;
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -587,13 +599,13 @@ fi
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				INFOPLIST_FILE = ExpoWidgetsTarget/Info.plist;
-				CURRENT_PROJECT_VERSION = "313";
+				CURRENT_PROJECT_VERSION = "334";
 				IPHONEOS_DEPLOYMENT_TARGET = "16.4";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger.ExpoWidgetsTarget";
 				GENERATE_INFOPLIST_FILE = "YES";
 				INFOPLIST_KEY_CFBundleDisplayName = ExpoWidgetsTarget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MARKETING_VERSION = "2.14.2";
+				MARKETING_VERSION = "2.16.6";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				CODE_SIGN_ENTITLEMENTS = "ExpoWidgetsTarget/ExpoWidgetsTarget.entitlements";
 				APPLICATION_EXTENSION_API_ONLY = "YES";
@@ -620,11 +632,11 @@ fi
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5DBC93AF38CC4442BE8C899C /* Build configuration list for PBXNativeTarget "ExpoWidgetsTarget" */ = {
+		90CFDD0363F845B192B8FB32 /* Build configuration list for PBXNativeTarget "ExpoWidgetsTarget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				062D656C8A254296AA8356C5 /* Debug */,
-				051108742C214B188AEF6DCC /* Release */,
+				D1745B8EAC7A4B83AB6FF554 /* Debug */,
+				ED9FC819FE5248658623D9B0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -632,29 +644,29 @@ fi
 /* End XCConfigurationList section */
 
 /* Begin PBXTargetDependency section */
-		D2820FB2339B4AB6B7C547B7 /* PBXTargetDependency */ = {
+		713EC480A93046ABB6FF2EE6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C7CF5CA525014652829E51F8 /* ExpoWidgetsTarget */;
-			targetProxy = 000A228DD9B44800B0334EDE /* PBXContainerItemProxy */;
+			target = DF1E10F2E78647E1B56BD563 /* ExpoWidgetsTarget */;
+			targetProxy = 2658685142C54232BC9803A6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXContainerItemProxy section */
-		000A228DD9B44800B0334EDE /* PBXContainerItemProxy */ = {
+		2658685142C54232BC9803A6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = C7CF5CA525014652829E51F8;
+			remoteGlobalIDString = DF1E10F2E78647E1B56BD563;
 			remoteInfo = ExpoWidgetsTarget;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		7C51BCDC0DE94C6D91279E77 /* Embed Foundation Extensions */ = {
+		2B7A76BCEEF64D2DAF2E7868 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C70A754EE21D4F03A6E0E42D /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */,
+				CF2ED36F87DB415682EFB9EA /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			name = "Embed Foundation Extensions";

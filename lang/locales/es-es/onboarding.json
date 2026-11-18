@@ -253,7 +253,7 @@
         }
       },
       "dataSharingTitle": "Aviso de Compartición de Datos",
-      "dataSharingBody": "Para ofrecer funciones de IA, algunos de tus datos de fitness se compartirán con los servidores de Musclog. El nivel gratuito tiene solicitudes limitadas por día.",
+      "dataSharingBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales o mensajes de chat) se envía a través de los servidores de Musclog a Gemini, la IA de Google, para redactar la respuesta. No se envía nada hasta que uses una. El nivel gratuito tiene un número limitado de solicitudes por día.",
       "readPrivacyPolicy": "Leer nuestra Política de Privacidad",
       "enable": "Activar Musclog AI",
       "noThanks": "No gracias, continuar sin IA"

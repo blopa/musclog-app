@@ -7,6 +7,14 @@
     {
       "name": "SmartCamera",
       "initialLayout": "widgets/SmartCameraWidget.tsx"
+    },
+    {
+      "name": "ActivityHeatmap",
+      "initialLayout": "widgets/ActivityHeatmapWidget.tsx"
+    },
+    {
+      "name": "Cycle",
+      "initialLayout": "widgets/CycleWidget.tsx"
     }
   ]
 }

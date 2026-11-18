@@ -31,6 +31,7 @@ import {
 } from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { needsFreeTierConsent } from '@/utils/aiConsent';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
 import {
   effectiveUseMusclogGateway,
@@ -40,6 +41,7 @@ import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { HistoryPickerField } from './aiHistorySettings';
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
 const AI_KEY_TEST_MESSAGE_KEYS = {
@@ -299,6 +301,7 @@ export function AISettingsModal({
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
   const [claudeModelMenuVisible, setClaudeModelMenuVisible] = useState(false);
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
+  const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
@@ -619,7 +622,13 @@ export function AISettingsModal({
                   label: t('settings.aiSettings.musclogFreeTier.toggle'),
                   subtitle: t('settings.aiSettings.musclogFreeTier.toggleSubtitle'),
                   value: debouncedUseMusclogFreeTier,
-                  onValueChange: handleUseMusclogFreeTierChange,
+                  onValueChange: (value: boolean) => {
+                    if (needsFreeTierConsent(debouncedUseMusclogFreeTier, value)) {
+                      setFreeTierConsentVisible(true);
+                    } else {
+                      handleUseMusclogFreeTierChange(value);
+                    }
+                  },
                 },
               ]}
             />
@@ -1002,6 +1011,20 @@ export function AISettingsModal({
           title={t('settings.aiSettings.selectClaudeModel')}
           subtitle={t('settings.aiSettings.selectClaudeModelSubtitle')}
           items={claudeModelMenuItems}
+        />
+
+        {/* Inside this FullScreenModal's tree, and never open together with a menu. */}
+        {/* eslint-disable-next-line local/no-sibling-modals */}
+        <ConfirmationModal
+          visible={freeTierConsentVisible}
+          onClose={() => setFreeTierConsentVisible(false)}
+          onConfirm={() => {
+            setFreeTierConsentVisible(false);
+            handleUseMusclogFreeTierChange(true);
+          }}
+          title={t('settings.aiSettings.musclogFreeTier.consentTitle')}
+          message={t('settings.aiSettings.musclogFreeTier.consentBody')}
+          confirmLabel={t('settings.aiSettings.musclogFreeTier.consentConfirm')}
         />
       </View>
 
