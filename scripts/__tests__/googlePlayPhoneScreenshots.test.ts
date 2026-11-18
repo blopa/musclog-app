@@ -320,7 +320,18 @@ describe('google-play-phone-screenshots composer', () => {
         : (board.localized[locale]?.[id] as { content?: string } | undefined)?.content;
     const localesOf = (design: Design) => designLocales(design);
 
+    // The captures are working files written by `npm run screenshots:app-store-iphone:capture`, so
+    // the structural check does not depend on them; the next test does, and runs only when they exist.
+    const isMissingCaptures = (problem: string) => problem.startsWith('missing files');
+    const capturesPresent = !designProblems(appStore, TARGETS.appstore).some(isMissingCaptures);
+
     it('accepts the committed App Store design', () => {
+      expect(
+        designProblems(appStore, TARGETS.appstore).filter((problem) => !isMissingCaptures(problem))
+      ).toEqual([]);
+    });
+
+    (capturesPresent ? it : it.skip)('has a capture for every screen in every language', () => {
       expect(designProblems(appStore, TARGETS.appstore)).toEqual([]);
     });
 

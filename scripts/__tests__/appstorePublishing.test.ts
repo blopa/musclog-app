@@ -345,9 +345,14 @@ describe('the App Store version folder', () => {
 
   it('is refused by validate and plan when it is named after an older version', () => {
     const meta = withFolder('2.6.2');
+    // The refusal comes from the script itself; a stub `asc` keeps the test independent of whether
+    // the real CLI is installed (without one on PATH the script stops at "asc is required" first).
+    const stubs = tmp();
+    fs.writeFileSync(path.join(stubs, 'asc'), '#!/bin/sh\nexit 0\n', { mode: 0o755 });
     for (const command of ['validate', 'plan']) {
       const r = run('bash', [path.join(SCRIPTS, 'appstore.sh'), command], {
         MUSCLOG_APPSTORE_META: meta,
+        PATH: `${stubs}${path.delimiter}${process.env.PATH ?? ''}`,
       });
 
       expect(r.code).not.toBe(0);
