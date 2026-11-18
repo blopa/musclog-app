@@ -156,3 +156,5 @@ app/(website)/posts
 
 .release
 android/play
+ios/appstore
+.asc
