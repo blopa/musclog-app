@@ -803,6 +803,7 @@ if (require.main === module) {
     const at = args.indexOf(name);
     return at >= 0 ? args[at + 1] : undefined;
   };
+
   const mode = args[0] && !args[0].startsWith('--') ? args[0] : 'render';
   const run = { render, studio }[mode];
   if (!run) {
