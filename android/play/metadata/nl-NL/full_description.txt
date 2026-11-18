@@ -41,7 +41,7 @@ Musclog is een fitnesslogboek en calorieënteller in één gratis, open source a
 
 <b>Privé door ontwerp</b>
 • Gewicht, vetpercentage en voedingslogs worden op je toestel versleuteld.
-• Vergrendel de hele app, of alleen je cyclus-, training-, voedings- of voortgangsgegevens, met de vingerafdruk of pincode van je telefoon.
+• Vergrendel de hele app, of alleen je cyclus-, training-, voedings- of voortgangsgegevens, met de biometrie of toegangscode van je telefoon.
 • Exporteer of maak een back-up van je gegevens, of verplaats ze naar een andere telefoon door QR-codes te scannen, zonder cloud.
 • Anonieme crashrapporten helpen fouten op te lossen en kun je in de instellingen uitzetten.
 • Widgets op het beginscherm, meerdere kleurthema's, en English, Español, Nederlands, Português (Brasil) en Русский.

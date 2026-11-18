@@ -230,6 +230,9 @@ describe('appstore-listing-metadata.py', () => {
       '9.9.9',
       '--listing',
       l.play,
+      // Not the repo's committed listing-extra.json: these tests must not depend on its text.
+      '--extra',
+      path.join(l.dir, 'no-listing-extra.json'),
       ...extra,
       l.out,
     ]);
@@ -320,6 +323,44 @@ describe('appstore-listing-metadata.py', () => {
     const en = JSON.parse(fs.readFileSync(path.join(l.out, 'version/9.9.9/en-US.json'), 'utf8'));
     expect(en.whatsNew).toBe('Fixes');
     expect(en.description).not.toBe('old');
+  });
+});
+
+describe('the App Store version folder', () => {
+  const appVersion = JSON.parse(fs.readFileSync(path.join(ROOT, 'app.json'), 'utf8')).expo.version;
+  const withFolder = (version: string) => {
+    const dir = tmp();
+    const meta = path.join(dir, 'metadata');
+    fs.mkdirSync(path.join(meta, 'version', version), { recursive: true });
+    fs.writeFileSync(path.join(meta, 'version', version, 'en-US.json'), '{}');
+
+    return meta;
+  };
+
+  it('is the one the repo commits, named after app.json', () => {
+    const versions = fs.readdirSync(path.join(ROOT, 'ios/appstore/metadata/version'));
+
+    expect(versions).toEqual([appVersion]);
+  });
+
+  it('is refused by validate and plan when it is named after an older version', () => {
+    const meta = withFolder('2.6.2');
+    for (const command of ['validate', 'plan']) {
+      const r = run('bash', [path.join(SCRIPTS, 'appstore.sh'), command], {
+        MUSCLOG_APPSTORE_META: meta,
+      });
+
+      expect(r.code).not.toBe(0);
+      expect(r.out).toContain(`app.json's version is ${appVersion}`);
+    }
+  });
+
+  it('is not rewritten by from-listing when it is named after an older version', () => {
+    const meta = withFolder('2.6.2');
+    const r = run('python3', ['-I', path.join(SCRIPTS, 'appstore-listing-metadata.py'), meta]);
+
+    expect(r.code).not.toBe(0);
+    expect(r.out).toContain("is not app.json's version");
   });
 });
 

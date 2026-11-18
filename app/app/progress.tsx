@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
 import { startTransition, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, View } from 'react-native';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { CaloriesBurnedCard } from '@/components/cards/CaloriesBurnedCard';
@@ -160,8 +160,14 @@ export default function ProgressScreen() {
       iconColor: theme.colors.accent.secondary,
     },
     {
-      title: t('progress.syncHealthConnect'),
-      description: isSyncing ? t('progress.syncing') : t('progress.syncHealthConnectDescription'),
+      title: t(Platform.OS === 'ios' ? 'progress.syncAppleHealth' : 'progress.syncHealthConnect'),
+      description: isSyncing
+        ? t('progress.syncing')
+        : t(
+            Platform.OS === 'ios'
+              ? 'progress.syncAppleHealthDescription'
+              : 'progress.syncHealthConnectDescription'
+          ),
       icon: RefreshCw,
       onPress: isSyncing ? () => {} : handleSync,
       iconColor: isSyncing ? theme.colors.text.secondary : theme.colors.accent.secondary,

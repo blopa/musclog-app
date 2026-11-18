@@ -43,7 +43,7 @@ Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Port
 
 <b>Tasarımdan itibaren gizli</b>
 • Kilo, vücut yağı ve yemek günlükleri cihazında şifrelenir.
-• Tüm uygulamayı ya da yalnızca döngü, antrenman, yemek veya ilerleme verilerini telefonunun parmak izi veya PIN'i ile kilitle.
+• Tüm uygulamayı ya da yalnızca döngü, antrenman, yemek veya ilerleme verilerini telefonunun biyometrisi veya kilit koduyla kilitle.
 • Verilerini dışa aktar veya yedekle ya da QR kodları tarayarak bulut olmadan başka bir telefona taşı.
 • Anonim çökme raporları hataların düzeltilmesine yardımcı olur ve ayarlardan kapatılabilir.
 • Ana ekran widget'ları, birkaç renk teması ve İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça dil desteği.

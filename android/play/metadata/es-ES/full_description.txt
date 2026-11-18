@@ -41,7 +41,7 @@ Musclog es un registro de entrenamiento y un contador de calorías en una sola a
 
 <b>Privado por diseño</b>
 • El peso, la grasa corporal y los registros de comidas se cifran en tu dispositivo.
-• Bloquea toda la app, o solo tus datos de ciclo, entrenamiento, comidas o progreso, con la huella o el PIN de tu móvil.
+• Bloquea toda la app, o solo tus datos de ciclo, entrenamiento, comidas o progreso, con la biometría o el código de tu móvil.
 • Exporta o respalda tus datos, o pásalos a otro móvil escaneando códigos QR, sin nube.
 • Los informes de fallos anónimos ayudan a corregir errores y se pueden desactivar en los ajustes.
 • Widgets en la pantalla de inicio, varios temas de color, y English, Español, Nederlands, Português (Brasil) y Русский.

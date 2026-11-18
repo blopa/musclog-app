@@ -155,13 +155,13 @@ scripts/appstore.sh screenshots ... # see "Screenshots" below
 `from-listing` (`scripts/appstore-listing-metadata.py`) keeps the Play listing the one place the store text is
 written:
 
-| App Store field                                  | Source                                                                                                                                                                                               |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name` (30)                                      | `android/play/metadata/<locale>/title.txt`                                                                                                                                                           |
-| `promotionalText` (170)                          | `short_description.txt`                                                                                                                                                                              |
-| `description` (4000)                             | `full_description.txt`, Play's `<b>` tags removed                                                                                                                                                    |
-| `subtitle` (30), `keywords` (100)                | `ios/appstore/listing-extra.json`: `{"<apple locale>": {"subtitle": "…", "keywords": "a,b,c"}}`. Play has neither, so a locale without them leaves the field out and App Store Connect keeps its own |
-| `privacyPolicyUrl`, `supportUrl`, `marketingUrl` | the website: `contactWebsite` in `android/play/app.json` plus the `privacy` and `contact` paths in `components/website/websiteRoutes.json`                                                           |
+| App Store field                                  | Source                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name` (30)                                      | `android/play/metadata/<locale>/title.txt`                                                                                                                                                                                                                                                                                                                                                                     |
+| `promotionalText` (170)                          | `short_description.txt`                                                                                                                                                                                                                                                                                                                                                                                        |
+| `description` (4000)                             | `full_description.txt`, Play's `<b>` tags removed                                                                                                                                                                                                                                                                                                                                                              |
+| `subtitle` (30), `keywords` (100)                | `ios/appstore/listing-extra.json` (committed, all ten locales): `{"<apple locale>": {"subtitle": "…", "keywords": "a,b,c", "whatsNew": "…"}}`. Play has none of them, so a locale without an entry leaves the field out and App Store Connect keeps its own. Keywords do not repeat words from that locale's title (`appstore.sh audit` flags it); the `whatsNew` text is release copy, rewrite it per version |
+| `privacyPolicyUrl`, `supportUrl`, `marketingUrl` | the website: `contactWebsite` in `android/play/app.json` plus the `privacy` and `contact` paths in `components/website/websiteRoutes.json`                                                                                                                                                                                                                                                                     |
 
 Play locales map to Apple's (`ru-RU`→`ru`, `it-IT`→`it`, `pl-PL`→`pl`, `tr-TR`→`tr`, `zh-CN`→`zh-Hans`,
 `zh-TW`→`zh-Hant`, `es-419`→`es-MX`; the table is `LOCALES` in the script and an unknown locale fails). It
@@ -177,15 +177,30 @@ describes features by their Android names, and App Store text should describe on
 shows you the current values, then you edit the files and `up --with-settings` pushes them (asc reads each value
 back and fails when App Store Connect disagrees). `review-information.json` holds a name, phone and email, so
 it is **gitignored** (a public repo); a demo account password is never written, only `@env:ASC_DEMO_ACCOUNT_PASSWORD`
-(Musclog needs no demo account). Set the age rating from the app's real behaviour (the compliance skill's
+(Musclog needs no demo account). `categories.json` sets only `primaryCategory` (`HEALTH_AND_FITNESS`); pick a secondary one deliberately in App Store Connect rather than from a guess. Set the age rating from the app's real behaviour (the compliance skill's
 "2026 age rating questions"); `asc age-rating edit --app 6761317034 --all-none` is the starting point, then
 override what applies (AI chat, health topics, user-generated content: none).
 
 **`new-version`** runs `asc versions create --if-exists skip` for `expo.version`: the listing and screenshots
 attach to an App Store version, and uploading a binary does not create one.
 
+**The version folder is app.json's version, and the scripts refuse anything else.** `metadata/version/<X.Y.Z>/` must be named `expo.version` (the version `new-version` creates and `plan`/`up` push to): `meta_version` in `appstore.sh` fails `validate`, `plan` and `up` on a folder left over from an older pull, and `from-listing` refuses to rewrite one. The listing once sat in `2.6.2` while the app was 2.16.x, so a push would have gone into that old version. After a version bump, rename the folder (`mv metadata/version/<old> metadata/version/<new>`) or `pull` it; pinned by `scripts/__tests__/appstorePublishing.test.ts`.
+
 `whatsNew` comes from `listing-extra.json` too (`{"en-US": {"whatsNew": "…"}}`); it is release copy, so rewrite
 it for each version (Apple requires it from the second version on).
+
+### What `appstore.sh audit` reports on purpose
+
+`audit` (the vendored `metadata-audit.py`) has no suppression list, so these stay in its output; each was read and decided (2026-11-18):
+
+- **`BOTH-PLACEHOLDER` ("todo") in `es-ES` and `pt-BR`**: false positive, "todo" is the word for "all".
+- **`APPLE-3.1.2-MISLEADING-PRICING` in `en-US`**: false positive, triggered by "no subscription". Musclog has no subscription, purchase or paywall.
+- **`CHINA-AI-REFERENCES` (ChatGPT/Claude, all locales)**: kept on purpose. The line "build a plan or describe a meal in ChatGPT or Claude and bring it into Musclog" is the description of a shipped feature (`utils/aiWorkoutPlan/`, `utils/aiFoodLog/`). The rule only matters for the China mainland storefront: leave that territory out of the app's availability in App Store Connect, or neutralise that one bullet before adding it.
+- Text that describes a platform feature is written so it is true on both stores (app lock is "biometrics or passcode", not "fingerprint or PIN"; "Health Connect" becomes "Apple Health" in the converter). Do not reintroduce platform-specific wording in the Play text.
+
+### Before the first TestFlight/submit
+
+`ios/MusclogLiftLogRepeat/Info.plist` still carries `expo-dev-client`'s `NSLocalNetworkUsageDescription` ("Expo Dev Launcher uses the local network…") and `NSBonjourServices` (`_expo._tcp`). Check the production `.ipa`'s plist (`unzip -p <ipa> 'Payload/*.app/Info.plist'`, then `plutil -p` or a converter) and, if they are in it, decide with a prebuild change rather than a hand edit: a review-visible string that talks about a dev launcher is a 5.1.1 question.
 
 ## Screenshots
 

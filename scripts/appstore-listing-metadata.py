@@ -101,6 +101,10 @@ def version_dir(out_dir: Path, version):
     if version:
         return out_dir / "version" / version
     if len(existing) == 1:
+        # The listing attaches to app.json's version (`appstore.sh new-version`). Rewriting a folder left over
+        # from an older pull would keep the listing in that old version.
+        if existing[0].name != app_version():
+            sys.exit(f"error: {existing[0]} is not app.json's version ({app_version()}); rename the folder, or pass --version {existing[0].name} on purpose.")
         return existing[0]
     if len(existing) > 1:
         sys.exit(f"error: more than one version folder in {out_dir / 'version'}; pass --version X.Y.Z.")

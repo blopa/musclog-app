@@ -48,7 +48,14 @@ meta_version() {
   [[ -n "$dirs" ]] || die "no version folder in $META/version. Run 'scripts/appstore.sh pull' (or from-listing) first."
   [[ "$(printf '%s\n' "$dirs" | wc -l)" == 1 ]] || die "more than one version folder in $META/version; keep only the one you edit:
 $dirs"
-  basename "$dirs"
+  local folder
+  folder="$(basename "$dirs")"
+  # The listing and the screenshots attach to the version `new-version` creates, which is app.json's. A folder
+  # left over from an older pull (the listing once sat in 2.6.2 while the app was 2.16.x) would be pushed into
+  # that old version.
+  [[ "$folder" == "$(app_version)" ]] || die "the version folder is $META/version/$folder but app.json's version is $(app_version).
+Rename it:  mv '$META/version/$folder' '$META/version/$(app_version)'   (or run 'scripts/appstore.sh pull' for that version)."
+  printf '%s\n' "$folder"
 }
 
 # The scopes asc reads and writes: the listing text, or with --with-settings the category, age rating and review contact too.
@@ -112,6 +119,7 @@ cmd_up() {
 # Limits and other-platform names, offline, over the files as they are.
 cmd_lint() {
   [[ -d "$META" ]] || die "no $META yet. Run 'scripts/appstore.sh pull' or 'from-listing' first."
+  meta_version >/dev/null
   python3 -I - "$META" <<'PY' || die "listing text problems above."
 import json, re, sys
 from pathlib import Path

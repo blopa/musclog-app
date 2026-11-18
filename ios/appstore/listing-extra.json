@@ -1,0 +1,52 @@
+{
+  "en-US": {
+    "subtitle": "Lift, Log, Repeat",
+    "keywords": "gym,lifting,strength,macros,nutrition,barcode,RPE,1RM,routines,diary,tracker,weight,progress,coach",
+    "whatsNew": "Meet Loggy, Musclog's new mascot. New in this release:\n• Import your workout history from a CSV export.\n• Your year in Musclog: a story of your training and eating.\n• Strength levels for the main lifts and recent training load per muscle.\n• A Weekly Review where you choose to progress, repeat the week or go lighter.\n• Plenty of fixes and polish."
+  },
+  "es-ES": {
+    "subtitle": "Entrena, anota, repite",
+    "keywords": "musculacion,fuerza,macros,nutricion,proteina,dieta,rutinas,diario,peso,progreso,1RM,RPE,series",
+    "whatsNew": "Conoce a Loggy, la nueva mascota de Musclog. Novedades de esta versión:\n• Importa tu historial de entrenamientos desde un archivo CSV.\n• Tu año en Musclog: una historia de tus entrenamientos y tu alimentación.\n• Niveles de fuerza en los levantamientos principales y carga reciente por músculo.\n• Una revisión semanal en la que decides si progresar, repetir la semana o bajar la carga.\n• Muchas correcciones y mejoras de detalle."
+  },
+  "nl-NL": {
+    "subtitle": "Trainen, loggen, herhalen",
+    "keywords": "gym,krachttraining,spiermassa,macros,voeding,eiwit,barcode,RPE,1RM,schema,routines,tracker,gewicht",
+    "whatsNew": "Maak kennis met Loggy, de nieuwe mascotte van Musclog. Nieuw in deze versie:\n• Importeer je trainingsgeschiedenis uit een CSV-export.\n• Je jaar in Musclog: een verhaal over je training en eten.\n• Krachtniveaus voor de belangrijkste oefeningen en recente trainingsbelasting per spiergroep.\n• Een wekelijkse review waarin je kiest om door te gaan, de week te herhalen of rustiger te trainen.\n• Veel oplossingen en verfijningen."
+  },
+  "pt-BR": {
+    "subtitle": "Treine, registre, repita",
+    "keywords": "academia,musculação,força,macros,nutrição,proteína,rotina,diário,peso,progresso,1RM,RPE,barcode",
+    "whatsNew": "Conheça o Loggy, a nova mascote do Musclog. Novidades desta versão:\n• Importe seu histórico de treinos de um arquivo CSV.\n• Seu ano no Musclog: uma história dos seus treinos e da sua alimentação.\n• Níveis de força nos principais exercícios e carga recente de treino por músculo.\n• Uma revisão semanal em que você escolhe avançar, repetir a semana ou treinar mais leve.\n• Muitas correções e melhorias de acabamento."
+  },
+  "ru": {
+    "subtitle": "Тренируй, записывай, повторяй",
+    "keywords": "зал,силовые,штанга,макросы,питание,БЖУ,штрихкод,RPE,1RM,программы,дневник,трекер,вес,прогресс,коуч",
+    "whatsNew": "Знакомьтесь с Loggy, новым талисманом Musclog. Что нового в этой версии:\n• Импорт истории тренировок из файла CSV.\n• Ваш год в Musclog: история ваших тренировок и питания.\n• Уровни силы в основных упражнениях и недавняя нагрузка по мышцам.\n• Еженедельный обзор, где вы решаете: прогрессировать, повторить неделю или снизить нагрузку.\n• Множество исправлений и доработок."
+  },
+  "de-DE": {
+    "subtitle": "Heben, loggen, wiederholen",
+    "keywords": "gym,krafttraining,makros,ernährung,eiweiß,barcode,RPE,1RM,routinen,tagebuch,tracker,gewicht",
+    "whatsNew": "Lerne Loggy kennen, das neue Maskottchen von Musclog. Neu in dieser Version:\n• Importiere deinen Trainingsverlauf aus einer CSV-Datei.\n• Dein Jahr in Musclog: eine Geschichte deines Trainings und Essens.\n• Kraftlevel für die Hauptübungen und die aktuelle Trainingsbelastung pro Muskelgruppe.\n• Eine Wochenauswertung, in der du entscheidest: steigern, Woche wiederholen oder leichter trainieren.\n• Viele Fehlerbehebungen und Feinschliff."
+  },
+  "fr-FR": {
+    "subtitle": "Soulever, noter, répéter",
+    "keywords": "gym,musculation,force,macros,nutrition,protéines,code-barres,RPE,1RM,routines,journal,suivi,poids",
+    "whatsNew": "Découvre Loggy, la nouvelle mascotte de Musclog. Nouveautés de cette version :\n• Importe ton historique d'entraînement depuis un export CSV.\n• Ton année dans Musclog : l'histoire de tes séances et de tes repas.\n• Niveaux de force sur les mouvements principaux et charge récente par muscle.\n• Un bilan hebdomadaire où tu choisis de progresser, de répéter la semaine ou d'alléger.\n• De nombreuses corrections et améliorations."
+  },
+  "it": {
+    "subtitle": "Allena, registra, ripeti",
+    "keywords": "palestra,pesi,forza,macro,nutrizione,proteine,dieta,barcode,RPE,1RM,schede,diario,tracker",
+    "whatsNew": "Scopri Loggy, la nuova mascotte di Musclog. Novità di questa versione:\n• Importa la cronologia dei tuoi allenamenti da un file CSV.\n• Il tuo anno in Musclog: una storia dei tuoi allenamenti e della tua alimentazione.\n• Livelli di forza negli esercizi principali e carico recente per muscolo.\n• Una revisione settimanale in cui scegli se progredire, ripetere la settimana o allenarti più leggero.\n• Tante correzioni e rifiniture."
+  },
+  "pl": {
+    "subtitle": "Trenuj, zapisuj, powtarzaj",
+    "keywords": "siłownia,siłowe,makro,odżywianie,dieta,kalorie,białko,skaner,RPE,1RM,plany,rutyny,waga,postępy,coach",
+    "whatsNew": "Poznaj Loggy, nową maskotkę Musclog. Nowości w tej wersji:\n• Importuj historię treningów z pliku CSV.\n• Twój rok w Musclog: historia treningów i jedzenia.\n• Poziomy siły w głównych ćwiczeniach i ostatnie obciążenie na mięśnie.\n• Tygodniowy przegląd, w którym wybierasz: progresję, powtórzenie tygodnia albo lżejszy trening.\n• Mnóstwo poprawek i dopracowań."
+  },
+  "tr": {
+    "subtitle": "Kaldır, kaydet, tekrarla",
+    "keywords": "spor,salon,ağırlık,güç,makro,beslenme,diyet,barkod,RPE,1RM,program,rutin,günlük,kilo,ilerleme,koç",
+    "whatsNew": "Musclog'un yeni maskotu Loggy ile tanış. Bu sürümde neler var:\n• Antrenman geçmişini bir CSV dosyasından içe aktar.\n• Musclog'da senin yılın: antrenmanlarının ve beslenmenin hikâyesi.\n• Ana hareketlerde güç seviyeleri ve kas grubu başına son yük.\n• Haftalık İnceleme: ilerlemeyi, haftayı tekrarlamayı ya da daha hafif gitmeyi seç.\n• Çok sayıda düzeltme ve iyileştirme."
+  }
+}

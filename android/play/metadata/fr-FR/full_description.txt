@@ -43,7 +43,7 @@ L'application est disponible en anglais, espagnol, néerlandais, portugais (Bré
 
 <b>Confidentialité dès la conception</b>
 • Le poids, la masse grasse et les journaux alimentaires sont chiffrés sur ton appareil.
-• Verrouille toute l'application, ou seulement tes données de cycle, d'entraînement, d'alimentation ou de progression, avec l'empreinte digitale ou le code PIN de ton téléphone.
+• Verrouille toute l'application, ou seulement tes données de cycle, d'entraînement, d'alimentation ou de progression, avec la biométrie ou le code de ton téléphone.
 • Exporte ou sauvegarde tes données, ou transfère-les vers un autre téléphone par QR codes, sans cloud.
 • Les rapports de plantage anonymes aident à corriger les bugs et se désactivent.
 • Widgets d'écran d'accueil, plusieurs thèmes de couleurs, et English, Español, Nederlands, Português (Brasil) et Русский.

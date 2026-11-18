@@ -127,6 +127,8 @@
     "manageNutritionDescription": "Revisa y edita tus registros de comida",
     "listMeasurementsDescription": "Ver todas tus mediciones corporales",
     "syncHealthConnectDescription": "Importar datos desde Google Health Connect",
+    "syncAppleHealth": "Sincronizar Apple Health",
+    "syncAppleHealthDescription": "Importar datos de Apple Health",
     "syncing": "Sincronizando...",
     "quickActions": "Acciones Rápidas",
     "measurement": {

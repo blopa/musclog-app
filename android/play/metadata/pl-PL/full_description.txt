@@ -43,7 +43,7 @@ Aplikacja jest dostępna w językach: angielskim, hiszpańskim, niderlandzkim, p
 
 <b>Prywatność od podstaw</b>
 • Waga, tkanka tłuszczowa i dziennik żywieniowy są szyfrowane na Twoim urządzeniu.
-• Zablokuj całą aplikację albo tylko dane o cyklu, treningach, jedzeniu lub postępach odciskiem palca albo PIN-em telefonu.
+• Zablokuj całą aplikację albo tylko dane o cyklu, treningach, jedzeniu lub postępach biometrią albo kodem blokady telefonu.
 • Eksportuj dane lub twórz kopie zapasowe albo przenieś je na inny telefon, skanując kody QR, bez chmury.
 • Anonimowe raporty o błędach pomagają je naprawiać i można je wyłączyć w ustawieniach.
 • Widżety na ekran główny, kilka motywów kolorystycznych oraz języki: angielski, hiszpański, niderlandzki, portugalski (Brazylia) i rosyjski.

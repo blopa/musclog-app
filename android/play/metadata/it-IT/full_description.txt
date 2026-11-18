@@ -43,7 +43,7 @@ L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile) e russ
 
 <b>Privacy fin dall'origine</b>
 • Peso, grasso corporeo e diari alimentari sono cifrati sul tuo dispositivo.
-• Blocca l'intera app, oppure solo i dati di ciclo, allenamento, alimentazione o progressi, con l'impronta digitale o il PIN del telefono.
+• Blocca l'intera app, oppure solo i dati di ciclo, allenamento, alimentazione o progressi, con la biometria o il codice del telefono.
 • Esporta o salva i tuoi dati, oppure trasferiscili su un altro telefono scansionando codici QR, senza cloud.
 • I report anonimi sugli arresti aiutano a correggere i bug e si disattivano.
 • Widget per la schermata Home, diversi temi di colore, e English, Español, Nederlands, Português (Brasil) e Русский.
