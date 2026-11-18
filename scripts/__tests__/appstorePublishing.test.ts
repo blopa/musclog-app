@@ -394,6 +394,44 @@ describe('appstore.sh screenshots from-captures', () => {
     ]);
   });
 
+  it('replaces the target folder, so a screen the capture no longer makes does not stay', () => {
+    const dir = tmp();
+    const from = path.join(dir, 'captures');
+    fs.mkdirSync(from);
+    fs.writeFileSync(path.join(from, '01-home.png'), 'new');
+    const shots = path.join(dir, 'shots');
+    fs.mkdirSync(path.join(shots, 'en-US', 'ipad'), { recursive: true });
+    fs.writeFileSync(path.join(shots, 'en-US', 'ipad', '05-old.png'), 'old');
+    const r = run(
+      'bash',
+      [
+        path.join(SCRIPTS, 'appstore.sh'),
+        'screenshots',
+        'from-captures',
+        '--kind',
+        'ipad',
+        '--from',
+        from,
+      ],
+      { MUSCLOG_APPSTORE_SHOTS: shots }
+    );
+
+    expect(r.code).toBe(0);
+    expect(fs.readdirSync(path.join(shots, 'en-US', 'ipad'))).toEqual(['01-home.png']);
+  });
+
+  it('has no default source for the iphone set, which is rendered rather than copied', () => {
+    const dir = tmp();
+    const r = run(
+      'bash',
+      [path.join(SCRIPTS, 'appstore.sh'), 'screenshots', 'from-captures', '--kind', 'iphone'],
+      { MUSCLOG_APPSTORE_SHOTS: path.join(dir, 'shots') }
+    );
+
+    expect(r.code).not.toBe(0);
+    expect(r.out).toContain('npm run screenshots:app-store-iphone');
+  });
+
   it('refuses a source folder with no numbered captures', () => {
     const dir = tmp();
     const r = run(

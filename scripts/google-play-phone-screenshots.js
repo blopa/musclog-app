@@ -696,16 +696,21 @@ async function render(target, only = null) {
 
   const sharp = require('sharp');
   const images = [];
-  for (const { source, target } of outputs) {
-    images.push({
-      target,
-      png: await sharp(source)
-        .resize({ width: target.outputWidth, kernel: 'lanczos3' })
-        // Both stores take opaque images (Play: JPEG or 24-bit PNG without an alpha channel).
-        .flatten({ background: '#000000' })
-        .png({ compressionLevel: 9 })
-        .toBuffer(),
-    });
+  for (const { source, target: file } of outputs) {
+    const png = await sharp(source)
+      .resize({ width: target.outputWidth, kernel: 'lanczos3' })
+      // Both stores take opaque images (Play: JPEG or 24-bit PNG without an alpha channel).
+      .flatten({ background: '#000000' })
+      .png({ compressionLevel: 9 })
+      .toBuffer();
+    const { width } = await sharp(png).metadata();
+    if (width !== target.outputWidth) {
+      fail(
+        `${file} came out ${width} px wide, not ${target.outputWidth}; nothing in the listing changed`
+      );
+    }
+
+    images.push({ target: file, png });
   }
 
   // Everything rendered: only now touch the listing, so a failure never leaves it half updated.

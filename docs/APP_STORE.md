@@ -206,6 +206,8 @@ it for each version (Apple requires it from the second version on).
 
 `ios/appstore/screenshots/<apple locale>/iphone/*.png` fills the `IPHONE_65` set (1242×2688 or 1284×2778 px) and
 `.../ipad/*.png` the `IPAD_PRO_3GEN_129` set (2048×2732 or 2064×2752 px), up to 10 each, in file-name order.
+Both are produced by one command, `npm run screenshots:app-store-listing` (builds the web app once; `npm run
+screenshots:app-store-iphone` and `npm run screenshots:app-store-ipad` do one half).
 
 ```
 scripts/appstore.sh screenshots from-captures [--from DIR] [--locale en-US] [--kind iphone|ipad]
@@ -215,18 +217,33 @@ scripts/appstore.sh screenshots up          # asks, then REPLACES each set with 
 scripts/appstore.sh screenshots list        # what App Store Connect has now
 ```
 
-- `from-captures` copies the five numbered captures of the app-store suite (`screenshots/app-store/portrait-6.7/
-01-home.png … 05-settings.png`, 1284×2778; not the `modal-*` ones) into the folder for one locale. They are raw app
-  captures in the language the suite ran in, so only `en-US` is filled by default. A locale with no screenshots
-  of its own should fall back to the primary language on the store page (check in App Store Connect); copying
-  English captures into `de-DE` would show English UI under a German listing.
-- Designed marketing frames (device mockup plus caption) are the Play phone project,
-  `screenshots/google-play/phone.osg.json`; it takes an iPhone `deviceType` (add its screen to `SCREEN_SHAPES` in
-  `scripts/google-play-phone-screenshots.js`). Render those into the same folders when you want them.
-- **iPad:** `app.json` has `supportsTablet: true`, so App Store Connect asks for iPad screenshots too and there
-  are none yet (the suite has only phone projects; the Play tablet captures are 1100×1466 and 768×1024, which
-  are not accepted sizes). Either capture 2048×2732 iPad frames or decide whether the app should declare
-  iPad support (a build-config change).
+- **iPhone: designed frames, eight per language.** The Playwright config `playwright.app-store-phone.config.ts` runs
+  the Play phone spec at 440×956 CSS px × 3 (1320×2868, an iPhone 17 Pro Max screen) into
+  `screenshots/app-store-listing/iphone/<locale>/`; `scripts/google-play-phone-screenshots.js render --target
+appstore` places each capture in a 3D iPhone 17 Pro Max with a caption (the design is
+  `screenshots/app-store-listing/iphone.osg.json`, an Open Screenshot Generator project: boards 2568×5556, rendered at
+  1284×2778) and writes `ios/appstore/screenshots/<locale>/iphone/NN-<screen>.png` for en-US, es-ES, nl-NL, pt-BR and
+  ru. The captions and the screen order are Play's, and a Jest test pins that both designs carry the same text and
+  that none mentions Android, Google Play or Health Connect; a screen or caption that is only true on one platform
+  gets its own text in `iphone.osg.json`. A render replaces the numbered files of those folders and removes any other
+  (a stale screen never stays on the store). `de-DE`, `fr-FR`, `it`, `pl` and `tr` have no screenshots and fall back
+  to the primary language on the store page (check in App Store Connect); copying English captures into `de-DE`
+  would show English UI under a German listing. A render needs WebGL: see the `screenshots:app-store-listing`
+  bullet in `AGENTS.md` for the software-GL Chromium wrapper (`MUSCLOG_CHROMIUM_PATH`), and
+  `npm run screenshots:app-store-iphone:studio` edits the design visually.
+- **iPad: unframed captures, four, en-US.** `app.json` has `supportsTablet: true`, so App Store Connect asks for iPad
+  screenshots too. `playwright.app-store-ipad.config.ts` runs the Play tablet spec at 516×688 CSS px × 4 (2064×2752)
+  into `screenshots/app-store-listing/ipad/en-US/NN-<screen>.png` (home, workout, food, goals). The viewport is
+  deliberately narrow: from 1024 CSS px up the web build draws the website's desktop shell (QR code, store links)
+  around the app (`global.css`, `min-width: 1024px`, not the user agent). `scripts/appstore.sh screenshots
+from-captures --kind ipad` copies them into `ios/appstore/screenshots/en-US/ipad/`, replacing the folder.
+  Whether the app should declare iPad support at all is the owner's call (a build-config change); these captures
+  exist so the store requirement can be met.
+- `from-captures` copies the numbered `NN-name.png` files of `--from DIR` (default for `--kind ipad`:
+  `screenshots/app-store-listing/ipad/<locale>`; `--kind iphone` has no default, since the iPhone set is rendered) and
+  replaces the target folder. The raw captures of the app-store suite (`npm run screenshots`,
+  `screenshots/app-store/<theme>/portrait-6.7/`) are web-layout working files and not a store source: `05-settings`
+  shows the "Manage sensors" row (WitMotion BLE sensors), which no listing mentions.
 - `screenshots up` runs with `--replace --confirm` per set; `plan` shows the deletions first.
 
 ## Troubleshooting
