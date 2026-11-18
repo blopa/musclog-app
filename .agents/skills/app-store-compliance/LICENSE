@@ -1,0 +1,33 @@
+OpenRoots Agent License 2.3
+===========================
+
+Canonical text: https://openroots.org/licenses/ora/2.3/legalcode.txt
+Plain summary:  https://openroots.org/licenses/ora/2.3
+SPDX:           LicenseRef-OpenRoots-ORA-2.3
+
+Effective:      see the release this file accompanies
+Term:           Permanent. This release does not convert to another
+                licence by lapse of time.
+
+This licence is one fixed text, adopted word for word. The canonical
+version lives at the address above and is never edited. A correction
+is issued as a new version and this text remains reachable permanently.
+
+SUMMARY OF TERMS
+----------------
+Root tier     Free and unconditional at or below USD 20,000,000
+              annual revenue, and for any individual, nonprofit,
+              school, or government body, at any size.
+
+Canopy tier   Above the threshold, 0.5% of the amount by which
+              attributable revenue EXCEEDS the threshold, capped at
+              USD 250,000 per year. Revenue at or below the
+              threshold bears no royalty, so crossing the line costs
+              almost nothing. Self-reported quarterly, never negotiated.
+
+Compute tier  AI training is not granted by either tier above. It
+              requires a separate Compute licence at every tier.
+              Human reading and search indexing are unaffected.
+
+The operative text is the canonical version linked above. This file is
+a pointer to it, not a substitute for it.

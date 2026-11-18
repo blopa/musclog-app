@@ -1,0 +1,3265 @@
+#!/usr/bin/env bash
+# Test gauntlet for app-store-compliance-guard.sh
+# Covers positive, negative, override, fail-open, hook-mode silence, and stress cases.
+# @register: no
+set -uo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+GUARD="$HERE/app-store-compliance-guard.sh"
+[ -x "$GUARD" ] || GUARD="bash $HERE/app-store-compliance-guard.sh"
+PASS=0; FAIL=0
+ok()   { PASS=$((PASS+1)); printf 'PASS  %s\n' "$1"; }
+bad()  { FAIL=$((FAIL+1)); printf 'FAIL  %s\n' "$1"; }
+# A privacy manifest is a plist. The validator rejects anything it cannot parse, so fixtures carry a real one.
+PLIST_EMPTY='<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict/></plist>'
+
+mk_ios_bad() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/App"
+  printf '<plist><dict></dict></plist>' > "$d/App/Info.plist"
+  printf 'import CoreLocation\nclass A { func signIn(){} func createAccount(){} }\nlet m=CLLocationManager()\nlet u="https://staging.example.com"\nimport Stripe\n' > "$d/App/X.swift"
+  echo "$d"
+}
+mk_ios_clean() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/App"
+  printf '<plist><dict><key>NSCameraUsageDescription</key><string>Scan receipts to log expenses</string><key>NSLocationWhenInUseUsageDescription</key><string>Show nearby stores on the map</string><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/App/Info.plist"
+  printf '%s' "$PLIST_EMPTY" > "$d/App/PrivacyInfo.xcprivacy"
+  printf 'import StoreKit\nimport CoreLocation\nimport AVFoundation\nclass A { func signIn(){} func createAccount(){} func deleteAccount(){} func restorePurchases(){} }\nlet dev=AVCaptureDevice.default(for:.video)\nlet m=CLLocationManager()\nlet p="https://api.realbackend.io"\nlet policy="https://realbackend.io/privacy-policy"\nlet prod:SKProduct?=nil\n' > "$d/App/X.swift"
+  echo "$d"
+}
+mk_android_bad() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/app/src/main"
+  printf '<manifest><uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/></manifest>' > "$d/app/src/main/AndroidManifest.xml"
+  printf 'android { defaultConfig { targetSdkVersion 30 } }\n' > "$d/app/build.gradle"
+  echo "$d"
+}
+
+# The four known FALSE-POSITIVE scenarios, which must all stay SILENT: a localhost only inside
+# #if DEBUG (never shipped), a location usage description in the modern INFOPLIST_KEY build-setting
+# form, example.com used as test input inside a Tests dir (never shipped), and the bare word "Adjust".
+mk_ios_precision_safe() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/App.xcodeproj" "$d/App" "$d/AppTests"
+  printf 'INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "for prayer times";\nITSAppUsesNonExemptEncryption = NO;\n' > "$d/App.xcodeproj/project.pbxproj"
+  printf '%s' "$PLIST_EMPTY" > "$d/App/PrivacyInfo.xcprivacy"
+  printf 'import CoreLocation\nimport SwiftUI\nlet m = CLLocationManager()\nlet policy = "https://app.com/privacy-policy"\nvar base: String {\n#if DEBUG\nreturn "http://localhost:8787"\n#else\nreturn "https://prod.app.com"\n#endif\n}\nstruct V: View { var body: some View { TextField("Search", text: .constant("")) } }\nlet label = "Adjust times"\n' > "$d/App/Main.swift"
+  printf 'let testURL = "https://example.com/x"\n' > "$d/AppTests/T.swift"
+  echo "$d"
+}
+
+# The SAME four categories as REAL shipped violations, which must all FIRE (no blind spot): a
+# release-reachable localhost string, CLLocationManager with no usage description, a real tracking
+# SDK (AdjustConfig), and lorem ipsum in shipped (non-test) source.
+mk_ios_precision_real() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/App.xcodeproj" "$d/App"
+  printf 'X=1;\n' > "$d/App.xcodeproj/project.pbxproj"
+  printf 'import CoreLocation\nimport AdjustSdk\nlet m = CLLocationManager()\nlet staging = "http://localhost:9000"\nlet cfg = AdjustConfig(appToken:"x")\nlet copy = "lorem ipsum dolor sit"\n' > "$d/App/Main.swift"
+  echo "$d"
+}
+
+mk_ios_bad_nutrition() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/App"
+  printf '<plist><dict></dict></plist>' > "$d/App/Info.plist"
+  printf 'import Foundation\nlet email = "test@example.com"\n' > "$d/App/X.swift"
+  echo "$d"
+}
+
+mk_android_bad_privacy() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/app/src/main"
+  printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="com.google.android.gms.permission.AD_ID"/><uses-permission android:name="android.permission.READ_STEPS"/><uses-permission android:name="android.permission.READ_CONTACTS"/></manifest>' > "$d/app/src/main/AndroidManifest.xml"
+  printf 'android { defaultConfig { targetSdkVersion 34 } }\n' > "$d/app/build.gradle"
+  printf 'class MyActivity { void test() { requestPermissions(new String[]{"camera"}, 1); HealthConnectClient client = null; contacts = "john"; } }\n' > "$d/app/src/main/MyActivity.java"
+  echo "$d"
+}
+
+mk_web_bad() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d"
+  printf '{"name": "test-web"}' > "$d/package.json"
+  printf '<html><body><script>localStorage.setItem("token", "secret"); sessionStorage.setItem("session", "xyz"); indexedDB.open("db"); gtag("event", "test"); document.cookie = "user=john"; processData("sensitivedata");</script></body></html>' > "$d/index.html"
+  echo "$d"
+}
+
+mk_web_clean() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d"
+  printf '{"name": "test-web"}' > "$d/package.json"
+  printf '<html><body><script>encryptedStorage("token"); clearSessionStorage(); encryptDatabase(); consentTracking(); cookieBanner(); GDPR();</script></body></html>' > "$d/index.html"
+  echo "$d"
+}
+
+# Flutter with a required-reason plugin and no PrivacyInfo.xcprivacy anywhere.
+mk_flutter_bad() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/Runner" "$d/lib"
+  printf 'name: t\ndependencies:\n  permission_handler: ^11.0.0\n' > "$d/pubspec.yaml"
+  printf "import 'package:permission_handler/permission_handler.dart';\nvoid main(){Permission.camera.request();}\n" > "$d/lib/main.dart"
+  printf '<plist><dict></dict></plist>' > "$d/ios/Runner/Info.plist"
+  echo "$d"
+}
+
+# React Native + an undisclosed OTA updater (CodePush).
+mk_rn_bad() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App"
+  printf '{"dependencies":{"react-native":"0.74.0","react-native-code-push":"^8.0.0"}}' > "$d/package.json"
+  printf 'import codePush from "react-native-code-push";\ncodePush.sync();\n' > "$d/App.tsx"
+  printf '<plist><dict></dict></plist>' > "$d/ios/App/Info.plist"
+  echo "$d"
+}
+
+# Ionic/Capacitor thin wrapper. WebView present, fewer than 2 native-feel plugins.
+mk_ionic_thin_wrapper() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App" "$d/src"
+  printf '{"dependencies":{"@capacitor/core":"^6.0.0","@ionic/angular":"^8.0.0"}}' > "$d/package.json"
+  printf 'export default {};' > "$d/capacitor.config.ts"
+  printf "import { Capacitor } from '@capacitor/core';\nconst wv = new WKWebView();\n" > "$d/src/app.ts"
+  printf '<plist><dict></dict></plist>' > "$d/ios/App/Info.plist"
+  echo "$d"
+}
+
+# Same shape but with 3 distinct native-feel plugins. Thin-wrapper must NOT fire.
+mk_ionic_native_shell() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App" "$d/src"
+  printf '{"dependencies":{"@capacitor/core":"^6.0.0","@ionic/angular":"^8.0.0"}}' > "$d/package.json"
+  printf 'export default {};' > "$d/capacitor.config.ts"
+  printf "import { Capacitor } from '@capacitor/core';\nimport '@capacitor/status-bar';\nimport '@capacitor/splash-screen';\nimport '@capacitor/push-notifications';\nconst wv = new WKWebView();\n" > "$d/src/app.ts"
+  printf '<plist><dict></dict></plist>' > "$d/ios/App/Info.plist"
+  echo "$d"
+}
+
+# Flutter, Android-only (no ios/ folder at all). The iOS-only privacy-manifest check must
+# NOT fire, since flutter build appbundle/apk never touches Info.plist or PrivacyInfo.xcprivacy.
+mk_flutter_android_only() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/android/app/src/main" "$d/lib"
+  printf 'name: t\ndependencies:\n  permission_handler: ^11.0.0\n' > "$d/pubspec.yaml"
+  printf "import 'package:permission_handler/permission_handler.dart';\nvoid main(){Permission.camera.request();}\n" > "$d/lib/main.dart"
+  printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$d/android/app/src/main/AndroidManifest.xml"
+  echo "$d"
+}
+
+# Monorepo layout: root package.json is tooling-only, the real RN app lives at apps/mobile/.
+mk_rn_monorepo() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/apps/mobile/ios/App"
+  printf '{"name":"tooling-root","private":true}' > "$d/package.json"
+  printf '{"dependencies":{"react-native":"0.74.0"}}' > "$d/apps/mobile/package.json"
+  printf '<plist><dict></dict></plist>' > "$d/apps/mobile/ios/App/Info.plist"
+  echo "$d"
+}
+
+# A config.xml that is NOT Cordova (no <widget>/xmlns:cdv marker). Must not flip IS_IONIC.
+mk_unrelated_config_xml() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App"
+  printf '<configuration><appSettings></appSettings></configuration>' > "$d/config.xml"
+  printf '<plist><dict></dict></plist>' > "$d/ios/App/Info.plist"
+  echo "$d"
+}
+
+# The real-world Codex-found scenario: a full cross-platform Flutter repo with BOTH ios/ and
+# android/ folders committed (the normal case), building only for Android.
+mk_flutter_both_platforms() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/Runner" "$d/android/app/src/main" "$d/lib"
+  printf 'name: t\ndependencies:\n  permission_handler: ^11.0.0\n' > "$d/pubspec.yaml"
+  printf "import 'package:permission_handler/permission_handler.dart';\nvoid main(){Permission.camera.request();}\n" > "$d/lib/main.dart"
+  printf '<plist><dict></dict></plist>' > "$d/ios/Runner/Info.plist"
+  printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$d/android/app/src/main/AndroidManifest.xml"
+  echo "$d"
+}
+
+# 1 positive. iOS with violations blocks
+D="$(mk_ios_bad)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'CRITICAL' && [ "$RC" -eq 2 ] && ok "iOS violations block (exit 2, has CRITICAL)" || bad "iOS violations block"
+rm -rf "$D"
+
+# 2 positive. Android background location blocks
+D="$(mk_android_bad)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'GOOGLE-PERM-BACKGROUND-LOCATION' && [ "$RC" -eq 2 ] && ok "Android bg location blocks" || bad "Android bg location blocks"
+rm -rf "$D"
+
+# 3 negative. Clean iOS passes
+D="$(mk_ios_clean)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ]; then ok "Clean iOS passes (exit 0)"; else bad "Clean iOS passes (got $RC) :: $(echo "$OUT" | grep CRITICAL)"; fi
+rm -rf "$D"
+
+# 4 override. APP_STORE_GUARD_OK=1 allows despite critical
+D="$(mk_ios_bad)"; OUT="$(APP_STORE_GUARD_OK=1 bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && ok "Override allows critical (exit 0)" || bad "Override allows critical (got $RC)"
+rm -rf "$D"
+
+# 5 hook mode. Non-submission command stays silent
+OUT="$(printf '{"tool_input":{"command":"ls -la"}}' | bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "Hook mode silent on non-submission command" || bad "Hook mode silent (rc=$RC out=$OUT)"
+
+# 6 hook mode. Submission command runs the scan
+D="$(mk_ios_bad)"; OUT="$(printf '{"tool_input":{"command":"fastlane deliver --submit"}}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "Hook mode runs scan on submission command" || bad "Hook mode runs scan (rc=$RC)"
+rm -rf "$D"
+
+# 7 a non-existent dir does not crash and never reads as a clean pass
+OUT="$(bash "$GUARD" /no/such/dir/here 2>&1)"; RC=$?
+[ "$RC" -eq 1 ] && ok "Missing dir is reported (exit 1)" || bad "Missing dir is reported (got $RC)"
+
+# 8 stress. Malformed JSON stdin does not crash
+OUT="$(printf '%s' '{not valid json [[[ command : oops }}}' | bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && ok "Malformed JSON stdin fail-open" || bad "Malformed JSON stdin (got $RC)"
+
+# 9 stress. Empty stdin does not hang or crash. /tmp may hold no app at all, which is exit 1 (not checked).
+OUT="$(printf '' | bash "$GUARD" /tmp 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] || [ "$RC" -eq 1 ] || [ "$RC" -eq 2 ] && ok "Empty stdin handled" || bad "Empty stdin handled (got $RC)"
+
+# 9b fail-open. Hook mode with an empty payload must not fall back to scanning the working directory
+D="$(mk_ios_bad)"; OUT="$(cd "$D" && printf '' | bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "Empty hook payload exits 0 without scanning cwd" || bad "Empty hook payload scanned cwd (rc=$RC)"
+rm -rf "$D"
+
+# 10 precision. The four known false-positive scenarios must NOT fire (no false alarms).
+D="$(mk_ios_precision_safe)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+if echo "$OUT" | grep -Eq 'STAGING-BACKEND|MISSING-USAGE-DESCRIPTION|BOTH-PLACEHOLDER|MISSING-ATT' || [ "$RC" -ne 0 ]; then
+  bad "Precision: false positives silent (rc=$RC, leaked: $(echo "$OUT" | grep -Eo 'STAGING-BACKEND|MISSING-USAGE-DESCRIPTION|BOTH-PLACEHOLDER|MISSING-ATT' | paste -sd, -))"
+else ok "Precision: #if-DEBUG localhost, INFOPLIST_KEY location, example.com-in-Tests, word Adjust all stay silent"; fi
+rm -rf "$D"
+
+# 11 no blind spot. The SAME four categories as real shipped violations must STILL fire.
+D="$(mk_ios_precision_real)"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+MISS=""
+for pat in STAGING-BACKEND MISSING-USAGE-DESCRIPTION BOTH-PLACEHOLDER MISSING-ATT; do
+  echo "$OUT" | grep -q "$pat" || MISS="$MISS $pat"
+done
+[ -z "$MISS" ] && ok "No blind spot: release localhost, no-usage location, AdjustConfig, lorem ipsum all still fire" || bad "No blind spot: missed$MISS"
+rm -rf "$D"
+
+# 12 Apple Privacy Nutrition Labels violation blocks
+D="$(mk_ios_bad_nutrition)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'APPLE-PRIVACY-NUTRITION-LABELS' && ok "Apple missing nutrition labels blocks" || bad "Apple missing nutrition labels blocks"
+rm -rf "$D"
+
+# 13 Android user disclosures, AD_ID, runtime permission checks, health permissions block
+D="$(mk_android_bad_privacy)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+MISS_AND=""
+for pat in ANDROID-USER-DATA-DISCLOSURE ANDROID-ADVERTISING-ID ANDROID-RUNTIME-PERMISSIONS ANDROID-HEALTH-PERMISSIONS; do
+  echo "$OUT" | grep -q "$pat" || MISS_AND="$MISS_AND $pat"
+done
+[ -z "$MISS_AND" ] && ok "Android bad privacy checks all fire" || bad "Android bad privacy checks missed:$MISS_AND"
+rm -rf "$D"
+
+# 14 Web bad privacy checks (GDPR, cookie, localStorage, sessionStorage, IndexedDB, tracking)
+D="$(mk_web_bad)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+MISS_WEB=""
+for pat in WEB-GDPR-COMPLIANCE WEB-COOKIE-CONSENT WEB-LOCAL-STORAGE WEB-SESSION-STORAGE WEB-INDEXEDDB WEB-TRACKING-TECHNOLOGIES; do
+  echo "$OUT" | grep -q "$pat" || MISS_WEB="$MISS_WEB $pat"
+done
+[ -z "$MISS_WEB" ] && [ "$RC" -eq 2 ] && ok "Web bad privacy checks all fire (exit 2)" || bad "Web bad privacy checks missed:$MISS_WEB or wrong exit code ($RC)"
+rm -rf "$D"
+
+# 15 Web clean privacy checks pass
+D="$(mk_web_clean)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+if [ "$RC" -eq 0 ] && ! echo "$OUT" | grep -q 'WEB-'; then
+  ok "Web clean privacy passes (exit 0)"
+else
+  bad "Web clean privacy passes (got $RC) :: $(echo "$OUT" | grep -E 'WEB-')"
+fi
+rm -rf "$D"
+
+# 16 Subscription hard-cancel block (phone/mail/in-person only)
+D="$(mktemp -d)"; mkdir -p "$D"
+printf '{"name":"t"}' > "$D/package.json"
+printf '<html><body>Your subscription auto-renews monthly. Call us to cancel at 1-800-555-0100.</body></html>' > "$D/index.html"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'BOTH-SUBSCRIPTION-HARD-CANCEL' && ok "Subscription phone-only cancel blocks" || bad "Subscription phone-only cancel blocks"
+rm -rf "$D"
+
+# 17 Subscription self-service cancel stays silent
+D="$(mktemp -d)"; mkdir -p "$D"
+printf '{"name":"t"}' > "$D/package.json"
+printf '<html><body>Your membership auto-renews monthly. Cancel any time from Account Settings.</body></html>' > "$D/index.html"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+if ! echo "$OUT" | grep -q 'BOTH-SUBSCRIPTION-HARD-CANCEL'; then
+  ok "Subscription self-service cancel stays silent"
+else
+  bad "Subscription self-service cancel stays silent"
+fi
+rm -rf "$D"
+
+# 18 Flutter framework detected + privacy manifest gap blocks
+D="$(mk_flutter_bad)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+if echo "$OUT" | grep -q 'Flutter=1' && echo "$OUT" | grep -q 'FLUTTER-PRIVACY-MANIFEST-MISSING' && [ "$RC" -eq 2 ]; then
+  ok "Flutter detected, missing privacy manifest blocks"
+else
+  bad "Flutter detected, missing privacy manifest blocks (rc=$RC)"
+fi
+rm -rf "$D"
+
+# 19 React Native + undisclosed CodePush OTA fires (non-critical, does not block alone)
+D="$(mk_rn_bad)"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+if echo "$OUT" | grep -q 'ReactNative/Expo=1' && echo "$OUT" | grep -q 'RN-OTA-UNDECLARED'; then
+  ok "React Native detected, undisclosed CodePush OTA fires"
+else
+  bad "React Native detected, undisclosed CodePush OTA fires"
+fi
+rm -rf "$D"
+
+# 20 Ionic thin wrapper (WebView, <2 native plugins) fires as HIGH (advisory heuristic, not a
+# hard blocker per council review, since plugin-count is a proxy, not the real Apple 4.2 test)
+D="$(mk_ionic_thin_wrapper)"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+if echo "$OUT" | grep -q 'Ionic/Capacitor/Cordova=1' && echo "$OUT" | grep -q 'IONIC-4.2-THIN-WRAPPER'; then
+  ok "Ionic thin wrapper fires as high-severity advisory on 4.2 minimum functionality"
+else
+  bad "Ionic thin wrapper fires as high-severity advisory on 4.2 minimum functionality"
+fi
+rm -rf "$D"
+
+# 21 Ionic with 3 distinct native-feel plugins does NOT trip the thin-wrapper false positive
+D="$(mk_ionic_native_shell)"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+if ! echo "$OUT" | grep -q 'IONIC-4.2-THIN-WRAPPER'; then
+  ok "Ionic with real native plugin shell stays silent on thin-wrapper"
+else
+  bad "Ionic with real native plugin shell stays silent on thin-wrapper (false positive)"
+fi
+rm -rf "$D"
+
+# 22 Submission-command regex now catches Flutter, Capacitor, Ionic, EAS, Cordova build commands
+MISS_CMD=""
+for cmd in "flutter build ipa --release" "npx cap sync ios" "ionic capacitor build ios --prod" "eas build --platform ios" "cordova build ios --release"; do
+  OUT="$(printf '{"tool_input":{"command":"%s"}}' "$cmd" | bash "$GUARD" 2>&1)"
+  echo "$OUT" | grep -q 'App Store Compliance Guard' || MISS_CMD="$MISS_CMD [$cmd]"
+done
+[ -z "$MISS_CMD" ] && ok "Submission regex catches flutter/cap/ionic/eas/cordova build commands" || bad "Submission regex missed:$MISS_CMD"
+
+# 23 Council-found bug fix: Flutter Android-only build must NOT trigger the iOS-only privacy check
+D="$(mk_flutter_android_only)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+if ! echo "$OUT" | grep -q 'FLUTTER-PRIVACY-MANIFEST-MISSING'; then
+  ok "Flutter Android-only build stays silent on iOS-only privacy check"
+else
+  bad "Flutter Android-only build wrongly fired the iOS-only privacy check (rc=$RC)"
+fi
+rm -rf "$D"
+
+# 24 Council-found bug fix: monorepo detection scans every package.json, not just the first
+D="$(mk_rn_monorepo)"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+if echo "$OUT" | grep -q 'ReactNative/Expo=1'; then
+  ok "Monorepo React Native detected via nested apps/mobile/package.json"
+else
+  bad "Monorepo React Native detected via nested apps/mobile/package.json"
+fi
+rm -rf "$D"
+
+# 25 Council-found bug fix: an unrelated config.xml (no Cordova widget marker) must not flip IS_IONIC
+D="$(mk_unrelated_config_xml)"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+if echo "$OUT" | grep -q 'Ionic/Capacitor/Cordova=0'; then
+  ok "Unrelated config.xml (no widget marker) stays silent on Ionic detection"
+else
+  bad "Unrelated config.xml (no widget marker) stays silent on Ionic detection"
+fi
+rm -rf "$D"
+
+# 26 Command overrides file-tree presence for a both-platforms repo (docs/CROSS-PLATFORM-FRAMEWORKS.md)
+D="$(mk_flutter_both_platforms)"
+OUT_APK="$(printf '{"tool_input":{"command":"flutter build apk --release"}}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"
+OUT_IPA="$(printf '{"tool_input":{"command":"flutter build ipa --release"}}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"
+if ! echo "$OUT_APK" | grep -q 'FLUTTER-PRIVACY-MANIFEST-MISSING' && echo "$OUT_IPA" | grep -q 'FLUTTER-PRIVACY-MANIFEST-MISSING'; then
+  ok "Command-aware gate: apk build silent, ipa build fires, on the SAME both-platforms repo"
+else
+  bad "Command-aware gate: apk build silent, ipa build fires, on the SAME both-platforms repo"
+fi
+rm -rf "$D"
+
+# 27 Donation link to a funding platform fires the Payments-policy finding on an Android tree
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } }\n' > "$D/app/build.gradle"
+printf 'val donate = "https://opencollective.com/example/donate"\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-PAYMENTS-DONATION-LINK' && ok "Open Collective donate link fires the Payments finding" || bad "Open Collective donate link fires the Payments finding"
+rm -rf "$D"
+
+# 28 Play billing with no refund-review handling surfaces the chargeback-liability finding
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } }\n' > "$D/app/build.gradle"
+printf 'import com.android.billingclient.api.BillingClient\nval c = BillingClient.newBuilder(ctx)\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-PLAY-CHARGEBACK-LIABILITY' && ok "Play billing without ReviewRefund handling surfaces chargeback liability" || bad "Play billing without ReviewRefund handling surfaces chargeback liability"
+rm -rf "$D"
+
+# 29 Play billing WITH refund-review handling stays silent on the chargeback finding
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } }\n' > "$D/app/build.gradle"
+printf 'import com.android.billingclient.api.BillingClient\nfun onRtdn(n: PendingRefundReviewNotification) { reviewRefund(n) }\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +GOOGLE-PLAY-CHARGEBACK-LIABILITY ' && bad "Play billing with ReviewRefund handling stays silent" || ok "Play billing with ReviewRefund handling stays silent"
+rm -rf "$D"
+
+# 30 SIWA relay allowlist with only the old domain fires
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'let ok = email.hasSuffix("privaterelay.appleid.com")\n' > "$D/App/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'APPLE-4.0-SIWA-RELAY-DOMAIN' && ok "SIWA relay allowlist missing private.icloud.com fires" || bad "SIWA relay allowlist missing private.icloud.com fires"
+rm -rf "$D"
+
+# 31 SIWA relay allowlist with both domains stays silent
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'let ok = email.hasSuffix("privaterelay.appleid.com") || email.hasSuffix("private.icloud.com")\n' > "$D/App/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +APPLE-4\.0-SIWA-RELAY-DOMAIN ' && bad "SIWA relay allowlist with both domains stays silent" || ok "SIWA relay allowlist with both domains stays silent"
+rm -rf "$D"
+
+# 32 External purchase link with no storefront gating fires
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'ExternalPurchaseLink.open()\n' > "$D/App/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'APPLE-3.1.1-EXTERNAL-LINK-REGION-GATING' && ok "External purchase link without storefront gating fires" || bad "External purchase link without storefront gating fires"
+rm -rf "$D"
+
+# 33 External purchase link gated on the storefront stays silent
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'if Storefront.current?.countryCode == "USA" { ExternalPurchaseLink.open() }\n' > "$D/App/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +APPLE-3\.1\.1-EXTERNAL-LINK-REGION-GATING ' && bad "External purchase link gated on storefront stays silent" || ok "External purchase link gated on storefront stays silent"
+rm -rf "$D"
+
+# 34 Declared Age Range without RESCIND_CONSENT fires
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'let r = DeclaredAgeRange.request()\n' > "$D/App/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'APPLE-5.1.1-RESCIND-CONSENT-UNHANDLED' && ok "Declared Age Range without RESCIND_CONSENT fires" || bad "Declared Age Range without RESCIND_CONSENT fires"
+rm -rf "$D"
+
+# 35 On-Demand Resources usage fires the deprecation finding
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'let req = NSBundleResourceRequest(tags: ["level2"])\n' > "$D/App/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'APPLE-ODR-DEPRECATED-27' && ok "On-Demand Resources usage fires" || bad "On-Demand Resources usage fires"
+rm -rf "$D"
+
+# 36 READ_CONTACTS on an API 37 target fires the contact-picker finding
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 37 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'val p = "android.permission.READ_CONTACTS"\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-CONTACTS-PICKER-REQUIRED' && ok "READ_CONTACTS at API 37 fires contact-picker finding" || bad "READ_CONTACTS at API 37 fires contact-picker finding"
+rm -rf "$D"
+
+# 37 READ_CONTACTS on an API 36 target stays silent on the API 37 finding
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'val p = "android.permission.READ_CONTACTS"\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +GOOGLE-CONTACTS-PICKER-REQUIRED ' && bad "READ_CONTACTS at API 36 stays silent on the API 37 finding" || ok "READ_CONTACTS at API 36 stays silent on the API 37 finding"
+rm -rf "$D"
+
+# 38 Local network discovery on API 37 without ACCESS_LOCAL_NETWORK fires
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 37 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'val nsd = getSystemService(NsdManager::class.java)\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'ANDROID-LOCAL-NETWORK-PERMISSION' && ok "NsdManager at API 37 without ACCESS_LOCAL_NETWORK fires" || bad "NsdManager at API 37 without ACCESS_LOCAL_NETWORK fires"
+rm -rf "$D"
+
+# 39 Foreground service used for geofencing fires
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'val perm = "android.permission.FOREGROUND_SERVICE_LOCATION"; fun geofenceLoop() {}\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-FGS-GEOFENCE-REMOVED' && ok "FGS geofencing fires" || bad "FGS geofencing fires"
+rm -rf "$D"
+
+# 40 Random chat app without minor blocking fires critical
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'val tagline = "random chat with strangers"\n' > "$D/app/src/main/java/t/Src.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-ANON-CHAT-MINOR-BLOCK' && ok "Random chat without minor blocking fires" || bad "Random chat without minor blocking fires"
+rm -rf "$D"
+
+# 41 Release build without minifyEnabled true fires the R8 finding
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'val x = 1\n' > "$D/app/src/main/java/t/Src.kt"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled false } } }\n' > "$D/app/build.gradle"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'ANDROID-R8-OPTIMIZATION-MISSING' && ok "Missing R8 minify fires" || bad "Missing R8 minify fires"
+rm -rf "$D"
+
+# 42 Pipeline script calling the removed ASC age-rating endpoint fires critical
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist/>' > "$D/App/Info.plist"
+printf '// curl https://api.appstoreconnect.apple.com/v1/appStoreVersions/123/ageRatingDeclaration\n' > "$D/App/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'APPLE-ASCAPI-AGERATING-ENDPOINT-REMOVED' && ok "Removed ASC age-rating endpoint in a script fires" || bad "Removed ASC age-rating endpoint in a script fires"
+rm -rf "$D"
+
+# 43 A vendored build.gradle.kts under node_modules must not switch the Android section on for an iOS-only app
+D="$(mktemp -d)"; mkdir -p "$D/node_modules/react-native" "$D/ios"
+printf '{"name":"x"}' > "$D/package.json"
+touch "$D/node_modules/react-native/build.gradle.kts" "$D/ios/Podfile"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+if echo "$OUT" | grep -q 'Android=0' && ! echo "$OUT" | grep -Eq '^\s+\[(CRITICAL|HIGH|MEDIUM)\]\s+(ANDROID|GOOGLE)-'; then ok "Vendored gradle file does not flip Android on"; else bad "Vendored gradle file does not flip Android on"; fi
+rm -rf "$D"
+
+# 44 NSPrivacyTracking true with no NSPrivacyTrackingDomains is the ITMS-91064 upload rejection and must block
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/App/Info.plist"
+printf '<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict><key>NSPrivacyTracking</key><true/><key>NSPrivacyTrackingDomains</key><array/></dict></plist>' > "$D/App/PrivacyInfo.xcprivacy"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'APPLE-ITMS-91064-TRACKING-NO-DOMAINS' && [ "$RC" -eq 2 ] && ok "Tracking true with empty domains blocks" || bad "Tracking true with empty domains blocks (rc=$RC)"
+rm -rf "$D"
+
+# 45 A manifest that is not a plist cannot be compiled by Xcode, so it is a finding, never a silent pass
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/App/Info.plist"
+printf '{}' > "$D/App/PrivacyInfo.xcprivacy"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'APPLE-MANIFEST-UNREADABLE' && ok "Malformed manifest fires" || bad "Malformed manifest fires"
+rm -rf "$D"
+
+# 46 A manifest inside a Tests dir is a fixture, not a shipped manifest, and is not validated
+D="$(mktemp -d)"; mkdir -p "$D/App" "$D/AppTests/Fixtures"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/App/Info.plist"
+printf '%s' "$PLIST_EMPTY" > "$D/App/PrivacyInfo.xcprivacy"
+printf '{}' > "$D/AppTests/Fixtures/PrivacyInfo.xcprivacy"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'APPLE-MANIFEST-UNREADABLE' && bad "Manifest fixture under Tests is skipped" || ok "Manifest fixture under Tests is skipped"
+
+# 47 A Python virtualenv inside the project is not app source. Its vendored JSON mentions betting,
+# background location, and localhost, none of which the app ships.
+D="$(mktemp -d)"; mkdir -p "$D/App" "$D/app/src/main" "$D/tool/.venv/lib/python3.12/site-packages/api"
+printf '<plist/>' > "$D/App/Info.plist"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf '{"a": "fixed-odds betting", "b": "ACCESS_BACKGROUND_LOCATION", "c": "http://localhost:8080"}\n' > "$D/tool/.venv/lib/python3.12/site-packages/api/discovery.json"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +(APPLE-GAMBLING-BRAZIL-LICENSE|APPLE-2\.1-STAGING-BACKEND|GOOGLE-PERM-BACKGROUND-LOCATION) ' && bad "Virtualenv contents are not scanned as app source" || ok "Virtualenv contents are not scanned as app source"
+rm -rf "$D"
+
+# 48 Many privacy manifests, as every CocoaPods or SPM project has. `find | grep -q .` exited 141
+# under pipefail once grep stopped reading, and reported the app's own manifest missing.
+D="$(mktemp -d)"; mkdir -p "$D/ios/Runner" "$D/lib"
+printf 'name: t\ndependencies:\n  permission_handler: ^11.0.0\n' > "$D/pubspec.yaml"
+printf "import 'package:permission_handler/permission_handler.dart';\n" > "$D/lib/main.dart"
+printf '<plist><dict></dict></plist>' > "$D/ios/Runner/Info.plist"
+printf '{}' > "$D/ios/Runner/PrivacyInfo.xcprivacy"
+for i in $(seq 1 1500); do mkdir -p "$D/ios/Pods/SomeVendoredPod$i/Resources"; printf '{}' > "$D/ios/Pods/SomeVendoredPod$i/Resources/PrivacyInfo.xcprivacy"; done
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +(FLUTTER|APPLE)-PRIVACY-MANIFEST-MISSING ' && bad "Existing privacy manifest is found among many (no SIGPIPE under pipefail)" || ok "Existing privacy manifest is found among many (no SIGPIPE under pipefail)"
+rm -rf "$D"
+
+# 49 A project that itself sits under folders named build and test is still scanned. Exclusions
+# apply only below the project root.
+P="$(mktemp -d)"; D="$P/build/test/app"; mkdir -p "$D"
+S="$(mk_ios_bad)"; cp -R "$S/." "$D/"; rm -rf "$S"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'APPLE-3.1.1-EXTERNAL-PAYMENT' && [ "$RC" -eq 2 ] && ok "Project under build/ and test/ parent folders is still scanned" || bad "Project under build/ and test/ parent folders is still scanned (rc=$RC)"
+rm -rf "$P"
+
+# 50 NSPrivacyCollectedDataTypes lives in PrivacyInfo.xcprivacy, so declaring it there satisfies the check.
+D="$(mk_ios_bad_nutrition)"
+printf '<plist><dict><key>NSPrivacyCollectedDataTypes</key><array/></dict></plist>' > "$D/App/PrivacyInfo.xcprivacy"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +APPLE-PRIVACY-NUTRITION-LABELS ' && bad "Privacy manifest declaring collected data types satisfies nutrition labels" || ok "Privacy manifest declaring collected data types satisfies nutrition labels"
+rm -rf "$D"
+
+# 51 Lowercase test folders (Flutter test/ and integration_test/, JS tests/) never ship either.
+D="$(mktemp -d)"; mkdir -p "$D/App" "$D/test"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'func deleteAccount() { api.delete("/users/me") }\n' > "$D/App/A.swift"
+printf '// the outgoing page must finish sliding after it is deactivated\n' > "$D/test/T.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +APPLE-ACCOUNT-DELETION-WEAK ' && bad "Words in a lowercase test/ folder are not app source" || ok "Words in a lowercase test/ folder are not app source"
+rm -rf "$D"
+
+# 52 A cross-platform app selling digital goods through a store plugin, and physical goods through a
+# payment SDK, is not an external-payment violation. Without the plugin it still is.
+mk_flutter_pay() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/Runner" "$d/android/app/src/main" "$d/lib"
+  printf 'name: t\ndependencies:\n  razorpay_flutter: ^1.3.0\n%b' "$1" > "$d/pubspec.yaml"
+  printf '<plist><dict></dict></plist>' > "$d/ios/Runner/Info.plist"
+  printf '{}' > "$d/ios/Runner/PrivacyInfo.xcprivacy"
+  printf '<manifest package="t"/>' > "$d/android/app/src/main/AndroidManifest.xml"
+  echo "$d"
+}
+D="$(mk_flutter_pay '  in_app_purchase: ^3.2.0\n')"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +(GOOGLE-PLAY-BILLING|APPLE-3\.1\.1-EXTERNAL-PAYMENT) ' && bad "Store purchase plugin satisfies both IAP checks" || ok "Store purchase plugin satisfies both IAP checks"
+rm -rf "$D"
+D="$(mk_flutter_pay '')"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-PLAY-BILLING' && echo "$OUT" | grep -q 'APPLE-3.1.1-EXTERNAL-PAYMENT' && ok "Payment SDK with no store plugin still fires both IAP checks" || bad "Payment SDK with no store plugin still fires both IAP checks"
+rm -rf "$D"
+
+# 53 "renew automatically until cancelled" is a renewal notice, not an instruction to call.
+D="$(mktemp -d)"
+printf '{"name":"t"}' > "$D/package.json"
+printf '<html><body>Your subscription renews automatically until cancelled in your store account settings.</body></html>' > "$D/index.html"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +BOTH-SUBSCRIPTION-HARD-CANCEL ' && bad "Call inside automatically does not read as call to cancel" || ok "Call inside automatically does not read as call to cancel"
+rm -rf "$D"
+
+# 54 and 51, the two fixtures from #542. Prose about files is not a sensitive permission. READ_CONTACTS is.
+mk_android_perm() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/android/app/src/main"
+  printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/>%s</manifest>' "$1" > "$d/android/app/src/main/AndroidManifest.xml"
+  printf 'android { compileSdk 36 }\n' > "$d/android/app/build.gradle"
+  echo "$d"
+}
+D="$(mk_android_perm '')"
+printf '<html><body>%s</body></html>' "$(for i in $(seq 1 20); do printf 'Export the files. '; done)" > "$D/notes.html"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +ANDROID-USER-DATA-DISCLOSURE ' && bad "#542 fixture A: prose about files stays silent" || ok "#542 fixture A: prose about files stays silent"
+rm -rf "$D"
+D="$(mk_android_perm '<uses-permission android:name="android.permission.READ_CONTACTS"/>')"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'ANDROID-USER-DATA-DISCLOSURE' && ok "#542 fixture B: READ_CONTACTS without disclosure fires" || bad "#542 fixture B: READ_CONTACTS without disclosure fires"
+rm -rf "$D"
+
+# 56 #542. Bundled web output under dist/ is a build artifact, not source.
+D="$(mktemp -d)"; mkdir -p "$D/App" "$D/web/dist/assets"
+printf '<plist/>' > "$D/App/Info.plist"
+printf 'const u="http://localhost:54321/auth/v1";\n' > "$D/web/dist/assets/index-abc123.js"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^  \[(CRITICAL|HIGH|MEDIUM)\] +APPLE-2\.1-STAGING-BACKEND ' && bad "Bundled dist/ output is not scanned as source" || ok "Bundled dist/ output is not scanned as source"
+rm -rf "$D"
+
+# 57 targetSdk lives two levels down in every real project. The old ** glob never read android/app/build.gradle
+D="$(mktemp -d)"; mkdir -p "$D/android/app/src/main"
+printf '<manifest package="t"/>' > "$D/android/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 35 } buildTypes { release { minifyEnabled true } } }\n' > "$D/android/app/build.gradle"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^ +\[CRITICAL\] +GOOGLE-TARGET-API ' && ok "targetSdk 35 two levels deep fires the API 36 floor" || bad "targetSdk 35 two levels deep fires the API 36 floor"
+printf 'android { defaultConfig { targetSdk = 36 } buildTypes { release { isMinifyEnabled = true } } }\n' > "$D/android/app/build.gradle"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^ +\[CRITICAL\] +GOOGLE-TARGET-API ' && bad "targetSdk 36 stays silent" || ok "targetSdk 36 stays silent"
+rm -rf "$D"
+
+# 58 Play Billing Library 7 dependency fires the v8 floor, 8 stays silent
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\ndependencies { implementation "com.android.billingclient:billing-ktx:7.1.1" }\n' > "$D/app/build.gradle"
+printf 'val c = BillingClient.newBuilder(ctx)\n' > "$D/app/src/main/java/t/Pay.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^ +\[CRITICAL\] +GOOGLE-PLAY-BILLING-V8-REQUIRED ' && ok "Billing Library 7 fires the v8 floor" || bad "Billing Library 7 fires the v8 floor"
+sed -i.bak 's/billing-ktx:7.1.1/billing-ktx:8.0.0/' "$D/app/build.gradle"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -Eq '^ +\[CRITICAL\] +GOOGLE-PLAY-BILLING-V8-REQUIRED ' && bad "Billing Library 8 stays silent" || ok "Billing Library 8 stays silent"
+rm -rf "$D"
+
+# 59 READ_MEDIA_IMAGES without the photo picker surfaces the declaration, with the picker it stays silent
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest><uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/></manifest>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-PHOTO-VIDEO-PERMISSIONS-DECLARATION' && ok "READ_MEDIA_IMAGES without a picker surfaces the declaration" || bad "READ_MEDIA_IMAGES without a picker surfaces the declaration"
+printf 'val p = registerForActivityResult(PickVisualMedia()) {}\n' > "$D/app/src/main/java/t/Pick.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-PHOTO-VIDEO-PERMISSIONS-DECLARATION' && bad "READ_MEDIA_IMAGES with the photo picker stays silent" || ok "READ_MEDIA_IMAGES with the photo picker stays silent"
+rm -rf "$D"
+
+# 60 an AccountManager import with no declared permission is not a data-collection signal
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main/java/t"
+printf '<manifest><uses-permission android:name="android.permission.INTERNET"/></manifest>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'import android.accounts.AccountManager\n// ContactsContract is not used here\n' > "$D/app/src/main/java/t/A.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'ANDROID-USER-DATA-DISCLOSURE' && bad "Symbol in an import without a declared permission stays silent" || ok "Symbol in an import without a declared permission stays silent"
+rm -rf "$D"
+
+# 61 src/dist is an Android product-flavor source set and must be scanned, web/dist is build output and must not
+D="$(mktemp -d)"; mkdir -p "$D/app/src/main" "$D/app/src/dist/java/t"
+printf '<manifest package="t"/>' > "$D/app/src/main/AndroidManifest.xml"
+printf 'android { defaultConfig { targetSdkVersion 36 } buildTypes { release { minifyEnabled true } } }\n' > "$D/app/build.gradle"
+printf 'import com.stripe.android.Stripe\n' > "$D/app/src/dist/java/t/Pay.kt"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'GOOGLE-PLAY-BILLING' && ok "Stripe inside a src/dist flavor tree is still seen" || bad "Stripe inside a src/dist flavor tree is still seen"
+rm -rf "$D"
+
+# 62 a privacy manifest whose root is an array fires through the guard, never a silent pass
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/App/Info.plist"
+printf '<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><array/></plist>' > "$D/App/PrivacyInfo.xcprivacy"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'APPLE-MANIFEST-UNREADABLE' && [ "$RC" -eq 2 ] && ok "Array-root manifest blocks" || bad "Array-root manifest blocks (rc=$RC)"
+rm -rf "$D"
+
+# ===== Issue #610. The hook payload parser must be JSON-aware. Real Claude Code payloads below =====
+# (.tool_input.command inside JSON). The old regex truncated at an escaped quote and left \n literal.
+BS='\'
+P_QUOTED='{"tool_name":"Bash","tool_input":{"command":"cd '"$BS"'"$CLAUDE_PROJECT_DIR/apps/app'"$BS"'" && npx eas submit --platform ios"}}'
+P_CONT='{"tool_input":{"command":"npx eas '"$BS$BS$BS"'n  submit --platform ios"}}'
+P_TWOCMD='{"tool_input":{"command":"echo eas'"$BS"'nsubmit --platform ios"}}'
+P_TABCRLF='{"tool_input":{"command":"npx'"$BS"'teas'"$BS"'tsubmit --platform ios'"$BS"'r'"$BS"'n"}}'
+P_QUOTED_CONT='{"tool_input":{"command":"cd '"$BS"'"$CLAUDE_PROJECT_DIR/apps/app'"$BS"'" && npx eas '"$BS$BS$BS"'n submit --platform ios"}}'
+P_QUOTED_TEST='{"tool_input":{"command":"cd '"$BS"'"$HOME/my app'"$BS"'" && npm test"}}'
+P_COMMITMSG='{"tool_input":{"command":"git commit -m '"$BS"'"docs: note that eas submit needs a profile'"$BS"'""}}'
+
+# 63 a quoted path before the submit command must still be scanned
+D="$(mk_ios_bad)"
+OUT="$(printf '%s' "$P_QUOTED" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-1 quoted path before eas submit is scanned" || bad "610-1 quoted path before eas submit is scanned (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 64 a backslash-newline continuation must not hide the trigger
+D="$(mk_ios_bad)"
+OUT="$(printf '%s' "$P_CONT" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-2 line continuation before submit is scanned" || bad "610-2 line continuation before submit is scanned (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 65 a bare newline separates commands. "eas" on one line and "submit" on the next is NOT a submit
+D="$(mk_ios_bad)"
+OUT="$(printf '%s' "$P_TWOCMD" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-3 trigger split across two commands is never invented" || bad "610-3 trigger split across two commands is never invented (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 66 on a block in hook mode the report reaches stderr (the only stream Claude Code shows on exit 2)
+D="$(mk_ios_bad)"
+ERR="$(printf '{"tool_input":{"command":"fastlane deliver --submit"}}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 >/dev/null)"; RC=$?
+echo "$ERR" | grep -q 'BLOCKED' && echo "$ERR" | grep -q 'CRITICAL' && [ "$RC" -eq 2 ] && ok "610-4 hook-mode block report is on stderr" || bad "610-4 hook-mode block report is on stderr (rc=$RC bytes=${#ERR})"
+rm -rf "$D"
+
+# 67 a passing hook-mode scan keeps its report on stdout, and stderr stays quiet
+D="$(mk_ios_clean)"
+STDOUT="$(printf '{"tool_input":{"command":"fastlane deliver --submit"}}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>/dev/null)"; RC=$?
+ERR="$(printf '{"tool_input":{"command":"fastlane deliver --submit"}}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 >/dev/null)"
+echo "$STDOUT" | grep -q 'Summary\.' && [ "$RC" -eq 0 ] && ! echo "$ERR" | grep -q 'Summary\.' && ok "610-5 hook-mode pass report stays on stdout" || bad "610-5 hook-mode pass report stays on stdout (rc=$RC)"
+rm -rf "$D"
+
+# 68 standalone mode is unchanged. the report is on stdout even when it blocks
+D="$(mk_ios_bad)"
+STDOUT="$(bash "$GUARD" "$D" 2>/dev/null)"; RC=$?
+echo "$STDOUT" | grep -q 'BLOCKED' && [ "$RC" -eq 2 ] && ok "610-6 standalone block report stays on stdout" || bad "610-6 standalone block report stays on stdout (rc=$RC)"
+rm -rf "$D"
+
+# 69 CRLF inside the command and a tab between the words are folded, the trigger still matches
+D="$(mk_ios_bad)"
+OUT="$(printf '%s' "$P_TABCRLF" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-7 tabs and CRLF inside the command still match" || bad "610-7 tabs and CRLF inside the command still match (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 70 without jq the fallback decoder still handles the quoted path (a vendored copy on a runner without jq)
+D="$(mk_ios_bad)"
+NOJQ="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil python3 xmllint dirname basename date; do p="$([ "$b" = python3 ] && pyenv which python3 2>/dev/null || command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOJQ/$b"; done
+OUT="$(printf '%s' "$P_QUOTED" | PATH="$NOJQ" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-8 quoted path is scanned without jq on PATH" || bad "610-8 quoted path is scanned without jq on PATH (rc=$RC bytes=${#OUT})"
+rm -rf "$D" "$NOJQ"
+
+# 71 without jq AND python3 the last-resort decoder still unescapes the quoted path and the continuation
+D="$(mk_ios_bad)"
+NOJQ="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOJQ/$b"; done
+OUT="$(printf '%s' "$P_QUOTED_CONT" | PATH="$NOJQ" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-9 quoted path plus continuation is scanned with neither jq nor python3" || bad "610-9 quoted path plus continuation is scanned with neither jq nor python3 (rc=$RC bytes=${#OUT})"
+rm -rf "$D" "$NOJQ"
+
+# 72 a payload with the command at the top level (older hook shape) is still read
+D="$(mk_ios_bad)"
+OUT="$(printf '{"command":"fastlane pilot upload"}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-10 top-level command key is read" || bad "610-10 top-level command key is read (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 73 malformed JSON payload fails open, silently
+OUT="$(printf '{"tool_input":{"command":"fastlane deliver' | bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "610-11 malformed payload fails open silently" || bad "610-11 malformed payload fails open silently (rc=$RC out=$OUT)"
+
+# 74 a non-string command (object) fails open, silently
+OUT="$(printf '{"tool_input":{"command":{"nested":true}}}' | bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "610-12 non-string command fails open silently" || bad "610-12 non-string command fails open silently (rc=$RC out=$OUT)"
+
+# 75 a quoted non-submit command stays silent (decoding must not widen the trigger)
+OUT="$(printf '%s' "$P_QUOTED_TEST" | bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-13 quoted non-submit command stays silent" || bad "610-13 quoted non-submit command stays silent (rc=$RC out=$OUT)"
+
+# 76 the trigger phrase inside a commit message is scanned on the conservative side, never a silent skip.
+# The scan on a clean project must exit 0, so a commit message never blocks anyone.
+D="$(mk_ios_clean)"
+OUT="$(printf '%s' "$P_COMMITMSG" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && ok "610-14 trigger phrase inside a commit message never blocks a clean project" || bad "610-14 trigger phrase inside a commit message never blocks a clean project (rc=$RC)"
+rm -rf "$D"
+
+# 77 a 200KB payload with the command at the end is decoded and scanned
+D="$(mk_ios_bad)"
+PAD="$(head -c 200000 /dev/zero | tr '\0' 'x')"
+OUT="$(printf '{"tool_input":{"description":"%s","command":"npx eas submit --platform ios"}}' "$PAD" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-15 large payload is decoded and scanned" || bad "610-15 large payload is decoded and scanned (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# ===== Issue #610, second round. Counterexamples from the adversarial review, pinned =====
+NOTOOLS="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOTOOLS/$b"; done
+NOJQ="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil python3 xmllint dirname basename date; do p="$([ "$b" = python3 ] && pyenv which python3 2>/dev/null || command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOJQ/$b"; done
+P_ESCBS='{"tool_input":{"command":"gradlew '"$BS$BS$BS$BS$BS"'nbundleRelease"}}'
+P_BSSPACE='{"tool_input":{"command":"npx eas '"$BS$BS"' '"$BS"'nsubmit --platform ios"}}'
+P_META_OK='{"meta":{"command":"eas submit"},"tool_input":{"command":"ls"}}'
+P_META_BROKEN='{"meta":{"command":"eas submit"},"tool_input":{"command":"ls"},BROKEN'
+P_FALSE='{"tool_input":{"command":false},"command":"fastlane pilot upload"}'
+P_UESC='{"tool_input":{"command":"'"$BS"'u0065as submit --platform ios"}}'
+
+# 78 two backslashes before a newline are an escaped backslash plus a separator, not a continuation
+D="$(mk_ios_bad)"
+OUT="$(printf '%s' "$P_ESCBS" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-16 escaped backslash before a newline is not folded" || bad "610-16 escaped backslash before a newline is not folded (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 79 a backslash followed by a space and then a newline is not a continuation either
+D="$(mk_ios_bad)"
+OUT="$(printf '%s' "$P_BSSPACE" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-17 backslash space newline is not folded" || bad "610-17 backslash space newline is not folded (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 80 a trigger under a sibling key never wins over tool_input.command, on every tier
+D="$(mk_ios_bad)"
+for tier in "$PATH" "$NOJQ" "$NOTOOLS"; do
+  OUT="$(printf '%s' "$P_META_OK" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  [ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-18 sibling command key is ignored (tier=${tier##*/})" || bad "610-18 sibling command key is ignored (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D"
+
+# 81 a malformed payload with a trigger under a sibling key stays silent when a real parser is installed
+D="$(mk_ios_bad)"
+for tier in "$PATH" "$NOJQ"; do
+  OUT="$(printf '%s' "$P_META_BROKEN" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  [ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-19 malformed payload never scans a sibling key (tier=${tier##*/})" || bad "610-19 malformed payload never scans a sibling key (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D"
+
+# 82 a non-string tool_input.command falls through to the top-level command identically on jq and python3
+D="$(mk_ios_bad)"
+for tier in "$PATH" "$NOJQ"; do
+  OUT="$(printf '%s' "$P_FALSE" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-20 false tool_input.command falls through to top-level (tier=${tier##*/})" || bad "610-20 false tool_input.command falls through to top-level (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D"
+
+# 83 an ASCII unicode escape in the command is read on every tier, including the no-tools fallback
+D="$(mk_ios_bad)"
+for tier in "$PATH" "$NOJQ" "$NOTOOLS"; do
+  OUT="$(printf '%s' "$P_UESC" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-21 unicode-escaped trigger is read (tier=${tier##*/})" || bad "610-21 unicode-escaped trigger is read (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D"
+
+# 84 the three tiers agree byte for byte on the two payloads from the issue
+D="$(mk_ios_bad)"
+for p in "$P_QUOTED" "$P_CONT"; do
+  A="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 | grep -E '^  \[|^Summary\.|^BLOCKED')"
+  B="$(printf '%s' "$p" | PATH="$NOJQ" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 | grep -E '^  \[|^Summary\.|^BLOCKED')"
+  C="$(printf '%s' "$p" | PATH="$NOTOOLS" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 | grep -E '^  \[|^Summary\.|^BLOCKED')"
+  [ -n "$A" ] && [ "$A" = "$B" ] && [ "$B" = "$C" ] && ok "610-22 tiers agree on an issue payload" || bad "610-22 tiers agree on an issue payload (jq=${#A} py=${#B} none=${#C})"
+done
+rm -rf "$D"
+
+# 85 there is no stdin cap. a 34MB valid payload with the command up front is read and scanned
+D="$(mk_ios_bad)"
+BIG="$(mktemp)"; { printf '{"tool_input":{"command":"npx eas submit --platform ios","description":"'; head -c 34000000 /dev/zero | tr '\0' 'x'; printf '"}}'; } > "$BIG"
+OUT="$(CLAUDE_PROJECT_DIR="$D" bash "$GUARD" < "$BIG" 2>&1)"; RC=$?; rm -f "$BIG"
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-23 34MB valid payload is read and scanned" || bad "610-23 34MB valid payload is read and scanned (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+rm -rf "$NOTOOLS" "$NOJQ"
+
+# ===== Issue #610, third round. Reporter persona findings, pinned =====
+P_ECHO='{"tool_input":{"command":"echo '"$BS"'"eas submit --platform ios'"$BS"'""}}'
+P_GREP='{"tool_input":{"command":"grep -rn '"'"'eas submit'"'"' docs/"}}'
+P_COMMENT='{"tool_input":{"command":"ls -la # then npx eas submit --platform ios"}}'
+P_COMMENT_ECHO='{"tool_input":{"command":"echo hi # then npx eas submit --platform ios"}}'
+P_SHC='{"tool_input":{"command":"bash -c '"$BS"'"npx eas submit --platform ios'"$BS"'""}}'
+P_CD_APP='{"tool_input":{"command":"cd '"$BS"'"$CLAUDE_PROJECT_DIR/apps/app'"$BS"'" && npx eas submit --platform ios"}}'
+P_CD_REL='{"tool_input":{"command":"cd apps/app; eas submit -p ios --latest"}}'
+P_CD_OUT='{"tool_input":{"command":"cd /tmp && npx eas submit --platform ios"}}'
+P_BOM="$(printf '\357\273\277')"'{"tool_input":{"command":"fastlane pilot upload"}}'
+
+mk_expo_mono() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/apps/app/ios/App" "$d/apps/kiosk/ios/Kiosk" "$d/node_modules/x"
+  printf '{"name":"root","workspaces":["apps/*"]}' > "$d/package.json"
+  printf '{"expo":{"name":"app"}}' > "$d/apps/app/app.json"
+  printf '<plist><dict></dict></plist>' > "$d/apps/app/ios/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\nlet u="https://staging.example.com"\n' > "$d/apps/app/ios/App/A.swift"
+  printf '<plist><dict><key>NSLocationWhenInUseUsageDescription</key><string>Show stores</string><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/apps/kiosk/ios/Kiosk/Info.plist"
+  printf '%s' "$PLIST_EMPTY" > "$d/apps/kiosk/ios/Kiosk/PrivacyInfo.xcprivacy"
+  printf 'import StoreKit\nlet policy="https://kiosk.example.io/privacy-policy"\n' > "$d/apps/kiosk/ios/Kiosk/K.swift"
+  echo "$d"
+}
+
+# 86 echo of the trigger text is not a submit
+OUT="$(printf '%s' "$P_ECHO" | bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-24 echo of the trigger text stays silent" || bad "610-24 echo of the trigger text stays silent (rc=$RC bytes=${#OUT})"
+
+# 87 grep for the trigger text is not a submit
+OUT="$(printf '%s' "$P_GREP" | bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-25 grep for the trigger text stays silent" || bad "610-25 grep for the trigger text stays silent (rc=$RC bytes=${#OUT})"
+
+# 88 a trailing comment is blanked only behind a text-only command. behind anything else it scans on the
+# conservative side (a comment can start inside a quoted wrapper argument) and a clean project still passes.
+D="$(mk_ios_clean)"
+OUT="$(printf '%s' "$P_COMMENT_ECHO" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-26 comment behind echo stays silent" || bad "610-26 comment behind echo stays silent (rc=$RC bytes=${#OUT})"
+OUT="$(printf '%s' "$P_COMMENT" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && ok "610-26 comment behind ls scans and a clean project passes" || bad "610-26 comment behind ls scans and a clean project passes (rc=$RC)"
+rm -rf "$D"
+
+# 89 a submit wrapped in bash -c "..." is still a submit and is scanned
+D="$(mk_ios_bad)"
+OUT="$(printf '%s' "$P_SHC" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-27 submit inside bash -c is scanned" || bad "610-27 submit inside bash -c is scanned (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 90 a leading cd into an app inside the project scopes the scan to that app, quoted and relative forms
+D="$(mk_expo_mono)"
+for p in "$P_CD_APP" "$P_CD_REL"; do
+  OUT="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q "^Project\. .*/apps/app$" && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "610-28 leading cd scopes the scan to the app" || bad "610-28 leading cd scopes the scan to the app (rc=$RC)"
+done
+rm -rf "$D"
+
+# 91 a leading cd outside the project root is ignored and the root is scanned
+D="$(mk_expo_mono)"
+OUT="$(printf '%s' "$P_CD_OUT" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ok "610-29 cd outside the project root is ignored" || bad "610-29 cd outside the project root is ignored (rc=$RC)"
+rm -rf "$D"
+
+# 92 a UTF-8 BOM before the payload is read on every tier
+D="$(mk_ios_bad)"
+NOTOOLS="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOTOOLS/$b"; done
+NOJQ="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil python3 xmllint dirname basename date; do p="$([ "$b" = python3 ] && pyenv which python3 2>/dev/null || command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOJQ/$b"; done
+for tier in "$PATH" "$NOJQ" "$NOTOOLS"; do
+  OUT="$(printf '%s' "$P_BOM" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-30 BOM payload is read (tier=${tier##*/})" || bad "610-30 BOM payload is read (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D" "$NOTOOLS" "$NOJQ"
+
+# ===== Issue #610, fourth round. Hook-contract persona findings, pinned =====
+P_MCP='{"hook_event_name":"PreToolUse","tool_name":"mcp__some__runner","tool_input":{"command":"eas submit --platform ios"}}'
+P_EDIT='{"hook_event_name":"PreToolUse","tool_name":"Edit","tool_input":{"file_path":"x.md","new_string":"run eas submit"},"command":"eas submit --platform ios"}'
+P_NUL='{"tool_name":"Bash","tool_input":{"command":"./gradlew '"$BS"'u0000 bundleRelease"}}'
+
+# 93 a payload from any tool other than Bash is never scanned, even when it carries a command key
+D="$(mk_ios_bad)"
+for p in "$P_MCP" "$P_EDIT"; do
+  OUT="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  [ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-31 non-Bash tool payload stays silent" || bad "610-31 non-Bash tool payload stays silent (rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D"
+
+# 94 a 5MB payload that is valid JSON with the command up front is scanned, well under the cap
+D="$(mk_ios_bad)"
+BIG="$(mktemp)"; { printf '{"tool_name":"Bash","tool_input":{"command":"npx eas submit --platform ios","description":"'; head -c 5000000 /dev/zero | tr '\0' 'x'; printf '"}}'; } > "$BIG"
+OUT="$(CLAUDE_PROJECT_DIR="$D" bash "$GUARD" < "$BIG" 2>&1)"; RC=$?; rm -f "$BIG"
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-32 5MB valid payload is scanned" || bad "610-32 5MB valid payload is scanned (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# 95 a NUL byte inside the command never leaks a bash warning to stderr on a pass
+D="$(mk_ios_clean)"
+ERR="$(printf '%s' "$P_NUL" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 >/dev/null)"; RC=$?
+[ "$RC" -eq 0 ] && [ -z "$ERR" ] && ok "610-33 NUL byte in the command keeps stderr empty on a pass" || bad "610-33 NUL byte in the command keeps stderr empty on a pass (rc=$RC err=${ERR:0:80})"
+rm -rf "$D"
+
+# ===== Issue #610, fifth round. Second adversarial review, pinned. A submit can never hide in quotes =====
+P_QSUB='{"tool_input":{"command":"eas '"$BS"'"submit'"$BS"'" --platform ios"}}'
+P_SEMI_SHC='{"tool_input":{"command":"true;bash -c '"'"'eas submit --platform ios'"'"'"}}'
+P_PY_OS='{"tool_input":{"command":"python3 -c '"'"'import os; os.system('"$BS"'"eas submit --platform ios'"$BS"'")'"'"'"}}'
+P_SUBST='{"tool_input":{"command":"x='"$BS"'"$(bash -c '"'"'npx eas submit --platform ios'"'"')'"$BS"'""}}'
+P_ABS_SH='{"tool_input":{"command":"/bin/sh -c '"'"'eas submit --platform ios'"'"'"}}'
+P_TWO_CD='{"tool_input":{"command":"cd apps/app && cd ../kiosk && npx eas submit --platform ios"}}'
+P_TWO_DOCS='{"tool_input":{"command":"eas submit --platform ios"}} {"tool_input":{"command":"echo"}}'
+P_NESTED_TN='{"metadata":{"tool_name":"Edit"},"tool_name":"Bash","tool_input":{"command":"fastlane pilot upload"}}'
+NOJQ="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil python3 xmllint dirname basename date; do p="$([ "$b" = python3 ] && pyenv which python3 2>/dev/null || command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOJQ/$b"; done
+
+# 96 a submit is scanned however it is quoted or wrapped
+D="$(mk_ios_bad)"
+for p in "$P_QSUB" "$P_SEMI_SHC" "$P_PY_OS" "$P_SUBST" "$P_ABS_SH"; do
+  OUT="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-34 quoted or wrapped submit is scanned" || bad "610-34 quoted or wrapped submit is scanned (rc=$RC bytes=${#OUT} payload=${p:0:60})"
+done
+rm -rf "$D"
+
+# 97 two cd's in one command never scope the scan. the root is scanned as before
+D="$(mk_expo_mono)"
+OUT="$(printf '%s' "$P_TWO_CD" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ok "610-35 two cd's fall back to the project root" || bad "610-35 two cd's fall back to the project root (rc=$RC)"
+rm -rf "$D"
+
+# 98 two concatenated JSON documents are not one payload. silent on jq and on python3
+D="$(mk_ios_bad)"
+for tier in "$PATH" "$NOJQ"; do
+  OUT="$(printf '%s' "$P_TWO_DOCS" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  [ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-36 concatenated documents stay silent (tier=${tier##*/})" || bad "610-36 concatenated documents stay silent (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D"
+
+# 99 a nested metadata tool_name never masks the real top-level Bash tool_name on the JSON tiers
+D="$(mk_ios_bad)"
+for tier in "$PATH" "$NOJQ"; do
+  OUT="$(printf '%s' "$P_NESTED_TN" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-37 nested tool_name does not mask Bash (tier=${tier##*/})" || bad "610-37 nested tool_name does not mask Bash (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+rm -rf "$D" "$NOJQ"
+
+# ===== Issue #610, sixth round. Portability persona. the no-tools unescape must stay linear =====
+# 100 a 300KB command reaches the no-tools tier and is unescaped and scanned in seconds, not minutes
+D="$(mk_ios_bad)"
+NOTOOLS="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOTOOLS/$b"; done
+BIG="$(mktemp)"; { printf '{"tool_input":{"command":"npx eas submit --platform ios && echo '; head -c 300000 /dev/zero | tr '\0' 'x'; printf '"}}'; } > "$BIG"
+T0=$(date +%s); OUT="$(PATH="$NOTOOLS" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" < "$BIG" 2>&1)"; RC=$?; T1=$(date +%s); rm -f "$BIG"
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && [ $((T1-T0)) -lt 20 ] && ok "610-38 300KB command is scanned on the no-tools tier in $((T1-T0))s" || bad "610-38 300KB command is scanned on the no-tools tier (rc=$RC secs=$((T1-T0)) bytes=${#OUT})"
+rm -rf "$D" "$NOTOOLS"
+
+# ===== Issue #610, seventh round. Fuzz persona. a present but broken parser never disables the guard =====
+mk_broken_tool_path() {  # $1 = name of the tool to break, everything else real, jq and python3 otherwise absent
+  local d; d="$(mktemp -d)"
+  for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$d/$b"; done
+  printf '#!/bin/sh\necho "xcrun: error: invalid active developer path" >&2\nexit 1\n' > "$d/$1"; chmod +x "$d/$1"
+  echo "$d"
+}
+P_FF='{"tool_input":{"command":"eas'"$BS"'fsubmit --platform ios"}}'
+P_NESTED_TI='{"command":"ls","tool_input":{"env":{"x":"y"},"command":"eas submit --platform ios"}}'
+
+# 101 the macOS python3 stub (no Command Line Tools) or a stale pyenv shim must fall through, never silence the guard
+D="$(mk_ios_bad)"
+for tool in python3 jq; do
+  BROKEN="$(mk_broken_tool_path "$tool")"
+  OUT="$(printf '%s' "$P_QUOTED" | PATH="$BROKEN" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-39 broken $tool on PATH falls through and the submit is scanned" || bad "610-39 broken $tool on PATH falls through and the submit is scanned (rc=$RC bytes=${#OUT})"
+  rm -rf "$BROKEN"
+done
+rm -rf "$D"
+
+# 102 a form feed between the tool and the verb is whitespace on every tier
+D="$(mk_ios_bad)"
+NOTOOLS="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOTOOLS/$b"; done
+for tier in "$PATH" "$NOTOOLS"; do
+  OUT="$(printf '%s' "$P_FF" | PATH="$tier" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-40 form feed separator is read (tier=${tier##*/})" || bad "610-40 form feed separator is read (tier=${tier##*/} rc=$RC bytes=${#OUT})"
+done
+
+# 103 a nested object ahead of the command key inside tool_input does not fool the no-tools tier
+OUT="$(printf '%s' "$P_NESTED_TI" | PATH="$NOTOOLS" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-41 nested object inside tool_input is skipped over" || bad "610-41 nested object inside tool_input is skipped over (rc=$RC bytes=${#OUT})"
+rm -rf "$D" "$NOTOOLS"
+
+# ===== Issue #610, eighth round. Third adversarial review. an inert text command cannot smuggle a submit =====
+P_ECHO_SUBST='{"tool_input":{"command":"echo '"$BS"'"$(eas submit --platform ios)'"$BS"'""}}'
+P_ECHO_PIPE='{"tool_input":{"command":"echo '"$BS"'"eas submit --platform ios'"$BS"'" | sh"}}'
+P_GIT_ALIAS='{"tool_input":{"command":"git -c alias.ship='"'"'!npx eas submit --platform ios'"'"' ship"}}'
+P_GIT_MSG='{"tool_input":{"command":"git commit -m '"$BS"'"docs: note that eas submit needs a profile'"$BS"'""}}'
+
+# 104 a submit inside a command substitution, a pipe, or a git alias behind an inert-looking command is scanned
+D="$(mk_ios_bad)"
+for p in "$P_ECHO_SUBST" "$P_ECHO_PIPE" "$P_GIT_ALIAS"; do
+  OUT="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-42 smuggled submit behind a text command is scanned" || bad "610-42 smuggled submit behind a text command is scanned (rc=$RC bytes=${#OUT} payload=${p:0:60})"
+done
+rm -rf "$D"
+
+# 105 a plain echo of the trigger with no substitution, pipe, or separator is still silent
+OUT="$(printf '%s' "$P_ECHO" | bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-43 plain echo of the trigger stays silent" || bad "610-43 plain echo of the trigger stays silent (rc=$RC bytes=${#OUT})"
+
+# 106 git is no longer inert (aliases and exec flags run commands). a commit message scans and a clean project passes
+D="$(mk_ios_clean)"
+OUT="$(printf '%s' "$P_GIT_MSG" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && ok "610-44 git commit message scans and a clean project passes" || bad "610-44 git commit message scans and a clean project passes (rc=$RC)"
+rm -rf "$D"
+
+# ===== Issue #610, ninth round. Fourth adversarial review. a parser that passes its probe but fails for real falls through =====
+mk_shim_path() {  # $1 tool name to shim, $2 shim body, $3 = jq|python3|none to keep real on PATH besides the shim
+  local d; d="$(mktemp -d)"
+  for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$d/$b"; done
+  [ "$3" = jq ] && ln -s "$(command -v jq)" "$d/jq"; [ "$3" = python3 ] && ln -s "$(pyenv which python3 2>/dev/null || command -v python3)" "$d/python3"
+  printf '%s\n' "$2" > "$d/$1"; chmod +x "$d/$1"
+  echo "$d"
+}
+P_UNI='{"tool_input":{"command":"cd apps/caf\xc3\xa9 && npx eas submit --platform ios"}}'
+
+# 107 a jq that answers the probe but dies on real input falls through to python3 and the submit is scanned
+D="$(mk_ios_bad)"
+SHIM="$(mk_shim_path jq '#!/bin/sh
+[ "$1" = "-n" ] && exit 0
+echo "jq: error: segfault" >&2; exit 2' python3)"
+OUT="$(printf '%s' "$P_QUOTED" | PATH="$SHIM" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-45 jq that fails on real input falls through" || bad "610-45 jq that fails on real input falls through (rc=$RC bytes=${#OUT})"
+rm -rf "$SHIM"
+
+# 108 a python3 that answers the probe but dies on real input falls through to the regex tier and the submit is scanned
+SHIM="$(mk_shim_path python3 '#!/bin/sh
+[ "$2" = "pass" ] && exit 0
+echo "Fatal Python error" >&2; exit 1' none)"
+OUT="$(printf '%s' "$P_QUOTED" | PATH="$SHIM" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-46 python3 that fails on real input falls through" || bad "610-46 python3 that fails on real input falls through (rc=$RC bytes=${#OUT})"
+rm -rf "$SHIM"
+
+# 109 a genuinely invalid payload rejected by python3 stays silent (rejection is authoritative, not a crash)
+SHIM="$(mk_shim_path jq '#!/bin/sh
+exit 2' python3)"
+OUT="$(printf '{"tool_input":{"command":"fastlane deliver' | PATH="$SHIM" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-47 python3 rejecting invalid JSON stays silent" || bad "610-47 python3 rejecting invalid JSON stays silent (rc=$RC bytes=${#OUT})"
+rm -rf "$SHIM"
+
+# 110 PYTHONIOENCODING=ascii never drops a command with a non-ASCII path on the python3 tier
+NOJQ="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil python3 xmllint dirname basename date; do p="$([ "$b" = python3 ] && pyenv which python3 2>/dev/null || command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOJQ/$b"; done
+OUT="$(printf "$P_UNI" | PYTHONIOENCODING=ascii PATH="$NOJQ" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-48 non-ASCII path survives PYTHONIOENCODING=ascii" || bad "610-48 non-ASCII path survives PYTHONIOENCODING=ascii (rc=$RC bytes=${#OUT})"
+rm -rf "$NOJQ"
+
+# 111 with no temp file available the pass report stays on stdout and a block still puts its reason on stderr
+SHIM="$(mk_shim_path mktemp '#!/bin/sh
+exit 1' jq)"; ln -s "$(pyenv which python3 2>/dev/null || command -v python3)" "$SHIM/python3"
+ERR="$(printf '{"tool_input":{"command":"fastlane deliver --submit"}}' | PATH="$SHIM" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 >/dev/null)"; RC=$?
+echo "$ERR" | grep -q '^BLOCKED\.' && [ "$RC" -eq 2 ] && ok "610-49 degraded routing still puts the block reason on stderr" || bad "610-49 degraded routing still puts the block reason on stderr (rc=$RC err=${ERR:0:80})"
+rm -rf "$D"
+D="$(mk_ios_clean)"
+STDOUT="$(printf '{"tool_input":{"command":"fastlane deliver --submit"}}' | PATH="$SHIM" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>/dev/null)"; RC=$?
+echo "$STDOUT" | grep -q 'Summary\.' && [ "$RC" -eq 0 ] && ok "610-50 degraded routing keeps the pass report on stdout" || bad "610-50 degraded routing keeps the pass report on stdout (rc=$RC bytes=${#STDOUT})"
+rm -rf "$D" "$SHIM"
+
+# ===== Issue #610, tenth round. Fifth adversarial review. a backslash before a letter is the letter =====
+P_LETTER_ESC='{"tool_input":{"command":"eas s'"$BS$BS"'ubmit --platform ios"}}'
+P_CONT_ESC='{"tool_input":{"command":"eas '"$BS$BS$BS"'n'"$BS$BS"'submit --platform ios"}}'
+
+# 112 eas s\ubmit and a continuation followed by \submit are both plain eas submit to the shell, and are scanned
+D="$(mk_ios_bad)"
+for p in "$P_LETTER_ESC" "$P_CONT_ESC"; do
+  OUT="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-51 letter escape inside the verb is scanned" || bad "610-51 letter escape inside the verb is scanned (rc=$RC bytes=${#OUT} payload=${p:0:60})"
+done
+rm -rf "$D"
+
+# ===== Issue #610, eleventh round. A heredoc body is data unless an interpreter consumes it =====
+P_HD_GH='{"tool_input":{"command":"gh pr create --title x --body-file - <<'"$BS"'"EOF'"$BS"'"'"$BS"'nFixes the guard so npx eas submit --platform ios is scanned.'"$BS"'nEOF"}}'
+P_HD_CAT='{"tool_input":{"command":"cat > notes.md <<EOF'"$BS"'nrun npx eas submit --platform ios later'"$BS"'nEOF"}}'
+P_HD_BASH='{"tool_input":{"command":"bash <<EOF'"$BS"'nnpx eas submit --platform ios'"$BS"'nEOF"}}'
+P_HD_PIPE='{"tool_input":{"command":"cat <<EOF | sh'"$BS"'nnpx eas submit --platform ios'"$BS"'nEOF"}}'
+P_HD_DOCKER='{"tool_input":{"command":"docker exec build sh <<'"'"'EOF'"'"''"$BS"'nfastlane pilot upload'"$BS"'nEOF"}}'
+P_HD_THEN='{"tool_input":{"command":"cat > x.txt <<EOF'"$BS"'nhello'"$BS"'nEOF'"$BS"'nnpx eas submit --platform ios"}}'
+
+# 113 a heredoc handed to gh or cat is prose, not a submit
+D="$(mk_ios_bad)"
+for p in "$P_HD_GH" "$P_HD_CAT"; do
+  OUT="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  [ -z "$OUT" ] && [ "$RC" -eq 0 ] && ok "610-52 heredoc prose behind gh or cat stays silent" || bad "610-52 heredoc prose behind gh or cat stays silent (rc=$RC bytes=${#OUT} payload=${p:0:50})"
+done
+
+# 114 a heredoc handed to an interpreter, directly, through a pipe, or inside docker exec, is scanned
+for p in "$P_HD_BASH" "$P_HD_PIPE" "$P_HD_DOCKER"; do
+  OUT="$(printf '%s' "$p" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-53 heredoc fed to an interpreter is scanned" || bad "610-53 heredoc fed to an interpreter is scanned (rc=$RC bytes=${#OUT} payload=${p:0:50})"
+done
+
+# 115 a real submit on the line after a heredoc terminator is still scanned
+OUT="$(printf '%s' "$P_HD_THEN" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'App Store Compliance Guard' && [ "$RC" -eq 2 ] && ok "610-54 submit after a heredoc terminator is scanned" || bad "610-54 submit after a heredoc terminator is scanned (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# ===== Issue #612. Sibling apps in a monorepo are scanned on their own, deep apps are detected =====
+# apps/app is broken (no usage description, Stripe without StoreKit). apps/kiosk is clean and carries the mitigations.
+mk_pooled_mono() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/apps/app/ios/App" "$d/apps/kiosk/ios/Kiosk" "$d/node_modules/x"
+  printf '{"name":"root","workspaces":["apps/*"]}' > "$d/package.json"
+  printf '{"expo":{"name":"app"}}' > "$d/apps/app/app.json"
+  printf '<plist><dict></dict></plist>' > "$d/apps/app/ios/App/Info.plist"
+  printf 'import CoreLocation\nimport Stripe\nlet m=CLLocationManager()\n' > "$d/apps/app/ios/App/A.swift"
+  printf '{"expo":{"name":"kiosk"}}' > "$d/apps/kiosk/app.json"
+  printf '<plist><dict><key>NSLocationWhenInUseUsageDescription</key><string>Show stores</string><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/apps/kiosk/ios/Kiosk/Info.plist"
+  printf '%s' "$PLIST_EMPTY" > "$d/apps/kiosk/ios/Kiosk/PrivacyInfo.xcprivacy"
+  printf 'import StoreKit\nlet iap="react-native-iap"\nlet policy="https://kiosk.example.io/privacy-policy"\nfunc restorePurchases(){}\n' > "$d/apps/kiosk/ios/Kiosk/K.swift"
+  echo "$d"
+}
+# An Xcode project seven levels down. The old platform switch stopped at depth 4 and reported iOS=0.
+mk_deep_ios() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/a/b/c/d/e/ios/Acme.xcodeproj" "$d/a/b/c/d/e/ios/Acme"
+  printf 'X=1;\n' > "$d/a/b/c/d/e/ios/Acme.xcodeproj/project.pbxproj"
+  printf '<plist><dict></dict></plist>' > "$d/a/b/c/d/e/ios/Acme/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/a/b/c/d/e/ios/Acme/A.swift"
+  echo "$d"
+}
+# One app whose own ios/ and android/ folders each carry project markers. Those are parts of the app, never sibling apps.
+mk_nested_native() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App.xcworkspace" "$d/ios/App" "$d/android/app/src/main"
+  printf '{"expo":{"name":"one"}}' > "$d/app.json"
+  printf "platform :ios, '15.0'\n" > "$d/ios/Podfile"
+  printf '<plist><dict></dict></plist>' > "$d/ios/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/ios/App/A.swift"
+  printf "include ':app'\n" > "$d/android/settings.gradle"
+  printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$d/android/app/src/main/AndroidManifest.xml"
+  echo "$d"
+}
+# Two native projects side by side, one per platform, with no marker at the root.
+mk_two_native() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios-app/App.xcodeproj" "$d/ios-app/App" "$d/android-app/app/src/main"
+  printf 'X=1;\n' > "$d/ios-app/App.xcodeproj/project.pbxproj"
+  printf '<plist><dict></dict></plist>' > "$d/ios-app/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/ios-app/App/A.swift"
+  printf "include ':app'\n" > "$d/android-app/settings.gradle"
+  printf '<manifest><uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/></manifest>' > "$d/android-app/app/src/main/AndroidManifest.xml"
+  echo "$d"
+}
+# A Swift package library next to one app. A library is not an app and never gets its own section.
+mk_app_plus_lib() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/apps/app/ios/App" "$d/packages/kit/Sources/Kit"
+  printf '{"expo":{"name":"app"}}' > "$d/apps/app/app.json"
+  printf '<plist><dict></dict></plist>' > "$d/apps/app/ios/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/apps/app/ios/App/A.swift"
+  printf '// swift-tools-version:5.9\nimport PackageDescription\nlet package = Package(name: "Kit")\n' > "$d/packages/kit/Package.swift"
+  printf 'public let k = 1\n' > "$d/packages/kit/Sources/Kit/K.swift"
+  echo "$d"
+}
+P_ROOT_SUBMIT='{"tool_input":{"command":"npx eas submit --platform ios"}}'
+
+# 116 a clean sibling app never vouches for a broken one. each app root is scanned on its own
+D="$(mk_pooled_mono)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+NCRIT="$(echo "$OUT" | grep -c '^  \[CRITICAL\] ')"
+[ "$RC" -eq 2 ] && [ "$NCRIT" -eq 2 ] && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && echo "$OUT" | grep -q 'EXTERNAL-PAYMENT' && ok "612-1 sibling app cannot vouch for a broken app" || bad "612-1 sibling app cannot vouch for a broken app (rc=$RC criticals=$NCRIT)"
+echo "$OUT" | grep -q "^Project\. $D$" && [ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && ok "612-2 monorepo report keeps the root Project line and adds one App section per root" || bad "612-2 monorepo report keeps the root Project line and adds one App section per root"
+# the findings sit under the app they belong to, never under the clean sibling
+APP_SECTION="$(echo "$OUT" | awk '/^App\. .*\/apps\/app$/{p=1;next} /^App\. /{p=0} p')"
+KIOSK_SECTION="$(echo "$OUT" | awk '/^App\. .*\/apps\/kiosk$/{p=1;next} /^App\. |^Summary\.|^== Regulatory/{p=0} p')"
+echo "$APP_SECTION" | grep -q '\[CRITICAL\]' && ! echo "$KIOSK_SECTION" | grep -q '\[CRITICAL\]' && ok "612-3 findings sit under their own app section" || bad "612-3 findings sit under their own app section"
+rm -rf "$D"
+
+# 117 in hook mode the per-app report is buffered and a block goes to stderr in full
+D="$(mk_pooled_mono)"
+ERR="$(mktemp)"; STDOUT="$(printf '%s' "$P_ROOT_SUBMIT" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>"$ERR")"; RC=$?
+[ "$RC" -eq 2 ] && [ -z "$STDOUT" ] && [ "$(grep -c '^App\. ' "$ERR")" -eq 2 ] && grep -q 'BLOCKED' "$ERR" && ok "612-4 hook mode block carries both app sections on stderr" || bad "612-4 hook mode block carries both app sections on stderr (rc=$RC stdout=${#STDOUT})"
+rm -rf "$D" "$ERR"
+
+# 118 a leading cd into one app still scopes the scan to that app alone, no App sections
+D="$(mk_pooled_mono)"
+OUT="$(printf '%s' "$P_CD_REL" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. .*/apps/app$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "612-5 cd into an app scopes to that app with a plain report" || bad "612-5 cd into an app scopes to that app with a plain report (rc=$RC)"
+rm -rf "$D"
+
+# 119 an Xcode project six levels down is still an iOS target
+D="$(mk_deep_ios)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'Platforms\. iOS=1' && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "612-6 Xcode project seven levels down is detected as iOS" || bad "612-6 Xcode project seven levels down is detected as iOS (rc=$RC)"
+rm -rf "$D"
+
+# 120 an app's own ios/ and android/ folders are parts of that app, so a single-app project keeps the plain report
+D="$(mk_nested_native)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && echo "$OUT" | grep -q 'Platforms\. iOS=1 Android=1' && ok "612-7 nested ios and android folders never split one app" || bad "612-7 nested ios and android folders never split one app (rc=$RC)"
+rm -rf "$D"
+
+# 121 two native projects side by side each get their own section and their own platform line
+D="$(mk_two_native)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$OUT" | grep -q 'GOOGLE-PERM-BACKGROUND-LOCATION' && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "612-8 side by side native projects are scanned separately" || bad "612-8 side by side native projects are scanned separately (rc=$RC)"
+IOS_SECTION="$(echo "$OUT" | awk '/^App\. .*\/ios-app$/{p=1;next} /^App\. |^Summary\.|^== Regulatory/{p=0} p')"
+echo "$IOS_SECTION" | grep -q 'Platforms\. iOS=1 Android=0' && ok "612-9 each section reports its own platforms" || bad "612-9 each section reports its own platforms"
+rm -rf "$D"
+
+# 122 a Swift package library next to one app is not a second app. one root means the plain whole-tree report
+D="$(mk_app_plus_lib)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "612-10 a library package never becomes an app section" || bad "612-10 a library package never becomes an app section (rc=$RC)"
+rm -rf "$D"
+
+# 123 a binary file is still skipped by the source scan
+D="$(mk_ios_clean)"
+printf 'fixed-odds\000\000betting\000' > "$D/App/blob.plist"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+! echo "$OUT" | grep -q 'GAMBLING' && [ "$RC" -eq 0 ] && ok "612-11 binary files never feed the source scan" || bad "612-11 binary files never feed the source scan (rc=$RC)"
+rm -rf "$D"
+
+# 124 a symbol in one file and its mitigation in another still pair up
+D="$(mk_ios_clean)"
+printf '<plist><dict><key>CFBundleURLSchemes</key><array><string>acme</string></array></dict></plist>' > "$D/App/Scheme.plist"
+printf 'let x = "https://acme.example.io/.well-known/apple-app-site-association"\n' > "$D/App/C.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+! echo "$OUT" | grep -q 'UNSAFE-DEEPLINK' && [ "$RC" -eq 0 ] && ok "612-12 a mitigation in another file still pairs with its trigger" || bad "612-12 a mitigation in another file still pairs with its trigger (rc=$RC)"
+rm -rf "$D"
+
+# ===== Issue #612, second round. The adversarial review findings, pinned =====
+# The project root is itself an Expo app and a nested Expo app lives under it. The child must not vouch for the root.
+mk_root_app_plus_child() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App" "$d/apps/child/ios/Child"
+  printf '{"expo":{"name":"root"}}' > "$d/app.json"
+  printf '<plist><dict></dict></plist>' > "$d/ios/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/ios/App/A.swift"
+  printf '{"expo":{"name":"child"}}' > "$d/apps/child/app.json"
+  printf '<plist><dict><key>NSLocationWhenInUseUsageDescription</key><string>Show stores</string><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/apps/child/ios/Child/Info.plist"
+  printf '%s' "$PLIST_EMPTY" > "$d/apps/child/ios/Child/PrivacyInfo.xcprivacy"
+  printf 'let policy="https://child.example.io/privacy-policy"\n' > "$d/apps/child/ios/Child/C.swift"
+  echo "$d"
+}
+# A native app at the root with a demo Xcode project nested under Examples. The demo is part of the repo, not a second app.
+mk_root_xcode_plus_demo() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/App.xcodeproj/project.xcworkspace" "$d/App" "$d/Examples/Demo.xcodeproj" "$d/Examples/Demo"
+  printf 'X=1;\n' > "$d/App.xcodeproj/project.pbxproj"
+  printf '<plist><dict></dict></plist>' > "$d/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/App/A.swift"
+  printf 'X=1;\n' > "$d/Examples/Demo.xcodeproj/project.pbxproj"
+  printf 'let demo = 1\n' > "$d/Examples/Demo/D.swift"
+  echo "$d"
+}
+# A stray Pods tree under a root ios folder must not make the root an app and re-pool two real apps.
+mk_pods_at_root() {
+  local d; d="$(mk_pooled_mono)"; mkdir -p "$d/ios/Pods/Foo.xcodeproj"
+  printf 'X=1;\n' > "$d/ios/Pods/Foo.xcodeproj/project.pbxproj"
+  echo "$d"
+}
+# A Heroku-style app.json in a tooling folder is not an app. One real app means the plain report.
+mk_heroku_json_sibling() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/apps/mobile/ios/App" "$d/tools/cli"
+  printf '{"expo":{"name":"mobile"}}' > "$d/apps/mobile/app.json"
+  printf '<plist><dict></dict></plist>' > "$d/apps/mobile/ios/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/apps/mobile/ios/App/A.swift"
+  printf '{"name":"cli","description":"a deploy manifest","stack":"heroku-22"}' > "$d/tools/cli/app.json"
+  printf 'console.log(1)\n' > "$d/tools/cli/index.js"
+  echo "$d"
+}
+# A Flutter package (pubspec, no platform folder) next to a Flutter app is a library. One app means the plain report.
+mk_flutter_pkg_sibling() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/apps/mobile/ios/Runner" "$d/apps/mobile/lib" "$d/packages/ui/lib"
+  printf 'name: mobile\ndependencies:\n  permission_handler: ^11.0.0\n' > "$d/apps/mobile/pubspec.yaml"
+  printf "import 'package:permission_handler/permission_handler.dart';\nvoid main(){Permission.camera.request();}\n" > "$d/apps/mobile/lib/main.dart"
+  printf '<plist><dict></dict></plist>' > "$d/apps/mobile/ios/Runner/Info.plist"
+  printf 'name: ui\n' > "$d/packages/ui/pubspec.yaml"
+  printf 'class Ui {}\n' > "$d/packages/ui/lib/ui.dart"
+  echo "$d"
+}
+# Two bare native projects under the conventional names, nothing at the root. Each is its own app.
+mk_bare_ios_android() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App.xcodeproj" "$d/ios/App" "$d/android/app/src/main"
+  printf 'X=1;\n' > "$d/ios/App.xcodeproj/project.pbxproj"
+  printf '<plist><dict></dict></plist>' > "$d/ios/App/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/ios/App/A.swift"
+  printf "include ':app'\n" > "$d/android/settings.gradle"
+  printf '<manifest><uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/></manifest>' > "$d/android/app/src/main/AndroidManifest.xml"
+  echo "$d"
+}
+
+# 125 a nested clean app never vouches for the root app, and the root scan leaves the nested app out
+D="$(mk_root_app_plus_child)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+ROOT_SECTION="$(echo "$OUT" | awk -v r="App. $D" '$0==r{p=1;next} /^App\. /{p=0} p')"
+CHILD_SECTION="$(echo "$OUT" | awk '/^App\. .*\/apps\/child$/{p=1;next} /^App\. |^Summary\.|^== Regulatory/{p=0} p')"
+[ "$RC" -eq 2 ] && [ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$ROOT_SECTION" | grep -q 'MISSING-USAGE-DESCRIPTION' && ! echo "$CHILD_SECTION" | grep -q '\[CRITICAL\]' && ok "612-13 root app plus nested app are scanned apart" || bad "612-13 root app plus nested app are scanned apart (rc=$RC)"
+rm -rf "$D"
+
+# 126 a demo Xcode project nested under a root native app stays part of that app. documented, pinned
+D="$(mk_root_xcode_plus_demo)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "612-14 a nested demo Xcode project never splits a root native app" || bad "612-14 a nested demo Xcode project never splits a root native app (rc=$RC)"
+rm -rf "$D"
+
+# 127 a Pods tree under a root ios folder cannot make the root an app
+D="$(mk_pods_at_root)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && [ "$RC" -eq 2 ] && ok "612-15 Pods under a root ios folder never re-pool the apps" || bad "612-15 Pods under a root ios folder never re-pool the apps (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+rm -rf "$D"
+
+# 128 an app.json that is not Expo or React Native is not an app
+D="$(mk_heroku_json_sibling)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "612-16 a Heroku app.json never becomes an app section" || bad "612-16 a Heroku app.json never becomes an app section (rc=$RC)"
+rm -rf "$D"
+
+# 129 a Flutter package without a platform folder is a library, not an app
+D="$(mk_flutter_pkg_sibling)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && ok "612-17 a Flutter package never becomes an app section" || bad "612-17 a Flutter package never becomes an app section (rc=$RC)"
+rm -rf "$D"
+
+# 130 two bare native projects under ios/ and android/ with nothing at the root are two apps
+D="$(mk_bare_ios_android)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$OUT" | grep -q 'GOOGLE-PERM-BACKGROUND-LOCATION' && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "612-18 bare ios and android projects side by side are two apps" || bad "612-18 bare ios and android projects side by side are two apps (rc=$RC)"
+rm -rf "$D"
+
+# 131 the deadline section cannot be skipped from the environment
+D="$(mk_ios_clean)"
+OUT="$(DEADLINE_DONE=1 bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'Regulatory Compliance Deadline Status' && ok "612-19 DEADLINE_DONE from the environment is ignored" || bad "612-19 DEADLINE_DONE from the environment is ignored (rc=$RC)"
+rm -rf "$D"
+
+# 132 a project path with a space still splits into its apps
+B="$(mktemp -d)"; D="$B/my app"; mkdir -p "$D"; SRC="$(mk_pooled_mono)"; cp -R "$SRC"/. "$D"/; rm -rf "$SRC"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && [ "$RC" -eq 2 ] && ok "612-20 a path with a space still splits into apps" || bad "612-20 a path with a space still splits into apps (rc=$RC)"
+rm -rf "$B"
+
+# 133 a truncated blob falls back to the per-file scan instead of passing silently
+D="$(mk_ios_bad)"
+OUT="$( ( ulimit -f 1; bash "$GUARD" "$D" 2>&1 ) )"; RC=$?
+echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "612-21 a blob that cannot be written falls back and still blocks" || bad "612-21 a blob that cannot be written falls back and still blocks (rc=$RC)"
+rm -rf "$D"
+
+# 134 a multi-app scan leaves no temp files behind
+D="$(mk_pooled_mono)"; T="$(mktemp -d)"
+TMPDIR="$T" bash "$GUARD" "$D" >/dev/null 2>&1
+[ -z "$(ls -A "$T")" ] && ok "612-22 a multi-app scan leaves no temp files" || bad "612-22 a multi-app scan leaves no temp files ($(ls -A "$T" | wc -l | tr -d ' ') left)"
+rm -rf "$D" "$T"
+
+# 135 a workspace inside an Xcode project bundle never becomes an app of its own
+D="$(mk_ios_precision_safe)"; mkdir -p "$D/App.xcodeproj/project.xcworkspace"; printf '<Workspace/>' > "$D/App.xcodeproj/project.xcworkspace/contents.xcworkspacedata"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 0 ] && ok "612-23 a workspace inside the project bundle never splits the app" || bad "612-23 a workspace inside the project bundle never splits the app (rc=$RC)"
+rm -rf "$D"
+
+# ===== Issue #612, third round. Second adversarial review, pinned =====
+# 136 a trailing slash on the project path still keeps the nested app out of the root scan
+D="$(mk_root_app_plus_child)"
+OUT="$(bash "$GUARD" "$D/" 2>&1)"; RC=$?
+ROOT_SECTION="$(echo "$OUT" | awk -v r="App. $D/" '$0==r{p=1;next} /^App\. /{p=0} p')"
+[ "$RC" -eq 2 ] && echo "$ROOT_SECTION" | grep -q 'MISSING-USAGE-DESCRIPTION' && ok "612-24 a trailing slash on the project path changes nothing" || bad "612-24 a trailing slash on the project path changes nothing (rc=$RC)"
+rm -rf "$D"
+
+# 137 a nested app's privacy manifest never vouches for the root app
+D="$(mk_root_app_plus_child)"
+printf 'let d = UserDefaults.standard\n' > "$D/ios/App/B.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+ROOT_SECTION="$(echo "$OUT" | awk -v r="App. $D" '$0==r{p=1;next} /^App\. /{p=0} p')"
+echo "$ROOT_SECTION" | grep -q 'APPLE-PRIVACY-MANIFEST-MISSING' && ok "612-25 a nested app's privacy manifest never vouches for the root" || bad "612-25 a nested app's privacy manifest never vouches for the root (rc=$RC)"
+rm -rf "$D"
+
+# 138 a nested app's release minification never vouches for the root Android app
+D="$(mktemp -d)"; mkdir -p "$D/android/app/src/main" "$D/apps/child/android/app/src/main"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf "include ':app'\n" > "$D/android/settings.gradle"
+printf 'android { buildTypes { release { minifyEnabled false } } }\n' > "$D/android/app/build.gradle"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/android/app/src/main/AndroidManifest.xml"
+printf '{"expo":{"name":"child"}}' > "$D/apps/child/app.json"
+printf "include ':app'\n" > "$D/apps/child/android/settings.gradle"
+printf 'android { buildTypes { release { minifyEnabled true } } }\n' > "$D/apps/child/android/app/build.gradle"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/apps/child/android/app/src/main/AndroidManifest.xml"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+ROOT_SECTION="$(echo "$OUT" | awk -v r="App. $D" '$0==r{p=1;next} /^App\. /{p=0} p')"
+echo "$ROOT_SECTION" | grep -q 'ANDROID-R8-OPTIMIZATION-MISSING' && ok "612-26 a nested app's minification never vouches for the root" || bad "612-26 a nested app's minification never vouches for the root (rc=$RC)"
+rm -rf "$D"
+
+# 139 a Flutter plugin has platform folders and is still a library
+D="$(mktemp -d)"; mkdir -p "$D/apps/mobile/ios/App" "$D/packages/camera_plugin/ios/Classes"
+printf '{"expo":{"name":"mobile"}}' > "$D/apps/mobile/app.json"
+printf '<plist><dict></dict></plist>' > "$D/apps/mobile/ios/App/Info.plist"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$D/apps/mobile/ios/App/A.swift"
+printf 'name: camera_plugin\nflutter:\n  plugin:\n    platforms:\n      ios:\n        pluginClass: CameraPlugin\n' > "$D/packages/camera_plugin/pubspec.yaml"
+printf 'final class CameraPlugin {}\n' > "$D/packages/camera_plugin/ios/Classes/CameraPlugin.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "612-27 a Flutter plugin never becomes an app section" || bad "612-27 a Flutter plugin never becomes an app section (rc=$RC)"
+rm -rf "$D"
+
+# 140 a source file that ends with the old static marker text cannot forge a complete blob
+D="$(mktemp -d)"; mkdir -p "$D/App"
+printf '<plist><dict></dict></plist>' > "$D/App/Info.plist"
+printf '%*s%s' 494 '' '~~ascg~blob~end~~' > "$D/App/a.swift"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$D/App/z.swift"
+OUT="$( ( ulimit -f 1; bash "$GUARD" "$D" 2>&1 ) )"; RC=$?
+echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "612-28 a forged end marker never certifies a truncated blob" || bad "612-28 a forged end marker never certifies a truncated blob (rc=$RC)"
+rm -rf "$D"
+
+# 141 an app eleven levels down is still detected, and the tree is scanned in one piece
+D="$(mktemp -d)"; P="$D/a/b/c/d/e/f/g/h/i/ios"; mkdir -p "$P/Acme.xcodeproj" "$P/Acme"
+printf 'X=1;\n' > "$P/Acme.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$P/Acme/Info.plist"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$P/Acme/A.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'Platforms\. iOS=1' && [ "$RC" -eq 2 ] && ok "612-29 an app eleven levels down is detected" || bad "612-29 an app eleven levels down is detected (rc=$RC)"
+rm -rf "$D"
+
+# 142 an Android app with no Gradle file at all still gets the R8 finding, as it always did
+D="$(mktemp -d)"; mkdir -p "$D/android/app/src/main"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/android/app/src/main/AndroidManifest.xml"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'ANDROID-R8-OPTIMIZATION-MISSING' && ok "612-30 no Gradle file still means the R8 finding" || bad "612-30 no Gradle file still means the R8 finding (rc=$RC)"
+rm -rf "$D"
+
+# ===== Issue #612, fourth round. Third adversarial review, pinned =====
+# 143 a nested app whose name carries glob characters is still kept out of the root scan
+D="$(mktemp -d)"; mkdir -p "$D/ios/App" "$D/apps/[child]/ios/Child"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf '<plist><dict></dict></plist>' > "$D/ios/App/Info.plist"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$D/ios/App/A.swift"
+printf '{"expo":{"name":"child"}}' > "$D/apps/[child]/app.json"
+printf '<plist><dict><key>NSLocationWhenInUseUsageDescription</key><string>Stores</string></dict></plist>' > "$D/apps/[child]/ios/Child/Info.plist"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+ROOT_SECTION="$(echo "$OUT" | awk -v r="App. $D" '$0==r{p=1;next} /^App\. /{p=0} p')"
+echo "$ROOT_SECTION" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "612-31 a nested app named with brackets is still pruned from the root scan" || bad "612-31 a nested app named with brackets is still pruned from the root scan (rc=$RC)"
+rm -rf "$D"
+
+# 144 a Flutter plugin with an android folder under a root app is part of the repo, never a second app
+D="$(mktemp -d)"; mkdir -p "$D/ios/App" "$D/packages/plugin/android/src/main"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf '<plist><dict></dict></plist>' > "$D/ios/App/Info.plist"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$D/ios/App/A.swift"
+printf 'name: plugin\nflutter:\n  plugin:\n    platforms:\n      android:\n        package: com.example.plugin\n' > "$D/packages/plugin/pubspec.yaml"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/packages/plugin/android/src/main/AndroidManifest.xml"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "612-32 a Flutter plugin's android folder never becomes an app" || bad "612-32 a Flutter plugin's android folder never becomes an app (rc=$RC)"
+rm -rf "$D"
+
+# 145 two Android app modules with no settings file are two apps, and the clean one never vouches
+D="$(mktemp -d)"; mkdir -p "$D/apps/a/app/src/main" "$D/apps/b/app/src/main"
+printf "plugins { id 'com.android.application' }\nandroid { buildTypes { release { minifyEnabled false } } }\n" > "$D/apps/a/app/build.gradle"
+printf "plugins { id 'com.android.application' }\nandroid { buildTypes { release { minifyEnabled true } } }\n" > "$D/apps/b/app/build.gradle"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/apps/a/app/src/main/AndroidManifest.xml"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/apps/b/app/src/main/AndroidManifest.xml"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+A_SECTION="$(echo "$OUT" | awk '/^App\. .*\/apps\/a\/app$/{p=1;next} /^App\. |^Summary\.|^== Regulatory/{p=0} p')"
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$A_SECTION" | grep -q 'ANDROID-R8-OPTIMIZATION-MISSING' && ok "612-33 Android app modules without a settings file are two apps" || bad "612-33 Android app modules without a settings file are two apps (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+rm -rf "$D"
+
+# 146 a React Native native module (peerDependencies, an android folder, no app config) next to one app is a library
+D="$(mktemp -d)"; mkdir -p "$D/apps/mobile/ios/App" "$D/packages/rn-lib/android/src/main"
+printf '{"expo":{"name":"mobile"}}' > "$D/apps/mobile/app.json"
+printf '<plist><dict></dict></plist>' > "$D/apps/mobile/ios/App/Info.plist"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$D/apps/mobile/ios/App/A.swift"
+printf '{"name":"rn-lib","peerDependencies":{"react-native":"*"}}' > "$D/packages/rn-lib/package.json"
+printf "plugins { id 'com.android.library' }\nandroid { }\n" > "$D/packages/rn-lib/android/build.gradle"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/packages/rn-lib/android/src/main/AndroidManifest.xml"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "612-34 a React Native module never becomes an app section" || bad "612-34 a React Native module never becomes an app section (rc=$RC)"
+rm -rf "$D"
+
+# ===== Issue #612, fifth round. Hook-contract persona findings, pinned =====
+# 147 a manifest inside a test fixture directory never becomes an app root
+D="$(mk_ios_bad)"; mkdir -p "$D/__tests__/fixtures/android/app/src/main"
+printf '<manifest><uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/></manifest>' > "$D/__tests__/fixtures/android/app/src/main/AndroidManifest.xml"
+printf "plugins { id 'com.android.application' }\n" > "$D/__tests__/fixtures/android/app/build.gradle"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && ! echo "$OUT" | grep -q 'BACKGROUND-LOCATION' && ok "612-35 a test fixture never becomes an app root" || bad "612-35 a test fixture never becomes an app root (rc=$RC)"
+rm -rf "$D"
+
+# 148 a project path that is a symlink is scanned through its target instead of passing silently
+REAL="$(mk_ios_bad)"; LINK="$(mktemp -d)/link"; ln -s "$REAL" "$LINK"
+OUT="$(bash "$GUARD" "$LINK" 2>&1)"; RC=$?
+echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "612-36 a symlinked project path is scanned" || bad "612-36 a symlinked project path is scanned (rc=$RC)"
+rm -rf "$REAL" "$(dirname "$LINK")"
+
+# 149 an app whose package.json carries a peer dependency is still an app when it owns its platform projects
+D="$(mktemp -d)"; mkdir -p "$D/apps/peer/ios/App.xcodeproj" "$D/apps/peer/ios/App" "$D/apps/peer/android/app/src/main" "$D/apps/other/ios/Other"
+printf '{"dependencies":{"react-native":"0.75.0"},"peerDependencies":{"react":"18.0.0"}}' > "$D/apps/peer/package.json"
+printf 'X=1;\n' > "$D/apps/peer/ios/App.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/apps/peer/ios/App/Info.plist"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$D/apps/peer/ios/App/A.swift"
+printf "include ':app'\n" > "$D/apps/peer/android/settings.gradle"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/apps/peer/android/app/src/main/AndroidManifest.xml"
+printf '{"expo":{"name":"other"}}' > "$D/apps/other/app.json"
+printf '<plist><dict></dict></plist>' > "$D/apps/other/ios/Other/Info.plist"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && [ "$RC" -eq 2 ] && ok "612-37 an app with a peer dependency and its own platform projects is an app" || bad "612-37 an app with a peer dependency and its own platform projects is an app (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+rm -rf "$D"
+
+# ===== Issues #655, #656, #657. App root detection edges left open by #614 =====
+# An Expo app next to a workspace member that is a React Native app by package.json alone. $1 is the member's native folder.
+mk_rn_pkg_member() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/apps/a/ios/App" "$d/apps/b/src"
+  printf '{"expo":{"name":"a"}}' > "$d/apps/a/app.json"
+  printf '<plist><dict></dict></plist>' > "$d/apps/a/ios/App/Info.plist"
+  printf '{"name":"b","dependencies":{"react":"18.3.1","%s":"0.75.0"}}' "$2" > "$d/apps/b/package.json"
+  printf 'export default function B() {}\n' > "$d/apps/b/src/App.tsx"
+  case "$1" in
+    ios) mkdir -p "$d/apps/b/ios/B"; printf "platform :ios, '15.0'\n" > "$d/apps/b/ios/Podfile"; printf 'import UIKit\n' > "$d/apps/b/ios/B/AppDelegate.swift" ;;
+    android) mkdir -p "$d/apps/b/android/app/src/main/java"; printf 'org.gradle.jvmargs=-Xmx2g\n' > "$d/apps/b/android/gradle.properties" ;;
+  esac
+  echo "$d"
+}
+# 655 a React Native or Expo app with no app.json or app.config is an app when package.json depends on it and it owns a native folder
+D="$(mk_rn_pkg_member ios react-native)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$OUT" | grep -q "^App\. $D/apps/b$" && ok "655-1 a React Native workspace member with an ios folder is its own app" || bad "655-1 a React Native workspace member with an ios folder is its own app (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+rm -rf "$D"
+D="$(mk_rn_pkg_member android expo)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$OUT" | grep -q "^App\. $D/apps/b$" && ok "655-2 an Expo workspace member with only an android folder is its own app" || bad "655-2 an Expo workspace member with only an android folder is its own app (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+rm -rf "$D"
+# a native-module library. peerDependencies, react-native only as a dev dependency, ios and android source folders
+D="$(mk_rn_pkg_member none react)"; rm -rf "$D/apps/b"; mkdir -p "$D/packages/rn-lib/ios" "$D/packages/rn-lib/android/src/main/java"
+printf '{"name":"rn-lib","peerDependencies":{"react-native":"*"},"devDependencies":{"react-native":"0.75.0"}}' > "$D/packages/rn-lib/package.json"
+printf '#import <React/RCTBridgeModule.h>\n' > "$D/packages/rn-lib/ios/RNLib.m"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && ok "655-3 a native-module library with peerDependencies is still not an app" || bad "655-3 a native-module library with peerDependencies is still not an app (rc=$RC)"
+# react-native only as a dev dependency, no peerDependencies, an ios folder. a tooling package, not an app
+rm -rf "$D/packages/rn-lib"; mkdir -p "$D/tools/e2e/ios"
+printf '{"name":"e2e","devDependencies":{"react-native":"0.75.0","detox":"20.0.0"}}' > "$D/tools/e2e/package.json"
+printf 'describe("x", () => {})\n' > "$D/tools/e2e/ios/flow.js"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && ok "655-4 react-native as a dev dependency only never makes an app" || bad "655-4 react-native as a dev dependency only never makes an app (rc=$RC)"
+rm -rf "$D"
+
+# 656 a bare Xcode project in an examples folder under a root Expo app stays part of the root scan
+D="$(mktemp -d)"; mkdir -p "$D/ios/App" "$D/examples/NativeDemo/Demo.xcodeproj" "$D/examples/NativeDemo/Demo"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf '<plist><dict></dict></plist>' > "$D/ios/App/Info.plist"
+printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$D/ios/App/A.swift"
+printf 'X=1;\n' > "$D/examples/NativeDemo/Demo.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/examples/NativeDemo/Demo/Info.plist"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Project\. $D$" && ! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "656-1 a nested demo Xcode project never splits a root framework app" || bad "656-1 a nested demo Xcode project never splits a root framework app (rc=$RC)"
+rm -rf "$D"
+
+# 657 an app directory linked into the tree from outside it is followed one level and scanned
+mk_linked_app() {  # prints the project dir. the linked app lives in a sibling temp dir, removed with rm_linked
+  local d ext; d="$(mktemp -d)"; ext="$(mk_ios_bad)"; mkdir -p "$d/apps"
+  printf 'X=1;\n' > "$ext/App/project.pbxproj"; mkdir -p "$ext/App.xcodeproj"; mv "$ext/App/project.pbxproj" "$ext/App.xcodeproj/"
+  ln -s "$ext" "$d/apps/linked"
+  echo "$d"
+}
+rm_linked() { rm -rf "$(cd "$1/apps/linked" 2>/dev/null && pwd -P)" "$1"; }
+D="$(mk_linked_app)"; mkdir -p "$D/apps/a/ios/App"
+printf '{"expo":{"name":"a"}}' > "$D/apps/a/app.json"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/apps/a/ios/App/Info.plist"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+LINK_SECTION="$(echo "$OUT" | awk '/^App\. .*\/apps\/linked$/{p=1;next} /^App\. |^Summary\.|^== Regulatory/{p=0} p')"
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$LINK_SECTION" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "657-1 a linked app beside a real app is scanned on its own" || bad "657-1 a linked app beside a real app is scanned on its own (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+rm_linked "$D"
+D="$(mk_linked_app)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^App\. $D/apps/linked$" && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "657-2 a linked app that is the only app is still scanned" || bad "657-2 a linked app that is the only app is still scanned (rc=$RC)"
+rm_linked "$D"
+# a clean linked app must never replace the scan of the project's own unmarked source (adversarial review)
+D="$(mk_ios_bad)"; EXT="$(mk_ios_clean)"; mkdir -p "$EXT/App.xcodeproj" "$D/apps"; printf 'X=1;\n' > "$EXT/App.xcodeproj/project.pbxproj"
+ln -s "$EXT" "$D/apps/linked"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^App\. $D/apps/linked$" && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "657-4 a clean linked app does not hide the project's own critical findings" || bad "657-4 a clean linked app does not hide the project's own critical findings (rc=$RC)"
+rm -rf "$D" "$EXT"
+D="$(mktemp -d)"; EXT="$(mk_ios_clean)"; mkdir -p "$EXT/App.xcodeproj" "$D/apps"; printf 'X=1;\n' > "$EXT/App.xcodeproj/project.pbxproj"
+ln -s "$EXT" "$D/apps/linked"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q '^CLEAR\.' && ! echo "$OUT" | grep -q 'NOT CHECKED' && [ "$RC" -eq 0 ] && ok "657-5 an empty project root beside a clean linked app is CLEAR, not NOT CHECKED" || bad "657-5 an empty project root beside a clean linked app is CLEAR, not NOT CHECKED (rc=$RC)"
+rm -rf "$D" "$EXT"
+D="$(mktemp -d)"; U="$(mktemp -d)"; mkdir -p "$D/apps" "$U/ProjectSettings" "$U/Assets"
+printf 'm_EditorVersion: 6000.0.1f1\n' > "$U/ProjectSettings/ProjectVersion.txt"
+printf 'using UnityEngine;\nclass A { void S(){ var u="https://staging.example.com"; } }\n' > "$U/Assets/A.cs"
+ln -s "$U" "$D/apps/game"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^App\. $D/apps/game$" && ok "657-6 a linked Unity project is followed like any other app" || bad "657-6 a linked Unity project is followed like any other app (rc=$RC)"
+rm -rf "$D" "$U"
+D="$(mktemp -d)"; EXT="$(mk_ios_bad)"; mkdir -p "$EXT/App.xcodeproj" "$D/apps"; printf 'X=1;\n' > "$EXT/App.xcodeproj/project.pbxproj"
+ln -s "$EXT" "$D/apps/one"; ln -s "$EXT" "$D/apps/two"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -cE "^App\. $D/apps/(one|two)$")" -eq 1 ] && [ "$RC" -eq 2 ] && ok "657-7 two links to one app scan it once" || bad "657-7 two links to one app scan it once (rc=$RC sections=$(echo "$OUT" | grep -cE '^App\. '))"
+rm -rf "$D" "$EXT"
+D="$(mktemp -d)"; EXT="$(mktemp -d)"; mkdir -p "$D/apps/flutter/lib" "$EXT/App.xcodeproj"
+printf 'name: f\nflutter:\n  uses-material-design: true\n' > "$D/apps/flutter/pubspec.yaml"; printf 'void main() {}\n' > "$D/apps/flutter/lib/main.dart"
+printf 'X=1;\n' > "$EXT/App.xcodeproj/project.pbxproj"; ln -s "$EXT" "$D/apps/linked"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q '^NOT CHECKED' && ! echo "$OUT" | grep -q '^CLEAR' && [ "$RC" -eq 1 ] && ok "657-9 a Flutter app with no native folder beside a clean linked app is NOT CHECKED, never CLEAR" || bad "657-9 a Flutter app with no native folder beside a clean linked app is NOT CHECKED, never CLEAR (rc=$RC)"
+rm -rf "$D" "$EXT"
+for EXCL in vendor build node_modules; do
+  D="$(mktemp -d)"; EXT="$(mk_ios_bad)"; mkdir -p "$EXT/App.xcodeproj"; printf 'X=1;\n' > "$EXT/App.xcodeproj/project.pbxproj"
+  ln -s "$EXT" "$D/$EXCL"
+  OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+  ! echo "$OUT" | grep -q "^App\. $D/$EXCL$" && [ "$RC" -ne 2 ] && ok "657-8 an app linked as $EXCL stays excluded like a real $EXCL folder" || bad "657-8 an app linked as $EXCL stays excluded like a real $EXCL folder (rc=$RC)"
+  rm -rf "$D" "$EXT"
+done
+# links that point back into the tree, above it, or at themselves must not hang the scan or become apps
+D="$(mk_ios_bad)"; mkdir -p "$D/apps/a"
+ln -s "$D" "$D/apps/a/up"; ln -s . "$D/apps/here"; ln -s loop "$D/apps/loop"; ln -s "$(dirname "$D")" "$D/apps/parent"
+OUTF="$(mktemp)"; bash "$GUARD" "$D" > "$OUTF" 2>&1 & GPID=$!
+i=0; while kill -0 "$GPID" 2>/dev/null && [ "$i" -lt 120 ]; do sleep 0.5; i=$((i+1)); done
+if kill -0 "$GPID" 2>/dev/null; then kill "$GPID" 2>/dev/null; wait "$GPID" 2>/dev/null; bad "657-3 self-referencing links do not hang the scan (killed after 60s)"
+else wait "$GPID"; RC=$?; OUT="$(cat "$OUTF")"
+  ! echo "$OUT" | grep -q '^App\. ' && echo "$OUT" | grep -q 'MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "657-3 self-referencing links do not hang the scan or become apps" || bad "657-3 self-referencing links do not hang the scan or become apps (rc=$RC)"
+fi
+rm -rf "$D" "$OUTF"
+
+# ===== Issue #658. The run reports how long it took, and says so when it nears the hook timeout =====
+D="$(mk_ios_bad)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -qE '^Scan time\. [0-9]+s$' && ok "658-1 the scan time is printed" || bad "658-1 the scan time is printed"
+echo "$OUT" | grep -q 'hook timeout' && bad "658-2 a fast run prints no timeout hint" || ok "658-2 a fast run prints no timeout hint"
+OUT="$(APP_STORE_GUARD_SLOW_SECS=0 bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'hook timeout' && echo "$OUT" | grep -q '"timeout"' && ok "658-3 a run past the slow threshold names the timeout setting to raise" || bad "658-3 a run past the slow threshold names the timeout setting to raise"
+ERR="$(printf '{"tool_input":{"command":"fastlane deliver --submit"}}' | APP_STORE_GUARD_SLOW_SECS=0 CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1 >/dev/null)"; RC=$?
+echo "$ERR" | grep -qE '^Scan time\. [0-9]+s$' && echo "$ERR" | grep -q 'hook timeout' && [ "$RC" -eq 2 ] && ok "658-4 a hook-mode block carries the scan time and the hint on stderr" || bad "658-4 a hook-mode block carries the scan time and the hint on stderr (rc=$RC)"
+OUT="$(APP_STORE_GUARD_SLOW_SECS=abc bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -qE '^Scan time\. [0-9]+s$' && ! echo "$OUT" | grep -q 'hook timeout' && [ "$RC" -eq 2 ] && ok "658-5 a non-numeric threshold falls back to the default" || bad "658-5 a non-numeric threshold falls back to the default (rc=$RC)"
+rm -rf "$D"
+
+# ===== Submit commands that reach the store through a wrapper or a custom lane (#836) =====
+hook_rc() { python3 -c 'import json,sys; print(json.dumps({"tool_name":sys.argv[2],"tool_input":{"command":sys.argv[1]}}))' "$1" "${3:-Bash}" | CLAUDE_PROJECT_DIR="$2" bash "$GUARD" >/dev/null 2>&1; echo $?; }
+D="$(mk_ios_bad)"
+mkdir -p "$D/fastlane"
+printf 'default_platform(:ios)\nplatform :ios do\n  lane :tests do\n    scan\n  end\n  lane :nightly do\n    build_app\n    upload_to_testflight\n  end\n  lane :screens do\n    snapshot\n  end\nend\n' > "$D/fastlane/Fastfile"
+printf '{\n  "name": "x",\n  "scripts": {\n    "submit:ios": "cd ios && fastlane ios release",\n    "ship": "eas submit -p ios",\n    "lint": "eslint ."\n  }\n}\n' > "$D/package.json"
+printf 'ios-release:\n\txcodebuild -workspace A.xcworkspace -scheme A archive\n\nfmt:\n\tswiftformat .\n' > "$D/Makefile"
+n=0
+for c in "bundle exec fastlane release" "fastlane ios beta" "fastlane android deploy" "fastlane run upload_to_testflight" "fastlane upload_to_app_store" "fastlane nightly" "gradle publishBundle" "./gradlew publishReleaseBundle" "./gradlew :app:promoteReleaseArtifact" "npx eas --non-interactive submit -p ios" "eas --profile production build" "npm run submit:ios" "pnpm run ship" "yarn ship" "make ios-release"; do
+  n=$((n+1)); RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "2" ] && ok "836-$n blocked. $c" || bad "836-$n blocked. $c (rc=$RC)"
+done
+for c in "fastlane tests" "fastlane ios screens" "fastlane match development" "fastlane --version" "bundle exec fastlane lanes" "npm run lint" "yarn install" "npm install" "make fmt" "make" "gradle publishToMavenLocal" "./gradlew test" 'echo "fastlane release"' "grep -r 'fastlane beta' docs"; do
+  n=$((n+1)); RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "0" ] && ok "836-$n silent. $c" || bad "836-$n silent. $c (rc=$RC)"
+done
+# A PowerShell tool call carries a shell command too (Claude Code on Windows).
+RC="$(hook_rc "fastlane deliver" "$D" PowerShell)"
+[ "$RC" = "2" ] && ok "836-ps a PowerShell tool payload is scanned" || bad "836-ps a PowerShell tool payload is scanned (rc=$RC)"
+rm -rf "$D"
+
+# Second round (#836). Options before the subcommand, a makefile named with -f, a lane held in a variable.
+D="$(mk_ios_bad)"; mkdir -p "$D/ios" "$D/apps/mobile"
+printf '{\n  "scripts": {\n    "submit:ios": "fastlane ios \\"release\\""\n  }\n}\n' > "$D/ios/package.json"
+printf '{\n  "scripts": {\n    "submit": "eas submit -p ios"\n  }\n}\n' > "$D/apps/mobile/package.json"
+printf '{\n  "scripts": {\n    "q": "fastlane ios \\"release\\"",\n    "buildX": "eas submit",\n    "build.x": "tsc"\n  }\n}\n' > "$D/package.json"
+printf 'ios-release:\n\txcodebuild -scheme A archive\n' > "$D/Release.mk"
+printf 'ios-release:\n\txcodebuild -scheme A archive\n' > "$D/Makefile"
+n=0
+for c in 'pnpm --dir apps/mobile run submit' 'npm --prefix ios run submit:ios' 'npm run q' 'make -f Release.mk ios-release' "make 'ios-release'" 'make -j4 ios-release' 'npx expo upload:ios' 'fastlane ios "$LANE"' 'fastlane ios $(printf deliver)' './gradlew "$TASK"'; do
+  n=$((n+1)); RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "2" ] && ok "836b-$n blocked. $c" || bad "836b-$n blocked. $c (rc=$RC)"
+done
+for c in 'fastlane ios restore_state' 'fastlane ios shipshape' 'npm install bundletool' 'yarn add transporter' 'npm run build.x' './gradlew test -Pv=$V'; do
+  n=$((n+1)); RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "0" ] && ok "836b-$n silent. $c" || bad "836b-$n silent. $c (rc=$RC)"
+done
+rm -rf "$D"
+
+# An explicit path that is not a directory is an error the person must see, never a silent pass.
+ERR="$(bash "$GUARD" /no/such/dir/here 2>&1)"; RC=$?
+[ "$RC" -eq 1 ] && echo "$ERR" | grep -q "not a directory" && ok "836-path a missing project path exits 1 with a reason" || bad "836-path a missing project path exits 1 with a reason (rc=$RC)"
+
+# Without python3 the deadline list is skipped with a note, never a command-not-found error.
+D="$(mk_ios_bad)"; SHIM="$(mktemp -d)"
+for b in bash cat grep sed awk find xargs tr head tail mktemp wc sort uniq cut dirname basename date rm ls env printf cmp mkdir plutil xmllint file od comm tee sleep expr touch; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$SHIM/$b"; done
+OUT="$(PATH="$SHIM" bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "python3: command not found" && bad "836-nopy no raw python3 error without python3" || ok "836-nopy no raw python3 error without python3"
+echo "$OUT" | grep -q "python3 not found" && [ "$RC" -eq 2 ] && ok "836-nopy2 the skipped deadline list is named and the scan still blocks" || bad "836-nopy2 the skipped deadline list is named and the scan still blocks (rc=$RC)"
+rm -rf "$D" "$SHIM"
+
+# ===== The run always ends with a verdict a person can read. A silent exit 0 is not a verdict. =====
+D="$(mk_ios_clean)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && echo "$OUT" | grep -q '^CLEAR\. 0 critical' && ok "verdict-1 a clean app ends with a CLEAR line" || bad "verdict-1 a clean app ends with a CLEAR line (rc=$RC)"
+rm -rf "$D"
+D="$(mktemp -d)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 1 ] && echo "$OUT" | grep -q '^NOT CHECKED\.' && ! echo "$OUT" | grep -q '^CLEAR' && ok "verdict-2 an empty folder is NOT CHECKED with exit 1, never a pass" || bad "verdict-2 an empty folder is NOT CHECKED with exit 1 (rc=$RC)"
+printf '{"expo":{"name":"x","slug":"x"}}' > "$D/app.json"; printf '{"dependencies":{"expo":"~52.0.0","react-native":"0.76.0"}}' > "$D/package.json"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 1 ] && echo "$OUT" | grep -q 'expo prebuild' && ok "verdict-3 an Expo app with no native folders is told to prebuild" || bad "verdict-3 an Expo app with no native folders is told to prebuild (rc=$RC)"
+ERR="$(printf '{"tool_name":"Bash","tool_input":{"command":"eas submit -p ios"}}' | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && echo "$ERR" | grep -q 'NOT CHECKED' && ok "verdict-4 as a hook an unscannable project is reported and never blocked" || bad "verdict-4 as a hook an unscannable project is reported and never blocked (rc=$RC)"
+rm -rf "$D"
+D="$(mk_ios_bad)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 2 ] && echo "$OUT" | grep -q 'run the same command again' && ok "verdict-5 a block says what to do next" || bad "verdict-5 a block says what to do next (rc=$RC)"
+rm -rf "$D"
+
+# ===== Third review round. Each case failed before its fix. =====
+r3_hook() { python3 -c 'import json,sys; print(json.dumps({"tool_input":{"command":sys.argv[1]}}))' "$1" | CLAUDE_PROJECT_DIR="$2" bash "$GUARD" >/dev/null 2>"${3:-/dev/null}"; }
+D="$(mk_ios_bad)"
+r3_hook 'npm install "$(fastlane deliver)"' "$D"; RC=$?
+[ "$RC" -eq 2 ] && ok "r3-1 a submit inside a command substitution in an install line still blocks" || bad "r3-1 a submit inside a command substitution in an install line still blocks (rc=$RC)"
+r3_hook 'npm install `fastlane deliver`' "$D"; RC=$?
+[ "$RC" -eq 2 ] && ok "r3-2 a submit inside backticks in an install line still blocks" || bad "r3-2 a submit inside backticks in an install line still blocks (rc=$RC)"
+r3_hook 'npm install bundletool fastlane' "$D"; RC=$?
+[ "$RC" -eq 0 ] && ok "r3-3 a plain install of a package named like a submit tool stays silent" || bad "r3-3 a plain install of a package named like a submit tool stays silent (rc=$RC)"
+OUT="$(env -u HOME bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 2 ] && ! echo "$OUT" | grep -q "unbound variable" && ok "r3-4 an unset HOME does not crash the guard" || bad "r3-4 an unset HOME does not crash the guard (rc=$RC)"
+rm -rf "$D"
+# A monorepo with one scannable app and one Expo app with no native folders is never CLEAR.
+D="$(mktemp -d)"; mkdir -p "$D/apps/native/App.xcodeproj" "$D/apps/expo"
+N="$(mk_ios_clean)"; cp -R "$N/App" "$D/apps/native/"; rm -rf "$N"
+printf '{"expo":{"name":"x","slug":"x"}}' > "$D/apps/expo/app.json"; printf '{"dependencies":{"expo":"~52.0.0","react-native":"0.76.0"}}' > "$D/apps/expo/package.json"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^Apps. 2 app roots" && ! echo "$OUT" | grep -q '^CLEAR' && echo "$OUT" | grep '^NOT CHECKED' | grep -q 'apps/expo' && [ "$RC" -eq 1 ] && ok "r3-5 an unscanned sibling app stops CLEAR and is named" || bad "r3-5 an unscanned sibling app stops CLEAR and is named (rc=$RC)"
+r3_hook 'fastlane deliver' "$D" "$D/err.txt"; RC=$?
+[ "$RC" -eq 0 ] && grep -q 'NOT CHECKED' "$D/err.txt" && ok "r3-6 as a hook the unscanned sibling is reported and never blocks" || bad "r3-6 as a hook the unscanned sibling is reported and never blocks (rc=$RC)"
+rm -rf "$D"
+
+# ===== Issue 842. Findings lead the report, critical first, each with the file that triggered it. =====
+D="$(mk_ios_bad)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | awk '/^  \[CRITICAL\]/{ if (lower) bad=1; c++ } /^  \[(HIGH|MEDIUM)\]/{ lower=1 } END { exit (bad || c == 0) }' && ok "842-1 every critical finding prints above the first high or medium one" || bad "842-1 every critical finding prints above the first high or medium one"
+FIRST_F="$(echo "$OUT" | grep -n '^  \[' | head -1 | cut -d: -f1)"; DL="$(echo "$OUT" | grep -n 'Regulatory Compliance Deadline Status' | head -1 | cut -d: -f1)"
+[ -n "$FIRST_F" ] && [ -n "$DL" ] && [ "$FIRST_F" -lt "$DL" ] && ok "842-2 findings print above the deadline list" || bad "842-2 findings print above the deadline list (finding=$FIRST_F deadlines=$DL)"
+echo "$OUT" | grep -A1 'APPLE-2.1-STAGING-BACKEND' | grep -q '^      file\. App/X\.swift:4$' && ok "842-3 a finding names the file and line that triggered it" || bad "842-3 a finding names the file and line that triggered it"
+echo "$OUT" | grep -A2 'APPLE-2.1-STAGING-BACKEND' | grep -q '^      fix\. ' && ok "842-4 the fix line still follows the finding" || bad "842-4 the fix line still follows the finding"
+rm -rf "$D"
+# Deadlines follow the stores the project ships to. Laws that bind every app stay.
+DLF="$(mktemp)"
+python3 - "$DLF" <<'PYT'
+import datetime, json, sys
+day = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+rows = [("A", "Apple App Store (Global)", "Apple rule"), ("G", "Google Play (Global)", "Play rule"), ("R", "Android (Brazil)", "Android rule"), ("E", "European Union", "EU law")]
+out = [{"id": i, "jurisdiction": j, "law": law, "requirement": "r", "effective_date": "2026-01-01", "grace_period": "none", "mandatory_date": day, "enforcement_date": day, "affected_repository_sections": "docs/X.md", "priority": "high"} for i, j, law in rows]
+with open(sys.argv[1], "w", encoding="utf-8") as f:
+    json.dump({"deadlines": out}, f)
+PYT
+D="$(mk_android_bad)"; OUT="$(DEADLINES_FILE="$DLF" bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'Play rule' && echo "$OUT" | grep -q 'Android rule' && echo "$OUT" | grep -q 'EU law' && ! echo "$OUT" | grep -q 'Apple rule' && echo "$OUT" | grep -q '^1 deadline(s) for a store this project does not ship to' && ok "842-5 an Android-only project sees no Apple store deadline and is told one was left out" || bad "842-5 an Android-only project sees no Apple store deadline and is told one was left out"
+rm -rf "$D"
+D="$(mk_ios_bad)"; OUT="$(DEADLINES_FILE="$DLF" bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -q 'Apple rule' && echo "$OUT" | grep -q 'EU law' && ! echo "$OUT" | grep -q 'Play rule' && ! echo "$OUT" | grep -q 'Android rule' && ok "842-6 an iOS-only project sees no Google Play or Android deadline" || bad "842-6 an iOS-only project sees no Google Play or Android deadline"
+rm -rf "$D" "$DLF"
+
+# ===== Issue 837. Unity, .NET MAUI, Tauri mobile and Kotlin Multiplatform. One bad and one clean project each. =====
+BAD_SRC='"https://staging.example.com/api"'
+GOOD_SRC='"https://api.realbackend.io" "https://realbackend.io/privacy-policy"'
+mk_unity() {  # $1 is the string the source file carries
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ProjectSettings" "$d/Assets/Scripts"
+  printf 'm_EditorVersion: 6000.0.30f1\n' > "$d/ProjectSettings/ProjectVersion.txt"
+  printf 'public class Api { string[] u = { %s }; }\n' "$1" > "$d/Assets/Scripts/Api.cs"
+  echo "$d"
+}
+mk_maui() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/Platforms/iOS" "$d/Platforms/Android" "$d/Services"
+  printf '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFrameworks>net8.0-ios;net8.0-android</TargetFrameworks><UseMaui>true</UseMaui></PropertyGroup></Project>\n' > "$d/App.csproj"
+  printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/Platforms/iOS/Info.plist"
+  printf '<manifest></manifest>' > "$d/Platforms/Android/AndroidManifest.xml"
+  printf 'public class Api { string[] u = { %s }; }\n' "$1" > "$d/Services/Api.cs"
+  echo "$d"
+}
+mk_tauri() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/src-tauri/src" "$d/src-tauri/gen/apple/app.xcodeproj" "$d/src-tauri/gen/apple/app_iOS"
+  printf '{"productName":"x","identifier":"io.realbackend.x"}' > "$d/src-tauri/tauri.conf.json"
+  printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/src-tauri/gen/apple/app_iOS/Info.plist"
+  printf 'pub fn urls() -> Vec<&'"'"'static str> { vec![%s] }\n' "$(printf '%s' "$1" | sed 's/" "/", "/')" > "$d/src-tauri/src/lib.rs"
+  echo "$d"
+}
+mk_kmp() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/shared/src/commonMain/kotlin" "$d/iosApp/iosApp.xcodeproj" "$d/iosApp/iosApp"
+  printf 'include(":shared")\n' > "$d/settings.gradle.kts"
+  printf 'plugins { kotlin("multiplatform") }\n' > "$d/shared/build.gradle.kts"
+  printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/iosApp/iosApp/Info.plist"
+  printf 'val urls = listOf(%s)\n' "$(printf '%s' "$1" | sed 's/" "/", "/')" > "$d/shared/src/commonMain/kotlin/Api.kt"
+  echo "$d"
+}
+f837() {  # name, builder, framework label, source path, submit command
+  local D OUT RC
+  D="$("$2" "$BAD_SRC")"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+  [ "$RC" -eq 2 ] && echo "$OUT" | grep -q "^Frameworks\. .*$3=1" && echo "$OUT" | grep -A1 'APPLE-2.1-STAGING-BACKEND' | grep -q "file\. $4:1" \
+    && ok "837 $1 bad project is recognised, blocked, and the finding names $4" || bad "837 $1 bad project is recognised, blocked, and the finding names $4 (rc=$RC)"
+  r3_hook "$5" "$D"; RC=$?
+  [ "$RC" -eq 2 ] && ok "837 $1 submit command runs the scan" || bad "837 $1 submit command runs the scan (rc=$RC)"
+  rm -rf "$D"
+  D="$("$2" "$GOOD_SRC")"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+  [ "$RC" -eq 0 ] && echo "$OUT" | grep -q '^CLEAR\. ' && ! echo "$OUT" | grep -q '^Apps\. ' \
+    && ok "837 $1 clean project is CLEAR and scanned as one app" || bad "837 $1 clean project is CLEAR and scanned as one app (rc=$RC)"
+  r3_hook "$5" "$D"; RC=$?
+  [ "$RC" -eq 0 ] && ok "837 $1 submit command passes on the clean project" || bad "837 $1 submit command passes on the clean project (rc=$RC)"
+  rm -rf "$D"
+}
+f837 "Unity" mk_unity "Unity" "Assets/Scripts/Api.cs" "/Applications/Unity/Unity -batchmode -quit -buildTarget iOS -executeMethod Build.Run"
+f837 "MAUI" mk_maui "MAUI" "Services/Api.cs" "dotnet publish -f net8.0-ios -c Release"
+f837 "Tauri" mk_tauri "Tauri" "src-tauri/src/lib.rs" "cargo tauri ios build"
+f837 "KMP" mk_kmp "KotlinMultiplatform" "shared/src/commonMain/kotlin/Api.kt" "xcodebuild -scheme iosApp archive"
+# A Unity project has no Info.plist or Gradle file until it is exported, so the two checks that read them stay silent.
+D="$(mk_unity "$GOOD_SRC")"; OUT="$(bash "$GUARD" "$D" 2>&1)"
+! echo "$OUT" | grep -qE 'APPLE-EXPORT-COMPLIANCE-MISSING|ANDROID-R8-OPTIMIZATION-MISSING' && echo "$OUT" | grep -q '^Unity\. ' && ok "837 Unity is not blamed for files that exist only after export, and is told so" || bad "837 Unity is not blamed for files that exist only after export, and is told so"
+r3_hook "Unity -batchmode -buildTarget StandaloneOSX -executeMethod Build.Run" "$D"; RC=$?
+[ "$RC" -eq 0 ] && ok "837 a Unity desktop build is not a store submit" || bad "837 a Unity desktop build is not a store submit (rc=$RC)"
+rm -rf "$D"
+D="$(mk_maui "$BAD_SRC")"
+r3_hook "dotnet build" "$D"; RC=$?
+[ "$RC" -eq 0 ] && ok "837 a plain dotnet build is not a store submit" || bad "837 a plain dotnet build is not a store submit (rc=$RC)"
+r3_hook "cargo tauri dev" "$D"; RC=$?
+[ "$RC" -eq 0 ] && ok "837 tauri dev is not a store submit" || bad "837 tauri dev is not a store submit (rc=$RC)"
+rm -rf "$D"
+
+# ===== Second attack pass on this change. Each case failed before its fix. =====
+# A finding with two conditions names the file that holds the more specific one.
+D="$(mk_ios_clean)"
+printf 'let plan = "monthly subscription"\n' > "$D/App/Aaa.swift"
+printf 'let help = "call support to cancel"\n' > "$D/App/Zzz.swift"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -A1 'BOTH-SUBSCRIPTION-HARD-CANCEL' | grep -q 'file\. App/Zzz\.swift:1' && ok "c2-1 a two-condition finding names the file of the specific condition" || bad "c2-1 a two-condition finding names the file of the specific condition"
+# A broken privacy manifest is still reported now that findings are buffered.
+printf '<plist><dict><key>NSPrivacyTracking</key><true/></dict></plist>' > "$D/App/PrivacyInfo.xcprivacy"
+OUT="$(bash "$GUARD" "$D" 2>&1)"
+echo "$OUT" | grep -qE '^  \[(CRITICAL|HIGH|MEDIUM)\] APPLE-[A-Z0-9.-]*(MANIFEST|TRACKING)' && ok "c2-2 privacy manifest validator findings survive the buffering" || bad "c2-2 privacy manifest validator findings survive the buffering"
+rm -rf "$D"
+D="$(mk_maui "$BAD_SRC")"
+r3_hook "dotnet publish --framework net8.0-maccatalyst --configuration Debug" "$D"; RC=$?
+[ "$RC" -eq 0 ] && ok "c2-3 a Mac Catalyst publish is not an iOS or Android submit" || bad "c2-3 a Mac Catalyst publish is not an iOS or Android submit (rc=$RC)"
+rm -rf "$D"
+
+# ===== Third attack pass. Each case failed before its fix. =====
+D="$(mk_maui "$BAD_SRC")"
+r3_hook "dotnet publish --framework net8.0-ios --configuration Debug" "$D"; RC=$?
+[ "$RC" -eq 0 ] && ok "c3-1 a Debug dotnet publish is not a store submit" || bad "c3-1 a Debug dotnet publish is not a store submit (rc=$RC)"
+r3_hook "dotnet publish -c Debug -f net8.0-android && dotnet publish -f net8.0-ios -c Release" "$D"; RC=$?
+[ "$RC" -eq 2 ] && ok "c3-2 a Release publish after a Debug one still runs the scan" || bad "c3-2 a Release publish after a Debug one still runs the scan (rc=$RC)"
+rm -rf "$D"
+# A cross-platform app with no native folder has had no store check, so it is never CLEAR.
+D="$(mktemp -d)"
+printf '{"dependencies":{"@capacitor/core":"^6.0.0"}}' > "$D/package.json"; printf 'export default {};' > "$D/capacitor.config.ts"; printf '<html></html>' > "$D/index.html"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 1 ] && echo "$OUT" | grep -q '^NOT CHECKED' && echo "$OUT" | grep -q 'npx cap add' && ! echo "$OUT" | grep -q '^CLEAR' && ok "c3-3 a Capacitor app with no native folders is NOT CHECKED and told to add one" || bad "c3-3 a Capacitor app with no native folders is NOT CHECKED and told to add one (rc=$RC)"
+r3_hook "npx cap build ios" "$D" "$D/err.txt"; RC=$?
+[ "$RC" -eq 0 ] && grep -q 'NOT CHECKED' "$D/err.txt" && ok "c3-4 as a hook the Capacitor app is reported and not blocked" || bad "c3-4 as a hook the Capacitor app is reported and not blocked (rc=$RC)"
+rm -rf "$D"
+D="$(mktemp -d)"; mkdir -p "$D/lib"
+printf 'name: x\ndependencies:\n  flutter:\n    sdk: flutter\n' > "$D/pubspec.yaml"; printf 'void main() {}\n' > "$D/lib/main.dart"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 1 ] && echo "$OUT" | grep -q '^NOT CHECKED' && echo "$OUT" | grep -q 'flutter create' && ok "c3-5 a Flutter app with no platform folders is NOT CHECKED and told to create them" || bad "c3-5 a Flutter app with no platform folders is NOT CHECKED and told to create them (rc=$RC)"
+rm -rf "$D"
+D="$(mk_web_clean)"; OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && echo "$OUT" | grep -q '^CLEAR' && ok "c3-6 a plain web project still ends CLEAR" || bad "c3-6 a plain web project still ends CLEAR (rc=$RC)"
+rm -rf "$D"
+
+# ===== Fourth attack pass. Each case failed before its fix. =====
+# A Flutter app with no platform folders next to a native app is its own root, so it cannot hide behind the sibling.
+D="$(mktemp -d)"; mkdir -p "$D/apps/native/App.xcodeproj" "$D/apps/fl/lib" "$D/packages/util/lib"
+N="$(mk_ios_clean)"; cp -R "$N/App" "$D/apps/native/"; rm -rf "$N"
+printf 'name: fl\ndependencies:\n  flutter:\n    sdk: flutter\n' > "$D/apps/fl/pubspec.yaml"; printf 'void main() {}\n' > "$D/apps/fl/lib/main.dart"
+printf 'name: util\n' > "$D/packages/util/pubspec.yaml"; printf 'int one() => 1;\n' > "$D/packages/util/lib/util.dart"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 1 ] && echo "$OUT" | grep '^NOT CHECKED' | grep -q 'apps/fl' && ! echo "$OUT" | grep '^NOT CHECKED' | grep -q 'packages/util' && ! echo "$OUT" | grep -q '^CLEAR' && ok "c4-1 a Flutter app with no platform folders beside a native app stops CLEAR" || bad "c4-1 a Flutter app with no platform folders beside a native app stops CLEAR (rc=$RC)"
+rm -rf "$D/apps/fl"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && echo "$OUT" | grep -q '^CLEAR' && ok "c4-2 a plain Dart package beside a native app does not stop CLEAR" || bad "c4-2 a plain Dart package beside a native app does not stop CLEAR (rc=$RC)"
+rm -rf "$D"
+
+# Harness payloads (2.0.0). Codex, Gemini CLI, Cursor, Copilot CLI and OpenCode each send the shell command
+# in their own shape. Each must reach the scan on the jq and python3 tiers, and a non-shell tool must stay silent.
+D="$(mk_ios_bad)"
+NOJQ="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil python3 xmllint dirname basename date env; do p="$([ "$b" = python3 ] && pyenv which python3 2>/dev/null || command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOJQ/$b"; done
+harness_payload() { python3 -c '
+import json, sys
+kind, cmd, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
+shapes = {
+  "codex": {"hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": {"command": cmd}, "cwd": cwd},
+  "gemini": {"hook_event_name": "BeforeTool", "tool_name": "run_shell_command", "tool_input": {"command": cmd}, "cwd": cwd},
+  "cursor": {"hook_event_name": "beforeShellExecution", "command": cmd, "cwd": cwd},
+  "copilot-str": {"toolName": "bash", "toolArgs": json.dumps({"command": cmd}), "cwd": cwd},
+  "copilot-obj": {"toolName": "bash", "toolArgs": {"command": cmd}, "cwd": cwd},
+  "grok": {"hookEventName": "PreToolUse", "toolName": "run_terminal_command", "toolInput": {"command": cmd}, "cwd": cwd},
+  "grok-cmd": {"hookEventName": "PreToolUse", "toolName": "run_terminal_cmd", "toolInput": {"command": cmd}, "cwd": cwd},
+  "grok-monitor": {"hookEventName": "PreToolUse", "toolName": "monitor", "toolInput": {"command": cmd}, "cwd": cwd},
+  "grok-bash": {"hookEventName": "PreToolUse", "toolName": "bash", "toolInput": {"command": cmd}, "cwd": cwd},
+  "grok-readfile": {"hookEventName": "PreToolUse", "toolName": "read_file", "toolInput": {"command": cmd, "path": "x"}, "cwd": cwd},
+  "droid": {"hook_event_name": "PreToolUse", "tool_name": "Execute", "tool_input": {"command": cmd}, "cwd": cwd},
+  "auggie": {"hook_event_name": "PreToolUse", "tool_name": "launch-process", "tool_input": {"command": cmd}, "workspace_roots": [cwd]},
+  "windsurf": {"agent_action_name": "pre_run_command", "tool_info": {"command_line": cmd, "cwd": cwd}},
+  "vscode": {"hook_event_name": "PreToolUse", "tool_name": "runInTerminal", "tool_input": {"command": cmd}, "cwd": cwd},
+  "kiro": {"hook_event_name": "preToolUse", "tool_name": "execute_bash", "tool_input": {"command": cmd}, "cwd": cwd},
+  "goose": {"hook_event_name": "PreToolUse", "tool_name": "shell", "tool_input": {"command": cmd}, "working_dir": cwd},
+  "grok-read": {"hookEventName": "PreToolUse", "toolName": "Read", "toolInput": {"command": cmd, "path": "x"}, "cwd": cwd},
+  "windsurf-read": {"agent_action_name": "pre_read_code", "tool_info": {"file_path": cmd, "cwd": cwd}},
+  "opencode": {"tool_name": "bash", "tool_input": {"command": cmd}, "cwd": cwd},
+  "write": {"tool_name": "Write", "tool_input": {"command": cmd, "file_path": "x"}, "cwd": cwd},
+  "gemini-write": {"tool_name": "write_file", "tool_input": {"command": cmd}, "cwd": cwd},
+  "copilot-edit": {"toolName": "edit", "toolArgs": json.dumps({"command": cmd}), "cwd": cwd},
+}
+print(json.dumps(shapes[kind]))' "$1" "$2" "$3"; }
+SUB="fastlane deliver"
+for tier in "$PATH" "$NOJQ"; do
+  tn="${tier##*/}"; [ "$tier" = "$PATH" ] && tn=jq
+  for kind in codex gemini cursor copilot-str copilot-obj opencode grok grok-cmd grok-monitor grok-bash droid auggie windsurf vscode kiro goose; do
+    RC="$( cd /tmp && harness_payload "$kind" "$SUB" "$D" | env -u CLAUDE_PROJECT_DIR PATH="$tier" bash "$GUARD" >/dev/null 2>&1; echo $? )"
+    [ "$RC" = "2" ] && ok "h-$kind blocks a submit command and scans the payload cwd (tier=$tn)" || bad "h-$kind blocks a submit command and scans the payload cwd (tier=$tn rc=$RC)"
+  done
+  for kind in write gemini-write copilot-edit grok-read grok-readfile windsurf-read; do
+    OUT="$( cd /tmp && harness_payload "$kind" "$SUB" "$D" | env -u CLAUDE_PROJECT_DIR PATH="$tier" bash "$GUARD" 2>&1 )"; RC=$?
+    [ "$RC" = "0" ] && [ -z "$OUT" ] && ok "h-$kind a non-shell tool stays silent (tier=$tn)" || bad "h-$kind a non-shell tool stays silent (tier=$tn rc=$RC)"
+  done
+  RC="$( cd /tmp && harness_payload codex "ls -la" "$D" | env -u CLAUDE_PROJECT_DIR PATH="$tier" bash "$GUARD" >/dev/null 2>&1; echo $? )"
+  [ "$RC" = "0" ] && ok "h-ordinary an ordinary command stays silent (tier=$tn)" || bad "h-ordinary an ordinary command stays silent (tier=$tn rc=$RC)"
+done
+# CLAUDE_PROJECT_DIR still wins over the payload cwd, so Claude Code behaves exactly as before.
+CLEAN="$(mk_ios_clean)"
+RC="$( harness_payload codex "$SUB" "$D" | CLAUDE_PROJECT_DIR="$CLEAN" bash "$GUARD" >/dev/null 2>&1; echo $? )"
+[ "$RC" = "0" ] && ok "h-precedence CLAUDE_PROJECT_DIR wins over the payload cwd" || bad "h-precedence CLAUDE_PROJECT_DIR wins over the payload cwd (rc=$RC)"
+# A payload cwd that is not a directory falls back to the working directory.
+RC="$( cd "$CLEAN" && harness_payload codex "$SUB" "/nonexistent/x" | env -u CLAUDE_PROJECT_DIR bash "$GUARD" >/dev/null 2>&1; echo $? )"
+[ "$RC" = "0" ] && ok "h-badcwd a missing payload cwd falls back to the working directory" || bad "h-badcwd a missing payload cwd falls back to the working directory (rc=$RC)"
+rm -rf "$CLEAN" "$NOJQ"
+# fastlane global options before the action or lane must not hide a submission.
+for c in "fastlane --verbose deliver" "fastlane --env production deliver" "bundle exec fastlane --verbose pilot" "fastlane --capture_output ios release" "fastlane -v upload_to_testflight"; do
+  RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "2" ] && ok "fl-opt blocks. $c" || bad "fl-opt blocks. $c (rc=$RC)"
+done
+for c in "fastlane --version" "fastlane --help" "fastlane --env production tests"; do
+  RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "0" ] && ok "fl-opt silent. $c" || bad "fl-opt silent. $c (rc=$RC)"
+done
+rm -rf "$D"
+
+# ===== Rule precision round (October 2026 review). each case failed on the guard before its fix =====
+rr_run() { OUT="$(bash "$GUARD" "$1" 2>&1)"; RC=$?; }
+rr_has() { printf '%s\n' "$OUT" | grep -q -e "$1"; }
+rr_hook() {  # $1 command, $2 project dir. sets OUT (stdout and stderr) and RC
+  OUT="$(python3 -c 'import json,sys; print(json.dumps({"tool_name":"Bash","tool_input":{"command":sys.argv[1]}}))' "$1" | CLAUDE_PROJECT_DIR="$2" bash "$GUARD" 2>&1)"; RC=$?
+}
+mk_rr_ios() {  # $1 Info.plist dict body, $2 Swift source
+  local d; d="$(mktemp -d)"; mkdir -p "$d/App"
+  printf '<plist><dict>%s<key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' "$1" > "$d/App/Info.plist"
+  printf '%s' "$PLIST_EMPTY" > "$d/App/PrivacyInfo.xcprivacy"
+  printf '%s\nlet policy = "https://realbackend.io/privacy-policy"\n' "$2" > "$d/App/X.swift"
+  echo "$d"
+}
+
+# A02 a usage-description key or a deletion call that exists only in a comment satisfies nothing
+D="$(mk_rr_ios '' 'import AVFoundation
+// NSCameraUsageDescription is set later
+let dev = AVCaptureDevice.default(for: .video)')"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "rr-A02-1 a camera key named only in a Swift comment still raises the finding" || bad "rr-A02-1 a camera key named only in a Swift comment still raises the finding (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'class A { func signIn() {} }
+// deleteAccount comes in the next release
+/* func deleteUser() {} */')"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-NO-ACCOUNT-DELETION' && ok "rr-A02-2 a deletion call that exists only in comments raises the finding" || bad "rr-A02-2 a deletion call that exists only in comments raises the finding (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import AVFoundation
+class A { func signIn() {} }
+let dev = AVCaptureDevice.default(for: .video)
+let endpoint = "https://api.realbackend.io/v1/deleteAccount" // removes the user')"
+mkdir -p "$D/App.xcodeproj"; printf 'INFOPLIST_KEY_NSCameraUsageDescription = "Scan receipts";\n' > "$D/App.xcodeproj/project.pbxproj"
+rr_run "$D"
+! rr_has 'MISSING-USAGE-DESCRIPTION' && ! rr_has 'NO-ACCOUNT-DELETION' && ok "rr-A02-3 a build-setting key and a deletion URL before a trailing comment stay clean" || bad "rr-A02-3 a build-setting key and a deletion URL before a trailing comment stay clean (rc=$RC)"
+rm -rf "$D"
+D="$(mk_ios_clean)"; rr_run "$D"
+! rr_has 'MISSING-USAGE-DESCRIPTION' && ! rr_has 'NO-ACCOUNT-DELETION' && [ "$RC" -eq 0 ] && ok "rr-A02-4 the clean iOS fixture stays clean" || bad "rr-A02-4 the clean iOS fixture stays clean (rc=$RC)"
+rm -rf "$D"
+
+# A02b a purpose string that exists only in InfoPlist.strings satisfies nothing, Apple reads Info.plist (ITMS-90683)
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/App/en.lproj"; printf '"NSCameraUsageDescription" = "Scan receipts";\n' > "$D/App/en.lproj/InfoPlist.strings"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "rr-A02-5 a camera key only in InfoPlist.strings still raises the finding" || bad "rr-A02-5 a camera key only in InfoPlist.strings still raises the finding (rc=$RC)"
+rm -rf "$D"
+
+# A02c a permission API named in a comment counts, as in 1.0.0. the system photo picker needs no permission
+D="$(mk_rr_ios '' 'class A {}
+// TODO maybe use AVCaptureDevice and CLLocationManager later
+/* CNContactStore() */')"
+rr_run "$D"
+rr_has 'MISSING-USAGE-DESCRIPTION' && ok "rr-A02-6 a permission API named only in comments still counts, as in 1.0.0" || bad "rr-A02-6 a permission API named only in comments still counts, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import PhotosUI
+let picker = PHPickerViewController(configuration: PHPickerConfiguration())')"
+rr_run "$D"
+! rr_has 'Photos used without' && ok "rr-A02-7 PHPickerViewController alone needs no photo library purpose string" || bad "rr-A02-7 PHPickerViewController alone needs no photo library purpose string (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import Photos
+PHPhotoLibrary.requestAuthorization { _ in }')"
+rr_run "$D"
+rr_has 'Photos used without' && ok "rr-A02-8 PHPhotoLibrary access still needs the photo library purpose string" || bad "rr-A02-8 PHPhotoLibrary access still needs the photo library purpose string (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video) // camera for receipts')"
+rr_run "$D"
+rr_has 'Camera used without' && [ "$RC" -eq 2 ] && ok "rr-A02-9 a real camera call with a trailing comment still blocks" || bad "rr-A02-9 a real camera call with a trailing comment still blocks (rc=$RC)"
+rm -rf "$D"
+
+# A13 ATT needs both halves, the purpose string and the authorization call, and names the missing one
+D="$(mk_rr_ios '<key>NSUserTrackingUsageDescription</key><string>Measure ads</string>' 'import AppsFlyerLib
+let af = AppsFlyerLib.shared()')"
+rr_run "$D"
+rr_has 'APPLE-5.1.2-MISSING-ATT' && rr_has 'requestTrackingAuthorization call' && ! rr_has 'NSUserTrackingUsageDescription in Info.plist' && ok "rr-A13-1 a purpose string without the request call is flagged and the call is named" || bad "rr-A13-1 a purpose string without the request call is flagged and the call is named"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import AppsFlyerLib
+import AppTrackingTransparency
+// NSUserTrackingUsageDescription
+ATTrackingManager.requestTrackingAuthorization { _ in }')"
+rr_run "$D"
+rr_has 'APPLE-5.1.2-MISSING-ATT' && rr_has 'NSUserTrackingUsageDescription in Info.plist' && ! rr_has 'requestTrackingAuthorization call' && ok "rr-A13-2 the request call without a purpose string is flagged and the key is named" || bad "rr-A13-2 the request call without a purpose string is flagged and the key is named"
+rm -rf "$D"
+D="$(mk_rr_ios '<key>NSUserTrackingUsageDescription</key><string>Measure ads</string>' 'import AppsFlyerLib
+import AppTrackingTransparency
+ATTrackingManager.requestTrackingAuthorization { _ in AppsFlyerLib.shared().start() }')"
+rr_run "$D"
+! rr_has 'APPLE-5.1.2-MISSING-ATT' && ok "rr-A13-3 both halves present stays clean" || bad "rr-A13-3 both halves present stays clean"
+rm -rf "$D"
+
+# A10 a vendored privacy manifest is the SDK's, never the app's own
+D="$(mk_rr_ios '' 'let d = UserDefaults.standard')"
+rm -f "$D/App/PrivacyInfo.xcprivacy"
+mkdir -p "$D/Pods/SomeSDK" "$D/.build/checkouts/Lib/Sources" "$D/node_modules/x/ios" "$D/ios/.symlinks/plugins/p/ios"
+for v in Pods/SomeSDK .build/checkouts/Lib/Sources node_modules/x/ios ios/.symlinks/plugins/p/ios; do printf '%s' "$PLIST_EMPTY" > "$D/$v/PrivacyInfo.xcprivacy"; done
+rr_run "$D"
+rr_has 'APPLE-PRIVACY-MANIFEST-MISSING' && ok "rr-A10-1 vendored manifests alone do not count as the app manifest" || bad "rr-A10-1 vendored manifests alone do not count as the app manifest (rc=$RC)"
+printf '%s' "$PLIST_EMPTY" > "$D/App/PrivacyInfo.xcprivacy"
+rr_run "$D"
+! rr_has 'APPLE-PRIVACY-MANIFEST-MISSING' && ok "rr-A10-2 an app manifest beside vendored ones stays clean" || bad "rr-A10-2 an app manifest beside vendored ones stays clean"
+rm -rf "$D"
+D="$(mktemp -d)"; mkdir -p "$D/ios/Runner" "$D/ios/.symlinks/plugins/permission_handler/ios" "$D/lib"
+printf 'name: t\ndependencies:\n  permission_handler: ^11.0.0\n' > "$D/pubspec.yaml"
+printf "import 'package:permission_handler/permission_handler.dart';\nvoid main(){}\n" > "$D/lib/main.dart"
+printf '<plist><dict></dict></plist>' > "$D/ios/Runner/Info.plist"
+printf '%s' "$PLIST_EMPTY" > "$D/ios/.symlinks/plugins/permission_handler/ios/PrivacyInfo.xcprivacy"
+rr_run "$D"
+rr_has 'FLUTTER-PRIVACY-MANIFEST-MISSING' && ok "rr-A10-3 a Flutter plugin manifest under .symlinks is not the app manifest" || bad "rr-A10-3 a Flutter plugin manifest under .symlinks is not the app manifest"
+rm -rf "$D"
+
+# A12 framework IAP plugins need a restore call too, and their own restore APIs count
+mk_rr_flutter_iap() {  # $1 Dart body
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/Runner" "$d/lib"
+  printf 'name: t\ndependencies:\n  purchases_flutter: ^8.0.0\n' > "$d/pubspec.yaml"
+  printf "import 'package:purchases_flutter/purchases_flutter.dart';\n%s\n" "$1" > "$d/lib/main.dart"
+  printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/ios/Runner/Info.plist"
+  printf '%s' "$PLIST_EMPTY" > "$d/ios/Runner/PrivacyInfo.xcprivacy"
+  echo "$d"
+}
+D="$(mk_rr_flutter_iap 'void buy() { Purchases.purchasePackage(p); }')"; rr_run "$D"
+rr_has 'APPLE-RESTORE-PURCHASES-MISSING' && ok "rr-A12-1 RevenueCat purchases without restore are flagged" || bad "rr-A12-1 RevenueCat purchases without restore are flagged"
+rm -rf "$D"
+D="$(mk_rr_flutter_iap 'void buy() { Purchases.purchasePackage(p); }
+void restore() { Purchases.restorePurchases(); }')"; rr_run "$D"
+! rr_has 'APPLE-RESTORE-PURCHASES-MISSING' && ok "rr-A12-2 Purchases.restorePurchases counts as restore" || bad "rr-A12-2 Purchases.restorePurchases counts as restore"
+rm -rf "$D"
+mk_rr_unity_iap() {  # $1 C# body
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ProjectSettings" "$d/Assets"
+  printf 'm_EditorVersion: 2022.3.1f1\n' > "$d/ProjectSettings/ProjectVersion.txt"
+  printf 'using UnityEngine.Purchasing;\nclass Shop { %s }\n' "$1" > "$d/Assets/Shop.cs"
+  echo "$d"
+}
+D="$(mk_rr_unity_iap 'void Buy() { controller.InitiatePurchase("gems"); }')"; rr_run "$D"
+rr_has 'APPLE-RESTORE-PURCHASES-MISSING' && ok "rr-A12-3 Unity IAP without restore is flagged" || bad "rr-A12-3 Unity IAP without restore is flagged"
+rm -rf "$D"
+D="$(mk_rr_unity_iap 'void Restore() { apple.RestoreTransactions(r => {}); }')"; rr_run "$D"
+! rr_has 'APPLE-RESTORE-PURCHASES-MISSING' && ok "rr-A12-4 Unity RestoreTransactions counts as restore" || bad "rr-A12-4 Unity RestoreTransactions counts as restore"
+rm -rf "$D"
+
+# A09 an Android-only build command never meets a native Apple finding, an iOS command still does
+D="$(mktemp -d)"; mkdir -p "$D/ios/Runner" "$D/android/app/src/main" "$D/lib"
+printf 'name: t\n' > "$D/pubspec.yaml"; printf 'void main(){}\n' > "$D/lib/main.dart"
+printf '<plist><dict></dict></plist>' > "$D/ios/Runner/Info.plist"
+printf 'import AVFoundation\nlet dev = AVCaptureDevice.default(for: .video)\n' > "$D/ios/Runner/Cam.swift"
+printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"></manifest>' > "$D/android/app/src/main/AndroidManifest.xml"
+rr_hook "flutter build appbundle --release" "$D"
+! rr_has 'APPLE-5.1.1-MISSING-USAGE-DESCRIPTION' && ! rr_has 'APPLE-EXPORT-COMPLIANCE' && ok "rr-A09-1 an Android-only build skips the native Apple checks" || bad "rr-A09-1 an Android-only build skips the native Apple checks (rc=$RC)"
+for c in "./gradlew bundleRelease" "flutter build ipa"; do
+  rr_hook "$c" "$D"
+  case "$c" in
+    *ipa) rr_has 'APPLE-5.1.1-MISSING-USAGE-DESCRIPTION' && [ "$RC" -eq 2 ] && ok "rr-A09-2 an iOS build still raises the Apple finding" || bad "rr-A09-2 an iOS build still raises the Apple finding (rc=$RC)" ;;
+    *) ! rr_has 'APPLE-5.1.1-MISSING-USAGE-DESCRIPTION' && ok "rr-A09-3 a Gradle release bundle skips the native Apple checks" || bad "rr-A09-3 a Gradle release bundle skips the native Apple checks (rc=$RC)" ;;
+  esac
+done
+rr_run "$D"
+rr_has 'APPLE-5.1.1-MISSING-USAGE-DESCRIPTION' && ok "rr-A09-4 a standalone scan still covers both stores" || bad "rr-A09-4 a standalone scan still covers both stores"
+rm -rf "$D"
+
+# A24 an unusable mktemp falls back to /tmp, as before 2.0.0, so the scan still runs
+# macOS mktemp ignores an unusable TMPDIR, so a PATH shim stands in. one fails, one hands back a path that cannot be written.
+D="$(mk_ios_clean)"; SHIMS="$(mktemp -d)"; mkdir -p "$SHIMS/fail" "$SHIMS/bad"
+printf '#!/bin/sh\nexit 1\n' > "$SHIMS/fail/mktemp"
+printf '#!/bin/sh\necho /nonexistent/ascg-tmp/buffer\n' > "$SHIMS/bad/mktemp"
+chmod +x "$SHIMS/fail/mktemp" "$SHIMS/bad/mktemp"
+for s in fail bad; do
+  OUT="$(PATH="$SHIMS/$s:$PATH" bash "$GUARD" "$D" 2>&1)"; RC=$?
+  [ "$RC" -eq 0 ] && ! rr_has 'NOT CHECKED' && rr_has '^CLEAR' && ok "rr-A24-1 an unusable mktemp falls back to /tmp and still scans (mktemp $s)" || bad "rr-A24-1 an unusable mktemp falls back to /tmp and still scans (mktemp $s rc=$RC)"
+  ERR="$(python3 -c 'import json; print(json.dumps({"tool_name":"Bash","tool_input":{"command":"xcrun altool --upload-app -f a.ipa"}}))' | PATH="$SHIMS/$s:$PATH" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+  ! printf '%s' "$ERR" | grep -q 'NOT CHECKED' && printf '%s' "$ERR" | grep -q 'App Store Compliance Guard' && ok "rr-A24-2 as a hook an unusable mktemp still scans through /tmp (mktemp $s)" || bad "rr-A24-2 as a hook an unusable mktemp still scans through /tmp (mktemp $s rc=$RC)"
+done
+rm -rf "$D" "$SHIMS"
+
+# A11 a managed Expo app has its app config checked, and a critical config finding blocks
+mk_rr_expo() {  # $1 package.json, $2 app.json
+  local d; d="$(mktemp -d)"
+  printf '%s' "$1" > "$d/package.json"; printf '%s' "$2" > "$d/app.json"
+  echo "$d"
+}
+D="$(mk_rr_expo '{"dependencies":{"expo":"51.0.0"}}' '{"expo":{"name":"x","android":{"permissions":["ACCESS_BACKGROUND_LOCATION"]}}}')"
+rr_hook "eas submit -p android" "$D"
+[ "$RC" -eq 2 ] && rr_has 'GOOGLE-PERM-BACKGROUND-LOCATION' && ok "rr-A11-1 background location in the Expo config blocks an Android submit" || bad "rr-A11-1 background location in the Expo config blocks an Android submit (rc=$RC)"
+rr_hook "eas submit -p ios" "$D"
+[ "$RC" -eq 0 ] && ! rr_has 'GOOGLE-PERM-BACKGROUND-LOCATION' && rr_has 'NOT CHECKED' && ok "rr-A11-2 an iOS-only submit skips the Android config check" || bad "rr-A11-2 an iOS-only submit skips the Android config check (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_expo '{"dependencies":{"expo":"51.0.0","expo-camera":"15.0.0"}}' '{"expo":{"name":"x","android":{"permissions":["android.permission.READ_SMS"]}}}')"
+rr_run "$D"
+[ "$RC" -eq 2 ] && rr_has 'GOOGLE-PERM-SMS-CALLLOG' && rr_has 'Camera module in the Expo app' && ok "rr-A11-3 a standalone scan reads the Expo config, SMS blocks and the camera string is named" || bad "rr-A11-3 a standalone scan reads the Expo config, SMS blocks and the camera string is named (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_expo '{"dependencies":{"expo":"51.0.0","expo-camera":"15.0.0","@react-native-async-storage/async-storage":"1.0.0"}}' '{"expo":{"name":"x","plugins":[["expo-camera",{"cameraPermission":"Scan receipts to log expenses"}]],"ios":{"privacyManifests":{"NSPrivacyAccessedAPITypes":[]}},"android":{"blockedPermissions":["android.permission.ACCESS_BACKGROUND_LOCATION","android.permission.READ_SMS"]}}}')"
+rr_hook "eas submit -p android" "$D"
+[ "$RC" -eq 0 ] && rr_has 'critical=0 high=0 medium=0' && rr_has 'NOT CHECKED' && ok "rr-A11-4 a clean Expo config with blockedPermissions stays clean and NOT CHECKED" || bad "rr-A11-4 a clean Expo config with blockedPermissions stays clean and NOT CHECKED (rc=$RC)"
+rm -rf "$D"
+
+# FP1 a commit or PR message is text, a real submit beside it is not
+D="$(mk_ios_bad)"
+for c in 'git commit -m "docs: mention eas build"' "git commit -am 'note the fastlane deliver lane'" 'gh pr create --title "Ship" --body "run eas submit -p ios after merge"' 'git tag -a v1 -m "eas submit done"'; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "rr-FP1 a message stays silent. $c" || bad "rr-FP1 a message stays silent. $c (rc=$RC bytes=${#OUT})"
+done
+for c in 'git commit -m x && eas submit -p ios' 'git commit -m "$(eas submit -p ios)"'; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ok "rr-FP1 a real submit beside a message blocks. $c" || bad "rr-FP1 a real submit beside a message blocks. $c (rc=$RC)"
+done
+rm -rf "$D"
+
+# ===== Codex review round (October 2026). each case failed on the guard before its fix =====
+FL="fast""lane"
+cx_payload() {  # $1 json shape, $2 command, $3 cwd, $4 tool name. prints one payload
+  python3 -c '
+import json, sys
+kind, cmd, cwd, tool = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+shapes = {
+  "bash": {"tool_name": tool, "tool_input": {"command": cmd}, "cwd": cwd},
+  "cursor": {"hook_event_name": "beforeShellExecution", "command": cmd, "cwd": cwd},
+  "copilot-str": {"toolName": "bash", "toolArgs": json.dumps({"command": cmd}), "cwd": cwd},
+}
+print(json.dumps(shapes[kind]))' "$1" "$2" "$3" "${4:-Bash}"
+}
+CX_NOTOOLS="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head tail mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date env ls; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$CX_NOTOOLS/$b"; done
+
+# CX1 a commit message exemption covers only the git segment, never a later command's arguments
+D="$(mk_ios_bad)"
+rr_hook "git commit -m safe; bash -c 'eval \"\$1\"' -m '$FL deliver'" "$D"
+[ "$RC" -eq 2 ] && ok "cx1-1 a -m argument of a later bash -c segment is not blanked as a message" || bad "cx1-1 a -m argument of a later bash -c segment is not blanked as a message (rc=$RC)"
+rr_hook "git commit -m \"wip; $FL deliver | later\" -m 'and && eas submit'" "$D"
+[ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "cx1-2 separators inside a quoted commit message stay text" || bad "cx1-2 separators inside a quoted commit message stay text (rc=$RC bytes=${#OUT})"
+rm -rf "$D"
+
+# CX2 a compound command is classified per segment. any Apple upload keeps the Apple checks
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+for c in "./gradlew bundleRelease && $FL deliver" "$FL deliver && echo bundleRelease" "$FL pilot; ./gradlew assembleRelease"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && rr_has 'MISSING-USAGE-DESCRIPTION' && ! rr_has 'Command targets Android only' && ok "cx2 Apple checks stay on. $c" || bad "cx2 Apple checks stay on. $c (rc=$RC)"
+done
+rr_hook "./gradlew bundleRelease" "$D"
+rr_has 'Command targets Android only' && ok "cx2 a plain Android build stays Android only" || bad "cx2 a plain Android build stays Android only (rc=$RC)"
+# An Apple upload is never Android, and an Android word inside another tool's argument is not a gradle task or flag
+for c in "$FL deliver output_path:bundleRelease" "$FL pilot upload ipa:app-bundleRelease.ipa" "$FL upload_to_testflight build:assembleRelease" "$FL --verbose deliver notes:run-android" "$FL deliver --platform android" "$FL testflight -p android"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && rr_has 'MISSING-USAGE-DESCRIPTION' && ! rr_has 'Command targets Android only' && ok "cx2b an Apple upload keeps the Apple checks. $c" || bad "cx2b an Apple upload keeps the Apple checks. $c (rc=$RC)"
+done
+for c in "./gradlew :app:bundleRelease" "./gradlew clean app:assembleRelease --stacktrace" "flutter build appbundle --release"; do
+  rr_hook "$c" "$D"
+  rr_has 'Command targets Android only' && ok "cx2b a real Android task stays Android only. $c" || bad "cx2b a real Android task stays Android only. $c (rc=$RC)"
+done
+rm -rf "$D"
+
+# CX14 the platform flag forms 1.0.0 knew are Android only, the forms it did not know keep the Apple checks, as in 1.0.0
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+for c in "eas submit --platform android" "eas build --platform  android --profile production"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 0 ] && rr_has 'Command targets Android only' && ok "cx14 Android only. $c" || bad "cx14 Android only. $c (rc=$RC)"
+done
+for c in "eas build -p android" "eas submit --platform=android" "eas build -p=android"; do
+  rr_hook "$c" "$D"
+  ! rr_has 'Command targets Android only' && rr_has 'NSCameraUsageDescription' && ok "cx14 the Apple checks still run, as in 1.0.0. $c" || bad "cx14 the Apple checks still run, as in 1.0.0. $c (rc=$RC)"
+done
+for c in "eas build -p ios" "eas build -p all" "eas submit --platform=android && eas submit --platform=ios"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ! rr_has 'Command targets Android only' && ok "cx14 not Android only. $c" || bad "cx14 not Android only. $c (rc=$RC)"
+done
+rm -rf "$D"
+
+# CX3 a comment marker inside a string is not a comment. the code after it still counts
+D="$(mk_rr_ios '' 'import AVFoundation
+let help = """
+/* Start a comment using this marker
+"""
+let camera = AVCaptureDevice.default(for: .video)')"
+rr_run "$D"
+rr_has 'Camera used without NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "cx3-1 /* inside a Swift multiline string does not hide the camera call" || bad "cx3-1 /* inside a Swift multiline string does not hide the camera call (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import CoreLocation
+let a = "x /* y", b = 1
+let m = CLLocationManager()
+let c = "z */ w"')"
+mkdir -p "$D/Web"; printf 'const t = `\n/* not a comment\n`;\nconst cam = "AVCaptureDevice";\n' > "$D/Web/t.ts"
+rr_run "$D"
+rr_has 'Location used without' && rr_has 'Camera used without NSCameraUsageDescription' && ok "cx3-2 /* inside a one-line string and a template literal keeps the code" || bad "cx3-2 /* inside a one-line string and a template literal keeps the code (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'class A { func signIn() {} }
+let x = 1 /* deleteAccount */
+let y = "a" + "b" // deleteUser')"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-NO-ACCOUNT-DELETION' && ok "cx3-3 a mid-line block comment still satisfies nothing" || bad "cx3-3 a mid-line block comment still satisfies nothing (rc=$RC)"
+rm -rf "$D"
+
+# CX3b a /* inside a Swift raw string #"..."#, a multiline raw string, or any number of # is text, not a comment
+for src in 'let s = #"/* not a comment"#' 'let s = #"say "hi" /* not a comment"#' 'let s = #"\"/* not a comment"#' 'let s = ##"a "# /* not a comment"##' 'let s = #"""
+/* not a comment
+"""#' 'let s = ##"""
+"""# /* still inside
+"""##' 'let s = #"/*"#; let t = #"*/"#'; do
+  D="$(mk_rr_ios '' "import AVFoundation
+$src
+let camera = AVCaptureDevice.default(for: .video)")"
+  rr_run "$D"
+  rr_has 'Camera used without NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "cx3b raw string keeps the camera call. ${src%%$'\n'*}" || bad "cx3b raw string keeps the camera call. ${src%%$'\n'*} (rc=$RC)"
+  rm -rf "$D"
+done
+D="$(mk_rr_ios '' 'import AVFoundation
+/* AVCaptureDevice */')"
+rr_run "$D"
+rr_has 'Camera used without' && ok "cx3b a block comment naming AVCaptureDevice counts, as in 1.0.0" || bad "cx3b a block comment naming AVCaptureDevice counts, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import AVFoundation
+let s = #"raw"# /* AVCaptureDevice.default(for: .video) */')"
+rr_run "$D"
+rr_has 'Camera used without' && ok "cx3b a mid-line block comment counts as a trigger, as in 1.0.0" || bad "cx3b a mid-line block comment counts as a trigger, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'class A { func signIn() {} }
+let s = #"\"# // deleteAccount')"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-NO-ACCOUNT-DELETION' && ok "cx3b a backslash in a raw string does not turn a trailing comment into code" || bad "cx3b a backslash in a raw string does not turn a trailing comment into code (rc=$RC)"
+rm -rf "$D"
+
+# CX4 a translation or config file never satisfies an implementation check
+D="$(mk_rr_ios '' 'class A { func signIn() {} }')"
+mkdir -p "$D/App/en.lproj"; printf '/* TODO: deleteAccount */\n"title" = "deleteUser";\n' > "$D/App/en.lproj/InfoPlist.strings"
+printf '{"deleteAccount": "soon"}\n' > "$D/App/flags.json"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-NO-ACCOUNT-DELETION' && [ "$RC" -eq 2 ] && ok "cx4-1 deleteAccount in InfoPlist.strings or a json config satisfies nothing" || bad "cx4-1 deleteAccount in InfoPlist.strings or a json config satisfies nothing (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'class A { func signIn() {} }')"
+mkdir -p "$D/www"; printf '<html><!-- deleteAccount --><script>function deleteAccount(){ api.del() }</script></html>\n' > "$D/www/index.html"
+rr_run "$D"
+! rr_has 'APPLE-5.1.1-NO-ACCOUNT-DELETION' && ok "cx4-2 a real deletion function in inline HTML script still counts" || bad "cx4-2 a real deletion function in inline HTML script still counts (rc=$RC)"
+rm -rf "$D"
+
+# CX11 Cursor beforeShellExecution always gets permission JSON on stdout, the report on stderr
+CLEAN="$(mk_ios_clean)"; D="$(mk_ios_bad)"; EMPTY="$(mktemp -d)"
+ERRF="$(mktemp)"
+OUTJ="$( cd /tmp && cx_payload cursor "$FL deliver" "$CLEAN" | env -u CLAUDE_PROJECT_DIR bash "$GUARD" 2>"$ERRF" )"; RC=$?
+printf '%s' "$OUTJ" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("permission")=="allow" else 1)' && [ "$RC" -eq 0 ] && grep -q 'CLEAR' "$ERRF" && ok "cx11-1 an allowed Cursor submit prints permission allow JSON" || bad "cx11-1 an allowed Cursor submit prints permission allow JSON (rc=$RC out=${OUTJ:0:60})"
+OUTJ="$( cd /tmp && cx_payload cursor "$FL deliver" "$D" | env -u CLAUDE_PROJECT_DIR bash "$GUARD" 2>"$ERRF" )"; RC=$?
+printf '%s' "$OUTJ" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("permission")=="deny" and d.get("user_message") and d.get("agent_message") else 1)' && [ "$RC" -eq 2 ] && grep -q 'BLOCKED' "$ERRF" && ok "cx11-2 a blocked Cursor submit prints permission deny JSON and exits 2" || bad "cx11-2 a blocked Cursor submit prints permission deny JSON and exits 2 (rc=$RC out=${OUTJ:0:60})"
+OUTJ="$( cd /tmp && cx_payload cursor "$FL deliver" "$EMPTY" | env -u CLAUDE_PROJECT_DIR bash "$GUARD" 2>"$ERRF" )"; RC=$?
+printf '%s' "$OUTJ" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("permission")=="allow" else 1)' && [ "$RC" -eq 0 ] && grep -q 'NOT CHECKED' "$ERRF" && ok "cx11-3 a NOT CHECKED Cursor submit still prints valid JSON" || bad "cx11-3 a NOT CHECKED Cursor submit still prints valid JSON (rc=$RC out=${OUTJ:0:60})"
+OUTJ="$( cd /tmp && cx_payload cursor "$FL deliver" "$CLEAN" | env CLAUDE_PROJECT_DIR="$CLEAN" PATH="$CX_NOTOOLS" bash "$GUARD" 2>"$ERRF" )"; RC=$?
+[ "$OUTJ" = '{"permission":"allow"}' ] && [ "$RC" -eq 0 ] && ok "cx11-4 the no-tools tier also answers Cursor with JSON" || bad "cx11-4 the no-tools tier also answers Cursor with JSON (rc=$RC out=${OUTJ:0:60})"
+rm -rf "$CLEAN" "$D" "$EMPTY" "$ERRF"
+
+# CX16 a managed Expo config with single-quoted keys is read like a double-quoted one
+D="$(mktemp -d)"; printf '{"dependencies":{"expo":"51.0.0"}}' > "$D/package.json"
+printf "export default {\n  expo: { android: { 'permissions': ['android.permission.READ_SMS'] } }\n};\n" > "$D/app.config.js"
+rr_hook "eas submit -p android" "$D"
+[ "$RC" -eq 2 ] && rr_has 'GOOGLE-PERM-SMS-CALLLOG' && ok "cx16-1 a single-quoted permissions key is read" || bad "cx16-1 a single-quoted permissions key is read (rc=$RC)"
+printf "export default { expo: { android: { 'isAndroidBackgroundLocationEnabled': true } } };\n" > "$D/app.config.js"
+rr_hook "eas submit -p android" "$D"
+[ "$RC" -eq 2 ] && rr_has 'GOOGLE-PERM-BACKGROUND-LOCATION' && ok "cx16-2 a single-quoted background location flag is read" || bad "cx16-2 a single-quoted background location flag is read (rc=$RC)"
+printf '{"dependencies":{"expo":"51.0.0","expo-camera":"15.0.0"}}' > "$D/package.json"
+printf "export default { expo: { ios: { infoPlist: { 'NSCameraUsageDescription': 'Scan receipts' } } } };\n" > "$D/app.config.js"
+rr_hook "eas submit -p ios" "$D"
+! rr_has 'Camera module in the Expo app' && ok "cx16-3 a single-quoted camera purpose key is read" || bad "cx16-3 a single-quoted camera purpose key is read (rc=$RC)"
+rm -rf "$D"
+
+# CX17 with no jq and no python3, a Copilot toolArgs JSON string is still parsed (that tier reads no payload cwd)
+D="$(mk_ios_bad)"
+P_CS="$(cx_payload copilot-str "$FL deliver" "$D")"
+OUT="$( cd /tmp && printf '%s' "$P_CS" | env CLAUDE_PROJECT_DIR="$D" PATH="$CX_NOTOOLS" bash "$GUARD" 2>&1 )"; RC=$?
+[ "$RC" -eq 2 ] && printf '%s' "$OUT" | grep -q 'App Store Compliance Guard' && ok "cx17-1 a Copilot toolArgs string is parsed on the no-tools tier" || bad "cx17-1 a Copilot toolArgs string is parsed on the no-tools tier (rc=$RC bytes=${#OUT})"
+P_CS="$(cx_payload copilot-str "ls -la" "$D")"
+OUT="$( cd /tmp && printf '%s' "$P_CS" | env CLAUDE_PROJECT_DIR="$D" PATH="$CX_NOTOOLS" bash "$GUARD" 2>&1 )"; RC=$?
+[ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "cx17-2 an ordinary Copilot command stays silent on the no-tools tier" || bad "cx17-2 an ordinary Copilot command stays silent on the no-tools tier (rc=$RC)"
+rm -rf "$D"
+
+# CX18 only real shell tool names carry a command. a read-only MCP tool named like a terminal is silent
+D="$(mk_ios_bad)"
+for tn in jq python3; do
+  TP="$PATH"; [ "$tn" = python3 ] && { TP="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head tail mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date env ls python3; do p="$([ "$b" = python3 ] && pyenv which python3 2>/dev/null || command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$TP/$b"; done; }
+  for t in mcp__terminal__explain_command mcp__shell__lint myTerminalHelper; do
+    OUT="$( cd /tmp && cx_payload bash "$FL deliver" "$D" "$t" | env -u CLAUDE_PROJECT_DIR PATH="$TP" bash "$GUARD" 2>&1 )"; RC=$?
+    [ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "cx18 $t stays silent (tier=$tn)" || bad "cx18 $t stays silent (tier=$tn rc=$RC)"
+  done
+  for t in run_in_terminal runInTerminal PowerShell execute_cmd; do
+    RC="$( cd /tmp && cx_payload bash "$FL deliver" "$D" "$t" | env -u CLAUDE_PROJECT_DIR PATH="$TP" bash "$GUARD" >/dev/null 2>&1; echo $? )"
+    [ "$RC" = "2" ] && ok "cx18 $t is scanned (tier=$tn)" || bad "cx18 $t is scanned (tier=$tn rc=$RC)"
+  done
+  [ "$tn" = python3 ] && rm -rf "$TP"
+done
+rm -rf "$D" "$CX_NOTOOLS"
+
+# 656 a bare native project under a root framework app is its own app, unless a root build file pulls it in
+mk_fw_root_plus_native() {
+  local d; d="$(mktemp -d)"; mkdir -p "$d/ios/App" "$d/native/Legacy/Legacy.xcodeproj" "$d/native/Legacy/Legacy"
+  printf '{"expo":{"name":"root"}}' > "$d/app.json"
+  printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$d/ios/App/Info.plist"
+  printf '%s' "$PLIST_EMPTY" > "$d/ios/App/PrivacyInfo.xcprivacy"
+  printf 'let policy="https://root.example.io/privacy-policy"\n' > "$d/ios/App/R.swift"
+  printf 'X=1;\n' > "$d/native/Legacy/Legacy.xcodeproj/project.pbxproj"
+  printf '<plist><dict></dict></plist>' > "$d/native/Legacy/Legacy/Info.plist"
+  printf 'import CoreLocation\nlet m=CLLocationManager()\n' > "$d/native/Legacy/Legacy/L.swift"
+  echo "$d"
+}
+D="$(mk_fw_root_plus_native)"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+[ "$(echo "$OUT" | grep -c '^App\. ')" -eq 2 ] && echo "$OUT" | grep -q "^App\. $D/native/Legacy$" && [ "$RC" -eq 2 ] && ok "i656-1 a bare Xcode project under a root Expo app is scanned on its own" || bad "i656-1 a bare Xcode project under a root Expo app is scanned on its own (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+mkdir -p "$D/ios/App.xcworkspace"; printf '<Workspace><FileRef location="group:../native/Legacy/Legacy.xcodeproj"></FileRef></Workspace>\n' > "$D/ios/App.xcworkspace/contents.xcworkspacedata"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+! echo "$OUT" | grep -q '^App\. ' && [ "$RC" -eq 2 ] && ok "i656-2 a nested project the root workspace references stays merged" || bad "i656-2 a nested project the root workspace references stays merged (rc=$RC)"
+rm -rf "$D"
+D="$(mk_fw_root_plus_native)"; rm -rf "$D/native"
+mkdir -p "$D/android/app" "$D/libs/legacy/src/main"
+printf "include ':app', ':legacy'\nproject(':legacy').projectDir = new File('../libs/legacy')\n" > "$D/android/settings.gradle"
+printf 'apply plugin: "com.android.application"\n' > "$D/android/app/build.gradle"
+printf 'apply plugin: "com.android.application"\nandroid { defaultConfig { targetSdkVersion 36 } }\n' > "$D/libs/legacy/build.gradle"
+printf '<manifest/>' > "$D/libs/legacy/src/main/AndroidManifest.xml"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+! echo "$OUT" | grep -q '^App\. ' && ok "i656-3 an Android project the root settings.gradle includes stays merged" || bad "i656-3 an Android project the root settings.gradle includes stays merged (rc=$RC sections=$(echo "$OUT" | grep -c '^App\. '))"
+rm -f "$D/android/settings.gradle"
+OUT="$(bash "$GUARD" "$D" 2>&1)"; RC=$?
+echo "$OUT" | grep -q "^App\. $D/libs/legacy$" && ok "i656-4 the same Android project with no shared build file is its own app" || bad "i656-4 the same Android project with no shared build file is its own app (rc=$RC)"
+rm -rf "$D"
+
+# R3 round 3 review. every input below is one where main scanned or reported, and the branch must too
+FL="fast""lane"
+# R3-1 a git message that sits inside a command substitution is never blanked
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+rr_hook "git commit -m safe \$(bash -c 'eval \"\$1\"' -m '$FL deliver')" "$D"
+[ "$RC" -eq 2 ] && rr_has 'Camera used without' && ok "r3-1 a submit inside a command substitution in a git commit is scanned" || bad "r3-1 a submit inside a command substitution in a git commit is scanned (rc=$RC)"
+BT='`'
+rr_hook "git commit -m safe ${BT}bash -c 'eval \"\$1\"' -m '$FL deliver'${BT}" "$D"
+[ "$RC" -eq 2 ] && ok "r3-1b a submit inside a backtick substitution in a git commit is scanned" || bad "r3-1b a submit inside a backtick substitution in a git commit is scanned (rc=$RC)"
+# R3-2 a wrapped Apple upload (npm run, make) keeps the Apple checks next to an Android build
+printf '{"scripts":{"submit-ios":"%s deliver","ship":"%s deliver"}}\n' "$FL" "$FL" > "$D/package.json"
+printf 'ship:\n\t%s deliver\n' "$FL" > "$D/Makefile"
+GW="./gradle""w bundle""Release"
+for c in "$GW && npm run submit-ios" "$GW && npm run ship" "$GW && make ship" "$GW && make ship-ios"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && rr_has 'Camera used without' && ! rr_has 'Command targets Android only' && ok "r3-2 Apple checks stay on. $c" || bad "r3-2 Apple checks stay on. $c (rc=$RC)"
+done
+rr_hook "$GW" "$D"
+rr_has 'Command targets Android only' && ok "r3-2b a plain Android build next to a package.json stays Android only" || bad "r3-2b a plain Android build next to a package.json stays Android only (rc=$RC)"
+rm -rf "$D"
+# R3-3 the comment stripper never drops compiled code after an escaped raw delimiter, a regex literal, or a Rust raw string
+for src in 'let text = #"""
+\#"""#
+/*
+"""#' 'let pattern = #/[/*]/#' 'let pattern = /[/*]/' 'let s = "a" + #"\#"/*"#'; do
+  D="$(mk_rr_ios '' "import AVFoundation
+$src
+let camera = AVCaptureDevice.default(for: .video)")"
+  rr_run "$D"
+  rr_has 'Camera used without NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "r3-3 the camera call survives. ${src%%$'\n'*}" || bad "r3-3 the camera call survives. ${src%%$'\n'*} (rc=$RC)"
+  rm -rf "$D"
+done
+for rs in 'let s = r#"
+/*
+"#;' 'let p = r"C:\"; let q = "/*";' 'let b = br#"x"#; let q = r"\"; let t = "/*";'; do
+  D="$(mk_rr_ios '' 'import AVFoundation')"
+  printf '%s\nlet camera = "AVCaptureDevice";\n' "$rs" > "$D/App/lib.rs"
+  rr_run "$D"
+  rr_has 'Camera used without NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "r3-3 a Rust raw string keeps the code after it. ${rs%%$'\n'*}" || bad "r3-3 a Rust raw string keeps the code after it. ${rs%%$'\n'*} (rc=$RC)"
+  rm -rf "$D"
+done
+D="$(mk_rr_ios '' 'import AVFoundation
+/* a real
+ * multiline AVCaptureDevice comment */')"
+rr_run "$D"
+rr_has 'Camera used without' && ok "r3-3b a mention inside a block comment counts as a trigger, as in 1.0.0" || bad "r3-3b a mention inside a block comment counts as a trigger, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import AVFoundation
+/* an unmarked line inside a block counts as code, as in 1.0.0
+   AVCaptureDevice.default(for: .video) */')"
+rr_run "$D"
+rr_has 'Camera used without' && ok "r3-3c an unmarked line inside a block counts, as in 1.0.0" || bad "r3-3c an unmarked line inside a block counts, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+# R3-4 translation text never proves StoreKit or a restore control
+D="$(mk_rr_ios '' 'import Stripe')"
+mkdir -p "$D/App/en.lproj"; printf '"help" = "StoreKit";\n"restore" = "Restore Purchases";\n' > "$D/App/en.lproj/InfoPlist.strings"
+rr_run "$D"
+rr_has 'APPLE-3.1.1-EXTERNAL-PAYMENT' && [ "$RC" -eq 2 ] && ok "r3-4 StoreKit named only in InfoPlist.strings does not hide an external payment SDK" || bad "r3-4 StoreKit named only in InfoPlist.strings does not hide an external payment SDK (rc=$RC)"
+rm -rf "$D"
+# R3-8 the no-parser fallback stays quiet for a read tool, like jq and python3 do
+D="$(mk_ios_bad)"
+NOP="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOP/$b"; done
+OUT="$(printf '{"tool_name":"Read","tool_input":{"command":"%s deliver"}}' "$FL" | PATH="$NOP" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "r3-8 a Read payload stays quiet without jq or python3" || bad "r3-8 a Read payload stays quiet without jq or python3 (rc=$RC bytes=${#OUT})"
+OUT="$(printf '{"tool_name":"Bash","tool_input":{"command":"%s deliver"}}' "$FL" | PATH="$NOP" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 2 ] && ok "r3-8b a Bash payload is still scanned without jq or python3" || bad "r3-8b a Bash payload is still scanned without jq or python3 (rc=$RC)"
+OUT="$(printf '{"toolName":"run_terminal_command","toolInput":{"command":"%s deliver"}}' "$FL" | PATH="$NOP" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 2 ] && ok "r3-8c a Grok payload is still scanned without jq or python3" || bad "r3-8c a Grok payload is still scanned without jq or python3 (rc=$RC)"
+OUT="$(printf '{"tool_info":{"command_line":"%s deliver"}}' "$FL" | PATH="$NOP" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 2 ] && ok "r3-8d a Windsurf payload with no tool name is still scanned without jq or python3" || bad "r3-8d a Windsurf payload with no tool name is still scanned without jq or python3 (rc=$RC)"
+rm -rf "$D" "$NOP"
+# R3-M a clean nested native project never takes the scan away from a managed Expo root with no native folder
+D="$(mktemp -d)"; mkdir -p "$D/src" "$D/native/Legacy/Legacy.xcodeproj" "$D/native/Legacy/Legacy"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf 'export function signIn(){}\nexport function createAccount(){}\n' > "$D/src/auth.ts"
+printf 'X=1;\n' > "$D/native/Legacy/Legacy.xcodeproj/project.pbxproj"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/native/Legacy/Legacy/Info.plist"
+printf '%s' "$PLIST_EMPTY" > "$D/native/Legacy/Legacy/PrivacyInfo.xcprivacy"
+printf 'let x = 1\n' > "$D/native/Legacy/Legacy/L.swift"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-NO-ACCOUNT-DELETION' && [ "$RC" -eq 2 ] && ok "r3-M a managed Expo root keeps its account deletion finding beside a clean native child" || bad "r3-M a managed Expo root keeps its account deletion finding beside a clean native child (rc=$RC)"
+rm -rf "$D"
+
+# R4 round 4 review. each input is one where main scanned or reported, or a real submit went unchecked
+FL="fast""lane"
+GW="./gradle""w bundle""Release"
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+# R4-1 a git alias or any git global option other than -C keeps the whole command scanned
+rr_hook "git -c 'alias.ship=!f() { eval \"\$3\"; }; f' ship commit -m '$FL deliver'" "$D"
+[ "$RC" -eq 2 ] && ok "r4-1 a git alias that runs its argument is scanned" || bad "r4-1 a git alias that runs its argument is scanned (rc=$RC)"
+rr_hook "git -C . commit -m 'release notes for $FL deliver'" "$D"
+[ "$RC" -eq 0 ] && ok "r4-1b a plain git -C commit message stays text" || bad "r4-1b a plain git -C commit message stays text (rc=$RC)"
+# R4-2 only a known harmless command may sit beside an Android build and keep it Android only
+mkdir -p "$D/scripts"; printf 'import os\nos.system("%s deliver")\n' "$FL" > "$D/scripts/upload.py"
+printf '%s deliver\n' "$FL" > "$D/scripts/upload.sh"
+for c in "$GW && python3 scripts/upload.py" "$GW && node scripts/upload.js" "$GW && ruby scripts/upload.rb" "$GW && scripts/upload.sh" "$GW && ./upload" "$GW && deno run up.ts"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ! rr_has 'Command targets Android only' && ok "r4-2 Apple checks stay on. $c" || bad "r4-2 Apple checks stay on. $c (rc=$RC)"
+done
+for c in "$GW && echo done" "cd android && $GW" "export X=1; $GW" "$GW; ls"; do
+  rr_hook "$c" "$D"
+  rr_has 'Command targets Android only' && ok "r4-2b stays Android only. $c" || bad "r4-2b stays Android only. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R4-3 an empty or project-less ios folder never counts as the root's own platform
+D="$(mktemp -d)"; mkdir -p "$D/src" "$D/ios" "$D/native/Legacy/Legacy.xcodeproj" "$D/native/Legacy/Legacy"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf 'export function signIn(){}\nexport function createAccount(){}\n' > "$D/src/auth.ts"
+printf 'X=1;\n' > "$D/native/Legacy/Legacy.xcodeproj/project.pbxproj"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/native/Legacy/Legacy/Info.plist"
+printf '%s' "$PLIST_EMPTY" > "$D/native/Legacy/Legacy/PrivacyInfo.xcprivacy"
+printf 'let x = 1\n' > "$D/native/Legacy/Legacy/L.swift"
+rr_run "$D"
+rr_has 'APPLE-5.1.1-NO-ACCOUNT-DELETION' && [ "$RC" -eq 2 ] && ok "r4-3 an empty ios folder does not split the native child off a managed Expo root" || bad "r4-3 an empty ios folder does not split the native child off a managed Expo root (rc=$RC)"
+rm -rf "$D"
+# R4-4 a // inside a JavaScript or Swift regex literal is not a comment
+for src in 'const pattern = /[//]/; const camera = "AVCaptureDevice";' 'const u = x.replace(/https?:\/\//, ""); const camera = "AVCaptureDevice";'; do
+  D="$(mk_rr_ios '' 'import AVFoundation')"
+  printf '%s\n' "$src" > "$D/App/bridge.js"
+  rr_run "$D"
+  rr_has 'Camera used without NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "r4-4 the code after a regex survives. $src" || bad "r4-4 the code after a regex survives. $src (rc=$RC)"
+  rm -rf "$D"
+done
+D="$(mk_rr_ios '' 'import AVFoundation
+  // AVCaptureDevice on its own line
+let x = 1')"
+rr_run "$D"
+rr_has 'Camera used without' && ok "r4-4b a whole-line comment counts as a trigger, as in 1.0.0" || bad "r4-4b a whole-line comment counts as a trigger, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+# R4-7 the no-parser fallback trusts a tool name only when the payload names exactly one
+D="$(mk_ios_bad)"
+NOP="$(mktemp -d)"; for b in bash grep sed awk find xargs tr head mktemp cat rm printf wc sort uniq cut plutil xmllint dirname basename date; do p="$(command -v "$b" 2>/dev/null)"; [ -n "$p" ] && ln -s "$p" "$NOP/$b"; done
+OUT="$(printf '{"metadata":{"tool_name":"Read"},"tool_name":"Bash","tool_input":{"command":"%s deliver"}}' "$FL" | PATH="$NOP" CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 2 ] && ok "r4-7 a nested tool_name never hides a Bash submit without jq or python3" || bad "r4-7 a nested tool_name never hides a Bash submit without jq or python3 (rc=$RC)"
+rm -rf "$D" "$NOP"
+# R4-9 workspace runners resolve the selected package's script
+D="$(mktemp -d)"; mkdir -p "$D/apps/x/App"
+printf '{"name":"root","private":true,"workspaces":["apps/*"]}\n' > "$D/package.json"
+printf '{"name":"x","scripts":{"ship-it":"%s deliver"}}\n' "$FL" > "$D/apps/x/package.json"
+printf '{"name":"x","targets":{"ship-it":{"executor":"nx:run-commands","options":{"command":"%s deliver"}}}}\n' "$FL" > "$D/apps/x/project.json"
+printf '<plist><dict></dict></plist>' > "$D/apps/x/App/Info.plist"; mkdir -p "$D/apps/x/App.xcodeproj"; printf 'X=1;\n' > "$D/apps/x/App.xcodeproj/project.pbxproj"
+printf 'import AVFoundation\nlet d = AVCaptureDevice.default(for: .video)\n' > "$D/apps/x/App/A.swift"
+for c in "yarn workspace x ship-it" "pnpm --filter x ship-it" "pnpm --filter x run ship-it" "npm -w x run ship-it" "npm --prefix apps/x run ship-it" "turbo run ship-it" "npx turbo run ship-it --filter=x" "nx run x:ship-it" "npx nx run x:ship-it" "lerna run ship-it" "bun --filter x run ship-it"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ok "r4-9 a workspace runner is scanned. $c" || bad "r4-9 a workspace runner is scanned. $c (rc=$RC)"
+done
+rr_hook "yarn workspace x lint" "$D"
+[ "$RC" -eq 0 ] && [ -z "$OUT" ] && ok "r4-9b a workspace runner with a harmless script stays quiet" || bad "r4-9b a workspace runner with a harmless script stays quiet (rc=$RC)"
+mkdir -p "$D/apps/web"; printf '{"name":"web","scripts":{"build":"next build"}}\n' > "$D/apps/web/package.json"
+printf '{"name":"x","scripts":{"ship-it":"%s deliver","build":"eas build -p ios"}}\n' "$FL" > "$D/apps/x/package.json"
+for c in "pnpm --filter web build" "yarn workspace web build" "npm --prefix apps/web run build" "npm -w web run build"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 0 ] && ok "r4-9c a named web package never inherits the mobile package script. $c" || bad "r4-9c a named web package never inherits the mobile package script. $c (rc=$RC)"
+done
+rr_hook "pnpm --filter x build" "$D"
+[ "$RC" -eq 2 ] && ok "r4-9d the named mobile package build script is scanned" || bad "r4-9d the named mobile package build script is scanned (rc=$RC)"
+rm -rf "$D"
+
+# R4P the persona review on real monorepo layouts
+# R4P-1 a local Expo native module (an Android library) never becomes its own app
+D="$(mktemp -d)"; mkdir -p "$D/android/app/src/main" "$D/modules/pay/android/src/main/java"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf '{"dependencies":{"expo":"52","react-native":"0.76"}}' > "$D/package.json"
+printf 'apply plugin: "com.android.application"\nandroid { defaultConfig { targetSdkVersion 36 } }\n' > "$D/android/app/build.gradle"
+printf '<manifest/>' > "$D/android/app/src/main/AndroidManifest.xml"
+printf 'apply plugin: "com.android.library"\n' > "$D/modules/pay/android/build.gradle"
+printf '<manifest/>' > "$D/modules/pay/android/src/main/AndroidManifest.xml"
+printf 'import com.stripe.android.Stripe\n' > "$D/modules/pay/android/src/main/java/Pay.kt"
+rr_run "$D"
+! rr_has '^App\. ' && ok "r4p-1 a local native library module stays with the app that uses it" || bad "r4p-1 a local native library module stays with the app that uses it (rc=$RC)"
+rm -rf "$D"
+# R4P-2 a Tuist Project.swift purpose string counts as the key
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+printf 'let project = Project(name: "App", targets: [.target(name: "App", infoPlist: .extendingDefault(with: ["NSCameraUsageDescription": "Scan receipts to log expenses"]))])\n' > "$D/Project.swift"
+rr_run "$D"
+! rr_has 'Camera used without' && ok "r4p-2 a camera key set in Tuist Project.swift counts" || bad "r4p-2 a camera key set in Tuist Project.swift counts (rc=$RC)"
+rm -rf "$D"
+# R4P-3 only a folder named exactly like demo or sample is a demo. resample and sample-store are real apps
+for name in resample sample-store; do
+  D="$(mktemp -d)"; mkdir -p "$D/ios/Main" "$D/apps/$name/Store.xcodeproj" "$D/apps/$name/Store"
+  printf '{"expo":{"name":"root"}}' > "$D/app.json"
+  printf '<plist><dict><key>NSLocationWhenInUseUsageDescription</key><string>Show nearby stores</string></dict></plist>' > "$D/ios/Main/Info.plist"
+  mkdir -p "$D/ios/Main.xcodeproj"; printf 'X=1;\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+  printf 'X=1;\n' > "$D/apps/$name/Store.xcodeproj/project.pbxproj"
+  printf '<plist><dict></dict></plist>' > "$D/apps/$name/Store/Info.plist"
+  printf 'import CoreLocation\nlet m = CLLocationManager()\n' > "$D/apps/$name/Store/S.swift"
+  rr_run "$D"
+  rr_has "^App\. $D/apps/$name$" && ok "r4p-3 apps/$name is scanned as its own app" || bad "r4p-3 apps/$name is scanned as its own app (rc=$RC)"
+  rm -rf "$D"
+done
+# R4P-4 a native StoreKit app needs a real restore call. a plugin's purchase list does not count
+D="$(mk_rr_ios '' 'import StoreKit
+let p: SKProduct? = nil
+func load() { getAvailablePurchases() }')"
+rr_run "$D"
+rr_has 'APPLE-RESTORE-PURCHASES-MISSING' && ok "r4p-4 a StoreKit app with only getAvailablePurchases still needs Restore Purchases" || bad "r4p-4 a StoreKit app with only getAvailablePurchases still needs Restore Purchases (rc=$RC)"
+rm -rf "$D"
+
+# R5 round 5 review
+FL="fast""lane"
+GW="./gradle""w bundle""Release"
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+# R5-1 a harmless-looking command beside an Android build is trusted only without any substitution, and git is never trusted
+for c in "$GW && echo \"\$(python3 scripts/upload.py)\"" "$GW && echo \`./up.sh\`" "$GW && git upload" "$GW && cat <(./up.sh)"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ! rr_has 'Command targets Android only' && ok "r5-1 Apple checks stay on. $c" || bad "r5-1 Apple checks stay on. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R5-2 a // or /* inside a regex never hides code, even with a space before it
+for src in 'const pattern = /[ //]/; const camera = "AVCaptureDevice";' 'const pattern = /[ /*]/; const camera = "AVCaptureDevice"; /* tail */' 'const s = "a\
+/* not a comment";
+const camera = "AVCaptureDevice";'; do
+  D="$(mk_rr_ios '' 'import AVFoundation')"
+  printf '%s\n' "$src" > "$D/App/bridge.js"
+  rr_run "$D"
+  rr_has 'Camera used without NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "r5-2 the code survives. ${src%%$'\n'*}" || bad "r5-2 the code survives. ${src%%$'\n'*} (rc=$RC)"
+  rm -rf "$D"
+done
+# R5-3 an option in a later command never scopes the runner. the root package script still counts
+D="$(mktemp -d)"; mkdir -p "$D/apps/web" "$D/App"
+printf '{"name":"root","scripts":{"ship":"%s deliver"}}\n' "$FL" > "$D/package.json"
+printf '{"name":"web","scripts":{"ship":"echo web"}}\n' > "$D/apps/web/package.json"
+printf '<plist><dict></dict></plist>' > "$D/App/Info.plist"; mkdir -p "$D/App.xcodeproj"; printf 'X=1;\n' > "$D/App.xcodeproj/project.pbxproj"
+printf 'import AVFoundation\nlet d = AVCaptureDevice.default(for: .video)\n' > "$D/App/A.swift"
+rr_hook "npm run ship && echo --prefix apps/web" "$D"
+[ "$RC" -eq 2 ] && ok "r5-3 a later echo --prefix never hides the root script" || bad "r5-3 a later echo --prefix never hides the root script (rc=$RC)"
+# R5-5 recursive runners read every package, and a scoped name matches in full
+printf '{"name":"root"}\n' > "$D/package.json"; mkdir -p "$D/apps/mob"
+printf '{"name":"@mobile/web","scripts":{"ship":"%s deliver"}}\n' "$FL" > "$D/apps/mob/package.json"
+for c in "npm --workspaces run ship" "npm run ship --workspaces" "pnpm -r run ship" "pnpm --recursive run ship" "yarn workspaces foreach run ship" "pnpm --filter @mobile/web ship"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ok "r5-5 scanned. $c" || bad "r5-5 scanned. $c (rc=$RC)"
+done
+rr_hook "pnpm --filter @other/web ship" "$D"
+[ "$RC" -eq 2 ] && ok "r5-5b an unknown scoped package falls back to every package" || bad "r5-5b an unknown scoped package falls back to every package (rc=$RC)"
+rm -rf "$D"
+# R5-7 an Xcode framework project never splits off as its own app
+D="$(mktemp -d)"; mkdir -p "$D/ios/Main.xcodeproj" "$D/ios/Main" "$D/modules/Pay/Pay.xcodeproj" "$D/modules/Pay/Pay"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf 'X=1;\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+printf '<plist><dict><key>NSCameraUsageDescription</key><string>Scan receipts</string></dict></plist>' > "$D/ios/Main/Info.plist"
+printf 'productType = "com.apple.product-type.framework";\n' > "$D/modules/Pay/Pay.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/modules/Pay/Pay/Info.plist"
+printf 'import AVFoundation\nlet d = AVCaptureDevice.default(for: .video)\n' > "$D/modules/Pay/Pay/P.swift"
+rr_run "$D"
+! rr_has '^App\. ' && ok "r5-7 a framework Xcode project stays with the app that links it" || bad "r5-7 a framework Xcode project stays with the app that links it (rc=$RC)"
+rm -rf "$D"
+# R6 persona round 2
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+# R6-1 a message quote left open across lines never hides the submit that bash runs
+rr_hook "git commit -m \"a
+git commit -m \" ; $FL deliver ; echo \"
+\"" "$D"
+[ "$RC" -eq 2 ] && ok "r6-1 a multi-line quoted message never hides a submit" || bad "r6-1 a multi-line quoted message never hides a submit (rc=$RC)"
+rr_hook "gh pr create -b \"x
+\" ; $FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r6-1b a gh body across lines never hides a submit" || bad "r6-1b a gh body across lines never hides a submit (rc=$RC)"
+rm -rf "$D"
+# R6-2 a /* that never closes was a misread string, so the code after it still counts
+D="$(mk_rr_ios '' 'import AVFoundation
+let s = "x"
+/* stray opener inside what was really a string
+let dev = AVCaptureDevice.default(for: .video)')"
+rr_hook "$FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r6-2 an unclosed block comment never hides a camera call" || bad "r6-2 an unclosed block comment never hides a camera call (rc=$RC)"
+rm -rf "$D"
+# R6-3 a camera mention in a closed block comment counts, as in 1.0.0
+D="$(mk_rr_ios '' 'import Foundation
+/* AVCaptureDevice.default(for: .video)
+*/
+let s = "x"')"
+rr_hook "$FL deliver" "$D"
+rr_has 'NSCameraUsageDescription' && ok "r6-3 a camera mention in a block comment counts, as in 1.0.0" || bad "r6-3 a camera mention in a block comment counts, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+# R7 Codex round 6
+# R7-1 a C# verbatim string, a Rust string holding /*, and a mid-line // never hide a camera call
+D="$(mk_rr_ios '' 'let s = "x"')"
+printf '%s\n' 'var path = @"C:\"; var q = " // "; var camera = AVCaptureDevice.GetDefaultDevice(AVMediaTypes.Video);' > "$D/App/Cam.cs"
+rr_hook "$FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r7-1a a C# verbatim string never hides a camera call" || bad "r7-1a a C# verbatim string never hides a camera call (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'let s = "x"')"
+printf '%s\n' 'let s = "a' '/* b";' 'let camera = unsafe { AVCaptureDevice::defaultDeviceWithMediaType(AVMediaTypeVideo) };' '/* end */' > "$D/App/cam.rs"
+rr_hook "$FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r7-1b a Rust string holding /* never hides a camera call" || bad "r7-1b a Rust string holding /* never hides a camera call (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'import AVFoundation
+let q = "a" ; _ = 1 // b ; let dev = AVCaptureDevice.default(for: .video)')"
+rr_hook "$FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r7-1c code after a mid-line // still counts, as on main" || bad "r7-1c code after a mid-line // still counts, as on main (rc=$RC)"
+rm -rf "$D"
+# R7-2 a later web workspace build never masks an earlier root submit script
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/apps/web"
+printf '{"name":"root","scripts":{"ship":"eas submit -p ios"}}' > "$D/package.json"
+printf '{"name":"web","scripts":{"build":"vercel deploy"}}' > "$D/apps/web/package.json"
+rr_hook "npm run ship && yarn workspace web build" "$D"
+[ "$RC" -eq 2 ] && ok "r7-2 every runner in the command is read" || bad "r7-2 every runner in the command is read (rc=$RC)"
+# R7-2b runner shorthands that name a script without run
+for c in "bun ship" "turbo ship" "nx run-many -t ship" "nx affected --target=ship" "pnpm -r ship"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ok "r7-2b scanned. $c" || bad "r7-2b scanned. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R7-3 git beside an Android build can run a configured helper, so the Apple checks stay on
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+for c in "$GW && git diff --no-index --ext-diff /dev/null README.md" "$GW && git status"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ! rr_has 'Command targets Android only' && ok "r7-3 Apple checks stay on. $c" || bad "r7-3 Apple checks stay on. $c (rc=$RC)"
+done
+# R7-5 Kiro runs PowerShell through execute_pwsh
+OUT="$(python3 -c 'import json,sys; print(json.dumps({"hook_event_name":"preToolUse","tool_name":"execute_pwsh","tool_input":{"command":sys.argv[1]}}))' "$FL deliver" | CLAUDE_PROJECT_DIR="$D" bash "$GUARD" 2>&1)"; RC=$?
+[ "$RC" -eq 2 ] && ok "r7-5 a Kiro execute_pwsh submit is checked" || bad "r7-5 a Kiro execute_pwsh submit is checked (rc=$RC)"
+rm -rf "$D"
+# R7-4 a brownfield native host that embeds React Native stays in the root scan, so its OTA updater is still reported
+D="$(mktemp -d)"; mkdir -p "$D/ios/Main.xcodeproj" "$D/ios/Main" "$D/Native/Native.xcodeproj"
+printf '{"name":"r","dependencies":{"react-native":"0.76.0"}}' > "$D/package.json"
+printf '{"name":"r","displayName":"R"}' > "$D/app.json"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Native.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/Main/Info.plist"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf 'let url = CodePush.bundleURL()\n' > "$D/Native/Entry.swift"
+rr_run "$D"
+rr_has 'RN-OTA-UNDECLARED' && ok "r7-4 a brownfield host keeps the React Native checks" || bad "r7-4 a brownfield host keeps the React Native checks (rc=$RC)"
+rm -rf "$D"
+# R8 Codex round 7
+# R8-1 a multi-line Rust string holding /* and quotes never hides a camera call
+D="$(mk_rr_ios '' 'let s = "x"')"
+printf '%s\n' 'let pattern = "first' '/* \"quoted\"' 'last";' 'let camera = unsafe {' '    AVCaptureDevice::defaultDeviceWithMediaType(AVMediaTypeVideo)' '};' '/* end */' > "$D/App/cam.rs"
+rr_hook "$FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r8-1 a multi-line string holding /* never hides a camera call" || bad "r8-1 a multi-line string holding /* never hides a camera call (rc=$RC)"
+rm -rf "$D"
+# R8-2 JSX text holding // never hides the deletion handler after it
+D="$(mk_rr_ios '' 'class A { func signIn() {} }')"
+printf '%s\n' 'export const S = () => <View><Text>a // b</Text><Button onPress={deleteAccount} /></View>;' > "$D/App/Settings.tsx"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r8-2 JSX text holding // keeps the handler after it" || bad "r8-2 JSX text holding // keeps the handler after it (rc=$RC)"
+rm -rf "$D"
+# R8-3 an Objective-C Capacitor host is brownfield and stays in the root scan
+D="$(mktemp -d)"; mkdir -p "$D/ios/Main.xcodeproj" "$D/ios/Main" "$D/Native/Native.xcodeproj"
+printf '{"name":"r","dependencies":{"@capacitor/core":"6.0.0"}}' > "$D/package.json"
+printf 'export default { appId: "a.b" };\n' > "$D/capacitor.config.ts"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Native.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/Main/Info.plist"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf '#import <Capacitor/Capacitor.h>\n@interface H : CAPBridgeViewController\n@end\n@implementation H { UIWebView *old; }\n@end\n' > "$D/Native/Host.m"
+rr_run "$D"
+rr_has 'IONIC-UIWEBVIEW-DEPRECATED' && ok "r8-3 an Objective-C Capacitor host keeps the Ionic checks" || bad "r8-3 an Objective-C Capacitor host keeps the Ionic checks (rc=$RC)"
+rm -rf "$D"
+# R8-4 a quoted folder holding a ; is never split into two commands
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/apps/a;b"; printf '{"name":"ab","scripts":{"ship":"eas submit -p ios"}}' > "$D/apps/a;b/package.json"
+rr_hook "npm --prefix \"apps/a;b\" run ship" "$D"
+[ "$RC" -eq 2 ] && ok "r8-4 a quoted folder with ; still finds the script" || bad "r8-4 a quoted folder with ; still finds the script (rc=$RC)"
+# R8-5 a script defined only in a child package, reached by nx, bun or several filters
+mkdir -p "$D/apps/mobile" "$D/apps/web"
+printf '{"name":"@acme/mobile","scripts":{"ship":"eas submit -p ios"}}' > "$D/apps/mobile/package.json"
+printf '{"name":"@acme/web","scripts":{"ship":"vercel deploy"}}' > "$D/apps/web/package.json"
+for c in "nx ship mobile" "nx affected --target=ship" "bun run --filter @acme/mobile ship" "pnpm --filter @acme/mobile --filter @acme/web ship"; do
+  rr_hook "$c" "$D"
+  [ "$RC" -eq 2 ] && ok "r8-5 scanned. $c" || bad "r8-5 scanned. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R9 Codex round 8
+# R9-1 a pointer write led by * and a line with code after a leading /* note */ are code
+D="$(mk_rr_ios '' 'let s = "x"')"
+printf '%s\n' 'void f(void **out) {' '*out = (__bridge void *)[AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];' '}' > "$D/App/P.m"
+rr_hook "$FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r9-1a a pointer write led by * is code" || bad "r9-1a a pointer write led by * is code (rc=$RC)"
+rm -rf "$D"
+D="$(mk_rr_ios '' 'let s = "x"')"
+printf '%s\n' '/* note */ AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo]; NSString *s = @"*/";' > "$D/App/Q.m"
+rr_hook "$FL deliver" "$D"
+[ "$RC" -eq 2 ] && ok "r9-1b code after a leading /* note */ counts" || bad "r9-1b code after a leading /* note */ counts (rc=$RC)"
+rm -rf "$D"
+# R9-2 a // inside a string never hides the deletion call after it
+D="$(mk_rr_ios '' 'class A { func signIn() {} }')"
+printf '%s\n' 'const s = " // x "; deleteAccount();' > "$D/App/del.js"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r9-2 a // inside a string keeps the deletion after it" || bad "r9-2 a // inside a string keeps the deletion after it (rc=$RC)"
+rm -rf "$D"
+# R9-3 a runner inside $( ) never masks the outer submit script
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/apps/web"
+printf '{"name":"root","scripts":{"ship":"eas submit -p ios"}}' > "$D/package.json"
+printf '{"name":"web","scripts":{"args":"printf x"}}' > "$D/apps/web/package.json"
+rr_hook "npm run ship -- \"\$(yarn workspace web args)\"" "$D"
+[ "$RC" -eq 2 ] && ok "r9-3 a nested runner never masks the outer submit" || bad "r9-3 a nested runner never masks the outer submit (rc=$RC)"
+rm -rf "$D"
+# R9-4 a native host that imports Cordova under a Capacitor root is brownfield and keeps the Ionic checks
+D="$(mktemp -d)"; mkdir -p "$D/ios/Main.xcodeproj" "$D/ios/Main" "$D/Native/Native.xcodeproj"
+printf '{"name":"r","dependencies":{"@capacitor/core":"6.0.0","cordova-plugin-x":"1.0.0"}}' > "$D/package.json"
+printf 'export default { appId: "a.b" };\n' > "$D/capacitor.config.ts"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Native.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/Main/Info.plist"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf '#import <Cordova/CDV.h>\nUIWebView *webView;\n' > "$D/Native/Host.m"
+rr_run "$D"
+rr_has 'IONIC-UIWEBVIEW-DEPRECATED' && ok "r9-4 a Cordova host keeps the Ionic checks" || bad "r9-4 a Cordova host keeps the Ionic checks (rc=$RC)"
+rm -rf "$D"
+# R10 Codex round 9
+# R10-1 a spaced pointer write and code after a closing */ count as triggers
+for src in '* out = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];' ' */ AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];'; do
+  D="$(mk_rr_ios '' 'let s = "x"')"
+  printf '%s\n' "$src" > "$D/App/R.m"
+  rr_hook "$FL deliver" "$D"
+  [ "$RC" -eq 2 ] && ok "r10-1 the camera call counts. $src" || bad "r10-1 the camera call counts. $src (rc=$RC)"
+  rm -rf "$D"
+done
+# R10-2 runner text inside an argument never hides the outer npm script
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/apps/web"
+printf '{"name":"root","scripts":{"ship":"eas submit -p ios"}}' > "$D/package.json"
+printf '{"name":"web","scripts":{"args":"printf x"}}' > "$D/apps/web/package.json"
+rr_hook "npm run ship -- --path=\"yarn workspace web args.ipa\"" "$D"
+[ "$RC" -eq 2 ] && ok "r10-2 runner text in an argument never hides the npm script" || bad "r10-2 runner text in an argument never hides the npm script (rc=$RC)"
+rm -rf "$D"
+# R10-3 a Swift host that imports Cordova stays in the root scan
+D="$(mktemp -d)"; mkdir -p "$D/ios/Main.xcodeproj" "$D/ios/Main" "$D/Native/Native.xcodeproj"
+printf '{"name":"r","dependencies":{"@capacitor/core":"6.0.0"}}' > "$D/package.json"
+printf 'export default { appId: "a.b" };\n' > "$D/capacitor.config.ts"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Native.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/Main/Info.plist"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf 'import Cordova\nclass AppDelegate: CDVAppDelegate { var legacy: UIWebView? }\n' > "$D/Native/AppDelegate.swift"
+rr_run "$D"
+rr_has 'IONIC-UIWEBVIEW-DEPRECATED' && ok "r10-3 a Swift Cordova host keeps the Ionic checks" || bad "r10-3 a Swift Cordova host keeps the Ionic checks (rc=$RC)"
+rm -rf "$D"
+# R10-4 a // inside a single-quoted string keeps the deletion after it
+D="$(mk_rr_ios '' 'class A { func signIn() {} }')"
+printf '%s\n' "const s = ' // x '; deleteAccount();" > "$D/App/del.js"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r10-4 a // in a single-quoted string keeps the deletion" || bad "r10-4 a // in a single-quoted string keeps the deletion (rc=$RC)"
+rm -rf "$D"
+# R7-6 a purpose key in an XcodeGen include, an Nx project.json, a Tuist helper or a Cordova config.xml counts
+for f in targets/App.yml project.json Tuist/ProjectDescriptionHelpers/Info.swift config.xml; do
+  D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+  mkdir -p "$D/$(dirname "$f")"; printf 'NSCameraUsageDescription Scan receipts\n' > "$D/$f"
+  rr_hook "$FL deliver" "$D"
+  ! rr_has 'NSCameraUsageDescription' && ok "r7-6 a camera key in $f counts" || bad "r7-6 a camera key in $f counts (rc=$RC)"
+  rm -rf "$D"
+done
+
+# R11 Codex round 10
+# R11-1 triggers read every line raw, as in 1.0.0, so a // line holding a live Swift interpolation still counts
+D="$(mk_rr_ios '' 'import AVFoundation
+let message = """
+// \(AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in }))
+"""')"
+rr_hook "$FL deliver" "$D"
+rr_has 'NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "r11-1 a // line holding an interpolation still triggers" || bad "r11-1 a // line holding an interpolation still triggers (rc=$RC)"
+rm -rf "$D"
+# R11-2 an RCTAppDelegate host stays in the root scan and keeps the React Native checks
+D="$(mktemp -d)"; mkdir -p "$D/ios/Main.xcodeproj" "$D/ios/Main" "$D/Native/Native.xcodeproj" "$D/Native/js"
+printf '{"name":"r","dependencies":{"expo":"51.0.0","react-native":"0.74.0"}}' > "$D/package.json"
+printf 'module.exports = { name: "r" };\n' > "$D/app.config.js"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Native.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/Main/Info.plist"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf 'import React_RCTAppDelegate\nclass AppDelegate: RCTAppDelegate {}\n' > "$D/Native/Host.swift"
+printf '{"name":"native-js","dependencies":{"@react-native-async-storage/async-storage":"2"}}' > "$D/Native/js/package.json"
+printf "import AsyncStorage from '@react-native-async-storage/async-storage';\nAsyncStorage.getItem('x');\n" > "$D/Native/js/storage.js"
+rr_run "$D"
+rr_has 'RN-PRIVACY-MANIFEST-MISSING' && ok "r11-2 an RCTAppDelegate host keeps the React Native checks" || bad "r11-2 an RCTAppDelegate host keeps the React Native checks (rc=$RC)"
+rm -rf "$D"
+# R11-3 a zsh =(...) substitution is executable, so a commit message and a safe command lose their pass
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/scripts"; printf '%s deliver\n' "$FL" > "$D/scripts/up.sh"
+rr_hook "git commit -m \"$FL deliver\" =(sh scripts/up.sh)" "$D"
+[ "$RC" -eq 2 ] && ok "r11-3 a zsh =() beside a commit message still scans" || bad "r11-3 a zsh =() beside a commit message still scans (rc=$RC)"
+rr_hook "./gradlew bundleRelease && echo =(sh scripts/up.sh)" "$D"
+rr_has 'NSCameraUsageDescription' && ok "r11-3 a zsh =() beside an Android build keeps the Apple checks" || bad "r11-3 a zsh =() beside an Android build keeps the Apple checks (rc=$RC)"
+rm -rf "$D"
+# R11-4 a /* ... */ pair inside quoted strings never removes the code between them
+D="$(mk_rr_ios '' 'class A { func signIn() {} }')"
+printf '%s\n' "signIn();" "const s = ' /* '; deleteAccount(); const end = ' */ ';" > "$D/App/del.js"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r11-4 quoted block markers keep the deletion between them" || bad "r11-4 quoted block markers keep the deletion between them (rc=$RC)"
+rm -rf "$D"
+# R12 Codex round 11
+# R12-1 an Android word inside a quoted lane parameter is text, so an iOS lane keeps the Apple checks
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/fastlane"
+UP="upload_to_""testflight"
+printf 'lane :beta do |options|\n  %s(changelog: options[:notes])\nend\n' "$UP" > "$D/fastlane/Fastfile"
+rr_hook "$FL beta notes:\"test -p android\"" "$D"
+rr_has 'NSCameraUsageDescription' && [ "$RC" -eq 2 ] && ok "r12-1 a quoted -p android in a lane parameter keeps the Apple checks" || bad "r12-1 a quoted -p android in a lane parameter keeps the Apple checks (rc=$RC)"
+rr_hook "$FL beta notes:'flutter build appbundle'" "$D"
+rr_has 'NSCameraUsageDescription' && ok "r12-1 a single-quoted Android build in a parameter keeps the Apple checks" || bad "r12-1 a single-quoted Android build in a parameter keeps the Apple checks (rc=$RC)"
+rm -rf "$D"
+# R12-1b a plain Android release command still stays Android only
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+rr_hook "./gradlew bundleRelease" "$D"
+! rr_has 'NSCameraUsageDescription' && ok "r12-1b a plain Android build still skips the Apple checks" || bad "r12-1b a plain Android build still skips the Apple checks (rc=$RC)"
+rm -rf "$D"
+# R13 Codex round 12
+# R13-1 a harmless echo, a comment or a second line naming Android never vouches for an iOS lane
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/fastlane"
+UP="upload_to_""testflight"
+printf 'lane :beta do |options|\n  %s(changelog: options[:notes])\nend\n' "$UP" > "$D/fastlane/Fastfile"
+for c in "$FL beta notes:\"test -p android\"; echo -p android" "$FL beta notes:\"test -p android\" # -p android" "$FL beta notes:\"x -p android\" && ./gradlew bundleRelease"; do
+  rr_hook "$c" "$D"
+  rr_has 'NSCameraUsageDescription' && ok "r13-1 the iOS lane keeps the Apple checks. $c" || bad "r13-1 the iOS lane keeps the Apple checks. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R13-2 a host using React's surface view, or an Android React activity, stays in the root scan
+for host in 'import React
+let v = RCTSurfaceHostingProxyRootView(bridge: b, moduleName: "x")' 'class MainActivity : ReactActivity() {}'; do
+  D="$(mktemp -d)"; mkdir -p "$D/ios/App.xcodeproj" "$D/ios/App" "$D/Native/Host.xcodeproj"
+  printf '{"name":"r","dependencies":{"react-native":"0.74.0"}}' > "$D/package.json"
+  printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/App.xcodeproj/project.pbxproj"
+  printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Host.xcodeproj/project.pbxproj"
+  printf '<plist><dict></dict></plist>' > "$D/ios/App/Info.plist"
+  printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+  printf '%s\n' "$host" > "$D/Native/Host.swift"
+  printf 'AsyncStorage.getItem("theme");\n' > "$D/Native/Feature.ts"
+  rr_run "$D"
+  rr_has 'RN-PRIVACY-MANIFEST-MISSING' && ok "r13-2 a React host keeps the React Native checks. ${host%%$'\n'*}" || bad "r13-2 a React host keeps the React Native checks. ${host%%$'\n'*} (rc=$RC)"
+  rm -rf "$D"
+done
+# R14 Codex round 13
+# R14-1 a quoted lane name, a quoted variable or a quoted fastlane still counts as an iOS submit beside an Android one
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+mkdir -p "$D/fastlane"
+UP="upload_to_""testflight"
+printf 'lane :beta do |options|\n  %s(changelog: options[:notes])\nend\n' "$UP" > "$D/fastlane/Fastfile"
+EA="eas"" submit"
+for c in "$FL \"beta\" notes:\"test -p android\"; $EA -p android" "$FL \"\$LANE\" notes:x; $EA -p android" "\"$FL\" beta; $EA -p android"; do
+  rr_hook "$c" "$D"
+  rr_has 'NSCameraUsageDescription' && ok "r14-1 the iOS submit keeps the Apple checks. $c" || bad "r14-1 the iOS submit keeps the Apple checks. $c (rc=$RC)"
+done
+rr_hook "$EA -p android && echo done" "$D"
+rr_has 'NSCameraUsageDescription' && ok "r14-1b a -p android submit beside a harmless echo keeps the Apple checks, as in 1.0.0" || bad "r14-1b a -p android submit beside a harmless echo keeps the Apple checks, as in 1.0.0 (rc=$RC)"
+rm -rf "$D"
+# R14-2 a native app split off a framework root keeps that root's framework checks
+D="$(mktemp -d)"; mkdir -p "$D/ios/App.xcodeproj" "$D/ios/App" "$D/Native/Legacy.xcodeproj"
+printf '{"name":"r","dependencies":{"@capacitor/core":"6.0.0"}}' > "$D/package.json"
+printf 'export default { appId: "a.b" };\n' > "$D/capacitor.config.ts"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/App.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Legacy.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/App/Info.plist"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf 'import UIKit\nvar legacy: UIWebView?\n' > "$D/Native/Legacy.swift"
+rr_run "$D"
+rr_has 'IONIC-UIWEBVIEW-DEPRECATED' && ok "r14-2 a split native app keeps the root framework checks" || bad "r14-2 a split native app keeps the root framework checks (rc=$RC)"
+rm -rf "$D"
+# R15 Codex round 14
+# R15-1 a wrapped Apple submit never borrows an Android flag from a harmless command, Android only needs main's rule too
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+printf '{"name":"r","scripts":{"ship":"%s deliver"}}' "$FL" > "$D/package.json"
+rr_hook "npm run ship; echo -p android" "$D"
+rr_has 'NSCameraUsageDescription' && ok "r15-1 a wrapped Apple submit keeps the Apple checks beside echo -p android" || bad "r15-1 a wrapped Apple submit keeps the Apple checks beside echo -p android (rc=$RC)"
+rm -rf "$D"
+# R15-2 a framework marker inside a split native app still counts for the root it was pooled with
+D="$(mktemp -d)"; mkdir -p "$D/ios/App.xcodeproj" "$D/Native/Native.xcodeproj"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf '{"name":"r","dependencies":{"react-native":"0.74.0"}}' > "$D/package.json"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/App.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Native.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/Info.plist"
+printf 'import UIKit\nvar legacy: UIWebView?\n' > "$D/ios/Legacy.swift"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf '<widget id="com.acme.native"/>\n' > "$D/Native/config.xml"
+rr_run "$D"
+rr_has 'IONIC-UIWEBVIEW-DEPRECATED' && ok "r15-2 a framework marker in a split native app still counts for the root" || bad "r15-2 a framework marker in a split native app still counts for the root (rc=$RC)"
+rm -rf "$D"
+# R16 Codex round 15
+# R16-1 a wrapped Apple submit never borrows an Android flag from an echo beside it
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+printf '{"name":"r","scripts":{"ship":"%s deliver"}}' "$FL" > "$D/package.json"
+for c in "npm run ship; echo --platform android" "npm run ship && echo build apk"; do
+  rr_hook "$c" "$D"
+  rr_has 'NSCameraUsageDescription' && ok "r16-1 a wrapped Apple submit keeps the Apple checks. $c" || bad "r16-1 a wrapped Apple submit keeps the Apple checks. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R16-2 a wrapped submit that names Android itself stays Android only
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+BR="bundle""Release"
+printf '{"name":"r","scripts":{"ship":"./gradlew %s"}}' "$BR" > "$D/package.json"
+rr_hook "npm run ship -- --platform android" "$D"
+rr_has 'Command targets Android only' && ok "r16-2 a wrapped submit naming Android itself stays Android only" || bad "r16-2 a wrapped submit naming Android itself stays Android only (rc=$RC)"
+rm -rf "$D"
+# R17 Codex round 16
+# R17-1 a submit quoted inside bash -c never takes an Android word from the outer arguments
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+UP="upload_to_""testflight"
+mkdir -p "$D/fastlane"; printf 'lane :beta do\n  %s\nend\n' "$UP" > "$D/fastlane/Fastfile"
+rr_hook "bash -c '$FL beta' --platform android" "$D"
+rr_has 'NSCameraUsageDescription' && ok "r17-1 a submit inside bash -c keeps the Apple checks beside outer Android arguments" || bad "r17-1 a submit inside bash -c keeps the Apple checks beside outer Android arguments (rc=$RC)"
+rm -rf "$D"
+# R17-2 evidence split between the root and a split native app still counts, scanned as one as in 1.0.0
+D="$(mktemp -d)"; mkdir -p "$D/ios/App.xcodeproj" "$D/Shared" "$D/Native/Native.xcodeproj"
+printf '{"expo":{"name":"root"}}' > "$D/app.json"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/App.xcodeproj/project.pbxproj"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/Native/Native.xcodeproj/project.pbxproj"
+printf '<plist><dict></dict></plist>' > "$D/ios/Info.plist"
+printf '<plist><dict></dict></plist>' > "$D/Native/Info.plist"
+printf 'let title = "Monthly subscription"\n' > "$D/Shared/Pricing.swift"
+printf 'let cancel = "Call us to cancel"\n' > "$D/Native/Cancel.swift"
+rr_run "$D"
+rr_has 'BOTH-SUBSCRIPTION-HARD-CANCEL' && ok "r17-2 evidence split across a split native app still counts" || bad "r17-2 evidence split across a split native app still counts (rc=$RC)"
+[ "$(printf '%s' "$OUT" | grep -c 'BOTH-SUBSCRIPTION-HARD-CANCEL')" -le 1 ] && ok "r17-2b the pooled pass never lists a finding twice" || bad "r17-2b the pooled pass never lists a finding twice"
+rm -rf "$D"
+# R18 Codex round 17
+# R18-1 a submit quoted inside any shell, by path or behind env or sudo, never takes the outer Android arguments
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+UP="upload_to_""testflight"
+mkdir -p "$D/fastlane"; printf 'lane :beta do\n  %s\nend\n' "$UP" > "$D/fastlane/Fastfile"
+for c in "/bin/bash -c '$FL beta' --platform android" "env bash -c '$FL beta' --platform android" "sudo sh -c '$FL beta' --platform android"; do
+  rr_hook "$c" "$D"
+  rr_has 'NSCameraUsageDescription' && ok "r18-1 a quoted submit keeps the Apple checks. $c" || bad "r18-1 a quoted submit keeps the Apple checks. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R18-2 an Nx target whose options carry an env object still names its submit command
+D="$(mktemp -d)"; mkdir -p "$D/apps/x/App"
+printf '{"name":"root","private":true,"workspaces":["apps/*"]}\n' > "$D/package.json"
+printf '{"name":"x","targets":{"ship":{"executor":"nx:run-commands","options":{"env":{"NODE_ENV":"production"},"command":"%s deliver"}}}}\n' "$FL" > "$D/apps/x/project.json"
+printf '<plist><dict></dict></plist>' > "$D/apps/x/App/Info.plist"; mkdir -p "$D/apps/x/App.xcodeproj"; printf 'X=1;\n' > "$D/apps/x/App.xcodeproj/project.pbxproj"
+printf 'import AVFoundation\nlet d = AVCaptureDevice.default(for: .video)\n' > "$D/apps/x/App/A.swift"
+rr_hook "nx run x:ship" "$D"
+[ "$RC" -eq 2 ] && ok "r18-2 an Nx target with an env object is still a submit" || bad "r18-2 an Nx target with an env object is still a submit (rc=$RC)"
+rm -rf "$D"
+# R19 the guard itself on macOS bash 3.2, which reads the \001 separator as a quoting byte
+if [ -x /bin/bash ] && /bin/bash --version 2>/dev/null | grep -q 'version 3\.'; then
+  D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+  EA="eas"" submit"
+  OUT="$(python3 -c 'import json,sys; print(json.dumps({"tool_name":"Bash","tool_input":{"command":sys.argv[1]}}))' "$EA --platform android" | CLAUDE_PROJECT_DIR="$D" /bin/bash "$GUARD" 2>&1)"; RC=$?
+  [ "$RC" -eq 0 ] && rr_has 'Command targets Android only' && ok "r19 bash 3.2 reads an Android submit as Android only" || bad "r19 bash 3.2 reads an Android submit as Android only (rc=$RC)"
+  rm -rf "$D"
+fi
+# R20 Codex round 18
+# R20-1 a submit inside python -c or ruby -e never takes the outer Android arguments
+D="$(mk_rr_ios '' 'import AVFoundation
+let dev = AVCaptureDevice.default(for: .video)')"
+UP="upload_to_""testflight"
+mkdir -p "$D/fastlane"; printf 'lane :beta do\n  %s\nend\n' "$UP" > "$D/fastlane/Fastfile"
+for c in "python3 -c '__import__(\"os\").system(\"$FL beta\")' --platform android" "ruby -e 'system(\"$FL beta\")' --platform android"; do
+  rr_hook "$c" "$D"
+  rr_has 'NSCameraUsageDescription' && ok "r20-1 a submit inside another program keeps the Apple checks. $c" || bad "r20-1 a submit inside another program keeps the Apple checks. $c (rc=$RC)"
+done
+rm -rf "$D"
+# R20-2 code after a closing block comment on the same line still counts
+D="$(mk_rr_ios '' 'class A { func signIn() {} }
+/* Account settings action.
+ */ func deleteAccount() { removeCurrentUserAndData() }')"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r20-2 a deletion after a closing block comment still counts" || bad "r20-2 a deletion after a closing block comment still counts (rc=$RC)"
+rm -rf "$D"
+# R21 Codex round 19
+# R21-1 an exclusion-only pnpm filter reads every other package, so the submitting one is found
+D="$(mktemp -d)"; mkdir -p "$D/apps/docs" "$D/apps/mobile/App"
+printf '{"name":"root","private":true}\n' > "$D/package.json"
+printf 'packages: ["apps/*"]\n' > "$D/pnpm-workspace.yaml"
+printf '{"name":"@acme/docs","scripts":{"ship":"echo done"}}\n' > "$D/apps/docs/package.json"
+printf '{"name":"@acme/mobile","scripts":{"ship":"%s deliver"}}\n' "$FL" > "$D/apps/mobile/package.json"
+printf '<plist><dict></dict></plist>' > "$D/apps/mobile/App/Info.plist"; mkdir -p "$D/apps/mobile/App.xcodeproj"; printf 'X=1;\n' > "$D/apps/mobile/App.xcodeproj/project.pbxproj"
+printf 'import AVFoundation\nlet d = AVCaptureDevice.default(for: .video)\n' > "$D/apps/mobile/App/A.swift"
+rr_hook "pnpm --filter '!@acme/docs' run ship" "$D"
+[ "$RC" -eq 2 ] && ok "r21-1 an exclusion-only pnpm filter still finds the submitting package" || bad "r21-1 an exclusion-only pnpm filter still finds the submitting package (rc=$RC)"
+rm -rf "$D"
+# R22 Codex round 20
+# R22-1 an escaped quote inside a string never hides a deletion written after it
+D="$(mk_rr_ios '' 'let ready = true')"
+printf '%s\n' 'signIn(); const s = "quote: \" // string"; function deleteAccount() { return api.deleteUser(); }' > "$D/App/account.js"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r22-1 an escaped quote never hides a deletion after it" || bad "r22-1 an escaped quote never hides a deletion after it (rc=$RC)"
+rm -rf "$D"
+# R23 Codex round 21
+# R23-1 the pooled pass keeps a critical finding that shares its id with a high one already listed
+D="$(mktemp -d)"; mkdir -p "$D/ios/Main.xcodeproj" "$D/android/app/src/main" "$D/androidRelease/src/main"
+printf '{"name":"r","dependencies":{"react-native":"0.74.0"}}' > "$D/package.json"
+printf 'productType = "com.apple.product-type.application";\n' > "$D/ios/Main.xcodeproj/project.pbxproj"
+printf '<plist><dict><key>ITSAppUsesNonExemptEncryption</key><false/></dict></plist>' > "$D/ios/Info.plist"
+printf 'import Photos\nlet lib = PHPhotoLibrary.shared()\n' > "$D/Photo.swift"
+printf "include ':app'\n" > "$D/android/settings.gradle"
+printf "plugins { id 'com.android.application' }\n" > "$D/android/app/build.gradle"
+printf '<manifest package="a.b"/>' > "$D/android/app/src/main/AndroidManifest.xml"
+printf "plugins { id 'com.android.application' }\n" > "$D/androidRelease/build.gradle"
+printf '<manifest package="a.c"/>' > "$D/androidRelease/src/main/AndroidManifest.xml"
+printf 'import AVFoundation\nlet dev = AVCaptureDevice.default(for: .video)\n' > "$D/androidRelease/Camera.swift"
+rr_hook "xcodebuild -project ios/Main.xcodeproj archive" "$D"
+rr_has 'NSCameraUsageDescription' && ok "r23-1 the pooled pass keeps a critical finding beside a high one with the same id" || bad "r23-1 the pooled pass keeps a critical finding beside a high one with the same id (rc=$RC)"
+rm -rf "$D"
+# R23-2 a quote inside a JS regex literal never hides a deletion after it
+D="$(mk_rr_ios '' 'let ready = true')"
+printf '%s\n' 'signIn(); const r = /"/; const s = " // "; function deleteAccount() { return api.deleteUser(); }' > "$D/App/account.js"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r23-2 a quote in a regex literal never hides a deletion" || bad "r23-2 a quote in a regex literal never hides a deletion (rc=$RC)"
+rm -rf "$D"
+# R24 Codex round 22
+# R24-1 a JS regex literal holding a quote and a space never hides a deletion after it
+D="$(mk_rr_ios '' 'let ready = true')"
+printf '%s\n' 'signIn(); const r = /" /; const s = " // "; function deleteAccount() { return api.deleteUser(); }' > "$D/App/account.js"
+rr_run "$D"
+! rr_has 'NO-ACCOUNT-DELETION' && ok "r24-1 a regex literal with a space never hides a deletion" || bad "r24-1 a regex literal with a space never hides a deletion (rc=$RC)"
+rm -rf "$D"
+# R25 Codex round 23
+# R25-1 removing an inline comment never joins two words into deletion evidence
+D="$(mk_rr_ios '' 'let ready = true')"
+printf '%s\n' 'extern void sendSignup(void);' 'void createAccount(void) { sendSignup(); }' 'typedef int account;' 'account /* cache */deletion = 0;' > "$D/App/Account.m"
+rr_run "$D"
+rr_has 'NO-ACCOUNT-DELETION' && ok "r25-1 a removed comment never manufactures deletion evidence" || bad "r25-1 a removed comment never manufactures deletion evidence (rc=$RC)"
+rm -rf "$D"
+# R25-2 a regex literal after && or return never hides a deletion after it
+for js in 'signIn(); const r = true && /"/; const s = " // "; function deleteAccount() { return api.deleteUser(); }' \
+          'signIn(); function f() { return /"/; } const s = " // "; function deleteAccount() { return api.deleteUser(); }'; do
+  D="$(mk_rr_ios '' 'let ready = true')"
+  printf '%s\n' "$js" > "$D/App/account.js"
+  rr_run "$D"
+  ! rr_has 'NO-ACCOUNT-DELETION' && ok "r25-2 a regex literal after an operator never hides a deletion" || bad "r25-2 a regex literal after an operator never hides a deletion (rc=$RC)"
+  rm -rf "$D"
+done
+# R26 Qwen round 24. a regex literal after + - * < > never hides a deletion after it
+for op in '+' '-' '*' '>' '<' '%'; do
+  D="$(mk_rr_ios '' 'let ready = true')"
+  printf '%s\n' "var a = 1; signIn(); const x = a $op /\"/; const s = \" // \"; function deleteAccount() { return api.deleteUser(); }" > "$D/App/account.js"
+  rr_run "$D"
+  ! rr_has 'NO-ACCOUNT-DELETION' && ok "r26 a regex literal after $op never hides a deletion" || bad "r26 a regex literal after $op never hides a deletion (rc=$RC)"
+  rm -rf "$D"
+done
+# App Store Connect CLIs that upload or submit for review (Helm, asc, Codemagic CLI tools).
+D="$(mk_ios_bad)"
+n=0
+for c in 'helm-asc apps 123 builds upload --platform iOS --file a.ipa --submit' '/Applications/Helm.app/Contents/Helpers/helm-asc apps 1 builds upload --file a.ipa' 'helm-asc apps 1 versions 2 --submit' 'asc builds upload --file a.ipa' 'asc submissions create --app 1' 'app-store-connect publish --path a.ipa'; do
+  n=$((n+1)); RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "2" ] && ok "asc-$n blocked. $c" || bad "asc-$n blocked. $c (rc=$RC)"
+done
+for c in 'helm-asc apps list' 'helm-asc apps 1 builds list' 'asc apps list' 'brew install asc' 'echo "helm-asc builds upload"' 'app-store-connect fetch-signing-files com.x'; do
+  n=$((n+1)); RC="$(hook_rc "$c" "$D")"
+  [ "$RC" = "0" ] && ok "asc-$n silent. $c" || bad "asc-$n silent. $c (rc=$RC)"
+done
+rm -rf "$D"
+# Gap sweep 2026-11-15. iOS 13 floor, IPv6 (2.5.5), HealthKit and iCloud (5.1.3), debuggable, specialUse, 64-bit ABI.
+gs_ios() {  # $1 extra file name relative to App, $2 its content
+  local d; d="$(mk_rr_ios '' 'let ready = true')"
+  printf '%s\n' "$2" > "$d/App/$1"
+  echo "$d"
+}
+gs_check() {  # $1 label, $2 dir, $3 id, $4 expect present (1) or absent (0)
+  rr_run "$2"
+  if [ "$4" = "1" ]; then
+    rr_has "$3" && ok "gs $1" || bad "gs $1 (rc=$RC)"
+  else
+    ! rr_has "$3" && ok "gs $1" || bad "gs $1 (rc=$RC)"
+  fi
+  rm -rf "$2"
+}
+mkdir_proj() {  # one app build configuration carrying $2
+  mkdir -p "$1/App.xcodeproj"
+  printf '{\n\t\tA1 = {\n\t\t\tisa = XCBuildConfiguration;\n\t\t\tbuildSettings = {\n\t\t\t\t%s\n\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.x.app;\n\t\t\t};\n\t\t\tname = Release;\n\t\t};\n}\n' "$2" > "$1/App.xcodeproj/project.pbxproj"
+}
+
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir_proj "$D" 'IPHONEOS_DEPLOYMENT_TARGET = 12.0;'
+gs_check "ios13-1 a 12.0 deployment target is flagged" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 1
+D="$(gs_ios ok.swift 'let a = 1')"; printf "platform :ios, '11.0'\n" > "$D/Podfile"
+gs_check "ios13-2 a Podfile platform 11.0 is flagged" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 1
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir_proj "$D" 'IPHONEOS_DEPLOYMENT_TARGET = 13.0;'
+gs_check "ios13-3 a 13.0 target stays silent" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 0
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir_proj "$D" 'IPHONEOS_DEPLOYMENT_TARGET = 17.0;'
+gs_check "ios13-4 a 17.0 target stays silent (no 1x prefix match)" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 0
+
+D="$(gs_ios Net.m 'in_addr_t a = inet_addr("10.0.0.1");')"
+gs_check "ipv6-1 inet_addr is flagged" "$D" 'APPLE-2.5.5-IPV4-ONLY-NETWORKING' 1
+D="$(gs_ios Net.swift 'let r = getaddrinfo(host, nil, &hints, &res)')"
+gs_check "ipv6-2 getaddrinfo stays silent" "$D" 'APPLE-2.5.5-IPV4-ONLY-NETWORKING' 0
+D="$(gs_ios Net.swift 'let my_inet_addr_label = "x"')"
+gs_check "ipv6-3 a word containing inet_addr without a call stays silent" "$D" 'APPLE-2.5.5-IPV4-ONLY-NETWORKING' 0
+
+D="$(gs_ios H.swift 'let s = HKHealthStore()
+let c = CKContainer.default()')"
+gs_check "health-1 HealthKit plus CloudKit is flagged" "$D" 'APPLE-5.1.3-HEALTH-DATA-ICLOUD' 1
+D="$(gs_ios H.swift 'let s = HKHealthStore()')"
+gs_check "health-2 HealthKit alone stays silent" "$D" 'APPLE-5.1.3-HEALTH-DATA-ICLOUD' 0
+
+D="$(mk_android_perm '<application android:debuggable="true"/>')"
+gs_check "dbg-1 debuggable true is flagged" "$D" 'ANDROID-DEBUGGABLE-RELEASE' 1
+D="$(mk_android_perm '<application android:debuggable="false"/>')"
+gs_check "dbg-2 debuggable false stays silent" "$D" 'ANDROID-DEBUGGABLE-RELEASE' 0
+
+D="$(mk_android_perm '<application><service android:name=".S" android:foregroundServiceType="specialUse"/></application>')"
+gs_check "fgs-1 specialUse without the subtype property is flagged" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 1
+D="$(mk_android_perm '<application><service android:name=".S" android:foregroundServiceType="specialUse"><property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="sync"/></service></application>')"
+gs_check "fgs-2 specialUse with the subtype property stays silent" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 0
+
+D="$(mk_android_perm '')"; printf "android { compileSdk 36\n defaultConfig { ndk { abiFilters 'armeabi-v7a' } } }\n" > "$D/android/app/build.gradle"
+gs_check "abi-1 armeabi-v7a only is flagged" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+D="$(mk_android_perm '')"; printf "android { compileSdk 36\n defaultConfig { ndk { abiFilters 'armeabi-v7a', 'arm64-v8a' } } }\n" > "$D/android/app/build.gradle"
+gs_check "abi-2 armeabi-v7a with arm64-v8a stays silent" "$D" 'ANDROID-64BIT-ABI-MISSING' 0
+D="$(gs_ios Net.c 'int a = inet_addr("1.2.3.4");')"
+gs_check "ipv6-4 a C source is scanned" "$D" 'APPLE-2.5.5-IPV4-ONLY-NETWORKING' 1
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir -p "$D/Config"; printf 'IPHONEOS_DEPLOYMENT_TARGET = 12.0\n' > "$D/Config/Base.xcconfig"
+gs_check "ios13-5 an xcconfig 12.0 target is flagged" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 1
+# Round 2 attack regressions (gap sweep 2026-11-15).
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir -p "$D/Config"; printf 'IPHONEOS_DEPLOYMENT_TARGET[sdk=iphoneos*] = 12.0\n' > "$D/Config/Base.xcconfig"
+gs_check "ios13-6 an sdk-qualified xcconfig 12.0 target is flagged" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 1
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir -p "$D/Config"; printf 'IPHONEOS_DEPLOYMENT_TARGET = 12.0 // minimum\n' > "$D/Config/Base.xcconfig"
+gs_check "ios13-7 a commented xcconfig 12.0 target is flagged" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 1
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir -p "$D/ThirdParty/curl"; printf 'int a = inet_addr("1.2.3.4");\n' > "$D/ThirdParty/curl/x.c"
+gs_check "ipv6-5 vendored C under ThirdParty stays silent" "$D" 'APPLE-2.5.5-IPV4-ONLY-NETWORKING' 0
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir -p "$D/ThirdParty/curl"; printf '/* signIn via OAuth bearer, createAccount */\nint CRYPTO_THREAD_ID;\n' > "$D/ThirdParty/curl/oauth2.c"
+gs_check "vendor-1 vendored C never raises the account deletion finding" "$D" 'NO-ACCOUNT-DELETION' 0
+D="$(mk_android_perm "<application android:debuggable='true'/>")"
+gs_check "dbg-3 single-quoted debuggable true is flagged" "$D" 'ANDROID-DEBUGGABLE-RELEASE' 1
+D="$(mk_android_perm '')"; mkdir -p "$D/android/app/src/debug"; printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:debuggable="true"/></manifest>' > "$D/android/app/src/debug/AndroidManifest.xml"
+gs_check "dbg-4 a debug-only manifest stays silent" "$D" 'ANDROID-DEBUGGABLE-RELEASE' 0
+D="$(mk_android_perm '<application><service android:name=".A" android:foregroundServiceType="specialUse"><property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="sync"/></service><service android:name=".B" android:foregroundServiceType="dataSync|specialUse"/></application>')"
+gs_check "fgs-3 a second specialUse service without its own property is flagged" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 1
+D="$(mk_android_perm '<application><service android:name=".A" tools:foregroundServiceType="specialUse"/></application>')"
+gs_check "fgs-4 a tools: override stays silent" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 0
+D="$(mk_android_perm '')"; printf "android { compileSdk 36\n buildTypes { debug { ndk { abiFilters 'arm64-v8a' } }\n release { ndk { abiFilters 'armeabi-v7a' } } } }\n" > "$D/android/app/build.gradle"
+gs_check "abi-3 a debug arm64 filter never hides a 32-bit only release filter" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk { abiFilters += listOf("x86") } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-4 an x86 only Kotlin DSL filter is flagged" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk { abiFilters += listOf("x86", "x86_64") } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-5 x86 with x86_64 stays silent" "$D" 'ANDROID-64BIT-ABI-MISSING' 0
+# Round 3 attack regressions (gap sweep 2026-11-15).
+D="$(mk_android_perm "<application><service android:name='.S' android:foregroundServiceType='specialUse'/></application>")"
+gs_check "fgs-5 single-quoted specialUse without a property is flagged" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 1
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk {\n abiFilters += setOf(\n "armeabi-v7a"\n )\n } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-6 a multi-line 32-bit only setOf is flagged" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk {\n abiFilters += setOf("armeabi-v7a",\n "arm64-v8a")\n } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-7 a pair split across lines stays silent" "$D" 'ANDROID-64BIT-ABI-MISSING' 0
+D="$(mk_android_perm '')"; printf "android { compileSdk 36\n defaultConfig { ndk { abiFilters 'armeabi-v7a' // TODO add 'arm64-v8a'\n } } }\n" > "$D/android/app/build.gradle"
+gs_check "abi-8 a comment naming arm64-v8a never hides a 32-bit only filter" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+# Round 4 attack regressions (gap sweep 2026-11-15). Parsed, not pattern matched.
+D="$(mk_android_perm '<!-- android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE --><application><service android:name=".A" android:foregroundServiceType="specialUse"/></application>')"
+gs_check "fgs-6 a property named only in a comment never satisfies the check" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 1
+D="$(mk_android_perm '<application><service android:name=".A" android:foregroundServiceType="specialUse"/><service android:name=".B"><property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="x"/></service></application>')"
+gs_check "fgs-7 another service's property never satisfies the check" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 1
+D="$(mk_android_perm '<application><service android:name=".A" android:foregroundServiceType=
+"specialUse"/></application>')"
+gs_check "fgs-8 an attribute value on the next line is still read" "$D" 'ANDROID-FGS-SPECIAL-USE-UNDECLARED' 1
+D="$(mk_android_perm '')"; printf 'android { compileSdk 36\n defaultConfig { ndk { abiFilters "armeabi-v7a" /* TODO "arm64-v8a" */ } } }\n' > "$D/android/app/build.gradle"
+gs_check "abi-9 a block comment naming arm64-v8a never hides a 32-bit only filter" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+D="$(mk_android_perm '')"; printf 'android { compileSdk 36\n defaultConfig { ndk {\n /* abiFilters "armeabi-v7a" */\n abiFilters "arm64-v8a" } } }\n' > "$D/android/app/build.gradle"
+gs_check "abi-10 a commented-out filter stays silent" "$D" 'ANDROID-64BIT-ABI-MISSING' 0
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk {\n abiFilters += "armeabi-v7a"\n abiFilters += "arm64-v8a"\n } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-11 consecutive += statements in one block are merged" "$D" 'ANDROID-64BIT-ABI-MISSING' 0
+# Round 5 attack regression. getByName blocks keep their own scope.
+D="$(mk_android_perm '')"; printf "android { compileSdk 36\n buildTypes {\n getByName('release') { ndk { abiFilters 'armeabi-v7a' } }\n getByName('benchmark') { ndk { abiFilters 'arm64-v8a' } }\n } }\n" > "$D/android/app/build.gradle"
+gs_check "abi-12 another build type's 64-bit ABI never hides release" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+# Round 6 attack regression. abiFilters -= removes an ABI.
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk {\n abiFilters += "armeabi-v7a"\n abiFilters += "arm64-v8a"\n abiFilters -= "arm64-v8a"\n } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-13 a removed 64-bit ABI no longer counts" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+# Round 7 attack regression. a framework target below 13 beside an iOS 17 app stays silent.
+D="$(gs_ios ok.swift 'let a = 1')"; mkdir -p "$D/App.xcodeproj"
+printf '{\n\t\tA1 = {\n\t\t\tisa = XCBuildConfiguration;\n\t\t\tbuildSettings = {\n\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = 17.0;\n\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.x.app;\n\t\t\t};\n\t\t};\n\t\tF1 = {\n\t\t\tisa = XCBuildConfiguration;\n\t\t\tbuildSettings = {\n\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = 12.0;\n\t\t\t\tPRODUCT_NAME = Fw;\n\t\t\t\tSKIP_INSTALL = YES;\n\t\t\t};\n\t\t};\n}\n' > "$D/App.xcodeproj/project.pbxproj"
+gs_check "ios13-8 a framework target below 13 beside an iOS 17 app stays silent" "$D" 'APPLE-MIN-DEPLOYMENT-TARGET-IOS13' 0
+# Round 8 attack regression. abiFilters.remove() and .clear() remove ABIs.
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk {\n abiFilters += setOf("armeabi-v7a", "arm64-v8a")\n abiFilters.remove("arm64-v8a")\n } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-14 abiFilters.remove of the 64-bit ABI is flagged" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+D="$(mk_android_perm '')"; printf 'android { compileSdk = 36\n defaultConfig { ndk {\n abiFilters += setOf("arm64-v8a")\n abiFilters.clear()\n abiFilters += "armeabi-v7a"\n } } }\n' > "$D/android/app/build.gradle.kts"
+gs_check "abi-15 abiFilters.clear drops earlier ABIs" "$D" 'ANDROID-64BIT-ABI-MISSING' 1
+echo ""
+echo "app-store-compliance-guard-test: $PASS passed, $FAIL failed"
+[ "$FAIL" -eq 0 ]

@@ -1,0 +1,726 @@
+#!/usr/bin/env python3
+"""Monitors platform-specific AI policies (Apple, Google Play) from
+live feeds or mock data, and drafts a 15-section PR per finding."""
+
+import os
+import sys
+import re
+import argparse
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
+import json
+import html
+
+
+_COMMENT = r"<!--(?:-?>|.*?--!?>|.*\Z)"
+_BOGUS = r"<(?:[!?]|/(?![A-Za-z]))[^>]*(?:>|\Z)"
+_TAG = r"""</?[A-Za-z](?:[^<>"']|"[^"]*"|'[^']*')*>"""
+HTML_MARKUP = re.compile(
+    _COMMENT
+    + r"|<!\[CDATA\[(.*?)(?:\]\]>|\Z)"
+    + r"""|<(textarea|title)(?=[\t\n\f\r />])(?:[^<>"']|"[^"]*"|'[^']*')*>(.*?)(?:</\2(?=[\t\n\f\r />])(?:[^<>"']|"[^"]*"|'[^']*')*>|\Z)"""
+    + "|"
+    + _BOGUS
+    + "|"
+    + _TAG,
+    re.S | re.I | re.A,
+)  # every branch ends at its terminator or at the end, so one left-to-right pass stays linear
+_CDATA_MARKUP = re.compile(_COMMENT + "|" + _BOGUS + "|" + _TAG, re.S | re.I | re.A)
+
+
+_TAG_NAME = re.compile(r"</?([A-Za-z][A-Za-z0-9-]*)", re.A)
+
+
+def _visible_markup(m):
+    """CDATA and textarea or title content is visible text. Inline tags join, other markup separates."""
+    if m.group(1) is not None:
+        return " " + _CDATA_MARKUP.sub(" ", m.group(1)) + " "
+    if m.group(3) is not None:
+        return " " + m.group(3) + " "
+    t = _TAG_NAME.match(m.group(0))
+    return "" if t and t.group(1).lower() in _XHTML_INLINE else " "
+
+
+FEED_NAMESPACES = ("", "http://www.w3.org/2005/Atom", "http://purl.org/rss/1.0/")
+RSS_CONTENT_NS = "http://purl.org/rss/1.0/modules/content/"
+DC_NS = "http://purl.org/dc/elements/1.1/"
+XML_BASE = "{http://www.w3.org/XML/1998/namespace}base"
+_XHTML_INLINE = {
+    "a", "abbr", "b", "bdi", "bdo", "cite", "code", "data", "del", "dfn", "em", "font", "i",
+    "ins", "kbd", "label", "mark", "q", "s", "samp", "small", "span", "strong", "sub", "sup",
+    "time", "tt", "u", "var",
+}  # every other element separates its text, so an unknown block can never join two words
+
+
+def _xhtml_text(elem):
+    """Text of an XHTML tree. Inline elements run on, every other element is separated by a space."""
+    out, stack = [], [(elem, False)]
+    while stack:  # explicit stack, so a deeply nested feed cannot exhaust recursion
+        node, closing = stack.pop()
+        name = node.tag.split("}", 1)[-1].lower() if isinstance(node.tag, str) else ""
+        block = name not in _XHTML_INLINE
+        if not closing and name in ("script", "style"):
+            stack.append((node, True))  # never visible, only its tail is
+            continue
+        if closing:
+            if block:
+                out.append(" ")
+            if node is not elem and node.tail:
+                out.append(node.tail)
+            continue
+        if block:
+            out.append(" ")
+        if node.text:
+            out.append(node.text)
+        stack.append((node, True))
+        for sub in reversed(list(node)):
+            stack.append((sub, False))
+    return "".join(out)
+
+
+def _feed_text(child, atom, field):
+    """Atom text is plain unless type says html or xhtml (RFC 4287 3.1.1, 4.1.3).
+    An RSS title is plain text, an RSS description is HTML."""
+    plain = re.sub(r"\s+", " ", child.text or "").strip()
+    if not atom:  # an RSS title is text with entities, never markup to strip
+        return html.unescape(plain) if field == "title" else clean_html_text(child.text or "")
+    kind = (child.get("type") or "text").split(";")[0].strip().lower()
+    if kind == "xhtml" or kind.endswith("+xml") and "xhtml" in kind:
+        return re.sub(r"\s+", " ", _xhtml_text(child)).strip()
+    if kind in ("html", "text/html"):
+        return clean_html_text(child.text or "")
+    if "/" in kind and not kind.startswith("text/") and not kind.endswith("xml"):
+        return ""  # base64 binary content is not readable text
+    return plain
+
+
+def clean_html_text(raw_text):
+    """Strips raw HTML tags, unescapes entities, and collapses whitespace."""
+    if not raw_text:
+        return ""
+    text = HTML_MARKUP.sub(_visible_markup, raw_text)
+    text = html.unescape(text)
+    return re.sub(r"\s+", " ", text).strip()
+
+# Define default RSS/Atom feed URLs
+APPLE_RSS = "https://developer.apple.com/news/rss/news.rss"
+# Since Google doesn't have a single stable RSS for policy, we support checking RSS as well
+GOOGLE_RSS = "https://android-developers.googleblog.com/feeds/posts/default"
+
+# 25 Compliance domains tracking (simulated context/coverage check as per monitor.py description)
+COMPLIANCE_DOMAINS = [
+    "AI-Generated Content",
+    "App Review AI Guidance",
+    "Safety Expectations",
+    "User Disclosure",
+    "Privacy Manifest",
+    "Required Reason APIs",
+    "Tracking Domains",
+    "Export Compliance",
+    "Trader Status",
+    "In-App Purchases",
+    "Restore Purchases",
+    "Subscriptions",
+    "Demo Accounts",
+    "Human Interface Guidelines",
+    "GDPR Compliance",
+    "COPPA Compliance",
+    "EU AI Act",
+    "Designed for Families",
+    "Simulated Gambling",
+    "Loot Boxes",
+    "macOS Sandboxing",
+    "Dynamic Code Loading",
+    "Package Visibility",
+    "Overlays/Tapjacking",
+    "Account Deletion",
+]
+
+# AI signals to look for when scanning the codebase
+AI_SIGNALS = [
+    r"api\.openai\.com",
+    r"openai",
+    r"anthropic",
+    r"gemini",
+    r"generativelanguage",
+    r"chat/completions",
+    r"stable[ -_]diffusion",
+    r"text-to-image",
+    r"image generation",
+    r"chatgpt",
+    r"claude",
+    r"llm",
+    r"generative[ -_]ai",
+]
+
+# Illustrative fallback only (real landing pages, invented wording). See README.
+MOCK_ANNOUNCEMENTS = [
+    {
+        "id": "APPLE-AI-2026-UPDATE",
+        "platform": "Apple",
+        "title": "Sample. Apple App Review Guidelines, generative AI section (illustrative)",
+        "description": "Illustrative example only. Apps with generative AI features are expected to implement input/output moderation and user-reporting, disclose data shared with third-party LLM providers, and reflect AI-generated content in the age rating questionnaire. Verify the current wording at the linked guidelines page before citing it as fact.",
+        "link": "https://developer.apple.com/app-store/review/guidelines/",
+        "pubDate": "Wed, 01 Apr 2026 10:00:00 PDT",
+    },
+    {
+        "id": "GOOGLE-AI-2026-POLICY",
+        "platform": "Google Play",
+        "title": "Sample. Google Play generative AI content policy (illustrative)",
+        "description": "Illustrative example only. Apps featuring generative AI are expected to disclose AI-generated content, let users flag or report harmful output, and prevent deepfakes, face-swaps, and non-consensual sexual content. Verify the current wording at the linked developer policy center before citing it as fact.",
+        "link": "https://play.google/developer-content-policy/",
+        "pubDate": "Thu, 02 Apr 2026 09:00:00 PDT",
+    },
+]
+
+
+def scan_codebase(start_dir="."):
+    """
+    Scans the codebase for AI-related integration signals.
+    Excludes typical build, dependency, and test directories.
+    """
+    matches = []
+    exclude_dirs = {
+        "node_modules",
+        "Pods",
+        ".git",
+        "build",
+        "DerivedData",
+        "vendor",
+        ".dart_tool",
+        "Carthage",
+        "androidTest",
+        "__tests__",
+        "dist",
+    }
+
+    compiled_signals = [re.compile(pattern, re.IGNORECASE) for pattern in AI_SIGNALS]
+
+    for root, dirs, files in os.walk(start_dir):
+        # Prune excluded directories in-place
+        dirs[:] = [d for d in dirs if d not in exclude_dirs and not d.endswith("Tests")]
+
+        for file in files:
+            # Focus on source, config, and plist files
+            if not file.endswith(
+                (
+                    ".swift",
+                    ".m",
+                    ".h",
+                    ".kt",
+                    ".java",
+                    ".xml",
+                    ".plist",
+                    ".gradle",
+                    ".kts",
+                    ".json",
+                    ".js",
+                    ".ts",
+                    ".dart",
+                    ".md",
+                )
+            ):
+                continue
+
+            filepath = os.path.join(root, file)
+            # Skip monitor.py and other scripts to avoid self-referencing
+            if "monitor.py" in file or "monitor-test.sh" in file:
+                continue
+
+            try:
+                with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                    for i, line in enumerate(f, 1):
+                        for r in compiled_signals:
+                            if r.search(line):
+                                matches.append(
+                                    {
+                                        "file": filepath,
+                                        "line_num": i,
+                                        "content": line.strip()[:100],
+                                        "matched_pattern": r.pattern,
+                                    }
+                                )
+                                break  # match found for this line, go to next line
+            except Exception:
+                # Silently ignore binary/unreadable files
+                pass
+    return matches
+
+
+def parse_rss_feed(url):
+    """
+    Fetches and parses both RSS (XML with <item>) and Atom (XML with <entry>) feeds.
+    Returns list of parsed item dicts with keys: title, description, link, pubDate.
+    """
+    items = []
+    try:
+        req = urllib.request.Request(
+            url, headers={"User-Agent": "Mozilla/5.0 (AppStoreComplianceMonitor/1.0)"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
+            xml_data = response.read()
+            root = ET.fromstring(xml_data)
+
+            # Helper to strip XML namespaces from tags
+            def clean_tag(tag):
+                if "}" in tag:
+                    return tag.split("}", 1)[1]
+                return tag
+
+            def ns(e):
+                return e.tag[1:].split("}", 1)[0] if e.tag.startswith("{") else ""
+
+            parents = {c: p for p in root.iter() for c in p}
+
+            def base_of(e):
+                """The xml:base in scope at e, resolved from the fetched URL down."""
+                chain = []
+                while e is not None:
+                    chain.append(e.get(XML_BASE))
+                    e = parents.get(e)
+                base = url
+                for b in reversed(chain):
+                    if b and b.strip():
+                        base = urllib.parse.urljoin(base, b.strip())
+                return base
+
+            for elem in root.iter():
+                if not isinstance(elem.tag, str):
+                    continue
+                tag = clean_tag(elem.tag)
+                if tag in ("item", "entry") and ns(elem) in FEED_NAMESPACES:
+                    title = ""
+                    desc_parts = []
+                    links = []  # (preferred, href, element)
+                    dates = {}
+
+                    for child in elem:
+                        if not isinstance(child.tag, str):
+                            continue
+                        ctag = clean_tag(child.tag)
+                        if ns(child) == RSS_CONTENT_NS and ctag == "encoded":
+                            part = clean_html_text(child.text or "")
+                            if part:
+                                desc_parts.append(part)  # the RSS Content module body is HTML
+                            continue
+                        if ns(child) == DC_NS and ctag == "date":
+                            dates.setdefault("dc", child.text or "")
+                            continue
+                        if ns(child) != ns(elem):
+                            continue  # an extension element never stands in for the feed's own
+                        if ctag == "title":
+                            title = _feed_text(child, tag == "entry", "title")
+                        elif ctag in ("description", "summary", "content"):
+                            part = _feed_text(child, tag == "entry", "body")
+                            if part:
+                                desc_parts.append(part)  # summary and content both count
+                        elif ctag == "link":
+                            href = (child.get("href") or child.text or "").strip()
+                            rel = (child.get("rel") or "alternate").strip().lower()
+                            if href:
+                                links.append((rel == "alternate", href, child))
+                        elif ctag in ("pubDate", "published"):
+                            dates.setdefault("published", child.text or "")
+                        elif ctag == "updated":
+                            dates.setdefault("updated", child.text or "")
+
+                    link = ""
+                    if links:  # alternate or no rel first, any other relation only as a fallback
+                        _, href, link_elem = next((x for x in links if x[0]), links[0])
+                        base = base_of(link_elem)
+                        link = urllib.parse.urljoin(base, href)
+                    pub_date = next(
+                        (dates[k] for k in ("published", "updated", "dc") if dates.get(k, "").strip()),
+                        "",
+                    )
+
+                    items.append(
+                        {
+                            "title": title,
+                            "description": " ".join(desc_parts),
+                            "link": link.strip(),
+                            "pubDate": pub_date.strip(),
+                        }
+                    )
+    except Exception as e:
+        print(f"Warning: Failed to fetch live feed {url}: {e}", file=sys.stderr)
+    return items
+
+
+def analyze_announcements(announcements, keywords):
+    """
+    Filters announcements for AI policy changes and maps them to policy items.
+    """
+    matches = []
+    keywords_lower = [k.lower() for k in keywords]
+
+    for ann in announcements:
+        title = ann.get("title", "")
+        desc = ann.get("description", "")
+        text_to_search = (title + " " + desc).lower()
+
+        # Check if any keyword matches
+        matched_kw = [kw for kw in keywords_lower if kw in text_to_search]
+        if matched_kw:
+            # Platform classification
+            platform = (
+                "Apple"
+                if "apple" in text_to_search or ann.get("platform") == "Apple"
+                else "Google Play"
+            )
+
+            # Map specific review requirements
+            review_items = []
+            if platform == "Apple":
+                if any(
+                    x in text_to_search
+                    for x in ["content", "generative", "output", "model"]
+                ):
+                    review_items.append("AI-generated content requirements")
+                if any(
+                    x in text_to_search for x in ["review", "guideline", "guidance"]
+                ):
+                    review_items.append("App Review AI guidance")
+                if any(
+                    x in text_to_search
+                    for x in ["safe", "harmful", "abuse", "nsfw", "moderation", "filter"]
+                ):
+                    review_items.append("Safety expectations")
+                if any(
+                    x in text_to_search
+                    for x in ["disclos", "consent", "modal", "inform"]
+                ):
+                    review_items.append("User disclosure requirements")
+                if not review_items:
+                    review_items = ["General Apple AI policy"]
+            else:
+                if any(
+                    x in text_to_search for x in ["policy", "policies", "guideline", "requirement"]
+                ):
+                    review_items.append("Google Play AI policies")
+                if any(
+                    x in text_to_search
+                    for x in ["disclos", "consent", "modal", "inform"]
+                ):
+                    review_items.append("AI-generated content disclosures")
+                if any(
+                    x in text_to_search
+                    for x in ["safe", "harmful", "abuse", "nsfw", "moderation", "filter"]
+                ):
+                    review_items.append("User safety requirements")
+                if not review_items:
+                    review_items = ["General Google Play AI policy"]
+
+            matches.append(
+                {
+                    "title": title,
+                    "description": desc,
+                    "link": ann.get("link", ""),
+                    "pubDate": ann.get("pubDate", ""),
+                    "platform": platform,
+                    "matched_keywords": matched_kw,
+                    "review_items": review_items,
+                }
+            )
+    return matches
+
+
+def generate_pull_request_draft(policy_matches, affected_files):
+    """
+    Generates a draft of a pull request complying with the exact 15 required sections.
+    """
+    # Group matched files to list them cleanly
+    files_list_str = ""
+    if affected_files:
+        unique_files = sorted(list(set(f["file"] for f in affected_files)))
+        files_list_str = "\n".join(f"- `{f}`" for f in unique_files)
+    else:
+        files_list_str = "- *No AI signals directly detected in source files. (Verify dynamically loaded components or web endpoints).* "
+
+    citations_list = "\n".join(
+        f"- [{m['title']}]({m['link']}) ({m['platform']} Update, {m['pubDate']})"
+        for m in policy_matches
+    )
+
+    migration_steps_list = []
+    impl_checklist_items = []
+
+    # Generate contextual migration steps and implementation checklist based on platforms triggered
+    platforms_triggered = set(m["platform"] for m in policy_matches)
+    if "Apple" in platforms_triggered:
+        migration_steps_list.append(
+            "1. **Consent Modal**: Add an in-app consent modal detailing that third-party AI/LLM components are used and get explicit consent before sending user personal data."
+        )
+        migration_steps_list.append(
+            "2. **Output Moderation**: Wire real-time prompt/response filters to detect, flag, and filter out objectionable or NSFW AI content."
+        )
+        migration_steps_list.append(
+            "3. **Age Rating Update**: Update the age rating questionnaire in App Store Connect to account for interactive AI chat functionality."
+        )
+
+        impl_checklist_items.append(
+            "- [ ] Create `ConsentModalView` and integrate it into onboarding/settings."
+        )
+        impl_checklist_items.append(
+            "- [ ] Integrate OpenAI/Anthropic moderation API or client-side bad-word list."
+        )
+        impl_checklist_items.append(
+            "- [ ] Add reporting and content flag buttons next to AI-generated messages."
+        )
+        impl_checklist_items.append(
+            "- [ ] Recheck App Store Connect questionnaire for Guideline 1.2 and 2.3.6 updates."
+        )
+    if "Google Play" in platforms_triggered or not platforms_triggered:
+        migration_steps_list.append(
+            "4. **Prominent Disclosure**: Implement an in-app disclaimer and user consent sheet for generative content on Android devices."
+        )
+        migration_steps_list.append(
+            "5. **Content Safety Controls**: Add a prominent 'report content' or 'flag output' UI element directly on all AI output cards."
+        )
+        migration_steps_list.append(
+            "6. **Terms of Service update**: Declare user safety requirements regarding deepfakes and non-consensual content generation."
+        )
+
+        impl_checklist_items.append(
+            "- [ ] Implement a prominent Play Policy disclosure dialog on app launch or AI feature access."
+        )
+        impl_checklist_items.append(
+            "- [ ] Implement one-click reporting next to every AI output block on Android."
+        )
+        impl_checklist_items.append(
+            "- [ ] Prevent face-swap and image generation capabilities if NSFW/deepfake models can be accessed."
+        )
+        impl_checklist_items.append(
+            "- [ ] Update the Google Play Console Data Safety form declarations."
+        )
+
+    migration_steps_str = "\n".join(migration_steps_list)
+    impl_checklist_str = "\n".join(impl_checklist_items)
+
+    pr_template = f"""# PULL REQUEST DRAFT: Platform-Specific AI Policy Compliance Update
+
+## 1. Summary
+This pull request brings the application into complete compliance with the latest platform-specific AI policies. It implements robust user disclosure, consent modals, output filtering, and content reporting mechanisms to prevent potential rejections during App Store and Google Play reviews.
+
+## 2. Background
+Both Apple and Google Play have tightened their restrictions regarding generative AI features inside mobile apps. Review systems are now actively rejecting applications that send user data to third-party LLM APIs without transparent consent or that display generative content without moderation safeguards.
+
+## 3. Regulatory change
+- **Apple (Guidelines 1.2, 5.1.2(i), and 2.3.6)**: Requires clear disclosure of third-party AI data sharing, explicit user consent prior to transmission, content filters for output safety, and reflection of chat assistants in the age rating.
+- **Google Play (AI-Generated Content Policy)**: Enforces mandatory user-facing disclosures, user flagging/reporting mechanisms for offensive AI-generated content, and zero-tolerance for deepfakes, face-swapping, or non-consensual graphic outputs.
+
+## 4. Official citations
+{citations_list}
+
+## 5. Affected files
+{files_list_str}
+
+## 6. Risk assessment
+- **Risk Level**: High
+- **Consequences of non-compliance**: Immediate rejection of app updates by Apple App Review and potential Google Play suspension or removal under their AI-generated content guidelines.
+- **Mitigation plan**: Build interactive user consent, prominent disclosure overlays, content moderation filters, and clear flagging UI.
+
+## 7. Migration steps
+{migration_steps_str}
+
+## 8. Backward compatibility
+All changes are purely additive. Older clients will default to safe local fallback content or receive standard prompts. Data structures, local schema versions, and existing preferences remain fully backward compatible.
+
+## 9. Implementation checklist
+{impl_checklist_str}
+- [ ] Update `docs/ADVANCED-2026.md` and related compliance manuals.
+
+## 10. Testing checklist
+- [ ] Verify that the consent modal triggers and blocks data send until approved.
+- [ ] Verify that prompt injection attempts and inappropriate topics trigger the moderation filter.
+- [ ] Test the content flagging button and verify reports are logged on the server.
+- [ ] Test on both iOS and Android emulators/devices for layout adjustments.
+
+## 11. Documentation checklist
+- [ ] Update the Privacy Policy URL with third-party AI disclosure details.
+- [ ] Update App Store Connect "Notes for Review" with demo credentials and compliance instructions.
+- [ ] Update Google Play Console Data Safety questionnaire declarations.
+- [ ] Document moderation guidelines in the repository's wiki or `docs/` folder.
+
+## 12. Compliance impact
+- **Apple App Store**: Aligns with 2026 guidelines; secures safe passage through human and automated reviews.
+- **Google Play**: Safeguards developer account health and retains age-appropriate content standing.
+- **EU AI Act**: Fulfills Article 50 transparency requirements for AI-generated interaction.
+
+## 13. Breaking changes
+- No breaking database schema migrations.
+- UI flow changes include a mandatory, one-time consent prompt when first accessing AI-powered features.
+
+## 14. Review checklist
+- [ ] Code complies with all architectural boundaries and secure API storage rules.
+- [ ] Consent modal text is clear, localized, and lists the AI sub-processors.
+- [ ] Verification tests for the content moderation engine pass.
+
+## 15. Approver recommendations
+Apple 5.1.2(i) requires clearly disclosing where personal data is shared with third parties, including third-party AI, and obtaining explicit permission first. Naming the AI provider in the consent modal is the clearest way to meet it. Confirm the content reporting UI works and that reports get a timely response.
+"""
+    return pr_template
+
+
+SIMULATED_NOTICE = [
+    "",
+    "> **Simulated output, not live announcements.** This file was generated from sample",
+    "> announcements (the built-in set, the default, or a file passed with `--mock`). The titles,",
+    "> publish dates, and descriptions below are examples that show the shape of a migration",
+    "> report, not real publications. Only the linked official documentation URLs are real.",
+    "> Re-run the monitor with `--live` against the real feeds before treating anything here",
+    "> as an actual requirement.",
+    "",
+]
+
+
+def update_documentation(policy_matches, output_filepath, is_simulated=False):
+    """
+    Appends the latest policy findings and migration tasks directly to the output compliance file.
+    """
+    report_content = [
+        "<!-- AI_POLICY_MONITOR_START -->",
+    ]
+    if is_simulated:
+        report_content.extend(SIMULATED_NOTICE)
+    report_content.extend([
+        "# AI Policy Monitoring & Compliance Report",
+        "",
+        "This report is continuously generated and updated by `scripts/monitor-ai-policy.py` to keep track of platform policy changes.",
+        "",
+        "## Latest Monitored Policy Changes",
+        "",
+    ])
+
+    for m in policy_matches:
+        report_content.append(f"### {m['title']} ({m['platform']})")
+        report_content.append(f"- **Published**: {m['pubDate']}")
+        report_content.append(f"- **Official Link**: [{m['link']}]({m['link']})")
+        report_content.append(f"- **Key Topics**: {', '.join(m['review_items'])}")
+        report_content.append(f"- **Details**: {m['description']}")
+        report_content.append("")
+
+    report_content.append("<!-- AI_POLICY_MONITOR_END -->")
+
+    # Write or append to the output file
+    try:
+        with open(output_filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(report_content))
+        print(f"Documentation updated/created successfully at: {output_filepath}")
+    except Exception as e:
+        print(f"Error writing documentation to {output_filepath}: {e}", file=sys.stderr)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="App Store & Google Play AI Policy Monitor"
+    )
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Fetch live RSS/Atom feeds from Apple and Google blog",
+    )
+    parser.add_argument(
+        "--mock",
+        type=str,
+        help="Path to a mock JSON/XML file or 'inline' to use built-in mock policy updates",
+    )
+    parser.add_argument(
+        "--keywords",
+        type=str,
+        default="ai,generative,artificial intelligence,llm,openai,anthropic,gemini,safety,user disclosure,disclosure",
+        help="Comma-separated keywords to scan announcements for",
+    )
+    parser.add_argument(
+        "--dir", type=str, default=".", help="Codebase directory to scan"
+    )
+    parser.add_argument(
+        "--output-docs",
+        type=str,
+        default=None,
+        help="Filepath to write migration tasks / docs updates",
+    )
+    parser.add_argument(
+        "--pr-output",
+        type=str,
+        help="Filepath to save the drafted PR (will output to stdout if omitted)",
+    )
+
+    args = parser.parse_args()
+
+    keywords_list = [k.strip() for k in args.keywords.split(",")]
+    announcements = []
+
+    # 1. Gather announcements
+    if args.live:
+        print("Fetching live Apple RSS feed...")
+        announcements.extend(parse_rss_feed(APPLE_RSS))
+        print("Fetching live Google Blog RSS/Atom feed...")
+        announcements.extend(parse_rss_feed(GOOGLE_RSS))
+
+    used_mock = False
+    if args.mock or (not args.live and not args.mock):
+        used_mock = True
+        print("Data. sample announcements built into this script, not live news.")
+        # Default or explicit inline mock mode
+        print("Using mock policy update data for analysis...")
+        if args.mock and args.mock != "inline" and os.path.exists(args.mock):
+            try:
+                with open(args.mock, "r") as f:
+                    announcements.extend(json.load(f))
+            except Exception as e:
+                print(
+                    f"Failed to read mock file {args.mock}: {e}, falling back to inline data",
+                    file=sys.stderr,
+                )
+                announcements.extend(MOCK_ANNOUNCEMENTS)
+        else:
+            announcements.extend(MOCK_ANNOUNCEMENTS)
+    else:
+        print("Data. live feeds, fetched just now.")
+
+    # 2. Analyze policy announcements against keywords
+    matched_policies = analyze_announcements(announcements, keywords_list)
+
+    if not matched_policies:
+        print("No new AI platform policy changes detected.")
+        sys.exit(0)
+
+    print(f"Detected {len(matched_policies)} AI-related platform policy announcements:")
+    for idx, m in enumerate(matched_policies, 1):
+        print(f" {idx}. [{m['platform']}] {m['title']}")
+        print(f"    Citations checked: {', '.join(m['review_items'])}")
+
+    # 3. Scan codebase for affected AI features
+    print(f"Scanning codebase under '{args.dir}' for AI signals...")
+    affected_features = scan_codebase(args.dir)
+    print(f"Found {len(affected_features)} matching source lines.")
+
+    # 4. Generate documentation updates and migration tasks
+    if args.output_docs:
+        os.makedirs(os.path.dirname(args.output_docs) or ".", exist_ok=True)
+        update_documentation(matched_policies, args.output_docs, is_simulated=used_mock)
+    else:
+        print("No file written. Pass --output-docs <path> to save this report.")
+
+    # 5. Draft the Pull Request with exactly 15 sections
+    pr_draft = generate_pull_request_draft(matched_policies, affected_features)
+    if used_mock:
+        pr_draft = "\n".join(SIMULATED_NOTICE[1:]) + "\n" + pr_draft
+
+    if args.pr_output:
+        try:
+            with open(args.pr_output, "w", encoding="utf-8") as f:
+                f.write(pr_draft)
+            print(f"PR Draft successfully written to: {args.pr_output}")
+        except Exception as e:
+            print(f"Failed to write PR draft to {args.pr_output}: {e}", file=sys.stderr)
+    else:
+        print("\n=== GENERATED COMPREHENSIVE COMPLIANCE PULL REQUEST DRAFT ===")
+        print(pr_draft)
+        print("==============================================================")
+
+
+if __name__ == "__main__":
+    main()

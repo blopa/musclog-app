@@ -1,0 +1,177 @@
+# Pre Submission Checklist
+
+Run this before any upload to App Store Connect or the Play Console. Each item is phrased as a verifiable check. Every box ends in one of two states, checked or marked not applicable. An empty box is a release blocker.
+
+Not applicable is allowed one item at a time, and only with a one-line reason written next to the box, for example "N/A. no login, so no demo account" or "N/A. no in app purchases". An item with no reason counts as unchecked. Two items can never be marked not applicable, because every app has them:
+
+- The privacy declaration matches what the app really collects at runtime, every SDK included.
+- A privacy policy URL is published and reachable from inside the app.
+
+## Start here. Two checks, about five minutes
+
+These two stop most rejections on both stores. Do them before anything else.
+
+- [ ] A working demo account with a live backend is in the review notes, and the login works today.
+- [ ] The privacy declaration (Apple privacy labels, Google Data Safety form) matches what the app really collects at runtime, every SDK included.
+
+Then work down the page. Do Shared first, then the store you ship to. Skip any section whose heading says "if" and does not match your app. The full list is about 100 boxes, so plan an hour for a first pass.
+
+## Shared (both stores)
+
+### Stability and completeness
+- [ ] The app launches and runs without a crash on a real device, on the oldest supported OS and the newest.
+- [ ] No placeholder text, lorem ipsum, dummy images, or temporary content anywhere in the build.
+- [ ] Every link, button, and navigation path works. No dead ends, no broken URLs.
+- [ ] The production backend is live and reachable for the entire review window.
+- [ ] A working demo account is provided, or a demo mode exists, for any feature behind login.
+- [ ] All in app purchases are live, visible, and complete a real transaction in the review build.
+
+### Privacy and data
+- [ ] A privacy policy is published, reachable from inside the app, and accurate.
+- [ ] Every data collection has user consent before it happens.
+- [ ] Every permission has a specific reason string that names the real feature using it.
+- [ ] Account creating apps offer in app account deletion.
+- [ ] Users can withdraw consent and the app still works for non core features.
+- [ ] Every third party SDK and its data behavior is known and declared.
+
+### Mobile Security and Best Practices
+For a deep-dive reference across platform best practices, see the [mobile security guide](MOBILE-SECURITY-2026.md).
+- [ ] **Secure Storage:** Sensitive items (session tokens, passwords, keys) are stored securely (iOS Keychain or Android EncryptedSharedPreferences/Keystore) and never in plaintext files, plain SharedPreferences, or unencrypted local databases.
+- [ ] **Biometrics:** Biometric login (FaceID, TouchID, BiometricPrompt) is crypto-backed, requiring biometric validation to unlock a secure cryptographic key rather than just returning a bypassable boolean.
+- [ ] **Jailbreak and Root Detection:** Device environment check is implemented locally (and backed by Google Play Integrity on Android) to block or gracefully degrade app features when run on compromised/rooted/jailbroken devices.
+- [ ] **Certificate Pinning and SSL:** SSL/TLS cleartext traffic is completely disabled. Public key pinning (SPKI hashes, a fingerprint of the server's public key) is implemented on critical endpoints with valid backup pins configured.
+- [ ] **Backup Exclusion:** Sensitive private directory files (database files, token preferences) are explicitly excluded from automatic iOS iCloud/iTunes backups and Android ADB/Google Drive backups.
+- [ ] **Deep Link and URL Schemes Verification:** Inputs from deep links, Universal Links, and App Links are treated as untrusted, sanitized, and thoroughly validated. Secure Universal Links (iOS) and verified App Links (Android) are used instead of easily hijackable custom schemes.
+- [ ] **Secure Auth and Session Flows:** Standard modern flows like OAuth 2.1 or OIDC with PKCE (a one-time proof that stops a stolen login code from being reused) are used without hardcoded client secrets. Session timeouts are enforced, and all local tokens, databases, and caches are thoroughly destroyed on logout or session expiration.
+
+### Metadata and listing
+- [ ] The app name, description, and screenshots match what the app actually does.
+- [ ] Screenshots show the app in use, not a splash or login screen.
+- [ ] Creative assets (product page header, search result art) show the app or its brand, suit all audiences, and carry no prices, discounts, unverifiable claims, or references to other apps (Apple 2.3.14, 16 October 2026).
+- [ ] No keyword stuffing in the name, subtitle, or description.
+- [ ] The age or content rating questionnaire is answered honestly.
+- [ ] No references to the other platform or to alternative marketplaces.
+
+### Monetization
+- [ ] Digital goods use the official store billing.
+- [ ] Subscription terms, renewal, charges, and cancellation are disclosed before purchase.
+- [ ] Loot boxes or random rewards disclose odds before purchase.
+
+## Apple specific
+
+- [ ] Notes for Review explains every non obvious feature and every in app purchase.
+- [ ] No hidden, dormant, or undocumented feature, and no remote flag that turns on functionality App Review did not see (Apple 2.5.19, bait-and-switch, 16 October 2026).
+- [ ] Privacy nutrition labels match the app's real data collection and the SDKs.
+- [ ] App Tracking Transparency prompt is implemented before any cross app tracking.
+- [ ] Third party social login is paired with an equal privacy preserving alternative such as Sign in with Apple.
+- [ ] No private APIs, no deprecated frameworks, current OS support.
+- [ ] No downloaded code that changes app features. Server side changes are data, not code.
+- [ ] Background modes declared match what the app actually does.
+- [ ] The new age rating questionnaire (13 plus, 16 plus, 18 plus) is answered for every app.
+- [ ] Any AI feature that can produce sensitive content has an age restriction.
+- [ ] Any personal data shared with a third party AI has a consent modal naming the provider and data types.
+- [ ] Regulated category apps are submitted under the legal entity and geo restricted where required.
+- [ ] App name is 30 characters or fewer.
+- [ ] App Review contact phone number is in international format with the country code, for example +852, not digits only.
+- [ ] The first consumable, first non-consumable, first auto-renewable subscription, and first non-renewing subscription are each submitted together with a new app version, never added on their own to an already approved version.
+- [ ] Screenshots include at least one for iPhone with Dynamic Island (medium display), at least one iPad 13 inch screenshot if the app supports iPadOS, and, for watch apps, one Apple Watch size used consistently across every localization, checked against the current App Store Connect specification page.
+- [ ] iPhone Duo (APPLE-IPHONE-DUO-LAUNCH, ships 23 October 2026). Built with Xcode 27.1 and the iOS 27.1 SDK, and checked in the Duo simulator on the outer display, the inner display open, and the inner display partially folded, in each rotation.
+- [ ] iPhone Duo screenshots uploaded in App Store Connect (accepted since 5 October 2026, they earn the optimized for iPhone Duo badge). From April 2027 they are required for any app using the iOS 27.1 SDK or later (APPLE-IPHONE-DUO-SCREENSHOTS-REQ).
+- [ ] iPhone Duo layout. Layout comes from size classes and scene bounds, never `userInterfaceIdiom`, `UIInterfaceOrientation`, or fixed screen sizes. Custom views stay clear of reserved regions (cameras and the fold).
+- [ ] iPhone Duo bars. Navigation bars, toolbars, and tab bars come from the system navigation containers, and every toolbar item has both an icon and a title so it can present vertically.
+- [ ] The build meets the SDK floor. the 26 SDKs today, the 27 SDKs from April 2027.
+
+## Google Play specific
+
+- [ ] The Data Safety form matches the app's real runtime data behavior, including every SDK. This is the top rejection cause.
+- [ ] Every sensitive permission has a qualifying core use case and the required declaration.
+- [ ] Background location, all files access, SMS, call log, and AccessibilityService each map to a visible core feature, or are removed.
+- [ ] The app targets the current required Android API level.
+- [ ] For a new personal developer account, the closed test of at least 12 testers over 14 consecutive days is complete.
+- [ ] Play Billing is used for in app digital goods.
+- [ ] The IARC content rating questionnaire is complete.
+- [ ] The listing makes no claim the app cannot deliver.
+- [ ] Apps for children follow the Families policy and use only Families certified ad SDKs.
+
+## EU specific (legal layer, if the app reaches EU users)
+
+Passing App Review does not make an app EU-legal. The full hard rules and sources are in the [EU regulatory guide](EU-REGULATORY-2026.md).
+
+- [ ] DSA trader status is declared and verified in App Store Connect. A missing declaration removes the app from the EU App Store (Apple enforced 17 February 2025).
+- [ ] Any AI feature reaching EU users shows an in-app notice that the user is interacting with AI, at or before first interaction (EU AI Act Article 50(1), in force 2 August 2026).
+- [ ] AI-generated audio, image, video, or text carries a machine-readable and visible AI-generated marking (Article 50(2) and 50(4)).
+- [ ] A short AI-literacy record exists for the team building or operating the AI feature (Article 4, live since 2 February 2025).
+- [ ] No prohibited AI practice ships (manipulation, banned emotion inference, biometric categorisation) (Article 5, live since 2 February 2025).
+- [ ] Personal data shared with a third-party AI has a consent modal naming the provider and data types, shown before data leaves the device (Apple Guideline 5.1.2(i), 13 November 2025).
+- [ ] The app meets EN 301 549 and WCAG 2.1 AA and publishes its Annex V accessibility information in the terms and conditions or an equivalent document (European Accessibility Act, Directive (EU) 2019/882 Article 13(2), in force 28 June 2025). VoiceOver labels, Dynamic Type, contrast, and Reduce Motion are covered.
+- [ ] If the app offers alternative payments or out-of-app offers in the EU, the StoreKit External Purchases or Offers Entitlement is declared, the disclosure sheet is wired, In-App Purchase (when offered) is shown at the same time and at least as prominently, the chosen options stay in place for 12 months, and monthly reporting is wired (DMA, Attachment 14 terms from 1 October 2026).
+- [ ] Minors are protected on EU alternative payments. Kids category apps and users under the storefront's parental-consent age (13, or higher where set) get alternative processing only behind a parental gate. A Kids category app cannot offer an out-of-app purchase on a website, and users under that age see no out-of-app offers at all. Older minors get both only behind a parental gate.
+
+## Global specific (USA and other markets, if the app reaches those users)
+
+The full hard rules and sources are in the [global regulatory guide](GLOBAL-REGULATORY-2026.md). This is legal, on top of App Review. Several dates are under active litigation, so re-verify each against the cited source.
+
+- [ ] Child-directed or under-13 data. COPPA verifiable parental consent, a separate opt-in for ad or third-party disclosure, a written retention policy and a written security program (general compliance date 22 April 2026).
+- [ ] US state App Store Accountability Acts (Utah, Texas, Louisiana, Alabama). the app requests an age category from the store, confirms parental consent for a minor, and re-requests on a major change, wired through the Declared Age Range API (iOS) or the Play Age Signals API (Android, ensuring strict ToS compliance prohibiting ads, marketing, user profiling, or analytics use of age data).
+- [ ] Age rating set to 4-plus, 9-plus, 13-plus, 16-plus, or 18-plus, never Unrated, questionnaire re-answered by 31 January 2026.
+- [ ] US storefront external links are allowed with no entitlement and no disclosure sheet, no in-app alternative payment, and the commission question is treated as unsettled.
+- [ ] California and US state privacy. a privacy policy, notice at collection, know, delete, correct, "Do Not Sell or Share", "Limit Use of Sensitive PI", and honoring Global Privacy Control.
+- [ ] Biometric. written consent before capture, a public retention and destruction schedule, and no sale (Illinois BIPA, Texas CUBI).
+- [ ] Health app. the HIPAA gate, else the FTC Health Breach Notification Rule with a 60-day breach notice.
+- [ ] 18-plus download gating handled for Brazil, Australia, and Singapore for the Apple block of 24 February 2026, and Google Play's Digital ECA age-assurance rollout for Brazil via the Play Age Signals API starting 17 March 2026.
+- [ ] UK Online Safety Act Highly Effective Age Assurance and the Children's-Code defaults for a likely-child service.
+- [ ] Australia under-16 age assurance for an age-restricted social media platform.
+- [ ] South Korea Korea-only binary with an approved payment provider if alternative billing is used.
+- [ ] China MIIT app filing with a local entity, plus PIPL and a Banhao license for a game.
+
+## Platform mechanics gate (both stores, if the item applies)
+
+The full detail with dated sources is in the [platform mechanics guide](PLATFORM-MECHANICS-2026.md). These are current, common, blocking causes the base maps did not carry.
+
+Apple.
+
+- [ ] macOS app distributed outside the Mac App Store is Developer ID signed with the hardened runtime, notarized with `notarytool`, and stapled with `stapler`.
+- [ ] Not a thin wrapper (Guideline 4.2) and not a duplicate, clone, or un-differentiated saturated-category app (Guideline 4.3, tightened June 2026).
+- [ ] Reader app using the External Link Account Entitlement meets every 3.1.3(a) condition and link rule, and offers no in-app purchase while the entitlement is used.
+- [ ] France ANSSI encryption declaration uploaded in App Store Connect if the app uses non-exempt encryption and ships on the French App Store.
+- [ ] App Store Connect content-rights question answered, with proof of rights available for any third-party content.
+- [ ] visionOS App Motion declared, and watchOS and tvOS built with the platform-26 SDK and Xcode 26 by 28 April 2026.
+- [ ] Fixed-odds betting apps distributed in Brazil provide a valid Secretariat of Prizes and Bets (SPA) license in the App Review Information, set the Brazil age rating to A18 via the questionnaire, and are submitted under a new app version for verification (since May 8, 2026).
+
+Android.
+
+- [ ] Developer identity verified if the app is distributed to Brazil, Indonesia, Singapore, or Thailand (required since 30 September 2026), and every Play package name registered in Play Console.
+- [ ] Every foreground service declares `foregroundServiceType` in the manifest with the matching permission, and each type is declared in the Play Console with a demo video.
+- [ ] No SafetyNet Attestation. attestation uses the Play Integrity API, verified server-side.
+- [ ] Play Billing Library at version 8 or later (required for new apps and updates since 31 August 2026, extension available to 1 November 2026), and digital goods route through Play Billing.
+- [ ] `targetSdkVersion` at least 36 for new apps and updates (required since 31 August 2026, extension available to 1 November 2026). Wear OS and Android Automotive OS at least 35, Android TV and Android XR at least 34.
+- [ ] No unexpected launch-time or mid-task full-screen interstitial, and every interstitial is closable by 15 seconds.
+- [ ] Health app has the Health Apps Declaration, a core-function justification per Health Connect permission, the migrated Organization Account, and the correct medical-device label or disclaimer.
+- [ ] Real-money game apps in supported countries have the required licenses or self-declarations, geo-restrictions, age-gating, and comply with any relevant Play Age Signals API terms.
+
+Cross-cutting.
+
+- [ ] A US-facing UGC app has a documented NCMEC CyberTipline report path on actual knowledge and a 1-year preservation policy.
+- [ ] A UGC or social app has a content filter, in-app report and block, published contact, and 24-hour remove-and-eject (Apple 1.2), plus the Google Play Child Safety Standards items for the Social and Dating categories.
+- [ ] Account-creating app has both an in-app account-and-data deletion flow and a publicly reachable web deletion URL, declared.
+- [ ] Not on the OFAC SDN list, and country availability excludes the embargoed territories.
+- [ ] Releasing in Syria. EAR jurisdiction, classification, and the license exception or license relied on are documented (15 CFR 746.9).
+- [ ] Non-store card payments for real goods implement PSD2 SCA and 3D Secure in the EU or UK, store no card number, and identify the correct PCI SAQ (the card industry self-assessment form that fits how the app takes payments).
+
+## The two checks that prevent the most rejections
+
+Two checks stop the majority of rejections across both stores. A working demo account with a live backend, and a privacy declaration that matches actual runtime behavior including SDKs. If you verify nothing else, verify these two.
+
+## Account and program readiness (added September 2026)
+
+The checks above assume the developer account can submit. In 2026 that assumption fails often enough to plan for.
+
+- [ ] Apple Developer Program membership shows Active, not Pending. Enrollment and identity verification are taking two to six weeks, the ID upload link has failed for some accounts, and Developer Support replies take days. Enroll six weeks before the first submission ([Apple Developer Forums](https://developer.apple.com/forums/thread/817247), [thread 816626](https://developer.apple.com/forums/thread/816626)).
+- [ ] Every Apple Developer Program License Agreement update and attachment is accepted by the Account Holder. Attachment 12 (Brazil) was due 6 July 2026, Attachment 14 (EU) before 1 October 2026.
+- [ ] Any individual-to-organization migration was started a quarter ahead (a 61-day open migration was reported on 1 September 2026).
+- [ ] The social media capability question is answered in App Store Connect before uploading a new version.
+- [ ] Google Play account type is Organization with a D-U-N-S number if the app is financial, health, VPN, or government (30 September 2026).
+- [ ] Every distributed Play package name is registered for Android developer verification (30 September 2026).
+- [ ] Play content rating questionnaire is complete and current (unrated apps are not allowed).
+- [ ] If enrolled in US alternative billing or external links, transaction reporting is wired for 1 October 2026.
+
