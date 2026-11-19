@@ -32,14 +32,14 @@ describe('blog tags copy', () => {
       expect((blog.browseTags as string).length).toBeGreaterThan(0);
 
       const tagsPage = blog.tagsPage as Record<string, unknown>;
-      for (const key of ['title', 'description', 'eyebrow', 'listLabel']) {
+      for (const key of ['title', 'description', 'listLabel']) {
         expect(typeof tagsPage[key]).toBe('string');
         expect((tagsPage[key] as string).length).toBeGreaterThan(0);
       }
       expect(tagsPage.postCount_other).toContain('{{count}}');
 
       const tagPage = blog.tagPage as Record<string, unknown>;
-      for (const key of ['title', 'description', 'empty', 'listLabel', 'eyebrow']) {
+      for (const key of ['title', 'description', 'empty', 'listLabel']) {
         expect(typeof tagPage[key]).toBe('string');
         expect((tagPage[key] as string).length).toBeGreaterThan(0);
       }

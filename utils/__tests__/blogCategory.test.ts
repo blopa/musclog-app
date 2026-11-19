@@ -93,7 +93,6 @@ describe('blog category translations', () => {
       expect(Object.keys(categoryPage).sort()).toEqual([
         'description',
         'empty',
-        'eyebrow',
         'listLabel',
         'title',
       ]);

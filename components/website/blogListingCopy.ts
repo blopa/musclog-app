@@ -14,7 +14,6 @@ export interface BlogListingCopy {
   categoryLabel?: string;
   description: string;
   empty: string;
-  eyebrow: string;
   listLabel: string;
   title: string;
 }
@@ -30,7 +29,6 @@ export function useBlogListingCopy(category?: string, tagLabel?: string): BlogLi
     return {
       description: t('tagPage.description', { tag: tagLabel }),
       empty: t('tagPage.empty', { tag: tagLabel }),
-      eyebrow: t('tagPage.eyebrow'),
       listLabel: t('tagPage.listLabel', { tag: tagLabel }),
       title: t('tagPage.title', { tag: tagLabel }),
     };
@@ -40,7 +38,6 @@ export function useBlogListingCopy(category?: string, tagLabel?: string): BlogLi
     return {
       description: t('description'),
       empty: t('empty'),
-      eyebrow: t('eyebrow'),
       listLabel: t('listLabel'),
       title: t('title'),
     };
@@ -52,7 +49,6 @@ export function useBlogListingCopy(category?: string, tagLabel?: string): BlogLi
     categoryLabel,
     description: t('categoryPage.description', { category: categoryLabel }),
     empty: t('categoryPage.empty', { category: categoryLabel }),
-    eyebrow: t('categoryPage.eyebrow'),
     listLabel: t('categoryPage.listLabel', { category: categoryLabel }),
     title: t('categoryPage.title', { category: categoryLabel }),
   };

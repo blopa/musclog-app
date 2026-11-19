@@ -29,14 +29,11 @@ export function BlogCategoriesPage({ categories }: { categories: BlogCategorySum
             {t('backToBlog')}
           </a>
 
-          <header className="mx-auto mb-14 max-w-3xl text-center">
-            <p className="mb-4 text-sm font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
-              {t('categoriesPage.eyebrow')}
-            </p>
+          <header className="mb-12 max-w-3xl">
             <h1 className="text-balance text-4xl font-bold text-text-primary md:text-6xl">
               {t('categoriesPage.title')}
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
+            <p className="mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
               {t('categoriesPage.description')}
             </p>
           </header>

@@ -349,7 +349,6 @@
       "tools": "Tools"
     },
     "blog": {
-      "eyebrow": "Uit de werkplaats",
       "title": "Musclog-blog",
       "description": "Notities over het bouwen van een private, open-source fitnessapp — van productkeuzes tot de technologie erachter.",
       "empty": "Er zijn nog geen artikelen gepubliceerd.",
@@ -372,21 +371,18 @@
       "pageStatus": "Pagina {{current}} van {{total}}",
       "pageLabel": "Pagina {{page}}",
       "categoryPage": {
-        "eyebrow": "Bekijken per categorie",
         "title": "Artikelen over {{category}}",
         "description": "Alle Musclog-blogartikelen in de categorie {{category}}.",
         "empty": "Er zijn geen artikelen gevonden in {{category}}.",
         "listLabel": "Blogartikelen over {{category}}"
       },
       "tagPage": {
-        "eyebrow": "Bekijken per tag",
         "title": "Artikelen met de tag {{tag}}",
         "description": "Alle Musclog-blogartikelen met de tag {{tag}}.",
         "empty": "Er zijn geen artikelen gevonden met de tag {{tag}}.",
         "listLabel": "Blogartikelen met de tag {{tag}}"
       },
       "tagsPage": {
-        "eyebrow": "Bekijken per tag",
         "title": "Blogtags",
         "description": "Alle tags die op de Musclog-blog worden gebruikt. Hoe groter een tag, hoe meer artikelen hem hebben.",
         "listLabel": "Blogtags",
@@ -396,7 +392,6 @@
         "postCount_other": "{{count}} artikelen"
       },
       "categoriesPage": {
-        "eyebrow": "Bekijken per categorie",
         "title": "Blogcategorieën",
         "description": "Alle onderwerpen van de Musclog-blog, van training en voeding tot techniek en productupdates.",
         "listLabel": "Blogcategorieën",

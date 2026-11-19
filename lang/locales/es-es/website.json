@@ -349,7 +349,6 @@
       "tools": "Herramientas"
     },
     "blog": {
-      "eyebrow": "Desde el taller",
       "title": "Blog de Musclog",
       "description": "Notas sobre cómo creamos una app de fitness privada y open source: desde las decisiones de producto hasta la tecnología que la hace posible.",
       "empty": "Todavía no hay artículos publicados.",
@@ -372,21 +371,18 @@
       "pageStatus": "Página {{current}} de {{total}}",
       "pageLabel": "Página {{page}}",
       "categoryPage": {
-        "eyebrow": "Explorar por categoría",
         "title": "Artículos de {{category}}",
         "description": "Todos los artículos del blog de Musclog en la categoría {{category}}.",
         "empty": "No se encontraron artículos en {{category}}.",
         "listLabel": "Artículos de blog de {{category}}"
       },
       "tagPage": {
-        "eyebrow": "Explorar por etiqueta",
         "title": "Artículos con la etiqueta {{tag}}",
         "description": "Todos los artículos del blog de Musclog etiquetados con {{tag}}.",
         "empty": "No se encontraron artículos con la etiqueta {{tag}}.",
         "listLabel": "Artículos de blog con la etiqueta {{tag}}"
       },
       "tagsPage": {
-        "eyebrow": "Explorar por etiqueta",
         "title": "Etiquetas del blog",
         "description": "Todas las etiquetas usadas en el blog de Musclog. Cuanto más grande es una etiqueta, más artículos la llevan.",
         "listLabel": "Etiquetas del blog",
@@ -396,7 +392,6 @@
         "postCount_other": "{{count}} artículos"
       },
       "categoriesPage": {
-        "eyebrow": "Explorar por categoría",
         "title": "Categorías del blog",
         "description": "Todos los temas del blog de Musclog, desde entrenamiento y nutrición hasta ingeniería y novedades del producto.",
         "listLabel": "Categorías del blog",

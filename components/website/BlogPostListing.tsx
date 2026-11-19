@@ -120,37 +120,33 @@ export function BlogPostListing({
             <ArrowLeft className="h-4 w-4" color="currentColor" />
             {tag ? t('backToTags') : t('backToCategories')}
           </a>
-        ) : (
-          <div className="mb-8 flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
-            <a
-              href={BLOG_CATEGORIES_PATH}
-              className="inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
-              style={{ color: BRAND_GREEN_BRIGHT }}
-            >
-              {t('browseCategories')}
-              <ArrowRight className="h-4 w-4" color="currentColor" />
-            </a>
-            <a
-              href={BLOG_TAGS_PATH}
-              className="inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
-              style={{ color: BRAND_GREEN_BRIGHT }}
-            >
-              {t('browseTags')}
-              <ArrowRight className="h-4 w-4" color="currentColor" />
-            </a>
-          </div>
-        )}
+        ) : null}
 
-        <header className="mx-auto mb-14 max-w-3xl text-center">
-          <p className="mb-4 text-sm font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
-            {copy.eyebrow}
-          </p>
+        <header className="mb-12 max-w-3xl">
           <h1 className="text-balance text-4xl font-bold text-text-primary md:text-6xl">
             {copy.title}
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
+          <p className="mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
             {copy.description}
           </p>
+          {category || tag ? null : (
+            <p className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-bold">
+              <a
+                href={BLOG_CATEGORIES_PATH}
+                className="transition-colors hover:text-accent-pale"
+                style={{ color: BRAND_GREEN_BRIGHT }}
+              >
+                {t('browseCategories')}
+              </a>
+              <a
+                href={BLOG_TAGS_PATH}
+                className="transition-colors hover:text-accent-pale"
+                style={{ color: BRAND_GREEN_BRIGHT }}
+              >
+                {t('browseTags')}
+              </a>
+            </p>
+          )}
         </header>
 
         {posts.length === 0 ? (

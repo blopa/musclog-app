@@ -349,7 +349,6 @@
       "tools": "Tools"
     },
     "blog": {
-      "eyebrow": "From the workshop",
       "title": "Musclog Blog",
       "description": "Notes on building a private, open-source fitness app — from product decisions to the technology behind it.",
       "empty": "No posts have been published yet.",
@@ -372,21 +371,18 @@
       "pageStatus": "Page {{current}} of {{total}}",
       "pageLabel": "Page {{page}}",
       "categoryPage": {
-        "eyebrow": "Browse by category",
         "title": "{{category}} articles",
         "description": "All Musclog blog posts filed under {{category}}.",
         "empty": "No posts were found in {{category}}.",
         "listLabel": "{{category}} blog posts"
       },
       "tagPage": {
-        "eyebrow": "Browse by tag",
         "title": "Posts tagged {{tag}}",
         "description": "Every Musclog blog article tagged {{tag}}.",
         "empty": "No posts were found with the tag {{tag}}.",
         "listLabel": "{{tag}} blog posts"
       },
       "tagsPage": {
-        "eyebrow": "Browse by tag",
         "title": "Blog tags",
         "description": "Every tag used on the Musclog blog. The bigger a tag, the more articles carry it.",
         "listLabel": "Blog tags",
@@ -396,7 +392,6 @@
         "postCount_other": "{{count}} articles"
       },
       "categoriesPage": {
-        "eyebrow": "Browse by category",
         "title": "Blog categories",
         "description": "Every topic the Musclog blog covers, from training and nutrition to engineering and product updates.",
         "listLabel": "Blog categories",

@@ -20,7 +20,7 @@ describe('blog categories copy', () => {
     expect(typeof blog.backToCategories).toBe('string');
     expect(typeof blog.browseCategories).toBe('string');
     expect(page).toBeDefined();
-    for (const key of ['title', 'description', 'eyebrow', 'listLabel']) {
+    for (const key of ['title', 'description', 'listLabel']) {
       expect(typeof page[key]).toBe('string');
       expect((page[key] as string).length).toBeGreaterThan(0);
     }
