@@ -1,0 +1,68 @@
+{
+  "websiteToolWorkoutLogTemplate": {
+    "title": "Ficha de treino grátis para imprimir",
+    "intro": "Baixe uma ficha de treino para imprimir, ou uma planilha para preencher no computador. Ambas são gratuitas, sem cadastro. A planilha é salva como CSV, que o app Musclog pode importar.",
+    "downloads": {
+      "title": "Downloads",
+      "pdfA4": "Ficha para imprimir, A4",
+      "pdfA4Note": "PDF, 4 folhas na horizontal. Para papel A4.",
+      "pdfLetter": "Ficha para imprimir, US Letter",
+      "pdfLetterNote": "PDF, 4 folhas na horizontal. Para papel US Letter.",
+      "xlsx": "Modelo de planilha",
+      "xlsxNote": "Arquivo do Excel (.xlsx) que também abre no Google Sheets, Numbers e LibreOffice. Uma aba Log e uma aba Read me.",
+      "csv": "Modelo CSV",
+      "csvNote": "As mesmas colunas em texto simples, para qualquer planilha ou para o app.",
+      "english": "Os arquivos estão em inglês, seja qual for o idioma desta página."
+    },
+    "check": {
+      "title": "Confira seu CSV preenchido",
+      "intro": "Escolha seu arquivo e veja o que o Musclog leria nele. Ele usa o mesmo leitor do app, no seu navegador. O arquivo não é enviado.",
+      "file": "Arquivo CSV",
+      "unitLabel": "Os pesos no seu arquivo estão em",
+      "kg": "kg",
+      "lb": "lb",
+      "result": "O Musclog leria {{workouts}} e {{sets}}.",
+      "workoutCount_one": "{{formattedCount}} treino",
+      "workoutCount_other": "{{formattedCount}} treinos",
+      "setCount_one": "{{formattedCount}} série",
+      "setCount_other": "{{formattedCount}} séries",
+      "skipped_one": "{{formattedCount}} linha foi ignorada: data ausente ou futura, sem nome de exercício ou nada medido.",
+      "skipped_other": "{{formattedCount}} linhas foram ignoradas: data ausente ou futura, sem nome de exercício ou nada medido.",
+      "problems": {
+        "empty": "O arquivo está vazio.",
+        "tooLarge": "O arquivo é grande demais para verificar aqui.",
+        "unreadable": "Isto não parece uma ficha de treino. Mantenha a linha de cabeçalho do modelo como está.",
+        "noRows": "O arquivo tem uma linha de cabeçalho, mas nenhuma série abaixo dela.",
+        "read": "Não foi possível ler o arquivo."
+      },
+      "exampleWarning": "Apague a linha de exemplo do modelo antes de importar, senão ela será lida como uma série real."
+    },
+    "sections": [
+      {
+        "title": "O que há na ficha para imprimir",
+        "body": [
+          "Cada folha é um treino. No topo você escreve a data, o treino, seu peso corporal e se treina em kg ou lb. Abaixo há doze linhas de exercício com cinco séries cada, um espaço para o peso, outro para as repetições, e uma coluna Notas para como foi a série ou para qualquer dor.",
+          "O PDF tem quatro folhas, então uma impressão cobre cerca de uma ou duas semanas. Imprima quantas cópias precisar. As folhas não trazem programa: você decide o que vai nas linhas."
+        ]
+      },
+      {
+        "title": "Como preencher a planilha",
+        "body": [
+          "Escreva uma linha por série: a data, o nome do treino, o exercício, o número da série, o peso e as repetições. RPE e Notas são opcionais. O peso é um número simples na unidade que você sempre usa. Deixe Reps vazio para uma série por tempo. RPE 10 é uma série sem nada sobrando, 9 deixa uma repetição e 8 deixa duas.",
+          "As colunas seguem o formato que o importador do Musclog lê, então você não precisa converter nada. Salve a aba Log como arquivo CSV e, no app, abra Configurações, depois Backups e dados, depois Importar treinos. O Musclog associa os nomes dos exercícios ao seu catálogo e mostra uma revisão antes de salvar qualquer sessão."
+        ]
+      },
+      {
+        "title": "Papel, planilha ou app",
+        "body": [
+          "O papel não precisa de bateria nem de conta, e anotar uma série leva alguns segundos. O que ele não faz é consultar por você: você mesmo lê a ficha da semana passada para decidir o que treinar hoje.",
+          "Uma planilha pode somar seu volume e montar um gráfico de um exercício, se você criar as fórmulas. O Musclog faz isso e calcula o próximo peso a partir da sua última sessão, com o motivo à mostra, mas o registro é seu de qualquer forma. É um app gratuito e de código aberto, seus dados ficam no seu aparelho, e você pode trazer para ele a planilha acima."
+        ]
+      }
+    ],
+    "articles": {
+      "trackProgress": "Como acompanhar seu progresso na academia: guia para iniciantes",
+      "importHistory": "Traga seu histórico de treinos do Strong, Hevy ou FitNotes"
+    }
+  }
+}

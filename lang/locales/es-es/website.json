@@ -117,6 +117,10 @@
           "title": "Calculadora de descarga: cuánto peso y cuánto tiempo | Musclog",
           "description": "Introduce tu peso de trabajo y tus series y obtén la semana de descarga: el peso más ligero, las series a mantener, cuánto empujar y cuánto dura."
         },
+        "toolWorkoutLogTemplate": {
+          "title": "Registro de entrenamiento gratis para imprimir (PDF) y hoja de cálculo | Musclog",
+          "description": "Descarga un registro de entrenamiento gratis para imprimir en A4 o US Letter, y una plantilla de Excel y CSV. La hoja de cálculo se importa en la app Musclog."
+        },
         "programs": {
           "title": "Programas de entrenamiento gratis | Musclog",
           "description": "Programas gratis: push pull legs, torso pierna, cuerpo completo y mas. Cada dia, ejercicio, serie y repeticion esta detallado y puedes abrirlo en Musclog."

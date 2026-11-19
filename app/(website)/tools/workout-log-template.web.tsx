@@ -124,9 +124,14 @@ export default function WorkoutLogTemplateToolPage() {
               <div className="space-y-3" aria-live="polite">
                 <ToolNotice>
                   {t('check.result', {
-                    count: check.workouts,
-                    workouts: formatInteger(check.workouts),
-                    sets: formatInteger(check.sets),
+                    workouts: t('check.workoutCount', {
+                      count: check.workouts,
+                      formattedCount: formatInteger(check.workouts),
+                    }),
+                    sets: t('check.setCount', {
+                      count: check.sets,
+                      formattedCount: formatInteger(check.sets),
+                    }),
                   })}
                 </ToolNotice>
                 {check.skipped > 0 ? (

@@ -7,7 +7,7 @@ import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import type { Units } from '@/constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import type { RawWorkoutTemplate, RawWorkoutTemplateExercise } from '@/data/workoutTemplates';
-import { clearStalePending, commitPrepared } from '@/database/commitPrepared';
+import { clearStalePending, commitPrepared, getLastCommitFailure } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
@@ -30,6 +30,7 @@ import {
   type ProgressionRule,
   serializeProgressionRule,
 } from '@/utils/progressionRuleSchema';
+import { captureMessage } from '@/utils/sentry';
 import { roundWeightForUnits } from '@/utils/unitConversion';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
@@ -490,7 +491,27 @@ export class WorkoutTemplateService {
     ];
     // Inside the writer nothing legitimately holds these pending, so a leftover state from an
     // abandoned prepare would otherwise fail every save of this workout until the app restarts.
-    clearStalePending(owned);
+    const stale = clearStalePending(owned);
+    if (stale.length > 0) {
+      // Unexplained leak: say what was stuck and what failed before it. Never blocks the save.
+      const lastFailure = getLastCommitFailure();
+      void captureMessage('Stale pending records cleared before saving a workout', {
+        level: 'warning',
+        tags: { context: 'WorkoutTemplateService.saveExistingTemplate' },
+        extra: {
+          templateId,
+          staleCount: stale.length,
+          stale: stale.slice(0, 10),
+          lastCommitFailure: lastFailure
+            ? {
+                message: lastFailure.message,
+                secondsAgo: Math.round((now - lastFailure.at) / 1000),
+                recordCount: lastFailure.recordCount,
+              }
+            : null,
+        },
+      }).catch(() => undefined);
+    }
 
     await commitPrepared(database, owned, async () => {
       // Resolve plan membership BEFORE deciding schedules: calendar ownership depends on the

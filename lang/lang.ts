@@ -111,6 +111,7 @@ import enUsWebsiteToolRpeChart from './locales/en-us/websiteToolRpeChart.json';
 import enUsWebsiteTools from './locales/en-us/websiteTools.json';
 import enUsWebsiteToolStrengthLevel from './locales/en-us/websiteToolStrengthLevel.json';
 import enUsWebsiteToolWarmUpCalculator from './locales/en-us/websiteToolWarmUpCalculator.json';
+import enUsWebsiteToolWorkoutLogTemplate from './locales/en-us/websiteToolWorkoutLogTemplate.json';
 import enUsWeeklyStreakCard from './locales/en-us/weeklyStreakCard.json';
 import enUsWhatsNew from './locales/en-us/whatsNew.json';
 import enUsWidgets from './locales/en-us/widgets.json';
@@ -215,6 +216,7 @@ import esEsWebsiteToolRpeChart from './locales/es-es/websiteToolRpeChart.json';
 import esEsWebsiteTools from './locales/es-es/websiteTools.json';
 import esEsWebsiteToolStrengthLevel from './locales/es-es/websiteToolStrengthLevel.json';
 import esEsWebsiteToolWarmUpCalculator from './locales/es-es/websiteToolWarmUpCalculator.json';
+import esEsWebsiteToolWorkoutLogTemplate from './locales/es-es/websiteToolWorkoutLogTemplate.json';
 import esEsWeeklyStreakCard from './locales/es-es/weeklyStreakCard.json';
 import esEsWhatsNew from './locales/es-es/whatsNew.json';
 import esEsWidgets from './locales/es-es/widgets.json';
@@ -319,6 +321,7 @@ import nlNlWebsiteToolRpeChart from './locales/nl-nl/websiteToolRpeChart.json';
 import nlNlWebsiteTools from './locales/nl-nl/websiteTools.json';
 import nlNlWebsiteToolStrengthLevel from './locales/nl-nl/websiteToolStrengthLevel.json';
 import nlNlWebsiteToolWarmUpCalculator from './locales/nl-nl/websiteToolWarmUpCalculator.json';
+import nlNlWebsiteToolWorkoutLogTemplate from './locales/nl-nl/websiteToolWorkoutLogTemplate.json';
 import nlNlWeeklyStreakCard from './locales/nl-nl/weeklyStreakCard.json';
 import nlNlWhatsNew from './locales/nl-nl/whatsNew.json';
 import nlNlWidgets from './locales/nl-nl/widgets.json';
@@ -423,6 +426,7 @@ import ptBrWebsiteToolRpeChart from './locales/pt-br/websiteToolRpeChart.json';
 import ptBrWebsiteTools from './locales/pt-br/websiteTools.json';
 import ptBrWebsiteToolStrengthLevel from './locales/pt-br/websiteToolStrengthLevel.json';
 import ptBrWebsiteToolWarmUpCalculator from './locales/pt-br/websiteToolWarmUpCalculator.json';
+import ptBrWebsiteToolWorkoutLogTemplate from './locales/pt-br/websiteToolWorkoutLogTemplate.json';
 import ptBrWeeklyStreakCard from './locales/pt-br/weeklyStreakCard.json';
 import ptBrWhatsNew from './locales/pt-br/whatsNew.json';
 import ptBrWidgets from './locales/pt-br/widgets.json';
@@ -527,6 +531,7 @@ import ruRuWebsiteToolRpeChart from './locales/ru-ru/websiteToolRpeChart.json';
 import ruRuWebsiteTools from './locales/ru-ru/websiteTools.json';
 import ruRuWebsiteToolStrengthLevel from './locales/ru-ru/websiteToolStrengthLevel.json';
 import ruRuWebsiteToolWarmUpCalculator from './locales/ru-ru/websiteToolWarmUpCalculator.json';
+import ruRuWebsiteToolWorkoutLogTemplate from './locales/ru-ru/websiteToolWorkoutLogTemplate.json';
 import ruRuWeeklyStreakCard from './locales/ru-ru/weeklyStreakCard.json';
 import ruRuWhatsNew from './locales/ru-ru/whatsNew.json';
 import ruRuWidgets from './locales/ru-ru/widgets.json';
@@ -661,6 +666,7 @@ const resources = {
       ...enUsWebsiteToolRpeChart,
       ...enUsWebsiteToolStrengthLevel,
       ...enUsWebsiteToolWarmUpCalculator,
+      ...enUsWebsiteToolWorkoutLogTemplate,
       ...enUsWebsiteTools,
       ...enUsWeeklyStreakCard,
       ...enUsWhatsNew,
@@ -769,6 +775,7 @@ const resources = {
       ...esEsWebsiteToolRpeChart,
       ...esEsWebsiteToolStrengthLevel,
       ...esEsWebsiteToolWarmUpCalculator,
+      ...esEsWebsiteToolWorkoutLogTemplate,
       ...esEsWebsiteTools,
       ...esEsWeeklyStreakCard,
       ...esEsWhatsNew,
@@ -877,6 +884,7 @@ const resources = {
       ...nlNlWebsiteToolRpeChart,
       ...nlNlWebsiteToolStrengthLevel,
       ...nlNlWebsiteToolWarmUpCalculator,
+      ...nlNlWebsiteToolWorkoutLogTemplate,
       ...nlNlWebsiteTools,
       ...nlNlWeeklyStreakCard,
       ...nlNlWhatsNew,
@@ -985,6 +993,7 @@ const resources = {
       ...ptBrWebsiteToolRpeChart,
       ...ptBrWebsiteToolStrengthLevel,
       ...ptBrWebsiteToolWarmUpCalculator,
+      ...ptBrWebsiteToolWorkoutLogTemplate,
       ...ptBrWebsiteTools,
       ...ptBrWeeklyStreakCard,
       ...ptBrWhatsNew,
@@ -1093,6 +1102,7 @@ const resources = {
       ...ruRuWebsiteToolRpeChart,
       ...ruRuWebsiteToolStrengthLevel,
       ...ruRuWebsiteToolWarmUpCalculator,
+      ...ruRuWebsiteToolWorkoutLogTemplate,
       ...ruRuWebsiteTools,
       ...ruRuWeeklyStreakCard,
       ...ruRuWhatsNew,

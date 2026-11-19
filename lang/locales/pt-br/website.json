@@ -117,6 +117,10 @@
           "title": "Calculadora de deload: quanta carga e por quanto tempo | Musclog",
           "description": "Informe sua carga de trabalho e suas séries e veja a semana de deload: a carga mais leve, as séries a manter, quanto empurrar e por quanto tempo dura."
         },
+        "toolWorkoutLogTemplate": {
+          "title": "Ficha de treino grátis para imprimir (PDF) e planilha | Musclog",
+          "description": "Baixe uma ficha de treino grátis para imprimir em A4 ou US Letter, e um modelo de Excel e CSV. A planilha pode ser importada no app Musclog."
+        },
         "programs": {
           "title": "Programas de treino gratis | Musclog",
           "description": "Programas gratis: push pull legs, upper lower, full body e mais. Cada dia, exercicio, serie e repeticao esta listado e voce abre no Musclog."

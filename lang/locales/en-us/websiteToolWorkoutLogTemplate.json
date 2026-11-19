@@ -21,8 +21,11 @@
       "unitLabel": "Weights in your file are in",
       "kg": "kg",
       "lb": "lb",
-      "result_one": "Musclog would read {{workouts}} workout with {{sets}} sets.",
-      "result_other": "Musclog would read {{workouts}} workouts with {{sets}} sets.",
+      "result": "Musclog would read {{workouts}} and {{sets}}.",
+      "workoutCount_one": "{{formattedCount}} workout",
+      "workoutCount_other": "{{formattedCount}} workouts",
+      "setCount_one": "{{formattedCount}} set",
+      "setCount_other": "{{formattedCount}} sets",
       "skipped_one": "{{formattedCount}} row was skipped: a missing or future date, no exercise name, or nothing measured.",
       "skipped_other": "{{formattedCount}} rows were skipped: a missing or future date, no exercise name, or nothing measured.",
       "problems": {

@@ -6,6 +6,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
+import { captureMessage } from '@/utils/sentry';
 import { kgToDisplay } from '@/utils/unitConversion';
 import {
   ExerciseInWorkout,
@@ -40,6 +41,11 @@ jest.mock('@nozbe/watermelondb', () => ({
 // barrel; loading it for real would evaluate every WatermelonDB model against the `Q`-only
 // mock above (`class X extends Model` with `Model` undefined), so point it at the same
 // mocked instance.
+jest.mock('@/utils/sentry', () => ({
+  captureMessage: jest.fn().mockResolvedValue(undefined),
+  captureException: jest.fn().mockResolvedValue(undefined),
+}));
+
 jest.mock('../../index', () => require('../../database-instance'));
 
 jest.mock('../../database-instance', () => {
@@ -1078,6 +1084,26 @@ describe('WorkoutTemplateService', () => {
         WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' })
       ).resolves.toBe(existingTemplate);
       expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+      // The leak is unexplained, so the cleanup says what was stuck instead of hiding it.
+      expect(captureMessage).toHaveBeenCalledWith(
+        'Stale pending records cleared before saving a workout',
+        expect.objectContaining({
+          extra: expect.objectContaining({
+            templateId: 'template-1',
+            staleCount: 1,
+            stale: [expect.objectContaining({ id: 'set-1', state: 'update' })],
+          }),
+        })
+      );
+    });
+
+    it('does not report anything when no record was left pending', async () => {
+      const existingTemplate = pendingAwareRecord(createMockWorkoutTemplate({ id: 'template-1' }));
+      stubCollections({ existingTemplate });
+
+      await WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' });
+
+      expect(captureMessage).not.toHaveBeenCalled();
     });
 
     it('prepares a standalone schedule once when the workout joins a plan', async () => {
