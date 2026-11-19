@@ -1,7 +1,8 @@
 /** @jest-environment jsdom */
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 
+import { ENGLISH_ONLY_NOTICE_MS } from '@/components/website/EnglishOnlyNotice';
 import { WebsitePreferences } from '@/components/website/WebsitePreferences';
 import { THEME_IDS } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -19,6 +20,7 @@ jest.mock('lucide-react-native', () => ({
   X: () => null,
   Check: () => null,
   Globe: () => null,
+  Languages: () => null,
   Monitor: () => null,
   Palette: () => null,
 }));
@@ -43,6 +45,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  jest.useRealTimers();
   jest.restoreAllMocks();
   window.localStorage.clear();
   window.history.pushState({}, '', '/');
@@ -143,6 +146,90 @@ describe('website preferences', () => {
     expect(mockChangeLanguage).toHaveBeenCalledWith('ru-RU');
     expect(window.localStorage.getItem('musclog_lang')).toBe('ru-RU');
     expect(nav.clicked).toEqual(['/en/blog/some-post']);
+  });
+
+  describe('English-only notice', () => {
+    const notice = () => screen.queryByRole('status');
+
+    it('says the posts stay English when another language is chosen on the blog', () => {
+      goTo('/en/blog/some-post');
+      openPreferences();
+      expect(notice()).toBeNull();
+      fireEvent.click(screen.getByRole('link', { name: /Español/ }));
+      expect(notice()?.textContent).toContain('website.blog.englishOnlyNotice');
+      // The choice is made, so the panel gives way to the notice instead of covering it.
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
+
+    it('also covers the blog listings, categories and tags', () => {
+      ['/en/blog', '/en/blog/category/news', '/en/blog/tag/open-source'].forEach((url) => {
+        goTo(url);
+        const { unmount } = render(createElement(WebsitePreferences));
+        fireEvent.click(screen.getByRole('button', { name: 'website.navigation.preferences' }));
+        fireEvent.click(screen.getByRole('link', { name: /Nederlands/ }));
+        expect(notice()).not.toBeNull();
+        unmount();
+      });
+    });
+
+    it('stays away when English is chosen again, and takes an open notice down', () => {
+      goTo('/en/blog/some-post');
+      openPreferences();
+      fireEvent.click(screen.getByRole('link', { name: /Español/ }));
+      expect(notice()).not.toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: 'website.navigation.preferences' }));
+      fireEvent.click(screen.getByRole('link', { name: /English/ }));
+      expect(notice()).toBeNull();
+    });
+
+    it('is not shown where the page itself changes address', () => {
+      goTo('/en/tools/protein-calculator');
+      const nav = swallowNavigation();
+      openPreferences();
+      fireEvent.click(screen.getByRole('link', { name: /Español/ }));
+      nav.stop();
+      expect(notice()).toBeNull();
+    });
+
+    it('is not shown on an unprefixed page that has its own translations', () => {
+      goTo('/open');
+      openPreferences();
+      fireEvent.click(screen.getByRole('link', { name: /Español/ }));
+      expect(mockChangeLanguage).toHaveBeenCalledWith('es-ES');
+      expect(notice()).toBeNull();
+    });
+
+    it('closes with its button and focuses the trigger the panel closed over', () => {
+      goTo('/en/blog');
+      const trigger = openPreferences();
+      fireEvent.click(screen.getByRole('link', { name: /Русский/ }));
+      expect(document.activeElement).toBe(trigger);
+      fireEvent.click(screen.getByRole('button', { name: 'website.cta.close' }));
+      expect(notice()).toBeNull();
+    });
+
+    it('goes away by itself, and starts over when another language is chosen', () => {
+      jest.useFakeTimers();
+      goTo('/en/blog');
+      openPreferences();
+      fireEvent.click(screen.getByRole('link', { name: /Español/ }));
+      act(() => {
+        jest.advanceTimersByTime(ENGLISH_ONLY_NOTICE_MS - 1000);
+      });
+      expect(notice()).not.toBeNull();
+
+      fireEvent.click(screen.getByRole('button', { name: 'website.navigation.preferences' }));
+      fireEvent.click(screen.getByRole('link', { name: /Nederlands/ }));
+      act(() => {
+        jest.advanceTimersByTime(ENGLISH_ONLY_NOTICE_MS - 1000);
+      });
+      expect(notice()).not.toBeNull();
+
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(notice()).toBeNull();
+    });
   });
 
   it('applies theme choices without closing the preferences panel', () => {

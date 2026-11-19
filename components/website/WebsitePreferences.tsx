@@ -1,9 +1,11 @@
 import { Check, Globe, Monitor, Palette, SlidersHorizontal, X } from 'lucide-react-native';
-import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import { EnglishOnlyNotice } from '@/components/website/EnglishOnlyNotice';
 import {
+  DEFAULT_LOCALE_PREFIX,
   localeForLanguage,
   localeScopeOf,
   localizedPath,
@@ -87,6 +89,9 @@ export function WebsitePreferences() {
   const [activeTab, setActiveTab] = useState<'language' | 'theme'>('language');
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  // A counter, not a flag: choosing another language again restarts the notice's timer.
+  const [noticeId, setNoticeId] = useState<number | null>(null);
+  const dismissNotice = useCallback(() => setNoticeId(null), []);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const id = useId();
@@ -154,6 +159,8 @@ export function WebsitePreferences() {
   // A page with a translated URL is switched by navigating; the blog and unprefixed pages
   // (`/open`) have no other language, so the chrome changes in place.
   const navigates = page !== null && page.locale !== null && localeScopeOf(page.path) === 'all';
+  // The blog's posts stay English, so after an in-place switch the visitor is told so.
+  const englishOnly = page !== null && localeScopeOf(page.path) === 'en';
   const currentLocale = page?.locale && navigates ? page.locale : i18nLocale;
 
   return (
@@ -290,6 +297,14 @@ export function WebsitePreferences() {
                                         error
                                       )
                                     );
+                                  // Choosing a language is done, as it is when the page navigates.
+                                  setIsOpen(false);
+                                  triggerRef.current?.focus();
+                                  setNoticeId((current) =>
+                                    englishOnly && locale.prefix !== DEFAULT_LOCALE_PREFIX
+                                      ? (current ?? 0) + 1
+                                      : null
+                                  );
                                 }
                               }}
                               className="flex min-h-12 items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-ink/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-primary"
@@ -361,6 +376,7 @@ export function WebsitePreferences() {
             document.body
           )
         : null}
+      {noticeId !== null ? <EnglishOnlyNotice key={noticeId} onDismiss={dismissNotice} /> : null}
     </>
   );
 }
