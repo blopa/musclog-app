@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -58,6 +59,7 @@ export function ToolLayout({
 }: ToolLayoutProps) {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'websiteTools.layout' });
   const language = i18n.resolvedLanguage ?? i18n.language;
+  const href = useWebsiteHref();
   const seo = fixedPageSeo(routeKey, language);
 
   return (
@@ -69,7 +71,7 @@ export function ToolLayout({
       />
       <div className="container mx-auto max-w-5xl px-4">
         <a
-          href="/tools"
+          href={href('/tools')}
           className="text-sm font-semibold transition-colors hover:text-accent-primary"
           style={{ color: BODY_TEXT_SOFT }}
         >
@@ -135,7 +137,7 @@ export function ToolLayout({
               {articles.map((article) => (
                 <li key={article.href}>
                   <a
-                    href={article.href}
+                    href={href(article.href)}
                     className="underline underline-offset-2"
                     style={{ color: BRAND_GREEN_BRIGHT }}
                   >
@@ -156,7 +158,7 @@ export function ToolLayout({
                 return (
                   <li key={key}>
                     <a
-                      href={toolPath(key)}
+                      href={href(toolPath(key))}
                       className="underline underline-offset-2"
                       style={{ color: BRAND_GREEN_BRIGHT }}
                     >

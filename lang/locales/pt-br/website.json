@@ -121,6 +121,10 @@
           "title": "Ficha de treino grátis para imprimir (PDF) e planilha | Musclog",
           "description": "Baixe uma ficha de treino grátis para imprimir em A4 ou US Letter, e um modelo de Excel e CSV. A planilha pode ser importada no app Musclog."
         },
+        "toolNutritionLogTemplate": {
+          "title": "Diário alimentar grátis para imprimir (PDF) e planilha | Musclog",
+          "description": "Baixe um diário alimentar grátis para imprimir em A4 ou US Letter: macros já calculados, ou por 100 g para você fazer as contas. Além de uma planilha que faz as contas para você."
+        },
         "programs": {
           "title": "Programas de treino gratis | Musclog",
           "description": "Programas gratis: push pull legs, upper lower, full body e mais. Cada dia, exercicio, serie e repeticao esta listado e voce abre no Musclog."
@@ -345,7 +349,6 @@
       "tools": "Ferramentas"
     },
     "blog": {
-      "eyebrow": "Direto da oficina",
       "title": "Blog do Musclog",
       "description": "Notas sobre a criação de um app de fitness privado e open source — das decisões de produto à tecnologia por trás dele.",
       "empty": "Ainda não há artigos publicados.",
@@ -368,21 +371,18 @@
       "pageStatus": "Página {{current}} de {{total}}",
       "pageLabel": "Página {{page}}",
       "categoryPage": {
-        "eyebrow": "Explorar por categoria",
         "title": "Artigos sobre {{category}}",
         "description": "Todos os artigos do blog do Musclog na categoria {{category}}.",
         "empty": "Nenhum artigo foi encontrado em {{category}}.",
         "listLabel": "Artigos do blog sobre {{category}}"
       },
       "tagPage": {
-        "eyebrow": "Explorar por tag",
         "title": "Artigos com a tag {{tag}}",
         "description": "Todos os artigos do blog do Musclog marcados com a tag {{tag}}.",
         "empty": "Nenhum artigo foi encontrado com a tag {{tag}}.",
         "listLabel": "Artigos do blog com a tag {{tag}}"
       },
       "tagsPage": {
-        "eyebrow": "Explorar por tag",
         "title": "Tags do blog",
         "description": "Todas as tags usadas no blog do Musclog. Quanto maior a tag, mais artigos a usam.",
         "listLabel": "Tags do blog",
@@ -392,7 +392,6 @@
         "postCount_other": "{{count}} artigos"
       },
       "categoriesPage": {
-        "eyebrow": "Explorar por categoria",
         "title": "Categorias do blog",
         "description": "Todos os temas do blog do Musclog, de treino e nutrição a engenharia e novidades do produto.",
         "listLabel": "Categorias do blog",
@@ -551,6 +550,12 @@
       "forwarded": "Se o Musclog não abriu, toque no botão abaixo.",
       "installHint": "Ainda não tem o Musclog?",
       "installLink": "Baixar Musclog"
+    },
+    "forwarding": {
+      "title": "Levando você para a página certa",
+      "description": "As páginas do Musclog agora ficam sob um idioma, então estamos enviando você para a versão em inglês. Leva só um instante.",
+      "fallback": "Nada acontece?",
+      "link": "Abrir a página"
     },
     "footer": {
       "privacyPolicy": "Política de Privacidade",

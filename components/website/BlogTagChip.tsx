@@ -1,3 +1,5 @@
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
+
 import { blogTagPath, blogTagSlug } from './blogRoutes';
 import { brand, BRAND_GREEN_BRIGHT } from './websiteColors';
 
@@ -7,9 +9,11 @@ import { brand, BRAND_GREEN_BRIGHT } from './websiteColors';
  * `className` carries only what differs between the two spots (horizontal padding, stacking).
  */
 export function BlogTagChip({ className = '', tag }: { className?: string; tag: string }) {
+  const href = useWebsiteHref();
+
   return (
     <a
-      href={blogTagPath(blogTagSlug(tag))}
+      href={href(blogTagPath(blogTagSlug(tag)))}
       className={`rounded-full border py-1 text-xs font-semibold transition-colors hover:border-accent-bright/60 hover:text-accent-pale ${className}`}
       style={{
         backgroundColor: brand(0.09),

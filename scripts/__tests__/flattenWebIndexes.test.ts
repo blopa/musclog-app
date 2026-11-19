@@ -71,4 +71,16 @@ describe('flattenDirectoryIndexes', () => {
     expect(await exists('(website)/x.html')).toBe(false);
     expect(await exists('assets/z.html')).toBe(false);
   });
+
+  it('flattens locale directories', async () => {
+    await put('es/index.html', 'es');
+    await put('pt-br/index.html', 'br');
+    await put('pt-br/tools/index.html', 'tools');
+
+    expect(flattenDirectoryIndexes(dist).sort()).toEqual(
+      ['es.html', 'pt-br.html', 'pt-br/tools.html'].sort()
+    );
+    expect(await readFile(path.join(dist, 'es.html'), 'utf8')).toBe('es');
+    expect(await readFile(path.join(dist, 'pt-br/tools.html'), 'utf8')).toBe('tools');
+  });
 });

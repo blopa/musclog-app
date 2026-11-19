@@ -40,6 +40,7 @@ import { importDatabase, shouldSeedDevData, shouldSeedLayoutAuditData } from '@/
 import { handleError } from '@/utils/handleError';
 import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
+import { websitePageUrl } from '@/utils/websiteUrl';
 
 /** The most Loggy takes, on a tall phone. */
 const LANDING_POSE_MAX_HEIGHT = 152;
@@ -90,7 +91,7 @@ function SetupOption({ label, labelAccessory, note, icon, variant, onPress }: Se
 
 export default function LandingScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const { height: windowHeight, fontScale } = useWindowDimensions();
@@ -407,7 +408,7 @@ export default function LandingScreen() {
                     <Text
                       accessibilityRole="link"
                       onPress={async () => {
-                        const url = 'https://musclog.app/terms';
+                        const url = websitePageUrl('/terms', i18n.language);
                         try {
                           await Linking.openURL(url);
                         } catch (e) {

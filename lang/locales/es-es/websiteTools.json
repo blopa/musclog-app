@@ -28,6 +28,20 @@
       "invalid": "Revisa el peso de la barra y la cantidad de discos: cada campo necesita un número."
     },
     "index": {
+      "groups": {
+        "strength": {
+          "title": "Conoce tu fuerza",
+          "body": "Calcula tu máximo, tus discos y tus calentamientos."
+        },
+        "training": {
+          "title": "Planifica tu entrenamiento",
+          "body": "Define esfuerzo, progresión y descargas, y lleva un registro."
+        },
+        "nutrition": {
+          "title": "Come según tu objetivo",
+          "body": "Proteína, calorías y carbohidratos sin adivinar."
+        }
+      },
       "title": "Herramientas gratis para quien entrena",
       "intro": "Calculadoras que funcionan en tu navegador y usan las mismas fórmulas que la app Musclog. Nada de lo que escribes sale de la página.",
       "programsTitle": "Programas de entrenamiento gratis",

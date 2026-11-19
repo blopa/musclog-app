@@ -28,6 +28,20 @@
       "invalid": "Controleer het stanggewicht en het aantal schijven: elk veld heeft een getal nodig."
     },
     "index": {
+      "groups": {
+        "strength": {
+          "title": "Ken je kracht",
+          "body": "Bereken je max, je schijven en je opwarmsets."
+        },
+        "training": {
+          "title": "Plan je training",
+          "body": "Bepaal inspanning, progressie en deloads en houd een logboek bij."
+        },
+        "nutrition": {
+          "title": "Eet voor je doel",
+          "body": "Eiwit, calorieën en koolhydraten zonder te gokken."
+        }
+      },
       "title": "Gratis tools voor krachtsporters",
       "intro": "Rekenmachines die in je browser draaien en dezelfde formules gebruiken als de Musclog-app. Niets wat je typt verlaat de pagina.",
       "programsTitle": "Gratis trainingsschema's",

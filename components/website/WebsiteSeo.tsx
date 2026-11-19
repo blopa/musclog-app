@@ -2,8 +2,8 @@ import { usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import { useTranslation } from 'react-i18next';
 
+import { stripLocalePrefix } from './localeRoutes';
 import {
-  absoluteUrl,
   fixedPageSeo,
   metadataForPage,
   type PageSeo,
@@ -13,10 +13,9 @@ import {
 } from './websiteMetadata';
 import websiteRoutes from './websiteRoutes.json';
 
-const ROUTE_KEY_BY_PATH: Record<string, WebsiteSeoRouteKey> = {
-  ...Object.fromEntries(Object.entries(websiteRoutes).map(([key, route]) => [route.path, key])),
-  '/home': 'home',
-} as Record<string, WebsiteSeoRouteKey>;
+const ROUTE_KEY_BY_PATH = Object.fromEntries(
+  Object.entries(websiteRoutes).map(([key, route]) => [route.path, key])
+) as Record<string, WebsiteSeoRouteKey>;
 
 function PageMetadata({ page }: { page: PageSeo }) {
   const { i18n } = useTranslation();
@@ -29,7 +28,10 @@ function PageMetadata({ page }: { page: PageSeo }) {
       <meta name="description" content={page.description} />
       <meta name="keywords" content={page.keywords ?? websiteCopy(language).seo.keywords} />
       <meta name="robots" content={page.robots ?? 'index, follow'} />
-      <link rel="canonical" href={absoluteUrl(page.canonicalPath)} />
+      <link rel="canonical" href={metadata.alternates?.canonical as string} />
+      {Object.entries(metadata.alternates?.languages ?? {}).map(([hrefLang, href]) => (
+        <link key={hrefLang} rel="alternate" hrefLang={hrefLang} href={href as string} />
+      ))}
       <meta property="og:type" content={og.type} />
       <meta property="og:site_name" content={og.siteName} />
       <meta property="og:locale" content={og.locale} />
@@ -69,7 +71,8 @@ function normalizePathname(pathname: string | null | undefined): string {
 }
 
 function routeKeyForPathname(pathname: string | null | undefined): WebsiteSeoRouteKey | null {
-  return ROUTE_KEY_BY_PATH[normalizePathname(pathname)] ?? null;
+  // The routes are registered by their logical path; the public one starts with the language.
+  return ROUTE_KEY_BY_PATH[stripLocalePrefix(normalizePathname(pathname))] ?? null;
 }
 
 export function WebsiteSeoForCurrentRoute({

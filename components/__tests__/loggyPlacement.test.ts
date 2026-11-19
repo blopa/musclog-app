@@ -37,10 +37,14 @@ const MAY_RENDER_LOGGY: Record<string, string> = {
  * SVG as a plain image, not `LoggyPose`, so it is held separately.
  */
 const MAY_RENDER_WEBSITE_LOGGY: Record<string, string> = {
-  'app/(website)/download.web.tsx': 'the page that starts the install (lifting, ready to train)',
-  'app/(website)/exercises.web.tsx': 'no results for a search, in place of the icon (shrug)',
-  'app/(website)/faq.web.tsx': 'above the questions (thinking)',
-  'app/(website)/home.web.tsx': 'the one introduction on the homepage (wave)',
+  'app/(website)/[locale]/download.web.tsx':
+    'the page that starts the install (lifting, ready to train)',
+  'app/(website)/[locale]/exercises.web.tsx':
+    'no results for a search, in place of the icon (shrug)',
+  'app/(website)/[locale]/faq.web.tsx': 'above the questions (thinking)',
+  'app/(website)/[locale]/index.web.tsx': 'the one introduction on the homepage (wave)',
+  'components/website/LegacyForward.tsx':
+    'the page an old unprefixed address shows while it forwards to /en (thinking)',
   'app/(website)/open.web.tsx':
     'the page an assistant link lands on (reading, review before saving)',
 };
@@ -106,7 +110,7 @@ describe('Loggy placement', () => {
   });
 
   it('shows him once on the homepage, as the introduction and nowhere else on it', () => {
-    const home = sourceOf('app/(website)/home.web.tsx');
+    const home = sourceOf('app/(website)/[locale]/index.web.tsx');
 
     expect(home.match(/<WebsiteLoggy\b/g)).toHaveLength(1);
     expect(home).toMatch(/export function MeetLoggy\(\)/);
@@ -146,7 +150,7 @@ describe('Loggy placement', () => {
   });
 
   it('falls back to the icon when he is hidden where he stands in for it', () => {
-    expect(sourceOf('app/(website)/exercises.web.tsx')).toMatch(/loggyVisible \? \(/);
+    expect(sourceOf('app/(website)/[locale]/exercises.web.tsx')).toMatch(/loggyVisible \? \(/);
   });
 
   it('is requested by an empty state only on the two whole-screen first-use screens', () => {

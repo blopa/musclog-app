@@ -28,11 +28,12 @@ const SHARED_FUNCTIONS: Record<(typeof TOOLS)[number]['key'], string[]> = {
   progressiveOverload: ['computeStartTarget', 'loadStepFor'],
   deloadCalculator: ['deloadedLoad', 'loadBelow', 'lighterSetCount'],
   workoutLogTemplate: ['parseWorkoutImport'],
+  nutritionLogTemplate: ['inferCaloriesFromMacrosPer100g'],
 };
 
 describe.each(TOOLS)('tool $key', ({ key, routeKey }) => {
   const slug = toolPath(key).split('/').pop()!;
-  const pagePath = `app/(website)/tools/${slug}`;
+  const pagePath = `app/(website)/[locale]/tools/${slug}`;
   const modelName = `${key}Model`;
 
   it('is a /tools route with a web page and a native redirect', () => {
@@ -43,7 +44,7 @@ describe.each(TOOLS)('tool $key', ({ key, routeKey }) => {
 
   it('exports metadata for its route key and renders the shared layout', () => {
     const page = strip(read(`${pagePath}.web.tsx`));
-    expect(page).toContain(`fixedPageMetadata('${routeKey}')`);
+    expect(page).toContain(`fixedMetadataFor('${routeKey}')`);
     expect(page).toContain(`routeKey="${routeKey}"`);
     expect(page).toContain('<ToolLayout');
   });

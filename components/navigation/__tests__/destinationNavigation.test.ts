@@ -8,12 +8,13 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { HOME_ROUTE, isHomePath } from '@/components/navigation/navDestinations';
+import { HOME_ROUTE, isHomePath, NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import {
   rewriteTabsAction,
   singleTabsRouter,
   TABS_ROUTE_NAME,
 } from '@/components/navigation/singleTabsRouter';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 
 // Loaded from expo-router's build so the test exercises the installed routers, not a copy.
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -211,12 +212,15 @@ describe('wiring', () => {
   });
 
   it('every bar destination is a tab of the tab navigator', () => {
-    const navDestinations = source('components/navigation/navDestinations.ts');
-    const routes = [...navDestinations.matchAll(/route: '\/app\/([^']+)'/g)].map((m) => m[1]);
+    const routes = [
+      HOME_ROUTE,
+      ...Object.values(NAV_DESTINATIONS).map((destination) => destination.route),
+      WEEKLY_REVIEW_ROUTE,
+    ].filter((route): route is string => route !== null);
     expect(routes.length).toBeGreaterThan(5);
-    // The Weekly Review route is a constant there (WEEKLY_REVIEW_ROUTE), so it is named here.
-    for (const route of [...routes, 'index', 'weekly-review']) {
-      expect(() => source(`app/app/(tabs)/${route}.tsx`)).not.toThrow();
+    for (const route of routes) {
+      const name = route === HOME_ROUTE ? 'index' : route.replace(/^\/app\//, '');
+      expect(() => source(`app/app/(tabs)/${name}.tsx`)).not.toThrow();
     }
   });
 });

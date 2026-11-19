@@ -1,8 +1,9 @@
-import { Link, usePathname } from 'expo-router';
+import { usePathname } from 'expo-router';
 import { Cookie } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import {
   ANALYTICS_RESET_EVENT,
   AnalyticsConsentState,
@@ -20,6 +21,7 @@ const BANNER_DELAY_MS = 400;
 
 export function AnalyticsConsent() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cookieConsent' });
+  const href = useWebsiteHref();
   const pathname = usePathname();
   const [consent, setConsent] = useState<AnalyticsConsentState>(() => getAnalyticsConsent());
   const [visible, setVisible] = useState(false);
@@ -103,9 +105,9 @@ export function AnalyticsConsent() {
 
           <p className="text-sm leading-relaxed text-text-tertiary">
             {t('description')}{' '}
-            <Link href="/privacy" className="text-accent-primary underline underline-offset-2">
+            <a href={href('/privacy')} className="text-accent-primary underline underline-offset-2">
               {t('privacyLink')}
-            </Link>
+            </a>
             .
           </p>
         </div>

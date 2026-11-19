@@ -81,6 +81,8 @@ describe('the /open page', () => {
     expect(websiteRoutes.open).toEqual({
       path: OPEN_LINK_PATH,
       robots: expect.stringContaining('noindex'),
+      // The one page that never takes a language prefix: the app's link claim names its exact path.
+      locales: 'none',
     });
     expect(read('public/robots.txt')).toContain(`Disallow: ${OPEN_LINK_PATH}\n`);
   });

@@ -39,9 +39,11 @@ describe('website header navigation', () => {
       '<nav className="hidden items-center gap-6 lg:flex">',
       '</nav>'
     );
-    const links = [...headerNavigation.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
+    const links = [...headerNavigation.matchAll(/href=\{href\('([^']+)'\)\}/g)].map(
+      (match) => match[1]
+    );
 
-    expect(links).toEqual(['/blog', '/calculator', '/exercises', '/progress']);
+    expect(links).toEqual(['/blog', '/tools', '/exercises', '/progress']);
   });
 
   it('offers the burger menu in the header cluster that replaces the desktop nav', () => {
@@ -72,7 +74,7 @@ describe('website mobile menu', () => {
     );
 
     expect(links).toEqual([
-      '/home#features',
+      '/#features',
       '/blog',
       '/tools',
       '/calculator',
@@ -108,7 +110,10 @@ describe('website mobile menu', () => {
   it('closes on escape, on a backdrop press, and when a destination is chosen', () => {
     expect(mobileMenu).toContain("if (event.key === 'Escape')");
     expect(mobileMenu).toContain('onClick={() => setIsOpen(false)}');
-    expect(mobileMenu).toContain('onPress={() => setIsOpen(false)}');
+    // The backdrop, the external links and the in-site links all close it on click.
+    expect(
+      mobileMenu.match(/onClick=\{\(\) => setIsOpen\(false\)\}/g)?.length
+    ).toBeGreaterThanOrEqual(3);
   });
 
   it('closes when the viewport grows past the desktop breakpoint', () => {
@@ -139,5 +144,24 @@ describe('website footer', () => {
       GITHUB_LICENSE_URL,
       GITHUB_REPO_URL,
     ]);
+  });
+});
+
+describe('links between website pages', () => {
+  // expo-router's `Link` navigates on the client. Every route is a lazy chunk plus a loader fetch
+  // inside a Suspense boundary whose production fallback is `null`, so the content area stayed
+  // blank (header and footer only) until both arrived. A plain anchor is a full load, which paints
+  // the statically exported HTML straight away (docs/FIXES.md).
+  const FILES = [
+    'components/website/WebsiteWrapper.web.tsx',
+    'components/website/AnalyticsConsent.web.tsx',
+    'app/(website)/en/blog/[...slug].web.tsx',
+  ];
+
+  it.each(FILES)('%s links with plain anchors, not expo-router Link', (file) => {
+    const text = readFileSync(join(__dirname, '..', '..', '..', file), 'utf8');
+
+    expect(text).not.toMatch(/import\s*\{[^}]*\bLink\b[^}]*\}\s*from 'expo-router'/);
+    expect(text).not.toMatch(/<Link[\s>]/);
   });
 });

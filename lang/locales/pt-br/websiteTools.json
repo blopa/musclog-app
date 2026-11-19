@@ -28,6 +28,20 @@
       "invalid": "Confira o peso da barra e a quantidade de anilhas: cada campo precisa de um número."
     },
     "index": {
+      "groups": {
+        "strength": {
+          "title": "Conheça sua força",
+          "body": "Calcule seu máximo, seus discos e seus aquecimentos."
+        },
+        "training": {
+          "title": "Planeje seu treino",
+          "body": "Defina esforço, progressão e deloads, e mantenha um registro."
+        },
+        "nutrition": {
+          "title": "Coma pelo seu objetivo",
+          "body": "Proteína, calorias e carboidratos sem adivinhar."
+        }
+      },
       "title": "Ferramentas gratuitas para quem treina",
       "intro": "Calculadoras que funcionam no seu navegador e usam as mesmas contas do app Musclog. Nada do que você digita sai da página.",
       "programsTitle": "Programas de treino gratuitos",

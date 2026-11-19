@@ -19,6 +19,8 @@ import {
   XShareButton,
 } from 'react-share';
 
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
+
 import { BODY_TEXT_SOFT, ink } from './websiteColors';
 import { absoluteUrl, SEO_IMAGE_URL } from './websiteMetadata';
 
@@ -60,7 +62,8 @@ export interface BlogPostShareProps {
 
 export function BlogPostShare({ canonicalPath, description, title }: BlogPostShareProps) {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.blog.share' });
-  const url = absoluteUrl(canonicalPath);
+  const href = useWebsiteHref();
+  const url = absoluteUrl(href(canonicalPath));
   const summary = description || title;
 
   /**

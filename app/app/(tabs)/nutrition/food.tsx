@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { useHasCamera } from '@/components/CameraView';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { useCoach } from '@/components/CoachContext';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
@@ -72,6 +73,7 @@ import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { targetModeSummary } from '@/components/weeklyReview/targetModeLabel';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
+import type { CameraMode } from '@/constants/camera';
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSmartCamera } from '@/context/SmartCameraContext';
@@ -161,7 +163,8 @@ export default function FoodScreen() {
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
-  const { openCamera, setCurrentDate, hasCamera } = useSmartCamera();
+  const { openCamera, setCurrentDate } = useSmartCamera();
+  const hasCamera = useHasCamera();
   const {
     handleFoodCardPress,
     handleFoodMenuPress,
@@ -1216,6 +1219,43 @@ export default function FoodScreen() {
     },
   ];
 
+  const openDiaryCamera = (
+    mode: CameraMode,
+    { hideCameraModePicker = false, withMealType = true } = {}
+  ) =>
+    openCamera({
+      mode,
+      hideCameraModePicker,
+      showBarcodeTextSearch: mode === 'barcode-scan',
+      logDate: selectedDate,
+      mealType: withMealType ? selectedMealType : undefined,
+    });
+
+  const handleQuickScan = hasCamera
+    ? () => openDiaryCamera('barcode-scan', { withMealType: false })
+    : undefined;
+
+  const handleAddFoodAiCamera = hasCamera
+    ? () => {
+        closeAddFoodModal();
+        openDiaryCamera('ai-meal-photo');
+      }
+    : undefined;
+
+  const handleAddFoodBarcode = hasCamera
+    ? () => {
+        closeAddFoodModal();
+        openDiaryCamera('barcode-scan');
+      }
+    : undefined;
+
+  const handleSearchBarcode = hasCamera
+    ? () => {
+        screenModals.foodSearch.close();
+        openDiaryCamera('barcode-scan', { hideCameraModePicker: true });
+      }
+    : undefined;
+
   return (
     <MasterLayout>
       <ScreenHeader
@@ -1391,18 +1431,7 @@ export default function FoodScreen() {
 
                     {/* Scan Buttons */}
                     <FoodQuickActions
-                      onScanBarcode={
-                        hasCamera
-                          ? () => {
-                              openCamera({
-                                mode: 'barcode-scan',
-                                hideCameraModePicker: false,
-                                showBarcodeTextSearch: true,
-                                logDate: selectedDate,
-                              });
-                            }
-                          : undefined
-                      }
+                      onScanBarcode={handleQuickScan}
                       onSearchFood={() => screenModals.foodSearch.open('all')}
                       onMyMeals={screenModals.myMeals.open}
                       onMoreOptions={() => {
@@ -1474,33 +1503,8 @@ export default function FoodScreen() {
             closeAddFoodModal();
             screenModals.foodSearch.open('all');
           }}
-          onAiCameraPress={
-            hasCamera
-              ? () => {
-                  closeAddFoodModal();
-                  openCamera({
-                    mode: 'ai-meal-photo',
-                    hideCameraModePicker: false,
-                    logDate: selectedDate,
-                    mealType: selectedMealType,
-                  });
-                }
-              : undefined
-          }
-          onScanBarcodePress={
-            hasCamera
-              ? () => {
-                  closeAddFoodModal();
-                  openCamera({
-                    mode: 'barcode-scan',
-                    hideCameraModePicker: false,
-                    showBarcodeTextSearch: true,
-                    logDate: selectedDate,
-                    mealType: selectedMealType,
-                  });
-                }
-              : undefined
-          }
+          onAiCameraPress={handleAddFoodAiCamera}
+          onScanBarcodePress={handleAddFoodBarcode}
           onSearchFoodPress={() => {
             closeAddFoodModal();
             screenModals.foodSearch.open('all');
@@ -1600,20 +1604,7 @@ export default function FoodScreen() {
             screenModals.foodSearch.close();
             screenModals.createCustomFood.open();
           }}
-          onBarcodeScanPress={
-            hasCamera
-              ? () => {
-                  screenModals.foodSearch.close();
-                  openCamera({
-                    mode: 'barcode-scan',
-                    hideCameraModePicker: true,
-                    showBarcodeTextSearch: true,
-                    logDate: selectedDate,
-                    mealType: selectedMealType,
-                  });
-                }
-              : undefined
-          }
+          onBarcodeScanPress={handleSearchBarcode}
           isAiEnabled={isAiConfigured}
         />
 

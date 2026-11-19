@@ -1,4 +1,3 @@
-import { Link } from 'expo-router';
 import { Download, Dumbbell, Menu, X } from 'lucide-react-native';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -6,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { computePopoverTop } from '@/components/website/popoverPlacement';
 import { StoreButtons } from '@/components/website/StoreButtons';
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -189,6 +189,7 @@ const MOBILE_MENU_ID = 'website-mobile-menu';
 
 export function MobileMenu() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
+  const href = useWebsiteHref();
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -237,7 +238,7 @@ export function MobileMenu() {
   }, [isOpen]);
 
   const menuLinks = [
-    { text: t('features'), href: '/home#features' },
+    { text: t('features'), href: '/#features' },
     { text: t('blog'), href: '/blog' },
     { text: t('tools'), href: '/tools' },
     { text: t('calculator'), href: '/calculator' },
@@ -310,14 +311,14 @@ export function MobileMenu() {
                         {link.text}
                       </a>
                     ) : (
-                      <Link
+                      <a
                         key={link.text}
-                        href={link.href}
-                        onPress={() => setIsOpen(false)}
+                        href={href(link.href)}
+                        onClick={() => setIsOpen(false)}
                         className={`${linkClasses} text-text-primary`}
                       >
                         {link.text}
-                      </Link>
+                      </a>
                     )
                   )}
                 </nav>
@@ -342,6 +343,7 @@ export function MobileMenu() {
 
 export function Header() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
+  const href = useWebsiteHref();
 
   return (
     <header
@@ -349,7 +351,7 @@ export function Header() {
       style={{ backgroundColor: surface(), borderColor: ink(0.08) }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
+        <a href={href('/')} className="flex shrink-0 items-center gap-2">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-inner"
             style={{ backgroundColor: BRAND_GREEN }}
@@ -364,33 +366,33 @@ export function Header() {
               {t('appTagline')}
             </span>
           </div>
-        </Link>
+        </a>
 
         <nav className="hidden items-center gap-6 lg:flex">
-          <Link
-            href="/blog"
+          <a
+            href={href('/blog')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('blog')}
-          </Link>
-          <Link
-            href="/calculator"
+          </a>
+          <a
+            href={href('/tools')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
-            {t('calculator')}
-          </Link>
-          <Link
-            href="/exercises"
+            {t('tools')}
+          </a>
+          <a
+            href={href('/exercises')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('exercises')}
-          </Link>
-          <Link
-            href="/progress"
+          </a>
+          <a
+            href={href('/progress')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('progress')}
-          </Link>
+          </a>
           <DownloadModal
             variant="default"
             className="shrink-0 whitespace-nowrap px-5 py-2.5 text-sm font-bold"
@@ -421,6 +423,7 @@ export function Footer() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.footer' });
   const { t: navT } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
   const { t: consentT } = useTranslation(undefined, { keyPrefix: 'website.cookieConsent' });
+  const href = useWebsiteHref();
 
   const footerLinks = [
     { text: t('privacyPolicy'), href: '/privacy' },
@@ -440,7 +443,7 @@ export function Footer() {
     <footer className="border-t py-8" style={{ borderColor: ink(0.08) }}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <Link href="/" className="flex items-center gap-3">
+          <a href={href('/')} className="flex items-center gap-3">
             <div
               className="flex h-8 w-8 items-center justify-center rounded-inner"
               style={{ backgroundColor: BRAND_GREEN }}
@@ -453,7 +456,7 @@ export function Footer() {
                 {navT('appTagline')}
               </span>
             </div>
-          </Link>
+          </a>
 
           <nav className="grid grid-cols-2 justify-items-center gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:justify-items-start md:text-left">
             {footerLinks.map((link) =>
@@ -468,13 +471,13 @@ export function Footer() {
                   {link.text}
                 </a>
               ) : (
-                <Link
+                <a
                   key={link.text}
-                  href={link.href}
+                  href={href(link.href)}
                   className="text-sm text-text-tertiary transition-colors hover:text-accent-primary"
                 >
                   {link.text}
-                </Link>
+                </a>
               )
             )}
             <button

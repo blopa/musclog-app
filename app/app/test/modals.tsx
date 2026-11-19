@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useHasCamera } from '@/components/CameraView';
 import { CycleDaySheet } from '@/components/cycle/CycleDaySheet';
 import { AddExerciseModal } from '@/components/modals/AddExerciseModal';
 import { AddExerciseToSessionModal } from '@/components/modals/AddExerciseToSessionModal';
@@ -106,7 +107,8 @@ const TEST_WORKOUT_METADATA_NOW = Date.now();
 export default function ModalsTestScreen() {
   // Menstrual cycle data for CycleSettingsModal
   const { cycle } = useMenstrualCycle();
-  const { openCamera, hasCamera } = useSmartCamera();
+  const { openCamera } = useSmartCamera();
+  const hasCamera = useHasCamera();
 
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);

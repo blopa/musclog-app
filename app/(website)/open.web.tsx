@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import { WebsiteLoggy } from '@/components/website/WebsiteLoggy';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { useCountdown } from '@/hooks/useCountdown';
@@ -27,6 +28,7 @@ import {
 export default function Open() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.open' });
   const { formatInteger } = useFormatAppNumber();
+  const href = useWebsiteHref();
   const [link, setLink] = useState<OpenLink | null>(null);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ export default function Open() {
 
       <p className="mt-10 text-sm leading-6 text-text-secondary">
         {t('installHint')}{' '}
-        <a href="/download" className="font-semibold text-text-primary underline">
+        <a href={href('/download')} className="font-semibold text-text-primary underline">
           {t('installLink')}
         </a>
       </p>

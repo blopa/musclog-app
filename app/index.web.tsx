@@ -4,12 +4,10 @@ import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
 import { SplashLoading } from '@/components/SplashLoading';
+import { LegacyForward } from '@/components/website/LegacyForward';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
-import { WebsiteShell } from '@/components/website/WebsiteShell';
 import { isProduction } from '@/utils/app';
 import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
-
-import Home from './(website)/home.web';
 
 export function generateMetadata() {
   return fixedPageMetadata('home');
@@ -28,12 +26,9 @@ export default function Index() {
     runEntryOnboardingRedirect(router, 'index.web', pathname);
   }, [navigationState?.key, pathname, router]);
 
+  // The public home page is `/en`, `/es`, …: the bare address is an old one and forwards to English.
   if (isProduction()) {
-    return (
-      <WebsiteShell>
-        <Home />
-      </WebsiteShell>
-    );
+    return <LegacyForward to="/en" />;
   }
 
   return <SplashLoading />;

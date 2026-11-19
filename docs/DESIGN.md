@@ -655,8 +655,10 @@ stay out (`deslopGuards.test.ts`); if the stage needs more, capture more real sc
 **Loggy on the website** is a short list, held by `components/__tests__/loggyPlacement.test.ts`
 like the app's: the homepage's "Meet Loggy" introduction (`wave`, the only place the homepage
 shows him), the top of the download page (`lifting`), the FAQ header (`thinking`), the `/open`
-bridge an assistant's link lands on (`reading`: review before anything is saved) and an exercise
-search with no results (`shrug`, in place of the icon). Never on legal pages, the contact page, the
+bridge an assistant's link lands on (`reading`: review before anything is saved), the "taking you
+to the right page" screen an old unprefixed address shows while it forwards to `/en/…`
+(`LegacyForward`, `thinking`, inside the normal header and footer) and an exercise search with no
+results (`shrug`, in place of the icon). Never on legal pages, the contact page, the
 calculator, the progress and rep-marker tools, the Game Boy and comparison pages, or the blog. He
 is the generated animated SVG as a CSS background (`WebsiteLoggy`), always decorative (no alt text),
 in the greens of the visitor's theme, with the words beside him carrying the meaning, and the section around him never depends on him: with

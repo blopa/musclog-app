@@ -1,11 +1,37 @@
+import { useTranslation } from 'react-i18next';
+
 import { GITHUB_REPO_URL } from '@/constants/misc';
 
 import { blogPostPath } from './blogRoutes';
-import { SITE_ORIGIN } from './websiteMetadata';
+import {
+  DEFAULT_LOCALE_PREFIX,
+  localeForLanguage,
+  localizedPath,
+  parsePublicPath,
+} from './localeRoutes';
+import { absoluteUrl, SITE_ORIGIN } from './websiteMetadata';
 
 const SITE_NAME = 'Musclog';
 const LOGO_URL = `${SITE_ORIGIN}/images/seo-image.png`;
 const SAME_AS = [GITHUB_REPO_URL, 'https://instagram.com/musclog.app'];
+/** The organisation and the site are one entity in every language, named by the default-language home. */
+const ENTITY_URL = absoluteUrl(localizedPath('/', DEFAULT_LOCALE_PREFIX));
+
+/**
+ * The absolute, localized URL of a page (given by its LOGICAL path) in the visitor's language, and
+ * the `hreflang` of the language that URL is in (the blog has English copy only, so a Spanish
+ * visitor's post URL is `/en/blog/…` and says `en`).
+ */
+function usePageLocation(path: string): { inLanguage: string; url: string } {
+  const { i18n } = useTranslation();
+  const { prefix } = localeForLanguage(i18n.resolvedLanguage ?? i18n.language);
+  const localized = localizedPath(path, prefix);
+
+  return {
+    inLanguage: (parsePublicPath(localized).locale ?? localeForLanguage('en')).hreflang,
+    url: absoluteUrl(localized),
+  };
+}
 
 /** Escape script terminators before embedding JSON-LD in prerendered HTML. */
 function jsonLdText(data: unknown): string {
@@ -25,14 +51,14 @@ export function WebsiteOrganizationJsonLd() {
       {
         '@type': 'Organization',
         name: SITE_NAME,
-        url: SITE_ORIGIN,
+        url: ENTITY_URL,
         logo: LOGO_URL,
         sameAs: SAME_AS,
       },
       {
         '@type': 'WebSite',
         name: SITE_NAME,
-        url: SITE_ORIGIN,
+        url: ENTITY_URL,
       },
     ],
   };
@@ -50,11 +76,13 @@ export function WebsiteOrganizationJsonLd() {
  * be sourced (Google penalizes misleading structured data).
  */
 export function SoftwareApplicationJsonLd({ description }: { description: string }) {
+  const { inLanguage, url } = usePageLocation('/');
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: SITE_NAME,
-    url: SITE_ORIGIN,
+    url,
+    inLanguage,
     description,
     operatingSystem: 'ANDROID, IOS',
     applicationCategory: 'HealthApplication',
@@ -85,12 +113,14 @@ export function WebApplicationJsonLd({
   description: string;
   path: string;
 }) {
+  const { inLanguage, url } = usePageLocation(path);
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name,
     description,
-    url: `${SITE_ORIGIN}${path}`,
+    url,
+    inLanguage,
     applicationCategory: 'HealthApplication',
     operatingSystem: 'Any',
     isAccessibleForFree: true,
@@ -99,7 +129,7 @@ export function WebApplicationJsonLd({
       price: '0',
       priceCurrency: 'USD',
     },
-    provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_ORIGIN },
+    provider: { '@type': 'Organization', name: SITE_NAME, url: ENTITY_URL },
   };
 
   return (
@@ -164,13 +194,16 @@ export function BlogListingJsonLd({
   posts,
   title,
 }: BlogListingJsonLdProps) {
-  const url = `${SITE_ORIGIN}${canonicalPath}`;
+  const { inLanguage, url } = usePageLocation(canonicalPath);
+  const { i18n } = useTranslation();
+  const { prefix } = localeForLanguage(i18n.resolvedLanguage ?? i18n.language);
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: title,
     description,
     url,
+    inLanguage,
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: posts.length,
@@ -178,7 +211,7 @@ export function BlogListingJsonLd({
         '@type': 'ListItem',
         position: positionOffset + index + 1,
         name: post.title,
-        url: `${SITE_ORIGIN}${blogPostPath(post.slug)}`,
+        url: absoluteUrl(localizedPath(blogPostPath(post.slug), prefix)),
       })),
     },
   };
@@ -208,12 +241,13 @@ export function BlogPostingJsonLd({
   tags,
   title,
 }: BlogPostingJsonLdProps) {
-  const url = `${SITE_ORIGIN}${canonicalPath}`;
+  const { inLanguage, url } = usePageLocation(canonicalPath);
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: title,
     description: description || title,
+    inLanguage,
     datePublished: date,
     articleSection: category,
     keywords: tags,
@@ -223,12 +257,12 @@ export function BlogPostingJsonLd({
     author: {
       '@type': 'Organization',
       name: SITE_NAME,
-      url: SITE_ORIGIN,
+      url: ENTITY_URL,
     },
     publisher: {
       '@type': 'Organization',
       name: SITE_NAME,
-      url: SITE_ORIGIN,
+      url: ENTITY_URL,
       logo: {
         '@type': 'ImageObject',
         url: LOGO_URL,

@@ -28,11 +28,6 @@ type OpenCameraOptions = {
 };
 
 type SmartCameraContextType = {
-  /**
-   * Whether the device has a camera (`useHasCamera`). The owner that builds a camera handler
-   * supplies it only while this is true; a camera button renders iff its handler is given.
-   */
-  hasCamera: boolean;
   openCamera: (options?: OpenCameraOptions) => void;
   setCurrentDate: (date: Date | undefined) => void;
 };
@@ -109,10 +104,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     onBarcodeScannedRef.current?.(data);
   }, []);
 
-  const value = useMemo(
-    () => ({ hasCamera, openCamera, setCurrentDate }),
-    [hasCamera, openCamera, setCurrentDate]
-  );
+  const value = useMemo(() => ({ openCamera, setCurrentDate }), [openCamera, setCurrentDate]);
 
   return (
     <SmartCameraContext.Provider value={value}>

@@ -4,7 +4,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import { createElement } from 'react';
 
-import { Hero } from '@/app/(website)/home.web';
+import { Hero } from '@/app/(website)/[locale]/index.web';
 import { THEME_IDS } from '@/constants/settings';
 import { useThemeId } from '@/hooks/useTheme';
 import { DEFAULT_THEME_BY_MODE } from '@/theme.registry';

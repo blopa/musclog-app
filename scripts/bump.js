@@ -1,3 +1,4 @@
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -55,6 +56,19 @@ function replaceRequired(content, pattern, replacement, label) {
 
   pattern.lastIndex = 0;
   return content.replace(pattern, replacement);
+}
+
+// JSON.stringify reflows short arrays (`"platforms": ["ios", "android"]`) onto one line per item,
+// which the repo's Prettier then rewrites, so every bump left app.json unformatted. The format
+// step runs the repo's own Prettier CLI synchronously (its API is async) with the config passed
+// explicitly, so temporary fixture directories format the same way.
+const PRETTIER_CLI = require.resolve('prettier/bin/prettier.cjs');
+const PRETTIER_CONFIG = require.resolve('../prettier.config.js');
+
+function formatJsonFiles(files) {
+  execFileSync(process.execPath, [PRETTIER_CLI, '--write', '--config', PRETTIER_CONFIG, ...files], {
+    stdio: 'ignore',
+  });
 }
 
 function releasePaths(projectDir) {
@@ -182,6 +196,7 @@ function bumpProjectVersions(projectDir, bumpType) {
 
   fs.writeFileSync(files.package, `${JSON.stringify(packageJson, null, 2)}\n`);
   fs.writeFileSync(files.app, `${JSON.stringify(app, null, 2)}\n`);
+  formatJsonFiles([files.package, files.app]);
   if (packageLock) {
     fs.writeFileSync(files.lock, `${JSON.stringify(packageLock, null, 2)}\n`);
   }

@@ -346,7 +346,6 @@ export function FoodSearchModal({
   isAiEnabled = true,
 }: FoodSearchModalProps) {
   const theme = useTheme();
-  const showBarcodeScan = onBarcodeScanPress !== undefined;
   const { t } = useTranslation();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const { showSnackbar } = useSnackbar();
@@ -1259,7 +1258,7 @@ export function FoodSearchModal({
                 onChangeText={setSearchQuery}
                 onSubmitEditing={triggerNow}
                 returnKeyType="search"
-                className={`w-full rounded-card border border-border-light bg-bg-overlay py-3.5 pl-11 text-base text-text-primary ${showBarcodeScan ? 'pr-10' : ''}`}
+                className={`w-full rounded-card border border-border-light bg-bg-overlay py-3.5 pl-11 text-base text-text-primary ${onBarcodeScanPress ? 'pr-10' : ''}`}
                 style={{
                   backgroundColor: theme.colors.background.secondaryDark,
                   borderColor: searchQuery
@@ -1268,7 +1267,7 @@ export function FoodSearchModal({
                 }}
                 autoFocus
               />
-              {showBarcodeScan ? (
+              {onBarcodeScanPress ? (
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t('common.a11y.scanBarcode')}

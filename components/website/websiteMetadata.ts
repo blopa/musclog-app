@@ -1,4 +1,4 @@
-import type { Metadata } from 'expo-router/server';
+import type { GenerateMetadataFunction, Metadata } from 'expo-router/server';
 
 import en from '@/lang/locales/en-us/website.json';
 import es from '@/lang/locales/es-es/website.json';
@@ -7,6 +7,13 @@ import pt from '@/lang/locales/pt-br/website.json';
 import ru from '@/lang/locales/ru-ru/website.json';
 
 import { blogListingPath, blogTagPath } from './blogRoutes';
+import {
+  hreflangAlternatePaths,
+  localeByPrefix,
+  localeForLanguage,
+  localePrefixesFor,
+  localizedPath,
+} from './localeRoutes';
 import websiteRoutes from './websiteRoutes.json';
 
 export type WebsiteSeoRouteKey = keyof typeof websiteRoutes;
@@ -26,13 +33,7 @@ const translations = {
   'pt-br': pt.website,
   'ru-ru': ru.website,
 };
-const locales = {
-  'en-us': 'en_US',
-  'es-es': 'es_ES',
-  'nl-nl': 'nl_NL',
-  'pt-br': 'pt_BR',
-  'ru-ru': 'ru_RU',
-};
+const OG_LOCALES = ['en_US', 'es_ES', 'nl_NL', 'pt_BR', 'ru_RU'];
 
 export function websiteCopy(language = 'en-us') {
   return translations[language.toLowerCase() as keyof typeof translations] ?? translations['en-us'];
@@ -41,6 +42,7 @@ export function websiteCopy(language = 'en-us') {
 export type PageSeo = {
   title: string;
   description: string;
+  /** The LOGICAL path (`/tools/protein-calculator`); the language prefix is added per locale. */
   canonicalPath: string;
   robots?: string;
   keywords?: string;
@@ -51,13 +53,31 @@ export type PageSeo = {
 
 export function metadataForPage(page: PageSeo, language = 'en-us'): Metadata {
   const copy = websiteCopy(language).seo;
-  const locale = locales[language.toLowerCase() as keyof typeof locales] ?? locales['en-us'];
+  const wanted = localeForLanguage(language);
+  // A page with no copy in the visitor's language (the blog) is published in English only, and so
+  // is its canonical; an unprefixed page (`/open`) keeps its address.
+  const available = localePrefixesFor(page.canonicalPath);
+  const prefix = available.includes(wanted.prefix)
+    ? wanted.prefix
+    : (available[0] ?? wanted.prefix);
+  const locale = localeByPrefix(prefix).ogLocale;
+  const canonicalUrl = absoluteUrl(localizedPath(page.canonicalPath, prefix));
+  const alternates = hreflangAlternatePaths(page.canonicalPath);
   return {
     title: page.title,
     description: page.description,
     keywords: page.keywords ?? copy.keywords,
     robots: page.robots ?? 'index, follow',
-    alternates: { canonical: absoluteUrl(page.canonicalPath) },
+    alternates: {
+      canonical: canonicalUrl,
+      ...(alternates.length > 0
+        ? {
+            languages: Object.fromEntries(
+              alternates.map(([hreflang, path]) => [hreflang, absoluteUrl(path)])
+            ),
+          }
+        : {}),
+    },
     openGraph: {
       type: page.date ? 'article' : 'website',
       title:
@@ -65,8 +85,8 @@ export function metadataForPage(page: PageSeo, language = 'en-us'): Metadata {
       description: page.description,
       siteName: copy.siteName,
       locale,
-      alternateLocale: Object.values(locales).filter((value) => value !== locale),
-      url: absoluteUrl(page.canonicalPath),
+      alternateLocale: OG_LOCALES.filter((value) => value !== locale),
+      url: canonicalUrl,
       images: [
         {
           url: SEO_IMAGE_URL,
@@ -100,8 +120,21 @@ export function fixedPageSeo(
   return { ...copy, canonicalPath: canonicalPath ?? route.path, robots: route.robots };
 }
 
-export function fixedPageMetadata(routeKey: WebsiteSeoRouteKey): Metadata {
-  return metadataForPage(fixedPageSeo(routeKey));
+export function fixedPageMetadata(routeKey: WebsiteSeoRouteKey, language = 'en-us'): Metadata {
+  return metadataForPage(fixedPageSeo(routeKey, language), language);
+}
+
+/** The i18n language of a route's `[locale]` param (`pt-br` -> `pt-BR`); English when absent. */
+export function languageForLocaleParam(param: string | string[] | undefined): string {
+  return localeByPrefix(Array.isArray(param) ? param[0] : param).language;
+}
+
+/**
+ * The `generateMetadata` export of a page with a fixed route key: the page's own copy for the
+ * `[locale]` the route was exported for, with its canonical and `hreflang` alternates.
+ */
+export function fixedMetadataFor(routeKey: WebsiteSeoRouteKey): GenerateMetadataFunction {
+  return (_request, params) => fixedPageMetadata(routeKey, languageForLocaleParam(params?.locale));
 }
 
 export function blogListingSeo(page: number, category?: string, language = 'en-us'): PageSeo {

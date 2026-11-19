@@ -9,6 +9,7 @@ import {
   metadataForPage,
   websiteCopy,
 } from '../websiteMetadata';
+import { WEBSITE_LOCALES, localizedPath } from '../localeRoutes';
 import routes from '../websiteRoutes.json';
 
 describe('SDK 58 website metadata', () => {
@@ -16,7 +17,9 @@ describe('SDK 58 website metadata', () => {
     const metadata = fixedPageMetadata(key as keyof typeof routes);
     expect(metadata.title).toBeTruthy();
     expect(metadata.description).toBeTruthy();
-    expect(metadata.alternates?.canonical).toBe(`https://musclog.app${route.path}`);
+    expect(metadata.alternates?.canonical).toBe(
+      `https://musclog.app${localizedPath(route.path, 'en')}`
+    );
     expect(metadata.openGraph?.url).toBe(metadata.alternates?.canonical);
     expect(metadata.twitter?.card).toBe('summary_large_image');
     expect(metadata.robots).toBe('robots' in route ? route.robots : 'index, follow');
@@ -85,16 +88,92 @@ describe('SDK 58 website metadata', () => {
       // A listing that has child routes is served from its folder's index file.
       const file =
         route.path === '/'
-          ? 'home'
+          ? 'index'
           : ['/blog', '/blog/category', '/blog/tag', '/tools', '/programs'].includes(route.path)
             ? `${route.path.slice(1)}/index`
             : route.path.slice(1);
       if (file === 'test') {
         continue;
       }
-      expect(readFileSync(join(root, `app/(website)/${file}.web.tsx`), 'utf8')).toContain(
-        'export function generateMetadata'
+      // `/open` is the one page that stays outside the language folder (its exact address is claimed
+      // by the app's link settings).
+      const scope = 'locales' in route ? route.locales : 'all';
+      const folder = scope === 'none' ? '' : scope === 'en' ? 'en/' : '[locale]/';
+      expect(readFileSync(join(root, `app/(website)/${folder}${file}.web.tsx`), 'utf8')).toMatch(
+        /export (function|const) generateMetadata/
       );
+    }
+  });
+});
+
+describe('website metadata per locale', () => {
+  const translatedKeys = (Object.keys(routes) as (keyof typeof routes)[]).filter(
+    (key) => !('locales' in routes[key])
+  );
+
+  it.each(WEBSITE_LOCALES)('gives $prefix pages a self-referencing canonical', (locale) => {
+    for (const key of translatedKeys) {
+      const metadata = fixedPageMetadata(key, locale.language);
+      expect(metadata.alternates?.canonical).toBe(
+        `https://musclog.app${localizedPath(routes[key].path, locale.prefix)}`
+      );
+      expect(metadata.openGraph?.url).toBe(metadata.alternates?.canonical);
+      expect(metadata.openGraph?.locale).toBe(locale.ogLocale);
+    }
+  });
+
+  it('gives every translated page the same reciprocal hreflang set with x-default', () => {
+    for (const key of translatedKeys) {
+      const sets = WEBSITE_LOCALES.map((locale) =>
+        JSON.stringify(fixedPageMetadata(key, locale.language).alternates?.languages)
+      );
+      expect(new Set(sets).size).toBe(1);
+      const languages = fixedPageMetadata(key).alternates?.languages as Record<string, string>;
+      expect(Object.keys(languages).sort()).toEqual(
+        [...WEBSITE_LOCALES.map((locale) => locale.hreflang), 'x-default'].sort()
+      );
+      expect(languages['x-default']).toBe(languages.en);
+      for (const locale of WEBSITE_LOCALES) {
+        expect(languages[locale.hreflang]).toBe(
+          `https://musclog.app${localizedPath(routes[key].path, locale.prefix)}`
+        );
+      }
+    }
+  });
+
+  it("uses each locale's own copy for the title", () => {
+    expect(fixedPageMetadata('toolProteinCalculator', 'es-ES').title).toBe(
+      websiteCopy('es-es').seo.routes.toolProteinCalculator.title
+    );
+    expect(fixedPageMetadata('toolProteinCalculator', 'es-ES').title).not.toBe(
+      fixedPageMetadata('toolProteinCalculator', 'en-US').title
+    );
+  });
+
+  it('gives English-only blog pages one English canonical and no alternates, in any language', () => {
+    for (const language of ['en-US', 'es-ES', 'pt-BR', 'ru-RU']) {
+      const post = metadataForPage(
+        {
+          title: 'Post',
+          description: 'x',
+          canonicalPath: '/blog/2026/08/post',
+          date: '2026-08-01',
+        },
+        language
+      );
+      expect(post.alternates?.canonical).toBe('https://musclog.app/en/blog/2026/08/post');
+      expect(post.alternates?.languages).toBeUndefined();
+      expect(post.openGraph?.locale).toBe('en_US');
+      expect(fixedPageMetadata('blog', language).alternates?.languages).toBeUndefined();
+      expect(blogListingSeo(2).canonicalPath).toBe('/blog/page/2');
+    }
+  });
+
+  it('leaves the unprefixed pages unprefixed and without alternates', () => {
+    for (const key of ['open', 'test'] as const) {
+      const metadata = fixedPageMetadata(key, 'es-ES');
+      expect(metadata.alternates?.canonical).toBe(`https://musclog.app${routes[key].path}`);
+      expect(metadata.alternates?.languages).toBeUndefined();
     }
   });
 });

@@ -3,7 +3,7 @@
  *
  * The blog loaders read Markdown off disk with `node:fs/promises`, so they only ever run on
  * web (static export / server data loaders). They still reach the native graph, because
- * expo-router's native `require.context` regex matches `app/(website)/blog/*.web.tsx` and
+ * expo-router's native `require.context` regex matches `app/(website)/en/blog/*.web.tsx` and
  * Metro resolves their `await import()` statically. Metro resolves this stub instead so the
  * Node built-ins — and gray-matter / markdown-it / highlight.js — stay out of the app bundle.
  *

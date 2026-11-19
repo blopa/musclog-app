@@ -1,0 +1,99 @@
+import { useTranslation } from 'react-i18next';
+
+import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
+import { BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
+import { WebsiteLoggy } from '@/components/website/WebsiteLoggy';
+import { fixedMetadataFor } from '@/components/website/websiteMetadata';
+import { trackStoreButtonClick, withPlayReferrer } from '@/utils/websiteAnalytics';
+import { localeStaticParams } from '@/components/website/localeStaticParams';
+
+function AppleLogo() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 36 36">
+      <path
+        fill="currentColor"
+        d="M22.667 6.639C23.76 5.223 24.59 3.22 24.29 1.178c-1.789.124-3.88 1.272-5.098 2.767-1.111 1.356-2.026 3.37-1.67 5.328 1.955.061 3.975-1.114 5.145-2.634Z"
+      />
+      <path
+        fill="currentColor"
+        d="M31.36 12.466c-1.718-2.16-4.132-3.414-6.412-3.414-3.009 0-4.282 1.445-6.373 1.445-2.155 0-3.793-1.44-6.396-1.44-2.556 0-5.278 1.566-7.004 4.245-2.426 3.773-2.011 10.865 1.921 16.906 1.407 2.162 3.286 4.593 5.744 4.614 2.187.02 2.803-1.407 5.767-1.422 2.963-.016 3.525 1.441 5.708 1.418 2.46-.02 4.442-2.713 5.849-4.875 1.009-1.55 1.384-2.33 2.166-4.079-5.69-2.172-6.601-10.285-.97-13.399Z"
+      />
+    </svg>
+  );
+}
+
+function GooglePlayLogo() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 36 36">
+      <path
+        fill={hue('info')}
+        d="M19.728 17.3 3.496 33.576c-.776-.736-1.195-1.745-1.195-2.839V5.21c0-1.115.44-2.124 1.237-2.88l16.19 14.97Z"
+      />
+      <path
+        fill={hue('amber')}
+        d="M33.757 17.973c0 1.473-.797 2.776-2.118 3.512l-4.613 2.566-5.726-5.3-1.572-1.45 6.06-6.078 5.85 3.239c1.322.736 2.12 2.04 2.12 3.511Z"
+      />
+      <path
+        fill={BRAND_GREEN_BRIGHT}
+        d="M19.728 17.3 3.538 2.33c.21-.211.483-.4.755-.569 1.321-.799 2.915-.82 4.278-.063l17.217 9.525-6.06 6.077Z"
+      />
+      <path
+        fill={hue('error')}
+        d="M27.026 24.05 8.57 34.25a4.166 4.166 0 0 1-2.097.546c-.755 0-1.51-.189-2.18-.609a3.807 3.807 0 0 1-.798-.61L19.728 17.3l1.572 1.451 5.726 5.3Z"
+      />
+    </svg>
+  );
+}
+
+export default function Download() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.download' });
+
+  return (
+    <>
+      <main className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center overflow-hidden px-4 py-20">
+        <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col items-center text-center">
+          <WebsiteLoggy pose="lifting" className="mb-6 h-32 w-auto sm:h-40" />
+          <h1 className="max-w-lg text-balance text-4xl font-bold leading-tight text-text-primary sm:text-5xl">
+            {t('title')}
+          </h1>
+          <p className="mt-4 max-w-md text-balance text-base leading-7 text-text-secondary sm:text-lg">
+            {t('subtitle')}
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-5 sm:gap-6">
+            <a
+              href={GOOGLE_PLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t('googleLabel')}
+              className="flex h-28 w-28 items-center justify-center rounded-card border border-ink/15 bg-bg-card text-text-primary transition-all hover:-translate-y-1 hover:border-ink/35 hover:bg-bg-cardElevated focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary sm:h-32 sm:w-32"
+              onClick={(event) => {
+                event.currentTarget.href = withPlayReferrer(GOOGLE_PLAY_URL);
+                trackStoreButtonClick({ store: 'google_play', availability: 'available' });
+              }}
+            >
+              <GooglePlayLogo />
+            </a>
+
+            <a
+              href={TESTFLIGHT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t('appleLabel')}
+              className="flex h-28 w-28 items-center justify-center rounded-card border border-ink/15 bg-bg-card text-text-primary transition-all hover:-translate-y-1 hover:border-ink/35 hover:bg-bg-cardElevated focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary sm:h-32 sm:w-32"
+              onClick={() =>
+                trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })
+              }
+            >
+              <AppleLogo />
+            </a>
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}
+
+export const generateStaticParams = localeStaticParams;
+
+export const generateMetadata = fixedMetadataFor('download');

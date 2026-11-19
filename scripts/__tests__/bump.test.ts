@@ -103,3 +103,17 @@ it('leaves a listing folder named after another version alone', () => {
 
   expect(existsSync(join(projectDir, 'ios/appstore/metadata/version/2.6.2/en-US.json'))).toBe(true);
 });
+
+it('keeps short arrays in app.json on one line after a bump', () => {
+  writeFixture(
+    'app.json',
+    '{\n  "expo": {\n    "android": { "versionCode": 296 },\n' +
+      '    "ios": { "buildNumber": "296" },\n' +
+      '    "platforms": ["ios", "android", "web"],\n    "version": "2.11.2"\n  }\n}\n'
+  );
+  bumpProjectVersions(projectDir, 'patch');
+
+  expect(readFileSync(join(projectDir, 'app.json'), 'utf8')).toContain(
+    '"platforms": ["ios", "android", "web"]'
+  );
+});
