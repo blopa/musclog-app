@@ -149,6 +149,9 @@
     <loc>https://musclog.app/blog/page/4</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/page/5</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/category/engineering</loc>
   </url>
   <url>
@@ -168,6 +171,9 @@
   </url>
   <url>
     <loc>https://musclog.app/blog/category/training</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/category/training/page/2</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/category/web-development</loc>
@@ -467,6 +473,9 @@
     <loc>https://musclog.app/blog/tag/strength-training</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/tag/strength-training/page/2</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/tag/strong</loc>
   </url>
   <url>
@@ -483,6 +492,9 @@
   </url>
   <url>
     <loc>https://musclog.app/blog/tag/training-chart</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/tag/training-volume</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/tag/typescript</loc>
@@ -522,6 +534,12 @@
   </url>
   <url>
     <loc>https://musclog.app/blog/tag/workout-tracking</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/01/how-many-reps-before-adding-weight</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/02/how-many-sets-per-muscle-per-week</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/2026/03/musclog-version-2-is-out</loc>
