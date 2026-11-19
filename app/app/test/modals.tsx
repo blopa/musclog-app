@@ -106,7 +106,7 @@ const TEST_WORKOUT_METADATA_NOW = Date.now();
 export default function ModalsTestScreen() {
   // Menstrual cycle data for CycleSettingsModal
   const { cycle } = useMenstrualCycle();
-  const { openCamera } = useSmartCamera();
+  const { openCamera, hasCamera } = useSmartCamera();
 
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
@@ -1908,10 +1908,18 @@ export default function ModalsTestScreen() {
         onMealTypeSelect={(mealType) => {
           console.log('Meal type selected:', mealType);
         }}
-        onAiCameraPress={() => {
-          console.log('AI Camera pressed');
-        }}
-        onScanBarcodePress={() => openCamera({ mode: 'barcode-scan', hideCameraModePicker: true })}
+        onAiCameraPress={
+          hasCamera
+            ? () => {
+                console.log('AI Camera pressed');
+              }
+            : undefined
+        }
+        onScanBarcodePress={
+          hasCamera
+            ? () => openCamera({ mode: 'barcode-scan', hideCameraModePicker: true })
+            : undefined
+        }
         onSearchFoodPress={() => {
           console.log('Search food pressed');
         }}
@@ -1944,9 +1952,13 @@ export default function ModalsTestScreen() {
         onCreatePress={() => {
           console.log('Create pressed');
         }}
-        onBarcodeScanPress={() => {
-          console.log('Barcode scan pressed');
-        }}
+        onBarcodeScanPress={
+          hasCamera
+            ? () => {
+                console.log('Barcode scan pressed');
+              }
+            : undefined
+        }
         onFoodSelect={(food) => {
           console.log('Food selected:', food);
         }}

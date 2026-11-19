@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import {
@@ -20,6 +21,7 @@ import {
 
 import { captureWithSnapshotLadder } from '@/components/cameraShutter';
 import { runCameraWarmUp } from '@/components/cameraWarmUp';
+import { readHasCamera } from '@/utils/cameraAvailability';
 import { toFileUri } from '@/utils/file';
 
 export type CameraViewRef = {
@@ -292,3 +294,25 @@ export const useCameraPermissions = (): [
 
   return [permission, request];
 };
+
+function getHasCameraSnapshot(): boolean {
+  return readHasCamera(() => Camera.getAvailableCameraDevices());
+}
+
+function subscribeToCameraDevices(onChange: () => void): () => void {
+  const subscription = Camera.addCameraDevicesChangedListener(onChange);
+
+  return () => subscription.remove();
+}
+
+/**
+ * Whether the device has a camera. Every camera call to action (the navigation button, scan
+ * buttons, AI photo, receiving from another phone) is shown only while this is true.
+ *
+ * This is hardware, not permission: a camera the person has not allowed yet still counts, because
+ * the camera screen asks for it. Reactive, since a USB camera can be attached to a tablet.
+ * Web always reports true (`CameraView.web.tsx`).
+ */
+export function useHasCamera(): boolean {
+  return useSyncExternalStore(subscribeToCameraDevices, getHasCameraSnapshot, getHasCameraSnapshot);
+}

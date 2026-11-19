@@ -25,6 +25,7 @@ type AddFoodModalProps = {
   visible: boolean;
   onClose: () => void;
   onMealTypeSelect?: (mealType: MealType) => void;
+  /** Each camera method renders only while its handler is supplied (the AI one also needs `isAiEnabled`). */
   onAiCameraPress?: () => void;
   onScanBarcodePress?: () => void;
   onSearchFoodPress?: () => void;
@@ -162,22 +163,24 @@ export function AddFoodModal({
                     onClose();
                   }}
                 />
-                <TrackingMethodButton
-                  icon={ScanLine}
-                  title={t('food.addFoodModal.scanBarcode.title')}
-                  description={t('food.addFoodModal.scanBarcode.description')}
-                  onPress={() => {
-                    onScanBarcodePress?.();
-                    onClose();
-                  }}
-                />
-                {isAiEnabled ? (
+                {onScanBarcodePress ? (
+                  <TrackingMethodButton
+                    icon={ScanLine}
+                    title={t('food.addFoodModal.scanBarcode.title')}
+                    description={t('food.addFoodModal.scanBarcode.description')}
+                    onPress={() => {
+                      onScanBarcodePress();
+                      onClose();
+                    }}
+                  />
+                ) : null}
+                {isAiEnabled && onAiCameraPress ? (
                   <TrackingMethodButton
                     icon={Sparkles}
                     title={t('food.addFoodModal.aiCamera.title')}
                     description={t('food.addFoodModal.aiCamera.description')}
                     onPress={() => {
-                      onAiCameraPress?.();
+                      onAiCameraPress();
                       onClose();
                     }}
                   />

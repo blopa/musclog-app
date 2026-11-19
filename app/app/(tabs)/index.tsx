@@ -113,7 +113,7 @@ export default function HomeScreen() {
     homeActions,
     showHomeSteps,
   } = useSettings();
-  const { openCamera } = useSmartCamera();
+  const { openCamera, hasCamera } = useSmartCamera();
   const { formatEnergy } = useEnergyUnit();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
@@ -724,8 +724,8 @@ export default function HomeScreen() {
         visible={isAddFoodVisible}
         onClose={handleCloseAddFood}
         onMealTypeSelect={handleMealTypeSelect}
-        onAiCameraPress={handleAiCameraPress}
-        onScanBarcodePress={handleScanBarcodePress}
+        onAiCameraPress={hasCamera ? handleAiCameraPress : undefined}
+        onScanBarcodePress={hasCamera ? handleScanBarcodePress : undefined}
         onSearchFoodPress={handleSearchFoodPress}
         onCreateCustomFoodPress={handleCreateCustomFoodPress}
         onTrackCustomMealPress={handleTrackCustomMealPress}
@@ -759,7 +759,7 @@ export default function HomeScreen() {
         mealType={selectedMealType}
         initialTab={foodSearchInitialTab}
         onCreatePress={handleFoodSearchCreatePress}
-        onBarcodeScanPress={handleFoodSearchBarcodePress}
+        onBarcodeScanPress={hasCamera ? handleFoodSearchBarcodePress : undefined}
         onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         isAiEnabled={isAiConfigured}
       />

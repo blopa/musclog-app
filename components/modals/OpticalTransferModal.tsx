@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, View } from 'react-native';
 
+import { useHasCamera } from '@/components/CameraView';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { SecretInput } from '@/components/theme/SecretInput';
@@ -35,6 +36,7 @@ export function OpticalTransferModal({ visible, onClose }: OpticalTransferModalP
   const theme = useTheme();
   const { t } = useTranslation();
   const { requireExportEncryption } = useDebouncedSettings();
+  const hasCamera = useHasCamera();
 
   const [sendVisible, setSendVisible] = useSubModalVisibility(visible);
   const [receiveVisible, setReceiveVisible] = useSubModalVisibility(visible);
@@ -63,12 +65,14 @@ export function OpticalTransferModal({ visible, onClose }: OpticalTransferModalP
               subtitle={t('opticalTransfer.sendCardSubtitle')}
               title={t('opticalTransfer.sendCard')}
             />
-            <SettingsCard
-              icon={<ScanLine color={theme.colors.accent.primary} size={theme.iconSize.xl} />}
-              onPress={() => setReceiveVisible(true)}
-              subtitle={t('opticalTransfer.receiveCardSubtitle')}
-              title={t('opticalTransfer.receiveCard')}
-            />
+            {hasCamera ? (
+              <SettingsCard
+                icon={<ScanLine color={theme.colors.accent.primary} size={theme.iconSize.xl} />}
+                onPress={() => setReceiveVisible(true)}
+                subtitle={t('opticalTransfer.receiveCardSubtitle')}
+                title={t('opticalTransfer.receiveCard')}
+              />
+            ) : null}
           </ListGroup>
         </View>
 

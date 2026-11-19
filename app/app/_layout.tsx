@@ -22,6 +22,7 @@ import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
+import { singleTabsRouter } from '@/components/navigation/singleTabsRouter';
 import { isStaticExport } from '@/constants/platform';
 import { AppLockProvider } from '@/context/AppLockContext';
 import { CoachPersonaProvider } from '@/context/CoachPersonaContext';
@@ -109,7 +110,10 @@ function AppContent() {
       ) : null}
       <LanguageInitializer />
       <WidgetSync />
+      {/* One tab navigator for the main destinations, however a screen gets there: see
+          `singleTabsRouter`. */}
       <Stack
+        UNSTABLE_router={singleTabsRouter}
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.background.primary },

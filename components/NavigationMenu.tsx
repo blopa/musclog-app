@@ -5,8 +5,9 @@ import { memo, type ReactNode, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
+import { useHasCamera } from '@/components/CameraView';
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
-import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
+import { HOME_ROUTE, isHomePath, NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import type { NavItemKey } from '@/constants/settings';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
@@ -76,6 +77,51 @@ function NavSlotButton({
   );
 }
 
+type CameraNavButtonProps = {
+  active: boolean;
+  onPress: () => void;
+};
+
+/**
+ * The bottom bar's centre camera button. The bar renders it only while the device has a camera.
+ */
+function CameraNavButton({ active, onPress }: CameraNavButtonProps) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+  const { width: screenWidth } = useWindowDimensions();
+  const isSmallScreen = screenWidth < 350;
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('common.a11y.openCamera')}
+      className="z-10 items-center justify-center gap-1"
+      style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
+      onPress={onPress}
+    >
+      <View
+        className="items-center justify-center rounded-full"
+        style={[
+          isSmallScreen
+            ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+            : { width: 80, height: 80 },
+          {
+            backgroundColor: active
+              ? theme.colors.accent.primary
+              : addOpacityToHex(theme.colors.accent.primary, 0.8),
+          },
+        ]}
+      >
+        <Camera
+          size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
+          color={theme.colors.background.secondaryDark}
+          strokeWidth={theme.strokeWidth.medium}
+        />
+      </View>
+    </Pressable>
+  );
+}
+
 type NavSlotConfig = {
   /**
    * Route prefix that marks this slot active, when it is broader than the destination's own
@@ -85,8 +131,6 @@ type NavSlotConfig = {
   activePath?: string;
   /** Second prefix that also counts as active — profile owns the progress screen. */
   alsoActiveFor?: string;
-  /** `replace` instead of `navigate` — the food diary swaps itself rather than stacking. */
-  replace?: boolean;
   /** Haptic + route prefetch on press-in. Worth it only for the heaviest screen. */
   prefetch?: boolean;
   /**
@@ -107,7 +151,7 @@ type NavSlotConfig = {
  */
 const NAV_SLOTS: Record<Exclude<NavItemKey, 'coach'>, NavSlotConfig> = {
   workouts: { activePath: '/app/workout' },
-  food: { activePath: '/app/nutrition/', replace: true },
+  food: { activePath: '/app/nutrition/' },
   profile: { alsoActiveFor: '/app/progress', prefetch: true, navigateWhenActive: true },
   cycle: {},
   settings: {},
@@ -127,14 +171,13 @@ export const NavigationMenu = memo(function NavigationMenu({
   const { rawSlots, isCycleActive } = useNavigationItems();
   const weeklyReview = useWeeklyReviewStatus();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
-  const { width: screenWidth } = useWindowDimensions();
-  const isSmallScreen = screenWidth < 350;
+  const hasCamera = useHasCamera();
   const insets = useAppSafeAreaInsets();
 
   const isPathActive = useCallback(
     (path: string) => {
       if (path === '/') {
-        return pathname === '/app';
+        return isHomePath(pathname);
       }
 
       return pathname.startsWith(path);
@@ -168,7 +211,7 @@ export const NavigationMenu = memo(function NavigationMenu({
       }
 
       const slot = NAV_SLOTS[slotKey];
-      const { alsoActiveFor, replace, prefetch } = slot;
+      const { alsoActiveFor, prefetch } = slot;
       // Typed `string`, not `string | null`: `coach` is the only routeless destination and it
       // returned above, so the narrowed key can only index entries with a real route.
       const { icon: Icon, route: destination } = NAV_DESTINATIONS[slotKey];
@@ -176,13 +219,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         isPathActive(slot.activePath ?? destination) ||
         (!!alsoActiveFor && isPathActive(alsoActiveFor));
 
-      const go = () => {
-        if (replace) {
-          router.replace(destination);
-        } else {
-          router.navigate(destination);
-        }
-      };
+      const go = () => router.navigate(destination);
 
       return (
         <NavSlotButton
@@ -235,7 +272,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           label={t('home.navigation.home')}
           onPress={() => {
             if (!homeActive) {
-              router.navigate('/app');
+              router.navigate(HOME_ROUTE);
             }
           }}
           icon={
@@ -250,34 +287,8 @@ export const NavigationMenu = memo(function NavigationMenu({
         {/* Slot 1 - customizable */}
         {renderNavSlot(navSlot1)}
 
-        {/* Camera - always fixed */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common.a11y.openCamera')}
-          className="z-10 items-center justify-center gap-1"
-          style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
-          onPress={onCameraPress}
-        >
-          <View
-            className="items-center justify-center rounded-full"
-            style={[
-              isSmallScreen
-                ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
-                : { width: 80, height: 80 },
-              {
-                backgroundColor: cameraFabActive
-                  ? theme.colors.accent.primary
-                  : addOpacityToHex(theme.colors.accent.primary, 0.8),
-              },
-            ]}
-          >
-            <Camera
-              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
-              color={theme.colors.background.secondaryDark}
-              strokeWidth={theme.strokeWidth.medium}
-            />
-          </View>
-        </Pressable>
+        {/* Camera - fixed, unless the device has no camera to open */}
+        {hasCamera ? <CameraNavButton active={cameraFabActive} onPress={onCameraPress} /> : null}
 
         {/* Slot 2 - customizable */}
         {renderNavSlot(navSlot2)}

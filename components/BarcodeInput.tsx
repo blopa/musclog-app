@@ -10,7 +10,8 @@ type BarcodeInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
-  onScanPress: () => void;
+  /** The scan button renders only while this is supplied. */
+  onScanPress?: () => void;
 };
 
 export function BarcodeInput({
@@ -34,27 +35,29 @@ export function BarcodeInput({
         inputMode="numeric"
         keyboardType="numeric"
       />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('food.actions.scanBarcode')}
-        className="absolute right-2 items-center justify-center rounded-control"
-        style={{
-          ...(Platform.OS !== 'web'
-            ? {
-                top: theme.size['14'] / 2,
-              }
-            : {
-                top: theme.size['18'] / 2,
-              }),
-          width: theme.size['10'],
-          height: theme.size['10'],
-          backgroundColor: theme.colors.accent.primary10,
-          borderRadius: theme.borderRadius.sm,
-        }}
-        onPress={onScanPress}
-      >
-        <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-      </Pressable>
+      {onScanPress ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('food.actions.scanBarcode')}
+          className="absolute right-2 items-center justify-center rounded-control"
+          style={{
+            ...(Platform.OS !== 'web'
+              ? {
+                  top: theme.size['14'] / 2,
+                }
+              : {
+                  top: theme.size['18'] / 2,
+                }),
+            width: theme.size['10'],
+            height: theme.size['10'],
+            backgroundColor: theme.colors.accent.primary10,
+            borderRadius: theme.borderRadius.sm,
+          }}
+          onPress={onScanPress}
+        >
+          <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+        </Pressable>
+      ) : null}
     </View>
   );
 }

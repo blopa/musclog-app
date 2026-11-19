@@ -95,8 +95,10 @@ import { useFoodDiarySelection } from '@/hooks/useFoodDiarySelection';
 import { useFoodItemUi } from '@/hooks/useFoodItemUi';
 import { useFoodScreenModals } from '@/hooks/useFoodScreenModals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useLocalToday } from '@/hooks/useLocalToday';
 import { useMealGroupUi } from '@/hooks/useMealGroupUi';
 import { useMealUi } from '@/hooks/useMealUi';
+import { useOnChange } from '@/hooks/useOnChange';
 import { useIncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -106,9 +108,11 @@ import { isCoachReplyBusy } from '@/services/coachReplyStore';
 import { startCoachReply } from '@/services/coachReplyStream';
 import {
   calendarDateFromRecordDay,
+  followTodayAfterRollover,
   formatLocalCalendarDayIso,
   formatLocalCalendarDayNumericIntl,
   localCalendarDayFromParam,
+  localDayStartMs,
 } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
@@ -157,7 +161,7 @@ export default function FoodScreen() {
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
-  const { openCamera, setCurrentDate } = useSmartCamera();
+  const { openCamera, setCurrentDate, hasCamera } = useSmartCamera();
   const {
     handleFoodCardPress,
     handleFoodMenuPress,
@@ -228,14 +232,20 @@ export default function FoodScreen() {
   // `date` (yyyy-MM-dd) opens the diary on a specific day, e.g. a day the Weekly Review is missing.
   const { date: dateParam } = useLocalSearchParams<{ date?: string }>();
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayFromParam(dateParam));
-  // A screen that is already mounted receives a new `date` without remounting; follow it once.
-  const [appliedDateParam, setAppliedDateParam] = useState(dateParam);
-  if (dateParam !== appliedDateParam) {
-    setAppliedDateParam(dateParam);
-    if (dateParam) {
-      setSelectedDate(localCalendarDayFromParam(dateParam));
+  // The diary is a tab kept mounted while hidden: a later `date` arrives without a remount, and the
+  // screen can outlive midnight (if it was showing today, it moves to the new today).
+  useOnChange(dateParam, (_previous, next) => {
+    if (next) {
+      setSelectedDate(localCalendarDayFromParam(next));
     }
-  }
+  });
+  const today = useLocalToday();
+  useOnChange(today, (previousToday, nextToday) => {
+    const next = followTodayAfterRollover(localDayStartMs(selectedDate), previousToday, nextToday);
+    if (next) {
+      setSelectedDate(next);
+    }
+  });
 
   // The optical send target is captured before each share handler clears its menu selection, so the
   // screen-level sender can outlive the menu that launched it. One slot, not one per kind: only
@@ -1381,14 +1391,18 @@ export default function FoodScreen() {
 
                     {/* Scan Buttons */}
                     <FoodQuickActions
-                      onScanBarcode={() => {
-                        openCamera({
-                          mode: 'barcode-scan',
-                          hideCameraModePicker: false,
-                          showBarcodeTextSearch: true,
-                          logDate: selectedDate,
-                        });
-                      }}
+                      onScanBarcode={
+                        hasCamera
+                          ? () => {
+                              openCamera({
+                                mode: 'barcode-scan',
+                                hideCameraModePicker: false,
+                                showBarcodeTextSearch: true,
+                                logDate: selectedDate,
+                              });
+                            }
+                          : undefined
+                      }
                       onSearchFood={() => screenModals.foodSearch.open('all')}
                       onMyMeals={screenModals.myMeals.open}
                       onMoreOptions={() => {
@@ -1460,25 +1474,33 @@ export default function FoodScreen() {
             closeAddFoodModal();
             screenModals.foodSearch.open('all');
           }}
-          onAiCameraPress={() => {
-            closeAddFoodModal();
-            openCamera({
-              mode: 'ai-meal-photo',
-              hideCameraModePicker: false,
-              logDate: selectedDate,
-              mealType: selectedMealType,
-            });
-          }}
-          onScanBarcodePress={() => {
-            closeAddFoodModal();
-            openCamera({
-              mode: 'barcode-scan',
-              hideCameraModePicker: false,
-              showBarcodeTextSearch: true,
-              logDate: selectedDate,
-              mealType: selectedMealType,
-            });
-          }}
+          onAiCameraPress={
+            hasCamera
+              ? () => {
+                  closeAddFoodModal();
+                  openCamera({
+                    mode: 'ai-meal-photo',
+                    hideCameraModePicker: false,
+                    logDate: selectedDate,
+                    mealType: selectedMealType,
+                  });
+                }
+              : undefined
+          }
+          onScanBarcodePress={
+            hasCamera
+              ? () => {
+                  closeAddFoodModal();
+                  openCamera({
+                    mode: 'barcode-scan',
+                    hideCameraModePicker: false,
+                    showBarcodeTextSearch: true,
+                    logDate: selectedDate,
+                    mealType: selectedMealType,
+                  });
+                }
+              : undefined
+          }
           onSearchFoodPress={() => {
             closeAddFoodModal();
             screenModals.foodSearch.open('all');
@@ -1578,16 +1600,20 @@ export default function FoodScreen() {
             screenModals.foodSearch.close();
             screenModals.createCustomFood.open();
           }}
-          onBarcodeScanPress={() => {
-            screenModals.foodSearch.close();
-            openCamera({
-              mode: 'barcode-scan',
-              hideCameraModePicker: true,
-              showBarcodeTextSearch: true,
-              logDate: selectedDate,
-              mealType: selectedMealType,
-            });
-          }}
+          onBarcodeScanPress={
+            hasCamera
+              ? () => {
+                  screenModals.foodSearch.close();
+                  openCamera({
+                    mode: 'barcode-scan',
+                    hideCameraModePicker: true,
+                    showBarcodeTextSearch: true,
+                    logDate: selectedDate,
+                    mealType: selectedMealType,
+                  });
+                }
+              : undefined
+          }
           isAiEnabled={isAiConfigured}
         />
 

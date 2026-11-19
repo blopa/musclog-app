@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useHasCamera } from '@/components/CameraView';
 import { useCoach } from '@/components/CoachContext';
 import { ListRow } from '@/components/theme/ListRow';
 import { TRACK_MEAL } from '@/constants/chat';
@@ -27,11 +28,13 @@ export function ComebackTips({ answers }: { answers: ComebackAnswers }) {
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const { isAiConfigured, isAiMealPhotoEnabled, aiProvider } = useSettings();
+  const hasCamera = useHasCamera();
 
   const tips = comebackRecommendations(answers, {
     isAiConfigured,
     isAiMealPhotoEnabled,
     aiProvider,
+    hasCamera,
   });
   const act = (action: ComebackTipAction) => {
     switch (action) {

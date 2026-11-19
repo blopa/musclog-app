@@ -31,7 +31,12 @@ export type ComebackRecommendationContext = {
   isAiMealPhotoEnabled: boolean;
   /** The provider that would answer; null when none is configured. */
   aiProvider: AiProviderKind | null;
+  /** Whether the device has a camera. Without one, no tip may open the camera. */
+  hasCamera: boolean;
 };
+
+/** Actions that open the camera; dropped entirely when the device has none. */
+const CAMERA_ACTIONS: ReadonlySet<ComebackTipAction> = new Set(['smartCameraMeal', 'barcodeScan']);
 
 function tip(id: string, action: ComebackTipAction = 'none'): ComebackTip {
   const base = {
@@ -66,7 +71,7 @@ function aiTips(ctx: ComebackRecommendationContext): ComebackTip[] {
   return tips;
 }
 
-export function comebackRecommendations(
+function recommendationsFor(
   answers: ComebackAnswers,
   ctx: ComebackRecommendationContext
 ): ComebackTip[] {
@@ -86,4 +91,18 @@ export function comebackRecommendations(
     default:
       return [tip('savedMeals', 'myMeals'), ...aiTips(ctx)];
   }
+}
+
+/**
+ * Tailored tips for the way the person eats. Tips that open the camera are removed when the device
+ * has none; every branch keeps at least one tip that needs nothing (saved meals, copying a day, or
+ * the AI setup tip).
+ */
+export function comebackRecommendations(
+  answers: ComebackAnswers,
+  ctx: ComebackRecommendationContext
+): ComebackTip[] {
+  const tips = recommendationsFor(answers, ctx);
+
+  return ctx.hasCamera ? tips : tips.filter((tip) => !CAMERA_ACTIONS.has(tip.action));
 }

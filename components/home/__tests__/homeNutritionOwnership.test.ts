@@ -22,7 +22,7 @@ const CALLS_THE_HOOK = /\buseDailyNutritionSummary\s*\(/;
  */
 describe('home screen daily-nutrition ownership', () => {
   it('subscribes exactly once, at the route level', () => {
-    const screen = code('app', 'app', 'index.tsx');
+    const screen = code('app', 'app', '(tabs)', 'index.tsx');
 
     expect([...screen.matchAll(new RegExp(CALLS_THE_HOOK, 'g'))]).toHaveLength(1);
   });

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { useHasCamera } from '@/components/CameraView';
 import { MealItemCard } from '@/components/cards/MealItemCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MenuButton } from '@/components/theme/MenuButton';
@@ -156,6 +157,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
   const [sendMealId, setSendMealId] = useState<string | null>(null);
   const [importVisible, setImportVisible] = useState(false);
+  const hasCamera = useHasCamera();
 
   useEffect(() => {
     if (!visible) {
@@ -639,7 +641,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
             onCreateMeal={handleCreateMeal}
             onDynamicMealCreator={handleDynamicMealCreator}
             onGenerateMealAI={handleGenerateMealAI}
-            onImportFromPhone={handleImportFromPhone}
+            onImportFromPhone={hasCamera ? handleImportFromPhone : undefined}
             isAiEnabled={isAiConfigured}
           />
         ) : null}

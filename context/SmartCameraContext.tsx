@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 
-import { useCameraPermissions } from '@/components/CameraView';
+import { useCameraPermissions, useHasCamera } from '@/components/CameraView';
 import { BarcodeCameraModal } from '@/components/modals/BarcodeCameraModal';
 import SmartCameraModal from '@/components/modals/SmartCameraModal';
 import type { CameraMode } from '@/constants/camera';
@@ -28,6 +28,11 @@ type OpenCameraOptions = {
 };
 
 type SmartCameraContextType = {
+  /**
+   * Whether the device has a camera (`useHasCamera`). The owner that builds a camera handler
+   * supplies it only while this is true; a camera button renders iff its handler is given.
+   */
+  hasCamera: boolean;
   openCamera: (options?: OpenCameraOptions) => void;
   setCurrentDate: (date: Date | undefined) => void;
 };
@@ -36,6 +41,7 @@ const SmartCameraContext = createContext<SmartCameraContextType | undefined>(und
 
 export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const { isAiConfigured, isAiMealPhotoEnabled, useOcrBeforeAi } = useSettings();
+  const hasCamera = useHasCamera();
   const [isVisible, setIsVisible] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>('barcode-scan');
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
@@ -66,16 +72,26 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
 
   const permissionGranted = permission?.granted ?? null;
 
-  const openCamera = useCallback((options?: OpenCameraOptions) => {
-    setCameraMode(options?.mode ?? 'barcode-scan');
-    setHideCameraModePicker(options?.hideCameraModePicker ?? false);
-    setLogDate(options?.logDate);
-    setMealTypeForLog(options?.mealType);
-    setShowBarcodeTextSearch(options?.showBarcodeTextSearch ?? false);
-    onBarcodeScannedRef.current = options?.onBarcodeScanned;
-    setHasBarcodeCallback(!!options?.onBarcodeScanned);
-    setIsVisible(true);
-  }, []);
+  // Every entry point hides its own camera button on a device without a camera; this is the
+  // backstop for the ones that cannot (a widget tap, an old shortcut), so none of them opens an
+  // empty viewfinder.
+  const openCamera = useCallback(
+    (options?: OpenCameraOptions) => {
+      if (!hasCamera) {
+        return;
+      }
+
+      setCameraMode(options?.mode ?? 'barcode-scan');
+      setHideCameraModePicker(options?.hideCameraModePicker ?? false);
+      setLogDate(options?.logDate);
+      setMealTypeForLog(options?.mealType);
+      setShowBarcodeTextSearch(options?.showBarcodeTextSearch ?? false);
+      onBarcodeScannedRef.current = options?.onBarcodeScanned;
+      setHasBarcodeCallback(!!options?.onBarcodeScanned);
+      setIsVisible(true);
+    },
+    [hasCamera]
+  );
 
   const handleCameraModalClose = useCallback(() => {
     setIsVisible(false);
@@ -93,7 +109,10 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     onBarcodeScannedRef.current?.(data);
   }, []);
 
-  const value = useMemo(() => ({ openCamera, setCurrentDate }), [openCamera, setCurrentDate]);
+  const value = useMemo(
+    () => ({ hasCamera, openCamera, setCurrentDate }),
+    [hasCamera, openCamera, setCurrentDate]
+  );
 
   return (
     <SmartCameraContext.Provider value={value}>

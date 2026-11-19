@@ -24,7 +24,8 @@ export function quickActionBasis(fontScale: number): number {
 }
 
 type FoodQuickActionsProps = {
-  onScanBarcode: () => void;
+  /** The scan button renders only while this is supplied. */
+  onScanBarcode?: () => void;
   onSearchFood: () => void;
   onMyMeals: () => void;
   onMoreOptions: () => void;
@@ -56,17 +57,19 @@ export function FoodQuickActions({
   return (
     <View className="gap-2">
       <View className="flex-row flex-wrap gap-2">
-        {slot(
-          'scan',
-          <Button
-            label={t('food.actions.scanBarcode')}
-            icon={ScanLine}
-            variant="secondary"
-            size="sm"
-            width="full"
-            onPress={onScanBarcode}
-          />
-        )}
+        {onScanBarcode
+          ? slot(
+              'scan',
+              <Button
+                label={t('food.actions.scanBarcode')}
+                icon={ScanLine}
+                variant="secondary"
+                size="sm"
+                width="full"
+                onPress={onScanBarcode}
+              />
+            )
+          : null}
         {slot(
           'search',
           <Button

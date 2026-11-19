@@ -114,7 +114,7 @@ describe('screens', () => {
 describe('entry points and the guided flow', () => {
   it('the landing and the profile offer the AI setup without requiring a configured AI', () => {
     const landing = read('app/app/onboarding/landing.tsx');
-    const profile = read('app/app/profile.tsx');
+    const profile = read('app/app/(tabs)/profile.tsx');
 
     expect(landing).toContain("aiSetupRoute('setup', 'onboarding')");
     expect(profile).toContain("aiSetupRoute('setup', 'profile')");

@@ -8,11 +8,15 @@ describe('open link wiring', () => {
   // screen ABOVE the gate: it then waits for the unlock and the review opens after it.
   it.each([
     [
-      'app/app/workout/workouts.tsx',
+      'app/app/(tabs)/workout/workouts.tsx',
       "useIncomingOpenLink(\n    'workout'",
       '<ExternalWorkoutPlanModal',
     ],
-    ['app/app/nutrition/food.tsx', "useIncomingOpenLink(\n    'food'", '<ExternalFoodLogModal'],
+    [
+      'app/app/(tabs)/nutrition/food.tsx',
+      "useIncomingOpenLink(\n    'food'",
+      '<ExternalFoodLogModal',
+    ],
   ])('%s holds the payload above its lock gate and gives it to the modal', (path, hook, modal) => {
     const source = read(path);
     const hookAt = source.indexOf(hook);

@@ -69,8 +69,8 @@ is still **MISSING**. With `--bypass-keychain` the profile is stored in `~/.asc/
 ## Releasing
 
 Like the Android scripts, nothing here bumps the version: `npm run bump-app-version` does (it keeps
-`app.json`, the Android and the iOS native files in step; `expo.ios.buildNumber` must rise with every upload of
-one version).
+`app.json`, the Android and the iOS native files in step, and renames `ios/appstore/metadata/version/<old>` to the
+new version; `expo.ios.buildNumber` must rise with every upload of one version).
 
 ```
 npm run bump-app-version                              # you bump; the scripts never do
@@ -184,7 +184,7 @@ override what applies (AI chat, health topics, user-generated content: none).
 **`new-version`** runs `asc versions create --if-exists skip` for `expo.version`: the listing and screenshots
 attach to an App Store version, and uploading a binary does not create one.
 
-**The version folder is app.json's version, and the scripts refuse anything else.** `metadata/version/<X.Y.Z>/` must be named `expo.version` (the version `new-version` creates and `plan`/`up` push to): `meta_version` in `appstore.sh` fails `validate`, `plan` and `up` on a folder left over from an older pull, and `from-listing` refuses to rewrite one. The listing once sat in `2.6.2` while the app was 2.16.x, so a push would have gone into that old version. After a version bump, rename the folder (`mv metadata/version/<old> metadata/version/<new>`) or `pull` it; pinned by `scripts/__tests__/appstorePublishing.test.ts`.
+**The version folder is app.json's version, and the scripts refuse anything else.** `metadata/version/<X.Y.Z>/` must be named `expo.version` (the version `new-version` creates and `plan`/`up` push to): `meta_version` in `appstore.sh` fails `validate`, `plan` and `up` on a folder left over from an older pull, and `from-listing` refuses to rewrite one. The listing once sat in `2.6.2` while the app was 2.16.x, so a push would have gone into that old version. `npm run bump-app-version` renames the folder itself (`renameAppStoreVersionFolder`, `scripts/bump.js`; a folder named after some other version is left alone); after a hand-edited version, rename it (`mv metadata/version/<old> metadata/version/<new>`) or `pull` it. Pinned by `scripts/__tests__/appstorePublishing.test.ts` and `scripts/__tests__/bump.test.ts`.
 
 `whatsNew` comes from `listing-extra.json` too (`{"en-US": {"whatsNew": "…"}}`); it is release copy, so rewrite
 it for each version (Apple requires it from the second version on).

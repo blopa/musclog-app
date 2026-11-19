@@ -3,6 +3,49 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Switching tabs got slower every time, then took ten seconds (2026-11-19)
+
+### Symptom
+
+In a production build, tapping between Home, Food and Workouts (fastest when tapping a second tab
+about 50 ms after the first) made each switch lag, and after roughly fifty rounds even a calm tap took
+ten seconds or more. Once, after a few minutes of this, the app went back to its boot screen as if it
+had just been launched. The database was large (three years of food logs) but nothing had been logged
+in the last 90 days.
+
+### Cause
+
+Every app screen is a sibling in one expo-router `Stack` (`app/app/_layout.tsx`). In expo-router 58
+(React Navigation 7 underneath), the stack's `NAVIGATE` pushes a new screen unless the target is the
+one already focused; it never goes back to a copy further down. The bottom bar called
+`router.navigate` for every tab (and `router.replace` for Food), so each tap mounted a new, complete
+Home, Food or Workouts screen on top of the old ones: fifty rounds of Food, Workouts, Home left 101
+screens alive (reproduced against the router's own reducer). None of them unmounted, so all of them kept
+their database observers, decryption and per-minute clocks running, and every write re-ran their
+queries. Memory grew until the OS killed the process and relaunched it, which is the boot screen that
+appeared mid-session. Finishing a workout leaked the same way on a smaller scale: the summary's
+"Go home" `replace('/app')` left the previous Home and Workouts underneath a new Home.
+
+### Fix
+
+The main destinations are now tabs of one tab navigator (`app/app/(tabs)/`), so switching shows the
+screen that is already built instead of stacking a new one, the way Musclog 1.x's drawer did. The
+outer stack's `singleTabsRouter` turns any navigation to the tabs from a pushed screen (a live
+workout, its summary, a notification tap) into "back to the tab navigator already there", so a
+second one cannot be mounted. Because of that rule, the bar, the account
+menu and "back to Home" reach a destination with a plain `router.navigate`. Fifty rounds of Food, Workouts, Home
+now leave the same three tab routes with the same keys.
+
+Hidden tabs stay mounted so coming back is instant, but only the most recently used four (two on a
+phone with about 3 GB or less; all hidden ones are dropped on an iOS memory warning), which bounds
+what a tab costs: its memory, and the database queries it keeps running while hidden. Because a
+mounted tab outlives its first render, the food diary and Weekly Review now follow new route params
+and the diary follows midnight (they used to read both only on mount).
+
+`components/navigation/__tests__/destinationNavigation.test.ts` runs the old flat stack (it must
+still grow past 100 screens), the tab router, and the stack with `singleTabsRouter` through
+expo-router's own reducers, and checks that every screen in `(tabs)/` is declared in its layout.
+
 ## Google Analytics received no data at all (2026-11-19)
 
 ### Symptom
@@ -1078,7 +1121,7 @@ that it was already broken for every user, imported data or not.
 
 ### Cause
 
-The configurable-home-actions branch was merged with the feature only half present. `app/app/index.tsx`
+The configurable-home-actions branch was merged with the feature only half present. `app/app/(tabs)/index.tsx`
 gained two `useMemo` calls without the matching `react` import, `VisualSettingsModal.tsx` called
 `isHomeActionAvailable` without importing it, and the entire persistence chain behind
 `useSettings().homeActions` was absent: no `HOME_ACTIONS_SETTING_TYPE`, no
@@ -1484,3 +1527,20 @@ looks for a missing row with a `take(1)` read before opening a writer, so the co
 nothing to fill does not queue behind other writers. Pinned by
 `database/__tests__/{bootForegroundClock,dbBootCoordinator}.test.ts` and
 `database/services/__tests__/ExerciseService.search.test.ts`.
+
+## Play blocked a release over an implied `android.hardware.wifi` requirement (2.16.6)
+
+Play Console refused to send build 334 for review: "Required hardware feature declarations are
+restricting your app's availability" (`android.hardware.wifi`, hiding the app from some phones,
+tablets, desktops and Android XR). Nothing declared it: `@react-native-community/netinfo` adds
+`ACCESS_WIFI_STATE`, and a few permissions imply a `<uses-feature required="true">` of their own
+(`CAMERA` → camera and camera.autofocus, the Bluetooth permissions → bluetooth, the location
+permissions → location, location.gps and location.network). `plugins/withOptionalHardwareFeatures.js`
+now declares all of them with `android:required="false"`, which overrides the implied requirement
+and keeps the permission, so the hardware still works where it exists. Musclog does not need any of
+it to log workouts or type in food. To add a feature, add its name to `OPTIONAL_FEATURES`. The
+plugin only fixes availability: screens that use the camera, Bluetooth sensors or location must
+still cope with a device that lacks the hardware. The camera half is done: every camera call to action hides behind `useHasCamera()` (see AGENTS.md); Bluetooth and location are not. The committed manifest comes from
+`npm run prebuild:android`; note that `--clean` also deletes `android/play/` (the Play listing,
+which prebuild does not generate), so restore it with `git checkout -- android/play` afterwards.
+Pinned by `plugins/__tests__/withOptionalHardwareFeatures.test.ts`.

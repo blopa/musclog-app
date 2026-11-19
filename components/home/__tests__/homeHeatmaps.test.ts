@@ -15,7 +15,7 @@ function code(...segments: string[]): string {
  */
 describe('home heatmaps', () => {
   it('is mounted once by the home screen, which reads no heatmap setting or data itself', () => {
-    const screen = code('app', 'app', 'index.tsx');
+    const screen = code('app', 'app', '(tabs)', 'index.tsx');
 
     expect([...screen.matchAll(/<HomeHeatmaps\b/g)]).toHaveLength(1);
     expect(screen).not.toMatch(/homeHeatmap|useActivityHeatmapDays/);

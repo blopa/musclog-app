@@ -51,7 +51,7 @@ const NEVER_WEBSITE_LOGGY =
 
 /** The two screens whose whole-screen empty state passes `pose` to `EmptyStateCard`. */
 const EMPTY_STATE_POSE_CALLERS = [
-  'app/app/notes.tsx',
+  'app/app/(tabs)/notes.tsx',
   'components/workout/WorkoutLibraryContent.tsx',
 ];
 

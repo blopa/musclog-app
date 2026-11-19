@@ -644,6 +644,14 @@ brand palette but not the mobile component primitives. Use semantic elements, vi
 responsive content width, and plain `<a href>` links for website navigation unless a documented
 router exception applies.
 
+**The homepage hero fills its space with the product, not with decoration.** The claim sits on the
+left; the right column is a flat block of the visitor's brand colour (`BRAND_GREEN`, no gradient,
+no pattern) with three real screens standing on it, cropped by its bottom edge, which rests on the
+next section's hairline. The front screen is the active theme's home capture; the two side screens
+are carousel captures taken in the default dark palette only, so in any other theme they are drawn
+in greys (`grayscale`) rather than in a green that contradicts the stage. Dot or grid backgrounds
+stay out (`deslopGuards.test.ts`); if the stage needs more, capture more real screens per theme.
+
 **Loggy on the website** is a short list, held by `components/__tests__/loggyPlacement.test.ts`
 like the app's: the homepage's "Meet Loggy" introduction (`wave`, the only place the homepage
 shows him), the top of the download page (`lifting`), the FAQ header (`thinking`), the `/open`

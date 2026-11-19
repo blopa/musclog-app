@@ -24,7 +24,7 @@ describe('the app lock reaches every surface that shows cycle records', () => {
   });
 
   it('renders the cycle screen’s sheets inside its lock gate', () => {
-    const screen = read('app/app/cycle.tsx');
+    const screen = read('app/app/(tabs)/cycle.tsx');
     expect(screen.indexOf('{renderPanel()}')).toBeGreaterThan(
       screen.indexOf('<AreaLockGate area="cycle">')
     );
@@ -44,12 +44,12 @@ describe('the app lock reaches every surface that shows cycle records', () => {
  */
 describe('each lockable area gates all of its screens', () => {
   const gated: [string, string][] = [
-    ['app/app/cycle.tsx', 'area="cycle"'],
-    ['app/app/progress.tsx', 'area="progress"'],
-    ['app/app/nutrition/food.tsx', 'area="nutrition"'],
-    ['app/app/weekly-review.tsx', 'area={WEEKLY_REVIEW_LOCK_AREAS}'],
+    ['app/app/(tabs)/cycle.tsx', 'area="cycle"'],
+    ['app/app/(tabs)/progress.tsx', 'area="progress"'],
+    ['app/app/(tabs)/nutrition/food.tsx', 'area="nutrition"'],
+    ['app/app/(tabs)/weekly-review.tsx', 'area={WEEKLY_REVIEW_LOCK_AREAS}'],
     ['app/app/year-in-review.tsx', 'area={YEAR_IN_REVIEW_LOCK_AREAS}'],
-    ['app/app/workout/workouts.tsx', 'area="workout"'],
+    ['app/app/(tabs)/workout/workouts.tsx', 'area="workout"'],
     ['app/app/workout/workout-session.tsx', 'area="workout"'],
     ['app/app/workout/workout-summary.tsx', 'area="workout"'],
     ['app/app/workout/rest-timer.tsx', 'area="workout"'],
@@ -65,16 +65,19 @@ describe('each lockable area gates all of its screens', () => {
 
   it('gates every screen file in app/app/workout', () => {
     const { readdirSync } = jest.requireActual('fs') as typeof import('fs');
-    const files = readdirSync(join(__dirname, '../../app/app/workout')).filter(
-      (name) => name.endsWith('.tsx') && !name.endsWith('.web.tsx')
-    );
-    for (const name of files) {
-      expect(read(`app/app/workout/${name}`)).toContain('<AreaLockGate');
+    // `(tabs)` is a route group (no URL segment), so the workouts screen sits one folder down.
+    for (const folder of ['app/app/workout', 'app/app/(tabs)/workout']) {
+      const files = readdirSync(join(__dirname, '../..', folder)).filter(
+        (name) => name.endsWith('.tsx') && !name.endsWith('.web.tsx')
+      );
+      for (const name of files) {
+        expect(read(`${folder}/${name}`)).toContain('<AreaLockGate');
+      }
     }
   });
 
   it('weekly review holds both the workout and the nutrition lock', () => {
-    expect(read('app/app/weekly-review.tsx')).toMatch(
+    expect(read('app/app/(tabs)/weekly-review.tsx')).toMatch(
       /WEEKLY_REVIEW_LOCK_AREAS = \['workout', 'nutrition'\]/
     );
   });
