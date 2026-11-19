@@ -551,6 +551,12 @@
       "installHint": "Don't have Musclog yet?",
       "installLink": "Download Musclog"
     },
+    "forwarding": {
+      "title": "Taking you to the right page",
+      "description": "Musclog pages now live under a language, so we are sending you to the English version. This only takes a moment.",
+      "fallback": "Nothing happening?",
+      "link": "Open the page"
+    },
     "footer": {
       "privacyPolicy": "Privacy Policy",
       "terms": "Terms",

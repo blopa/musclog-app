@@ -551,6 +551,12 @@
       "installHint": "Heb je Musclog nog niet?",
       "installLink": "Download Musclog"
     },
+    "forwarding": {
+      "title": "We brengen je naar de juiste pagina",
+      "description": "Pagina's van Musclog staan nu onder een taal, dus we sturen je door naar de Engelse versie. Dit duurt maar even.",
+      "fallback": "Gebeurt er niets?",
+      "link": "Open de pagina"
+    },
     "footer": {
       "privacyPolicy": "Privacybeleid",
       "terms": "Voorwaarden",

@@ -551,6 +551,12 @@
       "installHint": "Ainda não tem o Musclog?",
       "installLink": "Baixar Musclog"
     },
+    "forwarding": {
+      "title": "Levando você para a página certa",
+      "description": "As páginas do Musclog agora ficam sob um idioma, então estamos enviando você para a versão em inglês. Leva só um instante.",
+      "fallback": "Nada acontece?",
+      "link": "Abrir a página"
+    },
     "footer": {
       "privacyPolicy": "Política de Privacidade",
       "terms": "Termos",
