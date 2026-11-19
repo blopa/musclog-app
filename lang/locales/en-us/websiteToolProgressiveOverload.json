@@ -44,6 +44,8 @@
         "deload": "Go lighter"
       },
       "target_one": "{{weight}} for {{reps}} rep",
+      "target_few": "{{weight}} for {{reps}} reps",
+      "target_many": "{{weight}} for {{reps}} reps",
       "target_other": "{{weight}} for {{reps}} reps",
       "changeUp": "{{change}} ({{percent}}) heavier than last time.",
       "changeSame": "The same weight as last time.",

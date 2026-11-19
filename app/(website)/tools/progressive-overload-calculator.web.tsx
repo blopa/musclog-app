@@ -73,10 +73,9 @@ export default function ProgressiveOverloadToolPage() {
       return t('results.changeSame');
     }
 
-    return t(change > 0 ? 'results.changeUp' : 'results.changeDown', {
-      change: withUnit(Math.abs(change)),
-      percent: percent(changePercent),
-    });
+    const values = { change: withUnit(Math.abs(change)), percent: percent(changePercent) };
+
+    return change > 0 ? t('results.changeUp', values) : t('results.changeDown', values);
   };
 
   const maxFor = (field: string) => {

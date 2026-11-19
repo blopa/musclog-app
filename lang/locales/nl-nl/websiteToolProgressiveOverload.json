@@ -44,6 +44,8 @@
         "deload": "Lichter"
       },
       "target_one": "{{weight}} voor {{reps}} rep",
+      "target_few": "{{weight}} voor {{reps}} reps",
+      "target_many": "{{weight}} voor {{reps}} reps",
       "target_other": "{{weight}} voor {{reps}} reps",
       "changeUp": "{{change}} ({{percent}}) zwaarder dan de vorige keer.",
       "changeSame": "Hetzelfde gewicht als de vorige keer.",

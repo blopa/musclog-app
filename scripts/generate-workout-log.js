@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * Writes the free printable workout log (PDF, A4 and US Letter) and the spreadsheet template (XLSX
  * and CSV) that /tools/workout-log-template offers, into public/downloads/.

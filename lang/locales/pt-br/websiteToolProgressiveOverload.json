@@ -44,6 +44,8 @@
         "deload": "Diminuir a carga"
       },
       "target_one": "{{weight}} para {{reps}} repetição",
+      "target_few": "{{weight}} para {{reps}} repetições",
+      "target_many": "{{weight}} para {{reps}} repetições",
       "target_other": "{{weight}} para {{reps}} repetições",
       "changeUp": "{{change}} ({{percent}}) mais pesado que a última vez.",
       "changeSame": "O mesmo peso da última vez.",

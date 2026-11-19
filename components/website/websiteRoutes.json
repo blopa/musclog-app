@@ -128,7 +128,7 @@
     "llms": {
       "section": "Product",
       "title": "Lifting Tools",
-      "summary": "Free calculators for lifters: one-rep max, plates, warm-ups, RPE, protein, calorie deficit and net carbs."
+      "summary": "Free calculators for lifters: one-rep max, plates, warm-ups, RPE, progressive overload, deload, protein, calorie deficit and net carbs, plus a printable workout log."
     }
   },
   "toolOneRepMax": {
