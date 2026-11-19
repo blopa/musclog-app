@@ -183,6 +183,7 @@ function writePdf(size) {
       doc.text('Reps', left + weightWidth, tableY + 15, { width: repsWidth, align: 'center' });
       doc.font('Helvetica-Bold').fontSize(9).fillColor(INK);
     }
+
     doc.text('Notes', MARGIN + exerciseWidth + setWidth * SET_COLUMNS + 6, tableY + 14, {
       width: notesWidth,
     });

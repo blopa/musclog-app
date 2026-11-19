@@ -6,8 +6,8 @@ import { ToolLayout, type ToolSection } from '@/components/website/tools/ToolLay
 import { useToolUnits } from '@/components/website/tools/useToolState';
 import {
   checkLogCsv,
-  type LogCheck,
   LOG_DOWNLOADS,
+  type LogCheck,
 } from '@/components/website/tools/workoutLogTemplateModel';
 import {
   BODY_TEXT,
