@@ -17,6 +17,7 @@ import { MealService } from '@/database/services/MealService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
@@ -156,6 +157,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
   const [sendMealId, setSendMealId] = useState<string | null>(null);
   const [importVisible, setImportVisible] = useState(false);
+  const hasCamera = useHasCamera();
 
   useEffect(() => {
     if (!visible) {
@@ -639,7 +641,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
             onCreateMeal={handleCreateMeal}
             onDynamicMealCreator={handleDynamicMealCreator}
             onGenerateMealAI={handleGenerateMealAI}
-            onImportFromPhone={handleImportFromPhone}
+            onImportFromPhone={hasCamera ? handleImportFromPhone : undefined}
             isAiEnabled={isAiConfigured}
           />
         ) : null}

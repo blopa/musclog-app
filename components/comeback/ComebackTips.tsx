@@ -6,6 +6,7 @@ import { useCoach } from '@/components/CoachContext';
 import { ListRow } from '@/components/theme/ListRow';
 import { TRACK_MEAL } from '@/constants/chat';
 import { useSmartCamera } from '@/context/SmartCameraContext';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSettings } from '@/hooks/useSettings';
 import {
   comebackRecommendations,
@@ -27,11 +28,13 @@ export function ComebackTips({ answers }: { answers: ComebackAnswers }) {
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const { isAiConfigured, isAiMealPhotoEnabled, aiProvider } = useSettings();
+  const hasCamera = useHasCamera();
 
   const tips = comebackRecommendations(answers, {
     isAiConfigured,
     isAiMealPhotoEnabled,
     aiProvider,
+    hasCamera,
   });
   const act = (action: ComebackTipAction) => {
     switch (action) {

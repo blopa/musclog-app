@@ -11,6 +11,7 @@ import Food from '@/database/models/Food';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -248,6 +249,7 @@ export function AddFoodItemToMealModal({
   onAddFoods,
 }: AddFoodItemToMealModalProps) {
   const theme = useTheme();
+  const hasCamera = useHasCamera();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<
@@ -445,13 +447,15 @@ export function AddFoodItemToMealModal({
             onChangeText={setSearchQuery}
             placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
             icon={
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('common.a11y.scanBarcode')}
-                onPress={openScanner}
-              >
-                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </Pressable>
+              hasCamera ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.scanBarcode')}
+                  onPress={openScanner}
+                >
+                  <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                </Pressable>
+              ) : undefined
             }
           />
         </View>

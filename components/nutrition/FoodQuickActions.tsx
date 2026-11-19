@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useWindowDimensions, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
@@ -45,6 +46,7 @@ export function FoodQuickActions({
   const { t } = useTranslation();
   const theme = useTheme();
   const { fontScale } = useWindowDimensions();
+  const hasCamera = useHasCamera();
   const basis = quickActionBasis(fontScale);
 
   const slot = (key: string, button: ReactNode) => (
@@ -56,17 +58,19 @@ export function FoodQuickActions({
   return (
     <View className="gap-2">
       <View className="flex-row flex-wrap gap-2">
-        {slot(
-          'scan',
-          <Button
-            label={t('food.actions.scanBarcode')}
-            icon={ScanLine}
-            variant="secondary"
-            size="sm"
-            width="full"
-            onPress={onScanBarcode}
-          />
-        )}
+        {hasCamera
+          ? slot(
+              'scan',
+              <Button
+                label={t('food.actions.scanBarcode')}
+                icon={ScanLine}
+                variant="secondary"
+                size="sm"
+                width="full"
+                onPress={onScanBarcode}
+              />
+            )
+          : null}
         {slot(
           'search',
           <Button

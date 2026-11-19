@@ -1540,7 +1540,7 @@ now declares all of them with `android:required="false"`, which overrides the im
 and keeps the permission, so the hardware still works where it exists. Musclog does not need any of
 it to log workouts or type in food. To add a feature, add its name to `OPTIONAL_FEATURES`. The
 plugin only fixes availability: screens that use the camera, Bluetooth sensors or location must
-still cope with a device that lacks the hardware. The committed manifest comes from
+still cope with a device that lacks the hardware. The camera half is done: every camera call to action hides behind `useHasCamera()` (see AGENTS.md); Bluetooth and location are not. The committed manifest comes from
 `npm run prebuild:android`; note that `--clean` also deletes `android/play/` (the Play listing,
 which prebuild does not generate), so restore it with `git checkout -- android/play` afterwards.
 Pinned by `plugins/__tests__/withOptionalHardwareFeatures.test.ts`.

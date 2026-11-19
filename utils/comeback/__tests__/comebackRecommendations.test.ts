@@ -2,16 +2,23 @@ import { comebackRecommendations } from '@/utils/comeback/comebackRecommendation
 
 const ids = (tips: { id: string }[]) => tips.map((t) => t.id);
 
-const noAi = { isAiConfigured: false, isAiMealPhotoEnabled: false, aiProvider: null } as const;
+const noAi = {
+  isAiConfigured: false,
+  isAiMealPhotoEnabled: false,
+  aiProvider: null,
+  hasCamera: true,
+} as const;
 const strongAi = {
   isAiConfigured: true,
   isAiMealPhotoEnabled: true,
   aiProvider: 'gemini',
+  hasCamera: true,
 } as const;
 const basicAi = {
   isAiConfigured: true,
   isAiMealPhotoEnabled: false,
   aiProvider: 'on-device',
+  hasCamera: true,
 } as const;
 
 describe('comebackRecommendations', () => {
@@ -75,5 +82,56 @@ describe('comebackRecommendations', () => {
 
   it('still returns something when the eating question was skipped', () => {
     expect(comebackRecommendations({}, noAi).length).toBeGreaterThan(0);
+  });
+
+  describe('without a camera', () => {
+    const CAMERA_ACTIONS = ['smartCameraMeal', 'barcodeScan'];
+    const noCamera = { ...strongAi, hasCamera: false } as const;
+    const noCameraNoAi = { ...noAi, hasCamera: false } as const;
+
+    it('never offers a tip whose action opens the camera, for any eating answer', () => {
+      const answers = [
+        { eating: 'out' },
+        { eating: 'cook' },
+        { eating: 'mix' },
+        { eating: 'varies' },
+        {},
+      ] as const;
+
+      for (const answer of answers) {
+        for (const ctx of [noCamera, noCameraNoAi, { ...basicAi, hasCamera: false }]) {
+          const tips = comebackRecommendations(answer, ctx);
+
+          for (const tip of tips) {
+            expect(CAMERA_ACTIONS).not.toContain(tip.action);
+          }
+        }
+      }
+    });
+
+    it('drops the photo and barcode tips but keeps the chat-based AI tip', () => {
+      expect(ids(comebackRecommendations({ eating: 'out' }, noCamera))).toEqual([
+        'describeMeal',
+        'proteinFirstDish',
+      ]);
+    });
+
+    it('leaves a cooking household with saved meals only', () => {
+      expect(ids(comebackRecommendations({ eating: 'cook' }, noCamera))).toEqual(['savedMeals']);
+    });
+
+    it('keeps every branch non-empty', () => {
+      for (const eating of ['out', 'cook', 'mix', 'varies', undefined] as const) {
+        expect(comebackRecommendations({ eating }, noCameraNoAi).length).toBeGreaterThan(0);
+        expect(comebackRecommendations({ eating }, noCamera).length).toBeGreaterThan(0);
+      }
+    });
+
+    it('does not change the result when a camera is present', () => {
+      expect(ids(comebackRecommendations({ eating: 'cook' }, strongAi))).toEqual([
+        'savedMeals',
+        'scanBarcode',
+      ]);
+    });
   });
 });

@@ -16,6 +16,8 @@ import { DEFAULT_HOME_ACTIONS, HomeActionKey, MIN_HOME_ACTIONS } from '@/constan
 export type HomeActionContext = {
   isAiConfigured: boolean;
   isWeb: boolean;
+  /** Whether the device has a camera at all (`useHasCamera`); permission is a separate matter. */
+  hasCamera: boolean;
 };
 
 export type HomeActionConfig = {
@@ -51,8 +53,8 @@ export const HOME_ACTIONS: Record<HomeActionKey, HomeActionConfig> = {
     labelKey: 'home.actions.scanBarcode',
     icon: ScanLine,
     tone: 'muted',
-    // There is no camera to scan with on web.
-    isAvailable: ({ isWeb }) => !isWeb,
+    // There is no camera to scan with on web, nor on a device without one.
+    isAvailable: ({ isWeb, hasCamera }) => !isWeb && hasCamera,
   },
   ai_photo: {
     labelKey: 'home.actions.aiPhoto',
@@ -60,7 +62,7 @@ export const HOME_ACTIONS: Record<HomeActionKey, HomeActionConfig> = {
     tone: 'accent',
     // Gated on the provider per the AI-affordance rule: an action inside a menu or a grid
     // must not advertise AI, because tapping it would dead-end.
-    isAvailable: ({ isAiConfigured, isWeb }) => isAiConfigured && !isWeb,
+    isAvailable: ({ isAiConfigured, isWeb, hasCamera }) => isAiConfigured && !isWeb && hasCamera,
   },
   my_meals: {
     labelKey: 'home.actions.myMeals',

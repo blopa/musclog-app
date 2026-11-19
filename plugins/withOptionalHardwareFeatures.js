@@ -14,7 +14,8 @@
  * requirement while keeping the permission, so the code that uses the hardware keeps working where
  * it exists. `app.json` has no field for `uses-feature`, hence this plugin.
  *
- * Whether the UI hides the feature on a device that lacks the hardware is a separate piece of work.
+ * The camera is hidden from the UI on a device that lacks one (`hooks/useHasCamera.ts`); Wi-Fi needs
+ * nothing (a phone may be on mobile data) and Bluetooth/location are not handled yet.
  */
 
 const { withAndroidManifest } = require('expo/config-plugins');

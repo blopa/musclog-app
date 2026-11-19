@@ -11,6 +11,7 @@ import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import type { NavItemKey } from '@/constants/settings';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
@@ -126,6 +127,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const { rawSlots, isCycleActive } = useNavigationItems();
   const weeklyReview = useWeeklyReviewStatus();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
+  const hasCamera = useHasCamera();
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 350;
   const insets = useAppSafeAreaInsets();
@@ -244,34 +246,36 @@ export const NavigationMenu = memo(function NavigationMenu({
         {/* Slot 1 - customizable */}
         {renderNavSlot(navSlot1)}
 
-        {/* Camera - always fixed */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common.a11y.openCamera')}
-          className="z-10 items-center justify-center gap-1"
-          style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
-          onPress={onCameraPress}
-        >
-          <View
-            className="items-center justify-center rounded-full"
-            style={[
-              isSmallScreen
-                ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
-                : { width: 80, height: 80 },
-              {
-                backgroundColor: cameraFabActive
-                  ? theme.colors.accent.primary
-                  : addOpacityToHex(theme.colors.accent.primary, 0.8),
-              },
-            ]}
+        {/* Camera - fixed, unless the device has no camera to open */}
+        {hasCamera ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('common.a11y.openCamera')}
+            className="z-10 items-center justify-center gap-1"
+            style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
+            onPress={onCameraPress}
           >
-            <Camera
-              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
-              color={theme.colors.background.secondaryDark}
-              strokeWidth={theme.strokeWidth.medium}
-            />
-          </View>
-        </Pressable>
+            <View
+              className="items-center justify-center rounded-full"
+              style={[
+                isSmallScreen
+                  ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+                  : { width: 80, height: 80 },
+                {
+                  backgroundColor: cameraFabActive
+                    ? theme.colors.accent.primary
+                    : addOpacityToHex(theme.colors.accent.primary, 0.8),
+                },
+              ]}
+            >
+              <Camera
+                size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
+                color={theme.colors.background.secondaryDark}
+                strokeWidth={theme.strokeWidth.medium}
+              />
+            </View>
+          </Pressable>
+        ) : null}
 
         {/* Slot 2 - customizable */}
         {renderNavSlot(navSlot2)}

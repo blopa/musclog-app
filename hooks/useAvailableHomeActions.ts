@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 
 import { HOME_ACTIONS } from '@/components/home/homeActions';
 import { HOME_ACTION_KEYS, HomeActionKey } from '@/constants/homeActions';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSettings } from '@/hooks/useSettings';
 
 /**
@@ -16,9 +17,10 @@ import { useSettings } from '@/hooks/useSettings';
  */
 export function useAvailableHomeActions(): readonly HomeActionKey[] {
   const { isAiConfigured } = useSettings();
+  const hasCamera = useHasCamera();
 
   return useMemo(() => {
-    const context = { isAiConfigured, isWeb: Platform.OS === 'web' };
+    const context = { isAiConfigured, isWeb: Platform.OS === 'web', hasCamera };
     return HOME_ACTION_KEYS.filter((key) => HOME_ACTIONS[key].isAvailable(context));
-  }, [isAiConfigured]);
+  }, [isAiConfigured, hasCamera]);
 }

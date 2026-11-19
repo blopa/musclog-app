@@ -40,9 +40,9 @@ describe('HOME_ACTIONS', () => {
 describe('log_cardio', () => {
   it('is offered on every device, because logging a walk needs nothing from the device', () => {
     for (const context of [
-      { isAiConfigured: true, isWeb: false },
-      { isAiConfigured: false, isWeb: false },
-      { isAiConfigured: false, isWeb: true },
+      { isAiConfigured: true, isWeb: false, hasCamera: true },
+      { isAiConfigured: false, isWeb: false, hasCamera: true },
+      { isAiConfigured: false, isWeb: true, hasCamera: true },
     ]) {
       expect(HOME_ACTIONS.log_cardio.isAvailable(context)).toBe(true);
     }
@@ -91,7 +91,7 @@ describe('orderHomeActionRows', () => {
 });
 
 describe('HOME_ACTIONS[key].isAvailable', () => {
-  const native = { isAiConfigured: true, isWeb: false };
+  const native = { isAiConfigured: true, isWeb: false, hasCamera: true };
   const isAvailable = (key: HomeActionKey, context: HomeActionContext) =>
     HOME_ACTIONS[key].isAvailable(context);
 
@@ -106,6 +106,12 @@ describe('HOME_ACTIONS[key].isAvailable', () => {
     expect(isAvailable('ai_photo', { ...native, isWeb: true })).toBe(false);
     expect(isAvailable('scan_barcode', { ...native, isWeb: true })).toBe(false);
     expect(isAvailable('scan_barcode', native)).toBe(true);
+  });
+
+  it('hides the camera-backed actions on a device without a camera', () => {
+    expect(isAvailable('ai_photo', { ...native, hasCamera: false })).toBe(false);
+    expect(isAvailable('scan_barcode', { ...native, hasCamera: false })).toBe(false);
+    expect(isAvailable('track_food', { ...native, hasCamera: false })).toBe(true);
   });
 
   // The home screen renders whatever survives this filter, so a key with no gate of its
@@ -124,9 +130,9 @@ describe('HOME_ACTIONS[key].isAvailable', () => {
   it('has no permanently unavailable action', () => {
     for (const key of HOME_ACTION_KEYS) {
       const reachable = [
-        { isAiConfigured: true, isWeb: false },
-        { isAiConfigured: false, isWeb: false },
-        { isAiConfigured: true, isWeb: true },
+        { isAiConfigured: true, isWeb: false, hasCamera: true },
+        { isAiConfigured: false, isWeb: false, hasCamera: true },
+        { isAiConfigured: true, isWeb: true, hasCamera: true },
       ].some((context) => isAvailable(key, context));
 
       expect(reachable).toBe(true);

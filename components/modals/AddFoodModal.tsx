@@ -19,6 +19,7 @@ import { ListGroup } from '@/components/theme/ListGroup';
 import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TrackingMethodButton } from '@/components/TrackingMethodButton';
 import { MealType } from '@/database/models';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useTheme } from '@/hooks/useTheme';
 
 type AddFoodModalProps = {
@@ -59,6 +60,7 @@ export function AddFoodModal({
   onTrackFromSavedPress,
 }: AddFoodModalProps) {
   const theme = useTheme();
+  const hasCamera = useHasCamera();
   const { t } = useTranslation();
 
   const mealTypes: {
@@ -162,16 +164,18 @@ export function AddFoodModal({
                     onClose();
                   }}
                 />
-                <TrackingMethodButton
-                  icon={ScanLine}
-                  title={t('food.addFoodModal.scanBarcode.title')}
-                  description={t('food.addFoodModal.scanBarcode.description')}
-                  onPress={() => {
-                    onScanBarcodePress?.();
-                    onClose();
-                  }}
-                />
-                {isAiEnabled ? (
+                {hasCamera ? (
+                  <TrackingMethodButton
+                    icon={ScanLine}
+                    title={t('food.addFoodModal.scanBarcode.title')}
+                    description={t('food.addFoodModal.scanBarcode.description')}
+                    onPress={() => {
+                      onScanBarcodePress?.();
+                      onClose();
+                    }}
+                  />
+                ) : null}
+                {isAiEnabled && hasCamera ? (
                   <TrackingMethodButton
                     icon={Sparkles}
                     title={t('food.addFoodModal.aiCamera.title')}

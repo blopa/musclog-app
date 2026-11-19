@@ -32,6 +32,7 @@ import { seedDevData } from '@/database/seeders/dev';
 import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';
@@ -121,6 +122,7 @@ export default function LandingScreen() {
   // Import functionality state
   const [importModalVisible, setImportModalVisible] = useState(false);
   const [opticalImportVisible, setOpticalImportVisible] = useState(false);
+  const hasCamera = useHasCamera();
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [loading, setLoading] = useState(false);
   useKeepScreenAwake('onboarding-import', loading);
@@ -234,19 +236,23 @@ export default function LandingScreen() {
               >
                 <Download size={20} color={theme.colors.text.primary} />
               </TouchableOpacity>
-              <TouchableOpacity
-                className="rounded-control p-2"
-                style={{
-                  backgroundColor: theme.colors.background.scrim30,
-                  opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
-                }}
-                onPress={() => setOpticalImportVisible(true)}
-                disabled={isInitializing}
-                accessibilityLabel={t('onboarding.landing.importOptically')}
-                accessibilityRole="button"
-              >
-                <ScanLine size={20} color={theme.colors.text.primary} />
-              </TouchableOpacity>
+              {hasCamera ? (
+                <TouchableOpacity
+                  className="rounded-control p-2"
+                  style={{
+                    backgroundColor: theme.colors.background.scrim30,
+                    opacity: isInitializing
+                      ? theme.colors.opacity.medium
+                      : theme.colors.opacity.full,
+                  }}
+                  onPress={() => setOpticalImportVisible(true)}
+                  disabled={isInitializing}
+                  accessibilityLabel={t('onboarding.landing.importOptically')}
+                  accessibilityRole="button"
+                >
+                  <ScanLine size={20} color={theme.colors.text.primary} />
+                </TouchableOpacity>
+              ) : null}
             </View>
 
             {/* Hero Section */}

@@ -59,6 +59,7 @@ import { NutritionService } from '@/database/services/NutritionService';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFavoriteFoods } from '@/hooks/useFavoriteFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import useNutritionLogs from '@/hooks/useNutritionLogs';
@@ -345,6 +346,8 @@ export function FoodSearchModal({
   isAiEnabled = true,
 }: FoodSearchModalProps) {
   const theme = useTheme();
+  const hasCamera = useHasCamera();
+  const showBarcodeScan = hasCamera && onBarcodeScanPress !== undefined;
   const { t } = useTranslation();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const { showSnackbar } = useSnackbar();
@@ -1257,7 +1260,7 @@ export function FoodSearchModal({
                 onChangeText={setSearchQuery}
                 onSubmitEditing={triggerNow}
                 returnKeyType="search"
-                className="w-full rounded-card border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
+                className={`w-full rounded-card border border-border-light bg-bg-overlay py-3.5 pl-11 text-base text-text-primary ${showBarcodeScan ? 'pr-10' : ''}`}
                 style={{
                   backgroundColor: theme.colors.background.secondaryDark,
                   borderColor: searchQuery
@@ -1266,17 +1269,19 @@ export function FoodSearchModal({
                 }}
                 autoFocus
               />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('common.a11y.scanBarcode')}
-                className="absolute inset-y-0 right-0 items-center justify-center pr-2"
-                onPress={onBarcodeScanPress}
-                hitSlop={12}
-              >
-                <View className="rounded-control p-1.5">
-                  <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                </View>
-              </Pressable>
+              {showBarcodeScan ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.scanBarcode')}
+                  className="absolute inset-y-0 right-0 items-center justify-center pr-2"
+                  onPress={onBarcodeScanPress}
+                  hitSlop={12}
+                >
+                  <View className="rounded-control p-1.5">
+                    <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                  </View>
+                </Pressable>
+              ) : null}
             </View>
           </View>
 

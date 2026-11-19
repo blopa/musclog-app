@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, View } from 'react-native';
 
 import { TextInput } from '@/components/theme/TextInput';
+import { useHasCamera } from '@/hooks/useHasCamera';
 import { useTheme } from '@/hooks/useTheme';
 
 type BarcodeInputProps = {
@@ -22,6 +23,7 @@ export function BarcodeInput({
 }: BarcodeInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const hasCamera = useHasCamera();
   const sanitizedValue = value.replace(/\D/g, '');
 
   return (
@@ -34,27 +36,29 @@ export function BarcodeInput({
         inputMode="numeric"
         keyboardType="numeric"
       />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('food.actions.scanBarcode')}
-        className="absolute right-2 items-center justify-center rounded-control"
-        style={{
-          ...(Platform.OS !== 'web'
-            ? {
-                top: theme.size['14'] / 2,
-              }
-            : {
-                top: theme.size['18'] / 2,
-              }),
-          width: theme.size['10'],
-          height: theme.size['10'],
-          backgroundColor: theme.colors.accent.primary10,
-          borderRadius: theme.borderRadius.sm,
-        }}
-        onPress={onScanPress}
-      >
-        <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-      </Pressable>
+      {hasCamera ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('food.actions.scanBarcode')}
+          className="absolute right-2 items-center justify-center rounded-control"
+          style={{
+            ...(Platform.OS !== 'web'
+              ? {
+                  top: theme.size['14'] / 2,
+                }
+              : {
+                  top: theme.size['18'] / 2,
+                }),
+            width: theme.size['10'],
+            height: theme.size['10'],
+            backgroundColor: theme.colors.accent.primary10,
+            borderRadius: theme.borderRadius.sm,
+          }}
+          onPress={onScanPress}
+        >
+          <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+        </Pressable>
+      ) : null}
     </View>
   );
 }
