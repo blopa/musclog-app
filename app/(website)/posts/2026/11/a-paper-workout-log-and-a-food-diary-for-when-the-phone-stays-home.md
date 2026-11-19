@@ -73,7 +73,7 @@ Paper does not draw charts or remember your best set. If you later want that, yo
 
 The workout log page also offers a spreadsheet (Excel or CSV) with these columns: `Date`, `Workout Name`, `Exercise Name`, `Set Order`, `Weight`, `Reps`, `RPE` and `Notes`. That is the layout the Strong app exports, which Musclog's importer already reads. Copy your sheets into it, one row per set, delete the example row, and save the Log sheet as CSV.
 
-![The free printable workout log page on musclog.app, with the downloads for the A4 and US Letter PDFs, the spreadsheet template and the CSV template, and the start of the Check your filled-in CSV panel](/images/blog/2026/11/paper-log-workout-page.webp 'The workout log downloads')
+![The free printable workout log page on musclog.app: the Downloads panel with the A4 and US Letter PDFs, the spreadsheet template and the CSV template, beside the Check your filled-in CSV panel with a kg or lb choice and a file picker](/images/blog/2026/11/paper-log-workout-page.webp 'The workout log page: downloads and the CSV check')
 
 Before you open the app, the same page can check your file. Choose your CSV and it tells you how many workouts and sets Musclog would read from it, and warns if the example row is still there. It runs the same reader the app uses, in your browser, and the file is not uploaded.
 
@@ -135,8 +135,7 @@ Two things that trip people up:
 
 If you want to check your maths, the [food diary page](/tools/nutrition-log-template) has a small form that does the same sum. Type the label's numbers and the grams, and it shows what you ate. Leave the calories empty and it estimates them from the macros: 4 kcal per gram of protein and carbs, 9 per gram of fat.
 
-![The free printable food diary page, with downloads for the version with macros already worked out and the per 100 g version, in A4 and US Letter, and the start of the Spreadsheet group](/images/blog/2026/11/paper-log-food-downloads.webp)
-![The per 100 g sums for 150 g eaten: 527 calories, estimated from the macros, 18 g protein, 90 g carbs and 10.5 g fat](/images/blog/2026/11/paper-log-food-sums.webp)
+![The free printable food diary page on musclog.app: the Downloads panel with both versions in A4 and US Letter and the spreadsheet, beside the Try the per 100 g sums form, where 12 g protein, 60 g carbs and 7 g fat per 100 g and 150 g eaten give 527 calories, 18 g protein, 90 g carbs and 10.5 g fat](/images/blog/2026/11/paper-log-food-page.webp 'The food diary page: downloads and the sums form')
 
 ### The spreadsheet
 
