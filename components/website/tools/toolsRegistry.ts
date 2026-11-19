@@ -7,18 +7,22 @@ import websiteRoutes from '@/components/website/websiteRoutes.json';
  * list and in the search result are one piece of copy.
  */
 export const TOOLS = [
-  { key: 'oneRepMax', routeKey: 'toolOneRepMax' },
-  { key: 'plateCalculator', routeKey: 'toolPlateCalculator' },
-  { key: 'strengthLevel', routeKey: 'toolStrengthLevel' },
-  { key: 'warmUpCalculator', routeKey: 'toolWarmUpCalculator' },
-  { key: 'rpeChart', routeKey: 'toolRpeChart' },
-  { key: 'proteinCalculator', routeKey: 'toolProteinCalculator' },
-  { key: 'calorieDeficit', routeKey: 'toolCalorieDeficit' },
-  { key: 'netCarbs', routeKey: 'toolNetCarbs' },
-  { key: 'progressiveOverload', routeKey: 'toolProgressiveOverload' },
-  { key: 'deloadCalculator', routeKey: 'toolDeloadCalculator' },
-  { key: 'workoutLogTemplate', routeKey: 'toolWorkoutLogTemplate' },
+  { key: 'oneRepMax', routeKey: 'toolOneRepMax', group: 'strength' },
+  { key: 'plateCalculator', routeKey: 'toolPlateCalculator', group: 'strength' },
+  { key: 'strengthLevel', routeKey: 'toolStrengthLevel', group: 'strength' },
+  { key: 'warmUpCalculator', routeKey: 'toolWarmUpCalculator', group: 'strength' },
+  { key: 'rpeChart', routeKey: 'toolRpeChart', group: 'training' },
+  { key: 'proteinCalculator', routeKey: 'toolProteinCalculator', group: 'nutrition' },
+  { key: 'calorieDeficit', routeKey: 'toolCalorieDeficit', group: 'nutrition' },
+  { key: 'netCarbs', routeKey: 'toolNetCarbs', group: 'nutrition' },
+  { key: 'progressiveOverload', routeKey: 'toolProgressiveOverload', group: 'training' },
+  { key: 'deloadCalculator', routeKey: 'toolDeloadCalculator', group: 'training' },
+  { key: 'workoutLogTemplate', routeKey: 'toolWorkoutLogTemplate', group: 'training' },
 ] as const;
+
+/** How the index page sorts the tools: by what the lifter is trying to do, not by file name. */
+export const TOOL_GROUPS = ['strength', 'training', 'nutrition'] as const;
+export type ToolGroup = (typeof TOOL_GROUPS)[number];
 
 export type ToolKey = (typeof TOOLS)[number]['key'];
 export type ToolRouteKey = (typeof TOOLS)[number]['routeKey'];

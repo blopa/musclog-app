@@ -28,6 +28,20 @@
       "invalid": "Check the bar weight and the plate counts: each needs a number."
     },
     "index": {
+      "groups": {
+        "strength": {
+          "title": "Know your strength",
+          "body": "Work out your max, your plates and your warm-ups."
+        },
+        "training": {
+          "title": "Plan your training",
+          "body": "Set effort, progression, deloads and keep a log."
+        },
+        "nutrition": {
+          "title": "Eat for your goal",
+          "body": "Protein, calories and carbs without the guesswork."
+        }
+      },
       "title": "Free tools for lifters",
       "intro": "Calculators that run in your browser and use the same math as the Musclog app. Nothing you type leaves the page.",
       "programsTitle": "Free workout programs",
