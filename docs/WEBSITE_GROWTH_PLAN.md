@@ -121,15 +121,55 @@ so no server ever sees it. Two follow-ups would turn sharing into free distribut
 - Make the workout summary's share an image card drawn on the phone (the `useChartCapture` path the year
   story uses) with `musclog.app` on it, instead of plain text.
 
-`assetlinks.json` still has placeholder fingerprints (see `AGENTS.md`, open links), so on Android a tapped
-link opens the bridge page rather than the app until they are filled in.
+`assetlinks.json` holds real fingerprints now, but nothing in the repo proves they are the Play App Signing
+and EAS upload keys (see `AGENTS.md`, open links); until checked, a tapped link may open the bridge page
+rather than the app.
+
+## Phase 2: long-tail backlog from keyword research (2026-11-19)
+
+Phase 1 aimed at head terms ("1rm calculator", "push pull legs"), which big sites own; a domain with 8
+clicks a month will not rank there for a long time. This phase aims at narrower searches. Evidence is Google
+autocomplete (US English), which shows what people type but not how often. When Search Console has a few
+months of data, `npm run presence:snapshot` replaces this guesswork (`docs/ONLINE_PRESENCE.md`).
+
+**Structural first: translations are invisible to search.** Every locale shares the English URL and there
+is no `hreflang`, so Google indexes only English. Search Console already shows impressions from Brazil,
+India and Nigeria. Per-locale paths (`/pt-br/tools/protein-calculator`) with `hreflang` alternates, in the
+sitemap and in `generateMetadata`, would let the existing translations rank. This is the largest single
+change in this plan and needs a design decision (routing, the language picker, canonical rules) before any
+code.
+
+Content, roughly in order of fit (demand you can see in autocomplete × how closely Musclog answers it):
+
+| #   | Working title or page                                                               | Searches seen in autocomplete                                                                                              | Links to                                    |
+| --- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 16  | How many sets per muscle per week? A table by goal                                  | "how many sets a week for muscle growth", "how many sets chest per week", "how many sets biceps per week"                  | muscle load in the app, programs            |
+| 17  | When to add weight: how many reps before you go heavier                             | "how many reps before adding weight", "how many reps before you increase weight", "how many sets before increasing weight" | double-progression post, tool 1             |
+| 18  | Rest between sets: how long for muscle, strength and endurance                      | "how much rest between sets for hypertrophy", "… for strength", "rest between reps vs sets"                                | the rest timer                              |
+| 19  | Progressive overload calculator (tool) + "how much should you progressive overload" | "progressive overload calculator", "progressive overload app free", "how much should you progressive overload"             | reuses `computeStartTarget` / `loadStepFor` |
+| 20  | Free printable workout log (PDF) and spreadsheet, or the app                        | "workout log book pdf free download", "workout log template", "workout log book excel"                                     | `/download`; the PDF is the linkable asset  |
+| 21  | Body recomposition: eat at maintenance, lift, and track the trend                   | "body recomposition calculator", "body recomposition beginner", "body recomposition after 40"                              | `/calculator`, TDEE post                    |
+| 22  | Strong app CSV format: what each column means and how to move it                    | "strong app csv format", "strong app data export", "strong app download data", "strong app delete history"                 | the import guide, `/alternatives/strong`    |
+| 23  | Free macro tracker with a barcode scanner and no account                            | "macro tracker completely free", "free macro tracker iphone", "macro tracker barcode scanner"                              | `/download`, privacy post                   |
+| 24  | TDEE with steps: how daily steps change what you burn                               | "tdee calculator with steps", "tdee how many steps", "tdee how active am i"                                                | `/calculator`, the steps sync               |
+| 25  | Deload calculator (tool): how much weight and for how long                          | "deload how much weight", "deload calculator", "deload for how long"                                                       | deload post, reuses `deloadedLoad`          |
+| 26  | Dumbbell-only program pages and a "home with dumbbells" variant                     | "workout plan at home with dumbbells", "dumbbell workout beginner", "workout plan dumbbells and bench"                     | `/programs/short-full-body-home`            |
+| 27  | First week at the gym: what to do on day 1                                          | "beginner gym first day workout", "beginner at gym what to do", "gym workout beginner female"                              | `/programs/full-body-3-day`                 |
+
+Rules on top of the ones above: one search intent per page; never two posts for the same query (merge
+instead, the digest's cannibalisation list will show it); a tool beats an article when the search says
+"calculator"; and each new page goes into `docs/ONLINE_PRESENCE.md`'s change ledger when it ships, with a
+review date, so its effect is measured. Off-site (no code): post the engineering stories to Hacker News and
+the lifter posts where people ask these questions (r/fitness daily threads, r/weightroom, r/GYM), tagged with
+`utm_source`, which `presence:snapshot` then shows in GA4's sources.
 
 ## Status
 
 | Phase                               | Status                                                                                                                                                                                                   |
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0. Search Console, Tools navigation | Tools navigation done. Search Console: musclog.app is already a verified Domain property; the only open step is submitting `sitemap.xml` (none is submitted yet, checked 2026-11-14)                     |
+| 0. Search Console, Tools navigation | done. `sitemap.xml` submitted and read (211 URLs, 0 errors, 2026-11-18); Search Console and GA4 are connected to `npm run presence:snapshot`                                                             |
 | Tools 1–10                          | done. Competitor facts re-checked in a real browser on 2026-11-14 (Strong, Hevy, MyFitnessPal)                                                                                                           |
 | Blog posts (15 of 15)               | done, English only, under `app/(website)/posts/2026/11/`; categories `training`, `nutrition`, `guides` exist in all five locales                                                                         |
 | Strong and FitNotes in the grid     | not done: the grid has no "unknown" state and 8 of its ~65 rows could be sourced for either app (verified quotes: Strong App Store listing, FitNotes Google Play listing). Needs a design decision first |
 | Share links (optional)              | routine link done; the image card from the workout summary is not started                                                                                                                                |
+| Phase 2 (long-tail backlog)         | researched 2026-11-19, nothing written yet; per-locale URLs need a design decision first                                                                                                                 |
