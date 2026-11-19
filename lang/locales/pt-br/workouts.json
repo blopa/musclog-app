@@ -255,7 +255,6 @@
       "linkError": "Não foi possível ler o link do seu assistente. {{reason}} Cole o bloco JSON do chat no lugar."
     },
     "aiGeneration": {
-      "comingSoon": "Geração de treino por IA em breve.",
       "title": "Gerar com IA",
       "subtitle": "Conte seus objetivos e criaremos um plano de treino personalizado",
       "preferencesLabel": "Suas preferências",
@@ -264,9 +263,6 @@
       "successMessageWithPlan": "{{planName}} está pronto com {{count}} treinos.",
       "errorMessage": "Não foi possível gerar um plano. Por favor, tente novamente.",
       "aiNotConfigured": "Os recursos de IA não estão configurados. Adicione uma chave de API do Gemini ou OpenAI nas Configurações."
-    },
-    "templateBrowser": {
-      "comingSoon": "Navegador de modelos em breve."
     },
     "interruptedSession": {
       "description": "Você tem um treino em andamento.",

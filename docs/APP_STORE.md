@@ -200,7 +200,9 @@ it for each version (Apple requires it from the second version on).
 
 ### Before the first TestFlight/submit
 
-`ios/MusclogLiftLogRepeat/Info.plist` still carries `expo-dev-client`'s `NSLocalNetworkUsageDescription` ("Expo Dev Launcher uses the local network…") and `NSBonjourServices` (`_expo._tcp`). Check the production `.ipa`'s plist (`unzip -p <ipa> 'Payload/*.app/Info.plist'`, then `plutil -p` or a converter) and, if they are in it, decide with a prebuild change rather than a hand edit: a review-visible string that talks about a dev launcher is a 5.1.1 question.
+`app.json` gives the local-network permission a Musclog string (`ios.infoPlist.NSLocalNetworkUsageDescription`: it is for reaching an AI model on the user's own network). `expo-dev-client`'s config plugin keeps a description that already exists, and its release build phase deletes only one that still reads "Expo Dev Launcher" plus the `_expo._tcp` Bonjour service, so a release build keeps the Musclog string and drops the dev-launcher service (the committed `Info.plist` still lists `_expo._tcp` for debug builds). Pinned by `utils/__tests__/iosPrivacyConfig.test.ts`. Still worth one look at the production `.ipa` (`unzip -p <ipa> 'Payload/*.app/Info.plist'`) once a build exists.
+
+`app.json` also declares the shipped languages for iOS (`expo-localization` `supportedLocales.ios`, which writes `CFBundleLocalizations`), so the App Store's Languages row lists the five app languages instead of English alone, and declares no remote-push background mode (every notification is scheduled locally).
 
 ## Screenshots
 
@@ -231,12 +233,12 @@ appstore` places each capture in a 3D iPhone 17 Pro Max with a caption (the desi
   would show English UI under a German listing. A render needs WebGL: see the `screenshots:app-store-listing`
   bullet in `AGENTS.md` for the software-GL Chromium wrapper (`MUSCLOG_CHROMIUM_PATH`), and
   `npm run screenshots:app-store-iphone:studio` edits the design visually.
-- **iPad: unframed captures, four, en-US.** `app.json` has `supportsTablet: true`, so App Store Connect asks for iPad
+- **iPad: unframed captures, four, in each of the five app languages.** `app.json` has `supportsTablet: true`, so App Store Connect asks for iPad
   screenshots too. `playwright.app-store-ipad.config.ts` runs the Play tablet spec at 516×688 CSS px × 4 (2064×2752)
-  into `screenshots/app-store-listing/ipad/en-US/NN-<screen>.png` (home, workout, food, goals). The viewport is
+  into `screenshots/app-store-listing/ipad/<locale>/NN-<screen>.png` (home, workout, food, goals; the project's `perLocale` metadata makes the spec loop over every bundled language, switching through Settings like the phone spec). The viewport is
   deliberately narrow: from 1024 CSS px up the web build draws the website's desktop shell (QR code, store links)
   around the app (`global.css`, `min-width: 1024px`, not the user agent). `scripts/appstore.sh screenshots
-from-captures --kind ipad` copies them into `ios/appstore/screenshots/en-US/ipad/`, replacing the folder.
+from-captures --kind ipad` copies one locale into `ios/appstore/screenshots/<apple locale>/ipad/`, replacing the folder (`npm run screenshots:app-store-ipad:sync` does the five).
   Whether the app should declare iPad support at all is the owner's call (a build-config change); these captures
   exist so the store requirement can be met.
 - `from-captures` copies the numbered `NN-name.png` files of `--from DIR` (default for `--kind ipad`:

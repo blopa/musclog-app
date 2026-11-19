@@ -21,7 +21,6 @@
     "creation": {
       "title": "New exercise goal",
       "chooseType": "What do you want to track?",
-      "comingSoon": "Coming soon",
       "chooseExercise": "Choose an exercise",
       "searchPlaceholder": "Search exercises…",
       "currentEstimated1RM": "Your estimated current 1RM: {{value}} {{unit}}",

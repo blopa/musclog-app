@@ -96,4 +96,34 @@ describe('iOS privacy configuration', () => {
     expect(pluginOptions('react-native-vision-camera')?.enableMicrophonePermission).toBe(false);
     expect(plistStrings(read(INFO_PLIST)).NSMicrophoneUsageDescription).toBeUndefined();
   });
+
+  it('words the local-network permission for the local AI model, never for the dev launcher', () => {
+    // Release builds strip only a description that still says "Expo Dev Launcher", so a real
+    // Musclog string is what keeps the local AI model reachable on a home network.
+    const text = expo.ios.infoPlist.NSLocalNetworkUsageDescription as string;
+
+    expect(text).toMatch(/^Musclog /);
+    expect(text).not.toMatch(/Expo Dev Launcher/i);
+    expect(plistStrings(read(INFO_PLIST)).NSLocalNetworkUsageDescription).toBe(text);
+  });
+
+  it('declares no remote-push background mode: every notification is scheduled locally', () => {
+    expect(pluginOptions('expo-notifications')?.enableBackgroundRemoteNotifications).toBe(false);
+    expect(expo.ios.infoPlist.UIBackgroundModes).not.toContain('remote-notification');
+    expect(read(INFO_PLIST)).not.toContain('<string>remote-notification</string>');
+  });
+
+  it('declares the languages the app ships, so the App Store lists them', () => {
+    const declared = (pluginOptions('expo-localization')?.supportedLocales as any)?.ios as string[];
+    const shipped = fs
+      .readdirSync(path.join(root, 'lang/locales'))
+      .filter((d) => d !== 'untranslated.json');
+    const base = (tag: string) => tag.toLowerCase().split('-')[0];
+
+    expect(declared.map(base).sort()).toEqual(shipped.map(base).sort());
+    const plist = read(INFO_PLIST);
+    const block =
+      plist.match(/<key>CFBundleLocalizations<\/key>\s*<array>([\s\S]*?)<\/array>/)?.[1] ?? '';
+    expect([...block.matchAll(/<string>([^<]+)<\/string>/g)].map((m) => m[1])).toEqual(declared);
+  });
 });

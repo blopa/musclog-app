@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test';
 
-// Captures the iPad screens of the App Store listing (the IPAD_PRO_3GEN_129 set takes 2048 × 2732 or
+// Captures the iPad screens of the App Store listing, once per bundled language into ipad/<locale> (the IPAD_PRO_3GEN_129 set takes 2048 × 2732 or
 // 2064 × 2752). It runs the Google Play tablet spec at the iPad Pro 13-inch's pixel size, 2064 ×
 // 2752, as 516 × 688 CSS px at 4×: a wider viewport (the iPad's own 1032 pt) makes the web build
 // draw the website's desktop shell (QR code, store links) around the app instead of the app, the
@@ -13,7 +13,11 @@ export default defineConfig({
   projects: [
     {
       name: 'ipad',
-      metadata: { outputRoot: 'screenshots/app-store-listing/ipad/en-US', numbered: true },
+      metadata: {
+        outputRoot: 'screenshots/app-store-listing/ipad',
+        numbered: true,
+        perLocale: true,
+      },
       use: { viewport: { width: 516, height: 688 }, deviceScaleFactor: 4 },
     },
   ],

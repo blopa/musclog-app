@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,6 +10,7 @@ import {
   installFixtureRoutes,
   navigateTo,
   seedDemoData,
+  selectMetricUnits,
   selectTheme,
 } from './helpers/screenshotSession';
 import { clickTopmost, localeCopy } from './layoutAudit/flowKit';
@@ -30,43 +31,11 @@ const FOOD_DETAILS_SCROLL_PX = 420;
 const DIARY_SCROLL_PX = 430;
 const PROGRESS_SCROLL_PX = 650;
 const PAST_WORKOUT_SCROLL_PX = 600;
-const SETTINGS_MIRROR_KEY = 'musclog_settings_mirror';
 
 const OFF_PRODUCT_FIXTURE = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'off-product-3017620425035.json'),
   'utf8'
 );
-
-/** Switches the seeded (imperial) app to metric through Settings → Profile and units, in English. */
-async function selectMetricUnits(page: Page) {
-  await page.goto(`${APP_URL}/settings`, { timeout: 60000 });
-  await page
-    .getByText(localeCopy('en-US', 'settings', ['settings', 'basicSettings', 'title'], ''), {
-      exact: true,
-    })
-    .first()
-    .click();
-  await clickTopmost(
-    page.getByText(
-      localeCopy('en-US', 'editFitnessDetails', ['editFitnessDetails', 'metric'], ''),
-      {
-        exact: true,
-      }
-    )
-  );
-  await expect
-    .poll(
-      () =>
-        page.evaluate(
-          (key) => JSON.parse(localStorage.getItem(key) ?? '{}').units as string | undefined,
-          SETTINGS_MIRROR_KEY
-        ),
-      { timeout: 15000 }
-    )
-    .toBe('metric');
-  // LokiJS autosaves every 500ms; leaving earlier discards the choice on the next load.
-  await page.waitForTimeout(2000);
-}
 
 for (const locale of bundledLocales()) {
   test.describe(`Google Play phone screenshots (${locale})`, () => {

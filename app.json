@@ -21,7 +21,14 @@
       "./plugins/withThemeAppIcons",
       "expo-system-ui",
       "react-native-edge-to-edge",
-      "expo-localization",
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": ["en", "es", "nl", "pt-BR", "ru"]
+          }
+        }
+      ],
       ["expo-router", {}],
       [
         "expo-splash-screen",
@@ -217,7 +224,8 @@
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSFaceIDUsageDescription": "Musclog uses Face ID to unlock the parts of the app you choose to lock, such as cycle tracking or your workouts.",
         "NSLocationWhenInUseUsageDescription": "Musclog never asks for your location. iOS requires this text because a bundled library contains location code that Musclog does not call.",
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "NSLocalNetworkUsageDescription": "Musclog uses the local network only to reach an AI model you run on your own computer or home server, if you set one up in AI settings.",
+        "UIBackgroundModes": ["fetch"]
       },
       "privacyManifests": {
         "NSPrivacyTracking": false,

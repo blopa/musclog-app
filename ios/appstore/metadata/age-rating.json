@@ -1,6 +1,6 @@
 {
   "advertising": false,
-  "ageAssurance": true,
+  "ageAssurance": false,
   "ageRatingOverride": "NONE",
   "ageRatingOverrideV2": "NONE",
   "alcoholTobaccoOrDrugUseOrReferences": "NONE",
@@ -15,7 +15,7 @@
   "matureOrSuggestiveThemes": "NONE",
   "medicalOrTreatmentInformation": "INFREQUENT_OR_MILD",
   "messagingAndChat": false,
-  "parentalControls": true,
+  "parentalControls": false,
   "profanityOrCrudeHumor": "NONE",
   "sexualContentGraphicAndNudity": "NONE",
   "sexualContentOrNudity": "NONE",

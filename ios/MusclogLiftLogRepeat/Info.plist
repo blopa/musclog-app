@@ -18,6 +18,14 @@
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+      <string>en</string>
+      <string>es</string>
+      <string>nl</string>
+      <string>pt-BR</string>
+      <string>ru</string>
+    </array>
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
     <key>CFBundlePackageType</key>
@@ -76,7 +84,7 @@
     <key>NSHealthUpdateUsageDescription</key>
     <string>Musclog writes workouts, nutrition and body metrics, and optionally your manually logged bleeding and basal temperature when you request a cycle export.</string>
     <key>NSLocalNetworkUsageDescription</key>
-    <string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
+    <string>Musclog uses the local network only to reach an AI model you run on your own computer or home server, if you set one up in AI settings.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Musclog never asks for your location. iOS requires this text because a bundled library contains location code that Musclog does not call.</string>
     <key>NSPhotoLibraryUsageDescription</key>
@@ -117,7 +125,6 @@
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>
-      <string>remote-notification</string>
       <string>bluetooth-central</string>
       <string>processing</string>
     </array>

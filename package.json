@@ -40,7 +40,7 @@
     "screenshots:app-store-iphone:studio": "node scripts/google-play-phone-screenshots.js studio --target appstore",
     "screenshots:app-store-iphone": "npm run screenshots:build && npm run screenshots:app-store-iphone:capture && npm run screenshots:app-store-iphone:render",
     "screenshots:app-store-ipad:run": "npm run playwright-runner -- --config playwright.app-store-ipad.config.ts",
-    "screenshots:app-store-ipad:sync": "bash scripts/appstore.sh screenshots from-captures --kind ipad --locale en-US",
+    "screenshots:app-store-ipad:sync": "for pair in en-US:en-US es-ES:es-ES nl-NL:nl-NL pt-BR:pt-BR ru-RU:ru; do bash scripts/appstore.sh screenshots from-captures --kind ipad --from screenshots/app-store-listing/ipad/${pair%%:*} --locale ${pair##*:} || exit 1; done",
     "screenshots:app-store-ipad": "npm run screenshots:build && npm run screenshots:app-store-ipad:run && npm run screenshots:app-store-ipad:sync",
     "screenshots:app-store-listing": "npm run screenshots:build && npm run screenshots:app-store-iphone:capture && npm run screenshots:app-store-iphone:render && npm run screenshots:app-store-ipad:run && npm run screenshots:app-store-ipad:sync",
     "layout:scan": "node scripts/layout-risk-scan.js",

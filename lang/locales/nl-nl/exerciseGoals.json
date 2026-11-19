@@ -21,7 +21,6 @@
     "creation": {
       "title": "Nieuw oefeningsdoel",
       "chooseType": "Wat wil je bijhouden?",
-      "comingSoon": "Binnenkort beschikbaar",
       "chooseExercise": "Kies een oefening",
       "searchPlaceholder": "Zoek oefeningen…",
       "currentEstimated1RM": "Je huidige geschatte 1RM: {{value}} {{unit}}",

@@ -21,7 +21,6 @@
     "creation": {
       "title": "Nova Meta de Exercício",
       "chooseType": "O que você quer acompanhar?",
-      "comingSoon": "Em breve",
       "chooseExercise": "Escolha um Exercício",
       "searchPlaceholder": "Buscar exercícios…",
       "currentEstimated1RM": "Seu 1RM estimado atual: {{value}} {{unit}}",

@@ -255,7 +255,6 @@
       "linkError": "The link from your assistant couldn't be read. {{reason}} Paste the JSON block from the chat instead."
     },
     "aiGeneration": {
-      "comingSoon": "AI workout generation is coming soon.",
       "title": "Generate with AI",
       "subtitle": "Tell us about your goals and we'll build a personalized workout plan",
       "preferencesLabel": "Your preferences",
@@ -264,9 +263,6 @@
       "successMessageWithPlan": "{{planName}} is ready with {{count}} workouts.",
       "errorMessage": "Couldn't generate a plan. Please try again.",
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings."
-    },
-    "templateBrowser": {
-      "comingSoon": "The template browser is coming soon."
     },
     "interruptedSession": {
       "description": "You have a workout in progress.",

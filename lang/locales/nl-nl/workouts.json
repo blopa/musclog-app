@@ -255,7 +255,6 @@
       "linkError": "De link van je assistent kon niet worden gelezen. {{reason}} Plak in plaats daarvan het JSON-blok uit de chat."
     },
     "aiGeneration": {
-      "comingSoon": "AI-workoutgeneratie komt binnenkort.",
       "title": "Genereren met AI",
       "subtitle": "Vertel ons over je doelen en we bouwen een gepersonaliseerd workout-plan",
       "preferencesLabel": "Je voorkeuren",
@@ -264,9 +263,6 @@
       "successMessageWithPlan": "{{planName}} is klaar met {{count}} workouts.",
       "errorMessage": "Kon geen plan genereren. Probeer het opnieuw.",
       "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen."
-    },
-    "templateBrowser": {
-      "comingSoon": "Sjabloonbrowser komt binnenkort."
     },
     "interruptedSession": {
       "description": "Je hebt een workout in uitvoering.",

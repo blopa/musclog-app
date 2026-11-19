@@ -52,7 +52,6 @@ import CreateExerciseModal from './CreateExerciseModal';
 import { CreateFoodPortionModal } from './CreateFoodPortionModal';
 import { CreateMealModal } from './CreateMealModal';
 import CreateWorkoutModal from './CreateWorkoutModal';
-import { CreateWorkoutOptionsModal } from './CreateWorkoutOptionsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { GenericEditModal } from './GenericEditModal';
 import {
@@ -609,7 +608,6 @@ export function DataLogModal({
   const [createExerciseModalVisible, setCreateExerciseModalVisible] = useState(false);
   const [createFoodPortionModalVisible, setCreateFoodPortionModalVisible] = useState(false);
   const [createWorkoutModalVisible, setCreateWorkoutModalVisible] = useState(false);
-  const [createWorkoutOptionsModalVisible, setCreateWorkoutOptionsModalVisible] = useState(false);
   const [createGenericModalVisible, setCreateGenericModalVisible] = useState(false);
 
   useEffect(() => {
@@ -625,7 +623,6 @@ export function DataLogModal({
         setCreateExerciseModalVisible(false);
         setCreateFoodPortionModalVisible(false);
         setCreateWorkoutModalVisible(false);
-        setCreateWorkoutOptionsModalVisible(false);
         setCreateGenericModalVisible(false);
       };
 
@@ -1343,7 +1340,7 @@ export function DataLogModal({
           description: t('workouts.createTemplate.description'),
           onPress: () => {
             setShowCreateMenu(false);
-            setCreateWorkoutOptionsModalVisible(true);
+            setCreateWorkoutModalVisible(true);
           },
         });
         break;
@@ -1605,28 +1602,6 @@ export function DataLogModal({
           onCreatePortion={() => {
             refresh();
             setCreateFoodPortionModalVisible(false);
-          }}
-        />
-      ) : null}
-      {createWorkoutOptionsModalVisible ? (
-        <CreateWorkoutOptionsModal
-          visible={createWorkoutOptionsModalVisible}
-          onClose={() => setCreateWorkoutOptionsModalVisible(false)}
-          onGenerateWithAi={() => {
-            setCreateWorkoutOptionsModalVisible(false);
-            // TODO: Implement AI workout generation
-            // Placeholder for AI workout generation
-            showSnackbar('success', t('workouts.aiGeneration.comingSoon'));
-          }}
-          onCreateEmptyTemplate={() => {
-            setCreateWorkoutOptionsModalVisible(false);
-            setCreateWorkoutModalVisible(true);
-          }}
-          onBrowseTemplates={() => {
-            setCreateWorkoutOptionsModalVisible(false);
-            // TODO: Implement template browsing functionality
-            // Placeholder for template browsing - could navigate to a template library
-            showSnackbar('success', t('workouts.templateBrowser.comingSoon'));
           }}
         />
       ) : null}

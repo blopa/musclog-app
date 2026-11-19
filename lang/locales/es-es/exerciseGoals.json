@@ -21,7 +21,6 @@
     "creation": {
       "title": "Nuevo Objetivo de Ejercicio",
       "chooseType": "¿Qué quieres rastrear?",
-      "comingSoon": "Próximamente",
       "chooseExercise": "Elige un Ejercicio",
       "searchPlaceholder": "Buscar ejercicios…",
       "currentEstimated1RM": "Tu 1RM estimado actual: {{value}} {{unit}}",
