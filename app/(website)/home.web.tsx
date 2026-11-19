@@ -8,9 +8,11 @@ import { StoreButtons } from '@/components/website/StoreButtons';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
+  BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
   HEADING_TEXT,
   ink,
+  surface,
 } from '@/components/website/websiteColors';
 import { WebsiteLoggy } from '@/components/website/WebsiteLoggy';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
@@ -19,7 +21,7 @@ import { DownloadModal } from '@/components/website/WebsiteWrapper';
 import { GITHUB_REPO_URL } from '@/constants/misc';
 import { THEME_IDS, type ThemeId } from '@/constants/settings';
 import { useThemeId } from '@/hooks/useTheme';
-import { THEME_DEFINITIONS } from '@/theme.registry';
+import { DEFAULT_THEME_BY_MODE, THEME_DEFINITIONS } from '@/theme.registry';
 import { trackDemoStart } from '@/utils/websiteAnalytics';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
@@ -546,20 +548,74 @@ export function Themes() {
   );
 }
 
+/**
+ * One phone in a bezel. The bezel is the page ground, so the screenshot reads as a device standing
+ * on the brand stage rather than a picture pasted onto it.
+ */
+function HeroPhone({
+  src,
+  alt,
+  className,
+  eager = false,
+  muted = false,
+}: {
+  src: string;
+  alt: string;
+  className: string;
+  eager?: boolean;
+  /** Drawn in greys, for a capture whose palette is not the visitor's. */
+  muted?: boolean;
+}) {
+  return (
+    <div
+      className={`absolute rounded-sheet border p-1.5 ${className}`}
+      style={{
+        backgroundColor: surface(),
+        borderColor: ink(0.14),
+        filter: muted ? 'grayscale(1)' : undefined,
+      }}
+    >
+      <div className="overflow-hidden rounded-card">
+        <img
+          src={src}
+          alt={alt}
+          width={537}
+          height={1166}
+          loading={eager ? 'eager' : 'lazy'}
+          className="block h-auto w-full"
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The hero is the claim on the left and the product on the right. The product stands on a flat
+ * block of the visitor's own brand colour (no gradient, no pattern): three real screens, the
+ * front one in the active theme, cropped by the stage's bottom edge, which sits on the next
+ * section's hairline. The two side screens are the carousel's captures, taken in the default
+ * dark palette only, so in any other theme they are drawn in greys rather than in a green that
+ * contradicts the stage.
+ */
 export function Hero() {
   const themeId = useThemeId();
   const { t } = useTranslation(undefined, { keyPrefix: 'website.hero' });
+  const { t: tSlides } = useTranslation(undefined, { keyPrefix: 'website.screenshots.slides' });
+  const sideScreensMuted = themeId !== DEFAULT_THEME_BY_MODE.dark;
 
   return (
-    <section className="pb-16 pt-24 md:pb-20 md:pt-32">
+    <section className="overflow-hidden pt-24 md:pt-28">
       <div className="container mx-auto px-4">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="space-y-6">
-            <h1 className="text-balance text-4xl font-semibold leading-tight text-text-primary md:text-6xl lg:text-[4.25rem]">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
+          <div className="space-y-7 self-center lg:pb-24">
+            <h1 className="text-balance text-5xl font-bold leading-[1.05] text-text-primary md:text-6xl xl:text-[4.5rem]">
               {t('title1')} {t('title2')}
             </h1>
 
-            <p className="max-w-lg text-lg leading-8" style={{ color: BODY_TEXT }}>
+            <p
+              className="max-w-xl text-lg leading-8 md:text-xl md:leading-9"
+              style={{ color: BODY_TEXT }}
+            >
               {t('subheading')}
             </p>
 
@@ -581,21 +637,28 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="flex justify-center lg:justify-end">
-            <div
-              className="w-[280px] rounded-sheet border p-1 md:w-[320px]"
-              style={{ borderColor: ink(0.2) }}
-            >
-              <div className="overflow-hidden rounded-card">
-                <img
-                  src={THEME_SCREENSHOT(themeId)}
-                  alt={t('screenshotAlt')}
-                  width={320}
-                  height={640}
-                  className="h-auto w-full"
-                />
-              </div>
-            </div>
+          <div
+            className="relative h-[460px] overflow-hidden rounded-t-sheet sm:h-[560px] lg:h-[660px]"
+            style={{ backgroundColor: BRAND_GREEN }}
+          >
+            <HeroPhone
+              src={PHONE_SCREENSHOT('screenshot-2.png')}
+              alt={tSlides('today.alt')}
+              muted={sideScreensMuted}
+              className="left-[4%] top-[22%] w-[38%] max-w-[250px]"
+            />
+            <HeroPhone
+              src={PHONE_SCREENSHOT('screenshot-10.png')}
+              alt={tSlides('restTimer.alt')}
+              muted={sideScreensMuted}
+              className="right-[4%] top-[26%] w-[38%] max-w-[250px]"
+            />
+            <HeroPhone
+              src={THEME_SCREENSHOT(themeId)}
+              alt={t('screenshotAlt')}
+              eager
+              className="left-1/2 top-[9%] w-[48%] max-w-[320px] -translate-x-1/2"
+            />
           </div>
         </div>
       </div>
