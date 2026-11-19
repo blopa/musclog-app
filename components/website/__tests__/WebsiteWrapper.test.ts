@@ -41,7 +41,7 @@ describe('website header navigation', () => {
     );
     const links = [...headerNavigation.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
 
-    expect(links).toEqual(['/blog', '/calculator', '/exercises', '/progress']);
+    expect(links).toEqual(['/blog', '/tools', '/exercises', '/progress']);
   });
 
   it('offers the burger menu in the header cluster that replaces the desktop nav', () => {

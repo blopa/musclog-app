@@ -374,10 +374,10 @@ export function Header() {
             {t('blog')}
           </Link>
           <Link
-            href="/calculator"
+            href="/tools"
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
-            {t('calculator')}
+            {t('tools')}
           </Link>
           <Link
             href="/exercises"
