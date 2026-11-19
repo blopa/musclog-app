@@ -1,4 +1,4 @@
-import type { Stack } from 'expo-router';
+import type { NavigationAction, Stack } from 'expo-router';
 import type { ComponentProps } from 'react';
 
 type StackRouterOverride = NonNullable<ComponentProps<typeof Stack>['UNSTABLE_router']>;
@@ -16,29 +16,25 @@ type StackRouterOverride = NonNullable<ComponentProps<typeof Stack>['UNSTABLE_ro
  */
 export const TABS_ROUTE_NAME = '(tabs)';
 
-type StackLikeState = {
+/** The part of the outer stack's state the rewrite reads (a `StackNavigationState` has more). */
+type StackRoutes = {
   index: number;
   routes: readonly { name: string }[];
 };
 
-type RoutingAction = {
-  type: string;
-  payload?: object;
-} & Record<string, unknown>;
-
 /**
  * Turns any action that would add another tab navigator into "go back to the one already in the
  * stack", which closes the screens above it and applies the nested tab change to it. Everything
- * else passes through untouched, as does an action when no tab navigator is in the stack yet
- * (a cold deep link into a pushed screen), so that first one is created normally.
+ * else passes through untouched (the same object), as does an action when no tab navigator is in
+ * the stack yet (a cold deep link into a pushed screen), so that first one is created normally.
  */
-export function rewriteTabsAction<A extends RoutingAction>(state: StackLikeState, action: A): A {
+export function rewriteTabsAction(state: StackRoutes, action: NavigationAction): NavigationAction {
   if (action.type !== 'NAVIGATE' && action.type !== 'PUSH' && action.type !== 'REPLACE') {
     return action;
   }
 
-  const payload = action.payload as { name?: unknown } | undefined;
-  if (payload?.name !== TABS_ROUTE_NAME) {
+  const { payload } = action;
+  if (!payload || !('name' in payload) || payload.name !== TABS_ROUTE_NAME) {
     return action;
   }
 
@@ -58,10 +54,9 @@ export function rewriteTabsAction<A extends RoutingAction>(state: StackLikeState
  */
 export const singleTabsRouter: StackRouterOverride = (original) => ({
   getStateForAction(state, action, options) {
-    const rewritten = rewriteTabsAction(
-      state as unknown as StackLikeState,
-      action as unknown as RoutingAction
-    ) as unknown as typeof action;
+    // The router is generic over its action type, which cannot say that a stack action rewritten
+    // to `NAVIGATE` is still one the stack accepts; it is, so this is the one cast.
+    const rewritten = rewriteTabsAction(state, action) as typeof action;
     return original.getStateForAction(state, rewritten, options);
   },
 });

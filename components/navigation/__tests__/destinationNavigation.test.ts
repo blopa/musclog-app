@@ -8,12 +8,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import {
-  goHome,
-  goToDestination,
-  HOME_ROUTE,
-  isHomePath,
-} from '@/components/navigation/destinationNavigation';
+import { HOME_ROUTE, isHomePath } from '@/components/navigation/navDestinations';
 import {
   rewriteTabsAction,
   singleTabsRouter,
@@ -179,14 +174,7 @@ describe('singleTabsRouter (one tab navigator in the outer stack)', () => {
   });
 });
 
-describe('goToDestination / goHome', () => {
-  it('navigates, which the tab navigator turns into a switch', () => {
-    const router = { navigate: jest.fn() };
-    goToDestination(router, '/app/nutrition/food');
-    goHome(router);
-    expect(router.navigate.mock.calls).toEqual([['/app/nutrition/food'], [HOME_ROUTE]]);
-  });
-
+describe('isHomePath', () => {
   it('recognises the Home path with or without a trailing slash', () => {
     expect(isHomePath('/app')).toBe(true);
     expect(isHomePath('/app/')).toBe(true);
@@ -197,13 +185,6 @@ describe('goToDestination / goHome', () => {
 describe('wiring', () => {
   const root = join(__dirname, '..', '..', '..');
   const source = (file: string) => readFileSync(join(root, file), 'utf8');
-
-  it.each(['components/NavigationMenu.tsx', 'components/modals/UserMenuModal.tsx'])(
-    '%s reaches destinations through destinationNavigation, never the router',
-    (file) => {
-      expect(source(file)).not.toMatch(/router\.(navigate|push|replace|dismissTo)\(/);
-    }
-  );
 
   it('the outer stack runs singleTabsRouter', () => {
     expect(source('app/app/_layout.tsx')).toMatch(/UNSTABLE_router=\{singleTabsRouter\}/);

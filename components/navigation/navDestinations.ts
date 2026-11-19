@@ -32,7 +32,7 @@ export type NavDestination = {
  * destinations: the bottom bar (`NavigationMenu`), the account menu (`UserMenuModal`) and the slot
  * picker (`VisualSettingsModal`). A destination therefore picks its icon and route **once**.
  *
- * Bar-specific routing modifiers (which prefix marks the tab active, prefetch, replace) stay in
+ * Bar-specific routing modifiers (which prefix marks the tab active, prefetch) stay in
  * `NAV_SLOTS` in `NavigationMenu.tsx` — they mean nothing to the other two surfaces.
  *
  * Being a `Record<NavItemKey, …>` is load-bearing: adding a key to `NAV_ITEM_KEYS` fails the build
@@ -102,3 +102,10 @@ export const NAV_DESTINATIONS = {
     route: '/app/notes',
   },
 } as const satisfies Record<NavItemKey, NavDestination>;
+
+export const HOME_ROUTE = '/app';
+
+/** Whether `pathname` is the Home screen. */
+export function isHomePath(pathname: string): boolean {
+  return pathname === HOME_ROUTE || pathname === `${HOME_ROUTE}/`;
+}

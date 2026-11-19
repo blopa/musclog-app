@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { useHasCamera } from '@/components/CameraView';
 import { MealItemCard } from '@/components/cards/MealItemCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MenuButton } from '@/components/theme/MenuButton';
@@ -17,7 +18,6 @@ import { MealService } from '@/database/services/MealService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import { useNativeShareText } from '@/hooks/useNativeShareText';

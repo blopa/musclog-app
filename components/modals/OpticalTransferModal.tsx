@@ -15,11 +15,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, View } from 'react-native';
 
+import { useHasCamera } from '@/components/CameraView';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 

@@ -9,12 +9,11 @@ import {
   useState,
 } from 'react';
 
-import { useCameraPermissions } from '@/components/CameraView';
+import { useCameraPermissions, useHasCamera } from '@/components/CameraView';
 import { BarcodeCameraModal } from '@/components/modals/BarcodeCameraModal';
 import SmartCameraModal from '@/components/modals/SmartCameraModal';
 import type { CameraMode } from '@/constants/camera';
 import type { MealType } from '@/database/models';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSettings } from '@/hooks/useSettings';
 
 export type { CameraMode };
@@ -29,6 +28,11 @@ type OpenCameraOptions = {
 };
 
 type SmartCameraContextType = {
+  /**
+   * Whether the device has a camera (`useHasCamera`). The owner that builds a camera handler
+   * supplies it only while this is true; a camera button renders iff its handler is given.
+   */
+  hasCamera: boolean;
   openCamera: (options?: OpenCameraOptions) => void;
   setCurrentDate: (date: Date | undefined) => void;
 };
@@ -105,7 +109,10 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     onBarcodeScannedRef.current?.(data);
   }, []);
 
-  const value = useMemo(() => ({ openCamera, setCurrentDate }), [openCamera, setCurrentDate]);
+  const value = useMemo(
+    () => ({ hasCamera, openCamera, setCurrentDate }),
+    [hasCamera, openCamera, setCurrentDate]
+  );
 
   return (
     <SmartCameraContext.Provider value={value}>

@@ -2,11 +2,11 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useHasCamera } from '@/components/CameraView';
 import { useCoach } from '@/components/CoachContext';
 import { ListRow } from '@/components/theme/ListRow';
 import { TRACK_MEAL } from '@/constants/chat';
 import { useSmartCamera } from '@/context/SmartCameraContext';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSettings } from '@/hooks/useSettings';
 import {
   comebackRecommendations,

@@ -5,11 +5,16 @@
 import { renderHook } from '@testing-library/react';
 import { act } from 'react';
 
-import { useHasCamera } from '@/hooks/useHasCamera';
+import { useHasCamera } from '@/components/CameraView';
 
 let mockDevices: unknown[] = [];
 let mockListener: (() => void) | null = null;
 const mockRemove = jest.fn();
+
+// CameraView.tsx imports these for the camera view itself; the hook under test needs none of them.
+jest.mock('@/utils/file', () => ({ toFileUri: (uri: string) => uri }));
+jest.mock('@/components/cameraShutter', () => ({ captureWithSnapshotLadder: jest.fn() }));
+jest.mock('@/components/cameraWarmUp', () => ({ runCameraWarmUp: jest.fn() }));
 
 jest.mock('react-native-vision-camera', () => ({
   Camera: {

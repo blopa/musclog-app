@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useHasCamera } from '@/components/CameraView';
 import { LoggyPose } from '@/components/LoggyPose';
 import { MasterLayout } from '@/components/MasterLayout';
 import { CenteredModal } from '@/components/modals/CenteredModal';
@@ -32,7 +33,6 @@ import { seedDevData } from '@/database/seeders/dev';
 import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';

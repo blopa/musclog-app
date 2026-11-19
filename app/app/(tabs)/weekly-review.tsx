@@ -38,6 +38,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 import { useComebackState } from '@/hooks/useComebackState';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useOnChange } from '@/hooks/useOnChange';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
@@ -91,15 +92,13 @@ export default function WeeklyReviewScreen() {
   // This screen is a tab kept mounted while hidden, so a later link (a notification naming a
   // review or a day) arrives as new params without a remount: follow it once, like a fresh open.
   const paramsKey = `${params.reviewId ?? ''}|${params.reviewDay ?? ''}|${params.checkinId ?? ''}`;
-  const [appliedParamsKey, setAppliedParamsKey] = useState(paramsKey);
-  if (paramsKey !== appliedParamsKey) {
-    setAppliedParamsKey(paramsKey);
+  useOnChange(paramsKey, () => {
     setSelectedReview(params.reviewId);
     setRequestedDay(params.reviewDay);
     if (params.checkinId) {
       setPanel({ kind: 'legacyCheckin', id: params.checkinId });
     }
-  }
+  });
   const [reminder, setReminder] = useState(false);
   const [showAllHistory, setShowAllHistory] = useState(false);
   /** `null` until read, so the welcome cannot flash for someone who already dismissed it. */

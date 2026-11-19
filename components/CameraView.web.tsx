@@ -4,6 +4,14 @@ import { useZxing } from 'react-zxing';
 
 export { useCameraPermissions } from '@/utils/webCameraPermissions';
 
+/**
+ * The browser only learns whether a camera exists once the page asks for one, so the web build
+ * keeps every camera entry point and lets the camera screen explain a denial or a missing device.
+ */
+export function useHasCamera(): boolean {
+  return true;
+}
+
 type CameraViewProps = {
   [key: string]: any;
   children?: ReactNode;

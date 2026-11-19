@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, View } from 'react-native';
 
 import { TextInput } from '@/components/theme/TextInput';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useTheme } from '@/hooks/useTheme';
 
 type BarcodeInputProps = {
@@ -11,7 +10,8 @@ type BarcodeInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
-  onScanPress: () => void;
+  /** The scan button renders only while this is supplied. */
+  onScanPress?: () => void;
 };
 
 export function BarcodeInput({
@@ -23,7 +23,6 @@ export function BarcodeInput({
 }: BarcodeInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const hasCamera = useHasCamera();
   const sanitizedValue = value.replace(/\D/g, '');
 
   return (
@@ -36,7 +35,7 @@ export function BarcodeInput({
         inputMode="numeric"
         keyboardType="numeric"
       />
-      {hasCamera ? (
+      {onScanPress ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('food.actions.scanBarcode')}

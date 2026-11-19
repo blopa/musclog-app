@@ -15,6 +15,7 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { useHasCamera } from '@/components/CameraView';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -180,6 +181,7 @@ export function ScannedFoodDetailsModal({
     reset: resetEditForm,
   } = useFoodEditForm({ decimalSeparator, energyUnit, inferredCaloriesPer100g });
 
+  const hasCamera = useHasCamera();
   const { openScanner, scanner } = useBarcodeCameraModal(visible, (data) =>
     setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
   );
@@ -695,7 +697,7 @@ export function ScannedFoodDetailsModal({
                   setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
                 }
                 placeholder={t('food.foodDetails.barcodePlaceholder')}
-                onScanPress={openScanner}
+                onScanPress={hasCamera ? openScanner : undefined}
               />
 
               <TextInput

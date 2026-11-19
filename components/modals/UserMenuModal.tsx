@@ -14,7 +14,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
-import { goToDestination } from '@/components/navigation/destinationNavigation';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
@@ -125,8 +124,7 @@ export function UserMenuModal({
   )
     .map((item) => {
       const { icon: Icon, menuLabelKey, route } = NAV_DESTINATIONS[item];
-      const navigate =
-        pressHandlerOverrides[item] ?? (route ? () => goToDestination(router, route) : null);
+      const navigate = pressHandlerOverrides[item] ?? (route ? () => router.navigate(route) : null);
 
       if (!navigate) {
         return null;

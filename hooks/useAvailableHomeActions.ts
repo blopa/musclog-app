@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { useHasCamera } from '@/components/CameraView';
 import { HOME_ACTIONS } from '@/components/home/homeActions';
 import { HOME_ACTION_KEYS, HomeActionKey } from '@/constants/homeActions';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSettings } from '@/hooks/useSettings';
 
 /**

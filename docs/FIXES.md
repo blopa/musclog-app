@@ -32,8 +32,8 @@ The main destinations are now tabs of one tab navigator (`app/app/(tabs)/`), so 
 screen that is already built instead of stacking a new one, the way Musclog 1.x's drawer did. The
 outer stack's `singleTabsRouter` turns any navigation to the tabs from a pushed screen (a live
 workout, its summary, a notification tap) into "back to the tab navigator already there", so a
-second one cannot be mounted. `components/navigation/destinationNavigation.ts` is the one place the
-bar, the account menu and "back to Home" reach a destination. Fifty rounds of Food, Workouts, Home
+second one cannot be mounted. Because of that rule, the bar, the account
+menu and "back to Home" reach a destination with a plain `router.navigate`. Fifty rounds of Food, Workouts, Home
 now leave the same three tab routes with the same keys.
 
 Hidden tabs stay mounted so coming back is instant, but only the most recently used four (two on a

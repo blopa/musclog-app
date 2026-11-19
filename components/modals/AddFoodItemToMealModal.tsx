@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { useHasCamera } from '@/components/CameraView';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
@@ -11,7 +12,6 @@ import Food from '@/database/models/Food';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';

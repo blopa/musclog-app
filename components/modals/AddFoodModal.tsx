@@ -19,13 +19,13 @@ import { ListGroup } from '@/components/theme/ListGroup';
 import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TrackingMethodButton } from '@/components/TrackingMethodButton';
 import { MealType } from '@/database/models';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useTheme } from '@/hooks/useTheme';
 
 type AddFoodModalProps = {
   visible: boolean;
   onClose: () => void;
   onMealTypeSelect?: (mealType: MealType) => void;
+  /** Each camera method renders only while its handler is supplied (the AI one also needs `isAiEnabled`). */
   onAiCameraPress?: () => void;
   onScanBarcodePress?: () => void;
   onSearchFoodPress?: () => void;
@@ -60,7 +60,6 @@ export function AddFoodModal({
   onTrackFromSavedPress,
 }: AddFoodModalProps) {
   const theme = useTheme();
-  const hasCamera = useHasCamera();
   const { t } = useTranslation();
 
   const mealTypes: {
@@ -164,24 +163,24 @@ export function AddFoodModal({
                     onClose();
                   }}
                 />
-                {hasCamera ? (
+                {onScanBarcodePress ? (
                   <TrackingMethodButton
                     icon={ScanLine}
                     title={t('food.addFoodModal.scanBarcode.title')}
                     description={t('food.addFoodModal.scanBarcode.description')}
                     onPress={() => {
-                      onScanBarcodePress?.();
+                      onScanBarcodePress();
                       onClose();
                     }}
                   />
                 ) : null}
-                {isAiEnabled && hasCamera ? (
+                {isAiEnabled && onAiCameraPress ? (
                   <TrackingMethodButton
                     icon={Sparkles}
                     title={t('food.addFoodModal.aiCamera.title')}
                     description={t('food.addFoodModal.aiCamera.description')}
                     onPress={() => {
-                      onAiCameraPress?.();
+                      onAiCameraPress();
                       onClose();
                     }}
                   />

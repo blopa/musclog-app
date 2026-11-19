@@ -2,7 +2,6 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
-import { goHome } from '@/components/navigation/destinationNavigation';
 import {
   COMEBACK_WELCOME_NOTIFICATION_TYPE,
   CYCLE_NOTIFICATION_TYPE,
@@ -81,9 +80,8 @@ export async function handleNotificationResponse(response: Notifications.Notific
       break;
 
     case COMEBACK_WELCOME_NOTIFICATION_TYPE:
-      // Home makes the offer itself (ComebackCard), so the nudge only has to land there. Back to
-      // the Home already open rather than stacking a second one over the current screen.
-      goHome(router);
+      // Home makes the offer itself (ComebackCard), so the nudge only has to land there.
+      router.navigate('/app');
       break;
 
     case YEAR_REVIEW_NOTIFICATION_TYPE: {

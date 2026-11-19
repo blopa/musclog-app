@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useWindowDimensions, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
@@ -25,7 +24,8 @@ export function quickActionBasis(fontScale: number): number {
 }
 
 type FoodQuickActionsProps = {
-  onScanBarcode: () => void;
+  /** The scan button renders only while this is supplied. */
+  onScanBarcode?: () => void;
   onSearchFood: () => void;
   onMyMeals: () => void;
   onMoreOptions: () => void;
@@ -46,7 +46,6 @@ export function FoodQuickActions({
   const { t } = useTranslation();
   const theme = useTheme();
   const { fontScale } = useWindowDimensions();
-  const hasCamera = useHasCamera();
   const basis = quickActionBasis(fontScale);
 
   const slot = (key: string, button: ReactNode) => (
@@ -58,7 +57,7 @@ export function FoodQuickActions({
   return (
     <View className="gap-2">
       <View className="flex-row flex-wrap gap-2">
-        {hasCamera
+        {onScanBarcode
           ? slot(
               'scan',
               <Button

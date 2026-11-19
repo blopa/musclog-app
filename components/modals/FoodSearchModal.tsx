@@ -59,7 +59,6 @@ import { NutritionService } from '@/database/services/NutritionService';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFavoriteFoods } from '@/hooks/useFavoriteFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useHasCamera } from '@/hooks/useHasCamera';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import useNutritionLogs from '@/hooks/useNutritionLogs';
@@ -128,6 +127,7 @@ type FoodSearchModalProps = {
   logDate?: Date;
   initialTab?: 'all' | 'myFoods' | 'openfood' | 'usda' | 'meals';
   onCreatePress?: () => void;
+  /** The barcode icon in the search field renders only while this is supplied. */
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
   /**
@@ -346,8 +346,7 @@ export function FoodSearchModal({
   isAiEnabled = true,
 }: FoodSearchModalProps) {
   const theme = useTheme();
-  const hasCamera = useHasCamera();
-  const showBarcodeScan = hasCamera && onBarcodeScanPress !== undefined;
+  const showBarcodeScan = onBarcodeScanPress !== undefined;
   const { t } = useTranslation();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const { showSnackbar } = useSnackbar();
