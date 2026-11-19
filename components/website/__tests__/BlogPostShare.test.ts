@@ -84,6 +84,6 @@ describe('blog post share row', () => {
     const footer = postPage.slice(postPage.indexOf('<footer'));
 
     expect(footer.indexOf('<BlogPostShare')).toBeGreaterThan(-1);
-    expect(footer.indexOf('<BlogPostShare')).toBeLessThan(footer.indexOf('<Link'));
+    expect(footer.indexOf('<BlogPostShare')).toBeLessThan(footer.indexOf('href="/blog"'));
   });
 });

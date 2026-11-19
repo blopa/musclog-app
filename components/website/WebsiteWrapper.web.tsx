@@ -1,4 +1,3 @@
-import { Link } from 'expo-router';
 import { Download, Dumbbell, Menu, X } from 'lucide-react-native';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -310,14 +309,14 @@ export function MobileMenu() {
                         {link.text}
                       </a>
                     ) : (
-                      <Link
+                      <a
                         key={link.text}
                         href={link.href}
-                        onPress={() => setIsOpen(false)}
+                        onClick={() => setIsOpen(false)}
                         className={`${linkClasses} text-text-primary`}
                       >
                         {link.text}
-                      </Link>
+                      </a>
                     )
                   )}
                 </nav>
@@ -349,7 +348,7 @@ export function Header() {
       style={{ backgroundColor: surface(), borderColor: ink(0.08) }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
+        <a href="/" className="flex shrink-0 items-center gap-2">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-inner"
             style={{ backgroundColor: BRAND_GREEN }}
@@ -364,33 +363,33 @@ export function Header() {
               {t('appTagline')}
             </span>
           </div>
-        </Link>
+        </a>
 
         <nav className="hidden items-center gap-6 lg:flex">
-          <Link
+          <a
             href="/blog"
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('blog')}
-          </Link>
-          <Link
+          </a>
+          <a
             href="/tools"
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('tools')}
-          </Link>
-          <Link
+          </a>
+          <a
             href="/exercises"
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('exercises')}
-          </Link>
-          <Link
+          </a>
+          <a
             href="/progress"
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('progress')}
-          </Link>
+          </a>
           <DownloadModal
             variant="default"
             className="shrink-0 whitespace-nowrap px-5 py-2.5 text-sm font-bold"
@@ -440,7 +439,7 @@ export function Footer() {
     <footer className="border-t py-8" style={{ borderColor: ink(0.08) }}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <Link href="/" className="flex items-center gap-3">
+          <a href="/" className="flex items-center gap-3">
             <div
               className="flex h-8 w-8 items-center justify-center rounded-inner"
               style={{ backgroundColor: BRAND_GREEN }}
@@ -453,7 +452,7 @@ export function Footer() {
                 {navT('appTagline')}
               </span>
             </div>
-          </Link>
+          </a>
 
           <nav className="grid grid-cols-2 justify-items-center gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:justify-items-start md:text-left">
             {footerLinks.map((link) =>
@@ -468,13 +467,13 @@ export function Footer() {
                   {link.text}
                 </a>
               ) : (
-                <Link
+                <a
                   key={link.text}
                   href={link.href}
                   className="text-sm text-text-tertiary transition-colors hover:text-accent-primary"
                 >
                   {link.text}
-                </Link>
+                </a>
               )
             )}
             <button

@@ -1,4 +1,4 @@
-import { Link, usePathname } from 'expo-router';
+import { usePathname } from 'expo-router';
 import { Cookie } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,9 +103,9 @@ export function AnalyticsConsent() {
 
           <p className="text-sm leading-relaxed text-text-tertiary">
             {t('description')}{' '}
-            <Link href="/privacy" className="text-accent-primary underline underline-offset-2">
+            <a href="/privacy" className="text-accent-primary underline underline-offset-2">
               {t('privacyLink')}
-            </Link>
+            </a>
             .
           </p>
         </div>

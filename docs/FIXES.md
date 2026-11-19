@@ -3,6 +3,39 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## The blog (and every website page) showed only header and footer for a moment (2026-11-19)
+
+### Symptom
+
+Clicking "Blog" in the header left the content area empty, with the footer sitting right under the
+header, for a few hundred milliseconds (longer on a real connection) before the page appeared. The
+site is statically exported, so the HTML already holds the whole page.
+
+### Cause
+
+Not hydration: a hard load of `/blog` paints the exported HTML at once and keeps it through hydration
+(checked cold and warm, on a local copy of `dist/` and on musclog.app, sampling `<main>` every frame).
+The header, footer, mobile menu and cookie banner linked with expo-router's `Link`, which navigates on
+the client. A client navigation has nothing to show yet: each route is a lazy chunk, and `useLoaderData`
+then fetches `/_expo/loaders/<route>` (the loader data is embedded in the HTML only for a hard load).
+Both waits happen inside the route's `<Suspense>`, and in lazy import mode expo-router picks its own
+`SuspenseFallback`, which renders `null` in production (`useScreens.js`, `ResolvedSuspenseFallback`), so
+the area is empty until the data arrives. Sampling a click from `/faq` to `/blog` showed no `<main>`
+for about 310 ms even on localhost.
+
+### Fix
+
+Website-to-website links are plain `<a href>` (a full load, so the static HTML paints immediately), in
+`WebsiteWrapper.web.tsx`, `AnalyticsConsent.web.tsx` and the blog post page. Blog cards and tag links
+already were. The "Try the demo" link stays a `Link` because it goes into the client-only `/app`.
+`components/website/__tests__/WebsiteWrapper.test.ts` fails if those files import `Link` again.
+
+### Cost and alternatives
+
+A full load re-runs hydration of the shared ~27 MB bundle (cached after the first visit), which the blog
+cards already did. Keeping client navigation would need the fallback to show something (not
+configurable per route in lazy mode) or the chunk and loader data prefetched before the click.
+
 ## Switching tabs got slower every time, then took ten seconds (2026-11-19)
 
 ### Symptom
