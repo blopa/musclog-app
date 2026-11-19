@@ -1,0 +1,82 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Calculadora de descarga",
+    "intro": "Introduce el peso de trabajo y las series de un ejercicio y obtén la semana de descarga: cuánto bajar el peso, cuántas series mantener, con qué esfuerzo entrenar y cuánto dura.",
+    "form": {
+      "weight": "Peso de trabajo",
+      "weightHint": "Lo que levantas en tus series de trabajo normales.",
+      "sets": "Series de trabajo en una semana normal",
+      "setsHint": "Número entero, para este ejercicio.",
+      "equipmentLabel": "Equipo",
+      "equipment": {
+        "barbell": "Barra",
+        "dumbbell": "Mancuerna",
+        "machine": "Máquina o polea"
+      }
+    },
+    "problems": {
+      "weight": "Introduce el peso de trabajo como un número mayor que 0 y como máximo {{max}}.",
+      "sets": "Introduce las series como un número entero del 1 al {{max}}."
+    },
+    "results": {
+      "title": "Tu semana de descarga",
+      "weight": "Peso",
+      "weightNote": "{{percent}} más ligero que tu peso de trabajo, redondeado a la baja a una carga que puedas poner. Mantén tus repeticiones habituales.",
+      "sets": "Series",
+      "setsValue_one": "{{sets}} serie",
+      "setsValue_other": "{{sets}} series",
+      "setsNote": "Bajas desde {{from}}: alrededor de dos tercios, nunca menos de una.",
+      "effort": "Esfuerzo",
+      "effortValue": "{{count}} repeticiones en reserva",
+      "effortNote": "Termina cada serie con unas {{count}} repeticiones aún posibles, para que la semana se sienta fácil a propósito.",
+      "duration": "Duración",
+      "durationValue_one": "{{count}} semana",
+      "durationValue_other": "{{count}} semanas",
+      "durationNote": "Entrena con la frecuencia habitual pero con trabajo más ligero, y luego vuelve a tus cargas normales.",
+      "plates": "Discos en cada lado de la barra",
+      "emptyBar": "Barra vacía",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "Esta ya es la carga más ligera que este equipo puede dar, así que el peso se mantiene. Reduce las series y empuja menos fuerte.",
+      "step": "Un paso de carga para este equipo es {{step}}."
+    },
+    "table": {
+      "title": "Otros recortes habituales",
+      "cut": "Recorte",
+      "weight": "Peso",
+      "actual": "Realmente más ligero en",
+      "musclog": "Recorte de Musclog",
+      "percent": "{{percent}}",
+      "note": "Musclog toma el 10% o un paso de carga, lo que sea mayor. Las filas del 10, 15 y 20% son reglas prácticas, no resultados de estudios. Cada una se redondea a la baja a una carga que realmente puedas poner, así que un peso pequeño puede acabar más ligero de lo que pediste."
+    },
+    "sections": [
+      {
+        "title": "Cuánto más ligero, y durante cuánto tiempo",
+        "body": [
+          "La descarga de la app de Musclog es un recorte del 10% o de un paso de carga, lo que sea mayor, redondeado a un peso que tu equipo pueda dar y siempre estrictamente más ligero que ahora. Una semana más ligera mantiene alrededor de dos tercios de las series de trabajo, conserva las repeticiones planificadas y apunta a 4 repeticiones en reserva. Dura una semana. Todas estas son decisiones de producto de Musclog, no resultados de estudios.",
+          "Muchas personas usan entre un 10 y un 20% menos de peso, o alrededor de un tercio menos de series, durante una semana. Usa la tabla para un recorte más profundo si la semana anterior se sintió muy pesada. Mantén los mismos ejercicios y el mismo número de sesiones: una descarga es entrenamiento más ligero, no una semana libre."
+        ]
+      },
+      {
+        "title": "Cuándo tiene sentido una descarga",
+        "body": [
+          "Las señales habituales son que el mismo peso se sienta mucho más pesado que hace unas semanas, que fallen repeticiones que normalmente sacas y que casi no te quede nada en reserva. El mal sueño, el estrés o la enfermedad pueden dar lo mismo, y una descarga también ayuda en esos casos. Si una articulación duele de forma aguda, consulta a un médico o fisioterapeuta en lugar de seguir.",
+          "La app descarga un ejercicio por su cuenta después de dos sesiones seguidas con la misma carga en las que terminaste sin nada en reserva o no llegaste a las repeticiones planificadas. Sugiere una semana más ligera desde tu Weekly Review cuando se estancan varios levantamientos. Tú decides si la tomas."
+        ]
+      },
+      {
+        "title": "Lo que dice la investigación",
+        "body": [
+          "Un estudio de consenso de 2023 entre entrenadores de fuerza y físico definió la descarga como un periodo de estrés de entrenamiento reducido destinado a limitar la fatiga, favorecer la recuperación y prepararte para entrenamientos posteriores. Es una definición, no una prescripción. Las cifras de esta página no provienen de ese estudio."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell et al. (2023), Integración de la descarga en los programas de entrenamiento de deportes de fuerza y físico: un enfoque de consenso Delphi internacional (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Nueva escala de RPE específica del entrenamiento de resistencia que mide las repeticiones en reserva"
+    },
+    "articles": {
+      "deload": "Semanas de descarga: cuándo necesitas una y cómo hacerla",
+      "doubleProgression": "Doble progresión: la forma más sencilla de añadir peso cada semana"
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Deload-calculator",
+    "intro": "Vul het werkgewicht en de sets van een oefening in en krijg de deloadweek: hoeveel lichter je gaat, hoeveel sets je houdt, hoe hard je duwt en hoe lang hij duurt.",
+    "form": {
+      "weight": "Werkgewicht",
+      "weightHint": "Wat je tilt voor je gewone werksets.",
+      "sets": "Werksets in een normale week",
+      "setsHint": "Heel getal, voor deze ene oefening.",
+      "equipmentLabel": "Materiaal",
+      "equipment": {
+        "barbell": "Barbell",
+        "dumbbell": "Dumbbell",
+        "machine": "Machine of kabel"
+      }
+    },
+    "problems": {
+      "weight": "Vul het werkgewicht in als een getal boven 0 en hooguit {{max}}.",
+      "sets": "Vul de sets in als heel getal van 1 tot {{max}}."
+    },
+    "results": {
+      "title": "Jouw deloadweek",
+      "weight": "Gewicht",
+      "weightNote": "{{percent}} lichter dan je werkgewicht, naar beneden afgerond naar een belasting die je kunt instellen. Houd je gebruikelijke reps aan.",
+      "sets": "Sets",
+      "setsValue_one": "{{sets}} set",
+      "setsValue_other": "{{sets}} sets",
+      "setsNote": "Omlaag van {{from}}: ongeveer twee derde, nooit minder dan één.",
+      "effort": "Inspanning",
+      "effortValue": "{{count}} reps in reserve",
+      "effortNote": "Stop elke set met ongeveer {{count}} reps die nog mogelijk zijn, zodat de week bewust licht voelt.",
+      "duration": "Duur",
+      "durationValue_one": "{{count}} week",
+      "durationValue_other": "{{count}} weken",
+      "durationNote": "Train zo vaak als gewoonlijk met lichter werk en ga daarna terug naar je normale belastingen.",
+      "plates": "Schijven aan elke kant van de stang",
+      "emptyBar": "Lege stang",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "Dit is al de lichtste belasting die dit materiaal kan maken, dus het gewicht blijft gelijk. Snijd in de sets en duw minder hard.",
+      "step": "Eén belastingsstap voor dit materiaal is {{step}}."
+    },
+    "table": {
+      "title": "Andere gangbare verlagingen",
+      "cut": "Verlaging",
+      "weight": "Gewicht",
+      "actual": "Werkelijk lichter met",
+      "musclog": "Verlaging van Musclog",
+      "percent": "{{percent}}",
+      "note": "Musclog neemt 10% of één belastingsstap, wat het grootst is. De rijen van 10, 15 en 20% zijn vuistregels, geen onderzoeksresultaten. Elke wordt naar beneden afgerond naar een belasting die je echt kunt instellen, dus een klein gewicht kan uiteindelijk lichter uitvallen dan de verlaging die je vroeg."
+    },
+    "sections": [
+      {
+        "title": "Hoeveel lichter, en hoe lang",
+        "body": [
+          "De deload van de Musclog-app is een verlaging van 10% of één belastingsstap, wat het grootst is, naar beneden afgerond naar een gewicht dat je materiaal kan maken en altijd strikt lichter dan nu. Een lichtere week houdt dan ongeveer twee derde van de werksets, behoudt de geplande reps en mikt op 4 reps in reserve. Hij duurt één week. Dit zijn allemaal productkeuzes van Musclog, geen onderzoeksresultaten.",
+          "Sporters gebruiken vaak 10 tot 20% minder gewicht, of ongeveer een derde minder sets, voor een week. Gebruik de tabel voor een diepere verlaging als de week ervoor erg zwaar voelde. Houd dezelfde oefeningen en hetzelfde aantal sessies aan: een deload is lichter trainen, geen week vrij."
+        ]
+      },
+      {
+        "title": "Wanneer een deload zin heeft",
+        "body": [
+          "De gebruikelijke signalen zijn dat hetzelfde gewicht veel zwaarder voelt dan een paar weken geleden, dat reps die je normaal haalt mislukken en dat er bijna geen reps meer in reserve zijn. Slechte slaap, stress of ziekte kan er hetzelfde uitzien, en een deload helpt daar ook bij. Doet een gewricht scherp pijn, zoek dan een arts of fysiotherapeut op in plaats van door te gaan.",
+          "De app deloadt één oefening zelf na twee sessies achter elkaar op dezelfde belasting waarbij je niets in reserve had of de geplande reps miste. Hij stelt een lichtere week voor vanuit je Weekly Review als meerdere lifts vastlopen. Jij kiest of je hem neemt."
+        ]
+      },
+      {
+        "title": "Wat het onderzoek zegt",
+        "body": [
+          "Een consensusstudie uit 2023 onder kracht- en physique-coaches definieerde een deload als een periode met verminderde trainingsbelasting, bedoeld om vermoeidheid te beperken, herstel te steunen en je voor te bereiden op latere training. Dat is een definitie, geen voorschrift. De cijfers op deze pagina komen niet uit die studie."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell et al. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Nieuwe RPE-schaal voor krachttraining die herhalingen in reserve meet"
+    },
+    "articles": {
+      "deload": "Deloadweken: wanneer je er een nodig hebt en hoe je hem doet",
+      "doubleProgression": "Dubbele progressie: de eenvoudigste manier om elke week gewicht toe te voegen"
+    }
+  }
+}

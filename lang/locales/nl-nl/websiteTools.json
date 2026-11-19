@@ -8,7 +8,8 @@
       "ctaTitle": "Bijhouden in Musclog",
       "ctaBody": "Musclog is een gratis, open-source fitness- en voedingsapp. Je gegevens blijven op je apparaat.",
       "sameMath": "Gebruikt dezelfde berekening als de Musclog-app.",
-      "localOnly": "Alles wat je typt blijft in je browser."
+      "localOnly": "Alles wat je typt blijft in je browser.",
+      "readMore": "Meer lezen"
     },
     "units": {
       "label": "Eenheden",

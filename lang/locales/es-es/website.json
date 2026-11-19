@@ -109,6 +109,14 @@
           "title": "Carbohidratos netos y totales: conversor | Musclog",
           "description": "Las etiquetas de EE. UU. cuentan la fibra dentro de los carbohidratos y las de la UE no. Convierte entre carbohidratos netos y totales."
         },
+        "toolProgressiveOverload": {
+          "title": "Calculadora de sobrecarga progresiva | Musclog",
+          "description": "Escribe el peso y las repeticiones de tu última sesión y mira qué levantar: subir peso, sumar una repetición, repetir o bajar, según la regla de Musclog."
+        },
+        "toolDeloadCalculator": {
+          "title": "Calculadora de descarga: cuánto peso y cuánto tiempo | Musclog",
+          "description": "Introduce tu peso de trabajo y tus series y obtén la semana de descarga: el peso más ligero, las series a mantener, cuánto empujar y cuánto dura."
+        },
         "programs": {
           "title": "Programas de entrenamiento gratis | Musclog",
           "description": "Programas gratis: push pull legs, torso pierna, cuerpo completo y mas. Cada dia, ejercicio, serie y repeticion esta detallado y puedes abrirlo en Musclog."

@@ -8,7 +8,8 @@
       "ctaTitle": "Track it in Musclog",
       "ctaBody": "Musclog is a free, open-source fitness and nutrition tracker. Your data stays on your device.",
       "sameMath": "Uses the same calculation as the Musclog app.",
-      "localOnly": "Everything you type stays in your browser."
+      "localOnly": "Everything you type stays in your browser.",
+      "readMore": "Read more"
     },
     "units": {
       "label": "Units",

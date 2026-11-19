@@ -101,9 +101,11 @@ import enUsWebsite from './locales/en-us/website.json';
 import enUsWebsiteAlternativesPages from './locales/en-us/websiteAlternativesPages.json';
 import enUsWebsitePrograms from './locales/en-us/websitePrograms.json';
 import enUsWebsiteToolCalorieDeficit from './locales/en-us/websiteToolCalorieDeficit.json';
+import enUsWebsiteToolDeloadCalculator from './locales/en-us/websiteToolDeloadCalculator.json';
 import enUsWebsiteToolNetCarbs from './locales/en-us/websiteToolNetCarbs.json';
 import enUsWebsiteToolOneRepMax from './locales/en-us/websiteToolOneRepMax.json';
 import enUsWebsiteToolPlateCalculator from './locales/en-us/websiteToolPlateCalculator.json';
+import enUsWebsiteToolProgressiveOverload from './locales/en-us/websiteToolProgressiveOverload.json';
 import enUsWebsiteToolProteinCalculator from './locales/en-us/websiteToolProteinCalculator.json';
 import enUsWebsiteToolRpeChart from './locales/en-us/websiteToolRpeChart.json';
 import enUsWebsiteTools from './locales/en-us/websiteTools.json';
@@ -203,9 +205,11 @@ import esEsWebsite from './locales/es-es/website.json';
 import esEsWebsiteAlternativesPages from './locales/es-es/websiteAlternativesPages.json';
 import esEsWebsitePrograms from './locales/es-es/websitePrograms.json';
 import esEsWebsiteToolCalorieDeficit from './locales/es-es/websiteToolCalorieDeficit.json';
+import esEsWebsiteToolDeloadCalculator from './locales/es-es/websiteToolDeloadCalculator.json';
 import esEsWebsiteToolNetCarbs from './locales/es-es/websiteToolNetCarbs.json';
 import esEsWebsiteToolOneRepMax from './locales/es-es/websiteToolOneRepMax.json';
 import esEsWebsiteToolPlateCalculator from './locales/es-es/websiteToolPlateCalculator.json';
+import esEsWebsiteToolProgressiveOverload from './locales/es-es/websiteToolProgressiveOverload.json';
 import esEsWebsiteToolProteinCalculator from './locales/es-es/websiteToolProteinCalculator.json';
 import esEsWebsiteToolRpeChart from './locales/es-es/websiteToolRpeChart.json';
 import esEsWebsiteTools from './locales/es-es/websiteTools.json';
@@ -305,9 +309,11 @@ import nlNlWebsite from './locales/nl-nl/website.json';
 import nlNlWebsiteAlternativesPages from './locales/nl-nl/websiteAlternativesPages.json';
 import nlNlWebsitePrograms from './locales/nl-nl/websitePrograms.json';
 import nlNlWebsiteToolCalorieDeficit from './locales/nl-nl/websiteToolCalorieDeficit.json';
+import nlNlWebsiteToolDeloadCalculator from './locales/nl-nl/websiteToolDeloadCalculator.json';
 import nlNlWebsiteToolNetCarbs from './locales/nl-nl/websiteToolNetCarbs.json';
 import nlNlWebsiteToolOneRepMax from './locales/nl-nl/websiteToolOneRepMax.json';
 import nlNlWebsiteToolPlateCalculator from './locales/nl-nl/websiteToolPlateCalculator.json';
+import nlNlWebsiteToolProgressiveOverload from './locales/nl-nl/websiteToolProgressiveOverload.json';
 import nlNlWebsiteToolProteinCalculator from './locales/nl-nl/websiteToolProteinCalculator.json';
 import nlNlWebsiteToolRpeChart from './locales/nl-nl/websiteToolRpeChart.json';
 import nlNlWebsiteTools from './locales/nl-nl/websiteTools.json';
@@ -407,9 +413,11 @@ import ptBrWebsite from './locales/pt-br/website.json';
 import ptBrWebsiteAlternativesPages from './locales/pt-br/websiteAlternativesPages.json';
 import ptBrWebsitePrograms from './locales/pt-br/websitePrograms.json';
 import ptBrWebsiteToolCalorieDeficit from './locales/pt-br/websiteToolCalorieDeficit.json';
+import ptBrWebsiteToolDeloadCalculator from './locales/pt-br/websiteToolDeloadCalculator.json';
 import ptBrWebsiteToolNetCarbs from './locales/pt-br/websiteToolNetCarbs.json';
 import ptBrWebsiteToolOneRepMax from './locales/pt-br/websiteToolOneRepMax.json';
 import ptBrWebsiteToolPlateCalculator from './locales/pt-br/websiteToolPlateCalculator.json';
+import ptBrWebsiteToolProgressiveOverload from './locales/pt-br/websiteToolProgressiveOverload.json';
 import ptBrWebsiteToolProteinCalculator from './locales/pt-br/websiteToolProteinCalculator.json';
 import ptBrWebsiteToolRpeChart from './locales/pt-br/websiteToolRpeChart.json';
 import ptBrWebsiteTools from './locales/pt-br/websiteTools.json';
@@ -509,9 +517,11 @@ import ruRuWebsite from './locales/ru-ru/website.json';
 import ruRuWebsiteAlternativesPages from './locales/ru-ru/websiteAlternativesPages.json';
 import ruRuWebsitePrograms from './locales/ru-ru/websitePrograms.json';
 import ruRuWebsiteToolCalorieDeficit from './locales/ru-ru/websiteToolCalorieDeficit.json';
+import ruRuWebsiteToolDeloadCalculator from './locales/ru-ru/websiteToolDeloadCalculator.json';
 import ruRuWebsiteToolNetCarbs from './locales/ru-ru/websiteToolNetCarbs.json';
 import ruRuWebsiteToolOneRepMax from './locales/ru-ru/websiteToolOneRepMax.json';
 import ruRuWebsiteToolPlateCalculator from './locales/ru-ru/websiteToolPlateCalculator.json';
+import ruRuWebsiteToolProgressiveOverload from './locales/ru-ru/websiteToolProgressiveOverload.json';
 import ruRuWebsiteToolProteinCalculator from './locales/ru-ru/websiteToolProteinCalculator.json';
 import ruRuWebsiteToolRpeChart from './locales/ru-ru/websiteToolRpeChart.json';
 import ruRuWebsiteTools from './locales/ru-ru/websiteTools.json';
@@ -642,9 +652,11 @@ const resources = {
       ...enUsWebsiteAlternativesPages,
       ...enUsWebsitePrograms,
       ...enUsWebsiteToolCalorieDeficit,
+      ...enUsWebsiteToolDeloadCalculator,
       ...enUsWebsiteToolNetCarbs,
       ...enUsWebsiteToolOneRepMax,
       ...enUsWebsiteToolPlateCalculator,
+      ...enUsWebsiteToolProgressiveOverload,
       ...enUsWebsiteToolProteinCalculator,
       ...enUsWebsiteToolRpeChart,
       ...enUsWebsiteToolStrengthLevel,
@@ -748,9 +760,11 @@ const resources = {
       ...esEsWebsiteAlternativesPages,
       ...esEsWebsitePrograms,
       ...esEsWebsiteToolCalorieDeficit,
+      ...esEsWebsiteToolDeloadCalculator,
       ...esEsWebsiteToolNetCarbs,
       ...esEsWebsiteToolOneRepMax,
       ...esEsWebsiteToolPlateCalculator,
+      ...esEsWebsiteToolProgressiveOverload,
       ...esEsWebsiteToolProteinCalculator,
       ...esEsWebsiteToolRpeChart,
       ...esEsWebsiteToolStrengthLevel,
@@ -854,9 +868,11 @@ const resources = {
       ...nlNlWebsiteAlternativesPages,
       ...nlNlWebsitePrograms,
       ...nlNlWebsiteToolCalorieDeficit,
+      ...nlNlWebsiteToolDeloadCalculator,
       ...nlNlWebsiteToolNetCarbs,
       ...nlNlWebsiteToolOneRepMax,
       ...nlNlWebsiteToolPlateCalculator,
+      ...nlNlWebsiteToolProgressiveOverload,
       ...nlNlWebsiteToolProteinCalculator,
       ...nlNlWebsiteToolRpeChart,
       ...nlNlWebsiteToolStrengthLevel,
@@ -960,9 +976,11 @@ const resources = {
       ...ptBrWebsiteAlternativesPages,
       ...ptBrWebsitePrograms,
       ...ptBrWebsiteToolCalorieDeficit,
+      ...ptBrWebsiteToolDeloadCalculator,
       ...ptBrWebsiteToolNetCarbs,
       ...ptBrWebsiteToolOneRepMax,
       ...ptBrWebsiteToolPlateCalculator,
+      ...ptBrWebsiteToolProgressiveOverload,
       ...ptBrWebsiteToolProteinCalculator,
       ...ptBrWebsiteToolRpeChart,
       ...ptBrWebsiteToolStrengthLevel,
@@ -1066,9 +1084,11 @@ const resources = {
       ...ruRuWebsiteAlternativesPages,
       ...ruRuWebsitePrograms,
       ...ruRuWebsiteToolCalorieDeficit,
+      ...ruRuWebsiteToolDeloadCalculator,
       ...ruRuWebsiteToolNetCarbs,
       ...ruRuWebsiteToolOneRepMax,
       ...ruRuWebsiteToolPlateCalculator,
+      ...ruRuWebsiteToolProgressiveOverload,
       ...ruRuWebsiteToolProteinCalculator,
       ...ruRuWebsiteToolRpeChart,
       ...ruRuWebsiteToolStrengthLevel,

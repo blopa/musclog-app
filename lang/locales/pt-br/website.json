@@ -109,6 +109,14 @@
           "title": "Carboidratos liquidos e totais: conversor | Musclog",
           "description": "Rotulos dos EUA contam a fibra dentro dos carboidratos e os da UE nao. Converta entre carboidratos liquidos e totais."
         },
+        "toolProgressiveOverload": {
+          "title": "Calculadora de sobrecarga progressiva | Musclog",
+          "description": "Informe o peso e as repetições da última sessão e veja o que levantar: subir a carga, somar uma repetição, repetir ou diminuir, pela regra do Musclog."
+        },
+        "toolDeloadCalculator": {
+          "title": "Calculadora de deload: quanta carga e por quanto tempo | Musclog",
+          "description": "Informe sua carga de trabalho e suas séries e veja a semana de deload: a carga mais leve, as séries a manter, quanto empurrar e por quanto tempo dura."
+        },
         "programs": {
           "title": "Programas de treino gratis | Musclog",
           "description": "Programas gratis: push pull legs, upper lower, full body e mais. Cada dia, exercicio, serie e repeticao esta listado e voce abre no Musclog."

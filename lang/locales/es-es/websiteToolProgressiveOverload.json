@@ -1,0 +1,102 @@
+{
+  "websiteToolProgressiveOverload": {
+    "title": "Calculadora de sobrecarga progresiva",
+    "intro": "Escribe lo que hiciste en la sesión anterior y obtén el peso y las repeticiones a los que apuntar la próxima vez. Aplica la regla que usa la app de Musclog para decidir tu siguiente entrenamiento.",
+    "form": {
+      "weight": "Peso de la sesión anterior",
+      "weightHint": "El peso de tus series de trabajo.",
+      "reps": "Repeticiones en tu serie más débil",
+      "repsHint": "Número entero. Cuenta la serie con menos repeticiones.",
+      "plannedReps": "Repeticiones que pide tu plan",
+      "plannedRepsHint": "Por serie, el mínimo de tu rango de repeticiones.",
+      "reserve": "Repeticiones en reserva, media",
+      "reserveHint": "Repeticiones que aún podrías haber hecho después de cada serie, en media. Déjalo vacío si no valoraste tu esfuerzo.",
+      "equipmentLabel": "Equipo",
+      "equipment": {
+        "barbell": "Barra",
+        "dumbbell": "Mancuerna",
+        "machine": "Máquina o polea"
+      },
+      "modeLabel": "Cómo progresar",
+      "mode": {
+        "weight_first": "Añadir peso primero",
+        "reps_first": "Añadir repeticiones primero"
+      },
+      "completeLabel": "¿Terminaste todas las series?",
+      "twoInARowLabel": "¿La sesión anterior también fallaste con este peso?",
+      "yes": "Sí",
+      "no": "No",
+      "twoInARowNo": "No o no estoy seguro",
+      "twoInARowYes": "Sí, me faltaron repeticiones o llegué al fallo",
+      "moreOptions": "Más opciones: equipo, estilo de progresión y detalles de la última sesión"
+    },
+    "problems": {
+      "weight": "Escribe el peso de la sesión anterior como un número mayor que 0 y como máximo {{max}}.",
+      "reps": "Escribe las repeticiones como un número entero de 1 a {{max}}.",
+      "plannedReps": "Escribe las repeticiones planeadas como un número entero de 1 a {{max}}.",
+      "reserve": "Escribe las repeticiones en reserva como un número de 0 a {{max}}, o déjalo vacío."
+    },
+    "results": {
+      "title": "Próxima sesión",
+      "kind": {
+        "progression": "Sube",
+        "repeat": "Repite la última vez",
+        "deload": "Baja el peso"
+      },
+      "target_one": "{{weight}} para {{reps}} repetición",
+      "target_other": "{{weight}} para {{reps}} repeticiones",
+      "changeUp": "{{change}} ({{percent}}) más pesado que la última vez.",
+      "changeSame": "El mismo peso que la última vez.",
+      "changeDown": "{{change}} ({{percent}}) más ligero que la última vez.",
+      "step": "Un incremento de carga para este equipo es {{step}}.",
+      "plates": "Discos en cada lado de la barra",
+      "emptyBar": "Barra vacía",
+      "plateLine": "{{count}} × {{weight}}",
+      "unrated": "No valoraste las repeticiones en reserva, así que la decisión se basa solo en las repeticiones: una repetición más cada sesión hasta el máximo de tu rango y después más peso."
+    },
+    "reasons": {
+      "addWeight": "La sesión anterior cumplió el objetivo: al menos {{reserve}} repeticiones en reserva y al menos {{planned}} repeticiones en tu serie más débil. La carga sube un incremento.",
+      "addReps": "La sesión anterior cumplió el objetivo, pero primero suben las repeticiones y luego el peso. La carga solo sube cuando llegas al máximo de tu rango de repeticiones.",
+      "stepTooCoarse": "Un incremento ({{step}}) es más de una cuarta parte de este peso, un salto demasiado grande, así que la app añade una repetición.",
+      "unfinished": "No terminaste todas las series, así que la sesión no cuenta como éxito. Repítela.",
+      "missedPlan": "No llegaste a las repeticiones planeadas. Un fallo repite el mismo peso. Dos seguidos con este peso lo bajan.",
+      "tooHard": "Te quedaron menos de {{reserve}} repeticiones en reserva, así que la sesión ya fue lo bastante dura. Repítela. La carga sube solo cuando te queden al menos {{reserve}}.",
+      "deload": "Dos sesiones fallidas seguidas con este peso. La carga baja un 10% o un incremento, lo que sea mayor, y luego se redondea a un peso que puedas cargar."
+    },
+    "sections": [
+      {
+        "title": "¿Cuánto conviene añadir?",
+        "body": [
+          "Musclog añade un incremento de carga: 2,5 kg (5 lb) sin gimnasio configurado, o dos veces tu disco más ligero en una barra si ya la configuraste. En un levantamiento de 100 kg eso es el 2,5%, y en una mancuerna ligera es una parte grande, así que cuando un incremento supera una cuarta parte del peso, la app añade una repetición. Son reglas del producto, no resultados de estudios.",
+          "La investigación da un rango, no un número. La posición del American College of Sports Medicine de 2009 sugiere subir la carga entre un 2 y un 10% aproximadamente cuando puedes hacer una o dos repeticiones por encima de tu objetivo en dos sesiones seguidas. Musclog es más prudente en un aspecto y más rápido en otro: actúa tras una sola sesión, pero solo si te quedaron repeticiones en reserva y cumpliste todas las repeticiones planeadas."
+        ]
+      },
+      {
+        "title": "Cuándo sube, repite o baja",
+        "body": [
+          "Sube cuando tu serie de trabajo más débil alcanzó las repeticiones planeadas y terminaste con al menos 2 repeticiones en reserva de media. Repite después de una sesión difícil o corta, porque un mal día no es un estancamiento. Baja después de dos sesiones seguidas con el mismo peso en las que no te quedó nada en reserva, o no alcanzaste las repeticiones planeadas. Estas reglas de dos sesiones son decisiones de Musclog."
+        ]
+      },
+      {
+        "title": "Peso primero o repeticiones primero",
+        "body": [
+          "Peso primero añade un incremento cada vez que lo consigues y mantiene tus repeticiones. Repeticiones primero añade una repetición cada sesión hasta que estás dos repeticiones por encima de tu plan (una por encima en planes de seis repeticiones o menos), y entonces añade peso y vuelve a las repeticiones planeadas. Esa segunda forma es la doble progresión."
+        ]
+      },
+      {
+        "title": "Lo que esta página no puede ver",
+        "body": [
+          "Solo lee una sesión. La app también mira tu plan, tu gimnasio y la semana en la que estás, y muestra el motivo junto a cada serie. Toma la respuesta como un buen punto de partida, no como una prescripción."
+        ]
+      }
+    ],
+    "sources": {
+      "acsm": "American College of Sports Medicine (2009), Progression models in resistance training for healthy adults (Medicine & Science in Sports & Exercise)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "doubleProgression": "Doble progresión: la forma más sencilla de añadir peso cada semana",
+      "trackProgress": "Cómo llevar tu progreso en el gimnasio: guía para principiantes"
+    }
+  }
+}

@@ -15,6 +15,8 @@ export const TOOLS = [
   { key: 'proteinCalculator', routeKey: 'toolProteinCalculator' },
   { key: 'calorieDeficit', routeKey: 'toolCalorieDeficit' },
   { key: 'netCarbs', routeKey: 'toolNetCarbs' },
+  { key: 'progressiveOverload', routeKey: 'toolProgressiveOverload' },
+  { key: 'deloadCalculator', routeKey: 'toolDeloadCalculator' },
 ] as const;
 
 export type ToolKey = (typeof TOOLS)[number]['key'];

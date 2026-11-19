@@ -109,6 +109,14 @@
           "title": "Net Carbs vs Total Carbs Converter | Musclog",
           "description": "US labels count fiber inside carbohydrates and EU labels do not. Convert between net and total carbs in either direction."
         },
+        "toolProgressiveOverload": {
+          "title": "Progressive Overload Calculator | Musclog",
+          "description": "Enter last session's weight and reps and get what to lift next: add weight, add a rep, repeat or go lighter, using the rule the Musclog app uses."
+        },
+        "toolDeloadCalculator": {
+          "title": "Deload Calculator: How Much Weight and How Long | Musclog",
+          "description": "Enter your working weight and sets and get a deload week: the lighter weight, the sets to keep, how hard to push and how long it lasts."
+        },
         "programs": {
           "title": "Free Workout Programs | Musclog",
           "description": "Free workout programs: push pull legs, upper lower, full body and more. Every day, exercise, set and rep is listed, and you can open it in Musclog."

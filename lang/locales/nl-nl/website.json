@@ -109,6 +109,14 @@
           "title": "Netto en totale koolhydraten omrekenen | Musclog",
           "description": "Amerikaanse etiketten tellen vezels mee in koolhydraten en Europese niet. Reken om tussen netto en totale koolhydraten."
         },
+        "toolProgressiveOverload": {
+          "title": "Progressieve overload-calculator | Musclog",
+          "description": "Vul het gewicht en de reps van je vorige sessie in en zie wat je hierna moet tillen: omhoog, een rep erbij, herhalen of lichter, volgens de Musclog-regel."
+        },
+        "toolDeloadCalculator": {
+          "title": "Deload-calculator: hoeveel gewicht en hoe lang | Musclog",
+          "description": "Vul je werkgewicht en sets in en krijg een deloadweek: het lichtere gewicht, de sets om te houden, hoe hard je duwt en hoe lang hij duurt."
+        },
         "programs": {
           "title": "Gratis trainingsschema's | Musclog",
           "description": "Gratis schema's: push pull legs, upper lower, full body en meer. Elke dag, oefening, set en herhaling staat erbij en je opent het in Musclog."

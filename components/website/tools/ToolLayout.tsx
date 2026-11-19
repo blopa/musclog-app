@@ -37,6 +37,8 @@ interface ToolLayoutProps {
   sources?: ToolSource[];
   /** Other tools worth a link from this one. */
   related?: ToolKey[];
+  /** Blog posts that explain the same topic in full, linked under the tool. */
+  articles?: ToolSource[];
 }
 
 /**
@@ -52,6 +54,7 @@ export function ToolLayout({
   sections = [],
   sources = [],
   related = [],
+  articles = [],
 }: ToolLayoutProps) {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'websiteTools.layout' });
   const language = i18n.resolvedLanguage ?? i18n.language;
@@ -118,6 +121,25 @@ export function ToolLayout({
                     style={{ color: BRAND_GREEN_BRIGHT }}
                   >
                     {source.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {articles.length > 0 ? (
+          <section className="mt-8 max-w-3xl">
+            <h2 className="mb-3 text-lg font-bold text-text-primary">{t('readMore')}</h2>
+            <ul className="space-y-2 text-sm font-semibold">
+              {articles.map((article) => (
+                <li key={article.href}>
+                  <a
+                    href={article.href}
+                    className="underline underline-offset-2"
+                    style={{ color: BRAND_GREEN_BRIGHT }}
+                  >
+                    {article.label}
                   </a>
                 </li>
               ))}

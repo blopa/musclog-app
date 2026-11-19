@@ -195,6 +195,22 @@
       "summary": "Convert between net and total carbs and see why US and EU food labels disagree."
     }
   },
+  "toolProgressiveOverload": {
+    "path": "/tools/progressive-overload-calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Progressive Overload Calculator",
+      "summary": "Next session's weight and reps from last session, using the progression rule the app uses."
+    }
+  },
+  "toolDeloadCalculator": {
+    "path": "/tools/deload-calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Deload Calculator",
+      "summary": "The lighter weight, the sets to keep, the effort and the length of a deload week, from the app's own rules."
+    }
+  },
   "programs": {
     "path": "/programs",
     "llms": {
