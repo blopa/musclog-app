@@ -560,7 +560,7 @@
     "privacy": {
       "titleStart": "Privacy",
       "titleHighlight": "Policy",
-      "lastUpdated": "Last updated: November 14, 2026",
+      "lastUpdated": "Last updated: November 19, 2026",
       "highlights": {
         "dataProtection": {
           "title": "Data Protection",
@@ -704,7 +704,7 @@
           "title": "Sharing Your Personal Data",
           "items": [
             "With the providers You choose: food searches go to the food database You select, and AI requests go to the AI provider You configure.",
-            "With Service Providers that run parts of the Service for Us: Sentry (crash reports), Cloudflare and Google (the free Musclog AI option), and Vercel and Google Analytics (the website).",
+            "With Service Providers that run parts of the Service for Us: Sentry (crash reports), Cloudflare and Google (the free Musclog AI option), GitHub and Cloudflare (hosting the website), and Google Analytics (the website, only after You accept analytics).",
             "When required by law, as described in \"Disclosure of Your Personal Data\".",
             "With Your consent, for example when You export or share data yourself.",
             "We do not sell Your data or share it with advertisers or data brokers."
@@ -759,7 +759,7 @@
         },
         "analytics": {
           "title": "Website Analytics",
-          "content1": "This website uses Vercel Web Analytics, a cookieless and privacy-first analytics service. It collects no personal identifiers and uses no cookies — visitors are identified only by an anonymous hash that resets every 24 hours. No consent is required for this tool under the ePrivacy Directive.",
+          "content1": "The website is hosted on GitHub Pages and served through Cloudflare. Like any web server, they process the technical data every request carries (IP address, browser and requested page) to deliver the page and protect it from abuse. The website itself sets no cookies and uses no analytics until You accept them.",
           "content2": "This website also uses Google Analytics 4 (GA4), a service provided by Google LLC, to collect anonymized data about how visitors interact with the site. Analytics cookies are only set after you explicitly consent by clicking \"Accept\" in the cookie banner.",
           "content3": "When you consent to GA4, Google Analytics may collect:",
           "items": [
@@ -771,7 +771,7 @@
             "The campaign tags (utm_source, utm_medium, utm_campaign) of the link you arrived from, attached to Google Play, App Store and demo clicks"
           ],
           "content4": "Legal basis for GA4: Consent (GDPR Art. 6(1)(a)). You may withdraw your consent at any time by clicking \"Cookie settings\" in the page footer. Withdrawal of consent will prevent any further collection and does not affect the lawfulness of processing carried out before withdrawal.",
-          "content5": "GA4 data is retained in Google Analytics for 14 months by default. Google acts as a data processor under a Data Processing Agreement. For more information on how Google handles data, see the",
+          "content5": "Google Analytics keeps event-level data for two months and then deletes it; reports aggregated from it carry no personal data. Google acts as a data processor under a Data Processing Agreement. For more information on how Google handles data, see the",
           "googlePrivacyPolicy": "Google Privacy Policy",
           "content6": "Your consent choice is stored locally in your browser (localStorage) and is never sent to our servers. It is used solely to remember your preference between visits.",
           "content7": "If the link you followed carries campaign tags (for example ?utm_source=reddit), the website keeps them in your browser's session storage until you close the tab, so it can tell which post or announcement led to a visit. They are sent to Google Analytics only after you accept analytics. When you open Google Play from this website, the same tags are added to the store link as an install referrer, which lets us see in Google Play Console how many installs came from each campaign; Google Play receives them because you followed that link, not from your browser storage. The tags describe the link, never you, and contain no personal data."
@@ -792,7 +792,7 @@
           "title": "On This Website",
           "summary": "The website processes a narrower set of data, primarily relating to website operation, language preference, analytics, and cookie consent management.",
           "items": [
-            "This website uses Vercel Analytics to measure anonymous, cookieless traffic data without requiring consent.",
+            "The website is hosted on GitHub Pages and served through Cloudflare, which process standard request data (such as IP address) to deliver pages.",
             "This website uses Google Analytics 4 only after you provide explicit consent through the cookie banner.",
             "Your language preference is stored locally in your browser and is not transmitted to our servers.",
             "Your cookie consent choice is stored locally in your browser and is not transmitted to our servers."

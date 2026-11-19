@@ -3,6 +3,48 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Google Analytics received no data at all (2026-11-19)
+
+### Symptom
+
+GA4 showed "No data received from your website yet" eight months after the stream was created
+(March 2026), although visitors accepted the consent banner, `gtag/js` loaded and `window.dataLayer`
+filled with the right commands.
+
+### Cause
+
+The gtag stub in `utils/websiteAnalytics.web.ts` was `function gtag(...args) { dataLayer.push(args) }`.
+gtag.js executes only dataLayer entries that are `arguments` objects; a rest parameter is a plain
+array, which it silently skips. So `js`, `config` and every `page_view`, `store_button_click` and
+`demo_start` were dropped and no `/g/collect` request was ever made. Re-sending the same three commands
+as `arguments` on the live site produced a collect hit at once.
+
+### Fix
+
+The stub pushes `arguments`, as Google's own snippet does. Pinned by
+`utils/__tests__/websiteAnalyticsGtag.test.ts`, which checks every dataLayer entry is an `arguments`
+object. Don't "modernise" it back to a rest parameter.
+
+## Directory routes redirected to http:// with a trailing slash (2026-11-19)
+
+### Symptom
+
+123 of the 211 sitemap URLs answered 301 to `http://musclog.app/<path>/`, while the sitemap and every
+canonical use the slash-less https URL, so Google saw a redirect and a canonical mismatch.
+
+### Cause
+
+Expo exports blog, category, tag, tools and programs pages as `X/index.html`. GitHub Pages answers a
+directory URL with a 301 to the slash form, and behind Cloudflare (which reaches the origin over http)
+that redirect points at `http://`. Where a flat file sits beside the directory (`dist/alternatives.html`
+plus `dist/alternatives/`), `/alternatives` was served 200 with no redirect.
+
+### Fix
+
+`scripts/flatten-web-indexes.js`, the last step of `build-android-web`, copies every `X/index.html` to
+`X.html` (never overwriting, skipping route groups, `_` directories and asset folders). Pinned by
+`scripts/__tests__/flattenWebIndexes.test.ts`.
+
 ## Website pages opened in the default theme, then switched seconds later or not at all (November 2026)
 
 ### Symptom

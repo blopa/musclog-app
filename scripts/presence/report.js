@@ -42,10 +42,17 @@ function gscDigest(gsc, ledgerEntries) {
     queryPages,
     countries,
     devices,
+    devicesPrevious = [],
     sitemaps = [],
   } = gsc;
-  const current = analysis.totals(queries);
-  const previous = analysis.totals(queriesPrevious);
+  // Google hides the text of rare queries, so the query rows are only part of the traffic. The
+  // device breakdown has no such gap, so it is the source of the real totals.
+  const current = analysis.totals(devices);
+  const previous = analysis.totals(devicesPrevious);
+  const queryCoverage = {
+    shownImpressions: analysis.totals(queries).impressions,
+    totalImpressions: current.impressions,
+  };
   const queryMovers = analysis.findMovers(
     analysis.compareGroups(queries, queriesPrevious, (row) => row.query)
   );
@@ -56,6 +63,7 @@ function gscDigest(gsc, ledgerEntries) {
 
   return {
     totals: { current, previous },
+    queryCoverage,
     topQueries: [...queries]
       .sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions)
       .slice(0, TOP),
@@ -139,6 +147,10 @@ function buildDigest(snapshot, { ledgerDue = [] } = {}) {
     };
   }
 
+  if (sources.live?.ok) {
+    digest.live = sources.live.data;
+  }
+
   return digest;
 }
 
@@ -188,6 +200,10 @@ function renderMarkdown(digest) {
     );
 
     lines.push('### Top queries', '');
+    lines.push(
+      `Google shows the text for ${digest.gsc.queryCoverage.shownImpressions} of ${digest.gsc.queryCoverage.totalImpressions} impressions; the rest are anonymized rare queries.`,
+      ''
+    );
     lines.push(
       table(
         ['Query', 'Clicks', 'Impr.', 'CTR', 'Pos.'],
@@ -477,6 +493,28 @@ function renderMarkdown(digest) {
       );
     } else if (storePerformance?.skipped) {
       lines.push(`_${storePerformance.skipped}_`, '');
+    }
+  }
+
+  if (digest.live) {
+    const { live } = digest;
+
+    lines.push('## Live sitemap check', '');
+    lines.push(`${live.ok} of ${live.checked} sitemap URLs answer 200.`, '');
+
+    if (live.problems.length > 0) {
+      lines.push(
+        table(
+          ['Status', 'URL', 'Redirects to'],
+          live.problems.slice(0, 30).map((row) => [row.status, row.url, row.location ?? ''])
+        )
+      );
+      lines.push(
+        `By status: ${Object.entries(live.byStatus)
+          .map(([status, count]) => `${status} x${count}`)
+          .join(', ')}. ${live.downgradesToHttp} redirect to plain http.`,
+        ''
+      );
     }
   }
 

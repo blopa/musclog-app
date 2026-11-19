@@ -58,6 +58,9 @@ Never propose an edit from a number alone. For each candidate:
    from a country whose language the app ships: es, nl, pt-BR, ru), **indexing** (sitemap URLs with no
    impressions), **conversion** (visits but few store clicks per session: the page's call to action).
 
+   A sitemap URL that does not answer 200 in the "Live sitemap check" section (a redirect, a 404, a
+   downgrade to plain http) is always a top finding: fix it before any other lever.
+
 Ignore noise: under about 50 impressions a query is not a signal, one window of movement may be
 seasonality, and GA4 counts only visitors who accepted analytics (use it for shape, never for totals).
 

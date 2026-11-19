@@ -560,7 +560,7 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidad",
-      "lastUpdated": "Última actualización: 14 de noviembre de 2026",
+      "lastUpdated": "Última actualización: 19 de noviembre de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Protección de datos",
@@ -704,7 +704,7 @@
           "title": "Compartir tus Datos Personales",
           "items": [
             "Con los proveedores que elijas: las búsquedas de alimentos van a la base de datos de alimentos que selecciones y las solicitudes de IA van al proveedor de IA que configures.",
-            "Con Proveedores de Servicios que gestionan partes del Servicio por Nosotros: Sentry (informes de fallos), Cloudflare y Google (la opción gratuita Musclog AI), y Vercel y Google Analytics (el sitio web).",
+            "Con Proveedores de Servicios que gestionan partes del Servicio por Nosotros: Sentry (informes de fallos), Cloudflare y Google (la opción gratuita Musclog AI), GitHub y Cloudflare (alojamiento del sitio web) y Google Analytics (el sitio web, solo después de que aceptes la analítica).",
             "Cuando lo exija la ley, como se describe en \"Divulgación de tus Datos Personales\".",
             "Con tu consentimiento, por ejemplo cuando exportas o compartes datos tú mismo.",
             "No vendemos tus datos ni los compartimos con anunciantes ni intermediarios de datos."
@@ -759,7 +759,7 @@
         },
         "analytics": {
           "title": "Analítica del sitio web",
-          "content1": "Este sitio web utiliza Vercel Web Analytics, un servicio de analítica sin cookies y centrado en la privacidad. No recopila identificadores personales ni utiliza cookies: los visitantes se identifican únicamente mediante un hash anónimo que se restablece cada 24 horas. No se requiere consentimiento para esta herramienta bajo la Directiva ePrivacy.",
+          "content1": "El sitio web está alojado en GitHub Pages y se sirve a través de Cloudflare. Como cualquier servidor web, tratan los datos técnicos que lleva cada solicitud (dirección IP, navegador y página solicitada) para entregar la página y protegerla de abusos. El propio sitio web no establece cookies ni utiliza analítica hasta que las aceptes.",
           "content2": "Este sitio web también utiliza Google Analytics 4 (GA4), un servicio proporcionado por Google LLC, para recopilar datos anonimizados sobre cómo los visitantes interactúan con el sitio. Las cookies de analítica solo se activan después de que consientes explícitamente haciendo clic en \"Aceptar\" en el banner de cookies.",
           "content3": "Cuando consientes el uso de GA4, Google Analytics puede recopilar:",
           "items": [
@@ -771,7 +771,7 @@
             "Las etiquetas de campaña (utm_source, utm_medium, utm_campaign) del enlace por el que llegaste, asociadas a los clics en Google Play, App Store y la demo"
           ],
           "content4": "Base legal para GA4: Consentimiento (RGPD Art. 6(1)(a)). Puedes retirar tu consentimiento en cualquier momento haciendo clic en \"Configuración de cookies\" en el pie de página. La retirada del consentimiento impedirá cualquier recopilación adicional y no afectará la legalidad del procesamiento realizado antes de la retirada.",
-          "content5": "Los datos de GA4 se retienen en Google Analytics durante 14 meses de forma predeterminada. Google actúa como procesador de datos bajo un Acuerdo de Procesamiento de Datos. Para más información sobre cómo Google maneja los datos, consulta la",
+          "content5": "Google Analytics conserva los datos a nivel de evento durante dos meses y después los elimina; los informes agregados a partir de ellos no contienen datos personales. Google actúa como procesador de datos bajo un Acuerdo de Procesamiento de Datos. Para más información sobre cómo Google maneja los datos, consulta la",
           "googlePrivacyPolicy": "Política de Privacidad de Google",
           "content6": "Tu elección de consentimiento se almacena localmente en tu navegador (localStorage) y nunca se envía a nuestros servidores. Se utiliza únicamente para recordar tu preferencia entre visitas.",
           "content7": "Si el enlace que seguiste lleva etiquetas de campaña (por ejemplo ?utm_source=reddit), el sitio las guarda en el almacenamiento de sesión de tu navegador hasta que cierres la pestaña, para saber qué publicación o anuncio llevó a la visita. Solo se envían a Google Analytics después de que aceptes la analítica. Cuando abres Google Play desde este sitio, las mismas etiquetas se añaden al enlace de la tienda como referencia de instalación, lo que nos permite ver en Google Play Console cuántas instalaciones vinieron de cada campaña; Google Play las recibe porque seguiste ese enlace, no desde el almacenamiento de tu navegador. Las etiquetas describen el enlace, nunca a ti, y no contienen datos personales."
@@ -792,7 +792,7 @@
           "title": "En este sitio web",
           "summary": "El sitio web trata un conjunto más limitado de datos, principalmente relacionados con el funcionamiento del sitio, la preferencia de idioma, la analítica y la gestión del consentimiento de cookies.",
           "items": [
-            "Este sitio web utiliza Vercel Analytics para medir datos de tráfico anónimos y sin cookies, sin requerir consentimiento.",
+            "El sitio web está alojado en GitHub Pages y se sirve a través de Cloudflare, que tratan datos de solicitud estándar (como la dirección IP) para entregar las páginas.",
             "Este sitio web utiliza Google Analytics 4 únicamente después de que otorgues tu consentimiento explícito mediante el banner de cookies.",
             "Tu preferencia de idioma se almacena localmente en tu navegador y no se transmite a nuestros servidores.",
             "Tu elección de consentimiento de cookies se almacena localmente en tu navegador y no se transmite a nuestros servidores."

@@ -5,7 +5,7 @@
  * `.presence/` (git-ignored) and renders a digest the `musclog-online-presence-research` skill reads.
  *
  *   node scripts/presence.js check
- *   node scripts/presence.js snapshot [--days 28] [--only gsc,ga4,play,audit]
+ *   node scripts/presence.js snapshot [--days 28] [--only gsc,ga4,play,audit,live]
  *   node scripts/presence.js report [--snapshot <dir>] [--json]
  *   node scripts/presence.js inspect <url> [<url>...]
  *   node scripts/presence.js ledger
@@ -25,12 +25,13 @@ const {
   loadConfig,
 } = require('./presence/config');
 const { dueEntries, readLedger } = require('./presence/ledger');
+const { checkUrls, summarizeLiveCheck } = require('./presence/liveCheck');
 const play = require('./presence/play');
 const { buildDigest, renderMarkdown } = require('./presence/report');
 const { chooseSite, createSearchConsole } = require('./presence/searchConsole');
 const { auditSite } = require('./presence/siteAudit');
 
-const ALL_SOURCES = ['gsc', 'ga4', 'play', 'audit'];
+const ALL_SOURCES = ['gsc', 'ga4', 'play', 'audit', 'live'];
 const DEFAULT_DAYS = 28;
 
 function parseArgs(argv) {
@@ -115,6 +116,7 @@ async function collectGsc({ keyPath, config, window }) {
     queryPages,
     countries,
     devices,
+    devicesPrevious,
     daily,
     sitemaps,
   ] = await Promise.all([
@@ -125,6 +127,7 @@ async function collectGsc({ keyPath, config, window }) {
     query(window.current, ['query', 'page']),
     query(window.current, ['country']),
     query(window.current, ['device']),
+    query(window.previous, ['device']),
     query(window.current, ['date']),
     searchConsole.listSitemaps(site).catch(() => []),
   ]);
@@ -138,6 +141,7 @@ async function collectGsc({ keyPath, config, window }) {
     queryPages,
     countries,
     devices,
+    devicesPrevious,
     daily,
     sitemaps,
   };
@@ -185,6 +189,15 @@ const COLLECTORS = {
   ga4: collectGa4,
   play: collectPlay,
   audit: async () => auditSite(),
+  live: async () => {
+    const urls = auditSite().sitemapUrls ?? [];
+
+    if (urls.length === 0) {
+      throw new Error('No sitemap URLs to check (public/sitemap.xml is missing or empty).');
+    }
+
+    return summarizeLiveCheck(await checkUrls(urls), urls.length);
+  },
 };
 
 /** One failing source never loses the others: its error is recorded and the run goes on. */
@@ -383,7 +396,7 @@ async function main() {
 
   if (!command) {
     console.log(
-      'Usage: node scripts/presence.js <check|snapshot|report|inspect|ledger> [options]\n  snapshot [--days 28] [--only gsc,ga4,play,audit]\n  report [--snapshot DIR] [--json]\n  inspect <url...>'
+      'Usage: node scripts/presence.js <check|snapshot|report|inspect|ledger> [options]\n  snapshot [--days 28] [--only gsc,ga4,play,audit,live]\n  report [--snapshot DIR] [--json]\n  inspect <url...>'
     );
     process.exitCode = parsed.positional[0] ? 1 : 0;
 

@@ -560,7 +560,7 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 14 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 19 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -704,7 +704,7 @@
           "title": "Delen van uw Persoonsgegevens",
           "items": [
             "Met de providers die u kiest: zoekopdrachten naar voeding gaan naar de voedingsdatabase die u selecteert en AI-verzoeken gaan naar de AI-provider die u configureert.",
-            "Met Serviceproviders die delen van de Service voor Ons uitvoeren: Sentry (crashrapporten), Cloudflare en Google (de gratis Musclog AI-optie), en Vercel en Google Analytics (de website).",
+            "Met Serviceproviders die delen van de Service voor Ons uitvoeren: Sentry (crashrapporten), Cloudflare en Google (de gratis Musclog AI-optie), GitHub en Cloudflare (hosting van de website) en Google Analytics (de website, alleen nadat u analyse accepteert).",
             "Wanneer de wet dit vereist, zoals beschreven onder \"Openbaarmaking van uw Persoonsgegevens\".",
             "Met uw toestemming, bijvoorbeeld wanneer u zelf gegevens exporteert of deelt.",
             "Wij verkopen uw gegevens niet en delen ze niet met adverteerders of datahandelaren."
@@ -759,7 +759,7 @@
         },
         "analytics": {
           "title": "Website-analyse",
-          "content1": "Deze website maakt gebruik van Vercel Web Analytics, een cookieloze en privacy-gerichte analyseservice. Het verzamelt geen persoonlijke identificatoren en gebruikt geen cookies — bezoekers worden alleen geïdentificeerd door een anonieme hash die elke 24 uur wordt gereset. Er is geen toestemming vereist voor deze tool onder de ePrivacy-richtlijn.",
+          "content1": "De website wordt gehost op GitHub Pages en geleverd via Cloudflare. Zoals elke webserver verwerken zij de technische gegevens die elk verzoek bevat (IP-adres, browser en opgevraagde pagina) om de pagina te leveren en tegen misbruik te beschermen. De website zelf plaatst geen cookies en gebruikt geen analyse totdat u die accepteert.",
           "content2": "Deze website maakt ook gebruik van Google Analytics 4 (GA4), een dienst van Google LLC, om geanonimiseerde gegevens te verzamelen over hoe bezoekers de site gebruiken. Analysecookies worden alleen ingesteld nadat u expliciet toestemming geeft door op \"Accepteren\" in de cookiebanner te klikken.",
           "content3": "Wanneer u toestemming geeft voor GA4, kan Google Analytics verzamelen:",
           "items": [
@@ -771,7 +771,7 @@
             "De campagnetags (utm_source, utm_medium, utm_campaign) van de link waarmee u binnenkwam, gekoppeld aan klikken op Google Play, App Store en de demo"
           ],
           "content4": "Rechtsgrondslag voor GA4: Toestemming (AVG Art. 6(1)(a)). U kunt uw toestemming op elk moment intrekken door op \"Cookie-instellingen\" in de paginavoettekst te klikken. Intrekking van toestemming voorkomt verdere verzameling en heeft geen invloed op de rechtmatigheid van de verwerking vóór de intrekking.",
-          "content5": "GA4-gegevens worden standaard 14 maanden bewaard in Google Analytics. Google treedt op als gegevensverwerker onder een Gegevensverwerkingsovereenkomst. Voor meer informatie over hoe Google gegevens verwerkt, zie het",
+          "content5": "Google Analytics bewaart gegevens op gebeurtenisniveau twee maanden en verwijdert ze daarna; rapporten die daaruit worden samengesteld bevatten geen persoonsgegevens. Google treedt op als gegevensverwerker onder een Gegevensverwerkingsovereenkomst. Voor meer informatie over hoe Google gegevens verwerkt, zie het",
           "googlePrivacyPolicy": "Privacybeleid van Google",
           "content6": "Uw toestemmingskeuze wordt lokaal opgeslagen in uw browser (localStorage) en wordt nooit naar onze servers verzonden. Het wordt uitsluitend gebruikt om uw voorkeur tussen bezoeken te onthouden.",
           "content7": "Als de link die u volgde campagnetags bevat (bijvoorbeeld ?utm_source=reddit), bewaart de website die in de sessieopslag van uw browser tot u het tabblad sluit, zodat we kunnen zien welk bericht of welke aankondiging tot een bezoek leidde. Ze worden pas naar Google Analytics gestuurd nadat u analyse accepteert. Wanneer u Google Play vanaf deze website opent, worden dezelfde tags als installatieverwijzing aan de winkellink toegevoegd, zodat we in Google Play Console kunnen zien hoeveel installaties uit elke campagne kwamen; Google Play ontvangt ze omdat u die link volgde, niet uit de opslag van uw browser. De tags beschrijven de link, nooit u, en bevatten geen persoonsgegevens."
@@ -792,7 +792,7 @@
           "title": "Op deze website",
           "summary": "De website verwerkt een beperktere set gegevens, hoofdzakelijk met betrekking tot websitefunctionaliteit, taalvoorkeur, analyse en het beheer van cookie-toestemming.",
           "items": [
-            "Deze website gebruikt Vercel Analytics om anonieme, cookieloze verkeersgegevens te meten zonder toestemming te vereisen.",
+            "De website wordt gehost op GitHub Pages en geleverd via Cloudflare, die standaard verzoekgegevens (zoals het IP-adres) verwerken om pagina's te leveren.",
             "Deze website gebruikt Google Analytics 4 uitsluitend nadat u via de cookiebanner expliciet toestemming hebt gegeven.",
             "Uw taalvoorkeur wordt lokaal in uw browser opgeslagen en wordt niet naar onze servers verzonden.",
             "Uw cookie-toestemmingskeuze wordt lokaal in uw browser opgeslagen en wordt niet naar onze servers verzonden."

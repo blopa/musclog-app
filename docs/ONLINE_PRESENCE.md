@@ -16,6 +16,7 @@ scope for now.
 | Google Analytics 4 | landing pages, traffic sources and campaigns, store-button clicks, demo starts                        | Data + Admin API, same key (`scripts/presence/analytics.js`)                      |
 | Google Play        | reviews, release health, and (with a bucket id) store-listing visitors and installs by country/source | the `gplay` CLI and profile of `docs/GOOGLE_PLAY.md` (`scripts/presence/play.js`) |
 | Offline site audit | title/description lengths, locale coverage, sitemap gaps, blog frontmatter and body checks            | reads the repo (`scripts/presence/siteAudit.js`)                                  |
+| Live sitemap check | the HTTP status of every sitemap URL on the live site (redirects, 404s, http downgrades)              | plain GET with redirects not followed (`scripts/presence/liveCheck.js`)           |
 
 **GA4 undercounts on purpose.** The site sends analytics only after the visitor accepts the consent banner
 (`utils/websiteAnalytics.web.ts`), so GA4 numbers describe the _shape_ of traffic (which pages lead to a
@@ -49,7 +50,7 @@ key (`~/keys/musclog-play-service-account.json`) or have its own at
 
 ```
 npm run presence:check       # what works, and the exact fix for what does not
-npm run presence:snapshot    # collect everything (--days 28, --only gsc,ga4,play,audit)
+npm run presence:snapshot    # collect everything (--days 28, --only gsc,ga4,play,audit,live)
 npm run presence:report      # print the latest digest (--json, --snapshot DIR)
 npm run presence -- inspect /tools/one-rep-max   # Google's own index verdict for a URL
 npm run presence -- ledger   # change-ledger entries whose review date has passed
@@ -95,6 +96,7 @@ Date = when it shipped. Target = a site path (`/tools/one-rep-max`) or a query i
 numbers that justified it (window and values), so the review compares like with like. Review on = an ISO
 day; `presence:report` lists the row from then on, with the target's current numbers beside it.
 
-| Date       | Change | Target | Evidence | Review on |
-| ---------- | ------ | ------ | -------- | --------- |
-| _none yet_ |        |        |          |           |
+| Date       | Change                                                                                                                                            | Target  | Evidence                                                                                                                                                                                                     | Review on  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| 2026-11-19 | Every directory route also ships as a flat `X.html`, so blog, category, tag, tools and programs URLs answer 200 instead of a 301 to `http://…/X/` | `/blog` | Live check: 123 of 211 sitemap URLs 301 to plain http; inspection: `/blog` "Page with redirect", `/tools/one-rep-max` "Discovered, currently not indexed"; site 166 impressions, 8 clicks (28 days to 11-16) | 2026-12-24 |
+| 2026-11-19 | gtag stub pushes `arguments` (GA4 had received no hit since the stream was created in March)                                                      | `/`     | GA4 Data API: 0 sessions, 0 events from 2026-08-01 to 11-18                                                                                                                                                  | 2026-12-03 |
