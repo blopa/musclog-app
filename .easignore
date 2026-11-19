@@ -158,3 +158,5 @@ app/(website)/posts
 android/play
 ios/appstore
 .asc
+
+.presence/

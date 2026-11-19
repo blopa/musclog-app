@@ -41,6 +41,7 @@ leads naturally into the app. Expect 3–6 months before search traffic shows up
 
 - [ ] Verify musclog.app in Google Search Console and submit `/sitemap.xml`, which the build already
       generates. Note the queries the site already ranks for; they decide which tools come first.
+      Once verified, `docs/ONLINE_PRESENCE.md` explains how to connect it to `npm run presence:snapshot`.
 - [ ] Add a "Tools" entry to the header burger menu (`MobileMenu` `menuLinks`) and the footer. Don't add a
       homepage section: the homepage composition is pinned by `deslopGuards.test.ts`.
 

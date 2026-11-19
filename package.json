@@ -6,6 +6,10 @@
   },
   "scripts": {
     "playwright-runner": "node tests/run-tests.js",
+    "presence": "node scripts/presence.js",
+    "presence:check": "node scripts/presence.js check",
+    "presence:snapshot": "node scripts/presence.js snapshot",
+    "presence:report": "node scripts/presence.js report",
     "screenshots:build": "EXPO_PUBLIC_SCREENSHOT_MODE=1 npm run build-android-web",
     "screenshots:app-store:run": "npm run playwright-runner -- tests/screenshot-automation.spec.ts",
     "screenshots:wrapped:run": "npm run playwright-runner -- tests/screenshot-wrapped.spec.ts",
