@@ -316,6 +316,19 @@ the snapshots on failure. Schedules the membership sync already prepared are not
 Pinned by `database/services/__tests__/WorkoutTemplateService.test.ts`. Any new writer that prepares
 several existing records must go through `commitPrepared` with all of them listed.
 
+### Still pending after the fix: `workout_template_sets` (2.16.5, November 2026)
+
+Sentry still saw "Cannot update a record with pending changes (workout_template_sets#…)" from
+`useWorkoutForm.saveTemplate` on 2.16.5. `saveExistingTemplate` is the only code that prepares template
+sets, and a pending flag lives only in the JS session (a killed app starts clean), so some earlier prepare in
+the same session left a set pending; **what did is not yet known**. `saveExistingTemplate` now calls
+`clearStalePending` (`database/commitPrepared.ts`) inside the writer, where nothing legitimately holds those
+records pending, so the save goes through. It reports each time it clears something (Sentry warning
+"Stale pending records cleared before saving a workout": the table, ids and state of what was stuck, plus
+`getLastCommitFailure()`, the last failed `commitPrepared` of the session and how long ago). When that event
+shows up, its `lastCommitFailure` is the lead to the real cause; remove the cleanup only once that is fixed.
+Pinned by `database/services/__tests__/WorkoutTemplateService.test.ts`.
+
 ## Nutrition kept disagreeing with Health Connect / Apple Health (November 2026)
 
 Four sync defects, found while adding the time-grouped food diary (which relies on a log's

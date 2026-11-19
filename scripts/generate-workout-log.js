@@ -241,10 +241,12 @@ function writePdf(size) {
     doc.text(
       'Musclog: a free, open-source workout and nutrition tracker. https://musclog.app',
       MARGIN,
-      height - MARGIN - 4,
+      // Inside the bottom margin: text that ends below it makes pdfkit add a page of its own.
+      height - MARGIN - 14,
       {
         width: usable,
         align: 'center',
+        lineBreak: false,
       }
     );
   }

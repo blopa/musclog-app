@@ -1,6 +1,11 @@
 import { parseWorkoutImport } from '@/utils/workoutImport/sessions';
 
-import { checkLogCsv, LOG_DOWNLOADS, MAX_CHECK_CHARS } from '../workoutLogTemplateModel';
+import {
+  checkLogCsv,
+  EXAMPLE_ROW_NOTE,
+  LOG_DOWNLOADS,
+  MAX_CHECK_CHARS,
+} from '../workoutLogTemplateModel';
 
 const NOW = new Date('2026-06-01T12:00:00Z');
 const HEADER = 'Date,Workout Name,Exercise Name,Set Order,Weight,Reps,RPE,Notes';
