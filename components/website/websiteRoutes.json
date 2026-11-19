@@ -211,6 +211,14 @@
       "summary": "The lighter weight, the sets to keep, the effort and the length of a deload week, from the app's own rules."
     }
   },
+  "toolWorkoutLogTemplate": {
+    "path": "/tools/workout-log-template",
+    "llms": {
+      "section": "Product",
+      "title": "Free Printable Workout Log",
+      "summary": "A printable workout log (PDF) and a spreadsheet template (XLSX, CSV) that the Musclog app can import."
+    }
+  },
   "programs": {
     "path": "/programs",
     "llms": {

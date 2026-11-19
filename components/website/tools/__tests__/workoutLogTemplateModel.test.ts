@@ -15,7 +15,7 @@ describe('checkLogCsv', () => {
       '2026-01-08 18:00:00,Pull Day,Barbell Row,1,50,10,,',
     ].join('\n');
     const result = checkLogCsv(csv, 'kg', NOW);
-    expect(result).toEqual({ ok: true, workouts: 2, sets: 4, skipped: 0 });
+    expect(result).toEqual({ ok: true, workouts: 2, sets: 4, skipped: 0, exampleRow: false });
 
     const direct = parseWorkoutImport(csv, { assumedWeightUnit: 'kg', now: NOW });
     expect(direct.ok && direct.sessions).toHaveLength(2);
@@ -27,7 +27,13 @@ describe('checkLogCsv', () => {
       '2026-01-05 18:10:00,Push Day,Bench Press (Barbell),1,60,8,8,',
       'not a date,Push Day,Bench Press (Barbell),2,65,6,9,',
     ].join('\n');
-    expect(checkLogCsv(csv, 'kg', NOW)).toEqual({ ok: true, workouts: 1, sets: 1, skipped: 1 });
+    expect(checkLogCsv(csv, 'kg', NOW)).toEqual({
+      ok: true,
+      workouts: 1,
+      sets: 1,
+      skipped: 1,
+      exampleRow: false,
+    });
   });
 
   it('refuses empty, header-only and unrecognised files with a named problem', () => {
@@ -38,6 +44,13 @@ describe('checkLogCsv', () => {
       ok: false,
       problem: 'tooLarge',
     });
+  });
+});
+
+describe('the example row', () => {
+  it('is flagged so the page can tell the visitor to delete it', () => {
+    const csv = `${HEADER}\n2026-01-05 18:10:00,Push Day,Bench Press,1,60,8,8,${EXAMPLE_ROW_NOTE}`;
+    expect(checkLogCsv(csv, 'kg', NOW)).toMatchObject({ ok: true, exampleRow: true });
   });
 });
 

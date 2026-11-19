@@ -1023,9 +1023,11 @@ describe('WorkoutTemplateService', () => {
       const existingSet = pendingAwareRecord(
         createMockWorkoutTemplateSet({ id: 'set-1', templateExerciseId: 'te-1', setOrder: 1 })
       );
-      // The same set is already pending (a stale state from elsewhere), so preparing it throws
-      // after the template and exercise were prepared.
-      existingSet._preparedState = 'update';
+      const realPrepareUpdate = existingSet.prepareUpdate;
+      // The set fails to prepare after the template and exercise were prepared.
+      existingSet.prepareUpdate = jest.fn(() => {
+        throw new Error('prepare failed');
+      });
       stubCollections({
         existingTemplate,
         rowsByTable: {
@@ -1036,15 +1038,42 @@ describe('WorkoutTemplateService', () => {
 
       await expect(
         WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' })
-      ).rejects.toThrow('pending changes');
+      ).rejects.toThrow('prepare failed');
 
       // Nothing was committed, and the records prepared before the failure are not left pending.
       expect(mockDatabase.batch).not.toHaveBeenCalled();
       expect(existingTemplate._preparedState).toBeNull();
       expect(existingExercise._preparedState).toBeNull();
 
-      // The stale state is gone, so the next save goes through.
-      existingSet._preparedState = null;
+      existingSet.prepareUpdate = realPrepareUpdate;
+      await expect(
+        WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' })
+      ).resolves.toBe(existingTemplate);
+      expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    });
+
+    it('saves a workout whose records were left pending by an abandoned prepare', async () => {
+      const existingTemplate = pendingAwareRecord(createMockWorkoutTemplate({ id: 'template-1' }));
+      const existingExercise = pendingAwareRecord(
+        createMockWorkoutTemplateExercise({
+          id: 'te-1',
+          exerciseId: 'ex-1',
+          templateId: 'template-1',
+        })
+      );
+      const existingSet = pendingAwareRecord(
+        createMockWorkoutTemplateSet({ id: 'set-1', templateExerciseId: 'te-1', setOrder: 1 })
+      );
+      // Sentry 2.16.5: a stale pending state made every save throw until the app restarted.
+      existingSet._preparedState = 'update';
+      stubCollections({
+        existingTemplate,
+        rowsByTable: {
+          workout_template_exercises: [existingExercise],
+          workout_template_sets: [existingSet],
+        },
+      });
+
       await expect(
         WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' })
       ).resolves.toBe(existingTemplate);

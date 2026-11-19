@@ -4,6 +4,9 @@ import type { ImportWeightUnit } from '@/utils/workoutImport/types';
 /** Largest CSV the page reads, in characters: far above any hand-kept log, below a stuck tab. */
 export const MAX_CHECK_CHARS = 2_000_000;
 
+/** The note on the template's example row; a file that still has it holds a row to delete. */
+export const EXAMPLE_ROW_NOTE = 'Example row: delete this line';
+
 export interface LogDownload {
   key: 'pdfA4' | 'pdfLetter' | 'xlsx' | 'csv';
   /** The file in `public/downloads/`, written by `npm run generate-workout-log`. */
@@ -20,7 +23,7 @@ export const LOG_DOWNLOADS: readonly LogDownload[] = [
 ];
 
 export type LogCheck =
-  | { ok: true; workouts: number; sets: number; skipped: number }
+  | { ok: true; workouts: number; sets: number; skipped: number; exampleRow: boolean }
   | { ok: false; problem: 'empty' | 'tooLarge' | 'unreadable' | 'noRows' };
 
 /**
@@ -51,5 +54,11 @@ export function checkLogCsv(
     0
   );
 
-  return { ok: true, workouts: result.sessions.length, sets, skipped: result.skipped.length };
+  return {
+    ok: true,
+    workouts: result.sessions.length,
+    sets,
+    skipped: result.skipped.length,
+    exampleRow: text.includes(EXAMPLE_ROW_NOTE),
+  };
 }

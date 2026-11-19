@@ -2,7 +2,11 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
-import { checkLogCsv, LOG_DOWNLOADS } from '@/components/website/tools/workoutLogTemplateModel';
+import {
+  checkLogCsv,
+  EXAMPLE_ROW_NOTE,
+  LOG_DOWNLOADS,
+} from '@/components/website/tools/workoutLogTemplateModel';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const log = require('../generate-workout-log.js');
@@ -51,7 +55,12 @@ describe('generate-workout-log', () => {
       workouts: 1,
       sets: 1,
       skipped: 0,
+      exampleRow: true,
     });
+  });
+
+  it('keeps the example-row note the page looks for', () => {
+    expect(log.EXAMPLE_ROW[log.EXAMPLE_ROW.length - 1]).toBe(EXAMPLE_ROW_NOTE);
   });
 
   it('matches the files committed under public/downloads (rerun npm run generate-workout-log)', () => {

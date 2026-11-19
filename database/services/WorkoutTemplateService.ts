@@ -7,7 +7,7 @@ import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import type { Units } from '@/constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import type { RawWorkoutTemplate, RawWorkoutTemplateExercise } from '@/data/workoutTemplates';
-import { commitPrepared } from '@/database/commitPrepared';
+import { clearStalePending, commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
@@ -481,74 +481,73 @@ export class WorkoutTemplateService {
         : Promise.resolve([]),
     ]);
 
-    await commitPrepared(
-      database,
-      [
-        template,
-        ...existingExercises,
-        ...existingSets,
-        ...existingSchedules,
-        ...existingMemberships,
-      ],
-      async () => {
-        // Resolve plan membership BEFORE deciding schedules: calendar ownership depends on the
-        // outcome. A template with at least one active membership takes its weekdays from that
-        // membership, so writing standalone `schedules` for it too would leave two live calendar
-        // stores for one workout — dormant rows that silently resurrect if it later leaves the plan.
-        let membershipRecords: Model[] = [];
-        let activePlanIds: string[] = [];
+    const owned = [
+      template,
+      ...existingExercises,
+      ...existingSets,
+      ...existingSchedules,
+      ...existingMemberships,
+    ];
+    // Inside the writer nothing legitimately holds these pending, so a leftover state from an
+    // abandoned prepare would otherwise fail every save of this workout until the app restarts.
+    clearStalePending(owned);
 
-        if (data.planIds !== undefined) {
-          ({ activePlanIds, records: membershipRecords } =
-            await WorkoutPlanService.prepareSyncTemplateMemberships(templateId, data.planIds, now));
-        } else if (data.selectedDays.length > 0) {
-          // planIds omitted means "leave memberships alone", so read the current set. Only worth a
-          // query when there are days that would otherwise be written.
-          activePlanIds = await WorkoutPlanService.getActivePlanIdsForTemplate(templateId);
-        }
+    await commitPrepared(database, owned, async () => {
+      // Resolve plan membership BEFORE deciding schedules: calendar ownership depends on the
+      // outcome. A template with at least one active membership takes its weekdays from that
+      // membership, so writing standalone `schedules` for it too would leave two live calendar
+      // stores for one workout — dormant rows that silently resurrect if it later leaves the plan.
+      let membershipRecords: Model[] = [];
+      let activePlanIds: string[] = [];
 
-        // Joining a plan already retires the standalone schedules (the membership sync prepares
-        // them). Preparing the same row twice in one pass is the "pending changes" error.
-        const alreadyPrepared = new Set(membershipRecords.map((record) => record.id));
-        const softDelete = <T extends Model & { deletedAt?: number; updatedAt: number }>(
-          record: T
-        ) =>
-          record.prepareUpdate((draft) => {
-            draft.deletedAt = now;
-            draft.updatedAt = now;
-          });
-
-        return [
-          template.prepareUpdate((t) => {
-            t.name = data.name;
-            t.description = data.description || undefined;
-            t.workoutInsightsType =
-              data.workoutInsightsType != null
-                ? parseWorkoutInsightsType(data.workoutInsightsType)
-                : parseWorkoutInsightsType(t.workoutInsightsType);
-            t.type = data.type ?? t.type;
-            t.icon = data.icon ?? t.icon;
-            // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
-            t.weekDaysJson = undefined;
-            t.updatedAt = now;
-          }),
-          ...existingSchedules
-            .filter((schedule) => !alreadyPrepared.has(schedule.id))
-            .map(softDelete),
-          ...this.prepareTemplateExerciseGraph(
-            templateId,
-            data.exercises,
-            now,
-            existingExercises,
-            existingSets
-          ),
-          ...membershipRecords,
-          ...(activePlanIds.length === 0
-            ? this.prepareSchedules(templateId, data.selectedDays, now)
-            : []),
-        ];
+      if (data.planIds !== undefined) {
+        ({ activePlanIds, records: membershipRecords } =
+          await WorkoutPlanService.prepareSyncTemplateMemberships(templateId, data.planIds, now));
+      } else if (data.selectedDays.length > 0) {
+        // planIds omitted means "leave memberships alone", so read the current set. Only worth a
+        // query when there are days that would otherwise be written.
+        activePlanIds = await WorkoutPlanService.getActivePlanIdsForTemplate(templateId);
       }
-    );
+
+      // Joining a plan already retires the standalone schedules (the membership sync prepares
+      // them). Preparing the same row twice in one pass is the "pending changes" error.
+      const alreadyPrepared = new Set(membershipRecords.map((record) => record.id));
+      const softDelete = <T extends Model & { deletedAt?: number; updatedAt: number }>(record: T) =>
+        record.prepareUpdate((draft) => {
+          draft.deletedAt = now;
+          draft.updatedAt = now;
+        });
+
+      return [
+        template.prepareUpdate((t) => {
+          t.name = data.name;
+          t.description = data.description || undefined;
+          t.workoutInsightsType =
+            data.workoutInsightsType != null
+              ? parseWorkoutInsightsType(data.workoutInsightsType)
+              : parseWorkoutInsightsType(t.workoutInsightsType);
+          t.type = data.type ?? t.type;
+          t.icon = data.icon ?? t.icon;
+          // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
+          t.weekDaysJson = undefined;
+          t.updatedAt = now;
+        }),
+        ...existingSchedules
+          .filter((schedule) => !alreadyPrepared.has(schedule.id))
+          .map(softDelete),
+        ...this.prepareTemplateExerciseGraph(
+          templateId,
+          data.exercises,
+          now,
+          existingExercises,
+          existingSets
+        ),
+        ...membershipRecords,
+        ...(activePlanIds.length === 0
+          ? this.prepareSchedules(templateId, data.selectedDays, now)
+          : []),
+      ];
+    });
 
     return template;
   }

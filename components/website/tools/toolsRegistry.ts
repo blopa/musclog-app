@@ -17,6 +17,7 @@ export const TOOLS = [
   { key: 'netCarbs', routeKey: 'toolNetCarbs' },
   { key: 'progressiveOverload', routeKey: 'toolProgressiveOverload' },
   { key: 'deloadCalculator', routeKey: 'toolDeloadCalculator' },
+  { key: 'workoutLogTemplate', routeKey: 'toolWorkoutLogTemplate' },
 ] as const;
 
 export type ToolKey = (typeof TOOLS)[number]['key'];
