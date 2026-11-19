@@ -1,157 +1,190 @@
 /**
- * The bottom bar must switch tabs without stacking screens. Every app screen is a sibling in one
- * expo-router `Stack`, whose `navigate` pushes unless the target is already focused, so a bare
- * `navigate` per tap left 101 live screens after fifty rounds of Food → Workouts → Home and made
- * tab switches take ten seconds (docs/FIXES.md). These tests drive expo-router's own stack
- * reducer, so a router upgrade that changes either half of that story fails here.
+ * Switching between the main destinations must never stack screens. Before the tab navigator,
+ * every screen was a sibling in one expo-router `Stack` whose `navigate` pushes unless the target
+ * is focused, so fifty rounds of Food → Workouts → Home left 101 live screens and ten-second
+ * switches (docs/FIXES.md). These tests drive expo-router's own reducers (the vendored React
+ * Navigation 7 routers), so a router upgrade that changes any of this fails here.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import {
-  destinationNavigationKind,
   goHome,
   goToDestination,
   HOME_ROUTE,
   isHomePath,
 } from '@/components/navigation/destinationNavigation';
+import {
+  rewriteTabsAction,
+  singleTabsRouter,
+  TABS_ROUTE_NAME,
+} from '@/components/navigation/singleTabsRouter';
 
-// The reducer expo-router's `Stack` runs (vendored React Navigation 7), loaded from its build so
-// the test exercises the installed version rather than a copy of its rules.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// Loaded from expo-router's build so the test exercises the installed routers, not a copy.
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { StackRouter } = require('expo-router/build/react-navigation/routers/StackRouter');
+const { TabRouter } = require('expo-router/build/react-navigation/routers/TabRouter');
+/* eslint-enable @typescript-eslint/no-require-imports */
 
-type Route = { key: string; name: string };
-type StackState = {
-  type: 'stack';
+type Route = { key: string; name: string; state?: unknown };
+type State = {
+  type: string;
   key: string;
   stale: false;
   index: number;
   routeNames: string[];
   routes: Route[];
+  history?: unknown[];
+};
+type Reducer = {
+  getStateForAction: (state: State, action: object, options: object) => unknown;
 };
 
 const HOME = 'index';
 const FOOD = 'nutrition/food';
 const WORKOUTS = 'workout/workouts';
-const ROUTE_NAMES = [HOME, FOOD, WORKOUTS];
-const ROUTE_FOR: Record<string, string> = {
-  [FOOD]: '/app/nutrition/food',
-  [WORKOUTS]: '/app/workout/workouts',
-};
+const SESSION = 'workout/workout-session';
+const SUMMARY = 'workout/workout-summary';
 
-const router = StackRouter({});
-const options = { routeNames: ROUTE_NAMES, routeParamList: {}, routeGetIdList: {} };
-
-function initialState(): StackState {
-  return {
-    type: 'stack',
-    key: 'stack-test',
-    stale: false,
-    index: 0,
-    routeNames: ROUTE_NAMES,
-    routes: [{ key: 'index-initial', name: HOME }],
-  };
-}
-
-function reduce(state: StackState, type: 'NAVIGATE' | 'POP_TO' | 'REPLACE', name: string) {
-  const result = router.getStateForAction(state, { type, payload: { name } }, options);
-  if (!result?.state) {
-    throw new Error(`${type} ${name} was not handled`);
+function reduce(router: Reducer, state: State, action: object, routeNames: string[]): State {
+  const result = router.getStateForAction(state, action, {
+    routeNames,
+    routeParamList: {},
+    routeGetIdList: {},
+  }) as { state?: State } | string | null;
+  if (!result || typeof result === 'string' || !result.state) {
+    throw new Error(`${JSON.stringify(action)} was not handled`);
   }
 
-  return result.state as StackState;
+  return result.state;
 }
 
-const focused = (state: StackState) => state.routes[state.index].name;
-
-/** What a bar tap does under the rule in `destinationNavigation.ts`. */
-function tapWithRule(state: StackState, name: string): StackState {
-  if (name === HOME) {
-    return reduce(state, 'POP_TO', HOME);
-  }
-
-  const kind = destinationNavigationKind(focused(state) === HOME);
-  return reduce(state, kind === 'push' ? 'NAVIGATE' : 'POP_TO', name);
-}
-
-describe('bottom bar tab switching', () => {
-  it('a bare navigate per tap stacks a new screen every time (the reason for the rule)', () => {
-    // The old bar: Food replaced the current screen, everything else used navigate.
-    let state = initialState();
+describe('the old flat stack (why the tabs exist)', () => {
+  it('a bare navigate per tap stacks a new screen every time', () => {
+    const names = [HOME, FOOD, WORKOUTS];
+    const stack = StackRouter({});
+    let state: State = {
+      type: 'stack',
+      key: 'stack-flat',
+      stale: false,
+      index: 0,
+      routeNames: names,
+      routes: [{ key: 'home-0', name: HOME }],
+    };
     for (let round = 0; round < 50; round++) {
-      state = reduce(state, 'REPLACE', FOOD);
-      state = reduce(state, 'NAVIGATE', WORKOUTS);
-      state = reduce(state, 'NAVIGATE', HOME);
+      state = reduce(stack, state, { type: 'REPLACE', payload: { name: FOOD } }, names);
+      state = reduce(stack, state, { type: 'NAVIGATE', payload: { name: WORKOUTS } }, names);
+      state = reduce(stack, state, { type: 'NAVIGATE', payload: { name: HOME } }, names);
     }
 
     expect(state.routes.length).toBeGreaterThan(100);
   });
+});
 
-  it('keeps the stack at Home plus one destination however fast the taps come', () => {
-    let state = initialState();
-    let deepest = 0;
+describe('the tab navigator', () => {
+  const names = [HOME, FOOD, WORKOUTS];
+  const tabs = TabRouter({ backBehavior: 'firstRoute' });
+  const initial = (): State => ({
+    type: 'tab',
+    key: 'tab-test',
+    stale: false,
+    index: 0,
+    routeNames: names,
+    routes: names.map((name) => ({ key: `${name}-key`, name })),
+    history: [{ type: 'route', key: `${HOME}-key` }],
+  });
+
+  it('switches between the same routes however fast the taps come', () => {
+    let state = initial();
     for (let round = 0; round < 50; round++) {
-      for (const name of [FOOD, WORKOUTS, HOME, WORKOUTS, FOOD, FOOD, HOME]) {
-        state = tapWithRule(state, name);
-        deepest = Math.max(deepest, state.routes.length);
-        expect(focused(state)).toBe(name);
+      for (const name of [FOOD, WORKOUTS, HOME, WORKOUTS, FOOD, HOME]) {
+        state = reduce(tabs, state, { type: 'NAVIGATE', payload: { name } }, names);
+        expect(state.routes[state.index].name).toBe(name);
       }
     }
 
-    expect(deepest).toBeLessThanOrEqual(2);
-    expect(state.routes.map((route) => route.name)).toEqual([HOME]);
+    // Same three routes with the same keys: each tab's screen is reused, never rebuilt.
+    expect(state.routes).toEqual(initial().routes);
   });
 
-  it('returns to the original Home instead of mounting a new one', () => {
-    let state = initialState();
-    state = tapWithRule(state, WORKOUTS);
-    state = tapWithRule(state, FOOD);
-    expect(state.routes.map((route) => route.name)).toEqual([HOME, FOOD]);
+  it('goes back to Home from another tab, and leaves the app from Home', () => {
+    let state = reduce(tabs, initial(), { type: 'NAVIGATE', payload: { name: FOOD } }, names);
+    state = reduce(tabs, state, { type: 'GO_BACK' }, names);
+    expect(state.routes[state.index].name).toBe(HOME);
 
-    state = tapWithRule(state, HOME);
-    expect(state.routes).toEqual([{ key: 'index-initial', name: HOME }]);
+    const fromHome = tabs.getStateForAction(state, { type: 'GO_BACK' }, { routeNames: names });
+    expect(typeof fromHome === 'string' || fromHome === null).toBe(true);
+  });
+});
+
+describe('singleTabsRouter (one tab navigator in the outer stack)', () => {
+  const names = [TABS_ROUTE_NAME, SESSION, SUMMARY];
+  const original = StackRouter({});
+  const stack: Reducer = { ...original, ...singleTabsRouter(original as never) };
+  const nestedTabs = { type: 'tab', index: 1, routes: [{ name: FOOD }] };
+  // expo-router marks the nested state it resolves; the router ignores unmarked state.
+  const resolvedNestedTabs = { ...nestedTabs, __internal__routerActionState: true };
+  const withTabsBelow = (): State => ({
+    type: 'stack',
+    key: 'stack-app',
+    stale: false,
+    index: 2,
+    routeNames: names,
+    routes: [
+      { key: 'tabs-0', name: TABS_ROUTE_NAME },
+      { key: 'session-0', name: SESSION },
+      { key: 'summary-0', name: SUMMARY },
+    ],
   });
 
-  it('goes back to a destination already in the stack and drops the screens above it', () => {
-    // Workouts, then a pushed detail screen on top of it (here: Food standing in for it).
-    let state = tapWithRule(initialState(), WORKOUTS);
-    state = reduce(state, 'NAVIGATE', FOOD);
-    state = tapWithRule(state, WORKOUTS);
+  it.each(['NAVIGATE', 'PUSH', 'REPLACE'])(
+    '%s to a tab from a pushed screen goes back to the tab navigator already there',
+    (type) => {
+      const state = reduce(
+        stack,
+        withTabsBelow(),
+        { type, payload: { name: TABS_ROUTE_NAME, state: resolvedNestedTabs } },
+        names
+      );
 
-    expect(state.routes.map((route) => route.name)).toEqual([HOME, WORKOUTS]);
+      expect(state.routes.map((route) => route.key)).toEqual(['tabs-0']);
+      expect(state.routes[0].state).toEqual(nestedTabs);
+    }
+  );
+
+  it('creates the tab navigator normally when there is none yet (a cold deep link)', () => {
+    const state = reduce(
+      stack,
+      { ...withTabsBelow(), index: 0, routes: [{ key: 'summary-0', name: SUMMARY }] },
+      { type: 'REPLACE', payload: { name: TABS_ROUTE_NAME } },
+      names
+    );
+
+    expect(state.routes.map((route) => route.name)).toEqual([TABS_ROUTE_NAME]);
+    expect(state.routes[0].key).not.toBe('summary-0');
   });
 
-  it('brings Home back when the stack has none (a cold deep link)', () => {
-    let state = reduce(initialState(), 'REPLACE', FOOD);
-    state = tapWithRule(state, HOME);
+  it('leaves every other screen alone', () => {
+    const action = { type: 'NAVIGATE', payload: { name: SESSION } };
+    expect(rewriteTabsAction(withTabsBelow(), action)).toBe(action);
 
-    expect(state.routes.map((route) => route.name)).toEqual([HOME]);
+    const goBack = { type: 'GO_BACK' };
+    expect(rewriteTabsAction(withTabsBelow(), goBack)).toBe(goBack);
+  });
+
+  it('ignores a tab navigator that is only preloaded above the focused screen', () => {
+    const state = { index: 0, routes: [{ name: SESSION }, { name: TABS_ROUTE_NAME }] };
+    const action = { type: 'NAVIGATE', payload: { name: TABS_ROUTE_NAME } };
+    expect(rewriteTabsAction(state, action)).toBe(action);
   });
 });
 
 describe('goToDestination / goHome', () => {
-  const fakeRouter = () => ({ navigate: jest.fn(), dismissTo: jest.fn() });
-
-  it('pushes only from Home', () => {
-    const r = fakeRouter();
-    goToDestination(r, ROUTE_FOR[FOOD], true);
-    expect(r.navigate).toHaveBeenCalledWith(ROUTE_FOR[FOOD]);
-    expect(r.dismissTo).not.toHaveBeenCalled();
-  });
-
-  it('pops to or replaces with the destination from anywhere else', () => {
-    const r = fakeRouter();
-    goToDestination(r, ROUTE_FOR[WORKOUTS], false);
-    expect(r.dismissTo).toHaveBeenCalledWith(ROUTE_FOR[WORKOUTS]);
-    expect(r.navigate).not.toHaveBeenCalled();
-  });
-
-  it('goes Home by dismissing to it', () => {
-    const r = fakeRouter();
-    goHome(r);
-    expect(r.dismissTo).toHaveBeenCalledWith(HOME_ROUTE);
-    expect(r.navigate).not.toHaveBeenCalled();
+  it('navigates, which the tab navigator turns into a switch', () => {
+    const router = { navigate: jest.fn() };
+    goToDestination(router, '/app/nutrition/food');
+    goHome(router);
+    expect(router.navigate.mock.calls).toEqual([['/app/nutrition/food'], [HOME_ROUTE]]);
   });
 
   it('recognises the Home path with or without a trailing slash', () => {
@@ -161,14 +194,48 @@ describe('goToDestination / goHome', () => {
   });
 });
 
-describe('navigation surfaces route through the rule', () => {
+describe('wiring', () => {
   const root = join(__dirname, '..', '..', '..');
+  const source = (file: string) => readFileSync(join(root, file), 'utf8');
 
   it.each(['components/NavigationMenu.tsx', 'components/modals/UserMenuModal.tsx'])(
-    '%s never calls the router directly',
+    '%s reaches destinations through destinationNavigation, never the router',
     (file) => {
-      const source = readFileSync(join(root, file), 'utf8');
-      expect(source).not.toMatch(/router\.(navigate|push|replace)\(/);
+      expect(source(file)).not.toMatch(/router\.(navigate|push|replace|dismissTo)\(/);
     }
   );
+
+  it('the outer stack runs singleTabsRouter', () => {
+    expect(source('app/app/_layout.tsx')).toMatch(/UNSTABLE_router=\{singleTabsRouter\}/);
+  });
+
+  it('declares every screen of the (tabs) folder, or expo-router redirects it to Home', () => {
+    const tabsDir = join(root, 'app', 'app', '(tabs)');
+    const screens: string[] = [];
+    const walk = (dir: string, prefix: string) => {
+      for (const entry of require('fs').readdirSync(dir, { withFileTypes: true })) {
+        if (entry.isDirectory()) {
+          walk(join(dir, entry.name), `${prefix}${entry.name}/`);
+        } else if (/\.tsx$/.test(entry.name) && !entry.name.startsWith('_')) {
+          screens.push(prefix + entry.name.replace(/(\.web|\.native)?\.tsx$/, ''));
+        }
+      }
+    };
+    walk(tabsDir, '');
+
+    const layout = source('app/app/(tabs)/_layout.tsx');
+    const declared = [...layout.matchAll(/^\s*'([^']+)',$/gm)].map((m) => m[1]);
+    expect([...new Set(screens)].sort()).toEqual([...declared].sort());
+    expect(declared[0]).toBe('index');
+  });
+
+  it('every bar destination is a tab of the tab navigator', () => {
+    const navDestinations = source('components/navigation/navDestinations.ts');
+    const routes = [...navDestinations.matchAll(/route: '\/app\/([^']+)'/g)].map((m) => m[1]);
+    expect(routes.length).toBeGreaterThan(5);
+    // The Weekly Review route is a constant there (WEEKLY_REVIEW_ROUTE), so it is named here.
+    for (const route of [...routes, 'index', 'weekly-review']) {
+      expect(() => source(`app/app/(tabs)/${route}.tsx`)).not.toThrow();
+    }
+  });
 });

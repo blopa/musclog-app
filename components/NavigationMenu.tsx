@@ -175,9 +175,8 @@ export const NavigationMenu = memo(function NavigationMenu({
         isPathActive(slot.activePath ?? destination) ||
         (!!alsoActiveFor && isPathActive(alsoActiveFor));
 
-      // Never a bare `navigate`: it pushes a new copy of the screen on every tap (see
-      // `destinationNavigation.ts`), which is how switching tabs piled up 100+ live screens.
-      const go = () => goToDestination(router, destination, isHomePath(pathname));
+      // Through `destinationNavigation.ts`, the one place that says how a tab is reached.
+      const go = () => goToDestination(router, destination);
 
       return (
         <NavSlotButton
@@ -209,7 +208,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         />
       );
     },
-    [isPathActive, isCycleActive, onCoachPress, pathname, router, t, theme, weeklyReview?.ready]
+    [isPathActive, isCycleActive, onCoachPress, router, t, theme, weeklyReview?.ready]
   );
 
   const homeActive = isPathActive('/');

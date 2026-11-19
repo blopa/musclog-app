@@ -89,6 +89,7 @@ import { nutritionDayShareKey } from '@/database/share/buildNutritionDayShare';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { useLocalToday } from '@/hooks/useLocalToday';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFastingDay } from '@/hooks/useFastingDay';
 import { useFoodDiarySelection } from '@/hooks/useFoodDiarySelection';
@@ -107,8 +108,10 @@ import { startCoachReply } from '@/services/coachReplyStream';
 import {
   calendarDateFromRecordDay,
   formatLocalCalendarDayIso,
+  followTodayAfterRollover,
   formatLocalCalendarDayNumericIntl,
   localCalendarDayFromParam,
+  localDayStartMs,
 } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
@@ -234,6 +237,18 @@ export default function FoodScreen() {
     setAppliedDateParam(dateParam);
     if (dateParam) {
       setSelectedDate(localCalendarDayFromParam(dateParam));
+    }
+  }
+
+  // The diary is a tab kept mounted while hidden, so it can outlive midnight: if it was showing
+  // today, it moves to the new today instead of reopening on yesterday.
+  const today = useLocalToday();
+  const [seenToday, setSeenToday] = useState(today);
+  if (today !== seenToday) {
+    setSeenToday(today);
+    const next = followTodayAfterRollover(localDayStartMs(selectedDate), seenToday, today);
+    if (next) {
+      setSelectedDate(next);
     }
   }
 

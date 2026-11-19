@@ -4,7 +4,7 @@ import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 
 /**
  * @deprecated The Weekly Review lives at {@link WEEKLY_REVIEW_ROUTE} (`/app/weekly-review`,
- * `app/app/weekly-review.tsx`). This route exists ONLY to forward the old address and is slated
+ * `app/app/(tabs)/weekly-review.tsx`). This route exists ONLY to forward the old address and is slated
  * for deletion. Do not link to it, add features to it, or build a new URL from it.
  *
  * ## Why it exists
@@ -36,7 +36,7 @@ import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
  *   2. `LEGACY_CHECKIN_ROUTE` in `constants/weeklyReviewRoute.ts`, and the sentence in that file's
  *      doc block that says the old route "survives only as a redirect". (The constant is documentation
  *      only: nothing imports it.)
- *   3. The "Weekly Review screen is `app/app/weekly-review.tsx`..." paragraph in `AGENTS.md` that says
+ *   3. The "Weekly Review screen is `app/app/(tabs)/weekly-review.tsx`..." paragraph in `AGENTS.md` that says
  *      `checkin-list.tsx` is "only a `<Redirect>`... keep it". It then becomes false.
  *   4. The "old links and notifications still open it" clause in `docs/CURRENT_FEATURES.md`.
  *

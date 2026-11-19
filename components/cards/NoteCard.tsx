@@ -7,7 +7,7 @@ import type { NoteListItemProps } from './noteListItem';
 
 /**
  * The highlighted tile for the "Latest" section (the section header above it already says
- * so — see app/app/notes.tsx — so this card doesn't repeat it). Sits in a 2-column grid;
+ * so — see app/app/(tabs)/notes.tsx — so this card doesn't repeat it). Sits in a 2-column grid;
  * elevation + a faint accent rim carry the hierarchy against the flat `NoteRow`s below.
  */
 export function NoteCard({ note, relativeTime, onPress, onMenuPress }: NoteListItemProps) {

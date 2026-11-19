@@ -12,7 +12,7 @@ jest.mock('@/utils/calendarDate', () => ({
 }));
 
 /**
- * The throttle used to be a `let` in `app/app/index.tsx`, where none of this was reachable
+ * The throttle used to be a `let` in `app/app/(tabs)/index.tsx`, where none of this was reachable
  * from a test. Re-importing per case is how each one gets a fresh clock.
  */
 function loadModule(): typeof import('../dailyStepsRefresh') {

@@ -28,6 +28,7 @@ import {
   parseLocalCalendarDate,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
+  followTodayAfterRollover,
 } from '@/utils/calendarDate';
 
 describe('calendarDate', () => {
@@ -219,5 +220,23 @@ describe('localCalendarDayFromParam', () => {
     for (const param of [undefined, '', 'yesterday', '2026-02-30', '2026-13-01', '26-03-08']) {
       expect(formatLocalCalendarDayIso(localCalendarDayFromParam(param))).toBe(today);
     }
+  });
+});
+
+describe('followTodayAfterRollover', () => {
+  const yesterday = new Date(2026, 10, 18).getTime();
+  const today = new Date(2026, 10, 19).getTime();
+  const lastWeek = new Date(2026, 10, 12).getTime();
+
+  it('moves a screen that was showing today to the new today', () => {
+    expect(followTodayAfterRollover(yesterday, yesterday, today)?.getTime()).toBe(today);
+  });
+
+  it('keeps a day the person picked on purpose', () => {
+    expect(followTodayAfterRollover(lastWeek, yesterday, today)).toBeNull();
+  });
+
+  it('does nothing while the day has not changed', () => {
+    expect(followTodayAfterRollover(today, today, today)).toBeNull();
   });
 });

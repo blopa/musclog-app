@@ -21,9 +21,15 @@ function routeFiles(directory: string, prefix = ''): string[] {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     if (entry.isDirectory()) {
       // `test/` holds developer fixtures, not screens a person can reach.
-      return entry.name === 'test'
-        ? []
-        : routeFiles(path.join(directory, entry.name), `${prefix}${entry.name}/`);
+      if (entry.name === 'test') {
+        return [];
+      }
+      // A route group such as `(tabs)` adds no URL segment, so it is not part of the route name.
+      const isGroup = /^\(.*\)$/.test(entry.name);
+      return routeFiles(
+        path.join(directory, entry.name),
+        isGroup ? prefix : `${prefix}${entry.name}/`
+      );
     }
 
     return entry.name.endsWith('.tsx')

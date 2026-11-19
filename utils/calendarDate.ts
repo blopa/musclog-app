@@ -609,3 +609,20 @@ export function formatLocalInstantIntl(instantMs: number, localeTag: string): st
     timeStyle: 'short',
   }).format(instantMs);
 }
+
+/**
+ * A screen kept mounted across midnight (a hidden tab, `utils/tabKeepAlive.ts`) still holds the
+ * day it was built on. When it was showing "today", it should show the new today; a day the
+ * person picked on purpose stays. Returns the day to move to, or `null` to stay.
+ */
+export function followTodayAfterRollover(
+  selectedDayMs: number,
+  previousTodayMs: number,
+  todayMs: number
+): Date | null {
+  if (todayMs === previousTodayMs || selectedDayMs !== previousTodayMs) {
+    return null;
+  }
+
+  return new Date(todayMs);
+}

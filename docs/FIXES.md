@@ -28,15 +28,23 @@ appeared mid-session. Finishing a workout leaked the same way on a smaller scale
 
 ### Fix
 
-`components/navigation/destinationNavigation.ts` is the one rule for reaching a top-level
-destination: Home is `dismissTo('/app')` (back to the Home already open, unmounting everything above
-it), a destination is pushed only from Home, and from anywhere else it is `dismissTo(route)` (back to
-it if it is in the stack, otherwise it replaces the current screen). The stack therefore stays at Home
-plus one destination however fast the taps come. `NavigationMenu`, `UserMenuModal`, the workout
-summary's "Go home" and the comeback notification use it, and the food slot's `replace` flag is gone.
-`components/navigation/__tests__/destinationNavigation.test.ts` runs both the old and the new taps
-through expo-router's stack reducer (the old way must still grow past 100 screens, the new way must stay
-at two or fewer) and fails if the bar or the account menu calls the router directly.
+The main destinations are now tabs of one tab navigator (`app/app/(tabs)/`), so switching shows the
+screen that is already built instead of stacking a new one, the way Musclog 1.x's drawer did. The
+outer stack's `singleTabsRouter` turns any navigation to the tabs from a pushed screen (a live
+workout, its summary, a notification tap) into "back to the tab navigator already there", so a
+second one cannot be mounted. `components/navigation/destinationNavigation.ts` is the one place the
+bar, the account menu and "back to Home" reach a destination. Fifty rounds of Food, Workouts, Home
+now leave the same three tab routes with the same keys.
+
+Hidden tabs stay mounted so coming back is instant, but only the most recently used four (two on a
+phone with about 3 GB or less; all hidden ones are dropped on an iOS memory warning), which bounds
+what a tab costs: its memory, and the database queries it keeps running while hidden. Because a
+mounted tab outlives its first render, the food diary and Weekly Review now follow new route params
+and the diary follows midnight (they used to read both only on mount).
+
+`components/navigation/__tests__/destinationNavigation.test.ts` runs the old flat stack (it must
+still grow past 100 screens), the tab router, and the stack with `singleTabsRouter` through
+expo-router's own reducers, and checks that every screen in `(tabs)/` is declared in its layout.
 
 ## Google Analytics received no data at all (2026-11-19)
 
@@ -1113,7 +1121,7 @@ that it was already broken for every user, imported data or not.
 
 ### Cause
 
-The configurable-home-actions branch was merged with the feature only half present. `app/app/index.tsx`
+The configurable-home-actions branch was merged with the feature only half present. `app/app/(tabs)/index.tsx`
 gained two `useMemo` calls without the matching `react` import, `VisualSettingsModal.tsx` called
 `isHomeActionAvailable` without importing it, and the entire persistence chain behind
 `useSettings().homeActions` was absent: no `HOME_ACTIONS_SETTING_TYPE`, no

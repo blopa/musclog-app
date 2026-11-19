@@ -8,7 +8,7 @@ import type { MealType } from '@/database/models/NutritionLog';
  * copying half of an AI-generated or saved meal would leave a group that no longer
  * adds up, so a group is always all-or-nothing. Loose logs stay individual rows.
  * This mirrors how the diary itself splits a day (`ungroupedByType` vs
- * `mealGroupsByType` in `app/app/nutrition/food.tsx`).
+ * `mealGroupsByType` in `app/app/(tabs)/nutrition/food.tsx`).
  *
  * Selection is tracked as the set of *deselected* row ids rather than selected ones,
  * so "everything ticked" is the natural empty state and rows that arrive later (a

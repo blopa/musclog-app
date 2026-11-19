@@ -15,7 +15,7 @@ function code(...segments: string[]): string {
  */
 describe('year-in-review card on Home', () => {
   it('is mounted once by the home screen, which reads no year-review data itself', () => {
-    const screen = code('app', 'app', 'index.tsx');
+    const screen = code('app', 'app', '(tabs)', 'index.tsx');
 
     expect([...screen.matchAll(/<YearInReviewCard\b/g)]).toHaveLength(1);
     expect(screen).not.toMatch(

@@ -116,7 +116,7 @@ target.
 - **Evidence**: `components/modals/FullScreenModal.tsx` is an RN `Modal` with
   `animationType="slide"` and an `ArrowLeft` close button. 84 files use it — Food details, Add food
   to Breakfast, Exercises, Nutrition log, Past workout detail, Past workouts history, Body metrics,
-  Log meal, Add entry, Select time. `app/app/index.tsx` alone imports about 14 modals.
+  Log meal, Add entry, Select time. `app/app/(tabs)/index.tsx` alone imports about 14 modals.
 - **Why it reads as web**: the motion says "sheet", the arrow says "page", and neither gesture
   works (no swipe down, no swipe back). It behaves like a web overlay with a fake back button.
 - **Before**: slides up from the bottom, ← at top left, no gestures, not deep-linkable.
@@ -176,7 +176,7 @@ target.
 ### U5 — Every list row is its own card with a ⋮ menu
 
 - **Evidence**: food diary rows (`components/cards/FoodItemCard.tsx` and the diary in
-  `app/app/nutrition/food.tsx`), Recent foods on Home, Nutrition log, Add exercise and Replace
+  `app/app/(tabs)/nutrition/food.tsx`), Recent foods on Home, Nutrition log, Add exercise and Replace
   exercise render each row as a separate rounded, bordered box with a vertical ⋮ button. No list row
   has swipe actions (the one `Swipeable` match, `FoodInfoCard.tsx`, is a carousel). `ListGroup` /
   `ListRow` already exist and Settings uses them.
@@ -195,9 +195,9 @@ target.
 ### U6 — Home and Food are stacks of dashboard cards with duplicated content and competing actions
 
 - **Evidence**:
-  - **Home** (`app/app/index.tsx`): hero card, stat strip, two large tiles (Start workout / Track
+  - **Home** (`app/app/(tabs)/index.tsx`): hero card, stat strip, two large tiles (Start workout / Track
     food), Weekly Review card, recent-food cards, a dashed "Add food" button, recent workouts.
-  - **Food** (`app/app/nutrition/food.tsx`): the same hero card, the same Weekly Review card, and a
+  - **Food** (`app/app/(tabs)/nutrition/food.tsx`): the same hero card, the same Weekly Review card, and a
     2×2 grid of outlined buttons (Scan barcode, AI camera, My meals, More options), then the diary.
   - When a review is due, the Weekly Review card appears on Home, Food and Workouts.
   - Home offers four ways to log food: the camera button, the Track food tile, "Add food", and the
@@ -217,7 +217,7 @@ target.
 
 ### U7 — Progress opens on number tiles, not a chart, and some figures undermine trust
 
-- **Evidence** (`app/app/progress.tsx`): range pills (7D … ALL) scroll sideways and clip "ALL";
+- **Evidence** (`app/app/(tabs)/progress.tsx`): range pills (7D … ALL) scroll sideways and clip "ALL";
   "Weekly averages" is a single switch in its own card; the first screen is centred stat tiles and
   the weight trend starts below the fold; "Empirical TDEE 582" sits next to "Statistical TDEE 2598"
   with no explanation.

@@ -1,4 +1,4 @@
-import { usePathname, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Bug, X } from 'lucide-react-native';
 import { createElement, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
-import { goToDestination, isHomePath } from '@/components/navigation/destinationNavigation';
+import { goToDestination } from '@/components/navigation/destinationNavigation';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
@@ -82,7 +82,6 @@ export function UserMenuModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const pathname = usePathname();
   const { rawSlots, isCycleActive } = useNavigationItems();
 
   const isInNav = (item: string) =>
@@ -127,8 +126,7 @@ export function UserMenuModal({
     .map((item) => {
       const { icon: Icon, menuLabelKey, route } = NAV_DESTINATIONS[item];
       const navigate =
-        pressHandlerOverrides[item] ??
-        (route ? () => goToDestination(router, route, isHomePath(pathname)) : null);
+        pressHandlerOverrides[item] ?? (route ? () => goToDestination(router, route) : null);
 
       if (!navigate) {
         return null;

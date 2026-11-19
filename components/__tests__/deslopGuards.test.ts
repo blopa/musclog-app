@@ -307,7 +307,7 @@ describe('Phase 5: Home and the hero surfaces', () => {
   });
 
   it('opens Home on the date, not a greeting or the version string', () => {
-    const home = stripComments(readFileSync(join(root, 'app/app/index.tsx'), 'utf8'));
+    const home = stripComments(readFileSync(join(root, 'app/app/(tabs)/index.tsx'), 'utf8'));
     expect(home).not.toMatch(/home\.greeting|getTimeBasedGreeting|packageJson/);
     for (const locale of LOCALES) {
       const keys = localeStrings(locale).map(([key]) => key);
@@ -316,7 +316,7 @@ describe('Phase 5: Home and the hero surfaces', () => {
   });
 
   it('shows the compact Weekly Review card on Home only while a review is waiting', () => {
-    const home = stripComments(readFileSync(join(root, 'app/app/index.tsx'), 'utf8'));
+    const home = stripComments(readFileSync(join(root, 'app/app/(tabs)/index.tsx'), 'utf8'));
     expect(home).toMatch(/<WeeklyReviewCard compact quietUntilReady \/>/);
   });
 
@@ -325,7 +325,7 @@ describe('Phase 5: Home and the hero surfaces', () => {
       readFileSync(join(root, 'components/cards/DailySummaryCard/DailySummaryCard.tsx'), 'utf8')
     );
     expect(card).not.toMatch(/Math\.round\((calorieProgress|macro\.progress)\)\)\}%/);
-    const home = stripComments(readFileSync(join(root, 'app/app/index.tsx'), 'utf8'));
+    const home = stripComments(readFileSync(join(root, 'app/app/(tabs)/index.tsx'), 'utf8'));
     expect(home).toMatch(/cardShowsEaten=\{homeSummaryCard !== 'weekly_streak'\}/);
   });
 
@@ -341,7 +341,7 @@ describe('Phase 5: Home and the hero surfaces', () => {
   });
 
   it('shows the cycle day once, inside the wheel', () => {
-    const cycle = stripComments(readFileSync(join(root, 'app/app/cycle.tsx'), 'utf8'));
+    const cycle = stripComments(readFileSync(join(root, 'app/app/(tabs)/cycle.tsx'), 'utf8'));
     expect(cycle).not.toMatch(/dayCounter|focus\.currentPhase/);
   });
 });
@@ -410,7 +410,7 @@ const EM_DASH_ALLOWLIST = [
 const EXCLAMATION_CEILING = 2;
 /** Sparkles means AI. Every file here draws it on an AI affordance only. */
 const SPARKLES_ALLOWLIST = [
-  'app/app/nutrition/food.tsx',
+  'app/app/(tabs)/nutrition/food.tsx',
   'app/app/onboarding/musclog-api.tsx',
   'components/SmartCameraModePicker.tsx',
   'components/modals/AINotConfiguredModal.tsx',
@@ -532,16 +532,16 @@ describe('Phase 7: copy', () => {
 describe('Phase 8: screen headers and wayfinding', () => {
   const SCREENS: [string, string | null, string | null][] = [
     // [route file, destination it names (null: hides the bar), lockArea it passes (null: ungated)]
-    ['app/app/settings.tsx', null, null],
-    ['app/app/progress.tsx', null, '"progress"'],
-    ['app/app/profile.tsx', 'profile', null],
-    ['app/app/notes.tsx', 'notes', null],
-    ['app/app/cycle.tsx', 'cycle', '"cycle"'],
-    ['app/app/weekly-review.tsx', 'checkin', '{WEEKLY_REVIEW_LOCK_AREAS}'],
+    ['app/app/(tabs)/settings.tsx', null, null],
+    ['app/app/(tabs)/progress.tsx', null, '"progress"'],
+    ['app/app/(tabs)/profile.tsx', 'profile', null],
+    ['app/app/(tabs)/notes.tsx', 'notes', null],
+    ['app/app/(tabs)/cycle.tsx', 'cycle', '"cycle"'],
+    ['app/app/(tabs)/weekly-review.tsx', 'checkin', '{WEEKLY_REVIEW_LOCK_AREAS}'],
     ['app/app/comeback.tsx', null, '{COMEBACK_LOCK_AREAS}'],
     ['app/app/year-in-review.tsx', null, '{YEAR_IN_REVIEW_LOCK_AREAS}'],
-    ['app/app/workout/workouts.tsx', 'workouts', '"workout"'],
-    ['app/app/nutrition/food.tsx', 'food', '"nutrition"'],
+    ['app/app/(tabs)/workout/workouts.tsx', 'workouts', '"workout"'],
+    ['app/app/(tabs)/nutrition/food.tsx', 'food', '"nutrition"'],
     // The AI setup screens hide the bar and gate nothing: they hold no records, only answers.
     ['app/app/onboarding/ai-setup.tsx', null, null],
     ['app/app/onboarding/ai-provider.tsx', null, null],
