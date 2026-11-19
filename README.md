@@ -1,69 +1,54 @@
 <p align="center">
-    <a href="https://play.google.com/store/apps/details?id=com.werules.logger">
-        <img src="/assets/theme-icons/icon-bg-kinetic-depth.png" width="30%" alt="Musclog-logo">
-    </a>
+  <img src="screenshots/banner/en-US/banner.png" alt="Musclog: track your workouts and nutrition like a pro" width="100%">
 </p>
+
+<h1 align="center">Musclog – Lift, Log, Repeat</h1>
+
 <p align="center">
-    <h1 align="center">Musclog - Lift, Log, Repeat</h1>
-</p>
-<p align="center">
-    <em>Free, open-source workout and nutrition tracker. No account, no ads, your data stays on your phone.</em>
-</p>
-<p align="center">
-    <img src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=default&logo=TypeScript&logoColor=white" alt="TypeScript">
-    <img src="https://img.shields.io/badge/React_Native-61DAFB.svg?style=default&logo=React&logoColor=black" alt="React Native">
-    <img src="https://img.shields.io/badge/Expo-000020.svg?style=default&logo=Expo&logoColor=white" alt="Expo">
-    <img src="https://img.shields.io/badge/NativeWind-06B6D4.svg?style=default&logo=Tailwind-CSS&logoColor=white" alt="NativeWind">
+  <strong>A free, open-source workout and nutrition tracker. No account, no ads, works offline.</strong>
 </p>
 
 <p align="center">
-    <a href="https://play.google.com/store/apps/details?id=com.werules.logger">Google Play</a> ·
-    <a href="https://testflight.apple.com/join/mq3QMSHU">iOS (TestFlight)</a> ·
-    <a href="https://musclog.app/app">Try the web demo</a> ·
-    <a href="https://musclog.app">Website</a>
+  <a href="LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/badge/license-GPL--3.0-blue"></a>
+  <a href="https://github.com/blopa/musclog-app/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/blopa/musclog-app"></a>
+  <img alt="React Native + Expo" src="https://img.shields.io/badge/React_Native-Expo-000020">
+  <img alt="Platforms: Android, iOS, web" src="https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20web-lightgrey">
 </p>
 
-<br>
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.werules.logger"><b>Google Play</b></a> ·
+  <a href="https://testflight.apple.com/join/mq3QMSHU"><b>iOS (TestFlight)</b></a> ·
+  <a href="https://musclog.app/app"><b>Web demo</b></a> ·
+  <a href="https://musclog.app"><b>Website</b></a>
+</p>
 
----
+<p align="center">
+  <img src="screenshots/phone/screenshot-1.png" width="24%" alt="Home">
+  <img src="screenshots/phone/screenshot-10.png" width="24%" alt="Logging a workout">
+  <img src="screenshots/phone/screenshot-2.png" width="24%" alt="Food diary">
+  <img src="screenshots/phone/screenshot-5.png" width="24%" alt="Body metrics and weight trend">
+</p>
 
-## Overview
+Musclog logs your lifts and your food in one app. Data lives on your device (sensitive fields are encrypted), it works offline, and you can export it or move it to another phone without a cloud account.
 
-<div align="center">
-  <img src="screenshots/nutrition-tracking.jpg" alt="App Dashboard" width="400"/>
-  <img src="screenshots/workout-tracking.jpg" alt="Workout Logging" width="400"/>
-</div>
+- **Train:** plans, explained progression, plate math, rest timers, weekly review
+- **Eat:** food diary, barcode and label scanning, macros, and a calorie target that follows your weight trend
+- **Optional:** AI coaching with your own API key, cycle tracking, Health Connect and HealthKit
+- **Import:** Strong, Hevy and FitNotes CSV exports
 
-Musclog logs your lifts **and** your food in one app, with no account and no server to run. Everything is stored on your device (encrypted where it is sensitive), works offline, and can be exported or moved to another phone without the cloud.
+### What leaves your device
 
-- **Train:** workout plans, progression that explains every number it changes, plate math, rest timers and a weekly review.
-- **Eat:** food diary, barcode and label scanning, macros and an energy target that adapts to your real weight trend.
-- **Optional extras:** AI coaching with your own API key (or none at all), cycle tracking, Health Connect and HealthKit.
+Nothing is uploaded to a Musclog server. Some features contact third parties only when you use them:
 
-It is built with React Native and Expo (Android, iOS and web) and stores data locally with WatermelonDB.
+- Food search: Open Food Facts and USDA by default (the "All" source). USDA search needs an API key in the build (`EXPO_PUBLIC_USDA_API_KEY`); without one only Open Food Facts is used. You can pick a single source, the Musclog barcode database, or none in Settings → Basic settings.
+- AI coach and photo analysis: Google Gemini, OpenAI or Claude, using your own key, only if you enable it. There is also an opt-in Musclog free tier that forwards requests to Google Gemini; it asks for consent before it is turned on.
+- Crash reports (Sentry): on by default and sent only if the build includes a Sentry DSN; you can turn them off under Settings → Backups and data ("Anonymous bug report"). A report holds the error and where it happened, the app version and the device model; no name, email, workouts, food or body data.
 
-> **Note:** Kinetic Depth, Kinetic Light, Kinetic Shock, and Kinetic Volt are available under Settings →
-> Interface → Appearance. Choose one directly or let System follow your device's light/dark mode.
+### Get involved
 
-## Read the [blog post](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/) about how this app came to be.
+[Report a bug](https://github.com/blopa/musclog-app/issues/new/choose) · [Request a feature](https://github.com/blopa/musclog-app/issues/new/choose) · [Ask a question](https://github.com/blopa/musclog-app/discussions) · [Contributing](CONTRIBUTING.md)
 
----
-
-## Screenshots
-
-<div align="center">
-  <img src="screenshots/phone/screenshot-1.png" alt="Home overview" width="200"/>
-  <img src="screenshots/phone/screenshot-2.png" alt="Food diary" width="200"/>
-  <img src="screenshots/phone/screenshot-3.png" alt="Workout library" width="200"/>
-  <img src="screenshots/phone/screenshot-4.png" alt="Create workout" width="200"/>
-</div>
-
-<div align="center">
-  <img src="screenshots/phone/screenshot-5.png" alt="Body metrics" width="200"/>
-  <img src="screenshots/phone/screenshot-6.png" alt="Goals management" width="200"/>
-  <img src="screenshots/phone/screenshot-7.png" alt="AI coach chat" width="200"/>
-  <img src="screenshots/phone/screenshot-8.png" alt="Backups and data" width="200"/>
-</div>
+Licensed under [GPL-3.0](LICENSE). Bundled exercise data is CC0 (free-exercise-db).
 
 ---
 
@@ -183,8 +168,8 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 
 | Layer          | Technology                                                           |
 | -------------- | -------------------------------------------------------------------- |
-| Framework      | React Native 0.86 + Expo SDK / Router 57                             |
-| Language       | TypeScript 5.9                                                       |
+| Framework      | React Native 0.88 + Expo SDK / Router 58                             |
+| Language       | TypeScript 6.0                                                       |
 | Database       | WatermelonDB 0.28 (SQLite-backed, reactive)                          |
 | Styling        | NativeWind 4.2 (Tailwind CSS for React Native)                       |
 | Icons          | Lucide React Native                                                  |
@@ -208,7 +193,7 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 ## Repository Structure
 
 ```
-musclog/
+musclog-app/
 ├── app/
 │   ├── app/                    # Product app routes (native + web app)
 │   └── (website)/              # Public website and blog routes
@@ -242,15 +227,15 @@ musclog/
 
 ```bash
 # 1. Clone the repository
-git clone git@github.com:blopa/musclog-app.git
-cd musclog
+git clone https://github.com/blopa/musclog-app.git
+cd musclog-app
 
 # 2. Install dependencies
 npm install
 
 # 3. Configure environment variables
 cp .env.example .env
-# Edit .env to add optional API keys (see below)
+# Edit .env to add the optional USDA and Sentry keys (see below)
 
 # 4. Start the development server
 npm start
@@ -266,10 +251,10 @@ npm run web       # Web browser
 
 ### Environment Variables
 
-AI features are optional. To enable them, add your keys to `.env`:
+Every variable is optional. `.env` holds only the USDA food-search key and the Sentry settings:
 
 ```env
-# USDA api key
+# USDA api key (enables USDA food search; without it only Open Food Facts is searched)
 EXPO_PUBLIC_USDA_API_KEY=your_usda_key
 
 # Sentry error tracking (optional)
@@ -282,6 +267,8 @@ If you run a local release build and Sentry uploads fail with an auth token erro
 ```bash
 npx sentry-cli login
 ```
+
+AI features are not configured in `.env`. Add your own Gemini, OpenAI or Claude key in the app under AI settings (it is stored encrypted on the device), or turn on the Musclog free tier there.
 
 > For production builds, use [EAS Secrets](https://docs.expo.dev/eas/environment-variables/) instead of committing keys to version control.
 
@@ -353,18 +340,19 @@ npm run submit-ios                # Submit to App Store Connect
 - [DESIGN.md](docs/DESIGN.md): visual system and interaction standards
 - [FIXES.md](docs/FIXES.md): incidents, workarounds, and regression guardrails
 - [RESEARCH.md](docs/RESEARCH.md): consolidated technical and product research
+- [sdk-verification.md](docs/sdk-verification.md): widget bundle, web upgrade and signing checks for the Expo SDK
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or pull request. For larger changes, open an issue first to discuss the approach.
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup and the checks to run before a pull request. Bugs and feature requests go through the [issue templates](https://github.com/blopa/musclog-app/issues/new/choose); questions and ideas belong in [GitHub Discussions](https://github.com/blopa/musclog-app/discussions). For larger changes, open an issue first to discuss the approach. Everyone taking part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md); security problems go through [SECURITY.md](SECURITY.md).
 
 ---
 
 ## License
 
-This project is open source. See the [LICENSE](LICENSE) file for details.
+Musclog is licensed under the [GNU General Public License v3.0 or later](LICENSE); see [NOTICE](NOTICE) for the copyright notice.
 
 The bundled exercise data and photos come from [free-exercise-db](https://github.com/yuhonas/free-exercise-db), a public-domain project released under CC0.
 
@@ -382,9 +370,4 @@ The Google Play phone screenshots are composed with [Open Screenshot Generator](
 - [WatermelonDB Documentation](https://watermelondb.dev/)
 - [NativeWind Documentation](https://www.nativewind.dev/)
 
-SDK 58 verification: `npm run check-widget-bundles` builds and executes both isolated widget
-runtimes (the iOS half needs `npm run prebuild` on a Mac first, which regenerates the widget
-target's registry). After `npm run build-android-web`, `npm run test:upgrade:web` checks exported SEO,
-blog navigation, public controls, and fresh app seeding in Chromium. Set `MUSCLOG_TEST_PORT`
-when another local test server is already running. The iOS widget extension requires App Groups
-on both app identifiers and matching signing profiles.
+SDK verification steps: [docs/sdk-verification.md](docs/sdk-verification.md).

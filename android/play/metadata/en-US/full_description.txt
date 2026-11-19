@@ -1,6 +1,5 @@
-<b>Musclog - Lift, Log, Repeat</b>
-
-Musclog is a workout tracker and calorie counter in one free, open source app. Log your gym sessions and your food, follow your progress, and keep it all on your phone: no account, no ads, and logging works offline.
+<b>Log your workouts and your food in one app: no account, no ads, no subscription.</b>
+Musclog is a free, open source workout tracker and calorie counter. It suggests your next weight and reps from your last session, scans food barcodes, and works offline. Your data stays on your phone.
 
 <b>Nothing locked away</b>
 • Unlimited workout routines and plans, and your full history.
@@ -9,10 +8,10 @@ Musclog is a workout tracker and calorie counter in one free, open source app. L
 
 <b>Workout log and gym tracker</b>
 • Log sets, reps and weight in seconds, with a rest timer, warm-up sets, supersets and notes for every exercise.
+• Progressive overload made simple: Musclog suggests your next weight and reps and explains every number it changes. Pick double progression, linear or percentage-based rules, or keep full control.
 • Track effort with RPE or reps in reserve (RIR).
 • 870+ exercises with photos and target muscles, searchable in your language, or add your own.
 • Ready-made workout plans: Push Pull Legs, Upper/Lower, Full Body, PHUL, 5-day splits and short home or no-equipment routines. Or build your own weekly or rotating program.
-• Progressive overload made simple: Musclog suggests your next weight and reps from your last session and explains every number it changes. Pick double progression, linear or percentage-based rules, or keep full control.
 • Plate calculator for your gym's bar and plates, in kg or lb, per exercise if you like.
 • Swap an exercise when a machine is busy or something hurts, and let Musclog remember what to avoid.
 • Import your history from Strong, Hevy or FitNotes.

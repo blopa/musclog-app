@@ -1,6 +1,5 @@
-<b>Musclog - Lift, Log, Repeat</b>
-
-Musclog, tek bir ücretsiz ve açık kaynaklı uygulamada antrenman takibi ve kalori sayacıdır. Spor salonu antrenmanlarını ve yediklerini kaydet, ilerlemeni izle ve her şeyi telefonunda tut: hesap yok, reklam yok, kayıt internetsiz de çalışır.
+<b>Antrenmanlarını ve yediklerini tek uygulamada kaydet: hesap yok, reklam yok, abonelik yok.</b>
+Musclog, ücretsiz ve açık kaynaklı bir antrenman takibi ve kalori sayacıdır. Son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir, yiyecek barkodlarını tarar ve internetsiz çalışır. Verilerin telefonunda kalır.
 
 Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça.
 
@@ -11,10 +10,10 @@ Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Port
 
 <b>Antrenman günlüğü ve spor salonu takibi</b>
 • Setleri, tekrarları ve ağırlığı saniyeler içinde kaydet: dinlenme sayacı, ısınma setleri, süperset ve her egzersiz için notlarla.
+• Kademeli yüklenme basitleşti: Musclog son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir ve değiştirdiği her sayıyı açıklar. Çift ilerleme, doğrusal veya yüzdeye dayalı kuralları seç ya da tam kontrolü elinde tut.
 • Eforu RPE veya yedekte kalan tekrar (RIR) ile takip et.
 • Fotoğraflı ve hedef kaslı 870'ten fazla egzersiz, kendi dilinde aranabilir; ya da kendininkini ekle.
 • Hazır antrenman programları: Push Pull Legs, Üst/Alt, Full Body, PHUL, 5 günlük bölmeler ve evde ya da ekipmansız kısa rutinler. Ya da kendi haftalık veya döngüsel programını oluştur.
-• Kademeli yüklenme basitleşti: Musclog son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir ve değiştirdiği her sayıyı açıklar. Çift ilerleme, doğrusal veya yüzdeye dayalı kuralları seç ya da tam kontrolü elinde tut.
 • Salonunun bar ve plakaları için plaka hesaplayıcı, kg veya lb olarak, istersen egzersiz bazında.
 • Makine doluyken ya da bir yer ağrıyorken egzersizi değiştir; Musclog neyden kaçınacağını hatırlasın.
 • Geçmişini Strong, Hevy veya FitNotes'tan içe aktar.

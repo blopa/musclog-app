@@ -1,6 +1,5 @@
-<b>Musclog - Lift, Log, Repeat</b>
-
-Musclog is een fitnesslogboek en calorieënteller in één gratis, open source app. Log je trainingen in de sportschool en je eten, volg je voortgang en houd alles op je telefoon: geen account, geen advertenties en loggen werkt offline.
+<b>Log je trainingen en je eten in één app: geen account, geen advertenties en geen abonnement.</b>
+Musclog is een gratis, open source fitnesslogboek en calorieënteller. De app stelt je volgende gewicht en herhalingen voor op basis van je laatste training, scant barcodes van voedsel en werkt offline. Je gegevens blijven op je telefoon.
 
 <b>Niets op slot</b>
 • Onbeperkt trainingsschema's en -routines, en je volledige geschiedenis.
@@ -9,10 +8,10 @@ Musclog is een fitnesslogboek en calorieënteller in één gratis, open source a
 
 <b>Trainingslogboek en gym tracker</b>
 • Log sets, herhalingen en gewicht in een paar seconden, met een rusttimer, warming-upsets, supersets en notities per oefening.
+• Progressive overload eenvoudig gemaakt: Musclog stelt je volgende gewicht en herhalingen voor op basis van je laatste training en legt elk getal uit dat het aanpast. Kies dubbele progressie, lineaire of op percentages gebaseerde regels, of houd zelf de volledige controle.
 • Volg je inspanning met RPE of herhalingen in reserve (RIR).
 • 870+ oefeningen met foto's en doelspieren, doorzoekbaar in je eigen taal, of voeg je eigen oefeningen toe.
 • Kant-en-klare trainingsschema's: Push Pull Legs, Upper/Lower, Full Body, PHUL, 5-daagse splits en korte routines voor thuis of zonder materiaal. Of stel zelf een wekelijks of roterend schema samen.
-• Progressive overload eenvoudig gemaakt: Musclog stelt je volgende gewicht en herhalingen voor op basis van je laatste training en legt elk getal uit dat het aanpast. Kies dubbele progressie, lineaire of op percentages gebaseerde regels, of houd zelf de volledige controle.
 • Schijvenberekening voor de stang en schijven van jouw sportschool, in kg of lb, desgewenst per oefening.
 • Wissel een oefening als een apparaat bezet is of iets pijn doet, en laat Musclog onthouden wat je moet vermijden.
 • Importeer je geschiedenis uit Strong, Hevy of FitNotes.
