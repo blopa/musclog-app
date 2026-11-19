@@ -89,9 +89,11 @@ cmd_plan() {
       *) die "plan: unknown option $1" ;;
     esac
   done
-  use_asc_profile
+  # The version folder is checked offline, before the sign-in: a wrong folder is the same mistake whether or not
+  # the profile is signed in, and the check must not depend on the machine's credentials.
   local v
   v="$(meta_version)"
+  use_asc_profile
   echo "== Listing for version $v (dry run, nothing is changed)"
   asc metadata push --app "$(asc_app_id)" --version "$v" --platform IOS --dir "$META" --include "$(scopes)" --dry-run --output table
 }
