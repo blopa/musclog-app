@@ -7,6 +7,7 @@
   "scripts": {
     "playwright-runner": "node tests/run-tests.js",
     "generate-workout-log": "node scripts/generate-workout-log.js",
+    "generate-nutrition-log": "node scripts/generate-nutrition-log.js",
     "presence": "node scripts/presence.js",
     "presence:check": "node scripts/presence.js check",
     "presence:snapshot": "node scripts/presence.js snapshot",

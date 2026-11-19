@@ -103,6 +103,7 @@ import enUsWebsitePrograms from './locales/en-us/websitePrograms.json';
 import enUsWebsiteToolCalorieDeficit from './locales/en-us/websiteToolCalorieDeficit.json';
 import enUsWebsiteToolDeloadCalculator from './locales/en-us/websiteToolDeloadCalculator.json';
 import enUsWebsiteToolNetCarbs from './locales/en-us/websiteToolNetCarbs.json';
+import enUsWebsiteToolNutritionLogTemplate from './locales/en-us/websiteToolNutritionLogTemplate.json';
 import enUsWebsiteToolOneRepMax from './locales/en-us/websiteToolOneRepMax.json';
 import enUsWebsiteToolPlateCalculator from './locales/en-us/websiteToolPlateCalculator.json';
 import enUsWebsiteToolProgressiveOverload from './locales/en-us/websiteToolProgressiveOverload.json';
@@ -208,6 +209,7 @@ import esEsWebsitePrograms from './locales/es-es/websitePrograms.json';
 import esEsWebsiteToolCalorieDeficit from './locales/es-es/websiteToolCalorieDeficit.json';
 import esEsWebsiteToolDeloadCalculator from './locales/es-es/websiteToolDeloadCalculator.json';
 import esEsWebsiteToolNetCarbs from './locales/es-es/websiteToolNetCarbs.json';
+import esEsWebsiteToolNutritionLogTemplate from './locales/es-es/websiteToolNutritionLogTemplate.json';
 import esEsWebsiteToolOneRepMax from './locales/es-es/websiteToolOneRepMax.json';
 import esEsWebsiteToolPlateCalculator from './locales/es-es/websiteToolPlateCalculator.json';
 import esEsWebsiteToolProgressiveOverload from './locales/es-es/websiteToolProgressiveOverload.json';
@@ -313,6 +315,7 @@ import nlNlWebsitePrograms from './locales/nl-nl/websitePrograms.json';
 import nlNlWebsiteToolCalorieDeficit from './locales/nl-nl/websiteToolCalorieDeficit.json';
 import nlNlWebsiteToolDeloadCalculator from './locales/nl-nl/websiteToolDeloadCalculator.json';
 import nlNlWebsiteToolNetCarbs from './locales/nl-nl/websiteToolNetCarbs.json';
+import nlNlWebsiteToolNutritionLogTemplate from './locales/nl-nl/websiteToolNutritionLogTemplate.json';
 import nlNlWebsiteToolOneRepMax from './locales/nl-nl/websiteToolOneRepMax.json';
 import nlNlWebsiteToolPlateCalculator from './locales/nl-nl/websiteToolPlateCalculator.json';
 import nlNlWebsiteToolProgressiveOverload from './locales/nl-nl/websiteToolProgressiveOverload.json';
@@ -418,6 +421,7 @@ import ptBrWebsitePrograms from './locales/pt-br/websitePrograms.json';
 import ptBrWebsiteToolCalorieDeficit from './locales/pt-br/websiteToolCalorieDeficit.json';
 import ptBrWebsiteToolDeloadCalculator from './locales/pt-br/websiteToolDeloadCalculator.json';
 import ptBrWebsiteToolNetCarbs from './locales/pt-br/websiteToolNetCarbs.json';
+import ptBrWebsiteToolNutritionLogTemplate from './locales/pt-br/websiteToolNutritionLogTemplate.json';
 import ptBrWebsiteToolOneRepMax from './locales/pt-br/websiteToolOneRepMax.json';
 import ptBrWebsiteToolPlateCalculator from './locales/pt-br/websiteToolPlateCalculator.json';
 import ptBrWebsiteToolProgressiveOverload from './locales/pt-br/websiteToolProgressiveOverload.json';
@@ -523,6 +527,7 @@ import ruRuWebsitePrograms from './locales/ru-ru/websitePrograms.json';
 import ruRuWebsiteToolCalorieDeficit from './locales/ru-ru/websiteToolCalorieDeficit.json';
 import ruRuWebsiteToolDeloadCalculator from './locales/ru-ru/websiteToolDeloadCalculator.json';
 import ruRuWebsiteToolNetCarbs from './locales/ru-ru/websiteToolNetCarbs.json';
+import ruRuWebsiteToolNutritionLogTemplate from './locales/ru-ru/websiteToolNutritionLogTemplate.json';
 import ruRuWebsiteToolOneRepMax from './locales/ru-ru/websiteToolOneRepMax.json';
 import ruRuWebsiteToolPlateCalculator from './locales/ru-ru/websiteToolPlateCalculator.json';
 import ruRuWebsiteToolProgressiveOverload from './locales/ru-ru/websiteToolProgressiveOverload.json';
@@ -659,6 +664,7 @@ const resources = {
       ...enUsWebsiteToolCalorieDeficit,
       ...enUsWebsiteToolDeloadCalculator,
       ...enUsWebsiteToolNetCarbs,
+      ...enUsWebsiteToolNutritionLogTemplate,
       ...enUsWebsiteToolOneRepMax,
       ...enUsWebsiteToolPlateCalculator,
       ...enUsWebsiteToolProgressiveOverload,
@@ -768,6 +774,7 @@ const resources = {
       ...esEsWebsiteToolCalorieDeficit,
       ...esEsWebsiteToolDeloadCalculator,
       ...esEsWebsiteToolNetCarbs,
+      ...esEsWebsiteToolNutritionLogTemplate,
       ...esEsWebsiteToolOneRepMax,
       ...esEsWebsiteToolPlateCalculator,
       ...esEsWebsiteToolProgressiveOverload,
@@ -877,6 +884,7 @@ const resources = {
       ...nlNlWebsiteToolCalorieDeficit,
       ...nlNlWebsiteToolDeloadCalculator,
       ...nlNlWebsiteToolNetCarbs,
+      ...nlNlWebsiteToolNutritionLogTemplate,
       ...nlNlWebsiteToolOneRepMax,
       ...nlNlWebsiteToolPlateCalculator,
       ...nlNlWebsiteToolProgressiveOverload,
@@ -986,6 +994,7 @@ const resources = {
       ...ptBrWebsiteToolCalorieDeficit,
       ...ptBrWebsiteToolDeloadCalculator,
       ...ptBrWebsiteToolNetCarbs,
+      ...ptBrWebsiteToolNutritionLogTemplate,
       ...ptBrWebsiteToolOneRepMax,
       ...ptBrWebsiteToolPlateCalculator,
       ...ptBrWebsiteToolProgressiveOverload,
@@ -1095,6 +1104,7 @@ const resources = {
       ...ruRuWebsiteToolCalorieDeficit,
       ...ruRuWebsiteToolDeloadCalculator,
       ...ruRuWebsiteToolNetCarbs,
+      ...ruRuWebsiteToolNutritionLogTemplate,
       ...ruRuWebsiteToolOneRepMax,
       ...ruRuWebsiteToolPlateCalculator,
       ...ruRuWebsiteToolProgressiveOverload,

@@ -24,6 +24,7 @@ Musclog is built and maintained in the open; the full source is on GitHub. This 
 - [Progressive Overload Calculator](https://musclog.app/tools/progressive-overload-calculator): Next session's weight and reps from last session, using the progression rule the app uses.
 - [Deload Calculator](https://musclog.app/tools/deload-calculator): The lighter weight, the sets to keep, the effort and the length of a deload week, from the app's own rules.
 - [Free Printable Workout Log](https://musclog.app/tools/workout-log-template): A printable workout log (PDF) and a spreadsheet template (XLSX, CSV) that the Musclog app can import.
+- [Free Printable Food Diary](https://musclog.app/tools/nutrition-log-template): A printable food diary (PDF) with the macros worked out, or per 100 g so you do the sums, plus a spreadsheet that does them for you.
 - [Free Workout Programs](https://musclog.app/programs): Free workout programs with every day, exercise, set and rep, that you can open in Musclog.
 - [Musclog vs Strong](https://musclog.app/alternatives/strong): Honest comparison of Musclog and Strong: free routine limit, PRO pricing and importing your Strong history.
 - [Musclog vs Hevy](https://musclog.app/alternatives/hevy): Honest comparison of Musclog and Hevy: free plan limits, the warm-up calculator and importing your Hevy history.

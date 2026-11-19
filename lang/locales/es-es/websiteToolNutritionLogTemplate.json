@@ -1,0 +1,90 @@
+{
+  "websiteToolNutritionLogTemplate": {
+    "title": "Diario de comidas gratis para imprimir",
+    "intro": "Descarga un diario de comidas para imprimir, en dos versiones: una donde escribes las calorías y los macros que ya calculaste, y otra donde copias los valores por 100 g de una etiqueta y haces las cuentas tú. También hay una hoja de cálculo que hace las cuentas por ti. Todo gratis, sin registro.",
+    "downloads": {
+      "title": "Descargas",
+      "versions": {
+        "ready": {
+          "title": "Macros ya calculados",
+          "body": "Una fila por alimento: la comida, el alimento, la cantidad y después las calorías, proteínas, hidratos de carbono y grasas de esa cantidad."
+        },
+        "per100": {
+          "title": "Por 100 g, tú haces las cuentas",
+          "body": "Copia los valores por 100 g de la etiqueta, escribe los gramos que comiste y calcula lo que contiene esa cantidad."
+        },
+        "both": {
+          "title": "Hoja de cálculo",
+          "body": "Las dos versiones como pestañas, con las cuentas hechas por fórmulas."
+        }
+      },
+      "readyA4": "Diario de comidas, A4",
+      "readyA4Note": "PDF, 7 hojas apaisadas, una por día. Para papel A4.",
+      "readyLetter": "Diario de comidas, US Letter",
+      "readyLetterNote": "PDF, 7 hojas apaisadas, una por día. Para papel US Letter.",
+      "per100A4": "Diario de comidas por 100 g, A4",
+      "per100A4Note": "PDF, 7 hojas apaisadas, una por día. Para papel A4.",
+      "per100Letter": "Diario de comidas por 100 g, US Letter",
+      "per100LetterNote": "PDF, 7 hojas apaisadas, una por día. Para papel US Letter.",
+      "xlsx": "Plantilla de hoja de cálculo",
+      "xlsxNote": "Archivo de Excel (.xlsx) que también se abre en Google Sheets, Numbers y LibreOffice. Una pestaña Day, una pestaña Per 100 g y una pestaña Read me.",
+      "english": "Los archivos están en inglés, sea cual sea el idioma de esta página."
+    },
+    "try": {
+      "title": "Prueba las cuentas por 100 g",
+      "intro": "Escribe lo que dice la etiqueta por 100 g y cuántos gramos comiste. Es la misma aritmética que pide la hoja por 100 g. Nada de lo que escribes sale de tu navegador.",
+      "kcal": "Calorías por 100 g",
+      "kcalHint": "Opcional. Déjalo vacío para estimarlas a partir de los macros.",
+      "protein": "Proteínas por 100 g",
+      "carbs": "Hidratos de carbono por 100 g",
+      "fat": "Grasas por 100 g",
+      "grams": "Gramos que comiste",
+      "formula": "Cada cifra es el valor por 100 g por {{grams}} g, dividido entre 100.",
+      "results": {
+        "kcal": "Calorías comidas",
+        "kcalEstimated": "Estimadas a partir de los macros: 4 kcal por gramo de proteínas e hidratos de carbono, 9 por gramo de grasa.",
+        "protein": "Proteínas comidas",
+        "carbs": "Hidratos de carbono comidos",
+        "fat": "Grasas comidas"
+      },
+      "problems": {
+        "kcal": "Las calorías por 100 g deben ser un número de 0 a 900.",
+        "protein": "Las proteínas por 100 g deben ser un número de 0 a 100.",
+        "carbs": "Los hidratos de carbono por 100 g deben ser un número de 0 a 100.",
+        "fat": "Las grasas por 100 g deben ser un número de 0 a 100.",
+        "grams": "Los gramos deben ser un número de 0 a 5000.",
+        "macrosTooHigh": "Proteínas, hidratos de carbono y grasas juntos no pueden superar 100 g en 100 g de alimento. Revisa los números."
+      }
+    },
+    "sections": [
+      {
+        "title": "Qué hay en el diario para imprimir",
+        "body": [
+          "Cada hoja es un día. Arriba escribes la fecha, si fue día de entrenamiento o de descanso, tu peso corporal y cuánta agua bebiste. Debajo hay doce filas para los alimentos, una columna de Notas y casillas de Total, Objetivo y Restante bajo las calorías y los macros, para ver lo que queda del día.",
+          "El PDF tiene siete hojas, una semana por impresión. Las hojas no llevan objetivos ni plan de comidas: escribes tus propios objetivos en la fila Objetivo."
+        ]
+      },
+      {
+        "title": "Qué versión imprimir",
+        "body": [
+          "Usa la primera versión cuando ya tienes los números de la cantidad que comiste: de una columna por ración, de una comida que calculaste antes o de una app de alimentos. Los escribes directamente en la fila.",
+          "Usa la versión por 100 g cuando solo tienes la columna por 100 g de la etiqueta. Copias esos números, pesas lo que comiste y calculas cada cantidad: valor por 100 g por los gramos comidos, dividido entre 100. Para 150 g de un alimento con 12 g de proteínas por 100 g, son 12 × 150 ÷ 100 = 18 g de proteínas. Es más lento, pero muestra cómo se construyen los números."
+        ]
+      },
+      {
+        "title": "Cómo usar la hoja de cálculo",
+        "body": [
+          "La pestaña Day es para los números que ya calculaste. La pestaña Per 100 g hace las cuentas por ti: escribe los valores de la etiqueta y los gramos comidos, y las columnas de la derecha se rellenan. Ambas pestañas suman el día y muestran lo que queda de tu objetivo.",
+          "Las cuentas usan fórmulas sencillas, así que puedes leerlas o cambiarlas. Guarda una copia del archivo por día, o añade una pestaña para cada día."
+        ]
+      },
+      {
+        "title": "Papel, hoja de cálculo o app",
+        "body": [
+          "El papel no necesita batería ni cuenta, y hacer las cuentas a mano te enseña lo que tiene tu comida. Lo que no puede hacer es buscar el alimento por ti, escanear un código de barras o llevar un total acumulado por sí solo.",
+          "Musclog sí lo hace: calcula los macros de la cantidad que comiste, así que nunca tienes que hacer tú las cuentas por 100 g. Es una app gratuita y de código abierto, y tus datos se quedan en tu dispositivo."
+        ]
+      }
+    ]
+  }
+}

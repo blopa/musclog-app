@@ -18,6 +18,7 @@ export const TOOLS = [
   { key: 'progressiveOverload', routeKey: 'toolProgressiveOverload', group: 'training' },
   { key: 'deloadCalculator', routeKey: 'toolDeloadCalculator', group: 'training' },
   { key: 'workoutLogTemplate', routeKey: 'toolWorkoutLogTemplate', group: 'training' },
+  { key: 'nutritionLogTemplate', routeKey: 'toolNutritionLogTemplate', group: 'nutrition' },
 ] as const;
 
 /** How the index page sorts the tools: by what the lifter is trying to do, not by file name. */

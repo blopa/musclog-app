@@ -1,0 +1,90 @@
+{
+  "websiteToolNutritionLogTemplate": {
+    "title": "Gratis printbaar voedingsdagboek",
+    "intro": "Download een voedingsdagboek om af te drukken, in twee versies: een waarin je de calorieën en macro's schrijft die je al hebt uitgerekend, en een waarin je de waarden per 100 g van een etiket overneemt en zelf de sommen maakt. Er is ook een spreadsheet die de sommen voor je doet. Alles gratis, zonder registratie.",
+    "downloads": {
+      "title": "Downloads",
+      "versions": {
+        "ready": {
+          "title": "Macro's al uitgerekend",
+          "body": "Één rij per voedingsmiddel: de maaltijd, het voedingsmiddel, de hoeveelheid en daarna de calorieën, eiwit, koolhydraten en vet voor die hoeveelheid."
+        },
+        "per100": {
+          "title": "Per 100 g, zelf de sommen maken",
+          "body": "Neem de waarden per 100 g van het etiket over, schrijf de grammen op die je at en bereken wat die hoeveelheid bevat."
+        },
+        "both": {
+          "title": "Spreadsheet",
+          "body": "Beide indelingen als tabbladen, met de sommen gedaan door formules."
+        }
+      },
+      "readyA4": "Voedingsdagboek, A4",
+      "readyA4Note": "PDF, 7 liggende bladen, één per dag. Voor A4-papier.",
+      "readyLetter": "Voedingsdagboek, US Letter",
+      "readyLetterNote": "PDF, 7 liggende bladen, één per dag. Voor US Letter-papier.",
+      "per100A4": "Voedingsdagboek per 100 g, A4",
+      "per100A4Note": "PDF, 7 liggende bladen, één per dag. Voor A4-papier.",
+      "per100Letter": "Voedingsdagboek per 100 g, US Letter",
+      "per100LetterNote": "PDF, 7 liggende bladen, één per dag. Voor US Letter-papier.",
+      "xlsx": "Spreadsheetsjabloon",
+      "xlsxNote": "Excel-bestand (.xlsx) dat ook opent in Google Sheets, Numbers en LibreOffice. Een tabblad Day, een tabblad Per 100 g en een tabblad Read me.",
+      "english": "De bestanden zijn in het Engels, welke taal deze pagina ook heeft."
+    },
+    "try": {
+      "title": "Probeer de sommen per 100 g",
+      "intro": "Typ wat het etiket per 100 g zegt en hoeveel gram je at. Dit is dezelfde rekenmethode die het blad per 100 g vraagt. Wat je typt verlaat je browser niet.",
+      "kcal": "Calorieën per 100 g",
+      "kcalHint": "Optioneel. Laat leeg om het uit de macro's te schatten.",
+      "protein": "Eiwit per 100 g",
+      "carbs": "Koolhydraten per 100 g",
+      "fat": "Vet per 100 g",
+      "grams": "Gram die je at",
+      "formula": "Elk getal is de waarde per 100 g keer {{grams}} g, gedeeld door 100.",
+      "results": {
+        "kcal": "Calorieën gegeten",
+        "kcalEstimated": "Geschat uit de macro's: 4 kcal per gram eiwit en koolhydraten, 9 per gram vet.",
+        "protein": "Eiwit gegeten",
+        "carbs": "Koolhydraten gegeten",
+        "fat": "Vet gegeten"
+      },
+      "problems": {
+        "kcal": "Calorieën per 100 g moeten een getal van 0 tot 900 zijn.",
+        "protein": "Eiwit per 100 g moet een getal van 0 tot 100 zijn.",
+        "carbs": "Koolhydraten per 100 g moeten een getal van 0 tot 100 zijn.",
+        "fat": "Vet per 100 g moet een getal van 0 tot 100 zijn.",
+        "grams": "Gram moet een getal van 0 tot 5000 zijn.",
+        "macrosTooHigh": "Eiwit, koolhydraten en vet samen kunnen niet meer dan 100 g per 100 g voedsel zijn. Controleer de getallen."
+      }
+    },
+    "sections": [
+      {
+        "title": "Wat er in het printbare dagboek staat",
+        "body": [
+          "Elk blad is één dag. Bovenaan schrijf je de datum, of het een trainings- of rustdag was, je lichaamsgewicht en hoeveel water je dronk. Eronder staan twaalf rijen voor de voedingsmiddelen, een kolom Notities en vakjes Totaal, Doel en Over onder de calorieën en macro's, zodat je ziet wat er van de dag over is.",
+          "De PDF bevat zeven bladen, één week per print. De bladen bevatten geen doelen en geen maaltijdplan: je schrijft je eigen doelen in de rij Doel."
+        ]
+      },
+      {
+        "title": "Welke versie je afdrukt",
+        "body": [
+          "Gebruik de eerste versie als je de getallen al hebt voor de hoeveelheid die je at: uit een kolom per portie, een maaltijd die je eerder uitrekende of een voedingsapp. Je schrijft ze direct in de rij.",
+          "Gebruik de versie per 100 g als je alleen de kolom per 100 g van het etiket hebt. Je neemt die getallen over, weegt wat je at en berekent elke hoeveelheid: per 100 g keer de gegeten grammen, gedeeld door 100. Voor 150 g van een voedingsmiddel met 12 g eiwit per 100 g is dat 12 × 150 ÷ 100 = 18 g eiwit. Het is trager, maar het laat zien hoe de getallen zijn opgebouwd."
+        ]
+      },
+      {
+        "title": "Hoe je de spreadsheet gebruikt",
+        "body": [
+          "Het tabblad Day is voor getallen die je al hebt uitgerekend. Het tabblad Per 100 g doet de sommen voor je: typ de getallen van het etiket en de gegeten grammen, en de kolommen rechts vullen zich. Beide tabbladen tellen de dag op en tonen wat er van je doel over is.",
+          "De sommen gebruiken gewone formules, dus je kunt ze lezen of aanpassen. Bewaar één kopie van het bestand per dag, of voeg per dag een tabblad toe."
+        ]
+      },
+      {
+        "title": "Papier, een spreadsheet of een app",
+        "body": [
+          "Papier heeft geen batterij en geen account nodig, en de sommen met de hand maken leert je wat er in je eten zit. Wat het niet kan, is het voedingsmiddel voor je opzoeken, een barcode scannen of zelf een doorlopend totaal bijhouden.",
+          "Musclog doet dat wel, en rekent de macro's uit voor de hoeveelheid die je at, zodat je nooit zelf de sommen per 100 g hoeft te maken. Het is een gratis app met open source-code, en je gegevens blijven op je apparaat."
+        ]
+      }
+    ]
+  }
+}

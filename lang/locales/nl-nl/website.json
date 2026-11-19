@@ -121,6 +121,10 @@
           "title": "Gratis printbaar trainingslogboek (PDF) en spreadsheet | Musclog",
           "description": "Download een gratis trainingslogboek om af te drukken in A4 of US Letter, plus een Excel- en CSV-sjabloon. De spreadsheet is te importeren in de Musclog-app."
         },
+        "toolNutritionLogTemplate": {
+          "title": "Gratis printbaar voedingsdagboek (PDF) en spreadsheet | Musclog",
+          "description": "Download een gratis voedingsdagboek om af te drukken in A4 of US Letter: macro's die je al hebt uitgerekend, of per 100 g zodat je de sommen zelf maakt. Plus een spreadsheet die ze voor je maakt."
+        },
         "programs": {
           "title": "Gratis trainingsschema's | Musclog",
           "description": "Gratis schema's: push pull legs, upper lower, full body en meer. Elke dag, oefening, set en herhaling staat erbij en je opent het in Musclog."

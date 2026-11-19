@@ -28,6 +28,7 @@ const SHARED_FUNCTIONS: Record<(typeof TOOLS)[number]['key'], string[]> = {
   progressiveOverload: ['computeStartTarget', 'loadStepFor'],
   deloadCalculator: ['deloadedLoad', 'loadBelow', 'lighterSetCount'],
   workoutLogTemplate: ['parseWorkoutImport'],
+  nutritionLogTemplate: ['inferCaloriesFromMacrosPer100g'],
 };
 
 describe.each(TOOLS)('tool $key', ({ key, routeKey }) => {

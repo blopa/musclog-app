@@ -121,6 +121,10 @@
           "title": "Ficha de treino grátis para imprimir (PDF) e planilha | Musclog",
           "description": "Baixe uma ficha de treino grátis para imprimir em A4 ou US Letter, e um modelo de Excel e CSV. A planilha pode ser importada no app Musclog."
         },
+        "toolNutritionLogTemplate": {
+          "title": "Diário alimentar grátis para imprimir (PDF) e planilha | Musclog",
+          "description": "Baixe um diário alimentar grátis para imprimir em A4 ou US Letter: macros já calculados, ou por 100 g para você fazer as contas. Além de uma planilha que faz as contas para você."
+        },
         "programs": {
           "title": "Programas de treino gratis | Musclog",
           "description": "Programas gratis: push pull legs, upper lower, full body e mais. Cada dia, exercicio, serie e repeticao esta listado e voce abre no Musclog."

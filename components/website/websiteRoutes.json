@@ -219,6 +219,14 @@
       "summary": "A printable workout log (PDF) and a spreadsheet template (XLSX, CSV) that the Musclog app can import."
     }
   },
+  "toolNutritionLogTemplate": {
+    "path": "/tools/nutrition-log-template",
+    "llms": {
+      "section": "Product",
+      "title": "Free Printable Food Diary",
+      "summary": "A printable food diary (PDF) with the macros worked out, or per 100 g so you do the sums, plus a spreadsheet that does them for you."
+    }
+  },
   "programs": {
     "path": "/programs",
     "llms": {
