@@ -127,6 +127,8 @@
     "manageNutritionDescription": "Bekijk en bewerk je voedingslogboeken",
     "listMeasurementsDescription": "Bekijk al je lichaamsmetingen",
     "syncHealthConnectDescription": "Importeer gegevens uit Google Health Connect",
+    "syncAppleHealth": "Apple Health synchroniseren",
+    "syncAppleHealthDescription": "Gegevens importeren uit Apple Health",
     "syncing": "Synchroniseren...",
     "quickActions": "Snelle acties",
     "measurement": {

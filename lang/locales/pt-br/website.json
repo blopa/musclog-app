@@ -109,6 +109,18 @@
           "title": "Carboidratos liquidos e totais: conversor | Musclog",
           "description": "Rotulos dos EUA contam a fibra dentro dos carboidratos e os da UE nao. Converta entre carboidratos liquidos e totais."
         },
+        "toolProgressiveOverload": {
+          "title": "Calculadora de sobrecarga progressiva | Musclog",
+          "description": "Informe o peso e as repetições da última sessão e veja o que levantar: subir a carga, somar uma repetição, repetir ou diminuir, pela regra do Musclog."
+        },
+        "toolDeloadCalculator": {
+          "title": "Calculadora de deload: quanta carga e por quanto tempo | Musclog",
+          "description": "Informe sua carga de trabalho e suas séries e veja a semana de deload: a carga mais leve, as séries a manter, quanto empurrar e por quanto tempo dura."
+        },
+        "toolWorkoutLogTemplate": {
+          "title": "Ficha de treino grátis para imprimir (PDF) e planilha | Musclog",
+          "description": "Baixe uma ficha de treino grátis para imprimir em A4 ou US Letter, e um modelo de Excel e CSV. A planilha pode ser importada no app Musclog."
+        },
         "programs": {
           "title": "Programas de treino gratis | Musclog",
           "description": "Programas gratis: push pull legs, upper lower, full body e mais. Cada dia, exercicio, serie e repeticao esta listado e voce abre no Musclog."
@@ -192,8 +204,8 @@
       "screenshotAlt": "Captura de tela do app Musclog"
     },
     "screenshots": {
-      "title": "Veja o Musclog em movimento",
-      "description": "Uma visualização lenta de telas reais do app. Passe o mouse para pausar e clique em qualquer cartão para abrir ampliado.",
+      "title": "Por dentro do app",
+      "description": "Telas reais do Musclog. Role para o lado ou toque em uma para ver maior.",
       "openSlide": "Abrir captura",
       "modalAriaLabel": "Prévia de capturas do Musclog",
       "close": "Fechar",
@@ -267,36 +279,36 @@
       "description": "Ferramentas para registrar, planejar e revisar. Os recursos com IA são opcionais.",
       "items": {
         "aiCoach": {
-          "title": "Treinador de IA (Loggy)",
-          "description": "Converse com seu treinador de IA para planos de treino personalizados, conselhos de nutrição e estimativa de refeições por foto."
+          "title": "Coach de IA",
+          "description": "Converse com o Loggy sobre treino e comida, ou estime uma refeição a partir de uma foto. Opcional, com sua própria chave do Gemini, OpenAI ou Claude."
         },
         "barcode": {
-          "title": "Leitor de Código de Barras",
-          "description": "Adicione produtos rapidamente escaneando códigos de barras. Acesse o banco de dados Open Food Facts com milhões de produtos."
+          "title": "Leitor de código de barras",
+          "description": "Escaneie um produto para registrá-lo pelo Open Food Facts, com Nutri-Score e NOVA quando o produto tem."
         },
         "checkins": {
-          "title": "Check-ins Semanais",
-          "description": "Análise automatizada de 7 dias do seu progresso com ajustes dinâmicos de metas para mantê-lo no caminho certo."
+          "title": "Revisão semanal",
+          "description": "Toda semana, veja como foram sua comida, seu peso e seu treino, e aceite ou pule uma mudança sugerida nas suas metas."
         },
         "analytics": {
-          "title": "Análises de Progresso",
-          "description": "Gráficos interativos para peso, gordura corporal e progresso de levantamento. Rastreie seu TDEE com dados reais."
+          "title": "Gráficos de progresso",
+          "description": "Gráficos de peso, gordura corporal e levantamentos, e uma estimativa de gasto calórico a partir dos seus próprios registros."
         },
         "cycle": {
           "title": "Consciência do Ciclo",
           "description": "Registre menstruações e sintomas e veja padrões nos seus próprios dados. As previsões ficam desativadas até você ativá-las."
         },
         "templates": {
-          "title": "Modelos de Treino",
-          "description": "Crie rotinas personalizadas como PPL ou Superior/Inferior. Acesse uma extensa biblioteca de exercícios com foco muscular."
+          "title": "Planos de treino",
+          "description": "Monte rotinas como empurrar/puxar/pernas ou superior/inferior com uma biblioteca de mais de 800 exercícios e músculos alvo."
         },
         "healthConnect": {
           "title": "Health Connect",
           "description": "Sincronize com o Google Health Connect para compartilhar dados com outros apps de saúde e fitness no Android."
         },
         "encryption": {
-          "title": "Armazenamento Criptografado",
-          "description": "Seus dados sensíveis de saúde são criptografados em repouso usando AES. Exporte a qualquer momento como JSON ou Excel."
+          "title": "Armazenamento criptografado",
+          "description": "Peso, gordura corporal e registros de comida são criptografados no seu dispositivo. Exporte em JSON ou Excel quando quiser."
         }
       }
     },
@@ -318,7 +330,7 @@
       "features": "Recursos",
       "progress": "Progresso",
       "github": "GitHub",
-      "download": "Baixar Agora",
+      "download": "Baixar",
       "calculator": "Calculadora",
       "exercises": "Exercícios",
       "gameboy": "Game Boy",
@@ -509,8 +521,8 @@
     "storeButtons": {
       "googleTitle": "DISPONÍVEL NO",
       "googleStore": "Google Play",
-      "appleTitle": "BAIXAR NA",
-      "appleStore": "App Store",
+      "appleTitle": "PARTICIPAR NO",
+      "appleStore": "TestFlight",
       "comingSoon": "App Store em breve!",
       "qrButton": "Mostrar códigos QR",
       "qrTitle": "Códigos QR",
@@ -518,7 +530,7 @@
       "qrGoogleLabel": "Página de instalação para Android",
       "qrAppleLabel": "Página de instalação para iOS",
       "qrGoogleAlt": "Código QR para o Google Play",
-      "qrAppleAlt": "Código QR para a App Store",
+      "qrAppleAlt": "Código QR do TestFlight",
       "close": "Fechar"
     },
     "download": {
@@ -527,7 +539,7 @@
       "title": "Baixe o Musclog",
       "subtitle": "Baixe o Musclog agora e mantenha treinos, nutrição e progresso em um só lugar privado.",
       "googleLabel": "Baixar Musclog no Google Play",
-      "appleLabel": "Baixar Musclog na App Store"
+      "appleLabel": "Participar do Musclog no TestFlight"
     },
     "open": {
       "title": "Abrir no Musclog",
@@ -546,7 +558,7 @@
       "github": "GitHub",
       "contact": "Contato",
       "license": "Licença",
-      "copyright": "Software Livre e Open Source. Construído para sua privacidade.",
+      "copyright": "Software livre e de código aberto.",
       "latestBuild": "Build mais recente: {{version}}"
     },
     "cookieConsent": {
@@ -560,7 +572,7 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidade",
-      "lastUpdated": "Última atualização: 14 de novembro de 2026",
+      "lastUpdated": "Última atualização: 19 de novembro de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Proteção de dados",
@@ -704,7 +716,7 @@
           "title": "Compartilhamento de seus Dados Pessoais",
           "items": [
             "Com os provedores que você escolher: as buscas de alimentos vão para o banco de dados de alimentos que você selecionar, e as solicitações de IA vão para o provedor de IA que você configurar.",
-            "Com Provedores de Serviços que operam partes do Serviço para nós: Sentry (relatórios de falhas), Cloudflare e Google (a opção gratuita Musclog AI), e Vercel e Google Analytics (o site).",
+            "Com Provedores de Serviços que operam partes do Serviço para nós: Sentry (relatórios de falhas), Cloudflare e Google (a opção gratuita Musclog AI), GitHub e Cloudflare (hospedagem do site) e Google Analytics (o site, somente depois que você aceitar a análise).",
             "Quando exigido por lei, conforme descrito em \"Divulgação de seus Dados Pessoais\".",
             "Com seu consentimento, por exemplo quando você mesmo exporta ou compartilha dados.",
             "Não vendemos seus dados nem os compartilhamos com anunciantes ou corretores de dados."
@@ -759,7 +771,7 @@
         },
         "analytics": {
           "title": "Análise do site",
-          "content1": "Este site usa o Vercel Web Analytics, um serviço de análise sem cookies e com foco em privacidade. Ele não coleta identificadores pessoais e não usa cookies — os visitantes são identificados apenas por um hash anônimo que é redefinido a cada 24 horas. Não é necessário consentimento para esta ferramenta sob a Diretiva ePrivacy.",
+          "content1": "O site é hospedado no GitHub Pages e servido pela Cloudflare. Como qualquer servidor web, eles processam os dados técnicos que cada requisição carrega (endereço IP, navegador e página solicitada) para entregar a página e protegê-la contra abusos. O próprio site não define cookies e não usa análise até que você as aceite.",
           "content2": "Este site também usa o Google Analytics 4 (GA4), um serviço fornecido pela Google LLC, para coletar dados anonimizados sobre como os visitantes interagem com o site. Os cookies de análise só são definidos após você consentir explicitamente clicando em \"Aceitar\" no banner de cookies.",
           "content3": "Quando você consente com o GA4, o Google Analytics pode coletar:",
           "items": [
@@ -771,7 +783,7 @@
             "As etiquetas de campanha (utm_source, utm_medium, utm_campaign) do link pelo qual você chegou, associadas aos cliques no Google Play, na App Store e na demonstração"
           ],
           "content4": "Base legal para o GA4: Consentimento (RGPD Art. 6(1)(a)). Você pode retirar seu consentimento a qualquer momento clicando em \"Configurações de cookies\" no rodapé da página. A retirada do consentimento impedirá qualquer coleta adicional e não afetará a legalidade do processamento realizado antes da retirada.",
-          "content5": "Os dados do GA4 são retidos no Google Analytics por 14 meses por padrão. O Google atua como processador de dados sob um Acordo de Processamento de Dados. Para mais informações sobre como o Google lida com dados, consulte a",
+          "content5": "O Google Analytics mantém dados em nível de evento por dois meses e depois os exclui; os relatórios agregados a partir deles não contêm dados pessoais. O Google atua como processador de dados sob um Acordo de Processamento de Dados. Para mais informações sobre como o Google lida com dados, consulte a",
           "googlePrivacyPolicy": "Política de Privacidade do Google",
           "content6": "Sua escolha de consentimento é armazenada localmente no seu navegador (localStorage) e nunca é enviada para nossos servidores. É usada exclusivamente para lembrar sua preferência entre visitas.",
           "content7": "Se o link que você seguiu tiver etiquetas de campanha (por exemplo ?utm_source=reddit), o site as guarda no armazenamento de sessão do seu navegador até você fechar a aba, para saber qual publicação ou anúncio levou à visita. Elas só são enviadas ao Google Analytics depois que você aceita a análise. Quando você abre o Google Play a partir deste site, as mesmas etiquetas são adicionadas ao link da loja como referência de instalação, o que nos permite ver no Google Play Console quantas instalações vieram de cada campanha; o Google Play as recebe porque você seguiu esse link, não a partir do armazenamento do seu navegador. As etiquetas descrevem o link, nunca você, e não contêm dados pessoais."
@@ -792,7 +804,7 @@
           "title": "Neste site",
           "summary": "O site trata um conjunto mais limitado de dados, principalmente relacionados à operação do site, à preferência de idioma, à análise e ao gerenciamento do consentimento de cookies.",
           "items": [
-            "Este site utiliza o Vercel Analytics para medir dados de tráfego anônimos e sem cookies, sem exigir consentimento.",
+            "O site é hospedado no GitHub Pages e servido pela Cloudflare, que processam dados de requisição padrão (como o endereço IP) para entregar as páginas.",
             "Este site utiliza o Google Analytics 4 somente após você fornecer consentimento explícito por meio do banner de cookies.",
             "Sua preferência de idioma é armazenada localmente no seu navegador e não é transmitida aos nossos servidores.",
             "Sua escolha de consentimento de cookies é armazenada localmente no seu navegador e não é transmitida aos nossos servidores."

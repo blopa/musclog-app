@@ -253,7 +253,7 @@
         }
       },
       "dataSharingTitle": "Aviso de Compartilhamento de Dados",
-      "dataSharingBody": "Para fornecer recursos de IA, alguns dados de saúde serão compartilhados com os servidores da Musclog. O nível gratuito tem solicitações limitadas por dia.",
+      "dataSharingBody": "Quando você usa um recurso de IA, o que ele precisa (por exemplo seus treinos, refeições, medidas corporais ou mensagens de chat) é enviado pelos servidores da Musclog ao Gemini, a IA do Google, para escrever a resposta. Nada é enviado até você usar um recurso. O nível gratuito tem um número limitado de solicitações por dia.",
       "readPrivacyPolicy": "Leia nossa Política de Privacidade",
       "enable": "Ativar Musclog AI",
       "noThanks": "Não obrigado, continuar sem IA"

@@ -470,17 +470,6 @@ export default function ExerciseGoalCreationModal({
         }}
         isSelected={goalType === 'consistency'}
       />
-
-      {['steps_per_day', 'distance_per_session', 'pace', 'duration'].map((type) => (
-        <GoalOptionItem
-          key={type}
-          icon={<TrendingUp size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-          title={t(`exerciseGoals.goalTypes.${type}`)}
-          description={t('exerciseGoals.creation.comingSoon')}
-          onPress={() => {}}
-          disabled
-        />
-      ))}
     </View>
   );
 

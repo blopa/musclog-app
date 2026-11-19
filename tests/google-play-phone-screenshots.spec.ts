@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,14 +10,17 @@ import {
   installFixtureRoutes,
   navigateTo,
   seedDemoData,
+  selectMetricUnits,
   selectTheme,
 } from './helpers/screenshotSession';
 import { clickTopmost, localeCopy } from './layoutAudit/flowKit';
 import { selectAppLanguage } from './layoutAudit/language';
 import { bundledLocales } from './layoutAudit/locales';
 
-// Raw phone captures (`<locale>/<name>.png`) for the composer that frames them.
-const OUTPUT_ROOT = path.join('screenshots', 'google-play', 'phone');
+// Raw phone captures (`<locale>/<name>.png`) for the composer that frames them. The App Store
+// config (`playwright.app-store-phone.config.ts`) runs this same spec at an iPhone's size and
+// names its own folder through the project's `outputRoot` metadata.
+const DEFAULT_OUTPUT_ROOT = path.join('screenshots', 'google-play', 'phone');
 // The workout the demo data holds that reads as a real session (seeded names are not localized).
 const WORKOUT_NAME = 'Leg Day / Squats';
 // The workout view captured: Guided (photo hero and steppers) or Inline (the set list).
@@ -28,43 +31,11 @@ const FOOD_DETAILS_SCROLL_PX = 420;
 const DIARY_SCROLL_PX = 430;
 const PROGRESS_SCROLL_PX = 650;
 const PAST_WORKOUT_SCROLL_PX = 600;
-const SETTINGS_MIRROR_KEY = 'musclog_settings_mirror';
 
 const OFF_PRODUCT_FIXTURE = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'off-product-3017620425035.json'),
   'utf8'
 );
-
-/** Switches the seeded (imperial) app to metric through Settings → Profile and units, in English. */
-async function selectMetricUnits(page: Page) {
-  await page.goto(`${APP_URL}/settings`, { timeout: 60000 });
-  await page
-    .getByText(localeCopy('en-US', 'settings', ['settings', 'basicSettings', 'title'], ''), {
-      exact: true,
-    })
-    .first()
-    .click();
-  await clickTopmost(
-    page.getByText(
-      localeCopy('en-US', 'editFitnessDetails', ['editFitnessDetails', 'metric'], ''),
-      {
-        exact: true,
-      }
-    )
-  );
-  await expect
-    .poll(
-      () =>
-        page.evaluate(
-          (key) => JSON.parse(localStorage.getItem(key) ?? '{}').units as string | undefined,
-          SETTINGS_MIRROR_KEY
-        ),
-      { timeout: 15000 }
-    )
-    .toBe('metric');
-  // LokiJS autosaves every 500ms; leaving earlier discards the choice on the next load.
-  await page.waitForTimeout(2000);
-}
 
 for (const locale of bundledLocales()) {
   test.describe(`Google Play phone screenshots (${locale})`, () => {
@@ -74,8 +45,9 @@ for (const locale of bundledLocales()) {
     test.use({ reducedMotion: 'reduce', locale: 'en-US', actionTimeout: 15000 });
     test.setTimeout(1800000);
 
-    test(`Capture the phone listing screens in ${locale}`, async ({ page }) => {
-      const outputDir = path.join(OUTPUT_ROOT, locale);
+    test(`Capture the phone listing screens in ${locale}`, async ({ page }, testInfo) => {
+      const outputRoot = (testInfo.project.metadata.outputRoot as string) ?? DEFAULT_OUTPUT_ROOT;
+      const outputDir = path.join(outputRoot, locale);
       fs.rmSync(outputDir, { recursive: true, force: true });
       fs.mkdirSync(outputDir, { recursive: true });
       const shot = (name: string, waitTime?: number) =>

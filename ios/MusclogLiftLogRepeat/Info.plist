@@ -18,12 +18,20 @@
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+      <string>en</string>
+      <string>es</string>
+      <string>nl</string>
+      <string>pt-BR</string>
+      <string>ru</string>
+    </array>
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.16.5</string>
+    <string>2.16.6</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -43,7 +51,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>333</string>
+    <string>334</string>
     <key>ExpoWidgetsAppGroupIdentifier</key>
     <string>group.com.werules.logger</string>
     <key>ExpoWidgets_EnablePushNotifications</key>
@@ -62,23 +70,23 @@
       <true/>
     </dict>
     <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors</string>
+    <string>Musclog uses Bluetooth to connect to a motion sensor you pair, to record your movement during workout sets.</string>
     <key>NSBonjourServices</key>
     <array>
       <string>_expo._tcp</string>
     </array>
     <key>NSCameraUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your camera</string>
+    <string>Musclog uses the camera to scan food barcodes and nutrition labels, take meal photos for AI estimates, and receive data from another phone shown as QR codes.</string>
     <key>NSFaceIDUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to use Face ID.</string>
+    <string>Musclog uses Face ID to unlock the parts of the app you choose to lock, such as cycle tracking or your workouts.</string>
     <key>NSHealthShareUsageDescription</key>
     <string>Musclog reads workouts, nutrition and body measurements, and optionally menstrual bleeding and basal temperature when you request a cycle import.</string>
     <key>NSHealthUpdateUsageDescription</key>
     <string>Musclog writes workouts, nutrition and body metrics, and optionally your manually logged bleeding and basal temperature when you request a cycle export.</string>
     <key>NSLocalNetworkUsageDescription</key>
-    <string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
+    <string>Musclog uses the local network only to reach an AI model you run on your own computer or home server, if you set one up in AI settings.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.</string>
+    <string>Musclog never asks for your location. iOS requires this text because a bundled library contains location code that Musclog does not call.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Allow Musclog to access your photos to select food images and exercise demonstrations.</string>
     <key>NSSupportsLiveActivities</key>
@@ -92,7 +100,7 @@
     <key>RCTMetroPort</key>
     <string>$(RCT_METRO_PORT)</string>
     <key>RCTRootViewBackgroundColor</key>
-    <integer>4278784784</integer>
+    <integer>4279046672</integer>
     <key>UIAppFonts</key>
     <array>
       <string>MaterialIcons.ttf</string>
@@ -117,7 +125,6 @@
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>
-      <string>remote-notification</string>
       <string>bluetooth-central</string>
       <string>processing</string>
     </array>
@@ -148,6 +155,6 @@
     <key>UIUserInterfaceStyle</key>
     <string>Automatic</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
-    <false/>
+    <true/>
   </dict>
 </plist>

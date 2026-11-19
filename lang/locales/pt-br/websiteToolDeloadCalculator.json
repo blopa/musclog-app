@@ -1,0 +1,86 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Calculadora de deload",
+    "intro": "Informe a carga de trabalho e as séries de um exercício e veja a semana de deload: quanto diminuir, quantas séries manter, com que esforço treinar e por quanto tempo dura.",
+    "form": {
+      "weight": "Carga de trabalho",
+      "weightHint": "O que você levanta nas suas séries de trabalho normais.",
+      "sets": "Séries de trabalho em uma semana normal",
+      "setsHint": "Número inteiro, para este exercício.",
+      "equipmentLabel": "Equipamento",
+      "equipment": {
+        "barbell": "Barra",
+        "dumbbell": "Halter",
+        "machine": "Máquina ou polia"
+      }
+    },
+    "problems": {
+      "weight": "Informe a carga de trabalho como um número maior que 0 e no máximo {{max}}.",
+      "sets": "Informe as séries como um número inteiro de 1 a {{max}}."
+    },
+    "results": {
+      "title": "Sua semana de deload",
+      "weight": "Carga",
+      "weightNote": "{{percent}} mais leve que a sua carga de trabalho, arredondada para baixo até uma carga que você consiga ajustar. Mantenha suas repetições habituais.",
+      "sets": "Séries",
+      "setsValue_one": "{{sets}} série",
+      "setsValue_few": "{{sets}} séries",
+      "setsValue_many": "{{sets}} séries",
+      "setsValue_other": "{{sets}} séries",
+      "setsNote": "Abaixo de {{from}}: cerca de dois terços, nunca menos de uma.",
+      "effort": "Esforço",
+      "effortValue": "{{count}} repetições em reserva",
+      "effortNote": "Termine cada série com cerca de {{count}} repetições ainda possíveis, para a semana ficar leve de propósito.",
+      "duration": "Duração",
+      "durationValue_one": "{{count}} semana",
+      "durationValue_few": "{{count}} semanas",
+      "durationValue_many": "{{count}} semanas",
+      "durationValue_other": "{{count}} semanas",
+      "durationNote": "Treine com a frequência de sempre, com um trabalho mais leve, e depois volte às suas cargas normais.",
+      "plates": "Anilhas em cada lado da barra",
+      "emptyBar": "Barra vazia",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "Esta já é a carga mais leve que este equipamento consegue fazer, então o peso se mantém. Corte as séries e faça menos esforço.",
+      "step": "Um passo de carga para este equipamento é {{step}}."
+    },
+    "table": {
+      "title": "Outros cortes comuns",
+      "cut": "Corte",
+      "weight": "Carga",
+      "actual": "Na prática, mais leve em",
+      "musclog": "Corte do Musclog",
+      "percent": "{{percent}}",
+      "note": "O Musclog usa 10% ou um passo de carga, o que for maior. As linhas de 10, 15 e 20% são regras práticas, não resultados de estudos. Cada uma é arredondada para baixo até uma carga que você realmente consegue ajustar, então uma carga pequena pode acabar mais leve do que o corte pedido."
+    },
+    "sections": [
+      {
+        "title": "Quanto mais leve, e por quanto tempo",
+        "body": [
+          "O deload do app Musclog é um corte de 10% ou de um passo de carga, o que for maior, arredondado para uma carga que o seu equipamento consegue fazer e sempre estritamente mais leve que a atual. Uma semana mais leve mantém cerca de dois terços das séries de trabalho, mantém as repetições planejadas e mira em 4 repetições em reserva. Ela dura uma semana. Tudo isso são escolhas de produto do Musclog, não resultados de estudos.",
+          "Quem treina costuma usar de 10 a 20% menos carga, ou cerca de um terço a menos de séries, por uma semana. Use a tabela para um corte mais profundo se a semana anterior pareceu muito pesada. Mantenha os mesmos exercícios e o mesmo número de sessões: deload é treino mais leve, não uma semana de folga."
+        ]
+      },
+      {
+        "title": "Quando um deload faz sentido",
+        "body": [
+          "Os sinais comuns são a mesma carga parecer bem mais pesada que há algumas semanas, repetições que você normalmente faz falharem e quase nenhuma repetição sobrando em reserva. Sono ruim, estresse ou doença podem parecer iguais, e um deload ajuda nesses casos também. Se uma articulação doer de forma aguda, procure um médico ou fisioterapeuta em vez de continuar.",
+          "O app faz deload de um exercício sozinho depois de duas sessões seguidas com a mesma carga em que você terminou sem nada em reserva ou não bateu as repetições planejadas. Ele sugere uma semana mais leve na sua Weekly Review quando vários levantamentos estagnam. Você decide se aceita."
+        ]
+      },
+      {
+        "title": "O que diz a pesquisa",
+        "body": [
+          "Um estudo de consenso de 2023 com treinadores de força e physique definiu o deload como um período de estresse de treino reduzido, feito para limitar a fadiga, apoiar a recuperação e preparar você para treinos futuros. Isso é uma definição, não uma prescrição. Os números desta página não vêm dele."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell et al. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Nova escala de RPE específica para treino de força que mede repetições em reserva"
+    },
+    "articles": {
+      "deload": "Semanas de deload: quando você precisa de uma e como fazê-la",
+      "doubleProgression": "Dupla progressão: a forma mais simples de adicionar carga toda semana"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "_comment": "Findings of the app-store-compliance guard that were checked against the code and are not a problem for this app. scripts/appstore_guard_gate.py still prints them with the reason; only its exit code ignores them. 'id' is the guard's finding id; 'file', when given, must be the start of the file the guard reports (it reports only the FIRST file it matches, so read the raw report after touching the area). 'checked' is the day the finding was verified against the code; look again after 180 days or when the vendored guard is updated. Findings about Google Play, Android and the website are not gated for an iOS release (see the gate), so they are not listed here.",
+  "known": [
+    {
+      "id": "APPLE-2.1-STAGING-BACKEND",
+      "file": "app/+native-intent.tsx",
+      "checked": "2026-11-18",
+      "reason": "The match is `http://localhost${path}` in a template literal that only turns an incoming widget path into a URL object to read its query string (new URL needs a base). Nothing is fetched. The AI gateway comes from an env var (constants/gateway.ts); the local-LLM default http://localhost:11434/v1 is a user-entered Ollama address (context/SettingsContext.tsx, AISettingsModal.tsx), not a backend the release depends on. The guard reports only the first file it matches, so after a change in this area run `appstore_guard_gate.py --raw` and read every hit."
+    },
+    {
+      "id": "APPLE-5.1.1-NO-ACCOUNT-DELETION",
+      "file": "database/schema.ts",
+      "checked": "2026-11-18",
+      "reason": "Musclog has no account: no sign-up, login, cloud or server profile. Onboarding makes a profile on the device (currentUserSyncId is a local UUID). The match is the `external_account_id // OAuth provider ID` column comment and the unused UserService.linkOAuthAccount/unlinkOAuthAccount (called only by their own test). Everything the person entered is deleted in-app from Settings > Backups and data (clear all data). Re-check if a real sign-in is ever added."
+    },
+    {
+      "id": "APPLE-GAMBLING-BRAZIL-LICENSE",
+      "file": "utils/exerciseSearch.ts",
+      "checked": "2026-11-18",
+      "reason": "The word is 'betting' in a code comment ('Hermes support is not worth betting search on'). Musclog has no betting, odds or wagering feature."
+    },
+    {
+      "id": "BOTH-PLACEHOLDER",
+      "file": "components/modals/MealEstimationModal.tsx",
+      "checked": "2026-11-18",
+      "reason": "https://example.com/*.jpg are the sample items of MealEstimationModal's demo data, which only the guarded /app/test/modals fixture renders (nothing in the shipped screens imports the modal). Other example.com / example.org strings are in tests, the dev seeder and an input placeholder ('e.g. alex@example.com')."
+    },
+    {
+      "id": "BOTH-SUBSCRIPTION-HARD-CANCEL",
+      "file": "components/cameraShutter.ts",
+      "checked": "2026-11-18",
+      "reason": "The text matched is a code comment about a native camera call that 'cannot be cancelled'. Musclog has no subscription, purchase or membership; everything is free."
+    },
+    {
+      "id": "BOTH-LOOTBOX-ODDS",
+      "file": "data/exerciseCatalogue.ts",
+      "checked": "2026-11-18",
+      "reason": "The pattern 'gacha' matches inside the Portuguese 'agachamento' (squat) and its forms in the exercise catalogue and locale data. There is no loot box, random reward or in-app purchase."
+    },
+    {
+      "id": "RN-OTA-UNDECLARED",
+      "file": "package.json",
+      "checked": "2026-11-18",
+      "reason": "expo-updates is installed (Expo's own modules need it for reloadAsync in utils/app.ts) but disabled: ios/MusclogLiftLogRepeat/Supporting/Expo.plist has EXUpdatesEnabled false, app.json has no `updates` block, and nothing calls checkForUpdateAsync/fetchUpdateAsync. No JS is delivered outside the store build."
+    },
+    {
+      "id": "BOTH-UNSAFE-DEEPLINK",
+      "file": "ios/",
+      "checked": "2026-11-18",
+      "reason": "Universal Links are configured: expo.ios.associatedDomains (applinks:musclog.app) in app.json and the com.apple.developer.associated-domains entitlement, with the association file at public/.well-known/apple-app-site-association (served by the Pages workflow). The guard looks for the text 'apple-app-site-association' inside source files, and the file's own JSON does not contain its name. The custom scheme com.werules.logger:// is what the widgets and the open link bridge use, and open links only act after onboarding (app/+native-intent.tsx)."
+    }
+  ]
+}

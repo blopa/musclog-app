@@ -128,7 +128,7 @@
     "llms": {
       "section": "Product",
       "title": "Lifting Tools",
-      "summary": "Free calculators for lifters: one-rep max, plates, warm-ups, RPE, protein, calorie deficit and net carbs."
+      "summary": "Free calculators for lifters: one-rep max, plates, warm-ups, RPE, progressive overload, deload, protein, calorie deficit and net carbs, plus a printable workout log."
     }
   },
   "toolOneRepMax": {
@@ -193,6 +193,30 @@
       "section": "Product",
       "title": "Net Carbs vs Total Carbs",
       "summary": "Convert between net and total carbs and see why US and EU food labels disagree."
+    }
+  },
+  "toolProgressiveOverload": {
+    "path": "/tools/progressive-overload-calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Progressive Overload Calculator",
+      "summary": "Next session's weight and reps from last session, using the progression rule the app uses."
+    }
+  },
+  "toolDeloadCalculator": {
+    "path": "/tools/deload-calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Deload Calculator",
+      "summary": "The lighter weight, the sets to keep, the effort and the length of a deload week, from the app's own rules."
+    }
+  },
+  "toolWorkoutLogTemplate": {
+    "path": "/tools/workout-log-template",
+    "llms": {
+      "section": "Product",
+      "title": "Free Printable Workout Log",
+      "summary": "A printable workout log (PDF) and a spreadsheet template (XLSX, CSV) that the Musclog app can import."
     }
   },
   "programs": {

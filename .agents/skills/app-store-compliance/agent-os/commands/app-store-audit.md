@@ -1,0 +1,45 @@
+---
+description: Run an enterprise pre submission compliance audit on an iOS or Android app against Apple App Store and Google Play rejection rules. Pass a project path or run from the project root.
+---
+
+# App Store Audit
+
+Run a full pre submission compliance audit on a mobile app project so it passes review on the first try. Use before any submission, or after a rejection to build the fix and appeal plan.
+
+## What to do
+
+1. Resolve the target. Use the path the user passed as an argument, otherwise the current working directory.
+
+2. Run the automated guard against the project root and capture the ranked findings.
+
+```
+bash ~/.claude/hooks/app-store-compliance-guard.sh <project-path>
+```
+
+2b. Load the structured references for full context. From `~/.claude/skills/app-store-compliance/references/` load the by app type file that matches the app and the relevant rule category files, so the audit reasons from the full guideline set, not only the guard output. Offer the user `templates/REVIEW-NOTES-TEMPLATE.md` for a new submission.
+
+2c. Run the metadata layer. If the user pulled the listing into a metadata directory, run `python3 ~/.claude/skills/app-store-compliance/scripts/metadata-audit.py <metadata-dir>` to audit the real store listing, and `--propose` to write suggested fixes. The pull step is `scripts/pull-metadata.sh apple`. A large share of rejections live in the listing text.
+
+2d. Run the Apple Developer requirements monitor. Run `python3 ~/.claude/skills/app-store-compliance/scripts/monitor.py --project <project-path>` to monitor updates to 25 critical tracks against Apple Developer announcements, identify affected files, generate migration tasks, estimate release impact, and draft pull requests.
+
+3. Run the human checks the scanner cannot see, from `~/.claude/skills/app-store-compliance/docs/PRE-SUBMISSION-CHECKLIST.md`.
+   - The production backend is live and stays up during review.
+   - A working demo account exists, with no 2FA the reviewer cannot pass, not expired, pre populated with data.
+   - The Apple privacy nutrition labels and the privacy manifest, and the Google Data Safety form, match the real runtime behavior including every SDK.
+   - Screenshots show the app in use, the listing claims only what the app does.
+   - For a new Google personal account, the closed test of 12 testers over 14 days is complete.
+   - The 2026 Apple age rating questionnaire is answered.
+   - For any app reaching EU, US, or other-global users, load and check the legal layer. `docs/EU-REGULATORY-2026.md` (the EU AI Act, the DMA and the Core Technology Fee, DSA trader status, the European Accessibility Act) and `docs/GLOBAL-REGULATORY-2026.md` (COPPA, the US state App Store Accountability Acts, the external-link rules, the UK, Australia, Brazil, Canada, South Korea, India, and more, plus Apple's cross-region age-assurance spine). Store review does not check these, and several are release blockers with real fines.
+   - Load and check the platform-mechanics gates for the app's type. `docs/PLATFORM-MECHANICS-2026.md` (macOS notarization, Guideline 4.2 and 4.3, reader apps, France ANSSI encryption, visionOS and watchOS and tvOS specifics, Android developer verification, Foreground Service types, Play Integrity, Play Billing v8, target API, Health Connect, and the cross-cutting CSAM, UGC, accessibility, deletion-URL, sanctions, and PCI items). These are current, common, blocking causes the base maps did not carry.
+
+4. Produce a ranked findings table. The pattern id, the platform, the cited guideline, the severity, the concrete fix, and the file or setting to change. Order by severity. Mark every critical as a release blocker.
+
+5. If the app was already rejected, find the matching pattern in `~/.claude/skills/app-store-compliance/data/rejection-patterns.json`, apply the fix, then follow the appeal playbook in the docs. Never resubmit an unchanged build.
+
+6. Give a clear verdict. Clear to submit, or blocked with a numbered fix list. Never report clear while a critical finding stands.
+
+## Reference
+
+- Skill. `~/.claude/skills/app-store-compliance/`
+- Guard. `~/.claude/hooks/app-store-compliance-guard.sh`
+- Public playbook. https://github.com/mjmirza/app-store-compliance

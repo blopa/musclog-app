@@ -21,7 +21,6 @@
     "creation": {
       "title": "Новая цель по упражнению",
       "chooseType": "Что вы хотите отслеживать?",
-      "comingSoon": "Скоро",
       "chooseExercise": "Выберите упражнение",
       "searchPlaceholder": "Поиск упражнений…",
       "currentEstimated1RM": "Ваш расчётный текущий 1ПМ: {{value}} {{unit}}",

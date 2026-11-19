@@ -1,6 +1,5 @@
-<b>Musclog - Lift, Log, Repeat</b>
-
-Musclog è un diario di allenamento e un contacalorie in un'unica app gratuita e open source. Registra le sessioni in palestra e i pasti, segui i tuoi progressi e tieni tutto sul telefono: nessun account, nessuna pubblicità, e la registrazione funziona offline.
+<b>Registra allenamenti e pasti in un'unica app: senza account, senza pubblicità e senza abbonamento.</b>
+Musclog è un diario di allenamento e un contacalorie gratuito e open source. Ti suggerisce il carico della prossima sessione in base all'ultima, scansiona i codici a barre e funziona offline. I tuoi dati restano sul telefono.
 
 L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile) e russo.
 
@@ -11,10 +10,10 @@ L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile) e russ
 
 <b>Diario di allenamento e tracker per la palestra</b>
 • Registra serie, ripetizioni e carichi in pochi secondi, con timer di recupero, serie di riscaldamento, superserie e note per ogni esercizio.
+• Il sovraccarico progressivo reso semplice: Musclog ti suggerisce il carico e le ripetizioni successivi in base all'ultima sessione e spiega ogni numero che modifica. Scegli doppia progressione, regole lineari o in percentuale, o mantieni il controllo.
 • Monitora lo sforzo con l'RPE o le ripetizioni in riserva (RIR).
 • Più di 870 esercizi con foto e muscoli coinvolti, ricercabili nella tua lingua, oppure aggiungi i tuoi.
 • Schede già pronte: Push Pull Legs, Upper/Lower, Full Body, PHUL, split su 5 giorni e routine brevi da fare a casa o senza attrezzi. Oppure crea il tuo programma settimanale o a rotazione.
-• Il sovraccarico progressivo reso semplice: Musclog ti suggerisce il carico e le ripetizioni successivi in base all'ultima sessione e spiega ogni numero che modifica. Scegli doppia progressione, regole lineari o in percentuale, o mantieni il controllo.
 • Calcolatore dei dischi per il bilanciere e i dischi della tua palestra, in kg o lb.
 • Sostituisci un esercizio quando una macchina è occupata o qualcosa fa male, e lascia che Musclog ricordi cosa evitare.
 • Importa la tua cronologia da Strong, Hevy o FitNotes.
@@ -43,7 +42,7 @@ L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile) e russ
 
 <b>Privacy fin dall'origine</b>
 • Peso, grasso corporeo e diari alimentari sono cifrati sul tuo dispositivo.
-• Blocca l'intera app, oppure solo i dati di ciclo, allenamento, alimentazione o progressi, con l'impronta digitale o il PIN del telefono.
+• Blocca l'intera app, oppure solo i dati di ciclo, allenamento, alimentazione o progressi, con la biometria o il codice del telefono.
 • Esporta o salva i tuoi dati, oppure trasferiscili su un altro telefono scansionando codici QR, senza cloud.
 • I report anonimi sugli arresti aiutano a correggere i bug e si disattivano.
 • Widget per la schermata Home, diversi temi di colore, e English, Español, Nederlands, Português (Brasil) e Русский.

@@ -2,10 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const {
+  APP_STORE_DESIGN,
   DESIGN,
   OUTPUT_WIDTH,
   PLAY_LOCALES,
   SCREEN_SHAPES,
+  TARGETS,
   deinlineProject,
   designLocales,
   designProblems,
@@ -15,18 +17,25 @@ const {
   resolveOsgCommand,
   screenPadding,
 } = require('../google-play-phone-screenshots') as {
+  APP_STORE_DESIGN: string;
   DESIGN: string;
   OUTPUT_WIDTH: number;
   PLAY_LOCALES: Record<string, string>;
   SCREEN_SHAPES: Record<string, Shape>;
+  TARGETS: Record<string, Target>;
   deinlineProject: (
     project: Design,
     refsByHash: Map<string, string>
   ) => { design: Design; embedded: number };
   designLocales: (design: Design) => string[];
-  designProblems: (design: Design) => string[];
+  designProblems: (design: Design, target?: Target) => string[];
   inlineDesign: (design: Design) => Promise<{ project: Design; refsByHash: Map<string, string> }>;
-  listingPathFor: (filename: string, locale: string) => string | null;
+  listingPathFor: (
+    filename: string,
+    locale: string,
+    target?: Target,
+    design?: Design | null
+  ) => string | null;
   projectForLocale: (design: Design, locale: string) => Design;
   resolveOsgCommand: (
     dir: string,
@@ -41,6 +50,11 @@ const {
 };
 
 type Shape = { width: number; height: number; cameraBottom: number };
+
+type Target = {
+  label: string;
+  isManaged: (name: string) => boolean;
+};
 
 type Element = {
   id: string;
@@ -294,6 +308,122 @@ describe('google-play-phone-screenshots composer', () => {
       expect(byId('headline')?.fontSize).toBe(45);
       expect(byId('subheadline')?.fontSize).toBe(20);
       expect(byId('phone')).toBeUndefined();
+    });
+  });
+
+  describe('App Store iPhone design', () => {
+    const appStore = JSON.parse(fs.readFileSync(APP_STORE_DESIGN, 'utf8')) as Design;
+    const BASE = designLocales(committed)[0];
+    const captionOf = (board: Board, id: string, locale: string) =>
+      locale === BASE
+        ? board.elements.find((element) => element.id === id)?.content
+        : (board.localized[locale]?.[id] as { content?: string } | undefined)?.content;
+    const localesOf = (design: Design) => designLocales(design);
+
+    // The captures are working files written by `npm run screenshots:app-store-iphone:capture`, so
+    // the structural check does not depend on them; the next test does, and runs only when they exist.
+    const isMissingCaptures = (problem: string) => problem.startsWith('missing files');
+    const capturesPresent = !designProblems(appStore, TARGETS.appstore).some(isMissingCaptures);
+
+    it('accepts the committed App Store design', () => {
+      expect(
+        designProblems(appStore, TARGETS.appstore).filter((problem) => !isMissingCaptures(problem))
+      ).toEqual([]);
+    });
+
+    (capturesPresent ? it : it.skip)('has a capture for every screen in every language', () => {
+      expect(designProblems(appStore, TARGETS.appstore)).toEqual([]);
+    });
+
+    it('uses the iPhone 17 Pro Max device and shape for every device element', () => {
+      expect(SCREEN_SHAPES['iphone-17-pro-max']).toBeDefined();
+      for (const board of appStore.projectData) {
+        const devices = board.elements.filter((element) => element.type === 'device');
+        expect(devices.length).toBeGreaterThan(0);
+        for (const device of devices) {
+          expect(device.deviceType).toBe('iphone-17-pro-max');
+        }
+      }
+    });
+
+    it('renders every board at 1284x2778 (2568x5556 artboard)', () => {
+      for (const board of appStore.projectData) {
+        expect(board.size).toEqual({ width: 2568, height: 5556 });
+      }
+    });
+
+    it('has the same eight artboards as the Play design', () => {
+      expect(appStore.projectData.map((board) => board.name)).toEqual(
+        committed.projectData.map((board) => board.name)
+      );
+      expect(appStore.projectData).toHaveLength(8);
+    });
+
+    it('carries the same headline and subheadline text in every language as the Play design', () => {
+      expect(localesOf(appStore)).toEqual(localesOf(committed));
+      for (const locale of localesOf(committed)) {
+        committed.projectData.forEach((playBoard, index) => {
+          const storeBoard = appStore.projectData[index];
+          for (const id of ['headline', 'subheadline']) {
+            expect(captionOf(storeBoard, id, locale)).toBe(captionOf(playBoard, id, locale));
+          }
+        });
+      }
+    });
+
+    it('names no Android, Health Connect or Google Play in any artboard text', () => {
+      const forbidden = /health connect|android|google play/i;
+      expect(JSON.stringify(appStore.projectData)).not.toMatch(forbidden);
+      expect(JSON.stringify(committed.projectData)).not.toMatch(forbidden);
+    });
+
+    it('rejects an App Store board of the wrong height as not IPHONE_65', () => {
+      const copy = structuredClone(appStore);
+      copy.projectData[0].size = { width: 2568, height: 5000 };
+      expect(designProblems(copy, TARGETS.appstore)).toEqual(
+        expect.arrayContaining([expect.stringContaining('IPHONE_65')])
+      );
+    });
+
+    it('maps App Store captures to the per-locale iphone folder with the board slug', () => {
+      expect(
+        listingPathFor(
+          '03_Food-details_2568x5556.png',
+          'es-ES',
+          TARGETS.appstore,
+          appStore
+        )?.endsWith(
+          path.join('ios', 'appstore', 'screenshots', 'es-ES', 'iphone', '03-food-details.png')
+        )
+      ).toBe(true);
+      expect(
+        listingPathFor('03_Food-details_2568x5556.png', 'ru', TARGETS.appstore, appStore)?.endsWith(
+          path.join('ios', 'appstore', 'screenshots', 'ru', 'iphone', '03-food-details.png')
+        )
+      ).toBe(true);
+      expect(
+        listingPathFor('03_Food-details_2568x5556.png', 'de-DE', TARGETS.appstore, appStore)
+      ).toBeNull();
+    });
+
+    it('still maps Play renders to the numbered Play listing file by default', () => {
+      expect(
+        listingPathFor('01_Home_2160x3840.png', 'en-US')?.endsWith(
+          path.join('android', 'play', 'metadata', 'en-US', 'images', 'phoneScreenshots', '01.png')
+        )
+      ).toBe(true);
+    });
+
+    it('manages only the target-specific file names', () => {
+      expect(TARGETS.appstore.isManaged('01-home.png')).toBe(true);
+      expect(TARGETS.appstore.isManaged('notes.txt')).toBe(false);
+      expect(TARGETS.play.isManaged('01.png')).toBe(true);
+      expect(TARGETS.play.isManaged('01-home.png')).toBe(false);
+    });
+
+    it('does not caption the Muscles board as strength levels', () => {
+      const muscles = committed.projectData[5];
+      expect(captionOf(muscles, 'headline', BASE)).not.toBe('How strong are you?');
     });
   });
 

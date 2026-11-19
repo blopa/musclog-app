@@ -1,6 +1,5 @@
-<b>Musclog - Lift, Log, Repeat</b>
-
-Musclog ist Trainingstagebuch und Kalorienzähler in einer kostenlosen Open-Source-App. Protokolliere deine Einheiten im Gym und deine Mahlzeiten, verfolge deinen Fortschritt und behalte alles auf deinem Handy: kein Konto, keine Werbung, und das Protokollieren funktioniert offline.
+<b>Erfasse Training und Essen in einer App: ohne Konto, ohne Werbung, ohne Abo.</b>
+Musclog ist ein kostenloses Open-Source-Trainingstagebuch mit Kalorienzähler. Es schlägt dir Gewicht und Wiederholungen fürs nächste Training vor, scannt Barcodes und funktioniert offline. Deine Daten bleiben auf deinem Handy.
 
 Die App ist auf Englisch, Spanisch, Niederländisch, Portugiesisch (Brasilien) und Russisch verfügbar.
 
@@ -11,10 +10,10 @@ Die App ist auf Englisch, Spanisch, Niederländisch, Portugiesisch (Brasilien) u
 
 <b>Trainingsprotokoll und Gym-Tracker</b>
 • Sätze, Wiederholungen und Gewicht in Sekunden erfassen, mit Pausentimer, Aufwärmsätzen, Supersätzen und Notizen zu jeder Übung.
+• Progressive Überlastung einfach gemacht: Musclog schlägt dir Gewicht und Wiederholungen für die nächste Einheit anhand deines letzten Trainings vor und erklärt jede Zahl, die er ändert. Wähle doppelte Progression, lineare oder prozentbasierte Regeln oder behalte die Kontrolle.
 • Erfasse die Intensität mit RPE oder Wiederholungen in Reserve (RIR).
 • Über 870 Übungen mit Fotos und Zielmuskeln, durchsuchbar in deiner Sprache, oder lege eigene an.
 • Fertige Pläne: Push Pull Legs, Ober-/Unterkörper, Ganzkörper, PHUL, 5er-Splits sowie kurze Routinen für zu Hause oder ohne Geräte. Oder baue dein eigenes Wochen- oder Rotationsprogramm.
-• Progressive Überlastung einfach gemacht: Musclog schlägt dir Gewicht und Wiederholungen für die nächste Einheit anhand deines letzten Trainings vor und erklärt jede Zahl, die er ändert. Wähle doppelte Progression, lineare oder prozentbasierte Regeln oder behalte die Kontrolle.
 • Scheibenrechner für Stange und Scheiben deines Gyms, in kg oder lb.
 • Tausche eine Übung aus, wenn ein Gerät belegt ist oder etwas wehtut, und lass Musclog sich merken, was du meiden willst.
 • Importiere deinen Verlauf aus Strong, Hevy oder FitNotes.
@@ -43,7 +42,7 @@ Die App ist auf Englisch, Spanisch, Niederländisch, Portugiesisch (Brasilien) u
 
 <b>Privatsphäre von Grund auf</b>
 • Gewicht, Körperfett und Ernährungsprotokolle sind auf deinem Gerät verschlüsselt.
-• Sperre die ganze App oder nur deine Zyklus-, Trainings-, Ernährungs- oder Fortschrittsdaten mit Fingerabdruck oder PIN deines Handys.
+• Sperre die ganze App oder nur deine Zyklus-, Trainings-, Ernährungs- oder Fortschrittsdaten mit Biometrie oder dem Code deines Handys.
 • Exportiere oder sichere deine Daten oder übertrage sie per QR-Code auf ein anderes Handy, ohne Cloud.
 • Anonyme Absturzberichte helfen bei Fehlern und sind abschaltbar.
 • Widgets für den Startbildschirm, mehrere Farbthemen und die Sprachen English, Español, Nederlands, Português (Brasil) und Русский.

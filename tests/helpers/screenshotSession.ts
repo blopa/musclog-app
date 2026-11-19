@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import settingsCopy from '@/lang/locales/en-us/settings.json';
+import { clickTopmost, localeCopy } from '@/tests/layoutAudit/flowKit';
 import { DEFAULT_THEME_BY_MODE, THEME_IDS } from '@/theme.registry';
 
 export const BASE_URL =
@@ -96,4 +97,37 @@ export async function capture(page: Page, filePath: string, waitTime = 3000) {
   await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => undefined);
   await page.waitForTimeout(500);
   await page.screenshot({ path: filePath, fullPage: false });
+}
+
+const SETTINGS_MIRROR_KEY = 'musclog_settings_mirror';
+
+/** Switches the seeded (imperial) app to metric through Settings → Profile and units, in English. */
+export async function selectMetricUnits(page: Page) {
+  await page.goto(`${APP_URL}/settings`, { timeout: 60000 });
+  await page
+    .getByText(localeCopy('en-US', 'settings', ['settings', 'basicSettings', 'title'], ''), {
+      exact: true,
+    })
+    .first()
+    .click();
+  await clickTopmost(
+    page.getByText(
+      localeCopy('en-US', 'editFitnessDetails', ['editFitnessDetails', 'metric'], ''),
+      {
+        exact: true,
+      }
+    )
+  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          (key) => JSON.parse(localStorage.getItem(key) ?? '{}').units as string | undefined,
+          SETTINGS_MIRROR_KEY
+        ),
+      { timeout: 15000 }
+    )
+    .toBe('metric');
+  // LokiJS autosaves every 500ms; leaving earlier discards the choice on the next load.
+  await page.waitForTimeout(2000);
 }

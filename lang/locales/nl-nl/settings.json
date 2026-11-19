@@ -355,8 +355,11 @@
       "musclogFreeTier": {
         "sectionTitle": "Musclog gratis niveau",
         "toggle": "Musclog Gratis Niveau LLM gebruiken",
-        "toggleSubtitle": "Gebruik AI-functies zonder API-sleutel. Onderworpen aan een dagelijkse limiet.",
-        "activeNote": "Gratis niveau is actief. Je eigen API-sleutels worden niet gebruikt."
+        "toggleSubtitle": "Gebruikt Google Gemini. Er geldt een dagelijkse limiet.",
+        "activeNote": "Gratis niveau is actief. Je eigen API-sleutels worden niet gebruikt.",
+        "consentTitle": "Gegevens delen met Google Gemini?",
+        "consentBody": "Wanneer je een AI-functie gebruikt, wordt wat die nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmetingen of chatberichten) via de servers van Musclog naar Gemini, de AI van Google, gestuurd om het antwoord te schrijven. Er wordt niets verzonden tot je er een gebruikt. Het gratis abonnement heeft een beperkt aantal verzoeken per dag.",
+        "consentConfirm": "Akkoord en inschakelen"
       },
       "testKey": "Sleutel testen",
       "testingKey": "Testen…"

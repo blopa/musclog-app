@@ -253,7 +253,7 @@
         }
       },
       "dataSharingTitle": "Melding over Gegevensdeling",
-      "dataSharingBody": "Om AI-functies te bieden, worden sommige fitnessgegevens gedeeld met Musclog-servers. Het gratis abonnement heeft beperkte verzoeken per dag.",
+      "dataSharingBody": "Wanneer je een AI-functie gebruikt, wordt wat die nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmetingen of chatberichten) via de servers van Musclog naar Gemini, de AI van Google, gestuurd om het antwoord te schrijven. Er wordt niets verzonden tot je er een gebruikt. Het gratis abonnement heeft een beperkt aantal verzoeken per dag.",
       "readPrivacyPolicy": "Lees ons Privacybeleid",
       "enable": "Musclog AI inschakelen",
       "noThanks": "Nee bedankt, doorgaan zonder AI"

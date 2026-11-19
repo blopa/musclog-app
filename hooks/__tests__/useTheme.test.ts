@@ -2,8 +2,10 @@
  * @jest-environment jsdom
  */
 
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 
 import { ThemeProvider, ThemeScope } from '@/context/ThemeContext';
 import { useSettings } from '@/hooks/useSettings';
@@ -123,6 +125,61 @@ describe('theme context', () => {
     expect(result.current.id).toBe('kinetic-depth');
     expect(result.current.mode).toBe('dark');
     expect(result.current.theme.colors.background.primary).toBe('#0d1210');
+  });
+
+  it('lets the mirror outrank a readable settings row when asked, as the website does', () => {
+    // The website's write to the row can be lost before a slow database opens; the mirror holds
+    // the newer choice (see `WebsiteThemeSync`).
+    setMirroredThemePreference('kinetic-volt');
+    mockUseSettings.mockReturnValue({ isLoading: false, theme: 'kinetic-blush' });
+    const websiteWrapper = ({ children }: { children: ReactNode }) =>
+      createElement(ThemeProvider, { preferMirror: true }, children);
+
+    const { result } = renderHook(readTheme, { wrapper: websiteWrapper });
+
+    expect(result.current.id).toBe('kinetic-volt');
+  });
+
+  it('renders no palette into static HTML on web, so the pre-paint script stays in charge', () => {
+    // An inline palette on the provider's element outranks :root for the whole page, so every
+    // statically served page showed the default theme until the bundle hydrated.
+    setMirroredThemePreference('kinetic-volt');
+    mockUseSettings.mockReturnValue({ isLoading: true, theme: 'system' });
+
+    const html = renderToString(createElement(ThemeProvider, null, createElement('p', null, 'x')));
+
+    expect(html).not.toMatch(/--c-[\w-]+\s*:/);
+  });
+
+  it('never publishes the default palette while hydrating a page painted from the mirror', async () => {
+    setMirroredThemePreference('kinetic-volt');
+    mockUseSettings.mockReturnValue({ isLoading: true, theme: 'system' });
+    const tree = () => createElement(ThemeProvider, null, createElement('p', null, 'x'));
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(tree());
+    document.body.appendChild(container);
+    const setProperty = jest.spyOn(document.documentElement.style, 'setProperty');
+    const setAttribute = jest.spyOn(document.documentElement, 'setAttribute');
+
+    let root: ReturnType<typeof hydrateRoot> | undefined;
+    try {
+      await act(async () => {
+        root = hydrateRoot(container, tree());
+      });
+
+      const backgrounds = setProperty.mock.calls
+        .filter(([name]) => name === '--c-bg-primary')
+        .map(([, value]) => value);
+      expect(backgrounds).toEqual([themeCssVariables['kinetic-volt']['--c-bg-primary']]);
+      expect(
+        setAttribute.mock.calls.filter(([name]) => name === 'data-theme-id').map(([, id]) => id)
+      ).toEqual(['kinetic-volt']);
+    } finally {
+      setProperty.mockRestore();
+      setAttribute.mockRestore();
+      act(() => root?.unmount());
+      container.remove();
+    }
   });
 
   it('leaves the root-level web variables in place when the provider unmounts', () => {

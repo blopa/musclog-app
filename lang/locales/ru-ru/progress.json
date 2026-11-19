@@ -127,6 +127,8 @@
     "manageNutritionDescription": "Просмотреть и редактировать журналы питания",
     "listMeasurementsDescription": "Просмотреть все измерения тела",
     "syncHealthConnectDescription": "Импортировать данные из Google Health Connect",
+    "syncAppleHealth": "Синхронизировать Apple Health",
+    "syncAppleHealthDescription": "Импортировать данные из Apple Health",
     "syncing": "Синхронизация...",
     "quickActions": "Быстрые действия",
     "measurement": {

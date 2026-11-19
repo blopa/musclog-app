@@ -3,6 +3,85 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Google Analytics received no data at all (2026-11-19)
+
+### Symptom
+
+GA4 showed "No data received from your website yet" eight months after the stream was created
+(March 2026), although visitors accepted the consent banner, `gtag/js` loaded and `window.dataLayer`
+filled with the right commands.
+
+### Cause
+
+The gtag stub in `utils/websiteAnalytics.web.ts` was `function gtag(...args) { dataLayer.push(args) }`.
+gtag.js executes only dataLayer entries that are `arguments` objects; a rest parameter is a plain
+array, which it silently skips. So `js`, `config` and every `page_view`, `store_button_click` and
+`demo_start` were dropped and no `/g/collect` request was ever made. Re-sending the same three commands
+as `arguments` on the live site produced a collect hit at once.
+
+### Fix
+
+The stub pushes `arguments`, as Google's own snippet does. Pinned by
+`utils/__tests__/websiteAnalyticsGtag.test.ts`, which checks every dataLayer entry is an `arguments`
+object. Don't "modernise" it back to a rest parameter.
+
+## Directory routes redirected to http:// with a trailing slash (2026-11-19)
+
+### Symptom
+
+123 of the 211 sitemap URLs answered 301 to `http://musclog.app/<path>/`, while the sitemap and every
+canonical use the slash-less https URL, so Google saw a redirect and a canonical mismatch.
+
+### Cause
+
+Expo exports blog, category, tag, tools and programs pages as `X/index.html`. GitHub Pages answers a
+directory URL with a 301 to the slash form, and behind Cloudflare (which reaches the origin over http)
+that redirect points at `http://`. Where a flat file sits beside the directory (`dist/alternatives.html`
+plus `dist/alternatives/`), `/alternatives` was served 200 with no redirect.
+
+### Fix
+
+`scripts/flatten-web-indexes.js`, the last step of `build-android-web`, copies every `X/index.html` to
+`X.html` (never overwriting, skipping route groups, `_` directories and asset folders). Pinned by
+`scripts/__tests__/flattenWebIndexes.test.ts`.
+
+## Website pages opened in the default theme, then switched seconds later or not at all (November 2026)
+
+### Symptom
+
+A theme picked on the website applied at once, but the next page (say a blog post from `/blog`)
+loaded in the default palette, stayed that way for about ten seconds on a phone, and only then
+switched. Sometimes, on Chrome for Android, it never switched.
+
+### Cause
+
+Two separate faults.
+
+1. The pre-paint script in `app/+html.tsx` put the visitor's palette on `:root`, but `ThemeProvider`
+   also wrote the palette inline on its own wrapper `View` (NativeWind `vars()`), and the static export
+   rendered that View in the default palette, since a server render cannot read the visitor's storage.
+   An inline value on an element inside `<html>` outranks `:root` for everything below it, so every
+   statically served page showed the default theme until the bundle loaded and hydrated (seconds on a
+   phone). The hydration render made it worse: `useSyncExternalStore` serves server snapshots there,
+   so the provider resolved the default palette and its effect wrote that over `:root` too.
+2. A browser that has also used the web app opens that app's database on every website page, and
+   once it was readable its theme row outranked the website's choice. The picker's write to that row
+   is lost when the visitor leaves the page before the database finishes opening, so the stale row
+   brought the old theme back and `ThemeProvider` recorded it into the mirror, overwriting the choice.
+
+### Fix
+
+On web `ThemeProvider` puts nothing inline (the palette lives on `:root` only) and skips its
+hydration render (`useIsHydrated`), so the pre-paint script (`utils/themePrepaint.ts`) is the only
+thing that colours a static page before hydration. That script now also paints the OS default when
+storage throws, and follows the OS scheme for a `system` preference. On the website the mirror
+outranks the settings row (`<ThemeProvider preferMirror>` in `WebsiteProviders`), because every
+theme change in the browser reaches the mirror, and `WebsiteThemeSync` writes the mirror back into
+the row whenever the two disagree, so the app opens in the theme picked on the website. Pinned by
+`hooks/__tests__/useTheme.test.ts` (no inline palette in server HTML; no default palette published
+while hydrating), `utils/__tests__/themePrepaint.test.ts` and
+`components/website/__tests__/WebsiteThemeSync.test.ts`.
+
 ## Steps never synced from Health Connect on Android (November 2026)
 
 ### Symptom
@@ -236,6 +315,19 @@ touch and prepares and commits through `commitPrepared`, which now accepts an as
 the snapshots on failure. Schedules the membership sync already prepared are not prepared a second time.
 Pinned by `database/services/__tests__/WorkoutTemplateService.test.ts`. Any new writer that prepares
 several existing records must go through `commitPrepared` with all of them listed.
+
+### Still pending after the fix: `workout_template_sets` (2.16.5, November 2026)
+
+Sentry still saw "Cannot update a record with pending changes (workout_template_sets#…)" from
+`useWorkoutForm.saveTemplate` on 2.16.5. `saveExistingTemplate` is the only code that prepares template
+sets, and a pending flag lives only in the JS session (a killed app starts clean), so some earlier prepare in
+the same session left a set pending; **what did is not yet known**. `saveExistingTemplate` now calls
+`clearStalePending` (`database/commitPrepared.ts`) inside the writer, where nothing legitimately holds those
+records pending, so the save goes through. It reports each time it clears something (Sentry warning
+"Stale pending records cleared before saving a workout": the table, ids and state of what was stuck, plus
+`getLastCommitFailure()`, the last failed `commitPrepared` of the session and how long ago). When that event
+shows up, its `lastCommitFailure` is the lead to the real cause; remove the cleanup only once that is fixed.
+Pinned by `database/services/__tests__/WorkoutTemplateService.test.ts`.
 
 ## Nutrition kept disagreeing with Health Connect / Apple Health (November 2026)
 

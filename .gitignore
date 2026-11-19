@@ -118,3 +118,13 @@ layout-audit-report/
 
 # Android bundles built by scripts/release-android.sh
 .release/
+
+# asc (App Store Connect CLI): a repo-local profile (`asc auth login --local`) would hold credentials.
+# Keys themselves stay in ~/keys and are covered by *.p8 above. See docs/APP_STORE.md.
+.asc/
+ios/appstore/*.local.json
+# The App Review contact (name, phone, email) that `appstore.sh pull --with-settings` writes: personal data.
+ios/appstore/metadata/review-information.json
+
+# Online-presence snapshots and reviews (docs/ONLINE_PRESENCE.md): local research data
+.presence/

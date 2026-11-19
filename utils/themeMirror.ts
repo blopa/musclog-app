@@ -14,9 +14,11 @@ import { themeCssVariables } from '@/theme.tokens';
  * So this module holds two things: the preference itself, which is what the
  * site's picker writes and `ThemeProvider` falls back to, and the resolved
  * `--c-*` map, which the blocking script in `app/+html.tsx` replays before the
- * body renders. The settings table stays authoritative wherever it can be read;
- * this is the stand-in, and `ThemeProvider` refreshes it from the real row as
- * soon as one arrives.
+ * body renders. Inside the app the settings table stays authoritative wherever
+ * it can be read; this is the stand-in, and `ThemeProvider` refreshes it from the
+ * real row as soon as one arrives. On the website it is the other way round
+ * (`ThemeProvider preferMirror`): every theme change in this browser reaches the
+ * mirror, so it wins, and `WebsiteThemeSync` copies it back into the row.
  */
 export const THEME_MIRROR_STORAGE_KEY = 'musclog_theme';
 

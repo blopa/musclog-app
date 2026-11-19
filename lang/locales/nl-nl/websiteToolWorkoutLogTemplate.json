@@ -1,0 +1,74 @@
+{
+  "websiteToolWorkoutLogTemplate": {
+    "title": "Gratis printbaar trainingslogboek",
+    "intro": "Download een trainingslogboek om af te drukken, of een spreadsheet om op de computer in te vullen. Beide zijn gratis, zonder registratie. De spreadsheet wordt opgeslagen als CSV, die de Musclog-app kan importeren.",
+    "downloads": {
+      "title": "Downloads",
+      "pdfA4": "Printbaar logboek, A4",
+      "pdfA4Note": "PDF, 4 liggende bladen. Voor A4-papier.",
+      "pdfLetter": "Printbaar logboek, US Letter",
+      "pdfLetterNote": "PDF, 4 liggende bladen. Voor US Letter-papier.",
+      "xlsx": "Spreadsheetsjabloon",
+      "xlsxNote": "Excel-bestand (.xlsx) dat ook opent in Google Sheets, Numbers en LibreOffice. Een Log-blad en een Read me-blad.",
+      "csv": "CSV-sjabloon",
+      "csvNote": "Dezelfde kolommen als platte tekst, voor elke spreadsheet of voor de app.",
+      "english": "De bestanden zijn in het Engels, welke taal deze pagina ook heeft."
+    },
+    "check": {
+      "title": "Controleer je ingevulde CSV",
+      "intro": "Kies je bestand en zie wat Musclog eruit zou lezen. Het gebruikt in je browser dezelfde lezer als de app. Het bestand wordt niet geüpload.",
+      "file": "CSV-bestand",
+      "unitLabel": "Gewichten in je bestand zijn in",
+      "kg": "kg",
+      "lb": "lb",
+      "result": "Musclog zou {{workouts}} en {{sets}} lezen.",
+      "workoutCount_one": "{{formattedCount}} training",
+      "workoutCount_few": "{{formattedCount}} trainingen",
+      "workoutCount_many": "{{formattedCount}} trainingen",
+      "workoutCount_other": "{{formattedCount}} trainingen",
+      "setCount_one": "{{formattedCount}} set",
+      "setCount_few": "{{formattedCount}} sets",
+      "setCount_many": "{{formattedCount}} sets",
+      "setCount_other": "{{formattedCount}} sets",
+      "skipped_one": "{{formattedCount}} rij is overgeslagen: een ontbrekende of toekomstige datum, geen oefeningnaam of niets gemeten.",
+      "skipped_few": "{{formattedCount}} rijen zijn overgeslagen: een ontbrekende of toekomstige datum, geen oefeningnaam of niets gemeten.",
+      "skipped_many": "{{formattedCount}} rijen zijn overgeslagen: een ontbrekende of toekomstige datum, geen oefeningnaam of niets gemeten.",
+      "skipped_other": "{{formattedCount}} rijen zijn overgeslagen: een ontbrekende of toekomstige datum, geen oefeningnaam of niets gemeten.",
+      "problems": {
+        "empty": "Het bestand is leeg.",
+        "tooLarge": "Het bestand is te groot om hier te controleren.",
+        "unreadable": "Dit lijkt geen trainingslogboek. Laat de koprij van het sjabloon zoals die is.",
+        "noRows": "Het bestand heeft een koprij, maar geen sets eronder.",
+        "read": "Het bestand kon niet worden gelezen."
+      },
+      "exampleWarning": "Verwijder de voorbeeldrij in het sjabloon voordat je importeert, anders wordt die als echte set gelezen."
+    },
+    "sections": [
+      {
+        "title": "Wat er in het printbare logboek staat",
+        "body": [
+          "Elk blad is één training. Bovenaan schrijf je de datum, de training, je lichaamsgewicht en of je in kg of lb traint. Daaronder staan twaalf oefeningrijen met elk vijf sets, een vak voor het gewicht, een vak voor de herhalingen en een kolom Notities voor hoe zwaar een set aanvoelde of voor alles wat pijn deed.",
+          "De pdf heeft vier bladen, dus één keer printen dekt ongeveer een of twee weken. Print zoveel kopieën als je nodig hebt. De bladen bevatten geen programma: jij bepaalt wat in de rijen komt."
+        ]
+      },
+      {
+        "title": "Hoe je de spreadsheet invult",
+        "body": [
+          "Schrijf één rij per set: de datum, de naam van de training, de oefening, het setnummer, het gewicht en de herhalingen. RPE en Notities zijn optioneel. Het gewicht is een gewoon getal in de eenheid die je altijd gebruikt. Laat Reps leeg voor een set op tijd. RPE 10 is een set zonder reserve, 9 laat één herhaling over en 8 laat er twee over.",
+          "De kolommen volgen het formaat dat de importeur van Musclog leest, dus je hoeft niets om te zetten. Sla het Log-blad op als CSV-bestand en open dan in de app Instellingen, daarna Back-ups en gegevens, daarna Trainingen importeren. Musclog koppelt de oefeningnamen aan de catalogus en toont een controle voordat er ook maar één sessie wordt opgeslagen."
+        ]
+      },
+      {
+        "title": "Papier, een spreadsheet of een app",
+        "body": [
+          "Papier heeft geen batterij en geen account nodig, en een set noteren kost een paar seconden. Wat het niet kan, is voor je terugkijken: je leest zelf het blad van vorige week om te bepalen wat je vandaag traint.",
+          "Een spreadsheet kan je volume optellen en een oefening grafisch maken, als je de formules zelf bouwt. Musclog doet dat en berekent het volgende gewicht op basis van je laatste sessie, met de reden erbij, maar het logboek is in beide gevallen van jou. Het is een gratis app met open source, je gegevens blijven op je apparaat, en de spreadsheet hierboven kun je erin brengen."
+        ]
+      }
+    ],
+    "articles": {
+      "trackProgress": "Zo volg je je vooruitgang in de sportschool: een beginnersgids",
+      "importHistory": "Breng je trainingsgeschiedenis van Strong, Hevy of FitNotes over"
+    }
+  }
+}

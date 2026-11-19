@@ -1,0 +1,239 @@
+#!/usr/bin/env bash
+# Test suite for scripts/monitor-ai-policy.py
+# Verifies mock RSS input parsing, AI keyword matching, codebase scanning,
+# documentation generation, and the presence of exactly 15 required non-vague sections in the PR draft.
+
+set -uo pipefail
+
+PASS=0
+FAIL=0
+
+ok()   { PASS=$((PASS+1)); printf 'PASS  %s\n' "$1"; }
+bad()  { FAIL=$((FAIL+1)); printf 'FAIL  %s\n' "$1"; }
+
+MOCK_JSON="/tmp/test_ai_announcements.json"
+OUT_DOCS="/tmp/test_ai_migration.md"
+OUT_PR="/tmp/test_ai_pr.md"
+
+# Cleanup files first
+cleanup() {
+  rm -f "$MOCK_JSON" "$OUT_DOCS" "$OUT_PR" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+# 1. Create a mock dataset containing both unrelated news and relevant AI policy announcements
+cat << 'EOF' > "$MOCK_JSON"
+[
+  {
+    "id": "UNRELATED-NEWS",
+    "platform": "Apple",
+    "title": "New Apple Arcade Games Coming in Spring",
+    "description": "Discover new games arriving on Apple Arcade this Spring including classic card games and puzzle games.",
+    "link": "https://developer.apple.com/news/?id=arcade_spring",
+    "pubDate": "Mon, 10 Mar 2026 09:00:00 PDT"
+  },
+  {
+    "id": "APPLE-AI-TEST-RULE",
+    "platform": "Apple",
+    "title": "Important Updates on Generative AI Requirements and User Disclosures",
+    "description": "We are introducing new compliance checks for generative AI outputs. Developers must include user disclosures and clear consent mechanisms for third-party AI data flows.",
+    "link": "https://developer.apple.com/news/?id=ai_test_2026",
+    "pubDate": "Tue, 11 Mar 2026 10:00:00 PDT"
+  },
+  {
+    "id": "GOOGLE-AI-TEST-RULE",
+    "platform": "Google Play",
+    "title": "Google Play Policy Revision: Disclosure for AI-Generated Media",
+    "description": "All developers utilizing generative AI for user-generated content must implement prominent safety safeguards and disclosures.",
+    "link": "https://android-developers.googleblog.com/",
+    "pubDate": "Wed, 12 Mar 2026 11:00:00 PDT"
+  }
+]
+EOF
+
+echo "== Running AI Policy Monitor Test Suite =="
+
+# 2. Execute scripts/monitor-ai-policy.py with mock dataset
+python3 scripts/monitor-ai-policy.py --mock "$MOCK_JSON" --dir . --output-docs "$OUT_DOCS" --pr-output "$OUT_PR" > /tmp/monitor_run.log 2>&1
+RC=$?
+
+if [ "$RC" -ne 0 ]; then
+  bad "monitor-ai-policy.py failed with exit code $RC. Output:"
+  cat /tmp/monitor_run.log
+  exit 1
+fi
+ok "monitor-ai-policy.py ran successfully with exit code 0"
+
+# 3. Assert relevant policies were matched and unrelated was ignored
+if grep -q "Generative AI Requirements" /tmp/monitor_run.log && grep -q "Google Play Policy Revision" /tmp/monitor_run.log; then
+  ok "Correctly matched relevant AI policy updates"
+else
+  bad "Failed to match relevant AI policy updates. Output: $(cat /tmp/monitor_run.log)"
+fi
+
+if grep -q "Apple Arcade Games" /tmp/monitor_run.log; then
+  bad "Erroneously matched unrelated Apple Arcade announcement"
+else
+  ok "Successfully ignored unrelated announcement"
+fi
+
+# 4. Assert that documentation was generated
+if [ -f "$OUT_DOCS" ]; then
+  ok "Documentation output file created at $OUT_DOCS"
+  # Check content in documentation
+  if grep -q "Generative AI Requirements" "$OUT_DOCS" && grep -q "Google Play Policy Revision" "$OUT_DOCS"; then
+    ok "Documentation contains details of matched policy updates"
+  else
+    bad "Documentation is missing policy details"
+  fi
+else
+  bad "Documentation file was not created"
+fi
+
+# 5. Assert that PR Draft contains EXACTLY 15 required sections
+if [ -f "$OUT_PR" ]; then
+  ok "PR Draft output file created at $OUT_PR"
+
+  # Define the exactly 15 required sections
+  declare -a SECTIONS=(
+    "Summary"
+    "Background"
+    "Regulatory change"
+    "Official citations"
+    "Affected files"
+    "Risk assessment"
+    "Migration steps"
+    "Backward compatibility"
+    "Implementation checklist"
+    "Testing checklist"
+    "Documentation checklist"
+    "Compliance impact"
+    "Breaking changes"
+    "Review checklist"
+    "Approver recommendations"
+  )
+
+  MISSING=0
+  for idx in "${!SECTIONS[@]}"; do
+    sec_num=$((idx + 1))
+    sec_name="${SECTIONS[$idx]}"
+    # Match patterns like "## 1. Summary" or "## 15. Approver recommendations"
+    if grep -q "## ${sec_num}\. ${sec_name}" "$OUT_PR"; then
+      true
+    else
+      echo "  Missing PR section: ## ${sec_num}. ${sec_name}"
+      MISSING=$((MISSING + 1))
+    fi
+  done
+
+  if [ "$MISSING" -eq 0 ]; then
+    ok "PR Draft contains exactly the 15 required compliance sections"
+  else
+    bad "PR Draft is missing $MISSING of the 15 required compliance sections"
+  fi
+else
+  bad "PR Draft file was not created"
+fi
+
+# Topic labels are assigned from word stems, so "disclose", "policies" and "harmful" are not missed.
+STEM_JSON="$(mktemp)"; STEM_DOCS="$(mktemp)"; STEM_PR="$(mktemp)"
+cat << 'STEMS' > "$STEM_JSON"
+[
+  {"id": "A", "platform": "Apple", "title": "Generative AI apps must disclose third-party AI use",
+   "description": "Apps using generative AI must disclose data sharing and block harmful output.",
+   "link": "https://mock.invalid/a", "pubDate": "Mon, 10 Mar 2026 09:00:00 PDT"},
+  {"id": "G", "platform": "Google", "title": "Generative AI apps and Play policies",
+   "description": "Updated Play policies for generative AI apps. Apps must disclose AI content and keep users safe.",
+   "link": "https://mock.invalid/g", "pubDate": "Mon, 10 Mar 2026 09:00:00 PDT"}
+]
+STEMS
+python3 scripts/monitor-ai-policy.py --mock "$STEM_JSON" --dir . --output-docs "$STEM_DOCS" --pr-output "$STEM_PR" >/dev/null 2>&1
+TOPICS="$(grep 'Key Topics' "$STEM_DOCS")"
+echo "$TOPICS" | grep -q "User disclosure requirements" && echo "$TOPICS" | grep -q "Safety expectations" && ok "Apple topics are matched from the stems disclose and harmful" || bad "Apple topics are matched from the stems disclose and harmful"
+echo "$TOPICS" | grep -q "Google Play AI policies" && echo "$TOPICS" | grep -q "AI-generated content disclosures" && echo "$TOPICS" | grep -q "User safety requirements" && ok "Google topics are matched from the stems policies, disclose and safe" || bad "Google topics are matched from the stems policies, disclose and safe"
+rm -f "$STEM_JSON" "$STEM_DOCS" "$STEM_PR"
+
+# Feed descriptions carry HTML. The parser keeps only the visible text, so a keyword
+# inside a link target ("/llm/") cannot match an item that never mentions it.
+HT="$(mktemp -d)"
+cat > "$HT/feed.rss" <<'XML'
+<rss><channel><item><title>Tax &amp;amp; price updates</title>
+<description>&lt;p&gt;Read the &lt;a href="https://developer.example/llm/"&gt;notes&lt;/a&gt; on pricing.&lt;/p&gt;</description>
+<link>https://mock.invalid/html</link><pubDate>Mon, 01 Sep 2026 10:00:00 PDT</pubDate></item></channel></rss>
+XML
+python3 - "$HT/feed.rss" "$(dirname "$0")/monitor-ai-policy.py" <<'PY' && ok "feed items are matched on visible text, not HTML" || bad "feed items are matched on visible text, not HTML"
+import importlib.util, sys
+spec = importlib.util.spec_from_file_location("m", sys.argv[2]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+items = m.parse_rss_feed("file://" + sys.argv[1])
+assert items[0]["title"] == "Tax & price updates", items
+assert items[0]["description"] == "Read the notes on pricing.", items
+assert not m.analyze_announcements(items, ["llm"]), "matched a word that only appears in a link"
+PY
+rm -rf "$HT"
+
+# Issue #1000. Feed edge cases found in the October review, one fixture per case.
+I1000="$(mktemp -d)"
+MOD="$(dirname "$0")/monitor-ai-policy.py"
+feed_case() {
+  # $1 label, $2 feed file, $3 python assertions over the parsed items
+  python3 - "$2" "$MOD" "$3" <<'PY' && ok "$1" || bad "$1"
+import importlib.util, sys
+spec = importlib.util.spec_from_file_location("m", sys.argv[2]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+items = m.parse_rss_feed("file://" + sys.argv[1])
+exec(sys.argv[3])
+PY
+}
+cat > "$I1000/rel.atom" <<'XML'
+<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Policy</title>
+<link rel="alternate" href="https://example.invalid/news/policy"/>
+<link rel="self" href="https://example.invalid/feeds/entry/1"/>
+<summary>AI update</summary></entry>
+<entry><title>Policy two</title>
+<link rel="self" href="https://example.invalid/feeds/entry/2"/>
+<link href="https://example.invalid/news/two"/>
+<summary>AI update</summary></entry></feed>
+XML
+feed_case "#1000 an Atom citation prefers rel alternate or no rel over rel self" "$I1000/rel.atom" \
+  'assert [i["link"] for i in items] == ["https://example.invalid/news/policy", "https://example.invalid/news/two"], items'
+cat > "$I1000/base.atom" <<'XML'
+<feed xmlns="http://www.w3.org/2005/Atom" xml:base="https://example.invalid/news/"><entry><title>Policy</title>
+<link rel="alternate" href="policy"/><summary>AI update</summary></entry></feed>
+XML
+feed_case "#1000 an inherited xml:base resolves a relative Atom link" "$I1000/base.atom" \
+  'assert items[0]["link"] == "https://example.invalid/news/policy", items'
+mkdir -p "$I1000/feeds"
+cat > "$I1000/feeds/rel-base.atom" <<'XML'
+<feed xmlns="http://www.w3.org/2005/Atom" xml:base="../news/"><entry><title>Policy</title>
+<link rel="alternate" href="policy"/><summary>AI update</summary></entry></feed>
+XML
+feed_case "#1000 a relative xml:base resolves against the feed's own URL" "$I1000/feeds/rel-base.atom" \
+  'assert items[0]["link"] == "file://" + sys.argv[1].rsplit("/feeds/", 1)[0] + "/news/policy", items'
+cat > "$I1000/encoded.rss" <<'XML'
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><item><title>Platform news</title>
+<description>Short teaser.</description>
+<content:encoded><![CDATA[<p>Apps that call an <b>LLM</b> must disclose it.</p>]]></content:encoded>
+<link>https://example.invalid/encoded</link></item></channel></rss>
+XML
+feed_case "#1000 the RSS Content module body is read for keyword matching" "$I1000/encoded.rss" \
+  'assert "LLM" in items[0]["description"], items; assert m.analyze_announcements(items, ["llm"]), "keyword only in content:encoded was missed"'
+cat > "$I1000/dates.atom" <<'XML'
+<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>A</title>
+<published>2026-01-01T00:00:00Z</published><updated>2026-02-02T00:00:00Z</updated><summary>x</summary></entry>
+<entry><title>B</title>
+<updated>2026-02-02T00:00:00Z</updated><published>2026-01-01T00:00:00Z</published><summary>x</summary></entry>
+<entry><title>C</title><updated>2026-02-02T00:00:00Z</updated><summary>x</summary></entry></feed>
+XML
+cat > "$I1000/dc.rdf" <<'XML'
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<item rdf:about="https://example.invalid/rdf"><title>RDF item</title><link>https://example.invalid/rdf</link>
+<description>x</description><dc:date>2026-03-03T00:00:00Z</dc:date></item></rdf:RDF>
+XML
+feed_case "#1000 dates prefer published, then updated, regardless of element order" "$I1000/dates.atom" \
+  'assert [i["pubDate"] for i in items] == ["2026-01-01T00:00:00Z", "2026-01-01T00:00:00Z", "2026-02-02T00:00:00Z"], items'
+feed_case "#1000 an RSS 1.0 dc:date is read when no published or updated exists" "$I1000/dc.rdf" \
+  'assert items[0]["pubDate"] == "2026-03-03T00:00:00Z", items'
+rm -rf "$I1000"
+
+echo ""
+echo "AI Policy Monitor test suite: $PASS passed, $FAIL failed"
+[ "$FAIL" -eq 0 ]

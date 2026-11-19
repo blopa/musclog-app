@@ -8,6 +8,7 @@ const LOCALES = ['en-us', 'es-es', 'nl-nl', 'pt-br', 'ru-ru'];
 const read = (path: string) => readFileSync(join(root, path), 'utf8');
 const strip = (source: string) =>
   source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
 const pascal = (key: string) => key.charAt(0).toUpperCase() + key.slice(1);
 
 /**
@@ -24,6 +25,9 @@ const SHARED_FUNCTIONS: Record<(typeof TOOLS)[number]['key'], string[]> = {
   proteinCalculator: ['bodyweightProtein', 'PROTEIN_G_PER_KG_BODYWEIGHT'],
   calorieDeficit: ['calculateTDEE', 'getMinCalories'],
   netCarbs: ['digestibleCarbs', 'totalCarbsFromSource'],
+  progressiveOverload: ['computeStartTarget', 'loadStepFor'],
+  deloadCalculator: ['deloadedLoad', 'loadBelow', 'lighterSetCount'],
+  workoutLogTemplate: ['parseWorkoutImport'],
 };
 
 describe.each(TOOLS)('tool $key', ({ key, routeKey }) => {
@@ -60,9 +64,11 @@ describe.each(TOOLS)('tool $key', ({ key, routeKey }) => {
         ? value.map(shape)
         : value && typeof value === 'object'
           ? Object.fromEntries(
+              // Plural forms differ by language (Russian has few and many), so `x_one`, `x_few`
+              // and `x_other` are one key.
               Object.entries(value as Record<string, unknown>)
+                .map(([k, v]) => [k.replace(PLURAL_SUFFIX, ''), shape(v)] as const)
                 .sort(([a], [b]) => a.localeCompare(b))
-                .map(([k, v]) => [k, shape(v)])
             )
           : 'text';
     const copies = LOCALES.map((locale) =>

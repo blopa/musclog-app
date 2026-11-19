@@ -14,7 +14,7 @@ import {
   trackPageView,
 } from '@/utils/websiteAnalytics';
 
-import { brand, BRAND_GREEN, ink, scrim, surface } from './websiteColors';
+import { brand, BRAND_GREEN, ink, surface } from './websiteColors';
 
 const BANNER_DELAY_MS = 400;
 
@@ -88,12 +88,11 @@ export function AnalyticsConsent() {
         style={{
           backgroundColor: surface(),
           borderColor: ink(0.08),
-          boxShadow: `0 24px 70px ${scrim(0.45)}, 0 0 0 1px ${ink(0.03)}, 0 0 30px ${brand(0.08)}`,
         }}
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">
           <div
-            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border"
+            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-control border"
             style={{
               backgroundColor: brand(0.1),
               borderColor: brand(0.24),
@@ -115,7 +114,7 @@ export function AnalyticsConsent() {
           <button
             type="button"
             onClick={reject}
-            className="hover:bg-ink/8 flex-1 rounded-full border px-4 py-2 text-sm font-semibold text-text-primary transition-colors sm:flex-none"
+            className="hover:bg-ink/8 flex-1 rounded-control border px-4 py-2 text-sm font-semibold text-text-primary transition-colors sm:flex-none"
             style={{ borderColor: ink(0.16) }}
           >
             {t('reject')}
@@ -123,7 +122,7 @@ export function AnalyticsConsent() {
           <button
             type="button"
             onClick={accept}
-            className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:brightness-95 sm:flex-none"
+            className="flex-1 rounded-control px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:brightness-95 sm:flex-none"
             style={{ backgroundColor: BRAND_GREEN }}
           >
             {t('accept')}

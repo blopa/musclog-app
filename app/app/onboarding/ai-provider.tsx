@@ -7,6 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { PROVIDER_NAME_KEYS } from '@/components/aiOnboarding/providerNames';
 import { MasterLayout } from '@/components/MasterLayout';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { Button } from '@/components/theme/Button';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
@@ -81,6 +82,8 @@ export default function AiProviderScreen() {
   const [checking, setChecking] = useState(false);
   const [failure, setFailure] = useState<Exclude<AiKeyTestResult, 'ok'> | null>(null);
   const [problem, setProblem] = useState(false);
+  // Choosing the free tier sends the setup chat to Google Gemini, so it is confirmed first.
+  const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -168,12 +171,7 @@ export default function AiProviderScreen() {
                 icon={Cloud}
                 title={t(PROVIDER_NAME_KEYS.gateway)}
                 subtitle={t('aiOnboarding.provider.gatewayHint')}
-                onPress={() =>
-                  attempt(async () => {
-                    await enableFreeTier();
-                    await choose('gateway');
-                  })
-                }
+                onPress={() => setFreeTierConsentVisible(true)}
               />
             ) : null}
             {(['gemini', 'openai', 'claude'] as const).map((provider) => (
@@ -309,6 +307,21 @@ export default function AiProviderScreen() {
           />
         </View>
       </KeyboardAwareScrollView>
+
+      <ConfirmationModal
+        visible={freeTierConsentVisible}
+        onClose={() => setFreeTierConsentVisible(false)}
+        onConfirm={() => {
+          setFreeTierConsentVisible(false);
+          attempt(async () => {
+            await enableFreeTier();
+            await choose('gateway');
+          });
+        }}
+        title={t('settings.aiSettings.musclogFreeTier.consentTitle')}
+        message={t('settings.aiSettings.musclogFreeTier.consentBody')}
+        confirmLabel={t('settings.aiSettings.musclogFreeTier.consentConfirm')}
+      />
     </MasterLayout>
   );
 }

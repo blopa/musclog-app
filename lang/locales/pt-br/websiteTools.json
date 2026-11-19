@@ -8,7 +8,8 @@
       "ctaTitle": "Registre no Musclog",
       "ctaBody": "O Musclog é um app de fitness e nutrição gratuito e de código aberto. Seus dados ficam no seu dispositivo.",
       "sameMath": "Usa o mesmo cálculo do app Musclog.",
-      "localOnly": "Tudo o que você digita fica no seu navegador."
+      "localOnly": "Tudo o que você digita fica no seu navegador.",
+      "readMore": "Leia mais"
     },
     "units": {
       "label": "Unidades",

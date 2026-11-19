@@ -1,6 +1,5 @@
-<b>Musclog - Lift, Log, Repeat</b>
-
-Musclog est un suivi d'entraînement et un compteur de calories réunis dans une seule application gratuite et open source. Note tes séances de salle et tes repas, suis ta progression et garde tout sur ton téléphone : pas de compte, pas de pubs, et la saisie fonctionne hors ligne.
+<b>Note séances et repas dans une appli : sans compte, sans pubs, sans abonnement.</b>
+Musclog est un suivi d'entraînement et un compteur de calories gratuit et open source. Il te propose ta prochaine charge d'après ta dernière séance, scanne les codes-barres et fonctionne hors ligne. Tes données restent sur ton téléphone.
 
 L'application est disponible en anglais, espagnol, néerlandais, portugais (Brésil) et russe.
 
@@ -11,10 +10,10 @@ L'application est disponible en anglais, espagnol, néerlandais, portugais (Bré
 
 <b>Carnet d'entraînement et suivi de salle</b>
 • Note séries, répétitions et charges en quelques secondes, avec minuteur de repos, échauffement, supersets et notes par exercice.
+• La surcharge progressive simplifiée : Musclog te propose ta prochaine charge et tes prochaines répétitions d'après ta dernière séance, et explique chaque chiffre qu'il modifie. Choisis double progression, règles linéaires ou en pourcentage, ou garde la main.
 • Suis ton effort avec le RPE ou les répétitions en réserve (RIR).
 • Plus de 870 exercices avec photos et muscles ciblés, recherchables dans ta langue, ou ajoute les tiens.
 • Programmes prêts à l'emploi : Push Pull Legs, Haut/Bas du corps, Full Body, PHUL, splits sur 5 jours et routines courtes à la maison ou sans matériel. Ou crée le tien, hebdomadaire ou en rotation.
-• La surcharge progressive simplifiée : Musclog te propose ta prochaine charge et tes prochaines répétitions d'après ta dernière séance, et explique chaque chiffre qu'il modifie. Choisis double progression, règles linéaires ou en pourcentage, ou garde la main.
 • Calculateur de disques pour la barre et les disques de ta salle, en kg ou lb.
 • Remplace un exercice quand une machine est prise ou qu'une douleur gêne, et Musclog retient ce qu'il faut éviter.
 • Importe ton historique depuis Strong, Hevy ou FitNotes.
@@ -43,7 +42,7 @@ L'application est disponible en anglais, espagnol, néerlandais, portugais (Bré
 
 <b>Confidentialité dès la conception</b>
 • Le poids, la masse grasse et les journaux alimentaires sont chiffrés sur ton appareil.
-• Verrouille toute l'application, ou seulement tes données de cycle, d'entraînement, d'alimentation ou de progression, avec l'empreinte digitale ou le code PIN de ton téléphone.
+• Verrouille toute l'application, ou seulement tes données de cycle, d'entraînement, d'alimentation ou de progression, avec la biométrie ou le code de ton téléphone.
 • Exporte ou sauvegarde tes données, ou transfère-les vers un autre téléphone par QR codes, sans cloud.
 • Les rapports de plantage anonymes aident à corriger les bugs et se désactivent.
 • Widgets d'écran d'accueil, plusieurs thèmes de couleurs, et English, Español, Nederlands, Português (Brasil) et Русский.

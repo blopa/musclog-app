@@ -41,10 +41,13 @@ function ensureGtagStub() {
   }
 
   window.dataLayer = window.dataLayer || [];
+  // gtag.js only executes dataLayer entries that are `arguments` objects; a plain array (what a
+  // rest parameter gives) is silently ignored, so `js`, `config` and every event were dropped and
+  // GA4 never received a hit (docs/FIXES.md). Keep Google's own snippet shape.
   window.gtag =
     window.gtag ||
-    function gtag(...args: unknown[]) {
-      window.dataLayer.push(args);
+    function gtag() {
+      window.dataLayer.push(arguments);
     };
 }
 

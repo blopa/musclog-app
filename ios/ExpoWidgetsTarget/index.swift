@@ -7,6 +7,8 @@ struct ExportWidgets0: WidgetBundle {
   var body: some Widget {
     Nutrition()
     SmartCamera()
+    ActivityHeatmap()
+    Cycle()
     WidgetLiveActivity()
   }
 }

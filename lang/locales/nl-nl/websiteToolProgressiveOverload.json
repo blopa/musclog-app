@@ -1,0 +1,104 @@
+{
+  "websiteToolProgressiveOverload": {
+    "title": "Progressieve overload-calculator",
+    "intro": "Vul in wat je in je vorige sessie deed en krijg het gewicht en de reps waar je de volgende keer op mikt. Het past de regel toe die de Musclog-app gebruikt om je volgende training te bepalen.",
+    "form": {
+      "weight": "Gewicht van je vorige sessie",
+      "weightHint": "Het gewicht van je werksets.",
+      "reps": "Reps in je zwakste werkset",
+      "repsHint": "Geheel getal. De set met de minste reps telt.",
+      "plannedReps": "Reps die je plan vraagt",
+      "plannedRepsHint": "Per set, de ondergrens van je repbereik.",
+      "reserve": "Reps in reserve, gemiddeld",
+      "reserveHint": "Reps die je na elke set nog had kunnen doen, gemiddeld. Laat leeg als je je inspanning niet hebt beoordeeld.",
+      "equipmentLabel": "Materiaal",
+      "equipment": {
+        "barbell": "Barbell",
+        "dumbbell": "Dumbbell",
+        "machine": "Machine of kabel"
+      },
+      "modeLabel": "Hoe je progressie maakt",
+      "mode": {
+        "weight_first": "Eerst gewicht toevoegen",
+        "reps_first": "Eerst reps toevoegen"
+      },
+      "completeLabel": "Heb je elke set afgemaakt?",
+      "twoInARowLabel": "Is de sessie ervoor ook mislukt bij dit gewicht?",
+      "yes": "Ja",
+      "no": "Nee",
+      "twoInARowNo": "Nee of niet zeker",
+      "twoInARowYes": "Ja, ik miste reps of kwam tot falen",
+      "moreOptions": "Meer opties: materiaal, progressiestijl en details van je vorige sessie"
+    },
+    "problems": {
+      "weight": "Vul het gewicht van de vorige sessie in als getal boven 0 en maximaal {{max}}.",
+      "reps": "Vul de reps in als geheel getal van 1 tot {{max}}.",
+      "plannedReps": "Vul de geplande reps in als geheel getal van 1 tot {{max}}.",
+      "reserve": "Vul reps in reserve in als getal van 0 tot {{max}}, of laat leeg."
+    },
+    "results": {
+      "title": "Volgende sessie",
+      "kind": {
+        "progression": "Omhoog",
+        "repeat": "Herhaal de vorige keer",
+        "deload": "Lichter"
+      },
+      "target_one": "{{weight}} voor {{reps}} rep",
+      "target_few": "{{weight}} voor {{reps}} reps",
+      "target_many": "{{weight}} voor {{reps}} reps",
+      "target_other": "{{weight}} voor {{reps}} reps",
+      "changeUp": "{{change}} ({{percent}}) zwaarder dan de vorige keer.",
+      "changeSame": "Hetzelfde gewicht als de vorige keer.",
+      "changeDown": "{{change}} ({{percent}}) lichter dan de vorige keer.",
+      "step": "Eén gewichtsstap voor dit materiaal is {{step}}.",
+      "plates": "Schijven aan elke kant van de stang",
+      "emptyBar": "Lege stang",
+      "plateLine": "{{count}} × {{weight}}",
+      "unrated": "Je hebt reps in reserve leeg gelaten, dus de keuze berust alleen op reps: elke sessie één rep extra tot de top van je bereik, daarna meer gewicht."
+    },
+    "reasons": {
+      "addWeight": "De vorige sessie haalde de lat: minstens {{reserve}} reps in reserve en minstens {{planned}} reps in je zwakste set. De belasting gaat één stap omhoog.",
+      "addReps": "De vorige sessie haalde de lat, maar de reps gaan eerst omhoog voordat het gewicht dat doet. De belasting stijgt pas als je de top van je repbereik bereikt.",
+      "stepTooCoarse": "Eén gewichtsstap ({{step}}) is meer dan een kwart van dit gewicht, een te grote sprong, dus de app voegt een rep toe.",
+      "unfinished": "Je hebt niet elke set afgemaakt, dus de sessie telt niet als succes. Herhaal hem.",
+      "missedPlan": "Je hebt de geplande reps niet gehaald. Eén keer missen herhaalt hetzelfde gewicht. Twee keer achter elkaar bij dit gewicht verlaagt het.",
+      "tooHard": "Je had minder dan {{reserve}} reps in reserve, dus de sessie was al zwaar genoeg. Herhaal hem. De belasting gaat pas omhoog als je er minstens {{reserve}} overhoudt.",
+      "deload": "Twee mislukte sessies achter elkaar bij dit gewicht. De belasting gaat 10% of één stap omlaag, wat het meeste is, en wordt daarna afgerond op een gewicht dat je kunt instellen."
+    },
+    "sections": [
+      {
+        "title": "Hoeveel moet je erbij doen?",
+        "body": [
+          "Musclog voegt één gewichtsstap toe: 2,5 kg (5 lb) zonder ingestelde sportschool, of twee keer je lichtste schijf bij een barbell als je er een hebt ingesteld. Bij een lift van 100 kg is dat 2,5%, en bij een lichte dumbbell is het een groot deel, dus als één stap meer dan een kwart van het gewicht is, voegt de app een rep toe. Dit zijn productregels, geen onderzoeksresultaten.",
+          "Onderzoek geeft een bereik, geen vast getal. De positionstatement van het American College of Sports Medicine uit 2009 stelt voor het gewicht met ongeveer 2 tot 10% te verhogen zodra je twee sessies achter elkaar één of twee reps boven je doel kunt doen. Musclog is op één punt voorzichtiger en op een ander punt sneller: het handelt na één sessie, maar alleen als je reps in reserve overhield en alle geplande reps haalde."
+        ]
+      },
+      {
+        "title": "Wanneer het omhoog gaat, herhaalt of lichter wordt",
+        "body": [
+          "Het gaat omhoog als je zwakste werkset de geplande reps haalde en je gemiddeld minstens 2 reps in reserve overhield. Het herhaalt na één zware of korte sessie, want één slechte dag is geen stilstand. Het wordt lichter na twee sessies achter elkaar bij hetzelfde gewicht waarbij je niets in reserve overhield, of de geplande reps niet haalde. Deze tweesessieregels zijn keuzes van Musclog."
+        ]
+      },
+      {
+        "title": "Eerst gewicht of eerst reps",
+        "body": [
+          "Eerst gewicht voegt elke keer dat je het verdient een stap toe en houdt je reps. Eerst reps voegt elke sessie een rep toe tot je twee reps boven je plan zit (één boven bij plannen van zes reps of minder), daarna komt er gewicht bij en ga je terug naar de geplande reps. Die tweede manier is dubbele progressie."
+        ]
+      },
+      {
+        "title": "Wat deze pagina niet kan zien",
+        "body": [
+          "Ze leest één sessie. De app kijkt ook naar je plan, je sportschool en de week waarin je zit, en toont de reden naast elke set. Zie het antwoord als een goed startpunt, niet als voorschrift."
+        ]
+      }
+    ],
+    "sources": {
+      "acsm": "American College of Sports Medicine (2009), Progression models in resistance training for healthy adults (Medicine & Science in Sports & Exercise)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "doubleProgression": "Dubbele progressie: de eenvoudigste manier om elke week gewicht toe te voegen",
+      "trackProgress": "Zo houd je je voortgang in de sportschool bij: een beginnersgids"
+    }
+  }
+}

@@ -1,0 +1,143 @@
+# Rules. Metadata and store listing
+
+11 rules in this category. Generated from data/rejection-patterns.json. Each rule names the guideline, the severity, what triggers it, and the fix.
+
+## APPLE-2.3.6-SOCIAL-MEDIA-DECLARATION
+
+- Title. Social media capability not declared before submission
+- Platform. apple
+- Guideline or policy. 2.3.6 and the App Store Connect social media capability declaration (Apple Developer news 0d2gpmml, 8 June 2026)
+- Severity. critical
+- What triggers it. Since September 2026 every new version or update, and every notarization for alternative marketplaces, requires answering whether the app includes social media capabilities. An app with feeds, followers, chat rooms, direct messages, or live streams that has not answered the question cannot be submitted. Declaring social media places the app in the Time Allowance category for Social Media with a minimum 13+ rating, and serving under-13 users requires the Declared Age Range API.
+- How to fix it. Answer the social media capability question in App Store Connect (or set socialMedia and socialMediaAgeRestricted through the App Store Connect API age-rating declaration), accept the 13+ minimum, and adopt the Declared Age Range API if you need under-13 users.
+- Detection signals. newsFeed, NewsFeed, followers, chatRoom, ChatRoom, DirectMessage, liveStream, LiveStream, socialMedia
+- Present means handled. socialMediaAgeRestricted, DeclaredAgeRange
+
+How to detect.
+
+```bash
+grep -rn 'newsFeed\|NewsFeed\|followers\|chatRoom\|ChatRoom\|DirectMessage\|liveStream\|LiveStream' --include='*.swift' --include='*.m' --include='*.plist' --include='*.entitlements' --include='*.pbxproj' .   # then confirm the social media capability question is answered in App Store Connect
+```
+
+## APPLE-2.3-AGE-RATING-2026
+
+- Title. New 2026 age rating questionnaire not answered
+- Platform. apple
+- Guideline or policy. 2.3.6
+- Severity. high
+- What triggers it. Manual check. The updated age rating questions (13 plus, 16 plus, 18 plus) must be answered by 31 January 2026 to submit updates.
+- How to fix it. Answer the updated age rating questionnaire in App Store Connect for every app.
+
+## APPLE-5.2.5-APPLE-DEVICE-IMAGE
+
+- Title. Apple device image or Apple trademark in the icon or screenshots
+- Platform. apple
+- Guideline or policy. 5.2.5
+- Severity. high
+- What triggers it. Manual metadata check. The app icon or screenshots show an Apple device, the Apple logo, or imply Apple endorsement.
+- How to fix it. Remove Apple device images and Apple marks from the icon and screenshots. Source. truongduy2611 apple_trademark rule.
+
+## BOTH-UNREACHABLE-METADATA-URL
+
+- Title. Broken support, marketing, or privacy URL in the listing
+- Platform. both
+- Guideline or policy. Apple 1.5 and 2.1, Google User Data
+- Severity. high
+- What triggers it. A support URL, marketing URL, or privacy policy URL in the listing does not load. Mirrors the fastlane precheck unreachable_urls rule.
+- How to fix it. Confirm every listing URL is public and loads during the entire review window.
+
+How to detect.
+
+```bash
+python3 scripts/metadata-audit.py ./metadata --check-urls
+```
+
+## CHINA-AI-REFERENCES
+
+- Title. External AI service references in a China storefront
+- Platform. apple
+- Guideline or policy. 5
+- Severity. high
+- What triggers it. Manual storefront check. References to ChatGPT, Gemini, OpenAI, or similar external AI services in an app distributed on the China storefront can trigger a regional rejection.
+- How to fix it. Remove or localize external AI service references for the China storefront. Source. truongduy2611 china_storefront rule.
+
+## APPLE-2.3-CROSS-PLATFORM-REFERENCE
+
+- Title. Reference to other platform or marketplace
+- Platform. apple
+- Guideline or policy. 2.3.10
+- Severity. medium
+- What triggers it. Strings such as Android, Google Play, or alternative marketplace names found in app facing copy or metadata.
+- How to fix it. Remove references to other platforms and marketplaces from the app and metadata.
+- Detection signals. Google Play, available on Android, download on the Play Store
+
+How to detect.
+
+```bash
+python3 scripts/metadata-audit.py ./metadata
+```
+
+## APPLE-2.3-FUTURE-FUNCTIONALITY
+
+- Title. Metadata promises features that do not ship in this build
+- Platform. apple
+- Guideline or policy. 2.3.1
+- Severity. medium
+- What triggers it. Listing or in app copy uses coming soon, beta, or a promised feature not present in the build. Mirrors the fastlane precheck future_functionality rule.
+- How to fix it. Describe only what the build does today. Remove coming soon and future feature promises from the listing.
+- Detection signals. coming soon, coming-soon, beta, will be available, in a future update, stay tuned
+
+How to detect.
+
+```bash
+python3 scripts/metadata-audit.py ./metadata
+```
+
+## APPLE-2.3-NEGATIVE-APPLE-SENTIMENT
+
+- Title. Metadata names an iOS bug or references Apple negatively
+- Platform. apple
+- Guideline or policy. 2.3.1
+- Severity. medium
+- What triggers it. Listing copy mentions an iOS bug or makes a negative or insensitive reference to Apple. Mirrors the fastlane precheck negative_apple_sentiment rule.
+- How to fix it. Remove negative references to Apple and iOS bugs from the listing copy.
+- Detection signals. iOS bug, apple bug, broken on iOS, fix for ios bug
+
+How to detect.
+
+```bash
+python3 scripts/metadata-audit.py ./metadata
+```
+
+## APPLE-2.3.4-DEVICE-FRAMES-PREVIEW
+
+- Title. Device frames around the app in a preview video
+- Platform. apple
+- Guideline or policy. 2.3.4
+- Severity. medium
+- What triggers it. Manual metadata check. The app preview video wraps the app in a device frame instead of showing the app full screen.
+- How to fix it. Capture the preview video full screen from the device, without a device frame overlay.
+
+## BOTH-METADATA-DECORATION
+
+- Title. Metadata field overflow or banned decoration
+- Platform. both
+- Guideline or policy. Apple 2.3.7, Google Store Listing
+- Severity. medium
+- What triggers it. App name over the limit (Apple 30, Google 30), emoji in the title, all caps, or ranking and price claims such as number one, best, top, or free in the title or icon.
+- How to fix it. Keep each metadata field within its limit and remove emoji, all caps, and ranking or price claims from the title and icon.
+
+How to detect.
+
+```bash
+python3 scripts/metadata-audit.py ./metadata
+```
+
+## APPLE-2.3.14-CREATIVE-ASSET-CONTENT
+
+- Title. Creative asset with pricing, unverifiable claims, or misleading references
+- Platform. apple
+- Guideline or policy. 2.3.14
+- Severity. medium
+- What triggers it. A creative asset (the App Store product page header or search result artwork, new in guideline 2.3.14 on 16 October 2026) shows specific or discounted pricing, an unverifiable product claim, a reference to another app meant to mislead, content not suitable for all audiences, or art unrelated to the app's content, functionality, or brand. Checked by hand, creative assets live in App Store Connect, not in the project.
+- How to fix it. Keep creative assets about the app or its brand, appropriate for all audiences, with no prices, discounts, ranking or unverifiable claims, and no references to other apps. Follow Apple's asset guidelines. Source. https://developer.apple.com/news/?id=92th7e5i
