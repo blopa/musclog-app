@@ -12,6 +12,7 @@ const path = require('node:path');
 const matter = require('gray-matter');
 
 const { REPO_ROOT, SITE_ORIGIN } = require('./config');
+const { localizedPath } = require('../../components/website/localeRoutes');
 
 // Search results truncate around these widths; the ranges are conventions, not limits.
 const TITLE_MAX = 60;
@@ -135,11 +136,7 @@ function auditRoutes(root, sitemapUrls) {
       }
     }
 
-    if (
-      sitemapUrls &&
-      !sitemapUrls.includes(`${SITE_ORIGIN}${route.path === '/' ? '' : route.path}`) &&
-      !sitemapUrls.includes(`${SITE_ORIGIN}${route.path}`)
-    ) {
+    if (sitemapUrls && !sitemapUrls.includes(`${SITE_ORIGIN}${localizedPath(route.path, 'en')}`)) {
       findings.push({
         severity: 'warn',
         kind: 'route-not-in-sitemap',

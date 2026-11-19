@@ -12,6 +12,7 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
+import { websitePageUrl } from '@/utils/websiteUrl';
 
 const FEATURES = [
   {
@@ -37,11 +38,9 @@ const FEATURES = [
   },
 ];
 
-const PRIVACY_POLICY_URL = 'https://musclog.app/privacy';
-
 export default function MusclogApiScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -207,7 +206,7 @@ export default function MusclogApiScreen() {
                   color: theme.colors.status.amber,
                   fontSize: theme.typography.fontSize.xs,
                 }}
-                onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+                onPress={() => Linking.openURL(websitePageUrl('/privacy', i18n.language))}
               >
                 {t('onboarding.musclogApi.readPrivacyPolicy')}
               </Text>

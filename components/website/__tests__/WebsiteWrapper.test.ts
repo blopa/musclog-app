@@ -39,7 +39,9 @@ describe('website header navigation', () => {
       '<nav className="hidden items-center gap-6 lg:flex">',
       '</nav>'
     );
-    const links = [...headerNavigation.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
+    const links = [...headerNavigation.matchAll(/href=\{href\('([^']+)'\)\}/g)].map(
+      (match) => match[1]
+    );
 
     expect(links).toEqual(['/blog', '/tools', '/exercises', '/progress']);
   });
@@ -72,7 +74,7 @@ describe('website mobile menu', () => {
     );
 
     expect(links).toEqual([
-      '/home#features',
+      '/#features',
       '/blog',
       '/tools',
       '/calculator',
@@ -153,7 +155,7 @@ describe('links between website pages', () => {
   const FILES = [
     'components/website/WebsiteWrapper.web.tsx',
     'components/website/AnalyticsConsent.web.tsx',
-    'app/(website)/blog/[...slug].web.tsx',
+    'app/(website)/en/blog/[...slug].web.tsx',
   ];
 
   it.each(FILES)('%s links with plain anchors, not expo-router Link', (file) => {

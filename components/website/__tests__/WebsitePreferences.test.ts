@@ -42,7 +42,27 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => {
+  jest.restoreAllMocks();
+  window.localStorage.clear();
+  window.history.pushState({}, '', '/');
+  mockChangeLanguage.mockClear();
+});
+
+const goTo = (url: string) => window.history.pushState({}, '', url);
+// jsdom cannot navigate; record what the browser would have followed.
+const swallowNavigation = () => {
+  const clicked: string[] = [];
+  const handler = (event: Event) => {
+    const anchor = (event.target as HTMLElement).closest('a');
+    if (anchor) {
+      clicked.push(anchor.getAttribute('href') ?? '');
+      event.preventDefault();
+    }
+  };
+  document.addEventListener('click', handler);
+  return { clicked, stop: () => document.removeEventListener('click', handler) };
+};
 
 const openPreferences = () => {
   render(createElement(WebsitePreferences));
@@ -52,17 +72,29 @@ const openPreferences = () => {
 };
 
 describe('website preferences', () => {
-  it('opens styled language choices with code badges and the current locale selected', () => {
+  it('lists all five languages as links with the address locale selected', () => {
+    goTo('/es/tools/protein-calculator?kg=80#result');
     const trigger = openPreferences();
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
-    expect(screen.queryByRole('combobox')).toBeNull();
-    const group = screen.getByRole('radiogroup', { name: 'website.navigation.language' });
-    expect(within(group).getAllByRole('radio')).toHaveLength(4);
-    expect((screen.getByRole('radio', { name: 'English' }) as HTMLInputElement).checked).toBe(true);
-    expect(group.textContent).toContain('EN');
-    expect(group.textContent).toContain('ES');
-    expect(group.textContent).toContain('NL');
-    expect(group.textContent).toContain('PT');
+    const nav = screen.getByRole('navigation', { name: 'website.navigation.language' });
+    const links = within(nav).getAllByRole('link');
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      '/en/tools/protein-calculator?kg=80#result',
+      '/es/tools/protein-calculator?kg=80#result',
+      '/nl/tools/protein-calculator?kg=80#result',
+      '/pt-br/tools/protein-calculator?kg=80#result',
+      '/ru/tools/protein-calculator?kg=80#result',
+    ]);
+    expect(links.map((link) => link.getAttribute('hreflang'))).toEqual([
+      'en',
+      'es',
+      'nl',
+      'pt-BR',
+      'ru',
+    ]);
+    expect(screen.getByRole('link', { name: /Español/ }).getAttribute('aria-current')).toBe('true');
+    expect(screen.getByRole('link', { name: /English/ }).getAttribute('aria-current')).toBeNull();
+    ['EN', 'ES', 'NL', 'PT', 'RU'].forEach((badge) => expect(nav.textContent).toContain(badge));
     expect(document.activeElement).toBe(
       screen.getByRole('tab', { name: 'website.navigation.language' })
     );
@@ -88,13 +120,33 @@ describe('website preferences', () => {
       ).checked
     ).toBe(true);
     fireEvent.keyDown(themeTab, { key: 'Home' });
-    expect(screen.getByRole('radiogroup', { name: 'website.navigation.language' })).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'website.navigation.language' })).toBeTruthy();
   });
 
-  it('applies language and theme choices without closing the preferences panel', () => {
+  it('follows the link and remembers the language on a translated page', () => {
+    goTo('/en/tools/protein-calculator');
+    const nav = swallowNavigation();
     openPreferences();
-    fireEvent.click(screen.getByRole('radio', { name: 'Nederlands' }));
-    expect(mockChangeLanguage).toHaveBeenCalledWith('nl-nl');
+    fireEvent.click(screen.getByRole('link', { name: /Nederlands/ }));
+    nav.stop();
+    expect(nav.clicked).toEqual(['/nl/tools/protein-calculator']);
+    expect(window.localStorage.getItem('musclog_lang')).toBe('nl-NL');
+    expect(mockChangeLanguage).not.toHaveBeenCalled();
+  });
+
+  it('changes the chrome in place on the English-only blog', () => {
+    goTo('/en/blog/some-post');
+    const nav = swallowNavigation();
+    openPreferences();
+    fireEvent.click(screen.getByRole('link', { name: /Русский/ }));
+    nav.stop();
+    expect(mockChangeLanguage).toHaveBeenCalledWith('ru-RU');
+    expect(window.localStorage.getItem('musclog_lang')).toBe('ru-RU');
+    expect(nav.clicked).toEqual(['/en/blog/some-post']);
+  });
+
+  it('applies theme choices without closing the preferences panel', () => {
+    openPreferences();
     fireEvent.click(screen.getByRole('tab', { name: 'website.navigation.theme' }));
     fireEvent.click(
       screen.getByRole('radio', { name: `settings.theme.options.${THEME_IDS[0]}.label` })

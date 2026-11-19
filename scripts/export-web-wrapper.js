@@ -11,7 +11,14 @@ function main() {
 
   const child = spawn('npx', ['expo', 'export', '--platform', 'web'], {
     stdio: ['inherit', 'pipe', 'inherit'],
-    env: { ...process.env, NODE_ENV: 'production' },
+    env: {
+      ...process.env,
+      NODE_ENV: 'production',
+      // Every public page is rendered once per language, so the export outgrew Node's default heap
+      // (about 4 GB): it died mid-render with "heap out of memory" and the later steps ran on a
+      // half-empty dist. `npm run web` already asks for the same limit.
+      NODE_OPTIONS: process.env.NODE_OPTIONS ?? '--max-old-space-size=8192',
+    },
     shell: true,
   });
 

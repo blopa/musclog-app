@@ -31,7 +31,7 @@ export function buildExerciseImagePath(freeExerciseDbId: string, frame: 0 | 1 = 
  * frame 1 the end position; only frame 0 is stored on the exercise row.
  *
  * Kept in step with `scripts/generate-exercise-images.js`, which writes these files, and
- * with `app/(website)/exercises.web.tsx`, which renders them.
+ * with `app/(website)/[locale]/exercises.web.tsx`, which renders them.
  */
 export function buildExerciseCloudUrl(freeExerciseDbId: string, frame: 0 | 1 = 0): string {
   return `https://musclog.app${buildExerciseImagePath(freeExerciseDbId, frame)}`;

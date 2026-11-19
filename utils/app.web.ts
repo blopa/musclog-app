@@ -20,7 +20,7 @@ export function isProduction() {
  * data imported, the dashboard appeared, then the tab reloaded into onboarding (see docs/FIXES.md).
  *
  * Every other surface reloads in place on purpose. In particular the website progress page
- * (`app/(website)/progress.web.tsx`) imports a dump only to draw its own charts, so sending it to
+ * (`app/(website)/[locale]/progress.web.tsx`) imports a dump only to draw its own charts, so sending it to
  * `/app` would navigate a website visitor into the app.
  */
 export function restoreReloadTarget(pathname: string): null | string {

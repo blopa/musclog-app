@@ -1,6 +1,7 @@
 import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
+import { WEBSITE_LOCALES } from '@/components/website/localeRoutes';
 import { qrCodeSvgData } from '@/components/website/qrCodeSvg';
 import { GOOGLE_PLAY_URL } from '@/components/website/storeLinks';
 import { websiteLoggyCss } from '@/components/website/websiteLoggyAssets';
@@ -53,9 +54,15 @@ const LANDING_TRANSLATIONS: Record<string, LandingCopy> = {
  * Patches the landing panel text from localStorage before React boots.
  * Serialized via .toString() so the logic lives as real code, not a string.
  */
-function landingI18nPatcher(translations: Record<string, LandingCopy>, storageKey: string) {
+function landingI18nPatcher(
+  translations: Record<string, LandingCopy>,
+  storageKey: string,
+  languageByPrefix: Record<string, string>
+) {
   try {
-    let lang = localStorage.getItem(storageKey);
+    // An address with a language in it (`/es/tools/…`) decides; the stored choice is for the rest.
+    let prefix = window.location.pathname.split('/')[1];
+    let lang = languageByPrefix[prefix] || localStorage.getItem(storageKey);
     let s = (lang && translations[lang as keyof typeof translations]) || translations['en-US'];
 
     document.querySelectorAll('[data-landing-i18n]').forEach(function (el) {
@@ -69,7 +76,9 @@ function landingI18nPatcher(translations: Record<string, LandingCopy>, storageKe
 
 const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})(${JSON.stringify(
   LANDING_TRANSLATIONS
-)}, ${JSON.stringify(LANDING_LANGUAGE_STORAGE_KEY)});`;
+)}, ${JSON.stringify(LANDING_LANGUAGE_STORAGE_KEY)}, ${JSON.stringify(
+  Object.fromEntries(WEBSITE_LOCALES.map(({ prefix, language }) => [prefix, language]))
+)});`;
 
 // The palette on :root before the body renders; see `utils/themePrepaint`. Only the two mode
 // defaults are inlined — the mirror carries its own map, so the other palettes never travel.

@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { getAppBuildInfo } from '@/utils/appBuildInfo';
 import { formatAppVersion } from '@/utils/appVersionLabel';
 import { isSupportProjectListLinkVisible } from '@/utils/supportProjectInstallSource';
+import { websitePageUrl } from '@/utils/websiteUrl';
 
 const buildInfo = getAppBuildInfo();
 
@@ -19,7 +20,7 @@ interface LegalLinksCardProps {
 }
 
 export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
 
   const supportHref = useMemo((): string | null => {
@@ -54,13 +55,13 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
           variant="grouped"
           title={t('settings.termsOfService')}
           trailing={externalCue}
-          onPress={() => openLink('https://musclog.app/terms')}
+          onPress={() => openLink(websitePageUrl('/terms', i18n.language))}
         />
         <ListRow
           variant="grouped"
           title={t('settings.privacyPolicy')}
           trailing={externalCue}
-          onPress={() => openLink('https://musclog.app/privacy')}
+          onPress={() => openLink(websitePageUrl('/privacy', i18n.language))}
         />
         {supportHref !== null ? (
           <ListRow

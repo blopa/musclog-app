@@ -4,7 +4,7 @@ import { join } from 'path';
 const componentPath = join(__dirname, '..', 'BlogPostShare.tsx');
 const source = readFileSync(componentPath, 'utf8');
 const postPage = readFileSync(
-  join(__dirname, '..', '..', '..', 'app', '(website)', 'blog', '[...slug].web.tsx'),
+  join(__dirname, '..', '..', '..', 'app', '(website)', 'en', 'blog', '[...slug].web.tsx'),
   'utf8'
 );
 const globalCss = readFileSync(join(__dirname, '..', '..', '..', 'global.css'), 'utf8');
@@ -57,7 +57,7 @@ describe('blog post share row', () => {
 
   it('builds the shared URL from the SEO origin rather than a second copy of it', () => {
     expect(source).toContain("import { absoluteUrl, SEO_IMAGE_URL } from './websiteMetadata'");
-    expect(source).toContain('const url = absoluteUrl(canonicalPath)');
+    expect(source).toContain('const url = absoluteUrl(href(canonicalPath))');
     expect(source).not.toMatch(/https:\/\/musclog\.app/);
   });
 
@@ -84,6 +84,6 @@ describe('blog post share row', () => {
     const footer = postPage.slice(postPage.indexOf('<footer'));
 
     expect(footer.indexOf('<BlogPostShare')).toBeGreaterThan(-1);
-    expect(footer.indexOf('<BlogPostShare')).toBeLessThan(footer.indexOf('href="/blog"'));
+    expect(footer.indexOf('<BlogPostShare')).toBeLessThan(footer.indexOf('backToBlog'));
   });
 });

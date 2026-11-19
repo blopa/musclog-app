@@ -103,7 +103,7 @@ describe('exercise catalogue rendering architecture', () => {
 
   it('renders website photos through the shared slug URL helper with source credit', () => {
     const source = readFileSync(
-      join(repositoryRoot, 'app', '(website)', 'exercises.web.tsx'),
+      join(repositoryRoot, 'app', '(website)', '[locale]', 'exercises.web.tsx'),
       'utf8'
     );
     const websiteCopy = JSON.parse(

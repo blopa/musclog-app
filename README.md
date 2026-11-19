@@ -364,7 +364,7 @@ The Google Play phone screenshots are composed with [Open Screenshot Generator](
 
 ## Resources
 
-- [Musclog Blog](https://musclog.app/blog) — statically generated from Markdown, with paginated all-post and category listings, rich prose, and syntax-highlighted code
+- [Musclog Blog](https://musclog.app/en/blog) — statically generated from Markdown, with paginated all-post and category listings, rich prose, and syntax-highlighted code
 - [Blog post: How Musclog came to be](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/)
 - [Expo Documentation](https://docs.expo.dev/)
 - [WatermelonDB Documentation](https://watermelondb.dev/)

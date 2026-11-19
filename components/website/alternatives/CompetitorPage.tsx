@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -26,6 +27,7 @@ export function CompetitorPage({ id }: { id: CompetitorId }) {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'websiteAlternativesPages' });
   const { t: layoutT } = useTranslation(undefined, { keyPrefix: 'websiteTools.layout' });
   const language = i18n.resolvedLanguage ?? i18n.language;
+  const href = useWebsiteHref();
   const competitor = COMPETITORS.find((entry) => entry.id === id)!;
   const name = competitor.name;
   const facts = t(`apps.${id}.facts`, { returnObjects: true }) as FactCopy[];
@@ -39,7 +41,7 @@ export function CompetitorPage({ id }: { id: CompetitorId }) {
     <main className="pb-20 pt-28">
       <div className="container mx-auto max-w-5xl px-4">
         <a
-          href="/alternatives"
+          href={href('/alternatives')}
           className="text-sm font-semibold transition-colors hover:text-accent-primary"
           style={{ color: BODY_TEXT_SOFT }}
         >

@@ -17,7 +17,8 @@
   },
   "open": {
     "path": "/open",
-    "robots": "noindex, nofollow, noarchive"
+    "robots": "noindex, nofollow, noarchive",
+    "locales": "none"
   },
   "exercises": {
     "path": "/exercises",
@@ -57,7 +58,8 @@
       "section": "Source & Extras",
       "title": "Blog",
       "summary": "Articles about Musclog, open-source development, privacy, fitness technology, and the ideas behind the app."
-    }
+    },
+    "locales": "en"
   },
   "blogCategories": {
     "path": "/blog/category",
@@ -65,7 +67,8 @@
       "section": "Source & Extras",
       "title": "Blog categories",
       "summary": "Every category of the Musclog blog, with the number of articles in each."
-    }
+    },
+    "locales": "en"
   },
   "blogTags": {
     "path": "/blog/tag",
@@ -73,7 +76,8 @@
       "section": "Source & Extras",
       "title": "Blog tags",
       "summary": "Every tag used on the Musclog blog as a cloud, sized by how many articles carry it."
-    }
+    },
+    "locales": "en"
   },
   "faq": {
     "path": "/faq",
@@ -261,6 +265,7 @@
   },
   "test": {
     "path": "/test",
-    "robots": "noindex, nofollow, noarchive"
+    "robots": "noindex, nofollow, noarchive",
+    "locales": "none"
   }
 }

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { computePopoverTop } from '@/components/website/popoverPlacement';
 import { StoreButtons } from '@/components/website/StoreButtons';
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -188,6 +189,7 @@ const MOBILE_MENU_ID = 'website-mobile-menu';
 
 export function MobileMenu() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
+  const href = useWebsiteHref();
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -236,7 +238,7 @@ export function MobileMenu() {
   }, [isOpen]);
 
   const menuLinks = [
-    { text: t('features'), href: '/home#features' },
+    { text: t('features'), href: '/#features' },
     { text: t('blog'), href: '/blog' },
     { text: t('tools'), href: '/tools' },
     { text: t('calculator'), href: '/calculator' },
@@ -311,7 +313,7 @@ export function MobileMenu() {
                     ) : (
                       <a
                         key={link.text}
-                        href={link.href}
+                        href={href(link.href)}
                         onClick={() => setIsOpen(false)}
                         className={`${linkClasses} text-text-primary`}
                       >
@@ -341,6 +343,7 @@ export function MobileMenu() {
 
 export function Header() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
+  const href = useWebsiteHref();
 
   return (
     <header
@@ -348,7 +351,7 @@ export function Header() {
       style={{ backgroundColor: surface(), borderColor: ink(0.08) }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <a href="/" className="flex shrink-0 items-center gap-2">
+        <a href={href('/')} className="flex shrink-0 items-center gap-2">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-inner"
             style={{ backgroundColor: BRAND_GREEN }}
@@ -367,25 +370,25 @@ export function Header() {
 
         <nav className="hidden items-center gap-6 lg:flex">
           <a
-            href="/blog"
+            href={href('/blog')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('blog')}
           </a>
           <a
-            href="/tools"
+            href={href('/tools')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('tools')}
           </a>
           <a
-            href="/exercises"
+            href={href('/exercises')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('exercises')}
           </a>
           <a
-            href="/progress"
+            href={href('/progress')}
             className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('progress')}
@@ -420,6 +423,7 @@ export function Footer() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.footer' });
   const { t: navT } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
   const { t: consentT } = useTranslation(undefined, { keyPrefix: 'website.cookieConsent' });
+  const href = useWebsiteHref();
 
   const footerLinks = [
     { text: t('privacyPolicy'), href: '/privacy' },
@@ -439,7 +443,7 @@ export function Footer() {
     <footer className="border-t py-8" style={{ borderColor: ink(0.08) }}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <a href="/" className="flex items-center gap-3">
+          <a href={href('/')} className="flex items-center gap-3">
             <div
               className="flex h-8 w-8 items-center justify-center rounded-inner"
               style={{ backgroundColor: BRAND_GREEN }}
@@ -469,7 +473,7 @@ export function Footer() {
               ) : (
                 <a
                   key={link.text}
-                  href={link.href}
+                  href={href(link.href)}
                   className="text-sm text-text-tertiary transition-colors hover:text-accent-primary"
                 >
                   {link.text}

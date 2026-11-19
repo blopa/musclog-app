@@ -721,7 +721,9 @@ describe('Website: no decorative layers', () => {
     // target the header links to, and the privacy claim is made once, in the hero. The one other
     // section is the short mascot introduction (`MeetLoggy`): a paragraph beside his picture, not a
     // row of matching columns, and the only place the homepage draws him.
-    const home = stripComments(readFileSync(join(root, 'app/(website)/home.web.tsx'), 'utf8'));
+    const home = stripComments(
+      readFileSync(join(root, 'app/(website)/[locale]/index.web.tsx'), 'utf8')
+    );
     expect(home).not.toMatch(/export function (Features|HowItWorks)\b/);
     expect(home).not.toMatch(/website\.(features|howItWorks)\b/);
     expect(home.match(/id="features"/g)).toHaveLength(1);

@@ -15,7 +15,7 @@ describe.each(COMPETITORS)('competitor page $id', (competitor) => {
   it('is a registered /alternatives route with a web page and a native redirect', () => {
     const route = websiteRoutes[competitor.routeKey as keyof typeof websiteRoutes];
     expect(route.path).toMatch(/^\/alternatives\/[a-z]+$/);
-    const file = `app/(website)${route.path}`;
+    const file = `app/(website)/[locale]${route.path}`;
     expect(readFileSync(join(root, `${file}.web.tsx`), 'utf8')).toContain(`id="${competitor.id}"`);
     expect(readFileSync(join(root, `${file}.tsx`), 'utf8')).toContain('<Redirect href="/app" />');
   });

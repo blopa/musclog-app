@@ -469,7 +469,7 @@ describe('site audit', () => {
   it('reads the sitemap from public/sitemap.xml when no URLs are passed', async () => {
     await write(
       'public/sitemap.xml',
-      '<urlset><url><loc>https://musclog.app</loc></url><url><loc>https://musclog.app/tools</loc></url></urlset>'
+      '<urlset><url><loc>https://musclog.app/en</loc></url><url><loc>https://musclog.app/en/tools</loc></url></urlset>'
     );
 
     const { stats, findings } = siteAudit.auditSite({ root });

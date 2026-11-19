@@ -128,7 +128,7 @@
     "build-android-local-cache": "bash scripts/run-eas-local-android-build.sh production",
     "build-android-apk": "eas build -p android --profile production-apk --clear-cache",
     "build-android-apk-local": "bash scripts/run-eas-local-android-build.sh production-apk --clear-cache",
-    "build-android-web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && node scripts/export-web-wrapper.js && node scripts/flatten-web-indexes.js",
+    "build-android-web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && node scripts/export-web-wrapper.js && node scripts/localize-web-exports.js && node scripts/write-legacy-redirects.js && node scripts/flatten-web-indexes.js",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
     "prebuild:android": "expo prebuild -p android --clean",

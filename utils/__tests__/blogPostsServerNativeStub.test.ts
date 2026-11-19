@@ -1,6 +1,6 @@
 // `utils/blogPosts.server` reads Markdown with `node:fs/promises`, so it cannot resolve in a
 // native bundle. It still reaches the native graph — expo-router's native require.context
-// matches `app/(website)/blog/*.web.tsx`, and Metro resolves their `await import()` statically —
+// matches `app/(website)/en/blog/*.web.tsx`, and Metro resolves their `await import()` statically —
 // so metro.config.js swaps it for blog-posts-server-stub.js off web. This pins that rule and
 // keeps the stub's surface in step with the real module.
 const path = require('node:path');

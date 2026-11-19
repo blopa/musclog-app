@@ -24,14 +24,14 @@ describe('blog category translations', () => {
       'utf8'
     );
     const articleSource = readFileSync(
-      path.join(process.cwd(), 'app', '(website)', 'blog', '[...slug].web.tsx'),
+      path.join(process.cwd(), 'app', '(website)', 'en', 'blog', '[...slug].web.tsx'),
       'utf8'
     );
 
     expect(listingSource).toContain('t(`categories.${post.category}`)');
-    expect(listingSource).toContain('href={blogCategoryPath(post.category)}');
+    expect(listingSource).toContain('href={href(blogCategoryPath(post.category))}');
     expect(articleSource).toContain('const category = t(`categories.${post.category}`);');
-    expect(articleSource).toContain('href={`/blog/category/${post.category}`}');
+    expect(articleSource).toContain('href={href(blogCategoryPath(post.category))}');
     expect(articleSource.match(/category=\{category\}/g)).toHaveLength(2);
   });
 
@@ -41,6 +41,7 @@ describe('blog category translations', () => {
         process.cwd(),
         'app',
         '(website)',
+        'en',
         'blog',
         'category',
         '[category]',
@@ -53,6 +54,7 @@ describe('blog category translations', () => {
         process.cwd(),
         'app',
         '(website)',
+        'en',
         'blog',
         'category',
         '[category]',

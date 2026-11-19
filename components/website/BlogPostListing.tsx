@@ -9,6 +9,7 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import { getBlogPaginationItems } from '@/utils/blogPagination';
 import type { BlogPostPage } from '@/utils/blogPosts.server';
 
@@ -102,8 +103,9 @@ export function BlogPostListing({
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const copy = useBlogListingCopy(category, tagLabel);
+  const href = useWebsiteHref();
   const pagePath = (page: number) =>
-    tag ? blogTagPath(tag, page) : blogListingPath(page, category);
+    href(tag ? blogTagPath(tag, page) : blogListingPath(page, category));
   const previousPage = currentPage > 1 ? currentPage - 1 : null;
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
   const paginationItems = getBlogPaginationItems(currentPage, totalPages);
@@ -113,7 +115,7 @@ export function BlogPostListing({
       <div className="container relative z-10 mx-auto max-w-4xl px-4">
         {category || tag ? (
           <a
-            href={tag ? BLOG_TAGS_PATH : BLOG_CATEGORIES_PATH}
+            href={href(tag ? BLOG_TAGS_PATH : BLOG_CATEGORIES_PATH)}
             className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
@@ -132,14 +134,14 @@ export function BlogPostListing({
           {category || tag ? null : (
             <p className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-bold">
               <a
-                href={BLOG_CATEGORIES_PATH}
+                href={href(BLOG_CATEGORIES_PATH)}
                 className="transition-colors hover:text-accent-pale"
                 style={{ color: BRAND_GREEN_BRIGHT }}
               >
                 {t('browseCategories')}
               </a>
               <a
-                href={BLOG_TAGS_PATH}
+                href={href(BLOG_TAGS_PATH)}
                 className="transition-colors hover:text-accent-pale"
                 style={{ color: BRAND_GREEN_BRIGHT }}
               >
@@ -173,7 +175,7 @@ export function BlogPostListing({
                   </time>
                   <span className="h-1 w-1 rounded-full bg-ink/25" aria-hidden="true" />
                   <a
-                    href={blogCategoryPath(post.category)}
+                    href={href(blogCategoryPath(post.category))}
                     className="relative z-10 inline-flex items-center gap-2 transition-colors hover:text-accent-pale"
                   >
                     <Folder className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
@@ -184,7 +186,7 @@ export function BlogPostListing({
                 <h2 className="text-balance text-2xl font-bold leading-tight md:text-[2rem]">
                   {/* Plain anchors preserve inherited HTML typography and hover colors here. */}
                   <a
-                    href={blogPostPath(post.slug)}
+                    href={href(blogPostPath(post.slug))}
                     className="text-text-primary transition-colors group-hover:text-accent-bright"
                   >
                     {post.title}

@@ -3,6 +3,13 @@ import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import {
+  localeForLanguage,
+  localeScopeOf,
+  localizedPath,
+  parsePublicPath,
+  WEBSITE_LOCALES,
+} from '@/components/website/localeRoutes';
 import { computePopoverTop } from '@/components/website/popoverPlacement';
 import {
   brand,
@@ -19,12 +26,23 @@ import { THEME_DEFINITIONS } from '@/theme.registry';
 import { setMirroredThemePreference } from '@/utils/themeMirror';
 
 const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
-const LANGUAGES = [
-  { code: 'en-us', badge: 'EN', label: 'English' },
-  { code: 'es-es', badge: 'ES', label: 'Español' },
-  { code: 'nl-nl', badge: 'NL', label: 'Nederlands' },
-  { code: 'pt-br', badge: 'PT', label: 'Português' },
-];
+const LANGUAGE_STORAGE_KEY = 'musclog_lang';
+// The native names are by design untranslated: each language is named in itself.
+const LANGUAGE_LABELS: Record<string, { badge: string; label: string }> = {
+  en: { badge: 'EN', label: 'English' },
+  es: { badge: 'ES', label: 'Español' },
+  nl: { badge: 'NL', label: 'Nederlands' },
+  'pt-br': { badge: 'PT', label: 'Português' },
+  ru: { badge: 'RU', label: 'Русский' },
+};
+
+function rememberLanguage(language: string) {
+  try {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  } catch {
+    // Storage can be blocked; the address still carries the language.
+  }
+}
 
 function PreferenceOption({
   name,
@@ -73,8 +91,7 @@ export function WebsitePreferences() {
   const panelRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const title = t('website.navigation.preferences');
-  const locale = (i18n.resolvedLanguage ?? i18n.language).toLowerCase();
-  const language = LANGUAGES.find(({ code }) => code.split('-')[0] === locale.split('-')[0]);
+  const i18nLocale = localeForLanguage(i18n.resolvedLanguage ?? i18n.language);
 
   useEffect(() => {
     if (!isOpen) {
@@ -130,6 +147,14 @@ export function WebsitePreferences() {
       document.removeEventListener('pointerdown', handlePointerDown);
     };
   }, [isOpen, activeTab]);
+
+  // The panel only exists after a click, so the address can be read straight from the window.
+  const page = isOpen ? parsePublicPath(window.location.pathname) : null;
+  const logicalTarget = page ? `${page.path}${window.location.search}${window.location.hash}` : '/';
+  // A page with a translated URL is switched by navigating; the blog and unprefixed pages
+  // (`/open`) have no other language, so the chrome changes in place.
+  const navigates = page !== null && page.locale !== null && localeScopeOf(page.path) === 'all';
+  const currentLocale = page?.locale && navigates ? page.locale : i18nLocale;
 
   return (
     <>
@@ -239,68 +264,98 @@ export function WebsitePreferences() {
                 role="tabpanel"
                 aria-labelledby={`${id}-${activeTab}-tab`}
               >
-                <div
-                  role="radiogroup"
-                  aria-label={t(`website.navigation.${activeTab}`)}
-                  className="flex flex-col gap-1"
-                >
-                  {activeTab === 'language'
-                    ? LANGUAGES.map(({ code, label, badge }) => (
-                        <PreferenceOption
-                          key={code}
-                          name={`${id}-language`}
-                          value={code}
-                          label={label}
-                          selected={language?.code === code}
-                          onSelect={() => {
-                            i18n
-                              .changeLanguage(code)
-                              .catch((error) =>
-                                console.warn(
-                                  '[WebsitePreferences] Failed to change language:',
-                                  error
-                                )
-                              );
-                          }}
-                        >
+                {activeTab === 'language' ? (
+                  <nav aria-label={t('website.navigation.language')}>
+                    <ul className="flex flex-col gap-1">
+                      {WEBSITE_LOCALES.map((locale) => {
+                        const { badge, label } = LANGUAGE_LABELS[locale.prefix];
+                        const selected = currentLocale.prefix === locale.prefix;
+
+                        return (
+                          <li key={locale.prefix}>
+                            <a
+                              href={localizedPath(logicalTarget, locale.prefix)}
+                              hrefLang={locale.hreflang}
+                              lang={locale.hreflang}
+                              aria-current={selected ? 'true' : undefined}
+                              onClick={(event) => {
+                                rememberLanguage(locale.language);
+                                if (!navigates) {
+                                  event.preventDefault();
+                                  i18n
+                                    .changeLanguage(locale.language)
+                                    .catch((error) =>
+                                      console.warn(
+                                        '[WebsitePreferences] Failed to change language:',
+                                        error
+                                      )
+                                    );
+                                }
+                              }}
+                              className="flex min-h-12 items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-ink/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-primary"
+                              style={
+                                selected
+                                  ? { backgroundColor: brand(0.12), color: HEADING_TEXT }
+                                  : undefined
+                              }
+                            >
+                              <span
+                                aria-hidden="true"
+                                className="w-7 text-center text-xs font-bold leading-none tracking-wide"
+                              >
+                                {badge}
+                              </span>
+                              <span className="flex-1">{label}</span>
+                              {selected ? (
+                                <Check
+                                  size={18}
+                                  className="text-accent-primary"
+                                  aria-hidden={true}
+                                />
+                              ) : null}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </nav>
+                ) : (
+                  <div
+                    role="radiogroup"
+                    aria-label={t('website.navigation.theme')}
+                    className="flex flex-col gap-1"
+                  >
+                    {THEME_OPTIONS.map((option) => (
+                      <PreferenceOption
+                        key={option}
+                        name={`${id}-theme`}
+                        value={option}
+                        label={t(`settings.theme.options.${option}.label`)}
+                        selected={themePreference === option}
+                        onSelect={() => {
+                          // The public site observes the mirror before the app settings database.
+                          setMirroredThemePreference(option);
+                          SettingsService.setTheme(option).catch((error) =>
+                            console.warn('[WebsitePreferences] Failed to save theme:', error)
+                          );
+                        }}
+                      >
+                        {option === 'system' ? (
+                          <Monitor size={24} aria-hidden={true} />
+                        ) : (
                           <span
                             aria-hidden="true"
-                            className="w-7 text-center text-xs font-bold leading-none tracking-wide"
-                          >
-                            {badge}
-                          </span>
-                        </PreferenceOption>
-                      ))
-                    : THEME_OPTIONS.map((option) => (
-                        <PreferenceOption
-                          key={option}
-                          name={`${id}-theme`}
-                          value={option}
-                          label={t(`settings.theme.options.${option}.label`)}
-                          selected={themePreference === option}
-                          onSelect={() => {
-                            // The public site observes the mirror before the app settings database.
-                            setMirroredThemePreference(option);
-                            SettingsService.setTheme(option).catch((error) =>
-                              console.warn('[WebsitePreferences] Failed to save theme:', error)
-                            );
-                          }}
-                        >
-                          {option === 'system' ? (
-                            <Monitor size={24} aria-hidden={true} />
-                          ) : (
-                            <span
-                              aria-hidden="true"
-                              className="h-6 w-6 shrink-0 rounded-full border-4"
-                              style={{
-                                backgroundColor: THEME_DEFINITIONS[option].palette.brandPrimary,
-                                borderColor: THEME_DEFINITIONS[option].palette.borderHairline,
-                              }}
-                            />
-                          )}
-                        </PreferenceOption>
-                      ))}
-                </div>
+                            className="h-6 w-6 shrink-0 rounded-full border-4"
+                            style={{
+                              backgroundColor: THEME_DEFINITIONS[option].palette.brandPrimary,
+                              borderColor: THEME_DEFINITIONS[option].palette.borderHairline,
+                            }}
+                          />
+                        )}
+                      </PreferenceOption>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>,
             document.body

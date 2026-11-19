@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Folder } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import type { BlogCategorySummary } from '@/utils/blogPosts.server';
 
 import { blogCategoryPath, blogPagePath } from './blogRoutes';
@@ -14,6 +15,7 @@ import { WebsiteSeo } from './WebsiteSeo';
  */
 export function BlogCategoriesPage({ categories }: { categories: BlogCategorySummary[] }) {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
+  const href = useWebsiteHref();
 
   return (
     <>
@@ -21,7 +23,7 @@ export function BlogCategoriesPage({ categories }: { categories: BlogCategorySum
       <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-28">
         <div className="container relative z-10 mx-auto max-w-4xl px-4">
           <a
-            href={blogPagePath(1)}
+            href={href(blogPagePath(1))}
             className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
@@ -42,7 +44,7 @@ export function BlogCategoriesPage({ categories }: { categories: BlogCategorySum
             {categories.map(({ category, postCount }) => (
               <li key={category}>
                 <a
-                  href={blogCategoryPath(category)}
+                  href={href(blogCategoryPath(category))}
                   className="group flex h-full items-center justify-between gap-4 rounded-card border border-ink/10 p-6 transition-colors hover:border-accent-bright/40"
                 >
                   <span className="flex min-w-0 flex-col gap-2">

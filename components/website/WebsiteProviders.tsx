@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
-import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { AnalyticsConsent } from '@/components/website/AnalyticsConsent';
+import { WebsiteLanguageInitializer } from '@/components/website/WebsiteLanguage';
 import { WebsiteThemeSync } from '@/components/website/WebsiteThemeSync';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { ThemeProvider } from '@/context/ThemeContext';
@@ -15,7 +15,7 @@ export function WebsiteProviders({ children }: { children: ReactNode }) {
       <SettingsProvider>
         <ThemeProvider preferMirror>
           <WebsiteThemeSync />
-          <LanguageInitializer />
+          <WebsiteLanguageInitializer />
           {children}
           <AnalyticsConsent />
         </ThemeProvider>

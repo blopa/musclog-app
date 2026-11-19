@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import type { BlogTagSummary } from '@/utils/blogPosts.server';
 import { TAG_CLOUD_LEVELS, tagCloudLevel } from '@/utils/blogTagCloud';
 
@@ -22,6 +23,7 @@ const TAG_SIZE_CLASSES = ['text-sm', 'text-lg', 'text-2xl', 'text-4xl', 'text-5x
  */
 export function BlogTagsPage({ tags }: { tags: BlogTagSummary[] }) {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
+  const href = useWebsiteHref();
   const counts = tags.map((tag) => tag.postCount);
   const min = Math.min(...counts);
   const max = Math.max(...counts);
@@ -32,7 +34,7 @@ export function BlogTagsPage({ tags }: { tags: BlogTagSummary[] }) {
       <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-28">
         <div className="container relative z-10 mx-auto max-w-4xl px-4">
           <a
-            href={blogPagePath(1)}
+            href={href(blogPagePath(1))}
             className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
@@ -60,7 +62,7 @@ export function BlogTagsPage({ tags }: { tags: BlogTagSummary[] }) {
               return (
                 <li key={tag}>
                   <a
-                    href={blogTagPath(tag)}
+                    href={href(blogTagPath(tag))}
                     title={countLabel}
                     className={`${TAG_SIZE_CLASSES[Math.min(level, TAG_CLOUD_LEVELS - 1)]} font-bold leading-tight text-text-primary transition-colors hover:text-accent-bright`}
                   >
