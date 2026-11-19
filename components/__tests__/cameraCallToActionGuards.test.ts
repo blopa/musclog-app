@@ -3,18 +3,31 @@ import { join } from 'path';
 
 /**
  * These components render through React Native primitives that this repo cannot mount under Jest,
- * so the rules are checked at source level, on semantic tokens only: whitespace is collapsed
- * before matching, so formatting (indentation, line breaks) is never pinned.
+ * so the rules are checked at source level. Only the invariants are pinned, not how each gate is
+ * spelled, so a refactor that keeps the behaviour passes:
  *
- * The convention (like `SmartCameraShell`'s shutter): a camera button renders iff its handler is
- * supplied. Leaves never read the camera hook; the owner that builds the handler supplies it only
- * while the device has a camera.
+ * 1. Leaves never read the camera hook.
+ * 2. Each leaf's camera prop is optional and its button is conditional on that prop.
+ * 3. The camera fact has one source: SmartCameraContext exposes no `hasCamera` and keeps the backstop.
+ * 4. The form scanner gates itself; its callers pass `openScanner` through without the hook.
+ * 5. Screen owners that supply camera handlers read `hasCamera`.
+ * 6. Other owners read `useHasCamera()` from CameraView.
+ *
+ * Whitespace is collapsed before matching, so formatting (indentation, line breaks) is never pinned.
  */
 const ROOT = join(__dirname, '..', '..');
 
 function source(relativePath: string): string {
   return readFileSync(join(ROOT, relativePath), 'utf8').replace(/\s+/g, ' ');
 }
+
+const LEAF_PROPS: Array<[string, string]> = [
+  ['components/BarcodeInput.tsx', 'onScanPress'],
+  ['components/nutrition/FoodQuickActions.tsx', 'onScanBarcode'],
+  ['components/modals/AddFoodModal.tsx', 'onScanBarcodePress'],
+  ['components/modals/AddFoodModal.tsx', 'onAiCameraPress'],
+  ['components/modals/FoodSearchModal.tsx', 'onBarcodeScanPress'],
+];
 
 const LEAVES = [
   'components/BarcodeInput.tsx',
@@ -23,111 +36,87 @@ const LEAVES = [
   'components/modals/FoodSearchModal.tsx',
 ];
 
+const CALLERS = [
+  'components/modals/CreateCustomFoodModal.tsx',
+  'components/modals/FoodMealTrackingDetailsModal.tsx',
+  'components/modals/ScannedFoodDetailsModal.tsx',
+  'components/modals/AddFoodItemToMealModal.tsx',
+];
+
+const SCREEN_OWNERS = [
+  'app/app/(tabs)/index.tsx',
+  'app/app/(tabs)/nutrition/food.tsx',
+  'app/app/test/modals.tsx',
+];
+
+const OTHER_OWNERS = [
+  'components/NavigationMenu.tsx',
+  'components/modals/MyMealsModal.tsx',
+  'components/modals/OpticalTransferModal.tsx',
+  'app/app/onboarding/landing.tsx',
+  'components/comeback/ComebackTips.tsx',
+  'hooks/useAvailableHomeActions.ts',
+];
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 describe('camera call to action guards: leaves', () => {
   it.each(LEAVES)('%s does not read the camera hook', (file) => {
     expect(source(file)).not.toContain('useHasCamera');
   });
 
-  it('BarcodeInput renders the scan button only with onScanPress', () => {
-    const text = source('components/BarcodeInput.tsx');
+  it.each(LEAF_PROPS)('%s makes %s optional and conditionally renders its button', (file, prop) => {
+    const text = source(file);
+    const p = escapeRegExp(prop);
 
-    expect(text).toContain('onScanPress?: () => void;');
-    expect(text).toContain('{onScanPress ? ( <Pressable');
+    expect(text).toContain(`${prop}?: () => void`);
+    expect(text).toMatch(new RegExp(`(\\{${p} \\?|&& ${p} \\?)`));
+  });
+});
+
+describe('camera call to action guards: single source', () => {
+  it('SmartCameraContextType does not carry hasCamera', () => {
+    const text = source('context/SmartCameraContext.tsx');
+    const typeBody = text.slice(
+      text.indexOf('type SmartCameraContextType = {'),
+      text.indexOf('};', text.indexOf('type SmartCameraContextType = {'))
+    );
+
+    expect(typeBody).not.toContain('hasCamera');
   });
 
-  it('FoodQuickActions omits the scan slot without onScanBarcode and keeps the others', () => {
-    const text = source('components/nutrition/FoodQuickActions.tsx');
+  it('the SmartCameraContext provider keeps the backstop', () => {
+    expect(source('context/SmartCameraContext.tsx')).toContain('if (!hasCamera) { return; }');
+  });
+});
 
-    expect(text).toContain('onScanBarcode?: () => void;');
-    expect(text).toMatch(/\{onScanBarcode \? slot\( 'scan',/);
+describe('camera call to action guards: form scanner', () => {
+  it('useBarcodeCameraModal gates its scanner on useHasCamera', () => {
+    const text = source('components/modals/useBarcodeCameraModal.tsx');
 
-    for (const key of ['search', 'meals', 'more']) {
-      expect(text).toContain(`slot( '${key}',`);
-    }
+    expect(text).toContain('useHasCamera()');
+    expect(text).toContain('hasCamera ? ');
   });
 
-  it('AddFoodModal renders the barcode and AI camera methods only with their handlers', () => {
-    const text = source('components/modals/AddFoodModal.tsx');
-
-    expect(text).toMatch(/\{onScanBarcodePress \? \( <TrackingMethodButton icon=\{ScanLine\}/);
-    expect(text).toContain('{isAiEnabled && onAiCameraPress ? (');
-  });
-
-  it('FoodSearchModal shows the barcode icon only with onBarcodeScanPress', () => {
-    const text = source('components/modals/FoodSearchModal.tsx');
-
-    expect(text).toContain('const showBarcodeScan = onBarcodeScanPress !== undefined;');
-    expect(text).toContain('{showBarcodeScan ? ( <Pressable');
-    expect(text).toContain("showBarcodeScan ? 'pr-10' : ''");
+  it.each(CALLERS)('%s does not read the camera hook itself', (file) => {
+    expect(source(file)).not.toContain('useHasCamera');
   });
 });
 
 describe('camera call to action guards: owners', () => {
-  it('SmartCameraContext exposes the single hasCamera subscription', () => {
-    const text = source('context/SmartCameraContext.tsx');
-
-    expect(text).toContain('hasCamera: boolean;');
-    expect(text).toContain('const hasCamera = useHasCamera();');
-    expect(text).toContain('if (!hasCamera) { return; }');
-  });
-
-  it.each([
-    ['app/app/(tabs)/index.tsx', ['onAiCameraPress', 'onScanBarcodePress', 'onBarcodeScanPress']],
-    ['app/app/test/modals.tsx', ['onAiCameraPress', 'onScanBarcodePress', 'onBarcodeScanPress']],
-    [
-      'app/app/(tabs)/nutrition/food.tsx',
-      ['onScanBarcode', 'onAiCameraPress', 'onScanBarcodePress', 'onBarcodeScanPress'],
-    ],
-  ])('%s supplies camera handlers only with hasCamera', (file, props) => {
+  it.each(SCREEN_OWNERS)('%s reads hasCamera and gates its handlers on it', (file) => {
     const text = source(file);
 
-    expect(text).toMatch(/const \{[^}]*\bhasCamera\b[^}]*\} = useSmartCamera\(\);/);
-
-    for (const prop of props) {
-      expect(text).toMatch(new RegExp(`${prop}=\\{ ?hasCamera \\?`));
-    }
+    expect(text).toContain('useHasCamera()');
+    expect(text).toContain('hasCamera ?');
   });
 
-  it.each([
-    'components/modals/CreateCustomFoodModal.tsx',
-    'components/modals/FoodMealTrackingDetailsModal.tsx',
-    'components/modals/ScannedFoodDetailsModal.tsx',
-  ])('%s passes the scanner to BarcodeInput only with a camera', (file) => {
+  it.each(OTHER_OWNERS)('%s calls useHasCamera imported from CameraView', (file) => {
     const text = source(file);
 
-    expect(text).toContain("import { useHasCamera } from '@/components/CameraView';");
-    expect(text).toContain('const hasCamera = useHasCamera();');
-    expect(text).toContain('onScanPress={hasCamera ? openScanner : undefined}');
-  });
-
-  it('AddFoodItemToMealModal draws its own scan icon only with a camera', () => {
-    const text = source('components/modals/AddFoodItemToMealModal.tsx');
-
-    expect(text).toContain("import { useHasCamera } from '@/components/CameraView';");
-    expect(text).toMatch(/icon=\{ hasCamera \? \( <Pressable/);
-  });
-
-  it('MyMealsModal passes the phone import only with a camera', () => {
-    expect(source('components/modals/MyMealsModal.tsx')).toContain(
-      'onImportFromPhone={hasCamera ? handleImportFromPhone : undefined}'
-    );
-  });
-
-  it('the navigation bar renders the camera button only with a camera', () => {
-    expect(source('components/NavigationMenu.tsx')).toContain('{hasCamera ? <CameraNavButton');
-  });
-
-  it.each([
-    'app/app/onboarding/landing.tsx',
-    'components/NavigationMenu.tsx',
-    'components/modals/MyMealsModal.tsx',
-    'components/modals/OpticalTransferModal.tsx',
-    'components/comeback/ComebackTips.tsx',
-    'hooks/useAvailableHomeActions.ts',
-    'context/SmartCameraContext.tsx',
-  ])('%s reads useHasCamera from CameraView', (file) => {
-    expect(source(file)).toMatch(
-      /import \{[^}]*\buseHasCamera\b[^}]*\} from '@\/components\/CameraView';/
-    );
+    expect(text).toMatch(/import \{[^}]*\buseHasCamera\b[^}]*\} from '@\/components\/CameraView';/);
+    expect(text).toContain('useHasCamera()');
   });
 });

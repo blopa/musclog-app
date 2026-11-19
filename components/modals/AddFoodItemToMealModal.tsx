@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import { useHasCamera } from '@/components/CameraView';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
@@ -249,7 +248,6 @@ export function AddFoodItemToMealModal({
   onAddFoods,
 }: AddFoodItemToMealModalProps) {
   const theme = useTheme();
-  const hasCamera = useHasCamera();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<
@@ -447,7 +445,7 @@ export function AddFoodItemToMealModal({
             onChangeText={setSearchQuery}
             placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
             icon={
-              hasCamera ? (
+              openScanner ? (
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t('common.a11y.scanBarcode')}

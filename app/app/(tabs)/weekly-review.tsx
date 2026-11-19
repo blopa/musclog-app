@@ -68,6 +68,11 @@ type ReviewPanel =
   | { kind: 'logWeight'; day: number }
   | { kind: 'legacyCheckin'; id: string };
 
+/** The panel a link opens the screen on: an old check-in link opens that check-in. */
+function linkedPanel(checkinId: string | undefined): ReviewPanel | null {
+  return checkinId ? { kind: 'legacyCheckin', id: checkinId } : null;
+}
+
 export default function WeeklyReviewScreen() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
@@ -85,18 +90,18 @@ export default function WeeklyReviewScreen() {
   const [busy, setBusy] = useState(false);
   const reviewMomentCountedRef = useRef(false);
   const comeback = useComebackState();
-  const [panel, setPanel] = useState<ReviewPanel | null>(
-    params.checkinId ? { kind: 'legacyCheckin', id: params.checkinId } : null
-  );
+  const [panel, setPanel] = useState(() => linkedPanel(params.checkinId));
   const closePanel = () => setPanel(null);
   // This screen is a tab kept mounted while hidden, so a later link (a notification naming a
   // review or a day) arrives as new params without a remount: follow it once, like a fresh open.
+  // The same three values seed the state above; a link without a check-in keeps an open panel.
   const paramsKey = `${params.reviewId ?? ''}|${params.reviewDay ?? ''}|${params.checkinId ?? ''}`;
   useOnChange(paramsKey, () => {
     setSelectedReview(params.reviewId);
     setRequestedDay(params.reviewDay);
-    if (params.checkinId) {
-      setPanel({ kind: 'legacyCheckin', id: params.checkinId });
+    const linked = linkedPanel(params.checkinId);
+    if (linked) {
+      setPanel(linked);
     }
   });
   const [reminder, setReminder] = useState(false);

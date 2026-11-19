@@ -36,7 +36,6 @@ import { Image, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
-import { useHasCamera } from '@/components/CameraView';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import { Button } from '@/components/theme/Button';
@@ -150,7 +149,6 @@ export default function CreateCustomFoodModal({
   const [nutritionBasis, setNutritionBasis] = useState<'per_100g' | 'per_serving'>('per_100g');
   const [servingName, setServingName] = useState('');
 
-  const hasCamera = useHasCamera();
   const { openScanner, scanner } = useBarcodeCameraModal(visible, setBarcode);
 
   useEffect(() => {
@@ -681,7 +679,7 @@ export default function CreateCustomFoodModal({
               value={barcode}
               onChangeText={setBarcode}
               placeholder={t('food.newCustomFood.barcodePlaceholder')}
-              onScanPress={hasCamera ? openScanner : undefined}
+              onScanPress={openScanner}
             />
 
             {/* Brand */}

@@ -1,10 +1,11 @@
 import * as ExpoLinking from 'expo-linking';
-import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
+import { useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useHasCamera } from '@/components/CameraView';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
@@ -113,12 +114,12 @@ export default function HomeScreen() {
     homeActions,
     showHomeSteps,
   } = useSettings();
-  const { openCamera, hasCamera } = useSmartCamera();
+  const { openCamera } = useSmartCamera();
+  const hasCamera = useHasCamera();
   const { formatEnergy } = useEnergyUnit();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
 
-  const pathname = usePathname();
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
