@@ -120,6 +120,18 @@ function assertReleaseVersionsMatch(projectDir) {
   return versions;
 }
 
+// The App Store listing is `ios/appstore/metadata/version/<X.Y.Z>/`, and scripts/appstore.sh
+// refuses a folder that is not named after app.json's version, so it moves with every bump.
+// A folder named after some other version (a stale pull) is left alone for the script to report.
+function renameAppStoreVersionFolder(projectDir, fromVersion, toVersion) {
+  const root = path.join(projectDir, 'ios/appstore/metadata/version');
+  const from = path.join(root, fromVersion);
+  const to = path.join(root, toVersion);
+  if (fs.existsSync(from) && !fs.existsSync(to)) {
+    fs.renameSync(from, to);
+  }
+}
+
 function bumpProjectVersions(projectDir, bumpType) {
   const current = assertReleaseVersionsMatch(projectDir);
   const files = releasePaths(projectDir);
@@ -193,6 +205,8 @@ function bumpProjectVersions(projectDir, bumpType) {
     );
     fs.writeFileSync(widgetInfo, widget);
   }
+
+  renameAppStoreVersionFolder(projectDir, current.appVersion, nextVersion);
 
   assertReleaseVersionsMatch(projectDir);
   return { build: nextBuild, version: nextVersion };

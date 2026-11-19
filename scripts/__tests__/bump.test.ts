@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -85,4 +85,21 @@ it('refuses to bump an already inconsistent project', () => {
   );
 
   expect(() => bumpProjectVersions(projectDir, 'patch')).toThrow('Release version mismatch');
+});
+
+it('renames the App Store listing folder to the new version', () => {
+  writeFixture('ios/appstore/metadata/version/2.11.2/en-US.json', {});
+  bumpProjectVersions(projectDir, 'patch');
+
+  expect(existsSync(join(projectDir, 'ios/appstore/metadata/version/2.11.3/en-US.json'))).toBe(
+    true
+  );
+  expect(existsSync(join(projectDir, 'ios/appstore/metadata/version/2.11.2'))).toBe(false);
+});
+
+it('leaves a listing folder named after another version alone', () => {
+  writeFixture('ios/appstore/metadata/version/2.6.2/en-US.json', {});
+  bumpProjectVersions(projectDir, 'patch');
+
+  expect(existsSync(join(projectDir, 'ios/appstore/metadata/version/2.6.2/en-US.json'))).toBe(true);
 });
