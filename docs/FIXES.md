@@ -1527,3 +1527,20 @@ looks for a missing row with a `take(1)` read before opening a writer, so the co
 nothing to fill does not queue behind other writers. Pinned by
 `database/__tests__/{bootForegroundClock,dbBootCoordinator}.test.ts` and
 `database/services/__tests__/ExerciseService.search.test.ts`.
+
+## Play blocked a release over an implied `android.hardware.wifi` requirement (2.16.6)
+
+Play Console refused to send build 334 for review: "Required hardware feature declarations are
+restricting your app's availability" (`android.hardware.wifi`, hiding the app from some phones,
+tablets, desktops and Android XR). Nothing declared it: `@react-native-community/netinfo` adds
+`ACCESS_WIFI_STATE`, and a few permissions imply a `<uses-feature required="true">` of their own
+(`CAMERA` → camera and camera.autofocus, the Bluetooth permissions → bluetooth, the location
+permissions → location, location.gps and location.network). `plugins/withOptionalHardwareFeatures.js`
+now declares all of them with `android:required="false"`, which overrides the implied requirement
+and keeps the permission, so the hardware still works where it exists. Musclog does not need any of
+it to log workouts or type in food. To add a feature, add its name to `OPTIONAL_FEATURES`. The
+plugin only fixes availability: screens that use the camera, Bluetooth sensors or location must
+still cope with a device that lacks the hardware. The committed manifest comes from
+`npm run prebuild:android`; note that `--clean` also deletes `android/play/` (the Play listing,
+which prebuild does not generate), so restore it with `git checkout -- android/play` afterwards.
+Pinned by `plugins/__tests__/withOptionalHardwareFeatures.test.ts`.

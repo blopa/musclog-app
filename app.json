@@ -23,6 +23,7 @@
       "./plugins/withNativeBuildJobPools",
       "./plugins/withIosSimulatorBuildFix",
       "./plugins/withThemeAppIcons",
+      "./plugins/withOptionalHardwareFeatures",
       "expo-system-ui",
       "react-native-edge-to-edge",
       [
