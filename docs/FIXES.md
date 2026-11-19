@@ -3,6 +3,41 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Switching tabs got slower every time, then took ten seconds (2026-11-19)
+
+### Symptom
+
+In a production build, tapping between Home, Food and Workouts (fastest when tapping a second tab
+about 50 ms after the first) made each switch lag, and after roughly fifty rounds even a calm tap took
+ten seconds or more. Once, after a few minutes of this, the app went back to its boot screen as if it
+had just been launched. The database was large (three years of food logs) but nothing had been logged
+in the last 90 days.
+
+### Cause
+
+Every app screen is a sibling in one expo-router `Stack` (`app/app/_layout.tsx`). In expo-router 58
+(React Navigation 7 underneath), the stack's `NAVIGATE` pushes a new screen unless the target is the
+one already focused; it never goes back to a copy further down. The bottom bar called
+`router.navigate` for every tab (and `router.replace` for Food), so each tap mounted a new, complete
+Home, Food or Workouts screen on top of the old ones: fifty rounds of Food, Workouts, Home left 101
+screens alive (reproduced against the router's own reducer). None of them unmounted, so all of them kept
+their database observers, decryption and per-minute clocks running, and every write re-ran their
+queries. Memory grew until the OS killed the process and relaunched it, which is the boot screen that
+appeared mid-session. Finishing a workout leaked the same way on a smaller scale: the summary's
+"Go home" `replace('/app')` left the previous Home and Workouts underneath a new Home.
+
+### Fix
+
+`components/navigation/destinationNavigation.ts` is the one rule for reaching a top-level
+destination: Home is `dismissTo('/app')` (back to the Home already open, unmounting everything above
+it), a destination is pushed only from Home, and from anywhere else it is `dismissTo(route)` (back to
+it if it is in the stack, otherwise it replaces the current screen). The stack therefore stays at Home
+plus one destination however fast the taps come. `NavigationMenu`, `UserMenuModal`, the workout
+summary's "Go home" and the comeback notification use it, and the food slot's `replace` flag is gone.
+`components/navigation/__tests__/destinationNavigation.test.ts` runs both the old and the new taps
+through expo-router's stack reducer (the old way must still grow past 100 screens, the new way must stay
+at two or fewer) and fails if the bar or the account menu calls the router directly.
+
 ## Google Analytics received no data at all (2026-11-19)
 
 ### Symptom

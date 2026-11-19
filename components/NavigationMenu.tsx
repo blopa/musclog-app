@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
+import { goHome, goToDestination, isHomePath } from '@/components/navigation/destinationNavigation';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import type { NavItemKey } from '@/constants/settings';
@@ -85,8 +86,6 @@ type NavSlotConfig = {
   activePath?: string;
   /** Second prefix that also counts as active — profile owns the progress screen. */
   alsoActiveFor?: string;
-  /** `replace` instead of `navigate` — the food diary swaps itself rather than stacking. */
-  replace?: boolean;
   /** Haptic + route prefetch on press-in. Worth it only for the heaviest screen. */
   prefetch?: boolean;
   /**
@@ -107,7 +106,7 @@ type NavSlotConfig = {
  */
 const NAV_SLOTS: Record<Exclude<NavItemKey, 'coach'>, NavSlotConfig> = {
   workouts: { activePath: '/app/workout' },
-  food: { activePath: '/app/nutrition/', replace: true },
+  food: { activePath: '/app/nutrition/' },
   profile: { alsoActiveFor: '/app/progress', prefetch: true, navigateWhenActive: true },
   cycle: {},
   settings: {},
@@ -134,7 +133,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const isPathActive = useCallback(
     (path: string) => {
       if (path === '/') {
-        return pathname === '/app';
+        return isHomePath(pathname);
       }
 
       return pathname.startsWith(path);
@@ -168,7 +167,7 @@ export const NavigationMenu = memo(function NavigationMenu({
       }
 
       const slot = NAV_SLOTS[slotKey];
-      const { alsoActiveFor, replace, prefetch } = slot;
+      const { alsoActiveFor, prefetch } = slot;
       // Typed `string`, not `string | null`: `coach` is the only routeless destination and it
       // returned above, so the narrowed key can only index entries with a real route.
       const { icon: Icon, route: destination } = NAV_DESTINATIONS[slotKey];
@@ -176,13 +175,9 @@ export const NavigationMenu = memo(function NavigationMenu({
         isPathActive(slot.activePath ?? destination) ||
         (!!alsoActiveFor && isPathActive(alsoActiveFor));
 
-      const go = () => {
-        if (replace) {
-          router.replace(destination);
-        } else {
-          router.navigate(destination);
-        }
-      };
+      // Never a bare `navigate`: it pushes a new copy of the screen on every tap (see
+      // `destinationNavigation.ts`), which is how switching tabs piled up 100+ live screens.
+      const go = () => goToDestination(router, destination, isHomePath(pathname));
 
       return (
         <NavSlotButton
@@ -214,7 +209,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         />
       );
     },
-    [isPathActive, isCycleActive, onCoachPress, router, t, theme, weeklyReview?.ready]
+    [isPathActive, isCycleActive, onCoachPress, pathname, router, t, theme, weeklyReview?.ready]
   );
 
   const homeActive = isPathActive('/');
@@ -235,7 +230,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           label={t('home.navigation.home')}
           onPress={() => {
             if (!homeActive) {
-              router.navigate('/app');
+              goHome(router);
             }
           }}
           icon={

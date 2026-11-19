@@ -10,6 +10,7 @@ import { ComebackSummaryLine } from '@/components/comeback/ComebackSummaryLine';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { goHome } from '@/components/navigation/destinationNavigation';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutSessionFeedback } from '@/components/workout/WorkoutSessionFeedback';
 import { WorkoutSummaryProgression } from '@/components/workout/WorkoutSummaryProgression';
@@ -269,7 +270,7 @@ export default function WorkoutSummaryScreen() {
   }, [i18n.language, i18n.resolvedLanguage, setUnreadCount, t, units, workoutLogId]);
 
   const handleGoHome = () => {
-    router.replace('/app');
+    goHome(router);
   };
 
   const handleShareSummary = async () => {
@@ -325,7 +326,7 @@ export default function WorkoutSummaryScreen() {
         context: 'exercise',
         workoutLogId,
       });
-      router.replace('/app');
+      goHome(router);
       openCoach();
     } catch (err) {
       await handleError(err, 'workout-summary.getFeedback', {
