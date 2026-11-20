@@ -126,6 +126,51 @@ describe('revenueCatHarness', () => {
     expect(h.getConfiguredAppUserId()).toBe('$RCAnonymousID:abc');
   });
 
+  it('getMonthlyPriceString configures under the id and reads the monthly price', async () => {
+    const h = load();
+    const monthly = {
+      identifier: '$rc_monthly',
+      packageType: 'MONTHLY',
+      product: { priceString: '€2.99' },
+    };
+
+    purchases.getOfferings.mockResolvedValue({
+      current: { monthly, availablePackages: [] },
+      all: {},
+    });
+    await expect(h.getMonthlyPriceString(RC_ID)).resolves.toBe('€2.99');
+    expect(purchases.configure).toHaveBeenCalledWith({ apiKey: 'ios-key', appUserID: RC_ID });
+  });
+
+  it('getMonthlyPriceString falls back to a MONTHLY package in any offering', async () => {
+    const h = load();
+    const found = { identifier: 'm', packageType: 'MONTHLY', product: { priceString: '$3.49' } };
+
+    purchases.getOfferings.mockResolvedValue({
+      current: null,
+      all: {
+        other: {
+          availablePackages: [
+            { identifier: 'a', packageType: 'ANNUAL', product: { priceString: '$30' } },
+            found,
+          ],
+        },
+      },
+    });
+    await expect(h.getMonthlyPriceString(RC_ID)).resolves.toBe('$3.49');
+  });
+
+  it('getMonthlyPriceString is null, never a throw, for an anonymous id or no package', async () => {
+    const h = load();
+
+    await expect(h.getMonthlyPriceString('anon')).resolves.toBeNull();
+    expect(purchases.configure).not.toHaveBeenCalled();
+    purchases.getOfferings.mockResolvedValue({ current: null, all: {} });
+    await expect(h.getMonthlyPriceString(RC_ID)).resolves.toBeNull();
+    purchases.getOfferings.mockRejectedValue(new Error('offline'));
+    await expect(h.getMonthlyPriceString(RC_ID)).resolves.toBeNull();
+  });
+
   it('has no logOut path', () => {
     const src = fs.readFileSync(path.join(__dirname, '..', 'revenueCatHarness.ts'), 'utf8');
 

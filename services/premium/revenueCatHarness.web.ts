@@ -37,3 +37,7 @@ export async function logInTo(_appUserId: string): Promise<never> {
 export async function getCustomerInfoDump(): Promise<never> {
   throw new Error(UNAVAILABLE);
 }
+
+export async function getMonthlyPriceString(_rcId: string): Promise<string | null> {
+  return null;
+}

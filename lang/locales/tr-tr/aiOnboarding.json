@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Yerel model",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Google AI Studio'yu aç",
       "openClaude": "Claude anahtarları sayfasını aç",
@@ -116,7 +117,9 @@
       },
       "title": "Yapay zekanı seç",
       "useExternal": "Bunun yerine ChatGPT veya Claude kullan",
-      "useSaved": "Kayıtlı anahtarı kullan"
+      "useSaved": "Kayıtlı anahtarı kullan",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "Abonelikle barındırılan YZ, anahtar gerekmez"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Anahtarı değiştir",
         "retry": "Tekrar dene",
         "switchProvider": "Başka bir yapay zeka seç",
-        "useExternal": "ChatGPT veya Claude kullan"
+        "useExternal": "ChatGPT veya Claude kullan",
+        "renewPremium": "Premium’u aç",
+        "restorePremium": "Satın alımları geri yükle"
       },
       "cancelled": {
         "description": "Mesajın kutuya geri geldi.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "Yapay zeka cevap veremedi. Tekrar dene ya da başka bir yol seç.",
         "title": "Bir şeyler ters gitti"
+      },
+      "hostedBudget": {
+        "title": "Premium kotası kullanıldı",
+        "description": "Kotanız bir sonraki dönemle yenilenir. Bu arada kendi anahtarınızı kullanabilir veya kurulumu elle tamamlayabilirsiniz."
+      },
+      "hostedSubscription": {
+        "title": "Premium bu cihazda etkin değil",
+        "description": "Satın almanızı geri yükleyin, aboneliği yenileyin veya kendi anahtarınızı kullanın."
+      },
+      "hostedUnavailable": {
+        "title": "Premium kullanılamıyor",
+        "description": "Musclog Premium’a şu anda ulaşılamıyor. Tekrar deneyin veya başka bir seçeneği kullanın."
+      },
+      "hostedBusy": {
+        "title": "Premium meşgul",
+        "description": "Aynı anda çok fazla istek var. Birkaç saniye sonra tekrar deneyin."
       }
     },
     "review": {

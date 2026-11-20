@@ -22,6 +22,14 @@
     "aiTimeout": "Está tardando demasiado. Inténtalo de nuevo.",
     "aiKeyTestOk": "Clave aceptada",
     "aiKeyTestRejected": "Clave rechazada. Revísala e inténtalo de nuevo.",
-    "aiKeyTestNetwork": "No se pudo contactar con el proveedor. Revisa tu conexión."
+    "aiKeyTestNetwork": "No se pudo contactar con el proveedor. Revisa tu conexión.",
+    "hostedBudget": "La cuota de IA Premium de este periodo se ha agotado. Se renueva el {{date}}. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+    "hostedBudgetNoDate": "La cuota de IA Premium de este periodo se ha agotado. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+    "hostedSubscription": "Musclog Premium no tiene una suscripción activa en este dispositivo. Restaura tu compra o suscríbete en los ajustes de Premium.",
+    "hostedRemoved": "Este dispositivo se ha eliminado de tu suscripción Premium. Restaura las compras en los ajustes de Premium para volver a añadirlo.",
+    "hostedUnavailable": "Musclog Premium no está disponible ahora mismo. Inténtalo de nuevo en un momento.",
+    "hostedDailyFull": "La IA Premium está al límite de capacidad hasta mañana (UTC).",
+    "hostedBusy": "Musclog Premium está ocupado. Inténtalo de nuevo en unos segundos.",
+    "hostedAlreadyProcessed": "Esa solicitud ya se procesó. Envíala de nuevo."
   }
 }

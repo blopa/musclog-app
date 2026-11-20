@@ -362,7 +362,10 @@
         "consentConfirm": "Accetto e attivo"
       },
       "testKey": "Prova chiave",
-      "testingKey": "Verifica in corso…"
+      "testingKey": "Verifica in corso…",
+      "premium": {
+        "activeNote": "Musclog Premium sta rispondendo alle tue richieste IA. Le tue chiavi e il piano gratuito non vengono usati mentre è attivo."
+      }
     },
     "visualSettings": {
       "title": "Aspetto e home",

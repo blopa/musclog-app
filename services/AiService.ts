@@ -1,11 +1,17 @@
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
+import {
+  getPremiumStatus,
+  getSessionGrant,
+  hostedAiBaseUrl,
+} from '@/services/premium/premiumService';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { isOnDeviceAiAvailable } from '@/utils/onDeviceAi';
+import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 
 /**
  * The Gemini model to use, with a stored model that is no longer supported replaced by the
@@ -97,6 +103,46 @@ type ProviderBuilder = (language: string) => Promise<CoachAIConfig>;
  * only the reads that decided it, never a config build with its side effects.
  */
 const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | null>> = {
+  // Musclog Premium. Usable only in a Premium build, with the person's switch on, a configured
+  // base URL and this device enrolled. The grant is minted inside the builder, so a provider that
+  // loses the race never mints a token. When the grant fails (removed, offline) the config is still
+  // returned, carrying the failure: the request then throws a typed error instead of falling
+  // through to another provider, which would change who receives the data (plan 8.6).
+  hosted: async () => {
+    if (!isPremiumUiEnabled() || !(await SettingsService.get(SETTINGS.useHostedAi))) {
+      return null;
+    }
+
+    const baseUrl = hostedAiBaseUrl();
+    if (!baseUrl) {
+      return null;
+    }
+
+    const status = await getPremiumStatus();
+    if (status === 'no_key' || status === 'not_enrolled') {
+      return null;
+    }
+
+    return async (language) => {
+      const grant = await getSessionGrant();
+      return grant.ok
+        ? {
+            provider: 'hosted',
+            baseUrl,
+            apiKey: grant.value.sessionToken,
+            model: 'musclog-hosted',
+            language,
+          }
+        : {
+            provider: 'hosted',
+            baseUrl,
+            apiKey: '',
+            model: 'musclog-hosted',
+            language,
+            hostedGrantFailure: grant.failure,
+          };
+    };
+  },
   // On web production builds, CORS blocks browser→Cloudflare direct calls.
   // In development the client uses a CORS proxy (see buildOpenAIClient).
   gateway: async () =>
@@ -147,6 +193,7 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
 
 /** Which provider wins when several are usable, first to last. */
 const PROVIDER_PRIORITY = [
+  'hosted',
   'gateway',
   'on-device',
   'local',
@@ -158,8 +205,9 @@ const PROVIDER_PRIORITY = [
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings, from the first usable provider in
-   * `PROVIDER_PRIORITY`: the Musclog free-tier gateway (it overrides every other provider when
-   * enabled), on-device AI, a local LLM, then a Gemini, an OpenAI or a Claude key. Every provider is probed in
+   * `PROVIDER_PRIORITY`: Musclog Premium (hosted, first when switched on in a Premium build), the
+   * Musclog free-tier gateway (it overrides every other provider when enabled), on-device AI, a local
+   * LLM, then a Gemini, an OpenAI or a Claude key. Every provider is probed in
    * parallel, since the first AI call of a session used to wait for a dozen settings read one
    * after another; the priority only decides which of the answers wins.
    */

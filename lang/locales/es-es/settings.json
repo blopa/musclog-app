@@ -362,7 +362,10 @@
         "consentConfirm": "Aceptar y activar"
       },
       "testKey": "Probar clave",
-      "testingKey": "Probando…"
+      "testingKey": "Probando…",
+      "premium": {
+        "activeNote": "Musclog Premium está respondiendo a tus solicitudes de IA. Tus propias claves y el nivel gratuito no se usan mientras esté activado."
+      }
     },
     "visualSettings": {
       "title": "Apariencia e inicio",

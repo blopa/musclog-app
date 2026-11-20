@@ -362,7 +362,10 @@
         "consentConfirm": "Agree and enable"
       },
       "testKey": "Test key",
-      "testingKey": "Testing…"
+      "testingKey": "Testing…",
+      "premium": {
+        "activeNote": "Musclog Premium is answering your AI requests. Your own keys and the free tier are not used while it is on."
+      }
     },
     "visualSettings": {
       "title": "Appearance and home",

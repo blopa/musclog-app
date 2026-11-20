@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Modello locale",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Apri Google AI Studio",
       "openClaude": "Apri la pagina delle chiavi di Claude",
@@ -116,7 +117,9 @@
       },
       "title": "Scegli la tua IA",
       "useExternal": "Usa invece ChatGPT o Claude",
-      "useSaved": "Usa la chiave salvata"
+      "useSaved": "Usa la chiave salvata",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "IA ospitata con abbonamento, senza chiave"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Sostituisci la chiave",
         "retry": "Riprova",
         "switchProvider": "Scegli un'altra IA",
-        "useExternal": "Usa ChatGPT o Claude"
+        "useExternal": "Usa ChatGPT o Claude",
+        "renewPremium": "Apri Premium",
+        "restorePremium": "Ripristina acquisti"
       },
       "cancelled": {
         "description": "Il tuo messaggio è tornato nella casella.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "L'IA non è riuscita a rispondere. Riprova, oppure scegli un altro modo.",
         "title": "Qualcosa è andato storto"
+      },
+      "hostedBudget": {
+        "title": "Quota Premium esaurita",
+        "description": "La quota si rinnova con il prossimo periodo. Nel frattempo puoi usare la tua chiave o completare la configurazione a mano."
+      },
+      "hostedSubscription": {
+        "title": "Premium non è attivo su questo dispositivo",
+        "description": "Ripristina l'acquisto, rinnova l'abbonamento o usa la tua chiave."
+      },
+      "hostedUnavailable": {
+        "title": "Premium non è disponibile",
+        "description": "Musclog Premium non è raggiungibile in questo momento. Riprova o usa un'altra opzione."
+      },
+      "hostedBusy": {
+        "title": "Premium è occupato",
+        "description": "Troppe richieste contemporaneamente. Riprova tra qualche secondo."
       }
     },
     "review": {

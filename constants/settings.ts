@@ -466,6 +466,9 @@ export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
  */
 export const USE_HOSTED_AI_SETTING_TYPE = 'use_hosted_ai';
 
+/** Version of the Premium consent the person last gave on this device (device-local, never backed up). */
+export const PREMIUM_CONSENT_VERSION_SETTING_TYPE = 'premium_consent_version';
+
 /**
  * Setting type for how many days of nutrition log history to send to the LLM.
  * value: 'none' | '7' | '30' | '60' | '90'.

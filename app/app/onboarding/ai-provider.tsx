@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { Cloud, KeyRound, Server, Smartphone } from 'lucide-react-native';
+import { Cloud, KeyRound, Server, Smartphone, Star } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
@@ -8,6 +8,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { PROVIDER_NAME_KEYS } from '@/components/aiOnboarding/providerNames';
 import { MasterLayout } from '@/components/MasterLayout';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { PremiumModal } from '@/components/modals/PremiumModal';
 import { Button } from '@/components/theme/Button';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
@@ -16,6 +17,7 @@ import { SecretInput } from '@/components/theme/SecretInput';
 import { TextButton } from '@/components/theme/TextButton';
 import { DEFAULT_CLAUDE_MODEL, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
 import { useAiSetupSession } from '@/hooks/useAiSetupSession';
+import { usePremium } from '@/hooks/usePremium';
 import { useTheme } from '@/hooks/useTheme';
 import { enableFreeTier, testAndSaveApiKey } from '@/services/aiProviderSetup';
 import { AiService } from '@/services/AiService';
@@ -84,6 +86,10 @@ export default function AiProviderScreen() {
   const [problem, setProblem] = useState(false);
   // Choosing the free tier sends the setup chat to Google Gemini, so it is confirmed first.
   const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
+  // Premium is an option only in builds where it is switched on. Choosing it opens the Premium
+  // screen; it never selects a provider by itself (no skipMusclogApi, no draft change).
+  const premium = usePremium();
+  const [premiumVisible, setPremiumVisible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -172,6 +178,15 @@ export default function AiProviderScreen() {
                 title={t(PROVIDER_NAME_KEYS.gateway)}
                 subtitle={t('aiOnboarding.provider.gatewayHint')}
                 onPress={() => setFreeTierConsentVisible(true)}
+              />
+            ) : null}
+            {premium.enabled ? (
+              <ListRow
+                variant="grouped"
+                icon={Star}
+                title={t('aiOnboarding.provider.premiumTitle')}
+                subtitle={t('aiOnboarding.provider.premiumHint')}
+                onPress={() => setPremiumVisible(true)}
               />
             ) : null}
             {(['gemini', 'openai', 'claude'] as const).map((provider) => (
@@ -308,6 +323,9 @@ export default function AiProviderScreen() {
         </View>
       </KeyboardAwareScrollView>
 
+      {/* Opened only from the list above, never while the consent modal is open. */}
+      <PremiumModal visible={premiumVisible} onClose={() => setPremiumVisible(false)} />
+      {/* eslint-disable-next-line local/no-sibling-modals */}
       <ConfirmationModal
         visible={freeTierConsentVisible}
         onClose={() => setFreeTierConsentVisible(false)}

@@ -1,0 +1,58 @@
+{
+  "premium": {
+    "title": "Musclog Premium",
+    "benefit": "AI w chmurze bez klucza do konfigurowania. Musclog Premium uruchamia AI za Ciebie w ramach miesięcznego limitu.",
+    "loading": "Sprawdzanie statusu Premium…",
+    "price": "{{price}} miesięcznie",
+    "subscribe": "Subskrybuj",
+    "restore": "Przywróć zakupy",
+    "usage": {
+      "used": "Wykorzystano {{pct}}% limitu tego okresu",
+      "renews": "Odnawia się {{date}}",
+      "nearLimit": "Blisko limitu tego okresu.",
+      "full": "Limit tego okresu jest w pełni wykorzystany."
+    },
+    "devices": "Używasz {{count}} z {{max}} urządzeń",
+    "useForAi": "Używaj Premium do AI",
+    "useForAiHint": "Żądania trafiają do usługi Musclog Premium, która przekazuje je do OpenRouter.",
+    "manage": "Zarządzaj subskrypcją",
+    "reset": "Zresetuj Premium na tym urządzeniu",
+    "resetTitle": "Zresetować Premium na tym urządzeniu?",
+    "resetBody": "To usunie rejestrację Premium tego urządzenia i utworzy nowy klucz urządzenia. Subskrypcja nie zostanie anulowana. Przywrócenie zakupów doda to urządzenie z powrotem i zajmie jedno z Twoich miejsc na urządzenia.",
+    "resetConfirm": "Resetuj",
+    "consent": {
+      "title": "Wysyłać żądania AI do Premium?",
+      "body": "Twoje wiadomości i zdjęcia, które wysyłasz do AI, trafiają do usługi Musclog Premium. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): nic na nich nie jest zapisywane ani wykorzystywane do uczenia. Możesz to wyłączyć w dowolnym momencie.",
+      "confirm": "Używaj AI Premium",
+      "cancel": "Nie teraz"
+    },
+    "renewalDisclosure": "Musclog Premium to subskrypcja miesięczna, która odnawia się automatycznie. Płatność zostaje pobrana z Twojego konta App Store lub Google Play po potwierdzeniu. Subskrypcja odnawia się, chyba że anulujesz ją co najmniej 24 godziny przed końcem bieżącego okresu. Zarządzaj nią lub anuluj ją w ustawieniach konta w sklepie. Wyświetlana cena to kwota pobierana przez sklep.",
+    "devicesNote": "Jedna subskrypcja działa na maksymalnie 3 Twoich urządzeniach.",
+    "platformsNote": "Subskrypcje na iOS i Androida są oddzielne.",
+    "terms": "Warunki korzystania",
+    "privacy": "Polityka prywatności",
+    "card": {
+      "checking": "Sprawdzanie Premium…",
+      "notSubscribed": "AI w chmurze bez klucza do konfigurowania",
+      "active": "Wykorzystano {{pct}}% · {{count}} z {{max}} urządzeń",
+      "exhausted": "Limit na ten okres wyczerpany",
+      "removed": "Usunięto z tej subskrypcji",
+      "revoked": "Premium jest nieaktywne"
+    },
+    "notice": {
+      "offline": "Brak połączenia. Premium potrzebuje połączenia, aby sprawdzić subskrypcję.",
+      "purchase_cancelled": "Zakup anulowany. Nic nie zostało pobrane.",
+      "purchase_failed": "Zakup nie został zrealizowany. Spróbuj ponownie lub sprawdź swoje konto w sklepie.",
+      "restore_nothing": "Nie znaleziono aktywnej subskrypcji Premium dla tego konta w sklepie.",
+      "removed": "To urządzenie zostało usunięte z tej subskrypcji, ponieważ dodano nowsze urządzenia. Jedna subskrypcja działa na maksymalnie 3 Twoich urządzeniach. Przywrócenie zakupów doda to urządzenie ponownie.",
+      "revoked": "Premium nie jest już aktywne dla tej subskrypcji.",
+      "exhausted": "Limit AI Premium na ten okres został wykorzystany. Odnawia się {{date}}. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",
+      "exhaustedNoDate": "Limit AI Premium na ten okres został wykorzystany. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",
+      "at_capacity": "AI Premium jest przeciążone do jutra (UTC).",
+      "unavailable": "Premium jest teraz niedostępne. Spróbuj ponownie później.",
+      "not_accepting": "Premium nie przyjmuje obecnie nowych subskrybentów.",
+      "not_available": "Premium nie jest obecnie dostępne w tym sklepie.",
+      "warning80": "Wykorzystano większość limitu AI Premium na ten okres."
+    }
+  }
+}

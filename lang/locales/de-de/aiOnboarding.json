@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Lokales Modell",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Google AI Studio öffnen",
       "openClaude": "Seite für Claude-Schlüssel öffnen",
@@ -116,7 +117,9 @@
       },
       "title": "Wähle deine KI",
       "useExternal": "Stattdessen ChatGPT oder Claude verwenden",
-      "useSaved": "Gespeicherten Schlüssel verwenden"
+      "useSaved": "Gespeicherten Schlüssel verwenden",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "Gehostete KI mit Abo, kein Schlüssel nötig"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Schlüssel ersetzen",
         "retry": "Erneut versuchen",
         "switchProvider": "Andere KI wählen",
-        "useExternal": "ChatGPT oder Claude verwenden"
+        "useExternal": "ChatGPT oder Claude verwenden",
+        "renewPremium": "Premium öffnen",
+        "restorePremium": "Käufe wiederherstellen"
       },
       "cancelled": {
         "description": "Deine Nachricht ist zurück im Eingabefeld.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "Die KI konnte nicht antworten. Versuche es erneut oder wähle einen anderen Weg.",
         "title": "Etwas ist schiefgelaufen"
+      },
+      "hostedBudget": {
+        "title": "Premium-Kontingent aufgebraucht",
+        "description": "Dein Kontingent wird mit dem nächsten Zeitraum erneuert. Bis dahin kannst du deinen eigenen Schlüssel verwenden oder die Einrichtung von Hand abschließen."
+      },
+      "hostedSubscription": {
+        "title": "Premium ist auf diesem Gerät nicht aktiv",
+        "description": "Stelle deinen Kauf wieder her, verlängere das Abo oder verwende deinen eigenen Schlüssel."
+      },
+      "hostedUnavailable": {
+        "title": "Premium ist nicht verfügbar",
+        "description": "Musclog Premium ist gerade nicht erreichbar. Versuche es erneut oder wähle eine andere Option."
+      },
+      "hostedBusy": {
+        "title": "Premium ist beschäftigt",
+        "description": "Zu viele Anfragen auf einmal. Versuche es in wenigen Sekunden erneut."
       }
     },
     "review": {

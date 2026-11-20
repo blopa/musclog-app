@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Локальная модель",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Открыть Google AI Studio",
       "openClaude": "Открыть страницу ключей Claude",
@@ -116,7 +117,9 @@
       },
       "title": "Выберите ИИ",
       "useExternal": "Использовать ChatGPT или Claude",
-      "useSaved": "Использовать сохранённый ключ"
+      "useSaved": "Использовать сохранённый ключ",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "ИИ в облаке по подписке, ключ не нужен"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Заменить ключ",
         "retry": "Повторить",
         "switchProvider": "Выбрать другой ИИ",
-        "useExternal": "Использовать ChatGPT или Claude"
+        "useExternal": "Использовать ChatGPT или Claude",
+        "renewPremium": "Открыть Premium",
+        "restorePremium": "Восстановить покупки"
       },
       "cancelled": {
         "description": "Ваше сообщение вернулось в поле ввода.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "ИИ не смог ответить. Повторите попытку или выберите другой способ.",
         "title": "Что-то пошло не так"
+      },
+      "hostedBudget": {
+        "title": "Лимит Premium исчерпан",
+        "description": "Лимит обновится со следующим периодом. А пока можно использовать свой ключ или завершить настройку вручную."
+      },
+      "hostedSubscription": {
+        "title": "Premium не активен на этом устройстве",
+        "description": "Восстановите покупку, продлите подписку или используйте свой ключ."
+      },
+      "hostedUnavailable": {
+        "title": "Premium недоступен",
+        "description": "Сейчас не удаётся связаться с Musclog Premium. Попробуйте снова или выберите другой вариант."
+      },
+      "hostedBusy": {
+        "title": "Premium занят",
+        "description": "Слишком много запросов одновременно. Попробуйте через несколько секунд."
       }
     },
     "review": {

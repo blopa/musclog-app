@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Modelo local",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Abrir Google AI Studio",
       "openClaude": "Abrir la página de claves de Claude",
@@ -116,7 +117,9 @@
       },
       "title": "Elige tu IA",
       "useExternal": "Usar ChatGPT o Claude en su lugar",
-      "useSaved": "Usar la clave guardada"
+      "useSaved": "Usar la clave guardada",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "IA alojada con suscripción, sin clave"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Reemplazar la clave",
         "retry": "Intentar de nuevo",
         "switchProvider": "Elegir otra IA",
-        "useExternal": "Usar ChatGPT o Claude"
+        "useExternal": "Usar ChatGPT o Claude",
+        "renewPremium": "Abrir Premium",
+        "restorePremium": "Restaurar compras"
       },
       "cancelled": {
         "description": "Tu mensaje volvió al cuadro de texto.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "La IA no pudo responder. Inténtalo de nuevo o elige otra forma.",
         "title": "Algo salió mal"
+      },
+      "hostedBudget": {
+        "title": "Cuota de Premium agotada",
+        "description": "Tu cuota se renueva con el siguiente periodo. Mientras tanto puedes usar tu propia clave o terminar la configuración a mano."
+      },
+      "hostedSubscription": {
+        "title": "Premium no está activo en este dispositivo",
+        "description": "Restaura tu compra, renueva la suscripción o usa tu propia clave."
+      },
+      "hostedUnavailable": {
+        "title": "Premium no está disponible",
+        "description": "No se puede contactar con Musclog Premium ahora mismo. Inténtalo de nuevo o usa otra opción."
+      },
+      "hostedBusy": {
+        "title": "Premium está ocupado",
+        "description": "Demasiadas solicitudes a la vez. Inténtalo de nuevo en unos segundos."
       }
     },
     "review": {

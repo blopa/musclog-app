@@ -9,7 +9,8 @@
       "tipApiKey": "Yapay zeka ayarlarından OpenAI veya Google Gemini API anahtarlarını kullan.",
       "tipFeatures": "Yapılandırıldıktan sonra mesajların seçtiğin modele gönderilir.",
       "openSettings": "Yapay zeka ayarlarını aç",
-      "notNow": "Şimdi değil"
+      "notNow": "Şimdi değil",
+      "premium": "Musclog Premium’u al"
     },
     "providers": {
       "openAIGemini": "OpenAI veya Google Gemini"

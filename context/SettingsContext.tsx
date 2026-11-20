@@ -94,6 +94,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 import {
   getSettingsMirror,
   type MirroredSettings,
@@ -109,6 +110,7 @@ import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
  */
 const REGISTERED_SETTINGS = [
   'enableClaude',
+  'useHostedAi',
   'cycleShowPredictions',
   'cycleShowFertility',
   'cycleNotificationStyle',
@@ -589,10 +591,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     canReadSettingsDb,
   ]);
 
+  // Musclog Premium is first in AiService's priority. The setting is only turned on by the Premium
+  // UI after an enrollment; the probe in AiService is the real authority on whether it answers.
+  const hostedOn = isPremiumUiEnabled() && state.useHostedAi;
+
   const isAiConfigured = useMemo(() => {
     const useMusclogGateway = effectiveUseMusclogGateway(state.useMusclogFreeTier);
 
     return (
+      hostedOn ||
       useMusclogGateway ||
       state.useOnDeviceAi ||
       (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
@@ -601,6 +608,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
     );
   }, [
+    hostedOn,
     state.useMusclogFreeTier,
     state.useOnDeviceAi,
     state.enableLocalLlm,
@@ -614,6 +622,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   ]);
 
   const aiProvider = useMemo<AiProviderKind | null>(() => {
+    if (hostedOn) {
+      return 'hosted';
+    }
+
     if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
       return 'gateway';
     }
@@ -636,6 +648,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
     return state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '' ? 'claude' : null;
   }, [
+    hostedOn,
     state.useMusclogFreeTier,
     state.useOnDeviceAi,
     state.enableLocalLlm,
@@ -648,10 +661,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.claudeApiKey,
   ]);
 
-  // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai → claude.
+  // Mirrors AiService.getAiConfig() priority: hosted → gateway → on-device → local → gemini → openai → claude.
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
-  // when it would be the active provider.
+  // when it would be the active provider. Hosted takes photos: /v1/config decides at call time.
   const isAiMealPhotoEnabled = useMemo(() => {
+    if (hostedOn) {
+      return true;
+    }
+
     if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
       return true;
     }
@@ -667,6 +684,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
     );
   }, [
+    hostedOn,
     state.useMusclogFreeTier,
     state.useOnDeviceAi,
     state.enableLocalLlm,

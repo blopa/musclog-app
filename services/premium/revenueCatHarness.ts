@@ -186,3 +186,32 @@ export async function getCustomerInfoDump(): Promise<{
 
   return { summary: summarizeCustomerInfo(info), raw: toJsonSafe(info) };
 }
+
+/**
+ * The localized price of the monthly package, for the subscribe button. Configures the SDK under
+ * the given key-derived id first (never anonymous); any failure is null, never a thrown error.
+ */
+export async function getMonthlyPriceString(rcId: string): Promise<string | null> {
+  try {
+    await configureRevenueCat(rcId);
+
+    const Purchases = loadPurchases();
+    const offerings = await Purchases.getOfferings();
+    const all = Object.values(offerings.all ?? {});
+    let pkg = offerings.current?.monthly ?? null;
+
+    if (!pkg) {
+      for (const offering of all) {
+        pkg = offering.availablePackages.find((p) => p.packageType === 'MONTHLY') ?? null;
+
+        if (pkg) {
+          break;
+        }
+      }
+    }
+
+    return pkg?.product.priceString ?? null;
+  } catch {
+    return null;
+  }
+}

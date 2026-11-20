@@ -362,7 +362,10 @@
         "consentConfirm": "Zgadzam się i włączam"
       },
       "testKey": "Sprawdź klucz",
-      "testingKey": "Sprawdzanie…"
+      "testingKey": "Sprawdzanie…",
+      "premium": {
+        "activeNote": "Musclog Premium odpowiada na Twoje żądania AI. Dopóki jest włączone, Twoje własne klucze i wersja darmowa nie są używane."
+      }
     },
     "visualSettings": {
       "title": "Wygląd i ekran główny",

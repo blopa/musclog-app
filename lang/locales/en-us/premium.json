@@ -1,0 +1,58 @@
+{
+  "premium": {
+    "title": "Musclog Premium",
+    "benefit": "Hosted AI with no key to set up. Musclog Premium runs the AI for you on a monthly allowance.",
+    "loading": "Checking your Premium status…",
+    "price": "{{price}} a month",
+    "subscribe": "Subscribe",
+    "restore": "Restore purchases",
+    "usage": {
+      "used": "{{pct}}% of this period's allowance used",
+      "renews": "Renews {{date}}",
+      "nearLimit": "Close to this period's allowance.",
+      "full": "This period's allowance is fully used."
+    },
+    "devices": "Using {{count}} of {{max}} devices",
+    "useForAi": "Use Premium for my AI",
+    "useForAiHint": "Requests go to the Musclog Premium service, which forwards them to OpenRouter.",
+    "manage": "Manage subscription",
+    "reset": "Reset Premium on this device",
+    "resetTitle": "Reset Premium on this device?",
+    "resetBody": "This forgets this device's Premium enrolment and makes a new device key. Your subscription is not cancelled. Restore purchases adds this device back, and it uses one of your device slots.",
+    "resetConfirm": "Reset",
+    "consent": {
+      "title": "Send AI requests to Premium?",
+      "body": "Your messages, and any photos you send to the AI, go to the Musclog Premium service. It forwards them to OpenRouter, which sends them to the AI model provider. Only zero data retention (ZDR) endpoints are used: on those, nothing is stored or used for training. You can switch this off at any time.",
+      "confirm": "Use Premium AI",
+      "cancel": "Not now"
+    },
+    "renewalDisclosure": "Musclog Premium is a monthly subscription that renews automatically. Payment is charged to your App Store or Google Play account at confirmation. It renews unless you cancel at least 24 hours before the current period ends. Manage or cancel it in your store account settings. The price shown is what the store charges.",
+    "devicesNote": "One subscription works on up to 3 of your devices.",
+    "platformsNote": "iOS and Android subscriptions are separate.",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "card": {
+      "checking": "Checking Premium…",
+      "notSubscribed": "Hosted AI with no key to set up",
+      "active": "{{pct}}% used · {{count}} of {{max}} devices",
+      "exhausted": "Allowance used up for this period",
+      "removed": "Removed from this subscription",
+      "revoked": "Premium is not active"
+    },
+    "notice": {
+      "offline": "You're offline. Premium needs a connection to check your subscription.",
+      "purchase_cancelled": "Purchase cancelled. Nothing was charged.",
+      "purchase_failed": "The purchase did not go through. Try again, or check your store account.",
+      "restore_nothing": "No active Premium subscription was found for this store account.",
+      "removed": "This device was removed from this subscription because newer devices were added. One subscription works on up to 3 of your devices. Restore purchases adds this device again.",
+      "revoked": "Premium is no longer active for this subscription.",
+      "exhausted": "This period's Premium AI allowance is used up. It renews on {{date}}. Musclog keeps working, and you can use your own key or the free tier.",
+      "exhaustedNoDate": "This period's Premium AI allowance is used up. Musclog keeps working, and you can use your own key or the free tier.",
+      "at_capacity": "Premium AI is at capacity until tomorrow (UTC).",
+      "unavailable": "Premium is unavailable right now. Try again later.",
+      "not_accepting": "Premium is not taking new subscribers right now.",
+      "not_available": "Premium isn't available in this store right now.",
+      "warning80": "You have used most of this period's Premium AI allowance."
+    }
+  }
+}

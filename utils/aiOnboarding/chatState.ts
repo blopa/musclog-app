@@ -20,6 +20,14 @@ export type AiOnboardingErrorKind =
   | 'timeout'
   | 'cancelled'
   | 'malformed'
+  /** Musclog Premium: the monthly allowance is used up (it renews by itself). */
+  | 'hostedBudget'
+  /** Musclog Premium: no active subscription on this device, or the device was removed. */
+  | 'hostedSubscription'
+  /** Musclog Premium: at capacity today, or temporarily unreachable. */
+  | 'hostedUnavailable'
+  /** Musclog Premium: a request is still in progress or was already answered. */
+  | 'hostedBusy'
   /** The chosen provider is no longer usable (key removed, free tier off, model gone). */
   | 'unavailable'
   | 'unknown';

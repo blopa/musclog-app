@@ -1,0 +1,58 @@
+{
+  "premium": {
+    "title": "Musclog Premium",
+    "benefit": "IA ospitata, senza chiave da configurare. Musclog Premium esegue l'IA per te con una quota mensile.",
+    "loading": "Verifica dello stato Premium…",
+    "price": "{{price}} al mese",
+    "subscribe": "Abbonati",
+    "restore": "Ripristina acquisti",
+    "usage": {
+      "used": "{{pct}} % della quota di questo periodo utilizzata",
+      "renews": "Si rinnova il {{date}}",
+      "nearLimit": "Vicino alla quota di questo periodo.",
+      "full": "La quota di questo periodo è esaurita."
+    },
+    "devices": "Usi {{count}} dispositivi su {{max}}",
+    "useForAi": "Usa Premium per la mia IA",
+    "useForAiHint": "Le richieste vanno al servizio Musclog Premium, che le inoltra a OpenRouter.",
+    "manage": "Gestisci abbonamento",
+    "reset": "Reimposta Premium su questo dispositivo",
+    "resetTitle": "Reimpostare Premium su questo dispositivo?",
+    "resetBody": "Questo dimentica l'iscrizione a Premium di questo dispositivo e crea una nuova chiave del dispositivo. L'abbonamento non viene annullato. Ripristina acquisti riaggiunge questo dispositivo e occupa uno dei tuoi posti dispositivo.",
+    "resetConfirm": "Reimposta",
+    "consent": {
+      "title": "Inviare le richieste IA a Premium?",
+      "body": "I tuoi messaggi e le foto che invii all'IA vanno al servizio Musclog Premium. Questo li inoltra a OpenRouter, che li invia al fornitore del modello IA. Vengono usati solo endpoint con zero conservazione dei dati (ZDR): su quelli non viene memorizzato nulla né usato per l'addestramento. Puoi disattivarlo in qualsiasi momento.",
+      "confirm": "Usa IA Premium",
+      "cancel": "Non ora"
+    },
+    "renewalDisclosure": "Musclog Premium è un abbonamento mensile con rinnovo automatico. Il pagamento viene addebitato sul tuo account App Store o Google Play alla conferma. Si rinnova a meno che tu non lo annulli almeno 24 ore prima della fine del periodo in corso. Gestiscilo o annullalo nelle impostazioni del tuo account store. Il prezzo mostrato è quello addebitato dallo store.",
+    "devicesNote": "Un abbonamento funziona su un massimo di 3 dei tuoi dispositivi.",
+    "platformsNote": "Gli abbonamenti iOS e Android sono separati.",
+    "terms": "Termini d'uso",
+    "privacy": "Informativa sulla privacy",
+    "card": {
+      "checking": "Verifica di Premium…",
+      "notSubscribed": "IA ospitata, senza chiave da configurare",
+      "active": "{{pct}} % usato · {{count}} dispositivi su {{max}}",
+      "exhausted": "Quota esaurita per questo periodo",
+      "removed": "Rimosso da questo abbonamento",
+      "revoked": "Premium non è attivo"
+    },
+    "notice": {
+      "offline": "Sei offline. Premium richiede una connessione per verificare l'abbonamento.",
+      "purchase_cancelled": "Acquisto annullato. Non è stato addebitato nulla.",
+      "purchase_failed": "L'acquisto non è andato a buon fine. Riprova o controlla il tuo account store.",
+      "restore_nothing": "Non è stato trovato alcun abbonamento Premium attivo per questo account store.",
+      "removed": "Questo dispositivo è stato rimosso da questo abbonamento perché ne sono stati aggiunti altri più recenti. Un abbonamento funziona su un massimo di 3 dei tuoi dispositivi. Ripristina acquisti riaggiunge questo dispositivo.",
+      "revoked": "Premium non è più attivo per questo abbonamento.",
+      "exhausted": "La quota di IA Premium di questo periodo è esaurita. Si rinnova il {{date}}. Musclog continua a funzionare e puoi usare la tua chiave o il piano gratuito.",
+      "exhaustedNoDate": "La quota di IA Premium di questo periodo è esaurita. Musclog continua a funzionare e puoi usare la tua chiave o il piano gratuito.",
+      "at_capacity": "L'IA Premium è al limite di capacità fino a domani (UTC).",
+      "unavailable": "Premium non è disponibile in questo momento. Riprova più tardi.",
+      "not_accepting": "Premium non accetta nuovi abbonati in questo momento.",
+      "not_available": "Premium non è disponibile su questo store in questo momento.",
+      "warning80": "Hai usato gran parte della quota di IA Premium di questo periodo."
+    }
+  }
+}

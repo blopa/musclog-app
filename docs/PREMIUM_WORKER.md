@@ -109,6 +109,10 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 `services/premium-worker/test/appClient.test.ts` imports the app's own pure client (`utils/premium/premiumFlows.ts`, `premiumState.ts`, `hostedClient.ts`, `deviceKeyCrypto.ts`) and runs it against the real handlers in Miniflare, so the signed string, the response shapes and the retry rules cannot drift apart. Those app files must keep relative imports only (the `@/` alias does not exist in the Worker package) and compile under its `noUncheckedIndexedAccess`.
 
+## The app side (P6, hidden)
+
+The app's provider, errors, image resize and Premium UI exist but are invisible: they need a build made with `EXPO_PUBLIC_PREMIUM_UI=1`, which no EAS profile sets until P7. See the "Premium provider, errors and UI" bullet in `AGENTS.md`. A client request carries `Idempotency-Key` (one per logical request) and the Worker's `x-should-retry: false` answers are retried only by the app's own backoff.
+
 ## Rollback
 
 - Code: `cd services/premium-worker && npx wrangler rollback --env <env>`.

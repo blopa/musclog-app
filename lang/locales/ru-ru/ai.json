@@ -9,7 +9,8 @@
       "tipApiKey": "Используйте API-ключи OpenAI или Google Gemini в настройках ИИ.",
       "tipFeatures": "После настройки ваши сообщения будут отправляться в выбранную вами модель.",
       "openSettings": "Открыть настройки ИИ",
-      "notNow": "Не сейчас"
+      "notNow": "Не сейчас",
+      "premium": "Получить Musclog Premium"
     },
     "providers": {
       "openAIGemini": "OpenAI или Google Gemini"

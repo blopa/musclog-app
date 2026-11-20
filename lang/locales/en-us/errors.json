@@ -22,6 +22,14 @@
     "aiTimeout": "This is taking too long. Try again.",
     "aiKeyTestOk": "Key accepted",
     "aiKeyTestRejected": "Key rejected. Check it and try again.",
-    "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection."
+    "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection.",
+    "hostedBudget": "This period's Premium AI allowance is used up. It renews on {{date}}. Musclog keeps working, and you can use your own key or the free tier.",
+    "hostedBudgetNoDate": "This period's Premium AI allowance is used up. Musclog keeps working, and you can use your own key or the free tier.",
+    "hostedSubscription": "Musclog Premium has no active subscription on this device. Restore your purchase or subscribe in Premium settings.",
+    "hostedRemoved": "This device was removed from your Premium subscription. Restore purchases in Premium settings to add it again.",
+    "hostedUnavailable": "Musclog Premium is unavailable right now. Try again in a moment.",
+    "hostedDailyFull": "Premium AI is at capacity until tomorrow (UTC).",
+    "hostedBusy": "Musclog Premium is busy. Try again in a few seconds.",
+    "hostedAlreadyProcessed": "That request was already handled. Please send it again."
   }
 }

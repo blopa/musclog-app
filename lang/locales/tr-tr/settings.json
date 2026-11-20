@@ -362,7 +362,10 @@
         "consentConfirm": "Kabul et ve etkinleştir"
       },
       "testKey": "Anahtarı test et",
-      "testingKey": "Test ediliyor…"
+      "testingKey": "Test ediliyor…",
+      "premium": {
+        "activeNote": "Musclog Premium YZ isteklerinizi yanıtlıyor. Açıkken kendi anahtarlarınız ve ücretsiz katman kullanılmaz."
+      }
     },
     "visualSettings": {
       "title": "Görünüm ve ana ekran",

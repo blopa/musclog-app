@@ -1,0 +1,58 @@
+{
+  "premium": {
+    "title": "Musclog Premium",
+    "benefit": "AI die voor je draait, zonder sleutel om in te stellen. Musclog Premium voert de AI voor je uit met een maandelijks tegoed.",
+    "loading": "Je Premium-status wordt gecontroleerd…",
+    "price": "{{price}} per maand",
+    "subscribe": "Abonneren",
+    "restore": "Aankopen herstellen",
+    "usage": {
+      "used": "{{pct}}% van het tegoed van deze periode gebruikt",
+      "renews": "Vernieuwt op {{date}}",
+      "nearLimit": "Bijna door het tegoed van deze periode heen.",
+      "full": "Het tegoed van deze periode is volledig op."
+    },
+    "devices": "{{count}} van {{max}} apparaten in gebruik",
+    "useForAi": "Premium gebruiken voor mijn AI",
+    "useForAiHint": "Verzoeken gaan naar de Musclog Premium-dienst, die ze doorstuurt naar OpenRouter.",
+    "manage": "Abonnement beheren",
+    "reset": "Premium op dit apparaat resetten",
+    "resetTitle": "Premium op dit apparaat resetten?",
+    "resetBody": "Hiermee wordt de Premium-registratie van dit apparaat vergeten en wordt een nieuwe apparaatsleutel gemaakt. Je abonnement wordt niet opgezegd. Aankopen herstellen voegt dit apparaat weer toe en neemt een van je apparaatplekken in.",
+    "resetConfirm": "Resetten",
+    "consent": {
+      "title": "AI-verzoeken naar Premium sturen?",
+      "body": "Je berichten en eventuele foto’s die je naar de AI stuurt, gaan naar de Musclog Premium-dienst. Die stuurt ze door naar OpenRouter, dat ze naar de aanbieder van het AI-model stuurt. Alleen eindpunten met zero data retention (ZDR) worden gebruikt: daar wordt niets opgeslagen of voor training gebruikt. Je kunt dit op elk moment uitzetten.",
+      "confirm": "Premium-AI gebruiken",
+      "cancel": "Niet nu"
+    },
+    "renewalDisclosure": "Musclog Premium is een maandabonnement dat automatisch wordt verlengd. De betaling wordt bij bevestiging afgeschreven van je App Store- of Google Play-account. Het abonnement verlengt zich tenzij je het minstens 24 uur voor het einde van de huidige periode opzegt. Beheer of zeg het op in de accountinstellingen van je store. De getoonde prijs is wat de store in rekening brengt.",
+    "devicesNote": "Eén abonnement werkt op maximaal 3 van je apparaten.",
+    "platformsNote": "iOS- en Android-abonnementen staan los van elkaar.",
+    "terms": "Gebruiksvoorwaarden",
+    "privacy": "Privacybeleid",
+    "card": {
+      "checking": "Premium wordt gecontroleerd…",
+      "notSubscribed": "AI die voor je draait, zonder sleutel om in te stellen",
+      "active": "{{pct}}% gebruikt · {{count}} van {{max}} apparaten",
+      "exhausted": "Tegoed voor deze periode op",
+      "removed": "Verwijderd uit dit abonnement",
+      "revoked": "Premium is niet actief"
+    },
+    "notice": {
+      "offline": "Je bent offline. Premium heeft een verbinding nodig om je abonnement te controleren.",
+      "purchase_cancelled": "Aankoop geannuleerd. Er is niets in rekening gebracht.",
+      "purchase_failed": "De aankoop is niet gelukt. Probeer het opnieuw of controleer je storeaccount.",
+      "restore_nothing": "Er is geen actief Premium-abonnement gevonden voor dit storeaccount.",
+      "removed": "Dit apparaat is uit dit abonnement verwijderd omdat er nieuwere apparaten zijn toegevoegd. Eén abonnement werkt op maximaal 3 van je apparaten. Aankopen herstellen voegt dit apparaat weer toe.",
+      "revoked": "Premium is niet langer actief voor dit abonnement.",
+      "exhausted": "Het Premium-AI-tegoed van deze periode is op. Het wordt op {{date}} vernieuwd. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+      "exhaustedNoDate": "Het Premium-AI-tegoed van deze periode is op. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+      "at_capacity": "Premium-AI zit tot morgen (UTC) aan de capaciteitsgrens.",
+      "unavailable": "Premium is nu niet beschikbaar. Probeer het later opnieuw.",
+      "not_accepting": "Premium neemt op dit moment geen nieuwe abonnees aan.",
+      "not_available": "Premium is nu niet beschikbaar in deze store.",
+      "warning80": "Je hebt het grootste deel van het Premium-AI-tegoed van deze periode gebruikt."
+    }
+  }
+}

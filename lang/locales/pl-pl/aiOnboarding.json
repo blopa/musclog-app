@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Model lokalny",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Otwórz Google AI Studio",
       "openClaude": "Otwórz stronę kluczy Claude",
@@ -116,7 +117,9 @@
       },
       "title": "Wybierz swoje AI",
       "useExternal": "Użyj ChatGPT lub Claude zamiast tego",
-      "useSaved": "Użyj zapisanego klucza"
+      "useSaved": "Użyj zapisanego klucza",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "AI w chmurze w ramach subskrypcji, bez klucza"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Zastąp klucz",
         "retry": "Spróbuj ponownie",
         "switchProvider": "Wybierz inne AI",
-        "useExternal": "Użyj ChatGPT lub Claude"
+        "useExternal": "Użyj ChatGPT lub Claude",
+        "renewPremium": "Otwórz Premium",
+        "restorePremium": "Przywróć zakupy"
       },
       "cancelled": {
         "description": "Twoja wiadomość wróciła do pola.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "AI nie mogło odpowiedzieć. Spróbuj ponownie albo wybierz inny sposób.",
         "title": "Coś poszło nie tak"
+      },
+      "hostedBudget": {
+        "title": "Wyczerpano limit Premium",
+        "description": "Limit odnowi się wraz z kolejnym okresem. Do tego czasu możesz użyć własnego klucza albo dokończyć konfigurację ręcznie."
+      },
+      "hostedSubscription": {
+        "title": "Premium nie jest aktywne na tym urządzeniu",
+        "description": "Przywróć zakup, odnów subskrypcję lub użyj własnego klucza."
+      },
+      "hostedUnavailable": {
+        "title": "Premium jest niedostępne",
+        "description": "Nie można teraz połączyć się z Musclog Premium. Spróbuj ponownie albo wybierz inną opcję."
+      },
+      "hostedBusy": {
+        "title": "Premium jest zajęte",
+        "description": "Zbyt wiele żądań naraz. Spróbuj ponownie za kilka sekund."
       }
     },
     "review": {

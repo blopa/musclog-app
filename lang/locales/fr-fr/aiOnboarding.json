@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Modèle local",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Ouvrir Google AI Studio",
       "openClaude": "Ouvrir la page des clés Claude",
@@ -116,7 +117,9 @@
       },
       "title": "Choisis ton IA",
       "useExternal": "Utiliser ChatGPT ou Claude à la place",
-      "useSaved": "Utiliser la clé enregistrée"
+      "useSaved": "Utiliser la clé enregistrée",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "IA hébergée sur abonnement, sans clé"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Remplacer la clé",
         "retry": "Réessayer",
         "switchProvider": "Choisir une autre IA",
-        "useExternal": "Utiliser ChatGPT ou Claude"
+        "useExternal": "Utiliser ChatGPT ou Claude",
+        "renewPremium": "Ouvrir Premium",
+        "restorePremium": "Restaurer les achats"
       },
       "cancelled": {
         "description": "Ton message est revenu dans la zone de saisie.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "L'IA n'a pas pu répondre. Réessaie, ou choisis une autre façon.",
         "title": "Une erreur s'est produite"
+      },
+      "hostedBudget": {
+        "title": "Quota Premium épuisé",
+        "description": "Votre quota se renouvelle avec la prochaine période. D'ici là, vous pouvez utiliser votre propre clé ou terminer la configuration manuellement."
+      },
+      "hostedSubscription": {
+        "title": "Premium n'est pas actif sur cet appareil",
+        "description": "Restaurez votre achat, renouvelez l’abonnement ou utilisez votre propre clé."
+      },
+      "hostedUnavailable": {
+        "title": "Premium est indisponible",
+        "description": "Musclog Premium est injoignable pour le moment. Réessayez ou choisissez une autre option."
+      },
+      "hostedBusy": {
+        "title": "Premium est occupé",
+        "description": "Trop de requêtes à la fois. Réessayez dans quelques secondes."
       }
     },
     "review": {

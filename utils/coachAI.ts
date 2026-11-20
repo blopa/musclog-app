@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { Content, Part } from '@google/genai';
+import { randomUUID } from 'expo-crypto';
 import OpenAI from 'openai';
 
 import { DebugDumpService } from '@/database/services/DebugDumpService';
@@ -7,12 +8,16 @@ import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { isProduction } from '@/utils/app';
+import { setHostedSignal } from '@/utils/premium/hostedSignal';
+import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
 import { notifyUserFacingAiError } from './aiErrorNotice';
 import {
   AiCancelledError,
   AiInvalidKeyError,
   AiTimeoutError,
+  type HostedErrorKind,
+  hostedErrorKindOf,
   rethrowUserFacingAiError,
   toUserFacingAiError,
 } from './aiErrors';
@@ -76,6 +81,201 @@ export class GatewayRateLimitError extends AiCreditsError {
   }
 }
 
+/**
+ * Musclog Premium (hosted) failures. Each carries `hostedKind`, which `utils/aiErrors.ts` reads by
+ * duck typing (no import cycle). Messages are fixed: the Worker's own text never reaches the user.
+ */
+export class HostedBudgetError extends AiCreditsError {
+  readonly hostedKind: HostedErrorKind = 'budget';
+  readonly resetsAt?: string;
+  readonly usedPct?: number;
+
+  constructor(options: { resetsAt?: string; usedPct?: number } = {}) {
+    super('Musclog Premium: the monthly allowance is used up');
+    this.name = 'HostedBudgetError';
+    this.resetsAt = options.resetsAt;
+    this.usedPct = options.usedPct;
+  }
+}
+
+/** HTTP 403: no active subscription behind this device. */
+export class HostedSubscriptionError extends Error {
+  readonly hostedKind: HostedErrorKind = 'subscription';
+
+  constructor(message = 'Musclog Premium: no active subscription on this device') {
+    super(message);
+    this.name = 'HostedSubscriptionError';
+  }
+}
+
+/** HTTP 401 `unknown_device`: this device was removed. The app never re-enrolls on its own. */
+export class HostedRemovedError extends HostedSubscriptionError {
+  readonly hostedKind: HostedErrorKind = 'removed';
+
+  constructor() {
+    super('Musclog Premium: this device was removed from the subscription');
+    this.name = 'HostedRemovedError';
+  }
+}
+
+/**
+ * 5xx, Cloudflare 1027, `daily_full`, `hosted_disabled`, and a 401 that is not `unknown_device`
+ * (the session token expired; the next request mints a new one). `retryable` is set only for the
+ * statuses `withLlmRetry` may repeat with the same idempotency key.
+ */
+export class HostedUnavailableError extends Error {
+  readonly hostedKind: HostedErrorKind;
+  readonly retryable: boolean;
+
+  constructor(
+    kind: 'unavailable' | 'dailyFull' = 'unavailable',
+    options: { retryable?: boolean } = {}
+  ) {
+    super(
+      kind === 'dailyFull'
+        ? 'Musclog Premium: at capacity today'
+        : 'Musclog Premium is temporarily unavailable'
+    );
+    this.name = 'HostedUnavailableError';
+    this.hostedKind = kind;
+    this.retryable = options.retryable ?? false;
+  }
+}
+
+/** HTTP 409 `in_progress` and HTTP 429: the same request is still running, or we are over the rate. */
+export class HostedBusyError extends Error {
+  readonly hostedKind: HostedErrorKind = 'busy';
+  readonly retryAfterSeconds?: number;
+
+  constructor(retryAfterSeconds?: number) {
+    super('Musclog Premium is busy, try again shortly');
+    this.name = 'HostedBusyError';
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
+/** HTTP 409 `already_processed`: the Worker answered this request before; the person must resend. */
+export class HostedAlreadyProcessedError extends Error {
+  readonly hostedKind: HostedErrorKind = 'alreadyProcessed';
+
+  constructor() {
+    super('Musclog Premium already answered this request; please send it again');
+    this.name = 'HostedAlreadyProcessedError';
+  }
+}
+
+const HOSTED_RETRY_STATUSES = new Set([502, 503, 504]);
+
+/** A hosted failure `withLlmRetry` may repeat, with the same idempotency key. */
+export function isRetryableHostedError(error: unknown): boolean {
+  return (
+    error instanceof HostedBusyError || (error instanceof HostedUnavailableError && error.retryable)
+  );
+}
+
+/**
+ * Maps a failed session-token grant (from `AiService`) to the hosted error, without any request.
+ */
+export function hostedGrantError(failure: PremiumActionFailure): Error {
+  if (failure === 'unknown_device') {
+    return new HostedRemovedError();
+  }
+
+  if (failure === 'not_enrolled' || failure === 'subscription_required') {
+    return new HostedSubscriptionError();
+  }
+
+  return new HostedUnavailableError('unavailable');
+}
+
+function numericSeconds(value: unknown): number | undefined {
+  const seconds = typeof value === 'number' ? value : Number(value);
+  return typeof value !== 'undefined' && value !== null && Number.isFinite(seconds) && seconds >= 0
+    ? seconds
+    : undefined;
+}
+
+/**
+ * Maps an OpenAI SDK failure from the Musclog Worker to a hosted error, or `null` when it is not one
+ * the Worker produces. The Worker's body is `{ error: { code, message, retry_after?, resets_at? } }`;
+ * the SDK keeps that body on `error.error`, so the code is read from the inner object.
+ */
+export function toHostedAiError(error: unknown): Error | null {
+  if (hostedErrorKindOf(error) !== null) {
+    return error as Error;
+  }
+
+  if (!(error instanceof OpenAI.APIError)) {
+    return null;
+  }
+
+  const status = error.status;
+  const body = (error.error ?? {}) as Record<string, any>;
+  const inner: Record<string, any> =
+    typeof body.error === 'object' && body.error !== null ? body.error : body;
+  const code = typeof inner.code === 'string' ? inner.code : '';
+  const headerValue =
+    typeof error.headers?.get === 'function' ? error.headers.get('retry-after') : undefined;
+  const retryAfter = numericSeconds(inner.retry_after) ?? numericSeconds(headerValue);
+  const resetsAt = typeof inner.resets_at === 'string' ? inner.resets_at : undefined;
+
+  if (/error code: ?1027/i.test(String(error.message ?? '')) || code === '1027') {
+    return new HostedUnavailableError('unavailable');
+  }
+
+  if (code === 'daily_full') {
+    return new HostedUnavailableError('dailyFull');
+  }
+
+  switch (status) {
+    case 402:
+      return new HostedBudgetError({ resetsAt });
+    case 403:
+      return new HostedSubscriptionError();
+    case 401:
+      return code === 'unknown_device'
+        ? new HostedRemovedError()
+        : new HostedUnavailableError('unavailable');
+    case 409:
+      if (code === 'in_progress') {
+        return new HostedBusyError(retryAfter);
+      }
+
+      return code === 'already_processed' ? new HostedAlreadyProcessedError() : null;
+    case 429:
+      return new HostedBusyError(retryAfter);
+    default:
+      if (typeof status === 'number' && status >= 500) {
+        return new HostedUnavailableError('unavailable', {
+          retryable: code !== 'hosted_disabled' && HOSTED_RETRY_STATUSES.has(status),
+        });
+      }
+
+      return null;
+  }
+}
+
+/** Reports a hosted failure to the Premium screens (see `utils/premium/hostedSignal.ts`). */
+function noteHostedError(error: Error): void {
+  const kind = hostedErrorKindOf(error);
+  switch (kind) {
+    case 'budget':
+      setHostedSignal('exhausted');
+      return;
+    case 'dailyFull':
+      setHostedSignal('daily_full');
+      return;
+    case 'unavailable':
+      setHostedSignal('unavailable');
+      return;
+    case 'removed':
+      setHostedSignal('removed');
+      return;
+    default:
+      setHostedSignal(null);
+  }
+}
+
 export function isAiCreditsError(error: any): boolean {
   if (error instanceof AiCreditsError) {
     return true;
@@ -133,6 +333,8 @@ export function reportAiError(error: unknown, context: string): void {
     sendToSentry:
       !isAiCreditsError(error) &&
       !isAiConnectionError(error) &&
+      // Typed Premium failures are the Worker's answer (budget, subscription, capacity), not a bug.
+      hostedErrorKindOf(error) === null &&
       // A rejected key, a timeout and a cancel are the user's configuration or network, not bugs.
       !(
         error instanceof AiInvalidKeyError ||
@@ -204,7 +406,8 @@ const LLM_REQUEST_TIMEOUT_MS = 60_000;
  */
 async function runWithAbort<T>(
   config: CoachAIConfig,
-  request: (signal: AbortSignal, touch: () => void) => Promise<T>
+  request: (signal: AbortSignal, touch: () => void, meta: HostedRequestMeta) => Promise<T>,
+  meta: HostedRequestMeta
 ): Promise<T> {
   const controller = new AbortController();
   let timedOut = false;
@@ -226,7 +429,7 @@ async function runWithAbort<T>(
   }
 
   try {
-    return await request(controller.signal, arm);
+    return await request(controller.signal, arm, meta);
   } catch (error) {
     if (timedOut) {
       throw new AiTimeoutError();
@@ -243,11 +446,30 @@ async function runWithAbort<T>(
   }
 }
 
+/**
+ * What one logical request carries to every HTTP attempt. The idempotency key is created once per
+ * logical request (hosted only), so a retry is recognised by the Worker as the same request.
+ */
+export type HostedRequestMeta = { idempotencyKey?: string };
+
+/**
+ * The request options for an OpenAI SDK call: the abort signal, plus the `Idempotency-Key` header
+ * when the request is a hosted one. Non-hosted requests send no such header.
+ */
+function requestOptions(
+  signal: AbortSignal,
+  meta: HostedRequestMeta
+): { signal: AbortSignal; headers?: Record<string, string> } {
+  return meta.idempotencyKey
+    ? { signal, headers: { 'Idempotency-Key': meta.idempotencyKey } }
+    : { signal };
+}
+
 /** Exported for tests; not part of the module's public surface. */
 export async function withLlmRetry<T>(
   operation: string,
   config: CoachAIConfig,
-  request: (signal: AbortSignal, touch: () => void) => Promise<T>,
+  request: (signal: AbortSignal, touch: () => void, meta: HostedRequestMeta) => Promise<T>,
   options?: {
     /**
      * True once a streaming request has shown text. A retry would restart the reply under the
@@ -259,13 +481,51 @@ export async function withLlmRetry<T>(
   const provider = config.provider;
   let attempt = 0;
   let timeoutRetried = false;
+  const idempotencyKey = provider === 'hosted' ? randomUUID() : undefined;
+  const meta: HostedRequestMeta = { idempotencyKey };
+
+  // The session token could not be minted: no request is sent, the typed error says why.
+  if (provider === 'hosted' && config.hostedGrantFailure) {
+    const grantError = hostedGrantError(config.hostedGrantFailure);
+    noteHostedError(grantError);
+    throw grantError;
+  }
 
   while (true) {
     try {
-      return await runWithAbort(config, request);
-    } catch (error) {
-      if (error instanceof AiCancelledError) {
-        throw error;
+      const value = await runWithAbort(config, request, meta);
+      if (provider === 'hosted') {
+        setHostedSignal('ok');
+      }
+
+      return value;
+    } catch (rawError) {
+      if (rawError instanceof AiCancelledError) {
+        throw rawError;
+      }
+
+      let error: unknown = rawError;
+      if (provider === 'hosted') {
+        const hosted = toHostedAiError(rawError);
+        if (hosted) {
+          noteHostedError(hosted);
+          error = hosted;
+          if (options?.hasStreamed?.()) {
+            throw hosted;
+          }
+
+          if (isRetryableHostedError(hosted) && attempt < LLM_RETRY_DELAYS_MS.length) {
+            const delayMs = LLM_RETRY_DELAYS_MS[attempt];
+            console.warn(
+              `[coachAI] ${operation} hosted ${(hosted as { hostedKind?: string }).hostedKind}; retrying in ${delayMs}ms with the same idempotency key`
+            );
+            attempt += 1;
+            await sleep(delayMs);
+            continue;
+          }
+
+          throw hosted;
+        }
       }
 
       // A wrong key never gets better by asking again, and is not retried.
@@ -307,7 +567,8 @@ export async function withLlmRetry<T>(
   }
 }
 
-export type CoachAIProvider = 'gemini' | 'openai' | 'claude' | 'on-device' | 'local' | 'gateway';
+export type CoachAIProvider =
+  'gemini' | 'openai' | 'claude' | 'on-device' | 'local' | 'gateway' | 'hosted';
 
 export interface ProviderConfig {
   maxCharBudget: number; // Maximum character budget for the total request context
@@ -360,6 +621,13 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     enableFoundationFoods: true,
     enableMemories: true,
   },
+  hosted: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
 };
 
 export type CoachAIConfig = {
@@ -374,6 +642,11 @@ export type CoachAIConfig = {
   signal?: AbortSignal;
   /** Overrides the default request timeout, in milliseconds. */
   timeoutMs?: number;
+  /**
+   * Hosted only: the session token could not be minted (set by `AiService`). Requests then fail
+   * with the matching hosted error without being sent.
+   */
+  hostedGrantFailure?: PremiumActionFailure;
 };
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
@@ -389,6 +662,11 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     apiKey: config.apiKey ?? 'unused',
     baseURL: config.baseUrl,
     dangerouslyAllowBrowser: true,
+    // Hosted requests retry through `withLlmRetry`'s own backoff: the SDK would repeat a 503 that
+    // the Worker says must not be repeated (`daily_full`, `hosted_disabled`).
+    maxRetries: config.provider === 'hosted' ? 0 : undefined,
+    // The Idempotency-Key is per logical request, so it is passed per call (`requestOptions`), never
+    // here: these default headers are static and go on every request of the client.
     defaultHeaders: config.gatewayByokAlias
       ? {
           'cf-aig-byok-alias': config.gatewayByokAlias,
@@ -516,9 +794,12 @@ async function streamOpenAiText(
   return withLlmRetry(
     operation,
     config,
-    async (signal, touch) => {
+    async (signal, touch, meta) => {
       sink.reset();
-      const chunks = await client.chat.completions.create({ ...payload, stream: true }, { signal });
+      const chunks = await client.chat.completions.create(
+        { ...payload, stream: true },
+        requestOptions(signal, meta)
+      );
       for await (const chunk of chunks) {
         touch();
         const delta = chunk.choices[0]?.delta?.content;
@@ -1095,8 +1376,8 @@ async function sendViaOpenAI(
       return parseCoachResponse(streamedRaw || '{}');
     }
 
-    const completion = await withLlmRetry('sendViaOpenAI', config, (signal) =>
-      client.chat.completions.create(requestPayload, { signal })
+    const completion = await withLlmRetry('sendViaOpenAI', config, (signal, _touch, meta) =>
+      client.chat.completions.create(requestPayload, requestOptions(signal, meta))
     );
 
     await logLlmDebugEvent({
@@ -1433,8 +1714,8 @@ async function generateText(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry('generateText', config, (signal) =>
-    client.chat.completions.create(requestPayload, { signal })
+  const completion = await withLlmRetry('generateText', config, (signal, _touch, meta) =>
+    client.chat.completions.create(requestPayload, requestOptions(signal, meta))
   );
 
   await logLlmDebugEvent({
@@ -1592,8 +1873,8 @@ async function generateTextWithHistory(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry('generateTextWithHistory', config, (signal) =>
-    client.chat.completions.create(requestPayload, { signal })
+  const completion = await withLlmRetry('generateTextWithHistory', config, (signal, _touch, meta) =>
+    client.chat.completions.create(requestPayload, requestOptions(signal, meta))
   );
 
   await logLlmDebugEvent({
@@ -1777,8 +2058,8 @@ export async function requestStructured<T = unknown>(
     config,
   });
 
-  const completion = await withLlmRetry(operation, config, (signal) =>
-    client.chat.completions.create(payload, { signal })
+  const completion = await withLlmRetry(operation, config, (signal, _touch, meta) =>
+    client.chat.completions.create(payload, requestOptions(signal, meta))
   );
   await logLlmDebugEvent({
     provider: config.provider,
@@ -1835,6 +2116,19 @@ const CLAUDE_IMAGE_TYPES: readonly ClaudeImageType[] = [
 /** Claude takes four image types; anything else is sent as the JPEG the camera pipeline produces. */
 function claudeImageType(mimeType: string): ClaudeImageType {
   return CLAUDE_IMAGE_TYPES.find((type) => type === mimeType) ?? 'image/jpeg';
+}
+
+/**
+ * Hosted photos only. Loaded inline because the image codec is a native module that the other
+ * providers never need (the pattern of services/premium/revenueCatHarness.ts).
+ */
+function prepareHostedImageLazily(
+  base64: string,
+  mimeType: string
+): Promise<{ base64: string; mimeType: string }> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const hostedImage: typeof import('@/utils/hostedImage') = require('@/utils/hostedImage');
+  return hostedImage.prepareHostedImage(base64, mimeType);
 }
 
 async function generateWithImageStructured<T>(
@@ -1970,7 +2264,13 @@ async function generateWithImageStructured<T>(
 
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
-  const dataUrl = `data:${mimeType};base64,${base64Image}`;
+  // Hosted photos are resized and re-encoded to the Worker's advertised limits first; BYOK and
+  // gateway requests send the photo as it is.
+  const image =
+    config.provider === 'hosted'
+      ? await prepareHostedImageLazily(base64Image, mimeType)
+      : { base64: base64Image, mimeType };
+  const dataUrl = `data:${image.mimeType};base64,${image.base64}`;
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
@@ -2001,8 +2301,11 @@ async function generateWithImageStructured<T>(
     config,
   });
 
-  const completion = await withLlmRetry('generateWithImageStructured', config, (signal) =>
-    client.chat.completions.create(requestPayload, { signal })
+  const completion = await withLlmRetry(
+    'generateWithImageStructured',
+    config,
+    (signal, _touch, meta) =>
+      client.chat.completions.create(requestPayload, requestOptions(signal, meta))
   );
 
   await logLlmDebugEvent({

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -9,6 +10,7 @@ import { PROVIDER_NAME_KEYS } from '@/components/aiOnboarding/providerNames';
 import { QuickReplyChips } from '@/components/aiOnboarding/QuickReplyChips';
 import type { RecoveryAction } from '@/components/aiOnboarding/recoveryActions';
 import { MasterLayout } from '@/components/MasterLayout';
+import { PremiumModal } from '@/components/modals/PremiumModal';
 import { Button } from '@/components/theme/Button';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { useAiOnboardingChat } from '@/hooks/useAiOnboardingChat';
@@ -34,6 +36,8 @@ function ChatBody({ session, draftApi }: { session: AiSetupSession; draftApi: Lo
   const { mode, go, goGuided } = session;
   const { draft } = draftApi;
   const chat = useAiOnboardingChat({ draft, update: draftApi.update });
+  // Both Premium recovery actions open the Premium screen, which has the Restore button too.
+  const [premiumVisible, setPremiumVisible] = useState(false);
 
   const sending = chat.status === 'sending';
   const failed =
@@ -67,6 +71,10 @@ function ChatBody({ session, draftApi }: { session: AiSetupSession; draftApi: Lo
         break;
       case 'continueGuided':
         void goGuided();
+        break;
+      case 'renewPremium':
+      case 'restorePremium':
+        setPremiumVisible(true);
         break;
     }
   };
@@ -106,6 +114,7 @@ function ChatBody({ session, draftApi }: { session: AiSetupSession; draftApi: Lo
         onCancel={chat.cancel}
         sending={sending}
       />
+      <PremiumModal visible={premiumVisible} onClose={() => setPremiumVisible(false)} />
     </MasterLayout>
   );
 }

@@ -2,6 +2,7 @@ import type { CoachAIProvider } from '@/utils/coachAI';
 
 /** Whole translation keys, one per provider, so the compiler asks for a name when one is added. */
 export const PROVIDER_NAME_KEYS: Record<CoachAIProvider, string> = {
+  hosted: 'aiOnboarding.provider.names.hosted',
   gemini: 'aiOnboarding.provider.names.gemini',
   openai: 'aiOnboarding.provider.names.openai',
   claude: 'aiOnboarding.provider.names.claude',

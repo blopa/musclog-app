@@ -15,6 +15,7 @@ import { Linking, Platform, Pressable, Text, View } from 'react-native';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
+import { PremiumCard } from '@/components/settings/PremiumCard';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
@@ -30,6 +31,7 @@ import {
   OPENAI_MODELS,
 } from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { usePremium } from '@/hooks/usePremium';
 import { useTheme } from '@/hooks/useTheme';
 import { needsFreeTierConsent } from '@/utils/aiConsent';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
@@ -43,6 +45,7 @@ import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { HistoryPickerField } from './aiHistorySettings';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
+import { PremiumModal } from './PremiumModal';
 
 const AI_KEY_TEST_MESSAGE_KEYS = {
   ok: 'errors.aiKeyTestOk',
@@ -302,6 +305,8 @@ export function AISettingsModal({
   const [claudeModelMenuVisible, setClaudeModelMenuVisible] = useState(false);
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
   const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
+  const [premiumVisible, setPremiumVisible] = useState(false);
+  const premium = usePremium();
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
@@ -606,6 +611,9 @@ export function AISettingsModal({
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
+        {/* Musclog Premium: renders nothing while Premium is switched off in this build. */}
+        <PremiumCard onPress={() => setPremiumVisible(true)} />
+
         {/* Musclog Free Tier Section — hidden on web production builds (CORS/quota constraints) */}
         {musclogGatewayAvailable ? (
           <View className="gap-3">
@@ -638,6 +646,12 @@ export function AISettingsModal({
               </Text>
             ) : null}
           </View>
+        ) : null}
+
+        {premium.enabled && premium.view.phase === 'active' && premium.useHostedAi ? (
+          <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
+            {t('settings.aiSettings.premium.activeNote')}
+          </Text>
         ) : null}
 
         {/* Provider sections (dimmed when free tier is active) */}
@@ -1032,6 +1046,9 @@ export function AISettingsModal({
         visible={isCustomPromptsVisible}
         onClose={() => setIsCustomPromptsVisible(false)}
       />
+
+      {/* Opened only from the Premium card at the top, never while a menu or the consent modal is open. */}
+      <PremiumModal visible={premiumVisible} onClose={() => setPremiumVisible(false)} />
     </FullScreenModal>
   );
 }

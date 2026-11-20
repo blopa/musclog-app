@@ -34,7 +34,36 @@ export class AiCancelledError extends Error {
   }
 }
 
-/** Providers where the user supplies the key. Gateway and on-device never become a key error. */
+/**
+ * The hosted (Musclog Premium) failures. The classes live in `coachAI.ts`, which imports this module,
+ * so this file reads them by their `hostedKind` tag instead of importing them (no cycle).
+ */
+export type HostedErrorKind =
+  'budget' | 'subscription' | 'removed' | 'unavailable' | 'dailyFull' | 'busy' | 'alreadyProcessed';
+
+const HOSTED_ERROR_KINDS: ReadonlySet<string> = new Set<HostedErrorKind>([
+  'budget',
+  'subscription',
+  'removed',
+  'unavailable',
+  'dailyFull',
+  'busy',
+  'alreadyProcessed',
+]);
+
+/** The hosted failure kind of a thrown error, or `null` for anything else. */
+export function hostedErrorKindOf(error: unknown): HostedErrorKind | null {
+  if (typeof error !== 'object' || error === null) {
+    return null;
+  }
+
+  const kind = (error as { hostedKind?: unknown }).hostedKind;
+  return typeof kind === 'string' && HOSTED_ERROR_KINDS.has(kind)
+    ? (kind as HostedErrorKind)
+    : null;
+}
+
+/** Providers where the user supplies the key. Gateway, hosted and on-device never become a key error. */
 const USER_KEY_PROVIDERS: ReadonlySet<CoachAIProvider> = new Set(['gemini', 'openai', 'claude']);
 
 /** The fields the provider SDKs put on a failure; every one may be absent. */
@@ -151,7 +180,9 @@ export function rethrowUserFacingAiError(error: unknown): void {
   if (
     error instanceof AiInvalidKeyError ||
     error instanceof AiTimeoutError ||
-    error instanceof AiCancelledError
+    error instanceof AiCancelledError ||
+    // Every hosted failure is typed and user-actionable; none may turn into the generic credits text.
+    hostedErrorKindOf(error) !== null
   ) {
     throw error;
   }
@@ -163,6 +194,7 @@ const PROVIDER_LABELS: Record<CoachAIProvider, string> = {
   claude: 'Claude',
   local: 'Local',
   gateway: 'Musclog',
+  hosted: 'Musclog Premium',
   'on-device': 'On-device',
 };
 
@@ -172,7 +204,8 @@ const PROVIDER_LABELS: Record<CoachAIProvider, string> = {
  */
 export function describeAiError(
   error: unknown,
-  t: (key: string, options?: Record<string, unknown>) => string
+  t: (key: string, options?: Record<string, unknown>) => string,
+  locale?: string
 ): string | null {
   if (error instanceof AiInvalidKeyError) {
     return t('errors.aiInvalidApiKey', { provider: PROVIDER_LABELS[error.provider] });
@@ -182,7 +215,58 @@ export function describeAiError(
     return t('errors.aiTimeout');
   }
 
+  const hosted = hostedErrorKindOf(error);
+  if (hosted) {
+    return describeHostedError(hosted, error, t, locale);
+  }
+
   return null;
+}
+
+/** The date a hosted budget resets, formatted for the locale, or `null` when it is not a date. */
+function formatResetDate(error: unknown, locale?: string): string | null {
+  const resetsAt = (error as { resetsAt?: unknown }).resetsAt;
+  if (typeof resetsAt !== 'string') {
+    return null;
+  }
+
+  const date = new Date(resetsAt);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  try {
+    return new Intl.DateTimeFormat(locale ?? 'en', { dateStyle: 'medium' }).format(date);
+  } catch {
+    return null;
+  }
+}
+
+function describeHostedError(
+  kind: HostedErrorKind,
+  error: unknown,
+  t: (key: string, options?: Record<string, unknown>) => string,
+  locale?: string
+): string {
+  switch (kind) {
+    case 'budget': {
+      const date = formatResetDate(error, locale);
+      return date ? t('errors.hostedBudget', { date }) : t('errors.hostedBudgetNoDate');
+    }
+
+    case 'subscription':
+      return t('errors.hostedSubscription');
+    case 'removed':
+      return t('errors.hostedRemoved');
+    case 'unavailable':
+      return t('errors.hostedUnavailable');
+    case 'dailyFull':
+      return t('errors.hostedDailyFull');
+    case 'busy':
+      return t('errors.hostedBusy');
+    case 'alreadyProcessed':
+      return t('errors.hostedAlreadyProcessed');
+  }
 }
 
 /** Providers for which the Cancel/timeout machinery and a key test make sense. */

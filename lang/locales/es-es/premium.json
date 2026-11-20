@@ -1,0 +1,58 @@
+{
+  "premium": {
+    "title": "Musclog Premium",
+    "benefit": "IA alojada sin clave que configurar. Musclog Premium ejecuta la IA por ti con una cuota mensual.",
+    "loading": "Comprobando tu estado de Premium…",
+    "price": "{{price}} al mes",
+    "subscribe": "Suscribirse",
+    "restore": "Restaurar compras",
+    "usage": {
+      "used": "{{pct}} % de la cuota de este periodo utilizada",
+      "renews": "Se renueva el {{date}}",
+      "nearLimit": "Cerca de la cuota de este periodo.",
+      "full": "La cuota de este periodo está agotada."
+    },
+    "devices": "Usando {{count}} de {{max}} dispositivos",
+    "useForAi": "Usar Premium para mi IA",
+    "useForAiHint": "Las solicitudes se envían al servicio Musclog Premium, que las reenvía a OpenRouter.",
+    "manage": "Gestionar suscripción",
+    "reset": "Restablecer Premium en este dispositivo",
+    "resetTitle": "¿Restablecer Premium en este dispositivo?",
+    "resetBody": "Esto olvida la inscripción de Premium de este dispositivo y crea una clave nueva. Tu suscripción no se cancela. Restaurar compras vuelve a añadir este dispositivo y ocupa una de tus plazas de dispositivo.",
+    "resetConfirm": "Restablecer",
+    "consent": {
+      "title": "¿Enviar las solicitudes de IA a Premium?",
+      "body": "Tus mensajes y las fotos que envíes a la IA se envían al servicio Musclog Premium. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se usan endpoints de retención cero de datos (ZDR): en ellos no se guarda nada ni se usa para entrenar modelos. Puedes desactivarlo en cualquier momento.",
+      "confirm": "Usar IA Premium",
+      "cancel": "Ahora no"
+    },
+    "renewalDisclosure": "Musclog Premium es una suscripción mensual que se renueva automáticamente. El pago se carga a tu cuenta de App Store o Google Play al confirmar la compra. Se renueva salvo que la canceles al menos 24 horas antes de que termine el periodo actual. Gestiónala o cancélala en los ajustes de tu cuenta de la tienda. El precio mostrado es el que cobra la tienda.",
+    "devicesNote": "Una suscripción funciona en hasta 3 de tus dispositivos.",
+    "platformsNote": "Las suscripciones de iOS y Android son independientes.",
+    "terms": "Condiciones de uso",
+    "privacy": "Política de privacidad",
+    "card": {
+      "checking": "Comprobando Premium…",
+      "notSubscribed": "IA alojada sin clave que configurar",
+      "active": "{{pct}} % usado · {{count}} de {{max}} dispositivos",
+      "exhausted": "Cuota agotada para este periodo",
+      "removed": "Eliminado de esta suscripción",
+      "revoked": "Premium no está activo"
+    },
+    "notice": {
+      "offline": "Estás sin conexión. Premium necesita conexión para comprobar tu suscripción.",
+      "purchase_cancelled": "Compra cancelada. No se ha cobrado nada.",
+      "purchase_failed": "La compra no se completó. Inténtalo de nuevo o revisa tu cuenta de la tienda.",
+      "restore_nothing": "No se encontró ninguna suscripción activa de Premium para esta cuenta de la tienda.",
+      "removed": "Este dispositivo se ha eliminado de esta suscripción porque se han añadido dispositivos más recientes. Una suscripción funciona en hasta 3 de tus dispositivos. Restaurar compras vuelve a añadir este dispositivo.",
+      "revoked": "Premium ya no está activo para esta suscripción.",
+      "exhausted": "La cuota de IA Premium de este periodo se ha agotado. Se renueva el {{date}}. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+      "exhaustedNoDate": "La cuota de IA Premium de este periodo se ha agotado. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+      "at_capacity": "La IA Premium está al límite de capacidad hasta mañana (UTC).",
+      "unavailable": "Premium no está disponible ahora mismo. Inténtalo más tarde.",
+      "not_accepting": "Premium no admite nuevos suscriptores en este momento.",
+      "not_available": "Premium no está disponible en esta tienda por ahora.",
+      "warning80": "Has usado la mayor parte de la cuota de IA Premium de este periodo."
+    }
+  }
+}

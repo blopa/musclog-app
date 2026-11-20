@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Lokaal model",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Premium"
       },
       "openGemini": "Google AI Studio openen",
       "openClaude": "De Claude-sleutelpagina openen",
@@ -116,7 +117,9 @@
       },
       "title": "Kies je AI",
       "useExternal": "Gebruik in plaats daarvan ChatGPT of Claude",
-      "useSaved": "De opgeslagen sleutel gebruiken"
+      "useSaved": "De opgeslagen sleutel gebruiken",
+      "premiumTitle": "Musclog Premium",
+      "premiumHint": "Gehoste AI op abonnement, geen sleutel nodig"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "De sleutel vervangen",
         "retry": "Opnieuw proberen",
         "switchProvider": "Een andere AI kiezen",
-        "useExternal": "ChatGPT of Claude gebruiken"
+        "useExternal": "ChatGPT of Claude gebruiken",
+        "renewPremium": "Premium openen",
+        "restorePremium": "Aankopen herstellen"
       },
       "cancelled": {
         "description": "Je bericht staat weer in het tekstvak.",
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "De AI kon niet antwoorden. Probeer opnieuw of kies een andere manier.",
         "title": "Er ging iets mis"
+      },
+      "hostedBudget": {
+        "title": "Premium-tegoed op",
+        "description": "Je tegoed wordt vernieuwd met de volgende periode. Tot die tijd kun je je eigen sleutel gebruiken of de installatie handmatig afronden."
+      },
+      "hostedSubscription": {
+        "title": "Premium is niet actief op dit apparaat",
+        "description": "Herstel je aankoop, verleng het abonnement of gebruik je eigen sleutel."
+      },
+      "hostedUnavailable": {
+        "title": "Premium is niet beschikbaar",
+        "description": "Musclog Premium is nu niet bereikbaar. Probeer het opnieuw of kies een andere optie."
+      },
+      "hostedBusy": {
+        "title": "Premium is bezet",
+        "description": "Te veel verzoeken tegelijk. Probeer het over een paar seconden opnieuw."
       }
     },
     "review": {

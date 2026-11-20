@@ -22,6 +22,14 @@
     "aiTimeout": "Dit duurt te lang. Probeer het opnieuw.",
     "aiKeyTestOk": "Sleutel geaccepteerd",
     "aiKeyTestRejected": "Sleutel geweigerd. Controleer hem en probeer opnieuw.",
-    "aiKeyTestNetwork": "Kon de provider niet bereiken. Controleer je verbinding."
+    "aiKeyTestNetwork": "Kon de provider niet bereiken. Controleer je verbinding.",
+    "hostedBudget": "Het Premium-AI-tegoed van deze periode is op. Het wordt op {{date}} vernieuwd. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+    "hostedBudgetNoDate": "Het Premium-AI-tegoed van deze periode is op. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+    "hostedSubscription": "Musclog Premium heeft geen actief abonnement op dit apparaat. Herstel je aankoop of abonneer je in de Premium-instellingen.",
+    "hostedRemoved": "Dit apparaat is uit je Premium-abonnement verwijderd. Herstel de aankopen in de Premium-instellingen om het weer toe te voegen.",
+    "hostedUnavailable": "Musclog Premium is nu niet beschikbaar. Probeer het zo opnieuw.",
+    "hostedDailyFull": "Premium-AI zit tot morgen (UTC) aan de capaciteitsgrens.",
+    "hostedBusy": "Musclog Premium is bezet. Probeer het over een paar seconden opnieuw.",
+    "hostedAlreadyProcessed": "Dit verzoek is al verwerkt. Stuur het opnieuw."
   }
 }

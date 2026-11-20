@@ -22,6 +22,14 @@
     "aiTimeout": "Bu çok uzun sürüyor. Tekrar dene.",
     "aiKeyTestOk": "Anahtar kabul edildi",
     "aiKeyTestRejected": "Anahtar reddedildi. Kontrol edip tekrar dene.",
-    "aiKeyTestNetwork": "Sağlayıcıya ulaşılamadı. Bağlantını kontrol et."
+    "aiKeyTestNetwork": "Sağlayıcıya ulaşılamadı. Bağlantını kontrol et.",
+    "hostedBudget": "Bu dönemin Premium YZ kotası kullanıldı. {{date}} tarihinde yenilenir. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
+    "hostedBudgetNoDate": "Bu dönemin Premium YZ kotası kullanıldı. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
+    "hostedSubscription": "Musclog Premium bu cihazda etkin bir aboneliğe sahip değil. Premium ayarlarında satın almanızı geri yükleyin veya abone olun.",
+    "hostedRemoved": "Bu cihaz Premium aboneliğinizden kaldırıldı. Yeniden eklemek için Premium ayarlarında satın alımları geri yükleyin.",
+    "hostedUnavailable": "Musclog Premium şu anda kullanılamıyor. Birazdan tekrar deneyin.",
+    "hostedDailyFull": "Premium YZ yarına kadar (UTC) kapasitesinde.",
+    "hostedBusy": "Musclog Premium meşgul. Birkaç saniye sonra tekrar deneyin.",
+    "hostedAlreadyProcessed": "Bu istek zaten işlendi. Lütfen yeniden gönderin."
   }
 }

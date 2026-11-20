@@ -362,7 +362,10 @@
         "consentConfirm": "Zustimmen und aktivieren"
       },
       "testKey": "Schlüssel testen",
-      "testingKey": "Wird getestet…"
+      "testingKey": "Wird getestet…",
+      "premium": {
+        "activeNote": "Musclog Premium beantwortet deine KI-Anfragen. Solange es eingeschaltet ist, werden deine eigenen Schlüssel und die kostenlose Stufe nicht verwendet."
+      }
     },
     "visualSettings": {
       "title": "Darstellung und Startseite",

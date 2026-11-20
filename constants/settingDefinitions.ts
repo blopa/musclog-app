@@ -45,6 +45,7 @@ import {
   parseRestHapticStrength,
   parseRestHeadsUpSeconds,
   parseWorkoutAutonomy,
+  PREMIUM_CONSENT_VERSION_SETTING_TYPE,
   REST_ALERT_SOUND_SETTING_TYPE,
   REST_HAPTIC_STRENGTH_SETTING_TYPE,
   REST_HEADS_UP_SECONDS_SETTING_TYPE,
@@ -115,6 +116,17 @@ export const SETTINGS = {
   claudeModel: textSetting(CLAUDE_MODEL_SETTING_TYPE),
   enableClaude: booleanSetting(ENABLE_CLAUDE_SETTING_TYPE, true),
   useHostedAi: booleanSetting(USE_HOSTED_AI_SETTING_TYPE, false),
+  /** Consent version for hosted AI (`utils/premium/premiumConsent.ts`); null until given. */
+  premiumConsentVersion: {
+    type: PREMIUM_CONSENT_VERSION_SETTING_TYPE,
+    defaultValue: null,
+    parse: (raw) => {
+      const value = Number(raw);
+
+      return Number.isInteger(value) && value > 0 ? value : null;
+    },
+    serialize: (value) => (value === null ? '' : String(value)),
+  } satisfies SettingDefinition<number | null>,
   cycleShowPredictions: booleanSetting(CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, true),
   cycleShowFertility: booleanSetting(CYCLE_SHOW_FERTILITY_SETTING_TYPE, false),
   cycleNotificationStyle: choiceSetting<CycleNotificationStyle>(

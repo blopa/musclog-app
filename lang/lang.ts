@@ -98,6 +98,7 @@ import deDeOpticalTransfer from './locales/de-de/opticalTransfer.json';
 import deDeOptionsSelector from './locales/de-de/optionsSelector.json';
 import deDePastWorkoutHistory from './locales/de-de/pastWorkoutHistory.json';
 import deDePortionSizes from './locales/de-de/portionSizes.json';
+import deDePremium from './locales/de-de/premium.json';
 import deDeProfile from './locales/de-de/profile.json';
 import deDeProgress from './locales/de-de/progress.json';
 import deDeReplaceExercise from './locales/de-de/replaceExercise.json';
@@ -204,6 +205,7 @@ import enUsOpticalTransfer from './locales/en-us/opticalTransfer.json';
 import enUsOptionsSelector from './locales/en-us/optionsSelector.json';
 import enUsPastWorkoutHistory from './locales/en-us/pastWorkoutHistory.json';
 import enUsPortionSizes from './locales/en-us/portionSizes.json';
+import enUsPremium from './locales/en-us/premium.json';
 import enUsProfile from './locales/en-us/profile.json';
 import enUsProgress from './locales/en-us/progress.json';
 import enUsReplaceExercise from './locales/en-us/replaceExercise.json';
@@ -310,6 +312,7 @@ import esEsOpticalTransfer from './locales/es-es/opticalTransfer.json';
 import esEsOptionsSelector from './locales/es-es/optionsSelector.json';
 import esEsPastWorkoutHistory from './locales/es-es/pastWorkoutHistory.json';
 import esEsPortionSizes from './locales/es-es/portionSizes.json';
+import esEsPremium from './locales/es-es/premium.json';
 import esEsProfile from './locales/es-es/profile.json';
 import esEsProgress from './locales/es-es/progress.json';
 import esEsReplaceExercise from './locales/es-es/replaceExercise.json';
@@ -416,6 +419,7 @@ import frFrOpticalTransfer from './locales/fr-fr/opticalTransfer.json';
 import frFrOptionsSelector from './locales/fr-fr/optionsSelector.json';
 import frFrPastWorkoutHistory from './locales/fr-fr/pastWorkoutHistory.json';
 import frFrPortionSizes from './locales/fr-fr/portionSizes.json';
+import frFrPremium from './locales/fr-fr/premium.json';
 import frFrProfile from './locales/fr-fr/profile.json';
 import frFrProgress from './locales/fr-fr/progress.json';
 import frFrReplaceExercise from './locales/fr-fr/replaceExercise.json';
@@ -522,6 +526,7 @@ import itItOpticalTransfer from './locales/it-it/opticalTransfer.json';
 import itItOptionsSelector from './locales/it-it/optionsSelector.json';
 import itItPastWorkoutHistory from './locales/it-it/pastWorkoutHistory.json';
 import itItPortionSizes from './locales/it-it/portionSizes.json';
+import itItPremium from './locales/it-it/premium.json';
 import itItProfile from './locales/it-it/profile.json';
 import itItProgress from './locales/it-it/progress.json';
 import itItReplaceExercise from './locales/it-it/replaceExercise.json';
@@ -628,6 +633,7 @@ import nlNlOpticalTransfer from './locales/nl-nl/opticalTransfer.json';
 import nlNlOptionsSelector from './locales/nl-nl/optionsSelector.json';
 import nlNlPastWorkoutHistory from './locales/nl-nl/pastWorkoutHistory.json';
 import nlNlPortionSizes from './locales/nl-nl/portionSizes.json';
+import nlNlPremium from './locales/nl-nl/premium.json';
 import nlNlProfile from './locales/nl-nl/profile.json';
 import nlNlProgress from './locales/nl-nl/progress.json';
 import nlNlReplaceExercise from './locales/nl-nl/replaceExercise.json';
@@ -734,6 +740,7 @@ import plPlOpticalTransfer from './locales/pl-pl/opticalTransfer.json';
 import plPlOptionsSelector from './locales/pl-pl/optionsSelector.json';
 import plPlPastWorkoutHistory from './locales/pl-pl/pastWorkoutHistory.json';
 import plPlPortionSizes from './locales/pl-pl/portionSizes.json';
+import plPlPremium from './locales/pl-pl/premium.json';
 import plPlProfile from './locales/pl-pl/profile.json';
 import plPlProgress from './locales/pl-pl/progress.json';
 import plPlReplaceExercise from './locales/pl-pl/replaceExercise.json';
@@ -840,6 +847,7 @@ import ptBrOpticalTransfer from './locales/pt-br/opticalTransfer.json';
 import ptBrOptionsSelector from './locales/pt-br/optionsSelector.json';
 import ptBrPastWorkoutHistory from './locales/pt-br/pastWorkoutHistory.json';
 import ptBrPortionSizes from './locales/pt-br/portionSizes.json';
+import ptBrPremium from './locales/pt-br/premium.json';
 import ptBrProfile from './locales/pt-br/profile.json';
 import ptBrProgress from './locales/pt-br/progress.json';
 import ptBrReplaceExercise from './locales/pt-br/replaceExercise.json';
@@ -946,6 +954,7 @@ import ruRuOpticalTransfer from './locales/ru-ru/opticalTransfer.json';
 import ruRuOptionsSelector from './locales/ru-ru/optionsSelector.json';
 import ruRuPastWorkoutHistory from './locales/ru-ru/pastWorkoutHistory.json';
 import ruRuPortionSizes from './locales/ru-ru/portionSizes.json';
+import ruRuPremium from './locales/ru-ru/premium.json';
 import ruRuProfile from './locales/ru-ru/profile.json';
 import ruRuProgress from './locales/ru-ru/progress.json';
 import ruRuReplaceExercise from './locales/ru-ru/replaceExercise.json';
@@ -1052,6 +1061,7 @@ import trTrOpticalTransfer from './locales/tr-tr/opticalTransfer.json';
 import trTrOptionsSelector from './locales/tr-tr/optionsSelector.json';
 import trTrPastWorkoutHistory from './locales/tr-tr/pastWorkoutHistory.json';
 import trTrPortionSizes from './locales/tr-tr/portionSizes.json';
+import trTrPremium from './locales/tr-tr/premium.json';
 import trTrProfile from './locales/tr-tr/profile.json';
 import trTrProgress from './locales/tr-tr/progress.json';
 import trTrReplaceExercise from './locales/tr-tr/replaceExercise.json';
@@ -1204,6 +1214,7 @@ const resources = {
       ...deDeOptionsSelector,
       ...deDePastWorkoutHistory,
       ...deDePortionSizes,
+      ...deDePremium,
       ...deDeProfile,
       ...deDeProgress,
       ...deDeReplaceExercise,
@@ -1314,6 +1325,7 @@ const resources = {
       ...enUsOptionsSelector,
       ...enUsPastWorkoutHistory,
       ...enUsPortionSizes,
+      ...enUsPremium,
       ...enUsProfile,
       ...enUsProgress,
       ...enUsReplaceExercise,
@@ -1424,6 +1436,7 @@ const resources = {
       ...esEsOptionsSelector,
       ...esEsPastWorkoutHistory,
       ...esEsPortionSizes,
+      ...esEsPremium,
       ...esEsProfile,
       ...esEsProgress,
       ...esEsReplaceExercise,
@@ -1534,6 +1547,7 @@ const resources = {
       ...frFrOptionsSelector,
       ...frFrPastWorkoutHistory,
       ...frFrPortionSizes,
+      ...frFrPremium,
       ...frFrProfile,
       ...frFrProgress,
       ...frFrReplaceExercise,
@@ -1644,6 +1658,7 @@ const resources = {
       ...itItOptionsSelector,
       ...itItPastWorkoutHistory,
       ...itItPortionSizes,
+      ...itItPremium,
       ...itItProfile,
       ...itItProgress,
       ...itItReplaceExercise,
@@ -1754,6 +1769,7 @@ const resources = {
       ...nlNlOptionsSelector,
       ...nlNlPastWorkoutHistory,
       ...nlNlPortionSizes,
+      ...nlNlPremium,
       ...nlNlProfile,
       ...nlNlProgress,
       ...nlNlReplaceExercise,
@@ -1864,6 +1880,7 @@ const resources = {
       ...plPlOptionsSelector,
       ...plPlPastWorkoutHistory,
       ...plPlPortionSizes,
+      ...plPlPremium,
       ...plPlProfile,
       ...plPlProgress,
       ...plPlReplaceExercise,
@@ -1974,6 +1991,7 @@ const resources = {
       ...ptBrOptionsSelector,
       ...ptBrPastWorkoutHistory,
       ...ptBrPortionSizes,
+      ...ptBrPremium,
       ...ptBrProfile,
       ...ptBrProgress,
       ...ptBrReplaceExercise,
@@ -2084,6 +2102,7 @@ const resources = {
       ...ruRuOptionsSelector,
       ...ruRuPastWorkoutHistory,
       ...ruRuPortionSizes,
+      ...ruRuPremium,
       ...ruRuProfile,
       ...ruRuProgress,
       ...ruRuReplaceExercise,
@@ -2194,6 +2213,7 @@ const resources = {
       ...trTrOptionsSelector,
       ...trTrPastWorkoutHistory,
       ...trTrPortionSizes,
+      ...trTrPremium,
       ...trTrProfile,
       ...trTrProgress,
       ...trTrReplaceExercise,

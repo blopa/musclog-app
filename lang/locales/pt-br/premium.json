@@ -1,0 +1,58 @@
+{
+  "premium": {
+    "title": "Musclog Premium",
+    "benefit": "IA hospedada, sem chave para configurar. O Musclog Premium roda a IA para você com uma cota mensal.",
+    "loading": "Verificando seu status Premium…",
+    "price": "{{price}} por mês",
+    "subscribe": "Assinar",
+    "restore": "Restaurar compras",
+    "usage": {
+      "used": "{{pct}}% da cota deste período usada",
+      "renews": "Renova em {{date}}",
+      "nearLimit": "Perto da cota deste período.",
+      "full": "A cota deste período está totalmente usada."
+    },
+    "devices": "Usando {{count}} de {{max}} dispositivos",
+    "useForAi": "Usar o Premium para minha IA",
+    "useForAiHint": "As solicitações vão para o serviço Musclog Premium, que as encaminha para o OpenRouter.",
+    "manage": "Gerenciar assinatura",
+    "reset": "Redefinir o Premium neste dispositivo",
+    "resetTitle": "Redefinir o Premium neste dispositivo?",
+    "resetBody": "Isso esquece a adesão ao Premium deste dispositivo e cria uma nova chave de dispositivo. Sua assinatura não é cancelada. Restaurar compras adiciona este dispositivo de volta e ocupa uma das suas vagas de dispositivo.",
+    "resetConfirm": "Redefinir",
+    "consent": {
+      "title": "Enviar solicitações de IA ao Premium?",
+      "body": "Suas mensagens e quaisquer fotos que você enviar à IA vão para o serviço Musclog Premium. Ele as encaminha ao OpenRouter, que as envia ao provedor do modelo de IA. Só são usados endpoints com retenção zero de dados (ZDR): neles nada é armazenado nem usado para treinamento. Você pode desativar isso a qualquer momento.",
+      "confirm": "Usar IA Premium",
+      "cancel": "Agora não"
+    },
+    "renewalDisclosure": "O Musclog Premium é uma assinatura mensal com renovação automática. O pagamento é cobrado da sua conta da App Store ou do Google Play na confirmação. A assinatura se renova, a menos que você cancele pelo menos 24 horas antes do fim do período atual. Gerencie ou cancele nas configurações da sua conta na loja. O preço exibido é o que a loja cobra.",
+    "devicesNote": "Uma assinatura funciona em até 3 dos seus dispositivos.",
+    "platformsNote": "As assinaturas de iOS e Android são separadas.",
+    "terms": "Termos de uso",
+    "privacy": "Política de privacidade",
+    "card": {
+      "checking": "Verificando o Premium…",
+      "notSubscribed": "IA hospedada, sem chave para configurar",
+      "active": "{{pct}}% usado · {{count}} de {{max}} dispositivos",
+      "exhausted": "Cota deste período esgotada",
+      "removed": "Removido desta assinatura",
+      "revoked": "O Premium não está ativo"
+    },
+    "notice": {
+      "offline": "Você está offline. O Premium precisa de conexão para verificar sua assinatura.",
+      "purchase_cancelled": "Compra cancelada. Nada foi cobrado.",
+      "purchase_failed": "A compra não foi concluída. Tente de novo ou verifique sua conta na loja.",
+      "restore_nothing": "Não encontramos nenhuma assinatura Premium ativa para esta conta da loja.",
+      "removed": "Este dispositivo foi removido desta assinatura porque dispositivos mais novos foram adicionados. Uma assinatura funciona em até 3 dos seus dispositivos. Restaurar compras adiciona este dispositivo de novo.",
+      "revoked": "O Premium não está mais ativo para esta assinatura.",
+      "exhausted": "A cota de IA Premium deste período acabou. Ela renova em {{date}}. O Musclog continua funcionando, e você pode usar sua própria chave ou o plano gratuito.",
+      "exhaustedNoDate": "A cota de IA Premium deste período acabou. O Musclog continua funcionando, e você pode usar sua própria chave ou o plano gratuito.",
+      "at_capacity": "A IA Premium está no limite de capacidade até amanhã (UTC).",
+      "unavailable": "O Premium está indisponível agora. Tente novamente mais tarde.",
+      "not_accepting": "O Premium não está aceitando novos assinantes no momento.",
+      "not_available": "O Premium não está disponível nesta loja no momento.",
+      "warning80": "Você usou a maior parte da cota de IA Premium deste período."
+    }
+  }
+}
