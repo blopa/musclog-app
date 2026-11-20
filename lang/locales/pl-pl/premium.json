@@ -8,9 +8,7 @@
     "restore": "Przywróć zakupy",
     "usage": {
       "used": "Wykorzystano {{pct}}% limitu tego okresu",
-      "renews": "Odnawia się {{date}}",
-      "nearLimit": "Blisko limitu tego okresu.",
-      "full": "Limit tego okresu jest w pełni wykorzystany."
+      "renews": "Odnawia się {{date}}"
     },
     "devices": "Używasz {{count}} z {{max}} urządzeń",
     "useForAi": "Używaj Premium do AI",
@@ -44,6 +42,7 @@
       "purchase_cancelled": "Zakup anulowany. Nic nie zostało pobrane.",
       "purchase_failed": "Zakup nie został zrealizowany. Spróbuj ponownie lub sprawdź swoje konto w sklepie.",
       "restore_nothing": "Nie znaleziono aktywnej subskrypcji Premium dla tego konta w sklepie.",
+      "confirming": "Twój zakup jest jeszcze potwierdzany. Spróbuj ponownie za minutę.",
       "removed": "To urządzenie zostało usunięte z tej subskrypcji, ponieważ dodano nowsze urządzenia. Jedna subskrypcja działa na maksymalnie 3 Twoich urządzeniach. Przywrócenie zakupów doda to urządzenie ponownie.",
       "revoked": "Premium nie jest już aktywne dla tej subskrypcji.",
       "exhausted": "Limit AI Premium na ten okres został wykorzystany. Odnawia się {{date}}. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",

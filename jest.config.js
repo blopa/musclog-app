@@ -49,7 +49,8 @@ module.exports = {
       ...baseConfig,
       displayName: 'jsdom',
       testEnvironment: 'jsdom',
-      testMatch: ['**/hooks/**/*.test.ts'],
+      // Hook tests, plus component render tests named `*.dom.test.tsx` (react-native-web + RTL).
+      testMatch: ['**/hooks/**/*.test.ts', '**/components/**/__tests__/*.dom.test.tsx'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.jsdom.js'],
       moduleNameMapper: {
         // Static assets, which the node project's RN preset handles via its own asset

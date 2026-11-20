@@ -59,7 +59,7 @@ export function TextButton({
       className={`min-h-11 flex-row items-center gap-2 active:opacity-70 ${align === 'start' ? 'self-start' : 'justify-center'} ${disabled ? 'opacity-50' : ''}`}
     >
       {Icon && iconPosition === 'left' ? <Icon size={theme.iconSize.sm} color={toneColor} /> : null}
-      <Text className="text-sm font-semibold" style={{ color: toneColor }}>
+      <Text className="text-sm font-semibold" style={{ color: toneColor, flexShrink: 1 }}>
         {label}
       </Text>
       {Icon && iconPosition === 'right' ? (

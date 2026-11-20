@@ -8,9 +8,7 @@
     "restore": "Käufe wiederherstellen",
     "usage": {
       "used": "{{pct}} % des Kontingents für diesen Zeitraum verbraucht",
-      "renews": "Verlängert sich am {{date}}",
-      "nearLimit": "Das Kontingent für diesen Zeitraum ist fast erreicht.",
-      "full": "Das Kontingent für diesen Zeitraum ist vollständig verbraucht."
+      "renews": "Verlängert sich am {{date}}"
     },
     "devices": "{{count}} von {{max}} Geräten in Verwendung",
     "useForAi": "Premium für meine KI verwenden",
@@ -44,6 +42,7 @@
       "purchase_cancelled": "Kauf abgebrochen. Es wurde nichts berechnet.",
       "purchase_failed": "Der Kauf ist nicht abgeschlossen worden. Versuche es erneut oder prüfe dein Store-Konto.",
       "restore_nothing": "Für dieses Store-Konto wurde kein aktives Premium-Abo gefunden.",
+      "confirming": "Dein Kauf wird noch bestätigt. Versuche es in einer Minute erneut.",
       "removed": "Dieses Gerät wurde von diesem Abo entfernt, weil neuere Geräte hinzugefügt wurden. Ein Abo funktioniert auf bis zu 3 deiner Geräte. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt.",
       "revoked": "Premium ist für dieses Abo nicht mehr aktiv.",
       "exhausted": "Das Premium-KI-Kontingent für diesen Zeitraum ist aufgebraucht. Es wird am {{date}} erneuert. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",

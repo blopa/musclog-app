@@ -1,0 +1,316 @@
+import { fireEvent, render, screen } from '@testing-library/react';
+import { Linking } from 'react-native';
+
+import { PREMIUM_NOTICE_KEYS, PremiumModal } from '@/components/modals/PremiumModal';
+import { usePremium } from '@/hooks/usePremium';
+import { PREMIUM_PRIVACY_URL, PREMIUM_TERMS_URL } from '@/utils/premium/premiumLinks';
+import {
+  buildPremiumViewModel,
+  type PremiumNotice,
+  type PremiumViewInput,
+  type PremiumViewModel,
+} from '@/utils/premium/premiumUiState';
+
+jest.mock('@/hooks/usePremium', () => ({ usePremium: jest.fn() }));
+jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
+jest.mock('@/hooks/useFormatAppNumber', () => ({
+  useFormatAppNumber: () => ({ formatInteger: (n: number) => String(n) }),
+}));
+jest.mock('@/hooks/useSubModalVisibility', () => {
+  const react = require('react');
+  return {
+    // The real hook starts closed; the dialog opens only on a request.
+    useSubModalVisibility: () => react.useState(false),
+  };
+});
+jest.mock('react-i18next', () => ({
+  initReactI18next: { type: '3rdParty', init: () => undefined },
+  useTranslation: () => ({
+    t: (key: string, params?: Record<string, unknown>) =>
+      params ? `${key}:${JSON.stringify(params)}` : key,
+    i18n: { language: 'en-US', resolvedLanguage: 'en-US' },
+  }),
+}));
+// The real modal chrome is out of scope here: render its children only while visible.
+jest.mock('@/components/modals/FullScreenModal', () => ({
+  FullScreenModal: ({ visible, children, title }: any) =>
+    visible ? (
+      <div>
+        <h1>{title}</h1>
+        {children}
+      </div>
+    ) : null,
+}));
+jest.mock('@/components/modals/ConfirmationModal', () => ({
+  ConfirmationModal: ({ visible, onConfirm, confirmLabel, title }: any) =>
+    visible ? (
+      <div>
+        <span>{title}</span>
+        <button onClick={() => onConfirm()}>{confirmLabel}</button>
+      </div>
+    ) : null,
+}));
+
+const mockUsePremium = usePremium as jest.Mock;
+
+function input(overrides: Partial<PremiumViewInput> = {}): PremiumViewInput {
+  return {
+    status: 'not_subscribed' as never,
+    config: null,
+    configFailure: null,
+    usage: null,
+    lastActionFailure: null,
+    signal: null,
+    busy: false,
+    ...overrides,
+  };
+}
+
+function premiumWith(view: PremiumViewModel, extra: Record<string, unknown> = {}) {
+  return {
+    enabled: true,
+    view,
+    priceString: null,
+    busy: false,
+    useHostedAi: false,
+    subscribe: jest.fn(async () => false),
+    restore: jest.fn(async () => false),
+    refresh: jest.fn(async () => undefined),
+    setUseHostedAi: jest.fn(async () => undefined),
+    reset: jest.fn(async () => undefined),
+    consentNeeded: jest.fn(() => false),
+    recordConsent: jest.fn(async () => undefined),
+    ...extra,
+  };
+}
+
+const CONFIG_ON = { enabled: true, acceptingNew: true } as never;
+
+function renderModal() {
+  return render(<PremiumModal visible onClose={jest.fn()} />);
+}
+
+describe('PremiumModal', () => {
+  let openURL: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockUsePremium.mockReset();
+    openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(true as never);
+  });
+
+  afterEach(() => {
+    openURL.mockRestore();
+  });
+
+  describe('notices', () => {
+    // 'exhausted' depends on the renewal date and has its own tests below.
+    const plainNotices = (Object.keys(PREMIUM_NOTICE_KEYS) as PremiumNotice[]).filter(
+      (notice) => notice !== 'exhausted'
+    );
+
+    it.each(plainNotices)('renders the %s notice key', (notice) => {
+      // A view carrying the notice directly; the phase does not matter for the text.
+      mockUsePremium.mockReturnValue(
+        premiumWith({
+          ...buildPremiumViewModel(input({ status: 'active' as never })),
+          notice,
+        })
+      );
+
+      renderModal();
+
+      expect(screen.getByText(PREMIUM_NOTICE_KEYS[notice])).toBeTruthy();
+    });
+
+    it('renders the dated exhausted notice with the renewal date', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith({
+          ...buildPremiumViewModel(input({ status: 'exhausted' as never })),
+          notice: 'exhausted',
+          resetsAt: '2026-12-01T00:00:00.000Z',
+        })
+      );
+
+      renderModal();
+
+      expect(screen.getByText(/premium\.notice\.exhausted:\{"date":"/)).toBeTruthy();
+    });
+
+    it('renders the undated exhausted notice when there is no renewal date', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith({
+          ...buildPremiumViewModel(input({ status: 'exhausted' as never })),
+          notice: 'exhausted',
+          resetsAt: null,
+        })
+      );
+
+      renderModal();
+
+      expect(screen.getByText('premium.notice.exhaustedNoDate')).toBeTruthy();
+    });
+  });
+
+  describe('subscribe and restore', () => {
+    it('hides Subscribe when the view cannot subscribe', () => {
+      mockUsePremium.mockReturnValue(premiumWith(buildPremiumViewModel(input({ config: null }))));
+
+      renderModal();
+
+      expect(screen.queryByText('premium.subscribe')).toBeNull();
+    });
+
+    it('shows Subscribe when the view can subscribe', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })))
+      );
+
+      renderModal();
+
+      expect(screen.getByText('premium.subscribe')).toBeTruthy();
+    });
+
+    it('lets a revoked subscription subscribe again and restore', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ status: 'revoked' as never, config: CONFIG_ON })))
+      );
+
+      renderModal();
+
+      expect(screen.getByText('premium.notice.revoked')).toBeTruthy();
+      expect(screen.getByText('premium.subscribe')).toBeTruthy();
+      expect(screen.getByText('premium.restore')).toBeTruthy();
+    });
+
+    it('shows Restore iff the view can restore', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })))
+      );
+      const { unmount } = renderModal();
+      expect(screen.getByText('premium.restore')).toBeTruthy();
+      unmount();
+
+      mockUsePremium.mockReturnValue(
+        premiumWith({ ...buildPremiumViewModel(input({ config: CONFIG_ON })), canRestore: false })
+      );
+      renderModal();
+      expect(screen.queryByText('premium.restore')).toBeNull();
+    });
+
+    it('calls subscribe when Subscribe is pressed', () => {
+      const premium = premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })));
+      mockUsePremium.mockReturnValue(premium);
+
+      renderModal();
+      fireEvent.click(screen.getByText('premium.subscribe'));
+
+      expect(premium.subscribe).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('hosted AI switch and consent', () => {
+    const activeView = buildPremiumViewModel(
+      input({
+        status: 'active' as never,
+        usage: { usedPct: 10, resetsAt: null, devices: { count: 1, max: 3 } } as never,
+      })
+    );
+
+    it('keeps the switch usable to turn AI off when the period has run out, never to turn it on', () => {
+      const exhausted = buildPremiumViewModel(
+        input({
+          status: 'exhausted' as never,
+          usage: { usedPct: 100, resetsAt: null, devices: { count: 1, max: 3 } } as never,
+        })
+      );
+
+      mockUsePremium.mockReturnValue(premiumWith(exhausted, { useHostedAi: true }));
+      const { unmount } = renderModal();
+      expect((screen.getByRole('switch') as HTMLInputElement).disabled).toBe(false);
+      unmount();
+
+      mockUsePremium.mockReturnValue(premiumWith(exhausted, { useHostedAi: false }));
+      renderModal();
+      expect((screen.getByRole('switch') as HTMLInputElement).disabled).toBe(true);
+    });
+
+    it('opens the consent dialog and does not enable AI until confirmed', async () => {
+      const premium = premiumWith(activeView, {
+        consentNeeded: jest.fn(() => true),
+      });
+      mockUsePremium.mockReturnValue(premium);
+
+      renderModal();
+      fireEvent.click(screen.getByRole('switch'));
+
+      expect(screen.getByText('premium.consent.title')).toBeTruthy();
+      expect(premium.setUseHostedAi).not.toHaveBeenCalled();
+      expect(premium.recordConsent).not.toHaveBeenCalled();
+    });
+
+    it('records consent and then enables AI when the consent is confirmed', async () => {
+      const calls: string[] = [];
+      const premium = premiumWith(activeView, {
+        consentNeeded: jest.fn(() => true),
+        recordConsent: jest.fn(async () => {
+          calls.push('consent');
+        }),
+        setUseHostedAi: jest.fn(async (on: boolean) => {
+          calls.push(`set:${on}`);
+        }),
+      });
+      mockUsePremium.mockReturnValue(premium);
+
+      renderModal();
+      fireEvent.click(screen.getByRole('switch'));
+      fireEvent.click(screen.getByText('premium.consent.confirm'));
+
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(calls).toEqual(['consent', 'set:true']);
+    });
+
+    it('enables AI directly when consent is already on record', () => {
+      const premium = premiumWith(activeView, { consentNeeded: jest.fn(() => false) });
+      mockUsePremium.mockReturnValue(premium);
+
+      renderModal();
+      fireEvent.click(screen.getByRole('switch'));
+
+      expect(premium.setUseHostedAi).toHaveBeenCalledWith(true);
+      expect(screen.queryByText('premium.consent.title')).toBeNull();
+    });
+  });
+
+  describe('disclosures and links', () => {
+    beforeEach(() => {
+      mockUsePremium.mockReturnValue(premiumWith(buildPremiumViewModel(input({ config: null }))));
+    });
+
+    it('shows the renewal, devices and platforms texts', () => {
+      renderModal();
+
+      expect(screen.getByText('premium.renewalDisclosure')).toBeTruthy();
+      expect(screen.getByText('premium.devicesNote')).toBeTruthy();
+      expect(screen.getByText('premium.platformsNote')).toBeTruthy();
+    });
+
+    it('opens the terms and privacy pages', () => {
+      renderModal();
+
+      fireEvent.click(screen.getByText('premium.terms'));
+      expect(openURL).toHaveBeenLastCalledWith(PREMIUM_TERMS_URL);
+
+      fireEvent.click(screen.getByText('premium.privacy'));
+      expect(openURL).toHaveBeenLastCalledWith(PREMIUM_PRIVACY_URL);
+    });
+  });
+
+  it('shows the loading text while the status is unknown', () => {
+    mockUsePremium.mockReturnValue(premiumWith(buildPremiumViewModel(input({ status: null }))));
+
+    renderModal();
+
+    expect(screen.getByText('premium.loading')).toBeTruthy();
+  });
+});

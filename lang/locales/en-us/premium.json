@@ -8,9 +8,7 @@
     "restore": "Restore purchases",
     "usage": {
       "used": "{{pct}}% of this period's allowance used",
-      "renews": "Renews {{date}}",
-      "nearLimit": "Close to this period's allowance.",
-      "full": "This period's allowance is fully used."
+      "renews": "Renews {{date}}"
     },
     "devices": "Using {{count}} of {{max}} devices",
     "useForAi": "Use Premium for my AI",
@@ -18,7 +16,7 @@
     "manage": "Manage subscription",
     "reset": "Reset Premium on this device",
     "resetTitle": "Reset Premium on this device?",
-    "resetBody": "This forgets this device's Premium enrolment and makes a new device key. Your subscription is not cancelled. Restore purchases adds this device back, and it uses one of your device slots.",
+    "resetBody": "This forgets this device's Premium enrollment and makes a new device key. Your subscription is not cancelled. Restore purchases adds this device back, and it uses one of your device slots.",
     "resetConfirm": "Reset",
     "consent": {
       "title": "Send AI requests to Premium?",
@@ -44,6 +42,7 @@
       "purchase_cancelled": "Purchase cancelled. Nothing was charged.",
       "purchase_failed": "The purchase did not go through. Try again, or check your store account.",
       "restore_nothing": "No active Premium subscription was found for this store account.",
+      "confirming": "Your purchase is still being confirmed. Try again in a minute.",
       "removed": "This device was removed from this subscription because newer devices were added. One subscription works on up to 3 of your devices. Restore purchases adds this device again.",
       "revoked": "Premium is no longer active for this subscription.",
       "exhausted": "This period's Premium AI allowance is used up. It renews on {{date}}. Musclog keeps working, and you can use your own key or the free tier.",

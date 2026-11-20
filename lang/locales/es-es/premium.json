@@ -8,9 +8,7 @@
     "restore": "Restaurar compras",
     "usage": {
       "used": "{{pct}} % de la cuota de este periodo utilizada",
-      "renews": "Se renueva el {{date}}",
-      "nearLimit": "Cerca de la cuota de este periodo.",
-      "full": "La cuota de este periodo está agotada."
+      "renews": "Se renueva el {{date}}"
     },
     "devices": "Usando {{count}} de {{max}} dispositivos",
     "useForAi": "Usar Premium para mi IA",
@@ -44,6 +42,7 @@
       "purchase_cancelled": "Compra cancelada. No se ha cobrado nada.",
       "purchase_failed": "La compra no se completó. Inténtalo de nuevo o revisa tu cuenta de la tienda.",
       "restore_nothing": "No se encontró ninguna suscripción activa de Premium para esta cuenta de la tienda.",
+      "confirming": "Tu compra aún se está confirmando. Inténtalo de nuevo en un minuto.",
       "removed": "Este dispositivo se ha eliminado de esta suscripción porque se han añadido dispositivos más recientes. Una suscripción funciona en hasta 3 de tus dispositivos. Restaurar compras vuelve a añadir este dispositivo.",
       "revoked": "Premium ya no está activo para esta suscripción.",
       "exhausted": "La cuota de IA Premium de este periodo se ha agotado. Se renueva el {{date}}. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",

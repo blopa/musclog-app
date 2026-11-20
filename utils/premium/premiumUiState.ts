@@ -16,6 +16,7 @@ export type PremiumNotice =
   | 'purchase_cancelled'
   | 'purchase_failed'
   | 'restore_nothing'
+  | 'confirming'
   | 'removed'
   | 'revoked'
   | 'exhausted'
@@ -54,7 +55,6 @@ export type PremiumViewInput = {
 const RESTORE_NOTHING_FAILURES: readonly PremiumActionFailure[] = [
   'restore_failed',
   'subscription_required',
-  'entitlement_unavailable',
 ];
 
 const ACTION_NOTICES: Partial<Record<PremiumActionFailure, PremiumNotice>> = {
@@ -103,6 +103,11 @@ function applySignal(phase: PremiumPhase, signal: HostedSignal | null): PremiumP
 function noticeOf(input: PremiumViewInput, phase: PremiumPhase): PremiumNotice | null {
   const { lastActionFailure: failure, config, configFailure, signal, usage } = input;
 
+  // The store has the purchase but RevenueCat has not caught up: not "nothing found".
+  if (failure === 'entitlement_unavailable') {
+    return 'confirming';
+  }
+
   if (failure && RESTORE_NOTHING_FAILURES.includes(failure)) {
     return 'restore_nothing';
   }
@@ -145,7 +150,11 @@ function noticeOf(input: PremiumViewInput, phase: PremiumPhase): PremiumNotice |
     return 'unavailable';
   }
 
-  if (phase === 'active' && usage && usage.usedPct >= PREMIUM_WARNING_PCT && usage.usedPct < 100) {
+  if (phase === 'active' && usage && usage.usedPct >= 100) {
+    return 'exhausted';
+  }
+
+  if (phase === 'active' && usage && usage.usedPct >= PREMIUM_WARNING_PCT) {
     return 'warning80';
   }
 
@@ -160,13 +169,14 @@ export function buildPremiumViewModel(input: PremiumViewInput): PremiumViewModel
   return {
     phase,
     notice: phase === 'loading' ? null : noticeOf(input, phase),
+    // A revoked subscription (refund, chargeback) is over: the person can subscribe again.
     canSubscribe:
-      phase === 'not_subscribed' &&
+      (phase === 'not_subscribed' || phase === 'revoked') &&
       config !== null &&
       config.enabled !== false &&
       config.acceptingNew === true &&
       !busy,
-    canRestore: (phase === 'not_subscribed' || phase === 'removed') && !busy,
+    canRestore: (phase === 'not_subscribed' || phase === 'removed' || phase === 'revoked') && !busy,
     showUsage: usage !== null && usable,
     usedPct: usage !== null && usable ? usage.usedPct : null,
     resetsAt: usage !== null && usable ? usage.resetsAt : null,

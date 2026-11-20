@@ -54,6 +54,7 @@ export function PremiumCard({ onPress }: PremiumCardProps) {
       icon={<Cloud />}
       title={t('premium.title')}
       subtitle={subtitle}
+      subtitleLines={2}
       onPress={onPress}
     />
   );

@@ -35,6 +35,7 @@ const ALL_NOTICES: PremiumNotice[] = [
   'purchase_cancelled',
   'purchase_failed',
   'restore_nothing',
+  'confirming',
   'removed',
   'revoked',
   'exhausted',

@@ -8,9 +8,7 @@
     "restore": "Satın alımları geri yükle",
     "usage": {
       "used": "Bu dönem kotasının %{{pct}} kullanıldı",
-      "renews": "{{date}} tarihinde yenilenir",
-      "nearLimit": "Bu dönem kotasına yaklaşıldı.",
-      "full": "Bu dönemin kotası tamamen kullanıldı."
+      "renews": "{{date}} tarihinde yenilenir"
     },
     "devices": "{{max}} cihazdan {{count}} tanesi kullanılıyor",
     "useForAi": "YZ’m için Premium’u kullan",
@@ -44,6 +42,7 @@
       "purchase_cancelled": "Satın alma iptal edildi. Hiçbir ücret alınmadı.",
       "purchase_failed": "Satın alma tamamlanamadı. Yeniden deneyin veya mağaza hesabınızı kontrol edin.",
       "restore_nothing": "Bu mağaza hesabı için etkin bir Premium aboneliği bulunamadı.",
+      "confirming": "Satın alımınız hâlâ onaylanıyor. Bir dakika sonra tekrar deneyin.",
       "removed": "Daha yeni cihazlar eklendiği için bu cihaz bu abonelikten kaldırıldı. Bir abonelik, cihazlarınızdan en fazla 3 tanesinde çalışır. Satın alımları geri yüklemek bu cihazı yeniden ekler.",
       "revoked": "Bu abonelik için Premium artık etkin değil.",
       "exhausted": "Bu dönemin Premium YZ kotası kullanıldı. {{date}} tarihinde yenilenir. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",

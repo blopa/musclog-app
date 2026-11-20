@@ -310,6 +310,10 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/cycle/PredictionDetailsSheet.tsx': { flow: 'cycle (prediction details)' },
   'components/cycle/ReminderExplainerSheet.tsx': { flow: 'cycle (reminder explainer)' },
   'components/modals/AINotConfiguredModal.tsx': { fixture: 'Open AI Not Configured Modal' },
+  'components/modals/PremiumModal.tsx': {
+    unaudited:
+      'hidden behind EXPO_PUBLIC_PREMIUM_UI (no build sets it until P7), so the audited web build never offers it; pinned by components/modals/__tests__/PremiumModal.dom.test.tsx, and a fixture button joins this table with the P7 build flag',
+  },
   'components/modals/AINutritionTrackingContextModal.tsx': {
     fixture: 'Open AI Nutrition Context Modal',
   },

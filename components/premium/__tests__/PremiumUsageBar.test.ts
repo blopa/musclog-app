@@ -46,8 +46,8 @@ describe('PremiumUsageBar source', () => {
     expect(source).not.toMatch(/shadow/i);
   });
 
-  it('says the warning and full states in text as well as colour', () => {
-    expect(source).toContain("t('premium.usage.nearLimit')");
-    expect(source).toContain("t('premium.usage.full')");
+  it('leaves the warning and full wording to the modal notice (no second message)', () => {
+    expect(source).not.toContain('premium.usage.nearLimit');
+    expect(source).not.toContain('premium.usage.full');
   });
 });

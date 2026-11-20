@@ -80,13 +80,13 @@ describe('canSubscribe', () => {
 });
 
 describe('canRestore', () => {
-  it('is offered when not subscribed or removed, and not while busy', () => {
+  it('is offered when not subscribed, removed or revoked, and not while busy', () => {
     expect(view({ status: 'not_enrolled' }).canRestore).toBe(true);
     expect(view({ status: 'removed' }).canRestore).toBe(true);
     expect(view({ status: 'no_key', busy: true }).canRestore).toBe(false);
     expect(view({ status: 'active' }).canRestore).toBe(false);
     expect(view({ status: 'exhausted' }).canRestore).toBe(false);
-    expect(view({ status: 'revoked' }).canRestore).toBe(false);
+    expect(view({ status: 'revoked' }).canRestore).toBe(true);
     expect(view({ status: null }).canRestore).toBe(false);
   });
 });
@@ -124,7 +124,11 @@ describe('notice', () => {
       { lastActionFailure: 'subscription_required' },
       'restore_nothing',
     ],
-    ['entitlement lag', { lastActionFailure: 'entitlement_unavailable' }, 'restore_nothing'],
+    [
+      'entitlement lag is still confirming',
+      { lastActionFailure: 'entitlement_unavailable' },
+      'confirming',
+    ],
     ['network is offline', { lastActionFailure: 'network' }, 'offline'],
     ['worker unavailable', { lastActionFailure: 'unavailable' }, 'unavailable'],
     ['not available here', { lastActionFailure: 'not_available' }, 'not_available'],
@@ -144,7 +148,7 @@ describe('notice', () => {
     [
       '100 percent is exhausted, not a warning',
       { status: 'active', usage: { ...USAGE, usedPct: 100 } },
-      null,
+      'exhausted',
     ],
     [
       'a purchase failure outranks removal',
@@ -170,5 +174,14 @@ describe('notice', () => {
 
   it.each(table)('%s', (_name, over, expected) => {
     expect(view({ ...over }).notice).toBe(expected);
+  });
+});
+
+describe('a revoked subscription can be bought again', () => {
+  it('offers Subscribe when the Worker accepts new subscribers, and still Restore', () => {
+    const v = view({ status: 'revoked' });
+
+    expect(v.canSubscribe).toBe(true);
+    expect(v.canRestore).toBe(true);
   });
 });

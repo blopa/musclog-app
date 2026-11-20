@@ -8,9 +8,7 @@
     "restore": "Aankopen herstellen",
     "usage": {
       "used": "{{pct}}% van het tegoed van deze periode gebruikt",
-      "renews": "Vernieuwt op {{date}}",
-      "nearLimit": "Bijna door het tegoed van deze periode heen.",
-      "full": "Het tegoed van deze periode is volledig op."
+      "renews": "Vernieuwt op {{date}}"
     },
     "devices": "{{count}} van {{max}} apparaten in gebruik",
     "useForAi": "Premium gebruiken voor mijn AI",
@@ -44,6 +42,7 @@
       "purchase_cancelled": "Aankoop geannuleerd. Er is niets in rekening gebracht.",
       "purchase_failed": "De aankoop is niet gelukt. Probeer het opnieuw of controleer je storeaccount.",
       "restore_nothing": "Er is geen actief Premium-abonnement gevonden voor dit storeaccount.",
+      "confirming": "Je aankoop wordt nog bevestigd. Probeer het over een minuut opnieuw.",
       "removed": "Dit apparaat is uit dit abonnement verwijderd omdat er nieuwere apparaten zijn toegevoegd. Eén abonnement werkt op maximaal 3 van je apparaten. Aankopen herstellen voegt dit apparaat weer toe.",
       "revoked": "Premium is niet langer actief voor dit abonnement.",
       "exhausted": "Het Premium-AI-tegoed van deze periode is op. Het wordt op {{date}} vernieuwd. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",

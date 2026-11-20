@@ -8,9 +8,7 @@
     "restore": "Restaurer les achats",
     "usage": {
       "used": "{{pct}} % du quota de cette période utilisé",
-      "renews": "Se renouvelle le {{date}}",
-      "nearLimit": "Proche du quota de cette période.",
-      "full": "Le quota de cette période est entièrement utilisé."
+      "renews": "Se renouvelle le {{date}}"
     },
     "devices": "{{count}} appareils sur {{max}} utilisés",
     "useForAi": "Utiliser Premium pour mon IA",
@@ -44,6 +42,7 @@
       "purchase_cancelled": "Achat annulé. Aucun montant n’a été débité.",
       "purchase_failed": "L'achat n'a pas abouti. Réessayez, ou vérifiez votre compte sur la boutique.",
       "restore_nothing": "Aucun abonnement Premium actif n'a été trouvé pour ce compte sur la boutique.",
+      "confirming": "Votre achat est encore en cours de confirmation. Réessayez dans une minute.",
       "removed": "Cet appareil a été retiré de cet abonnement parce que de nouveaux appareils ont été ajoutés. Un abonnement fonctionne sur jusqu'à 3 de vos appareils. Restaurer les achats rajoute cet appareil.",
       "revoked": "Premium n'est plus actif pour cet abonnement.",
       "exhausted": "Le quota d'IA Premium de cette période est épuisé. Il se renouvelle le {{date}}. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",

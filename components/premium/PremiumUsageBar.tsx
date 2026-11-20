@@ -87,18 +87,7 @@ export function PremiumUsageBar({ usedPct, resetsAt }: PremiumUsageBarProps) {
           style={{ width: `${fill}%`, backgroundColor: fillColor }}
         />
       </View>
-      {tone === 'warning' ? (
-        <Text
-          style={{ color: theme.colors.status.warning, fontSize: theme.typography.fontSize.sm }}
-        >
-          {t('premium.usage.nearLimit')}
-        </Text>
-      ) : null}
-      {tone === 'error' ? (
-        <Text style={{ color: theme.colors.status.error, fontSize: theme.typography.fontSize.sm }}>
-          {t('premium.usage.full')}
-        </Text>
-      ) : null}
+      {/* The warning and the full state are the modal's notice (one message, not two). */}
       {renews ? (
         <Text
           style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}

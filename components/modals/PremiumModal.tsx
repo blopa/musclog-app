@@ -29,6 +29,7 @@ export const PREMIUM_NOTICE_KEYS: Record<PremiumNotice, string> = {
   purchase_cancelled: 'premium.notice.purchase_cancelled',
   purchase_failed: 'premium.notice.purchase_failed',
   restore_nothing: 'premium.notice.restore_nothing',
+  confirming: 'premium.notice.confirming',
   removed: 'premium.notice.removed',
   revoked: 'premium.notice.revoked',
   exhausted: 'premium.notice.exhausted',
@@ -44,6 +45,7 @@ export const PREMIUM_NOTICE_TONE: Record<PremiumNotice, PremiumNoticeTone> = {
   purchase_cancelled: 'info',
   purchase_failed: 'error',
   restore_nothing: 'info',
+  confirming: 'info',
   removed: 'warning',
   revoked: 'warning',
   exhausted: 'warning',
@@ -227,7 +229,8 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
             label: t('premium.useForAi'),
             subtitle: t('premium.useForAiHint'),
             value: premium.useHostedAi,
-            disabled: !view.canUseHosted || busy,
+            // Switching it off stays possible when the period has run out; only switching on needs an active one.
+            disabled: !(view.canUseHosted || premium.useHostedAi) || busy,
             onValueChange: (on: boolean) => {
               handleToggle(on);
             },
@@ -267,6 +270,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           </View>
         );
       case 'not_subscribed':
+      case 'revoked':
         return renderNotSubscribed();
       case 'active':
       case 'exhausted':
