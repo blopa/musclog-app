@@ -202,7 +202,7 @@ it for each version (Apple requires it from the second version on).
 
 `app.json` gives the local-network permission a Musclog string (`ios.infoPlist.NSLocalNetworkUsageDescription`: it is for reaching an AI model on the user's own network). `expo-dev-client`'s config plugin keeps a description that already exists, and its release build phase deletes only one that still reads "Expo Dev Launcher" plus the `_expo._tcp` Bonjour service, so a release build keeps the Musclog string and drops the dev-launcher service (the committed `Info.plist` still lists `_expo._tcp` for debug builds). Pinned by `utils/__tests__/iosPrivacyConfig.test.ts`. Still worth one look at the production `.ipa` (`unzip -p <ipa> 'Payload/*.app/Info.plist'`) once a build exists.
 
-`app.json` also declares the shipped languages for iOS (`expo-localization` `supportedLocales.ios`, which writes `CFBundleLocalizations`), so the App Store's Languages row lists the five app languages instead of English alone, and declares no remote-push background mode (every notification is scheduled locally).
+`app.json` also declares the shipped languages for iOS (`expo-localization` `supportedLocales.ios`, which writes `CFBundleLocalizations`), so the App Store's Languages row lists every bundled app language (ten since the German, French, Italian, Polish and Turkish work; the store text still names the languages of the released app) instead of English alone, and declares no remote-push background mode (every notification is scheduled locally).
 
 ## Screenshots
 
