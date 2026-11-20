@@ -1,0 +1,117 @@
+# Checks for the Musclog Premium Worker and its infrastructure (docs/plans/musclog-premium.md,
+# section 5). Checks only: no job here applies, deploys or reads a secret. State is a local
+# encrypted file and every account call is made by hand with scripts/premium-deploy.sh.
+# utils/__tests__/premiumChecksWorkflow.test.ts pins these rules.
+name: Premium checks
+
+on:
+  pull_request:
+    paths:
+      - 'services/premium-worker/**'
+      - 'infra/premium/**'
+      - 'scripts/premium-deploy.sh'
+      - 'docs/PREMIUM_WORKER.md'
+      - '.github/workflows/premium-checks.yml'
+  push:
+    branches: [main, dev]
+    paths:
+      - 'services/premium-worker/**'
+      - 'infra/premium/**'
+      - 'scripts/premium-deploy.sh'
+      - 'docs/PREMIUM_WORKER.md'
+      - '.github/workflows/premium-checks.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: premium-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  worker:
+    name: Worker tests and types
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The exact version eas.json pins for the EAS builds.
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26.10.0'
+          cache: npm
+          cache-dependency-path: services/premium-worker/package-lock.json
+
+      - name: Install dependencies
+        run: npm --prefix services/premium-worker ci --no-audit --no-fund
+
+      - name: Test
+        run: npm --prefix services/premium-worker test
+
+      - name: Check types
+        run: npm --prefix services/premium-worker run typecheck
+
+  infra:
+    name: OpenTofu validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # infra/premium/versions.tf requires "~> 1.13".
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: '1.13.2'
+          tofu_wrapper: false
+
+      # No backend and no token: init only downloads the pinned provider.
+      - name: Init
+        run: tofu -chdir=infra/premium init -backend=false -input=false
+
+      - name: Format
+        run: tofu -chdir=infra/premium fmt -check -recursive
+
+      - name: Validate
+        run: tofu -chdir=infra/premium validate
+
+  script:
+    name: Script dry runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26.10.0'
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: '1.13.2'
+          tofu_wrapper: false
+
+      # shellcheck comes with the ubuntu-latest image.
+      - name: Shellcheck
+        run: shellcheck --severity=warning scripts/premium-deploy.sh
+
+      # An empty environment on purpose: a dry run needs no credential.
+      - name: Dry run, staging
+        run: scripts/premium-deploy.sh staging --dry-run
+
+      - name: Dry run, production
+        run: scripts/premium-deploy.sh production --dry-run

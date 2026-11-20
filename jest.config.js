@@ -4,14 +4,19 @@ const baseConfig = {
     // babel-jest too — `expo|@expo` alone only covers `expo/` and `@expo/`.
     // (`@sentry/react-native` is ESM as well, but it is stubbed by the manual
     // mock in `__mocks__/@sentry/` rather than transformed.)
-    'node_modules/(?!(lucide-react-native|@react-native|react-native|react-native-css-interop|react-native-web|nativewind|@nozbe|expo|expo-.*|@expo|ml-array-max|ml-array-min|is-any-array)/)',
+    'node_modules/(?!(lucide-react-native|@react-native|react-native|react-native-css-interop|react-native-web|nativewind|@nozbe|expo|expo-.*|@expo|ml-array-max|ml-array-min|is-any-array|@noble)/)',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  // spikes/ holds standalone feasibility packages with their own node_modules and test runners.
-  modulePathIgnorePatterns: ['<rootDir>/spikes/'],
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/spikes/'],
+  // spikes/ holds standalone feasibility packages, and services/premium-worker/ is the Premium
+  // Cloudflare Worker: both have their own node_modules and test runners (Vitest).
+  modulePathIgnorePatterns: ['<rootDir>/spikes/', '<rootDir>/services/premium-worker/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '<rootDir>/spikes/',
+    '<rootDir>/services/premium-worker/',
+  ],
   collectCoverageFrom: [
     'utils/**/*.ts',
     'hooks/**/*.ts',

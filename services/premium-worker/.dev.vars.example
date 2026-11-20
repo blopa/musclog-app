@@ -1,0 +1,4 @@
+# Copy to .dev.vars (git-ignored) for `wrangler dev --env local`. Never real keys.
+OPENROUTER_API_KEY=local-mock
+REVENUECAT_V2_SECRET_KEY=local-mock
+SESSION_HMAC_KEY=local-dev-hmac-key-change-me-0123456789

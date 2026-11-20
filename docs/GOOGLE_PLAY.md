@@ -113,3 +113,7 @@ positions against paywalled apps without naming them. Cycle copy never promises 
 Content rating, target audience, the Data safety form, category, countries and pricing stay in Play
 Console. The app collects anonymous crash reports (Sentry, on by default, user can turn them off) and sends
 food lookups and AI requests to the services the user picks; keep the Data safety form consistent with that.
+
+## The Premium identity harness build
+
+`eas build --profile premium-harness` (extends `production`, sets `EXPO_PUBLIC_PREMIUM_HARNESS=1`) makes the build that runs the RevenueCat sandbox matrix (`docs/PREMIUM_WORKER.md` → Running G2 and G9). Upload it to a Play **internal testing** track only: never to production, and never `release-android.sh upload --track production` or a `promote` of it. The app links `react-native-purchases` (the Play Billing library and the `BILLING` permission come with it), so the Data safety form must disclose the RevenueCat SDK before a production release that contains it.

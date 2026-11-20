@@ -271,3 +271,7 @@ Pricing and availability, the App Privacy ("nutrition label") answers, the expor
 release setting. (The category, age rating and review contact are reachable with `--with-settings`.) The app stores everything on the device and sends food lookups, crash reports (Sentry, can be turned
 off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards to
 Google Gemini; keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.
+
+## The Premium identity harness build
+
+`eas build --profile premium-harness` (extends `production`, sets `EXPO_PUBLIC_PREMIUM_HARNESS=1`) makes the build that runs the RevenueCat sandbox matrix (`docs/PREMIUM_WORKER.md` → Running G2 and G9). It goes to TestFlight only, never to App Review or a release. The app links `react-native-purchases` (it adds its own privacy manifest), so the App Privacy labels must disclose the RevenueCat SDK before a release that contains it; re-run the compliance guard then.

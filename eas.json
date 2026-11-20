@@ -57,6 +57,13 @@
         "buildType": "apk",
         "applicationArchivePath": "android/app/build/outputs/apk/release/app-release.apk"
       }
+    },
+    "premium-harness": {
+      "extends": "production",
+      "env": {
+        "EAS_BUILD_PLATFORM": "device",
+        "EXPO_PUBLIC_PREMIUM_HARNESS": "1"
+      }
     }
   },
   "submit": {

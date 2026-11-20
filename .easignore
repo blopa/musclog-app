@@ -138,6 +138,11 @@ promo-video
 # Standalone feasibility spikes (docs/plans/musclog-premium.md), never part of the app.
 spikes
 
+# The Premium Cloudflare Worker and its infrastructure (docs/PREMIUM_WORKER.md): a separate
+# package deployed with wrangler, never part of the app.
+services/premium-worker
+infra
+
 # Automated-test and development-only sources are not part of native bundles.
 **/__tests__
 __mocks__

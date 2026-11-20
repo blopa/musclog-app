@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars (git-ignored). Real ids stay out of the repository.
+# The API token is NOT set here: export CLOUDFLARE_API_TOKEN in the shell.
+account_id = "00000000000000000000000000000000"
+zone_id    = "00000000000000000000000000000000"
+# environment is passed by scripts/premium-deploy.sh (-var environment=...).
+# alert_email = "you@example.com"

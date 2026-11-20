@@ -8,7 +8,8 @@ config.resolver.assetExts = [...(config.resolver.assetExts ?? []), 'wasm'];
 
 // promo-video/ is a separate Remotion package with its own node_modules (React 18, three.js);
 // nothing in the app imports it, so keep Metro from crawling it. spikes/ holds standalone
-// feasibility experiments (docs/plans/musclog-premium.md) with their own node_modules.
+// feasibility experiments (docs/plans/musclog-premium.md) with their own node_modules, and
+// services/premium-worker/ is the Premium Cloudflare Worker (its own package, never imported).
 config.resolver.blockList = [
   ...[].concat(config.resolver.blockList ?? []),
   /^promo-video$/,
@@ -17,6 +18,9 @@ config.resolver.blockList = [
   ),
   /^spikes$/,
   new RegExp(`^${path.join(__dirname, 'spikes').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\\\/]`),
+  new RegExp(
+    `^${path.join(__dirname, 'services', 'premium-worker').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\\\/]`
+  ),
 ];
 
 // Sharp is a Node-only native module; stub it so Metro never tries to load it.

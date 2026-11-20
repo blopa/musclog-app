@@ -21,6 +21,7 @@ module.exports = defineConfig([
       'gameboy/**',
       'promo-video/**',
       'spikes/**',
+      'services/premium-worker/**',
       '.claude/**',
       '.agents/**',
       'training-data/.venv/**',

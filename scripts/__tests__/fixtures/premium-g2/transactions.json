@@ -1,0 +1,19 @@
+{
+  "_fake": true,
+  "items": [
+    {
+      "id": "tx_1",
+      "purchased_at": 1789000000000,
+      "expiration_date": 1789000300000,
+      "effective_expiration_date": 1789000300000,
+      "revenue_in_usd": { "gross": 4.99, "commission": 1.5, "tax": 0.5, "proceeds": 3.0 }
+    },
+    {
+      "id": "tx_2",
+      "purchased_at": 1789000300000,
+      "expiration_date": 1789000600000,
+      "revenue_in_usd": { "gross": 4.99, "commission": null, "tax": null, "proceeds": null }
+    }
+  ],
+  "next_page": null
+}

@@ -1,0 +1,8 @@
+{
+  "_fake": true,
+  "id": "mlg1_a",
+  "object": "customer",
+  "active_entitlements": {
+    "items": [{ "entitlement_id": "entl_fake", "expires_at": 1790000000000 }]
+  }
+}
