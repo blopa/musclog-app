@@ -1,50 +1,53 @@
-<b>Registra allenamenti e pasti in un'unica app: senza account, senza pubblicità e senza abbonamento.</b>
-Musclog è un diario di allenamento e un contacalorie gratuito e open source. Ti suggerisce il carico della prossima sessione in base all'ultima, scansiona i codici a barre e funziona offline. I tuoi dati restano sul telefono.
+<b>Registra allenamenti e pasti in un'unica app: senza account e senza pubblicità.</b>
+Musclog è un diario di allenamento e un contacalorie gratuito e open source. Suggerisce il carico della prossima sessione in base all'ultima, scansiona i codici a barre e funziona offline. I tuoi dati restano sul telefono.
 
 L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile) e russo.
 
 <b>Niente è bloccato</b>
 • Routine e programmi di allenamento illimitati, e tutta la tua cronologia.
-• Lo scanner di codici a barre, la scansione delle etichette nutrizionali e la ricerca degli alimenti sono nell'app per tutti.
-• Ogni grafico, esportazione e backup è incluso, senza abbonamento.
+• Scanner di codici a barre, scansione delle etichette e ricerca alimenti per tutti.
+• Ogni grafico, esportazione e backup è incluso e gratuito.
 
 <b>Diario di allenamento e tracker per la palestra</b>
-• Registra serie, ripetizioni e carichi in pochi secondi, con timer di recupero, serie di riscaldamento, superserie e note per ogni esercizio.
-• Il sovraccarico progressivo reso semplice: Musclog ti suggerisce il carico e le ripetizioni successivi in base all'ultima sessione e spiega ogni numero che modifica. Scegli doppia progressione, regole lineari o in percentuale, o mantieni il controllo.
+• Registra serie, ripetizioni e carichi in pochi secondi, con timer di recupero, serie di riscaldamento, superserie e note.
+• Sovraccarico progressivo semplice: Musclog suggerisce carico e ripetizioni successivi e spiega ogni numero che modifica. Scegli doppia progressione, regole lineari o in percentuale, o mantieni il controllo.
 • Monitora lo sforzo con l'RPE o le ripetizioni in riserva (RIR).
-• Più di 870 esercizi con foto e muscoli coinvolti, ricercabili nella tua lingua, oppure aggiungi i tuoi.
-• Schede già pronte: Push Pull Legs, Upper/Lower, Full Body, PHUL, split su 5 giorni e routine brevi da fare a casa o senza attrezzi. Oppure crea il tuo programma settimanale o a rotazione.
-• Calcolatore dei dischi per il bilanciere e i dischi della tua palestra, in kg o lb.
-• Sostituisci un esercizio quando una macchina è occupata o qualcosa fa male, e lascia che Musclog ricordi cosa evitare.
+• Più di 870 esercizi con foto e muscoli coinvolti, ricercabili nella tua lingua, o aggiungi i tuoi.
+• Schede già pronte: Push Pull Legs, Upper/Lower, Full Body, PHUL, split su 5 giorni e routine brevi da fare a casa o senza attrezzi. Oppure crea il tuo programma.
+• Calcolatore dei dischi per bilanciere e dischi della palestra, in kg o lb.
+• Sostituisci un esercizio se una macchina è occupata o qualcosa fa male: Musclog ricorda cosa evitare.
 • Importa la tua cronologia da Strong, Hevy o FitNotes.
 
 <b>Guarda crescere la tua forza</b>
 • Record personali, 1RM stimato e livelli di forza per i principali sollevamenti.
-• Carico di allenamento recente per muscolo su una mappa del corpo e una heatmap a calendario dei tuoi allenamenti.
-• Una revisione settimanale di allenamento e alimentazione, in cui scegli se progredire, ripetere la settimana o alleggerire.
+• Carico recente per muscolo su una mappa del corpo e una heatmap dei tuoi allenamenti.
+• Revisione settimanale di allenamento e alimentazione: scegli se progredire, ripetere la settimana o alleggerire.
 • Modalità ripartenza: un rientro più leggero dopo una pausa.
 
 <b>Contacalorie e tracker dei macronutrienti</b>
-• Diario alimentare con scanner di codici a barre e scansione delle etichette nutrizionali.
-• Cerca in Open Food Facts e nel database alimentare USDA, oppure crea i tuoi alimenti e pasti.
-• Obiettivi di calorie, proteine, carboidrati, grassi e fibre per dimagrire, mantenere il peso o aumentare la massa muscolare.
+• Diario alimentare con scanner di codici a barre e scansione delle etichette.
+• Cerca in Open Food Facts e nel database USDA, oppure crea i tuoi alimenti e pasti.
+• Obiettivi di calorie, proteine, carboidrati, grassi e fibre per dimagrire, mantenere il peso o mettere massa.
 • Obiettivi che si adattano al tuo reale andamento del peso, in kcal o kJ, metrico o imperiale.
 
 <b>Monitoraggio del corpo</b>
-• Peso, grasso corporeo, misure corporee e umore, con grafici.
-• Monitoraggio facoltativo del ciclo mestruale: registra mestruazioni e sintomi e osserva i tuoi schemi. Le previsioni sono stime e non ci sono consigli di allenamento basati sulle fasi.
-• Sincronizzazione con Health Connect per peso, alimentazione, allenamenti e misure corporee.
+• Peso, grasso corporeo, misure e umore, con grafici.
+• Monitoraggio facoltativo del ciclo: mestruazioni, sintomi e tuoi schemi. Le previsioni sono stime e non ci sono consigli di allenamento basati sulle fasi.
+• Health Connect: peso, alimentazione, allenamenti e misure corporee.
 
 <b>IA, solo se vuoi</b>
-• Chatta con un coach di fitness, stima un pasto da una foto e genera schede di allenamento con la tua chiave Gemini, OpenAI o Claude, un modello locale o l'opzione gratuita integrata nell'app.
+• Chatta con un coach di fitness, stima un pasto da foto e genera schede con la tua chiave Gemini, OpenAI o Claude, un modello locale o l'opzione gratuita nell'app.
 • Oppure crea una scheda o descrivi un pasto in ChatGPT o Claude e portalo in Musclog.
 • Scegli come ti parla il coach. Niente in Musclog richiede l'IA.
 
+<b>Musclog Premium (facoltativo)</b>
+Musclog Premium è un abbonamento mensile che risponde alle richieste di IA senza una tua chiave. Il pagamento viene addebitato sul tuo account dello store e si rinnova automaticamente ogni mese, a meno che non annulli nelle impostazioni del tuo account dello store almeno 24 ore prima del rinnovo. Tutto il resto di Musclog resta gratuito. Termini: https://musclog.app/en/terms
+
 <b>Privacy fin dall'origine</b>
-• Peso, grasso corporeo e diari alimentari sono cifrati sul tuo dispositivo.
-• Blocca l'intera app, oppure solo i dati di ciclo, allenamento, alimentazione o progressi, con la biometria o il codice del telefono.
-• Esporta o salva i tuoi dati, oppure trasferiscili su un altro telefono scansionando codici QR, senza cloud.
-• I report anonimi sugli arresti aiutano a correggere i bug e si disattivano.
+• Peso, grasso corporeo e diari alimentari sono cifrati sul dispositivo.
+• Blocca l'intera app o solo ciclo, allenamento, alimentazione o progressi, con biometria o codice del telefono.
+• Esporta o salva i dati, o trasferiscili su un altro telefono via QR, senza cloud.
+• Report anonimi sugli arresti per correggere i bug, disattivabili.
 • Widget per la schermata Home, diversi temi di colore, e English, Español, Nederlands, Português (Brasil) e Русский.
 
 Lift, Log, Repeat.

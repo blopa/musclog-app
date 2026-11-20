@@ -19,12 +19,12 @@
           {
             "topic": "Free version",
             "them": "Saves unlimited workouts, but is limited to 3 custom routines.",
-            "musclog": "There is no limit on routines, and nothing is locked behind a subscription."
+            "musclog": "There is no limit on routines, and every tracking feature is free."
           },
           {
             "topic": "Paid plan",
             "them": "Strong PRO removes the routine limit: $4.99 per month or $29.99 per year (U.S. App Store prices).",
-            "musclog": "Free and open source (GPL-3.0). There is no paid tier."
+            "musclog": "Free and open source (GPL-3.0). The only paid option is an optional monthly Premium subscription for hosted AI."
           }
         ],
         "import": "Musclog can import a Strong CSV export: Settings, Backups and data, Import workouts. It matches exercise names to its own catalogue and asks you about any it cannot match, and it shows a review before anything is saved. Importing the same file twice does not duplicate sessions, and an import can be undone.",

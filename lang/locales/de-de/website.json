@@ -589,7 +589,7 @@
         },
         "security": {
           "title": "Du behältst die Kontrolle",
-          "description": "Nur die Lebensmittelsuche, optionale KI und Absturzberichte nutzen das Internet, und du kannst jeden davon ausschalten."
+          "description": "Nur die Lebensmittelsuche, optionale KI, Premium-Abo-Prüfungen und Absturzberichte nutzen das Internet, und du kannst jeden davon ausschalten."
         }
       },
       "intro": "Diese Datenschutzerklärung beschreibt unsere Richtlinien und Verfahren zur Erhebung, Nutzung, Speicherung und Weitergabe deiner Informationen, wenn du Musclog verwendest. Sie gilt sowohl für die Musclog-App als auch für die Musclog-Website, auch wenn die Datenkategorien in beiden Fällen unterschiedlich sind. Diese Datenschutzerklärung erklärt außerdem deine Datenschutzrechte und wie das Gesetz dich schützt.",
@@ -648,7 +648,7 @@
             "items": [
               "Anonyme Absturzberichte, solange sie eingeschaltet sind (siehe „Anonyme Absturzberichte“ weiter unten).",
               "Lebensmittelsuchen und gescannte Barcodes, die an die Lebensmitteldatenbank gesendet werden, die du wählst (siehe „Lebensmitteldatenbanken“ weiter unten).",
-              "Anfragen, die du an eine optionale KI-Funktion sendest, gesendet an den Anbieter, den du wählst (siehe „Optionale KI-Funktionen“ weiter unten).",
+              "Anfragen, die du an eine optionale KI-Funktion sendest, gesendet an den Anbieter, den du wählst, den kostenlosen Musclog-KI-Zugang oder Musclog Premium (siehe „Optionale KI-Funktionen“ weiter unten).",
               "Daten, die du selbst exportierst, sicherst, teilst oder auf ein anderes Gerät überträgst.",
               "Nutzungsdaten aus Besuchen der Website (siehe „Website-Analyse“ weiter unten)."
             ]
@@ -672,10 +672,11 @@
           },
           "optionalAi": {
             "title": "Optionale KI-Funktionen",
-            "content1": "Die Musclog-App kann vollständig offline genutzt werden, außer für Lebensmittelsuchen, optionale KI-Funktionen und Absturzberichte. Musclog sendet deine Trainings-, Ernährungs-, Gesundheits- oder Profildaten nicht an unsere Server, außer wenn du den unten beschriebenen kostenlosen Musclog-KI-Zugang nutzt.",
-            "content2": "Musclog bietet optionale KI-Funktionen an. Sie bleiben ausgeschaltet, bis du einen Anbieter wählst: deinen eigenen OpenAI-, Anthropic-Claude- oder Google-Gemini-API-Schlüssel, ein Modell auf dem Gerät wie Apple Intelligence unter iOS, einen lokalen oder selbst gehosteten LLM-Endpunkt oder den kostenlosen Musclog-KI-Zugang.",
+            "content1": "Die Musclog-App kann vollständig offline genutzt werden, außer für Lebensmittelsuchen, optionale KI-Funktionen und Absturzberichte. Musclog sendet deine Trainings-, Ernährungs-, Gesundheits- oder Profildaten nicht an unsere Server, außer wenn du den unten beschriebenen kostenlosen Musclog-KI-Zugang oder Musclog Premium nutzt.",
+            "content2": "Musclog bietet optionale KI-Funktionen an. Sie bleiben ausgeschaltet, bis du einen Anbieter wählst: deinen eigenen OpenAI-, Anthropic-Claude- oder Google-Gemini-API-Schlüssel, ein Modell auf dem Gerät wie Apple Intelligence unter iOS, einen lokalen oder selbst gehosteten LLM-Endpunkt, den kostenlosen Musclog-KI-Zugang oder Musclog Premium, ein optionales monatliches Abo.",
             "content3": "Wenn du eine KI-Funktion nutzt, werden die Daten, die du absenden möchtest, an den Anbieter oder Endpunkt gesendet, den du konfigurierst. Wenn du ein selbst gehostetes lokales Modell unter eigener Kontrolle nutzt, können diese Daten in deiner eigenen Umgebung bleiben. Wenn du einen gehosteten Drittanbieter-Endpunkt nutzt, einschließlich eines gehosteten Dienstes für lokale Modelle, kann dieser Anbieter die Daten nach seinen eigenen Bedingungen und Datenschutzpraktiken verarbeiten. Musclog kontrolliert nicht, wie externe Anbieter die Daten verarbeiten, die du ihnen sendest.",
             "content4": "Wenn du den kostenlosen Musclog-KI-Zugang wählst, werden deine Anfragen über das Cloudflare AI Gateway gesendet, das für Musclog betrieben wird, und von Google Gemini mit einem von Musclog verwalteten API-Schlüssel beantwortet. Eine Anfrage enthält nur das, was du an die KI-Funktion sendest, etwa Chatnachrichten, Mahlzeitenfotos oder die Trainings-, Ernährungs- und Körperdaten, die diese Funktion braucht. Anfragen können für begrenzte Zeit in den Protokollen des Gateways gespeichert werden, um Fehler und Missbrauch zu überwachen, und werden von Cloudflare und Google nach deren eigenen Bedingungen verarbeitet.",
+            "contentPremium": "Wenn du Musclog Premium abonnierst, werden deine KI-Anfragen an den eigenen Dienst von Musclog gesendet, der auf Cloudflare Workers läuft, und von dort an OpenRouter, der sie nur an KI-Anbieter weitergibt, die auf null Datenspeicherung und kein Training mit deinen Daten eingestellt sind. Eine Anfrage enthält nur das, was du an die KI-Funktion sendest, etwa Chatnachrichten, Mahlzeitenfotos oder die Trainings-, Ernährungs- und Körperdaten, die diese Funktion braucht. Der Dienst von Musclog speichert weder den Inhalt deiner Anfragen noch die Antworten. Er behält nur eine Kennung, die aus einem Schlüssel auf deinem Gerät abgeleitet ist, Nutzungszähler und einen kurzen Fingerabdruck jeder Anfrage, damit eine wiederholte Anfrage nicht doppelt gezählt wird. RevenueCat erhält diese Kennung und deinen Kaufstatus im Store, um zu bestätigen, dass dein Abo aktiv ist. Musclog erhält weder deinen Namen noch deine E-Mail-Adresse oder Zahlungsdaten: Die Zahlung läuft über Apple oder Google. Premium ist vom kostenlosen Musclog-KI-Zugang getrennt und wird erst eingeschaltet, nachdem du dem in der App zugestimmt hast.",
             "content5": "Du solltest die Datenschutzerklärungen der von dir gewählten Anbieter prüfen, darunter:",
             "cloudflarePrivacyPolicy": "Datenschutzerklärung von Cloudflare",
             "openaiPrivacyPolicy": "Datenschutzerklärung von OpenAI",
@@ -710,7 +711,7 @@
           "title": "Nutzung deiner personenbezogenen Daten",
           "items": [
             "Um die Funktionen der App bereitzustellen, etwa Trainings-, Ernährungs- und Körpertracking, die auf deinem Gerät laufen.",
-            "Um die Lebensmittelsuchen und optionalen KI-Anfragen zu beantworten, die du stellst.",
+            "Um die Lebensmittelsuchen und optionalen KI-Anfragen zu beantworten, die du stellst, und um zu prüfen, ob dein Premium-Abo aktiv ist.",
             "Um Abstürze und Fehler zu finden und zu beheben, mithilfe anonymer Absturzberichte, solange sie eingeschaltet sind.",
             "Um zu verstehen, wie Besucher die Website nutzen, wie unter „Website-Analyse“ beschrieben.",
             "Um dir zu antworten, wenn du uns kontaktierst.",
@@ -721,7 +722,7 @@
           "title": "Weitergabe deiner personenbezogenen Daten",
           "items": [
             "An die Anbieter, die du wählst: Lebensmittelsuchen gehen an die Lebensmitteldatenbank, die du auswählst, und KI-Anfragen an den KI-Anbieter, den du konfigurierst.",
-            "An Dienstleister, die Teile des Dienstes für uns betreiben: Sentry (Absturzberichte), Cloudflare und Google (der kostenlose Musclog-KI-Zugang), GitHub und Cloudflare (Hosting der Website) sowie Google Analytics (die Website, nur nachdem du Analyse akzeptiert hast).",
+            "An Dienstleister, die Teile des Dienstes für uns betreiben: Sentry (Absturzberichte), Cloudflare und Google (der kostenlose Musclog-KI-Zugang), Cloudflare, OpenRouter und RevenueCat (Musclog Premium), GitHub und Cloudflare (Hosting der Website) sowie Google Analytics (die Website, nur nachdem du Analyse akzeptiert hast).",
             "Wenn es das Gesetz verlangt, wie unter „Offenlegung deiner personenbezogenen Daten“ beschrieben.",
             "Mit deiner Einwilligung, etwa wenn du Daten selbst exportierst oder teilst.",
             "Wir verkaufen deine Daten nicht und geben sie nicht an Werbetreibende oder Datenhändler weiter."
@@ -729,15 +730,15 @@
         },
         "retention": {
           "title": "Speicherdauer deiner personenbezogenen Daten",
-          "content": "Daten in der App bleiben auf deinem Gerät, bis du sie löschst oder die App deinstallierst. Anonyme Absturzberichte werden von Sentry für eine begrenzte Zeit gespeichert und danach gelöscht. Anfragen über den kostenlosen Musclog-KI-Zugang können für eine begrenzte Zeit in den Protokollen des Gateways gespeichert werden. Daten der Website-Analyse werden wie unter „Website-Analyse“ beschrieben aufbewahrt."
+          "content": "Daten in der App bleiben auf deinem Gerät, bis du sie löschst oder die App deinstallierst. Anonyme Absturzberichte werden von Sentry für eine begrenzte Zeit gespeichert und danach gelöscht. Anfragen über den kostenlosen Musclog-KI-Zugang können für eine begrenzte Zeit in den Protokollen des Gateways gespeichert werden. Der Dienst von Musclog Premium speichert die Geräte-Kennung, Nutzungszähler und Anfrage-Fingerabdrücke, die er für dein Abo braucht, und keine Nachrichten- oder Fotoinhalte. Daten der Website-Analyse werden wie unter „Website-Analyse“ beschrieben aufbewahrt."
         },
         "transfer": {
           "title": "Übermittlung deiner personenbezogenen Daten",
-          "content": "Absturzberichte, Lebensmittelsuchen, KI-Anfragen und Website-Analysen werden von den in dieser Datenschutzerklärung genannten Diensten verarbeitet, die außerhalb deines Landes liegen können, wo Datenschutzgesetze von denen deiner Rechtsordnung abweichen können. Musclog unternimmt angemessene Schritte, um sicherzustellen, dass diese Daten sicher und in Übereinstimmung mit dieser Datenschutzerklärung behandelt werden."
+          "content": "Absturzberichte, Lebensmittelsuchen, KI-Anfragen, Abo-Prüfungen und Website-Analysen werden von den in dieser Datenschutzerklärung genannten Diensten verarbeitet, die außerhalb deines Landes liegen können, wo Datenschutzgesetze von denen deiner Rechtsordnung abweichen können. Musclog unternimmt angemessene Schritte, um sicherzustellen, dass diese Daten sicher und in Übereinstimmung mit dieser Datenschutzerklärung behandelt werden."
         },
         "deletion": {
           "title": "Lösche deine personenbezogenen Daten",
-          "content": "Da deine Daten auf deinem Gerät gespeichert sind, kannst du sie jederzeit löschen: einzelne Einträge entfernen, alle Daten über die Datenverwaltung der App löschen oder die App deinstallieren. Musclog hat kein Konto, das gelöscht werden müsste. Wenn wir dir beim Löschen eines Absturzberichts oder anderer Daten helfen sollen, die dein Gerät verlassen haben, kontaktiere uns per E-Mail."
+          "content": "Da deine Daten auf deinem Gerät gespeichert sind, kannst du sie jederzeit löschen: einzelne Einträge entfernen, alle Daten über die Datenverwaltung der App löschen oder die App deinstallieren. Musclog hat kein Konto, das gelöscht werden müsste, und Musclog Premium braucht keins: „Premium zurücksetzen“ in der App vergisst die Premium-Anmeldung und den Geräteschlüssel dieses Geräts, kündigt aber dein Abo nicht; das verwaltest du in deinem Store-Konto. Wenn wir dir beim Löschen eines Absturzberichts oder anderer Daten helfen sollen, die dein Gerät verlassen haben, kontaktiere uns per E-Mail."
         },
         "disclosure": {
           "title": "Offenlegung deiner personenbezogenen Daten",
@@ -801,7 +802,7 @@
           "items": [
             "Alle Daten, die du in die App eingibst, werden lokal auf deinem Gerät gespeichert.",
             "Die App verlangt kein Konto und bietet keine Cloud-Synchronisierung.",
-            "Wir haben keinen Zugriff auf deine Trainings-, Ernährungs-, Gesundheits- oder Zyklusdaten, außer dem, was du über den kostenlosen Musclog-KI-Zugang sendest.",
+            "Wir haben keinen Zugriff auf deine Trainings-, Ernährungs-, Gesundheits- oder Zyklusdaten, außer dem, was du über den kostenlosen Musclog-KI-Zugang oder Musclog Premium sendest.",
             "Sensible Daten, die die App speichert, einschließlich Menstruationszyklusdaten, sind im Ruhezustand mit AES verschlüsselt."
           ]
         },
@@ -873,11 +874,17 @@
           "title": "Anerkennung",
           "content1": "Dies sind die Nutzungsbedingungen, die die Nutzung dieses Dienstes und die Vereinbarung zwischen dir und dem Unternehmen regeln. Mit dem Zugriff auf den Dienst oder seiner Nutzung stimmst du diesen Nutzungsbedingungen zu und bist an sie gebunden.",
           "content2": "Dein Zugriff auf den Dienst und seine Nutzung setzt außerdem voraus, dass du der Datenschutzerklärung des Unternehmens zustimmst und sie einhältst.",
-          "content3": "Musclog ist ein lokal gespeicherter, quelloffener Fitness-Tracker. Ein Konto ist nicht nötig. Deine Daten bleiben auf deinem Gerät und werden nie an unsere Server gesendet."
+          "content3": "Musclog ist ein lokal gespeicherter, quelloffener Fitness-Tracker. Ein Konto ist nicht nötig. Deine Daten bleiben auf deinem Gerät, und nur die KI-Funktionen, die du nutzt, senden, was sie brauchen, an den Anbieter, den du wählst."
         },
         "links": {
           "title": "Links zu anderen Websites",
           "content": "Unser Dienst kann Links zu Websites oder Diensten Dritter enthalten, die nicht dem Unternehmen gehören oder von ihm kontrolliert werden. Wir haben keine Kontrolle über die Inhalte, Datenschutzerklärungen oder Praktiken von Websites oder Diensten Dritter und übernehmen dafür keine Verantwortung."
+        },
+        "subscription": {
+          "title": "Musclog-Premium-Abo",
+          "content1": "Musclog Premium ist ein optionales monatliches Abo, das KI-Anfragen über den gehosteten Dienst von Musclog beantwortet, sodass du keinen eigenen Schlüssel brauchst. Alles andere in Musclog ist kostenlos, und der kostenlose Musclog-KI-Zugang und deine eigenen Schlüssel funktionieren ohne es weiter.",
+          "content2": "Das Abo wird von Apple oder Google verkauft und abgerechnet, nicht von uns. Der Preis wird vor dem Kauf in der App in deiner Währung angezeigt. Die Zahlung wird bei der Bestätigung deinem Store-Konto belastet, und das Abo verlängert sich jeden Monat automatisch, außer du kündigst mindestens 24 Stunden bevor der laufende Zeitraum endet. Du kannst es in deinen Store-Kontoeinstellungen verwalten oder kündigen; Erstattungen regelt der Store nach seinen eigenen Richtlinien.",
+          "content3": "Premium umfasst ein begrenztes Kontingent an KI-Anfragen, und die App zeigt, wie viel noch übrig ist. Ist es aufgebraucht, pausiert die gehostete KI bis zur Erneuerung, und deine eigenen Schlüssel und die kostenlose Option funktionieren weiter. Käufe wiederherstellen in der App schaltet Premium für ein Gerät wieder ein, das mit dem Store-Konto angemeldet ist, mit dem gekauft wurde."
         },
         "termination": {
           "title": "Kündigung",
@@ -1070,6 +1077,10 @@
             {
               "question": "Welche Einheiten unterstützt die App?",
               "answer": "Die Datenbank speichert immer metrische Werte (kg, cm, g, kcal). Du kannst jederzeit in den Einstellungen auf Imperial (lbs, Zoll, oz) umstellen — die App rechnet alle angezeigten Werte automatisch um. Körperfettanteil, BMI und FFMI sind einheitenlos und werden nie umgerechnet."
+            },
+            {
+              "question": "Hat Musclog ein Abo?",
+              "answer": "Musclog ist kostenlos. Protokollieren, Pläne, Verlauf, Diagramme, Import, Export und die kostenlosen KI-Optionen kosten nichts. Musclog Premium ist ein optionales monatliches Abo, das ein gehostetes KI-Kontingent hinzufügt, sodass du keinen eigenen Schlüssel brauchst. Für den Rest der App brauchst du es nie."
             }
           ]
         },

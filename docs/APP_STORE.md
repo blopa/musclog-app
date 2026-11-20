@@ -194,7 +194,7 @@ it for each version (Apple requires it from the second version on).
 `audit` (the vendored `metadata-audit.py`) has no suppression list, so these stay in its output; each was read and decided (2026-11-18):
 
 - **`BOTH-PLACEHOLDER` ("todo") in `es-ES` and `pt-BR`**: false positive, "todo" is the word for "all".
-- **`APPLE-3.1.2-MISLEADING-PRICING` in `en-US`**: false positive, triggered by "no subscription". Musclog has no subscription, purchase or paywall.
+- **`APPLE-3.1.2-MISLEADING-PRICING`**: the listing used to trigger it with "no subscription"; since 2026-11-20 the copy says everything except the optional hosted AI allowance is free and carries the 3.1.2(c) disclosures (monthly, auto-renewing, cancel in the store account, Terms link, no price). If the guard still reports it, fix the wording, do not add a known entry.
 - **`CHINA-AI-REFERENCES` (ChatGPT/Claude, all locales)**: kept on purpose. The line "build a plan or describe a meal in ChatGPT or Claude and bring it into Musclog" is the description of a shipped feature (`utils/aiWorkoutPlan/`, `utils/aiFoodLog/`). The rule only matters for the China mainland storefront: leave that territory out of the app's availability in App Store Connect, or neutralise that one bullet before adding it.
 - Text that describes a platform feature is written so it is true on both stores (app lock is "biometrics or passcode", not "fingerprint or PIN"; "Health Connect" becomes "Apple Health" in the converter). Do not reintroduce platform-specific wording in the Play text.
 
@@ -271,6 +271,8 @@ Pricing and availability, the App Privacy ("nutrition label") answers, the expor
 release setting. (The category, age rating and review contact are reachable with `--with-settings`.) The app stores everything on the device and sends food lookups, crash reports (Sentry, can be turned
 off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards to
 Google Gemini; keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.
+
+**Premium (decided 2026-11-20, nothing shipped yet):** `expo.ios.privacyManifests` now also declares Purchase History and Device ID (`rc_id`), both not linked, no tracking, App Functionality (pinned by `iosPrivacyConfig.test.ts`); answer the App Store Connect labels the same way, and RevenueCat's SDK manifest must be seen merged after `npm run prebuild:ios` on a Mac. The review note says: no account can be created in the app (a device-derived id, no email or name), so 5.1.1(v) does not apply, "Reset Premium" forgets the device key and enrollment, and the subscription is managed in the App Store; a Restore purchases button is in the Premium screen; the free tier and own-key AI need no purchase. The description carries the 3.1.2(c) text (monthly, auto-renewal, cancel at least 24 hours before renewal, Terms link) with no price: the price shown is the store's own string. The device-limit wording is an open decision (see the plan, section 16).
 
 ## The Premium identity harness build
 

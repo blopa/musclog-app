@@ -589,7 +589,7 @@
         },
         "security": {
           "title": "Kontrol sende",
-          "description": "Yalnızca besin araması, isteğe bağlı yapay zekâ ve çökme raporları internet kullanır; bunların her birini kapatabilirsin."
+          "description": "Yalnızca besin araması, isteğe bağlı yapay zekâ, Premium abonelik kontrolleri ve çökme raporları internet kullanır; bunların her birini kapatabilirsin."
         }
       },
       "intro": "Bu Gizlilik Politikası, Musclog'u kullandığında bilgilerinin toplanması, kullanılması, saklanması ve paylaşılması konusundaki politika ve prosedürlerimizi açıklar. Hem Musclog uygulamasını hem de Musclog web sitesini kapsar; ancak her bağlamda işlenen veri kategorileri farklıdır. Bu Gizlilik Politikası ayrıca gizlilik haklarını ve yasaların seni nasıl koruduğunu da açıklar.",
@@ -648,7 +648,7 @@
             "items": [
               "Açıkken anonim çökme raporları (aşağıdaki \"Anonim çökme raporları\" bölümüne bak).",
               "Besin aramaları ve taranan barkodlar, seçtiğin besin veritabanına gönderilir (aşağıdaki \"Besin veritabanları\" bölümüne bak).",
-              "İsteğe bağlı bir yapay zekâ özelliğine gönderdiğin istekler, seçtiğin sağlayıcıya gönderilir (aşağıdaki \"İsteğe bağlı yapay zekâ özellikleri\" bölümüne bak).",
+              "İsteğe bağlı bir yapay zekâ özelliğine gönderdiğin istekler, seçtiğin sağlayıcıya, ücretsiz Musclog yapay zekâ seçeneğine ya da Musclog Premium'a gönderilir (aşağıdaki \"İsteğe bağlı yapay zekâ özellikleri\" bölümüne bak).",
               "Kendin dışa aktardığın, yedeklediğin, paylaştığın veya başka bir cihaza taşıdığın veriler.",
               "Web sitesi ziyaretlerinden gelen kullanım verileri (aşağıdaki \"Web sitesi analitiği\" bölümüne bak)."
             ]
@@ -672,10 +672,11 @@
           },
           "optionalAi": {
             "title": "İsteğe bağlı yapay zekâ özellikleri",
-            "content1": "Musclog uygulaması, besin aramaları, isteğe bağlı yapay zekâ özellikleri ve çökme raporları dışında tamamen çevrimdışı kullanılabilir. Musclog, aşağıda anlatılan ücretsiz Musclog yapay zekâ seçeneğini kullandığın durumlar dışında antrenman, beslenme, sağlık veya profil verilerini sunucularına göndermez.",
-            "content2": "Musclog isteğe bağlı yapay zekâ özellikleri sunar. Bir sağlayıcı seçene kadar kapalı kalırlar: kendi OpenAI, Anthropic Claude veya Google Gemini API anahtarın, iOS'ta Apple Intelligence gibi cihaz üstü bir model, yerel veya kendi barındırdığın bir LLM uç noktası ya da ücretsiz Musclog yapay zekâ seçeneği.",
+            "content1": "Musclog uygulaması, besin aramaları, isteğe bağlı yapay zekâ özellikleri ve çökme raporları dışında tamamen çevrimdışı kullanılabilir. Musclog, aşağıda anlatılan ücretsiz Musclog yapay zekâ seçeneğini veya Musclog Premium'u kullandığın durumlar dışında antrenman, beslenme, sağlık veya profil verilerini sunucularına göndermez.",
+            "content2": "Musclog isteğe bağlı yapay zekâ özellikleri sunar. Bir sağlayıcı seçene kadar kapalı kalırlar: kendi OpenAI, Anthropic Claude veya Google Gemini API anahtarın, iOS'ta Apple Intelligence gibi cihaz üstü bir model, yerel veya kendi barındırdığın bir LLM uç noktası, ücretsiz Musclog yapay zekâ seçeneği ya da isteğe bağlı aylık bir abonelik olan Musclog Premium.",
             "content3": "Bir yapay zekâ özelliğini kullanmayı seçersen, göndermeye karar verdiğin veriler yapılandırdığın sağlayıcıya veya uç noktaya gönderilir. Tamamen kendi kontrolündeki kendi barındırdığın yerel bir modeli kullanırsan, bu veriler kendi ortamında kalabilir. Barındırılan bir üçüncü taraf uç noktası kullanırsan (barındırılan yerel model hizmetleri dahil), o sağlayıcı verileri kendi koşullarına ve gizlilik uygulamalarına göre işleyebilir. Musclog, dış sağlayıcıların kendilerine gönderdiğin verileri nasıl işlediğini kontrol etmez.",
             "content4": "Ücretsiz Musclog yapay zekâ seçeneğini seçersen, istekler Musclog için işletilen Cloudflare AI Gateway üzerinden gönderilir ve Musclog tarafından yönetilen bir API anahtarı kullanılarak Google Gemini tarafından yanıtlanır. Bir istek yalnızca yapay zekâ özelliğine gönderdiğin şeyleri içerir: sohbet mesajları, öğün fotoğrafları veya o özelliğin ihtiyaç duyduğu antrenman, beslenme ve vücut bilgileri. İstekler hata ve kötüye kullanımı izlemek için ağ geçidinin günlüklerinde sınırlı bir süre tutulabilir; Cloudflare ve Google tarafından kendi koşulları altında işlenir.",
+            "contentPremium": "Musclog Premium'a abone olursan, yapay zekâ isteklerin Cloudflare Workers üzerinde çalışan Musclog'un kendi hizmetine, oradan da OpenRouter'a gönderilir; OpenRouter bunları yalnızca veri saklamayı sıfır olarak ayarlanmış ve verilerin üzerinde eğitim yapmayan yapay zekâ sağlayıcılarına iletir. Bir istek yalnızca yapay zekâ özelliğine gönderdiğin şeyleri içerir: sohbet mesajları, öğün fotoğrafları veya o özelliğin ihtiyaç duyduğu antrenman, beslenme ve vücut bilgileri. Musclog'un hizmeti isteklerinin içeriğini ya da yanıtları saklamaz. Yalnızca cihazında bulunan bir anahtardan türetilmiş bir tanımlayıcıyı, kullanım sayaçlarını ve her isteğin kısa bir parmak izini tutar; böylece yeniden gönderilen bir istek iki kez sayılmaz. RevenueCat, aboneliğinin etkin olduğunu doğrulamak için bu tanımlayıcıyı ve mağaza satın alma durumunu alır. Musclog adını, e-posta adresini ya da ödeme bilgilerini almaz: ödemeyi Apple veya Google yönetir. Premium, ücretsiz Musclog yapay zekâ seçeneğinden ayrıdır ve yalnızca uygulamada bunu kabul ettikten sonra açılır.",
             "content5": "Seçtiğin sağlayıcıların gizlilik politikalarını incelemelisin, bunlar arasında:",
             "cloudflarePrivacyPolicy": "Cloudflare Gizlilik Politikası",
             "openaiPrivacyPolicy": "OpenAI Gizlilik Politikası",
@@ -710,7 +711,7 @@
           "title": "Kişisel verilerinin kullanımı",
           "items": [
             "Cihazında çalışan antrenman, beslenme ve vücut takibi gibi uygulama özelliklerini sunmak için.",
-            "Yaptığın besin aramalarına ve isteğe bağlı yapay zekâ isteklerine yanıt vermek için.",
+            "Yaptığın besin aramalarına ve isteğe bağlı yapay zekâ isteklerine yanıt vermek ve Premium aboneliğinin etkin olduğunu doğrulamak için.",
             "Çökmeleri ve hataları bulmak ve düzeltmek için; açıkken anonim çökme raporlarını kullanarak.",
             "\"Web sitesi analitiği\" bölümünde anlatıldığı gibi, ziyaretçilerin web sitesini nasıl kullandığını anlamak için.",
             "Bizimle iletişime geçtiğinde sana yanıt vermek için.",
@@ -721,7 +722,7 @@
           "title": "Kişisel verilerinin paylaşılması",
           "items": [
             "Seçtiğin sağlayıcılarla: besin aramaları seçtiğin besin veritabanına, yapay zekâ istekleri ise yapılandırdığın yapay zekâ sağlayıcısına gider.",
-            "Hizmetin bölümlerini bizim adımıza çalıştıran hizmet sağlayıcılarıyla: Sentry (çökme raporları), Cloudflare ve Google (ücretsiz Musclog yapay zekâ seçeneği), GitHub ve Cloudflare (web sitesini barındırma) ve Google Analytics (web sitesi; yalnızca analitiği kabul ettikten sonra).",
+            "Hizmetin bölümlerini bizim adımıza çalıştıran hizmet sağlayıcılarıyla: Sentry (çökme raporları), Cloudflare ve Google (ücretsiz Musclog yapay zekâ seçeneği), Cloudflare, OpenRouter ve RevenueCat (Musclog Premium), GitHub ve Cloudflare (web sitesini barındırma) ve Google Analytics (web sitesi; yalnızca analitiği kabul ettikten sonra).",
             "\"Kişisel verilerinin ifşası\" bölümünde anlatıldığı gibi yasa gerektirdiğinde.",
             "Örneğin verilerini kendin dışa aktarır ya da paylaşırsan, senin rızanla.",
             "Verilerini satmayız ve reklamcılarla ya da veri simsarlarıyla paylaşmayız."
@@ -729,15 +730,15 @@
         },
         "retention": {
           "title": "Kişisel verilerinin saklanması",
-          "content": "Uygulamadaki veriler, sen silene ya da uygulamayı kaldırana kadar cihazında kalır. Anonim çökme raporları Sentry tarafından sınırlı bir süre tutulur, sonra silinir. Ücretsiz Musclog yapay zekâ seçeneğiyle gönderilen istekler, ağ geçidinin günlüklerinde sınırlı bir süre tutulabilir. Web sitesi analitiği verileri \"Web sitesi analitiği\" bölümünde anlatıldığı gibi saklanır."
+          "content": "Uygulamadaki veriler, sen silene ya da uygulamayı kaldırana kadar cihazında kalır. Anonim çökme raporları Sentry tarafından sınırlı bir süre tutulur, sonra silinir. Ücretsiz Musclog yapay zekâ seçeneğiyle gönderilen istekler, ağ geçidinin günlüklerinde sınırlı bir süre tutulabilir. Musclog Premium hizmeti, aboneliğini çalıştırmak için gereken cihaz tanımlayıcısını, kullanım sayaçlarını ve istek parmak izlerini tutar; mesaj veya fotoğraf içeriğini tutmaz. Web sitesi analitiği verileri \"Web sitesi analitiği\" bölümünde anlatıldığı gibi saklanır."
         },
         "transfer": {
           "title": "Kişisel verilerinin aktarılması",
-          "content": "Çökme raporları, besin aramaları, yapay zekâ istekleri ve web sitesi analitiği, bu Gizlilik Politikasında adı geçen hizmetler tarafından işlenir; bu hizmetler ülkenin dışında bulunabilir ve veri koruma yasaları yargı alanınızdakinden farklı olabilir. Musclog, bu verilerin güvenli bir şekilde ve bu Gizlilik Politikasına uygun olarak işlenmesi için makul adımlar atar."
+          "content": "Çökme raporları, besin aramaları, yapay zekâ istekleri, abonelik kontrolleri ve web sitesi analitiği, bu Gizlilik Politikasında adı geçen hizmetler tarafından işlenir; bu hizmetler ülkenin dışında bulunabilir ve veri koruma yasaları yargı alanınızdakinden farklı olabilir. Musclog, bu verilerin güvenli bir şekilde ve bu Gizlilik Politikasına uygun olarak işlenmesi için makul adımlar atar."
         },
         "deletion": {
           "title": "Kişisel verilerini sil",
-          "content": "Verilerin cihazında saklandığı için, istediğin zaman silebilirsin: tek tek kayıtları silebilir, uygulamanın veri ayarlarından tüm verileri silebilir ya da uygulamayı kaldırabilirsin. Musclog'da silinecek bir hesap yoktur. Cihazından ayrılmış bir çökme raporunu veya başka bir veriyi silmemize yardımcı olmamızı istersen, e-postayla bize ulaş."
+          "content": "Verilerin cihazında saklandığı için, istediğin zaman silebilirsin: tek tek kayıtları silebilir, uygulamanın veri ayarlarından tüm verileri silebilir ya da uygulamayı kaldırabilirsin. Musclog'da silinecek bir hesap yoktur ve Musclog Premium'un da hesaba ihtiyacı yoktur: uygulamadaki „Premium’u sıfırla“ bu cihazın Premium kaydını ve cihaz anahtarını unutur, ancak aboneliğini iptal etmez; aboneliğini mağaza hesabından yönetirsin. Cihazından ayrılmış bir çökme raporunu veya başka bir veriyi silmemize yardımcı olmamızı istersen, e-postayla bize ulaş."
         },
         "disclosure": {
           "title": "Kişisel verilerinin ifşası",
@@ -801,7 +802,7 @@
           "items": [
             "Uygulamaya girdiğin tüm veriler cihazında yerel olarak saklanır.",
             "Uygulama hesap gerektirmez ve bulut senkronizasyonu sunmaz.",
-            "Antrenman, beslenme, sağlık veya döngü verilerine erişimimiz yoktur; ücretsiz Musclog yapay zekâ seçeneğiyle göndermeyi seçtiklerin hariç.",
+            "Antrenman, beslenme, sağlık veya döngü verilerine erişimimiz yoktur; ücretsiz Musclog yapay zekâ seçeneğiyle veya Musclog Premium ile göndermeyi seçtiklerin hariç.",
             "Adet döngüsü kayıtları dahil, uygulamanın sakladığı hassas veriler AES ile dinlenme halinde şifrelenir."
           ]
         },
@@ -873,11 +874,17 @@
           "title": "Kabul",
           "content1": "Bunlar, bu Hizmetin kullanımını yöneten ve sen ile Şirket arasında işleyen sözleşmenin Kullanım Koşullarıdır. Hizmete erişerek ya da onu kullanarak bu Kullanım Koşullarına bağlı olmayı kabul edersin.",
           "content2": "Hizmete erişimin ve kullanımın, Şirketin Gizlilik Politikasını kabul etmene ve ona uymana da bağlıdır.",
-          "content3": "Musclog, yerel öncelikli ve açık kaynaklı bir fitness takipçisidir. Hesap gerekmez. Verilerin cihazında kalır ve asla sunucularımıza gönderilmez."
+          "content3": "Musclog, yerel öncelikli ve açık kaynaklı bir fitness takipçisidir. Hesap gerekmez. Verilerin cihazında kalır; yalnızca kullanmayı seçtiğin yapay zekâ özellikleri, ihtiyaç duydukları şeyi seçtiğin sağlayıcıya gönderir."
         },
         "links": {
           "title": "Diğer web sitelerine bağlantılar",
           "content": "Hizmetimiz, Şirketin sahip olmadığı ya da kontrol etmediği üçüncü taraf web sitelerine veya hizmetlere bağlantılar içerebilir. Üçüncü taraf web sitelerinin veya hizmetlerinin içeriği, gizlilik politikaları veya uygulamaları üzerinde kontrolümüz yoktur ve bunlardan sorumluluk kabul etmeyiz."
+        },
+        "subscription": {
+          "title": "Musclog Premium Aboneliği",
+          "content1": "Musclog Premium, yapay zekâ isteklerini Musclog'un barındırılan hizmeti üzerinden yanıtlayan isteğe bağlı aylık bir aboneliktir; bu yüzden kendi anahtarına ihtiyacın olmaz. Musclog'un geri kalanı ücretsizdir; ücretsiz Musclog yapay zekâ seçeneği ve kendi anahtarların aboneliğe ihtiyaç duymadan çalışmaya devam eder.",
+          "content2": "Abonelik Apple veya Google tarafından satılır ve faturalandırılır, Biz tarafından değil. Fiyat, satın almadan önce uygulamada senin para biriminle gösterilir. Ödeme onaylandığında mağaza hesabından tahsil edilir ve abonelik, geçerli dönemin bitiminden en az 24 saat önce iptal etmediğin sürece her ay otomatik olarak yenilenir. Aboneliğini mağaza hesabı ayarlarından yönetebilir veya iptal edebilirsin; iadeler mağazanın kendi politikasına göre yapılır.",
+          "content3": "Premium, sınırlı bir yapay zekâ isteği hakkı içerir ve uygulama ne kadarının kaldığını gösterir. Bu hak tükendiğinde, barındırılan yapay zekâ yenilenene kadar duraklatılır; kendi anahtarların ve ücretsiz seçenek çalışmaya devam eder. Uygulamada satın alımları geri yüklemek, Premium'u satın almış mağaza hesabına giriş yapılmış bir cihazda yeniden açar."
         },
         "termination": {
           "title": "Fesih",
@@ -1070,6 +1077,10 @@
             {
               "question": "Uygulama hangi birim sistemlerini destekliyor?",
               "answer": "Veritabanı her zaman metrik değerleri (kg, cm, g, kcal) saklar. Ayarlar'dan istediğin zaman emperyal birimlere (lb, inç, oz) geçebilirsin — uygulama gösterilen tüm değerleri otomatik çevirir. Vücut yağ yüzdesi, BMI ve FFMI birimsizdir ve asla çevrilmez."
+            },
+            {
+              "question": "Musclog'un aboneliği var mı?",
+              "answer": "Musclog kullanımı ücretsizdir. Kayıt, planlar, geçmiş, grafikler, içe ve dışa aktarma ile ücretsiz yapay zekâ seçenekleri hiçbir ücrete tabi değildir. Musclog Premium, barındırılan yapay zekâ kotası ekleyen isteğe bağlı aylık bir aboneliktir; bu yüzden kendi anahtarına ihtiyacın olmaz. Uygulamanın geri kalanı için hiçbir zaman gerekmez."
             }
           ]
         },

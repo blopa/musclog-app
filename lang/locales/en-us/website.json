@@ -589,7 +589,7 @@
         },
         "security": {
           "title": "You Stay in Control",
-          "description": "Only food search, optional AI and crash reports use the internet, and you can turn off each of them."
+          "description": "Only food search, optional AI, Premium subscription checks and crash reports use the internet, and you can turn off each of them."
         }
       },
       "intro": "This Privacy Policy describes Our policies and procedures on the collection, use, storage and disclosure of Your information when You use Musclog. It applies both to the Musclog application and to the Musclog website, although the categories of data processed in each context are different. This Privacy Policy also explains Your privacy rights and how the law protects You.",
@@ -648,7 +648,7 @@
             "items": [
               "Anonymous crash reports, while they are turned on (see \"Anonymous Crash Reports\" below).",
               "Food searches and scanned barcodes, sent to the food database You choose (see \"Food Databases\" below).",
-              "Requests You send to an optional AI feature, sent to the provider You choose (see \"Optional AI Features\" below).",
+              "Requests You send to an optional AI feature, sent to the provider You choose, to the free Musclog AI option or to Musclog Premium (see \"Optional AI Features\" below).",
               "Data You export, back up, share or move to another device yourself.",
               "Usage Data from visits to the website (see \"Website Analytics\" below)."
             ]
@@ -672,10 +672,11 @@
           },
           "optionalAi": {
             "title": "Optional AI Features",
-            "content1": "The Musclog application can be used fully offline, except for food searches, optional AI features and crash reports. Musclog does not send Your workout, nutrition, health or profile data to Our servers, except when You use the free Musclog AI option described below.",
-            "content2": "Musclog offers optional AI features. They stay off until You choose a provider: Your own OpenAI, Anthropic Claude or Google Gemini API key, an on-device model such as Apple Intelligence on iOS, a local or self-hosted LLM endpoint, or the free Musclog AI option.",
+            "content1": "The Musclog application can be used fully offline, except for food searches, optional AI features and crash reports. Musclog does not send Your workout, nutrition, health or profile data to Our servers, except when You use the free Musclog AI option or Musclog Premium, described below.",
+            "content2": "Musclog offers optional AI features. They stay off until You choose a provider: Your own OpenAI, Anthropic Claude or Google Gemini API key, an on-device model such as Apple Intelligence on iOS, a local or self-hosted LLM endpoint, the free Musclog AI option, or Musclog Premium, an optional monthly subscription.",
             "content3": "If you choose to use an AI feature, the data that you decide to submit will be sent to the provider or endpoint you configure. If you use a self-hosted local model under your own control, that data may remain within your own environment. If you use a third-party hosted endpoint, including a hosted local-model service, that provider may process the data in accordance with its own terms and privacy practices. Musclog does not control how external providers process data you send to them.",
             "content4": "If You choose the free Musclog AI option, Your requests are sent through Cloudflare AI Gateway, operated for Musclog, and answered by Google Gemini using an API key managed by Musclog. A request contains only what You send to the AI feature, such as chat messages, meal photos, or the workout, nutrition and body details that feature needs. Requests may be kept in the gateway's logs for a limited time to monitor errors and abuse, and are processed by Cloudflare and Google under their own terms.",
+            "contentPremium": "If You subscribe to Musclog Premium, Your AI requests are sent to Musclog's own service, which runs on Cloudflare Workers, and from there to OpenRouter, which passes them only to AI providers set to zero data retention and no training on Your data. A request contains only what You send to the AI feature, such as chat messages, meal photos, or the workout, nutrition and body details that feature needs. Musclog's service does not store the content of Your requests or the replies. It keeps only an identifier derived from a key that exists on Your Device, usage counts, and a short fingerprint of each request so that a retried request is not counted twice. RevenueCat receives that identifier and Your store purchase status to confirm that Your subscription is active. Musclog does not receive Your name, email address or payment details: payment is handled by Apple or Google. Premium is separate from the free Musclog AI option and is turned on only after You agree to this in the application.",
             "content5": "You should review the privacy policies of the providers You choose, including:",
             "cloudflarePrivacyPolicy": "Cloudflare Privacy Policy",
             "openaiPrivacyPolicy": "OpenAI Privacy Policy",
@@ -710,7 +711,7 @@
           "title": "Use of Your Personal Data",
           "items": [
             "To provide the features of the application, such as workout, nutrition and body tracking, which run on Your Device.",
-            "To answer the food searches and optional AI requests that You make.",
+            "To answer the food searches and optional AI requests that You make, and to check that Your Premium subscription is active.",
             "To find and fix crashes and bugs, using anonymous crash reports while they are turned on.",
             "To understand how visitors use the website, as described in \"Website Analytics\".",
             "To respond to You when You contact Us.",
@@ -721,7 +722,7 @@
           "title": "Sharing Your Personal Data",
           "items": [
             "With the providers You choose: food searches go to the food database You select, and AI requests go to the AI provider You configure.",
-            "With Service Providers that run parts of the Service for Us: Sentry (crash reports), Cloudflare and Google (the free Musclog AI option), GitHub and Cloudflare (hosting the website), and Google Analytics (the website, only after You accept analytics).",
+            "With Service Providers that run parts of the Service for Us: Sentry (crash reports), Cloudflare and Google (the free Musclog AI option), Cloudflare, OpenRouter and RevenueCat (Musclog Premium), GitHub and Cloudflare (hosting the website), and Google Analytics (the website, only after You accept analytics).",
             "When required by law, as described in \"Disclosure of Your Personal Data\".",
             "With Your consent, for example when You export or share data yourself.",
             "We do not sell Your data or share it with advertisers or data brokers."
@@ -729,15 +730,15 @@
         },
         "retention": {
           "title": "Retention of Your Personal Data",
-          "content": "Data in the application stays on Your Device until You delete it or uninstall the application. Anonymous crash reports are kept by Sentry for a limited period and then deleted. Requests sent through the free Musclog AI option may be kept in the gateway's logs for a limited period. Website analytics data is kept as described in \"Website Analytics\"."
+          "content": "Data in the application stays on Your Device until You delete it or uninstall the application. Anonymous crash reports are kept by Sentry for a limited period and then deleted. Requests sent through the free Musclog AI option may be kept in the gateway's logs for a limited period. Musclog Premium's service keeps the device identifier, usage counts and request fingerprints it needs to run Your subscription, and keeps no message or photo content. Website analytics data is kept as described in \"Website Analytics\"."
         },
         "transfer": {
           "title": "Transfer of Your Personal Data",
-          "content": "Crash reports, food searches, AI requests and website analytics are processed by the services named in this Privacy Policy, which may be located outside Your country, where data protection laws may differ from those of Your jurisdiction. Musclog takes reasonable steps to ensure that this data is handled securely and in accordance with this Privacy Policy."
+          "content": "Crash reports, food searches, AI requests, subscription checks and website analytics are processed by the services named in this Privacy Policy, which may be located outside Your country, where data protection laws may differ from those of Your jurisdiction. Musclog takes reasonable steps to ensure that this data is handled securely and in accordance with this Privacy Policy."
         },
         "deletion": {
           "title": "Delete Your Personal Data",
-          "content": "Because Your data is stored on Your Device, You can delete it at any time: delete individual entries, delete all data from the application's data settings, or uninstall the application. Musclog has no account to delete. If You would like Us to help delete a crash report or other data that left Your Device, contact Us by email."
+          "content": "Because Your data is stored on Your Device, You can delete it at any time: delete individual entries, delete all data from the application's data settings, or uninstall the application. Musclog has no account to delete, and Musclog Premium needs none: \"Reset Premium\" in the application forgets this device's Premium enrollment and device key, but does not cancel Your subscription, which You manage in Your store account. If You would like Us to help delete a crash report or other data that left Your Device, contact Us by email."
         },
         "disclosure": {
           "title": "Disclosure of Your Personal Data",
@@ -801,7 +802,7 @@
           "items": [
             "All data you enter into the application is stored locally on your device.",
             "The application does not require an account and does not provide cloud synchronization.",
-            "We have no access to your workout, nutrition, health or cycle data, except what you choose to send through the free Musclog AI option.",
+            "We have no access to your workout, nutrition, health or cycle data, except what you choose to send through the free Musclog AI option or Musclog Premium.",
             "Sensitive data stored by the application, including menstrual cycle records, is encrypted at rest using AES."
           ]
         },
@@ -873,11 +874,17 @@
           "title": "Acknowledgment",
           "content1": "These are the Terms and Conditions governing the use of this Service and the agreement that operates between you and the Company. By accessing or using the Service you agree to be bound by these Terms and Conditions.",
           "content2": "Your access to and use of the Service is also conditioned on your acceptance of and compliance with the Privacy Policy of the Company.",
-          "content3": "Musclog is a local-first, open-source fitness tracker. No account is required. Your data stays on your device and is never sent to our servers."
+          "content3": "Musclog is a local-first, open-source fitness tracker. No account is required. Your data stays on your device, and only the AI features you choose to use send what they need to the provider you pick."
         },
         "links": {
           "title": "Links to Other Websites",
           "content": "Our Service may contain links to third-party websites or services that are not owned or controlled by the Company. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services."
+        },
+        "subscription": {
+          "title": "Musclog Premium Subscription",
+          "content1": "Musclog Premium is an optional monthly subscription that answers AI requests through Musclog's hosted service, so You do not need Your own key. Everything else in Musclog is free, and the free Musclog AI option and Your own keys keep working without it.",
+          "content2": "The subscription is sold and billed by Apple or Google, not by Us. The price is shown in the application, in Your currency, before You buy. Payment is charged to Your store account at confirmation, and the subscription renews automatically every month unless You cancel at least 24 hours before the current period ends. You can manage or cancel it in Your store account settings, and refunds are handled by the store under its own policy.",
+          "content3": "Premium includes a limited allowance of AI requests, and the application shows how much is left. When it is used up, hosted AI pauses until it renews, and Your own keys and the free option keep working. Restore purchases in the application turns Premium back on for a device signed in to the store account that bought it."
         },
         "termination": {
           "title": "Termination",
@@ -1070,6 +1077,10 @@
             {
               "question": "What units does the app support?",
               "answer": "The database always stores metric values (kg, cm, g, kcal). You can switch to imperial (lbs, inches, oz) in Settings at any time — the app converts all displayed values automatically. Body fat percentage, BMI, and FFMI are unitless and are never converted."
+            },
+            {
+              "question": "Does Musclog have a subscription?",
+              "answer": "Musclog is free to use. Logging, plans, history, charts, import, export and the free AI options cost nothing. Musclog Premium is an optional monthly subscription that adds a hosted AI allowance, so you do not need your own key. You never need it to use the rest of the app."
             }
           ]
         },

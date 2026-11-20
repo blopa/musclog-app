@@ -19,12 +19,12 @@
           {
             "topic": "Version gratuite",
             "them": "Enregistre un nombre illimité de séances, mais est limitée à 3 programmes personnalisés.",
-            "musclog": "Aucune limite sur les programmes, et rien n'est bloqué derrière un abonnement."
+            "musclog": "Aucune limite sur les programmes, et toutes les fonctions de suivi sont gratuites."
           },
           {
             "topic": "Offre payante",
             "them": "Strong PRO supprime la limite de programmes : 4,99 $ par mois ou 29,99 $ par an (prix de l'App Store américain).",
-            "musclog": "Gratuite et open source (GPL-3.0). Il n'y a pas d'offre payante."
+            "musclog": "Gratuite et open source (GPL-3.0). La seule option payante est un abonnement mensuel Premium facultatif pour l'IA hébergée."
           }
         ],
         "import": "Musclog peut importer un export CSV de Strong : Réglages, Sauvegardes et données, Importer des séances. Il associe les noms d'exercices à son propre catalogue, te demande pour ceux qu'il ne reconnaît pas, et affiche un examen avant tout enregistrement. Importer deux fois le même fichier ne duplique pas les séances, et un import peut être annulé.",

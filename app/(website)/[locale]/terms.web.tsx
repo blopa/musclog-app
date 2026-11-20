@@ -93,6 +93,22 @@ export default function Terms() {
       ),
     },
     {
+      title: t('sections.subscription.title'),
+      content: (
+        <>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content1')}
+          </p>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content2')}
+          </p>
+          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content3')}
+          </p>
+        </>
+      ),
+    },
+    {
       title: t('sections.termination.title'),
       content: (
         <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>

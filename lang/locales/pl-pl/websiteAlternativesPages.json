@@ -19,12 +19,12 @@
           {
             "topic": "Wersja darmowa",
             "them": "Zapisuje nieograniczoną liczbę treningów, ale jest ograniczona do 3 własnych rutyn.",
-            "musclog": "Nie ma limitu rutyn i nic nie jest zablokowane za subskrypcją."
+            "musclog": "Nie ma limitu rutyn, a każda funkcja śledzenia jest darmowa."
           },
           {
             "topic": "Plan płatny",
             "them": "Strong PRO usuwa limit rutyn: 4,99 USD miesięcznie lub 29,99 USD rocznie (ceny w amerykańskim App Store).",
-            "musclog": "Darmowy i open source (GPL-3.0). Nie ma poziomu płatnego."
+            "musclog": "Darmowy i open source (GPL-3.0). Jedyną płatną opcją jest opcjonalna miesięczna subskrypcja Premium dla hostowanej AI."
           }
         ],
         "import": "Musclog może zaimportować eksport CSV ze Stronga: Ustawienia, Kopie zapasowe i dane, Importuj treningi. Dopasowuje nazwy ćwiczeń do własnego katalogu i pyta o te, których nie może dopasować, a przed zapisaniem czegokolwiek pokazuje przegląd. Import tego samego pliku dwa razy nie duplikuje sesji, a import można cofnąć.",

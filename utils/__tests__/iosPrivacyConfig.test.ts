@@ -53,6 +53,19 @@ describe('iOS privacy configuration', () => {
     }
   });
 
+  it('declares the Premium data types: purchase history and the per-install device id', () => {
+    const types = expo.ios.privacyManifests.NSPrivacyCollectedDataTypes.map(
+      (type: { NSPrivacyCollectedDataType: string }) => type.NSPrivacyCollectedDataType
+    );
+
+    expect(types).toEqual(
+      expect.arrayContaining([
+        'NSPrivacyCollectedDataTypePurchaseHistory',
+        'NSPrivacyCollectedDataTypeDeviceID',
+      ])
+    );
+  });
+
   it('ships the generated manifest in the committed iOS project', () => {
     const xml = read(PRIVACY_INFO);
     for (const type of expo.ios.privacyManifests.NSPrivacyAccessedAPITypes) {

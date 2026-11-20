@@ -41,7 +41,7 @@ Musclog logs your lifts and your food in one app. Data lives on your device (sen
 Nothing is uploaded to a Musclog server. Some features contact third parties only when you use them:
 
 - Food search: Open Food Facts and USDA by default (the "All" source). USDA search needs an API key in the build (`EXPO_PUBLIC_USDA_API_KEY`); without one only Open Food Facts is used. You can pick a single source, the Musclog barcode database, or none in Settings → Basic settings.
-- AI coach and photo analysis: Google Gemini, OpenAI or Claude, using your own key, only if you enable it. There is also an opt-in Musclog free tier that forwards requests to Google Gemini; it asks for consent before it is turned on.
+- AI coach and photo analysis: Google Gemini, OpenAI or Claude, using your own key, only if you enable it. There is also an opt-in Musclog free tier that forwards requests to Google Gemini; it asks for consent before it is turned on. Musclog Premium, an optional monthly subscription for a hosted AI allowance (no key needed), is built but hidden behind the `EXPO_PUBLIC_PREMIUM_UI` build flag until its release; everything else in the app stays free.
 - Crash reports (Sentry): on by default and sent only if the build includes a Sentry DSN; you can turn them off under Settings → Backups and data ("Anonymous bug report"). A report holds the error and where it happened, the app version and the device model; no name, email, workouts, food or body data.
 
 ### Get involved

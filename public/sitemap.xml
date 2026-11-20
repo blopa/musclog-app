@@ -6186,6 +6186,9 @@
     <loc>https://musclog.app/en/blog/category/engineering</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/category/engineering/page/2</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/category/guides</loc>
   </url>
   <url>
@@ -6345,6 +6348,9 @@
     <loc>https://musclog.app/en/blog/tag/gbdk</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/github-pages</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/gym</loc>
   </url>
   <url>
@@ -6366,7 +6372,13 @@
     <loc>https://musclog.app/en/blog/tag/homebrew</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/hreflang</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/hypertrophy</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/i18n</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/import</loc>
@@ -6507,6 +6519,9 @@
     <loc>https://musclog.app/en/blog/tag/rpe</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/seo</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/sharp</loc>
   </url>
   <url>
@@ -6514,6 +6529,9 @@
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/startup</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/static-export</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/static-site</loc>
@@ -6568,6 +6586,9 @@
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/watermelondb</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/web</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/weight-trend</loc>
@@ -6691,6 +6712,9 @@
   </url>
   <url>
     <loc>https://musclog.app/en/blog/2026/11/how-to-track-gym-progress</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/2026/11/i-put-the-language-in-the-url-and-then-spent-two-days-on-the-urls-that-have-none</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/2026/11/i-stopped-after-a-summer-of-travel-so-musclog-can-ease-you-back-in</loc>

@@ -105,8 +105,8 @@ Play's metadata policy shapes the copy: never compare with or name another app (
 history from Strong, Hevy or FitNotes" line is the one exception), no "best"/"#1", no keyword lists, and no
 "free" in the title or short description. The short description must not reappear word for word in the
 full description. Comparisons belong on the website's `/alternatives` page. The "Nothing locked away"
-section (unlimited routines, the barcode scanner for everyone, no subscription) is how the listing
-positions against paywalled apps without naming them. Cycle copy never promises phase-based training advice.
+section (unlimited routines, the barcode scanner for everyone, every chart, export and backup free) is how the listing
+positions against paywalled apps without naming them. Since the Premium decisions of 2026-11-20 the listing never says "no subscription" or "no paywall": it says everything except the optional hosted AI allowance is free, adds a short "Musclog Premium (optional)" section (monthly, auto-renews until cancelled at least 24 hours before renewal in the store account, terms link, no price and no currency), and never names Google Play or Android in that section because the App Store text is generated from this file. Hold the Premium paragraph back from a published listing until the release that ships Premium (`play.sh up` is the maintainer's call). Data safety, when Premium ships: add purchase history and a device or other ID (`rc_id`) as collected and name RevenueCat, Cloudflare and OpenRouter as processors; the AI section names the Premium route and the free Gateway route separately. Cycle copy never promises phase-based training advice.
 
 ## What the API cannot do
 
