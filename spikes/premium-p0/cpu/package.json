@@ -1,0 +1,1 @@
+{"name":"musclog-spike-cpu","private":true,"version":"0.0.0","type":"module","devDependencies":{"@cloudflare/vitest-plugin":"^1.8.5","vitest":"^4.1.12","wrangler":"^4.165.0"}}

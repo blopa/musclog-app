@@ -135,6 +135,9 @@ gameboy
 # AGENTS.md -> promo-video.
 promo-video
 
+# Standalone feasibility spikes (docs/plans/musclog-premium.md), never part of the app.
+spikes
+
 # Automated-test and development-only sources are not part of native bundles.
 **/__tests__
 __mocks__

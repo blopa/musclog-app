@@ -9,6 +9,9 @@ const baseConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  // spikes/ holds standalone feasibility packages with their own node_modules and test runners.
+  modulePathIgnorePatterns: ['<rootDir>/spikes/'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/spikes/'],
   collectCoverageFrom: [
     'utils/**/*.ts',
     'hooks/**/*.ts',

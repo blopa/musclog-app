@@ -40,6 +40,7 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "gameboy",
+    "spikes",
     "training-data/.venv",
     "training-data/output",
     "utils/repCountingModel/*.js"
