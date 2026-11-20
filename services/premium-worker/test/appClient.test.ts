@@ -93,13 +93,13 @@ describe('app client against the Worker', () => {
     const grant = value(r);
     expect(grant.sessionToken).toMatch(/^v1\./);
     expect(Number.isFinite(grant.expiresAtMs)).toBe(true);
-    expect(grant.devices).toEqual({ count: 1, max: 3 });
+    expect(grant.devices).toEqual({ count: 1, max: 25 });
     expect(grant.usedPct).toBe(0);
     const usage = await hostedUsage(BASE, grant.sessionToken, net.fetch);
     expect(usage.ok).toBe(true);
     expect(parseUsage(usage.body)).toMatchObject({
       status: 'active',
-      devices: { count: 1, max: 3 },
+      devices: { count: 1, max: 25 },
     });
   });
 
@@ -173,7 +173,7 @@ describe('app client against the Worker', () => {
   });
 
   it('5. the fourth device evicts the least recently used; its session is unknown_device', async () => {
-    const h = harness();
+    const h = harness(3);
     const [d1, d2, d3, d4] = [device(), device(), device(), device()];
     const sub = h.rc.addSubscription(d1.rcId, { id: 'sub_main' });
     value(await enrollDevice(flows(h, honest(d1)).deps));
@@ -205,7 +205,7 @@ describe('app client against the Worker', () => {
         if (lateSleeps.length === 1) late.rc.addSubscription(dLate.rcId, { id: 'sub_late' });
       },
     });
-    expect(value(ok).devices).toEqual({ count: 1, max: 3 });
+    expect(value(ok).devices).toEqual({ count: 1, max: 25 });
     expect(lateSleeps).toEqual([2000]);
     expect(lateDeps.net.paths.filter((p) => p === '/v1/enroll')).toHaveLength(2);
 

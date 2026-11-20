@@ -34,7 +34,7 @@ describe('GET /v1/usage', () => {
       used_pct: Math.ceil((100 * row.spent_u) / row.early_cap_u),
       resets_at: new Date(NOW + 29 * DAY_MS).toISOString(),
       status: 'active',
-      devices: { count: 1, max: 3 },
+      devices: { count: 1, max: 25 },
     });
     expect(Object.keys(b).some((k) => k.endsWith('_u'))).toBe(false);
     expect(JSON.stringify(b)).not.toMatch(/_u"/);

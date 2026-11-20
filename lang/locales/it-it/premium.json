@@ -10,13 +10,13 @@
       "used": "{{pct}} % della quota di questo periodo utilizzata",
       "renews": "Si rinnova il {{date}}"
     },
-    "devices": "Usi {{count}} dispositivi su {{max}}",
+    "devices": "Condiviso da tutti i tuoi dispositivi",
     "useForAi": "Usa Premium per la mia IA",
     "useForAiHint": "Le richieste vanno al servizio Musclog Premium, che le inoltra a OpenRouter.",
     "manage": "Gestisci abbonamento",
     "reset": "Reimposta Premium su questo dispositivo",
     "resetTitle": "Reimpostare Premium su questo dispositivo?",
-    "resetBody": "Questo dimentica l'iscrizione a Premium di questo dispositivo e crea una nuova chiave del dispositivo. L'abbonamento non viene annullato. Ripristina acquisti riaggiunge questo dispositivo e occupa uno dei tuoi posti dispositivo.",
+    "resetBody": "Questo dimentica l'iscrizione a Premium di questo dispositivo e crea una nuova chiave del dispositivo. L'abbonamento non viene annullato. Ripristina acquisti riaggiunge questo dispositivo.",
     "resetConfirm": "Reimposta",
     "consent": {
       "title": "Inviare le richieste IA a Premium?",
@@ -25,14 +25,14 @@
       "cancel": "Non ora"
     },
     "renewalDisclosure": "Musclog Premium è un abbonamento mensile con rinnovo automatico. Il pagamento viene addebitato sul tuo account App Store o Google Play alla conferma. Si rinnova a meno che tu non lo annulli almeno 24 ore prima della fine del periodo in corso. Gestiscilo o annullalo nelle impostazioni del tuo account store. Il prezzo mostrato è quello addebitato dallo store.",
-    "devicesNote": "Un abbonamento funziona su un massimo di 3 dei tuoi dispositivi.",
+    "devicesNote": "Un unico abbonamento e un'unica quota, condivisi da tutti i tuoi dispositivi.",
     "platformsNote": "Gli abbonamenti iOS e Android sono separati.",
     "terms": "Termini d'uso",
     "privacy": "Informativa sulla privacy",
     "card": {
       "checking": "Verifica di Premium…",
       "notSubscribed": "IA ospitata, senza chiave da configurare",
-      "active": "{{pct}} % usato · {{count}} dispositivi su {{max}}",
+      "active": "{{pct}} % usato · condiviso da tutti i tuoi dispositivi",
       "exhausted": "Quota esaurita per questo periodo",
       "removed": "Rimosso da questo abbonamento",
       "revoked": "Premium non è attivo"
@@ -43,7 +43,7 @@
       "purchase_failed": "L'acquisto non è andato a buon fine. Riprova o controlla il tuo account store.",
       "restore_nothing": "Non è stato trovato alcun abbonamento Premium attivo per questo account store.",
       "confirming": "Il tuo acquisto è ancora in fase di conferma. Riprova tra un minuto.",
-      "removed": "Questo dispositivo è stato rimosso da questo abbonamento perché ne sono stati aggiunti altri più recenti. Un abbonamento funziona su un massimo di 3 dei tuoi dispositivi. Ripristina acquisti riaggiunge questo dispositivo.",
+      "removed": "Questo dispositivo è stato rimosso da questo abbonamento perché sono stati aggiunti molti dispositivi più recenti. Ripristina acquisti riaggiunge questo dispositivo.",
       "revoked": "Premium non è più attivo per questo abbonamento.",
       "exhausted": "La quota di IA Premium di questo periodo è esaurita. Si rinnova il {{date}}. Musclog continua a funzionare e puoi usare la tua chiave o il piano gratuito.",
       "exhaustedNoDate": "La quota di IA Premium di questo periodo è esaurita. Musclog continua a funzionare e puoi usare la tua chiave o il piano gratuito.",

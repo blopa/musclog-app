@@ -222,3 +222,17 @@ describe('the Worker refuses to serve on an invalid config (plan 13 row 6)', () 
     expect(body.error.code).toBe('hosted_disabled');
   });
 });
+
+describe('limits.max_devices', () => {
+  const withDevices = (n: number) => baseEnv(mutate((c) => (c.limits.max_devices = n)));
+
+  it('rejects 51 (above the safety ceiling) and 0', () => {
+    expect(rejected(withDevices(51)).join()).toContain('max_devices');
+    expect(rejected(withDevices(0)).join()).toContain('max_devices');
+  });
+
+  it('accepts 25 and 50', () => {
+    expect(parseConfig(withDevices(25)).ok).toBe(true);
+    expect(parseConfig(withDevices(50)).ok).toBe(true);
+  });
+});

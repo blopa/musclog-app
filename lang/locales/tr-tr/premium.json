@@ -10,13 +10,13 @@
       "used": "Bu dönem kotasının %{{pct}} kullanıldı",
       "renews": "{{date}} tarihinde yenilenir"
     },
-    "devices": "{{max}} cihazdan {{count}} tanesi kullanılıyor",
+    "devices": "Tüm cihazlarınızla paylaşılır",
     "useForAi": "YZ’m için Premium’u kullan",
     "useForAiHint": "İstekler Musclog Premium hizmetine gider ve oradan OpenRouter’a iletilir.",
     "manage": "Aboneliği yönet",
     "reset": "Bu cihazda Premium’u sıfırla",
     "resetTitle": "Bu cihazda Premium sıfırlansın mı?",
-    "resetBody": "Bu, bu cihazın Premium kaydını unutur ve yeni bir cihaz anahtarı oluşturur. Aboneliğiniz iptal edilmez. Satın alımları geri yüklemek bu cihazı yeniden ekler ve cihaz yuvalarınızdan birini kullanır.",
+    "resetBody": "Bu, bu cihazın Premium kaydını unutur ve yeni bir cihaz anahtarı oluşturur. Aboneliğiniz iptal edilmez. Satın alımları geri yüklemek bu cihazı yeniden ekler.",
     "resetConfirm": "Sıfırla",
     "consent": {
       "title": "YZ istekleri Premium’a gönderilsin mi?",
@@ -25,14 +25,14 @@
       "cancel": "Şimdi değil"
     },
     "renewalDisclosure": "Musclog Premium, otomatik yenilenen aylık bir aboneliktir. Ödeme, onaylandığında App Store veya Google Play hesabınızdan tahsil edilir. Mevcut dönemin bitiminden en az 24 saat önce iptal etmezseniz abonelik yenilenir. Aboneliği mağaza hesabı ayarlarınızdan yönetebilir veya iptal edebilirsiniz. Gösterilen fiyat, mağazanın tahsil ettiği fiyattır.",
-    "devicesNote": "Bir abonelik, cihazlarınızdan en fazla 3 tanesinde çalışır.",
+    "devicesNote": "Tek bir abonelik ve tek bir hak, tüm cihazlarınızla paylaşılır.",
     "platformsNote": "iOS ve Android abonelikleri ayrıdır.",
     "terms": "Kullanım koşulları",
     "privacy": "Gizlilik politikası",
     "card": {
       "checking": "Premium kontrol ediliyor…",
       "notSubscribed": "Kurulacak anahtar gerektirmeden barındırılan YZ",
-      "active": "%{{pct}} kullanıldı · {{max}} cihazdan {{count}} tanesi",
+      "active": "%{{pct}} kullanıldı · tüm cihazlarınızla paylaşılıyor",
       "exhausted": "Bu dönem için kota kullanıldı",
       "removed": "Bu aboneliden kaldırıldı",
       "revoked": "Premium etkin değil"
@@ -43,7 +43,7 @@
       "purchase_failed": "Satın alma tamamlanamadı. Yeniden deneyin veya mağaza hesabınızı kontrol edin.",
       "restore_nothing": "Bu mağaza hesabı için etkin bir Premium aboneliği bulunamadı.",
       "confirming": "Satın alımınız hâlâ onaylanıyor. Bir dakika sonra tekrar deneyin.",
-      "removed": "Daha yeni cihazlar eklendiği için bu cihaz bu abonelikten kaldırıldı. Bir abonelik, cihazlarınızdan en fazla 3 tanesinde çalışır. Satın alımları geri yüklemek bu cihazı yeniden ekler.",
+      "removed": "Daha birçok yeni cihaz eklendiği için bu cihaz bu abonelikten kaldırıldı. Satın alımları geri yüklemek bu cihazı yeniden ekler.",
       "revoked": "Bu abonelik için Premium artık etkin değil.",
       "exhausted": "Bu dönemin Premium YZ kotası kullanıldı. {{date}} tarihinde yenilenir. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
       "exhaustedNoDate": "Bu dönemin Premium YZ kotası kullanıldı. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",

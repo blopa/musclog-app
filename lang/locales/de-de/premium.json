@@ -10,13 +10,13 @@
       "used": "{{pct}} % des Kontingents für diesen Zeitraum verbraucht",
       "renews": "Verlängert sich am {{date}}"
     },
-    "devices": "{{count}} von {{max}} Geräten in Verwendung",
+    "devices": "Von allen deinen Geräten gemeinsam genutzt",
     "useForAi": "Premium für meine KI verwenden",
     "useForAiHint": "Anfragen gehen an den Musclog-Premium-Dienst, der sie an OpenRouter weiterleitet.",
     "manage": "Abo verwalten",
     "reset": "Premium auf diesem Gerät zurücksetzen",
     "resetTitle": "Premium auf diesem Gerät zurücksetzen?",
-    "resetBody": "Dies entfernt die Premium-Registrierung dieses Geräts und erstellt einen neuen Geräteschlüssel. Dein Abo wird nicht gekündigt. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt und belegt einen deiner Geräteplätze.",
+    "resetBody": "Dies entfernt die Premium-Registrierung dieses Geräts und erstellt einen neuen Geräteschlüssel. Dein Abo wird nicht gekündigt. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt.",
     "resetConfirm": "Zurücksetzen",
     "consent": {
       "title": "KI-Anfragen an Premium senden?",
@@ -25,14 +25,14 @@
       "cancel": "Nicht jetzt"
     },
     "renewalDisclosure": "Musclog Premium ist ein monatliches Abo mit automatischer Verlängerung. Die Zahlung wird bei der Bestätigung deinem App-Store- bzw. Google-Play-Konto belastet. Das Abo verlängert sich, sofern du es nicht mindestens 24 Stunden vor Ende des laufenden Zeitraums kündigst. Verwalte oder kündige es in den Kontoeinstellungen deines Stores. Der angezeigte Preis ist der Preis, den der Store berechnet.",
-    "devicesNote": "Ein Abo funktioniert auf bis zu 3 deiner Geräte.",
+    "devicesNote": "Ein Abo und ein Kontingent, gemeinsam genutzt von allen deinen Geräten.",
     "platformsNote": "iOS- und Android-Abos sind getrennt.",
     "terms": "Nutzungsbedingungen",
     "privacy": "Datenschutzerklärung",
     "card": {
       "checking": "Premium wird geprüft…",
       "notSubscribed": "KI ohne Schlüssel einrichten",
-      "active": "{{pct}} % verbraucht · {{count}} von {{max}} Geräten",
+      "active": "{{pct}} % verbraucht · von allen deinen Geräten gemeinsam genutzt",
       "exhausted": "Kontingent für diesen Zeitraum aufgebraucht",
       "removed": "Von diesem Abo entfernt",
       "revoked": "Premium ist nicht aktiv"
@@ -43,7 +43,7 @@
       "purchase_failed": "Der Kauf ist nicht abgeschlossen worden. Versuche es erneut oder prüfe dein Store-Konto.",
       "restore_nothing": "Für dieses Store-Konto wurde kein aktives Premium-Abo gefunden.",
       "confirming": "Dein Kauf wird noch bestätigt. Versuche es in einer Minute erneut.",
-      "removed": "Dieses Gerät wurde von diesem Abo entfernt, weil neuere Geräte hinzugefügt wurden. Ein Abo funktioniert auf bis zu 3 deiner Geräte. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt.",
+      "removed": "Dieses Gerät wurde von diesem Abo entfernt, weil viele neuere Geräte hinzugefügt wurden. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt.",
       "revoked": "Premium ist für dieses Abo nicht mehr aktiv.",
       "exhausted": "Das Premium-KI-Kontingent für diesen Zeitraum ist aufgebraucht. Es wird am {{date}} erneuert. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
       "exhaustedNoDate": "Das Premium-KI-Kontingent für diesen Zeitraum ist aufgebraucht. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",

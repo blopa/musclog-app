@@ -42,7 +42,7 @@ describe('session', () => {
     expect(res.status).toBe(200);
     const b = await json(res);
     expect(b.session_token).toMatch(/^v1\./);
-    expect(b.devices).toEqual({ count: 1, max: 3 });
+    expect(b.devices).toEqual({ count: 1, max: 25 });
     expect(b.period.used_pct).toBe(0);
     expect(total(h.rc)).toBe(0);
   });

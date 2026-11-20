@@ -87,7 +87,7 @@ const schema = z
         max_inflight: int.min(1).max(10),
         global_max_requests_per_day: int.min(1),
         max_subscribers: int.min(1),
-        max_devices: int.min(1).max(10),
+        max_devices: int.min(1).max(50),
         body_max_bytes: int.min(1).max(1048576),
         max_messages: int.min(1).max(256),
         max_tools: int.min(0).max(128),

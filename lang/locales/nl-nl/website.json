@@ -730,7 +730,7 @@
         },
         "retention": {
           "title": "Bewaring van uw Persoonsgegevens",
-          "content": "Gegevens in de applicatie blijven op Uw Apparaat totdat u ze verwijdert of de applicatie verwijdert. Anonieme crashrapporten worden door Sentry gedurende een beperkte periode bewaard en daarna verwijderd. Verzoeken die via de gratis Musclog AI-optie worden verzonden, kunnen gedurende een beperkte periode in de logboeken van de gateway worden bewaard. De dienst van Musclog Premium bewaart de apparaatidentificatie, gebruiksaantallen en verzoekvingerafdrukken die nodig zijn om uw abonnement uit te voeren, en bewaart geen berichten- of fotogegevens. Website-analysegegevens worden bewaard zoals beschreven onder \"Website-analyse\"."
+          "content": "Gegevens in de applicatie blijven op Uw Apparaat totdat u ze verwijdert of de applicatie verwijdert. Anonieme crashrapporten worden door Sentry gedurende een beperkte periode bewaard en daarna verwijderd. Verzoeken die via de gratis Musclog AI-optie worden verzonden, kunnen gedurende een beperkte periode in de logboeken van de gateway worden bewaard. De dienst van Musclog Premium bewaart de vingerafdruk van elk verzoek 7 dagen nadat erop is geantwoord, de gebruiksaantallen 60 dagen nadat de factureringsperiode waartoe ze behoren is afgelopen, en de apparaatidentificatie totdat U Ons vraagt die te verwijderen (zie \"Uw Persoonsgegevens verwijderen\" hieronder: neem per e-mail contact met Ons op). Er wordt geen berichten- of fotogegevens bewaard. Website-analysegegevens worden bewaard zoals beschreven onder \"Website-analyse\"."
         },
         "transfer": {
           "title": "Overdracht van uw Persoonsgegevens",

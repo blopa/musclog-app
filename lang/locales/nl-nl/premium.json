@@ -10,13 +10,13 @@
       "used": "{{pct}}% van het tegoed van deze periode gebruikt",
       "renews": "Vernieuwt op {{date}}"
     },
-    "devices": "{{count}} van {{max}} apparaten in gebruik",
+    "devices": "Gedeeld door al je apparaten",
     "useForAi": "Premium gebruiken voor mijn AI",
     "useForAiHint": "Verzoeken gaan naar de Musclog Premium-dienst, die ze doorstuurt naar OpenRouter.",
     "manage": "Abonnement beheren",
     "reset": "Premium op dit apparaat resetten",
     "resetTitle": "Premium op dit apparaat resetten?",
-    "resetBody": "Hiermee wordt de Premium-registratie van dit apparaat vergeten en wordt een nieuwe apparaatsleutel gemaakt. Je abonnement wordt niet opgezegd. Aankopen herstellen voegt dit apparaat weer toe en neemt een van je apparaatplekken in.",
+    "resetBody": "Hiermee wordt de Premium-registratie van dit apparaat vergeten en wordt een nieuwe apparaatsleutel gemaakt. Je abonnement wordt niet opgezegd. Aankopen herstellen voegt dit apparaat weer toe.",
     "resetConfirm": "Resetten",
     "consent": {
       "title": "AI-verzoeken naar Premium sturen?",
@@ -25,14 +25,14 @@
       "cancel": "Niet nu"
     },
     "renewalDisclosure": "Musclog Premium is een maandabonnement dat automatisch wordt verlengd. De betaling wordt bij bevestiging afgeschreven van je App Store- of Google Play-account. Het abonnement verlengt zich tenzij je het minstens 24 uur voor het einde van de huidige periode opzegt. Beheer of zeg het op in de accountinstellingen van je store. De getoonde prijs is wat de store in rekening brengt.",
-    "devicesNote": "Eén abonnement werkt op maximaal 3 van je apparaten.",
+    "devicesNote": "Eén abonnement en één tegoed, gedeeld door al je apparaten.",
     "platformsNote": "iOS- en Android-abonnementen staan los van elkaar.",
     "terms": "Gebruiksvoorwaarden",
     "privacy": "Privacybeleid",
     "card": {
       "checking": "Premium wordt gecontroleerd…",
       "notSubscribed": "AI die voor je draait, zonder sleutel om in te stellen",
-      "active": "{{pct}}% gebruikt · {{count}} van {{max}} apparaten",
+      "active": "{{pct}}% gebruikt · gedeeld door al je apparaten",
       "exhausted": "Tegoed voor deze periode op",
       "removed": "Verwijderd uit dit abonnement",
       "revoked": "Premium is niet actief"
@@ -43,7 +43,7 @@
       "purchase_failed": "De aankoop is niet gelukt. Probeer het opnieuw of controleer je storeaccount.",
       "restore_nothing": "Er is geen actief Premium-abonnement gevonden voor dit storeaccount.",
       "confirming": "Je aankoop wordt nog bevestigd. Probeer het over een minuut opnieuw.",
-      "removed": "Dit apparaat is uit dit abonnement verwijderd omdat er nieuwere apparaten zijn toegevoegd. Eén abonnement werkt op maximaal 3 van je apparaten. Aankopen herstellen voegt dit apparaat weer toe.",
+      "removed": "Dit apparaat is uit dit abonnement verwijderd omdat er veel nieuwere apparaten zijn toegevoegd. Aankopen herstellen voegt dit apparaat weer toe.",
       "revoked": "Premium is niet langer actief voor dit abonnement.",
       "exhausted": "Het Premium-AI-tegoed van deze periode is op. Het wordt op {{date}} vernieuwd. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
       "exhaustedNoDate": "Het Premium-AI-tegoed van deze periode is op. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",

@@ -730,7 +730,7 @@
         },
         "retention": {
           "title": "Speicherdauer deiner personenbezogenen Daten",
-          "content": "Daten in der App bleiben auf deinem Gerät, bis du sie löschst oder die App deinstallierst. Anonyme Absturzberichte werden von Sentry für eine begrenzte Zeit gespeichert und danach gelöscht. Anfragen über den kostenlosen Musclog-KI-Zugang können für eine begrenzte Zeit in den Protokollen des Gateways gespeichert werden. Der Dienst von Musclog Premium speichert die Geräte-Kennung, Nutzungszähler und Anfrage-Fingerabdrücke, die er für dein Abo braucht, und keine Nachrichten- oder Fotoinhalte. Daten der Website-Analyse werden wie unter „Website-Analyse“ beschrieben aufbewahrt."
+          "content": "Daten in der App bleiben auf deinem Gerät, bis du sie löschst oder die App deinstallierst. Anonyme Absturzberichte werden von Sentry für eine begrenzte Zeit gespeichert und danach gelöscht. Anfragen über den kostenlosen Musclog-KI-Zugang können für eine begrenzte Zeit in den Protokollen des Gateways gespeichert werden. Der Dienst von Musclog Premium speichert den Fingerabdruck jeder Anfrage 7 Tage nach deren Beantwortung, Nutzungszähler 60 Tage nach dem Ende des jeweiligen Abrechnungszeitraums und die Geräte-Kennung, bis du uns bittest, sie zu entfernen (siehe „Lösche deine personenbezogenen Daten“ weiter unten: kontaktiere uns per E-Mail). Er speichert keinen Nachrichten- oder Fotoinhalt. Daten der Website-Analyse werden wie unter „Website-Analyse“ beschrieben aufbewahrt."
         },
         "transfer": {
           "title": "Übermittlung deiner personenbezogenen Daten",

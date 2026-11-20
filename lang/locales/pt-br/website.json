@@ -730,7 +730,7 @@
         },
         "retention": {
           "title": "Retenção de seus Dados Pessoais",
-          "content": "Os dados no aplicativo permanecem no seu Dispositivo até que você os exclua ou desinstale o aplicativo. Os relatórios anônimos de falhas são mantidos pelo Sentry por um período limitado e depois excluídos. As solicitações enviadas pela opção gratuita Musclog AI podem ser mantidas nos logs do gateway por um período limitado. O serviço do Musclog Premium mantém o identificador do dispositivo, as contagens de uso e as impressões digitais de solicitações de que precisa para executar sua assinatura, e não mantém conteúdo de mensagens nem de fotos. Os dados de análise do site são mantidos conforme descrito em \"Análise do site\"."
+          "content": "Os dados no aplicativo permanecem no seu Dispositivo até que você os exclua ou desinstale o aplicativo. Os relatórios anônimos de falhas são mantidos pelo Sentry por um período limitado e depois excluídos. As solicitações enviadas pela opção gratuita Musclog AI podem ser mantidas nos logs do gateway por um período limitado. O serviço do Musclog Premium guarda a impressão digital de cada solicitação por 7 dias após a resposta, as contagens de uso por 60 dias após o fim do período de cobrança a que pertencem, e o identificador do dispositivo até que você nos peça para removê-lo (consulte \"Excluir seus Dados Pessoais\" abaixo: entre em contato por e-mail). Ele não guarda conteúdo de mensagens nem de fotos. Os dados de análise do site são mantidos conforme descrito em \"Análise do site\"."
         },
         "transfer": {
           "title": "Transferência de seus Dados Pessoais",

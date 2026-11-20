@@ -730,7 +730,7 @@
         },
         "retention": {
           "title": "Kişisel verilerinin saklanması",
-          "content": "Uygulamadaki veriler, sen silene ya da uygulamayı kaldırana kadar cihazında kalır. Anonim çökme raporları Sentry tarafından sınırlı bir süre tutulur, sonra silinir. Ücretsiz Musclog yapay zekâ seçeneğiyle gönderilen istekler, ağ geçidinin günlüklerinde sınırlı bir süre tutulabilir. Musclog Premium hizmeti, aboneliğini çalıştırmak için gereken cihaz tanımlayıcısını, kullanım sayaçlarını ve istek parmak izlerini tutar; mesaj veya fotoğraf içeriğini tutmaz. Web sitesi analitiği verileri \"Web sitesi analitiği\" bölümünde anlatıldığı gibi saklanır."
+          "content": "Uygulamadaki veriler, sen silene ya da uygulamayı kaldırana kadar cihazında kalır. Anonim çökme raporları Sentry tarafından sınırlı bir süre tutulur, sonra silinir. Ücretsiz Musclog yapay zekâ seçeneğiyle gönderilen istekler, ağ geçidinin günlüklerinde sınırlı bir süre tutulabilir. Musclog Premium hizmeti, her isteğin parmak izini yanıtlandıktan sonra 7 gün, kullanım sayaçlarını ait oldukları fatura döneminin bitiminden sonra 60 gün ve cihaz tanımlayıcısını bizden kaldırmamızı isteyene kadar tutar (aşağıdaki \"Kişisel verilerini sil\" bölümüne bak: bize e-posta ile ulaş). Mesaj veya fotoğraf içeriğini tutmaz. Web sitesi analitiği verileri \"Web sitesi analitiği\" bölümünde anlatıldığı gibi saklanır."
         },
         "transfer": {
           "title": "Kişisel verilerinin aktarılması",

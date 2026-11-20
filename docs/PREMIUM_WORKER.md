@@ -113,6 +113,27 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 The app's provider, errors, image resize and Premium UI exist but are invisible: they need a build made with `EXPO_PUBLIC_PREMIUM_UI=1`, which no EAS profile sets until P7. See the "Premium provider, errors and UI" bullet in `AGENTS.md`. A client request carries `Idempotency-Key` (one per logical request) and the Worker's `x-should-retry: false` answers are retried only by the app's own backoff.
 
+## Retention and removing a device identifier on request
+
+The Worker has no delete route (routes are challenge, config, enroll, session, usage, chat). What it keeps, and for how long (the nightly cron calls `prune` in `src/ledger.ts`):
+
+| Data                                                        | Kept                                                                                                                                                      |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Request fingerprints and their ledger rows (`reservations`) | 7 days after the request settled, was refunded or expired (`PRUNE_MS`)                                                                                    |
+| Usage counts per billing period (`periods`)                 | 60 days after the period ends (`PERIOD_PRUNE_MS`)                                                                                                         |
+| Device identifier and public key (`devices`)                | Until removed on request: **no cron deletes it** (a 26th enroll evicts the least recently used device of a subscription, as `revoked`, but keeps its row) |
+| Message or photo content                                    | Never stored                                                                                                                                              |
+
+**The privacy page promises "contact Us by email and We remove the identifier".** That is this manual operation (maintainer only, an authenticated Cloudflare call, so never from an agent): the person sends the identifier shown by the app's Premium screen (`rc_id`); then
+
+```bash
+cd services/premium-worker
+npx wrangler d1 execute musclog-premium-db --remote --env production \
+  --command "DELETE FROM devices WHERE rc_id = '<rc_id>'"
+```
+
+Reservations and periods carry no `rc_id` (they are keyed by the payment key), so nothing else names the device; they leave on the schedule above. Deleting the row also signs that install out (its next session call answers `unknown_device`, the app shows the removed state and never re-enrolls silently). Answer the email within a month and keep no copy of the identifier afterwards. An authenticated delete-device endpoint stays an open design (plan section 16).
+
 ## Rollback
 
 - Code: `cd services/premium-worker && npx wrangler rollback --env <env>`.

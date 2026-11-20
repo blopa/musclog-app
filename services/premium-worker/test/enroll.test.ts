@@ -22,8 +22,8 @@ const code = async (r: Response) => ((await json(r)).error as Json).code as stri
 const calls = (rc: { calls: Record<string, number> }) =>
   Object.values(rc.calls).reduce((a, b) => a + b, 0);
 
-function setup() {
-  const h = harness();
+function setup(maxDevices?: number) {
+  const h = harness(maxDevices);
   const d = newDevice();
   const sub = h.rc.addSubscription(d.rcId, { id: 'sub_main' });
   return { h, d, sub };
@@ -44,7 +44,7 @@ describe('enroll', () => {
     expect(b.session_token).toMatch(/^v1\./);
     expect(b.expires_at).toBe(new Date(h.deps.now() + 3_600_000).toISOString());
     expect(b.period).toEqual({ used_pct: 0, resets_at: new Date(NOW + 29 * DAY_MS).toISOString() });
-    expect(b.devices).toEqual({ count: 1, max: 3 });
+    expect(b.devices).toEqual({ count: 1, max: 25 });
     expect(JSON.stringify(b)).not.toMatch(/_u"/);
     const p = await env.DB.prepare('SELECT COUNT(*) AS n FROM periods').first<{ n: number }>();
     expect(p!.n).toBe(1);
@@ -240,14 +240,14 @@ describe('enroll', () => {
     });
   });
 
-  describe('multi-device LRU (MAX_DEVICES 3)', () => {
+  describe('multi-device LRU (max_devices 3)', () => {
     async function enrollOn(h: ReturnType<typeof harness>, subId: string, d: TestDevice) {
       h.rc.moveSubscription(subId, d.rcId);
       return h.enroll(d);
     }
 
     it('the 4th enrollment revokes the least recently used; a recent session survives', async () => {
-      const { h, d, sub } = setup();
+      const { h, d, sub } = setup(3);
       const [d2, d3, d4] = [newDevice(), newDevice(), newDevice()] as [
         TestDevice,
         TestDevice,
@@ -284,7 +284,7 @@ describe('enroll', () => {
     });
 
     it('a revoked device can enroll again and evicts the next least recently used', async () => {
-      const { h, d, sub } = setup();
+      const { h, d, sub } = setup(3);
       const others = [newDevice(), newDevice(), newDevice()];
       await h.enroll(d);
       for (const o of others) await enrollOn(h, sub.id, o); // evicts d

@@ -7,7 +7,7 @@ import { createExecutionContext, env } from 'cloudflare:test';
 
 import { createApp } from '../../src/app';
 import { b64url } from '../../src/identity/token';
-import { testDeps, type TestDeps } from './ctx';
+import { testConfig, testDeps, type TestDeps } from './ctx';
 import { fakeRevenueCat, type FakeRevenueCat } from './revenuecat';
 
 export const SIGNING_DOMAIN = 'musclog-premium-v1';
@@ -73,17 +73,25 @@ export interface Harness {
   usage(token: string, over?: Record<string, unknown>): Promise<Response>;
 }
 
-export function harness(): Harness {
+/**
+ * `maxDevices` pins the device cap for this harness (the test config's own cap is a safety
+ * ceiling, so eviction tests ask for a small one explicitly).
+ */
+export function harness(maxDevices?: number): Harness {
   const rc = fakeRevenueCat();
   const deps = testDeps({ revenuecat: rc });
   const app = createApp(() => deps);
+  const base: Record<string, unknown> =
+    maxDevices === undefined
+      ? {}
+      : { AI_CONFIG_JSON: JSON.stringify(testConfig({ limits: { max_devices: maxDevices } })) };
   const h: Harness = {
     rc,
     deps,
     call: (path, init, over) =>
       app.fetch!(
         new Request('https://worker.test' + path, init) as never,
-        { ...env, ...over } as never,
+        { ...env, ...base, ...over } as never,
         createExecutionContext()
       ) as Promise<Response>,
     async nonce(over) {

@@ -10,13 +10,13 @@
       "used": "{{pct}} % de la cuota de este periodo utilizada",
       "renews": "Se renueva el {{date}}"
     },
-    "devices": "Usando {{count}} de {{max}} dispositivos",
+    "devices": "Compartido por todos tus dispositivos",
     "useForAi": "Usar Premium para mi IA",
     "useForAiHint": "Las solicitudes se envían al servicio Musclog Premium, que las reenvía a OpenRouter.",
     "manage": "Gestionar suscripción",
     "reset": "Restablecer Premium en este dispositivo",
     "resetTitle": "¿Restablecer Premium en este dispositivo?",
-    "resetBody": "Esto olvida la inscripción de Premium de este dispositivo y crea una clave nueva. Tu suscripción no se cancela. Restaurar compras vuelve a añadir este dispositivo y ocupa una de tus plazas de dispositivo.",
+    "resetBody": "Esto olvida la inscripción de Premium de este dispositivo y crea una clave nueva. Tu suscripción no se cancela. Restaurar compras vuelve a añadir este dispositivo.",
     "resetConfirm": "Restablecer",
     "consent": {
       "title": "¿Enviar las solicitudes de IA a Premium?",
@@ -25,14 +25,14 @@
       "cancel": "Ahora no"
     },
     "renewalDisclosure": "Musclog Premium es una suscripción mensual que se renueva automáticamente. El pago se carga a tu cuenta de App Store o Google Play al confirmar la compra. Se renueva salvo que la canceles al menos 24 horas antes de que termine el periodo actual. Gestiónala o cancélala en los ajustes de tu cuenta de la tienda. El precio mostrado es el que cobra la tienda.",
-    "devicesNote": "Una suscripción funciona en hasta 3 de tus dispositivos.",
+    "devicesNote": "Una suscripción y una sola cuota, compartidas por todos tus dispositivos.",
     "platformsNote": "Las suscripciones de iOS y Android son independientes.",
     "terms": "Condiciones de uso",
     "privacy": "Política de privacidad",
     "card": {
       "checking": "Comprobando Premium…",
       "notSubscribed": "IA alojada sin clave que configurar",
-      "active": "{{pct}} % usado · {{count}} de {{max}} dispositivos",
+      "active": "{{pct}} % usado · compartido por todos tus dispositivos",
       "exhausted": "Cuota agotada para este periodo",
       "removed": "Eliminado de esta suscripción",
       "revoked": "Premium no está activo"
@@ -43,7 +43,7 @@
       "purchase_failed": "La compra no se completó. Inténtalo de nuevo o revisa tu cuenta de la tienda.",
       "restore_nothing": "No se encontró ninguna suscripción activa de Premium para esta cuenta de la tienda.",
       "confirming": "Tu compra aún se está confirmando. Inténtalo de nuevo en un minuto.",
-      "removed": "Este dispositivo se ha eliminado de esta suscripción porque se han añadido dispositivos más recientes. Una suscripción funciona en hasta 3 de tus dispositivos. Restaurar compras vuelve a añadir este dispositivo.",
+      "removed": "Este dispositivo se ha eliminado de esta suscripción porque se han añadido muchos dispositivos más recientes. Restaurar compras vuelve a añadir este dispositivo.",
       "revoked": "Premium ya no está activo para esta suscripción.",
       "exhausted": "La cuota de IA Premium de este periodo se ha agotado. Se renueva el {{date}}. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
       "exhaustedNoDate": "La cuota de IA Premium de este periodo se ha agotado. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",

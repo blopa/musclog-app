@@ -730,7 +730,7 @@
         },
         "retention": {
           "title": "Retention of Your Personal Data",
-          "content": "Data in the application stays on Your Device until You delete it or uninstall the application. Anonymous crash reports are kept by Sentry for a limited period and then deleted. Requests sent through the free Musclog AI option may be kept in the gateway's logs for a limited period. Musclog Premium's service keeps the device identifier, usage counts and request fingerprints it needs to run Your subscription, and keeps no message or photo content. Website analytics data is kept as described in \"Website Analytics\"."
+          "content": "Data in the application stays on Your Device until You delete it or uninstall the application. Anonymous crash reports are kept by Sentry for a limited period and then deleted. Requests sent through the free Musclog AI option may be kept in the gateway's logs for a limited period. Musclog Premium's service keeps the fingerprint of each request for 7 days after it is answered, usage counts for 60 days after the billing period they belong to ends, and the device identifier until You ask Us to remove it (see \"Delete Your Personal Data\" below: contact Us by email). It keeps no message or photo content. Website analytics data is kept as described in \"Website Analytics\"."
         },
         "transfer": {
           "title": "Transfer of Your Personal Data",

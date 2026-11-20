@@ -730,7 +730,7 @@
         },
         "retention": {
           "title": "Przechowywanie Twoich danych osobowych",
-          "content": "Dane w aplikacji pozostają na Twoim urządzeniu, dopóki ich nie usuniesz lub nie odinstalujesz aplikacji. Anonimowe raporty o awariach są przechowywane przez Sentry przez ograniczony czas, a potem usuwane. Zapytania wysyłane przez darmową opcję AI Musclog mogą być przechowywane w dziennikach bramki przez ograniczony czas. Usługa Musclog Premium przechowuje identyfikator urządzenia, liczniki użycia i odciski zapytań potrzebne do obsługi Twojej subskrypcji, a nie przechowuje treści wiadomości ani zdjęć. Dane z analityki strony są przechowywane zgodnie z opisem w „Analityka strony”."
+          "content": "Dane w aplikacji pozostają na Twoim urządzeniu, dopóki ich nie usuniesz lub nie odinstalujesz aplikacji. Anonimowe raporty o awariach są przechowywane przez Sentry przez ograniczony czas, a potem usuwane. Zapytania wysyłane przez darmową opcję AI Musclog mogą być przechowywane w dziennikach bramki przez ograniczony czas. Usługa Musclog Premium przechowuje odcisk każdego zapytania przez 7 dni od udzielenia na nie odpowiedzi, liczniki użycia przez 60 dni od zakończenia okresu rozliczeniowego, do którego należą, oraz identyfikator urządzenia, dopóki nie poprosisz Nas o jego usunięcie (zob. „Usuwanie Twoich danych osobowych” poniżej: skontaktuj się z Nami e-mailowo). Nie przechowuje treści wiadomości ani zdjęć. Dane z analityki strony są przechowywane zgodnie z opisem w „Analityka strony”."
         },
         "transfer": {
           "title": "Przekazywanie Twoich danych osobowych",
