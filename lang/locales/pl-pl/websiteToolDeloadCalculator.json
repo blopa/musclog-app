@@ -1,86 +1,86 @@
 {
   "websiteToolDeloadCalculator": {
-    "title": "Deload calculator",
-    "intro": "Enter a lift's working weight and sets and get the deload week: how much lighter to go, how many sets to keep, how hard to push and how long it lasts.",
+    "title": "Kalkulator odciążenia",
+    "intro": "Wpisz roboczy ciężar ćwiczenia i liczbę serii, a dostaniesz tydzień odciążenia: o ile lżej iść, ile serii zostawić, jak mocno naciskać i jak długo to trwa.",
     "form": {
-      "weight": "Working weight",
-      "weightHint": "What you lift for your normal working sets.",
-      "sets": "Working sets in a normal week",
-      "setsHint": "Whole number, for this one exercise.",
-      "equipmentLabel": "Equipment",
+      "weight": "Ciężar roboczy",
+      "weightHint": "To, co podnosisz w normalnych seriach roboczych.",
+      "sets": "Serie robocze w normalnym tygodniu",
+      "setsHint": "Liczba całkowita, dla tego jednego ćwiczenia.",
+      "equipmentLabel": "Sprzęt",
       "equipment": {
-        "barbell": "Barbell",
-        "dumbbell": "Dumbbell",
-        "machine": "Machine or cable"
+        "barbell": "Sztanga",
+        "dumbbell": "Hantle",
+        "machine": "Maszyna lub wyciąg"
       }
     },
     "problems": {
-      "weight": "Enter the working weight as a number above 0 and at most {{max}}.",
-      "sets": "Enter the sets as a whole number from 1 to {{max}}."
+      "weight": "Wpisz ciężar roboczy jako liczbę większą od 0 i co najwyżej {{max}}.",
+      "sets": "Wpisz serie jako liczbę całkowitą od 1 do {{max}}."
     },
     "results": {
-      "title": "Your deload week",
-      "weight": "Weight",
-      "weightNote": "{{percent}} lighter than your working weight, rounded down to a load you can set. Keep your usual reps.",
-      "sets": "Sets",
-      "setsValue_one": "{{sets}} set",
-      "setsValue_few": "{{sets}} sets",
-      "setsValue_many": "{{sets}} sets",
-      "setsValue_other": "{{sets}} sets",
-      "setsNote": "Down from {{from}}: about two thirds, never fewer than one.",
-      "effort": "Effort",
-      "effortValue": "{{count}} reps in reserve",
-      "effortNote": "Stop each set with about {{count}} reps still possible, so the week feels easy on purpose.",
-      "duration": "Length",
-      "durationValue_one": "{{count}} week",
-      "durationValue_few": "{{count}} weeks",
-      "durationValue_many": "{{count}} weeks",
-      "durationValue_other": "{{count}} weeks",
-      "durationNote": "Train as often as usual with lighter work, then go back to your normal loads.",
-      "plates": "Plates on each side of the bar",
-      "emptyBar": "Empty bar",
+      "title": "Twój tydzień odciążenia",
+      "weight": "Ciężar",
+      "weightNote": "{{percent}} lżej niż twój ciężar roboczy, zaokrąglone w dół do obciążenia, które możesz ustawić. Zachowaj zwykłą liczbę powtórzeń.",
+      "sets": "Serie",
+      "setsValue_one": "{{sets}} seria",
+      "setsValue_few": "{{sets}} serie",
+      "setsValue_many": "{{sets}} serii",
+      "setsValue_other": "{{sets}} serii",
+      "setsNote": "W dół z {{from}}: około dwóch trzecich, nigdy mniej niż jedna.",
+      "effort": "Wysiłek",
+      "effortValue": "{{count}} powtórzeń w zapasie",
+      "effortNote": "Kończ każdą serię, mając jeszcze około {{count}} powtórzeń w zapasie, żeby ten tydzień był celowo lekki.",
+      "duration": "Długość",
+      "durationValue_one": "{{count}} tydzień",
+      "durationValue_few": "{{count}} tygodnie",
+      "durationValue_many": "{{count}} tygodni",
+      "durationValue_other": "{{count}} tygodnia",
+      "durationNote": "Trenuj tak często jak zwykle z lżejszą pracą, potem wróć do zwykłych obciążeń.",
+      "plates": "Talerze po każdej stronie sztangi",
+      "emptyBar": "Pusta sztanga",
       "plateLine": "{{count}} × {{weight}}",
-      "noLighter": "This is already the lightest load this equipment can make, so the weight stays. Cut the sets and push less hard instead.",
-      "step": "One load step for this equipment is {{step}}."
+      "noLighter": "To już najlżejsze obciążenie, jakie ten sprzęt może dać, więc ciężar zostaje. Zamiast tego zmniejsz serie i naciskaj mniej.",
+      "step": "Jeden krok obciążenia dla tego sprzętu to {{step}}."
     },
     "table": {
-      "title": "Other common cuts",
-      "cut": "Cut",
-      "weight": "Weight",
-      "actual": "Actually lighter by",
-      "musclog": "Musclog's cut",
+      "title": "Inne popularne redukcje",
+      "cut": "Redukcja",
+      "weight": "Ciężar",
+      "actual": "Faktycznie lżej o",
+      "musclog": "Redukcja w Musclog",
       "percent": "{{percent}}",
-      "note": "Musclog takes 10% or one load step, whichever is larger. The 10, 15 and 20% rows are rules of thumb, not study results. Each is rounded down to a load you can really set, so a small weight can end up lighter by more than the cut you asked for."
+      "note": "Musclog bierze 10% albo jeden krok obciążenia, w zależności od tego, co jest większe. Wiersze 10, 15 i 20% to zasady kciuka, a nie wyniki badań. Każdy jest zaokrąglany w dół do obciążenia, które naprawdę da się ustawić, więc przy małym ciężarze może wyjść lżej o więcej, niż prosiłeś."
     },
     "sections": [
       {
-        "title": "How much lighter, and for how long",
+        "title": "Ile lżej i jak długo",
         "body": [
-          "The Musclog app's deload is a cut of 10% or one load step, whichever is larger, rounded down to a weight your equipment can make and always strictly lighter than now. A lighter week then keeps about two thirds of the working sets, keeps the planned reps and aims for 4 reps in reserve. It lasts one week. All of these are Musclog product choices, not study results.",
-          "Lifters often use 10 to 20% less weight, or about a third fewer sets, for a week. Use the table for a deeper cut if the week before felt very heavy. Keep the same exercises and the same number of sessions: a deload is lighter training, not a week off."
+          "Odciążenie w aplikacji Musclog to redukcja o 10% albo jeden krok obciążenia, w zależności od tego, co jest większe, zaokrąglona w dół do ciężaru, jaki może zrobić twój sprzęt, i zawsze wyraźnie lżejsza niż teraz. Lżejszy tydzień zachowuje wtedy około dwóch trzecich serii roboczych, utrzymuje planowaną liczbę powtórzeń i celuje w 4 powtórzenia w zapasie. Trwa jeden tydzień. Wszystko to wybory produktowe Musclog, a nie wyniki badań.",
+          "Ćwiczący często używają o 10 do 20% mniejszego ciężaru albo o około jedną trzecią mniej serii przez tydzień. Skorzystaj z tabeli, jeśli poprzedni tydzień był bardzo ciężki i chcesz głębszej redukcji. Zachowaj te same ćwiczenia i tę samą liczbę sesji: odciążenie to lżejszy trening, a nie tydzień wolnego."
         ]
       },
       {
-        "title": "When a deload makes sense",
+        "title": "Kiedy odciążenie ma sens",
         "body": [
-          "The usual signs are the same weight feeling much heavier than a few weeks ago, missed reps you normally hit and almost no reps left in reserve. Poor sleep, stress or illness can look the same, and a deload helps with those too. If a joint hurts sharply, see a doctor or physiotherapist instead.",
-          "The app deloads one exercise on its own after two sessions in a row at the same load where you ended with nothing in reserve or missed the planned reps. It suggests a lighter week from your Weekly Review when several lifts stall. You choose whether to take it."
+          "Typowe sygnały to ten sam ciężar, który wydaje się znacznie cięższy niż kilka tygodni temu, nieudane powtórzenia, które zwykle robisz, i prawie żadnych powtórzeń w zapasie. Zły sen, stres czy choroba mogą wyglądać tak samo, a odciążenie pomaga też przy nich. Jeśli stawy boli ostro, zgłoś się do lekarza albo fizjoterapeuty.",
+          "Aplikacja odciąża jedno ćwiczenie samodzielnie po dwóch sesjach z rzędu przy tym samym obciążeniu, w których nic nie zostało w zapasie albo nie zrobiono planowanych powtórzeń. Gdy kilka ćwiczeń stoi w miejscu, proponuje lżejszy tydzień w twoim Przeglądzie tygodnia. Ty wybierasz, czy z tego skorzystać."
         ]
       },
       {
-        "title": "What the research says",
+        "title": "Co mówią badania",
         "body": [
-          "A 2023 consensus study of strength and physique coaches defined a deload as a period of reduced training stress meant to limit fatigue, support recovery and prepare you for later training. That is a definition, not a prescription. The numbers on this page do not come from it."
+          "Konsensusowe badanie z 2023 roku wśród trenerów siły i sylwetki zdefiniowało odciążenie jako okres zmniejszonego obciążenia treningowego, mający ograniczyć zmęczenie, wspierać regenerację i przygotować do dalszych treningów. To definicja, a nie zalecenie. Liczby na tej stronie nie pochodzą z niego."
         ]
       }
     ],
     "sources": {
-      "bell": "Bell et al. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
-      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+      "bell": "Bell i in. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos i in. (2016), Nowa skala RPE dla treningu oporowego mierząca powtórzenia w zapasie"
     },
     "articles": {
-      "deload": "Deload weeks: when you need one and how to run it",
-      "doubleProgression": "Double progression: the simplest way to add weight every week"
+      "deload": "Tygodnie odciążenia: kiedy są potrzebne i jak je przeprowadzić",
+      "doubleProgression": "Podwójna progresja: najprostszy sposób, by dodawać ciężar co tydzień"
     }
   }
 }

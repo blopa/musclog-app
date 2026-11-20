@@ -1,11 +1,11 @@
 {
   "logSetPerformance": {
-    "title": "Log set performance",
-    "difficulty": "Difficulty (RPE)",
-    "easy": "Easy",
-    "moderate": "Moderate",
-    "failure": "Failure",
-    "cancel": "Cancel",
-    "logSet": "Log set"
+    "title": "Set performansını kaydet",
+    "difficulty": "Zorluk (RPE)",
+    "easy": "Kolay",
+    "moderate": "Orta",
+    "failure": "Tükenme",
+    "cancel": "Vazgeç",
+    "logSet": "Seti kaydet"
   }
 }

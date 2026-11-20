@@ -1,18 +1,18 @@
 {
   "sessionFeedback": {
-    "title": "Session feedback",
-    "subtitle": "Rate your performance",
-    "difficulty": "Difficulty",
-    "exhaustion": "Exhaustion",
-    "enjoyment": "Enjoyment",
-    "easy": "Easy",
-    "extreme": "Extreme",
-    "fresh": "Fresh",
-    "drained": "Drained",
-    "disliked": "Disliked",
-    "loved": "Loved",
-    "submit": "Submit feedback",
-    "notes": "Notes",
-    "notesPlaceholder": "How did it go? Anything to remember next time?"
+    "title": "Feedback zur Einheit",
+    "subtitle": "Bewerte deine Leistung",
+    "difficulty": "Schwierigkeit",
+    "exhaustion": "Erschöpfung",
+    "enjoyment": "Spaß",
+    "easy": "Leicht",
+    "extreme": "Extrem",
+    "fresh": "Frisch",
+    "drained": "Ausgelaugt",
+    "disliked": "Nicht gemocht",
+    "loved": "Geliebt",
+    "submit": "Feedback senden",
+    "notes": "Notizen",
+    "notesPlaceholder": "Wie lief es? Gibt es etwas, das du beim nächsten Mal beachten willst?"
   }
 }

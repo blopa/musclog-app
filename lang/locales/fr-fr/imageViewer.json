@@ -1,9 +1,9 @@
 {
   "imageViewer": {
-    "open": "Open photo",
-    "close": "Close",
-    "save": "Save or share photo",
-    "shareFailed": "Couldn't share the photo.",
-    "shareUnavailable": "Sharing is not available on this device."
+    "open": "Ouvrir la photo",
+    "close": "Fermer",
+    "save": "Enregistrer ou partager la photo",
+    "shareFailed": "Impossible de partager la photo.",
+    "shareUnavailable": "Le partage n'est pas disponible sur cet appareil."
   }
 }

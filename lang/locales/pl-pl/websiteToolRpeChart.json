@@ -1,71 +1,71 @@
 {
   "websiteToolRpeChart": {
-    "title": "RPE and RIR chart with load calculator",
-    "intro": "A chart of what share of your one-rep max each number of reps is at each RPE, what RPE means in reps left, and a calculator that turns a set you did into the load for another set.",
+    "title": "Tabela RPE i RIR z kalkulatorem obciążenia",
+    "intro": "Tabela, jaki udział twojego maksimum na jedno powtórzenie stanowi każda liczba powtórzeń przy każdym RPE, co oznacza RPE w powtórzeniach w zapasie, oraz kalkulator, który zamienia wykonaną serię na obciążenie innej serii.",
     "chart": {
-      "title": "Share of your one-rep max",
+      "title": "Udział twojego maksimum na jedno powtórzenie",
       "rpeColumn": "RPE {{rpe}}",
-      "reps": "Reps",
-      "note": "Read across for the reps you do and down for the effort you rate the set. The percentages come from the same averaged estimate the app uses, so even one rep at RPE 10 reads just under 100%."
+      "reps": "Powtórzenia",
+      "note": "Czytaj w poprzek dla powtórzeń, które robisz, i w dół dla wysiłku, który oceniasz za serię. Procenty pochodzą z tego samego uśrednionego szacunku, którego używa aplikacja, więc nawet jedno powtórzenie przy RPE 10 wychodzi tuż poniżej 100%."
     },
     "meaning": {
-      "title": "What each RPE means",
+      "title": "Co oznacza każde RPE",
       "rpe": "RPE",
-      "reserve": "Reps in reserve",
-      "meaning": "Meaning",
-      "none": "No reps left. The set ended at failure.",
-      "one": "One rep left in the tank.",
-      "two": "Two reps left in the tank.",
-      "three": "Three reps left in the tank.",
-      "four": "Four reps left in the tank."
+      "reserve": "Powtórzenia w zapasie",
+      "meaning": "Znaczenie",
+      "none": "Brak powtórzeń. Seria skończyła się upadkiem.",
+      "one": "Jedno powtórzenie w zapasie.",
+      "two": "Dwa powtórzenia w zapasie.",
+      "three": "Trzy powtórzenia w zapasie.",
+      "four": "Cztery powtórzenia w zapasie."
     },
     "form": {
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "rpe": "RPE of that set",
-      "targetReps": "Target reps",
-      "targetRepsHint": "Whole number, 1 to 10",
-      "targetRpe": "Target RPE"
+      "weight": "Podniesiony ciężar",
+      "reps": "Wykonane powtórzenia",
+      "repsHint": "Liczba całkowita, 1 do 10",
+      "rpe": "RPE tej serii",
+      "targetReps": "Docelowe powtórzenia",
+      "targetRepsHint": "Liczba całkowita, 1 do 10",
+      "targetRpe": "Docelowe RPE"
     },
     "problems": {
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "targetReps": "Enter the target reps as a whole number from 1 to 10."
+      "weight": "Wpisz podniesiony ciężar jako liczbę większą od 0.",
+      "reps": "Wpisz powtórzenia jako liczbę całkowitą od 1 do 10.",
+      "targetReps": "Wpisz docelowe powtórzenia jako liczbę całkowitą od 1 do 10."
     },
     "results": {
-      "oneRepMax": "Estimated one-rep max",
-      "target": "Load for the target, exact",
-      "targetRounded": "Rounded for a bar with standard plates",
-      "roundedNote": "Rounded to the smallest steps a bar loaded with standard plates goes up in. Without a gym the app uses the same steps.",
-      "reps": "reps",
-      "atRpe": "at RPE"
+      "oneRepMax": "Szacowane maksimum na jedno powtórzenie",
+      "target": "Obciążenie dla celu, dokładne",
+      "targetRounded": "Zaokrąglone dla sztangi ze standardowymi talerzami",
+      "roundedNote": "Zaokrąglone do najmniejszych kroków, o jakie rośnie sztanga załadowana standardowymi talerzami. Bez siłowni aplikacja używa tych samych kroków.",
+      "reps": "powt.",
+      "atRpe": "przy RPE"
     },
     "sections": [
       {
-        "title": "What RPE means",
+        "title": "Co znaczy RPE",
         "body": [
-          "RPE, rate of perceived exertion, runs from 1 to 10. A set rated 10 had no reps left. RPE 9 left one rep in reserve, RPE 8 two, and so on.",
-          "Reps in reserve (RIR) is the same scale written the other way: RPE = 10 minus RIR. The Musclog app stores a set's effort either way, and the two are the same number."
+          "RPE, czyli wskaźnik subiektywnego wysiłku, biegnie od 1 do 10. Seria oceniona na 10 nie miała żadnych powtórzeń w zapasie. RPE 9 zostawiało jedno powtórzenie w zapasie, RPE 8 dwa i tak dalej.",
+          "Powtórzenia w zapasie (RIR) to ta sama skala zapisana odwrotnie: RPE = 10 minus RIR. Aplikacja Musclog zapisuje wysiłek serii w jednej z tych form, a obie to ta sama liczba."
         ]
       },
       {
-        "title": "Why people misjudge it",
+        "title": "Dlaczego ludzie się mylą",
         "body": [
-          "Judging how many reps you had left is a skill, and most people are less accurate the further a set was from failure. A set that felt like it had a few reps left may have had more or fewer.",
-          "Treat the chart as a guide. Check it against how your sets actually go, and rate effort honestly when you log it."
+          "Ocena, ile powtórzeń zostało w zapasie, to umiejętność, a większość ludzi jest mniej dokładna, im dalej seria była od upadku. Seria, która wydawała się mieć kilka powtórzeń w zapasie, mogła mieć ich więcej albo mniej.",
+          "Traktuj tabelę jako wskazówkę. Sprawdź ją, porównując z tym, jak naprawdę idą serie, i uczciwie oceniaj wysiłek, gdy go zapisujesz."
         ]
       },
       {
-        "title": "How the chart and calculator work",
+        "title": "Jak działa tabela i kalkulator",
         "body": [
-          "Each cell is the share of your one-rep max that many reps at that RPE represent. It comes from the same averaged formulas the Musclog app uses to estimate a logged set.",
-          "The calculator estimates your one-rep max from a set you did, then gives the load for a different number of reps at a different RPE. The rounded load is what a bar with standard plates can make."
+          "Każda komórka to udział twojego maksimum na jedno powtórzenie, jaki reprezentuje tyle powtórzeń przy tym RPE. Wynika z tych samych uśrednionych formuł, których aplikacja Musclog używa do szacowania zapisanej serii.",
+          "Kalkulator szacuje twoje maksimum na jedno powtórzenie z wykonanej serii, a potem podaje obciążenie dla innej liczby powtórzeń przy innym RPE. Zaokrąglone obciążenie to to, co sztanga ze standardowymi talerzami może zrobić."
         ]
       }
     ],
     "sources": {
-      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+      "zourdos": "Zourdos i in. (2016), Nowa skala RPE dla treningu oporowego mierząca powtórzenia w zapasie"
     }
   }
 }

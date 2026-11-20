@@ -1,58 +1,58 @@
 {
   "replaceExercise": {
-    "title": "Replace exercise",
-    "replace": "Replace",
-    "searchPlaceholder": "Search exercises...",
-    "selectExercise": "Select exercise",
-    "loadMore": "Load more",
-    "loadingMore": "Loading…",
-    "noExercisesMatch": "No exercises match",
+    "title": "Übung ersetzen",
+    "replace": "Ersetzen",
+    "searchPlaceholder": "Übungen suchen …",
+    "selectExercise": "Übung auswählen",
+    "loadMore": "Mehr laden",
+    "loadingMore": "Wird geladen…",
+    "noExercisesMatch": "Keine Übungen gefunden",
     "families": {
-      "all": "All",
-      "torso": "Upper body",
-      "arms": "Arms",
-      "legs": "Legs",
-      "core": "Core",
-      "other": "Other"
+      "all": "Alle",
+      "torso": "Oberkörper",
+      "arms": "Arme",
+      "legs": "Beine",
+      "core": "Rumpf",
+      "other": "Sonstige"
     },
-    "suggested": "Suggested for you",
-    "disliked": "Disliked",
-    "hiddenHint": "Exercises you avoid, or that your gym can't supply, are hidden.",
-    "back": "Back",
-    "swapped": "Swapped {{from}} for {{to}}",
+    "suggested": "Für dich vorgeschlagen",
+    "disliked": "Unbeliebt",
+    "hiddenHint": "Übungen, die du meidest oder die dein Studio nicht bieten kann, sind ausgeblendet.",
+    "back": "Zurück",
+    "swapped": "{{from}} gegen {{to}} getauscht",
     "reason": {
-      "title": "Why swap?",
-      "subtitle": "Replacing with {{name}}",
-      "question": "What's the reason?",
+      "title": "Warum tauschen?",
+      "subtitle": "Ersetzen durch {{name}}",
+      "question": "Was ist der Grund?",
       "options": {
-        "equipment_unavailable": "Equipment unavailable",
-        "pain": "Pain or discomfort",
-        "too_hard": "Too difficult",
-        "too_easy": "Too easy",
-        "dislike": "Don't like it",
-        "machine_occupied": "Machine occupied",
-        "just_today": "Just for today"
+        "equipment_unavailable": "Gerät nicht verfügbar",
+        "pain": "Schmerzen oder Beschwerden",
+        "too_hard": "Zu schwer",
+        "too_easy": "Zu leicht",
+        "dislike": "Mag ich nicht",
+        "machine_occupied": "Gerät belegt",
+        "just_today": "Nur für heute"
       },
       "descriptions": {
-        "equipment_unavailable": "The machine or weights aren't there",
-        "pain": "Something hurts or feels wrong",
-        "too_hard": "Too heavy or too demanding",
-        "too_easy": "Not challenging enough",
-        "dislike": "Just not for me",
-        "machine_occupied": "Someone else is using it",
-        "just_today": "Only this session"
+        "equipment_unavailable": "Das Gerät oder die Gewichte sind nicht da",
+        "pain": "Etwas tut weh oder fühlt sich falsch an",
+        "too_hard": "Zu schwer oder zu anspruchsvoll",
+        "too_easy": "Nicht fordernd genug",
+        "dislike": "Einfach nichts für mich",
+        "machine_occupied": "Jemand anderes benutzt es",
+        "just_today": "Nur diese Einheit"
       },
       "remember": {
-        "injury": "Stop suggesting {{name}} for now",
-        "dislike": "Don't suggest {{name}} again"
+        "injury": "{{name}} vorerst nicht mehr vorschlagen",
+        "dislike": "{{name}} nicht mehr vorschlagen"
       },
       "rememberHint": {
-        "injury": "It stays out of swaps and generated workouts until it heals.",
-        "dislike": "It will be ranked last, never the first suggestion."
+        "injury": "Die Übung bleibt bei Tauschvorschlägen und generierten Trainings außen vor, bis sie verheilt ist.",
+        "dislike": "Sie wird ganz unten eingeordnet und nie als erster Vorschlag gezeigt."
       },
-      "removeEquipment": "{{equipment}} isn't available at {{gym}}",
-      "removeEquipmentHint": "Remove it from this gym so exercises needing it aren't suggested."
+      "removeEquipment": "{{equipment}} ist nicht in {{gym}} verfügbar",
+      "removeEquipmentHint": "Entferne es aus diesem Studio, damit Übungen, die es brauchen, nicht vorgeschlagen werden."
     },
-    "addReason": "Add reason"
+    "addReason": "Grund hinzufügen"
   }
 }

@@ -1,80 +1,80 @@
 {
   "websiteToolCalorieDeficit": {
-    "title": "Calorie deficit and goal date calculator",
-    "intro": "Set a goal weight and a date to see the daily calorie target that gets you there, the range it sits in and whether the pace is realistic.",
+    "title": "Calcolatore di deficit calorico e data obiettivo",
+    "intro": "Imposta un peso obiettivo e una data per vedere il target calorico giornaliero che ti ci porta, l'intervallo in cui si colloca e se il ritmo è realistico.",
     "form": {
-      "sex": "Sex",
-      "male": "Male",
-      "female": "Female",
-      "age": "Age",
-      "height": "Height",
-      "weight": "Current weight",
-      "activity": "Activity level",
-      "goalWeight": "Goal weight",
-      "goalDate": "Goal date",
+      "sex": "Sesso",
+      "male": "Uomo",
+      "female": "Donna",
+      "age": "Età",
+      "height": "Altezza",
+      "weight": "Peso attuale",
+      "activity": "Livello di attività",
+      "goalWeight": "Peso obiettivo",
+      "goalDate": "Data obiettivo",
       "cm": "cm",
       "inches": "in",
-      "activity1": "Sedentary (little or no exercise)",
-      "activity2": "Light Active (1–3 days/week)",
-      "activity3": "Moderately Active (3–5x/week)",
-      "activity4": "Very Active (6–7 days/week)",
-      "activity5": "Super Active (physical job + training)"
+      "activity1": "Sedentario (poco o nessun esercizio)",
+      "activity2": "Poco attivo (1–3 giorni a settimana)",
+      "activity3": "Moderatamente attivo (3–5 volte a settimana)",
+      "activity4": "Molto attivo (6–7 giorni a settimana)",
+      "activity5": "Estremamente attivo (lavoro fisico + allenamento)"
     },
     "problems": {
-      "age": "Enter an age between 15 and 100.",
-      "height": "Enter a height within the range the calculator accepts.",
-      "weight": "Enter a weight within the range the calculator accepts.",
-      "goalWeight": "Enter a goal weight within the range the calculator accepts.",
-      "goalDate": "Pick a goal date.",
-      "goalDateNotFuture": "The goal date must be after today."
+      "age": "Inserisci un'età tra 15 e 100 anni.",
+      "height": "Inserisci un'altezza nell'intervallo accettato dal calcolatore.",
+      "weight": "Inserisci un peso nell'intervallo accettato dal calcolatore.",
+      "goalWeight": "Inserisci un peso obiettivo nell'intervallo accettato dal calcolatore.",
+      "goalDate": "Scegli una data obiettivo.",
+      "goalDateNotFuture": "La data obiettivo deve essere successiva a oggi."
     },
     "results": {
-      "target": "Daily calorie target",
-      "range": "Range: {{low}} to {{high}}",
-      "summary": "The numbers",
-      "change": "Weight change",
-      "days": "Days to the goal date",
-      "deficit": "Daily deficit",
-      "surplus": "Daily surplus",
-      "perDay": "per day",
-      "weekly": "Weekly pace",
-      "perWeek": "per week",
-      "tdee": "Estimated daily energy use",
-      "share": "Deficit as a share of daily energy use"
+      "target": "Target calorico giornaliero",
+      "range": "Intervallo: da {{low}} a {{high}}",
+      "summary": "I numeri",
+      "change": "Variazione di peso",
+      "days": "Giorni alla data obiettivo",
+      "deficit": "Deficit giornaliero",
+      "surplus": "Surplus giornaliero",
+      "perDay": "al giorno",
+      "weekly": "Ritmo settimanale",
+      "perWeek": "a settimana",
+      "tdee": "Dispendio energetico giornaliero stimato",
+      "share": "Deficit in percentuale del dispendio energetico giornaliero"
     },
     "notes": {
-      "noChange": "You are already at that weight, so no change is needed.",
-      "floor": "Your target would be below the minimum of {{floor}}, so the page sets it there.",
-      "laterDate": "The earliest date that minimum allows is {{date}}.",
-      "floorAboveTdee": "Estimated energy use is at or below the minimum, so no deficit is possible. Choose a higher goal weight or talk to a clinician.",
-      "pace": "This pace is above 1% of your body weight per week, a Musclog guideline. A slower pace usually holds up better.",
-      "deficitLarge": "This deficit is above 25% of your estimated energy use, a Musclog guideline. A smaller deficit over a longer time is usually easier to keep.",
-      "range": "The estimate is uncertain, so the target is shown as a range: 10% of your energy use either side. The 10% is a Musclog product choice, not a measured error.",
-      "thresholds": "The 1% pace and 25% deficit guidelines are Musclog product choices, not findings from a study."
+      "noChange": "Sei già a quel peso, quindi non serve alcuna variazione.",
+      "floor": "Il tuo target scenderebbe sotto il minimo di {{floor}}, quindi la pagina lo imposta a quel valore.",
+      "laterDate": "La data più vicina consentita dal minimo è {{date}}.",
+      "floorAboveTdee": "Il dispendio energetico stimato è pari o inferiore al minimo, quindi nessun deficit è possibile. Scegli un peso obiettivo più alto o parla con un medico.",
+      "pace": "Questo ritmo supera l'1% del peso corporeo a settimana, una linea guida di Musclog. Un ritmo più lento di solito regge meglio.",
+      "deficitLarge": "Questo deficit supera il 25% del dispendio energetico stimato, una linea guida di Musclog. Un deficit più piccolo su un periodo più lungo di solito è più facile da mantenere.",
+      "range": "La stima è incerta, quindi il target è mostrato come intervallo: il 10% del tuo dispendio energetico in più e in meno. Il 10% è una scelta di prodotto di Musclog, non un errore misurato.",
+      "thresholds": "Le linee guida dell'1% di ritmo e del 25% di deficit sono scelte di prodotto di Musclog, non risultati di uno studio."
     },
     "sections": [
       {
-        "title": "How the target is made",
+        "title": "Come viene costruito il target",
         "body": [
-          "Your energy use is estimated from your sex, age, height and weight (the Mifflin-St Jeor resting rate) multiplied by your activity level. It is the same estimate the Musclog app uses when it has no tracking history.",
-          "The weight change is turned into energy with the app's kilocalories-per-kilogram rule and spread across the days to your goal date. The target is that energy use minus the daily deficit (or plus, for a gain)."
+          "Il tuo dispendio energetico viene stimato a partire da sesso, età, altezza e peso (il tasso di riposo di Mifflin-St Jeor) moltiplicati per il livello di attività. È la stessa stima che l'app Musclog usa quando non ha una cronologia di monitoraggio.",
+          "La variazione di peso viene convertita in energia con la regola chilocalorie per chilogrammo dell'app e distribuita sui giorni fino alla data obiettivo. Il target è il dispendio energetico meno il deficit giornaliero (o più, in caso di aumento)."
         ]
       },
       {
-        "title": "Why the date is a guide",
+        "title": "Perché la data è solo una guida",
         "body": [
-          "Hall et al. (2011) modelled how body weight responds to a change in energy intake. The body adjusts over months, so a fixed number of calories per kilogram is an approximation. Weigh yourself every few weeks and adjust."
+          "Hall et al. (2011) hanno modellato come il peso corporeo risponde a una variazione dell'apporto energetico. Il corpo si adatta nell'arco di mesi, quindi un numero fisso di calorie per chilogrammo è un'approssimazione. Pesati ogni poche settimane e aggiusta."
         ]
       },
       {
-        "title": "The minimum",
+        "title": "Il minimo",
         "body": [
-          "The target never goes below the minimum the app uses: 1,200 kcal for women and 1,500 kcal for men, or 80% of your resting rate if that is higher. If your date needs less, the page gives the earliest date the minimum allows."
+          "Il target non scende mai sotto il minimo usato dall'app: 1.200 kcal per le donne e 1.500 kcal per gli uomini, oppure l'80% del tuo tasso di riposo se è più alto. Se la tua data richiede meno, la pagina indica la data più vicina consentita dal minimo."
         ]
       }
     ],
     "sources": {
-      "hall": "Hall et al. (2011), quantification of the effect of energy imbalance on body weight"
+      "hall": "Hall et al. (2011), quantificazione dell'effetto dello squilibrio energetico sul peso corporeo"
     }
   }
 }

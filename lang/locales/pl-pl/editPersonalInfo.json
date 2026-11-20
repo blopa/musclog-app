@@ -1,18 +1,18 @@
 {
   "editPersonalInfo": {
-    "title": "Edit personal info",
-    "fullName": "Full name",
-    "fullNamePlaceholder": "e.g. Alex Johnson",
-    "emailAddress": "Email address",
-    "emailPlaceholder": "e.g. alex@example.com",
-    "dateOfBirth": "Date of birth",
-    "dateOfBirthPlaceholder": "MM/DD/YYYY",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "other": "Other",
-    "chooseAvatar": "Choose avatar",
-    "chooseColor": "Choose color",
-    "saveChanges": "Save changes"
+    "title": "Edytuj dane osobowe",
+    "fullName": "Imię i nazwisko",
+    "fullNamePlaceholder": "np. Alex Johnson",
+    "emailAddress": "Adres e-mail",
+    "emailPlaceholder": "np. alex@example.com",
+    "dateOfBirth": "Data urodzenia",
+    "dateOfBirthPlaceholder": "DD.MM.RRRR",
+    "gender": "Płeć",
+    "male": "Mężczyzna",
+    "female": "Kobieta",
+    "other": "Inna",
+    "chooseAvatar": "Wybierz awatar",
+    "chooseColor": "Wybierz kolor",
+    "saveChanges": "Zapisz zmiany"
   }
 }

@@ -1,70 +1,70 @@
 {
   "websiteToolProteinCalculator": {
-    "title": "Protein calculator",
-    "intro": "Enter your body weight, height and goal to get a daily protein target in grams, with the grams per kilogram behind it.",
+    "title": "Protein hesaplayıcısı",
+    "intro": "Vücut ağırlığını, boyunu ve hedefini gir; gram cinsinden günlük bir protein hedefini ve arkasındaki kilogram başına gramı al.",
     "form": {
-      "weight": "Body weight",
-      "height": "Height",
-      "goal": "Main goal",
-      "deficit": "Eating in a calorie deficit?",
-      "deficitYes": "Yes, cutting",
-      "deficitNo": "No",
-      "goalWeight": "Goal weight (optional)",
-      "goalWeightHint": "If you set one, protein is based on it instead of your current weight.",
+      "weight": "Vücut ağırlığı",
+      "height": "Boy",
+      "goal": "Ana hedef",
+      "deficit": "Kalori açığında mı besleniyorsun?",
+      "deficitYes": "Evet, kesiyorum",
+      "deficitNo": "Hayır",
+      "goalWeight": "Hedef kilo (isteğe bağlı)",
+      "goalWeightHint": "Bir tane belirlersen protein, mevcut kilon yerine ona göre hesaplanır.",
       "cm": "cm",
-      "inches": "in"
+      "inches": "inç"
     },
     "goals": {
-      "hypertrophy": "Build muscle",
-      "strength": "Get stronger",
-      "general": "General health",
-      "endurance": "Endurance",
-      "weightLoss": "Weight loss"
+      "hypertrophy": "Kas yapmak",
+      "strength": "Güçlenmek",
+      "general": "Genel sağlık",
+      "endurance": "Dayanıklılık",
+      "weightLoss": "Kilo vermek"
     },
     "problems": {
-      "weight": "Enter a body weight within the range the calculator accepts.",
-      "height": "Enter a height within the range the calculator accepts.",
-      "goalWeight": "Enter a goal weight within the range the calculator accepts, or leave it empty."
+      "weight": "Hesaplayıcının kabul ettiği aralıkta bir vücut ağırlığı gir.",
+      "height": "Hesaplayıcının kabul ettiği aralıkta bir boy gir.",
+      "goalWeight": "Hesaplayıcının kabul ettiği aralıkta bir hedef kilo gir ya da boş bırak."
     },
     "results": {
-      "grams": "Protein per day",
-      "gramsNote": "{{perKg}} of {{reference}}",
-      "tableTitle": "Grams per kilogram by goal",
-      "tableGoal": "Goal",
-      "tablePerKg": "Per kg of body weight"
+      "grams": "Günlük protein",
+      "gramsNote": "{{reference}} üzerinden {{perKg}}",
+      "tableTitle": "Hedefe göre kilogram başına gram",
+      "tableGoal": "Hedef",
+      "tablePerKg": "Vücut ağırlığı kilogramı başına"
     },
     "notes": {
-      "capped": "Your weight is above the reference weight of {{reference}} (BMI 30 for your height), so the figure uses that. Your weight is {{weight}}. Without a goal weight, the cap stops protein growing with fat mass.",
-      "deficit": "Eating in a deficit raises the minimum to {{value}}, because protein helps keep muscle while you lose fat.",
-      "bodyweight": "This figure is based on body weight. The calculator does not ask for body fat, so it cannot tell muscle from fat.",
-      "spread": "The daily total is what counts. Spread it over your meals however suits you, in as many or as few as you like.",
-      "medical": "General information, not medical advice. If you have kidney disease or another condition that affects protein, ask a clinician before you change your intake."
+      "capped": "Kilon, boyuna göre {{reference}} referans kilosunun (VKİ 30) üzerinde, bu yüzden rakam onu kullanır. Kilon {{weight}}. Hedef kilo yoksa, sınır protein değerinin yağ kütlesiyle birlikte büyümesini durdurur.",
+      "deficit": "Açıkta beslenmek, minimumu {{value}} değerine yükseltir; çünkü yağ kaybederken proteinin kası korumaya yardımcı olur.",
+      "bodyweight": "Bu rakam vücut ağırlığına dayanır. Hesaplayıcı vücut yağı sormaz, bu yüzden kası yağdan ayıramaz.",
+      "spread": "Önemli olan günlük toplamdır. Dilediğin kadar ya da az sayıda öğüne, sana uygun şekilde dağıt.",
+      "medical": "Genel bilgidir, tıbbi tavsiye değildir. Proteini etkileyen bir böbrek hastalığın ya da başka bir durumun varsa, alımını değiştirmeden önce bir hekime danış."
     },
     "sections": [
       {
-        "title": "How the figure is made",
+        "title": "Rakam nasıl oluşturulur",
         "body": [
-          "Protein is set in grams per kilogram of body weight for your goal: the same table the Musclog app uses for its daily targets. In a deficit it rises to at least 2.0 g/kg.",
-          "A percentage of calories is not used, because it makes protein fall as you eat less, just when keeping muscle matters most."
+          "Protein, hedefin için vücut ağırlığının kilogramı başına gram olarak belirlenir: Musclog uygulamasının günlük hedefleri için kullandığı aynı tablo. Açıkta kilo ile 2,0 g/kg'a kadar yükselir.",
+          "Kalorilerin yüzdesi kullanılmaz, çünkü yediğin azaldıkça proteini düşürür; kası korumanın en önemli olduğu tam o anda."
         ]
       },
       {
-        "title": "Why the weight is capped",
+        "title": "Ağırlık neden sınırlandırılır",
         "body": [
-          "Without a goal weight, the figure uses your current weight but never more than the weight at BMI 30 for your height. Above that, the extra mass is mostly not lean tissue, and protein for all of it would be more than you need. A goal weight replaces the cap."
+          "Hedef kilo yokken rakam mevcut kilonu kullanır ama asla boyuna göre VKİ 30 kilosunun üzerine çıkmaz. Bunun üzerinde, ekstra kütlenin çoğu yağsız doku değildir ve tamamı için protein ihtiyacından fazla olurdu. Bir hedef kilo bu sınırın yerini alır."
         ]
       },
       {
-        "title": "What the research says",
+        "title": "Araştırma ne diyor",
         "body": [
-          "Morton et al. (2018) pooled resistance training studies and found that muscle gains levelled off at about 1.6 g/kg a day, with the upper confidence limit near 2.2 g/kg. The general and hypertrophy figures sit in that range.",
-          "Helms et al. (2014) reviewed protein for people dieting while training, and the 2.0 g/kg minimum for a deficit comes from that literature. It is a Musclog setting, not a measured result for you."
+          "Morton ve ark. (2018), direnç antrenmanı çalışmalarını bir araya getirdi ve kas kazanımlarının günde kilogram başına yaklaşık 1,6 g'da düzlüğe ulaştığını, üst güven sınırının 2,2 g/kg civarında olduğunu buldu. Genel ve hipertrofi rakamları bu aralıkta yer alır.",
+          "Helms ve ark. (2014), antrenman yaparken diyet uygulayan insanlar için proteini gözden geçirdi; açıkta 2,0 g/kg minimumu bu literatürden gelir. Bu bir Musclog ayarıdır, senin için ölçülmüş bir sonuç değildir."
         ]
       }
     ],
     "sources": {
-      "morton": "Morton et al. (2018), meta-analysis of protein supplementation and resistance training gains",
-      "helms": "Helms et al. (2014), protein intake during energy restriction for physique athletes"
+      "morton": "Morton ve ark. (2018), protein takviyesi ve direnç antrenmanı kazanımları üzerine meta-analiz",
+      "helms": "Helms ve ark. (2014), fiziksel görünüm sporcuları için enerji kısıtlaması sırasında protein alımı"
     }
   }
 }

@@ -1,212 +1,212 @@
 {
   "aiOnboarding": {
     "chat": {
-      "greeting": "Hi! I'll ask a few short questions to set up Musclog for you. You can skip anything optional, and you'll review every answer before anything is saved. Say hi, or just tell me a bit about yourself.",
-      "notSent": "Not sent",
-      "placeholder": "Type your answer",
-      "review": "Review my answers",
-      "send": "Send",
-      "stop": "Stop",
-      "thinking": "Thinking…",
-      "title": "Setup chat"
+      "greeting": "Salut ! Je vais te poser quelques courtes questions pour configurer Musclog pour toi. Tu peux passer ce qui est facultatif, et tu vérifieras chaque réponse avant que quoi que ce soit ne soit enregistré. Dis bonjour, ou parle-moi un peu de toi.",
+      "notSent": "Non envoyé",
+      "placeholder": "Écris ta réponse",
+      "review": "Vérifier mes réponses",
+      "send": "Envoyer",
+      "stop": "Arrêter",
+      "thinking": "Réflexion…",
+      "title": "Chat de configuration"
     },
     "common": {
-      "backToGuided": "Use the setup forms instead",
-      "editManually": "Edit my details by hand"
+      "backToGuided": "Utiliser plutôt les formulaires de configuration",
+      "editManually": "Modifier mes infos à la main"
     },
     "external": {
-      "backSection": "Step 2: come back with your setup",
+      "backSection": "Étape 2 : reviens avec ta configuration",
       "errors": {
-        "newerVersion": "This setup was made for a newer version of Musclog. Update the app, then import it again.",
-        "notJson": "That doesn't look like a setup file. Pick the musclog-onboarding.json file the assistant gave you, or paste its JSON.",
-        "tooLarge": "That file is too large to be a setup file.",
-        "wrongSchema": "That isn't a Musclog setup file. Check that you picked the file the assistant made."
+        "newerVersion": "Cette configuration a été faite pour une version plus récente de Musclog. Mets l'app à jour, puis importe-la à nouveau.",
+        "notJson": "Ça ne ressemble pas à un fichier de configuration. Choisis le fichier musclog-onboarding.json que l'assistant t'a donné, ou colle son JSON.",
+        "tooLarge": "Ce fichier est trop volumineux pour être une configuration.",
+        "wrongSchema": "Ce n'est pas un fichier de configuration Musclog. Vérifie que tu as choisi le fichier créé par l'assistant."
       },
-      "importFile": "Import a setup file",
-      "intro": "ChatGPT or Claude can ask the questions for you, then give you a file to bring back. You leave Musclog for a moment; nothing is applied until you review it here.",
-      "noFile": "No file? Paste the JSON instead, or go back to the setup forms.",
+      "importFile": "Importer un fichier de configuration",
+      "intro": "ChatGPT ou Claude peuvent te poser les questions, puis te donner un fichier à rapporter. Tu quittes Musclog un instant ; rien n'est appliqué tant que tu ne l'as pas vérifié ici.",
+      "noFile": "Pas de fichier ? Colle le JSON à la place, ou reviens aux formulaires de configuration.",
       "paste": {
-        "fromClipboard": "Paste from clipboard",
-        "import": "Import",
-        "placeholder": "Paste the JSON here",
-        "subtitle": "Paste the JSON the assistant gave you.",
-        "title": "Paste setup JSON"
+        "fromClipboard": "Coller depuis le presse-papiers",
+        "import": "Importer",
+        "placeholder": "Colle le JSON ici",
+        "subtitle": "Colle le JSON que l'assistant t'a donné.",
+        "title": "Coller le JSON de configuration"
       },
       "steps": {
-        "one": "Open ChatGPT or Claude. The instructions are copied for you: paste them into the chat.",
-        "three": "Come back to Musclog and import that file, or paste its text.",
-        "two": "Answer its questions. It will end with a file called musclog-onboarding.json."
+        "one": "Ouvre ChatGPT ou Claude. Les instructions sont copiées pour toi : colle-les dans la conversation.",
+        "three": "Reviens dans Musclog et importe ce fichier, ou colle son texte.",
+        "two": "Réponds à ses questions. Il se terminera par un fichier nommé musclog-onboarding.json."
       },
-      "title": "Use ChatGPT or Claude"
+      "title": "Utiliser ChatGPT ou Claude"
     },
     "fields": {
-      "activityLevel": "Activity level",
-      "birthDate": "Birthday",
-      "bodyFat": "Body fat",
-      "breakLength": "Break length",
-      "fitnessGoal": "Fitness focus",
-      "fullName": "Name",
-      "gender": "Gender",
-      "height": "Height",
-      "liftingExperience": "Training experience",
-      "trainingAutonomy": "Load suggestions",
-      "trainingDays": "Days per week",
-      "trainingLocation": "Where you train",
-      "units": "Units",
-      "weight": "Weight",
-      "weightGoal": "Weight goal"
+      "activityLevel": "Niveau d'activité",
+      "birthDate": "Date de naissance",
+      "bodyFat": "Masse grasse",
+      "breakLength": "Durée de la pause",
+      "fitnessGoal": "Objectif sportif",
+      "fullName": "Nom",
+      "gender": "Genre",
+      "height": "Taille",
+      "liftingExperience": "Expérience d'entraînement",
+      "trainingAutonomy": "Suggestions de charges",
+      "trainingDays": "Jours par semaine",
+      "trainingLocation": "Où tu t'entraînes",
+      "units": "Unités",
+      "weight": "Poids",
+      "weightGoal": "Objectif de poids"
     },
     "hub": {
-      "chatSubtitle": "Answer a few questions in a chat inside Musclog.",
-      "chatTitle": "Chat with AI here",
-      "externalSubtitle": "Chat there, then bring your setup back as a file.",
-      "externalTitle": "Use ChatGPT or Claude",
-      "haveFile": "I already have a setup file",
-      "intro": "Answer a few questions in a conversation instead of filling in forms. You'll check everything before anything is saved.",
-      "privacy": "Your answers go to the AI you choose. Your API key stays on this device.",
-      "profileIntro": "Tell an AI what has changed. You'll see each change next to what you have now before anything is saved.",
-      "profileTitle": "Update with AI",
-      "resumeBody": "You have an unfinished setup conversation.",
-      "resumeContinue": "Continue",
-      "resumeStartOver": "Start over",
-      "resumeTitle": "Pick up where you left off",
-      "title": "Set up with AI"
+      "chatSubtitle": "Réponds à quelques questions dans une conversation dans Musclog.",
+      "chatTitle": "Discuter avec l'IA ici",
+      "externalSubtitle": "Discute là-bas, puis rapporte ta configuration sous forme de fichier.",
+      "externalTitle": "Utiliser ChatGPT ou Claude",
+      "haveFile": "J'ai déjà un fichier de configuration",
+      "intro": "Réponds à quelques questions dans une conversation au lieu de remplir des formulaires. Tu vérifieras tout avant que quoi que ce soit ne soit enregistré.",
+      "privacy": "Tes réponses partent vers l'IA que tu choisis. Ta clé d'API reste sur cet appareil.",
+      "profileIntro": "Dis à une IA ce qui a changé. Tu verras chaque changement à côté de ce que tu as actuellement avant que quoi que ce soit ne soit enregistré.",
+      "profileTitle": "Mettre à jour avec l'IA",
+      "resumeBody": "Tu as une conversation de configuration non terminée.",
+      "resumeContinue": "Continuer",
+      "resumeStartOver": "Recommencer",
+      "resumeTitle": "Reprendre là où tu t'étais arrêté",
+      "title": "Configurer avec l'IA"
     },
     "provider": {
-      "checkKey": "Check key and continue",
-      "gatewayHint": "No account or key. A daily limit applies.",
-      "intro": "Pick the AI that will ask you the questions. Your own key keeps working in Musclog afterwards.",
-      "keyLabel": "API key",
-      "keyNetwork": "Couldn't reach {{provider}} to check the key. Check your connection and try again.",
-      "keyPlaceholder": "Paste your key",
-      "keyRejected": "{{provider}} didn't accept that key. Check that you copied all of it.",
-      "keySaved": "A key is saved. Tap to use it or replace it.",
-      "keyStorage": "The key is stored encrypted on this device and used for Musclog's AI features. Musclog uses {{model}} by default; you can change it, or remove the key, in Settings, AI.",
-      "keyTitle": "Your {{provider}} key",
+      "checkKey": "Vérifier la clé et continuer",
+      "gatewayHint": "Pas de compte ni de clé. Une limite quotidienne s'applique.",
+      "intro": "Choisis l'IA qui te posera les questions. Ta propre clé continuera de fonctionner dans Musclog ensuite.",
+      "keyLabel": "Clé d'API",
+      "keyNetwork": "Impossible de joindre {{provider}} pour vérifier la clé. Vérifie ta connexion et réessaie.",
+      "keyPlaceholder": "Colle ta clé",
+      "keyRejected": "{{provider}} n'a pas accepté cette clé. Vérifie que tu l'as copiée en entier.",
+      "keySaved": "Une clé est enregistrée. Touche pour l'utiliser ou la remplacer.",
+      "keyStorage": "La clé est stockée chiffrée sur cet appareil et sert aux fonctions IA de Musclog. Musclog utilise {{model}} par défaut ; tu peux le changer, ou supprimer la clé, dans Réglages, IA.",
+      "keyTitle": "Ta clé {{provider}}",
       "names": {
         "claude": "Claude",
-        "gateway": "Free Musclog AI",
+        "gateway": "Musclog IA gratuite",
         "gemini": "Google Gemini",
-        "local": "Local model",
+        "local": "Modèle local",
         "onDevice": "Apple Intelligence",
         "openai": "OpenAI"
       },
-      "openGemini": "Open Google AI Studio",
-      "openClaude": "Open the Claude keys page",
-      "openOpenAi": "Open the OpenAI keys page",
-      "ownKey": "Use your own key",
-      "problem": "Something went wrong. Try again, or pick another option.",
-      "simpleHint": "Runs on your device. Simpler models may struggle with this chat.",
+      "openGemini": "Ouvrir Google AI Studio",
+      "openClaude": "Ouvrir la page des clés Claude",
+      "openOpenAi": "Ouvrir la page des clés OpenAI",
+      "ownKey": "Utiliser ma propre clé",
+      "problem": "Une erreur s'est produite. Réessaie, ou choisis une autre option.",
+      "simpleHint": "Fonctionne sur ton appareil. Les modèles plus simples peuvent avoir du mal avec ce chat.",
       "steps": {
         "claude": {
-          "one": "Open the Claude Console keys page and sign in.",
-          "three": "Copy it and paste it below.",
-          "two": "Create a new API key. Your account needs credits added."
+          "one": "Ouvre la page des clés de la Claude Console et connecte-toi.",
+          "three": "Copie-la et colle-la ci-dessous.",
+          "two": "Crée une nouvelle clé d'API. Ton compte doit avoir des crédits."
         },
         "gemini": {
-          "one": "Open Google AI Studio and sign in.",
-          "three": "Copy it and paste it below.",
-          "two": "Create an API key."
+          "one": "Ouvre Google AI Studio et connecte-toi.",
+          "three": "Copie-la et colle-la ci-dessous.",
+          "two": "Crée une clé d'API."
         },
         "openai": {
-          "one": "Open the OpenAI keys page and sign in.",
-          "three": "Copy it and paste it below.",
-          "two": "Create a new secret key. Your account needs billing set up."
+          "one": "Ouvre la page des clés OpenAI et connecte-toi.",
+          "three": "Copie-la et colle-la ci-dessous.",
+          "two": "Crée une nouvelle clé secrète. Ton compte doit avoir la facturation activée."
         }
       },
-      "title": "Choose your AI",
-      "useExternal": "Use ChatGPT or Claude instead",
-      "useSaved": "Use the saved key"
+      "title": "Choisis ton IA",
+      "useExternal": "Utiliser ChatGPT ou Claude à la place",
+      "useSaved": "Utiliser la clé enregistrée"
     },
     "recovery": {
       "actions": {
-        "continueGuided": "Use the setup forms instead",
-        "ownKey": "Use my own key",
-        "replaceKey": "Replace the key",
-        "retry": "Try again",
-        "switchProvider": "Choose another AI",
-        "useExternal": "Use ChatGPT or Claude"
+        "continueGuided": "Utiliser plutôt les formulaires de configuration",
+        "ownKey": "Utiliser ma propre clé",
+        "replaceKey": "Remplacer la clé",
+        "retry": "Réessayer",
+        "switchProvider": "Choisir une autre IA",
+        "useExternal": "Utiliser ChatGPT ou Claude"
       },
       "cancelled": {
-        "description": "Your message is back in the box.",
-        "title": "Stopped"
+        "description": "Ton message est revenu dans la zone de saisie.",
+        "title": "Arrêté"
       },
       "credits": {
-        "description": "The provider says the account has run out of credit or quota. Add credit, or choose another way to answer.",
-        "title": "This AI has no credit left"
+        "description": "Le fournisseur indique que le compte n'a plus de crédit ou de quota. Ajoute du crédit, ou choisis une autre façon de répondre.",
+        "title": "Cette IA n'a plus de crédit"
       },
       "gatewayLimit": {
-        "description": "Free Musclog AI has a daily limit. Try again tomorrow, use your own key, or choose another way.",
-        "title": "The free daily limit is reached"
+        "description": "Musclog IA gratuite a une limite quotidienne. Réessaie demain, utilise ta propre clé, ou choisis une autre façon.",
+        "title": "La limite quotidienne gratuite est atteinte"
       },
       "invalidKey": {
-        "description": "The provider no longer accepts this key. Replace it, or choose another way to answer.",
-        "title": "The key was rejected"
+        "description": "Le fournisseur n'accepte plus cette clé. Remplace-la, ou choisis une autre façon de répondre.",
+        "title": "La clé a été refusée"
       },
       "malformed": {
-        "description": "This model isn't giving answers Musclog can use. Choose another AI or another way.",
-        "title": "That AI's answer couldn't be read"
+        "description": "Ce modèle ne donne pas de réponses que Musclog peut utiliser. Choisis une autre IA ou une autre façon.",
+        "title": "La réponse de cette IA n'a pas pu être lue"
       },
       "offline": {
-        "description": "Your message wasn't sent. Check your connection and try again.",
-        "title": "No connection"
+        "description": "Ton message n'a pas été envoyé. Vérifie ta connexion et réessaie.",
+        "title": "Pas de connexion"
       },
       "timeout": {
-        "description": "The AI didn't answer in time. Try again, or choose another one.",
-        "title": "That took too long"
+        "description": "L'IA n'a pas répondu à temps. Réessaie, ou choisis-en une autre.",
+        "title": "Ça a pris trop de temps"
       },
       "unavailable": {
-        "description": "It was turned off or its key was removed. Choose another AI or another way.",
-        "title": "This AI isn't available"
+        "description": "Elle a été désactivée ou sa clé a été supprimée. Choisis une autre IA ou une autre façon.",
+        "title": "Cette IA n'est pas disponible"
       },
       "unknown": {
-        "description": "The AI couldn't answer. Try again, or choose another way.",
-        "title": "Something went wrong"
+        "description": "L'IA n'a pas pu répondre. Réessaie, ou choisis une autre façon.",
+        "title": "Une erreur s'est produite"
       }
     },
     "review": {
-      "apply": "Apply",
-      "applyFailedBody": "Nothing was lost. Your answers are still here: try again.",
-      "applyFailedTitle": "Couldn't save your setup",
-      "applyOnboarding": "Looks right, continue",
-      "applyProfile": "Apply changes",
-      "back": "Back",
-      "currentValue": "Now: {{value}}",
+      "apply": "Appliquer",
+      "applyFailedBody": "Rien n'a été perdu. Tes réponses sont toujours là : réessaie.",
+      "applyFailedTitle": "Impossible d'enregistrer ta configuration",
+      "applyOnboarding": "Ça me va, continuer",
+      "applyProfile": "Appliquer les changements",
+      "back": "Retour",
+      "currentValue": "Actuellement : {{value}}",
       "errors": {
-        "invalid": "That value isn't valid.",
-        "outOfRange": "That value is outside the allowed range."
+        "invalid": "Cette valeur n'est pas valide.",
+        "outOfRange": "Cette valeur est en dehors de la plage autorisée."
       },
-      "ignored": "Ignored because Musclog doesn't use them: {{keys}}",
-      "intro": "Check your answers. Tap one to change it. Nothing is saved until you continue.",
-      "missing": "Still needed: {{fields}}",
-      "needed": "Needed",
-      "notSet": "Not set",
+      "ignored": "Ignoré car Musclog ne les utilise pas : {{keys}}",
+      "intro": "Vérifie tes réponses. Touche-en une pour la modifier. Rien n'est enregistré tant que tu ne continues pas.",
+      "missing": "Encore nécessaire : {{fields}}",
+      "needed": "Nécessaire",
+      "notSet": "Non défini",
       "notes": {
-        "comebackNotStarted": "Coming back after a break wasn't started. You can start it from Comeback.",
-        "daysNotApplied": "Days per week isn't saved from here.",
-        "gymKept": "You already have a gym, so it was left as it is.",
-        "recalculationSkipped": "Your targets weren't recalculated because your profile is missing something."
+        "comebackNotStarted": "Le retour après une pause n'a pas été lancé. Tu peux le lancer depuis Reprise.",
+        "daysNotApplied": "Les jours par semaine ne sont pas enregistrés depuis ici.",
+        "gymKept": "Tu as déjà une salle, elle a donc été laissée telle quelle.",
+        "recalculationSkipped": "Tes objectifs nutritionnels n'ont pas été recalculés parce qu'il manque une information à ton profil."
       },
-      "openComeback": "Open Comeback",
-      "profileIntro": "Each answer is shown next to what you have now. Choose which changes to apply.",
-      "recalculate": "Also recalculate my nutrition targets",
-      "recalculateHint": "You'll see the new targets before they're saved. Your earlier targets stay in your history.",
-      "remove": "Remove",
-      "save": "Save",
+      "openComeback": "Ouvrir la Reprise",
+      "profileIntro": "Chaque réponse est affichée à côté de ce que tu as actuellement. Choisis les changements à appliquer.",
+      "recalculate": "Recalculer aussi mes objectifs nutritionnels",
+      "recalculateHint": "Tu verras les nouveaux objectifs avant qu'ils ne soient enregistrés. Tes anciens objectifs restent dans ton historique.",
+      "remove": "Supprimer",
+      "save": "Enregistrer",
       "sections": {
-        "aboutYou": "About you",
-        "body": "Body",
-        "experience": "Experience",
-        "goals": "Goals",
-        "training": "Training"
+        "aboutYou": "À propos de toi",
+        "body": "Corps",
+        "experience": "Expérience",
+        "goals": "Objectifs",
+        "training": "Entraînement"
       },
-      "skip": "Skip",
-      "title": "Review your setup",
+      "skip": "Passer",
+      "title": "Vérifie ta configuration",
       "warnings": {
-        "comebackStartsAtMaintenance": "Because you're coming back after a break, your first nutrition plan starts at maintenance.",
-        "dobAgeMismatch": "The birth date and the age don't match. The birth date was used.",
-        "unusualBodyMeasurements": "Your height and weight look unusual together. Check them.",
-        "weightGoalConflictsFocus": "Your fitness focus is weight loss, but your weight goal isn't to lose weight."
+        "comebackStartsAtMaintenance": "Comme tu reprends après une pause, ton premier plan nutritionnel commence au maintien.",
+        "dobAgeMismatch": "La date de naissance et l'âge ne correspondent pas. La date de naissance a été utilisée.",
+        "unusualBodyMeasurements": "Ta taille et ton poids semblent inhabituels ensemble. Vérifie-les.",
+        "weightGoalConflictsFocus": "Ton objectif sportif est la perte de poids, mais ton objectif de poids n'est pas de perdre du poids."
       }
     }
   }

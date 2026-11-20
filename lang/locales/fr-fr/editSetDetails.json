@@ -1,10 +1,10 @@
 {
   "editSetDetails": {
-    "title": "Edit set details",
-    "subtitle": "Modify targets for {{setLabel}}",
-    "partialReps": "Partial reps",
-    "cancel": "Cancel",
-    "saveChanges": "Save changes",
-    "repsInReserve": "Reps in reserve"
+    "title": "Modifier les détails de la série",
+    "subtitle": "Modifie les objectifs de {{setLabel}}",
+    "partialReps": "Répétitions partielles",
+    "cancel": "Annuler",
+    "saveChanges": "Enregistrer les modifications",
+    "repsInReserve": "Répétitions en réserve"
   }
 }

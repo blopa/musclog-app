@@ -1,55 +1,55 @@
 {
   "websiteToolNetCarbs": {
-    "title": "Net carbs calculator",
-    "intro": "Turn the carbohydrate and fiber on a nutrition label into total and net carbs, and see which one your tracker expects.",
+    "title": "Rechner für Netto-Kohlenhydrate",
+    "intro": "Verwandle die Kohlenhydrate und Ballaststoffe auf einer Nährwertangabe in Gesamt- und Netto-Kohlenhydrate, und sieh, welche dein Tracker erwartet.",
     "form": {
-      "region": "Where the label is from",
-      "us": "US or Canada label: carbs include fiber",
-      "eu": "EU, UK or similar label: carbs exclude fiber",
-      "carbs": "Carbohydrate on the label",
-      "fiber": "Dietary fiber on the label"
+      "region": "Woher die Angabe stammt",
+      "us": "US- oder kanadische Angabe: Kohlenhydrate schließen Ballaststoffe ein",
+      "eu": "EU-, britische oder ähnliche Angabe: Kohlenhydrate ohne Ballaststoffe",
+      "carbs": "Kohlenhydrate auf der Angabe",
+      "fiber": "Ballaststoffe auf der Angabe"
     },
     "problems": {
-      "carbs": "Enter the carbohydrate as a number of grams.",
-      "fiber": "Enter the fiber as a number of grams, or 0.",
-      "fiberTooHigh": "On a US or Canada label, total carbohydrate already includes fiber, so fiber cannot be more than that total. Check the two numbers."
+      "carbs": "Gib die Kohlenhydrate als Zahl in Gramm ein.",
+      "fiber": "Gib die Ballaststoffe als Zahl in Gramm oder 0 ein.",
+      "fiberTooHigh": "Auf einer US- oder kanadischen Angabe sind die Ballaststoffe bereits in den Gesamtkohlenhydraten enthalten, sie können also nicht mehr als diese Gesamtmenge sein. Prüfe die beiden Zahlen."
     },
     "results": {
-      "net": "Net carbs",
-      "netNote": "Carbohydrate without fiber: the digestible part that net-carb trackers count.",
-      "total": "Total carbohydrate",
-      "totalNote": "Carbohydrate with fiber included: what US labels print and what Musclog stores for a food.",
-      "logTitle": "What to enter",
-      "logTotal": "A tracker that counts total carbs: enter {{value}}.",
-      "logNet": "A tracker that counts net carbs: enter {{value}}."
+      "net": "Netto-Kohlenhydrate",
+      "netNote": "Kohlenhydrate ohne Ballaststoffe: der verdauliche Anteil, den Netto-Kohlenhydrat-Tracker zählen.",
+      "total": "Gesamtkohlenhydrate",
+      "totalNote": "Kohlenhydrate einschließlich Ballaststoffe: was US-Angaben drucken und was Musclog für ein Lebensmittel speichert.",
+      "logTitle": "Was du eingeben solltest",
+      "logTotal": "Ein Tracker, der Gesamtkohlenhydrate zählt: gib {{value}} ein.",
+      "logNet": "Ein Tracker, der Netto-Kohlenhydrate zählt: gib {{value}} ein."
     },
     "notes": {
-      "sugarAlcohols": "Sugar alcohols (polyols such as erythritol or maltitol) are not subtracted here. Some people also take them off their net carbs; this tool does not, so the net figure may run a little high for products that contain them.",
-      "musclog": "Musclog stores total carbs including fiber, the way US labels count them. Food from EU sources is converted when it is saved, so the diary keeps one meaning for carbs."
+      "sugarAlcohols": "Zuckeralkohole (Polyole wie Erythrit oder Maltit) werden hier nicht abgezogen. Manche Menschen ziehen sie auch von ihren Netto-Kohlenhydraten ab; dieses Werkzeug tut das nicht, daher kann der Nettowert bei Produkten mit Zuckeralkoholen etwas zu hoch sein.",
+      "musclog": "Musclog speichert Gesamtkohlenhydrate einschließlich Ballaststoffe, so wie US-Angaben sie zählen. Lebensmittel aus EU-Quellen werden beim Speichern umgerechnet, damit das Tagebuch für Kohlenhydrate eine einheitliche Bedeutung behält."
     },
     "sections": [
       {
-        "title": "Why labels differ",
+        "title": "Warum sich die Angaben unterscheiden",
         "body": [
-          "In the EU, the declared carbohydrate is the carbohydrate your body metabolises, and fiber is declared on its own line. In the US and Canada, the total carbohydrate line already includes dietary fiber, so the same product can show different carbohydrate numbers on the two labels."
+          "In der EU ist der angegebene Kohlenhydratwert der Anteil, den dein Körper verstoffwechselt, und Ballaststoffe stehen in einer eigenen Zeile. In den USA und Kanada schließt die Zeile für Gesamtkohlenhydrate die Ballaststoffe bereits ein, deshalb kann dasselbe Produkt auf den beiden Angaben unterschiedliche Kohlenhydratwerte zeigen."
         ]
       },
       {
-        "title": "Total and net",
+        "title": "Gesamt und netto",
         "body": [
-          "Total carbohydrate includes fiber. Net carbs is total minus fiber, the part your body digests. The page shows both, because some trackers ask for one and some for the other."
+          "Gesamtkohlenhydrate enthalten Ballaststoffe. Netto-Kohlenhydrate sind Gesamt minus Ballaststoffe, der Anteil, den dein Körper verdaut. Die Seite zeigt beides, weil manche Tracker das eine und manche das andere verlangen."
         ]
       },
       {
-        "title": "What is not handled",
+        "title": "Was nicht berücksichtigt wird",
         "body": [
-          "Sugar alcohols are not subtracted, and the page does not estimate fiber for foods without a label."
+          "Zuckeralkohole werden nicht abgezogen, und die Seite schätzt keine Ballaststoffe für Lebensmittel ohne Angabe."
         ]
       }
     ],
     "sources": {
-      "eu": "EU Regulation 1169/2011, food information to consumers (Annex I)",
-      "fda": "FDA, A Food Labeling Guide (nutrition labelling)"
+      "eu": "EU-Verordnung 1169/2011, Lebensmittelinformation für Verbraucher (Anhang I)",
+      "fda": "FDA, A Food Labeling Guide (Nährwertkennzeichnung)"
     }
   }
 }

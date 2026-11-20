@@ -1,73 +1,73 @@
 {
   "websiteToolStrengthLevel": {
-    "title": "Strength level calculator",
-    "intro": "Enter your body weight and a set you did. See which strength level your estimated one-rep max reaches for that lift, and how much each level needs at your body weight.",
+    "title": "Kuvvet seviyesi hesaplayıcısı",
+    "intro": "Vücut ağırlığını ve yaptığın bir seti gir. Tahmini bir tekrarlık maksimumunun o hareket için hangi kuvvet seviyesine ulaştığını ve her seviyenin vücut ağırlığında ne kadar gerektirdiğini gör.",
     "form": {
-      "sex": "Sex",
-      "sexMale": "Male",
-      "sexFemale": "Female",
-      "sexOther": "Other",
-      "bodyWeight": "Body weight",
-      "lift": "Lift",
-      "perHand": "per hand",
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "reserve": "Reps in reserve (optional)",
-      "reserveHint": "How many more reps you could have done. Leave empty if you went to failure."
+      "sex": "Cinsiyet",
+      "sexMale": "Erkek",
+      "sexFemale": "Kadın",
+      "sexOther": "Diğer",
+      "bodyWeight": "Vücut ağırlığı",
+      "lift": "Hareket",
+      "perHand": "el başına",
+      "weight": "Kaldırılan ağırlık",
+      "reps": "Yapılan tekrar",
+      "repsHint": "Tam sayı, 1 ile 10 arası",
+      "reserve": "Tekrar rezervi (isteğe bağlı)",
+      "reserveHint": "Kaç tekrar daha yapabilirdin. Tükenmeye kadar gittiysen boş bırak."
     },
     "problems": {
-      "bodyWeight": "Enter your body weight as a number above 0.",
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "repsTooHigh": "Sets above 10 reps do not give a trustworthy one-rep max. A long set measures endurance, and every formula drifts further from the truth the more reps it has to extrapolate. Use a heavier set of 10 reps or fewer.",
-      "reserve": "Reps in reserve must be a whole number from 0 to 9."
+      "bodyWeight": "Vücut ağırlığını 0'dan büyük bir sayı olarak gir.",
+      "weight": "Kaldırdığın ağırlığı 0'dan büyük bir sayı olarak gir.",
+      "reps": "Tekrarı 1 ile 10 arasında tam bir sayı olarak gir.",
+      "repsTooHigh": "10 tekrardan fazla setler güvenilir bir tekrarlık maksimum vermez. Uzun bir set dayanıklılığı ölçer ve her formül, ekstrapole etmesi gereken tekrar sayısı arttıkça gerçeğten daha çok sapar. 10 ya da daha az tekrarlık daha ağır bir set kullan.",
+      "reserve": "Tekrar rezervi 0 ile 9 arasında tam bir sayı olmalı."
     },
     "results": {
-      "level": "Strength level",
+      "level": "Kuvvet seviyesi",
       "levels": {
-        "beginner": "Beginner",
-        "novice": "Novice",
-        "intermediate": "Intermediate",
-        "advanced": "Advanced",
-        "elite": "Elite"
+        "beginner": "Başlangıç",
+        "novice": "Acemi",
+        "intermediate": "Orta",
+        "advanced": "İleri",
+        "elite": "Elit"
       },
-      "range": "{{lower}} to {{upper}}",
-      "otherNote": "Shown on both the men's and women's scales, because no single table fits.",
-      "estimate": "Estimated one-rep max",
-      "nextLevel": "To reach {{level}}: an estimated one-rep max of {{weight}} {{unit}}.",
-      "topLevel": "This lift is at the top level. There is no level above elite.",
-      "tableTitle": "The one-rep max each level needs at your body weight",
-      "tableLevel": "Level",
-      "tableOne": "Estimated one-rep max",
-      "tableMale": "Men's scale",
-      "tableFemale": "Women's scale",
-      "tableNote": "Each figure is the estimated one-rep max for this lift at your body weight."
+      "range": "{{lower}} ile {{upper}} arası",
+      "otherNote": "Hiçbir tek tablo uymadığı için hem erkek hem kadın ölçeğinde gösterilir.",
+      "estimate": "Tahmini bir tekrarlık maksimum",
+      "nextLevel": "{{level}} seviyesine ulaşmak için: tahmini bir tekrarlık maksimum {{weight}} {{unit}}.",
+      "topLevel": "Bu hareket en üst seviyede. Elit'in üstünde seviye yok.",
+      "tableTitle": "Her seviyenin vücut ağırlığında gerektirdiği bir tekrarlık maksimum",
+      "tableLevel": "Seviye",
+      "tableOne": "Tahmini bir tekrarlık maksimum",
+      "tableMale": "Erkek ölçeği",
+      "tableFemale": "Kadın ölçeği",
+      "tableNote": "Her rakam, vücut ağırlığında bu hareket için tahmini bir tekrarlık maksimumdur."
     },
     "sections": [
       {
-        "title": "What the level compares",
+        "title": "Seviye neyi karşılaştırır",
         "body": [
-          "A level is your estimated one-rep max divided by your body weight, adjusted for the lift and for sex. Heavier people lift more in total, so the body weight is part of the comparison.",
-          "Levels are a Musclog rule of thumb, checked against public powerlifting results from OpenPowerlifting. They show where a lift sits on that scale. They do not rank you against other people."
+          "Bir seviye, tahmini bir tekrarlık maksimumunun vücut ağırlığına bölünmesi ve hareket ve cinsiyete göre ayarlanmasıdır. Daha ağır insanlar toplamda daha fazla kaldırır, bu yüzden vücut ağırlığı karşılaştırmanın bir parçasıdır.",
+          "Seviyeler bir Musclog deneyim kuralıdır; OpenPowerlifting'in açık powerlifting sonuçlarına karşı kontrol edilmiştir. Bir hareketin o ölçekte nerede durduğunu gösterirler. Seni başka insanlarla sıralamazlar."
         ]
       },
       {
-        "title": "Why sex and the lift change the numbers",
+        "title": "Cinsiyet ve hareket sayıları neden değiştirir",
         "body": [
-          "The benchmark for a lift depends on its body region, and women's results sit lower against body weight in the public data, so a woman's level uses a lower benchmark for that region.",
-          "Choose Other when you do not want the answer on one scale. Both the men's and women's scales are shown, and a range is given when they grade differently."
+          "Bir hareketin kıyası vücut bölgesine bağlıdır ve kadınların sonuçları kamuya açık verilerde vücut ağırlığına göre daha düşük durur; bu yüzden bir kadının seviyesi, o bölge için daha düşük bir kıyas kullanır.",
+          "Cevabın tek bir ölçekte görünmesini istemiyorsan Diğer'i seç. Hem erkek hem kadın ölçekleri gösterilir ve farklı derecelendirdiklerinde bir aralık verilir."
         ]
       },
       {
-        "title": "Dumbbell lifts",
+        "title": "Dambıl hareketleri",
         "body": [
-          "Dumbbell lifts are graded per hand, because both the benchmark and the weight you log are per hand. Enter the weight of one dumbbell, not the pair."
+          "Dambıl hareketleri el başına derecelendirilir, çünkü hem kıyas hem de kaydettiğin ağırlık el başınadır. Çiftin değil, tek bir dambılın ağırlığını gir."
         ]
       }
     ],
     "sources": {
-      "openpowerlifting": "OpenPowerlifting, public powerlifting results"
+      "openpowerlifting": "OpenPowerlifting, açık powerlifting sonuçları"
     }
   }
 }

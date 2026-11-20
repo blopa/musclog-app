@@ -1,57 +1,57 @@
 {
   "pastWorkoutHistory": {
-    "title": "Workout history",
-    "searchPlaceholder": "Search sessions...",
-    "noWorkoutsFound": "No workouts found matching your search.",
-    "noWorkoutHistory": "No workout history yet.",
-    "noWorkoutsInRange": "No workouts in this date range. Try increasing the filter range.",
-    "loadMore": "Load more",
-    "loadingMore": "Loading...",
+    "title": "Storico degli allenamenti",
+    "searchPlaceholder": "Cerca sessioni...",
+    "noWorkoutsFound": "Nessun allenamento trovato con questa ricerca.",
+    "noWorkoutHistory": "Nessuno storico degli allenamenti ancora.",
+    "noWorkoutsInRange": "Nessun allenamento in questo intervallo di date. Prova ad ampliare il filtro.",
+    "loadMore": "Carica altri",
+    "loadingMore": "Caricamento...",
     "stats": {
-      "duration": "Duration",
+      "duration": "Durata",
       "volume": "Volume",
-      "calories": "Calories",
-      "distance": "Distance",
-      "pace": "Pace"
+      "calories": "Calorie",
+      "distance": "Distanza",
+      "pace": "Ritmo"
     },
     "prBadge": {
       "singular": "{{count}} PR",
-      "plural": "{{count}} PRs"
+      "plural": "{{count}} PR"
     },
     "filters": {
-      "title": "Filter workouts",
-      "workoutType": "Workout type",
-      "minDuration": "Min. duration",
-      "reset": "Reset",
-      "applyFilters": "Apply filters",
+      "title": "Filtra allenamenti",
+      "workoutType": "Tipo di allenamento",
+      "minDuration": "Durata minima",
+      "reset": "Reimposta",
+      "applyFilters": "Applica filtri",
       "durationFormats": {
         "zero": "0m",
         "minutes": "{{minutes}}m",
-        "minutesPlus": "{{minutes}}+ mins",
+        "minutesPlus": "{{minutes}}+ min",
         "max": "120m+"
       },
       "workoutTypes": {
-        "all": "All types",
-        "strength": "Strength",
+        "all": "Tutti i tipi",
+        "strength": "Forza",
         "cardio": "Cardio",
         "hiit": "HIIT",
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "Date range",
-        "30days": "Last 30 days",
-        "90days": "Last 90 days",
-        "allTime": "All time"
+        "title": "Intervallo di date",
+        "30days": "Ultimi 30 giorni",
+        "90days": "Ultimi 90 giorni",
+        "allTime": "Tutto il periodo"
       },
       "muscleGroups": {
-        "title": "Muscle group (multi-select)",
-        "chest": "Chest",
-        "back": "Back",
-        "legs": "Legs",
-        "shoulders": "Shoulders",
-        "arms": "Arms",
+        "title": "Gruppo muscolare (selezione multipla)",
+        "chest": "Petto",
+        "back": "Schiena",
+        "legs": "Gambe",
+        "shoulders": "Spalle",
+        "arms": "Braccia",
         "core": "Core",
-        "fullBody": "Full body"
+        "fullBody": "Tutto il corpo"
       }
     }
   }

@@ -1,70 +1,70 @@
 [
   {
-    "title": "5-Day Hypertrophy Split"
+    "title": "Split ipertrofia 5 giorni"
   },
   {
     "title": "Push Pull Legs (PPL)"
   },
   {
-    "title": "Upper/Lower 4-Day Split"
+    "title": "Split Upper/Lower 4 giorni"
   },
   {
-    "title": "Full Body (3-Day)"
+    "title": "Full Body (3 giorni)"
   },
   {
-    "title": "Arnold Split (6-Day)"
+    "title": "Split Arnold (6 giorni)"
   },
   {
-    "title": "Bro Split (5-Day)"
+    "title": "Split Bro (5 giorni)"
   },
   {
     "title": "PHUL (Power Hypertrophy Upper Lower)"
   },
   {
-    "title": "2-Day Full Body (A/B)"
+    "title": "Full Body 2 giorni (A/B)"
   },
   {
-    "title": "3-Day Strength Builder"
+    "title": "Costruttore di forza 3 giorni"
   },
   {
-    "title": "Classic 3-Day (Chest/Tri, Back/Bi, Legs/Shoulders)"
+    "title": "Classico 3 giorni (Petto/Tricipiti, Schiena/Bicipiti, Gambe/Spalle)"
   },
   {
-    "title": "Brolic Workout"
+    "title": "Allenamento Brolic"
   },
   {
-    "title": "Cable Superset Workout",
-    "description": "A five-session cable program built around upper, lower, and antagonist supersets. Keep compounds and isolation work at 1–2 RIR; the final isolation set may reach 0–1 RIR. Progress each exercise independently with double progression.",
+    "title": "Allenamento superserie ai cavi",
+    "description": "Un programma di cinque sessioni con cavi, costruito su superserie di parte superiore, inferiore e antagonisti. Mantieni i multiarticolari e gli esercizi di isolamento a 1–2 RIR; l'ultima serie di isolamento può arrivare a 0–1 RIR. Progredisci su ogni esercizio in modo indipendente con la doppia progressione.",
     "dayNames": {
-      "1": "Upper A",
-      "2": "Lower A",
-      "3": "Arms",
-      "5": "Upper B",
-      "6": "Lower B"
+      "1": "Parte superiore A",
+      "2": "Parte inferiore A",
+      "3": "Braccia",
+      "5": "Parte superiore B",
+      "6": "Parte inferiore B"
     }
   },
   {
-    "title": "Short Full Body — Gym",
-    "description": "Two short full-body workouts (A and B) on gym equipment: about 30 minutes, 2 sets each, easy on purpose. A good way back in.",
+    "title": "Full Body breve — Palestra",
+    "description": "Due allenamenti brevi total body (A e B) con le attrezzature della palestra: circa 30 minuti, 2 serie per esercizio, volutamente leggeri. Un buon modo per ricominciare.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Allenamento A",
+      "2": "Allenamento B"
     }
   },
   {
-    "title": "Short Full Body — Home",
-    "description": "Two short full-body workouts (A and B) with dumbbells, a kettlebell and bands: about 30 minutes, 2 sets each. Easy on purpose.",
+    "title": "Full Body breve — Casa",
+    "description": "Due allenamenti brevi total body (A e B) con manubri, un kettlebell ed elastici: circa 30 minuti, 2 serie per esercizio. Volutamente leggeri.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Allenamento A",
+      "2": "Allenamento B"
     }
   },
   {
-    "title": "Short Full Body — No Equipment",
-    "description": "Two short full-body workouts (A and B) with just your body and a band: about 30 minutes, 2 sets each. Easy on purpose.",
+    "title": "Full Body breve — Senza attrezzi",
+    "description": "Due allenamenti brevi total body (A e B) con solo il tuo corpo e un elastico: circa 30 minuti, 2 serie per esercizio. Volutamente leggeri.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Allenamento A",
+      "2": "Allenamento B"
     }
   }
 ]

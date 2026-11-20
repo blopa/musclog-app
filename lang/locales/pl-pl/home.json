@@ -1,73 +1,73 @@
 {
   "home": {
-    "accountMenu": "Open account menu",
+    "accountMenu": "Otwórz menu konta",
     "actions": {
-      "startWorkout": "Start\nworkout",
-      "trackFood": "Track\nfood",
-      "scanBarcode": "Scan\nbarcode",
-      "aiPhoto": "AI\nphoto",
-      "myMeals": "My\nmeals",
-      "addNote": "Add\nnote",
-      "logCardio": "Log\nwalk/run"
+      "startWorkout": "Zacznij\ntrening",
+      "trackFood": "Zapisz\njedzenie",
+      "scanBarcode": "Zeskanuj\nkod",
+      "aiPhoto": "Zdjęcie\nAI",
+      "myMeals": "Moje\nposiłki",
+      "addNote": "Dodaj\nnotatkę",
+      "logCardio": "Zapisz\nspacer/bieg"
     },
     "sections": {
-      "recentWorkouts": "Recent workouts",
-      "recentFoods": "Recent foods",
-      "dailySummary": "Daily summary"
+      "recentWorkouts": "Ostatnie treningi",
+      "recentFoods": "Ostatnie produkty",
+      "dailySummary": "Podsumowanie dnia"
     },
     "activityRings": {
-      "move": "Move",
-      "steps": "Steps",
-      "rest": "Rest",
-      "score": "Score"
+      "move": "Ruch",
+      "steps": "Kroki",
+      "rest": "Odpoczynek",
+      "score": "Wynik"
     },
     "navigation": {
-      "home": "Home",
-      "profile": "Profile",
-      "workouts": "Workouts",
-      "food": "Food",
-      "coach": "Chat",
-      "focus": "Focus",
-      "cycle": "Cycle",
-      "checkin": "Weekly Review"
+      "home": "Start",
+      "profile": "Profil",
+      "workouts": "Treningi",
+      "food": "Jedzenie",
+      "coach": "Czat",
+      "focus": "Skupienie",
+      "cycle": "Cykl",
+      "checkin": "Przegląd tygodnia"
     },
     "dailyStats": {
-      "steps": "Steps",
-      "burned": "Burned so far",
-      "eaten": "Eaten",
-      "deficit": "Deficit",
-      "surplus": "Surplus",
-      "even": "Balanced"
+      "steps": "Kroki",
+      "burned": "Spalono do tej pory",
+      "eaten": "Zjedzono",
+      "deficit": "Deficyt",
+      "surplus": "Nadwyżka",
+      "even": "Zbilansowane"
     },
     "heatmaps": {
-      "lastWeeks_one": "Last week",
-      "lastWeeks_few": "Last {{count}} weeks",
-      "lastWeeks_many": "Last {{count}} weeks",
-      "lastWeeks_other": "Last {{count}} weeks",
-      "lastDays_one": "Last day",
-      "lastDays_few": "Last {{count}} days",
-      "lastDays_many": "Last {{count}} days",
-      "lastDays_other": "Last {{count}} days",
-      "tapHint": "Tap a day for details",
-      "less": "Less",
-      "more": "More",
-      "earlierWeeks": "Show earlier weeks",
-      "laterWeeks": "Show later weeks",
+      "lastWeeks_one": "Ostatni tydzień",
+      "lastWeeks_few": "Ostatnie {{count}} tygodnie",
+      "lastWeeks_many": "Ostatnich {{count}} tygodni",
+      "lastWeeks_other": "Ostatniego {{count}} tygodnia",
+      "lastDays_one": "Ostatni dzień",
+      "lastDays_few": "Ostatnie {{count}} dni",
+      "lastDays_many": "Ostatnich {{count}} dni",
+      "lastDays_other": "Ostatniego {{count}} dnia",
+      "tapHint": "Dotknij dnia, aby zobaczyć szczegóły",
+      "less": "Mniej",
+      "more": "Więcej",
+      "earlierWeeks": "Pokaż wcześniejsze tygodnie",
+      "laterWeeks": "Pokaż późniejsze tygodnie",
       "workouts": {
-        "title": "Workouts",
-        "none": "No workout",
-        "count_one": "{{count}} workout",
-        "count_few": "{{count}} workouts",
-        "count_many": "{{count}} workouts",
-        "count_other": "{{count}} workouts"
+        "title": "Treningi",
+        "none": "Brak treningu",
+        "count_one": "{{count}} trening",
+        "count_few": "{{count}} treningi",
+        "count_many": "{{count}} treningów",
+        "count_other": "{{count}} treningu"
       },
       "nutrition": {
-        "title": "Nutrition",
-        "none": "Nothing logged",
-        "count_one": "{{count}} meal logged",
-        "count_few": "{{count}} meals logged",
-        "count_many": "{{count}} meals logged",
-        "count_other": "{{count}} meals logged"
+        "title": "Odżywianie",
+        "none": "Nic nie zapisano",
+        "count_one": "Zapisano {{count}} posiłek",
+        "count_few": "Zapisano {{count}} posiłki",
+        "count_many": "Zapisano {{count}} posiłków",
+        "count_other": "Zapisano {{count}} posiłku"
       }
     }
   }

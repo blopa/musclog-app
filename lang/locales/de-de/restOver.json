@@ -1,16 +1,16 @@
 {
   "restOver": {
-    "startNextSet": "Start next set",
-    "upNext": "Up next",
-    "weight": "Weight",
+    "startNextSet": "Nächsten Satz starten",
+    "upNext": "Als Nächstes",
+    "weight": "Gewicht",
     "weightWithUnit": "{{value}} {{unit}}",
-    "reps": "Reps",
-    "set": "Set",
-    "restTimeIs": "Rest time is",
-    "over": "over",
-    "timeToGo": "Time to go! Next set is up.",
-    "noWorkoutId": "No workout ID provided",
-    "workoutDeleted": "Workout has been deleted",
-    "loadError": "Failed to load workout data"
+    "reps": "Wdh.",
+    "set": "Satz",
+    "restTimeIs": "Die Pause ist",
+    "over": "vorbei",
+    "timeToGo": "Es geht weiter! Der nächste Satz steht an.",
+    "noWorkoutId": "Keine Trainings-ID angegeben",
+    "workoutDeleted": "Training wurde gelöscht",
+    "loadError": "Trainingsdaten konnten nicht geladen werden"
   }
 }

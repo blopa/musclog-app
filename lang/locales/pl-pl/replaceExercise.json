@@ -1,58 +1,58 @@
 {
   "replaceExercise": {
-    "title": "Replace exercise",
-    "replace": "Replace",
-    "searchPlaceholder": "Search exercises...",
-    "selectExercise": "Select exercise",
-    "loadMore": "Load more",
-    "loadingMore": "Loading…",
-    "noExercisesMatch": "No exercises match",
+    "title": "Zamień ćwiczenie",
+    "replace": "Zamień",
+    "searchPlaceholder": "Szukaj ćwiczeń...",
+    "selectExercise": "Wybierz ćwiczenie",
+    "loadMore": "Wczytaj więcej",
+    "loadingMore": "Wczytywanie…",
+    "noExercisesMatch": "Żadne ćwiczenie nie pasuje",
     "families": {
-      "all": "All",
-      "torso": "Upper body",
-      "arms": "Arms",
-      "legs": "Legs",
-      "core": "Core",
-      "other": "Other"
+      "all": "Wszystkie",
+      "torso": "Górna część ciała",
+      "arms": "Ramiona",
+      "legs": "Nogi",
+      "core": "Brzuch i tułów",
+      "other": "Inne"
     },
-    "suggested": "Suggested for you",
-    "disliked": "Disliked",
-    "hiddenHint": "Exercises you avoid, or that your gym can't supply, are hidden.",
-    "back": "Back",
-    "swapped": "Swapped {{from}} for {{to}}",
+    "suggested": "Polecane dla ciebie",
+    "disliked": "Nielubiane",
+    "hiddenHint": "Ukryto ćwiczenia, których unikasz albo których nie ma na twojej siłowni.",
+    "back": "Wstecz",
+    "swapped": "Zamieniono {{from}} na {{to}}",
     "reason": {
-      "title": "Why swap?",
-      "subtitle": "Replacing with {{name}}",
-      "question": "What's the reason?",
+      "title": "Dlaczego zamieniasz?",
+      "subtitle": "Zamiana na: {{name}}",
+      "question": "Jaki jest powód?",
       "options": {
-        "equipment_unavailable": "Equipment unavailable",
-        "pain": "Pain or discomfort",
-        "too_hard": "Too difficult",
-        "too_easy": "Too easy",
-        "dislike": "Don't like it",
-        "machine_occupied": "Machine occupied",
-        "just_today": "Just for today"
+        "equipment_unavailable": "Sprzęt niedostępny",
+        "pain": "Ból albo dyskomfort",
+        "too_hard": "Za trudne",
+        "too_easy": "Za łatwe",
+        "dislike": "Nie lubię tego",
+        "machine_occupied": "Maszyna zajęta",
+        "just_today": "Tylko na dziś"
       },
       "descriptions": {
-        "equipment_unavailable": "The machine or weights aren't there",
-        "pain": "Something hurts or feels wrong",
-        "too_hard": "Too heavy or too demanding",
-        "too_easy": "Not challenging enough",
-        "dislike": "Just not for me",
-        "machine_occupied": "Someone else is using it",
-        "just_today": "Only this session"
+        "equipment_unavailable": "Maszyny albo ciężarów nie ma",
+        "pain": "Coś boli albo czuć coś nie tak",
+        "too_hard": "Za ciężkie albo zbyt wymagające",
+        "too_easy": "Za mało wyzwania",
+        "dislike": "Po prostu nie dla mnie",
+        "machine_occupied": "Ktoś inny z niej korzysta",
+        "just_today": "Tylko ta sesja"
       },
       "remember": {
-        "injury": "Stop suggesting {{name}} for now",
-        "dislike": "Don't suggest {{name}} again"
+        "injury": "Na razie nie proponuj: {{name}}",
+        "dislike": "Nie proponuj ponownie: {{name}}"
       },
       "rememberHint": {
-        "injury": "It stays out of swaps and generated workouts until it heals.",
-        "dislike": "It will be ranked last, never the first suggestion."
+        "injury": "Ćwiczenie nie pojawi się w zamianach ani w wygenerowanych treningach, dopóki się nie wygoi.",
+        "dislike": "Będzie na końcu listy, nigdy jako pierwsza propozycja."
       },
-      "removeEquipment": "{{equipment}} isn't available at {{gym}}",
-      "removeEquipmentHint": "Remove it from this gym so exercises needing it aren't suggested."
+      "removeEquipment": "{{equipment}} nie jest dostępne w: {{gym}}",
+      "removeEquipmentHint": "Usuń to z tej siłowni, żeby nie proponować ćwiczeń, które tego wymagają."
     },
-    "addReason": "Add reason"
+    "addReason": "Dodaj powód"
   }
 }

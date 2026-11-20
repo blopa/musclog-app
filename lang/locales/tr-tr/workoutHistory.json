@@ -1,19 +1,19 @@
 {
   "workoutHistory": {
-    "title": "Session history",
-    "previewTitle": "Workout preview",
-    "workoutInProgress": "Workout in progress",
-    "previewSubtitle": "Preview",
-    "duration": "Duration",
-    "volume": "Vol",
-    "setsDone": "Sets done",
-    "startThisWorkout": "Start this workout",
-    "noExercisesYet": "No exercises yet",
-    "exercise": "Exercise {{number}}",
+    "title": "Seans geçmişi",
+    "previewTitle": "Antrenman önizlemesi",
+    "workoutInProgress": "Antrenman devam ediyor",
+    "previewSubtitle": "Önizleme",
+    "duration": "Süre",
+    "volume": "Hacim",
+    "setsDone": "Tamamlanan set",
+    "startThisWorkout": "Bu antrenmana başla",
+    "noExercisesYet": "Henüz egzersiz yok",
+    "exercise": "Egzersiz {{number}}",
     "set": "Set {{number}}",
-    "share": "Share",
-    "shareDescription": "Share these workout details",
-    "shareFailed": "Failed to share workout details. Please try again.",
-    "viewHistory": "View past sessions"
+    "share": "Paylaş",
+    "shareDescription": "Bu antrenman ayrıntılarını paylaş",
+    "shareFailed": "Antrenman ayrıntıları paylaşılamadı. Lütfen tekrar dene.",
+    "viewHistory": "Geçmiş seansları gör"
   }
 }

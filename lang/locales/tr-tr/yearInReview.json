@@ -1,184 +1,184 @@
 {
   "yearInReview": {
-    "title": "Your year in Musclog",
-    "empty": "Nothing is logged for this year yet. The review fills in as you train and track.",
-    "back": "Back",
-    "next": "Next",
-    "done": "Done",
-    "stepOf": "{{current}} of {{total}}",
-    "shareButton": "Share",
-    "shareSheetTitle": "Share your year",
-    "includeWeight": "Include weight change",
-    "includeNutrition": "Include nutrition",
-    "shareHint": "Both are off unless you turn them on. Without them the image has no body weight and no food figures.",
-    "shareAction": "Share image",
+    "title": "Musclog'daki yılın",
+    "empty": "Bu yıl için henüz bir şey kaydedilmedi. Antrenman yaptıkça ve takip ettikçe değerlendirme dolar.",
+    "back": "Geri",
+    "next": "İleri",
+    "done": "Bitti",
+    "stepOf": "{{current}} / {{total}}",
+    "shareButton": "Paylaş",
+    "shareSheetTitle": "Yılını paylaş",
+    "includeWeight": "Kilo değişimini ekle",
+    "includeNutrition": "Beslenmeyi ekle",
+    "shareHint": "İkisi de sen açmadıkça kapalı. Onlar olmadan görselde vücut ağırlığı ve yemek bilgisi olmaz.",
+    "shareAction": "Görseli paylaş",
     "intro": {
-      "body": "Here is what your training and tracking looked like."
+      "body": "Antrenmanın ve takibin böyle görünüyormuş."
     },
     "sessions": {
-      "title": "Workouts",
-      "body_one": "workout finished",
-      "body_few": "workouts finished",
-      "body_many": "workouts finished",
-      "body_other": "workouts finished"
+      "title": "Antrenmanlar",
+      "body_one": "tamamlanan antrenman",
+      "body_few": "tamamlanan antrenman",
+      "body_many": "tamamlanan antrenman",
+      "body_other": "tamamlanan antrenman"
     },
     "heatmap": {
-      "title": "Training days",
-      "days_one": "day trained",
-      "days_few": "days trained",
-      "days_many": "days trained",
-      "days_other": "days trained",
+      "title": "Antrenman günleri",
+      "days_one": "antrenman yapılan gün",
+      "days_few": "antrenman yapılan gün",
+      "days_many": "antrenman yapılan gün",
+      "days_other": "antrenman yapılan gün",
       "legend": {
-        "workout": "Workout",
-        "food": "Food",
-        "both": "Both"
+        "workout": "Antrenman",
+        "food": "Yemek",
+        "both": "İkisi"
       }
     },
     "streak": {
-      "title": "Longest run",
-      "body_one": "week in a row with a workout",
-      "body_few": "weeks in a row with a workout",
-      "body_many": "weeks in a row with a workout",
-      "body_other": "weeks in a row with a workout"
+      "title": "En uzun seri",
+      "body_one": "üst üste antrenmanlı hafta",
+      "body_few": "üst üste antrenmanlı hafta",
+      "body_many": "üst üste antrenmanlı hafta",
+      "body_other": "üst üste antrenmanlı hafta"
     },
     "volume": {
-      "title": "Total lifted",
-      "body": "Weight times reps across your working sets.",
-      "perWorkout": "{{unit}} per workout"
+      "title": "Toplam kaldırılan",
+      "body": "Ana setlerindeki ağırlık çarpı tekrar.",
+      "perWorkout": "Antrenman başına {{unit}}"
     },
     "topExercises": {
-      "title": "Most trained",
+      "title": "En çok çalışılan",
       "sets_one": "{{n}} set",
-      "sets_few": "{{n}} sets",
-      "sets_many": "{{n}} sets",
-      "sets_other": "{{n}} sets"
+      "sets_few": "{{n}} set",
+      "sets_many": "{{n}} set",
+      "sets_other": "{{n}} set"
     },
     "records": {
-      "title": "Personal records",
-      "body_one": "new personal record",
-      "body_few": "new personal records",
-      "body_many": "new personal records",
-      "body_other": "new personal records"
+      "title": "Kişisel rekorlar",
+      "body_one": "yeni kişisel rekor",
+      "body_few": "yeni kişisel rekor",
+      "body_many": "yeni kişisel rekor",
+      "body_other": "yeni kişisel rekor"
     },
     "busiestMonth": {
-      "title": "Busiest month",
-      "body_one": "{{n}} workout that month.",
-      "body_few": "{{n}} workouts that month.",
-      "body_many": "{{n}} workouts that month.",
-      "body_other": "{{n}} workouts that month."
+      "title": "En yoğun ay",
+      "body_one": "O ay {{n}} antrenman.",
+      "body_few": "O ay {{n}} antrenman.",
+      "body_many": "O ay {{n}} antrenman.",
+      "body_other": "O ay {{n}} antrenman."
     },
     "trainingTime": {
-      "title": "Usual training time",
-      "hours": "{{n}} hours trained, from sessions with a recorded length.",
+      "title": "Genelde antrenman saati",
+      "hours": "Süresi kaydedilen seanslardan {{n}} saat antrenman.",
       "buckets": {
-        "morning": "Morning",
-        "afternoon": "Afternoon",
-        "evening": "Evening",
-        "night": "Night"
+        "morning": "Sabah",
+        "afternoon": "Öğleden sonra",
+        "evening": "Akşam",
+        "night": "Gece"
       }
     },
     "nutrition": {
-      "title": "Food logged",
-      "meals_one": "meal logged",
-      "meals_few": "meals logged",
-      "meals_many": "meals logged",
-      "meals_other": "meals logged",
-      "days_one": "day with food logged",
-      "days_few": "days with food logged",
-      "days_many": "days with food logged",
-      "days_other": "days with food logged"
+      "title": "Kaydedilen yemek",
+      "meals_one": "kaydedilen öğün",
+      "meals_few": "kaydedilen öğün",
+      "meals_many": "kaydedilen öğün",
+      "meals_other": "kaydedilen öğün",
+      "days_one": "yemek kaydedilen gün",
+      "days_few": "yemek kaydedilen gün",
+      "days_many": "yemek kaydedilen gün",
+      "days_other": "yemek kaydedilen gün"
     },
     "foodStreak": {
-      "title": "Longest logging run",
-      "body_one": "day in a row with food logged",
-      "body_few": "days in a row with food logged",
-      "body_many": "days in a row with food logged",
-      "body_other": "days in a row with food logged",
-      "chart": "Days with food logged, month by month."
+      "title": "En uzun kayıt serisi",
+      "body_one": "üst üste yemek kaydedilen gün",
+      "body_few": "üst üste yemek kaydedilen gün",
+      "body_many": "üst üste yemek kaydedilen gün",
+      "body_other": "üst üste yemek kaydedilen gün",
+      "chart": "Yemek kaydedilen günler, ay ay."
     },
     "favouriteMeal": {
-      "title": "Most logged meal",
-      "days_one": "{{n}} day",
-      "days_few": "{{n}} days",
-      "days_many": "{{n}} days",
-      "days_other": "{{n}} days",
+      "title": "En çok kaydedilen öğün",
+      "days_one": "{{n}} gün",
+      "days_few": "{{n}} gün",
+      "days_many": "{{n}} gün",
+      "days_other": "{{n}} gün",
       "captions": {
-        "breakfast": "Most important meal of the day, says every cereal box.",
-        "lunch": "The midday refuel.",
-        "dinner": "The big one at the end of the day.",
-        "snack": "Between meals counts too.",
-        "other": "Hard to file, easy to log."
+        "breakfast": "Her gevrek kutusu söyler: günün en önemli öğünü.",
+        "lunch": "Öğle yakıtı.",
+        "dinner": "Günün sonundaki büyük öğün.",
+        "snack": "Öğünler arası da sayılır.",
+        "other": "Sınıflandırması zor, kaydetmesi kolay."
       }
     },
     "protein": {
-      "title": "Protein, added up",
-      "caption": "{{unit}} of protein",
-      "body": "Gram by gram, from the protein in every meal you logged. Not the weight of the food.",
+      "title": "Protein, toplam",
+      "caption": "{{unit}} protein",
+      "body": "Kaydettiğin her öğünün proteininden gram gram. Yiyeceğin ağırlığı değil.",
       "compare": {
-        "wheyBag_one": "That is about {{n}} bag of whey protein.",
-        "wheyBag_few": "That is about {{n}} bags of whey protein.",
-        "wheyBag_many": "That is about {{n}} bags of whey protein.",
-        "wheyBag_other": "That is about {{n}} bags of whey protein.",
-        "cat_one": "That is about {{n}} cat.",
-        "cat_few": "That is about {{n}} cats.",
-        "cat_many": "That is about {{n}} cats.",
-        "cat_other": "That is about {{n}} cats.",
-        "bowlingBall_one": "That is about {{n}} bowling ball.",
-        "bowlingBall_few": "That is about {{n}} bowling balls.",
-        "bowlingBall_many": "That is about {{n}} bowling balls.",
-        "bowlingBall_other": "That is about {{n}} bowling balls.",
-        "barbell_one": "That is about {{n}} Olympic barbell.",
-        "barbell_few": "That is about {{n}} Olympic barbells.",
-        "barbell_many": "That is about {{n}} Olympic barbells.",
-        "barbell_other": "That is about {{n}} Olympic barbells."
+        "wheyBag_one": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "wheyBag_few": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "wheyBag_many": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "wheyBag_other": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "cat_one": "Bu yaklaşık {{n}} kedi.",
+        "cat_few": "Bu yaklaşık {{n}} kedi.",
+        "cat_many": "Bu yaklaşık {{n}} kedi.",
+        "cat_other": "Bu yaklaşık {{n}} kedi.",
+        "bowlingBall_one": "Bu yaklaşık {{n}} bowling topu.",
+        "bowlingBall_few": "Bu yaklaşık {{n}} bowling topu.",
+        "bowlingBall_many": "Bu yaklaşık {{n}} bowling topu.",
+        "bowlingBall_other": "Bu yaklaşık {{n}} bowling topu.",
+        "barbell_one": "Bu yaklaşık {{n}} olimpik halter.",
+        "barbell_few": "Bu yaklaşık {{n}} olimpik halter.",
+        "barbell_many": "Bu yaklaşık {{n}} olimpik halter.",
+        "barbell_other": "Bu yaklaşık {{n}} olimpik halter."
       },
-      "chicken_one": "chicken breast’s worth, broccoli not included",
-      "chicken_few": "chicken breasts’ worth, broccoli not included",
-      "chicken_many": "chicken breasts’ worth, broccoli not included",
-      "chicken_other": "chicken breasts’ worth, broccoli not included"
+      "chicken_one": "tavuk göğsü değerinde, brokoli dahil değil",
+      "chicken_few": "tavuk göğsü değerinde, brokoli dahil değil",
+      "chicken_many": "tavuk göğsü değerinde, brokoli dahil değil",
+      "chicken_other": "tavuk göğsü değerinde, brokoli dahil değil"
     },
     "macros": {
-      "title": "Where the grams went",
+      "title": "Gramlar nereye gitti",
       "protein": "Protein",
-      "carbs": "Carbs",
-      "fat": "Fat",
-      "body": "All the grams in the food you logged, added up."
+      "carbs": "Karbonhidrat",
+      "fat": "Yağ",
+      "body": "Kaydettiğin yiyecekteki tüm gramlar, toplandı."
     },
     "weight": {
-      "title": "Body weight",
-      "unchanged": "No change between your first and last weigh-in.",
-      "caption": "From your first weigh-in to your last."
+      "title": "Vücut ağırlığı",
+      "unchanged": "İlk ve son tartılman arasında değişiklik yok.",
+      "caption": "İlk tartılmandan son tartılmana."
     },
     "outro": {
-      "title": "That is the year",
-      "body": "Keep logging to see next year’s story."
+      "title": "Yıl bu kadardı",
+      "body": "Gelecek yılın hikâyesini görmek için kaydetmeye devam et."
     },
     "share": {
-      "sessions": "Workouts",
-      "activeDays": "Active days",
-      "volume": "Total lifted",
-      "topExercise": "Most trained",
-      "records": "Personal records",
-      "meals": "Meals logged",
+      "sessions": "Antrenmanlar",
+      "activeDays": "Aktif günler",
+      "volume": "Toplam kaldırılan",
+      "topExercise": "En çok çalışılan",
+      "records": "Kişisel rekorlar",
+      "meals": "Kaydedilen öğünler",
       "protein": "Protein",
-      "weight": "Weight change"
+      "weight": "Kilo değişimi"
     },
     "homeCard": {
-      "title": "Your {{year}} in Musclog",
-      "body": "See what your training looked like.",
-      "open": "Open your year",
-      "dismiss": "Dismiss"
+      "title": "{{year}} · Musclog'daki yılın",
+      "body": "Antrenmanının nasıl göründüğüne bak.",
+      "open": "Yılını aç",
+      "dismiss": "Kapat"
     },
     "settingsRow": {
-      "title": "Your year in Musclog",
-      "subtitle": "A look back at your training and tracking"
+      "title": "Musclog'daki yılın",
+      "subtitle": "Antrenman ve takibine geriye bakış"
     },
     "notification": {
-      "title": "Your {{year}} in Musclog is ready",
-      "body": "See what your training looked like this year."
+      "title": "{{year}}: Musclog'daki yılın hazır",
+      "body": "Bu yıl antrenmanının nasıl göründüğüne bak."
     },
-    "loadFailed": "Your year couldn't be loaded.",
-    "retry": "Try again",
-    "seeYear": "See {{year}} so far"
+    "loadFailed": "Yılın yüklenemedi.",
+    "retry": "Tekrar dene",
+    "seeYear": "{{year}} için şimdiye kadarkini gör"
   }
 }

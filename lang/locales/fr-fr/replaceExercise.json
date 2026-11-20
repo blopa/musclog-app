@@ -1,58 +1,58 @@
 {
   "replaceExercise": {
-    "title": "Replace exercise",
-    "replace": "Replace",
-    "searchPlaceholder": "Search exercises...",
-    "selectExercise": "Select exercise",
-    "loadMore": "Load more",
-    "loadingMore": "Loading…",
-    "noExercisesMatch": "No exercises match",
+    "title": "Remplacer l'exercice",
+    "replace": "Remplacer",
+    "searchPlaceholder": "Rechercher des exercices...",
+    "selectExercise": "Choisir un exercice",
+    "loadMore": "Charger plus",
+    "loadingMore": "Chargement…",
+    "noExercisesMatch": "Aucun exercice ne correspond",
     "families": {
-      "all": "All",
-      "torso": "Upper body",
-      "arms": "Arms",
-      "legs": "Legs",
-      "core": "Core",
-      "other": "Other"
+      "all": "Tous",
+      "torso": "Haut du corps",
+      "arms": "Bras",
+      "legs": "Jambes",
+      "core": "Tronc",
+      "other": "Autre"
     },
-    "suggested": "Suggested for you",
-    "disliked": "Disliked",
-    "hiddenHint": "Exercises you avoid, or that your gym can't supply, are hidden.",
-    "back": "Back",
-    "swapped": "Swapped {{from}} for {{to}}",
+    "suggested": "Suggérés pour toi",
+    "disliked": "Non apprécié",
+    "hiddenHint": "Les exercices que tu évites, ou que ta salle ne peut pas fournir, sont masqués.",
+    "back": "Retour",
+    "swapped": "{{from}} remplacé par {{to}}",
     "reason": {
-      "title": "Why swap?",
-      "subtitle": "Replacing with {{name}}",
-      "question": "What's the reason?",
+      "title": "Pourquoi remplacer ?",
+      "subtitle": "Remplacement par {{name}}",
+      "question": "Quelle est la raison ?",
       "options": {
-        "equipment_unavailable": "Equipment unavailable",
-        "pain": "Pain or discomfort",
-        "too_hard": "Too difficult",
-        "too_easy": "Too easy",
-        "dislike": "Don't like it",
-        "machine_occupied": "Machine occupied",
-        "just_today": "Just for today"
+        "equipment_unavailable": "Matériel indisponible",
+        "pain": "Douleur ou gêne",
+        "too_hard": "Trop difficile",
+        "too_easy": "Trop facile",
+        "dislike": "Je n'aime pas",
+        "machine_occupied": "Machine occupée",
+        "just_today": "Juste pour aujourd'hui"
       },
       "descriptions": {
-        "equipment_unavailable": "The machine or weights aren't there",
-        "pain": "Something hurts or feels wrong",
-        "too_hard": "Too heavy or too demanding",
-        "too_easy": "Not challenging enough",
-        "dislike": "Just not for me",
-        "machine_occupied": "Someone else is using it",
-        "just_today": "Only this session"
+        "equipment_unavailable": "La machine ou les charges ne sont pas là",
+        "pain": "Quelque chose fait mal ou semble anormal",
+        "too_hard": "Trop lourd ou trop exigeant",
+        "too_easy": "Pas assez stimulant",
+        "dislike": "Ce n'est pas pour moi",
+        "machine_occupied": "Quelqu'un d'autre l'utilise",
+        "just_today": "Seulement pour cette séance"
       },
       "remember": {
-        "injury": "Stop suggesting {{name}} for now",
-        "dislike": "Don't suggest {{name}} again"
+        "injury": "Ne plus proposer {{name}} pour l'instant",
+        "dislike": "Ne plus proposer {{name}}"
       },
       "rememberHint": {
-        "injury": "It stays out of swaps and generated workouts until it heals.",
-        "dislike": "It will be ranked last, never the first suggestion."
+        "injury": "Il reste exclu des remplacements et des séances générées jusqu'à guérison.",
+        "dislike": "Il sera classé en dernier, jamais en première suggestion."
       },
-      "removeEquipment": "{{equipment}} isn't available at {{gym}}",
-      "removeEquipmentHint": "Remove it from this gym so exercises needing it aren't suggested."
+      "removeEquipment": "{{equipment}} n'est pas disponible à {{gym}}",
+      "removeEquipmentHint": "Retire-le de cette salle pour que les exercices qui en ont besoin ne soient pas proposés."
     },
-    "addReason": "Add reason"
+    "addReason": "Ajouter une raison"
   }
 }

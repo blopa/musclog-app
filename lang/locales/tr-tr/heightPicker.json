@@ -1,10 +1,10 @@
 {
   "heightPicker": {
-    "cancel": "Cancel",
-    "confirmHeight": "Confirm height",
-    "feet": "Feet",
-    "inches": "Inches",
-    "selectedHeight": "Selected height",
-    "selectHeight": "Select height"
+    "cancel": "Vazgeç",
+    "confirmHeight": "Boyu onayla",
+    "feet": "Fit",
+    "inches": "İnç",
+    "selectedHeight": "Seçilen boy",
+    "selectHeight": "Boy seç"
   }
 }

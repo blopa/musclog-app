@@ -1,71 +1,71 @@
 {
   "websiteToolRpeChart": {
-    "title": "RPE and RIR chart with load calculator",
-    "intro": "A chart of what share of your one-rep max each number of reps is at each RPE, what RPE means in reps left, and a calculator that turns a set you did into the load for another set.",
+    "title": "Tableau RPE et RIR avec calculateur de charge",
+    "intro": "Un tableau indiquant quelle part de ta répétition maximale représente chaque nombre de répétitions à chaque RPE, ce que signifie la RPE en répétitions restantes, et un calculateur qui transforme une série effectuée en charge pour une autre série.",
     "chart": {
-      "title": "Share of your one-rep max",
+      "title": "Part de ta répétition maximale",
       "rpeColumn": "RPE {{rpe}}",
-      "reps": "Reps",
-      "note": "Read across for the reps you do and down for the effort you rate the set. The percentages come from the same averaged estimate the app uses, so even one rep at RPE 10 reads just under 100%."
+      "reps": "Répétitions",
+      "note": "Lis horizontalement pour les répétitions que tu fais, et verticalement pour l'effort que tu notes pour la série. Les pourcentages viennent de la même estimation moyenne que celle de l'application, donc même une répétition à RPE 10 reste juste en dessous de 100 %."
     },
     "meaning": {
-      "title": "What each RPE means",
+      "title": "Ce que signifie chaque RPE",
       "rpe": "RPE",
-      "reserve": "Reps in reserve",
-      "meaning": "Meaning",
-      "none": "No reps left. The set ended at failure.",
-      "one": "One rep left in the tank.",
-      "two": "Two reps left in the tank.",
-      "three": "Three reps left in the tank.",
-      "four": "Four reps left in the tank."
+      "reserve": "Répétitions en réserve",
+      "meaning": "Signification",
+      "none": "Plus aucune répétition. La série s'est terminée à l'échec.",
+      "one": "Une répétition restante en réserve.",
+      "two": "Deux répétitions restantes en réserve.",
+      "three": "Trois répétitions restantes en réserve.",
+      "four": "Quatre répétitions restantes en réserve."
     },
     "form": {
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "rpe": "RPE of that set",
-      "targetReps": "Target reps",
-      "targetRepsHint": "Whole number, 1 to 10",
-      "targetRpe": "Target RPE"
+      "weight": "Charge soulevée",
+      "reps": "Répétitions effectuées",
+      "repsHint": "Nombre entier, de 1 à 10",
+      "rpe": "RPE de cette série",
+      "targetReps": "Répétitions visées",
+      "targetRepsHint": "Nombre entier, de 1 à 10",
+      "targetRpe": "RPE visé"
     },
     "problems": {
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "targetReps": "Enter the target reps as a whole number from 1 to 10."
+      "weight": "Saisis la charge soulevée sous forme de nombre supérieur à 0.",
+      "reps": "Saisis les répétitions sous forme de nombre entier de 1 à 10.",
+      "targetReps": "Saisis les répétitions visées sous forme de nombre entier de 1 à 10."
     },
     "results": {
-      "oneRepMax": "Estimated one-rep max",
-      "target": "Load for the target, exact",
-      "targetRounded": "Rounded for a bar with standard plates",
-      "roundedNote": "Rounded to the smallest steps a bar loaded with standard plates goes up in. Without a gym the app uses the same steps.",
-      "reps": "reps",
-      "atRpe": "at RPE"
+      "oneRepMax": "Répétition maximale estimée (1RM)",
+      "target": "Charge pour la cible, exacte",
+      "targetRounded": "Arrondie pour une barre avec des disques standard",
+      "roundedNote": "Arrondie aux plus petits pas dont progresse une barre chargée avec des disques standard. Sans salle configurée, l'application utilise les mêmes pas.",
+      "reps": "répétitions",
+      "atRpe": "à RPE"
     },
     "sections": [
       {
-        "title": "What RPE means",
+        "title": "Ce que signifie la RPE",
         "body": [
-          "RPE, rate of perceived exertion, runs from 1 to 10. A set rated 10 had no reps left. RPE 9 left one rep in reserve, RPE 8 two, and so on.",
-          "Reps in reserve (RIR) is the same scale written the other way: RPE = 10 minus RIR. The Musclog app stores a set's effort either way, and the two are the same number."
+          "La RPE, échelle de perception de l'effort, va de 1 à 10. Une série notée 10 n'avait plus de répétitions possibles. Une RPE 9 laisse une répétition en réserve, une RPE 8 deux, et ainsi de suite.",
+          "Les répétitions en réserve (RIR) sont la même échelle exprimée à l'inverse : RPE = 10 moins RIR. L'application Musclog enregistre l'effort d'une série dans l'une ou l'autre forme, et les deux donnent le même chiffre."
         ]
       },
       {
-        "title": "Why people misjudge it",
+        "title": "Pourquoi on se trompe souvent",
         "body": [
-          "Judging how many reps you had left is a skill, and most people are less accurate the further a set was from failure. A set that felt like it had a few reps left may have had more or fewer.",
-          "Treat the chart as a guide. Check it against how your sets actually go, and rate effort honestly when you log it."
+          "Estimer combien de répétitions il te restait est une compétence, et la plupart des gens sont moins précis plus une série est éloignée de l'échec. Une série qui semblait laisser quelques répétitions en réserve peut en avoir laissé plus ou moins.",
+          "Considère le tableau comme un guide. Compare-le à la façon dont tes séries se passent réellement, et note honnêtement ton effort quand tu le saisis."
         ]
       },
       {
-        "title": "How the chart and calculator work",
+        "title": "Comment fonctionnent le tableau et le calculateur",
         "body": [
-          "Each cell is the share of your one-rep max that many reps at that RPE represent. It comes from the same averaged formulas the Musclog app uses to estimate a logged set.",
-          "The calculator estimates your one-rep max from a set you did, then gives the load for a different number of reps at a different RPE. The rounded load is what a bar with standard plates can make."
+          "Chaque cellule est la part de ta répétition maximale que représente ce nombre de répétitions à cette RPE. Elle provient des mêmes formules moyennées que celles qu'utilise l'application Musclog pour estimer une série enregistrée.",
+          "Le calculateur estime ta répétition maximale à partir d'une série effectuée, puis donne la charge pour un autre nombre de répétitions à une autre RPE. La charge arrondie est celle qu'une barre avec des disques standard peut faire."
         ]
       }
     ],
     "sources": {
-      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+      "zourdos": "Zourdos et al. (2016), Nouvelle échelle de RPE propre à l'entraînement en résistance, mesurant les répétitions en réserve"
     }
   }
 }

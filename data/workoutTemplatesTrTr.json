@@ -1,70 +1,70 @@
 [
   {
-    "title": "5-Day Hypertrophy Split"
+    "title": "5 Günlük Hipertrofi Bölümü"
   },
   {
     "title": "Push Pull Legs (PPL)"
   },
   {
-    "title": "Upper/Lower 4-Day Split"
+    "title": "Üst/Alt 4 Günlük Bölüm"
   },
   {
-    "title": "Full Body (3-Day)"
+    "title": "Tüm Vücut (3 Gün)"
   },
   {
-    "title": "Arnold Split (6-Day)"
+    "title": "Arnold Bölümü (6 Gün)"
   },
   {
-    "title": "Bro Split (5-Day)"
+    "title": "Bro Bölümü (5 Gün)"
   },
   {
-    "title": "PHUL (Power Hypertrophy Upper Lower)"
+    "title": "PHUL (Güç ve Hipertrofi Üst Alt)"
   },
   {
-    "title": "2-Day Full Body (A/B)"
+    "title": "2 Günlük Tüm Vücut (A/B)"
   },
   {
-    "title": "3-Day Strength Builder"
+    "title": "3 Günlük Kuvvet Programı"
   },
   {
-    "title": "Classic 3-Day (Chest/Tri, Back/Bi, Legs/Shoulders)"
+    "title": "Klasik 3 Gün (Göğüs/Triceps, Sırt/Biceps, Bacak/Omuz)"
   },
   {
-    "title": "Brolic Workout"
+    "title": "Brolic Antrenmanı"
   },
   {
-    "title": "Cable Superset Workout",
-    "description": "A five-session cable program built around upper, lower, and antagonist supersets. Keep compounds and isolation work at 1–2 RIR; the final isolation set may reach 0–1 RIR. Progress each exercise independently with double progression.",
+    "title": "Kablo Süperset Antrenmanı",
+    "description": "Üst, alt ve karşıt kas süpersetleri etrafında kurulmuş beş seanslık bir kablo programı. Bileşik ve izolasyon hareketlerini 1–2 RIR'da tut; son izolasyon seti 0–1 RIR'a ulaşabilir. Her egzersizi çift ilerlemeyle bağımsız ilerlet.",
     "dayNames": {
-      "1": "Upper A",
-      "2": "Lower A",
-      "3": "Arms",
-      "5": "Upper B",
-      "6": "Lower B"
+      "1": "Üst A",
+      "2": "Alt A",
+      "3": "Kol",
+      "5": "Üst B",
+      "6": "Alt B"
     }
   },
   {
-    "title": "Short Full Body — Gym",
-    "description": "Two short full-body workouts (A and B) on gym equipment: about 30 minutes, 2 sets each, easy on purpose. A good way back in.",
+    "title": "Kısa Tüm Vücut — Salon",
+    "description": "Salon ekipmanıyla iki kısa tüm vücut antrenmanı (A ve B): yaklaşık 30 dakika, her biri 2 set; bilerek kolay. Geri dönmek için iyi bir yol.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Antrenman A",
+      "2": "Antrenman B"
     }
   },
   {
-    "title": "Short Full Body — Home",
-    "description": "Two short full-body workouts (A and B) with dumbbells, a kettlebell and bands: about 30 minutes, 2 sets each. Easy on purpose.",
+    "title": "Kısa Tüm Vücut — Ev",
+    "description": "Dumbbell, kettlebell ve bantlarla iki kısa tüm vücut antrenmanı (A ve B): yaklaşık 30 dakika, her biri 2 set. Bilerek kolay.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Antrenman A",
+      "2": "Antrenman B"
     }
   },
   {
-    "title": "Short Full Body — No Equipment",
-    "description": "Two short full-body workouts (A and B) with just your body and a band: about 30 minutes, 2 sets each. Easy on purpose.",
+    "title": "Kısa Tüm Vücut — Ekipmansız",
+    "description": "Yalnızca vücut ağırlığın ve bir bantla iki kısa tüm vücut antrenmanı (A ve B): yaklaşık 30 dakika, her biri 2 set. Bilerek kolay.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Antrenman A",
+      "2": "Antrenman B"
     }
   }
 ]

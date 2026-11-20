@@ -1,74 +1,74 @@
 {
   "websiteToolWorkoutLogTemplate": {
-    "title": "Free printable workout log",
-    "intro": "Download a workout log to print, or a spreadsheet to fill in on a computer. Both are free, with no sign-up. The spreadsheet saves as a CSV that the Musclog app can import.",
+    "title": "Darmowy dziennik treningów do druku",
+    "intro": "Pobierz dziennik treningów do wydrukowania albo arkusz do wypełnienia na komputerze. Oba są darmowe, bez rejestracji. Arkusz zapisuje się jako CSV, który aplikacja Musclog może zaimportować.",
     "downloads": {
-      "title": "Downloads",
-      "pdfA4": "Printable log, A4",
-      "pdfA4Note": "PDF, 4 landscape sheets. For A4 paper.",
-      "pdfLetter": "Printable log, US Letter",
-      "pdfLetterNote": "PDF, 4 landscape sheets. For US Letter paper.",
-      "xlsx": "Spreadsheet template",
-      "xlsxNote": "Excel file (.xlsx) that also opens in Google Sheets, Numbers and LibreOffice. A Log sheet and a Read me sheet.",
-      "csv": "CSV template",
-      "csvNote": "The same columns as plain text, for any spreadsheet or for the app.",
-      "english": "The files are in English, whatever language this page is in."
+      "title": "Pliki do pobrania",
+      "pdfA4": "Dziennik do druku, A4",
+      "pdfA4Note": "PDF, 4 arkusze poziome. Na papier A4.",
+      "pdfLetter": "Dziennik do druku, US Letter",
+      "pdfLetterNote": "PDF, 4 arkusze poziome. Na papier US Letter.",
+      "xlsx": "Szablon arkusza",
+      "xlsxNote": "Plik Excel (.xlsx), który otworzy się też w Arkuszach Google, Numbers i LibreOffice. Arkusz Log i arkusz Read me.",
+      "csv": "Szablon CSV",
+      "csvNote": "Te same kolumny jako zwykły tekst, do dowolnego arkusza kalkulacyjnego albo do aplikacji.",
+      "english": "Pliki są po angielsku, niezależnie od języka tej strony."
     },
     "check": {
-      "title": "Check your filled-in CSV",
-      "intro": "Choose your file and see what Musclog would read from it. It runs the same reader as the app, in your browser. The file is not uploaded.",
-      "file": "CSV file",
-      "unitLabel": "Weights in your file are in",
+      "title": "Sprawdź wypełniony plik CSV",
+      "intro": "Wybierz plik i zobacz, co Musclog z niego odczyta. Używa tego samego czytnika co aplikacja, w twojej przeglądarce. Plik nie jest wysyłany.",
+      "file": "Plik CSV",
+      "unitLabel": "Ciężary w twoim pliku są podane w",
       "kg": "kg",
       "lb": "lb",
-      "result": "Musclog would read {{workouts}} and {{sets}}.",
-      "workoutCount_one": "{{formattedCount}} workout",
-      "workoutCount_few": "{{formattedCount}} workouts",
-      "workoutCount_many": "{{formattedCount}} workouts",
-      "workoutCount_other": "{{formattedCount}} workouts",
-      "setCount_one": "{{formattedCount}} set",
-      "setCount_few": "{{formattedCount}} sets",
-      "setCount_many": "{{formattedCount}} sets",
-      "setCount_other": "{{formattedCount}} sets",
-      "skipped_one": "{{formattedCount}} row was skipped: a missing or future date, no exercise name, or nothing measured.",
-      "skipped_few": "{{formattedCount}} rows were skipped: a missing or future date, no exercise name, or nothing measured.",
-      "skipped_many": "{{formattedCount}} rows were skipped: a missing or future date, no exercise name, or nothing measured.",
-      "skipped_other": "{{formattedCount}} rows were skipped: a missing or future date, no exercise name, or nothing measured.",
+      "result": "Musclog odczyta {{workouts}} i {{sets}}.",
+      "workoutCount_one": "{{formattedCount}} trening",
+      "workoutCount_few": "{{formattedCount}} treningi",
+      "workoutCount_many": "{{formattedCount}} treningów",
+      "workoutCount_other": "{{formattedCount}} treningu",
+      "setCount_one": "{{formattedCount}} seria",
+      "setCount_few": "{{formattedCount}} serie",
+      "setCount_many": "{{formattedCount}} serii",
+      "setCount_other": "{{formattedCount}} serii",
+      "skipped_one": "{{formattedCount}} wiersz został pominięty: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
+      "skipped_few": "{{formattedCount}} wiersze zostały pominięte: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
+      "skipped_many": "{{formattedCount}} wierszy zostało pominiętych: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
+      "skipped_other": "{{formattedCount}} wiersza zostało pominiętych: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
       "problems": {
-        "empty": "The file is empty.",
-        "tooLarge": "The file is too large to check here.",
-        "unreadable": "This does not look like a workout log. Keep the header row of the template as it is.",
-        "noRows": "The file has a header row but no sets under it.",
-        "read": "The file could not be read."
+        "empty": "Plik jest pusty.",
+        "tooLarge": "Plik jest za duży, by go tutaj sprawdzić.",
+        "unreadable": "To nie wygląda na dziennik treningów. Zachowaj wiersz nagłówka szablonu bez zmian.",
+        "noRows": "Plik ma wiersz nagłówka, ale nie ma pod nim żadnych serii.",
+        "read": "Nie udało się odczytać pliku."
       },
-      "exampleWarning": "Delete the example row in the template before you import, or it will be read as a real set."
+      "exampleWarning": "Przed importem usuń przykładowy wiersz z szablonu, bo zostanie odczytany jako prawdziwa seria."
     },
     "sections": [
       {
-        "title": "What is in the printable log",
+        "title": "Co jest w dzienniku do druku",
         "body": [
-          "Each sheet is one workout. At the top you write the date, the workout, your bodyweight and whether you lift in kg or lb. Below are twelve exercise rows with five sets each, a box for the weight and a box for the reps, and a Notes column for how hard a set felt or anything that hurt.",
-          "The PDF holds four sheets, so one print covers about a week or two. Print as many copies as you need. The sheets carry no program: you decide what goes in the rows."
+          "Każda kartka to jeden trening. Na górze wpisujesz datę, trening, masę ciała i to, czy podnosisz w kg, czy w lb. Poniżej są dwanaście wierszy ćwiczeń, po pięć serii każde, z polem na ciężar i polem na powtórzenia, oraz kolumna Notatki na to, jak ciężka była seria albo co bolało.",
+          "PDF ma cztery kartki, więc jeden wydruk wystarcza na tydzień lub dwa. Drukuj tyle kopii, ile potrzebujesz. Kartki nie zawierają programu: to ty decydujesz, co trafia do wierszy."
         ]
       },
       {
-        "title": "How to fill the spreadsheet",
+        "title": "Jak wypełnić arkusz",
         "body": [
-          "Write one row per set: the date, the workout name, the exercise, the set number, the weight and the reps. RPE and Notes are optional. Weight is a plain number in the unit you always use. Leave Reps empty for a timed set. RPE 10 is a set with nothing left, 9 leaves one rep and 8 leaves two.",
-          "The columns follow the layout Musclog's importer reads, so you do not have to convert anything. Save the Log sheet as a CSV file, then in the app open Settings, then Backups and data, then Import workouts. Musclog matches the exercise names to its catalogue and shows a review before it saves a single session."
+          "Zapisuj jeden wiersz na serię: datę, nazwę treningu, ćwiczenie, numer serii, ciężar i powtórzenia. RPE i Notatki są opcjonalne. Ciężar to zwykła liczba w jednostce, której zawsze używasz. Przy serii na czas zostaw pole Powtórzenia puste. RPE 10 to seria bez zapasu, 9 zostawia jedno powtórzenie, a 8 — dwa.",
+          "Kolumny odpowiadają układowi, który czyta importer Musclog, więc nic nie musisz przeliczać. Zapisz arkusz Log jako plik CSV, a potem w aplikacji otwórz Ustawienia, Kopie zapasowe i dane, Importuj treningi. Musclog dopasuje nazwy ćwiczeń do swojego katalogu i pokaże przegląd, zanim zapisze choćby jedną sesję."
         ]
       },
       {
-        "title": "Paper, a spreadsheet or an app",
+        "title": "Papier, arkusz czy aplikacja",
         "body": [
-          "Paper needs no battery and no account, and writing a set takes a few seconds. What it cannot do is look back for you: you read last week's sheet yourself to decide what to lift today.",
-          "A spreadsheet can add up your volume and chart a lift, if you build the formulas. Musclog does that and works out the next weight from your last session, with the reason shown, but the log is yours either way. It is a free, open-source app, your data stays on your device, and you can bring the spreadsheet above into it."
+          "Papier nie potrzebuje baterii ani konta, a zapisanie serii zajmuje kilka sekund. Nie potrafi jednak za ciebie zajrzeć wstecz: sam musisz przejrzeć zeszłotygodniową kartkę, by zdecydować, co podnieść dzisiaj.",
+          "Arkusz może zsumować objętość i narysować wykres ćwiczenia, jeśli zbudujesz formuły. Musclog robi to sam i wylicza kolejny ciężar z twojej ostatniej sesji, z pokazanym powodem, ale dziennik i tak jest twój. To darmowa aplikacja open source, twoje dane zostają na urządzeniu, a arkusz powyżej możesz do niej zaimportować."
         ]
       }
     ],
     "articles": {
-      "trackProgress": "How to track gym progress: a beginner's guide",
-      "importHistory": "Move your workout history from Strong, Hevy or FitNotes"
+      "trackProgress": "Jak śledzić postępy na siłowni: poradnik dla początkujących",
+      "importHistory": "Przenieś historię treningów ze Stronga, Hevy lub FitNotes"
     }
   }
 }

@@ -1,48 +1,48 @@
 {
   "websiteToolOneRepMax": {
-    "title": "One-rep max calculator",
-    "intro": "Enter a set you did and get an estimated one-rep max, with reps in reserve and a table of weights at every percentage of it.",
+    "title": "Calcolatore del massimale a una ripetizione",
+    "intro": "Inserisci una serie che hai fatto e ottieni una stima del tuo massimale a una ripetizione, con le ripetizioni in riserva e una tabella dei pesi a ogni percentuale del massimale.",
     "form": {
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "reserve": "Reps in reserve (optional)",
-      "reserveHint": "How many more reps you could have done. Leave empty if you went to failure."
+      "weight": "Peso sollevato",
+      "reps": "Ripetizioni fatte",
+      "repsHint": "Numero intero, da 1 a 10",
+      "reserve": "Ripetizioni in riserva (facoltativo)",
+      "reserveHint": "Quante altre ripetizioni avresti potuto fare. Lascia vuoto se sei arrivato al cedimento."
     },
     "problems": {
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "repsTooHigh": "Sets above 10 reps do not give a trustworthy one-rep max. A long set measures endurance, and every formula drifts further from the truth the more reps it has to extrapolate. Use a heavier set of 10 reps or fewer.",
-      "reserve": "Reps in reserve must be a whole number from 0 to 9."
+      "weight": "Inserisci il peso sollevato come numero maggiore di 0.",
+      "reps": "Inserisci le ripetizioni come numero intero da 1 a 10.",
+      "repsTooHigh": "Le serie con più di 10 ripetizioni non danno un massimale a una ripetizione affidabile. Una serie lunga misura la resistenza, e ogni formula si allontana di più dalla realtà quanto più deve estrapolare ripetizioni. Usa una serie più pesante di 10 ripetizioni o meno.",
+      "reserve": "Le ripetizioni in riserva devono essere un numero intero da 0 a 9."
     },
     "results": {
-      "estimate": "Estimated one-rep max",
-      "range": "Single formulas range from {{low}} to {{high}} {{unit}}. The estimate is their average.",
-      "tableTitle": "Weight at each percentage of your one-rep max",
-      "percent": "% of 1RM",
-      "weight": "Weight",
-      "reps": "Reps to failure",
-      "byFormula": "Each formula on its own",
-      "extrapolatedNote": "* Extrapolated. Above {{max}} reps the formulas are stretched past the range the app trusts for a set, so read these rows as a rough guide only."
+      "estimate": "Massimale stimato a una ripetizione",
+      "range": "Le singole formule vanno da {{low}} a {{high}} {{unit}}. La stima è la loro media.",
+      "tableTitle": "Peso a ogni percentuale del tuo massimale a una ripetizione",
+      "percent": "% di 1RM",
+      "weight": "Peso",
+      "reps": "Ripetizioni fino al cedimento",
+      "byFormula": "Ogni formula da sola",
+      "extrapolatedNote": "* Estrapolato. Oltre {{max}} ripetizioni le formule vengono allungate oltre l'intervallo che l'app considera affidabile per una serie, quindi leggi queste righe solo come guida approssimativa."
     },
     "sections": [
       {
-        "title": "How the estimate is made",
+        "title": "Come viene fatta la stima",
         "body": [
-          "The calculator averages seven published formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor and Wathen. Averaging smooths out the quirks of any single one, and the result is the same number the Musclog app shows for a logged set.",
-          "Reps in reserve are added to the reps you did. Five reps with two in reserve is treated as seven reps to failure, because that is how far from your limit the set was."
+          "Il calcolatore fa la media di sette formule pubblicate: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor e Wathen. La media attenua le anomalie di ciascuna, e il risultato è lo stesso numero che l'app Musclog mostra per una serie registrata.",
+          "Le ripetizioni in riserva si sommano alle ripetizioni fatte. Cinque ripetizioni con due in riserva vengono trattate come sette ripetizioni fino al cedimento, perché è la distanza dal tuo limite a cui era la serie."
         ]
       },
       {
-        "title": "Why sets above 10 reps are not trusted",
+        "title": "Perché le serie oltre 10 ripetizioni non sono affidabili",
         "body": [
-          "One-rep max formulas work best on low-rep sets. The further you stretch them, the further they drift, and a set of 15 mostly tells you about your endurance, not your top strength. The app ignores those sets for strength levels and goals, and this page does the same."
+          "Le formule del massimale a una ripetizione funzionano meglio con serie a poche ripetizioni. Più le allunghi, più si allontanano, e una serie di 15 dice soprattutto della tua resistenza, non della tua forza massima. L'app ignora quelle serie per i livelli di forza e gli obiettivi, e questa pagina fa lo stesso."
         ]
       },
       {
-        "title": "How to use the table",
+        "title": "Come usare la tabella",
         "body": [
-          "Each row is a weight at a percentage of your estimated one-rep max, with the reps to failure the same formulas predict at that weight. People vary a lot, so treat the numbers as a starting point and adjust to how the bar actually moves."
+          "Ogni riga è un peso a una percentuale del tuo massimale stimato a una ripetizione, con le ripetizioni fino al cedimento che le stesse formule prevedono a quel peso. Le persone variano molto, quindi considera i numeri un punto di partenza e adattali a come si muove davvero il bilanciere."
         ]
       }
     ],

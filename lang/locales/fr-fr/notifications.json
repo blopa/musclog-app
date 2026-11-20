@@ -2,115 +2,115 @@
   "notifications": {
     "header": {
       "title": "Notifications",
-      "clearAll": "Clear all"
+      "clearAll": "Tout effacer"
     },
     "sections": {
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "earlier": "Earlier"
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "earlier": "Plus tôt"
     },
     "channels": {
-      "default": "Default",
-      "activeWorkout": "Active workout",
-      "cycle": "Cycle reminders",
-      "restTimer": "Rest timer",
-      "workoutReminders": "Workout reminders",
-      "restTimerQuiet": "Rest timer (no sound)"
+      "default": "Par défaut",
+      "activeWorkout": "Séance en cours",
+      "cycle": "Rappels de cycle",
+      "restTimer": "Minuteur de repos",
+      "workoutReminders": "Rappels de séance",
+      "restTimerQuiet": "Minuteur de repos (sans son)"
     },
-    "startNow": "Start now",
+    "startNow": "Commencer maintenant",
     "types": {
       "aiInsight": {
-        "title": "AI insight",
-        "description": "Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery."
+        "title": "Analyse IA",
+        "description": "D'après tes récentes séances de force, essaie d'augmenter ton apport en protéines de 15 g aujourd'hui pour une récupération optimale."
       },
       "workoutReminder": {
-        "title": "Workout reminder",
-        "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
+        "title": "Rappel de séance",
+        "description": "Prêt pour {{workoutName}} ? Prévue à {{time}} aujourd'hui."
       },
       "workoutCompleted": {
-        "title": "Workout completed",
-        "description": "{{workoutName}} complete. You burned {{calories}}."
+        "title": "Séance terminée",
+        "description": "{{workoutName}} terminée. Tu as brûlé {{calories}}."
       },
       "kudosReceived": {
-        "title": "Kudos received",
-        "description": "{{name}} and {{count}} others liked your recent milestone: \"{{milestone}}\""
+        "title": "Félicitations reçues",
+        "description": "{{name}} et {{count}} autres ont aimé ton récent cap : « {{milestone}} »"
       },
       "weeklyReport": {
-        "title": "Weekly report ready",
-        "description": "Your progress report for last week is available. Check your stats."
+        "title": "Bilan hebdomadaire prêt",
+        "description": "Ton bilan de progrès de la semaine dernière est disponible. Consulte tes stats."
       },
       "activeWorkout": {
-        "title": "Workout: {{workoutName}}",
+        "title": "Séance : {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
         "bodyNoExercise": "{{totalTime}}",
-        "titleMinimal": "Workout in progress"
+        "titleMinimal": "Séance en cours"
       },
       "workoutReminderMorning": {
-        "title": "Workout reminder",
-        "body": "Your {{workoutName}} workout is on today."
+        "title": "Rappel de séance",
+        "body": "Ta séance {{workoutName}} est prévue aujourd'hui."
       },
       "nutritionOverview": {
-        "title": "Daily nutrition overview",
-        "body": "See how today's nutrition compared with your goals."
+        "title": "Résumé nutritionnel du jour",
+        "body": "Vois comment ta nutrition d'aujourd'hui se compare à tes objectifs."
       },
       "nutritionCheckin": {
-        "title": "Weekly progress check-in",
-        "body": "It's time for your weekly nutrition check-in! Let's see how you've done."
+        "title": "Bilan de progrès hebdomadaire",
+        "body": "C'est l'heure de ton bilan nutritionnel hebdomadaire ! Voyons comment tu t'en es sorti."
       },
       "periodPrediction": {
-        "title": "Period prediction",
-        "body": "Your period may start in a few days, based on your recent cycles."
+        "title": "Prévision des règles",
+        "body": "Tes règles pourraient commencer dans quelques jours, d'après tes derniers cycles."
       },
       "fertileWindow": {
-        "title": "Fertile window",
-        "body": "Your estimated fertile window may begin soon. It's a calendar estimate, not confirmation of ovulation."
+        "title": "Période fertile",
+        "body": "Ta période fertile estimée pourrait bientôt commencer. C'est une estimation calendaire, pas une confirmation de l'ovulation."
       },
       "restTimerAlert": {
-        "title": "Rest over",
-        "body": "Your rest is up. Time for the next set."
+        "title": "Repos terminé",
+        "body": "Ton repos est écoulé. Place à la série suivante."
       },
       "workoutDurationWarning": {
-        "title": "Still working out?",
-        "body": "Your session has been running for 5 hours. Remember to finish it in Musclog."
+        "title": "Toujours en séance ?",
+        "body": "Ta séance dure depuis 5 heures. N'oublie pas de la terminer dans Musclog."
       },
       "cycleDiscreet": {
         "title": "Musclog",
-        "body": "You have an update."
+        "body": "Tu as une mise à jour."
       },
       "unfinishedWorkout": {
-        "title": "Finish your workout?",
-        "body": "{{workoutName}} is still open. Finish and log it when you're done."
+        "title": "Terminer ta séance ?",
+        "body": "{{workoutName}} est toujours ouverte. Termine-la et enregistre-la quand tu as fini."
       },
       "goalAtRisk": {
-        "title": "Weekly goal at risk",
-        "body": "Workouts left to hit your weekly goal: {{count}}."
+        "title": "Objectif hebdomadaire menacé",
+        "body": "Séances restantes pour atteindre ton objectif hebdomadaire : {{count}}."
       },
       "restTimerHeadsUp": {
-        "title": "Almost ready",
-        "body": "{{seconds}} seconds of rest left."
+        "title": "Presque prêt",
+        "body": "Il reste {{seconds}} secondes de repos."
       },
       "workTimerAlert": {
-        "title": "Time's up",
-        "body": "Your timed set is done."
+        "title": "Temps écoulé",
+        "body": "Ta série chronométrée est terminée."
       },
       "comebackWelcome": {
-        "title": "Whenever you're ready",
-        "body": "No rush. If you'd like to ease back in, there's a gentle way to start."
+        "title": "Quand tu veux",
+        "body": "Pas de précipitation. Si tu veux reprendre doucement, il existe une façon progressive de recommencer."
       }
     },
     "actions": {
-      "addRest": "+{{seconds}}s rest",
-      "nextSet": "Next set",
-      "snooze": "Snooze 1h",
-      "done": "Done",
-      "later": "Later",
-      "skip": "Skip"
+      "addRest": "+{{seconds}} s de repos",
+      "nextSet": "Série suivante",
+      "snooze": "Reporter 1 h",
+      "done": "Fait",
+      "later": "Plus tard",
+      "skip": "Passer"
     },
     "restPrompt": {
-      "title": "Rest timer alerts?",
-      "message": "Your rest timer is running. Want an alert if you lock your phone or switch apps?",
-      "confirm": "Enable alerts",
-      "cancel": "Not now"
+      "title": "Alertes du minuteur de repos ?",
+      "message": "Ton minuteur de repos tourne. Veux-tu une alerte si tu verrouilles ton téléphone ou changes d'application ?",
+      "confirm": "Activer les alertes",
+      "cancel": "Pas maintenant"
     }
   }
 }

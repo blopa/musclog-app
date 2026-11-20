@@ -1,55 +1,55 @@
 {
   "websiteToolNetCarbs": {
-    "title": "Net carbs calculator",
-    "intro": "Turn the carbohydrate and fiber on a nutrition label into total and net carbs, and see which one your tracker expects.",
+    "title": "Calcolatore di carboidrati netti",
+    "intro": "Trasforma i carboidrati e le fibre di un'etichetta nutrizionale in carboidrati totali e netti, e scopri quale dei due si aspetta il tuo tracker.",
     "form": {
-      "region": "Where the label is from",
-      "us": "US or Canada label: carbs include fiber",
-      "eu": "EU, UK or similar label: carbs exclude fiber",
-      "carbs": "Carbohydrate on the label",
-      "fiber": "Dietary fiber on the label"
+      "region": "Provenienza dell'etichetta",
+      "us": "Etichetta USA o Canada: i carboidrati includono le fibre",
+      "eu": "Etichetta UE, Regno Unito o simile: i carboidrati escludono le fibre",
+      "carbs": "Carboidrati in etichetta",
+      "fiber": "Fibre alimentari in etichetta"
     },
     "problems": {
-      "carbs": "Enter the carbohydrate as a number of grams.",
-      "fiber": "Enter the fiber as a number of grams, or 0.",
-      "fiberTooHigh": "On a US or Canada label, total carbohydrate already includes fiber, so fiber cannot be more than that total. Check the two numbers."
+      "carbs": "Inserisci i carboidrati come numero di grammi.",
+      "fiber": "Inserisci le fibre come numero di grammi, oppure 0.",
+      "fiberTooHigh": "Su un'etichetta USA o Canada, i carboidrati totali includono già le fibre, quindi le fibre non possono superare quel totale. Controlla i due numeri."
     },
     "results": {
-      "net": "Net carbs",
-      "netNote": "Carbohydrate without fiber: the digestible part that net-carb trackers count.",
-      "total": "Total carbohydrate",
-      "totalNote": "Carbohydrate with fiber included: what US labels print and what Musclog stores for a food.",
-      "logTitle": "What to enter",
-      "logTotal": "A tracker that counts total carbs: enter {{value}}.",
-      "logNet": "A tracker that counts net carbs: enter {{value}}."
+      "net": "Carboidrati netti",
+      "netNote": "Carboidrati senza fibre: la parte digeribile che contano i tracker dei carboidrati netti.",
+      "total": "Carboidrati totali",
+      "totalNote": "Carboidrati con le fibre incluse: ciò che stampano le etichette USA e ciò che Musclog salva per un alimento.",
+      "logTitle": "Cosa inserire",
+      "logTotal": "Un tracker che conta i carboidrati totali: inserisci {{value}}.",
+      "logNet": "Un tracker che conta i carboidrati netti: inserisci {{value}}."
     },
     "notes": {
-      "sugarAlcohols": "Sugar alcohols (polyols such as erythritol or maltitol) are not subtracted here. Some people also take them off their net carbs; this tool does not, so the net figure may run a little high for products that contain them.",
-      "musclog": "Musclog stores total carbs including fiber, the way US labels count them. Food from EU sources is converted when it is saved, so the diary keeps one meaning for carbs."
+      "sugarAlcohols": "Gli alcoli dello zucchero (polioli come eritritolo o maltitolo) non vengono sottratti qui. Alcune persone li tolgono anche dai carboidrati netti; questo strumento non lo fa, quindi per i prodotti che li contengono il valore netto potrebbe risultare un po' alto.",
+      "musclog": "Musclog salva i carboidrati totali comprese le fibre, come li conteggiano le etichette USA. Gli alimenti di provenienza UE vengono convertiti al momento del salvataggio, così il diario mantiene un unico significato per i carboidrati."
     },
     "sections": [
       {
-        "title": "Why labels differ",
+        "title": "Perché le etichette differiscono",
         "body": [
-          "In the EU, the declared carbohydrate is the carbohydrate your body metabolises, and fiber is declared on its own line. In the US and Canada, the total carbohydrate line already includes dietary fiber, so the same product can show different carbohydrate numbers on the two labels."
+          "Nell'UE, i carboidrati dichiarati sono quelli che il tuo corpo metabolizza, e le fibre sono dichiarate su una riga a parte. Negli USA e in Canada, la riga dei carboidrati totali include già le fibre alimentari, quindi lo stesso prodotto può mostrare valori di carboidrati diversi sulle due etichette."
         ]
       },
       {
-        "title": "Total and net",
+        "title": "Totali e netti",
         "body": [
-          "Total carbohydrate includes fiber. Net carbs is total minus fiber, the part your body digests. The page shows both, because some trackers ask for one and some for the other."
+          "I carboidrati totali includono le fibre. I carboidrati netti sono il totale meno le fibre, cioè la parte che il corpo digerisce. La pagina mostra entrambi, perché alcuni tracker ne chiedono uno e altri l'altro."
         ]
       },
       {
-        "title": "What is not handled",
+        "title": "Cosa non viene gestito",
         "body": [
-          "Sugar alcohols are not subtracted, and the page does not estimate fiber for foods without a label."
+          "Gli alcoli dello zucchero non vengono sottratti, e la pagina non stima le fibre per gli alimenti senza etichetta."
         ]
       }
     ],
     "sources": {
-      "eu": "EU Regulation 1169/2011, food information to consumers (Annex I)",
-      "fda": "FDA, A Food Labeling Guide (nutrition labelling)"
+      "eu": "Regolamento UE 1169/2011, informazioni sugli alimenti ai consumatori (Allegato I)",
+      "fda": "FDA, A Food Labeling Guide (etichettatura nutrizionale)"
     }
   }
 }

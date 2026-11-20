@@ -1,27 +1,27 @@
 {
   "errors": {
     "connectionTimeout": {
-      "title": "Connection timeout",
-      "description": "We couldn't reach the Musclog servers. Please check your internet connection.",
-      "tryAgain": "Try again"
+      "title": "Zeitüberschreitung bei der Verbindung",
+      "description": "Wir konnten die Musclog-Server nicht erreichen. Bitte prüfe deine Internetverbindung.",
+      "tryAgain": "Erneut versuchen"
     },
-    "failedToLoadData": "Failed to load data",
-    "somethingWentWrong": "Something went wrong",
-    "genericDescription": "An unexpected error occurred.",
-    "reload": "Reload",
-    "aiCreditsError": "AI service quota exceeded. Please check your API key or try again later.",
-    "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
-    "aiProcessingErrorTitle": "Error processing request",
-    "gatewayDailyLimitError": "Daily free AI limit reached. Try again tomorrow or add your own API key in AI Settings.",
-    "gatewayDailyLimitErrorTitle": "Daily limit reached",
+    "failedToLoadData": "Daten konnten nicht geladen werden",
+    "somethingWentWrong": "Etwas ist schiefgelaufen",
+    "genericDescription": "Ein unerwarteter Fehler ist aufgetreten.",
+    "reload": "Neu laden",
+    "aiCreditsError": "Das KI-Kontingent ist aufgebraucht. Prüfe deinen API-Schlüssel oder versuche es später erneut.",
+    "aiProcessingError": "Entschuldigung, ich konnte diese Anfrage nicht verarbeiten. Bitte versuche es gleich noch einmal.",
+    "aiProcessingErrorTitle": "Fehler bei der Verarbeitung",
+    "gatewayDailyLimitError": "Das tägliche kostenlose KI-Limit ist erreicht. Versuche es morgen erneut oder füge in den KI-Einstellungen deinen eigenen API-Schlüssel hinzu.",
+    "gatewayDailyLimitErrorTitle": "Tageslimit erreicht",
     "databaseError": {
-      "title": "Database error",
-      "description": "A database error occurred. Error reporting has been enabled to help resolve this issue."
+      "title": "Datenbankfehler",
+      "description": "Ein Datenbankfehler ist aufgetreten. Die Fehlerberichte wurden aktiviert, damit das Problem behoben werden kann."
     },
-    "aiInvalidApiKey": "Your {{provider}} API key was rejected. Check it in AI settings.",
-    "aiTimeout": "This is taking too long. Try again.",
-    "aiKeyTestOk": "Key accepted",
-    "aiKeyTestRejected": "Key rejected. Check it and try again.",
-    "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection."
+    "aiInvalidApiKey": "Dein {{provider}}-API-Schlüssel wurde abgelehnt. Prüfe ihn in den KI-Einstellungen.",
+    "aiTimeout": "Das dauert zu lange. Versuche es erneut.",
+    "aiKeyTestOk": "Schlüssel akzeptiert",
+    "aiKeyTestRejected": "Schlüssel abgelehnt. Prüfe ihn und versuche es erneut.",
+    "aiKeyTestNetwork": "Der Anbieter ist nicht erreichbar. Prüfe deine Verbindung."
   }
 }

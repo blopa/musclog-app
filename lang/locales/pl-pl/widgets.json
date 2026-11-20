@@ -1,10 +1,10 @@
 {
   "widgets": {
-    "refresh": "Open Musclog to refresh",
-    "smartCamera": "Smart camera",
+    "refresh": "Otwórz Musclog, by odświeżyć",
+    "smartCamera": "Inteligentna kamera",
     "cycle": {
-      "day": "Day",
-      "privateCaption": "Tap to open"
+      "day": "Dzień",
+      "privateCaption": "Stuknij, by otworzyć"
     }
   }
 }

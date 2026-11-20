@@ -1,29 +1,29 @@
 {
   "emptyStates": {
     "workouts": {
-      "title": "No workouts yet",
-      "description": "Plan your routine and log your first session here.",
-      "buttonLabel": "Create your first workout"
+      "title": "Aucune séance pour l'instant",
+      "description": "Planifie ta routine et note ta première séance ici.",
+      "buttonLabel": "Crée ta première séance"
     },
     "foods": {
-      "title": "No food logged",
-      "description": "Log your meals to stay on top of your nutrition goals. Your body will thank you.",
-      "buttonLabel": "Log your meal"
+      "title": "Aucun aliment noté",
+      "description": "Note tes repas pour suivre tes objectifs nutritionnels. Ton corps te remerciera.",
+      "buttonLabel": "Note ton repas"
     },
     "workout": {
-      "title": "No workouts yet",
-      "description": "Ready for your first session?",
-      "button": "Plan"
+      "title": "Aucune séance pour l'instant",
+      "description": "Prêt pour ta première séance ?",
+      "button": "Planifier"
     },
     "food": {
-      "title": "Nothing logged today",
-      "description": "Meals you log today show up here.",
-      "button": "Log"
+      "title": "Rien noté aujourd'hui",
+      "description": "Les repas que tu notes aujourd'hui apparaissent ici.",
+      "button": "Noter"
     },
     "notes": {
-      "title": "No notes yet",
-      "description": "Jot down what you're cooking, like 70g of broccoli or a recipe idea, and track it when you're ready.",
-      "buttonLabel": "Write your first note"
+      "title": "Aucune note pour l'instant",
+      "description": "Note ce que tu cuisines, comme 70 g de brocoli ou une idée de recette, et suis-le quand tu seras prêt.",
+      "buttonLabel": "Écris ta première note"
     }
   }
 }

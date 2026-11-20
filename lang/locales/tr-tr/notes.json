@@ -1,49 +1,49 @@
 {
   "notes": {
-    "title": "Notes",
+    "title": "Notlar",
     "sections": {
-      "latest": "Latest",
-      "earlier": "Earlier"
+      "latest": "Son",
+      "earlier": "Daha önce"
     },
     "screenMenu": {
-      "title": "Notes",
-      "subtitle": "Jot it down now, track it later",
-      "create": "Create new note",
-      "createDescription": "Write down what you made or ate"
+      "title": "Notlar",
+      "subtitle": "Şimdi not al, sonra kaydet",
+      "create": "Yeni not oluştur",
+      "createDescription": "Yaptığın ya da yediğin şeyi yaz"
     },
     "noteMenu": {
-      "title": "Note options",
-      "edit": "Edit",
-      "editDescription": "Change the title or the text",
-      "duplicate": "Duplicate",
-      "duplicateDescription": "Copy it to the top of the list",
-      "track": "Track this",
-      "trackDescription": "Send it to the coach to log the food",
-      "delete": "Delete",
-      "deleteDescription": "Remove this note permanently"
+      "title": "Not seçenekleri",
+      "edit": "Düzenle",
+      "editDescription": "Başlığı ya da metni değiştir",
+      "duplicate": "Çoğalt",
+      "duplicateDescription": "Listenin en üstüne kopyala",
+      "track": "Bunu kaydet",
+      "trackDescription": "Besini kaydetmesi için koça gönder",
+      "delete": "Sil",
+      "deleteDescription": "Bu notu kalıcı olarak kaldır"
     },
     "form": {
-      "createTitle": "New note",
-      "editTitle": "Edit note",
-      "titleLabel": "Title (optional)",
-      "titlePlaceholder": "e.g. Lunch prep",
-      "bodyLabel": "Note",
-      "bodyPlaceholder": "e.g. 70g of broccoli, 120g chicken breast",
-      "bodyRequired": "Write something before saving",
-      "submit": "Save note"
+      "createTitle": "Yeni not",
+      "editTitle": "Notu düzenle",
+      "titleLabel": "Başlık (isteğe bağlı)",
+      "titlePlaceholder": "ör. Öğle yemeği hazırlığı",
+      "bodyLabel": "Not",
+      "bodyPlaceholder": "ör. 70g brokoli, 120g tavuk göğsü",
+      "bodyRequired": "Kaydetmeden önce bir şey yaz",
+      "submit": "Notu kaydet"
     },
     "deleteConfirm": {
-      "title": "Delete note?",
-      "message": "This note will be removed permanently. This can't be undone.",
-      "confirm": "Delete"
+      "title": "Not silinsin mi?",
+      "message": "Bu not kalıcı olarak kaldırılacak. Bu geri alınamaz.",
+      "confirm": "Sil"
     },
-    "createSuccess": "Note saved",
-    "createError": "Couldn't save the note",
-    "updateSuccess": "Note updated",
-    "updateError": "Couldn't update the note",
-    "duplicateSuccess": "Note duplicated",
-    "duplicateError": "Couldn't duplicate the note",
-    "deleteSuccess": "Note deleted",
-    "deleteError": "Couldn't delete the note"
+    "createSuccess": "Not kaydedildi",
+    "createError": "Not kaydedilemedi",
+    "updateSuccess": "Not güncellendi",
+    "updateError": "Not güncellenemedi",
+    "duplicateSuccess": "Not çoğaltıldı",
+    "duplicateError": "Not çoğaltılamadı",
+    "deleteSuccess": "Not silindi",
+    "deleteError": "Not silinemedi"
   }
 }

@@ -1,88 +1,88 @@
 {
   "websiteToolNutritionLogTemplate": {
-    "title": "Free printable food diary",
-    "intro": "Download a food diary to print, in two versions: one where you write the calories and macros you already worked out, and one where you copy the per 100 g numbers from a label and do the sums yourself. There is also a spreadsheet that does the sums for you. All free, with no sign-up.",
+    "title": "Darmowy dziennik żywienia do druku",
+    "intro": "Pobierz dziennik żywienia do wydrukowania w dwóch wersjach: jedna, w której wpisujesz kalorie i makroskładniki, które już policzyłeś, oraz jedna, w której przepisujesz liczby na 100 g z etykiety i robisz sumy samodzielnie. Jest też arkusz, który liczy sumy za ciebie. Wszystko darmowe, bez rejestracji.",
     "downloads": {
-      "title": "Downloads",
+      "title": "Pliki do pobrania",
       "versions": {
         "ready": {
-          "title": "Macros already worked out",
-          "body": "One row per food: the meal, the food, the amount, then the calories, protein, carbs and fat for that amount."
+          "title": "Makroskładniki już policzone",
+          "body": "Jeden wiersz na produkt: posiłek, produkt, ilość, a potem kalorie, białko, węglowodany i tłuszcz dla tej ilości."
         },
         "per100": {
-          "title": "Per 100 g, you do the sums",
-          "body": "Copy the label's per 100 g numbers, write the grams you ate, and work out what that amount holds."
+          "title": "Na 100 g, sumy robisz sam",
+          "body": "Przepisz liczby na 100 g z etykiety, zapisz gramy, które zjadłeś, i policz, ile składników jest w tej ilości."
         },
         "both": {
-          "title": "Spreadsheet",
-          "body": "Both layouts as tabs, with the sums done by formulas."
+          "title": "Arkusz",
+          "body": "Obie wersje jako zakładki, z sumami policzonymi przez formuły."
         }
       },
-      "readyA4": "Food diary, A4",
-      "readyA4Note": "PDF, 7 landscape sheets, one per day. For A4 paper.",
-      "readyLetter": "Food diary, US Letter",
-      "readyLetterNote": "PDF, 7 landscape sheets, one per day. For US Letter paper.",
-      "per100A4": "Food diary per 100 g, A4",
-      "per100A4Note": "PDF, 7 landscape sheets, one per day. For A4 paper.",
-      "per100Letter": "Food diary per 100 g, US Letter",
-      "per100LetterNote": "PDF, 7 landscape sheets, one per day. For US Letter paper.",
-      "xlsx": "Spreadsheet template",
-      "xlsxNote": "Excel file (.xlsx) that also opens in Google Sheets, Numbers and LibreOffice. A Day tab, a Per 100 g tab and a Read me tab.",
-      "english": "The files are in English, whatever language this page is in."
+      "readyA4": "Dziennik żywienia, A4",
+      "readyA4Note": "PDF, 7 arkuszy poziomych, po jednym na dzień. Na papier A4.",
+      "readyLetter": "Dziennik żywienia, US Letter",
+      "readyLetterNote": "PDF, 7 arkuszy poziomych, po jednym na dzień. Na papier US Letter.",
+      "per100A4": "Dziennik żywienia na 100 g, A4",
+      "per100A4Note": "PDF, 7 arkuszy poziomych, po jednym na dzień. Na papier A4.",
+      "per100Letter": "Dziennik żywienia na 100 g, US Letter",
+      "per100LetterNote": "PDF, 7 arkuszy poziomych, po jednym na dzień. Na papier US Letter.",
+      "xlsx": "Szablon arkusza",
+      "xlsxNote": "Plik Excel (.xlsx), który otworzy się też w Arkuszach Google, Numbers i LibreOffice. Zakładka Dzień, zakładka Na 100 g i zakładka Read me.",
+      "english": "Pliki są po angielsku, niezależnie od języka tej strony."
     },
     "try": {
-      "title": "Try the per 100 g sums",
-      "intro": "Type what the label says per 100 g and how many grams you ate. This is the same arithmetic the per 100 g sheet asks you to do. Nothing you type leaves your browser.",
-      "kcal": "Calories per 100 g",
-      "kcalHint": "Optional. Leave it empty to estimate it from the macros.",
-      "protein": "Protein per 100 g",
-      "carbs": "Carbs per 100 g",
-      "fat": "Fat per 100 g",
-      "grams": "Grams you ate",
-      "formula": "Each figure is the per 100 g number times {{grams}} g, divided by 100.",
+      "title": "Wypróbuj sumy na 100 g",
+      "intro": "Wpisz to, co etykieta podaje na 100 g, i ile gramów zjadłeś. To ta sama arytmetyka, którą wykonujesz w arkuszu na 100 g. Nic, co wpiszesz, nie opuszcza przeglądarki.",
+      "kcal": "Kalorie na 100 g",
+      "kcalHint": "Opcjonalnie. Zostaw puste, by oszacować je z makroskładników.",
+      "protein": "Białko na 100 g",
+      "carbs": "Węglowodany na 100 g",
+      "fat": "Tłuszcz na 100 g",
+      "grams": "Gramy, które zjadłeś",
+      "formula": "Każda wartość to liczba na 100 g razy {{grams}} g, podzielona przez 100.",
       "results": {
-        "kcal": "Calories eaten",
-        "kcalEstimated": "Estimated from the macros: 4 kcal per gram of protein and carbs, 9 per gram of fat.",
-        "protein": "Protein eaten",
-        "carbs": "Carbs eaten",
-        "fat": "Fat eaten"
+        "kcal": "Zjedzone kalorie",
+        "kcalEstimated": "Oszacowane z makroskładników: 4 kcal na gram białka i węglowodanów, 9 na gram tłuszczu.",
+        "protein": "Zjedzone białko",
+        "carbs": "Zjedzone węglowodany",
+        "fat": "Zjedzony tłuszcz"
       },
       "problems": {
-        "kcal": "Calories per 100 g must be a number from 0 to 900.",
-        "protein": "Protein per 100 g must be a number from 0 to 100.",
-        "carbs": "Carbs per 100 g must be a number from 0 to 100.",
-        "fat": "Fat per 100 g must be a number from 0 to 100.",
-        "grams": "Grams must be a number from 0 to 5000.",
-        "macrosTooHigh": "Protein, carbs and fat together cannot be more than 100 g in 100 g of food. Check the numbers."
+        "kcal": "Kalorie na 100 g muszą być liczbą od 0 do 900.",
+        "protein": "Białko na 100 g musi być liczbą od 0 do 100.",
+        "carbs": "Węglowodany na 100 g muszą być liczbą od 0 do 100.",
+        "fat": "Tłuszcz na 100 g musi być liczbą od 0 do 100.",
+        "grams": "Gramy muszą być liczbą od 0 do 5000.",
+        "macrosTooHigh": "Białko, węglowodany i tłuszcz razem nie mogą przekraczać 100 g w 100 g produktu. Sprawdź liczby."
       }
     },
     "sections": [
       {
-        "title": "What is in the printable diary",
+        "title": "Co jest w dzienniku do druku",
         "body": [
-          "Each sheet is one day. At the top you write the date, whether it was a training or a rest day, your bodyweight and how much water you drank. Below are twelve rows for the foods, a Notes column, and Total, Goal and Left boxes under the calories and macros so you can see what remains of the day.",
-          "The PDF holds seven sheets, one week per print. The sheets carry no targets and no meal plan: you write your own goals in the Goal row."
+          "Każda kartka to jeden dzień. Na górze wpisujesz datę, czy był to dzień treningowy czy odpoczynku, masę ciała i ile wody wypiłeś. Poniżej są dwanaście wierszy na produkty, kolumna Notatki oraz pola Suma, Cel i Zostało pod kaloriami i makroskładnikami, byś widział, ile zostało z dnia.",
+          "PDF ma siedem kartek, czyli jeden tydzień na wydruk. Kartki nie zawierają celów ani planu posiłków: własne cele wpisujesz w wierszu Cel."
         ]
       },
       {
-        "title": "Which version to print",
+        "title": "Którą wersję wydrukować",
         "body": [
-          "Use the first version when you already have the numbers for the amount you ate: from a per-serving column, a meal you worked out earlier, or a food app. You write them straight into the row.",
-          "Use the per 100 g version when all you have is the label's per 100 g column. You copy those numbers, weigh what you ate, and work out each amount: per 100 g times the grams eaten, divided by 100. For 150 g of a food with 12 g of protein per 100 g, that is 12 × 150 ÷ 100 = 18 g of protein. It is slower, and it shows how the numbers are built."
+          "Użyj pierwszej wersji, gdy masz już liczby dla zjedzonej ilości: z kolumny na porcję, z posiłku, który wcześniej policzyłeś, albo z aplikacji do jedzenia. Wpisujesz je prosto w wiersz.",
+          "Użyj wersji na 100 g, gdy masz tylko kolumnę na 100 g z etykiety. Przepisujesz te liczby, ważysz zjedzone jedzenie i liczysz każdą ilość: wartość na 100 g razy zjedzone gramy, podzielone przez 100. Dla 150 g produktu z 12 g białka na 100 g wychodzi 12 × 150 ÷ 100 = 18 g białka. To wolniejsze, za to widać, jak liczby są zbudowane."
         ]
       },
       {
-        "title": "How to use the spreadsheet",
+        "title": "Jak używać arkusza",
         "body": [
-          "The Day tab is for numbers you already worked out. The Per 100 g tab does the sums for you: type the label's numbers and the grams eaten, and the columns on the right fill in. Both tabs add up the day and show what is left of your goal.",
-          "The sums use plain formulas, so you can read or change them. Keep one copy of the file per day, or add a tab for each day."
+          "Zakładka Dzień służy do liczb, które już policzyłeś. Zakładka Na 100 g liczy sumy za ciebie: wpisujesz liczby z etykiety i zjedzone gramy, a kolumny po prawej się uzupełniają. Obie zakładki dodają dzień i pokazują, ile zostało z twojego celu.",
+          "Sumy używają zwykłych formuł, więc możesz je czytać albo zmieniać. Trzymaj jedną kopię pliku na dzień albo dodawaj zakładkę na każdy dzień."
         ]
       },
       {
-        "title": "Paper, a spreadsheet or an app",
+        "title": "Papier, arkusz czy aplikacja",
         "body": [
-          "Paper needs no battery and no account, and doing the sums by hand teaches you what is in your food. What it cannot do is look the food up for you, scan a barcode or keep a running total on its own.",
-          "Musclog does that, and works out the macros for the amount you ate, so you never do the per 100 g sums yourself. It is a free, open-source app, and your data stays on your device."
+          "Papier nie potrzebuje baterii ani konta, a liczenie na ręce uczy, co jest w jedzeniu. Nie potrafi jednak wyszukać produktu za ciebie, zeskanować kodu kreskowego ani sam prowadzić bieżącej sumy.",
+          "Musclog to robi i wylicza makroskładniki dla zjedzonej ilości, więc nigdy nie musisz liczyć sum na 100 g sam. To darmowa aplikacja open source, a twoje dane zostają na urządzeniu."
         ]
       }
     ]

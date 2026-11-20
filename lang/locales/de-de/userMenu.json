@@ -1,15 +1,15 @@
 {
   "userMenu": {
-    "greeting": "Account",
-    "profile": "Profile",
-    "settings": "Settings",
-    "progress": "Progress",
-    "cycle": "Cycle",
-    "workouts": "Workouts",
-    "food": "Food",
+    "greeting": "Konto",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "progress": "Fortschritt",
+    "cycle": "Zyklus",
+    "workouts": "Training",
+    "food": "Ernährung",
     "coach": "Coach",
-    "checkin": "Weekly Review",
-    "debugPage": "Debug page",
-    "notes": "Notes"
+    "checkin": "Wochenrückblick",
+    "debugPage": "Debug-Seite",
+    "notes": "Notizen"
   }
 }

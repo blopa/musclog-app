@@ -1,73 +1,73 @@
 {
   "home": {
-    "accountMenu": "Open account menu",
+    "accountMenu": "Apri menu account",
     "actions": {
-      "startWorkout": "Start\nworkout",
-      "trackFood": "Track\nfood",
-      "scanBarcode": "Scan\nbarcode",
-      "aiPhoto": "AI\nphoto",
-      "myMeals": "My\nmeals",
-      "addNote": "Add\nnote",
-      "logCardio": "Log\nwalk/run"
+      "startWorkout": "Inizia\nallenamento",
+      "trackFood": "Registra\nalimento",
+      "scanBarcode": "Scansiona\ncodice",
+      "aiPhoto": "Foto\nIA",
+      "myMeals": "I miei\npasti",
+      "addNote": "Aggiungi\nnota",
+      "logCardio": "Registra\ncamminata/corsa"
     },
     "sections": {
-      "recentWorkouts": "Recent workouts",
-      "recentFoods": "Recent foods",
-      "dailySummary": "Daily summary"
+      "recentWorkouts": "Allenamenti recenti",
+      "recentFoods": "Alimenti recenti",
+      "dailySummary": "Riepilogo giornaliero"
     },
     "activityRings": {
-      "move": "Move",
-      "steps": "Steps",
-      "rest": "Rest",
-      "score": "Score"
+      "move": "Movimento",
+      "steps": "Passi",
+      "rest": "Recupero",
+      "score": "Punteggio"
     },
     "navigation": {
       "home": "Home",
-      "profile": "Profile",
-      "workouts": "Workouts",
-      "food": "Food",
+      "profile": "Profilo",
+      "workouts": "Allenamenti",
+      "food": "Alimentazione",
       "coach": "Chat",
       "focus": "Focus",
-      "cycle": "Cycle",
-      "checkin": "Weekly Review"
+      "cycle": "Ciclo",
+      "checkin": "Revisione settimanale"
     },
     "dailyStats": {
-      "steps": "Steps",
-      "burned": "Burned so far",
-      "eaten": "Eaten",
+      "steps": "Passi",
+      "burned": "Bruciate finora",
+      "eaten": "Mangiate",
       "deficit": "Deficit",
       "surplus": "Surplus",
-      "even": "Balanced"
+      "even": "In equilibrio"
     },
     "heatmaps": {
-      "lastWeeks_one": "Last week",
-      "lastWeeks_few": "Last {{count}} weeks",
-      "lastWeeks_many": "Last {{count}} weeks",
-      "lastWeeks_other": "Last {{count}} weeks",
-      "lastDays_one": "Last day",
-      "lastDays_few": "Last {{count}} days",
-      "lastDays_many": "Last {{count}} days",
-      "lastDays_other": "Last {{count}} days",
-      "tapHint": "Tap a day for details",
-      "less": "Less",
-      "more": "More",
-      "earlierWeeks": "Show earlier weeks",
-      "laterWeeks": "Show later weeks",
+      "lastWeeks_one": "Ultima settimana",
+      "lastWeeks_few": "Ultime {{count}} settimane",
+      "lastWeeks_many": "Ultime {{count}} settimane",
+      "lastWeeks_other": "Ultime {{count}} settimane",
+      "lastDays_one": "Ultimo giorno",
+      "lastDays_few": "Ultimi {{count}} giorni",
+      "lastDays_many": "Ultimi {{count}} giorni",
+      "lastDays_other": "Ultimi {{count}} giorni",
+      "tapHint": "Tocca un giorno per i dettagli",
+      "less": "Meno",
+      "more": "Più",
+      "earlierWeeks": "Mostra settimane precedenti",
+      "laterWeeks": "Mostra settimane successive",
       "workouts": {
-        "title": "Workouts",
-        "none": "No workout",
-        "count_one": "{{count}} workout",
-        "count_few": "{{count}} workouts",
-        "count_many": "{{count}} workouts",
-        "count_other": "{{count}} workouts"
+        "title": "Allenamenti",
+        "none": "Nessun allenamento",
+        "count_one": "{{count}} allenamento",
+        "count_few": "{{count}} allenamenti",
+        "count_many": "{{count}} allenamenti",
+        "count_other": "{{count}} allenamenti"
       },
       "nutrition": {
-        "title": "Nutrition",
-        "none": "Nothing logged",
-        "count_one": "{{count}} meal logged",
-        "count_few": "{{count}} meals logged",
-        "count_many": "{{count}} meals logged",
-        "count_other": "{{count}} meals logged"
+        "title": "Alimentazione",
+        "none": "Nulla di registrato",
+        "count_one": "{{count}} pasto registrato",
+        "count_few": "{{count}} pasti registrati",
+        "count_many": "{{count}} pasti registrati",
+        "count_other": "{{count}} pasti registrati"
       }
     }
   }

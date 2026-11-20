@@ -1,75 +1,75 @@
 {
   "editFitnessDetails": {
-    "title": "Edit fitness details",
-    "units": "Units",
-    "imperial": "Imperial",
-    "metric": "Metric",
-    "bodyStats": "Body stats",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "other": "Other",
-    "currentWeight": "Current weight",
-    "height": "Height",
-    "fatPercentage": "Body fat percentage",
-    "fatPercentageNotSet": "Not set, tap to enter",
-    "goalsStrategy": "Goals & strategy",
-    "fitnessGoal": "Fitness goal",
-    "eatingPhase": "Eating phase",
-    "cut": "Cut",
-    "maintain": "Maintain",
-    "bulk": "Bulk",
-    "lifestyleContext": "Lifestyle context",
-    "activityLevel": "Activity level",
-    "liftingExperience": "Lifting experience",
-    "saveChanges": "Save changes",
-    "selectGoal": "Select fitness goal",
-    "selectGoalSubtitle": "Choose the goal that best fits your training",
-    "selectActivity": "Select activity level",
-    "selectActivitySubtitle": "Pick based on your whole day, not just workouts",
+    "title": "Edytuj dane treningowe",
+    "units": "Jednostki",
+    "imperial": "Imperialne",
+    "metric": "Metryczne",
+    "bodyStats": "Parametry ciała",
+    "gender": "Płeć",
+    "male": "Mężczyzna",
+    "female": "Kobieta",
+    "other": "Inna",
+    "currentWeight": "Obecna waga",
+    "height": "Wzrost",
+    "fatPercentage": "Procent tkanki tłuszczowej",
+    "fatPercentageNotSet": "Nie ustawiono, stuknij, aby wpisać",
+    "goalsStrategy": "Cele i strategia",
+    "fitnessGoal": "Cel treningowy",
+    "eatingPhase": "Faza żywienia",
+    "cut": "Redukcja",
+    "maintain": "Utrzymanie",
+    "bulk": "Masa",
+    "lifestyleContext": "Styl życia",
+    "activityLevel": "Poziom aktywności",
+    "liftingExperience": "Doświadczenie treningowe",
+    "saveChanges": "Zapisz zmiany",
+    "selectGoal": "Wybierz cel treningowy",
+    "selectGoalSubtitle": "Wybierz cel, który najlepiej pasuje do twojego treningu",
+    "selectActivity": "Wybierz poziom aktywności",
+    "selectActivitySubtitle": "Wybierz na podstawie całego dnia, nie tylko treningów",
     "activityLevelLabels": {
-      "sedentary": "Sedentary",
-      "light": "Light",
-      "moderate": "Moderate",
-      "active": "Active",
-      "superActive": "Super active"
+      "sedentary": "Siedzący",
+      "light": "Lekki",
+      "moderate": "Umiarkowany",
+      "active": "Aktywny",
+      "superActive": "Bardzo aktywny"
     },
     "activityLevelDescriptions": {
-      "sedentary": "Desk or sit-down job, under 5,000 steps/day, no regular exercise",
-      "light": "Desk job or mostly sitting. Gym or light exercise 2–4×/week but low movement otherwise. Most office workers who exercise fall here",
-      "moderate": "On your feet a good part of the day (teacher, retail, nurse) AND exercise 3–5×/week, or 7,500–10,000+ steps/day",
-      "active": "Physically demanding job (trades, healthcare) or daily intense training with high movement all day",
-      "superActive": "Hard physical job (construction, farming, military) plus regular training, moving heavily most of the day"
+      "sedentary": "Praca biurowa lub siedząca, poniżej 5 000 kroków dziennie, bez regularnych ćwiczeń",
+      "light": "Praca biurowa lub przeważnie siedzenie. Siłownia albo lekkie ćwiczenia 2–4 razy w tygodniu, ale poza tym mało ruchu. Tu mieści się większość biurowych osób ćwiczących",
+      "moderate": "Duża część dnia na nogach (nauczyciel, handel, pielęgniarka) ORAZ ćwiczenia 3–5 razy w tygodniu, albo 7 500–10 000+ kroków dziennie",
+      "active": "Wymagająca fizycznie praca (rzemiosło, ochrona zdrowia) albo codzienne intensywne treningi z dużym ruchem przez cały dzień",
+      "superActive": "Ciężka praca fizyczna (budownictwo, rolnictwo, wojsko) plus regularne treningi, duży ruch przez większość dnia"
     },
-    "weightGoal": "Your goal",
+    "weightGoal": "Twój cel",
     "weightGoalLabels": {
-      "lose": "Lose weight",
-      "maintain": "Maintain",
-      "gain": "Gain muscle"
+      "lose": "Schudnąć",
+      "maintain": "Utrzymać",
+      "gain": "Zbudować mięśnie"
     },
     "fitnessGoalLabels": {
-      "hypertrophy": "Hypertrophy (build muscle)",
-      "strength": "Strength (lift heavier)",
-      "endurance": "Endurance (stamina)",
-      "weightLoss": "Weight loss (burn fat)",
-      "general": "General fitness"
+      "hypertrophy": "Hipertrofia (budowa mięśni)",
+      "strength": "Siła (podnoszenie cięższych ciężarów)",
+      "endurance": "Wytrzymałość (kondycja)",
+      "weightLoss": "Redukcja masy (spalanie tłuszczu)",
+      "general": "Ogólna sprawność"
     },
     "fitnessGoalDescriptions": {
-      "hypertrophy": "Focus on muscle size and definition",
-      "strength": "Focus on maximum strength and power",
-      "endurance": "Focus on cardiovascular fitness",
-      "weightLoss": "Focus on fat loss and toning",
-      "general": "Maintain overall health and wellness"
+      "hypertrophy": "Skup się na objętości i rzeźbie mięśni",
+      "strength": "Skup się na maksymalnej sile i mocy",
+      "endurance": "Skup się na wydolności krążeniowej",
+      "weightLoss": "Skup się na spalaniu tłuszczu i ujędrnieniu",
+      "general": "Utrzymaj ogólne zdrowie i dobre samopoczucie"
     },
     "experienceLabels": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced"
+      "beginner": "Początkujący",
+      "intermediate": "Średniozaawansowany",
+      "advanced": "Zaawansowany"
     },
     "experienceDescriptions": {
-      "beginner": "New to consistent training. Still learning movements and gaining strength quickly week to week",
-      "intermediate": "Comfortable with main lifts. Training consistently for 1–3 years, progress comes monthly rather than weekly",
-      "advanced": "3+ years of structured, consistent training. Progress is slow and hard-earned, near your strength potential"
+      "beginner": "Nowy w regularnym treningu. Nadal uczysz się ruchów i szybko zyskujesz siłę z tygodnia na tydzień",
+      "intermediate": "Pewnie czujesz się w głównych bojach. Trenujesz regularnie od 1–3 lat, a postęp przychodzi raczej co miesiąc niż co tydzień",
+      "advanced": "Ponad 3 lata ustrukturyzowanego, regularnego treningu. Postęp jest powolny i wypracowany, blisko twojego potencjału siły"
     }
   }
 }

@@ -1,17 +1,17 @@
 {
   "restTimer": {
-    "resting": "Resting...",
-    "minus5s": "- 5s",
-    "plus5s": "+ 5s",
-    "skipRest": "Skip rest",
-    "done": "Done",
-    "reps": "reps",
-    "repsWithCount": "{{count}} reps",
-    "upNext": "Up next",
-    "missingWorkoutData": "Missing workout data",
-    "completedSetNotFound": "Completed set not found",
-    "getReady": "Get ready",
+    "resting": "Repos...",
+    "minus5s": "- 5 s",
+    "plus5s": "+ 5 s",
+    "skipRest": "Passer le repos",
+    "done": "Fait",
+    "reps": "rép.",
+    "repsWithCount": "{{count}} rép.",
+    "upNext": "À suivre",
+    "missingWorkoutData": "Données de séance manquantes",
+    "completedSetNotFound": "Série terminée introuvable",
+    "getReady": "Prépare-toi",
     "go": "Go",
-    "a11yRemaining": "{{time}} remaining"
+    "a11yRemaining": "{{time}} restant"
   }
 }

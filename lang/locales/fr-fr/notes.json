@@ -2,48 +2,48 @@
   "notes": {
     "title": "Notes",
     "sections": {
-      "latest": "Latest",
-      "earlier": "Earlier"
+      "latest": "Récentes",
+      "earlier": "Plus anciennes"
     },
     "screenMenu": {
       "title": "Notes",
-      "subtitle": "Jot it down now, track it later",
-      "create": "Create new note",
-      "createDescription": "Write down what you made or ate"
+      "subtitle": "Note-le maintenant, saisis-le plus tard",
+      "create": "Créer une note",
+      "createDescription": "Note ce que tu as cuisiné ou mangé"
     },
     "noteMenu": {
-      "title": "Note options",
-      "edit": "Edit",
-      "editDescription": "Change the title or the text",
-      "duplicate": "Duplicate",
-      "duplicateDescription": "Copy it to the top of the list",
-      "track": "Track this",
-      "trackDescription": "Send it to the coach to log the food",
-      "delete": "Delete",
-      "deleteDescription": "Remove this note permanently"
+      "title": "Options de la note",
+      "edit": "Modifier",
+      "editDescription": "Modifier le titre ou le texte",
+      "duplicate": "Dupliquer",
+      "duplicateDescription": "La copier en haut de la liste",
+      "track": "Saisir ceci",
+      "trackDescription": "L'envoyer au coach pour saisir l'aliment",
+      "delete": "Supprimer",
+      "deleteDescription": "Supprimer cette note définitivement"
     },
     "form": {
-      "createTitle": "New note",
-      "editTitle": "Edit note",
-      "titleLabel": "Title (optional)",
-      "titlePlaceholder": "e.g. Lunch prep",
+      "createTitle": "Nouvelle note",
+      "editTitle": "Modifier la note",
+      "titleLabel": "Titre (facultatif)",
+      "titlePlaceholder": "ex. préparation du déjeuner",
       "bodyLabel": "Note",
-      "bodyPlaceholder": "e.g. 70g of broccoli, 120g chicken breast",
-      "bodyRequired": "Write something before saving",
-      "submit": "Save note"
+      "bodyPlaceholder": "ex. 70 g de brocoli, 120 g de blanc de poulet",
+      "bodyRequired": "Écris quelque chose avant d'enregistrer",
+      "submit": "Enregistrer la note"
     },
     "deleteConfirm": {
-      "title": "Delete note?",
-      "message": "This note will be removed permanently. This can't be undone.",
-      "confirm": "Delete"
+      "title": "Supprimer la note ?",
+      "message": "Cette note sera supprimée définitivement. Cette action est irréversible.",
+      "confirm": "Supprimer"
     },
-    "createSuccess": "Note saved",
-    "createError": "Couldn't save the note",
-    "updateSuccess": "Note updated",
-    "updateError": "Couldn't update the note",
-    "duplicateSuccess": "Note duplicated",
-    "duplicateError": "Couldn't duplicate the note",
-    "deleteSuccess": "Note deleted",
-    "deleteError": "Couldn't delete the note"
+    "createSuccess": "Note enregistrée",
+    "createError": "Impossible d'enregistrer la note",
+    "updateSuccess": "Note mise à jour",
+    "updateError": "Impossible de mettre à jour la note",
+    "duplicateSuccess": "Note dupliquée",
+    "duplicateError": "Impossible de dupliquer la note",
+    "deleteSuccess": "Note supprimée",
+    "deleteError": "Impossible de supprimer la note"
   }
 }

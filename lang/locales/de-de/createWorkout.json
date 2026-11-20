@@ -1,50 +1,50 @@
 {
   "createWorkout": {
-    "title": "Create new workout",
-    "save": "Save",
-    "workoutIcon": "Workout icon",
-    "essentials": "Essentials",
-    "workoutTitle": "Workout title",
-    "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
-    "description": "Description",
-    "descriptionPlaceholder": "Focus on quads and calves...",
-    "workoutType": "Workout type",
+    "title": "Neues Training erstellen",
+    "save": "Speichern",
+    "workoutIcon": "Trainingssymbol",
+    "essentials": "Grundlagen",
+    "workoutTitle": "Trainingstitel",
+    "workoutTitlePlaceholder": "z. B. Beintag-Zerstörer",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Fokus auf Quadrizeps und Waden...",
+    "workoutType": "Trainingsart",
     "types": {
-      "strength": "Strength",
+      "strength": "Kraft",
       "cardio": "Cardio",
-      "flexibility": "Flexibility",
+      "flexibility": "Beweglichkeit",
       "calisthenics": "Calisthenics",
-      "other": "Other"
+      "other": "Andere"
     },
-    "intelligence": "Intelligence",
+    "intelligence": "Intelligenz",
     "workoutInsight": {
-      "title": "Workout insights",
-      "description": "Choose how Musclog prepares insights for your next session. AI adapts based on recovery data when enabled.",
-      "none": "None",
-      "algorithm": "Algorithm",
-      "ai": "AI"
+      "title": "Trainingseinblicke",
+      "description": "Wähle, wie Musclog Einblicke für dein nächstes Training vorbereitet. Wenn aktiviert, passt die KI sich anhand der Erholungsdaten an.",
+      "none": "Keine",
+      "algorithm": "Algorithmus",
+      "ai": "KI"
     },
     "routine": "Routine",
     "plan": {
-      "label": "Workout plans",
-      "none": "Not part of a plan",
-      "scheduleHint": "Weekdays are configured separately for each workout plan."
+      "label": "Trainingspläne",
+      "none": "Nicht Teil eines Plans",
+      "scheduleHint": "Die Wochentage werden für jeden Trainingsplan separat festgelegt."
     },
     "standaloneSchedule": {
-      "label": "Standalone schedule",
-      "description": "Used only while this workout is not part of a plan."
+      "label": "Eigenständiger Zeitplan",
+      "description": "Wird nur verwendet, solange dieses Training nicht Teil eines Plans ist."
     },
-    "weekly": "Weekly",
-    "exercises": "Exercises",
-    "exercisesInWorkout": "Exercises in the workout",
-    "addExerciseError": "Failed to add exercise",
-    "editTitle": "Edit workout",
-    "loadError": "Failed to load",
-    "noExercisesPlaceholder": "No exercises",
-    "saveError": "Failed to save",
+    "weekly": "Wöchentlich",
+    "exercises": "Übungen",
+    "exercisesInWorkout": "Übungen im Training",
+    "addExerciseError": "Übung konnte nicht hinzugefügt werden",
+    "editTitle": "Training bearbeiten",
+    "loadError": "Laden fehlgeschlagen",
+    "noExercisesPlaceholder": "Keine Übungen",
+    "saveError": "Speichern fehlgeschlagen",
     "validation": {
-      "titleRequiredMessage": "Please enter a workout title"
+      "titleRequiredMessage": "Bitte gib einen Trainingstitel ein"
     },
-    "ruleTapHint": "Tap an exercise to choose how its weights progress."
+    "ruleTapHint": "Tippe auf eine Übung, um festzulegen, wie ihre Gewichte steigen."
   }
 }

@@ -1,51 +1,51 @@
 {
   "websiteTools": {
     "layout": {
-      "allTools": "All tools",
-      "howItWorks": "How it works",
+      "allTools": "Tous les outils",
+      "howItWorks": "Comment ça marche",
       "sources": "Sources",
-      "related": "More tools",
-      "ctaTitle": "Track it in Musclog",
-      "ctaBody": "Musclog is a free, open-source fitness and nutrition tracker. Your data stays on your device.",
-      "sameMath": "Uses the same calculation as the Musclog app.",
-      "localOnly": "Everything you type stays in your browser.",
-      "readMore": "Read more"
+      "related": "Plus d'outils",
+      "ctaTitle": "Suis-le dans Musclog",
+      "ctaBody": "Musclog est une application gratuite et open source de suivi du fitness et de la nutrition. Tes données restent sur ton appareil.",
+      "sameMath": "Utilise le même calcul que l'application Musclog.",
+      "localOnly": "Tout ce que tu saisis reste dans ton navigateur.",
+      "readMore": "En savoir plus"
     },
     "units": {
-      "label": "Units",
-      "metric": "Metric (kg)",
-      "imperial": "Imperial (lb)",
+      "label": "Unités",
+      "metric": "Métrique (kg)",
+      "imperial": "Impérial (lb)",
       "kg": "kg",
       "lb": "lb"
     },
     "gym": {
-      "summary": "Your gym: bar and plates",
-      "barWeight": "Bar weight",
-      "plates": "Plate pairs",
-      "platesHint": "How many pairs of each plate you have. Use 0 for a plate your gym does not have.",
-      "reset": "Reset to a standard gym",
-      "remembered": "Remembered in this browser only.",
-      "invalid": "Check the bar weight and the plate counts: each needs a number."
+      "summary": "Ta salle : barre et disques",
+      "barWeight": "Poids de la barre",
+      "plates": "Paires de disques",
+      "platesHint": "Combien de paires de chaque disque tu possèdes. Mets 0 pour un disque que ta salle n'a pas.",
+      "reset": "Réinitialiser à une salle standard",
+      "remembered": "Mémorisé dans ce navigateur uniquement.",
+      "invalid": "Vérifie le poids de la barre et le nombre de disques : chacun doit être un nombre."
     },
     "index": {
       "groups": {
         "strength": {
-          "title": "Know your strength",
-          "body": "Work out your max, your plates and your warm-ups."
+          "title": "Connais ta force",
+          "body": "Calcule ta max, tes disques et tes échauffements."
         },
         "training": {
-          "title": "Plan your training",
-          "body": "Set effort, progression, deloads and keep a log."
+          "title": "Planifie ton entraînement",
+          "body": "Règle l'effort, la progression et les décharges, et tiens un carnet."
         },
         "nutrition": {
-          "title": "Eat for your goal",
-          "body": "Protein, calories and carbs without the guesswork."
+          "title": "Mange pour ton objectif",
+          "body": "Protéines, calories et glucides sans deviner."
         }
       },
-      "title": "Free tools for lifters",
-      "intro": "Calculators that run in your browser and use the same math as the Musclog app. Nothing you type leaves the page.",
-      "programsTitle": "Free workout programs",
-      "programsBody": "Full programs with every day, exercise, set and rep. Open one in Musclog with a tap."
+      "title": "Outils gratuits pour les pratiquants",
+      "intro": "Des calculateurs qui tournent dans ton navigateur et utilisent les mêmes calculs que l'application Musclog. Rien de ce que tu saisis ne quitte la page.",
+      "programsTitle": "Programmes d'entraînement gratuits",
+      "programsBody": "Des programmes complets avec chaque jour, exercice, série et répétition. Ouvre-en un dans Musclog d'un geste."
     }
   }
 }

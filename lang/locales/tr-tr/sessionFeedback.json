@@ -1,18 +1,18 @@
 {
   "sessionFeedback": {
-    "title": "Session feedback",
-    "subtitle": "Rate your performance",
-    "difficulty": "Difficulty",
-    "exhaustion": "Exhaustion",
-    "enjoyment": "Enjoyment",
-    "easy": "Easy",
-    "extreme": "Extreme",
-    "fresh": "Fresh",
-    "drained": "Drained",
-    "disliked": "Disliked",
-    "loved": "Loved",
-    "submit": "Submit feedback",
-    "notes": "Notes",
-    "notesPlaceholder": "How did it go? Anything to remember next time?"
+    "title": "Seans geri bildirimi",
+    "subtitle": "Performansını değerlendir",
+    "difficulty": "Zorluk",
+    "exhaustion": "Yorgunluk",
+    "enjoyment": "Keyif",
+    "easy": "Kolay",
+    "extreme": "Aşırı",
+    "fresh": "Dinç",
+    "drained": "Bitkin",
+    "disliked": "Sevmedim",
+    "loved": "Bayıldım",
+    "submit": "Geri bildirimi gönder",
+    "notes": "Notlar",
+    "notesPlaceholder": "Nasıl geçti? Bir dahaki sefere hatırlanacak bir şey var mı?"
   }
 }

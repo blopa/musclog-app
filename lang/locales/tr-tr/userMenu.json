@@ -1,15 +1,15 @@
 {
   "userMenu": {
-    "greeting": "Account",
-    "profile": "Profile",
-    "settings": "Settings",
-    "progress": "Progress",
-    "cycle": "Cycle",
-    "workouts": "Workouts",
-    "food": "Food",
-    "coach": "Coach",
-    "checkin": "Weekly Review",
-    "debugPage": "Debug page",
-    "notes": "Notes"
+    "greeting": "Hesap",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "progress": "İlerleme",
+    "cycle": "Döngü",
+    "workouts": "Antrenmanlar",
+    "food": "Besin",
+    "coach": "Koç",
+    "checkin": "Haftalık değerlendirme",
+    "debugPage": "Hata ayıklama sayfası",
+    "notes": "Notlar"
   }
 }

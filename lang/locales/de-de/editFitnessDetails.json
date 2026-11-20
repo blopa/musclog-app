@@ -1,75 +1,75 @@
 {
   "editFitnessDetails": {
-    "title": "Edit fitness details",
-    "units": "Units",
+    "title": "Fitnessdaten bearbeiten",
+    "units": "Einheiten",
     "imperial": "Imperial",
-    "metric": "Metric",
-    "bodyStats": "Body stats",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "other": "Other",
-    "currentWeight": "Current weight",
-    "height": "Height",
-    "fatPercentage": "Body fat percentage",
-    "fatPercentageNotSet": "Not set, tap to enter",
-    "goalsStrategy": "Goals & strategy",
-    "fitnessGoal": "Fitness goal",
-    "eatingPhase": "Eating phase",
-    "cut": "Cut",
-    "maintain": "Maintain",
-    "bulk": "Bulk",
-    "lifestyleContext": "Lifestyle context",
-    "activityLevel": "Activity level",
-    "liftingExperience": "Lifting experience",
-    "saveChanges": "Save changes",
-    "selectGoal": "Select fitness goal",
-    "selectGoalSubtitle": "Choose the goal that best fits your training",
-    "selectActivity": "Select activity level",
-    "selectActivitySubtitle": "Pick based on your whole day, not just workouts",
+    "metric": "Metrisch",
+    "bodyStats": "Körperdaten",
+    "gender": "Geschlecht",
+    "male": "Männlich",
+    "female": "Weiblich",
+    "other": "Andere",
+    "currentWeight": "Aktuelles Gewicht",
+    "height": "Größe",
+    "fatPercentage": "Körperfettanteil",
+    "fatPercentageNotSet": "Nicht angegeben, zum Eingeben tippen",
+    "goalsStrategy": "Ziele & Strategie",
+    "fitnessGoal": "Fitnessziel",
+    "eatingPhase": "Ernährungsphase",
+    "cut": "Diät",
+    "maintain": "Halten",
+    "bulk": "Aufbau",
+    "lifestyleContext": "Lebensstil",
+    "activityLevel": "Aktivitätslevel",
+    "liftingExperience": "Trainingserfahrung",
+    "saveChanges": "Änderungen speichern",
+    "selectGoal": "Fitnessziel auswählen",
+    "selectGoalSubtitle": "Wähle das Ziel, das am besten zu deinem Training passt",
+    "selectActivity": "Aktivitätslevel auswählen",
+    "selectActivitySubtitle": "Wähle nach deinem ganzen Tag, nicht nur nach dem Training",
     "activityLevelLabels": {
-      "sedentary": "Sedentary",
-      "light": "Light",
-      "moderate": "Moderate",
-      "active": "Active",
-      "superActive": "Super active"
+      "sedentary": "Sitzend",
+      "light": "Leicht",
+      "moderate": "Mäßig",
+      "active": "Aktiv",
+      "superActive": "Sehr aktiv"
     },
     "activityLevelDescriptions": {
-      "sedentary": "Desk or sit-down job, under 5,000 steps/day, no regular exercise",
-      "light": "Desk job or mostly sitting. Gym or light exercise 2–4×/week but low movement otherwise. Most office workers who exercise fall here",
-      "moderate": "On your feet a good part of the day (teacher, retail, nurse) AND exercise 3–5×/week, or 7,500–10,000+ steps/day",
-      "active": "Physically demanding job (trades, healthcare) or daily intense training with high movement all day",
-      "superActive": "Hard physical job (construction, farming, military) plus regular training, moving heavily most of the day"
+      "sedentary": "Schreibtisch- oder Sitzjob, unter 5.000 Schritte/Tag, kein regelmäßiges Training",
+      "light": "Schreibtischjob oder überwiegend Sitzen. Training oder leichte Bewegung 2–4×/Woche, sonst wenig Bewegung. Die meisten Büroangestellten, die Sport treiben, fallen hierunter",
+      "moderate": "Viel Stehen im Alltag (Lehrkraft, Verkauf, Pflege) UND Training 3–5×/Woche, oder 7.500–10.000+ Schritte/Tag",
+      "active": "Körperlich anstrengender Job (Handwerk, Pflege) oder tägliches intensives Training mit viel Bewegung den ganzen Tag",
+      "superActive": "Schwerer körperlicher Job (Bau, Landwirtschaft, Militär) plus regelmäßiges Training, die meiste Zeit des Tages stark in Bewegung"
     },
-    "weightGoal": "Your goal",
+    "weightGoal": "Dein Ziel",
     "weightGoalLabels": {
-      "lose": "Lose weight",
-      "maintain": "Maintain",
-      "gain": "Gain muscle"
+      "lose": "Abnehmen",
+      "maintain": "Halten",
+      "gain": "Muskeln aufbauen"
     },
     "fitnessGoalLabels": {
-      "hypertrophy": "Hypertrophy (build muscle)",
-      "strength": "Strength (lift heavier)",
-      "endurance": "Endurance (stamina)",
-      "weightLoss": "Weight loss (burn fat)",
-      "general": "General fitness"
+      "hypertrophy": "Hypertrophie (Muskeln aufbauen)",
+      "strength": "Kraft (schwerer heben)",
+      "endurance": "Ausdauer (Durchhaltevermögen)",
+      "weightLoss": "Gewichtsabnahme (Fett verbrennen)",
+      "general": "Allgemeine Fitness"
     },
     "fitnessGoalDescriptions": {
-      "hypertrophy": "Focus on muscle size and definition",
-      "strength": "Focus on maximum strength and power",
-      "endurance": "Focus on cardiovascular fitness",
-      "weightLoss": "Focus on fat loss and toning",
-      "general": "Maintain overall health and wellness"
+      "hypertrophy": "Fokus auf Muskelgröße und Definition",
+      "strength": "Fokus auf maximale Kraft und Leistung",
+      "endurance": "Fokus auf die Herz-Kreislauf-Fitness",
+      "weightLoss": "Fokus auf Fettabbau und Straffung",
+      "general": "Allgemeine Gesundheit und Wohlbefinden erhalten"
     },
     "experienceLabels": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced"
+      "beginner": "Anfänger",
+      "intermediate": "Fortgeschritten",
+      "advanced": "Profi"
     },
     "experienceDescriptions": {
-      "beginner": "New to consistent training. Still learning movements and gaining strength quickly week to week",
-      "intermediate": "Comfortable with main lifts. Training consistently for 1–3 years, progress comes monthly rather than weekly",
-      "advanced": "3+ years of structured, consistent training. Progress is slow and hard-earned, near your strength potential"
+      "beginner": "Neu im regelmäßigen Training. Bewegungen werden noch gelernt, die Kraft wächst von Woche zu Woche schnell",
+      "intermediate": "Sicher bei den Grundübungen. Seit 1–3 Jahren regelmäßig trainiert, Fortschritte kommen eher monatlich als wöchentlich",
+      "advanced": "3+ Jahre strukturiertes, regelmäßiges Training. Fortschritt ist langsam und hart erarbeitet, nahe an deinem Kraftpotenzial"
     }
   }
 }

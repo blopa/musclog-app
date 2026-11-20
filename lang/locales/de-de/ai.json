@@ -1,31 +1,31 @@
 {
   "ai": {
     "settings": {
-      "notConfigured": "AI is not configured. Please add an API key in AI Settings."
+      "notConfigured": "KI ist nicht eingerichtet. Bitte füge in den KI-Einstellungen einen API-Schlüssel hinzu."
     },
     "notConfiguredModal": {
-      "title": "AI isn't set up yet",
-      "subtitle": "Add an API key before you can chat with the coach.",
-      "tipApiKey": "Use OpenAI or Google Gemini API keys from AI settings.",
-      "tipFeatures": "Once configured, your messages are sent to the model you choose.",
-      "openSettings": "Open AI settings",
-      "notNow": "Not now"
+      "title": "KI ist noch nicht eingerichtet",
+      "subtitle": "Füge einen API-Schlüssel hinzu, bevor du mit dem Coach chatten kannst.",
+      "tipApiKey": "Verwende OpenAI- oder Google-Gemini-API-Schlüssel aus den KI-Einstellungen.",
+      "tipFeatures": "Sobald alles eingerichtet ist, werden deine Nachrichten an das Modell gesendet, das du wählst.",
+      "openSettings": "KI-Einstellungen öffnen",
+      "notNow": "Nicht jetzt"
     },
     "providers": {
-      "openAIGemini": "OpenAI or Google Gemini"
+      "openAIGemini": "OpenAI oder Google Gemini"
     },
     "icons": {
-      "Dumbbell": "Dumbbell",
-      "Target": "Target",
-      "Zap": "Zap",
-      "Trophy": "Trophy",
-      "Activity": "Activity",
-      "Heart": "Heart",
-      "Flame": "Flame"
+      "Dumbbell": "Hantel",
+      "Target": "Ziel",
+      "Zap": "Blitz",
+      "Trophy": "Pokal",
+      "Activity": "Aktivität",
+      "Heart": "Herz",
+      "Flame": "Flamme"
     },
     "chat": {
-      "message": "Message",
-      "typeYourMessage": "Type your message..."
+      "message": "Nachricht",
+      "typeYourMessage": "Schreibe deine Nachricht..."
     }
   }
 }

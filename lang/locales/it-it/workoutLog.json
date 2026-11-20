@@ -1,24 +1,24 @@
 {
   "workoutLog": {
     "manageWorkoutLogData": {
-      "deleteLogWarning": "Are you sure you want to delete this workout log? This action cannot be undone.",
-      "title": "Manage workout log data",
-      "searchPlaceholder": "Search workout sessions...",
-      "noWorkoutLogs": "No workout logs yet",
-      "noWorkoutLogsDesc": "Complete workouts to see them here",
-      "endOfHistory": "End of workout history",
-      "workoutLogOptions": "Workout options",
-      "editWorkoutLog": "Edit workout",
-      "editWorkoutLogDesc": "Modify workout details",
-      "duplicateWorkoutLog": "Duplicate workout",
-      "duplicateWorkoutLogDesc": "Create a copy of this workout",
-      "deleteWorkoutLog": "Delete workout",
-      "deleteWorkoutLogDesc": "Remove this workout log",
+      "deleteLogWarning": "Sei sicuro di voler eliminare questo diario di allenamento? L'operazione non può essere annullata.",
+      "title": "Gestisci i dati del diario di allenamento",
+      "searchPlaceholder": "Cerca sessioni di allenamento...",
+      "noWorkoutLogs": "Nessun diario di allenamento ancora",
+      "noWorkoutLogsDesc": "Completa gli allenamenti per vederli qui",
+      "endOfHistory": "Fine della cronologia degli allenamenti",
+      "workoutLogOptions": "Opzioni allenamento",
+      "editWorkoutLog": "Modifica allenamento",
+      "editWorkoutLogDesc": "Modifica i dettagli dell'allenamento",
+      "duplicateWorkoutLog": "Duplica allenamento",
+      "duplicateWorkoutLogDesc": "Crea una copia di questo allenamento",
+      "deleteWorkoutLog": "Elimina allenamento",
+      "deleteWorkoutLogDesc": "Rimuovi questo diario di allenamento",
       "detailFormat": "{{status}} • {{volume}}",
-      "statusCompleted": "Completed",
-      "statusInProgress": "In progress",
+      "statusCompleted": "Completato",
+      "statusInProgress": "In corso",
       "volumeFormat": "{{volume}} {{unit}}",
-      "unknownWorkout": "Unknown workout"
+      "unknownWorkout": "Allenamento sconosciuto"
     }
   }
 }

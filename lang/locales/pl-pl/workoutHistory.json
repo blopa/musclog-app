@@ -1,19 +1,19 @@
 {
   "workoutHistory": {
-    "title": "Session history",
-    "previewTitle": "Workout preview",
-    "workoutInProgress": "Workout in progress",
-    "previewSubtitle": "Preview",
-    "duration": "Duration",
-    "volume": "Vol",
-    "setsDone": "Sets done",
-    "startThisWorkout": "Start this workout",
-    "noExercisesYet": "No exercises yet",
-    "exercise": "Exercise {{number}}",
-    "set": "Set {{number}}",
-    "share": "Share",
-    "shareDescription": "Share these workout details",
-    "shareFailed": "Failed to share workout details. Please try again.",
-    "viewHistory": "View past sessions"
+    "title": "Historia sesji",
+    "previewTitle": "Podgląd treningu",
+    "workoutInProgress": "Trening w trakcie",
+    "previewSubtitle": "Podgląd",
+    "duration": "Czas trwania",
+    "volume": "Obj.",
+    "setsDone": "Wykonane serie",
+    "startThisWorkout": "Rozpocznij ten trening",
+    "noExercisesYet": "Brak ćwiczeń",
+    "exercise": "Ćwiczenie {{number}}",
+    "set": "Seria {{number}}",
+    "share": "Udostępnij",
+    "shareDescription": "Udostępnij szczegóły tego treningu",
+    "shareFailed": "Nie udało się udostępnić szczegółów treningu. Spróbuj ponownie.",
+    "viewHistory": "Zobacz dawne sesje"
   }
 }

@@ -1,86 +1,86 @@
 {
   "websiteToolDeloadCalculator": {
-    "title": "Deload calculator",
-    "intro": "Enter a lift's working weight and sets and get the deload week: how much lighter to go, how many sets to keep, how hard to push and how long it lasts.",
+    "title": "Calculateur de semaine de décharge",
+    "intro": "Saisis la charge de travail d'un exercice et ses séries, et obtiens la semaine de décharge : de combien alléger, combien de séries garder, à quel point pousser et sur combien de temps.",
     "form": {
-      "weight": "Working weight",
-      "weightHint": "What you lift for your normal working sets.",
-      "sets": "Working sets in a normal week",
-      "setsHint": "Whole number, for this one exercise.",
-      "equipmentLabel": "Equipment",
+      "weight": "Charge de travail",
+      "weightHint": "La charge que tu utilises pour tes séries de travail habituelles.",
+      "sets": "Séries de travail dans une semaine normale",
+      "setsHint": "Nombre entier, pour cet exercice seulement.",
+      "equipmentLabel": "Matériel",
       "equipment": {
-        "barbell": "Barbell",
-        "dumbbell": "Dumbbell",
-        "machine": "Machine or cable"
+        "barbell": "Barre",
+        "dumbbell": "Haltère",
+        "machine": "Machine ou câble"
       }
     },
     "problems": {
-      "weight": "Enter the working weight as a number above 0 and at most {{max}}.",
-      "sets": "Enter the sets as a whole number from 1 to {{max}}."
+      "weight": "Saisis la charge de travail sous forme de nombre supérieur à 0 et au plus {{max}}.",
+      "sets": "Saisis les séries sous forme de nombre entier de 1 à {{max}}."
     },
     "results": {
-      "title": "Your deload week",
-      "weight": "Weight",
-      "weightNote": "{{percent}} lighter than your working weight, rounded down to a load you can set. Keep your usual reps.",
-      "sets": "Sets",
-      "setsValue_one": "{{sets}} set",
-      "setsValue_few": "{{sets}} sets",
-      "setsValue_many": "{{sets}} sets",
-      "setsValue_other": "{{sets}} sets",
-      "setsNote": "Down from {{from}}: about two thirds, never fewer than one.",
+      "title": "Ta semaine de décharge",
+      "weight": "Charge",
+      "weightNote": "{{percent}} de moins que ta charge de travail, arrondie à une charge que tu peux régler. Garde tes répétitions habituelles.",
+      "sets": "Séries",
+      "setsValue_one": "{{sets}} série",
+      "setsValue_few": "{{sets}} séries",
+      "setsValue_many": "{{sets}} séries",
+      "setsValue_other": "{{sets}} séries",
+      "setsNote": "Contre {{from}} d'habitude : environ les deux tiers, jamais moins d'une.",
       "effort": "Effort",
-      "effortValue": "{{count}} reps in reserve",
-      "effortNote": "Stop each set with about {{count}} reps still possible, so the week feels easy on purpose.",
-      "duration": "Length",
-      "durationValue_one": "{{count}} week",
-      "durationValue_few": "{{count}} weeks",
-      "durationValue_many": "{{count}} weeks",
-      "durationValue_other": "{{count}} weeks",
-      "durationNote": "Train as often as usual with lighter work, then go back to your normal loads.",
-      "plates": "Plates on each side of the bar",
-      "emptyBar": "Empty bar",
+      "effortValue": "{{count}} répétitions en réserve",
+      "effortNote": "Arrête chaque série avec environ {{count}} répétitions encore possibles, pour que la semaine reste volontairement facile.",
+      "duration": "Durée",
+      "durationValue_one": "{{count}} semaine",
+      "durationValue_few": "{{count}} semaines",
+      "durationValue_many": "{{count}} semaines",
+      "durationValue_other": "{{count}} semaines",
+      "durationNote": "Entraîne-toi aussi souvent que d'habitude avec un travail plus léger, puis reviens à tes charges habituelles.",
+      "plates": "Disques de chaque côté de la barre",
+      "emptyBar": "Barre vide",
       "plateLine": "{{count}} × {{weight}}",
-      "noLighter": "This is already the lightest load this equipment can make, so the weight stays. Cut the sets and push less hard instead.",
-      "step": "One load step for this equipment is {{step}}."
+      "noLighter": "C'est déjà la charge la plus légère que ce matériel puisse faire : la charge reste donc la même. Réduis plutôt les séries et pousse moins fort.",
+      "step": "Un pas de charge pour ce matériel est de {{step}}."
     },
     "table": {
-      "title": "Other common cuts",
-      "cut": "Cut",
-      "weight": "Weight",
-      "actual": "Actually lighter by",
-      "musclog": "Musclog's cut",
+      "title": "Autres réductions courantes",
+      "cut": "Réduction",
+      "weight": "Charge",
+      "actual": "Réduction réelle de",
+      "musclog": "Réduction de Musclog",
       "percent": "{{percent}}",
-      "note": "Musclog takes 10% or one load step, whichever is larger. The 10, 15 and 20% rows are rules of thumb, not study results. Each is rounded down to a load you can really set, so a small weight can end up lighter by more than the cut you asked for."
+      "note": "Musclog retient 10 % ou un pas de charge, selon ce qui est le plus grand. Les lignes à 10, 15 et 20 % sont des règles empiriques, pas des résultats d'études. Chacune est arrondie à une charge que tu peux réellement régler : une petite charge peut donc finir plus allégée que la réduction demandée."
     },
     "sections": [
       {
-        "title": "How much lighter, and for how long",
+        "title": "De combien alléger, et pendant combien de temps",
         "body": [
-          "The Musclog app's deload is a cut of 10% or one load step, whichever is larger, rounded down to a weight your equipment can make and always strictly lighter than now. A lighter week then keeps about two thirds of the working sets, keeps the planned reps and aims for 4 reps in reserve. It lasts one week. All of these are Musclog product choices, not study results.",
-          "Lifters often use 10 to 20% less weight, or about a third fewer sets, for a week. Use the table for a deeper cut if the week before felt very heavy. Keep the same exercises and the same number of sessions: a deload is lighter training, not a week off."
+          "La décharge de l'application Musclog consiste à réduire de 10 % ou d'un pas de charge, selon ce qui est le plus grand, arrondi à un poids que ton matériel peut faire et toujours strictement plus léger qu'actuellement. Une semaine allégée conserve alors environ les deux tiers des séries de travail, garde les répétitions prévues et vise 4 répétitions en réserve. Elle dure une semaine. Tous ces choix sont des choix de produit de Musclog, pas des résultats d'études.",
+          "On réduit souvent la charge de 10 à 20 %, ou d'environ un tiers les séries, pendant une semaine. Utilise le tableau pour une réduction plus forte si la semaine précédente a été très lourde. Garde les mêmes exercices et le même nombre de séances : une décharge est un entraînement plus léger, pas une semaine de repos."
         ]
       },
       {
-        "title": "When a deload makes sense",
+        "title": "Quand une décharge a du sens",
         "body": [
-          "The usual signs are the same weight feeling much heavier than a few weeks ago, missed reps you normally hit and almost no reps left in reserve. Poor sleep, stress or illness can look the same, and a deload helps with those too. If a joint hurts sharply, see a doctor or physiotherapist instead.",
-          "The app deloads one exercise on its own after two sessions in a row at the same load where you ended with nothing in reserve or missed the planned reps. It suggests a lighter week from your Weekly Review when several lifts stall. You choose whether to take it."
+          "Les signes habituels sont une même charge qui paraît bien plus lourde qu'il y a quelques semaines, des répétitions manquées alors que tu les réussis d'habitude, et presque plus de répétitions en réserve. Un mauvais sommeil, le stress ou la maladie peuvent produire les mêmes effets, et une décharge aide aussi dans ces cas. Si une articulation te fait mal de façon aiguë, consulte un médecin ou un kinésithérapeute.",
+          "L'application décharge un exercice de sa propre initiative après deux séances de suite à la même charge où tu as fini sans rien en réserve ou en ayant raté les répétitions prévues. Elle propose une semaine allégée dans ton bilan hebdomadaire quand plusieurs mouvements stagnent. Tu choisis si tu la prends."
         ]
       },
       {
-        "title": "What the research says",
+        "title": "Ce que dit la recherche",
         "body": [
-          "A 2023 consensus study of strength and physique coaches defined a deload as a period of reduced training stress meant to limit fatigue, support recovery and prepare you for later training. That is a definition, not a prescription. The numbers on this page do not come from it."
+          "Une étude de consensus de 2023 auprès d'entraîneurs de force et de physique a défini la décharge comme une période de stress d'entraînement réduit, destinée à limiter la fatigue, favoriser la récupération et préparer les entraînements suivants. C'est une définition, pas une prescription. Les chiffres de cette page n'en sont pas issus."
         ]
       }
     ],
     "sources": {
-      "bell": "Bell et al. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
-      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+      "bell": "Bell et al. (2023), Intégrer la décharge dans les programmes d'entraînement de force et de physique : une approche par consensus Delphi international (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Nouvelle échelle de RPE propre à l'entraînement en résistance, mesurant les répétitions en réserve"
     },
     "articles": {
-      "deload": "Deload weeks: when you need one and how to run it",
-      "doubleProgression": "Double progression: the simplest way to add weight every week"
+      "deload": "Semaines de décharge : quand en avoir besoin et comment les mener",
+      "doubleProgression": "Double progression : la façon la plus simple d'ajouter de la charge chaque semaine"
     }
   }
 }

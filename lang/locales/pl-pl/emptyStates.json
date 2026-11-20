@@ -1,29 +1,29 @@
 {
   "emptyStates": {
     "workouts": {
-      "title": "No workouts yet",
-      "description": "Plan your routine and log your first session here.",
-      "buttonLabel": "Create your first workout"
+      "title": "Brak treningów",
+      "description": "Zaplanuj rutynę i zapisz tutaj pierwszą sesję.",
+      "buttonLabel": "Utwórz pierwszy trening"
     },
     "foods": {
-      "title": "No food logged",
-      "description": "Log your meals to stay on top of your nutrition goals. Your body will thank you.",
-      "buttonLabel": "Log your meal"
+      "title": "Brak zapisanego jedzenia",
+      "description": "Zapisuj posiłki, aby trzymać rękę na pulsie w swoich celach żywieniowych. Twoje ciało ci podziękuje.",
+      "buttonLabel": "Zapisz posiłek"
     },
     "workout": {
-      "title": "No workouts yet",
-      "description": "Ready for your first session?",
-      "button": "Plan"
+      "title": "Brak treningów",
+      "description": "Gotowy na pierwszą sesję?",
+      "button": "Zaplanuj"
     },
     "food": {
-      "title": "Nothing logged today",
-      "description": "Meals you log today show up here.",
-      "button": "Log"
+      "title": "Dziś nic nie zapisano",
+      "description": "Posiłki zapisane dzisiaj pojawią się tutaj.",
+      "button": "Zapisz"
     },
     "notes": {
-      "title": "No notes yet",
-      "description": "Jot down what you're cooking, like 70g of broccoli or a recipe idea, and track it when you're ready.",
-      "buttonLabel": "Write your first note"
+      "title": "Brak notatek",
+      "description": "Zapisz, co gotujesz, np. 70 g brokułów albo pomysł na przepis, i śledź to, gdy będziesz gotowy.",
+      "buttonLabel": "Napisz pierwszą notatkę"
     }
   }
 }

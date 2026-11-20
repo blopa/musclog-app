@@ -1,41 +1,41 @@
 {
   "lock": {
     "settings": {
-      "title": "App lock",
-      "subtitle": "Ask for fingerprint, face or device PIN",
-      "hint": "Ask for your fingerprint, face or device PIN before showing the areas you choose. They lock again after the app has been in the background for 30 seconds.",
-      "note": "This is a screen lock. Your data stays encrypted and on this phone; exported backups are separate files that you control.",
-      "noCredential": "Set up a screen lock or biometrics on your device first.",
-      "coveredByApp": "Covered by locking the whole app"
+      "title": "Blocco app",
+      "subtitle": "Chiedi impronta, volto o PIN del dispositivo",
+      "hint": "Chiedi la tua impronta, il volto o il PIN del dispositivo prima di mostrare le aree che scegli. Si bloccano di nuovo dopo 30 secondi in background.",
+      "note": "Questo è un blocco dello schermo. I tuoi dati restano cifrati e su questo telefono; i backup esportati sono file separati che gestisci tu.",
+      "noCredential": "Prima imposta un blocco dello schermo o la biometria sul tuo dispositivo.",
+      "coveredByApp": "Coperto dal blocco dell'intera app"
     },
     "areas": {
       "app": {
-        "label": "Whole app",
-        "hint": "Ask before anything in Musclog is shown"
+        "label": "Intera app",
+        "hint": "Chiedi prima di mostrare qualsiasi cosa di Musclog"
       },
       "cycle": {
-        "label": "Cycle tracking",
-        "hint": "Periods, symptoms and predictions",
-        "lockedTitle": "Cycle tracking is locked",
-        "lockedDescription": "Authenticate to see your cycle records."
+        "label": "Monitoraggio del ciclo",
+        "hint": "Mestruazioni, sintomi e previsioni",
+        "lockedTitle": "Il monitoraggio del ciclo è bloccato",
+        "lockedDescription": "Autenticati per vedere i tuoi dati del ciclo."
       },
       "workout": {
-        "label": "Workouts",
-        "hint": "Plans, sessions and workout history",
-        "lockedTitle": "Workouts are locked",
-        "lockedDescription": "Authenticate to see your workouts."
+        "label": "Allenamenti",
+        "hint": "Schede, sessioni e storico degli allenamenti",
+        "lockedTitle": "Gli allenamenti sono bloccati",
+        "lockedDescription": "Autenticati per vedere i tuoi allenamenti."
       },
       "nutrition": {
-        "label": "Nutrition",
-        "hint": "Food diary, meals and weekly targets",
-        "lockedTitle": "Nutrition is locked",
-        "lockedDescription": "Authenticate to see your nutrition data."
+        "label": "Alimentazione",
+        "hint": "Diario alimentare, pasti e target settimanali",
+        "lockedTitle": "L'alimentazione è bloccata",
+        "lockedDescription": "Autenticati per vedere i tuoi dati nutrizionali."
       },
       "progress": {
-        "label": "Progress",
-        "hint": "Charts, trends and body measurements",
-        "lockedTitle": "Progress is locked",
-        "lockedDescription": "Authenticate to see your progress."
+        "label": "Progressi",
+        "hint": "Grafici, andamenti e misure corporee",
+        "lockedTitle": "I progressi sono bloccati",
+        "lockedDescription": "Autenticati per vedere i tuoi progressi."
       }
     }
   }

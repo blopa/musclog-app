@@ -1,11 +1,11 @@
 {
   "workTimer": {
-    "label": "Set timer",
-    "open": "Set timer",
+    "label": "Ustaw timer",
+    "open": "Ustaw timer",
     "start": "Start",
     "stop": "Stop",
-    "close": "Close",
-    "minus5": "-5s",
-    "plus5": "+5s"
+    "close": "Zamknij",
+    "minus5": "-5 s",
+    "plus5": "+5 s"
   }
 }

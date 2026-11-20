@@ -1,41 +1,41 @@
 {
   "lock": {
     "settings": {
-      "title": "App lock",
-      "subtitle": "Ask for fingerprint, face or device PIN",
-      "hint": "Ask for your fingerprint, face or device PIN before showing the areas you choose. They lock again after the app has been in the background for 30 seconds.",
-      "note": "This is a screen lock. Your data stays encrypted and on this phone; exported backups are separate files that you control.",
-      "noCredential": "Set up a screen lock or biometrics on your device first.",
-      "coveredByApp": "Covered by locking the whole app"
+      "title": "Verrouillage de l'app",
+      "subtitle": "Demander l'empreinte, le visage ou le code de l'appareil",
+      "hint": "Demander ton empreinte, ton visage ou le code de l'appareil avant d'afficher les zones choisies. Elles se verrouillent à nouveau après 30 secondes en arrière-plan.",
+      "note": "Il s'agit d'un verrou d'écran. Tes données restent chiffrées et sur ce téléphone ; les sauvegardes exportées sont des fichiers séparés que tu contrôles.",
+      "noCredential": "Configure d'abord un verrou d'écran ou la biométrie sur ton appareil.",
+      "coveredByApp": "Couvert par le verrouillage de toute l'application"
     },
     "areas": {
       "app": {
-        "label": "Whole app",
-        "hint": "Ask before anything in Musclog is shown"
+        "label": "Toute l'application",
+        "hint": "Demander avant d'afficher quoi que ce soit de Musclog"
       },
       "cycle": {
-        "label": "Cycle tracking",
-        "hint": "Periods, symptoms and predictions",
-        "lockedTitle": "Cycle tracking is locked",
-        "lockedDescription": "Authenticate to see your cycle records."
+        "label": "Suivi du cycle",
+        "hint": "Règles, symptômes et prévisions",
+        "lockedTitle": "Le suivi du cycle est verrouillé",
+        "lockedDescription": "Authentifie-toi pour voir tes données de cycle."
       },
       "workout": {
-        "label": "Workouts",
-        "hint": "Plans, sessions and workout history",
-        "lockedTitle": "Workouts are locked",
-        "lockedDescription": "Authenticate to see your workouts."
+        "label": "Séances",
+        "hint": "Programmes, séances et historique",
+        "lockedTitle": "Les séances sont verrouillées",
+        "lockedDescription": "Authentifie-toi pour voir tes séances."
       },
       "nutrition": {
-        "label": "Nutrition",
-        "hint": "Food diary, meals and weekly targets",
-        "lockedTitle": "Nutrition is locked",
-        "lockedDescription": "Authenticate to see your nutrition data."
+        "label": "Alimentation",
+        "hint": "Journal alimentaire, repas et objectifs hebdomadaires",
+        "lockedTitle": "L'alimentation est verrouillée",
+        "lockedDescription": "Authentifie-toi pour voir tes données alimentaires."
       },
       "progress": {
-        "label": "Progress",
-        "hint": "Charts, trends and body measurements",
-        "lockedTitle": "Progress is locked",
-        "lockedDescription": "Authenticate to see your progress."
+        "label": "Progrès",
+        "hint": "Graphiques, tendances et mensurations",
+        "lockedTitle": "Les progrès sont verrouillés",
+        "lockedDescription": "Authentifie-toi pour voir tes progrès."
       }
     }
   }

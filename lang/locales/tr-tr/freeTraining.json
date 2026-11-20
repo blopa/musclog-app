@@ -1,31 +1,31 @@
 {
   "freeTraining": {
-    "workoutName": "Free training",
-    "blankWorkout": "Blank workout",
-    "title": "Free training",
-    "titleSession": "Session",
-    "subtitle": "Build your workout as you go. No templates, just progress.",
-    "addFirstExercise": "Add first exercise",
-    "tip": "Tip: You can add more exercises at any time.",
-    "startFreeTraining": "Start free training",
-    "startFreeTrainingSubtitle": "Build your workout as you go. No templates, just progress.",
-    "duration": "Duration",
-    "calories": "Calories",
-    "volume": "Volume",
-    "inProgress": "In progress",
+    "workoutName": "Serbest antrenman",
+    "blankWorkout": "Boş antrenman",
+    "title": "Serbest antrenman",
+    "titleSession": "Seans",
+    "subtitle": "Antrenmanını ilerledikçe oluştur. Şablon yok, sadece ilerleme var.",
+    "addFirstExercise": "İlk egzersizi ekle",
+    "tip": "İpucu: İstediğin zaman daha fazla egzersiz ekleyebilirsin.",
+    "startFreeTraining": "Serbest antrenmana başla",
+    "startFreeTrainingSubtitle": "Antrenmanını ilerledikçe oluştur. Şablon yok, sadece ilerleme var.",
+    "duration": "Süre",
+    "calories": "Kalori",
+    "volume": "Hacim",
+    "inProgress": "Devam ediyor",
     "addExercise": {
-      "title": "Add exercise",
-      "numberOfSets": "Number of sets",
-      "addToWorkout": "Add to workout",
-      "menuDescription": "Add exercises and sets to this session"
+      "title": "Egzersiz ekle",
+      "numberOfSets": "Set sayısı",
+      "addToWorkout": "Antrenmana ekle",
+      "menuDescription": "Bu seansa egzersiz ve set ekle"
     },
     "exerciseComplete": {
-      "title": "Exercise complete",
-      "subtitle": "Exercise complete. Ready for more?",
-      "setsCompleted": "{{count}} sets completed",
-      "totalVolume": "Total volume",
-      "addNextExercise": "Add next exercise",
-      "finishWorkout": "Finish workout"
+      "title": "Egzersiz tamamlandı",
+      "subtitle": "Egzersiz tamamlandı. Devam etmeye hazır mısın?",
+      "setsCompleted": "{{count}} set tamamlandı",
+      "totalVolume": "Toplam hacim",
+      "addNextExercise": "Sonraki egzersizi ekle",
+      "finishWorkout": "Antrenmanı bitir"
     }
   }
 }

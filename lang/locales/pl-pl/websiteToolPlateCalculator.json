@@ -1,42 +1,42 @@
 {
   "websiteToolPlateCalculator": {
-    "title": "Plate calculator",
-    "intro": "Enter the weight you want on the bar and get the plates for each side, using the plates your gym actually has, in kg or lb, with your own bar.",
+    "title": "Kalkulator talerzy",
+    "intro": "Wpisz ciężar, jaki chcesz mieć na sztandze, a dostaniesz talerze na każdą stronę, z talerzami, które naprawdę ma twoja siłownia, w kg albo lb, z twoją sztangą.",
     "form": {
-      "target": "Target weight",
-      "targetHint": "The total on the bar, bar included."
+      "target": "Docelowy ciężar",
+      "targetHint": "Łączny ciężar na sztandze, wraz ze sztangą."
     },
     "problems": {
-      "target": "Enter the target weight as a number above 0 and at most {{max}} {{unit}}."
+      "target": "Wpisz docelowy ciężar jako liczbę większą od 0 i co najwyżej {{max}} {{unit}}."
     },
     "results": {
-      "loaded": "Weight on the bar",
-      "exact": "Your gym can load this weight exactly.",
-      "inexact": "Your gym cannot make {{target}} exactly. The heaviest it can load is {{below}}, and the nearest loadable weight is {{nearest}}.",
-      "belowBar": "That is lighter than the bar ({{bar}}). Pick a heavier target, or set a lighter bar in your gym.",
-      "perSide": "Plates on each side",
-      "noPlates": "No plates are needed: the bar alone is the target.",
+      "loaded": "Ciężar na sztandze",
+      "exact": "Twoja siłownia może załadować ten ciężar dokładnie.",
+      "inexact": "Twoja siłownia nie może zrobić dokładnie {{target}}. Najcięższy, jaki może załadować, to {{below}}, a najbliższy możliwy to {{nearest}}.",
+      "belowBar": "To lżej niż sama sztanga ({{bar}}). Wybierz cięższy cel albo ustaw lżejszą sztangę w swojej siłowni.",
+      "perSide": "Talerze po każdej stronie",
+      "noPlates": "Talerze nie są potrzebne: sama sztanga to cel.",
       "plateLine": "{{count}} × {{weight}}",
-      "barLine": "Bar: {{bar}}. Plates are loaded in pairs, one on each side."
+      "barLine": "Sztanga: {{bar}}. Talerze ładuje się parami, po jednym z każdej strony."
     },
     "sections": [
       {
-        "title": "Why the heaviest plate first is wrong",
+        "title": "Dlaczego najcięższy talerz na początku to błąd",
         "body": [
-          "The usual method takes the heaviest plate that fits, then the next, and so on. That works when a gym has plenty of every plate. With limited plates it can fail: a gym with one pair each of 20, 15 and 10 kg needs 25 kg a side for a load of 70 kg with a 20 kg bar. Taking the 20 first leaves 5 kg that no plate fills. The answer is 15 and 10 kg, which the gym can load.",
-          "This calculator tries the combinations of the plates you enter and picks the heaviest load that does not go over your target, using the fewest plates."
+          "Zwykła metoda bierze najcięższy talerz, który się mieści, potem następny i tak dalej. Działa, gdy na siłowni jest dużo każdego talerza. Przy ograniczonej liczbie talerzy potrafi zawieść: siłownia z jedną parą po 20, 15 i 10 kg potrzebuje 25 kg na stronę, by uzyskać 70 kg z 20-kilogramową sztangą. Wzięcie 20 najpierw zostawia 5 kg, których żaden talerz nie uzupełni. Odpowiedź to 15 i 10 kg, które siłownia może załadować.",
+          "Ten kalkulator sprawdza kombinacje talerzy, które wpiszesz, i wybiera najcięższe obciążenie, które nie przekracza celu, używając najmniejszej liczby talerzy."
         ]
       },
       {
-        "title": "Plates load in pairs",
+        "title": "Talerze ładuje się parami",
         "body": [
-          "A bar takes plates in pairs, one on each side, so each plate you enter counts as pairs. An odd plate in a gym cannot be used for a pair and is left out. Enter how many pairs of each plate you have."
+          "Sztanga przyjmuje talerze parami, po jednym z każdej strony, więc każdy talerz, który wpiszesz, liczy się w parach. Nieparzysty talerz na siłowni nie może utworzyć pary i zostaje pominięty. Wpisz, ile par każdego talerza masz."
         ]
       },
       {
-        "title": "Bar weight and units",
+        "title": "Masa sztangi i jednostki",
         "body": [
-          "The bar is part of the total, so set your bar's weight first. Standard Olympic bars are 20 kg (45 lb), and some are lighter. Type in kg or lb: the app stores kilograms and converts, so the numbers match the Musclog app."
+          "Sztanga wchodzi w sumę, więc najpierw ustaw jej masę. Standardowe sztangi olimpijskie ważą 20 kg (45 lb), a niektóre są lżejsze. Wpisuj w kg albo lb: aplikacja przechowuje kilogramy i przelicza, więc liczby zgadzają się z aplikacją Musclog."
         ]
       }
     ]

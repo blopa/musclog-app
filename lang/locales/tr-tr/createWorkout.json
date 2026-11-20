@@ -1,50 +1,50 @@
 {
   "createWorkout": {
-    "title": "Create new workout",
-    "save": "Save",
-    "workoutIcon": "Workout icon",
-    "essentials": "Essentials",
-    "workoutTitle": "Workout title",
-    "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
-    "description": "Description",
-    "descriptionPlaceholder": "Focus on quads and calves...",
-    "workoutType": "Workout type",
+    "title": "Yeni antrenman oluştur",
+    "save": "Kaydet",
+    "workoutIcon": "Antrenman simgesi",
+    "essentials": "Temel bilgiler",
+    "workoutTitle": "Antrenman başlığı",
+    "workoutTitlePlaceholder": "ör. Bacak Günü Yıkımı",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Ön ve arka bacağa ile baldıra odaklan...",
+    "workoutType": "Antrenman türü",
     "types": {
-      "strength": "Strength",
-      "cardio": "Cardio",
-      "flexibility": "Flexibility",
-      "calisthenics": "Calisthenics",
-      "other": "Other"
+      "strength": "Güç",
+      "cardio": "Kardiyo",
+      "flexibility": "Esneklik",
+      "calisthenics": "Vücut ağırlığı",
+      "other": "Diğer"
     },
-    "intelligence": "Intelligence",
+    "intelligence": "Zekâ",
     "workoutInsight": {
-      "title": "Workout insights",
-      "description": "Choose how Musclog prepares insights for your next session. AI adapts based on recovery data when enabled.",
-      "none": "None",
-      "algorithm": "Algorithm",
-      "ai": "AI"
+      "title": "Antrenman içgörüleri",
+      "description": "Musclog'un bir sonraki seansın için içgörüleri nasıl hazırlayacağını seç. Etkinleştirildiğinde yapay zeka toparlanma verisine göre uyarlanır.",
+      "none": "Yok",
+      "algorithm": "Algoritma",
+      "ai": "Yapay zeka"
     },
-    "routine": "Routine",
+    "routine": "Rutin",
     "plan": {
-      "label": "Workout plans",
-      "none": "Not part of a plan",
-      "scheduleHint": "Weekdays are configured separately for each workout plan."
+      "label": "Antrenman planları",
+      "none": "Bir planın parçası değil",
+      "scheduleHint": "Haftanın günleri her antrenman planı için ayrı ayrı ayarlanır."
     },
     "standaloneSchedule": {
-      "label": "Standalone schedule",
-      "description": "Used only while this workout is not part of a plan."
+      "label": "Bağımsız program",
+      "description": "Yalnızca bu antrenman bir planın parçası değilken kullanılır."
     },
-    "weekly": "Weekly",
-    "exercises": "Exercises",
-    "exercisesInWorkout": "Exercises in the workout",
-    "addExerciseError": "Failed to add exercise",
-    "editTitle": "Edit workout",
-    "loadError": "Failed to load",
-    "noExercisesPlaceholder": "No exercises",
-    "saveError": "Failed to save",
+    "weekly": "Haftalık",
+    "exercises": "Egzersizler",
+    "exercisesInWorkout": "Antrenmandaki egzersizler",
+    "addExerciseError": "Egzersiz eklenemedi",
+    "editTitle": "Antrenmanı düzenle",
+    "loadError": "Yüklenemedi",
+    "noExercisesPlaceholder": "Egzersiz yok",
+    "saveError": "Kaydedilemedi",
     "validation": {
-      "titleRequiredMessage": "Please enter a workout title"
+      "titleRequiredMessage": "Lütfen bir antrenman başlığı gir"
     },
-    "ruleTapHint": "Tap an exercise to choose how its weights progress."
+    "ruleTapHint": "Ağırlıklarının nasıl ilerleyeceğini seçmek için bir egzersize dokun."
   }
 }

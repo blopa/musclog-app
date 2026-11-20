@@ -1,71 +1,71 @@
 {
   "websiteToolRpeChart": {
-    "title": "RPE and RIR chart with load calculator",
-    "intro": "A chart of what share of your one-rep max each number of reps is at each RPE, what RPE means in reps left, and a calculator that turns a set you did into the load for another set.",
+    "title": "RPE ve RIR tablosu ile yük hesaplayıcısı",
+    "intro": "Her RPE'de her tekrar sayısının bir tekrarlık maksimumunun ne kadarına denk geldiğini gösteren bir tablo, RPE'nin tekrar cinsinden ne anlama geldiğini ve yaptığın bir seti başka bir set için yüke çeviren bir hesaplayıcı.",
     "chart": {
-      "title": "Share of your one-rep max",
+      "title": "Bir tekrarlık maksimumunun payı",
       "rpeColumn": "RPE {{rpe}}",
-      "reps": "Reps",
-      "note": "Read across for the reps you do and down for the effort you rate the set. The percentages come from the same averaged estimate the app uses, so even one rep at RPE 10 reads just under 100%."
+      "reps": "Tekrar",
+      "note": "Yaptığın tekrarlar için yatay, setin çabasını derecelendirdiğin için dikey oku. Yüzdeler uygulamanın kullandığı aynı ortalama tahminden gelir, bu yüzden RPE 10'da tek bir tekrar bile %100'ün biraz altında okunur."
     },
     "meaning": {
-      "title": "What each RPE means",
+      "title": "Her RPE ne anlama gelir",
       "rpe": "RPE",
-      "reserve": "Reps in reserve",
-      "meaning": "Meaning",
-      "none": "No reps left. The set ended at failure.",
-      "one": "One rep left in the tank.",
-      "two": "Two reps left in the tank.",
-      "three": "Three reps left in the tank.",
-      "four": "Four reps left in the tank."
+      "reserve": "Tekrar rezervi",
+      "meaning": "Anlamı",
+      "none": "Tekrar kalmadı. Set tükenmeyle bitti.",
+      "one": "Depoda bir tekrar kaldı.",
+      "two": "Depoda iki tekrar kaldı.",
+      "three": "Depoda üç tekrar kaldı.",
+      "four": "Depoda dört tekrar kaldı."
     },
     "form": {
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "rpe": "RPE of that set",
-      "targetReps": "Target reps",
-      "targetRepsHint": "Whole number, 1 to 10",
-      "targetRpe": "Target RPE"
+      "weight": "Kaldırılan ağırlık",
+      "reps": "Yapılan tekrar",
+      "repsHint": "Tam sayı, 1 ile 10 arası",
+      "rpe": "Bu setin RPE'si",
+      "targetReps": "Hedef tekrar",
+      "targetRepsHint": "Tam sayı, 1 ile 10 arası",
+      "targetRpe": "Hedef RPE"
     },
     "problems": {
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "targetReps": "Enter the target reps as a whole number from 1 to 10."
+      "weight": "Kaldırdığın ağırlığı 0'dan büyük bir sayı olarak gir.",
+      "reps": "Tekrarı 1 ile 10 arasında tam bir sayı olarak gir.",
+      "targetReps": "Hedef tekrarı 1 ile 10 arasında tam bir sayı olarak gir."
     },
     "results": {
-      "oneRepMax": "Estimated one-rep max",
-      "target": "Load for the target, exact",
-      "targetRounded": "Rounded for a bar with standard plates",
-      "roundedNote": "Rounded to the smallest steps a bar loaded with standard plates goes up in. Without a gym the app uses the same steps.",
-      "reps": "reps",
-      "atRpe": "at RPE"
+      "oneRepMax": "Tahmini bir tekrarlık maksimum",
+      "target": "Hedef için yük, tam",
+      "targetRounded": "Standart plaklı bir halter için yuvarlanmış",
+      "roundedNote": "Standart plaklarla yüklenmiş bir halterin artabildiği en küçük adımlara yuvarlanmış. Spor salonu olmadan uygulama aynı adımları kullanır.",
+      "reps": "tekrar",
+      "atRpe": "RPE'de"
     },
     "sections": [
       {
-        "title": "What RPE means",
+        "title": "RPE ne anlama gelir",
         "body": [
-          "RPE, rate of perceived exertion, runs from 1 to 10. A set rated 10 had no reps left. RPE 9 left one rep in reserve, RPE 8 two, and so on.",
-          "Reps in reserve (RIR) is the same scale written the other way: RPE = 10 minus RIR. The Musclog app stores a set's effort either way, and the two are the same number."
+          "RPE, algılanan zorluk derecesi, 1 ile 10 arasında değişir. 10 ile derecelendirilen bir set, hiç tekrar kalmadan bitmiştir. RPE 9 rezervde bir tekrar bırakır, RPE 8 iki, ve böyle devam eder.",
+          "Tekrar rezervi (RIR), aynı ölçeğin tersten yazılmış halidir: RPE = 10 eksi RIR. Musclog uygulaması bir setin çabasını iki yoldan da saklar ve ikisi aynı sayıdır."
         ]
       },
       {
-        "title": "Why people misjudge it",
+        "title": "İnsanlar neden yanlış tahmin eder",
         "body": [
-          "Judging how many reps you had left is a skill, and most people are less accurate the further a set was from failure. A set that felt like it had a few reps left may have had more or fewer.",
-          "Treat the chart as a guide. Check it against how your sets actually go, and rate effort honestly when you log it."
+          "Kaç tekrar kaldığını tahmin etmek bir beceridir ve çoğu insan, set tükenmeden uzaklaştıkça daha az doğrudur. Birkaç tekrar kaldığını hisseden bir set, aslında daha fazla ya da daha az tekrar bırakmış olabilir.",
+          "Tabloyu bir rehber olarak gör. Setlerinin gerçekte nasıl gittiğine karşı kontrol et ve kaydederken çabanı dürüstçe derecelendir."
         ]
       },
       {
-        "title": "How the chart and calculator work",
+        "title": "Tablo ve hesaplayıcı nasıl çalışır",
         "body": [
-          "Each cell is the share of your one-rep max that many reps at that RPE represent. It comes from the same averaged formulas the Musclog app uses to estimate a logged set.",
-          "The calculator estimates your one-rep max from a set you did, then gives the load for a different number of reps at a different RPE. The rounded load is what a bar with standard plates can make."
+          "Her hücre, o RPE'de o kadar tekrarın bir tekrarlık maksimumunun ne kadarını temsil ettiğini gösterir. Uygulamanın kaydedilmiş bir seti tahmin etmek için kullandığı aynı ortalanmış formüllerden gelir.",
+          "Hesaplayıcı, yaptığın bir setten bir tekrarlık maksimumunu tahmin eder, sonra farklı bir RPE'de farklı sayıda tekrar için yükü verir. Yuvarlanmış yük, standart plaklı bir halterin yapabildiği yüktür."
         ]
       }
     ],
     "sources": {
-      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+      "zourdos": "Zourdos ve ark. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
     }
   }
 }

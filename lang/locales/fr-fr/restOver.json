@@ -1,16 +1,16 @@
 {
   "restOver": {
-    "startNextSet": "Start next set",
-    "upNext": "Up next",
-    "weight": "Weight",
+    "startNextSet": "Commencer la série suivante",
+    "upNext": "À suivre",
+    "weight": "Charge",
     "weightWithUnit": "{{value}} {{unit}}",
-    "reps": "Reps",
-    "set": "Set",
-    "restTimeIs": "Rest time is",
-    "over": "over",
-    "timeToGo": "Time to go! Next set is up.",
-    "noWorkoutId": "No workout ID provided",
-    "workoutDeleted": "Workout has been deleted",
-    "loadError": "Failed to load workout data"
+    "reps": "Répétitions",
+    "set": "Série",
+    "restTimeIs": "Le temps de repos est",
+    "over": "écoulé",
+    "timeToGo": "C'est reparti ! La série suivante t'attend.",
+    "noWorkoutId": "Aucun identifiant de séance fourni",
+    "workoutDeleted": "La séance a été supprimée",
+    "loadError": "Impossible de charger les données de la séance"
   }
 }

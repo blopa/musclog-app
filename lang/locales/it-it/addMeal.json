@@ -1,15 +1,15 @@
 {
   "addMeal": {
-    "createMeal": "Create meal",
-    "createMealDesc": "Add a new meal to your daily log",
-    "dynamicCreator": "Dynamic meal creator",
-    "dynamicCreatorDesc": "Build a meal step-by-step by scanning or searching foods",
-    "generateMealAI": "Generate meal with AI",
-    "generateMealAIDesc": "Let AI suggest a meal based on your preferences",
-    "manageCategories": "Manage categories",
-    "manageCategoriesDesc": "Organize your meal categories (breakfast, lunch, etc.)",
-    "importFromPhone": "Import from another phone",
-    "importFromPhoneDesc": "Scan a meal being sent from another phone",
-    "title": "Add meal"
+    "createMeal": "Crea pasto",
+    "createMealDesc": "Aggiungi un nuovo pasto al tuo diario giornaliero",
+    "dynamicCreator": "Creatore di pasti dinamico",
+    "dynamicCreatorDesc": "Componi un pasto passo dopo passo scansionando o cercando alimenti",
+    "generateMealAI": "Genera pasto con l'IA",
+    "generateMealAIDesc": "Lascia che l'IA suggerisca un pasto in base alle tue preferenze",
+    "manageCategories": "Gestisci categorie",
+    "manageCategoriesDesc": "Organizza le categorie dei tuoi pasti (colazione, pranzo, ecc.)",
+    "importFromPhone": "Importa da un altro telefono",
+    "importFromPhoneDesc": "Scansiona un pasto inviato da un altro telefono",
+    "title": "Aggiungi pasto"
   }
 }

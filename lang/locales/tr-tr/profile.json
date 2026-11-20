@@ -1,48 +1,48 @@
 {
   "profile": {
     "header": {
-      "title": "Profile"
+      "title": "Profil"
     },
-    "goal": "Goal",
-    "currentStats": "Current stats",
-    "history": "History",
-    "management": "Management",
-    "loading": "Loading...",
+    "goal": "Hedef",
+    "currentStats": "Mevcut istatistikler",
+    "history": "Geçmiş",
+    "management": "Yönetim",
+    "loading": "Yükleniyor...",
     "syncing": {
-      "healthKit": "Syncing with HealthKit..."
+      "healthKit": "HealthKit ile eşitleniyor..."
     },
     "bmiStatus": {
-      "underweight": "Underweight",
-      "normal": "Normal weight",
-      "overweight": "Overweight",
-      "obese": "Obese"
+      "underweight": "Zayıf",
+      "normal": "Normal kilo",
+      "overweight": "Fazla kilolu",
+      "obese": "Obez"
     },
     "gender": {
-      "male": "Male",
-      "female": "Female",
-      "other": "Other"
+      "male": "Erkek",
+      "female": "Kadın",
+      "other": "Diğer"
     },
     "managementItems": {
-      "editPersonal": "Edit personal info",
-      "editPersonalDesc": "Update your name, avatar, and personal details",
-      "editFitness": "Edit fitness details",
-      "editFitnessDesc": "Update your fitness goals and preferences",
-      "appPreferences": "App preferences",
-      "appPreferencesDesc": "Customize app settings and preferences",
-      "aiUpdate": "Update with AI",
-      "aiUpdateDesc": "Tell an AI what changed and review before saving"
+      "editPersonal": "Kişisel bilgileri düzenle",
+      "editPersonalDesc": "Adını, avatarını ve kişisel ayrıntılarını güncelle",
+      "editFitness": "Fitness ayrıntılarını düzenle",
+      "editFitnessDesc": "Fitness hedeflerini ve tercihlerini güncelle",
+      "appPreferences": "Uygulama tercihleri",
+      "appPreferencesDesc": "Uygulama ayarlarını ve tercihlerini özelleştir",
+      "aiUpdate": "Yapay zekâyla güncelle",
+      "aiUpdateDesc": "Yapay zekâya neyin değiştiğini anlat ve kaydetmeden önce incele"
     },
     "stats": {
-      "weight": "Weight",
-      "height": "Height",
-      "bodyFat": "Body fat",
+      "weight": "Kilo",
+      "height": "Boy",
+      "bodyFat": "Vücut yağı",
       "bmi": "BMI",
-      "age": "Age",
-      "gender": "Gender"
+      "age": "Yaş",
+      "gender": "Cinsiyet"
     },
     "weightPrediction": {
-      "title": "Predicted weight",
-      "subtitle": "Estimated from TDEE and your calorie tracking since last weigh-in"
+      "title": "Tahmini kilo",
+      "subtitle": "TDEE ve son kilo ölçümünden bu yana kalori takibine göre tahmin edildi"
     }
   }
 }

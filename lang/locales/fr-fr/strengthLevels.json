@@ -1,20 +1,20 @@
 {
   "strengthLevels": {
-    "title": "Strength levels",
+    "title": "Niveaux de force",
     "levels": {
-      "beginner": "Beginner",
+      "beginner": "Débutant",
       "novice": "Novice",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced",
-      "elite": "Elite"
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé",
+      "elite": "Élite"
     },
-    "rangeLabel": "{{lower}} to {{upper}}",
-    "otherNote": "Shown on both the men's and women's scales, because no single table fits.",
-    "addWeighIn": "Add a weigh-in to see strength levels.",
-    "sourceNote": "Levels compare your estimated 1RM with your body weight. They are a Musclog rule of thumb, checked against public powerlifting results from OpenPowerlifting.",
-    "sourceLink": "OpenPowerlifting website",
-    "estimated1rm": "Estimated 1RM",
-    "toReach": "To reach {{level}}",
-    "howItWorks": "How levels work"
+    "rangeLabel": "de {{lower}} à {{upper}}",
+    "otherNote": "Affiché sur les barèmes homme et femme, car aucun tableau unique ne convient.",
+    "addWeighIn": "Ajoute une pesée pour voir tes niveaux de force.",
+    "sourceNote": "Les niveaux comparent ton 1RM estimé à ton poids de corps. Ce sont des repères propres à Musclog, vérifiés sur des résultats publics de powerlifting d'OpenPowerlifting.",
+    "sourceLink": "Site d'OpenPowerlifting",
+    "estimated1rm": "1RM estimé",
+    "toReach": "Pour atteindre {{level}}",
+    "howItWorks": "Comment fonctionnent les niveaux"
   }
 }

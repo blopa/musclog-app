@@ -1,57 +1,57 @@
 {
   "websitePrograms": {
     "index": {
-      "title": "Free workout programs",
-      "intro": "Complete programs with every workout, exercise, set and rep written out. Read one here, or open it in Musclog with one tap and start training. Starting weights are suggested from your own profile when you open it in the app.",
-      "workouts_one": "{{count}} workout",
-      "workouts_few": "{{count}} workouts",
-      "workouts_many": "{{count}} workouts",
-      "workouts_other": "{{count}} workouts",
-      "minutes": "about {{minutes}} min per workout",
-      "exercisesLink": "Browse the exercise library"
+      "title": "Ücretsiz antrenman programları",
+      "intro": "Her antrenmanı, egzersizi, seti ve tekrarı eksiksiz yazılmış tam programlar. Burada okuyabilir ya da tek dokunuşla Musclog'da açıp antrenmana başlayabilirsin. Uygulamada açtığında başlangıç ağırlıkları kendi profilinden önerilir.",
+      "workouts_one": "{{count}} antrenman",
+      "workouts_few": "{{count}} antrenman",
+      "workouts_many": "{{count}} antrenman",
+      "workouts_other": "{{count}} antrenman",
+      "minutes": "antrenman başına yaklaşık {{minutes}} dk",
+      "exercisesLink": "Egzersiz kütüphanesine göz at"
     },
     "difficulty": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced"
+      "beginner": "Başlangıç",
+      "intermediate": "Orta",
+      "advanced": "İleri"
     },
     "detail": {
-      "allPrograms": "All programs",
-      "dayLabel": "Day {{n}}",
-      "exercise": "Exercise",
-      "setsReps": "Sets × reps",
-      "rest": "Rest",
-      "restSeconds": "{{seconds}} s",
-      "supersetGroup": "Superset {{group}}",
-      "openTitle": "Open this program in Musclog",
-      "openBody": "This opens the program in the app as a review, so nothing is saved until you confirm. Starting weights are suggested from your profile, and you choose the weekdays. If you do not have the app yet, the next page has the download links.",
-      "openButton": "Open in Musclog",
-      "howTitle": "How to run it",
+      "allPrograms": "Tüm programlar",
+      "dayLabel": "{{n}}. gün",
+      "exercise": "Egzersiz",
+      "setsReps": "Set × tekrar",
+      "rest": "Dinlenme",
+      "restSeconds": "{{seconds}} sn",
+      "supersetGroup": "Süperset {{group}}",
+      "openTitle": "Bu programı Musclog'da aç",
+      "openBody": "Bu, programı uygulamada bir inceleme olarak açar; sen onaylayana kadar hiçbir şey kaydedilmez. Başlangıç ağırlıkları profilinden önerilir ve haftanın günlerini sen seçersin. Uygulamaya sahip değilsen, sonraki sayfada indirme bağlantıları var.",
+      "openButton": "Musclog'da aç",
+      "howTitle": "Nasıl uygulanır",
       "how": [
-        "Do the workouts in order and repeat the cycle. One workout per training day is the simplest way to run it; the order matters more than the weekday.",
-        "Start with weights you can lift with good form and a couple of reps left. When you reach the top of the rep range on every set, add weight next time.",
-        "These programs are general examples, not medical advice. If you have an injury or a health condition, check with a professional first."
+        "Antrenmanları sırayla yap ve döngüyü tekrarla. Antrenman günü başına bir antrenman en basit uygulama biçimidir; sıra, haftanın gününden daha önemlidir.",
+        "İyi formla kaldırabildiğin ve birkaç tekrar kala bitirebildiğin ağırlıklarla başla. Her sette tekrar aralığının üst sınırına ulaştığında, bir sonraki seferde ağırlık ekle.",
+        "Bu programlar genel örneklerdir, tıbbi tavsiye değildir. Bir sakatlığın ya da sağlık durumun varsa önce bir uzmana danış."
       ],
-      "notFoundTitle": "Program not found",
-      "notFoundBody": "There is no program at this address.",
-      "metaTitle": "{{title}}: free workout program"
+      "notFoundTitle": "Program bulunamadı",
+      "notFoundBody": "Bu adreste bir program yok.",
+      "metaTitle": "{{title}}: ücretsiz antrenman programı"
     },
     "summaries": {
-      "push-pull-legs": "Three workouts: push (chest, shoulders and triceps), pull (back and biceps) and legs. Run the three once a week, or go through them twice for the classic six-day version.",
-      "upper-lower-4-day": "Four workouts: two upper-body days and two lower-body days, which trains each muscle twice a week on a four-day schedule.",
-      "full-body-3-day": "Three full-body workouts for beginners. Each one has a leg movement, a press, a pull and some arm work, so every muscle is trained three times a week.",
-      "phul": "Four workouts: two upper and two lower. The first of each pair is a heavy power day with low reps, the second is a hypertrophy day with higher reps.",
-      "5-day-hypertrophy-split": "Five workouts, one area each: chest, back, shoulders, legs and arms. More volume per muscle in a session, one hard session per muscle a week.",
-      "arnold-split": "Three workouts in the Arnold style: chest and back, shoulders and arms, then legs. The split is traditionally run twice through, for six training days.",
-      "bro-split": "Five workouts, one muscle group each: chest, back, legs, shoulders and arms. Each muscle gets one focused session a week.",
-      "2-day-full-body": "Two full-body workouts, A and B, for weeks when you can only train twice. Alternate them.",
-      "3-day-strength-builder": "Three workouts built around heavier sets of 4 to 8 reps on the squat, bench press, deadlift and rows, with lighter accessory work after them.",
-      "classic-3-day-split": "Three workouts: chest and triceps, back and biceps, then legs and shoulders. A classic split for a three-day week.",
-      "brolic-workout": "Two upper-body workouts, chest and shoulders, with plenty of pressing and fly work. Shorter than most programs here.",
-      "cable-superset-workout": "Five advanced workouts (Upper A, Lower A, Arms, Upper B, Lower B) built from cable exercises, paired in antagonist supersets, with a rep range and a rest time for each exercise.",
-      "short-full-body-gym": "Two short full-body workouts, A and B, on gym machines and free weights: about 30 minutes, 2 sets each, easy on purpose. A good way back after a break.",
-      "short-full-body-home": "Two short full-body workouts, A and B, with dumbbells, a kettlebell and bands: about 30 minutes, 2 sets each, easy on purpose.",
-      "short-full-body-no-equipment": "Two short full-body workouts, A and B, with just your body and a band: about 30 minutes, 2 sets each, easy on purpose."
+      "push-pull-legs": "Üç antrenman: itme (göğüs, omuz ve triceps), çekme (sırt ve biceps) ve bacak. Üçünü haftada bir kez yap ya da klasik altı günlük sürüm için ikişer kez tekrarla.",
+      "upper-lower-4-day": "Dört antrenman: iki üst vücut günü ve iki alt vücut günü. Dört günlük bir programda her kası haftada iki kez çalıştırır.",
+      "full-body-3-day": "Başlangıç seviyesi için üç tam vücut antrenmanı. Her birinde bir bacak hareketi, bir itiş, bir çekiş ve biraz kol çalışması var; böylece her kas haftada üç kez çalışılır.",
+      "phul": "Dört antrenman: iki üst, iki alt vücut. Her çiftin ilki düşük tekrarlı ağır bir güç günü, ikincisi ise yüksek tekrarlı bir hipertrofi günü.",
+      "5-day-hypertrophy-split": "Beş antrenman, her biri bir bölge: göğüs, sırt, omuz, bacak ve kol. Bir seansta kas başına daha fazla hacim, haftada kas başına bir yoğun seans.",
+      "arnold-split": "Arnold tarzında üç antrenman: göğüs ve sırt, omuz ve kol, sonra bacak. Program geleneksel olarak iki kez çalıştırılır; altı antrenman günü eder.",
+      "bro-split": "Beş antrenman, her biri tek bir kas grubu: göğüs, sırt, bacak, omuz ve kol. Her kas haftada bir odaklı seans alır.",
+      "2-day-full-body": "Yalnızca haftada iki kez antrenman yapabildiğin haftalar için iki tam vücut antrenmanı, A ve B. Dönüşümlü yap.",
+      "3-day-strength-builder": "Çömelme, bench press, deadlift ve sıra hareketlerinde 4 ila 8 tekrarlı ağır setler etrafında kurulmuş üç antrenman; ardından daha hafif yardımcı çalışmalar var.",
+      "classic-3-day-split": "Üç antrenman: göğüs ve triceps, sırt ve biceps, sonra bacak ve omuz. Üç günlük bir hafta için klasik bir bölünme.",
+      "brolic-workout": "Göğüs ve omuz odaklı iki üst vücut antrenmanı; bol itiş ve kelebek hareketi içerir. Buradaki çoğu programdan daha kısa.",
+      "cable-superset-workout": "Kablo egzersizlerinden oluşan, antagonist süperset'lerle eşleştirilmiş beş ileri antrenman (Üst A, Alt A, Kollar, Üst B, Alt B); her egzersiz için tekrar aralığı ve dinlenme süresi var.",
+      "short-full-body-gym": "Spor salonu makineleri ve serbest ağırlıklarla iki kısa tam vücut antrenmanı, A ve B: yaklaşık 30 dakika, set başına 2 set, bilerek kolay. Bir aradan sonra geri dönmek için iyi bir yol.",
+      "short-full-body-home": "Dambıllar, kettlebell ve direnç bantlarıyla iki kısa tam vücut antrenmanı, A ve B: yaklaşık 30 dakika, egzersiz başına 2 set, bilerek kolay.",
+      "short-full-body-no-equipment": "Yalnızca vücut ağırlığın ve bir direnç bandıyla iki kısa tam vücut antrenmanı, A ve B: yaklaşık 30 dakika, egzersiz başına 2 set, bilerek kolay."
     }
   }
 }

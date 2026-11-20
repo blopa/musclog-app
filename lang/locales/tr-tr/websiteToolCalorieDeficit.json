@@ -1,80 +1,80 @@
 {
   "websiteToolCalorieDeficit": {
-    "title": "Calorie deficit and goal date calculator",
-    "intro": "Set a goal weight and a date to see the daily calorie target that gets you there, the range it sits in and whether the pace is realistic.",
+    "title": "Kalori açığı ve hedef tarih hesaplayıcısı",
+    "intro": "Bir hedef kilo ve tarih belirle; sana ulaştıracak günlük kalori hedefini, bu hedefin hangi aralıkta olduğunu ve temponun gerçekçi olup olmadığını gör.",
     "form": {
-      "sex": "Sex",
-      "male": "Male",
-      "female": "Female",
-      "age": "Age",
-      "height": "Height",
-      "weight": "Current weight",
-      "activity": "Activity level",
-      "goalWeight": "Goal weight",
-      "goalDate": "Goal date",
+      "sex": "Cinsiyet",
+      "male": "Erkek",
+      "female": "Kadın",
+      "age": "Yaş",
+      "height": "Boy",
+      "weight": "Mevcut kilo",
+      "activity": "Aktivite düzeyi",
+      "goalWeight": "Hedef kilo",
+      "goalDate": "Hedef tarih",
       "cm": "cm",
-      "inches": "in",
-      "activity1": "Sedentary (little or no exercise)",
-      "activity2": "Light Active (1–3 days/week)",
-      "activity3": "Moderately Active (3–5x/week)",
-      "activity4": "Very Active (6–7 days/week)",
-      "activity5": "Super Active (physical job + training)"
+      "inches": "inç",
+      "activity1": "Hareketsiz (az ya da hiç egzersiz yok)",
+      "activity2": "Hafif aktif (haftada 1–3 gün)",
+      "activity3": "Orta düzeyde aktif (haftada 3–5 kez)",
+      "activity4": "Çok aktif (haftada 6–7 gün)",
+      "activity5": "Son derece aktif (fiziksel iş + antrenman)"
     },
     "problems": {
-      "age": "Enter an age between 15 and 100.",
-      "height": "Enter a height within the range the calculator accepts.",
-      "weight": "Enter a weight within the range the calculator accepts.",
-      "goalWeight": "Enter a goal weight within the range the calculator accepts.",
-      "goalDate": "Pick a goal date.",
-      "goalDateNotFuture": "The goal date must be after today."
+      "age": "15 ile 100 arasında bir yaş gir.",
+      "height": "Hesaplayıcının kabul ettiği aralıkta bir boy gir.",
+      "weight": "Hesaplayıcının kabul ettiği aralıkta bir kilo gir.",
+      "goalWeight": "Hesaplayıcının kabul ettiği aralıkta bir hedef kilo gir.",
+      "goalDate": "Bir hedef tarih seç.",
+      "goalDateNotFuture": "Hedef tarih bugünden sonra olmalı."
     },
     "results": {
-      "target": "Daily calorie target",
-      "range": "Range: {{low}} to {{high}}",
-      "summary": "The numbers",
-      "change": "Weight change",
-      "days": "Days to the goal date",
-      "deficit": "Daily deficit",
-      "surplus": "Daily surplus",
-      "perDay": "per day",
-      "weekly": "Weekly pace",
-      "perWeek": "per week",
-      "tdee": "Estimated daily energy use",
-      "share": "Deficit as a share of daily energy use"
+      "target": "Günlük kalori hedefi",
+      "range": "Aralık: {{low}} ile {{high}} arası",
+      "summary": "Sayılar",
+      "change": "Kilo değişimi",
+      "days": "Hedef tarihe kalan gün",
+      "deficit": "Günlük açık",
+      "surplus": "Günlük fazla",
+      "perDay": "günde",
+      "weekly": "Haftalık tempo",
+      "perWeek": "haftada",
+      "tdee": "Tahmini günlük enerji kullanımı",
+      "share": "Günlük enerji kullanımına oranla açık"
     },
     "notes": {
-      "noChange": "You are already at that weight, so no change is needed.",
-      "floor": "Your target would be below the minimum of {{floor}}, so the page sets it there.",
-      "laterDate": "The earliest date that minimum allows is {{date}}.",
-      "floorAboveTdee": "Estimated energy use is at or below the minimum, so no deficit is possible. Choose a higher goal weight or talk to a clinician.",
-      "pace": "This pace is above 1% of your body weight per week, a Musclog guideline. A slower pace usually holds up better.",
-      "deficitLarge": "This deficit is above 25% of your estimated energy use, a Musclog guideline. A smaller deficit over a longer time is usually easier to keep.",
-      "range": "The estimate is uncertain, so the target is shown as a range: 10% of your energy use either side. The 10% is a Musclog product choice, not a measured error.",
-      "thresholds": "The 1% pace and 25% deficit guidelines are Musclog product choices, not findings from a study."
+      "noChange": "Zaten bu kilodasın, değişiklik gerekmiyor.",
+      "floor": "Hedefin {{floor}} minimumunun altında kalacaktı, bu yüzden sayfa onu bu değere ayarlar.",
+      "laterDate": "Bu minimumun izin verdiği en erken tarih {{date}}.",
+      "floorAboveTdee": "Tahmini enerji kullanımı minimumun altında ya da buna eşit, bu yüzden bir açık mümkün değil. Daha yüksek bir hedef kilo seç ya da bir hekimle konuş.",
+      "pace": "Bu tempo, haftada vücut kilonun %1'inden fazla; bu bir Musclog yönergesi. Daha yavaş bir tempo genellikle daha iyi dayanır.",
+      "deficitLarge": "Bu açık, tahmini enerji kullanımının %25'inden fazla; bu bir Musclog yönergesi. Daha uzun bir sürede daha küçük bir açık genellikle sürdürmesi daha kolaydır.",
+      "range": "Tahmin belirsiz olduğu için hedef bir aralık olarak gösterilir: enerji kullanımının iki yanında %10. Bu %10, Musclog'un bir ürün tercihidir, ölçülmüş bir hata değildir.",
+      "thresholds": "Haftada %1 tempo ve %25 açık yönergeleri Musclog'un ürün tercihleridir, bir çalışmanın bulguları değildir."
     },
     "sections": [
       {
-        "title": "How the target is made",
+        "title": "Hedef nasıl oluşturulur",
         "body": [
-          "Your energy use is estimated from your sex, age, height and weight (the Mifflin-St Jeor resting rate) multiplied by your activity level. It is the same estimate the Musclog app uses when it has no tracking history.",
-          "The weight change is turned into energy with the app's kilocalories-per-kilogram rule and spread across the days to your goal date. The target is that energy use minus the daily deficit (or plus, for a gain)."
+          "Enerji kullanımın, cinsiyetin, yaşın, boyun ve kilonun (Mifflin-St Jeor dinlenme hızı) aktivite düzeyinle çarpılmasıyla tahmin edilir. Musclog uygulamasının takip geçmişi olmadığında kullandığı tahminle aynıdır.",
+          "Kilo değişimi, uygulamanın kilogram başına kilokalori kuralıyla enerjiye çevrilir ve hedef tarihine kadar günlere yayılır. Hedef, bu enerji kullanımı eksi günlük açıktır (ya da kilo alımı için artı)."
         ]
       },
       {
-        "title": "Why the date is a guide",
+        "title": "Tarih neden bir rehber",
         "body": [
-          "Hall et al. (2011) modelled how body weight responds to a change in energy intake. The body adjusts over months, so a fixed number of calories per kilogram is an approximation. Weigh yourself every few weeks and adjust."
+          "Hall ve ark. (2011), vücut ağırlığının enerji alımındaki bir değişime nasıl tepki verdiğini modelledi. Vücut aylar içinde uyum sağlar, bu yüzden kilogram başına sabit bir kalori sayısı bir yaklaşımdır. Birkaç haftada bir tartıl ve ayarla."
         ]
       },
       {
-        "title": "The minimum",
+        "title": "Minimum",
         "body": [
-          "The target never goes below the minimum the app uses: 1,200 kcal for women and 1,500 kcal for men, or 80% of your resting rate if that is higher. If your date needs less, the page gives the earliest date the minimum allows."
+          "Hedef, uygulamanın kullandığı minimumun altına asla düşmez: kadınlar için 1.200 kcal, erkekler için 1.500 kcal ya da bu daha yüksekse dinlenme hızının %80'i. Tarihin daha az gerektiriyorsa sayfa, minimumun izin verdiği en erken tarihi verir."
         ]
       }
     ],
     "sources": {
-      "hall": "Hall et al. (2011), quantification of the effect of energy imbalance on body weight"
+      "hall": "Hall ve ark. (2011), enerji dengesizliğinin vücut ağırlığına etkisinin nicelleştirilmesi"
     }
   }
 }

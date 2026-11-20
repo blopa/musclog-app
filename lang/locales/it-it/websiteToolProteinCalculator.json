@@ -1,70 +1,70 @@
 {
   "websiteToolProteinCalculator": {
-    "title": "Protein calculator",
-    "intro": "Enter your body weight, height and goal to get a daily protein target in grams, with the grams per kilogram behind it.",
+    "title": "Calcolatore delle proteine",
+    "intro": "Inserisci peso corporeo, altezza e obiettivo per ottenere un target giornaliero di proteine in grammi, con i grammi per chilogrammo che stanno alla base.",
     "form": {
-      "weight": "Body weight",
-      "height": "Height",
-      "goal": "Main goal",
-      "deficit": "Eating in a calorie deficit?",
-      "deficitYes": "Yes, cutting",
+      "weight": "Peso corporeo",
+      "height": "Altezza",
+      "goal": "Obiettivo principale",
+      "deficit": "Stai mangiando in deficit calorico?",
+      "deficitYes": "Sì, sto tagliando",
       "deficitNo": "No",
-      "goalWeight": "Goal weight (optional)",
-      "goalWeightHint": "If you set one, protein is based on it instead of your current weight.",
+      "goalWeight": "Peso obiettivo (facoltativo)",
+      "goalWeightHint": "Se lo imposti, le proteine si basano su di lui invece che sul peso attuale.",
       "cm": "cm",
       "inches": "in"
     },
     "goals": {
-      "hypertrophy": "Build muscle",
-      "strength": "Get stronger",
-      "general": "General health",
-      "endurance": "Endurance",
-      "weightLoss": "Weight loss"
+      "hypertrophy": "Costruire muscoli",
+      "strength": "Diventare più forte",
+      "general": "Salute generale",
+      "endurance": "Resistenza",
+      "weightLoss": "Perdere peso"
     },
     "problems": {
-      "weight": "Enter a body weight within the range the calculator accepts.",
-      "height": "Enter a height within the range the calculator accepts.",
-      "goalWeight": "Enter a goal weight within the range the calculator accepts, or leave it empty."
+      "weight": "Inserisci un peso corporeo nell'intervallo accettato dal calcolatore.",
+      "height": "Inserisci un'altezza nell'intervallo accettato dal calcolatore.",
+      "goalWeight": "Inserisci un peso obiettivo nell'intervallo accettato dal calcolatore, oppure lascia vuoto."
     },
     "results": {
-      "grams": "Protein per day",
-      "gramsNote": "{{perKg}} of {{reference}}",
-      "tableTitle": "Grams per kilogram by goal",
-      "tableGoal": "Goal",
-      "tablePerKg": "Per kg of body weight"
+      "grams": "Proteine al giorno",
+      "gramsNote": "{{perKg}} di {{reference}}",
+      "tableTitle": "Grammi per chilogrammo per obiettivo",
+      "tableGoal": "Obiettivo",
+      "tablePerKg": "Per kg di peso corporeo"
     },
     "notes": {
-      "capped": "Your weight is above the reference weight of {{reference}} (BMI 30 for your height), so the figure uses that. Your weight is {{weight}}. Without a goal weight, the cap stops protein growing with fat mass.",
-      "deficit": "Eating in a deficit raises the minimum to {{value}}, because protein helps keep muscle while you lose fat.",
-      "bodyweight": "This figure is based on body weight. The calculator does not ask for body fat, so it cannot tell muscle from fat.",
-      "spread": "The daily total is what counts. Spread it over your meals however suits you, in as many or as few as you like.",
-      "medical": "General information, not medical advice. If you have kidney disease or another condition that affects protein, ask a clinician before you change your intake."
+      "capped": "Il tuo peso è superiore al peso di riferimento di {{reference}} (BMI 30 per la tua altezza), quindi il calcolo usa quel valore. Il tuo peso è {{weight}}. Senza un peso obiettivo, il limite impedisce alle proteine di crescere insieme alla massa grassa.",
+      "deficit": "Mangiare in deficit alza il minimo a {{value}}, perché le proteine aiutano a conservare il muscolo mentre perdi grasso.",
+      "bodyweight": "Questo valore si basa sul peso corporeo. Il calcolatore non chiede la massa grassa, quindi non può distinguere muscolo e grasso.",
+      "spread": "Conta il totale giornaliero. Distribuiscilo sui pasti come preferisci, in tanti o pochi pasti.",
+      "medical": "Informazioni generali, non consigli medici. Se hai una malattia renale o un'altra condizione che influisce sulle proteine, chiedi a un medico prima di cambiare l'alimentazione."
     },
     "sections": [
       {
-        "title": "How the figure is made",
+        "title": "Come viene calcolato il valore",
         "body": [
-          "Protein is set in grams per kilogram of body weight for your goal: the same table the Musclog app uses for its daily targets. In a deficit it rises to at least 2.0 g/kg.",
-          "A percentage of calories is not used, because it makes protein fall as you eat less, just when keeping muscle matters most."
+          "Le proteine sono impostate in grammi per chilogrammo di peso corporeo per il tuo obiettivo: la stessa tabella che l'app Musclog usa per i target giornalieri. In deficit salgono ad almeno 2,0 g/kg.",
+          "Non si usa una percentuale delle calorie, perché in quel caso le proteine calano quando mangi di meno, proprio quando conservare il muscolo conta di più."
         ]
       },
       {
-        "title": "Why the weight is capped",
+        "title": "Perché il peso è limitato",
         "body": [
-          "Without a goal weight, the figure uses your current weight but never more than the weight at BMI 30 for your height. Above that, the extra mass is mostly not lean tissue, and protein for all of it would be more than you need. A goal weight replaces the cap."
+          "Senza un peso obiettivo, il calcolo usa il tuo peso attuale ma mai più del peso corrispondente a BMI 30 per la tua altezza. Oltre quel punto la massa in eccesso non è per lo più tessuto magro, e proteine per tutta quella massa sarebbero più di quanto serve. Un peso obiettivo sostituisce il limite."
         ]
       },
       {
-        "title": "What the research says",
+        "title": "Cosa dice la ricerca",
         "body": [
-          "Morton et al. (2018) pooled resistance training studies and found that muscle gains levelled off at about 1.6 g/kg a day, with the upper confidence limit near 2.2 g/kg. The general and hypertrophy figures sit in that range.",
-          "Helms et al. (2014) reviewed protein for people dieting while training, and the 2.0 g/kg minimum for a deficit comes from that literature. It is a Musclog setting, not a measured result for you."
+          "Morton et al. (2018) hanno riunito studi sull'allenamento con i pesi e hanno rilevato che i guadagni muscolari si stabilizzano intorno a 1,6 g/kg al giorno, con il limite superiore di confidenza vicino a 2,2 g/kg. I valori generali e per l'ipertrofia rientrano in quell'intervallo.",
+          "Helms et al. (2014) hanno esaminato le proteine per chi è a dieta mentre si allena, e il minimo di 2,0 g/kg in deficit deriva da quella letteratura. È un'impostazione di Musclog, non un risultato misurato su di te."
         ]
       }
     ],
     "sources": {
-      "morton": "Morton et al. (2018), meta-analysis of protein supplementation and resistance training gains",
-      "helms": "Helms et al. (2014), protein intake during energy restriction for physique athletes"
+      "morton": "Morton et al. (2018), meta-analisi dell'integrazione proteica e dei guadagni dell'allenamento con i pesi",
+      "helms": "Helms et al. (2014), assunzione di proteine durante la restrizione energetica per atleti del fisico"
     }
   }
 }

@@ -1,49 +1,49 @@
 {
   "notes": {
-    "title": "Notes",
+    "title": "Notatki",
     "sections": {
-      "latest": "Latest",
-      "earlier": "Earlier"
+      "latest": "Najnowsze",
+      "earlier": "Wcześniejsze"
     },
     "screenMenu": {
-      "title": "Notes",
-      "subtitle": "Jot it down now, track it later",
-      "create": "Create new note",
-      "createDescription": "Write down what you made or ate"
+      "title": "Notatki",
+      "subtitle": "Zapisz teraz, zapisz w dzienniku później",
+      "create": "Utwórz nową notatkę",
+      "createDescription": "Zapisz, co zrobiłeś albo co zjadłeś"
     },
     "noteMenu": {
-      "title": "Note options",
-      "edit": "Edit",
-      "editDescription": "Change the title or the text",
-      "duplicate": "Duplicate",
-      "duplicateDescription": "Copy it to the top of the list",
-      "track": "Track this",
-      "trackDescription": "Send it to the coach to log the food",
-      "delete": "Delete",
-      "deleteDescription": "Remove this note permanently"
+      "title": "Opcje notatki",
+      "edit": "Edytuj",
+      "editDescription": "Zmień tytuł lub treść",
+      "duplicate": "Powiel",
+      "duplicateDescription": "Skopiuj na początek listy",
+      "track": "Zapisz to",
+      "trackDescription": "Wyślij do trenera, żeby zapisał jedzenie",
+      "delete": "Usuń",
+      "deleteDescription": "Trwale usuń tę notatkę"
     },
     "form": {
-      "createTitle": "New note",
-      "editTitle": "Edit note",
-      "titleLabel": "Title (optional)",
-      "titlePlaceholder": "e.g. Lunch prep",
-      "bodyLabel": "Note",
-      "bodyPlaceholder": "e.g. 70g of broccoli, 120g chicken breast",
-      "bodyRequired": "Write something before saving",
-      "submit": "Save note"
+      "createTitle": "Nowa notatka",
+      "editTitle": "Edytuj notatkę",
+      "titleLabel": "Tytuł (opcjonalnie)",
+      "titlePlaceholder": "np. przygotowanie obiadu",
+      "bodyLabel": "Notatka",
+      "bodyPlaceholder": "np. 70 g brokułów, 120 g piersi z kurczaka",
+      "bodyRequired": "Przed zapisem coś wpisz",
+      "submit": "Zapisz notatkę"
     },
     "deleteConfirm": {
-      "title": "Delete note?",
-      "message": "This note will be removed permanently. This can't be undone.",
-      "confirm": "Delete"
+      "title": "Usunąć notatkę?",
+      "message": "Ta notatka zostanie trwale usunięta. Tej operacji nie można cofnąć.",
+      "confirm": "Usuń"
     },
-    "createSuccess": "Note saved",
-    "createError": "Couldn't save the note",
-    "updateSuccess": "Note updated",
-    "updateError": "Couldn't update the note",
-    "duplicateSuccess": "Note duplicated",
-    "duplicateError": "Couldn't duplicate the note",
-    "deleteSuccess": "Note deleted",
-    "deleteError": "Couldn't delete the note"
+    "createSuccess": "Zapisano notatkę",
+    "createError": "Nie udało się zapisać notatki",
+    "updateSuccess": "Zaktualizowano notatkę",
+    "updateError": "Nie udało się zaktualizować notatki",
+    "duplicateSuccess": "Powielono notatkę",
+    "duplicateError": "Nie udało się powielić notatki",
+    "deleteSuccess": "Usunięto notatkę",
+    "deleteError": "Nie udało się usunąć notatki"
   }
 }

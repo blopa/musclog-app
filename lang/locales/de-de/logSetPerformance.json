@@ -1,11 +1,11 @@
 {
   "logSetPerformance": {
-    "title": "Log set performance",
-    "difficulty": "Difficulty (RPE)",
-    "easy": "Easy",
-    "moderate": "Moderate",
-    "failure": "Failure",
-    "cancel": "Cancel",
-    "logSet": "Log set"
+    "title": "Satzleistung erfassen",
+    "difficulty": "Schwierigkeit (RPE)",
+    "easy": "Leicht",
+    "moderate": "Mittel",
+    "failure": "Versagen",
+    "cancel": "Abbrechen",
+    "logSet": "Satz erfassen"
   }
 }

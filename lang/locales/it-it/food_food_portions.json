@@ -1,10 +1,10 @@
 {
-  "food_food_portions": "Food food portions",
-  "createPortion": "Create portion",
-  "createFoodPortion": "Create food portion",
-  "portionName": "Portion name",
-  "portionNamePlaceholder": "e.g., Cup, Slice, Piece",
-  "weightGrams": "Weight (grams)",
-  "selectIcon": "Select icon",
-  "chooseIcon": "Choose icon"
+  "food_food_portions": "Porzioni degli alimenti",
+  "createPortion": "Crea porzione",
+  "createFoodPortion": "Crea porzione dell'alimento",
+  "portionName": "Nome della porzione",
+  "portionNamePlaceholder": "es. Tazza, fetta, pezzo",
+  "weightGrams": "Peso (grammi)",
+  "selectIcon": "Seleziona icona",
+  "chooseIcon": "Scegli icona"
 }

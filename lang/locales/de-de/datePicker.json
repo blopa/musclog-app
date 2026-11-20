@@ -1,20 +1,20 @@
 {
   "datePicker": {
-    "cancel": "Cancel",
-    "clearDate": "Clear date",
-    "confirm": "Confirm",
-    "month": "Month",
-    "nextMonday": "Next Monday",
-    "selectDate": "Select date",
-    "selectMonthYear": "Select month year",
+    "cancel": "Abbrechen",
+    "clearDate": "Datum entfernen",
+    "confirm": "Bestätigen",
+    "month": "Monat",
+    "nextMonday": "Nächster Montag",
+    "selectDate": "Datum auswählen",
+    "selectMonthYear": "Monat und Jahr auswählen",
     "status": {
-      "fasted": "Fasted",
-      "tracked": "Food logged"
+      "fasted": "Gefastet",
+      "tracked": "Essen erfasst"
     },
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "year": "Year",
-    "xYearsAgo": "{{count}} years ago",
-    "yesterday": "Yesterday"
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "year": "Jahr",
+    "xYearsAgo": "vor {{count}} Jahren",
+    "yesterday": "Gestern"
   }
 }

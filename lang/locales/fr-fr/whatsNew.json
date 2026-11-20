@@ -1,239 +1,239 @@
 {
   "whatsNew": {
-    "title": "What's new",
+    "title": "Nouveautés",
     "intro": {
-      "inside": "What's in this tour",
-      "title": "Make Musclog your own",
-      "description": "A few things have changed. Take a quick look and choose what works for you. Changes save as you tap; you can revisit this tour in Settings.",
-      "truncated": "We’ve kept this tour to the latest highlights."
+      "inside": "Ce qu'il y a dans cette visite",
+      "title": "Fais de Musclog le tien",
+      "description": "Quelques éléments ont changé. Jette un œil rapide et choisis ce qui te convient. Les changements s'enregistrent dès que tu tapes ; tu peux revoir cette visite dans les Réglages.",
+      "truncated": "Nous avons limité cette visite aux points forts les plus récents."
     },
-    "next": "Next",
-    "back": "Back",
-    "done": "Done",
-    "skip": "Skip for now",
-    "pageOf": "Page {{current}} of {{total}}",
-    "saveFailed": "Couldn’t save this choice. Please try again.",
-    "loadFailed": "Couldn’t load this choice.",
-    "dismissFailed": "Couldn’t save your progress. Please try again.",
-    "retry": "Try again",
+    "next": "Suivant",
+    "back": "Retour",
+    "done": "Terminé",
+    "skip": "Passer pour l'instant",
+    "pageOf": "Page {{current}} sur {{total}}",
+    "saveFailed": "Impossible d'enregistrer ce choix. Réessaie.",
+    "loadFailed": "Impossible de charger ce choix.",
+    "dismissFailed": "Impossible d'enregistrer ta progression. Réessaie.",
+    "retry": "Réessayer",
     "settingsCard": {
-      "title": "What's new",
-      "subtitle": "Revisit the latest features and preferences"
+      "title": "Nouveautés",
+      "subtitle": "Revois les dernières fonctions et préférences"
     },
     "debug": {
-      "title": "What's new",
-      "record": "Seen through: {{version}}",
-      "none": "No record",
-      "clear": "Clear record (simulate upgrade)",
-      "set": "Set seen-through version",
-      "preview": "Preview release {{version}}",
-      "invalid": "Enter a version such as 2.13.0.",
+      "title": "Nouveautés",
+      "record": "Vue jusqu'à : {{version}}",
+      "none": "Aucun enregistrement",
+      "clear": "Effacer l'enregistrement (simuler une mise à jour)",
+      "set": "Définir la version vue jusqu'à",
+      "preview": "Aperçu de la version {{version}}",
+      "invalid": "Saisis une version comme 2.13.0.",
       "version": "Version (x.y.z)"
     },
     "releases": {
       "v2_15_2": {
         "view": {
-          "title": "Your workout, your view",
-          "description": "Guided view now helps you focus on one set at a time. Prefer the full picture? Inline view is still here."
+          "title": "Ta séance, ta vue",
+          "description": "La vue guidée t'aide maintenant à te concentrer sur une série à la fois. Tu préfères la vue d'ensemble ? La vue en ligne est toujours là."
         },
         "workoutView": {
-          "title": "Choose your workout view",
-          "description": "You can change this later in visual settings.",
+          "title": "Choisis ta vue de séance",
+          "description": "Tu pourras la changer plus tard dans les réglages visuels.",
           "guided": {
-            "label": "Guided",
-            "description": "Focus on your current set with larger controls."
+            "label": "Guidée",
+            "description": "Concentre-toi sur ta série en cours, avec des commandes plus grandes."
           },
           "inline": {
-            "label": "Inline",
-            "description": "See and edit your sets together in a list."
+            "label": "En ligne",
+            "description": "Vois et modifie tes séries ensemble dans une liste."
           }
         },
         "targets": {
-          "title": "Targets that fit you and your gym",
-          "description": "Musclog suggests starting targets from your history and marks the numbers it changed, so you can always edit them. Add your gym’s bar and plates to get loads you can actually put on the bar."
+          "title": "Des objectifs adaptés à toi et à ta salle",
+          "description": "Musclog suggère des objectifs de départ à partir de ton historique et marque les chiffres qu'il a modifiés, pour que tu puisses toujours les éditer. Ajoute la barre et les disques de ta salle pour obtenir des charges que tu peux réellement mettre sur la barre."
         },
         "workoutAutonomy": {
-          "title": "Starting targets",
-          "description": "How your history shapes the next workout.",
+          "title": "Objectifs de départ",
+          "description": "Comment ton historique façonne la prochaine séance.",
           "suggest": {
-            "label": "Suggest targets",
-            "description": "Use progression suggestions when starting a workout."
+            "label": "Suggérer des objectifs",
+            "description": "Utilise les suggestions de progression au début d'une séance."
           },
           "manual": {
-            "label": "Keep my plan",
-            "description": "Start with the targets saved in my workout."
+            "label": "Garder mon programme",
+            "description": "Commence avec les objectifs enregistrés dans ma séance."
           }
         },
-        "setupGym": "Set up gyms and plates",
+        "setupGym": "Configurer les salles et les disques",
         "review": {
-          "title": "One weekly moment to reflect",
-          "description": "Weekly Review brings your nutrition and training together, with suggestions you choose whether to apply."
+          "title": "Un moment hebdomadaire pour faire le point",
+          "description": "Le bilan hebdomadaire réunit ta nutrition et ton entraînement, avec des suggestions que tu choisis d'appliquer ou non."
         },
         "reviewWeekday": {
-          "title": "Your review day",
-          "description": "Pick a day that fits your routine. Existing reminder preferences stay in place."
+          "title": "Ton jour de bilan",
+          "description": "Choisis un jour qui s'intègre à ta routine. Tes préférences de rappel actuelles restent en place."
         },
-        "openReview": "Open Weekly Review",
+        "openReview": "Ouvrir le bilan hebdomadaire",
         "workoutMore": {
-          "title": "More for your workouts",
+          "title": "Plus pour tes séances",
           "plans": {
-            "label": "Workout plans",
-            "description": "Organize workouts into weekly or rotating plans."
+            "label": "Programmes d'entraînement",
+            "description": "Organise tes séances en programmes hebdomadaires ou en rotation."
           },
           "cardio": {
-            "label": "Cardio log",
-            "description": "Record cardio sessions alongside your strength training."
+            "label": "Carnet cardio",
+            "description": "Enregistre tes séances cardio à côté de ton entraînement de force."
           },
           "swaps": {
-            "label": "Exercise swaps",
-            "description": "Swap an exercise during a workout without changing the original plan."
+            "label": "Remplacements d'exercices",
+            "description": "Remplace un exercice pendant une séance sans modifier le programme d'origine."
           },
           "restrictions": {
-            "label": "Exercise restrictions",
-            "description": "Remember exercises to avoid and temporary injuries in workout settings."
+            "label": "Restrictions d'exercices",
+            "description": "Retiens les exercices à éviter et les blessures temporaires dans les réglages de séance."
           },
           "warmups": {
-            "label": "Warm-up sets",
-            "description": "Keep warm-ups separate from your working sets."
+            "label": "Séries d'échauffement",
+            "description": "Garde les échauffements séparés de tes séries de travail."
           },
           "restTimer": {
-            "label": "Automatic rest timer",
-            "description": "Start the rest timer after each set, with optional vibration."
+            "label": "Minuteur de repos automatique",
+            "description": "Lance le minuteur de repos après chaque série, avec une vibration facultative."
           }
         },
         "heatmaps": {
-          "title": "Your activity at a glance",
-          "description": "See the days you trained and logged meals as a calendar of squares on Home: darker means busier, and tapping a square reads out that day. Turn it on in Settings → Appearance and home → Home heatmaps, where you also pick the layout."
+          "title": "Ton activité d'un coup d'œil",
+          "description": "Vois les jours où tu t'es entraîné et où tu as noté tes repas, sous forme de calendrier de carrés sur l'accueil : plus c'est foncé, plus la journée était chargée, et taper sur un carré affiche ce jour. Active-le dans Réglages → Apparence et accueil → Cartes d'activité, où tu choisis aussi la mise en page."
         },
         "aiSetup": {
-          "title": "Set up Musclog by talking",
-          "description": "Answer a few questions in a chat instead of filling in forms, using free Musclog AI, your own Gemini or OpenAI key, or ChatGPT or Claude. You review and edit every answer before anything is saved."
+          "title": "Configure Musclog en parlant",
+          "description": "Réponds à quelques questions dans une conversation au lieu de remplir des formulaires, avec l'IA Musclog gratuite, ta propre clé Gemini ou OpenAI, ou ChatGPT ou Claude. Tu relis et modifies chaque réponse avant tout enregistrement."
         },
-        "openAiSetup": "Update my profile with AI",
+        "openAiSetup": "Mettre à jour mon profil avec l'IA",
         "coachPersona": {
-          "title": "Pick who your AI coach is",
-          "description": "Keep Loggy, or pick Count Dracula, Cthulhu or Sherlock Holmes, or write your own with a name, a voice and a picture. Only the wording changes, never the numbers or the safety advice. Find it in Settings → AI."
+          "title": "Choisis qui est ton coach IA",
+          "description": "Garde Loggy, ou choisis le comte Dracula, Cthulhu ou Sherlock Holmes, ou écris le tien avec un nom, une voix et une image. Seule la formulation change, jamais les chiffres ni les conseils de sécurité. Tu le trouves dans Réglages → IA."
         },
         "appWide": {
-          "title": "Also new across the app",
+          "title": "Aussi nouveau dans l'application",
           "home": {
-            "label": "A tidier Home",
-            "description": "Today’s numbers first, smaller shortcuts, and a Weekly Review card only while one is due."
+            "label": "Un accueil plus net",
+            "description": "Les chiffres du jour d'abord, des raccourcis plus petits, et une carte de bilan hebdomadaire seulement quand un bilan est dû."
           },
           "menus": {
-            "label": "Calmer menus and Settings",
-            "description": "Simple grouped lists instead of stacks of cards, with Settings split into seven clearer groups."
+            "label": "Menus et réglages plus calmes",
+            "description": "Des listes simples et groupées au lieu d'empilements de cartes, avec des réglages répartis en sept groupes plus clairs."
           },
           "widgets": {
-            "label": "Widgets on iOS and Android",
-            "description": "Nutrition Progress and Smart Camera now work on iOS too. On Android, remove your old Musclog widgets and add them again from the widget picker."
+            "label": "Widgets sur iOS et Android",
+            "description": "La progression nutritionnelle et la caméra intelligente fonctionnent maintenant aussi sur iOS. Sur Android, supprime tes anciens widgets Musclog et rajoute-les depuis le sélecteur de widgets."
           },
           "lock": {
-            "label": "Lock parts of the app",
-            "description": "In Settings → App lock, protect your cycle, workouts, nutrition, progress or the whole app with your device credential."
+            "label": "Verrouiller certaines parties de l'application",
+            "description": "Dans Réglages → Verrouillage de l'application, protège ton cycle, tes séances, ta nutrition, ta progression ou toute l'application avec le code de ton appareil."
           }
         },
         "cycleDiary": {
-          "title": "A private, encrypted cycle diary",
-          "description": "Your periods and day logs are now encrypted on your device. Predictions show how confident they are, and the fertile-window estimate is optional and off by default. Reminders can be as discreet as you like, and a read-only Cycle widget shows nothing personal under an app lock."
+          "title": "Un journal du cycle privé et chiffré",
+          "description": "Tes règles et tes notes quotidiennes sont désormais chiffrées sur ton appareil. Les prévisions indiquent leur niveau de fiabilité, et l'estimation de la fenêtre fertile est facultative et désactivée par défaut. Les rappels peuvent être aussi discrets que tu veux, et un widget Cycle en lecture seule n'affiche rien de personnel sous un verrouillage de l'application."
         }
       },
       "v2_16_0": {
         "loggy": {
-          "title": "Meet Loggy",
-          "description": "Loggy is Musclog's mascot. He welcomes you, keeps empty screens company and turns up when you reach a first. You can change how he appears below, or later in Settings → Appearance and home.",
+          "title": "Découvre Loggy",
+          "description": "Loggy est la mascotte de Musclog. Il t'accueille, tient compagnie aux écrans vides et apparaît quand tu atteins une première fois. Tu peux changer sa présence ci-dessous, ou plus tard dans Réglages → Apparence et accueil.",
           "show": {
-            "title": "Show Loggy",
-            "description": "Turn off to hide him everywhere. Your AI coach keeps its picture."
+            "title": "Afficher Loggy",
+            "description": "Désactive pour le masquer partout. Ton coach IA garde son image."
           },
           "animated": {
-            "title": "Animated Loggy",
-            "description": "Turn off to always see him standing still. Only applies while Loggy is shown."
+            "title": "Loggy animé",
+            "description": "Désactive pour le voir toujours immobile. N'a d'effet que lorsque Loggy est affiché."
           }
         },
         "importHistory": {
-          "title": "Bring your training history",
-          "description": "Moving from another app? Bring your past workouts over, so your records and progress start from day one.",
+          "title": "Ramène ton historique d'entraînement",
+          "description": "Tu viens d'une autre application ? Ramène tes anciennes séances, pour que tes records et ta progression partent du premier jour.",
           "items": {
             "apps": {
-              "label": "Strong, Hevy and FitNotes",
-              "description": "Pick the file you exported from the app."
+              "label": "Strong, Hevy et FitNotes",
+              "description": "Choisis le fichier exporté depuis l'application."
             },
             "twice": {
-              "label": "Safe to repeat",
-              "description": "Importing the same file twice adds nothing."
+              "label": "Sans risque à répéter",
+              "description": "Importer deux fois le même fichier n'ajoute rien."
             },
             "undo": {
-              "label": "Easy to undo",
-              "description": "Remove everything an import added whenever you like."
+              "label": "Facile à annuler",
+              "description": "Supprime tout ce qu'un import a ajouté, quand tu veux."
             }
           },
           "action": {
-            "label": "Import workouts",
-            "description": "You can also do this later in Settings → Backups and data."
+            "label": "Importer des séances",
+            "description": "Tu peux aussi le faire plus tard dans Réglages → Sauvegardes et données."
           }
         },
         "yearInReview": {
-          "title": "Your year in Musclog",
-          "description": "Each December, look back at everything you did this year.",
+          "title": "Ton année dans Musclog",
+          "description": "Chaque décembre, revois tout ce que tu as fait cette année.",
           "items": {
             "look": {
-              "label": "Sessions, records and days trained",
-              "description": "Your year as numbers and posters you can flip through."
+              "label": "Séances, records et jours d'entraînement",
+              "description": "Ton année en chiffres et en affiches à feuilleter."
             },
             "share": {
-              "label": "Share it as an image",
-              "description": "Post it, or keep it to yourself."
+              "label": "Partage-la en image",
+              "description": "Publie-la, ou garde-la pour toi."
             },
             "private": {
-              "label": "Private by default",
-              "description": "Weight and nutrition stay out unless you add them."
+              "label": "Privée par défaut",
+              "description": "Le poids et la nutrition restent exclus, sauf si tu les ajoutes."
             }
           },
           "action": {
-            "label": "See your year so far"
+            "label": "Voir ton année jusqu'ici"
           }
         },
         "strengthLevels": {
-          "title": "Strength levels",
-          "description": "See how your main lifts compare with your body weight, and what the next level takes.",
+          "title": "Niveaux de force",
+          "description": "Vois comment tes exercices principaux se comparent à ton poids corporel, et ce que demande le niveau suivant.",
           "items": {
             "bodyWeight": {
-              "label": "Compared with your body weight",
-              "description": "Needs a weigh-in: log your weight to see your levels."
+              "label": "Comparé à ton poids corporel",
+              "description": "Nécessite une pesée : enregistre ton poids pour voir tes niveaux."
             },
             "next": {
-              "label": "What the next level takes",
-              "description": "The load to lift to reach the next level."
+              "label": "Ce que demande le niveau suivant",
+              "description": "La charge à soulever pour atteindre le niveau suivant."
             },
             "where": {
-              "label": "On Progress and on each lift",
-              "description": "You'll find them in both places."
+              "label": "Dans la progression et sur chaque exercice",
+              "description": "Tu les trouveras aux deux endroits."
             }
           },
           "action": {
-            "label": "Open progress"
+            "label": "Ouvrir la progression"
           }
         },
         "trainingLoad": {
-          "title": "Recent training load",
-          "description": "A body map on Progress shows what you trained over the last week.",
+          "title": "Charge d'entraînement récente",
+          "description": "Une carte corporelle dans la progression montre ce que tu as travaillé la semaine dernière.",
           "items": {
             "map": {
-              "label": "The last 7 days on a body map",
-              "description": "The muscles you worked show up darker."
+              "label": "Les 7 derniers jours sur une carte corporelle",
+              "description": "Les muscles que tu as sollicités apparaissent plus foncés."
             },
             "sets": {
-              "label": "Weekly sets per muscle",
-              "description": "The numbers sit right beside the map."
+              "label": "Séries hebdomadaires par muscle",
+              "description": "Les chiffres sont juste à côté de la carte."
             },
             "load": {
-              "label": "Load, not readiness",
-              "description": "It shows what you trained, not whether you should train again."
+              "label": "La charge, pas la forme",
+              "description": "Elle montre ce que tu as entraîné, pas si tu dois t'entraîner à nouveau."
             }
           },
           "action": {
-            "label": "Open progress"
+            "label": "Ouvrir la progression"
           }
         }
       }

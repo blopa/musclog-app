@@ -1,7 +1,7 @@
 {
   "spiderChart": {
-    "primaryFocus": "Primary focus",
-    "areaToImprove": "Area to improve",
-    "defaultScoreLabel": "PTS"
+    "primaryFocus": "Ana odak",
+    "areaToImprove": "Geliştirilecek alan",
+    "defaultScoreLabel": "PUAN"
   }
 }

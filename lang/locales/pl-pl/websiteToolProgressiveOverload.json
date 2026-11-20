@@ -1,104 +1,104 @@
 {
   "websiteToolProgressiveOverload": {
-    "title": "Progressive overload calculator",
-    "intro": "Enter what you did last session and get the weight and reps to aim for next time. It runs the rule the Musclog app uses to set your next workout.",
+    "title": "Kalkulator progresji przeciążeniowej",
+    "intro": "Wpisz, co zrobiłeś na ostatniej sesji, a dostaniesz ciężar i powtórzenia, do których dążyć następnym razem. Używa reguły, której używa aplikacja Musclog do ustalania twojego następnego treningu.",
     "form": {
-      "weight": "Last session's weight",
-      "weightHint": "The weight of your working sets.",
-      "reps": "Reps in your weakest working set",
-      "repsHint": "Whole number. The set with the fewest reps is the one that counts.",
-      "plannedReps": "Reps your plan asks for",
-      "plannedRepsHint": "Per set, the bottom of your rep range.",
-      "reserve": "Reps in reserve, average",
-      "reserveHint": "Reps you could still have done after each set, averaged. Leave it empty if you did not rate your effort.",
-      "equipmentLabel": "Equipment",
+      "weight": "Ciężar z ostatniej sesji",
+      "weightHint": "Ciężar twoich serii roboczych.",
+      "reps": "Powtórzenia w najsłabszej serii roboczej",
+      "repsHint": "Liczba całkowita. Liczy się seria z najmniejszą liczbą powtórzeń.",
+      "plannedReps": "Powtórzenia z twojego planu",
+      "plannedRepsHint": "Na serię, dolna granica twojego zakresu powtórzeń.",
+      "reserve": "Powtórzenia w zapasie, średnio",
+      "reserveHint": "Ile powtórzeń mógłbyś jeszcze zrobić po każdej serii, uśrednione. Zostaw puste, jeśli nie oceniałeś wysiłku.",
+      "equipmentLabel": "Sprzęt",
       "equipment": {
-        "barbell": "Barbell",
-        "dumbbell": "Dumbbell",
-        "machine": "Machine or cable"
+        "barbell": "Sztanga",
+        "dumbbell": "Hantle",
+        "machine": "Maszyna lub wyciąg"
       },
-      "modeLabel": "How to progress",
+      "modeLabel": "Jak progresować",
       "mode": {
-        "weight_first": "Add weight first",
-        "reps_first": "Add reps first"
+        "weight_first": "Najpierw dodaj ciężar",
+        "reps_first": "Najpierw dodaj powtórzenia"
       },
-      "completeLabel": "Did you finish every set?",
-      "twoInARowLabel": "Did the session before it also fail at this weight?",
-      "yes": "Yes",
-      "no": "No",
-      "twoInARowNo": "No or not sure",
-      "twoInARowYes": "Yes, I missed reps or hit failure",
-      "moreOptions": "More options: equipment, progression style and last session details"
+      "completeLabel": "Czy zrobiłeś każdą serię?",
+      "twoInARowLabel": "Czy poprzednia sesja przy tym ciężarze też się nie udała?",
+      "yes": "Tak",
+      "no": "Nie",
+      "twoInARowNo": "Nie albo nie jestem pewien",
+      "twoInARowYes": "Tak, zrobiłem za mało powtórzeń albo doszedłem do upadku",
+      "moreOptions": "Więcej opcji: sprzęt, styl progresji i szczegóły ostatniej sesji"
     },
     "problems": {
-      "weight": "Enter last session's weight as a number above 0 and at most {{max}}.",
-      "reps": "Enter the reps as a whole number from 1 to {{max}}.",
-      "plannedReps": "Enter the planned reps as a whole number from 1 to {{max}}.",
-      "reserve": "Enter reps in reserve as a number from 0 to {{max}}, or leave it empty."
+      "weight": "Wpisz ciężar z ostatniej sesji jako liczbę większą od 0 i co najwyżej {{max}}.",
+      "reps": "Wpisz powtórzenia jako liczbę całkowitą od 1 do {{max}}.",
+      "plannedReps": "Wpisz planowane powtórzenia jako liczbę całkowitą od 1 do {{max}}.",
+      "reserve": "Wpisz powtórzenia w zapasie jako liczbę od 0 do {{max}} albo zostaw puste."
     },
     "results": {
-      "title": "Next session",
+      "title": "Następna sesja",
       "kind": {
-        "progression": "Go up",
-        "repeat": "Repeat last time",
-        "deload": "Go lighter"
+        "progression": "Idź w górę",
+        "repeat": "Powtórz jak ostatnio",
+        "deload": "Idź lżej"
       },
-      "target_one": "{{weight}} for {{reps}} rep",
-      "target_few": "{{weight}} for {{reps}} reps",
-      "target_many": "{{weight}} for {{reps}} reps",
-      "target_other": "{{weight}} for {{reps}} reps",
-      "changeUp": "{{change}} ({{percent}}) heavier than last time.",
-      "changeSame": "The same weight as last time.",
-      "changeDown": "{{change}} ({{percent}}) lighter than last time.",
-      "step": "One load step for this equipment is {{step}}.",
-      "plates": "Plates on each side of the bar",
-      "emptyBar": "Empty bar",
+      "target_one": "{{weight}} na {{reps}} powtórzenie",
+      "target_few": "{{weight}} na {{reps}} powtórzenia",
+      "target_many": "{{weight}} na {{reps}} powtórzeń",
+      "target_other": "{{weight}} na {{reps}} powtórzenia",
+      "changeUp": "{{change}} ({{percent}}) cięższe niż ostatnio.",
+      "changeSame": "Ten sam ciężar co ostatnio.",
+      "changeDown": "{{change}} ({{percent}}) lżejsze niż ostatnio.",
+      "step": "Jeden krok obciążenia dla tego sprzętu to {{step}}.",
+      "plates": "Talerze po każdej stronie sztangi",
+      "emptyBar": "Pusta sztanga",
       "plateLine": "{{count}} × {{weight}}",
-      "unrated": "You left reps in reserve empty, so the call rests on reps alone: one more rep each session up to the top of your range, then more weight."
+      "unrated": "Zostawiłeś puste powtórzenia w zapasie, więc decyzja opiera się tylko na powtórzeniach: jedno powtórzenie więcej na sesję, aż do góry zakresu, a potem więcej ciężaru."
     },
     "reasons": {
-      "addWeight": "Last session met the bar: at least {{reserve}} reps in reserve and at least {{planned}} reps in your weakest set. The load goes up one step.",
-      "addReps": "Last session met the bar, but the reps go up before the weight does. The load only rises once you reach the top of your rep range.",
-      "stepTooCoarse": "One load step ({{step}}) is more than a quarter of this weight, a jump too big to make, so the app adds a rep instead.",
-      "unfinished": "You did not finish every set, so the session does not count as a success. Repeat it.",
-      "missedPlan": "You missed the planned reps. One miss repeats the same weight. Two in a row at this weight lower it.",
-      "tooHard": "You had fewer than {{reserve}} reps in reserve, so the session was already hard enough. Repeat it. The load goes up only when you leave at least {{reserve}}.",
-      "deload": "Two failed sessions in a row at this weight. The load drops by 10% or one step, whichever is larger, then rounds down to a load you can set."
+      "addWeight": "Ostatnia sesja spełniła warunek: co najmniej {{reserve}} powtórzeń w zapasie i co najmniej {{planned}} powtórzeń w najsłabszej serii. Obciążenie rośnie o jeden krok.",
+      "addReps": "Ostatnia sesja spełniła warunek, ale najpierw rosną powtórzenia, a dopiero potem ciężar. Obciążenie wzrośnie, gdy dojdziesz do góry zakresu powtórzeń.",
+      "stepTooCoarse": "Jeden krok obciążenia ({{step}}) to ponad ćwierć tego ciężaru, skok zbyt duży, by go zrobić, więc aplikacja dodaje powtórzenie.",
+      "unfinished": "Nie zrobiłeś każdej serii, więc sesja nie liczy się jako sukces. Powtórz ją.",
+      "missedPlan": "Nie zrobiłeś planowanych powtórzeń. Jedna porażka powtarza ten sam ciężar. Dwie z rzędu przy tym ciężarze obniżają go.",
+      "tooHard": "Miałeś mniej niż {{reserve}} powtórzeń w zapasie, więc sesja była już dość ciężka. Powtórz ją. Obciążenie rośnie tylko wtedy, gdy zostawisz co najmniej {{reserve}}.",
+      "deload": "Dwie nieudane sesje z rzędu przy tym ciężarze. Obciążenie spada o 10% albo o jeden krok, w zależności od tego, co jest większe, a potem zaokrągla się w dół do obciążenia, które możesz ustawić."
     },
     "sections": [
       {
-        "title": "How much should you add?",
+        "title": "Ile dodać?",
         "body": [
-          "Musclog adds one load step: 2.5 kg (5 lb) with no gym set up, or twice your lightest plate on a barbell when you have set one up. On a 100 kg lift that is 2.5%, and on a light dumbbell it is a big share, so when one step is more than a quarter of the weight the app adds a rep instead. These are product rules, not study results.",
-          "Research gives a range, not one number. The American College of Sports Medicine's 2009 position stand suggests raising the load by about 2 to 10% once you can do one or two reps over your target in two sessions in a row. Musclog is more cautious in one way and quicker in another: it acts after a single session, but only when you left reps in reserve and hit every planned rep."
+          "Musclog dodaje jeden krok obciążenia: 2,5 kg (5 lb), gdy nie masz ustawionej siłowni, albo dwa razy najlżejszy talerz na sztandze, gdy ją skonfigurowałeś. Przy ćwiczeniu z 100 kg to 2,5%, a przy lekkiej hantli to duży udział, więc gdy jeden krok przekracza ćwierć ciężaru, aplikacja dodaje powtórzenie. To zasady produktowe, a nie wyniki badań.",
+          "Badania podają zakres, a nie jedną liczbę. Stanowisko American College of Sports Medicine z 2009 roku sugeruje podniesienie obciążenia o około 2 do 10%, gdy w dwóch sesjach z rzędu zrobisz o jedno albo dwa powtórzenia więcej niż cel. Musclog jest w jednym aspekcie ostrożniejszy, a w innym szybszy: działa po jednej sesji, ale tylko wtedy, gdy zostawiłeś powtórzenia w zapasie i zrobiłeś każde zaplanowane powtórzenie."
         ]
       },
       {
-        "title": "When it goes up, repeats or goes lighter",
+        "title": "Kiedy idzie w górę, powtarza się, a kiedy idzie lżej",
         "body": [
-          "It goes up when your weakest working set hit the planned reps and you ended with at least 2 reps in reserve on average. It repeats after one hard or short session, because one bad day is not a stall. It goes lighter after two sessions in a row at the same weight where you ended with nothing in reserve, or missed the planned reps. These two-session rules are Musclog's choices."
+          "Idzie w górę, gdy najsłabsza seria robocza zrobiła zaplanowane powtórzenia, a na koniec zostało średnio co najmniej 2 powtórzenia w zapasie. Powtarza się po jednej ciężkiej lub krótkiej sesji, bo jeden zły dzień to nie zastój. Idzie lżej po dwóch sesjach z rzędu przy tym samym ciężarze, w których nic nie zostało w zapasie, albo gdy nie zrobiono planowanych powtórzeń. Te reguły dwóch sesji to wybory Musclog."
         ]
       },
       {
-        "title": "Weight first or reps first",
+        "title": "Najpierw ciężar czy najpierw powtórzenia",
         "body": [
-          "Weight first adds a step every time you earn it and keeps your reps. Reps first adds a rep each session until you are two reps above your plan (one above for plans of six reps or fewer), then adds weight and goes back to the planned reps. That second way is double progression."
+          "Najpierw ciężar dodaje krok za każdym razem, gdy na niego zasłużysz, i zachowuje powtórzenia. Najpierw powtórzenia dodaje po powtórzeniu na sesję, aż będziesz dwa powtórzenia ponad plan (jedno ponad, przy planach do sześciu powtórzeń), potem dodaje ciężar i wraca do planowanych powtórzeń. Ten drugi sposób to podwójna progresja."
         ]
       },
       {
-        "title": "What this page cannot see",
+        "title": "Czego ta strona nie widzi",
         "body": [
-          "It reads one session. The app also looks at your plan, your gym and the week you are in, and shows the reason next to each set. Treat the answer as a good starting point, not a prescription."
+          "Czyta jedną sesję. Aplikacja patrzy też na twój plan, twoją siłownię i tydzień, w którym jesteś, i pokazuje powód przy każdej serii. Traktuj odpowiedź jako dobry punkt wyjścia, a nie receptę."
         ]
       }
     ],
     "sources": {
       "acsm": "American College of Sports Medicine (2009), Progression models in resistance training for healthy adults (Medicine & Science in Sports & Exercise)",
-      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+      "zourdos": "Zourdos i in. (2016), Nowa skala RPE dla treningu oporowego mierząca powtórzenia w zapasie"
     },
     "articles": {
-      "doubleProgression": "Double progression: the simplest way to add weight every week",
-      "trackProgress": "How to track gym progress: a beginner's guide"
+      "doubleProgression": "Podwójna progresja: najprostszy sposób, by dodawać ciężar co tydzień",
+      "trackProgress": "Jak śledzić postępy na siłowni: poradnik dla początkujących"
     }
   }
 }

@@ -1,53 +1,53 @@
 {
   "websiteToolWarmUpCalculator": {
-    "title": "Warm-up calculator",
-    "intro": "Enter your working weight and get the warm-up sets that lead up to it, with the plates for each side of the bar when you lift a barbell.",
+    "title": "Calculateur d'échauffement",
+    "intro": "Saisis ta charge de travail et obtiens les séries d'échauffement qui y mènent, avec les disques de chaque côté de la barre quand tu soulèves une barre.",
     "form": {
-      "working": "Working weight",
-      "workingHint": "The weight of the set you are building up to.",
-      "equipmentLabel": "Equipment",
+      "working": "Charge de travail",
+      "workingHint": "La charge de la série vers laquelle tu te prépares.",
+      "equipmentLabel": "Matériel",
       "equipment": {
-        "barbell": "Barbell",
-        "dumbbell": "Dumbbell",
-        "machine": "Machine or cable"
+        "barbell": "Barre",
+        "dumbbell": "Haltère",
+        "machine": "Machine ou câble"
       }
     },
     "problems": {
-      "working": "Enter the working weight as a number above 0 and at most {{max}}."
+      "working": "Saisis la charge de travail sous forme de nombre supérieur à 0 et au plus {{max}}."
     },
     "results": {
-      "title": "Warm-up sets",
-      "set": "Set",
-      "weight": "Weight",
-      "reps": "Reps",
-      "plates": "Plates per side",
-      "working": "Working set",
-      "target": "Target",
-      "emptyBar": "Empty bar",
+      "title": "Séries d'échauffement",
+      "set": "Série",
+      "weight": "Charge",
+      "reps": "Répétitions",
+      "plates": "Disques par côté",
+      "working": "Série de travail",
+      "target": "Cible",
+      "emptyBar": "Barre vide",
       "plateLine": "{{count}} × {{weight}}",
-      "rest": "Rest about {{seconds}} seconds between warm-up sets.",
-      "barIsWarmUp": "Your working weight is so close to the bar that the bar is the warm-up. Go straight to your first set.",
-      "noRamp": "This weight is too light for a warm-up ramp. Start at your working weight.",
-      "workingNotLoadable": "Your gym cannot load the working weight exactly. The warm-ups use the nearest loadable weights."
+      "rest": "Repos d'environ {{seconds}} secondes entre les séries d'échauffement.",
+      "barIsWarmUp": "Ta charge de travail est si proche de la barre que la barre elle-même sert d'échauffement. Passe directement à ta première série.",
+      "noRamp": "Cette charge est trop légère pour une progression d'échauffement. Commence à ta charge de travail.",
+      "workingNotLoadable": "Ta salle ne peut pas charger exactement la charge de travail. Les échauffements utilisent les charges chargeables les plus proches."
     },
     "sections": [
       {
-        "title": "How the ramp is built",
+        "title": "Comment la progression est construite",
         "body": [
-          "Each warm-up set is a share of the working weight: 40% for 5 reps, 60% for 3 reps and 80% for 2 reps. Each one is heavier and shorter than the last, so you arrive at the working weight warm without being tired.",
-          "On a barbell, the ramp opens with the empty bar for 10 reps when the first ramp set is well above it. Every weight is rounded to what your plates can make, and a warm-up within 10% of the working weight is dropped."
+          "Chaque série d'échauffement est une part de la charge de travail : 40 % pour 5 répétitions, 60 % pour 3 répétitions et 80 % pour 2 répétitions. Chacune est plus lourde et plus courte que la précédente, pour que tu arrives à la charge de travail échauffé sans être fatigué.",
+          "Sur une barre, la progression commence à vide pour 10 répétitions quand la première série est bien au-dessus. Chaque charge est arrondie à ce que tes disques permettent, et un échauffement à moins de 10 % de la charge de travail est supprimé."
         ]
       },
       {
-        "title": "These are Musclog's choices",
+        "title": "Ce sont les choix de Musclog",
         "body": [
-          "The percentages, the reps and the rest between sets are a common prescription that Musclog uses. They are product choices, not results from a study. Change them to suit how you feel."
+          "Les pourcentages, les répétitions et le repos entre les séries sont une prescription courante que Musclog utilise. Ce sont des choix de produit, pas des résultats d'une étude. Modifie-les selon ce que tu ressens."
         ]
       },
       {
-        "title": "Barbell, dumbbell or machine",
+        "title": "Barre, haltère ou machine",
         "body": [
-          "On a barbell the plates for each side are shown, so you can load every warm-up from your gym's plates. Dumbbells and machines skip the bar and plates and use the standard increments of a typical gym."
+          "Sur une barre, les disques de chaque côté sont affichés, pour que tu charges chaque échauffement avec les disques de ta salle. Les haltères et machines se passent de barre et de disques, et utilisent les incréments standard d'une salle classique."
         ]
       }
     ]

@@ -1,10 +1,10 @@
 {
   "workTimer": {
-    "label": "Set timer",
-    "open": "Set timer",
-    "start": "Start",
-    "stop": "Stop",
-    "close": "Close",
+    "label": "Imposta timer",
+    "open": "Imposta timer",
+    "start": "Avvia",
+    "stop": "Ferma",
+    "close": "Chiudi",
     "minus5": "-5s",
     "plus5": "+5s"
   }

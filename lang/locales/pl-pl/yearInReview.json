@@ -1,184 +1,184 @@
 {
   "yearInReview": {
-    "title": "Your year in Musclog",
-    "empty": "Nothing is logged for this year yet. The review fills in as you train and track.",
-    "back": "Back",
-    "next": "Next",
-    "done": "Done",
-    "stepOf": "{{current}} of {{total}}",
-    "shareButton": "Share",
-    "shareSheetTitle": "Share your year",
-    "includeWeight": "Include weight change",
-    "includeNutrition": "Include nutrition",
-    "shareHint": "Both are off unless you turn them on. Without them the image has no body weight and no food figures.",
-    "shareAction": "Share image",
+    "title": "Twój rok w Musclog",
+    "empty": "Na ten rok nic jeszcze nie zapisano. Przegląd uzupełnia się, gdy trenujesz i śledzisz.",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "done": "Gotowe",
+    "stepOf": "{{current}} z {{total}}",
+    "shareButton": "Udostępnij",
+    "shareSheetTitle": "Udostępnij swój rok",
+    "includeWeight": "Dołącz zmianę wagi",
+    "includeNutrition": "Dołącz odżywianie",
+    "shareHint": "Obie opcje są wyłączone, dopóki ich nie włączysz. Bez nich obraz nie zawiera wagi ciała ani danych o jedzeniu.",
+    "shareAction": "Udostępnij obraz",
     "intro": {
-      "body": "Here is what your training and tracking looked like."
+      "body": "Oto jak wyglądały Twój trening i śledzenie."
     },
     "sessions": {
-      "title": "Workouts",
-      "body_one": "workout finished",
-      "body_few": "workouts finished",
-      "body_many": "workouts finished",
-      "body_other": "workouts finished"
+      "title": "Treningi",
+      "body_one": "ukończony trening",
+      "body_few": "ukończone treningi",
+      "body_many": "ukończonych treningów",
+      "body_other": "ukończonego treningu"
     },
     "heatmap": {
-      "title": "Training days",
-      "days_one": "day trained",
-      "days_few": "days trained",
-      "days_many": "days trained",
-      "days_other": "days trained",
+      "title": "Dni treningowe",
+      "days_one": "dzień z treningiem",
+      "days_few": "dni z treningiem",
+      "days_many": "dni z treningiem",
+      "days_other": "dnia z treningiem",
       "legend": {
-        "workout": "Workout",
-        "food": "Food",
-        "both": "Both"
+        "workout": "Trening",
+        "food": "Jedzenie",
+        "both": "Oba"
       }
     },
     "streak": {
-      "title": "Longest run",
-      "body_one": "week in a row with a workout",
-      "body_few": "weeks in a row with a workout",
-      "body_many": "weeks in a row with a workout",
-      "body_other": "weeks in a row with a workout"
+      "title": "Najdłuższa passa",
+      "body_one": "tydzień z rzędu z treningiem",
+      "body_few": "tygodnie z rzędu z treningiem",
+      "body_many": "tygodni z rzędu z treningiem",
+      "body_other": "tygodnia z rzędu z treningiem"
     },
     "volume": {
-      "title": "Total lifted",
-      "body": "Weight times reps across your working sets.",
-      "perWorkout": "{{unit}} per workout"
+      "title": "Łącznie podniesiono",
+      "body": "Ciężar razy powtórzenia we wszystkich seriach roboczych.",
+      "perWorkout": "{{unit}} na trening"
     },
     "topExercises": {
-      "title": "Most trained",
-      "sets_one": "{{n}} set",
-      "sets_few": "{{n}} sets",
-      "sets_many": "{{n}} sets",
-      "sets_other": "{{n}} sets"
+      "title": "Najczęściej trenowane",
+      "sets_one": "{{n}} seria",
+      "sets_few": "{{n}} serie",
+      "sets_many": "{{n}} serii",
+      "sets_other": "{{n}} serii"
     },
     "records": {
-      "title": "Personal records",
-      "body_one": "new personal record",
-      "body_few": "new personal records",
-      "body_many": "new personal records",
-      "body_other": "new personal records"
+      "title": "Rekordy osobiste",
+      "body_one": "nowy rekord osobisty",
+      "body_few": "nowe rekordy osobiste",
+      "body_many": "nowych rekordów osobistych",
+      "body_other": "nowego rekordu osobistego"
     },
     "busiestMonth": {
-      "title": "Busiest month",
-      "body_one": "{{n}} workout that month.",
-      "body_few": "{{n}} workouts that month.",
-      "body_many": "{{n}} workouts that month.",
-      "body_other": "{{n}} workouts that month."
+      "title": "Najbardziej intensywny miesiąc",
+      "body_one": "{{n}} trening w tym miesiącu.",
+      "body_few": "{{n}} treningi w tym miesiącu.",
+      "body_many": "{{n}} treningów w tym miesiącu.",
+      "body_other": "{{n}} treningu w tym miesiącu."
     },
     "trainingTime": {
-      "title": "Usual training time",
-      "hours": "{{n}} hours trained, from sessions with a recorded length.",
+      "title": "Zwykła pora treningu",
+      "hours": "{{n}} godz. treningu z sesji z zapisaną długością.",
       "buckets": {
-        "morning": "Morning",
-        "afternoon": "Afternoon",
-        "evening": "Evening",
-        "night": "Night"
+        "morning": "Rano",
+        "afternoon": "Po południu",
+        "evening": "Wieczorem",
+        "night": "W nocy"
       }
     },
     "nutrition": {
-      "title": "Food logged",
-      "meals_one": "meal logged",
-      "meals_few": "meals logged",
-      "meals_many": "meals logged",
-      "meals_other": "meals logged",
-      "days_one": "day with food logged",
-      "days_few": "days with food logged",
-      "days_many": "days with food logged",
-      "days_other": "days with food logged"
+      "title": "Zapisane jedzenie",
+      "meals_one": "zapisany posiłek",
+      "meals_few": "zapisane posiłki",
+      "meals_many": "zapisanych posiłków",
+      "meals_other": "zapisanego posiłku",
+      "days_one": "dzień z zapisanym jedzeniem",
+      "days_few": "dni z zapisanym jedzeniem",
+      "days_many": "dni z zapisanym jedzeniem",
+      "days_other": "dnia z zapisanym jedzeniem"
     },
     "foodStreak": {
-      "title": "Longest logging run",
-      "body_one": "day in a row with food logged",
-      "body_few": "days in a row with food logged",
-      "body_many": "days in a row with food logged",
-      "body_other": "days in a row with food logged",
-      "chart": "Days with food logged, month by month."
+      "title": "Najdłuższa passa zapisów",
+      "body_one": "dzień z rzędu z zapisanym jedzeniem",
+      "body_few": "dni z rzędu z zapisanym jedzeniem",
+      "body_many": "dni z rzędu z zapisanym jedzeniem",
+      "body_other": "dnia z rzędu z zapisanym jedzeniem",
+      "chart": "Dni z zapisanym jedzeniem, miesiąc po miesiącu."
     },
     "favouriteMeal": {
-      "title": "Most logged meal",
-      "days_one": "{{n}} day",
-      "days_few": "{{n}} days",
-      "days_many": "{{n}} days",
-      "days_other": "{{n}} days",
+      "title": "Najczęściej zapisywany posiłek",
+      "days_one": "{{n}} dzień",
+      "days_few": "{{n}} dni",
+      "days_many": "{{n}} dni",
+      "days_other": "{{n}} dnia",
       "captions": {
-        "breakfast": "Most important meal of the day, says every cereal box.",
-        "lunch": "The midday refuel.",
-        "dinner": "The big one at the end of the day.",
-        "snack": "Between meals counts too.",
-        "other": "Hard to file, easy to log."
+        "breakfast": "Najważniejszy posiłek dnia, jak wiadomo z każdego pudełka płatków.",
+        "lunch": "Obiadowe doładowanie.",
+        "dinner": "Ten najważniejszy na koniec dnia.",
+        "snack": "Też się liczy między posiłkami.",
+        "other": "Trudno go przypisać, łatwo zapisać."
       }
     },
     "protein": {
-      "title": "Protein, added up",
-      "caption": "{{unit}} of protein",
-      "body": "Gram by gram, from the protein in every meal you logged. Not the weight of the food.",
+      "title": "Białko, zsumowane",
+      "caption": "{{unit}} białka",
+      "body": "Gram po gramie, z białka w każdym zapisanym posiłku. Nie waga jedzenia.",
       "compare": {
-        "wheyBag_one": "That is about {{n}} bag of whey protein.",
-        "wheyBag_few": "That is about {{n}} bags of whey protein.",
-        "wheyBag_many": "That is about {{n}} bags of whey protein.",
-        "wheyBag_other": "That is about {{n}} bags of whey protein.",
-        "cat_one": "That is about {{n}} cat.",
-        "cat_few": "That is about {{n}} cats.",
-        "cat_many": "That is about {{n}} cats.",
-        "cat_other": "That is about {{n}} cats.",
-        "bowlingBall_one": "That is about {{n}} bowling ball.",
-        "bowlingBall_few": "That is about {{n}} bowling balls.",
-        "bowlingBall_many": "That is about {{n}} bowling balls.",
-        "bowlingBall_other": "That is about {{n}} bowling balls.",
-        "barbell_one": "That is about {{n}} Olympic barbell.",
-        "barbell_few": "That is about {{n}} Olympic barbells.",
-        "barbell_many": "That is about {{n}} Olympic barbells.",
-        "barbell_other": "That is about {{n}} Olympic barbells."
+        "wheyBag_one": "To mniej więcej {{n}} worek białka serwatkowego.",
+        "wheyBag_few": "To mniej więcej {{n}} worki białka serwatkowego.",
+        "wheyBag_many": "To mniej więcej {{n}} worków białka serwatkowego.",
+        "wheyBag_other": "To mniej więcej {{n}} worka białka serwatkowego.",
+        "cat_one": "To mniej więcej {{n}} kot.",
+        "cat_few": "To mniej więcej {{n}} koty.",
+        "cat_many": "To mniej więcej {{n}} kotów.",
+        "cat_other": "To mniej więcej {{n}} kota.",
+        "bowlingBall_one": "To mniej więcej {{n}} kula do kręgli.",
+        "bowlingBall_few": "To mniej więcej {{n}} kule do kręgli.",
+        "bowlingBall_many": "To mniej więcej {{n}} kul do kręgli.",
+        "bowlingBall_other": "To mniej więcej {{n}} kuli do kręgli.",
+        "barbell_one": "To mniej więcej {{n}} sztanga olimpijska.",
+        "barbell_few": "To mniej więcej {{n}} sztangi olimpijskie.",
+        "barbell_many": "To mniej więcej {{n}} sztang olimpijskich.",
+        "barbell_other": "To mniej więcej {{n}} sztangi olimpijskiej."
       },
-      "chicken_one": "chicken breast’s worth, broccoli not included",
-      "chicken_few": "chicken breasts’ worth, broccoli not included",
-      "chicken_many": "chicken breasts’ worth, broccoli not included",
-      "chicken_other": "chicken breasts’ worth, broccoli not included"
+      "chicken_one": "odpowiednik jednej piersi z kurczaka, bez brokuła",
+      "chicken_few": "odpowiednik kilku piersi z kurczaka, bez brokuła",
+      "chicken_many": "odpowiednik wielu piersi z kurczaka, bez brokuła",
+      "chicken_other": "odpowiednik części piersi z kurczaka, bez brokuła"
     },
     "macros": {
-      "title": "Where the grams went",
-      "protein": "Protein",
-      "carbs": "Carbs",
-      "fat": "Fat",
-      "body": "All the grams in the food you logged, added up."
+      "title": "Dokąd poszły gramy",
+      "protein": "Białko",
+      "carbs": "Węglowodany",
+      "fat": "Tłuszcz",
+      "body": "Wszystkie gramy z zapisanego jedzenia, zsumowane."
     },
     "weight": {
-      "title": "Body weight",
-      "unchanged": "No change between your first and last weigh-in.",
-      "caption": "From your first weigh-in to your last."
+      "title": "Masa ciała",
+      "unchanged": "Bez zmian między pierwszym a ostatnim ważeniem.",
+      "caption": "Od pierwszego ważenia do ostatniego."
     },
     "outro": {
-      "title": "That is the year",
-      "body": "Keep logging to see next year’s story."
+      "title": "Tak wyglądał ten rok",
+      "body": "Dalej zapisuj, aby zobaczyć historię przyszłego roku."
     },
     "share": {
-      "sessions": "Workouts",
-      "activeDays": "Active days",
-      "volume": "Total lifted",
-      "topExercise": "Most trained",
-      "records": "Personal records",
-      "meals": "Meals logged",
-      "protein": "Protein",
-      "weight": "Weight change"
+      "sessions": "Treningi",
+      "activeDays": "Dni aktywne",
+      "volume": "Łącznie podniesiono",
+      "topExercise": "Najczęściej trenowane",
+      "records": "Rekordy osobiste",
+      "meals": "Zapisane posiłki",
+      "protein": "Białko",
+      "weight": "Zmiana wagi"
     },
     "homeCard": {
-      "title": "Your {{year}} in Musclog",
-      "body": "See what your training looked like.",
-      "open": "Open your year",
-      "dismiss": "Dismiss"
+      "title": "Twój {{year}} w Musclog",
+      "body": "Zobacz, jak wyglądał Twój trening.",
+      "open": "Otwórz swój rok",
+      "dismiss": "Zamknij"
     },
     "settingsRow": {
-      "title": "Your year in Musclog",
-      "subtitle": "A look back at your training and tracking"
+      "title": "Twój rok w Musclog",
+      "subtitle": "Spojrzenie wstecz na trening i śledzenie"
     },
     "notification": {
-      "title": "Your {{year}} in Musclog is ready",
-      "body": "See what your training looked like this year."
+      "title": "Twój {{year}} w Musclog jest gotowy",
+      "body": "Zobacz, jak wyglądał Twój trening w tym roku."
     },
-    "loadFailed": "Your year couldn't be loaded.",
-    "retry": "Try again",
-    "seeYear": "See {{year}} so far"
+    "loadFailed": "Nie udało się wczytać Twojego roku.",
+    "retry": "Spróbuj ponownie",
+    "seeYear": "Zobacz {{year}} do tej pory"
   }
 }

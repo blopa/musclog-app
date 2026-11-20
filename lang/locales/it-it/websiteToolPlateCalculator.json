@@ -1,42 +1,42 @@
 {
   "websiteToolPlateCalculator": {
-    "title": "Plate calculator",
-    "intro": "Enter the weight you want on the bar and get the plates for each side, using the plates your gym actually has, in kg or lb, with your own bar.",
+    "title": "Calcolatore dei dischi",
+    "intro": "Inserisci il peso che vuoi sul bilanciere e ottieni i dischi per ogni lato, usando i dischi che la tua palestra ha davvero, in kg o lb, con il tuo bilanciere.",
     "form": {
-      "target": "Target weight",
-      "targetHint": "The total on the bar, bar included."
+      "target": "Peso obiettivo",
+      "targetHint": "Il totale sul bilanciere, bilanciere incluso."
     },
     "problems": {
-      "target": "Enter the target weight as a number above 0 and at most {{max}} {{unit}}."
+      "target": "Inserisci il peso obiettivo come numero maggiore di 0 e al massimo {{max}} {{unit}}."
     },
     "results": {
-      "loaded": "Weight on the bar",
-      "exact": "Your gym can load this weight exactly.",
-      "inexact": "Your gym cannot make {{target}} exactly. The heaviest it can load is {{below}}, and the nearest loadable weight is {{nearest}}.",
-      "belowBar": "That is lighter than the bar ({{bar}}). Pick a heavier target, or set a lighter bar in your gym.",
-      "perSide": "Plates on each side",
-      "noPlates": "No plates are needed: the bar alone is the target.",
+      "loaded": "Peso sul bilanciere",
+      "exact": "La tua palestra può caricare esattamente questo peso.",
+      "inexact": "La tua palestra non può fare esattamente {{target}}. Il peso più alto caricabile è {{below}}, e quello caricabile più vicino è {{nearest}}.",
+      "belowBar": "È più leggero del bilanciere ({{bar}}). Scegli un obiettivo più pesante, oppure imposta un bilanciere più leggero nella tua palestra.",
+      "perSide": "Dischi per lato",
+      "noPlates": "Non servono dischi: il solo bilanciere è l'obiettivo.",
       "plateLine": "{{count}} × {{weight}}",
-      "barLine": "Bar: {{bar}}. Plates are loaded in pairs, one on each side."
+      "barLine": "Bilanciere: {{bar}}. I dischi si caricano a coppie, uno per lato."
     },
     "sections": [
       {
-        "title": "Why the heaviest plate first is wrong",
+        "title": "Perché il disco più pesante per primo è sbagliato",
         "body": [
-          "The usual method takes the heaviest plate that fits, then the next, and so on. That works when a gym has plenty of every plate. With limited plates it can fail: a gym with one pair each of 20, 15 and 10 kg needs 25 kg a side for a load of 70 kg with a 20 kg bar. Taking the 20 first leaves 5 kg that no plate fills. The answer is 15 and 10 kg, which the gym can load.",
-          "This calculator tries the combinations of the plates you enter and picks the heaviest load that does not go over your target, using the fewest plates."
+          "Il metodo comune prende il disco più pesante che entra, poi il successivo, e così via. Funziona quando la palestra ha molti dischi di ogni peso. Con dischi limitati può non funzionare: una palestra con una coppia ciascuno da 20, 15 e 10 kg deve arrivare a 25 kg per lato per un carico di 70 kg con un bilanciere da 20 kg. Prendere prima il 20 lascia 5 kg che nessun disco riempie. La soluzione è 15 e 10 kg, che la palestra può caricare.",
+          "Questo calcolatore prova le combinazioni dei dischi che inserisci e sceglie il carico più pesante che non supera il tuo obiettivo, usando il minor numero di dischi."
         ]
       },
       {
-        "title": "Plates load in pairs",
+        "title": "I dischi si caricano a coppie",
         "body": [
-          "A bar takes plates in pairs, one on each side, so each plate you enter counts as pairs. An odd plate in a gym cannot be used for a pair and is left out. Enter how many pairs of each plate you have."
+          "Un bilanciere accetta i dischi a coppie, uno per lato, quindi ogni disco che inserisci conta a coppie. Un disco spaiato in palestra non può formare una coppia e viene escluso. Inserisci quante coppie di ogni disco hai."
         ]
       },
       {
-        "title": "Bar weight and units",
+        "title": "Peso del bilanciere e unità",
         "body": [
-          "The bar is part of the total, so set your bar's weight first. Standard Olympic bars are 20 kg (45 lb), and some are lighter. Type in kg or lb: the app stores kilograms and converts, so the numbers match the Musclog app."
+          "Il bilanciere fa parte del totale, quindi imposta per primo il peso del tuo. I bilancieri olimpici standard pesano 20 kg (45 lb), e alcuni sono più leggeri. Scrivi in kg o lb: l'app salva i chilogrammi e converte, così i numeri coincidono con quelli dell'app Musclog."
         ]
       }
     ]

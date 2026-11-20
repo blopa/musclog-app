@@ -1,48 +1,48 @@
 {
   "websiteToolOneRepMax": {
-    "title": "One-rep max calculator",
-    "intro": "Enter a set you did and get an estimated one-rep max, with reps in reserve and a table of weights at every percentage of it.",
+    "title": "Rechner für das Ein-Wiederholungs-Maximum",
+    "intro": "Gib einen Satz ein, den du gemacht hast, und erhalte ein geschätztes Ein-Wiederholungs-Maximum, mit Wiederholungen in Reserve und einer Tabelle mit Gewichten bei jedem Prozentsatz davon.",
     "form": {
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "reserve": "Reps in reserve (optional)",
-      "reserveHint": "How many more reps you could have done. Leave empty if you went to failure."
+      "weight": "Gehobenes Gewicht",
+      "reps": "Gemachte Wiederholungen",
+      "repsHint": "Ganze Zahl, 1 bis 10",
+      "reserve": "Wiederholungen in Reserve (optional)",
+      "reserveHint": "Wie viele weitere Wiederholungen möglich gewesen wären. Lass es leer, wenn du bis zum Muskelversagen gegangen bist."
     },
     "problems": {
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "repsTooHigh": "Sets above 10 reps do not give a trustworthy one-rep max. A long set measures endurance, and every formula drifts further from the truth the more reps it has to extrapolate. Use a heavier set of 10 reps or fewer.",
-      "reserve": "Reps in reserve must be a whole number from 0 to 9."
+      "weight": "Gib das gehobene Gewicht als Zahl über 0 ein.",
+      "reps": "Gib die Wiederholungen als ganze Zahl von 1 bis 10 ein.",
+      "repsTooHigh": "Sätze mit mehr als 10 Wiederholungen ergeben kein verlässliches Ein-Wiederholungs-Maximum. Ein langer Satz misst Ausdauer, und jede Formel weicht umso weiter von der Wahrheit ab, je mehr Wiederholungen sie hochrechnen muss. Nutze einen schwereren Satz mit 10 Wiederholungen oder weniger.",
+      "reserve": "Wiederholungen in Reserve müssen eine ganze Zahl von 0 bis 9 sein."
     },
     "results": {
-      "estimate": "Estimated one-rep max",
-      "range": "Single formulas range from {{low}} to {{high}} {{unit}}. The estimate is their average.",
-      "tableTitle": "Weight at each percentage of your one-rep max",
-      "percent": "% of 1RM",
-      "weight": "Weight",
-      "reps": "Reps to failure",
-      "byFormula": "Each formula on its own",
-      "extrapolatedNote": "* Extrapolated. Above {{max}} reps the formulas are stretched past the range the app trusts for a set, so read these rows as a rough guide only."
+      "estimate": "Geschätztes Ein-Wiederholungs-Maximum",
+      "range": "Einzelne Formeln liegen zwischen {{low}} und {{high}} {{unit}}. Die Schätzung ist ihr Mittelwert.",
+      "tableTitle": "Gewicht bei jedem Prozentsatz deines Ein-Wiederholungs-Maximums",
+      "percent": "% von 1RM",
+      "weight": "Gewicht",
+      "reps": "Wdh. bis Versagen",
+      "byFormula": "Jede Formel einzeln",
+      "extrapolatedNote": "* Hochgerechnet. Über {{max}} Wiederholungen werden die Formeln über den Bereich hinaus gedehnt, dem die App bei einem Satz vertraut. Lies diese Zeilen daher nur als grobe Orientierung."
     },
     "sections": [
       {
-        "title": "How the estimate is made",
+        "title": "So entsteht die Schätzung",
         "body": [
-          "The calculator averages seven published formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor and Wathen. Averaging smooths out the quirks of any single one, and the result is the same number the Musclog app shows for a logged set.",
-          "Reps in reserve are added to the reps you did. Five reps with two in reserve is treated as seven reps to failure, because that is how far from your limit the set was."
+          "Der Rechner mittelt sieben veröffentlichte Formeln: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor und Wathen. Das Mitteln glättet die Eigenheiten jeder einzelnen Formel, und das Ergebnis ist dieselbe Zahl, die die Musclog-App für einen erfassten Satz zeigt.",
+          "Wiederholungen in Reserve werden zu deinen gemachten Wiederholungen addiert. Fünf Wiederholungen mit zwei in Reserve gelten als sieben Wiederholungen bis Versagen, denn so weit von deiner Grenze entfernt war der Satz."
         ]
       },
       {
-        "title": "Why sets above 10 reps are not trusted",
+        "title": "Warum Sätze über 10 Wiederholungen nicht gelten",
         "body": [
-          "One-rep max formulas work best on low-rep sets. The further you stretch them, the further they drift, and a set of 15 mostly tells you about your endurance, not your top strength. The app ignores those sets for strength levels and goals, and this page does the same."
+          "Formeln für das Ein-Wiederholungs-Maximum funktionieren am besten bei Sätzen mit wenigen Wiederholungen. Je weiter man sie dehnt, desto stärker weichen sie ab, und ein Satz mit 15 sagt vor allem etwas über deine Ausdauer, nicht über deine maximale Kraft. Die App ignoriert diese Sätze für Kraftstufen und Ziele, und diese Seite tut dasselbe."
         ]
       },
       {
-        "title": "How to use the table",
+        "title": "So nutzt du die Tabelle",
         "body": [
-          "Each row is a weight at a percentage of your estimated one-rep max, with the reps to failure the same formulas predict at that weight. People vary a lot, so treat the numbers as a starting point and adjust to how the bar actually moves."
+          "Jede Zeile ist ein Gewicht bei einem Prozentsatz deines geschätzten Ein-Wiederholungs-Maximums, mit den Wiederholungen bis Versagen, die dieselben Formeln für dieses Gewicht vorhersagen. Menschen unterscheiden sich stark, betrachte die Zahlen daher als Ausgangspunkt und passe sie an, wie sich die Stange tatsächlich bewegt."
         ]
       }
     ],

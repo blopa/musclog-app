@@ -1,164 +1,164 @@
 {
   "coach": {
     "title": "Chat",
-    "you": "You",
+    "you": "Tu",
     "status": "Online",
     "statusOffline": "Offline",
     "context": {
-      "general": "General",
-      "exercise": "Fitness",
-      "nutrition": "Nutrition"
+      "general": "Generale",
+      "exercise": "Allenamento",
+      "nutrition": "Alimentazione"
     },
-    "placeholder": "Type a message...",
-    "todayAt": "Today, {{time}}",
-    "imageSent": "Sent an image",
+    "placeholder": "Scrivi un messaggio...",
+    "todayAt": "Oggi, {{time}}",
+    "imageSent": "Immagine inviata",
     "actions": {
-      "createWorkout": "Create workout",
-      "analyzeProgress": "Analyze progress",
-      "nutritionCheck": "Nutrition check",
-      "trackMeal": "Track meal",
-      "workoutGen": "Workout gen.",
-      "mealPlan": "Meal plan"
+      "createWorkout": "Crea allenamento",
+      "analyzeProgress": "Analizza progressi",
+      "nutritionCheck": "Controllo alimentazione",
+      "trackMeal": "Registra pasto",
+      "workoutGen": "Gen. allenamento",
+      "mealPlan": "Piano pasti"
     },
-    "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
-    "mealPlanPrompt": "I can help you create a personalized meal plan for 3 days! Tell me about your preferences, allergies, or any specific foods you'd like to include.",
-    "analyzeProgressPrompt": "I'll analyze your recent workouts. Any remarks you'd like to tell me before I do?",
-    "nutritionCheckPrompt": "I'll review your nutrition for the last 7 days. Any remarks you'd like to add before I do?",
-    "trackMealPrompt": "Tell me what you've eaten (you can even send a photo!), and I'll estimate the macros and track it for you.",
-    "welcomeMessage": "Hi, I'm {{name}}, your AI coach. Ask me anything about your workouts, nutrition or progress.",
-    "welcomeMessageExercise": "Hi, I'm {{name}}. Ask me to build a workout plan, check your form or analyze your progress.",
-    "welcomeMessageNutrition": "Hi, I'm {{name}}. Tell me what you ate and I'll estimate the macros, or ask me a nutrition question.",
+    "workoutGenerationPrompt": "Posso aiutarti a creare un piano di allenamento personalizzato! Parlami dei tuoi obiettivi, dell'attrezzatura disponibile e di quanti giorni a settimana vorresti allenarti.",
+    "mealPlanPrompt": "Posso aiutarti a creare un piano pasti personalizzato per 3 giorni! Parlami delle tue preferenze, delle allergie o dei cibi specifici che vorresti includere.",
+    "analyzeProgressPrompt": "Analizzerò i tuoi ultimi allenamenti. Vuoi dirmi qualcosa prima che inizi?",
+    "nutritionCheckPrompt": "Controllerò la tua alimentazione degli ultimi 7 giorni. Vuoi aggiungere qualche osservazione prima che inizi?",
+    "trackMealPrompt": "Dimmi cosa hai mangiato (puoi anche mandare una foto!) e stimerò i macronutrienti e lo registrerò per te.",
+    "welcomeMessage": "Ciao, sono {{name}}, il tuo coach IA. Chiedimi qualsiasi cosa su allenamenti, alimentazione o progressi.",
+    "welcomeMessageExercise": "Ciao, sono {{name}}. Chiedimi di creare un piano di allenamento, controllare la tua esecuzione o analizzare i tuoi progressi.",
+    "welcomeMessageNutrition": "Ciao, sono {{name}}. Dimmi cosa hai mangiato e stimerò i macronutrienti, oppure fammi una domanda sull'alimentazione.",
     "insights": {
-      "noNutritionLogs": "I can't give nutrition insights yet because you haven't tracked any meals in the past 7 days. Log your food and I'll have feedback for you.",
-      "noWorkoutLogs": "I can't give workout insights yet because you haven't completed a workout in the past 7 days. Finish one and I'll analyze your training."
+      "noNutritionLogs": "Non posso ancora darti consigli sull'alimentazione perché non hai registrato alcun pasto negli ultimi 7 giorni. Registra il cibo e ti darò un riscontro.",
+      "noWorkoutLogs": "Non posso ancora darti consigli sugli allenamenti perché non hai completato un allenamento negli ultimi 7 giorni. Finiscine uno e analizzerò il tuo allenamento."
     },
     "errors": {
-      "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
-      "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
-      "mealPlanGenerationFailed": "Sorry, I couldn't generate a meal plan. Please try again.",
-      "generalError": "Sorry, something went wrong. Please try again.",
-      "progressInsightFailed": "Could not analyze progress. Try again later.",
-      "nutritionInsightFailed": "Could not check nutrition. Try again later.",
-      "trackMealFailed": "I couldn't estimate the macros for that meal. Could you describe it in more detail?",
-      "featureRequiresCloudAi": "This feature is not available with Apple Intelligence. Please switch to OpenAI or Gemini in Settings.",
-      "filePickFailed": "Failed to pick file. Please try again.",
-      "creditsExhausted": "It looks like your AI credits have run out. Please check your API key or billing in Settings.",
-      "rateLimited": "Please wait a moment before sending another message.",
-      "replyInProgress": "I'm still writing another reply. Please wait for it to finish.",
-      "toolRequestFailed": "I could not process that request. Please try again.",
-      "conversationFallback": "I can help you with fitness and nutrition questions. What would you like to know?",
-      "requestProcessingFailed": "I had trouble processing your request. Could you try rephrasing that?"
+      "aiNotConfigured": "Le funzioni IA non sono configurate. Aggiungi una chiave API di Gemini o OpenAI nelle impostazioni.",
+      "workoutGenerationFailed": "Mi dispiace, non sono riuscito a creare un piano di allenamento. Riprova.",
+      "mealPlanGenerationFailed": "Mi dispiace, non sono riuscito a creare un piano pasti. Riprova.",
+      "generalError": "Mi dispiace, qualcosa è andato storto. Riprova.",
+      "progressInsightFailed": "Impossibile analizzare i progressi. Riprova più tardi.",
+      "nutritionInsightFailed": "Impossibile controllare l'alimentazione. Riprova più tardi.",
+      "trackMealFailed": "Non sono riuscito a stimare i macronutrienti di quel pasto. Potresti descriverlo più in dettaglio?",
+      "featureRequiresCloudAi": "Questa funzione non è disponibile con Apple Intelligence. Passa a OpenAI o Gemini nelle impostazioni.",
+      "filePickFailed": "Impossibile scegliere il file. Riprova.",
+      "creditsExhausted": "Sembra che i tuoi crediti IA siano esauriti. Controlla la chiave API o la fatturazione nelle impostazioni.",
+      "rateLimited": "Attendi un momento prima di inviare un altro messaggio.",
+      "replyInProgress": "Sto ancora scrivendo un'altra risposta. Attendi che finisca.",
+      "toolRequestFailed": "Non sono riuscito a elaborare questa richiesta. Riprova.",
+      "conversationFallback": "Posso aiutarti con domande su allenamento e alimentazione. Cosa vorresti sapere?",
+      "requestProcessingFailed": "Ho avuto problemi a elaborare la tua richiesta. Potresti riformularla?"
     },
-    "goToSettings": "Go to settings",
+    "goToSettings": "Vai alle impostazioni",
     "success": {
-      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "I've created {{planName}} with {{count}} workouts for you! 💪 {{description}}",
-      "mealPlanGenerated": "I've created a 3-day meal plan with {{count}} meals for you! 🥗 {{description}}",
-      "trackMealSuccess": "I've tracked {{count}} ingredients for your meal: {{ingredients}}. Total: {{calories}}.",
-      "trackMealReady": "I've analyzed {{count}} meal(s): {{meals}} ({{calories}} total). Tap a meal to review and log it.",
-      "historyCleared": "Chat history cleared."
+      "workoutPlanGenerated": "Ho creato {{count}} allenamenti per te! 💪 {{description}}",
+      "workoutPlanGeneratedWithName": "Ho creato {{planName}} con {{count}} allenamenti per te! 💪 {{description}}",
+      "mealPlanGenerated": "Ho creato un piano pasti di 3 giorni con {{count}} pasti per te! 🥗 {{description}}",
+      "trackMealSuccess": "Ho registrato {{count}} ingredienti per il tuo pasto: {{ingredients}}. Totale: {{calories}}.",
+      "trackMealReady": "Ho analizzato {{count}} pasto/i: {{meals}} ({{calories}} in totale). Tocca un pasto per controllarlo e registrarlo.",
+      "historyCleared": "Cronologia della chat cancellata."
     },
     "aiInstructions": {
-      "parseWorkouts": "Parse the workouts and return the structured list.",
-      "parseNutrition": "Parse the nutrition data and return the structured list.",
-      "parseRetrospectiveNutrition": "Parse the meals and return the structured list.",
-      "generateWorkoutPlanWithHistory": "Generate a workout plan based on this conversation.",
-      "generateWorkoutPlanDefault": "Generate a basic weekly workout plan (e.g. 3-day split)."
+      "parseWorkouts": "Analizza gli allenamenti e restituisci l'elenco strutturato.",
+      "parseNutrition": "Analizza i dati alimentari e restituisci l'elenco strutturato.",
+      "parseRetrospectiveNutrition": "Analizza i pasti e restituisci l'elenco strutturato.",
+      "generateWorkoutPlanWithHistory": "Genera un piano di allenamento in base a questa conversazione.",
+      "generateWorkoutPlanDefault": "Genera un semplice piano settimanale di allenamento (ad es. uno split di 3 giorni)."
     },
     "chatMessages": {
-      "title": "Chat messages",
-      "searchPlaceholder": "Search messages...",
-      "noMessages": "No messages yet",
-      "noMessagesDesc": "Start a conversation with Loggy",
-      "endOfHistory": "All messages loaded",
-      "messageOptions": "Message options",
-      "editMessage": "Edit message",
-      "editMessageDesc": "Change the message text",
-      "deleteMessage": "Delete message",
-      "deleteMessageDesc": "Permanently remove this message",
-      "createMessage": "Create message",
-      "createMessageDesc": "Add a new message to the history",
-      "createMessageFailed": "Failed to create message",
-      "sender": "Sender",
-      "senderUser": "User",
+      "title": "Messaggi della chat",
+      "searchPlaceholder": "Cerca messaggi...",
+      "noMessages": "Nessun messaggio ancora",
+      "noMessagesDesc": "Inizia una conversazione con Loggy",
+      "endOfHistory": "Tutti i messaggi caricati",
+      "messageOptions": "Opzioni messaggio",
+      "editMessage": "Modifica messaggio",
+      "editMessageDesc": "Cambia il testo del messaggio",
+      "deleteMessage": "Elimina messaggio",
+      "deleteMessageDesc": "Rimuovi definitivamente questo messaggio",
+      "createMessage": "Crea messaggio",
+      "createMessageDesc": "Aggiungi un nuovo messaggio alla cronologia",
+      "createMessageFailed": "Impossibile creare il messaggio",
+      "sender": "Mittente",
+      "senderUser": "Utente",
       "senderCoach": "Coach"
     },
     "menu": {
-      "title": "Chat options",
-      "quickSettings": "Quick settings",
-      "quickSettingsDesc": "Adjust AI thinking, image handling, and history sent to the AI.",
-      "clearHistory": "Clear chat history",
-      "clearHistoryDesc": "Delete all messages in this conversation context.",
-      "shareHistory": "Share chat history",
-      "shareHistoryDesc": "Export this whole conversation as plain text."
+      "title": "Opzioni chat",
+      "quickSettings": "Impostazioni rapide",
+      "quickSettingsDesc": "Regola il ragionamento dell'IA, la gestione delle immagini e la cronologia inviata all'IA.",
+      "clearHistory": "Cancella cronologia chat",
+      "clearHistoryDesc": "Elimina tutti i messaggi di questo contesto di conversazione.",
+      "shareHistory": "Condividi cronologia chat",
+      "shareHistoryDesc": "Esporta l'intera conversazione come testo semplice."
     },
     "quickSettings": {
-      "title": "Quick settings",
-      "subtitle": "Adjust how Loggy thinks and what context it receives."
+      "title": "Impostazioni rapide",
+      "subtitle": "Regola come ragiona Loggy e quale contesto riceve."
     },
     "confirmClear": {
-      "title": "Clear chat history?",
-      "message": "This will permanently delete all messages in this conversation context. This cannot be undone."
+      "title": "Cancellare la cronologia della chat?",
+      "message": "Verranno eliminati definitivamente tutti i messaggi di questo contesto di conversazione. Non si può annullare."
     },
     "share": {
-      "title": "Chat with Loggy",
-      "noMessages": "There is no chat history to share yet.",
-      "failed": "Failed to share chat history. Please try again.",
+      "title": "Chat con Loggy",
+      "noMessages": "Non c'è ancora una cronologia della chat da condividere.",
+      "failed": "Impossibile condividere la cronologia della chat. Riprova.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "AI can make mistakes. Please verify important information.",
+    "disclaimer": "L'IA può commettere errori. Verifica le informazioni importanti.",
     "message": {
-      "menuTitle": "Message actions",
-      "copy": "Copy",
-      "copyDesc": "Copy message text to clipboard",
-      "share": "Share",
-      "shareDesc": "Share this message",
-      "delete": "Delete",
-      "deleteDesc": "Remove this message from the conversation",
-      "copied": "Message copied to clipboard",
-      "deleted": "Message deleted"
+      "menuTitle": "Azioni messaggio",
+      "copy": "Copia",
+      "copyDesc": "Copia il testo del messaggio negli appunti",
+      "share": "Condividi",
+      "shareDesc": "Condividi questo messaggio",
+      "delete": "Elimina",
+      "deleteDesc": "Rimuovi questo messaggio dalla conversazione",
+      "copied": "Messaggio copiato negli appunti",
+      "deleted": "Messaggio eliminato"
     },
-    "sendViaOpenAI": "Send via OpenAI",
+    "sendViaOpenAI": "Invia tramite OpenAI",
     "personas": {
       "loggy": {
         "name": "Loggy",
-        "description": "Friendly and motivating. The default."
+        "description": "Amichevole e motivante. Quello predefinito."
       },
       "dracula": {
         "name": "Dracula",
-        "description": "An old-world count with centuries of discipline."
+        "description": "Un conte d'altri tempi con secoli di disciplina."
       },
       "cthulhu": {
         "name": "Cthulhu",
-        "description": "An ancient cosmic horror who really wants you to hit your protein."
+        "description": "Un antico orrore cosmico che vuole davvero che tu raggiunga il tuo obiettivo di proteine."
       },
       "sherlock": {
         "name": "Sherlock Holmes",
-        "description": "Deduces your progress from the clues in your logs."
+        "description": "Deduce i tuoi progressi dagli indizi nei tuoi registri."
       },
       "custom": {
-        "name": "Custom coach",
-        "description": "Write your own coach: a name, a voice and an avatar."
+        "name": "Coach personalizzato",
+        "description": "Crea il tuo coach: un nome, un modo di parlare e un avatar."
       }
     },
     "personaPicker": {
-      "title": "Coach personality",
-      "subtitle": "Choose who your coach is. Only the way it talks changes; the advice and rules stay the same.",
-      "editCustom": "Edit custom coach",
-      "onDeviceNote": "On-device AI always uses Loggy. Switch to a cloud or local AI to pick a different coach.",
+      "title": "Personalità del coach",
+      "subtitle": "Scegli chi è il tuo coach. Cambia solo il modo di parlare; i consigli e le regole restano gli stessi.",
+      "editCustom": "Modifica coach personalizzato",
+      "onDeviceNote": "L'IA sul dispositivo usa sempre Loggy. Passa a un'IA nel cloud o locale per scegliere un altro coach.",
       "custom": {
-        "title": "Custom coach",
-        "nameLabel": "Name",
-        "namePlaceholder": "e.g. Coach Atlas",
-        "voiceLabel": "How it talks",
-        "voicePlaceholder": "e.g. A calm drill sergeant who respects effort and never lets me skip leg day.",
+        "title": "Coach personalizzato",
+        "nameLabel": "Nome",
+        "namePlaceholder": "es. Coach Atlas",
+        "voiceLabel": "Come parla",
+        "voicePlaceholder": "es. Un sergente calmo che rispetta l'impegno e non mi lascia saltare il giorno gambe.",
         "voiceCount": "{{count}} / {{max}}",
-        "hint": "Your description is sent to the AI with your messages. It only changes the tone, not the advice.",
-        "avatarPick": "Choose avatar",
-        "avatarChange": "Change avatar",
-        "avatarRemove": "Remove avatar",
-        "errorUnsafe": "That text can’t be used. Try describing the voice in simpler words.",
-        "errorImage": "Couldn’t load that image."
+        "hint": "La tua descrizione viene inviata all'IA insieme ai tuoi messaggi. Cambia solo il tono, non i consigli.",
+        "avatarPick": "Scegli avatar",
+        "avatarChange": "Cambia avatar",
+        "avatarRemove": "Rimuovi avatar",
+        "errorUnsafe": "Questo testo non può essere usato. Prova a descrivere il modo di parlare con parole più semplici.",
+        "errorImage": "Impossibile caricare quell'immagine."
       }
     }
   }

@@ -1,9 +1,9 @@
 {
   "focus": {
-    "day": "Day",
-    "physiologicalInsights": "Physiological insights",
-    "estrogen": "Estrogen",
-    "metabolism": "Metabolism",
-    "energyLevel": "Energy level"
+    "day": "Tag",
+    "physiologicalInsights": "Physiologische Einblicke",
+    "estrogen": "Östrogen",
+    "metabolism": "Stoffwechsel",
+    "energyLevel": "Energielevel"
   }
 }

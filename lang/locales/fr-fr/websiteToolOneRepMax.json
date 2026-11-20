@@ -1,54 +1,54 @@
 {
   "websiteToolOneRepMax": {
-    "title": "One-rep max calculator",
-    "intro": "Enter a set you did and get an estimated one-rep max, with reps in reserve and a table of weights at every percentage of it.",
+    "title": "Calculateur de répétition maximale",
+    "intro": "Saisis une série que tu as faite et obtiens une répétition maximale estimée (1RM), avec les répétitions en réserve et un tableau des charges à chaque pourcentage de cette valeur.",
     "form": {
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "reserve": "Reps in reserve (optional)",
-      "reserveHint": "How many more reps you could have done. Leave empty if you went to failure."
+      "weight": "Charge soulevée",
+      "reps": "Répétitions effectuées",
+      "repsHint": "Nombre entier, de 1 à 10",
+      "reserve": "Répétitions en réserve (facultatif)",
+      "reserveHint": "Combien de répétitions de plus tu aurais pu faire. Laisse vide si tu es allé jusqu'à l'échec."
     },
     "problems": {
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "repsTooHigh": "Sets above 10 reps do not give a trustworthy one-rep max. A long set measures endurance, and every formula drifts further from the truth the more reps it has to extrapolate. Use a heavier set of 10 reps or fewer.",
-      "reserve": "Reps in reserve must be a whole number from 0 to 9."
+      "weight": "Saisis la charge soulevée, un nombre supérieur à 0.",
+      "reps": "Saisis les répétitions sous forme de nombre entier de 1 à 10.",
+      "repsTooHigh": "Les séries de plus de 10 répétitions ne donnent pas une 1RM fiable. Une longue série mesure l'endurance, et chaque formule s'éloigne d'autant plus de la réalité qu'elle doit extrapoler un grand nombre de répétitions. Utilise une série plus lourde de 10 répétitions ou moins.",
+      "reserve": "Les répétitions en réserve doivent être un nombre entier de 0 à 9."
     },
     "results": {
-      "estimate": "Estimated one-rep max",
-      "range": "Single formulas range from {{low}} to {{high}} {{unit}}. The estimate is their average.",
-      "tableTitle": "Weight at each percentage of your one-rep max",
-      "percent": "% of 1RM",
-      "weight": "Weight",
-      "reps": "Reps to failure",
-      "byFormula": "Each formula on its own",
-      "extrapolatedNote": "* Extrapolated. Above {{max}} reps the formulas are stretched past the range the app trusts for a set, so read these rows as a rough guide only."
+      "estimate": "Répétition maximale estimée (1RM)",
+      "range": "Les formules individuelles vont de {{low}} à {{high}} {{unit}}. L'estimation est leur moyenne.",
+      "tableTitle": "Charge à chaque pourcentage de ta répétition maximale",
+      "percent": "% de la 1RM",
+      "weight": "Charge",
+      "reps": "Répétitions jusqu'à l'échec",
+      "byFormula": "Chaque formule séparément",
+      "extrapolatedNote": "* Extrapolé. Au-delà de {{max}} répétitions, les formules sont étirées au-delà de la plage que l'application considère fiable pour une série : lis ces lignes comme une simple indication."
     },
     "sections": [
       {
-        "title": "How the estimate is made",
+        "title": "Comment l'estimation est faite",
         "body": [
-          "The calculator averages seven published formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor and Wathen. Averaging smooths out the quirks of any single one, and the result is the same number the Musclog app shows for a logged set.",
-          "Reps in reserve are added to the reps you did. Five reps with two in reserve is treated as seven reps to failure, because that is how far from your limit the set was."
+          "Le calculateur fait la moyenne de sept formules publiées : Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor et Wathen. La moyenne lisse les particularités de chacune, et le résultat est le même chiffre que celui que l'application Musclog affiche pour une série enregistrée.",
+          "Les répétitions en réserve s'ajoutent aux répétitions effectuées. Cinq répétitions avec deux en réserve sont traitées comme sept répétitions jusqu'à l'échec, car c'est à cette distance de ta limite que se situait la série."
         ]
       },
       {
-        "title": "Why sets above 10 reps are not trusted",
+        "title": "Pourquoi les séries de plus de 10 répétitions ne sont pas retenues",
         "body": [
-          "One-rep max formulas work best on low-rep sets. The further you stretch them, the further they drift, and a set of 15 mostly tells you about your endurance, not your top strength. The app ignores those sets for strength levels and goals, and this page does the same."
+          "Les formules de répétition maximale fonctionnent mieux sur les séries à faible nombre de répétitions. Plus on les étire, plus elles s'éloignent de la réalité, et une série de 15 répétitions renseigne surtout sur ton endurance, pas sur ta force maximale. L'application ignore ces séries pour les niveaux de force et les objectifs, et cette page fait de même."
         ]
       },
       {
-        "title": "How to use the table",
+        "title": "Comment utiliser le tableau",
         "body": [
-          "Each row is a weight at a percentage of your estimated one-rep max, with the reps to failure the same formulas predict at that weight. People vary a lot, so treat the numbers as a starting point and adjust to how the bar actually moves."
+          "Chaque ligne est une charge à un pourcentage de ta répétition maximale estimée, avec le nombre de répétitions jusqu'à l'échec que prédisent les mêmes formules pour cette charge. Les personnes varient beaucoup : considère les chiffres comme un point de départ et ajuste-les selon la façon dont la barre se déplace réellement."
         ]
       }
     ],
     "sources": {
-      "nuzzo": "Nuzzo et al. (2024), Maximal number of repetitions at percentages of the one repetition maximum (Sports Medicine)",
-      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+      "nuzzo": "Nuzzo et al. (2024), Nombre maximal de répétitions à des pourcentages de la répétition maximale (Sports Medicine)",
+      "zourdos": "Zourdos et al. (2016), Nouvelle échelle de RPE propre à l'entraînement en résistance, mesurant les répétitions en réserve"
     }
   }
 }

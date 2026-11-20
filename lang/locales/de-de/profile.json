@@ -1,48 +1,48 @@
 {
   "profile": {
     "header": {
-      "title": "Profile"
+      "title": "Profil"
     },
-    "goal": "Goal",
-    "currentStats": "Current stats",
-    "history": "History",
-    "management": "Management",
-    "loading": "Loading...",
+    "goal": "Ziel",
+    "currentStats": "Aktuelle Werte",
+    "history": "Verlauf",
+    "management": "Verwaltung",
+    "loading": "Wird geladen …",
     "syncing": {
-      "healthKit": "Syncing with HealthKit..."
+      "healthKit": "Synchronisierung mit HealthKit läuft …"
     },
     "bmiStatus": {
-      "underweight": "Underweight",
-      "normal": "Normal weight",
-      "overweight": "Overweight",
-      "obese": "Obese"
+      "underweight": "Untergewicht",
+      "normal": "Normalgewicht",
+      "overweight": "Übergewicht",
+      "obese": "Adipositas"
     },
     "gender": {
-      "male": "Male",
-      "female": "Female",
-      "other": "Other"
+      "male": "Männlich",
+      "female": "Weiblich",
+      "other": "Andere"
     },
     "managementItems": {
-      "editPersonal": "Edit personal info",
-      "editPersonalDesc": "Update your name, avatar, and personal details",
-      "editFitness": "Edit fitness details",
-      "editFitnessDesc": "Update your fitness goals and preferences",
-      "appPreferences": "App preferences",
-      "appPreferencesDesc": "Customize app settings and preferences",
-      "aiUpdate": "Update with AI",
-      "aiUpdateDesc": "Tell an AI what changed and review before saving"
+      "editPersonal": "Persönliche Daten bearbeiten",
+      "editPersonalDesc": "Name, Profilbild und persönliche Angaben aktualisieren",
+      "editFitness": "Fitnessdaten bearbeiten",
+      "editFitnessDesc": "Fitnessziele und Vorlieben aktualisieren",
+      "appPreferences": "App-Einstellungen",
+      "appPreferencesDesc": "App-Einstellungen und Vorlieben anpassen",
+      "aiUpdate": "Mit KI aktualisieren",
+      "aiUpdateDesc": "Sag einer KI, was sich geändert hat, und prüfe alles vor dem Speichern"
     },
     "stats": {
-      "weight": "Weight",
-      "height": "Height",
-      "bodyFat": "Body fat",
+      "weight": "Gewicht",
+      "height": "Größe",
+      "bodyFat": "Körperfett",
       "bmi": "BMI",
-      "age": "Age",
-      "gender": "Gender"
+      "age": "Alter",
+      "gender": "Geschlecht"
     },
     "weightPrediction": {
-      "title": "Predicted weight",
-      "subtitle": "Estimated from TDEE and your calorie tracking since last weigh-in"
+      "title": "Vorhergesagtes Gewicht",
+      "subtitle": "Geschätzt aus dem Gesamtumsatz und deiner Kalorienerfassung seit der letzten Wägung"
     }
   }
 }

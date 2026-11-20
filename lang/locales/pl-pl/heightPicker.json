@@ -1,10 +1,10 @@
 {
   "heightPicker": {
-    "cancel": "Cancel",
-    "confirmHeight": "Confirm height",
-    "feet": "Feet",
-    "inches": "Inches",
-    "selectedHeight": "Selected height",
-    "selectHeight": "Select height"
+    "cancel": "Anuluj",
+    "confirmHeight": "Potwierdź wzrost",
+    "feet": "Stopy",
+    "inches": "Cale",
+    "selectedHeight": "Wybrany wzrost",
+    "selectHeight": "Wybierz wzrost"
   }
 }

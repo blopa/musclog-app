@@ -1,27 +1,27 @@
 {
   "errors": {
     "connectionTimeout": {
-      "title": "Connection timeout",
-      "description": "We couldn't reach the Musclog servers. Please check your internet connection.",
-      "tryAgain": "Try again"
+      "title": "Délai de connexion dépassé",
+      "description": "Nous n'avons pas pu joindre les serveurs de Musclog. Vérifie ta connexion internet.",
+      "tryAgain": "Réessayer"
     },
-    "failedToLoadData": "Failed to load data",
-    "somethingWentWrong": "Something went wrong",
-    "genericDescription": "An unexpected error occurred.",
-    "reload": "Reload",
-    "aiCreditsError": "AI service quota exceeded. Please check your API key or try again later.",
-    "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
-    "aiProcessingErrorTitle": "Error processing request",
-    "gatewayDailyLimitError": "Daily free AI limit reached. Try again tomorrow or add your own API key in AI Settings.",
-    "gatewayDailyLimitErrorTitle": "Daily limit reached",
+    "failedToLoadData": "Échec du chargement des données",
+    "somethingWentWrong": "Une erreur s'est produite",
+    "genericDescription": "Une erreur inattendue s'est produite.",
+    "reload": "Recharger",
+    "aiCreditsError": "Quota du service IA dépassé. Vérifie ta clé API ou réessaie plus tard.",
+    "aiProcessingError": "Désolé, j'ai eu du mal à traiter cette demande. Réessaie dans un instant.",
+    "aiProcessingErrorTitle": "Erreur lors du traitement de la demande",
+    "gatewayDailyLimitError": "La limite quotidienne gratuite de l'IA est atteinte. Réessaie demain ou ajoute ta propre clé API dans les réglages IA.",
+    "gatewayDailyLimitErrorTitle": "Limite quotidienne atteinte",
     "databaseError": {
-      "title": "Database error",
-      "description": "A database error occurred. Error reporting has been enabled to help resolve this issue."
+      "title": "Erreur de base de données",
+      "description": "Une erreur de base de données s'est produite. Le signalement d'erreurs a été activé pour aider à résoudre le problème."
     },
-    "aiInvalidApiKey": "Your {{provider}} API key was rejected. Check it in AI settings.",
-    "aiTimeout": "This is taking too long. Try again.",
-    "aiKeyTestOk": "Key accepted",
-    "aiKeyTestRejected": "Key rejected. Check it and try again.",
-    "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection."
+    "aiInvalidApiKey": "Ta clé API {{provider}} a été refusée. Vérifie-la dans les réglages IA.",
+    "aiTimeout": "Ça prend trop de temps. Réessaie.",
+    "aiKeyTestOk": "Clé acceptée",
+    "aiKeyTestRejected": "Clé refusée. Vérifie-la et réessaie.",
+    "aiKeyTestNetwork": "Impossible de joindre le fournisseur. Vérifie ta connexion."
   }
 }

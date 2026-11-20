@@ -1,73 +1,73 @@
 {
   "home": {
-    "accountMenu": "Open account menu",
+    "accountMenu": "Kontomenü öffnen",
     "actions": {
-      "startWorkout": "Start\nworkout",
-      "trackFood": "Track\nfood",
-      "scanBarcode": "Scan\nbarcode",
-      "aiPhoto": "AI\nphoto",
-      "myMeals": "My\nmeals",
-      "addNote": "Add\nnote",
-      "logCardio": "Log\nwalk/run"
+      "startWorkout": "Training\nstarten",
+      "trackFood": "Essen\nerfassen",
+      "scanBarcode": "Barcode\nscannen",
+      "aiPhoto": "KI-\nFoto",
+      "myMeals": "Meine\nMahlzeiten",
+      "addNote": "Notiz\nhinzufügen",
+      "logCardio": "Gehen/Laufen\nerfassen"
     },
     "sections": {
-      "recentWorkouts": "Recent workouts",
-      "recentFoods": "Recent foods",
-      "dailySummary": "Daily summary"
+      "recentWorkouts": "Letzte Trainings",
+      "recentFoods": "Letzte Lebensmittel",
+      "dailySummary": "Tagesübersicht"
     },
     "activityRings": {
-      "move": "Move",
-      "steps": "Steps",
-      "rest": "Rest",
-      "score": "Score"
+      "move": "Bewegung",
+      "steps": "Schritte",
+      "rest": "Pause",
+      "score": "Wert"
     },
     "navigation": {
-      "home": "Home",
-      "profile": "Profile",
-      "workouts": "Workouts",
-      "food": "Food",
+      "home": "Start",
+      "profile": "Profil",
+      "workouts": "Trainings",
+      "food": "Essen",
       "coach": "Chat",
-      "focus": "Focus",
-      "cycle": "Cycle",
-      "checkin": "Weekly Review"
+      "focus": "Fokus",
+      "cycle": "Zyklus",
+      "checkin": "Wochenrückblick"
     },
     "dailyStats": {
-      "steps": "Steps",
-      "burned": "Burned so far",
-      "eaten": "Eaten",
-      "deficit": "Deficit",
-      "surplus": "Surplus",
-      "even": "Balanced"
+      "steps": "Schritte",
+      "burned": "Bisher verbrannt",
+      "eaten": "Gegessen",
+      "deficit": "Defizit",
+      "surplus": "Überschuss",
+      "even": "Ausgeglichen"
     },
     "heatmaps": {
-      "lastWeeks_one": "Last week",
-      "lastWeeks_few": "Last {{count}} weeks",
-      "lastWeeks_many": "Last {{count}} weeks",
-      "lastWeeks_other": "Last {{count}} weeks",
-      "lastDays_one": "Last day",
-      "lastDays_few": "Last {{count}} days",
-      "lastDays_many": "Last {{count}} days",
-      "lastDays_other": "Last {{count}} days",
-      "tapHint": "Tap a day for details",
-      "less": "Less",
-      "more": "More",
-      "earlierWeeks": "Show earlier weeks",
-      "laterWeeks": "Show later weeks",
+      "lastWeeks_one": "Letzte Woche",
+      "lastWeeks_few": "Letzte {{count}} Wochen",
+      "lastWeeks_many": "Letzte {{count}} Wochen",
+      "lastWeeks_other": "Letzte {{count}} Wochen",
+      "lastDays_one": "Letzter Tag",
+      "lastDays_few": "Letzte {{count}} Tage",
+      "lastDays_many": "Letzte {{count}} Tage",
+      "lastDays_other": "Letzte {{count}} Tage",
+      "tapHint": "Tippe auf einen Tag für Details",
+      "less": "Weniger",
+      "more": "Mehr",
+      "earlierWeeks": "Frühere Wochen anzeigen",
+      "laterWeeks": "Spätere Wochen anzeigen",
       "workouts": {
-        "title": "Workouts",
-        "none": "No workout",
-        "count_one": "{{count}} workout",
-        "count_few": "{{count}} workouts",
-        "count_many": "{{count}} workouts",
-        "count_other": "{{count}} workouts"
+        "title": "Trainings",
+        "none": "Kein Training",
+        "count_one": "{{count}} Training",
+        "count_few": "{{count}} Trainings",
+        "count_many": "{{count}} Trainings",
+        "count_other": "{{count}} Trainings"
       },
       "nutrition": {
-        "title": "Nutrition",
-        "none": "Nothing logged",
-        "count_one": "{{count}} meal logged",
-        "count_few": "{{count}} meals logged",
-        "count_many": "{{count}} meals logged",
-        "count_other": "{{count}} meals logged"
+        "title": "Ernährung",
+        "none": "Nichts erfasst",
+        "count_one": "{{count}} Mahlzeit erfasst",
+        "count_few": "{{count}} Mahlzeiten erfasst",
+        "count_many": "{{count}} Mahlzeiten erfasst",
+        "count_other": "{{count}} Mahlzeiten erfasst"
       }
     }
   }

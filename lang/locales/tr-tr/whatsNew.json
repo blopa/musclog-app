@@ -1,239 +1,239 @@
 {
   "whatsNew": {
-    "title": "What's new",
+    "title": "Yenilikler",
     "intro": {
-      "inside": "What's in this tour",
-      "title": "Make Musclog your own",
-      "description": "A few things have changed. Take a quick look and choose what works for you. Changes save as you tap; you can revisit this tour in Settings.",
-      "truncated": "We’ve kept this tour to the latest highlights."
+      "inside": "Bu turda neler var",
+      "title": "Musclog'u kendine göre ayarla",
+      "description": "Birkaç şey değişti. Hızlıca göz at ve sana uyanı seç. Değişiklikler dokundukça kaydedilir; bu turu Ayarlar'dan yeniden açabilirsin.",
+      "truncated": "Bu turu en son öne çıkanlarla sınırlı tuttuk."
     },
-    "next": "Next",
-    "back": "Back",
-    "done": "Done",
-    "skip": "Skip for now",
-    "pageOf": "Page {{current}} of {{total}}",
-    "saveFailed": "Couldn’t save this choice. Please try again.",
-    "loadFailed": "Couldn’t load this choice.",
-    "dismissFailed": "Couldn’t save your progress. Please try again.",
-    "retry": "Try again",
+    "next": "İleri",
+    "back": "Geri",
+    "done": "Bitti",
+    "skip": "Şimdilik atla",
+    "pageOf": "Sayfa {{current}} / {{total}}",
+    "saveFailed": "Bu seçim kaydedilemedi. Lütfen tekrar dene.",
+    "loadFailed": "Bu seçim yüklenemedi.",
+    "dismissFailed": "İlerlemen kaydedilemedi. Lütfen tekrar dene.",
+    "retry": "Tekrar dene",
     "settingsCard": {
-      "title": "What's new",
-      "subtitle": "Revisit the latest features and preferences"
+      "title": "Yenilikler",
+      "subtitle": "En son özelliklere ve tercihlere yeniden göz at"
     },
     "debug": {
-      "title": "What's new",
-      "record": "Seen through: {{version}}",
-      "none": "No record",
-      "clear": "Clear record (simulate upgrade)",
-      "set": "Set seen-through version",
-      "preview": "Preview release {{version}}",
-      "invalid": "Enter a version such as 2.13.0.",
-      "version": "Version (x.y.z)"
+      "title": "Yenilikler",
+      "record": "Görülen sürüm: {{version}}",
+      "none": "Kayıt yok",
+      "clear": "Kaydı temizle (yükseltmeyi simüle et)",
+      "set": "Görülen sürümü ayarla",
+      "preview": "Sürüm {{version}} önizlemesi",
+      "invalid": "2.13.0 gibi bir sürüm gir.",
+      "version": "Sürüm (x.y.z)"
     },
     "releases": {
       "v2_15_2": {
         "view": {
-          "title": "Your workout, your view",
-          "description": "Guided view now helps you focus on one set at a time. Prefer the full picture? Inline view is still here."
+          "title": "Antrenmanın, senin görünümün",
+          "description": "Rehberli görünüm artık bir seferde tek bir sete odaklanmana yardımcı oluyor. Tam resmi mi tercih edersin? Satır içi görünüm hâlâ burada."
         },
         "workoutView": {
-          "title": "Choose your workout view",
-          "description": "You can change this later in visual settings.",
+          "title": "Antrenman görünümünü seç",
+          "description": "Bunu daha sonra görsel ayarlarda değiştirebilirsin.",
           "guided": {
-            "label": "Guided",
-            "description": "Focus on your current set with larger controls."
+            "label": "Rehberli",
+            "description": "Daha büyük kontrollerle mevcut setine odaklan."
           },
           "inline": {
-            "label": "Inline",
-            "description": "See and edit your sets together in a list."
+            "label": "Satır içi",
+            "description": "Setlerini bir listede birlikte gör ve düzenle."
           }
         },
         "targets": {
-          "title": "Targets that fit you and your gym",
-          "description": "Musclog suggests starting targets from your history and marks the numbers it changed, so you can always edit them. Add your gym’s bar and plates to get loads you can actually put on the bar."
+          "title": "Sana ve spor salonuna uyan hedefler",
+          "description": "Musclog geçmişinden başlangıç hedefleri önerir ve değiştirdiği sayıları işaretler, böylece her zaman düzenleyebilirsin. Halterinin ve plaklarının ölçülerini ekle; böylece halterde gerçekten yükleyebileceğin yükleri alırsın."
         },
         "workoutAutonomy": {
-          "title": "Starting targets",
-          "description": "How your history shapes the next workout.",
+          "title": "Başlangıç hedefleri",
+          "description": "Geçmişin bir sonraki antrenmanı nasıl şekillendirir.",
           "suggest": {
-            "label": "Suggest targets",
-            "description": "Use progression suggestions when starting a workout."
+            "label": "Hedef öner",
+            "description": "Bir antrenmana başlarken ilerleme önerilerini kullan."
           },
           "manual": {
-            "label": "Keep my plan",
-            "description": "Start with the targets saved in my workout."
+            "label": "Planımı koru",
+            "description": "Antrenmanımda kayıtlı hedeflerle başla."
           }
         },
-        "setupGym": "Set up gyms and plates",
+        "setupGym": "Spor salonlarını ve plakları ayarla",
         "review": {
-          "title": "One weekly moment to reflect",
-          "description": "Weekly Review brings your nutrition and training together, with suggestions you choose whether to apply."
+          "title": "Düşünmek için haftada bir an",
+          "description": "Haftalık Değerlendirme beslenmeni ve antrenmanlarını bir araya getirir; uygulamayı seçebileceğin önerilerle birlikte."
         },
         "reviewWeekday": {
-          "title": "Your review day",
-          "description": "Pick a day that fits your routine. Existing reminder preferences stay in place."
+          "title": "Değerlendirme günün",
+          "description": "Rutinine uyan bir gün seç. Mevcut hatırlatıcı tercihlerin olduğu gibi kalır."
         },
-        "openReview": "Open Weekly Review",
+        "openReview": "Haftalık Değerlendirme'yi aç",
         "workoutMore": {
-          "title": "More for your workouts",
+          "title": "Antrenmanların için daha fazlası",
           "plans": {
-            "label": "Workout plans",
-            "description": "Organize workouts into weekly or rotating plans."
+            "label": "Antrenman planları",
+            "description": "Antrenmanları haftalık ya da dönüşümlü planlara düzenle."
           },
           "cardio": {
-            "label": "Cardio log",
-            "description": "Record cardio sessions alongside your strength training."
+            "label": "Kardiyo günlüğü",
+            "description": "Kardiyo seanslarını kuvvet antrenmanınla birlikte kaydet."
           },
           "swaps": {
-            "label": "Exercise swaps",
-            "description": "Swap an exercise during a workout without changing the original plan."
+            "label": "Egzersiz değişimleri",
+            "description": "Orijinal planı değiştirmeden bir antrenman sırasında bir egzersizi değiştir."
           },
           "restrictions": {
-            "label": "Exercise restrictions",
-            "description": "Remember exercises to avoid and temporary injuries in workout settings."
+            "label": "Egzersiz kısıtlamaları",
+            "description": "Antrenman ayarlarında kaçınılacak egzersizleri ve geçici sakatlıkları hatırla."
           },
           "warmups": {
-            "label": "Warm-up sets",
-            "description": "Keep warm-ups separate from your working sets."
+            "label": "Isınma setleri",
+            "description": "Isınmaları ana setlerinden ayrı tut."
           },
           "restTimer": {
-            "label": "Automatic rest timer",
-            "description": "Start the rest timer after each set, with optional vibration."
+            "label": "Otomatik dinlenme zamanlayıcısı",
+            "description": "Her setten sonra dinlenme zamanlayıcısını başlat; isteğe bağlı titreşimle."
           }
         },
         "heatmaps": {
-          "title": "Your activity at a glance",
-          "description": "See the days you trained and logged meals as a calendar of squares on Home: darker means busier, and tapping a square reads out that day. Turn it on in Settings → Appearance and home → Home heatmaps, where you also pick the layout."
+          "title": "Etkinliğin bir bakışta",
+          "description": "Antrenman yaptığın ve öğün kaydettiğin günleri Ana Sayfa'da kareler takvimi olarak gör: koyu olan daha yoğun demektir ve bir kareye dokunmak o günü okur. Ayarlar → Görünüm ve ana sayfa → Ana sayfa ısı haritaları'nda aç; düzeni de orada seçersin."
         },
         "aiSetup": {
-          "title": "Set up Musclog by talking",
-          "description": "Answer a few questions in a chat instead of filling in forms, using free Musclog AI, your own Gemini or OpenAI key, or ChatGPT or Claude. You review and edit every answer before anything is saved."
+          "title": "Musclog'u konuşarak kur",
+          "description": "Formları doldurmak yerine bir sohbette birkaç soruyu yanıtla; ücretsiz Musclog AI, kendi Gemini ya da OpenAI anahtarın ya da ChatGPT ya da Claude ile. Kaydedilmeden önce her yanıtı inceler ve düzenlersin."
         },
-        "openAiSetup": "Update my profile with AI",
+        "openAiSetup": "Profilimi yapay zekâ ile güncelle",
         "coachPersona": {
-          "title": "Pick who your AI coach is",
-          "description": "Keep Loggy, or pick Count Dracula, Cthulhu or Sherlock Holmes, or write your own with a name, a voice and a picture. Only the wording changes, never the numbers or the safety advice. Find it in Settings → AI."
+          "title": "Yapay zekâ koçunun kim olacağını seç",
+          "description": "Loggy'de kal, ya da Kont Dracula, Cthulhu veya Sherlock Holmes'u seç; ya da bir adı, bir sesi ve bir resmiyle kendininkini yaz. Yalnızca üslup değişir; sayılar ya da güvenlik tavsiyesi asla. Ayarlar → Yapay zekâ'da bul."
         },
         "appWide": {
-          "title": "Also new across the app",
+          "title": "Uygulama genelinde de yeni",
           "home": {
-            "label": "A tidier Home",
-            "description": "Today’s numbers first, smaller shortcuts, and a Weekly Review card only while one is due."
+            "label": "Daha düzenli bir Ana Sayfa",
+            "description": "Önce bugünün sayıları, daha küçük kısayollar ve yalnızca bir değerlendirme zamanı geldiğinde Haftalık Değerlendirme kartı."
           },
           "menus": {
-            "label": "Calmer menus and Settings",
-            "description": "Simple grouped lists instead of stacks of cards, with Settings split into seven clearer groups."
+            "label": "Daha sakin menüler ve Ayarlar",
+            "description": "Kart yığınları yerine basit gruplanmış listeler; Ayarlar daha net yedi gruba ayrıldı."
           },
           "widgets": {
-            "label": "Widgets on iOS and Android",
-            "description": "Nutrition Progress and Smart Camera now work on iOS too. On Android, remove your old Musclog widgets and add them again from the widget picker."
+            "label": "iOS ve Android'de widget'lar",
+            "description": "Beslenme İlerlemesi ve Akıllı Kamera artık iOS'ta da çalışıyor. Android'de eski Musclog widget'larını kaldır ve widget seçiciden yeniden ekle."
           },
           "lock": {
-            "label": "Lock parts of the app",
-            "description": "In Settings → App lock, protect your cycle, workouts, nutrition, progress or the whole app with your device credential."
+            "label": "Uygulamanın bölümlerini kilitle",
+            "description": "Ayarlar → Uygulama kilidi'nde döngünü, antrenmanlarını, beslenmeni, ilerlemeni ya da tüm uygulamayı cihaz kimliğinle koru."
           }
         },
         "cycleDiary": {
-          "title": "A private, encrypted cycle diary",
-          "description": "Your periods and day logs are now encrypted on your device. Predictions show how confident they are, and the fertile-window estimate is optional and off by default. Reminders can be as discreet as you like, and a read-only Cycle widget shows nothing personal under an app lock."
+          "title": "Özel, şifreli bir döngü günlüğü",
+          "description": "Adetlerin ve gün kayıtların artık cihazında şifreli. Tahminler ne kadar emin olduklarını gösterir; doğurganlık penceresi tahmini isteğe bağlıdır ve varsayılan olarak kapalıdır. Hatırlatıcılar istediğin kadar gizli olabilir ve salt okunur bir Döngü widget'ı uygulama kilidi altında kişisel hiçbir şey göstermez."
         }
       },
       "v2_16_0": {
         "loggy": {
-          "title": "Meet Loggy",
-          "description": "Loggy is Musclog's mascot. He welcomes you, keeps empty screens company and turns up when you reach a first. You can change how he appears below, or later in Settings → Appearance and home.",
+          "title": "Loggy ile tanış",
+          "description": "Loggy, Musclog'un maskotudur. Seni karşılar, boş ekranlara eşlik eder ve bir ilk'e ulaştığında ortaya çıkar. Aşağıdan ya da daha sonra Ayarlar → Görünüm ve ana sayfa'dan nasıl göründüğünü değiştirebilirsin.",
           "show": {
-            "title": "Show Loggy",
-            "description": "Turn off to hide him everywhere. Your AI coach keeps its picture."
+            "title": "Loggy'yi göster",
+            "description": "Her yerde gizlemek için kapat. Yapay zekâ koçun resmini korur."
           },
           "animated": {
-            "title": "Animated Loggy",
-            "description": "Turn off to always see him standing still. Only applies while Loggy is shown."
+            "title": "Hareketli Loggy",
+            "description": "Onu her zaman duruyor halde görmek için kapat. Yalnızca Loggy gösterilirken geçerlidir."
           }
         },
         "importHistory": {
-          "title": "Bring your training history",
-          "description": "Moving from another app? Bring your past workouts over, so your records and progress start from day one.",
+          "title": "Antrenman geçmişini getir",
+          "description": "Başka bir uygulamadan mı geçiyorsun? Geçmiş antrenmanlarını da getir; böylece kayıtların ve ilerlemen ilk günden başlar.",
           "items": {
             "apps": {
-              "label": "Strong, Hevy and FitNotes",
-              "description": "Pick the file you exported from the app."
+              "label": "Strong, Hevy ve FitNotes",
+              "description": "Uygulamadan dışa aktardığın dosyayı seç."
             },
             "twice": {
-              "label": "Safe to repeat",
-              "description": "Importing the same file twice adds nothing."
+              "label": "Tekrarlamak güvenli",
+              "description": "Aynı dosyayı iki kez içe aktarmak hiçbir şey eklemez."
             },
             "undo": {
-              "label": "Easy to undo",
-              "description": "Remove everything an import added whenever you like."
+              "label": "Geri almak kolay",
+              "description": "Bir içe aktarmanın eklediği her şeyi istediğin zaman kaldır."
             }
           },
           "action": {
-            "label": "Import workouts",
-            "description": "You can also do this later in Settings → Backups and data."
+            "label": "Antrenmanları içe aktar",
+            "description": "Bunu daha sonra Ayarlar → Yedeklemeler ve veriler'de de yapabilirsin."
           }
         },
         "yearInReview": {
-          "title": "Your year in Musclog",
-          "description": "Each December, look back at everything you did this year.",
+          "title": "Musclog'daki yılın",
+          "description": "Her Aralık'ta bu yıl yaptığın her şeye geriye bakın.",
           "items": {
             "look": {
-              "label": "Sessions, records and days trained",
-              "description": "Your year as numbers and posters you can flip through."
+              "label": "Seanslar, rekorlar ve antrenman yapılan günler",
+              "description": "Yılın sayılar ve çevirebileceğin posterler olarak."
             },
             "share": {
-              "label": "Share it as an image",
-              "description": "Post it, or keep it to yourself."
+              "label": "Bir görsel olarak paylaş",
+              "description": "Paylaş ya da kendine sakla."
             },
             "private": {
-              "label": "Private by default",
-              "description": "Weight and nutrition stay out unless you add them."
+              "label": "Varsayılan olarak özel",
+              "description": "Kilo ve beslenme, sen eklemedikçe dışarıda kalır."
             }
           },
           "action": {
-            "label": "See your year so far"
+            "label": "Bu yılki yılını gör"
           }
         },
         "strengthLevels": {
-          "title": "Strength levels",
-          "description": "See how your main lifts compare with your body weight, and what the next level takes.",
+          "title": "Kuvvet seviyeleri",
+          "description": "Ana hareketlerinin vücut ağırlığına göre nasıl durduğunu ve bir sonraki seviyenin ne gerektirdiğini gör.",
           "items": {
             "bodyWeight": {
-              "label": "Compared with your body weight",
-              "description": "Needs a weigh-in: log your weight to see your levels."
+              "label": "Vücut ağırlığına göre karşılaştırma",
+              "description": "Bir tartılma gerekir: seviyelerini görmek için kilonu kaydet."
             },
             "next": {
-              "label": "What the next level takes",
-              "description": "The load to lift to reach the next level."
+              "label": "Bir sonraki seviye ne gerektirir",
+              "description": "Bir sonraki seviyeye ulaşmak için kaldırılması gereken yük."
             },
             "where": {
-              "label": "On Progress and on each lift",
-              "description": "You'll find them in both places."
+              "label": "İlerleme'de ve her harekette",
+              "description": "Bunları iki yerde de bulursun."
             }
           },
           "action": {
-            "label": "Open progress"
+            "label": "İlerlemeyi aç"
           }
         },
         "trainingLoad": {
-          "title": "Recent training load",
-          "description": "A body map on Progress shows what you trained over the last week.",
+          "title": "Son antrenman yükü",
+          "description": "İlerleme'deki bir vücut haritası, son haftada neyi çalıştığını gösterir.",
           "items": {
             "map": {
-              "label": "The last 7 days on a body map",
-              "description": "The muscles you worked show up darker."
+              "label": "Son 7 gün bir vücut haritasında",
+              "description": "Çalıştığın kaslar daha koyu görünür."
             },
             "sets": {
-              "label": "Weekly sets per muscle",
-              "description": "The numbers sit right beside the map."
+              "label": "Kas başına haftalık set",
+              "description": "Rakamlar haritanın hemen yanında durur."
             },
             "load": {
-              "label": "Load, not readiness",
-              "description": "It shows what you trained, not whether you should train again."
+              "label": "Yük, hazır oluş değil",
+              "description": "Neyi çalıştığını gösterir, tekrar çalışman gerekip gerekmediğini değil."
             }
           },
           "action": {
-            "label": "Open progress"
+            "label": "İlerlemeyi aç"
           }
         }
       }

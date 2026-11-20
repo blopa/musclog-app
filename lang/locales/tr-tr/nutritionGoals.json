@@ -1,143 +1,143 @@
 {
   "nutritionGoals": {
-    "title": "Set nutrition & body goals",
-    "subtitle": "Define your targets for nutrition and body composition.",
-    "dailyMacroTargets": "Daily macro targets",
-    "totalDailyCalories": "Total daily calories",
+    "title": "Beslenme ve vücut hedeflerini belirle",
+    "subtitle": "Beslenme ve vücut kompozisyonu için hedeflerini tanımla.",
+    "dailyMacroTargets": "Günlük makro hedefleri",
+    "totalDailyCalories": "Günlük toplam kalori",
     "tdeeHint": "TDEE: {{kcal}}",
-    "kcalPerKgTissueHint": "Based on {{kcal}} per 1 kg of tissue (Hall 2008 + Forbes 2007)",
-    "kcalPerLbTissueHint": "Based on {{kcal}} per 1 lb of tissue (Hall 2008 + Forbes 2007)",
-    "calorieDeficit": "−{{kcal}} deficit",
-    "calorieSurplus": "+{{kcal}} surplus",
-    "atMaintenance": "At maintenance",
-    "targetBodyMetrics": "Target body metrics",
-    "macrosDistribution": "Macros distribution",
-    "balance": "Balance",
-    "optimal": "Optimal",
+    "kcalPerKgTissueHint": "1 kg doku başına {{kcal}} değerine göre (Hall 2008 + Forbes 2007)",
+    "kcalPerLbTissueHint": "1 lb doku başına {{kcal}} değerine göre (Hall 2008 + Forbes 2007)",
+    "calorieDeficit": "−{{kcal}} açık",
+    "calorieSurplus": "+{{kcal}} fazla",
+    "atMaintenance": "Koruma seviyesinde",
+    "targetBodyMetrics": "Hedef vücut ölçüleri",
+    "macrosDistribution": "Makro dağılımı",
+    "balance": "Denge",
+    "optimal": "İdeal",
     "protein": "Protein",
-    "carbohydrates": "Carbohydrates",
-    "fats": "Fats",
-    "targetWeight": "Target weight",
-    "targetBodyFat": "Target body fat",
-    "targetBMI": "Target BMI",
-    "targetFFMI": "Target FFMI",
-    "targetDate": "Target date",
-    "targetDateNotSet": "Not set",
-    "targetDateSublabel": "When you want to reach your body targets",
-    "targetDateClear": "Clear",
-    "editTitle": "Edit goal",
-    "updateGoal": "Update goal",
-    "goalStartDate": "Goal start date",
-    "goalStartDateSublabel": "When this goal period started",
-    "goalStartDateToday": "Today",
-    "saveGoals": "Save goals",
-    "settingsNote": "You can change these values anytime in Settings.",
+    "carbohydrates": "Karbonhidrat",
+    "fats": "Yağlar",
+    "targetWeight": "Hedef kilo",
+    "targetBodyFat": "Hedef vücut yağı",
+    "targetBMI": "Hedef BMI",
+    "targetFFMI": "Hedef FFMI",
+    "targetDate": "Hedef tarih",
+    "targetDateNotSet": "Belirlenmedi",
+    "targetDateSublabel": "Vücut hedeflerine ne zaman ulaşmak istediğin",
+    "targetDateClear": "Temizle",
+    "editTitle": "Hedefi düzenle",
+    "updateGoal": "Hedefi güncelle",
+    "goalStartDate": "Hedef başlangıç tarihi",
+    "goalStartDateSublabel": "Bu hedef dönemi ne zaman başladı",
+    "goalStartDateToday": "Bugün",
+    "saveGoals": "Hedefleri kaydet",
+    "settingsNote": "Bu değerleri istediğin zaman Ayarlar'dan değiştirebilirsin.",
     "sublabels": {
-      "targetWeight": "Target weight in {{unit}}",
-      "targetBodyFat": "% percentage",
-      "targetBMI": "Body mass index",
-      "targetFFMI": "Fat-Free mass index"
+      "targetWeight": "{{unit}} cinsinden hedef kilo",
+      "targetBodyFat": "% oran",
+      "targetBMI": "Vücut kitle indeksi",
+      "targetFFMI": "Yağsız kitle indeksi"
     },
-    "acceptAndContinue": "Accept and continue",
-    "adjustGoalsManually": "Adjust goals manually",
-    "continue": "Continue",
+    "acceptAndContinue": "Kabul et ve devam et",
+    "adjustGoalsManually": "Hedefleri elle ayarla",
+    "continue": "Devam et",
     "results": {
-      "aiCalculationComplete": "Calculation complete",
-      "your": "Your",
-      "nutritionPlan": "Nutrition plan",
-      "aiDescription": "Based on your body metrics and activity levels, our calculations has optimized your daily targets.",
-      "manualDescription": "Here are the nutrition goals you set. You can continue or go back to adjust them.",
-      "manualPlanBadge": "Your custom plan",
-      "macroSplit": "Macro split",
-      "manualTipsTitle": "You're all set",
-      "manualTipsDescription": "Start logging meals to track your progress. You can change these goals anytime in Settings.",
-      "dailyCalorieTarget": "Daily calorie target",
+      "aiCalculationComplete": "Hesaplama tamamlandı",
+      "your": "Senin",
+      "nutritionPlan": "Beslenme planı",
+      "aiDescription": "Vücut ölçülerine ve aktivite düzeyine göre hesaplamalarımız günlük hedeflerini optimize etti.",
+      "manualDescription": "İşte belirlediğin beslenme hedefleri. Devam edebilir ya da geri dönüp ayarlayabilirsin.",
+      "manualPlanBadge": "Senin özel planın",
+      "macroSplit": "Makro dağılımı",
+      "manualTipsTitle": "Hazırsın",
+      "manualTipsDescription": "İlerlemeni takip etmek için öğünlerini kaydetmeye başla. Bu hedefleri istediğin zaman Ayarlar'dan değiştirebilirsin.",
+      "dailyCalorieTarget": "Günlük kalori hedefi",
       "protein": "Protein",
-      "carbs": "Carbs",
-      "fats": "Fats",
-      "estimatedWeightLoss": "Estimated weight loss",
-      "estimatedWeightGain": "Estimated weight gain",
-      "estimatedMaintenance": "Estimated maintenance",
-      "projectionTitle": "{{days}}-day projection",
-      "projectionDescription": "By tracking these goals, you are projected to reach {{value}} {{unit}} in {{days}} days.",
-      "projectionMaintenanceTitle": "Maintaining weight",
-      "projectionMaintenanceMuscleGain": "With consistent training and nutrition, natural muscle gain in {{days}} days is typically {{range}} {{unit}}, depending on genetics and experience.",
-      "calorieRange": "Range: {{range}}",
-      "bodyFatUncertaintyNote": "Range accounts for body fat measurement variation (±4%)",
-      "dailyDeficit": "Daily deficit: {{kcal}}",
-      "dailySurplus": "Daily surplus: {{kcal}}",
-      "projectionFat": "Fat: {{value}} {{unit}}",
-      "projectionLean": "Lean: {{value}} {{unit}}",
-      "leanMassClarification": "Lean mass includes water, glycogen, and other non-fat tissue, not just muscle.",
-      "formulasBasedOn": "Based on Hall/Forbes body composition model & metabolizable energy (Int J Obes 2008; Br J Nutr 2007).",
-      "macroSourcesNote": "Macro targets based on IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), and Helms et al. (2014).",
+      "carbs": "Karbonhidrat",
+      "fats": "Yağlar",
+      "estimatedWeightLoss": "Tahmini kilo kaybı",
+      "estimatedWeightGain": "Tahmini kilo artışı",
+      "estimatedMaintenance": "Tahmini koruma",
+      "projectionTitle": "{{days}} günlük projeksiyon",
+      "projectionDescription": "Bu hedefleri takip ettiğinde {{days}} günde {{value}} {{unit}} seviyesine ulaşman bekleniyor.",
+      "projectionMaintenanceTitle": "Kilo koruma",
+      "projectionMaintenanceMuscleGain": "Düzenli antrenman ve beslenmeyle, genetik ve deneyime bağlı olarak {{days}} günde doğal kas artışı genellikle {{range}} {{unit}} olur.",
+      "calorieRange": "Aralık: {{range}}",
+      "bodyFatUncertaintyNote": "Aralık, vücut yağı ölçümündeki farkları hesaba katar (±%4)",
+      "dailyDeficit": "Günlük açık: {{kcal}}",
+      "dailySurplus": "Günlük fazla: {{kcal}}",
+      "projectionFat": "Yağ: {{value}} {{unit}}",
+      "projectionLean": "Yağsız: {{value}} {{unit}}",
+      "leanMassClarification": "Yağsız kütle, yalnızca kası değil; suyu, glikojeni ve diğer yağsız dokuları da içerir.",
+      "formulasBasedOn": "Hall/Forbes vücut kompozisyonu modeli ve metabolize edilebilir enerjiye dayanır (Int J Obes 2008; Br J Nutr 2007).",
+      "macroSourcesNote": "Makro hedefleri IOM AMDR, ISSN Pozisyon Bildirisi (2017), ACSM/ADA/DC Ortak Pozisyon Bildirisi (2016) ve Helms ve arkadaşları (2014) temel alınarak belirlenmiştir.",
       "goalLabels": {
-        "weight_loss": "Weight loss",
-        "muscle_gain": "Muscle gain",
-        "maintenance": "Maintenance",
-        "moderateWeightLoss": "Moderate weight loss strategy",
-        "enduranceTraining": "Endurance training",
-        "generalFitness": "General fitness",
-        "leanBulk": "Lean bulk strategy",
-        "strengthSurplus": "Strength surplus strategy"
+        "weight_loss": "Kilo verme",
+        "muscle_gain": "Kas kazanımı",
+        "maintenance": "Koruma",
+        "moderateWeightLoss": "Orta düzeyde kilo verme stratejisi",
+        "enduranceTraining": "Dayanıklılık antrenmanı",
+        "generalFitness": "Genel fitness",
+        "leanBulk": "Yağsız kütle artışı stratejisi",
+        "strengthSurplus": "Güç fazlası stratejisi"
       }
     },
-    "errorSaving": "Error saving",
+    "errorSaving": "Kaydetme hatası",
     "dietTypes": {
       "keto": {
-        "title": "Keto",
-        "subtitle": "Low carb"
+        "title": "Ketojenik",
+        "subtitle": "Düşük karbonhidrat"
       },
       "lowCarb": {
-        "title": "Low carb",
-        "subtitle": "Fat adapted"
+        "title": "Düşük karbonhidrat",
+        "subtitle": "Yağa adapte"
       },
       "highProteinMuscle": {
-        "title": "High protein",
-        "subtitle": "Muscle building"
+        "title": "Yüksek protein",
+        "subtitle": "Kas geliştirme"
       },
       "highProteinFatLoss": {
-        "title": "High protein",
-        "subtitle": "Fat loss"
+        "title": "Yüksek protein",
+        "subtitle": "Yağ kaybı"
       },
       "highCarb": {
-        "title": "High carb",
-        "subtitle": "Energy focus"
+        "title": "Yüksek karbonhidrat",
+        "subtitle": "Enerji odaklı"
       },
       "balanced": {
-        "title": "Balanced",
-        "subtitle": "Optimal"
+        "title": "Dengeli",
+        "subtitle": "İdeal"
       },
       "moderateFat": {
-        "title": "Moderate fat",
-        "subtitle": "Sustained energy"
+        "title": "Orta yağ",
+        "subtitle": "Sürdürülebilir enerji"
       },
       "lowFat": {
-        "title": "Low fat",
-        "subtitle": "Lean diet"
+        "title": "Düşük yağ",
+        "subtitle": "Yağsız diyet"
       },
       "custom": {
-        "title": "Custom",
-        "subtitle": "Your plan"
+        "title": "Özel",
+        "subtitle": "Senin planın"
       }
     },
-    "goalMode": "Goal mode",
+    "goalMode": "Hedef modu",
     "modeOptions": {
-      "manual": "Manual",
-      "daily": "Daily",
-      "weekly": "Weekly"
+      "manual": "Elle",
+      "daily": "Günlük",
+      "weekly": "Haftalık"
     },
     "modeHints": {
-      "manual": "Set your own targets. They stay the same until you edit them.",
-      "daily": "Targets update automatically each day based on your stats and goal date.",
-      "weekly": "Review and approve targets each week. They stay the same between reviews."
+      "manual": "Kendi hedeflerini belirle. Sen değiştirene kadar aynı kalırlar.",
+      "daily": "Hedefler, istatistiklerine ve hedef tarihine göre her gün otomatik güncellenir.",
+      "weekly": "Hedefleri her hafta incele ve onayla. İncelemeler arasında aynı kalırlar."
     },
-    "manual": "Manual",
-    "dynamic": "Dynamic",
-    "dynamicInfo": "Daily targets are auto-calculated each day from your current stats and goal timeline. Your current calorie target is {{kcal}}.",
-    "dynamicBadge": "Dynamic",
-    "dynamicRequiredFields": "Target weight and target date are required for dynamic goals.",
-    "keepCurrentTargets": "Keep my current targets",
+    "manual": "Elle",
+    "dynamic": "Dinamik",
+    "dynamicInfo": "Günlük hedefler, mevcut istatistiklerinden ve hedef zaman çizelgenden her gün otomatik hesaplanır. Mevcut kalori hedefin {{kcal}}.",
+    "dynamicBadge": "Dinamik",
+    "dynamicRequiredFields": "Dinamik hedefler için hedef kilo ve hedef tarih gerekli.",
+    "keepCurrentTargets": "Mevcut hedeflerimi koru",
     "perGram": "{{energy}}/g"
   }
 }

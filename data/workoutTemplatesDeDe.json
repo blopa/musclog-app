@@ -1,70 +1,70 @@
 [
   {
-    "title": "5-Day Hypertrophy Split"
+    "title": "5-Tage-Hypertrophie-Split"
   },
   {
     "title": "Push Pull Legs (PPL)"
   },
   {
-    "title": "Upper/Lower 4-Day Split"
+    "title": "Oberkörper/Unterkörper-Split (4 Tage)"
   },
   {
-    "title": "Full Body (3-Day)"
+    "title": "Ganzkörper (3 Tage)"
   },
   {
-    "title": "Arnold Split (6-Day)"
+    "title": "Arnold-Split (6 Tage)"
   },
   {
-    "title": "Bro Split (5-Day)"
+    "title": "Bro-Split (5 Tage)"
   },
   {
     "title": "PHUL (Power Hypertrophy Upper Lower)"
   },
   {
-    "title": "2-Day Full Body (A/B)"
+    "title": "Ganzkörper 2 Tage (A/B)"
   },
   {
-    "title": "3-Day Strength Builder"
+    "title": "3-Tage-Kraftaufbau"
   },
   {
-    "title": "Classic 3-Day (Chest/Tri, Back/Bi, Legs/Shoulders)"
+    "title": "Klassisch 3 Tage (Brust/Trizeps, Rücken/Bizeps, Beine/Schultern)"
   },
   {
-    "title": "Brolic Workout"
+    "title": "Brolic-Training"
   },
   {
-    "title": "Cable Superset Workout",
-    "description": "A five-session cable program built around upper, lower, and antagonist supersets. Keep compounds and isolation work at 1–2 RIR; the final isolation set may reach 0–1 RIR. Progress each exercise independently with double progression.",
+    "title": "Kabel-Supersatz-Training",
+    "description": "Ein fünfteiliges Kabelprogramm mit Supersätzen für Oberkörper, Unterkörper und Gegenspieler. Grundübungen und Isolation bei 1–2 RIR halten; der letzte Isolationssatz darf 0–1 RIR erreichen. Steigere jede Übung unabhängig mit doppelter Steigerung.",
     "dayNames": {
-      "1": "Upper A",
-      "2": "Lower A",
-      "3": "Arms",
-      "5": "Upper B",
-      "6": "Lower B"
+      "1": "Oberkörper A",
+      "2": "Unterkörper A",
+      "3": "Arme",
+      "5": "Oberkörper B",
+      "6": "Unterkörper B"
     }
   },
   {
-    "title": "Short Full Body — Gym",
-    "description": "Two short full-body workouts (A and B) on gym equipment: about 30 minutes, 2 sets each, easy on purpose. A good way back in.",
+    "title": "Kurzes Ganzkörpertraining — Studio",
+    "description": "Zwei kurze Ganzkörpertrainings (A und B) am Studio-Equipment: etwa 30 Minuten, je 2 Sätze, bewusst leicht. Ein guter Wiedereinstieg.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Training A",
+      "2": "Training B"
     }
   },
   {
-    "title": "Short Full Body — Home",
-    "description": "Two short full-body workouts (A and B) with dumbbells, a kettlebell and bands: about 30 minutes, 2 sets each. Easy on purpose.",
+    "title": "Kurzes Ganzkörpertraining — Zuhause",
+    "description": "Zwei kurze Ganzkörpertrainings (A und B) mit Kurzhanteln, einer Kettlebell und Bändern: etwa 30 Minuten, je 2 Sätze. Bewusst leicht.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Training A",
+      "2": "Training B"
     }
   },
   {
-    "title": "Short Full Body — No Equipment",
-    "description": "Two short full-body workouts (A and B) with just your body and a band: about 30 minutes, 2 sets each. Easy on purpose.",
+    "title": "Kurzes Ganzkörpertraining — ohne Geräte",
+    "description": "Zwei kurze Ganzkörpertrainings (A und B) nur mit dem eigenen Körper und einem Band: etwa 30 Minuten, je 2 Sätze. Bewusst leicht.",
     "dayNames": {
-      "1": "Workout A",
-      "2": "Workout B"
+      "1": "Training A",
+      "2": "Training B"
     }
   }
 ]

@@ -1,12 +1,12 @@
 {
   "goalHistoryCard": {
     "proteinPrefix": "P",
-    "carbsPrefix": "C",
-    "fatPrefix": "F",
+    "carbsPrefix": "G",
+    "fatPrefix": "L",
     "g": "g",
     "kg": "kg",
     "lbs": "lbs",
-    "bf": "BF",
-    "dynamic": "Dynamic"
+    "bf": "MG",
+    "dynamic": "Dynamique"
   }
 }

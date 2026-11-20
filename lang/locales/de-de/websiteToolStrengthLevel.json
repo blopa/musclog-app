@@ -1,73 +1,73 @@
 {
   "websiteToolStrengthLevel": {
-    "title": "Strength level calculator",
-    "intro": "Enter your body weight and a set you did. See which strength level your estimated one-rep max reaches for that lift, and how much each level needs at your body weight.",
+    "title": "Rechner für Kraftstufen",
+    "intro": "Gib dein Körpergewicht und einen Satz ein, den du gemacht hast. Sieh, welche Kraftstufe dein geschätztes Ein-Wiederholungs-Maximum bei dieser Übung erreicht, und wie viel jede Stufe bei deinem Körpergewicht braucht.",
     "form": {
-      "sex": "Sex",
-      "sexMale": "Male",
-      "sexFemale": "Female",
-      "sexOther": "Other",
-      "bodyWeight": "Body weight",
-      "lift": "Lift",
-      "perHand": "per hand",
-      "weight": "Weight lifted",
-      "reps": "Reps done",
-      "repsHint": "Whole number, 1 to 10",
-      "reserve": "Reps in reserve (optional)",
-      "reserveHint": "How many more reps you could have done. Leave empty if you went to failure."
+      "sex": "Geschlecht",
+      "sexMale": "Männlich",
+      "sexFemale": "Weiblich",
+      "sexOther": "Andere",
+      "bodyWeight": "Körpergewicht",
+      "lift": "Übung",
+      "perHand": "pro Hand",
+      "weight": "Gehobenes Gewicht",
+      "reps": "Gemachte Wiederholungen",
+      "repsHint": "Ganze Zahl, 1 bis 10",
+      "reserve": "Wiederholungen in Reserve (optional)",
+      "reserveHint": "Wie viele weitere Wiederholungen möglich gewesen wären. Lass es leer, wenn du bis zum Muskelversagen gegangen bist."
     },
     "problems": {
-      "bodyWeight": "Enter your body weight as a number above 0.",
-      "weight": "Enter the weight you lifted as a number above 0.",
-      "reps": "Enter the reps as a whole number from 1 to 10.",
-      "repsTooHigh": "Sets above 10 reps do not give a trustworthy one-rep max. A long set measures endurance, and every formula drifts further from the truth the more reps it has to extrapolate. Use a heavier set of 10 reps or fewer.",
-      "reserve": "Reps in reserve must be a whole number from 0 to 9."
+      "bodyWeight": "Gib dein Körpergewicht als Zahl über 0 ein.",
+      "weight": "Gib das gehobene Gewicht als Zahl über 0 ein.",
+      "reps": "Gib die Wiederholungen als ganze Zahl von 1 bis 10 ein.",
+      "repsTooHigh": "Sätze mit mehr als 10 Wiederholungen ergeben kein verlässliches Ein-Wiederholungs-Maximum. Ein langer Satz misst Ausdauer, und jede Formel weicht umso weiter von der Wahrheit ab, je mehr Wiederholungen sie hochrechnen muss. Nutze einen schwereren Satz mit 10 Wiederholungen oder weniger.",
+      "reserve": "Wiederholungen in Reserve müssen eine ganze Zahl von 0 bis 9 sein."
     },
     "results": {
-      "level": "Strength level",
+      "level": "Kraftstufe",
       "levels": {
-        "beginner": "Beginner",
-        "novice": "Novice",
-        "intermediate": "Intermediate",
-        "advanced": "Advanced",
+        "beginner": "Anfänger",
+        "novice": "Einsteiger",
+        "intermediate": "Fortgeschritten",
+        "advanced": "Profi",
         "elite": "Elite"
       },
-      "range": "{{lower}} to {{upper}}",
-      "otherNote": "Shown on both the men's and women's scales, because no single table fits.",
-      "estimate": "Estimated one-rep max",
-      "nextLevel": "To reach {{level}}: an estimated one-rep max of {{weight}} {{unit}}.",
-      "topLevel": "This lift is at the top level. There is no level above elite.",
-      "tableTitle": "The one-rep max each level needs at your body weight",
-      "tableLevel": "Level",
-      "tableOne": "Estimated one-rep max",
-      "tableMale": "Men's scale",
-      "tableFemale": "Women's scale",
-      "tableNote": "Each figure is the estimated one-rep max for this lift at your body weight."
+      "range": "{{lower}} bis {{upper}}",
+      "otherNote": "Auf der Männer- und der Frauenskala angezeigt, weil keine einzelne Tabelle passt.",
+      "estimate": "Geschätztes Ein-Wiederholungs-Maximum",
+      "nextLevel": "Um {{level}} zu erreichen: ein geschätztes Ein-Wiederholungs-Maximum von {{weight}} {{unit}}.",
+      "topLevel": "Diese Übung ist auf der obersten Stufe. Über Elite gibt es keine Stufe.",
+      "tableTitle": "Das Ein-Wiederholungs-Maximum, das jede Stufe bei deinem Körpergewicht braucht",
+      "tableLevel": "Stufe",
+      "tableOne": "Geschätztes Ein-Wiederholungs-Maximum",
+      "tableMale": "Männerskala",
+      "tableFemale": "Frauenskala",
+      "tableNote": "Jeder Wert ist das geschätzte Ein-Wiederholungs-Maximum für diese Übung bei deinem Körpergewicht."
     },
     "sections": [
       {
-        "title": "What the level compares",
+        "title": "Was die Stufe vergleicht",
         "body": [
-          "A level is your estimated one-rep max divided by your body weight, adjusted for the lift and for sex. Heavier people lift more in total, so the body weight is part of the comparison.",
-          "Levels are a Musclog rule of thumb, checked against public powerlifting results from OpenPowerlifting. They show where a lift sits on that scale. They do not rank you against other people."
+          "Eine Stufe ist dein geschätztes Ein-Wiederholungs-Maximum geteilt durch dein Körpergewicht, angepasst an die Übung und das Geschlecht. Schwerere Menschen heben insgesamt mehr, daher ist das Körpergewicht Teil des Vergleichs.",
+          "Die Stufen sind eine Faustregel von Musclog, geprüft an öffentlichen Ergebnissen aus dem Kraftdreikampf von OpenPowerlifting. Sie zeigen, wo eine Übung auf dieser Skala steht. Sie reihen dich nicht gegen andere Menschen ein."
         ]
       },
       {
-        "title": "Why sex and the lift change the numbers",
+        "title": "Warum Geschlecht und Übung die Zahlen ändern",
         "body": [
-          "The benchmark for a lift depends on its body region, and women's results sit lower against body weight in the public data, so a woman's level uses a lower benchmark for that region.",
-          "Choose Other when you do not want the answer on one scale. Both the men's and women's scales are shown, and a range is given when they grade differently."
+          "Der Maßstab für eine Übung hängt von ihrer Körperregion ab, und die Ergebnisse von Frauen liegen in den öffentlichen Daten im Verhältnis zum Körpergewicht niedriger. Deshalb nutzt die Stufe einer Frau für diese Region einen niedrigeren Maßstab.",
+          "Wähle Andere, wenn du die Antwort nicht auf einer Skala willst. Dann werden die Männer- und die Frauenskala gezeigt, und bei abweichender Einstufung wird ein Bereich angegeben."
         ]
       },
       {
-        "title": "Dumbbell lifts",
+        "title": "Kurzhantelübungen",
         "body": [
-          "Dumbbell lifts are graded per hand, because both the benchmark and the weight you log are per hand. Enter the weight of one dumbbell, not the pair."
+          "Kurzhantelübungen werden pro Hand bewertet, weil sowohl der Maßstab als auch das erfasste Gewicht pro Hand gelten. Gib das Gewicht einer Kurzhantel ein, nicht das Paar."
         ]
       }
     ],
     "sources": {
-      "openpowerlifting": "OpenPowerlifting, public powerlifting results"
+      "openpowerlifting": "OpenPowerlifting, öffentliche Ergebnisse im Kraftdreikampf"
     }
   }
 }

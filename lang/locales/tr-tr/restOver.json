@@ -1,16 +1,16 @@
 {
   "restOver": {
-    "startNextSet": "Start next set",
-    "upNext": "Up next",
-    "weight": "Weight",
+    "startNextSet": "Sonraki seti başlat",
+    "upNext": "Sırada",
+    "weight": "Ağırlık",
     "weightWithUnit": "{{value}} {{unit}}",
-    "reps": "Reps",
+    "reps": "Tekrar",
     "set": "Set",
-    "restTimeIs": "Rest time is",
-    "over": "over",
-    "timeToGo": "Time to go! Next set is up.",
-    "noWorkoutId": "No workout ID provided",
-    "workoutDeleted": "Workout has been deleted",
-    "loadError": "Failed to load workout data"
+    "restTimeIs": "Dinlenme süresi",
+    "over": "bitti",
+    "timeToGo": "Zaman geldi! Sonraki set sırada.",
+    "noWorkoutId": "Antrenman kimliği verilmedi",
+    "workoutDeleted": "Antrenman silindi",
+    "loadError": "Antrenman verileri yüklenemedi"
   }
 }

@@ -1,9 +1,9 @@
 {
   "focus": {
-    "day": "Day",
-    "physiologicalInsights": "Physiological insights",
-    "estrogen": "Estrogen",
-    "metabolism": "Metabolism",
-    "energyLevel": "Energy level"
+    "day": "Gün",
+    "physiologicalInsights": "Fizyolojik içgörüler",
+    "estrogen": "Östrojen",
+    "metabolism": "Metabolizma",
+    "energyLevel": "Enerji düzeyi"
   }
 }

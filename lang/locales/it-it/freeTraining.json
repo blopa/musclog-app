@@ -1,31 +1,31 @@
 {
   "freeTraining": {
-    "workoutName": "Free training",
-    "blankWorkout": "Blank workout",
-    "title": "Free training",
-    "titleSession": "Session",
-    "subtitle": "Build your workout as you go. No templates, just progress.",
-    "addFirstExercise": "Add first exercise",
-    "tip": "Tip: You can add more exercises at any time.",
-    "startFreeTraining": "Start free training",
-    "startFreeTrainingSubtitle": "Build your workout as you go. No templates, just progress.",
-    "duration": "Duration",
-    "calories": "Calories",
+    "workoutName": "Allenamento libero",
+    "blankWorkout": "Allenamento vuoto",
+    "title": "Allenamento libero",
+    "titleSession": "Sessione",
+    "subtitle": "Costruisci il tuo allenamento man mano che procedi. Nessuna scheda, solo progressi.",
+    "addFirstExercise": "Aggiungi il primo esercizio",
+    "tip": "Suggerimento: puoi aggiungere altri esercizi in qualsiasi momento.",
+    "startFreeTraining": "Inizia allenamento libero",
+    "startFreeTrainingSubtitle": "Costruisci il tuo allenamento man mano che procedi. Nessuna scheda, solo progressi.",
+    "duration": "Durata",
+    "calories": "Calorie",
     "volume": "Volume",
-    "inProgress": "In progress",
+    "inProgress": "In corso",
     "addExercise": {
-      "title": "Add exercise",
-      "numberOfSets": "Number of sets",
-      "addToWorkout": "Add to workout",
-      "menuDescription": "Add exercises and sets to this session"
+      "title": "Aggiungi esercizio",
+      "numberOfSets": "Numero di serie",
+      "addToWorkout": "Aggiungi all'allenamento",
+      "menuDescription": "Aggiungi esercizi e serie a questa sessione"
     },
     "exerciseComplete": {
-      "title": "Exercise complete",
-      "subtitle": "Exercise complete. Ready for more?",
-      "setsCompleted": "{{count}} sets completed",
-      "totalVolume": "Total volume",
-      "addNextExercise": "Add next exercise",
-      "finishWorkout": "Finish workout"
+      "title": "Esercizio completato",
+      "subtitle": "Esercizio completato. Pronto per altri?",
+      "setsCompleted": "{{count}} serie completate",
+      "totalVolume": "Volume totale",
+      "addNextExercise": "Aggiungi il prossimo esercizio",
+      "finishWorkout": "Termina allenamento"
     }
   }
 }

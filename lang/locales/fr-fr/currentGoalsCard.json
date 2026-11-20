@@ -1,20 +1,20 @@
 {
   "currentGoalsCard": {
-    "dailyTarget": "Daily target",
-    "protein": "Protein",
+    "dailyTarget": "Objectif quotidien",
+    "protein": "Protéines",
     "proteinShort": "P",
-    "carbs": "Carbs",
-    "carbsShort": "C",
-    "fats": "Fats",
-    "fatsShort": "F",
-    "targetWeight": "Target weight",
-    "bodyFat": "Body fat",
-    "ffmi": "FFMI",
-    "bmi": "BMI",
+    "carbs": "Glucides",
+    "carbsShort": "G",
+    "fats": "Lipides",
+    "fatsShort": "L",
+    "targetWeight": "Poids visé",
+    "bodyFat": "Masse grasse",
+    "ffmi": "IMG",
+    "bmi": "IMC",
     "g": "g",
     "kg": "kg",
-    "lbs": "lbs",
+    "lbs": "lb",
     "percent": "%",
-    "dynamicNote": "Auto-calculated for today from your goal settings"
+    "dynamicNote": "Calculé automatiquement pour aujourd'hui à partir de tes objectifs"
   }
 }

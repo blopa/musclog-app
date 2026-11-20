@@ -1,49 +1,49 @@
 {
   "notes": {
-    "title": "Notes",
+    "title": "Note",
     "sections": {
-      "latest": "Latest",
-      "earlier": "Earlier"
+      "latest": "Ultime",
+      "earlier": "Precedenti"
     },
     "screenMenu": {
-      "title": "Notes",
-      "subtitle": "Jot it down now, track it later",
-      "create": "Create new note",
-      "createDescription": "Write down what you made or ate"
+      "title": "Note",
+      "subtitle": "Annotalo ora, registralo dopo",
+      "create": "Crea nuova nota",
+      "createDescription": "Scrivi cosa hai preparato o mangiato"
     },
     "noteMenu": {
-      "title": "Note options",
-      "edit": "Edit",
-      "editDescription": "Change the title or the text",
-      "duplicate": "Duplicate",
-      "duplicateDescription": "Copy it to the top of the list",
-      "track": "Track this",
-      "trackDescription": "Send it to the coach to log the food",
-      "delete": "Delete",
-      "deleteDescription": "Remove this note permanently"
+      "title": "Opzioni nota",
+      "edit": "Modifica",
+      "editDescription": "Cambia il titolo o il testo",
+      "duplicate": "Duplica",
+      "duplicateDescription": "Copiala in cima alla lista",
+      "track": "Registralo",
+      "trackDescription": "Invialo al coach per registrare l'alimento",
+      "delete": "Elimina",
+      "deleteDescription": "Rimuovi questa nota definitivamente"
     },
     "form": {
-      "createTitle": "New note",
-      "editTitle": "Edit note",
-      "titleLabel": "Title (optional)",
-      "titlePlaceholder": "e.g. Lunch prep",
-      "bodyLabel": "Note",
-      "bodyPlaceholder": "e.g. 70g of broccoli, 120g chicken breast",
-      "bodyRequired": "Write something before saving",
-      "submit": "Save note"
+      "createTitle": "Nuova nota",
+      "editTitle": "Modifica nota",
+      "titleLabel": "Titolo (facoltativo)",
+      "titlePlaceholder": "es. Preparazione del pranzo",
+      "bodyLabel": "Nota",
+      "bodyPlaceholder": "es. 70 g di broccoli, 120 g di petto di pollo",
+      "bodyRequired": "Scrivi qualcosa prima di salvare",
+      "submit": "Salva nota"
     },
     "deleteConfirm": {
-      "title": "Delete note?",
-      "message": "This note will be removed permanently. This can't be undone.",
-      "confirm": "Delete"
+      "title": "Eliminare la nota?",
+      "message": "Questa nota verrà rimossa definitivamente. L'azione non può essere annullata.",
+      "confirm": "Elimina"
     },
-    "createSuccess": "Note saved",
-    "createError": "Couldn't save the note",
-    "updateSuccess": "Note updated",
-    "updateError": "Couldn't update the note",
-    "duplicateSuccess": "Note duplicated",
-    "duplicateError": "Couldn't duplicate the note",
-    "deleteSuccess": "Note deleted",
-    "deleteError": "Couldn't delete the note"
+    "createSuccess": "Nota salvata",
+    "createError": "Impossibile salvare la nota",
+    "updateSuccess": "Nota aggiornata",
+    "updateError": "Impossibile aggiornare la nota",
+    "duplicateSuccess": "Nota duplicata",
+    "duplicateError": "Impossibile duplicare la nota",
+    "deleteSuccess": "Nota eliminata",
+    "deleteError": "Impossibile eliminare la nota"
   }
 }

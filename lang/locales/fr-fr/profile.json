@@ -1,48 +1,48 @@
 {
   "profile": {
     "header": {
-      "title": "Profile"
+      "title": "Profil"
     },
-    "goal": "Goal",
-    "currentStats": "Current stats",
-    "history": "History",
-    "management": "Management",
-    "loading": "Loading...",
+    "goal": "Objectif",
+    "currentStats": "Statistiques actuelles",
+    "history": "Historique",
+    "management": "Gestion",
+    "loading": "Chargement...",
     "syncing": {
-      "healthKit": "Syncing with HealthKit..."
+      "healthKit": "Synchronisation avec HealthKit..."
     },
     "bmiStatus": {
-      "underweight": "Underweight",
-      "normal": "Normal weight",
-      "overweight": "Overweight",
-      "obese": "Obese"
+      "underweight": "Insuffisance pondérale",
+      "normal": "Poids normal",
+      "overweight": "Surpoids",
+      "obese": "Obésité"
     },
     "gender": {
-      "male": "Male",
-      "female": "Female",
-      "other": "Other"
+      "male": "Homme",
+      "female": "Femme",
+      "other": "Autre"
     },
     "managementItems": {
-      "editPersonal": "Edit personal info",
-      "editPersonalDesc": "Update your name, avatar, and personal details",
-      "editFitness": "Edit fitness details",
-      "editFitnessDesc": "Update your fitness goals and preferences",
-      "appPreferences": "App preferences",
-      "appPreferencesDesc": "Customize app settings and preferences",
-      "aiUpdate": "Update with AI",
-      "aiUpdateDesc": "Tell an AI what changed and review before saving"
+      "editPersonal": "Modifier les infos personnelles",
+      "editPersonalDesc": "Mettre à jour ton nom, ton avatar et tes données personnelles",
+      "editFitness": "Modifier les données sportives",
+      "editFitnessDesc": "Mettre à jour tes objectifs et préférences sportives",
+      "appPreferences": "Préférences de l'application",
+      "appPreferencesDesc": "Personnaliser les réglages et préférences de l'application",
+      "aiUpdate": "Mettre à jour avec l'IA",
+      "aiUpdateDesc": "Dis à une IA ce qui a changé et vérifie avant d'enregistrer"
     },
     "stats": {
-      "weight": "Weight",
-      "height": "Height",
-      "bodyFat": "Body fat",
-      "bmi": "BMI",
-      "age": "Age",
-      "gender": "Gender"
+      "weight": "Poids",
+      "height": "Taille",
+      "bodyFat": "Masse grasse",
+      "bmi": "IMC",
+      "age": "Âge",
+      "gender": "Sexe"
     },
     "weightPrediction": {
-      "title": "Predicted weight",
-      "subtitle": "Estimated from TDEE and your calorie tracking since last weigh-in"
+      "title": "Poids prévu",
+      "subtitle": "Estimé à partir de la TDEE et de ton suivi calorique depuis la dernière pesée"
     }
   }
 }

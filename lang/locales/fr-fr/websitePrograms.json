@@ -1,57 +1,57 @@
 {
   "websitePrograms": {
     "index": {
-      "title": "Free workout programs",
-      "intro": "Complete programs with every workout, exercise, set and rep written out. Read one here, or open it in Musclog with one tap and start training. Starting weights are suggested from your own profile when you open it in the app.",
-      "workouts_one": "{{count}} workout",
-      "workouts_few": "{{count}} workouts",
-      "workouts_many": "{{count}} workouts",
-      "workouts_other": "{{count}} workouts",
-      "minutes": "about {{minutes}} min per workout",
-      "exercisesLink": "Browse the exercise library"
+      "title": "Programmes d'entraînement gratuits",
+      "intro": "Des programmes complets, avec chaque séance, exercice, série et répétition détaillés. Lis-en un ici, ou ouvre-le dans Musclog d'un seul geste pour commencer à t'entraîner. Les charges de départ sont suggérées à partir de ton profil quand tu l'ouvres dans l'application.",
+      "workouts_one": "{{count}} séance",
+      "workouts_few": "{{count}} séances",
+      "workouts_many": "{{count}} séances",
+      "workouts_other": "{{count}} séances",
+      "minutes": "environ {{minutes}} min par séance",
+      "exercisesLink": "Parcourir la bibliothèque d'exercices"
     },
     "difficulty": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced"
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
     },
     "detail": {
-      "allPrograms": "All programs",
-      "dayLabel": "Day {{n}}",
-      "exercise": "Exercise",
-      "setsReps": "Sets × reps",
-      "rest": "Rest",
+      "allPrograms": "Tous les programmes",
+      "dayLabel": "Jour {{n}}",
+      "exercise": "Exercice",
+      "setsReps": "Séries × répétitions",
+      "rest": "Repos",
       "restSeconds": "{{seconds}} s",
       "supersetGroup": "Superset {{group}}",
-      "openTitle": "Open this program in Musclog",
-      "openBody": "This opens the program in the app as a review, so nothing is saved until you confirm. Starting weights are suggested from your profile, and you choose the weekdays. If you do not have the app yet, the next page has the download links.",
-      "openButton": "Open in Musclog",
-      "howTitle": "How to run it",
+      "openTitle": "Ouvrir ce programme dans Musclog",
+      "openBody": "Cela ouvre le programme dans l'application sous forme d'examen : rien n'est enregistré tant que tu ne confirmes pas. Les charges de départ sont suggérées à partir de ton profil, et tu choisis les jours de la semaine. Si tu n'as pas encore l'application, la page suivante contient les liens de téléchargement.",
+      "openButton": "Ouvrir dans Musclog",
+      "howTitle": "Comment le suivre",
       "how": [
-        "Do the workouts in order and repeat the cycle. One workout per training day is the simplest way to run it; the order matters more than the weekday.",
-        "Start with weights you can lift with good form and a couple of reps left. When you reach the top of the rep range on every set, add weight next time.",
-        "These programs are general examples, not medical advice. If you have an injury or a health condition, check with a professional first."
+        "Fais les séances dans l'ordre et répète le cycle. Une séance par jour d'entraînement est la façon la plus simple de le suivre : l'ordre compte plus que le jour de la semaine.",
+        "Commence avec des charges que tu peux soulever avec une bonne technique et encore deux répétitions en réserve. Quand tu atteins le haut de la plage de répétitions sur toutes les séries, augmente la charge la fois suivante.",
+        "Ces programmes sont des exemples généraux, pas un avis médical. Si tu as une blessure ou un problème de santé, consulte d'abord un professionnel."
       ],
-      "notFoundTitle": "Program not found",
-      "notFoundBody": "There is no program at this address.",
-      "metaTitle": "{{title}}: free workout program"
+      "notFoundTitle": "Programme introuvable",
+      "notFoundBody": "Il n'existe aucun programme à cette adresse.",
+      "metaTitle": "{{title}} : programme d'entraînement gratuit"
     },
     "summaries": {
-      "push-pull-legs": "Three workouts: push (chest, shoulders and triceps), pull (back and biceps) and legs. Run the three once a week, or go through them twice for the classic six-day version.",
-      "upper-lower-4-day": "Four workouts: two upper-body days and two lower-body days, which trains each muscle twice a week on a four-day schedule.",
-      "full-body-3-day": "Three full-body workouts for beginners. Each one has a leg movement, a press, a pull and some arm work, so every muscle is trained three times a week.",
-      "phul": "Four workouts: two upper and two lower. The first of each pair is a heavy power day with low reps, the second is a hypertrophy day with higher reps.",
-      "5-day-hypertrophy-split": "Five workouts, one area each: chest, back, shoulders, legs and arms. More volume per muscle in a session, one hard session per muscle a week.",
-      "arnold-split": "Three workouts in the Arnold style: chest and back, shoulders and arms, then legs. The split is traditionally run twice through, for six training days.",
-      "bro-split": "Five workouts, one muscle group each: chest, back, legs, shoulders and arms. Each muscle gets one focused session a week.",
-      "2-day-full-body": "Two full-body workouts, A and B, for weeks when you can only train twice. Alternate them.",
-      "3-day-strength-builder": "Three workouts built around heavier sets of 4 to 8 reps on the squat, bench press, deadlift and rows, with lighter accessory work after them.",
-      "classic-3-day-split": "Three workouts: chest and triceps, back and biceps, then legs and shoulders. A classic split for a three-day week.",
-      "brolic-workout": "Two upper-body workouts, chest and shoulders, with plenty of pressing and fly work. Shorter than most programs here.",
-      "cable-superset-workout": "Five advanced workouts (Upper A, Lower A, Arms, Upper B, Lower B) built from cable exercises, paired in antagonist supersets, with a rep range and a rest time for each exercise.",
-      "short-full-body-gym": "Two short full-body workouts, A and B, on gym machines and free weights: about 30 minutes, 2 sets each, easy on purpose. A good way back after a break.",
-      "short-full-body-home": "Two short full-body workouts, A and B, with dumbbells, a kettlebell and bands: about 30 minutes, 2 sets each, easy on purpose.",
-      "short-full-body-no-equipment": "Two short full-body workouts, A and B, with just your body and a band: about 30 minutes, 2 sets each, easy on purpose."
+      "push-pull-legs": "Trois séances : poussée (pectoraux, épaules et triceps), tirage (dos et biceps) et jambes. Enchaîne les trois une fois par semaine, ou fais-les deux fois pour la version classique sur six jours.",
+      "upper-lower-4-day": "Quatre séances : deux jours haut du corps et deux jours bas du corps, ce qui entraîne chaque muscle deux fois par semaine sur un programme de quatre jours.",
+      "full-body-3-day": "Trois séances complètes pour débutants. Chacune comprend un mouvement de jambes, une poussée, un tirage et du travail des bras, pour entraîner chaque muscle trois fois par semaine.",
+      "phul": "Quatre séances : deux haut du corps et deux bas du corps. La première de chaque paire est une journée de puissance lourde en peu de répétitions, la seconde une journée d'hypertrophie avec davantage de répétitions.",
+      "5-day-hypertrophy-split": "Cinq séances, une zone par séance : pectoraux, dos, épaules, jambes et bras. Plus de volume par muscle dans une séance, une séance intense par muscle et par semaine.",
+      "arnold-split": "Trois séances dans le style Arnold : pectoraux et dos, épaules et bras, puis jambes. Ce programme se fait traditionnellement deux fois, soit six jours d'entraînement.",
+      "bro-split": "Cinq séances, un groupe musculaire chacune : pectoraux, dos, jambes, épaules et bras. Chaque muscle reçoit une séance ciblée par semaine.",
+      "2-day-full-body": "Deux séances complètes, A et B, pour les semaines où tu ne peux t'entraîner que deux fois. Alterne-les.",
+      "3-day-strength-builder": "Trois séances construites autour de séries lourdes de 4 à 8 répétitions au squat, au développé couché, au soulevé de terre et aux rowings, suivies d'exercices d'appoint plus légers.",
+      "classic-3-day-split": "Trois séances : pectoraux et triceps, dos et biceps, puis jambes et épaules. Un découpage classique pour une semaine de trois jours.",
+      "brolic-workout": "Deux séances haut du corps, pectoraux et épaules, avec beaucoup de développés et d'écartés. Plus courte que la plupart des programmes proposés ici.",
+      "cable-superset-workout": "Cinq séances avancées (Haut A, Bas A, Bras, Haut B, Bas B) construites avec des exercices au câble, associés en supersets antagonistes, avec une plage de répétitions et un temps de repos pour chaque exercice.",
+      "short-full-body-gym": "Deux courtes séances complètes, A et B, aux machines et avec poids libres : environ 30 minutes, 2 séries chacune, volontairement faciles. Une bonne façon de reprendre après une pause.",
+      "short-full-body-home": "Deux courtes séances complètes, A et B, avec haltères, kettlebell et élastiques : environ 30 minutes, 2 séries chacune, volontairement faciles.",
+      "short-full-body-no-equipment": "Deux courtes séances complètes, A et B, avec seulement ton corps et un élastique : environ 30 minutes, 2 séries chacune, volontairement faciles."
     }
   }
 }
