@@ -1,0 +1,95 @@
+{
+  "workout": {
+    "title": "Allenamento",
+    "workouts": {
+      "title": "Allenamenti"
+    },
+    "import": {
+      "characters": "Caratteri",
+      "emptyData": "Incolla o inserisci i dati dell'allenamento.",
+      "formatInfo": "Incolla o scrivi il tuo diario di allenamento (ad esempio da una nota o da un'app). L'AI lo leggerà e creerà le sessioni.",
+      "import": "Importa",
+      "importWorkouts": "Importa allenamenti",
+      "instructions": "Incolla qui sotto i dati del tuo allenamento. Formati supportati: testo libero, elenchi puntati o diari strutturati.",
+      "pasteWorkoutDataPlaceholder": "Incolla qui i dati dell'allenamento...",
+      "processing": "Elaborazione...",
+      "processingData": "Allenamenti importati correttamente.",
+      "processingFailed": "Impossibile elaborare i dati. Controlla il formato e riprova.",
+      "supportedFormats": "Formati supportati"
+    },
+    "sessionOverview": "Riepilogo della sessione",
+    "startWorkout": "Inizia allenamento",
+    "resumeSession": "Riprendi sessione",
+    "workout": "Allenamento",
+    "inProgress": "In corso",
+    "type": {
+      "strength": "Forza",
+      "cardio": "Cardio",
+      "flexibility": "Mobilità",
+      "calisthenics": "Calisthenics",
+      "other": "Altro",
+      "free": "Libero"
+    },
+    "exercises": "{{count}} esercizi",
+    "workoutSequence": "Sequenza dell'allenamento",
+    "skipped": "Saltata",
+    "startFromExercise": {
+      "title": "Inizia dall'esercizio",
+      "message": "Vuoi iniziare l'allenamento da {{exerciseName}}?",
+      "confirm": "Inizia da qui",
+      "cancel": "Annulla"
+    },
+    "summary": {
+      "failedToLoad": "Caricamento non riuscito",
+      "noWorkoutId": "Nessun ID allenamento",
+      "unableToLoad": "Impossibile caricare",
+      "failedToGetFeedback": "Impossibile ottenere un parere. Riprova.",
+      "healthPrompt": {
+        "title": "Collegare i tuoi dati sanitari?",
+        "message": "Ora che hai finito un allenamento, Musclog può leggere e scrivere dati sulla salute come passi, peso e allenamenti.",
+        "confirm": "Collega",
+        "later": "Forse più tardi"
+      }
+    },
+    "muscleGroups": {
+      "chest": "Petto",
+      "back": "Schiena",
+      "legs": "Gambe",
+      "shoulders": "Spalle",
+      "arms": "Braccia",
+      "core": "Core",
+      "abdomen": "Addome",
+      "glutes": "Glutei",
+      "fullBody": "Tutto il corpo",
+      "biceps": "Bicipiti",
+      "triceps": "Tricipiti",
+      "forearms": "Avambracci",
+      "abs": "Addominali",
+      "quads": "Quadricipiti",
+      "hamstrings": "Femorali",
+      "calves": "Polpacci",
+      "full_body": "Tutto il corpo",
+      "cardio": "Cardio",
+      "other": "Altro"
+    },
+    "exerciseTypes": {
+      "compound": "Multiarticolare",
+      "isolation": "Isolamento",
+      "bodyweight": "Corpo libero",
+      "machine": "Macchina",
+      "dumbbell": "Manubrio",
+      "barbell": "Bilanciere",
+      "cable": "Cavo",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Elastico",
+      "medicine_ball": "Palla medica",
+      "smith_machine": "Multipower",
+      "plate_machine": "Macchina a dischi",
+      "cardio": "Cardio",
+      "stretching": "Stretching",
+      "plyometric": "Pliometrico",
+      "mobility": "Mobilità",
+      "other": "Altro"
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "goalsManagement": {
+    "title": "Hedef yönetimi",
+    "nutritionAndBodyTab": "Beslenme ve vücut",
+    "fitnessAndExerciseTab": "Fitness ve egzersiz",
+    "subtitle": "İlerlemeni ve geçmişini takip et.",
+    "currentGoals": "Güncel hedefler",
+    "history": "Hedef geçmişi",
+    "newGoal": "Yeni hedef",
+    "createGoalDesc": "Yeni beslenme hedefleri ve makrolar belirle",
+    "createCheckin": "Kontrol oluştur",
+    "createCheckinDesc": "Yeni bir beslenme kontrol kaydı ekle",
+    "emptyStateMessage": "Başlamak için yeni bir hedef oluştur",
+    "editGoal": "Düzenle",
+    "deleteGoalAction": "Sil",
+    "deleteGoal": "Hedefi sil",
+    "deleteGoalMessage": "Bu hedef geçmişinden kalıcı olarak kaldırılacak.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Bu hedefi silmek istediğinden emin misin? Bu işlem geri alınamaz.",
+      "title": "Beslenme hedefleri",
+      "searchPlaceholder": "Hedef ara...",
+      "noGoals": "Henüz hedef yok",
+      "noGoalsDesc": "Burada görmek için beslenme hedefleri belirle",
+      "endOfHistory": "Hedef geçmişinin sonu",
+      "goalOptions": "Hedef seçenekleri",
+      "editGoal": "Hedefi düzenle",
+      "editGoalDesc": "Kalori, makroları ve hedefleri değiştir",
+      "duplicateGoal": "Hedefi çoğalt",
+      "duplicateGoalDesc": "Yeni bir hedef olarak kullanmak için kopya oluştur",
+      "regenerateCheckins": "Kontrolleri yeniden oluştur",
+      "regenerateCheckinsDesc": "Bu hedefin kontrollerini sil ve yeniden oluştur",
+      "deleteGoal": "Hedefi sil",
+      "deleteGoalDesc": "Bu hedefi geçmişten kaldır",
+      "subtitleFormat": "{{calories}} • {{phase}} • Hedef {{targetWeight}} {{unit}}",
+      "phaseCut": "Kesim",
+      "phaseMaintain": "Koruma",
+      "phaseBulk": "Kas artırma"
+    },
+    "goalCreationMethod": {
+      "title": "Yeni hedef",
+      "subtitle": "Yeni hedefini nasıl kurmak istersin?",
+      "guidedTitle": "Birkaç soruyu yanıtla",
+      "guidedDescription": "Seni adım adım doğru kalori ve makro hedeflerine yönlendireceğiz.",
+      "manualTitle": "Elle belirle",
+      "manualDescription": "Kalorini, makrolarını ve hedeflerini doğrudan gir.",
+      "autoCalculateTitle": "Benim için hesapla",
+      "autoCalculateDescription": "Profiline göre Mifflin-St Jeor formülüyle hedeflerini hesaplarız."
+    },
+    "goalWizard": {
+      "title": "Hedefini kur",
+      "step": "{{total}} adımdan {{current}}. adım",
+      "next": "İleri",
+      "back": "Geri",
+      "createGoal": "Hedef oluştur",
+      "goalType": {
+        "title": "Ana hedefin ne?",
+        "subtitle": "Bu, sana uygun kalori ve makro hedeflerini önermemize yardımcı olur.",
+        "lose": "Kilo ver",
+        "loseDescription": "Kalori açığıyla vücut yağını azalt.",
+        "maintain": "Kilonu koru",
+        "maintainDescription": "Mevcut kilonu ve vücut kompozisyonunu koru.",
+        "gain": "Kilo al",
+        "gainDescription": "Kalori fazlasıyla kas ve güç geliştir."
+      },
+      "goalWeight": {
+        "titleMain": "Hedef",
+        "titleAccent": "kilonun ne?",
+        "subtitle": "Ulaşmak istediğin kiloyu belirle. Mevcut kilonu referans olarak gösteriyoruz.",
+        "label": "Hedef kilo",
+        "currentWeightLabel": "Mevcut kilon",
+        "tipLoseBF": "Haftada vücut kilonun %0,5–1'i kadar bir hız, kesim sırasında kas kütlesini korumaya yardımcı olan sürdürülebilir bir tempodur.",
+        "tipGain": "Haftada 0,25–0,5 kg almak, yağ artışını en aza indirirken istikrarlı kas gelişimine izin verir.",
+        "tipGainImperial": "Haftada 0,55–1,1 lbs almak, yağ artışını en aza indirirken istikrarlı kas gelişimine izin verir."
+      },
+      "targetDate": {
+        "title": "Hedefine ne zaman ulaşmak istiyorsun?",
+        "subtitle": "Bir son tarih belirlemek, ilerlemeni zaman içinde takip etmene yardımcı olur.",
+        "label": "Hedef tarih",
+        "notSet": "Belirli bir tarih yok",
+        "clear": "Tarihi temizle",
+        "warningLabel": "Agresif zaman çizelgesi",
+        "warningMessage": "İstenen tempo: haftada yaklaşık {{weeklyLoss}} {{unit}}. Mevcut vücut kilon için önerilen üst sınır: haftada yaklaşık {{suggestedMaxWeeklyLoss}} {{unit}}. Yine de bunun için kalori hesaplayacağız, ancak daha gerçekçi bir hedef tarih yaklaşık {{estimatedDate}} olur."
+      }
+    },
+    "manageCheckinData": {
+      "title": "Beslenme kontrolleri",
+      "searchPlaceholder": "Kontrol ara...",
+      "noCheckins": "Henüz kontrol yok",
+      "noCheckinsDesc": "Kontroller, yapay zekâ ile hesaplanan bir beslenme hedefi kurduğunda oluşturulur",
+      "endOfHistory": "Tüm kontroller yüklendi",
+      "checkinOptions": "Kontrol seçenekleri",
+      "editCheckin": "Kontrolü düzenle",
+      "editCheckinDesc": "Kontrol hedeflerini değiştir",
+      "deleteCheckin": "Kontrolü sil",
+      "deleteCheckinDesc": "Bu kontrolü kalıcı olarak kaldır",
+      "subtitleFormat": "Hedef {{targetWeight}} {{unit}} • %{{targetBodyFat}} vücut yağı",
+      "checkinDate": "Kontrol tarihi"
+    },
+    "exerciseGoals": "Egzersiz hedefleri",
+    "exerciseGoalsTitle": "Güç ve düzenlilik",
+    "exerciseGoalsSubtitle": "1RM hedeflerini ve antrenman sıklığını takip et"
+  }
+}

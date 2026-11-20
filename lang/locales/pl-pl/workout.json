@@ -1,0 +1,95 @@
+{
+  "workout": {
+    "title": "Trening",
+    "workouts": {
+      "title": "Treningi"
+    },
+    "import": {
+      "characters": "Znaki",
+      "emptyData": "Wklej lub wpisz dane treningu.",
+      "formatInfo": "Wklej lub wpisz swój dziennik treningów (np. z notatki albo aplikacji). AI go przetworzy i utworzy sesje.",
+      "import": "Importuj",
+      "importWorkouts": "Importuj treningi",
+      "instructions": "Wklej poniżej dane treningu. Obsługiwane: zwykły tekst, listy punktowane lub ustrukturyzowane dzienniki.",
+      "pasteWorkoutDataPlaceholder": "Wklej tutaj dane treningu...",
+      "processing": "Przetwarzanie...",
+      "processingData": "Treningi zostały zaimportowane.",
+      "processingFailed": "Nie udało się przetworzyć danych. Sprawdź format i spróbuj ponownie.",
+      "supportedFormats": "Obsługiwane formaty"
+    },
+    "sessionOverview": "Przegląd sesji",
+    "startWorkout": "Rozpocznij trening",
+    "resumeSession": "Wznów sesję",
+    "workout": "Trening",
+    "inProgress": "W trakcie",
+    "type": {
+      "strength": "Siłowy",
+      "cardio": "Cardio",
+      "flexibility": "Elastyczność",
+      "calisthenics": "Kalistenika",
+      "other": "Inne",
+      "free": "Dowolny"
+    },
+    "exercises": "{{count}} ćwiczeń",
+    "workoutSequence": "Kolejność treningu",
+    "skipped": "Pominięte",
+    "startFromExercise": {
+      "title": "Zacznij od ćwiczenia",
+      "message": "Chcesz zacząć trening od {{exerciseName}}?",
+      "confirm": "Zacznij tutaj",
+      "cancel": "Anuluj"
+    },
+    "summary": {
+      "failedToLoad": "Nie udało się wczytać",
+      "noWorkoutId": "Brak ID treningu",
+      "unableToLoad": "Nie można wczytać",
+      "failedToGetFeedback": "Nie udało się uzyskać opinii. Spróbuj ponownie.",
+      "healthPrompt": {
+        "title": "Połączyć dane zdrowotne?",
+        "message": "Skoro ukończyłeś trening, Musclog może odczytywać i zapisywać dane zdrowotne, takie jak kroki, masa ciała i treningi.",
+        "confirm": "Połącz",
+        "later": "Może później"
+      }
+    },
+    "muscleGroups": {
+      "chest": "Klatka",
+      "back": "Plecy",
+      "legs": "Nogi",
+      "shoulders": "Barki",
+      "arms": "Ramiona",
+      "core": "Core",
+      "abdomen": "Brzuch",
+      "glutes": "Pośladki",
+      "fullBody": "Całe ciało",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "forearms": "Przedramiona",
+      "abs": "Mięśnie brzucha",
+      "quads": "Czworogłowe",
+      "hamstrings": "Dwugłowe uda",
+      "calves": "Łydki",
+      "full_body": "Całe ciało",
+      "cardio": "Cardio",
+      "other": "Inne"
+    },
+    "exerciseTypes": {
+      "compound": "Wielostawowe",
+      "isolation": "Izolowane",
+      "bodyweight": "Z masą ciała",
+      "machine": "Maszyna",
+      "dumbbell": "Hantle",
+      "barbell": "Sztanga",
+      "cable": "Wyciąg",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Taśma oporowa",
+      "medicine_ball": "Piłka lekarska",
+      "smith_machine": "Suwnica Smitha",
+      "plate_machine": "Maszyna z talerzami",
+      "cardio": "Cardio",
+      "stretching": "Rozciąganie",
+      "plyometric": "Plyometria",
+      "mobility": "Mobilność",
+      "other": "Inne"
+    }
+  }
+}

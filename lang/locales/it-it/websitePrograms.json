@@ -1,0 +1,57 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Programmi di allenamento gratuiti",
+      "intro": "Programmi completi con ogni allenamento, esercizio, serie e ripetizione scritti per esteso. Leggine uno qui, oppure aprilo in Musclog con un tocco e inizia ad allenarti. I pesi di partenza vengono suggeriti dal tuo profilo quando lo apri nell'app.",
+      "workouts_one": "{{count}} allenamento",
+      "workouts_few": "{{count}} allenamenti",
+      "workouts_many": "{{count}} allenamenti",
+      "workouts_other": "{{count}} allenamenti",
+      "minutes": "circa {{minutes}} min per allenamento",
+      "exercisesLink": "Sfoglia la libreria degli esercizi"
+    },
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzato"
+    },
+    "detail": {
+      "allPrograms": "Tutti i programmi",
+      "dayLabel": "Giorno {{n}}",
+      "exercise": "Esercizio",
+      "setsReps": "Serie × ripetizioni",
+      "rest": "Recupero",
+      "restSeconds": "{{seconds}} s",
+      "supersetGroup": "Superserie {{group}}",
+      "openTitle": "Apri questo programma in Musclog",
+      "openBody": "Si apre il programma nell'app come revisione, quindi non viene salvato nulla finché non confermi. I pesi di partenza sono suggeriti dal tuo profilo, e scegli tu i giorni della settimana. Se non hai ancora l'app, la pagina successiva contiene i link per il download.",
+      "openButton": "Apri in Musclog",
+      "howTitle": "Come eseguirlo",
+      "how": [
+        "Fai gli allenamenti in ordine e ripeti il ciclo. Un allenamento per giorno di allenamento è il modo più semplice; l'ordine conta più del giorno della settimana.",
+        "Parti con pesi che riesci a sollevare con una buona tecnica e con un paio di ripetizioni in riserva. Quando raggiungi la parte alta dell'intervallo di ripetizioni in ogni serie, aggiungi peso la volta successiva.",
+        "Questi programmi sono esempi generici, non consigli medici. In caso di infortunio o di una condizione di salute, consulta prima un professionista."
+      ],
+      "notFoundTitle": "Programma non trovato",
+      "notFoundBody": "Non c'è nessun programma a questo indirizzo.",
+      "metaTitle": "{{title}}: programma di allenamento gratuito"
+    },
+    "summaries": {
+      "push-pull-legs": "Tre allenamenti: spinta (petto, spalle e tricipiti), trazione (schiena e bicipiti) e gambe. Svolgili una volta a settimana, oppure due volte per la versione classica a sei giorni.",
+      "upper-lower-4-day": "Quattro allenamenti: due giorni per la parte superiore del corpo e due per la parte inferiore, così ogni muscolo viene allenato due volte a settimana con un programma di quattro giorni.",
+      "full-body-3-day": "Tre allenamenti total body per principianti. Ognuno include un movimento per le gambe, una spinta, una trazione e un po' di lavoro per le braccia, quindi ogni muscolo viene allenato tre volte a settimana.",
+      "phul": "Quattro allenamenti: due per la parte superiore e due per la parte inferiore. Il primo di ogni coppia è un giorno di potenza pesante con poche ripetizioni, il secondo un giorno di ipertrofia con più ripetizioni.",
+      "5-day-hypertrophy-split": "Cinque allenamenti, una zona per volta: petto, schiena, spalle, gambe e braccia. Più volume per muscolo in ogni sessione, una sessione intensa per muscolo a settimana.",
+      "arnold-split": "Tre allenamenti in stile Arnold: petto e schiena, spalle e braccia, poi gambe. Lo schema si ripete tradizionalmente due volte, per sei giorni di allenamento.",
+      "bro-split": "Cinque allenamenti, un gruppo muscolare per volta: petto, schiena, gambe, spalle e braccia. Ogni muscolo riceve una sessione mirata a settimana.",
+      "2-day-full-body": "Due allenamenti total body, A e B, per le settimane in cui puoi allenarti solo due volte. Alternali.",
+      "3-day-strength-builder": "Tre allenamenti costruiti attorno a serie più pesanti da 4 a 8 ripetizioni su squat, panca piana, stacco e rematore, con lavoro accessorio più leggero dopo.",
+      "classic-3-day-split": "Tre allenamenti: petto e tricipiti, schiena e bicipiti, poi gambe e spalle. Uno schema classico per una settimana di tre giorni.",
+      "brolic-workout": "Due allenamenti per la parte superiore, petto e spalle, con molti esercizi di spinta e croci. Più brevi della maggior parte dei programmi qui.",
+      "cable-superset-workout": "Cinque allenamenti avanzati (Superiore A, Inferiore A, Braccia, Superiore B, Inferiore B) costruiti con esercizi ai cavi, abbinati in superserie antagoniste, con un intervallo di ripetizioni e un tempo di recupero per ogni esercizio.",
+      "short-full-body-gym": "Due allenamenti total body brevi, A e B, con macchine e pesi liberi: circa 30 minuti, 2 serie ciascuno, volutamente facili. Un buon modo per ripartire dopo una pausa.",
+      "short-full-body-home": "Due allenamenti total body brevi, A e B, con manubri, kettlebell ed elastici: circa 30 minuti, 2 serie ciascuno, volutamente facili.",
+      "short-full-body-no-equipment": "Due allenamenti total body brevi, A e B, con solo il tuo corpo e un elastico: circa 30 minuti, 2 serie ciascuno, volutamente facili."
+    }
+  }
+}

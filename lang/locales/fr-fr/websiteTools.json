@@ -1,0 +1,51 @@
+{
+  "websiteTools": {
+    "layout": {
+      "allTools": "Tous les outils",
+      "howItWorks": "Comment ça marche",
+      "sources": "Sources",
+      "related": "Plus d'outils",
+      "ctaTitle": "Suis-le dans Musclog",
+      "ctaBody": "Musclog est une application gratuite et open source de suivi du fitness et de la nutrition. Tes données restent sur ton appareil.",
+      "sameMath": "Utilise le même calcul que l'application Musclog.",
+      "localOnly": "Tout ce que tu saisis reste dans ton navigateur.",
+      "readMore": "En savoir plus"
+    },
+    "units": {
+      "label": "Unités",
+      "metric": "Métrique (kg)",
+      "imperial": "Impérial (lb)",
+      "kg": "kg",
+      "lb": "lb"
+    },
+    "gym": {
+      "summary": "Ta salle : barre et disques",
+      "barWeight": "Poids de la barre",
+      "plates": "Paires de disques",
+      "platesHint": "Combien de paires de chaque disque tu possèdes. Mets 0 pour un disque que ta salle n'a pas.",
+      "reset": "Réinitialiser à une salle standard",
+      "remembered": "Mémorisé dans ce navigateur uniquement.",
+      "invalid": "Vérifie le poids de la barre et le nombre de disques : chacun doit être un nombre."
+    },
+    "index": {
+      "groups": {
+        "strength": {
+          "title": "Connais ta force",
+          "body": "Calcule ta max, tes disques et tes échauffements."
+        },
+        "training": {
+          "title": "Planifie ton entraînement",
+          "body": "Règle l'effort, la progression et les décharges, et tiens un carnet."
+        },
+        "nutrition": {
+          "title": "Mange pour ton objectif",
+          "body": "Protéines, calories et glucides sans deviner."
+        }
+      },
+      "title": "Outils gratuits pour les pratiquants",
+      "intro": "Des calculateurs qui tournent dans ton navigateur et utilisent les mêmes calculs que l'application Musclog. Rien de ce que tu saisis ne quitte la page.",
+      "programsTitle": "Programmes d'entraînement gratuits",
+      "programsBody": "Des programmes complets avec chaque jour, exercice, série et répétition. Ouvre-en un dans Musclog d'un geste."
+    }
+  }
+}

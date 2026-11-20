@@ -1,0 +1,18 @@
+{
+  "sessionFeedback": {
+    "title": "Seans geri bildirimi",
+    "subtitle": "Performansını değerlendir",
+    "difficulty": "Zorluk",
+    "exhaustion": "Yorgunluk",
+    "enjoyment": "Keyif",
+    "easy": "Kolay",
+    "extreme": "Aşırı",
+    "fresh": "Dinç",
+    "drained": "Bitkin",
+    "disliked": "Sevmedim",
+    "loved": "Bayıldım",
+    "submit": "Geri bildirimi gönder",
+    "notes": "Notlar",
+    "notesPlaceholder": "Nasıl geçti? Bir dahaki sefere hatırlanacak bir şey var mı?"
+  }
+}

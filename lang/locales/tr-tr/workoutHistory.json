@@ -1,0 +1,19 @@
+{
+  "workoutHistory": {
+    "title": "Seans geçmişi",
+    "previewTitle": "Antrenman önizlemesi",
+    "workoutInProgress": "Antrenman devam ediyor",
+    "previewSubtitle": "Önizleme",
+    "duration": "Süre",
+    "volume": "Hacim",
+    "setsDone": "Tamamlanan set",
+    "startThisWorkout": "Bu antrenmana başla",
+    "noExercisesYet": "Henüz egzersiz yok",
+    "exercise": "Egzersiz {{number}}",
+    "set": "Set {{number}}",
+    "share": "Paylaş",
+    "shareDescription": "Bu antrenman ayrıntılarını paylaş",
+    "shareFailed": "Antrenman ayrıntıları paylaşılamadı. Lütfen tekrar dene.",
+    "viewHistory": "Geçmiş seansları gör"
+  }
+}

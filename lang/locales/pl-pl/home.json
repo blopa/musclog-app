@@ -1,0 +1,74 @@
+{
+  "home": {
+    "accountMenu": "Otwórz menu konta",
+    "actions": {
+      "startWorkout": "Zacznij\ntrening",
+      "trackFood": "Zapisz\njedzenie",
+      "scanBarcode": "Zeskanuj\nkod",
+      "aiPhoto": "Zdjęcie\nAI",
+      "myMeals": "Moje\nposiłki",
+      "addNote": "Dodaj\nnotatkę",
+      "logCardio": "Zapisz\nspacer/bieg"
+    },
+    "sections": {
+      "recentWorkouts": "Ostatnie treningi",
+      "recentFoods": "Ostatnie produkty",
+      "dailySummary": "Podsumowanie dnia"
+    },
+    "activityRings": {
+      "move": "Ruch",
+      "steps": "Kroki",
+      "rest": "Odpoczynek",
+      "score": "Wynik"
+    },
+    "navigation": {
+      "home": "Start",
+      "profile": "Profil",
+      "workouts": "Treningi",
+      "food": "Jedzenie",
+      "coach": "Czat",
+      "focus": "Skupienie",
+      "cycle": "Cykl",
+      "checkin": "Przegląd tygodnia"
+    },
+    "dailyStats": {
+      "steps": "Kroki",
+      "burned": "Spalono do tej pory",
+      "eaten": "Zjedzono",
+      "deficit": "Deficyt",
+      "surplus": "Nadwyżka",
+      "even": "Zbilansowane"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Ostatni tydzień",
+      "lastWeeks_few": "Ostatnie {{count}} tygodnie",
+      "lastWeeks_many": "Ostatnich {{count}} tygodni",
+      "lastWeeks_other": "Ostatniego {{count}} tygodnia",
+      "lastDays_one": "Ostatni dzień",
+      "lastDays_few": "Ostatnie {{count}} dni",
+      "lastDays_many": "Ostatnich {{count}} dni",
+      "lastDays_other": "Ostatniego {{count}} dnia",
+      "tapHint": "Dotknij dnia, aby zobaczyć szczegóły",
+      "less": "Mniej",
+      "more": "Więcej",
+      "earlierWeeks": "Pokaż wcześniejsze tygodnie",
+      "laterWeeks": "Pokaż późniejsze tygodnie",
+      "workouts": {
+        "title": "Treningi",
+        "none": "Brak treningu",
+        "count_one": "{{count}} trening",
+        "count_few": "{{count}} treningi",
+        "count_many": "{{count}} treningów",
+        "count_other": "{{count}} treningu"
+      },
+      "nutrition": {
+        "title": "Odżywianie",
+        "none": "Nic nie zapisano",
+        "count_one": "Zapisano {{count}} posiłek",
+        "count_few": "Zapisano {{count}} posiłki",
+        "count_many": "Zapisano {{count}} posiłków",
+        "count_other": "Zapisano {{count}} posiłku"
+      }
+    }
+  }
+}

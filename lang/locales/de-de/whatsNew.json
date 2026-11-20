@@ -1,0 +1,242 @@
+{
+  "whatsNew": {
+    "title": "Neuigkeiten",
+    "intro": {
+      "inside": "Was in dieser Tour steckt",
+      "title": "Mach Musclog zu deinem",
+      "description": "Ein paar Dinge haben sich geändert. Schau kurz rein und wähle, was für dich passt. Änderungen werden beim Antippen gespeichert; du findest diese Tour in den Einstellungen wieder.",
+      "truncated": "Wir haben diese Tour auf die neuesten Highlights beschränkt."
+    },
+    "next": "Weiter",
+    "back": "Zurück",
+    "done": "Fertig",
+    "skip": "Vorerst überspringen",
+    "pageOf": "Seite {{current}} von {{total}}",
+    "saveFailed": "Diese Auswahl konnte nicht gespeichert werden. Bitte versuche es erneut.",
+    "loadFailed": "Diese Auswahl konnte nicht geladen werden.",
+    "dismissFailed": "Dein Fortschritt konnte nicht gespeichert werden. Bitte versuche es erneut.",
+    "retry": "Erneut versuchen",
+    "settingsCard": {
+      "title": "Neuigkeiten",
+      "subtitle": "Die neuesten Funktionen und Einstellungen noch einmal ansehen"
+    },
+    "debug": {
+      "title": "Neuigkeiten",
+      "record": "Gesehen bis: {{version}}",
+      "none": "Kein Eintrag",
+      "clear": "Eintrag löschen (Update simulieren)",
+      "set": "Gesehen-bis-Version setzen",
+      "preview": "Version {{version}} anzeigen",
+      "invalid": "Gib eine Version wie 2.13.0 ein.",
+      "version": "Version (x.y.z)"
+    },
+    "releases": {
+      "v2_15_2": {
+        "view": {
+          "title": "Dein Training, deine Ansicht",
+          "description": "Die geführte Ansicht hilft dir jetzt, dich auf einen Satz nach dem anderen zu konzentrieren. Lieber das ganze Bild? Die Inline-Ansicht gibt es weiterhin."
+        },
+        "workoutView": {
+          "title": "Wähle deine Trainingsansicht",
+          "description": "Du kannst das später in den Anzeigeeinstellungen ändern.",
+          "guided": {
+            "label": "Geführt",
+            "description": "Konzentriere dich mit größeren Bedienelementen auf deinen aktuellen Satz."
+          },
+          "inline": {
+            "label": "Inline",
+            "description": "Sieh und bearbeite deine Sätze gemeinsam in einer Liste."
+          }
+        },
+        "targets": {
+          "title": "Ziele, die zu dir und deinem Studio passen",
+          "description": "Musclog schlägt Startziele aus deinem Verlauf vor und markiert die Werte, die es geändert hat, damit du sie immer bearbeiten kannst. Trage die Stange und Scheiben deines Studios ein, damit du Gewichte bekommst, die du tatsächlich auflegen kannst."
+        },
+        "workoutAutonomy": {
+          "title": "Startziele",
+          "description": "Wie dein Verlauf das nächste Training beeinflusst.",
+          "suggest": {
+            "label": "Ziele vorschlagen",
+            "description": "Steigerungsvorschläge beim Start eines Trainings nutzen."
+          },
+          "manual": {
+            "label": "Meinen Plan behalten",
+            "description": "Mit den im Training gespeicherten Zielen starten."
+          }
+        },
+        "setupGym": "Studios und Scheiben einrichten",
+        "review": {
+          "title": "Ein wöchentlicher Moment zum Nachdenken",
+          "description": "Der Wochenrückblick verbindet Ernährung und Training, mit Vorschlägen, ob du sie übernehmen willst."
+        },
+        "reviewWeekday": {
+          "title": "Dein Rückblick-Tag",
+          "description": "Wähle einen Tag, der zu deiner Routine passt. Bestehende Erinnerungseinstellungen bleiben erhalten."
+        },
+        "openReview": "Wochenrückblick öffnen",
+        "workoutMore": {
+          "title": "Mehr für deine Trainings",
+          "plans": {
+            "label": "Trainingspläne",
+            "description": "Ordne Trainings in Wochen- oder rotierende Pläne."
+          },
+          "cardio": {
+            "label": "Cardio-Protokoll",
+            "description": "Erfasse Cardio-Einheiten neben deinem Krafttraining."
+          },
+          "swaps": {
+            "label": "Übungstausch",
+            "description": "Tausche eine Übung während des Trainings, ohne den ursprünglichen Plan zu ändern."
+          },
+          "restrictions": {
+            "label": "Übungseinschränkungen",
+            "description": "Merke dir Übungen, die du meiden willst, und vorübergehende Verletzungen in den Trainingseinstellungen."
+          },
+          "warmups": {
+            "label": "Aufwärmsätze",
+            "description": "Halte Aufwärmsätze getrennt von deinen Arbeitssätzen."
+          },
+          "restTimer": {
+            "label": "Automatischer Pausentimer",
+            "description": "Starte den Pausentimer nach jedem Satz, optional mit Vibration."
+          }
+        },
+        "heatmaps": {
+          "title": "Deine Aktivität auf einen Blick",
+          "description": "Sieh die Tage, an denen du trainiert und Mahlzeiten erfasst hast, als Kalender aus Feldern auf dem Startbildschirm: Dunkler heißt aktiver, und ein Tippen auf ein Feld zeigt diesen Tag. Schalte es unter Einstellungen → Erscheinungsbild und Startseite → Startseiten-Heatmaps ein, dort wählst du auch das Layout."
+        },
+        "aiSetup": {
+          "title": "Richte Musclog per Gespräch ein",
+          "description": "Beantworte ein paar Fragen im Chat statt Formulare auszufüllen, mit kostenloser Musclog-KI, deinem eigenen Gemini- oder OpenAI-Schlüssel oder ChatGPT oder Claude. Du prüfst und bearbeitest jede Antwort, bevor etwas gespeichert wird."
+        },
+        "openAiSetup": "Mein Profil mit KI aktualisieren",
+        "coachPersona": {
+          "title": "Wähle, wer dein KI-Coach ist",
+          "description": "Behalte Loggy oder wähle Graf Dracula, Cthulhu oder Sherlock Holmes, oder schreibe deinen eigenen mit Name, Stimme und Bild. Nur die Formulierung ändert sich, nie die Zahlen oder die Sicherheitshinweise. Du findest es unter Einstellungen → KI."
+        },
+        "appWide": {
+          "title": "Auch app-weit neu",
+          "home": {
+            "label": "Eine aufgeräumtere Startseite",
+            "description": "Die heutigen Zahlen zuerst, kleinere Verknüpfungen, und eine Wochenrückblick-Karte nur, wenn einer fällig ist."
+          },
+          "menus": {
+            "label": "Ruhigere Menüs und Einstellungen",
+            "description": "Einfache gruppierte Listen statt Kartenstapel, die Einstellungen sind in sieben klarere Gruppen aufgeteilt."
+          },
+          "widgets": {
+            "label": "Widgets auf iOS und Android",
+            "description": "Ernährungsfortschritt und Smarte Kamera funktionieren jetzt auch auf iOS. Entferne auf Android deine alten Musclog-Widgets und füge sie im Widget-Auswahlmenü neu hinzu."
+          },
+          "lock": {
+            "label": "Teile der App sperren",
+            "description": "Schütze unter Einstellungen → App-Sperre deinen Zyklus, deine Trainings, deine Ernährung, deinen Fortschritt oder die ganze App mit deinen Gerätedaten."
+          }
+        },
+        "cycleDiary": {
+          "title": "Ein privates, verschlüsseltes Zyklustagebuch",
+          "description": "Deine Perioden und Tageseinträge sind jetzt auf deinem Gerät verschlüsselt. Vorhersagen zeigen, wie sicher sie sind, und die Schätzung des fruchtbaren Fensters ist optional und standardmäßig aus. Erinnerungen können so unauffällig sein, wie du willst, und ein reines Zyklus-Widget zeigt bei einer App-Sperre nichts Persönliches."
+        }
+      },
+      "v2_16_0": {
+        "loggy": {
+          "title": "Lerne Loggy kennen",
+          "description": "Loggy ist das Maskottchen von Musclog. Er begrüßt dich, leistet leeren Bildschirmen Gesellschaft und taucht auf, wenn du ein erstes Mal erreichst. Du kannst unten ändern, wie er erscheint, oder später unter Einstellungen → Erscheinungsbild und Startseite.",
+          "show": {
+            "title": "Loggy anzeigen",
+            "description": "Ausschalten, um ihn überall zu verbergen. Dein KI-Coach behält sein Bild."
+          },
+          "animated": {
+            "title": "Animierter Loggy",
+            "description": "Ausschalten, damit er immer still steht. Gilt nur, wenn Loggy angezeigt wird."
+          }
+        },
+        "importHistory": {
+          "title": "Bring deine Trainingshistorie mit",
+          "description": "Wechselst du von einer anderen App? Übernimm deine bisherigen Trainings, damit deine Rekorde und dein Fortschritt von Tag eins an beginnen.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy und FitNotes",
+              "description": "Wähle die Datei, die du aus der App exportiert hast."
+            },
+            "twice": {
+              "label": "Gefahrlos wiederholbar",
+              "description": "Dieselbe Datei zweimal zu importieren fügt nichts hinzu."
+            },
+            "undo": {
+              "label": "Leicht rückgängig zu machen",
+              "description": "Entferne jederzeit alles, was ein Import hinzugefügt hat."
+            }
+          },
+          "action": {
+            "label": "Trainings importieren",
+            "description": "Das kannst du auch später unter Einstellungen → Backups und Daten tun."
+          }
+        },
+        "yearInReview": {
+          "title": "Dein Jahr in Musclog",
+          "description": "Schau jeden Dezember auf alles zurück, was du dieses Jahr getan hast.",
+          "items": {
+            "look": {
+              "label": "Einheiten, Rekorde und Trainingstage",
+              "description": "Dein Jahr in Zahlen und Postern, durch die du blättern kannst."
+            },
+            "share": {
+              "label": "Als Bild teilen",
+              "description": "Veröffentliche es oder behalte es für dich."
+            },
+            "private": {
+              "label": "Standardmäßig privat",
+              "description": "Gewicht und Ernährung bleiben außen vor, bis du sie hinzufügst."
+            }
+          },
+          "action": {
+            "label": "Dein bisheriges Jahr ansehen"
+          }
+        },
+        "strengthLevels": {
+          "title": "Kraftstufen",
+          "description": "Sieh, wie deine Hauptübungen im Verhältnis zu deinem Körpergewicht stehen und was die nächste Stufe verlangt.",
+          "items": {
+            "bodyWeight": {
+              "label": "Im Verhältnis zu deinem Körpergewicht",
+              "description": "Braucht eine Wägung: Erfasse dein Gewicht, um deine Stufen zu sehen."
+            },
+            "next": {
+              "label": "Was die nächste Stufe verlangt",
+              "description": "Die Last, die du heben musst, um die nächste Stufe zu erreichen."
+            },
+            "where": {
+              "label": "Unter Fortschritt und bei jeder Übung",
+              "description": "Du findest sie an beiden Orten."
+            }
+          },
+          "action": {
+            "label": "Fortschritt öffnen"
+          }
+        },
+        "trainingLoad": {
+          "title": "Aktuelle Trainingsbelastung",
+          "description": "Eine Körperkarte unter Fortschritt zeigt, was du in der letzten Woche trainiert hast.",
+          "items": {
+            "map": {
+              "label": "Die letzten 7 Tage auf einer Körperkarte",
+              "description": "Die Muskeln, die du trainiert hast, erscheinen dunkler."
+            },
+            "sets": {
+              "label": "Wöchentliche Sätze pro Muskel",
+              "description": "Die Zahlen stehen direkt neben der Karte."
+            },
+            "load": {
+              "label": "Belastung, nicht Erholung",
+              "description": "Sie zeigt, was du trainiert hast, nicht, ob du wieder trainieren solltest."
+            }
+          },
+          "action": {
+            "label": "Fortschritt öffnen"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "restTimer": {
+    "resting": "Recupero...",
+    "minus5s": "- 5s",
+    "plus5s": "+ 5s",
+    "skipRest": "Salta recupero",
+    "done": "Fatto",
+    "reps": "rip.",
+    "repsWithCount": "{{count}} rip.",
+    "upNext": "Prossimo",
+    "missingWorkoutData": "Dati dell'allenamento mancanti",
+    "completedSetNotFound": "Serie completata non trovata",
+    "getReady": "Preparati",
+    "go": "Via",
+    "a11yRemaining": "{{time}} rimanenti"
+  }
+}

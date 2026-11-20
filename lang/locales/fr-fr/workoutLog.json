@@ -1,0 +1,24 @@
+{
+  "workoutLog": {
+    "manageWorkoutLogData": {
+      "deleteLogWarning": "Es-tu sûr de vouloir supprimer ce carnet de séance ? Cette action est irréversible.",
+      "title": "Gérer les données des séances",
+      "searchPlaceholder": "Rechercher des séances...",
+      "noWorkoutLogs": "Aucune séance enregistrée pour l'instant",
+      "noWorkoutLogsDesc": "Termine des séances pour les voir ici",
+      "endOfHistory": "Fin de l'historique des séances",
+      "workoutLogOptions": "Options de la séance",
+      "editWorkoutLog": "Modifier la séance",
+      "editWorkoutLogDesc": "Modifier les détails de la séance",
+      "duplicateWorkoutLog": "Dupliquer la séance",
+      "duplicateWorkoutLogDesc": "Créer une copie de cette séance",
+      "deleteWorkoutLog": "Supprimer la séance",
+      "deleteWorkoutLogDesc": "Supprimer ce carnet de séance",
+      "detailFormat": "{{status}} • {{volume}}",
+      "statusCompleted": "Terminée",
+      "statusInProgress": "En cours",
+      "volumeFormat": "{{volume}} {{unit}}",
+      "unknownWorkout": "Séance inconnue"
+    }
+  }
+}

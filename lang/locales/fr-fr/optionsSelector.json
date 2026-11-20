@@ -1,0 +1,10 @@
+{
+  "optionsSelector": {
+    "link": "Lier",
+    "unlink": "Délier",
+    "edit": "Modifier",
+    "done": "Terminé",
+    "deleteExercise": "Supprimer l'exercice",
+    "deleteExercises": "Supprimer les exercices"
+  }
+}

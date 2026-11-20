@@ -1,0 +1,49 @@
+{
+  "notes": {
+    "title": "Notlar",
+    "sections": {
+      "latest": "Son",
+      "earlier": "Daha önce"
+    },
+    "screenMenu": {
+      "title": "Notlar",
+      "subtitle": "Şimdi not al, sonra kaydet",
+      "create": "Yeni not oluştur",
+      "createDescription": "Yaptığın ya da yediğin şeyi yaz"
+    },
+    "noteMenu": {
+      "title": "Not seçenekleri",
+      "edit": "Düzenle",
+      "editDescription": "Başlığı ya da metni değiştir",
+      "duplicate": "Çoğalt",
+      "duplicateDescription": "Listenin en üstüne kopyala",
+      "track": "Bunu kaydet",
+      "trackDescription": "Besini kaydetmesi için koça gönder",
+      "delete": "Sil",
+      "deleteDescription": "Bu notu kalıcı olarak kaldır"
+    },
+    "form": {
+      "createTitle": "Yeni not",
+      "editTitle": "Notu düzenle",
+      "titleLabel": "Başlık (isteğe bağlı)",
+      "titlePlaceholder": "ör. Öğle yemeği hazırlığı",
+      "bodyLabel": "Not",
+      "bodyPlaceholder": "ör. 70g brokoli, 120g tavuk göğsü",
+      "bodyRequired": "Kaydetmeden önce bir şey yaz",
+      "submit": "Notu kaydet"
+    },
+    "deleteConfirm": {
+      "title": "Not silinsin mi?",
+      "message": "Bu not kalıcı olarak kaldırılacak. Bu geri alınamaz.",
+      "confirm": "Sil"
+    },
+    "createSuccess": "Not kaydedildi",
+    "createError": "Not kaydedilemedi",
+    "updateSuccess": "Not güncellendi",
+    "updateError": "Not güncellenemedi",
+    "duplicateSuccess": "Not çoğaltıldı",
+    "duplicateError": "Not çoğaltılamadı",
+    "deleteSuccess": "Not silindi",
+    "deleteError": "Not silinemedi"
+  }
+}

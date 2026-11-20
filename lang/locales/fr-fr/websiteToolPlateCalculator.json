@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Calculateur de disques",
+    "intro": "Saisis le poids que tu veux sur la barre et obtiens les disques de chaque côté, avec les disques que ta salle possède réellement, en kg ou en lb, avec ta propre barre.",
+    "form": {
+      "target": "Poids cible",
+      "targetHint": "Le total sur la barre, barre comprise."
+    },
+    "problems": {
+      "target": "Saisis le poids cible sous forme de nombre supérieur à 0 et au plus {{max}} {{unit}}."
+    },
+    "results": {
+      "loaded": "Poids sur la barre",
+      "exact": "Ta salle peut charger ce poids exactement.",
+      "inexact": "Ta salle ne peut pas faire exactement {{target}}. La charge la plus lourde possible est {{below}}, et la charge chargeable la plus proche est {{nearest}}.",
+      "belowBar": "C'est plus léger que la barre ({{bar}}). Choisis une cible plus lourde, ou règle une barre plus légère dans ta salle.",
+      "perSide": "Disques de chaque côté",
+      "noPlates": "Aucun disque n'est nécessaire : la barre seule correspond à la cible.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Barre : {{bar}}. Les disques se chargent par paires, un de chaque côté."
+    },
+    "sections": [
+      {
+        "title": "Pourquoi commencer par le disque le plus lourd est une erreur",
+        "body": [
+          "La méthode habituelle prend le disque le plus lourd qui convient, puis le suivant, et ainsi de suite. Cela fonctionne quand une salle possède beaucoup de chaque disque. Avec un nombre limité de disques, elle peut échouer : une salle avec une paire chacun de 20, 15 et 10 kg a besoin de 25 kg par côté pour une charge de 70 kg avec une barre de 20 kg. Prendre le 20 d'abord laisse 5 kg qu'aucun disque ne complète. La solution est 15 et 10 kg, que la salle peut charger.",
+          "Ce calculateur essaie les combinaisons des disques que tu saisis et choisit la charge la plus lourde qui ne dépasse pas ta cible, en utilisant le moins de disques possible."
+        ]
+      },
+      {
+        "title": "Les disques se chargent par paires",
+        "body": [
+          "Une barre accepte les disques par paires, un de chaque côté, donc chaque disque que tu saisis compte par paires. Un disque impair de la salle ne peut pas former de paire et est exclu. Indique combien de paires de chaque disque tu possèdes."
+        ]
+      },
+      {
+        "title": "Poids de la barre et unités",
+        "body": [
+          "La barre fait partie du total : indique donc d'abord le poids de ta barre. Les barres olympiques standard pèsent 20 kg (45 lb), et certaines sont plus légères. Saisis en kg ou en lb : l'application stocke les kilogrammes et convertit, pour que les chiffres correspondent à ceux de l'application Musclog."
+        ]
+      }
+    ]
+  }
+}

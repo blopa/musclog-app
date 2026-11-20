@@ -1,0 +1,12 @@
+{
+  "camera": {
+    "title": "Aparat",
+    "processing": {
+      "aiAnalyzingMeal": "AI analizuje twój posiłek...",
+      "aiAnalyzingFood": "AI analizuje twoje jedzenie...",
+      "processingNutrients": "Przetwarzanie składników odżywczych",
+      "analyzingImage": "Analizowanie kodu kreskowego...",
+      "processingData": "Przetwarzanie danych"
+    }
+  }
+}

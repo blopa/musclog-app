@@ -1,0 +1,27 @@
+{
+  "errors": {
+    "connectionTimeout": {
+      "title": "Connessione scaduta",
+      "description": "Non siamo riusciti a raggiungere i server di Musclog. Controlla la connessione a internet.",
+      "tryAgain": "Riprova"
+    },
+    "failedToLoadData": "Caricamento dei dati non riuscito",
+    "somethingWentWrong": "Qualcosa è andato storto",
+    "genericDescription": "Si è verificato un errore imprevisto.",
+    "reload": "Ricarica",
+    "aiCreditsError": "Quota del servizio IA superata. Controlla la chiave API o riprova più tardi.",
+    "aiProcessingError": "Mi dispiace, ho avuto problemi a elaborare quella richiesta. Riprova tra un momento.",
+    "aiProcessingErrorTitle": "Errore nell'elaborazione della richiesta",
+    "gatewayDailyLimitError": "Raggiunto il limite giornaliero di IA gratuita. Riprova domani oppure aggiungi la tua chiave API nelle impostazioni IA.",
+    "gatewayDailyLimitErrorTitle": "Limite giornaliero raggiunto",
+    "databaseError": {
+      "title": "Errore del database",
+      "description": "Si è verificato un errore del database. La segnalazione degli errori è stata attivata per aiutare a risolvere il problema."
+    },
+    "aiInvalidApiKey": "La tua chiave API di {{provider}} è stata rifiutata. Controllala nelle impostazioni IA.",
+    "aiTimeout": "Ci sta mettendo troppo. Riprova.",
+    "aiKeyTestOk": "Chiave accettata",
+    "aiKeyTestRejected": "Chiave rifiutata. Controllala e riprova.",
+    "aiKeyTestNetwork": "Impossibile raggiungere il fornitore. Controlla la connessione."
+  }
+}

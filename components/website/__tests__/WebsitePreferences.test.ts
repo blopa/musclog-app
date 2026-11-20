@@ -75,7 +75,7 @@ const openPreferences = () => {
 };
 
 describe('website preferences', () => {
-  it('lists all five languages as links with the address locale selected', () => {
+  it('lists all ten languages as links with the address locale selected', () => {
     goTo('/es/tools/protein-calculator?kg=80#result');
     const trigger = openPreferences();
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
@@ -87,6 +87,11 @@ describe('website preferences', () => {
       '/nl/tools/protein-calculator?kg=80#result',
       '/pt-br/tools/protein-calculator?kg=80#result',
       '/ru/tools/protein-calculator?kg=80#result',
+      '/de/tools/protein-calculator?kg=80#result',
+      '/fr/tools/protein-calculator?kg=80#result',
+      '/it/tools/protein-calculator?kg=80#result',
+      '/pl/tools/protein-calculator?kg=80#result',
+      '/tr/tools/protein-calculator?kg=80#result',
     ]);
     expect(links.map((link) => link.getAttribute('hreflang'))).toEqual([
       'en',
@@ -94,10 +99,17 @@ describe('website preferences', () => {
       'nl',
       'pt-BR',
       'ru',
+      'de',
+      'fr',
+      'it',
+      'pl',
+      'tr',
     ]);
     expect(screen.getByRole('link', { name: /Español/ }).getAttribute('aria-current')).toBe('true');
     expect(screen.getByRole('link', { name: /English/ }).getAttribute('aria-current')).toBeNull();
-    ['EN', 'ES', 'NL', 'PT', 'RU'].forEach((badge) => expect(nav.textContent).toContain(badge));
+    ['EN', 'ES', 'NL', 'PT', 'RU', 'DE', 'FR', 'IT', 'PL', 'TR'].forEach((badge) =>
+      expect(nav.textContent).toContain(badge)
+    );
     expect(document.activeElement).toBe(
       screen.getByRole('tab', { name: 'website.navigation.language' })
     );

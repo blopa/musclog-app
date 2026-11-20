@@ -1,0 +1,9 @@
+{
+  "imageViewer": {
+    "open": "Fotoğrafı aç",
+    "close": "Kapat",
+    "save": "Fotoğrafı kaydet ya da paylaş",
+    "shareFailed": "Fotoğraf paylaşılamadı.",
+    "shareUnavailable": "Bu cihazda paylaşım kullanılamıyor."
+  }
+}

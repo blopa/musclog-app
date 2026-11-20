@@ -1,0 +1,58 @@
+{
+  "pastWorkoutHistory": {
+    "title": "Historia treningów",
+    "searchPlaceholder": "Szukaj sesji...",
+    "noWorkoutsFound": "Nie znaleziono treningów pasujących do wyszukiwania.",
+    "noWorkoutHistory": "Brak historii treningów.",
+    "noWorkoutsInRange": "Brak treningów w tym zakresie dat. Spróbuj poszerzyć filtr.",
+    "loadMore": "Wczytaj więcej",
+    "loadingMore": "Wczytywanie...",
+    "stats": {
+      "duration": "Czas trwania",
+      "volume": "Objętość",
+      "calories": "Kalorie",
+      "distance": "Dystans",
+      "pace": "Tempo"
+    },
+    "prBadge": {
+      "singular": "{{count}} rekord",
+      "plural": "Rekordy: {{count}}"
+    },
+    "filters": {
+      "title": "Filtruj treningi",
+      "workoutType": "Rodzaj treningu",
+      "minDuration": "Min. czas trwania",
+      "reset": "Resetuj",
+      "applyFilters": "Zastosuj filtry",
+      "durationFormats": {
+        "zero": "0 min",
+        "minutes": "{{minutes}} min",
+        "minutesPlus": "{{minutes}}+ min",
+        "max": "120 min+"
+      },
+      "workoutTypes": {
+        "all": "Wszystkie rodzaje",
+        "strength": "Siłowy",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Joga"
+      },
+      "dateRange": {
+        "title": "Zakres dat",
+        "30days": "Ostatnie 30 dni",
+        "90days": "Ostatnie 90 dni",
+        "allTime": "Cały czas"
+      },
+      "muscleGroups": {
+        "title": "Grupa mięśni (wiele wyborów)",
+        "chest": "Klatka piersiowa",
+        "back": "Plecy",
+        "legs": "Nogi",
+        "shoulders": "Barki",
+        "arms": "Ramiona",
+        "core": "Brzuch i tułów",
+        "fullBody": "Całe ciało"
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "nutrition": {
+    "title": "Beslenme",
+    "food": {
+      "title": "Besin"
+    },
+    "analyze": "Analiz et",
+    "calories": "Kalori",
+    "carbs": "Karbonhidrat",
+    "characters": "Karakter",
+    "confirmAndSave": "Onayla ve kaydet",
+    "createCustom": "Özel oluştur",
+    "createCustomDesc": "Besin ayrıntılarını elle ekle",
+    "dailyTotals": "Günlük toplamlar",
+    "dateLabel": "Tarih",
+    "emptyData": "Lütfen besin verisini yapıştır ya da gir.",
+    "emptyDescription": "Lütfen bir öğün açıklaması gir.",
+    "entriesCount": "Kayıtlar",
+    "example": "Örnek",
+    "fat": "Yağ",
+    "fiber": "Lif",
+    "foodNotFound": "Besin bulunamadı",
+    "foodNotFoundDescription": "Bu öğeyi veritabanımızda bulamadık. Ne yapmak istersin?",
+    "import": "İçe aktar",
+    "importFormatInfo": "Öğün kaydını yapıştır ya da yaz (ör. bir nottan ya da uygulamadan). Yapay zekâ bunu ayrıştırıp kayıtlar önerir.",
+    "importInstructions": "Besin verilerini aşağıya yapıştır. Desteklenenler: serbest metin, madde listeleri ya da yapılandırılmış kayıtlar.",
+    "importNutrition": "Besin verilerini içe aktar",
+    "logPastDay": "Geçmiş bir günü kaydet",
+    "mealDescriptionPlaceholder": "ör. Muzlu yulaf ezmesi, 2 yumurta, sütlü kahve",
+    "pasteNutritionDataPlaceholder": "Besin verisini buraya yapıştır...",
+    "processing": "İşleniyor...",
+    "processingData": "Besin verileri başarıyla içe aktarıldı.",
+    "processingDescription": "Açıklama başarıyla işlendi.",
+    "processingFailed": "Veriler işlenemedi. Lütfen biçimi kontrol edip tekrar dene.",
+    "protein": "Protein",
+    "retrospectiveExample": "ör. Kahvaltı: yulaf ezmesi ve muz. Öğle yemeği: tavuklu salata. Akşam yemeği: sebzeli makarna.",
+    "retrospectiveInstructions": "O gün ne yediğini kendi cümlelerinle anlat. Yapay zekâ porsiyonları ve besin değerlerini tahmin edecek.",
+    "review": "İncele",
+    "searchAgain": "Yeniden ara",
+    "searchAgainDesc": "Farklı bir arama terimi dene",
+    "tryAICamera": "Yapay zekâ kamerasını dene",
+    "tryAICameraDesc": "Öğününü anında tanımlamak için tara",
+    "supportedFormats": "Desteklenen biçimler",
+    "checkin": {
+      "title": "Haftalık kontrol",
+      "noCheckinFound": "Bekleyen kontrol bulunamadı.",
+      "currentStatus": "Mevcut durum",
+      "onTrack": "Yolunda",
+      "ahead": "Önde",
+      "behind": "Geride",
+      "noCheckinFoundDesc": "Bugün için planlanmış bir kontrolün yok. Bir sonraki planlı kontrol gününde tekrar gel.",
+      "headline": {
+        "onTrack": "Yolunda",
+        "ahead": "Plânın önünde",
+        "behind": "Gelişecek yer var"
+      },
+      "subtext": {
+        "onTrack": "Bu hafta düzenli bir tempo tuttun. Hedeflerine doğru ilerlemeye devam et.",
+        "ahead": "Kilo hedeflerinin önündesin! Tutarlılık için harika iş.",
+        "behind": "Bu hafta değerlerin dalgalandı. Düzenli kayıt bunları dengeleyecek."
+      },
+      "weightTrend": "Kilo eğilimi",
+      "target": "Hedef",
+      "targetShort": "Hedef: %{{value}}",
+      "weeklyBreakdown": "Haftalık döküm",
+      "weekProgress": "{{total}} haftadan {{current}}. hafta",
+      "summaryIntro": "Günlük {{target}} hedefledin, ama ortalama şu oldu:",
+      "summaryOutro": "Sonuca rağmen tamamladın:",
+      "workoutsCount": "antrenman",
+      "noWorkouts": "antrenman yok",
+      "withHighIntensity": "yüksek yoğunlukla.",
+      "avgIntake": "Ort. alım",
+      "consistency": "Tutarlılık",
+      "rate": "oran",
+      "avgBodyFat": "Ort. vücut yağı",
+      "activeMinutes": "Aktif dakikalar",
+      "vsLastWeek": "geçen haftaya göre {{prefix}}{{value}}%",
+      "adherence": "Haftalık uyum",
+      "summary": "Günlük {{targetKcal}} hedefledin, ama günlük ortalama {{actualKcal}} oldu. {{workouts}} antrenman tamamladın.",
+      "weightComparison": "Kilo: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "Bu hafta kilonu 4 defadan az kaydettin. Ortalamalar daha az isabetli olabilir.",
+      "keepMacros": "Mevcut makrolarımı koru",
+      "readjust": "Planımı yeniden ayarla",
+      "nextMilestones": "Sonraki kilometre taşı",
+      "history": "Geçmiş",
+      "weekTitle": "{{number}}. Hafta Değerlendirmesi",
+      "prepareNow": "Şimdi hazırla",
+      "noMilestones": "Yaklaşan kontrol yok. Başlamak için beslenme hedefini kur.",
+      "noHistory": "Henüz tamamlanmış kontrol yok.",
+      "selectYear": "Yıla göre filtrele",
+      "notEnoughDataWarning": "Bu hafta yeterli veri kaydedilmedi. Sonuçlar hatalı olabilir.",
+      "sparseTrendWarning": "Eğilimin mevcut, ama haftalık kontrol için güvenilir olacak kadar kilo ölçümü ya da beslenme kaydı yok.",
+      "status": {
+        "pending": "Bekliyor",
+        "ahead": "Önde",
+        "onTrack": "Yolunda",
+        "behind": "Geride",
+        "descriptions": {
+          "pending": "Kontrol henüz tamamlanmadı",
+          "ahead": "İlerleme hedefin önünde",
+          "onTrack": "İlerleme hedefte",
+          "behind": "İlerleme hedefin gerisinde"
+        }
+      }
+    },
+    "common": {},
+    "createMeal": {
+      "estimated": "Tahmini",
+      "totalNutrition": "Toplam besin değerleri"
+    },
+    "macros": {
+      "protein": "Protein",
+      "carbs": "Karbonhidrat",
+      "fat": "Yağ"
+    },
+    "mealEstimation": {
+      "title": "Öğün tahmini",
+      "identifiedItems": "Tanımlanan öğeler",
+      "addItem": "Öğe ekle",
+      "confirmAndLog": "Onayla ve öğünü kaydet",
+      "retake": "Yeniden çek",
+      "logged": "Öğün kaydedildi",
+      "logError": "Bu öğün kaydedilemedi. Lütfen tekrar dene."
+    },
+    "index": {
+      "handleSaveCustomFood": "Özel besin başarıyla kaydedildi."
+    },
+    "manageFoodData": {
+      "title": "Beslenme günlüğü",
+      "searchPlaceholder": "Besin kaydı ara...",
+      "noLogs": "Henüz besin kaydı yok",
+      "noLogsDesc": "Öğünlerini burada görmek için takip etmeye başla",
+      "endOfHistory": "Besin kaydı geçmişinin sonu",
+      "foodOptions": "Besin seçenekleri",
+      "editFoodEntry": "Besin kaydını düzenle",
+      "editFoodEntryDesc": "Besin ayrıntılarını değiştir",
+      "duplicateEntry": "Kaydı çoğalt",
+      "duplicateEntryDesc": "Bu kaydın bir kopyasını oluştur",
+      "deleteEntry": "Kaydı sil",
+      "deleteEntryDesc": "Bu besin kaydını kaldır"
+    }
+  }
+}

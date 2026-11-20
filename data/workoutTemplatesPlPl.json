@@ -1,0 +1,70 @@
+[
+  {
+    "title": "Podział hipertrofii na 5 dni"
+  },
+  {
+    "title": "Push, pull, nogi (PPL)"
+  },
+  {
+    "title": "Podział góra/dół na 4 dni"
+  },
+  {
+    "title": "Całe ciało (3 dni)"
+  },
+  {
+    "title": "Podział Arnolda (6 dni)"
+  },
+  {
+    "title": "Bro split (5 dni)"
+  },
+  {
+    "title": "PHUL (siła i hipertrofia: góra/dół)"
+  },
+  {
+    "title": "Całe ciało, 2 dni (A/B)"
+  },
+  {
+    "title": "Budowanie siły, 3 dni"
+  },
+  {
+    "title": "Klasyczny 3-dniowy (klatka/triceps, plecy/biceps, nogi/barki)"
+  },
+  {
+    "title": "Trening brolic"
+  },
+  {
+    "title": "Trening supersetów na wyciągach",
+    "description": "Pięciosesyjny program na wyciągach, oparty na supersetach górnej partii, dolnej partii i mięśni antagonistycznych. Ćwiczenia wielostawowe i izolacyjne rób z 1–2 RIR; ostatnia seria izolacyjna może dojść do 0–1 RIR. Progresuj każde ćwiczenie osobno, podwójną progresją.",
+    "dayNames": {
+      "1": "Góra A",
+      "2": "Dół A",
+      "3": "Ramiona",
+      "5": "Góra B",
+      "6": "Dół B"
+    }
+  },
+  {
+    "title": "Krótki trening całego ciała — siłownia",
+    "description": "Dwa krótkie treningi całego ciała (A i B) na sprzęcie siłowni: około 30 minut, po 2 serie każdego ćwiczenia, celowo lekko. Dobry sposób na powrót do treningów.",
+    "dayNames": {
+      "1": "Trening A",
+      "2": "Trening B"
+    }
+  },
+  {
+    "title": "Krótki trening całego ciała — dom",
+    "description": "Dwa krótkie treningi całego ciała (A i B) z hantlami, kettlebellem i gumami: około 30 minut, po 2 serie każdego ćwiczenia. Celowo lekko.",
+    "dayNames": {
+      "1": "Trening A",
+      "2": "Trening B"
+    }
+  },
+  {
+    "title": "Krótki trening całego ciała — bez sprzętu",
+    "description": "Dwa krótkie treningi całego ciała (A i B) tylko z masą ciała i gumą: około 30 minut, po 2 serie każdego ćwiczenia. Celowo lekko.",
+    "dayNames": {
+      "1": "Trening A",
+      "2": "Trening B"
+    }
+  }
+]

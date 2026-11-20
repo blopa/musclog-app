@@ -1,0 +1,103 @@
+{
+  "goalsManagement": {
+    "title": "Ziele verwalten",
+    "nutritionAndBodyTab": "Ernährung & Körper",
+    "fitnessAndExerciseTab": "Fitness & Übungen",
+    "subtitle": "Verfolge deinen Fortschritt und deinen Verlauf.",
+    "currentGoals": "Aktuelle Ziele",
+    "history": "Zielverlauf",
+    "newGoal": "Neues Ziel",
+    "createGoalDesc": "Neue Ernährungsziele und Makros festlegen",
+    "createCheckin": "Check-in erstellen",
+    "createCheckinDesc": "Einen neuen Ernährungs-Check-in hinzufügen",
+    "emptyStateMessage": "Erstelle ein neues Ziel, um loszulegen",
+    "editGoal": "Bearbeiten",
+    "deleteGoalAction": "Löschen",
+    "deleteGoal": "Ziel löschen",
+    "deleteGoalMessage": "Dieses Ziel wird dauerhaft aus deinem Verlauf entfernt.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Willst du dieses Ziel wirklich löschen? Das kann nicht rückgängig gemacht werden.",
+      "title": "Ernährungsziele",
+      "searchPlaceholder": "Ziele suchen …",
+      "noGoals": "Noch keine Ziele",
+      "noGoalsDesc": "Lege Ernährungsziele fest, dann siehst du sie hier",
+      "endOfHistory": "Ende des Zielverlaufs",
+      "goalOptions": "Optionen für Ziele",
+      "editGoal": "Ziel bearbeiten",
+      "editGoalDesc": "Kalorien, Makros und Zielwerte ändern",
+      "duplicateGoal": "Ziel duplizieren",
+      "duplicateGoalDesc": "Kopie als neues Ziel erstellen",
+      "regenerateCheckins": "Check-ins neu erstellen",
+      "regenerateCheckinsDesc": "Check-ins für dieses Ziel löschen und neu anlegen",
+      "deleteGoal": "Ziel löschen",
+      "deleteGoalDesc": "Dieses Ziel aus dem Verlauf entfernen",
+      "subtitleFormat": "{{calories}} • {{phase}} • Ziel {{targetWeight}} {{unit}}",
+      "phaseCut": "Diät",
+      "phaseMaintain": "Halten",
+      "phaseBulk": "Aufbau"
+    },
+    "goalCreationMethod": {
+      "title": "Neues Ziel",
+      "subtitle": "Wie möchtest du dein neues Ziel einrichten?",
+      "guidedTitle": "Beantworte ein paar Fragen",
+      "guidedDescription": "Wir führen dich Schritt für Schritt zu den passenden Kalorien- und Makrozielen.",
+      "manualTitle": "Manuell festlegen",
+      "manualDescription": "Gib deine Kalorien, Makros und Ziele direkt ein.",
+      "autoCalculateTitle": "Berechne es für mich",
+      "autoCalculateDescription": "Wir berechnen deine Ziele mit der Mifflin-St-Jeor-Formel auf Basis deines Profils."
+    },
+    "goalWizard": {
+      "title": "Dein Ziel einrichten",
+      "step": "Schritt {{current}} von {{total}}",
+      "next": "Weiter",
+      "back": "Zurück",
+      "createGoal": "Ziel erstellen",
+      "goalType": {
+        "title": "Was ist dein Hauptziel?",
+        "subtitle": "Damit können wir passende Kalorien- und Makroziele für dich empfehlen.",
+        "lose": "Abnehmen",
+        "loseDescription": "Körperfett durch ein Kaloriendefizit reduzieren.",
+        "maintain": "Gewicht halten",
+        "maintainDescription": "Dein aktuelles Gewicht und deine Körperzusammensetzung beibehalten.",
+        "gain": "Zunehmen",
+        "gainDescription": "Muskeln und Kraft mit einem Kalorienüberschuss aufbauen."
+      },
+      "goalWeight": {
+        "titleMain": "Was ist dein",
+        "titleAccent": "Zielgewicht?",
+        "subtitle": "Lege das Gewicht fest, das du erreichen willst. Dein aktuelles Gewicht wird zur Orientierung angezeigt.",
+        "label": "Zielgewicht",
+        "currentWeightLabel": "Dein aktuelles Gewicht",
+        "tipLoseBF": "0,5–1 % deines Körpergewichts pro Woche sind ein nachhaltiges Tempo, das in der Diätphase Muskelmasse schützt.",
+        "tipGain": "0,25–0,5 kg pro Woche halten den Fettanteil gering und ermöglichen trotzdem stetigen Muskelaufbau.",
+        "tipGainImperial": "0,55–1,1 lbs pro Woche halten den Fettanteil gering und ermöglichen trotzdem stetigen Muskelaufbau."
+      },
+      "targetDate": {
+        "title": "Wann willst du dein Ziel erreichen?",
+        "subtitle": "Ein Termin hilft dir, deinen Fortschritt im Blick zu behalten.",
+        "label": "Zieldatum",
+        "notSet": "Kein bestimmtes Datum",
+        "clear": "Datum entfernen",
+        "warningLabel": "Ambitionierter Zeitplan",
+        "warningMessage": "Gewünschtes Tempo: etwa {{weeklyLoss}} {{unit}} pro Woche. Empfohlene Obergrenze für dein aktuelles Körpergewicht: etwa {{suggestedMaxWeeklyLoss}} {{unit}} pro Woche. Wir berechnen die Kalorien trotzdem, aber ein realistischeres Zieldatum wäre etwa {{estimatedDate}}."
+      }
+    },
+    "manageCheckinData": {
+      "title": "Ernährungs-Check-ins",
+      "searchPlaceholder": "Check-ins suchen …",
+      "noCheckins": "Noch keine Check-ins",
+      "noCheckinsDesc": "Check-ins werden angelegt, wenn du ein KI-berechnetes Ernährungsziel einrichtest",
+      "endOfHistory": "Alle Check-ins geladen",
+      "checkinOptions": "Optionen für Check-ins",
+      "editCheckin": "Check-in bearbeiten",
+      "editCheckinDesc": "Zielwerte des Check-ins ändern",
+      "deleteCheckin": "Check-in löschen",
+      "deleteCheckinDesc": "Diesen Check-in dauerhaft entfernen",
+      "subtitleFormat": "Ziel {{targetWeight}} {{unit}} • {{targetBodyFat}} % Körperfett",
+      "checkinDate": "Datum des Check-ins"
+    },
+    "exerciseGoals": "Übungsziele",
+    "exerciseGoalsTitle": "Kraft & Regelmäßigkeit",
+    "exerciseGoalsSubtitle": "1RM-Ziele und Trainingshäufigkeit im Blick behalten"
+  }
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "title": "5 Günlük Hipertrofi Bölümü"
+  },
+  {
+    "title": "Push Pull Legs (PPL)"
+  },
+  {
+    "title": "Üst/Alt 4 Günlük Bölüm"
+  },
+  {
+    "title": "Tüm Vücut (3 Gün)"
+  },
+  {
+    "title": "Arnold Bölümü (6 Gün)"
+  },
+  {
+    "title": "Bro Bölümü (5 Gün)"
+  },
+  {
+    "title": "PHUL (Güç ve Hipertrofi Üst Alt)"
+  },
+  {
+    "title": "2 Günlük Tüm Vücut (A/B)"
+  },
+  {
+    "title": "3 Günlük Kuvvet Programı"
+  },
+  {
+    "title": "Klasik 3 Gün (Göğüs/Triceps, Sırt/Biceps, Bacak/Omuz)"
+  },
+  {
+    "title": "Brolic Antrenmanı"
+  },
+  {
+    "title": "Kablo Süperset Antrenmanı",
+    "description": "Üst, alt ve karşıt kas süpersetleri etrafında kurulmuş beş seanslık bir kablo programı. Bileşik ve izolasyon hareketlerini 1–2 RIR'da tut; son izolasyon seti 0–1 RIR'a ulaşabilir. Her egzersizi çift ilerlemeyle bağımsız ilerlet.",
+    "dayNames": {
+      "1": "Üst A",
+      "2": "Alt A",
+      "3": "Kol",
+      "5": "Üst B",
+      "6": "Alt B"
+    }
+  },
+  {
+    "title": "Kısa Tüm Vücut — Salon",
+    "description": "Salon ekipmanıyla iki kısa tüm vücut antrenmanı (A ve B): yaklaşık 30 dakika, her biri 2 set; bilerek kolay. Geri dönmek için iyi bir yol.",
+    "dayNames": {
+      "1": "Antrenman A",
+      "2": "Antrenman B"
+    }
+  },
+  {
+    "title": "Kısa Tüm Vücut — Ev",
+    "description": "Dumbbell, kettlebell ve bantlarla iki kısa tüm vücut antrenmanı (A ve B): yaklaşık 30 dakika, her biri 2 set. Bilerek kolay.",
+    "dayNames": {
+      "1": "Antrenman A",
+      "2": "Antrenman B"
+    }
+  },
+  {
+    "title": "Kısa Tüm Vücut — Ekipmansız",
+    "description": "Yalnızca vücut ağırlığın ve bir bantla iki kısa tüm vücut antrenmanı (A ve B): yaklaşık 30 dakika, her biri 2 set. Bilerek kolay.",
+    "dayNames": {
+      "1": "Antrenman A",
+      "2": "Antrenman B"
+    }
+  }
+]

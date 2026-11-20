@@ -1,0 +1,31 @@
+{
+  "cardio": {
+    "title": "Enregistrer une marche ou une course",
+    "subtitle": "En ajouter une sans démarrer de séance",
+    "menuItem": "Enregistrer une marche ou une course",
+    "activity": "Activité",
+    "walk": "Marche",
+    "run": "Course",
+    "treadmill": "Sur tapis de course",
+    "distance": "Distance",
+    "distanceInput": "Distance ({{unit}})",
+    "duration": "Durée",
+    "hours": "Heures",
+    "minutes": "Minutes",
+    "seconds": "Secondes",
+    "pace": "Allure",
+    "ended": "Terminée",
+    "estimate": "Calories estimées",
+    "estimateValue": "{{kcal}}",
+    "estimateNoWeight": "Ajoute ton poids dans ton profil pour estimer les calories.",
+    "estimateHint": "Estimé à partir de ta vitesse et de ton poids, sur terrain plat.",
+    "watchCalories": "Calories de ma montre (facultatif)",
+    "watchHint": "Laisse à 0 pour utiliser l'estimation.",
+    "save": "Enregistrer",
+    "saved": "{{activity}} enregistrée",
+    "failed": "Impossible d'enregistrer. Réessaie.",
+    "needsDistanceAndTime": "Saisis une distance et une durée pour enregistrer.",
+    "futureError": "C'est dans le futur. Choisis quand tu as terminé.",
+    "noPace": "—"
+  }
+}

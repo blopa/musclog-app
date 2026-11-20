@@ -1,0 +1,184 @@
+{
+  "yearInReview": {
+    "title": "Ton année dans Musclog",
+    "empty": "Rien n’est enregistré pour cette année pour l’instant. Le bilan se remplit au fil de tes entraînements et de ton suivi.",
+    "back": "Retour",
+    "next": "Suivant",
+    "done": "Terminé",
+    "stepOf": "{{current}} sur {{total}}",
+    "shareButton": "Partager",
+    "shareSheetTitle": "Partage ton année",
+    "includeWeight": "Inclure l’évolution du poids",
+    "includeNutrition": "Inclure la nutrition",
+    "shareHint": "Les deux sont désactivés tant que tu ne les actives pas. Sans eux, l’image ne contient ni poids corporel ni chiffres d’alimentation.",
+    "shareAction": "Partager l’image",
+    "intro": {
+      "body": "Voici à quoi ont ressemblé ton entraînement et ton suivi."
+    },
+    "sessions": {
+      "title": "Séances",
+      "body_one": "séance terminée",
+      "body_few": "séances terminées",
+      "body_many": "séances terminées",
+      "body_other": "séances terminées"
+    },
+    "heatmap": {
+      "title": "Jours d’entraînement",
+      "days_one": "jour d’entraînement",
+      "days_few": "jours d’entraînement",
+      "days_many": "jours d’entraînement",
+      "days_other": "jours d’entraînement",
+      "legend": {
+        "workout": "Séance",
+        "food": "Repas",
+        "both": "Les deux"
+      }
+    },
+    "streak": {
+      "title": "Plus longue série",
+      "body_one": "semaine d’affilée avec une séance",
+      "body_few": "semaines d’affilée avec une séance",
+      "body_many": "semaines d’affilée avec une séance",
+      "body_other": "semaines d’affilée avec une séance"
+    },
+    "volume": {
+      "title": "Total soulevé",
+      "body": "Poids multiplié par les rép. sur tes séries de travail.",
+      "perWorkout": "{{unit}} par séance"
+    },
+    "topExercises": {
+      "title": "Les plus travaillés",
+      "sets_one": "{{n}} série",
+      "sets_few": "{{n}} séries",
+      "sets_many": "{{n}} séries",
+      "sets_other": "{{n}} séries"
+    },
+    "records": {
+      "title": "Records personnels",
+      "body_one": "nouveau record personnel",
+      "body_few": "nouveaux records personnels",
+      "body_many": "nouveaux records personnels",
+      "body_other": "nouveaux records personnels"
+    },
+    "busiestMonth": {
+      "title": "Mois le plus chargé",
+      "body_one": "{{n}} séance ce mois-là.",
+      "body_few": "{{n}} séances ce mois-là.",
+      "body_many": "{{n}} séances ce mois-là.",
+      "body_other": "{{n}} séances ce mois-là."
+    },
+    "trainingTime": {
+      "title": "Créneau d’entraînement habituel",
+      "hours": "{{n}} heures d’entraînement, à partir des séances dont la durée est enregistrée.",
+      "buckets": {
+        "morning": "Matin",
+        "afternoon": "Après-midi",
+        "evening": "Soir",
+        "night": "Nuit"
+      }
+    },
+    "nutrition": {
+      "title": "Repas notés",
+      "meals_one": "repas noté",
+      "meals_few": "repas notés",
+      "meals_many": "repas notés",
+      "meals_other": "repas notés",
+      "days_one": "jour avec un repas noté",
+      "days_few": "jours avec un repas noté",
+      "days_many": "jours avec un repas noté",
+      "days_other": "jours avec un repas noté"
+    },
+    "foodStreak": {
+      "title": "Plus longue série de suivi",
+      "body_one": "jour d’affilée avec un repas noté",
+      "body_few": "jours d’affilée avec un repas noté",
+      "body_many": "jours d’affilée avec un repas noté",
+      "body_other": "jours d’affilée avec un repas noté",
+      "chart": "Jours avec un repas noté, mois par mois."
+    },
+    "favouriteMeal": {
+      "title": "Repas le plus noté",
+      "days_one": "{{n}} jour",
+      "days_few": "{{n}} jours",
+      "days_many": "{{n}} jours",
+      "days_other": "{{n}} jours",
+      "captions": {
+        "breakfast": "Le repas le plus important de la journée, disent toutes les boîtes de céréales.",
+        "lunch": "Le coup de fouet de midi.",
+        "dinner": "Le gros repas de fin de journée.",
+        "snack": "Entre les repas, ça compte aussi.",
+        "other": "Difficile à classer, facile à noter."
+      }
+    },
+    "protein": {
+      "title": "Protéines, additionnées",
+      "caption": "{{unit}} de protéines",
+      "body": "Gramme par gramme, à partir des protéines de chaque repas noté. Et non le poids de la nourriture.",
+      "compare": {
+        "wheyBag_one": "Cela fait environ {{n}} sac de whey protéine.",
+        "wheyBag_few": "Cela fait environ {{n}} sacs de whey protéine.",
+        "wheyBag_many": "Cela fait environ {{n}} sacs de whey protéine.",
+        "wheyBag_other": "Cela fait environ {{n}} sacs de whey protéine.",
+        "cat_one": "Cela fait environ {{n}} chat.",
+        "cat_few": "Cela fait environ {{n}} chats.",
+        "cat_many": "Cela fait environ {{n}} chats.",
+        "cat_other": "Cela fait environ {{n}} chats.",
+        "bowlingBall_one": "Cela fait environ {{n}} boule de bowling.",
+        "bowlingBall_few": "Cela fait environ {{n}} boules de bowling.",
+        "bowlingBall_many": "Cela fait environ {{n}} boules de bowling.",
+        "bowlingBall_other": "Cela fait environ {{n}} boules de bowling.",
+        "barbell_one": "Cela fait environ {{n}} barre olympique.",
+        "barbell_few": "Cela fait environ {{n}} barres olympiques.",
+        "barbell_many": "Cela fait environ {{n}} barres olympiques.",
+        "barbell_other": "Cela fait environ {{n}} barres olympiques."
+      },
+      "chicken_one": "l’équivalent d’un blanc de poulet, brocolis non compris",
+      "chicken_few": "l’équivalent de blancs de poulet, brocolis non compris",
+      "chicken_many": "l’équivalent de blancs de poulet, brocolis non compris",
+      "chicken_other": "l’équivalent de blancs de poulet, brocolis non compris"
+    },
+    "macros": {
+      "title": "Où sont passés les grammes",
+      "protein": "Protéines",
+      "carbs": "Glucides",
+      "fat": "Lipides",
+      "body": "Tous les grammes des aliments que tu as notés, additionnés."
+    },
+    "weight": {
+      "title": "Poids corporel",
+      "unchanged": "Aucune évolution entre ta première et ta dernière pesée.",
+      "caption": "De ta première pesée à ta dernière."
+    },
+    "outro": {
+      "title": "Voilà l’année",
+      "body": "Continue de noter pour voir l’histoire de l’année prochaine."
+    },
+    "share": {
+      "sessions": "Séances",
+      "activeDays": "Jours actifs",
+      "volume": "Total soulevé",
+      "topExercise": "Les plus travaillés",
+      "records": "Records personnels",
+      "meals": "Repas notés",
+      "protein": "Protéines",
+      "weight": "Évolution du poids"
+    },
+    "homeCard": {
+      "title": "Ton année {{year}} dans Musclog",
+      "body": "Découvre à quoi ont ressemblé tes entraînements.",
+      "open": "Ouvrir ton année",
+      "dismiss": "Masquer"
+    },
+    "settingsRow": {
+      "title": "Ton année dans Musclog",
+      "subtitle": "Un regard sur tes entraînements et ton suivi"
+    },
+    "notification": {
+      "title": "Ton année {{year}} dans Musclog est prête",
+      "body": "Découvre à quoi ont ressemblé tes entraînements cette année."
+    },
+    "loadFailed": "Impossible de charger ton année.",
+    "retry": "Réessayer",
+    "seeYear": "Voir {{year}} jusqu’ici"
+  }
+}

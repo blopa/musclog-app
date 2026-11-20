@@ -1,0 +1,80 @@
+{
+  "websiteToolCalorieDeficit": {
+    "title": "Calculateur de déficit calorique et de date cible",
+    "intro": "Indique un poids cible et une date pour voir l'objectif calorique quotidien qui t'y mène, la fourchette dans laquelle il se situe et si le rythme est réaliste.",
+    "form": {
+      "sex": "Sexe",
+      "male": "Homme",
+      "female": "Femme",
+      "age": "Âge",
+      "height": "Taille",
+      "weight": "Poids actuel",
+      "activity": "Niveau d'activité",
+      "goalWeight": "Poids cible",
+      "goalDate": "Date cible",
+      "cm": "cm",
+      "inches": "in",
+      "activity1": "Sédentaire (peu ou pas d'exercice)",
+      "activity2": "Légèrement actif (1 à 3 jours par semaine)",
+      "activity3": "Modérément actif (3 à 5 fois par semaine)",
+      "activity4": "Très actif (6 à 7 jours par semaine)",
+      "activity5": "Extrêmement actif (travail physique + entraînement)"
+    },
+    "problems": {
+      "age": "Saisis un âge entre 15 et 100 ans.",
+      "height": "Saisis une taille dans la plage acceptée par le calculateur.",
+      "weight": "Saisis un poids dans la plage acceptée par le calculateur.",
+      "goalWeight": "Saisis un poids cible dans la plage acceptée par le calculateur.",
+      "goalDate": "Choisis une date cible.",
+      "goalDateNotFuture": "La date cible doit être postérieure à aujourd'hui."
+    },
+    "results": {
+      "target": "Objectif calorique quotidien",
+      "range": "Fourchette : {{low}} à {{high}}",
+      "summary": "Les chiffres",
+      "change": "Variation de poids",
+      "days": "Jours avant la date cible",
+      "deficit": "Déficit quotidien",
+      "surplus": "Excédent quotidien",
+      "perDay": "par jour",
+      "weekly": "Rythme hebdomadaire",
+      "perWeek": "par semaine",
+      "tdee": "Dépense énergétique quotidienne estimée",
+      "share": "Déficit en proportion de la dépense énergétique quotidienne"
+    },
+    "notes": {
+      "noChange": "Tu es déjà à ce poids, aucun changement n'est nécessaire.",
+      "floor": "Ton objectif serait en dessous du minimum de {{floor}}, la page le fixe donc à ce niveau.",
+      "laterDate": "La date la plus proche permise par ce minimum est le {{date}}.",
+      "floorAboveTdee": "La dépense énergétique estimée est égale ou inférieure au minimum : aucun déficit n'est possible. Choisis un poids cible plus élevé ou parles-en à un médecin.",
+      "pace": "Ce rythme dépasse 1 % de ton poids corporel par semaine, une recommandation de Musclog. Un rythme plus lent tient généralement mieux.",
+      "deficitLarge": "Ce déficit dépasse 25 % de ta dépense énergétique estimée, une recommandation de Musclog. Un déficit plus petit sur une durée plus longue est généralement plus facile à tenir.",
+      "range": "L'estimation est incertaine, la cible est donc affichée sous forme de fourchette : 10 % de ta dépense énergétique de chaque côté. Les 10 % sont un choix de produit de Musclog, pas une erreur mesurée.",
+      "thresholds": "Les repères de 1 % de rythme et de 25 % de déficit sont des choix de produit de Musclog, pas des résultats d'étude."
+    },
+    "sections": [
+      {
+        "title": "Comment la cible est établie",
+        "body": [
+          "Ta dépense énergétique est estimée à partir de ton sexe, de ton âge, de ta taille et de ton poids (la formule de Mifflin-St Jeor pour le métabolisme de repos), multipliés par ton niveau d'activité. C'est la même estimation que celle qu'utilise l'application Musclog quand elle n'a pas d'historique de suivi.",
+          "La variation de poids est convertie en énergie avec la règle de kilocalories par kilogramme de l'application, puis répartie sur les jours jusqu'à ta date cible. La cible correspond à cette dépense énergétique moins le déficit quotidien (ou plus, en cas de prise de poids)."
+        ]
+      },
+      {
+        "title": "Pourquoi la date n'est qu'une indication",
+        "body": [
+          "Hall et al. (2011) ont modélisé la façon dont le poids corporel réagit à une variation des apports énergétiques. Le corps s'adapte sur plusieurs mois, donc un nombre fixe de calories par kilogramme est une approximation. Pèse-toi toutes les quelques semaines et ajuste."
+        ]
+      },
+      {
+        "title": "Le minimum",
+        "body": [
+          "La cible ne descend jamais sous le minimum utilisé par l'application : 1 200 kcal pour les femmes et 1 500 kcal pour les hommes, ou 80 % de ton métabolisme de repos si c'est plus élevé. Si ta date exige moins, la page te donne la date la plus proche que permet ce minimum."
+        ]
+      }
+    ],
+    "sources": {
+      "hall": "Hall et al. (2011), quantification de l'effet d'un déséquilibre énergétique sur le poids corporel"
+    }
+  }
+}

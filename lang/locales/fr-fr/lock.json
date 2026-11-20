@@ -1,0 +1,42 @@
+{
+  "lock": {
+    "settings": {
+      "title": "Verrouillage de l'app",
+      "subtitle": "Demander l'empreinte, le visage ou le code de l'appareil",
+      "hint": "Demander ton empreinte, ton visage ou le code de l'appareil avant d'afficher les zones choisies. Elles se verrouillent à nouveau après 30 secondes en arrière-plan.",
+      "note": "Il s'agit d'un verrou d'écran. Tes données restent chiffrées et sur ce téléphone ; les sauvegardes exportées sont des fichiers séparés que tu contrôles.",
+      "noCredential": "Configure d'abord un verrou d'écran ou la biométrie sur ton appareil.",
+      "coveredByApp": "Couvert par le verrouillage de toute l'application"
+    },
+    "areas": {
+      "app": {
+        "label": "Toute l'application",
+        "hint": "Demander avant d'afficher quoi que ce soit de Musclog"
+      },
+      "cycle": {
+        "label": "Suivi du cycle",
+        "hint": "Règles, symptômes et prévisions",
+        "lockedTitle": "Le suivi du cycle est verrouillé",
+        "lockedDescription": "Authentifie-toi pour voir tes données de cycle."
+      },
+      "workout": {
+        "label": "Séances",
+        "hint": "Programmes, séances et historique",
+        "lockedTitle": "Les séances sont verrouillées",
+        "lockedDescription": "Authentifie-toi pour voir tes séances."
+      },
+      "nutrition": {
+        "label": "Alimentation",
+        "hint": "Journal alimentaire, repas et objectifs hebdomadaires",
+        "lockedTitle": "L'alimentation est verrouillée",
+        "lockedDescription": "Authentifie-toi pour voir tes données alimentaires."
+      },
+      "progress": {
+        "label": "Progrès",
+        "hint": "Graphiques, tendances et mensurations",
+        "lockedTitle": "Les progrès sont verrouillés",
+        "lockedDescription": "Authentifie-toi pour voir tes progrès."
+      }
+    }
+  }
+}

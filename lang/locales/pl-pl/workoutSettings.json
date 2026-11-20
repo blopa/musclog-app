@@ -1,0 +1,106 @@
+{
+  "workoutSettings": {
+    "title": "Ustawienia treningu",
+    "gyms": {
+      "title": "Moje siłownie",
+      "subtitle": "Opisz sprzęt, na którym trenujesz. Kalkulator talerzy, kroki ciężaru i podpowiedzi ćwiczeń dopasowują się do aktywnej siłowni.",
+      "empty": "Nie skonfigurowano jeszcze siłowni",
+      "emptyHint": "Dodaj jedną, aby mieć obliczenia talerzy i kroki ciężaru dopasowane do sprzętu.",
+      "add": "Dodaj siłownię",
+      "active": "Aktywna",
+      "makeActive": "Użyj tej siłowni",
+      "noGym": "Nie używaj siłowni",
+      "summary": "Sztanga {{bar}} {{unit}} · rozmiary talerzy: {{plates}} · typy sprzętu: {{equipment}}"
+    },
+    "editGym": {
+      "title": "Edytuj siłownię",
+      "createTitle": "Nowa siłownia",
+      "name": "Nazwa",
+      "namePlaceholder": "np. Siłownia domowa",
+      "unit": "Jednostka ciężaru",
+      "unitDefault": "Ustawienie konta",
+      "unitHint": "Przypnij funty lub kilogramy tylko dla tej siłowni, na przykład gdy jej talerze są w funtach. Ćwiczenia z własną jednostką zachowują ją.",
+      "bar": "Ciężar sztangi ({{unit}})",
+      "increment": "Najmniejszy krok ciężaru ({{unit}})",
+      "incrementHint": "Używany dla hantli, maszyn i wyciągów.",
+      "plates": "Talerze",
+      "platesHint": "Ile sztuk każdego talerza posiadasz. Talerze ładuje się parami.",
+      "fewerPlates": "Mniej talerzy {{weight}} {{unit}}",
+      "morePlates": "Więcej talerzy {{weight}} {{unit}}",
+      "removePlate": "Usuń talerze {{weight}} {{unit}}",
+      "plateWeight": "Nowy ciężar talerza ({{unit}})",
+      "addPlate": "Dodaj talerz",
+      "resetPlates": "Standardowe talerze",
+      "equipment": "Sprzęt",
+      "equipmentHint": "Ćwiczenia wymagające innego sprzętu nie będą podpowiadane dla tej siłowni.",
+      "save": "Zapisz siłownię",
+      "delete": "Usuń siłownię",
+      "deleteTitle": "Usunąć tę siłownię?",
+      "deleteMessage": "Treningi i historia pozostają bez zmian.",
+      "saveFailed": "Nie udało się zapisać siłowni. Spróbuj ponownie."
+    },
+    "restrictions": {
+      "title": "Ćwiczenia do pominięcia",
+      "subtitle": "Nie będą podpowiadane w zamianach ani w generowanych treningach.",
+      "empty": "Pusto. Oznacz ćwiczenie na jego ekranie albo przy zamianie.",
+      "clear": "Dopuść ponownie",
+      "until": "Do {{date}}",
+      "healed": "Wyleczone",
+      "limit": "Możesz pominąć do {{count}} ćwiczeń.",
+      "kind": {
+        "never": "Nigdy nie proponuj",
+        "injury": "Kontuzja",
+        "dislike": "Nielubiane"
+      },
+      "badge": {
+        "never": "Nigdy nie proponuj",
+        "injury": "Kontuzja",
+        "dislike": "Nielubiane"
+      },
+      "expiry": {
+        "2w": "2 tygodnie",
+        "4w": "1 miesiąc",
+        "12w": "3 miesiące",
+        "open": "Do odwołania"
+      }
+    },
+    "plateCalculator": {
+      "title": "Kalkulator talerzy",
+      "subtitle": "Obciążenie {{weight}} {{unit}}",
+      "belowBar": "To mniej niż sztanga {{bar}} {{unit}}.",
+      "barOnly": "Sama sztanga, bez talerzy.",
+      "perSide": "Na jedną stronę",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Sztanga",
+      "exact": "Obciążenie: dokładnie {{weight}} {{unit}}",
+      "closest": "Najbliższe możliwe obciążenie: {{weight}} {{unit}} (brakuje {{short}} {{unit}})",
+      "defaultsHint": "Używane są standardowe talerze. Skonfiguruj siłownię w Ustawieniach treningu, aby uzyskać dokładne wyniki.",
+      "open": "Talerze dla {{weight}} {{unit}}"
+    },
+    "restTimer": {
+      "title": "Timer odpoczynku",
+      "subtitle": "Jak zachowują się przerwy między seriami.",
+      "autoStart": "Uruchamiaj automatycznie",
+      "autoStartHint": "Po zakończeniu serii. Wyłącz, aby samodzielnie uruchamiać odpoczynek przyciskiem Rozpocznij odpoczynek.",
+      "haptics": "Odliczanie wibracją",
+      "hapticsHint": "Tyknięcie w ostatnich trzech sekundach i wibracja na zero.",
+      "defaultRest": "Domyślny odpoczynek",
+      "defaultRestHint": "Używany dla serii, które nie podają własnego odpoczynku.",
+      "seconds": "s",
+      "strongHaptics": "Mocniejsze wibracje",
+      "strongHapticsHint": "Mocniejsze stuknięcia i podwójna wibracja na zero.",
+      "alertSound": "Dźwięk alarmu",
+      "alertSoundHint": "Odtwórz dźwięk, gdy przyjdzie powiadomienie o końcu odpoczynku. Wyłączenie zostawia wibrację.",
+      "headsUp": "Ostrzeżenie przed końcem odpoczynku",
+      "headsUpOff": "Wyłączone",
+      "headsUpSeconds": "{{seconds}} s",
+      "headsUpHint": "Timer przejdzie na „przygotuj się” i zawibruje raz, tyle czasu przed końcem odpoczynku."
+    },
+    "autonomy": {
+      "title": "Gdy trening się zaczyna",
+      "subtitle": "Zdecyduj, ile dzisiejszych wartości wybiera aplikacja.",
+      "suggest": "Sugeruj ciężary i powtórzenia",
+      "suggestHint": "Każde ćwiczenie startuje od tego, jak poszła jego ostatnia sesja: więcej ciężaru, więcej powtórzeń, odciążenie albo powtórka. Zobaczysz dlaczego i możesz to cofnąć."
+    }
+  }
+}

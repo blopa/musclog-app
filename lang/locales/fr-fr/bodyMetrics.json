@@ -1,0 +1,144 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Mesures corporelles",
+      "newMetric": "Nouvelle mesure"
+    },
+    "metrics": {
+      "weight": "Poids",
+      "bodyFat": "Masse grasse",
+      "body_fat": "Masse grasse",
+      "muscle_mass": "Masse musculaire",
+      "lean_body_mass": "Masse maigre",
+      "basal_metabolic_rate": "Métabolisme de base",
+      "total_calories_burned": "Calories totales brûlées",
+      "active_calories_burned": "Calories actives brûlées",
+      "bmi": "IMC",
+      "height": "Taille",
+      "chest": "Poitrine",
+      "waist": "Tour de taille",
+      "hips": "Hanches",
+      "arms": "Bras",
+      "thighs": "Cuisses",
+      "calves": "Mollets",
+      "neck": "Cou",
+      "shoulders": "Épaules",
+      "mood": "Humeur",
+      "water": "Eau",
+      "supplement": "Complément",
+      "ffmi": "IMG",
+      "nutrition": "Nutrition",
+      "exercise": "Exercice",
+      "other": "Autre",
+      "daily_steps": "Pas",
+      "descriptions": {
+        "weight": "Suis ton poids au fil du temps",
+        "body_fat": "Pourcentage de masse grasse",
+        "muscle_mass": "Masse musculaire squelettique totale",
+        "lean_body_mass": "Poids moins la masse grasse",
+        "basal_metabolic_rate": "Calories brûlées au repos complet",
+        "total_calories_burned": "Dépense énergétique quotidienne totale",
+        "active_calories_burned": "Calories brûlées par l'activité",
+        "bmi": "Indice de masse corporelle selon la taille et le poids",
+        "height": "Ta taille debout",
+        "chest": "Mesure du tour de poitrine",
+        "waist": "Mesure du tour de taille",
+        "hips": "Mesure du tour de hanches",
+        "arms": "Mesure du tour de bras",
+        "thighs": "Mesure du tour de cuisses",
+        "calves": "Mesure du tour de mollets",
+        "neck": "Mesure du tour de cou",
+        "shoulders": "Mesure du tour d'épaules",
+        "mood": "Ton humeur et ton bien-être général",
+        "water": "Rappel d'eau quotidien accompli",
+        "ffmi": "Indice de masse maigre",
+        "nutrition": "Journal quotidien de ton apport alimentaire",
+        "exercise": "Journal de ton activité physique et de tes exercices",
+        "other": "Autres mesures corporelles",
+        "daily_steps": "Pas enregistrés par ton téléphone ou ta montre"
+      }
+    },
+    "current": {
+      "label": "Actuel"
+    },
+    "history": {
+      "title": "Historique",
+      "filter": "Filtrer",
+      "loadMore": "Charger plus",
+      "loadingMore": "Chargement...",
+      "notes": {
+        "baseline": "Point de départ",
+        "noChange": "Aucun changement",
+        "decreased": "En baisse",
+        "increased": "En hausse"
+      },
+      "filters": {
+        "title": "Filtrer l'historique",
+        "sortOrder": {
+          "title": "Ordre de tri",
+          "newestFirst": "Plus récent d'abord",
+          "oldestFirst": "Plus ancien d'abord"
+        },
+        "trend": {
+          "title": "Tendance",
+          "all": "Toutes",
+          "increased": "En hausse",
+          "decreased": "En baisse",
+          "noChange": "Aucun changement"
+        },
+        "reset": "Réinitialiser",
+        "apply": "Appliquer les filtres"
+      }
+    },
+    "dateFormats": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier"
+    },
+    "noDataAvailable": "Aucune donnée disponible",
+    "noHistoryDataAvailable": "Aucun historique disponible",
+    "manageMetricData": {
+      "title": "Historique des mesures",
+      "searchPlaceholder": "Chercher par type de mesure...",
+      "noEntries": "Aucune mesure pour l'instant",
+      "noEntriesDesc": "Ajoute des mesures corporelles pour les voir ici",
+      "endOfHistory": "Fin de l'historique des mesures",
+      "metricOptions": "Options de la mesure",
+      "editEntry": "Modifier la saisie",
+      "editEntryDesc": "Modifier la valeur et la date",
+      "duplicateEntry": "Dupliquer la saisie",
+      "duplicateEntryDesc": "Créer une copie avec une nouvelle date",
+      "deleteEntry": "Supprimer la saisie",
+      "deleteEntryDesc": "Supprimer cette mesure"
+    },
+    "addEntry": {
+      "title": "Ajouter une saisie",
+      "enterType": "Choisir le type",
+      "description": "Enregistrer une nouvelle mesure corporelle",
+      "enterWeight": "Saisir le poids",
+      "enterBodyFat": "Saisir la masse grasse",
+      "enterHeight": "Saisir la taille",
+      "date": "Date",
+      "time": "Heure",
+      "moodQuestion": "Comment te sens-tu aujourd'hui ?",
+      "supplementQuestion": "As-tu pris ton complément aujourd'hui ?",
+      "supplementQuestionWithName": "As-tu pris {{name}} aujourd'hui ?",
+      "waterQuestionWithAmount": "As-tu pensé à boire {{amount}} litres d'eau aujourd'hui ?",
+      "moods": {
+        "0": "Mauvaise",
+        "1": "Basse",
+        "2": "Correcte",
+        "3": "Bonne",
+        "4": "Excellente"
+      },
+      "saveEntry": "Enregistrer la saisie",
+      "saveSuccess": "Saisie enregistrée",
+      "errorSaving": "Erreur lors de l'enregistrement",
+      "yes": "Oui",
+      "no": "Non",
+      "taken": "Pris",
+      "notTaken": "Non pris",
+      "note": "Note",
+      "notePlaceholder": "Ajoute une note..."
+    }
+  }
+}

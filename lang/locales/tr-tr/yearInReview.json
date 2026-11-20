@@ -1,0 +1,184 @@
+{
+  "yearInReview": {
+    "title": "Musclog'daki yılın",
+    "empty": "Bu yıl için henüz bir şey kaydedilmedi. Antrenman yaptıkça ve takip ettikçe değerlendirme dolar.",
+    "back": "Geri",
+    "next": "İleri",
+    "done": "Bitti",
+    "stepOf": "{{current}} / {{total}}",
+    "shareButton": "Paylaş",
+    "shareSheetTitle": "Yılını paylaş",
+    "includeWeight": "Kilo değişimini ekle",
+    "includeNutrition": "Beslenmeyi ekle",
+    "shareHint": "İkisi de sen açmadıkça kapalı. Onlar olmadan görselde vücut ağırlığı ve yemek bilgisi olmaz.",
+    "shareAction": "Görseli paylaş",
+    "intro": {
+      "body": "Antrenmanın ve takibin böyle görünüyormuş."
+    },
+    "sessions": {
+      "title": "Antrenmanlar",
+      "body_one": "tamamlanan antrenman",
+      "body_few": "tamamlanan antrenman",
+      "body_many": "tamamlanan antrenman",
+      "body_other": "tamamlanan antrenman"
+    },
+    "heatmap": {
+      "title": "Antrenman günleri",
+      "days_one": "antrenman yapılan gün",
+      "days_few": "antrenman yapılan gün",
+      "days_many": "antrenman yapılan gün",
+      "days_other": "antrenman yapılan gün",
+      "legend": {
+        "workout": "Antrenman",
+        "food": "Yemek",
+        "both": "İkisi"
+      }
+    },
+    "streak": {
+      "title": "En uzun seri",
+      "body_one": "üst üste antrenmanlı hafta",
+      "body_few": "üst üste antrenmanlı hafta",
+      "body_many": "üst üste antrenmanlı hafta",
+      "body_other": "üst üste antrenmanlı hafta"
+    },
+    "volume": {
+      "title": "Toplam kaldırılan",
+      "body": "Ana setlerindeki ağırlık çarpı tekrar.",
+      "perWorkout": "Antrenman başına {{unit}}"
+    },
+    "topExercises": {
+      "title": "En çok çalışılan",
+      "sets_one": "{{n}} set",
+      "sets_few": "{{n}} set",
+      "sets_many": "{{n}} set",
+      "sets_other": "{{n}} set"
+    },
+    "records": {
+      "title": "Kişisel rekorlar",
+      "body_one": "yeni kişisel rekor",
+      "body_few": "yeni kişisel rekor",
+      "body_many": "yeni kişisel rekor",
+      "body_other": "yeni kişisel rekor"
+    },
+    "busiestMonth": {
+      "title": "En yoğun ay",
+      "body_one": "O ay {{n}} antrenman.",
+      "body_few": "O ay {{n}} antrenman.",
+      "body_many": "O ay {{n}} antrenman.",
+      "body_other": "O ay {{n}} antrenman."
+    },
+    "trainingTime": {
+      "title": "Genelde antrenman saati",
+      "hours": "Süresi kaydedilen seanslardan {{n}} saat antrenman.",
+      "buckets": {
+        "morning": "Sabah",
+        "afternoon": "Öğleden sonra",
+        "evening": "Akşam",
+        "night": "Gece"
+      }
+    },
+    "nutrition": {
+      "title": "Kaydedilen yemek",
+      "meals_one": "kaydedilen öğün",
+      "meals_few": "kaydedilen öğün",
+      "meals_many": "kaydedilen öğün",
+      "meals_other": "kaydedilen öğün",
+      "days_one": "yemek kaydedilen gün",
+      "days_few": "yemek kaydedilen gün",
+      "days_many": "yemek kaydedilen gün",
+      "days_other": "yemek kaydedilen gün"
+    },
+    "foodStreak": {
+      "title": "En uzun kayıt serisi",
+      "body_one": "üst üste yemek kaydedilen gün",
+      "body_few": "üst üste yemek kaydedilen gün",
+      "body_many": "üst üste yemek kaydedilen gün",
+      "body_other": "üst üste yemek kaydedilen gün",
+      "chart": "Yemek kaydedilen günler, ay ay."
+    },
+    "favouriteMeal": {
+      "title": "En çok kaydedilen öğün",
+      "days_one": "{{n}} gün",
+      "days_few": "{{n}} gün",
+      "days_many": "{{n}} gün",
+      "days_other": "{{n}} gün",
+      "captions": {
+        "breakfast": "Her gevrek kutusu söyler: günün en önemli öğünü.",
+        "lunch": "Öğle yakıtı.",
+        "dinner": "Günün sonundaki büyük öğün.",
+        "snack": "Öğünler arası da sayılır.",
+        "other": "Sınıflandırması zor, kaydetmesi kolay."
+      }
+    },
+    "protein": {
+      "title": "Protein, toplam",
+      "caption": "{{unit}} protein",
+      "body": "Kaydettiğin her öğünün proteininden gram gram. Yiyeceğin ağırlığı değil.",
+      "compare": {
+        "wheyBag_one": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "wheyBag_few": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "wheyBag_many": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "wheyBag_other": "Bu yaklaşık {{n}} torba whey proteine denk.",
+        "cat_one": "Bu yaklaşık {{n}} kedi.",
+        "cat_few": "Bu yaklaşık {{n}} kedi.",
+        "cat_many": "Bu yaklaşık {{n}} kedi.",
+        "cat_other": "Bu yaklaşık {{n}} kedi.",
+        "bowlingBall_one": "Bu yaklaşık {{n}} bowling topu.",
+        "bowlingBall_few": "Bu yaklaşık {{n}} bowling topu.",
+        "bowlingBall_many": "Bu yaklaşık {{n}} bowling topu.",
+        "bowlingBall_other": "Bu yaklaşık {{n}} bowling topu.",
+        "barbell_one": "Bu yaklaşık {{n}} olimpik halter.",
+        "barbell_few": "Bu yaklaşık {{n}} olimpik halter.",
+        "barbell_many": "Bu yaklaşık {{n}} olimpik halter.",
+        "barbell_other": "Bu yaklaşık {{n}} olimpik halter."
+      },
+      "chicken_one": "tavuk göğsü değerinde, brokoli dahil değil",
+      "chicken_few": "tavuk göğsü değerinde, brokoli dahil değil",
+      "chicken_many": "tavuk göğsü değerinde, brokoli dahil değil",
+      "chicken_other": "tavuk göğsü değerinde, brokoli dahil değil"
+    },
+    "macros": {
+      "title": "Gramlar nereye gitti",
+      "protein": "Protein",
+      "carbs": "Karbonhidrat",
+      "fat": "Yağ",
+      "body": "Kaydettiğin yiyecekteki tüm gramlar, toplandı."
+    },
+    "weight": {
+      "title": "Vücut ağırlığı",
+      "unchanged": "İlk ve son tartılman arasında değişiklik yok.",
+      "caption": "İlk tartılmandan son tartılmana."
+    },
+    "outro": {
+      "title": "Yıl bu kadardı",
+      "body": "Gelecek yılın hikâyesini görmek için kaydetmeye devam et."
+    },
+    "share": {
+      "sessions": "Antrenmanlar",
+      "activeDays": "Aktif günler",
+      "volume": "Toplam kaldırılan",
+      "topExercise": "En çok çalışılan",
+      "records": "Kişisel rekorlar",
+      "meals": "Kaydedilen öğünler",
+      "protein": "Protein",
+      "weight": "Kilo değişimi"
+    },
+    "homeCard": {
+      "title": "{{year}} · Musclog'daki yılın",
+      "body": "Antrenmanının nasıl göründüğüne bak.",
+      "open": "Yılını aç",
+      "dismiss": "Kapat"
+    },
+    "settingsRow": {
+      "title": "Musclog'daki yılın",
+      "subtitle": "Antrenman ve takibine geriye bakış"
+    },
+    "notification": {
+      "title": "{{year}}: Musclog'daki yılın hazır",
+      "body": "Bu yıl antrenmanının nasıl göründüğüne bak."
+    },
+    "loadFailed": "Yılın yüklenemedi.",
+    "retry": "Tekrar dene",
+    "seeYear": "{{year}} için şimdiye kadarkini gör"
+  }
+}

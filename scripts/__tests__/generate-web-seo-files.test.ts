@@ -221,7 +221,7 @@ describe('generate-web-seo-files localized sitemap', () => {
       expect(entry.alternates).toEqual([]);
     }
 
-    expect(sitemap).not.toMatch(/\/(es|nl|pt-br|ru)\/blog/);
+    expect(sitemap).not.toMatch(/\/(es|nl|pt-br|ru|de|fr|it|pl|tr)\/blog/);
     expect(sitemap).toContain('<loc>https://musclog.app/en/blog</loc>');
     expect(sitemap).toMatch(/<loc>https:\/\/musclog\.app\/en\/blog\/\d{4}\//);
     expect(new Set(parsed.map((entry) => entry.loc)).size).toBe(parsed.length);
@@ -229,7 +229,9 @@ describe('generate-web-seo-files localized sitemap', () => {
 
   it('never lists /open, /test or an unprefixed address', () => {
     for (const entry of parsed) {
-      expect(entry.loc).toMatch(/^https:\/\/musclog\.app\/(en|es|nl|pt-br|ru)(\/|$)/);
+      expect(entry.loc).toMatch(
+        /^https:\/\/musclog\.app\/(en|es|nl|pt-br|ru|de|fr|it|pl|tr)(\/|$)/
+      );
       expect(entry.loc).not.toMatch(/\/(open|test)(\/|$)/);
     }
   });

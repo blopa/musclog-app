@@ -1,0 +1,144 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Metriche corporee",
+      "newMetric": "Nuova metrica"
+    },
+    "metrics": {
+      "weight": "Peso",
+      "bodyFat": "Massa grassa",
+      "body_fat": "Massa grassa",
+      "muscle_mass": "Massa muscolare",
+      "lean_body_mass": "Massa magra",
+      "basal_metabolic_rate": "Metabolismo basale",
+      "total_calories_burned": "Calorie totali bruciate",
+      "active_calories_burned": "Calorie attive bruciate",
+      "bmi": "BMI",
+      "height": "Altezza",
+      "chest": "Petto",
+      "waist": "Vita",
+      "hips": "Fianchi",
+      "arms": "Braccia",
+      "thighs": "Cosce",
+      "calves": "Polpacci",
+      "neck": "Collo",
+      "shoulders": "Spalle",
+      "mood": "Umore",
+      "water": "Acqua",
+      "supplement": "Integratore",
+      "ffmi": "FFMI",
+      "nutrition": "Alimentazione",
+      "exercise": "Esercizio",
+      "other": "Altro",
+      "daily_steps": "Passi",
+      "descriptions": {
+        "weight": "Tieni traccia del tuo peso corporeo nel tempo",
+        "body_fat": "Percentuale di massa grassa",
+        "muscle_mass": "Massa muscolare scheletrica totale",
+        "lean_body_mass": "Peso corporeo meno la massa grassa",
+        "basal_metabolic_rate": "Calorie bruciate a riposo completo",
+        "total_calories_burned": "Dispendio energetico giornaliero totale",
+        "active_calories_burned": "Calorie bruciate con l'attività",
+        "bmi": "Indice di massa corporea basato su altezza e peso",
+        "height": "La tua altezza in piedi",
+        "chest": "Misura della circonferenza del petto",
+        "waist": "Misura della circonferenza della vita",
+        "hips": "Misura della circonferenza dei fianchi",
+        "arms": "Misura della circonferenza del braccio",
+        "thighs": "Misura della circonferenza delle cosce",
+        "calves": "Misura della circonferenza dei polpacci",
+        "neck": "Misura della circonferenza del collo",
+        "shoulders": "Misura della circonferenza delle spalle",
+        "mood": "Il tuo umore e benessere generale",
+        "water": "Promemoria giornaliero dell'acqua completato",
+        "ffmi": "Indice di massa magra",
+        "nutrition": "Registro giornaliero dell'assunzione alimentare",
+        "exercise": "Registro dell'attività fisica e degli esercizi",
+        "other": "Altre misurazioni corporee",
+        "daily_steps": "Passi registrati dal telefono o dall'orologio"
+      }
+    },
+    "current": {
+      "label": "Attuale"
+    },
+    "history": {
+      "title": "Cronologia",
+      "filter": "Filtra",
+      "loadMore": "Carica altro",
+      "loadingMore": "Caricamento...",
+      "notes": {
+        "baseline": "Punto di partenza",
+        "noChange": "Nessuna variazione",
+        "decreased": "Diminuito",
+        "increased": "Aumentato"
+      },
+      "filters": {
+        "title": "Filtra cronologia",
+        "sortOrder": {
+          "title": "Ordine",
+          "newestFirst": "Dal più recente",
+          "oldestFirst": "Dal più vecchio"
+        },
+        "trend": {
+          "title": "Andamento",
+          "all": "Tutti",
+          "increased": "Aumentato",
+          "decreased": "Diminuito",
+          "noChange": "Nessuna variazione"
+        },
+        "reset": "Ripristina",
+        "apply": "Applica filtri"
+      }
+    },
+    "dateFormats": {
+      "today": "Oggi",
+      "yesterday": "Ieri"
+    },
+    "noDataAvailable": "Nessun dato disponibile",
+    "noHistoryDataAvailable": "Nessuna cronologia disponibile",
+    "manageMetricData": {
+      "title": "Cronologia delle metriche",
+      "searchPlaceholder": "Cerca per tipo di metrica...",
+      "noEntries": "Nessuna voce di metrica ancora",
+      "noEntriesDesc": "Aggiungi voci di metriche corporee per vederle qui",
+      "endOfHistory": "Fine della cronologia delle metriche",
+      "metricOptions": "Opzioni metrica",
+      "editEntry": "Modifica voce",
+      "editEntryDesc": "Cambia valore e data",
+      "duplicateEntry": "Duplica voce",
+      "duplicateEntryDesc": "Crea una copia con una nuova data",
+      "deleteEntry": "Elimina voce",
+      "deleteEntryDesc": "Rimuovi questa voce di metrica"
+    },
+    "addEntry": {
+      "title": "Aggiungi voce",
+      "enterType": "Inserisci tipo",
+      "description": "Registra una nuova misurazione corporea",
+      "enterWeight": "Inserisci peso",
+      "enterBodyFat": "Inserisci massa grassa",
+      "enterHeight": "Inserisci altezza",
+      "date": "Data",
+      "time": "Ora",
+      "moodQuestion": "Come ti senti oggi?",
+      "supplementQuestion": "Hai preso il tuo integratore oggi?",
+      "supplementQuestionWithName": "Hai preso {{name}} oggi?",
+      "waterQuestionWithAmount": "Ti sei ricordato di bere {{amount}} litri d'acqua oggi?",
+      "moods": {
+        "0": "Pessimo",
+        "1": "Basso",
+        "2": "Discreto",
+        "3": "Buono",
+        "4": "Ottimo"
+      },
+      "saveEntry": "Salva voce",
+      "saveSuccess": "Voce salvata",
+      "errorSaving": "Errore durante il salvataggio",
+      "yes": "Sì",
+      "no": "No",
+      "taken": "Preso",
+      "notTaken": "Non preso",
+      "note": "Nota",
+      "notePlaceholder": "Aggiungi una nota..."
+    }
+  }
+}

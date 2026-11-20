@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Warum habe ich das bekommen?",
+      "thisWorkout": "dieses Training",
+      "setting": "Trainingserinnerungen sind an, und {{workout}} ist für {{day}} geplant.",
+      "settingNoDay": "Trainingserinnerungen sind an, und {{workout}} steht in deinem Plan.",
+      "fromPlan": "Dieser Tag kommt aus einem Trainingsplan.",
+      "fromSchedule": "Dieser Tag kommt aus dem Zeitplan, den du beim Training festgelegt hast.",
+      "timing": "Die Erinnerung ist auf {{time}} gesetzt, die geplante Zeit.",
+      "timingLead": "Sie kommt {{minutes}} Minuten vor der geplanten Zeit, {{time}}.",
+      "pause": "Alle Erinnerungen für {{days}} Tage pausieren",
+      "paused": "Erinnerungen für {{days}} Tage pausiert.",
+      "turnOff": "Trainingserinnerungen ausschalten",
+      "turnedOff": "Trainingserinnerungen sind aus.",
+      "settings": "Benachrichtigungseinstellungen",
+      "failed": "Die Erinnerungen konnten nicht geändert werden. Versuche es erneut."
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "weeklyStreakCard": {
+    "workoutsThisWeek": "bu hafta antrenman",
+    "dayStreak": "günlük seri",
+    "days": "{{value}} gün",
+    "bestStreak": "En iyi seri",
+    "setWeeklyGoal": "Hedef belirle",
+    "activeDays": "aktif gün"
+  }
+}

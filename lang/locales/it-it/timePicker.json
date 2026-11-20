@@ -1,0 +1,18 @@
+{
+  "timePicker": {
+    "am": "AM",
+    "cancel": "Annulla",
+    "clearSelection": "Cancella selezione",
+    "clearTime": "Cancella orario",
+    "confirm": "Imposta orario",
+    "confirmTime": "Conferma orario",
+    "hours": "Ore",
+    "midnight": "Mezzanotte",
+    "minutes": "Minuti",
+    "noon": "Mezzogiorno",
+    "now": "Ora",
+    "pm": "PM",
+    "selectedStartTime": "Ora di inizio selezionata",
+    "selectTime": "Seleziona orario"
+  }
+}

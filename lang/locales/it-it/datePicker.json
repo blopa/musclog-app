@@ -1,0 +1,20 @@
+{
+  "datePicker": {
+    "cancel": "Annulla",
+    "clearDate": "Cancella data",
+    "confirm": "Conferma",
+    "month": "Mese",
+    "nextMonday": "Lunedì prossimo",
+    "selectDate": "Seleziona data",
+    "selectMonthYear": "Seleziona mese e anno",
+    "status": {
+      "fasted": "Digiuno",
+      "tracked": "Cibo registrato"
+    },
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "year": "Anno",
+    "xYearsAgo": "{{count}} anni fa",
+    "yesterday": "Ieri"
+  }
+}

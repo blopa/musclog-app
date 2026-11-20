@@ -1,0 +1,17 @@
+{
+  "restTimer": {
+    "resting": "Pause…",
+    "minus5s": "- 5 s",
+    "plus5s": "+ 5 s",
+    "skipRest": "Pause überspringen",
+    "done": "Fertig",
+    "reps": "Wdh.",
+    "repsWithCount": "{{count}} Wdh.",
+    "upNext": "Als Nächstes",
+    "missingWorkoutData": "Trainingsdaten fehlen",
+    "completedSetNotFound": "Abgeschlossener Satz nicht gefunden",
+    "getReady": "Mach dich bereit",
+    "go": "Los",
+    "a11yRemaining": "Noch {{time}}"
+  }
+}

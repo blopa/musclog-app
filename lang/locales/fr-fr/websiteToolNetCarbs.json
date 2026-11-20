@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Calculateur de glucides nets",
+    "intro": "Transforme les glucides et les fibres d'une étiquette nutritionnelle en glucides totaux et nets, et vois lequel ton outil de suivi attend.",
+    "form": {
+      "region": "Origine de l'étiquette",
+      "us": "Étiquette des États-Unis ou du Canada : les glucides incluent les fibres",
+      "eu": "Étiquette de l'UE, du Royaume-Uni ou similaire : les glucides excluent les fibres",
+      "carbs": "Glucides sur l'étiquette",
+      "fiber": "Fibres alimentaires sur l'étiquette"
+    },
+    "problems": {
+      "carbs": "Saisis les glucides en grammes.",
+      "fiber": "Saisis les fibres en grammes, ou 0.",
+      "fiberTooHigh": "Sur une étiquette américaine ou canadienne, les glucides totaux incluent déjà les fibres : les fibres ne peuvent donc pas dépasser ce total. Vérifie les deux nombres."
+    },
+    "results": {
+      "net": "Glucides nets",
+      "netNote": "Glucides sans fibres : la partie digestible que comptent les outils de suivi des glucides nets.",
+      "total": "Glucides totaux",
+      "totalNote": "Glucides fibres incluses : ce qu'impriment les étiquettes américaines et ce que Musclog enregistre pour un aliment.",
+      "logTitle": "Quoi saisir",
+      "logTotal": "Un outil qui compte les glucides totaux : saisis {{value}}.",
+      "logNet": "Un outil qui compte les glucides nets : saisis {{value}}."
+    },
+    "notes": {
+      "sugarAlcohols": "Les polyols (comme l'érythritol ou le maltitol) ne sont pas soustraits ici. Certaines personnes les retirent aussi de leurs glucides nets ; cet outil ne le fait pas, donc le chiffre net peut être un peu élevé pour les produits qui en contiennent.",
+      "musclog": "Musclog enregistre les glucides totaux, fibres incluses, comme les étiquettes américaines les comptent. Les aliments de sources européennes sont convertis lors de l'enregistrement, pour que le journal garde un seul sens aux glucides."
+    },
+    "sections": [
+      {
+        "title": "Pourquoi les étiquettes diffèrent",
+        "body": [
+          "Dans l'UE, les glucides déclarés sont ceux que ton corps métabolise, et les fibres sont indiquées sur une ligne à part. Aux États-Unis et au Canada, la ligne des glucides totaux inclut déjà les fibres alimentaires : le même produit peut donc afficher des valeurs de glucides différentes sur les deux étiquettes."
+        ]
+      },
+      {
+        "title": "Totaux et nets",
+        "body": [
+          "Les glucides totaux incluent les fibres. Les glucides nets sont les glucides totaux moins les fibres, soit la partie que ton corps digère. La page affiche les deux, car certains outils demandent l'un et d'autres l'autre."
+        ]
+      },
+      {
+        "title": "Ce qui n'est pas traité",
+        "body": [
+          "Les polyols ne sont pas soustraits, et la page n'estime pas les fibres pour les aliments sans étiquette."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "Règlement UE 1169/2011, information des consommateurs sur les denrées alimentaires (annexe I)",
+      "fda": "FDA, A Food Labeling Guide (étiquetage nutritionnel)"
+    }
+  }
+}

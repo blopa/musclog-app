@@ -1,0 +1,51 @@
+{
+  "websiteTools": {
+    "layout": {
+      "allTools": "Alle Werkzeuge",
+      "howItWorks": "So funktioniert es",
+      "sources": "Quellen",
+      "related": "Weitere Werkzeuge",
+      "ctaTitle": "Verfolge es in Musclog",
+      "ctaBody": "Musclog ist ein kostenloser Open-Source-Tracker für Fitness und Ernährung. Deine Daten bleiben auf deinem Gerät.",
+      "sameMath": "Nutzt dieselbe Berechnung wie die Musclog-App.",
+      "localOnly": "Alles, was du eingibst, bleibt in deinem Browser.",
+      "readMore": "Weiterlesen"
+    },
+    "units": {
+      "label": "Einheiten",
+      "metric": "Metrisch (kg)",
+      "imperial": "Imperial (lb)",
+      "kg": "kg",
+      "lb": "lb"
+    },
+    "gym": {
+      "summary": "Dein Studio: Stange und Scheiben",
+      "barWeight": "Gewicht der Stange",
+      "plates": "Scheibenpaare",
+      "platesHint": "Wie viele Paare jeder Scheibe du hast. Nimm 0 für eine Scheibe, die dein Studio nicht hat.",
+      "reset": "Auf ein Standard-Studio zurücksetzen",
+      "remembered": "Nur in diesem Browser gespeichert.",
+      "invalid": "Prüfe das Gewicht der Stange und die Scheibenanzahl: Jedes Feld braucht eine Zahl."
+    },
+    "index": {
+      "groups": {
+        "strength": {
+          "title": "Kenne deine Kraft",
+          "body": "Berechne dein Maximum, deine Scheiben und deine Aufwärmsätze."
+        },
+        "training": {
+          "title": "Plane dein Training",
+          "body": "Lege Anstrengung und Steigerung fest, plane Entlastungen und führe ein Protokoll."
+        },
+        "nutrition": {
+          "title": "Iss für dein Ziel",
+          "body": "Protein, Kalorien und Kohlenhydrate ohne Rätselraten."
+        }
+      },
+      "title": "Kostenlose Werkzeuge für Kraftsportler",
+      "intro": "Rechner, die im Browser laufen und dieselbe Mathematik wie die Musclog-App nutzen. Nichts, was du eingibst, verlässt die Seite.",
+      "programsTitle": "Kostenlose Trainingspläne",
+      "programsBody": "Vollständige Pläne mit jedem Tag, jeder Übung, jedem Satz und jeder Wiederholung. Öffne einen mit einem Tippen in Musclog."
+    }
+  }
+}

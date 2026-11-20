@@ -1,0 +1,103 @@
+{
+  "goalsManagement": {
+    "title": "Gestion des objectifs",
+    "nutritionAndBodyTab": "Nutrition et corps",
+    "fitnessAndExerciseTab": "Forme et exercice",
+    "subtitle": "Suis tes progrès et ton historique.",
+    "currentGoals": "Objectifs actuels",
+    "history": "Historique des objectifs",
+    "newGoal": "Nouvel objectif",
+    "createGoalDesc": "Définir de nouvelles cibles nutritionnelles et de macros",
+    "createCheckin": "Créer un bilan",
+    "createCheckinDesc": "Ajouter une nouvelle entrée de bilan nutritionnel",
+    "emptyStateMessage": "Crée un nouvel objectif pour commencer",
+    "editGoal": "Modifier",
+    "deleteGoalAction": "Supprimer",
+    "deleteGoal": "Supprimer l'objectif",
+    "deleteGoalMessage": "Cet objectif sera supprimé définitivement de ton historique.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Supprimer cet objectif ? Cette action est irréversible.",
+      "title": "Objectifs nutritionnels",
+      "searchPlaceholder": "Rechercher des objectifs...",
+      "noGoals": "Aucun objectif pour l'instant",
+      "noGoalsDesc": "Définis des objectifs nutritionnels pour les voir ici",
+      "endOfHistory": "Fin de l'historique des objectifs",
+      "goalOptions": "Options de l'objectif",
+      "editGoal": "Modifier l'objectif",
+      "editGoalDesc": "Modifier les calories, les macros et les cibles",
+      "duplicateGoal": "Dupliquer l'objectif",
+      "duplicateGoalDesc": "Créer une copie à utiliser comme nouvel objectif",
+      "regenerateCheckins": "Recréer les bilans",
+      "regenerateCheckinsDesc": "Supprimer et recréer les bilans de cet objectif",
+      "deleteGoal": "Supprimer l'objectif",
+      "deleteGoalDesc": "Retirer cet objectif de l'historique",
+      "subtitleFormat": "{{calories}} • {{phase}} • Cible {{targetWeight}} {{unit}}",
+      "phaseCut": "Sèche",
+      "phaseMaintain": "Maintien",
+      "phaseBulk": "Prise de masse"
+    },
+    "goalCreationMethod": {
+      "title": "Nouvel objectif",
+      "subtitle": "Comment veux-tu configurer ton nouvel objectif ?",
+      "guidedTitle": "Réponds à quelques questions",
+      "guidedDescription": "Nous te guidons étape par étape vers les bonnes cibles de calories et de macros.",
+      "manualTitle": "Régler manuellement",
+      "manualDescription": "Saisis directement tes calories, tes macros et tes cibles.",
+      "autoCalculateTitle": "Calcule-le pour moi",
+      "autoCalculateDescription": "Nous calculons tes cibles avec la formule de Mifflin-St Jeor à partir de ton profil."
+    },
+    "goalWizard": {
+      "title": "Configure ton objectif",
+      "step": "Étape {{current}} sur {{total}}",
+      "next": "Suivant",
+      "back": "Retour",
+      "createGoal": "Créer l'objectif",
+      "goalType": {
+        "title": "Quel est ton objectif principal ?",
+        "subtitle": "Cela nous aide à recommander les bonnes cibles de calories et de macros.",
+        "lose": "Perdre du poids",
+        "loseDescription": "Réduire la masse grasse par un déficit calorique.",
+        "maintain": "Maintenir le poids",
+        "maintainDescription": "Garder ton poids et ta composition corporelle actuels.",
+        "gain": "Prendre du poids",
+        "gainDescription": "Gagner du muscle et de la force avec un surplus calorique."
+      },
+      "goalWeight": {
+        "titleMain": "Quel est ton",
+        "titleAccent": "poids cible ?",
+        "subtitle": "Définis le poids que tu veux atteindre. Ton poids actuel est affiché pour référence.",
+        "label": "Poids cible",
+        "currentWeightLabel": "Ton poids actuel",
+        "tipLoseBF": "Viser 0,5 à 1 % de ton poids corporel par semaine est un rythme soutenable qui préserve la masse musculaire pendant une sèche.",
+        "tipGain": "Prendre 0,25 à 0,5 kg par semaine limite la prise de gras tout en permettant une progression musculaire régulière.",
+        "tipGainImperial": "Prendre 0,55 à 1,1 lbs par semaine limite la prise de gras tout en permettant une progression musculaire régulière."
+      },
+      "targetDate": {
+        "title": "Quand veux-tu atteindre ton objectif ?",
+        "subtitle": "Fixer une échéance t'aide à suivre tes progrès dans le temps.",
+        "label": "Date cible",
+        "notSet": "Pas de date précise",
+        "clear": "Effacer la date",
+        "warningLabel": "Calendrier ambitieux",
+        "warningMessage": "Rythme demandé : environ {{weeklyLoss}} {{unit}} par semaine. Fourchette haute conseillée pour ton poids actuel : environ {{suggestedMaxWeeklyLoss}} {{unit}} par semaine. Nous calculerons quand même les calories pour cette date, mais une date plus réaliste serait autour du {{estimatedDate}}."
+      }
+    },
+    "manageCheckinData": {
+      "title": "Bilans nutritionnels",
+      "searchPlaceholder": "Rechercher des bilans...",
+      "noCheckins": "Aucun bilan pour l'instant",
+      "noCheckinsDesc": "Les bilans sont créés quand tu configures un objectif nutritionnel calculé par l'IA",
+      "endOfHistory": "Tous les bilans sont chargés",
+      "checkinOptions": "Options du bilan",
+      "editCheckin": "Modifier le bilan",
+      "editCheckinDesc": "Modifier les cibles du bilan",
+      "deleteCheckin": "Supprimer le bilan",
+      "deleteCheckinDesc": "Supprimer définitivement ce bilan",
+      "subtitleFormat": "Cible {{targetWeight}} {{unit}} • {{targetBodyFat}} % de masse grasse",
+      "checkinDate": "Date du bilan"
+    },
+    "exerciseGoals": "Objectifs d'exercice",
+    "exerciseGoalsTitle": "Force et régularité",
+    "exerciseGoalsSubtitle": "Suivre les objectifs de 1RM et la fréquence des séances"
+  }
+}

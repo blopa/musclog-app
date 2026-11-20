@@ -1,0 +1,16 @@
+{
+  "restOver": {
+    "startNextSet": "Commencer la série suivante",
+    "upNext": "À suivre",
+    "weight": "Charge",
+    "weightWithUnit": "{{value}} {{unit}}",
+    "reps": "Répétitions",
+    "set": "Série",
+    "restTimeIs": "Le temps de repos est",
+    "over": "écoulé",
+    "timeToGo": "C'est reparti ! La série suivante t'attend.",
+    "noWorkoutId": "Aucun identifiant de séance fourni",
+    "workoutDeleted": "La séance a été supprimée",
+    "loadError": "Impossible de charger les données de la séance"
+  }
+}

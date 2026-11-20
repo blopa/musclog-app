@@ -1,0 +1,27 @@
+{
+  "errors": {
+    "connectionTimeout": {
+      "title": "Bağlantı zaman aşımına uğradı",
+      "description": "Musclog sunucularına ulaşamadık. Lütfen internet bağlantını kontrol et.",
+      "tryAgain": "Tekrar dene"
+    },
+    "failedToLoadData": "Veri yüklenemedi",
+    "somethingWentWrong": "Bir şeyler ters gitti",
+    "genericDescription": "Beklenmeyen bir hata oluştu.",
+    "reload": "Yeniden yükle",
+    "aiCreditsError": "Yapay zeka hizmetinin kotası aşıldı. Lütfen API anahtarını kontrol et ya da daha sonra tekrar dene.",
+    "aiProcessingError": "Üzgünüm, bu isteği işlerken sorun yaşadım. Lütfen birazdan tekrar dene.",
+    "aiProcessingErrorTitle": "İstek işlenirken hata oluştu",
+    "gatewayDailyLimitError": "Günlük ücretsiz yapay zeka limitine ulaşıldı. Yarın tekrar dene ya da Yapay Zeka Ayarları'na kendi API anahtarını ekle.",
+    "gatewayDailyLimitErrorTitle": "Günlük limite ulaşıldı",
+    "databaseError": {
+      "title": "Veritabanı hatası",
+      "description": "Bir veritabanı hatası oluştu. Bu sorunu çözmeye yardımcı olmak için hata raporlama etkinleştirildi."
+    },
+    "aiInvalidApiKey": "{{provider}} API anahtarın reddedildi. Yapay zeka ayarlarından kontrol et.",
+    "aiTimeout": "Bu çok uzun sürüyor. Tekrar dene.",
+    "aiKeyTestOk": "Anahtar kabul edildi",
+    "aiKeyTestRejected": "Anahtar reddedildi. Kontrol edip tekrar dene.",
+    "aiKeyTestNetwork": "Sağlayıcıya ulaşılamadı. Bağlantını kontrol et."
+  }
+}

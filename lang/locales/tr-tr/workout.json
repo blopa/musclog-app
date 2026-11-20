@@ -1,0 +1,95 @@
+{
+  "workout": {
+    "title": "Antrenman",
+    "workouts": {
+      "title": "Antrenmanlar"
+    },
+    "import": {
+      "characters": "Karakter",
+      "emptyData": "Lütfen antrenman verisini yapıştır ya da gir.",
+      "formatInfo": "Antrenman günlüğünü yapıştır ya da yaz (ör. bir nottan ya da uygulamadan). Yapay zekâ bunu ayrıştırıp seansları oluşturur.",
+      "import": "İçe aktar",
+      "importWorkouts": "Antrenmanları içe aktar",
+      "instructions": "Antrenman verini aşağıya yapıştır. Desteklenenler: serbest metin, madde listeleri ya da yapılandırılmış günlükler.",
+      "pasteWorkoutDataPlaceholder": "Antrenman verisini buraya yapıştır...",
+      "processing": "İşleniyor...",
+      "processingData": "Antrenmanlar başarıyla içe aktarıldı.",
+      "processingFailed": "Veri işlenemedi. Lütfen biçimi kontrol edip tekrar dene.",
+      "supportedFormats": "Desteklenen biçimler"
+    },
+    "sessionOverview": "Seans özeti",
+    "startWorkout": "Antrenmana başla",
+    "resumeSession": "Seansa devam et",
+    "workout": "Antrenman",
+    "inProgress": "Devam ediyor",
+    "type": {
+      "strength": "Kuvvet",
+      "cardio": "Kardiyo",
+      "flexibility": "Esneklik",
+      "calisthenics": "Vücut ağırlığı",
+      "other": "Diğer",
+      "free": "Serbest"
+    },
+    "exercises": "{{count}} egzersiz",
+    "workoutSequence": "Antrenman sırası",
+    "skipped": "Atlandı",
+    "startFromExercise": {
+      "title": "Egzersizden başla",
+      "message": "Antrenmanı {{exerciseName}} egzersizinden başlatmak ister misin?",
+      "confirm": "Buradan başla",
+      "cancel": "İptal"
+    },
+    "summary": {
+      "failedToLoad": "Yüklenemedi",
+      "noWorkoutId": "Antrenman kimliği yok",
+      "unableToLoad": "Yüklenemiyor",
+      "failedToGetFeedback": "Geri bildirim alınamadı. Lütfen tekrar dene.",
+      "healthPrompt": {
+        "title": "Sağlık verilerini bağlayalım mı?",
+        "message": "Bir antrenmanı bitirdiğine göre Musclog adım, kilo ve antrenman gibi sağlık verilerini okuyup yazabilir.",
+        "confirm": "Bağla",
+        "later": "Belki sonra"
+      }
+    },
+    "muscleGroups": {
+      "chest": "Göğüs",
+      "back": "Sırt",
+      "legs": "Bacaklar",
+      "shoulders": "Omuzlar",
+      "arms": "Kollar",
+      "core": "Gövde",
+      "abdomen": "Karın",
+      "glutes": "Kalçalar",
+      "fullBody": "Tüm vücut",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "forearms": "Ön kollar",
+      "abs": "Karın kasları",
+      "quads": "Uyluk önü",
+      "hamstrings": "Arka uyluk",
+      "calves": "Baldır",
+      "full_body": "Tüm vücut",
+      "cardio": "Kardiyo",
+      "other": "Diğer"
+    },
+    "exerciseTypes": {
+      "compound": "Bileşik",
+      "isolation": "İzolasyon",
+      "bodyweight": "Vücut ağırlığı",
+      "machine": "Makine",
+      "dumbbell": "Dambıl",
+      "barbell": "Halter",
+      "cable": "Kablo",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Direnç bandı",
+      "medicine_ball": "Tıp topu",
+      "smith_machine": "Smith makinesi",
+      "plate_machine": "Plaklı makine",
+      "cardio": "Kardiyo",
+      "stretching": "Esneme",
+      "plyometric": "Pliometrik",
+      "mobility": "Hareketlilik",
+      "other": "Diğer"
+    }
+  }
+}

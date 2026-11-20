@@ -1,0 +1,83 @@
+{
+  "meals": {
+    "title": "Meine Mahlzeiten",
+    "filters": {
+      "all": "Alle",
+      "highProtein": "Viel Protein",
+      "breakfast": "Frühstück",
+      "lunch": "Mittagessen"
+    },
+    "tags": {
+      "highProtein": "Viel Protein",
+      "ketoFriendly": "Keto-freundlich",
+      "vegetarian": "Vegetarisch",
+      "breakfast": "Frühstück",
+      "lunch": "Mittagessen",
+      "dinner": "Abendessen",
+      "snack": "Snack"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} Mahlzeit",
+      "mealCount_other": "{{count}} Mahlzeiten",
+      "view": "Ansehen",
+      "viewBreakfast": "Frühstück ansehen",
+      "viewLunch": "Mittagessen ansehen",
+      "viewDinner": "Abendessen ansehen",
+      "viewSnack": "Snack ansehen",
+      "tracked": "Erfasst"
+    },
+    "untitledMeal": "Mahlzeit ohne Namen",
+    "searchPlaceholder": "Mahlzeiten suchen …",
+    "loadingMeals": "Mahlzeiten werden geladen …",
+    "noMealsFound": "Keine Mahlzeiten gefunden",
+    "noMealsYet": "Noch keine Mahlzeiten",
+    "noMealsMatch": "Keine Mahlzeiten passen zu \"{{query}}\"",
+    "createFirstMeal": "Erstelle deine erste Mahlzeit, um loszulegen",
+    "tryDifferentFilter": "Probiere einen anderen Filter",
+    "loadingMore": "Weitere werden geladen …",
+    "loadMore": "Mehr laden",
+    "customMeal": "Eigene Mahlzeit",
+    "createdByYou": "Von dir erstellt",
+    "logMeal": "Mahlzeit erfassen",
+    "mealType": "Mahlzeit",
+    "history": {
+      "unknownMeal": "Unbekannte Mahlzeit"
+    },
+    "deleteItem": {
+      "title": "Eintrag löschen",
+      "message": "Willst du diesen Eintrag wirklich löschen?",
+      "cancel": "Abbrechen",
+      "delete": "Löschen"
+    },
+    "unknownFood": "Unbekannt",
+    "generateAI": {
+      "title": "Mahlzeiten mit KI erstellen",
+      "describeLabel": "Beschreibe deine Vorlieben",
+      "preferencesLabel": "Vorlieben",
+      "placeholder": "z. B. Proteinreiche Mahlzeiten für Muskelaufbau, ich mag Hähnchen und Reis, ohne Milchprodukte …",
+      "applyLabel": "Mahlzeiten erstellen",
+      "successMessage": "Mahlzeit erstellt.",
+      "errorMessage": "Mahlzeiten konnten nicht erstellt werden. Bitte versuche es noch einmal.",
+      "aiNotConfigured": "KI-Funktionen sind nicht eingerichtet. Füge in den Einstellungen einen Gemini- oder OpenAI-Schlüssel hinzu.",
+      "generating": "Mahlzeiten werden erstellt …"
+    },
+    "dynamicCreator": {
+      "title": "Mahlzeiten-Baukasten",
+      "saveMealTitle": "Mahlzeit speichern",
+      "noIngredients": "Noch keine Zutaten.\nTippe auf \"Lebensmittel hinzufügen\", um deine Mahlzeit zusammenzustellen.",
+      "addFood": "Lebensmittel hinzufügen",
+      "finishAndSave": "Fertig & speichern",
+      "saveButton": "Mahlzeit speichern",
+      "totalNutrition": "Gesamte Nährwerte",
+      "ingredientsSummary_one": "{{count}} Zutat",
+      "ingredientsSummary_other": "{{count}} Zutaten",
+      "mealNameLabel": "Name der Mahlzeit",
+      "mealNamePlaceholder": "z. B. Bowl nach dem Training",
+      "mealNameRequired": "Bitte gib einen Namen für die Mahlzeit ein",
+      "descriptionLabel": "Beschreibung (optional)",
+      "descriptionPlaceholder": "z. B. Proteinreiche Mahlzeit mit Hähnchen und Reis",
+      "nutritionBasisLabel": "Nährwertbasis",
+      "savedSuccess": "Mahlzeit gespeichert."
+    }
+  }
+}

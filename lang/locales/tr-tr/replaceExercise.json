@@ -1,0 +1,58 @@
+{
+  "replaceExercise": {
+    "title": "Egzersizi değiştir",
+    "replace": "Değiştir",
+    "searchPlaceholder": "Egzersiz ara...",
+    "selectExercise": "Egzersiz seç",
+    "loadMore": "Daha fazla yükle",
+    "loadingMore": "Yükleniyor…",
+    "noExercisesMatch": "Eşleşen egzersiz yok",
+    "families": {
+      "all": "Tümü",
+      "torso": "Üst vücut",
+      "arms": "Kollar",
+      "legs": "Bacaklar",
+      "core": "Gövde",
+      "other": "Diğer"
+    },
+    "suggested": "Senin için önerilen",
+    "disliked": "Sevilmeyen",
+    "hiddenHint": "Kaçındığın ya da salonunun sağlayamadığı egzersizler gizlenir.",
+    "back": "Geri",
+    "swapped": "{{from}} yerine {{to}} koyuldu",
+    "reason": {
+      "title": "Neden değiştiriyorsun?",
+      "subtitle": "{{name}} ile değiştiriliyor",
+      "question": "Nedeni nedir?",
+      "options": {
+        "equipment_unavailable": "Ekipman yok",
+        "pain": "Ağrı ya da rahatsızlık",
+        "too_hard": "Çok zor",
+        "too_easy": "Çok kolay",
+        "dislike": "Sevmiyorum",
+        "machine_occupied": "Makine dolu",
+        "just_today": "Sadece bugün için"
+      },
+      "descriptions": {
+        "equipment_unavailable": "Makine ya da ağırlıklar yok",
+        "pain": "Bir yerin ağrıyor ya da yanlış hissettiriyor",
+        "too_hard": "Çok ağır ya da çok zorlayıcı",
+        "too_easy": "Yeterince zorlayıcı değil",
+        "dislike": "Bana göre değil",
+        "machine_occupied": "Başkası kullanıyor",
+        "just_today": "Yalnızca bu seans"
+      },
+      "remember": {
+        "injury": "{{name}} egzersizini şimdilik önermeyi bırak",
+        "dislike": "{{name}} egzersizini bir daha önerme"
+      },
+      "rememberHint": {
+        "injury": "İyileşene kadar değiştirmelerde ve oluşturulan antrenmanlarda yer almaz.",
+        "dislike": "Listenin en sonunda sıralanır, asla ilk öneri olmaz."
+      },
+      "removeEquipment": "{{equipment}} {{gym}} salonunda yok",
+      "removeEquipmentHint": "Bu ekipmanı salondan kaldır, böylece ona ihtiyaç duyan egzersizler önerilmez."
+    },
+    "addReason": "Neden ekle"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "dailySummaryCard": {
+    "alcohol": "Alkol",
+    "alcoholLabel": "Ayrıca şunları tükettin:",
+    "carbs": "Karbonhidrat",
+    "fiber": "Lif",
+    "fiberShort": "Li",
+    "carbsShort": "K",
+    "dailySummary": "Günün özeti",
+    "fats": "Yağ",
+    "fatsShort": "Y",
+    "goalExceeded": "Hedef aşıldı",
+    "goalReached": "Hedefe ulaşıldı",
+    "over": "Fazla",
+    "protein": "Protein",
+    "proteinShort": "P",
+    "remaining": "Kalan",
+    "setGoals": "Hedef belirle",
+    "setGoalsToTrack": "Takip etmek için hedef belirle",
+    "today": "Bugün",
+    "weeklyAvg": "Haftalık ortalama"
+  }
+}

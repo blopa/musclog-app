@@ -1,0 +1,48 @@
+{
+  "profile": {
+    "header": {
+      "title": "Profil"
+    },
+    "goal": "Hedef",
+    "currentStats": "Mevcut istatistikler",
+    "history": "Geçmiş",
+    "management": "Yönetim",
+    "loading": "Yükleniyor...",
+    "syncing": {
+      "healthKit": "HealthKit ile eşitleniyor..."
+    },
+    "bmiStatus": {
+      "underweight": "Zayıf",
+      "normal": "Normal kilo",
+      "overweight": "Fazla kilolu",
+      "obese": "Obez"
+    },
+    "gender": {
+      "male": "Erkek",
+      "female": "Kadın",
+      "other": "Diğer"
+    },
+    "managementItems": {
+      "editPersonal": "Kişisel bilgileri düzenle",
+      "editPersonalDesc": "Adını, avatarını ve kişisel ayrıntılarını güncelle",
+      "editFitness": "Fitness ayrıntılarını düzenle",
+      "editFitnessDesc": "Fitness hedeflerini ve tercihlerini güncelle",
+      "appPreferences": "Uygulama tercihleri",
+      "appPreferencesDesc": "Uygulama ayarlarını ve tercihlerini özelleştir",
+      "aiUpdate": "Yapay zekâyla güncelle",
+      "aiUpdateDesc": "Yapay zekâya neyin değiştiğini anlat ve kaydetmeden önce incele"
+    },
+    "stats": {
+      "weight": "Kilo",
+      "height": "Boy",
+      "bodyFat": "Vücut yağı",
+      "bmi": "BMI",
+      "age": "Yaş",
+      "gender": "Cinsiyet"
+    },
+    "weightPrediction": {
+      "title": "Tahmini kilo",
+      "subtitle": "TDEE ve son kilo ölçümünden bu yana kalori takibine göre tahmin edildi"
+    }
+  }
+}

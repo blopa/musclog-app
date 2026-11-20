@@ -1,0 +1,165 @@
+{
+  "coach": {
+    "title": "Sohbet",
+    "you": "Sen",
+    "status": "Çevrimiçi",
+    "statusOffline": "Çevrimdışı",
+    "context": {
+      "general": "Genel",
+      "exercise": "Fitness",
+      "nutrition": "Beslenme"
+    },
+    "placeholder": "Bir mesaj yaz...",
+    "todayAt": "Bugün, {{time}}",
+    "imageSent": "Bir resim gönderildi",
+    "actions": {
+      "createWorkout": "Antrenman oluştur",
+      "analyzeProgress": "İlerlemeyi analiz et",
+      "nutritionCheck": "Beslenme kontrolü",
+      "trackMeal": "Öğünü takip et",
+      "workoutGen": "Antrenman üret",
+      "mealPlan": "Öğün planı"
+    },
+    "workoutGenerationPrompt": "Sana kişisel bir antrenman planı oluşturmada yardımcı olabilirim! Hedeflerini, kullanabileceğin ekipmanı ve haftada kaç gün çalışmak istediğini anlat.",
+    "mealPlanPrompt": "Sana 3 günlük kişisel bir öğün planı oluşturmada yardımcı olabilirim! Tercihlerini, alerjilerini ya da eklemek istediğin belirli yiyecekleri anlat.",
+    "analyzeProgressPrompt": "Son antrenmanlarını analiz edeceğim. Ben başlamadan önce söylemek istediğin bir not var mı?",
+    "nutritionCheckPrompt": "Son 7 günkü beslenmeni inceleyeceğim. Ben başlamadan önce eklemek istediğin bir not var mı?",
+    "trackMealPrompt": "Ne yediğini anlat (hatta bir fotoğraf da gönderebilirsin!), ben makroları tahmin edip senin için takip edeyim.",
+    "welcomeMessage": "Merhaba, ben {{name}}, yapay zeka koçun. Antrenmanların, beslenmen ya da ilerlemen hakkında bana her şeyi sorabilirsin.",
+    "welcomeMessageExercise": "Merhaba, ben {{name}}. Bana bir antrenman planı hazırlamamı, formunu kontrol etmemi ya da ilerlemeni analiz etmemi iste.",
+    "welcomeMessageNutrition": "Merhaba, ben {{name}}. Ne yediğini anlat, makroları tahmin edeyim ya da bana bir beslenme sorusu sor.",
+    "insights": {
+      "noNutritionLogs": "Son 7 günde hiç öğün takip etmediğin için henüz beslenme içgörüsü veremem. Yiyeceklerini kaydet, sana geri bildirim vereyim.",
+      "noWorkoutLogs": "Son 7 günde bir antrenmanı tamamlamadığın için henüz antrenman içgörüsü veremem. Birini bitir, antrenmanını analiz edeyim."
+    },
+    "errors": {
+      "aiNotConfigured": "Yapay zeka özellikleri yapılandırılmamış. Lütfen Ayarlar'a bir Gemini ya da OpenAI API anahtarı ekle.",
+      "workoutGenerationFailed": "Üzgünüm, bir antrenman planı oluşturamadım. Lütfen tekrar dene.",
+      "mealPlanGenerationFailed": "Üzgünüm, bir öğün planı oluşturamadım. Lütfen tekrar dene.",
+      "generalError": "Üzgünüm, bir şeyler ters gitti. Lütfen tekrar dene.",
+      "progressInsightFailed": "İlerleme analiz edilemedi. Daha sonra tekrar dene.",
+      "nutritionInsightFailed": "Beslenme kontrol edilemedi. Daha sonra tekrar dene.",
+      "trackMealFailed": "Bu öğünün makrolarını tahmin edemedim. Biraz daha ayrıntılı anlatır mısın?",
+      "featureRequiresCloudAi": "Bu özellik Apple Intelligence ile kullanılamıyor. Lütfen Ayarlar'dan OpenAI ya da Gemini'ye geç.",
+      "filePickFailed": "Dosya seçilemedi. Lütfen tekrar dene.",
+      "creditsExhausted": "Yapay zeka kredilerin bitmiş görünüyor. Lütfen Ayarlar'dan API anahtarını ya da faturalandırmanı kontrol et.",
+      "rateLimited": "Başka bir mesaj göndermeden önce lütfen bir an bekle.",
+      "replyInProgress": "Hâlâ başka bir cevap yazıyorum. Lütfen bitmesini bekle.",
+      "toolRequestFailed": "Bu isteği işleyemedim. Lütfen tekrar dene.",
+      "conversationFallback": "Fitness ve beslenme sorularında yardımcı olabilirim. Ne öğrenmek istersin?",
+      "requestProcessingFailed": "İsteğini işlerken sorun yaşadım. Bunu başka bir şekilde anlatır mısın?"
+    },
+    "goToSettings": "Ayarlara git",
+    "success": {
+      "workoutPlanGenerated": "Senin için {{count}} antrenman oluşturdum! 💪 {{description}}",
+      "workoutPlanGeneratedWithName": "Senin için {{count}} antrenmanlık {{planName}} oluşturdum! 💪 {{description}}",
+      "mealPlanGenerated": "Senin için {{count}} öğünlük 3 günlük bir öğün planı oluşturdum! 🥗 {{description}}",
+      "trackMealSuccess": "Öğünün için {{count}} malzeme takip ettim: {{ingredients}}. Toplam: {{calories}}.",
+      "trackMealReady": "{{count}} öğünü analiz ettim: {{meals}} (toplam {{calories}}). İncelemek ve kaydetmek için bir öğüne dokun.",
+      "historyCleared": "Sohbet geçmişi temizlendi."
+    },
+    "aiInstructions": {
+      "parseWorkouts": "Antrenmanları ayrıştır ve yapılandırılmış listeyi döndür.",
+      "parseNutrition": "Beslenme verisini ayrıştır ve yapılandırılmış listeyi döndür.",
+      "parseRetrospectiveNutrition": "Öğünleri ayrıştır ve yapılandırılmış listeyi döndür.",
+      "generateWorkoutPlanWithHistory": "Bu sohbete dayanarak bir antrenman planı oluştur.",
+      "generateWorkoutPlanDefault": "Basit bir haftalık antrenman planı oluştur (ör. 3 günlük bölünme)."
+    },
+    "chatMessages": {
+      "title": "Sohbet mesajları",
+      "searchPlaceholder": "Mesajlarda ara...",
+      "noMessages": "Henüz mesaj yok",
+      "noMessagesDesc": "Loggy ile bir sohbet başlat",
+      "endOfHistory": "Tüm mesajlar yüklendi",
+      "messageOptions": "Mesaj seçenekleri",
+      "editMessage": "Mesajı düzenle",
+      "editMessageDesc": "Mesaj metnini değiştir",
+      "deleteMessage": "Mesajı sil",
+      "deleteMessageDesc": "Bu mesajı kalıcı olarak kaldır",
+      "createMessage": "Mesaj oluştur",
+      "createMessageDesc": "Geçmişe yeni bir mesaj ekle",
+      "createMessageFailed": "Mesaj oluşturulamadı",
+      "sender": "Gönderen",
+      "senderUser": "Kullanıcı",
+      "senderCoach": "Koç"
+    },
+    "menu": {
+      "title": "Sohbet seçenekleri",
+      "quickSettings": "Hızlı ayarlar",
+      "quickSettingsDesc": "Yapay zekanın düşünme biçimini, resim işlemeyi ve yapay zekaya gönderilen geçmişi ayarla.",
+      "clearHistory": "Sohbet geçmişini temizle",
+      "clearHistoryDesc": "Bu sohbet bağlamındaki tüm mesajları sil.",
+      "shareHistory": "Sohbet geçmişini paylaş",
+      "shareHistoryDesc": "Bu sohbetin tamamını düz metin olarak dışa aktar."
+    },
+    "quickSettings": {
+      "title": "Hızlı ayarlar",
+      "subtitle": "Loggy'nin nasıl düşündüğünü ve hangi bağlamı aldığını ayarla."
+    },
+    "confirmClear": {
+      "title": "Sohbet geçmişi temizlensin mi?",
+      "message": "Bu işlem bu sohbet bağlamındaki tüm mesajları kalıcı olarak silecek. Geri alınamaz."
+    },
+    "share": {
+      "title": "Loggy ile sohbet",
+      "noMessages": "Henüz paylaşılacak bir sohbet geçmişi yok.",
+      "failed": "Sohbet geçmişi paylaşılamadı. Lütfen tekrar dene.",
+      "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
+    },
+    "disclaimer": "Yapay zeka hata yapabilir. Lütfen önemli bilgileri doğrula.",
+    "message": {
+      "menuTitle": "Mesaj işlemleri",
+      "copy": "Kopyala",
+      "copyDesc": "Mesaj metnini panoya kopyala",
+      "share": "Paylaş",
+      "shareDesc": "Bu mesajı paylaş",
+      "delete": "Sil",
+      "deleteDesc": "Bu mesajı sohbetten kaldır",
+      "copied": "Mesaj panoya kopyalandı",
+      "deleted": "Mesaj silindi"
+    },
+    "sendViaOpenAI": "OpenAI ile gönder",
+    "personas": {
+      "loggy": {
+        "name": "Loggy",
+        "description": "Samimi ve motive edici. Varsayılan."
+      },
+      "dracula": {
+        "name": "Drakula",
+        "description": "Yüzyıllık disiplinli eski dünya kontu."
+      },
+      "cthulhu": {
+        "name": "Cthulhu",
+        "description": "Proteinini almanı gerçekten çok isteyen kadim bir kozmik korku."
+      },
+      "sherlock": {
+        "name": "Sherlock Holmes",
+        "description": "İlerlemeni kayıtlarındaki ipuçlarından çıkarır."
+      },
+      "custom": {
+        "name": "Özel koç",
+        "description": "Kendi koçunu yaz: bir ad, bir ses ve bir avatar."
+      }
+    },
+    "personaPicker": {
+      "title": "Koç kişiliği",
+      "subtitle": "Koçunun kim olduğunu seç. Yalnızca konuşma biçimi değişir; öneriler ve kurallar aynı kalır.",
+      "editCustom": "Özel koçu düzenle",
+      "onDeviceNote": "Cihaz üzerindeki yapay zeka her zaman Loggy'yi kullanır. Farklı bir koç seçmek için bulut ya da yerel bir yapay zekaya geç.",
+      "custom": {
+        "title": "Özel koç",
+        "nameLabel": "Ad",
+        "namePlaceholder": "ör. Koç Atlas",
+        "voiceLabel": "Konuşma biçimi",
+        "voicePlaceholder": "ör. Çabaya saygı duyan ve bacak gününü asla atlatmayan sakin bir antrenör.",
+        "voiceCount": "{{count}} / {{max}}",
+        "hint": "Açıklaman mesajlarınla birlikte yapay zekaya gönderilir. Yalnızca tonu değiştirir, önerileri değil.",
+        "avatarPick": "Avatar seç",
+        "avatarChange": "Avatarı değiştir",
+        "avatarRemove": "Avatarı kaldır",
+        "errorUnsafe": "Bu metin kullanılamaz. Sesi daha sade kelimelerle anlatmayı dene.",
+        "errorImage": "Bu resim yüklenemedi."
+      }
+    }
+  }
+}

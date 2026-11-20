@@ -1,0 +1,16 @@
+{
+  "restOver": {
+    "startNextSet": "Nächsten Satz starten",
+    "upNext": "Als Nächstes",
+    "weight": "Gewicht",
+    "weightWithUnit": "{{value}} {{unit}}",
+    "reps": "Wdh.",
+    "set": "Satz",
+    "restTimeIs": "Die Pause ist",
+    "over": "vorbei",
+    "timeToGo": "Es geht weiter! Der nächste Satz steht an.",
+    "noWorkoutId": "Keine Trainings-ID angegeben",
+    "workoutDeleted": "Training wurde gelöscht",
+    "loadError": "Trainingsdaten konnten nicht geladen werden"
+  }
+}

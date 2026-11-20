@@ -1,0 +1,10 @@
+{
+  "food_food_portions": "Porcje produktów",
+  "createPortion": "Utwórz porcję",
+  "createFoodPortion": "Utwórz porcję produktu",
+  "portionName": "Nazwa porcji",
+  "portionNamePlaceholder": "np. szklanka, kromka, sztuka",
+  "weightGrams": "Waga (gramy)",
+  "selectIcon": "Wybierz ikonę",
+  "chooseIcon": "Wybierz ikonę"
+}

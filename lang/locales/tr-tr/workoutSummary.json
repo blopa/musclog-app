@@ -1,0 +1,24 @@
+{
+  "workoutSummary": {
+    "totalTime": "Toplam süre",
+    "volume": "Hacim",
+    "duration": "Süre",
+    "personalRecords": "Kişisel rekorlar",
+    "newPRs": "Yeni rekorlar",
+    "goHome": "Ana sayfaya dön",
+    "youCrushedIt": "Antrenman tamamlandı",
+    "shareText": "Az önce bir antrenmanı bitirdim.",
+    "sharePersonalRecords_one": "Kişisel rekor: {{count}}",
+    "sharePersonalRecords_other": "Kişisel rekor: {{count}}",
+    "shareSummary": "Özeti paylaş",
+    "workoutCompleted": "Antrenman tamamlandı",
+    "viewDetails": "Ayrıntıları gör",
+    "viewMuscles": "Kasları gör",
+    "getFeedback": "Yapay zekâdan geri bildirim al",
+    "gettingFeedback": "Geri bildirim alınıyor...",
+    "completedMessage": "{{workoutName}} antrenmanını tamamladın",
+    "completedSummary": "Antrenman tamamlandı: {{workoutName}}",
+    "caloriesBurned": "Yakılan kalori",
+    "workoutSaved": "Antrenman kaydedildi. Sonraki sefer neyin değiştiğini aşağıda görebilirsin."
+  }
+}

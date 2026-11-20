@@ -1,0 +1,90 @@
+{
+  "websiteToolNutritionLogTemplate": {
+    "title": "Kostenloses Ernährungstagebuch zum Ausdrucken",
+    "intro": "Lade ein Ernährungstagebuch zum Ausdrucken herunter, in zwei Versionen: eine, in die du die Kalorien und Makros einträgst, die du bereits berechnet hast, und eine, in die du die Werte pro 100 g von einer Packung übernimmst und die Rechnung selbst machst. Außerdem gibt es eine Tabelle, die die Rechnung für dich übernimmt. Alles kostenlos, ohne Anmeldung.",
+    "downloads": {
+      "title": "Downloads",
+      "versions": {
+        "ready": {
+          "title": "Makros bereits berechnet",
+          "body": "Eine Zeile pro Lebensmittel: die Mahlzeit, das Lebensmittel, die Menge, dann Kalorien, Protein, Kohlenhydrate und Fett für diese Menge."
+        },
+        "per100": {
+          "title": "Pro 100 g, du rechnest",
+          "body": "Übernimm die Werte pro 100 g von der Packung, schreibe die gegessenen Gramm auf und berechne, was diese Menge enthält."
+        },
+        "both": {
+          "title": "Tabelle",
+          "body": "Beide Layouts als Tabs, mit den Berechnungen per Formel."
+        }
+      },
+      "readyA4": "Ernährungstagebuch, A4",
+      "readyA4Note": "PDF, 7 Blätter im Querformat, eins pro Tag. Für A4-Papier.",
+      "readyLetter": "Ernährungstagebuch, US Letter",
+      "readyLetterNote": "PDF, 7 Blätter im Querformat, eins pro Tag. Für US-Letter-Papier.",
+      "per100A4": "Ernährungstagebuch pro 100 g, A4",
+      "per100A4Note": "PDF, 7 Blätter im Querformat, eins pro Tag. Für A4-Papier.",
+      "per100Letter": "Ernährungstagebuch pro 100 g, US Letter",
+      "per100LetterNote": "PDF, 7 Blätter im Querformat, eins pro Tag. Für US-Letter-Papier.",
+      "xlsx": "Tabellenvorlage",
+      "xlsxNote": "Excel-Datei (.xlsx), die sich auch in Google Sheets, Numbers und LibreOffice öffnen lässt. Ein Tab Tag, ein Tab Pro 100 g und ein Tab Lies mich.",
+      "english": "Die Dateien sind auf Englisch, unabhängig von der Sprache dieser Seite."
+    },
+    "try": {
+      "title": "Die Rechnung pro 100 g ausprobieren",
+      "intro": "Gib ein, was die Packung pro 100 g angibt, und wie viele Gramm du gegessen hast. Das ist dieselbe Rechnung, die das Blatt Pro 100 g von dir verlangt. Nichts, was du eingibst, verlässt deinen Browser.",
+      "kcal": "Kalorien pro 100 g",
+      "kcalHint": "Optional. Lass es leer, um es aus den Makros zu schätzen.",
+      "protein": "Protein pro 100 g",
+      "carbs": "Kohlenhydrate pro 100 g",
+      "fat": "Fett pro 100 g",
+      "grams": "Gegessene Gramm",
+      "formula": "Jeder Wert ist die Angabe pro 100 g mal {{grams}} g, geteilt durch 100.",
+      "results": {
+        "kcal": "Gegessene Kalorien",
+        "kcalEstimated": "Aus den Makros geschätzt: 4 kcal pro Gramm Protein und Kohlenhydrate, 9 pro Gramm Fett.",
+        "protein": "Gegessenes Protein",
+        "carbs": "Gegessene Kohlenhydrate",
+        "fat": "Gegessenes Fett"
+      },
+      "problems": {
+        "kcal": "Kalorien pro 100 g müssen eine Zahl von 0 bis 900 sein.",
+        "protein": "Protein pro 100 g muss eine Zahl von 0 bis 100 sein.",
+        "carbs": "Kohlenhydrate pro 100 g müssen eine Zahl von 0 bis 100 sein.",
+        "fat": "Fett pro 100 g muss eine Zahl von 0 bis 100 sein.",
+        "grams": "Gramm müssen eine Zahl von 0 bis 5000 sein.",
+        "macrosTooHigh": "Protein, Kohlenhydrate und Fett zusammen können nicht mehr als 100 g in 100 g Lebensmittel sein. Prüfe die Zahlen."
+      }
+    },
+    "sections": [
+      {
+        "title": "Was im Ausdruck-Tagebuch steht",
+        "body": [
+          "Jedes Blatt ist ein Tag. Oben trägst du das Datum ein, ob es ein Trainings- oder Ruhetag war, dein Körpergewicht und wie viel Wasser du getrunken hast. Darunter stehen zwölf Zeilen für die Lebensmittel, eine Spalte Notizen sowie Felder für Gesamt, Ziel und Rest unter Kalorien und Makros, damit du siehst, was vom Tag übrig ist.",
+          "Das PDF hat sieben Blätter, eine Woche pro Ausdruck. Die Blätter enthalten keine Ziele und keinen Essensplan: Deine eigenen Ziele trägst du in der Zeile Ziel ein."
+        ]
+      },
+      {
+        "title": "Welche Version du drucken solltest",
+        "body": [
+          "Nimm die erste Version, wenn du die Werte für die gegessene Menge bereits hast: aus einer Spalte pro Portion, einer Mahlzeit, die du früher berechnet hast, oder einer Ernährungs-App. Du schreibst sie direkt in die Zeile.",
+          "Nimm die Version pro 100 g, wenn du nur die Spalte pro 100 g der Packung hast. Du übernimmst diese Werte, wiegst, was du gegessen hast, und berechnest jede Menge: Wert pro 100 g mal gegessene Gramm, geteilt durch 100. Für 150 g eines Lebensmittels mit 12 g Protein pro 100 g sind das 12 × 150 ÷ 100 = 18 g Protein. Das ist langsamer, zeigt aber, wie die Werte entstehen."
+        ]
+      },
+      {
+        "title": "So nutzt du die Tabelle",
+        "body": [
+          "Der Tab Tag ist für Werte, die du bereits berechnet hast. Der Tab Pro 100 g macht die Rechnung für dich: Gib die Werte der Packung und die gegessenen Gramm ein, dann füllen sich die Spalten rechts. Beide Tabs summieren den Tag und zeigen, was von deinem Ziel übrig ist.",
+          "Die Berechnungen verwenden einfache Formeln, die du lesen oder ändern kannst. Behalte eine Kopie der Datei pro Tag oder füge für jeden Tag einen Tab hinzu."
+        ]
+      },
+      {
+        "title": "Papier, Tabelle oder App",
+        "body": [
+          "Papier braucht keinen Akku und kein Konto, und die Rechnung von Hand bringt dir bei, was in deinem Essen steckt. Was es nicht kann, ist, das Lebensmittel für dich nachzuschlagen, einen Barcode zu scannen oder von selbst eine laufende Summe zu führen.",
+          "Musclog übernimmt das und berechnet die Makros für die gegessene Menge, sodass du die Rechnung pro 100 g nie selbst machen musst. Es ist eine kostenlose Open-Source-App, und deine Daten bleiben auf deinem Gerät."
+        ]
+      }
+    ]
+  }
+}

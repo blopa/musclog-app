@@ -1,0 +1,104 @@
+{
+  "websiteToolProgressiveOverload": {
+    "title": "Kademeli aşırı yükleme hesaplayıcısı",
+    "intro": "Son seansta ne yaptığını gir; bir sonraki sefer hedeflemen gereken ağırlığı ve tekrarı al. Musclog uygulamasının bir sonraki antrenmanını belirlemek için kullandığı kuralı çalıştırır.",
+    "form": {
+      "weight": "Son seansın ağırlığı",
+      "weightHint": "Ana setlerinin ağırlığı.",
+      "reps": "En zayıf ana setindeki tekrar",
+      "repsHint": "Tam sayı. En az tekrarlı set sayılır.",
+      "plannedReps": "Planının istediği tekrar",
+      "plannedRepsHint": "Her set için, tekrar aralığının alt sınırı.",
+      "reserve": "Tekrar rezervi, ortalama",
+      "reserveHint": "Her setten sonra hâlâ yapabileceğin tekrarların ortalaması. Çabanı derecelendirmediysen boş bırak.",
+      "equipmentLabel": "Ekipman",
+      "equipment": {
+        "barbell": "Halter",
+        "dumbbell": "Dambıl",
+        "machine": "Makine ya da kablo"
+      },
+      "modeLabel": "Nasıl ilerlenir",
+      "mode": {
+        "weight_first": "Önce ağırlık ekle",
+        "reps_first": "Önce tekrar ekle"
+      },
+      "completeLabel": "Her seti bitirdin mi?",
+      "twoInARowLabel": "Ondan önceki seans da bu ağırlıkta başarısız oldu mu?",
+      "yes": "Evet",
+      "no": "Hayır",
+      "twoInARowNo": "Hayır ya da emin değilim",
+      "twoInARowYes": "Evet, tekrar kaçırdım ya da tükenmeye ulaştım",
+      "moreOptions": "Daha fazla seçenek: ekipman, ilerleme tarzı ve son seans ayrıntıları"
+    },
+    "problems": {
+      "weight": "Son seansın ağırlığını 0'dan büyük ve en fazla {{max}} olan bir sayı olarak gir.",
+      "reps": "Tekrarı 1 ile {{max}} arasında tam bir sayı olarak gir.",
+      "plannedReps": "Planlanan tekrarı 1 ile {{max}} arasında tam bir sayı olarak gir.",
+      "reserve": "Tekrar rezervini 0 ile {{max}} arasında bir sayı olarak gir ya da boş bırak."
+    },
+    "results": {
+      "title": "Sonraki seans",
+      "kind": {
+        "progression": "Yukarı çık",
+        "repeat": "Geçen seferki gibi tekrarla",
+        "deload": "Daha hafif git"
+      },
+      "target_one": "{{reps}} tekrar için {{weight}}",
+      "target_few": "{{reps}} tekrar için {{weight}}",
+      "target_many": "{{reps}} tekrar için {{weight}}",
+      "target_other": "{{reps}} tekrar için {{weight}}",
+      "changeUp": "Geçen seferden {{change}} ({{percent}}) daha ağır.",
+      "changeSame": "Geçen seferle aynı ağırlık.",
+      "changeDown": "Geçen seferden {{change}} ({{percent}}) daha hafif.",
+      "step": "Bu ekipman için bir yük adımı {{step}}.",
+      "plates": "Halterin her iki yanındaki plaklar",
+      "emptyBar": "Boş halter",
+      "plateLine": "{{count}} × {{weight}}",
+      "unrated": "Tekrar rezervini boş bıraktın, bu yüzden karar yalnızca tekrarlara dayanıyor: her seansta aralığının üst sınırına kadar bir tekrar daha, sonra daha fazla ağırlık."
+    },
+    "reasons": {
+      "addWeight": "Son seans hedefe ulaştı: ortalama en az {{reserve}} tekrar rezerv ve en zayıf setinde en az {{planned}} tekrar. Yük bir adım yükselir.",
+      "addReps": "Son seans hedefe ulaştı, ama ağırlıktan önce tekrar artar. Yük, yalnızca tekrar aralığının üst sınırına ulaşınca yükselir.",
+      "stepTooCoarse": "Bir yük adımı ({{step}}) bu ağırlığın dörtte birinden fazla; yapılamayacak kadar büyük bir sıçrama, bu yüzden uygulama bunun yerine bir tekrar ekler.",
+      "unfinished": "Her seti bitirmedin, bu yüzden seans bir başarı sayılmaz. Tekrarla.",
+      "missedPlan": "Planlanan tekrarları kaçırdın. Bir kaçırma aynı ağırlığı tekrarlatır. Bu ağırlıkta üst üste iki kaçırma onu düşürür.",
+      "tooHard": "Rezervde {{reserve}} tekrardan azın vardı, bu yüzden seans zaten yeterince zordu. Tekrarla. Yük, yalnızca en az {{reserve}} tekrar bıraktığında yükselir.",
+      "deload": "Bu ağırlıkta üst üste iki başarısız seans. Yük %10 ya da bir adım düşer, hangisi büyükse; sonra ayarlayabileceğin bir yüke aşağı yuvarlanır."
+    },
+    "sections": [
+      {
+        "title": "Ne kadar eklemelisin",
+        "body": [
+          "Musclog bir yük adımı ekler: spor salonu kurulmamışsa 2,5 kg (5 lb), halter kurduysan en hafif plağının iki katı. 100 kg'lık bir harekette bu %2,5'tir ve hafif bir dambılda büyük bir paydır; bu yüzden bir adım ağırlığın dörtte birinden fazla olduğunda uygulama bunun yerine bir tekrar ekler. Bunlar ürün kurallarıdır, çalışma sonuçları değildir.",
+          "Araştırma tek bir sayı değil bir aralık verir. Amerikan Spor Hekimliği Koleji'nin 2009 pozisyon bildirisi, arka arkaya iki seansta hedefinin üstünde bir ya da iki tekrar yapabildiğinde yükü yaklaşık %2 ila 10 artırmayı önerir. Musclog bir yönden daha temkinli, bir yönden daha hızlıdır: tek bir seanstan sonra harekete geçer, ama yalnızca rezervde tekrar bıraktığında ve planlanan her tekrara ulaştığında."
+        ]
+      },
+      {
+        "title": "Ne zaman yükselir, tekrarlanır ya da hafifler",
+        "body": [
+          "Ana setinin en zayıfı planlanan tekrara ulaştığında ve ortalama en az 2 tekrar rezervle bitirdiğinde yükselir. Bir zor ya da kısa seanstan sonra tekrarlanır, çünkü bir kötü gün bir duraklama değildir. Aynı ağırlıkta üst üste iki seansta rezervde hiç tekrar kalmadan ya da planlanan tekrarları kaçırarak bittiğinde daha hafif gider. Bu iki seanslık kurallar Musclog'un tercihleridir."
+        ]
+      },
+      {
+        "title": "Önce ağırlık mı, önce tekrar mı",
+        "body": [
+          "Önce ağırlık, hak ettiğinde her seferinde bir adım ekler ve tekrarlarını korur. Önce tekrar, planının iki tekrar üstüne çıkana kadar her seansta bir tekrar ekler (altı tekrar ya da daha az planlarda bir üstüne), sonra ağırlık ekler ve planlanan tekrarlara döner. Bu ikinci yol çift ilerlemedir."
+        ]
+      },
+      {
+        "title": "Bu sayfa neyi göremez",
+        "body": [
+          "Yalnızca tek bir seansı okur. Uygulama ayrıca planına, spor salonuna ve içinde bulunduğun haftaya bakar ve nedenini her setin yanında gösterir. Cevabı bir reçete değil, iyi bir başlangıç noktası olarak gör."
+        ]
+      }
+    ],
+    "sources": {
+      "acsm": "Amerikan Spor Hekimliği Koleji (2009), Progression models in resistance training for healthy adults (Medicine & Science in Sports & Exercise)",
+      "zourdos": "Zourdos ve ark. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "doubleProgression": "Çift ilerleme: her hafta ağırlık eklemenin en basit yolu",
+      "trackProgress": "Spor salonu ilerlemesi nasıl takip edilir: başlangıç rehberi"
+    }
+  }
+}

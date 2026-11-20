@@ -1,0 +1,74 @@
+{
+  "websiteToolWorkoutLogTemplate": {
+    "title": "Kostenloses Trainingsprotokoll zum Ausdrucken",
+    "intro": "Lade ein Trainingsprotokoll zum Ausdrucken oder eine Tabelle zum Ausfüllen am Computer herunter. Beides ist kostenlos, ohne Anmeldung. Die Tabelle wird als CSV gespeichert, die die Musclog-App importieren kann.",
+    "downloads": {
+      "title": "Downloads",
+      "pdfA4": "Protokoll zum Ausdrucken, A4",
+      "pdfA4Note": "PDF, 4 Blätter im Querformat. Für A4-Papier.",
+      "pdfLetter": "Protokoll zum Ausdrucken, US Letter",
+      "pdfLetterNote": "PDF, 4 Blätter im Querformat. Für US-Letter-Papier.",
+      "xlsx": "Tabellenvorlage",
+      "xlsxNote": "Excel-Datei (.xlsx), die sich auch in Google Sheets, Numbers und LibreOffice öffnen lässt. Ein Blatt Protokoll und ein Blatt Lies mich.",
+      "csv": "CSV-Vorlage",
+      "csvNote": "Dieselben Spalten als Klartext, für jede Tabellenkalkulation oder für die App.",
+      "english": "Die Dateien sind auf Englisch, unabhängig von der Sprache dieser Seite."
+    },
+    "check": {
+      "title": "Deine ausgefüllte CSV prüfen",
+      "intro": "Wähle deine Datei und sieh, was Musclog daraus lesen würde. Es nutzt im Browser denselben Leser wie die App. Die Datei wird nicht hochgeladen.",
+      "file": "CSV-Datei",
+      "unitLabel": "Die Gewichte in deiner Datei sind in",
+      "kg": "kg",
+      "lb": "lb",
+      "result": "Musclog würde {{workouts}} und {{sets}} lesen.",
+      "workoutCount_one": "{{formattedCount}} Training",
+      "workoutCount_few": "{{formattedCount}} Trainings",
+      "workoutCount_many": "{{formattedCount}} Trainings",
+      "workoutCount_other": "{{formattedCount}} Trainings",
+      "setCount_one": "{{formattedCount}} Satz",
+      "setCount_few": "{{formattedCount}} Sätze",
+      "setCount_many": "{{formattedCount}} Sätze",
+      "setCount_other": "{{formattedCount}} Sätze",
+      "skipped_one": "{{formattedCount}} Zeile wurde übersprungen: ein fehlendes oder zukünftiges Datum, kein Übungsname oder nichts gemessen.",
+      "skipped_few": "{{formattedCount}} Zeilen wurden übersprungen: ein fehlendes oder zukünftiges Datum, kein Übungsname oder nichts gemessen.",
+      "skipped_many": "{{formattedCount}} Zeilen wurden übersprungen: ein fehlendes oder zukünftiges Datum, kein Übungsname oder nichts gemessen.",
+      "skipped_other": "{{formattedCount}} Zeilen wurden übersprungen: ein fehlendes oder zukünftiges Datum, kein Übungsname oder nichts gemessen.",
+      "problems": {
+        "empty": "Die Datei ist leer.",
+        "tooLarge": "Die Datei ist hier zu groß zum Prüfen.",
+        "unreadable": "Das sieht nicht nach einem Trainingsprotokoll aus. Lass die Kopfzeile der Vorlage unverändert.",
+        "noRows": "Die Datei hat eine Kopfzeile, aber darunter keine Sätze.",
+        "read": "Die Datei konnte nicht gelesen werden."
+      },
+      "exampleWarning": "Lösche vor dem Import die Beispielzeile der Vorlage, sonst wird sie als echter Satz gelesen."
+    },
+    "sections": [
+      {
+        "title": "Was im Protokoll zum Ausdrucken steht",
+        "body": [
+          "Jedes Blatt ist ein Training. Oben trägst du Datum, Training, dein Körpergewicht und ob du in kg oder lb trainierst ein. Darunter stehen zwölf Übungszeilen mit je fünf Sätzen, ein Feld für das Gewicht und ein Feld für die Wiederholungen sowie eine Spalte Notizen für die Anstrengung oder Beschwerden.",
+          "Das PDF hat vier Blätter, ein Ausdruck reicht also für etwa ein bis zwei Wochen. Drucke so viele Kopien, wie du brauchst. Die Blätter enthalten keinen Plan: Du entscheidest, was in die Zeilen kommt."
+        ]
+      },
+      {
+        "title": "So füllst du die Tabelle aus",
+        "body": [
+          "Schreibe pro Satz eine Zeile: das Datum, den Trainingsnamen, die Übung, die Satznummer, das Gewicht und die Wiederholungen. RPE und Notizen sind optional. Das Gewicht ist eine einfache Zahl in der Einheit, die du immer nutzt. Lass Wiederholungen leer bei einem zeitgesteuerten Satz. RPE 10 ist ein Satz ohne Reserve, 9 lässt eine Wiederholung übrig und 8 zwei.",
+          "Die Spalten folgen dem Aufbau, den der Importer von Musclog liest, du musst also nichts umrechnen. Speichere das Blatt Protokoll als CSV-Datei und öffne dann in der App die Einstellungen, dann Backups und Daten, dann Trainings importieren. Musclog ordnet die Übungsnamen seinem Katalog zu und zeigt eine Prüfung, bevor es auch nur eine Einheit speichert."
+        ]
+      },
+      {
+        "title": "Papier, Tabelle oder App",
+        "body": [
+          "Papier braucht keinen Akku und kein Konto, und einen Satz einzutragen dauert ein paar Sekunden. Was es nicht kann, ist für dich nachsehen: Du liest das Blatt der letzten Woche selbst, um zu entscheiden, was du heute hebst.",
+          "Eine Tabelle kann deine Trainingsmenge zusammenrechnen und eine Übung als Diagramm zeigen, wenn du die Formeln selbst baust. Musclog macht das und berechnet das nächste Gewicht aus deiner letzten Einheit, mit angezeigtem Grund, aber das Protokoll gehört dir in jedem Fall. Musclog ist eine kostenlose Open-Source-App, deine Daten bleiben auf deinem Gerät, und du kannst die Tabelle oben dort hineinbringen."
+        ]
+      }
+    ],
+    "articles": {
+      "trackProgress": "So verfolgst du deinen Fortschritt im Studio: ein Leitfaden für Einsteiger",
+      "importHistory": "Übertrage deine Trainingshistorie aus Strong, Hevy oder FitNotes"
+    }
+  }
+}

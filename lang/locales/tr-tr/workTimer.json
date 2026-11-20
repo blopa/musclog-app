@@ -1,0 +1,11 @@
+{
+  "workTimer": {
+    "label": "Zamanlayıcı ayarla",
+    "open": "Zamanlayıcı ayarla",
+    "start": "Başlat",
+    "stop": "Durdur",
+    "close": "Kapat",
+    "minus5": "-5 sn",
+    "plus5": "+5 sn"
+  }
+}

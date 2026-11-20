@@ -1,0 +1,104 @@
+{
+  "websiteToolProgressiveOverload": {
+    "title": "Rechner für progressive Überlastung",
+    "intro": "Gib ein, was du in der letzten Einheit gemacht hast, und erhalte das Gewicht und die Wiederholungen für das nächste Mal. Es nutzt dieselbe Regel, mit der die Musclog-App dein nächstes Training festlegt.",
+    "form": {
+      "weight": "Gewicht der letzten Einheit",
+      "weightHint": "Das Gewicht deiner Arbeitssätze.",
+      "reps": "Wiederholungen im schwächsten Arbeitssatz",
+      "repsHint": "Ganze Zahl. Der Satz mit den wenigsten Wiederholungen zählt.",
+      "plannedReps": "Wiederholungen laut deinem Plan",
+      "plannedRepsHint": "Pro Satz das untere Ende deines Wiederholungsbereichs.",
+      "reserve": "Wiederholungen in Reserve, Durchschnitt",
+      "reserveHint": "Wiederholungen, die nach jedem Satz noch möglich gewesen wären, gemittelt. Lass es leer, wenn du deine Anstrengung nicht bewertet hast.",
+      "equipmentLabel": "Gerät",
+      "equipment": {
+        "barbell": "Langhantel",
+        "dumbbell": "Kurzhantel",
+        "machine": "Maschine oder Kabelzug"
+      },
+      "modeLabel": "Wie du steigerst",
+      "mode": {
+        "weight_first": "Zuerst Gewicht steigern",
+        "reps_first": "Zuerst Wiederholungen steigern"
+      },
+      "completeLabel": "Hast du jeden Satz beendet?",
+      "twoInARowLabel": "Ist die Einheit davor bei diesem Gewicht auch gescheitert?",
+      "yes": "Ja",
+      "no": "Nein",
+      "twoInARowNo": "Nein oder unsicher",
+      "twoInARowYes": "Ja, ich habe Wiederholungen verpasst oder bin ans Versagen gekommen",
+      "moreOptions": "Weitere Optionen: Gerät, Steigerungsstil und Details zur letzten Einheit"
+    },
+    "problems": {
+      "weight": "Gib das Gewicht der letzten Einheit als Zahl über 0 und höchstens {{max}} ein.",
+      "reps": "Gib die Wiederholungen als ganze Zahl von 1 bis {{max}} ein.",
+      "plannedReps": "Gib die geplanten Wiederholungen als ganze Zahl von 1 bis {{max}} ein.",
+      "reserve": "Gib die Wiederholungen in Reserve als Zahl von 0 bis {{max}} ein oder lass das Feld leer."
+    },
+    "results": {
+      "title": "Nächste Einheit",
+      "kind": {
+        "progression": "Steigern",
+        "repeat": "Wie letztes Mal wiederholen",
+        "deload": "Leichter werden"
+      },
+      "target_one": "{{weight}} für {{reps}} Wdh.",
+      "target_few": "{{weight}} für {{reps}} Wdh.",
+      "target_many": "{{weight}} für {{reps}} Wdh.",
+      "target_other": "{{weight}} für {{reps}} Wdh.",
+      "changeUp": "{{change}} ({{percent}}) schwerer als letztes Mal.",
+      "changeSame": "Dasselbe Gewicht wie letztes Mal.",
+      "changeDown": "{{change}} ({{percent}}) leichter als letztes Mal.",
+      "step": "Eine Laststufe für dieses Gerät ist {{step}}.",
+      "plates": "Scheiben auf jeder Seite der Stange",
+      "emptyBar": "Leere Stange",
+      "plateLine": "{{count}} × {{weight}}",
+      "unrated": "Du hast die Wiederholungen in Reserve leer gelassen, daher stützt sich die Empfehlung nur auf die Wiederholungen: jede Einheit eine Wiederholung mehr bis zum oberen Ende deines Bereichs, dann mehr Gewicht."
+    },
+    "reasons": {
+      "addWeight": "Die letzte Einheit hat die Vorgabe erfüllt: im Schnitt mindestens {{reserve}} Wiederholungen in Reserve und mindestens {{planned}} Wiederholungen im schwächsten Satz. Die Last steigt um eine Stufe.",
+      "addReps": "Die letzte Einheit hat die Vorgabe erfüllt, aber die Wiederholungen steigen vor dem Gewicht. Die Last steigt erst, wenn du das obere Ende deines Wiederholungsbereichs erreichst.",
+      "stepTooCoarse": "Eine Laststufe ({{step}}) ist mehr als ein Viertel dieses Gewichts, ein zu großer Sprung, also addiert die App stattdessen eine Wiederholung.",
+      "unfinished": "Du hast nicht jeden Satz beendet, die Einheit gilt daher nicht als Erfolg. Wiederhole sie.",
+      "missedPlan": "Du hast die geplanten Wiederholungen verpasst. Ein Verpassen wiederholt dasselbe Gewicht. Zwei hintereinander bei diesem Gewicht senken es.",
+      "tooHard": "Du hattest weniger als {{reserve}} Wiederholungen in Reserve, die Einheit war also schon hart genug. Wiederhole sie. Die Last steigt nur, wenn du mindestens {{reserve}} übrig lässt.",
+      "deload": "Zwei gescheiterte Einheiten hintereinander bei diesem Gewicht. Die Last sinkt um 10 % oder eine Stufe, je nachdem, was größer ist, und wird dann auf eine Last abgerundet, die du einstellen kannst."
+    },
+    "sections": [
+      {
+        "title": "Wie viel solltest du addieren?",
+        "body": [
+          "Musclog addiert eine Laststufe: 2,5 kg (5 lb), wenn kein Studio eingerichtet ist, oder das Doppelte deiner leichtesten Scheibe an der Langhantel, wenn du eines eingerichtet hast. Bei einer 100-kg-Übung sind das 2,5 %, und bei einer leichten Kurzhantel ist es ein großer Anteil, daher addiert die App eine Wiederholung, wenn eine Stufe mehr als ein Viertel des Gewichts ausmacht. Das sind Produktregeln, keine Studienergebnisse.",
+          "Die Forschung gibt eine Spanne an, keine einzelne Zahl. Die Positionserklärung des American College of Sports Medicine von 2009 schlägt vor, die Last um etwa 2 bis 10 % zu erhöhen, sobald du zwei Einheiten hintereinander ein oder zwei Wiederholungen mehr schaffst als dein Ziel. Musclog ist in einer Hinsicht vorsichtiger und in einer anderen schneller: Es handelt nach einer einzigen Einheit, aber nur, wenn du Wiederholungen in Reserve übrig hattest und jede geplante Wiederholung geschafft hast."
+        ]
+      },
+      {
+        "title": "Wann es steigt, wiederholt oder leichter wird",
+        "body": [
+          "Es steigt, wenn dein schwächster Arbeitssatz die geplanten Wiederholungen geschafft hat und du im Schnitt mindestens 2 Wiederholungen in Reserve übrig hattest. Es wiederholt sich nach einer harten oder kurzen Einheit, denn ein schlechter Tag ist kein Stillstand. Es wird leichter nach zwei Einheiten hintereinander beim selben Gewicht, in denen du nichts in Reserve hattest oder die geplanten Wiederholungen verpasst hast. Diese Zwei-Einheiten-Regeln sind Entscheidungen von Musclog."
+        ]
+      },
+      {
+        "title": "Gewicht zuerst oder Wiederholungen zuerst",
+        "body": [
+          "Gewicht zuerst addiert jedes Mal eine Stufe, wenn du sie dir verdient hast, und behält deine Wiederholungen. Wiederholungen zuerst addiert pro Einheit eine Wiederholung, bis du zwei Wiederholungen über deinem Plan liegst (bei Plänen mit sechs Wiederholungen oder weniger eine), dann addiert es Gewicht und kehrt zu den geplanten Wiederholungen zurück. Die zweite Variante ist die doppelte Steigerung."
+        ]
+      },
+      {
+        "title": "Was diese Seite nicht sehen kann",
+        "body": [
+          "Sie liest eine Einheit. Die App schaut zusätzlich auf deinen Plan, dein Studio und die Woche, in der du gerade bist, und zeigt neben jedem Satz den Grund. Betrachte die Antwort als guten Ausgangspunkt, nicht als Vorschrift."
+        ]
+      }
+    ],
+    "sources": {
+      "acsm": "American College of Sports Medicine (2009), Progression models in resistance training for healthy adults (Medicine & Science in Sports & Exercise)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "doubleProgression": "Doppelte Steigerung: der einfachste Weg, jede Woche Gewicht zu addieren",
+      "trackProgress": "So verfolgst du deinen Fortschritt im Studio: ein Leitfaden für Einsteiger"
+    }
+  }
+}

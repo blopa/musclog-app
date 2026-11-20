@@ -1,0 +1,23 @@
+{
+  "exerciseTransition": {
+    "totalTime": "Gesamtzeit",
+    "completeSuffix": "abgeschlossen",
+    "completedMessage": "Starke Leistung. Atme kurz durch.",
+    "upNext": "Als Nächstes",
+    "target": "Ziel",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
+    "sets": "Sätze",
+    "reps": "Wdh.",
+    "rest": "Pause",
+    "sec": "Sek.",
+    "equipment": "Ausrüstung",
+    "startNextExercise": "Nächste Übung starten",
+    "loadingNextExercise": "Nächste Übung wird geladen …",
+    "errorTitle": "Training nicht gefunden",
+    "errorDescription": "Der Übergangsbildschirm der Übung kann nicht geladen werden. Bitte versuche es erneut.",
+    "goBack": "Zurück",
+    "noWorkoutId": "Keine Trainings-ID angegeben",
+    "loadFailed": "Trainingsdaten konnten nicht geladen werden"
+  }
+}

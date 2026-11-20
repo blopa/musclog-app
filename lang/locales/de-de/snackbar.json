@@ -1,0 +1,25 @@
+{
+  "snackbar": {
+    "view": "Ansehen",
+    "retry": "Erneut versuchen",
+    "ok": "OK",
+    "syncedRecords_one": "{{count}} Gesundheitseintrag synchronisiert.",
+    "syncedRecords_other": "{{count}} Gesundheitseinträge synchronisiert.",
+    "noNewData": "Keine neuen Daten zum Synchronisieren.",
+    "failedToEnableSync": "Health-Connect-Synchronisierung konnte nicht aktiviert werden.",
+    "failedToDisableSync": "Health-Connect-Synchronisierung konnte nicht deaktiviert werden.",
+    "syncDisabledMessage": "Die Health-Connect-Synchronisierung wurde deaktiviert.",
+    "healthConnect": {
+      "noPermissionsGranted": "Keine Health-Connect-Berechtigungen erteilt",
+      "sdkNotAvailable": "Health Connect ist auf diesem Gerät nicht verfügbar. Bitte installiere es über den Play Store.",
+      "permissionDenied": "Health-Connect-Berechtigungen wurden verweigert. Bitte erteile Berechtigungen, um Gesundheitsdaten zu synchronisieren.",
+      "permissionRevoked": "Health-Connect-Berechtigungen wurden entzogen. Bitte aktiviere sie in den Einstellungen erneut.",
+      "offline": "Keine Internetverbindung. Gesundheitsdaten werden synchronisiert, sobald du wieder online bist.",
+      "syncConflict": "Konflikt bei Gesundheitsdaten erkannt. Die neuesten Daten werden verwendet.",
+      "invalidValueRange": "Ungültiger Wert für Gesundheitsdaten. Bitte prüfe deine Eingabe.",
+      "rateLimitExceeded": "Zu viele Anfragen. Bitte warte kurz und versuche es erneut.",
+      "syncInProgress": "Synchronisierung läuft bereits. Bitte warte, bis sie abgeschlossen ist.",
+      "unknownError": "Beim Synchronisieren der Gesundheitsdaten ist ein Fehler aufgetreten. Bitte versuche es erneut."
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "websiteToolCalorieDeficit": {
+    "title": "Kalkulator deficytu kalorycznego i daty celu",
+    "intro": "Ustaw wagę docelową i datę, by zobaczyć dzienny cel kaloryczny, który do niej prowadzi, przedział, w którym się mieści, i czy tempo jest realistyczne.",
+    "form": {
+      "sex": "Płeć",
+      "male": "Mężczyzna",
+      "female": "Kobieta",
+      "age": "Wiek",
+      "height": "Wzrost",
+      "weight": "Obecna masa",
+      "activity": "Poziom aktywności",
+      "goalWeight": "Waga docelowa",
+      "goalDate": "Data celu",
+      "cm": "cm",
+      "inches": "cale",
+      "activity1": "Siedzący tryb życia (mało lub brak ćwiczeń)",
+      "activity2": "Lekko aktywny (1–3 dni w tygodniu)",
+      "activity3": "Umiarkowanie aktywny (3–5 razy w tygodniu)",
+      "activity4": "Bardzo aktywny (6–7 dni w tygodniu)",
+      "activity5": "Super aktywny (praca fizyczna + trening)"
+    },
+    "problems": {
+      "age": "Podaj wiek między 15 a 100.",
+      "height": "Podaj wzrost w zakresie akceptowanym przez kalkulator.",
+      "weight": "Podaj masę w zakresie akceptowanym przez kalkulator.",
+      "goalWeight": "Podaj wagę docelową w zakresie akceptowanym przez kalkulator.",
+      "goalDate": "Wybierz datę celu.",
+      "goalDateNotFuture": "Data celu musi być późniejsza niż dzisiaj."
+    },
+    "results": {
+      "target": "Dzienny cel kaloryczny",
+      "range": "Zakres: od {{low}} do {{high}}",
+      "summary": "Liczby",
+      "change": "Zmiana masy",
+      "days": "Dni do daty celu",
+      "deficit": "Dzienny deficyt",
+      "surplus": "Dzienna nadwyżka",
+      "perDay": "dziennie",
+      "weekly": "Tygodniowe tempo",
+      "perWeek": "tygodniowo",
+      "tdee": "Szacowane dzienne zużycie energii",
+      "share": "Deficyt jako udział dziennego zużycia energii"
+    },
+    "notes": {
+      "noChange": "Już masz taką wagę, więc zmiana nie jest potrzebna.",
+      "floor": "Twój cel byłby poniżej minimum {{floor}}, więc strona ustawia go na tym poziomie.",
+      "laterDate": "Najwcześniejsza data, na jaką pozwala to minimum, to {{date}}.",
+      "floorAboveTdee": "Szacowane zużycie energii jest na poziomie minimum lub poniżej, więc deficyt nie jest możliwy. Wybierz wyższą wagę docelową lub porozmawiaj z lekarzem.",
+      "pace": "To tempo przekracza 1% masy ciała tygodniowo, wytyczną Musclog. Wolniejsze tempo zwykle lepiej się sprawdza.",
+      "deficitLarge": "Ten deficyt przekracza 25% szacowanego zużycia energii, wytyczną Musclog. Mniejszy deficyt na dłuższy czas zwykle łatwiej utrzymać.",
+      "range": "Szacunek jest niepewny, więc cel pokazany jest jako zakres: 10% zużycia energii w obie strony. 10% to wybór produktowy Musclog, a nie zmierzony błąd.",
+      "thresholds": "Wytyczne 1% tempa i 25% deficytu to wybory produktowe Musclog, a nie wnioski z badania."
+    },
+    "sections": [
+      {
+        "title": "Jak powstaje cel",
+        "body": [
+          "Twoje zużycie energii szacowane jest z płci, wieku, wzrostu i masy (spoczynkowe tempo wg Mifflina-St Jeora), pomnożonych przez poziom aktywności. To ten sam szacunek, którego aplikacja Musclog używa, gdy nie ma historii śledzenia.",
+          "Zmiana masy jest przeliczana na energię za pomocą reguły kilokalorii na kilogram aplikacji i rozłożona na dni do daty celu. Cel to to zużycie energii minus dzienny deficyt (albo plus, przy przyroście)."
+        ]
+      },
+      {
+        "title": "Dlaczego data jest tylko wskazówką",
+        "body": [
+          "Hall i in. (2011) modelowali, jak masa ciała reaguje na zmianę podaży energii. Organizm dostosowuje się przez miesiące, więc stała liczba kalorii na kilogram to przybliżenie. Waż się co kilka tygodni i koryguj."
+        ]
+      },
+      {
+        "title": "Minimum",
+        "body": [
+          "Cel nigdy nie schodzi poniżej minimum, jakiego używa aplikacja: 1 200 kcal dla kobiet i 1 500 kcal dla mężczyzn, albo 80% spoczynkowego tempa, jeśli jest wyższe. Jeśli twoja data wymaga mniej, strona podaje najwcześniejszą datę, na jaką pozwala minimum."
+        ]
+      }
+    ],
+    "sources": {
+      "hall": "Hall i in. (2011), kwantyfikacja wpływu bilansu energetycznego na masę ciała"
+    }
+  }
+}

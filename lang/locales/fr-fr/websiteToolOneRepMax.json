@@ -1,0 +1,54 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "Calculateur de répétition maximale",
+    "intro": "Saisis une série que tu as faite et obtiens une répétition maximale estimée (1RM), avec les répétitions en réserve et un tableau des charges à chaque pourcentage de cette valeur.",
+    "form": {
+      "weight": "Charge soulevée",
+      "reps": "Répétitions effectuées",
+      "repsHint": "Nombre entier, de 1 à 10",
+      "reserve": "Répétitions en réserve (facultatif)",
+      "reserveHint": "Combien de répétitions de plus tu aurais pu faire. Laisse vide si tu es allé jusqu'à l'échec."
+    },
+    "problems": {
+      "weight": "Saisis la charge soulevée, un nombre supérieur à 0.",
+      "reps": "Saisis les répétitions sous forme de nombre entier de 1 à 10.",
+      "repsTooHigh": "Les séries de plus de 10 répétitions ne donnent pas une 1RM fiable. Une longue série mesure l'endurance, et chaque formule s'éloigne d'autant plus de la réalité qu'elle doit extrapoler un grand nombre de répétitions. Utilise une série plus lourde de 10 répétitions ou moins.",
+      "reserve": "Les répétitions en réserve doivent être un nombre entier de 0 à 9."
+    },
+    "results": {
+      "estimate": "Répétition maximale estimée (1RM)",
+      "range": "Les formules individuelles vont de {{low}} à {{high}} {{unit}}. L'estimation est leur moyenne.",
+      "tableTitle": "Charge à chaque pourcentage de ta répétition maximale",
+      "percent": "% de la 1RM",
+      "weight": "Charge",
+      "reps": "Répétitions jusqu'à l'échec",
+      "byFormula": "Chaque formule séparément",
+      "extrapolatedNote": "* Extrapolé. Au-delà de {{max}} répétitions, les formules sont étirées au-delà de la plage que l'application considère fiable pour une série : lis ces lignes comme une simple indication."
+    },
+    "sections": [
+      {
+        "title": "Comment l'estimation est faite",
+        "body": [
+          "Le calculateur fait la moyenne de sept formules publiées : Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor et Wathen. La moyenne lisse les particularités de chacune, et le résultat est le même chiffre que celui que l'application Musclog affiche pour une série enregistrée.",
+          "Les répétitions en réserve s'ajoutent aux répétitions effectuées. Cinq répétitions avec deux en réserve sont traitées comme sept répétitions jusqu'à l'échec, car c'est à cette distance de ta limite que se situait la série."
+        ]
+      },
+      {
+        "title": "Pourquoi les séries de plus de 10 répétitions ne sont pas retenues",
+        "body": [
+          "Les formules de répétition maximale fonctionnent mieux sur les séries à faible nombre de répétitions. Plus on les étire, plus elles s'éloignent de la réalité, et une série de 15 répétitions renseigne surtout sur ton endurance, pas sur ta force maximale. L'application ignore ces séries pour les niveaux de force et les objectifs, et cette page fait de même."
+        ]
+      },
+      {
+        "title": "Comment utiliser le tableau",
+        "body": [
+          "Chaque ligne est une charge à un pourcentage de ta répétition maximale estimée, avec le nombre de répétitions jusqu'à l'échec que prédisent les mêmes formules pour cette charge. Les personnes varient beaucoup : considère les chiffres comme un point de départ et ajuste-les selon la façon dont la barre se déplace réellement."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo et al. (2024), Nombre maximal de répétitions à des pourcentages de la répétition maximale (Sports Medicine)",
+      "zourdos": "Zourdos et al. (2016), Nouvelle échelle de RPE propre à l'entraînement en résistance, mesurant les répétitions en réserve"
+    }
+  }
+}

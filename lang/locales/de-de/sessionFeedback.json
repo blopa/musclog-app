@@ -1,0 +1,18 @@
+{
+  "sessionFeedback": {
+    "title": "Feedback zur Einheit",
+    "subtitle": "Bewerte deine Leistung",
+    "difficulty": "Schwierigkeit",
+    "exhaustion": "Erschöpfung",
+    "enjoyment": "Spaß",
+    "easy": "Leicht",
+    "extreme": "Extrem",
+    "fresh": "Frisch",
+    "drained": "Ausgelaugt",
+    "disliked": "Nicht gemocht",
+    "loved": "Geliebt",
+    "submit": "Feedback senden",
+    "notes": "Notizen",
+    "notesPlaceholder": "Wie lief es? Gibt es etwas, das du beim nächsten Mal beachten willst?"
+  }
+}

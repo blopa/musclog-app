@@ -1,0 +1,10 @@
+{
+  "food_food_portions": "Besin porsiyonları",
+  "createPortion": "Porsiyon oluştur",
+  "createFoodPortion": "Besin porsiyonu oluştur",
+  "portionName": "Porsiyon adı",
+  "portionNamePlaceholder": "ör. Bardak, Dilim, Parça",
+  "weightGrams": "Ağırlık (gram)",
+  "selectIcon": "Simge seç",
+  "chooseIcon": "Simge seç"
+}

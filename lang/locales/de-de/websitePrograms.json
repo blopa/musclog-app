@@ -1,0 +1,57 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Kostenlose Trainingspläne",
+      "intro": "Vollständige Pläne mit jedem Training, jeder Übung, jedem Satz und jeder Wiederholung ausgeschrieben. Lies einen hier, oder öffne ihn mit einem Tippen in Musclog und beginne zu trainieren. Die Startgewichte werden beim Öffnen in der App aus deinem Profil vorgeschlagen.",
+      "workouts_one": "{{count}} Training",
+      "workouts_few": "{{count}} Trainings",
+      "workouts_many": "{{count}} Trainings",
+      "workouts_other": "{{count}} Trainings",
+      "minutes": "etwa {{minutes}} Min. pro Training",
+      "exercisesLink": "Zur Übungsbibliothek"
+    },
+    "difficulty": {
+      "beginner": "Anfänger",
+      "intermediate": "Fortgeschritten",
+      "advanced": "Profi"
+    },
+    "detail": {
+      "allPrograms": "Alle Pläne",
+      "dayLabel": "Tag {{n}}",
+      "exercise": "Übung",
+      "setsReps": "Sätze × Wdh.",
+      "rest": "Pause",
+      "restSeconds": "{{seconds}} s",
+      "supersetGroup": "Supersatz {{group}}",
+      "openTitle": "Diesen Plan in Musclog öffnen",
+      "openBody": "Das öffnet den Plan in der App zur Prüfung, damit nichts gespeichert wird, bevor du bestätigst. Die Startgewichte werden aus deinem Profil vorgeschlagen, und die Wochentage wählst du selbst. Wenn du die App noch nicht hast, findest du auf der nächsten Seite die Download-Links.",
+      "openButton": "In Musclog öffnen",
+      "howTitle": "So führst du ihn durch",
+      "how": [
+        "Absolviere die Trainings in der Reihenfolge und wiederhole den Zyklus. Ein Training pro Trainingstag ist die einfachste Art, das durchzuziehen; die Reihenfolge ist wichtiger als der Wochentag.",
+        "Beginne mit Gewichten, die du sauber heben kannst und bei denen dir noch ein paar Wiederholungen bleiben. Wenn du bei jedem Satz das obere Ende des Wiederholungsbereichs erreichst, erhöhe das Gewicht beim nächsten Mal.",
+        "Diese Pläne sind allgemeine Beispiele, keine medizinische Beratung. Wenn du eine Verletzung oder eine gesundheitliche Vorerkrankung hast, sprich vorher mit einer Fachperson."
+      ],
+      "notFoundTitle": "Plan nicht gefunden",
+      "notFoundBody": "Unter dieser Adresse gibt es keinen Plan.",
+      "metaTitle": "{{title}}: kostenloser Trainingsplan"
+    },
+    "summaries": {
+      "push-pull-legs": "Drei Trainings: Drücken (Brust, Schultern und Trizeps), Ziehen (Rücken und Bizeps) und Beine. Absolviere die drei einmal pro Woche oder zweimal hintereinander für die klassische Sechs-Tage-Variante.",
+      "upper-lower-4-day": "Vier Trainings: zwei Oberkörpertage und zwei Unterkörpertage, sodass jeder Muskel an einem Vier-Tage-Plan zweimal pro Woche trainiert wird.",
+      "full-body-3-day": "Drei Ganzkörpertrainings für Anfänger. Jedes enthält eine Beinübung, ein Drücken, ein Ziehen und etwas Armarbeit, sodass jeder Muskel dreimal pro Woche trainiert wird.",
+      "phul": "Vier Trainings: zwei für den Oberkörper und zwei für den Unterkörper. Der erste Tag jedes Paares ist ein schwerer Krafttag mit wenigen Wiederholungen, der zweite ein Hypertrophietag mit mehr Wiederholungen.",
+      "5-day-hypertrophy-split": "Fünf Trainings, je einer für einen Bereich: Brust, Rücken, Schultern, Beine und Arme. Mehr Volumen pro Muskel in einer Einheit, eine harte Einheit pro Muskel und Woche.",
+      "arnold-split": "Drei Trainings im Arnold-Stil: Brust und Rücken, Schultern und Arme, dann Beine. Der Plan wird traditionell zweimal durchlaufen, für sechs Trainingstage.",
+      "bro-split": "Fünf Trainings mit je einer Muskelgruppe: Brust, Rücken, Beine, Schultern und Arme. Jeder Muskel bekommt eine gezielte Einheit pro Woche.",
+      "2-day-full-body": "Zwei Ganzkörpertrainings, A und B, für Wochen, in denen du nur zweimal trainieren kannst. Wechsle sie ab.",
+      "3-day-strength-builder": "Drei Trainings rund um schwerere Sätze mit 4 bis 8 Wiederholungen bei Kniebeuge, Bankdrücken, Kreuzheben und Rudern, danach leichtere Zusatzübungen.",
+      "classic-3-day-split": "Drei Trainings: Brust und Trizeps, Rücken und Bizeps, dann Beine und Schultern. Ein klassischer Plan für eine Woche mit drei Tagen.",
+      "brolic-workout": "Zwei Oberkörpertrainings, Brust und Schultern, mit viel Drück- und Fliegerarbeit. Kürzer als die meisten Pläne hier.",
+      "cable-superset-workout": "Fünf fortgeschrittene Trainings (Oberkörper A, Unterkörper A, Arme, Oberkörper B, Unterkörper B) aus Kabelübungen, in antagonistischen Supersätzen gepaart, mit Wiederholungsbereich und Pausenzeit für jede Übung.",
+      "short-full-body-gym": "Zwei kurze Ganzkörpertrainings, A und B, an Geräten und mit freien Gewichten: etwa 30 Minuten, je 2 Sätze, bewusst leicht gehalten. Ein guter Wiedereinstieg nach einer Pause.",
+      "short-full-body-home": "Zwei kurze Ganzkörpertrainings, A und B, mit Kurzhanteln, einer Kettlebell und Bändern: etwa 30 Minuten, je 2 Sätze, bewusst leicht gehalten.",
+      "short-full-body-no-equipment": "Zwei kurze Ganzkörpertrainings, A und B, nur mit deinem Körpergewicht und einem Band: etwa 30 Minuten, je 2 Sätze, bewusst leicht gehalten."
+    }
+  }
+}

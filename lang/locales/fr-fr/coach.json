@@ -1,0 +1,165 @@
+{
+  "coach": {
+    "title": "Discussion",
+    "you": "Toi",
+    "status": "En ligne",
+    "statusOffline": "Hors ligne",
+    "context": {
+      "general": "Général",
+      "exercise": "Sport",
+      "nutrition": "Nutrition"
+    },
+    "placeholder": "Écris un message...",
+    "todayAt": "Aujourd'hui, {{time}}",
+    "imageSent": "Image envoyée",
+    "actions": {
+      "createWorkout": "Créer une séance",
+      "analyzeProgress": "Analyser ma progression",
+      "nutritionCheck": "Bilan nutritionnel",
+      "trackMeal": "Enregistrer un repas",
+      "workoutGen": "Générer une séance",
+      "mealPlan": "Plan de repas"
+    },
+    "workoutGenerationPrompt": "Je peux t'aider à créer un plan d'entraînement personnalisé ! Parle-moi de tes objectifs, du matériel disponible et du nombre de jours par semaine où tu veux t'entraîner.",
+    "mealPlanPrompt": "Je peux t'aider à créer un plan de repas personnalisé pour 3 jours ! Parle-moi de tes préférences, de tes allergies ou des aliments précis que tu veux inclure.",
+    "analyzeProgressPrompt": "Je vais analyser tes dernières séances. Une remarque à me faire avant que je commence ?",
+    "nutritionCheckPrompt": "Je vais examiner ton alimentation des 7 derniers jours. Une remarque à ajouter avant que je commence ?",
+    "trackMealPrompt": "Dis-moi ce que tu as mangé (tu peux même envoyer une photo !), et j'estimerai les macros et je l'enregistrerai pour toi.",
+    "welcomeMessage": "Salut, je suis {{name}}, ton coach IA. Demande-moi ce que tu veux sur tes séances, ta nutrition ou ta progression.",
+    "welcomeMessageExercise": "Salut, je suis {{name}}. Demande-moi de créer un plan d'entraînement, de vérifier ta technique ou d'analyser ta progression.",
+    "welcomeMessageNutrition": "Salut, je suis {{name}}. Dis-moi ce que tu as mangé et j'estimerai les macros, ou pose-moi une question sur la nutrition.",
+    "insights": {
+      "noNutritionLogs": "Je ne peux pas encore donner de conseils nutritionnels car tu n'as enregistré aucun repas ces 7 derniers jours. Note ce que tu manges et je te donnerai un retour.",
+      "noWorkoutLogs": "Je ne peux pas encore donner de conseils sur tes séances car tu n'as terminé aucune séance ces 7 derniers jours. Termines-en une et j'analyserai ton entraînement."
+    },
+    "errors": {
+      "aiNotConfigured": "Les fonctions IA ne sont pas configurées. Ajoute une clé API Gemini ou OpenAI dans les réglages.",
+      "workoutGenerationFailed": "Désolé, je n'ai pas pu générer de plan d'entraînement. Réessaie.",
+      "mealPlanGenerationFailed": "Désolé, je n'ai pas pu générer de plan de repas. Réessaie.",
+      "generalError": "Désolé, une erreur s'est produite. Réessaie.",
+      "progressInsightFailed": "Impossible d'analyser la progression. Réessaie plus tard.",
+      "nutritionInsightFailed": "Impossible de vérifier la nutrition. Réessaie plus tard.",
+      "trackMealFailed": "Je n'ai pas pu estimer les macros de ce repas. Peux-tu le décrire plus en détail ?",
+      "featureRequiresCloudAi": "Cette fonction n'est pas disponible avec Apple Intelligence. Passe à OpenAI ou Gemini dans les réglages.",
+      "filePickFailed": "Échec de la sélection du fichier. Réessaie.",
+      "creditsExhausted": "Il semble que tes crédits IA soient épuisés. Vérifie ta clé API ou ta facturation dans les réglages.",
+      "rateLimited": "Attends un instant avant d'envoyer un autre message.",
+      "replyInProgress": "Je suis encore en train d'écrire une autre réponse. Attends qu'elle soit terminée.",
+      "toolRequestFailed": "Je n'ai pas pu traiter cette demande. Réessaie.",
+      "conversationFallback": "Je peux t'aider avec les questions de sport et de nutrition. Que veux-tu savoir ?",
+      "requestProcessingFailed": "J'ai eu du mal à traiter ta demande. Peux-tu la reformuler ?"
+    },
+    "goToSettings": "Aller aux réglages",
+    "success": {
+      "workoutPlanGenerated": "J'ai créé {{count}} séances pour toi ! 💪 {{description}}",
+      "workoutPlanGeneratedWithName": "J'ai créé {{planName}} avec {{count}} séances pour toi ! 💪 {{description}}",
+      "mealPlanGenerated": "J'ai créé un plan de repas de 3 jours avec {{count}} repas pour toi ! 🥗 {{description}}",
+      "trackMealSuccess": "J'ai enregistré {{count}} ingrédients pour ton repas : {{ingredients}}. Total : {{calories}}.",
+      "trackMealReady": "J'ai analysé {{count}} repas : {{meals}} ({{calories}} au total). Touche un repas pour le vérifier et l'enregistrer.",
+      "historyCleared": "Historique de discussion effacé."
+    },
+    "aiInstructions": {
+      "parseWorkouts": "Analyse les séances et renvoie la liste structurée.",
+      "parseNutrition": "Analyse les données nutritionnelles et renvoie la liste structurée.",
+      "parseRetrospectiveNutrition": "Analyse les repas et renvoie la liste structurée.",
+      "generateWorkoutPlanWithHistory": "Génère un plan d'entraînement à partir de cette conversation.",
+      "generateWorkoutPlanDefault": "Génère un plan d'entraînement hebdomadaire de base (par exemple un découpage sur 3 jours)."
+    },
+    "chatMessages": {
+      "title": "Messages du chat",
+      "searchPlaceholder": "Chercher dans les messages...",
+      "noMessages": "Aucun message pour l'instant",
+      "noMessagesDesc": "Commence une conversation avec Loggy",
+      "endOfHistory": "Tous les messages sont chargés",
+      "messageOptions": "Options du message",
+      "editMessage": "Modifier le message",
+      "editMessageDesc": "Changer le texte du message",
+      "deleteMessage": "Supprimer le message",
+      "deleteMessageDesc": "Supprimer définitivement ce message",
+      "createMessage": "Créer un message",
+      "createMessageDesc": "Ajouter un nouveau message à l'historique",
+      "createMessageFailed": "Échec de la création du message",
+      "sender": "Expéditeur",
+      "senderUser": "Utilisateur",
+      "senderCoach": "Coach"
+    },
+    "menu": {
+      "title": "Options du chat",
+      "quickSettings": "Réglages rapides",
+      "quickSettingsDesc": "Règle la réflexion de l'IA, la gestion des images et l'historique envoyé à l'IA.",
+      "clearHistory": "Effacer l'historique du chat",
+      "clearHistoryDesc": "Supprime tous les messages de ce contexte de conversation.",
+      "shareHistory": "Partager l'historique du chat",
+      "shareHistoryDesc": "Exporte toute cette conversation en texte brut."
+    },
+    "quickSettings": {
+      "title": "Réglages rapides",
+      "subtitle": "Règle la façon dont Loggy réfléchit et le contexte qu'il reçoit."
+    },
+    "confirmClear": {
+      "title": "Effacer l'historique du chat ?",
+      "message": "Cela supprimera définitivement tous les messages de ce contexte de conversation. Action irréversible."
+    },
+    "share": {
+      "title": "Discussion avec Loggy",
+      "noMessages": "Il n'y a pas encore d'historique de discussion à partager.",
+      "failed": "Impossible de partager l'historique du chat. Réessaie.",
+      "historyLine": "{{timestamp}} - {{sender}} : {{message}}"
+    },
+    "disclaimer": "L'IA peut se tromper. Vérifie les informations importantes.",
+    "message": {
+      "menuTitle": "Actions sur le message",
+      "copy": "Copier",
+      "copyDesc": "Copier le texte du message dans le presse-papiers",
+      "share": "Partager",
+      "shareDesc": "Partager ce message",
+      "delete": "Supprimer",
+      "deleteDesc": "Retirer ce message de la conversation",
+      "copied": "Message copié dans le presse-papiers",
+      "deleted": "Message supprimé"
+    },
+    "sendViaOpenAI": "Envoyer via OpenAI",
+    "personas": {
+      "loggy": {
+        "name": "Loggy",
+        "description": "Sympa et motivant. Le choix par défaut."
+      },
+      "dracula": {
+        "name": "Dracula",
+        "description": "Un comte de l'ancien temps, plein de siècles de discipline."
+      },
+      "cthulhu": {
+        "name": "Cthulhu",
+        "description": "Une ancienne horreur cosmique qui tient vraiment à ce que tu manges assez de protéines."
+      },
+      "sherlock": {
+        "name": "Sherlock Holmes",
+        "description": "Déduit ta progression à partir des indices de tes notes."
+      },
+      "custom": {
+        "name": "Coach personnalisé",
+        "description": "Crée ton propre coach : un nom, une voix et un avatar."
+      }
+    },
+    "personaPicker": {
+      "title": "Personnalité du coach",
+      "subtitle": "Choisis qui est ton coach. Seule sa façon de parler change ; les conseils et les règles restent les mêmes.",
+      "editCustom": "Modifier le coach personnalisé",
+      "onDeviceNote": "L'IA sur l'appareil utilise toujours Loggy. Passe à une IA en ligne ou locale pour choisir un autre coach.",
+      "custom": {
+        "title": "Coach personnalisé",
+        "nameLabel": "Nom",
+        "namePlaceholder": "ex. Coach Atlas",
+        "voiceLabel": "Façon de parler",
+        "voicePlaceholder": "ex. Un sergent instructeur calme qui respecte l'effort et ne me laisse jamais sauter le jour des jambes.",
+        "voiceCount": "{{count}} / {{max}}",
+        "hint": "Ta description est envoyée à l'IA avec tes messages. Elle change seulement le ton, pas les conseils.",
+        "avatarPick": "Choisir un avatar",
+        "avatarChange": "Changer d'avatar",
+        "avatarRemove": "Retirer l'avatar",
+        "errorUnsafe": "Ce texte ne peut pas être utilisé. Essaie de décrire la voix avec des mots plus simples.",
+        "errorImage": "Impossible de charger cette image."
+      }
+    }
+  }
+}

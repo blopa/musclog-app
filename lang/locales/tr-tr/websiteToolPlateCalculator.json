@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Plak hesaplayıcısı",
+    "intro": "Halterde olmasını istediğin ağırlığı gir; spor salonunun gerçekten sahip olduğu plaklarla, kg ya da lb olarak, kendi halterinle her iki yan için plakları al.",
+    "form": {
+      "target": "Hedef ağırlık",
+      "targetHint": "Halterdeki toplam, halter dahil."
+    },
+    "problems": {
+      "target": "Hedef ağırlığı 0'dan büyük ve en fazla {{max}} {{unit}} olan bir sayı olarak gir."
+    },
+    "results": {
+      "loaded": "Halterdeki ağırlık",
+      "exact": "Spor salonun bu ağırlığı tam olarak yükleyebilir.",
+      "inexact": "Spor salonun {{target}} değerini tam olarak yapamaz. Yükleyebileceği en ağır değer {{below}}, en yakın yüklenebilir ağırlık ise {{nearest}}.",
+      "belowBar": "Bu, halterden ({{bar}}) daha hafif. Daha ağır bir hedef seç ya da spor salonunda daha hafif bir halter ayarla.",
+      "perSide": "Her iki yandaki plaklar",
+      "noPlates": "Plak gerekmez: yalnızca halter hedefin kendisi.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Halter: {{bar}}. Plaklar çift çift yüklenir, her iki yana birer tane."
+    },
+    "sections": [
+      {
+        "title": "En ağır plakla başlamak neden yanlış",
+        "body": [
+          "Yaygın yöntem, sığan en ağır plağı alır, sonra bir sonrakini ve böyle devam eder. Bu, bir spor salonunda her plaktan bol olduğunda işe yarar. Sınırlı plakla başarısız olabilir: her birinden birer çift 20, 15 ve 10 kg olan bir spor salonu, 20 kg'lık bir halterle 70 kg'lık bir yük için her iki yana 25 kg ister. Önce 20'yi almak 5 kg'lık bir boşluk bırakır ve hiçbir plak onu dolduramaz. Doğru cevap 15 ve 10 kg'dır; spor salonu bunu yükleyebilir.",
+          "Bu hesaplayıcı, girdiğin plakların kombinasyonlarını dener ve hedefini aşmayan en ağır yükü, en az plakla seçer."
+        ]
+      },
+      {
+        "title": "Plaklar çift çift yüklenir",
+        "body": [
+          "Bir halter plakları çift çift alır, her iki yana birer tane; bu yüzden girdiğin her plak çiftler olarak sayılır. Spor salonundaki tek bir plak bir çift için kullanılamaz ve dışarıda kalır. Her plaktan kaç çiftin olduğunu gir."
+        ]
+      },
+      {
+        "title": "Halter ağırlığı ve birimler",
+        "body": [
+          "Halter toplamın bir parçasıdır, bu yüzden önce halterinin ağırlığını ayarla. Standart Olimpik halterler 20 kg (45 lb) ağırlığındadır, bazıları daha hafiftir. kg ya da lb yaz: uygulama kilogramı saklar ve çevirir, böylece sayılar Musclog uygulamasıyla eşleşir."
+        ]
+      }
+    ]
+  }
+}

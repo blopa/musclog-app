@@ -1,0 +1,143 @@
+{
+  "nutritionGoals": {
+    "title": "Ustaw cele żywieniowe i ciała",
+    "subtitle": "Określ cele dotyczące odżywiania i składu ciała.",
+    "dailyMacroTargets": "Dzienne cele makroskładników",
+    "totalDailyCalories": "Łączne kalorie dziennie",
+    "tdeeHint": "TDEE: {{kcal}}",
+    "kcalPerKgTissueHint": "Na podstawie {{kcal}} na 1 kg tkanki (Hall 2008 + Forbes 2007)",
+    "kcalPerLbTissueHint": "Na podstawie {{kcal}} na 1 lb tkanki (Hall 2008 + Forbes 2007)",
+    "calorieDeficit": "−{{kcal}} deficytu",
+    "calorieSurplus": "+{{kcal}} nadwyżki",
+    "atMaintenance": "Utrzymanie",
+    "targetBodyMetrics": "Docelowe wskaźniki ciała",
+    "macrosDistribution": "Podział makroskładników",
+    "balance": "Równowaga",
+    "optimal": "Optymalnie",
+    "protein": "Białko",
+    "carbohydrates": "Węglowodany",
+    "fats": "Tłuszcze",
+    "targetWeight": "Waga docelowa",
+    "targetBodyFat": "Docelowa tkanka tłuszczowa",
+    "targetBMI": "Docelowe BMI",
+    "targetFFMI": "Docelowe FFMI",
+    "targetDate": "Data docelowa",
+    "targetDateNotSet": "Nie ustawiono",
+    "targetDateSublabel": "Kiedy chcesz osiągnąć docelowe wskaźniki ciała",
+    "targetDateClear": "Wyczyść",
+    "editTitle": "Edytuj cel",
+    "updateGoal": "Zaktualizuj cel",
+    "goalStartDate": "Data startu celu",
+    "goalStartDateSublabel": "Kiedy zaczął się ten okres celu",
+    "goalStartDateToday": "Dzisiaj",
+    "saveGoals": "Zapisz cele",
+    "settingsNote": "Te wartości możesz zmienić w każdej chwili w ustawieniach.",
+    "sublabels": {
+      "targetWeight": "Waga docelowa w {{unit}}",
+      "targetBodyFat": "Procent",
+      "targetBMI": "Wskaźnik masy ciała",
+      "targetFFMI": "Wskaźnik beztłuszczowej masy ciała"
+    },
+    "acceptAndContinue": "Zaakceptuj i przejdź dalej",
+    "adjustGoalsManually": "Dostosuj cele ręcznie",
+    "continue": "Dalej",
+    "results": {
+      "aiCalculationComplete": "Obliczenia zakończone",
+      "your": "Twój",
+      "nutritionPlan": "plan żywieniowy",
+      "aiDescription": "Na podstawie wskaźników ciała i poziomu aktywności nasze obliczenia zoptymalizowały twoje dzienne cele.",
+      "manualDescription": "Oto cele żywieniowe, które ustawiono. Możesz przejść dalej albo wrócić i je zmienić.",
+      "manualPlanBadge": "Twój własny plan",
+      "macroSplit": "Podział makroskładników",
+      "manualTipsTitle": "Wszystko gotowe",
+      "manualTipsDescription": "Zacznij zapisywać posiłki, żeby śledzić postępy. Te cele możesz zmienić w każdej chwili w ustawieniach.",
+      "dailyCalorieTarget": "Dzienny cel kaloryczny",
+      "protein": "Białko",
+      "carbs": "Węglowodany",
+      "fats": "Tłuszcze",
+      "estimatedWeightLoss": "Szacowana utrata wagi",
+      "estimatedWeightGain": "Szacowany przyrost wagi",
+      "estimatedMaintenance": "Szacowane utrzymanie",
+      "projectionTitle": "Prognoza na {{days}} dni",
+      "projectionDescription": "Przy realizacji tych celów przewidujemy osiągnięcie {{value}} {{unit}} w ciągu {{days}} dni.",
+      "projectionMaintenanceTitle": "Utrzymanie wagi",
+      "projectionMaintenanceMuscleGain": "Przy regularnym treningu i odżywianiu naturalny przyrost mięśni w ciągu {{days}} dni wynosi zwykle {{range}} {{unit}}, zależnie od genetyki i doświadczenia.",
+      "calorieRange": "Zakres: {{range}}",
+      "bodyFatUncertaintyNote": "Zakres uwzględnia rozrzut pomiaru tkanki tłuszczowej (±4%)",
+      "dailyDeficit": "Dzienny deficyt: {{kcal}}",
+      "dailySurplus": "Dzienna nadwyżka: {{kcal}}",
+      "projectionFat": "Tłuszcz: {{value}} {{unit}}",
+      "projectionLean": "Masa beztłuszczowa: {{value}} {{unit}}",
+      "leanMassClarification": "Masa beztłuszczowa obejmuje wodę, glikogen i inne tkanki niebędące tłuszczem, a nie tylko mięśnie.",
+      "formulasBasedOn": "Na podstawie modelu składu ciała Halla/Forbesa i energii metabolizowalnej (Int J Obes 2008; Br J Nutr 2007).",
+      "macroSourcesNote": "Cele makroskładników oparte na IOM AMDR, ISSN Position Stand (2017), wspólnym stanowisku ACSM/ADA/DC (2016) oraz Helms i in. (2014).",
+      "goalLabels": {
+        "weight_loss": "Utrata wagi",
+        "muscle_gain": "Przyrost mięśni",
+        "maintenance": "Utrzymanie",
+        "moderateWeightLoss": "Umiarkowana strategia redukcji",
+        "enduranceTraining": "Trening wytrzymałościowy",
+        "generalFitness": "Ogólna kondycja",
+        "leanBulk": "Strategia czystej masy",
+        "strengthSurplus": "Strategia nadwyżki pod siłę"
+      }
+    },
+    "errorSaving": "Błąd zapisu",
+    "dietTypes": {
+      "keto": {
+        "title": "Keto",
+        "subtitle": "Mało węglowodanów"
+      },
+      "lowCarb": {
+        "title": "Mało węglowodanów",
+        "subtitle": "Adaptacja do tłuszczu"
+      },
+      "highProteinMuscle": {
+        "title": "Dużo białka",
+        "subtitle": "Budowa mięśni"
+      },
+      "highProteinFatLoss": {
+        "title": "Dużo białka",
+        "subtitle": "Redukcja tłuszczu"
+      },
+      "highCarb": {
+        "title": "Dużo węglowodanów",
+        "subtitle": "Nacisk na energię"
+      },
+      "balanced": {
+        "title": "Zbilansowana",
+        "subtitle": "Optymalnie"
+      },
+      "moderateFat": {
+        "title": "Umiarkowany tłuszcz",
+        "subtitle": "Długotrwała energia"
+      },
+      "lowFat": {
+        "title": "Mało tłuszczu",
+        "subtitle": "Lekka dieta"
+      },
+      "custom": {
+        "title": "Własna",
+        "subtitle": "Twój plan"
+      }
+    },
+    "goalMode": "Tryb celu",
+    "modeOptions": {
+      "manual": "Ręczny",
+      "daily": "Dzienny",
+      "weekly": "Tygodniowy"
+    },
+    "modeHints": {
+      "manual": "Ustaw własne cele. Zostają takie same, dopóki ich nie zmienisz.",
+      "daily": "Cele aktualizują się codziennie na podstawie twoich danych i daty celu.",
+      "weekly": "Co tydzień przeglądaj i zatwierdzaj cele. Między przeglądami nie zmieniają się."
+    },
+    "manual": "Ręczny",
+    "dynamic": "Dynamiczny",
+    "dynamicInfo": "Dzienne cele są przeliczane automatycznie na podstawie twoich bieżących danych i osi czasu celu. Obecny cel kaloryczny to {{kcal}}.",
+    "dynamicBadge": "Dynamiczny",
+    "dynamicRequiredFields": "Dla celów dynamicznych wymagana jest waga docelowa i data docelowa.",
+    "keepCurrentTargets": "Zostaw obecne cele",
+    "perGram": "{{energy}}/g"
+  }
+}

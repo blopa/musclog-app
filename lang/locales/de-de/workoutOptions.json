@@ -1,0 +1,15 @@
+{
+  "workoutOptions": {
+    "title": "Trainingsoptionen",
+    "cancelWorkout": "Training abbrechen",
+    "cancelWorkoutDesc": "Dieses Training verwerfen und zur Trainingsliste zurückkehren",
+    "finishWorkout": "Training beenden",
+    "finishWorkoutDesc": "Dieses Training abschließen und die Übersicht ansehen",
+    "previewWorkout": "Ganzes Training ansehen",
+    "previewWorkoutDesc": "Alle Übungen in diesem Plan ansehen",
+    "workoutSettings": "Trainingseinstellungen",
+    "workoutSettingsDesc": "Timer, Ton und Vorlieben",
+    "endWorkout": "Training beenden",
+    "endWorkoutDesc": "Beenden und Fortschritt speichern"
+  }
+}

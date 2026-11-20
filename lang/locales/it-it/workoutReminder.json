@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Perché ho ricevuto questo?",
+      "thisWorkout": "questo allenamento",
+      "setting": "I promemoria degli allenamenti sono attivi e {{workout}} è previsto per {{day}}.",
+      "settingNoDay": "I promemoria degli allenamenti sono attivi e {{workout}} fa parte del tuo piano.",
+      "fromPlan": "Quel giorno deriva da un piano di allenamento.",
+      "fromSchedule": "Quel giorno deriva dal calendario che hai impostato sull'allenamento.",
+      "timing": "Il promemoria è impostato per le {{time}}, l'orario previsto.",
+      "timingLead": "Arriva {{minutes}} minuti prima dell'orario previsto, {{time}}.",
+      "pause": "Sospendi tutti i promemoria per {{days}} giorni",
+      "paused": "Promemoria sospesi per {{days}} giorni.",
+      "turnOff": "Disattiva i promemoria degli allenamenti",
+      "turnedOff": "I promemoria degli allenamenti sono disattivati.",
+      "settings": "Impostazioni notifiche",
+      "failed": "Impossibile modificare i promemoria. Riprova."
+    }
+  }
+}

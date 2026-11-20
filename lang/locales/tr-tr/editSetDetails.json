@@ -1,0 +1,10 @@
+{
+  "editSetDetails": {
+    "title": "Set ayrıntılarını düzenle",
+    "subtitle": "{{setLabel}} için hedefleri değiştir",
+    "partialReps": "Kısmi tekrarlar",
+    "cancel": "İptal",
+    "saveChanges": "Değişiklikleri kaydet",
+    "repsInReserve": "Yedekte kalan tekrar"
+  }
+}

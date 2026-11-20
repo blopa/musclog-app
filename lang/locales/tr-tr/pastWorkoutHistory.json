@@ -1,0 +1,58 @@
+{
+  "pastWorkoutHistory": {
+    "title": "Antrenman geçmişi",
+    "searchPlaceholder": "Seans ara...",
+    "noWorkoutsFound": "Aramanla eşleşen antrenman bulunamadı.",
+    "noWorkoutHistory": "Henüz antrenman geçmişi yok.",
+    "noWorkoutsInRange": "Bu tarih aralığında antrenman yok. Filtre aralığını genişletmeyi dene.",
+    "loadMore": "Daha fazla yükle",
+    "loadingMore": "Yükleniyor...",
+    "stats": {
+      "duration": "Süre",
+      "volume": "Hacim",
+      "calories": "Kalori",
+      "distance": "Mesafe",
+      "pace": "Tempo"
+    },
+    "prBadge": {
+      "singular": "{{count}} kişisel rekor",
+      "plural": "{{count}} kişisel rekor"
+    },
+    "filters": {
+      "title": "Antrenmanları filtrele",
+      "workoutType": "Antrenman türü",
+      "minDuration": "Min. süre",
+      "reset": "Sıfırla",
+      "applyFilters": "Filtreleri uygula",
+      "durationFormats": {
+        "zero": "0dk",
+        "minutes": "{{minutes}}dk",
+        "minutesPlus": "{{minutes}}+ dk",
+        "max": "120dk+"
+      },
+      "workoutTypes": {
+        "all": "Tüm türler",
+        "strength": "Güç",
+        "cardio": "Kardiyo",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "Tarih aralığı",
+        "30days": "Son 30 gün",
+        "90days": "Son 90 gün",
+        "allTime": "Tüm zamanlar"
+      },
+      "muscleGroups": {
+        "title": "Kas grubu (çoklu seçim)",
+        "chest": "Göğüs",
+        "back": "Sırt",
+        "legs": "Bacaklar",
+        "shoulders": "Omuzlar",
+        "arms": "Kollar",
+        "core": "Gövde",
+        "fullBody": "Tüm vücut"
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "nutrition": {
+    "title": "Odżywianie",
+    "food": {
+      "title": "Jedzenie"
+    },
+    "analyze": "Analizuj",
+    "calories": "Kalorie",
+    "carbs": "Węglowodany",
+    "characters": "Znaki",
+    "confirmAndSave": "Potwierdź i zapisz",
+    "createCustom": "Utwórz własny",
+    "createCustomDesc": "Ręcznie dodaj dane żywieniowe",
+    "dailyTotals": "Sumy dzienne",
+    "dateLabel": "Data",
+    "emptyData": "Wklej lub wpisz dane żywieniowe.",
+    "emptyDescription": "Opisz posiłek.",
+    "entriesCount": "Wpisy",
+    "example": "Przykład",
+    "fat": "Tłuszcze",
+    "fiber": "Błonnik",
+    "foodNotFound": "Nie znaleziono produktu",
+    "foodNotFoundDescription": "Nie znaleźliśmy tej pozycji w naszej bazie. Co chcesz zrobić?",
+    "import": "Importuj",
+    "importFormatInfo": "Wklej lub wpisz swój dziennik posiłków (np. z notatki albo aplikacji). AI przeanalizuje go i zaproponuje wpisy.",
+    "importInstructions": "Wklej poniżej dane żywieniowe. Obsługiwane: zwykły tekst, listy punktowane lub uporządkowane dzienniki.",
+    "importNutrition": "Importuj dane żywieniowe",
+    "logPastDay": "Zapisz miniony dzień",
+    "mealDescriptionPlaceholder": "np. owsianka z bananem, 2 jajka, kawa z mlekiem",
+    "pasteNutritionDataPlaceholder": "Wklej tutaj dane żywieniowe...",
+    "processing": "Przetwarzanie...",
+    "processingData": "Dane żywieniowe zaimportowano.",
+    "processingDescription": "Opis został przetworzony.",
+    "processingFailed": "Nie udało się przetworzyć danych. Sprawdź format i spróbuj ponownie.",
+    "protein": "Białko",
+    "retrospectiveExample": "np. Śniadanie: owsianka i banan. Obiad: sałatka z kurczakiem. Kolacja: makaron z warzywami.",
+    "retrospectiveInstructions": "Opisz własnymi słowami, co jadłeś tego dnia. AI oszacuje porcje i składniki odżywcze.",
+    "review": "Przegląd",
+    "searchAgain": "Szukaj ponownie",
+    "searchAgainDesc": "Spróbuj innego hasła",
+    "tryAICamera": "Wypróbuj kamerę AI",
+    "tryAICameraDesc": "Zeskanuj posiłek, żeby od razu go rozpoznać",
+    "supportedFormats": "Obsługiwane formaty",
+    "checkin": {
+      "title": "Tygodniowa kontrola",
+      "noCheckinFound": "Nie znaleziono oczekujących kontroli.",
+      "currentStatus": "Obecny stan",
+      "onTrack": "Zgodnie z planem",
+      "ahead": "Przed planem",
+      "behind": "Za planem",
+      "noCheckinFoundDesc": "Nie masz dziś zaplanowanych kontroli. Wróć w kolejny zaplanowany dzień kontroli.",
+      "headline": {
+        "onTrack": "Zgodnie z planem",
+        "ahead": "Przed planem",
+        "behind": "Jest miejsce na poprawę"
+      },
+      "subtext": {
+        "onTrack": "W tym tygodniu utrzymujesz równe tempo. Dalej dąż do swoich celów.",
+        "ahead": "Jesteś przed docelową wagą! Świetna regularność.",
+        "behind": "Twoje wyniki w tym tygodniu się wahały. Regularne zapisywanie je wyrówna."
+      },
+      "weightTrend": "Trend wagi",
+      "target": "Cel",
+      "targetShort": "Cel: {{value}}%",
+      "weeklyBreakdown": "Podział tygodniowy",
+      "weekProgress": "Tydzień {{current}} z {{total}}",
+      "summaryIntro": "Celowałeś w {{target}} dziennie, ale średnio wyszło",
+      "summaryOutro": "Mimo wyniku ukończyłeś",
+      "workoutsCount": "treningów",
+      "noWorkouts": "bez treningów",
+      "withHighIntensity": "z dużą intensywnością.",
+      "avgIntake": "Średnie spożycie",
+      "consistency": "Regularność",
+      "rate": "tempo",
+      "avgBodyFat": "Średnia tkanka tłuszczowa",
+      "activeMinutes": "Minuty aktywności",
+      "vsLastWeek": "{{prefix}}{{value}}% względem poprzedniego tygodnia",
+      "adherence": "Tygodniowe trzymanie planu",
+      "summary": "Celowałeś w {{targetKcal}} dziennie, ale średnio wyszło {{actualKcal}} dziennie. Ukończyłeś treningów: {{workouts}}.",
+      "weightComparison": "Waga: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "W tym tygodniu zapisałeś wagę mniej niż 4 razy. Średnie mogą być mniej dokładne.",
+      "keepMacros": "Zostaw obecne makroskładniki",
+      "readjust": "Skoryguj plan",
+      "nextMilestones": "Następny etap",
+      "history": "Historia",
+      "weekTitle": "Przegląd tygodnia {{number}}",
+      "prepareNow": "Przygotuj teraz",
+      "noMilestones": "Brak nadchodzących kontroli. Dokończ ustawianie celu żywieniowego, żeby zacząć.",
+      "noHistory": "Nie ma jeszcze ukończonych kontroli.",
+      "selectYear": "Filtruj według roku",
+      "notEnoughDataWarning": "W tym tygodniu zapisano za mało danych. Wyniki mogą być niedokładne.",
+      "sparseTrendWarning": "Twój trend jest dostępny, ale nie ma wystarczająco wielu ważeń ani wpisów żywieniowych do pewnej tygodniowej kontroli.",
+      "status": {
+        "pending": "Oczekuje",
+        "ahead": "Przed planem",
+        "onTrack": "Zgodnie z planem",
+        "behind": "Za planem",
+        "descriptions": {
+          "pending": "Kontrola jeszcze nie została ukończona",
+          "ahead": "Postęp przed celem",
+          "onTrack": "Postęp zgodnie z celem",
+          "behind": "Postęp za celem"
+        }
+      }
+    },
+    "common": {},
+    "createMeal": {
+      "estimated": "Szacunkowo",
+      "totalNutrition": "Łączne wartości odżywcze"
+    },
+    "macros": {
+      "protein": "Białko",
+      "carbs": "Węglowodany",
+      "fat": "Tłuszcze"
+    },
+    "mealEstimation": {
+      "title": "Szacowanie posiłku",
+      "identifiedItems": "Rozpoznane pozycje",
+      "addItem": "Dodaj pozycję",
+      "confirmAndLog": "Potwierdź i zapisz posiłek",
+      "retake": "Zrób ponownie",
+      "logged": "Zapisano posiłek",
+      "logError": "Nie udało się zapisać tego posiłku. Spróbuj ponownie."
+    },
+    "index": {
+      "handleSaveCustomFood": "Własny produkt zapisano."
+    },
+    "manageFoodData": {
+      "title": "Dziennik żywienia",
+      "searchPlaceholder": "Szukaj w dzienniku...",
+      "noLogs": "Brak wpisów w dzienniku",
+      "noLogsDesc": "Zacznij zapisywać posiłki, a zobaczysz je tutaj",
+      "endOfHistory": "Koniec historii dziennika",
+      "foodOptions": "Opcje produktu",
+      "editFoodEntry": "Edytuj wpis",
+      "editFoodEntryDesc": "Zmień dane produktu",
+      "duplicateEntry": "Powiel wpis",
+      "duplicateEntryDesc": "Utwórz kopię tego wpisu",
+      "deleteEntry": "Usuń wpis",
+      "deleteEntryDesc": "Usuń ten wpis o jedzeniu"
+    }
+  }
+}

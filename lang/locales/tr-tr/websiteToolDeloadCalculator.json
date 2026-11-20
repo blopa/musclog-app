@@ -1,0 +1,86 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Yük azaltma hesaplayıcısı",
+    "intro": "Bir hareketin çalışma ağırlığını ve setlerini gir; yük azaltma haftasını al: ne kadar hafif gidileceği, kaç set tutulacağı, ne kadar zorlanılacağı ve ne kadar süreceği.",
+    "form": {
+      "weight": "Çalışma ağırlığı",
+      "weightHint": "Normal ana setlerinde kaldırdığın ağırlık.",
+      "sets": "Normal bir haftadaki ana set sayısı",
+      "setsHint": "Tam sayı, yalnızca bu bir egzersiz için.",
+      "equipmentLabel": "Ekipman",
+      "equipment": {
+        "barbell": "Halter",
+        "dumbbell": "Dambıl",
+        "machine": "Makine ya da kablo"
+      }
+    },
+    "problems": {
+      "weight": "Çalışma ağırlığını 0'dan büyük ve en fazla {{max}} olan bir sayı olarak gir.",
+      "sets": "Set sayısını 1 ile {{max}} arasında tam bir sayı olarak gir."
+    },
+    "results": {
+      "title": "Yük azaltma haftan",
+      "weight": "Ağırlık",
+      "weightNote": "Çalışma ağırlığından {{percent}} daha hafif, ayarlayabileceğin bir yüke aşağı yuvarlanmış. Her zamanki tekrarlarını yap.",
+      "sets": "Set",
+      "setsValue_one": "{{sets}} set",
+      "setsValue_few": "{{sets}} set",
+      "setsValue_many": "{{sets}} set",
+      "setsValue_other": "{{sets}} set",
+      "setsNote": "{{from}} setinden aşağı: yaklaşık üçte iki, en az bir.",
+      "effort": "Çaba",
+      "effortValue": "{{count}} tekrar rezervde",
+      "effortNote": "Her seti yaklaşık {{count}} tekrar daha yapılabilecekken bitir; hafta bilerek rahat geçsin.",
+      "duration": "Süre",
+      "durationValue_one": "{{count}} hafta",
+      "durationValue_few": "{{count}} hafta",
+      "durationValue_many": "{{count}} hafta",
+      "durationValue_other": "{{count}} hafta",
+      "durationNote": "Her zamanki sıklıkta, daha hafif çalışmayla antrenman yap; sonra normal yüklerine dön.",
+      "plates": "Halterin her iki yanındaki plaklar",
+      "emptyBar": "Boş halter",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "Bu ekipmanın yapabildiği en hafif yük zaten bu, bu yüzden ağırlık aynı kalır. Bunun yerine set sayısını azalt ve daha az zorlan.",
+      "step": "Bu ekipman için bir yük adımı {{step}}."
+    },
+    "table": {
+      "title": "Diğer yaygın indirimler",
+      "cut": "İndirim",
+      "weight": "Ağırlık",
+      "actual": "Gerçekte şu kadar daha hafif",
+      "musclog": "Musclog'un indirimi",
+      "percent": "{{percent}}",
+      "note": "Musclog, %10 ya da bir yük adımından hangisi büyükse onu alır. %10, %15 ve %20 satırları bir deneyim kuralıdır, çalışma sonucu değildir. Her biri gerçekten ayarlayabileceğin bir yüke aşağı yuvarlanır; bu yüzden küçük bir ağırlık istediğin indirimden daha fazla hafifleyebilir."
+    },
+    "sections": [
+      {
+        "title": "Ne kadar hafif, ne kadar süre",
+        "body": [
+          "Musclog uygulamasındaki yük azaltma, %10 ya da bir yük adımından hangisi büyükse o kadar bir indirimdir; ekipmanının yapabileceği bir ağırlığa aşağı yuvarlanır ve her zaman şu andakinden kesinlikle daha hafiftir. Daha hafif bir hafta, sonra çalışma setlerinin yaklaşık üçte ikisini tutar, planlanan tekrarları korur ve 4 tekrar rezerv hedefler. Bir hafta sürer. Bunların hepsi Musclog'un ürün tercihleridir, çalışma sonuçları değildir.",
+          "Sporcular çoğunlukla bir hafta için %10 ila 20 daha az ağırlık ya da yaklaşık üçte bir daha az set kullanır. Önceki hafta çok ağır geldiyse daha derin bir indirim için tabloyu kullan. Aynı egzersizleri ve aynı antrenman sayısını koru: yük azaltma, daha hafif bir antrenmandır, bir hafta ara değildir."
+        ]
+      },
+      {
+        "title": "Yük azaltma ne zaman mantıklı",
+        "body": [
+          "Tipik işaretler, aynı ağırlığın birkaç hafta öncesine göre çok daha ağır hissettirmesi, normalde yaptığın tekrarları kaçırman ve rezervde neredeyse hiç tekrar kalmamasıdır. Kötü uyku, stres ya da hastalık da aynı görünebilir ve yük azaltma bunlarda da yardımcı olur. Bir eklem keskin biçimde ağrıyorsa bunun yerine bir doktora ya da fizyoterapiste başvur.",
+          "Uygulama, ardışık iki seansta aynı yükte, rezervde hiç tekrar kalmadan ya da planlanan tekrarları kaçırarak bittiğinde bir egzersizi kendi başına yük azaltır. Birkaç kaldırış durduğunda, Haftalık Değerlendirmen'den daha hafif bir hafta önerir. Bunu kabul edip etmemek sana kalmıştır."
+        ]
+      },
+      {
+        "title": "Araştırma ne diyor",
+        "body": [
+          "Kuvvet ve fizik koçlarıyla yapılan 2023 tarihli bir uzlaşı çalışması, yük azaltmayı yorgunluğu sınırlamak, toparlanmayı desteklemek ve sonraki antrenmana hazırlamak için azaltılmış antrenman stresi dönemi olarak tanımladı. Bu bir tanımdır, bir reçete değildir. Bu sayfadaki sayılar ondan gelmez."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell ve ark. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos ve ark. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "deload": "Yük azaltma haftaları: ne zaman gerekir ve nasıl uygulanır",
+      "doubleProgression": "Çift ilerleme: her hafta ağırlık eklemenin en basit yolu"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "exerciseTransition": {
+    "totalTime": "Łączny czas",
+    "completeSuffix": "ukończone",
+    "completedMessage": "Świetna robota. Złap oddech.",
+    "upNext": "Następne",
+    "target": "Cel",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
+    "sets": "Serie",
+    "reps": "Powtórzenia",
+    "rest": "Odpoczynek",
+    "sec": "s",
+    "equipment": "Sprzęt",
+    "startNextExercise": "Zacznij następne ćwiczenie",
+    "loadingNextExercise": "Wczytywanie następnego ćwiczenia...",
+    "errorTitle": "Nie znaleziono treningu",
+    "errorDescription": "Nie udało się wczytać ekranu przejścia między ćwiczeniami. Spróbuj ponownie.",
+    "goBack": "Wróć",
+    "noWorkoutId": "Nie podano identyfikatora treningu",
+    "loadFailed": "Nie udało się wczytać danych treningu"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "restOver": {
+    "startNextSet": "Sonraki seti başlat",
+    "upNext": "Sırada",
+    "weight": "Ağırlık",
+    "weightWithUnit": "{{value}} {{unit}}",
+    "reps": "Tekrar",
+    "set": "Set",
+    "restTimeIs": "Dinlenme süresi",
+    "over": "bitti",
+    "timeToGo": "Zaman geldi! Sonraki set sırada.",
+    "noWorkoutId": "Antrenman kimliği verilmedi",
+    "workoutDeleted": "Antrenman silindi",
+    "loadError": "Antrenman verileri yüklenemedi"
+  }
+}

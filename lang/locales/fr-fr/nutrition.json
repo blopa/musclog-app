@@ -1,0 +1,143 @@
+{
+  "nutrition": {
+    "title": "Nutrition",
+    "food": {
+      "title": "Aliments"
+    },
+    "analyze": "Analyser",
+    "calories": "Calories",
+    "carbs": "Glucides",
+    "characters": "Caractères",
+    "confirmAndSave": "Confirmer et enregistrer",
+    "createCustom": "Créer un aliment",
+    "createCustomDesc": "Saisir manuellement les valeurs nutritionnelles",
+    "dailyTotals": "Totaux du jour",
+    "dateLabel": "Date",
+    "emptyData": "Colle ou saisis les données nutritionnelles.",
+    "emptyDescription": "Saisis une description du repas.",
+    "entriesCount": "Entrées",
+    "example": "Exemple",
+    "fat": "Lipides",
+    "fiber": "Fibres",
+    "foodNotFound": "Aliment introuvable",
+    "foodNotFoundDescription": "Nous n'avons pas trouvé cet élément dans notre base. Que veux-tu faire ?",
+    "import": "Importer",
+    "importFormatInfo": "Colle ou tape ton journal de repas (depuis une note ou une appli). L'IA l'analysera et proposera des entrées.",
+    "importInstructions": "Colle tes données nutritionnelles ci-dessous. Formats acceptés : texte libre, listes à puces ou journaux structurés.",
+    "importNutrition": "Importer la nutrition",
+    "logPastDay": "Saisir un jour passé",
+    "mealDescriptionPlaceholder": "ex. flocons d'avoine avec banane, 2 œufs, café au lait",
+    "pasteNutritionDataPlaceholder": "Colle les données nutritionnelles ici...",
+    "processing": "Traitement...",
+    "processingData": "Données nutritionnelles importées avec succès.",
+    "processingDescription": "Description traitée avec succès.",
+    "processingFailed": "Impossible de traiter les données. Vérifie le format et réessaie.",
+    "protein": "Protéines",
+    "retrospectiveExample": "ex. Petit-déjeuner : flocons d'avoine et banane. Déjeuner : salade de poulet. Dîner : pâtes avec des légumes.",
+    "retrospectiveInstructions": "Décris avec tes mots ce que tu as mangé ce jour-là. L'IA estimera les portions et les nutriments.",
+    "review": "Vérifier",
+    "searchAgain": "Rechercher à nouveau",
+    "searchAgainDesc": "Essaie un autre terme de recherche",
+    "tryAICamera": "Essayer la caméra IA",
+    "tryAICameraDesc": "Scanne ton repas pour une identification instantanée",
+    "supportedFormats": "Formats acceptés",
+    "checkin": {
+      "title": "Bilan hebdomadaire",
+      "noCheckinFound": "Aucun bilan en attente.",
+      "currentStatus": "Situation actuelle",
+      "onTrack": "Dans les clous",
+      "ahead": "En avance",
+      "behind": "En retard",
+      "noCheckinFoundDesc": "Tu n'as aucun bilan prévu aujourd'hui. Reviens le jour de ton prochain bilan.",
+      "headline": {
+        "onTrack": "Dans les clous",
+        "ahead": "En avance sur le plan",
+        "behind": "Marge de progression"
+      },
+      "subtext": {
+        "onTrack": "Tu as gardé un rythme régulier cette semaine. Continue vers tes objectifs.",
+        "ahead": "Tu es en avance sur tes cibles de poids ! Bravo pour la régularité.",
+        "behind": "Tes chiffres ont fluctué cette semaine. Une saisie régulière les lissera."
+      },
+      "weightTrend": "Tendance du poids",
+      "target": "Cible",
+      "targetShort": "Cible : {{value}} %",
+      "weeklyBreakdown": "Détail hebdomadaire",
+      "weekProgress": "Semaine {{current}} sur {{total}}",
+      "summaryIntro": "Tu visais {{target}}/jour, mais tu as en moyenne",
+      "summaryOutro": "Malgré le résultat, tu as réalisé",
+      "workoutsCount": "séances",
+      "noWorkouts": "aucune séance",
+      "withHighIntensity": "à haute intensité.",
+      "avgIntake": "Apport moyen",
+      "consistency": "Régularité",
+      "rate": "taux",
+      "avgBodyFat": "Masse grasse moyenne",
+      "activeMinutes": "Minutes actives",
+      "vsLastWeek": "{{prefix}}{{value}} % par rapport à la semaine dernière",
+      "adherence": "Adhésion hebdomadaire",
+      "summary": "Tu visais {{targetKcal}}/jour, mais tu as en moyenne consommé {{actualKcal}}/jour. Tu as réalisé {{workouts}} séances.",
+      "weightComparison": "Poids : {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "Tu as saisi ton poids moins de 4 fois cette semaine. Les moyennes peuvent être moins précises.",
+      "keepMacros": "Garder mes macros actuelles",
+      "readjust": "Réajuster mon plan",
+      "nextMilestones": "Prochaine étape",
+      "history": "Historique",
+      "weekTitle": "Bilan de la semaine {{number}}",
+      "prepareNow": "Préparer maintenant",
+      "noMilestones": "Aucun bilan à venir. Termine la configuration de ton objectif nutritionnel pour commencer.",
+      "noHistory": "Aucun bilan terminé pour l'instant.",
+      "selectYear": "Filtrer par année",
+      "notEnoughDataWarning": "Pas assez de données saisies cette semaine. Les résultats peuvent être inexacts.",
+      "sparseTrendWarning": "Ta tendance est disponible, mais il n'y a pas assez de pesées ou de journaux alimentaires pour un bilan hebdomadaire fiable.",
+      "status": {
+        "pending": "En attente",
+        "ahead": "En avance",
+        "onTrack": "Dans les clous",
+        "behind": "En retard",
+        "descriptions": {
+          "pending": "Bilan pas encore terminé",
+          "ahead": "Progrès en avance sur la cible",
+          "onTrack": "Progrès conforme à la cible",
+          "behind": "Progrès en retard sur la cible"
+        }
+      }
+    },
+    "common": {},
+    "createMeal": {
+      "estimated": "Estimé",
+      "totalNutrition": "Nutrition totale"
+    },
+    "macros": {
+      "protein": "Protéines",
+      "carbs": "Glucides",
+      "fat": "Lipides"
+    },
+    "mealEstimation": {
+      "title": "Estimation du repas",
+      "identifiedItems": "Éléments identifiés",
+      "addItem": "Ajouter un élément",
+      "confirmAndLog": "Confirmer et saisir le repas",
+      "retake": "Reprendre",
+      "logged": "Repas saisi",
+      "logError": "Impossible de saisir ce repas. Réessaie."
+    },
+    "index": {
+      "handleSaveCustomFood": "Aliment personnalisé enregistré."
+    },
+    "manageFoodData": {
+      "title": "Journal alimentaire",
+      "searchPlaceholder": "Rechercher dans le journal...",
+      "noLogs": "Aucune entrée pour l'instant",
+      "noLogsDesc": "Commence à saisir tes repas pour les voir ici",
+      "endOfHistory": "Fin de l'historique du journal",
+      "foodOptions": "Options de l'aliment",
+      "editFoodEntry": "Modifier l'entrée",
+      "editFoodEntryDesc": "Modifier les détails de l'aliment",
+      "duplicateEntry": "Dupliquer l'entrée",
+      "duplicateEntryDesc": "Créer une copie de cette entrée",
+      "deleteEntry": "Supprimer l'entrée",
+      "deleteEntryDesc": "Retirer cette entrée alimentaire"
+    }
+  }
+}

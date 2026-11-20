@@ -1,0 +1,75 @@
+{
+  "editFitnessDetails": {
+    "title": "Fitness bilgilerini düzenle",
+    "units": "Birimler",
+    "imperial": "İngiliz birimleri",
+    "metric": "Metrik",
+    "bodyStats": "Vücut ölçüleri",
+    "gender": "Cinsiyet",
+    "male": "Erkek",
+    "female": "Kadın",
+    "other": "Diğer",
+    "currentWeight": "Mevcut kilo",
+    "height": "Boy",
+    "fatPercentage": "Vücut yağı yüzdesi",
+    "fatPercentageNotSet": "Ayarlanmadı, girmek için dokun",
+    "goalsStrategy": "Hedefler ve strateji",
+    "fitnessGoal": "Fitness hedefi",
+    "eatingPhase": "Beslenme evresi",
+    "cut": "Kesim",
+    "maintain": "Koru",
+    "bulk": "Kütle artışı",
+    "lifestyleContext": "Yaşam tarzı bağlamı",
+    "activityLevel": "Aktivite düzeyi",
+    "liftingExperience": "Ağırlık antrenmanı deneyimi",
+    "saveChanges": "Değişiklikleri kaydet",
+    "selectGoal": "Fitness hedefini seç",
+    "selectGoalSubtitle": "Antrenmanına en uygun hedefi seç",
+    "selectActivity": "Aktivite düzeyini seç",
+    "selectActivitySubtitle": "Yalnızca antrenmanlara değil, bütün gününe göre seç",
+    "activityLevelLabels": {
+      "sedentary": "Hareketsiz",
+      "light": "Hafif",
+      "moderate": "Orta",
+      "active": "Aktif",
+      "superActive": "Çok aktif"
+    },
+    "activityLevelDescriptions": {
+      "sedentary": "Masa başı ya da oturarak yapılan iş, günde 5.000 adımın altında, düzenli egzersiz yok",
+      "light": "Masa başı iş ya da çoğunlukla oturmak. Haftada 2–4 kez salon ya da hafif egzersiz, ama geri kalan zamanda az hareket. Egzersiz yapan ofis çalışanlarının çoğu burada",
+      "moderate": "Günün büyük kısmında ayaktasın (öğretmen, satış, hemşire) VE haftada 3–5 kez egzersiz, ya da günde 7.500–10.000+ adım",
+      "active": "Fiziksel olarak zorlayıcı bir iş (zanaat, sağlık hizmetleri) ya da gün boyu yoğun hareketle günlük yoğun antrenman",
+      "superActive": "Ağır fiziksel iş (inşaat, tarım, askerlik) artı düzenli antrenman; günün çoğunda ağır hareket"
+    },
+    "weightGoal": "Hedefin",
+    "weightGoalLabels": {
+      "lose": "Kilo ver",
+      "maintain": "Koru",
+      "gain": "Kas kazan"
+    },
+    "fitnessGoalLabels": {
+      "hypertrophy": "Hipertrofi (kas yapmak)",
+      "strength": "Güç (daha ağır kaldırmak)",
+      "endurance": "Dayanıklılık (kondisyon)",
+      "weightLoss": "Kilo kaybı (yağ yakmak)",
+      "general": "Genel fitness"
+    },
+    "fitnessGoalDescriptions": {
+      "hypertrophy": "Kas boyutuna ve belirginliğine odaklan",
+      "strength": "Maksimum güç ve kuvvete odaklan",
+      "endurance": "Kardiyovasküler kondisyona odaklan",
+      "weightLoss": "Yağ kaybına ve kas belirginliğine odaklan",
+      "general": "Genel sağlığı ve iyi oluşu koru"
+    },
+    "experienceLabels": {
+      "beginner": "Başlangıç",
+      "intermediate": "Orta",
+      "advanced": "İleri"
+    },
+    "experienceDescriptions": {
+      "beginner": "Düzenli antrenmanda yeni. Hareketleri hâlâ öğreniyor ve haftadan haftaya hızla güç kazanıyor",
+      "intermediate": "Ana kaldırışlarda rahat. 1–3 yıldır düzenli antrenman yapıyor; ilerleme haftalık değil aylık geliyor",
+      "advanced": "3+ yıllık yapılandırılmış, düzenli antrenman. İlerleme yavaş ve emekle; gücünün potansiyeline yakın"
+    }
+  }
+}

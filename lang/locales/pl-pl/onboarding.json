@@ -1,0 +1,379 @@
+{
+  "onboarding": {
+    "skip": "Pomiń",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "getStarted": "Zacznij",
+    "steps": {
+      "step1": {
+        "title": "Zapisuj w kilka sekund",
+        "description": "Zapomnij o notesie. Zapisuj serie, powtórzenia i ciężary w kilka sekund i śledź wzrost siły w czasie."
+      },
+      "step2": {
+        "title": "Inteligentne odżywianie",
+        "description": "Zapisuj posiłki w kilka sekund ze skanowaniem AI albo z naszą dużą bazą. Zrozumienie, czym się odżywiasz, to klucz do wysokiej formy."
+      },
+      "step3": {
+        "title": "Jedna aplikacja, pełna kontrola",
+        "description": "Połącz dietę z treningiem. Zobacz dokładnie, jak odżywianie wspiera twoją siłę, dzięki wspólnym wykresom postępów."
+      },
+      "step4": {
+        "title": "Dopasujmy to do ciebie",
+        "description": "Kilka pytań o historię treningów pomoże nam ustawić realistyczne cele startowe."
+      }
+    },
+    "fitnessInfo": {
+      "physicalTitle": "Dane ciała",
+      "goalsTitle": "Cele treningowe",
+      "maybeLater": "Może później",
+      "save": "Zapisz",
+      "next": "Dalej",
+      "continue": "Dalej",
+      "errorSaving": "Błąd zapisu"
+    },
+    "personalInfo": {
+      "title": "Ustaw dane osobowe",
+      "errorSaving": "Błąd zapisu",
+      "finish": "Zakończ",
+      "trackCycle": "Śledzić cykl menstruacyjny?",
+      "trackCycleDescription": "Dopasuj wyniki i odżywianie do faz hormonalnych."
+    },
+    "cycleSetup": {
+      "title": "Konfiguracja śledzenia cyklu",
+      "description": "Poznamy twój cykl w miarę zapisywania, więc nie musisz znać średnich z góry.",
+      "anchor": {
+        "title": "Ostatni okres",
+        "description": "Kiedy zaczął się ostatni okres? Przybliżona data wystarczy. Możesz to później zmienić.",
+        "tapToSelect": "Dotknij, aby wybrać datę",
+        "iDontKnow": "Nie wiem / pomiń",
+        "skipInstead": "Wyczyść datę (nie jestem pewien)"
+      },
+      "length": {
+        "cycleLength": "Długość cyklu",
+        "cycleLengthLabel": "Cykl",
+        "periodDurationLabel": "Okres"
+      },
+      "birthControl": {
+        "title": "Antykoncepcja",
+        "description": "Czy obecnie stosujesz jakąś antykoncepcję? Metody hormonalne mogą zmieniać przebieg cyklu.",
+        "none": "Brak",
+        "noneDescription": "Brak antykoncepcji.",
+        "pill": "Tabletki",
+        "pillDescription": "Codzienna tabletka antykoncepcyjna.",
+        "iud": "Wkładka (typ nieustalony)",
+        "iudDescription": "Wybierz hormonalną albo miedzianą, żeby doprecyzować.",
+        "implant": "Implant",
+        "implantDescription": "Podskórny implant hormonalny.",
+        "other": "Inna",
+        "otherDescription": "Inna forma antykoncepcji.",
+        "hormonalIud": "Wkładka hormonalna",
+        "hormonalIudDescription": "Wkładka domaciczna uwalniająca hormony.",
+        "copperIud": "Wkładka miedziana",
+        "copperIudDescription": "Wkładka domaciczna bez hormonów.",
+        "patch": "Plaster",
+        "patchDescription": "Hormonalny plaster na skórę.",
+        "ring": "Krążek dopochwowy",
+        "ringDescription": "Hormonalny krążek dopochwowy.",
+        "shot": "Zastrzyk",
+        "shotDescription": "Hormonalny zastrzyk antykoncepcyjny.",
+        "combinedPill": "Tabletki złożone",
+        "combinedPillDescription": "Codzienna tabletka z estrogenem i progestagenem.",
+        "progestinPill": "Tabletki z samym progestagenem",
+        "progestinPillDescription": "Codzienna tabletka bez estrogenu."
+      },
+      "lifeStage": {
+        "title": "Kontekst cyklu",
+        "regular": "Nic niezwykłego",
+        "regularDescription": "Mój cykl jest w miarę regularny.",
+        "pcos": "PCOS / nieregularne cykle",
+        "pcosDescription": "Moje cykle są często nieregularne lub nieprzewidywalne.",
+        "perimenopause": "Okres okołomenopauzalny",
+        "perimenopauseDescription": "Moje cykle ostatnio stały się bardziej nieregularne.",
+        "postpartum": "Połóg",
+        "postpartumDescription": "Dziecko urodzono w ciągu ostatniego roku.",
+        "postPill": "Niedawno odstawiona antykoncepcja",
+        "postPillDescription": "Antykoncepcja hormonalna została niedawno odstawiona, a cykl może się jeszcze ustabilizować.",
+        "noBleeding": "Śledzenie bez krwawienia",
+        "noBleedingDescription": "Nie mam miesiączki (np. po operacji albo na hormonach tłumiących), ale chcę śledzić, jak się czuję."
+      },
+      "goal": {
+        "title": "Cel synchronizacji",
+        "description": "Na czym głównie zależy ci przy synchronizacji hormonalnej?",
+        "performance": "Optymalizacja wyników",
+        "performanceDescription": "Szczytowa siła i optymalizacja rekordów.",
+        "symptoms": "Łagodzenie objawów",
+        "symptomsDescription": "Komfort i regeneracja na co dzień.",
+        "energy": "Przewidywanie spadków energii",
+        "energyDescription": "Przewiduj spadki i odpowiednio dopasuj intensywność."
+      },
+      "pastPeriods": {
+        "title": "Minione okresy (opcjonalnie)",
+        "description": "Dodanie dat rozpoczęcia dawnych okresów pomaga aplikacji od razu poznać długość twojego cyklu i lepiej przewidywać.",
+        "addPastPeriod": "Dodaj dawny okres",
+        "duplicate": "Ten dzień jest już na liście.",
+        "remove": "Usuń ten okres"
+      },
+      "errors": {
+        "futureDate": "Daty okresów nie mogą być w przyszłości.",
+        "overlappingPeriods": "Te daty okresów nakładają się po uwzględnieniu długości. Usuń jedną albo rozsuń je dalej."
+      }
+    },
+    "healthConnect": {
+      "connectYour": "Połącz swoje",
+      "health": "dane zdrowotne",
+      "description": "Synchronizuj dane o aktywności z Musclog, żeby śledzić postępy i dostawać spersonalizowane wskazówki zdrowotne.",
+      "categories": {
+        "nutrition": "Odżywianie",
+        "weight": "Waga",
+        "sleep": "Sen",
+        "bodyComposition": "Skład ciała"
+      },
+      "allowHealthAccess": "Zezwól na dostęp do danych zdrowotnych",
+      "reviewHealthAccess": "Przejrzyj dostęp do danych zdrowotnych",
+      "connectedCount": "Połączono {{granted}}/{{total}}",
+      "accessCount": "Zażądano dostępu: {{granted}}/{{total}}",
+      "connectedTypes": "Połączone: {{types}}",
+      "requestedTypes": "Zażądane: {{types}}",
+      "permissionTypes": {
+        "height": "Wzrost",
+        "weight": "Waga",
+        "bodyFat": "Tkanka tłuszczowa",
+        "nutrition": "Odżywianie",
+        "totalCalories": "Kalorie łącznie",
+        "activeCalories": "Kalorie aktywne",
+        "basalMetabolicRate": "Metabolizm podstawowy",
+        "exerciseSession": "Treningi",
+        "leanBodyMass": "Masa beztłuszczowa",
+        "steps": "Kroki",
+        "distance": "Dystans"
+      },
+      "maybeLater": "Może później",
+      "privacyStatement": "Musclog ceni twoją prywatność. Twoje dane są szyfrowane i służą wyłącznie do analiz osobistych.",
+      "initializing": "Konfigurowanie Health Connect...",
+      "syncing": "Synchronizowanie danych zdrowotnych...",
+      "processing": "Przetwarzanie...",
+      "continue": "Dalej"
+    },
+    "landing": {
+      "getStarted": "Zacznij",
+      "termsAndPrivacy": "Kontynuując, akceptujesz nasz Regulamin i Politykę prywatności.",
+      "appName": "Musclog",
+      "tagline": "100% za darmo, 100% twoje",
+      "description": "Śledź treningi i odżywianie z pełną prywatnością. Bez kont, bez chmury, bez subskrypcji.",
+      "storedLocally": "Wszystkie dane są przechowywane lokalnie na twoim urządzeniu",
+      "viewTerms": "Zobacz regulamin",
+      "preparingApp": "Przygotowywanie aplikacji...",
+      "migratingPreamble": "Aktualizacja z poprzedniej wersji Musclog. Przenosimy twoje dane.",
+      "migratingData": "Przenoszenie danych...",
+      "migratingStep": "Przenoszenie: {{step}}...",
+      "migrationSteps": {
+        "preparing": "przygotowanie",
+        "downloading": "pobieranie",
+        "processing": "przetwarzanie",
+        "finalizing": "finalizowanie",
+        "fitness_goals": "cele żywieniowe",
+        "user_metrics": "wskaźniki ciała",
+        "users": "profil",
+        "foods": "produkty",
+        "nutrition_logs": "dzienniki żywienia",
+        "exercises": "ćwiczenia",
+        "workouts": "szablony treningów",
+        "workout_logs": "historia treningów",
+        "workout_template_sets": "serie szablonów treningów",
+        "workout_log_sets": "serie z dziennika treningów",
+        "validating": "dane"
+      },
+      "importData": "Importuj dane",
+      "importOptically": "Importuj dane z innego telefonu",
+      "personalizedSetup": "Konfiguracja spersonalizowana",
+      "personalizedSetupSteps": "11 kroków",
+      "personalizedSetupSubtitle": "Dokładne TDEE, makroskładniki i spersonalizowane zalecenia",
+      "quickSetup": "Szybka konfiguracja",
+      "quickSetupSteps": "7 kroków",
+      "quickSetupSubtitle": "Podstawowa konfiguracja, resztę możesz ustawić później",
+      "aiSetup": "Konfiguracja z AI",
+      "aiSetupSubtitle": "Porozmawiaj z AI albo pozwól, by przeprowadził cię wywiad ChatGPT lub Claude"
+    },
+    "quickPreferences": {
+      "title": "Zaczynamy",
+      "subtitle": "Ustaw preferencje dotyczące jednostek i wyświetlania.",
+      "unitSystem": "System jednostek",
+      "metric": "Metryczny",
+      "imperial": "Imperialny",
+      "gender": "Płeć",
+      "genderNote": "Nasze wzory na kalorie i makroskładniki pochodzą z dawnych badań, które rozpoznawały tylko dwie grupy, więc nie oddadzą wszystkich. Wybierz opcję najbliższą twojemu obecnemu ciału i hormonom (np. jeśli przyjmujesz terapię hormonalną) albo „Inna”, aby korzystać z wartości uśrednionych.",
+      "male": "Mężczyzna",
+      "female": "Kobieta",
+      "other": "Inna / wolę nie podawać",
+      "continue": "Dalej"
+    },
+    "quickGoals": {
+      "title": "Jakie masz cele?",
+      "subtitle": "Dostosujemy aplikację do tych celów.",
+      "fitnessFocus": "Główny nacisk",
+      "buildMuscle": "Budowa mięśni",
+      "strength": "Siła",
+      "endurance": "Wytrzymałość",
+      "general": "Ogólny",
+      "weightGoal": "Cel wagowy",
+      "lose": "Schudnąć",
+      "maintain": "Utrzymać",
+      "gain": "Przytyć",
+      "continue": "Dalej",
+      "weightLoss": "Utrata wagi"
+    },
+    "quickBodyStats": {
+      "title": "Twoje dane ciała",
+      "subtitle": "Służą do obliczenia zapotrzebowania kalorycznego i śledzenia postępów.",
+      "height": "Wzrost",
+      "weight": "Waga",
+      "birthday": "Data urodzenia",
+      "birthdayHelper": "Służy do obliczenia wieku dla dokładniejszych szacunków kalorii",
+      "bodyFat": "Procent tkanki tłuszczowej",
+      "bodyFatHelper": "Jeśli go znasz, pomoże to w obliczeniach kalorii",
+      "continue": "Dalej",
+      "birthdayEstimated": "Oszacowano na podstawie wieku. Wybierz datę urodzenia, jeśli ją znasz."
+    },
+    "personalizedPreferences": {
+      "nameLabel": "Jak mamy się do ciebie zwracać?",
+      "namePlaceholder": "Wpisz swoje imię (opcjonalnie)"
+    },
+    "personalizedExperience": {
+      "title": "Jakie masz doświadczenie?",
+      "subtitle": "Dzięki temu dopasujemy sugestie treningów do twojego poziomu.",
+      "experienceLabel": "Doświadczenie treningowe",
+      "activityLevelLabel": "Poziom aktywności",
+      "beginner": "Początkujący",
+      "beginnerDesc": "Mniej niż rok treningu",
+      "intermediate": "Średniozaawansowany",
+      "intermediateDesc": "1–3 lata regularnych treningów",
+      "advanced": "Zaawansowany",
+      "advancedDesc": "Ponad 3 lata intensywnych treningów",
+      "sedentary": "Siedzący tryb życia",
+      "sedentaryDesc": "Mało lub brak ruchu",
+      "lightlyActive": "Lekko aktywny",
+      "lightlyActiveDesc": "Lekki ruch 1–3 dni w tygodniu",
+      "moderatelyActive": "Umiarkowanie aktywny",
+      "moderatelyActiveDesc": "Umiarkowany ruch 3–5 dni w tygodniu",
+      "veryActive": "Bardzo aktywny",
+      "veryActiveDesc": "Intensywny ruch 6–7 dni w tygodniu",
+      "extremelyActive": "Ekstremalnie aktywny",
+      "extremelyActiveDesc": "Bardzo intensywny ruch albo praca fizyczna",
+      "continue": "Dalej"
+    },
+    "personalizedCycle": {
+      "title": "Jeszcze jedno pytanie",
+      "subtitle": "Pozwoli nam to dać ci bardziej spersonalizowane wskazówki.",
+      "question": "Czy miewasz miesiączkę?",
+      "yes": "Tak",
+      "yesDesc": "Chcę śledzić swój cykl",
+      "no": "Nie",
+      "noDesc": "Pomiń śledzenie cyklu",
+      "continue": "Dalej"
+    },
+    "musclogApi": {
+      "title": "Musclog AI",
+      "freeBadge": "Za darmo",
+      "subtitle": "Otrzymuj wskazówki AI dotyczące treningu i odżywiania.",
+      "features": {
+        "coach": {
+          "title": "Asystent treningowy AI",
+          "desc": "Otrzymuj propozycje ćwiczeń i wskazówki dotyczące techniki"
+        },
+        "insights": {
+          "title": "Analiza postępów",
+          "desc": "Spersonalizowana analiza twoich treningów"
+        },
+        "recommendations": {
+          "title": "Inteligentne zalecenia",
+          "desc": "Porady dotyczące treningu i odżywiania od AI"
+        }
+      },
+      "dataSharingTitle": "Informacja o udostępnianiu danych",
+      "dataSharingBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (np. twoje treningi, posiłki, pomiary ciała albo wiadomości w czacie), jest wysyłane przez serwery Musclog do Gemini AI od Google, żeby napisać odpowiedź. Nic nie jest wysyłane, dopóki z czegoś nie skorzystasz. Darmowy plan ma ograniczoną liczbę zapytań dziennie.",
+      "readPrivacyPolicy": "Przeczytaj naszą Politykę prywatności",
+      "enable": "Włącz Musclog AI",
+      "noThanks": "Nie, dziękuję, kontynuuj bez AI"
+    },
+    "setGoals": {
+      "title": "Inteligentny cel",
+      "calculation": "Obliczenia",
+      "description": "Używamy równań Mifflin–St Jeor i Katch–McArdle, żeby oszacować metabolizm, a potem poziom aktywności i cele, aby ustawić cele kaloryczne i makroskładniki.",
+      "personalizedMacros": "Spersonalizowane makroskładniki",
+      "dynamicAdjustments": "Dynamiczne korekty",
+      "calculateForMe": "Oblicz za mnie",
+      "setThemMyself": "Ustawię sam",
+      "missingData": "Najpierw uzupełnij dane treningowe, żebyśmy mogli obliczyć plan."
+    },
+    "trainingSetup": {
+      "title": "Jak trenujesz?",
+      "subtitle": "Kilka szybkich odpowiedzi skonfiguruje twoją siłownię i pierwszy trening.",
+      "locationLabel": "Gdzie trenujesz",
+      "location": {
+        "gym": "Siłownia",
+        "gymDesc": "Sztangi, maszyny i wyciągi",
+        "home": "Dom",
+        "homeDesc": "Hantle, gumy i ćwiczenia z masą ciała",
+        "minimal": "Minimum",
+        "minimalDesc": "Tylko własne ciało i może guma"
+      },
+      "experienceLabel": "Doświadczenie",
+      "experience": {
+        "beginner": "Początkujący",
+        "intermediate": "Średniozaawansowany",
+        "advanced": "Zaawansowany"
+      },
+      "daysLabel": "Dni w tygodniu",
+      "daysMax": "{{count}}+",
+      "helpLabel": "Sugestie ciężarów",
+      "help": {
+        "suggest": "Sugeruj moje ciężary",
+        "suggestDesc": "Cele rosną, gdy wykonasz powtórzenia, a aplikacja wyjaśnia dlaczego",
+        "manual": "Zdecyduję sam",
+        "manualDesc": "Plan zostaje skopiowany tak, jak jest, nic nie jest zmieniane za ciebie"
+      },
+      "changeLater": "Wszystko to możesz zmienić później w ustawieniach treningu.",
+      "continue": "Dalej",
+      "skip": "Pomiń, chcę tylko odżywianie",
+      "gymNames": {
+        "gym": "Moja siłownia",
+        "home": "Siłownia domowa",
+        "minimal": "Ćwiczenia z masą ciała"
+      },
+      "comingBackLabel": "Wracasz po przerwie?",
+      "comingBack": "Powrót po przerwie",
+      "comingBackDesc": "Łagodnie wprowadzimy twoje pierwsze tygodnie i ustawimy jedzenie na utrzymanie.",
+      "breakLengthLabel": "Jak długa była przerwa?"
+    },
+    "firstWorkout": {
+      "title": "Twój pierwszy trening",
+      "subtitlePlan": "Na podstawie twoich odpowiedzi ten plan to dobry początek. Możesz go w każdej chwili edytować.",
+      "subtitleEmpty": "Możesz zacząć od pustego treningu i dodawać ćwiczenia w trakcie.",
+      "days": "Dni w tygodniu: {{count}}",
+      "exercises": "Ćwiczenia: {{count}}",
+      "minutes": "Około {{count}} min",
+      "editHint": "Zmieniaj ćwiczenia, serie albo zasady, kiedy chcesz.",
+      "emptyTitle": "Zacznij od pustego treningu",
+      "emptyDescription": "Plany w bibliotece są ułożone pod sprzęt siłowni, więc je pominiemy. Dodawaj ćwiczenia w trakcie albo przejrzyj plany później.",
+      "addPlan": "Dodaj plan",
+      "dayLabel": "Dzień {{day}}",
+      "dayExercises": "Ćwiczenia: {{count}}",
+      "startEmpty": "Zacznij pusty trening",
+      "notNow": "Nie teraz",
+      "howTitle": "Jak to działa",
+      "stepAddTitle": "Dodaj ćwiczenia",
+      "stepAddBody": "Szukaj w bibliotece i dodawaj ruchy w trakcie treningu.",
+      "stepLogTitle": "Zapisuj serie",
+      "stepLogBody": "Wpisz ciężar i powtórzenia, a timer odpoczynku ruszy sam.",
+      "stepNextTitle": "Kolejny ciężar, sugerowany",
+      "stepNextBody": "Pamiętamy twoje wyniki i sugerujemy kolejny ciężar.",
+      "planHint": "Dotknij „{{action}}”, aby dodać ten plan do profilu, albo „{{later}}”, aby wybrać trening samodzielnie później."
+    },
+    "coachPersona": {
+      "title": "Wybierz swojego trenera",
+      "subtitle": "Kim ma być twój trener AI? Możesz to zmienić w każdej chwili w ustawieniach AI.",
+      "continue": "Dalej",
+      "keepLoggy": "Zostaw Loggy"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "websiteTools": {
+    "layout": {
+      "allTools": "Tüm araçlar",
+      "howItWorks": "Nasıl çalışır",
+      "sources": "Kaynaklar",
+      "related": "Daha fazla araç",
+      "ctaTitle": "Musclog'da takip et",
+      "ctaBody": "Musclog ücretsiz, açık kaynaklı bir fitness ve beslenme takipçisidir. Verilerin cihazında kalır.",
+      "sameMath": "Musclog uygulamasıyla aynı hesabı kullanır.",
+      "localOnly": "Yazdığın her şey tarayıcında kalır.",
+      "readMore": "Devamını oku"
+    },
+    "units": {
+      "label": "Birimler",
+      "metric": "Metrik (kg)",
+      "imperial": "Emperyal (lb)",
+      "kg": "kg",
+      "lb": "lb"
+    },
+    "gym": {
+      "summary": "Spor salonun: halter ve plaklar",
+      "barWeight": "Halter ağırlığı",
+      "plates": "Plak çiftleri",
+      "platesHint": "Her plaktan kaç çiftin olduğu. Spor salonunda olmayan bir plak için 0 kullan.",
+      "reset": "Standart bir spor salonuna sıfırla",
+      "remembered": "Yalnızca bu tarayıcıda hatırlanır.",
+      "invalid": "Halter ağırlığını ve plak sayılarını kontrol et: her biri bir sayı gerektirir."
+    },
+    "index": {
+      "groups": {
+        "strength": {
+          "title": "Gücünü bil",
+          "body": "Maksimumunu, plaklarını ve ısınmalarını hesapla."
+        },
+        "training": {
+          "title": "Antrenmanını planla",
+          "body": "Çabayı, ilerlemeyi, yük azaltmayı ayarla ve bir günlük tut."
+        },
+        "nutrition": {
+          "title": "Hedefin için ye",
+          "body": "Tahmine dayanmadan protein, kalori ve karbonhidrat."
+        }
+      },
+      "title": "Kaldıranlar için ücretsiz araçlar",
+      "intro": "Tarayıcında çalışan ve Musclog uygulamasıyla aynı matematiği kullanan hesaplayıcılar. Yazdığın hiçbir şey sayfayı terk etmez.",
+      "programsTitle": "Ücretsiz antrenman programları",
+      "programsBody": "Her gün, egzersiz, set ve tekrarı olan tam programlar. Birine dokunarak Musclog'da aç."
+    }
+  }
+}

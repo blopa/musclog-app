@@ -1,0 +1,11 @@
+{
+  "portionSizes": {
+    "addNew": "Yeni ekle",
+    "noResults": "Sonuç yok",
+    "searchPlaceholder": "Porsiyon ara...",
+    "selectTitle": "Porsiyon boyutunu seç",
+    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})",
+    "loadMore": "Daha fazla yükle",
+    "loadingMore": "Daha fazlası yükleniyor..."
+  }
+}

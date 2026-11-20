@@ -36,6 +36,11 @@ const LANGUAGE_LABELS: Record<string, { badge: string; label: string }> = {
   nl: { badge: 'NL', label: 'Nederlands' },
   'pt-br': { badge: 'PT', label: 'Português' },
   ru: { badge: 'RU', label: 'Русский' },
+  de: { badge: 'DE', label: 'Deutsch' },
+  fr: { badge: 'FR', label: 'Français' },
+  it: { badge: 'IT', label: 'Italiano' },
+  pl: { badge: 'PL', label: 'Polski' },
+  tr: { badge: 'TR', label: 'Türkçe' },
 };
 
 function rememberLanguage(language: string) {

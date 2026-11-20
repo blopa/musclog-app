@@ -1,0 +1,57 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Programmes d'entraînement gratuits",
+      "intro": "Des programmes complets, avec chaque séance, exercice, série et répétition détaillés. Lis-en un ici, ou ouvre-le dans Musclog d'un seul geste pour commencer à t'entraîner. Les charges de départ sont suggérées à partir de ton profil quand tu l'ouvres dans l'application.",
+      "workouts_one": "{{count}} séance",
+      "workouts_few": "{{count}} séances",
+      "workouts_many": "{{count}} séances",
+      "workouts_other": "{{count}} séances",
+      "minutes": "environ {{minutes}} min par séance",
+      "exercisesLink": "Parcourir la bibliothèque d'exercices"
+    },
+    "difficulty": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    },
+    "detail": {
+      "allPrograms": "Tous les programmes",
+      "dayLabel": "Jour {{n}}",
+      "exercise": "Exercice",
+      "setsReps": "Séries × répétitions",
+      "rest": "Repos",
+      "restSeconds": "{{seconds}} s",
+      "supersetGroup": "Superset {{group}}",
+      "openTitle": "Ouvrir ce programme dans Musclog",
+      "openBody": "Cela ouvre le programme dans l'application sous forme d'examen : rien n'est enregistré tant que tu ne confirmes pas. Les charges de départ sont suggérées à partir de ton profil, et tu choisis les jours de la semaine. Si tu n'as pas encore l'application, la page suivante contient les liens de téléchargement.",
+      "openButton": "Ouvrir dans Musclog",
+      "howTitle": "Comment le suivre",
+      "how": [
+        "Fais les séances dans l'ordre et répète le cycle. Une séance par jour d'entraînement est la façon la plus simple de le suivre : l'ordre compte plus que le jour de la semaine.",
+        "Commence avec des charges que tu peux soulever avec une bonne technique et encore deux répétitions en réserve. Quand tu atteins le haut de la plage de répétitions sur toutes les séries, augmente la charge la fois suivante.",
+        "Ces programmes sont des exemples généraux, pas un avis médical. Si tu as une blessure ou un problème de santé, consulte d'abord un professionnel."
+      ],
+      "notFoundTitle": "Programme introuvable",
+      "notFoundBody": "Il n'existe aucun programme à cette adresse.",
+      "metaTitle": "{{title}} : programme d'entraînement gratuit"
+    },
+    "summaries": {
+      "push-pull-legs": "Trois séances : poussée (pectoraux, épaules et triceps), tirage (dos et biceps) et jambes. Enchaîne les trois une fois par semaine, ou fais-les deux fois pour la version classique sur six jours.",
+      "upper-lower-4-day": "Quatre séances : deux jours haut du corps et deux jours bas du corps, ce qui entraîne chaque muscle deux fois par semaine sur un programme de quatre jours.",
+      "full-body-3-day": "Trois séances complètes pour débutants. Chacune comprend un mouvement de jambes, une poussée, un tirage et du travail des bras, pour entraîner chaque muscle trois fois par semaine.",
+      "phul": "Quatre séances : deux haut du corps et deux bas du corps. La première de chaque paire est une journée de puissance lourde en peu de répétitions, la seconde une journée d'hypertrophie avec davantage de répétitions.",
+      "5-day-hypertrophy-split": "Cinq séances, une zone par séance : pectoraux, dos, épaules, jambes et bras. Plus de volume par muscle dans une séance, une séance intense par muscle et par semaine.",
+      "arnold-split": "Trois séances dans le style Arnold : pectoraux et dos, épaules et bras, puis jambes. Ce programme se fait traditionnellement deux fois, soit six jours d'entraînement.",
+      "bro-split": "Cinq séances, un groupe musculaire chacune : pectoraux, dos, jambes, épaules et bras. Chaque muscle reçoit une séance ciblée par semaine.",
+      "2-day-full-body": "Deux séances complètes, A et B, pour les semaines où tu ne peux t'entraîner que deux fois. Alterne-les.",
+      "3-day-strength-builder": "Trois séances construites autour de séries lourdes de 4 à 8 répétitions au squat, au développé couché, au soulevé de terre et aux rowings, suivies d'exercices d'appoint plus légers.",
+      "classic-3-day-split": "Trois séances : pectoraux et triceps, dos et biceps, puis jambes et épaules. Un découpage classique pour une semaine de trois jours.",
+      "brolic-workout": "Deux séances haut du corps, pectoraux et épaules, avec beaucoup de développés et d'écartés. Plus courte que la plupart des programmes proposés ici.",
+      "cable-superset-workout": "Cinq séances avancées (Haut A, Bas A, Bras, Haut B, Bas B) construites avec des exercices au câble, associés en supersets antagonistes, avec une plage de répétitions et un temps de repos pour chaque exercice.",
+      "short-full-body-gym": "Deux courtes séances complètes, A et B, aux machines et avec poids libres : environ 30 minutes, 2 séries chacune, volontairement faciles. Une bonne façon de reprendre après une pause.",
+      "short-full-body-home": "Deux courtes séances complètes, A et B, avec haltères, kettlebell et élastiques : environ 30 minutes, 2 séries chacune, volontairement faciles.",
+      "short-full-body-no-equipment": "Deux courtes séances complètes, A et B, avec seulement ton corps et un élastique : environ 30 minutes, 2 séries chacune, volontairement faciles."
+    }
+  }
+}

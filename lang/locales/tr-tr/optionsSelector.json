@@ -1,0 +1,10 @@
+{
+  "optionsSelector": {
+    "link": "Bağla",
+    "unlink": "Bağlantıyı kaldır",
+    "edit": "Düzenle",
+    "done": "Tamam",
+    "deleteExercise": "Egzersizi sil",
+    "deleteExercises": "Egzersizleri sil"
+  }
+}

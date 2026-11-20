@@ -1,0 +1,25 @@
+{
+  "snackbar": {
+    "view": "Görüntüle",
+    "retry": "Tekrar dene",
+    "ok": "Tamam",
+    "syncedRecords_one": "{{count}} sağlık kaydı senkronize edildi.",
+    "syncedRecords_other": "{{count}} sağlık kaydı senkronize edildi.",
+    "noNewData": "Senkronize edilecek yeni veri yok.",
+    "failedToEnableSync": "Health Connect senkronizasyonu etkinleştirilemedi.",
+    "failedToDisableSync": "Health Connect senkronizasyonu devre dışı bırakılamadı.",
+    "syncDisabledMessage": "Health Connect senkronizasyonu devre dışı bırakıldı.",
+    "healthConnect": {
+      "noPermissionsGranted": "Health Connect izinleri verilmedi",
+      "sdkNotAvailable": "Health Connect bu cihazda kullanılamıyor. Lütfen Play Store'dan yükle.",
+      "permissionDenied": "Health Connect izinleri reddedildi. Sağlık verilerini senkronize etmek için lütfen izin ver.",
+      "permissionRevoked": "Health Connect izinleri iptal edildi. Lütfen ayarlardan yeniden etkinleştir.",
+      "offline": "İnternet bağlantısı yok. Çevrimiçi olduğunda sağlık verileri senkronize edilecek.",
+      "syncConflict": "Sağlık verisi çakışması algılandı. En güncel veri kullanılıyor.",
+      "invalidValueRange": "Geçersiz sağlık verisi değeri. Lütfen girdini kontrol et.",
+      "rateLimitExceeded": "Çok fazla istek. Lütfen biraz bekleyip tekrar dene.",
+      "syncInProgress": "Senkronizasyon zaten sürüyor. Lütfen tamamlanmasını bekle.",
+      "unknownError": "Sağlık verileri senkronize edilirken bir hata oluştu. Lütfen tekrar dene."
+    }
+  }
+}

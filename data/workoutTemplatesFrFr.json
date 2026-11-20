@@ -1,0 +1,70 @@
+[
+  {
+    "title": "Split hypertrophie sur 5 jours"
+  },
+  {
+    "title": "Push Pull Legs (PPL)"
+  },
+  {
+    "title": "Split Haut/Bas sur 4 jours"
+  },
+  {
+    "title": "Corps entier (3 jours)"
+  },
+  {
+    "title": "Split Arnold (6 jours)"
+  },
+  {
+    "title": "Bro Split (5 jours)"
+  },
+  {
+    "title": "PHUL (Power Hypertrophy Upper Lower)"
+  },
+  {
+    "title": "Corps entier 2 jours (A/B)"
+  },
+  {
+    "title": "Développement de la force sur 3 jours"
+  },
+  {
+    "title": "Classique 3 jours (Pectoraux/Triceps, Dos/Biceps, Jambes/Épaules)"
+  },
+  {
+    "title": "Séance Brolic"
+  },
+  {
+    "title": "Programme superset à la poulie",
+    "description": "Un programme de cinq séances à la poulie, construit autour de supersets haut, bas et antagonistes. Garde les polyarticulaires et l’isolation à 1–2 RIR ; la dernière série d’isolation peut atteindre 0–1 RIR. Progresse sur chaque exercice indépendamment, avec la double progression.",
+    "dayNames": {
+      "1": "Haut A",
+      "2": "Bas A",
+      "3": "Bras",
+      "5": "Haut B",
+      "6": "Bas B"
+    }
+  },
+  {
+    "title": "Corps entier court — Salle",
+    "description": "Deux séances courtes de corps entier (A et B) avec le matériel de salle : environ 30 minutes, 2 séries chacune, volontairement facile. Une bonne façon de reprendre.",
+    "dayNames": {
+      "1": "Séance A",
+      "2": "Séance B"
+    }
+  },
+  {
+    "title": "Corps entier court — Maison",
+    "description": "Deux séances courtes de corps entier (A et B) avec haltères, kettlebell et élastiques : environ 30 minutes, 2 séries chacune. Volontairement facile.",
+    "dayNames": {
+      "1": "Séance A",
+      "2": "Séance B"
+    }
+  },
+  {
+    "title": "Corps entier court — Sans matériel",
+    "description": "Deux séances courtes de corps entier (A et B) avec ton seul poids de corps et un élastique : environ 30 minutes, 2 séries chacune. Volontairement facile.",
+    "dayNames": {
+      "1": "Séance A",
+      "2": "Séance B"
+    }
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "sessionFeedback": {
+    "title": "Avis sur la séance",
+    "subtitle": "Note ta performance",
+    "difficulty": "Difficulté",
+    "exhaustion": "Épuisement",
+    "enjoyment": "Plaisir",
+    "easy": "Facile",
+    "extreme": "Extrême",
+    "fresh": "En forme",
+    "drained": "Vidé",
+    "disliked": "Pas aimé",
+    "loved": "Adoré",
+    "submit": "Envoyer l'avis",
+    "notes": "Notes",
+    "notesPlaceholder": "Comment ça s'est passé ? Un point à retenir pour la prochaine fois ?"
+  }
+}

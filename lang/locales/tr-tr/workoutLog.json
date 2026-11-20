@@ -1,0 +1,24 @@
+{
+  "workoutLog": {
+    "manageWorkoutLogData": {
+      "deleteLogWarning": "Bu antrenman günlüğünü silmek istediğinden emin misin? Bu işlem geri alınamaz.",
+      "title": "Antrenman günlüğü verilerini yönet",
+      "searchPlaceholder": "Antrenman seanslarında ara...",
+      "noWorkoutLogs": "Henüz antrenman günlüğü yok",
+      "noWorkoutLogsDesc": "Antrenmanları tamamladığında burada görünür",
+      "endOfHistory": "Antrenman geçmişinin sonu",
+      "workoutLogOptions": "Antrenman seçenekleri",
+      "editWorkoutLog": "Antrenmanı düzenle",
+      "editWorkoutLogDesc": "Antrenman ayrıntılarını değiştir",
+      "duplicateWorkoutLog": "Antrenmanı çoğalt",
+      "duplicateWorkoutLogDesc": "Bu antrenmanın bir kopyasını oluştur",
+      "deleteWorkoutLog": "Antrenmanı sil",
+      "deleteWorkoutLogDesc": "Bu antrenman günlüğünü kaldır",
+      "detailFormat": "{{status}} • {{volume}}",
+      "statusCompleted": "Tamamlandı",
+      "statusInProgress": "Devam ediyor",
+      "volumeFormat": "{{volume}} {{unit}}",
+      "unknownWorkout": "Bilinmeyen antrenman"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "websiteAlternativesPages": {
+    "shared": {
+      "title": "Musclog vs {{name}}",
+      "allComparisons": "Wszystkie alternatywy",
+      "checked": "Fakty o {{name}} sprawdzono {{date}}. Limity wersji darmowej się zmieniają, więc przed decyzją otwórz źródło z każdego wiersza.",
+      "colTopic": "Temat",
+      "colMusclog": "Musclog",
+      "source": "Źródło",
+      "chooseTitle": "Która opcja pasuje do ciebie",
+      "importTitle": "Przenoszenie historii treningów",
+      "otherApps": "Inne porównania",
+      "nonAffiliation": "Musclog nie jest powiązany z {{name}}. Nazwy produktów należą do ich właścicieli."
+    },
+    "apps": {
+      "strong": {
+        "intro": "Strong to aplikacja do zapisywania treningów. Musclog też zapisuje treningi, a do tego śledzi jedzenie — w jednej darmowej, open source aplikacji.",
+        "facts": [
+          {
+            "topic": "Wersja darmowa",
+            "them": "Zapisuje nieograniczoną liczbę treningów, ale jest ograniczona do 3 własnych rutyn.",
+            "musclog": "Nie ma limitu rutyn i nic nie jest zablokowane za subskrypcją."
+          },
+          {
+            "topic": "Plan płatny",
+            "them": "Strong PRO usuwa limit rutyn: 4,99 USD miesięcznie lub 29,99 USD rocznie (ceny w amerykańskim App Store).",
+            "musclog": "Darmowy i open source (GPL-3.0). Nie ma poziomu płatnego."
+          }
+        ],
+        "import": "Musclog może zaimportować eksport CSV ze Stronga: Ustawienia, Kopie zapasowe i dane, Importuj treningi. Dopasowuje nazwy ćwiczeń do własnego katalogu i pyta o te, których nie może dopasować, a przed zapisaniem czegokolwiek pokazuje przegląd. Import tego samego pliku dwa razy nie duplikuje sesji, a import można cofnąć.",
+        "chooseThem": "Zostań przy Stronge, jeśli już z niego korzystasz i trzy własne rutyny ci wystarczają.",
+        "chooseMusclog": "Wypróbuj Musclog, jeśli chcesz bez limitu rutyn, śledzenie jedzenia w tej samej aplikacji i dane zachowane na urządzeniu."
+      },
+      "hevy": {
+        "intro": "Hevy to aplikacja do zapisywania treningów z planem darmowym i płatnym planem Pro. Musclog zapisuje treningi i jedzenie w jednej darmowej, open source aplikacji.",
+        "facts": [
+          {
+            "topic": "Limity planu darmowego",
+            "them": "Plan darmowy jest ograniczony do 4 rutyn i 7 własnych ćwiczeń.",
+            "musclog": "Nie ma limitu rutyn ani własnych ćwiczeń."
+          },
+          {
+            "topic": "Kalkulator rozgrzewki",
+            "them": "Kalkulator rozgrzewki jest częścią Hevy Pro, a nie planu darmowego.",
+            "musclog": "Serie rozgrzewkowe są wbudowane i bezpłatne. Kalkulator rozgrzewki możesz też wypróbować na tej stronie."
+          },
+          {
+            "topic": "Historia treningów",
+            "them": "Historia danych w planie darmowym jest ograniczona do 3 miesięcy; Hevy Pro zachowuje całą.",
+            "musclog": "Cała twoja historia zostaje na urządzeniu, bez limitu czasowego."
+          }
+        ],
+        "import": "Musclog może zaimportować eksport CSV z Hevy: Ustawienia, Kopie zapasowe i dane, Importuj treningi. Dopasowuje nazwy ćwiczeń do własnego katalogu i pyta o te, których nie może dopasować, a przed zapisaniem czegokolwiek pokazuje przegląd. Import tego samego pliku dwa razy nie duplikuje sesji, a import można cofnąć.",
+        "chooseThem": "Zostań przy Hevy, jeśli już z niego korzystasz, a limity planu darmowego ci nie przeszkadzają.",
+        "chooseMusclog": "Wypróbuj Musclog, jeśli chcesz bez limitów rutyn i ćwiczeń, śledzenie jedzenia w tej samej aplikacji i dane zachowane na urządzeniu."
+      },
+      "myFitnessPal": {
+        "intro": "MyFitnessPal to aplikacja do śledzenia jedzenia i kalorii. Musclog też śledzi jedzenie i zapisuje treningi, w jednej darmowej, open source aplikacji.",
+        "facts": [
+          {
+            "topic": "Skanowanie kodów kreskowych",
+            "them": "Skanowanie kodów kreskowych jest funkcją Premium od 1 października 2022 r., według własnego ogłoszenia MyFitnessPal.",
+            "musclog": "Skanowanie kodów kreskowych jest bezpłatne."
+          },
+          {
+            "topic": "Skanowanie kodów kreskowych dziś",
+            "them": "Strona pomocy MyFitnessPal nadal mówi, że Barcode Scan jest dostępny tylko z subskrypcją Premium.",
+            "musclog": "Skanowanie kodów kreskowych jest bezpłatne."
+          }
+        ],
+        "import": "",
+        "chooseThem": "Zostań przy MyFitnessPal, jeśli już z niego korzystasz, polegasz na jego bazie produktów i jesteś zadowolony z wersji darmowej.",
+        "chooseMusclog": "Wypróbuj Musclog, jeśli chcesz bezpłatne skanowanie kodów kreskowych, treningi i jedzenie w jednej aplikacji, a dane zachowane na urządzeniu."
+      }
+    }
+  }
+}

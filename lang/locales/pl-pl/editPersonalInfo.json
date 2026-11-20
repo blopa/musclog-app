@@ -1,0 +1,18 @@
+{
+  "editPersonalInfo": {
+    "title": "Edytuj dane osobowe",
+    "fullName": "Imię i nazwisko",
+    "fullNamePlaceholder": "np. Alex Johnson",
+    "emailAddress": "Adres e-mail",
+    "emailPlaceholder": "np. alex@example.com",
+    "dateOfBirth": "Data urodzenia",
+    "dateOfBirthPlaceholder": "DD.MM.RRRR",
+    "gender": "Płeć",
+    "male": "Mężczyzna",
+    "female": "Kobieta",
+    "other": "Inna",
+    "chooseAvatar": "Wybierz awatar",
+    "chooseColor": "Wybierz kolor",
+    "saveChanges": "Zapisz zmiany"
+  }
+}

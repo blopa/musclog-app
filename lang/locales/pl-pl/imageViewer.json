@@ -1,0 +1,9 @@
+{
+  "imageViewer": {
+    "open": "Otwórz zdjęcie",
+    "close": "Zamknij",
+    "save": "Zapisz lub udostępnij zdjęcie",
+    "shareFailed": "Nie udało się udostępnić zdjęcia.",
+    "shareUnavailable": "Udostępnianie nie jest dostępne na tym urządzeniu."
+  }
+}

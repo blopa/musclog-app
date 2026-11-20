@@ -1,0 +1,24 @@
+{
+  "workoutSummary": {
+    "totalTime": "Gesamtzeit",
+    "volume": "Volumen",
+    "duration": "Dauer",
+    "personalRecords": "Persönliche Rekorde",
+    "newPRs": "Neue Bestleistungen",
+    "goHome": "Zur Startseite",
+    "youCrushedIt": "Training geschafft",
+    "shareText": "Ich habe gerade ein Training beendet.",
+    "sharePersonalRecords_one": "Persönliche Rekorde: {{count}}",
+    "sharePersonalRecords_other": "Persönliche Rekorde: {{count}}",
+    "shareSummary": "Zusammenfassung teilen",
+    "workoutCompleted": "Training abgeschlossen",
+    "viewDetails": "Details ansehen",
+    "viewMuscles": "Muskeln ansehen",
+    "getFeedback": "KI-Feedback holen",
+    "gettingFeedback": "Feedback wird geholt …",
+    "completedMessage": "Du hast das Training {{workoutName}} abgeschlossen",
+    "completedSummary": "Training abgeschlossen: {{workoutName}}",
+    "caloriesBurned": "Verbrannte Kalorien",
+    "workoutSaved": "Training gespeichert. Hier steht, was sich beim nächsten Mal ändert."
+  }
+}

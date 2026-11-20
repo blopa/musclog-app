@@ -1,0 +1,74 @@
+{
+  "home": {
+    "accountMenu": "Ouvrir le menu du compte",
+    "actions": {
+      "startWorkout": "Commencer\nséance",
+      "trackFood": "Saisir\naliment",
+      "scanBarcode": "Scanner\ncode-barres",
+      "aiPhoto": "Photo\nIA",
+      "myMeals": "Mes\nrepas",
+      "addNote": "Ajouter\nnote",
+      "logCardio": "Saisir\nmarche/course"
+    },
+    "sections": {
+      "recentWorkouts": "Séances récentes",
+      "recentFoods": "Aliments récents",
+      "dailySummary": "Résumé du jour"
+    },
+    "activityRings": {
+      "move": "Mouvement",
+      "steps": "Pas",
+      "rest": "Repos",
+      "score": "Score"
+    },
+    "navigation": {
+      "home": "Accueil",
+      "profile": "Profil",
+      "workouts": "Séances",
+      "food": "Alimentation",
+      "coach": "Discussion",
+      "focus": "Focus",
+      "cycle": "Cycle",
+      "checkin": "Bilan hebdomadaire"
+    },
+    "dailyStats": {
+      "steps": "Pas",
+      "burned": "Brûlées jusqu'ici",
+      "eaten": "Consommées",
+      "deficit": "Déficit",
+      "surplus": "Surplus",
+      "even": "Équilibré"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Dernière semaine",
+      "lastWeeks_few": "{{count}} dernières semaines",
+      "lastWeeks_many": "{{count}} dernières semaines",
+      "lastWeeks_other": "{{count}} dernières semaines",
+      "lastDays_one": "Dernier jour",
+      "lastDays_few": "{{count}} derniers jours",
+      "lastDays_many": "{{count}} derniers jours",
+      "lastDays_other": "{{count}} derniers jours",
+      "tapHint": "Touche un jour pour les détails",
+      "less": "Moins",
+      "more": "Plus",
+      "earlierWeeks": "Afficher les semaines précédentes",
+      "laterWeeks": "Afficher les semaines suivantes",
+      "workouts": {
+        "title": "Séances",
+        "none": "Aucune séance",
+        "count_one": "{{count}} séance",
+        "count_few": "{{count}} séances",
+        "count_many": "{{count}} séances",
+        "count_other": "{{count}} séances"
+      },
+      "nutrition": {
+        "title": "Alimentation",
+        "none": "Rien saisi",
+        "count_one": "{{count}} repas saisi",
+        "count_few": "{{count}} repas saisis",
+        "count_many": "{{count}} repas saisis",
+        "count_other": "{{count}} repas saisis"
+      }
+    }
+  }
+}

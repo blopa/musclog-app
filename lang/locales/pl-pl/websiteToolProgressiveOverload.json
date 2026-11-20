@@ -1,0 +1,104 @@
+{
+  "websiteToolProgressiveOverload": {
+    "title": "Kalkulator progresji przeciążeniowej",
+    "intro": "Wpisz, co zrobiłeś na ostatniej sesji, a dostaniesz ciężar i powtórzenia, do których dążyć następnym razem. Używa reguły, której używa aplikacja Musclog do ustalania twojego następnego treningu.",
+    "form": {
+      "weight": "Ciężar z ostatniej sesji",
+      "weightHint": "Ciężar twoich serii roboczych.",
+      "reps": "Powtórzenia w najsłabszej serii roboczej",
+      "repsHint": "Liczba całkowita. Liczy się seria z najmniejszą liczbą powtórzeń.",
+      "plannedReps": "Powtórzenia z twojego planu",
+      "plannedRepsHint": "Na serię, dolna granica twojego zakresu powtórzeń.",
+      "reserve": "Powtórzenia w zapasie, średnio",
+      "reserveHint": "Ile powtórzeń mógłbyś jeszcze zrobić po każdej serii, uśrednione. Zostaw puste, jeśli nie oceniałeś wysiłku.",
+      "equipmentLabel": "Sprzęt",
+      "equipment": {
+        "barbell": "Sztanga",
+        "dumbbell": "Hantle",
+        "machine": "Maszyna lub wyciąg"
+      },
+      "modeLabel": "Jak progresować",
+      "mode": {
+        "weight_first": "Najpierw dodaj ciężar",
+        "reps_first": "Najpierw dodaj powtórzenia"
+      },
+      "completeLabel": "Czy zrobiłeś każdą serię?",
+      "twoInARowLabel": "Czy poprzednia sesja przy tym ciężarze też się nie udała?",
+      "yes": "Tak",
+      "no": "Nie",
+      "twoInARowNo": "Nie albo nie jestem pewien",
+      "twoInARowYes": "Tak, zrobiłem za mało powtórzeń albo doszedłem do upadku",
+      "moreOptions": "Więcej opcji: sprzęt, styl progresji i szczegóły ostatniej sesji"
+    },
+    "problems": {
+      "weight": "Wpisz ciężar z ostatniej sesji jako liczbę większą od 0 i co najwyżej {{max}}.",
+      "reps": "Wpisz powtórzenia jako liczbę całkowitą od 1 do {{max}}.",
+      "plannedReps": "Wpisz planowane powtórzenia jako liczbę całkowitą od 1 do {{max}}.",
+      "reserve": "Wpisz powtórzenia w zapasie jako liczbę od 0 do {{max}} albo zostaw puste."
+    },
+    "results": {
+      "title": "Następna sesja",
+      "kind": {
+        "progression": "Idź w górę",
+        "repeat": "Powtórz jak ostatnio",
+        "deload": "Idź lżej"
+      },
+      "target_one": "{{weight}} na {{reps}} powtórzenie",
+      "target_few": "{{weight}} na {{reps}} powtórzenia",
+      "target_many": "{{weight}} na {{reps}} powtórzeń",
+      "target_other": "{{weight}} na {{reps}} powtórzenia",
+      "changeUp": "{{change}} ({{percent}}) cięższe niż ostatnio.",
+      "changeSame": "Ten sam ciężar co ostatnio.",
+      "changeDown": "{{change}} ({{percent}}) lżejsze niż ostatnio.",
+      "step": "Jeden krok obciążenia dla tego sprzętu to {{step}}.",
+      "plates": "Talerze po każdej stronie sztangi",
+      "emptyBar": "Pusta sztanga",
+      "plateLine": "{{count}} × {{weight}}",
+      "unrated": "Zostawiłeś puste powtórzenia w zapasie, więc decyzja opiera się tylko na powtórzeniach: jedno powtórzenie więcej na sesję, aż do góry zakresu, a potem więcej ciężaru."
+    },
+    "reasons": {
+      "addWeight": "Ostatnia sesja spełniła warunek: co najmniej {{reserve}} powtórzeń w zapasie i co najmniej {{planned}} powtórzeń w najsłabszej serii. Obciążenie rośnie o jeden krok.",
+      "addReps": "Ostatnia sesja spełniła warunek, ale najpierw rosną powtórzenia, a dopiero potem ciężar. Obciążenie wzrośnie, gdy dojdziesz do góry zakresu powtórzeń.",
+      "stepTooCoarse": "Jeden krok obciążenia ({{step}}) to ponad ćwierć tego ciężaru, skok zbyt duży, by go zrobić, więc aplikacja dodaje powtórzenie.",
+      "unfinished": "Nie zrobiłeś każdej serii, więc sesja nie liczy się jako sukces. Powtórz ją.",
+      "missedPlan": "Nie zrobiłeś planowanych powtórzeń. Jedna porażka powtarza ten sam ciężar. Dwie z rzędu przy tym ciężarze obniżają go.",
+      "tooHard": "Miałeś mniej niż {{reserve}} powtórzeń w zapasie, więc sesja była już dość ciężka. Powtórz ją. Obciążenie rośnie tylko wtedy, gdy zostawisz co najmniej {{reserve}}.",
+      "deload": "Dwie nieudane sesje z rzędu przy tym ciężarze. Obciążenie spada o 10% albo o jeden krok, w zależności od tego, co jest większe, a potem zaokrągla się w dół do obciążenia, które możesz ustawić."
+    },
+    "sections": [
+      {
+        "title": "Ile dodać?",
+        "body": [
+          "Musclog dodaje jeden krok obciążenia: 2,5 kg (5 lb), gdy nie masz ustawionej siłowni, albo dwa razy najlżejszy talerz na sztandze, gdy ją skonfigurowałeś. Przy ćwiczeniu z 100 kg to 2,5%, a przy lekkiej hantli to duży udział, więc gdy jeden krok przekracza ćwierć ciężaru, aplikacja dodaje powtórzenie. To zasady produktowe, a nie wyniki badań.",
+          "Badania podają zakres, a nie jedną liczbę. Stanowisko American College of Sports Medicine z 2009 roku sugeruje podniesienie obciążenia o około 2 do 10%, gdy w dwóch sesjach z rzędu zrobisz o jedno albo dwa powtórzenia więcej niż cel. Musclog jest w jednym aspekcie ostrożniejszy, a w innym szybszy: działa po jednej sesji, ale tylko wtedy, gdy zostawiłeś powtórzenia w zapasie i zrobiłeś każde zaplanowane powtórzenie."
+        ]
+      },
+      {
+        "title": "Kiedy idzie w górę, powtarza się, a kiedy idzie lżej",
+        "body": [
+          "Idzie w górę, gdy najsłabsza seria robocza zrobiła zaplanowane powtórzenia, a na koniec zostało średnio co najmniej 2 powtórzenia w zapasie. Powtarza się po jednej ciężkiej lub krótkiej sesji, bo jeden zły dzień to nie zastój. Idzie lżej po dwóch sesjach z rzędu przy tym samym ciężarze, w których nic nie zostało w zapasie, albo gdy nie zrobiono planowanych powtórzeń. Te reguły dwóch sesji to wybory Musclog."
+        ]
+      },
+      {
+        "title": "Najpierw ciężar czy najpierw powtórzenia",
+        "body": [
+          "Najpierw ciężar dodaje krok za każdym razem, gdy na niego zasłużysz, i zachowuje powtórzenia. Najpierw powtórzenia dodaje po powtórzeniu na sesję, aż będziesz dwa powtórzenia ponad plan (jedno ponad, przy planach do sześciu powtórzeń), potem dodaje ciężar i wraca do planowanych powtórzeń. Ten drugi sposób to podwójna progresja."
+        ]
+      },
+      {
+        "title": "Czego ta strona nie widzi",
+        "body": [
+          "Czyta jedną sesję. Aplikacja patrzy też na twój plan, twoją siłownię i tydzień, w którym jesteś, i pokazuje powód przy każdej serii. Traktuj odpowiedź jako dobry punkt wyjścia, a nie receptę."
+        ]
+      }
+    ],
+    "sources": {
+      "acsm": "American College of Sports Medicine (2009), Progression models in resistance training for healthy adults (Medicine & Science in Sports & Exercise)",
+      "zourdos": "Zourdos i in. (2016), Nowa skala RPE dla treningu oporowego mierząca powtórzenia w zapasie"
+    },
+    "articles": {
+      "doubleProgression": "Podwójna progresja: najprostszy sposób, by dodawać ciężar co tydzień",
+      "trackProgress": "Jak śledzić postępy na siłowni: poradnik dla początkujących"
+    }
+  }
+}

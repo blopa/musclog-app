@@ -1,0 +1,70 @@
+{
+  "websiteToolProteinCalculator": {
+    "title": "Protein hesaplayıcısı",
+    "intro": "Vücut ağırlığını, boyunu ve hedefini gir; gram cinsinden günlük bir protein hedefini ve arkasındaki kilogram başına gramı al.",
+    "form": {
+      "weight": "Vücut ağırlığı",
+      "height": "Boy",
+      "goal": "Ana hedef",
+      "deficit": "Kalori açığında mı besleniyorsun?",
+      "deficitYes": "Evet, kesiyorum",
+      "deficitNo": "Hayır",
+      "goalWeight": "Hedef kilo (isteğe bağlı)",
+      "goalWeightHint": "Bir tane belirlersen protein, mevcut kilon yerine ona göre hesaplanır.",
+      "cm": "cm",
+      "inches": "inç"
+    },
+    "goals": {
+      "hypertrophy": "Kas yapmak",
+      "strength": "Güçlenmek",
+      "general": "Genel sağlık",
+      "endurance": "Dayanıklılık",
+      "weightLoss": "Kilo vermek"
+    },
+    "problems": {
+      "weight": "Hesaplayıcının kabul ettiği aralıkta bir vücut ağırlığı gir.",
+      "height": "Hesaplayıcının kabul ettiği aralıkta bir boy gir.",
+      "goalWeight": "Hesaplayıcının kabul ettiği aralıkta bir hedef kilo gir ya da boş bırak."
+    },
+    "results": {
+      "grams": "Günlük protein",
+      "gramsNote": "{{reference}} üzerinden {{perKg}}",
+      "tableTitle": "Hedefe göre kilogram başına gram",
+      "tableGoal": "Hedef",
+      "tablePerKg": "Vücut ağırlığı kilogramı başına"
+    },
+    "notes": {
+      "capped": "Kilon, boyuna göre {{reference}} referans kilosunun (VKİ 30) üzerinde, bu yüzden rakam onu kullanır. Kilon {{weight}}. Hedef kilo yoksa, sınır protein değerinin yağ kütlesiyle birlikte büyümesini durdurur.",
+      "deficit": "Açıkta beslenmek, minimumu {{value}} değerine yükseltir; çünkü yağ kaybederken proteinin kası korumaya yardımcı olur.",
+      "bodyweight": "Bu rakam vücut ağırlığına dayanır. Hesaplayıcı vücut yağı sormaz, bu yüzden kası yağdan ayıramaz.",
+      "spread": "Önemli olan günlük toplamdır. Dilediğin kadar ya da az sayıda öğüne, sana uygun şekilde dağıt.",
+      "medical": "Genel bilgidir, tıbbi tavsiye değildir. Proteini etkileyen bir böbrek hastalığın ya da başka bir durumun varsa, alımını değiştirmeden önce bir hekime danış."
+    },
+    "sections": [
+      {
+        "title": "Rakam nasıl oluşturulur",
+        "body": [
+          "Protein, hedefin için vücut ağırlığının kilogramı başına gram olarak belirlenir: Musclog uygulamasının günlük hedefleri için kullandığı aynı tablo. Açıkta kilo ile 2,0 g/kg'a kadar yükselir.",
+          "Kalorilerin yüzdesi kullanılmaz, çünkü yediğin azaldıkça proteini düşürür; kası korumanın en önemli olduğu tam o anda."
+        ]
+      },
+      {
+        "title": "Ağırlık neden sınırlandırılır",
+        "body": [
+          "Hedef kilo yokken rakam mevcut kilonu kullanır ama asla boyuna göre VKİ 30 kilosunun üzerine çıkmaz. Bunun üzerinde, ekstra kütlenin çoğu yağsız doku değildir ve tamamı için protein ihtiyacından fazla olurdu. Bir hedef kilo bu sınırın yerini alır."
+        ]
+      },
+      {
+        "title": "Araştırma ne diyor",
+        "body": [
+          "Morton ve ark. (2018), direnç antrenmanı çalışmalarını bir araya getirdi ve kas kazanımlarının günde kilogram başına yaklaşık 1,6 g'da düzlüğe ulaştığını, üst güven sınırının 2,2 g/kg civarında olduğunu buldu. Genel ve hipertrofi rakamları bu aralıkta yer alır.",
+          "Helms ve ark. (2014), antrenman yaparken diyet uygulayan insanlar için proteini gözden geçirdi; açıkta 2,0 g/kg minimumu bu literatürden gelir. Bu bir Musclog ayarıdır, senin için ölçülmüş bir sonuç değildir."
+        ]
+      }
+    ],
+    "sources": {
+      "morton": "Morton ve ark. (2018), protein takviyesi ve direnç antrenmanı kazanımları üzerine meta-analiz",
+      "helms": "Helms ve ark. (2014), fiziksel görünüm sporcuları için enerji kısıtlaması sırasında protein alımı"
+    }
+  }
+}

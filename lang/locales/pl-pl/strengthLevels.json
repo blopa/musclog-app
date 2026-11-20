@@ -1,0 +1,20 @@
+{
+  "strengthLevels": {
+    "title": "Poziomy siły",
+    "levels": {
+      "beginner": "Początkujący",
+      "novice": "Nowicjusz",
+      "intermediate": "Średniozaawansowany",
+      "advanced": "Zaawansowany",
+      "elite": "Elita"
+    },
+    "rangeLabel": "{{lower}} do {{upper}}",
+    "otherNote": "Pokazane na skali męskiej i żeńskiej, bo żadna pojedyncza tabela nie pasuje.",
+    "addWeighIn": "Dodaj pomiar wagi, aby zobaczyć poziomy siły.",
+    "sourceNote": "Poziomy porównują szacowane 1RM z masą ciała. To reguła kciuka Musclog, sprawdzona na publicznych wynikach trójboju z OpenPowerlifting.",
+    "sourceLink": "Strona OpenPowerlifting",
+    "estimated1rm": "Szacowane 1RM",
+    "toReach": "Aby osiągnąć: {{level}}",
+    "howItWorks": "Jak działają poziomy"
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "common": {
+    "clear": "Temizle",
+    "value": "Değer",
+    "name": "Ad",
+    "next": "İleri",
+    "context": "Bağlam",
+    "processing": "işleniyor...",
+    "bootMayTakeMinutes": "Lütfen bekle ve uygulamayı açık tut. Bu birkaç dakika sürebilir. İlerleme çubuğu takılmış gibi görünebilir, ama hâlâ çalışıyoruz.",
+    "success": "Başarılı",
+    "saveError": "Değişiklikler kaydedilemedi",
+    "saveErrorSubtitle": "Lütfen tekrar dene",
+    "error_description": "Beklenmeyen bir hata oluştu. Lütfen tekrar dene.",
+    "back": "Geri",
+    "select": "Seç...",
+    "today": "Bugün",
+    "none": "Yok",
+    "amount_kcal": "{{amount}}",
+    "duplicateFailed": "Çoğaltma başarısız",
+    "yesterday": "Dün",
+    "daysAgo": "{{count}} gün önce",
+    "oneWeekAgo": "1 hafta önce",
+    "weeksAgo": "{{count}} hafta önce",
+    "monthsAgo": "{{count}} ay önce",
+    "monthsAgo_one": "{{count}} ay önce",
+    "monthsAgo_other": "{{count}} ay önce",
+    "oneMonthFromNow": "1 ay sonra",
+    "monthsFromNow": "{{count}} ay sonra",
+    "seeAll": "Tümünü gör",
+    "kcal": "kcal",
+    "min": "dk",
+    "cancel": "İptal",
+    "tryAgain": "Tekrar dene",
+    "photo": "Fotoğraf",
+    "loading": "Yükleniyor...",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "category": "Kategori",
+    "active": "Etkin",
+    "edit": "Düzenle",
+    "status": "Durum",
+    "timezone": "Saat dilimi",
+    "timezonePlaceholder": "+00:00",
+    "invalidTimezone": "+00:00, +05:30 ya da -04:00 gibi bir saat dilimi farkı gir.",
+    "change": "Değiştir",
+    "confirm": "Onayla",
+    "decreaseValue": "Değeri azalt",
+    "delete": "Sil",
+    "error": "Hata",
+    "loadMore": "Daha fazla yükle",
+    "goHome": "Ana sayfaya git",
+    "increaseValue": "Değeri artır",
+    "ok": "Tamam",
+    "deleteConfirmMessage": "{{name}} silinsin mi?",
+    "deleteFailed": "Silinemedi",
+    "saveChanges": "Değişiklikleri kaydet",
+    "close": "Kapat",
+    "install": "Yükle",
+    "createNew": "Yeni oluştur",
+    "heightFormatMetric": "{{value}} cm",
+    "heightFormatImperial": "{{feet}}' {{inches}}\"",
+    "weightFormatKg": "{{value}} kg",
+    "weightFormatLbs": "{{value}} lbs",
+    "weightFormatG": "{{value}}g",
+    "units": {
+      "g": "g",
+      "oz": "oz"
+    },
+    "eatingPhase": "Beslenme evresi",
+    "description": "Açıklama",
+    "loadMultiplier": "Yük çarpanı",
+    "deleteSuccess": "Başarıyla silindi",
+    "notFound": "Bulunamadı",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
+    "time": {
+      "daily": "Günlük",
+      "weekly": "Haftalık",
+      "monthly": "Aylık"
+    },
+    "appName": "MUSCLOG",
+    "selectIcon": "Simge seç",
+    "selectIconLabel": "Simge seç",
+    "icon": "Simge",
+    "archived": "Arşivlendi",
+    "descriptions": {
+      "none": "Yok"
+    },
+    "duration": {
+      "hoursOnly": "{{hours}}sa",
+      "hoursMinutes": "{{hours}}sa {{minutes}}dk",
+      "minutesOnly": "{{minutes}}dk",
+      "minutesShort": "{{minutes}} dk"
+    },
+    "days": {
+      "label": "Günler",
+      "letter": {
+        "sun": "P",
+        "mon": "P",
+        "tue": "S",
+        "wed": "Ç",
+        "thu": "P",
+        "fri": "C",
+        "sat": "C"
+      },
+      "short": {
+        "sun": "PAZ",
+        "mon": "PZT",
+        "tue": "SAL",
+        "wed": "ÇAR",
+        "thu": "PER",
+        "fri": "CUM",
+        "sat": "CMT"
+      }
+    },
+    "hide": "Gizle",
+    "show": "Göster",
+    "debugDetails": "Hata ayıklama ayrıntıları",
+    "errorMessage": "Hata mesajı",
+    "errorStack": "Hata yığını",
+    "componentStack": "Bileşen yığını",
+    "userAgent": "Kullanıcı aracısı",
+    "app": {
+      "title": "Musclog - Fitness ve beslenme takipçisi"
+    },
+    "nutrition": {
+      "title": "Musclog - Beslenme",
+      "food": {
+        "title": "Musclog - Yiyecek günlüğü"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Antrenman",
+      "workouts": {
+        "title": "Musclog - Antrenmanlar"
+      }
+    },
+    "progress": {
+      "title": "Musclog - İlerleme"
+    },
+    "profile": {
+      "title": "Musclog - Profil"
+    },
+    "settings": {
+      "title": "Musclog - Ayarlar"
+    },
+    "cycle": {
+      "title": "Musclog - Döngü"
+    },
+    "relativeTime": {
+      "now": "az önce",
+      "minutes": "{{value}}dk önce",
+      "hours": "{{value}}sa önce",
+      "days": "{{value}}g önce"
+    },
+    "a11y": {
+      "notifications": "Bildirimler",
+      "editProfile": "Profili düzenle",
+      "previousDay": "Önceki gün",
+      "nextDay": "Sonraki gün",
+      "previousMonth": "Önceki ay",
+      "nextMonth": "Sonraki ay",
+      "openCamera": "Kamerayı aç",
+      "chooseFromGallery": "Galeriden seç",
+      "takePhoto": "Fotoğraf çek",
+      "increase": "Artır",
+      "decrease": "Azalt",
+      "moreInfo": "Daha fazla bilgi",
+      "moreOptions": "Daha fazla seçenek",
+      "add": "Ekle",
+      "dismiss": "Kapat",
+      "remove": "Kaldır",
+      "scanBarcode": "Barkodu tara",
+      "send": "Gönder",
+      "attachFile": "Dosya ekle",
+      "removeImage": "Resmi kaldır",
+      "choosePhoto": "Bir fotoğraf seç",
+      "chooseIcon": "Simge seç",
+      "moveUp": "Yukarı taşı",
+      "moveDown": "Aşağı taşı",
+      "filter": "Filtre",
+      "clearSearch": "Aramayı temizle",
+      "showValue": "Değeri göster",
+      "hideValue": "Değeri gizle"
+    },
+    "externalAssistant": {
+      "copied": "Talimatlar kopyalandı",
+      "copiedPaste": "Talimatlar kopyalandı. Kutu boşsa sohbete yapıştır.",
+      "copy": "Kopyala",
+      "errors": {
+        "empty": "İçe aktarılacak bir şey yok.",
+        "fileRead": "Bu dosya okunamadı. Başka birini dene ya da bunun yerine metni yapıştır."
+      },
+      "fallback": "Uygulama ya da site açılamadı. Talimatlar kopyalandı: ChatGPT ya da Claude'u kendin aç ve yapıştır.",
+      "leaveSection": "1. adım: asistana sor",
+      "openChatgpt": "ChatGPT'yi aç",
+      "openClaude": "Claude'u aç",
+      "pasteJson": "JSON yapıştır",
+      "privacy": "Yalnızca talimatlar kopyalanır. Hakkında hiçbir bilgi ve hiçbir API anahtarı eklenmez.",
+      "share": "Paylaş"
+    },
+    "energyUnit": {
+      "kcal": "kcal",
+      "kj": "kJ"
+    }
+  }
+}

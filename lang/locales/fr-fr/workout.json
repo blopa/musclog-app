@@ -1,0 +1,95 @@
+{
+  "workout": {
+    "title": "Séance",
+    "workouts": {
+      "title": "Séances"
+    },
+    "import": {
+      "characters": "Caractères",
+      "emptyData": "Colle ou saisis les données de ta séance.",
+      "formatInfo": "Colle ou tape ton carnet d'entraînement (par ex. depuis une note ou une application). L'IA l'analysera et créera les séances.",
+      "import": "Importer",
+      "importWorkouts": "Importer des séances",
+      "instructions": "Colle tes données d'entraînement ci-dessous. Formats acceptés : texte libre, listes à puces ou carnets structurés.",
+      "pasteWorkoutDataPlaceholder": "Colle les données d'entraînement ici...",
+      "processing": "Traitement...",
+      "processingData": "Séances importées avec succès.",
+      "processingFailed": "Impossible de traiter les données. Vérifie le format et réessaie.",
+      "supportedFormats": "Formats acceptés"
+    },
+    "sessionOverview": "Aperçu de la séance",
+    "startWorkout": "Commencer la séance",
+    "resumeSession": "Reprendre la séance",
+    "workout": "Séance",
+    "inProgress": "En cours",
+    "type": {
+      "strength": "Force",
+      "cardio": "Cardio",
+      "flexibility": "Souplesse",
+      "calisthenics": "Callisthénie",
+      "other": "Autre",
+      "free": "Libre"
+    },
+    "exercises": "{{count}} exercices",
+    "workoutSequence": "Ordre de la séance",
+    "skipped": "Ignorée",
+    "startFromExercise": {
+      "title": "Commencer à partir d'un exercice",
+      "message": "Veux-tu commencer la séance à partir de {{exerciseName}} ?",
+      "confirm": "Commencer ici",
+      "cancel": "Annuler"
+    },
+    "summary": {
+      "failedToLoad": "Échec du chargement",
+      "noWorkoutId": "Aucun identifiant de séance",
+      "unableToLoad": "Chargement impossible",
+      "failedToGetFeedback": "Impossible d'obtenir un retour. Réessaie.",
+      "healthPrompt": {
+        "title": "Connecter tes données de santé ?",
+        "message": "Maintenant que tu as terminé une séance, Musclog peut lire et écrire des données de santé comme les pas, le poids et les séances.",
+        "confirm": "Connecter",
+        "later": "Peut-être plus tard"
+      }
+    },
+    "muscleGroups": {
+      "chest": "Pectoraux",
+      "back": "Dos",
+      "legs": "Jambes",
+      "shoulders": "Épaules",
+      "arms": "Bras",
+      "core": "Tronc",
+      "abdomen": "Abdominaux",
+      "glutes": "Fessiers",
+      "fullBody": "Corps entier",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "forearms": "Avant-bras",
+      "abs": "Abdos",
+      "quads": "Quadriceps",
+      "hamstrings": "Ischio-jambiers",
+      "calves": "Mollets",
+      "full_body": "Corps entier",
+      "cardio": "Cardio",
+      "other": "Autre"
+    },
+    "exerciseTypes": {
+      "compound": "Polyarticulaire",
+      "isolation": "Isolation",
+      "bodyweight": "Poids du corps",
+      "machine": "Machine",
+      "dumbbell": "Haltère",
+      "barbell": "Barre",
+      "cable": "Câble",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Élastique",
+      "medicine_ball": "Medicine ball",
+      "smith_machine": "Smith machine",
+      "plate_machine": "Machine à disques",
+      "cardio": "Cardio",
+      "stretching": "Étirement",
+      "plyometric": "Pliométrie",
+      "mobility": "Mobilité",
+      "other": "Autre"
+    }
+  }
+}

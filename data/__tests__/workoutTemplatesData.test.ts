@@ -5,11 +5,16 @@ import {
   getWorkoutTemplates,
   workoutTemplates,
 } from '@/data/workoutTemplates';
+import workoutTemplatesDeDe from '@/data/workoutTemplatesDeDe.json';
 import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
 import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
+import workoutTemplatesFrFr from '@/data/workoutTemplatesFrFr.json';
+import workoutTemplatesItIt from '@/data/workoutTemplatesItIt.json';
 import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
+import workoutTemplatesPlPl from '@/data/workoutTemplatesPlPl.json';
 import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
 import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
+import workoutTemplatesTrTr from '@/data/workoutTemplatesTrTr.json';
 import { WORKOUT_TEMPLATE_COPIES_BY_LOCALE } from '@/lang/lang';
 import { equipmentForLocation, SHORT_PLAN_TITLES } from '@/utils/onboardingTraining';
 
@@ -21,6 +26,11 @@ describe('workout template copies', () => {
       'nl-NL': workoutTemplatesNlNl,
       'pt-BR': workoutTemplatesPtBr,
       'ru-RU': workoutTemplatesRuRu,
+      'de-DE': workoutTemplatesDeDe,
+      'fr-FR': workoutTemplatesFrFr,
+      'it-IT': workoutTemplatesItIt,
+      'pl-PL': workoutTemplatesPlPl,
+      'tr-TR': workoutTemplatesTrTr,
     });
   });
 
@@ -59,6 +69,11 @@ describe('workout template copies', () => {
     ['nl-NL', workoutTemplatesNlNl],
     ['pt-BR', workoutTemplatesPtBr],
     ['ru-RU', workoutTemplatesRuRu],
+    ['de-DE', workoutTemplatesDeDe],
+    ['fr-FR', workoutTemplatesFrFr],
+    ['it-IT', workoutTemplatesItIt],
+    ['pl-PL', workoutTemplatesPlPl],
+    ['tr-TR', workoutTemplatesTrTr],
   ])('keeps the %s catalog aligned with the workout definitions', (_locale, copies) => {
     expect(copies).toHaveLength(workoutTemplates.length);
     expect(copies.every(({ title }) => title.trim().length > 0)).toBe(true);
@@ -77,6 +92,11 @@ describe('workout template copies', () => {
     ['nl-NL', '5-daagse hypertrofiesplit', 'Bovenlichaam A'],
     ['pt-BR', 'Divisão de hipertrofia de 5 dias', 'Superior A'],
     ['ru-RU', '5-дневный сплит на гипертрофию', 'Верх A'],
+    ['de-DE', '5-Tage-Hypertrophie-Split', 'Oberkörper A'],
+    ['fr-FR', 'Split hypertrophie sur 5 jours', 'Haut A'],
+    ['it-IT', 'Split ipertrofia 5 giorni', 'Parte superiore A'],
+    ['pl-PL', 'Podział hipertrofii na 5 dni', 'Góra A'],
+    ['tr-TR', '5 Günlük Hipertrofi Bölümü', 'Üst A'],
   ])('selects localized copies for %s', (locale, expectedTitle, expectedFirstDay) => {
     const templates = getWorkoutTemplates(locale);
 
@@ -93,7 +113,7 @@ describe('workout template copies', () => {
   });
 
   it('falls back to English copies for unsupported locales', () => {
-    expect(getWorkoutTemplates('fr-FR')[0].title).toBe(workoutTemplatesEnUs[0].title);
+    expect(getWorkoutTemplates('ja-JP')[0].title).toBe(workoutTemplatesEnUs[0].title);
   });
 });
 

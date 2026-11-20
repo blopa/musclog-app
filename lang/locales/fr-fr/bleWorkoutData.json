@@ -1,0 +1,21 @@
+{
+  "bleWorkoutData": {
+    "sectionTitle": "Données des capteurs",
+    "title": "Fichiers BLE des séances",
+    "subtitle": "Gère les enregistrements de mouvement des capteurs de tes séries",
+    "modalTitle": "Fichiers BLE des séances",
+    "noFiles": "Aucun enregistrement de capteur pour l'instant",
+    "noFilesHint": "Lance le suivi d'une série pendant une séance pour créer des enregistrements",
+    "shareAll": "Tout partager",
+    "deleteAll": "Tout supprimer",
+    "deleteAllConfirmTitle": "Supprimer tous les enregistrements",
+    "deleteAllConfirmMessage": "Cela supprimera définitivement les {{count}} enregistrements.",
+    "refresh": "Actualiser",
+    "share": "Partager",
+    "delete": "Supprimer",
+    "deleteConfirmTitle": "Supprimer l'enregistrement",
+    "deleteConfirmMessage": "Cela supprimera définitivement l'enregistrement de {{name}}.",
+    "samples": "{{count}} échantillons",
+    "setLabel": "Série {{number}}"
+  }
+}

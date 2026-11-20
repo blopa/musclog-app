@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Kalkulator węglowodanów netto",
+    "intro": "Przelicz węglowodany i błonnik z etykiety żywieniowej na węglowodany całkowite i netto i zobacz, którego z nich oczekuje twój tracker.",
+    "form": {
+      "region": "Skąd jest etykieta",
+      "us": "Etykieta z USA lub Kanady: węglowodany zawierają błonnik",
+      "eu": "Etykieta z UE, Wielkiej Brytanii lub podobna: węglowodany nie zawierają błonnika",
+      "carbs": "Węglowodany na etykiecie",
+      "fiber": "Błonnik pokarmowy na etykiecie"
+    },
+    "problems": {
+      "carbs": "Wpisz węglowodany jako liczbę gramów.",
+      "fiber": "Wpisz błonnik jako liczbę gramów albo 0.",
+      "fiberTooHigh": "Na etykiecie z USA lub Kanady węglowodany całkowite już zawierają błonnik, więc błonnik nie może być większy niż ta suma. Sprawdź obie liczby."
+    },
+    "results": {
+      "net": "Węglowodany netto",
+      "netNote": "Węglowodany bez błonnika: przyswajalna część, którą liczą trackery netto.",
+      "total": "Węglowodany całkowite",
+      "totalNote": "Węglowodany z błonnikiem: to, co drukują etykiety z USA i co Musclog zapisuje dla produktu.",
+      "logTitle": "Co wpisać",
+      "logTotal": "Tracker liczący węglowodany całkowite: wpisz {{value}}.",
+      "logNet": "Tracker liczący węglowodany netto: wpisz {{value}}."
+    },
+    "notes": {
+      "sugarAlcohols": "Alkohole cukrowe (poliole, np. erytrytol czy maltitol) nie są tu odejmowane. Niektórzy odejmują je też od węglowodanów netto; to narzędzie tego nie robi, więc wynik netto może być dla produktów je zawierających nieco zawyżony.",
+      "musclog": "Musclog zapisuje węglowodany całkowite łącznie z błonnikiem, tak jak liczą je etykiety z USA. Produkty z źródeł unijnych są przeliczane przy zapisie, więc dziennik ma jedno znaczenie dla węglowodanów."
+    },
+    "sections": [
+      {
+        "title": "Dlaczego etykiety się różnią",
+        "body": [
+          "W UE deklarowane węglowodany to te, które organizm metabolizuje, a błonnik jest podawany w osobnym wierszu. W USA i Kanadzie wiersz węglowodanów całkowitych już zawiera błonnik pokarmowy, więc ten sam produkt może mieć inne liczby węglowodanów na obu etykietach."
+        ]
+      },
+      {
+        "title": "Całkowite i netto",
+        "body": [
+          "Węglowodany całkowite zawierają błonnik. Węglowodany netto to całkowite minus błonnik, czyli część trawiona przez organizm. Strona pokazuje oba, bo niektóre trackery pytają o jedno, a niektóre o drugie."
+        ]
+      },
+      {
+        "title": "Czego nie obsługujemy",
+        "body": [
+          "Alkoholi cukrowych się nie odejmuje, a strona nie szacuje błonnika dla produktów bez etykiety."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "Rozporządzenie UE nr 1169/2011 o informacji o żywności dla konsumentów (załącznik I)",
+      "fda": "FDA, A Food Labeling Guide (znakowanie wartości odżywczych)"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "workTimer": {
+    "label": "Timer einstellen",
+    "open": "Timer einstellen",
+    "start": "Start",
+    "stop": "Stopp",
+    "close": "Schließen",
+    "minus5": "-5 s",
+    "plus5": "+5 s"
+  }
+}

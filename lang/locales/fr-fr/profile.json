@@ -1,0 +1,48 @@
+{
+  "profile": {
+    "header": {
+      "title": "Profil"
+    },
+    "goal": "Objectif",
+    "currentStats": "Statistiques actuelles",
+    "history": "Historique",
+    "management": "Gestion",
+    "loading": "Chargement...",
+    "syncing": {
+      "healthKit": "Synchronisation avec HealthKit..."
+    },
+    "bmiStatus": {
+      "underweight": "Insuffisance pondérale",
+      "normal": "Poids normal",
+      "overweight": "Surpoids",
+      "obese": "Obésité"
+    },
+    "gender": {
+      "male": "Homme",
+      "female": "Femme",
+      "other": "Autre"
+    },
+    "managementItems": {
+      "editPersonal": "Modifier les infos personnelles",
+      "editPersonalDesc": "Mettre à jour ton nom, ton avatar et tes données personnelles",
+      "editFitness": "Modifier les données sportives",
+      "editFitnessDesc": "Mettre à jour tes objectifs et préférences sportives",
+      "appPreferences": "Préférences de l'application",
+      "appPreferencesDesc": "Personnaliser les réglages et préférences de l'application",
+      "aiUpdate": "Mettre à jour avec l'IA",
+      "aiUpdateDesc": "Dis à une IA ce qui a changé et vérifie avant d'enregistrer"
+    },
+    "stats": {
+      "weight": "Poids",
+      "height": "Taille",
+      "bodyFat": "Masse grasse",
+      "bmi": "IMC",
+      "age": "Âge",
+      "gender": "Sexe"
+    },
+    "weightPrediction": {
+      "title": "Poids prévu",
+      "subtitle": "Estimé à partir de la TDEE et de ton suivi calorique depuis la dernière pesée"
+    }
+  }
+}

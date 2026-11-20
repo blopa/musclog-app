@@ -1,0 +1,29 @@
+{
+  "emptyStates": {
+    "workouts": {
+      "title": "Noch keine Trainings",
+      "description": "Plane deine Routine und erfasse hier dein erstes Training.",
+      "buttonLabel": "Erstelle dein erstes Training"
+    },
+    "foods": {
+      "title": "Kein Essen erfasst",
+      "description": "Erfasse deine Mahlzeiten, um deine Ernährungsziele im Blick zu behalten. Dein Körper wird es dir danken.",
+      "buttonLabel": "Mahlzeit erfassen"
+    },
+    "workout": {
+      "title": "Noch keine Trainings",
+      "description": "Bereit für deine erste Einheit?",
+      "button": "Planen"
+    },
+    "food": {
+      "title": "Heute nichts erfasst",
+      "description": "Heute erfasste Mahlzeiten erscheinen hier.",
+      "button": "Erfassen"
+    },
+    "notes": {
+      "title": "Noch keine Notizen",
+      "description": "Notiere, was du kochst, etwa 70 g Brokkoli oder eine Rezeptidee, und verfolge es, wenn du bereit bist.",
+      "buttonLabel": "Schreibe deine erste Notiz"
+    }
+  }
+}

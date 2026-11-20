@@ -1,0 +1,21 @@
+{
+  "bleWorkoutData": {
+    "sectionTitle": "Sensör verisi",
+    "title": "BLE antrenman dosyaları",
+    "subtitle": "Antrenman setlerinden alınan sensör hareket kayıtlarını yönet",
+    "modalTitle": "BLE antrenman dosyaları",
+    "noFiles": "Henüz sensör kaydı yok",
+    "noFilesHint": "Kayıt oluşturmak için antrenman sırasında bir seti takip etmeye başla",
+    "shareAll": "Tümünü paylaş",
+    "deleteAll": "Tümünü sil",
+    "deleteAllConfirmTitle": "Tüm kayıtları sil",
+    "deleteAllConfirmMessage": "Bu işlem {{count}} kaydın tamamını kalıcı olarak silecek.",
+    "refresh": "Yenile",
+    "share": "Paylaş",
+    "delete": "Sil",
+    "deleteConfirmTitle": "Kaydı sil",
+    "deleteConfirmMessage": "Bu işlem {{name}} için kaydı kalıcı olarak silecek.",
+    "samples": "{{count}} örnek",
+    "setLabel": "Set {{number}}"
+  }
+}

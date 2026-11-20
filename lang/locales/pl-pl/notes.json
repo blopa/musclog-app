@@ -1,0 +1,49 @@
+{
+  "notes": {
+    "title": "Notatki",
+    "sections": {
+      "latest": "Najnowsze",
+      "earlier": "Wcześniejsze"
+    },
+    "screenMenu": {
+      "title": "Notatki",
+      "subtitle": "Zapisz teraz, zapisz w dzienniku później",
+      "create": "Utwórz nową notatkę",
+      "createDescription": "Zapisz, co zrobiłeś albo co zjadłeś"
+    },
+    "noteMenu": {
+      "title": "Opcje notatki",
+      "edit": "Edytuj",
+      "editDescription": "Zmień tytuł lub treść",
+      "duplicate": "Powiel",
+      "duplicateDescription": "Skopiuj na początek listy",
+      "track": "Zapisz to",
+      "trackDescription": "Wyślij do trenera, żeby zapisał jedzenie",
+      "delete": "Usuń",
+      "deleteDescription": "Trwale usuń tę notatkę"
+    },
+    "form": {
+      "createTitle": "Nowa notatka",
+      "editTitle": "Edytuj notatkę",
+      "titleLabel": "Tytuł (opcjonalnie)",
+      "titlePlaceholder": "np. przygotowanie obiadu",
+      "bodyLabel": "Notatka",
+      "bodyPlaceholder": "np. 70 g brokułów, 120 g piersi z kurczaka",
+      "bodyRequired": "Przed zapisem coś wpisz",
+      "submit": "Zapisz notatkę"
+    },
+    "deleteConfirm": {
+      "title": "Usunąć notatkę?",
+      "message": "Ta notatka zostanie trwale usunięta. Tej operacji nie można cofnąć.",
+      "confirm": "Usuń"
+    },
+    "createSuccess": "Zapisano notatkę",
+    "createError": "Nie udało się zapisać notatki",
+    "updateSuccess": "Zaktualizowano notatkę",
+    "updateError": "Nie udało się zaktualizować notatki",
+    "duplicateSuccess": "Powielono notatkę",
+    "duplicateError": "Nie udało się powielić notatki",
+    "deleteSuccess": "Usunięto notatkę",
+    "deleteError": "Nie udało się usunąć notatki"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "nutrition": {
+    "title": "Ernährung",
+    "food": {
+      "title": "Essen"
+    },
+    "analyze": "Analysieren",
+    "calories": "Kalorien",
+    "carbs": "Kohlenhydrate",
+    "characters": "Zeichen",
+    "confirmAndSave": "Bestätigen & speichern",
+    "createCustom": "Eigene erstellen",
+    "createCustomDesc": "Nährwertdetails manuell hinzufügen",
+    "dailyTotals": "Tagessummen",
+    "dateLabel": "Datum",
+    "emptyData": "Bitte füge Nährwertdaten ein oder gib sie ein.",
+    "emptyDescription": "Bitte gib eine Beschreibung der Mahlzeit ein.",
+    "entriesCount": "Einträge",
+    "example": "Beispiel",
+    "fat": "Fett",
+    "fiber": "Ballaststoffe",
+    "foodNotFound": "Lebensmittel nicht gefunden",
+    "foodNotFoundDescription": "Wir konnten dieses Lebensmittel nicht in unserer Datenbank finden. Was möchtest du tun?",
+    "import": "Importieren",
+    "importFormatInfo": "Füge dein Mahlzeitenprotokoll ein oder tippe es (z. B. aus einer Notiz oder App). Die KI liest es aus und schlägt Einträge vor.",
+    "importInstructions": "Füge deine Ernährungsdaten unten ein. Unterstützt: Freitext, Aufzählungen oder strukturierte Protokolle.",
+    "importNutrition": "Ernährung importieren",
+    "logPastDay": "Einen vergangenen Tag erfassen",
+    "mealDescriptionPlaceholder": "z. B. Haferflocken mit Banane, 2 Eier, Kaffee mit Milch",
+    "pasteNutritionDataPlaceholder": "Ernährungsdaten hier einfügen …",
+    "processing": "Wird verarbeitet …",
+    "processingData": "Ernährungsdaten erfolgreich importiert.",
+    "processingDescription": "Beschreibung erfolgreich verarbeitet.",
+    "processingFailed": "Die Daten konnten nicht verarbeitet werden. Bitte prüfe das Format und versuche es erneut.",
+    "protein": "Protein",
+    "retrospectiveExample": "z. B. Frühstück: Haferflocken und Banane. Mittag: Hähnchensalat. Abendessen: Nudeln mit Gemüse.",
+    "retrospectiveInstructions": "Beschreibe mit deinen eigenen Worten, was du an diesem Tag gegessen hast. Die KI schätzt Portionen und Nährstoffe.",
+    "review": "Prüfen",
+    "searchAgain": "Erneut suchen",
+    "searchAgainDesc": "Versuche einen anderen Suchbegriff",
+    "tryAICamera": "KI-Kamera testen",
+    "tryAICameraDesc": "Scanne deine Mahlzeit für eine sofortige Erkennung",
+    "supportedFormats": "Unterstützte Formate",
+    "checkin": {
+      "title": "Wöchentlicher Check-in",
+      "noCheckinFound": "Keine ausstehenden Check-ins gefunden.",
+      "currentStatus": "Aktueller Stand",
+      "onTrack": "Im Plan",
+      "ahead": "Voraus",
+      "behind": "Hinterher",
+      "noCheckinFoundDesc": "Heute ist kein Check-in geplant. Komm am nächsten geplanten Check-in-Tag wieder.",
+      "headline": {
+        "onTrack": "Im Plan",
+        "ahead": "Vor dem Plan",
+        "behind": "Luft nach oben"
+      },
+      "subtext": {
+        "onTrack": "Du hast diese Woche ein gleichmäßiges Tempo gehalten. Bleib auf dem Weg zu deinen Zielen.",
+        "ahead": "Du bist deinen Gewichtszielen voraus! Starke Beständigkeit.",
+        "behind": "Deine Werte schwankten diese Woche. Regelmäßiges Erfassen gleicht das wieder aus."
+      },
+      "weightTrend": "Gewichtstrend",
+      "target": "Ziel",
+      "targetShort": "Ziel: {{value}} %",
+      "weeklyBreakdown": "Wochenübersicht",
+      "weekProgress": "Woche {{current}} von {{total}}",
+      "summaryIntro": "Du wolltest {{target}}/Tag, hast aber im Schnitt",
+      "summaryOutro": "Trotz des Ergebnisses hast du",
+      "workoutsCount": "Trainings",
+      "noWorkouts": "keine Trainings",
+      "withHighIntensity": "mit hoher Intensität absolviert.",
+      "avgIntake": "Ø Aufnahme",
+      "consistency": "Beständigkeit",
+      "rate": "Quote",
+      "avgBodyFat": "Ø Körperfett",
+      "activeMinutes": "Aktive Minuten",
+      "vsLastWeek": "{{prefix}}{{value}} % gegenüber letzter Woche",
+      "adherence": "Wöchentliche Einhaltung",
+      "summary": "Du wolltest {{targetKcal}}/Tag, hast aber im Schnitt {{actualKcal}}/Tag gegessen. Du hast {{workouts}} Trainings absolviert.",
+      "weightComparison": "Gewicht: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "Du hast diese Woche weniger als 4-mal dein Gewicht erfasst. Die Durchschnittswerte sind dann vielleicht ungenauer.",
+      "keepMacros": "Meine aktuellen Makros beibehalten",
+      "readjust": "Plan anpassen",
+      "nextMilestones": "Nächster Meilenstein",
+      "history": "Verlauf",
+      "weekTitle": "Rückblick Woche {{number}}",
+      "prepareNow": "Jetzt vorbereiten",
+      "noMilestones": "Keine anstehenden Check-ins. Richte dein Ernährungsziel ein, um loszulegen.",
+      "noHistory": "Noch keine abgeschlossenen Check-ins.",
+      "selectYear": "Nach Jahr filtern",
+      "notEnoughDataWarning": "Diese Woche wurden zu wenige Daten erfasst. Die Ergebnisse könnten ungenau sein.",
+      "sparseTrendWarning": "Dein Trend ist verfügbar, aber es gibt nicht genug Wägungen oder Ernährungsprotokolle für einen verlässlichen Wochen-Check-in.",
+      "status": {
+        "pending": "Ausstehend",
+        "ahead": "Voraus",
+        "onTrack": "Im Plan",
+        "behind": "Hinterher",
+        "descriptions": {
+          "pending": "Check-in noch nicht abgeschlossen",
+          "ahead": "Fortschritt vor dem Ziel",
+          "onTrack": "Fortschritt im Ziel",
+          "behind": "Fortschritt hinter dem Ziel"
+        }
+      }
+    },
+    "common": {},
+    "createMeal": {
+      "estimated": "Geschätzt",
+      "totalNutrition": "Gesamte Nährwerte"
+    },
+    "macros": {
+      "protein": "Protein",
+      "carbs": "Kohlenhydrate",
+      "fat": "Fett"
+    },
+    "mealEstimation": {
+      "title": "Mahlzeitenschätzung",
+      "identifiedItems": "Erkannte Lebensmittel",
+      "addItem": "Eintrag hinzufügen",
+      "confirmAndLog": "Mahlzeit bestätigen & erfassen",
+      "retake": "Neu aufnehmen",
+      "logged": "Mahlzeit erfasst",
+      "logError": "Diese Mahlzeit konnte nicht erfasst werden. Bitte versuche es noch einmal."
+    },
+    "index": {
+      "handleSaveCustomFood": "Eigenes Lebensmittel erfolgreich gespeichert."
+    },
+    "manageFoodData": {
+      "title": "Ernährungsprotokoll",
+      "searchPlaceholder": "Ernährungsprotokolle suchen …",
+      "noLogs": "Noch keine Ernährungsprotokolle",
+      "noLogsDesc": "Beginne, deine Mahlzeiten zu erfassen, dann siehst du sie hier",
+      "endOfHistory": "Ende des Ernährungsprotokolls",
+      "foodOptions": "Optionen für Lebensmittel",
+      "editFoodEntry": "Eintrag bearbeiten",
+      "editFoodEntryDesc": "Die Lebensmitteldetails ändern",
+      "duplicateEntry": "Eintrag duplizieren",
+      "duplicateEntryDesc": "Eine Kopie dieses Eintrags erstellen",
+      "deleteEntry": "Eintrag löschen",
+      "deleteEntryDesc": "Diesen Lebensmitteleintrag entfernen"
+    }
+  }
+}

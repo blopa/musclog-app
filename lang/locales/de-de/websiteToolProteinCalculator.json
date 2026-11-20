@@ -1,0 +1,70 @@
+{
+  "websiteToolProteinCalculator": {
+    "title": "Proteinrechner",
+    "intro": "Gib dein Körpergewicht, deine Größe und dein Ziel ein, um ein tägliches Proteinziel in Gramm zu erhalten, mit den Gramm pro Kilogramm, auf denen es beruht.",
+    "form": {
+      "weight": "Körpergewicht",
+      "height": "Größe",
+      "goal": "Hauptziel",
+      "deficit": "Isst du mit einem Kaloriendefizit?",
+      "deficitYes": "Ja, ich reduziere",
+      "deficitNo": "Nein",
+      "goalWeight": "Zielgewicht (optional)",
+      "goalWeightHint": "Wenn du eines festlegst, basiert das Protein darauf statt auf deinem aktuellen Gewicht.",
+      "cm": "cm",
+      "inches": "in"
+    },
+    "goals": {
+      "hypertrophy": "Muskeln aufbauen",
+      "strength": "Stärker werden",
+      "general": "Allgemeine Gesundheit",
+      "endurance": "Ausdauer",
+      "weightLoss": "Gewicht verlieren"
+    },
+    "problems": {
+      "weight": "Gib ein Körpergewicht im Bereich ein, den der Rechner akzeptiert.",
+      "height": "Gib eine Größe im Bereich ein, den der Rechner akzeptiert.",
+      "goalWeight": "Gib ein Zielgewicht im Bereich ein, den der Rechner akzeptiert, oder lass das Feld leer."
+    },
+    "results": {
+      "grams": "Protein pro Tag",
+      "gramsNote": "{{perKg}} von {{reference}}",
+      "tableTitle": "Gramm pro Kilogramm nach Ziel",
+      "tableGoal": "Ziel",
+      "tablePerKg": "Pro kg Körpergewicht"
+    },
+    "notes": {
+      "capped": "Dein Gewicht liegt über dem Referenzgewicht von {{reference}} (BMI 30 bei deiner Größe), deshalb rechnet die Angabe damit. Dein Gewicht ist {{weight}}. Ohne Zielgewicht begrenzt die Grenze, dass das Protein nicht mit der Fettmasse wächst.",
+      "deficit": "Essen im Defizit hebt das Minimum auf {{value}}, weil Protein hilft, die Muskeln zu erhalten, während du Fett verlierst.",
+      "bodyweight": "Diese Angabe basiert auf dem Körpergewicht. Der Rechner fragt nicht nach Körperfett und kann daher Muskeln nicht von Fett unterscheiden.",
+      "spread": "Zählt wird die Tagessumme. Verteile sie auf deine Mahlzeiten, wie es dir passt, in so vielen oder so wenigen, wie du willst.",
+      "medical": "Allgemeine Informationen, keine medizinische Beratung. Wenn du eine Nierenerkrankung oder eine andere Erkrankung hast, die Protein betrifft, frag vor einer Umstellung deiner Zufuhr eine Fachperson."
+    },
+    "sections": [
+      {
+        "title": "So entsteht die Angabe",
+        "body": [
+          "Protein wird je Kilogramm Körpergewicht für dein Ziel in Gramm festgelegt: dieselbe Tabelle, die die Musclog-App für ihre täglichen Ziele verwendet. Im Defizit steigt sie auf mindestens 2,0 g/kg.",
+          "Ein Prozentsatz der Kalorien wird nicht verwendet, weil das Protein fallen lässt, sobald du weniger isst, genau dann, wenn der Muskelerhalt am wichtigsten ist."
+        ]
+      },
+      {
+        "title": "Warum das Gewicht begrenzt wird",
+        "body": [
+          "Ohne Zielgewicht nutzt die Angabe dein aktuelles Gewicht, aber nie mehr als das Gewicht bei BMI 30 für deine Größe. Darüber ist die zusätzliche Masse meist kein mageres Gewebe, und Protein für all das wäre mehr als nötig. Ein Zielgewicht ersetzt die Grenze."
+        ]
+      },
+      {
+        "title": "Was die Forschung sagt",
+        "body": [
+          "Morton et al. (2018) haben Krafttrainingsstudien zusammengefasst und festgestellt, dass der Muskelzuwachs bei etwa 1,6 g/kg täglich ein Plateau erreicht, mit einer oberen Konfidenzgrenze nahe 2,2 g/kg. Die Werte für Allgemein und Hypertrophie liegen in diesem Bereich.",
+          "Helms et al. (2014) haben Protein für Menschen untersucht, die während des Trainings abnehmen, und das Minimum von 2,0 g/kg im Defizit stammt aus dieser Literatur. Es ist eine Einstellung von Musclog, kein gemessenes Ergebnis für dich."
+        ]
+      }
+    ],
+    "sources": {
+      "morton": "Morton et al. (2018), Metaanalyse zu Proteinergänzung und Zuwächsen im Krafttraining",
+      "helms": "Helms et al. (2014), Proteinzufuhr bei Energiemangel für Physique-Athleten"
+    }
+  }
+}

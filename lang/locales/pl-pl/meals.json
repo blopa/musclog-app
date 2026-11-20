@@ -1,0 +1,83 @@
+{
+  "meals": {
+    "title": "Moje posiłki",
+    "filters": {
+      "all": "Wszystkie",
+      "highProtein": "Dużo białka",
+      "breakfast": "Śniadanie",
+      "lunch": "Obiad"
+    },
+    "tags": {
+      "highProtein": "Dużo białka",
+      "ketoFriendly": "Dobre na keto",
+      "vegetarian": "Wegetariańskie",
+      "breakfast": "Śniadanie",
+      "lunch": "Obiad",
+      "dinner": "Kolacja",
+      "snack": "Przekąska"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} posiłek",
+      "mealCount_other": "{{count}} posiłków",
+      "view": "Zobacz",
+      "viewBreakfast": "Zobacz śniadanie",
+      "viewLunch": "Zobacz obiad",
+      "viewDinner": "Zobacz kolację",
+      "viewSnack": "Zobacz przekąskę",
+      "tracked": "Zapisano"
+    },
+    "untitledMeal": "Posiłek bez nazwy",
+    "searchPlaceholder": "Szukaj posiłków...",
+    "loadingMeals": "Wczytywanie posiłków...",
+    "noMealsFound": "Nie znaleziono posiłków",
+    "noMealsYet": "Brak posiłków",
+    "noMealsMatch": "Żaden posiłek nie pasuje do „{{query}}”",
+    "createFirstMeal": "Utwórz pierwszy posiłek, żeby zacząć",
+    "tryDifferentFilter": "Spróbuj innego filtra",
+    "loadingMore": "Wczytywanie kolejnych...",
+    "loadMore": "Wczytaj więcej",
+    "customMeal": "Własny posiłek",
+    "createdByYou": "Utworzony przez ciebie",
+    "logMeal": "Zapisz posiłek",
+    "mealType": "Rodzaj posiłku",
+    "history": {
+      "unknownMeal": "Nieznany posiłek"
+    },
+    "deleteItem": {
+      "title": "Usuń pozycję",
+      "message": "Na pewno usunąć tę pozycję?",
+      "cancel": "Anuluj",
+      "delete": "Usuń"
+    },
+    "unknownFood": "Nieznany",
+    "generateAI": {
+      "title": "Wygeneruj posiłki z AI",
+      "describeLabel": "Opisz swoje preferencje",
+      "preferencesLabel": "Preferencje",
+      "placeholder": "np. posiłki bogate w białko na masę, lubię kurczaka i ryż, unikam nabiału...",
+      "applyLabel": "Wygeneruj posiłki",
+      "successMessage": "Utworzono posiłek.",
+      "errorMessage": "Nie udało się wygenerować posiłków. Spróbuj ponownie.",
+      "aiNotConfigured": "Funkcje AI nie są skonfigurowane. Dodaj klucz API Gemini lub OpenAI w ustawieniach.",
+      "generating": "Generowanie posiłków..."
+    },
+    "dynamicCreator": {
+      "title": "Kreator posiłku",
+      "saveMealTitle": "Zapisz posiłek",
+      "noIngredients": "Brak składników.\nDotknij „Dodaj produkt”, żeby zacząć budować posiłek.",
+      "addFood": "Dodaj produkt",
+      "finishAndSave": "Zakończ i zapisz",
+      "saveButton": "Zapisz posiłek",
+      "totalNutrition": "Łączne wartości odżywcze",
+      "ingredientsSummary_one": "{{count}} składnik",
+      "ingredientsSummary_other": "Składniki: {{count}}",
+      "mealNameLabel": "Nazwa posiłku",
+      "mealNamePlaceholder": "np. miska po treningu",
+      "mealNameRequired": "Podaj nazwę posiłku",
+      "descriptionLabel": "Opis (opcjonalnie)",
+      "descriptionPlaceholder": "np. posiłek bogaty w białko z kurczakiem i ryżem",
+      "nutritionBasisLabel": "Podstawa wartości odżywczych",
+      "savedSuccess": "Zapisano posiłek."
+    }
+  }
+}

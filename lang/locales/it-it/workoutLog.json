@@ -1,0 +1,24 @@
+{
+  "workoutLog": {
+    "manageWorkoutLogData": {
+      "deleteLogWarning": "Sei sicuro di voler eliminare questo diario di allenamento? L'operazione non può essere annullata.",
+      "title": "Gestisci i dati del diario di allenamento",
+      "searchPlaceholder": "Cerca sessioni di allenamento...",
+      "noWorkoutLogs": "Nessun diario di allenamento ancora",
+      "noWorkoutLogsDesc": "Completa gli allenamenti per vederli qui",
+      "endOfHistory": "Fine della cronologia degli allenamenti",
+      "workoutLogOptions": "Opzioni allenamento",
+      "editWorkoutLog": "Modifica allenamento",
+      "editWorkoutLogDesc": "Modifica i dettagli dell'allenamento",
+      "duplicateWorkoutLog": "Duplica allenamento",
+      "duplicateWorkoutLogDesc": "Crea una copia di questo allenamento",
+      "deleteWorkoutLog": "Elimina allenamento",
+      "deleteWorkoutLogDesc": "Rimuovi questo diario di allenamento",
+      "detailFormat": "{{status}} • {{volume}}",
+      "statusCompleted": "Completato",
+      "statusInProgress": "In corso",
+      "volumeFormat": "{{volume}} {{unit}}",
+      "unknownWorkout": "Allenamento sconosciuto"
+    }
+  }
+}

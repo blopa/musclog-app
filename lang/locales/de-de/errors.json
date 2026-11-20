@@ -1,0 +1,27 @@
+{
+  "errors": {
+    "connectionTimeout": {
+      "title": "Zeitüberschreitung bei der Verbindung",
+      "description": "Wir konnten die Musclog-Server nicht erreichen. Bitte prüfe deine Internetverbindung.",
+      "tryAgain": "Erneut versuchen"
+    },
+    "failedToLoadData": "Daten konnten nicht geladen werden",
+    "somethingWentWrong": "Etwas ist schiefgelaufen",
+    "genericDescription": "Ein unerwarteter Fehler ist aufgetreten.",
+    "reload": "Neu laden",
+    "aiCreditsError": "Das KI-Kontingent ist aufgebraucht. Prüfe deinen API-Schlüssel oder versuche es später erneut.",
+    "aiProcessingError": "Entschuldigung, ich konnte diese Anfrage nicht verarbeiten. Bitte versuche es gleich noch einmal.",
+    "aiProcessingErrorTitle": "Fehler bei der Verarbeitung",
+    "gatewayDailyLimitError": "Das tägliche kostenlose KI-Limit ist erreicht. Versuche es morgen erneut oder füge in den KI-Einstellungen deinen eigenen API-Schlüssel hinzu.",
+    "gatewayDailyLimitErrorTitle": "Tageslimit erreicht",
+    "databaseError": {
+      "title": "Datenbankfehler",
+      "description": "Ein Datenbankfehler ist aufgetreten. Die Fehlerberichte wurden aktiviert, damit das Problem behoben werden kann."
+    },
+    "aiInvalidApiKey": "Dein {{provider}}-API-Schlüssel wurde abgelehnt. Prüfe ihn in den KI-Einstellungen.",
+    "aiTimeout": "Das dauert zu lange. Versuche es erneut.",
+    "aiKeyTestOk": "Schlüssel akzeptiert",
+    "aiKeyTestRejected": "Schlüssel abgelehnt. Prüfe ihn und versuche es erneut.",
+    "aiKeyTestNetwork": "Der Anbieter ist nicht erreichbar. Prüfe deine Verbindung."
+  }
+}

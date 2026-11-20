@@ -1,0 +1,86 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Kalkulator odciążenia",
+    "intro": "Wpisz roboczy ciężar ćwiczenia i liczbę serii, a dostaniesz tydzień odciążenia: o ile lżej iść, ile serii zostawić, jak mocno naciskać i jak długo to trwa.",
+    "form": {
+      "weight": "Ciężar roboczy",
+      "weightHint": "To, co podnosisz w normalnych seriach roboczych.",
+      "sets": "Serie robocze w normalnym tygodniu",
+      "setsHint": "Liczba całkowita, dla tego jednego ćwiczenia.",
+      "equipmentLabel": "Sprzęt",
+      "equipment": {
+        "barbell": "Sztanga",
+        "dumbbell": "Hantle",
+        "machine": "Maszyna lub wyciąg"
+      }
+    },
+    "problems": {
+      "weight": "Wpisz ciężar roboczy jako liczbę większą od 0 i co najwyżej {{max}}.",
+      "sets": "Wpisz serie jako liczbę całkowitą od 1 do {{max}}."
+    },
+    "results": {
+      "title": "Twój tydzień odciążenia",
+      "weight": "Ciężar",
+      "weightNote": "{{percent}} lżej niż twój ciężar roboczy, zaokrąglone w dół do obciążenia, które możesz ustawić. Zachowaj zwykłą liczbę powtórzeń.",
+      "sets": "Serie",
+      "setsValue_one": "{{sets}} seria",
+      "setsValue_few": "{{sets}} serie",
+      "setsValue_many": "{{sets}} serii",
+      "setsValue_other": "{{sets}} serii",
+      "setsNote": "W dół z {{from}}: około dwóch trzecich, nigdy mniej niż jedna.",
+      "effort": "Wysiłek",
+      "effortValue": "{{count}} powtórzeń w zapasie",
+      "effortNote": "Kończ każdą serię, mając jeszcze około {{count}} powtórzeń w zapasie, żeby ten tydzień był celowo lekki.",
+      "duration": "Długość",
+      "durationValue_one": "{{count}} tydzień",
+      "durationValue_few": "{{count}} tygodnie",
+      "durationValue_many": "{{count}} tygodni",
+      "durationValue_other": "{{count}} tygodnia",
+      "durationNote": "Trenuj tak często jak zwykle z lżejszą pracą, potem wróć do zwykłych obciążeń.",
+      "plates": "Talerze po każdej stronie sztangi",
+      "emptyBar": "Pusta sztanga",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "To już najlżejsze obciążenie, jakie ten sprzęt może dać, więc ciężar zostaje. Zamiast tego zmniejsz serie i naciskaj mniej.",
+      "step": "Jeden krok obciążenia dla tego sprzętu to {{step}}."
+    },
+    "table": {
+      "title": "Inne popularne redukcje",
+      "cut": "Redukcja",
+      "weight": "Ciężar",
+      "actual": "Faktycznie lżej o",
+      "musclog": "Redukcja w Musclog",
+      "percent": "{{percent}}",
+      "note": "Musclog bierze 10% albo jeden krok obciążenia, w zależności od tego, co jest większe. Wiersze 10, 15 i 20% to zasady kciuka, a nie wyniki badań. Każdy jest zaokrąglany w dół do obciążenia, które naprawdę da się ustawić, więc przy małym ciężarze może wyjść lżej o więcej, niż prosiłeś."
+    },
+    "sections": [
+      {
+        "title": "Ile lżej i jak długo",
+        "body": [
+          "Odciążenie w aplikacji Musclog to redukcja o 10% albo jeden krok obciążenia, w zależności od tego, co jest większe, zaokrąglona w dół do ciężaru, jaki może zrobić twój sprzęt, i zawsze wyraźnie lżejsza niż teraz. Lżejszy tydzień zachowuje wtedy około dwóch trzecich serii roboczych, utrzymuje planowaną liczbę powtórzeń i celuje w 4 powtórzenia w zapasie. Trwa jeden tydzień. Wszystko to wybory produktowe Musclog, a nie wyniki badań.",
+          "Ćwiczący często używają o 10 do 20% mniejszego ciężaru albo o około jedną trzecią mniej serii przez tydzień. Skorzystaj z tabeli, jeśli poprzedni tydzień był bardzo ciężki i chcesz głębszej redukcji. Zachowaj te same ćwiczenia i tę samą liczbę sesji: odciążenie to lżejszy trening, a nie tydzień wolnego."
+        ]
+      },
+      {
+        "title": "Kiedy odciążenie ma sens",
+        "body": [
+          "Typowe sygnały to ten sam ciężar, który wydaje się znacznie cięższy niż kilka tygodni temu, nieudane powtórzenia, które zwykle robisz, i prawie żadnych powtórzeń w zapasie. Zły sen, stres czy choroba mogą wyglądać tak samo, a odciążenie pomaga też przy nich. Jeśli stawy boli ostro, zgłoś się do lekarza albo fizjoterapeuty.",
+          "Aplikacja odciąża jedno ćwiczenie samodzielnie po dwóch sesjach z rzędu przy tym samym obciążeniu, w których nic nie zostało w zapasie albo nie zrobiono planowanych powtórzeń. Gdy kilka ćwiczeń stoi w miejscu, proponuje lżejszy tydzień w twoim Przeglądzie tygodnia. Ty wybierasz, czy z tego skorzystać."
+        ]
+      },
+      {
+        "title": "Co mówią badania",
+        "body": [
+          "Konsensusowe badanie z 2023 roku wśród trenerów siły i sylwetki zdefiniowało odciążenie jako okres zmniejszonego obciążenia treningowego, mający ograniczyć zmęczenie, wspierać regenerację i przygotować do dalszych treningów. To definicja, a nie zalecenie. Liczby na tej stronie nie pochodzą z niego."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell i in. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos i in. (2016), Nowa skala RPE dla treningu oporowego mierząca powtórzenia w zapasie"
+    },
+    "articles": {
+      "deload": "Tygodnie odciążenia: kiedy są potrzebne i jak je przeprowadzić",
+      "doubleProgression": "Podwójna progresja: najprostszy sposób, by dodawać ciężar co tydzień"
+    }
+  }
+}

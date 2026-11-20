@@ -1,0 +1,8 @@
+{
+  "endWorkout": {
+    "title": "Zakończ trening",
+    "confirmation": "Na pewno zakończyć bieżącą sesję treningową?",
+    "finishAndSave": "Zakończ i zapisz",
+    "finishAndDiscard": "Zakończ i odrzuć"
+  }
+}

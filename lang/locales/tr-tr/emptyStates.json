@@ -1,0 +1,29 @@
+{
+  "emptyStates": {
+    "workouts": {
+      "title": "Henüz antrenman yok",
+      "description": "Rutinini planla ve ilk seansını buraya kaydet.",
+      "buttonLabel": "İlk antrenmanını oluştur"
+    },
+    "foods": {
+      "title": "Yiyecek kaydedilmedi",
+      "description": "Beslenme hedeflerinde kalmak için öğünlerini kaydet. Vücudun sana teşekkür edecek.",
+      "buttonLabel": "Öğününü kaydet"
+    },
+    "workout": {
+      "title": "Henüz antrenman yok",
+      "description": "İlk seansına hazır mısın?",
+      "button": "Planla"
+    },
+    "food": {
+      "title": "Bugün hiçbir şey kaydedilmedi",
+      "description": "Bugün kaydettiğin öğünler burada görünür.",
+      "button": "Kaydet"
+    },
+    "notes": {
+      "title": "Henüz not yok",
+      "description": "Pişirdiğin şeyleri, mesela 70 g brokoli ya da bir tarif fikri gibi, kısaca yaz; hazır olduğunda takip et.",
+      "buttonLabel": "İlk notunu yaz"
+    }
+  }
+}

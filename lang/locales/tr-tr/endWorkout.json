@@ -1,0 +1,8 @@
+{
+  "endWorkout": {
+    "title": "Antrenmanı bitir",
+    "confirmation": "Mevcut antrenman seansını bitirmek istediğinden emin misin?",
+    "finishAndSave": "Bitir ve kaydet",
+    "finishAndDiscard": "Bitir ve at"
+  }
+}

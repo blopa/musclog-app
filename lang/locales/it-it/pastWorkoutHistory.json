@@ -1,0 +1,58 @@
+{
+  "pastWorkoutHistory": {
+    "title": "Storico degli allenamenti",
+    "searchPlaceholder": "Cerca sessioni...",
+    "noWorkoutsFound": "Nessun allenamento trovato con questa ricerca.",
+    "noWorkoutHistory": "Nessuno storico degli allenamenti ancora.",
+    "noWorkoutsInRange": "Nessun allenamento in questo intervallo di date. Prova ad ampliare il filtro.",
+    "loadMore": "Carica altri",
+    "loadingMore": "Caricamento...",
+    "stats": {
+      "duration": "Durata",
+      "volume": "Volume",
+      "calories": "Calorie",
+      "distance": "Distanza",
+      "pace": "Ritmo"
+    },
+    "prBadge": {
+      "singular": "{{count}} PR",
+      "plural": "{{count}} PR"
+    },
+    "filters": {
+      "title": "Filtra allenamenti",
+      "workoutType": "Tipo di allenamento",
+      "minDuration": "Durata minima",
+      "reset": "Reimposta",
+      "applyFilters": "Applica filtri",
+      "durationFormats": {
+        "zero": "0m",
+        "minutes": "{{minutes}}m",
+        "minutesPlus": "{{minutes}}+ min",
+        "max": "120m+"
+      },
+      "workoutTypes": {
+        "all": "Tutti i tipi",
+        "strength": "Forza",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "Intervallo di date",
+        "30days": "Ultimi 30 giorni",
+        "90days": "Ultimi 90 giorni",
+        "allTime": "Tutto il periodo"
+      },
+      "muscleGroups": {
+        "title": "Gruppo muscolare (selezione multipla)",
+        "chest": "Petto",
+        "back": "Schiena",
+        "legs": "Gambe",
+        "shoulders": "Spalle",
+        "arms": "Braccia",
+        "core": "Core",
+        "fullBody": "Tutto il corpo"
+      }
+    }
+  }
+}

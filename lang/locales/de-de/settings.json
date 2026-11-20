@@ -1,0 +1,690 @@
+{
+  "settings": {
+    "title": "Einstellungen",
+    "groups": {
+      "you": "Du",
+      "app": "App",
+      "training": "Training",
+      "nutritionHealth": "Ernährung und Gesundheit",
+      "ai": "KI",
+      "data": "Daten",
+      "about": "Über"
+    },
+    "basicSettings": {
+      "title": "Profil und Einheiten",
+      "subtitle": "Profil, Einheiten und Einstellungen",
+      "localization": "Sprache und Region",
+      "language": "Sprache",
+      "languageSubtitle": "Bevorzugte Sprache wählen",
+      "integrations": "Integrationen",
+      "connectHealthData": "Gesundheitsdaten verbinden",
+      "readHealthData": "Gesundheitsdaten lesen",
+      "writeHealthData": "Gesundheitsdaten schreiben",
+      "healthData": "Gesundheitsdaten",
+      "healthDataSubtitle": "Trainings und Körperwerte synchronisieren",
+      "healthDataPrivacy": "Deine Gesundheitsdaten werden nur lokal gespeichert.",
+      "syncNow": "Jetzt synchronisieren",
+      "syncing": "Synchronisiere...",
+      "foodSearchSource": "Quelle für die Lebensmittelsuche",
+      "foodSearchBoth": "Alle",
+      "foodSearchBothDescription": "Open Food Facts, USDA und Musclog durchsuchen",
+      "foodSearchOpenFoodFacts": "Open Food Facts",
+      "foodSearchOpenFoodFactsDescription": "Quelloffene Lebensmitteldatenbank",
+      "foodSearchUSDA": "USDA",
+      "foodSearchUSDADescription": "Datenbank des US-Landwirtschaftsministeriums",
+      "foodSearchMusclog": "Musclog",
+      "foodSearchMusclogDescription": "Musclog-Barcode-Datenbank (nur Barcode-Scan)",
+      "foodSearchNone": "Keine",
+      "foodSearchNoneDescription": "Nur in deiner lokalen Datenbank suchen",
+      "energyUnit": "Energieeinheit",
+      "energyUnitKcal": "Kilokalorien",
+      "energyUnitKj": "Kilojoule",
+      "energyUnitHint": "Ändert, wie Energie angezeigt und eingegeben wird. Deine Daten bleiben in Kilokalorien gespeichert."
+    },
+    "migration": {
+      "title": "Datenmigration",
+      "description": "Daten aus der alten Datenbank in die neue WatermelonDB importieren",
+      "checkMigrationData": "Migrationsdaten prüfen",
+      "migrating": "Migriere...",
+      "importData": "Daten importieren",
+      "summary": "Migrationsübersicht:",
+      "records": "Einträge",
+      "migrated": "migriert",
+      "tablesFound": "Gefundene Tabellen:",
+      "successful": "Migration abgeschlossen",
+      "failed": "Migration fehlgeschlagen",
+      "error": "Fehler: {{error}}",
+      "clickToCheck": "Tippe auf „Migrationsdaten prüfen“, um zu sehen, was migriert werden kann",
+      "resetMigration": "Migration zurücksetzen",
+      "summaryItems": {
+        "fitnessGoals": "Fitnessziele",
+        "userMetrics": "Körperwerte",
+        "users": "Nutzer",
+        "foods": "Lebensmittel",
+        "nutritionLogs": "Ernährungseinträge",
+        "exercises": "Übungen",
+        "workouts": "Trainings",
+        "workoutLogs": "Trainingseinträge",
+        "templateSets": "Vorlagensätze",
+        "logSets": "Satzeinträge"
+      }
+    },
+    "advancedSettings": {
+      "title": "Backups und Daten",
+      "subtitle": "Datenexport, Integrationen, Cache",
+      "dataPortability": "Datenübertragung",
+      "exportFitnessData": "Fitnessdaten exportieren",
+      "exportFitnessDataSubtitle": "Vollständiges Backup herunterladen (JSON)",
+      "importFitnessData": "Fitnessdaten importieren",
+      "importFitnessDataSubtitle": "Aus einer Backup-Datei wiederherstellen",
+      "manageLocalBackups": "Lokale Backups verwalten",
+      "manageLocalBackupsSubtitle": "Automatische Sicherungen ansehen und wiederherstellen",
+      "localBackups": {
+        "title": "Lokale Backups",
+        "noBackups": "Keine lokalen Backups gefunden",
+        "noBackupsDesc": "Automatische Backups werden vor destruktiven Datenbankänderungen erstellt",
+        "backupFromTo": "Migration: v{{from}} zu v{{to}}",
+        "preRestoreBackup": "Vor der Datenbankwiederherstellung",
+        "exerciseCatalogueBackup": "Vor dem Update des Übungskatalogs",
+        "automaticBackup": "Automatisches Datenbank-Backup",
+        "backupDate": "Erstellt am {{date}}",
+        "export": "Backup exportieren",
+        "exportDisabled": "Export deaktiviert – Verschlüsselung erforderlich oder Datenbank nicht verfügbar",
+        "restore": "Datenbank wiederherstellen",
+        "delete": "Backup löschen",
+        "deleteConfirmTitle": "Backup löschen?",
+        "deleteConfirmMessage": "Möchtest du diese Backup-Datei wirklich löschen? Das kann nicht rückgängig gemacht werden.",
+        "restoreConfirmTitle": "Datenbank wiederherstellen?",
+        "restoreConfirmMessage": "Alle aktuellen Daten werden durch die Daten aus diesem Backup ersetzt. Die App wird nach der Wiederherstellung neu geladen.",
+        "restoreSuccess": "Datenbank erfolgreich wiederhergestellt",
+        "cycleEncryptionBackup": "Vor der Verschlüsselung der Zyklusdaten"
+      },
+      "confirmExport": "Export bestätigen",
+      "confirmImport": "Import bestätigen",
+      "exportConfirmationSubtitle": "Schütze die Datei optional mit einer Phrase. Leer lassen für keine Verschlüsselung.",
+      "exportConfirmationSubtitleRequired": "Eine Verschlüsselungsphrase ist erforderlich. Gib eine Phrase ein, um dein Backup zu schützen.",
+      "importConfirmationSubtitle": "Falls das Backup verschlüsselt ist, gib dieselbe Phrase ein, die beim Export verwendet wurde.",
+      "enterEncryptionPhrase": "Verschlüsselungsphrase (optional)",
+      "enterEncryptionPhraseRequired": "Verschlüsselungsphrase (erforderlich)",
+      "enterDecryptionPhrase": "Entschlüsselungsphrase (optional)",
+      "encryptionPhrasePlaceholder": "Leer lassen für unverschlüsselten Export",
+      "encryptionPhrasePlaceholderRequired": "Gib eine Phrase ein, um das Backup zu verschlüsseln",
+      "decryptionPhrasePlaceholder": "Phrase eingeben, falls das Backup verschlüsselt ist",
+      "encryptionPhraseRequired": "Für den Export ist eine Verschlüsselungsphrase erforderlich. Bitte gib eine ein.",
+      "includeDeletedRecords": "Gelöschte Einträge einschließen",
+      "requireExportEncryption": "Verschlüsselung beim Export erforderlich",
+      "requireExportEncryptionSubtitle": "Beim Datenexport immer eine Verschlüsselungsphrase verlangen",
+      "disableEncryptionConfirmTitle": "Verschlüsselungspflicht deaktivieren?",
+      "disableEncryptionConfirmSubtitle": "Deine Datenexporte werden dadurch weniger sicher.",
+      "disableEncryptionWarning": "Wenn du diese Einstellung deaktivierst, kannst du deine Daten unverschlüsselt exportieren. Dann sind sie gefährdet, falls die Exportdatei abgefangen wird oder unbefugte Personen darauf zugreifen.",
+      "disableEncryptionInputLabel": "Gib die Phrase unten ein, um zu bestätigen",
+      "disableEncryptionConfirmPhrase": "meine Daten unsicher machen",
+      "disableEncryptionHint": "Du musst genau die Phrase oben eingeben, um fortzufahren.",
+      "biometricAuthPrompt": "Authentifiziere dich, um die Verschlüsselungspflicht zu deaktivieren",
+      "exportFailedMessage": "Beim Export ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+      "importFailedMessage": "Beim Import ist ein Fehler aufgetreten. Bitte prüfe die Datei und versuche es erneut.",
+      "importSuccessMessage": "Daten erfolgreich importiert",
+      "privacyDiagnostics": "Datenschutz und Diagnose",
+      "anonymousBugReport": "Anonymer Fehlerbericht",
+      "anonymousBugReportSubtitle": "Hilf, Musclog zu verbessern, indem du Absturzprotokolle sendest",
+      "reminders": "Erinnerungen",
+      "dailyMoodPrompt": "Tägliche Stimmungsabfrage",
+      "dailyMoodPromptSubtitle": "Zeigt auf dem Startbildschirm einen Stimmungswähler, wenn heute noch nichts eingetragen ist",
+      "dailyWaterPrompt": "Tägliche Wasser-Erinnerung",
+      "dailyWaterPromptSubtitle": "Zeigt nach 20 Uhr eine abendliche Wasser-Erinnerung auf dem Startbildschirm",
+      "dailySupplementPrompt": "Tägliche Supplement-Erinnerung",
+      "dailySupplementPromptSubtitle": "Zeigt tägliche Supplement-Erinnerungen auf dem Startbildschirm",
+      "manageSupplements": "Supplements verwalten",
+      "manageSupplementsSubtitle": "Supplements hinzufügen und festlegen, welche Erinnerungen auslösen sollen",
+      "manageSupplementsEmpty": "Noch keine Supplements hinzugefügt.",
+      "supplementNameLabel": "Name des Supplements",
+      "supplementNamePlaceholder": "z. B. Kreatin",
+      "addSupplement": "Supplement hinzufügen",
+      "addSupplementDescription": "Ein neues Supplement zum Verfolgen anlegen",
+      "editSupplement": "Supplement bearbeiten",
+      "editSupplementDescription": "Name oder Erinnerungseinstellungen ändern",
+      "deleteSupplementDescription": "Dieses Supplement dauerhaft entfernen",
+      "alwaysAllowFoodEditing": "Lebensmittelbearbeitung immer erlauben",
+      "alwaysAllowFoodEditingSubtitle": "Lebensmitteldetails auch dann bearbeitbar machen, wenn sie aus der API stammen",
+      "showWeightPrediction": "Gewichtsprognose anzeigen",
+      "showWeightPredictionSubtitle": "Zeigt auf dem Profilbildschirm eine Gewichtsprognose, wenn seit 4 Tagen kein Gewicht erfasst wurde",
+      "intuitiveEatingMode": "Intuitiver Tracking-Modus",
+      "intuitiveEatingModeSubtitle": "Erfasste Mengen in der Tageskarte ausblenden und stattdessen ?? statt genauer Werte zeigen",
+      "nutrition": "Ernährung",
+      "disableMinimumCalories": "Untergrenze für Kalorien deaktivieren",
+      "disableMinimumCaloriesSubtitle": "Kalorienziele unterhalb der Standard-Mindestwerte von 1200 / 1500 kcal erlauben",
+      "useBfForCalculations": "Körperfett für Berechnungen verwenden",
+      "useBfForCalculationsSubtitle": "Körperfettanteil für Kalorien- und Makroberechnungen verwenden",
+      "includeFiberInCarbs": "Kohlenhydrate enthalten Ballaststoffe",
+      "includeFiberInCarbsSubtitle": "Bei manueller Eingabe von Lebensmitteln das Kohlenhydratfeld als Gesamtkohlenhydrate behandeln (Ballaststoffe enthalten, US-Etiketten). Ausschalten, wenn deine Etiketten Nettokohlenhydrate zeigen (ohne Ballaststoffe, EU-Etiketten).",
+      "enableFastedDay": "Fastentage",
+      "enableFastedDaySubtitle": "Lass dich Tage markieren, an denen du nichts gegessen hast. Ein Fastentag zählt als echter 0-Kalorien-Tag in deinem Gesamtumsatz (TDEE), deinen Durchschnittswerten und Serien. Nicht markierte leere Tage werden übersprungen, damit ein vergessener Eintrag deine Werte nicht senkt.",
+      "disableMinimumCaloriesConfirmTitle": "Untergrenze für Kalorien deaktivieren?",
+      "disableMinimumCaloriesConfirmMessage": "Das entfernt die standardmäßigen Mindestkalorien-Schutzgrenzen von Musclog und erlaubt Ziele bis hinunter zu 0 kcal.",
+      "disableMinimumCaloriesWarning": "Eine Unterschreitung der Mindestkalorien wird nicht empfohlen und kann unsicher sein. Wenn du dies aktivierst, bestätigst du, dass du auf eigene Verantwortung handelst, dass Musclog diese Mindestwerte nicht empfiehlt und dass du die Risiken verstehst, bevor du fortfährst.",
+      "disableMinimumCaloriesConfirmButton": "Ich verstehe",
+      "charts": "Diagramme",
+      "chartTooltipLeft": "Tooltip links",
+      "chartTooltipLeftSubtitle": "Diagramm-Tooltips oben links statt oben rechts anzeigen",
+      "workouts": "Training",
+      "progressionModeWeightFirst": "Gewichtssteigerung priorisieren",
+      "progressionModeWeightFirstSubtitle": "Gewicht direkt erhöhen, wenn RIR hoch ist, statt Wiederholungen hinzuzufügen",
+      "enableAdvancedDataManagement": "Erweiterte Datenverwaltung aktivieren",
+      "enableAdvancedDataManagementSubtitle": "Direkten Zugriff auf deine App-Daten erlauben (nur für erfahrene Nutzer)",
+      "enableAdvancedDataManagementConfirmTitle": "Nur für erfahrene Nutzer",
+      "enableAdvancedDataManagementConfirmMessage": "Das ist nur für erfahrene Nutzer gedacht. Wer hier mit den Daten herumspielt, kann die App irreparabel beschädigen. Nutze das nur, wenn du weißt, was du tust.",
+      "dataManagement": "Datenverwaltung",
+      "manageFoodData": "Lebensmitteldaten verwalten",
+      "manageFoodDataSubtitle": "Eigene Lebensmitteleinträge ansehen, bearbeiten oder löschen",
+      "manageNutritionLogsData": "Ernährungseinträge verwalten",
+      "manageNutritionLogsDataSubtitle": "Tägliche Ernährungsaufzeichnungen prüfen und ändern",
+      "manageMealsData": "Mahlzeitendaten verwalten",
+      "manageMealsDataSubtitle": "Gespeicherte Mahlzeiten-Konfigurationen ordnen und anpassen",
+      "managePortionsData": "Portionsdaten verwalten",
+      "managePortionsDataSubtitle": "Eigene Portionsgrößen für verschiedene Lebensmittel verwalten",
+      "manageWorkoutsData": "Trainingsdaten verwalten",
+      "manageWorkoutsDataSubtitle": "Deine persönlichen Trainingsroutinen bearbeiten oder entfernen",
+      "manageWorkoutsLogData": "Trainingsprotokoll verwalten",
+      "manageWorkoutsLogDataSubtitle": "Vergangene Trainingseinheiten ansehen und ändern",
+      "manageMetricsData": "Körperwerte verwalten",
+      "manageMetricsDataSubtitle": "Körperwerte und Fortschritt erfassen und anpassen",
+      "manageExercisesData": "Übungsdaten verwalten",
+      "manageExercisesDataSubtitle": "Deine eigene Übungsliste und Details pflegen",
+      "manageGoalsData": "Ernährungsziele verwalten",
+      "manageGoalsDataSubtitle": "Verlauf deiner Ernährungs- und Körperzusammensetzungsziele ansehen und verwalten",
+      "manageCheckinsData": "Ernährungs-Check-ins",
+      "manageCheckinsDataSubtitle": "Deine Fortschritts-Check-ins ansehen und verwalten",
+      "clearAppData": "App-Daten löschen",
+      "clearAppDataSubtitle": "Datenbankeinträge, Einstellungen, Cache-Dateien und gespeicherte Medien dauerhaft löschen",
+      "clearAppDataConfirmTitle": "Alle App-Daten löschen?",
+      "clearAppDataConfirmMessage": "Dadurch werden deine Trainings, Ernährungseinträge, Ziele, Körperwerte, der Chatverlauf, Einstellungen, lokale Backups, Cache-Dateien und gespeicherten Bilder von diesem Gerät gelöscht.",
+      "clearAppDataWarning": "Das kann nicht rückgängig gemacht werden. Diese Daten lassen sich nicht wiederherstellen, außer du hast bereits ein externes Backup erstellt.",
+      "clearAppDataConfirmButton": "Alles löschen",
+      "clearAppDataAuthPrompt": "Authentifiziere dich, um alle App-Daten zu löschen",
+      "clearAppDataFailedMessage": "Beim Löschen der App-Daten ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+      "openSettingsFailedMessage": "App-Einstellungen können nicht geöffnet werden. Bitte öffne sie manuell.",
+      "dangerZone": "Gefahrenbereich",
+      "opticalTransfer": "Optische Übertragung",
+      "opticalTransferSubtitle": "Deine Daten mit Licht auf ein anderes Telefon übertragen",
+      "storage": {
+        "title": "Speicher",
+        "total": "Von Musclog belegt",
+        "units": {
+          "b": "B",
+          "kb": "KB",
+          "mb": "MB",
+          "gb": "GB"
+        },
+        "categories": {
+          "database": {
+            "name": "Datenbank",
+            "description": "Deine Einträge, Ziele und Einstellungen"
+          },
+          "photos": {
+            "name": "Deine Fotos",
+            "description": "Fotos von Lebensmitteln, Mahlzeiten und eigenen Übungen"
+          },
+          "sensorRecordings": {
+            "name": "Sensoraufnahmen",
+            "description": "Daten, die von verbundenen Trainingssensoren gespeichert wurden"
+          },
+          "recoveryPoints": {
+            "name": "Sicherheits-Backups",
+            "description": "Automatische Backups vor Updates und Wiederherstellungen. Verwalte sie unter Lokale Backups"
+          },
+          "exerciseImages": {
+            "name": "Übungsbilder",
+            "description": "Heruntergeladene Demonstrationsbilder. Sie werden bei Bedarf erneut geladen"
+          },
+          "temporary": {
+            "name": "Temporäre Dateien",
+            "description": "Überreste von Exporten, Teilen und Fotobearbeitung"
+          }
+        },
+        "clear": "Leeren",
+        "clearTitle": "{{name}} leeren?",
+        "clearMessage": {
+          "exerciseImages": "Die Bilder werden beim nächsten Anzeigen einer Übung erneut geladen. Deine Daten sind nicht betroffen.",
+          "temporary": "Entfernt Überreste, die älter als eine Stunde sind. Deine Daten und Sicherheits-Backups bleiben unberührt."
+        },
+        "freed": "{{size}} freigegeben",
+        "nothingToClear": "Nichts zum Leeren",
+        "clearFailed": "Speicher konnte nicht geleert werden",
+        "unavailable": "Speicher kann gerade nicht gelesen werden.",
+        "retry": "Erneut versuchen"
+      },
+      "storageSubtitle": "Sieh nach, was Musclog auf diesem Gerät speichert, und gib Platz frei"
+    },
+    "chatMessages": {
+      "title": "Chatnachrichten",
+      "subtitle": "Gesprächsverlauf ansehen und bearbeiten"
+    },
+    "aiSettings": {
+      "title": "KI-Einstellungen",
+      "save": "Speichern",
+      "saved": "Gespeichert",
+      "googleGeminiIntegration": "Google-Gemini-Integration",
+      "googleGeminiApiKey": "Google-Gemini-API-Schlüssel",
+      "apiKeyPlaceholder": "Füge hier deinen API-Schlüssel ein",
+      "apiKeyHelper": "Für Google Gemini wird ein Gemini-API-Schlüssel benötigt. Du bekommst ihn in Google AI Studio.",
+      "claudeIntegration": "Claude-Integration",
+      "claudeApiKey": "Claude-API-Schlüssel",
+      "enableClaude": "Claude aktivieren",
+      "claudeModel": "Claude-Modell",
+      "selectClaudeModel": "Claude-Modell auswählen",
+      "selectClaudeModelSubtitle": "Wähle das Modell, das alle KI-Funktionen verwenden",
+      "openAiIntegration": "OpenAI-Integration",
+      "openAiApiKey": "OpenAI-API-Schlüssel",
+      "insightsAlerts": "Einblicke und Hinweise",
+      "enableGoogleGemini": "Google Gemini aktivieren",
+      "dailyNutritionInsights": "Tägliche Ernährungseinblicke",
+      "dailyNutritionInsightsSubtitle": "Morgendliche Zusammenfassung auf Basis der Einträge",
+      "workoutInsights": "Trainingseinblicke",
+      "workoutInsightsSubtitle": "Analyse nach dem Training",
+      "enableOpenAi": "OpenAI aktivieren",
+      "localLlmIntegration": "Integration eines lokalen LLM",
+      "enableLocalLlm": "Lokales LLM aktivieren",
+      "localLlmBaseUrl": "Basis-URL des lokalen LLM",
+      "localLlmModel": "Modell des lokalen LLM",
+      "localLlmApiKey": "API-Schlüssel des lokalen LLM (optional)",
+      "localLlmApiKeyHelper": "Die meisten lokalen LLMs brauchen keinen API-Schlüssel, du kannst aber bei Bedarf einen festlegen.",
+      "localLlmHelp": "Brauchst du Hilfe? Schau in die offizielle Anleitung",
+      "geminiModel": "Gemini-Modell",
+      "openAiModel": "OpenAI-Modell",
+      "selectModel": "Modell auswählen",
+      "selectGeminiModel": "Gemini-Modell auswählen",
+      "selectGeminiModelSubtitle": "Wähle das Modell, das alle KI-Funktionen verwenden",
+      "selectOpenAiModel": "OpenAI-Modell auswählen",
+      "selectOpenAiModelSubtitle": "Wähle das Modell, das alle KI-Funktionen verwenden",
+      "subtitle": "Einstellungen für alle KI-Funktionen dieser App",
+      "imageProcessing": "Bildverarbeitung",
+      "useOcrBeforeAi": "OCR vor dem Senden an die KI verwenden",
+      "useOcrBeforeAiSubtitle": "Bilder lokal per OCR verarbeiten und stattdessen Text senden",
+      "useOcrBeforeAiOnDeviceSubtitle": "Für Apple Intelligence erforderlich. OCR wandelt Bilder vor dem Senden in Text um.",
+      "sendFoundationFoodsToLlm": "Basis-Lebensmittel an die KI senden",
+      "sendFoundationFoodsToLlmSubtitle": "Zuordnung von Zutaten mit der Basis-Lebensmitteldatenbank verbessern",
+      "getOpenAiKey": "OpenAI-Schlüssel holen",
+      "customPrompts": "Eigene Systemanweisungen",
+      "customPromptsSubtitle": "Füge deine eigenen Anweisungen zu allen KI-Funktionen hinzu",
+      "manageCustomPrompts": "Eigene Anweisungen verwalten",
+      "addPrompt": "Anweisung hinzufügen",
+      "editPrompt": "Anweisung bearbeiten",
+      "promptName": "Name der Anweisung",
+      "promptContent": "Inhalt der Anweisung",
+      "promptIsActive": "Aktiv",
+      "promptNamePlaceholder": "z. B. Strenger Trainer",
+      "promptContentPlaceholder": "Gib hier deine eigenen Anweisungen ein …",
+      "deletePrompt": "Anweisung löschen",
+      "deletePromptConfirm": "Möchtest du diese Anweisung wirklich löschen?",
+      "noPrompts": "Noch keine eigenen Anweisungen hinzugefügt.",
+      "promptContext": "Kontext",
+      "promptContextGeneral": "Allgemein",
+      "promptContextNutrition": "Ernährung",
+      "promptContextExercise": "Training",
+      "memorySettings": "Gedächtniseinstellungen",
+      "useThinkingMode": "Denkmodus verwenden",
+      "useThinkingModeSubtitle": "Erlaubt KI-Anbietern tieferes Nachdenken, wo unterstützt. Das verbraucht mehr Tokens und kann die Kosten erhöhen.",
+      "maxAiMemories": "Maximale KI-Erinnerungen",
+      "maxAiMemoriesSubtitle": "Anzahl früherer Nachrichten, die in Gesprächen gemerkt werden",
+      "nutritionLogHistoryDays": "An die KI gesendeter Ernährungsverlauf",
+      "nutritionLogHistoryDaysSubtitle": "Wie viele Tage früherer Ernährungseinträge als Kontext an die KI gesendet werden. Mehr Tage verbrauchen mehr Tokens.",
+      "nutritionLogHistoryDaysNone": "Keine",
+      "nutritionLogHistoryDays7": "7 Tage",
+      "nutritionLogHistoryDays30": "30 Tage",
+      "nutritionLogHistoryDays60": "60 Tage",
+      "nutritionLogHistoryDays90": "90 Tage",
+      "nutritionLogHistoryDaysNoneDescription": "Keinen Ernährungsverlauf an die KI senden",
+      "nutritionLogHistoryDaysOptionDescription": "Die letzten {{days}} Tage Ernährungseinträge an die KI senden",
+      "workoutHistoryDays": "An die KI gesendeter Trainingsverlauf",
+      "workoutHistoryDaysSubtitle": "Wie viele Tage früherer Trainings beim Chat im Fitnessmodus an die KI gesendet werden. Mehr Tage verbrauchen mehr Tokens.",
+      "workoutHistoryDaysNone": "Keine",
+      "workoutHistoryDays7": "7 Tage",
+      "workoutHistoryDays30": "30 Tage",
+      "workoutHistoryDays60": "60 Tage",
+      "workoutHistoryDays90": "90 Tage",
+      "workoutHistoryDaysNoneDescription": "Keinen Trainingsverlauf an die KI senden",
+      "workoutHistoryDaysOptionDescription": "Die letzten {{days}} Tage Trainings an die KI senden",
+      "onDeviceAi": {
+        "sectionTitle": "Apple Intelligence",
+        "toggle": "Apple Intelligence verwenden",
+        "toggleSubtitle": "KI-Anfragen auf dem Gerät mit Apple-Foundation-Modellen verarbeiten. Kein API-Schlüssel nötig.",
+        "toggleSubtitleNotReady": "Apple Intelligence ist auf diesem Gerät nicht verfügbar. Voraussetzung: iPhone 15 Pro oder neuer mit iOS 26 und aktivierter Apple Intelligence.",
+        "privacyNote": "Deine Daten bleiben auf dem Gerät und werden nie an externe Server gesendet.",
+        "foundationFoodsDisabled": "Das Einfügen von Basis-Lebensmitteln ist für die KI auf dem Gerät deaktiviert, um Speicher zu sparen."
+      },
+      "musclogFreeTier": {
+        "sectionTitle": "Musclog-Gratistarif",
+        "toggle": "Musclog-Gratis-LLM verwenden",
+        "toggleSubtitle": "Nutzt Google Gemini. Es gilt ein Tageslimit für Anfragen.",
+        "activeNote": "Der Gratistarif ist aktiv. Deine eigenen API-Schlüssel werden nicht verwendet.",
+        "consentTitle": "Daten mit Google Gemini teilen?",
+        "consentBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über die Server von Musclog an Googles KI Gemini gesendet, um die Antwort zu erstellen. Es wird nichts gesendet, solange du keine Funktion nutzt. Der Gratistarif hat ein begrenztes Anfragenkontingent pro Tag.",
+        "consentConfirm": "Zustimmen und aktivieren"
+      },
+      "testKey": "Schlüssel testen",
+      "testingKey": "Wird getestet…"
+    },
+    "visualSettings": {
+      "title": "Darstellung und Startseite",
+      "subtitle": "Oberfläche der App anpassen",
+      "sectionTitle": "Navigationsleiste",
+      "sectionSubtitle": "Wähle, welche Verknüpfungen in der unteren Leiste erscheinen. Start und Kamera sind immer fest.",
+      "slot1Label": "Platz 1 (links neben der Kamera)",
+      "slot2Label": "Platz 2 (rechts neben der Kamera)",
+      "slot3Label": "Platz 3 (ganz rechts)",
+      "selectItem": "Wähle eine Verknüpfung für diesen Platz",
+      "currentlyInSlot": "Aktuell auf Platz {{slot}} (wird getauscht)",
+      "navItems": {
+        "workouts": "Training",
+        "food": "Ernährung",
+        "profile": "Profil",
+        "coach": "Coach",
+        "cycle": "Zyklus",
+        "settings": "Einstellungen",
+        "progress": "Fortschritt",
+        "checkin": "Check-in",
+        "notes": "Notizen"
+      }
+    },
+    "nutritionDisplay": {
+      "sectionTitle": "Ernährungsanzeige",
+      "sectionSubtitle": "Wähle, welche Makros in der Ernährungsübersicht angezeigt werden.",
+      "label": "Sichtbare Makros",
+      "popupTitle": "Sichtbare Makros",
+      "popupSubtitle": "Umschalten, welche Makros angezeigt werden",
+      "allSelected": "Alle Makros",
+      "selected": "{{count}} Makros",
+      "carbs": "Kohlenhydrate",
+      "protein": "Eiweiß",
+      "fats": "Fette",
+      "fiber": "Ballaststoffe",
+      "alcohol": "Alkohol"
+    },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Wähle, wie das Maskottchen erscheint.",
+      "show": {
+        "title": "Loggy anzeigen",
+        "description": "Das Maskottchen erscheint auf Willkommensbildschirmen, leeren Bildschirmen und bei Feiern. Schalte es aus, um ihn überall zu verbergen. Dein KI-Coach behält sein Bild."
+      },
+      "animated": {
+        "title": "Animierter Loggy",
+        "description": "Loggy bewegt sich ein wenig, wenn er auftaucht. Schalte es aus, damit er immer still stehend zu sehen ist."
+      }
+    },
+    "foodDiary": {
+      "sectionTitle": "Ernährungstagebuch",
+      "sectionSubtitle": "Wähle, wie das Ernährungstagebuch aufgebaut und gruppiert ist.",
+      "compact": {
+        "title": "Kompakte Ansicht",
+        "description": "Leere Mahlzeiten ausblenden und dichtere Einträge zeigen. Tippe auf einen Eintrag, um seine Makros zu sehen."
+      },
+      "grouping": {
+        "popupTitle": "Lebensmittel gruppieren nach",
+        "popupSubtitle": "Ändert nur die Anzeige des Tagebuchs, nicht deine Mahlzeiten oder Ernährungsdaten.",
+        "options": {
+          "categories": {
+            "label": "Mahlzeitenkategorien",
+            "description": "Frühstück, Mittagessen, Abendessen, Snacks und Sonstiges."
+          },
+          "time": {
+            "label": "Tageszeit",
+            "description": "Stundenabschnitte in der Reihenfolge, in der du gegessen hast."
+          }
+        }
+      }
+    },
+    "notificationsSettings": {
+      "title": "Benachrichtigungen",
+      "subtitle": "Hinweise zu Training, Ernährung und Zyklus",
+      "mainToggle": "Benachrichtigungen aktivieren",
+      "mainToggleSubtitle": "Alle App-Benachrichtigungen ein- oder ausschalten",
+      "workoutReminders": "Trainingserinnerungen",
+      "workoutRemindersSubtitle": "Benachrichtigung an geplanten Trainingstagen",
+      "activeWorkout": "Aktives Training",
+      "activeWorkoutSubtitle": "Timer und Übung in einer dauerhaften Benachrichtigung anzeigen",
+      "nutritionOverview": "Tägliche Ernährungsübersicht",
+      "nutritionOverviewSubtitle": "Zusammenfassung deiner täglichen Aufnahme und Ziele",
+      "menstrualCycle": "Zyklus-Hinweise",
+      "menstrualCycleSubtitle": "Vorhersagen zur Periode und Hinweise zum fruchtbaren Fenster",
+      "restTimer": "Pausentimer-Hinweise",
+      "restTimerSubtitle": "Benachrichtigung, wenn deine Pause vorbei ist",
+      "workoutDuration": "Warnung bei langem Training",
+      "workoutDurationSubtitle": "Warnung, wenn deine Einheit länger als 5 Stunden dauert",
+      "restTimerRepeat": "Pausen-Hinweis wiederholen",
+      "restTimerRepeatSubtitle": "Eine Minute später noch einmal erinnern, wenn ich den nächsten Satz nicht begonnen habe",
+      "unfinishedWorkout": "Erinnerung an unvollständiges Training",
+      "unfinishedWorkoutSubtitle": "45 Minuten nach meinem letzten Satz erinnern, falls ich das Beenden vergessen habe",
+      "goalAtRisk": "Wochenziel in Gefahr",
+      "goalAtRiskSubtitle": "Warnen, wenn mein wöchentliches Trainingsziel aus dem Ruder läuft",
+      "weeklyReview": "Wochenrückblick",
+      "weeklyReviewSubtitle": "Erinnerung, wenn dein Wochenrückblick bereit ist",
+      "lockScreen": "Details auf dem Sperrbildschirm",
+      "lockScreenOptions": {
+        "full": "Alle Details",
+        "minimal": "Minimal"
+      },
+      "sections": {
+        "session": "Während des Trainings",
+        "plan": "Dein Trainingsplan",
+        "reports": "Berichte und Ernährung",
+        "quiet": "Ruhezeiten und Pause",
+        "delivery": "Zustellung"
+      },
+      "accountability": {
+        "structured": "Strukturiert",
+        "gentle": "Sanft",
+        "flexible": "Flexibel"
+      },
+      "accountabilityHints": {
+        "structured": "Erinnere mich an meinen geplanten Trainingstagen.",
+        "gentle": "Nur anstupsen, wenn mein Wochenziel aus dem Ruder läuft.",
+        "flexible": "Nie anstupsen. Zeig mir nur, was als Nächstes kommt."
+      },
+      "reminderLead": "Vor dem Training erinnern",
+      "leadOnTime": "Pünktlich",
+      "leadMinutes": "{{minutes}} Min.",
+      "quietHours": "Ruhezeiten",
+      "quietHoursSubtitle": "Keine Erinnerungen in diesem Zeitfenster",
+      "quietExempt": "Pausen-Hinweise und dein aktives Training werden nie stummgeschaltet.",
+      "quietFrom": "Von",
+      "quietUntil": "Bis",
+      "pause": "Erinnerungen pausieren",
+      "pauseOptions": {
+        "off": "Aus",
+        "days3": "3 Tage",
+        "week": "1 Woche"
+      },
+      "deliveryStatus": "Berechtigung: {{permission}} · {{pending}} geplant",
+      "permission": {
+        "granted": "erlaubt",
+        "denied": "blockiert",
+        "undetermined": "noch nicht gefragt",
+        "unsupported": "nicht unterstützt"
+      },
+      "testAlert": "Test-Pausenhinweis senden",
+      "openSystemSettings": "Systemeinstellungen für Benachrichtigungen öffnen",
+      "updateInterval": "Trainingsuhr aktualisieren alle",
+      "updateIntervalOption": "{{seconds}} s"
+    },
+    "supportProject": {
+      "title": "Projekt unterstützen"
+    },
+    "notifications": "Benachrichtigungen",
+    "termsOfService": "Nutzungsbedingungen",
+    "privacyPolicy": "Datenschutzerklärung",
+    "appBehaviorSettings": {
+      "title": "Tracking-Einstellungen",
+      "subtitle": "Einstellungen zu Training, Ernährung und Diagrammen"
+    },
+    "bleDevices": {
+      "title": "Sensoren verwalten",
+      "subtitle": "Speichere deine WitMotion-BLE-Sensoren und verbinde dich erneut",
+      "savedSensors": "Gespeicherte Sensoren",
+      "noSavedSensors": "Noch keine gespeicherten Sensoren",
+      "noSavedSensorsHint": "Unten suchen, um einen Sensor zu finden und zu speichern",
+      "scanButton": "Nach Sensoren suchen",
+      "stopScanButton": "Suche beenden",
+      "scanning": "Suche läuft...",
+      "foundSensors": "Gefundene Sensoren",
+      "saveSensor": "Speichern",
+      "connectButton": "Verbinden",
+      "disconnectButton": "Trennen",
+      "connecting": "Verbinde...",
+      "connected": "Verbunden",
+      "saved": "Gespeichert",
+      "renameButton": "Umbenennen",
+      "renameTitle": "Sensor umbenennen",
+      "removeButton": "Entfernen",
+      "removeConfirm": "{{name}} aus den gespeicherten Sensoren entfernen?",
+      "lastConnected": "Zuletzt verbunden {{time}}",
+      "neverConnected": "Noch nie verbunden",
+      "permissionDenied": "Bluetooth-Berechtigung verweigert. Bitte erlaube den Bluetooth-Zugriff, um nach Sensoren zu suchen.",
+      "previewDataButton": "Datenvorschau",
+      "previewTitle": "Sensorvorschau",
+      "previewAngle": "Winkel",
+      "previewAccel": "Beschl.",
+      "previewGyro": "Gyro",
+      "previewWaiting": "Warte auf Daten...",
+      "previewDisconnected": "Sensor nicht verbunden",
+      "repsRecordingButton": "Wiederholungsaufnahme öffnen",
+      "recordingSettings": "Aufnahmeeinstellungen",
+      "generateChartPayload": "Diagrammdaten erzeugen",
+      "generateChartPayloadSubtitle": "Signal- und Wiederholungsmarkierungen für die Diagrammanzeige nach jedem Satz einschließen"
+    },
+    "homeActions": {
+      "sectionTitle": "Startbildschirm-Aktionen",
+      "sectionSubtitle": "Wähle die Schnellaktions-Schaltflächen auf deinem Startbildschirm.",
+      "popupTitle": "Startbildschirm-Aktionen",
+      "popupSubtitle": "Wähle {{min}} bis {{max}} Aktionen",
+      "editActions": "Aktionen bearbeiten",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "Sie erscheinen in der Reihenfolge, in der du sie wählst.",
+      "hintAtMin": "Behalte mindestens {{min}} auf deinem Startbildschirm.",
+      "hintAtMax": "Das ist das Maximum. Entferne eine, um eine andere hinzuzufügen."
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Übersichtskarte auf dem Startbildschirm",
+      "sectionSubtitle": "Wähle, welche Karte oben auf deinem Startbildschirm erscheint.",
+      "popupTitle": "Übersichtskarte",
+      "popupSubtitle": "Wähle eine Karte zum Anzeigen",
+      "options": {
+        "daily_summary": {
+          "label": "Tagesübersicht",
+          "description": "Kalorien und Makros für den Tag"
+        },
+        "weekly_streak": {
+          "label": "Wochen-Serie",
+          "description": "Trainings dieser Woche und deine Tracking-Serie"
+        }
+      }
+    },
+    "homeDailyStats": {
+      "showHomeSteps": {
+        "title": "Schritte anzeigen",
+        "description": "Zeige deine täglichen Schritte und deine Energiebilanz auf dem Startbildschirm."
+      }
+    },
+    "theme": {
+      "sectionTitle": "Erscheinungsbild",
+      "sectionSubtitle": "Wähle, wie Musclog aussieht. „System“ folgt der Geräteeinstellung.",
+      "popupTitle": "Erscheinungsbild",
+      "popupSubtitle": "Wähle ein Design",
+      "options": {
+        "system": {
+          "label": "System",
+          "description": "Der Geräteeinstellung folgen"
+        },
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Tiefe Flächen mit Smaragd-Akzenten"
+        },
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Helle Flächen mit Smaragd-Akzenten"
+        },
+        "kinetic-shock": {
+          "label": "Kinetic Shock",
+          "description": "Tiefrosa Flächen mit pinken Akzenten"
+        },
+        "kinetic-volt": {
+          "label": "Kinetic Volt",
+          "description": "Warme dunkle Flächen mit elektrisch gelben Akzenten"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Sanft rosa Flächen mit einem Himbeerakzent"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Tiefviolette Flächen mit orangefarbenem Visier-Akzent"
+        },
+        "kinetic-scope": {
+          "label": "Scope",
+          "description": "Nahezu schwarze Flächen mit zurückhaltendem Limettenakzent"
+        }
+      },
+      "iconAppliesLater": "Das App-Symbol ändert sich, wenn du die App verlässt."
+    },
+    "workoutSettings": {
+      "title": "Trainingseinstellungen",
+      "subtitle": "Studios, Gewichtsscheiben und Übungen, die du meiden willst"
+    },
+    "helpAndFeedback": {
+      "title": "Hilfe und Feedback",
+      "subtitle": "Melde einen Fehler, schlage eine Funktion vor oder nimm Kontakt auf",
+      "reportBug": "Fehler melden",
+      "requestFeature": "Funktion vorschlagen",
+      "githubHint": "Öffnet GitHub (Konto nötig). Version und Gerät sind schon ausgefüllt.",
+      "community": "Community beitreten",
+      "communityHint": "Chatte mit anderen Musclog-Nutzern",
+      "email": "E-Mail-Support",
+      "emailHint": "Kein Konto nötig. Version und Gerät werden der Nachricht hinzugefügt.",
+      "rate": "Musclog bewerten",
+      "rateHint": "Eine Bewertung bei Google Play hilft anderen, die App zu finden.",
+      "openFailed": "Dieser Link konnte nicht geöffnet werden."
+    },
+    "homeHeatmaps": {
+      "sectionTitle": "Heatmaps auf dem Startbildschirm",
+      "sectionSubtitle": "Zeige einen Kalender deiner letzten Aktivität auf dem Startbildschirm.",
+      "popupTitle": "Heatmaps auf dem Startbildschirm",
+      "popupSubtitle": "Wähle, welche Heatmaps angezeigt werden",
+      "options": {
+        "none": {
+          "label": "Aus",
+          "description": "Keine Heatmaps auf dem Startbildschirm"
+        },
+        "workouts": {
+          "label": "Training",
+          "description": "Tage, an denen du trainiert hast"
+        },
+        "nutrition": {
+          "label": "Ernährung",
+          "description": "Tage, an denen du Mahlzeiten erfasst hast"
+        },
+        "both": {
+          "label": "Training und Ernährung",
+          "description": "Beide Heatmaps"
+        }
+      },
+      "layout": {
+        "popupTitle": "Heatmap-Layout",
+        "popupSubtitle": "Wie sich die beiden Heatmaps den Startbildschirm teilen",
+        "options": {
+          "full": {
+            "label": "Volle Breite",
+            "description": "Eine über der anderen"
+          },
+          "side_by_side": {
+            "label": "Nebeneinander",
+            "description": "Zwei kompakte Karten in einer Reihe"
+          },
+          "compact": {
+            "label": "Kompakt",
+            "description": "Letzte 30 Tage, je eine dünne Zeile"
+          }
+        }
+      }
+    }
+  }
+}

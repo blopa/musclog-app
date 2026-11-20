@@ -1,0 +1,116 @@
+{
+  "notifications": {
+    "header": {
+      "title": "Benachrichtigungen",
+      "clearAll": "Alle löschen"
+    },
+    "sections": {
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "earlier": "Früher"
+    },
+    "channels": {
+      "default": "Standard",
+      "activeWorkout": "Laufendes Training",
+      "cycle": "Zyklus-Erinnerungen",
+      "restTimer": "Pausentimer",
+      "workoutReminders": "Trainingserinnerungen",
+      "restTimerQuiet": "Pausentimer (ohne Ton)"
+    },
+    "startNow": "Jetzt starten",
+    "types": {
+      "aiInsight": {
+        "title": "KI-Hinweis",
+        "description": "Basierend auf deinen letzten Lifts: Erhöhe heute deine Proteinzufuhr um 15 g für eine optimale Erholung."
+      },
+      "workoutReminder": {
+        "title": "Trainingserinnerung",
+        "description": "Bereit für {{workoutName}}? Heute um {{time}} geplant."
+      },
+      "workoutCompleted": {
+        "title": "Training abgeschlossen",
+        "description": "{{workoutName}} abgeschlossen. Du hast {{calories}} verbrannt."
+      },
+      "kudosReceived": {
+        "title": "Anerkennung erhalten",
+        "description": "{{name}} und {{count}} weitere mochten deinen letzten Meilenstein: \"{{milestone}}\""
+      },
+      "weeklyReport": {
+        "title": "Wochenbericht bereit",
+        "description": "Dein Fortschrittsbericht für letzte Woche ist verfügbar. Schau dir deine Werte an."
+      },
+      "activeWorkout": {
+        "title": "Training: {{workoutName}}",
+        "body": "{{totalTime}} – {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Training läuft"
+      },
+      "workoutReminderMorning": {
+        "title": "Trainingserinnerung",
+        "body": "Dein Training {{workoutName}} steht heute an."
+      },
+      "nutritionOverview": {
+        "title": "Tagesübersicht Ernährung",
+        "body": "Sieh nach, wie deine heutige Ernährung zu deinen Zielen passt."
+      },
+      "nutritionCheckin": {
+        "title": "Wöchentlicher Fortschritts-Check-in",
+        "body": "Zeit für deinen wöchentlichen Ernährungs-Check-in! Schauen wir, wie es gelaufen ist."
+      },
+      "periodPrediction": {
+        "title": "Periodenvorhersage",
+        "body": "Deine Periode könnte in ein paar Tagen beginnen, basierend auf deinen letzten Zyklen."
+      },
+      "fertileWindow": {
+        "title": "Fruchtbares Fenster",
+        "body": "Dein geschätztes fruchtbares Fenster könnte bald beginnen. Es ist eine Kalenderschätzung, keine Bestätigung des Eisprungs."
+      },
+      "restTimerAlert": {
+        "title": "Pause vorbei",
+        "body": "Deine Pause ist um. Zeit für den nächsten Satz."
+      },
+      "workoutDurationWarning": {
+        "title": "Noch am Trainieren?",
+        "body": "Deine Einheit läuft seit 5 Stunden. Denk daran, sie in Musclog zu beenden."
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Du hast eine Neuigkeit."
+      },
+      "unfinishedWorkout": {
+        "title": "Training beenden?",
+        "body": "{{workoutName}} ist noch offen. Beende es und erfasse es, wenn du fertig bist."
+      },
+      "goalAtRisk": {
+        "title": "Wochenziel in Gefahr",
+        "body": "Noch {{count}} Trainings bis zu deinem Wochenziel."
+      },
+      "restTimerHeadsUp": {
+        "title": "Gleich geht's weiter",
+        "body": "Noch {{seconds}} Sekunden Pause."
+      },
+      "workTimerAlert": {
+        "title": "Zeit ist um",
+        "body": "Dein zeitgesteuerter Satz ist fertig."
+      },
+      "comebackWelcome": {
+        "title": "Wann immer du bereit bist",
+        "body": "Kein Stress. Wenn du langsam wieder einsteigen willst, gibt es einen sanften Weg."
+      }
+    },
+    "actions": {
+      "addRest": "+{{seconds}} s Pause",
+      "nextSet": "Nächster Satz",
+      "snooze": "1 Std. später",
+      "done": "Fertig",
+      "later": "Später",
+      "skip": "Überspringen"
+    },
+    "restPrompt": {
+      "title": "Benachrichtigungen für den Pausentimer?",
+      "message": "Dein Pausentimer läuft. Willst du eine Benachrichtigung, wenn du das Handy sperrst oder die App wechselst?",
+      "confirm": "Benachrichtigungen aktivieren",
+      "cancel": "Nicht jetzt"
+    }
+  }
+}

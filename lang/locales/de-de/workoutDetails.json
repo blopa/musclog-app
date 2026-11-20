@@ -1,0 +1,15 @@
+{
+  "workoutDetails": {
+    "subtitle": "Dieses Training verwalten",
+    "preview": "Training ansehen",
+    "previewDescription": "Alle Trainingsdetails ansehen",
+    "edit": "Training bearbeiten",
+    "editDescription": "Übungen und Sätze ändern",
+    "duplicate": "Duplizieren",
+    "duplicateDescription": "Eine Kopie dieses Trainings erstellen",
+    "share": "Teilen",
+    "shareDescription": "Training mit anderen teilen",
+    "delete": "Löschen",
+    "deleteDescription": "Dieses Training dauerhaft entfernen"
+  }
+}

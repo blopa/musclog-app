@@ -1,0 +1,310 @@
+{
+  "comeback": {
+    "title": "Geri dönüş",
+    "settings": {
+      "title": "Geri dönüş planı başlat",
+      "subtitle": "Antrenmana ve beslenmeye adım adım, yavaş yavaş geri dön"
+    },
+    "offer": {
+      "title": "Tekrar hoş geldin",
+      "bodyWorkout": "Son antrenmanından bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyWorkout_one": "Son antrenmanından bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyWorkout_other": "Son antrenmanından bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyFood": "En son yiyecek kaydettiğinden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyFood_one": "En son yiyecek kaydettiğinden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyFood_other": "En son yiyecek kaydettiğinden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyBoth": "En son antrenman yaptığın ya da yiyecek kaydettiğin günden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyBoth_one": "En son antrenman yaptığın ya da yiyecek kaydettiğin günden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyBoth_other": "En son antrenman yaptığın ya da yiyecek kaydettiğin günden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "start": "Yavaşça yeniden başla",
+      "notNow": "Şimdi değil",
+      "bodyWorkout_few": "Son antrenmanından bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyWorkout_many": "Son antrenmanından bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyFood_few": "En son yiyecek kaydettiğinden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyFood_many": "En son yiyecek kaydettiğinden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyBoth_few": "En son antrenman yaptığın ya da yiyecek kaydettiğin günden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?",
+      "bodyBoth_many": "En son antrenman yaptığın ya da yiyecek kaydettiğin günden bu yana {{count}} gün geçti. Yavaş yavaş geri dönmek ister misin?"
+    },
+    "card": {
+      "week": "Geri dönüş, {{total}} haftanın {{week}}. haftası",
+      "sessions": "Bu hafta {{target}} antrenmandan {{done}} tanesi",
+      "minimum": "Bugün minimumumu yaptım",
+      "minimumDone": "Bugünkü minimum tamam",
+      "minimumHint": "10 dakikalık bir yürüyüş ya da düzgün bir öğün sayılır. Karar senin.",
+      "checkpointWaiting": "Kontrol notun Haftalık Değerlendirme'de bekliyor",
+      "open": "Geri dönüşü aç",
+      "stalledTitle": "Kaldığın yerden devam et",
+      "stalledBody": "Bir süredir ara verdin. İstemedikçe baştan başlaman gerekmiyor.",
+      "stalledContinue": "Kaldığım yerden devam et",
+      "stalledRestart": "1. haftayı yeniden başlat",
+      "setupDone": "Geri dönüş planın hazır",
+      "setupPartial": "Geri dönüşün başladı, ama bazı adımlar tamamlanmadı. Bunları geri dönüş ekranından ayarlayabilirsin.",
+      "tailor": "Uyarla (3 kısa soru)"
+    },
+    "summary": {
+      "week": "Geri dönüş haftası {{total}} haftanın {{week}}. Kolay tut.",
+      "graduated": "Geri dönüşünü tamamladın. Bundan sonra ilerleme buradan devam eder."
+    },
+    "checkpoint": {
+      "feel": {
+        "easy": "Çok kolay",
+        "right": "Tam yerinde",
+        "hard": "Çok zor"
+      }
+    },
+    "screen": {
+      "thisWeek": "Bu hafta",
+      "graduatedTitle": "Geri dönüş tamamlandı",
+      "graduatedBody": "Hızlanma aşamasını bitirdin. Artık ilerleme, kullandığın yüklerden devam eder.",
+      "endsOn": "Hızlanma yaklaşık {{date}} tarihinde biter",
+      "weightChange": "1. günden bu yana {{change}} {{unit}}",
+      "finish": "Geri dönüşü bitir",
+      "endConfirm": "Geri dönüş modu sonlandırılsın mı? Geçmişin kalır, antrenmanlar normal ilerlemeye döner.",
+      "endConfirmYes": "Geri dönüşü bitir",
+      "endConfirmNo": "Devam et",
+      "ended": "Geri dönüş sona erdi",
+      "end": "Geri dönüşü bitir",
+      "startPlan": "Geri dönüş planı başlat",
+      "endedBody": "Geri dönüşün sona erdi. İstediğin zaman yenisini başlatabilirsin.",
+      "notStartedBody": "Ara verdikten sonra geri mi dönüyorsun? Kısa ve yumuşak bir plan yeniden başlamayı kolaylaştırabilir.",
+      "checkpointTitle": "{{week}}. hafta kontrolü",
+      "checkpointBody": "Haftalık Değerlendirme'nde cevapla.",
+      "program": "Plan",
+      "programFootnote": "Yükler, ara vermeden önceki son seanslarına göre bir başlangıç noktasıdır. Yanlış gelen her şeyi değiştir.",
+      "sinceTitle": "Geri döndüğünden beri",
+      "sinceWorkouts": "{{count}} antrenman",
+      "sinceWorkouts_one": "{{count}} antrenman",
+      "sinceWorkouts_other": "{{count}} antrenman",
+      "sinceFood": "{{count}} gün yiyecek kaydedildi",
+      "sinceFood_one": "{{count}} gün yiyecek kaydedildi",
+      "sinceFood_other": "{{count}} gün yiyecek kaydedildi",
+      "sinceMinimum": "{{count}} minimum gün",
+      "sinceMinimum_one": "{{count}} minimum gün",
+      "sinceMinimum_other": "{{count}} minimum gün",
+      "sinceFootnote": "Eski zirvene göre değil, geri döndüğün ilk haftaya göre ölçülür.",
+      "eatingTitle": "Beslenme",
+      "toggleMealsOnly": "Şimdilik yalnızca öğün kaydet",
+      "toggleMealsOnlyHint": "Hazır olana kadar sayıları gizle.",
+      "toggleProteinOnly": "Yalnızca proteini göster",
+      "toggleProteinOnlyHint": "Odağı tek bir sayıda tut.",
+      "edit": "Cevaplarımı düzenle",
+      "sinceWorkouts_few": "{{count}} antrenman",
+      "sinceWorkouts_many": "{{count}} antrenman",
+      "sinceFood_few": "{{count}} gün yiyecek kaydedildi",
+      "sinceFood_many": "{{count}} gün yiyecek kaydedildi",
+      "sinceMinimum_few": "{{count}} minimum gün",
+      "sinceMinimum_many": "{{count}} minimum gün"
+    },
+    "plan": {
+      "programTitle": "İlk dört haftan",
+      "weekLabel": "{{week}}. hafta",
+      "weekRow": "{{count}} ana set, yaklaşık {{rir}} tekrar yedekte, eski yüklerinin %{{percent}}'i",
+      "weekRow_one": "{{count}} ana set, yaklaşık {{rir}} tekrar yedekte, eski yüklerinin %{{percent}}'i",
+      "weekRow_other": "{{count}} ana set, yaklaşık {{rir}} tekrar yedekte, eski yüklerinin %{{percent}}'i",
+      "weekRowPlanSets": "Planladığın setler, yaklaşık {{rir}} tekrar yedekte, eski yüklerinin %{{percent}}'i",
+      "sessions": "Haftada {{count}} seans",
+      "sessions_one": "Haftada {{count}} seans",
+      "sessions_other": "Haftada {{count}} seans",
+      "cueTitle": "Eğer-o zaman işaretin",
+      "cue": "{{days}} saat {{time}} olduğunda antrenman kıyafetlerimi giyip ısınmaya başlarım.",
+      "missTitle": "Bir gün kaçırırsam",
+      "missRule": "Bir sonrakini yap. Asla iki katına çıkarma.",
+      "maintenanceFirst": "İlk iki hafta koruma kalorisinde besleneceksin. Bundan sonra küçük bir açık önerilir, ama sen dokunmadan asla uygulanmaz.",
+      "setGoal": "Haftalık hedefimi {{count}} antrenman olarak ayarla",
+      "setGoal_one": "Haftalık hedefimi {{count}} antrenman olarak ayarla",
+      "setGoal_other": "Haftalık hedefimi {{count}} antrenman olarak ayarla",
+      "switchDiary": "Yiyecek günlüğümü buna uyacak şekilde değiştir",
+      "longBreakNote": "Uzun bir aradan sonra göğüs ağrın, bayılma hissin ya da bilinen bir kalp rahatsızlığın varsa önce bir doktora danış.",
+      "partialFailure": "Bazı adımlar tamamlanmadı. Bunları geri dönüş ekranından ayarlayabilirsin.",
+      "weekRow_few": "{{count}} ana set, yaklaşık {{rir}} tekrar yedekte, eski yüklerinin %{{percent}}'i",
+      "weekRow_many": "{{count}} ana set, yaklaşık {{rir}} tekrar yedekte, eski yüklerinin %{{percent}}'i",
+      "sessions_few": "Haftada {{count}} seans",
+      "sessions_many": "Haftada {{count}} seans",
+      "setGoal_few": "Haftalık hedefimi {{count}} antrenman olarak ayarla",
+      "setGoal_many": "Haftalık hedefimi {{count}} antrenman olarak ayarla"
+    },
+    "setup": {
+      "step": "{{total}} adımın {{current}}. adımı",
+      "skip": "Atla",
+      "save": "Kaydet",
+      "startCta": "Geri dönüşümü başlat",
+      "breakLength": {
+        "under1m": "Bir aydan az",
+        "1to3m": "1 ila 3 ay",
+        "3to6m": "3 ila 6 ay",
+        "over6m": "6 aydan fazla"
+      },
+      "intro": {
+        "title": "Tekrar hoş geldin",
+        "subtitle": "Birkaç kısa soru. İstediklerini atla.",
+        "workoutGap": "Son antrenmanın {{count}} gün önceydi.",
+        "workoutGap_one": "Son antrenmanın {{count}} gün önceydi.",
+        "workoutGap_other": "Son antrenmanın {{count}} gün önceydi.",
+        "foodGap": "En son {{count}} gün önce yiyecek kaydettin.",
+        "foodGap_one": "En son {{count}} gün önce yiyecek kaydettin.",
+        "foodGap_other": "En son {{count}} gün önce yiyecek kaydettin.",
+        "body": "Ara vermek olağandır. Küçük başlayıp sana uygun bir temponla yeniden kuracağız.",
+        "howLong": "Ara yaklaşık ne kadar sürdü?",
+        "workoutGap_few": "Son antrenmanın {{count}} gün önceydi.",
+        "workoutGap_many": "Son antrenmanın {{count}} gün önceydi.",
+        "foodGap_few": "En son {{count}} gün önce yiyecek kaydettin.",
+        "foodGap_many": "En son {{count}} gün önce yiyecek kaydettin."
+      },
+      "track": {
+        "title": "Neye yavaşça geri dönmek istiyorsun?",
+        "subtitle": "Bunu daha sonra değiştirebilirsin.",
+        "workout": "Antrenmanlar",
+        "nutrition": "Yiyecek",
+        "both": "İkisi de"
+      },
+      "where": {
+        "title": "Nerede antrenman yapacaksın?",
+        "subtitle": "Bu, ekipmanına uyan bir plan seçer.",
+        "gym": "Salon",
+        "home": "Ev, birkaç ekipman",
+        "minimal": "Ekipman yok"
+      },
+      "days": {
+        "title": "Haftada kaç gün?",
+        "subtitle": "İhtiyaç duyduğunu sandığından daha azıyla başla.",
+        "one": "1 gün",
+        "two": "2 gün",
+        "three": "3 gün",
+        "four": "4 gün",
+        "recommended": "Başlangıç için önerilen",
+        "pickDays": "Hangi günler?",
+        "pickTime": "Saat kaçta?"
+      },
+      "start": {
+        "title": "Nasıl başlamak istersin?",
+        "subtitle": "Geri dönmenin en kolay yolunu seç.",
+        "ownPlan": "Kendi planıma yavaşça geri dön",
+        "ownPlanHint": "Alışık olduğun antrenmanlar, başta daha hafif yüklerle.",
+        "shortPlan": "Benim için kısa bir plan",
+        "shortPlanHint": "Kurulumuna uyan iki kısa tüm vücut antrenmanı.",
+        "chooseLater": "Sonra seçeceğim",
+        "chooseLaterHint": "Şimdilik yalnızca hafifletilmiş yükler geçerli."
+      },
+      "eating": {
+        "title": "Genelde nasıl yersin?",
+        "subtitle": "Bu, kayıt ipuçlarını sana göre ayarlar.",
+        "cook": "Çoğunlukla kendim pişiririm",
+        "mix": "Karışık",
+        "out": "Çoğunlukla dışarıda yerim",
+        "varies": "Değişir"
+      },
+      "tracking": {
+        "title": "Ne kadarını takip etmek istersin?",
+        "subtitle": "Başta az takip etmek de yeterli.",
+        "full": "Her şey",
+        "fullHint": "Kalori ve tüm makrolar.",
+        "caloriesProtein": "Yalnızca kalori ve protein",
+        "caloriesProteinHint": "Takip edeceğin iki sayı.",
+        "mealsOnly": "Yalnızca öğünleri kaydet, henüz sayı yok",
+        "mealsOnlyHint": "Önce alışkanlığı kur."
+      },
+      "goal": {
+        "title": "Şimdilik yiyecek hedefin ne?",
+        "subtitle": "Düzenli yemek yemek önce gelir.",
+        "regular": "Önce düzenli yemek",
+        "regularHint": "Koruma kalorisi, önce protein.",
+        "loseSlowly": "Yavaşça yağ ver",
+        "loseSlowlyHint": "İki hafta koruma, ardından küçük bir açık.",
+        "rebuild": "Kas yapmak",
+        "rebuildHint": "Bol proteinli koruma kalorisi.",
+        "keep": "Mevcut hedeflerimi koru",
+        "keepHint": "Hedeflerinde hiçbir şey değişmez.",
+        "weightTitle": "Başlangıç kilon",
+        "latestWeight": "{{weight}} {{unit}}, {{count}} gün önce kaydedildi",
+        "latestWeight_one": "{{weight}} {{unit}}, {{count}} gün önce kaydedildi",
+        "latestWeight_other": "{{weight}} {{unit}}, {{count}} gün önce kaydedildi",
+        "weightLabel": "Bugünkü kilo",
+        "weightHint": "İsteğe bağlı. Eklersen 1. gün olur.",
+        "latestWeight_few": "{{weight}} {{unit}}, {{count}} gün önce kaydedildi",
+        "latestWeight_many": "{{weight}} {{unit}}, {{count}} gün önce kaydedildi"
+      },
+      "energy": {
+        "title": "Son zamanlarda enerjin nasıl?",
+        "subtitle": "Enerjin düşükse başlangıç daha da yumuşak olur.",
+        "plenty": "Bol",
+        "plentyHint": "Hazırsın.",
+        "some": "Biraz",
+        "someHint": "İniş çıkışlı.",
+        "low": "Çok az",
+        "lowHint": "İlk haftaları fazladan hafif tutacağız.",
+        "support": "Şu an her şey ağır geliyorsa birisiyle konuşmak yardımcı olabilir"
+      },
+      "plan": {
+        "title": "Planın",
+        "subtitle": "Dört kolay hafta, sonra devam edersin."
+      }
+    },
+    "deficit": {
+      "title": "Küçük bir açığa hazır mısın?",
+      "body": "İki haftadır koruma kalorisinde yiyorsun. İstersen şimdi yumuşak bir açığa geçebilirsin.",
+      "numbers": "Günde {{from}} ile {{to}} arası, {{protein}} g protein ile",
+      "accept": "Açığı uygula",
+      "decline": "Koruma kalorisinde kal",
+      "applied": "Hedeflerin güncellendi",
+      "changedSince": "Hedeflerin kurulumdan bu yana değişti, bu yüzden hiçbir şeyin üzerine yazılmadı"
+    },
+    "reflection": {
+      "title": "{{week}}. hafta nasıl geçti?",
+      "nextPhase": "Yiyeceklerin için sırada ne var?",
+      "keepLosing": "Yavaşça yağ vermeye devam et",
+      "maintain": "Koru",
+      "performance": "Performansa odaklan"
+    },
+    "tips": {
+      "snapMeal": {
+        "title": "Öğününün fotoğrafını çek",
+        "body": "Bir restoran öğününün fotoğrafını çek, yapay zeka tahmin etsin.",
+        "action": "Kamerayı aç"
+      },
+      "snapMealBasic": {
+        "title": "Öğününün fotoğrafını çek",
+        "body": "Fotoğraf tahminleri ücretsiz Musclog AI ya da bir Gemini ya da OpenAI anahtarıyla en iyi sonucu verir. Mevcut sağlayıcın restoran öğünlerinde kaba kalabilir.",
+        "action": "Kamerayı aç"
+      },
+      "describeMeal": {
+        "title": "Ne yediğini anlat",
+        "body": "Koça ne yediğini söyle, öğünü senin için kaydetsin.",
+        "action": "Koça anlat"
+      },
+      "describeMealBasic": {
+        "title": "Ne yediğini anlat",
+        "body": "Koça ne yediğini söyle. Tahminler ücretsiz Musclog AI ya da bir Gemini ya da OpenAI anahtarıyla daha iyi olur.",
+        "action": "Koça anlat"
+      },
+      "setupAi": {
+        "title": "Yapay zekayla öğün kaydını kur",
+        "body": "Fotoğraflar ve açıklamalar dışarıda yemeyi kaydetmeyi çok daha kolay yapar.",
+        "action": "Yapay zeka ayarlarını aç"
+      },
+      "proteinFirstDish": {
+        "title": "Proteini ön planda olan yemeği seç",
+        "body": "Dışarıda yerken proteini merkeze alan yemeği seç ve kabaca kaydet. Yaklaşık olması yeterli."
+      },
+      "savedMeals": {
+        "title": "Kayıtlı öğünlerini yeniden kullan",
+        "body": "Hep aynı şeyleri mi pişiriyorsun? Bir kez kaydet, tek dokunuşla takip et.",
+        "action": "Öğünlerimi aç"
+      },
+      "scanBarcode": {
+        "title": "Barkodu tara",
+        "body": "Paketli yiyecekler için taramak kaydetmenin en hızlı yolu.",
+        "action": "Barkod tara"
+      },
+      "sameAsYesterday": {
+        "title": "Dünle aynı",
+        "body": "Zaten kaydettiğin bir günü kopyala ve değişen şeyleri düzenle.",
+        "action": "Bir günü kopyala"
+      },
+      "copyPreviousDay": {
+        "title": "Önceki bir günü kopyala",
+        "body": "Günler değişir ama çoğu tekrar eder. Bugüne benzeyen bir günden başla.",
+        "action": "Bir günü kopyala"
+      }
+    }
+  }
+}

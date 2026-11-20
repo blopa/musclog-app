@@ -1,0 +1,10 @@
+{
+  "widgets": {
+    "refresh": "Yenilemek için Musclog'u aç",
+    "smartCamera": "Akıllı kamera",
+    "cycle": {
+      "day": "Gün",
+      "privateCaption": "Açmak için dokun"
+    }
+  }
+}

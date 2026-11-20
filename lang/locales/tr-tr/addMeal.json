@@ -1,0 +1,15 @@
+{
+  "addMeal": {
+    "createMeal": "Öğün oluştur",
+    "createMealDesc": "Günlük kaydına yeni bir öğün ekle",
+    "dynamicCreator": "Dinamik öğün oluşturucu",
+    "dynamicCreatorDesc": "Yiyecekleri tarayarak veya arayarak adım adım bir öğün oluştur",
+    "generateMealAI": "Yapay zekayla öğün oluştur",
+    "generateMealAIDesc": "Yapay zeka tercihlerine göre bir öğün önersin",
+    "manageCategories": "Kategorileri yönet",
+    "manageCategoriesDesc": "Öğün kategorilerini düzenle (kahvaltı, öğle yemeği vb.)",
+    "importFromPhone": "Başka bir telefondan içe aktar",
+    "importFromPhoneDesc": "Başka bir telefondan gönderilen bir öğünü tara",
+    "title": "Öğün ekle"
+  }
+}

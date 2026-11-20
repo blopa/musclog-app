@@ -1,0 +1,48 @@
+{
+  "profile": {
+    "header": {
+      "title": "Profilo"
+    },
+    "goal": "Obiettivo",
+    "currentStats": "Dati attuali",
+    "history": "Storico",
+    "management": "Gestione",
+    "loading": "Caricamento...",
+    "syncing": {
+      "healthKit": "Sincronizzazione con HealthKit..."
+    },
+    "bmiStatus": {
+      "underweight": "Sottopeso",
+      "normal": "Peso normale",
+      "overweight": "Sovrappeso",
+      "obese": "Obesità"
+    },
+    "gender": {
+      "male": "Maschio",
+      "female": "Femmina",
+      "other": "Altro"
+    },
+    "managementItems": {
+      "editPersonal": "Modifica dati personali",
+      "editPersonalDesc": "Aggiorna nome, avatar e dettagli personali",
+      "editFitness": "Modifica dati di fitness",
+      "editFitnessDesc": "Aggiorna obiettivi e preferenze di fitness",
+      "appPreferences": "Preferenze dell'app",
+      "appPreferencesDesc": "Personalizza impostazioni e preferenze dell'app",
+      "aiUpdate": "Aggiorna con l'IA",
+      "aiUpdateDesc": "Dici all'IA cosa è cambiato e controlli prima di salvare"
+    },
+    "stats": {
+      "weight": "Peso",
+      "height": "Altezza",
+      "bodyFat": "Massa grassa",
+      "bmi": "BMI",
+      "age": "Età",
+      "gender": "Sesso"
+    },
+    "weightPrediction": {
+      "title": "Peso previsto",
+      "subtitle": "Stimato dal TDEE e dalle tue registrazioni calorie dall'ultima pesata"
+    }
+  }
+}

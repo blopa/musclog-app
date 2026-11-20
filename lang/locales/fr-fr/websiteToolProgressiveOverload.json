@@ -1,0 +1,104 @@
+{
+  "websiteToolProgressiveOverload": {
+    "title": "Calculateur de surcharge progressive",
+    "intro": "Saisis ce que tu as fait lors de la dernière séance et obtiens la charge et les répétitions à viser la fois suivante. Il applique la règle que l'application Musclog utilise pour fixer ta prochaine séance.",
+    "form": {
+      "weight": "Charge de la dernière séance",
+      "weightHint": "La charge de tes séries de travail.",
+      "reps": "Répétitions de ta série de travail la plus faible",
+      "repsHint": "Nombre entier. La série avec le moins de répétitions est celle qui compte.",
+      "plannedReps": "Répétitions prévues par ton programme",
+      "plannedRepsHint": "Par série, le bas de ta plage de répétitions.",
+      "reserve": "Répétitions en réserve, moyenne",
+      "reserveHint": "Répétitions que tu aurais encore pu faire après chaque série, en moyenne. Laisse vide si tu n'as pas noté ton effort.",
+      "equipmentLabel": "Matériel",
+      "equipment": {
+        "barbell": "Barre",
+        "dumbbell": "Haltère",
+        "machine": "Machine ou câble"
+      },
+      "modeLabel": "Comment progresser",
+      "mode": {
+        "weight_first": "Ajouter de la charge d'abord",
+        "reps_first": "Ajouter des répétitions d'abord"
+      },
+      "completeLabel": "As-tu terminé toutes les séries ?",
+      "twoInARowLabel": "La séance précédente avait-elle aussi échoué à cette charge ?",
+      "yes": "Oui",
+      "no": "Non",
+      "twoInARowNo": "Non ou pas sûr",
+      "twoInARowYes": "Oui, j'ai raté des répétitions ou atteint l'échec",
+      "moreOptions": "Plus d'options : matériel, style de progression et détails de la dernière séance"
+    },
+    "problems": {
+      "weight": "Saisis la charge de la dernière séance sous forme de nombre supérieur à 0 et au plus {{max}}.",
+      "reps": "Saisis les répétitions sous forme de nombre entier de 1 à {{max}}.",
+      "plannedReps": "Saisis les répétitions prévues sous forme de nombre entier de 1 à {{max}}.",
+      "reserve": "Saisis les répétitions en réserve sous forme de nombre de 0 à {{max}}, ou laisse vide."
+    },
+    "results": {
+      "title": "Prochaine séance",
+      "kind": {
+        "progression": "Monter",
+        "repeat": "Refaire comme la dernière fois",
+        "deload": "Alléger"
+      },
+      "target_one": "{{weight}} pour {{reps}} répétition",
+      "target_few": "{{weight}} pour {{reps}} répétitions",
+      "target_many": "{{weight}} pour {{reps}} répétitions",
+      "target_other": "{{weight}} pour {{reps}} répétitions",
+      "changeUp": "{{change}} ({{percent}}) de plus que la dernière fois.",
+      "changeSame": "La même charge que la dernière fois.",
+      "changeDown": "{{change}} ({{percent}}) de moins que la dernière fois.",
+      "step": "Un pas de charge pour ce matériel est de {{step}}.",
+      "plates": "Disques de chaque côté de la barre",
+      "emptyBar": "Barre vide",
+      "plateLine": "{{count}} × {{weight}}",
+      "unrated": "Tu as laissé les répétitions en réserve vides : la décision repose donc sur les seules répétitions, une de plus à chaque séance jusqu'au haut de ta plage, puis davantage de charge."
+    },
+    "reasons": {
+      "addWeight": "La dernière séance a atteint l'objectif : au moins {{reserve}} répétitions en réserve et au moins {{planned}} répétitions dans ta série la plus faible. La charge monte d'un pas.",
+      "addReps": "La dernière séance a atteint l'objectif, mais les répétitions augmentent avant la charge. La charge ne monte qu'une fois le haut de ta plage de répétitions atteint.",
+      "stepTooCoarse": "Un pas de charge ({{step}}) représente plus d'un quart de cette charge, un saut trop grand pour être réalisé : l'application ajoute donc une répétition à la place.",
+      "unfinished": "Tu n'as pas terminé toutes les séries, la séance ne compte donc pas comme une réussite. Refais-la.",
+      "missedPlan": "Tu as raté les répétitions prévues. Un échec répète la même charge. Deux échecs de suite à cette charge la font baisser.",
+      "tooHard": "Tu avais moins de {{reserve}} répétitions en réserve : la séance était déjà assez dure. Refais-la. La charge ne monte que si tu laisses au moins {{reserve}}.",
+      "deload": "Deux séances ratées de suite à cette charge. La charge baisse de 10 % ou d'un pas, selon ce qui est le plus grand, puis s'arrondit à une charge que tu peux régler."
+    },
+    "sections": [
+      {
+        "title": "De combien augmenter ?",
+        "body": [
+          "Musclog ajoute un pas de charge : 2,5 kg (5 lb) sans salle configurée, ou deux fois ton plus léger disque sur une barre quand tu as configuré une salle. Sur un exercice de 100 kg, cela fait 2,5 %, et sur un haltère léger, c'est une part importante : quand un pas représente plus d'un quart du poids, l'application ajoute donc une répétition à la place. Ce sont des règles de produit, pas des résultats d'études.",
+          "La recherche donne une fourchette, pas un chiffre unique. La prise de position de l'American College of Sports Medicine de 2009 suggère d'augmenter la charge d'environ 2 à 10 % une fois que tu peux faire une ou deux répétitions de plus que ta cible lors de deux séances de suite. Musclog est plus prudente sur un point et plus rapide sur un autre : elle agit après une seule séance, mais seulement si tu as laissé des répétitions en réserve et réussi toutes les répétitions prévues."
+        ]
+      },
+      {
+        "title": "Quand ça monte, reste stable ou baisse",
+        "body": [
+          "Ça monte quand ta série de travail la plus faible a atteint les répétitions prévues et que tu as fini avec au moins 2 répétitions en réserve en moyenne. Ça reste stable après une séance dure ou courte, car une mauvaise journée n'est pas une stagnation. Ça baisse après deux séances de suite à la même charge où tu n'as rien gardé en réserve, ou où tu as raté les répétitions prévues. Ces règles des deux séances sont des choix de Musclog."
+        ]
+      },
+      {
+        "title": "Poids d'abord ou répétitions d'abord",
+        "body": [
+          "Le poids d'abord ajoute un pas chaque fois que tu l'as gagné, et garde tes répétitions. Les répétitions d'abord ajoutent une répétition à chaque séance jusqu'à en avoir deux de plus que ton programme (une seule pour les programmes de six répétitions ou moins), puis ajoutent de la charge et reviennent aux répétitions prévues. Cette seconde méthode est la double progression."
+        ]
+      },
+      {
+        "title": "Ce que cette page ne voit pas",
+        "body": [
+          "Elle lit une seule séance. L'application regarde aussi ton programme, ta salle et la semaine que tu vis, et affiche la raison à côté de chaque série. Considère la réponse comme un bon point de départ, pas comme une prescription."
+        ]
+      }
+    ],
+    "sources": {
+      "acsm": "American College of Sports Medicine (2009), Modèles de progression en entraînement de résistance pour adultes en bonne santé (Medicine & Science in Sports & Exercise)",
+      "zourdos": "Zourdos et al. (2016), Nouvelle échelle de RPE propre à l'entraînement en résistance, mesurant les répétitions en réserve"
+    },
+    "articles": {
+      "doubleProgression": "Double progression : la façon la plus simple d'ajouter de la charge chaque semaine",
+      "trackProgress": "Comment suivre ses progrès en salle : guide pour débutants"
+    }
+  }
+}

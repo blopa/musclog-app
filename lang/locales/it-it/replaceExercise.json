@@ -1,0 +1,58 @@
+{
+  "replaceExercise": {
+    "title": "Sostituisci esercizio",
+    "replace": "Sostituisci",
+    "searchPlaceholder": "Cerca esercizi...",
+    "selectExercise": "Seleziona esercizio",
+    "loadMore": "Carica altri",
+    "loadingMore": "Caricamento…",
+    "noExercisesMatch": "Nessun esercizio corrisponde",
+    "families": {
+      "all": "Tutti",
+      "torso": "Parte superiore",
+      "arms": "Braccia",
+      "legs": "Gambe",
+      "core": "Core",
+      "other": "Altro"
+    },
+    "suggested": "Consigliati per te",
+    "disliked": "Non graditi",
+    "hiddenHint": "Gli esercizi che eviti, o che la tua palestra non ha, sono nascosti.",
+    "back": "Indietro",
+    "swapped": "Sostituito {{from}} con {{to}}",
+    "reason": {
+      "title": "Perché sostituire?",
+      "subtitle": "Sostituzione con {{name}}",
+      "question": "Qual è il motivo?",
+      "options": {
+        "equipment_unavailable": "Attrezzatura non disponibile",
+        "pain": "Dolore o fastidio",
+        "too_hard": "Troppo difficile",
+        "too_easy": "Troppo facile",
+        "dislike": "Non mi piace",
+        "machine_occupied": "Macchina occupata",
+        "just_today": "Solo per oggi"
+      },
+      "descriptions": {
+        "equipment_unavailable": "La macchina o i pesi non ci sono",
+        "pain": "Qualcosa fa male o non va",
+        "too_hard": "Troppo pesante o troppo impegnativo",
+        "too_easy": "Non abbastanza impegnativo",
+        "dislike": "Semplicemente non fa per me",
+        "machine_occupied": "Qualcun altro la sta usando",
+        "just_today": "Solo per questa sessione"
+      },
+      "remember": {
+        "injury": "Non suggerire più {{name}} per ora",
+        "dislike": "Non suggerire più {{name}}"
+      },
+      "rememberHint": {
+        "injury": "Resta escluso dalle sostituzioni e dagli allenamenti generati finché non guarisci.",
+        "dislike": "Verrà messo per ultimo, mai come primo suggerimento."
+      },
+      "removeEquipment": "{{equipment}} non è disponibile a {{gym}}",
+      "removeEquipmentHint": "Rimuovilo da questa palestra, così non vengono suggeriti esercizi che lo richiedono."
+    },
+    "addReason": "Aggiungi motivo"
+  }
+}

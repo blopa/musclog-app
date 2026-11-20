@@ -1,0 +1,54 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "Kalkulator maksimum na jedno powtórzenie",
+    "intro": "Wpisz serię, którą zrobiłeś, a dostaniesz szacowane maksimum na jedno powtórzenie z zapasem powtórzeń i tabelę ciężarów przy każdym jego procencie.",
+    "form": {
+      "weight": "Podniesiony ciężar",
+      "reps": "Wykonane powtórzenia",
+      "repsHint": "Liczba całkowita, 1 do 10",
+      "reserve": "Powtórzenia w zapasie (opcjonalnie)",
+      "reserveHint": "Ile powtórzeń jeszcze mógłbyś zrobić. Zostaw puste, jeśli szedłeś do upadku."
+    },
+    "problems": {
+      "weight": "Wpisz podniesiony ciężar jako liczbę większą od 0.",
+      "reps": "Wpisz powtórzenia jako liczbę całkowitą od 1 do 10.",
+      "repsTooHigh": "Serie powyżej 10 powtórzeń nie dają wiarygodnego maksimum na jedno powtórzenie. Długa seria mierzy wytrzymałość, a każda formuła im bardziej musi ekstrapolować powtórzenia, tym bardziej odchodzi od prawdy. Użyj cięższej serii do 10 powtórzeń lub mniej.",
+      "reserve": "Powtórzenia w zapasie muszą być liczbą całkowitą od 0 do 9."
+    },
+    "results": {
+      "estimate": "Szacowane maksimum na jedno powtórzenie",
+      "range": "Pojedyncze formuły wahają się od {{low}} do {{high}} {{unit}}. Szacunek to ich średnia.",
+      "tableTitle": "Ciężar przy każdym procencie twojego maksimum na jedno powtórzenie",
+      "percent": "% 1RM",
+      "weight": "Ciężar",
+      "reps": "Powtórzenia do upadku",
+      "byFormula": "Każda formuła osobno",
+      "extrapolatedNote": "* Ekstrapolowane. Powyżej {{max}} powtórzeń formuły są rozciągane poza zakres, któremu aplikacja ufa dla serii, więc traktuj te wiersze jako tylko przybliżenie."
+    },
+    "sections": [
+      {
+        "title": "Jak liczony jest szacunek",
+        "body": [
+          "Kalkulator uśrednia siedem opublikowanych formuł: Epleya, Brzyckiego, Landera, Lombardiego, Mayhew, O'Connora i Wathena. Uśrednianie wygładza osobliwości każdej z nich, a wynik to ta sama liczba, którą aplikacja Musclog pokazuje dla zapisanej serii.",
+          "Powtórzenia w zapasie dodaje się do wykonanych powtórzeń. Pięć powtórzeń z dwoma w zapasie traktowane jest jak siedem powtórzeń do upadku, bo tyle brakowało do twojego limitu."
+        ]
+      },
+      {
+        "title": "Dlaczego serie powyżej 10 powtórzeń nie są wiarygodne",
+        "body": [
+          "Formuły maksimum na jedno powtórzenie działają najlepiej przy seriach o niskiej liczbie powtórzeń. Im bardziej je rozciągasz, tym bardziej się mylą, a seria 15 powtórzeń mówi głównie o wytrzymałości, a nie o szczytowej sile. Aplikacja ignoruje te serie przy poziomach siły i celach, i ta strona robi tak samo."
+        ]
+      },
+      {
+        "title": "Jak używać tabeli",
+        "body": [
+          "Każdy wiersz to ciężar przy procencie szacowanego maksimum na jedno powtórzenie, z powtórzeniami do upadku, które te same formuły przewidują przy tym ciężarze. Ludzie bardzo się różnią, więc traktuj liczby jako punkt wyjścia i dostosuj je do tego, jak sztanga naprawdę się porusza."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo i in. (2024), Maximal number of repetitions at percentages of the one repetition maximum (Sports Medicine)",
+      "zourdos": "Zourdos i in. (2016), Nowa skala RPE dla treningu oporowego mierząca powtórzenia w zapasie"
+    }
+  }
+}

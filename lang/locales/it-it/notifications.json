@@ -1,0 +1,116 @@
+{
+  "notifications": {
+    "header": {
+      "title": "Notifiche",
+      "clearAll": "Cancella tutte"
+    },
+    "sections": {
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "earlier": "Precedenti"
+    },
+    "channels": {
+      "default": "Predefinito",
+      "activeWorkout": "Allenamento in corso",
+      "cycle": "Promemoria del ciclo",
+      "restTimer": "Timer di recupero",
+      "workoutReminders": "Promemoria allenamento",
+      "restTimerQuiet": "Timer di recupero (senza suono)"
+    },
+    "startNow": "Inizia ora",
+    "types": {
+      "aiInsight": {
+        "title": "Analisi IA",
+        "description": "In base ai tuoi ultimi sollevamenti, prova ad aumentare oggi l'apporto di proteine di 15 g per un recupero ottimale."
+      },
+      "workoutReminder": {
+        "title": "Promemoria allenamento",
+        "description": "Pronto per {{workoutName}}? Previsto per oggi alle {{time}}."
+      },
+      "workoutCompleted": {
+        "title": "Allenamento completato",
+        "description": "{{workoutName}} completato. Hai bruciato {{calories}}."
+      },
+      "kudosReceived": {
+        "title": "Complimenti ricevuti",
+        "description": "{{name}} e altre {{count}} persone hanno apprezzato il tuo ultimo traguardo: \"{{milestone}}\""
+      },
+      "weeklyReport": {
+        "title": "Report settimanale pronto",
+        "description": "Il tuo report sui progressi della settimana scorsa è disponibile. Controlla le tue statistiche."
+      },
+      "activeWorkout": {
+        "title": "Allenamento: {{workoutName}}",
+        "body": "{{totalTime}} - {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Allenamento in corso"
+      },
+      "workoutReminderMorning": {
+        "title": "Promemoria allenamento",
+        "body": "Il tuo allenamento {{workoutName}} è previsto per oggi."
+      },
+      "nutritionOverview": {
+        "title": "Riepilogo alimentare giornaliero",
+        "body": "Scopri come l'alimentazione di oggi si confronta con i tuoi obiettivi."
+      },
+      "nutritionCheckin": {
+        "title": "Controllo settimanale dei progressi",
+        "body": "È ora del tuo controllo nutrizionale settimanale! Vediamo come è andata."
+      },
+      "periodPrediction": {
+        "title": "Previsione del ciclo",
+        "body": "Il tuo ciclo potrebbe iniziare tra pochi giorni, in base ai cicli recenti."
+      },
+      "fertileWindow": {
+        "title": "Finestra fertile",
+        "body": "La tua finestra fertile stimata potrebbe iniziare a breve. È una stima del calendario, non una conferma dell'ovulazione."
+      },
+      "restTimerAlert": {
+        "title": "Recupero terminato",
+        "body": "Il recupero è finito. È ora della serie successiva."
+      },
+      "workoutDurationWarning": {
+        "title": "Ancora in allenamento?",
+        "body": "La tua sessione è in corso da 5 ore. Ricordati di terminarla in Musclog."
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Hai un aggiornamento."
+      },
+      "unfinishedWorkout": {
+        "title": "Terminare l'allenamento?",
+        "body": "{{workoutName}} è ancora aperto. Terminalo e registralo quando hai finito."
+      },
+      "goalAtRisk": {
+        "title": "Obiettivo settimanale a rischio",
+        "body": "Allenamenti mancanti per raggiungere l'obiettivo settimanale: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Quasi pronto",
+        "body": "Mancano {{seconds}} secondi di recupero."
+      },
+      "workTimerAlert": {
+        "title": "Tempo scaduto",
+        "body": "La tua serie a tempo è finita."
+      },
+      "comebackWelcome": {
+        "title": "Quando sei pronto",
+        "body": "Nessuna fretta. Se vuoi riprendere gradualmente, c'è un modo delicato per ricominciare."
+      }
+    },
+    "actions": {
+      "addRest": "+{{seconds}}s di recupero",
+      "nextSet": "Serie successiva",
+      "snooze": "Posticipa 1 h",
+      "done": "Fatto",
+      "later": "Più tardi",
+      "skip": "Salta"
+    },
+    "restPrompt": {
+      "title": "Avvisi del timer di recupero?",
+      "message": "Il timer di recupero è in funzione. Vuoi un avviso se blocchi il telefono o cambi app?",
+      "confirm": "Attiva avvisi",
+      "cancel": "Non ora"
+    }
+  }
+}

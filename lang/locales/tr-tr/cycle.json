@@ -1,0 +1,719 @@
+{
+  "cycle": {
+    "title": "Döngü",
+    "nextPeriod": "Sonraki adet tahmini",
+    "insightsAndLog": "Döngü içgörüleri ve kayıt",
+    "dailyLog": "Günlük kayıt",
+    "flowIntensity": "Akış yoğunluğu",
+    "symptomsTitle": "Belirtiler",
+    "noLogsToday": "Bugün için belirti kaydedilmedi.",
+    "logSymptoms": "Belirti kaydet",
+    "logDaily": "Günlük döngü kaydı",
+    "predictionDisclaimer": "Döngü tahminleri yaklaşık değerlerdir ve bir doğum kontrol yöntemi değildir.",
+    "periodActive": "Adet sürüyor, {{day}}. gün",
+    "periodActiveGeneric": "Adet sürüyor",
+    "settings": {
+      "title": "Döngü ayarları",
+      "subtitle": "Döngü yapılandırmanı düzenle",
+      "changeContext": "Yaşam evresini ya da doğum kontrolünü değiştir",
+      "sectionUsual": "Olağan sürelerin",
+      "usualHint": "Kendi geçmişini öğrenecek kadar veri birikene kadar kullanılır.",
+      "sectionShown": "Gösterilenler",
+      "showPredictions": "Tahminleri göster",
+      "showPredictionsHint": "Tahmini tarih göstermeden kayıt tutmaya devam etmek için kapat.",
+      "showFertility": "Doğurganlık tahminlerini göster",
+      "showFertilityHint": "Varsayılan olarak kapalı. Doğurgan pencerenin bilgilendirme amaçlı bir tahminidir, doğum kontrolü değildir.",
+      "fertility": {
+        "explainTitle": "Doğurganlık tahminleri gösterilsin mi?",
+        "explainMessage": "Doğurgan pencere, geçmiş döngü sürelerinden tahmin edilir. Bu, yumurtlamanın ne zaman olduğunu güvenilir biçimde söyleyemez; bu yüzden hamileliği önlemek için tek başına asla kullanma.",
+        "enable": "Tahminleri göster"
+      },
+      "sectionReminders": "Hatırlatıcılar",
+      "sectionTracking": "Takip",
+      "sectionPrivacy": "Gizlilik",
+      "privacyNote": "Döngü kayıtların bu telefonda şifrelenir. Dışa aktardığın yedekler, senin kontrolünde olan ayrı dosyalardır.",
+      "sectionExport": "Dışa aktar",
+      "exportPeriods": "Adetleri dışa aktar (CSV)",
+      "exportDays": "Günlük kaydı dışa aktar (CSV)",
+      "summaryTitle": "Randevu özeti",
+      "summaryHint": "Kaydettiklerinin kısa bir PDF'i: tarihler, kanama, belirtiler, ağrı ve notlar. Yalnızca kayıtlarını gösterir, tanı koymaz.",
+      "summaryRange": "Son {{count}} ay",
+      "summaryCreate": "Özet oluştur (PDF)",
+      "sectionManage": "Yönet",
+      "pause": "Takibi duraklat",
+      "pauseHint": "Duraklatmak tüm kayıtlarını korur ve sen devam ettirene kadar döngü sekmesini ve hatırlatıcıları gizler.",
+      "delete": {
+        "action": "Tüm döngü verilerini sil",
+        "title": "Tüm döngü verileri silinsin mi?",
+        "message": "Bu işlem bu telefondaki her adeti, günlük kaydı ve yaşam evresi girişini kalıcı olarak siler. Geri alınamaz. Daha önce dışa aktardığın ya da paylaştığın dosyalar uygulamanın dışındadır ve etkilenmez. Paylaşılan ruh hali kayıtları Ana Sayfa ve İlerleme'de kullanılabilir kalır.",
+        "confirm": "Her şeyi sil",
+        "prompt": "Döngü verilerinin silinmesini onayla",
+        "backupsTitle": "Yerel kurtarma noktaları da silinsin mi?",
+        "backupsMessage": "Bu telefon, verilerinin geri kalanıyla birlikte döngü kayıtlarının bir kopyasını içerebilen {{count}} kurtarma noktası tutuyor. Bunu da silinsin mi?",
+        "backupsMessage_plural": "Bu telefon, verilerinin geri kalanıyla birlikte döngü kayıtlarının bir kopyasını içerebilen {{count}} kurtarma noktası tutuyor. Bunları da silinsin mi?",
+        "backupsConfirm": "Kurtarma noktalarını sil"
+      }
+    },
+    "noData": {
+      "title": "Döngünü takip etmeye başla",
+      "description": "Adet tarihlerini kaydet ya da kanama olmadan belirtileri takip et. Son adet tarihini bilmeden de başlayabilirsin.",
+      "start": "Takibe başla",
+      "pausedTitle": "Takip duraklatıldı",
+      "pausedDescription": "Geçmişin kaydedildi. Kayda devam etmek ve tahminleri görmek için devam ettir.",
+      "resume": "Takibe devam et"
+    },
+    "actions": {
+      "periodStarted": "Adetim bugün başladı",
+      "periodEnded": "Adetim bugün bitti",
+      "logPastPeriod": "Geçmiş bir adet kaydet"
+    },
+    "periodLog": {
+      "startTitle": "Adet başlangıcını kaydet",
+      "endTitle": "Adet bitişini kaydet",
+      "pastTitle": "Geçmiş adet ekle",
+      "startDescription": "Adetinin ne zaman başladığını işaretle. Bugün ya da geçmiş bir tarih için kayıt yapabilirsin.",
+      "endDescription": "Adetinin ne zaman bittiğini işaretle.",
+      "pastDescription": "Geçmiş adet tarihlerini eklemek, uygulamanın döngünü öğrenmesine ve daha iyi tahminler yapmasına yardımcı olur.",
+      "startDateLabel": "Adet başladı",
+      "endDateLabel": "Adet bitti",
+      "startedOn": "Adet başladı",
+      "useToday": "Bugünü kullan"
+    },
+    "confidence": {
+      "low": "{{count}} döngüye dayalı tahmin",
+      "low_plural": "{{count}} döngüye dayalı tahmin",
+      "medium": "{{count}} döngüye dayalı",
+      "high": "{{count}} döngüye dayalı, iyi doğruluk",
+      "irregular": "Döngüler değişken, bu yüzden bir tarih aralığı gösteriliyor"
+    },
+    "lifeStage": {
+      "pcos": "PCOS ile döngüler çok düzensiz olabilir. Tahminler kaba yaklaşımlardır.",
+      "postPill": "Doğum kontrolünü bırakma: döngüler 1–3 ay düzensiz olabilir.",
+      "postpartum": "Doğum sonrası döngüler çoğu zaman öngörülemez biçimde geri döner, özellikle emzirirken.",
+      "perimenopause": "Menopoz öncesi dönem döngüde belirgin düzensizliklere yol açabilir. Tahmini bir aralık gösteriliyor."
+    },
+    "flow": {
+      "spotting": "Lekelenme",
+      "light": "Hafif",
+      "medium": "Orta",
+      "heavy": "Yoğun",
+      "veryHeavy": "Çok yoğun"
+    },
+    "symptoms": {
+      "physicalTitle": "Fiziksel",
+      "emotionalTitle": "Duygusal ve zihinsel",
+      "cramps": "Kramp",
+      "headache": "Baş ağrısı",
+      "migraine": "Migren",
+      "bloating": "Şişkinlik",
+      "breastTenderness": "Göğüs hassasiyeti",
+      "nausea": "Bulantı",
+      "backPain": "Sırt ağrısı",
+      "fatigue": "Yorgunluk",
+      "acne": "Akne",
+      "foodCravings": "Yiyecek isteği",
+      "digestiveIssues": "Sindirim sorunları",
+      "hotFlashes": "Sıcak basmaları",
+      "insomnia": "Uykusuzluk",
+      "moodSwings": "Ruh hali dalgalanmaları",
+      "anxiety": "Kaygı",
+      "irritability": "Sinirlilik",
+      "lowMood": "Düşük ruh hali",
+      "brainFog": "Zihin bulanıklığı",
+      "lowLibido": "Düşük cinsel istek"
+    },
+    "phase": {
+      "menstrual": "Adet",
+      "follicular": "Foliküler",
+      "ovulatory": "Yumurtlama",
+      "ovulation": "Yumurtlama",
+      "luteal": "Luteal",
+      "between": "Adetler arası"
+    },
+    "late": {
+      "title": "Olağan aralığının {{count}} gün sonrasında",
+      "title_plural": "Olağan aralığının {{count}} gün sonrasında",
+      "description": "Adetin başladığında kaydet, tahminlerin güncellenecek."
+    },
+    "insufficient": "Tahmini görmek için bir adet kaydet",
+    "periodNotLogged": "Adet henüz kaydedilmedi",
+    "lock": {
+      "prompt": "Musclog'un kilidini aç",
+      "unlock": "Kilidi aç",
+      "appTitle": "Musclog kilitli",
+      "appDescription": "Devam etmek için kimliğini doğrula."
+    },
+    "calendar": {
+      "bleeding": {
+        "none": "Kanama yok",
+        "spotting": "Lekelenme",
+        "light": "Hafif",
+        "medium": "Orta",
+        "heavy": "Yoğun",
+        "very_heavy": "Çok yoğun"
+      },
+      "a11y": {
+        "period": "kaydedilmiş adet",
+        "predicted": "tahmini adet penceresi",
+        "fertile": "tahmini doğurgan pencere",
+        "observation": "bir şey kaydedildi",
+        "today": "bugün",
+        "nothing": "hiçbir şey kaydedilmedi"
+      },
+      "previousMonth": "Önceki ay",
+      "nextMonth": "Sonraki ay",
+      "legend": "Takvim açıklaması",
+      "legendPeriod": "Kaydedilmiş adet ya da kanama",
+      "legendSpotting": "Kaydedilmiş lekelenme",
+      "legendPredicted": "Tahmini adet penceresi",
+      "legendFertile": "Tahmini doğurgan pencere",
+      "legendLogged": "Bir şey kaydedildi"
+    },
+    "context": {
+      "title": "Yaşam evresi ve doğum kontrolü",
+      "description": "Bir tarihten itibaren yapılan değişikliği kaydet. Önceki geçmişin korunur.",
+      "effectiveFrom": "Şu tarihten itibaren geçerli",
+      "chooseSpecific": "Daha iyi bir rehberlik için belirli bir tür seç.",
+      "effects": "Bazı yöntemler döngünün davranışını değiştirir; bu nedenle tahminler ve doğurgan pencere gizlenebilir ya da bir uyarıyla gösterilebilir.",
+      "remove": "Bu değişikliği kaldır",
+      "timelineTitle": "Yaşam evresi ve doğum kontrolü geçmişi",
+      "from": "{{date}} tarihinden itibaren",
+      "lossQuietTitle": "Diğer hatırlatıcılar da duraklatılsın mı?",
+      "lossQuietMessage": "Tahminler ve adet hatırlatıcıları zaten durduruldu. Günlük kontrolü ve diğer döngü hatırlatıcılarını da 4 hafta için duraklatabilirsin. Hap hatırlatıcıları devam eder. Döngü ayarlarından istediğin zaman devam ettirebilirsin.",
+      "lossQuietConfirm": "4 hafta duraklat",
+      "lossQuietKeep": "Açık kalsın"
+    },
+    "daySheet": {
+      "title": "Bu günü kaydet",
+      "noSymptoms": "Bugün belirti yok",
+      "noSymptomsLogged": "Belirti yok",
+      "moreSymptoms": "Daha fazla belirti",
+      "fewerSymptoms": "Daha az belirti",
+      "pain": "Ağrı",
+      "energy": "Enerji",
+      "energyLevel": {
+        "1": "Çok düşük",
+        "2": "Düşük",
+        "3": "İdare eder",
+        "4": "İyi",
+        "5": "Yüksek"
+      },
+      "note": "Not",
+      "notePlaceholder": "Hatırlanmaya değer her şey",
+      "clearDay": "Bu günü temizle",
+      "nothingLogged": "Bu gün için hiçbir şey kaydedilmedi.",
+      "addDetails": "Ayrıntı ekle",
+      "edit": "Düzenle",
+      "startPeriodPrompt": "Adet dışında kanama kaydedildi.",
+      "startPeriod": "Adeti burada başlat",
+      "moodUnavailable": "Ruh hali yüklenemedi. Diğer her şey yine de kaydedilir.",
+      "severityOptional": "Ne kadar şiddetli? İsteğe bağlı. Temizlemek için bir derecelendirmeye yeniden dokun.",
+      "painScale": "0 = ağrı yok, 10 = hayal edebileceğin en kötüsü",
+      "clearTitle": "Bu gün temizlensin mi?",
+      "clearMessage": "Bu işlem, Ana Sayfa ve İlerleme'deki ruh haline dahil, bu gün için kaydedilen her şeyi kaldırır. Geri alınamaz.",
+      "clearConfirm": "Günü temizle",
+      "pill": {
+        "label": "Hap",
+        "taken": "Alındı",
+        "skipped": "Atlandı"
+      }
+    },
+    "edit": {
+      "title": "Adeti düzenle",
+      "delete": "Bu adeti sil",
+      "deleteTitle": "Bu adet silinsin mi?",
+      "deleteMessage": "İstatistiklerin ve hatırlatıcıların onsuz yeniden hesaplanır. Hemen ardından geri alabilirsin.",
+      "deleted": "Adet silindi",
+      "undo": "Geri al",
+      "recalculates": "Kaydetmek istatistiklerini ve hatırlatıcılarını yeniden hesaplar."
+    },
+    "end": {
+      "title": "Nasıl bitti?",
+      "open": "Hâlâ devam ediyor",
+      "onDate": "Bir tarihte",
+      "unknown": "Hatırlamıyorum",
+      "usualLength": "Olağan süre ({{days}} gün)",
+      "estimatedHint": "Kaydedilmiş bir bitiş tarihi olarak değil, bir tahmin olarak kaydedilir.",
+      "unknownHint": "Bu adedin süresi ortalamalarında kullanılmayacak."
+    },
+    "errors": {
+      "future": "Adet tarihleri gelecekte olamaz.",
+      "overlap": "Bu, daha önce kaydettiğin bir adetle çakışıyor.",
+      "endBeforeStart": "Bitiş, başlangıçtan önce olamaz.",
+      "notFound": "Bu adet artık yok. Kaldırılmış olabilir."
+    },
+    "fertilityDisclaimer": "Yalnızca bilgilendirme amaçlı bir tahmindir. Hamileliği önlemek için tek başına kullanma.",
+    "history": {
+      "title": "Geçmiş",
+      "tabCalendar": "Takvim",
+      "tabHistory": "Adetler",
+      "empty": "Henüz kaydedilmiş bir adet yok.",
+      "estimatedEnd": "Tahmini bitiş",
+      "unknownEnd": "Bitiş bilinmiyor",
+      "ongoing": "Devam ediyor",
+      "editHint": "Düzenlemek için dokun",
+      "days": "{{days}} gün",
+      "days_plural": "{{days}} gün",
+      "cycleLength": "{{days}} günlük döngü",
+      "cycleLength_plural": "{{days}} günlük döngü",
+      "notUsed": "Tahminlerde kullanılmaz: {{reason}}",
+      "reason": {
+        "too_short": "aralık çok kısaydı, muhtemelen yanlış kayıt",
+        "possible_missed_period": "diğerlerinden çok daha uzundu, muhtemelen atlanmış bir adet",
+        "user_excluded": "sen dışarıda bıraktın",
+        "hormonal_context": "hormonal bir yöntem kullanılıyordu",
+        "postpartum_context": "doğum sonrası döngüler sayılmaz",
+        "life_context": "doğal adet tahmini olmayan bir bağlam"
+      }
+    },
+    "insights": {
+      "title": "Kayıtlarındaki örüntüler",
+      "basedOnRecords": "Yalnızca kendi kayıtlarına dayanır.",
+      "viewData": "Veriyi gör",
+      "viewSessions": "Bu seansları gör",
+      "evidenceTitle": "Bu neye dayanıyor",
+      "recurringSymptom": "Son {{total}} döngünün {{hits}} tanesinde, adetin başlamasından {{days}} gün içinde {{symptom}} kaydettin.",
+      "highPain": "Son {{total}} döngünün {{hits}} tanesinde, adetin başlamasından {{days}} gün içinde {{level}} ya da daha yüksek ağrı kaydettin.",
+      "cycleLengthLonger": "Son döngün {{length}} gündü; önceki {{count}} döngünün ortancasından ({{typical}} gün) {{diff}} gün daha uzundu.",
+      "cycleLengthShorter": "Son döngün {{length}} gündü; önceki {{count}} döngünün ortancasından ({{typical}} gün) {{diff}} gün daha kısaydı.",
+      "durationLonger": "Son adetin {{duration}} gün sürdü; önceki {{count}} adetin ortancasından ({{typical}} gün) {{diff}} gün daha uzundu.",
+      "durationShorter": "Son adetin {{duration}} gün sürdü; önceki {{count}} adetin ortancasından ({{typical}} gün) {{diff}} gün daha kısaydı.",
+      "moodNearStart": "Son {{total}} döngünün {{hits}} tanesinde, adetin başlamasından {{days}} gün içindeki ruh halin diğer günlerine göre daha düşük kaydedildi.",
+      "workoutNearStart": "Son {{total}} döngünün {{hits}} tanesinde, adetin başlamasından {{days}} gün içindeki antrenmanlarının hacmi aynı döngüdeki diğer seanslarından daha düşüktü.",
+      "recurringPreperiodSymptom": "{{total}} kayıtlı adetin {{hits}} tanesinin başlamasından önceki yedi günde {{symptom}} kaydettin."
+    },
+    "phaseEstimated": "Tahmini evre",
+    "phaseUnknown": "Tahmin yok",
+    "prediction": {
+      "insufficient": "Tahmini görmek için bir adet kaydet",
+      "hidden": "Tahminler gizli",
+      "notShown": "Senin durumunda tahmin yok",
+      "likelyRange": "Muhtemelen {{from}} – {{to}}",
+      "likelyDate": "Muhtemelen {{date}} civarında",
+      "caveated": "Bu yöntem döngünün davranışını değiştirebilir, bu yüzden tahmini gevşek düşün.",
+      "variabilityExpected": "Senin durumunda döngü uzunluğu değişir. Bu yaygındır ve aralık bunu yansıtır.",
+      "variableHint": "Döngülerin çok değişti ({{low}}–{{high}} gün). Tek bir tarih güvenilir olmayabilir.",
+      "keepHidden": "Gizli tut",
+      "showRange": "Aralığı göster",
+      "fertile": "Tahmini doğurgan pencere: {{from}} – {{to}}",
+      "howCalculated": "Bu nasıl hesaplanıyor?",
+      "show": "Tahminleri göster",
+      "hide": "Tahminleri gizle",
+      "detailsTitle": "Tahmin nasıl yapılıyor",
+      "basis": "Son {{cycles}} döngüne dayalı · ortanca {{median}} gün · aralık {{low}}–{{high}}",
+      "basis_plural": "Son {{cycles}} döngüne dayalı · ortanca {{median}} gün · aralık {{low}}–{{high}}",
+      "basisNone": "Henüz kullanılabilir döngü yok, bu yüzden tahmin olağan süren olan {{days}} günü kullanır.",
+      "recentWeighted": "Yakın döngüler daha çok sayılır, bu yüzden tahmin {{days}} günü kullanır.",
+      "excludedCount": "{{cycles}} döngü kullanılmıyor (aşağıya bak).",
+      "excludedCount_plural": "{{cycles}} döngü kullanılmıyor (aşağıya bak).",
+      "cycleUsed": "Tahminlerde kullanılıyor",
+      "useForPredictions": "Bu döngüyü tahminler için kullan",
+      "evidenceNote": "Verilerine dayanır. Tahmin bir tıbbi sonuç değil, bir kestirimdir.",
+      "confidence": {
+        "none": "Henüz veri yok",
+        "low": "Düşük güven · {{cycles}} kullanılabilir döngü",
+        "low_plural": "Düşük güven · {{cycles}} kullanılabilir döngü",
+        "moderate": "Orta güven · {{cycles}} kullanılabilir döngü",
+        "high": "Yüksek güven · {{cycles}} kullanılabilir döngü"
+      },
+      "suppressed": {
+        "hormonal": "Bu yöntemde kanama doğal bir döngüyü izlemeyebilir, bu yüzden tahmin edilen bir tarih pek bir anlam taşımaz. Yine de her şeyi kaydedebilirsin.",
+        "postpartum": "Doğumdan sonra döngüler çoğu zaman öngörülemez biçimde geri döner. İki adet kaydettiğinde tahminler görünmeye başlar.",
+        "no_bleeding": "Kanama olmadan takip ediyorsun, bu yüzden tahmin edilecek bir adet yok. Günlük kayıtlar ve örüntüler yine çalışır."
+      }
+    },
+    "quickLog": {
+      "title": "Hızlı kayıt",
+      "pinPrompt": "{{symptom}} belirtisini sık kaydediyorsun. Hızlı kayda sabitleyelim mi?",
+      "noThanks": "Hayır, teşekkürler",
+      "pin": "Sabitle"
+    },
+    "severity": {
+      "mild": "hafif",
+      "moderate": "orta",
+      "severe": "şiddetli"
+    },
+    "summary": {
+      "title": "Döngü özeti",
+      "range": "{{from}} – {{to}} (son {{months}} ay)",
+      "disclaimer": "Musclog uygulamasından kendi kaydettiğin veriler. Bir tanı değildir ve tıbbi tavsiyenin yerini tutmaz.",
+      "sectionOverview": "Genel bakış",
+      "sectionPeriods": "Adetler",
+      "sectionBleeding": "Kanama günleri düzeye göre",
+      "sectionSymptoms": "En çok kaydedilen belirtiler (gün)",
+      "sectionPain": "Ağrı",
+      "sectionNotes": "Notlar",
+      "sectionContext": "Yaşam evresi ve doğum kontrolü",
+      "colStart": "Başlangıç",
+      "colEnd": "Bitiş",
+      "colDuration": "Gün",
+      "colCycleLength": "Döngü (gün)",
+      "colStatus": "Ortalamalarda kullanıldı",
+      "empty": "Bu aralıkta adet yok.",
+      "statusUsed": "sayıldı",
+      "statusInProgress": "devam ediyor",
+      "overviewPeriods": "{{n}} adet kaydedildi",
+      "overviewPeriods_plural": "{{n}} adet kaydedildi",
+      "overviewLength": "Döngü uzunluğu: ortanca {{median}} gün, aralık {{low}}–{{high}}.",
+      "overviewNoLength": "Bir döngü uzunluğunu belirtmek için yeterli tamamlanmış döngü yok.",
+      "overviewUsed": "Ortalamalar için {{used}} döngü sayıldı, {{excluded}} tanesi sayılmadı.",
+      "pain": "Ağrı {{days}} günde kaydedildi: ortanca {{median}}/10, en yüksek {{max}}/10, {{severe}} gün 6 ve üzeri."
+    },
+    "personalize": {
+      "title": "Takibi kişiselleştir",
+      "goalsTitle": "Neyi anlamak istersin?",
+      "goalsHint": "Senin için önemli olanları seç. Bunları daha sonra değiştirebilirsin.",
+      "goals": {
+        "timing": "Adet zamanlaması",
+        "symptoms": "Ağrı ve belirtiler",
+        "mood": "Ruh hali",
+        "record": "Sadece kayıt tut"
+      },
+      "question": "Kanamayı ya da döngüsel belirtileri takip etmek ister misin?",
+      "trackBleeding": "Kanama ve belirtiler",
+      "trackBleedingHint": "Adet tarihlerini ve günlük gözlemleri tut.",
+      "trackSymptoms": "Adet olmadan belirtiler",
+      "trackSymptomsHint": "Kanama olmasa bile bir vücut günlüğü tut.",
+      "skip": "Şimdilik atla",
+      "skipHint": "Takibi daha sonra ayarlardan etkinleştirebilirsin.",
+      "quickTitle": "Hızlı kayıt favorileri",
+      "quickHint": "Hızlı kayıt için en fazla altı belirti seç.",
+      "customSymptom": "Yeni özel belirti",
+      "removeNamed": "{{name}} formdan kaldır",
+      "fieldsTitle": "İsteğe bağlı günlük alanlar",
+      "fieldsHint": "Günlük kayıtta yalnızca seçtiğin alanlar görünür.",
+      "fields": {
+        "sleepHours": "Uyku (saat)",
+        "temperatureC": "Bazal sıcaklık",
+        "discharge": "Akıntı / serviks mukusu",
+        "medication": "İlaç ve doz",
+        "sex": "Cinsel aktivite",
+        "tags": "Etiketler",
+        "impact": "Günlük yaşama etkisi",
+        "leakage": "Giysi ya da yatak takımından sızıntı",
+        "clots": "Kan pıhtıları",
+        "lhTest": "Yumurtlama (LH) testi",
+        "pregnancyTest": "Hamilelik testi"
+      },
+      "customField": "Yeni özel alan",
+      "kinds": {
+        "text": "Metin",
+        "number": "Sayı",
+        "toggle": "Evet / hayır",
+        "rating": "Sınırlı derecelendirme"
+      },
+      "removeHint": "Bir alanı formdan kaldırmak, o alana daha önce kaydedilen değerleri geçmişte ve dışa aktarmalarda tutar.",
+      "saving": "Kaydediliyor…",
+      "observationsHint": "Kaydetmediğin alanı boş bırak. Bazal sıcaklık elle yapılan bir gözlemdir ve yumurtlamayı doğrulamaz.",
+      "invalidObservation": "Girişlerini kontrol et: uyku 0–24 saat olmalı, sıcaklık 30–45 °C olmalı ve sayı alanları geçerli bir sayı içermeli.",
+      "unexpectedBleeding": "Beklenmeyen kanama ya da lekelenme kaydet",
+      "sharedMoodHint": "Ruh hali Ana Sayfa ve İlerleme ile paylaşılır. Burada temizlemek, o günün ruh halini oradan da kaldırır. Döngü verilerini silmek paylaşılan ruh hallerini korur.",
+      "loadingMood": "Ruh hali yükleniyor…",
+      "clearMood": "Kaydederken ruh halini temizle",
+      "clearDayAndMood": "Bu günün gözlemlerini ve paylaşılan ruh halini temizle",
+      "summaryObservations": "Ruh hali ve diğer gözlemler",
+      "add": "Ekle",
+      "moodUnlogged": "Ruh hali kaydedilmedi"
+    },
+    "portability": {
+      "title": "Döngü yedeği ve içe aktarma",
+      "backupTitle": "Şifreli döngü yedeği",
+      "recoveryHint": "Bu dosya adet geçmişini, günlük gözlemleri, bağlamı, tercihleri ve paylaşılan ruh hali geçmişini içerir. Bunu bu telefonun dışında kaydet. Şifreyi ayrıca sakla: şifre olmadan yedek kurtarılamaz. Döngü takibini etkinleştirdikten sonra yeni cihazında aşağıdan geri yükle.",
+      "lastBackup": "Son şifreli yedek hazırlandı: {{date}}",
+      "noBackup": "Bu cihazda henüz şifreli döngü yedeği hazırlanmadı.",
+      "password": "Yedek şifresi (en az 8 karakter)",
+      "repeatPassword": "Şifreyi tekrar gir",
+      "createBackup": "Şifreli yedek oluştur",
+      "plaintextHint": "Okunabilir JSON, CSV ve PDF dışa aktarımları şifre korumasız hassas bilgiler içerir. Yalnızca seçtiğin biriyle paylaş.",
+      "exportJson": "Okunabilir döngü JSON'u dışa aktar",
+      "exportContexts": "Bağlam geçmişi CSV'sini dışa aktar",
+      "importTitle": "Döngü geçmişini getir",
+      "importHint": "Musclog'un bir döngü JSON yedeğini ya da Musclog'un dışa aktardığı adet, günlük kayıt ya da bağlam CSV'sini seç. Tarihler YYYY-AA-GG biçimindedir. Bu işlem döngü kayıtlarını ve paylaşılan ruh hallerini birleştirir; uygulamanın diğer verileri olduğu gibi kalır.",
+      "importPassword": "Şifreli dosyanın şifresi (değilse boş bırak)",
+      "chooseFile": "Dosya seç ve önizle",
+      "conflictHint": "Zaten bir kaydı olan bir tarih için, kendi kaydını mı tutmak yoksa tüm kaydı içe aktarılanla mı değiştirmek istediğini seç.",
+      "keep": "Mevcut olanı tut",
+      "replace": "Eşleşen tarihleri değiştir",
+      "restorePreferences": "Olağan süreleri, hedefleri ve alan seçimlerini geri yükle",
+      "preview": "{{added}} yeni kayıt · {{updated}} değişiklik · {{skipped}} mevcut kayıt korundu · {{overlaps}} çakışan adet atlandı",
+      "checking": "Dosya kontrol ediliyor…",
+      "overlapHint": "Çakışan adetler atlanır. Alan tanımları dosyayla birlikte gelir, böylece geçmiş gözlemler okunabilir kalır. Önizleme her adedi, günü, bağlamı ve ruh halini ayrı ayrı sayar.",
+      "confirmImport": "Birleştirmeyi onayla",
+      "imported": "{{added}} yeni kayıt ve {{updated}} değişiklik içe aktarıldı.",
+      "invalidFile": "Bu dosya içe aktarılamaz. Biçimini, tarihlerini ve alan tanımlarını kontrol et.",
+      "failed": "Bu işlem tamamlanamadı. Dosyayı ya da şifreyi kontrol edip tekrar dene.",
+      "prepared": "Dışa aktarma hazırlandı. Dosyayı geri alabileceğin bir yerde sakla.",
+      "fullBackup": "Tam uygulama yedeği ve geri yükleme",
+      "fullBackupHint": "Tam uygulama yedeği ve yerel kurtarma noktaları için Veri ayarlarını aç. Dışa aktarma şifrelemesi varsayılan olarak gereklidir. Tam bir yedeği geri yüklemek uygulama verilerinin yerini alır; yukarıdaki yalnızca döngü içe aktarması ise birleştirir."
+    },
+    "comparison": {
+      "tab": "Karşılaştır",
+      "title": "Döngülerini karşılaştır",
+      "description": "Kendi kaydettiğin gözlemleri döngü gününe ya da bir sonraki kaydedilmiş adetten önceye göre karşılaştır. Görmek ya da düzenlemek için herhangi bir güne dokun.",
+      "start": "Döngü günü",
+      "before": "Bir sonraki adetten önce",
+      "filter": "Bir belirti ya da ölçüm bul",
+      "metrics": {
+        "bleeding": "Kanama",
+        "pain": "Ağrı (0–10)",
+        "energy": "Enerji (1–5)",
+        "mood": "Ruh hali (0–4)"
+      },
+      "flowLegend": "— kaydedilmedi · 0 kanama yok · 1 lekelenme · 2 hafif · 3 orta · 4 yoğun · 5 çok yoğun",
+      "symptomLegend": "— kaydedilmedi · 0 açıkça belirti yok · ● var, derecelendirilmedi · 1 hafif · 2 orta · 3 şiddetli",
+      "numberLegend": "— kaydedilmedi. Sayılar kaydettiğin derecelendirmelerdir, çıkarılmış değerler değildir.",
+      "empty": "Döngüleri karşılaştırmak için adet başlangıçlarını kaydet. Adetten önce görünümü iki başlangıç gerektirir.",
+      "inProgress": "Devam ediyor",
+      "unlogged": "Kaydedilmedi",
+      "unrated": "Var, derecelendirilmedi",
+      "limitHint": "Son altı döngünü gösterir; bir başlangıçtan sonra en fazla 60 gün ve bir sonraki kaydedilmiş başlangıçtan önce 14 gün. Boş günler boş kalır."
+    },
+    "complete": {
+      "confirmLong": "Bu uzun döngü doğru",
+      "unknownLength": "Olağan döngü uzunluğumu bilmiyorum",
+      "rangeHeuristic": "Bu aralık, geçmişine dayalı bir tahmindir; bir olasılık aralığı ya da doğrulanmış bir yumurtlama tarihi değildir.",
+      "backtest": "Geriye dönük kontrol: sonraki {{checked}} başlangıçtan {{hits}} tanesi aralığın içine düştü; ortalama orta nokta hatası {{error}} gün. Bu klinik bir doğrulama değildir.",
+      "restoreFirst": "Geçmişimi geri yükle ya da getir",
+      "careTitle": "Belirtilerini anlamak",
+      "careHint": "NHS ve RCOG'dan genel bilgilendirme. Kayıt tutmak bir tanı değildir. Belirtiler seni endişelendiriyorsa ya da günlük yaşamını etkiliyorsa bir sağlık profesyoneliyle konuş; ağır ya da hızla kötüleşen belirtilerde yerel acil servise başvur.",
+      "education": {
+        "bleeding": "Yoğun kanama (NHS, İngilizce)",
+        "pain": "Adet ağrısı (NHS, İngilizce)",
+        "unexpected": "Beklenmeyen kanama (NHS, İngilizce)",
+        "pms": "PMS ve belirti günlükleri (RCOG, İngilizce)",
+        "menopause": "Menopoz öncesi dönem ve menopoz (NHS, İngilizce)",
+        "pregnancy": "Hamilelik bilgileri (NHS, İngilizce)",
+        "postpartum": "Doğum sonrası iyileşme (NHS, İngilizce)",
+        "pregnancy_loss": "Hamilelik kaybı bilgileri (NHS, İngilizce)"
+      },
+      "trends": "Eğilimler ve arama",
+      "trendsHint": "Adetin olmadığı günler dahil kayıtlı günlerini incele. Bunlar gözlemlerdir; bir değişikliğin nedenini açıklamazlar.",
+      "lastDays": "Son {{days}} gün",
+      "summary": "{{logged}} kayıtlı gün · {{heavy}} yoğun akışlı gün · {{spotting}} lekelenme günü · {{impact}} günlük yaşama etkili gün",
+      "recap": "Kaydedilmiş {{date}} başlangıcından bu yana: {{logged}} kayıtlı gün, {{heavy}} yoğun akışlı gün, {{impact}} günlük yaşama etkili gün.",
+      "symptomSummary": "{{symptom}}: {{days}} kayıtlı gün, {{severe}} tanesi şiddetli derecelendirildi",
+      "loggedOnly": "Yalnızca kaydedilmiş değerler gösterilir. Eksik günler bilinmiyor sayılır. En son 30 değer listelenir.",
+      "noObservations": "Bu aralıkta eşleşen gözlem yok.",
+      "contextChanged": "Bağlam {{date}} tarihinde değişti. Bağlam geçmişine bak.",
+      "search": "Kayıtlarında ara",
+      "searchHint": "Belirtileri, notları, ilaçları, etiketleri ya da özel değerleri ara. Tüm kelimeler eşleşmeli. Arama bu cihazda kalır; en fazla 50 eşleşen gün gösterilir.",
+      "metrics": {
+        "pain": "Ağrı (0–10)",
+        "energy": "Enerji (1–5)",
+        "mood": "Ruh hali (0–4)",
+        "sleepHours": "Uyku (saat)",
+        "temperatureC": "Bazal sıcaklık (°C)",
+        "impact": "Günlük yaşama etkisi (0–3)",
+        "bleeding": "Kanama",
+        "symptoms": "Belirtiler",
+        "note": "Notlar",
+        "importedTemperatureC": "İçe aktarılan bazal sıcaklık (°C)"
+      },
+      "backupDays": "Yedek hatırlatma aralığı (gün; 0 kapatır)",
+      "importTitle": "Başka bir takipçiden geçmiş getir",
+      "importHint": "{{rows}} CSV satırı. Sütunlar: {{columns}}. Aşağıya tam sütun adlarını gir; isteğe bağlı alanları boş bırak. Bu sihirbaz CSV kabul eder, tescilli arşivleri değil.",
+      "importColumns": {
+        "date": "Tarih/başlangıç sütunu",
+        "end": "Bitiş tarihi sütunu (isteğe bağlı)",
+        "flow": "Akış sütunu (isteğe bağlı)",
+        "temperature": "°C cinsinden sıcaklık sütunu (isteğe bağlı)",
+        "symptoms": "Belirtiler sütunu (noktalı virgülle ayrılmış)",
+        "note": "Notlar sütunu (isteğe bağlı)"
+      },
+      "dateOrder": {
+        "iso": "YYYY-AA-GG",
+        "dmy": "Gün/ay/yıl",
+        "mdy": "Ay/gün/yıl"
+      },
+      "importPeriods": "Her satır bir adet başlangıcını kaydeder (günlük kayıt değil)",
+      "importError": "Sütun adlarını, tarih sırasını ve değerleri kontrol et. Akış olarak none, spotting, light, medium, heavy ya da very_heavy kabul edilir; sıcaklık °C olmalı. Yinelenen adet başlangıçları ve geçersiz tarihler içe aktarılamaz.",
+      "previewImport": "İçe aktarmayı önizle",
+      "healthTitle": "Sağlık deposundaki döngü verileri",
+      "healthHint": "İzninle kanama ve bazal sıcaklığı oku. İçe aktarılan gözlemler kendi kaynaklarını korur ve elle yaptığın kayıtların yerini almaz ya da adet başlangıcı oluşturmaz. Sağlık deposuna erişim, platformun geçmiş verisi izinleriyle sınırlanabilir.",
+      "healthRead": "Oku ve önizle",
+      "healthPreview": "{{count}} gözlem kullanılabilir. Aynı kaynak kimliklerini yeniden içe aktarmak yalnızca içe aktarılmış kopyalarını günceller.",
+      "healthImport": "Bu gözlemleri içe aktar",
+      "healthWrite": "Elle girilen kanama ve sıcaklığı dışa aktar",
+      "healthWriteHint": "Bu, seçtiğin aralıktaki elle girdiğin kanama ve bazal sıcaklık kayıtlarını cihazının sağlık deposuna yazar. İzni olan diğer uygulamalar bunları okuyabilir. İçe aktarılan gözlemler, belirtiler, ruh hali, ilaç, cinsel aktivite ve notlar dışarıda bırakılır. Çok yoğun akış yoğun olarak dışa aktarılır.",
+      "healthDone": "İçe aktarılan gözlemler kaydedildi.",
+      "healthWritten": "{{count}} sağlık kaydı yazıldı.",
+      "healthError": "Sağlık erişimi başarısız oldu ya da izin reddedildi. Cihazın sağlık izinlerini kontrol edip tekrar dene. Başarısız bir dışa aktarma bazı kayıtları yazmış olabilir; yeniden denemek Musclog'un kendi kayıtlarını günceller.",
+      "importedValue": "{{source}} kaynağından içe aktarıldı: {{value}}",
+      "sharing": "Seçilen kayıtları paylaş",
+      "sharingHint": "Tam olarak neyi paylaşacağını seç. Bu, seçtiğin aralık için okunabilir bir JSON dosyası oluşturur. Alıcı dosyayı saklayabilir ya da iletebilir; bu canlı bir erişim değildir ve geri alınamaz. Varsayılan olarak hiçbir şey seçili değildir.",
+      "shareSelected": "Seçilen alanları dışa aktar",
+      "presets": "İsteğe bağlı günlük kurulumları",
+      "presetsHint": "Yararlı alanlar ekle ve kullanılmayan favori yuvalarını doldur. Geçmişin ve mevcut favorilerin olduğu gibi kalır.",
+      "preset": {
+        "pms": "PMS/ruh hali günlüğü kur",
+        "fertility": "Doğurganlık gözlemleri ekle",
+        "perimenopause": "Menopoz öncesi dönem gözlemleri ekle"
+      },
+      "pmsDiaryHint": "Ardışık iki döngü boyunca tutulan günlük belirti ve etki günlüğü, PMS hakkında klinik bir görüşmeye destek olabilir. Bu günlük doğrulanmış bir PMDD anketi değildir ve PMDD tanısı koymaz.",
+      "fertilityHint": "Sıcaklık, akıntı ve test sonuçları yalnızca gözlemdir. Yumurtlamayı doğrulamazlar ve takvim tahminlerini doğum kontrolü için uygun hâle getirmezler.",
+      "impact": {
+        "0": "Etkisi yok",
+        "1": "Biraz aksama",
+        "2": "Etkinlikler sınırlı",
+        "3": "Olağan etkinlikleri yapamıyor"
+      },
+      "tests": {
+        "negative": "Negatif",
+        "positive": "Pozitif",
+        "unclear": "Belirsiz"
+      },
+      "stagePregnancy": "Hamilelik",
+      "stagePregnancyHint": "Adet ve doğurganlık tahminleri duraklatıldı. Belirti kayıtlarını tut ve hazır olduğunda bağlamı değiştir.",
+      "stageLoss": "Hamilelik kaybından sonra",
+      "stageLossHint": "Adet ya da doğurganlık tahmini olmayan sakin bir takip bağlamı. Geçmişin korunur; hazır olduğunda başka bir bağlama dön.",
+      "stageSurgery": "Histerektomiden sonra",
+      "stageSurgeryHint": "Adet ya da doğurganlık tahmini olmadan belirtileri takip et. Ameliyat, yumurtalık döngülerinin hâlâ olup olmadığını otomatik olarak bize söylemez.",
+      "stageMenopause": "Menopozdan sonra",
+      "stageMenopauseHint": "Adet ya da doğurganlık tahmini olmadan belirtileri takip et. Beklenmeyen kanama yine de kaydedilebilir.",
+      "ratingMin": "En düşük derecelendirme",
+      "ratingMax": "En yüksek derecelendirme",
+      "chartDescription": "{{metric}} zamana göre. Her nokta kaydedilmiş bir değerdir; tarihler ve değerler aşağıda listelenir.",
+      "variabilitySummary": "Bu aralıkta {{count}} kayıtlı döngü aralığı var: {{low}}–{{high}} gün; tahminlerden dışlananlar da dahil.",
+      "energyInsight": "Gözlemlenen {{total}} döngünün {{hits}} tanesinde adetlerin başlangıcına yakın daha düşük enerji kaydettin. Bu bir neden olduğunu kanıtlamaz.",
+      "sleepInsight": "Gözlemlenen {{total}} döngünün {{hits}} tanesinde adetlerin başlangıcına yakın daha kısa uyku kaydettin. Bu bir neden olduğunu kanıtlamaz.",
+      "reviewLong": "Bu uzun döngüyü yeniden belirsiz olarak değerlendir"
+    },
+    "notifications": {
+      "subtle": {
+        "cycle": "Döngü güncellemen hazır.",
+        "routine": "Günlük hatırlatıcın için zaman.",
+        "checkIn": "Günlük kontrol zamanı.",
+        "update": "Kaydını güncelleme zamanı.",
+        "backup": "Bir yedek kaydetme zamanı."
+      },
+      "periodStart": {
+        "title": "Adet yakında başlayabilir",
+        "body": "Son döngülerine göre adetin {{from}} civarında başlayabilir. Bu bir tahmindir.",
+        "bodyRange": "Son döngülerine göre adetin {{from}} ile {{to}} arasında başlayabilir. Bu bir tahmindir."
+      },
+      "periodDue": {
+        "title": "Adet bugün başlayabilir",
+        "body": "Son döngülerine göre en olası başlangıç bugün. Olduğunda kaydet."
+      },
+      "periodLate": {
+        "title": "Bu döngü olağandan uzun",
+        "body": "Bu döngü son düzenin ötesinde uzun. Bunun birçok olası nedeni var. Güncellemek istersen dokun.",
+        "bodyRange": "Bu döngü son düzenin ötesinde uzun; bu düzen genellikle {{to}} tarihine kadar biter. Bunun birçok olası nedeni var. Güncellemek istersen dokun."
+      },
+      "fertileWindow": {
+        "title": "Tahmini doğurgan pencere",
+        "body": "Tahmini doğurgan pencerenin {{from}} tarihinde başlayabilir. Bu bir takvim tahminidir; yumurtlamanın onayı ya da doğum kontrolü değildir.",
+        "bodyRange": "Tahmini doğurgan pencerende {{from}} ile {{to}} arası var. Bu bir takvim tahminidir; yumurtlamanın onayı ya da doğum kontrolü değildir."
+      },
+      "pill": {
+        "title": "Hap hatırlatıcısı",
+        "body": "Hapını alma zamanı."
+      },
+      "dailyLog": {
+        "title": "Günlük döngü kontrolü",
+        "body": "İstersen bugünü kaydet."
+      },
+      "endCheck": {
+        "title": "Adetin hâlâ sürüyor mu?",
+        "body": "Devam ediyor olarak işaretlediğin adet bir hafta önce başladı. Hazır olduğunda bitişini güncelle."
+      },
+      "backup": {
+        "title": "Döngü yedeği",
+        "body": "Kayıtlarının şifreli bir yedeğini kaydetmeyi düşün."
+      }
+    },
+    "reminders": {
+      "time": "Hatırlatıcı saati",
+      "leadDays": "Adetinden önce kaç gün önceden haber verilsin",
+      "oncePerCycle": "döngü başına yaklaşık bir kez",
+      "atMostOncePerCycle": "döngü başına en fazla bir kez",
+      "daily": "her gün",
+      "oncePerPeriod": "adet başına en fazla bir kez",
+      "basis": {
+        "estimate": "kaydettiğin döngülere dayalı bir tahmin",
+        "routine": "seçtiğin bir saat"
+      },
+      "notWhileSuppressed": "senin durumunda tahminler kapalıyken gönderilmez",
+      "periodStart": {
+        "label": "Adetimden önce",
+        "when": "{{time}} saatinde, aşağıda ayarlanan uyarı süresiyle, tahmin edilen en erken başlangıçtan önce"
+      },
+      "periodDue": {
+        "label": "En olası günde",
+        "when": "En olası başlangıç gününde {{time}} saatinde"
+      },
+      "periodLate": {
+        "label": "Bu döngü uzarsa",
+        "when": "Olağan aralığın bittiği günden sonraki gün, tarafsız bir dille"
+      },
+      "fertileWindow": {
+        "label": "Tahmini doğurgan pencere",
+        "when": "Tahmini pencere başladığında {{time}} saatinde",
+        "unavailable": "Yalnızca doğurgan pencere tahmini açıkken ve bunun bir anlam taşıdığı bir durumda kullanılabilir."
+      },
+      "dailyLog": {
+        "label": "Günlük kontrol",
+        "when": "{{time}} saatinde"
+      },
+      "endCheck": {
+        "label": "Devam eden adeti kontrol et",
+        "when": "Devam ediyor olarak işaretlediğin adetten bir hafta sonra"
+      },
+      "backup": {
+        "label": "Yedek hatırlatıcısı"
+      },
+      "pill": {
+        "label": "Hap hatırlatıcısı",
+        "when": "Her hap gününde {{time}} saatinde",
+        "time": "Hap saati",
+        "pattern21": "21 gün + 7 gün ara",
+        "pattern24": "24 gün + 4 gün ara",
+        "continuous": "Her gün",
+        "packStart": "Mevcut paketin ilk hapı",
+        "hint": "Hapsiz günlerde hatırlatıcı gelmez. Bu bir hatırlatıcıdır, tıbbi tavsiye değildir: bir dozu kaçırırsan hapın talimatlarını izle.",
+        "notPaused": "duraklatma sırasında da devam eder"
+      },
+      "pause": {
+        "title": "Döngü hatırlatıcılarını duraklat",
+        "week": "1 hafta",
+        "month": "1 ay",
+        "indefinite": "Devam ettirene kadar",
+        "resume": "Hatırlatıcıları devam ettir",
+        "hint": "Hastalık, yas, seyahat ya da bir ara için. Hap hatırlatıcıları devam eder."
+      },
+      "status": {
+        "web": "Hatırlatıcılar Musclog telefon uygulaması tarafından iletilir. Burada yapılan ayarlar orada da geçerlidir.",
+        "noPermission": "Musclog için bildirimlere izin verilmiyor, bu yüzden hiçbir hatırlatıcı gelemez.",
+        "switchedOff": "Döngü bildirimleri kapalı, bu yüzden hiçbir hatırlatıcı gelmeyecek.",
+        "pausedUntil": "Hatırlatıcılar {{date}} tarihine kadar duraklatıldı.",
+        "paused": "Hatırlatıcılar, sen devam ettirene kadar duraklatıldı.",
+        "next": "Sonraki: {{reminder}}, {{date}}.",
+        "none": "Hiçbir şey planlanmadı. Aşağıdan bir hatırlatıcıyı aç.",
+        "turnOn": "Döngü hatırlatıcılarını aç",
+        "permissionDenied": "Bildirimlere izin verilmedi. Bunlara telefonunun ayarlarından izin verebilirsin."
+      },
+      "test": "Test bildirimi gönder",
+      "testSent": "Gönderildi. Seçtiğin biçimde birkaç saniye içinde gelir.",
+      "style": {
+        "title": "Kilit ekranı metni",
+        "hint": "Telefonuna bakan birinin okuyabileceği metin. Gizli, bir hatırlatıcının neyle ilgili olduğunu asla söylemez.",
+        "private": "Gizli",
+        "subtle": "Yalın",
+        "detailed": "Ayrıntılı"
+      },
+      "preview": "Önizleme",
+      "lockScreenHint": "Güvenli bir kilit ekranı olan kilitli bir telefonda, Android döngü hatırlatıcılarının metnini de gizler.",
+      "why": {
+        "title": "Bu hatırlatıcıyı neden aldın",
+        "setting": "Döngü ayarlarında “{{reminder}}” seçeneğini açtın.",
+        "estimateFromCycles": "Tarihi, kaydettiğin döngülerden ({{cycles}} kullanıldı) yapılmış bir tahmindir. Bu döngüler {{low}} ile {{high}} gün arasında sürdü. Bir hatırlatıcı bundan daha kesin olamaz.",
+        "estimateFromSetup": "Tarihi, girdiğin olağan döngü süresinden gelir; çünkü henüz yeterli kayıtlı geçmiş yok. Adet kaydettikçe daha iyi olur.",
+        "routine": "Döngü verin ne olursa olsun, seçtiğin saatte çalar.",
+        "pillBreak": "Paketinin hapsiz günlerini atlar.",
+        "late": "Uzun bir döngünün birçok olası nedeni vardır. Musclog hiçbirini varsaymaz.",
+        "change": "Hatırlatıcıları değiştir ya da kapat",
+        "estimateFromSteadyCycles": "Tarihi, kaydettiğin döngülerden ({{cycles}} kullanıldı) yapılmış bir tahmindir. Hepsi yaklaşık {{low}} gün sürdü. Döngüler yine de değişebilir, bu yüzden yaklaşık kabul et."
+      }
+    }
+  }
+}

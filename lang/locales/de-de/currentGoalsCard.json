@@ -1,0 +1,20 @@
+{
+  "currentGoalsCard": {
+    "dailyTarget": "Tagesziel",
+    "protein": "Protein",
+    "proteinShort": "P",
+    "carbs": "Kohlenhydrate",
+    "carbsShort": "KH",
+    "fats": "Fett",
+    "fatsShort": "F",
+    "targetWeight": "Zielgewicht",
+    "bodyFat": "Körperfett",
+    "ffmi": "FFMI",
+    "bmi": "BMI",
+    "g": "g",
+    "kg": "kg",
+    "lbs": "lbs",
+    "percent": "%",
+    "dynamicNote": "Für heute automatisch aus deinen Zieleinstellungen berechnet"
+  }
+}

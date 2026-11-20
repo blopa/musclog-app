@@ -1,0 +1,10 @@
+{
+  "widgets": {
+    "refresh": "Ouvre Musclog pour actualiser",
+    "smartCamera": "Caméra intelligente",
+    "cycle": {
+      "day": "Jour",
+      "privateCaption": "Touche pour ouvrir"
+    }
+  }
+}

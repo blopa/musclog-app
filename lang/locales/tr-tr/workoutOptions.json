@@ -1,0 +1,15 @@
+{
+  "workoutOptions": {
+    "title": "Antrenman seçenekleri",
+    "cancelWorkout": "Antrenmanı iptal et",
+    "cancelWorkoutDesc": "Bu antrenmanı at ve antrenman listesine dön",
+    "finishWorkout": "Antrenmanı bitir",
+    "finishWorkoutDesc": "Bu antrenmanı tamamla ve özeti gör",
+    "previewWorkout": "Tüm antrenmanı önizle",
+    "previewWorkoutDesc": "Bu plandaki tüm egzersizleri gör",
+    "workoutSettings": "Antrenman ayarları",
+    "workoutSettingsDesc": "Zamanlayıcılar, ses ve tercihler",
+    "endWorkout": "Antrenmanı sonlandır",
+    "endWorkoutDesc": "Bitir ve ilerlemeni kaydet"
+  }
+}

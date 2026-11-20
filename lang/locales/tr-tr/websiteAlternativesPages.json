@@ -1,0 +1,77 @@
+{
+  "websiteAlternativesPages": {
+    "shared": {
+      "title": "Musclog ve {{name}}",
+      "allComparisons": "Tüm alternatifler",
+      "checked": "{{name}} hakkındaki bilgiler {{date}} tarihinde kontrol edildi. Ücretsiz katman sınırları değişir, bu yüzden karar vermeden önce her satırdaki kaynağı aç.",
+      "colTopic": "Konu",
+      "colMusclog": "Musclog",
+      "source": "Kaynak",
+      "chooseTitle": "Hangisi sana uyar",
+      "importTitle": "Antrenman geçmişini taşımak",
+      "otherApps": "Diğer karşılaştırmalar",
+      "nonAffiliation": "Musclog, {{name}} ile bağlantılı değildir. Ürün adları sahiplerine aittir."
+    },
+    "apps": {
+      "strong": {
+        "intro": "Strong bir antrenman kayıt uygulamasıdır. Musclog da antrenmanları kaydeder, ayrıca yiyecekleri de takip eder; hepsi tek bir ücretsiz, açık kaynaklı uygulamada.",
+        "facts": [
+          {
+            "topic": "Ücretsiz sürüm",
+            "them": "Sınırsız antrenman kaydeder, ancak 3 özel rutinle sınırlıdır.",
+            "musclog": "Rutinlerde sınır yoktur ve hiçbir şey abonelik arkasında kilitli değildir."
+          },
+          {
+            "topic": "Ücretli plan",
+            "them": "Strong PRO rutin sınırını kaldırır: ayda 4,99 $ ya da yılda 29,99 $ (ABD App Store fiyatları).",
+            "musclog": "Ücretsiz ve açık kaynak (GPL-3.0). Ücretli katman yoktur."
+          }
+        ],
+        "import": "Musclog bir Strong CSV dışa aktarımını içe aktarabilir: Ayarlar, Yedeklemeler ve veriler, Antrenmanları içe aktar. Egzersiz adlarını kendi kataloğuyla eşleştirir, eşleşmeyenler hakkında sana sorar ve hiçbir şey kaydedilmeden önce bir inceleme ekranı gösterir. Aynı dosyayı iki kez içe aktarmak seansları çoğaltmaz ve içe aktarma geri alınabilir.",
+        "chooseThem": "Zaten Strong kullanıyorsan ve 3 özel rutin sana yetiyorsa Strong'da kal.",
+        "chooseMusclog": "Rutin sınırı olmasın, yiyecek takibi aynı uygulamada olsun ve verilerin cihazında kalsın istiyorsan Musclog'u dene."
+      },
+      "hevy": {
+        "intro": "Hevy, ücretsiz bir planı ve ücretli bir Pro planı olan bir antrenman kayıt uygulamasıdır. Musclog antrenmanları ve yiyecekleri tek bir ücretsiz, açık kaynaklı uygulamada kaydeder.",
+        "facts": [
+          {
+            "topic": "Ücretsiz plan sınırları",
+            "them": "Ücretsiz plan 4 rutin ve 7 özel egzersizle sınırlıdır.",
+            "musclog": "Rutinlerde veya özel egzersizlerde sınır yoktur."
+          },
+          {
+            "topic": "Isınma hesaplayıcısı",
+            "them": "Isınma hesaplayıcısı ücretsiz planın değil, Hevy Pro'nun parçasıdır.",
+            "musclog": "Isınma setleri yerleşiktir ve ücretsizdir. Isınma hesaplayıcısını bu sitede de deneyebilirsin."
+          },
+          {
+            "topic": "Antrenman geçmişi",
+            "them": "Ücretsiz planın veri geçmişi 3 ayla sınırlıdır; Hevy Pro hepsini saklar.",
+            "musclog": "Tüm geçmişin cihazında kalır ve zaman sınırı yoktur."
+          }
+        ],
+        "import": "Musclog bir Hevy CSV dışa aktarımını içe aktarabilir: Ayarlar, Yedeklemeler ve veriler, Antrenmanları içe aktar. Egzersiz adlarını kendi kataloğuyla eşleştirir, eşleşmeyenler hakkında sana sorar ve hiçbir şey kaydedilmeden önce bir inceleme ekranı gösterir. Aynı dosyayı iki kez içe aktarmak seansları çoğaltmaz ve içe aktarma geri alınabilir.",
+        "chooseThem": "Zaten Hevy kullanıyorsan ve ücretsiz plan sınırları işini engellemiyorsa Hevy'de kal.",
+        "chooseMusclog": "Rutin ve egzersiz sınırı olmasın, yiyecek takibi aynı uygulamada olsun ve verilerin cihazında kalsın istiyorsan Musclog'u dene."
+      },
+      "myFitnessPal": {
+        "intro": "MyFitnessPal bir yiyecek ve kalori takip uygulamasıdır. Musclog da yiyecekleri takip eder ve antrenmanlarını kaydeder; hepsi tek bir ücretsiz, açık kaynaklı uygulamada.",
+        "facts": [
+          {
+            "topic": "Barkod okuma",
+            "them": "MyFitnessPal'in kendi duyurusuna göre barkod okuma, 1 Ekim 2022'den beri Premium bir özellik.",
+            "musclog": "Barkod okuma ücretsizdir."
+          },
+          {
+            "topic": "Bugün barkod okuma",
+            "them": "MyFitnessPal'in kendi yardım sayfası hâlâ Barkod Tarama'nın yalnızca Premium abonelikle kullanılabildiğini söylüyor.",
+            "musclog": "Barkod okuma ücretsizdir."
+          }
+        ],
+        "import": "",
+        "chooseThem": "Zaten MyFitnessPal kullanıyorsan, yiyecek veritabanına güveniyorsan ve ücretsiz sürümle memnunsan MyFitnessPal'de kal.",
+        "chooseMusclog": "Ücretsiz barkod okuma, antrenmanlar ve yiyecekler tek uygulamada olsun ve verilerin cihazında kalsın istiyorsan Musclog'u dene."
+      }
+    }
+  }
+}

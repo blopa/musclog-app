@@ -1,0 +1,719 @@
+{
+  "cycle": {
+    "title": "Zyklus",
+    "nextPeriod": "Vorhersage der nächsten Periode",
+    "insightsAndLog": "Zyklus-Einblicke & Protokoll",
+    "dailyLog": "Tagesprotokoll",
+    "flowIntensity": "Blutungsstärke",
+    "symptomsTitle": "Symptome",
+    "noLogsToday": "Heute sind keine Symptome erfasst.",
+    "logSymptoms": "Symptome erfassen",
+    "logDaily": "Zyklus-Tagesprotokoll",
+    "predictionDisclaimer": "Zyklusvorhersagen sind Schätzungen und keine Verhütungsmethode.",
+    "periodActive": "Periode aktiv, Tag {{day}}",
+    "periodActiveGeneric": "Periode aktiv",
+    "settings": {
+      "title": "Zykluseinstellungen",
+      "subtitle": "Bearbeite deine Zykluskonfiguration",
+      "changeContext": "Lebensphase oder Verhütung ändern",
+      "sectionUsual": "Deine üblichen Längen",
+      "usualHint": "Wird verwendet, bis genug eigener Verlauf vorhanden ist.",
+      "sectionShown": "Was angezeigt wird",
+      "showPredictions": "Vorhersagen anzeigen",
+      "showPredictionsHint": "Ausschalten, um ohne vorhergesagte Termine weiter zu erfassen.",
+      "showFertility": "Fruchtbarkeitsschätzungen anzeigen",
+      "showFertilityHint": "Standardmäßig aus. Eine informative Schätzung des fruchtbaren Fensters, keine Verhütung.",
+      "fertility": {
+        "explainTitle": "Fruchtbarkeitsschätzungen anzeigen?",
+        "explainMessage": "Das fruchtbare Fenster wird aus deinen bisherigen Zykluslängen geschätzt. Damit lässt sich der Eisprung nicht zuverlässig bestimmen, verlass dich deshalb nie allein darauf, eine Schwangerschaft zu verhindern.",
+        "enable": "Schätzungen anzeigen"
+      },
+      "sectionReminders": "Erinnerungen",
+      "sectionTracking": "Erfassung",
+      "sectionPrivacy": "Datenschutz",
+      "privacyNote": "Zyklusdaten werden auf diesem Telefon verschlüsselt. Exportierte Sicherungen sind separate Dateien, die du selbst kontrollierst.",
+      "sectionExport": "Export",
+      "exportPeriods": "Perioden exportieren (CSV)",
+      "exportDays": "Tagesprotokoll exportieren (CSV)",
+      "summaryTitle": "Arztbesuch-Zusammenfassung",
+      "summaryHint": "Ein kurzes PDF mit deinen Erfassungen: Termine, Blutung, Symptome, Schmerzen und Notizen. Es enthält nur deine Aufzeichnungen und keine Diagnose.",
+      "summaryRange": "Letzte {{count}} Monate",
+      "summaryCreate": "Zusammenfassung erstellen (PDF)",
+      "sectionManage": "Verwalten",
+      "pause": "Erfassung pausieren",
+      "pauseHint": "Eine Pause behält alle deine Einträge und blendet den Zyklus-Tab und die Erinnerungen aus, bis du fortsetzt.",
+      "delete": {
+        "action": "Alle Zyklusdaten löschen",
+        "title": "Alle Zyklusdaten löschen?",
+        "message": "Dadurch werden alle Perioden, Tagesprotokolle und Lebensphasen-Einträge dauerhaft von diesem Telefon entfernt. Das lässt sich nicht rückgängig machen. Dateien, die du früher exportiert oder geteilt hast, liegen außerhalb der App und sind nicht betroffen. Geteilte Stimmungseinträge bleiben in Home und Fortschritt erhalten.",
+        "confirm": "Alles löschen",
+        "prompt": "Löschen deiner Zyklusdaten bestätigen",
+        "backupsTitle": "Auch lokale Wiederherstellungspunkte löschen?",
+        "backupsMessage": "Auf diesem Telefon ist {{count}} Wiederherstellungspunkt gespeichert, der eine Kopie deiner Zyklusdaten zusammen mit den übrigen Daten enthalten kann. Ihn ebenfalls löschen?",
+        "backupsMessage_plural": "Auf diesem Telefon sind {{count}} Wiederherstellungspunkte gespeichert, die eine Kopie deiner Zyklusdaten zusammen mit den übrigen Daten enthalten können. Sie ebenfalls löschen?",
+        "backupsConfirm": "Wiederherstellungspunkte löschen"
+      }
+    },
+    "noData": {
+      "title": "Beginne mit der Zyklus-Erfassung",
+      "description": "Erfasse Periodentermine oder Symptome ohne Blutung. Du musst das Datum deiner letzten Periode nicht kennen, um zu starten.",
+      "start": "Erfassung starten",
+      "pausedTitle": "Erfassung ist pausiert",
+      "pausedDescription": "Dein Verlauf ist gespeichert. Setze fort, um weiter zu erfassen und Vorhersagen zu sehen.",
+      "resume": "Erfassung fortsetzen"
+    },
+    "actions": {
+      "periodStarted": "Meine Periode hat heute begonnen",
+      "periodEnded": "Meine Periode ist heute zu Ende",
+      "logPastPeriod": "Vergangene Periode erfassen"
+    },
+    "periodLog": {
+      "startTitle": "Periodenbeginn erfassen",
+      "endTitle": "Periodenende erfassen",
+      "pastTitle": "Vergangene Periode hinzufügen",
+      "startDescription": "Markiere, wann deine Periode begonnen hat. Du kannst für heute oder ein vergangenes Datum erfassen.",
+      "endDescription": "Markiere, wann deine Periode zu Ende war.",
+      "pastDescription": "Vergangene Periodentermine helfen der App, deinen Zyklus zu lernen und bessere Vorhersagen zu treffen.",
+      "startDateLabel": "Periode begann am",
+      "endDateLabel": "Periode endete am",
+      "startedOn": "Periode begann am",
+      "useToday": "Heute verwenden"
+    },
+    "confidence": {
+      "low": "Schätzung auf Basis von {{count}} Zyklus",
+      "low_plural": "Schätzung auf Basis von {{count}} Zyklen",
+      "medium": "Basierend auf {{count}} Zyklen",
+      "high": "Basierend auf {{count}} Zyklen, gute Genauigkeit",
+      "irregular": "Zyklen schwanken, deshalb wird ein Datumsbereich angezeigt"
+    },
+    "lifeStage": {
+      "pcos": "Bei PCOS können Zyklen stark unregelmäßig sein. Vorhersagen sind grobe Schätzungen.",
+      "postPill": "Nach dem Absetzen der Pille können Zyklen 1–3 Monate unregelmäßig sein.",
+      "postpartum": "Zyklen nach der Geburt kehren oft unvorhersehbar zurück, besonders während des Stillens.",
+      "perimenopause": "Die Perimenopause kann die Zyklen stark unregelmäßig machen. Es wird ein geschätzter Bereich angezeigt."
+    },
+    "flow": {
+      "spotting": "Schmierblutung",
+      "light": "Schwach",
+      "medium": "Mittel",
+      "heavy": "Stark",
+      "veryHeavy": "Sehr stark"
+    },
+    "symptoms": {
+      "physicalTitle": "Körperlich",
+      "emotionalTitle": "Emotional & psychisch",
+      "cramps": "Krämpfe",
+      "headache": "Kopfschmerzen",
+      "migraine": "Migräne",
+      "bloating": "Blähungen",
+      "breastTenderness": "Brustspannen",
+      "nausea": "Übelkeit",
+      "backPain": "Rückenschmerzen",
+      "fatigue": "Müdigkeit",
+      "acne": "Akne",
+      "foodCravings": "Heißhunger",
+      "digestiveIssues": "Verdauungsprobleme",
+      "hotFlashes": "Hitzewallungen",
+      "insomnia": "Schlaflosigkeit",
+      "moodSwings": "Stimmungsschwankungen",
+      "anxiety": "Angst",
+      "irritability": "Reizbarkeit",
+      "lowMood": "Niedergeschlagenheit",
+      "brainFog": "Konzentrationsprobleme",
+      "lowLibido": "Verminderte Libido"
+    },
+    "phase": {
+      "menstrual": "Menstruation",
+      "follicular": "Follikelphase",
+      "ovulatory": "Ovulatorisch",
+      "ovulation": "Eisprung",
+      "luteal": "Lutealphase",
+      "between": "Zwischen den Perioden"
+    },
+    "late": {
+      "title": "{{count}} Tag später als dein üblicher Bereich",
+      "title_plural": "{{count}} Tage später als dein üblicher Bereich",
+      "description": "Erfasse deine Periode, wenn sie beginnt, dann werden deine Vorhersagen aktualisiert."
+    },
+    "insufficient": "Erfasse eine Periode, um eine Vorhersage zu sehen",
+    "periodNotLogged": "Periode noch nicht erfasst",
+    "lock": {
+      "prompt": "Musclog entsperren",
+      "unlock": "Entsperren",
+      "appTitle": "Musclog ist gesperrt",
+      "appDescription": "Authentifiziere dich, um fortzufahren."
+    },
+    "calendar": {
+      "bleeding": {
+        "none": "Keine Blutung",
+        "spotting": "Schmierblutung",
+        "light": "Schwach",
+        "medium": "Mittel",
+        "heavy": "Stark",
+        "very_heavy": "Sehr stark"
+      },
+      "a11y": {
+        "period": "erfasste Periode",
+        "predicted": "vorhergesagtes Periodenfenster",
+        "fertile": "geschätztes fruchtbares Fenster",
+        "observation": "etwas erfasst",
+        "today": "heute",
+        "nothing": "nichts erfasst"
+      },
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "legend": "Kalenderlegende",
+      "legendPeriod": "Erfasste Periode oder Blutung",
+      "legendSpotting": "Erfasste Schmierblutung",
+      "legendPredicted": "Vorhergesagtes Periodenfenster",
+      "legendFertile": "Geschätztes fruchtbares Fenster",
+      "legendLogged": "Etwas erfasst"
+    },
+    "context": {
+      "title": "Lebensphase & Verhütung",
+      "description": "Halte eine Änderung ab einem Datum fest. Dein früherer Verlauf bleibt erhalten.",
+      "effectiveFrom": "Gilt ab",
+      "chooseSpecific": "Wähle einen bestimmten Typ für bessere Hinweise.",
+      "effects": "Manche Methoden verändern, wie sich dein Zyklus verhält. Vorhersagen und das fruchtbare Fenster können daher ausgeblendet oder mit einem Hinweis angezeigt werden.",
+      "remove": "Diese Änderung entfernen",
+      "timelineTitle": "Verlauf Lebensphase & Verhütung",
+      "from": "Ab {{date}}",
+      "lossQuietTitle": "Auch die anderen Erinnerungen pausieren?",
+      "lossQuietMessage": "Vorhersagen und Periodenerinnerungen sind bereits beendet. Du kannst außerdem den täglichen Check-in und die übrigen Zyklus-Erinnerungen für 4 Wochen pausieren. Pillen-Erinnerungen laufen weiter. Du kannst jederzeit in den Zykluseinstellungen fortsetzen.",
+      "lossQuietConfirm": "4 Wochen pausieren",
+      "lossQuietKeep": "Behalten"
+    },
+    "daySheet": {
+      "title": "Diesen Tag erfassen",
+      "noSymptoms": "Heute keine Symptome",
+      "noSymptomsLogged": "Keine Symptome",
+      "moreSymptoms": "Mehr Symptome",
+      "fewerSymptoms": "Weniger Symptome",
+      "pain": "Schmerz",
+      "energy": "Energie",
+      "energyLevel": {
+        "1": "Sehr niedrig",
+        "2": "Niedrig",
+        "3": "Okay",
+        "4": "Gut",
+        "5": "Hoch"
+      },
+      "note": "Notiz",
+      "notePlaceholder": "Alles, was du dir merken willst",
+      "clearDay": "Diesen Tag leeren",
+      "nothingLogged": "Für diesen Tag ist nichts erfasst.",
+      "addDetails": "Details hinzufügen",
+      "edit": "Bearbeiten",
+      "startPeriodPrompt": "Blutung außerhalb einer Periode erfasst.",
+      "startPeriod": "Hier Periode beginnen",
+      "moodUnavailable": "Die Stimmung konnte nicht geladen werden. Alles andere wird trotzdem gespeichert.",
+      "severityOptional": "Wie stark? Optional. Tippe erneut auf eine Bewertung, um sie zu entfernen.",
+      "painScale": "0 = kein Schmerz, 10 = das Schlimmste, das du dir vorstellen kannst",
+      "clearTitle": "Diesen Tag leeren?",
+      "clearMessage": "Dadurch wird alles entfernt, was für diesen Tag erfasst wurde, einschließlich der Stimmung in Home und Fortschritt. Das lässt sich nicht rückgängig machen.",
+      "clearConfirm": "Tag leeren",
+      "pill": {
+        "label": "Pille",
+        "taken": "Genommen",
+        "skipped": "Ausgelassen"
+      }
+    },
+    "edit": {
+      "title": "Periode bearbeiten",
+      "delete": "Diese Periode löschen",
+      "deleteTitle": "Diese Periode löschen?",
+      "deleteMessage": "Deine Statistiken und Erinnerungen werden ohne sie neu berechnet. Du kannst direkt danach rückgängig machen.",
+      "deleted": "Periode gelöscht",
+      "undo": "Rückgängig",
+      "recalculates": "Beim Speichern werden deine Statistiken und Erinnerungen neu berechnet."
+    },
+    "end": {
+      "title": "Wie ist sie geendet?",
+      "open": "Dauert noch an",
+      "onDate": "An einem Datum",
+      "unknown": "Ich erinnere mich nicht",
+      "usualLength": "Übliche Länge ({{days}} Tage)",
+      "estimatedHint": "Als Schätzung gespeichert, nicht als erfasstes Enddatum.",
+      "unknownHint": "Die Länge dieser Periode fließt nicht in deine Durchschnittswerte ein."
+    },
+    "errors": {
+      "future": "Periodentermine können nicht in der Zukunft liegen.",
+      "overlap": "Dies überschneidet sich mit einer Periode, die du bereits erfasst hast.",
+      "endBeforeStart": "Das Ende kann nicht vor dem Beginn liegen.",
+      "notFound": "Diese Periode existiert nicht mehr. Sie wurde möglicherweise entfernt."
+    },
+    "fertilityDisclaimer": "Nur eine informative Schätzung. Verlass dich nicht allein darauf, eine Schwangerschaft zu verhindern.",
+    "history": {
+      "title": "Verlauf",
+      "tabCalendar": "Kalender",
+      "tabHistory": "Perioden",
+      "empty": "Noch keine Perioden erfasst.",
+      "estimatedEnd": "Geschätztes Ende",
+      "unknownEnd": "Ende unbekannt",
+      "ongoing": "Läuft noch",
+      "editHint": "Tippen zum Bearbeiten",
+      "days": "{{days}} Tag",
+      "days_plural": "{{days}} Tage",
+      "cycleLength": "{{days}}-Tage-Zyklus",
+      "cycleLength_plural": "{{days}}-Tage-Zyklus",
+      "notUsed": "Nicht für Vorhersagen verwendet: {{reason}}",
+      "reason": {
+        "too_short": "der Abstand war sehr kurz, möglicherweise eine Fehlerfassung",
+        "possible_missed_period": "er war deutlich länger als deine anderen, möglicherweise eine ausgelassene Periode",
+        "user_excluded": "du hast ihn ausgeschlossen",
+        "hormonal_context": "eine hormonelle Methode war in Gebrauch",
+        "postpartum_context": "Zyklen nach der Geburt werden nicht gezählt",
+        "life_context": "Kontext ohne natürliche Periodenvorhersage"
+      }
+    },
+    "insights": {
+      "title": "Muster in deinen Aufzeichnungen",
+      "basedOnRecords": "Nur auf Basis deiner Aufzeichnungen.",
+      "viewData": "Daten ansehen",
+      "viewSessions": "Diese Einheiten ansehen",
+      "evidenceTitle": "Worauf das basiert",
+      "recurringSymptom": "Du hast {{symptom}} innerhalb von {{days}} Tagen nach Beginn deiner Periode erfasst, in {{hits}} der letzten {{total}} Zyklen.",
+      "highPain": "Du hast Schmerzen von {{level}} oder mehr innerhalb von {{days}} Tagen nach Beginn deiner Periode erfasst, in {{hits}} der letzten {{total}} Zyklen.",
+      "cycleLengthLonger": "Dein letzter Zyklus dauerte {{length}} Tage, {{diff}} Tage länger als der Median deiner vorherigen {{count}} Zyklen ({{typical}} Tage).",
+      "cycleLengthShorter": "Dein letzter Zyklus dauerte {{length}} Tage, {{diff}} Tage kürzer als der Median deiner vorherigen {{count}} Zyklen ({{typical}} Tage).",
+      "durationLonger": "Deine letzte Periode dauerte {{duration}} Tage, {{diff}} Tage länger als der Median deiner vorherigen {{count}} ({{typical}} Tage).",
+      "durationShorter": "Deine letzte Periode dauerte {{duration}} Tage, {{diff}} Tage kürzer als der Median deiner vorherigen {{count}} ({{typical}} Tage).",
+      "moodNearStart": "Deine erfasste Stimmung war innerhalb von {{days}} Tagen nach Beginn deiner Periode in {{hits}} der letzten {{total}} Zyklen niedriger als an deinen übrigen Tagen.",
+      "workoutNearStart": "In {{hits}} der letzten {{total}} Zyklen lag das Trainingsvolumen innerhalb von {{days}} Tagen nach Beginn deiner Periode unter dem deiner übrigen Einheiten im selben Zyklus.",
+      "recurringPreperiodSymptom": "Du hast {{symptom}} in den sieben Tagen vor Beginn von {{hits}} von {{total}} erfassten Perioden erfasst."
+    },
+    "phaseEstimated": "Geschätzte Phase",
+    "phaseUnknown": "Keine Schätzung",
+    "prediction": {
+      "insufficient": "Erfasse eine Periode, um eine Vorhersage zu sehen",
+      "hidden": "Vorhersagen sind ausgeblendet",
+      "notShown": "In deiner Situation gibt es keine Vorhersage",
+      "likelyRange": "Wahrscheinlich {{from}} – {{to}}",
+      "likelyDate": "Wahrscheinlich um {{date}}",
+      "caveated": "Diese Methode kann verändern, wie sich dein Zyklus verhält. Behandle die Schätzung daher locker.",
+      "variabilityExpected": "Die Zykluslänge schwankt in deiner Situation. Das ist häufig, und der Bereich bildet das ab.",
+      "variableHint": "Deine Zyklen haben stark geschwankt ({{low}}–{{high}} Tage). Ein einzelnes Datum ist möglicherweise nicht verlässlich.",
+      "keepHidden": "Ausgeblendet lassen",
+      "showRange": "Bereich anzeigen",
+      "fertile": "Geschätztes fruchtbares Fenster: {{from}} – {{to}}",
+      "howCalculated": "Wie wird das berechnet?",
+      "show": "Vorhersagen anzeigen",
+      "hide": "Vorhersagen ausblenden",
+      "detailsTitle": "So wird die Schätzung erstellt",
+      "basis": "Basierend auf deinem letzten {{cycles}} Zyklus · Median {{median}} Tage · Bereich {{low}}–{{high}}",
+      "basis_plural": "Basierend auf deinen letzten {{cycles}} Zyklen · Median {{median}} Tage · Bereich {{low}}–{{high}}",
+      "basisNone": "Noch keine verwertbaren Zyklen, daher nutzt die Schätzung deine übliche Länge von {{days}} Tagen.",
+      "recentWeighted": "Neuere Zyklen zählen stärker, deshalb nutzt die Schätzung {{days}} Tage.",
+      "excludedCount": "{{cycles}} Zyklus wird nicht verwendet (siehe unten).",
+      "excludedCount_plural": "{{cycles}} Zyklen werden nicht verwendet (siehe unten).",
+      "cycleUsed": "Für Vorhersagen verwendet",
+      "useForPredictions": "Diesen Zyklus für Vorhersagen verwenden",
+      "evidenceNote": "Basierend auf deinen Daten. Eine Vorhersage ist eine Schätzung, kein medizinisches Ergebnis.",
+      "confidence": {
+        "none": "Noch keine Daten",
+        "low": "Geringe Sicherheit · {{cycles}} verwertbarer Zyklus",
+        "low_plural": "Geringe Sicherheit · {{cycles}} verwertbare Zyklen",
+        "moderate": "Mittlere Sicherheit · {{cycles}} verwertbare Zyklen",
+        "high": "Höhere Sicherheit · {{cycles}} verwertbare Zyklen"
+      },
+      "suppressed": {
+        "hormonal": "Blutungen bei dieser Methode folgen möglicherweise keinem natürlichen Zyklus, deshalb würde ein vorhergesagtes Datum wenig bedeuten. Du kannst trotzdem alles erfassen.",
+        "postpartum": "Zyklen kehren nach der Geburt oft unvorhersehbar zurück. Vorhersagen erscheinen, sobald du zwei Perioden erfasst hast.",
+        "no_bleeding": "Du erfasst ohne Blutung, daher gibt es keine Periode, die vorhergesagt werden könnte. Tagesprotokolle und Muster funktionieren weiterhin."
+      }
+    },
+    "quickLog": {
+      "title": "Schnellerfassung",
+      "pinPrompt": "Du erfasst oft {{symptom}}. In die Schnellerfassung anheften?",
+      "noThanks": "Nein danke",
+      "pin": "Anheften"
+    },
+    "severity": {
+      "mild": "leicht",
+      "moderate": "mittel",
+      "severe": "stark"
+    },
+    "summary": {
+      "title": "Zyklus-Zusammenfassung",
+      "range": "{{from}} – {{to}} (letzte {{months}} Monate)",
+      "disclaimer": "Selbst erfasste Daten aus der Musclog-App. Sie ist keine Diagnose und ersetzt keine ärztliche Beratung.",
+      "sectionOverview": "Überblick",
+      "sectionPeriods": "Perioden",
+      "sectionBleeding": "Blutungstage nach Stärke",
+      "sectionSymptoms": "Häufigste erfasste Symptome (Tage)",
+      "sectionPain": "Schmerzen",
+      "sectionNotes": "Notizen",
+      "sectionContext": "Lebensphase & Verhütung",
+      "colStart": "Beginn",
+      "colEnd": "Ende",
+      "colDuration": "Tage",
+      "colCycleLength": "Zyklus (Tage)",
+      "colStatus": "Für Durchschnitte verwendet",
+      "empty": "In diesem Zeitraum gibt es keine Perioden.",
+      "statusUsed": "gezählt",
+      "statusInProgress": "läuft noch",
+      "overviewPeriods": "{{n}} Periode erfasst",
+      "overviewPeriods_plural": "{{n}} Perioden erfasst",
+      "overviewLength": "Zykluslänge: Median {{median}} Tage, Bereich {{low}}–{{high}}.",
+      "overviewNoLength": "Nicht genug abgeschlossene Zyklen, um eine Zykluslänge anzugeben.",
+      "overviewUsed": "{{used}} Zyklen für Durchschnittswerte gezählt, {{excluded}} nicht gezählt.",
+      "pain": "Schmerzen erfasst an {{days}} Tagen: Median {{median}}/10, höchster Wert {{max}}/10, {{severe}} Tage mit 6 oder mehr."
+    },
+    "personalize": {
+      "title": "Erfassung personalisieren",
+      "goalsTitle": "Was möchtest du verstehen?",
+      "goalsHint": "Wähle aus, was dir wichtig ist. Du kannst das später ändern.",
+      "goals": {
+        "timing": "Zeitpunkt der Periode",
+        "symptoms": "Schmerzen und Symptome",
+        "mood": "Stimmung",
+        "record": "Nur ein Protokoll führen"
+      },
+      "question": "Möchtest du Blutungen oder zyklische Symptome erfassen?",
+      "trackBleeding": "Blutung und Symptome",
+      "trackBleedingHint": "Periodentermine und tägliche Beobachtungen festhalten.",
+      "trackSymptoms": "Symptome ohne Periode",
+      "trackSymptomsHint": "Ein Körpertagebuch führen, auch wenn du nicht blutest.",
+      "skip": "Vorerst überspringen",
+      "skipHint": "Du kannst die Erfassung später in den Einstellungen aktivieren.",
+      "quickTitle": "Favoriten der Schnellerfassung",
+      "quickHint": "Wähle bis zu sechs Symptome für die Schnellerfassung.",
+      "customSymptom": "Neues eigenes Symptom",
+      "removeNamed": "{{name}} aus dem Formular entfernen",
+      "fieldsTitle": "Optionale Tagesfelder",
+      "fieldsHint": "Nur deine ausgewählten Felder erscheinen im Tagesprotokoll.",
+      "fields": {
+        "sleepHours": "Schlaf (Stunden)",
+        "temperatureC": "Basaltemperatur",
+        "discharge": "Ausfluss / Zervixschleim",
+        "medication": "Medikament und Dosis",
+        "sex": "Sexuelle Aktivität",
+        "tags": "Schlagwörter",
+        "impact": "Auswirkung auf den Alltag",
+        "leakage": "Durchgesickert auf Kleidung oder Bettwäsche",
+        "clots": "Blutgerinnsel",
+        "lhTest": "Ovulationstest (LH)",
+        "pregnancyTest": "Schwangerschaftstest"
+      },
+      "customField": "Neues eigenes Feld",
+      "kinds": {
+        "text": "Text",
+        "number": "Zahl",
+        "toggle": "Ja / Nein",
+        "rating": "Bewertung mit Grenzen"
+      },
+      "removeHint": "Wenn du ein Feld aus dem Formular entfernst, bleiben seine bisher erfassten Werte im Verlauf und in den Exporten erhalten.",
+      "saving": "Wird gespeichert…",
+      "observationsHint": "Lass ein Feld leer, wenn du es nicht erfasst hast. Die Temperatur ist eine manuelle Beobachtung und bestätigt keinen Eisprung.",
+      "invalidObservation": "Prüfe deine Eingaben: Schlaf muss zwischen 0 und 24 Stunden liegen, die Temperatur zwischen 30 und 45 °C, und Zahlenfelder brauchen eine gültige Zahl.",
+      "unexpectedBleeding": "Unerwartete Blutung oder Schmierblutung erfassen",
+      "sharedMoodHint": "Die Stimmung wird mit Home und Fortschritt geteilt. Wenn du sie hier leerst, wird die Stimmung für diesen Tag auch dort entfernt. Beim Löschen der Zyklusdaten bleiben geteilte Stimmungen erhalten.",
+      "loadingMood": "Stimmung wird geladen…",
+      "clearMood": "Stimmung beim Speichern leeren",
+      "clearDayAndMood": "Beobachtungen und geteilte Stimmung für diesen Tag leeren",
+      "summaryObservations": "Stimmung und andere Beobachtungen",
+      "add": "Hinzufügen",
+      "moodUnlogged": "Stimmung nicht erfasst"
+    },
+    "portability": {
+      "title": "Zyklus-Sicherung und Import",
+      "backupTitle": "Verschlüsselte Zyklus-Sicherung",
+      "recoveryHint": "Diese Datei enthält den Periodenverlauf, tägliche Beobachtungen, Kontext, Einstellungen und den Verlauf geteilter Stimmungen. Speichere sie außerhalb dieses Telefons. Bewahre das Passwort getrennt auf: Ohne Passwort lässt sich die Sicherung nicht wiederherstellen. Stelle sie unten auf deinem neuen Gerät wieder her, nachdem du die Zyklus-Erfassung aktiviert hast.",
+      "lastBackup": "Letzte verschlüsselte Sicherung erstellt: {{date}}",
+      "noBackup": "Auf diesem Gerät wurde keine verschlüsselte Zyklus-Sicherung erstellt.",
+      "password": "Sicherungs-Passwort (mindestens 8 Zeichen)",
+      "repeatPassword": "Passwort wiederholen",
+      "createBackup": "Verschlüsselte Sicherung erstellen",
+      "plaintextHint": "Lesbare JSON-, CSV- und PDF-Exporte enthalten sensible Informationen ohne Passwortschutz. Teile sie nur mit Personen, die du selbst auswählst.",
+      "exportJson": "Lesbares Zyklus-JSON exportieren",
+      "exportContexts": "Verlauf Lebensphase als CSV exportieren",
+      "importTitle": "Zyklusverlauf übernehmen",
+      "importHint": "Wähle eine Musclog-Zyklus-JSON-Sicherung oder eine von Musclog exportierte CSV mit Perioden, Tagesprotokollen oder Kontext. Daten im Format JJJJ-MM-TT. Dies führt Zyklusdaten und geteilte Stimmungen zusammen; deine übrigen App-Daten bleiben unverändert.",
+      "importPassword": "Passwort für eine verschlüsselte Datei (sonst leer lassen)",
+      "chooseFile": "Datei wählen und Vorschau anzeigen",
+      "conflictHint": "Wähle für ein Datum, das bereits einen Eintrag hat, ob du deinen behalten oder den gesamten Eintrag durch den importierten ersetzen willst.",
+      "keep": "Vorhandenen behalten",
+      "replace": "Passende Daten ersetzen",
+      "restorePreferences": "Übliche Längen, Ziele und Feldauswahl wiederherstellen",
+      "preview": "{{added}} neue Einträge · {{updated}} Ersetzungen · {{skipped}} vorhandene Einträge behalten · {{overlaps}} überlappende Perioden übersprungen",
+      "checking": "Datei wird geprüft…",
+      "overlapHint": "Überlappende Perioden werden übersprungen. Felddefinitionen werden mit der Datei übertragen, damit frühere Beobachtungen lesbar bleiben. Die Vorschau zählt jede Periode, jeden Tag, jeden Kontext und jede Stimmung getrennt.",
+      "confirmImport": "Zusammenführen bestätigen",
+      "imported": "{{added}} neue Einträge und {{updated}} Ersetzungen importiert.",
+      "invalidFile": "Diese Datei kann nicht importiert werden. Prüfe Format, Daten und Felddefinitionen.",
+      "failed": "Diese Aktion konnte nicht abgeschlossen werden. Prüfe Datei oder Passwort und versuche es erneut.",
+      "prepared": "Export vorbereitet. Bewahre die Datei an einem Ort auf, von dem du sie wiederherstellen kannst.",
+      "fullBackup": "Vollständige App-Sicherung und Wiederherstellung",
+      "fullBackupHint": "Öffne die Daten-Einstellungen für eine vollständige App-Sicherung und lokale Wiederherstellungspunkte. Standardmäßig ist eine Verschlüsselung des Exports erforderlich. Eine vollständige Wiederherstellung ersetzt die App-Daten; der reine Zyklusimport oben führt sie dagegen zusammen."
+    },
+    "comparison": {
+      "tab": "Vergleichen",
+      "title": "Deine Zyklen vergleichen",
+      "description": "Vergleiche deine eigenen Beobachtungen nach Zyklustag oder vor dem nächsten erfassten Periodenbeginn. Tippe auf einen Tag, um ihn anzusehen oder zu bearbeiten.",
+      "start": "Zyklustag",
+      "before": "Vor der nächsten Periode",
+      "filter": "Symptom oder Messwert suchen",
+      "metrics": {
+        "bleeding": "Blutung",
+        "pain": "Schmerz (0–10)",
+        "energy": "Energie (1–5)",
+        "mood": "Stimmung (0–4)"
+      },
+      "flowLegend": "— nicht erfasst · 0 keine Blutung · 1 Schmierblutung · 2 schwach · 3 mittel · 4 stark · 5 sehr stark",
+      "symptomLegend": "— nicht erfasst · 0 ausdrücklich keine Symptome · ● vorhanden, nicht bewertet · 1 leicht · 2 mittel · 3 stark",
+      "numberLegend": "— nicht erfasst. Zahlen sind deine erfassten Bewertungen, keine abgeleiteten Werte.",
+      "empty": "Erfasse Periodenbeginne, um Zyklen zu vergleichen. Die Ansicht vor der Periode braucht zwei Beginne.",
+      "inProgress": "Läuft noch",
+      "unlogged": "Nicht erfasst",
+      "unrated": "Vorhanden, nicht bewertet",
+      "limitHint": "Zeigt deine letzten sechs Zyklen, bis zu 60 Tage nach einem Beginn oder 14 Tage vor dem nächsten erfassten Beginn. Leere Tage bleiben leer."
+    },
+    "complete": {
+      "confirmLong": "Dieser längere Zyklus stimmt",
+      "unknownLength": "Ich kenne meine übliche Zykluslänge nicht",
+      "rangeHeuristic": "Dieser Bereich ist eine Schätzung aus deinem Verlauf, kein Wahrscheinlichkeitsintervall und kein bestätigter Eisprungtermin.",
+      "backtest": "Rückblickende Prüfung: {{hits}} von {{checked}} späteren Beginnen lagen im Bereich; mittlerer Fehler des Mittelpunkts {{error}} Tage. Dies ist keine klinische Validierung.",
+      "restoreFirst": "Wiederherstellen oder meinen Verlauf übernehmen",
+      "careTitle": "Deine Symptome verstehen",
+      "careHint": "Allgemeine Information von NHS und RCOG. Das Erfassen ist keine Diagnose. Wenn dich Symptome beunruhigen oder deinen Alltag beeinträchtigen, besprich sie mit einer Fachperson; bei starken oder rasch zunehmenden Beschwerden suche umgehend ärztliche Hilfe vor Ort.",
+      "education": {
+        "bleeding": "Starke Blutung (NHS, Englisch)",
+        "pain": "Menstruationsschmerzen (NHS, Englisch)",
+        "unexpected": "Unerwartete Blutung (NHS, Englisch)",
+        "pms": "PMS und Symptomtagebücher (RCOG, Englisch)",
+        "menopause": "Perimenopause und Menopause (NHS, Englisch)",
+        "pregnancy": "Informationen zur Schwangerschaft (NHS, Englisch)",
+        "postpartum": "Erholung nach der Geburt (NHS, Englisch)",
+        "pregnancy_loss": "Informationen zum Schwangerschaftsverlust (NHS, Englisch)"
+      },
+      "trends": "Verläufe und Suche",
+      "trendsHint": "Erkunde deine erfassten Tage, auch wenn keine Periode stattfindet. Das sind Beobachtungen, keine Erklärungen dafür, was eine Veränderung verursacht hat.",
+      "lastDays": "Letzte {{days}} Tage",
+      "summary": "{{logged}} erfasste Tage · {{heavy}} Tage mit starker Blutung · {{spotting}} Tage mit Schmierblutung · {{impact}} Tage mit Auswirkung auf den Alltag",
+      "recap": "Seit dem erfassten Beginn am {{date}}: {{logged}} erfasste Tage, {{heavy}} Tage mit starker Blutung, {{impact}} Tage mit Auswirkung auf den Alltag.",
+      "symptomSummary": "{{symptom}}: {{days}} erfasste Tage, {{severe}} als stark bewertet",
+      "loggedOnly": "Es werden nur erfasste Werte angezeigt. Fehlende Tage sind unbekannt. Die letzten 30 Werte sind aufgelistet.",
+      "noObservations": "In diesem Zeitraum gibt es keine passenden Beobachtungen.",
+      "contextChanged": "Kontext geändert am {{date}}. Siehe Verlauf der Lebensphase.",
+      "search": "Deine Aufzeichnungen durchsuchen",
+      "searchHint": "Suche nach Symptomen, Notizen, Medikamenten, Schlagwörtern oder eigenen Werten. Alle Wörter müssen passen. Die Suche bleibt auf diesem Gerät; bis zu 50 passende Tage werden angezeigt.",
+      "metrics": {
+        "pain": "Schmerz (0–10)",
+        "energy": "Energie (1–5)",
+        "mood": "Stimmung (0–4)",
+        "sleepHours": "Schlaf (Stunden)",
+        "temperatureC": "Basaltemperatur (°C)",
+        "impact": "Auswirkung auf den Alltag (0–3)",
+        "bleeding": "Blutung",
+        "symptoms": "Symptome",
+        "note": "Notizen",
+        "importedTemperatureC": "Importierte Basaltemperatur (°C)"
+      },
+      "backupDays": "Intervall der Sicherungserinnerung (Tage; 0 deaktiviert)",
+      "importTitle": "Verlauf aus einer anderen App übernehmen",
+      "importHint": "{{rows}} CSV-Zeilen. Spalten: {{columns}}. Gib die exakten Spaltennamen unten ein; optionale Felder leer lassen. Dieser Assistent akzeptiert CSV, keine proprietären Archive.",
+      "importColumns": {
+        "date": "Spalte Datum/Beginn",
+        "end": "Spalte Enddatum (optional)",
+        "flow": "Spalte Blutungsstärke (optional)",
+        "temperature": "Spalte Temperatur in °C (optional)",
+        "symptoms": "Spalte Symptome (durch Semikolon getrennt)",
+        "note": "Spalte Notizen (optional)"
+      },
+      "dateOrder": {
+        "iso": "JJJJ-MM-TT",
+        "dmy": "Tag/Monat/Jahr",
+        "mdy": "Monat/Tag/Jahr"
+      },
+      "importPeriods": "Jede Zeile erfasst einen Periodenbeginn (kein Tagesprotokoll)",
+      "importError": "Prüfe Spaltennamen, Datumsreihenfolge und Werte. Die Blutungsstärke akzeptiert none, spotting, light, medium, heavy oder very_heavy; die Temperatur muss in °C angegeben sein. Doppelte Periodenbeginne und ungültige Daten können nicht importiert werden.",
+      "previewImport": "Import-Vorschau",
+      "healthTitle": "Zyklusdaten in deinem Gesundheitsspeicher",
+      "healthHint": "Lies Blutung und Basaltemperatur mit deiner Erlaubnis aus. Importierte Beobachtungen behalten ihre Quelle und ersetzen nie deine manuellen Einträge oder erzeugen Periodenbeginne. Der Zugriff auf den Gesundheitsspeicher kann durch die Verlaufsberechtigungen der Plattform eingeschränkt sein.",
+      "healthRead": "Lesen und Vorschau",
+      "healthPreview": "{{count}} Beobachtungen verfügbar. Ein erneuter Import derselben Quell-IDs aktualisiert nur deren importierte Kopien.",
+      "healthImport": "Diese Beobachtungen importieren",
+      "healthWrite": "Manuelle Blutung und Temperatur exportieren",
+      "healthWriteHint": "Dies schreibt deine manuellen Einträge zu Blutung und Basaltemperatur im gewählten Zeitraum in den Gesundheitsspeicher deines Geräts. Andere Apps mit Berechtigung können sie lesen. Importierte Beobachtungen, Symptome, Stimmung, Medikamente, Sexualität und Notizen sind ausgeschlossen. Sehr starke Blutung wird als stark exportiert.",
+      "healthDone": "Importierte Beobachtungen gespeichert.",
+      "healthWritten": "{{count}} Gesundheitseinträge geschrieben.",
+      "healthError": "Der Zugriff auf Gesundheitsdaten ist fehlgeschlagen oder die Berechtigung wurde verweigert. Prüfe die Gesundheitsberechtigungen des Geräts und versuche es erneut. Ein fehlgeschlagener Export hat möglicherweise einige Einträge geschrieben; ein erneuter Versuch aktualisiert die eigenen Einträge von Musclog.",
+      "importedValue": "Importiert aus {{source}}: {{value}}",
+      "sharing": "Ausgewählte Einträge teilen",
+      "sharingHint": "Wähle genau aus, was geteilt werden soll. Dies erstellt eine lesbare JSON-Datei für deinen gewählten Zeitraum. Die empfangende Person kann die Datei behalten oder weitergeben; es ist kein Live-Zugriff und kann nicht widerrufen werden. Standardmäßig ist nichts ausgewählt.",
+      "shareSelected": "Ausgewählte Felder exportieren",
+      "presets": "Optionale Tagebuch-Vorlagen",
+      "presetsHint": "Füge nützliche Felder hinzu und fülle ungenutzte Favoritenplätze. Dein Verlauf und deine vorhandenen Favoriten bleiben erhalten.",
+      "preset": {
+        "pms": "PMS-/Stimmungstagebuch einrichten",
+        "fertility": "Fruchtbarkeitsbeobachtungen hinzufügen",
+        "perimenopause": "Beobachtungen zur Perimenopause hinzufügen"
+      },
+      "pmsDiaryHint": "Ein tägliches Symptom- und Auswirkungstagebuch über zwei aufeinanderfolgende Zyklen kann ein klinisches Gespräch über PMS unterstützen. Dieses Tagebuch ist kein validierter PMDD-Fragebogen und stellt keine PMDD-Diagnose.",
+      "fertilityHint": "Temperatur, Ausfluss und Testergebnisse sind nur Beobachtungen. Sie bestätigen keinen Eisprung und machen Kalenderschätzungen nicht zur Verhütung geeignet.",
+      "impact": {
+        "0": "Keine Auswirkung",
+        "1": "Leichte Beeinträchtigung",
+        "2": "Aktivitäten eingeschränkt",
+        "3": "Übliche Aktivitäten nicht möglich"
+      },
+      "tests": {
+        "negative": "Negativ",
+        "positive": "Positiv",
+        "unclear": "Unklar"
+      },
+      "stagePregnancy": "Schwangerschaft",
+      "stagePregnancyHint": "Vorhersagen zu Periode und Fruchtbarkeit sind pausiert. Behalte deine Symptomaufzeichnungen und ändere den Kontext, wenn du bereit bist.",
+      "stageLoss": "Nach einem Schwangerschaftsverlust",
+      "stageLossHint": "Ein ruhiger Erfassungskontext ohne Vorhersagen zu Periode oder Fruchtbarkeit. Dein Verlauf bleibt erhalten; wechsle später in einen anderen Kontext, wenn du bereit bist.",
+      "stageSurgery": "Nach einer Hysterektomie",
+      "stageSurgeryHint": "Erfasse Symptome ohne Vorhersagen zu Periode oder Fruchtbarkeit. Eine Operation sagt nicht automatisch aus, ob du noch Eierstockzyklen hast.",
+      "stageMenopause": "Nach der Menopause",
+      "stageMenopauseHint": "Erfasse Symptome ohne Vorhersagen zu Periode oder Fruchtbarkeit. Unerwartete Blutungen können weiterhin erfasst werden.",
+      "ratingMin": "Mindestbewertung",
+      "ratingMax": "Höchstbewertung",
+      "chartDescription": "{{metric}} im Zeitverlauf. Jeder Punkt ist ein erfasster Wert; Daten und Werte sind unten aufgelistet.",
+      "variabilitySummary": "{{count}} erfasste Zykluszeiträume in diesem Bereich: {{low}}–{{high}} Tage, einschließlich der von Vorhersagen ausgeschlossenen Zeiträume.",
+      "energyInsight": "Du hast in {{hits}} von {{total}} beobachteten Zyklen eine niedrigere Energie nahe am Periodenbeginn erfasst. Das belegt keine Ursache.",
+      "sleepInsight": "Du hast in {{hits}} von {{total}} beobachteten Zyklen kürzeren Schlaf nahe am Periodenbeginn erfasst. Das belegt keine Ursache.",
+      "reviewLong": "Diesen langen Zyklus wieder als unsicher behandeln"
+    },
+    "notifications": {
+      "subtle": {
+        "cycle": "Deine Zyklus-Aktualisierung ist bereit.",
+        "routine": "Zeit für deine tägliche Erinnerung.",
+        "checkIn": "Zeit für deinen täglichen Check-in.",
+        "update": "Zeit, dein Protokoll zu aktualisieren.",
+        "backup": "Zeit, eine Sicherung zu speichern."
+      },
+      "periodStart": {
+        "title": "Periode könnte bald beginnen",
+        "body": "Basierend auf deinen letzten Zyklen könnte deine Periode etwa um {{from}} beginnen. Das ist eine Schätzung.",
+        "bodyRange": "Basierend auf deinen letzten Zyklen könnte deine Periode zwischen {{from}} und {{to}} beginnen. Das ist eine Schätzung."
+      },
+      "periodDue": {
+        "title": "Periode könnte heute beginnen",
+        "body": "Heute ist laut deinen letzten Zyklen der wahrscheinlichste Beginn. Erfasse ihn, wenn er eintritt."
+      },
+      "periodLate": {
+        "title": "Dieser Zyklus ist länger als üblich",
+        "body": "Dieser Zyklus ist länger als dein bisheriges Muster. Dafür gibt es viele mögliche Gründe. Tippe, wenn du ihn aktualisieren möchtest.",
+        "bodyRange": "Dieser Zyklus ist länger als dein bisheriges Muster, das meist bis {{to}} endet. Dafür gibt es viele mögliche Gründe. Tippe, wenn du ihn aktualisieren möchtest."
+      },
+      "fertileWindow": {
+        "title": "Geschätztes fruchtbares Fenster",
+        "body": "Dein geschätztes fruchtbares Fenster könnte am {{from}} beginnen. Es ist eine Kalenderschätzung, keine Bestätigung des Eisprungs und keine Verhütung.",
+        "bodyRange": "Dein geschätztes fruchtbares Fenster reicht von {{from}} bis {{to}}. Es ist eine Kalenderschätzung, keine Bestätigung des Eisprungs und keine Verhütung."
+      },
+      "pill": {
+        "title": "Pillenerinnerung",
+        "body": "Zeit, deine Pille zu nehmen."
+      },
+      "dailyLog": {
+        "title": "Täglicher Zyklus-Check-in",
+        "body": "Erfasse heute, wenn du möchtest."
+      },
+      "endCheck": {
+        "title": "Dauert deine Periode noch an?",
+        "body": "Die Periode, die du als laufend markiert hast, begann vor einer Woche. Aktualisiere ihr Ende, wenn du soweit bist."
+      },
+      "backup": {
+        "title": "Zyklus-Sicherung",
+        "body": "Erwäge, eine verschlüsselte Sicherung deiner Aufzeichnungen zu speichern."
+      }
+    },
+    "reminders": {
+      "time": "Erinnerungszeit",
+      "leadDays": "Tage Vorlauf vor deiner Periode",
+      "oncePerCycle": "etwa einmal pro Zyklus",
+      "atMostOncePerCycle": "höchstens einmal pro Zyklus",
+      "daily": "jeden Tag",
+      "oncePerPeriod": "höchstens einmal pro Periode",
+      "basis": {
+        "estimate": "eine Schätzung aus deinen erfassten Zyklen",
+        "routine": "eine von dir gewählte Zeit"
+      },
+      "notWhileSuppressed": "wird nicht gesendet, solange Vorhersagen für deine Situation aus sind",
+      "periodStart": {
+        "label": "Vor meiner Periode",
+        "when": "Um {{time}}, mit dem unten eingestellten Vorlauf, vor dem frühesten vorhergesagten Beginn"
+      },
+      "periodDue": {
+        "label": "Am wahrscheinlichsten Tag",
+        "when": "Um {{time}} am wahrscheinlichsten Starttag"
+      },
+      "periodLate": {
+        "label": "Wenn dieser Zyklus lang dauert",
+        "when": "Am Tag nach dem Ende deines üblichen Bereichs, in neutraler Formulierung"
+      },
+      "fertileWindow": {
+        "label": "Geschätztes fruchtbares Fenster",
+        "when": "Um {{time}}, wenn das geschätzte Fenster beginnt",
+        "unavailable": "Nur verfügbar, wenn die Schätzung des fruchtbaren Fensters aktiviert ist und sie in deiner Situation aussagekräftig ist."
+      },
+      "dailyLog": {
+        "label": "Täglicher Check-in",
+        "when": "Um {{time}}"
+      },
+      "endCheck": {
+        "label": "Laufende Periode prüfen",
+        "when": "Eine Woche nach einer Periode, die du als laufend markiert hast"
+      },
+      "backup": {
+        "label": "Sicherungserinnerung"
+      },
+      "pill": {
+        "label": "Pillenerinnerung",
+        "when": "An jedem Pillentag um {{time}}",
+        "time": "Pillenzeit",
+        "pattern21": "21 Tage + 7 frei",
+        "pattern24": "24 Tage + 4 frei",
+        "continuous": "Jeden Tag",
+        "packStart": "Erste Pille der aktuellen Packung",
+        "hint": "Pillenfreie Tage erhalten keine Erinnerung. Dies ist eine Erinnerung, keine medizinische Beratung: Befolge bei einer vergessenen Pille die Anweisungen auf deiner Packung.",
+        "notPaused": "läuft während einer Pause weiter"
+      },
+      "pause": {
+        "title": "Zyklus-Erinnerungen pausieren",
+        "week": "1 Woche",
+        "month": "1 Monat",
+        "indefinite": "Bis ich fortsetze",
+        "resume": "Erinnerungen fortsetzen",
+        "hint": "Bei Krankheit, Trauer, Reisen oder einer Pause. Pillenerinnerungen laufen weiter."
+      },
+      "status": {
+        "web": "Erinnerungen werden von der Musclog-Telefon-App zugestellt. Hier vorgenommene Einstellungen gelten dort ebenfalls.",
+        "noPermission": "Benachrichtigungen sind für Musclog nicht erlaubt, daher kann keine Erinnerung ankommen.",
+        "switchedOff": "Zyklusbenachrichtigungen sind ausgeschaltet, daher kommt keine Erinnerung an.",
+        "pausedUntil": "Erinnerungen sind bis {{date}} pausiert.",
+        "paused": "Erinnerungen sind pausiert, bis du sie fortsetzt.",
+        "next": "Als Nächstes: {{reminder}}, {{date}}.",
+        "none": "Nichts ist geplant. Aktiviere unten eine Erinnerung.",
+        "turnOn": "Zyklus-Erinnerungen aktivieren",
+        "permissionDenied": "Benachrichtigungen wurden nicht erlaubt. Du kannst sie in den Einstellungen deines Telefons erlauben."
+      },
+      "test": "Test-Benachrichtigung senden",
+      "testSent": "Gesendet. Sie kommt in wenigen Sekunden an, formuliert wie gewählt.",
+      "style": {
+        "title": "Formulierung auf dem Sperrbildschirm",
+        "hint": "Was jemand beim Blick auf dein Telefon lesen kann. Privat verrät nie, worum es bei einer Erinnerung geht.",
+        "private": "Privat",
+        "subtle": "Dezent",
+        "detailed": "Ausführlich"
+      },
+      "preview": "Vorschau",
+      "lockScreenHint": "Auf einem gesperrten Telefon mit sicherem Sperrbildschirm blendet Android auch den Text von Zyklus-Erinnerungen aus.",
+      "why": {
+        "title": "Warum du diese Erinnerung erhältst",
+        "setting": "Du hast „{{reminder}}“ in den Zykluseinstellungen aktiviert.",
+        "estimateFromCycles": "Ihr Datum ist eine Schätzung aus deinen erfassten Zyklen ({{cycles}} verwendet), die {{low}} bis {{high}} Tage lang waren. Eine Erinnerung kann nicht genauer sein als das.",
+        "estimateFromSetup": "Ihr Datum stammt aus der üblichen Zykluslänge, die du eingegeben hast, weil es noch nicht genug erfassten Verlauf gibt. Es wird besser, je mehr Perioden du erfasst.",
+        "routine": "Sie ertönt zu der Zeit, die du gewählt hast, unabhängig von deinen Zyklusdaten.",
+        "pillBreak": "Sie überspringt die pillenfreien Tage deiner Packung.",
+        "late": "Ein längerer Zyklus hat viele mögliche Gründe. Musclog nimmt nie einen davon an.",
+        "change": "Erinnerungen ändern oder ausschalten",
+        "estimateFromSteadyCycles": "Ihr Datum ist eine Schätzung aus deinen erfassten Zyklen ({{cycles}} verwendet), die alle etwa {{low}} Tage lang waren. Zyklen können dennoch schwanken, behandle es daher als ungefähr."
+      }
+    }
+  }
+}

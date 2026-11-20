@@ -1,0 +1,27 @@
+{
+  "errors": {
+    "connectionTimeout": {
+      "title": "Przekroczono czas połączenia",
+      "description": "Nie udało się połączyć z serwerami Musclog. Sprawdź połączenie z internetem.",
+      "tryAgain": "Spróbuj ponownie"
+    },
+    "failedToLoadData": "Nie udało się wczytać danych",
+    "somethingWentWrong": "Coś poszło nie tak",
+    "genericDescription": "Wystąpił nieoczekiwany błąd.",
+    "reload": "Wczytaj ponownie",
+    "aiCreditsError": "Przekroczono limit usługi AI. Sprawdź klucz API albo spróbuj ponownie później.",
+    "aiProcessingError": "Nie udało się przetworzyć tego żądania. Spróbuj ponownie za chwilę.",
+    "aiProcessingErrorTitle": "Błąd przetwarzania żądania",
+    "gatewayDailyLimitError": "Osiągnięto dzienny limit darmowej AI. Spróbuj jutro albo dodaj własny klucz API w ustawieniach AI.",
+    "gatewayDailyLimitErrorTitle": "Osiągnięto dzienny limit",
+    "databaseError": {
+      "title": "Błąd bazy danych",
+      "description": "Wystąpił błąd bazy danych. Zgłaszanie błędów zostało włączone, aby pomóc rozwiązać problem."
+    },
+    "aiInvalidApiKey": "Klucz API {{provider}} został odrzucony. Sprawdź go w ustawieniach AI.",
+    "aiTimeout": "To trwa zbyt długo. Spróbuj ponownie.",
+    "aiKeyTestOk": "Klucz zaakceptowany",
+    "aiKeyTestRejected": "Klucz odrzucony. Sprawdź go i spróbuj ponownie.",
+    "aiKeyTestNetwork": "Nie udało się połączyć z dostawcą. Sprawdź połączenie."
+  }
+}

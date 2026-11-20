@@ -1,0 +1,70 @@
+{
+  "websiteToolProteinCalculator": {
+    "title": "Kalkulator białka",
+    "intro": "Wpisz masę ciała, wzrost i cel, by dostać dzienny cel białka w gramach, wraz z gramami na kilogram, na których się opiera.",
+    "form": {
+      "weight": "Masa ciała",
+      "height": "Wzrost",
+      "goal": "Główny cel",
+      "deficit": "Jedzenie w deficycie kalorycznym?",
+      "deficitYes": "Tak, redukuję",
+      "deficitNo": "Nie",
+      "goalWeight": "Waga docelowa (opcjonalnie)",
+      "goalWeightHint": "Jeśli ją ustawisz, białko liczy się od niej, a nie od obecnej masy.",
+      "cm": "cm",
+      "inches": "cale"
+    },
+    "goals": {
+      "hypertrophy": "Budowa mięśni",
+      "strength": "Zwiększenie siły",
+      "general": "Ogólne zdrowie",
+      "endurance": "Wytrzymałość",
+      "weightLoss": "Utrata wagi"
+    },
+    "problems": {
+      "weight": "Wpisz masę ciała w zakresie akceptowanym przez kalkulator.",
+      "height": "Wpisz wzrost w zakresie akceptowanym przez kalkulator.",
+      "goalWeight": "Wpisz wagę docelową w zakresie akceptowanym przez kalkulator albo zostaw puste."
+    },
+    "results": {
+      "grams": "Białko dziennie",
+      "gramsNote": "{{perKg}} z {{reference}}",
+      "tableTitle": "Gramy na kilogram według celu",
+      "tableGoal": "Cel",
+      "tablePerKg": "Na kg masy ciała"
+    },
+    "notes": {
+      "capped": "Twoja masa jest powyżej masy referencyjnej {{reference}} (BMI 30 dla twojego wzrostu), więc wynik używa tej wartości. Twoja masa to {{weight}}. Bez wagi docelowej limit sprawia, że białko nie rośnie wraz z masą tłuszczową.",
+      "deficit": "Jedzenie w deficycie podnosi minimum do {{value}}, bo białko pomaga zachować mięśnie podczas utraty tłuszczu.",
+      "bodyweight": "Ta wartość opiera się na masie ciała. Kalkulator nie pyta o tkankę tłuszczową, więc nie odróżni mięśni od tłuszczu.",
+      "spread": "Liczy się dzienna suma. Rozłóż ją na posiłki, jak ci wygodnie, w tylu porcjach, ile chcesz.",
+      "medical": "Informacja ogólna, a nie porada medyczna. Jeśli masz chorobę nerek albo inne schorzenie wpływające na białko, zapytaj lekarza, zanim zmienisz dietę."
+    },
+    "sections": [
+      {
+        "title": "Jak powstaje wynik",
+        "body": [
+          "Białko ustawia się w gramach na kilogram masy ciała dla twojego celu: ta sama tabela, której aplikacja Musclog używa dla dziennych celów. W deficycie rośnie do co najmniej 2,0 g/kg.",
+          "Procent kalorii nie jest używany, bo sprawia, że białko spada, gdy jesz mniej, a właśnie wtedy zachowanie mięśni jest najważniejsze."
+        ]
+      },
+      {
+        "title": "Dlaczego masa jest ograniczana",
+        "body": [
+          "Bez wagi docelowej wynik używa obecnej masy, ale nigdy więcej niż masy przy BMI 30 dla twojego wzrostu. Powyżej tego dodatkowa masa w większości nie jest tkanką beztłuszczową, a białko dla całości byłoby więcej, niż potrzebujesz. Waga docelowa zastępuje ten limit."
+        ]
+      },
+      {
+        "title": "Co mówią badania",
+        "body": [
+          "Morton i in. (2018) zebrali badania nad treningiem oporowym i stwierdzili, że przyrosty mięśni wyrównują się przy około 1,6 g/kg dziennie, a górna granica ufności jest bliska 2,2 g/kg. Wartości ogólne i dla hipertrofii mieszczą się w tym zakresie.",
+          "Helms i in. (2014) przeanalizowali białko dla osób na diecie przy treningu, a minimum 2,0 g/kg w deficycie pochodzi z tej literatury. To ustawienie Musclog, a nie zmierzony wynik dla ciebie."
+        ]
+      }
+    ],
+    "sources": {
+      "morton": "Morton i in. (2018), metaanaliza suplementacji białkiem a przyrosty w treningu oporowym",
+      "helms": "Helms i in. (2014), spożycie białka podczas ograniczania energii u sportowców sylwetkowych"
+    }
+  }
+}

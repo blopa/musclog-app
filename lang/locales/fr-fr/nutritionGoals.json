@@ -1,0 +1,143 @@
+{
+  "nutritionGoals": {
+    "title": "Définir les objectifs nutrition et corps",
+    "subtitle": "Définis tes cibles de nutrition et de composition corporelle.",
+    "dailyMacroTargets": "Cibles quotidiennes de macros",
+    "totalDailyCalories": "Calories quotidiennes totales",
+    "tdeeHint": "TDEE : {{kcal}}",
+    "kcalPerKgTissueHint": "Basé sur {{kcal}} par kg de tissu (Hall 2008 + Forbes 2007)",
+    "kcalPerLbTissueHint": "Basé sur {{kcal}} par lb de tissu (Hall 2008 + Forbes 2007)",
+    "calorieDeficit": "−{{kcal}} de déficit",
+    "calorieSurplus": "+{{kcal}} de surplus",
+    "atMaintenance": "Au maintien",
+    "targetBodyMetrics": "Cibles corporelles",
+    "macrosDistribution": "Répartition des macros",
+    "balance": "Équilibre",
+    "optimal": "Optimal",
+    "protein": "Protéines",
+    "carbohydrates": "Glucides",
+    "fats": "Lipides",
+    "targetWeight": "Poids cible",
+    "targetBodyFat": "Masse grasse cible",
+    "targetBMI": "IMC cible",
+    "targetFFMI": "IMM cible",
+    "targetDate": "Date cible",
+    "targetDateNotSet": "Non défini",
+    "targetDateSublabel": "Quand tu veux atteindre tes cibles corporelles",
+    "targetDateClear": "Effacer",
+    "editTitle": "Modifier l'objectif",
+    "updateGoal": "Mettre à jour l'objectif",
+    "goalStartDate": "Date de début de l'objectif",
+    "goalStartDateSublabel": "Quand cette période d'objectif a commencé",
+    "goalStartDateToday": "Aujourd'hui",
+    "saveGoals": "Enregistrer les objectifs",
+    "settingsNote": "Tu peux modifier ces valeurs à tout moment dans les Réglages.",
+    "sublabels": {
+      "targetWeight": "Poids cible en {{unit}}",
+      "targetBodyFat": "% de masse grasse",
+      "targetBMI": "Indice de masse corporelle",
+      "targetFFMI": "Indice de masse maigre"
+    },
+    "acceptAndContinue": "Accepter et continuer",
+    "adjustGoalsManually": "Ajuster les objectifs manuellement",
+    "continue": "Continuer",
+    "results": {
+      "aiCalculationComplete": "Calcul terminé",
+      "your": "Ton",
+      "nutritionPlan": "Plan nutritionnel",
+      "aiDescription": "Selon tes mensurations et ton niveau d'activité, nos calculs ont optimisé tes cibles quotidiennes.",
+      "manualDescription": "Voici les objectifs nutritionnels que tu as définis. Tu peux continuer ou revenir en arrière pour les ajuster.",
+      "manualPlanBadge": "Ton plan personnalisé",
+      "macroSplit": "Répartition des macros",
+      "manualTipsTitle": "Tout est prêt",
+      "manualTipsDescription": "Commence à saisir tes repas pour suivre tes progrès. Tu peux modifier ces objectifs à tout moment dans les Réglages.",
+      "dailyCalorieTarget": "Cible calorique quotidienne",
+      "protein": "Protéines",
+      "carbs": "Glucides",
+      "fats": "Lipides",
+      "estimatedWeightLoss": "Perte de poids estimée",
+      "estimatedWeightGain": "Prise de poids estimée",
+      "estimatedMaintenance": "Maintien estimé",
+      "projectionTitle": "Projection sur {{days}} jours",
+      "projectionDescription": "En suivant ces objectifs, tu devrais atteindre {{value}} {{unit}} en {{days}} jours.",
+      "projectionMaintenanceTitle": "Maintien du poids",
+      "projectionMaintenanceMuscleGain": "Avec un entraînement et une nutrition réguliers, le gain musculaire naturel sur {{days}} jours est généralement de {{range}} {{unit}}, selon la génétique et l'expérience.",
+      "calorieRange": "Fourchette : {{range}}",
+      "bodyFatUncertaintyNote": "La fourchette tient compte des variations de mesure de la masse grasse (±4 %)",
+      "dailyDeficit": "Déficit quotidien : {{kcal}}",
+      "dailySurplus": "Surplus quotidien : {{kcal}}",
+      "projectionFat": "Masse grasse : {{value}} {{unit}}",
+      "projectionLean": "Masse maigre : {{value}} {{unit}}",
+      "leanMassClarification": "La masse maigre comprend l'eau, le glycogène et les autres tissus non gras, pas seulement le muscle.",
+      "formulasBasedOn": "Basé sur le modèle de composition corporelle de Hall/Forbes et l'énergie métabolisable (Int J Obes 2008 ; Br J Nutr 2007).",
+      "macroSourcesNote": "Cibles de macros basées sur les AMDR de l'IOM, la prise de position de l'ISSN (2017), la prise de position conjointe ACSM/ADA/DC (2016) et Helms et al. (2014).",
+      "goalLabels": {
+        "weight_loss": "Perte de poids",
+        "muscle_gain": "Prise de muscle",
+        "maintenance": "Maintien",
+        "moderateWeightLoss": "Stratégie de perte de poids modérée",
+        "enduranceTraining": "Entraînement d'endurance",
+        "generalFitness": "Forme générale",
+        "leanBulk": "Stratégie de prise de masse maigre",
+        "strengthSurplus": "Stratégie de surplus pour la force"
+      }
+    },
+    "errorSaving": "Erreur lors de l'enregistrement",
+    "dietTypes": {
+      "keto": {
+        "title": "Keto",
+        "subtitle": "Pauvre en glucides"
+      },
+      "lowCarb": {
+        "title": "Pauvre en glucides",
+        "subtitle": "Adapté aux graisses"
+      },
+      "highProteinMuscle": {
+        "title": "Riche en protéines",
+        "subtitle": "Prise de muscle"
+      },
+      "highProteinFatLoss": {
+        "title": "Riche en protéines",
+        "subtitle": "Perte de gras"
+      },
+      "highCarb": {
+        "title": "Riche en glucides",
+        "subtitle": "Focus énergie"
+      },
+      "balanced": {
+        "title": "Équilibré",
+        "subtitle": "Optimal"
+      },
+      "moderateFat": {
+        "title": "Lipides modérés",
+        "subtitle": "Énergie durable"
+      },
+      "lowFat": {
+        "title": "Pauvre en lipides",
+        "subtitle": "Régime léger"
+      },
+      "custom": {
+        "title": "Personnalisé",
+        "subtitle": "Ton plan"
+      }
+    },
+    "goalMode": "Mode d'objectif",
+    "modeOptions": {
+      "manual": "Manuel",
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire"
+    },
+    "modeHints": {
+      "manual": "Définis tes propres cibles. Elles restent les mêmes jusqu'à ce que tu les modifies.",
+      "daily": "Les cibles se mettent à jour chaque jour selon tes données et ta date d'objectif.",
+      "weekly": "Vérifie et valide tes cibles chaque semaine. Elles restent les mêmes entre deux bilans."
+    },
+    "manual": "Manuel",
+    "dynamic": "Dynamique",
+    "dynamicInfo": "Les cibles quotidiennes sont calculées automatiquement chaque jour à partir de tes données actuelles et de ta trajectoire d'objectif. Ta cible calorique actuelle est de {{kcal}}.",
+    "dynamicBadge": "Dynamique",
+    "dynamicRequiredFields": "Le poids cible et la date cible sont requis pour les objectifs dynamiques.",
+    "keepCurrentTargets": "Garder mes cibles actuelles",
+    "perGram": "{{energy}}/g"
+  }
+}

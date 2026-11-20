@@ -1,0 +1,144 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Vücut ölçümleri",
+      "newMetric": "Yeni ölçüm"
+    },
+    "metrics": {
+      "weight": "Kilo",
+      "bodyFat": "Vücut yağı",
+      "body_fat": "Vücut yağı",
+      "muscle_mass": "Kas kütlesi",
+      "lean_body_mass": "Yağsız vücut kütlesi",
+      "basal_metabolic_rate": "Bazal metabolizma hızı",
+      "total_calories_burned": "Toplam yakılan kalori",
+      "active_calories_burned": "Aktif yakılan kalori",
+      "bmi": "BMI",
+      "height": "Boy",
+      "chest": "Göğüs",
+      "waist": "Bel",
+      "hips": "Kalça",
+      "arms": "Kollar",
+      "thighs": "Uyluklar",
+      "calves": "Baldırlar",
+      "neck": "Boyun",
+      "shoulders": "Omuzlar",
+      "mood": "Ruh hali",
+      "water": "Su",
+      "supplement": "Takviye",
+      "ffmi": "FFMI",
+      "nutrition": "Beslenme",
+      "exercise": "Egzersiz",
+      "other": "Diğer",
+      "daily_steps": "Adım",
+      "descriptions": {
+        "weight": "Vücut kilonu zaman içinde takip et",
+        "body_fat": "Vücut yağ kütlesinin yüzdesi",
+        "muscle_mass": "Toplam iskelet kası kütlesi",
+        "lean_body_mass": "Vücut kilosu eksi yağ kütlesi",
+        "basal_metabolic_rate": "Tam dinlenmede yakılan kalori",
+        "total_calories_burned": "Günlük toplam enerji harcaması",
+        "active_calories_burned": "Hareketle yakılan kalori",
+        "bmi": "Boy ve kiloya göre vücut kitle indeksi",
+        "height": "Ayakta duruş boyun",
+        "chest": "Göğüs çevresi ölçümü",
+        "waist": "Bel çevresi ölçümü",
+        "hips": "Kalça çevresi ölçümü",
+        "arms": "Üst kol çevresi ölçümü",
+        "thighs": "Uyluk çevresi ölçümü",
+        "calves": "Baldır çevresi ölçümü",
+        "neck": "Boyun çevresi ölçümü",
+        "shoulders": "Omuz çevresi ölçümü",
+        "mood": "Genel ruh halin ve iyi oluşun",
+        "water": "Günlük su hatırlatıcısının tamamlanması",
+        "ffmi": "Yağsız kütle indeksi",
+        "nutrition": "Günlük beslenme alım kaydı",
+        "exercise": "Fiziksel aktivite ve egzersiz kaydı",
+        "other": "Diğer vücut ölçümleri",
+        "daily_steps": "Telefonun ya da saatinin kaydettiği adımlar"
+      }
+    },
+    "current": {
+      "label": "Şimdiki"
+    },
+    "history": {
+      "title": "Geçmiş",
+      "filter": "Filtre",
+      "loadMore": "Daha fazla yükle",
+      "loadingMore": "Yükleniyor...",
+      "notes": {
+        "baseline": "Başlangıç",
+        "noChange": "Değişiklik yok",
+        "decreased": "Azaldı",
+        "increased": "Arttı"
+      },
+      "filters": {
+        "title": "Geçmişi filtrele",
+        "sortOrder": {
+          "title": "Sıralama",
+          "newestFirst": "En yeni önce",
+          "oldestFirst": "En eski önce"
+        },
+        "trend": {
+          "title": "Eğilim",
+          "all": "Tümü",
+          "increased": "Arttı",
+          "decreased": "Azaldı",
+          "noChange": "Değişiklik yok"
+        },
+        "reset": "Sıfırla",
+        "apply": "Filtreleri uygula"
+      }
+    },
+    "dateFormats": {
+      "today": "Bugün",
+      "yesterday": "Dün"
+    },
+    "noDataAvailable": "Veri yok",
+    "noHistoryDataAvailable": "Geçmiş verisi yok",
+    "manageMetricData": {
+      "title": "Ölçüm geçmişi",
+      "searchPlaceholder": "Ölçüm türüne göre ara...",
+      "noEntries": "Henüz ölçüm kaydı yok",
+      "noEntriesDesc": "Burada görmek için vücut ölçümü kaydı ekle",
+      "endOfHistory": "Ölçüm geçmişinin sonu",
+      "metricOptions": "Ölçüm seçenekleri",
+      "editEntry": "Kaydı düzenle",
+      "editEntryDesc": "Değeri ve tarihi değiştir",
+      "duplicateEntry": "Kaydı çoğalt",
+      "duplicateEntryDesc": "Yeni bir tarihle kopyasını oluştur",
+      "deleteEntry": "Kaydı sil",
+      "deleteEntryDesc": "Bu ölçüm kaydını kaldır"
+    },
+    "addEntry": {
+      "title": "Kayıt ekle",
+      "enterType": "Tür gir",
+      "description": "Yeni bir vücut ölçümü kaydet",
+      "enterWeight": "Kilo gir",
+      "enterBodyFat": "Vücut yağı gir",
+      "enterHeight": "Boy gir",
+      "date": "Tarih",
+      "time": "Saat",
+      "moodQuestion": "Bugün kendini nasıl hissediyorsun?",
+      "supplementQuestion": "Bugün takviyeni aldın mı?",
+      "supplementQuestionWithName": "Bugün {{name}} aldın mı?",
+      "waterQuestionWithAmount": "Bugün {{amount}} litre su içmeyi hatırladın mı?",
+      "moods": {
+        "0": "Kötü",
+        "1": "Düşük",
+        "2": "İdare eder",
+        "3": "İyi",
+        "4": "Harika"
+      },
+      "saveEntry": "Kaydı kaydet",
+      "saveSuccess": "Kayıt başarıyla kaydedildi",
+      "errorSaving": "Kaydedilirken hata oluştu",
+      "yes": "Evet",
+      "no": "Hayır",
+      "taken": "Alındı",
+      "notTaken": "Alınmadı",
+      "note": "Not",
+      "notePlaceholder": "Not ekle..."
+    }
+  }
+}

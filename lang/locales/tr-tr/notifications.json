@@ -1,0 +1,116 @@
+{
+  "notifications": {
+    "header": {
+      "title": "Bildirimler",
+      "clearAll": "Tümünü temizle"
+    },
+    "sections": {
+      "today": "Bugün",
+      "yesterday": "Dün",
+      "earlier": "Daha önce"
+    },
+    "channels": {
+      "default": "Varsayılan",
+      "activeWorkout": "Devam eden antrenman",
+      "cycle": "Döngü hatırlatıcıları",
+      "restTimer": "Dinlenme zamanlayıcısı",
+      "workoutReminders": "Antrenman hatırlatıcıları",
+      "restTimerQuiet": "Dinlenme zamanlayıcısı (sessiz)"
+    },
+    "startNow": "Şimdi başla",
+    "types": {
+      "aiInsight": {
+        "title": "Yapay zekâ içgörüsü",
+        "description": "Son kaldırışlarına göre, en iyi toparlanma için bugün proteini 15g artırmayı dene."
+      },
+      "workoutReminder": {
+        "title": "Antrenman hatırlatıcısı",
+        "description": "{{workoutName}} için hazır mısın? Bugün {{time}} için planlandı."
+      },
+      "workoutCompleted": {
+        "title": "Antrenman tamamlandı",
+        "description": "{{workoutName}} tamamlandı. {{calories}} yaktın."
+      },
+      "kudosReceived": {
+        "title": "Beğeni aldın",
+        "description": "{{name}} ve {{count}} kişi son kilometre taşını beğendi: \"{{milestone}}\""
+      },
+      "weeklyReport": {
+        "title": "Haftalık rapor hazır",
+        "description": "Geçen haftaki ilerleme raporun hazır. İstatistiklerine bak."
+      },
+      "activeWorkout": {
+        "title": "Antrenman: {{workoutName}}",
+        "body": "{{totalTime}} - {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Antrenman devam ediyor"
+      },
+      "workoutReminderMorning": {
+        "title": "Antrenman hatırlatıcısı",
+        "body": "{{workoutName}} antrenmanın bugün var."
+      },
+      "nutritionOverview": {
+        "title": "Günlük beslenme özeti",
+        "body": "Bugünkü beslenmenin hedeflerinle nasıl karşılaştığına bak."
+      },
+      "nutritionCheckin": {
+        "title": "Haftalık ilerleme kontrolü",
+        "body": "Haftalık beslenme kontrolün zamanı geldi! Bakalım nasıl gitmiş."
+      },
+      "periodPrediction": {
+        "title": "Adet tahmini",
+        "body": "Son döngülerine göre adet dönemin birkaç gün içinde başlayabilir."
+      },
+      "fertileWindow": {
+        "title": "Verimli dönem",
+        "body": "Tahmini verimli dönemin yakında başlayabilir. Bu takvim tahminidir, yumurtlamanın onayı değildir."
+      },
+      "restTimerAlert": {
+        "title": "Dinlenme bitti",
+        "body": "Dinlenmen bitti. Sıradaki set zamanı."
+      },
+      "workoutDurationWarning": {
+        "title": "Hâlâ antrenman yapıyor musun?",
+        "body": "Seansın 5 saattir devam ediyor. Musclog'da bitirmeyi unutma."
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Bir güncellemen var."
+      },
+      "unfinishedWorkout": {
+        "title": "Antrenmanını bitirmek ister misin?",
+        "body": "{{workoutName}} hâlâ açık. Bitince bitir ve kaydet."
+      },
+      "goalAtRisk": {
+        "title": "Haftalık hedef risk altında",
+        "body": "Haftalık hedefe ulaşmak için kalan antrenman: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Neredeyse hazır",
+        "body": "{{seconds}} saniye dinlenme kaldı."
+      },
+      "workTimerAlert": {
+        "title": "Süre doldu",
+        "body": "Süreli setin tamamlandı."
+      },
+      "comebackWelcome": {
+        "title": "Hazır olduğunda",
+        "body": "Acele yok. Yavaş yavaş dönmek istersen bunu yapmanın nazik bir yolu var."
+      }
+    },
+    "actions": {
+      "addRest": "+{{seconds}}sn dinlenme",
+      "nextSet": "Sonraki set",
+      "snooze": "1 saat ertele",
+      "done": "Tamam",
+      "later": "Sonra",
+      "skip": "Atla"
+    },
+    "restPrompt": {
+      "title": "Dinlenme zamanlayıcısı uyarıları?",
+      "message": "Dinlenme zamanlayıcın çalışıyor. Telefonunu kilitlersen ya da uygulama değiştirirsen uyarı almak ister misin?",
+      "confirm": "Uyarıları aç",
+      "cancel": "Şimdi değil"
+    }
+  }
+}

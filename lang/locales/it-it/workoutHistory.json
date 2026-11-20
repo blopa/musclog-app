@@ -1,0 +1,19 @@
+{
+  "workoutHistory": {
+    "title": "Cronologia sessioni",
+    "previewTitle": "Anteprima allenamento",
+    "workoutInProgress": "Allenamento in corso",
+    "previewSubtitle": "Anteprima",
+    "duration": "Durata",
+    "volume": "Vol",
+    "setsDone": "Serie completate",
+    "startThisWorkout": "Inizia questo allenamento",
+    "noExercisesYet": "Nessun esercizio ancora",
+    "exercise": "Esercizio {{number}}",
+    "set": "Serie {{number}}",
+    "share": "Condividi",
+    "shareDescription": "Condividi questi dettagli dell'allenamento",
+    "shareFailed": "Impossibile condividere i dettagli dell'allenamento. Riprova.",
+    "viewHistory": "Vedi sessioni passate"
+  }
+}

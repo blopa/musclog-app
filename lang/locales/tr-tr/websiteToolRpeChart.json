@@ -1,0 +1,71 @@
+{
+  "websiteToolRpeChart": {
+    "title": "RPE ve RIR tablosu ile yük hesaplayıcısı",
+    "intro": "Her RPE'de her tekrar sayısının bir tekrarlık maksimumunun ne kadarına denk geldiğini gösteren bir tablo, RPE'nin tekrar cinsinden ne anlama geldiğini ve yaptığın bir seti başka bir set için yüke çeviren bir hesaplayıcı.",
+    "chart": {
+      "title": "Bir tekrarlık maksimumunun payı",
+      "rpeColumn": "RPE {{rpe}}",
+      "reps": "Tekrar",
+      "note": "Yaptığın tekrarlar için yatay, setin çabasını derecelendirdiğin için dikey oku. Yüzdeler uygulamanın kullandığı aynı ortalama tahminden gelir, bu yüzden RPE 10'da tek bir tekrar bile %100'ün biraz altında okunur."
+    },
+    "meaning": {
+      "title": "Her RPE ne anlama gelir",
+      "rpe": "RPE",
+      "reserve": "Tekrar rezervi",
+      "meaning": "Anlamı",
+      "none": "Tekrar kalmadı. Set tükenmeyle bitti.",
+      "one": "Depoda bir tekrar kaldı.",
+      "two": "Depoda iki tekrar kaldı.",
+      "three": "Depoda üç tekrar kaldı.",
+      "four": "Depoda dört tekrar kaldı."
+    },
+    "form": {
+      "weight": "Kaldırılan ağırlık",
+      "reps": "Yapılan tekrar",
+      "repsHint": "Tam sayı, 1 ile 10 arası",
+      "rpe": "Bu setin RPE'si",
+      "targetReps": "Hedef tekrar",
+      "targetRepsHint": "Tam sayı, 1 ile 10 arası",
+      "targetRpe": "Hedef RPE"
+    },
+    "problems": {
+      "weight": "Kaldırdığın ağırlığı 0'dan büyük bir sayı olarak gir.",
+      "reps": "Tekrarı 1 ile 10 arasında tam bir sayı olarak gir.",
+      "targetReps": "Hedef tekrarı 1 ile 10 arasında tam bir sayı olarak gir."
+    },
+    "results": {
+      "oneRepMax": "Tahmini bir tekrarlık maksimum",
+      "target": "Hedef için yük, tam",
+      "targetRounded": "Standart plaklı bir halter için yuvarlanmış",
+      "roundedNote": "Standart plaklarla yüklenmiş bir halterin artabildiği en küçük adımlara yuvarlanmış. Spor salonu olmadan uygulama aynı adımları kullanır.",
+      "reps": "tekrar",
+      "atRpe": "RPE'de"
+    },
+    "sections": [
+      {
+        "title": "RPE ne anlama gelir",
+        "body": [
+          "RPE, algılanan zorluk derecesi, 1 ile 10 arasında değişir. 10 ile derecelendirilen bir set, hiç tekrar kalmadan bitmiştir. RPE 9 rezervde bir tekrar bırakır, RPE 8 iki, ve böyle devam eder.",
+          "Tekrar rezervi (RIR), aynı ölçeğin tersten yazılmış halidir: RPE = 10 eksi RIR. Musclog uygulaması bir setin çabasını iki yoldan da saklar ve ikisi aynı sayıdır."
+        ]
+      },
+      {
+        "title": "İnsanlar neden yanlış tahmin eder",
+        "body": [
+          "Kaç tekrar kaldığını tahmin etmek bir beceridir ve çoğu insan, set tükenmeden uzaklaştıkça daha az doğrudur. Birkaç tekrar kaldığını hisseden bir set, aslında daha fazla ya da daha az tekrar bırakmış olabilir.",
+          "Tabloyu bir rehber olarak gör. Setlerinin gerçekte nasıl gittiğine karşı kontrol et ve kaydederken çabanı dürüstçe derecelendir."
+        ]
+      },
+      {
+        "title": "Tablo ve hesaplayıcı nasıl çalışır",
+        "body": [
+          "Her hücre, o RPE'de o kadar tekrarın bir tekrarlık maksimumunun ne kadarını temsil ettiğini gösterir. Uygulamanın kaydedilmiş bir seti tahmin etmek için kullandığı aynı ortalanmış formüllerden gelir.",
+          "Hesaplayıcı, yaptığın bir setten bir tekrarlık maksimumunu tahmin eder, sonra farklı bir RPE'de farklı sayıda tekrar için yükü verir. Yuvarlanmış yük, standart plaklı bir halterin yapabildiği yüktür."
+        ]
+      }
+    ],
+    "sources": {
+      "zourdos": "Zourdos ve ark. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

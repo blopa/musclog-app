@@ -1,0 +1,20 @@
+{
+  "datePicker": {
+    "cancel": "İptal",
+    "clearDate": "Tarihi temizle",
+    "confirm": "Onayla",
+    "month": "Ay",
+    "nextMonday": "Gelecek pazartesi",
+    "selectDate": "Tarih seç",
+    "selectMonthYear": "Ay ve yıl seç",
+    "status": {
+      "fasted": "Aç",
+      "tracked": "Yiyecek kaydedildi"
+    },
+    "today": "Bugün",
+    "tomorrow": "Yarın",
+    "year": "Yıl",
+    "xYearsAgo": "{{count}} yıl önce",
+    "yesterday": "Dün"
+  }
+}

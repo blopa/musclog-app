@@ -1,0 +1,11 @@
+{
+  "logSetPerformance": {
+    "title": "Noter la performance de la série",
+    "difficulty": "Difficulté (RPE)",
+    "easy": "Facile",
+    "moderate": "Modérée",
+    "failure": "Échec",
+    "cancel": "Annuler",
+    "logSet": "Enregistrer la série"
+  }
+}

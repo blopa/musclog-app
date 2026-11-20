@@ -1,0 +1,15 @@
+{
+  "workoutDetails": {
+    "subtitle": "Gérer cette séance",
+    "preview": "Aperçu de la séance",
+    "previewDescription": "Voir le détail complet de la séance",
+    "edit": "Modifier la séance",
+    "editDescription": "Modifier les exercices et les séries",
+    "duplicate": "Dupliquer",
+    "duplicateDescription": "Créer une copie de cette séance",
+    "share": "Partager",
+    "shareDescription": "Partager la séance avec d'autres",
+    "delete": "Supprimer",
+    "deleteDescription": "Supprimer définitivement cette séance"
+  }
+}

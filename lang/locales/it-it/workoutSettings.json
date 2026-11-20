@@ -1,0 +1,106 @@
+{
+  "workoutSettings": {
+    "title": "Impostazioni allenamento",
+    "gyms": {
+      "title": "Le mie palestre",
+      "subtitle": "Descrivi l'attrezzatura con cui ti alleni. Il calcolatore dei dischi, i passi di peso e i suggerimenti di esercizi seguono la tua palestra attiva.",
+      "empty": "Nessuna palestra configurata",
+      "emptyHint": "Aggiungine una per avere calcoli dei dischi e passi di peso adatti alla tua attrezzatura.",
+      "add": "Aggiungi una palestra",
+      "active": "Attiva",
+      "makeActive": "Usa questa palestra",
+      "noGym": "Non usare una palestra",
+      "summary": "Bilanciere {{bar}} {{unit}} · {{plates}} misure di disco · {{equipment}} tipi di attrezzatura"
+    },
+    "editGym": {
+      "title": "Modifica palestra",
+      "createTitle": "Nuova palestra",
+      "name": "Nome",
+      "namePlaceholder": "es. Palestra di casa",
+      "unit": "Unità di peso",
+      "unitDefault": "Impostazione dell'account",
+      "unitHint": "Fissa libbre o chilogrammi solo per questa palestra, ad esempio quando i suoi dischi sono in libbre. Gli esercizi con una propria unità la mantengono.",
+      "bar": "Peso del bilanciere ({{unit}})",
+      "increment": "Passo di peso minimo ({{unit}})",
+      "incrementHint": "Usato per manubri, macchine e cavi.",
+      "plates": "Dischi",
+      "platesHint": "Quanti dischi di ogni peso possiedi. I dischi si caricano a coppie.",
+      "fewerPlates": "Meno dischi da {{weight}} {{unit}}",
+      "morePlates": "Più dischi da {{weight}} {{unit}}",
+      "removePlate": "Rimuovi dischi da {{weight}} {{unit}}",
+      "plateWeight": "Peso del nuovo disco ({{unit}})",
+      "addPlate": "Aggiungi disco",
+      "resetPlates": "Dischi standard",
+      "equipment": "Attrezzatura",
+      "equipmentHint": "Gli esercizi che richiedono altra attrezzatura non verranno suggeriti per questa palestra.",
+      "save": "Salva palestra",
+      "delete": "Elimina palestra",
+      "deleteTitle": "Eliminare questa palestra?",
+      "deleteMessage": "I tuoi allenamenti e lo storico non vengono modificati.",
+      "saveFailed": "Impossibile salvare la palestra. Riprova."
+    },
+    "restrictions": {
+      "title": "Esercizi da evitare",
+      "subtitle": "Non verranno suggeriti nelle sostituzioni o negli allenamenti generati.",
+      "empty": "Non c'è nulla qui. Segna un esercizio dalla sua schermata o quando lo sostituisci.",
+      "clear": "Consenti di nuovo",
+      "until": "Fino al {{date}}",
+      "healed": "Guarito",
+      "limit": "Puoi evitare fino a {{count}} esercizi.",
+      "kind": {
+        "never": "Non suggerire mai",
+        "injury": "Infortunio",
+        "dislike": "Non mi piace"
+      },
+      "badge": {
+        "never": "Non suggerire mai",
+        "injury": "Infortunio",
+        "dislike": "Non gradito"
+      },
+      "expiry": {
+        "2w": "2 settimane",
+        "4w": "1 mese",
+        "12w": "3 mesi",
+        "open": "Finché non cambio idea"
+      }
+    },
+    "plateCalculator": {
+      "title": "Calcolatore dei dischi",
+      "subtitle": "Carico di {{weight}} {{unit}}",
+      "belowBar": "È meno del bilanciere da {{bar}} {{unit}}.",
+      "barOnly": "Solo il bilanciere, non servono dischi.",
+      "perSide": "Per lato",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Bilanciere",
+      "exact": "Caricato: esattamente {{weight}} {{unit}}",
+      "closest": "Il carico più vicino possibile: {{weight}} {{unit}} ({{short}} {{unit}} in meno)",
+      "defaultsHint": "Uso dischi standard. Configura la tua palestra nelle impostazioni allenamento per risultati esatti.",
+      "open": "Dischi per {{weight}} {{unit}}"
+    },
+    "restTimer": {
+      "title": "Timer di recupero",
+      "subtitle": "Come si comportano i recuperi tra le serie.",
+      "autoStart": "Avvia automaticamente",
+      "autoStartHint": "Dopo aver completato una serie. Disattiva per avviare i recuperi da solo con il pulsante Avvia recupero.",
+      "haptics": "Conto alla rovescia tattile",
+      "hapticsHint": "Un colpetto negli ultimi tre secondi e una vibrazione a zero.",
+      "defaultRest": "Recupero predefinito",
+      "defaultRestHint": "Usato per le serie che non indicano un recupero proprio.",
+      "seconds": "s",
+      "strongHaptics": "Vibrazioni più forti",
+      "strongHapticsHint": "Colpetti più marcati e una doppia vibrazione a zero.",
+      "alertSound": "Suono di avviso",
+      "alertSoundHint": "Riproduce un suono quando arriva la notifica di fine recupero. Disattivato lascia solo la vibrazione.",
+      "headsUp": "Preavviso prima della fine del recupero",
+      "headsUpOff": "Disattivato",
+      "headsUpSeconds": "{{seconds}} s",
+      "headsUpHint": "Il timer passa a «preparati» e vibra una volta, con questo anticipo rispetto alla fine del recupero."
+    },
+    "autonomy": {
+      "title": "Quando inizia un allenamento",
+      "subtitle": "Decidi quanto dei valori di oggi sceglie l'app.",
+      "suggest": "Suggerisci pesi e ripetizioni",
+      "suggestHint": "Ogni esercizio parte da com'è andata la sua ultima sessione: più carico, più ripetizioni, uno scarico o una ripetizione. Vedrai il perché e potrai annullarlo."
+    }
+  }
+}

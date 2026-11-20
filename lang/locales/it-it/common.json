@@ -1,0 +1,207 @@
+{
+  "common": {
+    "clear": "Cancella",
+    "value": "Valore",
+    "name": "Nome",
+    "next": "Avanti",
+    "context": "Contesto",
+    "processing": "elaborazione...",
+    "bootMayTakeMinutes": "Attendi e tieni aperta l'app. Può richiedere diversi minuti. La barra di avanzamento potrebbe sembrare ferma, ma stiamo ancora lavorando.",
+    "success": "Operazione riuscita",
+    "saveError": "Impossibile salvare le modifiche",
+    "saveErrorSubtitle": "Riprova",
+    "error_description": "Si è verificato un errore imprevisto. Riprova.",
+    "back": "Indietro",
+    "select": "Seleziona...",
+    "today": "Oggi",
+    "none": "Nessuno",
+    "amount_kcal": "{{amount}}",
+    "duplicateFailed": "Duplicazione non riuscita",
+    "yesterday": "Ieri",
+    "daysAgo": "{{count}} giorni fa",
+    "oneWeekAgo": "1 settimana fa",
+    "weeksAgo": "{{count}} settimane fa",
+    "monthsAgo": "{{count}} mesi fa",
+    "monthsAgo_one": "{{count}} mese fa",
+    "monthsAgo_other": "{{count}} mesi fa",
+    "oneMonthFromNow": "Tra 1 mese",
+    "monthsFromNow": "Tra {{count}} mesi",
+    "seeAll": "Vedi tutto",
+    "kcal": "kcal",
+    "min": "min",
+    "cancel": "Annulla",
+    "tryAgain": "Riprova",
+    "photo": "Foto",
+    "loading": "Caricamento...",
+    "saving": "Salvataggio...",
+    "save": "Salva",
+    "category": "Categoria",
+    "active": "Attivo",
+    "edit": "Modifica",
+    "status": "Stato",
+    "timezone": "Fuso orario",
+    "timezonePlaceholder": "+00:00",
+    "invalidTimezone": "Inserisci uno scostamento di fuso orario come +00:00, +05:30 o -04:00.",
+    "change": "Cambia",
+    "confirm": "Conferma",
+    "decreaseValue": "Diminuisci valore",
+    "delete": "Elimina",
+    "error": "Errore",
+    "loadMore": "Carica altro",
+    "goHome": "Vai alla home",
+    "increaseValue": "Aumenta valore",
+    "ok": "Ok",
+    "deleteConfirmMessage": "Sei sicuro di voler eliminare {{name}}?",
+    "deleteFailed": "Eliminazione non riuscita",
+    "saveChanges": "Salva modifiche",
+    "close": "Chiudi",
+    "install": "Installa",
+    "createNew": "Crea nuovo",
+    "heightFormatMetric": "{{value}} cm",
+    "heightFormatImperial": "{{feet}}' {{inches}}\"",
+    "weightFormatKg": "{{value}} kg",
+    "weightFormatLbs": "{{value}} lbs",
+    "weightFormatG": "{{value}}g",
+    "units": {
+      "g": "g",
+      "oz": "oz"
+    },
+    "eatingPhase": "Fase alimentare",
+    "description": "Descrizione",
+    "loadMultiplier": "Moltiplicatore del carico",
+    "deleteSuccess": "Eliminato con successo",
+    "notFound": "Non trovato",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
+    "time": {
+      "daily": "Giornaliero",
+      "weekly": "Settimanale",
+      "monthly": "Mensile"
+    },
+    "appName": "MUSCLOG",
+    "selectIcon": "Seleziona icona",
+    "selectIconLabel": "Seleziona icona",
+    "icon": "Icona",
+    "archived": "Archiviato",
+    "descriptions": {
+      "none": "Nessuno"
+    },
+    "duration": {
+      "hoursOnly": "{{hours}}h",
+      "hoursMinutes": "{{hours}}h {{minutes}}m",
+      "minutesOnly": "{{minutes}}m",
+      "minutesShort": "{{minutes}} min"
+    },
+    "days": {
+      "label": "Giorni",
+      "letter": {
+        "sun": "D",
+        "mon": "L",
+        "tue": "M",
+        "wed": "M",
+        "thu": "G",
+        "fri": "V",
+        "sat": "S"
+      },
+      "short": {
+        "sun": "DOM",
+        "mon": "LUN",
+        "tue": "MAR",
+        "wed": "MER",
+        "thu": "GIO",
+        "fri": "VEN",
+        "sat": "SAB"
+      }
+    },
+    "hide": "Nascondi",
+    "show": "Mostra",
+    "debugDetails": "Dettagli di debug",
+    "errorMessage": "Messaggio di errore",
+    "errorStack": "Stack dell'errore",
+    "componentStack": "Stack dei componenti",
+    "userAgent": "User agent",
+    "app": {
+      "title": "Musclog - Fitness e alimentazione"
+    },
+    "nutrition": {
+      "title": "Musclog - Alimentazione",
+      "food": {
+        "title": "Musclog - Diario alimentare"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Allenamento",
+      "workouts": {
+        "title": "Musclog - Allenamenti"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Progressi"
+    },
+    "profile": {
+      "title": "Musclog - Profilo"
+    },
+    "settings": {
+      "title": "Musclog - Impostazioni"
+    },
+    "cycle": {
+      "title": "Musclog - Ciclo"
+    },
+    "relativeTime": {
+      "now": "poco fa",
+      "minutes": "{{value}} min fa",
+      "hours": "{{value}} h fa",
+      "days": "{{value}} g fa"
+    },
+    "a11y": {
+      "notifications": "Notifiche",
+      "editProfile": "Modifica profilo",
+      "previousDay": "Giorno precedente",
+      "nextDay": "Giorno successivo",
+      "previousMonth": "Mese precedente",
+      "nextMonth": "Mese successivo",
+      "openCamera": "Apri fotocamera",
+      "chooseFromGallery": "Scegli dalla galleria",
+      "takePhoto": "Scatta foto",
+      "increase": "Aumenta",
+      "decrease": "Diminuisci",
+      "moreInfo": "Più informazioni",
+      "moreOptions": "Altre opzioni",
+      "add": "Aggiungi",
+      "dismiss": "Ignora",
+      "remove": "Rimuovi",
+      "scanBarcode": "Scansiona codice a barre",
+      "send": "Invia",
+      "attachFile": "Allega un file",
+      "removeImage": "Rimuovi immagine",
+      "choosePhoto": "Scegli una foto",
+      "chooseIcon": "Scegli icona",
+      "moveUp": "Sposta su",
+      "moveDown": "Sposta giù",
+      "filter": "Filtra",
+      "clearSearch": "Cancella ricerca",
+      "showValue": "Mostra valore",
+      "hideValue": "Nascondi valore"
+    },
+    "externalAssistant": {
+      "copied": "Istruzioni copiate",
+      "copiedPaste": "Istruzioni copiate. Incollale nella chat se la casella è vuota.",
+      "copy": "Copia",
+      "errors": {
+        "empty": "Non c'è nulla da importare.",
+        "fileRead": "Impossibile leggere quel file. Prova con un altro, oppure incolla il testo."
+      },
+      "fallback": "Impossibile aprire l'app o il sito. Le istruzioni sono copiate: apri tu ChatGPT o Claude e incollale.",
+      "leaveSection": "Passo 1: chiedi all'assistente",
+      "openChatgpt": "Apri ChatGPT",
+      "openClaude": "Apri Claude",
+      "pasteJson": "Incolla JSON",
+      "privacy": "Vengono copiate solo le istruzioni. Non sono incluse informazioni su di te né chiavi API.",
+      "share": "Condividi"
+    },
+    "energyUnit": {
+      "kcal": "kcal",
+      "kj": "kJ"
+    }
+  }
+}

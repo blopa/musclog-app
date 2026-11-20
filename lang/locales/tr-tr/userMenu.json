@@ -1,0 +1,15 @@
+{
+  "userMenu": {
+    "greeting": "Hesap",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "progress": "İlerleme",
+    "cycle": "Döngü",
+    "workouts": "Antrenmanlar",
+    "food": "Besin",
+    "coach": "Koç",
+    "checkin": "Haftalık değerlendirme",
+    "debugPage": "Hata ayıklama sayfası",
+    "notes": "Notlar"
+  }
+}

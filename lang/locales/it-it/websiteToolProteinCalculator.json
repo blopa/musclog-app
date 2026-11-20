@@ -1,0 +1,70 @@
+{
+  "websiteToolProteinCalculator": {
+    "title": "Calcolatore delle proteine",
+    "intro": "Inserisci peso corporeo, altezza e obiettivo per ottenere un target giornaliero di proteine in grammi, con i grammi per chilogrammo che stanno alla base.",
+    "form": {
+      "weight": "Peso corporeo",
+      "height": "Altezza",
+      "goal": "Obiettivo principale",
+      "deficit": "Stai mangiando in deficit calorico?",
+      "deficitYes": "Sì, sto tagliando",
+      "deficitNo": "No",
+      "goalWeight": "Peso obiettivo (facoltativo)",
+      "goalWeightHint": "Se lo imposti, le proteine si basano su di lui invece che sul peso attuale.",
+      "cm": "cm",
+      "inches": "in"
+    },
+    "goals": {
+      "hypertrophy": "Costruire muscoli",
+      "strength": "Diventare più forte",
+      "general": "Salute generale",
+      "endurance": "Resistenza",
+      "weightLoss": "Perdere peso"
+    },
+    "problems": {
+      "weight": "Inserisci un peso corporeo nell'intervallo accettato dal calcolatore.",
+      "height": "Inserisci un'altezza nell'intervallo accettato dal calcolatore.",
+      "goalWeight": "Inserisci un peso obiettivo nell'intervallo accettato dal calcolatore, oppure lascia vuoto."
+    },
+    "results": {
+      "grams": "Proteine al giorno",
+      "gramsNote": "{{perKg}} di {{reference}}",
+      "tableTitle": "Grammi per chilogrammo per obiettivo",
+      "tableGoal": "Obiettivo",
+      "tablePerKg": "Per kg di peso corporeo"
+    },
+    "notes": {
+      "capped": "Il tuo peso è superiore al peso di riferimento di {{reference}} (BMI 30 per la tua altezza), quindi il calcolo usa quel valore. Il tuo peso è {{weight}}. Senza un peso obiettivo, il limite impedisce alle proteine di crescere insieme alla massa grassa.",
+      "deficit": "Mangiare in deficit alza il minimo a {{value}}, perché le proteine aiutano a conservare il muscolo mentre perdi grasso.",
+      "bodyweight": "Questo valore si basa sul peso corporeo. Il calcolatore non chiede la massa grassa, quindi non può distinguere muscolo e grasso.",
+      "spread": "Conta il totale giornaliero. Distribuiscilo sui pasti come preferisci, in tanti o pochi pasti.",
+      "medical": "Informazioni generali, non consigli medici. Se hai una malattia renale o un'altra condizione che influisce sulle proteine, chiedi a un medico prima di cambiare l'alimentazione."
+    },
+    "sections": [
+      {
+        "title": "Come viene calcolato il valore",
+        "body": [
+          "Le proteine sono impostate in grammi per chilogrammo di peso corporeo per il tuo obiettivo: la stessa tabella che l'app Musclog usa per i target giornalieri. In deficit salgono ad almeno 2,0 g/kg.",
+          "Non si usa una percentuale delle calorie, perché in quel caso le proteine calano quando mangi di meno, proprio quando conservare il muscolo conta di più."
+        ]
+      },
+      {
+        "title": "Perché il peso è limitato",
+        "body": [
+          "Senza un peso obiettivo, il calcolo usa il tuo peso attuale ma mai più del peso corrispondente a BMI 30 per la tua altezza. Oltre quel punto la massa in eccesso non è per lo più tessuto magro, e proteine per tutta quella massa sarebbero più di quanto serve. Un peso obiettivo sostituisce il limite."
+        ]
+      },
+      {
+        "title": "Cosa dice la ricerca",
+        "body": [
+          "Morton et al. (2018) hanno riunito studi sull'allenamento con i pesi e hanno rilevato che i guadagni muscolari si stabilizzano intorno a 1,6 g/kg al giorno, con il limite superiore di confidenza vicino a 2,2 g/kg. I valori generali e per l'ipertrofia rientrano in quell'intervallo.",
+          "Helms et al. (2014) hanno esaminato le proteine per chi è a dieta mentre si allena, e il minimo di 2,0 g/kg in deficit deriva da quella letteratura. È un'impostazione di Musclog, non un risultato misurato su di te."
+        ]
+      }
+    ],
+    "sources": {
+      "morton": "Morton et al. (2018), meta-analisi dell'integrazione proteica e dei guadagni dell'allenamento con i pesi",
+      "helms": "Helms et al. (2014), assunzione di proteine durante la restrizione energetica per atleti del fisico"
+    }
+  }
+}

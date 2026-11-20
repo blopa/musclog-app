@@ -1,0 +1,144 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Pomiary ciała",
+      "newMetric": "Nowy pomiar"
+    },
+    "metrics": {
+      "weight": "Waga",
+      "bodyFat": "Tkanka tłuszczowa",
+      "body_fat": "Tkanka tłuszczowa",
+      "muscle_mass": "Masa mięśniowa",
+      "lean_body_mass": "Masa beztłuszczowa",
+      "basal_metabolic_rate": "Podstawowa przemiana materii (BMR)",
+      "total_calories_burned": "Całkowite spalone kalorie",
+      "active_calories_burned": "Kalorie spalone podczas aktywności",
+      "bmi": "BMI",
+      "height": "Wzrost",
+      "chest": "Klatka piersiowa",
+      "waist": "Talia",
+      "hips": "Biodra",
+      "arms": "Ramiona",
+      "thighs": "Uda",
+      "calves": "Łydki",
+      "neck": "Szyja",
+      "shoulders": "Barki",
+      "mood": "Nastrój",
+      "water": "Woda",
+      "supplement": "Suplement",
+      "ffmi": "FFMI",
+      "nutrition": "Odżywianie",
+      "exercise": "Ćwiczenia",
+      "other": "Inne",
+      "daily_steps": "Kroki",
+      "descriptions": {
+        "weight": "Śledź wagę ciała w czasie",
+        "body_fat": "Procent masy tkanki tłuszczowej",
+        "muscle_mass": "Całkowita masa mięśni szkieletowych",
+        "lean_body_mass": "Masa ciała minus masa tłuszczowa",
+        "basal_metabolic_rate": "Kalorie spalane w pełnym spoczynku",
+        "total_calories_burned": "Całkowity dzienny wydatek energetyczny (TDEE)",
+        "active_calories_burned": "Kalorie spalane podczas aktywności",
+        "bmi": "Wskaźnik masy ciała na podstawie wzrostu i wagi",
+        "height": "Twój wzrost w pozycji stojącej",
+        "chest": "Pomiar obwodu klatki piersiowej",
+        "waist": "Pomiar obwodu talii",
+        "hips": "Pomiar obwodu bioder",
+        "arms": "Pomiar obwodu ramienia",
+        "thighs": "Pomiar obwodu uda",
+        "calves": "Pomiar obwodu łydki",
+        "neck": "Pomiar obwodu szyi",
+        "shoulders": "Pomiar obwodu barków",
+        "mood": "Twój ogólny nastrój i samopoczucie",
+        "water": "Wykonanie dziennego przypomnienia o wodzie",
+        "ffmi": "Wskaźnik beztłuszczowej masy ciała",
+        "nutrition": "Dzienny dziennik spożycia",
+        "exercise": "Dziennik aktywności fizycznej i ćwiczeń",
+        "other": "Inne pomiary ciała",
+        "daily_steps": "Kroki zapisane przez telefon lub zegarek"
+      }
+    },
+    "current": {
+      "label": "Obecne"
+    },
+    "history": {
+      "title": "Historia",
+      "filter": "Filtr",
+      "loadMore": "Wczytaj więcej",
+      "loadingMore": "Wczytywanie...",
+      "notes": {
+        "baseline": "Punkt wyjścia",
+        "noChange": "Bez zmian",
+        "decreased": "Spadek",
+        "increased": "Wzrost"
+      },
+      "filters": {
+        "title": "Filtruj historię",
+        "sortOrder": {
+          "title": "Kolejność",
+          "newestFirst": "Najnowsze najpierw",
+          "oldestFirst": "Najstarsze najpierw"
+        },
+        "trend": {
+          "title": "Trend",
+          "all": "Wszystkie",
+          "increased": "Wzrost",
+          "decreased": "Spadek",
+          "noChange": "Bez zmian"
+        },
+        "reset": "Resetuj",
+        "apply": "Zastosuj filtry"
+      }
+    },
+    "dateFormats": {
+      "today": "Dziś",
+      "yesterday": "Wczoraj"
+    },
+    "noDataAvailable": "Brak danych",
+    "noHistoryDataAvailable": "Brak historii danych",
+    "manageMetricData": {
+      "title": "Historia pomiarów",
+      "searchPlaceholder": "Szukaj po typie pomiaru...",
+      "noEntries": "Brak wpisów pomiarów",
+      "noEntriesDesc": "Dodaj wpisy pomiarów ciała, aby zobaczyć je tutaj",
+      "endOfHistory": "Koniec historii pomiarów",
+      "metricOptions": "Opcje pomiaru",
+      "editEntry": "Edytuj wpis",
+      "editEntryDesc": "Zmień wartość i datę",
+      "duplicateEntry": "Duplikuj wpis",
+      "duplicateEntryDesc": "Utwórz kopię z nową datą",
+      "deleteEntry": "Usuń wpis",
+      "deleteEntryDesc": "Usuń ten wpis pomiaru"
+    },
+    "addEntry": {
+      "title": "Dodaj wpis",
+      "enterType": "Wybierz typ",
+      "description": "Zapisz nowy pomiar ciała",
+      "enterWeight": "Wpisz wagę",
+      "enterBodyFat": "Wpisz tkankę tłuszczową",
+      "enterHeight": "Wpisz wzrost",
+      "date": "Data",
+      "time": "Godzina",
+      "moodQuestion": "Jak się dzisiaj czujesz?",
+      "supplementQuestion": "Czy dzisiaj wziąłeś suplement?",
+      "supplementQuestionWithName": "Czy dzisiaj wziąłeś: {{name}}?",
+      "waterQuestionWithAmount": "Czy dzisiaj wypiłeś wodę w ilości {{amount}} l?",
+      "moods": {
+        "0": "Źle",
+        "1": "Słabo",
+        "2": "Przeciętnie",
+        "3": "Dobrze",
+        "4": "Świetnie"
+      },
+      "saveEntry": "Zapisz wpis",
+      "saveSuccess": "Wpis zapisany",
+      "errorSaving": "Błąd zapisu",
+      "yes": "Tak",
+      "no": "Nie",
+      "taken": "Wzięte",
+      "notTaken": "Nie wzięte",
+      "note": "Notatka",
+      "notePlaceholder": "Dodaj notatkę..."
+    }
+  }
+}

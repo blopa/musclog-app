@@ -1,0 +1,15 @@
+{
+  "workoutDetails": {
+    "subtitle": "Gestisci questo allenamento",
+    "preview": "Anteprima allenamento",
+    "previewDescription": "Vedi tutti i dettagli dell'allenamento",
+    "edit": "Modifica allenamento",
+    "editDescription": "Modifica esercizi e serie",
+    "duplicate": "Duplica",
+    "duplicateDescription": "Crea una copia di questo allenamento",
+    "share": "Condividi",
+    "shareDescription": "Condividi l'allenamento con altri",
+    "delete": "Elimina",
+    "deleteDescription": "Rimuovi definitivamente questo allenamento"
+  }
+}

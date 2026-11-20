@@ -1,0 +1,23 @@
+{
+  "exerciseTransition": {
+    "totalTime": "Toplam süre",
+    "completeSuffix": "tamamlandı",
+    "completedMessage": "Harika çaba. Nefesini topla.",
+    "upNext": "Sırada",
+    "target": "Hedef",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
+    "sets": "Setler",
+    "reps": "Tekrarlar",
+    "rest": "Dinlenme",
+    "sec": "sn",
+    "equipment": "Ekipman",
+    "startNextExercise": "Sonraki egzersize başla",
+    "loadingNextExercise": "Sonraki egzersiz yükleniyor...",
+    "errorTitle": "Antrenman bulunamadı",
+    "errorDescription": "Egzersiz geçiş ekranı yüklenemedi. Lütfen tekrar dene.",
+    "goBack": "Geri dön",
+    "noWorkoutId": "Antrenman kimliği verilmedi",
+    "loadFailed": "Antrenman verisi yüklenemedi"
+  }
+}

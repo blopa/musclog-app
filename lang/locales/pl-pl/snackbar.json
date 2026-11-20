@@ -1,0 +1,25 @@
+{
+  "snackbar": {
+    "view": "Pokaż",
+    "retry": "Ponów",
+    "ok": "OK",
+    "syncedRecords_one": "Zsynchronizowano {{count}} rekord zdrowia.",
+    "syncedRecords_other": "Zsynchronizowano {{count}} rekordów zdrowia.",
+    "noNewData": "Brak nowych danych do synchronizacji.",
+    "failedToEnableSync": "Nie udało się włączyć synchronizacji z Health Connect.",
+    "failedToDisableSync": "Nie udało się wyłączyć synchronizacji z Health Connect.",
+    "syncDisabledMessage": "Synchronizacja z Health Connect została wyłączona.",
+    "healthConnect": {
+      "noPermissionsGranted": "Nie przyznano uprawnień Health Connect",
+      "sdkNotAvailable": "Health Connect nie jest dostępne na tym urządzeniu. Zainstaluj je ze Sklepu Play.",
+      "permissionDenied": "Odmówiono uprawnień Health Connect. Przyznaj uprawnienia, aby synchronizować dane zdrowotne.",
+      "permissionRevoked": "Cofnięto uprawnienia Health Connect. Włącz je ponownie w ustawieniach.",
+      "offline": "Brak połączenia z internetem. Dane zdrowotne zsynchronizują się, gdy wrócisz do sieci.",
+      "syncConflict": "Wykryto konflikt danych zdrowotnych. Użyto najnowszych danych.",
+      "invalidValueRange": "Nieprawidłowa wartość danych zdrowotnych. Sprawdź wpisane dane.",
+      "rateLimitExceeded": "Zbyt wiele zapytań. Poczekaj chwilę i spróbuj ponownie.",
+      "syncInProgress": "Synchronizacja już trwa. Poczekaj, aż się zakończy.",
+      "unknownError": "Wystąpił błąd podczas synchronizacji danych zdrowotnych. Spróbuj ponownie."
+    }
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "common": {
+    "clear": "Wyczyść",
+    "value": "Wartość",
+    "name": "Nazwa",
+    "next": "Dalej",
+    "context": "Kontekst",
+    "processing": "przetwarzanie...",
+    "bootMayTakeMinutes": "Poczekaj i zostaw aplikację otwartą. To może potrwać kilka minut. Pasek postępu może wyglądać na zawieszony, ale nadal pracujemy.",
+    "success": "Sukces",
+    "saveError": "Nie udało się zapisać zmian",
+    "saveErrorSubtitle": "Spróbuj ponownie",
+    "error_description": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "back": "Wstecz",
+    "select": "Wybierz...",
+    "today": "Dziś",
+    "none": "Brak",
+    "amount_kcal": "{{amount}}",
+    "duplicateFailed": "Duplikowanie nie powiodło się",
+    "yesterday": "Wczoraj",
+    "daysAgo": "{{count}} dni temu",
+    "oneWeekAgo": "1 tydzień temu",
+    "weeksAgo": "{{count}} tygodni temu",
+    "monthsAgo": "{{count}} miesięcy temu",
+    "monthsAgo_one": "{{count}} miesiąc temu",
+    "monthsAgo_other": "{{count}} miesiąca temu",
+    "oneMonthFromNow": "Za 1 miesiąc",
+    "monthsFromNow": "Za {{count}} miesięcy",
+    "seeAll": "Zobacz wszystkie",
+    "kcal": "kcal",
+    "min": "min",
+    "cancel": "Anuluj",
+    "tryAgain": "Spróbuj ponownie",
+    "photo": "Zdjęcie",
+    "loading": "Wczytywanie...",
+    "saving": "Zapisywanie...",
+    "save": "Zapisz",
+    "category": "Kategoria",
+    "active": "Aktywne",
+    "edit": "Edytuj",
+    "status": "Status",
+    "timezone": "Strefa czasowa",
+    "timezonePlaceholder": "+00:00",
+    "invalidTimezone": "Wpisz przesunięcie strefy, np. +00:00, +05:30 albo -04:00.",
+    "change": "Zmień",
+    "confirm": "Potwierdź",
+    "decreaseValue": "Zmniejsz wartość",
+    "delete": "Usuń",
+    "error": "Błąd",
+    "loadMore": "Wczytaj więcej",
+    "goHome": "Do strony głównej",
+    "increaseValue": "Zwiększ wartość",
+    "ok": "OK",
+    "deleteConfirmMessage": "Na pewno usunąć: {{name}}?",
+    "deleteFailed": "Nie udało się usunąć",
+    "saveChanges": "Zapisz zmiany",
+    "close": "Zamknij",
+    "install": "Zainstaluj",
+    "createNew": "Utwórz nowy",
+    "heightFormatMetric": "{{value}} cm",
+    "heightFormatImperial": "{{feet}}' {{inches}}\"",
+    "weightFormatKg": "{{value}} kg",
+    "weightFormatLbs": "{{value}} lbs",
+    "weightFormatG": "{{value}} g",
+    "units": {
+      "g": "g",
+      "oz": "oz"
+    },
+    "eatingPhase": "Faza żywienia",
+    "description": "Opis",
+    "loadMultiplier": "Mnożnik obciążenia",
+    "deleteSuccess": "Usunięto",
+    "notFound": "Nie znaleziono",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
+    "time": {
+      "daily": "Codziennie",
+      "weekly": "Co tydzień",
+      "monthly": "Co miesiąc"
+    },
+    "appName": "MUSCLOG",
+    "selectIcon": "Wybierz ikonę",
+    "selectIconLabel": "Wybierz ikonę",
+    "icon": "Ikona",
+    "archived": "Zarchiwizowane",
+    "descriptions": {
+      "none": "Brak"
+    },
+    "duration": {
+      "hoursOnly": "{{hours}} g",
+      "hoursMinutes": "{{hours}} g {{minutes}} min",
+      "minutesOnly": "{{minutes}} min",
+      "minutesShort": "{{minutes}} min"
+    },
+    "days": {
+      "label": "Dni",
+      "letter": {
+        "sun": "N",
+        "mon": "P",
+        "tue": "W",
+        "wed": "Ś",
+        "thu": "C",
+        "fri": "P",
+        "sat": "S"
+      },
+      "short": {
+        "sun": "NIE",
+        "mon": "PON",
+        "tue": "WT",
+        "wed": "ŚR",
+        "thu": "CZW",
+        "fri": "PT",
+        "sat": "SOB"
+      }
+    },
+    "hide": "Ukryj",
+    "show": "Pokaż",
+    "debugDetails": "Szczegóły debugowania",
+    "errorMessage": "Komunikat błędu",
+    "errorStack": "Stos błędu",
+    "componentStack": "Stos komponentów",
+    "userAgent": "User agent",
+    "app": {
+      "title": "Musclog - Fitness i odżywianie"
+    },
+    "nutrition": {
+      "title": "Musclog - Odżywianie",
+      "food": {
+        "title": "Musclog - Dziennik jedzenia"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Trening",
+      "workouts": {
+        "title": "Musclog - Treningi"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Postępy"
+    },
+    "profile": {
+      "title": "Musclog - Profil"
+    },
+    "settings": {
+      "title": "Musclog - Ustawienia"
+    },
+    "cycle": {
+      "title": "Musclog - Cykl"
+    },
+    "relativeTime": {
+      "now": "przed chwilą",
+      "minutes": "{{value}} min temu",
+      "hours": "{{value}} godz. temu",
+      "days": "{{value}} dni temu"
+    },
+    "a11y": {
+      "notifications": "Powiadomienia",
+      "editProfile": "Edytuj profil",
+      "previousDay": "Poprzedni dzień",
+      "nextDay": "Następny dzień",
+      "previousMonth": "Poprzedni miesiąc",
+      "nextMonth": "Następny miesiąc",
+      "openCamera": "Otwórz aparat",
+      "chooseFromGallery": "Wybierz z galerii",
+      "takePhoto": "Zrób zdjęcie",
+      "increase": "Zwiększ",
+      "decrease": "Zmniejsz",
+      "moreInfo": "Więcej informacji",
+      "moreOptions": "Więcej opcji",
+      "add": "Dodaj",
+      "dismiss": "Odrzuć",
+      "remove": "Usuń",
+      "scanBarcode": "Zeskanuj kod kreskowy",
+      "send": "Wyślij",
+      "attachFile": "Dołącz plik",
+      "removeImage": "Usuń obraz",
+      "choosePhoto": "Wybierz zdjęcie",
+      "chooseIcon": "Wybierz ikonę",
+      "moveUp": "Przesuń w górę",
+      "moveDown": "Przesuń w dół",
+      "filter": "Filtr",
+      "clearSearch": "Wyczyść wyszukiwanie",
+      "showValue": "Pokaż wartość",
+      "hideValue": "Ukryj wartość"
+    },
+    "externalAssistant": {
+      "copied": "Instrukcje skopiowane",
+      "copiedPaste": "Instrukcje skopiowane. Wklej je do czatu, jeśli pole jest puste.",
+      "copy": "Kopiuj",
+      "errors": {
+        "empty": "Nie ma nic do zaimportowania.",
+        "fileRead": "Nie udało się odczytać tego pliku. Wybierz inny albo wklej tekst."
+      },
+      "fallback": "Nie udało się otworzyć aplikacji ani strony. Instrukcje są skopiowane: otwórz ChatGPT lub Claude sam i wklej je.",
+      "leaveSection": "Krok 1: poproś asystenta",
+      "openChatgpt": "Otwórz ChatGPT",
+      "openClaude": "Otwórz Claude",
+      "pasteJson": "Wklej JSON",
+      "privacy": "Kopiowane są tylko instrukcje. Nie zawierają informacji o tobie ani klucza API.",
+      "share": "Udostępnij"
+    },
+    "energyUnit": {
+      "kcal": "kcal",
+      "kj": "kJ"
+    }
+  }
+}

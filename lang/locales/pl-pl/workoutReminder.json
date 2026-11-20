@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Skąd to przypomnienie?",
+      "thisWorkout": "ten trening",
+      "setting": "Przypomnienia o treningach są włączone, a {{workout}} jest zaplanowany na {{day}}.",
+      "settingNoDay": "Przypomnienia o treningach są włączone, a {{workout}} jest w twoim planie.",
+      "fromPlan": "Ten dzień pochodzi z planu treningowego.",
+      "fromSchedule": "Ten dzień pochodzi z harmonogramu ustawionego przy treningu.",
+      "timing": "Przypomnienie ustawiono na {{time}}, czyli na zaplanowaną godzinę.",
+      "timingLead": "Pojawi się {{minutes}} minut przed zaplanowaną godziną, czyli o {{time}}.",
+      "pause": "Wstrzymaj wszystkie przypomnienia na {{days}} dni",
+      "paused": "Przypomnienia wstrzymane na {{days}} dni.",
+      "turnOff": "Wyłącz przypomnienia o treningach",
+      "turnedOff": "Przypomnienia o treningach są wyłączone.",
+      "settings": "Ustawienia powiadomień",
+      "failed": "Nie udało się zmienić przypomnień. Spróbuj ponownie."
+    }
+  }
+}

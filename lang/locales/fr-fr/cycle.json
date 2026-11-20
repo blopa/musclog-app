@@ -1,0 +1,719 @@
+{
+  "cycle": {
+    "title": "Cycle",
+    "nextPeriod": "Prévision des prochaines règles",
+    "insightsAndLog": "Analyses et journal du cycle",
+    "dailyLog": "Journal quotidien",
+    "flowIntensity": "Intensité des règles",
+    "symptomsTitle": "Symptômes",
+    "noLogsToday": "Aucun symptôme noté pour aujourd'hui.",
+    "logSymptoms": "Noter des symptômes",
+    "logDaily": "Journal quotidien du cycle",
+    "predictionDisclaimer": "Les prévisions du cycle sont des estimations et ne constituent pas une méthode contraceptive.",
+    "periodActive": "Règles en cours, jour {{day}}",
+    "periodActiveGeneric": "Règles en cours",
+    "settings": {
+      "title": "Réglages du cycle",
+      "subtitle": "Modifie la configuration de ton cycle",
+      "changeContext": "Changer de situation ou de contraception",
+      "sectionUsual": "Tes durées habituelles",
+      "usualHint": "Utilisé tant qu'il n'y a pas assez d'historique pour apprendre le tien.",
+      "sectionShown": "Ce qui est affiché",
+      "showPredictions": "Afficher les prévisions",
+      "showPredictionsHint": "Désactive pour continuer à noter sans aucune date prévue.",
+      "showFertility": "Afficher les estimations de fertilité",
+      "showFertilityHint": "Désactivé par défaut. Estimation informative de la fenêtre fertile, pas une contraception.",
+      "fertility": {
+        "explainTitle": "Afficher les estimations de fertilité ?",
+        "explainMessage": "La fenêtre fertile est estimée à partir de la durée de tes cycles passés. Cela ne permet pas de savoir de façon fiable quand tu ovules, donc ne l'utilise jamais seule pour éviter une grossesse.",
+        "enable": "Afficher les estimations"
+      },
+      "sectionReminders": "Rappels",
+      "sectionTracking": "Suivi",
+      "sectionPrivacy": "Confidentialité",
+      "privacyNote": "Les données de cycle sont chiffrées sur ce téléphone. Les sauvegardes que tu exportes sont des fichiers séparés que tu contrôles.",
+      "sectionExport": "Exporter",
+      "exportPeriods": "Exporter les règles (CSV)",
+      "exportDays": "Exporter le journal quotidien (CSV)",
+      "summaryTitle": "Résumé pour le rendez-vous médical",
+      "summaryHint": "Un court PDF de ce que tu as noté : dates, saignements, symptômes, douleurs et notes. Il présente tes relevés et ne pose aucun diagnostic.",
+      "summaryRange": "{{count}} derniers mois",
+      "summaryCreate": "Créer le résumé (PDF)",
+      "sectionManage": "Gérer",
+      "pause": "Mettre le suivi en pause",
+      "pauseHint": "La pause conserve tous tes relevés et masque l'onglet cycle et les rappels jusqu'à la reprise.",
+      "delete": {
+        "action": "Supprimer toutes les données du cycle",
+        "title": "Supprimer toutes les données du cycle ?",
+        "message": "Cela efface définitivement de ce téléphone chaque période, chaque journal quotidien et chaque situation enregistrée. Action irréversible. Les fichiers que tu as exportés ou partagés avant restent hors de l'app et ne sont pas touchés. Les humeurs partagées restent disponibles dans Accueil et Progression.",
+        "confirm": "Tout supprimer",
+        "prompt": "Confirme la suppression de tes données de cycle",
+        "backupsTitle": "Supprimer aussi les points de restauration locaux ?",
+        "backupsMessage": "Ce téléphone conserve {{count}} point de restauration qui peut contenir une copie de tes données de cycle, avec le reste de tes données. Le supprimer aussi ?",
+        "backupsMessage_plural": "Ce téléphone conserve {{count}} points de restauration qui peuvent contenir une copie de tes données de cycle, avec le reste de tes données. Les supprimer aussi ?",
+        "backupsConfirm": "Supprimer les points de restauration"
+      }
+    },
+    "noData": {
+      "title": "Commence à suivre ton cycle",
+      "description": "Note les dates de règles ou suis tes symptômes sans saignement. Tu peux commencer sans connaître la date de tes dernières règles.",
+      "start": "Commencer le suivi",
+      "pausedTitle": "Le suivi est en pause",
+      "pausedDescription": "Ton historique est conservé. Reprends pour continuer à noter et voir les prévisions.",
+      "resume": "Reprendre le suivi"
+    },
+    "actions": {
+      "periodStarted": "Mes règles ont commencé aujourd'hui",
+      "periodEnded": "Mes règles se sont terminées aujourd'hui",
+      "logPastPeriod": "Noter des règles passées"
+    },
+    "periodLog": {
+      "startTitle": "Noter le début des règles",
+      "endTitle": "Noter la fin des règles",
+      "pastTitle": "Ajouter des règles passées",
+      "startDescription": "Indique quand tes règles ont commencé. Tu peux noter pour aujourd'hui ou pour une date passée.",
+      "endDescription": "Indique quand tes règles se sont terminées.",
+      "pastDescription": "Ajouter des dates de règles passées aide l'app à apprendre ton cycle et à mieux prévoir.",
+      "startDateLabel": "Les règles ont commencé le",
+      "endDateLabel": "Les règles se sont terminées le",
+      "startedOn": "Les règles ont commencé le",
+      "useToday": "Utiliser aujourd'hui"
+    },
+    "confidence": {
+      "low": "Estimation basée sur {{count}} cycle",
+      "low_plural": "Estimation basée sur {{count}} cycles",
+      "medium": "Basé sur {{count}} cycles",
+      "high": "Basé sur {{count}} cycles, bonne précision",
+      "irregular": "Les cycles varient, donc une plage de dates est affichée"
+    },
+    "lifeStage": {
+      "pcos": "Avec un SOPK, les cycles peuvent être très irréguliers. Les prévisions sont des estimations approximatives.",
+      "postPill": "Arrêt de la pilule : les cycles peuvent être irréguliers pendant 1 à 3 mois.",
+      "postpartum": "Après l'accouchement, les cycles reviennent souvent de façon imprévisible, surtout pendant l'allaitement.",
+      "perimenopause": "La préménopause peut causer une forte irrégularité du cycle. Une plage estimée est affichée."
+    },
+    "flow": {
+      "spotting": "Spotting",
+      "light": "Faibles",
+      "medium": "Moyennes",
+      "heavy": "Fortes",
+      "veryHeavy": "Très fortes"
+    },
+    "symptoms": {
+      "physicalTitle": "Physique",
+      "emotionalTitle": "Émotionnel et mental",
+      "cramps": "Crampes",
+      "headache": "Maux de tête",
+      "migraine": "Migraine",
+      "bloating": "Ballonnements",
+      "breastTenderness": "Seins sensibles",
+      "nausea": "Nausées",
+      "backPain": "Douleurs dans le dos",
+      "fatigue": "Fatigue",
+      "acne": "Acné",
+      "foodCravings": "Envies alimentaires",
+      "digestiveIssues": "Troubles digestifs",
+      "hotFlashes": "Bouffées de chaleur",
+      "insomnia": "Insomnie",
+      "moodSwings": "Sautes d'humeur",
+      "anxiety": "Anxiété",
+      "irritability": "Irritabilité",
+      "lowMood": "Humeur basse",
+      "brainFog": "Brouillard mental",
+      "lowLibido": "Libido basse"
+    },
+    "phase": {
+      "menstrual": "Menstruations",
+      "follicular": "Folliculaire",
+      "ovulatory": "Ovulatoire",
+      "ovulation": "Ovulation",
+      "luteal": "Lutéale",
+      "between": "Entre les règles"
+    },
+    "late": {
+      "title": "{{count}} jour après ta plage habituelle",
+      "title_plural": "{{count}} jours après ta plage habituelle",
+      "description": "Note tes règles quand elles commencent et tes prévisions se mettront à jour."
+    },
+    "insufficient": "Note des règles pour voir une prévision",
+    "periodNotLogged": "Règles pas encore notées",
+    "lock": {
+      "prompt": "Déverrouille Musclog",
+      "unlock": "Déverrouiller",
+      "appTitle": "Musclog est verrouillé",
+      "appDescription": "Authentifie-toi pour continuer."
+    },
+    "calendar": {
+      "bleeding": {
+        "none": "Aucun saignement",
+        "spotting": "Spotting",
+        "light": "Faibles",
+        "medium": "Moyennes",
+        "heavy": "Fortes",
+        "very_heavy": "Très fortes"
+      },
+      "a11y": {
+        "period": "règles notées",
+        "predicted": "fenêtre de règles prévue",
+        "fertile": "fenêtre fertile estimée",
+        "observation": "quelque chose de noté",
+        "today": "aujourd'hui",
+        "nothing": "rien de noté"
+      },
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant",
+      "legend": "Légende du calendrier",
+      "legendPeriod": "Règles ou saignement notés",
+      "legendSpotting": "Spotting noté",
+      "legendPredicted": "Fenêtre de règles prévue",
+      "legendFertile": "Fenêtre fertile estimée",
+      "legendLogged": "Quelque chose de noté"
+    },
+    "context": {
+      "title": "Situation et contraception",
+      "description": "Note un changement à partir d'une date. Ton historique précédent est conservé.",
+      "effectiveFrom": "S'applique à partir du",
+      "chooseSpecific": "Choisis un type précis pour de meilleurs conseils.",
+      "effects": "Certaines méthodes modifient le comportement de ton cycle : les prévisions et la fenêtre fertile peuvent être masquées ou affichées avec une mise en garde.",
+      "remove": "Supprimer ce changement",
+      "timelineTitle": "Historique des situations et de la contraception",
+      "from": "À partir du {{date}}",
+      "lossQuietTitle": "Mettre aussi les autres rappels en pause ?",
+      "lossQuietMessage": "Les prévisions et les rappels de règles se sont déjà arrêtés. Tu peux aussi mettre en pause le point quotidien et les autres rappels du cycle pendant 4 semaines. Les rappels de pilule continuent. Tu peux tout reprendre à tout moment dans les réglages du cycle.",
+      "lossQuietConfirm": "Pause de 4 semaines",
+      "lossQuietKeep": "Les garder"
+    },
+    "daySheet": {
+      "title": "Noter ce jour",
+      "noSymptoms": "Aucun symptôme aujourd'hui",
+      "noSymptomsLogged": "Aucun symptôme",
+      "moreSymptoms": "Plus de symptômes",
+      "fewerSymptoms": "Moins de symptômes",
+      "pain": "Douleur",
+      "energy": "Énergie",
+      "energyLevel": {
+        "1": "Très basse",
+        "2": "Basse",
+        "3": "Correcte",
+        "4": "Bonne",
+        "5": "Haute"
+      },
+      "note": "Note",
+      "notePlaceholder": "Tout ce qui mérite d'être retenu",
+      "clearDay": "Effacer ce jour",
+      "nothingLogged": "Rien de noté pour ce jour.",
+      "addDetails": "Ajouter des détails",
+      "edit": "Modifier",
+      "startPeriodPrompt": "Saignement noté en dehors des règles.",
+      "startPeriod": "Commencer les règles ici",
+      "moodUnavailable": "L'humeur n'a pas pu être chargée. Tout le reste est quand même enregistré.",
+      "severityOptional": "Quelle intensité ? Facultatif. Touche une note à nouveau pour l'effacer.",
+      "painScale": "0 = aucune douleur, 10 = la pire que tu puisses imaginer",
+      "clearTitle": "Effacer ce jour ?",
+      "clearMessage": "Cela supprime tout ce qui a été noté pour ce jour, y compris son humeur dans Accueil et Progression. Action irréversible.",
+      "clearConfirm": "Effacer le jour",
+      "pill": {
+        "label": "Pilule",
+        "taken": "Prise",
+        "skipped": "Oubliée"
+      }
+    },
+    "edit": {
+      "title": "Modifier les règles",
+      "delete": "Supprimer ces règles",
+      "deleteTitle": "Supprimer ces règles ?",
+      "deleteMessage": "Tes statistiques et tes rappels sont recalculés sans elles. Tu peux annuler juste après.",
+      "deleted": "Règles supprimées",
+      "undo": "Annuler",
+      "recalculates": "L'enregistrement recalcule tes statistiques et tes rappels."
+    },
+    "end": {
+      "title": "Comment cela s'est-il terminé ?",
+      "open": "Toujours en cours",
+      "onDate": "À une date",
+      "unknown": "Je ne me souviens plus",
+      "usualLength": "Durée habituelle ({{days}} jours)",
+      "estimatedHint": "Enregistré comme une estimation, pas comme une date de fin notée.",
+      "unknownHint": "La durée de ces règles ne sera pas utilisée dans tes moyennes."
+    },
+    "errors": {
+      "future": "Les dates de règles ne peuvent pas être dans le futur.",
+      "overlap": "Cela chevauche des règles que tu as déjà notées.",
+      "endBeforeStart": "La fin ne peut pas être avant le début.",
+      "notFound": "Ces règles n'existent plus. Elles ont peut-être été supprimées."
+    },
+    "fertilityDisclaimer": "Estimation informative uniquement. Ne l'utilise pas seule pour éviter une grossesse.",
+    "history": {
+      "title": "Historique",
+      "tabCalendar": "Calendrier",
+      "tabHistory": "Règles",
+      "empty": "Aucunes règles notées pour l'instant.",
+      "estimatedEnd": "Fin estimée",
+      "unknownEnd": "Fin inconnue",
+      "ongoing": "En cours",
+      "editHint": "Touche pour modifier",
+      "days": "{{days}} jour",
+      "days_plural": "{{days}} jours",
+      "cycleLength": "Cycle de {{days}} jours",
+      "cycleLength_plural": "Cycle de {{days}} jours",
+      "notUsed": "Non utilisé pour les prévisions : {{reason}}",
+      "reason": {
+        "too_short": "l'écart était très court, probablement une erreur de saisie",
+        "possible_missed_period": "il était bien plus long que les autres, peut-être des règles manquées",
+        "user_excluded": "tu l'as exclu",
+        "hormonal_context": "une méthode hormonale était utilisée",
+        "postpartum_context": "les cycles après l'accouchement ne sont pas comptés",
+        "life_context": "situation sans prévision naturelle des règles"
+      }
+    },
+    "insights": {
+      "title": "Tendances dans tes relevés",
+      "basedOnRecords": "Basé uniquement sur tes relevés.",
+      "viewData": "Voir les données",
+      "viewSessions": "Voir ces séances",
+      "evidenceTitle": "Sur quoi cela se base",
+      "recurringSymptom": "Tu as noté {{symptom}} dans les {{days}} jours suivant le début de tes règles dans {{hits}} de tes {{total}} derniers cycles.",
+      "highPain": "Tu as noté une douleur de {{level}} ou plus dans les {{days}} jours suivant le début de tes règles dans {{hits}} de tes {{total}} derniers cycles.",
+      "cycleLengthLonger": "Ton dernier cycle a duré {{length}} jours, {{diff}} jours de plus que la médiane de tes {{count}} cycles précédents ({{typical}} jours).",
+      "cycleLengthShorter": "Ton dernier cycle a duré {{length}} jours, {{diff}} jours de moins que la médiane de tes {{count}} cycles précédents ({{typical}} jours).",
+      "durationLonger": "Tes dernières règles ont duré {{duration}} jours, {{diff}} jours de plus que la médiane des {{count}} précédentes ({{typical}} jours).",
+      "durationShorter": "Tes dernières règles ont duré {{duration}} jours, {{diff}} jours de moins que la médiane des {{count}} précédentes ({{typical}} jours).",
+      "moodNearStart": "Ton humeur notée était plus basse dans les {{days}} jours suivant le début de tes règles que les autres jours dans {{hits}} de tes {{total}} derniers cycles.",
+      "workoutNearStart": "Dans {{hits}} de tes {{total}} derniers cycles, tes séances dans les {{days}} jours suivant le début de tes règles ont eu un volume plus faible que tes autres séances du même cycle.",
+      "recurringPreperiodSymptom": "Tu as noté {{symptom}} dans les sept jours précédant les règles dans {{hits}} des {{total}} règles enregistrées."
+    },
+    "phaseEstimated": "Phase estimée",
+    "phaseUnknown": "Aucune estimation",
+    "prediction": {
+      "insufficient": "Note des règles pour voir une prévision",
+      "hidden": "Les prévisions sont masquées",
+      "notShown": "Aucune prévision dans ta situation",
+      "likelyRange": "Probablement {{from}} – {{to}}",
+      "likelyDate": "Probablement autour du {{date}}",
+      "caveated": "Cette méthode peut modifier le comportement de ton cycle : prends l'estimation avec souplesse.",
+      "variabilityExpected": "La durée du cycle varie dans ta situation. C'est courant, et la plage en tient compte.",
+      "variableHint": "Tes cycles ont beaucoup varié ({{low}}–{{high}} jours). Une date unique peut ne pas être fiable.",
+      "keepHidden": "Garder masqué",
+      "showRange": "Afficher la plage",
+      "fertile": "Fenêtre fertile estimée : {{from}} – {{to}}",
+      "howCalculated": "Comment est-ce calculé ?",
+      "show": "Afficher les prévisions",
+      "hide": "Masquer les prévisions",
+      "detailsTitle": "Comment l'estimation est faite",
+      "basis": "Basé sur tes {{cycles}} derniers cycle · médiane {{median}} jours · plage {{low}}–{{high}}",
+      "basis_plural": "Basé sur tes {{cycles}} derniers cycles · médiane {{median}} jours · plage {{low}}–{{high}}",
+      "basisNone": "Pas encore de cycles exploitables, donc l'estimation utilise ta durée habituelle de {{days}} jours.",
+      "recentWeighted": "Les cycles récents comptent davantage, donc l'estimation utilise {{days}} jours.",
+      "excludedCount": "{{cycles}} cycle n'est pas utilisé (voir ci-dessous).",
+      "excludedCount_plural": "{{cycles}} cycles ne sont pas utilisés (voir ci-dessous).",
+      "cycleUsed": "Utilisé pour les prévisions",
+      "useForPredictions": "Utiliser ce cycle pour les prévisions",
+      "evidenceNote": "Basé sur tes données. Une prévision est une estimation, pas un résultat médical.",
+      "confidence": {
+        "none": "Pas encore de données",
+        "low": "Confiance faible · {{cycles}} cycle exploitable",
+        "low_plural": "Confiance faible · {{cycles}} cycles exploitables",
+        "moderate": "Confiance modérée · {{cycles}} cycles exploitables",
+        "high": "Confiance plus élevée · {{cycles}} cycles exploitables"
+      },
+      "suppressed": {
+        "hormonal": "Les saignements avec cette méthode peuvent ne pas suivre un cycle naturel, donc une date prévue ne voudrait pas dire grand-chose. Tu peux quand même tout noter.",
+        "postpartum": "Après l'accouchement, les cycles reviennent souvent de façon imprévisible. Les prévisions apparaîtront quand tu auras noté deux périodes de règles.",
+        "no_bleeding": "Tu fais un suivi sans saignement, donc il n'y a pas de règles à prévoir. Les journaux quotidiens et les tendances fonctionnent toujours."
+      }
+    },
+    "quickLog": {
+      "title": "Saisie rapide",
+      "pinPrompt": "Tu notes souvent {{symptom}}. L'épingler à la saisie rapide ?",
+      "noThanks": "Non merci",
+      "pin": "L'épingler"
+    },
+    "severity": {
+      "mild": "légère",
+      "moderate": "modérée",
+      "severe": "sévère"
+    },
+    "summary": {
+      "title": "Résumé du cycle",
+      "range": "{{from}} – {{to}} (les {{months}} derniers mois)",
+      "disclaimer": "Données auto-saisies depuis l'app Musclog. Ce n'est pas un diagnostic et cela ne remplace pas un avis médical.",
+      "sectionOverview": "Vue d'ensemble",
+      "sectionPeriods": "Règles",
+      "sectionBleeding": "Jours de saignement par niveau",
+      "sectionSymptoms": "Symptômes les plus notés (jours)",
+      "sectionPain": "Douleur",
+      "sectionNotes": "Notes",
+      "sectionContext": "Situation et contraception",
+      "colStart": "Début",
+      "colEnd": "Fin",
+      "colDuration": "Jours",
+      "colCycleLength": "Cycle (jours)",
+      "colStatus": "Utilisé pour les moyennes",
+      "empty": "Aucunes règles sur cette période.",
+      "statusUsed": "compté",
+      "statusInProgress": "en cours",
+      "overviewPeriods": "{{n}} règles notées",
+      "overviewPeriods_plural": "{{n}} règles notées",
+      "overviewLength": "Durée du cycle : médiane {{median}} jours, plage {{low}}–{{high}}.",
+      "overviewNoLength": "Pas assez de cycles complets pour indiquer une durée de cycle.",
+      "overviewUsed": "{{used}} cycles comptés pour les moyennes, {{excluded}} non comptés.",
+      "pain": "Douleur notée sur {{days}} jours : médiane {{median}}/10, maximum {{max}}/10, {{severe}} jours à 6 ou plus."
+    },
+    "personalize": {
+      "title": "Personnaliser le suivi",
+      "goalsTitle": "Que voudrais-tu comprendre ?",
+      "goalsHint": "Choisis ce qui compte pour toi. Tu pourras changer ça plus tard.",
+      "goals": {
+        "timing": "Calendrier des règles",
+        "symptoms": "Douleurs et symptômes",
+        "mood": "Humeur",
+        "record": "Simplement garder une trace"
+      },
+      "question": "Veux-tu suivre les saignements ou des symptômes cycliques ?",
+      "trackBleeding": "Saignements et symptômes",
+      "trackBleedingHint": "Garde les dates de règles et des observations quotidiennes.",
+      "trackSymptoms": "Symptômes sans règles",
+      "trackSymptomsHint": "Tiens un journal corporel même quand tu ne saignes pas.",
+      "skip": "Passer pour l'instant",
+      "skipHint": "Tu pourras activer le suivi plus tard dans les réglages.",
+      "quickTitle": "Favoris de la saisie rapide",
+      "quickHint": "Choisis jusqu'à six symptômes pour la saisie rapide.",
+      "customSymptom": "Nouveau symptôme personnalisé",
+      "removeNamed": "Retirer {{name}} du formulaire",
+      "fieldsTitle": "Champs quotidiens facultatifs",
+      "fieldsHint": "Seuls les champs que tu choisis apparaissent dans le journal quotidien.",
+      "fields": {
+        "sleepHours": "Sommeil (heures)",
+        "temperatureC": "Température basale",
+        "discharge": "Pertes / glaire cervicale",
+        "medication": "Médicament et dose",
+        "sex": "Activité sexuelle",
+        "tags": "Étiquettes",
+        "impact": "Impact sur la vie quotidienne",
+        "leakage": "Fuites à travers les vêtements ou la literie",
+        "clots": "Caillots de sang",
+        "lhTest": "Test d'ovulation (LH)",
+        "pregnancyTest": "Test de grossesse"
+      },
+      "customField": "Nouveau champ personnalisé",
+      "kinds": {
+        "text": "Texte",
+        "number": "Nombre",
+        "toggle": "Oui / non",
+        "rating": "Note bornée"
+      },
+      "removeHint": "Retirer un champ du formulaire conserve les valeurs déjà notées dans l'historique et les exports.",
+      "saving": "Enregistrement…",
+      "observationsHint": "Laisse un champ vide si tu ne l'as pas noté. La température est une observation manuelle et ne confirme pas l'ovulation.",
+      "invalidObservation": "Vérifie tes saisies : le sommeil doit être entre 0 et 24 heures, la température entre 30 et 45 °C, et les champs numériques doivent contenir un nombre valide.",
+      "unexpectedBleeding": "Noter un saignement ou un spotting inattendu",
+      "sharedMoodHint": "L'humeur est partagée avec Accueil et Progression. L'effacer ici supprime aussi l'humeur de ce jour là-bas. Supprimer les données du cycle conserve les humeurs partagées.",
+      "loadingMood": "Chargement de l'humeur…",
+      "clearMood": "Effacer l'humeur à l'enregistrement",
+      "clearDayAndMood": "Effacer les observations de ce jour et l'humeur partagée",
+      "summaryObservations": "Humeur et autres observations",
+      "add": "Ajouter",
+      "moodUnlogged": "Humeur non notée"
+    },
+    "portability": {
+      "title": "Sauvegarde et import du cycle",
+      "backupTitle": "Sauvegarde chiffrée du cycle",
+      "recoveryHint": "Ce fichier contient l'historique des règles, les observations quotidiennes, les situations, les préférences et l'historique des humeurs partagées. Conserve-le hors de ce téléphone. Garde le mot de passe à part : sans lui, la sauvegarde ne peut pas être récupérée. Restaure-la ci-dessous sur ton nouvel appareil après avoir activé le suivi du cycle.",
+      "lastBackup": "Dernière sauvegarde chiffrée préparée : {{date}}",
+      "noBackup": "Aucune sauvegarde chiffrée du cycle n'a été préparée sur cet appareil.",
+      "password": "Mot de passe de la sauvegarde (au moins 8 caractères)",
+      "repeatPassword": "Répéter le mot de passe",
+      "createBackup": "Créer une sauvegarde chiffrée",
+      "plaintextHint": "Les exports JSON, CSV et PDF lisibles contiennent des informations sensibles sans protection par mot de passe. Ne les partage qu'avec une personne de ton choix.",
+      "exportJson": "Exporter le JSON du cycle lisible",
+      "exportContexts": "Exporter l'historique des situations (CSV)",
+      "importTitle": "Importer ton historique de cycle",
+      "importHint": "Choisis une sauvegarde JSON de cycle Musclog, ou un CSV de règles, de journaux quotidiens ou de situations exporté par Musclog. Les dates utilisent AAAA-MM-JJ. Cela fusionne les données du cycle et les humeurs partagées ; tes autres données de l'app restent intactes.",
+      "importPassword": "Mot de passe d'un fichier chiffré (sinon laisse vide)",
+      "chooseFile": "Choisir un fichier et prévisualiser",
+      "conflictHint": "Pour une date qui a déjà un relevé, choisis si tu gardes le tien ou si tu remplaces tout le relevé par celui importé.",
+      "keep": "Garder l'existant",
+      "replace": "Remplacer les dates correspondantes",
+      "restorePreferences": "Restaurer les durées habituelles, les objectifs et les champs choisis",
+      "preview": "{{added}} nouveaux relevés · {{updated}} remplacements · {{skipped}} relevés existants conservés · {{overlaps}} règles qui se chevauchent ignorées",
+      "checking": "Vérification du fichier…",
+      "overlapHint": "Les règles qui se chevauchent sont ignorées. Les définitions de champs voyagent avec le fichier pour que les anciennes observations restent lisibles. La prévisualisation compte chaque période, jour, situation et humeur séparément.",
+      "confirmImport": "Confirmer la fusion",
+      "imported": "{{added}} nouveaux relevés importés et {{updated}} remplacements.",
+      "invalidFile": "Ce fichier ne peut pas être importé. Vérifie son format, ses dates et ses définitions de champs.",
+      "failed": "Impossible de terminer cette action. Vérifie le fichier ou le mot de passe, puis réessaie.",
+      "prepared": "Export préparé. Conserve le fichier à un endroit où tu pourras le récupérer.",
+      "fullBackup": "Sauvegarde et restauration complètes de l'app",
+      "fullBackupHint": "Ouvre les réglages des données pour une sauvegarde complète de l'app et les points de restauration locaux. Le chiffrement de l'export est exigé par défaut. Restaurer une sauvegarde complète remplace les données de l'app ; l'import du cycle ci-dessus, lui, fusionne."
+    },
+    "comparison": {
+      "tab": "Comparer",
+      "title": "Compare tes cycles",
+      "description": "Compare tes propres observations notées par jour de cycle ou avant les prochaines règles enregistrées. Touche n'importe quel jour pour le voir ou le modifier.",
+      "start": "Jour du cycle",
+      "before": "Avant les prochaines règles",
+      "filter": "Trouver un symptôme ou une mesure",
+      "metrics": {
+        "bleeding": "Saignement",
+        "pain": "Douleur (0–10)",
+        "energy": "Énergie (1–5)",
+        "mood": "Humeur (0–4)"
+      },
+      "flowLegend": "— non noté · 0 pas de saignement · 1 spotting · 2 faibles · 3 moyennes · 4 fortes · 5 très fortes",
+      "symptomLegend": "— non noté · 0 aucun symptôme noté explicitement · ● présent, non évalué · 1 léger · 2 modéré · 3 sévère",
+      "numberLegend": "— non noté. Les chiffres sont tes notes enregistrées, pas des valeurs déduites.",
+      "empty": "Note le début des règles pour comparer les cycles. La vue avant les règles nécessite deux débuts.",
+      "inProgress": "En cours",
+      "unlogged": "Non noté",
+      "unrated": "Présent, non évalué",
+      "limitHint": "Affiche tes six derniers cycles, jusqu'à 60 jours après un début ou 14 jours avant le prochain début noté. Les jours vides restent vides."
+    },
+    "complete": {
+      "confirmLong": "Ce cycle plus long est correct",
+      "unknownLength": "Je ne connais pas ma durée de cycle habituelle",
+      "rangeHeuristic": "Cette plage est une estimation tirée de ton historique, pas un intervalle de probabilité ni une date d'ovulation confirmée.",
+      "backtest": "Vérification rétrospective : {{hits}} débuts ultérieurs sur {{checked}} tombent dans la plage ; erreur moyenne par rapport au centre {{error}} jours. Ce n'est pas une validation clinique.",
+      "restoreFirst": "Restaurer ou importer mon historique",
+      "careTitle": "Comprendre tes symptômes",
+      "careHint": "Information générale issue du NHS et du RCOG. Le suivi n'est pas un diagnostic. Si des symptômes t'inquiètent ou gênent ta vie quotidienne, parles-en à un professionnel de santé ; consulte en urgence pour des symptômes sévères ou qui s'aggravent rapidement.",
+      "education": {
+        "bleeding": "Saignements abondants (NHS, en anglais)",
+        "pain": "Douleurs menstruelles (NHS, en anglais)",
+        "unexpected": "Saignements inattendus (NHS, en anglais)",
+        "pms": "SPM et journaux de symptômes (RCOG, en anglais)",
+        "menopause": "Préménopause et ménopause (NHS, en anglais)",
+        "pregnancy": "Informations sur la grossesse (NHS, en anglais)",
+        "postpartum": "Récupération après l'accouchement (NHS, en anglais)",
+        "pregnancy_loss": "Informations sur la perte de grossesse (NHS, en anglais)"
+      },
+      "trends": "Tendances et recherche",
+      "trendsHint": "Explore les jours que tu as notés, y compris ceux où tu n'as pas de règles. Ce sont des observations, pas des explications de ce qui a causé un changement.",
+      "lastDays": "{{days}} derniers jours",
+      "summary": "{{logged}} jours notés · {{heavy}} jours de règles fortes · {{spotting}} jours de spotting · {{impact}} jours avec impact sur la vie quotidienne",
+      "recap": "Depuis le début noté le {{date}} : {{logged}} jours notés, {{heavy}} jours de règles fortes, {{impact}} jours avec impact sur la vie quotidienne.",
+      "symptomSummary": "{{symptom}} : {{days}} jours notés, {{severe}} notés comme sévères",
+      "loggedOnly": "Seules les valeurs notées sont affichées. Les jours manquants sont inconnus. Les 30 dernières valeurs sont listées.",
+      "noObservations": "Aucune observation correspondante sur cette période.",
+      "contextChanged": "Situation modifiée le {{date}}. Voir l'historique des situations.",
+      "search": "Chercher dans tes relevés",
+      "searchHint": "Cherche des symptômes, des notes, des médicaments, des étiquettes ou des valeurs personnalisées. Tous les mots doivent correspondre. La recherche reste sur cet appareil ; jusqu'à 50 jours correspondants sont affichés.",
+      "metrics": {
+        "pain": "Douleur (0–10)",
+        "energy": "Énergie (1–5)",
+        "mood": "Humeur (0–4)",
+        "sleepHours": "Sommeil (heures)",
+        "temperatureC": "Température basale (°C)",
+        "impact": "Impact sur la vie quotidienne (0–3)",
+        "bleeding": "Saignement",
+        "symptoms": "Symptômes",
+        "note": "Notes",
+        "importedTemperatureC": "Température basale importée (°C)"
+      },
+      "backupDays": "Intervalle de rappel de sauvegarde (jours ; 0 désactive)",
+      "importTitle": "Importer l'historique depuis un autre suivi",
+      "importHint": "{{rows}} lignes CSV. Colonnes : {{columns}}. Saisis les noms exacts des colonnes ci-dessous ; laisse vides les champs facultatifs. Cet assistant accepte le CSV, pas les archives propriétaires.",
+      "importColumns": {
+        "date": "Colonne date/début",
+        "end": "Colonne date de fin (facultatif)",
+        "flow": "Colonne des règles (facultatif)",
+        "temperature": "Colonne température en °C (facultatif)",
+        "symptoms": "Colonne des symptômes (séparés par des points-virgules)",
+        "note": "Colonne des notes (facultatif)"
+      },
+      "dateOrder": {
+        "iso": "AAAA-MM-JJ",
+        "dmy": "Jour/mois/année",
+        "mdy": "Mois/jour/année"
+      },
+      "importPeriods": "Chaque ligne enregistre un début de règles (pas un journal quotidien)",
+      "importError": "Vérifie les noms des colonnes, l'ordre des dates et les valeurs. Les règles acceptent none, spotting, light, medium, heavy ou very_heavy ; la température doit être en °C. Les débuts de règles en double et les dates invalides ne peuvent pas être importés.",
+      "previewImport": "Prévisualiser l'import",
+      "healthTitle": "Données du cycle dans ton espace santé",
+      "healthHint": "Lis le saignement et la température basale avec ta permission. Les observations importées gardent leur source et ne remplacent jamais tes saisies manuelles ni ne créent de débuts de règles. L'accès à l'espace santé peut être limité par les autorisations d'historique de la plateforme.",
+      "healthRead": "Lire et prévisualiser",
+      "healthPreview": "{{count}} observations disponibles. Réimporter la même source ne met à jour que ses copies importées.",
+      "healthImport": "Importer ces observations",
+      "healthWrite": "Exporter le saignement et la température saisis",
+      "healthWriteHint": "Cela écrit tes saignements et tes températures basales saisis manuellement sur la période choisie dans l'espace santé de ton appareil. D'autres apps autorisées peuvent les lire. Les observations importées, les symptômes, l'humeur, les médicaments, l'activité sexuelle et les notes sont exclus. Les règles très fortes sont exportées comme fortes.",
+      "healthDone": "Observations importées enregistrées.",
+      "healthWritten": "{{count}} relevés de santé écrits.",
+      "healthError": "L'accès à la santé a échoué ou l'autorisation a été refusée. Vérifie les autorisations santé de l'appareil et réessaie. Un export échoué a pu écrire certains relevés ; réessayer met à jour les relevés propres à Musclog.",
+      "importedValue": "Importé depuis {{source}} : {{value}}",
+      "sharing": "Partager les relevés choisis",
+      "sharingHint": "Choisis exactement ce que tu partages. Cela crée un fichier JSON lisible pour la période choisie. Le destinataire peut garder ou transmettre le fichier ; ce n'est pas un accès en direct et il ne peut pas être révoqué. Rien n'est sélectionné par défaut.",
+      "shareSelected": "Exporter les champs choisis",
+      "presets": "Configurations de journal facultatives",
+      "presetsHint": "Ajoute des champs utiles et remplis les emplacements favoris libres. Ton historique et tes favoris existants restent intacts.",
+      "preset": {
+        "pms": "Configurer un journal SPM/humeur",
+        "fertility": "Ajouter des observations de fertilité",
+        "perimenopause": "Ajouter des observations de préménopause"
+      },
+      "pmsDiaryHint": "Un journal quotidien des symptômes et de leur impact sur deux cycles consécutifs peut nourrir une discussion clinique sur le SPM. Ce journal n'est pas un questionnaire TDPM validé et ne pose pas de diagnostic de TDPM.",
+      "fertilityHint": "La température, les pertes et les résultats de tests ne sont que des observations. Ils ne confirment pas l'ovulation et les estimations du calendrier ne conviennent pas à une contraception.",
+      "impact": {
+        "0": "Aucun impact",
+        "1": "Gêne légère",
+        "2": "Activités limitées",
+        "3": "Impossible de faire les activités habituelles"
+      },
+      "tests": {
+        "negative": "Négatif",
+        "positive": "Positif",
+        "unclear": "Peu clair"
+      },
+      "stagePregnancy": "Grossesse",
+      "stagePregnancyHint": "Les prévisions de règles et de fertilité sont suspendues. Garde tes relevés de symptômes et change de situation quand tu seras prête.",
+      "stageLoss": "Après une perte de grossesse",
+      "stageLossHint": "Un contexte de suivi discret, sans prévision de règles ni de fertilité. Ton historique est conservé ; reviens à un autre contexte quand tu seras prête.",
+      "stageSurgery": "Après une hystérectomie",
+      "stageSurgeryHint": "Suis tes symptômes sans prévision de règles ni de fertilité. La chirurgie ne dit pas automatiquement si tu as encore des cycles ovariens.",
+      "stageMenopause": "Après la ménopause",
+      "stageMenopauseHint": "Suis tes symptômes sans prévision de règles ni de fertilité. Les saignements inattendus peuvent toujours être notés.",
+      "ratingMin": "Note minimale",
+      "ratingMax": "Note maximale",
+      "chartDescription": "{{metric}} au fil du temps. Chaque point est une valeur notée ; les dates et les valeurs sont listées ci-dessous.",
+      "variabilitySummary": "{{count}} intervalles de cycle notés sur cette période : {{low}}–{{high}} jours, y compris les intervalles exclus des prévisions.",
+      "energyInsight": "Tu as noté une énergie plus basse près du début des règles dans {{hits}} des {{total}} cycles observés. Cela n'établit pas de cause.",
+      "sleepInsight": "Tu as noté un sommeil plus court près du début des règles dans {{hits}} des {{total}} cycles observés. Cela n'établit pas de cause.",
+      "reviewLong": "Considérer à nouveau ce long cycle comme incertain"
+    },
+    "notifications": {
+      "subtle": {
+        "cycle": "Ta mise à jour du cycle est prête.",
+        "routine": "C'est l'heure de ton rappel quotidien.",
+        "checkIn": "C'est l'heure de ton point quotidien.",
+        "update": "C'est l'heure de mettre ton journal à jour.",
+        "backup": "C'est l'heure d'enregistrer une sauvegarde."
+      },
+      "periodStart": {
+        "title": "Les règles pourraient bientôt commencer",
+        "body": "D'après tes cycles récents, tes règles pourraient commencer vers le {{from}}. C'est une estimation.",
+        "bodyRange": "D'après tes cycles récents, tes règles pourraient commencer entre le {{from}} et le {{to}}. C'est une estimation."
+      },
+      "periodDue": {
+        "title": "Les règles pourraient commencer aujourd'hui",
+        "body": "Aujourd'hui est le début le plus probable, d'après tes cycles récents. Note-le quand cela arrivera."
+      },
+      "periodLate": {
+        "title": "Ce cycle est plus long que d'habitude",
+        "body": "Ce cycle dépasse ton rythme récent. Il y a de nombreuses raisons possibles. Touche si tu veux le mettre à jour.",
+        "bodyRange": "Ce cycle dépasse ton rythme récent, qui se termine d'habitude vers le {{to}}. Il y a de nombreuses raisons possibles. Touche si tu veux le mettre à jour."
+      },
+      "fertileWindow": {
+        "title": "Fenêtre fertile estimée",
+        "body": "Ta fenêtre fertile estimée pourrait commencer le {{from}}. C'est une estimation du calendrier, pas une confirmation de l'ovulation, ni une contraception.",
+        "bodyRange": "Ta fenêtre fertile estimée va du {{from}} au {{to}}. C'est une estimation du calendrier, pas une confirmation de l'ovulation, ni une contraception."
+      },
+      "pill": {
+        "title": "Rappel de pilule",
+        "body": "C'est l'heure de prendre ta pilule."
+      },
+      "dailyLog": {
+        "title": "Point quotidien du cycle",
+        "body": "Note aujourd'hui si tu le souhaites."
+      },
+      "endCheck": {
+        "title": "Les règles sont-elles toujours en cours ?",
+        "body": "Les règles que tu as marquées comme en cours ont commencé il y a une semaine. Mets à jour leur fin quand tu seras prête."
+      },
+      "backup": {
+        "title": "Sauvegarde du cycle",
+        "body": "Pense à enregistrer une sauvegarde chiffrée de tes relevés."
+      }
+    },
+    "reminders": {
+      "time": "Heure du rappel",
+      "leadDays": "Jours de préavis avant tes règles",
+      "oncePerCycle": "environ une fois par cycle",
+      "atMostOncePerCycle": "au plus une fois par cycle",
+      "daily": "tous les jours",
+      "oncePerPeriod": "au plus une fois par période de règles",
+      "basis": {
+        "estimate": "une estimation à partir de tes cycles notés",
+        "routine": "une heure que tu as choisie"
+      },
+      "notWhileSuppressed": "non envoyé tant que les prévisions sont désactivées pour ta situation",
+      "periodStart": {
+        "label": "Avant mes règles",
+        "when": "À {{time}}, avec le préavis défini ci-dessous, avant le début prévu le plus tôt"
+      },
+      "periodDue": {
+        "label": "Le jour le plus probable",
+        "when": "À {{time}} le jour de début le plus probable"
+      },
+      "periodLate": {
+        "label": "Si ce cycle s'allonge",
+        "when": "Le lendemain de la fin de ta plage habituelle, avec un texte neutre"
+      },
+      "fertileWindow": {
+        "label": "Fenêtre fertile estimée",
+        "when": "À {{time}} quand la fenêtre estimée commence",
+        "unavailable": "Disponible seulement si l'estimation de la fenêtre fertile est activée, dans une situation où elle a du sens."
+      },
+      "dailyLog": {
+        "label": "Point quotidien",
+        "when": "À {{time}}"
+      },
+      "endCheck": {
+        "label": "Vérifier des règles en cours",
+        "when": "Une semaine après des règles que tu as marquées comme en cours"
+      },
+      "backup": {
+        "label": "Rappel de sauvegarde"
+      },
+      "pill": {
+        "label": "Rappel de pilule",
+        "when": "Chaque jour de pilule à {{time}}",
+        "time": "Heure de la pilule",
+        "pattern21": "21 jours + 7 sans",
+        "pattern24": "24 jours + 4 sans",
+        "continuous": "Tous les jours",
+        "packStart": "Première pilule de la plaquette en cours",
+        "hint": "Les jours sans pilule ne donnent pas de rappel. C'est un rappel, pas un conseil médical : suis les consignes de ta pilule si tu en oublies une.",
+        "notPaused": "continue pendant une pause"
+      },
+      "pause": {
+        "title": "Mettre les rappels du cycle en pause",
+        "week": "1 semaine",
+        "month": "1 mois",
+        "indefinite": "Jusqu'à ce que je reprenne",
+        "resume": "Reprendre les rappels",
+        "hint": "Pour une maladie, un deuil, un voyage ou une pause. Les rappels de pilule continuent."
+      },
+      "status": {
+        "web": "Les rappels sont envoyés par l'app Musclog sur téléphone. Les réglages faits ici s'y appliquent aussi.",
+        "noPermission": "Les notifications ne sont pas autorisées pour Musclog, donc aucun rappel ne peut arriver.",
+        "switchedOff": "Les notifications du cycle sont désactivées, donc aucun rappel n'arrivera.",
+        "pausedUntil": "Les rappels sont en pause jusqu'au {{date}}.",
+        "paused": "Les rappels sont en pause jusqu'à ce que tu les reprennes.",
+        "next": "Prochain : {{reminder}}, {{date}}.",
+        "none": "Rien n'est programmé. Active un rappel ci-dessous.",
+        "turnOn": "Activer les rappels du cycle",
+        "permissionDenied": "Les notifications n'ont pas été autorisées. Tu peux les autoriser dans les réglages de ton téléphone."
+      },
+      "test": "Envoyer une notification de test",
+      "testSent": "Envoyée. Elle arrive en quelques secondes, formulée comme tu l'as choisi.",
+      "style": {
+        "title": "Texte sur l'écran verrouillé",
+        "hint": "Ce que quelqu'un qui jette un œil à ton téléphone peut lire. Privé ne dit jamais de quoi parle un rappel.",
+        "private": "Privé",
+        "subtle": "Discret",
+        "detailed": "Détaillé"
+      },
+      "preview": "Aperçu",
+      "lockScreenHint": "Sur un téléphone verrouillé avec un écran de verrouillage sécurisé, Android masque aussi le texte des rappels du cycle.",
+      "why": {
+        "title": "Pourquoi tu as reçu ce rappel",
+        "setting": "Tu as activé « {{reminder}} » dans les réglages du cycle.",
+        "estimateFromCycles": "Sa date est une estimation à partir de tes cycles notés ({{cycles}} utilisés), qui ont duré entre {{low}} et {{high}} jours. Un rappel ne peut pas être plus précis que cela.",
+        "estimateFromSetup": "Sa date vient de la durée de cycle habituelle que tu as saisie, car il n'y a pas encore assez d'historique noté. Elle s'améliore au fil des règles notées.",
+        "routine": "Il sonne à l'heure que tu as choisie, quoi que disent tes données de cycle.",
+        "pillBreak": "Il ignore les jours sans pilule de ta plaquette.",
+        "late": "Un cycle plus long peut avoir de nombreuses raisons. Musclog n'en suppose jamais une.",
+        "change": "Modifier ou désactiver les rappels",
+        "estimateFromSteadyCycles": "Sa date est une estimation à partir de tes cycles notés ({{cycles}} utilisés), qui ont tous duré environ {{low}} jours. Les cycles peuvent quand même varier, donc prends-la comme approximative."
+      }
+    }
+  }
+}

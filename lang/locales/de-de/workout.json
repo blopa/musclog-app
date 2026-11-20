@@ -1,0 +1,95 @@
+{
+  "workout": {
+    "title": "Training",
+    "workouts": {
+      "title": "Trainings"
+    },
+    "import": {
+      "characters": "Zeichen",
+      "emptyData": "Bitte füge Trainingsdaten ein oder gib sie ein.",
+      "formatInfo": "Füge dein Trainingsprotokoll ein oder tippe es ab (z. B. aus einer Notiz oder App). Die KI liest es ein und erstellt die Einheiten.",
+      "import": "Importieren",
+      "importWorkouts": "Trainings importieren",
+      "instructions": "Füge deine Trainingsdaten unten ein. Unterstützt: Freitext, Aufzählungen oder strukturierte Protokolle.",
+      "pasteWorkoutDataPlaceholder": "Trainingsdaten hier einfügen ...",
+      "processing": "Wird verarbeitet ...",
+      "processingData": "Trainings wurden erfolgreich importiert.",
+      "processingFailed": "Die Daten konnten nicht verarbeitet werden. Bitte prüfe das Format und versuche es erneut.",
+      "supportedFormats": "Unterstützte Formate"
+    },
+    "sessionOverview": "Übersicht der Einheit",
+    "startWorkout": "Training starten",
+    "resumeSession": "Einheit fortsetzen",
+    "workout": "Training",
+    "inProgress": "Läuft",
+    "type": {
+      "strength": "Kraft",
+      "cardio": "Cardio",
+      "flexibility": "Beweglichkeit",
+      "calisthenics": "Calisthenics",
+      "other": "Sonstiges",
+      "free": "Frei"
+    },
+    "exercises": "{{count}} Übungen",
+    "workoutSequence": "Trainingsreihenfolge",
+    "skipped": "Übersprungen",
+    "startFromExercise": {
+      "title": "Ab Übung starten",
+      "message": "Möchtest du das Training bei {{exerciseName}} beginnen?",
+      "confirm": "Ab hier starten",
+      "cancel": "Abbrechen"
+    },
+    "summary": {
+      "failedToLoad": "Laden fehlgeschlagen",
+      "noWorkoutId": "Keine Trainings-ID",
+      "unableToLoad": "Laden nicht möglich",
+      "failedToGetFeedback": "Feedback konnte nicht abgerufen werden. Bitte versuche es erneut.",
+      "healthPrompt": {
+        "title": "Gesundheitsdaten verbinden?",
+        "message": "Jetzt, wo du ein Training beendet hast, kann Musclog Gesundheitsdaten wie Schritte, Gewicht und Trainings lesen und schreiben.",
+        "confirm": "Verbinden",
+        "later": "Vielleicht später"
+      }
+    },
+    "muscleGroups": {
+      "chest": "Brust",
+      "back": "Rücken",
+      "legs": "Beine",
+      "shoulders": "Schultern",
+      "arms": "Arme",
+      "core": "Rumpf",
+      "abdomen": "Bauch",
+      "glutes": "Gesäß",
+      "fullBody": "Ganzkörper",
+      "biceps": "Bizeps",
+      "triceps": "Trizeps",
+      "forearms": "Unterarme",
+      "abs": "Bauchmuskeln",
+      "quads": "Quadrizeps",
+      "hamstrings": "Beinbeuger",
+      "calves": "Waden",
+      "full_body": "Ganzkörper",
+      "cardio": "Cardio",
+      "other": "Sonstiges"
+    },
+    "exerciseTypes": {
+      "compound": "Mehrgelenkig",
+      "isolation": "Isolation",
+      "bodyweight": "Körpergewicht",
+      "machine": "Maschine",
+      "dumbbell": "Kurzhantel",
+      "barbell": "Langhantel",
+      "cable": "Kabelzug",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Widerstandsband",
+      "medicine_ball": "Medizinball",
+      "smith_machine": "Smith-Maschine",
+      "plate_machine": "Scheibenmaschine",
+      "cardio": "Cardio",
+      "stretching": "Dehnen",
+      "plyometric": "Plyometrisch",
+      "mobility": "Mobilität",
+      "other": "Sonstiges"
+    }
+  }
+}

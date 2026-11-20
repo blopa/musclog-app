@@ -1,0 +1,71 @@
+{
+  "websiteToolRpeChart": {
+    "title": "Tabela RPE i RIR z kalkulatorem obciążenia",
+    "intro": "Tabela, jaki udział twojego maksimum na jedno powtórzenie stanowi każda liczba powtórzeń przy każdym RPE, co oznacza RPE w powtórzeniach w zapasie, oraz kalkulator, który zamienia wykonaną serię na obciążenie innej serii.",
+    "chart": {
+      "title": "Udział twojego maksimum na jedno powtórzenie",
+      "rpeColumn": "RPE {{rpe}}",
+      "reps": "Powtórzenia",
+      "note": "Czytaj w poprzek dla powtórzeń, które robisz, i w dół dla wysiłku, który oceniasz za serię. Procenty pochodzą z tego samego uśrednionego szacunku, którego używa aplikacja, więc nawet jedno powtórzenie przy RPE 10 wychodzi tuż poniżej 100%."
+    },
+    "meaning": {
+      "title": "Co oznacza każde RPE",
+      "rpe": "RPE",
+      "reserve": "Powtórzenia w zapasie",
+      "meaning": "Znaczenie",
+      "none": "Brak powtórzeń. Seria skończyła się upadkiem.",
+      "one": "Jedno powtórzenie w zapasie.",
+      "two": "Dwa powtórzenia w zapasie.",
+      "three": "Trzy powtórzenia w zapasie.",
+      "four": "Cztery powtórzenia w zapasie."
+    },
+    "form": {
+      "weight": "Podniesiony ciężar",
+      "reps": "Wykonane powtórzenia",
+      "repsHint": "Liczba całkowita, 1 do 10",
+      "rpe": "RPE tej serii",
+      "targetReps": "Docelowe powtórzenia",
+      "targetRepsHint": "Liczba całkowita, 1 do 10",
+      "targetRpe": "Docelowe RPE"
+    },
+    "problems": {
+      "weight": "Wpisz podniesiony ciężar jako liczbę większą od 0.",
+      "reps": "Wpisz powtórzenia jako liczbę całkowitą od 1 do 10.",
+      "targetReps": "Wpisz docelowe powtórzenia jako liczbę całkowitą od 1 do 10."
+    },
+    "results": {
+      "oneRepMax": "Szacowane maksimum na jedno powtórzenie",
+      "target": "Obciążenie dla celu, dokładne",
+      "targetRounded": "Zaokrąglone dla sztangi ze standardowymi talerzami",
+      "roundedNote": "Zaokrąglone do najmniejszych kroków, o jakie rośnie sztanga załadowana standardowymi talerzami. Bez siłowni aplikacja używa tych samych kroków.",
+      "reps": "powt.",
+      "atRpe": "przy RPE"
+    },
+    "sections": [
+      {
+        "title": "Co znaczy RPE",
+        "body": [
+          "RPE, czyli wskaźnik subiektywnego wysiłku, biegnie od 1 do 10. Seria oceniona na 10 nie miała żadnych powtórzeń w zapasie. RPE 9 zostawiało jedno powtórzenie w zapasie, RPE 8 dwa i tak dalej.",
+          "Powtórzenia w zapasie (RIR) to ta sama skala zapisana odwrotnie: RPE = 10 minus RIR. Aplikacja Musclog zapisuje wysiłek serii w jednej z tych form, a obie to ta sama liczba."
+        ]
+      },
+      {
+        "title": "Dlaczego ludzie się mylą",
+        "body": [
+          "Ocena, ile powtórzeń zostało w zapasie, to umiejętność, a większość ludzi jest mniej dokładna, im dalej seria była od upadku. Seria, która wydawała się mieć kilka powtórzeń w zapasie, mogła mieć ich więcej albo mniej.",
+          "Traktuj tabelę jako wskazówkę. Sprawdź ją, porównując z tym, jak naprawdę idą serie, i uczciwie oceniaj wysiłek, gdy go zapisujesz."
+        ]
+      },
+      {
+        "title": "Jak działa tabela i kalkulator",
+        "body": [
+          "Każda komórka to udział twojego maksimum na jedno powtórzenie, jaki reprezentuje tyle powtórzeń przy tym RPE. Wynika z tych samych uśrednionych formuł, których aplikacja Musclog używa do szacowania zapisanej serii.",
+          "Kalkulator szacuje twoje maksimum na jedno powtórzenie z wykonanej serii, a potem podaje obciążenie dla innej liczby powtórzeń przy innym RPE. Zaokrąglone obciążenie to to, co sztanga ze standardowymi talerzami może zrobić."
+        ]
+      }
+    ],
+    "sources": {
+      "zourdos": "Zourdos i in. (2016), Nowa skala RPE dla treningu oporowego mierząca powtórzenia w zapasie"
+    }
+  }
+}

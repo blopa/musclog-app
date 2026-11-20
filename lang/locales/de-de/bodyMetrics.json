@@ -1,0 +1,144 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Körperwerte",
+      "newMetric": "Neuer Wert"
+    },
+    "metrics": {
+      "weight": "Gewicht",
+      "bodyFat": "Körperfett",
+      "body_fat": "Körperfett",
+      "muscle_mass": "Muskelmasse",
+      "lean_body_mass": "Magermasse",
+      "basal_metabolic_rate": "Grundumsatz",
+      "total_calories_burned": "Gesamtverbrauch an Kalorien",
+      "active_calories_burned": "Aktiver Kalorienverbrauch",
+      "bmi": "BMI",
+      "height": "Größe",
+      "chest": "Brust",
+      "waist": "Taille",
+      "hips": "Hüfte",
+      "arms": "Arme",
+      "thighs": "Oberschenkel",
+      "calves": "Waden",
+      "neck": "Nacken",
+      "shoulders": "Schultern",
+      "mood": "Stimmung",
+      "water": "Wasser",
+      "supplement": "Nahrungsergänzung",
+      "ffmi": "FFMI",
+      "nutrition": "Ernährung",
+      "exercise": "Bewegung",
+      "other": "Andere",
+      "daily_steps": "Schritte",
+      "descriptions": {
+        "weight": "Verfolge dein Körpergewicht über die Zeit",
+        "body_fat": "Anteil der Körperfettmasse in Prozent",
+        "muscle_mass": "Gesamte Skelettmuskelmasse",
+        "lean_body_mass": "Körpergewicht minus Fettmasse",
+        "basal_metabolic_rate": "Kalorien, die in völliger Ruhe verbrannt werden",
+        "total_calories_burned": "Gesamter täglicher Energieverbrauch",
+        "active_calories_burned": "Durch Aktivität verbrannte Kalorien",
+        "bmi": "Body-Mass-Index aus Größe und Gewicht",
+        "height": "Deine Körpergröße im Stehen",
+        "chest": "Messung des Brustumfangs",
+        "waist": "Messung des Taillenumfangs",
+        "hips": "Messung des Hüftumfangs",
+        "arms": "Messung des Oberarmumfangs",
+        "thighs": "Messung des Oberschenkelumfangs",
+        "calves": "Messung des Wadenumfangs",
+        "neck": "Messung des Halsumfangs",
+        "shoulders": "Messung des Schulterumfangs",
+        "mood": "Deine allgemeine Stimmung und dein Wohlbefinden",
+        "water": "Erledigung der täglichen Wasser-Erinnerung",
+        "ffmi": "Fettfreier Massenindex",
+        "nutrition": "Tägliches Protokoll der Nahrungsaufnahme",
+        "exercise": "Protokoll körperlicher Aktivität und Training",
+        "other": "Andere Körpermessungen",
+        "daily_steps": "Schritte, die dein Telefon oder deine Uhr aufzeichnet"
+      }
+    },
+    "current": {
+      "label": "Aktuell"
+    },
+    "history": {
+      "title": "Verlauf",
+      "filter": "Filter",
+      "loadMore": "Mehr laden",
+      "loadingMore": "Wird geladen...",
+      "notes": {
+        "baseline": "Ausgangswert",
+        "noChange": "Keine Änderung",
+        "decreased": "Gesunken",
+        "increased": "Gestiegen"
+      },
+      "filters": {
+        "title": "Verlauf filtern",
+        "sortOrder": {
+          "title": "Sortierung",
+          "newestFirst": "Neueste zuerst",
+          "oldestFirst": "Älteste zuerst"
+        },
+        "trend": {
+          "title": "Trend",
+          "all": "Alle",
+          "increased": "Gestiegen",
+          "decreased": "Gesunken",
+          "noChange": "Keine Änderung"
+        },
+        "reset": "Zurücksetzen",
+        "apply": "Filter anwenden"
+      }
+    },
+    "dateFormats": {
+      "today": "Heute",
+      "yesterday": "Gestern"
+    },
+    "noDataAvailable": "Keine Daten verfügbar",
+    "noHistoryDataAvailable": "Kein Verlauf verfügbar",
+    "manageMetricData": {
+      "title": "Messwertverlauf",
+      "searchPlaceholder": "Nach Messwerttyp suchen...",
+      "noEntries": "Noch keine Messwerte",
+      "noEntriesDesc": "Füge Körpermesswerte hinzu, um sie hier zu sehen",
+      "endOfHistory": "Ende des Messwertverlaufs",
+      "metricOptions": "Messwert-Optionen",
+      "editEntry": "Eintrag bearbeiten",
+      "editEntryDesc": "Wert und Datum ändern",
+      "duplicateEntry": "Eintrag duplizieren",
+      "duplicateEntryDesc": "Eine Kopie mit neuem Datum erstellen",
+      "deleteEntry": "Eintrag löschen",
+      "deleteEntryDesc": "Diesen Messwert entfernen"
+    },
+    "addEntry": {
+      "title": "Eintrag hinzufügen",
+      "enterType": "Typ eingeben",
+      "description": "Eine neue Körpermessung erfassen",
+      "enterWeight": "Gewicht eingeben",
+      "enterBodyFat": "Körperfett eingeben",
+      "enterHeight": "Größe eingeben",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "moodQuestion": "Wie fühlst du dich heute?",
+      "supplementQuestion": "Hast du heute dein Nahrungsergänzungsmittel genommen?",
+      "supplementQuestionWithName": "Hast du heute {{name}} genommen?",
+      "waterQuestionWithAmount": "Hast du heute daran gedacht, {{amount}} Liter Wasser zu trinken?",
+      "moods": {
+        "0": "Schlecht",
+        "1": "Niedrig",
+        "2": "Okay",
+        "3": "Gut",
+        "4": "Super"
+      },
+      "saveEntry": "Eintrag speichern",
+      "saveSuccess": "Eintrag erfolgreich gespeichert",
+      "errorSaving": "Fehler beim Speichern",
+      "yes": "Ja",
+      "no": "Nein",
+      "taken": "Genommen",
+      "notTaken": "Nicht genommen",
+      "note": "Notiz",
+      "notePlaceholder": "Notiz hinzufügen..."
+    }
+  }
+}

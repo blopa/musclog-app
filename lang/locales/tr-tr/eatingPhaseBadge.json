@@ -1,0 +1,8 @@
+{
+  "eatingPhaseBadge": {
+    "cutting": "Kesim",
+    "maintenance": "Koruma",
+    "bulking": "Kütle artışı",
+    "lean-bulk": "Yağsız kütle artışı"
+  }
+}

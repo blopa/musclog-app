@@ -1,0 +1,74 @@
+{
+  "home": {
+    "accountMenu": "Apri menu account",
+    "actions": {
+      "startWorkout": "Inizia\nallenamento",
+      "trackFood": "Registra\nalimento",
+      "scanBarcode": "Scansiona\ncodice",
+      "aiPhoto": "Foto\nIA",
+      "myMeals": "I miei\npasti",
+      "addNote": "Aggiungi\nnota",
+      "logCardio": "Registra\ncamminata/corsa"
+    },
+    "sections": {
+      "recentWorkouts": "Allenamenti recenti",
+      "recentFoods": "Alimenti recenti",
+      "dailySummary": "Riepilogo giornaliero"
+    },
+    "activityRings": {
+      "move": "Movimento",
+      "steps": "Passi",
+      "rest": "Recupero",
+      "score": "Punteggio"
+    },
+    "navigation": {
+      "home": "Home",
+      "profile": "Profilo",
+      "workouts": "Allenamenti",
+      "food": "Alimentazione",
+      "coach": "Chat",
+      "focus": "Focus",
+      "cycle": "Ciclo",
+      "checkin": "Revisione settimanale"
+    },
+    "dailyStats": {
+      "steps": "Passi",
+      "burned": "Bruciate finora",
+      "eaten": "Mangiate",
+      "deficit": "Deficit",
+      "surplus": "Surplus",
+      "even": "In equilibrio"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Ultima settimana",
+      "lastWeeks_few": "Ultime {{count}} settimane",
+      "lastWeeks_many": "Ultime {{count}} settimane",
+      "lastWeeks_other": "Ultime {{count}} settimane",
+      "lastDays_one": "Ultimo giorno",
+      "lastDays_few": "Ultimi {{count}} giorni",
+      "lastDays_many": "Ultimi {{count}} giorni",
+      "lastDays_other": "Ultimi {{count}} giorni",
+      "tapHint": "Tocca un giorno per i dettagli",
+      "less": "Meno",
+      "more": "Più",
+      "earlierWeeks": "Mostra settimane precedenti",
+      "laterWeeks": "Mostra settimane successive",
+      "workouts": {
+        "title": "Allenamenti",
+        "none": "Nessun allenamento",
+        "count_one": "{{count}} allenamento",
+        "count_few": "{{count}} allenamenti",
+        "count_many": "{{count}} allenamenti",
+        "count_other": "{{count}} allenamenti"
+      },
+      "nutrition": {
+        "title": "Alimentazione",
+        "none": "Nulla di registrato",
+        "count_one": "{{count}} pasto registrato",
+        "count_few": "{{count}} pasti registrati",
+        "count_many": "{{count}} pasti registrati",
+        "count_other": "{{count}} pasti registrati"
+      }
+    }
+  }
+}

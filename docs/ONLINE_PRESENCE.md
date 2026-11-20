@@ -69,7 +69,7 @@ Thresholds live in `scripts/presence/analysis.js`; they decide what is worth _lo
   description is the lever.
 - **Striking distance**: positions 8–20 → content depth, internal links, a closer match to the query.
 - **Cannibalisation**: two of our pages split one query → merge, or differentiate and link them.
-- **Questions people ask**: queries phrased as questions, in the five app languages → post and tool ideas.
+- **Questions people ask**: queries phrased as questions, in the ten app languages → post and tool ideas.
 - **Movers**, **sitemap URLs with no impressions**, **countries and devices**, **weak landing pages** and
   **store clicks per page** (GA4), **reviews** and **store-listing conversion** (Play).
 - **Site audit**: lengths, missing translations, missing sitemap entries, thin or unlinked posts.

@@ -1,0 +1,86 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Calcolatore dello scarico",
+    "intro": "Inserisci il peso di lavoro e le serie di un esercizio e ottieni la settimana di scarico: di quanto alleggerire, quante serie tenere, quanto spingere e per quanto tempo.",
+    "form": {
+      "weight": "Peso di lavoro",
+      "weightHint": "Il carico che usi per le serie di lavoro normali.",
+      "sets": "Serie di lavoro in una settimana normale",
+      "setsHint": "Numero intero, per questo solo esercizio.",
+      "equipmentLabel": "Attrezzatura",
+      "equipment": {
+        "barbell": "Bilanciere",
+        "dumbbell": "Manubrio",
+        "machine": "Macchina o cavo"
+      }
+    },
+    "problems": {
+      "weight": "Inserisci il peso di lavoro come numero maggiore di 0 e al massimo {{max}}.",
+      "sets": "Inserisci le serie come numero intero da 1 a {{max}}."
+    },
+    "results": {
+      "title": "La tua settimana di scarico",
+      "weight": "Peso",
+      "weightNote": "{{percent}} più leggero del tuo peso di lavoro, arrotondato per difetto a un carico che puoi impostare. Mantieni le tue solite ripetizioni.",
+      "sets": "Serie",
+      "setsValue_one": "{{sets}} serie",
+      "setsValue_few": "{{sets}} serie",
+      "setsValue_many": "{{sets}} serie",
+      "setsValue_other": "{{sets}} serie",
+      "setsNote": "In calo da {{from}}: circa due terzi, mai meno di una.",
+      "effort": "Sforzo",
+      "effortValue": "{{count}} ripetizioni in riserva",
+      "effortNote": "Fermati in ogni serie con circa {{count}} ripetizioni ancora possibili, così la settimana è volutamente leggera.",
+      "duration": "Durata",
+      "durationValue_one": "{{count}} settimana",
+      "durationValue_few": "{{count}} settimane",
+      "durationValue_many": "{{count}} settimane",
+      "durationValue_other": "{{count}} settimane",
+      "durationNote": "Allenati come al solito con un lavoro più leggero, poi torna ai tuoi carichi normali.",
+      "plates": "Dischi per lato del bilanciere",
+      "emptyBar": "Bilanciere vuoto",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "Questo è già il carico più leggero che questa attrezzatura può fare, quindi il peso resta invariato. Riduci invece le serie e spingi meno.",
+      "step": "Un incremento di carico per questa attrezzatura è {{step}}."
+    },
+    "table": {
+      "title": "Altri tagli comuni",
+      "cut": "Taglio",
+      "weight": "Peso",
+      "actual": "Di fatto più leggero del",
+      "musclog": "Taglio di Musclog",
+      "percent": "{{percent}}",
+      "note": "Musclog applica il 10% o un incremento di carico, a seconda di quale sia maggiore. Le righe del 10, 15 e 20% sono regole empiriche, non risultati di studi. Ogni valore è arrotondato per difetto a un carico che puoi impostare davvero, quindi un peso piccolo può risultare più leggero del taglio richiesto."
+    },
+    "sections": [
+      {
+        "title": "Quanto più leggero, e per quanto tempo",
+        "body": [
+          "Lo scarico dell'app Musclog è un taglio del 10% o di un incremento di carico, a seconda di quale sia maggiore, arrotondato per difetto a un peso che la tua attrezzatura può fare e sempre strettamente più leggero di adesso. Una settimana leggera mantiene circa due terzi delle serie di lavoro, conserva le ripetizioni previste e punta a 4 ripetizioni in riserva. Dura una settimana. Sono tutte scelte di prodotto di Musclog, non risultati di studi.",
+          "Spesso chi si allena usa dal 10 al 20% di peso in meno, o circa un terzo di serie in meno, per una settimana. Usa la tabella per un taglio più profondo se la settimana precedente è stata molto pesante. Mantieni gli stessi esercizi e lo stesso numero di sessioni: lo scarico è un allenamento più leggero, non una settimana di riposo."
+        ]
+      },
+      {
+        "title": "Quando ha senso fare uno scarico",
+        "body": [
+          "I segnali più comuni sono lo stesso peso che sembra molto più pesante di qualche settimana fa, ripetizioni mancate che di solito riesci a fare e quasi nessuna ripetizione in riserva. Sonno scarso, stress o malattia possono avere lo stesso effetto, e lo scarico aiuta anche in quei casi. Se un'articolazione fa male in modo acuto, consulta un medico o un fisioterapista.",
+          "L'app scarica un esercizio da sola dopo due sessioni consecutive con lo stesso carico in cui hai finito senza ripetizioni in riserva o hai mancato le ripetizioni previste. Suggerisce una settimana più leggera dalla tua Revisione settimanale quando più esercizi ristagnano. Decidi tu se accettare."
+        ]
+      },
+      {
+        "title": "Cosa dice la ricerca",
+        "body": [
+          "Uno studio di consenso del 2023 su allenatori di forza e fisico ha definito lo scarico come un periodo di stress da allenamento ridotto, pensato per limitare la fatica, favorire il recupero e prepararti agli allenamenti successivi. È una definizione, non una prescrizione. I numeri di questa pagina non derivano da essa."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell et al. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "deload": "Settimane di scarico: quando ti servono e come farle",
+      "doubleProgression": "Doppia progressione: il modo più semplice per aggiungere peso ogni settimana"
+    }
+  }
+}

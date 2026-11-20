@@ -1,0 +1,50 @@
+{
+  "createWorkout": {
+    "title": "Créer une nouvelle séance",
+    "save": "Enregistrer",
+    "workoutIcon": "Icône de la séance",
+    "essentials": "L'essentiel",
+    "workoutTitle": "Titre de la séance",
+    "workoutTitlePlaceholder": "ex. Jambes, destruction totale",
+    "description": "Description",
+    "descriptionPlaceholder": "Focus sur les quadriceps et les mollets...",
+    "workoutType": "Type de séance",
+    "types": {
+      "strength": "Force",
+      "cardio": "Cardio",
+      "flexibility": "Souplesse",
+      "calisthenics": "Callisthénie",
+      "other": "Autre"
+    },
+    "intelligence": "Intelligence",
+    "workoutInsight": {
+      "title": "Conseils sur la séance",
+      "description": "Choisis comment Musclog prépare les conseils pour ta prochaine séance. L'IA s'adapte aux données de récupération lorsqu'elle est activée.",
+      "none": "Aucun",
+      "algorithm": "Algorithme",
+      "ai": "IA"
+    },
+    "routine": "Routine",
+    "plan": {
+      "label": "Plans d'entraînement",
+      "none": "Ne fait partie d'aucun plan",
+      "scheduleHint": "Les jours de la semaine se règlent séparément pour chaque plan d'entraînement."
+    },
+    "standaloneSchedule": {
+      "label": "Planning indépendant",
+      "description": "Utilisé seulement tant que cette séance ne fait partie d'aucun plan."
+    },
+    "weekly": "Hebdomadaire",
+    "exercises": "Exercices",
+    "exercisesInWorkout": "Exercices de la séance",
+    "addExerciseError": "Impossible d'ajouter l'exercice",
+    "editTitle": "Modifier la séance",
+    "loadError": "Échec du chargement",
+    "noExercisesPlaceholder": "Aucun exercice",
+    "saveError": "Échec de l'enregistrement",
+    "validation": {
+      "titleRequiredMessage": "Saisis un titre de séance"
+    },
+    "ruleTapHint": "Touche un exercice pour choisir comment ses charges progressent."
+  }
+}

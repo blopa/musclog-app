@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Calcolatore dei dischi",
+    "intro": "Inserisci il peso che vuoi sul bilanciere e ottieni i dischi per ogni lato, usando i dischi che la tua palestra ha davvero, in kg o lb, con il tuo bilanciere.",
+    "form": {
+      "target": "Peso obiettivo",
+      "targetHint": "Il totale sul bilanciere, bilanciere incluso."
+    },
+    "problems": {
+      "target": "Inserisci il peso obiettivo come numero maggiore di 0 e al massimo {{max}} {{unit}}."
+    },
+    "results": {
+      "loaded": "Peso sul bilanciere",
+      "exact": "La tua palestra può caricare esattamente questo peso.",
+      "inexact": "La tua palestra non può fare esattamente {{target}}. Il peso più alto caricabile è {{below}}, e quello caricabile più vicino è {{nearest}}.",
+      "belowBar": "È più leggero del bilanciere ({{bar}}). Scegli un obiettivo più pesante, oppure imposta un bilanciere più leggero nella tua palestra.",
+      "perSide": "Dischi per lato",
+      "noPlates": "Non servono dischi: il solo bilanciere è l'obiettivo.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Bilanciere: {{bar}}. I dischi si caricano a coppie, uno per lato."
+    },
+    "sections": [
+      {
+        "title": "Perché il disco più pesante per primo è sbagliato",
+        "body": [
+          "Il metodo comune prende il disco più pesante che entra, poi il successivo, e così via. Funziona quando la palestra ha molti dischi di ogni peso. Con dischi limitati può non funzionare: una palestra con una coppia ciascuno da 20, 15 e 10 kg deve arrivare a 25 kg per lato per un carico di 70 kg con un bilanciere da 20 kg. Prendere prima il 20 lascia 5 kg che nessun disco riempie. La soluzione è 15 e 10 kg, che la palestra può caricare.",
+          "Questo calcolatore prova le combinazioni dei dischi che inserisci e sceglie il carico più pesante che non supera il tuo obiettivo, usando il minor numero di dischi."
+        ]
+      },
+      {
+        "title": "I dischi si caricano a coppie",
+        "body": [
+          "Un bilanciere accetta i dischi a coppie, uno per lato, quindi ogni disco che inserisci conta a coppie. Un disco spaiato in palestra non può formare una coppia e viene escluso. Inserisci quante coppie di ogni disco hai."
+        ]
+      },
+      {
+        "title": "Peso del bilanciere e unità",
+        "body": [
+          "Il bilanciere fa parte del totale, quindi imposta per primo il peso del tuo. I bilancieri olimpici standard pesano 20 kg (45 lb), e alcuni sono più leggeri. Scrivi in kg o lb: l'app salva i chilogrammi e converte, così i numeri coincidono con quelli dell'app Musclog."
+        ]
+      }
+    ]
+  }
+}

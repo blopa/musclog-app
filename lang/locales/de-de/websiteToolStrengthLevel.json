@@ -1,0 +1,73 @@
+{
+  "websiteToolStrengthLevel": {
+    "title": "Rechner für Kraftstufen",
+    "intro": "Gib dein Körpergewicht und einen Satz ein, den du gemacht hast. Sieh, welche Kraftstufe dein geschätztes Ein-Wiederholungs-Maximum bei dieser Übung erreicht, und wie viel jede Stufe bei deinem Körpergewicht braucht.",
+    "form": {
+      "sex": "Geschlecht",
+      "sexMale": "Männlich",
+      "sexFemale": "Weiblich",
+      "sexOther": "Andere",
+      "bodyWeight": "Körpergewicht",
+      "lift": "Übung",
+      "perHand": "pro Hand",
+      "weight": "Gehobenes Gewicht",
+      "reps": "Gemachte Wiederholungen",
+      "repsHint": "Ganze Zahl, 1 bis 10",
+      "reserve": "Wiederholungen in Reserve (optional)",
+      "reserveHint": "Wie viele weitere Wiederholungen möglich gewesen wären. Lass es leer, wenn du bis zum Muskelversagen gegangen bist."
+    },
+    "problems": {
+      "bodyWeight": "Gib dein Körpergewicht als Zahl über 0 ein.",
+      "weight": "Gib das gehobene Gewicht als Zahl über 0 ein.",
+      "reps": "Gib die Wiederholungen als ganze Zahl von 1 bis 10 ein.",
+      "repsTooHigh": "Sätze mit mehr als 10 Wiederholungen ergeben kein verlässliches Ein-Wiederholungs-Maximum. Ein langer Satz misst Ausdauer, und jede Formel weicht umso weiter von der Wahrheit ab, je mehr Wiederholungen sie hochrechnen muss. Nutze einen schwereren Satz mit 10 Wiederholungen oder weniger.",
+      "reserve": "Wiederholungen in Reserve müssen eine ganze Zahl von 0 bis 9 sein."
+    },
+    "results": {
+      "level": "Kraftstufe",
+      "levels": {
+        "beginner": "Anfänger",
+        "novice": "Einsteiger",
+        "intermediate": "Fortgeschritten",
+        "advanced": "Profi",
+        "elite": "Elite"
+      },
+      "range": "{{lower}} bis {{upper}}",
+      "otherNote": "Auf der Männer- und der Frauenskala angezeigt, weil keine einzelne Tabelle passt.",
+      "estimate": "Geschätztes Ein-Wiederholungs-Maximum",
+      "nextLevel": "Um {{level}} zu erreichen: ein geschätztes Ein-Wiederholungs-Maximum von {{weight}} {{unit}}.",
+      "topLevel": "Diese Übung ist auf der obersten Stufe. Über Elite gibt es keine Stufe.",
+      "tableTitle": "Das Ein-Wiederholungs-Maximum, das jede Stufe bei deinem Körpergewicht braucht",
+      "tableLevel": "Stufe",
+      "tableOne": "Geschätztes Ein-Wiederholungs-Maximum",
+      "tableMale": "Männerskala",
+      "tableFemale": "Frauenskala",
+      "tableNote": "Jeder Wert ist das geschätzte Ein-Wiederholungs-Maximum für diese Übung bei deinem Körpergewicht."
+    },
+    "sections": [
+      {
+        "title": "Was die Stufe vergleicht",
+        "body": [
+          "Eine Stufe ist dein geschätztes Ein-Wiederholungs-Maximum geteilt durch dein Körpergewicht, angepasst an die Übung und das Geschlecht. Schwerere Menschen heben insgesamt mehr, daher ist das Körpergewicht Teil des Vergleichs.",
+          "Die Stufen sind eine Faustregel von Musclog, geprüft an öffentlichen Ergebnissen aus dem Kraftdreikampf von OpenPowerlifting. Sie zeigen, wo eine Übung auf dieser Skala steht. Sie reihen dich nicht gegen andere Menschen ein."
+        ]
+      },
+      {
+        "title": "Warum Geschlecht und Übung die Zahlen ändern",
+        "body": [
+          "Der Maßstab für eine Übung hängt von ihrer Körperregion ab, und die Ergebnisse von Frauen liegen in den öffentlichen Daten im Verhältnis zum Körpergewicht niedriger. Deshalb nutzt die Stufe einer Frau für diese Region einen niedrigeren Maßstab.",
+          "Wähle Andere, wenn du die Antwort nicht auf einer Skala willst. Dann werden die Männer- und die Frauenskala gezeigt, und bei abweichender Einstufung wird ein Bereich angegeben."
+        ]
+      },
+      {
+        "title": "Kurzhantelübungen",
+        "body": [
+          "Kurzhantelübungen werden pro Hand bewertet, weil sowohl der Maßstab als auch das erfasste Gewicht pro Hand gelten. Gib das Gewicht einer Kurzhantel ein, nicht das Paar."
+        ]
+      }
+    ],
+    "sources": {
+      "openpowerlifting": "OpenPowerlifting, öffentliche Ergebnisse im Kraftdreikampf"
+    }
+  }
+}

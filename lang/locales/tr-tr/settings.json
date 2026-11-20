@@ -1,0 +1,690 @@
+{
+  "settings": {
+    "title": "Ayarlar",
+    "groups": {
+      "you": "Profil",
+      "app": "Uygulama",
+      "training": "Antrenman",
+      "nutritionHealth": "Beslenme ve sağlık",
+      "ai": "Yapay zekâ",
+      "data": "Veri",
+      "about": "Hakkında"
+    },
+    "basicSettings": {
+      "title": "Profil ve birimler",
+      "subtitle": "Profil, birimler ve tercihler",
+      "localization": "Yerelleştirme",
+      "language": "Dil",
+      "languageSubtitle": "Tercih ettiğin dili seç",
+      "integrations": "Entegrasyonlar",
+      "connectHealthData": "Sağlık verilerini bağla",
+      "readHealthData": "Sağlık verilerini oku",
+      "writeHealthData": "Sağlık verilerine yaz",
+      "healthData": "Sağlık verileri",
+      "healthDataSubtitle": "Antrenmanlarını ve vücut ölçülerini senkronize et",
+      "healthDataPrivacy": "Sağlık verilerin yalnızca cihazında saklanır.",
+      "syncNow": "Şimdi senkronize et",
+      "syncing": "Senkronize ediliyor...",
+      "foodSearchSource": "Besin arama kaynağı",
+      "foodSearchBoth": "Tümü",
+      "foodSearchBothDescription": "Open Food Facts, USDA ve Musclog'da ara",
+      "foodSearchOpenFoodFacts": "Open Food Facts",
+      "foodSearchOpenFoodFactsDescription": "Açık kaynaklı besin veritabanı",
+      "foodSearchUSDA": "USDA",
+      "foodSearchUSDADescription": "ABD Tarım Bakanlığı veritabanı",
+      "foodSearchMusclog": "Musclog",
+      "foodSearchMusclogDescription": "Musclog barkod veritabanı (yalnızca barkod taraması)",
+      "foodSearchNone": "Hiçbiri",
+      "foodSearchNoneDescription": "Yalnızca yerel veritabanında ara",
+      "energyUnit": "Enerji birimi",
+      "energyUnitKcal": "Kilokalori",
+      "energyUnitKj": "Kilojul",
+      "energyUnitHint": "Enerjinin nasıl gösterildiğini ve girildiğini değiştirir. Verilerin kilokalori olarak saklanmaya devam eder."
+    },
+    "migration": {
+      "title": "Veri geçişi",
+      "description": "Eski veritabanındaki verileri yeni WatermelonDB'ye aktar",
+      "checkMigrationData": "Geçiş verilerini kontrol et",
+      "migrating": "Geçiş yapılıyor...",
+      "importData": "Verileri içe aktar",
+      "summary": "Geçiş özeti:",
+      "records": "kayıt",
+      "migrated": "aktarıldı",
+      "tablesFound": "Bulunan tablolar:",
+      "successful": "Geçiş tamamlandı",
+      "failed": "Geçiş başarısız",
+      "error": "Hata: {{error}}",
+      "clickToCheck": "Neyin aktarılabileceğini görmek için Geçiş verilerini kontrol et'e dokun",
+      "resetMigration": "Geçişi sıfırla",
+      "summaryItems": {
+        "fitnessGoals": "Fitness hedefleri",
+        "userMetrics": "Kullanıcı ölçümleri",
+        "users": "Kullanıcılar",
+        "foods": "Besinler",
+        "nutritionLogs": "Beslenme kayıtları",
+        "exercises": "Egzersizler",
+        "workouts": "Antrenmanlar",
+        "workoutLogs": "Antrenman kayıtları",
+        "templateSets": "Şablon setleri",
+        "logSets": "Kayıt setleri"
+      }
+    },
+    "advancedSettings": {
+      "title": "Yedekler ve veriler",
+      "subtitle": "Veri dışa aktarma, entegrasyonlar, önbellek",
+      "dataPortability": "Veri taşınabilirliği",
+      "exportFitnessData": "Fitness verilerini dışa aktar",
+      "exportFitnessDataSubtitle": "Tam yedeği indir (JSON)",
+      "importFitnessData": "Fitness verilerini içe aktar",
+      "importFitnessDataSubtitle": "Bir yedek dosyasından geri yükle",
+      "manageLocalBackups": "Yerel yedekleri yönet",
+      "manageLocalBackupsSubtitle": "Otomatik güvenlik yedeklerini görüntüle ve geri yükle",
+      "localBackups": {
+        "title": "Yerel yedekler",
+        "noBackups": "Yerel yedek bulunamadı",
+        "noBackupsDesc": "Veritabanında yıkıcı değişikliklerden önce otomatik yedekler oluşturulur",
+        "backupFromTo": "Geçiş: v{{from}} → v{{to}}",
+        "preRestoreBackup": "Veritabanı geri yüklemeden önce",
+        "exerciseCatalogueBackup": "Egzersiz kataloğu güncellemesinden önce",
+        "automaticBackup": "Otomatik veritabanı yedeği",
+        "backupDate": "Oluşturulma: {{date}}",
+        "export": "Yedeği dışa aktar",
+        "exportDisabled": "Dışa aktarma devre dışı - şifreleme gerekli veya veritabanı kullanılamıyor",
+        "restore": "Veritabanını geri yükle",
+        "delete": "Yedeği sil",
+        "deleteConfirmTitle": "Yedek silinsin mi?",
+        "deleteConfirmMessage": "Bu yedek dosyasını silmek istediğinden emin misin? Bu işlem geri alınamaz.",
+        "restoreConfirmTitle": "Veritabanı geri yüklensin mi?",
+        "restoreConfirmMessage": "Bu işlem tüm mevcut verilerin yerine bu yedekteki verileri koyar. Geri yükleme bittikten sonra uygulama yeniden yüklenecek.",
+        "restoreSuccess": "Veritabanı başarıyla geri yüklendi",
+        "cycleEncryptionBackup": "Döngü verileri şifrelenmeden önce"
+      },
+      "confirmExport": "Dışa aktarmayı onayla",
+      "confirmImport": "İçe aktarmayı onayla",
+      "exportConfirmationSubtitle": "İstersen dosyayı bir parolayla koruyabilirsin. Şifresiz dışa aktarmak için boş bırak.",
+      "exportConfirmationSubtitleRequired": "Şifreleme parolası gerekli. Yedeğini korumak için bir parola gir.",
+      "importConfirmationSubtitle": "Yedek şifrelenmişse, dışa aktarırken kullandığın parolayı gir.",
+      "enterEncryptionPhrase": "Şifreleme parolası (isteğe bağlı)",
+      "enterEncryptionPhraseRequired": "Şifreleme parolası (zorunlu)",
+      "enterDecryptionPhrase": "Şifre çözme parolası (isteğe bağlı)",
+      "encryptionPhrasePlaceholder": "Şifresiz dışa aktarmak için boş bırak",
+      "encryptionPhrasePlaceholderRequired": "Yedeği şifrelemek için bir parola gir",
+      "decryptionPhrasePlaceholder": "Yedek şifrelenmişse parolayı gir",
+      "encryptionPhraseRequired": "Dışa aktarmak için şifreleme parolası gerekli. Lütfen bir tane gir.",
+      "includeDeletedRecords": "Silinmiş kayıtları dahil et",
+      "requireExportEncryption": "Dışa aktarmada şifreleme zorunlu olsun",
+      "requireExportEncryptionSubtitle": "Verileri dışa aktarırken her zaman bir şifreleme parolası iste",
+      "disableEncryptionConfirmTitle": "Şifreleme zorunluluğu kapatılsın mı?",
+      "disableEncryptionConfirmSubtitle": "Bu, veri dışa aktarmalarını daha az güvenli hale getirir.",
+      "disableEncryptionWarning": "Bu ayarı kapatırsan verilerini şifresiz dışa aktarabilirsin. Dışa aktarma dosyası ele geçirilir ya da yetkisiz kişiler erişirse verilerin savunmasız kalır.",
+      "disableEncryptionInputLabel": "Onaylamak için aşağıya parolayı yaz",
+      "disableEncryptionConfirmPhrase": "verilerimi güvensiz yap",
+      "disableEncryptionHint": "Devam etmek için yukarıdaki parolayı birebir yazmalısın.",
+      "biometricAuthPrompt": "Şifreleme zorunluluğunu kapatmak için kimlik doğrula",
+      "exportFailedMessage": "Dışa aktarma sırasında bir hata oluştu. Lütfen tekrar dene.",
+      "importFailedMessage": "İçe aktarma sırasında bir hata oluştu. Lütfen dosyayı kontrol edip tekrar dene.",
+      "importSuccessMessage": "Veriler başarıyla içe aktarıldı",
+      "privacyDiagnostics": "Gizlilik ve tanılama",
+      "anonymousBugReport": "Anonim hata raporu",
+      "anonymousBugReportSubtitle": "Çökme günlükleri göndererek Musclog'u geliştirmeye yardımcı ol",
+      "reminders": "Hatırlatıcılar",
+      "dailyMoodPrompt": "Günlük ruh hali istemi",
+      "dailyMoodPromptSubtitle": "Bugün henüz kaydedilmediyse ana ekranda bir ruh hali seçici göster",
+      "dailyWaterPrompt": "Günlük su istemi",
+      "dailyWaterPromptSubtitle": "Saat 20:00'den sonra ana ekranda gece su hatırlatıcısı göster",
+      "dailySupplementPrompt": "Günlük takviye istemi",
+      "dailySupplementPromptSubtitle": "Ana ekranda günlük takviye hatırlatıcıları göster",
+      "manageSupplements": "Takviyeleri yönet",
+      "manageSupplementsSubtitle": "Takviye ekle ve hangilerinin hatırlatıcı tetikleyeceğini seç",
+      "manageSupplementsEmpty": "Henüz takviye eklenmedi.",
+      "supplementNameLabel": "Takviye adı",
+      "supplementNamePlaceholder": "ör. Kreatin",
+      "addSupplement": "Takviye ekle",
+      "addSupplementDescription": "Takip etmek için yeni bir takviye oluştur",
+      "editSupplement": "Takviyeyi düzenle",
+      "editSupplementDescription": "Adı veya hatırlatıcı ayarlarını değiştir",
+      "deleteSupplementDescription": "Bu takviyeyi kalıcı olarak kaldır",
+      "alwaysAllowFoodEditing": "Besin düzenlemeye her zaman izin ver",
+      "alwaysAllowFoodEditingSubtitle": "API'den gelen besin bilgileri de düzenlenebilir olsun",
+      "showWeightPrediction": "Kilo tahminini göster",
+      "showWeightPredictionSubtitle": "4 gündür kilo kaydedilmediğinde profil ekranında tahmini bir kilo kartı göster",
+      "intuitiveEatingMode": "Sezgisel takip modu",
+      "intuitiveEatingModeSubtitle": "Günlük özet kartında takip edilen miktarları gizle, tam değerler yerine ?? göster",
+      "nutrition": "Beslenme",
+      "disableMinimumCalories": "Minimum kalori tabanını kapat",
+      "disableMinimumCaloriesSubtitle": "Kalori hedeflerinin varsayılan 1200 / 1500 kcal minimumlarının altına inmesine izin ver",
+      "useBfForCalculations": "Hesaplamalarda vücut yağını kullan",
+      "useBfForCalculationsSubtitle": "Kalori ve makro hesaplamalarında vücut yağı yüzdesini kullan",
+      "includeFiberInCarbs": "Karbonhidrat lifi içerir",
+      "includeFiberInCarbsSubtitle": "Besinleri elle girerken karbonhidrat alanını toplam karbonhidrat (lif dahil, ABD etiketleri) olarak değerlendir. Etiketlerin net karbonhidrat gösteriyorsa (lif hariç, AB etiketleri) kapat.",
+      "enableFastedDay": "Oruç günleri",
+      "enableFastedDaySubtitle": "Hiç yemediğin günleri oruç günü olarak işaretlemeni sağlar. Oruç günü TDEE, ortalamalar ve serilerde gerçek bir 0 kalorili gün sayılır. İşaretlemediğin boş günler atlanır, böylece unutulan bir kayıt istatistiklerini düşürmez.",
+      "disableMinimumCaloriesConfirmTitle": "Minimum kalori tabanı kapatılsın mı?",
+      "disableMinimumCaloriesConfirmMessage": "Bu, Musclog'un varsayılan minimum kalori güvencelerini kaldırır ve hedeflerin 0 kcal'ye kadar düşmesine izin verir.",
+      "disableMinimumCaloriesWarning": "Minimum kalori ihtiyacının altına inmek önerilmez ve güvensiz olabilir. Bunu açarak, kendi sorumluluğunda hareket ettiğini, Musclog'un bu minimumların altına inilmesini önermediğini ve devam etmeden önce riskleri anladığını onaylamış olursun.",
+      "disableMinimumCaloriesConfirmButton": "Anlıyorum",
+      "charts": "Grafikler",
+      "chartTooltipLeft": "İpucu solda",
+      "chartTooltipLeftSubtitle": "Grafik veri ipuçlarını sağ üst yerine sol üstte göster",
+      "workouts": "Antrenmanlar",
+      "progressionModeWeightFirst": "Önce ağırlık ilerlemesi",
+      "progressionModeWeightFirstSubtitle": "RIR yüksekken tekrar eklemek yerine doğrudan ağırlığı artır",
+      "enableAdvancedDataManagement": "Gelişmiş veri yönetimini aç",
+      "enableAdvancedDataManagementSubtitle": "Uygulama verilerine ham erişime izin ver (yalnızca ileri düzey kullanıcılar için)",
+      "enableAdvancedDataManagementConfirmTitle": "Yalnızca ileri düzey kullanıcılar",
+      "enableAdvancedDataManagementConfirmMessage": "Bu yalnızca ileri düzey kullanıcılar içindir. Buradaki verilerle oynamak uygulamanı onarılamayacak şekilde çökertebilir. Yalnızca ne yaptığını biliyorsan kullan.",
+      "dataManagement": "Veri yönetimi",
+      "manageFoodData": "Besin verilerini yönet",
+      "manageFoodDataSubtitle": "Özel besin kayıtlarını görüntüle, düzenle veya sil",
+      "manageNutritionLogsData": "Beslenme kayıtlarını yönet",
+      "manageNutritionLogsDataSubtitle": "Günlük beslenme kayıtlarını incele ve değiştir",
+      "manageMealsData": "Öğün verilerini yönet",
+      "manageMealsDataSubtitle": "Kayıtlı öğün yapılandırmalarını düzenle",
+      "managePortionsData": "Porsiyon verilerini yönet",
+      "managePortionsDataSubtitle": "Çeşitli besinler için özel porsiyon boyutlarını düzenle",
+      "manageWorkoutsData": "Antrenman verilerini yönet",
+      "manageWorkoutsDataSubtitle": "Kişisel antrenman rutinlerini düzenle veya kaldır",
+      "manageWorkoutsLogData": "Antrenman kayıt verilerini yönet",
+      "manageWorkoutsLogDataSubtitle": "Geçmiş antrenman seanslarına eriş ve değiştir",
+      "manageMetricsData": "Ölçüm verilerini yönet",
+      "manageMetricsDataSubtitle": "Vücut ölçülerini ve ilerlemeni takip et ve düzenle",
+      "manageExercisesData": "Egzersiz verilerini yönet",
+      "manageExercisesDataSubtitle": "Özel egzersiz listeni ve ayrıntılarını düzenle",
+      "manageGoalsData": "Beslenme hedeflerini yönet",
+      "manageGoalsDataSubtitle": "Beslenme ve vücut kompozisyonu hedeflerinin geçmişini görüntüle ve yönet",
+      "manageCheckinsData": "Beslenme kontrolleri",
+      "manageCheckinsDataSubtitle": "İlerleme kontrollerini görüntüle ve yönet",
+      "clearAppData": "Uygulama verilerini temizle",
+      "clearAppDataSubtitle": "Veritabanı kayıtlarını, ayarları, önbelleğe alınmış dosyaları ve kayıtlı uygulama medyasını kalıcı olarak sil",
+      "clearAppDataConfirmTitle": "Tüm uygulama verileri silinsin mi?",
+      "clearAppDataConfirmMessage": "Bu işlem antrenmanlarını, beslenme kayıtlarını, hedeflerini, ölçümlerini, sohbet geçmişini, ayarlarını, yerel yedeklerini, önbelleğe alınmış dosyalarını ve kayıtlı görselleri bu cihazdan siler.",
+      "clearAppDataWarning": "Bu işlem geri alınamaz. Harici bir yedeğin yoksa bu verileri kurtarmanın bir yolu yok.",
+      "clearAppDataConfirmButton": "Her şeyi sil",
+      "clearAppDataAuthPrompt": "Tüm uygulama verilerini silmek için kimlik doğrula",
+      "clearAppDataFailedMessage": "Uygulama verileri temizlenirken bir hata oluştu. Lütfen tekrar dene.",
+      "openSettingsFailedMessage": "Uygulama ayarları açılamadı. Lütfen manuel olarak aç.",
+      "dangerZone": "Tehlikeli bölge",
+      "opticalTransfer": "Optik aktarım",
+      "opticalTransferSubtitle": "Verilerini ışıkla başka bir telefona taşı",
+      "storage": {
+        "title": "Depolama",
+        "total": "Musclog'un kullandığı",
+        "units": {
+          "b": "B",
+          "kb": "KB",
+          "mb": "MB",
+          "gb": "GB"
+        },
+        "categories": {
+          "database": {
+            "name": "Veritabanı",
+            "description": "Kayıtların, hedeflerin ve ayarların"
+          },
+          "photos": {
+            "name": "Fotoğrafların",
+            "description": "Besin, öğün ve özel egzersizlerin fotoğrafları"
+          },
+          "sensorRecordings": {
+            "name": "Sensör kayıtları",
+            "description": "Bağlı antrenman sensörlerinden kaydedilen veriler"
+          },
+          "recoveryPoints": {
+            "name": "Güvenlik yedekleri",
+            "description": "Güncellemelerden ve geri yüklemelerden önce otomatik alınan yedekler. Bunları Yerel yedekler bölümünden yönet"
+          },
+          "exerciseImages": {
+            "name": "Egzersiz görselleri",
+            "description": "İndirilen gösterim görselleri. Gerektiğinde yeniden indirilir"
+          },
+          "temporary": {
+            "name": "Geçici dosyalar",
+            "description": "Dışa aktarma, paylaşma ve fotoğraf düzenlemeden kalanlar"
+          }
+        },
+        "clear": "Temizle",
+        "clearTitle": "{{name}} temizlensin mi?",
+        "clearMessage": {
+          "exerciseImages": "Görseller, bir egzersiz bir dahaki sefere gösterildiğinde yeniden indirilir. Verilerin etkilenmez.",
+          "temporary": "Bir saatten eski artık dosyalar kaldırılır. Verilerin ve güvenlik yedeklerin etkilenmez."
+        },
+        "freed": "{{size}} boşaltıldı",
+        "nothingToClear": "Temizlenecek bir şey yok",
+        "clearFailed": "Depolama temizlenemedi",
+        "unavailable": "Depolama şu an okunamıyor.",
+        "retry": "Tekrar dene"
+      },
+      "storageSubtitle": "Musclog'un bu cihazda neleri sakladığını gör ve yer aç"
+    },
+    "chatMessages": {
+      "title": "Sohbet mesajları",
+      "subtitle": "Konuşma geçmişini görüntüle ve düzenle"
+    },
+    "aiSettings": {
+      "title": "Yapay zekâ ayarları",
+      "save": "Kaydet",
+      "saved": "Kaydedildi",
+      "googleGeminiIntegration": "Google Gemini entegrasyonu",
+      "googleGeminiApiKey": "Google Gemini API anahtarı",
+      "apiKeyPlaceholder": "API anahtarını buraya yapıştır",
+      "apiKeyHelper": "Google Gemini'yi kullanmak için bir Gemini API anahtarı gerekir. Google AI Studio'dan alabilirsin.",
+      "claudeIntegration": "Claude entegrasyonu",
+      "claudeApiKey": "Claude API anahtarı",
+      "enableClaude": "Claude'u etkinleştir",
+      "claudeModel": "Claude modeli",
+      "selectClaudeModel": "Claude modelini seç",
+      "selectClaudeModelSubtitle": "Tüm yapay zekâ özelliklerinin kullanacağı modeli seç",
+      "openAiIntegration": "OpenAI entegrasyonu",
+      "openAiApiKey": "OpenAI API anahtarı",
+      "insightsAlerts": "Öneriler ve uyarılar",
+      "enableGoogleGemini": "Google Gemini'yi etkinleştir",
+      "dailyNutritionInsights": "Günlük beslenme önerileri",
+      "dailyNutritionInsightsSubtitle": "Kayıtlara dayalı sabah özeti",
+      "workoutInsights": "Antrenman önerileri",
+      "workoutInsightsSubtitle": "Antrenman sonrası analiz",
+      "enableOpenAi": "OpenAI'yi etkinleştir",
+      "localLlmIntegration": "Yerel LLM entegrasyonu",
+      "enableLocalLlm": "Yerel LLM'yi etkinleştir",
+      "localLlmBaseUrl": "Yerel LLM temel adresi",
+      "localLlmModel": "Yerel LLM modeli",
+      "localLlmApiKey": "Yerel LLM API anahtarı (isteğe bağlı)",
+      "localLlmApiKeyHelper": "Çoğu yerel LLM API anahtarı gerektirmez, ama istersen bir anahtar ayarlayabilirsin.",
+      "localLlmHelp": "Yardım mı lazım? Resmi rehbere bak",
+      "geminiModel": "Gemini modeli",
+      "openAiModel": "OpenAI modeli",
+      "selectModel": "Bir model seç",
+      "selectGeminiModel": "Gemini modelini seç",
+      "selectGeminiModelSubtitle": "Tüm yapay zekâ özelliklerinin kullanacağı modeli seç",
+      "selectOpenAiModel": "OpenAI modelini seç",
+      "selectOpenAiModelSubtitle": "Tüm yapay zekâ özelliklerinin kullanacağı modeli seç",
+      "subtitle": "Bu uygulamada kullanılan tüm yapay zekânın ayarları",
+      "imageProcessing": "Görsel işleme",
+      "useOcrBeforeAi": "Yapay zekâya göndermeden önce OCR kullan",
+      "useOcrBeforeAiSubtitle": "Görselleri yerelde OCR ile işle ve bunun yerine metin gönder",
+      "useOcrBeforeAiOnDeviceSubtitle": "Apple Intelligence için gerekli. OCR, göndermeden önce görselleri metne çevirir.",
+      "sendFoundationFoodsToLlm": "Temel besinleri yapay zekâya gönder",
+      "sendFoundationFoodsToLlmSubtitle": "Temel besinler veritabanını kullanarak malzeme eşleştirmesini iyileştir",
+      "getOpenAiKey": "OpenAI anahtarı al",
+      "customPrompts": "Özel sistem istemleri",
+      "customPromptsSubtitle": "Tüm yapay zekâ özelliklerine kendi talimatlarını ekle",
+      "manageCustomPrompts": "Özel istemleri yönet",
+      "addPrompt": "İstem ekle",
+      "editPrompt": "İstemi düzenle",
+      "promptName": "İstem adı",
+      "promptContent": "İstem içeriği",
+      "promptIsActive": "Etkin",
+      "promptNamePlaceholder": "ör. Katı Antrenör",
+      "promptContentPlaceholder": "Özel talimatlarını buraya yaz...",
+      "deletePrompt": "İstemi sil",
+      "deletePromptConfirm": "Bu istemi silmek istediğinden emin misin?",
+      "noPrompts": "Henüz özel istem eklenmedi.",
+      "promptContext": "Bağlam",
+      "promptContextGeneral": "Genel",
+      "promptContextNutrition": "Beslenme",
+      "promptContextExercise": "Egzersiz",
+      "memorySettings": "Bellek ayarları",
+      "useThinkingMode": "Düşünme modunu kullan",
+      "useThinkingModeSubtitle": "Desteklendiğinde yapay zekâ sağlayıcılarının daha derin akıl yürütmesine izin ver. Daha fazla token kullanır ve maliyeti artırabilir.",
+      "maxAiMemories": "En fazla yapay zekâ belleği",
+      "maxAiMemoriesSubtitle": "Konuşmalarda hatırlanacak önceki mesaj sayısı",
+      "nutritionLogHistoryDays": "Yapay zekâya gönderilen beslenme kaydı geçmişi",
+      "nutritionLogHistoryDaysSubtitle": "Bağlam için yapay zekâya kaç günlük geçmiş beslenme kaydı gönderilsin. Daha çok gün göndermek daha fazla token kullanır.",
+      "nutritionLogHistoryDaysNone": "Yok",
+      "nutritionLogHistoryDays7": "7 gün",
+      "nutritionLogHistoryDays30": "30 gün",
+      "nutritionLogHistoryDays60": "60 gün",
+      "nutritionLogHistoryDays90": "90 gün",
+      "nutritionLogHistoryDaysNoneDescription": "Yapay zekâya beslenme kaydı geçmişi gönderme",
+      "nutritionLogHistoryDaysOptionDescription": "Yapay zekâya son {{days}} günün beslenme kayıtlarını gönder",
+      "workoutHistoryDays": "Yapay zekâya gönderilen antrenman geçmişi",
+      "workoutHistoryDaysSubtitle": "Fitness modunda sohbet ederken yapay zekâya kaç günlük geçmiş antrenman gönderilsin. Daha çok gün göndermek daha fazla token kullanır.",
+      "workoutHistoryDaysNone": "Yok",
+      "workoutHistoryDays7": "7 gün",
+      "workoutHistoryDays30": "30 gün",
+      "workoutHistoryDays60": "60 gün",
+      "workoutHistoryDays90": "90 gün",
+      "workoutHistoryDaysNoneDescription": "Yapay zekâya antrenman geçmişi gönderme",
+      "workoutHistoryDaysOptionDescription": "Yapay zekâya son {{days}} günün antrenmanlarını gönder",
+      "onDeviceAi": {
+        "sectionTitle": "Apple Intelligence",
+        "toggle": "Apple Intelligence'ı kullan",
+        "toggleSubtitle": "Yapay zekâ isteklerini Apple Foundation Models ile cihazda işle. API anahtarı gerekmez.",
+        "toggleSubtitleNotReady": "Apple Intelligence bu cihazda kullanılamıyor. iOS 26 ve etkin Apple Intelligence ile iPhone 15 Pro veya üstü gerekir.",
+        "privacyNote": "Verilerin cihazında kalır ve asla harici sunuculara gönderilmez.",
+        "foundationFoodsDisabled": "Bellek tasarrufu için cihaz üstü yapay zekâda temel besin ekleme kapalı."
+      },
+      "musclogFreeTier": {
+        "sectionTitle": "Musclog ücretsiz katmanı",
+        "toggle": "Musclog ücretsiz katman LLM'sini kullan",
+        "toggleSubtitle": "Google Gemini kullanır. Günlük istek sınırı uygulanır.",
+        "activeNote": "Ücretsiz katman etkin. Kendi API anahtarların kullanılmıyor.",
+        "consentTitle": "Veriler Google Gemini ile paylaşılsın mı?",
+        "consentBody": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler (ör. antrenmanların, öğünlerin, vücut ölçülerin veya sohbet mesajların) yanıtı yazması için Musclog'un sunucuları üzerinden Google'ın Gemini yapay zekâsına gönderilir. Bir özelliği kullanana kadar hiçbir şey gönderilmez. Ücretsiz katmanın günlük istek sayısı sınırlıdır.",
+        "consentConfirm": "Kabul et ve etkinleştir"
+      },
+      "testKey": "Anahtarı test et",
+      "testingKey": "Test ediliyor…"
+    },
+    "visualSettings": {
+      "title": "Görünüm ve ana ekran",
+      "subtitle": "Uygulama arayüzünü özelleştir",
+      "sectionTitle": "Gezinme çubuğu",
+      "sectionSubtitle": "Alt çubukta hangi kısayolların görüneceğini seç. Ana ekran ve Kamera her zaman sabittir.",
+      "slot1Label": "1. yuva (kameranın solu)",
+      "slot2Label": "2. yuva (kameranın sağı)",
+      "slot3Label": "3. yuva (en sağda)",
+      "selectItem": "Bu yuva için bir kısayol seç",
+      "currentlyInSlot": "Şu an yuva {{slot}} içinde (yer değiştirecek)",
+      "navItems": {
+        "workouts": "Antrenmanlar",
+        "food": "Besin",
+        "profile": "Profil",
+        "coach": "Koç",
+        "cycle": "Döngü",
+        "settings": "Ayarlar",
+        "progress": "İlerleme",
+        "checkin": "Kontrol",
+        "notes": "Notlar"
+      }
+    },
+    "nutritionDisplay": {
+      "sectionTitle": "Beslenme görünümü",
+      "sectionSubtitle": "Beslenme özetinde hangi makroların gösterileceğini seç.",
+      "label": "Görünen makrolar",
+      "popupTitle": "Görünen makrolar",
+      "popupSubtitle": "Hangi makroların gösterileceğini aç veya kapat",
+      "allSelected": "Tüm makrolar",
+      "selected": "{{count}} makro",
+      "carbs": "Karbonhidrat",
+      "protein": "Protein",
+      "fats": "Yağ",
+      "fiber": "Lif",
+      "alcohol": "Alkol"
+    },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Maskotun nasıl görüneceğini seç.",
+      "show": {
+        "title": "Loggy'yi göster",
+        "description": "Maskot karşılama, boş ve kutlama ekranlarında görünür. Her yerde gizlemek için kapat. Yapay zekâ koçun resmini korur."
+      },
+      "animated": {
+        "title": "Hareketli Loggy",
+        "description": "Loggy ortaya çıktığında biraz hareket eder. Her zaman hareketsiz görmek için kapat."
+      }
+    },
+    "foodDiary": {
+      "sectionTitle": "Besin günlüğü",
+      "sectionSubtitle": "Besin günlüğünün düzenini ve gruplamasını seç.",
+      "compact": {
+        "title": "Kompakt görünüm",
+        "description": "Boş öğünleri gizle ve girişleri daha yoğun göster. Makroları görmek için bir girişe dokun."
+      },
+      "grouping": {
+        "popupTitle": "Besinleri şuna göre grupla",
+        "popupSubtitle": "Yalnızca günlüğün gösterimini değiştirir, öğünlerini ve beslenme verilerini değil.",
+        "options": {
+          "categories": {
+            "label": "Öğün kategorileri",
+            "description": "Kahvaltı, öğle, akşam, atıştırmalık ve diğer."
+          },
+          "time": {
+            "label": "Gün saati",
+            "description": "Yediğin sıraya göre saatlik bölümler."
+          }
+        }
+      }
+    },
+    "notificationsSettings": {
+      "title": "Bildirimler",
+      "subtitle": "Antrenman, beslenme ve döngü uyarıları",
+      "mainToggle": "Bildirimleri etkinleştir",
+      "mainToggleSubtitle": "Tüm uygulama bildirimlerini aç veya kapat",
+      "workoutReminders": "Antrenman hatırlatıcıları",
+      "workoutRemindersSubtitle": "Planlı antrenman günlerinde bildirim al",
+      "activeWorkout": "Aktif antrenman",
+      "activeWorkoutSubtitle": "Zamanlayıcıyı ve egzersizi kalıcı bir bildirimde göster",
+      "nutritionOverview": "Günlük beslenme özeti",
+      "nutritionOverviewSubtitle": "Günlük alımının ve hedeflerinin özeti",
+      "menstrualCycle": "Adet döngüsü uyarıları",
+      "menstrualCycleSubtitle": "Adet tahminleri ve doğurgan pencere uyarıları",
+      "restTimer": "Dinlenme zamanlayıcısı uyarıları",
+      "restTimerSubtitle": "Dinlenme süren bittiğinde bildirim al",
+      "workoutDuration": "Uzun antrenman uyarısı",
+      "workoutDurationSubtitle": "Seansın 5 saati geçerse uyar",
+      "restTimerRepeat": "Dinlenme uyarısını tekrarla",
+      "restTimerRepeatSubtitle": "Bir sonraki seti başlatmadıysam bir dakika sonra bir kez daha hatırlat",
+      "unfinishedWorkout": "Tamamlanmamış antrenman hatırlatıcısı",
+      "unfinishedWorkoutSubtitle": "Bitirmeyi unuttuysam son setimden 45 dakika sonra dürt",
+      "goalAtRisk": "Haftalık hedef risk altında",
+      "goalAtRiskSubtitle": "Haftalık antrenman hedefim aksamaya başlayınca uyar",
+      "weeklyReview": "Haftalık değerlendirme",
+      "weeklyReviewSubtitle": "Haftalık değerlendirme hazır olduğunda hatırlatma",
+      "lockScreen": "Kilit ekranı ayrıntıları",
+      "lockScreenOptions": {
+        "full": "Tüm ayrıntılar",
+        "minimal": "Minimal"
+      },
+      "sections": {
+        "session": "Antrenman sırasında",
+        "plan": "Antrenman planın",
+        "reports": "Raporlar ve besin",
+        "quiet": "Sessiz saatler ve duraklatma",
+        "delivery": "Teslimat"
+      },
+      "accountability": {
+        "structured": "Yapılandırılmış",
+        "gentle": "Nazik",
+        "flexible": "Esnek"
+      },
+      "accountabilityHints": {
+        "structured": "Planlı antrenman günlerimde hatırlat.",
+        "gentle": "Yalnızca haftalık hedefim aksadığında dürt.",
+        "flexible": "Asla dürtme. Sadece sıradakini göster."
+      },
+      "reminderLead": "Antrenmandan önce hatırlat",
+      "leadOnTime": "Tam zamanında",
+      "leadMinutes": "{{minutes}} dk",
+      "quietHours": "Sessiz saatler",
+      "quietHoursSubtitle": "Bu aralıkta hatırlatıcı yok",
+      "quietExempt": "Dinlenme uyarıları ve aktif antrenmanın asla sessize alınmaz.",
+      "quietFrom": "Başlangıç",
+      "quietUntil": "Bitiş",
+      "pause": "Hatırlatıcıları duraklat",
+      "pauseOptions": {
+        "off": "Kapalı",
+        "days3": "3 gün",
+        "week": "1 hafta"
+      },
+      "deliveryStatus": "İzin: {{permission}} · {{pending}} planlandı",
+      "permission": {
+        "granted": "izinli",
+        "denied": "engellenmiş",
+        "undetermined": "henüz sorulmadı",
+        "unsupported": "desteklenmiyor"
+      },
+      "testAlert": "Test dinlenme uyarısı gönder",
+      "openSystemSettings": "Sistem bildirim ayarlarını aç",
+      "updateInterval": "Antrenman saatini şu sıklıkta güncelle",
+      "updateIntervalOption": "{{seconds}} sn"
+    },
+    "supportProject": {
+      "title": "Projeyi destekle"
+    },
+    "notifications": "Bildirimler",
+    "termsOfService": "Kullanım koşulları",
+    "privacyPolicy": "Gizlilik politikası",
+    "appBehaviorSettings": {
+      "title": "Takip tercihleri",
+      "subtitle": "Antrenman, beslenme ve grafik tercihleri"
+    },
+    "bleDevices": {
+      "title": "Sensörleri yönet",
+      "subtitle": "WitMotion BLE sensörlerini kaydet ve yeniden bağlan",
+      "savedSensors": "Kayıtlı sensörler",
+      "noSavedSensors": "Henüz kayıtlı sensör yok",
+      "noSavedSensorsHint": "Bir sensör bulup kaydetmek için aşağıda tara",
+      "scanButton": "Sensörleri tara",
+      "stopScanButton": "Taramayı durdur",
+      "scanning": "Taranıyor...",
+      "foundSensors": "Bulunan sensörler",
+      "saveSensor": "Kaydet",
+      "connectButton": "Bağlan",
+      "disconnectButton": "Bağlantıyı kes",
+      "connecting": "Bağlanıyor...",
+      "connected": "Bağlı",
+      "saved": "Kaydedildi",
+      "renameButton": "Yeniden adlandır",
+      "renameTitle": "Sensörü yeniden adlandır",
+      "removeButton": "Kaldır",
+      "removeConfirm": "{{name}} kayıtlı sensörlerden kaldırılsın mı?",
+      "lastConnected": "Son bağlantı: {{time}}",
+      "neverConnected": "Hiç bağlanmadı",
+      "permissionDenied": "Bluetooth izni reddedildi. Sensör taramak için lütfen Bluetooth erişimine izin ver.",
+      "previewDataButton": "Veriyi önizle",
+      "previewTitle": "Sensör önizlemesi",
+      "previewAngle": "Açı",
+      "previewAccel": "İvme",
+      "previewGyro": "Jiroskop",
+      "previewWaiting": "Veri bekleniyor...",
+      "previewDisconnected": "Sensör bağlı değil",
+      "repsRecordingButton": "Tekrar kaydını aç",
+      "recordingSettings": "Kayıt ayarları",
+      "generateChartPayload": "Grafik verisi oluştur",
+      "generateChartPayloadSubtitle": "Her setten sonra grafik gösterimi için sinyal ve tekrar işaretleme verisini dahil et"
+    },
+    "homeActions": {
+      "sectionTitle": "Ana ekran eylemleri",
+      "sectionSubtitle": "Ana ekranındaki hızlı eylem düğmelerini seç.",
+      "popupTitle": "Ana ekran eylemleri",
+      "popupSubtitle": "{{min}} ile {{max}} arasında eylem seç",
+      "editActions": "Eylemleri düzenle",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "Seçtiğin sırayla görünürler.",
+      "hintAtMin": "Ana ekranında en az {{min}} tane olsun.",
+      "hintAtMax": "Bu en fazla sayı. Yenisini eklemek için birini kaldır."
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Ana ekran özet kartı",
+      "sectionSubtitle": "Ana ekranının en üstünde hangi kartın görüneceğini seç.",
+      "popupTitle": "Ana ekran özet kartı",
+      "popupSubtitle": "Gösterilecek bir kart seç",
+      "options": {
+        "daily_summary": {
+          "label": "Günlük özet",
+          "description": "Gün için kalori ve makrolar"
+        },
+        "weekly_streak": {
+          "label": "Haftalık seri",
+          "description": "Bu haftaki antrenmanlar ve takip serin"
+        }
+      }
+    },
+    "homeDailyStats": {
+      "showHomeSteps": {
+        "title": "Adımları göster",
+        "description": "Ana ekranda günlük adım sayını ve enerji dengeni göster."
+      }
+    },
+    "theme": {
+      "sectionTitle": "Görünüm",
+      "sectionSubtitle": "Musclog'un nasıl görüneceğini seç. Sistem, cihazının ayarını takip eder.",
+      "popupTitle": "Görünüm",
+      "popupSubtitle": "Bir tema seç",
+      "options": {
+        "system": {
+          "label": "Sistem",
+          "description": "Cihaz ayarını takip et"
+        },
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Zümrüt vurgulu koyu yüzeyler"
+        },
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Zümrüt vurgulu parlak yüzeyler"
+        },
+        "kinetic-shock": {
+          "label": "Kinetic Shock",
+          "description": "Pembe vurgulu koyu gül yüzeyler"
+        },
+        "kinetic-volt": {
+          "label": "Kinetic Volt",
+          "description": "Elektrik sarısı vurgulu sıcak koyu yüzeyler"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Frambuaz vurgulu yumuşak pembe yüzeyler"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Turuncu siper vurgulu koyu mor yüzeyler"
+        },
+        "kinetic-scope": {
+          "label": "Scope",
+          "description": "Ölçülü limon yeşili vurgulu neredeyse siyah yüzeyler"
+        }
+      },
+      "iconAppliesLater": "Uygulama simgesi, uygulamadan çıktığında değişecek."
+    },
+    "workoutSettings": {
+      "title": "Antrenman ayarları",
+      "subtitle": "Salonlar, plakalar ve kaçınılacak egzersizler"
+    },
+    "helpAndFeedback": {
+      "title": "Yardım ve geri bildirim",
+      "subtitle": "Hata bildir, özellik öner veya bizimle iletişime geç",
+      "reportBug": "Hata bildir",
+      "requestFeature": "Özellik iste",
+      "githubHint": "GitHub'ı açar (hesap gerekir). Sürüm ve cihaz otomatik doldurulur.",
+      "community": "Topluluğa katıl",
+      "communityHint": "Diğer Musclog kullanıcılarıyla sohbet et",
+      "email": "E-posta desteği",
+      "emailHint": "Hesap gerekmez. Mesaja sürüm ve cihaz bilgisi eklenir.",
+      "rate": "Musclog'u puanla",
+      "rateHint": "Google Play'de vereceğin puan, diğer insanların uygulamayı bulmasına yardımcı olur.",
+      "openFailed": "Bu bağlantı açılamadı."
+    },
+    "homeHeatmaps": {
+      "sectionTitle": "Ana ekran ısı haritaları",
+      "sectionSubtitle": "Ana ekranda son etkinliğinin takvimini göster.",
+      "popupTitle": "Ana ekran ısı haritaları",
+      "popupSubtitle": "Hangi ısı haritalarının gösterileceğini seç",
+      "options": {
+        "none": {
+          "label": "Kapalı",
+          "description": "Ana ekranda ısı haritası yok"
+        },
+        "workouts": {
+          "label": "Antrenmanlar",
+          "description": "Antrenman yaptığın günler"
+        },
+        "nutrition": {
+          "label": "Beslenme",
+          "description": "Öğün kaydettiğin günler"
+        },
+        "both": {
+          "label": "Antrenman ve beslenme",
+          "description": "İki ısı haritası da"
+        }
+      },
+      "layout": {
+        "popupTitle": "Isı haritası düzeni",
+        "popupSubtitle": "İki ısı haritası ana ekranda nasıl yer paylaşsın",
+        "options": {
+          "full": {
+            "label": "Tam genişlik",
+            "description": "Biri diğerinin üstünde"
+          },
+          "side_by_side": {
+            "label": "Yan yana",
+            "description": "Tek satırda iki kompakt kart"
+          },
+          "compact": {
+            "label": "Kompakt",
+            "description": "Son 30 gün, her biri ince bir satır"
+          }
+        }
+      }
+    }
+  }
+}

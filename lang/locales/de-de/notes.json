@@ -1,0 +1,49 @@
+{
+  "notes": {
+    "title": "Notizen",
+    "sections": {
+      "latest": "Neueste",
+      "earlier": "Früher"
+    },
+    "screenMenu": {
+      "title": "Notizen",
+      "subtitle": "Jetzt notieren, später erfassen",
+      "create": "Neue Notiz erstellen",
+      "createDescription": "Notiere, was du gekocht oder gegessen hast"
+    },
+    "noteMenu": {
+      "title": "Notizoptionen",
+      "edit": "Bearbeiten",
+      "editDescription": "Titel oder Text ändern",
+      "duplicate": "Duplizieren",
+      "duplicateDescription": "Oben in der Liste kopieren",
+      "track": "Erfassen",
+      "trackDescription": "An den Coach senden, um das Essen zu erfassen",
+      "delete": "Löschen",
+      "deleteDescription": "Diese Notiz dauerhaft entfernen"
+    },
+    "form": {
+      "createTitle": "Neue Notiz",
+      "editTitle": "Notiz bearbeiten",
+      "titleLabel": "Titel (optional)",
+      "titlePlaceholder": "z. B. Mittagessen vorbereiten",
+      "bodyLabel": "Notiz",
+      "bodyPlaceholder": "z. B. 70 g Brokkoli, 120 g Hähnchenbrust",
+      "bodyRequired": "Schreibe etwas, bevor du speicherst",
+      "submit": "Notiz speichern"
+    },
+    "deleteConfirm": {
+      "title": "Notiz löschen?",
+      "message": "Diese Notiz wird dauerhaft entfernt. Das kann nicht rückgängig gemacht werden.",
+      "confirm": "Löschen"
+    },
+    "createSuccess": "Notiz gespeichert",
+    "createError": "Notiz konnte nicht gespeichert werden",
+    "updateSuccess": "Notiz aktualisiert",
+    "updateError": "Notiz konnte nicht aktualisiert werden",
+    "duplicateSuccess": "Notiz dupliziert",
+    "duplicateError": "Notiz konnte nicht dupliziert werden",
+    "deleteSuccess": "Notiz gelöscht",
+    "deleteError": "Notiz konnte nicht gelöscht werden"
+  }
+}

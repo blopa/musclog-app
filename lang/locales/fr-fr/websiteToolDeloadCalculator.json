@@ -1,0 +1,86 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Calculateur de semaine de décharge",
+    "intro": "Saisis la charge de travail d'un exercice et ses séries, et obtiens la semaine de décharge : de combien alléger, combien de séries garder, à quel point pousser et sur combien de temps.",
+    "form": {
+      "weight": "Charge de travail",
+      "weightHint": "La charge que tu utilises pour tes séries de travail habituelles.",
+      "sets": "Séries de travail dans une semaine normale",
+      "setsHint": "Nombre entier, pour cet exercice seulement.",
+      "equipmentLabel": "Matériel",
+      "equipment": {
+        "barbell": "Barre",
+        "dumbbell": "Haltère",
+        "machine": "Machine ou câble"
+      }
+    },
+    "problems": {
+      "weight": "Saisis la charge de travail sous forme de nombre supérieur à 0 et au plus {{max}}.",
+      "sets": "Saisis les séries sous forme de nombre entier de 1 à {{max}}."
+    },
+    "results": {
+      "title": "Ta semaine de décharge",
+      "weight": "Charge",
+      "weightNote": "{{percent}} de moins que ta charge de travail, arrondie à une charge que tu peux régler. Garde tes répétitions habituelles.",
+      "sets": "Séries",
+      "setsValue_one": "{{sets}} série",
+      "setsValue_few": "{{sets}} séries",
+      "setsValue_many": "{{sets}} séries",
+      "setsValue_other": "{{sets}} séries",
+      "setsNote": "Contre {{from}} d'habitude : environ les deux tiers, jamais moins d'une.",
+      "effort": "Effort",
+      "effortValue": "{{count}} répétitions en réserve",
+      "effortNote": "Arrête chaque série avec environ {{count}} répétitions encore possibles, pour que la semaine reste volontairement facile.",
+      "duration": "Durée",
+      "durationValue_one": "{{count}} semaine",
+      "durationValue_few": "{{count}} semaines",
+      "durationValue_many": "{{count}} semaines",
+      "durationValue_other": "{{count}} semaines",
+      "durationNote": "Entraîne-toi aussi souvent que d'habitude avec un travail plus léger, puis reviens à tes charges habituelles.",
+      "plates": "Disques de chaque côté de la barre",
+      "emptyBar": "Barre vide",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "C'est déjà la charge la plus légère que ce matériel puisse faire : la charge reste donc la même. Réduis plutôt les séries et pousse moins fort.",
+      "step": "Un pas de charge pour ce matériel est de {{step}}."
+    },
+    "table": {
+      "title": "Autres réductions courantes",
+      "cut": "Réduction",
+      "weight": "Charge",
+      "actual": "Réduction réelle de",
+      "musclog": "Réduction de Musclog",
+      "percent": "{{percent}}",
+      "note": "Musclog retient 10 % ou un pas de charge, selon ce qui est le plus grand. Les lignes à 10, 15 et 20 % sont des règles empiriques, pas des résultats d'études. Chacune est arrondie à une charge que tu peux réellement régler : une petite charge peut donc finir plus allégée que la réduction demandée."
+    },
+    "sections": [
+      {
+        "title": "De combien alléger, et pendant combien de temps",
+        "body": [
+          "La décharge de l'application Musclog consiste à réduire de 10 % ou d'un pas de charge, selon ce qui est le plus grand, arrondi à un poids que ton matériel peut faire et toujours strictement plus léger qu'actuellement. Une semaine allégée conserve alors environ les deux tiers des séries de travail, garde les répétitions prévues et vise 4 répétitions en réserve. Elle dure une semaine. Tous ces choix sont des choix de produit de Musclog, pas des résultats d'études.",
+          "On réduit souvent la charge de 10 à 20 %, ou d'environ un tiers les séries, pendant une semaine. Utilise le tableau pour une réduction plus forte si la semaine précédente a été très lourde. Garde les mêmes exercices et le même nombre de séances : une décharge est un entraînement plus léger, pas une semaine de repos."
+        ]
+      },
+      {
+        "title": "Quand une décharge a du sens",
+        "body": [
+          "Les signes habituels sont une même charge qui paraît bien plus lourde qu'il y a quelques semaines, des répétitions manquées alors que tu les réussis d'habitude, et presque plus de répétitions en réserve. Un mauvais sommeil, le stress ou la maladie peuvent produire les mêmes effets, et une décharge aide aussi dans ces cas. Si une articulation te fait mal de façon aiguë, consulte un médecin ou un kinésithérapeute.",
+          "L'application décharge un exercice de sa propre initiative après deux séances de suite à la même charge où tu as fini sans rien en réserve ou en ayant raté les répétitions prévues. Elle propose une semaine allégée dans ton bilan hebdomadaire quand plusieurs mouvements stagnent. Tu choisis si tu la prends."
+        ]
+      },
+      {
+        "title": "Ce que dit la recherche",
+        "body": [
+          "Une étude de consensus de 2023 auprès d'entraîneurs de force et de physique a défini la décharge comme une période de stress d'entraînement réduit, destinée à limiter la fatigue, favoriser la récupération et préparer les entraînements suivants. C'est une définition, pas une prescription. Les chiffres de cette page n'en sont pas issus."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell et al. (2023), Intégrer la décharge dans les programmes d'entraînement de force et de physique : une approche par consensus Delphi international (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Nouvelle échelle de RPE propre à l'entraînement en résistance, mesurant les répétitions en réserve"
+    },
+    "articles": {
+      "deload": "Semaines de décharge : quand en avoir besoin et comment les mener",
+      "doubleProgression": "Double progression : la façon la plus simple d'ajouter de la charge chaque semaine"
+    }
+  }
+}

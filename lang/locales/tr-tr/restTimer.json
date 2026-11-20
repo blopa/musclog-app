@@ -1,0 +1,17 @@
+{
+  "restTimer": {
+    "resting": "Dinleniyor...",
+    "minus5s": "- 5sn",
+    "plus5s": "+ 5sn",
+    "skipRest": "Dinlenmeyi atla",
+    "done": "Tamam",
+    "reps": "tekrar",
+    "repsWithCount": "{{count}} tekrar",
+    "upNext": "Sırada",
+    "missingWorkoutData": "Antrenman verisi eksik",
+    "completedSetNotFound": "Tamamlanan set bulunamadı",
+    "getReady": "Hazırlan",
+    "go": "Başla",
+    "a11yRemaining": "{{time}} kaldı"
+  }
+}

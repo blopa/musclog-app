@@ -1,0 +1,11 @@
+{
+  "workTimer": {
+    "label": "Minuteur",
+    "open": "Minuteur",
+    "start": "Démarrer",
+    "stop": "Arrêter",
+    "close": "Fermer",
+    "minus5": "-5 s",
+    "plus5": "+5 s"
+  }
+}

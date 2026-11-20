@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Isınma hesaplayıcısı",
+    "intro": "Çalışma ağırlığını gir; ona kadar giden ısınma setlerini al. Halter kaldırıyorsan, halterin her iki yanındaki plaklarla birlikte.",
+    "form": {
+      "working": "Çalışma ağırlığı",
+      "workingHint": "Ulaşmaya çalıştığın setin ağırlığı.",
+      "equipmentLabel": "Ekipman",
+      "equipment": {
+        "barbell": "Halter",
+        "dumbbell": "Dambıl",
+        "machine": "Makine ya da kablo"
+      }
+    },
+    "problems": {
+      "working": "Çalışma ağırlığını 0'dan büyük ve en fazla {{max}} olan bir sayı olarak gir."
+    },
+    "results": {
+      "title": "Isınma setleri",
+      "set": "Set",
+      "weight": "Ağırlık",
+      "reps": "Tekrar",
+      "plates": "Her yandaki plaklar",
+      "working": "Ana set",
+      "target": "Hedef",
+      "emptyBar": "Boş halter",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Isınma setleri arasında yaklaşık {{seconds}} saniye dinlen.",
+      "barIsWarmUp": "Çalışma ağırlığın halterin ağırlığına o kadar yakın ki halter ısınma oluyor. Doğrudan ilk setine geç.",
+      "noRamp": "Bu ağırlık bir ısınma merdiveni için çok hafif. Çalışma ağırlığında başla.",
+      "workingNotLoadable": "Spor salonun çalışma ağırlığını tam olarak yükleyemiyor. Isınmalar en yakın yüklenebilir ağırlıkları kullanır."
+    },
+    "sections": [
+      {
+        "title": "Merdiven nasıl kurulur",
+        "body": [
+          "Her ısınma seti, çalışma ağırlığının bir payıdır: 5 tekrar için %40, 3 tekrar için %60 ve 2 tekrar için %80. Her biri bir öncekinden daha ağır ve daha kısadır, böylece yorulmadan çalışma ağırlığına ısınmış olarak ulaşırsın.",
+          "Halterde, merdivenin ilk seti halterin çok üstündeyse merdiven 10 tekrar boş halterle başlar. Her ağırlık plaklarının yapabileceği değere yuvarlanır ve çalışma ağırlığının %10 yakınındaki bir ısınma atılır."
+        ]
+      },
+      {
+        "title": "Bunlar Musclog'un tercihleri",
+        "body": [
+          "Yüzdeler, tekrarlar ve setler arası dinlenme, Musclog'un kullandığı yaygın bir reçetedir. Bunlar ürün tercihleridir, bir çalışmanın sonuçları değildir. Nasıl hissettiğine uyacak şekilde değiştir."
+        ]
+      },
+      {
+        "title": "Halter, dambıl ya da makine",
+        "body": [
+          "Halterde her iki yan için plaklar gösterilir, böylece her ısınmayı spor salonunun plaklarından yükleyebilirsin. Dambıller ve makineler halteri ve plakları atlar ve tipik bir spor salonunun standart artışlarını kullanır."
+        ]
+      }
+    ]
+  }
+}

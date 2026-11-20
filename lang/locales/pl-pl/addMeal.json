@@ -1,0 +1,15 @@
+{
+  "addMeal": {
+    "createMeal": "Utwórz posiłek",
+    "createMealDesc": "Dodaj nowy posiłek do dziennika",
+    "dynamicCreator": "Kreator posiłku krok po kroku",
+    "dynamicCreatorDesc": "Złóż posiłek krok po kroku, skanując lub wyszukując produkty",
+    "generateMealAI": "Wygeneruj posiłek z AI",
+    "generateMealAIDesc": "Pozwól AI zaproponować posiłek na podstawie twoich preferencji",
+    "manageCategories": "Zarządzaj kategoriami",
+    "manageCategoriesDesc": "Uporządkuj kategorie posiłków (śniadanie, obiad itd.)",
+    "importFromPhone": "Importuj z innego telefonu",
+    "importFromPhoneDesc": "Zeskanuj posiłek wysłany z innego telefonu",
+    "title": "Dodaj posiłek"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "websiteToolWorkoutLogTemplate": {
+    "title": "Darmowy dziennik treningów do druku",
+    "intro": "Pobierz dziennik treningów do wydrukowania albo arkusz do wypełnienia na komputerze. Oba są darmowe, bez rejestracji. Arkusz zapisuje się jako CSV, który aplikacja Musclog może zaimportować.",
+    "downloads": {
+      "title": "Pliki do pobrania",
+      "pdfA4": "Dziennik do druku, A4",
+      "pdfA4Note": "PDF, 4 arkusze poziome. Na papier A4.",
+      "pdfLetter": "Dziennik do druku, US Letter",
+      "pdfLetterNote": "PDF, 4 arkusze poziome. Na papier US Letter.",
+      "xlsx": "Szablon arkusza",
+      "xlsxNote": "Plik Excel (.xlsx), który otworzy się też w Arkuszach Google, Numbers i LibreOffice. Arkusz Log i arkusz Read me.",
+      "csv": "Szablon CSV",
+      "csvNote": "Te same kolumny jako zwykły tekst, do dowolnego arkusza kalkulacyjnego albo do aplikacji.",
+      "english": "Pliki są po angielsku, niezależnie od języka tej strony."
+    },
+    "check": {
+      "title": "Sprawdź wypełniony plik CSV",
+      "intro": "Wybierz plik i zobacz, co Musclog z niego odczyta. Używa tego samego czytnika co aplikacja, w twojej przeglądarce. Plik nie jest wysyłany.",
+      "file": "Plik CSV",
+      "unitLabel": "Ciężary w twoim pliku są podane w",
+      "kg": "kg",
+      "lb": "lb",
+      "result": "Musclog odczyta {{workouts}} i {{sets}}.",
+      "workoutCount_one": "{{formattedCount}} trening",
+      "workoutCount_few": "{{formattedCount}} treningi",
+      "workoutCount_many": "{{formattedCount}} treningów",
+      "workoutCount_other": "{{formattedCount}} treningu",
+      "setCount_one": "{{formattedCount}} seria",
+      "setCount_few": "{{formattedCount}} serie",
+      "setCount_many": "{{formattedCount}} serii",
+      "setCount_other": "{{formattedCount}} serii",
+      "skipped_one": "{{formattedCount}} wiersz został pominięty: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
+      "skipped_few": "{{formattedCount}} wiersze zostały pominięte: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
+      "skipped_many": "{{formattedCount}} wierszy zostało pominiętych: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
+      "skipped_other": "{{formattedCount}} wiersza zostało pominiętych: brakująca albo przyszła data, brak nazwy ćwiczenia lub nic nie zmierzono.",
+      "problems": {
+        "empty": "Plik jest pusty.",
+        "tooLarge": "Plik jest za duży, by go tutaj sprawdzić.",
+        "unreadable": "To nie wygląda na dziennik treningów. Zachowaj wiersz nagłówka szablonu bez zmian.",
+        "noRows": "Plik ma wiersz nagłówka, ale nie ma pod nim żadnych serii.",
+        "read": "Nie udało się odczytać pliku."
+      },
+      "exampleWarning": "Przed importem usuń przykładowy wiersz z szablonu, bo zostanie odczytany jako prawdziwa seria."
+    },
+    "sections": [
+      {
+        "title": "Co jest w dzienniku do druku",
+        "body": [
+          "Każda kartka to jeden trening. Na górze wpisujesz datę, trening, masę ciała i to, czy podnosisz w kg, czy w lb. Poniżej są dwanaście wierszy ćwiczeń, po pięć serii każde, z polem na ciężar i polem na powtórzenia, oraz kolumna Notatki na to, jak ciężka była seria albo co bolało.",
+          "PDF ma cztery kartki, więc jeden wydruk wystarcza na tydzień lub dwa. Drukuj tyle kopii, ile potrzebujesz. Kartki nie zawierają programu: to ty decydujesz, co trafia do wierszy."
+        ]
+      },
+      {
+        "title": "Jak wypełnić arkusz",
+        "body": [
+          "Zapisuj jeden wiersz na serię: datę, nazwę treningu, ćwiczenie, numer serii, ciężar i powtórzenia. RPE i Notatki są opcjonalne. Ciężar to zwykła liczba w jednostce, której zawsze używasz. Przy serii na czas zostaw pole Powtórzenia puste. RPE 10 to seria bez zapasu, 9 zostawia jedno powtórzenie, a 8 — dwa.",
+          "Kolumny odpowiadają układowi, który czyta importer Musclog, więc nic nie musisz przeliczać. Zapisz arkusz Log jako plik CSV, a potem w aplikacji otwórz Ustawienia, Kopie zapasowe i dane, Importuj treningi. Musclog dopasuje nazwy ćwiczeń do swojego katalogu i pokaże przegląd, zanim zapisze choćby jedną sesję."
+        ]
+      },
+      {
+        "title": "Papier, arkusz czy aplikacja",
+        "body": [
+          "Papier nie potrzebuje baterii ani konta, a zapisanie serii zajmuje kilka sekund. Nie potrafi jednak za ciebie zajrzeć wstecz: sam musisz przejrzeć zeszłotygodniową kartkę, by zdecydować, co podnieść dzisiaj.",
+          "Arkusz może zsumować objętość i narysować wykres ćwiczenia, jeśli zbudujesz formuły. Musclog robi to sam i wylicza kolejny ciężar z twojej ostatniej sesji, z pokazanym powodem, ale dziennik i tak jest twój. To darmowa aplikacja open source, twoje dane zostają na urządzeniu, a arkusz powyżej możesz do niej zaimportować."
+        ]
+      }
+    ],
+    "articles": {
+      "trackProgress": "Jak śledzić postępy na siłowni: poradnik dla początkujących",
+      "importHistory": "Przenieś historię treningów ze Stronga, Hevy lub FitNotes"
+    }
+  }
+}

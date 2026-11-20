@@ -1,0 +1,48 @@
+{
+  "profile": {
+    "header": {
+      "title": "Profil"
+    },
+    "goal": "Ziel",
+    "currentStats": "Aktuelle Werte",
+    "history": "Verlauf",
+    "management": "Verwaltung",
+    "loading": "Wird geladen …",
+    "syncing": {
+      "healthKit": "Synchronisierung mit HealthKit läuft …"
+    },
+    "bmiStatus": {
+      "underweight": "Untergewicht",
+      "normal": "Normalgewicht",
+      "overweight": "Übergewicht",
+      "obese": "Adipositas"
+    },
+    "gender": {
+      "male": "Männlich",
+      "female": "Weiblich",
+      "other": "Andere"
+    },
+    "managementItems": {
+      "editPersonal": "Persönliche Daten bearbeiten",
+      "editPersonalDesc": "Name, Profilbild und persönliche Angaben aktualisieren",
+      "editFitness": "Fitnessdaten bearbeiten",
+      "editFitnessDesc": "Fitnessziele und Vorlieben aktualisieren",
+      "appPreferences": "App-Einstellungen",
+      "appPreferencesDesc": "App-Einstellungen und Vorlieben anpassen",
+      "aiUpdate": "Mit KI aktualisieren",
+      "aiUpdateDesc": "Sag einer KI, was sich geändert hat, und prüfe alles vor dem Speichern"
+    },
+    "stats": {
+      "weight": "Gewicht",
+      "height": "Größe",
+      "bodyFat": "Körperfett",
+      "bmi": "BMI",
+      "age": "Alter",
+      "gender": "Geschlecht"
+    },
+    "weightPrediction": {
+      "title": "Vorhergesagtes Gewicht",
+      "subtitle": "Geschätzt aus dem Gesamtumsatz und deiner Kalorienerfassung seit der letzten Wägung"
+    }
+  }
+}

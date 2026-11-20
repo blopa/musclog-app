@@ -1,0 +1,90 @@
+{
+  "websiteToolNutritionLogTemplate": {
+    "title": "Diario alimentare gratuito da stampare",
+    "intro": "Scarica un diario alimentare da stampare, in due versioni: una in cui scrivi calorie e macronutrienti già calcolati, e una in cui copi i valori per 100 g dall'etichetta e fai tu i calcoli. C'è anche un foglio di calcolo che fa i conti per te. Tutto gratuito, senza registrazione.",
+    "downloads": {
+      "title": "Download",
+      "versions": {
+        "ready": {
+          "title": "Macronutrienti già calcolati",
+          "body": "Una riga per alimento: il pasto, l'alimento, la quantità, poi calorie, proteine, carboidrati e grassi per quella quantità."
+        },
+        "per100": {
+          "title": "Per 100 g, fai tu i calcoli",
+          "body": "Copia i valori per 100 g dell'etichetta, scrivi i grammi mangiati e calcola cosa contiene quella quantità."
+        },
+        "both": {
+          "title": "Foglio di calcolo",
+          "body": "Entrambe le versioni come schede, con i calcoli fatti da formule."
+        }
+      },
+      "readyA4": "Diario alimentare, A4",
+      "readyA4Note": "PDF, 7 fogli orizzontali, uno per giorno. Per carta A4.",
+      "readyLetter": "Diario alimentare, US Letter",
+      "readyLetterNote": "PDF, 7 fogli orizzontali, uno per giorno. Per carta US Letter.",
+      "per100A4": "Diario alimentare per 100 g, A4",
+      "per100A4Note": "PDF, 7 fogli orizzontali, uno per giorno. Per carta A4.",
+      "per100Letter": "Diario alimentare per 100 g, US Letter",
+      "per100LetterNote": "PDF, 7 fogli orizzontali, uno per giorno. Per carta US Letter.",
+      "xlsx": "Modello di foglio di calcolo",
+      "xlsxNote": "File Excel (.xlsx) che si apre anche in Google Fogli, Numbers e LibreOffice. Una scheda Giorno, una scheda Per 100 g e una scheda Leggimi.",
+      "english": "I file sono in inglese, qualunque sia la lingua di questa pagina."
+    },
+    "try": {
+      "title": "Prova i calcoli per 100 g",
+      "intro": "Scrivi quello che dice l'etichetta per 100 g e quanti grammi hai mangiato. È la stessa aritmetica che chiede il foglio per 100 g. Quello che scrivi non lascia mai il tuo browser.",
+      "kcal": "Calorie per 100 g",
+      "kcalHint": "Facoltativo. Lascia vuoto per stimarle a partire dai macronutrienti.",
+      "protein": "Proteine per 100 g",
+      "carbs": "Carboidrati per 100 g",
+      "fat": "Grassi per 100 g",
+      "grams": "Grammi mangiati",
+      "formula": "Ogni valore è il numero per 100 g moltiplicato per {{grams}} g, diviso 100.",
+      "results": {
+        "kcal": "Calorie mangiate",
+        "kcalEstimated": "Stimate dai macronutrienti: 4 kcal per grammo di proteine e carboidrati, 9 per grammo di grassi.",
+        "protein": "Proteine mangiate",
+        "carbs": "Carboidrati mangiati",
+        "fat": "Grassi mangiati"
+      },
+      "problems": {
+        "kcal": "Le calorie per 100 g devono essere un numero da 0 a 900.",
+        "protein": "Le proteine per 100 g devono essere un numero da 0 a 100.",
+        "carbs": "I carboidrati per 100 g devono essere un numero da 0 a 100.",
+        "fat": "I grassi per 100 g devono essere un numero da 0 a 100.",
+        "grams": "I grammi devono essere un numero da 0 a 5000.",
+        "macrosTooHigh": "Proteine, carboidrati e grassi insieme non possono superare 100 g ogni 100 g di alimento. Controlla i numeri."
+      }
+    },
+    "sections": [
+      {
+        "title": "Cosa contiene il diario stampabile",
+        "body": [
+          "Ogni foglio corrisponde a un giorno. In alto scrivi la data, se era un giorno di allenamento o di riposo, il tuo peso corporeo e quanta acqua hai bevuto. Sotto ci sono dodici righe per gli alimenti, una colonna Note e le caselle Totale, Obiettivo e Restano sotto calorie e macronutrienti, così vedi cosa resta della giornata.",
+          "Il PDF contiene sette fogli, una settimana per stampa. I fogli non riportano obiettivi né piani alimentari: scrivi i tuoi nella riga Obiettivo."
+        ]
+      },
+      {
+        "title": "Quale versione stampare",
+        "body": [
+          "Usa la prima versione quando hai già i numeri per la quantità mangiata: da una colonna per porzione, da un pasto calcolato in precedenza o da un'app alimentare. Li scrivi direttamente nella riga.",
+          "Usa la versione per 100 g quando hai solo la colonna per 100 g dell'etichetta. Copi quei valori, pesi quello che hai mangiato e calcoli ogni quantità: valore per 100 g per i grammi mangiati, diviso 100. Per 150 g di un alimento con 12 g di proteine per 100 g, sono 12 × 150 ÷ 100 = 18 g di proteine. È più lenta, ma mostra come sono costruiti i numeri."
+        ]
+      },
+      {
+        "title": "Come usare il foglio di calcolo",
+        "body": [
+          "La scheda Giorno serve per i numeri già calcolati. La scheda Per 100 g fa i conti per te: scrivi i valori dell'etichetta e i grammi mangiati, e le colonne a destra si compilano. Entrambe le schede sommano la giornata e mostrano quanto resta del tuo obiettivo.",
+          "I calcoli usano formule semplici, quindi puoi leggerle o modificarle. Conserva una copia del file per giorno, oppure aggiungi una scheda per ogni giorno."
+        ]
+      },
+      {
+        "title": "Carta, foglio di calcolo o app",
+        "body": [
+          "La carta non richiede batteria né account, e fare i conti a mano ti insegna cosa c'è nel cibo. Non può però cercare l'alimento per te, leggere un codice a barre o tenere da sola un totale aggiornato.",
+          "Musclog lo fa, e calcola i macronutrienti per la quantità che hai mangiato, così non devi mai fare da solo i calcoli per 100 g. È un'app gratuita e open source, e i tuoi dati restano sul dispositivo."
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Kalkulator talerzy",
+    "intro": "Wpisz ciężar, jaki chcesz mieć na sztandze, a dostaniesz talerze na każdą stronę, z talerzami, które naprawdę ma twoja siłownia, w kg albo lb, z twoją sztangą.",
+    "form": {
+      "target": "Docelowy ciężar",
+      "targetHint": "Łączny ciężar na sztandze, wraz ze sztangą."
+    },
+    "problems": {
+      "target": "Wpisz docelowy ciężar jako liczbę większą od 0 i co najwyżej {{max}} {{unit}}."
+    },
+    "results": {
+      "loaded": "Ciężar na sztandze",
+      "exact": "Twoja siłownia może załadować ten ciężar dokładnie.",
+      "inexact": "Twoja siłownia nie może zrobić dokładnie {{target}}. Najcięższy, jaki może załadować, to {{below}}, a najbliższy możliwy to {{nearest}}.",
+      "belowBar": "To lżej niż sama sztanga ({{bar}}). Wybierz cięższy cel albo ustaw lżejszą sztangę w swojej siłowni.",
+      "perSide": "Talerze po każdej stronie",
+      "noPlates": "Talerze nie są potrzebne: sama sztanga to cel.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Sztanga: {{bar}}. Talerze ładuje się parami, po jednym z każdej strony."
+    },
+    "sections": [
+      {
+        "title": "Dlaczego najcięższy talerz na początku to błąd",
+        "body": [
+          "Zwykła metoda bierze najcięższy talerz, który się mieści, potem następny i tak dalej. Działa, gdy na siłowni jest dużo każdego talerza. Przy ograniczonej liczbie talerzy potrafi zawieść: siłownia z jedną parą po 20, 15 i 10 kg potrzebuje 25 kg na stronę, by uzyskać 70 kg z 20-kilogramową sztangą. Wzięcie 20 najpierw zostawia 5 kg, których żaden talerz nie uzupełni. Odpowiedź to 15 i 10 kg, które siłownia może załadować.",
+          "Ten kalkulator sprawdza kombinacje talerzy, które wpiszesz, i wybiera najcięższe obciążenie, które nie przekracza celu, używając najmniejszej liczby talerzy."
+        ]
+      },
+      {
+        "title": "Talerze ładuje się parami",
+        "body": [
+          "Sztanga przyjmuje talerze parami, po jednym z każdej strony, więc każdy talerz, który wpiszesz, liczy się w parach. Nieparzysty talerz na siłowni nie może utworzyć pary i zostaje pominięty. Wpisz, ile par każdego talerza masz."
+        ]
+      },
+      {
+        "title": "Masa sztangi i jednostki",
+        "body": [
+          "Sztanga wchodzi w sumę, więc najpierw ustaw jej masę. Standardowe sztangi olimpijskie ważą 20 kg (45 lb), a niektóre są lżejsze. Wpisuj w kg albo lb: aplikacja przechowuje kilogramy i przelicza, więc liczby zgadzają się z aplikacją Musclog."
+        ]
+      }
+    ]
+  }
+}

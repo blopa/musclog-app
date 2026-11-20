@@ -1,0 +1,31 @@
+{
+  "ai": {
+    "settings": {
+      "notConfigured": "KI ist nicht eingerichtet. Bitte füge in den KI-Einstellungen einen API-Schlüssel hinzu."
+    },
+    "notConfiguredModal": {
+      "title": "KI ist noch nicht eingerichtet",
+      "subtitle": "Füge einen API-Schlüssel hinzu, bevor du mit dem Coach chatten kannst.",
+      "tipApiKey": "Verwende OpenAI- oder Google-Gemini-API-Schlüssel aus den KI-Einstellungen.",
+      "tipFeatures": "Sobald alles eingerichtet ist, werden deine Nachrichten an das Modell gesendet, das du wählst.",
+      "openSettings": "KI-Einstellungen öffnen",
+      "notNow": "Nicht jetzt"
+    },
+    "providers": {
+      "openAIGemini": "OpenAI oder Google Gemini"
+    },
+    "icons": {
+      "Dumbbell": "Hantel",
+      "Target": "Ziel",
+      "Zap": "Blitz",
+      "Trophy": "Pokal",
+      "Activity": "Aktivität",
+      "Heart": "Herz",
+      "Flame": "Flamme"
+    },
+    "chat": {
+      "message": "Nachricht",
+      "typeYourMessage": "Schreibe deine Nachricht..."
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Calcolatore del riscaldamento",
+    "intro": "Inserisci il peso di lavoro e ottieni le serie di riscaldamento che portano fino a lì, con i dischi per lato del bilanciere quando usi un bilanciere.",
+    "form": {
+      "working": "Peso di lavoro",
+      "workingHint": "Il peso della serie a cui stai arrivando.",
+      "equipmentLabel": "Attrezzatura",
+      "equipment": {
+        "barbell": "Bilanciere",
+        "dumbbell": "Manubrio",
+        "machine": "Macchina o cavo"
+      }
+    },
+    "problems": {
+      "working": "Inserisci il peso di lavoro come numero maggiore di 0 e al massimo {{max}}."
+    },
+    "results": {
+      "title": "Serie di riscaldamento",
+      "set": "Serie",
+      "weight": "Peso",
+      "reps": "Ripetizioni",
+      "plates": "Dischi per lato",
+      "working": "Serie di lavoro",
+      "target": "Obiettivo",
+      "emptyBar": "Bilanciere vuoto",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Recupero di circa {{seconds}} secondi tra le serie di riscaldamento.",
+      "barIsWarmUp": "Il tuo peso di lavoro è così vicino al bilanciere che il bilanciere è il riscaldamento. Passa direttamente alla prima serie.",
+      "noRamp": "Questo peso è troppo leggero per una progressione di riscaldamento. Parti dal tuo peso di lavoro.",
+      "workingNotLoadable": "La tua palestra non può caricare esattamente il peso di lavoro. Il riscaldamento usa i pesi caricabili più vicini."
+    },
+    "sections": [
+      {
+        "title": "Come è costruita la progressione",
+        "body": [
+          "Ogni serie di riscaldamento è una percentuale del peso di lavoro: 40% per 5 ripetizioni, 60% per 3 ripetizioni e 80% per 2 ripetizioni. Ognuna è più pesante e più corta della precedente, così arrivi al peso di lavoro caldo senza essere già stanco.",
+          "Con un bilanciere, la progressione inizia con il bilanciere vuoto per 10 ripetizioni quando la prima serie è ben sopra il suo peso. Ogni peso viene arrotondato a ciò che i tuoi dischi possono fare, e un riscaldamento entro il 10% del peso di lavoro viene eliminato."
+        ]
+      },
+      {
+        "title": "Sono scelte di Musclog",
+        "body": [
+          "Le percentuali, le ripetizioni e il recupero tra le serie sono una prescrizione comune che Musclog usa. Sono scelte di prodotto, non risultati di uno studio. Modificali in base a come ti senti."
+        ]
+      },
+      {
+        "title": "Bilanciere, manubrio o macchina",
+        "body": [
+          "Con un bilanciere vengono mostrati i dischi per ogni lato, così puoi caricare ogni riscaldamento con i dischi della tua palestra. Manubri e macchine non usano bilanciere e dischi, ma gli incrementi standard di una palestra tipica."
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,719 @@
+{
+  "cycle": {
+    "title": "Cykl",
+    "nextPeriod": "Przewidywany następny okres",
+    "insightsAndLog": "Wskazówki o cyklu i dziennik",
+    "dailyLog": "Dziennik dnia",
+    "flowIntensity": "Intensywność krwawienia",
+    "symptomsTitle": "Objawy",
+    "noLogsToday": "Brak zapisanych objawów na dziś.",
+    "logSymptoms": "Zapisz objawy",
+    "logDaily": "Dzienny dziennik cyklu",
+    "predictionDisclaimer": "Przewidywania cyklu są szacunkami i nie są metodą antykoncepcji.",
+    "periodActive": "Okres trwa, dzień {{day}}",
+    "periodActiveGeneric": "Okres trwa",
+    "settings": {
+      "title": "Ustawienia cyklu",
+      "subtitle": "Edytuj konfigurację cyklu",
+      "changeContext": "Zmień etap życia lub antykoncepcję",
+      "sectionUsual": "Twoje zwykłe długości",
+      "usualHint": "Używane, dopóki nie ma wystarczającej historii, by nauczyć się twoich wartości.",
+      "sectionShown": "Co jest pokazywane",
+      "showPredictions": "Pokazuj przewidywania",
+      "showPredictionsHint": "Wyłącz, aby zapisywać bez przewidywanych dat.",
+      "showFertility": "Pokazuj szacunki płodności",
+      "showFertilityHint": "Domyślnie wyłączone. Informacyjne oszacowanie okna płodności, nie antykoncepcja.",
+      "fertility": {
+        "explainTitle": "Pokazać szacunki płodności?",
+        "explainMessage": "Okno płodności jest szacowane na podstawie długości twoich dawnych cykli. Nie pozwala to wiarygodnie określić dnia owulacji, więc nigdy nie używaj tego samodzielnie do zapobiegania ciąży.",
+        "enable": "Pokaż szacunki"
+      },
+      "sectionReminders": "Przypomnienia",
+      "sectionTracking": "Śledzenie",
+      "sectionPrivacy": "Prywatność",
+      "privacyNote": "Zapisy cyklu są szyfrowane na tym telefonie. Wyeksportowane kopie to osobne pliki, którymi zarządzasz ty.",
+      "sectionExport": "Eksport",
+      "exportPeriods": "Eksportuj okresy (CSV)",
+      "exportDays": "Eksportuj dzienny dziennik (CSV)",
+      "summaryTitle": "Podsumowanie do lekarza",
+      "summaryHint": "Krótki PDF z tym, co zapisałeś: daty, krwawienie, objawy, ból i notatki. Zawiera twoje zapisy i nie stawia diagnozy.",
+      "summaryRange": "Zakres: {{count}} mies.",
+      "summaryCreate": "Utwórz podsumowanie (PDF)",
+      "sectionManage": "Zarządzanie",
+      "pause": "Wstrzymaj śledzenie",
+      "pauseHint": "Wstrzymanie zachowuje wszystkie zapisy i ukrywa zakładkę cyklu oraz przypomnienia, do czasu wznowienia.",
+      "delete": {
+        "action": "Usuń wszystkie dane cyklu",
+        "title": "Usunąć wszystkie dane cyklu?",
+        "message": "To trwale usuwa z tego telefonu każdy okres, dzienny zapis i wpis o etapie życia. Nie da się tego cofnąć. Pliki, które wcześniej wyeksportowałeś lub udostępniłeś, są poza aplikacją i nie zostaną zmienione. Udostępnione wpisy nastroju pozostaną dostępne na ekranach Home i Postępy.",
+        "confirm": "Usuń wszystko",
+        "prompt": "Potwierdź usunięcie danych cyklu",
+        "backupsTitle": "Usunąć też lokalne punkty przywracania?",
+        "backupsMessage": "Na tym telefonie zapisano punkty przywracania: {{count}}. Mogą zawierać kopię twoich zapisów cyklu razem z resztą danych. Usunąć je także?",
+        "backupsMessage_plural": "Na tym telefonie zapisano punkty przywracania: {{count}}. Mogą zawierać kopię twoich zapisów cyklu razem z resztą danych. Usunąć je także?",
+        "backupsConfirm": "Usuń punkty przywracania"
+      }
+    },
+    "noData": {
+      "title": "Zacznij śledzić cykl",
+      "description": "Zapisuj daty okresów albo objawy bez krwawienia. Możesz zacząć, nie znając daty ostatniego okresu.",
+      "start": "Zacznij śledzenie",
+      "pausedTitle": "Śledzenie jest wstrzymane",
+      "pausedDescription": "Historia jest zapisana. Wznów, aby dalej zapisywać i widzieć przewidywania.",
+      "resume": "Wznów śledzenie"
+    },
+    "actions": {
+      "periodStarted": "Mój okres zaczął się dzisiaj",
+      "periodEnded": "Mój okres skończył się dzisiaj",
+      "logPastPeriod": "Zapisz miniony okres"
+    },
+    "periodLog": {
+      "startTitle": "Zapisz początek okresu",
+      "endTitle": "Zapisz koniec okresu",
+      "pastTitle": "Dodaj miniony okres",
+      "startDescription": "Zaznacz, kiedy okres się zaczął. Możesz zapisać dzisiaj albo wcześniejszą datę.",
+      "endDescription": "Zaznacz, kiedy okres się skończył.",
+      "pastDescription": "Dodawanie dat minionych okresów pomaga aplikacji poznać twój cykl i lepiej przewidywać.",
+      "startDateLabel": "Okres zaczął się",
+      "endDateLabel": "Okres skończył się",
+      "startedOn": "Okres zaczął się",
+      "useToday": "Użyj dzisiaj"
+    },
+    "confidence": {
+      "low": "Szacunek na podstawie {{count}} cyklu",
+      "low_plural": "Szacunek na podstawie cykli: {{count}}",
+      "medium": "Na podstawie cykli: {{count}}",
+      "high": "Na podstawie cykli: {{count}}, dobra dokładność",
+      "irregular": "Cykle się różnią, więc pokazywany jest zakres dat"
+    },
+    "lifeStage": {
+      "pcos": "Przy PCOS cykle mogą być bardzo nieregularne. Przewidywania są przybliżone.",
+      "postPill": "Po odstawieniu antykoncepcji hormonalnej cykle mogą być nieregularne przez 1–3 miesiące.",
+      "postpartum": "Cykle po porodzie często wracają w nieprzewidywalny sposób, zwłaszcza podczas karmienia piersią.",
+      "perimenopause": "Okres okołomenopauzalny może powodować znaczną nieregularność cyklu. Pokazywany jest szacowany zakres."
+    },
+    "flow": {
+      "spotting": "Plamienie",
+      "light": "Słabe",
+      "medium": "Średnie",
+      "heavy": "Silne",
+      "veryHeavy": "Bardzo silne"
+    },
+    "symptoms": {
+      "physicalTitle": "Fizyczne",
+      "emotionalTitle": "Emocjonalne i psychiczne",
+      "cramps": "Skurcze",
+      "headache": "Ból głowy",
+      "migraine": "Migrena",
+      "bloating": "Wzdęcia",
+      "breastTenderness": "Tkliwość piersi",
+      "nausea": "Nudności",
+      "backPain": "Ból pleców",
+      "fatigue": "Zmęczenie",
+      "acne": "Trądzik",
+      "foodCravings": "Ochota na jedzenie",
+      "digestiveIssues": "Problemy trawienne",
+      "hotFlashes": "Uderzenia gorąca",
+      "insomnia": "Bezsenność",
+      "moodSwings": "Wahania nastroju",
+      "anxiety": "Niepokój",
+      "irritability": "Drażliwość",
+      "lowMood": "Obniżony nastrój",
+      "brainFog": "Mgła mózgowa",
+      "lowLibido": "Niskie libido"
+    },
+    "phase": {
+      "menstrual": "Menstruacyjna",
+      "follicular": "Folikularna",
+      "ovulatory": "Owulacyjna",
+      "ovulation": "Owulacja",
+      "luteal": "Lutealna",
+      "between": "Między okresami"
+    },
+    "late": {
+      "title": "O {{count}} dzień później niż zwykły zakres",
+      "title_plural": "O {{count}} dni później niż zwykły zakres",
+      "description": "Zapisz okres, gdy się zacznie, a przewidywania się zaktualizują."
+    },
+    "insufficient": "Zapisz okres, aby zobaczyć przewidywanie",
+    "periodNotLogged": "Okres jeszcze nie zapisany",
+    "lock": {
+      "prompt": "Odblokuj Musclog",
+      "unlock": "Odblokuj",
+      "appTitle": "Musclog jest zablokowany",
+      "appDescription": "Uwierzytelnij się, aby kontynuować."
+    },
+    "calendar": {
+      "bleeding": {
+        "none": "Brak krwawienia",
+        "spotting": "Plamienie",
+        "light": "Słabe",
+        "medium": "Średnie",
+        "heavy": "Silne",
+        "very_heavy": "Bardzo silne"
+      },
+      "a11y": {
+        "period": "zapisany okres",
+        "predicted": "przewidywane okno okresu",
+        "fertile": "szacowane okno płodności",
+        "observation": "coś zapisane",
+        "today": "dzisiaj",
+        "nothing": "nic nie zapisano"
+      },
+      "previousMonth": "Poprzedni miesiąc",
+      "nextMonth": "Następny miesiąc",
+      "legend": "Legenda kalendarza",
+      "legendPeriod": "Zapisany okres lub krwawienie",
+      "legendSpotting": "Zapisane plamienie",
+      "legendPredicted": "Przewidywane okno okresu",
+      "legendFertile": "Szacowane okno płodności",
+      "legendLogged": "Coś zapisane"
+    },
+    "context": {
+      "title": "Etap życia i antykoncepcja",
+      "description": "Zapisz zmianę od wskazanej daty. Wcześniejsza historia zostaje.",
+      "effectiveFrom": "Obowiązuje od",
+      "chooseSpecific": "Wybierz konkretny typ, aby uzyskać lepsze wskazówki.",
+      "effects": "Niektóre metody zmieniają zachowanie cyklu, więc przewidywania i okno płodności mogą być ukryte albo pokazane z zastrzeżeniem.",
+      "remove": "Usuń tę zmianę",
+      "timelineTitle": "Historia etapu życia i antykoncepcji",
+      "from": "Od {{date}}",
+      "lossQuietTitle": "Wstrzymać też pozostałe przypomnienia?",
+      "lossQuietMessage": "Przewidywania i przypomnienia o okresie już ustały. Możesz też na 4 tygodnie wstrzymać dzienne sprawdzenie i inne przypomnienia o cyklu. Przypomnienia o tabletce działają dalej. Wznowisz je w każdej chwili w ustawieniach cyklu.",
+      "lossQuietConfirm": "Wstrzymaj na 4 tygodnie",
+      "lossQuietKeep": "Zostaw je"
+    },
+    "daySheet": {
+      "title": "Zapisz ten dzień",
+      "noSymptoms": "Dziś bez objawów",
+      "noSymptomsLogged": "Bez objawów",
+      "moreSymptoms": "Więcej objawów",
+      "fewerSymptoms": "Mniej objawów",
+      "pain": "Ból",
+      "energy": "Energia",
+      "energyLevel": {
+        "1": "Bardzo niska",
+        "2": "Niska",
+        "3": "Przeciętna",
+        "4": "Dobra",
+        "5": "Wysoka"
+      },
+      "note": "Notatka",
+      "notePlaceholder": "Wszystko, co warto zapamiętać",
+      "clearDay": "Wyczyść ten dzień",
+      "nothingLogged": "Nic nie zapisano na ten dzień.",
+      "addDetails": "Dodaj szczegóły",
+      "edit": "Edytuj",
+      "startPeriodPrompt": "Krwawienie zapisane poza okresem.",
+      "startPeriod": "Zacznij okres tutaj",
+      "moodUnavailable": "Nie udało się wczytać nastroju. Reszta i tak się zapisze.",
+      "severityOptional": "Jak silne? Opcjonalnie. Stuknij ocenę ponownie, aby ją usunąć.",
+      "painScale": "0 = brak bólu, 10 = najgorszy, jaki sobie wyobrazisz",
+      "clearTitle": "Wyczyścić ten dzień?",
+      "clearMessage": "To usuwa wszystko zapisane na ten dzień, w tym jego nastrój na ekranach Home i Postępy. Nie da się tego cofnąć.",
+      "clearConfirm": "Wyczyść dzień",
+      "pill": {
+        "label": "Tabletka",
+        "taken": "Wzięta",
+        "skipped": "Pominięta"
+      }
+    },
+    "edit": {
+      "title": "Edytuj okres",
+      "delete": "Usuń ten okres",
+      "deleteTitle": "Usunąć ten okres?",
+      "deleteMessage": "Statystyki i przypomnienia zostaną przeliczone bez niego. Możesz to cofnąć zaraz po usunięciu.",
+      "deleted": "Okres usunięty",
+      "undo": "Cofnij",
+      "recalculates": "Zapis przelicza statystyki i przypomnienia."
+    },
+    "end": {
+      "title": "Jak się skończył?",
+      "open": "Wciąż trwa",
+      "onDate": "W konkretnym dniu",
+      "unknown": "Nie pamiętam",
+      "usualLength": "Zwykła długość ({{days}} dni)",
+      "estimatedHint": "Zapisane jako szacunek, nie jako zarejestrowana data końca.",
+      "unknownHint": "Długość tego okresu nie będzie używana w twoich średnich."
+    },
+    "errors": {
+      "future": "Daty okresów nie mogą być w przyszłości.",
+      "overlap": "To nakłada się na okres, który już zapisałeś.",
+      "endBeforeStart": "Koniec nie może być przed początkiem.",
+      "notFound": "Ten okres już nie istnieje. Mógł zostać usunięty."
+    },
+    "fertilityDisclaimer": "Tylko informacyjne oszacowanie. Nie używaj tego samodzielnie do zapobiegania ciąży.",
+    "history": {
+      "title": "Historia",
+      "tabCalendar": "Kalendarz",
+      "tabHistory": "Okresy",
+      "empty": "Nie zapisano jeszcze żadnego okresu.",
+      "estimatedEnd": "Szacowany koniec",
+      "unknownEnd": "Koniec nieznany",
+      "ongoing": "Trwa",
+      "editHint": "Stuknij, aby edytować",
+      "days": "{{days}} d.",
+      "days_plural": "{{days}} d.",
+      "cycleLength": "Cykl: {{days}} d.",
+      "cycleLength_plural": "Cykl: {{days}} d.",
+      "notUsed": "Nie używane do przewidywań: {{reason}}",
+      "reason": {
+        "too_short": "odstęp był bardzo krótki, prawdopodobnie błędny zapis",
+        "possible_missed_period": "był wyraźnie dłuższy niż inne, być może pominięty okres",
+        "user_excluded": "wykluczyłeś go",
+        "hormonal_context": "w tym czasie stosowano metodę hormonalną",
+        "postpartum_context": "cykle poporodowe nie są liczone",
+        "life_context": "kontekst bez naturalnego przewidywania okresu"
+      }
+    },
+    "insights": {
+      "title": "Wzorce w twoich zapisach",
+      "basedOnRecords": "Opiera się wyłącznie na twoich zapisach.",
+      "viewData": "Zobacz dane",
+      "viewSessions": "Zobacz te sesje",
+      "evidenceTitle": "Na czym to się opiera",
+      "recurringSymptom": "Zapisałeś {{symptom}} w ciągu {{days}} dni od początku okresu w {{hits}} z twoich ostatnich {{total}} cykli.",
+      "highPain": "Zapisałeś ból na poziomie {{level}} lub wyższym w ciągu {{days}} dni od początku okresu w {{hits}} z twoich ostatnich {{total}} cykli.",
+      "cycleLengthLonger": "Twój ostatni cykl trwał {{length}} dni, o {{diff}} dni dłużej niż mediana poprzednich cykli ({{count}}): {{typical}} dni.",
+      "cycleLengthShorter": "Twój ostatni cykl trwał {{length}} dni, o {{diff}} dni krócej niż mediana poprzednich cykli ({{count}}): {{typical}} dni.",
+      "durationLonger": "Twój ostatni okres trwał {{duration}} dni, o {{diff}} dni dłużej niż mediana poprzednich okresów ({{count}}): {{typical}} dni.",
+      "durationShorter": "Twój ostatni okres trwał {{duration}} dni, o {{diff}} dni krócej niż mediana poprzednich okresów ({{count}}): {{typical}} dni.",
+      "moodNearStart": "Zapisany nastrój był niższy w ciągu {{days}} dni od początku okresu niż w pozostałe dni, w {{hits}} z twoich ostatnich {{total}} cykli.",
+      "workoutNearStart": "W {{hits}} z twoich ostatnich {{total}} cykli treningi w ciągu {{days}} dni od początku okresu miały mniejszą objętość niż pozostałe sesje w tym samym cyklu.",
+      "recurringPreperiodSymptom": "Zapisałeś {{symptom}} w ciągu siedmiu dni przed {{hits}} z {{total}} zapisanych okresów."
+    },
+    "phaseEstimated": "Szacowana faza",
+    "phaseUnknown": "Brak szacunku",
+    "prediction": {
+      "insufficient": "Zapisz okres, aby zobaczyć przewidywanie",
+      "hidden": "Przewidywania są ukryte",
+      "notShown": "Brak przewidywania w twojej sytuacji",
+      "likelyRange": "Prawdopodobnie {{from}} – {{to}}",
+      "likelyDate": "Prawdopodobnie około {{date}}",
+      "caveated": "Ta metoda może zmieniać zachowanie cyklu, więc traktuj szacunek ostrożnie.",
+      "variabilityExpected": "W twojej sytuacji długość cyklu się zmienia. To częste, a zakres to odzwierciedla.",
+      "variableHint": "Twoje cykle bardzo się różniły ({{low}}–{{high}} dni). Pojedyncza data może nie być wiarygodna.",
+      "keepHidden": "Zostaw ukryte",
+      "showRange": "Pokaż zakres",
+      "fertile": "Szacowane okno płodności: {{from}} – {{to}}",
+      "howCalculated": "Jak to jest liczone?",
+      "show": "Pokaż przewidywania",
+      "hide": "Ukryj przewidywania",
+      "detailsTitle": "Jak powstaje szacunek",
+      "basis": "Na podstawie ostatnich cykli: {{cycles}} · mediana {{median}} dni · zakres {{low}}–{{high}}",
+      "basis_plural": "Na podstawie ostatnich cykli: {{cycles}} · mediana {{median}} dni · zakres {{low}}–{{high}}",
+      "basisNone": "Nie ma jeszcze użytecznych cykli, więc szacunek używa twojej zwykłej długości: {{days}} dni.",
+      "recentWeighted": "Nowsze cykle liczą się bardziej, więc szacunek używa {{days}} dni.",
+      "excludedCount": "Liczba pominiętych cykli: {{cycles}} (patrz niżej).",
+      "excludedCount_plural": "Liczba pominiętych cykli: {{cycles}} (patrz niżej).",
+      "cycleUsed": "Używany do przewidywań",
+      "useForPredictions": "Użyj tego cyklu do przewidywań",
+      "evidenceNote": "Oparte na twoich danych. Przewidywanie jest szacunkiem, nie wynikiem medycznym.",
+      "confidence": {
+        "none": "Brak danych",
+        "low": "Niska pewność · użyteczne cykle: {{cycles}}",
+        "low_plural": "Niska pewność · użyteczne cykle: {{cycles}}",
+        "moderate": "Umiarkowana pewność · użyteczne cykle: {{cycles}}",
+        "high": "Wyższa pewność · użyteczne cykle: {{cycles}}"
+      },
+      "suppressed": {
+        "hormonal": "Krwawienie przy tej metodzie może nie przebiegać w naturalnym cyklu, więc przewidywana data nic by nie znaczyła. Nadal możesz zapisywać wszystko.",
+        "postpartum": "Cykle często wracają po porodzie w nieprzewidywalny sposób. Przewidywania pojawią się, gdy zapiszesz dwa okresy.",
+        "no_bleeding": "Śledzisz bez krwawienia, więc nie ma okresu do przewidzenia. Dzienne zapisy i wzorce nadal działają."
+      }
+    },
+    "quickLog": {
+      "title": "Szybki zapis",
+      "pinPrompt": "Często zapisujesz {{symptom}}. Przypiąć do szybkiego zapisu?",
+      "noThanks": "Nie, dziękuję",
+      "pin": "Przypnij"
+    },
+    "severity": {
+      "mild": "łagodny",
+      "moderate": "umiarkowany",
+      "severe": "silny"
+    },
+    "summary": {
+      "title": "Podsumowanie cyklu",
+      "range": "{{from}} – {{to}} (ostatnie {{months}} mies.)",
+      "disclaimer": "Dane zapisane przez użytkownika w aplikacji Musclog. To nie jest diagnoza i nie zastępuje porady lekarskiej.",
+      "sectionOverview": "Przegląd",
+      "sectionPeriods": "Okresy",
+      "sectionBleeding": "Dni krwawienia według poziomu",
+      "sectionSymptoms": "Najczęściej zapisywane objawy (dni)",
+      "sectionPain": "Ból",
+      "sectionNotes": "Notatki",
+      "sectionContext": "Etap życia i antykoncepcja",
+      "colStart": "Początek",
+      "colEnd": "Koniec",
+      "colDuration": "Dni",
+      "colCycleLength": "Cykl (dni)",
+      "colStatus": "Używany do średnich",
+      "empty": "Brak okresów w tym zakresie.",
+      "statusUsed": "wliczony",
+      "statusInProgress": "w trakcie",
+      "overviewPeriods": "Zapisane okresy: {{n}}",
+      "overviewPeriods_plural": "Zapisane okresy: {{n}}",
+      "overviewLength": "Długość cyklu: mediana {{median}} dni, zakres {{low}}–{{high}}.",
+      "overviewNoLength": "Za mało zakończonych cykli, by podać długość cyklu.",
+      "overviewUsed": "Do średnich wliczono cykle: {{used}}, nie wliczono: {{excluded}}.",
+      "pain": "Ból zapisany w {{days}} dniach: mediana {{median}}/10, najwyższy {{max}}/10, dni z oceną 6 lub więcej: {{severe}}."
+    },
+    "personalize": {
+      "title": "Dostosuj śledzenie",
+      "goalsTitle": "Co chcesz zrozumieć?",
+      "goalsHint": "Wybierz to, co jest dla ciebie ważne. Możesz to zmienić później.",
+      "goals": {
+        "timing": "Termin okresu",
+        "symptoms": "Ból i objawy",
+        "mood": "Nastrój",
+        "record": "Po prostu prowadzę zapis"
+      },
+      "question": "Chcesz śledzić krwawienie lub objawy cykliczne?",
+      "trackBleeding": "Krwawienie i objawy",
+      "trackBleedingHint": "Zapisuj daty okresów i codzienne obserwacje.",
+      "trackSymptoms": "Objawy bez okresów",
+      "trackSymptomsHint": "Prowadź dziennik ciała, nawet gdy nie krwawisz.",
+      "skip": "Pomiń na razie",
+      "skipHint": "Śledzenie możesz włączyć później w ustawieniach.",
+      "quickTitle": "Ulubione szybkiego zapisu",
+      "quickHint": "Wybierz do sześciu objawów do szybkiego zapisu.",
+      "customSymptom": "Nowy własny objaw",
+      "removeNamed": "Usuń {{name}} z formularza",
+      "fieldsTitle": "Opcjonalne pola dzienne",
+      "fieldsHint": "W dzienniku pojawiają się tylko wybrane przez ciebie pola.",
+      "fields": {
+        "sleepHours": "Sen (godziny)",
+        "temperatureC": "Temperatura podstawowa",
+        "discharge": "Upławy / śluz szyjkowy",
+        "medication": "Lek i dawka",
+        "sex": "Aktywność seksualna",
+        "tags": "Tagi",
+        "impact": "Wpływ na codzienne życie",
+        "leakage": "Przeciek przez ubranie lub pościel",
+        "clots": "Skrzepy krwi",
+        "lhTest": "Test owulacyjny (LH)",
+        "pregnancyTest": "Test ciążowy"
+      },
+      "customField": "Nowe własne pole",
+      "kinds": {
+        "text": "Tekst",
+        "number": "Liczba",
+        "toggle": "Tak / nie",
+        "rating": "Ocena w skali"
+      },
+      "removeHint": "Usunięcie pola z formularza zachowuje jego wcześniej zapisane wartości w historii i eksportach.",
+      "saving": "Zapisywanie…",
+      "observationsHint": "Zostaw pole puste, jeśli tego nie zapisywałeś. Temperatura to obserwacja ręczna i nie potwierdza owulacji.",
+      "invalidObservation": "Sprawdź wpisy: sen musi wynosić 0–24 godziny, temperatura 30–45 °C, a pola liczbowe muszą zawierać poprawną liczbę.",
+      "unexpectedBleeding": "Zapisz nieoczekiwane krwawienie lub plamienie",
+      "sharedMoodHint": "Nastrój jest wspólny z Home i Postępami. Wyczyszczenie go tutaj usuwa też nastrój tego dnia tam. Usunięcie danych cyklu zachowuje wspólne nastroje.",
+      "loadingMood": "Wczytywanie nastroju…",
+      "clearMood": "Wyczyść nastrój przy zapisie",
+      "clearDayAndMood": "Wyczyść obserwacje tego dnia i wspólny nastrój",
+      "summaryObservations": "Nastrój i inne obserwacje",
+      "add": "Dodaj",
+      "moodUnlogged": "Nastrój nie zapisany"
+    },
+    "portability": {
+      "title": "Kopia zapasowa i import cyklu",
+      "backupTitle": "Zaszyfrowana kopia cyklu",
+      "recoveryHint": "Ten plik zawiera historię okresów, dzienne obserwacje, etapy, ustawienia i historię wspólnych nastrojów. Zapisz go poza tym telefonem. Hasło przechowuj osobno: bez niego kopii nie da się odzyskać. Przywróć ją poniżej na nowym urządzeniu po włączeniu śledzenia cyklu.",
+      "lastBackup": "Ostatnia zaszyfrowana kopia przygotowana: {{date}}",
+      "noBackup": "Na tym urządzeniu nie przygotowano jeszcze zaszyfrowanej kopii cyklu.",
+      "password": "Hasło kopii (co najmniej 8 znaków)",
+      "repeatPassword": "Powtórz hasło",
+      "createBackup": "Utwórz zaszyfrowaną kopię",
+      "plaintextHint": "Czytelne pliki JSON, CSV i PDF zawierają wrażliwe informacje bez zabezpieczenia hasłem. Udostępniaj je tylko wybranej osobie.",
+      "exportJson": "Eksportuj czytelny JSON cyklu",
+      "exportContexts": "Eksportuj historię etapów (CSV)",
+      "importTitle": "Przenieś historię cyklu",
+      "importHint": "Wybierz kopię JSON cyklu Musclog albo plik CSV okresów, dziennika lub etapów wyeksportowany przez Musclog. Daty w formacie RRRR-MM-DD. Scala to zapisy cyklu i wspólne nastroje; reszta danych w aplikacji zostaje bez zmian.",
+      "importPassword": "Hasło do zaszyfrowanego pliku (w innym razie zostaw puste)",
+      "chooseFile": "Wybierz plik i zobacz podgląd",
+      "conflictHint": "Dla daty, która ma już zapis, wybierz, czy zostawić swój, czy zastąpić cały zapis importowanym.",
+      "keep": "Zachowaj istniejące",
+      "replace": "Zastąp pasujące daty",
+      "restorePreferences": "Przywróć zwykłe długości, cele i wybór pól",
+      "preview": "Nowe zapisy: {{added}} · zastąpienia: {{updated}} · zachowane istniejące: {{skipped}} · pominięte nakładające się okresy: {{overlaps}}",
+      "checking": "Sprawdzanie pliku…",
+      "overlapHint": "Nakładające się okresy są pomijane. Definicje pól przechodzą razem z plikiem, aby dawne obserwacje dały się odczytać. Podgląd liczy osobno każdy okres, dzień, etap i nastrój.",
+      "confirmImport": "Potwierdź scalenie",
+      "imported": "Zaimportowano nowych zapisów: {{added}}, zastąpień: {{updated}}.",
+      "invalidFile": "Tego pliku nie można zaimportować. Sprawdź format, daty i definicje pól.",
+      "failed": "Nie udało się wykonać tej operacji. Sprawdź plik lub hasło i spróbuj ponownie.",
+      "prepared": "Eksport gotowy. Zapisz plik w miejscu, z którego da się go odzyskać.",
+      "fullBackup": "Pełna kopia aplikacji i przywracanie",
+      "fullBackupHint": "Otwórz ustawienia danych, aby zrobić pełną kopię aplikacji i lokalne punkty przywracania. Domyślnie wymagane jest szyfrowanie eksportu. Przywrócenie pełnej kopii zastępuje dane aplikacji; import samego cyklu powyżej scala je."
+    },
+    "comparison": {
+      "tab": "Porównaj",
+      "title": "Porównaj swoje cykle",
+      "description": "Porównuj własne zapisane obserwacje według dnia cyklu albo przed następnym zapisanym okresem. Stuknij dowolny dzień, aby go zobaczyć lub edytować.",
+      "start": "Dzień cyklu",
+      "before": "Przed następnym okresem",
+      "filter": "Znajdź objaw lub miarę",
+      "metrics": {
+        "bleeding": "Krwawienie",
+        "pain": "Ból (0–10)",
+        "energy": "Energia (1–5)",
+        "mood": "Nastrój (0–4)"
+      },
+      "flowLegend": "— nie zapisano · 0 brak krwawienia · 1 plamienie · 2 słabe · 3 średnie · 4 silne · 5 bardzo silne",
+      "symptomLegend": "— nie zapisano · 0 wyraźnie brak objawów · ● obecne, bez oceny · 1 łagodny · 2 umiarkowany · 3 silny",
+      "numberLegend": "— nie zapisano. Liczby to twoje zapisane oceny, nie wartości wywnioskowane.",
+      "empty": "Zapisz początki okresów, aby porównać cykle. Widok przed okresem wymaga dwóch początków.",
+      "inProgress": "W trakcie",
+      "unlogged": "Nie zapisano",
+      "unrated": "Obecne, bez oceny",
+      "limitHint": "Pokazuje twoje ostatnie sześć cykli, do 60 dni po początku lub 14 dni przed następnym zapisanym początkiem. Puste dni zostają puste."
+    },
+    "complete": {
+      "confirmLong": "Ten dłuższy cykl jest prawidłowy",
+      "unknownLength": "Nie znam swojej zwykłej długości cyklu",
+      "rangeHeuristic": "Ten zakres to szacunek z twojej historii, a nie przedział prawdopodobieństwa ani potwierdzona data owulacji.",
+      "backtest": "Sprawdzenie wsteczne: {{hits}} z {{checked}} późniejszych początków wpadło w zakres; średni błąd środka {{error}} dni. To nie jest walidacja kliniczna.",
+      "restoreFirst": "Przywróć lub przenieś moją historię",
+      "careTitle": "Zrozumieć swoje objawy",
+      "careHint": "Ogólna wiedza z NHS i RCOG. Zapisywanie nie jest diagnozą. Jeśli objawy cię martwią albo wpływają na codzienność, porozmawiaj z lekarzem; przy silnych lub szybko pogarszających się objawach szukaj pilnej pomocy.",
+      "education": {
+        "bleeding": "Silne krwawienie (NHS, po angielsku)",
+        "pain": "Bolesne miesiączkowanie (NHS, po angielsku)",
+        "unexpected": "Nieoczekiwane krwawienie (NHS, po angielsku)",
+        "pms": "PMS i dzienniki objawów (RCOG, po angielsku)",
+        "menopause": "Okres okołomenopauzalny i menopauza (NHS, po angielsku)",
+        "pregnancy": "Informacje o ciąży (NHS, po angielsku)",
+        "postpartum": "Powrót do zdrowia po porodzie (NHS, po angielsku)",
+        "pregnancy_loss": "Informacje o utracie ciąży (NHS, po angielsku)"
+      },
+      "trends": "Trendy i wyszukiwanie",
+      "trendsHint": "Przeglądaj zapisane dni, także te bez okresów. To obserwacje, a nie wyjaśnienia tego, co wywołało zmianę.",
+      "lastDays": "Ostatnie {{days}} dni",
+      "summary": "Dni z zapisem: {{logged}} · dni silnego krwawienia: {{heavy}} · dni plamienia: {{spotting}} · dni z wpływem na codzienność: {{impact}}",
+      "recap": "Od zapisanego początku {{date}}: dni z zapisem {{logged}}, dni silnego krwawienia {{heavy}}, dni z wpływem na codzienność {{impact}}.",
+      "symptomSummary": "{{symptom}}: zapisane dni {{days}}, ocenione jako silne: {{severe}}",
+      "loggedOnly": "Pokazywane są tylko zapisane wartości. Brakujące dni są nieznane. Wymieniono ostatnie 30 wartości.",
+      "noObservations": "Brak pasujących obserwacji w tym zakresie.",
+      "contextChanged": "Etap zmienił się {{date}}. Zobacz historię etapów.",
+      "search": "Szukaj w swoich zapisach",
+      "searchHint": "Szukaj objawów, notatek, leków, tagów lub własnych wartości. Muszą pasować wszystkie słowa. Wyszukiwanie zostaje na tym urządzeniu; pokazywanych jest do 50 pasujących dni.",
+      "metrics": {
+        "pain": "Ból (0–10)",
+        "energy": "Energia (1–5)",
+        "mood": "Nastrój (0–4)",
+        "sleepHours": "Sen (godziny)",
+        "temperatureC": "Temperatura podstawowa (°C)",
+        "impact": "Wpływ na codzienność (0–3)",
+        "bleeding": "Krwawienie",
+        "symptoms": "Objawy",
+        "note": "Notatki",
+        "importedTemperatureC": "Zaimportowana temperatura podstawowa (°C)"
+      },
+      "backupDays": "Odstęp przypomnień o kopii (dni; 0 wyłącza)",
+      "importTitle": "Przenieś historię z innego narzędzia",
+      "importHint": "Wierszy CSV: {{rows}}. Kolumny: {{columns}}. Wpisz dokładne nazwy kolumn poniżej; opcjonalne pola zostaw puste. Kreator przyjmuje CSV, nie zastrzeżone archiwa.",
+      "importColumns": {
+        "date": "Kolumna daty/początku",
+        "end": "Kolumna daty końca (opcjonalnie)",
+        "flow": "Kolumna krwawienia (opcjonalnie)",
+        "temperature": "Kolumna temperatury w °C (opcjonalnie)",
+        "symptoms": "Kolumna objawów (oddzielone średnikiem)",
+        "note": "Kolumna notatek (opcjonalnie)"
+      },
+      "dateOrder": {
+        "iso": "RRRR-MM-DD",
+        "dmy": "Dzień/miesiąc/rok",
+        "mdy": "Miesiąc/dzień/rok"
+      },
+      "importPeriods": "Każdy wiersz zapisuje początek okresu (nie dzienny zapis)",
+      "importError": "Sprawdź nazwy kolumn, kolejność dat i wartości. Krwawienie przyjmuje: none, spotting, light, medium, heavy albo very_heavy; temperatura musi być w °C. Zduplikowanych początków okresów i nieprawidłowych dat nie da się zaimportować.",
+      "previewImport": "Zobacz podgląd importu",
+      "healthTitle": "Dane cyklu w magazynie zdrowia",
+      "healthHint": "Odczytuj krwawienie i temperaturę podstawową za zgodą. Zaimportowane obserwacje zachowują swoje źródło i nigdy nie zastępują zapisów ręcznych ani nie tworzą początków okresów. Dostęp do magazynu zdrowia może być ograniczony uprawnieniami historii platformy.",
+      "healthRead": "Odczytaj i zobacz podgląd",
+      "healthPreview": "Dostępnych obserwacji: {{count}}. Ponowny import tych samych identyfikatorów źródła aktualizuje tylko ich zaimportowane kopie.",
+      "healthImport": "Importuj te obserwacje",
+      "healthWrite": "Eksportuj ręczne krwawienie i temperaturę",
+      "healthWriteHint": "Zapisuje twoje ręczne wpisy krwawienia i temperatury podstawowej z wybranego zakresu w magazynie zdrowia urządzenia. Inne aplikacje z uprawnieniem mogą je odczytać. Zaimportowane obserwacje, objawy, nastrój, leki, aktywność seksualna i notatki są wykluczone. Bardzo silne krwawienie jest eksportowane jako silne.",
+      "healthDone": "Zaimportowane obserwacje zostały zapisane.",
+      "healthWritten": "Zapisano rekordów zdrowia: {{count}}.",
+      "healthError": "Dostęp do danych zdrowia się nie powiódł albo odmówiono uprawnienia. Sprawdź uprawnienia zdrowia w urządzeniu i spróbuj ponownie. Nieudany eksport mógł zapisać część rekordów; ponowna próba aktualizuje rekordy Musclog.",
+      "importedValue": "Zaimportowano z {{source}}: {{value}}",
+      "sharing": "Udostępnij wybrane zapisy",
+      "sharingHint": "Wybierz dokładnie, co udostępnić. Powstaje czytelny plik JSON dla wybranego zakresu. Odbiorca może go zachować lub przesłać dalej; to nie jest dostęp na żywo i nie da się tego cofnąć. Domyślnie nic nie jest wybrane.",
+      "shareSelected": "Eksportuj wybrane pola",
+      "presets": "Opcjonalne konfiguracje dziennika",
+      "presetsHint": "Dodaj przydatne pola i wypełnij nieużywane miejsca ulubionych. Twoja historia i istniejące ulubione zostają bez zmian.",
+      "preset": {
+        "pms": "Skonfiguruj dziennik PMS/nastroju",
+        "fertility": "Dodaj obserwacje płodności",
+        "perimenopause": "Dodaj obserwacje okresu okołomenopauzalnego"
+      },
+      "pmsDiaryHint": "Dzienny dziennik objawów i wpływu przez dwa kolejne cykle może wesprzeć rozmowę kliniczną o PMS. Ten dziennik nie jest zwalidowanym kwestionariuszem PMDD i nie diagnozuje PMDD.",
+      "fertilityHint": "Temperatura, upławy i wyniki testów to tylko obserwacje. Nie potwierdzają owulacji ani nie czynią szacunków kalendarzowych nadających się do antykoncepcji.",
+      "impact": {
+        "0": "Bez wpływu",
+        "1": "Pewne zakłócenie",
+        "2": "Ograniczone czynności",
+        "3": "Brak możliwości wykonywania zwykłych czynności"
+      },
+      "tests": {
+        "negative": "Ujemny",
+        "positive": "Dodatni",
+        "unclear": "Niejednoznaczny"
+      },
+      "stagePregnancy": "Ciąża",
+      "stagePregnancyHint": "Przewidywania okresu i płodności są wstrzymane. Zachowaj zapisy objawów i zmień etap, gdy będziesz gotowy.",
+      "stageLoss": "Po utracie ciąży",
+      "stageLossHint": "Spokojny kontekst śledzenia bez przewidywań okresu i płodności. Historia zostaje; wróć do innego kontekstu, gdy będziesz gotowy.",
+      "stageSurgery": "Po histerektomii",
+      "stageSurgeryHint": "Śledź objawy bez przewidywań okresu i płodności. Operacja nie mówi automatycznie, czy nadal masz cykle jajnikowe.",
+      "stageMenopause": "Po menopauzie",
+      "stageMenopauseHint": "Śledź objawy bez przewidywań okresu i płodności. Nieoczekiwane krwawienie nadal można zapisać.",
+      "ratingMin": "Minimalna ocena",
+      "ratingMax": "Maksymalna ocena",
+      "chartDescription": "{{metric}} w czasie. Każda kropka to zapisana wartość; daty i wartości są wymienione poniżej.",
+      "variabilitySummary": "Zapisane odstępy cykli w tym zakresie: {{count}}, od {{low}} do {{high}} dni, w tym odstępy wykluczone z przewidywań.",
+      "energyInsight": "Zapisałeś niższą energię w pobliżu początków okresów w {{hits}} z {{total}} obserwowanych cykli. To nie ustala przyczyny.",
+      "sleepInsight": "Zapisałeś krótszy sen w pobliżu początków okresów w {{hits}} z {{total}} obserwowanych cykli. To nie ustala przyczyny.",
+      "reviewLong": "Traktuj ten długi cykl znowu jako niepewny"
+    },
+    "notifications": {
+      "subtle": {
+        "cycle": "Aktualizacja cyklu jest gotowa.",
+        "routine": "Pora na dzienne przypomnienie.",
+        "checkIn": "Pora na dzienne sprawdzenie.",
+        "update": "Pora zaktualizować dziennik.",
+        "backup": "Pora zapisać kopię."
+      },
+      "periodStart": {
+        "title": "Okres może wkrótce się zacząć",
+        "body": "Na podstawie ostatnich cykli okres może zacząć się około {{from}}. To szacunek.",
+        "bodyRange": "Na podstawie ostatnich cykli okres może zacząć się między {{from}} a {{to}}. To szacunek."
+      },
+      "periodDue": {
+        "title": "Okres może zacząć się dzisiaj",
+        "body": "Dziś to najbardziej prawdopodobny początek według twoich ostatnich cykli. Zapisz go, gdy się zacznie."
+      },
+      "periodLate": {
+        "title": "Ten cykl jest dłuższy niż zwykle",
+        "body": "Ten cykl jest dłuższy niż twój ostatni schemat. Możliwych powodów jest wiele. Stuknij, jeśli chcesz to zaktualizować.",
+        "bodyRange": "Ten cykl jest dłuższy niż twój ostatni schemat, który zwykle kończy się do {{to}}. Możliwych powodów jest wiele. Stuknij, jeśli chcesz to zaktualizować."
+      },
+      "fertileWindow": {
+        "title": "Szacowane okno płodności",
+        "body": "Szacowane okno płodności może zacząć się {{from}}. To szacunek kalendarzowy, nie potwierdzenie owulacji i nie antykoncepcja.",
+        "bodyRange": "Szacowane okno płodności to {{from}} – {{to}}. To szacunek kalendarzowy, nie potwierdzenie owulacji i nie antykoncepcja."
+      },
+      "pill": {
+        "title": "Przypomnienie o tabletce",
+        "body": "Pora wziąć tabletkę."
+      },
+      "dailyLog": {
+        "title": "Dzienne sprawdzenie cyklu",
+        "body": "Zapisz dzisiaj, jeśli chcesz."
+      },
+      "endCheck": {
+        "title": "Czy okres wciąż trwa?",
+        "body": "Okres, który oznaczyłeś jako trwający, zaczął się tydzień temu. Zaktualizuj jego koniec, gdy będziesz gotowy."
+      },
+      "backup": {
+        "title": "Kopia cyklu",
+        "body": "Rozważ zapisanie zaszyfrowanej kopii swoich zapisów."
+      }
+    },
+    "reminders": {
+      "time": "Godzina przypomnienia",
+      "leadDays": "Dni wyprzedzenia przed okresem",
+      "oncePerCycle": "mniej więcej raz w cyklu",
+      "atMostOncePerCycle": "najwyżej raz w cyklu",
+      "daily": "codziennie",
+      "oncePerPeriod": "najwyżej raz w okresie",
+      "basis": {
+        "estimate": "szacunek z twoich zapisanych cykli",
+        "routine": "godzina, którą wybrałeś"
+      },
+      "notWhileSuppressed": "nie wysyłane, gdy przewidywania są wyłączone w twojej sytuacji",
+      "periodStart": {
+        "label": "Przed okresem",
+        "when": "O {{time}}, z wyprzedzeniem ustawionym niżej, przed najwcześniejszym przewidywanym początkiem"
+      },
+      "periodDue": {
+        "label": "W najbardziej prawdopodobny dzień",
+        "when": "O {{time}} w najbardziej prawdopodobny dzień początku"
+      },
+      "periodLate": {
+        "label": "Jeśli ten cykl się przedłuży",
+        "when": "Dzień po zakończeniu twojego zwykłego zakresu, neutralnym tekstem"
+      },
+      "fertileWindow": {
+        "label": "Szacowane okno płodności",
+        "when": "O {{time}}, gdy szacowane okno się zaczyna",
+        "unavailable": "Dostępne tylko przy włączonym szacunku okna płodności, w sytuacji, w której ma to sens."
+      },
+      "dailyLog": {
+        "label": "Dzienne sprawdzenie",
+        "when": "O {{time}}"
+      },
+      "endCheck": {
+        "label": "Sprawdź trwający okres",
+        "when": "Tydzień po okresie, który oznaczyłeś jako trwający"
+      },
+      "backup": {
+        "label": "Przypomnienie o kopii"
+      },
+      "pill": {
+        "label": "Przypomnienie o tabletce",
+        "when": "W każdy dzień z tabletką o {{time}}",
+        "time": "Godzina tabletki",
+        "pattern21": "21 dni + 7 przerwy",
+        "pattern24": "24 dni + 4 przerwy",
+        "continuous": "Codziennie",
+        "packStart": "Pierwsza tabletka z bieżącego opakowania",
+        "hint": "W dni bez tabletki nie ma przypomnienia. To przypomnienie, nie porada medyczna: jeśli opuścisz tabletkę, postępuj zgodnie z ulotką.",
+        "notPaused": "działa dalej podczas wstrzymania"
+      },
+      "pause": {
+        "title": "Wstrzymaj przypomnienia o cyklu",
+        "week": "1 tydzień",
+        "month": "1 miesiąc",
+        "indefinite": "Do wznowienia",
+        "resume": "Wznów przypomnienia",
+        "hint": "Na czas choroby, żałoby, podróży lub przerwy. Przypomnienia o tabletce działają dalej."
+      },
+      "status": {
+        "web": "Przypomnienia są dostarczane przez aplikację Musclog na telefonie. Ustawienia zrobione tutaj obowiązują także tam.",
+        "noPermission": "Powiadomienia nie są dozwolone dla Musclog, więc żadne przypomnienie nie dotrze.",
+        "switchedOff": "Powiadomienia o cyklu są wyłączone, więc żadne przypomnienie nie dotrze.",
+        "pausedUntil": "Przypomnienia są wstrzymane do {{date}}.",
+        "paused": "Przypomnienia są wstrzymane, dopóki ich nie wznowisz.",
+        "next": "Następne: {{reminder}}, {{date}}.",
+        "none": "Nic nie jest zaplanowane. Włącz przypomnienie poniżej.",
+        "turnOn": "Włącz przypomnienia o cyklu",
+        "permissionDenied": "Powiadomienia nie zostały dozwolone. Możesz je włączyć w ustawieniach telefonu."
+      },
+      "test": "Wyślij testowe powiadomienie",
+      "testSent": "Wysłano. Dotrze za kilka sekund, sformułowane tak, jak wybrałeś.",
+      "style": {
+        "title": "Treść na ekranie blokady",
+        "hint": "To, co ktoś zerkający na telefon mógłby przeczytać. Wariant „Prywatne” nigdy nie mówi, czego dotyczy przypomnienie.",
+        "private": "Prywatne",
+        "subtle": "Dyskretne",
+        "detailed": "Szczegółowe"
+      },
+      "preview": "Podgląd",
+      "lockScreenHint": "Na zablokowanym telefonie z bezpiecznym ekranem blokady Android też ukrywa treść przypomnień o cyklu.",
+      "why": {
+        "title": "Dlaczego dostajesz to przypomnienie",
+        "setting": "Włączyłeś „{{reminder}}” w ustawieniach cyklu.",
+        "estimateFromCycles": "Jego data to szacunek z twoich zapisanych cykli (użyto: {{cycles}}), które miały od {{low}} do {{high}} dni. Przypomnienie nie może być dokładniejsze niż to.",
+        "estimateFromSetup": "Jego data wynika z podanej zwykłej długości cyklu, bo nie ma jeszcze wystarczającej historii zapisów. Będzie lepiej, gdy zapisujesz okresy.",
+        "routine": "Włącza się o wybranej przez ciebie godzinie, niezależnie od danych cyklu.",
+        "pillBreak": "Pomija dni bez tabletki w twoim opakowaniu.",
+        "late": "Dłuższy cykl może mieć wiele przyczyn. Musclog nigdy nie zakłada żadnej z nich.",
+        "change": "Zmień lub wyłącz przypomnienia",
+        "estimateFromSteadyCycles": "Jego data to szacunek z twoich zapisanych cykli (użyto: {{cycles}}), które wszystkie trwały około {{low}} dni. Cykle mogą się jednak różnić, więc traktuj to jako przybliżenie."
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "workoutSummary": {
+    "totalTime": "Łączny czas",
+    "volume": "Objętość",
+    "duration": "Czas trwania",
+    "personalRecords": "Rekordy osobiste",
+    "newPRs": "Nowe rekordy",
+    "goHome": "Do domu",
+    "youCrushedIt": "Trening ukończony",
+    "shareText": "Właśnie ukończono trening.",
+    "sharePersonalRecords_one": "Rekordy osobiste: {{count}}",
+    "sharePersonalRecords_other": "Rekordy osobiste: {{count}}",
+    "shareSummary": "Udostępnij podsumowanie",
+    "workoutCompleted": "Trening ukończony",
+    "viewDetails": "Zobacz szczegóły",
+    "viewMuscles": "Zobacz mięśnie",
+    "getFeedback": "Uzyskaj opinię AI",
+    "gettingFeedback": "Pobieranie opinii...",
+    "completedMessage": "Ukończono trening {{workoutName}}",
+    "completedSummary": "Trening ukończony: {{workoutName}}",
+    "caloriesBurned": "Spalone kalorie",
+    "workoutSaved": "Trening zapisany. Oto, co zmieni się następnym razem."
+  }
+}

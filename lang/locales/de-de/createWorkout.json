@@ -1,0 +1,50 @@
+{
+  "createWorkout": {
+    "title": "Neues Training erstellen",
+    "save": "Speichern",
+    "workoutIcon": "Trainingssymbol",
+    "essentials": "Grundlagen",
+    "workoutTitle": "Trainingstitel",
+    "workoutTitlePlaceholder": "z. B. Beintag-Zerstörer",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Fokus auf Quadrizeps und Waden...",
+    "workoutType": "Trainingsart",
+    "types": {
+      "strength": "Kraft",
+      "cardio": "Cardio",
+      "flexibility": "Beweglichkeit",
+      "calisthenics": "Calisthenics",
+      "other": "Andere"
+    },
+    "intelligence": "Intelligenz",
+    "workoutInsight": {
+      "title": "Trainingseinblicke",
+      "description": "Wähle, wie Musclog Einblicke für dein nächstes Training vorbereitet. Wenn aktiviert, passt die KI sich anhand der Erholungsdaten an.",
+      "none": "Keine",
+      "algorithm": "Algorithmus",
+      "ai": "KI"
+    },
+    "routine": "Routine",
+    "plan": {
+      "label": "Trainingspläne",
+      "none": "Nicht Teil eines Plans",
+      "scheduleHint": "Die Wochentage werden für jeden Trainingsplan separat festgelegt."
+    },
+    "standaloneSchedule": {
+      "label": "Eigenständiger Zeitplan",
+      "description": "Wird nur verwendet, solange dieses Training nicht Teil eines Plans ist."
+    },
+    "weekly": "Wöchentlich",
+    "exercises": "Übungen",
+    "exercisesInWorkout": "Übungen im Training",
+    "addExerciseError": "Übung konnte nicht hinzugefügt werden",
+    "editTitle": "Training bearbeiten",
+    "loadError": "Laden fehlgeschlagen",
+    "noExercisesPlaceholder": "Keine Übungen",
+    "saveError": "Speichern fehlgeschlagen",
+    "validation": {
+      "titleRequiredMessage": "Bitte gib einen Trainingstitel ein"
+    },
+    "ruleTapHint": "Tippe auf eine Übung, um festzulegen, wie ihre Gewichte steigen."
+  }
+}

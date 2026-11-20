@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Aufwärmrechner",
+    "intro": "Gib dein Arbeitsgewicht ein und erhalte die Aufwärmsätze, die darauf hinführen, mit den Scheiben für jede Seite der Stange, wenn du mit einer Langhantel trainierst.",
+    "form": {
+      "working": "Arbeitsgewicht",
+      "workingHint": "Das Gewicht des Satzes, auf den du hinarbeitest.",
+      "equipmentLabel": "Gerät",
+      "equipment": {
+        "barbell": "Langhantel",
+        "dumbbell": "Kurzhantel",
+        "machine": "Maschine oder Kabelzug"
+      }
+    },
+    "problems": {
+      "working": "Gib das Arbeitsgewicht als Zahl über 0 und höchstens {{max}} ein."
+    },
+    "results": {
+      "title": "Aufwärmsätze",
+      "set": "Satz",
+      "weight": "Gewicht",
+      "reps": "Wdh.",
+      "plates": "Scheiben pro Seite",
+      "working": "Arbeitssatz",
+      "target": "Ziel",
+      "emptyBar": "Leere Stange",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Pause von etwa {{seconds}} Sekunden zwischen den Aufwärmsätzen.",
+      "barIsWarmUp": "Dein Arbeitsgewicht liegt so nah an der Stange, dass die Stange selbst das Aufwärmen ist. Geh direkt zu deinem ersten Satz.",
+      "noRamp": "Dieses Gewicht ist für eine Aufwärmrampe zu leicht. Beginne mit deinem Arbeitsgewicht.",
+      "workingNotLoadable": "Dein Studio kann das Arbeitsgewicht nicht genau laden. Die Aufwärmsätze nutzen die nächsten ladbaren Gewichte."
+    },
+    "sections": [
+      {
+        "title": "So ist die Rampe aufgebaut",
+        "body": [
+          "Jeder Aufwärmsatz ist ein Anteil des Arbeitsgewichts: 40 % für 5 Wiederholungen, 60 % für 3 Wiederholungen und 80 % für 2 Wiederholungen. Jeder ist schwerer und kürzer als der vorherige, sodass du warm am Arbeitsgewicht ankommst, ohne müde zu sein.",
+          "An einer Langhantel beginnt die Rampe mit der leeren Stange für 10 Wiederholungen, wenn der erste Rampensatz deutlich darüber liegt. Jedes Gewicht wird auf das gerundet, was deine Scheiben erzeugen können, und ein Aufwärmsatz innerhalb von 10 % des Arbeitsgewichts wird weggelassen."
+        ]
+      },
+      {
+        "title": "Das sind Entscheidungen von Musclog",
+        "body": [
+          "Die Prozentsätze, die Wiederholungen und die Pause zwischen den Sätzen sind eine übliche Vorgabe, die Musclog verwendet. Es sind Produktentscheidungen, keine Ergebnisse einer Studie. Passe sie an, wie du dich fühlst."
+        ]
+      },
+      {
+        "title": "Langhantel, Kurzhantel oder Maschine",
+        "body": [
+          "An einer Langhantel werden die Scheiben für jede Seite angezeigt, damit du jeden Aufwärmsatz aus den Scheiben deines Studios laden kannst. Kurzhanteln und Maschinen lassen Stange und Scheiben weg und nutzen die üblichen Schrittweiten eines typischen Studios."
+        ]
+      }
+    ]
+  }
+}

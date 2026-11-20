@@ -1,0 +1,24 @@
+{
+  "workoutSummary": {
+    "totalTime": "Tempo totale",
+    "volume": "Volume",
+    "duration": "Durata",
+    "personalRecords": "Record personali",
+    "newPRs": "Nuovi record",
+    "goHome": "Torna alla home",
+    "youCrushedIt": "Allenamento completato",
+    "shareText": "Ho appena finito un allenamento.",
+    "sharePersonalRecords_one": "Record personali: {{count}}",
+    "sharePersonalRecords_other": "Record personali: {{count}}",
+    "shareSummary": "Condividi il riepilogo",
+    "workoutCompleted": "Allenamento completato",
+    "viewDetails": "Vedi dettagli",
+    "viewMuscles": "Vedi muscoli",
+    "getFeedback": "Ottieni un feedback dall'IA",
+    "gettingFeedback": "Richiesta del feedback in corso...",
+    "completedMessage": "Hai completato l'allenamento {{workoutName}}",
+    "completedSummary": "Allenamento completato: {{workoutName}}",
+    "caloriesBurned": "Calorie bruciate",
+    "workoutSaved": "Allenamento salvato. Ecco cosa cambia la prossima volta."
+  }
+}

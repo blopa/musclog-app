@@ -1,0 +1,10 @@
+{
+  "optionsSelector": {
+    "link": "Verknüpfen",
+    "unlink": "Verknüpfung lösen",
+    "edit": "Bearbeiten",
+    "done": "Fertig",
+    "deleteExercise": "Übung löschen",
+    "deleteExercises": "Übungen löschen"
+  }
+}

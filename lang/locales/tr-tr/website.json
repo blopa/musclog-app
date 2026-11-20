@@ -1,0 +1,1770 @@
+{
+  "website": {
+    "seo": {
+      "siteName": "Musclog",
+      "imageAlt": "Özel fitness, beslenme ve ilerleme takibini gösteren Musclog uygulama önizlemesi.",
+      "keywords": "Musclog, fitness takipçisi, antrenman takipçisi, beslenme takipçisi, makro takipçisi, açık kaynaklı fitness uygulaması, yerel öncelikli uygulama",
+      "routes": {
+        "home": {
+          "title": "Musclog - Lift, Log, Repeat",
+          "description": "Antrenman kaydı, yapay zekâ ile öğün takibi, ilerleme analitiği ve cihazında özel veriler sunan ücretsiz, açık kaynaklı, yerel öncelikli bir fitness ve beslenme takipçisi."
+        },
+        "download": {
+          "title": "Musclog'u indir",
+          "description": "Musclog'u Android için indir ya da iOS TestFlight'a katıl; antrenmanlarını, beslenmeni ve ilerlemeni verilerin cihazında özel olarak saklanırken takip etmeye başla."
+        },
+        "open": {
+          "title": "Musclog'da aç",
+          "description": "Yapay zekâ asistanındaki bir antrenman planını ya da besin kaydını Musclog uygulamasında açar."
+        },
+        "exercises": {
+          "title": "Musclog Egzersiz Kütüphanesi",
+          "description": "Musclog'un egzersiz kütüphanesine göz at: daha iyi antrenmanlar kurmak için kas grupları, ekipman, mekanik, talimatlar ve GIF tarzı görseller."
+        },
+        "gameboy": {
+          "title": "Musclog'u Game Boy'da oyna",
+          "description": "Musclog'un küçük Game Boy Color sürümünü tarayıcında oyna ve cebe sığan bir fitness takibi eğlencesi için ROM'u indir."
+        },
+        "progress": {
+          "title": "Musclog İlerleme İçe Aktarma",
+          "description": "Musclog JSON dışa aktarmasını tarayıcında yerel olarak içe aktar; kilo, beslenme, antrenman, ruh hali ve ölçüm eğilimlerini masaüstü panosunda incele."
+        },
+        "repMarker": {
+          "title": "Tekrar İşaretleme Aracı | Musclog",
+          "description": "Tekrar kayıtlarını yükle, aralıkları işaretle, hareket grafiklerini önizle ve Musclog'un tekrar sayma araçları için etiketli antrenman verisi dışa aktar."
+        },
+        "calculator": {
+          "title": "Fitness ve Makro Hesaplayıcı | Musclog",
+          "description": "Musclog'un fitness hesaplayıcısıyla kalori, makro, BMI, FFMI ve hedef değerlerini tahmin et, ardından planı uygulamada kullan."
+        },
+        "faq": {
+          "title": "Musclog SSS",
+          "description": "Musclog'un gizlilik modeli, beslenme hesapları, antrenman takibi, yapay zekâ özellikleri ve açık kaynaklı fitness yöntemi hakkındaki soruların yanıtlarını bul."
+        },
+        "contact": {
+          "title": "Musclog ile iletişim",
+          "description": "Destek, sorular, hata raporları veya özel fitness ve beslenme takibi üzerine açık kaynaklı iş birliği için Musclog ile iletişime geç."
+        },
+        "privacy": {
+          "title": "Musclog Gizlilik Politikası",
+          "description": "Musclog'un uygulama verilerini, web sitesi analitiğini, isteğe bağlı yapay zekâ sağlayıcılarını, yerel öncelikli depolamayı, şifrelemeyi, izinleri ve gizlilik tercihlerini nasıl ele aldığını oku."
+        },
+        "terms": {
+          "title": "Musclog Kullanım Koşulları",
+          "description": "Hizmet kapsamı, sorumluluk, garantiler, uygulanacak hukuk ve iletişim bilgileri dahil olmak üzere Musclog'u kullanma koşullarını incele."
+        },
+        "test": {
+          "title": "Hata Ayıklama Grafik Yükleyicisi | Musclog",
+          "description": "Musclog'un kayıt araçlarını geliştirirken tekrar grafik verisi yüklemek ve önizlemek için dizine eklenmeyen bir geliştirme rotası."
+        },
+        "alternatives": {
+          "title": "Musclog ve Alternatifleri — Dürüst Uygulama Karşılaştırması",
+          "description": "Musclog'un MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy ve diğerleriyle gizlilik, beslenme, antrenman ve bütünsel sağlık takibi açısından nasıl karşılaştığını gör."
+        },
+        "blog": {
+          "title": "Musclog Blogu — Açık Kaynaklı Fitness ve Teknoloji",
+          "description": "Musclog, açık kaynaklı geliştirme, gizlilik, fitness teknolojisi ve uygulamanın arkasındaki fikirler hakkında yazıları oku."
+        },
+        "blogCategories": {
+          "title": "Blog Kategorileri — Musclog Blogu",
+          "description": "Musclog blog yazılarını kategoriye göre incele: antrenman, beslenme, mühendislik, ürün güncellemeleri ve daha fazlası."
+        },
+        "blogTags": {
+          "title": "Blog Etiketleri — Musclog Blogu",
+          "description": "Musclog blogunda kullanılan tüm etiketlere göz at. Etiket ne kadar büyükse, o etiketi taşıyan yazı o kadar çok demektir."
+        },
+        "tools": {
+          "title": "Ücretsiz Kaldırma Araçları ve Hesaplayıcılar | Musclog",
+          "description": "Sporcular için ücretsiz hesaplayıcılar: tek tekrar maksimumu, plaka yükleme, ısınma setleri, RPE, protein, kalori açığı ve net karbonhidrat. Musclog uygulamasıyla aynı matematiği kullanır."
+        },
+        "toolOneRepMax": {
+          "title": "Tek Tekrar Maksimumu Hesaplayıcısı | Musclog",
+          "description": "1 ila 10 tekrarlık herhangi bir setten tek tekrar maksimumunu tahmin et; yedekteki tekrarlar ve 1RM yüzdesi tablosu dahil. Musclog uygulamasıyla aynı matematik."
+        },
+        "toolPlateCalculator": {
+          "title": "Plaka Hesaplayıcı: Barın Üzerine Ne Yüklenir | Musclog",
+          "description": "Hedef ağırlığı ve salonundaki plakaları gir. Özel bar ağırlığıyla, barın her iki tarafı için kg veya lb cinsinden plakaları al."
+        },
+        "toolStrengthLevel": {
+          "title": "Vücut Ağırlığına Göre Güç Seviyesi Kontrolü | Musclog",
+          "description": "Vücut ağırlığın ve cinsiyetine göre squat, bench press, deadlift ya da diğer kaldırışlarının hangi güç seviyesinde olduğunu kontrol et. Bir aralıktır, asla yüzdelik dilim değil."
+        },
+        "toolWarmUpCalculator": {
+          "title": "Isınma Seti Hesaplayıcısı | Musclog",
+          "description": "Çalışma ağırlığın için ısınma setleri al; önce boş bar, sonra elindeki plakalarla yüklenebilen her set."
+        },
+        "toolRpeChart": {
+          "title": "RPE ve RIR Tablosu ve Yük Hesaplayıcı | Musclog",
+          "description": "Bir RPE ve yedekteki tekrar tablosu ile bir hesaplayıcı: yaptığın bir setten, farklı bir tekrar ve RPE hedefi için hangi yük olmalı?"
+        },
+        "toolProteinCalculator": {
+          "title": "Protein Hesaplayıcı: Günde Ne Kadar Protein | Musclog",
+          "description": "Hedefin için vücut ağırlığı kilogramı başına günlük protein gramı; yüksek vücut ağırlığının değeri şişirmemesi için bir referans ağırlıkla sınırlı."
+        },
+        "toolCalorieDeficit": {
+          "title": "Kalori Açığı ve Hedef Tarihi Hesaplayıcı | Musclog",
+          "description": "Bir tarihe kadar hedef kiloya ulaşmak için günlük kaloriyi hesapla; dürüst bir aralık ve tempo çok hızlıysa uyarı ile."
+        },
+        "toolNetCarbs": {
+          "title": "Net Karbonhidrat ve Toplam Karbonhidrat Dönüştürücü | Musclog",
+          "description": "ABD etiketleri lifi karbonhidratın içinde sayar, AB etiketleri saymaz. Net ve toplam karbonhidrat arasında iki yönde dönüşüm yap."
+        },
+        "toolProgressiveOverload": {
+          "title": "Aşamalı Yük Hesaplayıcı | Musclog",
+          "description": "Önceki seansın ağırlığını ve tekrarlarını gir; bir sonraki seansta ne kaldıracağını öğren: ağırlık ekle, tekrar ekle, aynısını yap ya da hafiflet. Musclog uygulamasının kuralını kullanır."
+        },
+        "toolDeloadCalculator": {
+          "title": "Yük Azaltma Hesaplayıcısı: Ne Kadar Ağırlık ve Ne Kadar Süre | Musclog",
+          "description": "Çalışma ağırlığını ve setlerini gir; bir yük azaltma haftası al: daha hafif ağırlık, tutulacak setler, ne kadar zorlanacağın ve ne kadar süreceği."
+        },
+        "toolWorkoutLogTemplate": {
+          "title": "Ücretsiz Yazdırılabilir Antrenman Günlüğü (PDF) ve Tablo | Musclog",
+          "description": "A4 veya US Letter olarak yazdırmak için ücretsiz bir antrenman günlüğü indir; ayrıca bir Excel ve CSV şablonu. Tablo Musclog uygulamasına aktarılır."
+        },
+        "toolNutritionLogTemplate": {
+          "title": "Ücretsiz Yazdırılabilir Besin Günlüğü (PDF) ve Tablo | Musclog",
+          "description": "A4 veya US Letter olarak yazdırmak için ücretsiz bir besin günlüğü indir: makrolar önceden hesaplanmış ya da 100 g başına, hesabı sen yap. Hesabı senin yerine yapan bir tablo da dahil."
+        },
+        "programs": {
+          "title": "Ücretsiz Antrenman Programları | Musclog",
+          "description": "Ücretsiz antrenman programları: itme çekme bacak, üst alt, tüm vücut ve daha fazlası. Her gün, egzersiz, set ve tekrar listelenir ve Musclog'da açabilirsin."
+        },
+        "alternativesStrong": {
+          "title": "Musclog ve Strong Karşılaştırması | Musclog",
+          "description": "Musclog ve Strong: Strong'un ücretsiz sürümü 3 özel rutinle sınırlı. Musclog'un neyi farklı yaptığını ve Strong geçmişini nasıl içe aktaracağını gör. Bilgiler tarihli ve kaynaklıdır."
+        },
+        "alternativesHevy": {
+          "title": "Musclog ve Hevy Karşılaştırması | Musclog",
+          "description": "Musclog ve Hevy: Hevy'nin ücretsiz planı rutin ve özel egzersizleri sınırlar. Musclog'un neyi farklı yaptığını ve Hevy geçmişini nasıl içe aktaracağını gör. Bilgiler tarihli ve kaynaklıdır."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog ve MyFitnessPal Karşılaştırması | Musclog",
+          "description": "Musclog ve MyFitnessPal: barkod taraması orada yalnızca Premium'da, Musclog'da ise ücretsiz. Bilgiler tarihli ve kaynaklıdır."
+        }
+      }
+    },
+    "landing": {
+      "title": "Musclog Web Demosu",
+      "cta": "Canlı dene",
+      "f1": "Akıllı antrenman takibi",
+      "f2": "Yapay zekâ ile fotoğraftan beslenme kaydı",
+      "f3": "Ayrıntılı ilerleme grafikleri",
+      "f4": "%100 özel ve cihaz üstü",
+      "tagline": "Yapay zekâ destekli fitness ve beslenme takibi — ücretsiz ve açık kaynaklı.",
+      "qrcode_title": "Uygulamayı indir",
+      "qrcode_text": "Musclog'u indirmek için tara"
+    },
+    "hero": {
+      "badge1": "Ücretsiz ve açık kaynaklı",
+      "badge2": "Hesap gerekmez",
+      "title1": "Fitness verilerin",
+      "title2": "sana ait olsun",
+      "subheading": "Antrenmanlarını, öğünlerini ve vücut ölçülerini kaydet. Verilerin cihazında kalır ve uygulama çevrimdışı çalışır.",
+      "github": "GitHub'da gör",
+      "demoEyebrow": "Anında önizleme",
+      "demoTitle": "Web demosunu dene",
+      "demoDescription": "İndirmeden önce uygulamanın tarayıcıda çalışan bir önizlemesini aç ve deneyimi keşfet.",
+      "demoButton": "Web demosunu aç",
+      "carousel": {
+        "eyebrow": "Uygulama önizlemesi",
+        "title": "Musclog'a hızlı bir bakış",
+        "description": "Uygulamadan birkaç gerçek ekranı kaydırarak beslenme, antrenman ve ilerleme akışlarını çalışırken gör.",
+        "prev": "Önceki ekran görüntüsü",
+        "next": "Sonraki ekran görüntüsü",
+        "goToSlide": "Ekran görüntüsü {{index}} göster",
+        "slides": {
+          "nutrition": {
+            "title": "Beslenme panosu",
+            "description": "Kalori, makro ve hızlı eylemleri bir bakışta takip et.",
+            "alt": "Musclog beslenme panosu ekran görüntüsü"
+          },
+          "home": {
+            "title": "Ana ekran özeti",
+            "description": "Gününü, son besinlerini ve antrenman kısayollarını tek yerde gör.",
+            "alt": "Musclog ana ekran özeti ekran görüntüsü"
+          },
+          "restTimer": {
+            "title": "Dinlenme zamanlayıcısı",
+            "description": "Odaklı bir dinlenme geri sayımıyla setlerini akıcı tut.",
+            "alt": "Musclog dinlenme zamanlayıcısı ekran görüntüsü"
+          },
+          "mealLogging": {
+            "title": "Öğün kaydı",
+            "description": "Önce beslenmeye odaklı bir akışla öğünlerini ve porsiyonlarını kaydet.",
+            "alt": "Musclog öğün kaydı ekran görüntüsü"
+          },
+          "progress": {
+            "title": "İlerleme özeti",
+            "description": "Değişimi daha kolay fark ettiren vücut ölçülerini ve eğilimleri incele.",
+            "alt": "Musclog ilerleme özeti ekran görüntüsü"
+          },
+          "workouts": {
+            "title": "Antrenman kütüphanesi",
+            "description": "Antrenman planlarına tek yerden göz at ve başlat.",
+            "alt": "Musclog antrenman kütüphanesi ekran görüntüsü"
+          }
+        }
+      },
+      "screenshotAlt": "Musclog uygulama ekran görüntüsü"
+    },
+    "screenshots": {
+      "title": "Uygulamanın içinden",
+      "description": "Musclog'dan gerçek ekranlar. Yana kaydır ya da büyütmek için birine dokun.",
+      "openSlide": "Ekran görüntüsünü aç",
+      "modalAriaLabel": "Musclog ekran görüntüsü önizlemesi",
+      "close": "Kapat",
+      "previous": "Önceki ekran görüntüsü",
+      "next": "Sonraki ekran görüntüsü",
+      "slides": {
+        "home": {
+          "title": "Ana ekran özeti",
+          "description": "Günlük pano, son besinler ve hızlı antrenman kısayolları tek yerde.",
+          "alt": "Musclog ana ekran özeti ekran görüntüsü"
+        },
+        "restTimer": {
+          "title": "Dinlenme zamanlayıcısı",
+          "description": "Setler arasında odaklı bir geri sayım.",
+          "alt": "Musclog dinlenme zamanlayıcısı ekran görüntüsü"
+        },
+        "completeSet": {
+          "title": "Seti tamamla",
+          "description": "Seti bitir ve doğrudan bir sonraki eyleme geç.",
+          "alt": "Musclog seti tamamla ekran görüntüsü"
+        },
+        "mealLogging": {
+          "title": "Öğün kaydı",
+          "description": "Önce beslenmeye odaklı bir akışla öğünlerini ve porsiyonlarını kaydet.",
+          "alt": "Musclog öğün kaydı ekran görüntüsü"
+        },
+        "chatCoach": {
+          "title": "Koç sohbeti",
+          "description": "Makrolar, antrenman veya öğün fikirleri hakkında Loggy'ye sor.",
+          "alt": "Musclog koç sohbeti ekran görüntüsü"
+        },
+        "chatCoach2": {
+          "title": "Koçtan antrenman önerileri",
+          "description": "Yapay zekâ koçundan kişiye özel egzersiz önerileri ve toparlanma ipuçları al.",
+          "alt": "Musclog koçun antrenman önerileri ekran görüntüsü"
+        },
+        "bodyMetrics": {
+          "title": "Vücut ölçümleri",
+          "description": "Kilo eğilimlerini ve vücut kompozisyonu özetlerini incele.",
+          "alt": "Musclog vücut ölçümleri ekran görüntüsü"
+        },
+        "workouts": {
+          "title": "Antrenman kütüphanesi",
+          "description": "Antrenman planlarına tek yerden göz at ve başlat.",
+          "alt": "Musclog antrenman kütüphanesi ekran görüntüsü"
+        },
+        "createWorkout": {
+          "title": "Antrenman oluştur",
+          "description": "Sıfırdan ya da yapay zekâ ile bir rutin başlat.",
+          "alt": "Musclog antrenman oluşturma ekran görüntüsü"
+        },
+        "today": {
+          "title": "Bugünün beslenmesi",
+          "description": "Günün kalori ve makrolarını bir bakışta gör.",
+          "alt": "Musclog bugünün beslenmesi ekran görüntüsü"
+        },
+        "settings": {
+          "title": "Yerel veri ayarları",
+          "description": "Dışa aktarmaları, içe aktarmaları ve yerel veri denetimlerini yönet.",
+          "alt": "Musclog yerel veri ayarları ekran görüntüsü"
+        }
+      }
+    },
+    "themes": {
+      "title": "Temanı seç",
+      "description": "Antrenmanına uyan paleti seç. Grafikler, kamera katmanları ve sekme çubuğu dahil her ekran buna uyar.",
+      "footnote": "Ayarlardan istediğin zaman değiştir. Seçmek istemezsen Musclog cihazının açık ve koyu ayarını da takip eder."
+    },
+    "featureGrid": {
+      "title": "Musclog neler yapar",
+      "description": "Kayıt, planlama ve değerlendirme araçları. Yapay zekâ kullanan özellikler isteğe bağlıdır.",
+      "items": {
+        "aiCoach": {
+          "title": "Yapay zekâ koçu",
+          "description": "Antrenman ve yiyecekler hakkında Loggy ile sohbet et ya da bir öğünü fotoğraftan tahmin ettir. İsteğe bağlı; kendi Gemini, OpenAI veya Claude anahtarınla çalışır."
+        },
+        "barcode": {
+          "title": "Barkod tarayıcı",
+          "description": "Bir ürünü tarayıp Open Food Facts'ten kaydet; üründe varsa Nutri-Score ve NOVA bilgisiyle birlikte."
+        },
+        "checkins": {
+          "title": "Haftalık değerlendirme",
+          "description": "Her hafta besinlerinin, kilonun ve antrenmanının nasıl gittiğini gör; hedeflerinde önerilen bir değişikliği kabul et veya atla."
+        },
+        "analytics": {
+          "title": "İlerleme grafikleri",
+          "description": "Kilo, vücut yağı ve kaldırışlar için grafikler; ayrıca kendi kayıtlarından bir kalori harcama tahmini."
+        },
+        "cycle": {
+          "title": "Döngü farkındalığı",
+          "description": "Adet ve belirtileri kaydet, kendi kayıtlarındaki kalıpları gör. Sen açmadıkça tahminler kapalı kalır."
+        },
+        "templates": {
+          "title": "Antrenman planları",
+          "description": "Hedef kasları olan 800'den fazla egzersizlik bir kütüphaneden itme/çekme/bacak ya da üst/alt gibi rutinler oluştur."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Android'de verilerini diğer sağlık ve fitness uygulamalarıyla paylaşmak için Google Health Connect ile senkronize ol."
+        },
+        "encryption": {
+          "title": "Şifreli depolama",
+          "description": "Kilo, vücut yağı ve besin kayıtları cihazında şifrelenir. İstediğin zaman JSON ya da Excel olarak dışa aktar."
+        }
+      }
+    },
+    "loggy": {
+      "title": "Loggy ile tanış",
+      "description": "Loggy, Musclog'un maskotu: kalem ve panoyla bir kayıt defteri. Birkaç anda ortaya çıkar; ilk kaydettiğin öğün, bitirdiğin bir antrenman ya da yılına bakış gibi. Yapay zekâ koçunun varsayılan sesi de odur.",
+      "setting": "Hoşlanmadın mı? Tek bir ayar onu uygulamanın her yerinde gizler."
+    },
+    "cta": {
+      "title": "Musclog'u al",
+      "description": "Antrenman ve besin kayıtlarını kendi cihazında tut. Ücretsiz ve açık kaynaklı.",
+      "download": "Şimdi indir",
+      "close": "Kapat",
+      "sourceCode": "Kaynak kodunu gör"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Lift, Log, Repeat",
+      "features": "Özellikler",
+      "progress": "İlerleme",
+      "github": "GitHub",
+      "download": "İndir",
+      "calculator": "Hesaplayıcı",
+      "exercises": "Egzersizler",
+      "gameboy": "Game Boy",
+      "language": "Dil",
+      "alternatives": "Alternatifler",
+      "blog": "Blog",
+      "menu": "Menü",
+      "openMenu": "Menüyü aç",
+      "closeMenu": "Menüyü kapat",
+      "preferences": "Tercihler",
+      "theme": "Tema",
+      "tools": "Araçlar"
+    },
+    "blog": {
+      "title": "Musclog Blogu",
+      "description": "Özel, açık kaynaklı bir fitness uygulaması yapmaya dair notlar — ürün kararlarından arkasındaki teknolojiye kadar.",
+      "empty": "Henüz yayımlanmış bir yazı yok.",
+      "listLabel": "Blog yazıları",
+      "tagsLabel": "Yazı etiketleri",
+      "readArticle": "Yazıyı oku",
+      "backToBlog": "Tüm yazılara dön",
+      "backToCategories": "Tüm kategorilere dön",
+      "browseCategories": "Kategoriye göre incele",
+      "backToTags": "Tüm etiketlere dön",
+      "browseTags": "Etikete göre incele",
+      "englishOnlyNotice": "Üzgünüz, blog yazıları yalnızca İngilizce.",
+      "share": {
+        "title": "Bu yazıyı paylaş",
+        "shareOn": "{{network}} üzerinde paylaş"
+      },
+      "paginationLabel": "Blog sayfalama",
+      "previousPage": "Önceki sayfa",
+      "nextPage": "Sonraki sayfa",
+      "pageStatus": "Sayfa {{current}} / {{total}}",
+      "pageLabel": "Sayfa {{page}}",
+      "categoryPage": {
+        "title": "{{category}} yazıları",
+        "description": "{{category}} kategorisindeki tüm Musclog blog yazıları.",
+        "empty": "{{category}} kategorisinde yazı bulunamadı.",
+        "listLabel": "{{category}} blog yazıları"
+      },
+      "tagPage": {
+        "title": "{{tag}} etiketli yazılar",
+        "description": "{{tag}} etiketi taşıyan her Musclog blog yazısı.",
+        "empty": "{{tag}} etiketiyle yazı bulunamadı.",
+        "listLabel": "{{tag}} blog yazıları"
+      },
+      "tagsPage": {
+        "title": "Blog etiketleri",
+        "description": "Musclog blogunda kullanılan tüm etiketler. Etiket ne kadar büyükse, o etiketi taşıyan yazı o kadar çok demektir.",
+        "listLabel": "Blog etiketleri",
+        "postCount_one": "{{count}} yazı",
+        "postCount_few": "{{count}} yazı",
+        "postCount_many": "{{count}} yazı",
+        "postCount_other": "{{count}} yazı"
+      },
+      "categoriesPage": {
+        "title": "Blog kategorileri",
+        "description": "Musclog blogunun ele aldığı her konu: antrenmandan beslenmeye, mühendislikten ürün güncellemelerine.",
+        "listLabel": "Blog kategorileri",
+        "postCount_one": "{{count}} yazı",
+        "postCount_few": "{{count}} yazı",
+        "postCount_many": "{{count}} yazı",
+        "postCount_other": "{{count}} yazı"
+      },
+      "categories": {
+        "product-updates": "Ürün güncellemeleri",
+        "web-development": "Web geliştirme",
+        "engineering": "Mühendislik",
+        "retro": "Retro",
+        "machine-learning": "Makine öğrenmesi",
+        "guides": "Rehberler",
+        "training": "Antrenman",
+        "nutrition": "Beslenme"
+      }
+    },
+    "gameboy": {
+      "pageTitle": "Musclog'u Game Boy'da oyna",
+      "eyebrow": "Sadece eğlence için",
+      "title": "Game Boy'da Musclog",
+      "subtitle": "Musclog'un küçük bir Game Boy Color sürümünü yaptık. Oynat'a bas ve doğrudan tarayıcında dene.",
+      "playButton": "Oynat",
+      "loading": "Yükleniyor…",
+      "errorLoad": "Oyun yüklenemedi. Lütfen tekrar dene.",
+      "controlsHint": "Masaüstü: hareket için ok tuşları ya da WASD, X = A, Z = B, Enter = Start, Shift = Select. Dokunmatik cihazlarda ekrandaki düğmeleri kullan.",
+      "up": "Yukarı",
+      "down": "Aşağı",
+      "left": "Sol",
+      "right": "Sağ",
+      "aButton": "A düğmesi",
+      "bButton": "B düğmesi",
+      "start": "Start",
+      "select": "Select",
+      "downloadRom": "ROM'u indir",
+      "downloadManual": "Kılavuzu indir"
+    },
+    "progress": {
+      "metaTitle": "Musclog İlerleme İçe Aktarma",
+      "loading": "Yerel ilerleme veritabanın yükleniyor...",
+      "hero": {
+        "eyebrow": "Masaüstü ilerleme görüntüleyici",
+        "title": "Musclog uygulamanın dışa aktardığı verileri buraya içe aktar",
+        "description": "Musclog JSON dışa aktarmanı bırak; kilo eğilimleri, beslenme kalıpları, antrenman hacmi ve önemli ilişkilerin büyük ekranlar için çizildiği tarayıcı tabanlı bir ilerleme panosu açılsın.",
+        "points": {
+          "weight": {
+            "title": "Kilo ve vücut kompozisyonu",
+            "description": "Tartı eğilimlerini, vücut yağı değişimlerini, FFMI'yi ve vücut ölçülerini tek yerde incele."
+          },
+          "nutrition": {
+            "title": "Beslenme ve TDEE",
+            "description": "İçe aktardığın günlükten kalori alımını, makro dengesini ve ortalama alım özetlerini incele."
+          },
+          "training": {
+            "title": "Antrenman ve ilişkiler",
+            "description": "Antrenman hacmini, ruh halini ve toparlanma benzeri sinyalleri geniş bir masaüstü ekranında karşılaştır."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Yerel içe aktarma",
+        "title": "Uygulama dışa aktarmanı bu tarayıcıya getir",
+        "description": "Musclog mobil uygulamasından oluşturulan JSON dışa aktarmasını seç. İçe aktarma tarayıcının yerel depolamasında çalışır ve cihazından asla çıkmaz.",
+        "passphraseLabel": "Şifre çözme parolası",
+        "passphrasePlaceholder": "İsteğe bağlı, yalnızca dışa aktarman şifrelenmişse",
+        "cta": "JSON dışa aktarmasını seç",
+        "importing": "Veriler içe aktarılıyor...",
+        "hint": "Desteklenen biçim: Musclog JSON dışa aktarması",
+        "selectedFile": "Seçilen dosya: {{fileName}}",
+        "genericError": "Bu dosya içe aktarılamadı. Geçerli bir Musclog dışa aktarması olduğunu kontrol et.",
+        "localOnlyTitle": "Varsayılan olarak özel",
+        "localOnlyDescription": "Bu sayfa dışa aktarmanı yalnızca yerel web veritabanına okur; ilerleme verilerini bir sunucuya yüklemeden inceleyebilirsin."
+      },
+      "dashboard": {
+        "eyebrow": "İçe aktarılmış analitik",
+        "title": "Musclog ilerlemen, masaüstü web için yeniden tasarlandı",
+        "description": "Bu pano uygulamayla aynı yerel veritabanını ve ilerleme hesaplarını kullanır, ama eğilimleri taramak ve kalıpları karşılaştırmak için daha geniş bir masaüstü düzeninde sunar.",
+        "replaceData": "İçe aktarılan verileri değiştir",
+        "localStorageHint": "Veriler tarayıcının yerel Musclog veritabanında saklanır."
+      },
+      "stats": {
+        "weightHint": "Seçtiğin aralıktaki en son kilo.",
+        "caloriesHint": "{{count}} kayıtlı beslenme gününün ortalama kalorisi.",
+        "workoutsHint": "Geçerli aralıktaki tamamlanmış antrenman kayıtları.",
+        "tdeeHint": "Mevcut verilere dayanan güncel tahmini bakım kalorisi."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Vücut kompozisyonu özeti",
+          "description": "En büyük değişimlerin bir bakışta görülmesi için önce temel vücut ölçülerin gösterilir."
+        },
+        "nutrition": {
+          "title": "Beslenme eğilimleri",
+          "description": "Günlük kalori toplamları ve son makro dengesi, alımını gördüğün sonuçlarla ilişkilendirmeyi kolaylaştırır.",
+          "macroSplit": "Son makro kalori dağılımı"
+        },
+        "training": {
+          "title": "Antrenman çıktısı",
+          "description": "Antrenman hacmi ve kas grubu başına set sayısı, antrenman çabanın gerçekte nereye gittiğini gösterir."
+        },
+        "correlations": {
+          "title": "İlişki görünümleri",
+          "description": "Bu masaüstü dağılım grafikleri, alımın ve vücut kompozisyonu değişimlerinin birlikte hareket edip etmediğini incelemeyi kolaylaştırır."
+        },
+        "mood": {
+          "title": "Ruh hali özetleri",
+          "description": "Ruh hali kayıtları, daha büyük vücut ve antrenman eğilimlerinin yanında hafif bir hazırlık katmanı olarak görünür kalır.",
+          "summaryTitle": "Ruh hali özeti",
+          "totalEntries": "Takip edilen dönemler",
+          "averageScore": "Ortalama puan"
+        },
+        "reminders": {
+          "title": "Hatırlatıcılara uyum",
+          "description": "Su ve takviye hatırlatıcıları artık tamamlama eğilimleri olarak görünüyor; böylece tutarlılığını diğer toparlanma sinyallerinle birlikte inceleyebilirsin.",
+          "supplementsTitle": "Takviye hatırlatıcıları"
+        },
+        "measurements": {
+          "title": "Ölçümler",
+          "description": "Çevre ölçümü kayıtları varsa, burada kompakt eğilim kartları olarak gösterilir.",
+          "empty": "İçe aktarılan aralıkta vücut ölçümü bulunamadı."
+        }
+      }
+    },
+    "storeButtons": {
+      "googleTitle": "ŞURADAN AL",
+      "googleStore": "Google Play",
+      "appleTitle": "KATIL",
+      "appleStore": "TestFlight",
+      "comingSoon": "App Store yakında!",
+      "qrButton": "QR kodlarını göster",
+      "qrTitle": "QR kodları",
+      "qrDescription": "Android veya iOS kurulum sayfasını doğrudan telefonunda aç.",
+      "qrGoogleLabel": "Android kurulum sayfası",
+      "qrAppleLabel": "iOS kurulum sayfası",
+      "qrGoogleAlt": "Google Play için QR kodu",
+      "qrAppleAlt": "TestFlight için QR kodu",
+      "close": "Kapat"
+    },
+    "download": {
+      "pageTitle": "Musclog'u indir",
+      "eyebrow": "Bugün takibe başla",
+      "title": "Musclog'u indir",
+      "subtitle": "Musclog'u şimdi indir ve antrenmanlarını, beslenmeni ve ilerlemeni tek bir özel yerde tut.",
+      "googleLabel": "Musclog'u Google Play'den indir",
+      "appleLabel": "Musclog TestFlight'a katıl"
+    },
+    "open": {
+      "title": "Musclog'da aç",
+      "descriptionWorkout": "Antrenman planın hazır. Hiçbir şey kaydedilmeden önce incelemek için Musclog'da aç.",
+      "descriptionFood": "Besin kaydın hazır. Hiçbir şey kaydedilmeden önce incelemek için Musclog'da aç.",
+      "descriptionEmpty": "Bu bağlantıda içe aktarılacak veri yok. Sohbetine dön ve bağlantıya yeniden dokun.",
+      "openButton": "Musclog'da aç",
+      "countdown": "Musclog {{seconds}} saniye içinde açılıyor…",
+      "forwarded": "Musclog açılmadıysa aşağıdaki düğmeye dokun.",
+      "installHint": "Henüz Musclog'un yok mu?",
+      "installLink": "Musclog'u indir"
+    },
+    "forwarding": {
+      "title": "Doğru sayfaya yönlendiriliyorsun",
+      "description": "Musclog sayfaları artık bir dilin altında yer alıyor, bu yüzden seni İngilizce sürüme gönderiyoruz. Bu yalnızca bir an sürer.",
+      "fallback": "Bir şey olmuyor mu?",
+      "link": "Sayfayı aç"
+    },
+    "footer": {
+      "privacyPolicy": "Gizlilik Politikası",
+      "terms": "Koşullar",
+      "github": "Github",
+      "contact": "İletişim",
+      "license": "Lisans",
+      "copyright": "Ücretsiz ve açık kaynaklı yazılım.",
+      "latestBuild": "Son derleme: {{version}}"
+    },
+    "cookieConsent": {
+      "ariaLabel": "Çerez onayı",
+      "description": "Web sitesinin nasıl kullanıldığını anlamak için Google Analytics kullanıyoruz. Analitik çerezleri yalnızca kabul edersen ayarlanır. Okuyun:",
+      "privacyLink": "Gizlilik Politikası",
+      "accept": "Kabul et",
+      "reject": "Reddet",
+      "cookieSettings": "Çerez ayarları"
+    },
+    "privacy": {
+      "titleStart": "Gizlilik",
+      "titleHighlight": "Politikası",
+      "lastUpdated": "Son güncelleme: 19 Kasım 2026",
+      "highlights": {
+        "dataProtection": {
+          "title": "Veri koruma",
+          "description": "Hassas kayıtlar cihazında şifrelenir ve ağ istekleri HTTPS kullanır."
+        },
+        "localFirst": {
+          "title": "Yerel öncelikli depolama",
+          "description": "Verilerin cihazında saklanır. Musclog'da hesap yok ve bulut senkronizasyonu yok."
+        },
+        "security": {
+          "title": "Kontrol sende",
+          "description": "Yalnızca besin araması, isteğe bağlı yapay zekâ ve çökme raporları internet kullanır; bunların her birini kapatabilirsin."
+        }
+      },
+      "intro": "Bu Gizlilik Politikası, Musclog'u kullandığında bilgilerinin toplanması, kullanılması, saklanması ve paylaşılması konusundaki politika ve prosedürlerimizi açıklar. Hem Musclog uygulamasını hem de Musclog web sitesini kapsar; ancak her bağlamda işlenen veri kategorileri farklıdır. Bu Gizlilik Politikası ayrıca gizlilik haklarını ve yasaların seni nasıl koruduğunu da açıklar.",
+      "sections": {
+        "scope": {
+          "title": "Bu Gizlilik Politikasının kapsamı",
+          "content": "Musclog hem bir uygulama hem de herkese açık bir web sitesi olarak sunulur. Bu iki hizmet farklı çalıştığından, geçerli gizlilik uygulamaları aşağıda ayrı ayrı özetlenir ve bu Gizlilik Politikası boyunca daha ayrıntılı açıklanır."
+        },
+        "interpretation": {
+          "title": "Yorum ve tanımlar",
+          "content": "Baş harfi büyük yazılmış kelimelerin anlamları aşağıdaki koşullarda tanımlanmıştır. Aşağıdaki tanımlar, tekil veya çoğul olarak geçmelerinden bağımsız olarak aynı anlama sahiptir."
+        },
+        "definitions": {
+          "title": "Tanımlar",
+          "items": {
+            "application": {
+              "term": "Uygulama",
+              "def": "Musclog'u, yani Musclog tarafından sağlanan yazılım programını ifade eder."
+            },
+            "company": {
+              "term": "Şirket",
+              "def": "(bu Sözleşmede \"Musclog\", \"Biz\", \"Bizim\" veya \"Bizi\" olarak anılan) Musclog'u ifade eder."
+            },
+            "device": {
+              "term": "Cihaz",
+              "def": "Hizmete erişebilen bilgisayar, cep telefonu veya dijital tablet gibi her türlü cihazı ifade eder."
+            },
+            "personalData": {
+              "term": "Kişisel veri",
+              "def": "Belirlenmiş ya da belirlenebilir bir kişiyle ilgili her türlü bilgiyi ifade eder."
+            },
+            "service": {
+              "term": "Hizmet",
+              "def": "Aksi ilgili bölümde belirtilmedikçe, Musclog uygulamasını ve Musclog web sitesini ifade eder."
+            },
+            "serviceProvider": {
+              "term": "Hizmet sağlayıcı",
+              "def": "Musclog adına verileri işleyen her türlü gerçek ya da tüzel kişiyi ifade eder."
+            },
+            "usageData": {
+              "term": "Kullanım verisi",
+              "def": "Hizmet kullanılırken otomatik olarak toplanan veriler; örneğin tarayıcı türü, cihaz modeli veya tanılama verileri."
+            },
+            "you": {
+              "term": "Sen",
+              "def": "Hizmete erişen veya hizmeti kullanan kişiyi ya da bu kişinin hizmete erişmesi veya kullanması adına hareket ettiği Musclog ya da başka bir tüzel kişiyi ifade eder; hangisi geçerliyse."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Kişisel verilerinin toplanması ve kullanılması",
+          "content": "Musclog, kişisel veri toplamadan çalışacak şekilde tasarlanmıştır. Bu bölüm, verilerin cihazından çıktığı sınırlı durumları açıklar.",
+          "typesCollected": {
+            "title": "Toplanan veri türleri",
+            "content": "Musclog senden bir hesap oluşturmanı istemez ve adını, e-posta adresini veya telefon numaranı istemez. Veriler cihazından yalnızca şu durumlarda çıkar:",
+            "items": [
+              "Açıkken anonim çökme raporları (aşağıdaki \"Anonim çökme raporları\" bölümüne bak).",
+              "Besin aramaları ve taranan barkodlar, seçtiğin besin veritabanına gönderilir (aşağıdaki \"Besin veritabanları\" bölümüne bak).",
+              "İsteğe bağlı bir yapay zekâ özelliğine gönderdiğin istekler, seçtiğin sağlayıcıya gönderilir (aşağıdaki \"İsteğe bağlı yapay zekâ özellikleri\" bölümüne bak).",
+              "Kendin dışa aktardığın, yedeklediğin, paylaştığın veya başka bir cihaza taşıdığın veriler.",
+              "Web sitesi ziyaretlerinden gelen kullanım verileri (aşağıdaki \"Web sitesi analitiği\" bölümüne bak)."
+            ]
+          },
+          "usageData": {
+            "title": "Kullanım verisi",
+            "content": "Kullanım verisi, aşağıdaki \"Web sitesi analitiği\" bölümünde anlatıldığı gibi web sitesinde otomatik olarak toplanır. Musclog uygulaması, anonim bir çökme raporunda yer alan uygulama sürümü ve cihaz modeli dışında kullanım verisi toplamaz."
+          },
+          "appPermissions": {
+            "title": "Uygulama kullanılırken toplanan bilgiler",
+            "content": "Uygulama özelliklerini sunabilmek için aşağıdaki izinleri isteyebilir. Bunlar aracılığıyla elde edilen veriler, bu Gizlilik Politikasında aksi belirtilmedikçe cihazında kalır:",
+            "items": [
+              "Kamera: besin barkodlarını ve besin etiketlerini taramak, öğün fotoğrafları çekmek ve QR kodlar aracılığıyla başka bir cihazdan veri almak için.",
+              "Health Connect veya Apple Health: yukarıdaki \"Health Connect ve Apple Health\" bölümüne bak.",
+              "Bildirimler, tam zamanlı alarmlar ve önyükleme tamamlandı: antrenman, dinlenme zamanlayıcısı, beslenme ve döngü hatırlatıcılarını cihazın yeniden başlatılsa bile zamanında göstermek için.",
+              "Biyometri (parmak izi veya yüz): uygulamayı veya bir kısmını kilitlemek için, bunu açarsan.",
+              "Bluetooth ve eski Android sürümlerinde konum; Android'in Bluetooth taraması için gerektirdiği izinlerdir: desteklenen bir tekrar takip sensörüne bağlanmak için. Musclog konumunu kullanmaz ve saklamaz.",
+              "İnternet: besin aramaları, isteğe bağlı yapay zekâ özellikleri ve çökme raporları için.",
+              "Titreşim ve uyanık tutma kilidi: dokunsal geri bildirim ve antrenman ile zamanlayıcılar sırasında ekranın açık kalması için."
+            ]
+          },
+          "optionalAi": {
+            "title": "İsteğe bağlı yapay zekâ özellikleri",
+            "content1": "Musclog uygulaması, besin aramaları, isteğe bağlı yapay zekâ özellikleri ve çökme raporları dışında tamamen çevrimdışı kullanılabilir. Musclog, aşağıda anlatılan ücretsiz Musclog yapay zekâ seçeneğini kullandığın durumlar dışında antrenman, beslenme, sağlık veya profil verilerini sunucularına göndermez.",
+            "content2": "Musclog isteğe bağlı yapay zekâ özellikleri sunar. Bir sağlayıcı seçene kadar kapalı kalırlar: kendi OpenAI, Anthropic Claude veya Google Gemini API anahtarın, iOS'ta Apple Intelligence gibi cihaz üstü bir model, yerel veya kendi barındırdığın bir LLM uç noktası ya da ücretsiz Musclog yapay zekâ seçeneği.",
+            "content3": "Bir yapay zekâ özelliğini kullanmayı seçersen, göndermeye karar verdiğin veriler yapılandırdığın sağlayıcıya veya uç noktaya gönderilir. Tamamen kendi kontrolündeki kendi barındırdığın yerel bir modeli kullanırsan, bu veriler kendi ortamında kalabilir. Barındırılan bir üçüncü taraf uç noktası kullanırsan (barındırılan yerel model hizmetleri dahil), o sağlayıcı verileri kendi koşullarına ve gizlilik uygulamalarına göre işleyebilir. Musclog, dış sağlayıcıların kendilerine gönderdiğin verileri nasıl işlediğini kontrol etmez.",
+            "content4": "Ücretsiz Musclog yapay zekâ seçeneğini seçersen, istekler Musclog için işletilen Cloudflare AI Gateway üzerinden gönderilir ve Musclog tarafından yönetilen bir API anahtarı kullanılarak Google Gemini tarafından yanıtlanır. Bir istek yalnızca yapay zekâ özelliğine gönderdiğin şeyleri içerir: sohbet mesajları, öğün fotoğrafları veya o özelliğin ihtiyaç duyduğu antrenman, beslenme ve vücut bilgileri. İstekler hata ve kötüye kullanımı izlemek için ağ geçidinin günlüklerinde sınırlı bir süre tutulabilir; Cloudflare ve Google tarafından kendi koşulları altında işlenir.",
+            "content5": "Seçtiğin sağlayıcıların gizlilik politikalarını incelemelisin, bunlar arasında:",
+            "cloudflarePrivacyPolicy": "Cloudflare Gizlilik Politikası",
+            "openaiPrivacyPolicy": "OpenAI Gizlilik Politikası",
+            "anthropicPrivacyPolicy": "Anthropic Gizlilik Politikası",
+            "googlePrivacyPolicy": "Google Gizlilik Politikası",
+            "applePrivacyPolicy": "Apple Gizlilik Politikası",
+            "and": "ve"
+          },
+          "healthConnect": {
+            "title": "Health Connect ve Apple Health",
+            "content": "Musclog'u Health Connect'e (Android) veya Apple Health'e (iOS) bağlarsan, uygulama yalnızca verdiğin izinlerle cihazındaki sağlık verilerini okur ve yazar:",
+            "items": [
+              "Kilo, boy, vücut yağı, yağsız vücut kütlesi, beslenme, adım, yakılan kalori ve bazal metabolizma hızını okuyabilir; döngü takibi kullanıp içe aktarmayı seçersen adet döngüsü verilerini de okuyabilir.",
+              "Kilo, boy, vücut yağı, yağsız vücut kütlesi, beslenme, antrenmanlar ve yürüme veya koşu mesafesini yazabilir; istersen adet döngüsü verilerini de yazabilir.",
+              "Health Connect veya Apple Health'ten okunan sağlık verileri cihazında kalır. Musclog bunları sunucularına göndermez, satmaz veya reklam için kullanmaz.",
+              "Sağlık verileri yalnızca uygulamanın fitness, beslenme ve vücut takibi özelliklerini sunmak için kullanılır.",
+              "Bu izinleri istediğin zaman Health Connect veya Sağlık uygulamasından iptal edebilirsin."
+            ]
+          },
+          "foodData": {
+            "title": "Besin veritabanları",
+            "content": "Bir besin aradığında ya da bir barkodu taradığında, arama metni veya barkod uygulamanın ayarlarında seçtiğin besin veritabanına gönderilir: Open Food Facts, USDA FoodData Central veritabanı veya Musclog'un kendi besin veritabanı. Bu isteklere bir hesap, ad veya başka kişisel bilgi eklenmez; ancak her internet isteği gibi bunlar da IP adresini isteği alan hizmete açık eder. İstersen yalnızca cihazında saklanan besinlerde de arayabilirsin."
+          }
+        },
+        "trainingData": {
+          "title": "Gönüllü antrenman verisi paylaşımı",
+          "content1": "Bir WT9011DCL BLE sensör cihazına sahipsen, onu uygulamaya bağlar ve tekrarlarını takip etmek için kullanırsan, Musclog cihazında yerel sensör kayıt dosyaları oluşturur. Bu dosyalar yalnızca bu cihaz tekrar takibi için aktif olarak kullanılırken oluşturulur. Yalnızca cihazında saklanırlar ve hiçbir sunucuya otomatik olarak yüklenmez, senkronize edilmez veya iletilmez; açıp kapatılacak bir seçenek yoktur ve hiçbir türde otomatik veri paylaşımı yapılmaz.",
+          "content2": "Verilerini Musclog'un fitness takibi modellerini geliştirmeye katkıda bulunmak için paylaşmak istersen, bu dosyaları elle paylaşabilirsin: örneğin e-posta ile ya da Google Drive gibi bir bulut depolama hizmeti üzerinden. Uygulama içinde bunun için bir mekanizma yoktur; herhangi bir paylaşım tamamen kendi isteğine ve kararına bağlıdır.",
+          "content3": "Bu yolla gönüllü olarak paylaştığın veriler, makine öğrenmesi modellerini eğitmek, test etmek ve geliştirmek için kullanılabilir. Ortaya çıkan model, açık kaynaklı bir yazılım olarak herkese açık biçimde yayımlanabilir. Verilerini paylaşarak, bunların herkese açık erişilebilen bir veri kümesinin parçası olabileceğini kabul etmiş olursun ve model geliştirme süreci kapsamında kopyalanmasına, saklanmasına, işlenmesine ve dağıtılmasına izin vermiş olursun. Yalnızca paylaşma hakkına sahip olduğun ve herkese açık hale getirilmesinde rahat olduğun verileri paylaşmalısın."
+        },
+        "useOfData": {
+          "title": "Kişisel verilerinin kullanımı",
+          "items": [
+            "Cihazında çalışan antrenman, beslenme ve vücut takibi gibi uygulama özelliklerini sunmak için.",
+            "Yaptığın besin aramalarına ve isteğe bağlı yapay zekâ isteklerine yanıt vermek için.",
+            "Çökmeleri ve hataları bulmak ve düzeltmek için; açıkken anonim çökme raporlarını kullanarak.",
+            "\"Web sitesi analitiği\" bölümünde anlatıldığı gibi, ziyaretçilerin web sitesini nasıl kullandığını anlamak için.",
+            "Bizimle iletişime geçtiğinde sana yanıt vermek için.",
+            "Musclog verilerini satmaz, reklam göstermez ve verilerini reklam veya profilleme için kullanmaz."
+          ]
+        },
+        "sharing": {
+          "title": "Kişisel verilerinin paylaşılması",
+          "items": [
+            "Seçtiğin sağlayıcılarla: besin aramaları seçtiğin besin veritabanına, yapay zekâ istekleri ise yapılandırdığın yapay zekâ sağlayıcısına gider.",
+            "Hizmetin bölümlerini bizim adımıza çalıştıran hizmet sağlayıcılarıyla: Sentry (çökme raporları), Cloudflare ve Google (ücretsiz Musclog yapay zekâ seçeneği), GitHub ve Cloudflare (web sitesini barındırma) ve Google Analytics (web sitesi; yalnızca analitiği kabul ettikten sonra).",
+            "\"Kişisel verilerinin ifşası\" bölümünde anlatıldığı gibi yasa gerektirdiğinde.",
+            "Örneğin verilerini kendin dışa aktarır ya da paylaşırsan, senin rızanla.",
+            "Verilerini satmayız ve reklamcılarla ya da veri simsarlarıyla paylaşmayız."
+          ]
+        },
+        "retention": {
+          "title": "Kişisel verilerinin saklanması",
+          "content": "Uygulamadaki veriler, sen silene ya da uygulamayı kaldırana kadar cihazında kalır. Anonim çökme raporları Sentry tarafından sınırlı bir süre tutulur, sonra silinir. Ücretsiz Musclog yapay zekâ seçeneğiyle gönderilen istekler, ağ geçidinin günlüklerinde sınırlı bir süre tutulabilir. Web sitesi analitiği verileri \"Web sitesi analitiği\" bölümünde anlatıldığı gibi saklanır."
+        },
+        "transfer": {
+          "title": "Kişisel verilerinin aktarılması",
+          "content": "Çökme raporları, besin aramaları, yapay zekâ istekleri ve web sitesi analitiği, bu Gizlilik Politikasında adı geçen hizmetler tarafından işlenir; bu hizmetler ülkenin dışında bulunabilir ve veri koruma yasaları yargı alanınızdakinden farklı olabilir. Musclog, bu verilerin güvenli bir şekilde ve bu Gizlilik Politikasına uygun olarak işlenmesi için makul adımlar atar."
+        },
+        "deletion": {
+          "title": "Kişisel verilerini sil",
+          "content": "Verilerin cihazında saklandığı için, istediğin zaman silebilirsin: tek tek kayıtları silebilir, uygulamanın veri ayarlarından tüm verileri silebilir ya da uygulamayı kaldırabilirsin. Musclog'da silinecek bir hesap yoktur. Cihazından ayrılmış bir çökme raporunu veya başka bir veriyi silmemize yardımcı olmamızı istersen, e-postayla bize ulaş."
+        },
+        "disclosure": {
+          "title": "Kişisel verilerinin ifşası",
+          "content": "Musclog, Kişisel Verilerini aşağıdakileri yapmak için gerekli olduğuna iyi niyetle inandığı durumlarda ifşa edebilir:",
+          "items": [
+            "Yasal bir yükümlülüğe uymak",
+            "Musclog'un hak ve mülkiyetini korumak ve savunmak",
+            "Hizmetle bağlantılı olası bir kötü davranışı önlemek veya soruşturmak",
+            "Hizmet kullanıcılarının ya da kamunun kişisel güvenliğini korumak",
+            "Yasal sorumluluğa karşı korunmak"
+          ]
+        },
+        "security": {
+          "title": "Kişisel verilerinin güvenliği",
+          "content": "Musclog, cihazındaki kilo, vücut yağı, besin kayıtları ve adet döngüsü kayıtları gibi hassas kayıtları şifreler; ağ istekleri HTTPS kullanır. Uygulamayı veya bir kısmını cihazının biyometrisi ya da PIN'i ile de kilitleyebilirsin. Elektronik depolamanın ya da internet üzerinden iletimin hiçbir yöntemi %100 güvenli değildir; bu yüzden mutlak güvenliği garanti edemeyiz."
+        },
+        "childrenPrivacy": {
+          "title": "Çocukların gizliliği",
+          "content": "Hizmetimiz 13 yaşın altındaki çocuklara yönelik değildir ve onlardan bilerek kişisel veri toplamayız. Bir çocuğun bize, örneğin e-posta yoluyla, kişisel veri gönderdiğini düşünüyorsan, lütfen bizimle iletişime geç; bunu sileriz."
+        },
+        "links": {
+          "title": "Diğer web sitelerine bağlantılar",
+          "content": "Hizmetimiz, bizim işletmediğimiz diğer web sitelerine bağlantılar içerebilir. Bir üçüncü taraf bağlantısına tıklarsan, o tarafın sitesine yönlendirilirsin. Ziyaret ettiğin her sitenin Gizlilik Politikasını incelemeni öneririz. Üçüncü taraf sitelerinin veya hizmetlerinin içeriği, gizlilik politikaları ve uygulamaları üzerinde kontrolümüz yoktur ve bunlardan sorumluluk kabul etmeyiz."
+        },
+        "changes": {
+          "title": "Bu Gizlilik Politikasındaki değişiklikler",
+          "content": "Bu Gizlilik Politikasını zaman zaman güncelleyebiliriz. Yeni sürümü bu sayfada yayımlayacağız ve en üstteki \"Son güncelleme\" tarihini değiştireceğiz. Önemli değişiklikler uygulama içinde de duyurulabilir. Değişiklikler bu sayfada yayımlandıkları anda geçerli olur."
+        },
+        "googlePlay": {
+          "title": "Google Play Store veri güvenliği etiketleri",
+          "content": "Musclog'un Google Play listesindeki Veri güvenliği bölümü, bu Gizlilik Politikasıyla aynı uygulamaları açıklar. Aralarında bir fark görürsen, lütfen bize bildir."
+        },
+        "crashReports": {
+          "title": "Anonim çökme raporları",
+          "content": "Uygulama, hataları bulup düzeltebilmemiz için hata izleme hizmeti Sentry'ye anonim çökme raporları gönderebilir. Bu varsayılan olarak açıktır ve Ayarlar → Yedekler ve veriler bölümündeki \"Anonim hata raporu\" anahtarıyla istediğin zaman kapatabilirsin. Bu kapalıyken uygulama, veritabanı hatalarına ilişkin raporlar dahil hiçbir çökme raporu göndermez. Bir rapor hatayı ve nerede oluştuğunu, uygulama sürümünü ve cihaz modelini içerir. Bir ad, hesap veya e-posta adresi ve kaydettiğin antrenmanlardan, besinlerden ya da vücut verilerinden hiçbirini içermez. Yerel çökmelere ilişkin raporlar, Sentry'nin kurulum için oluşturduğu ve sana bağlanmayan rastgele bir tanımlayıcı içerebilir. Her internet isteği gibi, bir rapor da IP adresini Sentry'ye açık eder; biz bunu seni tanımlamak için kullanmayız."
+        },
+        "analytics": {
+          "title": "Web sitesi analitiği",
+          "content1": "Web sitesi GitHub Pages üzerinde barındırılır ve Cloudflare üzerinden sunulur. Herhangi bir web sunucusu gibi, sayfayı iletmek ve kötüye kullanıma karşı korumak için her isteğin taşıdığı teknik verileri (IP adresi, tarayıcı ve istenen sayfa) işlerler. Web sitesinin kendisi, kabul etmediğin sürece çerez ayarlamaz ve analitik kullanmaz.",
+          "content2": "Bu web sitesi ayrıca Google LLC tarafından sağlanan bir hizmet olan Google Analytics 4 (GA4) kullanır; ziyaretçilerin siteyle nasıl etkileşim kurduğuna dair anonimleştirilmiş veriler toplar. Analitik çerezleri yalnızca çerez afişindeki \"Kabul et\" düğmesine tıklayarak açıkça onay verdikten sonra ayarlanır.",
+          "content3": "GA4'e onay verdiğinde Google Analytics şunları toplayabilir:",
+          "items": [
+            "Ziyaret edilen sayfalar ve her sayfada geçirilen süre",
+            "Genel coğrafi konum (ülke veya şehir düzeyinde, kesin konum değil)",
+            "Tarayıcı türü, cihaz türü ve işletim sistemi",
+            "Yönlendiren web sitesi veya arama motoru",
+            "Anonim etkileşim olayları (ör. bağlantı tıklamaları)",
+            "Geldiğin bağlantının kampanya etiketleri (utm_source, utm_medium, utm_campaign); Google Play, App Store ve demo tıklamalarına eklenir"
+          ],
+          "content4": "GA4 için yasal dayanak: Rıza (GDPR Md. 6(1)(a)). Rızanı istediğin zaman sayfa altbilgisindeki \"Çerez ayarları\" bağlantısına tıklayarak geri çekebilirsin. Rızanın geri çekilmesi, daha fazla toplamayı durdurur ve geri çekilmeden önce yapılan işlemenin hukuka uygunluğunu etkilemez.",
+          "content5": "Google Analytics, olay düzeyindeki verileri iki ay tutar ve sonra siler; bu verilerden derlenen raporlar kişisel veri içermez. Google, bir Veri İşleme Sözleşmesi kapsamında veri işleyen olarak hareket eder. Google'ın verileri nasıl işlediği hakkında daha fazla bilgi için bkz.",
+          "googlePrivacyPolicy": "Google Gizlilik Politikası",
+          "content6": "Çerez tercihin tarayıcında yerel olarak (localStorage) saklanır ve sunucularımıza hiç gönderilmez. Yalnızca ziyaretler arasında tercihini hatırlamak için kullanılır.",
+          "content7": "Takip ettiğin bağlantı kampanya etiketleri taşıyorsa (ör. ?utm_source=reddit), web sitesi bunları sekmeyi kapatana kadar tarayıcının oturum depolamasında tutar; böylece hangi gönderinin veya duyurunun ziyarete yol açtığını anlayabilir. Bunlar yalnızca analitiği kabul ettikten sonra Google Analytics'e gönderilir. Bu web sitesinden Google Play'i açtığında, aynı etiketler mağaza bağlantısına bir yükleme referansı olarak eklenir; bu sayede Google Play Console'da her kampanyadan kaç yükleme geldiğini görebiliriz. Google Play bu verileri tarayıcı depolamandan değil, takip ettiğin bağlantı nedeniyle alır. Etiketler bağlantıyı tanımlar, seni değil, ve kişisel veri içermez."
+        }
+      },
+      "appVsWebsite": {
+        "app": {
+          "title": "Musclog uygulamasının içinde",
+          "summary": "Musclog uygulaması öncelikli olarak yerel öncelikli bir ürün olarak tasarlanmıştır. Kullanıcı verilerinin çoğu cihazında kalır ve sunucularımıza iletilmez.",
+          "items": [
+            "Uygulamaya girdiğin tüm veriler cihazında yerel olarak saklanır.",
+            "Uygulama hesap gerektirmez ve bulut senkronizasyonu sunmaz.",
+            "Antrenman, beslenme, sağlık veya döngü verilerine erişimimiz yoktur; ücretsiz Musclog yapay zekâ seçeneğiyle göndermeyi seçtiklerin hariç.",
+            "Adet döngüsü kayıtları dahil, uygulamanın sakladığı hassas veriler AES ile dinlenme halinde şifrelenir."
+          ]
+        },
+        "website": {
+          "title": "Bu web sitesinde",
+          "summary": "Web sitesi, öncelikle web sitesinin çalışması, dil tercihi, analitik ve çerez onayı yönetimiyle ilgili daha dar bir veri kümesini işler.",
+          "items": [
+            "Web sitesi GitHub Pages üzerinde barındırılır ve Cloudflare üzerinden sunulur; Cloudflare sayfaları iletmek için IP adresi gibi standart istek verilerini işler.",
+            "Bu web sitesi Google Analytics 4'ü yalnızca çerez afişi üzerinden açıkça onay verdikten sonra kullanır.",
+            "Dil tercihin tarayıcında yerel olarak saklanır ve sunucularımıza iletilmez.",
+            "Çerez onay tercihin tarayıcında yerel olarak saklanır ve sunucularımıza iletilmez."
+          ]
+        }
+      },
+      "contact": {
+        "title": "Bize ulaş",
+        "content": "Bu Gizlilik Politikası hakkında sorun varsa, e-postayla bize ulaşabilirsin:"
+      },
+      "pageTitle": "Gizlilik Politikası | Musclog"
+    },
+    "terms": {
+      "titleStart": "Kullanım ve",
+      "conditions": "Koşullar",
+      "lastUpdated": "Son güncelleme: 25 Nisan 2026",
+      "highlights": {
+        "agreement": {
+          "title": "Kullanıcı sözleşmesi",
+          "description": "Bu uygulamayı kullanarak bu koşulları kabul etmiş olursun."
+        },
+        "liability": {
+          "title": "Sınırlı sorumluluk",
+          "description": "Bu uygulama kullanılarak alınan sağlık kararlarından sorumlu değiliz."
+        },
+        "warranty": {
+          "title": "Garanti yok",
+          "description": "Uygulama herhangi bir garanti verilmeden olduğu gibi sunulur."
+        }
+      },
+      "intro": "Musclog uygulamasını kullanmadan önce lütfen bu Kullanım Koşullarını dikkatle oku. Hizmetimize erişerek ya da onu kullanarak bu koşullara bağlı olmayı kabul etmiş olursun.",
+      "sections": {
+        "interpretation": {
+          "title": "Yorum ve tanımlar",
+          "content1": "Baş harfi büyük yazılmış kelimelerin anlamları aşağıdaki koşullarda tanımlanmıştır. Aşağıdaki tanımlar, tekil veya çoğul olarak geçmelerinden bağımsız olarak aynı anlama sahiptir.",
+          "content2": "Bu Kullanım Koşulları bakımından:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Uygulama",
+            "def": "Musclog adlı, herhangi bir elektronik cihazına indirdiğin, Musclog tarafından sağlanan yazılım programını ifade eder."
+          },
+          "company": {
+            "term": "Şirket",
+            "def": "Bu açık kaynaklı uygulamanın geliştiricisi ve sürdürücüsü olan Musclog'u ifade eder."
+          },
+          "device": {
+            "term": "Cihaz",
+            "def": "Akıllı telefon veya tablet gibi Hizmete erişebilen her türlü cihazı ifade eder."
+          },
+          "service": {
+            "term": "Hizmet",
+            "def": "Uygulamayı ifade eder."
+          },
+          "you": {
+            "term": "Sen",
+            "def": "Hizmete erişen veya hizmeti kullanan kişiyi ifade eder."
+          }
+        },
+        "acknowledgment": {
+          "title": "Kabul",
+          "content1": "Bunlar, bu Hizmetin kullanımını yöneten ve sen ile Şirket arasında işleyen sözleşmenin Kullanım Koşullarıdır. Hizmete erişerek ya da onu kullanarak bu Kullanım Koşullarına bağlı olmayı kabul edersin.",
+          "content2": "Hizmete erişimin ve kullanımın, Şirketin Gizlilik Politikasını kabul etmene ve ona uymana da bağlıdır.",
+          "content3": "Musclog, yerel öncelikli ve açık kaynaklı bir fitness takipçisidir. Hesap gerekmez. Verilerin cihazında kalır ve asla sunucularımıza gönderilmez."
+        },
+        "links": {
+          "title": "Diğer web sitelerine bağlantılar",
+          "content": "Hizmetimiz, Şirketin sahip olmadığı ya da kontrol etmediği üçüncü taraf web sitelerine veya hizmetlere bağlantılar içerebilir. Üçüncü taraf web sitelerinin veya hizmetlerinin içeriği, gizlilik politikaları veya uygulamaları üzerinde kontrolümüz yoktur ve bunlardan sorumluluk kabul etmeyiz."
+        },
+        "termination": {
+          "title": "Fesih",
+          "content": "Bu Kullanım Koşullarını ihlal etmen de dahil olmak üzere, herhangi bir nedenle erişimini önceden bildirim yapmaksızın ve hiçbir sorumluluk almaksızın sonlandırabilir ya da askıya alabiliriz. Fesih durumunda Hizmeti kullanma hakkın hemen sona erer."
+        },
+        "liability": {
+          "title": "Sorumluluğun sınırlandırılması",
+          "content1": "Uygulanabilir yasaların izin verdiği azami ölçüde, Şirket, kâr, veri, kullanım, itibar kaybı veya diğer maddi olmayan kayıplar dahil olmak üzere, hiçbir durumda dolaylı, arızi, özel, sonuçsal veya cezai zararlardan sorumlu olmayacaktır.",
+          "content2": "Bu uygulama tıbbi bir cihaz değildir. Bu uygulamadaki verilere dayanarak sağlık veya fitness kararları vermeden önce her zaman yetkin bir sağlık uzmanına danış."
+        },
+        "disclaimer": {
+          "title": "Feragat",
+          "content1": "Hizmet sana \"OLDUĞU GİBİ\" ve \"MEVCUT OLDUĞU ÖLÇÜDE\" ve her türlü kusur ve hatayla birlikte, herhangi bir garanti verilmeksizin sunulur.",
+          "content2": "Yukarıdakileri sınırlandırmaksızın, Şirket, Hizmetin gereksinimlerini karşılayacağına, amaçlanan sonuçları elde edeceğine veya başka herhangi bir yazılım, uygulama, sistem ya da hizmetle uyumlu olacağına ya da çalışacağına dair hiçbir garanti, taahhüt veya beyanda bulunmaz."
+        },
+        "governingLaw": {
+          "title": "Uygulanacak hukuk",
+          "content1": "Bu Koşullara ve Hizmeti kullanımına, ihtilaf kuralları hariç olmak üzere ülkenin hukuku uygulanır.",
+          "content2": "Yerel tüketici koruma yasaları sana ek haklar tanıyabilir. Bu Koşullardaki hiçbir şey, geçerli yasalar uyarınca bir tüketici olarak sahip olabileceğin hakları etkilemez."
+        },
+        "changes": {
+          "title": "Bu Koşullardaki değişiklikler",
+          "content": "Bu Koşulları tamamen kendi takdirimizle istediğimiz zaman değiştirme veya yenileme hakkını saklı tutarız. Yeni koşulların yürürlüğe girmesinden önce en az 30 gün önceden bildirim yapmaya çalışacağız. Bu değişikliklerin yürürlüğe girmesinden sonra Hizmetimize erişmeye ya da onu kullanmaya devam edersen, güncellenmiş koşullara bağlı olmayı kabul etmiş olursun."
+        }
+      },
+      "contact": {
+        "title": "Bize ulaş",
+        "content": "Bu Kullanım Koşulları hakkında sorun varsa, şu adresten bize e-postayla ulaşabilirsin:"
+      },
+      "pageTitle": "Kullanım Koşulları | Musclog"
+    },
+    "contact": {
+      "titleStart": "Bize",
+      "titleHighlight": "Ulaş",
+      "description": "Bir sorun, bir hata mı buldun ya da katkıda bulunmak mı istiyorsun? Senden haber almak isteriz.",
+      "form": {
+        "fullName": "Ad soyad",
+        "email": "E-posta adresi",
+        "subject": "Konu",
+        "message": "Mesaj",
+        "submit": "Mesaj gönder",
+        "mailto": "Posta uygulamasında aç",
+        "startOver": "Başka bir mesaj gönder",
+        "helpText": "Mesajı varsayılan posta uygulamanda açmak için yukarıdaki düğmeye tıkla.",
+        "placeholders": {
+          "fullName": "John Doe",
+          "email": "john@example.com",
+          "subject": "Aklında ne var?",
+          "message": "Sana nasıl yardımcı olabileceğimizi anlat…"
+        }
+      },
+      "connect": {
+        "title": "Bizimle bağlantı kur",
+        "follow": "Bizi takip et",
+        "github": {
+          "title": "GitHub deposu",
+          "description": "Hataları bildir, özellik iste veya doğrudan GitHub üzerinden kod katkısında bulun."
+        },
+        "discord": {
+          "title": "Topluluk Discord'u",
+          "description": "Diğer kullanıcılar ve geliştiricilerle sohbet etmek için topluluğumuza katıl."
+        },
+        "email": {
+          "title": "Destek e-postası",
+          "description": "Yardıma mı ihtiyacın var? Bize bir e-posta gönder, en kısa sürede dönüş yapalım."
+        }
+      },
+      "privacy": {
+        "title": "Önce gizlilik",
+        "description": "Buraya yazdığın hiçbir şeyi saklamıyoruz. Mesajın doğrudan e-posta kutumuza gider; sunucu yok, kayıt yok."
+      },
+      "pageTitle": "İletişim | Musclog"
+    },
+    "calculator": {
+      "pageTitle": "TDEE Hesaplayıcı | Musclog",
+      "titleStart": "TDEE",
+      "titleHighlight": "HESAPLAYICI",
+      "subtitle": "Yüksek performanslı sporcular için hassas veriler. Biyolojik temelini hesapla ve yolculuğunu optimize et.",
+      "form": {
+        "title": "FİTNESS PROFİLİ",
+        "age": "YAŞ",
+        "gender": "CİNSİYET",
+        "male": "Erkek",
+        "female": "Kadın",
+        "other": "Diğer",
+        "genderNote": "Bu formüller yalnızca iki grubu tanıyan eski araştırmalardan gelir, bu yüzden herkesi yansıtamazlar. Mevcut vücuduna ve hormonlarına en uygun olanı seç (ör. hormon tedavisi görüyorsan) ya da ortalama değerler için \"Diğer\"i seç.",
+        "weight": "KİLO (KG)",
+        "height": "BOY (CM)",
+        "bodyFat": "VÜCUT YAĞI %",
+        "experience": "DENEYİM",
+        "beginner": "Başlangıç",
+        "intermediate": "Orta",
+        "advanced": "İleri",
+        "activityLevel": "AKTİVİTE DÜZEYİ",
+        "activity1": "Hareketsiz (az ya da hiç egzersiz yok)",
+        "activity2": "Hafif aktif (haftada 1–3 gün)",
+        "activity3": "Orta düzeyde aktif (haftada 3–5 kez)",
+        "activity4": "Çok aktif (haftada 6–7 gün)",
+        "activity5": "Süper aktif (fiziksel iş + antrenman)",
+        "weightGoal": "KİLO HEDEFİ",
+        "cut": "Yağ yakma",
+        "maintain": "Koru",
+        "bulk": "Kas artırma",
+        "trainingFocus": "ANTRENMAN ODAĞI",
+        "hypertrophy": "HİPERTROFİ",
+        "hypertrophyDesc": "Kas hacmi ve belirginliği kazan",
+        "strength": "GÜÇ",
+        "strengthDesc": "Daha ağır kaldır ve güç kazan",
+        "endurance": "DAYANIKLILIK",
+        "enduranceDesc": "Kardiyovasküler dayanıklılığı artır",
+        "weightLoss": "KİLO VERME",
+        "weightLossDesc": "Yağ yak ve formunu iyileştir",
+        "general": "GENEL FİTNESS",
+        "generalDesc": "Genel sağlık ve iyi oluş",
+        "realtime": "SONUÇLAR ANLIK GÜNCELLENİR"
+      },
+      "results": {
+        "bmr": "BMR",
+        "bmrDesc": "Bazal metabolizma hızı: dinlenirken harcanan enerji.",
+        "tdee": "TDEE",
+        "tdeeDesc": "Aktiviteye dayalı günlük toplam enerji harcaması.",
+        "target": "HEDEF",
+        "bmi": "BMI",
+        "bmiDesc": "Vücut kitle indeksi: boy ve kilo oranının normalleştirilmiş hali.",
+        "ffmi": "FFMI",
+        "ffmiDesc": "Yağsız vücut kütle indeksi: kas kütlesi göstergesi.",
+        "macroProfile": "MAKRO PROFİLİ",
+        "protein": "PROTEİN",
+        "fats": "YAĞ",
+        "carbs": "KARBONHİDRAT",
+        "kcal": "KCAL",
+        "metabolicVelocity": "METABOLİK HIZ",
+        "velocityMaintain": "Optimum performans aralığı algılandı.",
+        "velocityCut": "Yağ yakma yolu için optimize edildi.",
+        "velocityBulk": "Yağsız kas birikimi için hazırlandı.",
+        "dailyTarget": "GÜNLÜK KALORİ HEDEFİ",
+        "maintenance": "KORUMA",
+        "calorieSurplus": "KALORİ FAZLASI",
+        "calorieDeficit": "KALORİ AÇIĞI"
+      }
+    },
+    "exercises": {
+      "eyebrow": "EGZERSİZ KÜTÜPHANESİ",
+      "pageTitle": "Her Egzersizi Keşfet",
+      "pageDescription": "Tüm egzersiz koleksiyonuna göz at — kas grubuna, mekaniğe göre filtrele ya da adına göre ara.",
+      "customNote": "Bunlar uygulamayla birlikte gelen egzersizler. Musclog'un içinde kendi özel egzersizlerini de doğrudan oluşturabilirsin.",
+      "searchPlaceholder": "Egzersiz ara...",
+      "filterAll": "Tümü",
+      "clearFilters": "Filtreleri temizle",
+      "noResults": "Filtrelerine uyan egzersiz yok.",
+      "showing": "{{count}} egzersiz gösteriliyor",
+      "sourceCredit": "Bu egzersizler ve fotoğraflar şu kaynaktan geliyor:",
+      "sourceCreditSuffix": ", CC0 altında yayımlanmış kamu malı bir proje.",
+      "stat": {
+        "exercises": "Egzersizler",
+        "muscleGroups": "Kas grupları",
+        "equipment": "Ekipman türleri"
+      }
+    },
+    "faq": {
+      "pageTitle": "SSS ve Bilim — Musclog",
+      "badge": "Kanıta Dayalı",
+      "titlePrefix": "SSS ve",
+      "titleHighlight": "Bilim",
+      "description": "Musclog'un gösterdiği her sayı hakem denetiminden geçmiş araştırmalara dayanır. Bu sayfa her hesabın arkasındaki modelleri, formülleri ve çalışmaları, orijinal kaynaklara bağlantılarla açıklar.",
+      "sources": "Kaynaklar",
+      "questionsCount_one": "{{count}} soru",
+      "questionsCount_other": "{{count}} soru",
+      "footer": {
+        "text": "Bu kaynaklardan birinde yanlış bir bilgi ya da onun yerini alan daha yeni bir çalışma mı buldun?",
+        "linkText": "Bize bildir",
+        "suffix": "— bilim sürekli gelişir, Musclog da öyle."
+      },
+      "categories": {
+        "general": {
+          "label": "Genel",
+          "items": [
+            {
+              "question": "Musclog nedir?",
+              "answer": "Musclog, antrenmanları, beslenmeyi ve vücut kompozisyonunu takip etmek için gizliliği ilk sıraya koyan bir fitness uygulamasıdır. Tüm verilerin cihazında saklanır. İsteğe bağlı yapay zekâ özelliklerini açıkça etkinleştirmediğin sürece hiçbir şey bir sunucuya gönderilmez."
+            },
+            {
+              "question": "Uygulama internet bağlantısı olmadan çalışır mı?",
+              "answer": "Evet. Tüm temel özellikler — antrenman kaydı, öğün takibi, ilerlemeyi görme ve beslenme hesaplayıcısını çalıştırma — tamamen çevrimdışı çalışır. İnternet bağlantısı yalnızca isteğe bağlı yapay zekâ özellikleri (öğün tanıma, yapay zekâ koçu), dış kaynaklardan besin veritabanı aramaları ve Health Connect / HealthKit senkronizasyonu için gerekir."
+            },
+            {
+              "question": "Beslenme hesaplamaları ne kadar doğru?",
+              "answer": "Hesaplayıcı, iyi doğrulanmış popülasyon denklemlerini kullanır (BMR için Katch-McArdle / Mifflin-St Jeor, projeksiyonlar için Hall 2008 vücut kompozisyonu modeli). Hiçbir denklem her birey için mükemmel değildir — BMR denklemlerinde tipik hata ±10 %'dur. En iyi sonuçlar, uygulamanın kalori alımı ile kilo değişiminden gerçek TDEE'ni hesaplayabilmesi için 2–4 hafta boyunca gerçek takip verisi girmekten gelir."
+            },
+            {
+              "question": "Uygulama hangi birim sistemlerini destekliyor?",
+              "answer": "Veritabanı her zaman metrik değerleri (kg, cm, g, kcal) saklar. Ayarlar'dan istediğin zaman emperyal birimlere (lb, inç, oz) geçebilirsin — uygulama gösterilen tüm değerleri otomatik çevirir. Vücut yağ yüzdesi, BMI ve FFMI birimsizdir ve asla çevrilmez."
+            }
+          ]
+        },
+        "nutrition": {
+          "label": "Beslenme Bilimi",
+          "items": [
+            {
+              "question": "Bazal Metabolizma Hızım (BMR) nasıl hesaplanıyor?",
+              "answer": "Musclog, vücut yağ yüzdesi girip girmediğine bağlı olarak iki denklem kullanır.",
+              "bullets": [
+                "Katch-McArdle (vücut yağı % bilindiğinde tercih edilir): BMR = 370 + 21,6 × Yağsız Vücut Kütlesi (kg). Metabolik aktivitesi çok düşük olan yağ kütlesini hesaba katmadığı için bu denklem sporcular ve ortalama olmayan vücut kompozisyonuna sahip kişiler için daha doğrudur.",
+                "Mifflin-St Jeor (varsayılan, vücut yağ % gerekmez): BMR = 10 × kilo + 6,25 × boy − 5 × yaş ± cinsiyet sabiti (erkek +5, kadın −161). Birkaç meta-analizde genel nüfus için en doğru BMR denklemi olarak doğrulanmıştır."
+              ],
+              "citations": [
+                {
+                  "label": "Katch-McArdle (1996)",
+                  "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27"
+                },
+                {
+                  "label": "Mifflin et al. (1990)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/"
+                },
+                {
+                  "label": "Frankenfield et al. meta-analizi (2005)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/"
+                }
+              ]
+            },
+            {
+              "question": "Toplam Günlük Enerji Harcamam (TDEE) nasıl tahmin ediliyor?",
+              "answer": "Musclog, verilerin için en iyi olanı otomatik seçerek iki mod kullanır.",
+              "bullets": [
+                "İstatistiksel (yeni kullanıcılar): TDEE = BMR × Aktivite Çarpanı. Çarpanlar, Harris-Benedict / Mifflin-St Jeor ölçeğine göre 1,2 (hareketsiz) ile 1,9 (çok aktif + fiziksel iş) arasında değişir.",
+                "Ampirik / Gözlenen TDEE (tercih edilir, en az 2 haftalık besin ve kilo verisi gerekir): Enerjinin Korunumu Birinci Yasası doğrudan uygulanır. TDEE = (Alınan kalori − Dokuda depolanan enerji) / Gün. Yağ dokusu parçalandığında kilogram başına 7.730 kcal depolar ve kilogram başına 8.840 kcal'ye mal olur; kas ise kilogram başına 1.250 kcal depolar ve 3.900 kcal'ye mal olur. Bu asimetrik değerler termodinamik sentez verimliliğini hesaba katar.",
+                "TDEE Kayma Düzeltmesi: Ampirik TDEE, dönemin ortalamasını temsil eder. Bunu mevcut vücut durumuna taşımak için üç üst üste uygulanan düzeltme yapılır: (1) Dinlenme Dokusu Kaybı — yağsız doku günde kilogram başına yaklaşık 13 kcal, yağ dokusu yaklaşık 4,5 kcal yakar (Elia 1992); (2) Aktiviteye Göre Ölçeklenen Kayıp — hareketin mekanik maliyeti vücut kütlesiyle ölçeklenir; (3) Kaybedilen her kilogram vücut kütlesi için günde 20 kcal'lik Adaptif Termogenez cezası; bu, NEAT baskılanmasını ve hormonal uyumu (leptin, tiroid) yansıtır."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Kilo kaybı başına enerji açığı",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Elia (1992) — RMR doku katsayıları",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/"
+                },
+                {
+                  "label": "Müller ve ark. (2022) — Adaptif termogenez",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall ve ark. (NIH) — Dinamik enerji dengesi",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Vücut yağ yüzdesi girmek hesabı nasıl iyileştirir?",
+              "answer": "Geçerli bir vücut yağ yüzdesi (%5–60) girildiğinde üç şey değişir:",
+              "bullets": [
+                "BMR, vücut kompozisyonunu dikkate alan ve metabolik olarak etkisiz yağ kütlesini hesaba katmayan Katch-McArdle'a geçer.",
+                "Kilo değişimlerinin yağ/yağsız dağılımı, Lambert W fonksiyonuyla analitik olarak çözülen Forbes Eğrisi'nden (Hall 2007) hesaplanır. Temel içgörü şudur: vücut yağ depolarını daha agresif koruduğu için daha zayıf kişiler kilogram başına daha yüksek oranda yağsız kütle kaybeder. Yağ oranı %12 olan bir kişi, saf yağ kaybı varsayan klasik ‘7.700 kcal/kg’ kuralından çok daha düşük, yaklaşık 5.800–6.200 kcal/kg hızında doku kaybeder.",
+                "±%4'lük bir belirsizlik bandı (tipik BIA/deri kıvrım hatası) tek bir sayı yerine gerçekçi bir minimum/maksimum kalori aralığı üretir; bu da vücut yağı ölçümünün doğal belirsizliğini gösterir."
+              ],
+              "formula": "etkili_kcal/kg = 9.440 × yağ_oranı + 1.820 × yağsız_oran",
+              "formulaCaption": "Hall (2008) karma enerji yoğunluğu — yağ oranı Forbes eğrisi / Lambert W ile belirlenir",
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                },
+                {
+                  "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                }
+              ]
+            },
+            {
+              "question": "Önerilen kalori açığı ya da fazlası nasıl belirleniyor?",
+              "answer": "Musclog kalori ayarlamasını sabit ±500 kcal yerine vücut kilona göre ölçekler ve kanıta dayalı güvenli aralıklarla sınırlar.",
+              "bullets": [
+                "Kilo verme (kesim): Varsayılan önerilen haftalık kayıp hızı vücut kilosunun haftada %0,5'idir. Vücut yağ oranı bilindiğinde bu, ACE klinik eşiklerine göre iyileştirilir — yağsız bireyler (erkekte yağ < %10, kadında < %20) kası korumak için haftada %0,35 gibi muhafazakâr bir oran alır, daha yüksek yağ oranına sahip bireyler ise haftada %0,65'e kadar güvenle kaybedebilir. Ortaya çıkan günlük açık, ciddi metabolik uyumu önlemek için 250–750 kcal ile sınırlandırılır.",
+                "Kilo alma (hacim): Yağ yayılımını en aza indirirken kas protein sentezini desteklemek için haftada vücut kilosunun yaklaşık %0,25'i kadar bir fazla hedeflenir. Fazla günlük 150–400 kcal ile sınırlandırılır.",
+                "Minimum kalori tabanları: kadınlar için günde 1.200 kcal, erkekler için günde 1.500 kcal ve asla BMR'nin %80'inin altında değil — IOM / National Academies yönergeleriyle uyumlu."
+              ],
+              "citations": [
+                {
+                  "label": "Garthe ve ark. (2011) — Kilo kaybı hızı ve vücut kompozisyonu",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+                },
+                {
+                  "label": "Iraki ve ark. (2019) — Doğal vücut geliştiriciler için beslenme önerileri",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/"
+                },
+                {
+                  "label": "ACE — Vücut yağ yüzdesi sınıflandırmaları",
+                  "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/"
+                }
+              ]
+            },
+            {
+              "question": "Kilo projeksiyon modeli nasıl çalışır?",
+              "answer": "Projeksiyon, 90 günlük kilo değişimini doğru tahmin etmek için iki aşama kullanır.",
+              "bullets": [
+                "Erken aşama — Glikojen tükenmesi: Tüm vücut glikojen havuzu kuru ağırlığın yaklaşık 15 g/kg'ı kadardır; her gram 3 g su bağlar ve toplamda vücut ağırlığının yaklaşık %6'sını oluşturan hidrate glikojen eder. Birikmiş kalori açığının yalnızca bu glikojen enerji havuzuna (~4.206 kcal/kg kuru) sığan kısmı erken ‘su kilosu’ kaybını sürükler. Bu, agresif açıklarda erken kayıpların aşırı tahmin edilmesini önler.",
+                "Denge aşaması: Kalan tüm açık, Hall/Forbes modelinin vücut kompozisyonuna duyarlı enerji yoğunluğunda yağ/yağsız doku kaybını sürükler. Bildirilen ‘haftalık hız’ her zaman bu denge rakamını yansıtır — ilk birkaç günden sonra kullanıcıların yaşadığı şey budur.",
+                "Fazla projeksiyonu: Glikojen depolarının dolu olduğu varsayılır, bu nedenle tüm fazla deneyim ağırlıklı maliyetlerle yağ/yağsız doku sentezine gider (başlangıç ~5.300 kcal/kg; orta ~6.370 kcal/kg; ileri ~7.430 kcal/kg)."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Kilo kaybı dokusunun enerji yoğunluğu",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Schoenfeld ve ark. — Hipertrofi etki büyüklükleri, antrene ve antrenmansız",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                }
+              ]
+            },
+            {
+              "question": "Günlük makrolarım nasıl hesaplanıyor?",
+              "answer": "Makro dağılımları fitness hedefine göre belirlenir; çerçeve olarak IOM AMDR aralıkları, düzeltme için ise ISSN/ACSM spora özgü araştırmalar kullanılır.",
+              "table": {
+                "head": ["Hedef", "Karbonhidrat", "Protein", "Yağ", "Gerekçe"],
+                "rows": [
+                  [
+                    "Kilo verme",
+                    "%40",
+                    "%30",
+                    "%30",
+                    "Açıkta kasları korumak için yüksek protein (ISSN/Helms 2014)"
+                  ],
+                  [
+                    "Hipertrofi",
+                    "%45",
+                    "%30",
+                    "%25",
+                    "Kas protein sentezi için protein; karbonhidrat hacimli antrenmanı destekler"
+                  ],
+                  [
+                    "Kuvvet",
+                    "%50",
+                    "%30",
+                    "%20",
+                    "Ağır bileşik hareketlerin glikolitik talebi için karbonhidrat"
+                  ],
+                  [
+                    "Dayanıklılık",
+                    "%55",
+                    "%20",
+                    "%25",
+                    "Glikojen önceliği (ACSM 6–10 g/kg/gün önerisi)"
+                  ],
+                  ["Genel", "%45", "%25", "%30", "Genel fitness için IOM AMDR içinde ortalanmış"]
+                ]
+              },
+              "answer2": "Kilo verme ve hipertrofi hedeflerinde, vücut yağ oranı bilindiğinde protein yüzde hedefinden mutlak, FFM tabanlı bir hedefe yükseltilir (kilo verme için 2,7 g/kg FFM; hipertrofi için 2,0 g/kg FFM) ve kalan kalori karbonhidrat ile yağ arasında orantılı olarak bölünür.",
+              "citations": [
+                {
+                  "label": "IOM Dietary Reference Intakes (2005) — AMDR",
+                  "url": "https://doi.org/10.17226/10490"
+                },
+                {
+                  "label": "Jäger ve ark. (2017) — ISSN Protein ve Egzersiz Pozisyon Bildirisi",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/"
+                },
+                {
+                  "label": "Helms ve ark. (2014) — Kanıta dayalı vücut geliştirme beslenme önerileri",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/"
+                },
+                {
+                  "label": "Thomas ve ark. (2016) — ACSM/ADA/DC Ortak Pozisyon Bildirisi",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/"
+                }
+              ]
+            },
+            {
+              "question": "Antrenman deneyimi hacim hesabını nasıl etkiler?",
+              "answer": "Kazanılan kilonun yağsız kütle mi yoksa yağ mı olduğu büyük ölçüde antrenman geçmişine bağlıdır. Antrenmansız bireylerin hipertrofi potansiyeli, genetik kas tavanının çoğunu zaten aşmış ileri düzey sporculardan çok daha fazladır.",
+              "bullets": [
+                "Başlangıç: kilogram başına yaklaşık %60 yağsız / %40 yağ. Etkili yapım maliyeti ≈ 5.304 kcal/kg.",
+                "Orta: yaklaşık %50 yağsız / %50 yağ. Etkili yapım maliyeti ≈ 6.370 kcal/kg.",
+                "İleri: yaklaşık %40 yağsız / %60 yağ. Etkili yapım maliyeti ≈ 7.434 kcal/kg.",
+                "Bu dağılımlar termodinamik yapım maliyetlerini kullanır: yağ için 8.840 kcal/kg ve kas için 3.900 kcal/kg; yağ için yaklaşık %87 sentez verimliliğini, kas için yaklaşık %32 verimliliği yansıtır (kas sentezi enerjisinin büyük kısmı ısı olarak kaybolur)."
+              ],
+              "citations": [
+                {
+                  "label": "Schoenfeld ve ark. — Direnç antrenmanı yük meta-analizi",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                },
+                {
+                  "label": "Sports Med (2023) — Direnç antrenmanında kas büyümesinde plato",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/"
+                },
+                {
+                  "label": "NCBI (2022) — Kas protein sentezinin termodinamik verimliliği",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/"
+                }
+              ]
+            },
+            {
+              "question": "RMR, obezite veya ileri yaş için nasıl ayarlanır?",
+              "answer": "Dinlenme Metabolizma Hızı doku katsayılarına (yağsız: kg başına günde 13 kcal; yağ: kg başına günde 4,5 kcal) iki kanıta dayalı ceza çarpanı uygulanır:",
+              "bullets": [
+                "VKİ > 30 (Obezite): Hem yağsız hem yağ doku katsayılarında −%2 azaltma; obez bireylerde mitokondri işlevinin bozulmasını yansıtır (Müller ve ark. 2013).",
+                "Yaş > 50: −%3 azaltma; hücresel yenilenme hızındaki düşüşü yansıtır (St-Onge & Gallagher 2010).",
+                "Uygulanabilir olduğunda her iki ceza eklenir (ör. 50 yaşın üzerinde obez bir kişi → toplam −%5)."
+              ],
+              "citations": [
+                {
+                  "label": "Müller ve ark. (2013) — Kalori kısıtlamasına metabolik adaptasyon",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/"
+                },
+                {
+                  "label": "St-Onge & Gallagher (2010) — Yaşla vücut kompozisyonu değişimleri",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/"
+                }
+              ]
+            }
+          ]
+        },
+        "workout": {
+          "label": "Antrenman Bilimi",
+          "items": [
+            {
+              "question": "Bir tekrarlık maksimum (1RM) tahminleri nasıl hesaplanıyor?",
+              "answer": "Musclog, yayımlanmış yedi formülden oluşan bir topluluk kullanır ve çıktılarının ortalamasını alır. Ortalama almak, her formülün farklı tekrar aralıklarında farklı doğruluk profillerine sahip olduğu için tek bir formülün sistematik hatasını azaltır.",
+              "table": {
+                "head": ["Formül", "Denklem", "En iyi kullanım"],
+                "rows": [
+                  [
+                    "Brzycki (1993)",
+                    "w / (1,0278 − 0,0278 × r)",
+                    "2–10 tekrar; en yaygın kullanılan"
+                  ],
+                  ["Epley (1985)", "w × (1 + r / 30)", "Genel kullanım; biraz temkinli"],
+                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Orta tekrar aralıkları"],
+                  ["Lombardi (1989)", "w × r^0,1", "Düşük tekrar aralıkları"],
+                  [
+                    "Mayhew ve ark. (1992)",
+                    "w / (0,522 + 0,419 × e^{−0,055r})",
+                    "Geniş tekrar aralığı; üstel model"
+                  ],
+                  ["O'Connor ve ark. (1989)", "w × (1 + 0,025 × r)", "Doğrusal; temkinli"],
+                  ["Wathen (1994)", "w / (0,488 + 0,539 × e^{−0,035r})", "Yüksek tekrar aralıkları"]
+                ]
+              },
+              "answer2": "Herhangi bir formül uygulanmadan önce Tekrar Rezervi (RIR) gerçek tekrarlara eklenir (ayarlanmış_tekrar = tekrar + RIR). Bu, maksimal altı çabayı tam çabaya eşdeğer bir değere çevirir; yani 2 RIR ile yapılan 8 tekrar, 1RM tahmini için tükenmeye kadar yapılmış 10 tekrar sayılır.",
+              "citations": [
+                {
+                  "label": "Brzycki (1993)",
+                  "url": "https://doi.org/10.1080/07303084.1993.10606684"
+                },
+                {
+                  "label": "Epley (1985)",
+                  "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
+                },
+                {
+                  "label": "Lander (1985)",
+                  "url": "https://www.vcalc.com/wiki/landers-formula"
+                },
+                {
+                  "label": "Lombardi (1989)",
+                  "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
+                },
+                {
+                  "label": "Mayhew ve ark. (1992)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/"
+                },
+                {
+                  "label": "O'Connor ve ark. (1989)",
+                  "url": "https://www.vcalc.com/wiki/oconner-et-al"
+                },
+                {
+                  "label": "Wathen (1994)",
+                  "url": "https://www.vcalc.com/wiki/wathen-formula"
+                }
+              ]
+            },
+            {
+              "question": "Antrenman hacmi nasıl hesaplanıyor?",
+              "answer": "Musclog, her set için hacim birimi olarak ham tonajı (ağırlık × tekrar) değil, ortalama 1RM tahminini kullanır. Bu daha anlamlı bir ölçü üretir, çünkü 1RM, yüksek tekrarlı setlerin ham ağırlığın öne sürdüğünden daha fazla toplam çaba temsil ettiği gerçeğini normalleştirir.",
+              "bullets": [
+                "Vücut ağırlığıyla yapılan hareketlerde, 1RM hesabından önce kullanıcının güncel vücut ağırlığı çubuk ağırlığına eklenir.",
+                "Toplam seans hacmi = seanstaki tüm setlerin ortalama 1RM tahminlerinin toplamı.",
+                "Kademeli aşırı yükleme takibi, aynı hareketler için bu sayıyı seanslar arasında karşılaştırır."
+              ]
+            },
+            {
+              "question": "Günlük adımlardan yakılan kaloriler nasıl hesaplanıyor?",
+              "answer": "Musclog, adım sayısından net (brüt değil) kalori harcamasını hesaplamak için ACSM metabolik yürüme denklemlerini kullanır. Net harcamayı kullanmak, zaten hesaba katılmış BMR/TDEE ile çift sayımı önler.",
+              "formula": "Net Kalori = (0,1 × mesafe_m × kilo_kg) / 200",
+              "formulaCaption": "ACSM VO₂ yürüme denkleminden türetilmiştir. Süre sadeleşir: hız (m/dk) × süre (dk) = mesafe (m). 1 L O₂ ≈ 5 kcal, yani ÷1000 × 5 = ÷200.",
+              "bullets": [
+                "Adım uzunluğu boydan cinsiyete özgü ampirik oranlarla tahmin edilir: erkekler için 0,415 × boy (cm) / 100, kadınlar için 0,413.",
+                "Mesafe = adım sayısı × adım uzunluğu.",
+                "Türetme, adım hızına ihtiyaç duyulmasını ortadan kaldırır; böylece aynı adım sayısında daha hızlı yürümenin, daha yavaş yürümeyle aynı görünmesi olan ‘adım hızı paradoksu’ ortadan kalkar."
+              ],
+              "citations": [
+                {
+                  "label": "ACSM Metabolik Denklemler — Yürüme VO₂",
+                  "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm"
+                },
+                {
+                  "label": "Pratama ve ark. (2012) — Adım uzunluğu tahmini",
+                  "url": "https://www.mdpi.com/2072-4292/11/1/55"
+                },
+                {
+                  "label": "Meta-analiz — Adım uzunluğu ve boy oranları",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/"
+                }
+              ]
+            },
+            {
+              "question": "Uygulama hedef RIR için ağırlık ve tekrarı nasıl hesaplıyor?",
+              "answer": "İki ters 1RM problemi çözülür:",
+              "bullets": [
+                "Hedef RIR için ağırlık: Yedi 1RM formülünün tamamı ağırlıkta doğrusaldır (1RM = ağırlık × f(tekrar, RIR)), bu yüzden ağırlık = 1RM / f(tekrar, RIR). f çarpanı, topluluk ağırlık = 1 ile çağrılarak hesaplanır.",
+                "Hedef ağırlık için tekrar: Ortalaması alınmış topluluğun kapalı biçimde bir tersi yoktur, bu yüzden uygulama ikili arama kullanır. 1RM tahminleri tekrar sayısında tekdüze artan olduğu için ikili arama, uygulamada görülen herhangi bir tekrar aralığında (1–50) yaklaşık 6 yinelemede yakınsar. RIR temelli özdüzenleme araştırmasının dayanağı için bkz. Helms ve ark. (2016)."
+              ],
+              "citations": [
+                {
+                  "label": "Helms ve ark. (2016) — RPE ve RIR temelli özdüzenleme",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/"
+                }
+              ]
+            }
+          ]
+        },
+        "methodology": {
+          "label": "Yöntem",
+          "items": [
+            {
+              "question": "Uygulama neden tek bir sayı yerine kalori aralığı gösteriyor?",
+              "answer": "Vücut yağ yüzdesi ölçümleri — biyoelektrik empedans (BIA), deri kıvrım kaliperi veya DEXA ile yapılmış olsun — tipik olarak ±%3–5 ölçüm hatası taşır. Musclog, girdiğin vücut yağ yüzdesine ±%4'lük bir bant (muhafazakâr bir orta nokta) uygular ve BMR, TDEE ve hedef kaloriyi iki uçta yeniden hesaplar.",
+              "bullets": [
+                "Minimum hedef kalori = VY% + %4 ile yapılan hesap (daha fazla yağ → daha az yağsız kütle → daha düşük BMR).",
+                "Maksimum hedef kalori = VY% − %4 ile yapılan hesap (daha az yağ → daha fazla yağsız kütle → daha yüksek BMR).",
+                "Ortadaki tek ‘hedef’, girdiğin VY%'yi doğrudan kullanarak elde edilen en iyi tahmin sonucudur.",
+                "Bu aralık gerçekçi belirsizliği iletir ve senin için ‘doğru’ sayının bu bandın herhangi bir yerinde olabileceğini anlamana yardımcı olur."
+              ]
+            },
+            {
+              "question": "Forbes Eğrisi nedir ve neden önemlidir?",
+              "answer": "Gilbert Forbes (1987) tarafından geliştirilen ve Kevin Hall (2007) tarafından daha da biçimlendirilen Forbes Eğrisi, vücudun kilo değişimlerini yağ kütlesi ile yağsız kütle arasında nasıl paylaştırdığını tanımlar. Kritik ve sezgiye aykırı bir sonucu vardır:",
+              "bullets": [
+                "Daha zayıf kişiler kilogram başına daha fazla yağsız kütle kaybeder — yağ rezervleri düşük olduğunda vücut yağ depolarını daha agresif korur.",
+                "Tersine, yüksek yağ oranına sahip kişiler kilogram başına daha yüksek oranda yağ kaybeder ve bu da etkili enerji yoğunluklarını klasik 7.700 kcal/kg kuralına yaklaştırır.",
+                "Eğri, bir C sabitiyle (erkekler için ≈13,8, kadınlar için ≈10,4) parametrelenir ve Lambert W fonksiyonunun (ana dal) çözümüyle bulunur. Musclog bu çözücüyü herhangi bir kütüphaneye bağımlılık olmadan Newton yöntemiyle sayısal olarak uygular.",
+                "Bu model olmadan, zayıf bireyler için kesimler sistematik olarak olduğundan az tahmin edilir — klasik kural tüm kilo kaybını yağ sayar ve gerçekte ne kadar yağ kaybedildiğini fazla tahmin ederdi."
+              ],
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Human Body Composition",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — PMC2376748 — Forbes eğrisinin biçimlendirilmesi",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                }
+              ]
+            },
+            {
+              "question": "Adaptif Termogenez nedir ve uygulama bunu nasıl hesaba katar?",
+              "answer": "Adaptif termogenez (AT), sürekli kalori kısıtlamasına yanıt olarak vücudun enerji harcamasının yalnızca vücut kütlesindeki değişimlerle açıklanamayacak kadar düşmesi olgusudur. Şunlar tarafından yönlendirilir:",
+              "bullets": [
+                "Hormonal baskılanma: Yağ kaybıyla leptin düşer; bu da sempatik sinir sistemi aktivitesini ve tiroid hormonu üretimini azaltır.",
+                "NEAT (Egzersiz Dışı Aktivite Termogenezi) azalması: Vücut bilinçsizce kıpırdanmayı, duruş değişikliklerini ve kendiliğinden hareketi azaltır.",
+                "Mitokondri verimliliği değişimleri: Hücreler yakılan kalori başına daha fazla ATP çıkarır.",
+                "Musclog, AT'yi kaybedilen toplam vücut kütlesi kilogramı başına 20 kcal/gün ceza olarak modeller (Hall ve ark.'nın 20–30 kcal/gün/kg aralığının orta noktası kullanılarak). Bu, ampirik izleme verilerinden hesaplanırken TDEE kayma düzeltmesinde ve gerçekçi, doğrusal olmayan bir kilo kaybı yörüngesi göstermek için 90 günlük projeksiyonda uygulanır."
+              ],
+              "citations": [
+                {
+                  "label": "Müller ve ark. (2022) — Klinik çalışmalarda AT büyüklüğü",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall ve ark. (NIH) — Dinamik enerji dengesi modeli (kg başına 20–30 kcal aralığı)",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "‘Bugün Yakılan Kalori’ tahmini nasıl hesaplanıyor?",
+              "answer": "Gerçek zamanlı kalori yakma tahmini, TDEE'ni 24 saate basitçe doğrusal bölmek yerine sirkadiyen ağırlıklı bir model kullanır. Metabolik oda ve sirkadiyen biyoloji araştırmaları, enerji harcamasının gün boyunca düzgün olmadığını gösterir — iç biyolojik saatin, duruşun, öğün zamanlamasının (yiyeceğin termik etkisi, TEF) ve kendiliğinden fiziksel aktivitenin (NEAT) yönlendirdiği belirgin bir 24 saatlik ritim izler.",
+              "table": {
+                "head": ["Zaman dilimi", "TDEE yüzdesi", "Başlıca etken"],
+                "rows": [
+                  [
+                    "23:00 – 03:00",
+                    "~%9,5",
+                    "Uykuya dalış, sempatik geri çekilme, %85–95 BMR düzeyinde SMR"
+                  ],
+                  [
+                    "03:00 – 07:00",
+                    "~%8,5",
+                    "Sirkadiyen en düşük nokta (~05:00), en düşük çekirdek sıcaklığı ve REE"
+                  ],
+                  ["07:00 – 11:00", "~%19,5", "Uyanınca duruş artışı (+%10), sabah TEF zirvesi"],
+                  ["11:00 – 15:00", "~%22,5", "Öğle TEF'i, gündüz NEAT ve mesleki hareket"],
+                  [
+                    "15:00 – 19:00",
+                    "~%25",
+                    "Sirkadiyen REE zirvesi (~17:00), çekirdek sıcaklık zirvesi"
+                  ],
+                  [
+                    "19:00 – 23:00",
+                    "~%15",
+                    "Akşam rahatlaması, zayıflayan akşam yemeği TEF'i, soğuyan çekirdek sıcaklık"
+                  ]
+                ]
+              },
+              "answer2": "Her dilim dört saattir (240 dakika). 23:00–03:00 dilimi gece yarısını kestiği için uygulama onu iki bitişik parçaya böler (00:00–03:00 ve 23:00–24:00), böylece hesaplama yerel gece yarısına bağlı kalır. Bugün şimdiye kadar yakılan kalori = Σ (her tamamlanmış veya kısmi parçadaki geçen dakika × dilim oranı × TDEE). Şu anki metabolik evre etiketi (ör. ‘Sirkadiyen Zirve’), o an hangi dilimin etkin olduğunu yansıtır.",
+              "citations": [
+                {
+                  "label": "Bo ve ark. (2015) — Öğün zamanlaması ve diyetle oluşan termogenez — IJO",
+                  "url": "https://doi.org/10.1038/ijo.2015.138"
+                },
+                {
+                  "label": "Manini (2010) — Enerji harcaması ve yaşlanma — Ageing Res Rev",
+                  "url": "https://doi.org/10.1016/j.arr.2009.08.002"
+                },
+                {
+                  "label": "Morris ve ark. (2015) — Sirkadiyen sistem ve sabah/akşam TEF farkı — Obesity",
+                  "url": "https://doi.org/10.1002/oby.21189"
+                },
+                {
+                  "label": "Poggiogalle ve ark. (2018) — Enerji metabolizmasının sirkadiyen düzenlenmesi — Metabolism",
+                  "url": "https://doi.org/10.1016/j.metabol.2017.11.017"
+                },
+                {
+                  "label": "Ruddick-Collins ve ark. (2021) — Sirkadiyen RMR ritimleri ve yiyeceğin termik etkisi — JCEM",
+                  "url": "https://doi.org/10.1210/clinem/dgab654"
+                },
+                {
+                  "label": "Sharma & Kavuru (2010) — Uyku ve metabolizmaya genel bakış — Int J Endocrinol",
+                  "url": "https://doi.org/10.1155/2010/270832"
+                }
+              ]
+            },
+            {
+              "question": "Günlük su alımı önerisi nasıl hesaplanıyor?",
+              "answer": "Su önerisi, günlük enerji harcamasının kilokaloride 0,75 ml oranında TDEE ile doğrusal olarak ölçeklenir. Bu, birbirinden bağımsız iki kılavuzun yakınsamasından türetilmiştir:",
+              "bullets": [
+                "ABD Gıda ve Beslenme Kurulu (1945): ‘harcanan kalori başına 1 ml’ (Musclog, suyun yaklaşık %25'inin yiyeceklerden geldiğini temsil etmek için 0,75 ml kullanır).",
+                "Diyet anketleri, içeceklerin yetişkinlerde toplam su alımının yaklaşık %70–80'ini oluşturduğunu gösterir (Gandy ve ark. 2016)."
+              ],
+              "citations": [
+                {
+                  "label": "PMC7692653 — İçeceklerden ve yiyeceklerden su alımı",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food"
+                },
+                {
+                  "label": "PMC5946122 — Su alımının içeceklerden gelen yüzdesi",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "repMarker": {
+      "title": "Tekrar İşaretleyici Aracı",
+      "description": "Tekrar sınırlarını işaretlemek için bir antrenman videosu ve sensör JSON'u yükle",
+      "uploadVideo": "Video yükle",
+      "uploadJson": "Sensör JSON'u yükle",
+      "dragDropVideo": "Videoyu sürükle ve bırak ya da gözatmak için tıkla",
+      "dragDropJson": "JSON'u sürükle ve bırak ya da gözatmak için tıkla",
+      "videoLoaded": "Video yüklendi",
+      "jsonLoaded": "JSON yüklendi",
+      "markStart": "Başlangıcı işaretle",
+      "markEnd": "Bitişi işaretle",
+      "undo": "Geri al",
+      "clearAll": "Hepsini temizle",
+      "waitingEnd": "Bitiş bekleniyor — tekrar bittiğinde E'ye bas",
+      "markerCount_one": "{{count}} tekrar işaretlendi",
+      "markerCount_other": "{{count}} tekrar işaretlendi",
+      "downloadJson": "JSON'u indir",
+      "repNumber": "Tekrar",
+      "startTime": "Başlangıç",
+      "endTime": "Bitiş",
+      "duration": "Süre",
+      "delete": "Sil",
+      "noMarkers": "Henüz tekrar işaretlenmedi. Bir tekrarın başlangıcını işaretlemek için S'ye bas.",
+      "invalidJson": "Geçersiz JSON: \"samples\" alanı eksik",
+      "seekHint": "Videoyu aramak için grafiğe tıkla",
+      "keyboardHint": "S = başlangıcı işaretle · E = bitişi işaretle · Boşluk = oynat/duraklat",
+      "chartOrientationTitle": "Yönelim",
+      "chartOrientationSubtitle": "cihaz açısı · dönel hareketler için en net",
+      "chartAccelerationTitle": "İvme",
+      "chartAccelerationSubtitle": "ham ivme · her hareket için çalışır"
+    },
+    "alternatives": {
+      "badge": "Dürüst Karşılaştırma",
+      "titlePrefix": "Musclog ile",
+      "titleHighlight": "alternatifleri",
+      "description": "Musclog'un gizlilik, beslenme, antrenman ve bütünsel sağlık takibi açısından popüler beslenme ve fitness uygulamalarıyla nasıl karşılaştığı. Ölçütler genişliği, gizliliği, sahipliği, çevrimdışı kullanımı ve entegrasyonu vurgular.",
+      "featureColumn": "Özellik",
+      "asOf": "Bu karşılaştırma, 24 Temmuz 2026 tarihinde erişilebilen resmi ürün belgelerini yansıtır. Musclog bilgileri canlı web sitesinden ve depodan, rakip bilgileri ise resmi sitelerinden ve yardım merkezlerinden alınmıştır.",
+      "disclaimer": "Ürün adları ve ticari markalar kendi sahiplerine aittir. Ayrıntılar sık değişir — en güncel bilgi için her sağlayıcının resmi sitesini kontrol et.",
+      "legend": {
+        "title": "Açıklama",
+        "full": "Güçlü, yerleşik destek",
+        "partial": "Kısmi, temel, entegrasyona bağlı veya ücretli",
+        "none": "Belgelenmiş bir temel özellik değil"
+      },
+      "notes": {
+        "fullApp": "Tam uygulama",
+        "basic": "Temel",
+        "trialOnly": "Yalnızca deneme",
+        "trackingFree": "Takip ücretsiz",
+        "strongBasic": "Güçlü temel",
+        "limited": "Sınırlı",
+        "strongCore": "Güçlü çekirdek",
+        "appleEcosystem": "Apple ekosistemi",
+        "appleHealthCentric": "Apple Health odaklı",
+        "offlineDiarySync": "Çevrimdışı günlük senkronizasyonu",
+        "notLocalFirst": "Yerel öncelikli değil",
+        "trackingDependent": "Takibe bağlı",
+        "cloudAccount": "Bulut hesabı",
+        "internetRequired": "İnternet gerekli",
+        "workoutCaching": "Antrenman önbellekleme",
+        "applePlatform": "Apple platformu",
+        "serverEncryption": "Sunucu şifrelemesi",
+        "premiumExport": "Premium dışa aktarma",
+        "exportGeneric": "Dışa aktarma",
+        "healthExport": "Sağlık dışa aktarımı",
+        "exportReports": "Dışa aktarma/raporlar",
+        "fullExportViaSupport": "Destek üzerinden tam dışa aktarma",
+        "workoutsMeasurements": "Antrenmanlar/ölçümler",
+        "mobile": "Mobil",
+        "appleOnly": "Yalnızca Apple",
+        "fullAppMobileOnly": "Tam uygulama, yalnızca mobil",
+        "upTo84": "84'e kadar",
+        "paid": "Ücretli",
+        "paidVoice": "Ücretli ses",
+        "gold": "Gold",
+        "goldVoice": "Gold/ses",
+        "premium": "Premium",
+        "curatedSources": "Seçilmiş kaynaklar",
+        "verifiedDatabases": "Doğrulanmış veritabanları",
+        "aiGuidance": "Yapay zekâ rehberliği",
+        "ai": "Yapay zekâ",
+        "nutritionAdvice": "Beslenme tavsiyesi",
+        "fastingFeature": "Oruç özelliği",
+        "timer": "Zamanlayıcı",
+        "plansTimer": "Planlar/zamanlayıcı",
+        "logging": "Kayıt",
+        "journal": "Günlük",
+        "basicExercise": "Temel egzersiz",
+        "exerciseEntries": "Egzersiz kayıtları",
+        "exerciseHabits": "Egzersiz alışkanlıkları",
+        "aiCoach": "Yapay zekâ koçu",
+        "separateApp": "Ayrı uygulama",
+        "periodLogging": "Adet kaydı",
+        "bestHere": "Burada en iyi",
+        "biometrics": "Biyometri",
+        "wearables": "Giyilebilir cihazlar",
+        "integrations": "Entegrasyonlar",
+        "watches": "Saatler",
+        "algorithmic": "Algoritmik",
+        "workoutCoach": "Antrenman koçu",
+        "pro": "Pro",
+        "nutrition": "Beslenme",
+        "personalitiesFiles": "Kişilikler/dosyalar",
+        "gpl3": "GPL-3.0",
+        "jsonDbExcel": "JSON, DB, Excel",
+        "micros40": "40+",
+        "yes": "Evet",
+        "no": "Hayır",
+        "some": "Bazı"
+      },
+      "sections": {
+        "privacy": {
+          "title": "Gizlilik, sahiplik ve fiyatlandırma",
+          "footnote": "Lifesum, internet bağlantısı olmadan değişiklikleri kaydedemeyeceğini ve verileri şirket sunucularında sakladığını belirtir. MyFitnessPal bazı çevrimdışı günlük değişikliklerine izin verir ama bunları daha sonra hesap sistemiyle senkronize eder. Musclog, merkezi depolama katmanı olarak yerel bir WatermelonDB veritabanı kullanır.",
+          "rows": {
+            "freeVersion": "Kullanışlı ücretsiz sürüm",
+            "openSource": "Açık kaynak",
+            "noProprietaryAccount": "Özel hesap gerekmez",
+            "localFirst": "Yerel öncelikli veri modeli",
+            "fullyOffline": "Temel işlevler tamamen çevrimdışı",
+            "localEncryption": "Hassas alanlar yerel olarak şifrelenir",
+            "rawDbAccess": "Ham veritabanı erişimi",
+            "migrationBackups": "Geçiş yedekleri ve veritabanı onarımı",
+            "completeBackup": "Kendi kendine tam yedekleme",
+            "platforms": "Android, iOS ve web",
+            "adsInFree": "Ücretsiz sürümde reklamlar"
+          }
+        },
+        "nutrition": {
+          "title": "Beslenme ve enerji koçluğu",
+          "footnote": "Ampirik enerji harcaması tahmini için MacroFactor ve Musclog burada en güçlü iki uygulama. Cronometer mikro besin derinliğinde öne çıkmaya devam ediyor; MyFitnessPal, Lifesum, Bevel, MacroFactor ve Cronometer ise artık bir tür yapay zekâ destekli yiyecek kaydı sunuyor.",
+          "rows": {
+            "caloriesMacros": "Kalori ve makrolar",
+            "micronutrients": "Ayrıntılı mikro besinler",
+            "barcode": "Barkod okuma",
+            "customFoods": "Özel yiyecekler ve porsiyonlar",
+            "savedMeals": "Kaydedilmiş öğünler ve tarifler",
+            "aiPhoto": "Yapay zekâ ile fotoğraftan öğün kaydı",
+            "naturalLanguage": "Doğal dille yiyecek kaydı",
+            "labelOcr": "Besin etiketi OCR",
+            "foodDbSelection": "Open Food Facts ve USDA seçimi",
+            "netCarbs": "Toplam ve net karbonhidrat modu",
+            "empiricalTdee": "Alım ve kiloya dayalı ampirik TDEE",
+            "autoTarget": "Otomatik kalori hedefi ayarlaması",
+            "weeklyCheckins": "Haftalık hedef kontrolleri",
+            "intuitiveEating": "Sayıları gizleyen Sezgisel Beslenme Modu",
+            "fastedDays": "Bilerek oruç tutulan gün kayıtları",
+            "supplements": "Takviyeler ve hatırlatıcılar",
+            "qualityInsights": "Beslenme kalitesi içgörüleri"
+          }
+        },
+        "workouts": {
+          "title": "Antrenmanlar ve ilerleme",
+          "footnote": "Ciddi kuvvet kaydı için MacroFactor Workouts ve Hevy en yakın rakiplerdir. Hevy setleri, ağırlıkları, süperset'leri, RPE'yi, zamanlayıcıları, kişisel rekorları, rutinleri ve ayrıntılı ilerleme istatistiklerini belgeler; MacroFactor Workouts ise daha çok dinamik programlamaya odaklanır. Temel fark, MacroFactor'ün beslenmeyi ve antrenmanı ayrı ürünlere bölmesi, Musclog'un ise ikisini tek bir yerel veri setinde birleştirmesidir.",
+          "rows": {
+            "strengthLogging": "Ayrıntılı kuvvet antrenmanı kaydı",
+            "setsRepsWeights": "Set, tekrar ve ağırlıklar",
+            "rpeRir": "RPE/RIR desteği",
+            "supersets": "Süperset'ler",
+            "prDetection": "Kişisel rekor algılama",
+            "restTimers": "Dinlenme zamanlayıcıları",
+            "customExercises": "Özel egzersizler",
+            "templates": "Antrenman şablonları ve rutinleri",
+            "aiPlans": "Yapay zekâ ile oluşturulan antrenman planları",
+            "pasteParse": "Bir antrenmanı yapıştır ve yapay zekâ ile ayrıştır",
+            "editHistorical": "Geçmiş antrenmanları düzenle",
+            "exerciseGoals": "Egzersize özgü hedefler",
+            "sharing": "Antrenman paylaşımı/derin bağlantılar",
+            "nutritionAndLifting": "Beslenme ve ciddi ağırlık antrenmanı bir arada",
+            "offlineRecovery": "Çevrimdışı antrenman kurtarma"
+          }
+        },
+        "wholeHealth": {
+          "title": "Bütünsel sağlık, yapay zekâ ve entegrasyonlar",
+          "footnote": "Bevel, giyilebilir cihazlardan türetilen toparlanma, uyku, stres ve hazır olma için en güçlü rakiptir. Musclog ise yerel veri sahipliğinde, Android desteğinde, ayrıntılı beslenme kontrollerinde, ampirik TDEE'de, kendi barındırdığın yapay zekâda, doğrudan BLE iş akışlarında ve veritabanı araçlarında daha güçlüdür.",
+          "rows": {
+            "bodyMeasurements": "Kilo ve vücut ölçümleri",
+            "bodyFatBmiFfmi": "Vücut yağı, BMI ve FFMI",
+            "correlationCharts": "Alanlar arası korelasyon grafikleri",
+            "menstrualCycle": "Adet döngüsü takibi",
+            "phaseAware": "Evreye duyarlı antrenman/beslenme içgörüleri",
+            "moodRecovery": "Ruh hali ve toparlanma takibi",
+            "sleepReadiness": "Ayrılmış uyku/hazır olma puanı",
+            "healthConnect": "Health Connect entegrasyonu",
+            "healthKit": "HealthKit entegrasyonu",
+            "historicalImport": "Geçmiş sağlık verisi içe aktarma",
+            "bleManagement": "Doğrudan BLE cihaz yönetimi",
+            "imuRepCounting": "Yerel IMU tekrar sayımı",
+            "aiCoachConfig": "Yapılandırılabilir konuşma yapay zekâ koçu",
+            "aiContext": "Yapay zekâ beslenme ve antrenman bağlamını görür",
+            "customPrompts": "Özel yapay zekâ sistem istemleri",
+            "byoApiKey": "Kendi API anahtarını getir",
+            "localModels": "Yerel/kendi barındırdığın yapay zekâ modelleri",
+            "gameboy": "Game Boy Color sürümü"
+          }
+        }
+      },
+      "winners": {
+        "title": "Her dar kategoride kim önde?",
+        "categoryHeader": "Kategori",
+        "winnerHeader": "En güçlü seçenek",
+        "rows": {
+          "overallCoverage": "En iyi genel özellik kapsamı",
+          "privacyOwnership": "En iyi gizlilik ve kullanıcı sahipliği",
+          "freeOpenSource": "En iyi ücretsiz/açık kaynak öneri",
+          "nutritionLifting": "Beslenme + ciddi ağırlık için en iyi tek uygulama",
+          "configurableAi": "En iyi yapılandırılabilir/yerel yapay zekâ",
+          "foodEcosystem": "En büyük ticari yiyecek ekosistemi",
+          "dietCoaching": "En uzmanlaşmış uyarlanabilir diyet koçluğu",
+          "micronutrient": "En uzmanlaşmış mikro besin takibi",
+          "wearableRecovery": "En iyi giyilebilir toparlanma/hazır olma deneyimi",
+          "socialLifting": "En köklü sosyal ağırlık antrenmanı deneyimi",
+          "mealPlan": "En cilalı yaşam tarzı öğün planı deneyimi",
+          "liftingProgramme": "En uzmanlaşmış otomatik ağırlık programı",
+          "gameboy": "En iyi Game Boy Color desteği"
+        }
+      },
+      "conclusion": {
+        "title": "Dürüst sonuç",
+        "quote": "Musclog, bu karşılaştırmada ciddi antrenman kaydını, kapsamlı beslenme takibini, ampirik enerji koçluğunu, vücut ve döngü analizlerini, yapay zekâ koçluğunu, sağlık entegrasyonlarını ve bağlı cihaz desteğini birleştiren tek uygulamadır; üstelik ücretsiz, açık kaynaklı, yerel öncelikli ve özel bir hesap olmadan kullanılabilir.",
+        "body": "Bu, Musclog'un her ayrı özellikte zaten en iyi olduğu anlamına gelmez. MyFitnessPal daha büyük bir ticari yiyecek ekosistemine sahip, Cronometer daha derin besin verisine, Bevel daha güçlü uyku ve hazır olma analizine, Hevy ise olgun bir sosyal ağırlık antrenmanı ağına sahip. Ama tam kombinasyonu isteyen biri, aksi halde şuna benzer bir şeye ihtiyaç duyardı:",
+        "stack": "MacroFactor + MacroFactor Workouts veya Hevy + Bevel + ek gizlilik/dışa aktarma araçları",
+        "bodyAfter": "Musclog bütün bu yığını tek bir uygulamada sunmayı hedefler."
+      },
+      "cta": {
+        "title": "Tüm yığını tek uygulamada al",
+        "description": "Ücretsiz, açık kaynaklı ve yerel öncelikli. Hesap gerekmez.",
+        "button": "Musclog'u indir"
+      }
+    }
+  }
+}

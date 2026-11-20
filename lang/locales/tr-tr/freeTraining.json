@@ -1,0 +1,31 @@
+{
+  "freeTraining": {
+    "workoutName": "Serbest antrenman",
+    "blankWorkout": "Boş antrenman",
+    "title": "Serbest antrenman",
+    "titleSession": "Seans",
+    "subtitle": "Antrenmanını ilerledikçe oluştur. Şablon yok, sadece ilerleme var.",
+    "addFirstExercise": "İlk egzersizi ekle",
+    "tip": "İpucu: İstediğin zaman daha fazla egzersiz ekleyebilirsin.",
+    "startFreeTraining": "Serbest antrenmana başla",
+    "startFreeTrainingSubtitle": "Antrenmanını ilerledikçe oluştur. Şablon yok, sadece ilerleme var.",
+    "duration": "Süre",
+    "calories": "Kalori",
+    "volume": "Hacim",
+    "inProgress": "Devam ediyor",
+    "addExercise": {
+      "title": "Egzersiz ekle",
+      "numberOfSets": "Set sayısı",
+      "addToWorkout": "Antrenmana ekle",
+      "menuDescription": "Bu seansa egzersiz ve set ekle"
+    },
+    "exerciseComplete": {
+      "title": "Egzersiz tamamlandı",
+      "subtitle": "Egzersiz tamamlandı. Devam etmeye hazır mısın?",
+      "setsCompleted": "{{count}} set tamamlandı",
+      "totalVolume": "Toplam hacim",
+      "addNextExercise": "Sonraki egzersizi ekle",
+      "finishWorkout": "Antrenmanı bitir"
+    }
+  }
+}

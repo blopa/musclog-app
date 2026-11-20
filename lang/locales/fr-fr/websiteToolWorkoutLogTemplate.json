@@ -1,0 +1,74 @@
+{
+  "websiteToolWorkoutLogTemplate": {
+    "title": "Carnet d'entraînement imprimable gratuit",
+    "intro": "Télécharge un carnet d'entraînement à imprimer, ou un tableur à remplir sur ordinateur. Les deux sont gratuits, sans inscription. Le tableur s'enregistre en CSV que l'application Musclog peut importer.",
+    "downloads": {
+      "title": "Téléchargements",
+      "pdfA4": "Carnet imprimable, A4",
+      "pdfA4Note": "PDF, 4 feuilles en paysage. Pour papier A4.",
+      "pdfLetter": "Carnet imprimable, US Letter",
+      "pdfLetterNote": "PDF, 4 feuilles en paysage. Pour papier US Letter.",
+      "xlsx": "Modèle de tableur",
+      "xlsxNote": "Fichier Excel (.xlsx) qui s'ouvre aussi dans Google Sheets, Numbers et LibreOffice. Une feuille Carnet et une feuille Lisez-moi.",
+      "csv": "Modèle CSV",
+      "csvNote": "Les mêmes colonnes en texte brut, pour n'importe quel tableur ou pour l'application.",
+      "english": "Les fichiers sont en anglais, quelle que soit la langue de cette page."
+    },
+    "check": {
+      "title": "Vérifie ton CSV rempli",
+      "intro": "Choisis ton fichier et vois ce que Musclog lirait. Il utilise le même lecteur que l'application, dans ton navigateur. Le fichier n'est pas envoyé.",
+      "file": "Fichier CSV",
+      "unitLabel": "Les charges de ton fichier sont en",
+      "kg": "kg",
+      "lb": "lb",
+      "result": "Musclog lirait {{workouts}} et {{sets}}.",
+      "workoutCount_one": "{{formattedCount}} séance",
+      "workoutCount_few": "{{formattedCount}} séances",
+      "workoutCount_many": "{{formattedCount}} séances",
+      "workoutCount_other": "{{formattedCount}} séances",
+      "setCount_one": "{{formattedCount}} série",
+      "setCount_few": "{{formattedCount}} séries",
+      "setCount_many": "{{formattedCount}} séries",
+      "setCount_other": "{{formattedCount}} séries",
+      "skipped_one": "{{formattedCount}} ligne a été ignorée : date absente ou future, pas de nom d'exercice, ou rien de mesuré.",
+      "skipped_few": "{{formattedCount}} lignes ont été ignorées : date absente ou future, pas de nom d'exercice, ou rien de mesuré.",
+      "skipped_many": "{{formattedCount}} lignes ont été ignorées : date absente ou future, pas de nom d'exercice, ou rien de mesuré.",
+      "skipped_other": "{{formattedCount}} lignes ont été ignorées : date absente ou future, pas de nom d'exercice, ou rien de mesuré.",
+      "problems": {
+        "empty": "Le fichier est vide.",
+        "tooLarge": "Le fichier est trop volumineux pour être vérifié ici.",
+        "unreadable": "Cela ne ressemble pas à un carnet d'entraînement. Garde la ligne d'en-tête du modèle telle quelle.",
+        "noRows": "Le fichier a une ligne d'en-tête mais aucune série dessous.",
+        "read": "Le fichier n'a pas pu être lu."
+      },
+      "exampleWarning": "Supprime la ligne d'exemple du modèle avant d'importer, sinon elle sera lue comme une vraie série."
+    },
+    "sections": [
+      {
+        "title": "Ce qu'il y a dans le carnet imprimable",
+        "body": [
+          "Chaque feuille correspond à une séance. En haut, tu notes la date, la séance, ton poids corporel et si tu soulèves en kg ou en lb. En dessous, douze lignes d'exercices avec cinq séries chacune, une case pour la charge et une case pour les répétitions, et une colonne Notes pour noter à quel point une série était difficile ou tout ce qui a fait mal.",
+          "Le PDF comporte quatre feuilles : une impression couvre donc environ une à deux semaines. Imprime autant d'exemplaires que tu veux. Les feuilles n'ont aucun programme : c'est toi qui décides de ce qui va dans les lignes."
+        ]
+      },
+      {
+        "title": "Comment remplir le tableur",
+        "body": [
+          "Écris une ligne par série : la date, le nom de la séance, l'exercice, le numéro de la série, la charge et les répétitions. RPE et Notes sont facultatifs. La charge est un simple nombre dans l'unité que tu utilises toujours. Laisse Répétitions vide pour une série chronométrée. RPE 10 est une série sans rien en réserve, 9 laisse une répétition et 8 en laisse deux.",
+          "Les colonnes suivent la structure que lit l'importateur de Musclog, donc tu n'as rien à convertir. Enregistre la feuille Carnet en fichier CSV, puis dans l'application ouvre Réglages, puis Sauvegardes et données, puis Importer des séances. Musclog associe les noms d'exercices à son catalogue et affiche un examen avant d'enregistrer la moindre séance."
+        ]
+      },
+      {
+        "title": "Papier, tableur ou application",
+        "body": [
+          "Le papier ne nécessite ni pile ni compte, et noter une série prend quelques secondes. Il ne peut pas aller chercher des données à ta place : c'est toi qui relis la feuille de la semaine dernière pour décider de ce que tu soulèves aujourd'hui.",
+          "Un tableur peut additionner ton volume et tracer la courbe d'un exercice, si tu construis les formules. Musclog le fait et calcule la charge suivante à partir de ta dernière séance, avec la raison affichée, mais le carnet reste le tien dans tous les cas. C'est une application gratuite et open source, tes données restent sur ton appareil, et tu peux y importer le tableur ci-dessus."
+        ]
+      }
+    ],
+    "articles": {
+      "trackProgress": "Comment suivre ses progrès en salle : guide pour débutants",
+      "importHistory": "Transférer ton historique d'entraînement depuis Strong, Hevy ou FitNotes"
+    }
+  }
+}

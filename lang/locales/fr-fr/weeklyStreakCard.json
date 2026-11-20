@@ -1,0 +1,10 @@
+{
+  "weeklyStreakCard": {
+    "workoutsThisWeek": "séances cette semaine",
+    "dayStreak": "jours de suite",
+    "days": "{{value}} jours",
+    "bestStreak": "Meilleure série",
+    "setWeeklyGoal": "Définir un objectif",
+    "activeDays": "jours actifs"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Calculateur d'échauffement",
+    "intro": "Saisis ta charge de travail et obtiens les séries d'échauffement qui y mènent, avec les disques de chaque côté de la barre quand tu soulèves une barre.",
+    "form": {
+      "working": "Charge de travail",
+      "workingHint": "La charge de la série vers laquelle tu te prépares.",
+      "equipmentLabel": "Matériel",
+      "equipment": {
+        "barbell": "Barre",
+        "dumbbell": "Haltère",
+        "machine": "Machine ou câble"
+      }
+    },
+    "problems": {
+      "working": "Saisis la charge de travail sous forme de nombre supérieur à 0 et au plus {{max}}."
+    },
+    "results": {
+      "title": "Séries d'échauffement",
+      "set": "Série",
+      "weight": "Charge",
+      "reps": "Répétitions",
+      "plates": "Disques par côté",
+      "working": "Série de travail",
+      "target": "Cible",
+      "emptyBar": "Barre vide",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Repos d'environ {{seconds}} secondes entre les séries d'échauffement.",
+      "barIsWarmUp": "Ta charge de travail est si proche de la barre que la barre elle-même sert d'échauffement. Passe directement à ta première série.",
+      "noRamp": "Cette charge est trop légère pour une progression d'échauffement. Commence à ta charge de travail.",
+      "workingNotLoadable": "Ta salle ne peut pas charger exactement la charge de travail. Les échauffements utilisent les charges chargeables les plus proches."
+    },
+    "sections": [
+      {
+        "title": "Comment la progression est construite",
+        "body": [
+          "Chaque série d'échauffement est une part de la charge de travail : 40 % pour 5 répétitions, 60 % pour 3 répétitions et 80 % pour 2 répétitions. Chacune est plus lourde et plus courte que la précédente, pour que tu arrives à la charge de travail échauffé sans être fatigué.",
+          "Sur une barre, la progression commence à vide pour 10 répétitions quand la première série est bien au-dessus. Chaque charge est arrondie à ce que tes disques permettent, et un échauffement à moins de 10 % de la charge de travail est supprimé."
+        ]
+      },
+      {
+        "title": "Ce sont les choix de Musclog",
+        "body": [
+          "Les pourcentages, les répétitions et le repos entre les séries sont une prescription courante que Musclog utilise. Ce sont des choix de produit, pas des résultats d'une étude. Modifie-les selon ce que tu ressens."
+        ]
+      },
+      {
+        "title": "Barre, haltère ou machine",
+        "body": [
+          "Sur une barre, les disques de chaque côté sont affichés, pour que tu charges chaque échauffement avec les disques de ta salle. Les haltères et machines se passent de barre et de disques, et utilisent les incréments standard d'une salle classique."
+        ]
+      }
+    ]
+  }
+}

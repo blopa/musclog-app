@@ -1,0 +1,184 @@
+{
+  "yearInReview": {
+    "title": "Dein Jahr in Musclog",
+    "empty": "Für dieses Jahr ist noch nichts erfasst. Der Rückblick füllt sich, während du trainierst und erfasst.",
+    "back": "Zurück",
+    "next": "Weiter",
+    "done": "Fertig",
+    "stepOf": "{{current}} von {{total}}",
+    "shareButton": "Teilen",
+    "shareSheetTitle": "Dein Jahr teilen",
+    "includeWeight": "Gewichtsveränderung einbeziehen",
+    "includeNutrition": "Ernährung einbeziehen",
+    "shareHint": "Beides ist aus, bis du es einschaltest. Ohne diese Angaben enthält das Bild kein Körpergewicht und keine Essenszahlen.",
+    "shareAction": "Bild teilen",
+    "intro": {
+      "body": "So sah dein Training und Erfassen aus."
+    },
+    "sessions": {
+      "title": "Trainings",
+      "body_one": "Training abgeschlossen",
+      "body_few": "Trainings abgeschlossen",
+      "body_many": "Trainings abgeschlossen",
+      "body_other": "Trainings abgeschlossen"
+    },
+    "heatmap": {
+      "title": "Trainingstage",
+      "days_one": "Trainingstag",
+      "days_few": "Trainingstage",
+      "days_many": "Trainingstage",
+      "days_other": "Trainingstage",
+      "legend": {
+        "workout": "Training",
+        "food": "Essen",
+        "both": "Beides"
+      }
+    },
+    "streak": {
+      "title": "Längste Serie",
+      "body_one": "Woche in Folge mit einem Training",
+      "body_few": "Wochen in Folge mit einem Training",
+      "body_many": "Wochen in Folge mit einem Training",
+      "body_other": "Wochen in Folge mit einem Training"
+    },
+    "volume": {
+      "title": "Insgesamt bewegt",
+      "body": "Gewicht mal Wdh. über deine Arbeitssätze.",
+      "perWorkout": "{{unit}} pro Training"
+    },
+    "topExercises": {
+      "title": "Am meisten trainiert",
+      "sets_one": "{{n}} Satz",
+      "sets_few": "{{n}} Sätze",
+      "sets_many": "{{n}} Sätze",
+      "sets_other": "{{n}} Sätze"
+    },
+    "records": {
+      "title": "Persönliche Rekorde",
+      "body_one": "neuer persönlicher Rekord",
+      "body_few": "neue persönliche Rekorde",
+      "body_many": "neue persönliche Rekorde",
+      "body_other": "neue persönliche Rekorde"
+    },
+    "busiestMonth": {
+      "title": "Intensivster Monat",
+      "body_one": "{{n}} Training in diesem Monat.",
+      "body_few": "{{n}} Trainings in diesem Monat.",
+      "body_many": "{{n}} Trainings in diesem Monat.",
+      "body_other": "{{n}} Trainings in diesem Monat."
+    },
+    "trainingTime": {
+      "title": "Übliche Trainingszeit",
+      "hours": "{{n}} Stunden trainiert, aus Einheiten mit erfasster Dauer.",
+      "buckets": {
+        "morning": "Morgens",
+        "afternoon": "Nachmittags",
+        "evening": "Abends",
+        "night": "Nachts"
+      }
+    },
+    "nutrition": {
+      "title": "Erfasstes Essen",
+      "meals_one": "erfasste Mahlzeit",
+      "meals_few": "erfasste Mahlzeiten",
+      "meals_many": "erfasste Mahlzeiten",
+      "meals_other": "erfasste Mahlzeiten",
+      "days_one": "Tag mit erfasstem Essen",
+      "days_few": "Tage mit erfasstem Essen",
+      "days_many": "Tage mit erfasstem Essen",
+      "days_other": "Tage mit erfasstem Essen"
+    },
+    "foodStreak": {
+      "title": "Längste Erfassungsserie",
+      "body_one": "Tag in Folge mit erfasstem Essen",
+      "body_few": "Tage in Folge mit erfasstem Essen",
+      "body_many": "Tage in Folge mit erfasstem Essen",
+      "body_other": "Tage in Folge mit erfasstem Essen",
+      "chart": "Tage mit erfasstem Essen, Monat für Monat."
+    },
+    "favouriteMeal": {
+      "title": "Meistprotokollierte Mahlzeit",
+      "days_one": "{{n}} Tag",
+      "days_few": "{{n}} Tage",
+      "days_many": "{{n}} Tage",
+      "days_other": "{{n}} Tage",
+      "captions": {
+        "breakfast": "Die wichtigste Mahlzeit des Tages, sagt jede Müslipackung.",
+        "lunch": "Die Mittagspause.",
+        "dinner": "Die große am Ende des Tages.",
+        "snack": "Zwischendurch zählt auch.",
+        "other": "Schwer einzuordnen, leicht zu erfassen."
+      }
+    },
+    "protein": {
+      "title": "Eiweiß, zusammengezählt",
+      "caption": "{{unit}} Eiweiß",
+      "body": "Gramm für Gramm, aus dem Eiweiß jeder erfassten Mahlzeit. Nicht das Gewicht des Essens.",
+      "compare": {
+        "wheyBag_one": "Das entspricht etwa {{n}} Beutel Whey-Protein.",
+        "wheyBag_few": "Das entspricht etwa {{n}} Beutel Whey-Protein.",
+        "wheyBag_many": "Das entspricht etwa {{n}} Beutel Whey-Protein.",
+        "wheyBag_other": "Das entspricht etwa {{n}} Beutel Whey-Protein.",
+        "cat_one": "Das entspricht etwa {{n}} Katze.",
+        "cat_few": "Das entspricht etwa {{n}} Katzen.",
+        "cat_many": "Das entspricht etwa {{n}} Katzen.",
+        "cat_other": "Das entspricht etwa {{n}} Katzen.",
+        "bowlingBall_one": "Das entspricht etwa {{n}} Bowlingkugel.",
+        "bowlingBall_few": "Das entspricht etwa {{n}} Bowlingkugeln.",
+        "bowlingBall_many": "Das entspricht etwa {{n}} Bowlingkugeln.",
+        "bowlingBall_other": "Das entspricht etwa {{n}} Bowlingkugeln.",
+        "barbell_one": "Das entspricht etwa {{n}} Olympiahantel.",
+        "barbell_few": "Das entspricht etwa {{n}} Olympiahanteln.",
+        "barbell_many": "Das entspricht etwa {{n}} Olympiahanteln.",
+        "barbell_other": "Das entspricht etwa {{n}} Olympiahanteln."
+      },
+      "chicken_one": "entspricht einer Hähnchenbrust, Brokkoli nicht inbegriffen",
+      "chicken_few": "entspricht Hähnchenbrüsten, Brokkoli nicht inbegriffen",
+      "chicken_many": "entspricht Hähnchenbrüsten, Brokkoli nicht inbegriffen",
+      "chicken_other": "entspricht Hähnchenbrüsten, Brokkoli nicht inbegriffen"
+    },
+    "macros": {
+      "title": "Wohin die Gramm gingen",
+      "protein": "Eiweiß",
+      "carbs": "Kohlenhydrate",
+      "fat": "Fett",
+      "body": "Alle Gramm im erfassten Essen, zusammengezählt."
+    },
+    "weight": {
+      "title": "Körpergewicht",
+      "unchanged": "Keine Veränderung zwischen deiner ersten und letzten Wiegung.",
+      "caption": "Von deiner ersten Wiegung bis zur letzten."
+    },
+    "outro": {
+      "title": "Das war das Jahr",
+      "body": "Erfass weiter, um die Geschichte des nächsten Jahres zu sehen."
+    },
+    "share": {
+      "sessions": "Trainings",
+      "activeDays": "Aktive Tage",
+      "volume": "Insgesamt bewegt",
+      "topExercise": "Am meisten trainiert",
+      "records": "Persönliche Rekorde",
+      "meals": "Erfasste Mahlzeiten",
+      "protein": "Eiweiß",
+      "weight": "Gewichtsveränderung"
+    },
+    "homeCard": {
+      "title": "Dein {{year}} in Musclog",
+      "body": "Sieh, wie dein Training aussah.",
+      "open": "Dein Jahr öffnen",
+      "dismiss": "Ausblenden"
+    },
+    "settingsRow": {
+      "title": "Dein Jahr in Musclog",
+      "subtitle": "Ein Rückblick auf dein Training und Erfassen"
+    },
+    "notification": {
+      "title": "Dein {{year}} in Musclog ist bereit",
+      "body": "Sieh, wie dein Training in diesem Jahr aussah."
+    },
+    "loadFailed": "Dein Jahr konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "seeYear": "{{year}} bisher ansehen"
+  }
+}

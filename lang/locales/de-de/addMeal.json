@@ -1,0 +1,15 @@
+{
+  "addMeal": {
+    "createMeal": "Mahlzeit erstellen",
+    "createMealDesc": "Eine neue Mahlzeit zu deinem Tagesprotokoll hinzufügen",
+    "dynamicCreator": "Mahlzeiten-Baukasten",
+    "dynamicCreatorDesc": "Stelle eine Mahlzeit Schritt für Schritt aus Lebensmitteln zusammen, die du scannst oder suchst",
+    "generateMealAI": "Mahlzeit mit KI generieren",
+    "generateMealAIDesc": "Lass die KI eine Mahlzeit passend zu deinen Vorlieben vorschlagen",
+    "manageCategories": "Kategorien verwalten",
+    "manageCategoriesDesc": "Ordne deine Mahlzeitenkategorien (Frühstück, Mittagessen usw.)",
+    "importFromPhone": "Von einem anderen Telefon importieren",
+    "importFromPhoneDesc": "Scanne eine Mahlzeit, die von einem anderen Telefon gesendet wird",
+    "title": "Mahlzeit hinzufügen"
+  }
+}

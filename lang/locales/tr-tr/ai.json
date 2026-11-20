@@ -1,0 +1,31 @@
+{
+  "ai": {
+    "settings": {
+      "notConfigured": "Yapay zeka yapılandırılmamış. Lütfen Yapay Zeka Ayarları'na bir API anahtarı ekle."
+    },
+    "notConfiguredModal": {
+      "title": "Yapay zeka henüz kurulmadı",
+      "subtitle": "Koçla sohbet edebilmek için önce bir API anahtarı ekle.",
+      "tipApiKey": "Yapay zeka ayarlarından OpenAI veya Google Gemini API anahtarlarını kullan.",
+      "tipFeatures": "Yapılandırıldıktan sonra mesajların seçtiğin modele gönderilir.",
+      "openSettings": "Yapay zeka ayarlarını aç",
+      "notNow": "Şimdi değil"
+    },
+    "providers": {
+      "openAIGemini": "OpenAI veya Google Gemini"
+    },
+    "icons": {
+      "Dumbbell": "Halter",
+      "Target": "Hedef",
+      "Zap": "Şimşek",
+      "Trophy": "Kupa",
+      "Activity": "Aktivite",
+      "Heart": "Kalp",
+      "Flame": "Alev"
+    },
+    "chat": {
+      "message": "Mesaj",
+      "typeYourMessage": "Mesajını yaz..."
+    }
+  }
+}

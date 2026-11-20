@@ -1,0 +1,50 @@
+{
+  "createWorkout": {
+    "title": "Utwórz nowy trening",
+    "save": "Zapisz",
+    "workoutIcon": "Ikona treningu",
+    "essentials": "Podstawy",
+    "workoutTitle": "Nazwa treningu",
+    "workoutTitlePlaceholder": "np. Dzień nóg bez litości",
+    "description": "Opis",
+    "descriptionPlaceholder": "Skup się na czworogłowych i łydkach...",
+    "workoutType": "Typ treningu",
+    "types": {
+      "strength": "Siła",
+      "cardio": "Kardio",
+      "flexibility": "Elastyczność",
+      "calisthenics": "Kalistenika",
+      "other": "Inny"
+    },
+    "intelligence": "Podpowiedzi",
+    "workoutInsight": {
+      "title": "Wskazówki do treningu",
+      "description": "Wybierz, jak Musclog przygotowuje wskazówki do następnej sesji. Gdy AI jest włączona, dostosowuje je na podstawie danych o regeneracji.",
+      "none": "Brak",
+      "algorithm": "Algorytm",
+      "ai": "AI"
+    },
+    "routine": "Rutyna",
+    "plan": {
+      "label": "Plany treningowe",
+      "none": "Nie należy do planu",
+      "scheduleHint": "Dni tygodnia ustawia się osobno dla każdego planu treningowego."
+    },
+    "standaloneSchedule": {
+      "label": "Harmonogram samodzielny",
+      "description": "Używany tylko wtedy, gdy ten trening nie należy do planu."
+    },
+    "weekly": "Tygodniowo",
+    "exercises": "Ćwiczenia",
+    "exercisesInWorkout": "Ćwiczenia w treningu",
+    "addExerciseError": "Nie udało się dodać ćwiczenia",
+    "editTitle": "Edytuj trening",
+    "loadError": "Nie udało się wczytać",
+    "noExercisesPlaceholder": "Brak ćwiczeń",
+    "saveError": "Nie udało się zapisać",
+    "validation": {
+      "titleRequiredMessage": "Wpisz nazwę treningu"
+    },
+    "ruleTapHint": "Stuknij ćwiczenie, aby wybrać, jak rosną jego ciężary."
+  }
+}

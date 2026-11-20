@@ -1,0 +1,20 @@
+{
+  "strengthLevels": {
+    "title": "Kraftlevel",
+    "levels": {
+      "beginner": "Anfänger",
+      "novice": "Einsteiger",
+      "intermediate": "Fortgeschritten",
+      "advanced": "Erfahren",
+      "elite": "Elite"
+    },
+    "rangeLabel": "{{lower}} bis {{upper}}",
+    "otherNote": "Auf der Männer- und der Frauenskala gezeigt, weil keine einzelne Tabelle passt.",
+    "addWeighIn": "Trage ein Gewicht ein, um die Kraftlevel zu sehen.",
+    "sourceNote": "Die Level vergleichen dein geschätztes 1RM mit deinem Körpergewicht. Es ist eine Faustregel von Musclog, geprüft an öffentlichen Powerlifting-Ergebnissen von OpenPowerlifting.",
+    "sourceLink": "OpenPowerlifting-Website",
+    "estimated1rm": "Geschätztes 1RM",
+    "toReach": "Um {{level}} zu erreichen",
+    "howItWorks": "So funktionieren die Level"
+  }
+}

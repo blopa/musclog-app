@@ -1,0 +1,50 @@
+{
+  "createWorkout": {
+    "title": "Crea nuovo allenamento",
+    "save": "Salva",
+    "workoutIcon": "Icona dell'allenamento",
+    "essentials": "Essenziali",
+    "workoutTitle": "Titolo dell'allenamento",
+    "workoutTitlePlaceholder": "es. Distruzione del giorno gambe",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Focus su quadricipiti e polpacci...",
+    "workoutType": "Tipo di allenamento",
+    "types": {
+      "strength": "Forza",
+      "cardio": "Cardio",
+      "flexibility": "Mobilità",
+      "calisthenics": "Calisthenics",
+      "other": "Altro"
+    },
+    "intelligence": "Intelligenza",
+    "workoutInsight": {
+      "title": "Consigli sull'allenamento",
+      "description": "Scegli come Musclog prepara i consigli per la prossima sessione. Quando è attiva, l'IA si adatta ai dati di recupero.",
+      "none": "Nessuno",
+      "algorithm": "Algoritmo",
+      "ai": "IA"
+    },
+    "routine": "Routine",
+    "plan": {
+      "label": "Piani di allenamento",
+      "none": "Non fa parte di un piano",
+      "scheduleHint": "I giorni della settimana si configurano separatamente per ogni piano di allenamento."
+    },
+    "standaloneSchedule": {
+      "label": "Programma autonomo",
+      "description": "Usato solo finché questo allenamento non fa parte di un piano."
+    },
+    "weekly": "Settimanale",
+    "exercises": "Esercizi",
+    "exercisesInWorkout": "Esercizi dell'allenamento",
+    "addExerciseError": "Impossibile aggiungere l'esercizio",
+    "editTitle": "Modifica allenamento",
+    "loadError": "Caricamento non riuscito",
+    "noExercisesPlaceholder": "Nessun esercizio",
+    "saveError": "Salvataggio non riuscito",
+    "validation": {
+      "titleRequiredMessage": "Inserisci un titolo per l'allenamento"
+    },
+    "ruleTapHint": "Tocca un esercizio per scegliere come progrediscono i suoi carichi."
+  }
+}

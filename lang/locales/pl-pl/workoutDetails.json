@@ -1,0 +1,15 @@
+{
+  "workoutDetails": {
+    "subtitle": "Zarządzaj tym treningiem",
+    "preview": "Podgląd treningu",
+    "previewDescription": "Zobacz pełne szczegóły treningu",
+    "edit": "Edytuj trening",
+    "editDescription": "Zmień ćwiczenia i serie",
+    "duplicate": "Duplikuj",
+    "duplicateDescription": "Utwórz kopię tego treningu",
+    "share": "Udostępnij",
+    "shareDescription": "Udostępnij trening innym",
+    "delete": "Usuń",
+    "deleteDescription": "Trwale usuń ten trening"
+  }
+}

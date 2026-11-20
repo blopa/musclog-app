@@ -1,0 +1,1782 @@
+{
+  "website": {
+    "seo": {
+      "siteName": "Musclog",
+      "imageAlt": "Musclog-App-Vorschau mit privatem Fitness-, Ernährungs- und Fortschritts-Tracking.",
+      "keywords": "Musclog, Fitness-Tracker, Trainings-Tracker, Ernährungs-Tracker, Makro-Tracker, Open-Source-Fitness-App, Local-First-App",
+      "routes": {
+        "home": {
+          "title": "Musclog – Lift, Log, Repeat",
+          "description": "Ein kostenloser, quelloffener, lokal gespeicherter Fitness- und Ernährungs-Tracker mit Trainingsprotokoll, KI-Mahlzeitenerfassung, Fortschrittsanalysen und privaten Daten auf dem Gerät."
+        },
+        "download": {
+          "title": "Musclog herunterladen",
+          "description": "Lade Musclog für Android herunter oder tritt der iOS-TestFlight bei und starte das Tracking von Training, Ernährung und Fortschritt, mit deinen Daten privat auf dem Gerät gespeichert."
+        },
+        "open": {
+          "title": "In Musclog öffnen",
+          "description": "Öffnet einen Trainingsplan oder ein Ernährungsprotokoll deines KI-Assistenten in der Musclog-App."
+        },
+        "exercises": {
+          "title": "Musclog-Übungsbibliothek",
+          "description": "Durchsuche die Übungsbibliothek von Musclog mit Muskelgruppen, Geräten, Bewegungsarten, Anleitungen und GIF-artigen Bildern für bessere Trainingspläne."
+        },
+        "gameboy": {
+          "title": "Musclog auf dem Game Boy spielen",
+          "description": "Spiele die winzige Game-Boy-Color-Version von Musclog direkt im Browser und lade das ROM herunter, für eine Erinnerung an Fitness-Tracking im Taschenformat."
+        },
+        "progress": {
+          "title": "Musclog-Fortschrittsimport",
+          "description": "Importiere einen Musclog-JSON-Export lokal in deinem Browser, um Trends bei Gewicht, Ernährung, Training, Stimmung und Körpermaßen auf einem Desktop-Dashboard zu erkunden."
+        },
+        "repMarker": {
+          "title": "Wiederholungsmarkierer | Musclog",
+          "description": "Lade Wiederholungsaufnahmen hoch, markiere Intervalle, sieh dir Bewegungsdiagramme an und exportiere beschriftete Trainingsdaten für die Wiederholungszähl-Werkzeuge von Musclog."
+        },
+        "calculator": {
+          "title": "Fitness- und Makrorechner | Musclog",
+          "description": "Schätze Kalorien, Makros, BMI, FFMI und Zielwerte mit dem Fitnessrechner von Musclog und nutze den Plan dann in der App."
+        },
+        "faq": {
+          "title": "Musclog-FAQ",
+          "description": "Finde Antworten zu Datenschutz, Ernährungsberechnung, Trainingsprotokoll, KI-Funktionen und zur Methodik der quelloffenen Fitness-App."
+        },
+        "contact": {
+          "title": "Musclog kontaktieren",
+          "description": "Kontaktiere Musclog für Support, Fragen, Fehlerberichte oder Zusammenarbeit rund um privates Fitness- und Ernährungs-Tracking als Open Source."
+        },
+        "privacy": {
+          "title": "Musclog-Datenschutzerklärung",
+          "description": "Lies, wie Musclog App-Daten, Website-Analysen, optionale KI-Anbieter, lokale Speicherung, Verschlüsselung, Berechtigungen und deine Datenschutzentscheidungen handhabt."
+        },
+        "terms": {
+          "title": "Musclog-Nutzungsbedingungen",
+          "description": "Lies die Nutzungsbedingungen für Musclog, einschließlich Leistungsumfang, Haftung, Gewährleistung, anwendbarem Recht und Kontaktdaten."
+        },
+        "test": {
+          "title": "Debug-Diagramm-Uploader | Musclog",
+          "description": "Eine nicht indexierte Entwicklungsroute zum Hochladen und Vorschauen von Wiederholungs-Diagrammdaten, während die Aufnahme-Werkzeuge von Musclog entstehen."
+        },
+        "alternatives": {
+          "title": "Musclog vs. Alternativen – ehrlicher App-Vergleich",
+          "description": "Sieh, wie Musclog im Vergleich zu MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy und anderen abschneidet – bei Datenschutz, Ernährung, Training und ganzheitlichem Tracking."
+        },
+        "blog": {
+          "title": "Musclog-Blog – Open Source, Fitness & Technik",
+          "description": "Lies Artikel über Musclog, Open-Source-Entwicklung, Datenschutz, Fitnesstechnik und die Ideen hinter der App."
+        },
+        "blogCategories": {
+          "title": "Blog-Kategorien – Musclog-Blog",
+          "description": "Durchsuche die Musclog-Blogartikel nach Kategorie: Training, Ernährung, Technik, Produktneuigkeiten und mehr."
+        },
+        "blogTags": {
+          "title": "Blog-Tags – Musclog-Blog",
+          "description": "Durchsuche alle Tags, die im Musclog-Blog verwendet werden. Je größer ein Tag, desto mehr Artikel tragen ihn."
+        },
+        "tools": {
+          "title": "Kostenlose Trainingswerkzeuge und Rechner | Musclog",
+          "description": "Kostenlose Rechner für Athleten: One-Rep-Max, Scheibenbeladung, Aufwärmsätze, RPE, Eiweiß, Kaloriendefizit und Netto-Kohlenhydrate. Sie nutzen dieselbe Mathematik wie die Musclog-App."
+        },
+        "toolOneRepMax": {
+          "title": "One-Rep-Max-Rechner | Musclog",
+          "description": "Schätze dein One-Rep-Max aus jedem Satz mit 1 bis 10 Wiederholungen, mit Reserve-Wiederholungen und einer Tabelle für Prozent des 1RM. Gleiche Mathematik wie die Musclog-App."
+        },
+        "toolPlateCalculator": {
+          "title": "Scheibenrechner: Was auf die Stange laden | Musclog",
+          "description": "Gib ein Zielgewicht und die Scheiben deines Studios ein. Du erhältst die Scheiben pro Seite der Stange, in kg oder lb, mit eigenem Stangengewicht."
+        },
+        "toolStrengthLevel": {
+          "title": "Kraftlevel-Rechner nach Körpergewicht | Musclog",
+          "description": "Prüfe, auf welchem Kraftlevel deine Kniebeuge, dein Bankdrücken, Kreuzheben oder eine andere Übung liegt, abhängig von Körpergewicht und Geschlecht. Ein Bereich, nie ein Perzentil."
+        },
+        "toolWarmUpCalculator": {
+          "title": "Aufwärmsatz-Rechner | Musclog",
+          "description": "Erhalte Aufwärmsätze für dein Arbeitsgewicht, zuerst die leere Stange, und jeder Satz mit den Scheiben, die du hast, ladbar."
+        },
+        "toolRpeChart": {
+          "title": "RPE- und RIR-Tabelle mit Lastrechner | Musclog",
+          "description": "Eine RPE- und Reserve-Wiederholungs-Tabelle plus Rechner: Welche Last sollte eine andere Wiederholungszahl und RPE erreichen, ausgehend von einem Satz, den du gemacht hast?"
+        },
+        "toolProteinCalculator": {
+          "title": "Eiweißrechner: wie viel Eiweiß pro Tag | Musclog",
+          "description": "Tägliches Eiweiß in Gramm pro Kilogramm Körpergewicht für dein Ziel, begrenzt auf ein Referenzgewicht, damit ein hohes Körpergewicht den Wert nicht aufbläht."
+        },
+        "toolCalorieDeficit": {
+          "title": "Kaloriendefizit- und Zieldatum-Rechner | Musclog",
+          "description": "Berechne tägliche Kalorien, um bis zu einem Datum ein Zielgewicht zu erreichen, mit einer ehrlichen Spanne und einer Warnung, wenn das Tempo zu hoch ist."
+        },
+        "toolNetCarbs": {
+          "title": "Netto- vs. Gesamtkohlenhydrate-Umrechner | Musclog",
+          "description": "US-Etiketten zählen Ballaststoffe in den Kohlenhydraten mit, EU-Etiketten nicht. Rechne in beide Richtungen zwischen Netto- und Gesamtkohlenhydraten um."
+        },
+        "toolProgressiveOverload": {
+          "title": "Rechner für progressive Überlastung | Musclog",
+          "description": "Gib Gewicht und Wiederholungen der letzten Einheit ein und erhalte, was du als Nächstes heben solltest: Gewicht erhöhen, eine Wiederholung hinzufügen, wiederholen oder leichter werden, nach der Regel der Musclog-App."
+        },
+        "toolDeloadCalculator": {
+          "title": "Deload-Rechner: wie viel Gewicht und wie lange | Musclog",
+          "description": "Gib dein Arbeitsgewicht und deine Sätze ein und erhalte eine Deload-Woche: das leichtere Gewicht, die beizubehaltenden Sätze, wie hart du gehen solltest und wie lange es dauert."
+        },
+        "toolWorkoutLogTemplate": {
+          "title": "Kostenloses Trainingsprotokoll zum Ausdrucken (PDF) und Tabelle | Musclog",
+          "description": "Lade ein kostenloses Trainingsprotokoll zum Ausdrucken in A4 oder US Letter herunter, dazu eine Excel- und CSV-Vorlage. Die Tabelle lässt sich in die Musclog-App importieren."
+        },
+        "toolNutritionLogTemplate": {
+          "title": "Kostenloses Ernährungstagebuch zum Ausdrucken (PDF) und Tabelle | Musclog",
+          "description": "Lade ein kostenloses Ernährungstagebuch zum Ausdrucken in A4 oder US Letter herunter: Makros bereits berechnet oder pro 100 g, damit du selbst rechnest. Dazu eine Tabelle, die die Rechnung für dich übernimmt."
+        },
+        "programs": {
+          "title": "Kostenlose Trainingspläne | Musclog",
+          "description": "Kostenlose Trainingspläne: Push-Pull-Legs, Oberkörper-Unterkörper, Ganzkörper und mehr. Jeder Tag, jede Übung, jeder Satz und jede Wiederholung ist aufgelistet, und du kannst ihn in Musclog öffnen."
+        },
+        "alternativesStrong": {
+          "title": "Musclog vs. Strong | Musclog",
+          "description": "Musclog vs. Strong: Die kostenlose Version von Strong ist auf 3 eigene Routinen begrenzt. Sieh, was Musclog anders macht, und wie du deinen Strong-Verlauf importierst. Fakten datiert und belegt."
+        },
+        "alternativesHevy": {
+          "title": "Musclog vs. Hevy | Musclog",
+          "description": "Musclog vs. Hevy: Der kostenlose Hevy-Plan begrenzt Routinen und eigene Übungen. Sieh, was Musclog anders macht, und wie du deinen Hevy-Verlauf importierst. Fakten datiert und belegt."
+        },
+        "alternativesMyFitnessPal": {
+          "title": "Musclog vs. MyFitnessPal | Musclog",
+          "description": "Musclog vs. MyFitnessPal: Barcode-Scannen ist dort nur im Premium-Tarif verfügbar und in Musclog kostenlos. Fakten datiert und belegt."
+        }
+      }
+    },
+    "landing": {
+      "title": "Musclog Web-Demo",
+      "cta": "Jetzt live ausprobieren",
+      "f1": "Intelligentes Training-Tracking",
+      "f2": "KI-Fotoerfassung der Ernährung",
+      "f3": "Detaillierte Fortschrittsdiagramme",
+      "f4": "100 % privat und auf dem Gerät",
+      "tagline": "KI-gestütztes Fitness- und Ernährungs-Tracking – kostenlos und quelloffen.",
+      "qrcode_title": "Lade die App herunter",
+      "qrcode_text": "Scanne, um Musclog herunterzuladen"
+    },
+    "hero": {
+      "badge1": "Kostenlos und quelloffen",
+      "badge2": "Kein Konto nötig",
+      "title1": "Deine Fitnessdaten",
+      "title2": "gehören dir",
+      "subheading": "Erfasse Trainings, Mahlzeiten und Körpermaße. Deine Daten bleiben auf deinem Gerät, und die App funktioniert offline.",
+      "github": "Auf GitHub ansehen",
+      "demoEyebrow": "Sofortige Vorschau",
+      "demoTitle": "Probiere die Web-Demo aus",
+      "demoDescription": "Öffne eine Browser-Vorschau der App und entdecke sie, bevor du sie herunterlädst.",
+      "demoButton": "Web-Demo öffnen",
+      "carousel": {
+        "eyebrow": "App-Vorschau",
+        "title": "Ein kurzer Blick in Musclog",
+        "description": "Blättere durch ein paar echte Bildschirme der App und sieh die Ernährungs-, Trainings- und Fortschrittsabläufe in Aktion.",
+        "prev": "Vorheriger Screenshot",
+        "next": "Nächster Screenshot",
+        "goToSlide": "Screenshot {{index}} zeigen",
+        "slides": {
+          "nutrition": {
+            "title": "Ernährungs-Dashboard",
+            "description": "Kalorien, Makros und Schnellaktionen auf einen Blick.",
+            "alt": "Screenshot des Ernährungs-Dashboards von Musclog"
+          },
+          "home": {
+            "title": "Startübersicht",
+            "description": "Sieh deinen Tag, letzte Lebensmittel und Trainingsverknüpfungen an einem Ort.",
+            "alt": "Screenshot der Startübersicht von Musclog"
+          },
+          "restTimer": {
+            "title": "Pausentimer",
+            "description": "Halte deine Sätze mit einem fokussierten Pausen-Countdown in Bewegung.",
+            "alt": "Screenshot des Pausentimers von Musclog"
+          },
+          "mealLogging": {
+            "title": "Mahlzeiten erfassen",
+            "description": "Erfasse Mahlzeiten und Portionen mit einem ernährungszentrierten Ablauf.",
+            "alt": "Screenshot der Mahlzeitenerfassung von Musclog"
+          },
+          "progress": {
+            "title": "Fortschrittseinblicke",
+            "description": "Prüfe Körperwerte und Trends, an denen Veränderungen leichter zu erkennen sind.",
+            "alt": "Screenshot der Fortschrittseinblicke von Musclog"
+          },
+          "workouts": {
+            "title": "Trainingsbibliothek",
+            "description": "Durchsuche und starte deine Trainingspläne an einem Ort.",
+            "alt": "Screenshot der Trainingsbibliothek von Musclog"
+          }
+        }
+      },
+      "screenshotAlt": "Screenshot der Musclog-App"
+    },
+    "screenshots": {
+      "title": "In der App",
+      "description": "Echte Bildschirme von Musclog. Seitlich scrollen oder antippen, um sie größer zu sehen.",
+      "openSlide": "Screenshot öffnen",
+      "modalAriaLabel": "Vorschau des Musclog-Screenshots",
+      "close": "Schließen",
+      "previous": "Vorheriger Screenshot",
+      "next": "Nächster Screenshot",
+      "slides": {
+        "home": {
+          "title": "Startübersicht",
+          "description": "Tagesübersicht, letzte Lebensmittel und schnelle Trainingsverknüpfungen an einem Ort.",
+          "alt": "Screenshot der Startübersicht von Musclog"
+        },
+        "restTimer": {
+          "title": "Pausentimer",
+          "description": "Ein fokussierter Countdown zwischen den Sätzen.",
+          "alt": "Screenshot des Pausentimers von Musclog"
+        },
+        "completeSet": {
+          "title": "Satz abschließen",
+          "description": "Beende den Satz und gehe direkt zur nächsten Aktion.",
+          "alt": "Screenshot von Satz abschließen in Musclog"
+        },
+        "mealLogging": {
+          "title": "Mahlzeiten erfassen",
+          "description": "Erfasse Mahlzeiten und Portionen mit einem ernährungszentrierten Ablauf.",
+          "alt": "Screenshot der Mahlzeitenerfassung von Musclog"
+        },
+        "chatCoach": {
+          "title": "Coach-Chat",
+          "description": "Frag Loggy nach Makros, Training oder Mahlzeitenideen.",
+          "alt": "Screenshot des Coach-Chats von Musclog"
+        },
+        "chatCoach2": {
+          "title": "Coach-Trainingstipps",
+          "description": "Erhalte passende Übungsvorschläge und Erholungstipps von deinem KI-Coach.",
+          "alt": "Screenshot der Trainingstipps des Coachs in Musclog"
+        },
+        "bodyMetrics": {
+          "title": "Körperwerte",
+          "description": "Prüfe Gewichtstrends und Erkenntnisse zur Körperzusammensetzung.",
+          "alt": "Screenshot der Körperwerte von Musclog"
+        },
+        "workouts": {
+          "title": "Trainingsbibliothek",
+          "description": "Durchsuche und starte deine Trainingspläne an einem Ort.",
+          "alt": "Screenshot der Trainingsbibliothek von Musclog"
+        },
+        "createWorkout": {
+          "title": "Training erstellen",
+          "description": "Starte eine Routine von Grund auf oder mit KI.",
+          "alt": "Screenshot von Training erstellen in Musclog"
+        },
+        "today": {
+          "title": "Heutige Ernährung",
+          "description": "Sieh Kalorien und Makros für den Tag auf einen Blick.",
+          "alt": "Screenshot der heutigen Ernährung in Musclog"
+        },
+        "settings": {
+          "title": "Einstellungen für lokale Daten",
+          "description": "Verwalte Exporte, Importe und lokale Datensteuerung.",
+          "alt": "Screenshot der lokalen Dateneinstellungen von Musclog"
+        }
+      }
+    },
+    "themes": {
+      "title": "Wähle dein Design",
+      "description": "Wähle die Palette, die zu deinem Training passt. Jeder Bildschirm folgt ihr, auch Diagramme, Kameraoverlays und die Tab-Leiste.",
+      "footnote": "Du kannst jederzeit in den Einstellungen wechseln. Musclog folgt außerdem der Hell-/Dunkel-Einstellung deines Geräts, falls du nicht wählen möchtest."
+    },
+    "featureGrid": {
+      "title": "Was Musclog kann",
+      "description": "Werkzeuge für Erfassung, Planung und Rückblick. Funktionen mit KI sind optional.",
+      "items": {
+        "aiCoach": {
+          "title": "KI-Coach",
+          "description": "Chatte mit Loggy über Training und Essen oder schätze eine Mahlzeit anhand eines Fotos. Optional, mit deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel."
+        },
+        "barcode": {
+          "title": "Barcode-Scanner",
+          "description": "Scanne ein Produkt, um es aus Open Food Facts zu erfassen, mit Nutri-Score und NOVA, wenn das Produkt sie hat."
+        },
+        "checkins": {
+          "title": "Wochenrückblick",
+          "description": "Sieh jede Woche, wie Ernährung, Gewicht und Training gelaufen sind, und nimm eine vorgeschlagene Änderung deiner Ziele an oder überspringe sie."
+        },
+        "analytics": {
+          "title": "Fortschrittsdiagramme",
+          "description": "Diagramme für Gewicht, Körperfett und Hebeübungen, dazu eine Schätzung des Kalorienverbrauchs aus deinen eigenen Einträgen."
+        },
+        "cycle": {
+          "title": "Zyklus-Bewusstsein",
+          "description": "Erfasse Perioden und Symptome und erkenne Muster in deinen eigenen Aufzeichnungen. Vorhersagen bleiben aus, bis du sie einschaltest."
+        },
+        "templates": {
+          "title": "Trainingspläne",
+          "description": "Erstelle Routinen wie Push/Pull/Legs oder Oberkörper/Unterkörper aus einer Bibliothek mit mehr als 800 Übungen mit Zielmuskeln."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Synchronisiere mit Google Health Connect, um Daten mit anderen Gesundheits- und Fitness-Apps auf Android zu teilen."
+        },
+        "encryption": {
+          "title": "Verschlüsselter Speicher",
+          "description": "Gewicht, Körperfett und Ernährungseinträge sind auf deinem Gerät verschlüsselt. Jederzeit als JSON oder Excel exportierbar."
+        }
+      }
+    },
+    "loggy": {
+      "title": "Lerne Loggy kennen",
+      "description": "Loggy ist das Maskottchen von Musclog: ein Logbuch mit Bleistift und Klemmbrett. Er taucht in einigen Momenten auf, etwa bei deiner ersten erfassten Mahlzeit, einem abgeschlossenen Training oder dem Rückblick auf dein Jahr, und er ist die Standardstimme des KI-Coachs.",
+      "setting": "Kein Fan? Eine Einstellung blendet ihn überall in der App aus."
+    },
+    "cta": {
+      "title": "Musclog holen",
+      "description": "Bewahre deine Trainings- und Ernährungseinträge auf deinem eigenen Gerät auf. Kostenlos und quelloffen.",
+      "download": "Jetzt herunterladen",
+      "close": "Schließen",
+      "sourceCode": "Quellcode ansehen"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Lift, Log, Repeat",
+      "features": "Funktionen",
+      "progress": "Fortschritt",
+      "github": "GitHub",
+      "download": "Herunterladen",
+      "calculator": "Rechner",
+      "exercises": "Übungen",
+      "gameboy": "Game Boy",
+      "language": "Sprache",
+      "alternatives": "Alternativen",
+      "blog": "Blog",
+      "menu": "Menü",
+      "openMenu": "Menü öffnen",
+      "closeMenu": "Menü schließen",
+      "preferences": "Einstellungen",
+      "theme": "Design",
+      "tools": "Werkzeuge"
+    },
+    "blog": {
+      "title": "Musclog-Blog",
+      "description": "Notizen zum Bau einer privaten, quelloffenen Fitness-App – von Produktentscheidungen bis zur Technik dahinter.",
+      "empty": "Es wurden noch keine Beiträge veröffentlicht.",
+      "listLabel": "Blogbeiträge",
+      "tagsLabel": "Beitrags-Tags",
+      "readArticle": "Artikel lesen",
+      "backToBlog": "Zurück zu allen Beiträgen",
+      "backToCategories": "Zurück zu allen Kategorien",
+      "browseCategories": "Nach Kategorie durchsuchen",
+      "backToTags": "Zurück zu allen Tags",
+      "browseTags": "Nach Tag durchsuchen",
+      "englishOnlyNotice": "Entschuldigung, Blogbeiträge gibt es nur auf Englisch.",
+      "share": {
+        "title": "Diesen Beitrag teilen",
+        "shareOn": "Auf {{network}} teilen"
+      },
+      "paginationLabel": "Blog-Seitennavigation",
+      "previousPage": "Vorherige Seite",
+      "nextPage": "Nächste Seite",
+      "pageStatus": "Seite {{current}} von {{total}}",
+      "pageLabel": "Seite {{page}}",
+      "categoryPage": {
+        "title": "Artikel zu {{category}}",
+        "description": "Alle Musclog-Blogbeiträge in der Kategorie {{category}}.",
+        "empty": "In {{category}} wurden keine Beiträge gefunden.",
+        "listLabel": "Blogbeiträge zu {{category}}"
+      },
+      "tagPage": {
+        "title": "Beiträge mit dem Tag {{tag}}",
+        "description": "Jeder Musclog-Blogartikel mit dem Tag {{tag}}.",
+        "empty": "Es wurden keine Beiträge mit dem Tag {{tag}} gefunden.",
+        "listLabel": "Blogbeiträge mit dem Tag {{tag}}"
+      },
+      "tagsPage": {
+        "title": "Blog-Tags",
+        "description": "Jeder Tag, der im Musclog-Blog verwendet wird. Je größer ein Tag, desto mehr Artikel tragen ihn.",
+        "listLabel": "Blog-Tags",
+        "postCount_one": "{{count}} Artikel",
+        "postCount_few": "{{count}} Artikel",
+        "postCount_many": "{{count}} Artikel",
+        "postCount_other": "{{count}} Artikel"
+      },
+      "categoriesPage": {
+        "title": "Blog-Kategorien",
+        "description": "Alle Themen des Musclog-Blogs, von Training und Ernährung bis zu Technik und Produktneuigkeiten.",
+        "listLabel": "Blog-Kategorien",
+        "postCount_one": "{{count}} Artikel",
+        "postCount_few": "{{count}} Artikel",
+        "postCount_many": "{{count}} Artikel",
+        "postCount_other": "{{count}} Artikel"
+      },
+      "categories": {
+        "product-updates": "Produktneuigkeiten",
+        "web-development": "Webentwicklung",
+        "engineering": "Technik",
+        "retro": "Retro",
+        "machine-learning": "Maschinelles Lernen",
+        "guides": "Anleitungen",
+        "training": "Training",
+        "nutrition": "Ernährung"
+      }
+    },
+    "gameboy": {
+      "pageTitle": "Musclog auf dem Game Boy spielen",
+      "eyebrow": "Nur zum Spaß",
+      "title": "Musclog auf einem Game Boy",
+      "subtitle": "Wir haben eine winzige Game-Boy-Color-Version von Musclog gebaut. Drück auf Play und probier sie direkt hier im Browser aus.",
+      "playButton": "Spielen",
+      "loading": "Lädt…",
+      "errorLoad": "Das Spiel konnte nicht geladen werden. Bitte versuche es erneut.",
+      "controlsHint": "Desktop: Pfeiltasten oder WASD zum Bewegen, X = A, Z = B, Enter = Start, Umschalt = Select. Auf Touch-Geräten die Schaltflächen auf dem Bildschirm verwenden.",
+      "up": "Oben",
+      "down": "Unten",
+      "left": "Links",
+      "right": "Rechts",
+      "aButton": "A-Taste",
+      "bButton": "B-Taste",
+      "start": "Start",
+      "select": "Select",
+      "downloadRom": "ROM herunterladen",
+      "downloadManual": "Anleitung herunterladen"
+    },
+    "progress": {
+      "metaTitle": "Musclog-Fortschrittsimport",
+      "loading": "Lade deine lokale Fortschrittsdatenbank...",
+      "hero": {
+        "eyebrow": "Desktop-Fortschrittsansicht",
+        "title": "Importiere die exportierten Daten deiner Musclog-App hier",
+        "description": "Zieh deinen Musclog-JSON-Export hierher, um ein browserbasiertes Fortschritts-Dashboard zu öffnen, mit Gewichtstrends, Ernährungsmustern, Trainingsvolumen und wichtigen Zusammenhängen, auf größeren Bildschirmen dargestellt.",
+        "points": {
+          "weight": {
+            "title": "Gewicht und Körperzusammensetzung",
+            "description": "Sieh Waagentrends, Körperfettveränderungen, FFMI und Körpermaße an einem Ort."
+          },
+          "nutrition": {
+            "title": "Ernährung und TDEE",
+            "description": "Prüfe Kalorienaufnahme, Makroverteilung und Durchschnittswerte aus deinem importierten Protokoll."
+          },
+          "training": {
+            "title": "Training und Zusammenhänge",
+            "description": "Vergleiche Trainingsvolumen, Stimmung und Erholungssignale auf einer breiteren Desktop-Fläche."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Lokaler Import",
+        "title": "Bring deinen App-Export in diesen Browser",
+        "description": "Wähle den JSON-Export aus der Musclog-Mobil-App. Der Import läuft lokal im Browserspeicher und verlässt nie dein Gerät.",
+        "passphraseLabel": "Entschlüsselungsphrase",
+        "passphrasePlaceholder": "Optional, nur wenn dein Export verschlüsselt war",
+        "cta": "JSON-Export wählen",
+        "importing": "Daten werden importiert...",
+        "hint": "Unterstütztes Format: Musclog-JSON-Export",
+        "selectedFile": "Ausgewählte Datei: {{fileName}}",
+        "genericError": "Diese Datei konnte nicht importiert werden. Bitte prüfe, ob es ein gültiger Musclog-Export ist.",
+        "localOnlyTitle": "Standardmäßig privat",
+        "localOnlyDescription": "Diese Seite liest deinen Export nur in die lokale Web-Datenbank ein, sodass du Fortschrittsdaten erkunden kannst, ohne sie auf einen Server hochzuladen."
+      },
+      "dashboard": {
+        "eyebrow": "Importierte Auswertung",
+        "title": "Dein Musclog-Fortschritt, neu gestaltet für das Desktop-Web",
+        "description": "Dieses Dashboard nutzt dieselbe lokale Datenbank und dieselben Fortschrittsberechnungen wie die App, zeigt sie aber in einem großzügigeren Desktop-Layout, das für das Erkennen von Trends und den Vergleich von Mustern gedacht ist.",
+        "replaceData": "Importierte Daten ersetzen",
+        "localStorageHint": "Die Daten werden in der lokalen Musclog-Datenbank deines Browsers gespeichert."
+      },
+      "stats": {
+        "weightHint": "Letztes Gewicht im gewählten Zeitraum.",
+        "caloriesHint": "Durchschnittliche Kalorien über {{count}} erfasste Ernährungstage.",
+        "workoutsHint": "Abgeschlossene Trainingseinträge im aktuellen Zeitraum.",
+        "tdeeHint": "Aktueller geschätzter Erhaltungsbedarf auf Basis der verfügbaren Daten."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Überblick Körperzusammensetzung",
+          "description": "Deine wichtigsten Körperwerte stehen zuerst, damit die größten Veränderungen auf einen Blick sichtbar sind."
+        },
+        "nutrition": {
+          "title": "Ernährungstrends",
+          "description": "Tägliche Kalorien und die aktuelle Makroverteilung machen es leichter, Aufnahme mit den Ergebnissen zu verbinden.",
+          "macroSplit": "Kalorienverteilung der Makros zuletzt"
+        },
+        "training": {
+          "title": "Trainingsleistung",
+          "description": "Trainingsvolumen und Sätze pro Muskelgruppe zeigen, wohin dein Trainingsaufwand tatsächlich geflossen ist."
+        },
+        "correlations": {
+          "title": "Korrelationsansichten",
+          "description": "Diese Streudiagramme machen es leichter zu prüfen, ob sich Aufnahme und Körperzusammensetzung gemeinsam verändern."
+        },
+        "mood": {
+          "title": "Stimmungsschnappschüsse",
+          "description": "Stimmungseinträge bleiben als leichte Bereitschaftsebene neben den großen Körper- und Trainingstrends sichtbar.",
+          "summaryTitle": "Stimmungsübersicht",
+          "totalEntries": "Erfasste Zeiträume",
+          "averageScore": "Durchschnittswert"
+        },
+        "reminders": {
+          "title": "Einhaltung der Erinnerungen",
+          "description": "Wasser- und Supplement-Erinnerungen erscheinen jetzt als Abschlusstrends, damit du Beständigkeit zusammen mit deinen anderen Erholungssignalen prüfen kannst.",
+          "supplementsTitle": "Supplement-Erinnerungen"
+        },
+        "measurements": {
+          "title": "Körpermaße",
+          "description": "Wenn Umfangsmessungen vorhanden sind, werden sie hier als kompakte Trendkarten gezeigt.",
+          "empty": "Im importierten Zeitraum wurden keine Körpermaße gefunden."
+        }
+      }
+    },
+    "storeButtons": {
+      "googleTitle": "JETZT BEI",
+      "googleStore": "Google Play",
+      "appleTitle": "JETZT ÜBER",
+      "appleStore": "TestFlight",
+      "comingSoon": "App Store bald verfügbar!",
+      "qrButton": "QR-Codes anzeigen",
+      "qrTitle": "QR-Codes",
+      "qrDescription": "Öffne die Installationsseite für Android oder iOS direkt auf deinem Telefon.",
+      "qrGoogleLabel": "Installationsseite für Android",
+      "qrAppleLabel": "Installationsseite für iOS",
+      "qrGoogleAlt": "QR-Code für Google Play",
+      "qrAppleAlt": "QR-Code für TestFlight",
+      "close": "Schließen"
+    },
+    "download": {
+      "pageTitle": "Musclog herunterladen",
+      "eyebrow": "Fang heute an",
+      "title": "Musclog herunterladen",
+      "subtitle": "Lade Musclog jetzt herunter und bewahre dein Training, deine Ernährung und deinen Fortschritt an einem privaten Ort auf.",
+      "googleLabel": "Musclog bei Google Play herunterladen",
+      "appleLabel": "Musclog auf TestFlight beitreten"
+    },
+    "open": {
+      "title": "In Musclog öffnen",
+      "descriptionWorkout": "Dein Trainingsplan ist bereit. Öffne ihn in Musclog, um ihn zu prüfen, bevor etwas gespeichert wird.",
+      "descriptionFood": "Dein Ernährungsprotokoll ist bereit. Öffne es in Musclog, um es zu prüfen, bevor etwas gespeichert wird.",
+      "descriptionEmpty": "Dieser Link enthält keine Daten zum Importieren. Geh zurück in deinen Chat und tippe den Link erneut an.",
+      "openButton": "In Musclog öffnen",
+      "countdown": "Musclog wird in {{seconds}} geöffnet…",
+      "forwarded": "Falls Musclog sich nicht öffnet, tippe unten auf den Button.",
+      "installHint": "Noch kein Musclog?",
+      "installLink": "Musclog herunterladen"
+    },
+    "forwarding": {
+      "title": "Wir bringen dich zur richtigen Seite",
+      "description": "Musclog-Seiten liegen jetzt unter einer Sprache, deshalb leiten wir dich zur englischen Version weiter. Das dauert nur einen Moment.",
+      "fallback": "Passiert nichts?",
+      "link": "Seite öffnen"
+    },
+    "footer": {
+      "privacyPolicy": "Datenschutzerklärung",
+      "terms": "Nutzungsbedingungen",
+      "github": "GitHub",
+      "contact": "Kontakt",
+      "license": "Lizenz",
+      "copyright": "Freie und quelloffene Software.",
+      "latestBuild": "Neueste Version: {{version}}"
+    },
+    "cookieConsent": {
+      "ariaLabel": "Cookie-Einwilligung",
+      "description": "Wir nutzen Google Analytics, um zu verstehen, wie Besucher die Website nutzen. Analyse-Cookies werden nur gesetzt, wenn du zustimmst. Lies unsere",
+      "privacyLink": "Datenschutzerklärung",
+      "accept": "Akzeptieren",
+      "reject": "Ablehnen",
+      "cookieSettings": "Cookie-Einstellungen"
+    },
+    "privacy": {
+      "titleStart": "Datenschutz",
+      "titleHighlight": "erklärung",
+      "lastUpdated": "Zuletzt aktualisiert: 19. November 2026",
+      "highlights": {
+        "dataProtection": {
+          "title": "Datenschutz",
+          "description": "Sensible Einträge sind auf deinem Gerät verschlüsselt, und Netzwerkanfragen laufen über HTTPS."
+        },
+        "localFirst": {
+          "title": "Lokale Speicherung",
+          "description": "Deine Daten werden auf deinem Gerät gespeichert. Musclog hat keine Konten und keine Cloud-Synchronisierung."
+        },
+        "security": {
+          "title": "Du behältst die Kontrolle",
+          "description": "Nur die Lebensmittelsuche, optionale KI und Absturzberichte nutzen das Internet, und du kannst jeden davon ausschalten."
+        }
+      },
+      "intro": "Diese Datenschutzerklärung beschreibt unsere Richtlinien und Verfahren zur Erhebung, Nutzung, Speicherung und Weitergabe deiner Informationen, wenn du Musclog verwendest. Sie gilt sowohl für die Musclog-App als auch für die Musclog-Website, auch wenn die Datenkategorien in beiden Fällen unterschiedlich sind. Diese Datenschutzerklärung erklärt außerdem deine Datenschutzrechte und wie das Gesetz dich schützt.",
+      "sections": {
+        "scope": {
+          "title": "Geltungsbereich dieser Datenschutzerklärung",
+          "content": "Musclog wird sowohl als App als auch als öffentliche Website bereitgestellt. Da beide Dienste unterschiedlich arbeiten, werden die jeweiligen Datenschutzpraktiken unten getrennt zusammengefasst und in dieser Datenschutzerklärung ausführlicher beschrieben."
+        },
+        "interpretation": {
+          "title": "Auslegung und Begriffsbestimmungen",
+          "content": "Wörter, deren Anfangsbuchstabe großgeschrieben ist, haben die unter den folgenden Bedingungen festgelegten Bedeutungen. Die folgenden Definitionen haben dieselbe Bedeutung, unabhängig davon, ob sie im Singular oder Plural erscheinen."
+        },
+        "definitions": {
+          "title": "Begriffsbestimmungen",
+          "items": {
+            "application": {
+              "term": "Anwendung",
+              "def": "bezeichnet Musclog, das von Musclog bereitgestellte Softwareprogramm."
+            },
+            "company": {
+              "term": "Unternehmen",
+              "def": "(in dieser Vereinbarung auch „Musclog“, „Wir“, „Uns“ oder „Unser“ genannt) bezeichnet Musclog."
+            },
+            "device": {
+              "term": "Gerät",
+              "def": "bezeichnet jedes Gerät, das auf den Dienst zugreifen kann, etwa einen Computer, ein Mobiltelefon oder ein digitales Tablet."
+            },
+            "personalData": {
+              "term": "Personenbezogene Daten",
+              "def": "bezeichnet alle Informationen, die sich auf eine identifizierte oder identifizierbare Person beziehen."
+            },
+            "service": {
+              "term": "Dienst",
+              "def": "bezeichnet die Musclog-App und die Musclog-Website, sofern im jeweiligen Abschnitt nichts anderes angegeben ist."
+            },
+            "serviceProvider": {
+              "term": "Dienstleister",
+              "def": "bezeichnet jede natürliche oder juristische Person, die Daten im Auftrag von Musclog verarbeitet."
+            },
+            "usageData": {
+              "term": "Nutzungsdaten",
+              "def": "bezeichnet Daten, die bei der Nutzung des Dienstes automatisch erhoben werden, etwa Browsertyp, Gerätemodell oder Diagnosedaten."
+            },
+            "you": {
+              "term": "Du",
+              "def": "bezeichnet die Person, die auf den Dienst zugreift oder ihn nutzt, oder Musclog bzw. eine andere juristische Person, in deren Namen diese Person auf den Dienst zugreift oder ihn nutzt, je nachdem."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Erhebung und Nutzung deiner personenbezogenen Daten",
+          "content": "Musclog ist so gestaltet, dass es ohne Erhebung personenbezogener Daten funktioniert. Dieser Abschnitt erklärt die begrenzten Fälle, in denen Daten dein Gerät verlassen.",
+          "typesCollected": {
+            "title": "Erhobene Datenarten",
+            "content": "Musclog verlangt von dir keine Konto-Erstellung und fragt nicht nach deinem Namen, deiner E-Mail-Adresse oder Telefonnummer. Daten verlassen dein Gerät nur in diesen Fällen:",
+            "items": [
+              "Anonyme Absturzberichte, solange sie eingeschaltet sind (siehe „Anonyme Absturzberichte“ weiter unten).",
+              "Lebensmittelsuchen und gescannte Barcodes, die an die Lebensmitteldatenbank gesendet werden, die du wählst (siehe „Lebensmitteldatenbanken“ weiter unten).",
+              "Anfragen, die du an eine optionale KI-Funktion sendest, gesendet an den Anbieter, den du wählst (siehe „Optionale KI-Funktionen“ weiter unten).",
+              "Daten, die du selbst exportierst, sicherst, teilst oder auf ein anderes Gerät überträgst.",
+              "Nutzungsdaten aus Besuchen der Website (siehe „Website-Analyse“ weiter unten)."
+            ]
+          },
+          "usageData": {
+            "title": "Nutzungsdaten",
+            "content": "Nutzungsdaten werden auf der Website automatisch erhoben, wie unter „Website-Analyse“ weiter unten beschrieben. Die Musclog-App erhebt keine Nutzungsdaten, abgesehen von der App-Version und dem Gerätemodell, die in einem anonymen Absturzbericht enthalten sind."
+          },
+          "appPermissions": {
+            "title": "Informationen, die bei der Nutzung der App erhoben werden",
+            "content": "Um ihre Funktionen bereitzustellen, kann die App die folgenden Berechtigungen anfragen. Daten, die dadurch erlangt werden, bleiben auf deinem Gerät, sofern diese Datenschutzerklärung nichts anderes sagt:",
+            "items": [
+              "Kamera: um Lebensmittel-Barcodes und Nährwertetiketten zu scannen, Mahlzeitenfotos aufzunehmen und Daten von einem anderen Gerät über QR-Codes zu empfangen.",
+              "Health Connect oder Apple Health: siehe „Health Connect und Apple Health“ oben.",
+              "Benachrichtigungen, exakte Alarme und Start nach dem Neustart: um Erinnerungen an Training, Pausentimer, Ernährung und Zyklus pünktlich anzuzeigen, auch nach einem Neustart deines Geräts.",
+              "Biometrie (Fingerabdruck oder Gesicht): um die App oder Teile davon zu sperren, falls du das einschaltest.",
+              "Bluetooth und auf älteren Android-Versionen der Standort, den Android für das Bluetooth-Scannen verlangt: um sich mit einem unterstützten Wiederholungs-Sensor zu verbinden. Musclog verwendet deinen Standort nicht und speichert ihn nicht.",
+              "Internet: für Lebensmittelsuchen, optionale KI-Funktionen und Absturzberichte.",
+              "Vibration und Wake-Lock: für haptisches Feedback und um den Bildschirm während Trainings und Timern eingeschaltet zu lassen."
+            ]
+          },
+          "optionalAi": {
+            "title": "Optionale KI-Funktionen",
+            "content1": "Die Musclog-App kann vollständig offline genutzt werden, außer für Lebensmittelsuchen, optionale KI-Funktionen und Absturzberichte. Musclog sendet deine Trainings-, Ernährungs-, Gesundheits- oder Profildaten nicht an unsere Server, außer wenn du den unten beschriebenen kostenlosen Musclog-KI-Zugang nutzt.",
+            "content2": "Musclog bietet optionale KI-Funktionen an. Sie bleiben ausgeschaltet, bis du einen Anbieter wählst: deinen eigenen OpenAI-, Anthropic-Claude- oder Google-Gemini-API-Schlüssel, ein Modell auf dem Gerät wie Apple Intelligence unter iOS, einen lokalen oder selbst gehosteten LLM-Endpunkt oder den kostenlosen Musclog-KI-Zugang.",
+            "content3": "Wenn du eine KI-Funktion nutzt, werden die Daten, die du absenden möchtest, an den Anbieter oder Endpunkt gesendet, den du konfigurierst. Wenn du ein selbst gehostetes lokales Modell unter eigener Kontrolle nutzt, können diese Daten in deiner eigenen Umgebung bleiben. Wenn du einen gehosteten Drittanbieter-Endpunkt nutzt, einschließlich eines gehosteten Dienstes für lokale Modelle, kann dieser Anbieter die Daten nach seinen eigenen Bedingungen und Datenschutzpraktiken verarbeiten. Musclog kontrolliert nicht, wie externe Anbieter die Daten verarbeiten, die du ihnen sendest.",
+            "content4": "Wenn du den kostenlosen Musclog-KI-Zugang wählst, werden deine Anfragen über das Cloudflare AI Gateway gesendet, das für Musclog betrieben wird, und von Google Gemini mit einem von Musclog verwalteten API-Schlüssel beantwortet. Eine Anfrage enthält nur das, was du an die KI-Funktion sendest, etwa Chatnachrichten, Mahlzeitenfotos oder die Trainings-, Ernährungs- und Körperdaten, die diese Funktion braucht. Anfragen können für begrenzte Zeit in den Protokollen des Gateways gespeichert werden, um Fehler und Missbrauch zu überwachen, und werden von Cloudflare und Google nach deren eigenen Bedingungen verarbeitet.",
+            "content5": "Du solltest die Datenschutzerklärungen der von dir gewählten Anbieter prüfen, darunter:",
+            "cloudflarePrivacyPolicy": "Datenschutzerklärung von Cloudflare",
+            "openaiPrivacyPolicy": "Datenschutzerklärung von OpenAI",
+            "anthropicPrivacyPolicy": "Datenschutzerklärung von Anthropic",
+            "googlePrivacyPolicy": "Datenschutzerklärung von Google",
+            "applePrivacyPolicy": "Datenschutzerklärung von Apple",
+            "and": "und"
+          },
+          "healthConnect": {
+            "title": "Health Connect und Apple Health",
+            "content": "Wenn du Musclog mit Health Connect (Android) oder Apple Health (iOS) verbindest, liest und schreibt die App Gesundheitsdaten auf deinem Gerät, nur mit den Berechtigungen, die du erteilst:",
+            "items": [
+              "Sie kann Gewicht, Größe, Körperfett, fettfreie Körpermasse, Ernährung, Schritte, verbrannte Kalorien und Grundumsatz lesen und, falls du die Zyklusverfolgung nutzt und den Import wählst, Menstruationszyklusdaten.",
+              "Sie kann Gewicht, Größe, Körperfett, fettfreie Körpermasse, Ernährung, Trainings sowie Geh- oder Laufstrecken schreiben und, falls du es wählst, Menstruationszyklusdaten.",
+              "Gesundheitsdaten, die aus Health Connect oder Apple Health gelesen werden, bleiben auf deinem Gerät. Musclog sendet sie nicht an unsere Server, verkauft sie nicht und verwendet sie nicht für Werbung.",
+              "Gesundheitsdaten werden nur genutzt, um die Fitness-, Ernährungs- und Körpertracking-Funktionen der App bereitzustellen.",
+              "Du kannst diese Berechtigungen jederzeit in Health Connect oder in der Gesundheit-App widerrufen."
+            ]
+          },
+          "foodData": {
+            "title": "Lebensmitteldatenbanken",
+            "content": "Wenn du nach einem Lebensmittel suchst oder einen Barcode scannst, wird der Suchtext oder Barcode an die Lebensmitteldatenbank gesendet, die in den Einstellungen der App gewählt ist: Open Food Facts, die USDA-FoodData-Central-Datenbank oder die eigene Lebensmitteldatenbank von Musclog. Diesen Anfragen wird kein Konto, kein Name und keine andere persönliche Information beigefügt. Wie bei jeder Internetanfrage verrät deine IP-Adresse dem empfangenden Dienst aber, wer anfragt. Du kannst auch wählen, nur in den Lebensmitteln auf deinem Gerät zu suchen."
+          }
+        },
+        "trainingData": {
+          "title": "Freiwillige Weitergabe von Trainingsdaten",
+          "content1": "Wenn du einen WT9011DCL-BLE-Sensor besitzt, ihn mit der App verbindest und zum Erfassen deiner Wiederholungen nutzt, erstellt Musclog lokale Sensoraufnahme-Dateien auf deinem Gerät. Diese Dateien entstehen nur, wenn dieses Gerät aktiv zum Erfassen von Wiederholungen genutzt wird. Sie werden ausschließlich auf deinem Gerät gespeichert und nie automatisch hochgeladen, synchronisiert oder an einen Server übertragen. Es gibt keinen Schalter zum Ein- oder Ausschalten und keine automatische Datenweitergabe jeglicher Art.",
+          "content2": "Wenn du deine Daten beitragen möchtest, um die Fitness-Tracking-Modelle von Musclog zu verbessern, kannst du diese Dateien manuell teilen, zum Beispiel per E-Mail oder über einen Cloud-Speicherdienst wie Google Drive. Dafür gibt es keinen Mechanismus in der App. Jede Weitergabe erfolgt ausschließlich auf deine eigene Initiative und in deinem eigenen Ermessen.",
+          "content3": "Daten, die du auf diesem Weg freiwillig teilst, können genutzt werden, um maschinelle Lernmodelle zu trainieren, zu testen und zu verbessern. Das entstehende Modell kann öffentlich als Open-Source-Software veröffentlicht werden. Mit der Weitergabe deiner Daten erkennst du an, dass sie Teil eines öffentlich zugänglichen Datensatzes werden können, und du erteilst die Erlaubnis, sie im Rahmen der Modellentwicklung zu kopieren, zu speichern, zu verarbeiten und zu verbreiten. Du solltest nur Daten teilen, die du weitergeben darfst und die du öffentlich verfügbar machen möchtest."
+        },
+        "useOfData": {
+          "title": "Nutzung deiner personenbezogenen Daten",
+          "items": [
+            "Um die Funktionen der App bereitzustellen, etwa Trainings-, Ernährungs- und Körpertracking, die auf deinem Gerät laufen.",
+            "Um die Lebensmittelsuchen und optionalen KI-Anfragen zu beantworten, die du stellst.",
+            "Um Abstürze und Fehler zu finden und zu beheben, mithilfe anonymer Absturzberichte, solange sie eingeschaltet sind.",
+            "Um zu verstehen, wie Besucher die Website nutzen, wie unter „Website-Analyse“ beschrieben.",
+            "Um dir zu antworten, wenn du uns kontaktierst.",
+            "Musclog verkauft deine Daten nicht, zeigt keine Werbung und nutzt deine Daten weder für Werbung noch für Profilbildung."
+          ]
+        },
+        "sharing": {
+          "title": "Weitergabe deiner personenbezogenen Daten",
+          "items": [
+            "An die Anbieter, die du wählst: Lebensmittelsuchen gehen an die Lebensmitteldatenbank, die du auswählst, und KI-Anfragen an den KI-Anbieter, den du konfigurierst.",
+            "An Dienstleister, die Teile des Dienstes für uns betreiben: Sentry (Absturzberichte), Cloudflare und Google (der kostenlose Musclog-KI-Zugang), GitHub und Cloudflare (Hosting der Website) sowie Google Analytics (die Website, nur nachdem du Analyse akzeptiert hast).",
+            "Wenn es das Gesetz verlangt, wie unter „Offenlegung deiner personenbezogenen Daten“ beschrieben.",
+            "Mit deiner Einwilligung, etwa wenn du Daten selbst exportierst oder teilst.",
+            "Wir verkaufen deine Daten nicht und geben sie nicht an Werbetreibende oder Datenhändler weiter."
+          ]
+        },
+        "retention": {
+          "title": "Speicherdauer deiner personenbezogenen Daten",
+          "content": "Daten in der App bleiben auf deinem Gerät, bis du sie löschst oder die App deinstallierst. Anonyme Absturzberichte werden von Sentry für eine begrenzte Zeit gespeichert und danach gelöscht. Anfragen über den kostenlosen Musclog-KI-Zugang können für eine begrenzte Zeit in den Protokollen des Gateways gespeichert werden. Daten der Website-Analyse werden wie unter „Website-Analyse“ beschrieben aufbewahrt."
+        },
+        "transfer": {
+          "title": "Übermittlung deiner personenbezogenen Daten",
+          "content": "Absturzberichte, Lebensmittelsuchen, KI-Anfragen und Website-Analysen werden von den in dieser Datenschutzerklärung genannten Diensten verarbeitet, die außerhalb deines Landes liegen können, wo Datenschutzgesetze von denen deiner Rechtsordnung abweichen können. Musclog unternimmt angemessene Schritte, um sicherzustellen, dass diese Daten sicher und in Übereinstimmung mit dieser Datenschutzerklärung behandelt werden."
+        },
+        "deletion": {
+          "title": "Lösche deine personenbezogenen Daten",
+          "content": "Da deine Daten auf deinem Gerät gespeichert sind, kannst du sie jederzeit löschen: einzelne Einträge entfernen, alle Daten über die Datenverwaltung der App löschen oder die App deinstallieren. Musclog hat kein Konto, das gelöscht werden müsste. Wenn wir dir beim Löschen eines Absturzberichts oder anderer Daten helfen sollen, die dein Gerät verlassen haben, kontaktiere uns per E-Mail."
+        },
+        "disclosure": {
+          "title": "Offenlegung deiner personenbezogenen Daten",
+          "content": "Musclog kann deine personenbezogenen Daten in gutem Glauben offenlegen, wenn dies notwendig ist, um:",
+          "items": [
+            "einer gesetzlichen Verpflichtung nachzukommen",
+            "die Rechte oder das Eigentum von Musclog zu schützen und zu verteidigen",
+            "mögliches Fehlverhalten im Zusammenhang mit dem Dienst zu verhindern oder zu untersuchen",
+            "die persönliche Sicherheit der Nutzer des Dienstes oder der Öffentlichkeit zu schützen",
+            "sich gegen rechtliche Haftung zu schützen"
+          ]
+        },
+        "security": {
+          "title": "Sicherheit deiner personenbezogenen Daten",
+          "content": "Musclog verschlüsselt sensible Einträge auf deinem Gerät, etwa Gewicht, Körperfett, Ernährungseinträge und Menstruationszyklusdaten, und die Netzwerkanfragen nutzen HTTPS. Du kannst die App oder Teile davon zusätzlich mit der Biometrie oder PIN deines Geräts sperren. Keine Methode der elektronischen Speicherung oder Übertragung über das Internet ist zu 100 % sicher, deshalb können wir absolute Sicherheit nicht garantieren."
+        },
+        "childrenPrivacy": {
+          "title": "Datenschutz für Kinder",
+          "content": "Unser Dienst richtet sich nicht an Kinder unter 13 Jahren, und wir erheben wissentlich keine personenbezogenen Daten von ihnen. Wenn du glaubst, dass ein Kind uns personenbezogene Daten gesendet hat, etwa per E-Mail, kontaktiere uns bitte, dann löschen wir sie."
+        },
+        "links": {
+          "title": "Links zu anderen Websites",
+          "content": "Unser Dienst kann Links zu anderen Websites enthalten, die nicht von uns betrieben werden. Wenn du auf einen Link eines Drittanbieters klickst, wirst du zur Website dieses Drittanbieters weitergeleitet. Wir raten dir dringend, die Datenschutzerklärung jeder Website zu prüfen, die du besuchst. Wir haben keine Kontrolle über die Inhalte, Datenschutzerklärungen oder Praktiken von Websites oder Diensten Dritter und übernehmen dafür keine Verantwortung."
+        },
+        "changes": {
+          "title": "Änderungen an dieser Datenschutzerklärung",
+          "content": "Wir können diese Datenschutzerklärung von Zeit zu Zeit aktualisieren. Wir veröffentlichen die neue Version auf dieser Seite und aktualisieren oben das Datum „Zuletzt aktualisiert“. Wesentliche Änderungen können auch in der App angekündigt werden. Änderungen gelten ab dem Zeitpunkt, an dem sie auf dieser Seite veröffentlicht werden."
+        },
+        "googlePlay": {
+          "title": "Datensicherheitsangaben im Google Play Store",
+          "content": "Der Abschnitt Datensicherheit im Google-Play-Eintrag von Musclog beschreibt dieselben Praktiken wie diese Datenschutzerklärung. Wenn dir ein Unterschied zwischen beiden auffällt, sag uns bitte Bescheid."
+        },
+        "crashReports": {
+          "title": "Anonyme Absturzberichte",
+          "content": "Die App kann anonyme Absturzberichte an Sentry senden, einen Dienst zur Fehlerverfolgung, damit wir Fehler finden und beheben können. Das ist standardmäßig eingeschaltet und kann jederzeit mit dem Schalter „Anonymer Fehlerbericht“ unter Einstellungen → Backups und Daten ausgeschaltet werden. Solange er aus ist, sendet die App überhaupt keine Absturzberichte, auch keine Berichte über Datenbankfehler. Ein Bericht enthält den Fehler und wo er auftrat, die App-Version und das Gerätemodell. Er enthält keinen Namen, kein Konto und keine E-Mail-Adresse und keine Trainings-, Ernährungs- oder Körperdaten, die du erfasst. Berichte über native Abstürze können eine zufällige Kennung enthalten, die Sentry für die Installation erzeugt und die nicht mit dir verknüpft ist. Wie bei jeder Internetanfrage verrät ein Bericht Sentry deine IP-Adresse. Wir nutzen sie nicht, um dich zu identifizieren."
+        },
+        "analytics": {
+          "title": "Website-Analyse",
+          "content1": "Die Website wird auf GitHub Pages gehostet und über Cloudflare ausgeliefert. Wie jeder Webserver verarbeiten sie die technischen Daten jeder Anfrage (IP-Adresse, Browser und aufgerufene Seite), um die Seite auszuliefern und vor Missbrauch zu schützen. Die Website selbst setzt keine Cookies und nutzt keine Analysedienste, bis du sie akzeptierst.",
+          "content2": "Diese Website nutzt außerdem Google Analytics 4 (GA4), einen Dienst der Google LLC, um anonymisierte Daten darüber zu erheben, wie Besucher mit der Website interagieren. Analyse-Cookies werden erst gesetzt, nachdem du ausdrücklich zugestimmt hast, indem du im Cookie-Banner auf „Akzeptieren“ klickst.",
+          "content3": "Wenn du GA4 zustimmst, kann Google Analytics Folgendes erfassen:",
+          "items": [
+            "Besuchte Seiten und Verweildauer auf jeder Seite",
+            "Allgemeiner Standort (Land oder Stadt, nicht genauer Standort)",
+            "Browsertyp, Gerätetyp und Betriebssystem",
+            "Verweisende Website oder Suchmaschine",
+            "Anonyme Interaktionsereignisse (z. B. Klicks auf Links)",
+            "Die Kampagnen-Tags (utm_source, utm_medium, utm_campaign) des Links, über den du gekommen bist, angehängt an Klicks auf Google Play, den App Store und die Demo"
+          ],
+          "content4": "Rechtsgrundlage für GA4: Einwilligung (DSGVO Art. 6 Abs. 1 lit. a). Du kannst deine Einwilligung jederzeit widerrufen, indem du im Seitenfuß auf „Cookie-Einstellungen“ klickst. Der Widerruf verhindert jede weitere Erhebung und berührt nicht die Rechtmäßigkeit der Verarbeitung, die vor dem Widerruf stattgefunden hat.",
+          "content5": "Google Analytics speichert ereignisbezogene Daten zwei Monate lang und löscht sie danach; Berichte, die daraus aggregiert werden, enthalten keine personenbezogenen Daten. Google handelt als Auftragsverarbeiter nach einer Auftragsverarbeitungsvereinbarung. Weitere Informationen darüber, wie Google Daten verarbeitet, findest du in der",
+          "googlePrivacyPolicy": "Datenschutzerklärung von Google",
+          "content6": "Deine Einwilligungsentscheidung wird lokal in deinem Browser gespeichert (localStorage) und nie an unsere Server gesendet. Sie dient allein dazu, deine Einstellung zwischen den Besuchen zu merken.",
+          "content7": "Wenn der Link, dem du gefolgt bist, Kampagnen-Tags enthält (zum Beispiel ?utm_source=reddit), bewahrt die Website sie im Sitzungsspeicher deines Browsers auf, bis du den Tab schließt, damit sie erkennen kann, welcher Beitrag oder welche Ankündigung zu einem Besuch geführt hat. Sie werden erst an Google Analytics gesendet, nachdem du Analyse akzeptiert hast. Wenn du von dieser Website aus Google Play öffnest, werden dieselben Tags als Install-Referrer an den Store-Link angehängt. So können wir in der Google-Play-Console sehen, wie viele Installationen aus jeder Kampagne stammen. Google Play erhält sie, weil du dem Link gefolgt bist, nicht aus dem Speicher deines Browsers. Die Tags beschreiben den Link, nie dich, und enthalten keine personenbezogenen Daten."
+        }
+      },
+      "appVsWebsite": {
+        "app": {
+          "title": "In der Musclog-App",
+          "summary": "Die Musclog-App ist in erster Linie als lokal gespeichertes Produkt konzipiert. Die meisten Nutzerdaten bleiben auf deinem Gerät gespeichert und werden nicht an unsere Server übertragen.",
+          "items": [
+            "Alle Daten, die du in die App eingibst, werden lokal auf deinem Gerät gespeichert.",
+            "Die App verlangt kein Konto und bietet keine Cloud-Synchronisierung.",
+            "Wir haben keinen Zugriff auf deine Trainings-, Ernährungs-, Gesundheits- oder Zyklusdaten, außer dem, was du über den kostenlosen Musclog-KI-Zugang sendest.",
+            "Sensible Daten, die die App speichert, einschließlich Menstruationszyklusdaten, sind im Ruhezustand mit AES verschlüsselt."
+          ]
+        },
+        "website": {
+          "title": "Auf dieser Website",
+          "summary": "Die Website verarbeitet einen enger gefassten Datensatz, vor allem zum Betrieb der Website, zur Spracheinstellung, zur Analyse und zur Verwaltung der Cookie-Einwilligung.",
+          "items": [
+            "Die Website wird auf GitHub Pages gehostet und über Cloudflare ausgeliefert, die Standard-Anfragedaten (etwa die IP-Adresse) verarbeiten, um Seiten auszuliefern.",
+            "Diese Website nutzt Google Analytics 4 nur, nachdem du über das Cookie-Banner ausdrücklich zugestimmt hast.",
+            "Deine Spracheinstellung wird lokal in deinem Browser gespeichert und nicht an unsere Server übertragen.",
+            "Deine Cookie-Einwilligung wird lokal in deinem Browser gespeichert und nicht an unsere Server übertragen."
+          ]
+        }
+      },
+      "contact": {
+        "title": "Kontaktiere uns",
+        "content": "Wenn du Fragen zu dieser Datenschutzerklärung hast, kannst du uns per E-Mail kontaktieren:"
+      },
+      "pageTitle": "Datenschutzerklärung | Musclog"
+    },
+    "terms": {
+      "titleStart": "Nutzungs-",
+      "conditions": "bedingungen",
+      "lastUpdated": "Zuletzt aktualisiert: 25. April 2026",
+      "highlights": {
+        "agreement": {
+          "title": "Nutzungsvereinbarung",
+          "description": "Mit der Nutzung dieser App stimmst du diesen Bedingungen zu."
+        },
+        "liability": {
+          "title": "Begrenzte Haftung",
+          "description": "Wir haften nicht für Gesundheitsentscheidungen, die mithilfe dieser App getroffen werden."
+        },
+        "warranty": {
+          "title": "Keine Gewährleistung",
+          "description": "Die App wird ohne jegliche Gewährleistung bereitgestellt, wie sie ist."
+        }
+      },
+      "intro": "Bitte lies diese Nutzungsbedingungen sorgfältig, bevor du die Musclog-App verwendest. Mit dem Zugriff auf unseren Dienst oder dessen Nutzung stimmst du diesen Bedingungen zu.",
+      "sections": {
+        "interpretation": {
+          "title": "Auslegung und Begriffsbestimmungen",
+          "content1": "Wörter, deren Anfangsbuchstabe großgeschrieben ist, haben die unter den folgenden Bedingungen festgelegten Bedeutungen. Die folgenden Definitionen haben dieselbe Bedeutung, unabhängig davon, ob sie im Singular oder Plural erscheinen.",
+          "content2": "Für die Zwecke dieser Nutzungsbedingungen:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Anwendung",
+            "def": "bezeichnet das von Musclog bereitgestellte Softwareprogramm, das du auf einem beliebigen elektronischen Gerät heruntergeladen hast und das Musclog heißt."
+          },
+          "company": {
+            "term": "Unternehmen",
+            "def": "bezeichnet Musclog, den Entwickler und Betreuer dieser quelloffenen Anwendung."
+          },
+          "device": {
+            "term": "Gerät",
+            "def": "bezeichnet jedes Gerät, das auf den Dienst zugreifen kann, etwa ein Smartphone oder Tablet."
+          },
+          "service": {
+            "term": "Dienst",
+            "def": "bezeichnet die Anwendung."
+          },
+          "you": {
+            "term": "Du",
+            "def": "bezeichnet die Person, die auf den Dienst zugreift oder ihn nutzt."
+          }
+        },
+        "acknowledgment": {
+          "title": "Anerkennung",
+          "content1": "Dies sind die Nutzungsbedingungen, die die Nutzung dieses Dienstes und die Vereinbarung zwischen dir und dem Unternehmen regeln. Mit dem Zugriff auf den Dienst oder seiner Nutzung stimmst du diesen Nutzungsbedingungen zu und bist an sie gebunden.",
+          "content2": "Dein Zugriff auf den Dienst und seine Nutzung setzt außerdem voraus, dass du der Datenschutzerklärung des Unternehmens zustimmst und sie einhältst.",
+          "content3": "Musclog ist ein lokal gespeicherter, quelloffener Fitness-Tracker. Ein Konto ist nicht nötig. Deine Daten bleiben auf deinem Gerät und werden nie an unsere Server gesendet."
+        },
+        "links": {
+          "title": "Links zu anderen Websites",
+          "content": "Unser Dienst kann Links zu Websites oder Diensten Dritter enthalten, die nicht dem Unternehmen gehören oder von ihm kontrolliert werden. Wir haben keine Kontrolle über die Inhalte, Datenschutzerklärungen oder Praktiken von Websites oder Diensten Dritter und übernehmen dafür keine Verantwortung."
+        },
+        "termination": {
+          "title": "Kündigung",
+          "content": "Wir können deinen Zugang sofort und ohne vorherige Ankündigung oder Haftung aus jedem Grund beenden oder aussetzen, auch wenn du gegen diese Nutzungsbedingungen verstößt. Nach einer Kündigung erlischt dein Recht, den Dienst zu nutzen, sofort."
+        },
+        "liability": {
+          "title": "Haftungsbeschränkung",
+          "content1": "Soweit es das anwendbare Recht zulässt, haftet das Unternehmen in keinem Fall für indirekte, zufällige, besondere, Folge- oder Strafschäden, einschließlich, aber nicht beschränkt auf entgangenen Gewinn, Datenverlust, Nutzungsausfall, Firmenwert oder andere immaterielle Verluste.",
+          "content2": "Diese App ist kein Medizinprodukt. Konsultiere immer eine qualifizierte Fachperson im Gesundheitswesen, bevor du Gesundheits- oder Fitnessentscheidungen auf Basis der Daten dieser App triffst."
+        },
+        "disclaimer": {
+          "title": "Haftungsausschluss",
+          "content1": "Der Dienst wird dir „WIE BESEHEN“ und „WIE VERFÜGBAR“ sowie mit allen Fehlern und Mängeln ohne jegliche Gewährleistung bereitgestellt.",
+          "content2": "Unbeschadet des Vorstehenden gibt das Unternehmen keine Garantie oder Zusicherung und keine Erklärung jeglicher Art dafür ab, dass der Dienst deine Anforderungen erfüllt, bestimmte Ergebnisse erzielt oder mit anderer Software, Anwendungen, Systemen oder Diensten kompatibel ist oder funktioniert."
+        },
+        "governingLaw": {
+          "title": "Anwendbares Recht",
+          "content1": "Es gilt das Recht des Landes unter Ausschluss seiner Kollisionsnormen für diese Bedingungen und deine Nutzung des Dienstes.",
+          "content2": "Die lokalen Verbraucherschutzgesetze können dir zusätzliche Rechte einräumen. Nichts in diesen Bedingungen berührt Rechte, die du als Verbraucher nach geltendem Recht hast."
+        },
+        "changes": {
+          "title": "Änderungen dieser Bedingungen",
+          "content": "Wir behalten uns vor, diese Bedingungen jederzeit nach eigenem Ermessen zu ändern oder zu ersetzen. Wir werden versuchen, mindestens 30 Tage vorher auf neue Bedingungen hinzuweisen, bevor sie in Kraft treten. Wenn du nach Inkrafttreten der Änderungen weiterhin auf unseren Dienst zugreifst oder ihn nutzt, stimmst du den geänderten Bedingungen zu."
+        }
+      },
+      "contact": {
+        "title": "Kontaktiere uns",
+        "content": "Wenn du Fragen zu diesen Nutzungsbedingungen hast, kannst du uns erreichen unter"
+      },
+      "pageTitle": "Nutzungsbedingungen | Musclog"
+    },
+    "contact": {
+      "titleStart": "Kontakt",
+      "titleHighlight": "aufnehmen",
+      "description": "Du hast eine Frage, hast einen Fehler gefunden oder möchtest mitwirken? Wir freuen uns, von dir zu hören.",
+      "form": {
+        "fullName": "Vollständiger Name",
+        "email": "E-Mail-Adresse",
+        "subject": "Betreff",
+        "message": "Nachricht",
+        "submit": "Nachricht senden",
+        "mailto": "In der Mail-App öffnen",
+        "startOver": "Weitere Nachricht senden",
+        "helpText": "Klicke auf den Button oben, um die Nachricht in deiner Standard-Mail-App zu öffnen.",
+        "placeholders": {
+          "fullName": "Max Mustermann",
+          "email": "max@beispiel.de",
+          "subject": "Was beschäftigt dich?",
+          "message": "Erzähl uns, wie wir helfen können…"
+        }
+      },
+      "connect": {
+        "title": "Verbinde dich mit uns",
+        "follow": "Folge uns",
+        "github": {
+          "title": "GitHub-Repository",
+          "description": "Melde Fehler, wünsche dir Funktionen oder trage direkt auf GitHub Code bei."
+        },
+        "discord": {
+          "title": "Community-Discord",
+          "description": "Tritt unserer Community bei, um mit anderen Nutzern und den Betreuern zu chatten."
+        },
+        "email": {
+          "title": "Support-E-Mail",
+          "description": "Brauchst du Hilfe? Schick uns eine E-Mail, und wir melden uns so schnell wie möglich."
+        }
+      },
+      "privacy": {
+        "title": "Datenschutz zuerst",
+        "description": "Wir speichern nichts, was du hier sendest. Deine Nachricht geht direkt an unsere E-Mail, ohne Server und ohne Protokolle."
+      },
+      "pageTitle": "Kontakt | Musclog"
+    },
+    "calculator": {
+      "pageTitle": "TDEE-Rechner | Musclog",
+      "titleStart": "TDEE",
+      "titleHighlight": "RECHNER",
+      "subtitle": "Präzise Daten für leistungsstarke Athleten. Berechne deine biologische Grundlage und optimiere deinen Weg.",
+      "form": {
+        "title": "FITNESSPROFIL",
+        "age": "ALTER",
+        "gender": "GESCHLECHT",
+        "male": "Männlich",
+        "female": "Weiblich",
+        "other": "Divers",
+        "genderNote": "Diese Formeln stammen aus älteren Studien, die nur zwei Gruppen kannten, deshalb können sie nicht auf jeden zutreffen. Wähle die Option, die am besten zu deinem aktuellen Körper und deinen Hormonen passt (zum Beispiel bei einer Hormontherapie), oder wähle „Divers“ für gemittelte Werte.",
+        "weight": "GEWICHT (KG)",
+        "height": "GRÖSSE (CM)",
+        "bodyFat": "KÖRPERFETT %",
+        "experience": "ERFAHRUNG",
+        "beginner": "Anfänger",
+        "intermediate": "Fortgeschritten",
+        "advanced": "Erfahren",
+        "activityLevel": "AKTIVITÄTSLEVEL",
+        "activity1": "Sitzend (wenig oder keine Bewegung)",
+        "activity2": "Leicht aktiv (1–3 Tage/Woche)",
+        "activity3": "Mäßig aktiv (3–5x/Woche)",
+        "activity4": "Sehr aktiv (6–7 Tage/Woche)",
+        "activity5": "Super aktiv (körperliche Arbeit + Training)",
+        "weightGoal": "GEWICHTSZIEL",
+        "cut": "Abnehmen",
+        "maintain": "Halten",
+        "bulk": "Zunehmen",
+        "trainingFocus": "TRAININGSSCHWERPUNKT",
+        "hypertrophy": "HYPERTROPHIE",
+        "hypertrophyDesc": "Muskelgröße und Definition aufbauen",
+        "strength": "KRAFT",
+        "strengthDesc": "Schwerer heben und Kraft aufbauen",
+        "endurance": "AUSDAUER",
+        "enduranceDesc": "Kardiovaskuläre Fitness verbessern",
+        "weightLoss": "GEWICHTSVERLUST",
+        "weightLossDesc": "Fett verbrennen und Form verbessern",
+        "general": "ALLGEMEINE FITNESS",
+        "generalDesc": "Allgemeine Gesundheit und Wohlbefinden",
+        "realtime": "ERGEBNISSE AKTUALISIEREN SICH IN ECHTZEIT"
+      },
+      "results": {
+        "bmr": "BMR",
+        "bmrDesc": "Grundumsatz (Basal Metabolic Rate): Energie im Ruhezustand.",
+        "tdee": "TDEE",
+        "tdeeDesc": "Gesamtenergieumsatz pro Tag, abhängig von der Aktivität.",
+        "target": "ZIEL",
+        "bmi": "BMI",
+        "bmiDesc": "Body-Mass-Index: normiertes Verhältnis von Größe zu Gewicht.",
+        "ffmi": "FFMI",
+        "ffmiDesc": "Fettfreier-Masse-Index: Indikator für Muskelmasse.",
+        "macroProfile": "MAKROPROFIL",
+        "protein": "EIWEISS",
+        "fats": "FETTE",
+        "carbs": "KOHLENHYDRATE",
+        "kcal": "KCAL",
+        "metabolicVelocity": "STOFFWECHSELTEMPO",
+        "velocityMaintain": "Optimaler Leistungsbereich erkannt.",
+        "velocityCut": "Optimiert für den Fettabbau.",
+        "velocityBulk": "Bereit für den Aufbau von Magermasse.",
+        "dailyTarget": "TÄGLICHES KALORIENZIEL",
+        "maintenance": "ERHALTUNG",
+        "calorieSurplus": "KALORIENÜBERSCHUSS",
+        "calorieDeficit": "KALORIENDEFIZIT"
+      }
+    },
+    "exercises": {
+      "eyebrow": "ÜBUNGSBIBLIOTHEK",
+      "pageTitle": "Jede Übung entdecken",
+      "pageDescription": "Durchsuche unsere vollständige Sammlung an Übungen – filtere nach Muskelgruppe oder Bewegungsart oder suche nach Namen.",
+      "customNote": "Dies sind die Übungen, die mit der App mitgeliefert werden. Du kannst auch eigene Übungen direkt in Musclog anlegen.",
+      "searchPlaceholder": "Übungen suchen...",
+      "filterAll": "Alle",
+      "clearFilters": "Filter zurücksetzen",
+      "noResults": "Keine Übungen passen zu deinen Filtern.",
+      "showing": "{{count}} Übungen werden angezeigt",
+      "sourceCredit": "Diese Übungen und Fotos stammen von",
+      "sourceCreditSuffix": ", einem gemeinfreien Projekt unter CC0.",
+      "stat": {
+        "exercises": "Übungen",
+        "muscleGroups": "Muskelgruppen",
+        "equipment": "Gerätetypen"
+      }
+    },
+    "faq": {
+      "pageTitle": "FAQ & Wissenschaft — Musclog",
+      "badge": "Evidenzbasiert",
+      "titlePrefix": "FAQ &",
+      "titleHighlight": "Die Wissenschaft",
+      "description": "Jede Zahl, die Musclog dir zeigt, stammt aus begutachteter Forschung. Diese Seite erklärt die Modelle, Formeln und Studien hinter jeder Berechnung — mit Links zu den Originalquellen.",
+      "sources": "Quellen",
+      "questionsCount_one": "{{count}} Frage",
+      "questionsCount_other": "{{count}} Fragen",
+      "footer": {
+        "text": "Einen Fehler oder eine neuere Studie gefunden, die eine dieser Quellen ersetzt?",
+        "linkText": "Sag uns Bescheid",
+        "suffix": "— die Wissenschaft entwickelt sich ständig weiter, und Musclog mit ihr."
+      },
+      "categories": {
+        "general": {
+          "label": "Allgemein",
+          "items": [
+            {
+              "question": "Was ist Musclog?",
+              "answer": "Musclog ist eine datenschutzorientierte Fitness-App zum Erfassen von Trainings, Ernährung und Körperzusammensetzung. Alle deine Daten werden lokal auf deinem Gerät gespeichert — nichts wird an einen Server gesendet, außer du aktivierst ausdrücklich die optionalen KI-Funktionen."
+            },
+            {
+              "question": "Funktioniert die App ohne Internetverbindung?",
+              "answer": "Ja. Alle Kernfunktionen — Trainings erfassen, Mahlzeiten verfolgen, Fortschritt ansehen und den Ernährungsrechner nutzen — funktionieren vollständig offline. Eine Internetverbindung braucht es nur für die optionalen KI-Funktionen (Mahlzeitenerkennung, KI-Coach), Lebensmittelsuchen in externen Datenbanken und die Synchronisation mit Health Connect / HealthKit."
+            },
+            {
+              "question": "Wie genau sind die Ernährungsberechnungen?",
+              "answer": "Der Rechner nutzt gut geprüfte Populationsgleichungen (Katch-McArdle / Mifflin-St Jeor für den Grundumsatz, das Hall-2008-Modell zur Körperzusammensetzung für Prognosen). Keine Gleichung ist für jeden Menschen perfekt genau — der typische Fehler von Grundumsatz-Gleichungen liegt bei ±10 %. Die besten Ergebnisse erhältst du, wenn du der App 2–4 Wochen echte Daten gibst, damit sie deinen empirischen Gesamtumsatz direkt aus Kalorienzufuhr und Gewichtsänderung berechnen kann."
+            },
+            {
+              "question": "Welche Einheiten unterstützt die App?",
+              "answer": "Die Datenbank speichert immer metrische Werte (kg, cm, g, kcal). Du kannst jederzeit in den Einstellungen auf Imperial (lbs, Zoll, oz) umstellen — die App rechnet alle angezeigten Werte automatisch um. Körperfettanteil, BMI und FFMI sind einheitenlos und werden nie umgerechnet."
+            }
+          ]
+        },
+        "nutrition": {
+          "label": "Ernährungswissenschaft",
+          "items": [
+            {
+              "question": "Wie wird mein Grundumsatz (BMR) berechnet?",
+              "answer": "Musclog nutzt zwei Gleichungen, je nachdem, ob du einen Körperfettanteil angegeben hast.",
+              "bullets": [
+                "Katch-McArdle (bevorzugt, wenn der KFA bekannt ist): BMR = 370 + 21,6 × fettfreie Masse (kg). Da sie die Fettmasse ignoriert — die kaum Stoffwechselaktivität hat —, ist diese Gleichung für Athleten und Menschen mit untypischer Körperzusammensetzung genauer.",
+                "Mifflin-St Jeor (Standard, ohne KFA-Angabe): BMR = 10 × Gewicht + 6,25 × Größe − 5 × Alter ± Geschlechtskonstante (+5 männlich, −161 weiblich). In mehreren Metaanalysen als genaueste allgemeine Grundumsatz-Gleichung für die Allgemeinbevölkerung bestätigt."
+              ],
+              "citations": [
+                {
+                  "label": "Katch-McArdle (1996)",
+                  "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27"
+                },
+                {
+                  "label": "Mifflin et al. (1990)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/"
+                },
+                {
+                  "label": "Frankenfield et al., Metaanalyse (2005)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/"
+                }
+              ]
+            },
+            {
+              "question": "Wie wird mein Gesamtenergieumsatz (TDEE) geschätzt?",
+              "answer": "Musclog nutzt zwei Modi und wählt automatisch den besten für deine Daten.",
+              "bullets": [
+                "Statistisch (neue Nutzer): TDEE = BMR × Aktivitätsfaktor. Die Faktoren reichen von 1,2 (sitzend) bis 1,9 (sehr aktiv + körperliche Arbeit), nach der Skala von Harris-Benedict / Mifflin-St Jeor.",
+                "Empirisch / beobachteter TDEE (bevorzugt, braucht ≥2 Wochen Ernährungs- und Gewichtsdaten): Wendet den ersten Hauptsatz der Thermodynamik direkt an. TDEE = (aufgenommene Kalorien − im Gewebe gespeicherte Energie) / Tage. Fettgewebe speichert beim Abbau 7.730 kcal/kg und kostet beim Aufbau 8.840 kcal/kg; Muskeln speichern 1.250 kcal/kg und kosten 3.900 kcal/kg. Diese asymmetrischen Werte berücksichtigen die thermodynamische Effizienz des Aufbaus.",
+                "Drift-Korrektur des TDEE: Der empirische TDEE ist der Durchschnitt über den Zeitraum. Um ihn auf deinen aktuellen Körperzustand zu projizieren, werden drei aufeinander aufbauende Anpassungen angewendet: (1) Ruhe-Gewebeverlust — Magergewebe verbrennt ~13 kcal/kg/Tag, Fett ~4,5 kcal/kg/Tag (Elia 1992); (2) aktivitätsbezogener Abzug — die mechanischen Kosten der Bewegung skalieren mit der Körpermasse; (3) Abzug durch adaptive Thermogenese von 20 kcal/Tag pro verlorenem kg Körpermasse, der die Unterdrückung von NEAT und hormonelle Anpassung (Leptin, Schilddrüse) widerspiegelt."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Energiedefizit pro Einheit Gewichtsverlust",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Elia (1992) — Gewebekoeffizienten des Ruheumsatzes",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/"
+                },
+                {
+                  "label": "Müller et al. (2022) — Adaptive Thermogenese",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamische Energiebilanz",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Wie verbessert die Angabe des Körperfettanteils die Berechnung?",
+              "answer": "Wenn ein gültiger Körperfettanteil (5–60 %) eingegeben wird, ändern sich drei Dinge:",
+              "bullets": [
+                "Der Grundumsatz wechselt zu Katch-McArdle, das die Körperzusammensetzung berücksichtigt und die stoffwechselinaktive Fettmasse ignoriert.",
+                "Die Aufteilung der Gewichtsänderung in Fett und Magermasse wird aus der Forbes-Kurve (Hall 2007) berechnet, analytisch gelöst über die Lambert-W-Funktion. Die zentrale Erkenntnis: Schlankere Menschen verlieren pro kg einen höheren Anteil Magermasse, weil der Körper seine Fettreserven stärker verteidigt. Bei 12 % KFA verliert man Gewebe mit etwa 5.800–6.200 kcal/kg, weit unter der klassischen „7.700 kcal/kg“-Regel, die reinen Fettverlust annimmt.",
+                "Ein Unsicherheitsband von ±4 % (typischer Fehler bei BIA oder Hautfaltenmessung) erzeugt eine realistische Min-/Max-Kalorienspanne statt einer einzelnen Zahl, und macht die grundsätzliche Ungenauigkeit der Körperfettmessung sichtbar."
+              ],
+              "formula": "effektive_kcal/kg = 9.440 × Fettanteil + 1.820 × Mageranteil",
+              "formulaCaption": "Hall (2008) gemischte Energiedichte — der Fettanteil wird über die Forbes-Kurve / Lambert W bestimmt",
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                },
+                {
+                  "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                }
+              ]
+            },
+            {
+              "question": "Wie wird mein empfohlenes Kaloriendefizit oder Kalorienplus festgelegt?",
+              "answer": "Musclog passt die Kalorienanpassung an dein Körpergewicht an, statt einen festen Wert von ±500 kcal zu verwenden, und begrenzt sie auf wissenschaftlich sichere Bereiche.",
+              "bullets": [
+                "Diät (Gewichtsverlust): Die empfohlene Verlustrate liegt standardmäßig bei 0,5 % des Körpergewichts pro Woche. Ist der Körperfettanteil bekannt, wird dies mit den klinischen ACE-Schwellenwerten verfeinert — schlanke Menschen (KFA < 10 % männlich / < 20 % weiblich) bekommen konservative 0,35 %/Woche, um die Muskulatur zu schützen, während Menschen mit höherem KFA sicher bis zu 0,65 %/Woche verlieren können. Das resultierende tägliche Defizit wird auf 250–750 kcal begrenzt, um starke metabolische Anpassung zu verhindern.",
+                "Aufbau (Gewichtszunahme): Angestrebt wird ein Überschuss von etwa 0,25 % des Körpergewichts pro Woche, der Fettansatz minimiert und die Muskelproteinsynthese unterstützt. Der Überschuss wird auf 150–400 kcal/Tag begrenzt.",
+                "Mindestwerte für Kalorien: 1.200 kcal/Tag für Frauen, 1.500 kcal/Tag für Männer und nie unter 80 % des Grundumsatzes — entsprechend den Leitlinien des IOM / der National Academies."
+              ],
+              "citations": [
+                {
+                  "label": "Garthe et al. (2011) — Abnahmerate und Körperzusammensetzung",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+                },
+                {
+                  "label": "Iraki et al. (2019) — Ernährungsempfehlungen für natürliche Bodybuilder",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/"
+                },
+                {
+                  "label": "ACE — Einteilung des Körperfettanteils",
+                  "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/"
+                }
+              ]
+            },
+            {
+              "question": "Wie funktioniert das Gewichtsprognosemodell?",
+              "answer": "Die Prognose nutzt zwei Phasen, um die Gewichtsänderung über 90 Tage genau vorherzusagen.",
+              "bullets": [
+                "Frühe Phase — Glykogenabbau: Der gesamte Glykogenspeicher des Körpers liegt bei etwa 15 g/kg Körpergewicht (trocken), gebunden an je etwa 3 g Wasser, also insgesamt rund 6 % des Körpergewichts als hydratisiertes Glykogen. Nur der Teil des kumulierten Kaloriendefizits, der in diesen Energiespeicher passt (~4.206 kcal/kg trocken), treibt den frühen „Wassergewichts“-Verlust an. So werden frühe Verluste bei aggressiven Defiziten nicht massiv überschätzt.",
+                "Gleichgewichtsphase: Das gesamte verbleibende Defizit treibt den Fett- und Magerverlust an, mit der zusammensetzungsabhängigen Energiedichte aus dem Hall/Forbes-Modell. Die angezeigte „Wochenrate“ spiegelt immer diesen Gleichgewichtswert wider — also das, was Nutzer nach den ersten Tagen erleben.",
+                "Überschussprognose: Die Glykogenspeicher gelten als voll, daher geht der gesamte Überschuss in den Fett- und Mageraufbau zu erfahrungsabhängigen Kosten (Anfänger ~5.300 kcal/kg Zunahme; Fortgeschrittene ~6.370 kcal/kg; Profis ~7.430 kcal/kg)."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Energiedichte von Gewebe beim Gewichtsverlust",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Schoenfeld et al. — Effektstärken der Hypertrophie, trainiert vs. untrainiert",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                }
+              ]
+            },
+            {
+              "question": "Wie werden meine täglichen Makros berechnet?",
+              "answer": "Die Makroverteilung richtet sich nach dem Fitnessziel. Als Rahmen dienen die AMDR-Bereiche des IOM, zur Verfeinerung die sportspezifische Forschung von ISSN/ACSM.",
+              "table": {
+                "head": ["Ziel", "Kohlenhydrate", "Protein", "Fett", "Begründung"],
+                "rows": [
+                  [
+                    "Gewichtsverlust",
+                    "40 %",
+                    "30 %",
+                    "30 %",
+                    "Viel Protein, um im Defizit die Muskulatur zu erhalten (ISSN/Helms 2014)"
+                  ],
+                  [
+                    "Hypertrophie",
+                    "45 %",
+                    "30 %",
+                    "25 %",
+                    "Protein für die MPS; Kohlenhydrate unterstützen das Volumentraining"
+                  ],
+                  [
+                    "Kraft",
+                    "50 %",
+                    "30 %",
+                    "20 %",
+                    "Kohlenhydrate für den glykolytischen Bedarf schwerer Grundübungen"
+                  ],
+                  [
+                    "Ausdauer",
+                    "55 %",
+                    "20 %",
+                    "25 %",
+                    "Glykogen hat Vorrang (ACSM-Richtwert 6–10 g/kg/Tag)"
+                  ],
+                  ["Allgemein", "45 %", "25 %", "30 %", "Mittig im IOM-AMDR für allgemeine Fitness"]
+                ]
+              },
+              "answer2": "Bei den Zielen Gewichtsverlust und Hypertrophie wird bei bekanntem KFA das Protein von einem prozentualen Ziel auf einen absoluten Wert je fettfreier Masse umgestellt (2,7 g/kg FFM bei Gewichtsverlust; 2,0 g/kg FFM bei Hypertrophie), die übrigen Kalorien werden anteilig auf Kohlenhydrate und Fette verteilt.",
+              "citations": [
+                {
+                  "label": "IOM Dietary Reference Intakes (2005) — AMDR",
+                  "url": "https://doi.org/10.17226/10490"
+                },
+                {
+                  "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/"
+                },
+                {
+                  "label": "Helms et al. (2014) — Evidenzbasierte Ernährungsempfehlungen für Bodybuilding",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/"
+                },
+                {
+                  "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/"
+                }
+              ]
+            },
+            {
+              "question": "Wie wirkt sich die Trainingserfahrung auf die Aufbauberechnung aus?",
+              "answer": "Der Anteil der Gewichtszunahme, der Magermasse statt Fett ist, hängt stark von der Trainingsvorgeschichte ab. Untrainierte haben ein viel größeres Hypertrophiepotenzial als Profis, die den größten Teil ihrer genetischen Muskelobergrenze bereits ausgeschöpft haben.",
+              "bullets": [
+                "Anfänger: ~60 % Magermasse / 40 % Fett pro kg Zunahme. Effektive Aufbaukosten ≈ 5.304 kcal/kg.",
+                "Fortgeschrittene: ~50 % Magermasse / 50 % Fett. Effektive Aufbaukosten ≈ 6.370 kcal/kg.",
+                "Profis: ~40 % Magermasse / 60 % Fett. Effektive Aufbaukosten ≈ 7.434 kcal/kg.",
+                "Diese Aufteilungen nutzen die thermodynamischen Aufbaukosten: 8.840 kcal/kg für Fett und 3.900 kcal/kg für Muskeln, was einer Syntheseeffizienz von ~87 % für Fett und ~32 % für Muskeln entspricht (der größte Teil der Energie für die Muskelsynthese geht als Wärme verloren)."
+              ],
+              "citations": [
+                {
+                  "label": "Schoenfeld et al. — Metaanalyse zur Trainingsbelastung im Krafttraining",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                },
+                {
+                  "label": "Sports Med (2023) — Plateau im Muskelwachstum durch Krafttraining",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/"
+                },
+                {
+                  "label": "NCBI (2022) — Thermodynamische Effizienz der Muskelproteinsynthese",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/"
+                }
+              ]
+            },
+            {
+              "question": "Wie wird der Ruheumsatz bei Adipositas oder höherem Alter angepasst?",
+              "answer": "Auf die Gewebekoeffizienten des Ruheumsatzes (Magermasse: 13 kcal/kg/Tag; Fett: 4,5 kcal/kg/Tag) werden zwei evidenzbasierte Abzugsfaktoren angewendet:",
+              "bullets": [
+                "BMI > 30 (Adipositas): −2 % Abzug auf beide Gewebekoeffizienten, Magermasse und Fett, als Folge einer beeinträchtigten Mitochondrienfunktion bei adipösen Menschen (Müller et al. 2013).",
+                "Alter > 50: −3 % Abzug, als Folge des sinkenden Zellumsatzes (St-Onge & Gallagher 2010).",
+                "Beide Abzüge addieren sich, wenn sie zutreffen (z. B. adipöse Person über 50 → insgesamt −5 %)."
+              ],
+              "citations": [
+                {
+                  "label": "Müller et al. (2013) — Metabolische Anpassung an Kalorienreduktion",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/"
+                },
+                {
+                  "label": "St-Onge & Gallagher (2010) — Veränderungen der Körperzusammensetzung mit dem Altern",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/"
+                }
+              ]
+            }
+          ]
+        },
+        "workout": {
+          "label": "Trainingswissenschaft",
+          "items": [
+            {
+              "question": "Wie werden Schätzungen des Ein-Wiederholungs-Maximums (1RM) berechnet?",
+              "answer": "Musclog berechnet das 1RM mit einem Ensemble aus sieben veröffentlichten Formeln und mittelt deren Ergebnisse. Das Mitteln verringert den systematischen Fehler jeder einzelnen Formel, die über die Wiederholungsbereiche unterschiedlich genau sind.",
+              "table": {
+                "head": ["Formel", "Gleichung", "Am besten für"],
+                "rows": [
+                  [
+                    "Brzycki (1993)",
+                    "w / (1,0278 − 0,0278 × r)",
+                    "2–10 Wdh.; am weitesten verbreitet"
+                  ],
+                  ["Epley (1985)", "w × (1 + r / 30)", "Allgemeine Nutzung; leicht konservativ"],
+                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Mittlere Wiederholungsbereiche"],
+                  ["Lombardi (1989)", "w × r^0,1", "Niedrige Wiederholungsbereiche"],
+                  [
+                    "Mayhew et al. (1992)",
+                    "w / (0,522 + 0,419 × e^{−0,055r})",
+                    "Breiter Wiederholungsbereich; exponentielles Modell"
+                  ],
+                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Linear; konservativ"],
+                  [
+                    "Wathen (1994)",
+                    "w / (0,488 + 0,539 × e^{−0,035r})",
+                    "Höhere Wiederholungsbereiche"
+                  ]
+                ]
+              },
+              "answer2": "Wiederholungen in Reserve (RIR) werden vor jeder Formel zu den tatsächlichen Wiederholungen addiert (angepasste Wdh. = Wdh. + RIR). So wird submaximale Anstrengung auf ein Äquivalent bei voller Anstrengung abgebildet: Ein Satz mit 8 Wiederholungen und 2 RIR zählt für die 1RM-Schätzung als 10 Wiederholungen bis zum Versagen.",
+              "citations": [
+                {
+                  "label": "Brzycki (1993)",
+                  "url": "https://doi.org/10.1080/07303084.1993.10606684"
+                },
+                {
+                  "label": "Epley (1985)",
+                  "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
+                },
+                {
+                  "label": "Lander (1985)",
+                  "url": "https://www.vcalc.com/wiki/landers-formula"
+                },
+                {
+                  "label": "Lombardi (1989)",
+                  "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
+                },
+                {
+                  "label": "Mayhew et al. (1992)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/"
+                },
+                {
+                  "label": "O'Connor et al. (1989)",
+                  "url": "https://www.vcalc.com/wiki/oconner-et-al"
+                },
+                {
+                  "label": "Wathen (1994)",
+                  "url": "https://www.vcalc.com/wiki/wathen-formula"
+                }
+              ]
+            },
+            {
+              "question": "Wie wird das Trainingsvolumen berechnet?",
+              "answer": "Musclog verwendet die gemittelte 1RM-Schätzung als Volumeneinheit für jeden Satz, nicht die reine Tonnage (Gewicht × Wiederholungen). Das ist aussagekräftiger, weil das 1RM berücksichtigt, dass Sätze mit mehr Wiederholungen einen größeren Gesamtaufwand bedeuten, als das reine Gewicht vermuten lässt.",
+              "bullets": [
+                "Bei Körpergewichtsübungen wird dein aktuelles Körpergewicht vor der 1RM-Berechnung zum Stangengewicht addiert.",
+                "Das Gesamtvolumen einer Einheit = Summe der gemittelten 1RM-Schätzungen aller Sätze der Einheit.",
+                "Die Verfolgung der progressiven Überlastung vergleicht diesen Wert über Einheiten hinweg für dieselben Übungen."
+              ]
+            },
+            {
+              "question": "Wie werden die aus täglichen Schritten verbrannten Kalorien berechnet?",
+              "answer": "Musclog nutzt die metabolischen Gleichungen des ACSM für das Gehen, um aus der Schrittzahl den Nettoenergieverbrauch (nicht den Bruttowert) zu berechnen. Der Nettowert verhindert eine Doppelzählung mit dem Grundumsatz und dem TDEE, die bereits berücksichtigt sind.",
+              "formula": "Netto-Kalorien = (0,1 × Distanz_m × Gewicht_kg) / 200",
+              "formulaCaption": "Abgeleitet aus der ACSM-VO₂-Gleichung für das Gehen. Die Zeit kürzt sich heraus: Geschwindigkeit (m/min) × Dauer (min) = Distanz (m). 1 L O₂ ≈ 5 kcal, also ÷1000 × 5 = ÷200.",
+              "bullets": [
+                "Die Schrittlänge wird aus der Größe geschätzt, mit geschlechtsspezifischen empirischen Verhältnissen: 0,415 × Größe (cm) / 100 für Männer, 0,413 für Frauen.",
+                "Distanz = Schritte × Schrittlänge.",
+                "Die Herleitung macht die Kenntnis der Schrittfrequenz überflüssig und vermeidet das „Frequenz-Paradox“, bei dem schnelleres Gehen bei gleicher Schrittzahl gleich aussieht wie langsameres."
+              ],
+              "citations": [
+                {
+                  "label": "ACSM-Stoffwechselgleichungen — VO₂ beim Gehen",
+                  "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm"
+                },
+                {
+                  "label": "Pratama et al. (2012) — Schätzung der Schrittlänge",
+                  "url": "https://www.mdpi.com/2072-4292/11/1/55"
+                },
+                {
+                  "label": "Metaanalyse — Schrittlänge und Größenverhältnisse",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/"
+                }
+              ]
+            },
+            {
+              "question": "Wie berechnet die App Gewicht und Wiederholungen für einen Ziel-RIR?",
+              "answer": "Es werden zwei inverse 1RM-Probleme gelöst:",
+              "bullets": [
+                "Gewicht für einen Ziel-RIR: Alle sieben 1RM-Formeln sind linear im Gewicht (1RM = Gewicht × f(Wdh., RIR)), also Gewicht = 1RM / f(Wdh., RIR). Der Faktor f wird berechnet, indem das Ensemble mit Gewicht = 1 aufgerufen wird.",
+                "Wiederholungen für ein Zielgewicht: Das gemittelte Ensemble hat keine geschlossene Umkehrfunktion, daher verwendet die App eine binäre Suche. Da die 1RM-Schätzungen mit den Wiederholungen streng monoton steigen, konvergiert die binäre Suche für jeden praktischen Wiederholungsbereich (1–50) in etwa 6 Schritten. Die Forschungsgrundlage für die RIR-basierte Selbstregulierung bilden Helms et al. (2016)."
+              ],
+              "citations": [
+                {
+                  "label": "Helms et al. (2016) — RPE und RIR-basierte Selbstregulierung",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/"
+                }
+              ]
+            }
+          ]
+        },
+        "methodology": {
+          "label": "Methodik",
+          "items": [
+            {
+              "question": "Warum zeigt die App eine Kalorienspanne statt einer einzelnen Zahl?",
+              "answer": "Messungen des Körperfettanteils — ob per Bioimpedanz (BIA), Hautfaltenzange oder DEXA — haben einen typischen Messfehler von ±3–5 %. Musclog wendet auf deinen eingegebenen Körperfettanteil ein ±4-%-Band an (eine konservative Mitte) und berechnet Grundumsatz, TDEE und Zielkalorien an beiden Enden neu.",
+              "bullets": [
+                "Min.-Zielkalorien = Berechnung mit KFA + 4 % (mehr Fett → weniger Magermasse → niedrigerer Grundumsatz).",
+                "Max.-Zielkalorien = Berechnung mit KFA − 4 % (weniger Fett → mehr Magermasse → höherer Grundumsatz).",
+                "Das einzelne „Ziel“ in der Mitte ist das beste Schätzergebnis, das deinen eingegebenen KFA direkt verwendet.",
+                "Diese Spanne macht die realistische Unsicherheit sichtbar und zeigt, dass die „richtige“ Zahl für dich persönlich irgendwo innerhalb des Bandes liegen kann."
+              ]
+            },
+            {
+              "question": "Was ist die Forbes-Kurve und warum ist sie wichtig?",
+              "answer": "Die Forbes-Kurve, von Gilbert Forbes (1987) entwickelt und von Kevin Hall (2007) weiter formalisiert, beschreibt, wie der Körper Gewichtsveränderungen auf Fettmasse und Magermasse verteilt. Sie hat eine wichtige, kontraintuitive Konsequenz:",
+              "bullets": [
+                "Schlankere Menschen verlieren pro verlorenem kg mehr Magermasse — der Körper verteidigt seine Fettreserven stärker, wenn sie niedrig sind.",
+                "Umgekehrt verlieren Menschen mit hohem Körperfettanteil einen größeren Fettanteil pro kg, weshalb ihre effektive Energiedichte näher an der klassischen 7.700-kcal/kg-Regel liegt.",
+                "Die Kurve wird durch eine Konstante C parametrisiert (≈13,8 für Männer, ≈10,4 für Frauen) und mit der Lambert-W-Funktion (Hauptzweig) gelöst. Musclog implementiert diesen Löser numerisch mit dem Newton-Verfahren, um keine Bibliothek zu benötigen.",
+                "Ohne dieses Modell werden Diäten für schlanke Menschen systematisch unterschätzt — die klassische Regel behandelt jeden Gewichtsverlust als Fett und würde daher überschätzen, wie viel Fett tatsächlich verloren geht."
+              ],
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Human Body Composition",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — PMC2376748 — Formalisierung der Forbes-Kurve",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                }
+              ]
+            },
+            {
+              "question": "Was ist adaptive Thermogenese und wie berücksichtigt die App sie?",
+              "answer": "Adaptive Thermogenese (AT) bezeichnet das Phänomen, dass der Energieverbrauch des Körpers bei anhaltender Kalorienreduktion stärker sinkt, als sich durch die Veränderung der Körpermasse allein erklären lässt. Sie wird verursacht durch:",
+              "bullets": [
+                "Hormonelle Unterdrückung: Leptin sinkt mit dem Fettverlust, was die Aktivität des sympathischen Nervensystems und die Produktion von Schilddrüsenhormonen senkt.",
+                "Reduktion von NEAT (Nicht-Sport-Aktivitätsthermogenese): Der Körper verringert unbewusst Zappeln, Haltungswechsel und spontane Bewegungen.",
+                "Veränderungen der Mitochondrieneffizienz: Die Zellen gewinnen pro verbrannter Kalorie mehr ATP.",
+                "Musclog modelliert AT als Abzug von 20 kcal/Tag pro kg verlorener Körpermasse (Mittelwert der Spanne von 20–30 kcal/Tag/kg nach Hall et al.). Das wird bei der Drift-Korrektur des TDEE aus empirischen Daten angewendet und in der 90-Tage-Prognose, damit der Gewichtsverlust eher realistisch als linear verläuft."
+              ],
+              "citations": [
+                {
+                  "label": "Müller et al. (2022) — Ausmaß der AT in klinischen Studien",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamisches Energiebilanzmodell (Spanne 20–30 kcal/kg)",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Wie wird die Schätzung „Heute verbrannte Kalorien“ berechnet?",
+              "answer": "Die Echtzeitschätzung des Kalorienverbrauchs nutzt ein zirkadian gewichtetes Modell statt einer einfachen linearen Aufteilung deines TDEE auf 24 Stunden. Forschung zu Stoffwechselkammern und zur zirkadianen Biologie zeigt, dass der Energieverbrauch über den Tag nicht gleichmäßig ist — er folgt einem ausgeprägten 24-Stunden-Rhythmus, der von deiner inneren Uhr, der Körperhaltung, dem Mahlzeitenzeitpunkt (thermischer Effekt der Nahrung, TEF) und spontaner Bewegung (NEAT) bestimmt wird.",
+              "table": {
+                "head": ["Zeitblock", "% des TDEE", "Haupttreiber"],
+                "rows": [
+                  [
+                    "23–3 Uhr",
+                    "~9,5 %",
+                    "Einschlafen, Rückgang des Sympathikus, SMR bei 85–95 % des Grundumsatzes"
+                  ],
+                  [
+                    "3–7 Uhr",
+                    "~8,5 %",
+                    "Zirkadianes Tief (~5 Uhr), niedrigste Körperkerntemperatur und REE"
+                  ],
+                  [
+                    "7–11 Uhr",
+                    "~19,5 %",
+                    "Anstieg durch das Aufstehen (+10 %), morgendlicher TEF-Höchstwert"
+                  ],
+                  [
+                    "11–15 Uhr",
+                    "~22,5 %",
+                    "TEF des Mittagessens, tagsüber NEAT und berufliche Bewegung"
+                  ],
+                  [
+                    "15–19 Uhr",
+                    "~25 %",
+                    "Zirkadianer REE-Höchstwert (~17 Uhr), Höchstwert der Körperkerntemperatur"
+                  ],
+                  [
+                    "19–23 Uhr",
+                    "~15 %",
+                    "Abendliche Entspannung, abgeschwächter TEF des Abendessens, sinkende Körperkerntemperatur"
+                  ]
+                ]
+              },
+              "answer2": "Jeder Block dauert vier Stunden (240 Minuten). Da der Block 23–3 Uhr über Mitternacht reicht, teilt die App ihn in zwei zusammenhängende Abschnitte (00:00–03:00 und 23:00–24:00), damit die Berechnung an die Ortszeit um Mitternacht gebunden bleibt. Bis jetzt heute verbrannte Kalorien = Σ (vergangene Minuten in jedem abgeschlossenen oder teilweisen Abschnitt × Blockrate × TDEE). Die aktuelle Stoffwechselphase (z. B. „Zirkadianer Höchstwert“) zeigt, welcher Block gerade aktiv ist.",
+              "citations": [
+                {
+                  "label": "Bo et al. (2015) — Mahlzeitenzeitpunkt & diätinduzierte Thermogenese — IJO",
+                  "url": "https://doi.org/10.1038/ijo.2015.138"
+                },
+                {
+                  "label": "Manini (2010) — Energieverbrauch und Altern — Ageing Res Rev",
+                  "url": "https://doi.org/10.1016/j.arr.2009.08.002"
+                },
+                {
+                  "label": "Morris et al. (2015) — Zirkadianes System & Unterschied morgendlicher/abendlicher TEF — Obesity",
+                  "url": "https://doi.org/10.1002/oby.21189"
+                },
+                {
+                  "label": "Poggiogalle et al. (2018) — Zirkadiane Regulation des Energiestoffwechsels — Metabolism",
+                  "url": "https://doi.org/10.1016/j.metabol.2017.11.017"
+                },
+                {
+                  "label": "Ruddick-Collins et al. (2021) — Zirkadiane RMR-Rhythmen & thermischer Effekt der Nahrung — JCEM",
+                  "url": "https://doi.org/10.1210/clinem/dgab654"
+                },
+                {
+                  "label": "Sharma & Kavuru (2010) — Überblick über Schlaf und Stoffwechsel — Int J Endocrinol",
+                  "url": "https://doi.org/10.1155/2010/270832"
+                }
+              ]
+            },
+            {
+              "question": "Wie wird die tägliche Trinkmenge empfohlen?",
+              "answer": "Die Wasserempfehlung skaliert linear mit dem TDEE im Verhältnis von 0,75 ml pro kcal täglichem Energieverbrauch. Abgeleitet ist das aus zwei unabhängig voneinander übereinstimmenden Richtlinien:",
+              "bullets": [
+                "Das U.S. Food and Nutrition Board (1945): „1 ml pro verbrauchter kcal“ (Musclog verwendet 0,75 ml für den Getränkeanteil, da etwa 25 % des Wassers aus Lebensmitteln stammen).",
+                "Ernährungserhebungen zeigen, dass Getränke bei Erwachsenen etwa 70–80 % der gesamten Wasseraufnahme ausmachen (Gandy et al. 2016)."
+              ],
+              "citations": [
+                {
+                  "label": "PMC7692653 — Wasseraufnahme aus Getränken vs. Lebensmitteln",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food"
+                },
+                {
+                  "label": "PMC5946122 — Anteil der Wasseraufnahme aus Getränken",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "repMarker": {
+      "title": "Wiederholungsmarkierer",
+      "description": "Lade ein Trainingsvideo und sensor-JSON hoch, um die Wiederholungsgrenzen zu markieren",
+      "uploadVideo": "Video hochladen",
+      "uploadJson": "Sensor-JSON hochladen",
+      "dragDropVideo": "Video hierher ziehen oder klicken, um zu suchen",
+      "dragDropJson": "JSON hierher ziehen oder klicken, um zu suchen",
+      "videoLoaded": "Video geladen",
+      "jsonLoaded": "JSON geladen",
+      "markStart": "Start markieren",
+      "markEnd": "Ende markieren",
+      "undo": "Rückgängig",
+      "clearAll": "Alle löschen",
+      "waitingEnd": "Warte auf das Ende — E drücken, wenn die Wiederholung endet",
+      "markerCount_one": "{{count}} Wiederholung markiert",
+      "markerCount_other": "{{count}} Wiederholungen markiert",
+      "downloadJson": "JSON herunterladen",
+      "repNumber": "Wdh.",
+      "startTime": "Start",
+      "endTime": "Ende",
+      "duration": "Dauer",
+      "delete": "Löschen",
+      "noMarkers": "Noch keine Wiederholungen markiert. Drücke S, um den Start einer Wiederholung zu markieren.",
+      "invalidJson": "Ungültiges JSON: Feld \"samples\" fehlt",
+      "seekHint": "Auf das Diagramm klicken, um im Video zu springen",
+      "keyboardHint": "S = Start markieren · E = Ende markieren · Leertaste = Abspielen/Pause",
+      "chartOrientationTitle": "Ausrichtung",
+      "chartOrientationSubtitle": "Gerätewinkel · am deutlichsten bei Rotationsübungen",
+      "chartAccelerationTitle": "Beschleunigung",
+      "chartAccelerationSubtitle": "Rohbeschleunigung · funktioniert bei jeder Übung"
+    },
+    "alternatives": {
+      "badge": "Ehrlicher Vergleich",
+      "titlePrefix": "Musclog vs.",
+      "titleHighlight": "die Alternativen",
+      "description": "Wie Musclog im Vergleich zu bekannten Ernährungs- und Fitness-Apps abschneidet, bei Datenschutz, Ernährung, Training und ganzheitlichem Tracking. Die Kriterien betonen Umfang, Datenschutz, Datenhoheit, Offline-Nutzung und Integration.",
+      "featureColumn": "Funktion",
+      "asOf": "Dieser Vergleich basiert auf der offiziellen Produktdokumentation vom 24. Juli 2026. Die Angaben zu Musclog stammen von der Live-Website und dem Repository; die Angaben zu den Mitbewerbern von deren offiziellen Websites und Hilfecentern.",
+      "disclaimer": "Produktnamen und Marken gehören ihren jeweiligen Eigentümern. Details ändern sich häufig — prüfe die aktuellen Angaben immer auf der offiziellen Seite jedes Anbieters.",
+      "legend": {
+        "title": "Legende",
+        "full": "Stark, eingebaute Unterstützung",
+        "partial": "Teilweise, einfach, von Integrationen abhängig oder kostenpflichtig",
+        "none": "Keine dokumentierte Kernfunktion"
+      },
+      "notes": {
+        "fullApp": "Vollständige App",
+        "basic": "Einfach",
+        "trialOnly": "Nur Testphase",
+        "trackingFree": "Tracking kostenlos",
+        "strongBasic": "Stark, einfach",
+        "limited": "Eingeschränkt",
+        "strongCore": "Stark im Kern",
+        "appleEcosystem": "Apple-Ökosystem",
+        "appleHealthCentric": "Auf Apple Health ausgerichtet",
+        "offlineDiarySync": "Offline-Tagebuch-Sync",
+        "notLocalFirst": "Nicht lokal zuerst",
+        "trackingDependent": "Abhängig vom Tracking",
+        "cloudAccount": "Cloud-Konto",
+        "internetRequired": "Internet nötig",
+        "workoutCaching": "Training im Cache",
+        "applePlatform": "Apple-Plattform",
+        "serverEncryption": "Serververschlüsselung",
+        "premiumExport": "Export im Premium-Tarif",
+        "exportGeneric": "Export",
+        "healthExport": "Health-Export",
+        "exportReports": "Export/Berichte",
+        "fullExportViaSupport": "Vollständiger Export über den Support",
+        "workoutsMeasurements": "Trainings/Messwerte",
+        "mobile": "Mobil",
+        "appleOnly": "Nur Apple",
+        "fullAppMobileOnly": "Vollständige App nur mobil",
+        "upTo84": "Bis zu 84",
+        "paid": "Kostenpflichtig",
+        "paidVoice": "Kostenpflichtige Stimme",
+        "gold": "Gold",
+        "goldVoice": "Gold/Stimme",
+        "premium": "Premium",
+        "curatedSources": "Kuratierte Quellen",
+        "verifiedDatabases": "Geprüfte Datenbanken",
+        "aiGuidance": "KI-Anleitung",
+        "ai": "KI",
+        "nutritionAdvice": "Ernährungsberatung",
+        "fastingFeature": "Fasten-Funktion",
+        "timer": "Timer",
+        "plansTimer": "Pläne/Timer",
+        "logging": "Erfassung",
+        "journal": "Tagebuch",
+        "basicExercise": "Einfache Übungen",
+        "exerciseEntries": "Übungseinträge",
+        "exerciseHabits": "Trainingsgewohnheiten",
+        "aiCoach": "KI-Coach",
+        "separateApp": "Eigene App",
+        "periodLogging": "Periodenerfassung",
+        "bestHere": "Hier am besten",
+        "biometrics": "Biometrie",
+        "wearables": "Wearables",
+        "integrations": "Integrationen",
+        "watches": "Uhren",
+        "algorithmic": "Algorithmisch",
+        "workoutCoach": "Trainingscoach",
+        "pro": "Pro",
+        "nutrition": "Ernährung",
+        "personalitiesFiles": "Persönlichkeiten/Dateien",
+        "gpl3": "GPL-3.0",
+        "jsonDbExcel": "JSON, DB, Excel",
+        "micros40": "40+",
+        "yes": "Ja",
+        "no": "Nein",
+        "some": "Teilweise"
+      },
+      "sections": {
+        "privacy": {
+          "title": "Datenschutz, Datenhoheit und Preise",
+          "footnote": "Lifesum gibt an, Änderungen ohne Internetverbindung nicht speichern zu können, und speichert Daten auf Firmenservern. MyFitnessPal erlaubt einige Änderungen am Tagebuch offline, synchronisiert sie aber später mit seinem Kontosystem. Musclog nutzt eine lokale WatermelonDB-Datenbank als zentrale Speicherschicht.",
+          "rows": {
+            "freeVersion": "Nützliche kostenlose Version",
+            "openSource": "Open Source",
+            "noProprietaryAccount": "Kein proprietäres Konto nötig",
+            "localFirst": "Datenmodell mit Vorrang für lokale Speicherung",
+            "fullyOffline": "Kernfunktionen vollständig offline",
+            "localEncryption": "Sensible Felder lokal verschlüsselt",
+            "rawDbAccess": "Direkter Datenbankzugriff",
+            "migrationBackups": "Migrations-Backups und Datenbankreparatur",
+            "completeBackup": "Vollständiges Backup in Eigenregie",
+            "platforms": "Android, iOS und Web",
+            "adsInFree": "Werbung in der kostenlosen Version"
+          }
+        },
+        "nutrition": {
+          "title": "Ernährung und Energie-Coaching",
+          "footnote": "MacroFactor und Musclog sind hier die beiden stärksten Apps für die empirische Schätzung des Energieverbrauchs. Cronometer bleibt besonders stark bei der Tiefe der Mikronährstoffe, während MyFitnessPal, Lifesum, Bevel, MacroFactor und Cronometer inzwischen alle eine Form KI-gestützter Lebensmittelerfassung anbieten.",
+          "rows": {
+            "caloriesMacros": "Kalorien und Makros",
+            "micronutrients": "Detaillierte Mikronährstoffe",
+            "barcode": "Barcode-Scan",
+            "customFoods": "Eigene Lebensmittel und Portionen",
+            "savedMeals": "Gespeicherte Mahlzeiten und Rezepte",
+            "aiPhoto": "KI-Erfassung von Mahlzeiten per Foto",
+            "naturalLanguage": "Lebensmittelerfassung in natürlicher Sprache",
+            "labelOcr": "OCR für Nährwertangaben",
+            "foodDbSelection": "Auswahl Open Food Facts und USDA",
+            "netCarbs": "Gesamt- oder Netto-Kohlenhydrat-Modus",
+            "empiricalTdee": "Empirischer TDEE aus Zufuhr und Gewicht",
+            "autoTarget": "Automatische Anpassung des Kalorienziels",
+            "weeklyCheckins": "Wöchentliche Zielkontrollen",
+            "intuitiveEating": "Modus Intuitives Essen, der Zahlen ausblendet",
+            "fastedDays": "Erfassung bewusster Fastentage",
+            "supplements": "Nahrungsergänzung und Erinnerungen",
+            "qualityInsights": "Auswertungen zur Lebensmittelqualität"
+          }
+        },
+        "workouts": {
+          "title": "Training und Fortschritt",
+          "footnote": "MacroFactor Trainings und Hevy sind die nächsten Konkurrenten für ernsthafte Krafttrainings-Erfassung. Hevy dokumentiert Sätze, Gewichte, Supersätze, RPE, Timer, persönliche Rekorde, Pläne und detaillierte Fortschrittsstatistiken; MacroFactor Trainings konzentriert sich stärker auf dynamische Programmierung. Der Hauptunterschied: MacroFactor trennt Ernährung und Training in zwei Produkte, während Musclog beides in einem lokalen Datenbestand vereint.",
+          "rows": {
+            "strengthLogging": "Detaillierte Erfassung von Krafttrainings",
+            "setsRepsWeights": "Sätze, Wiederholungen und Gewichte",
+            "rpeRir": "Unterstützung für RPE/RIR",
+            "supersets": "Supersätze",
+            "prDetection": "Erkennung persönlicher Rekorde",
+            "restTimers": "Pausentimer",
+            "customExercises": "Eigene Übungen",
+            "templates": "Trainingsvorlagen und Pläne",
+            "aiPlans": "Von KI erstellte Trainingspläne",
+            "pasteParse": "Training einfügen und mit KI auswerten",
+            "editHistorical": "Vergangene Trainings bearbeiten",
+            "exerciseGoals": "Übungsspezifische Ziele",
+            "sharing": "Teilen von Trainings/Deep Links",
+            "nutritionAndLifting": "Ernährung und ernsthaftes Krafttraining zusammen",
+            "offlineRecovery": "Wiederherstellung von Trainings offline"
+          }
+        },
+        "wholeHealth": {
+          "title": "Ganzheitliche Gesundheit, KI und Integrationen",
+          "footnote": "Bevel ist der stärkste Mitbewerber für Erholung, Schlaf, Stress und Bereitschaft aus Wearable-Daten. Musclog bleibt stärker bei der lokalen Datenhoheit, Android-Unterstützung, detaillierten Ernährungseinstellungen, dem empirischen TDEE, selbst gehosteter KI, direkten BLE-Abläufen und Datenbank-Werkzeugen.",
+          "rows": {
+            "bodyMeasurements": "Gewicht und Körpermaße",
+            "bodyFatBmiFfmi": "Körperfett, BMI und FFMI",
+            "correlationCharts": "Korrelationsdiagramme über Bereiche hinweg",
+            "menstrualCycle": "Zyklus-Tracking",
+            "phaseAware": "Phasenbezogene Erkenntnisse zu Training und Ernährung",
+            "moodRecovery": "Stimmungs- und Erholungs-Tracking",
+            "sleepReadiness": "Eigener Schlaf-/Bereitschaftswert",
+            "healthConnect": "Health-Connect-Integration",
+            "healthKit": "HealthKit-Integration",
+            "historicalImport": "Import historischer Gesundheitsdaten",
+            "bleManagement": "Direkte Verwaltung von BLE-Geräten",
+            "imuRepCounting": "Lokale Zählung von Wiederholungen per IMU",
+            "aiCoachConfig": "Konfigurierbarer KI-Coach im Dialog",
+            "aiContext": "KI kennt Ernährungs- und Trainingskontext",
+            "customPrompts": "Eigene KI-Systemanweisungen",
+            "byoApiKey": "Eigener API-Schlüssel",
+            "localModels": "Lokale/selbst gehostete KI-Modelle",
+            "gameboy": "Game-Boy-Color-Edition"
+          }
+        }
+      },
+      "winners": {
+        "title": "Wer gewinnt in jeder engen Kategorie?",
+        "categoryHeader": "Kategorie",
+        "winnerHeader": "Stärkste Option",
+        "rows": {
+          "overallCoverage": "Beste Funktionsabdeckung insgesamt",
+          "privacyOwnership": "Bester Datenschutz und beste Datenhoheit",
+          "freeOpenSource": "Bestes kostenloses/Open-Source-Angebot",
+          "nutritionLifting": "Beste einzelne App für Ernährung + ernsthaftes Krafttraining",
+          "configurableAi": "Beste konfigurierbare/lokale KI",
+          "foodEcosystem": "Größtes kommerzielles Lebensmittel-Ökosystem",
+          "dietCoaching": "Spezialisiertestes adaptives Ernährungs-Coaching",
+          "micronutrient": "Spezialisiertestes Mikronährstoff-Tracking",
+          "wearableRecovery": "Beste Erholungs-/Bereitschaftserfahrung mit Wearables",
+          "socialLifting": "Etabliertestes soziales Krafttraining-Erlebnis",
+          "mealPlan": "Ausgereiftestes Mahlzeitenplan-Erlebnis für den Alltag",
+          "liftingProgramme": "Spezialisiertestes automatisches Trainingsprogramm",
+          "gameboy": "Beste Unterstützung für den Game Boy Color"
+        }
+      },
+      "conclusion": {
+        "title": "Das ehrliche Fazit",
+        "quote": "Musclog ist die einzige App in diesem Vergleich, die ernsthafte Trainingserfassung, umfassendes Ernährungs-Tracking, empirisches Energie-Coaching, Körper- und Zyklusanalysen, KI-Coaching, Gesundheitsintegrationen und die Unterstützung verbundener Geräte kombiniert — und dabei kostenlos, Open Source, lokal zuerst und ohne proprietäres Konto nutzbar bleibt.",
+        "body": "Das heißt nicht, dass Musclog bei jeder einzelnen Funktion schon das Beste ist. MyFitnessPal hat ein größeres kommerzielles Lebensmittel-Ökosystem, Cronometer tiefere Nährstoffdaten, Bevel die stärkere Schlaf- und Bereitschaftsanalyse und Hevy ein ausgereiftes soziales Krafttraining-Netzwerk. Wer die vollständige Kombination möchte, bräuchte sonst etwas wie:",
+        "stack": "MacroFactor + MacroFactor Trainings oder Hevy + Bevel + zusätzliche Datenschutz- und Exportwerkzeuge",
+        "bodyAfter": "Musclog will den gesamten Stack in einer App bieten."
+      },
+      "cta": {
+        "title": "Den ganzen Stack in einer App",
+        "description": "Kostenlos, Open Source und lokal zuerst. Kein Konto nötig.",
+        "button": "Musclog herunterladen"
+      }
+    }
+  }
+}

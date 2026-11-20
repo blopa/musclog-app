@@ -1,0 +1,21 @@
+{
+  "bleWorkoutData": {
+    "sectionTitle": "Sensordaten",
+    "title": "BLE-Trainingsdateien",
+    "subtitle": "Sensor-Bewegungsaufnahmen aus deinen Trainingssätzen verwalten",
+    "modalTitle": "BLE-Trainingsdateien",
+    "noFiles": "Noch keine Sensoraufnahmen",
+    "noFilesHint": "Erfasse während eines Trainings einen Satz, um Aufnahmen zu erstellen",
+    "shareAll": "Alle teilen",
+    "deleteAll": "Alle löschen",
+    "deleteAllConfirmTitle": "Alle Aufnahmen löschen",
+    "deleteAllConfirmMessage": "Dadurch werden alle {{count}} Aufnahmen dauerhaft gelöscht.",
+    "refresh": "Aktualisieren",
+    "share": "Teilen",
+    "delete": "Löschen",
+    "deleteConfirmTitle": "Aufnahme löschen",
+    "deleteConfirmMessage": "Dadurch wird die Aufnahme für {{name}} dauerhaft gelöscht.",
+    "samples": "{{count}} Messwerte",
+    "setLabel": "Satz {{number}}"
+  }
+}

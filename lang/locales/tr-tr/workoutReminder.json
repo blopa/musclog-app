@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Neden bunu aldım?",
+      "thisWorkout": "bu antrenman",
+      "setting": "Antrenman hatırlatıcıları açık ve {{workout}} {{day}} için planlanmış.",
+      "settingNoDay": "Antrenman hatırlatıcıları açık ve {{workout}} planında.",
+      "fromPlan": "Bu gün bir antrenman planından geliyor.",
+      "fromSchedule": "Bu gün antrenmanda belirlediğin takvimden geliyor.",
+      "timing": "Hatırlatıcı, planlanan saat olan {{time}} için ayarlandı.",
+      "timingLead": "Planlanan saatten {{minutes}} dakika önce, {{time}} için gelir.",
+      "pause": "Tüm hatırlatıcıları {{days}} gün duraklat",
+      "paused": "Hatırlatıcılar {{days}} gün duraklatıldı.",
+      "turnOff": "Antrenman hatırlatıcılarını kapat",
+      "turnedOff": "Antrenman hatırlatıcıları kapalı.",
+      "settings": "Bildirim ayarları",
+      "failed": "Hatırlatıcılar değiştirilemedi. Tekrar dene."
+    }
+  }
+}

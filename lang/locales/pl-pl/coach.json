@@ -1,0 +1,165 @@
+{
+  "coach": {
+    "title": "Czat",
+    "you": "Ty",
+    "status": "Online",
+    "statusOffline": "Offline",
+    "context": {
+      "general": "Ogólne",
+      "exercise": "Trening",
+      "nutrition": "Odżywianie"
+    },
+    "placeholder": "Napisz wiadomość...",
+    "todayAt": "Dziś, {{time}}",
+    "imageSent": "Wysłano zdjęcie",
+    "actions": {
+      "createWorkout": "Utwórz trening",
+      "analyzeProgress": "Analizuj postępy",
+      "nutritionCheck": "Sprawdź odżywianie",
+      "trackMeal": "Zapisz posiłek",
+      "workoutGen": "Generuj trening",
+      "mealPlan": "Plan posiłków"
+    },
+    "workoutGenerationPrompt": "Mogę pomóc ci ułożyć spersonalizowany plan treningowy! Opowiedz mi o swoich celach, dostępnym sprzęcie i o tym, ile dni w tygodniu chcesz trenować.",
+    "mealPlanPrompt": "Mogę pomóc ci ułożyć spersonalizowany plan posiłków na 3 dni! Opowiedz o swoich preferencjach, alergiach albo konkretnych produktach, które chcesz uwzględnić.",
+    "analyzeProgressPrompt": "Przeanalizuję twoje ostatnie treningi. Zanim to zrobię, czy chcesz mi coś przekazać?",
+    "nutritionCheckPrompt": "Przejrzę twoje odżywianie z ostatnich 7 dni. Chcesz coś dodać, zanim to zrobię?",
+    "trackMealPrompt": "Opowiedz mi, co zjadłeś (możesz nawet wysłać zdjęcie!), a oszacuję makroskładniki i zapiszę to za ciebie.",
+    "welcomeMessage": "Cześć, jestem {{name}}, twój trener AI. Pytaj o cokolwiek dotyczącego treningów, odżywiania lub postępów.",
+    "welcomeMessageExercise": "Cześć, jestem {{name}}. Poproś mnie o plan treningowy, sprawdzenie techniki albo analizę postępów.",
+    "welcomeMessageNutrition": "Cześć, jestem {{name}}. Powiedz mi, co jadłeś, a oszacuję makroskładniki, albo zadaj pytanie o odżywianie.",
+    "insights": {
+      "noNutritionLogs": "Nie mogę jeszcze dać wskazówek o odżywianiu, bo w ciągu ostatnich 7 dni nie zapisano żadnych posiłków. Zapisz jedzenie, a przygotuję dla ciebie uwagi.",
+      "noWorkoutLogs": "Nie mogę jeszcze dać wskazówek o treningu, bo w ciągu ostatnich 7 dni nie ukończono żadnego treningu. Ukończ jeden, a przeanalizuję twoje ćwiczenia."
+    },
+    "errors": {
+      "aiNotConfigured": "Funkcje AI nie są skonfigurowane. Dodaj klucz API Gemini lub OpenAI w ustawieniach.",
+      "workoutGenerationFailed": "Przepraszam, nie udało się wygenerować planu treningowego. Spróbuj ponownie.",
+      "mealPlanGenerationFailed": "Przepraszam, nie udało się wygenerować planu posiłków. Spróbuj ponownie.",
+      "generalError": "Przepraszam, coś poszło nie tak. Spróbuj ponownie.",
+      "progressInsightFailed": "Nie udało się przeanalizować postępów. Spróbuj ponownie później.",
+      "nutritionInsightFailed": "Nie udało się sprawdzić odżywiania. Spróbuj ponownie później.",
+      "trackMealFailed": "Nie udało się oszacować makroskładników tego posiłku. Czy możesz opisać go dokładniej?",
+      "featureRequiresCloudAi": "Ta funkcja nie jest dostępna z Apple Intelligence. Przełącz się na OpenAI lub Gemini w ustawieniach.",
+      "filePickFailed": "Nie udało się wybrać pliku. Spróbuj ponownie.",
+      "creditsExhausted": "Wygląda na to, że skończyły się kredyty AI. Sprawdź klucz API albo rozliczenia w ustawieniach.",
+      "rateLimited": "Poczekaj chwilę przed wysłaniem kolejnej wiadomości.",
+      "replyInProgress": "Wciąż piszę inną odpowiedź. Poczekaj, aż się skończy.",
+      "toolRequestFailed": "Nie udało się przetworzyć tego żądania. Spróbuj ponownie.",
+      "conversationFallback": "Mogę pomóc w pytaniach o trening i odżywianie. Co chcesz wiedzieć?",
+      "requestProcessingFailed": "Nie udało się przetworzyć twojego żądania. Czy możesz przeformułować pytanie?"
+    },
+    "goToSettings": "Przejdź do ustawień",
+    "success": {
+      "workoutPlanGenerated": "Dla ciebie utworzono treningi: {{count}}! 💪 {{description}}",
+      "workoutPlanGeneratedWithName": "Dla ciebie utworzono plan {{planName}} z treningami: {{count}}! 💪 {{description}}",
+      "mealPlanGenerated": "Dla ciebie utworzono 3-dniowy plan posiłków z posiłkami: {{count}}! 🥗 {{description}}",
+      "trackMealSuccess": "Zapisano składniki twojego posiłku: {{count}}. Składniki: {{ingredients}}. Razem: {{calories}}.",
+      "trackMealReady": "Przeanalizowano posiłki: {{count}}: {{meals}} (razem {{calories}}). Stuknij posiłek, aby go przejrzeć i zapisać.",
+      "historyCleared": "Historia czatu wyczyszczona."
+    },
+    "aiInstructions": {
+      "parseWorkouts": "Przeanalizuj treningi i zwróć uporządkowaną listę.",
+      "parseNutrition": "Przeanalizuj dane o odżywianiu i zwróć uporządkowaną listę.",
+      "parseRetrospectiveNutrition": "Przeanalizuj posiłki i zwróć uporządkowaną listę.",
+      "generateWorkoutPlanWithHistory": "Wygeneruj plan treningowy na podstawie tej rozmowy.",
+      "generateWorkoutPlanDefault": "Wygeneruj podstawowy plan treningowy na tydzień (np. podział na 3 dni)."
+    },
+    "chatMessages": {
+      "title": "Wiadomości czatu",
+      "searchPlaceholder": "Szukaj wiadomości...",
+      "noMessages": "Brak wiadomości",
+      "noMessagesDesc": "Rozpocznij rozmowę z Loggy",
+      "endOfHistory": "Wszystkie wiadomości wczytane",
+      "messageOptions": "Opcje wiadomości",
+      "editMessage": "Edytuj wiadomość",
+      "editMessageDesc": "Zmień tekst wiadomości",
+      "deleteMessage": "Usuń wiadomość",
+      "deleteMessageDesc": "Trwale usuń tę wiadomość",
+      "createMessage": "Utwórz wiadomość",
+      "createMessageDesc": "Dodaj nową wiadomość do historii",
+      "createMessageFailed": "Nie udało się utworzyć wiadomości",
+      "sender": "Nadawca",
+      "senderUser": "Użytkownik",
+      "senderCoach": "Trener"
+    },
+    "menu": {
+      "title": "Opcje czatu",
+      "quickSettings": "Szybkie ustawienia",
+      "quickSettingsDesc": "Dostosuj myślenie AI, obsługę obrazów i historię wysyłaną do AI.",
+      "clearHistory": "Wyczyść historię czatu",
+      "clearHistoryDesc": "Usuń wszystkie wiadomości w tym kontekście rozmowy.",
+      "shareHistory": "Udostępnij historię czatu",
+      "shareHistoryDesc": "Wyeksportuj całą rozmowę jako zwykły tekst."
+    },
+    "quickSettings": {
+      "title": "Szybkie ustawienia",
+      "subtitle": "Dostosuj, jak Loggy myśli i jaki kontekst otrzymuje."
+    },
+    "confirmClear": {
+      "title": "Wyczyścić historię czatu?",
+      "message": "To trwale usunie wszystkie wiadomości w tym kontekście rozmowy. Nie da się tego cofnąć."
+    },
+    "share": {
+      "title": "Czat z Loggy",
+      "noMessages": "Nie ma jeszcze historii czatu do udostępnienia.",
+      "failed": "Nie udało się udostępnić historii czatu. Spróbuj ponownie.",
+      "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
+    },
+    "disclaimer": "AI może się mylić. Sprawdzaj ważne informacje.",
+    "message": {
+      "menuTitle": "Działania na wiadomości",
+      "copy": "Kopiuj",
+      "copyDesc": "Skopiuj tekst wiadomości do schowka",
+      "share": "Udostępnij",
+      "shareDesc": "Udostępnij tę wiadomość",
+      "delete": "Usuń",
+      "deleteDesc": "Usuń tę wiadomość z rozmowy",
+      "copied": "Skopiowano wiadomość do schowka",
+      "deleted": "Wiadomość usunięta"
+    },
+    "sendViaOpenAI": "Wyślij przez OpenAI",
+    "personas": {
+      "loggy": {
+        "name": "Loggy",
+        "description": "Przyjazny i motywujący. Domyślny."
+      },
+      "dracula": {
+        "name": "Dracula",
+        "description": "Stary hrabia z wiekową dyscypliną."
+      },
+      "cthulhu": {
+        "name": "Cthulhu",
+        "description": "Pradawny kosmiczny horror, który naprawdę chce, żebyś zjadł białko."
+      },
+      "sherlock": {
+        "name": "Sherlock Holmes",
+        "description": "Wnioskuje o twoich postępach z tropów w twoich zapisach."
+      },
+      "custom": {
+        "name": "Własny trener",
+        "description": "Napisz własnego trenera: imię, głos i awatar."
+      }
+    },
+    "personaPicker": {
+      "title": "Osobowość trenera",
+      "subtitle": "Wybierz, kim jest twój trener. Zmienia się tylko sposób mówienia; porady i zasady zostają te same.",
+      "editCustom": "Edytuj własnego trenera",
+      "onDeviceNote": "AI na urządzeniu zawsze używa Loggy. Przełącz się na AI w chmurze lub lokalne, aby wybrać innego trenera.",
+      "custom": {
+        "title": "Własny trener",
+        "nameLabel": "Imię",
+        "namePlaceholder": "np. Trener Atlas",
+        "voiceLabel": "Jak mówi",
+        "voicePlaceholder": "np. Spokojny sierżant, który szanuje wysiłek i nigdy nie pozwala mi opuścić dnia nóg.",
+        "voiceCount": "{{count}} / {{max}}",
+        "hint": "Twój opis jest wysyłany do AI razem z wiadomościami. Zmienia tylko ton, nie porady.",
+        "avatarPick": "Wybierz awatar",
+        "avatarChange": "Zmień awatar",
+        "avatarRemove": "Usuń awatar",
+        "errorUnsafe": "Ten tekst nie może zostać użyty. Spróbuj opisać głos prostszymi słowami.",
+        "errorImage": "Nie udało się wczytać tego obrazu."
+      }
+    }
+  }
+}

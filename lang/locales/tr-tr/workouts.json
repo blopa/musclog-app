@@ -1,0 +1,284 @@
+{
+  "workouts": {
+    "title": "Antrenmanlarım",
+    "filters": {
+      "all": "Tümü",
+      "strength": "Kuvvet",
+      "cardio": "Kardiyo",
+      "flexibility": "Esneklik",
+      "archived": "Arşivlenmiş"
+    },
+    "plans": {
+      "title": "Antrenman planları",
+      "unplanned": "Plansız",
+      "unscheduled": "Planlanmamış",
+      "defaultDayName": "Gün {{day}}",
+      "defaultAiPlanName": "Yapay zekâ antrenman planı",
+      "addToPlan": "Plana ekle",
+      "addToPlanDescription": "Bu antrenmanın hangi planlara dahil olacağını seç",
+      "createTitle": "Yeni antrenman planı",
+      "editTitle": "Antrenman planını düzenle",
+      "createDescription": "Antrenmanları haftalık ya da dönüşümlü bir programda grupla",
+      "editDescription": "Bu planın antrenmanlarını ve programını değiştir",
+      "deleteTitle": "Planı sil",
+      "deleteDescription": "Planı, antrenmanlarını silmeden sil",
+      "nameLabel": "Plan adı",
+      "namePlaceholder": "ör. Push Pull Legs",
+      "descriptionLabel": "Açıklama",
+      "descriptionPlaceholder": "Bu programın hedefini anlat",
+      "iconLabel": "Plan simgesi",
+      "membersLabel": "Bu plandaki antrenmanlar",
+      "selectorLabel": "Antrenman ekle ya da çıkar",
+      "membersEmpty": "Henüz antrenman yok. Bu plana eklemek için yukarıdaki bir antrenmanı işaretle.",
+      "removeMember": "Plandan çıkar",
+      "workoutCount": "{{count}} antrenman",
+      "cycleType": {
+        "label": "Program türü",
+        "weekly": "Haftalık",
+        "rotating": "Dönüşümlü"
+      },
+      "picker": {
+        "title": "Antrenman planlarını seç",
+        "description": "Planlar",
+        "create": "Yeni plan oluştur",
+        "exerciseCount": "{{count}} egzersiz"
+      },
+      "schedule": {
+        "clearTitle": "Dönüşümlü plana geçilsin mi?",
+        "clearMessage": "Bu plandaki gün atamaları silinecek. Geri dönersen geri gelmezler.",
+        "clearConfirm": "Geç ve günleri temizle"
+      },
+      "validation": {
+        "nameRequired": "Bir plan adı gir"
+      },
+      "saveSuccess": "Antrenman planı kaydedildi",
+      "saveError": "Antrenman planı kaydedilemedi",
+      "loadError": "Bu plan yüklenemedi",
+      "deleteSuccess": "Antrenman planı silindi",
+      "deleteError": "Antrenman planı silinemedi",
+      "deleteConfirmation": {
+        "title": "Antrenman planı silinsin mi?",
+        "message": "\"{{name}}\" silinsin mi? Antrenmanları silinmeyecek."
+      }
+    },
+    "archive": "Arşivle",
+    "archiveSuccess": "Antrenman başarıyla arşivlendi",
+    "archiveError": "Antrenman arşivlenemedi",
+    "duplicateSuccess": "Antrenman başarıyla çoğaltıldı",
+    "duplicateError": "Antrenman çoğaltılamadı",
+    "shareOpenLink": "Musclog'da aç:",
+    "delete": "Sil",
+    "deleteSuccess": "Antrenman başarıyla silindi",
+    "deleteError": "Antrenman silinemedi",
+    "deleteConfirmation": {
+      "title": "Antrenmanı sil",
+      "message": "\"{{name}}\" antrenmanını silmek istediğinden emin misin? Bu işlem geri alınamaz."
+    },
+    "searchPlaceholder": "Antrenmanlarda ara...",
+    "noSearchResults": "Antrenman bulunamadı",
+    "noSearchResultsDescription": "\"{{query}}\" ile eşleşen antrenman yok",
+    "noSearchResultsButtonLabel": "Aramayı temizle",
+    "exercises": "Egzersizler",
+    "addExercise": {
+      "title": "Egzersiz ekle",
+      "targetMuscle": "Hedef kas",
+      "searchPlaceholder": "{{muscle}} egzersizlerinde ara...",
+      "createSet": "Set oluştur",
+      "bodyweight": "Vücut ağırlığı",
+      "sets": "Set",
+      "reps": "Tekrar",
+      "weight": "Ağırlık",
+      "addToWorkout": "Antrenmana ekle",
+      "restTime": "Dinlenme süresi",
+      "seconds": "sn",
+      "setType": {
+        "label": "Set türü",
+        "normal": "Normal",
+        "warmup": "Isınma",
+        "failure": "Tükeniş",
+        "drop_set": "Düşen set",
+        "myo_rep": "Miyo-tekrar"
+      },
+      "notes": "Notlar",
+      "notesPlaceholder": "Makine ayarları, tutuş varyasyonları vb.",
+      "muscleGroups": {
+        "all": "Tümü",
+        "chest": "Göğüs",
+        "back": "Sırt",
+        "legs": "Bacak",
+        "arms": "Kol"
+      },
+      "searchPlaceholderAll": "Egzersizlerde ara...",
+      "noExercisesFound": "\"{{query}}\" ile eşleşen egzersiz bulunamadı",
+      "noExercisesAvailable": "{{muscle}} için egzersiz yok",
+      "exerciseDescription": "{{sets}} set × {{reps}} tekrar",
+      "exerciseDescriptionWithWeight": "{{sets}} set × {{reps}} tekrar @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} set × {{reps}} tekrar @"
+    },
+    "filterWorkouts": {
+      "title": "Antrenmanları filtrele",
+      "clear": "Temizle",
+      "clearFilters": "Filtreleri temizle",
+      "applyFilters": "Filtreleri uygula",
+      "workoutType": "Antrenman türü",
+      "targetMuscles": "Hedef kaslar",
+      "duration": "Süre",
+      "upTo": "{{duration}} kadar",
+      "workoutTypes": {
+        "strength": "Kuvvet",
+        "strengthDescription": "Ağırlıklar, vücut ağırlığı",
+        "cardio": "Kardiyo",
+        "cardioDescription": "Koşu, bisiklet, HIIT",
+        "flexibility": "Esneklik",
+        "flexibilityDescription": "Yoga, germe"
+      },
+      "muscleGroups": {
+        "fullBody": "Tüm vücut",
+        "chest": "Göğüs",
+        "back": "Sırt",
+        "legs": "Bacak",
+        "shoulders": "Omuz",
+        "arms": "Kol",
+        "core": "Gövde"
+      }
+    },
+    "createWorkoutOptions": {
+      "generateWithAi": "Yapay zekâyla oluştur",
+      "generateWithAiSubtitle": "Musclog, hedeflerine ve ekipmanına göre kişisel bir rutin oluştursun.",
+      "createFromEmptyTemplate": "Boş şablondan oluştur",
+      "createFromEmptyTemplateSubtitle": "Rutinini egzersiz egzersiz, sıfırdan tasarla.",
+      "browseTemplates": "Şablonlara göz at",
+      "browseTemplatesSubtitle": "Uzmanların hazırladığı programları ve topluluğun favorilerini keşfet.",
+      "externalAi": "ChatGPT ya da Claude ile oluştur",
+      "externalAiSubtitle": "Musclog dışında bir asistanla sohbet et, sonra yazdığı planı içe aktar."
+    },
+    "browseTemplatesModal": {
+      "title": "Şablonlara göz at",
+      "searchPlaceholder": "Uzman programlarında ara...",
+      "templateName": "Şablon {{number}}",
+      "tabs": {
+        "all": "Tümü",
+        "beginner": "Başlangıç",
+        "intermediate": "Orta",
+        "advanced": "İleri",
+        "strength": "Kuvvet",
+        "hypertrophy": "Hipertrofi",
+        "cardio": "Kardiyo"
+      },
+      "stats": {
+        "duration": "Süre",
+        "exercises": "Egzersiz",
+        "exercisesQty": "{{count}} egzersiz",
+        "exercisesQty_one": "{{count}} egzersiz",
+        "exercisesQty_other": "{{count}} egzersiz",
+        "sets": "Set",
+        "setsQty": "{{count}} set",
+        "setsQty_one": "{{count}} set",
+        "setsQty_other": "{{count}} set"
+      }
+    },
+    "manageWorkoutTemplateData": {
+      "deleteTemplateWarning": "Bu şablonu silmek istediğinden emin misin? Bu işlem geri alınamaz.",
+      "title": "Antrenman şablonu verilerini yönet",
+      "searchPlaceholder": "Şablonlarda ara...",
+      "noTemplates": "Henüz antrenman şablonu yok",
+      "noTemplatesDesc": "Burada görmek için antrenman şablonları oluştur",
+      "endOfHistory": "Şablon geçmişinin sonu",
+      "templateOptions": "Şablon seçenekleri",
+      "editTemplate": "Şablonu düzenle",
+      "editTemplateDesc": "Şablon adını ve egzersizlerini değiştir",
+      "duplicateTemplate": "Şablonu çoğalt",
+      "duplicateTemplateDesc": "Bu şablonun bir kopyasını oluştur",
+      "deleteTemplate": "Şablonu sil",
+      "deleteTemplateDesc": "Bu şablonu kalıcı olarak kaldır",
+      "noDescription": "Açıklama yok",
+      "unknownTemplate": "Bilinmeyen şablon"
+    },
+    "createTemplate": {
+      "title": "Antrenman şablonu oluştur",
+      "description": "Yeniden kullanılabilir bir antrenman rutini oluştur"
+    },
+    "createWorkoutOptionsModal": {
+      "header": "Antrenman oluştur",
+      "title": "Rutinini nasıl oluşturmak istersin?",
+      "subtitle": "Bugün rutinini nasıl oluşturmak istediğini seç."
+    },
+    "createFromTemplate": {
+      "title": "Şablondan antrenmanlar oluştur",
+      "message": "Bu, programdaki her gün için ayrı antrenman şablonları oluşturacak. Her antrenman, o gün için belirtilen egzersizleri, setleri ve tekrarları içerecek.",
+      "confirm": "Antrenmanları oluştur",
+      "cancel": "İptal",
+      "successMessage": "Antrenmanlar başarıyla oluşturuldu",
+      "successMessageWithPlan": "{{planName}} {{count}} antrenmanla oluşturuldu"
+    },
+    "externalPlan": {
+      "title": "ChatGPT ya da Claude ile oluştur",
+      "intro": "ChatGPT ya da Claude hedeflerini ve ekipmanını sorabilir, sonra planı burada açan bir bağlantı verir. Bir an Musclog'dan ayrılırsın; plan gözden geçirilene kadar hiçbir şey kaydedilmez.",
+      "steps": {
+        "one": "ChatGPT ya da Claude'u aç. Talimatlar senin için kopyalandı: sohbete yapıştır.",
+        "two": "Sorularını yanıtla. Sonunda \"Musclog'da aç\" bağlantısı ve plan JSON olarak gelir.",
+        "three": "Bu telefonda bağlantıya dokun. Musclog açılmazsa JSON'u (ya da bağlantıyı) yapıştır ya da dosyayı içe aktar."
+      },
+      "backSection": "2. adım: planı geri getir",
+      "importFile": "Plan dosyası içe aktar",
+      "noFile": "Bağlantı yok mu? JSON'u ya da bağlantıyı yapıştır ya da dosyayı içe aktar.",
+      "paste": {
+        "title": "Plan JSON'unu yapıştır",
+        "subtitle": "Asistanın verdiği JSON'u ya da bağlantıyı yapıştır.",
+        "placeholder": "JSON'u buraya yapıştır"
+      },
+      "errors": {
+        "newerVersion": "Bu plan Musclog'un daha yeni bir sürümü için yapıldı. Uygulamayı güncelle, sonra tekrar içe aktar.",
+        "notJson": "Bu bir plan dosyasına benzemiyor. Asistanın verdiği musclog-workout-plan.json dosyasını seç ya da JSON'unu yapıştır.",
+        "tooLarge": "Bu dosya bir plan dosyası olamayacak kadar büyük.",
+        "wrongSchema": "Bu bir Musclog plan dosyası değil. Asistanın oluşturduğu dosyayı seçtiğinden emin ol.",
+        "invalidPlan": "Bu dosyada kullanılabilir bir plan yok. Asistandan yeniden yazmasını iste.",
+        "noExercises": "Bu dosyadaki egzersizlerin hiçbiri okunamadı. Asistandan yeniden yazmasını iste."
+      },
+      "review": {
+        "intro": "Plan eklenmeden önce kontrol et. Sen oluşturana kadar hiçbir şey kaydedilmez.",
+        "weeklyOn": "Haftalık: {{days}}",
+        "rotating": "Antrenmanlarından sırayla geçer, sabit gün yok",
+        "setsReps": "{{sets}} × {{reps}}",
+        "setsRepsRange": "{{sets}} × {{min}}–{{max}}",
+        "unmatched_one": "{{count}} egzersiz Musclog'da yok ve dışarıda bırakılacak: {{names}}",
+        "unmatched_few": "{{count}} egzersiz Musclog'da yok ve dışarıda bırakılacak: {{names}}",
+        "unmatched_many": "{{count}} egzersiz Musclog'da yok ve dışarıda bırakılacak: {{names}}",
+        "unmatched_other": "{{count}} egzersiz Musclog'da yok ve dışarıda bırakılacak: {{names}}",
+        "skipped_one": "Dosyadaki {{count}} egzersiz okunamadı ve dışarıda bırakıldı",
+        "skipped_few": "Dosyadaki {{count}} egzersiz okunamadı ve dışarıda bırakıldı",
+        "skipped_many": "Dosyadaki {{count}} egzersiz okunamadı ve dışarıda bırakıldı",
+        "skipped_other": "Dosyadaki {{count}} egzersiz okunamadı ve dışarıda bırakıldı",
+        "create": "Planı oluştur",
+        "differentFile": "Başka bir dosya kullan"
+      },
+      "linkError": "Asistanından gelen bağlantı okunamadı. {{reason}} Bunun yerine sohbetteki JSON bloğunu yapıştır."
+    },
+    "aiGeneration": {
+      "title": "Yapay zekâyla oluştur",
+      "subtitle": "Hedeflerini anlat, kişisel bir antrenman planı oluşturalım",
+      "preferencesLabel": "Tercihlerin",
+      "preferencesPlaceholder": "Ör. Kas yapmak istiyorum, haftada 4 gün çalışabilirim, tam donanımlı bir salona erişimim var, orta seviye bir sporcuyum...",
+      "generateButton": "Plan oluştur",
+      "successMessageWithPlan": "{{planName}}, {{count}} antrenmanla hazır.",
+      "errorMessage": "Plan oluşturulamadı. Lütfen tekrar dene.",
+      "aiNotConfigured": "Yapay zekâ özellikleri ayarlanmadı. Ayarlar'a bir Gemini ya da OpenAI API anahtarı ekle."
+    },
+    "interruptedSession": {
+      "description": "Devam eden bir antrenmanın var.",
+      "resume": "Devam et",
+      "discard": "Vazgeç",
+      "discardConfirmTitle": "Antrenman silinsin mi?",
+      "discardConfirmMessage": "Bu, devam eden antrenmanını ve kaydedilmiş tüm setlerini kalıcı olarak siler.",
+      "discardConfirm": "Sil",
+      "discardCancel": "Tut",
+      "alreadyActive": "Zaten devam eden bir antrenmanın var. Önce devam et ya da vazgeç."
+    },
+    "unnamed": "İsimsiz",
+    "previewWorkout": "{{name}} önizle",
+    "history": {
+      "title": "Antrenman geçmişi",
+      "description": "Tamamladığın her seansı gör"
+    }
+  }
+}

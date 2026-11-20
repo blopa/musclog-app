@@ -1,0 +1,106 @@
+{
+  "workoutSettings": {
+    "title": "Trainingseinstellungen",
+    "gyms": {
+      "title": "Meine Studios",
+      "subtitle": "Beschreibe das Equipment, mit dem du trainierst. Der Scheibenrechner, die Gewichtsschritte und die Übungsvorschläge richten sich nach deinem aktiven Studio.",
+      "empty": "Noch kein Studio eingerichtet",
+      "emptyHint": "Lege eins an, um Scheibenrechnung und Gewichtsschritte passend zu deinem Equipment zu bekommen.",
+      "add": "Studio hinzufügen",
+      "active": "Aktiv",
+      "makeActive": "Dieses Studio verwenden",
+      "noGym": "Kein Studio verwenden",
+      "summary": "{{bar}} {{unit}} Stange · {{plates}} Scheibengrößen · {{equipment}} Equipment-Typen"
+    },
+    "editGym": {
+      "title": "Studio bearbeiten",
+      "createTitle": "Neues Studio",
+      "name": "Name",
+      "namePlaceholder": "z. B. Heimstudio",
+      "unit": "Gewichtseinheit",
+      "unitDefault": "Kontoeinstellung",
+      "unitHint": "Lege Pfund oder Kilogramm nur für dieses Studio fest, zum Beispiel wenn seine Scheiben in Pfund sind. Übungen mit eigener Einheit behalten sie.",
+      "bar": "Stangengewicht ({{unit}})",
+      "increment": "Kleinster Gewichtsschritt ({{unit}})",
+      "incrementHint": "Für Kurzhanteln, Maschinen und Seilzüge.",
+      "plates": "Scheiben",
+      "platesHint": "Wie viele von jeder Scheibe du besitzt. Scheiben werden paarweise aufgelegt.",
+      "fewerPlates": "Weniger {{weight}}-{{unit}}-Scheiben",
+      "morePlates": "Mehr {{weight}}-{{unit}}-Scheiben",
+      "removePlate": "{{weight}}-{{unit}}-Scheiben entfernen",
+      "plateWeight": "Neues Scheibengewicht ({{unit}})",
+      "addPlate": "Scheibe hinzufügen",
+      "resetPlates": "Standardscheiben",
+      "equipment": "Equipment",
+      "equipmentHint": "Übungen, die anderes Equipment brauchen, werden für dieses Studio nicht vorgeschlagen.",
+      "save": "Studio speichern",
+      "delete": "Studio löschen",
+      "deleteTitle": "Dieses Studio löschen?",
+      "deleteMessage": "Deine Trainings und dein Verlauf bleiben unberührt.",
+      "saveFailed": "Das Studio konnte nicht gespeichert werden. Bitte versuche es erneut."
+    },
+    "restrictions": {
+      "title": "Zu vermeidende Übungen",
+      "subtitle": "Diese werden bei Tausch und bei generierten Trainings nicht vorgeschlagen.",
+      "empty": "Hier ist nichts. Markiere eine Übung auf ihrem Bildschirm oder wenn du sie tauschst.",
+      "clear": "Wieder erlauben",
+      "until": "Bis {{date}}",
+      "healed": "Verheilt",
+      "limit": "Du kannst bis zu {{count}} Übungen meiden.",
+      "kind": {
+        "never": "Nie vorschlagen",
+        "injury": "Verletzung",
+        "dislike": "Abneigung"
+      },
+      "badge": {
+        "never": "Nie vorschlagen",
+        "injury": "Verletzung",
+        "dislike": "Ungern"
+      },
+      "expiry": {
+        "2w": "2 Wochen",
+        "4w": "1 Monat",
+        "12w": "3 Monate",
+        "open": "Bis ich es anders sage"
+      }
+    },
+    "plateCalculator": {
+      "title": "Scheibenrechner",
+      "subtitle": "Beladung {{weight}} {{unit}}",
+      "belowBar": "Das ist leichter als die Stange mit {{bar}} {{unit}}.",
+      "barOnly": "Nur die Stange, keine Scheiben nötig.",
+      "perSide": "Pro Seite",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Stange",
+      "exact": "Beladen: genau {{weight}} {{unit}}",
+      "closest": "Nächstmögliche Beladung: {{weight}} {{unit}} ({{short}} {{unit}} weniger)",
+      "defaultsHint": "Es werden Standardscheiben verwendet. Richte dein Studio unter Trainingseinstellungen ein, für genaue Ergebnisse.",
+      "open": "Scheiben für {{weight}} {{unit}}"
+    },
+    "restTimer": {
+      "title": "Pausentimer",
+      "subtitle": "Wie sich Pausen zwischen den Sätzen verhalten.",
+      "autoStart": "Automatisch starten",
+      "autoStartHint": "Nach dem Abschließen eines Satzes. Ausschalten, um Pausen selbst mit der Schaltfläche Pause starten zu beginnen.",
+      "haptics": "Haptischer Countdown",
+      "hapticsHint": "Ein Tick in den letzten drei Sekunden und ein Summen bei null.",
+      "defaultRest": "Standardpause",
+      "defaultRestHint": "Für Sätze, die keine eigene Pause angeben.",
+      "seconds": "Sek.",
+      "strongHaptics": "Stärkeres Feedback",
+      "strongHapticsHint": "Kräftigere Impulse und ein doppeltes Summen bei null.",
+      "alertSound": "Warnton",
+      "alertSoundHint": "Spielt einen Ton, wenn die Benachrichtigung „Pause vorbei“ eintrifft. Aus lässt nur die Vibration.",
+      "headsUp": "Vorwarnung vor Ende der Pause",
+      "headsUpOff": "Aus",
+      "headsUpSeconds": "{{seconds}} s",
+      "headsUpHint": "Der Timer wechselt zu „Mach dich bereit“ und summt einmal so lange vor Ende der Pause."
+    },
+    "autonomy": {
+      "title": "Wenn ein Training startet",
+      "subtitle": "Bestimme, wie viel von den heutigen Werten die App auswählt.",
+      "suggest": "Gewichte und Wdh. vorschlagen",
+      "suggestHint": "Jede Übung startet anhand des Verlaufs ihrer letzten Einheit: mehr Gewicht, mehr Wdh., eine Entlastung oder eine Wiederholung. Du siehst den Grund und kannst es rückgängig machen."
+    }
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "aiOnboarding": {
+    "chat": {
+      "greeting": "Merhaba! Musclog'u senin için kurmak adına birkaç kısa soru soracağım. İsteğe bağlı olan her şeyi atlayabilirsin ve kaydedilmeden önce her cevabı gözden geçireceksin. Selam ver ya da bana kendinden biraz bahset.",
+      "notSent": "Gönderilmedi",
+      "placeholder": "Cevabını yaz",
+      "review": "Cevaplarımı gözden geçir",
+      "send": "Gönder",
+      "stop": "Durdur",
+      "thinking": "Düşünüyor…",
+      "title": "Kurulum sohbeti"
+    },
+    "common": {
+      "backToGuided": "Bunun yerine kurulum formlarını kullan",
+      "editManually": "Bilgilerimi elle düzenle"
+    },
+    "external": {
+      "backSection": "2. adım: kurulumunla geri dön",
+      "errors": {
+        "newerVersion": "Bu kurulum Musclog'un daha yeni bir sürümü için hazırlanmış. Uygulamayı güncelle, sonra tekrar içe aktar.",
+        "notJson": "Bu bir kurulum dosyasına benzemiyor. Asistanın verdiği musclog-onboarding.json dosyasını seç ya da JSON'unu yapıştır.",
+        "tooLarge": "Bu dosya bir kurulum dosyası olamayacak kadar büyük.",
+        "wrongSchema": "Bu bir Musclog kurulum dosyası değil. Asistanın oluşturduğu dosyayı seçtiğinden emin ol."
+      },
+      "importFile": "Kurulum dosyasını içe aktar",
+      "intro": "ChatGPT veya Claude senin için soruları sorabilir, sonra geri getirmen için bir dosya verir. Bir an için Musclog'dan çıkarsın; burada gözden geçirene kadar hiçbir şey uygulanmaz.",
+      "noFile": "Dosyan yok mu? Bunun yerine JSON'u yapıştır ya da kurulum formlarına dön.",
+      "paste": {
+        "fromClipboard": "Panodan yapıştır",
+        "import": "İçe aktar",
+        "placeholder": "JSON'u buraya yapıştır",
+        "subtitle": "Asistanın verdiği JSON'u yapıştır.",
+        "title": "Kurulum JSON'unu yapıştır"
+      },
+      "steps": {
+        "one": "ChatGPT veya Claude'u aç. Talimatlar senin için kopyalanır: onları sohbete yapıştır.",
+        "three": "Musclog'a dön ve o dosyayı içe aktar ya da metnini yapıştır.",
+        "two": "Sorularını cevapla. Sonunda musclog-onboarding.json adlı bir dosya verecek."
+      },
+      "title": "ChatGPT veya Claude'u kullan"
+    },
+    "fields": {
+      "activityLevel": "Aktivite düzeyi",
+      "birthDate": "Doğum günü",
+      "bodyFat": "Vücut yağı",
+      "breakLength": "Ara süresi",
+      "fitnessGoal": "Fitness odağı",
+      "fullName": "Ad",
+      "gender": "Cinsiyet",
+      "height": "Boy",
+      "liftingExperience": "Antrenman deneyimi",
+      "trainingAutonomy": "Yük önerileri",
+      "trainingDays": "Haftada gün",
+      "trainingLocation": "Nerede antrenman yaparsın",
+      "units": "Birimler",
+      "weight": "Kilo",
+      "weightGoal": "Kilo hedefi"
+    },
+    "hub": {
+      "chatSubtitle": "Musclog içindeki bir sohbette birkaç soruyu cevapla.",
+      "chatTitle": "Yapay zekayla burada sohbet et",
+      "externalSubtitle": "Orada sohbet et, sonra kurulumunu bir dosya olarak geri getir.",
+      "externalTitle": "ChatGPT veya Claude'u kullan",
+      "haveFile": "Zaten bir kurulum dosyam var",
+      "intro": "Formları doldurmak yerine bir sohbette birkaç soruyu cevapla. Kaydedilmeden önce her şeyi kontrol edeceksin.",
+      "privacy": "Cevapların seçtiğin yapay zekaya gider. API anahtarın bu cihazda kalır.",
+      "profileIntro": "Yapay zekaya neyin değiştiğini anlat. Kaydedilmeden önce her değişikliği şu anki değerinin yanında göreceksin.",
+      "profileTitle": "Yapay zekayla güncelle",
+      "resumeBody": "Yarım kalmış bir kurulum sohbetin var.",
+      "resumeContinue": "Devam et",
+      "resumeStartOver": "Baştan başla",
+      "resumeTitle": "Kaldığın yerden devam et",
+      "title": "Yapay zekayla kur"
+    },
+    "provider": {
+      "checkKey": "Anahtarı kontrol et ve devam et",
+      "gatewayHint": "Hesap ya da anahtar gerekmez. Günlük bir limit vardır.",
+      "intro": "Sana soruları soracak yapay zekayı seç. Kendi anahtarın sonrasında da Musclog'da çalışmaya devam eder.",
+      "keyLabel": "API anahtarı",
+      "keyNetwork": "Anahtarı kontrol etmek için {{provider}} ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
+      "keyPlaceholder": "Anahtarını yapıştır",
+      "keyRejected": "{{provider}} bu anahtarı kabul etmedi. Tamamını kopyalayıp kopyalamadığını kontrol et.",
+      "keySaved": "Bir anahtar kayıtlı. Kullanmak ya da değiştirmek için dokun.",
+      "keyStorage": "Anahtar bu cihazda şifreli olarak saklanır ve Musclog'un yapay zeka özelliklerinde kullanılır. Musclog varsayılan olarak {{model}} kullanır; bunu Ayarlar'da, Yapay zeka bölümünden değiştirebilir ya da anahtarı kaldırabilirsin.",
+      "keyTitle": "{{provider}} anahtarın",
+      "names": {
+        "claude": "Claude",
+        "gateway": "Ücretsiz Musclog AI",
+        "gemini": "Google Gemini",
+        "local": "Yerel model",
+        "onDevice": "Apple Intelligence",
+        "openai": "OpenAI"
+      },
+      "openGemini": "Google AI Studio'yu aç",
+      "openClaude": "Claude anahtarları sayfasını aç",
+      "openOpenAi": "OpenAI anahtarları sayfasını aç",
+      "ownKey": "Kendi anahtarımı kullan",
+      "problem": "Bir sorun oldu. Tekrar dene ya da başka bir seçenek seç.",
+      "simpleHint": "Cihazında çalışır. Daha basit modeller bu sohbette zorlanabilir.",
+      "steps": {
+        "claude": {
+          "one": "Claude Console anahtarlar sayfasını aç ve oturum aç.",
+          "three": "Kopyala ve aşağıya yapıştır.",
+          "two": "Yeni bir API anahtarı oluştur. Hesabına kredi eklenmiş olmalı."
+        },
+        "gemini": {
+          "one": "Google AI Studio'yu aç ve oturum aç.",
+          "three": "Kopyala ve aşağıya yapıştır.",
+          "two": "Bir API anahtarı oluştur."
+        },
+        "openai": {
+          "one": "OpenAI anahtarlar sayfasını aç ve oturum aç.",
+          "three": "Kopyala ve aşağıya yapıştır.",
+          "two": "Yeni bir gizli anahtar oluştur. Hesabında faturalandırma ayarlanmış olmalı."
+        }
+      },
+      "title": "Yapay zekanı seç",
+      "useExternal": "Bunun yerine ChatGPT veya Claude kullan",
+      "useSaved": "Kayıtlı anahtarı kullan"
+    },
+    "recovery": {
+      "actions": {
+        "continueGuided": "Bunun yerine kurulum formlarını kullan",
+        "ownKey": "Kendi anahtarımı kullan",
+        "replaceKey": "Anahtarı değiştir",
+        "retry": "Tekrar dene",
+        "switchProvider": "Başka bir yapay zeka seç",
+        "useExternal": "ChatGPT veya Claude kullan"
+      },
+      "cancelled": {
+        "description": "Mesajın kutuya geri geldi.",
+        "title": "Durduruldu"
+      },
+      "credits": {
+        "description": "Sağlayıcı, hesabın kredisinin ya da kotasının bittiğini söylüyor. Kredi ekle ya da cevap almanın başka bir yolunu seç.",
+        "title": "Bu yapay zekanın kredisi kalmadı"
+      },
+      "gatewayLimit": {
+        "description": "Ücretsiz Musclog AI'ın günlük bir limiti var. Yarın tekrar dene, kendi anahtarını kullan ya da başka bir yol seç.",
+        "title": "Ücretsiz günlük limite ulaşıldı"
+      },
+      "invalidKey": {
+        "description": "Sağlayıcı bu anahtarı artık kabul etmiyor. Değiştir ya da cevap almanın başka bir yolunu seç.",
+        "title": "Anahtar reddedildi"
+      },
+      "malformed": {
+        "description": "Bu model Musclog'un kullanabileceği cevaplar vermiyor. Başka bir yapay zeka ya da başka bir yol seç.",
+        "title": "Bu yapay zekanın cevabı okunamadı"
+      },
+      "offline": {
+        "description": "Mesajın gönderilmedi. Bağlantını kontrol edip tekrar dene.",
+        "title": "Bağlantı yok"
+      },
+      "timeout": {
+        "description": "Yapay zeka zamanında cevap vermedi. Tekrar dene ya da başka birini seç.",
+        "title": "Çok uzun sürdü"
+      },
+      "unavailable": {
+        "description": "Kapatılmış ya da anahtarı kaldırılmış. Başka bir yapay zeka ya da başka bir yol seç.",
+        "title": "Bu yapay zeka kullanılamıyor"
+      },
+      "unknown": {
+        "description": "Yapay zeka cevap veremedi. Tekrar dene ya da başka bir yol seç.",
+        "title": "Bir şeyler ters gitti"
+      }
+    },
+    "review": {
+      "apply": "Uygula",
+      "applyFailedBody": "Hiçbir şey kaybolmadı. Cevapların hâlâ burada: tekrar dene.",
+      "applyFailedTitle": "Kurulumun kaydedilemedi",
+      "applyOnboarding": "Doğru görünüyor, devam et",
+      "applyProfile": "Değişiklikleri uygula",
+      "back": "Geri",
+      "currentValue": "Şimdi: {{value}}",
+      "errors": {
+        "invalid": "Bu değer geçerli değil.",
+        "outOfRange": "Bu değer izin verilen aralığın dışında."
+      },
+      "ignored": "Musclog bunları kullanmadığı için yok sayıldı: {{keys}}",
+      "intro": "Cevaplarını kontrol et. Değiştirmek için birine dokun. Devam edene kadar hiçbir şey kaydedilmez.",
+      "missing": "Hâlâ gerekli: {{fields}}",
+      "needed": "Gerekli",
+      "notSet": "Ayarlanmadı",
+      "notes": {
+        "comebackNotStarted": "Ara sonrası dönüş başlatılmadı. Bunu Geri Dönüş bölümünden başlatabilirsin.",
+        "daysNotApplied": "Haftada gün sayısı buradan kaydedilmez.",
+        "gymKept": "Zaten bir salonun var, bu yüzden olduğu gibi bırakıldı.",
+        "recalculationSkipped": "Profilinde eksik bir şey olduğu için hedeflerin yeniden hesaplanmadı."
+      },
+      "openComeback": "Geri Dönüş'ü aç",
+      "profileIntro": "Her cevap şu anki değerinin yanında gösterilir. Hangi değişikliklerin uygulanacağını seç.",
+      "recalculate": "Beslenme hedeflerimi de yeniden hesapla",
+      "recalculateHint": "Kaydedilmeden önce yeni hedefleri göreceksin. Eski hedeflerin geçmişinde kalır.",
+      "remove": "Kaldır",
+      "save": "Kaydet",
+      "sections": {
+        "aboutYou": "Hakkında",
+        "body": "Vücut",
+        "experience": "Deneyim",
+        "goals": "Hedefler",
+        "training": "Antrenman"
+      },
+      "skip": "Atla",
+      "title": "Kurulumunu gözden geçir",
+      "warnings": {
+        "comebackStartsAtMaintenance": "Ara sonrası dönüş yaptığın için ilk beslenme planın koruma kaloride başlar.",
+        "dobAgeMismatch": "Doğum tarihi ve yaş uyuşmuyor. Doğum tarihi kullanıldı.",
+        "unusualBodyMeasurements": "Boyun ve kilon birlikte alışılmadık görünüyor. Kontrol et.",
+        "weightGoalConflictsFocus": "Fitness odağın kilo verme, ama kilo hedefin kilo vermek değil."
+      }
+    }
+  }
+}

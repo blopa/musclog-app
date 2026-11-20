@@ -1,0 +1,15 @@
+{
+  "addMeal": {
+    "createMeal": "Créer un repas",
+    "createMealDesc": "Ajoute un nouveau repas à ton journal du jour",
+    "dynamicCreator": "Créateur de repas dynamique",
+    "dynamicCreatorDesc": "Compose un repas pas à pas en scannant ou en cherchant des aliments",
+    "generateMealAI": "Générer un repas avec l'IA",
+    "generateMealAIDesc": "Laisse l'IA te proposer un repas selon tes préférences",
+    "manageCategories": "Gérer les catégories",
+    "manageCategoriesDesc": "Organise les catégories de tes repas (petit-déjeuner, déjeuner, etc.)",
+    "importFromPhone": "Importer depuis un autre téléphone",
+    "importFromPhoneDesc": "Scanne un repas envoyé depuis un autre téléphone",
+    "title": "Ajouter un repas"
+  }
+}

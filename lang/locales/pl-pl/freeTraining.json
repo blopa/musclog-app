@@ -1,0 +1,31 @@
+{
+  "freeTraining": {
+    "workoutName": "Trening swobodny",
+    "blankWorkout": "Pusty trening",
+    "title": "Trening swobodny",
+    "titleSession": "Sesja",
+    "subtitle": "Układaj trening w trakcie. Bez szablonów, tylko postęp.",
+    "addFirstExercise": "Dodaj pierwsze ćwiczenie",
+    "tip": "Wskazówka: ćwiczenia możesz dodawać w każdej chwili.",
+    "startFreeTraining": "Zacznij trening swobodny",
+    "startFreeTrainingSubtitle": "Układaj trening w trakcie. Bez szablonów, tylko postęp.",
+    "duration": "Czas trwania",
+    "calories": "Kalorie",
+    "volume": "Objętość",
+    "inProgress": "W trakcie",
+    "addExercise": {
+      "title": "Dodaj ćwiczenie",
+      "numberOfSets": "Liczba serii",
+      "addToWorkout": "Dodaj do treningu",
+      "menuDescription": "Dodaj ćwiczenia i serie do tej sesji"
+    },
+    "exerciseComplete": {
+      "title": "Ćwiczenie ukończone",
+      "subtitle": "Ćwiczenie ukończone. Gotowy na więcej?",
+      "setsCompleted": "Ukończone serie: {{count}}",
+      "totalVolume": "Łączna objętość",
+      "addNextExercise": "Dodaj kolejne ćwiczenie",
+      "finishWorkout": "Zakończ trening"
+    }
+  }
+}

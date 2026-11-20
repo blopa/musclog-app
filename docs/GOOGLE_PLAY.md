@@ -93,11 +93,11 @@ from the public url plus `=s0`, hash-checked) so a fresh `pull` then `plan` show
 `npm run generate-banners` renders the promotional banner of every locale (`screenshots/banner/<locale>/banner.png`, 1920×905), and `npm run generate-banners:sync` writes each one as that locale's Play feature graphic, `metadata/<locale>/images/featureGraphic.png` (1024×500, no alpha; the banner is scaled to height and trimmed evenly at the sides, not stretched). Play keeps one feature graphic per language, so `scripts/play.sh plan` then shows an `image.upload` per locale and `up --with-images` publishes them; single images replace in place, so no clearing step is needed. Run `plan` or `check --with-images` first.
 
 Every text change covers all ten listing locales and must match what the app does. Five match the languages
-the app ships (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`). Five are listing-only for now (`de-DE`, `fr-FR`,
-`it-IT`, `pl-PL`, `tr-TR`): the app isn't translated into them yet, so each states, on its own line right
-after the opening paragraph, which languages the app is in. Update that line when the app gains a language,
-and once a listing-only locale ships in the app, it joins the screenshot and banner scripts too. The
-listing-only locales have no `images/` folder, so Play shows the default language's graphics. They don't
+the released app ships (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`). Five (`de-DE`, `fr-FR`, `it-IT`, `pl-PL`,
+`tr-TR`) are translated and bundled in the app but not in a released build yet, so each listing still states, on
+its own line right after the opening paragraph, which languages the app is in. When the release that ships them
+goes out, update that line in all ten listings and add the five locales to the screenshot and banner scripts.
+The five newer locales have no `images/` folder, so Play shows the default language's graphics. They don't
 exist on Play yet: create each once with `gplay listings update --locale <locale> ...` in an edit (see
 above), or `plan` fails with a 404.
 

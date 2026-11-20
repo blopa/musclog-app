@@ -1,0 +1,75 @@
+{
+  "editFitnessDetails": {
+    "title": "Modifier les détails sportifs",
+    "units": "Unités",
+    "imperial": "Impérial",
+    "metric": "Métrique",
+    "bodyStats": "Mensurations",
+    "gender": "Genre",
+    "male": "Homme",
+    "female": "Femme",
+    "other": "Autre",
+    "currentWeight": "Poids actuel",
+    "height": "Taille",
+    "fatPercentage": "Pourcentage de masse grasse",
+    "fatPercentageNotSet": "Non défini, touche pour saisir",
+    "goalsStrategy": "Objectifs et stratégie",
+    "fitnessGoal": "Objectif sportif",
+    "eatingPhase": "Phase alimentaire",
+    "cut": "Sèche",
+    "maintain": "Maintien",
+    "bulk": "Prise de masse",
+    "lifestyleContext": "Mode de vie",
+    "activityLevel": "Niveau d'activité",
+    "liftingExperience": "Expérience de musculation",
+    "saveChanges": "Enregistrer les modifications",
+    "selectGoal": "Choisir l'objectif sportif",
+    "selectGoalSubtitle": "Choisis l'objectif qui correspond le mieux à ton entraînement",
+    "selectActivity": "Choisir le niveau d'activité",
+    "selectActivitySubtitle": "Choisis selon ta journée entière, pas seulement les séances",
+    "activityLevelLabels": {
+      "sedentary": "Sédentaire",
+      "light": "Léger",
+      "moderate": "Modéré",
+      "active": "Actif",
+      "superActive": "Très actif"
+    },
+    "activityLevelDescriptions": {
+      "sedentary": "Travail de bureau ou assis, moins de 5 000 pas par jour, pas d'exercice régulier",
+      "light": "Travail de bureau ou surtout assis. Salle ou exercice léger 2 à 4 fois par semaine, mais peu de mouvement le reste du temps. La plupart des employés de bureau qui font du sport sont ici",
+      "moderate": "Debout une bonne partie de la journée (enseignant, vente, infirmier) ET exercice 3 à 5 fois par semaine, ou 7 500 à 10 000+ pas par jour",
+      "active": "Travail physique exigeant (artisanat, soins) ou entraînement intense quotidien avec beaucoup de mouvement toute la journée",
+      "superActive": "Travail physique très dur (construction, agriculture, armée) plus entraînement régulier, avec beaucoup de mouvement la plupart de la journée"
+    },
+    "weightGoal": "Ton objectif",
+    "weightGoalLabels": {
+      "lose": "Perdre du poids",
+      "maintain": "Maintenir",
+      "gain": "Prendre du muscle"
+    },
+    "fitnessGoalLabels": {
+      "hypertrophy": "Hypertrophie (prendre du muscle)",
+      "strength": "Force (soulever plus lourd)",
+      "endurance": "Endurance (résistance)",
+      "weightLoss": "Perte de poids (brûler du gras)",
+      "general": "Forme générale"
+    },
+    "fitnessGoalDescriptions": {
+      "hypertrophy": "Focus sur le volume et la définition musculaire",
+      "strength": "Focus sur la force maximale et la puissance",
+      "endurance": "Focus sur la condition cardiovasculaire",
+      "weightLoss": "Focus sur la perte de gras et le tonus",
+      "general": "Garder une bonne santé et un bien-être général"
+    },
+    "experienceLabels": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    },
+    "experienceDescriptions": {
+      "beginner": "Nouveau à l'entraînement régulier. Il apprend encore les mouvements et progresse vite d'une semaine à l'autre",
+      "intermediate": "À l'aise avec les mouvements de base. Entraînement régulier depuis 1 à 3 ans, la progression vient chaque mois plutôt que chaque semaine",
+      "advanced": "3 ans et plus d'entraînement structuré et régulier. La progression est lente et difficile, proche de ton potentiel de force"
+    }
+  }
+}

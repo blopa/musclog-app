@@ -1,0 +1,73 @@
+{
+  "websiteToolStrengthLevel": {
+    "title": "Calcolatore del livello di forza",
+    "intro": "Inserisci il tuo peso corporeo e una serie che hai fatto. Scopri quale livello di forza raggiunge il tuo massimale stimato a una ripetizione per quell'esercizio, e quanto serve per ogni livello con il tuo peso.",
+    "form": {
+      "sex": "Sesso",
+      "sexMale": "Uomo",
+      "sexFemale": "Donna",
+      "sexOther": "Altro",
+      "bodyWeight": "Peso corporeo",
+      "lift": "Esercizio",
+      "perHand": "per mano",
+      "weight": "Peso sollevato",
+      "reps": "Ripetizioni fatte",
+      "repsHint": "Numero intero, da 1 a 10",
+      "reserve": "Ripetizioni in riserva (facoltativo)",
+      "reserveHint": "Quante altre ripetizioni avresti potuto fare. Lascia vuoto se sei arrivato al cedimento."
+    },
+    "problems": {
+      "bodyWeight": "Inserisci il tuo peso corporeo come numero maggiore di 0.",
+      "weight": "Inserisci il peso sollevato come numero maggiore di 0.",
+      "reps": "Inserisci le ripetizioni come numero intero da 1 a 10.",
+      "repsTooHigh": "Le serie con più di 10 ripetizioni non danno un massimale a una ripetizione affidabile. Una serie lunga misura la resistenza, e ogni formula si allontana di più dalla realtà quanto più deve estrapolare ripetizioni. Usa una serie più pesante di 10 ripetizioni o meno.",
+      "reserve": "Le ripetizioni in riserva devono essere un numero intero da 0 a 9."
+    },
+    "results": {
+      "level": "Livello di forza",
+      "levels": {
+        "beginner": "Principiante",
+        "novice": "Novizio",
+        "intermediate": "Intermedio",
+        "advanced": "Avanzato",
+        "elite": "Élite"
+      },
+      "range": "da {{lower}} a {{upper}}",
+      "otherNote": "Mostrato sia sulla scala maschile sia su quella femminile, perché nessuna tabella singola si adatta.",
+      "estimate": "Massimale stimato a una ripetizione",
+      "nextLevel": "Per raggiungere {{level}}: un massimale stimato a una ripetizione di {{weight}} {{unit}}.",
+      "topLevel": "Questo esercizio è al livello più alto. Non esiste un livello sopra l'élite.",
+      "tableTitle": "Il massimale a una ripetizione richiesto da ogni livello con il tuo peso corporeo",
+      "tableLevel": "Livello",
+      "tableOne": "Massimale stimato a una ripetizione",
+      "tableMale": "Scala maschile",
+      "tableFemale": "Scala femminile",
+      "tableNote": "Ogni valore è il massimale stimato a una ripetizione per questo esercizio con il tuo peso corporeo."
+    },
+    "sections": [
+      {
+        "title": "Che cosa confronta il livello",
+        "body": [
+          "Un livello è il tuo massimale stimato a una ripetizione diviso il tuo peso corporeo, corretto per l'esercizio e per il sesso. Le persone più pesanti sollevano di più in totale, quindi il peso corporeo fa parte del confronto.",
+          "I livelli sono una regola empirica di Musclog, verificata con i risultati pubblici di powerlifting di OpenPowerlifting. Mostrano dove si colloca un esercizio su quella scala. Non ti confrontano con altre persone."
+        ]
+      },
+      {
+        "title": "Perché il sesso e l'esercizio cambiano i numeri",
+        "body": [
+          "Il riferimento per un esercizio dipende dalla regione del corpo coinvolta, e nei dati pubblici i risultati delle donne risultano più bassi rispetto al peso corporeo, quindi il livello di una donna usa un riferimento più basso per quella regione.",
+          "Scegli Altro se non vuoi la risposta su una sola scala. Vengono mostrate sia la scala maschile sia quella femminile, e viene indicato un intervallo quando le due danno gradi diversi."
+        ]
+      },
+      {
+        "title": "Esercizi con manubri",
+        "body": [
+          "Gli esercizi con manubri si valutano per mano, perché sia il riferimento sia il peso che registri sono per mano. Inserisci il peso di un solo manubrio, non della coppia."
+        ]
+      }
+    ],
+    "sources": {
+      "openpowerlifting": "OpenPowerlifting, risultati pubblici di powerlifting"
+    }
+  }
+}

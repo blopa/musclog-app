@@ -1,0 +1,58 @@
+{
+  "pastWorkoutHistory": {
+    "title": "Trainingsverlauf",
+    "searchPlaceholder": "Einheiten suchen …",
+    "noWorkoutsFound": "Keine Trainings gefunden, die zu deiner Suche passen.",
+    "noWorkoutHistory": "Noch kein Trainingsverlauf.",
+    "noWorkoutsInRange": "Keine Trainings in diesem Zeitraum. Versuche, den Filterbereich zu erweitern.",
+    "loadMore": "Mehr laden",
+    "loadingMore": "Wird geladen …",
+    "stats": {
+      "duration": "Dauer",
+      "volume": "Volumen",
+      "calories": "Kalorien",
+      "distance": "Strecke",
+      "pace": "Tempo"
+    },
+    "prBadge": {
+      "singular": "{{count}} PR",
+      "plural": "{{count}} PRs"
+    },
+    "filters": {
+      "title": "Trainings filtern",
+      "workoutType": "Trainingsart",
+      "minDuration": "Mind. Dauer",
+      "reset": "Zurücksetzen",
+      "applyFilters": "Filter anwenden",
+      "durationFormats": {
+        "zero": "0 Min.",
+        "minutes": "{{minutes}} Min.",
+        "minutesPlus": "{{minutes}}+ Min.",
+        "max": "120+ Min."
+      },
+      "workoutTypes": {
+        "all": "Alle Arten",
+        "strength": "Kraft",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "Zeitraum",
+        "30days": "Letzte 30 Tage",
+        "90days": "Letzte 90 Tage",
+        "allTime": "Gesamte Zeit"
+      },
+      "muscleGroups": {
+        "title": "Muskelgruppe (Mehrfachauswahl)",
+        "chest": "Brust",
+        "back": "Rücken",
+        "legs": "Beine",
+        "shoulders": "Schultern",
+        "arms": "Arme",
+        "core": "Rumpf",
+        "fullBody": "Ganzkörper"
+      }
+    }
+  }
+}

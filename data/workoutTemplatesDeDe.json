@@ -1,0 +1,70 @@
+[
+  {
+    "title": "5-Tage-Hypertrophie-Split"
+  },
+  {
+    "title": "Push Pull Legs (PPL)"
+  },
+  {
+    "title": "Oberkörper/Unterkörper-Split (4 Tage)"
+  },
+  {
+    "title": "Ganzkörper (3 Tage)"
+  },
+  {
+    "title": "Arnold-Split (6 Tage)"
+  },
+  {
+    "title": "Bro-Split (5 Tage)"
+  },
+  {
+    "title": "PHUL (Power Hypertrophy Upper Lower)"
+  },
+  {
+    "title": "Ganzkörper 2 Tage (A/B)"
+  },
+  {
+    "title": "3-Tage-Kraftaufbau"
+  },
+  {
+    "title": "Klassisch 3 Tage (Brust/Trizeps, Rücken/Bizeps, Beine/Schultern)"
+  },
+  {
+    "title": "Brolic-Training"
+  },
+  {
+    "title": "Kabel-Supersatz-Training",
+    "description": "Ein fünfteiliges Kabelprogramm mit Supersätzen für Oberkörper, Unterkörper und Gegenspieler. Grundübungen und Isolation bei 1–2 RIR halten; der letzte Isolationssatz darf 0–1 RIR erreichen. Steigere jede Übung unabhängig mit doppelter Steigerung.",
+    "dayNames": {
+      "1": "Oberkörper A",
+      "2": "Unterkörper A",
+      "3": "Arme",
+      "5": "Oberkörper B",
+      "6": "Unterkörper B"
+    }
+  },
+  {
+    "title": "Kurzes Ganzkörpertraining — Studio",
+    "description": "Zwei kurze Ganzkörpertrainings (A und B) am Studio-Equipment: etwa 30 Minuten, je 2 Sätze, bewusst leicht. Ein guter Wiedereinstieg.",
+    "dayNames": {
+      "1": "Training A",
+      "2": "Training B"
+    }
+  },
+  {
+    "title": "Kurzes Ganzkörpertraining — Zuhause",
+    "description": "Zwei kurze Ganzkörpertrainings (A und B) mit Kurzhanteln, einer Kettlebell und Bändern: etwa 30 Minuten, je 2 Sätze. Bewusst leicht.",
+    "dayNames": {
+      "1": "Training A",
+      "2": "Training B"
+    }
+  },
+  {
+    "title": "Kurzes Ganzkörpertraining — ohne Geräte",
+    "description": "Zwei kurze Ganzkörpertrainings (A und B) nur mit dem eigenen Körper und einem Band: etwa 30 Minuten, je 2 Sätze. Bewusst leicht.",
+    "dayNames": {
+      "1": "Training A",
+      "2": "Training B"
+    }
+  }
+]

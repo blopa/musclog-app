@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Scheibenrechner",
+    "intro": "Gib das Gewicht ein, das auf der Stange liegen soll, und erhalte die Scheiben für jede Seite, mit den Scheiben, die dein Studio wirklich hat, in kg oder lb, mit deiner eigenen Stange.",
+    "form": {
+      "target": "Zielgewicht",
+      "targetHint": "Die Gesamtlast auf der Stange, einschließlich Stange."
+    },
+    "problems": {
+      "target": "Gib das Zielgewicht als Zahl über 0 und höchstens {{max}} {{unit}} ein."
+    },
+    "results": {
+      "loaded": "Gewicht auf der Stange",
+      "exact": "Dein Studio kann dieses Gewicht genau aufladen.",
+      "inexact": "Dein Studio kann {{target}} nicht genau erzeugen. Das Schwerste, das es laden kann, ist {{below}}, und das nächste ladbare Gewicht ist {{nearest}}.",
+      "belowBar": "Das ist leichter als die Stange ({{bar}}). Wähle ein schwereres Ziel oder stelle im Studio eine leichtere Stange ein.",
+      "perSide": "Scheiben auf jeder Seite",
+      "noPlates": "Keine Scheiben nötig: Die Stange allein ist das Ziel.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Stange: {{bar}}. Scheiben werden paarweise geladen, eine auf jeder Seite."
+    },
+    "sections": [
+      {
+        "title": "Warum die schwerste Scheibe zuerst falsch ist",
+        "body": [
+          "Die übliche Methode nimmt die schwerste Scheibe, die passt, dann die nächste und so weiter. Das funktioniert, wenn ein Studio von jeder Scheibe genug hat. Bei begrenzten Scheiben kann es scheitern: Ein Studio mit je einem Paar 20, 15 und 10 kg braucht für 70 kg mit einer 20-kg-Stange 25 kg pro Seite. Nimmt man zuerst die 20, bleiben 5 kg, die keine Scheibe füllt. Die Lösung sind 15 und 10 kg, die das Studio laden kann.",
+          "Dieser Rechner probiert die Kombinationen der Scheiben, die du eingibst, und wählt die schwerste Last, die dein Ziel nicht überschreitet, mit möglichst wenigen Scheiben."
+        ]
+      },
+      {
+        "title": "Scheiben werden paarweise geladen",
+        "body": [
+          "Eine Stange nimmt Scheiben paarweise auf, eine auf jeder Seite, daher zählt jede Scheibe, die du eingibst, in Paaren. Eine ungerade Scheibe im Studio kann nicht zu einem Paar werden und bleibt außen vor. Gib ein, wie viele Paare du von jeder Scheibe hast."
+        ]
+      },
+      {
+        "title": "Stangengewicht und Einheiten",
+        "body": [
+          "Die Stange ist Teil der Gesamtlast, stelle also zuerst das Gewicht deiner Stange ein. Standard-Olympiastangen wiegen 20 kg (45 lb), manche sind leichter. Gib in kg oder lb ein: Die App speichert Kilogramm und rechnet um, damit die Zahlen zur Musclog-App passen."
+        ]
+      }
+    ]
+  }
+}

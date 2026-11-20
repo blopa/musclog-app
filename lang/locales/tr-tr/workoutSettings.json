@@ -1,0 +1,106 @@
+{
+  "workoutSettings": {
+    "title": "Antrenman ayarları",
+    "gyms": {
+      "title": "Salonlarım",
+      "subtitle": "Çalıştığın ekipmanı tanımla. Plaka hesaplayıcısı, ağırlık adımları ve egzersiz önerileri aktif salonunu izler.",
+      "empty": "Henüz salon kurulmadı",
+      "emptyHint": "Ekipmanına uyan plaka hesabı ve ağırlık adımları için bir tane ekle.",
+      "add": "Salon ekle",
+      "active": "Aktif",
+      "makeActive": "Bu salonu kullan",
+      "noGym": "Salon kullanma",
+      "summary": "{{bar}} {{unit}} bar · {{plates}} plaka boyutu · {{equipment}} ekipman türü"
+    },
+    "editGym": {
+      "title": "Salonu düzenle",
+      "createTitle": "Yeni salon",
+      "name": "Ad",
+      "namePlaceholder": "ör. Ev salonu",
+      "unit": "Ağırlık birimi",
+      "unitDefault": "Hesap ayarı",
+      "unitHint": "Yalnızca bu salon için pound ya da kilogram sabitle; örneğin plakaları pound ise. Kendi birimi olan egzersizler onu korur.",
+      "bar": "Bar ağırlığı ({{unit}})",
+      "increment": "En küçük ağırlık adımı ({{unit}})",
+      "incrementHint": "Dumbbell, makine ve kablolar için kullanılır.",
+      "plates": "Plakalar",
+      "platesHint": "Her plakadan kaç tane olduğu. Plakalar çift çift yüklenir.",
+      "fewerPlates": "{{weight}} {{unit}} plakalardan daha az",
+      "morePlates": "{{weight}} {{unit}} plakalardan daha fazla",
+      "removePlate": "{{weight}} {{unit}} plakaları kaldır",
+      "plateWeight": "Yeni plaka ağırlığı ({{unit}})",
+      "addPlate": "Plaka ekle",
+      "resetPlates": "Standart plakalar",
+      "equipment": "Ekipman",
+      "equipmentHint": "Başka ekipman gerektiren egzersizler bu salon için önerilmez.",
+      "save": "Salonu kaydet",
+      "delete": "Salonu sil",
+      "deleteTitle": "Bu salon silinsin mi?",
+      "deleteMessage": "Antrenmanların ve geçmişin etkilenmez.",
+      "saveFailed": "Salon kaydedilemedi. Lütfen tekrar dene."
+    },
+    "restrictions": {
+      "title": "Kaçınılacak egzersizler",
+      "subtitle": "Bunlar değiştirmelerde ya da oluşturulan antrenmanlarda önerilmez.",
+      "empty": "Burada bir şey yok. Egzersizi kendi ekranından ya da değiştirdiğinde işaretle.",
+      "clear": "Yeniden izin ver",
+      "until": "{{date}} tarihine kadar",
+      "healed": "İyileşti",
+      "limit": "En fazla {{count}} egzersizden kaçınabilirsin.",
+      "kind": {
+        "never": "Asla önerme",
+        "injury": "Sakatlık",
+        "dislike": "Sevmiyorum"
+      },
+      "badge": {
+        "never": "Asla önerme",
+        "injury": "Sakatlık",
+        "dislike": "Sevilmiyor"
+      },
+      "expiry": {
+        "2w": "2 hafta",
+        "4w": "1 ay",
+        "12w": "3 ay",
+        "open": "Ben değiştirene kadar"
+      }
+    },
+    "plateCalculator": {
+      "title": "Plaka hesaplayıcı",
+      "subtitle": "{{weight}} {{unit}} yükleniyor",
+      "belowBar": "Bu, {{bar}} {{unit}} barından hafif.",
+      "barOnly": "Yalnızca bar, plaka gerekmiyor.",
+      "perSide": "Her iki tarafta",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Bar",
+      "exact": "Yüklü: tam olarak {{weight}} {{unit}}",
+      "closest": "Yükleyebildiğin en yakın: {{weight}} {{unit}} ({{short}} {{unit}} eksik)",
+      "defaultsHint": "Standart plakalar kullanılıyor. Kesin sonuçlar için Antrenman Ayarları'ndan salonunu kur.",
+      "open": "{{weight}} {{unit}} için plakalar"
+    },
+    "restTimer": {
+      "title": "Dinlenme zamanlayıcısı",
+      "subtitle": "Setler arasında dinlenmelerin nasıl davrandığı.",
+      "autoStart": "Otomatik başlat",
+      "autoStartHint": "Bir seti tamamladıktan sonra. Dinlenmeleri Dinlenmeyi başlat düğmesiyle kendin başlatmak için kapat.",
+      "haptics": "Titreşimli geri sayım",
+      "hapticsHint": "Son üç saniyede bir tık, sıfırda bir titreşim.",
+      "defaultRest": "Varsayılan dinlenme",
+      "defaultRestHint": "Kendi dinlenme süresini belirtmeyen setler için kullanılır.",
+      "seconds": "sn",
+      "strongHaptics": "Güçlü titreşim",
+      "strongHapticsHint": "Daha sert dokunuşlar ve sıfırda çift titreşim.",
+      "alertSound": "Uyarı sesi",
+      "alertSoundHint": "Dinlenme bitti bildirimi geldiğinde ses çal. Kapalıysa yalnızca titreşim olur.",
+      "headsUp": "Dinlenme bitmeden uyarı",
+      "headsUpOff": "Kapalı",
+      "headsUpSeconds": "{{seconds}} sn",
+      "headsUpHint": "Dinlenme bitmeden bu kadar önce zamanlayıcı \"hazır ol\"a döner ve bir kez titrer."
+    },
+    "autonomy": {
+      "title": "Antrenman başladığında",
+      "subtitle": "Bugünkü sayıların ne kadarını uygulamanın seçeceğini belirle.",
+      "suggest": "Ağırlık ve tekrar öner",
+      "suggestHint": "Her egzersiz, son seansının nasıl geçtiğine göre başlar: daha fazla yük, daha fazla tekrar, yük azaltma ya da tekrar. Nedenini görürsün ve geri alabilirsin."
+    }
+  }
+}

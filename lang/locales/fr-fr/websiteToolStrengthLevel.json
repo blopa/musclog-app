@@ -1,0 +1,73 @@
+{
+  "websiteToolStrengthLevel": {
+    "title": "Calculateur de niveau de force",
+    "intro": "Saisis ton poids corporel et une série effectuée. Vois quel niveau de force correspond à ta répétition maximale estimée pour cet exercice, et ce que chaque niveau demande à ton poids corporel.",
+    "form": {
+      "sex": "Sexe",
+      "sexMale": "Homme",
+      "sexFemale": "Femme",
+      "sexOther": "Autre",
+      "bodyWeight": "Poids corporel",
+      "lift": "Exercice",
+      "perHand": "par main",
+      "weight": "Charge soulevée",
+      "reps": "Répétitions effectuées",
+      "repsHint": "Nombre entier, de 1 à 10",
+      "reserve": "Répétitions en réserve (facultatif)",
+      "reserveHint": "Combien de répétitions de plus tu aurais pu faire. Laisse vide si tu es allé jusqu'à l'échec."
+    },
+    "problems": {
+      "bodyWeight": "Saisis ton poids corporel sous forme de nombre supérieur à 0.",
+      "weight": "Saisis la charge soulevée sous forme de nombre supérieur à 0.",
+      "reps": "Saisis les répétitions sous forme de nombre entier de 1 à 10.",
+      "repsTooHigh": "Les séries de plus de 10 répétitions ne donnent pas une 1RM fiable. Une longue série mesure l'endurance, et chaque formule s'éloigne d'autant plus de la réalité qu'elle doit extrapoler un grand nombre de répétitions. Utilise une série plus lourde de 10 répétitions ou moins.",
+      "reserve": "Les répétitions en réserve doivent être un nombre entier de 0 à 9."
+    },
+    "results": {
+      "level": "Niveau de force",
+      "levels": {
+        "beginner": "Débutant",
+        "novice": "Novice",
+        "intermediate": "Intermédiaire",
+        "advanced": "Avancé",
+        "elite": "Élite"
+      },
+      "range": "De {{lower}} à {{upper}}",
+      "otherNote": "Affiché sur les échelles hommes et femmes, car aucun tableau unique ne convient.",
+      "estimate": "Répétition maximale estimée (1RM)",
+      "nextLevel": "Pour atteindre {{level}} : une 1RM estimée de {{weight}} {{unit}}.",
+      "topLevel": "Cet exercice est au niveau le plus haut. Il n'existe pas de niveau au-dessus d'élite.",
+      "tableTitle": "La répétition maximale que demande chaque niveau à ton poids corporel",
+      "tableLevel": "Niveau",
+      "tableOne": "Répétition maximale estimée",
+      "tableMale": "Échelle hommes",
+      "tableFemale": "Échelle femmes",
+      "tableNote": "Chaque valeur est la répétition maximale estimée pour cet exercice à ton poids corporel."
+    },
+    "sections": [
+      {
+        "title": "Ce que compare le niveau",
+        "body": [
+          "Un niveau correspond à ta répétition maximale estimée divisée par ton poids corporel, ajustée selon l'exercice et le sexe. Les personnes plus lourdes soulèvent davantage au total, donc le poids corporel fait partie de la comparaison.",
+          "Les niveaux sont une règle empirique de Musclog, vérifiée à partir des résultats publics de force de l'OpenPowerlifting. Ils indiquent où se situe un exercice sur cette échelle. Ils ne te classent pas par rapport aux autres."
+        ]
+      },
+      {
+        "title": "Pourquoi le sexe et l'exercice changent les chiffres",
+        "body": [
+          "La référence d'un exercice dépend de la zone du corps qu'il sollicite, et les résultats des femmes sont plus bas par rapport au poids corporel dans les données publiques : le niveau d'une femme utilise donc une référence plus basse pour cette zone.",
+          "Choisis Autre si tu ne veux pas que la réponse repose sur une seule échelle. Les échelles hommes et femmes sont alors toutes deux affichées, et une fourchette est donnée quand elles classent différemment."
+        ]
+      },
+      {
+        "title": "Exercices aux haltères",
+        "body": [
+          "Les exercices aux haltères sont notés par main, car la référence comme le poids que tu enregistres sont par main. Saisis le poids d'un seul haltère, pas celui de la paire."
+        ]
+      }
+    ],
+    "sources": {
+      "openpowerlifting": "OpenPowerlifting, résultats publics de force athlétique"
+    }
+  }
+}

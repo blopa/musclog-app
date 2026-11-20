@@ -1,0 +1,57 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Ücretsiz antrenman programları",
+      "intro": "Her antrenmanı, egzersizi, seti ve tekrarı eksiksiz yazılmış tam programlar. Burada okuyabilir ya da tek dokunuşla Musclog'da açıp antrenmana başlayabilirsin. Uygulamada açtığında başlangıç ağırlıkları kendi profilinden önerilir.",
+      "workouts_one": "{{count}} antrenman",
+      "workouts_few": "{{count}} antrenman",
+      "workouts_many": "{{count}} antrenman",
+      "workouts_other": "{{count}} antrenman",
+      "minutes": "antrenman başına yaklaşık {{minutes}} dk",
+      "exercisesLink": "Egzersiz kütüphanesine göz at"
+    },
+    "difficulty": {
+      "beginner": "Başlangıç",
+      "intermediate": "Orta",
+      "advanced": "İleri"
+    },
+    "detail": {
+      "allPrograms": "Tüm programlar",
+      "dayLabel": "{{n}}. gün",
+      "exercise": "Egzersiz",
+      "setsReps": "Set × tekrar",
+      "rest": "Dinlenme",
+      "restSeconds": "{{seconds}} sn",
+      "supersetGroup": "Süperset {{group}}",
+      "openTitle": "Bu programı Musclog'da aç",
+      "openBody": "Bu, programı uygulamada bir inceleme olarak açar; sen onaylayana kadar hiçbir şey kaydedilmez. Başlangıç ağırlıkları profilinden önerilir ve haftanın günlerini sen seçersin. Uygulamaya sahip değilsen, sonraki sayfada indirme bağlantıları var.",
+      "openButton": "Musclog'da aç",
+      "howTitle": "Nasıl uygulanır",
+      "how": [
+        "Antrenmanları sırayla yap ve döngüyü tekrarla. Antrenman günü başına bir antrenman en basit uygulama biçimidir; sıra, haftanın gününden daha önemlidir.",
+        "İyi formla kaldırabildiğin ve birkaç tekrar kala bitirebildiğin ağırlıklarla başla. Her sette tekrar aralığının üst sınırına ulaştığında, bir sonraki seferde ağırlık ekle.",
+        "Bu programlar genel örneklerdir, tıbbi tavsiye değildir. Bir sakatlığın ya da sağlık durumun varsa önce bir uzmana danış."
+      ],
+      "notFoundTitle": "Program bulunamadı",
+      "notFoundBody": "Bu adreste bir program yok.",
+      "metaTitle": "{{title}}: ücretsiz antrenman programı"
+    },
+    "summaries": {
+      "push-pull-legs": "Üç antrenman: itme (göğüs, omuz ve triceps), çekme (sırt ve biceps) ve bacak. Üçünü haftada bir kez yap ya da klasik altı günlük sürüm için ikişer kez tekrarla.",
+      "upper-lower-4-day": "Dört antrenman: iki üst vücut günü ve iki alt vücut günü. Dört günlük bir programda her kası haftada iki kez çalıştırır.",
+      "full-body-3-day": "Başlangıç seviyesi için üç tam vücut antrenmanı. Her birinde bir bacak hareketi, bir itiş, bir çekiş ve biraz kol çalışması var; böylece her kas haftada üç kez çalışılır.",
+      "phul": "Dört antrenman: iki üst, iki alt vücut. Her çiftin ilki düşük tekrarlı ağır bir güç günü, ikincisi ise yüksek tekrarlı bir hipertrofi günü.",
+      "5-day-hypertrophy-split": "Beş antrenman, her biri bir bölge: göğüs, sırt, omuz, bacak ve kol. Bir seansta kas başına daha fazla hacim, haftada kas başına bir yoğun seans.",
+      "arnold-split": "Arnold tarzında üç antrenman: göğüs ve sırt, omuz ve kol, sonra bacak. Program geleneksel olarak iki kez çalıştırılır; altı antrenman günü eder.",
+      "bro-split": "Beş antrenman, her biri tek bir kas grubu: göğüs, sırt, bacak, omuz ve kol. Her kas haftada bir odaklı seans alır.",
+      "2-day-full-body": "Yalnızca haftada iki kez antrenman yapabildiğin haftalar için iki tam vücut antrenmanı, A ve B. Dönüşümlü yap.",
+      "3-day-strength-builder": "Çömelme, bench press, deadlift ve sıra hareketlerinde 4 ila 8 tekrarlı ağır setler etrafında kurulmuş üç antrenman; ardından daha hafif yardımcı çalışmalar var.",
+      "classic-3-day-split": "Üç antrenman: göğüs ve triceps, sırt ve biceps, sonra bacak ve omuz. Üç günlük bir hafta için klasik bir bölünme.",
+      "brolic-workout": "Göğüs ve omuz odaklı iki üst vücut antrenmanı; bol itiş ve kelebek hareketi içerir. Buradaki çoğu programdan daha kısa.",
+      "cable-superset-workout": "Kablo egzersizlerinden oluşan, antagonist süperset'lerle eşleştirilmiş beş ileri antrenman (Üst A, Alt A, Kollar, Üst B, Alt B); her egzersiz için tekrar aralığı ve dinlenme süresi var.",
+      "short-full-body-gym": "Spor salonu makineleri ve serbest ağırlıklarla iki kısa tam vücut antrenmanı, A ve B: yaklaşık 30 dakika, set başına 2 set, bilerek kolay. Bir aradan sonra geri dönmek için iyi bir yol.",
+      "short-full-body-home": "Dambıllar, kettlebell ve direnç bantlarıyla iki kısa tam vücut antrenmanı, A ve B: yaklaşık 30 dakika, egzersiz başına 2 set, bilerek kolay.",
+      "short-full-body-no-equipment": "Yalnızca vücut ağırlığın ve bir direnç bandıyla iki kısa tam vücut antrenmanı, A ve B: yaklaşık 30 dakika, egzersiz başına 2 set, bilerek kolay."
+    }
+  }
+}

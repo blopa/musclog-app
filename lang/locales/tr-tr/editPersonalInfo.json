@@ -1,0 +1,18 @@
+{
+  "editPersonalInfo": {
+    "title": "Kişisel bilgileri düzenle",
+    "fullName": "Ad soyad",
+    "fullNamePlaceholder": "ör. Alex Johnson",
+    "emailAddress": "E-posta adresi",
+    "emailPlaceholder": "ör. alex@example.com",
+    "dateOfBirth": "Doğum tarihi",
+    "dateOfBirthPlaceholder": "GG/AA/YYYY",
+    "gender": "Cinsiyet",
+    "male": "Erkek",
+    "female": "Kadın",
+    "other": "Diğer",
+    "chooseAvatar": "Avatar seç",
+    "chooseColor": "Renk seç",
+    "saveChanges": "Değişiklikleri kaydet"
+  }
+}

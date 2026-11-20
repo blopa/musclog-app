@@ -1,0 +1,23 @@
+{
+  "exerciseTransition": {
+    "totalTime": "Tempo totale",
+    "completeSuffix": "completato",
+    "completedMessage": "Ottimo lavoro. Riprendi fiato.",
+    "upNext": "Prossimo",
+    "target": "Obiettivo",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
+    "sets": "Serie",
+    "reps": "Ripetizioni",
+    "rest": "Recupero",
+    "sec": "sec",
+    "equipment": "Attrezzatura",
+    "startNextExercise": "Inizia il prossimo esercizio",
+    "loadingNextExercise": "Caricamento del prossimo esercizio...",
+    "errorTitle": "Allenamento non trovato",
+    "errorDescription": "Impossibile caricare la schermata di transizione dell'esercizio. Riprova.",
+    "goBack": "Indietro",
+    "noWorkoutId": "Nessun ID allenamento fornito",
+    "loadFailed": "Caricamento dei dati dell'allenamento non riuscito"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Pourquoi ai-je reçu ceci ?",
+      "thisWorkout": "cette séance",
+      "setting": "Les rappels de séance sont activés, et {{workout}} est prévue pour {{day}}.",
+      "settingNoDay": "Les rappels de séance sont activés, et {{workout}} fait partie de ton programme.",
+      "fromPlan": "Ce jour vient d'un programme d'entraînement.",
+      "fromSchedule": "Ce jour vient du planning que tu as défini pour la séance.",
+      "timing": "Le rappel est réglé pour {{time}}, l'heure prévue.",
+      "timingLead": "Il arrive {{minutes}} minutes avant l'heure prévue, {{time}}.",
+      "pause": "Suspendre tous les rappels pendant {{days}} jours",
+      "paused": "Rappels suspendus pendant {{days}} jours.",
+      "turnOff": "Désactiver les rappels de séance",
+      "turnedOff": "Les rappels de séance sont désactivés.",
+      "settings": "Réglages des notifications",
+      "failed": "Impossible de modifier les rappels. Réessaie."
+    }
+  }
+}

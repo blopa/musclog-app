@@ -1,0 +1,83 @@
+{
+  "meals": {
+    "title": "I miei pasti",
+    "filters": {
+      "all": "Tutti",
+      "highProtein": "Ricco di proteine",
+      "breakfast": "Colazione",
+      "lunch": "Pranzo"
+    },
+    "tags": {
+      "highProtein": "Ricco di proteine",
+      "ketoFriendly": "Adatto alla keto",
+      "vegetarian": "Vegetariano",
+      "breakfast": "Colazione",
+      "lunch": "Pranzo",
+      "dinner": "Cena",
+      "snack": "Spuntino"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} pasto",
+      "mealCount_other": "{{count}} pasti",
+      "view": "Vedi",
+      "viewBreakfast": "Vedi colazione",
+      "viewLunch": "Vedi pranzo",
+      "viewDinner": "Vedi cena",
+      "viewSnack": "Vedi spuntino",
+      "tracked": "Registrato"
+    },
+    "untitledMeal": "Pasto senza nome",
+    "searchPlaceholder": "Cerca pasti...",
+    "loadingMeals": "Caricamento dei pasti...",
+    "noMealsFound": "Nessun pasto trovato",
+    "noMealsYet": "Nessun pasto ancora",
+    "noMealsMatch": "Nessun pasto corrisponde a \"{{query}}\"",
+    "createFirstMeal": "Crea il tuo primo pasto per iniziare",
+    "tryDifferentFilter": "Prova un filtro diverso",
+    "loadingMore": "Caricamento di altri...",
+    "loadMore": "Carica altri",
+    "customMeal": "Pasto personalizzato",
+    "createdByYou": "Creato da te",
+    "logMeal": "Registra pasto",
+    "mealType": "Tipo di pasto",
+    "history": {
+      "unknownMeal": "Pasto sconosciuto"
+    },
+    "deleteItem": {
+      "title": "Elimina elemento",
+      "message": "Sei sicuro di voler eliminare questo elemento?",
+      "cancel": "Annulla",
+      "delete": "Elimina"
+    },
+    "unknownFood": "Sconosciuto",
+    "generateAI": {
+      "title": "Genera pasti con l'IA",
+      "describeLabel": "Descrivi le tue preferenze",
+      "preferencesLabel": "Preferenze",
+      "placeholder": "es. Pasti ricchi di proteine per la crescita muscolare, preferisco pollo e riso, evita i latticini...",
+      "applyLabel": "Genera pasti",
+      "successMessage": "Pasto creato.",
+      "errorMessage": "Impossibile generare i pasti. Riprova.",
+      "aiNotConfigured": "Le funzioni IA non sono configurate. Aggiungi una chiave API di Gemini o OpenAI nelle Impostazioni.",
+      "generating": "Generazione dei pasti..."
+    },
+    "dynamicCreator": {
+      "title": "Creatore di pasti dinamico",
+      "saveMealTitle": "Salva pasto",
+      "noIngredients": "Ancora nessun ingrediente.\nTocca \"Aggiungi alimento\" per iniziare a comporre il pasto.",
+      "addFood": "Aggiungi alimento",
+      "finishAndSave": "Termina e salva",
+      "saveButton": "Salva pasto",
+      "totalNutrition": "Valori nutrizionali totali",
+      "ingredientsSummary_one": "{{count}} ingrediente",
+      "ingredientsSummary_other": "{{count}} ingredienti",
+      "mealNameLabel": "Nome del pasto",
+      "mealNamePlaceholder": "es. Bowl dopo l'allenamento",
+      "mealNameRequired": "Inserisci un nome per il pasto",
+      "descriptionLabel": "Descrizione (facoltativa)",
+      "descriptionPlaceholder": "es. Pasto ricco di proteine con pollo e riso",
+      "nutritionBasisLabel": "Base dei valori nutrizionali",
+      "savedSuccess": "Pasto salvato."
+    }
+  }
+}

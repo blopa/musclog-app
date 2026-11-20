@@ -6,7 +6,7 @@
  *
  * Usage:
  *   node scripts/generate-exercise-locales.js
- *   node scripts/generate-exercise-locales.js es nl pt ru
+ *   node scripts/generate-exercise-locales.js es nl pt ru de fr it pl tr
  *
  * The generated files contain copy only. `exerciseSlug` joins them to the structural
  * catalogue in `data/exercisesData.json`; names and descriptions come from
@@ -30,6 +30,11 @@ const TARGETS = {
   nl: 'exercisesNlNl.json',
   pt: 'exercisesPtBr.json',
   ru: 'exercisesRuRu.json',
+  de: 'exercisesDeDe.json',
+  fr: 'exercisesFrFr.json',
+  it: 'exercisesItIt.json',
+  pl: 'exercisesPlPl.json',
+  tr: 'exercisesTrTr.json',
 };
 
 function marker(markerIndex, field) {

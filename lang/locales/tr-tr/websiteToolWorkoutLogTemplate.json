@@ -1,0 +1,74 @@
+{
+  "websiteToolWorkoutLogTemplate": {
+    "title": "Ücretsiz yazdırılabilir antrenman günlüğü",
+    "intro": "Yazdırmak için bir antrenman günlüğü ya da bir bilgisayarda doldurmak için bir tablo indir. İkisi de ücretsiz, kayıt gerekmez. Tablo, Musclog uygulamasının içe aktarabildiği bir CSV olarak kaydedilir.",
+    "downloads": {
+      "title": "İndirmeler",
+      "pdfA4": "Yazdırılabilir günlük, A4",
+      "pdfA4Note": "PDF, 4 yatay sayfa. A4 kağıt için.",
+      "pdfLetter": "Yazdırılabilir günlük, ABD Letter",
+      "pdfLetterNote": "PDF, 4 yatay sayfa. ABD Letter kağıt için.",
+      "xlsx": "Tablo şablonu",
+      "xlsxNote": "Google E-Tablolar, Numbers ve LibreOffice'te de açılan Excel dosyası (.xlsx). Bir Günlük sayfası ve bir Beni oku sayfası var.",
+      "csv": "CSV şablonu",
+      "csvNote": "Aynı sütunlar düz metin olarak, herhangi bir tablo programı ya da uygulama için.",
+      "english": "Dosyalar, bu sayfa hangi dilde olursa olsun İngilizcedir."
+    },
+    "check": {
+      "title": "Doldurduğun CSV'yi kontrol et",
+      "intro": "Dosyanı seç ve Musclog'un ondan ne okuyacağını gör. Uygulamanın aynı okuyucusunu tarayıcında çalıştırır. Dosya yüklenmez.",
+      "file": "CSV dosyası",
+      "unitLabel": "Dosyandaki ağırlıklar şu birimde",
+      "kg": "kg",
+      "lb": "lb",
+      "result": "Musclog {{workouts}} ve {{sets}} okuyacak.",
+      "workoutCount_one": "{{formattedCount}} antrenman",
+      "workoutCount_few": "{{formattedCount}} antrenman",
+      "workoutCount_many": "{{formattedCount}} antrenman",
+      "workoutCount_other": "{{formattedCount}} antrenman",
+      "setCount_one": "{{formattedCount}} set",
+      "setCount_few": "{{formattedCount}} set",
+      "setCount_many": "{{formattedCount}} set",
+      "setCount_other": "{{formattedCount}} set",
+      "skipped_one": "{{formattedCount}} satır atlandı: eksik ya da gelecek bir tarih, egzersiz adı yok ya da hiçbir şey ölçülmemiş.",
+      "skipped_few": "{{formattedCount}} satır atlandı: eksik ya da gelecek bir tarih, egzersiz adı yok ya da hiçbir şey ölçülmemiş.",
+      "skipped_many": "{{formattedCount}} satır atlandı: eksik ya da gelecek bir tarih, egzersiz adı yok ya da hiçbir şey ölçülmemiş.",
+      "skipped_other": "{{formattedCount}} satır atlandı: eksik ya da gelecek bir tarih, egzersiz adı yok ya da hiçbir şey ölçülmemiş.",
+      "problems": {
+        "empty": "Dosya boş.",
+        "tooLarge": "Dosya burada kontrol edilemeyecek kadar büyük.",
+        "unreadable": "Bu bir antrenman günlüğü gibi görünmüyor. Şablonun başlık satırını olduğu gibi bırak.",
+        "noRows": "Dosyada bir başlık satırı var ama altında hiç set yok.",
+        "read": "Dosya okunamadı."
+      },
+      "exampleWarning": "İçe aktarmadan önce şablondaki örnek satırı sil; yoksa gerçek bir set gibi okunur."
+    },
+    "sections": [
+      {
+        "title": "Yazdırılabilir günlükte ne var",
+        "body": [
+          "Her sayfa bir antrenmandır. En üstte tarihi, antrenmanı, vücut ağırlığını ve kilo ile mi pound ile mi kaldırdığını yazarsın. Altında her biri beş setli on iki egzersiz satırı, bir ağırlık kutusu ve bir tekrar kutusu var; bir de bir setin nasıl hissettirdiğini ya da acıyan bir şeyi yazmak için bir Notlar sütunu var.",
+          "PDF dört sayfa içerir; yani tek bir baskı yaklaşık bir ya da iki haftayı kapsar. İhtiyacın kadar kopya yazdır. Sayfalar bir program taşımaz: satırlara neyin gireceğine sen karar verirsin."
+        ]
+      },
+      {
+        "title": "Tabloyu nasıl doldurursun",
+        "body": [
+          "Set başına bir satır yaz: tarih, antrenman adı, egzersiz, set numarası, ağırlık ve tekrar. RPE ve Notlar isteğe bağlıdır. Ağırlık, her zaman kullandığın birimde düz bir sayıdır. Zamanlı bir set için Tekrar'ı boş bırak. RPE 10, hiç tekrar kalmadığı bir set demektir; 9 bir tekrar bırakır, 8 iki bırakır.",
+          "Sütunlar Musclog'un içe aktarıcısının okuduğu düzeni izler, bu yüzden hiçbir şeyi dönüştürmen gerekmez. Günlük sayfasını bir CSV dosyası olarak kaydet, sonra uygulamada Ayarlar, sonra Yedeklemeler ve veriler, sonra Antrenmanları içe aktar'ı aç. Musclog egzersiz adlarını kendi kataloğuyla eşleştirir ve tek bir seansı kaydetmeden önce bir inceleme gösterir."
+        ]
+      },
+      {
+        "title": "Kağıt, tablo ya da uygulama",
+        "body": [
+          "Kağıt pil ve hesap gerektirmez ve bir seti yazmak birkaç saniye sürer. Yapamadığı şey senin için geriye bakmaktır: bugün ne kaldıracağına karar vermek için geçen haftanın sayfasını kendin okursun.",
+          "Bir tablo, yeterli formül kurarsan hacmini toplayabilir ve bir hareketi grafikleyebilir. Musclog bunu yapar ve bir sonraki ağırlığı son seansından, nedeni gösterilerek hesaplar; ama günlük yine de senindir. Ücretsiz, açık kaynaklı bir uygulamadır, verilerin cihazında kalır ve yukarıdaki tabloyu içine getirebilirsin."
+        ]
+      }
+    ],
+    "articles": {
+      "trackProgress": "Spor salonu ilerlemesi nasıl takip edilir: başlangıç rehberi",
+      "importHistory": "Antrenman geçmişini Strong, Hevy ya da FitNotes'tan taşı"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "notes": {
+    "title": "Notes",
+    "sections": {
+      "latest": "Récentes",
+      "earlier": "Plus anciennes"
+    },
+    "screenMenu": {
+      "title": "Notes",
+      "subtitle": "Note-le maintenant, saisis-le plus tard",
+      "create": "Créer une note",
+      "createDescription": "Note ce que tu as cuisiné ou mangé"
+    },
+    "noteMenu": {
+      "title": "Options de la note",
+      "edit": "Modifier",
+      "editDescription": "Modifier le titre ou le texte",
+      "duplicate": "Dupliquer",
+      "duplicateDescription": "La copier en haut de la liste",
+      "track": "Saisir ceci",
+      "trackDescription": "L'envoyer au coach pour saisir l'aliment",
+      "delete": "Supprimer",
+      "deleteDescription": "Supprimer cette note définitivement"
+    },
+    "form": {
+      "createTitle": "Nouvelle note",
+      "editTitle": "Modifier la note",
+      "titleLabel": "Titre (facultatif)",
+      "titlePlaceholder": "ex. préparation du déjeuner",
+      "bodyLabel": "Note",
+      "bodyPlaceholder": "ex. 70 g de brocoli, 120 g de blanc de poulet",
+      "bodyRequired": "Écris quelque chose avant d'enregistrer",
+      "submit": "Enregistrer la note"
+    },
+    "deleteConfirm": {
+      "title": "Supprimer la note ?",
+      "message": "Cette note sera supprimée définitivement. Cette action est irréversible.",
+      "confirm": "Supprimer"
+    },
+    "createSuccess": "Note enregistrée",
+    "createError": "Impossible d'enregistrer la note",
+    "updateSuccess": "Note mise à jour",
+    "updateError": "Impossible de mettre à jour la note",
+    "duplicateSuccess": "Note dupliquée",
+    "duplicateError": "Impossible de dupliquer la note",
+    "deleteSuccess": "Note supprimée",
+    "deleteError": "Impossible de supprimer la note"
+  }
+}

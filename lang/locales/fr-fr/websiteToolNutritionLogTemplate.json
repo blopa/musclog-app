@@ -1,0 +1,90 @@
+{
+  "websiteToolNutritionLogTemplate": {
+    "title": "Journal alimentaire imprimable gratuit",
+    "intro": "Télécharge un journal alimentaire à imprimer, en deux versions : l'une où tu écris les calories et macronutriments que tu as déjà calculés, et l'autre où tu recopies les valeurs pour 100 g de l'étiquette et fais les calculs toi-même. Il existe aussi un tableur qui fait les calculs à ta place. Tout est gratuit, sans inscription.",
+    "downloads": {
+      "title": "Téléchargements",
+      "versions": {
+        "ready": {
+          "title": "Macronutriments déjà calculés",
+          "body": "Une ligne par aliment : le repas, l'aliment, la quantité, puis les calories, les protéines, les glucides et les lipides pour cette quantité."
+        },
+        "per100": {
+          "title": "Pour 100 g, tu fais les calculs",
+          "body": "Recopie les valeurs pour 100 g de l'étiquette, note les grammes consommés et calcule ce que cette quantité contient."
+        },
+        "both": {
+          "title": "Tableur",
+          "body": "Les deux présentations en onglets, avec les calculs faits par des formules."
+        }
+      },
+      "readyA4": "Journal alimentaire, A4",
+      "readyA4Note": "PDF, 7 feuilles en paysage, une par jour. Pour papier A4.",
+      "readyLetter": "Journal alimentaire, US Letter",
+      "readyLetterNote": "PDF, 7 feuilles en paysage, une par jour. Pour papier US Letter.",
+      "per100A4": "Journal alimentaire pour 100 g, A4",
+      "per100A4Note": "PDF, 7 feuilles en paysage, une par jour. Pour papier A4.",
+      "per100Letter": "Journal alimentaire pour 100 g, US Letter",
+      "per100LetterNote": "PDF, 7 feuilles en paysage, une par jour. Pour papier US Letter.",
+      "xlsx": "Modèle de tableur",
+      "xlsxNote": "Fichier Excel (.xlsx) qui s'ouvre aussi dans Google Sheets, Numbers et LibreOffice. Un onglet Jour, un onglet Pour 100 g et un onglet Lisez-moi.",
+      "english": "Les fichiers sont en anglais, quelle que soit la langue de cette page."
+    },
+    "try": {
+      "title": "Essaie les calculs pour 100 g",
+      "intro": "Saisis ce que l'étiquette indique pour 100 g et le nombre de grammes consommés. C'est la même arithmétique que celle que demande la feuille pour 100 g. Rien de ce que tu saisis ne quitte ton navigateur.",
+      "kcal": "Calories pour 100 g",
+      "kcalHint": "Facultatif. Laisse vide pour l'estimer à partir des macronutriments.",
+      "protein": "Protéines pour 100 g",
+      "carbs": "Glucides pour 100 g",
+      "fat": "Lipides pour 100 g",
+      "grams": "Grammes consommés",
+      "formula": "Chaque valeur est le nombre pour 100 g multiplié par {{grams}} g, divisé par 100.",
+      "results": {
+        "kcal": "Calories consommées",
+        "kcalEstimated": "Estimées à partir des macronutriments : 4 kcal par gramme de protéines et de glucides, 9 par gramme de lipides.",
+        "protein": "Protéines consommées",
+        "carbs": "Glucides consommés",
+        "fat": "Lipides consommés"
+      },
+      "problems": {
+        "kcal": "Les calories pour 100 g doivent être un nombre entre 0 et 900.",
+        "protein": "Les protéines pour 100 g doivent être un nombre entre 0 et 100.",
+        "carbs": "Les glucides pour 100 g doivent être un nombre entre 0 et 100.",
+        "fat": "Les lipides pour 100 g doivent être un nombre entre 0 et 100.",
+        "grams": "Les grammes doivent être un nombre entre 0 et 5000.",
+        "macrosTooHigh": "Protéines, glucides et lipides réunis ne peuvent pas dépasser 100 g pour 100 g d'aliment. Vérifie les chiffres."
+      }
+    },
+    "sections": [
+      {
+        "title": "Ce qu'il y a dans le journal imprimable",
+        "body": [
+          "Chaque feuille correspond à une journée. En haut, tu notes la date, si c'était un jour d'entraînement ou de repos, ton poids corporel et la quantité d'eau bue. En dessous, douze lignes pour les aliments, une colonne Notes, et des cases Total, Objectif et Reste sous les calories et les macronutriments pour voir ce qu'il reste de la journée.",
+          "Le PDF comporte sept feuilles, une semaine par impression. Les feuilles n'ont ni objectifs ni plan alimentaire : tu écris tes propres objectifs dans la ligne Objectif."
+        ]
+      },
+      {
+        "title": "Quelle version imprimer",
+        "body": [
+          "Utilise la première version quand tu as déjà les chiffres de la quantité consommée : depuis une colonne par portion, un repas calculé plus tôt, ou une application alimentaire. Tu les écris directement dans la ligne.",
+          "Utilise la version pour 100 g quand tu n'as que la colonne pour 100 g de l'étiquette. Tu recopies ces valeurs, tu pèses ce que tu as mangé, et tu calcules chaque quantité : valeur pour 100 g × grammes consommés, divisé par 100. Pour 150 g d'un aliment contenant 12 g de protéines pour 100 g, cela fait 12 × 150 ÷ 100 = 18 g de protéines. C'est plus long, mais cela montre comment les chiffres sont construits."
+        ]
+      },
+      {
+        "title": "Comment utiliser le tableur",
+        "body": [
+          "L'onglet Jour sert aux chiffres que tu as déjà calculés. L'onglet Pour 100 g fait les calculs pour toi : saisis les valeurs de l'étiquette et les grammes consommés, et les colonnes de droite se remplissent. Les deux onglets additionnent la journée et indiquent ce qu'il reste de ton objectif.",
+          "Les calculs utilisent des formules simples, que tu peux lire ou modifier. Garde une copie du fichier par jour, ou ajoute un onglet pour chaque jour."
+        ]
+      },
+      {
+        "title": "Papier, tableur ou application",
+        "body": [
+          "Le papier ne nécessite ni pile ni compte, et faire les calculs à la main t'apprend ce que contiennent tes aliments. Il ne peut pas chercher l'aliment à ta place, scanner un code-barres ni tenir seul un total à jour.",
+          "Musclog le fait, et calcule les macronutriments pour la quantité consommée, pour que tu n'aies jamais à faire les calculs pour 100 g toi-même. C'est une application gratuite et open source, et tes données restent sur ton appareil."
+        ]
+      }
+    ]
+  }
+}

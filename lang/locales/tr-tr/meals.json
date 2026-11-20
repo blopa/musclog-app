@@ -1,0 +1,83 @@
+{
+  "meals": {
+    "title": "Öğünlerim",
+    "filters": {
+      "all": "Tümü",
+      "highProtein": "Yüksek protein",
+      "breakfast": "Kahvaltı",
+      "lunch": "Öğle yemeği"
+    },
+    "tags": {
+      "highProtein": "Yüksek protein",
+      "ketoFriendly": "Ketojenik uyumlu",
+      "vegetarian": "Vejetaryen",
+      "breakfast": "Kahvaltı",
+      "lunch": "Öğle yemeği",
+      "dinner": "Akşam yemeği",
+      "snack": "Atıştırmalık"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} öğün",
+      "mealCount_other": "{{count}} öğün",
+      "view": "Gör",
+      "viewBreakfast": "Kahvaltıyı gör",
+      "viewLunch": "Öğle yemeğini gör",
+      "viewDinner": "Akşam yemeğini gör",
+      "viewSnack": "Atıştırmalığı gör",
+      "tracked": "Kaydedildi"
+    },
+    "untitledMeal": "Adsız öğün",
+    "searchPlaceholder": "Öğün ara...",
+    "loadingMeals": "Öğünler yükleniyor...",
+    "noMealsFound": "Öğün bulunamadı",
+    "noMealsYet": "Henüz öğün yok",
+    "noMealsMatch": "\"{{query}}\" ile eşleşen öğün yok",
+    "createFirstMeal": "Başlamak için ilk öğününü oluştur",
+    "tryDifferentFilter": "Farklı bir filtre dene",
+    "loadingMore": "Daha fazlası yükleniyor...",
+    "loadMore": "Daha fazla yükle",
+    "customMeal": "Özel öğün",
+    "createdByYou": "Sen oluşturdun",
+    "logMeal": "Öğünü kaydet",
+    "mealType": "Öğün türü",
+    "history": {
+      "unknownMeal": "Bilinmeyen öğün"
+    },
+    "deleteItem": {
+      "title": "Öğeyi sil",
+      "message": "Bu öğeyi silmek istediğinden emin misin?",
+      "cancel": "Vazgeç",
+      "delete": "Sil"
+    },
+    "unknownFood": "Bilinmiyor",
+    "generateAI": {
+      "title": "Yapay zekâyla öğün oluştur",
+      "describeLabel": "Tercihlerini anlat",
+      "preferencesLabel": "Tercihler",
+      "placeholder": "ör. Kas geliştirmek için yüksek proteinli öğünler, tavuk ve pirinci severim, süt ürünlerinden kaçınırım...",
+      "applyLabel": "Öğün oluştur",
+      "successMessage": "Öğün oluşturuldu.",
+      "errorMessage": "Öğünler oluşturulamadı. Lütfen tekrar dene.",
+      "aiNotConfigured": "Yapay zekâ özellikleri ayarlanmamış. Lütfen Ayarlar'a bir Gemini ya da OpenAI API anahtarı ekle.",
+      "generating": "Öğünler oluşturuluyor..."
+    },
+    "dynamicCreator": {
+      "title": "Dinamik öğün oluşturucu",
+      "saveMealTitle": "Öğünü kaydet",
+      "noIngredients": "Henüz malzeme yok.\nÖğününü oluşturmaya başlamak için \"Besin ekle\"ye dokun.",
+      "addFood": "Besin ekle",
+      "finishAndSave": "Bitir ve kaydet",
+      "saveButton": "Öğünü kaydet",
+      "totalNutrition": "Toplam besin değerleri",
+      "ingredientsSummary_one": "{{count}} malzeme",
+      "ingredientsSummary_other": "{{count}} malzeme",
+      "mealNameLabel": "Öğün adı",
+      "mealNamePlaceholder": "ör. Antrenman sonrası kase",
+      "mealNameRequired": "Lütfen bir öğün adı gir",
+      "descriptionLabel": "Açıklama (isteğe bağlı)",
+      "descriptionPlaceholder": "ör. Tavuk ve pirinçli yüksek proteinli öğün",
+      "nutritionBasisLabel": "Besin değeri temeli",
+      "savedSuccess": "Öğün kaydedildi."
+    }
+  }
+}

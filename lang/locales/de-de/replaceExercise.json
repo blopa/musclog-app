@@ -1,0 +1,58 @@
+{
+  "replaceExercise": {
+    "title": "Übung ersetzen",
+    "replace": "Ersetzen",
+    "searchPlaceholder": "Übungen suchen …",
+    "selectExercise": "Übung auswählen",
+    "loadMore": "Mehr laden",
+    "loadingMore": "Wird geladen…",
+    "noExercisesMatch": "Keine Übungen gefunden",
+    "families": {
+      "all": "Alle",
+      "torso": "Oberkörper",
+      "arms": "Arme",
+      "legs": "Beine",
+      "core": "Rumpf",
+      "other": "Sonstige"
+    },
+    "suggested": "Für dich vorgeschlagen",
+    "disliked": "Unbeliebt",
+    "hiddenHint": "Übungen, die du meidest oder die dein Studio nicht bieten kann, sind ausgeblendet.",
+    "back": "Zurück",
+    "swapped": "{{from}} gegen {{to}} getauscht",
+    "reason": {
+      "title": "Warum tauschen?",
+      "subtitle": "Ersetzen durch {{name}}",
+      "question": "Was ist der Grund?",
+      "options": {
+        "equipment_unavailable": "Gerät nicht verfügbar",
+        "pain": "Schmerzen oder Beschwerden",
+        "too_hard": "Zu schwer",
+        "too_easy": "Zu leicht",
+        "dislike": "Mag ich nicht",
+        "machine_occupied": "Gerät belegt",
+        "just_today": "Nur für heute"
+      },
+      "descriptions": {
+        "equipment_unavailable": "Das Gerät oder die Gewichte sind nicht da",
+        "pain": "Etwas tut weh oder fühlt sich falsch an",
+        "too_hard": "Zu schwer oder zu anspruchsvoll",
+        "too_easy": "Nicht fordernd genug",
+        "dislike": "Einfach nichts für mich",
+        "machine_occupied": "Jemand anderes benutzt es",
+        "just_today": "Nur diese Einheit"
+      },
+      "remember": {
+        "injury": "{{name}} vorerst nicht mehr vorschlagen",
+        "dislike": "{{name}} nicht mehr vorschlagen"
+      },
+      "rememberHint": {
+        "injury": "Die Übung bleibt bei Tauschvorschlägen und generierten Trainings außen vor, bis sie verheilt ist.",
+        "dislike": "Sie wird ganz unten eingeordnet und nie als erster Vorschlag gezeigt."
+      },
+      "removeEquipment": "{{equipment}} ist nicht in {{gym}} verfügbar",
+      "removeEquipmentHint": "Entferne es aus diesem Studio, damit Übungen, die es brauchen, nicht vorgeschlagen werden."
+    },
+    "addReason": "Grund hinzufügen"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "healthConnect": {
+    "initializeFirst": "Lütfen önce Health Connect'i başlat",
+    "openSettings": "Ayarları aç",
+    "permissionsDenied": "Health Connect izinleri reddedildi",
+    "workoutCaloriesNote": "Kalori: {{calories}}",
+    "workoutVolumeNote": "Hacim: {{volume}} {{unit}}",
+    "repsWeightFormat": "{{reps}}×{{weight}} {{unit}}"
+  }
+}

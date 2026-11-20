@@ -1,0 +1,83 @@
+{
+  "meals": {
+    "title": "Mes repas",
+    "filters": {
+      "all": "Tous",
+      "highProtein": "Riche en protéines",
+      "breakfast": "Petit-déjeuner",
+      "lunch": "Déjeuner"
+    },
+    "tags": {
+      "highProtein": "Riche en protéines",
+      "ketoFriendly": "Compatible keto",
+      "vegetarian": "Végétarien",
+      "breakfast": "Petit-déjeuner",
+      "lunch": "Déjeuner",
+      "dinner": "Dîner",
+      "snack": "Collation"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} repas",
+      "mealCount_other": "{{count}} repas",
+      "view": "Voir",
+      "viewBreakfast": "Voir le petit-déjeuner",
+      "viewLunch": "Voir le déjeuner",
+      "viewDinner": "Voir le dîner",
+      "viewSnack": "Voir la collation",
+      "tracked": "Saisi"
+    },
+    "untitledMeal": "Repas sans nom",
+    "searchPlaceholder": "Rechercher des repas...",
+    "loadingMeals": "Chargement des repas...",
+    "noMealsFound": "Aucun repas trouvé",
+    "noMealsYet": "Aucun repas pour l'instant",
+    "noMealsMatch": "Aucun repas ne correspond à « {{query}} »",
+    "createFirstMeal": "Crée ton premier repas pour commencer",
+    "tryDifferentFilter": "Essaie un autre filtre",
+    "loadingMore": "Chargement...",
+    "loadMore": "Charger plus",
+    "customMeal": "Repas personnalisé",
+    "createdByYou": "Créé par toi",
+    "logMeal": "Saisir le repas",
+    "mealType": "Type de repas",
+    "history": {
+      "unknownMeal": "Repas inconnu"
+    },
+    "deleteItem": {
+      "title": "Supprimer l'élément",
+      "message": "Supprimer cet élément ?",
+      "cancel": "Annuler",
+      "delete": "Supprimer"
+    },
+    "unknownFood": "Inconnu",
+    "generateAI": {
+      "title": "Générer des repas avec l'IA",
+      "describeLabel": "Décris tes préférences",
+      "preferencesLabel": "Préférences",
+      "placeholder": "ex. repas riches en protéines pour la prise de muscle, je préfère le poulet et le riz, sans produits laitiers...",
+      "applyLabel": "Générer des repas",
+      "successMessage": "Repas créé.",
+      "errorMessage": "Impossible de générer les repas. Réessaie.",
+      "aiNotConfigured": "Les fonctions IA ne sont pas configurées. Ajoute une clé API Gemini ou OpenAI dans les Réglages.",
+      "generating": "Génération des repas..."
+    },
+    "dynamicCreator": {
+      "title": "Créateur de repas dynamique",
+      "saveMealTitle": "Enregistrer le repas",
+      "noIngredients": "Aucun ingrédient pour l'instant.\nAppuie sur « Ajouter un aliment » pour commencer à composer ton repas.",
+      "addFood": "Ajouter un aliment",
+      "finishAndSave": "Terminer et enregistrer",
+      "saveButton": "Enregistrer le repas",
+      "totalNutrition": "Nutrition totale",
+      "ingredientsSummary_one": "{{count}} ingrédient",
+      "ingredientsSummary_other": "{{count}} ingrédients",
+      "mealNameLabel": "Nom du repas",
+      "mealNamePlaceholder": "ex. bol après séance",
+      "mealNameRequired": "Saisis un nom de repas",
+      "descriptionLabel": "Description (facultatif)",
+      "descriptionPlaceholder": "ex. repas riche en protéines avec poulet et riz",
+      "nutritionBasisLabel": "Base nutritionnelle",
+      "savedSuccess": "Repas enregistré."
+    }
+  }
+}

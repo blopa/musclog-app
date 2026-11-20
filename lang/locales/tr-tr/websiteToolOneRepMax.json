@@ -1,0 +1,54 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "Bir tekrarlık maksimum hesaplayıcısı",
+    "intro": "Yaptığın bir seti gir; tahmini bir tekrarlık maksimum, tekrar rezervi ve bunun her yüzdesindeki ağırlıkların tablosunu al.",
+    "form": {
+      "weight": "Kaldırılan ağırlık",
+      "reps": "Yapılan tekrar",
+      "repsHint": "Tam sayı, 1 ile 10 arası",
+      "reserve": "Tekrar rezervi (isteğe bağlı)",
+      "reserveHint": "Kaç tekrar daha yapabilirdin. Tükenmeye kadar gittiysen boş bırak."
+    },
+    "problems": {
+      "weight": "Kaldırdığın ağırlığı 0'dan büyük bir sayı olarak gir.",
+      "reps": "Tekrarı 1 ile 10 arasında tam bir sayı olarak gir.",
+      "repsTooHigh": "10 tekrardan fazla setler güvenilir bir tekrarlık maksimum vermez. Uzun bir set dayanıklılığı ölçer ve her formül, ekstrapole etmesi gereken tekrar sayısı arttıkça gerçeğten daha çok sapar. 10 ya da daha az tekrarlık daha ağır bir set kullan.",
+      "reserve": "Tekrar rezervi 0 ile 9 arasında tam bir sayı olmalı."
+    },
+    "results": {
+      "estimate": "Tahmini bir tekrarlık maksimum",
+      "range": "Tekil formüller {{low}} ile {{high}} {{unit}} arasında değişir. Tahmin, bunların ortalamasıdır.",
+      "tableTitle": "Bir tekrarlık maksimumunun her yüzdesindeki ağırlık",
+      "percent": "% 1RM",
+      "weight": "Ağırlık",
+      "reps": "Tükenmeye kadar tekrar",
+      "byFormula": "Her formül kendi başına",
+      "extrapolatedNote": "* Ekstrapole edilmiş. {{max}} tekrarın üzerinde formüller, uygulamanın bir set için güvendiği aralığın ötesine uzatılır; bu yüzden bu satırları yalnızca kaba bir rehber olarak oku."
+    },
+    "sections": [
+      {
+        "title": "Tahmin nasıl yapılır",
+        "body": [
+          "Hesaplayıcı yedi yayımlanmış formülün ortalamasını alır: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor ve Wathen. Ortalama almak, tek bir formülün tuhaflıklarını yumuşatır ve sonuç, Musclog uygulamasının kaydedilmiş bir set için gösterdiği sayının aynısıdır.",
+          "Yaptığın tekrarlara tekrar rezervi eklenir. Rezervde iki tekrarla beş tekrar, yedi tekrar tükenmeye kadar sayılır; çünkü set limitinden o kadar uzaktı."
+        ]
+      },
+      {
+        "title": "10 tekrardan fazla setlere neden güvenilmez",
+        "body": [
+          "Bir tekrarlık maksimum formülleri düşük tekrarlı setlerde en iyi çalışır. Onları ne kadar uzatırsan o kadar sapar ve 15 tekrarlık bir set çoğunlukla senin dayanıklılığını söyler, en üst kuvvetini değil. Uygulama bu setleri kuvvet seviyeleri ve hedefler için yok sayar; bu sayfa da aynısını yapar."
+        ]
+      },
+      {
+        "title": "Tabloyu nasıl kullanırsın",
+        "body": [
+          "Her satır, tahmini bir tekrarlık maksimumun bir yüzdesindeki bir ağırlıktır ve aynı formüllerin o ağırlıkta tahmin ettiği tükenmeye kadar tekrarla birlikte gelir. İnsanlar çok değişir, bu yüzden sayıları bir başlangıç noktası olarak gör ve barın gerçekten nasıl hareket ettiğine göre ayarla."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo ve ark. (2024), Maximal number of repetitions at percentages of the one repetition maximum (Sports Medicine)",
+      "zourdos": "Zourdos ve ark. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "bleWorkoutData": {
+    "sectionTitle": "Dane z czujników",
+    "title": "Pliki treningów BLE",
+    "subtitle": "Zarządzaj nagraniami ruchu z czujników z twoich serii",
+    "modalTitle": "Pliki treningów BLE",
+    "noFiles": "Brak nagrań z czujników",
+    "noFilesHint": "Zacznij śledzić serię podczas treningu, aby utworzyć nagrania",
+    "shareAll": "Udostępnij wszystkie",
+    "deleteAll": "Usuń wszystkie",
+    "deleteAllConfirmTitle": "Usuń wszystkie nagrania",
+    "deleteAllConfirmMessage": "To trwale usunie wszystkie nagrania ({{count}}).",
+    "refresh": "Odśwież",
+    "share": "Udostępnij",
+    "delete": "Usuń",
+    "deleteConfirmTitle": "Usuń nagranie",
+    "deleteConfirmMessage": "To trwale usunie nagranie dla: {{name}}.",
+    "samples": "Próbki: {{count}}",
+    "setLabel": "Seria {{number}}"
+  }
+}

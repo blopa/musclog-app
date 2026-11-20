@@ -1,0 +1,242 @@
+{
+  "whatsNew": {
+    "title": "Nouveautés",
+    "intro": {
+      "inside": "Ce qu'il y a dans cette visite",
+      "title": "Fais de Musclog le tien",
+      "description": "Quelques éléments ont changé. Jette un œil rapide et choisis ce qui te convient. Les changements s'enregistrent dès que tu tapes ; tu peux revoir cette visite dans les Réglages.",
+      "truncated": "Nous avons limité cette visite aux points forts les plus récents."
+    },
+    "next": "Suivant",
+    "back": "Retour",
+    "done": "Terminé",
+    "skip": "Passer pour l'instant",
+    "pageOf": "Page {{current}} sur {{total}}",
+    "saveFailed": "Impossible d'enregistrer ce choix. Réessaie.",
+    "loadFailed": "Impossible de charger ce choix.",
+    "dismissFailed": "Impossible d'enregistrer ta progression. Réessaie.",
+    "retry": "Réessayer",
+    "settingsCard": {
+      "title": "Nouveautés",
+      "subtitle": "Revois les dernières fonctions et préférences"
+    },
+    "debug": {
+      "title": "Nouveautés",
+      "record": "Vue jusqu'à : {{version}}",
+      "none": "Aucun enregistrement",
+      "clear": "Effacer l'enregistrement (simuler une mise à jour)",
+      "set": "Définir la version vue jusqu'à",
+      "preview": "Aperçu de la version {{version}}",
+      "invalid": "Saisis une version comme 2.13.0.",
+      "version": "Version (x.y.z)"
+    },
+    "releases": {
+      "v2_15_2": {
+        "view": {
+          "title": "Ta séance, ta vue",
+          "description": "La vue guidée t'aide maintenant à te concentrer sur une série à la fois. Tu préfères la vue d'ensemble ? La vue en ligne est toujours là."
+        },
+        "workoutView": {
+          "title": "Choisis ta vue de séance",
+          "description": "Tu pourras la changer plus tard dans les réglages visuels.",
+          "guided": {
+            "label": "Guidée",
+            "description": "Concentre-toi sur ta série en cours, avec des commandes plus grandes."
+          },
+          "inline": {
+            "label": "En ligne",
+            "description": "Vois et modifie tes séries ensemble dans une liste."
+          }
+        },
+        "targets": {
+          "title": "Des objectifs adaptés à toi et à ta salle",
+          "description": "Musclog suggère des objectifs de départ à partir de ton historique et marque les chiffres qu'il a modifiés, pour que tu puisses toujours les éditer. Ajoute la barre et les disques de ta salle pour obtenir des charges que tu peux réellement mettre sur la barre."
+        },
+        "workoutAutonomy": {
+          "title": "Objectifs de départ",
+          "description": "Comment ton historique façonne la prochaine séance.",
+          "suggest": {
+            "label": "Suggérer des objectifs",
+            "description": "Utilise les suggestions de progression au début d'une séance."
+          },
+          "manual": {
+            "label": "Garder mon programme",
+            "description": "Commence avec les objectifs enregistrés dans ma séance."
+          }
+        },
+        "setupGym": "Configurer les salles et les disques",
+        "review": {
+          "title": "Un moment hebdomadaire pour faire le point",
+          "description": "Le bilan hebdomadaire réunit ta nutrition et ton entraînement, avec des suggestions que tu choisis d'appliquer ou non."
+        },
+        "reviewWeekday": {
+          "title": "Ton jour de bilan",
+          "description": "Choisis un jour qui s'intègre à ta routine. Tes préférences de rappel actuelles restent en place."
+        },
+        "openReview": "Ouvrir le bilan hebdomadaire",
+        "workoutMore": {
+          "title": "Plus pour tes séances",
+          "plans": {
+            "label": "Programmes d'entraînement",
+            "description": "Organise tes séances en programmes hebdomadaires ou en rotation."
+          },
+          "cardio": {
+            "label": "Carnet cardio",
+            "description": "Enregistre tes séances cardio à côté de ton entraînement de force."
+          },
+          "swaps": {
+            "label": "Remplacements d'exercices",
+            "description": "Remplace un exercice pendant une séance sans modifier le programme d'origine."
+          },
+          "restrictions": {
+            "label": "Restrictions d'exercices",
+            "description": "Retiens les exercices à éviter et les blessures temporaires dans les réglages de séance."
+          },
+          "warmups": {
+            "label": "Séries d'échauffement",
+            "description": "Garde les échauffements séparés de tes séries de travail."
+          },
+          "restTimer": {
+            "label": "Minuteur de repos automatique",
+            "description": "Lance le minuteur de repos après chaque série, avec une vibration facultative."
+          }
+        },
+        "heatmaps": {
+          "title": "Ton activité d'un coup d'œil",
+          "description": "Vois les jours où tu t'es entraîné et où tu as noté tes repas, sous forme de calendrier de carrés sur l'accueil : plus c'est foncé, plus la journée était chargée, et taper sur un carré affiche ce jour. Active-le dans Réglages → Apparence et accueil → Cartes d'activité, où tu choisis aussi la mise en page."
+        },
+        "aiSetup": {
+          "title": "Configure Musclog en parlant",
+          "description": "Réponds à quelques questions dans une conversation au lieu de remplir des formulaires, avec l'IA Musclog gratuite, ta propre clé Gemini ou OpenAI, ou ChatGPT ou Claude. Tu relis et modifies chaque réponse avant tout enregistrement."
+        },
+        "openAiSetup": "Mettre à jour mon profil avec l'IA",
+        "coachPersona": {
+          "title": "Choisis qui est ton coach IA",
+          "description": "Garde Loggy, ou choisis le comte Dracula, Cthulhu ou Sherlock Holmes, ou écris le tien avec un nom, une voix et une image. Seule la formulation change, jamais les chiffres ni les conseils de sécurité. Tu le trouves dans Réglages → IA."
+        },
+        "appWide": {
+          "title": "Aussi nouveau dans l'application",
+          "home": {
+            "label": "Un accueil plus net",
+            "description": "Les chiffres du jour d'abord, des raccourcis plus petits, et une carte de bilan hebdomadaire seulement quand un bilan est dû."
+          },
+          "menus": {
+            "label": "Menus et réglages plus calmes",
+            "description": "Des listes simples et groupées au lieu d'empilements de cartes, avec des réglages répartis en sept groupes plus clairs."
+          },
+          "widgets": {
+            "label": "Widgets sur iOS et Android",
+            "description": "La progression nutritionnelle et la caméra intelligente fonctionnent maintenant aussi sur iOS. Sur Android, supprime tes anciens widgets Musclog et rajoute-les depuis le sélecteur de widgets."
+          },
+          "lock": {
+            "label": "Verrouiller certaines parties de l'application",
+            "description": "Dans Réglages → Verrouillage de l'application, protège ton cycle, tes séances, ta nutrition, ta progression ou toute l'application avec le code de ton appareil."
+          }
+        },
+        "cycleDiary": {
+          "title": "Un journal du cycle privé et chiffré",
+          "description": "Tes règles et tes notes quotidiennes sont désormais chiffrées sur ton appareil. Les prévisions indiquent leur niveau de fiabilité, et l'estimation de la fenêtre fertile est facultative et désactivée par défaut. Les rappels peuvent être aussi discrets que tu veux, et un widget Cycle en lecture seule n'affiche rien de personnel sous un verrouillage de l'application."
+        }
+      },
+      "v2_16_0": {
+        "loggy": {
+          "title": "Découvre Loggy",
+          "description": "Loggy est la mascotte de Musclog. Il t'accueille, tient compagnie aux écrans vides et apparaît quand tu atteins une première fois. Tu peux changer sa présence ci-dessous, ou plus tard dans Réglages → Apparence et accueil.",
+          "show": {
+            "title": "Afficher Loggy",
+            "description": "Désactive pour le masquer partout. Ton coach IA garde son image."
+          },
+          "animated": {
+            "title": "Loggy animé",
+            "description": "Désactive pour le voir toujours immobile. N'a d'effet que lorsque Loggy est affiché."
+          }
+        },
+        "importHistory": {
+          "title": "Ramène ton historique d'entraînement",
+          "description": "Tu viens d'une autre application ? Ramène tes anciennes séances, pour que tes records et ta progression partent du premier jour.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy et FitNotes",
+              "description": "Choisis le fichier exporté depuis l'application."
+            },
+            "twice": {
+              "label": "Sans risque à répéter",
+              "description": "Importer deux fois le même fichier n'ajoute rien."
+            },
+            "undo": {
+              "label": "Facile à annuler",
+              "description": "Supprime tout ce qu'un import a ajouté, quand tu veux."
+            }
+          },
+          "action": {
+            "label": "Importer des séances",
+            "description": "Tu peux aussi le faire plus tard dans Réglages → Sauvegardes et données."
+          }
+        },
+        "yearInReview": {
+          "title": "Ton année dans Musclog",
+          "description": "Chaque décembre, revois tout ce que tu as fait cette année.",
+          "items": {
+            "look": {
+              "label": "Séances, records et jours d'entraînement",
+              "description": "Ton année en chiffres et en affiches à feuilleter."
+            },
+            "share": {
+              "label": "Partage-la en image",
+              "description": "Publie-la, ou garde-la pour toi."
+            },
+            "private": {
+              "label": "Privée par défaut",
+              "description": "Le poids et la nutrition restent exclus, sauf si tu les ajoutes."
+            }
+          },
+          "action": {
+            "label": "Voir ton année jusqu'ici"
+          }
+        },
+        "strengthLevels": {
+          "title": "Niveaux de force",
+          "description": "Vois comment tes exercices principaux se comparent à ton poids corporel, et ce que demande le niveau suivant.",
+          "items": {
+            "bodyWeight": {
+              "label": "Comparé à ton poids corporel",
+              "description": "Nécessite une pesée : enregistre ton poids pour voir tes niveaux."
+            },
+            "next": {
+              "label": "Ce que demande le niveau suivant",
+              "description": "La charge à soulever pour atteindre le niveau suivant."
+            },
+            "where": {
+              "label": "Dans la progression et sur chaque exercice",
+              "description": "Tu les trouveras aux deux endroits."
+            }
+          },
+          "action": {
+            "label": "Ouvrir la progression"
+          }
+        },
+        "trainingLoad": {
+          "title": "Charge d'entraînement récente",
+          "description": "Une carte corporelle dans la progression montre ce que tu as travaillé la semaine dernière.",
+          "items": {
+            "map": {
+              "label": "Les 7 derniers jours sur une carte corporelle",
+              "description": "Les muscles que tu as sollicités apparaissent plus foncés."
+            },
+            "sets": {
+              "label": "Séries hebdomadaires par muscle",
+              "description": "Les chiffres sont juste à côté de la carte."
+            },
+            "load": {
+              "label": "La charge, pas la forme",
+              "description": "Elle montre ce que tu as entraîné, pas si tu dois t'entraîner à nouveau."
+            }
+          },
+          "action": {
+            "label": "Ouvrir la progression"
+          }
+        }
+      }
+    }
+  }
+}

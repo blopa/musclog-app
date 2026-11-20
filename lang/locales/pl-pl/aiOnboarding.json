@@ -1,0 +1,213 @@
+{
+  "aiOnboarding": {
+    "chat": {
+      "greeting": "Cześć! Zadam kilka krótkich pytań, żeby skonfigurować dla ciebie Musclog. Możesz pominąć każde nieobowiązkowe pytanie, a każdą odpowiedź zobaczysz przed zapisem. Napisz cześć albo po prostu opowiedz mi trochę o sobie.",
+      "notSent": "Nie wysłano",
+      "placeholder": "Napisz odpowiedź",
+      "review": "Przejrzyj moje odpowiedzi",
+      "send": "Wyślij",
+      "stop": "Zatrzymaj",
+      "thinking": "Myślę…",
+      "title": "Czat konfiguracji"
+    },
+    "common": {
+      "backToGuided": "Użyj formularzy konfiguracji",
+      "editManually": "Edytuj swoje dane ręcznie"
+    },
+    "external": {
+      "backSection": "Krok 2: wróć z konfiguracją",
+      "errors": {
+        "newerVersion": "Ta konfiguracja powstała dla nowszej wersji Musclog. Zaktualizuj aplikację, a potem zaimportuj ją ponownie.",
+        "notJson": "To nie wygląda jak plik konfiguracji. Wybierz plik musclog-onboarding.json, który dał ci asystent, albo wklej jego JSON.",
+        "tooLarge": "Ten plik jest za duży, żeby być plikiem konfiguracji.",
+        "wrongSchema": "To nie jest plik konfiguracji Musclog. Sprawdź, czy wybrałeś plik utworzony przez asystenta."
+      },
+      "importFile": "Zaimportuj plik konfiguracji",
+      "intro": "ChatGPT lub Claude mogą zadać pytania za ciebie, a potem dać plik do przyniesienia z powrotem. Na chwilę opuszczasz Musclog; nic nie zostanie zastosowane, dopóki tego tutaj nie przejrzysz.",
+      "noFile": "Nie masz pliku? Wklej zamiast tego JSON albo wróć do formularzy konfiguracji.",
+      "paste": {
+        "fromClipboard": "Wklej ze schowka",
+        "import": "Importuj",
+        "placeholder": "Wklej tutaj JSON",
+        "subtitle": "Wklej JSON, który dał ci asystent.",
+        "title": "Wklej JSON konfiguracji"
+      },
+      "steps": {
+        "one": "Otwórz ChatGPT lub Claude. Instrukcje są dla ciebie skopiowane: wklej je do czatu.",
+        "three": "Wróć do Musclog i zaimportuj ten plik albo wklej jego tekst.",
+        "two": "Odpowiedz na jego pytania. Na końcu dostaniesz plik o nazwie musclog-onboarding.json."
+      },
+      "title": "Użyj ChatGPT lub Claude"
+    },
+    "fields": {
+      "activityLevel": "Poziom aktywności",
+      "birthDate": "Data urodzenia",
+      "bodyFat": "Tkanka tłuszczowa",
+      "breakLength": "Długość przerwy",
+      "fitnessGoal": "Cel treningowy",
+      "fullName": "Imię i nazwisko",
+      "gender": "Płeć",
+      "height": "Wzrost",
+      "liftingExperience": "Doświadczenie treningowe",
+      "trainingAutonomy": "Sugestie ciężarów",
+      "trainingDays": "Dni w tygodniu",
+      "trainingLocation": "Gdzie trenujesz",
+      "units": "Jednostki",
+      "weight": "Waga",
+      "weightGoal": "Cel wagowy"
+    },
+    "hub": {
+      "chatSubtitle": "Odpowiedz na kilka pytań w czacie w Musclog.",
+      "chatTitle": "Porozmawiaj tutaj z AI",
+      "externalSubtitle": "Porozmawiaj tam, a potem przynieś konfigurację jako plik.",
+      "externalTitle": "Użyj ChatGPT lub Claude",
+      "haveFile": "Mam już plik konfiguracji",
+      "intro": "Odpowiedz na kilka pytań w rozmowie zamiast wypełniać formularze. Wszystko sprawdzisz, zanim cokolwiek zostanie zapisane.",
+      "privacy": "Twoje odpowiedzi trafiają do wybranego przez ciebie AI. Klucz API zostaje na tym urządzeniu.",
+      "profileIntro": "Powiedz AI, co się zmieniło. Każdą zmianę zobaczysz obok tego, co masz teraz, zanim cokolwiek zostanie zapisane.",
+      "profileTitle": "Zaktualizuj z AI",
+      "resumeBody": "Masz niedokończoną rozmowę konfiguracyjną.",
+      "resumeContinue": "Kontynuuj",
+      "resumeStartOver": "Zacznij od nowa",
+      "resumeTitle": "Wróć tam, gdzie skończyłeś",
+      "title": "Skonfiguruj z AI"
+    },
+    "provider": {
+      "checkKey": "Sprawdź klucz i kontynuuj",
+      "gatewayHint": "Bez konta i klucza. Obowiązuje dzienny limit.",
+      "intro": "Wybierz AI, które zada ci pytania. Twój własny klucz będzie dalej działał w Musclog.",
+      "keyLabel": "Klucz API",
+      "keyNetwork": "Nie udało się połączyć z {{provider}}, żeby sprawdzić klucz. Sprawdź połączenie i spróbuj ponownie.",
+      "keyPlaceholder": "Wklej swój klucz",
+      "keyRejected": "{{provider}} nie zaakceptował tego klucza. Sprawdź, czy skopiowałeś go w całości.",
+      "keySaved": "Klucz jest zapisany. Stuknij, aby go użyć albo zastąpić.",
+      "keyStorage": "Klucz jest przechowywany zaszyfrowany na tym urządzeniu i używany do funkcji AI Musclog. Musclog domyślnie używa modelu {{model}}; możesz to zmienić albo usunąć klucz w Ustawieniach, w sekcji AI.",
+      "keyTitle": "Twój klucz {{provider}}",
+      "names": {
+        "claude": "Claude",
+        "gateway": "Darmowe AI Musclog",
+        "gemini": "Google Gemini",
+        "local": "Model lokalny",
+        "onDevice": "Apple Intelligence",
+        "openai": "OpenAI"
+      },
+      "openGemini": "Otwórz Google AI Studio",
+      "openClaude": "Otwórz stronę kluczy Claude",
+      "openOpenAi": "Otwórz stronę kluczy OpenAI",
+      "ownKey": "Użyj własnego klucza",
+      "problem": "Coś poszło nie tak. Spróbuj ponownie albo wybierz inną opcję.",
+      "simpleHint": "Działa na twoim urządzeniu. Prostsze modele mogą mieć trudność z tym czatem.",
+      "steps": {
+        "claude": {
+          "one": "Otwórz stronę kluczy Claude Console i zaloguj się.",
+          "three": "Skopiuj go i wklej poniżej.",
+          "two": "Utwórz nowy klucz API. Twoje konto potrzebuje doładowanych środków."
+        },
+        "gemini": {
+          "one": "Otwórz Google AI Studio i zaloguj się.",
+          "three": "Skopiuj go i wklej poniżej.",
+          "two": "Utwórz klucz API."
+        },
+        "openai": {
+          "one": "Otwórz stronę kluczy OpenAI i zaloguj się.",
+          "three": "Skopiuj go i wklej poniżej.",
+          "two": "Utwórz nowy tajny klucz. Twoje konto musi mieć skonfigurowane rozliczenia."
+        }
+      },
+      "title": "Wybierz swoje AI",
+      "useExternal": "Użyj ChatGPT lub Claude zamiast tego",
+      "useSaved": "Użyj zapisanego klucza"
+    },
+    "recovery": {
+      "actions": {
+        "continueGuided": "Użyj formularzy konfiguracji",
+        "ownKey": "Użyj mojego klucza",
+        "replaceKey": "Zastąp klucz",
+        "retry": "Spróbuj ponownie",
+        "switchProvider": "Wybierz inne AI",
+        "useExternal": "Użyj ChatGPT lub Claude"
+      },
+      "cancelled": {
+        "description": "Twoja wiadomość wróciła do pola.",
+        "title": "Zatrzymano"
+      },
+      "credits": {
+        "description": "Dostawca mówi, że na koncie skończył się kredyt albo limit. Dodaj kredyt albo wybierz inny sposób odpowiedzi.",
+        "title": "Ta AI nie ma już kredytu"
+      },
+      "gatewayLimit": {
+        "description": "Darmowe AI Musclog ma dzienny limit. Spróbuj jutro, użyj własnego klucza albo wybierz inny sposób.",
+        "title": "Osiągnięto darmowy dzienny limit"
+      },
+      "invalidKey": {
+        "description": "Dostawca nie akceptuje już tego klucza. Zastąp go albo wybierz inny sposób odpowiedzi.",
+        "title": "Klucz został odrzucony"
+      },
+      "malformed": {
+        "description": "Ten model nie daje odpowiedzi, których Musclog może użyć. Wybierz inne AI albo inny sposób.",
+        "title": "Nie udało się odczytać odpowiedzi tego AI"
+      },
+      "offline": {
+        "description": "Twoja wiadomość nie została wysłana. Sprawdź połączenie i spróbuj ponownie.",
+        "title": "Brak połączenia"
+      },
+      "timeout": {
+        "description": "AI nie odpowiedziało na czas. Spróbuj ponownie albo wybierz inne.",
+        "title": "Zajęło to zbyt długo"
+      },
+      "unavailable": {
+        "description": "Zostało wyłączone albo jego klucz został usunięty. Wybierz inne AI albo inny sposób.",
+        "title": "To AI jest niedostępne"
+      },
+      "unknown": {
+        "description": "AI nie mogło odpowiedzieć. Spróbuj ponownie albo wybierz inny sposób.",
+        "title": "Coś poszło nie tak"
+      }
+    },
+    "review": {
+      "apply": "Zastosuj",
+      "applyFailedBody": "Nic nie przepadło. Twoje odpowiedzi nadal tu są: spróbuj ponownie.",
+      "applyFailedTitle": "Nie udało się zapisać konfiguracji",
+      "applyOnboarding": "Wygląda dobrze, kontynuuj",
+      "applyProfile": "Zastosuj zmiany",
+      "back": "Wstecz",
+      "currentValue": "Teraz: {{value}}",
+      "errors": {
+        "invalid": "Ta wartość jest nieprawidłowa.",
+        "outOfRange": "Ta wartość jest poza dozwolonym zakresem."
+      },
+      "ignored": "Zignorowano, bo Musclog ich nie używa: {{keys}}",
+      "intro": "Sprawdź swoje odpowiedzi. Stuknij jedną, aby ją zmienić. Nic nie jest zapisywane, dopóki nie kontynuujesz.",
+      "missing": "Nadal potrzebne: {{fields}}",
+      "needed": "Wymagane",
+      "notSet": "Nie ustawiono",
+      "notes": {
+        "comebackNotStarted": "Powrót po przerwie nie został rozpoczęty. Możesz go uruchomić w zakładce Powrót.",
+        "daysNotApplied": "Dni w tygodniu nie są zapisywane stąd.",
+        "gymKept": "Masz już siłownię, więc zostaje bez zmian.",
+        "recalculationSkipped": "Twoje cele nie zostały przeliczone, bo w profilu czegoś brakuje."
+      },
+      "openComeback": "Otwórz Powrót",
+      "profileIntro": "Każda odpowiedź jest pokazana obok tego, co masz teraz. Wybierz, które zmiany zastosować.",
+      "recalculate": "Przelicz też moje cele żywieniowe",
+      "recalculateHint": "Zobaczysz nowe cele, zanim zostaną zapisane. Poprzednie cele zostaną w historii.",
+      "remove": "Usuń",
+      "save": "Zapisz",
+      "sections": {
+        "aboutYou": "O tobie",
+        "body": "Ciało",
+        "experience": "Doświadczenie",
+        "goals": "Cele",
+        "training": "Trening"
+      },
+      "skip": "Pomiń",
+      "title": "Przejrzyj swoją konfigurację",
+      "warnings": {
+        "comebackStartsAtMaintenance": "Ponieważ wracasz po przerwie, twój pierwszy plan żywieniowy zaczyna się od utrzymania.",
+        "dobAgeMismatch": "Data urodzenia i wiek się nie zgadzają. Użyto daty urodzenia.",
+        "unusualBodyMeasurements": "Twój wzrost i waga razem wyglądają nietypowo. Sprawdź je.",
+        "weightGoalConflictsFocus": "Twój cel treningowy to redukcja masy, ale cel wagowy nie oznacza jej."
+      }
+    }
+  }
+}

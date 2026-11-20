@@ -1,0 +1,20 @@
+{
+  "currentGoalsCard": {
+    "dailyTarget": "Günlük hedef",
+    "protein": "Protein",
+    "proteinShort": "P",
+    "carbs": "Karbonhidrat",
+    "carbsShort": "K",
+    "fats": "Yağ",
+    "fatsShort": "Y",
+    "targetWeight": "Hedef kilo",
+    "bodyFat": "Vücut yağı",
+    "ffmi": "FFMI",
+    "bmi": "BMI",
+    "g": "g",
+    "kg": "kg",
+    "lbs": "lbs",
+    "percent": "%",
+    "dynamicNote": "Bugün için hedef ayarlarından otomatik hesaplandı"
+  }
+}

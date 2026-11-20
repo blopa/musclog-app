@@ -1,0 +1,12 @@
+{
+  "camera": {
+    "title": "Kamera",
+    "processing": {
+      "aiAnalyzingMeal": "Yapay zeka öğününü analiz ediyor...",
+      "aiAnalyzingFood": "Yapay zeka yiyeceğini analiz ediyor...",
+      "processingNutrients": "Besinler işleniyor",
+      "analyzingImage": "Barkod analiz ediliyor...",
+      "processingData": "Veri işleniyor"
+    }
+  }
+}

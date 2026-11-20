@@ -1,0 +1,48 @@
+{
+  "profile": {
+    "header": {
+      "title": "Profil"
+    },
+    "goal": "Cel",
+    "currentStats": "Obecne dane",
+    "history": "Historia",
+    "management": "Zarządzanie",
+    "loading": "Wczytywanie...",
+    "syncing": {
+      "healthKit": "Synchronizacja z HealthKit..."
+    },
+    "bmiStatus": {
+      "underweight": "Niedowaga",
+      "normal": "Waga prawidłowa",
+      "overweight": "Nadwaga",
+      "obese": "Otyłość"
+    },
+    "gender": {
+      "male": "Mężczyzna",
+      "female": "Kobieta",
+      "other": "Inna"
+    },
+    "managementItems": {
+      "editPersonal": "Edytuj dane osobowe",
+      "editPersonalDesc": "Zaktualizuj imię, awatar i dane osobowe",
+      "editFitness": "Edytuj dane treningowe",
+      "editFitnessDesc": "Zaktualizuj cele treningowe i preferencje",
+      "appPreferences": "Preferencje aplikacji",
+      "appPreferencesDesc": "Dostosuj ustawienia i preferencje aplikacji",
+      "aiUpdate": "Zaktualizuj z AI",
+      "aiUpdateDesc": "Powiedz AI, co się zmieniło, i sprawdź przed zapisem"
+    },
+    "stats": {
+      "weight": "Waga",
+      "height": "Wzrost",
+      "bodyFat": "Tkanka tłuszczowa",
+      "bmi": "BMI",
+      "age": "Wiek",
+      "gender": "Płeć"
+    },
+    "weightPrediction": {
+      "title": "Przewidywana waga",
+      "subtitle": "Szacowane na podstawie TDEE i zapisanych kalorii od ostatniego ważenia"
+    }
+  }
+}

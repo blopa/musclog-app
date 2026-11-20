@@ -1,0 +1,19 @@
+{
+  "workoutHistory": {
+    "title": "Historia sesji",
+    "previewTitle": "Podgląd treningu",
+    "workoutInProgress": "Trening w trakcie",
+    "previewSubtitle": "Podgląd",
+    "duration": "Czas trwania",
+    "volume": "Obj.",
+    "setsDone": "Wykonane serie",
+    "startThisWorkout": "Rozpocznij ten trening",
+    "noExercisesYet": "Brak ćwiczeń",
+    "exercise": "Ćwiczenie {{number}}",
+    "set": "Seria {{number}}",
+    "share": "Udostępnij",
+    "shareDescription": "Udostępnij szczegóły tego treningu",
+    "shareFailed": "Nie udało się udostępnić szczegółów treningu. Spróbuj ponownie.",
+    "viewHistory": "Zobacz dawne sesje"
+  }
+}

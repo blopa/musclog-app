@@ -1,0 +1,23 @@
+{
+  "dailySummaryCard": {
+    "alcohol": "Alcol",
+    "alcoholLabel": "Hai anche consumato:",
+    "carbs": "Carboidrati",
+    "fiber": "Fibre",
+    "fiberShort": "Fi",
+    "carbsShort": "C",
+    "dailySummary": "Riepilogo della giornata",
+    "fats": "Grassi",
+    "fatsShort": "G",
+    "goalExceeded": "Obiettivo superato",
+    "goalReached": "Obiettivo raggiunto",
+    "over": "In eccesso",
+    "protein": "Proteine",
+    "proteinShort": "P",
+    "remaining": "Rimanenti",
+    "setGoals": "Imposta obiettivi",
+    "setGoalsToTrack": "Imposta obiettivi per monitorare",
+    "today": "Oggi",
+    "weeklyAvg": "Media settimanale"
+  }
+}

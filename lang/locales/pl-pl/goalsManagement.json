@@ -1,0 +1,103 @@
+{
+  "goalsManagement": {
+    "title": "Zarządzanie celami",
+    "nutritionAndBodyTab": "Odżywianie i ciało",
+    "fitnessAndExerciseTab": "Kondycja i ćwiczenia",
+    "subtitle": "Śledź postępy i historię.",
+    "currentGoals": "Bieżące cele",
+    "history": "Historia celów",
+    "newGoal": "Nowy cel",
+    "createGoalDesc": "Ustaw nowe cele żywieniowe i makroskładniki",
+    "createCheckin": "Utwórz kontrolę",
+    "createCheckinDesc": "Dodaj nowy wpis kontroli żywieniowej",
+    "emptyStateMessage": "Utwórz nowy cel, żeby zacząć",
+    "editGoal": "Edytuj",
+    "deleteGoalAction": "Usuń",
+    "deleteGoal": "Usuń cel",
+    "deleteGoalMessage": "Ten cel zostanie trwale usunięty z historii.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Na pewno usunąć ten cel? Tej operacji nie można cofnąć.",
+      "title": "Cele żywieniowe",
+      "searchPlaceholder": "Szukaj celów...",
+      "noGoals": "Brak celów",
+      "noGoalsDesc": "Ustaw cele żywieniowe, a pojawią się tutaj",
+      "endOfHistory": "Koniec historii celów",
+      "goalOptions": "Opcje celu",
+      "editGoal": "Edytuj cel",
+      "editGoalDesc": "Zmień kalorie, makroskładniki i wartości docelowe",
+      "duplicateGoal": "Powiel cel",
+      "duplicateGoalDesc": "Utwórz kopię, żeby użyć jej jako nowego celu",
+      "regenerateCheckins": "Wygeneruj kontrole ponownie",
+      "regenerateCheckinsDesc": "Usuń i utwórz od nowa kontrole tego celu",
+      "deleteGoal": "Usuń cel",
+      "deleteGoalDesc": "Usuń ten cel z historii",
+      "subtitleFormat": "{{calories}} • {{phase}} • Cel {{targetWeight}} {{unit}}",
+      "phaseCut": "Redukcja",
+      "phaseMaintain": "Utrzymanie",
+      "phaseBulk": "Masa"
+    },
+    "goalCreationMethod": {
+      "title": "Nowy cel",
+      "subtitle": "Jak chcesz ustawić nowy cel?",
+      "guidedTitle": "Odpowiedz na kilka pytań",
+      "guidedDescription": "Krok po kroku dobierzemy odpowiednie cele kaloryczne i makroskładniki.",
+      "manualTitle": "Ustaw ręcznie",
+      "manualDescription": "Wpisz kalorie, makroskładniki i wartości docelowe bezpośrednio.",
+      "autoCalculateTitle": "Policz za mnie",
+      "autoCalculateDescription": "Wyliczymy twoje cele według wzoru Mifflin-St Jeor na podstawie profilu."
+    },
+    "goalWizard": {
+      "title": "Ustaw swój cel",
+      "step": "Krok {{current}} z {{total}}",
+      "next": "Dalej",
+      "back": "Wstecz",
+      "createGoal": "Utwórz cel",
+      "goalType": {
+        "title": "Jaki jest twój główny cel?",
+        "subtitle": "Dzięki temu dobierzemy odpowiednie cele kaloryczne i makroskładniki.",
+        "lose": "Schudnąć",
+        "loseDescription": "Zmniejsz tkankę tłuszczową dzięki deficytowi kalorycznemu.",
+        "maintain": "Utrzymać wagę",
+        "maintainDescription": "Zachowaj obecną wagę i skład ciała.",
+        "gain": "Przytyć",
+        "gainDescription": "Buduj mięśnie i siłę dzięki nadwyżce kalorycznej."
+      },
+      "goalWeight": {
+        "titleMain": "Jaka jest twoja",
+        "titleAccent": "waga docelowa?",
+        "subtitle": "Ustaw wagę, do której chcesz dojść. Obecna waga jest pokazana dla porównania.",
+        "label": "Waga docelowa",
+        "currentWeightLabel": "Twoja obecna waga",
+        "tipLoseBF": "Tempo 0,5–1% masy ciała tygodniowo jest realne i pomaga zachować mięśnie podczas redukcji.",
+        "tipGain": "Przyrost 0,25–0,5 kg tygodniowo ogranicza przyrost tkanki tłuszczowej i pozwala stabilnie budować mięśnie.",
+        "tipGainImperial": "Przyrost 0,55–1,1 lbs tygodniowo ogranicza przyrost tkanki tłuszczowej i pozwala stabilnie budować mięśnie."
+      },
+      "targetDate": {
+        "title": "Kiedy chcesz osiągnąć cel?",
+        "subtitle": "Termin pomaga śledzić postępy w czasie.",
+        "label": "Data docelowa",
+        "notSet": "Bez konkretnej daty",
+        "clear": "Wyczyść datę",
+        "warningLabel": "Agresywny harmonogram",
+        "warningMessage": "Żądane tempo: około {{weeklyLoss}} {{unit}} tygodniowo. Sugerowany górny zakres przy obecnej masie ciała: około {{suggestedMaxWeeklyLoss}} {{unit}} tygodniowo. Nadal policzymy kalorie pod ten termin, ale bardziej realistyczna data to około {{estimatedDate}}."
+      }
+    },
+    "manageCheckinData": {
+      "title": "Kontrole żywieniowe",
+      "searchPlaceholder": "Szukaj kontroli...",
+      "noCheckins": "Brak kontroli",
+      "noCheckinsDesc": "Kontrole powstają, gdy ustawisz cel żywieniowy liczony przez AI",
+      "endOfHistory": "Wczytano wszystkie kontrole",
+      "checkinOptions": "Opcje kontroli",
+      "editCheckin": "Edytuj kontrolę",
+      "editCheckinDesc": "Zmień cele kontroli",
+      "deleteCheckin": "Usuń kontrolę",
+      "deleteCheckinDesc": "Trwale usuń tę kontrolę",
+      "subtitleFormat": "Cel {{targetWeight}} {{unit}} • {{targetBodyFat}}% tkanki tłuszczowej",
+      "checkinDate": "Data kontroli"
+    },
+    "exerciseGoals": "Cele ćwiczeniowe",
+    "exerciseGoalsTitle": "Siła i regularność",
+    "exerciseGoalsSubtitle": "Śledź cele 1RM i częstotliwość treningów"
+  }
+}

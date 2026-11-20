@@ -1,0 +1,71 @@
+{
+  "websiteToolRpeChart": {
+    "title": "Tabella RPE e RIR con calcolatore del carico",
+    "intro": "Una tabella di quale percentuale del tuo massimale a una ripetizione corrisponde ogni numero di ripetizioni a ogni RPE, cosa significa l'RPE in ripetizioni rimaste e un calcolatore che trasforma una serie che hai fatto nel carico per un'altra serie.",
+    "chart": {
+      "title": "Percentuale del tuo massimale a una ripetizione",
+      "rpeColumn": "RPE {{rpe}}",
+      "reps": "Ripetizioni",
+      "note": "Leggi in orizzontale le ripetizioni che fai e in verticale lo sforzo che assegni alla serie. Le percentuali derivano dalla stessa stima media usata dall'app, quindi anche una sola ripetizione a RPE 10 risulta appena sotto il 100%."
+    },
+    "meaning": {
+      "title": "Cosa significa ciascun RPE",
+      "rpe": "RPE",
+      "reserve": "Ripetizioni in riserva",
+      "meaning": "Significato",
+      "none": "Nessuna ripetizione rimasta. La serie è finita al cedimento.",
+      "one": "Una ripetizione rimasta nel serbatoio.",
+      "two": "Due ripetizioni rimaste nel serbatoio.",
+      "three": "Tre ripetizioni rimaste nel serbatoio.",
+      "four": "Quattro ripetizioni rimaste nel serbatoio."
+    },
+    "form": {
+      "weight": "Peso sollevato",
+      "reps": "Ripetizioni fatte",
+      "repsHint": "Numero intero, da 1 a 10",
+      "rpe": "RPE di quella serie",
+      "targetReps": "Ripetizioni obiettivo",
+      "targetRepsHint": "Numero intero, da 1 a 10",
+      "targetRpe": "RPE obiettivo"
+    },
+    "problems": {
+      "weight": "Inserisci il peso sollevato come numero maggiore di 0.",
+      "reps": "Inserisci le ripetizioni come numero intero da 1 a 10.",
+      "targetReps": "Inserisci le ripetizioni obiettivo come numero intero da 1 a 10."
+    },
+    "results": {
+      "oneRepMax": "Massimale stimato a una ripetizione",
+      "target": "Carico per l'obiettivo, esatto",
+      "targetRounded": "Arrotondato per un bilanciere con dischi standard",
+      "roundedNote": "Arrotondato ai passi più piccoli con cui sale un bilanciere caricato con dischi standard. Senza palestra, l'app usa gli stessi passi.",
+      "reps": "ripetizioni",
+      "atRpe": "a RPE"
+    },
+    "sections": [
+      {
+        "title": "Cosa significa RPE",
+        "body": [
+          "RPE, rate of perceived exertion (percezione soggettiva dello sforzo), va da 1 a 10. Una serie valutata 10 non aveva ripetizioni rimaste. RPE 9 lasciava una ripetizione in riserva, RPE 8 due, e così via.",
+          "Ripetizioni in riserva (RIR) è la stessa scala scritta al contrario: RPE = 10 meno RIR. L'app Musclog salva lo sforzo di una serie in uno dei due modi, e i due valori sono lo stesso numero."
+        ]
+      },
+      {
+        "title": "Perché si sbaglia spesso la valutazione",
+        "body": [
+          "Giudicare quante ripetizioni ti restavano è una capacità, e la maggior parte delle persone è meno precisa più una serie è lontana dal cedimento. Una serie che sembrava lasciarne qualcuna può averne lasciate di più o di meno.",
+          "Considera la tabella una guida. Verificala con come vanno davvero le tue serie, e valuta lo sforzo onestamente quando lo registri."
+        ]
+      },
+      {
+        "title": "Come funzionano la tabella e il calcolatore",
+        "body": [
+          "Ogni cella è la percentuale del tuo massimale a una ripetizione che corrisponde a quel numero di ripetizioni a quell'RPE. Deriva dalle stesse formule medie che l'app Musclog usa per stimare una serie registrata.",
+          "Il calcolatore stima il tuo massimale a una ripetizione da una serie che hai fatto, poi indica il carico per un numero diverso di ripetizioni a un RPE diverso. Il carico arrotondato è quello che un bilanciere con dischi standard può fare."
+        ]
+      }
+    ],
+    "sources": {
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

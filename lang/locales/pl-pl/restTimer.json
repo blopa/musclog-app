@@ -1,0 +1,17 @@
+{
+  "restTimer": {
+    "resting": "Odpoczynek...",
+    "minus5s": "- 5 s",
+    "plus5s": "+ 5 s",
+    "skipRest": "Pomiń odpoczynek",
+    "done": "Gotowe",
+    "reps": "powt.",
+    "repsWithCount": "{{count}} powt.",
+    "upNext": "Następne",
+    "missingWorkoutData": "Brak danych treningu",
+    "completedSetNotFound": "Nie znaleziono ukończonej serii",
+    "getReady": "Przygotuj się",
+    "go": "Start",
+    "a11yRemaining": "Pozostało: {{time}}"
+  }
+}

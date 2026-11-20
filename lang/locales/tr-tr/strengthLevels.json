@@ -1,0 +1,20 @@
+{
+  "strengthLevels": {
+    "title": "Güç seviyeleri",
+    "levels": {
+      "beginner": "Başlangıç",
+      "novice": "Acemi",
+      "intermediate": "Orta",
+      "advanced": "İleri",
+      "elite": "Elit"
+    },
+    "rangeLabel": "{{lower}} – {{upper}}",
+    "otherNote": "Tek bir tablo uymadığı için hem erkek hem kadın ölçeğinde gösterilir.",
+    "addWeighIn": "Güç seviyelerini görmek için bir kilo ölçümü ekle.",
+    "sourceNote": "Seviyeler, tahmini 1RM'ini vücut ağırlığınla karşılaştırır. Musclog'un pratik bir kuralıdır, OpenPowerlifting'in herkese açık powerlifting sonuçlarıyla kontrol edilmiştir.",
+    "sourceLink": "OpenPowerlifting web sitesi",
+    "estimated1rm": "Tahmini 1RM",
+    "toReach": "{{level}} seviyesine ulaşmak için",
+    "howItWorks": "Seviyeler nasıl çalışır"
+  }
+}

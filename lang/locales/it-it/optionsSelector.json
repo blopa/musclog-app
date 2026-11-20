@@ -1,0 +1,10 @@
+{
+  "optionsSelector": {
+    "link": "Collega",
+    "unlink": "Scollega",
+    "edit": "Modifica",
+    "done": "Fatto",
+    "deleteExercise": "Elimina esercizio",
+    "deleteExercises": "Elimina esercizi"
+  }
+}

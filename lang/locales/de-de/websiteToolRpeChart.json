@@ -1,0 +1,71 @@
+{
+  "websiteToolRpeChart": {
+    "title": "RPE- und RIR-Tabelle mit Gewichtsrechner",
+    "intro": "Eine Tabelle, welcher Anteil deines Ein-Wiederholungs-Maximums jede Anzahl Wiederholungen bei jedem RPE entspricht, was RPE in verbleibenden Wiederholungen bedeutet, und ein Rechner, der einen gemachten Satz in die Last für einen anderen Satz umrechnet.",
+    "chart": {
+      "title": "Anteil deines Ein-Wiederholungs-Maximums",
+      "rpeColumn": "RPE {{rpe}}",
+      "reps": "Wdh.",
+      "note": "Lies waagerecht die Wiederholungen ab, die du machst, und senkrecht die Anstrengung, die du für den Satz angibst. Die Prozentwerte stammen aus derselben gemittelten Schätzung, die die App verwendet, daher liegt selbst eine Wiederholung bei RPE 10 knapp unter 100 %."
+    },
+    "meaning": {
+      "title": "Was jedes RPE bedeutet",
+      "rpe": "RPE",
+      "reserve": "Wiederholungen in Reserve",
+      "meaning": "Bedeutung",
+      "none": "Keine Wiederholungen mehr. Der Satz endete beim Versagen.",
+      "one": "Eine Wiederholung blieb übrig.",
+      "two": "Zwei Wiederholungen blieben übrig.",
+      "three": "Drei Wiederholungen blieben übrig.",
+      "four": "Vier Wiederholungen blieben übrig."
+    },
+    "form": {
+      "weight": "Gehobenes Gewicht",
+      "reps": "Gemachte Wiederholungen",
+      "repsHint": "Ganze Zahl, 1 bis 10",
+      "rpe": "RPE dieses Satzes",
+      "targetReps": "Ziel-Wiederholungen",
+      "targetRepsHint": "Ganze Zahl, 1 bis 10",
+      "targetRpe": "Ziel-RPE"
+    },
+    "problems": {
+      "weight": "Gib das gehobene Gewicht als Zahl über 0 ein.",
+      "reps": "Gib die Wiederholungen als ganze Zahl von 1 bis 10 ein.",
+      "targetReps": "Gib die Ziel-Wiederholungen als ganze Zahl von 1 bis 10 ein."
+    },
+    "results": {
+      "oneRepMax": "Geschätztes Ein-Wiederholungs-Maximum",
+      "target": "Last für das Ziel, genau",
+      "targetRounded": "Gerundet für eine Stange mit Standardscheiben",
+      "roundedNote": "Gerundet auf die kleinsten Schritte, in denen eine mit Standardscheiben beladene Stange steigt. Ohne Studio nutzt die App dieselben Schritte.",
+      "reps": "Wdh.",
+      "atRpe": "bei RPE"
+    },
+    "sections": [
+      {
+        "title": "Was RPE bedeutet",
+        "body": [
+          "RPE, die wahrgenommene Anstrengung, reicht von 1 bis 10. Ein Satz mit RPE 10 hatte keine Wiederholungen mehr. RPE 9 ließ eine Wiederholung in Reserve, RPE 8 zwei, und so weiter.",
+          "Wiederholungen in Reserve (RIR) ist dieselbe Skala, nur andersherum geschrieben: RPE = 10 minus RIR. Die Musclog-App speichert die Anstrengung eines Satzes auf eine der beiden Arten, und beide sind dieselbe Zahl."
+        ]
+      },
+      {
+        "title": "Warum Menschen sich verschätzen",
+        "body": [
+          "Einzuschätzen, wie viele Wiederholungen dir noch blieben, ist eine Fertigkeit, und die meisten Menschen liegen umso ungenauer, je weiter ein Satz vom Versagen entfernt war. Ein Satz, der sich anfühlte, als wären noch ein paar Wiederholungen drin, hatte vielleicht mehr oder weniger.",
+          "Betrachte die Tabelle als Orientierung. Prüfe sie an deinen tatsächlichen Sätzen und bewerte die Anstrengung ehrlich, wenn du sie erfasst."
+        ]
+      },
+      {
+        "title": "Wie Tabelle und Rechner funktionieren",
+        "body": [
+          "Jede Zelle ist der Anteil deines Ein-Wiederholungs-Maximums, den so viele Wiederholungen bei diesem RPE darstellen. Er stammt aus denselben gemittelten Formeln, mit denen die Musclog-App einen erfassten Satz schätzt.",
+          "Der Rechner schätzt dein Ein-Wiederholungs-Maximum aus einem Satz, den du gemacht hast, und gibt dann die Last für eine andere Anzahl Wiederholungen bei einem anderen RPE an. Die gerundete Last ist das, was eine Stange mit Standardscheiben erzeugen kann."
+        ]
+      }
+    ],
+    "sources": {
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

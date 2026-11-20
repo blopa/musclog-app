@@ -1,0 +1,86 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Entlastungsrechner",
+    "intro": "Gib das Arbeitsgewicht und die Sätze einer Übung ein und erhalte die Entlastungswoche: wie viel leichter, wie viele Sätze du behältst, wie hart du gehst und wie lange sie dauert.",
+    "form": {
+      "weight": "Arbeitsgewicht",
+      "weightHint": "Womit du deine normalen Arbeitssätze machst.",
+      "sets": "Arbeitssätze in einer normalen Woche",
+      "setsHint": "Ganze Zahl, für diese eine Übung.",
+      "equipmentLabel": "Gerät",
+      "equipment": {
+        "barbell": "Langhantel",
+        "dumbbell": "Kurzhantel",
+        "machine": "Maschine oder Kabelzug"
+      }
+    },
+    "problems": {
+      "weight": "Gib das Arbeitsgewicht als Zahl über 0 und höchstens {{max}} ein.",
+      "sets": "Gib die Sätze als ganze Zahl von 1 bis {{max}} ein."
+    },
+    "results": {
+      "title": "Deine Entlastungswoche",
+      "weight": "Gewicht",
+      "weightNote": "{{percent}} leichter als dein Arbeitsgewicht, abgerundet auf eine Last, die du einstellen kannst. Behalte deine üblichen Wiederholungen bei.",
+      "sets": "Sätze",
+      "setsValue_one": "{{sets}} Satz",
+      "setsValue_few": "{{sets}} Sätze",
+      "setsValue_many": "{{sets}} Sätze",
+      "setsValue_other": "{{sets}} Sätze",
+      "setsNote": "Von {{from}} runter: etwa zwei Drittel, nie weniger als einer.",
+      "effort": "Anstrengung",
+      "effortValue": "{{count}} Wiederholungen in Reserve",
+      "effortNote": "Beende jeden Satz mit etwa {{count}} möglichen Wiederholungen, damit sich die Woche bewusst leicht anfühlt.",
+      "duration": "Dauer",
+      "durationValue_one": "{{count}} Woche",
+      "durationValue_few": "{{count}} Wochen",
+      "durationValue_many": "{{count}} Wochen",
+      "durationValue_other": "{{count}} Wochen",
+      "durationNote": "Trainiere so oft wie üblich mit leichterer Arbeit und kehre danach zu deinen normalen Lasten zurück.",
+      "plates": "Scheiben auf jeder Seite der Stange",
+      "emptyBar": "Leere Stange",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "Das ist bereits die leichteste Last, die dieses Gerät erzeugen kann, also bleibt das Gewicht. Reduziere stattdessen die Sätze und gehe weniger hart ran.",
+      "step": "Ein Laststufe für dieses Gerät ist {{step}}."
+    },
+    "table": {
+      "title": "Weitere übliche Reduzierungen",
+      "cut": "Reduzierung",
+      "weight": "Gewicht",
+      "actual": "Tatsächlich leichter um",
+      "musclog": "Reduzierung von Musclog",
+      "percent": "{{percent}}",
+      "note": "Musclog nimmt 10 % oder eine Laststufe, je nachdem, was größer ist. Die Zeilen mit 10, 15 und 20 % sind Faustregeln, keine Studienergebnisse. Jede wird auf eine Last abgerundet, die du wirklich einstellen kannst, daher kann ein kleines Gewicht um mehr als die gewünschte Reduzierung leichter werden."
+    },
+    "sections": [
+      {
+        "title": "Wie viel leichter und wie lange",
+        "body": [
+          "Die Entlastung in der Musclog-App ist eine Reduzierung um 10 % oder eine Laststufe, je nachdem, was größer ist, abgerundet auf ein Gewicht, das dein Gerät erzeugen kann, und immer strikt leichter als jetzt. Eine leichtere Woche behält dann etwa zwei Drittel der Arbeitssätze, behält die geplanten Wiederholungen und zielt auf 4 Wiederholungen in Reserve. Sie dauert eine Woche. All das sind Produktentscheidungen von Musclog, keine Studienergebnisse.",
+          "Sportler nehmen für eine Woche oft 10 bis 20 % weniger Gewicht oder etwa ein Drittel weniger Sätze. Nutze die Tabelle für eine stärkere Reduzierung, wenn sich die Woche davor sehr schwer angefühlt hat. Behalte dieselben Übungen und dieselbe Anzahl Einheiten bei: Eine Entlastung ist leichteres Training, keine Woche frei."
+        ]
+      },
+      {
+        "title": "Wann eine Entlastung sinnvoll ist",
+        "body": [
+          "Typische Anzeichen sind dasselbe Gewicht, das sich deutlich schwerer anfühlt als vor einigen Wochen, verpasste Wiederholungen, die du sonst schaffst, und fast keine Wiederholungen mehr in Reserve. Schlechter Schlaf, Stress oder Krankheit können ähnlich wirken, und auch dafür hilft eine Entlastung. Wenn ein Gelenk stark schmerzt, geh zu einer Ärztin, einem Arzt oder einer Physiotherapeutin.",
+          "Die App entlastet eine Übung von selbst, nachdem zwei Einheiten hintereinander bei derselben Last keine Wiederholungen in Reserve ließen oder die geplanten Wiederholungen verfehlt wurden. Sie schlägt eine leichtere Woche aus deinem Wochenrückblick vor, wenn mehrere Übungen stagnieren. Du entscheidest, ob du sie nimmst."
+        ]
+      },
+      {
+        "title": "Was die Forschung sagt",
+        "body": [
+          "Eine Konsensstudie von 2023 unter Kraft- und Physique-Coaches definiert eine Entlastung als Phase mit reduziertem Trainingsreiz, die Ermüdung begrenzen, die Erholung unterstützen und auf späteres Training vorbereiten soll. Das ist eine Definition, keine Vorschrift. Die Zahlen auf dieser Seite stammen nicht daraus."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell et al. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "deload": "Entlastungswochen: wann du eine brauchst und wie du sie durchführst",
+      "doubleProgression": "Doppelte Steigerung: der einfachste Weg, jede Woche Gewicht zu addieren"
+    }
+  }
+}

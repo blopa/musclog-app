@@ -1,0 +1,49 @@
+{
+  "notes": {
+    "title": "Note",
+    "sections": {
+      "latest": "Ultime",
+      "earlier": "Precedenti"
+    },
+    "screenMenu": {
+      "title": "Note",
+      "subtitle": "Annotalo ora, registralo dopo",
+      "create": "Crea nuova nota",
+      "createDescription": "Scrivi cosa hai preparato o mangiato"
+    },
+    "noteMenu": {
+      "title": "Opzioni nota",
+      "edit": "Modifica",
+      "editDescription": "Cambia il titolo o il testo",
+      "duplicate": "Duplica",
+      "duplicateDescription": "Copiala in cima alla lista",
+      "track": "Registralo",
+      "trackDescription": "Invialo al coach per registrare l'alimento",
+      "delete": "Elimina",
+      "deleteDescription": "Rimuovi questa nota definitivamente"
+    },
+    "form": {
+      "createTitle": "Nuova nota",
+      "editTitle": "Modifica nota",
+      "titleLabel": "Titolo (facoltativo)",
+      "titlePlaceholder": "es. Preparazione del pranzo",
+      "bodyLabel": "Nota",
+      "bodyPlaceholder": "es. 70 g di broccoli, 120 g di petto di pollo",
+      "bodyRequired": "Scrivi qualcosa prima di salvare",
+      "submit": "Salva nota"
+    },
+    "deleteConfirm": {
+      "title": "Eliminare la nota?",
+      "message": "Questa nota verrà rimossa definitivamente. L'azione non può essere annullata.",
+      "confirm": "Elimina"
+    },
+    "createSuccess": "Nota salvata",
+    "createError": "Impossibile salvare la nota",
+    "updateSuccess": "Nota aggiornata",
+    "updateError": "Impossibile aggiornare la nota",
+    "duplicateSuccess": "Nota duplicata",
+    "duplicateError": "Impossibile duplicare la nota",
+    "deleteSuccess": "Nota eliminata",
+    "deleteError": "Impossibile eliminare la nota"
+  }
+}

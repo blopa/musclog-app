@@ -1,0 +1,31 @@
+{
+  "cardio": {
+    "title": "Zapisz spacer lub bieg",
+    "subtitle": "Dodaj bez rozpoczynania treningu",
+    "menuItem": "Zapisz spacer lub bieg",
+    "activity": "Aktywność",
+    "walk": "Spacer",
+    "run": "Bieg",
+    "treadmill": "Na bieżni",
+    "distance": "Dystans",
+    "distanceInput": "Dystans ({{unit}})",
+    "duration": "Czas trwania",
+    "hours": "Godziny",
+    "minutes": "Minuty",
+    "seconds": "Sekundy",
+    "pace": "Tempo",
+    "ended": "Zakończono",
+    "estimate": "Szacowane kalorie",
+    "estimateValue": "{{kcal}}",
+    "estimateNoWeight": "Dodaj swoją wagę w profilu, aby oszacować kalorie.",
+    "estimateHint": "Szacowane na podstawie tempa i masy ciała na płaskim terenie.",
+    "watchCalories": "Kalorie z zegarka (opcjonalnie)",
+    "watchHint": "Zostaw 0, aby użyć szacunku.",
+    "save": "Zapisz",
+    "saved": "Zapisano: {{activity}}",
+    "failed": "Nie udało się zapisać. Spróbuj ponownie.",
+    "needsDistanceAndTime": "Wpisz dystans i czas trwania, aby zapisać.",
+    "futureError": "To jest w przyszłości. Wybierz, kiedy skończyłeś.",
+    "noPace": "—"
+  }
+}

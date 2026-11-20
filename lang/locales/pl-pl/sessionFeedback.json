@@ -1,0 +1,18 @@
+{
+  "sessionFeedback": {
+    "title": "Opinia o sesji",
+    "subtitle": "Oceń swój wynik",
+    "difficulty": "Trudność",
+    "exhaustion": "Zmęczenie",
+    "enjoyment": "Zadowolenie",
+    "easy": "Łatwo",
+    "extreme": "Ekstremalnie",
+    "fresh": "Świeży",
+    "drained": "Wyczerpany",
+    "disliked": "Nie podobało się",
+    "loved": "Podobało się",
+    "submit": "Wyślij opinię",
+    "notes": "Notatki",
+    "notesPlaceholder": "Jak poszło? Coś do zapamiętania na następnym razie?"
+  }
+}

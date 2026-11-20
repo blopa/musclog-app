@@ -1,0 +1,57 @@
+{
+  "websitePrograms": {
+    "index": {
+      "title": "Darmowe programy treningowe",
+      "intro": "Pełne programy z każdym treningiem, ćwiczeniem, serią i powtórzeniem. Przeczytaj jeden tutaj albo otwórz go w Musclog jednym dotknięciem i zacznij trenować. Ciężary startowe są podpowiadane z twojego profilu, gdy otworzysz program w aplikacji.",
+      "workouts_one": "{{count}} trening",
+      "workouts_few": "{{count}} treningi",
+      "workouts_many": "{{count}} treningów",
+      "workouts_other": "{{count}} treningu",
+      "minutes": "około {{minutes}} min na trening",
+      "exercisesLink": "Przeglądaj bibliotekę ćwiczeń"
+    },
+    "difficulty": {
+      "beginner": "Początkujący",
+      "intermediate": "Średniozaawansowany",
+      "advanced": "Zaawansowany"
+    },
+    "detail": {
+      "allPrograms": "Wszystkie programy",
+      "dayLabel": "Dzień {{n}}",
+      "exercise": "Ćwiczenie",
+      "setsReps": "Serie × powtórzenia",
+      "rest": "Odpoczynek",
+      "restSeconds": "{{seconds}} s",
+      "supersetGroup": "Superset {{group}}",
+      "openTitle": "Otwórz ten program w Musclog",
+      "openBody": "Otwiera program w aplikacji jako przegląd, więc nic nie zostaje zapisane, dopóki nie potwierdzisz. Ciężary startowe są podpowiadane z profilu, a dni tygodnia wybierasz sam. Jeśli nie masz jeszcze aplikacji, na następnej stronie są linki do pobrania.",
+      "openButton": "Otwórz w Musclog",
+      "howTitle": "Jak go prowadzić",
+      "how": [
+        "Wykonuj treningi po kolei i powtarzaj cykl. Jeden trening na dzień treningowy to najprostszy sposób; kolejność jest ważniejsza niż dzień tygodnia.",
+        "Zacznij od ciężarów, które podniesiesz z dobrą techniką i z zapasem kilku powtórzeń. Gdy na każdej serii dojdziesz do góry zakresu powtórzeń, następnym razem dodaj ciężar.",
+        "Te programy to ogólne przykłady, a nie porada medyczna. Jeśli masz kontuzję albo schorzenie, najpierw skonsultuj się z fachowcem."
+      ],
+      "notFoundTitle": "Nie znaleziono programu",
+      "notFoundBody": "Pod tym adresem nie ma programu.",
+      "metaTitle": "{{title}}: darmowy program treningowy"
+    },
+    "summaries": {
+      "push-pull-legs": "Trzy treningi: push (klatka, barki i triceps), pull (plecy i biceps) oraz nogi. Wykonuj je raz w tygodniu albo przechodź dwa razy, by uzyskać klasyczną wersję sześciodniową.",
+      "upper-lower-4-day": "Cztery treningi: dwa dni górnej partii ciała i dwa dni dolnej, co trenuje każdy mięsień dwa razy w tygodniu w planie czterodniowym.",
+      "full-body-3-day": "Trzy treningi na całe ciało dla początkujących. Każdy zawiera ruch nóg, wyciskanie, ciągnięcie i ćwiczenia rąk, więc każdy mięsień trenuje się trzy razy w tygodniu.",
+      "phul": "Cztery treningi: dwa górne i dwa dolne. Pierwszy z każdej pary to ciężki dzień siłowy z niską liczbą powtórzeń, drugi to dzień hipertrofii z wyższą liczbą.",
+      "5-day-hypertrophy-split": "Pięć treningów, każdy na jedną partię: klatka, plecy, barki, nogi i ręce. Więcej objętości na mięsień w sesji, jedna ciężka sesja na mięsień w tygodniu.",
+      "arnold-split": "Trzy treningi w stylu Arnolda: klatka i plecy, barki i ramiona, potem nogi. Podział tradycyjnie przechodzi się dwa razy, co daje sześć dni treningowych.",
+      "bro-split": "Pięć treningów, po jednej partii na każdy: klatka, plecy, nogi, barki i ramiona. Każdy mięsień dostaje jedną skupioną sesję w tygodniu.",
+      "2-day-full-body": "Dwa treningi na całe ciało, A i B, na tygodnie, gdy możesz trenować tylko dwa razy. Naprzemiennie.",
+      "3-day-strength-builder": "Trzy treningi oparte na cięższych seriach po 4 do 8 powtórzeń w przysiadzie, wyciskaniu na ławce, martwym ciągu i wiosłowaniu, z lżejszymi ćwiczeniami pomocniczymi po nich.",
+      "classic-3-day-split": "Trzy treningi: klatka i triceps, plecy i biceps, potem nogi i barki. Klasyczny podział na tydzień trzydniowy.",
+      "brolic-workout": "Dwa treningi górnej partii ciała, klatka i barki, z dużą ilością wyciskania i rozpiętek. Krótsze niż większość programów tutaj.",
+      "cable-superset-workout": "Pięć zaawansowanych treningów (Górne A, Dolne A, Ramiona, Górne B, Dolne B) z ćwiczeń na wyciągu, połączonych w supersety antagonistyczne, z zakresem powtórzeń i czasem odpoczynku dla każdego ćwiczenia.",
+      "short-full-body-gym": "Dwa krótkie treningi na całe ciało, A i B, na maszynach i wolnych ciężarach na siłowni: około 30 minut, po 2 serie, celowo lekko. Dobry sposób powrotu po przerwie.",
+      "short-full-body-home": "Dwa krótkie treningi na całe ciało, A i B, z hantlami, kettlebellem i gumami: około 30 minut, po 2 serie, celowo lekko.",
+      "short-full-body-no-equipment": "Dwa krótkie treningi na całe ciało, A i B, tylko z masą własnego ciała i gumą: około 30 minut, po 2 serie, celowo lekko."
+    }
+  }
+}

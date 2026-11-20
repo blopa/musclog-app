@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Kalkulator rozgrzewki",
+    "intro": "Wpisz swój ciężar roboczy, a dostaniesz serie rozgrzewkowe prowadzące do niego, z talerzami po każdej stronie sztangi, gdy podnosisz na sztandze.",
+    "form": {
+      "working": "Ciężar roboczy",
+      "workingHint": "Ciężar serii, do której się rozgrzewasz.",
+      "equipmentLabel": "Sprzęt",
+      "equipment": {
+        "barbell": "Sztanga",
+        "dumbbell": "Hantle",
+        "machine": "Maszyna lub wyciąg"
+      }
+    },
+    "problems": {
+      "working": "Wpisz ciężar roboczy jako liczbę większą od 0 i co najwyżej {{max}}."
+    },
+    "results": {
+      "title": "Serie rozgrzewkowe",
+      "set": "Seria",
+      "weight": "Ciężar",
+      "reps": "Powt.",
+      "plates": "Talerze po każdej stronie",
+      "working": "Seria robocza",
+      "target": "Cel",
+      "emptyBar": "Pusta sztanga",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Odpocznij około {{seconds}} sekund między seriami rozgrzewkowymi.",
+      "barIsWarmUp": "Twój ciężar roboczy jest tak blisko sztangi, że sama sztanga jest rozgrzewką. Przejdź od razu do pierwszej serii.",
+      "noRamp": "Ten ciężar jest za lekki na drabinkę rozgrzewkową. Zacznij od ciężaru roboczego.",
+      "workingNotLoadable": "Twoja siłownia nie może załadować ciężaru roboczego dokładnie. Rozgrzewki używają najbliższych ciężarów, jakie da się załadować."
+    },
+    "sections": [
+      {
+        "title": "Jak buduje się drabinkę",
+        "body": [
+          "Każda seria rozgrzewkowa to udział ciężaru roboczego: 40% na 5 powtórzeń, 60% na 3 powtórzenia i 80% na 2 powtórzenia. Każda jest cięższa i krótsza od poprzedniej, więc dochodzisz do ciężaru roboczego rozgrzany, a nie zmęczony.",
+          "Na sztandze drabinka zaczyna się od gołej sztangi na 10 powtórzeń, gdy pierwsza seria drabinki jest wyraźnie wyżej. Każdy ciężar zaokrągla się do tego, co mogą dać twoje talerze, a rozgrzewka w odległości 10% od ciężaru roboczego jest pomijana."
+        ]
+      },
+      {
+        "title": "To wybory Musclog",
+        "body": [
+          "Procenty, powtórzenia i odpoczynek między seriami to powszechnie stosowana rozpiska, której używa Musclog. To wybory produktowe, a nie wyniki badań. Zmień je, by pasowały do tego, jak się czujesz."
+        ]
+      },
+      {
+        "title": "Sztanga, hantle czy maszyna",
+        "body": [
+          "Na sztandze pokazywane są talerze po każdej stronie, byś mógł załadować każdą rozgrzewkę z talerzy swojej siłowni. Hantle i maszyny pomijają sztangę i talerze, używając standardowych przyrostów typowej siłowni."
+        ]
+      }
+    ]
+  }
+}

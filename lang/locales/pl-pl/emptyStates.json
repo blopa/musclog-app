@@ -1,0 +1,29 @@
+{
+  "emptyStates": {
+    "workouts": {
+      "title": "Brak treningów",
+      "description": "Zaplanuj rutynę i zapisz tutaj pierwszą sesję.",
+      "buttonLabel": "Utwórz pierwszy trening"
+    },
+    "foods": {
+      "title": "Brak zapisanego jedzenia",
+      "description": "Zapisuj posiłki, aby trzymać rękę na pulsie w swoich celach żywieniowych. Twoje ciało ci podziękuje.",
+      "buttonLabel": "Zapisz posiłek"
+    },
+    "workout": {
+      "title": "Brak treningów",
+      "description": "Gotowy na pierwszą sesję?",
+      "button": "Zaplanuj"
+    },
+    "food": {
+      "title": "Dziś nic nie zapisano",
+      "description": "Posiłki zapisane dzisiaj pojawią się tutaj.",
+      "button": "Zapisz"
+    },
+    "notes": {
+      "title": "Brak notatek",
+      "description": "Zapisz, co gotujesz, np. 70 g brokułów albo pomysł na przepis, i śledź to, gdy będziesz gotowy.",
+      "buttonLabel": "Napisz pierwszą notatkę"
+    }
+  }
+}

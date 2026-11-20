@@ -1,0 +1,74 @@
+{
+  "websiteToolWorkoutLogTemplate": {
+    "title": "Diario di allenamento gratuito da stampare",
+    "intro": "Scarica un diario di allenamento da stampare, oppure un foglio di calcolo da compilare al computer. Entrambi sono gratuiti, senza registrazione. Il foglio di calcolo si salva come CSV che l'app Musclog può importare.",
+    "downloads": {
+      "title": "Download",
+      "pdfA4": "Diario da stampare, A4",
+      "pdfA4Note": "PDF, 4 fogli orizzontali. Per carta A4.",
+      "pdfLetter": "Diario da stampare, US Letter",
+      "pdfLetterNote": "PDF, 4 fogli orizzontali. Per carta US Letter.",
+      "xlsx": "Modello di foglio di calcolo",
+      "xlsxNote": "File Excel (.xlsx) che si apre anche in Google Fogli, Numbers e LibreOffice. Un foglio Diario e un foglio Leggimi.",
+      "csv": "Modello CSV",
+      "csvNote": "Le stesse colonne come testo semplice, per qualsiasi foglio di calcolo o per l'app.",
+      "english": "I file sono in inglese, qualunque sia la lingua di questa pagina."
+    },
+    "check": {
+      "title": "Controlla il tuo CSV compilato",
+      "intro": "Scegli il file e vedi cosa leggerebbe Musclog. Usa lo stesso lettore dell'app, nel tuo browser. Il file non viene caricato.",
+      "file": "File CSV",
+      "unitLabel": "I pesi nel tuo file sono in",
+      "kg": "kg",
+      "lb": "lb",
+      "result": "Musclog leggerebbe {{workouts}} e {{sets}}.",
+      "workoutCount_one": "{{formattedCount}} allenamento",
+      "workoutCount_few": "{{formattedCount}} allenamenti",
+      "workoutCount_many": "{{formattedCount}} allenamenti",
+      "workoutCount_other": "{{formattedCount}} allenamenti",
+      "setCount_one": "{{formattedCount}} serie",
+      "setCount_few": "{{formattedCount}} serie",
+      "setCount_many": "{{formattedCount}} serie",
+      "setCount_other": "{{formattedCount}} serie",
+      "skipped_one": "{{formattedCount}} riga saltata: data mancante o futura, nessun nome di esercizio, oppure nessuna misura.",
+      "skipped_few": "{{formattedCount}} righe saltate: data mancante o futura, nessun nome di esercizio, oppure nessuna misura.",
+      "skipped_many": "{{formattedCount}} righe saltate: data mancante o futura, nessun nome di esercizio, oppure nessuna misura.",
+      "skipped_other": "{{formattedCount}} righe saltate: data mancante o futura, nessun nome di esercizio, oppure nessuna misura.",
+      "problems": {
+        "empty": "Il file è vuoto.",
+        "tooLarge": "Il file è troppo grande per essere controllato qui.",
+        "unreadable": "Non sembra un diario di allenamento. Mantieni la riga di intestazione del modello così com'è.",
+        "noRows": "Il file ha una riga di intestazione ma nessuna serie sotto.",
+        "read": "Il file non può essere letto."
+      },
+      "exampleWarning": "Elimina la riga di esempio nel modello prima di importare, altrimenti verrà letta come una serie reale."
+    },
+    "sections": [
+      {
+        "title": "Cosa contiene il diario da stampare",
+        "body": [
+          "Ogni foglio è un allenamento. In alto scrivi la data, l'allenamento, il tuo peso corporeo e se sollevi in kg o in lb. Sotto ci sono dodici righe di esercizi con cinque serie ciascuna, una casella per il peso e una per le ripetizioni, e una colonna Note per quanto è stata dura una serie o per eventuali dolori.",
+          "Il PDF contiene quattro fogli, quindi una stampa copre circa una o due settimane. Stampa quante copie ti servono. I fogli non contengono un programma: decidi tu cosa mettere nelle righe."
+        ]
+      },
+      {
+        "title": "Come compilare il foglio di calcolo",
+        "body": [
+          "Scrivi una riga per serie: la data, il nome dell'allenamento, l'esercizio, il numero della serie, il peso e le ripetizioni. RPE e Note sono facoltativi. Il peso è un numero semplice nell'unità che usi sempre. Lascia Ripetizioni vuoto per una serie a tempo. RPE 10 è una serie senza nulla in riserva, 9 lascia una ripetizione e 8 ne lascia due.",
+          "Le colonne seguono il formato che legge l'importatore di Musclog, quindi non devi convertire nulla. Salva il foglio Diario come file CSV, poi nell'app apri Impostazioni, poi Backup e dati, poi Importa allenamenti. Musclog abbina i nomi degli esercizi al suo catalogo e mostra una revisione prima di salvare anche una sola sessione."
+        ]
+      },
+      {
+        "title": "Carta, foglio di calcolo o app",
+        "body": [
+          "La carta non richiede batteria né account, e scrivere una serie richiede pochi secondi. Non può però guardare indietro per te: devi leggere tu il foglio della settimana scorsa per decidere cosa sollevare oggi.",
+          "Un foglio di calcolo può sommare il tuo volume e tracciare un esercizio, se costruisci tu le formule. Musclog lo fa e calcola il peso successivo a partire dalla tua ultima sessione, mostrando il motivo, ma il diario resta tuo in ogni caso. È un'app gratuita e open source, i tuoi dati restano sul dispositivo e puoi portarci il foglio di calcolo qui sopra."
+        ]
+      }
+    ],
+    "articles": {
+      "trackProgress": "Come monitorare i progressi in palestra: guida per principianti",
+      "importHistory": "Trasferisci la cronologia degli allenamenti da Strong, Hevy o FitNotes"
+    }
+  }
+}

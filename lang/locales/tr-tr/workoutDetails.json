@@ -1,0 +1,15 @@
+{
+  "workoutDetails": {
+    "subtitle": "Bu antrenmanı yönet",
+    "preview": "Antrenmanı önizle",
+    "previewDescription": "Antrenmanın tüm ayrıntılarını gör",
+    "edit": "Antrenmanı düzenle",
+    "editDescription": "Egzersizleri ve setleri değiştir",
+    "duplicate": "Çoğalt",
+    "duplicateDescription": "Bu antrenmanın bir kopyasını oluştur",
+    "share": "Paylaş",
+    "shareDescription": "Antrenmanı başkalarıyla paylaş",
+    "delete": "Sil",
+    "deleteDescription": "Bu antrenmanı kalıcı olarak kaldır"
+  }
+}

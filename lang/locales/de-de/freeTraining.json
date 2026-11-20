@@ -1,0 +1,31 @@
+{
+  "freeTraining": {
+    "workoutName": "Freies Training",
+    "blankWorkout": "Leeres Training",
+    "title": "Freies Training",
+    "titleSession": "Einheit",
+    "subtitle": "Stelle dein Training während des Trainings zusammen. Keine Vorlagen, nur Fortschritt.",
+    "addFirstExercise": "Erste Übung hinzufügen",
+    "tip": "Tipp: Du kannst jederzeit weitere Übungen hinzufügen.",
+    "startFreeTraining": "Freies Training starten",
+    "startFreeTrainingSubtitle": "Stelle dein Training während des Trainings zusammen. Keine Vorlagen, nur Fortschritt.",
+    "duration": "Dauer",
+    "calories": "Kalorien",
+    "volume": "Volumen",
+    "inProgress": "Läuft",
+    "addExercise": {
+      "title": "Übung hinzufügen",
+      "numberOfSets": "Anzahl Sätze",
+      "addToWorkout": "Zum Training hinzufügen",
+      "menuDescription": "Übungen und Sätze zu dieser Einheit hinzufügen"
+    },
+    "exerciseComplete": {
+      "title": "Übung abgeschlossen",
+      "subtitle": "Übung abgeschlossen. Bereit für mehr?",
+      "setsCompleted": "{{count}} Sätze absolviert",
+      "totalVolume": "Gesamtvolumen",
+      "addNextExercise": "Nächste Übung hinzufügen",
+      "finishWorkout": "Training beenden"
+    }
+  }
+}

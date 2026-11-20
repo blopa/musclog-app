@@ -1,0 +1,58 @@
+{
+  "pastWorkoutHistory": {
+    "title": "Historique des séances",
+    "searchPlaceholder": "Rechercher des séances...",
+    "noWorkoutsFound": "Aucune séance ne correspond à ta recherche.",
+    "noWorkoutHistory": "Aucun historique de séance pour l'instant.",
+    "noWorkoutsInRange": "Aucune séance sur cette période. Essaie d'élargir le filtre.",
+    "loadMore": "Charger plus",
+    "loadingMore": "Chargement...",
+    "stats": {
+      "duration": "Durée",
+      "volume": "Volume",
+      "calories": "Calories",
+      "distance": "Distance",
+      "pace": "Allure"
+    },
+    "prBadge": {
+      "singular": "{{count}} record",
+      "plural": "{{count}} records"
+    },
+    "filters": {
+      "title": "Filtrer les séances",
+      "workoutType": "Type de séance",
+      "minDuration": "Durée min.",
+      "reset": "Réinitialiser",
+      "applyFilters": "Appliquer les filtres",
+      "durationFormats": {
+        "zero": "0 min",
+        "minutes": "{{minutes}} min",
+        "minutesPlus": "{{minutes}}+ min",
+        "max": "120 min+"
+      },
+      "workoutTypes": {
+        "all": "Tous les types",
+        "strength": "Force",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "Période",
+        "30days": "30 derniers jours",
+        "90days": "90 derniers jours",
+        "allTime": "Tout le temps"
+      },
+      "muscleGroups": {
+        "title": "Groupe musculaire (choix multiple)",
+        "chest": "Pectoraux",
+        "back": "Dos",
+        "legs": "Jambes",
+        "shoulders": "Épaules",
+        "arms": "Bras",
+        "core": "Tronc",
+        "fullBody": "Corps entier"
+      }
+    }
+  }
+}

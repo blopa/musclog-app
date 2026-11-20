@@ -1,0 +1,54 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "Rechner für das Ein-Wiederholungs-Maximum",
+    "intro": "Gib einen Satz ein, den du gemacht hast, und erhalte ein geschätztes Ein-Wiederholungs-Maximum, mit Wiederholungen in Reserve und einer Tabelle mit Gewichten bei jedem Prozentsatz davon.",
+    "form": {
+      "weight": "Gehobenes Gewicht",
+      "reps": "Gemachte Wiederholungen",
+      "repsHint": "Ganze Zahl, 1 bis 10",
+      "reserve": "Wiederholungen in Reserve (optional)",
+      "reserveHint": "Wie viele weitere Wiederholungen möglich gewesen wären. Lass es leer, wenn du bis zum Muskelversagen gegangen bist."
+    },
+    "problems": {
+      "weight": "Gib das gehobene Gewicht als Zahl über 0 ein.",
+      "reps": "Gib die Wiederholungen als ganze Zahl von 1 bis 10 ein.",
+      "repsTooHigh": "Sätze mit mehr als 10 Wiederholungen ergeben kein verlässliches Ein-Wiederholungs-Maximum. Ein langer Satz misst Ausdauer, und jede Formel weicht umso weiter von der Wahrheit ab, je mehr Wiederholungen sie hochrechnen muss. Nutze einen schwereren Satz mit 10 Wiederholungen oder weniger.",
+      "reserve": "Wiederholungen in Reserve müssen eine ganze Zahl von 0 bis 9 sein."
+    },
+    "results": {
+      "estimate": "Geschätztes Ein-Wiederholungs-Maximum",
+      "range": "Einzelne Formeln liegen zwischen {{low}} und {{high}} {{unit}}. Die Schätzung ist ihr Mittelwert.",
+      "tableTitle": "Gewicht bei jedem Prozentsatz deines Ein-Wiederholungs-Maximums",
+      "percent": "% von 1RM",
+      "weight": "Gewicht",
+      "reps": "Wdh. bis Versagen",
+      "byFormula": "Jede Formel einzeln",
+      "extrapolatedNote": "* Hochgerechnet. Über {{max}} Wiederholungen werden die Formeln über den Bereich hinaus gedehnt, dem die App bei einem Satz vertraut. Lies diese Zeilen daher nur als grobe Orientierung."
+    },
+    "sections": [
+      {
+        "title": "So entsteht die Schätzung",
+        "body": [
+          "Der Rechner mittelt sieben veröffentlichte Formeln: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor und Wathen. Das Mitteln glättet die Eigenheiten jeder einzelnen Formel, und das Ergebnis ist dieselbe Zahl, die die Musclog-App für einen erfassten Satz zeigt.",
+          "Wiederholungen in Reserve werden zu deinen gemachten Wiederholungen addiert. Fünf Wiederholungen mit zwei in Reserve gelten als sieben Wiederholungen bis Versagen, denn so weit von deiner Grenze entfernt war der Satz."
+        ]
+      },
+      {
+        "title": "Warum Sätze über 10 Wiederholungen nicht gelten",
+        "body": [
+          "Formeln für das Ein-Wiederholungs-Maximum funktionieren am besten bei Sätzen mit wenigen Wiederholungen. Je weiter man sie dehnt, desto stärker weichen sie ab, und ein Satz mit 15 sagt vor allem etwas über deine Ausdauer, nicht über deine maximale Kraft. Die App ignoriert diese Sätze für Kraftstufen und Ziele, und diese Seite tut dasselbe."
+        ]
+      },
+      {
+        "title": "So nutzt du die Tabelle",
+        "body": [
+          "Jede Zeile ist ein Gewicht bei einem Prozentsatz deines geschätzten Ein-Wiederholungs-Maximums, mit den Wiederholungen bis Versagen, die dieselben Formeln für dieses Gewicht vorhersagen. Menschen unterscheiden sich stark, betrachte die Zahlen daher als Ausgangspunkt und passe sie an, wie sich die Stange tatsächlich bewegt."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo et al. (2024), Maximal number of repetitions at percentages of the one repetition maximum (Sports Medicine)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

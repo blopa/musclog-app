@@ -1,0 +1,31 @@
+{
+  "freeTraining": {
+    "workoutName": "Entraînement libre",
+    "blankWorkout": "Séance vierge",
+    "title": "Entraînement libre",
+    "titleSession": "Séance",
+    "subtitle": "Construis ta séance au fil de l'eau. Pas de modèle, juste de la progression.",
+    "addFirstExercise": "Ajouter le premier exercice",
+    "tip": "Astuce : tu peux ajouter d'autres exercices à tout moment.",
+    "startFreeTraining": "Commencer un entraînement libre",
+    "startFreeTrainingSubtitle": "Construis ta séance au fil de l'eau. Pas de modèle, juste de la progression.",
+    "duration": "Durée",
+    "calories": "Calories",
+    "volume": "Volume",
+    "inProgress": "En cours",
+    "addExercise": {
+      "title": "Ajouter un exercice",
+      "numberOfSets": "Nombre de séries",
+      "addToWorkout": "Ajouter à la séance",
+      "menuDescription": "Ajouter des exercices et des séries à cette séance"
+    },
+    "exerciseComplete": {
+      "title": "Exercice terminé",
+      "subtitle": "Exercice terminé. Prêt pour la suite ?",
+      "setsCompleted": "{{count}} séries terminées",
+      "totalVolume": "Volume total",
+      "addNextExercise": "Ajouter l'exercice suivant",
+      "finishWorkout": "Terminer la séance"
+    }
+  }
+}

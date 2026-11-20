@@ -1,0 +1,54 @@
+{
+  "websiteToolOneRepMax": {
+    "title": "Calcolatore del massimale a una ripetizione",
+    "intro": "Inserisci una serie che hai fatto e ottieni una stima del tuo massimale a una ripetizione, con le ripetizioni in riserva e una tabella dei pesi a ogni percentuale del massimale.",
+    "form": {
+      "weight": "Peso sollevato",
+      "reps": "Ripetizioni fatte",
+      "repsHint": "Numero intero, da 1 a 10",
+      "reserve": "Ripetizioni in riserva (facoltativo)",
+      "reserveHint": "Quante altre ripetizioni avresti potuto fare. Lascia vuoto se sei arrivato al cedimento."
+    },
+    "problems": {
+      "weight": "Inserisci il peso sollevato come numero maggiore di 0.",
+      "reps": "Inserisci le ripetizioni come numero intero da 1 a 10.",
+      "repsTooHigh": "Le serie con più di 10 ripetizioni non danno un massimale a una ripetizione affidabile. Una serie lunga misura la resistenza, e ogni formula si allontana di più dalla realtà quanto più deve estrapolare ripetizioni. Usa una serie più pesante di 10 ripetizioni o meno.",
+      "reserve": "Le ripetizioni in riserva devono essere un numero intero da 0 a 9."
+    },
+    "results": {
+      "estimate": "Massimale stimato a una ripetizione",
+      "range": "Le singole formule vanno da {{low}} a {{high}} {{unit}}. La stima è la loro media.",
+      "tableTitle": "Peso a ogni percentuale del tuo massimale a una ripetizione",
+      "percent": "% di 1RM",
+      "weight": "Peso",
+      "reps": "Ripetizioni fino al cedimento",
+      "byFormula": "Ogni formula da sola",
+      "extrapolatedNote": "* Estrapolato. Oltre {{max}} ripetizioni le formule vengono allungate oltre l'intervallo che l'app considera affidabile per una serie, quindi leggi queste righe solo come guida approssimativa."
+    },
+    "sections": [
+      {
+        "title": "Come viene fatta la stima",
+        "body": [
+          "Il calcolatore fa la media di sette formule pubblicate: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor e Wathen. La media attenua le anomalie di ciascuna, e il risultato è lo stesso numero che l'app Musclog mostra per una serie registrata.",
+          "Le ripetizioni in riserva si sommano alle ripetizioni fatte. Cinque ripetizioni con due in riserva vengono trattate come sette ripetizioni fino al cedimento, perché è la distanza dal tuo limite a cui era la serie."
+        ]
+      },
+      {
+        "title": "Perché le serie oltre 10 ripetizioni non sono affidabili",
+        "body": [
+          "Le formule del massimale a una ripetizione funzionano meglio con serie a poche ripetizioni. Più le allunghi, più si allontanano, e una serie di 15 dice soprattutto della tua resistenza, non della tua forza massima. L'app ignora quelle serie per i livelli di forza e gli obiettivi, e questa pagina fa lo stesso."
+        ]
+      },
+      {
+        "title": "Come usare la tabella",
+        "body": [
+          "Ogni riga è un peso a una percentuale del tuo massimale stimato a una ripetizione, con le ripetizioni fino al cedimento che le stesse formule prevedono a quel peso. Le persone variano molto, quindi considera i numeri un punto di partenza e adattali a come si muove davvero il bilanciere."
+        ]
+      }
+    ],
+    "sources": {
+      "nuzzo": "Nuzzo et al. (2024), Maximal number of repetitions at percentages of the one repetition maximum (Sports Medicine)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    }
+  }
+}

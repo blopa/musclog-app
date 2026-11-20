@@ -1,0 +1,116 @@
+{
+  "notifications": {
+    "header": {
+      "title": "Notifications",
+      "clearAll": "Tout effacer"
+    },
+    "sections": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "earlier": "Plus tôt"
+    },
+    "channels": {
+      "default": "Par défaut",
+      "activeWorkout": "Séance en cours",
+      "cycle": "Rappels de cycle",
+      "restTimer": "Minuteur de repos",
+      "workoutReminders": "Rappels de séance",
+      "restTimerQuiet": "Minuteur de repos (sans son)"
+    },
+    "startNow": "Commencer maintenant",
+    "types": {
+      "aiInsight": {
+        "title": "Analyse IA",
+        "description": "D'après tes récentes séances de force, essaie d'augmenter ton apport en protéines de 15 g aujourd'hui pour une récupération optimale."
+      },
+      "workoutReminder": {
+        "title": "Rappel de séance",
+        "description": "Prêt pour {{workoutName}} ? Prévue à {{time}} aujourd'hui."
+      },
+      "workoutCompleted": {
+        "title": "Séance terminée",
+        "description": "{{workoutName}} terminée. Tu as brûlé {{calories}}."
+      },
+      "kudosReceived": {
+        "title": "Félicitations reçues",
+        "description": "{{name}} et {{count}} autres ont aimé ton récent cap : « {{milestone}} »"
+      },
+      "weeklyReport": {
+        "title": "Bilan hebdomadaire prêt",
+        "description": "Ton bilan de progrès de la semaine dernière est disponible. Consulte tes stats."
+      },
+      "activeWorkout": {
+        "title": "Séance : {{workoutName}}",
+        "body": "{{totalTime}} - {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Séance en cours"
+      },
+      "workoutReminderMorning": {
+        "title": "Rappel de séance",
+        "body": "Ta séance {{workoutName}} est prévue aujourd'hui."
+      },
+      "nutritionOverview": {
+        "title": "Résumé nutritionnel du jour",
+        "body": "Vois comment ta nutrition d'aujourd'hui se compare à tes objectifs."
+      },
+      "nutritionCheckin": {
+        "title": "Bilan de progrès hebdomadaire",
+        "body": "C'est l'heure de ton bilan nutritionnel hebdomadaire ! Voyons comment tu t'en es sorti."
+      },
+      "periodPrediction": {
+        "title": "Prévision des règles",
+        "body": "Tes règles pourraient commencer dans quelques jours, d'après tes derniers cycles."
+      },
+      "fertileWindow": {
+        "title": "Période fertile",
+        "body": "Ta période fertile estimée pourrait bientôt commencer. C'est une estimation calendaire, pas une confirmation de l'ovulation."
+      },
+      "restTimerAlert": {
+        "title": "Repos terminé",
+        "body": "Ton repos est écoulé. Place à la série suivante."
+      },
+      "workoutDurationWarning": {
+        "title": "Toujours en séance ?",
+        "body": "Ta séance dure depuis 5 heures. N'oublie pas de la terminer dans Musclog."
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Tu as une mise à jour."
+      },
+      "unfinishedWorkout": {
+        "title": "Terminer ta séance ?",
+        "body": "{{workoutName}} est toujours ouverte. Termine-la et enregistre-la quand tu as fini."
+      },
+      "goalAtRisk": {
+        "title": "Objectif hebdomadaire menacé",
+        "body": "Séances restantes pour atteindre ton objectif hebdomadaire : {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Presque prêt",
+        "body": "Il reste {{seconds}} secondes de repos."
+      },
+      "workTimerAlert": {
+        "title": "Temps écoulé",
+        "body": "Ta série chronométrée est terminée."
+      },
+      "comebackWelcome": {
+        "title": "Quand tu veux",
+        "body": "Pas de précipitation. Si tu veux reprendre doucement, il existe une façon progressive de recommencer."
+      }
+    },
+    "actions": {
+      "addRest": "+{{seconds}} s de repos",
+      "nextSet": "Série suivante",
+      "snooze": "Reporter 1 h",
+      "done": "Fait",
+      "later": "Plus tard",
+      "skip": "Passer"
+    },
+    "restPrompt": {
+      "title": "Alertes du minuteur de repos ?",
+      "message": "Ton minuteur de repos tourne. Veux-tu une alerte si tu verrouilles ton téléphone ou changes d'application ?",
+      "confirm": "Activer les alertes",
+      "cancel": "Pas maintenant"
+    }
+  }
+}

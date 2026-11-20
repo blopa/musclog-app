@@ -1,0 +1,10 @@
+{
+  "food_food_portions": "Portionen von Lebensmitteln",
+  "createPortion": "Portion erstellen",
+  "createFoodPortion": "Lebensmittelportion erstellen",
+  "portionName": "Name der Portion",
+  "portionNamePlaceholder": "z. B. Tasse, Scheibe, Stück",
+  "weightGrams": "Gewicht (Gramm)",
+  "selectIcon": "Symbol auswählen",
+  "chooseIcon": "Symbol wählen"
+}

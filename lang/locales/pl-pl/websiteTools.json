@@ -1,0 +1,51 @@
+{
+  "websiteTools": {
+    "layout": {
+      "allTools": "Wszystkie narzędzia",
+      "howItWorks": "Jak to działa",
+      "sources": "Źródła",
+      "related": "Więcej narzędzi",
+      "ctaTitle": "Śledź to w Musclog",
+      "ctaBody": "Musclog to darmowa aplikacja open source do śledzenia treningów i odżywiania. Twoje dane zostają na urządzeniu.",
+      "sameMath": "Używa tych samych obliczeń co aplikacja Musclog.",
+      "localOnly": "Wszystko, co wpisujesz, zostaje w przeglądarce.",
+      "readMore": "Czytaj dalej"
+    },
+    "units": {
+      "label": "Jednostki",
+      "metric": "Metryczne (kg)",
+      "imperial": "Imperialne (lb)",
+      "kg": "kg",
+      "lb": "lb"
+    },
+    "gym": {
+      "summary": "Twoja siłownia: sztanga i talerze",
+      "barWeight": "Masa sztangi",
+      "plates": "Pary talerzy",
+      "platesHint": "Ile par każdego talerza masz. Wpisz 0 przy talerzu, którego nie ma twoja siłownia.",
+      "reset": "Przywróć standardową siłownię",
+      "remembered": "Zapamiętane tylko w tej przeglądarce.",
+      "invalid": "Sprawdź masę sztangi i liczbę talerzy: każde pole wymaga liczby."
+    },
+    "index": {
+      "groups": {
+        "strength": {
+          "title": "Poznaj swoją siłę",
+          "body": "Policz swoje maksimum, talerze i rozgrzewki."
+        },
+        "training": {
+          "title": "Zaplanuj trening",
+          "body": "Ustaw wysiłek, progresję i odciążenia oraz prowadź dziennik."
+        },
+        "nutrition": {
+          "title": "Jedz pod swój cel",
+          "body": "Białko, kalorie i węglowodany bez zgadywania."
+        }
+      },
+      "title": "Darmowe narzędzia dla ćwiczących",
+      "intro": "Kalkulatory działające w przeglądarce, używające tych samych obliczeń co aplikacja Musclog. Nic, co wpiszesz, nie opuszcza strony.",
+      "programsTitle": "Darmowe programy treningowe",
+      "programsBody": "Pełne programy z każdym dniem, ćwiczeniem, serią i powtórzeniem. Otwórz jeden w Musclog jednym dotknięciem."
+    }
+  }
+}

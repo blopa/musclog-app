@@ -32,6 +32,11 @@ describe('website locales', () => {
       'nl',
       'pt-br',
       'ru',
+      'de',
+      'fr',
+      'it',
+      'pl',
+      'tr',
     ]);
     expect(DEFAULT_LOCALE_PREFIX).toBe('en');
   });
@@ -43,6 +48,11 @@ describe('website locales', () => {
       'nl',
       'pt-BR',
       'ru',
+      'de',
+      'fr',
+      'it',
+      'pl',
+      'tr',
     ]);
   });
 
@@ -50,7 +60,8 @@ describe('website locales', () => {
     expect(localeForLanguage('pt-br').prefix).toBe('pt-br');
     expect(localeForLanguage('ru-RU').prefix).toBe('ru');
     expect(localeForLanguage('es').prefix).toBe('es');
-    expect(localeForLanguage('de-DE').prefix).toBe('en');
+    expect(localeForLanguage('de-DE').prefix).toBe('de');
+    expect(localeForLanguage('ja-JP').prefix).toBe('en');
     expect(localeForLanguage(undefined).prefix).toBe('en');
   });
 });
@@ -117,7 +128,18 @@ describe('locale scope', () => {
   });
 
   it('publishes a translated route in every locale', () => {
-    expect(localePrefixesFor('/tools/rpe-chart')).toEqual(['en', 'es', 'nl', 'pt-br', 'ru']);
+    expect(localePrefixesFor('/tools/rpe-chart')).toEqual([
+      'en',
+      'es',
+      'nl',
+      'pt-br',
+      'ru',
+      'de',
+      'fr',
+      'it',
+      'pl',
+      'tr',
+    ]);
     expect(localePrefixesFor('/blog')).toEqual(['en']);
     expect(localePrefixesFor('/open')).toEqual([]);
   });
@@ -131,6 +153,11 @@ describe('hreflangAlternatePaths', () => {
       ['nl', '/nl/tools/rpe-chart'],
       ['pt-BR', '/pt-br/tools/rpe-chart'],
       ['ru', '/ru/tools/rpe-chart'],
+      ['de', '/de/tools/rpe-chart'],
+      ['fr', '/fr/tools/rpe-chart'],
+      ['it', '/it/tools/rpe-chart'],
+      ['pl', '/pl/tools/rpe-chart'],
+      ['tr', '/tr/tools/rpe-chart'],
       ['x-default', '/en/tools/rpe-chart'],
     ]);
   });

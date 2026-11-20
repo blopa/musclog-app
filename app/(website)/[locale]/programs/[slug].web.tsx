@@ -30,11 +30,16 @@ import {
 } from '@/components/website/websiteMetadata';
 import { WebsitePageSeo } from '@/components/website/WebsiteSeo';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import dePrograms from '@/lang/locales/de-de/websitePrograms.json';
 import enPrograms from '@/lang/locales/en-us/websitePrograms.json';
 import esPrograms from '@/lang/locales/es-es/websitePrograms.json';
+import frPrograms from '@/lang/locales/fr-fr/websitePrograms.json';
+import itPrograms from '@/lang/locales/it-it/websitePrograms.json';
 import nlPrograms from '@/lang/locales/nl-nl/websitePrograms.json';
+import plPrograms from '@/lang/locales/pl-pl/websitePrograms.json';
 import ptPrograms from '@/lang/locales/pt-br/websitePrograms.json';
 import ruPrograms from '@/lang/locales/ru-ru/websitePrograms.json';
+import trPrograms from '@/lang/locales/tr-tr/websitePrograms.json';
 
 /** Every program in every language: the language is part of this page's own route. */
 export async function generateStaticParams(): Promise<{ locale: string; slug: string }[]> {
@@ -219,6 +224,11 @@ const PROGRAMS_COPY = {
   'nl-nl': nlPrograms,
   'pt-br': ptPrograms,
   'ru-ru': ruPrograms,
+  'de-de': dePrograms,
+  'fr-fr': frPrograms,
+  'it-it': itPrograms,
+  'pl-pl': plPrograms,
+  'tr-tr': trPrograms,
 };
 
 export const generateMetadata: GenerateMetadataFunction = async (_request, params) => {

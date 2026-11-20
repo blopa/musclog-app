@@ -1,0 +1,50 @@
+{
+  "createWorkout": {
+    "title": "Yeni antrenman oluştur",
+    "save": "Kaydet",
+    "workoutIcon": "Antrenman simgesi",
+    "essentials": "Temel bilgiler",
+    "workoutTitle": "Antrenman başlığı",
+    "workoutTitlePlaceholder": "ör. Bacak Günü Yıkımı",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Ön ve arka bacağa ile baldıra odaklan...",
+    "workoutType": "Antrenman türü",
+    "types": {
+      "strength": "Güç",
+      "cardio": "Kardiyo",
+      "flexibility": "Esneklik",
+      "calisthenics": "Vücut ağırlığı",
+      "other": "Diğer"
+    },
+    "intelligence": "Zekâ",
+    "workoutInsight": {
+      "title": "Antrenman içgörüleri",
+      "description": "Musclog'un bir sonraki seansın için içgörüleri nasıl hazırlayacağını seç. Etkinleştirildiğinde yapay zeka toparlanma verisine göre uyarlanır.",
+      "none": "Yok",
+      "algorithm": "Algoritma",
+      "ai": "Yapay zeka"
+    },
+    "routine": "Rutin",
+    "plan": {
+      "label": "Antrenman planları",
+      "none": "Bir planın parçası değil",
+      "scheduleHint": "Haftanın günleri her antrenman planı için ayrı ayrı ayarlanır."
+    },
+    "standaloneSchedule": {
+      "label": "Bağımsız program",
+      "description": "Yalnızca bu antrenman bir planın parçası değilken kullanılır."
+    },
+    "weekly": "Haftalık",
+    "exercises": "Egzersizler",
+    "exercisesInWorkout": "Antrenmandaki egzersizler",
+    "addExerciseError": "Egzersiz eklenemedi",
+    "editTitle": "Antrenmanı düzenle",
+    "loadError": "Yüklenemedi",
+    "noExercisesPlaceholder": "Egzersiz yok",
+    "saveError": "Kaydedilemedi",
+    "validation": {
+      "titleRequiredMessage": "Lütfen bir antrenman başlığı gir"
+    },
+    "ruleTapHint": "Ağırlıklarının nasıl ilerleyeceğini seçmek için bir egzersize dokun."
+  }
+}

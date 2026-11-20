@@ -1,0 +1,29 @@
+{
+  "emptyStates": {
+    "workouts": {
+      "title": "Nessun allenamento ancora",
+      "description": "Pianifica la tua routine e registra qui la tua prima sessione.",
+      "buttonLabel": "Crea il tuo primo allenamento"
+    },
+    "foods": {
+      "title": "Nessun cibo registrato",
+      "description": "Registra i tuoi pasti per restare in linea con gli obiettivi nutrizionali. Il tuo corpo ti ringrazierà.",
+      "buttonLabel": "Registra il tuo pasto"
+    },
+    "workout": {
+      "title": "Nessun allenamento ancora",
+      "description": "Pronto per la tua prima sessione?",
+      "button": "Pianifica"
+    },
+    "food": {
+      "title": "Nulla registrato oggi",
+      "description": "I pasti che registri oggi compaiono qui.",
+      "button": "Registra"
+    },
+    "notes": {
+      "title": "Nessuna nota ancora",
+      "description": "Annota cosa stai cucinando, come 70 g di broccoli o un'idea di ricetta, e registralo quando sei pronto.",
+      "buttonLabel": "Scrivi la tua prima nota"
+    }
+  }
+}

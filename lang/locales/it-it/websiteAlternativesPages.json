@@ -1,0 +1,77 @@
+{
+  "websiteAlternativesPages": {
+    "shared": {
+      "title": "Musclog vs {{name}}",
+      "allComparisons": "Tutte le alternative",
+      "checked": "I dati su {{name}} sono stati verificati il {{date}}. I limiti del piano gratuito cambiano, quindi apri la fonte di ogni riga prima di decidere.",
+      "colTopic": "Argomento",
+      "colMusclog": "Musclog",
+      "source": "Fonte",
+      "chooseTitle": "Quale fa per te",
+      "importTitle": "Trasferire la cronologia degli allenamenti",
+      "otherApps": "Altri confronti",
+      "nonAffiliation": "Musclog non è affiliata a {{name}}. I nomi dei prodotti appartengono ai rispettivi proprietari."
+    },
+    "apps": {
+      "strong": {
+        "intro": "Strong è un registro degli allenamenti. Anche Musclog registra gli allenamenti e in più tiene traccia del cibo, in un'unica app gratuita e open source.",
+        "facts": [
+          {
+            "topic": "Versione gratuita",
+            "them": "Salva allenamenti illimitati, ma è limitata a 3 schede personalizzate.",
+            "musclog": "Non c'è limite alle schede e nulla è bloccato dietro un abbonamento."
+          },
+          {
+            "topic": "Piano a pagamento",
+            "them": "Strong PRO rimuove il limite delle schede: 4,99 $ al mese o 29,99 $ all'anno (prezzi dell'App Store statunitense).",
+            "musclog": "Gratuita e open source (GPL-3.0). Non esiste un livello a pagamento."
+          }
+        ],
+        "import": "Musclog può importare un'esportazione CSV di Strong: Impostazioni, Backup e dati, Importa allenamenti. Abbina i nomi degli esercizi al proprio catalogo e chiede di quelli che non riesce a riconoscere, mostrando una revisione prima di salvare qualsiasi cosa. Importare lo stesso file due volte non duplica le sessioni, e un'importazione può essere annullata.",
+        "chooseThem": "Resta con Strong se lo usi già e tre schede personalizzate ti bastano.",
+        "chooseMusclog": "Prova Musclog se vuoi nessun limite di schede, il monitoraggio del cibo nella stessa app e i tuoi dati conservati sul dispositivo."
+      },
+      "hevy": {
+        "intro": "Hevy è un registro degli allenamenti con un piano gratuito e un piano Pro a pagamento. Musclog registra allenamenti e cibo in un'unica app gratuita e open source.",
+        "facts": [
+          {
+            "topic": "Limiti del piano gratuito",
+            "them": "Il piano gratuito è limitato a 4 schede e 7 esercizi personalizzati.",
+            "musclog": "Non c'è limite su schede o esercizi personalizzati."
+          },
+          {
+            "topic": "Calcolatore del riscaldamento",
+            "them": "Il calcolatore del riscaldamento fa parte di Hevy Pro, non del piano gratuito.",
+            "musclog": "Le serie di riscaldamento sono integrate e gratuite. Puoi provare anche il calcolatore del riscaldamento su questo sito."
+          },
+          {
+            "topic": "Cronologia degli allenamenti",
+            "them": "Il piano gratuito limita la cronologia dei dati a 3 mesi; Hevy Pro la conserva tutta.",
+            "musclog": "Tutta la tua cronologia resta sul dispositivo, senza limiti di tempo."
+          }
+        ],
+        "import": "Musclog può importare un'esportazione CSV di Hevy: Impostazioni, Backup e dati, Importa allenamenti. Abbina i nomi degli esercizi al proprio catalogo e chiede di quelli che non riesce a riconoscere, mostrando una revisione prima di salvare qualsiasi cosa. Importare lo stesso file due volte non duplica le sessioni, e un'importazione può essere annullata.",
+        "chooseThem": "Resta con Hevy se lo usi già e i limiti del piano gratuito non ti danno fastidio.",
+        "chooseMusclog": "Prova Musclog se vuoi nessun limite su schede ed esercizi, il monitoraggio del cibo nella stessa app e i tuoi dati conservati sul dispositivo."
+      },
+      "myFitnessPal": {
+        "intro": "MyFitnessPal è un tracker di cibo e calorie. Musclog traccia anche il cibo e registra i tuoi allenamenti, in un'unica app gratuita e open source.",
+        "facts": [
+          {
+            "topic": "Scansione del codice a barre",
+            "them": "La scansione del codice a barre è una funzione Premium dal 1° ottobre 2022, secondo l'annuncio dello stesso MyFitnessPal.",
+            "musclog": "La scansione del codice a barre è gratuita."
+          },
+          {
+            "topic": "Scansione del codice a barre oggi",
+            "them": "La pagina di aiuto di MyFitnessPal dice ancora che la scansione è disponibile solo con un abbonamento Premium.",
+            "musclog": "La scansione del codice a barre è gratuita."
+          }
+        ],
+        "import": "",
+        "chooseThem": "Resta con MyFitnessPal se lo usi già, ti affidi al suo database alimentare e sei soddisfatto della versione gratuita.",
+        "chooseMusclog": "Prova Musclog se vuoi la scansione gratuita dei codici a barre, allenamenti e alimentazione in un'unica app e i tuoi dati sul dispositivo."
+      }
+    }
+  }
+}

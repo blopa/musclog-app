@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Calcolatore di carboidrati netti",
+    "intro": "Trasforma i carboidrati e le fibre di un'etichetta nutrizionale in carboidrati totali e netti, e scopri quale dei due si aspetta il tuo tracker.",
+    "form": {
+      "region": "Provenienza dell'etichetta",
+      "us": "Etichetta USA o Canada: i carboidrati includono le fibre",
+      "eu": "Etichetta UE, Regno Unito o simile: i carboidrati escludono le fibre",
+      "carbs": "Carboidrati in etichetta",
+      "fiber": "Fibre alimentari in etichetta"
+    },
+    "problems": {
+      "carbs": "Inserisci i carboidrati come numero di grammi.",
+      "fiber": "Inserisci le fibre come numero di grammi, oppure 0.",
+      "fiberTooHigh": "Su un'etichetta USA o Canada, i carboidrati totali includono già le fibre, quindi le fibre non possono superare quel totale. Controlla i due numeri."
+    },
+    "results": {
+      "net": "Carboidrati netti",
+      "netNote": "Carboidrati senza fibre: la parte digeribile che contano i tracker dei carboidrati netti.",
+      "total": "Carboidrati totali",
+      "totalNote": "Carboidrati con le fibre incluse: ciò che stampano le etichette USA e ciò che Musclog salva per un alimento.",
+      "logTitle": "Cosa inserire",
+      "logTotal": "Un tracker che conta i carboidrati totali: inserisci {{value}}.",
+      "logNet": "Un tracker che conta i carboidrati netti: inserisci {{value}}."
+    },
+    "notes": {
+      "sugarAlcohols": "Gli alcoli dello zucchero (polioli come eritritolo o maltitolo) non vengono sottratti qui. Alcune persone li tolgono anche dai carboidrati netti; questo strumento non lo fa, quindi per i prodotti che li contengono il valore netto potrebbe risultare un po' alto.",
+      "musclog": "Musclog salva i carboidrati totali comprese le fibre, come li conteggiano le etichette USA. Gli alimenti di provenienza UE vengono convertiti al momento del salvataggio, così il diario mantiene un unico significato per i carboidrati."
+    },
+    "sections": [
+      {
+        "title": "Perché le etichette differiscono",
+        "body": [
+          "Nell'UE, i carboidrati dichiarati sono quelli che il tuo corpo metabolizza, e le fibre sono dichiarate su una riga a parte. Negli USA e in Canada, la riga dei carboidrati totali include già le fibre alimentari, quindi lo stesso prodotto può mostrare valori di carboidrati diversi sulle due etichette."
+        ]
+      },
+      {
+        "title": "Totali e netti",
+        "body": [
+          "I carboidrati totali includono le fibre. I carboidrati netti sono il totale meno le fibre, cioè la parte che il corpo digerisce. La pagina mostra entrambi, perché alcuni tracker ne chiedono uno e altri l'altro."
+        ]
+      },
+      {
+        "title": "Cosa non viene gestito",
+        "body": [
+          "Gli alcoli dello zucchero non vengono sottratti, e la pagina non stima le fibre per gli alimenti senza etichetta."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "Regolamento UE 1169/2011, informazioni sugli alimenti ai consumatori (Allegato I)",
+      "fda": "FDA, A Food Labeling Guide (etichettatura nutrizionale)"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "timePicker": {
+    "am": "AM",
+    "cancel": "İptal",
+    "clearSelection": "Seçimi temizle",
+    "clearTime": "Saati temizle",
+    "confirm": "Saati ayarla",
+    "confirmTime": "Saati onayla",
+    "hours": "Saat",
+    "midnight": "Gece yarısı",
+    "minutes": "Dakika",
+    "noon": "Öğle",
+    "now": "Şimdi",
+    "pm": "PM",
+    "selectedStartTime": "Seçilen başlangıç saati",
+    "selectTime": "Saat seç"
+  }
+}

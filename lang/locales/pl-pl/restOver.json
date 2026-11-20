@@ -1,0 +1,16 @@
+{
+  "restOver": {
+    "startNextSet": "Rozpocznij kolejną serię",
+    "upNext": "Następne",
+    "weight": "Ciężar",
+    "weightWithUnit": "{{value}} {{unit}}",
+    "reps": "Powtórzenia",
+    "set": "Seria",
+    "restTimeIs": "Czas odpoczynku",
+    "over": "minął",
+    "timeToGo": "Czas ruszać! Kolejna seria czeka.",
+    "noWorkoutId": "Nie podano identyfikatora treningu",
+    "workoutDeleted": "Trening został usunięty",
+    "loadError": "Nie udało się wczytać danych treningu"
+  }
+}

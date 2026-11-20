@@ -1,0 +1,20 @@
+{
+  "currentGoalsCard": {
+    "dailyTarget": "Objectif quotidien",
+    "protein": "Protéines",
+    "proteinShort": "P",
+    "carbs": "Glucides",
+    "carbsShort": "G",
+    "fats": "Lipides",
+    "fatsShort": "L",
+    "targetWeight": "Poids visé",
+    "bodyFat": "Masse grasse",
+    "ffmi": "IMG",
+    "bmi": "IMC",
+    "g": "g",
+    "kg": "kg",
+    "lbs": "lb",
+    "percent": "%",
+    "dynamicNote": "Calculé automatiquement pour aujourd'hui à partir de tes objectifs"
+  }
+}

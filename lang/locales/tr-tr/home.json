@@ -1,0 +1,74 @@
+{
+  "home": {
+    "accountMenu": "Hesap menüsünü aç",
+    "actions": {
+      "startWorkout": "Antrenmana\nbaşla",
+      "trackFood": "Besin\nkaydet",
+      "scanBarcode": "Barkod\ntara",
+      "aiPhoto": "Yapay zekâ\nfotoğrafı",
+      "myMeals": "Öğünlerim",
+      "addNote": "Not\nekle",
+      "logCardio": "Yürüyüş/koşu\nkaydet"
+    },
+    "sections": {
+      "recentWorkouts": "Son antrenmanlar",
+      "recentFoods": "Son besinler",
+      "dailySummary": "Günlük özet"
+    },
+    "activityRings": {
+      "move": "Hareket",
+      "steps": "Adımlar",
+      "rest": "Dinlenme",
+      "score": "Skor"
+    },
+    "navigation": {
+      "home": "Ana sayfa",
+      "profile": "Profil",
+      "workouts": "Antrenmanlar",
+      "food": "Besin",
+      "coach": "Sohbet",
+      "focus": "Odak",
+      "cycle": "Döngü",
+      "checkin": "Haftalık değerlendirme"
+    },
+    "dailyStats": {
+      "steps": "Adımlar",
+      "burned": "Şimdiye kadar yakılan",
+      "eaten": "Yenilen",
+      "deficit": "Açık",
+      "surplus": "Fazla",
+      "even": "Dengede"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Son hafta",
+      "lastWeeks_few": "Son {{count}} hafta",
+      "lastWeeks_many": "Son {{count}} hafta",
+      "lastWeeks_other": "Son {{count}} hafta",
+      "lastDays_one": "Son gün",
+      "lastDays_few": "Son {{count}} gün",
+      "lastDays_many": "Son {{count}} gün",
+      "lastDays_other": "Son {{count}} gün",
+      "tapHint": "Ayrıntılar için bir güne dokun",
+      "less": "Daha az",
+      "more": "Daha fazla",
+      "earlierWeeks": "Önceki haftaları göster",
+      "laterWeeks": "Sonraki haftaları göster",
+      "workouts": {
+        "title": "Antrenmanlar",
+        "none": "Antrenman yok",
+        "count_one": "{{count}} antrenman",
+        "count_few": "{{count}} antrenman",
+        "count_many": "{{count}} antrenman",
+        "count_other": "{{count}} antrenman"
+      },
+      "nutrition": {
+        "title": "Beslenme",
+        "none": "Kayıt yok",
+        "count_one": "{{count}} öğün kaydedildi",
+        "count_few": "{{count}} öğün kaydedildi",
+        "count_many": "{{count}} öğün kaydedildi",
+        "count_other": "{{count}} öğün kaydedildi"
+      }
+    }
+  }
+}

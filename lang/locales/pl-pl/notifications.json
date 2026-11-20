@@ -1,0 +1,116 @@
+{
+  "notifications": {
+    "header": {
+      "title": "Powiadomienia",
+      "clearAll": "Wyczyść wszystkie"
+    },
+    "sections": {
+      "today": "Dzisiaj",
+      "yesterday": "Wczoraj",
+      "earlier": "Wcześniej"
+    },
+    "channels": {
+      "default": "Domyślne",
+      "activeWorkout": "Trwający trening",
+      "cycle": "Przypomnienia o cyklu",
+      "restTimer": "Timer odpoczynku",
+      "workoutReminders": "Przypomnienia o treningach",
+      "restTimerQuiet": "Timer odpoczynku (bez dźwięku)"
+    },
+    "startNow": "Zacznij teraz",
+    "types": {
+      "aiInsight": {
+        "title": "Wskazówka AI",
+        "description": "Na podstawie ostatnich ćwiczeń spróbuj dziś zjeść 15 g białka więcej, żeby lepiej się regenerować."
+      },
+      "workoutReminder": {
+        "title": "Przypomnienie o treningu",
+        "description": "Gotowy na {{workoutName}}? Zaplanowano na dziś na {{time}}."
+      },
+      "workoutCompleted": {
+        "title": "Trening ukończony",
+        "description": "{{workoutName}} zakończony. Spalono {{calories}}."
+      },
+      "kudosReceived": {
+        "title": "Otrzymano pochwałę",
+        "description": "{{name}} i {{count}} innych polubiło twój ostatni sukces: „{{milestone}}”"
+      },
+      "weeklyReport": {
+        "title": "Raport tygodniowy gotowy",
+        "description": "Raport postępów za poprzedni tydzień jest dostępny. Sprawdź swoje statystyki."
+      },
+      "activeWorkout": {
+        "title": "Trening: {{workoutName}}",
+        "body": "{{totalTime}} - {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Trening w toku"
+      },
+      "workoutReminderMorning": {
+        "title": "Przypomnienie o treningu",
+        "body": "Dziś masz trening: {{workoutName}}."
+      },
+      "nutritionOverview": {
+        "title": "Dzienne podsumowanie odżywiania",
+        "body": "Zobacz, jak dzisiejsze odżywianie wypada na tle celów."
+      },
+      "nutritionCheckin": {
+        "title": "Tygodniowa kontrola postępów",
+        "body": "Czas na tygodniową kontrolę odżywiania! Zobaczmy, jak poszło."
+      },
+      "periodPrediction": {
+        "title": "Prognoza okresu",
+        "body": "Okres może zacząć się za kilka dni, na podstawie twoich ostatnich cykli."
+      },
+      "fertileWindow": {
+        "title": "Okres płodny",
+        "body": "Szacowany okres płodny może wkrótce się zacząć. To szacunek kalendarzowy, a nie potwierdzenie owulacji."
+      },
+      "restTimerAlert": {
+        "title": "Odpoczynek skończony",
+        "body": "Twój odpoczynek dobiegł końca. Czas na kolejną serię."
+      },
+      "workoutDurationWarning": {
+        "title": "Nadal trenujesz?",
+        "body": "Twoja sesja trwa już 5 godzin. Pamiętaj, żeby ją zakończyć w Musclog."
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Masz nową aktualizację."
+      },
+      "unfinishedWorkout": {
+        "title": "Zakończyć trening?",
+        "body": "{{workoutName}} jest nadal otwarty. Zakończ go i zapisz, gdy skończysz."
+      },
+      "goalAtRisk": {
+        "title": "Tygodniowy cel zagrożony",
+        "body": "Treningów do osiągnięcia tygodniowego celu: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Prawie gotowe",
+        "body": "Zostało {{seconds}} sekund odpoczynku."
+      },
+      "workTimerAlert": {
+        "title": "Czas minął",
+        "body": "Seria na czas dobiegła końca."
+      },
+      "comebackWelcome": {
+        "title": "Kiedy będziesz gotowy",
+        "body": "Bez pośpiechu. Jeśli chcesz wrócić stopniowo, jest łagodny sposób, żeby zacząć."
+      }
+    },
+    "actions": {
+      "addRest": "+{{seconds}} s odpoczynku",
+      "nextSet": "Następna seria",
+      "snooze": "Odłóż o 1 h",
+      "done": "Gotowe",
+      "later": "Później",
+      "skip": "Pomiń"
+    },
+    "restPrompt": {
+      "title": "Włączyć alerty timera odpoczynku?",
+      "message": "Timer odpoczynku działa. Chcesz dostać alert, gdy zablokujesz telefon albo przełączysz aplikację?",
+      "confirm": "Włącz alerty",
+      "cancel": "Nie teraz"
+    }
+  }
+}

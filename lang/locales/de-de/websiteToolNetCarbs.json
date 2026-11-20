@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Rechner für Netto-Kohlenhydrate",
+    "intro": "Verwandle die Kohlenhydrate und Ballaststoffe auf einer Nährwertangabe in Gesamt- und Netto-Kohlenhydrate, und sieh, welche dein Tracker erwartet.",
+    "form": {
+      "region": "Woher die Angabe stammt",
+      "us": "US- oder kanadische Angabe: Kohlenhydrate schließen Ballaststoffe ein",
+      "eu": "EU-, britische oder ähnliche Angabe: Kohlenhydrate ohne Ballaststoffe",
+      "carbs": "Kohlenhydrate auf der Angabe",
+      "fiber": "Ballaststoffe auf der Angabe"
+    },
+    "problems": {
+      "carbs": "Gib die Kohlenhydrate als Zahl in Gramm ein.",
+      "fiber": "Gib die Ballaststoffe als Zahl in Gramm oder 0 ein.",
+      "fiberTooHigh": "Auf einer US- oder kanadischen Angabe sind die Ballaststoffe bereits in den Gesamtkohlenhydraten enthalten, sie können also nicht mehr als diese Gesamtmenge sein. Prüfe die beiden Zahlen."
+    },
+    "results": {
+      "net": "Netto-Kohlenhydrate",
+      "netNote": "Kohlenhydrate ohne Ballaststoffe: der verdauliche Anteil, den Netto-Kohlenhydrat-Tracker zählen.",
+      "total": "Gesamtkohlenhydrate",
+      "totalNote": "Kohlenhydrate einschließlich Ballaststoffe: was US-Angaben drucken und was Musclog für ein Lebensmittel speichert.",
+      "logTitle": "Was du eingeben solltest",
+      "logTotal": "Ein Tracker, der Gesamtkohlenhydrate zählt: gib {{value}} ein.",
+      "logNet": "Ein Tracker, der Netto-Kohlenhydrate zählt: gib {{value}} ein."
+    },
+    "notes": {
+      "sugarAlcohols": "Zuckeralkohole (Polyole wie Erythrit oder Maltit) werden hier nicht abgezogen. Manche Menschen ziehen sie auch von ihren Netto-Kohlenhydraten ab; dieses Werkzeug tut das nicht, daher kann der Nettowert bei Produkten mit Zuckeralkoholen etwas zu hoch sein.",
+      "musclog": "Musclog speichert Gesamtkohlenhydrate einschließlich Ballaststoffe, so wie US-Angaben sie zählen. Lebensmittel aus EU-Quellen werden beim Speichern umgerechnet, damit das Tagebuch für Kohlenhydrate eine einheitliche Bedeutung behält."
+    },
+    "sections": [
+      {
+        "title": "Warum sich die Angaben unterscheiden",
+        "body": [
+          "In der EU ist der angegebene Kohlenhydratwert der Anteil, den dein Körper verstoffwechselt, und Ballaststoffe stehen in einer eigenen Zeile. In den USA und Kanada schließt die Zeile für Gesamtkohlenhydrate die Ballaststoffe bereits ein, deshalb kann dasselbe Produkt auf den beiden Angaben unterschiedliche Kohlenhydratwerte zeigen."
+        ]
+      },
+      {
+        "title": "Gesamt und netto",
+        "body": [
+          "Gesamtkohlenhydrate enthalten Ballaststoffe. Netto-Kohlenhydrate sind Gesamt minus Ballaststoffe, der Anteil, den dein Körper verdaut. Die Seite zeigt beides, weil manche Tracker das eine und manche das andere verlangen."
+        ]
+      },
+      {
+        "title": "Was nicht berücksichtigt wird",
+        "body": [
+          "Zuckeralkohole werden nicht abgezogen, und die Seite schätzt keine Ballaststoffe für Lebensmittel ohne Angabe."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "EU-Verordnung 1169/2011, Lebensmittelinformation für Verbraucher (Anhang I)",
+      "fda": "FDA, A Food Labeling Guide (Nährwertkennzeichnung)"
+    }
+  }
+}

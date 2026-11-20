@@ -1,0 +1,8 @@
+{
+  "endWorkout": {
+    "title": "Training beenden",
+    "confirmation": "Möchtest du die aktuelle Trainingseinheit wirklich beenden?",
+    "finishAndSave": "Beenden und speichern",
+    "finishAndDiscard": "Beenden und verwerfen"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "exerciseTransition": {
+    "totalTime": "Temps total",
+    "completeSuffix": "terminé",
+    "completedMessage": "Bel effort. Reprends ton souffle.",
+    "upNext": "À suivre",
+    "target": "Objectif",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
+    "sets": "Séries",
+    "reps": "Répétitions",
+    "rest": "Repos",
+    "sec": "s",
+    "equipment": "Matériel",
+    "startNextExercise": "Commencer l'exercice suivant",
+    "loadingNextExercise": "Chargement de l'exercice suivant...",
+    "errorTitle": "Séance introuvable",
+    "errorDescription": "Impossible de charger l'écran de transition entre exercices. Réessaie.",
+    "goBack": "Retour",
+    "noWorkoutId": "Aucun identifiant de séance fourni",
+    "loadFailed": "Échec du chargement des données de la séance"
+  }
+}

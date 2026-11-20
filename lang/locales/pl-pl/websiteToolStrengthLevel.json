@@ -1,0 +1,73 @@
+{
+  "websiteToolStrengthLevel": {
+    "title": "Kalkulator poziomu siły",
+    "intro": "Wpisz masę ciała i serię, którą zrobiłeś. Zobacz, na jaki poziom siły wskazuje twoje szacowane maksimum na jedno powtórzenie dla tego ćwiczenia i ile każdy poziom wymaga przy twojej masie ciała.",
+    "form": {
+      "sex": "Płeć",
+      "sexMale": "Mężczyzna",
+      "sexFemale": "Kobieta",
+      "sexOther": "Inna",
+      "bodyWeight": "Masa ciała",
+      "lift": "Ćwiczenie",
+      "perHand": "na rękę",
+      "weight": "Podniesiony ciężar",
+      "reps": "Wykonane powtórzenia",
+      "repsHint": "Liczba całkowita, 1 do 10",
+      "reserve": "Powtórzenia w zapasie (opcjonalnie)",
+      "reserveHint": "Ile powtórzeń mógłbyś jeszcze zrobić. Zostaw puste, jeśli szedłeś do upadku."
+    },
+    "problems": {
+      "bodyWeight": "Wpisz masę ciała jako liczbę większą od 0.",
+      "weight": "Wpisz podniesiony ciężar jako liczbę większą od 0.",
+      "reps": "Wpisz powtórzenia jako liczbę całkowitą od 1 do 10.",
+      "repsTooHigh": "Serie powyżej 10 powtórzeń nie dają wiarygodnego maksimum na jedno powtórzenie. Długa seria mierzy wytrzymałość, a każda formuła im bardziej musi ekstrapolować powtórzenia, tym bardziej odchodzi od prawdy. Użyj cięższej serii do 10 powtórzeń lub mniej.",
+      "reserve": "Powtórzenia w zapasie muszą być liczbą całkowitą od 0 do 9."
+    },
+    "results": {
+      "level": "Poziom siły",
+      "levels": {
+        "beginner": "Początkujący",
+        "novice": "Nowicjusz",
+        "intermediate": "Średniozaawansowany",
+        "advanced": "Zaawansowany",
+        "elite": "Elitarny"
+      },
+      "range": "{{lower}} do {{upper}}",
+      "otherNote": "Pokazane na skali męskiej i żeńskiej, bo żadna pojedyncza tabela nie pasuje.",
+      "estimate": "Szacowane maksimum na jedno powtórzenie",
+      "nextLevel": "Aby osiągnąć {{level}}: szacowane maksimum na jedno powtórzenie {{weight}} {{unit}}.",
+      "topLevel": "To ćwiczenie jest na najwyższym poziomie. Nie ma poziomu powyżej elitarnego.",
+      "tableTitle": "Maksimum na jedno powtórzenie, jakiego każdy poziom wymaga przy twojej masie ciała",
+      "tableLevel": "Poziom",
+      "tableOne": "Szacowane maksimum na jedno powtórzenie",
+      "tableMale": "Skala męska",
+      "tableFemale": "Skala żeńska",
+      "tableNote": "Każda wartość to szacowane maksimum na jedno powtórzenie dla tego ćwiczenia przy twojej masie ciała."
+    },
+    "sections": [
+      {
+        "title": "Co porównuje poziom",
+        "body": [
+          "Poziom to twoje szacowane maksimum na jedno powtórzenie podzielone przez masę ciała, skorygowane o ćwiczenie i płeć. Cięższe osoby podnoszą więcej w sumie, więc masa ciała jest częścią porównania.",
+          "Poziomy to reguła kciuka Musclog, sprawdzona na publicznych wynikach trójboju siłowego z OpenPowerlifting. Pokazują, gdzie ćwiczenie leży na tej skali. Nie porównują cię z innymi ludźmi."
+        ]
+      },
+      {
+        "title": "Dlaczego płeć i ćwiczenie zmieniają liczby",
+        "body": [
+          "Punkt odniesienia dla ćwiczenia zależy od regionu ciała, a wyniki kobiet w publicznych danych są niższe względem masy ciała, więc poziom kobiety używa niższego punktu odniesienia dla tego regionu.",
+          "Wybierz Inna, jeśli nie chcesz odpowiedzi na jednej skali. Pokazywane są skale męska i żeńska, a gdy oceniają inaczej, podawany jest zakres."
+        ]
+      },
+      {
+        "title": "Ćwiczenia z hantlami",
+        "body": [
+          "Ćwiczenia z hantlami ocenia się na rękę, bo i punkt odniesienia, i zapisywany ciężar są na rękę. Podaj ciężar jednej hantli, a nie pary."
+        ]
+      }
+    ],
+    "sources": {
+      "openpowerlifting": "OpenPowerlifting, publiczne wyniki trójboju siłowego"
+    }
+  }
+}

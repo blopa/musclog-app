@@ -1,0 +1,90 @@
+{
+  "websiteToolNutritionLogTemplate": {
+    "title": "Ücretsiz yazdırılabilir besin günlüğü",
+    "intro": "Yazdırmak için bir besin günlüğü indir; iki sürümde: hesaplanmış kalori ve makroları yazdığın bir sürüm ve bir etiketten 100 g başına değerleri kopyalayıp toplamları kendin yaptığın bir sürüm. Toplamları senin yerine yapan bir tablo da var. Hepsi ücretsiz, kayıt gerekmez.",
+    "downloads": {
+      "title": "İndirmeler",
+      "versions": {
+        "ready": {
+          "title": "Makrolar hazır hesaplanmış",
+          "body": "Yiyecek başına bir satır: öğün, yiyecek, miktar, sonra o miktar için kalori, protein, karbonhidrat ve yağ."
+        },
+        "per100": {
+          "title": "100 g başına, toplamları sen yaparsın",
+          "body": "Etiketteki 100 g başına değerleri kopyala, yediğin gramları yaz ve o miktarın neyi içerdiğini hesapla."
+        },
+        "both": {
+          "title": "Tablo",
+          "body": "İki düzen de sekme olarak, toplamlar formüllerle yapılmış."
+        }
+      },
+      "readyA4": "Besin günlüğü, A4",
+      "readyA4Note": "PDF, günde bir olmak üzere 7 yatay sayfa. A4 kağıt için.",
+      "readyLetter": "Besin günlüğü, ABD Letter",
+      "readyLetterNote": "PDF, günde bir olmak üzere 7 yatay sayfa. ABD Letter kağıt için.",
+      "per100A4": "100 g başına besin günlüğü, A4",
+      "per100A4Note": "PDF, günde bir olmak üzere 7 yatay sayfa. A4 kağıt için.",
+      "per100Letter": "100 g başına besin günlüğü, ABD Letter",
+      "per100LetterNote": "PDF, günde bir olmak üzere 7 yatay sayfa. ABD Letter kağıt için.",
+      "xlsx": "Tablo şablonu",
+      "xlsxNote": "Google E-Tablolar, Numbers ve LibreOffice'te de açılan Excel dosyası (.xlsx). Bir Gün sekmesi, bir 100 g başına sekmesi ve bir Beni oku sekmesi var.",
+      "english": "Dosyalar, bu sayfa hangi dilde olursa olsun İngilizcedir."
+    },
+    "try": {
+      "title": "100 g başına toplamları dene",
+      "intro": "Etiketin 100 g başına ne dediğini ve kaç gram yediğini yaz. Bu, 100 g başına tablosunun senden yapmanı istediği aritmetiğin aynısı. Yazdığın hiçbir şey tarayıcını terk etmez.",
+      "kcal": "100 g başına kalori",
+      "kcalHint": "İsteğe bağlı. Makrolardan tahmin etmek için boş bırak.",
+      "protein": "100 g başına protein",
+      "carbs": "100 g başına karbonhidrat",
+      "fat": "100 g başına yağ",
+      "grams": "Yediğin gram",
+      "formula": "Her rakam, 100 g başına değerin {{grams}} g ile çarpılması ve 100'e bölünmesidir.",
+      "results": {
+        "kcal": "Yenen kalori",
+        "kcalEstimated": "Makrolardan tahmin: protein ve karbonhidratta gram başına 4 kcal, yağda gram başına 9.",
+        "protein": "Yenen protein",
+        "carbs": "Yenen karbonhidrat",
+        "fat": "Yenen yağ"
+      },
+      "problems": {
+        "kcal": "100 g başına kalori 0 ile 900 arasında bir sayı olmalı.",
+        "protein": "100 g başına protein 0 ile 100 arasında bir sayı olmalı.",
+        "carbs": "100 g başına karbonhidrat 0 ile 100 arasında bir sayı olmalı.",
+        "fat": "100 g başına yağ 0 ile 100 arasında bir sayı olmalı.",
+        "grams": "Gram 0 ile 5000 arasında bir sayı olmalı.",
+        "macrosTooHigh": "100 g yiyecekte protein, karbonhidrat ve yağ toplamı 100 g'dan fazla olamaz. Sayıları kontrol et."
+      }
+    },
+    "sections": [
+      {
+        "title": "Yazdırılabilir günlükte ne var",
+        "body": [
+          "Her sayfa bir gündür. En üstte tarihi, bir antrenman günü mü yoksa dinlenme günü mü olduğunu, vücut ağırlığını ve ne kadar su içtiğini yazarsın. Altında yiyecekler için on iki satır, bir Notlar sütunu ve kalori ile makroların altında, günün ne kadarının kaldığını görebilmen için Toplam, Hedef ve Kalan kutuları var.",
+          "PDF yedi sayfa içerir; yazdırma başına bir hafta. Sayfalar hedef ya da öğün planı taşımaz: kendi hedeflerini Hedef satırına yazarsın."
+        ]
+      },
+      {
+        "title": "Hangi sürüm yazdırılmalı",
+        "body": [
+          "İlk sürümü, yediğin miktar için sayılara zaten sahipsen kullan: bir porsiyon sütunundan, daha önce hesapladığın bir öğünden ya da bir yemek uygulamasından. Bunları doğrudan satıra yazarsın.",
+          "100 g başına sürümü, elindeki tek şey etiketin 100 g başına sütunuysa kullan. Bu sayıları kopyalar, yediğin miktarı tartar ve her miktarı hesaplarsın: 100 g başına değer × yenen gram ÷ 100. 100 g'da 12 g protein içeren bir yiyeceğin 150 g'ı için bu, 12 × 150 ÷ 100 = 18 g protein eder. Daha yavaştır, ama sayıların nasıl oluştuğunu gösterir."
+        ]
+      },
+      {
+        "title": "Tabloyu nasıl kullanırsın",
+        "body": [
+          "Gün sekmesi, zaten hesapladığın sayılar içindir. 100 g başına sekmesi toplamları senin yerine yapar: etiketin sayılarını ve yenen gramları yazarsın, sağdaki sütunlar dolar. İki sekme de günü toplar ve hedefinden ne kaldığını gösterir.",
+          "Toplamlar düz formüller kullanır, bu yüzden onları okuyabilir ya da değiştirebilirsin. Dosyanın bir kopyasını gün başına tut ya da her gün için bir sekme ekle."
+        ]
+      },
+      {
+        "title": "Kağıt, tablo ya da uygulama",
+        "body": [
+          "Kağıt pil ve hesap gerektirmez; toplamları elle yapmak, yediğin şeyin içinde ne olduğunu öğretir. Yapamadığı şey, yiyecek için sana arama yapmak, barkod okumak ya da kendi başına çalışan bir toplam tutmaktır.",
+          "Musclog bunu yapar ve yediğin miktar için makroları hesaplar; böylece 100 g başına toplamları asla kendin yapmazsın. Ücretsiz, açık kaynaklı bir uygulamadır ve verilerin cihazında kalır."
+        ]
+      }
+    ]
+  }
+}

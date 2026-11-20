@@ -1,0 +1,284 @@
+{
+  "workouts": {
+    "title": "Meine Trainings",
+    "filters": {
+      "all": "Alle",
+      "strength": "Kraft",
+      "cardio": "Cardio",
+      "flexibility": "Beweglichkeit",
+      "archived": "Archiviert"
+    },
+    "plans": {
+      "title": "Trainingspläne",
+      "unplanned": "Ohne Plan",
+      "unscheduled": "Nicht eingeplant",
+      "defaultDayName": "Tag {{day}}",
+      "defaultAiPlanName": "KI-Trainingsplan",
+      "addToPlan": "Zum Plan hinzufügen",
+      "addToPlanDescription": "Wähle, welche Trainingspläne dieses Training enthalten",
+      "createTitle": "Neuer Trainingsplan",
+      "editTitle": "Trainingsplan bearbeiten",
+      "createDescription": "Trainings zu einem Wochen- oder Rotationsprogramm gruppieren",
+      "editDescription": "Die Trainings und den Zeitplan dieses Plans ändern",
+      "deleteTitle": "Plan löschen",
+      "deleteDescription": "Den Plan löschen, ohne seine Trainings zu löschen",
+      "nameLabel": "Planname",
+      "namePlaceholder": "z. B. Push Pull Legs",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Beschreibe das Ziel dieses Programms",
+      "iconLabel": "Plansymbol",
+      "membersLabel": "Trainings in diesem Plan",
+      "selectorLabel": "Trainings hinzufügen oder entfernen",
+      "membersEmpty": "Noch keine Trainings. Hake oben ein Training an, um es diesem Plan hinzuzufügen.",
+      "removeMember": "Aus dem Plan entfernen",
+      "workoutCount": "{{count}} Trainings",
+      "cycleType": {
+        "label": "Zeitplan-Art",
+        "weekly": "Wöchentlich",
+        "rotating": "Rotierend"
+      },
+      "picker": {
+        "title": "Trainingspläne auswählen",
+        "description": "Pläne",
+        "create": "Neuen Plan anlegen",
+        "exerciseCount": "{{count}} Übungen"
+      },
+      "schedule": {
+        "clearTitle": "Zu einem rotierenden Plan wechseln?",
+        "clearMessage": "Die Wochentage in diesem Plan werden gelöscht. Sie kehren nicht zurück, wenn du wieder zurückwechselst.",
+        "clearConfirm": "Wechseln und Tage löschen"
+      },
+      "validation": {
+        "nameRequired": "Gib einen Plannamen ein"
+      },
+      "saveSuccess": "Trainingsplan gespeichert",
+      "saveError": "Trainingsplan konnte nicht gespeichert werden",
+      "loadError": "Dieser Plan konnte nicht geladen werden",
+      "deleteSuccess": "Trainingsplan gelöscht",
+      "deleteError": "Trainingsplan konnte nicht gelöscht werden",
+      "deleteConfirmation": {
+        "title": "Trainingsplan löschen?",
+        "message": "„{{name}}“ löschen? Seine Trainings werden nicht gelöscht."
+      }
+    },
+    "archive": "Archivieren",
+    "archiveSuccess": "Training erfolgreich archiviert",
+    "archiveError": "Training konnte nicht archiviert werden",
+    "duplicateSuccess": "Training erfolgreich dupliziert",
+    "duplicateError": "Training konnte nicht dupliziert werden",
+    "shareOpenLink": "In Musclog öffnen:",
+    "delete": "Löschen",
+    "deleteSuccess": "Training erfolgreich gelöscht",
+    "deleteError": "Training konnte nicht gelöscht werden",
+    "deleteConfirmation": {
+      "title": "Training löschen",
+      "message": "Willst du „{{name}}“ wirklich löschen? Das lässt sich nicht rückgängig machen."
+    },
+    "searchPlaceholder": "Trainings durchsuchen …",
+    "noSearchResults": "Keine Trainings gefunden",
+    "noSearchResultsDescription": "Keine Trainings passen zu „{{query}}“",
+    "noSearchResultsButtonLabel": "Suche löschen",
+    "exercises": "Übungen",
+    "addExercise": {
+      "title": "Übung hinzufügen",
+      "targetMuscle": "Zielmuskel",
+      "searchPlaceholder": "{{muscle}}-Übungen durchsuchen …",
+      "createSet": "Satz anlegen",
+      "bodyweight": "Körpergewicht",
+      "sets": "Sätze",
+      "reps": "Wdh.",
+      "weight": "Gewicht",
+      "addToWorkout": "Zum Training hinzufügen",
+      "restTime": "Pausenzeit",
+      "seconds": "Sek.",
+      "setType": {
+        "label": "Satzart",
+        "normal": "Normal",
+        "warmup": "Aufwärmen",
+        "failure": "Muskelversagen",
+        "drop_set": "Drop-Set",
+        "myo_rep": "Myo-Rep"
+      },
+      "notes": "Notizen",
+      "notesPlaceholder": "Geräteeinstellungen, Griffvarianten usw.",
+      "muscleGroups": {
+        "all": "Alle",
+        "chest": "Brust",
+        "back": "Rücken",
+        "legs": "Beine",
+        "arms": "Arme"
+      },
+      "searchPlaceholderAll": "Übungen durchsuchen …",
+      "noExercisesFound": "Keine Übungen gefunden, die zu „{{query}}“ passen",
+      "noExercisesAvailable": "Keine Übungen für {{muscle}} verfügbar",
+      "exerciseDescription": "{{sets}} Sätze × {{reps}} Wdh.",
+      "exerciseDescriptionWithWeight": "{{sets}} Sätze × {{reps}} Wdh. @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} Sätze × {{reps}} Wdh. @"
+    },
+    "filterWorkouts": {
+      "title": "Trainings filtern",
+      "clear": "Leeren",
+      "clearFilters": "Filter löschen",
+      "applyFilters": "Filter anwenden",
+      "workoutType": "Trainingsart",
+      "targetMuscles": "Zielmuskeln",
+      "duration": "Dauer",
+      "upTo": "Bis zu {{duration}}",
+      "workoutTypes": {
+        "strength": "Kraft",
+        "strengthDescription": "Gewichte, Körpergewicht",
+        "cardio": "Cardio",
+        "cardioDescription": "Laufen, Radfahren, HIIT",
+        "flexibility": "Beweglichkeit",
+        "flexibilityDescription": "Yoga, Dehnen"
+      },
+      "muscleGroups": {
+        "fullBody": "Ganzkörper",
+        "chest": "Brust",
+        "back": "Rücken",
+        "legs": "Beine",
+        "shoulders": "Schultern",
+        "arms": "Arme",
+        "core": "Rumpf"
+      }
+    },
+    "createWorkoutOptions": {
+      "generateWithAi": "Mit KI erstellen",
+      "generateWithAiSubtitle": "Lass Musclog einen persönlichen Plan auf Basis deiner Ziele und deines Equipments erstellen.",
+      "createFromEmptyTemplate": "Aus leerer Vorlage erstellen",
+      "createFromEmptyTemplateSubtitle": "Stelle dein eigenes Training Übung für Übung von Grund auf zusammen.",
+      "browseTemplates": "Vorlagen durchsuchen",
+      "browseTemplatesSubtitle": "Entdecke von Experten erstellte Programme und Community-Favoriten.",
+      "externalAi": "Mit ChatGPT oder Claude erstellen",
+      "externalAiSubtitle": "Chatte außerhalb von Musclog mit einem Assistenten und importiere dann den Plan, den er schreibt."
+    },
+    "browseTemplatesModal": {
+      "title": "Vorlagen durchsuchen",
+      "searchPlaceholder": "Expertenprogramme durchsuchen …",
+      "templateName": "Vorlage {{number}}",
+      "tabs": {
+        "all": "Alle",
+        "beginner": "Anfänger",
+        "intermediate": "Fortgeschritten",
+        "advanced": "Profi",
+        "strength": "Kraft",
+        "hypertrophy": "Muskelaufbau",
+        "cardio": "Cardio"
+      },
+      "stats": {
+        "duration": "Dauer",
+        "exercises": "Übungen",
+        "exercisesQty": "{{count}} Übung",
+        "exercisesQty_one": "{{count}} Übung",
+        "exercisesQty_other": "{{count}} Übungen",
+        "sets": "Sätze",
+        "setsQty": "{{count}} Satz",
+        "setsQty_one": "{{count}} Satz",
+        "setsQty_other": "{{count}} Sätze"
+      }
+    },
+    "manageWorkoutTemplateData": {
+      "deleteTemplateWarning": "Willst du diese Vorlage wirklich löschen? Das lässt sich nicht rückgängig machen.",
+      "title": "Trainingsvorlagen verwalten",
+      "searchPlaceholder": "Vorlagen durchsuchen …",
+      "noTemplates": "Noch keine Trainingsvorlagen",
+      "noTemplatesDesc": "Lege Trainingsvorlagen an, dann siehst du sie hier",
+      "endOfHistory": "Ende des Vorlagenverlaufs",
+      "templateOptions": "Vorlagenoptionen",
+      "editTemplate": "Vorlage bearbeiten",
+      "editTemplateDesc": "Vorlagenname und Übungen ändern",
+      "duplicateTemplate": "Vorlage duplizieren",
+      "duplicateTemplateDesc": "Eine Kopie dieser Vorlage anlegen",
+      "deleteTemplate": "Vorlage löschen",
+      "deleteTemplateDesc": "Diese Vorlage dauerhaft entfernen",
+      "noDescription": "Keine Beschreibung",
+      "unknownTemplate": "Unbekannte Vorlage"
+    },
+    "createTemplate": {
+      "title": "Trainingsvorlage erstellen",
+      "description": "Eine wiederverwendbare Trainingsroutine aufbauen"
+    },
+    "createWorkoutOptionsModal": {
+      "header": "Training erstellen",
+      "title": "Wie möchtest du deine Routine aufbauen?",
+      "subtitle": "Wähle, wie du deine Routine heute aufbauen möchtest."
+    },
+    "createFromTemplate": {
+      "title": "Trainings aus Vorlage erstellen",
+      "message": "Dafür werden eigene Trainingsvorlagen für jeden Tag dieses Programms angelegt. Jedes Training enthält die Übungen, Sätze und Wdh., die für diesen Tag vorgesehen sind.",
+      "confirm": "Trainings erstellen",
+      "cancel": "Abbrechen",
+      "successMessage": "Trainings erfolgreich erstellt",
+      "successMessageWithPlan": "{{planName}} mit {{count}} Trainings erstellt"
+    },
+    "externalPlan": {
+      "title": "Mit ChatGPT oder Claude erstellen",
+      "intro": "ChatGPT oder Claude können nach deinen Zielen und deinem Equipment fragen und dir dann einen Link geben, der den Plan hier öffnet. Du verlässt Musclog kurz; gespeichert wird erst, wenn du den Plan geprüft hast.",
+      "steps": {
+        "one": "Öffne ChatGPT oder Claude. Die Anleitung wird für dich kopiert: füge sie im Chat ein.",
+        "two": "Beantworte seine Fragen. Am Ende kommt ein Link „In Musclog öffnen“ und der Plan als JSON.",
+        "three": "Tippe auf diesem Handy auf den Link. Öffnet sich Musclog nicht, füge das JSON (oder den Link) ein oder importiere die Datei."
+      },
+      "backSection": "Schritt 2: Plan zurückbringen",
+      "importFile": "Plandatei importieren",
+      "noFile": "Kein Link? Füge das JSON oder den Link ein oder importiere die Datei.",
+      "paste": {
+        "title": "Plan-JSON einfügen",
+        "subtitle": "Füge das JSON oder den Link ein, den dir der Assistent gegeben hat.",
+        "placeholder": "Das JSON hier einfügen"
+      },
+      "errors": {
+        "newerVersion": "Dieser Plan wurde für eine neuere Version von Musclog erstellt. Aktualisiere die App und importiere ihn dann erneut.",
+        "notJson": "Das sieht nicht nach einer Plandatei aus. Wähle die Datei musclog-workout-plan.json, die dir der Assistent gegeben hat, oder füge ihr JSON ein.",
+        "tooLarge": "Diese Datei ist zu groß für eine Plandatei.",
+        "wrongSchema": "Das ist keine Musclog-Plandatei. Prüfe, ob du die Datei gewählt hast, die der Assistent erstellt hat.",
+        "invalidPlan": "Diese Datei enthält keinen brauchbaren Plan. Bitte den Assistenten, ihn erneut zu schreiben.",
+        "noExercises": "Keine der Übungen in dieser Datei konnte gelesen werden. Bitte den Assistenten, sie erneut zu schreiben."
+      },
+      "review": {
+        "intro": "Prüfe den Plan, bevor er hinzugefügt wird. Gespeichert wird erst, wenn du ihn anlegst.",
+        "weeklyOn": "Wöchentlich am {{days}}",
+        "rotating": "Wechselt durch seine Trainings, ohne feste Tage",
+        "setsReps": "{{sets}} × {{reps}}",
+        "setsRepsRange": "{{sets}} × {{min}}–{{max}}",
+        "unmatched_one": "{{count}} Übung ist in Musclog nicht vorhanden und wird weggelassen: {{names}}",
+        "unmatched_few": "{{count}} Übungen sind in Musclog nicht vorhanden und werden weggelassen: {{names}}",
+        "unmatched_many": "{{count}} Übungen sind in Musclog nicht vorhanden und werden weggelassen: {{names}}",
+        "unmatched_other": "{{count}} Übungen sind in Musclog nicht vorhanden und werden weggelassen: {{names}}",
+        "skipped_one": "{{count}} Übung in der Datei konnte nicht gelesen werden und wurde weggelassen",
+        "skipped_few": "{{count}} Übungen in der Datei konnten nicht gelesen werden und wurden weggelassen",
+        "skipped_many": "{{count}} Übungen in der Datei konnten nicht gelesen werden und wurden weggelassen",
+        "skipped_other": "{{count}} Übungen in der Datei konnten nicht gelesen werden und wurden weggelassen",
+        "create": "Plan anlegen",
+        "differentFile": "Andere Datei verwenden"
+      },
+      "linkError": "Der Link von deinem Assistenten konnte nicht gelesen werden. {{reason}} Füge stattdessen den JSON-Block aus dem Chat ein."
+    },
+    "aiGeneration": {
+      "title": "Mit KI erstellen",
+      "subtitle": "Erzähl uns von deinen Zielen, und wir erstellen einen persönlichen Trainingsplan",
+      "preferencesLabel": "Deine Vorlieben",
+      "preferencesPlaceholder": "Z. B. Ich möchte Muskeln aufbauen, ich kann 4 Tage pro Woche trainieren, ich habe Zugang zu einem voll ausgestatteten Studio, ich bin fortgeschritten …",
+      "generateButton": "Plan erstellen",
+      "successMessageWithPlan": "{{planName}} ist mit {{count}} Trainings fertig.",
+      "errorMessage": "Der Plan konnte nicht erstellt werden. Bitte versuche es erneut.",
+      "aiNotConfigured": "KI-Funktionen sind nicht eingerichtet. Füge in den Einstellungen einen Gemini- oder OpenAI-Schlüssel hinzu."
+    },
+    "interruptedSession": {
+      "description": "Du hast ein Training laufen.",
+      "resume": "Fortsetzen",
+      "discard": "Verwerfen",
+      "discardConfirmTitle": "Training verwerfen?",
+      "discardConfirmMessage": "Dadurch werden dein laufendes Training und alle erfassten Sätze dauerhaft gelöscht.",
+      "discardConfirm": "Verwerfen",
+      "discardCancel": "Behalten",
+      "alreadyActive": "Du hast bereits ein Training laufen. Setze es zuerst fort oder verwirf es."
+    },
+    "unnamed": "Ohne Namen",
+    "previewWorkout": "{{name}} ansehen",
+    "history": {
+      "title": "Trainingsverlauf",
+      "description": "Sieh dir jede abgeschlossene Einheit an"
+    }
+  }
+}

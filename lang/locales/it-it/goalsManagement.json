@@ -1,0 +1,103 @@
+{
+  "goalsManagement": {
+    "title": "Gestione obiettivi",
+    "nutritionAndBodyTab": "Nutrizione e corpo",
+    "fitnessAndExerciseTab": "Forma ed esercizio",
+    "subtitle": "Monitora i tuoi progressi e lo storico.",
+    "currentGoals": "Obiettivi attuali",
+    "history": "Storico degli obiettivi",
+    "newGoal": "Nuovo obiettivo",
+    "createGoalDesc": "Imposta nuovi target nutrizionali e macronutrienti",
+    "createCheckin": "Crea controllo",
+    "createCheckinDesc": "Aggiungi una nuova voce di controllo nutrizionale",
+    "emptyStateMessage": "Crea un nuovo obiettivo per iniziare",
+    "editGoal": "Modifica",
+    "deleteGoalAction": "Elimina",
+    "deleteGoal": "Elimina obiettivo",
+    "deleteGoalMessage": "Questo obiettivo verrà rimosso definitivamente dallo storico.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Sei sicuro di voler eliminare questo obiettivo? L'azione non può essere annullata.",
+      "title": "Obiettivi nutrizionali",
+      "searchPlaceholder": "Cerca obiettivi...",
+      "noGoals": "Nessun obiettivo ancora",
+      "noGoalsDesc": "Imposta obiettivi nutrizionali per vederli qui",
+      "endOfHistory": "Fine dello storico obiettivi",
+      "goalOptions": "Opzioni obiettivo",
+      "editGoal": "Modifica obiettivo",
+      "editGoalDesc": "Cambia calorie, macronutrienti e target",
+      "duplicateGoal": "Duplica obiettivo",
+      "duplicateGoalDesc": "Crea una copia da usare come nuovo obiettivo",
+      "regenerateCheckins": "Rigenera i controlli",
+      "regenerateCheckinsDesc": "Elimina e ricrea i controlli per questo obiettivo",
+      "deleteGoal": "Elimina obiettivo",
+      "deleteGoalDesc": "Rimuovi questo obiettivo dallo storico",
+      "subtitleFormat": "{{calories}} • {{phase}} • Target {{targetWeight}} {{unit}}",
+      "phaseCut": "Definizione",
+      "phaseMaintain": "Mantenimento",
+      "phaseBulk": "Massa"
+    },
+    "goalCreationMethod": {
+      "title": "Nuovo obiettivo",
+      "subtitle": "Come vuoi impostare il tuo nuovo obiettivo?",
+      "guidedTitle": "Rispondi a qualche domanda",
+      "guidedDescription": "Ti guideremo passo dopo passo verso i giusti target di calorie e macronutrienti.",
+      "manualTitle": "Imposta manualmente",
+      "manualDescription": "Inserisci direttamente calorie, macronutrienti e target.",
+      "autoCalculateTitle": "Calcolalo per me",
+      "autoCalculateDescription": "Calcoliamo i tuoi target con la formula di Mifflin-St Jeor in base al tuo profilo."
+    },
+    "goalWizard": {
+      "title": "Imposta il tuo obiettivo",
+      "step": "Passaggio {{current}} di {{total}}",
+      "next": "Avanti",
+      "back": "Indietro",
+      "createGoal": "Crea obiettivo",
+      "goalType": {
+        "title": "Qual è il tuo obiettivo principale?",
+        "subtitle": "Ci aiuta a consigliarti le giuste calorie e i giusti macronutrienti.",
+        "lose": "Perdere peso",
+        "loseDescription": "Riduci la massa grassa con un deficit calorico.",
+        "maintain": "Mantenere il peso",
+        "maintainDescription": "Mantieni il tuo peso attuale e la composizione corporea.",
+        "gain": "Aumentare di peso",
+        "gainDescription": "Costruisci muscoli e forza con un surplus calorico."
+      },
+      "goalWeight": {
+        "titleMain": "Qual è il tuo",
+        "titleAccent": "peso obiettivo?",
+        "subtitle": "Imposta il peso che vuoi raggiungere. Il tuo peso attuale è mostrato come riferimento.",
+        "label": "Peso obiettivo",
+        "currentWeightLabel": "Il tuo peso attuale",
+        "tipLoseBF": "Puntare allo 0,5–1% del peso corporeo a settimana è un ritmo sostenibile che aiuta a preservare la massa muscolare durante la definizione.",
+        "tipGain": "Aumentare di 0,25–0,5 kg a settimana mantiene basso l'accumulo di grasso e consente una crescita muscolare costante.",
+        "tipGainImperial": "Aumentare di 0,55–1,1 lbs a settimana mantiene basso l'accumulo di grasso e consente una crescita muscolare costante."
+      },
+      "targetDate": {
+        "title": "Quando vuoi raggiungere il tuo obiettivo?",
+        "subtitle": "Fissare una scadenza ti aiuta a monitorare i progressi nel tempo.",
+        "label": "Data obiettivo",
+        "notSet": "Nessuna data specifica",
+        "clear": "Rimuovi data",
+        "warningLabel": "Tempistica aggressiva",
+        "warningMessage": "Ritmo richiesto: circa {{weeklyLoss}} {{unit}} a settimana. Limite massimo consigliato per il tuo peso attuale: circa {{suggestedMaxWeeklyLoss}} {{unit}} a settimana. Calcoleremo comunque le calorie per questo ritmo, ma una data più realistica sarebbe intorno al {{estimatedDate}}."
+      }
+    },
+    "manageCheckinData": {
+      "title": "Controlli nutrizionali",
+      "searchPlaceholder": "Cerca controlli...",
+      "noCheckins": "Nessun controllo ancora",
+      "noCheckinsDesc": "I controlli vengono creati quando imposti un obiettivo nutrizionale calcolato dall'IA",
+      "endOfHistory": "Tutti i controlli caricati",
+      "checkinOptions": "Opzioni controllo",
+      "editCheckin": "Modifica controllo",
+      "editCheckinDesc": "Cambia i target del controllo",
+      "deleteCheckin": "Elimina controllo",
+      "deleteCheckinDesc": "Rimuovi definitivamente questo controllo",
+      "subtitleFormat": "Target {{targetWeight}} {{unit}} • {{targetBodyFat}}% di massa grassa",
+      "checkinDate": "Data del controllo"
+    },
+    "exerciseGoals": "Obiettivi di esercizio",
+    "exerciseGoalsTitle": "Forza e costanza",
+    "exerciseGoalsSubtitle": "Monitora i target di 1RM e la frequenza degli allenamenti"
+  }
+}

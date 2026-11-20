@@ -1,0 +1,207 @@
+{
+  "common": {
+    "clear": "Leeren",
+    "value": "Wert",
+    "name": "Name",
+    "next": "Weiter",
+    "context": "Kontext",
+    "processing": "wird verarbeitet...",
+    "bootMayTakeMinutes": "Bitte warte und lass die App geöffnet. Das kann mehrere Minuten dauern. Die Fortschrittsanzeige wirkt vielleicht festgefahren, wir arbeiten aber weiter.",
+    "success": "Erfolg",
+    "saveError": "Änderungen konnten nicht gespeichert werden",
+    "saveErrorSubtitle": "Bitte versuche es erneut",
+    "error_description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
+    "back": "Zurück",
+    "select": "Auswählen...",
+    "today": "Heute",
+    "none": "Keine",
+    "amount_kcal": "{{amount}}",
+    "duplicateFailed": "Duplizieren fehlgeschlagen",
+    "yesterday": "Gestern",
+    "daysAgo": "vor {{count}} Tagen",
+    "oneWeekAgo": "vor 1 Woche",
+    "weeksAgo": "vor {{count}} Wochen",
+    "monthsAgo": "vor {{count}} Monaten",
+    "monthsAgo_one": "vor {{count}} Monat",
+    "monthsAgo_other": "vor {{count}} Monaten",
+    "oneMonthFromNow": "in 1 Monat",
+    "monthsFromNow": "in {{count}} Monaten",
+    "seeAll": "Alle anzeigen",
+    "kcal": "kcal",
+    "min": "Min.",
+    "cancel": "Abbrechen",
+    "tryAgain": "Erneut versuchen",
+    "photo": "Foto",
+    "loading": "Wird geladen...",
+    "saving": "Wird gespeichert...",
+    "save": "Speichern",
+    "category": "Kategorie",
+    "active": "Aktiv",
+    "edit": "Bearbeiten",
+    "status": "Status",
+    "timezone": "Zeitzone",
+    "timezonePlaceholder": "+00:00",
+    "invalidTimezone": "Gib eine Zeitzonenabweichung wie +00:00, +05:30 oder -04:00 ein.",
+    "change": "Ändern",
+    "confirm": "Bestätigen",
+    "decreaseValue": "Wert verringern",
+    "delete": "Löschen",
+    "error": "Fehler",
+    "loadMore": "Mehr laden",
+    "goHome": "Zur Startseite",
+    "increaseValue": "Wert erhöhen",
+    "ok": "OK",
+    "deleteConfirmMessage": "Möchtest du {{name}} wirklich löschen?",
+    "deleteFailed": "Löschen fehlgeschlagen",
+    "saveChanges": "Änderungen speichern",
+    "close": "Schließen",
+    "install": "Installieren",
+    "createNew": "Neu erstellen",
+    "heightFormatMetric": "{{value}} cm",
+    "heightFormatImperial": "{{feet}}' {{inches}}\"",
+    "weightFormatKg": "{{value}} kg",
+    "weightFormatLbs": "{{value}} lbs",
+    "weightFormatG": "{{value}}g",
+    "units": {
+      "g": "g",
+      "oz": "oz"
+    },
+    "eatingPhase": "Ernährungsphase",
+    "description": "Beschreibung",
+    "loadMultiplier": "Lastfaktor",
+    "deleteSuccess": "Erfolgreich gelöscht",
+    "notFound": "Nicht gefunden",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
+    "time": {
+      "daily": "Täglich",
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich"
+    },
+    "appName": "MUSCLOG",
+    "selectIcon": "Symbol auswählen",
+    "selectIconLabel": "Symbol auswählen",
+    "icon": "Symbol",
+    "archived": "Archiviert",
+    "descriptions": {
+      "none": "Keine"
+    },
+    "duration": {
+      "hoursOnly": "{{hours}} Std.",
+      "hoursMinutes": "{{hours}} Std. {{minutes}} Min.",
+      "minutesOnly": "{{minutes}} Min.",
+      "minutesShort": "{{minutes}} Min."
+    },
+    "days": {
+      "label": "Tage",
+      "letter": {
+        "sun": "S",
+        "mon": "M",
+        "tue": "D",
+        "wed": "M",
+        "thu": "D",
+        "fri": "F",
+        "sat": "S"
+      },
+      "short": {
+        "sun": "SO",
+        "mon": "MO",
+        "tue": "DI",
+        "wed": "MI",
+        "thu": "DO",
+        "fri": "FR",
+        "sat": "SA"
+      }
+    },
+    "hide": "Ausblenden",
+    "show": "Anzeigen",
+    "debugDetails": "Debug-Details",
+    "errorMessage": "Fehlermeldung",
+    "errorStack": "Fehler-Stack",
+    "componentStack": "Komponenten-Stack",
+    "userAgent": "User Agent",
+    "app": {
+      "title": "Musclog - Fitness- & Ernährungstracker"
+    },
+    "nutrition": {
+      "title": "Musclog - Ernährung",
+      "food": {
+        "title": "Musclog - Ernährungstagebuch"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Training",
+      "workouts": {
+        "title": "Musclog - Trainings"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Fortschritt"
+    },
+    "profile": {
+      "title": "Musclog - Profil"
+    },
+    "settings": {
+      "title": "Musclog - Einstellungen"
+    },
+    "cycle": {
+      "title": "Musclog - Zyklus"
+    },
+    "relativeTime": {
+      "now": "gerade eben",
+      "minutes": "vor {{value}} Min.",
+      "hours": "vor {{value}} Std.",
+      "days": "vor {{value}} Tagen"
+    },
+    "a11y": {
+      "notifications": "Benachrichtigungen",
+      "editProfile": "Profil bearbeiten",
+      "previousDay": "Vorheriger Tag",
+      "nextDay": "Nächster Tag",
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "openCamera": "Kamera öffnen",
+      "chooseFromGallery": "Aus der Galerie wählen",
+      "takePhoto": "Foto aufnehmen",
+      "increase": "Erhöhen",
+      "decrease": "Verringern",
+      "moreInfo": "Weitere Informationen",
+      "moreOptions": "Weitere Optionen",
+      "add": "Hinzufügen",
+      "dismiss": "Schließen",
+      "remove": "Entfernen",
+      "scanBarcode": "Barcode scannen",
+      "send": "Senden",
+      "attachFile": "Datei anhängen",
+      "removeImage": "Bild entfernen",
+      "choosePhoto": "Ein Foto wählen",
+      "chooseIcon": "Symbol wählen",
+      "moveUp": "Nach oben verschieben",
+      "moveDown": "Nach unten verschieben",
+      "filter": "Filter",
+      "clearSearch": "Suche leeren",
+      "showValue": "Wert anzeigen",
+      "hideValue": "Wert ausblenden"
+    },
+    "externalAssistant": {
+      "copied": "Anleitung kopiert",
+      "copiedPaste": "Anleitung kopiert. Füge sie in den Chat ein, wenn das Feld leer ist.",
+      "copy": "Kopieren",
+      "errors": {
+        "empty": "Es gibt nichts zu importieren.",
+        "fileRead": "Diese Datei konnte nicht gelesen werden. Probiere eine andere oder füge stattdessen den Text ein."
+      },
+      "fallback": "App oder Website konnten nicht geöffnet werden. Die Anleitung wurde kopiert: Öffne ChatGPT oder Claude selbst und füge sie ein.",
+      "leaveSection": "Schritt 1: Den Assistenten fragen",
+      "openChatgpt": "ChatGPT öffnen",
+      "openClaude": "Claude öffnen",
+      "pasteJson": "JSON einfügen",
+      "privacy": "Nur die Anleitung wird kopiert. Angaben zu dir und kein API-Schlüssel sind enthalten.",
+      "share": "Teilen"
+    },
+    "energyUnit": {
+      "kcal": "kcal",
+      "kj": "kJ"
+    }
+  }
+}

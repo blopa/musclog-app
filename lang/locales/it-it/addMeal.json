@@ -1,0 +1,15 @@
+{
+  "addMeal": {
+    "createMeal": "Crea pasto",
+    "createMealDesc": "Aggiungi un nuovo pasto al tuo diario giornaliero",
+    "dynamicCreator": "Creatore di pasti dinamico",
+    "dynamicCreatorDesc": "Componi un pasto passo dopo passo scansionando o cercando alimenti",
+    "generateMealAI": "Genera pasto con l'IA",
+    "generateMealAIDesc": "Lascia che l'IA suggerisca un pasto in base alle tue preferenze",
+    "manageCategories": "Gestisci categorie",
+    "manageCategoriesDesc": "Organizza le categorie dei tuoi pasti (colazione, pranzo, ecc.)",
+    "importFromPhone": "Importa da un altro telefono",
+    "importFromPhoneDesc": "Scansiona un pasto inviato da un altro telefono",
+    "title": "Aggiungi pasto"
+  }
+}

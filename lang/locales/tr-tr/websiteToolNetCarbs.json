@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Net karbonhidrat hesaplayıcısı",
+    "intro": "Bir besin etiketindeki karbonhidrat ve lifi toplam ve net karbonhidrata çevir; takip uygulamanın hangisini beklediğini gör.",
+    "form": {
+      "region": "Etiket nereden",
+      "us": "ABD ya da Kanada etiketi: karbonhidrat lifi içerir",
+      "eu": "AB, Birleşik Krallık ya da benzeri etiket: karbonhidrat lifi içermez",
+      "carbs": "Etikette karbonhidrat",
+      "fiber": "Etikette besin lifi"
+    },
+    "problems": {
+      "carbs": "Karbonhidratı gram cinsinden bir sayı olarak gir.",
+      "fiber": "Lifi gram cinsinden bir sayı ya da 0 olarak gir.",
+      "fiberTooHigh": "ABD ya da Kanada etiketinde toplam karbonhidrat zaten lifi içerir, bu yüzden lif bu toplamdan fazla olamaz. İki sayıyı kontrol et."
+    },
+    "results": {
+      "net": "Net karbonhidrat",
+      "netNote": "Lifsiz karbonhidrat: net karbonhidrat takipçilerinin saydığı sindirilebilir kısım.",
+      "total": "Toplam karbonhidrat",
+      "totalNote": "Lif dahil karbonhidrat: ABD etiketlerinin bastığı ve Musclog'un bir yiyecek için sakladığı değer.",
+      "logTitle": "Ne girmeli",
+      "logTotal": "Toplam karbonhidratı sayan bir takip uygulaması: {{value}} gir.",
+      "logNet": "Net karbonhidratı sayan bir takip uygulaması: {{value}} gir."
+    },
+    "notes": {
+      "sugarAlcohols": "Şeker alkolleri (eritritol ya da maltitol gibi polioller) burada çıkarılmaz. Bazı insanlar bunları net karbonhidratlarından da çıkarır; bu araç çıkarmaz, bu yüzden içerdikleri ürünlerde net değer biraz yüksek çıkabilir.",
+      "musclog": "Musclog, toplam karbonhidratı lif dahil olarak saklar; ABD etiketlerinin saydığı gibi. AB kaynaklı yiyecekler kaydedilirken dönüştürülür, böylece günlük karbonhidrat için tek bir anlam tutar."
+    },
+    "sections": [
+      {
+        "title": "Etiketler neden farklı",
+        "body": [
+          "AB'de bildirilen karbonhidrat, vücudunun metabolize ettiği karbonhidrattır ve lif kendi satırında bildirilir. ABD ve Kanada'da toplam karbonhidrat satırı besin lifini zaten içerir; bu yüzden aynı ürün iki etikette farklı karbonhidrat sayıları gösterebilir."
+        ]
+      },
+      {
+        "title": "Toplam ve net",
+        "body": [
+          "Toplam karbonhidrat lifi içerir. Net karbonhidrat, toplamdan lifin çıkarılmasıdır; vücudunun sindirdiği kısım. Sayfa ikisini de gösterir, çünkü bazı takip uygulamaları birini, bazıları ötekini ister."
+        ]
+      },
+      {
+        "title": "Ele alınmayanlar",
+        "body": [
+          "Şeker alkolleri çıkarılmaz ve sayfa etiketi olmayan yiyeceklerin lifini tahmin etmez."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "AB Yönetmeliği 1169/2011, tüketicilere gıda bilgisi (Ek I)",
+      "fda": "FDA, A Food Labeling Guide (besin etiketlemesi)"
+    }
+  }
+}

@@ -1,0 +1,379 @@
+{
+  "onboarding": {
+    "skip": "Atla",
+    "back": "Geri",
+    "next": "İleri",
+    "getStarted": "Başla",
+    "steps": {
+      "step1": {
+        "title": "Saniyeler içinde kaydet",
+        "description": "Defteri bırak. Setlerini, tekrarlarını ve ağırlıklarını saniyeler içinde kaydet ve gücündeki artışı zaman içinde görselleştir."
+      },
+      "step2": {
+        "title": "Akıllı beslenme",
+        "description": "Yapay zekâ taramasıyla ya da geniş veritabanımızla öğünleri saniyeler içinde kaydet. Yakıtını anlamak, zirve performansın anahtarıdır."
+      },
+      "step3": {
+        "title": "Tek uygulama, tam kontrol",
+        "description": "Beslenmen ile kaldırışların arasındaki bağı kur. Birleşik ilerleme grafikleriyle beslenmenin gücündeki artışı tam olarak gör."
+      },
+      "step4": {
+        "title": "Kişisel olalım",
+        "description": "Antrenman geçmişinle ilgili birkaç soru, gerçekçi başlangıç hedefleri belirlememize yardımcı olur."
+      }
+    },
+    "fitnessInfo": {
+      "physicalTitle": "Vücut ölçüleri",
+      "goalsTitle": "Fitness hedefleri",
+      "maybeLater": "Belki sonra",
+      "save": "Kaydet",
+      "next": "İleri",
+      "continue": "Devam et",
+      "errorSaving": "Kaydetme hatası"
+    },
+    "personalInfo": {
+      "title": "Kişisel bilgilerini gir",
+      "errorSaving": "Kaydetme hatası",
+      "finish": "Bitir",
+      "trackCycle": "Adet döngüsü takip edilsin mi?",
+      "trackCycleDescription": "Performansını ve beslenmeni hormonal dönemlerinle eşleştir."
+    },
+    "cycleSetup": {
+      "title": "Döngü takibi kurulumu",
+      "description": "Takip ettikçe döngünü öğreniriz, bu yüzden ortalamalarını baştan bilmen gerekmez.",
+      "anchor": {
+        "title": "Son adet dönemi",
+        "description": "Son adet dönemin ne zaman başladı? Kabaca bir tahmin yeterli. Bunu daha sonra güncelleyebilirsin.",
+        "tapToSelect": "Tarih seçmek için dokun",
+        "iDontKnow": "Bilmiyorum / atla",
+        "skipInstead": "Tarihi temizle (emin değilim)"
+      },
+      "length": {
+        "cycleLength": "Döngü uzunluğu",
+        "cycleLengthLabel": "Döngü",
+        "periodDurationLabel": "Adet dönemi"
+      },
+      "birthControl": {
+        "title": "Doğum kontrolü",
+        "description": "Şu anda herhangi bir doğum kontrol yöntemi kullanıyor musun? Hormonal yöntemler döngünün davranışını değiştirebilir.",
+        "none": "Yok",
+        "noneDescription": "Doğum kontrolü yok.",
+        "pill": "Hap",
+        "pillDescription": "Günlük ağızdan doğum kontrol hapı.",
+        "iud": "RİA (tür belirtilmedi)",
+        "iudDescription": "Kesin olması için hormonal ya da bakırlı seçin.",
+        "implant": "İmplant",
+        "implantDescription": "Deri altı hormonal implant.",
+        "other": "Diğer",
+        "otherDescription": "Başka bir doğum kontrol yöntemi.",
+        "hormonalIud": "Hormonal RİA",
+        "hormonalIudDescription": "Hormon salgılayan rahim içi araç.",
+        "copperIud": "Bakırlı RİA",
+        "copperIudDescription": "Hormon içermeyen rahim içi araç.",
+        "patch": "Plaster",
+        "patchDescription": "Hormonal deri plasteri.",
+        "ring": "Vajinal halka",
+        "ringDescription": "Hormonal vajinal halka.",
+        "shot": "Enjeksiyon",
+        "shotDescription": "Hormonal doğum kontrol enjeksiyonu.",
+        "combinedPill": "Kombine hap",
+        "combinedPillDescription": "Östrojen ve progestin içeren günlük hap.",
+        "progestinPill": "Yalnızca progestinli hap",
+        "progestinPillDescription": "Östrojen içermeyen günlük hap."
+      },
+      "lifeStage": {
+        "title": "Döngü bağlamı",
+        "regular": "Olağandışı bir şey yok",
+        "regularDescription": "Döngüm kabaca düzenli.",
+        "pcos": "PKOS / Düzensiz döngüler",
+        "pcosDescription": "Döngülerim çoğu zaman düzensiz ya da öngörülemez.",
+        "perimenopause": "Perimenopoz",
+        "perimenopauseDescription": "Döngülerim son zamanlarda daha düzensiz hale geldi.",
+        "postpartum": "Doğum sonrası",
+        "postpartumDescription": "Son bir yıl içinde doğum yaptım.",
+        "postPill": "Yakın zamanda doğum kontrolünü bıraktım",
+        "postPillDescription": "Yakın zamanda hormonal doğum kontrolünü bıraktım ve döngüm hâlâ oturuyor olabilir.",
+        "noBleeding": "Kanamasız takip",
+        "noBleedingDescription": "Adet dönemim yok (ör. ameliyat sonrası ya da hormon baskılayıcı kullanımda) ama nasıl hissettiğimi takip etmek istiyorum."
+      },
+      "goal": {
+        "title": "Senkronizasyon hedefi",
+        "description": "Hormonal senkronizasyon için birincil odağın ne?",
+        "performance": "Performansı optimize et",
+        "performanceDescription": "Zirve güç ve kişisel rekor optimizasyonu.",
+        "symptoms": "Belirtileri yönet",
+        "symptomsDescription": "Vardiyalarda konfor ve toparlanmaya odaklan.",
+        "energy": "Enerji düşüşlerini öngör",
+        "energyDescription": "Düşüşleri önceden gör ve yoğunluğu buna göre ayarla."
+      },
+      "pastPeriods": {
+        "title": "Geçmiş adet dönemleri (isteğe bağlı)",
+        "description": "Geçmiş adet dönemlerinin başlangıç tarihlerini eklemek, uygulamanın döngü uzunluğunu öğrenmesine ve hemen daha iyi tahminler yapmasına yardımcı olur.",
+        "addPastPeriod": "Geçmiş bir adet dönemi ekle",
+        "duplicate": "Bu gün listede zaten var.",
+        "remove": "Bu adet dönemini kaldır"
+      },
+      "errors": {
+        "futureDate": "Adet dönemi tarihleri gelecekte olamaz.",
+        "overlappingPeriods": "Süre uygulandığında bu adet dönemi tarihleri üst üste biniyor. Birini kaldır ya da aralarını açın."
+      }
+    },
+    "healthConnect": {
+      "connectYour": "Bağla",
+      "health": "Sağlık",
+      "description": "Gelişmiş ilerleme takibi ve kişisel sağlık içgörüleri için fitness verilerini Musclog'a eşitle.",
+      "categories": {
+        "nutrition": "Beslenme",
+        "weight": "Kilo",
+        "sleep": "Uyku",
+        "bodyComposition": "Vücut kompozisyonu"
+      },
+      "allowHealthAccess": "Sağlık erişimine izin ver",
+      "reviewHealthAccess": "Sağlık erişimini incele",
+      "connectedCount": "Bağlı {{granted}}/{{total}}",
+      "accessCount": "İstenen erişim {{granted}}/{{total}}",
+      "connectedTypes": "Bağlı: {{types}}",
+      "requestedTypes": "İstenen: {{types}}",
+      "permissionTypes": {
+        "height": "Boy",
+        "weight": "Kilo",
+        "bodyFat": "Vücut yağı",
+        "nutrition": "Beslenme",
+        "totalCalories": "Toplam kalori",
+        "activeCalories": "Aktif kalori",
+        "basalMetabolicRate": "Bazal metabolizma",
+        "exerciseSession": "Antrenmanlar",
+        "leanBodyMass": "Yağsız vücut kütlesi",
+        "steps": "Adımlar",
+        "distance": "Mesafe"
+      },
+      "maybeLater": "Belki sonra",
+      "privacyStatement": "Musclog gizliliğine önem verir. Verilerin şifrelenir ve yalnızca kişisel analizlerin için kullanılır.",
+      "initializing": "Health Connect başlatılıyor...",
+      "syncing": "Sağlık verileri eşitleniyor...",
+      "processing": "İşleniyor...",
+      "continue": "Devam et"
+    },
+    "landing": {
+      "getStarted": "Başla",
+      "termsAndPrivacy": "Devam ederek Koşullarımızı ve Gizlilik Politikamızı kabul etmiş olursun.",
+      "appName": "Musclog",
+      "tagline": "%100 ücretsiz, %100 senin",
+      "description": "Antrenmanlarını ve beslenmeni tam gizlilikle takip et. Hesap yok, bulut yok, abonelik yok.",
+      "storedLocally": "Tüm veriler cihazında yerel olarak saklanır",
+      "viewTerms": "Koşulları gör",
+      "preparingApp": "Uygulama senin için hazırlanıyor...",
+      "migratingPreamble": "Önceki Musclog'dan yükseltiliyorsun. Verilerini buraya taşıyoruz.",
+      "migratingData": "Verilerin taşınıyor...",
+      "migratingStep": "{{step}} taşınıyor...",
+      "migrationSteps": {
+        "preparing": "Hazırlanıyor",
+        "downloading": "İndiriliyor",
+        "processing": "İşleniyor",
+        "finalizing": "Tamamlanıyor",
+        "fitness_goals": "beslenme hedefleri",
+        "user_metrics": "vücut ölçüleri",
+        "users": "profil",
+        "foods": "besinler",
+        "nutrition_logs": "beslenme kayıtları",
+        "exercises": "egzersizler",
+        "workouts": "antrenman şablonları",
+        "workout_logs": "antrenman geçmişi",
+        "workout_template_sets": "antrenman şablonu setleri",
+        "workout_log_sets": "antrenman kaydı setleri",
+        "validating": "veriler"
+      },
+      "importData": "Veri içe aktar",
+      "importOptically": "Verileri başka bir telefondan içe aktar",
+      "personalizedSetup": "Kişisel kurulum",
+      "personalizedSetupSteps": "11 adım",
+      "personalizedSetupSubtitle": "Doğru TDEE, makrolar ve sana özel öneriler al",
+      "quickSetup": "Hızlı kurulum",
+      "quickSetupSteps": "7 adım",
+      "quickSetupSubtitle": "Temel kurulum, daha sonra kişiselleştirebilirsin",
+      "aiSetup": "Yapay zekâyla kur",
+      "aiSetupSubtitle": "Bir yapay zekâyla sohbet et ya da ChatGPT ya da Claude'un seni röportaja alsın"
+    },
+    "quickPreferences": {
+      "title": "Hadi başlayalım",
+      "subtitle": "Ölçü ve ekran tercihlerini belirle.",
+      "unitSystem": "Birim sistemi",
+      "metric": "Metrik",
+      "imperial": "İngiliz",
+      "gender": "Cinsiyet",
+      "genderNote": "Kalori ve makro formüllerimiz yalnızca iki grubu tanıyan eski araştırmalardan geliyor, bu yüzden herkesi yansıtamazlar. Mevcut bedenine ve hormonlarına en uygun seçeneği seç (ör. hormon tedavisi görüyorsan) ya da ortalama değerler için \"Diğer\"i seç.",
+      "male": "Erkek",
+      "female": "Kadın",
+      "other": "Diğer / Belirtmek istemiyorum",
+      "continue": "Devam et"
+    },
+    "quickGoals": {
+      "title": "Hedeflerin neler?",
+      "subtitle": "Deneyimini bunlara göre kişiselleştireceğiz.",
+      "fitnessFocus": "Fitness odağı",
+      "buildMuscle": "Kas yap",
+      "strength": "Güç",
+      "endurance": "Dayanıklılık",
+      "general": "Genel",
+      "weightGoal": "Kilo hedefi",
+      "lose": "Kilo ver",
+      "maintain": "Koru",
+      "gain": "Kilo al",
+      "continue": "Devam et",
+      "weightLoss": "Kilo verme"
+    },
+    "quickBodyStats": {
+      "title": "Vücut ölçülerin",
+      "subtitle": "Kalori ihtiyacını hesaplamak ve ilerlemeni takip etmek için kullanılır.",
+      "height": "Boy",
+      "weight": "Kilo",
+      "birthday": "Doğum tarihi",
+      "birthdayHelper": "Doğru kalori tahminleri için yaşını hesaplamakta kullanılır",
+      "bodyFat": "Vücut yağı yüzdesi",
+      "bodyFatHelper": "Biliyorsan kalori hesaplamalarına yardımcı olur",
+      "continue": "Devam et",
+      "birthdayEstimated": "Yaşına göre tahmin edildi. Biliyorsan doğum tarihini seç."
+    },
+    "personalizedPreferences": {
+      "nameLabel": "Sana nasıl hitap edelim?",
+      "namePlaceholder": "Adını gir (isteğe bağlı)"
+    },
+    "personalizedExperience": {
+      "title": "Deneyimin nasıl?",
+      "subtitle": "Antrenman önerilerini seviyene göre uyarlamamıza yardımcı olur.",
+      "experienceLabel": "Antrenman deneyimi",
+      "activityLevelLabel": "Aktivite düzeyi",
+      "beginner": "Başlangıç",
+      "beginnerDesc": "1 yıldan az antrenman",
+      "intermediate": "Orta",
+      "intermediateDesc": "1–3 yıl düzenli antrenman",
+      "advanced": "İleri",
+      "advancedDesc": "3+ yıl adanmış antrenman",
+      "sedentary": "Hareketsiz",
+      "sedentaryDesc": "Az ya da hiç egzersiz yok",
+      "lightlyActive": "Hafif aktif",
+      "lightlyActiveDesc": "Haftada 1–3 gün hafif egzersiz",
+      "moderatelyActive": "Orta düzeyde aktif",
+      "moderatelyActiveDesc": "Haftada 3–5 gün orta düzeyde egzersiz",
+      "veryActive": "Çok aktif",
+      "veryActiveDesc": "Haftada 6–7 gün zorlu egzersiz",
+      "extremelyActive": "Aşırı aktif",
+      "extremelyActiveDesc": "Çok zorlu egzersiz ya da fiziksel bir iş",
+      "continue": "Devam et"
+    },
+    "personalizedCycle": {
+      "title": "Bir soru daha",
+      "subtitle": "Sana daha kişisel içgörüler sunmamıza yardımcı olur.",
+      "question": "Adet görüyor musun?",
+      "yes": "Evet",
+      "yesDesc": "Döngümü takip etmek isterim",
+      "no": "Hayır",
+      "noDesc": "Döngü takibini atla",
+      "continue": "Devam et"
+    },
+    "musclogApi": {
+      "title": "Musclog Yapay Zekâ",
+      "freeBadge": "Ücretsiz",
+      "subtitle": "Antrenmanın ve beslenmen hakkında yapay zekâ içgörüleri al.",
+      "features": {
+        "coach": {
+          "title": "Yapay zekâ antrenman asistanı",
+          "desc": "Egzersiz önerileri ve form ipuçları al"
+        },
+        "insights": {
+          "title": "İlerleme içgörüleri",
+          "desc": "Antrenmanının kişiselleştirilmiş analizi"
+        },
+        "recommendations": {
+          "title": "Akıllı öneriler",
+          "desc": "Yapay zekâ destekli antrenman ve beslenme tavsiyeleri"
+        }
+      },
+      "dataSharingTitle": "Veri paylaşım bildirimi",
+      "dataSharingBody": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler (ör. antrenmanların, öğünlerin, vücut ölçülerin ya da sohbet mesajların) yanıtı yazabilmesi için Musclog'un sunucuları üzerinden Google'ın Gemini yapay zekâsına gönderilir. Bir özelliği kullanana kadar hiçbir şey gönderilmez. Ücretsiz katmanda günlük istek sayısı sınırlıdır.",
+      "readPrivacyPolicy": "Gizlilik Politikamızı oku",
+      "enable": "Musclog Yapay Zekâ'yı etkinleştir",
+      "noThanks": "Hayır teşekkürler, yapay zekâsız devam et"
+    },
+    "setGoals": {
+      "title": "Akıllı hedef",
+      "calculation": "Hesaplama",
+      "description": "Metabolizmanı tahmin etmek için Mifflin–St Jeor ve Katch–McArdle denklemlerini kullanıyoruz; ardından kalori ve makro hedeflerini aktivite düzeyin ve amaçlarınla belirliyoruz.",
+      "personalizedMacros": "Kişisel makrolar",
+      "dynamicAdjustments": "Dinamik ayarlamalar",
+      "calculateForMe": "Benim için hesapla",
+      "setThemMyself": "Kendim belirleyeceğim",
+      "missingData": "Planını hesaplayabilmemiz için önce fitness bilgilerini tamamla."
+    },
+    "trainingSetup": {
+      "title": "Nasıl antrenman yapıyorsun?",
+      "subtitle": "Birkaç hızlı yanıt, salonunu ve ilk antrenmanını kurar.",
+      "locationLabel": "Antrenman yaptığın yer",
+      "location": {
+        "gym": "Salon",
+        "gymDesc": "Halterler, makineler ve kablolar",
+        "home": "Ev",
+        "homeDesc": "Dambıllar, bantlar ve vücut ağırlığı",
+        "minimal": "Minimal",
+        "minimalDesc": "Sadece vücudun ve belki bir bant"
+      },
+      "experienceLabel": "Deneyim",
+      "experience": {
+        "beginner": "Başlangıç",
+        "intermediate": "Orta",
+        "advanced": "İleri"
+      },
+      "daysLabel": "Haftada gün",
+      "daysMax": "{{count}}+",
+      "helpLabel": "Yük önerileri",
+      "help": {
+        "suggest": "Ağırlıklarımı öner",
+        "suggestDesc": "Tekrarlarını tamamladığında hedefler yükselir ve uygulama nedenini açıklar",
+        "manual": "Ben karar vereyim",
+        "manualDesc": "Planın yazıldığı gibi kopyalanır, senin için hiçbir şey değiştirilmez"
+      },
+      "changeLater": "Bunların hepsini daha sonra antrenman ayarlarından değiştirebilirsin.",
+      "continue": "Devam et",
+      "skip": "Atla, sadece beslenme istiyorum",
+      "gymNames": {
+        "gym": "Salonum",
+        "home": "Ev salonu",
+        "minimal": "Vücut ağırlığı"
+      },
+      "comingBackLabel": "Ara verdikten sonra dönüyor musun?",
+      "comingBack": "Ara verdikten sonra dönüş",
+      "comingBackDesc": "İlk haftalarını hafifletecek ve beslenmeni bakım seviyesinden başlatacağız.",
+      "breakLengthLabel": "Ara ne kadar sürdü?"
+    },
+    "firstWorkout": {
+      "title": "İlk antrenmanın",
+      "subtitlePlan": "Yanıtlarına göre bu plan başlamak için iyi bir yer. İstediğin zaman düzenleyebilirsin.",
+      "subtitleEmpty": "Boş bir antrenmanla başlayıp ilerledikçe egzersiz ekleyebilirsin.",
+      "days": "Haftada gün: {{count}}",
+      "exercises": "Egzersiz: {{count}}",
+      "minutes": "Yaklaşık {{count}} dk",
+      "editHint": "Egzersizleri, setleri ya da kuralları istediğin zaman değiştir.",
+      "emptyTitle": "Boş bir antrenmanla başla",
+      "emptyDescription": "Kütüphanedeki planlar salon ekipmanına göre hazırlanmış, bu yüzden onları atlayacağız. İlerledikçe egzersiz ekle ya da planlara daha sonra göz at.",
+      "addPlan": "Planı ekle",
+      "dayLabel": "{{day}}. gün",
+      "dayExercises": "{{count}} egzersiz",
+      "startEmpty": "Boş antrenmana başla",
+      "notNow": "Şimdi değil",
+      "howTitle": "Nasıl çalışır",
+      "stepAddTitle": "Egzersiz ekle",
+      "stepAddBody": "Kütüphaneyi ara ve antrenman yaparken hareketleri ekle.",
+      "stepLogTitle": "Setlerini kaydet",
+      "stepLogBody": "Ağırlığı ve tekrarları gir; dinlenme zamanlayıcısı senin için başlar.",
+      "stepNextTitle": "Sonraki yük, önerilen",
+      "stepNextBody": "Sayılarını hatırlarız ve bir sonraki yükü öneririz.",
+      "planHint": "Bu planı profiline eklemek için \"{{action}}\", antrenmanı daha sonra kendin seçmek için \"{{later}}\" seçeneğine dokun."
+    },
+    "coachPersona": {
+      "title": "Koçunu seç",
+      "subtitle": "Yapay zekâ koçun kim olsun? Bunu istediğin zaman yapay zekâ ayarlarından değiştirebilirsin.",
+      "continue": "Devam et",
+      "keepLoggy": "Loggy'de kal"
+    }
+  }
+}

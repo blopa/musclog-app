@@ -1,0 +1,73 @@
+{
+  "websiteToolStrengthLevel": {
+    "title": "Kuvvet seviyesi hesaplayıcısı",
+    "intro": "Vücut ağırlığını ve yaptığın bir seti gir. Tahmini bir tekrarlık maksimumunun o hareket için hangi kuvvet seviyesine ulaştığını ve her seviyenin vücut ağırlığında ne kadar gerektirdiğini gör.",
+    "form": {
+      "sex": "Cinsiyet",
+      "sexMale": "Erkek",
+      "sexFemale": "Kadın",
+      "sexOther": "Diğer",
+      "bodyWeight": "Vücut ağırlığı",
+      "lift": "Hareket",
+      "perHand": "el başına",
+      "weight": "Kaldırılan ağırlık",
+      "reps": "Yapılan tekrar",
+      "repsHint": "Tam sayı, 1 ile 10 arası",
+      "reserve": "Tekrar rezervi (isteğe bağlı)",
+      "reserveHint": "Kaç tekrar daha yapabilirdin. Tükenmeye kadar gittiysen boş bırak."
+    },
+    "problems": {
+      "bodyWeight": "Vücut ağırlığını 0'dan büyük bir sayı olarak gir.",
+      "weight": "Kaldırdığın ağırlığı 0'dan büyük bir sayı olarak gir.",
+      "reps": "Tekrarı 1 ile 10 arasında tam bir sayı olarak gir.",
+      "repsTooHigh": "10 tekrardan fazla setler güvenilir bir tekrarlık maksimum vermez. Uzun bir set dayanıklılığı ölçer ve her formül, ekstrapole etmesi gereken tekrar sayısı arttıkça gerçeğten daha çok sapar. 10 ya da daha az tekrarlık daha ağır bir set kullan.",
+      "reserve": "Tekrar rezervi 0 ile 9 arasında tam bir sayı olmalı."
+    },
+    "results": {
+      "level": "Kuvvet seviyesi",
+      "levels": {
+        "beginner": "Başlangıç",
+        "novice": "Acemi",
+        "intermediate": "Orta",
+        "advanced": "İleri",
+        "elite": "Elit"
+      },
+      "range": "{{lower}} ile {{upper}} arası",
+      "otherNote": "Hiçbir tek tablo uymadığı için hem erkek hem kadın ölçeğinde gösterilir.",
+      "estimate": "Tahmini bir tekrarlık maksimum",
+      "nextLevel": "{{level}} seviyesine ulaşmak için: tahmini bir tekrarlık maksimum {{weight}} {{unit}}.",
+      "topLevel": "Bu hareket en üst seviyede. Elit'in üstünde seviye yok.",
+      "tableTitle": "Her seviyenin vücut ağırlığında gerektirdiği bir tekrarlık maksimum",
+      "tableLevel": "Seviye",
+      "tableOne": "Tahmini bir tekrarlık maksimum",
+      "tableMale": "Erkek ölçeği",
+      "tableFemale": "Kadın ölçeği",
+      "tableNote": "Her rakam, vücut ağırlığında bu hareket için tahmini bir tekrarlık maksimumdur."
+    },
+    "sections": [
+      {
+        "title": "Seviye neyi karşılaştırır",
+        "body": [
+          "Bir seviye, tahmini bir tekrarlık maksimumunun vücut ağırlığına bölünmesi ve hareket ve cinsiyete göre ayarlanmasıdır. Daha ağır insanlar toplamda daha fazla kaldırır, bu yüzden vücut ağırlığı karşılaştırmanın bir parçasıdır.",
+          "Seviyeler bir Musclog deneyim kuralıdır; OpenPowerlifting'in açık powerlifting sonuçlarına karşı kontrol edilmiştir. Bir hareketin o ölçekte nerede durduğunu gösterirler. Seni başka insanlarla sıralamazlar."
+        ]
+      },
+      {
+        "title": "Cinsiyet ve hareket sayıları neden değiştirir",
+        "body": [
+          "Bir hareketin kıyası vücut bölgesine bağlıdır ve kadınların sonuçları kamuya açık verilerde vücut ağırlığına göre daha düşük durur; bu yüzden bir kadının seviyesi, o bölge için daha düşük bir kıyas kullanır.",
+          "Cevabın tek bir ölçekte görünmesini istemiyorsan Diğer'i seç. Hem erkek hem kadın ölçekleri gösterilir ve farklı derecelendirdiklerinde bir aralık verilir."
+        ]
+      },
+      {
+        "title": "Dambıl hareketleri",
+        "body": [
+          "Dambıl hareketleri el başına derecelendirilir, çünkü hem kıyas hem de kaydettiğin ağırlık el başınadır. Çiftin değil, tek bir dambılın ağırlığını gir."
+        ]
+      }
+    ],
+    "sources": {
+      "openpowerlifting": "OpenPowerlifting, açık powerlifting sonuçları"
+    }
+  }
+}

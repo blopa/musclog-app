@@ -1,0 +1,31 @@
+{
+  "cardio": {
+    "title": "Yürüyüş ya da koşu kaydet",
+    "subtitle": "Antrenman başlatmadan bir tane ekle",
+    "menuItem": "Yürüyüş ya da koşu kaydet",
+    "activity": "Aktivite",
+    "walk": "Yürüyüş",
+    "run": "Koşu",
+    "treadmill": "Koşu bandında",
+    "distance": "Mesafe",
+    "distanceInput": "Mesafe ({{unit}})",
+    "duration": "Süre",
+    "hours": "Saat",
+    "minutes": "Dakika",
+    "seconds": "Saniye",
+    "pace": "Tempo",
+    "ended": "Bitti",
+    "estimate": "Tahmini kalori",
+    "estimateValue": "{{kcal}}",
+    "estimateNoWeight": "Kaloriyi tahmin etmek için profiline kilonu ekle.",
+    "estimateHint": "Düz bir zeminde hızın ve vücut kilona göre tahmin edilir.",
+    "watchCalories": "Saatimdeki kalori (isteğe bağlı)",
+    "watchHint": "Tahmini kullanmak için 0 bırak.",
+    "save": "Kaydet",
+    "saved": "{{activity}} kaydedildi",
+    "failed": "Bu kaydedilemedi. Lütfen tekrar dene.",
+    "needsDistanceAndTime": "Kaydetmek için bir mesafe ve süre gir.",
+    "futureError": "Bu gelecekte bir tarih. Ne zaman bitirdiğini seç.",
+    "noPace": "—"
+  }
+}

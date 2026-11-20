@@ -1,0 +1,42 @@
+{
+  "lock": {
+    "settings": {
+      "title": "Uygulama kilidi",
+      "subtitle": "Parmak izi, yüz ya da cihaz PIN'i iste",
+      "hint": "Seçtiğin alanları göstermeden önce parmak izini, yüzünü ya da cihaz PIN'ini iste. Uygulama arka planda 30 saniye kaldıktan sonra yeniden kilitlenirler.",
+      "note": "Bu bir ekran kilididir. Verilerin şifreli ve bu telefonda kalır; dışa aktarılan yedekler senin kontrol ettiğin ayrı dosyalardır.",
+      "noCredential": "Önce cihazında bir ekran kilidi ya da biyometrik doğrulama kur.",
+      "coveredByApp": "Tüm uygulamayı kilitlemeyle korunuyor"
+    },
+    "areas": {
+      "app": {
+        "label": "Tüm uygulama",
+        "hint": "Musclog'da herhangi bir şey gösterilmeden önce sor"
+      },
+      "cycle": {
+        "label": "Döngü takibi",
+        "hint": "Adet dönemleri, belirtiler ve tahminler",
+        "lockedTitle": "Döngü takibi kilitli",
+        "lockedDescription": "Döngü kayıtlarını görmek için doğrula."
+      },
+      "workout": {
+        "label": "Antrenmanlar",
+        "hint": "Planlar, seanslar ve antrenman geçmişi",
+        "lockedTitle": "Antrenmanlar kilitli",
+        "lockedDescription": "Antrenmanlarını görmek için doğrula."
+      },
+      "nutrition": {
+        "label": "Beslenme",
+        "hint": "Besin günlüğü, öğünler ve haftalık hedefler",
+        "lockedTitle": "Beslenme kilitli",
+        "lockedDescription": "Beslenme verilerini görmek için doğrula."
+      },
+      "progress": {
+        "label": "İlerleme",
+        "hint": "Grafikler, eğilimler ve vücut ölçüleri",
+        "lockedTitle": "İlerleme kilitli",
+        "lockedDescription": "İlerlemeni görmek için doğrula."
+      }
+    }
+  }
+}
