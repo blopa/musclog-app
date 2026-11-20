@@ -460,6 +460,13 @@ export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
 export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
 
 /**
+ * Setting type for routing AI requests through Musclog Premium's hosted service (stored in
+ * WatermelonDB settings table). value: 'true' | 'false'. Device-specific enrollment: never
+ * included in a backup, and a restore always lands on the default (off).
+ */
+export const USE_HOSTED_AI_SETTING_TYPE = 'use_hosted_ai';
+
+/**
  * Setting type for how many days of nutrition log history to send to the LLM.
  * value: 'none' | '7' | '30' | '60' | '90'.
  */

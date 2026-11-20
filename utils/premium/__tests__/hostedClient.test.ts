@@ -7,8 +7,10 @@ import {
 import {
   type FetchLike,
   hostedChallenge,
+  hostedConfig,
   hostedEnroll,
   hostedSession,
+  hostedUsage,
   toBase64Url,
 } from '@/utils/premium/hostedClient';
 
@@ -144,5 +146,66 @@ describe('hosted requests', () => {
     const r = await hostedChallenge('https://w', f);
 
     expect(r).toMatchObject({ status: 0, ok: false, errorCode: 'network' });
+  });
+});
+
+describe('hosted config and usage', () => {
+  it('GETs the config with no authorization header and no body', async () => {
+    const calls: Call[] = [];
+    const r = await hostedConfig('https://w.example//', fakeFetch(200, { tier: 'x' }, calls));
+
+    expect(calls[0].url).toBe('https://w.example/v1/config');
+    expect(calls[0].init?.method).toBe('GET');
+    expect(calls[0].init?.headers?.authorization).toBeUndefined();
+    expect(calls[0].init?.body).toBeUndefined();
+    expect(r).toMatchObject({ status: 200, ok: true, body: { tier: 'x' } });
+  });
+
+  it('GETs usage with exactly the bearer authorization header', async () => {
+    const calls: Call[] = [];
+    const r = await hostedUsage('https://w.example/', 'tok_secret', fakeFetch(200, {}, calls));
+
+    expect(calls[0].url).toBe('https://w.example/v1/usage');
+    expect(calls[0].init?.method).toBe('GET');
+    expect(calls[0].init?.headers).toEqual({ authorization: 'Bearer tok_secret' });
+    expect(calls[0].init?.body).toBeUndefined();
+    expect(JSON.stringify(r)).not.toContain('tok_secret');
+  });
+
+  it('reads the error code from the usage error envelope', async () => {
+    const r = await hostedUsage(
+      'https://w',
+      't',
+      fakeFetch(403, { error: { code: 'unknown_device' } })
+    );
+
+    expect(r).toMatchObject({ status: 403, ok: false, errorCode: 'unknown_device' });
+  });
+
+  it('reports unknown for a non-JSON config error body', async () => {
+    const f: FetchLike = async () => ({
+      status: 500,
+      ok: false,
+      json: async () => {
+        throw new Error('html');
+      },
+    });
+
+    expect(await hostedConfig('https://w', f)).toMatchObject({
+      status: 500,
+      errorCode: 'unknown',
+    });
+  });
+
+  it('turns a thrown config fetch into status 0 and network', async () => {
+    const f: FetchLike = async () => {
+      throw new Error('offline');
+    };
+
+    expect(await hostedConfig('https://w', f)).toMatchObject({
+      status: 0,
+      ok: false,
+      errorCode: 'network',
+    });
   });
 });

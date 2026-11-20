@@ -21,18 +21,18 @@ export function toBase64Url(bytes: Uint8Array): string {
   let out = '';
 
   for (let i = 0; i < bytes.length; i += 3) {
-    const b0 = bytes[i];
-    const b1 = i + 1 < bytes.length ? bytes[i + 1] : 0;
-    const b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;
+    const b0 = bytes[i] ?? 0;
+    const b1 = i + 1 < bytes.length ? (bytes[i + 1] ?? 0) : 0;
+    const b2 = i + 2 < bytes.length ? (bytes[i + 2] ?? 0) : 0;
 
-    out += B64[b0 >> 2] + B64[((b0 & 3) << 4) | (b1 >> 4)];
+    out += B64.charAt(b0 >> 2) + B64.charAt(((b0 & 3) << 4) | (b1 >> 4));
 
     if (i + 1 < bytes.length) {
-      out += B64[((b1 & 15) << 2) | (b2 >> 6)];
+      out += B64.charAt(((b1 & 15) << 2) | (b2 >> 6));
     }
 
     if (i + 2 < bytes.length) {
-      out += B64[b2 & 63];
+      out += B64.charAt(b2 & 63);
     }
   }
 
@@ -85,18 +85,34 @@ async function call(
   baseUrl: string,
   path: string,
   fetchImpl: FetchLike,
-  payload?: Record<string, string>
+  payload?: Record<string, string>,
+  bearer?: string
 ): Promise<HostedResult> {
   const url = baseUrl.replace(/\/+$/, '') + path;
+  const headers: Record<string, string> = {};
+
+  if (payload) {
+    headers['content-type'] = 'application/json';
+  }
+
+  if (bearer !== undefined) {
+    headers.authorization = `Bearer ${bearer}`;
+  }
+
+  const init: { method: string; headers?: Record<string, string>; body?: string } = {
+    method: payload ? 'POST' : 'GET',
+  };
+
+  if (Object.keys(headers).length > 0) {
+    init.headers = headers;
+  }
+
+  if (payload) {
+    init.body = JSON.stringify(payload);
+  }
 
   try {
-    const response = payload
-      ? await fetchImpl(url, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(payload),
-        })
-      : await fetchImpl(url, { method: 'GET' });
+    const response = await fetchImpl(url, init);
     let body: unknown = null;
 
     try {
@@ -121,6 +137,18 @@ async function call(
 
 export function hostedChallenge(baseUrl: string, fetchImpl: FetchLike): Promise<HostedResult> {
   return call(baseUrl, '/v1/challenge', fetchImpl);
+}
+
+export function hostedConfig(baseUrl: string, fetchImpl: FetchLike): Promise<HostedResult> {
+  return call(baseUrl, '/v1/config', fetchImpl);
+}
+
+export function hostedUsage(
+  baseUrl: string,
+  sessionToken: string,
+  fetchImpl: FetchLike
+): Promise<HostedResult> {
+  return call(baseUrl, '/v1/usage', fetchImpl, undefined, sessionToken);
 }
 
 export function hostedEnroll(

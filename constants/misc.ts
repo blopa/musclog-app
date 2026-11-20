@@ -91,5 +91,10 @@ export const HEALTH_CONNECT_PROMPT_PENDING = 'healthConnectPromptPending';
 // Device-local history of store-rating requests (`utils/reviewPrompt.ts`).
 export const REVIEW_PROMPT_STATE = 'reviewPromptState';
 
+// Device-local Premium state (`services/premium/premiumLocalState.ts`): which key-derived id this
+// device enrolled with and what the Worker last said. Never part of a backup: another phone's copy
+// would claim an enrollment its own key never made.
+export const PREMIUM_DEVICE_STATE = 'premiumDeviceState';
+
 // The one-time "how a set works" tip in the live workout session; set once it is dismissed.
 export const WORKOUT_FIRST_TIP_SEEN = 'workoutFirstTipSeen';

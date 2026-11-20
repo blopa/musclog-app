@@ -105,6 +105,10 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 **Afterwards:** write the matrix results into plan section 16, delete the sandbox customers' notes you do not need, rotate nothing (the harness holds no secret), and never promote a `premium-harness` build to production.
 
+## The app client's contract test
+
+`services/premium-worker/test/appClient.test.ts` imports the app's own pure client (`utils/premium/premiumFlows.ts`, `premiumState.ts`, `hostedClient.ts`, `deviceKeyCrypto.ts`) and runs it against the real handlers in Miniflare, so the signed string, the response shapes and the retry rules cannot drift apart. Those app files must keep relative imports only (the `@/` alias does not exist in the Worker package) and compile under its `noUncheckedIndexedAccess`.
+
 ## Rollback
 
 - Code: `cd services/premium-worker && npx wrangler rollback --env <env>`.

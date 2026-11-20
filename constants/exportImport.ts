@@ -6,6 +6,7 @@ import {
   COACH_RESTORED_COMPOSER,
   CRASH_REPORT_CONSENT_KEY,
   PERSONALIZED_BODY_DRAFT,
+  PREMIUM_DEVICE_STATE,
   REVIEW_PROMPT_STATE,
   SETTINGS_MIRROR_STORAGE_KEY,
   TEMP_NUTRITION_PLAN,
@@ -14,6 +15,7 @@ import {
   CLAUDE_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
+  USE_HOSTED_AI_SETTING_TYPE,
 } from '@/constants/settings';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
@@ -31,6 +33,9 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   // moments of one session, not data.
   COACH_REPLY_JOURNAL,
   COACH_RESTORED_COMPOSER,
+  // Device-local Musclog Premium state: another device's copy would claim an enrollment its own
+  // key never made.
+  PREMIUM_DEVICE_STATE,
   // Per-device copy of the crash report switch, rebuilt from the settings table.
   CRASH_REPORT_CONSENT_KEY,
   // Device-local history of store-rating requests; another device's must not carry over.
@@ -140,4 +145,15 @@ export const SETTINGS_EXCLUDED_TYPES = [
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   CLAUDE_API_KEY_SETTING_TYPE,
+  USE_HOSTED_AI_SETTING_TYPE,
 ];
+
+/**
+ * Settings a restore never takes from the file, whatever value the file carries. A hand-made or
+ * foreign backup could otherwise turn hosted AI on for a device that never enrolled.
+ */
+export const SETTINGS_FORCED_OFF_ON_RESTORE_TYPES: readonly string[] = [USE_HOSTED_AI_SETTING_TYPE];
+
+export function isRestoreForcedOffSetting(type: string): boolean {
+  return SETTINGS_FORCED_OFF_ON_RESTORE_TYPES.includes(type);
+}

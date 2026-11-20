@@ -56,6 +56,7 @@ import {
   serializeAppLockScopes,
   SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_LOGGY_SETTING_TYPE,
+  USE_HOSTED_AI_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
@@ -113,6 +114,7 @@ export const SETTINGS = {
   /** Raw stored model; read it through `resolveClaudeModel` (`utils/aiModels.ts`). */
   claudeModel: textSetting(CLAUDE_MODEL_SETTING_TYPE),
   enableClaude: booleanSetting(ENABLE_CLAUDE_SETTING_TYPE, true),
+  useHostedAi: booleanSetting(USE_HOSTED_AI_SETTING_TYPE, false),
   cycleShowPredictions: booleanSetting(CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, true),
   cycleShowFertility: booleanSetting(CYCLE_SHOW_FERTILITY_SETTING_TYPE, false),
   cycleNotificationStyle: choiceSetting<CycleNotificationStyle>(
