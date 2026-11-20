@@ -1,0 +1,143 @@
+{
+  "nutrition": {
+    "title": "Nutrition",
+    "food": {
+      "title": "Food"
+    },
+    "analyze": "Analyze",
+    "calories": "Calories",
+    "carbs": "Carbs",
+    "characters": "Characters",
+    "confirmAndSave": "Confirm & save",
+    "createCustom": "Create custom",
+    "createCustomDesc": "Manually add nutrition details",
+    "dailyTotals": "Daily totals",
+    "dateLabel": "Date",
+    "emptyData": "Please paste or enter nutrition data.",
+    "emptyDescription": "Please enter a meal description.",
+    "entriesCount": "Entries",
+    "example": "Example",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "foodNotFound": "Food not found",
+    "foodNotFoundDescription": "We couldn't find this item in our database. What would you like to do?",
+    "import": "Import",
+    "importFormatInfo": "Paste or type your meal log (e.g. from a note or app). AI will parse it and suggest entries.",
+    "importInstructions": "Paste your nutrition data below. Supported: free text, bullet lists, or structured logs.",
+    "importNutrition": "Import nutrition",
+    "logPastDay": "Log a past day",
+    "mealDescriptionPlaceholder": "e.g. Oatmeal with banana, 2 eggs, coffee with milk",
+    "pasteNutritionDataPlaceholder": "Paste nutrition data here...",
+    "processing": "Processing...",
+    "processingData": "Nutrition data imported successfully.",
+    "processingDescription": "Description processed successfully.",
+    "processingFailed": "Could not process the data. Please check the format and try again.",
+    "protein": "Protein",
+    "retrospectiveExample": "e.g. Breakfast: oatmeal and banana. Lunch: chicken salad. Dinner: pasta with vegetables.",
+    "retrospectiveInstructions": "Describe what you ate that day in your own words. AI will estimate portions and nutrients.",
+    "review": "Review",
+    "searchAgain": "Search again",
+    "searchAgainDesc": "Try a different search term",
+    "tryAICamera": "Try AI camera",
+    "tryAICameraDesc": "Scan your meal for instant identification",
+    "supportedFormats": "Supported formats",
+    "checkin": {
+      "title": "Weekly check-in",
+      "noCheckinFound": "No pending check-ins found.",
+      "currentStatus": "Current status",
+      "onTrack": "On track",
+      "ahead": "Ahead",
+      "behind": "Behind",
+      "noCheckinFoundDesc": "You don't have any check-ins scheduled for today. Come back on your next scheduled check-in day.",
+      "headline": {
+        "onTrack": "On track",
+        "ahead": "Ahead of plan",
+        "behind": "Room to grow"
+      },
+      "subtext": {
+        "onTrack": "You've maintained a consistent pace this week. Keep pushing toward your goals.",
+        "ahead": "You are ahead of your weight targets! Great job on the consistency.",
+        "behind": "Your numbers moved around this week. Consistent logging will even them out."
+      },
+      "weightTrend": "Weight trend",
+      "target": "Target",
+      "targetShort": "Target: {{value}}%",
+      "weeklyBreakdown": "Weekly breakdown",
+      "weekProgress": "Week {{current}} of {{total}}",
+      "summaryIntro": "You aimed for {{target}}/day, but averaged",
+      "summaryOutro": "Despite the result, you completed",
+      "workoutsCount": "workouts",
+      "noWorkouts": "no workouts",
+      "withHighIntensity": "with high intensity.",
+      "avgIntake": "Avg. Intake",
+      "consistency": "Consistency",
+      "rate": "rate",
+      "avgBodyFat": "Avg body fat",
+      "activeMinutes": "Active minutes",
+      "vsLastWeek": "{{prefix}}{{value}}% vs last week",
+      "adherence": "Weekly adherence",
+      "summary": "You aimed for {{targetKcal}}/day, but averaged {{actualKcal}}/day. You completed {{workouts}} workouts.",
+      "weightComparison": "Weight: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "You have logged weight less than 4 times this week. Averages may be less accurate.",
+      "keepMacros": "Keep my current macros",
+      "readjust": "Readjust my plan",
+      "nextMilestones": "Next milestone",
+      "history": "History",
+      "weekTitle": "Week {{number}} Review",
+      "prepareNow": "Prepare now",
+      "noMilestones": "No upcoming check-ins. Complete your nutrition goal setup to get started.",
+      "noHistory": "No completed check-ins yet.",
+      "selectYear": "Filter by year",
+      "notEnoughDataWarning": "Not enough data logged this week. Results may be inaccurate.",
+      "sparseTrendWarning": "Your trend is available, but there are not enough weigh-ins or nutrition logs for a confident weekly check-in.",
+      "status": {
+        "pending": "Pending",
+        "ahead": "Ahead",
+        "onTrack": "On track",
+        "behind": "Behind",
+        "descriptions": {
+          "pending": "Check-in not yet completed",
+          "ahead": "Progress ahead of target",
+          "onTrack": "Progress on target",
+          "behind": "Progress behind target"
+        }
+      }
+    },
+    "common": {},
+    "createMeal": {
+      "estimated": "Estimated",
+      "totalNutrition": "Total nutrition"
+    },
+    "macros": {
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat"
+    },
+    "mealEstimation": {
+      "title": "Meal estimation",
+      "identifiedItems": "Identified items",
+      "addItem": "Add item",
+      "confirmAndLog": "Confirm & log meal",
+      "retake": "Retake",
+      "logged": "Meal logged",
+      "logError": "Could not log this meal. Please try again."
+    },
+    "index": {
+      "handleSaveCustomFood": "Custom food saved successfully."
+    },
+    "manageFoodData": {
+      "title": "Nutrition log",
+      "searchPlaceholder": "Search food logs...",
+      "noLogs": "No food logs yet",
+      "noLogsDesc": "Start tracking your meals to see them here",
+      "endOfHistory": "End of food log history",
+      "foodOptions": "Food options",
+      "editFoodEntry": "Edit food entry",
+      "editFoodEntryDesc": "Modify the food details",
+      "duplicateEntry": "Duplicate entry",
+      "duplicateEntryDesc": "Create a copy of this entry",
+      "deleteEntry": "Delete entry",
+      "deleteEntryDesc": "Remove this food entry"
+    }
+  }
+}

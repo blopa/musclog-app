@@ -1,0 +1,44 @@
+{
+  "websiteToolPlateCalculator": {
+    "title": "Plate calculator",
+    "intro": "Enter the weight you want on the bar and get the plates for each side, using the plates your gym actually has, in kg or lb, with your own bar.",
+    "form": {
+      "target": "Target weight",
+      "targetHint": "The total on the bar, bar included."
+    },
+    "problems": {
+      "target": "Enter the target weight as a number above 0 and at most {{max}} {{unit}}."
+    },
+    "results": {
+      "loaded": "Weight on the bar",
+      "exact": "Your gym can load this weight exactly.",
+      "inexact": "Your gym cannot make {{target}} exactly. The heaviest it can load is {{below}}, and the nearest loadable weight is {{nearest}}.",
+      "belowBar": "That is lighter than the bar ({{bar}}). Pick a heavier target, or set a lighter bar in your gym.",
+      "perSide": "Plates on each side",
+      "noPlates": "No plates are needed: the bar alone is the target.",
+      "plateLine": "{{count}} × {{weight}}",
+      "barLine": "Bar: {{bar}}. Plates are loaded in pairs, one on each side."
+    },
+    "sections": [
+      {
+        "title": "Why the heaviest plate first is wrong",
+        "body": [
+          "The usual method takes the heaviest plate that fits, then the next, and so on. That works when a gym has plenty of every plate. With limited plates it can fail: a gym with one pair each of 20, 15 and 10 kg needs 25 kg a side for a load of 70 kg with a 20 kg bar. Taking the 20 first leaves 5 kg that no plate fills. The answer is 15 and 10 kg, which the gym can load.",
+          "This calculator tries the combinations of the plates you enter and picks the heaviest load that does not go over your target, using the fewest plates."
+        ]
+      },
+      {
+        "title": "Plates load in pairs",
+        "body": [
+          "A bar takes plates in pairs, one on each side, so each plate you enter counts as pairs. An odd plate in a gym cannot be used for a pair and is left out. Enter how many pairs of each plate you have."
+        ]
+      },
+      {
+        "title": "Bar weight and units",
+        "body": [
+          "The bar is part of the total, so set your bar's weight first. Standard Olympic bars are 20 kg (45 lb), and some are lighter. Type in kg or lb: the app stores kilograms and converts, so the numbers match the Musclog app."
+        ]
+      }
+    ]
+  }
+}

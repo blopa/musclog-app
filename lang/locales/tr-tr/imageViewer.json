@@ -1,0 +1,9 @@
+{
+  "imageViewer": {
+    "open": "Open photo",
+    "close": "Close",
+    "save": "Save or share photo",
+    "shareFailed": "Couldn't share the photo.",
+    "shareUnavailable": "Sharing is not available on this device."
+  }
+}

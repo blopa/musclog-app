@@ -1,0 +1,17 @@
+{
+  "restTimer": {
+    "resting": "Resting...",
+    "minus5s": "- 5s",
+    "plus5s": "+ 5s",
+    "skipRest": "Skip rest",
+    "done": "Done",
+    "reps": "reps",
+    "repsWithCount": "{{count}} reps",
+    "upNext": "Up next",
+    "missingWorkoutData": "Missing workout data",
+    "completedSetNotFound": "Completed set not found",
+    "getReady": "Get ready",
+    "go": "Go",
+    "a11yRemaining": "{{time}} remaining"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "websiteToolProgressiveOverload": {
+    "title": "Progressive overload calculator",
+    "intro": "Enter what you did last session and get the weight and reps to aim for next time. It runs the rule the Musclog app uses to set your next workout.",
+    "form": {
+      "weight": "Last session's weight",
+      "weightHint": "The weight of your working sets.",
+      "reps": "Reps in your weakest working set",
+      "repsHint": "Whole number. The set with the fewest reps is the one that counts.",
+      "plannedReps": "Reps your plan asks for",
+      "plannedRepsHint": "Per set, the bottom of your rep range.",
+      "reserve": "Reps in reserve, average",
+      "reserveHint": "Reps you could still have done after each set, averaged. Leave it empty if you did not rate your effort.",
+      "equipmentLabel": "Equipment",
+      "equipment": {
+        "barbell": "Barbell",
+        "dumbbell": "Dumbbell",
+        "machine": "Machine or cable"
+      },
+      "modeLabel": "How to progress",
+      "mode": {
+        "weight_first": "Add weight first",
+        "reps_first": "Add reps first"
+      },
+      "completeLabel": "Did you finish every set?",
+      "twoInARowLabel": "Did the session before it also fail at this weight?",
+      "yes": "Yes",
+      "no": "No",
+      "twoInARowNo": "No or not sure",
+      "twoInARowYes": "Yes, I missed reps or hit failure",
+      "moreOptions": "More options: equipment, progression style and last session details"
+    },
+    "problems": {
+      "weight": "Enter last session's weight as a number above 0 and at most {{max}}.",
+      "reps": "Enter the reps as a whole number from 1 to {{max}}.",
+      "plannedReps": "Enter the planned reps as a whole number from 1 to {{max}}.",
+      "reserve": "Enter reps in reserve as a number from 0 to {{max}}, or leave it empty."
+    },
+    "results": {
+      "title": "Next session",
+      "kind": {
+        "progression": "Go up",
+        "repeat": "Repeat last time",
+        "deload": "Go lighter"
+      },
+      "target_one": "{{weight}} for {{reps}} rep",
+      "target_few": "{{weight}} for {{reps}} reps",
+      "target_many": "{{weight}} for {{reps}} reps",
+      "target_other": "{{weight}} for {{reps}} reps",
+      "changeUp": "{{change}} ({{percent}}) heavier than last time.",
+      "changeSame": "The same weight as last time.",
+      "changeDown": "{{change}} ({{percent}}) lighter than last time.",
+      "step": "One load step for this equipment is {{step}}.",
+      "plates": "Plates on each side of the bar",
+      "emptyBar": "Empty bar",
+      "plateLine": "{{count}} × {{weight}}",
+      "unrated": "You left reps in reserve empty, so the call rests on reps alone: one more rep each session up to the top of your range, then more weight."
+    },
+    "reasons": {
+      "addWeight": "Last session met the bar: at least {{reserve}} reps in reserve and at least {{planned}} reps in your weakest set. The load goes up one step.",
+      "addReps": "Last session met the bar, but the reps go up before the weight does. The load only rises once you reach the top of your rep range.",
+      "stepTooCoarse": "One load step ({{step}}) is more than a quarter of this weight, a jump too big to make, so the app adds a rep instead.",
+      "unfinished": "You did not finish every set, so the session does not count as a success. Repeat it.",
+      "missedPlan": "You missed the planned reps. One miss repeats the same weight. Two in a row at this weight lower it.",
+      "tooHard": "You had fewer than {{reserve}} reps in reserve, so the session was already hard enough. Repeat it. The load goes up only when you leave at least {{reserve}}.",
+      "deload": "Two failed sessions in a row at this weight. The load drops by 10% or one step, whichever is larger, then rounds down to a load you can set."
+    },
+    "sections": [
+      {
+        "title": "How much should you add?",
+        "body": [
+          "Musclog adds one load step: 2.5 kg (5 lb) with no gym set up, or twice your lightest plate on a barbell when you have set one up. On a 100 kg lift that is 2.5%, and on a light dumbbell it is a big share, so when one step is more than a quarter of the weight the app adds a rep instead. These are product rules, not study results.",
+          "Research gives a range, not one number. The American College of Sports Medicine's 2009 position stand suggests raising the load by about 2 to 10% once you can do one or two reps over your target in two sessions in a row. Musclog is more cautious in one way and quicker in another: it acts after a single session, but only when you left reps in reserve and hit every planned rep."
+        ]
+      },
+      {
+        "title": "When it goes up, repeats or goes lighter",
+        "body": [
+          "It goes up when your weakest working set hit the planned reps and you ended with at least 2 reps in reserve on average. It repeats after one hard or short session, because one bad day is not a stall. It goes lighter after two sessions in a row at the same weight where you ended with nothing in reserve, or missed the planned reps. These two-session rules are Musclog's choices."
+        ]
+      },
+      {
+        "title": "Weight first or reps first",
+        "body": [
+          "Weight first adds a step every time you earn it and keeps your reps. Reps first adds a rep each session until you are two reps above your plan (one above for plans of six reps or fewer), then adds weight and goes back to the planned reps. That second way is double progression."
+        ]
+      },
+      {
+        "title": "What this page cannot see",
+        "body": [
+          "It reads one session. The app also looks at your plan, your gym and the week you are in, and shows the reason next to each set. Treat the answer as a good starting point, not a prescription."
+        ]
+      }
+    ],
+    "sources": {
+      "acsm": "American College of Sports Medicine (2009), Progression models in resistance training for healthy adults (Medicine & Science in Sports & Exercise)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "doubleProgression": "Double progression: the simplest way to add weight every week",
+      "trackProgress": "How to track gym progress: a beginner's guide"
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "websiteToolNutritionLogTemplate": {
+    "title": "Free printable food diary",
+    "intro": "Download a food diary to print, in two versions: one where you write the calories and macros you already worked out, and one where you copy the per 100 g numbers from a label and do the sums yourself. There is also a spreadsheet that does the sums for you. All free, with no sign-up.",
+    "downloads": {
+      "title": "Downloads",
+      "versions": {
+        "ready": {
+          "title": "Macros already worked out",
+          "body": "One row per food: the meal, the food, the amount, then the calories, protein, carbs and fat for that amount."
+        },
+        "per100": {
+          "title": "Per 100 g, you do the sums",
+          "body": "Copy the label's per 100 g numbers, write the grams you ate, and work out what that amount holds."
+        },
+        "both": {
+          "title": "Spreadsheet",
+          "body": "Both layouts as tabs, with the sums done by formulas."
+        }
+      },
+      "readyA4": "Food diary, A4",
+      "readyA4Note": "PDF, 7 landscape sheets, one per day. For A4 paper.",
+      "readyLetter": "Food diary, US Letter",
+      "readyLetterNote": "PDF, 7 landscape sheets, one per day. For US Letter paper.",
+      "per100A4": "Food diary per 100 g, A4",
+      "per100A4Note": "PDF, 7 landscape sheets, one per day. For A4 paper.",
+      "per100Letter": "Food diary per 100 g, US Letter",
+      "per100LetterNote": "PDF, 7 landscape sheets, one per day. For US Letter paper.",
+      "xlsx": "Spreadsheet template",
+      "xlsxNote": "Excel file (.xlsx) that also opens in Google Sheets, Numbers and LibreOffice. A Day tab, a Per 100 g tab and a Read me tab.",
+      "english": "The files are in English, whatever language this page is in."
+    },
+    "try": {
+      "title": "Try the per 100 g sums",
+      "intro": "Type what the label says per 100 g and how many grams you ate. This is the same arithmetic the per 100 g sheet asks you to do. Nothing you type leaves your browser.",
+      "kcal": "Calories per 100 g",
+      "kcalHint": "Optional. Leave it empty to estimate it from the macros.",
+      "protein": "Protein per 100 g",
+      "carbs": "Carbs per 100 g",
+      "fat": "Fat per 100 g",
+      "grams": "Grams you ate",
+      "formula": "Each figure is the per 100 g number times {{grams}} g, divided by 100.",
+      "results": {
+        "kcal": "Calories eaten",
+        "kcalEstimated": "Estimated from the macros: 4 kcal per gram of protein and carbs, 9 per gram of fat.",
+        "protein": "Protein eaten",
+        "carbs": "Carbs eaten",
+        "fat": "Fat eaten"
+      },
+      "problems": {
+        "kcal": "Calories per 100 g must be a number from 0 to 900.",
+        "protein": "Protein per 100 g must be a number from 0 to 100.",
+        "carbs": "Carbs per 100 g must be a number from 0 to 100.",
+        "fat": "Fat per 100 g must be a number from 0 to 100.",
+        "grams": "Grams must be a number from 0 to 5000.",
+        "macrosTooHigh": "Protein, carbs and fat together cannot be more than 100 g in 100 g of food. Check the numbers."
+      }
+    },
+    "sections": [
+      {
+        "title": "What is in the printable diary",
+        "body": [
+          "Each sheet is one day. At the top you write the date, whether it was a training or a rest day, your bodyweight and how much water you drank. Below are twelve rows for the foods, a Notes column, and Total, Goal and Left boxes under the calories and macros so you can see what remains of the day.",
+          "The PDF holds seven sheets, one week per print. The sheets carry no targets and no meal plan: you write your own goals in the Goal row."
+        ]
+      },
+      {
+        "title": "Which version to print",
+        "body": [
+          "Use the first version when you already have the numbers for the amount you ate: from a per-serving column, a meal you worked out earlier, or a food app. You write them straight into the row.",
+          "Use the per 100 g version when all you have is the label's per 100 g column. You copy those numbers, weigh what you ate, and work out each amount: per 100 g times the grams eaten, divided by 100. For 150 g of a food with 12 g of protein per 100 g, that is 12 × 150 ÷ 100 = 18 g of protein. It is slower, and it shows how the numbers are built."
+        ]
+      },
+      {
+        "title": "How to use the spreadsheet",
+        "body": [
+          "The Day tab is for numbers you already worked out. The Per 100 g tab does the sums for you: type the label's numbers and the grams eaten, and the columns on the right fill in. Both tabs add up the day and show what is left of your goal.",
+          "The sums use plain formulas, so you can read or change them. Keep one copy of the file per day, or add a tab for each day."
+        ]
+      },
+      {
+        "title": "Paper, a spreadsheet or an app",
+        "body": [
+          "Paper needs no battery and no account, and doing the sums by hand teaches you what is in your food. What it cannot do is look the food up for you, scan a barcode or keep a running total on its own.",
+          "Musclog does that, and works out the macros for the amount you ate, so you never do the per 100 g sums yourself. It is a free, open-source app, and your data stays on your device."
+        ]
+      }
+    ]
+  }
+}

@@ -5,11 +5,16 @@ import {
   getWorkoutTemplates,
   workoutTemplates,
 } from '@/data/workoutTemplates';
+import workoutTemplatesDeDe from '@/data/workoutTemplatesDeDe.json';
 import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
 import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
+import workoutTemplatesFrFr from '@/data/workoutTemplatesFrFr.json';
+import workoutTemplatesItIt from '@/data/workoutTemplatesItIt.json';
 import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
+import workoutTemplatesPlPl from '@/data/workoutTemplatesPlPl.json';
 import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
 import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
+import workoutTemplatesTrTr from '@/data/workoutTemplatesTrTr.json';
 import { WORKOUT_TEMPLATE_COPIES_BY_LOCALE } from '@/lang/lang';
 import { equipmentForLocation, SHORT_PLAN_TITLES } from '@/utils/onboardingTraining';
 
@@ -21,6 +26,11 @@ describe('workout template copies', () => {
       'nl-NL': workoutTemplatesNlNl,
       'pt-BR': workoutTemplatesPtBr,
       'ru-RU': workoutTemplatesRuRu,
+      'de-DE': workoutTemplatesDeDe,
+      'fr-FR': workoutTemplatesFrFr,
+      'it-IT': workoutTemplatesItIt,
+      'pl-PL': workoutTemplatesPlPl,
+      'tr-TR': workoutTemplatesTrTr,
     });
   });
 
@@ -59,6 +69,11 @@ describe('workout template copies', () => {
     ['nl-NL', workoutTemplatesNlNl],
     ['pt-BR', workoutTemplatesPtBr],
     ['ru-RU', workoutTemplatesRuRu],
+    ['de-DE', workoutTemplatesDeDe],
+    ['fr-FR', workoutTemplatesFrFr],
+    ['it-IT', workoutTemplatesItIt],
+    ['pl-PL', workoutTemplatesPlPl],
+    ['tr-TR', workoutTemplatesTrTr],
   ])('keeps the %s catalog aligned with the workout definitions', (_locale, copies) => {
     expect(copies).toHaveLength(workoutTemplates.length);
     expect(copies.every(({ title }) => title.trim().length > 0)).toBe(true);

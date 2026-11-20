@@ -1,0 +1,29 @@
+{
+  "emptyStates": {
+    "workouts": {
+      "title": "No workouts yet",
+      "description": "Plan your routine and log your first session here.",
+      "buttonLabel": "Create your first workout"
+    },
+    "foods": {
+      "title": "No food logged",
+      "description": "Log your meals to stay on top of your nutrition goals. Your body will thank you.",
+      "buttonLabel": "Log your meal"
+    },
+    "workout": {
+      "title": "No workouts yet",
+      "description": "Ready for your first session?",
+      "button": "Plan"
+    },
+    "food": {
+      "title": "Nothing logged today",
+      "description": "Meals you log today show up here.",
+      "button": "Log"
+    },
+    "notes": {
+      "title": "No notes yet",
+      "description": "Jot down what you're cooking, like 70g of broccoli or a recipe idea, and track it when you're ready.",
+      "buttonLabel": "Write your first note"
+    }
+  }
+}

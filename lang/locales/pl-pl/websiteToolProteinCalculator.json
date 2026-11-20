@@ -1,0 +1,70 @@
+{
+  "websiteToolProteinCalculator": {
+    "title": "Protein calculator",
+    "intro": "Enter your body weight, height and goal to get a daily protein target in grams, with the grams per kilogram behind it.",
+    "form": {
+      "weight": "Body weight",
+      "height": "Height",
+      "goal": "Main goal",
+      "deficit": "Eating in a calorie deficit?",
+      "deficitYes": "Yes, cutting",
+      "deficitNo": "No",
+      "goalWeight": "Goal weight (optional)",
+      "goalWeightHint": "If you set one, protein is based on it instead of your current weight.",
+      "cm": "cm",
+      "inches": "in"
+    },
+    "goals": {
+      "hypertrophy": "Build muscle",
+      "strength": "Get stronger",
+      "general": "General health",
+      "endurance": "Endurance",
+      "weightLoss": "Weight loss"
+    },
+    "problems": {
+      "weight": "Enter a body weight within the range the calculator accepts.",
+      "height": "Enter a height within the range the calculator accepts.",
+      "goalWeight": "Enter a goal weight within the range the calculator accepts, or leave it empty."
+    },
+    "results": {
+      "grams": "Protein per day",
+      "gramsNote": "{{perKg}} of {{reference}}",
+      "tableTitle": "Grams per kilogram by goal",
+      "tableGoal": "Goal",
+      "tablePerKg": "Per kg of body weight"
+    },
+    "notes": {
+      "capped": "Your weight is above the reference weight of {{reference}} (BMI 30 for your height), so the figure uses that. Your weight is {{weight}}. Without a goal weight, the cap stops protein growing with fat mass.",
+      "deficit": "Eating in a deficit raises the minimum to {{value}}, because protein helps keep muscle while you lose fat.",
+      "bodyweight": "This figure is based on body weight. The calculator does not ask for body fat, so it cannot tell muscle from fat.",
+      "spread": "The daily total is what counts. Spread it over your meals however suits you, in as many or as few as you like.",
+      "medical": "General information, not medical advice. If you have kidney disease or another condition that affects protein, ask a clinician before you change your intake."
+    },
+    "sections": [
+      {
+        "title": "How the figure is made",
+        "body": [
+          "Protein is set in grams per kilogram of body weight for your goal: the same table the Musclog app uses for its daily targets. In a deficit it rises to at least 2.0 g/kg.",
+          "A percentage of calories is not used, because it makes protein fall as you eat less, just when keeping muscle matters most."
+        ]
+      },
+      {
+        "title": "Why the weight is capped",
+        "body": [
+          "Without a goal weight, the figure uses your current weight but never more than the weight at BMI 30 for your height. Above that, the extra mass is mostly not lean tissue, and protein for all of it would be more than you need. A goal weight replaces the cap."
+        ]
+      },
+      {
+        "title": "What the research says",
+        "body": [
+          "Morton et al. (2018) pooled resistance training studies and found that muscle gains levelled off at about 1.6 g/kg a day, with the upper confidence limit near 2.2 g/kg. The general and hypertrophy figures sit in that range.",
+          "Helms et al. (2014) reviewed protein for people dieting while training, and the 2.0 g/kg minimum for a deficit comes from that literature. It is a Musclog setting, not a measured result for you."
+        ]
+      }
+    ],
+    "sources": {
+      "morton": "Morton et al. (2018), meta-analysis of protein supplementation and resistance training gains",
+      "helms": "Helms et al. (2014), protein intake during energy restriction for physique athletes"
+    }
+  }
+}

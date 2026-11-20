@@ -1,0 +1,55 @@
+{
+  "websiteToolNetCarbs": {
+    "title": "Net carbs calculator",
+    "intro": "Turn the carbohydrate and fiber on a nutrition label into total and net carbs, and see which one your tracker expects.",
+    "form": {
+      "region": "Where the label is from",
+      "us": "US or Canada label: carbs include fiber",
+      "eu": "EU, UK or similar label: carbs exclude fiber",
+      "carbs": "Carbohydrate on the label",
+      "fiber": "Dietary fiber on the label"
+    },
+    "problems": {
+      "carbs": "Enter the carbohydrate as a number of grams.",
+      "fiber": "Enter the fiber as a number of grams, or 0.",
+      "fiberTooHigh": "On a US or Canada label, total carbohydrate already includes fiber, so fiber cannot be more than that total. Check the two numbers."
+    },
+    "results": {
+      "net": "Net carbs",
+      "netNote": "Carbohydrate without fiber: the digestible part that net-carb trackers count.",
+      "total": "Total carbohydrate",
+      "totalNote": "Carbohydrate with fiber included: what US labels print and what Musclog stores for a food.",
+      "logTitle": "What to enter",
+      "logTotal": "A tracker that counts total carbs: enter {{value}}.",
+      "logNet": "A tracker that counts net carbs: enter {{value}}."
+    },
+    "notes": {
+      "sugarAlcohols": "Sugar alcohols (polyols such as erythritol or maltitol) are not subtracted here. Some people also take them off their net carbs; this tool does not, so the net figure may run a little high for products that contain them.",
+      "musclog": "Musclog stores total carbs including fiber, the way US labels count them. Food from EU sources is converted when it is saved, so the diary keeps one meaning for carbs."
+    },
+    "sections": [
+      {
+        "title": "Why labels differ",
+        "body": [
+          "In the EU, the declared carbohydrate is the carbohydrate your body metabolises, and fiber is declared on its own line. In the US and Canada, the total carbohydrate line already includes dietary fiber, so the same product can show different carbohydrate numbers on the two labels."
+        ]
+      },
+      {
+        "title": "Total and net",
+        "body": [
+          "Total carbohydrate includes fiber. Net carbs is total minus fiber, the part your body digests. The page shows both, because some trackers ask for one and some for the other."
+        ]
+      },
+      {
+        "title": "What is not handled",
+        "body": [
+          "Sugar alcohols are not subtracted, and the page does not estimate fiber for foods without a label."
+        ]
+      }
+    ],
+    "sources": {
+      "eu": "EU Regulation 1169/2011, food information to consumers (Annex I)",
+      "fda": "FDA, A Food Labeling Guide (nutrition labelling)"
+    }
+  }
+}

@@ -32,6 +32,11 @@ const WEBSITE_LOCALES = [
   { prefix: 'nl', hreflang: 'nl', language: 'nl-NL', ogLocale: 'nl_NL' },
   { prefix: 'pt-br', hreflang: 'pt-BR', language: 'pt-BR', ogLocale: 'pt_BR' },
   { prefix: 'ru', hreflang: 'ru', language: 'ru-RU', ogLocale: 'ru_RU' },
+  { prefix: 'de', hreflang: 'de', language: 'de-DE', ogLocale: 'de_DE' },
+  { prefix: 'fr', hreflang: 'fr', language: 'fr-FR', ogLocale: 'fr_FR' },
+  { prefix: 'it', hreflang: 'it', language: 'it-IT', ogLocale: 'it_IT' },
+  { prefix: 'pl', hreflang: 'pl', language: 'pl-PL', ogLocale: 'pl_PL' },
+  { prefix: 'tr', hreflang: 'tr', language: 'tr-TR', ogLocale: 'tr_TR' },
 ];
 
 const DEFAULT_LOCALE_PREFIX = 'en';

@@ -1,0 +1,86 @@
+{
+  "websiteToolDeloadCalculator": {
+    "title": "Deload calculator",
+    "intro": "Enter a lift's working weight and sets and get the deload week: how much lighter to go, how many sets to keep, how hard to push and how long it lasts.",
+    "form": {
+      "weight": "Working weight",
+      "weightHint": "What you lift for your normal working sets.",
+      "sets": "Working sets in a normal week",
+      "setsHint": "Whole number, for this one exercise.",
+      "equipmentLabel": "Equipment",
+      "equipment": {
+        "barbell": "Barbell",
+        "dumbbell": "Dumbbell",
+        "machine": "Machine or cable"
+      }
+    },
+    "problems": {
+      "weight": "Enter the working weight as a number above 0 and at most {{max}}.",
+      "sets": "Enter the sets as a whole number from 1 to {{max}}."
+    },
+    "results": {
+      "title": "Your deload week",
+      "weight": "Weight",
+      "weightNote": "{{percent}} lighter than your working weight, rounded down to a load you can set. Keep your usual reps.",
+      "sets": "Sets",
+      "setsValue_one": "{{sets}} set",
+      "setsValue_few": "{{sets}} sets",
+      "setsValue_many": "{{sets}} sets",
+      "setsValue_other": "{{sets}} sets",
+      "setsNote": "Down from {{from}}: about two thirds, never fewer than one.",
+      "effort": "Effort",
+      "effortValue": "{{count}} reps in reserve",
+      "effortNote": "Stop each set with about {{count}} reps still possible, so the week feels easy on purpose.",
+      "duration": "Length",
+      "durationValue_one": "{{count}} week",
+      "durationValue_few": "{{count}} weeks",
+      "durationValue_many": "{{count}} weeks",
+      "durationValue_other": "{{count}} weeks",
+      "durationNote": "Train as often as usual with lighter work, then go back to your normal loads.",
+      "plates": "Plates on each side of the bar",
+      "emptyBar": "Empty bar",
+      "plateLine": "{{count}} × {{weight}}",
+      "noLighter": "This is already the lightest load this equipment can make, so the weight stays. Cut the sets and push less hard instead.",
+      "step": "One load step for this equipment is {{step}}."
+    },
+    "table": {
+      "title": "Other common cuts",
+      "cut": "Cut",
+      "weight": "Weight",
+      "actual": "Actually lighter by",
+      "musclog": "Musclog's cut",
+      "percent": "{{percent}}",
+      "note": "Musclog takes 10% or one load step, whichever is larger. The 10, 15 and 20% rows are rules of thumb, not study results. Each is rounded down to a load you can really set, so a small weight can end up lighter by more than the cut you asked for."
+    },
+    "sections": [
+      {
+        "title": "How much lighter, and for how long",
+        "body": [
+          "The Musclog app's deload is a cut of 10% or one load step, whichever is larger, rounded down to a weight your equipment can make and always strictly lighter than now. A lighter week then keeps about two thirds of the working sets, keeps the planned reps and aims for 4 reps in reserve. It lasts one week. All of these are Musclog product choices, not study results.",
+          "Lifters often use 10 to 20% less weight, or about a third fewer sets, for a week. Use the table for a deeper cut if the week before felt very heavy. Keep the same exercises and the same number of sessions: a deload is lighter training, not a week off."
+        ]
+      },
+      {
+        "title": "When a deload makes sense",
+        "body": [
+          "The usual signs are the same weight feeling much heavier than a few weeks ago, missed reps you normally hit and almost no reps left in reserve. Poor sleep, stress or illness can look the same, and a deload helps with those too. If a joint hurts sharply, see a doctor or physiotherapist instead.",
+          "The app deloads one exercise on its own after two sessions in a row at the same load where you ended with nothing in reserve or missed the planned reps. It suggests a lighter week from your Weekly Review when several lifts stall. You choose whether to take it."
+        ]
+      },
+      {
+        "title": "What the research says",
+        "body": [
+          "A 2023 consensus study of strength and physique coaches defined a deload as a period of reduced training stress meant to limit fatigue, support recovery and prepare you for later training. That is a definition, not a prescription. The numbers on this page do not come from it."
+        ]
+      }
+    ],
+    "sources": {
+      "bell": "Bell et al. (2023), Integrating deloading into strength and physique sports training programmes: an international Delphi consensus approach (Sports Medicine - Open)",
+      "zourdos": "Zourdos et al. (2016), Novel resistance training-specific RPE scale measuring repetitions in reserve"
+    },
+    "articles": {
+      "deload": "Deload weeks: when you need one and how to run it",
+      "doubleProgression": "Double progression: the simplest way to add weight every week"
+    }
+  }
+}

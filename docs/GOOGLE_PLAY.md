@@ -94,7 +94,7 @@ from the public url plus `=s0`, hash-checked) so a fresh `pull` then `plan` show
 
 Every text change covers all ten listing locales and must match what the app does. Five match the languages
 the app ships (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`). Five are listing-only for now (`de-DE`, `fr-FR`,
-`it-IT`, `pl-PL`, `tr-TR`): the app isn't translated into them yet, so each states, on its own line right
+`it-IT`, `pl-PL`, `tr-TR`): the app has them registered (`lang/locales/<locale>/` holds English copy copied over) but isn't translated into them yet, so each states, on its own line right
 after the opening paragraph, which languages the app is in. Update that line when the app gains a language,
 and once a listing-only locale ships in the app, it joins the screenshot and banner scripts too. The
 listing-only locales have no `images/` folder, so Play shows the default language's graphics. They don't

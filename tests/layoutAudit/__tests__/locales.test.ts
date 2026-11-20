@@ -17,7 +17,18 @@ describe('locale names', () => {
 
 describe('bundledLocales', () => {
   it('lists every folder under lang/locales, English first', () => {
-    expect(bundledLocales()).toEqual(['en-US', 'es-ES', 'nl-NL', 'pt-BR', 'ru-RU']);
+    expect(bundledLocales()).toEqual([
+      'en-US',
+      'de-DE',
+      'es-ES',
+      'fr-FR',
+      'it-IT',
+      'nl-NL',
+      'pl-PL',
+      'pt-BR',
+      'ru-RU',
+      'tr-TR',
+    ]);
   });
 });
 
@@ -30,7 +41,10 @@ describe('resolveLocales', () => {
   it('accepts a list, adds the stretched-English pass, and drops duplicates', () => {
     expect(resolveLocales('ru-RU, nl-NL')).toEqual(['ru-RU', 'nl-NL']);
     expect(resolveLocales('all,pseudo')).toEqual([...bundledLocales(), 'pseudo']);
-    expect(resolveLocales('ru-RU,all')).toEqual(['ru-RU', 'en-US', 'es-ES', 'nl-NL', 'pt-BR']);
+    expect(resolveLocales('ru-RU,all')).toEqual([
+      'ru-RU',
+      ...bundledLocales().filter((locale) => locale !== 'ru-RU'),
+    ]);
   });
 });
 

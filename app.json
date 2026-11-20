@@ -26,7 +26,7 @@
         "expo-localization",
         {
           "supportedLocales": {
-            "ios": ["en", "es", "nl", "pt-BR", "ru"]
+            "ios": ["en", "es", "nl", "pt-BR", "ru", "de", "fr", "it", "pl", "tr"]
           }
         }
       ],

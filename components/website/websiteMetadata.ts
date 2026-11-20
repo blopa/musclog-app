@@ -1,10 +1,15 @@
 import type { GenerateMetadataFunction, Metadata } from 'expo-router/server';
 
+import de from '@/lang/locales/de-de/website.json';
 import en from '@/lang/locales/en-us/website.json';
 import es from '@/lang/locales/es-es/website.json';
+import fr from '@/lang/locales/fr-fr/website.json';
+import it from '@/lang/locales/it-it/website.json';
 import nl from '@/lang/locales/nl-nl/website.json';
+import pl from '@/lang/locales/pl-pl/website.json';
 import pt from '@/lang/locales/pt-br/website.json';
 import ru from '@/lang/locales/ru-ru/website.json';
+import tr from '@/lang/locales/tr-tr/website.json';
 
 import { blogListingPath, blogTagPath } from './blogRoutes';
 import {
@@ -32,8 +37,24 @@ const translations = {
   'nl-nl': nl.website,
   'pt-br': pt.website,
   'ru-ru': ru.website,
+  'de-de': de.website,
+  'fr-fr': fr.website,
+  'it-it': it.website,
+  'pl-pl': pl.website,
+  'tr-tr': tr.website,
 };
-const OG_LOCALES = ['en_US', 'es_ES', 'nl_NL', 'pt_BR', 'ru_RU'];
+const OG_LOCALES = [
+  'en_US',
+  'es_ES',
+  'nl_NL',
+  'pt_BR',
+  'ru_RU',
+  'de_DE',
+  'fr_FR',
+  'it_IT',
+  'pl_PL',
+  'tr_TR',
+];
 
 export function websiteCopy(language = 'en-us') {
   return translations[language.toLowerCase() as keyof typeof translations] ?? translations['en-us'];

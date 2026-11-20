@@ -1,0 +1,242 @@
+{
+  "whatsNew": {
+    "title": "What's new",
+    "intro": {
+      "inside": "What's in this tour",
+      "title": "Make Musclog your own",
+      "description": "A few things have changed. Take a quick look and choose what works for you. Changes save as you tap; you can revisit this tour in Settings.",
+      "truncated": "We’ve kept this tour to the latest highlights."
+    },
+    "next": "Next",
+    "back": "Back",
+    "done": "Done",
+    "skip": "Skip for now",
+    "pageOf": "Page {{current}} of {{total}}",
+    "saveFailed": "Couldn’t save this choice. Please try again.",
+    "loadFailed": "Couldn’t load this choice.",
+    "dismissFailed": "Couldn’t save your progress. Please try again.",
+    "retry": "Try again",
+    "settingsCard": {
+      "title": "What's new",
+      "subtitle": "Revisit the latest features and preferences"
+    },
+    "debug": {
+      "title": "What's new",
+      "record": "Seen through: {{version}}",
+      "none": "No record",
+      "clear": "Clear record (simulate upgrade)",
+      "set": "Set seen-through version",
+      "preview": "Preview release {{version}}",
+      "invalid": "Enter a version such as 2.13.0.",
+      "version": "Version (x.y.z)"
+    },
+    "releases": {
+      "v2_15_2": {
+        "view": {
+          "title": "Your workout, your view",
+          "description": "Guided view now helps you focus on one set at a time. Prefer the full picture? Inline view is still here."
+        },
+        "workoutView": {
+          "title": "Choose your workout view",
+          "description": "You can change this later in visual settings.",
+          "guided": {
+            "label": "Guided",
+            "description": "Focus on your current set with larger controls."
+          },
+          "inline": {
+            "label": "Inline",
+            "description": "See and edit your sets together in a list."
+          }
+        },
+        "targets": {
+          "title": "Targets that fit you and your gym",
+          "description": "Musclog suggests starting targets from your history and marks the numbers it changed, so you can always edit them. Add your gym’s bar and plates to get loads you can actually put on the bar."
+        },
+        "workoutAutonomy": {
+          "title": "Starting targets",
+          "description": "How your history shapes the next workout.",
+          "suggest": {
+            "label": "Suggest targets",
+            "description": "Use progression suggestions when starting a workout."
+          },
+          "manual": {
+            "label": "Keep my plan",
+            "description": "Start with the targets saved in my workout."
+          }
+        },
+        "setupGym": "Set up gyms and plates",
+        "review": {
+          "title": "One weekly moment to reflect",
+          "description": "Weekly Review brings your nutrition and training together, with suggestions you choose whether to apply."
+        },
+        "reviewWeekday": {
+          "title": "Your review day",
+          "description": "Pick a day that fits your routine. Existing reminder preferences stay in place."
+        },
+        "openReview": "Open Weekly Review",
+        "workoutMore": {
+          "title": "More for your workouts",
+          "plans": {
+            "label": "Workout plans",
+            "description": "Organize workouts into weekly or rotating plans."
+          },
+          "cardio": {
+            "label": "Cardio log",
+            "description": "Record cardio sessions alongside your strength training."
+          },
+          "swaps": {
+            "label": "Exercise swaps",
+            "description": "Swap an exercise during a workout without changing the original plan."
+          },
+          "restrictions": {
+            "label": "Exercise restrictions",
+            "description": "Remember exercises to avoid and temporary injuries in workout settings."
+          },
+          "warmups": {
+            "label": "Warm-up sets",
+            "description": "Keep warm-ups separate from your working sets."
+          },
+          "restTimer": {
+            "label": "Automatic rest timer",
+            "description": "Start the rest timer after each set, with optional vibration."
+          }
+        },
+        "heatmaps": {
+          "title": "Your activity at a glance",
+          "description": "See the days you trained and logged meals as a calendar of squares on Home: darker means busier, and tapping a square reads out that day. Turn it on in Settings → Appearance and home → Home heatmaps, where you also pick the layout."
+        },
+        "aiSetup": {
+          "title": "Set up Musclog by talking",
+          "description": "Answer a few questions in a chat instead of filling in forms, using free Musclog AI, your own Gemini or OpenAI key, or ChatGPT or Claude. You review and edit every answer before anything is saved."
+        },
+        "openAiSetup": "Update my profile with AI",
+        "coachPersona": {
+          "title": "Pick who your AI coach is",
+          "description": "Keep Loggy, or pick Count Dracula, Cthulhu or Sherlock Holmes, or write your own with a name, a voice and a picture. Only the wording changes, never the numbers or the safety advice. Find it in Settings → AI."
+        },
+        "appWide": {
+          "title": "Also new across the app",
+          "home": {
+            "label": "A tidier Home",
+            "description": "Today’s numbers first, smaller shortcuts, and a Weekly Review card only while one is due."
+          },
+          "menus": {
+            "label": "Calmer menus and Settings",
+            "description": "Simple grouped lists instead of stacks of cards, with Settings split into seven clearer groups."
+          },
+          "widgets": {
+            "label": "Widgets on iOS and Android",
+            "description": "Nutrition Progress and Smart Camera now work on iOS too. On Android, remove your old Musclog widgets and add them again from the widget picker."
+          },
+          "lock": {
+            "label": "Lock parts of the app",
+            "description": "In Settings → App lock, protect your cycle, workouts, nutrition, progress or the whole app with your device credential."
+          }
+        },
+        "cycleDiary": {
+          "title": "A private, encrypted cycle diary",
+          "description": "Your periods and day logs are now encrypted on your device. Predictions show how confident they are, and the fertile-window estimate is optional and off by default. Reminders can be as discreet as you like, and a read-only Cycle widget shows nothing personal under an app lock."
+        }
+      },
+      "v2_16_0": {
+        "loggy": {
+          "title": "Meet Loggy",
+          "description": "Loggy is Musclog's mascot. He welcomes you, keeps empty screens company and turns up when you reach a first. You can change how he appears below, or later in Settings → Appearance and home.",
+          "show": {
+            "title": "Show Loggy",
+            "description": "Turn off to hide him everywhere. Your AI coach keeps its picture."
+          },
+          "animated": {
+            "title": "Animated Loggy",
+            "description": "Turn off to always see him standing still. Only applies while Loggy is shown."
+          }
+        },
+        "importHistory": {
+          "title": "Bring your training history",
+          "description": "Moving from another app? Bring your past workouts over, so your records and progress start from day one.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy and FitNotes",
+              "description": "Pick the file you exported from the app."
+            },
+            "twice": {
+              "label": "Safe to repeat",
+              "description": "Importing the same file twice adds nothing."
+            },
+            "undo": {
+              "label": "Easy to undo",
+              "description": "Remove everything an import added whenever you like."
+            }
+          },
+          "action": {
+            "label": "Import workouts",
+            "description": "You can also do this later in Settings → Backups and data."
+          }
+        },
+        "yearInReview": {
+          "title": "Your year in Musclog",
+          "description": "Each December, look back at everything you did this year.",
+          "items": {
+            "look": {
+              "label": "Sessions, records and days trained",
+              "description": "Your year as numbers and posters you can flip through."
+            },
+            "share": {
+              "label": "Share it as an image",
+              "description": "Post it, or keep it to yourself."
+            },
+            "private": {
+              "label": "Private by default",
+              "description": "Weight and nutrition stay out unless you add them."
+            }
+          },
+          "action": {
+            "label": "See your year so far"
+          }
+        },
+        "strengthLevels": {
+          "title": "Strength levels",
+          "description": "See how your main lifts compare with your body weight, and what the next level takes.",
+          "items": {
+            "bodyWeight": {
+              "label": "Compared with your body weight",
+              "description": "Needs a weigh-in: log your weight to see your levels."
+            },
+            "next": {
+              "label": "What the next level takes",
+              "description": "The load to lift to reach the next level."
+            },
+            "where": {
+              "label": "On Progress and on each lift",
+              "description": "You'll find them in both places."
+            }
+          },
+          "action": {
+            "label": "Open progress"
+          }
+        },
+        "trainingLoad": {
+          "title": "Recent training load",
+          "description": "A body map on Progress shows what you trained over the last week.",
+          "items": {
+            "map": {
+              "label": "The last 7 days on a body map",
+              "description": "The muscles you worked show up darker."
+            },
+            "sets": {
+              "label": "Weekly sets per muscle",
+              "description": "The numbers sit right beside the map."
+            },
+            "load": {
+              "label": "Load, not readiness",
+              "description": "It shows what you trained, not whether you should train again."
+            }
+          },
+          "action": {
+            "label": "Open progress"
+          }
+        }
+      }
+    }
+  }
+}

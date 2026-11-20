@@ -4,29 +4,150 @@
 import 'intl-pluralrules';
 
 import {
+  de as localeDe,
   enUS as localeEnUS,
   es as localeEs,
+  fr as localeFr,
+  it as localeIt,
   nl as localeNl,
+  pl as localePl,
   ptBR as localePtBR,
   ru as localeRu,
+  tr as localeTr,
 } from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 // Exercise data
+import exercisesDeDe from '@/data/exercisesDeDe.json';
 import exercisesEnUs from '@/data/exercisesEnUS.json';
 import exercisesEsEs from '@/data/exercisesEsEs.json';
+import exercisesFrFr from '@/data/exercisesFrFr.json';
+import exercisesItIt from '@/data/exercisesItIt.json';
 import exercisesNlNl from '@/data/exercisesNlNl.json';
+import exercisesPlPl from '@/data/exercisesPlPl.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
 import exercisesRuRu from '@/data/exercisesRuRu.json';
+import exercisesTrTr from '@/data/exercisesTrTr.json';
 // Workout template copies
+import workoutTemplatesDeDe from '@/data/workoutTemplatesDeDe.json';
 import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
 import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
+import workoutTemplatesFrFr from '@/data/workoutTemplatesFrFr.json';
+import workoutTemplatesItIt from '@/data/workoutTemplatesItIt.json';
 import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
+import workoutTemplatesPlPl from '@/data/workoutTemplatesPlPl.json';
 import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
 import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
+import workoutTemplatesTrTr from '@/data/workoutTemplatesTrTr.json';
 
+// de-de
+import deDeAccessToken from './locales/de-de/access_token.json';
+import deDeAddMeal from './locales/de-de/addMeal.json';
+import deDeAi from './locales/de-de/ai.json';
+import deDeAiOnboarding from './locales/de-de/aiOnboarding.json';
+import deDeBleWorkoutData from './locales/de-de/bleWorkoutData.json';
+import deDeBodyFat from './locales/de-de/body_fat.json';
+import deDeBodyMetrics from './locales/de-de/bodyMetrics.json';
+import deDeCamera from './locales/de-de/camera.json';
+import deDeCardio from './locales/de-de/cardio.json';
+import deDeCoach from './locales/de-de/coach.json';
+import deDeComeback from './locales/de-de/comeback.json';
+import deDeCommon from './locales/de-de/common.json';
+import deDeCreateWorkout from './locales/de-de/createWorkout.json';
+import deDeCurrentGoalsCard from './locales/de-de/currentGoalsCard.json';
+import deDeCycle from './locales/de-de/cycle.json';
+import deDeDailySummaryCard from './locales/de-de/dailySummaryCard.json';
+import deDeDatePicker from './locales/de-de/datePicker.json';
+import deDeEatingPhaseBadge from './locales/de-de/eatingPhaseBadge.json';
+import deDeEditFitnessDetails from './locales/de-de/editFitnessDetails.json';
+import deDeEditPersonalInfo from './locales/de-de/editPersonalInfo.json';
+import deDeEditScreenInfo from './locales/de-de/editScreenInfo.json';
+import deDeEditSetDetails from './locales/de-de/editSetDetails.json';
+import deDeEmptyStates from './locales/de-de/emptyStates.json';
+import deDeEndWorkout from './locales/de-de/endWorkout.json';
+import deDeErrors from './locales/de-de/errors.json';
+import deDeExerciseGoals from './locales/de-de/exerciseGoals.json';
+import deDeExercises from './locales/de-de/exercises.json';
+import deDeExerciseTransition from './locales/de-de/exerciseTransition.json';
+import deDeExpiresIn from './locales/de-de/expires_in.json';
+import deDeFocus from './locales/de-de/focus.json';
+import deDeFood from './locales/de-de/food.json';
+import deDeFoodFoodPortions from './locales/de-de/food_food_portions.json';
+import deDeFoodSearch from './locales/de-de/foodSearch.json';
+import deDeFreeTraining from './locales/de-de/freeTraining.json';
+import deDeGoalHistoryCard from './locales/de-de/goalHistoryCard.json';
+import deDeGoalsManagement from './locales/de-de/goalsManagement.json';
+import deDeHealthConnect from './locales/de-de/healthConnect.json';
+import deDeHeightPicker from './locales/de-de/heightPicker.json';
+import deDeHome from './locales/de-de/home.json';
+import deDeImageViewer from './locales/de-de/imageViewer.json';
+import deDeLock from './locales/de-de/lock.json';
+import deDeLogSetPerformance from './locales/de-de/logSetPerformance.json';
+import deDeMealFoods from './locales/de-de/meal_foods.json';
+import deDeMeals from './locales/de-de/meals.json';
+import deDeMuscleLoad from './locales/de-de/muscleLoad.json';
+import deDeNotes from './locales/de-de/notes.json';
+import deDeNotifications from './locales/de-de/notifications.json';
+import deDeNutrition from './locales/de-de/nutrition.json';
+import deDeNutritionLogs from './locales/de-de/nutrition_logs.json';
+import deDeNutritionGoals from './locales/de-de/nutritionGoals.json';
+import deDeOnboarding from './locales/de-de/onboarding.json';
+import deDeOpticalTransfer from './locales/de-de/opticalTransfer.json';
+import deDeOptionsSelector from './locales/de-de/optionsSelector.json';
+import deDePastWorkoutHistory from './locales/de-de/pastWorkoutHistory.json';
+import deDePortionSizes from './locales/de-de/portionSizes.json';
+import deDeProfile from './locales/de-de/profile.json';
+import deDeProgress from './locales/de-de/progress.json';
+import deDeReplaceExercise from './locales/de-de/replaceExercise.json';
+import deDeRestOver from './locales/de-de/restOver.json';
+import deDeRestTimer from './locales/de-de/restTimer.json';
+import deDeSessionFeedback from './locales/de-de/sessionFeedback.json';
+import deDeSettings from './locales/de-de/settings.json';
+import deDeSnackbar from './locales/de-de/snackbar.json';
+import deDeSpiderChart from './locales/de-de/spiderChart.json';
+import deDeStartWorkout from './locales/de-de/startWorkout.json';
+import deDeStrengthLevels from './locales/de-de/strengthLevels.json';
+import deDeTimePicker from './locales/de-de/timePicker.json';
+import deDeTokenType from './locales/de-de/token_type.json';
+import deDeUserMenu from './locales/de-de/userMenu.json';
+import deDeWebsite from './locales/de-de/website.json';
+import deDeWebsiteAlternativesPages from './locales/de-de/websiteAlternativesPages.json';
+import deDeWebsitePrograms from './locales/de-de/websitePrograms.json';
+import deDeWebsiteToolCalorieDeficit from './locales/de-de/websiteToolCalorieDeficit.json';
+import deDeWebsiteToolDeloadCalculator from './locales/de-de/websiteToolDeloadCalculator.json';
+import deDeWebsiteToolNetCarbs from './locales/de-de/websiteToolNetCarbs.json';
+import deDeWebsiteToolNutritionLogTemplate from './locales/de-de/websiteToolNutritionLogTemplate.json';
+import deDeWebsiteToolOneRepMax from './locales/de-de/websiteToolOneRepMax.json';
+import deDeWebsiteToolPlateCalculator from './locales/de-de/websiteToolPlateCalculator.json';
+import deDeWebsiteToolProgressiveOverload from './locales/de-de/websiteToolProgressiveOverload.json';
+import deDeWebsiteToolProteinCalculator from './locales/de-de/websiteToolProteinCalculator.json';
+import deDeWebsiteToolRpeChart from './locales/de-de/websiteToolRpeChart.json';
+import deDeWebsiteTools from './locales/de-de/websiteTools.json';
+import deDeWebsiteToolStrengthLevel from './locales/de-de/websiteToolStrengthLevel.json';
+import deDeWebsiteToolWarmUpCalculator from './locales/de-de/websiteToolWarmUpCalculator.json';
+import deDeWebsiteToolWorkoutLogTemplate from './locales/de-de/websiteToolWorkoutLogTemplate.json';
+import deDeWeeklyStreakCard from './locales/de-de/weeklyStreakCard.json';
+import deDeWhatsNew from './locales/de-de/whatsNew.json';
+import deDeWidgets from './locales/de-de/widgets.json';
+import deDeWorkout from './locales/de-de/workout.json';
+import deDeWorkoutLogSets from './locales/de-de/workout_log_sets.json';
+import deDeWorkoutLogs from './locales/de-de/workout_logs.json';
+import deDeWorkoutTemplateSets from './locales/de-de/workout_template_sets.json';
+import deDeWorkoutDetail from './locales/de-de/workoutDetail.json';
+import deDeWorkoutDetails from './locales/de-de/workoutDetails.json';
+import deDeWorkoutHistory from './locales/de-de/workoutHistory.json';
+import deDeWorkoutImport from './locales/de-de/workoutImport.json';
+import deDeWorkoutLog from './locales/de-de/workoutLog.json';
+import deDeWorkoutOptions from './locales/de-de/workoutOptions.json';
+import deDeWorkoutReminder from './locales/de-de/workoutReminder.json';
+import deDeWorkouts from './locales/de-de/workouts.json';
+import deDeWorkoutSession from './locales/de-de/workoutSession.json';
+import deDeWorkoutSettings from './locales/de-de/workoutSettings.json';
+import deDeWorkoutSummary from './locales/de-de/workoutSummary.json';
+import deDeWorkTimer from './locales/de-de/workTimer.json';
+import deDeYearInReview from './locales/de-de/yearInReview.json';
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
 import enUsAddMeal from './locales/en-us/addMeal.json';
@@ -239,6 +360,218 @@ import esEsWorkoutSettings from './locales/es-es/workoutSettings.json';
 import esEsWorkoutSummary from './locales/es-es/workoutSummary.json';
 import esEsWorkTimer from './locales/es-es/workTimer.json';
 import esEsYearInReview from './locales/es-es/yearInReview.json';
+// fr-fr
+import frFrAccessToken from './locales/fr-fr/access_token.json';
+import frFrAddMeal from './locales/fr-fr/addMeal.json';
+import frFrAi from './locales/fr-fr/ai.json';
+import frFrAiOnboarding from './locales/fr-fr/aiOnboarding.json';
+import frFrBleWorkoutData from './locales/fr-fr/bleWorkoutData.json';
+import frFrBodyFat from './locales/fr-fr/body_fat.json';
+import frFrBodyMetrics from './locales/fr-fr/bodyMetrics.json';
+import frFrCamera from './locales/fr-fr/camera.json';
+import frFrCardio from './locales/fr-fr/cardio.json';
+import frFrCoach from './locales/fr-fr/coach.json';
+import frFrComeback from './locales/fr-fr/comeback.json';
+import frFrCommon from './locales/fr-fr/common.json';
+import frFrCreateWorkout from './locales/fr-fr/createWorkout.json';
+import frFrCurrentGoalsCard from './locales/fr-fr/currentGoalsCard.json';
+import frFrCycle from './locales/fr-fr/cycle.json';
+import frFrDailySummaryCard from './locales/fr-fr/dailySummaryCard.json';
+import frFrDatePicker from './locales/fr-fr/datePicker.json';
+import frFrEatingPhaseBadge from './locales/fr-fr/eatingPhaseBadge.json';
+import frFrEditFitnessDetails from './locales/fr-fr/editFitnessDetails.json';
+import frFrEditPersonalInfo from './locales/fr-fr/editPersonalInfo.json';
+import frFrEditScreenInfo from './locales/fr-fr/editScreenInfo.json';
+import frFrEditSetDetails from './locales/fr-fr/editSetDetails.json';
+import frFrEmptyStates from './locales/fr-fr/emptyStates.json';
+import frFrEndWorkout from './locales/fr-fr/endWorkout.json';
+import frFrErrors from './locales/fr-fr/errors.json';
+import frFrExerciseGoals from './locales/fr-fr/exerciseGoals.json';
+import frFrExercises from './locales/fr-fr/exercises.json';
+import frFrExerciseTransition from './locales/fr-fr/exerciseTransition.json';
+import frFrExpiresIn from './locales/fr-fr/expires_in.json';
+import frFrFocus from './locales/fr-fr/focus.json';
+import frFrFood from './locales/fr-fr/food.json';
+import frFrFoodFoodPortions from './locales/fr-fr/food_food_portions.json';
+import frFrFoodSearch from './locales/fr-fr/foodSearch.json';
+import frFrFreeTraining from './locales/fr-fr/freeTraining.json';
+import frFrGoalHistoryCard from './locales/fr-fr/goalHistoryCard.json';
+import frFrGoalsManagement from './locales/fr-fr/goalsManagement.json';
+import frFrHealthConnect from './locales/fr-fr/healthConnect.json';
+import frFrHeightPicker from './locales/fr-fr/heightPicker.json';
+import frFrHome from './locales/fr-fr/home.json';
+import frFrImageViewer from './locales/fr-fr/imageViewer.json';
+import frFrLock from './locales/fr-fr/lock.json';
+import frFrLogSetPerformance from './locales/fr-fr/logSetPerformance.json';
+import frFrMealFoods from './locales/fr-fr/meal_foods.json';
+import frFrMeals from './locales/fr-fr/meals.json';
+import frFrMuscleLoad from './locales/fr-fr/muscleLoad.json';
+import frFrNotes from './locales/fr-fr/notes.json';
+import frFrNotifications from './locales/fr-fr/notifications.json';
+import frFrNutrition from './locales/fr-fr/nutrition.json';
+import frFrNutritionLogs from './locales/fr-fr/nutrition_logs.json';
+import frFrNutritionGoals from './locales/fr-fr/nutritionGoals.json';
+import frFrOnboarding from './locales/fr-fr/onboarding.json';
+import frFrOpticalTransfer from './locales/fr-fr/opticalTransfer.json';
+import frFrOptionsSelector from './locales/fr-fr/optionsSelector.json';
+import frFrPastWorkoutHistory from './locales/fr-fr/pastWorkoutHistory.json';
+import frFrPortionSizes from './locales/fr-fr/portionSizes.json';
+import frFrProfile from './locales/fr-fr/profile.json';
+import frFrProgress from './locales/fr-fr/progress.json';
+import frFrReplaceExercise from './locales/fr-fr/replaceExercise.json';
+import frFrRestOver from './locales/fr-fr/restOver.json';
+import frFrRestTimer from './locales/fr-fr/restTimer.json';
+import frFrSessionFeedback from './locales/fr-fr/sessionFeedback.json';
+import frFrSettings from './locales/fr-fr/settings.json';
+import frFrSnackbar from './locales/fr-fr/snackbar.json';
+import frFrSpiderChart from './locales/fr-fr/spiderChart.json';
+import frFrStartWorkout from './locales/fr-fr/startWorkout.json';
+import frFrStrengthLevels from './locales/fr-fr/strengthLevels.json';
+import frFrTimePicker from './locales/fr-fr/timePicker.json';
+import frFrTokenType from './locales/fr-fr/token_type.json';
+import frFrUserMenu from './locales/fr-fr/userMenu.json';
+import frFrWebsite from './locales/fr-fr/website.json';
+import frFrWebsiteAlternativesPages from './locales/fr-fr/websiteAlternativesPages.json';
+import frFrWebsitePrograms from './locales/fr-fr/websitePrograms.json';
+import frFrWebsiteToolCalorieDeficit from './locales/fr-fr/websiteToolCalorieDeficit.json';
+import frFrWebsiteToolDeloadCalculator from './locales/fr-fr/websiteToolDeloadCalculator.json';
+import frFrWebsiteToolNetCarbs from './locales/fr-fr/websiteToolNetCarbs.json';
+import frFrWebsiteToolNutritionLogTemplate from './locales/fr-fr/websiteToolNutritionLogTemplate.json';
+import frFrWebsiteToolOneRepMax from './locales/fr-fr/websiteToolOneRepMax.json';
+import frFrWebsiteToolPlateCalculator from './locales/fr-fr/websiteToolPlateCalculator.json';
+import frFrWebsiteToolProgressiveOverload from './locales/fr-fr/websiteToolProgressiveOverload.json';
+import frFrWebsiteToolProteinCalculator from './locales/fr-fr/websiteToolProteinCalculator.json';
+import frFrWebsiteToolRpeChart from './locales/fr-fr/websiteToolRpeChart.json';
+import frFrWebsiteTools from './locales/fr-fr/websiteTools.json';
+import frFrWebsiteToolStrengthLevel from './locales/fr-fr/websiteToolStrengthLevel.json';
+import frFrWebsiteToolWarmUpCalculator from './locales/fr-fr/websiteToolWarmUpCalculator.json';
+import frFrWebsiteToolWorkoutLogTemplate from './locales/fr-fr/websiteToolWorkoutLogTemplate.json';
+import frFrWeeklyStreakCard from './locales/fr-fr/weeklyStreakCard.json';
+import frFrWhatsNew from './locales/fr-fr/whatsNew.json';
+import frFrWidgets from './locales/fr-fr/widgets.json';
+import frFrWorkout from './locales/fr-fr/workout.json';
+import frFrWorkoutLogSets from './locales/fr-fr/workout_log_sets.json';
+import frFrWorkoutLogs from './locales/fr-fr/workout_logs.json';
+import frFrWorkoutTemplateSets from './locales/fr-fr/workout_template_sets.json';
+import frFrWorkoutDetail from './locales/fr-fr/workoutDetail.json';
+import frFrWorkoutDetails from './locales/fr-fr/workoutDetails.json';
+import frFrWorkoutHistory from './locales/fr-fr/workoutHistory.json';
+import frFrWorkoutImport from './locales/fr-fr/workoutImport.json';
+import frFrWorkoutLog from './locales/fr-fr/workoutLog.json';
+import frFrWorkoutOptions from './locales/fr-fr/workoutOptions.json';
+import frFrWorkoutReminder from './locales/fr-fr/workoutReminder.json';
+import frFrWorkouts from './locales/fr-fr/workouts.json';
+import frFrWorkoutSession from './locales/fr-fr/workoutSession.json';
+import frFrWorkoutSettings from './locales/fr-fr/workoutSettings.json';
+import frFrWorkoutSummary from './locales/fr-fr/workoutSummary.json';
+import frFrWorkTimer from './locales/fr-fr/workTimer.json';
+import frFrYearInReview from './locales/fr-fr/yearInReview.json';
+// it-it
+import itItAccessToken from './locales/it-it/access_token.json';
+import itItAddMeal from './locales/it-it/addMeal.json';
+import itItAi from './locales/it-it/ai.json';
+import itItAiOnboarding from './locales/it-it/aiOnboarding.json';
+import itItBleWorkoutData from './locales/it-it/bleWorkoutData.json';
+import itItBodyFat from './locales/it-it/body_fat.json';
+import itItBodyMetrics from './locales/it-it/bodyMetrics.json';
+import itItCamera from './locales/it-it/camera.json';
+import itItCardio from './locales/it-it/cardio.json';
+import itItCoach from './locales/it-it/coach.json';
+import itItComeback from './locales/it-it/comeback.json';
+import itItCommon from './locales/it-it/common.json';
+import itItCreateWorkout from './locales/it-it/createWorkout.json';
+import itItCurrentGoalsCard from './locales/it-it/currentGoalsCard.json';
+import itItCycle from './locales/it-it/cycle.json';
+import itItDailySummaryCard from './locales/it-it/dailySummaryCard.json';
+import itItDatePicker from './locales/it-it/datePicker.json';
+import itItEatingPhaseBadge from './locales/it-it/eatingPhaseBadge.json';
+import itItEditFitnessDetails from './locales/it-it/editFitnessDetails.json';
+import itItEditPersonalInfo from './locales/it-it/editPersonalInfo.json';
+import itItEditScreenInfo from './locales/it-it/editScreenInfo.json';
+import itItEditSetDetails from './locales/it-it/editSetDetails.json';
+import itItEmptyStates from './locales/it-it/emptyStates.json';
+import itItEndWorkout from './locales/it-it/endWorkout.json';
+import itItErrors from './locales/it-it/errors.json';
+import itItExerciseGoals from './locales/it-it/exerciseGoals.json';
+import itItExercises from './locales/it-it/exercises.json';
+import itItExerciseTransition from './locales/it-it/exerciseTransition.json';
+import itItExpiresIn from './locales/it-it/expires_in.json';
+import itItFocus from './locales/it-it/focus.json';
+import itItFood from './locales/it-it/food.json';
+import itItFoodFoodPortions from './locales/it-it/food_food_portions.json';
+import itItFoodSearch from './locales/it-it/foodSearch.json';
+import itItFreeTraining from './locales/it-it/freeTraining.json';
+import itItGoalHistoryCard from './locales/it-it/goalHistoryCard.json';
+import itItGoalsManagement from './locales/it-it/goalsManagement.json';
+import itItHealthConnect from './locales/it-it/healthConnect.json';
+import itItHeightPicker from './locales/it-it/heightPicker.json';
+import itItHome from './locales/it-it/home.json';
+import itItImageViewer from './locales/it-it/imageViewer.json';
+import itItLock from './locales/it-it/lock.json';
+import itItLogSetPerformance from './locales/it-it/logSetPerformance.json';
+import itItMealFoods from './locales/it-it/meal_foods.json';
+import itItMeals from './locales/it-it/meals.json';
+import itItMuscleLoad from './locales/it-it/muscleLoad.json';
+import itItNotes from './locales/it-it/notes.json';
+import itItNotifications from './locales/it-it/notifications.json';
+import itItNutrition from './locales/it-it/nutrition.json';
+import itItNutritionLogs from './locales/it-it/nutrition_logs.json';
+import itItNutritionGoals from './locales/it-it/nutritionGoals.json';
+import itItOnboarding from './locales/it-it/onboarding.json';
+import itItOpticalTransfer from './locales/it-it/opticalTransfer.json';
+import itItOptionsSelector from './locales/it-it/optionsSelector.json';
+import itItPastWorkoutHistory from './locales/it-it/pastWorkoutHistory.json';
+import itItPortionSizes from './locales/it-it/portionSizes.json';
+import itItProfile from './locales/it-it/profile.json';
+import itItProgress from './locales/it-it/progress.json';
+import itItReplaceExercise from './locales/it-it/replaceExercise.json';
+import itItRestOver from './locales/it-it/restOver.json';
+import itItRestTimer from './locales/it-it/restTimer.json';
+import itItSessionFeedback from './locales/it-it/sessionFeedback.json';
+import itItSettings from './locales/it-it/settings.json';
+import itItSnackbar from './locales/it-it/snackbar.json';
+import itItSpiderChart from './locales/it-it/spiderChart.json';
+import itItStartWorkout from './locales/it-it/startWorkout.json';
+import itItStrengthLevels from './locales/it-it/strengthLevels.json';
+import itItTimePicker from './locales/it-it/timePicker.json';
+import itItTokenType from './locales/it-it/token_type.json';
+import itItUserMenu from './locales/it-it/userMenu.json';
+import itItWebsite from './locales/it-it/website.json';
+import itItWebsiteAlternativesPages from './locales/it-it/websiteAlternativesPages.json';
+import itItWebsitePrograms from './locales/it-it/websitePrograms.json';
+import itItWebsiteToolCalorieDeficit from './locales/it-it/websiteToolCalorieDeficit.json';
+import itItWebsiteToolDeloadCalculator from './locales/it-it/websiteToolDeloadCalculator.json';
+import itItWebsiteToolNetCarbs from './locales/it-it/websiteToolNetCarbs.json';
+import itItWebsiteToolNutritionLogTemplate from './locales/it-it/websiteToolNutritionLogTemplate.json';
+import itItWebsiteToolOneRepMax from './locales/it-it/websiteToolOneRepMax.json';
+import itItWebsiteToolPlateCalculator from './locales/it-it/websiteToolPlateCalculator.json';
+import itItWebsiteToolProgressiveOverload from './locales/it-it/websiteToolProgressiveOverload.json';
+import itItWebsiteToolProteinCalculator from './locales/it-it/websiteToolProteinCalculator.json';
+import itItWebsiteToolRpeChart from './locales/it-it/websiteToolRpeChart.json';
+import itItWebsiteTools from './locales/it-it/websiteTools.json';
+import itItWebsiteToolStrengthLevel from './locales/it-it/websiteToolStrengthLevel.json';
+import itItWebsiteToolWarmUpCalculator from './locales/it-it/websiteToolWarmUpCalculator.json';
+import itItWebsiteToolWorkoutLogTemplate from './locales/it-it/websiteToolWorkoutLogTemplate.json';
+import itItWeeklyStreakCard from './locales/it-it/weeklyStreakCard.json';
+import itItWhatsNew from './locales/it-it/whatsNew.json';
+import itItWidgets from './locales/it-it/widgets.json';
+import itItWorkout from './locales/it-it/workout.json';
+import itItWorkoutLogSets from './locales/it-it/workout_log_sets.json';
+import itItWorkoutLogs from './locales/it-it/workout_logs.json';
+import itItWorkoutTemplateSets from './locales/it-it/workout_template_sets.json';
+import itItWorkoutDetail from './locales/it-it/workoutDetail.json';
+import itItWorkoutDetails from './locales/it-it/workoutDetails.json';
+import itItWorkoutHistory from './locales/it-it/workoutHistory.json';
+import itItWorkoutImport from './locales/it-it/workoutImport.json';
+import itItWorkoutLog from './locales/it-it/workoutLog.json';
+import itItWorkoutOptions from './locales/it-it/workoutOptions.json';
+import itItWorkoutReminder from './locales/it-it/workoutReminder.json';
+import itItWorkouts from './locales/it-it/workouts.json';
+import itItWorkoutSession from './locales/it-it/workoutSession.json';
+import itItWorkoutSettings from './locales/it-it/workoutSettings.json';
+import itItWorkoutSummary from './locales/it-it/workoutSummary.json';
+import itItWorkTimer from './locales/it-it/workTimer.json';
+import itItYearInReview from './locales/it-it/yearInReview.json';
 // nl-nl
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
 import nlNlAddMeal from './locales/nl-nl/addMeal.json';
@@ -345,6 +678,112 @@ import nlNlWorkoutSettings from './locales/nl-nl/workoutSettings.json';
 import nlNlWorkoutSummary from './locales/nl-nl/workoutSummary.json';
 import nlNlWorkTimer from './locales/nl-nl/workTimer.json';
 import nlNlYearInReview from './locales/nl-nl/yearInReview.json';
+// pl-pl
+import plPlAccessToken from './locales/pl-pl/access_token.json';
+import plPlAddMeal from './locales/pl-pl/addMeal.json';
+import plPlAi from './locales/pl-pl/ai.json';
+import plPlAiOnboarding from './locales/pl-pl/aiOnboarding.json';
+import plPlBleWorkoutData from './locales/pl-pl/bleWorkoutData.json';
+import plPlBodyFat from './locales/pl-pl/body_fat.json';
+import plPlBodyMetrics from './locales/pl-pl/bodyMetrics.json';
+import plPlCamera from './locales/pl-pl/camera.json';
+import plPlCardio from './locales/pl-pl/cardio.json';
+import plPlCoach from './locales/pl-pl/coach.json';
+import plPlComeback from './locales/pl-pl/comeback.json';
+import plPlCommon from './locales/pl-pl/common.json';
+import plPlCreateWorkout from './locales/pl-pl/createWorkout.json';
+import plPlCurrentGoalsCard from './locales/pl-pl/currentGoalsCard.json';
+import plPlCycle from './locales/pl-pl/cycle.json';
+import plPlDailySummaryCard from './locales/pl-pl/dailySummaryCard.json';
+import plPlDatePicker from './locales/pl-pl/datePicker.json';
+import plPlEatingPhaseBadge from './locales/pl-pl/eatingPhaseBadge.json';
+import plPlEditFitnessDetails from './locales/pl-pl/editFitnessDetails.json';
+import plPlEditPersonalInfo from './locales/pl-pl/editPersonalInfo.json';
+import plPlEditScreenInfo from './locales/pl-pl/editScreenInfo.json';
+import plPlEditSetDetails from './locales/pl-pl/editSetDetails.json';
+import plPlEmptyStates from './locales/pl-pl/emptyStates.json';
+import plPlEndWorkout from './locales/pl-pl/endWorkout.json';
+import plPlErrors from './locales/pl-pl/errors.json';
+import plPlExerciseGoals from './locales/pl-pl/exerciseGoals.json';
+import plPlExercises from './locales/pl-pl/exercises.json';
+import plPlExerciseTransition from './locales/pl-pl/exerciseTransition.json';
+import plPlExpiresIn from './locales/pl-pl/expires_in.json';
+import plPlFocus from './locales/pl-pl/focus.json';
+import plPlFood from './locales/pl-pl/food.json';
+import plPlFoodFoodPortions from './locales/pl-pl/food_food_portions.json';
+import plPlFoodSearch from './locales/pl-pl/foodSearch.json';
+import plPlFreeTraining from './locales/pl-pl/freeTraining.json';
+import plPlGoalHistoryCard from './locales/pl-pl/goalHistoryCard.json';
+import plPlGoalsManagement from './locales/pl-pl/goalsManagement.json';
+import plPlHealthConnect from './locales/pl-pl/healthConnect.json';
+import plPlHeightPicker from './locales/pl-pl/heightPicker.json';
+import plPlHome from './locales/pl-pl/home.json';
+import plPlImageViewer from './locales/pl-pl/imageViewer.json';
+import plPlLock from './locales/pl-pl/lock.json';
+import plPlLogSetPerformance from './locales/pl-pl/logSetPerformance.json';
+import plPlMealFoods from './locales/pl-pl/meal_foods.json';
+import plPlMeals from './locales/pl-pl/meals.json';
+import plPlMuscleLoad from './locales/pl-pl/muscleLoad.json';
+import plPlNotes from './locales/pl-pl/notes.json';
+import plPlNotifications from './locales/pl-pl/notifications.json';
+import plPlNutrition from './locales/pl-pl/nutrition.json';
+import plPlNutritionLogs from './locales/pl-pl/nutrition_logs.json';
+import plPlNutritionGoals from './locales/pl-pl/nutritionGoals.json';
+import plPlOnboarding from './locales/pl-pl/onboarding.json';
+import plPlOpticalTransfer from './locales/pl-pl/opticalTransfer.json';
+import plPlOptionsSelector from './locales/pl-pl/optionsSelector.json';
+import plPlPastWorkoutHistory from './locales/pl-pl/pastWorkoutHistory.json';
+import plPlPortionSizes from './locales/pl-pl/portionSizes.json';
+import plPlProfile from './locales/pl-pl/profile.json';
+import plPlProgress from './locales/pl-pl/progress.json';
+import plPlReplaceExercise from './locales/pl-pl/replaceExercise.json';
+import plPlRestOver from './locales/pl-pl/restOver.json';
+import plPlRestTimer from './locales/pl-pl/restTimer.json';
+import plPlSessionFeedback from './locales/pl-pl/sessionFeedback.json';
+import plPlSettings from './locales/pl-pl/settings.json';
+import plPlSnackbar from './locales/pl-pl/snackbar.json';
+import plPlSpiderChart from './locales/pl-pl/spiderChart.json';
+import plPlStartWorkout from './locales/pl-pl/startWorkout.json';
+import plPlStrengthLevels from './locales/pl-pl/strengthLevels.json';
+import plPlTimePicker from './locales/pl-pl/timePicker.json';
+import plPlTokenType from './locales/pl-pl/token_type.json';
+import plPlUserMenu from './locales/pl-pl/userMenu.json';
+import plPlWebsite from './locales/pl-pl/website.json';
+import plPlWebsiteAlternativesPages from './locales/pl-pl/websiteAlternativesPages.json';
+import plPlWebsitePrograms from './locales/pl-pl/websitePrograms.json';
+import plPlWebsiteToolCalorieDeficit from './locales/pl-pl/websiteToolCalorieDeficit.json';
+import plPlWebsiteToolDeloadCalculator from './locales/pl-pl/websiteToolDeloadCalculator.json';
+import plPlWebsiteToolNetCarbs from './locales/pl-pl/websiteToolNetCarbs.json';
+import plPlWebsiteToolNutritionLogTemplate from './locales/pl-pl/websiteToolNutritionLogTemplate.json';
+import plPlWebsiteToolOneRepMax from './locales/pl-pl/websiteToolOneRepMax.json';
+import plPlWebsiteToolPlateCalculator from './locales/pl-pl/websiteToolPlateCalculator.json';
+import plPlWebsiteToolProgressiveOverload from './locales/pl-pl/websiteToolProgressiveOverload.json';
+import plPlWebsiteToolProteinCalculator from './locales/pl-pl/websiteToolProteinCalculator.json';
+import plPlWebsiteToolRpeChart from './locales/pl-pl/websiteToolRpeChart.json';
+import plPlWebsiteTools from './locales/pl-pl/websiteTools.json';
+import plPlWebsiteToolStrengthLevel from './locales/pl-pl/websiteToolStrengthLevel.json';
+import plPlWebsiteToolWarmUpCalculator from './locales/pl-pl/websiteToolWarmUpCalculator.json';
+import plPlWebsiteToolWorkoutLogTemplate from './locales/pl-pl/websiteToolWorkoutLogTemplate.json';
+import plPlWeeklyStreakCard from './locales/pl-pl/weeklyStreakCard.json';
+import plPlWhatsNew from './locales/pl-pl/whatsNew.json';
+import plPlWidgets from './locales/pl-pl/widgets.json';
+import plPlWorkout from './locales/pl-pl/workout.json';
+import plPlWorkoutLogSets from './locales/pl-pl/workout_log_sets.json';
+import plPlWorkoutLogs from './locales/pl-pl/workout_logs.json';
+import plPlWorkoutTemplateSets from './locales/pl-pl/workout_template_sets.json';
+import plPlWorkoutDetail from './locales/pl-pl/workoutDetail.json';
+import plPlWorkoutDetails from './locales/pl-pl/workoutDetails.json';
+import plPlWorkoutHistory from './locales/pl-pl/workoutHistory.json';
+import plPlWorkoutImport from './locales/pl-pl/workoutImport.json';
+import plPlWorkoutLog from './locales/pl-pl/workoutLog.json';
+import plPlWorkoutOptions from './locales/pl-pl/workoutOptions.json';
+import plPlWorkoutReminder from './locales/pl-pl/workoutReminder.json';
+import plPlWorkouts from './locales/pl-pl/workouts.json';
+import plPlWorkoutSession from './locales/pl-pl/workoutSession.json';
+import plPlWorkoutSettings from './locales/pl-pl/workoutSettings.json';
+import plPlWorkoutSummary from './locales/pl-pl/workoutSummary.json';
+import plPlWorkTimer from './locales/pl-pl/workTimer.json';
+import plPlYearInReview from './locales/pl-pl/yearInReview.json';
 // pt-br
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
@@ -557,35 +996,266 @@ import ruRuWorkoutSettings from './locales/ru-ru/workoutSettings.json';
 import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
 import ruRuWorkTimer from './locales/ru-ru/workTimer.json';
 import ruRuYearInReview from './locales/ru-ru/yearInReview.json';
+// tr-tr
+import trTrAccessToken from './locales/tr-tr/access_token.json';
+import trTrAddMeal from './locales/tr-tr/addMeal.json';
+import trTrAi from './locales/tr-tr/ai.json';
+import trTrAiOnboarding from './locales/tr-tr/aiOnboarding.json';
+import trTrBleWorkoutData from './locales/tr-tr/bleWorkoutData.json';
+import trTrBodyFat from './locales/tr-tr/body_fat.json';
+import trTrBodyMetrics from './locales/tr-tr/bodyMetrics.json';
+import trTrCamera from './locales/tr-tr/camera.json';
+import trTrCardio from './locales/tr-tr/cardio.json';
+import trTrCoach from './locales/tr-tr/coach.json';
+import trTrComeback from './locales/tr-tr/comeback.json';
+import trTrCommon from './locales/tr-tr/common.json';
+import trTrCreateWorkout from './locales/tr-tr/createWorkout.json';
+import trTrCurrentGoalsCard from './locales/tr-tr/currentGoalsCard.json';
+import trTrCycle from './locales/tr-tr/cycle.json';
+import trTrDailySummaryCard from './locales/tr-tr/dailySummaryCard.json';
+import trTrDatePicker from './locales/tr-tr/datePicker.json';
+import trTrEatingPhaseBadge from './locales/tr-tr/eatingPhaseBadge.json';
+import trTrEditFitnessDetails from './locales/tr-tr/editFitnessDetails.json';
+import trTrEditPersonalInfo from './locales/tr-tr/editPersonalInfo.json';
+import trTrEditScreenInfo from './locales/tr-tr/editScreenInfo.json';
+import trTrEditSetDetails from './locales/tr-tr/editSetDetails.json';
+import trTrEmptyStates from './locales/tr-tr/emptyStates.json';
+import trTrEndWorkout from './locales/tr-tr/endWorkout.json';
+import trTrErrors from './locales/tr-tr/errors.json';
+import trTrExerciseGoals from './locales/tr-tr/exerciseGoals.json';
+import trTrExercises from './locales/tr-tr/exercises.json';
+import trTrExerciseTransition from './locales/tr-tr/exerciseTransition.json';
+import trTrExpiresIn from './locales/tr-tr/expires_in.json';
+import trTrFocus from './locales/tr-tr/focus.json';
+import trTrFood from './locales/tr-tr/food.json';
+import trTrFoodFoodPortions from './locales/tr-tr/food_food_portions.json';
+import trTrFoodSearch from './locales/tr-tr/foodSearch.json';
+import trTrFreeTraining from './locales/tr-tr/freeTraining.json';
+import trTrGoalHistoryCard from './locales/tr-tr/goalHistoryCard.json';
+import trTrGoalsManagement from './locales/tr-tr/goalsManagement.json';
+import trTrHealthConnect from './locales/tr-tr/healthConnect.json';
+import trTrHeightPicker from './locales/tr-tr/heightPicker.json';
+import trTrHome from './locales/tr-tr/home.json';
+import trTrImageViewer from './locales/tr-tr/imageViewer.json';
+import trTrLock from './locales/tr-tr/lock.json';
+import trTrLogSetPerformance from './locales/tr-tr/logSetPerformance.json';
+import trTrMealFoods from './locales/tr-tr/meal_foods.json';
+import trTrMeals from './locales/tr-tr/meals.json';
+import trTrMuscleLoad from './locales/tr-tr/muscleLoad.json';
+import trTrNotes from './locales/tr-tr/notes.json';
+import trTrNotifications from './locales/tr-tr/notifications.json';
+import trTrNutrition from './locales/tr-tr/nutrition.json';
+import trTrNutritionLogs from './locales/tr-tr/nutrition_logs.json';
+import trTrNutritionGoals from './locales/tr-tr/nutritionGoals.json';
+import trTrOnboarding from './locales/tr-tr/onboarding.json';
+import trTrOpticalTransfer from './locales/tr-tr/opticalTransfer.json';
+import trTrOptionsSelector from './locales/tr-tr/optionsSelector.json';
+import trTrPastWorkoutHistory from './locales/tr-tr/pastWorkoutHistory.json';
+import trTrPortionSizes from './locales/tr-tr/portionSizes.json';
+import trTrProfile from './locales/tr-tr/profile.json';
+import trTrProgress from './locales/tr-tr/progress.json';
+import trTrReplaceExercise from './locales/tr-tr/replaceExercise.json';
+import trTrRestOver from './locales/tr-tr/restOver.json';
+import trTrRestTimer from './locales/tr-tr/restTimer.json';
+import trTrSessionFeedback from './locales/tr-tr/sessionFeedback.json';
+import trTrSettings from './locales/tr-tr/settings.json';
+import trTrSnackbar from './locales/tr-tr/snackbar.json';
+import trTrSpiderChart from './locales/tr-tr/spiderChart.json';
+import trTrStartWorkout from './locales/tr-tr/startWorkout.json';
+import trTrStrengthLevels from './locales/tr-tr/strengthLevels.json';
+import trTrTimePicker from './locales/tr-tr/timePicker.json';
+import trTrTokenType from './locales/tr-tr/token_type.json';
+import trTrUserMenu from './locales/tr-tr/userMenu.json';
+import trTrWebsite from './locales/tr-tr/website.json';
+import trTrWebsiteAlternativesPages from './locales/tr-tr/websiteAlternativesPages.json';
+import trTrWebsitePrograms from './locales/tr-tr/websitePrograms.json';
+import trTrWebsiteToolCalorieDeficit from './locales/tr-tr/websiteToolCalorieDeficit.json';
+import trTrWebsiteToolDeloadCalculator from './locales/tr-tr/websiteToolDeloadCalculator.json';
+import trTrWebsiteToolNetCarbs from './locales/tr-tr/websiteToolNetCarbs.json';
+import trTrWebsiteToolNutritionLogTemplate from './locales/tr-tr/websiteToolNutritionLogTemplate.json';
+import trTrWebsiteToolOneRepMax from './locales/tr-tr/websiteToolOneRepMax.json';
+import trTrWebsiteToolPlateCalculator from './locales/tr-tr/websiteToolPlateCalculator.json';
+import trTrWebsiteToolProgressiveOverload from './locales/tr-tr/websiteToolProgressiveOverload.json';
+import trTrWebsiteToolProteinCalculator from './locales/tr-tr/websiteToolProteinCalculator.json';
+import trTrWebsiteToolRpeChart from './locales/tr-tr/websiteToolRpeChart.json';
+import trTrWebsiteTools from './locales/tr-tr/websiteTools.json';
+import trTrWebsiteToolStrengthLevel from './locales/tr-tr/websiteToolStrengthLevel.json';
+import trTrWebsiteToolWarmUpCalculator from './locales/tr-tr/websiteToolWarmUpCalculator.json';
+import trTrWebsiteToolWorkoutLogTemplate from './locales/tr-tr/websiteToolWorkoutLogTemplate.json';
+import trTrWeeklyStreakCard from './locales/tr-tr/weeklyStreakCard.json';
+import trTrWhatsNew from './locales/tr-tr/whatsNew.json';
+import trTrWidgets from './locales/tr-tr/widgets.json';
+import trTrWorkout from './locales/tr-tr/workout.json';
+import trTrWorkoutLogSets from './locales/tr-tr/workout_log_sets.json';
+import trTrWorkoutLogs from './locales/tr-tr/workout_logs.json';
+import trTrWorkoutTemplateSets from './locales/tr-tr/workout_template_sets.json';
+import trTrWorkoutDetail from './locales/tr-tr/workoutDetail.json';
+import trTrWorkoutDetails from './locales/tr-tr/workoutDetails.json';
+import trTrWorkoutHistory from './locales/tr-tr/workoutHistory.json';
+import trTrWorkoutImport from './locales/tr-tr/workoutImport.json';
+import trTrWorkoutLog from './locales/tr-tr/workoutLog.json';
+import trTrWorkoutOptions from './locales/tr-tr/workoutOptions.json';
+import trTrWorkoutReminder from './locales/tr-tr/workoutReminder.json';
+import trTrWorkouts from './locales/tr-tr/workouts.json';
+import trTrWorkoutSession from './locales/tr-tr/workoutSession.json';
+import trTrWorkoutSettings from './locales/tr-tr/workoutSettings.json';
+import trTrWorkoutSummary from './locales/tr-tr/workoutSummary.json';
+import trTrWorkTimer from './locales/tr-tr/workTimer.json';
+import trTrYearInReview from './locales/tr-tr/yearInReview.json';
 // untranslated
 import untranslated from './locales/untranslated.json';
 
+export const DE_DE = 'de-DE';
 export const EN_US = 'en-US';
 export const ES_ES = 'es-ES';
+export const FR_FR = 'fr-FR';
+export const IT_IT = 'it-IT';
 export const NL_NL = 'nl-NL';
+export const PL_PL = 'pl-PL';
 export const PT_BR = 'pt-BR';
 export const RU_RU = 'ru-RU';
+export const TR_TR = 'tr-TR';
 export const DEFAULT_LANG = EN_US;
 
 // Exercise exports
 export const EXERCISES_JSON = {
+  [DE_DE]: exercisesDeDe,
   [EN_US]: exercisesEnUs,
   [ES_ES]: exercisesEsEs,
+  [FR_FR]: exercisesFrFr,
+  [IT_IT]: exercisesItIt,
   [NL_NL]: exercisesNlNl,
+  [PL_PL]: exercisesPlPl,
   [PT_BR]: exercisesPtBr,
   [RU_RU]: exercisesRuRu,
+  [TR_TR]: exercisesTrTr,
 };
 
 // Workout template copy exports
 export const WORKOUT_TEMPLATE_COPIES_BY_LOCALE = {
+  [DE_DE]: workoutTemplatesDeDe,
   [EN_US]: workoutTemplatesEnUs,
   [ES_ES]: workoutTemplatesEsEs,
+  [FR_FR]: workoutTemplatesFrFr,
+  [IT_IT]: workoutTemplatesItIt,
   [NL_NL]: workoutTemplatesNlNl,
+  [PL_PL]: workoutTemplatesPlPl,
   [PT_BR]: workoutTemplatesPtBr,
   [RU_RU]: workoutTemplatesRuRu,
+  [TR_TR]: workoutTemplatesTrTr,
 };
 
 const resources = {
+  [DE_DE]: {
+    translation: {
+      ...untranslated,
+      ...deDeAccessToken,
+      ...deDeAddMeal,
+      ...deDeAi,
+      ...deDeAiOnboarding,
+      ...deDeBleWorkoutData,
+      ...deDeBodyMetrics,
+      ...deDeBodyFat,
+      ...deDeCamera,
+      ...deDeCardio,
+      ...deDeCoach,
+      ...deDeComeback,
+      ...deDeCommon,
+      ...deDeCreateWorkout,
+      ...deDeCurrentGoalsCard,
+      ...deDeCycle,
+      ...deDeDailySummaryCard,
+      ...deDeDatePicker,
+      ...deDeEatingPhaseBadge,
+      ...deDeEditFitnessDetails,
+      ...deDeEditPersonalInfo,
+      ...deDeEditScreenInfo,
+      ...deDeEditSetDetails,
+      ...deDeEmptyStates,
+      ...deDeEndWorkout,
+      ...deDeErrors,
+      ...deDeExerciseGoals,
+      ...deDeExerciseTransition,
+      ...deDeExercises,
+      ...deDeExpiresIn,
+      ...deDeFocus,
+      ...deDeFood,
+      ...deDeFoodSearch,
+      ...deDeFoodFoodPortions,
+      ...deDeFreeTraining,
+      ...deDeGoalHistoryCard,
+      ...deDeGoalsManagement,
+      ...deDeHealthConnect,
+      ...deDeHeightPicker,
+      ...deDeHome,
+      ...deDeImageViewer,
+      ...deDeLock,
+      ...deDeLogSetPerformance,
+      ...deDeMealFoods,
+      ...deDeMeals,
+      ...deDeMuscleLoad,
+      ...deDeNotes,
+      ...deDeNotifications,
+      ...deDeNutrition,
+      ...deDeNutritionGoals,
+      ...deDeNutritionLogs,
+      ...deDeOnboarding,
+      ...deDeOpticalTransfer,
+      ...deDeOptionsSelector,
+      ...deDePastWorkoutHistory,
+      ...deDePortionSizes,
+      ...deDeProfile,
+      ...deDeProgress,
+      ...deDeReplaceExercise,
+      ...deDeRestOver,
+      ...deDeRestTimer,
+      ...deDeSessionFeedback,
+      ...deDeSettings,
+      ...deDeSnackbar,
+      ...deDeSpiderChart,
+      ...deDeStartWorkout,
+      ...deDeStrengthLevels,
+      ...deDeTimePicker,
+      ...deDeTokenType,
+      ...deDeUserMenu,
+      ...deDeWebsite,
+      ...deDeWebsiteAlternativesPages,
+      ...deDeWebsitePrograms,
+      ...deDeWebsiteToolCalorieDeficit,
+      ...deDeWebsiteToolDeloadCalculator,
+      ...deDeWebsiteToolNetCarbs,
+      ...deDeWebsiteToolNutritionLogTemplate,
+      ...deDeWebsiteToolOneRepMax,
+      ...deDeWebsiteToolPlateCalculator,
+      ...deDeWebsiteToolProgressiveOverload,
+      ...deDeWebsiteToolProteinCalculator,
+      ...deDeWebsiteToolRpeChart,
+      ...deDeWebsiteToolStrengthLevel,
+      ...deDeWebsiteToolWarmUpCalculator,
+      ...deDeWebsiteToolWorkoutLogTemplate,
+      ...deDeWebsiteTools,
+      ...deDeWeeklyStreakCard,
+      ...deDeWhatsNew,
+      ...deDeWidgets,
+      ...deDeWorkTimer,
+      ...deDeWorkout,
+      ...deDeWorkoutDetail,
+      ...deDeWorkoutDetails,
+      ...deDeWorkoutHistory,
+      ...deDeWorkoutImport,
+      ...deDeWorkoutLog,
+      ...deDeWorkoutOptions,
+      ...deDeWorkoutReminder,
+      ...deDeWorkoutSession,
+      ...deDeWorkoutSettings,
+      ...deDeWorkoutSummary,
+      ...deDeWorkoutLogSets,
+      ...deDeWorkoutLogs,
+      ...deDeWorkoutTemplateSets,
+      ...deDeWorkouts,
+      ...deDeYearInReview,
+    },
+  },
   [EN_US]: {
     translation: {
       ...untranslated,
@@ -806,6 +1476,226 @@ const resources = {
       ...esEsYearInReview,
     },
   },
+  [FR_FR]: {
+    translation: {
+      ...untranslated,
+      ...frFrAccessToken,
+      ...frFrAddMeal,
+      ...frFrAi,
+      ...frFrAiOnboarding,
+      ...frFrBleWorkoutData,
+      ...frFrBodyMetrics,
+      ...frFrBodyFat,
+      ...frFrCamera,
+      ...frFrCardio,
+      ...frFrCoach,
+      ...frFrComeback,
+      ...frFrCommon,
+      ...frFrCreateWorkout,
+      ...frFrCurrentGoalsCard,
+      ...frFrCycle,
+      ...frFrDailySummaryCard,
+      ...frFrDatePicker,
+      ...frFrEatingPhaseBadge,
+      ...frFrEditFitnessDetails,
+      ...frFrEditPersonalInfo,
+      ...frFrEditScreenInfo,
+      ...frFrEditSetDetails,
+      ...frFrEmptyStates,
+      ...frFrEndWorkout,
+      ...frFrErrors,
+      ...frFrExerciseGoals,
+      ...frFrExerciseTransition,
+      ...frFrExercises,
+      ...frFrExpiresIn,
+      ...frFrFocus,
+      ...frFrFood,
+      ...frFrFoodSearch,
+      ...frFrFoodFoodPortions,
+      ...frFrFreeTraining,
+      ...frFrGoalHistoryCard,
+      ...frFrGoalsManagement,
+      ...frFrHealthConnect,
+      ...frFrHeightPicker,
+      ...frFrHome,
+      ...frFrImageViewer,
+      ...frFrLock,
+      ...frFrLogSetPerformance,
+      ...frFrMealFoods,
+      ...frFrMeals,
+      ...frFrMuscleLoad,
+      ...frFrNotes,
+      ...frFrNotifications,
+      ...frFrNutrition,
+      ...frFrNutritionGoals,
+      ...frFrNutritionLogs,
+      ...frFrOnboarding,
+      ...frFrOpticalTransfer,
+      ...frFrOptionsSelector,
+      ...frFrPastWorkoutHistory,
+      ...frFrPortionSizes,
+      ...frFrProfile,
+      ...frFrProgress,
+      ...frFrReplaceExercise,
+      ...frFrRestOver,
+      ...frFrRestTimer,
+      ...frFrSessionFeedback,
+      ...frFrSettings,
+      ...frFrSnackbar,
+      ...frFrSpiderChart,
+      ...frFrStartWorkout,
+      ...frFrStrengthLevels,
+      ...frFrTimePicker,
+      ...frFrTokenType,
+      ...frFrUserMenu,
+      ...frFrWebsite,
+      ...frFrWebsiteAlternativesPages,
+      ...frFrWebsitePrograms,
+      ...frFrWebsiteToolCalorieDeficit,
+      ...frFrWebsiteToolDeloadCalculator,
+      ...frFrWebsiteToolNetCarbs,
+      ...frFrWebsiteToolNutritionLogTemplate,
+      ...frFrWebsiteToolOneRepMax,
+      ...frFrWebsiteToolPlateCalculator,
+      ...frFrWebsiteToolProgressiveOverload,
+      ...frFrWebsiteToolProteinCalculator,
+      ...frFrWebsiteToolRpeChart,
+      ...frFrWebsiteToolStrengthLevel,
+      ...frFrWebsiteToolWarmUpCalculator,
+      ...frFrWebsiteToolWorkoutLogTemplate,
+      ...frFrWebsiteTools,
+      ...frFrWeeklyStreakCard,
+      ...frFrWhatsNew,
+      ...frFrWidgets,
+      ...frFrWorkTimer,
+      ...frFrWorkout,
+      ...frFrWorkoutDetail,
+      ...frFrWorkoutDetails,
+      ...frFrWorkoutHistory,
+      ...frFrWorkoutImport,
+      ...frFrWorkoutLog,
+      ...frFrWorkoutOptions,
+      ...frFrWorkoutReminder,
+      ...frFrWorkoutSession,
+      ...frFrWorkoutSettings,
+      ...frFrWorkoutSummary,
+      ...frFrWorkoutLogSets,
+      ...frFrWorkoutLogs,
+      ...frFrWorkoutTemplateSets,
+      ...frFrWorkouts,
+      ...frFrYearInReview,
+    },
+  },
+  [IT_IT]: {
+    translation: {
+      ...untranslated,
+      ...itItAccessToken,
+      ...itItAddMeal,
+      ...itItAi,
+      ...itItAiOnboarding,
+      ...itItBleWorkoutData,
+      ...itItBodyMetrics,
+      ...itItBodyFat,
+      ...itItCamera,
+      ...itItCardio,
+      ...itItCoach,
+      ...itItComeback,
+      ...itItCommon,
+      ...itItCreateWorkout,
+      ...itItCurrentGoalsCard,
+      ...itItCycle,
+      ...itItDailySummaryCard,
+      ...itItDatePicker,
+      ...itItEatingPhaseBadge,
+      ...itItEditFitnessDetails,
+      ...itItEditPersonalInfo,
+      ...itItEditScreenInfo,
+      ...itItEditSetDetails,
+      ...itItEmptyStates,
+      ...itItEndWorkout,
+      ...itItErrors,
+      ...itItExerciseGoals,
+      ...itItExerciseTransition,
+      ...itItExercises,
+      ...itItExpiresIn,
+      ...itItFocus,
+      ...itItFood,
+      ...itItFoodSearch,
+      ...itItFoodFoodPortions,
+      ...itItFreeTraining,
+      ...itItGoalHistoryCard,
+      ...itItGoalsManagement,
+      ...itItHealthConnect,
+      ...itItHeightPicker,
+      ...itItHome,
+      ...itItImageViewer,
+      ...itItLock,
+      ...itItLogSetPerformance,
+      ...itItMealFoods,
+      ...itItMeals,
+      ...itItMuscleLoad,
+      ...itItNotes,
+      ...itItNotifications,
+      ...itItNutrition,
+      ...itItNutritionGoals,
+      ...itItNutritionLogs,
+      ...itItOnboarding,
+      ...itItOpticalTransfer,
+      ...itItOptionsSelector,
+      ...itItPastWorkoutHistory,
+      ...itItPortionSizes,
+      ...itItProfile,
+      ...itItProgress,
+      ...itItReplaceExercise,
+      ...itItRestOver,
+      ...itItRestTimer,
+      ...itItSessionFeedback,
+      ...itItSettings,
+      ...itItSnackbar,
+      ...itItSpiderChart,
+      ...itItStartWorkout,
+      ...itItStrengthLevels,
+      ...itItTimePicker,
+      ...itItTokenType,
+      ...itItUserMenu,
+      ...itItWebsite,
+      ...itItWebsiteAlternativesPages,
+      ...itItWebsitePrograms,
+      ...itItWebsiteToolCalorieDeficit,
+      ...itItWebsiteToolDeloadCalculator,
+      ...itItWebsiteToolNetCarbs,
+      ...itItWebsiteToolNutritionLogTemplate,
+      ...itItWebsiteToolOneRepMax,
+      ...itItWebsiteToolPlateCalculator,
+      ...itItWebsiteToolProgressiveOverload,
+      ...itItWebsiteToolProteinCalculator,
+      ...itItWebsiteToolRpeChart,
+      ...itItWebsiteToolStrengthLevel,
+      ...itItWebsiteToolWarmUpCalculator,
+      ...itItWebsiteToolWorkoutLogTemplate,
+      ...itItWebsiteTools,
+      ...itItWeeklyStreakCard,
+      ...itItWhatsNew,
+      ...itItWidgets,
+      ...itItWorkTimer,
+      ...itItWorkout,
+      ...itItWorkoutDetail,
+      ...itItWorkoutDetails,
+      ...itItWorkoutHistory,
+      ...itItWorkoutImport,
+      ...itItWorkoutLog,
+      ...itItWorkoutOptions,
+      ...itItWorkoutReminder,
+      ...itItWorkoutSession,
+      ...itItWorkoutSettings,
+      ...itItWorkoutSummary,
+      ...itItWorkoutLogSets,
+      ...itItWorkoutLogs,
+      ...itItWorkoutTemplateSets,
+      ...itItWorkouts,
+      ...itItYearInReview,
+    },
+  },
   [NL_NL]: {
     translation: {
       ...untranslated,
@@ -914,6 +1804,116 @@ const resources = {
       ...nlNlWorkoutTemplateSets,
       ...nlNlWorkouts,
       ...nlNlYearInReview,
+    },
+  },
+  [PL_PL]: {
+    translation: {
+      ...untranslated,
+      ...plPlAccessToken,
+      ...plPlAddMeal,
+      ...plPlAi,
+      ...plPlAiOnboarding,
+      ...plPlBleWorkoutData,
+      ...plPlBodyMetrics,
+      ...plPlBodyFat,
+      ...plPlCamera,
+      ...plPlCardio,
+      ...plPlCoach,
+      ...plPlComeback,
+      ...plPlCommon,
+      ...plPlCreateWorkout,
+      ...plPlCurrentGoalsCard,
+      ...plPlCycle,
+      ...plPlDailySummaryCard,
+      ...plPlDatePicker,
+      ...plPlEatingPhaseBadge,
+      ...plPlEditFitnessDetails,
+      ...plPlEditPersonalInfo,
+      ...plPlEditScreenInfo,
+      ...plPlEditSetDetails,
+      ...plPlEmptyStates,
+      ...plPlEndWorkout,
+      ...plPlErrors,
+      ...plPlExerciseGoals,
+      ...plPlExerciseTransition,
+      ...plPlExercises,
+      ...plPlExpiresIn,
+      ...plPlFocus,
+      ...plPlFood,
+      ...plPlFoodSearch,
+      ...plPlFoodFoodPortions,
+      ...plPlFreeTraining,
+      ...plPlGoalHistoryCard,
+      ...plPlGoalsManagement,
+      ...plPlHealthConnect,
+      ...plPlHeightPicker,
+      ...plPlHome,
+      ...plPlImageViewer,
+      ...plPlLock,
+      ...plPlLogSetPerformance,
+      ...plPlMealFoods,
+      ...plPlMeals,
+      ...plPlMuscleLoad,
+      ...plPlNotes,
+      ...plPlNotifications,
+      ...plPlNutrition,
+      ...plPlNutritionGoals,
+      ...plPlNutritionLogs,
+      ...plPlOnboarding,
+      ...plPlOpticalTransfer,
+      ...plPlOptionsSelector,
+      ...plPlPastWorkoutHistory,
+      ...plPlPortionSizes,
+      ...plPlProfile,
+      ...plPlProgress,
+      ...plPlReplaceExercise,
+      ...plPlRestOver,
+      ...plPlRestTimer,
+      ...plPlSessionFeedback,
+      ...plPlSettings,
+      ...plPlSnackbar,
+      ...plPlSpiderChart,
+      ...plPlStartWorkout,
+      ...plPlStrengthLevels,
+      ...plPlTimePicker,
+      ...plPlTokenType,
+      ...plPlUserMenu,
+      ...plPlWebsite,
+      ...plPlWebsiteAlternativesPages,
+      ...plPlWebsitePrograms,
+      ...plPlWebsiteToolCalorieDeficit,
+      ...plPlWebsiteToolDeloadCalculator,
+      ...plPlWebsiteToolNetCarbs,
+      ...plPlWebsiteToolNutritionLogTemplate,
+      ...plPlWebsiteToolOneRepMax,
+      ...plPlWebsiteToolPlateCalculator,
+      ...plPlWebsiteToolProgressiveOverload,
+      ...plPlWebsiteToolProteinCalculator,
+      ...plPlWebsiteToolRpeChart,
+      ...plPlWebsiteToolStrengthLevel,
+      ...plPlWebsiteToolWarmUpCalculator,
+      ...plPlWebsiteToolWorkoutLogTemplate,
+      ...plPlWebsiteTools,
+      ...plPlWeeklyStreakCard,
+      ...plPlWhatsNew,
+      ...plPlWidgets,
+      ...plPlWorkTimer,
+      ...plPlWorkout,
+      ...plPlWorkoutDetail,
+      ...plPlWorkoutDetails,
+      ...plPlWorkoutHistory,
+      ...plPlWorkoutImport,
+      ...plPlWorkoutLog,
+      ...plPlWorkoutOptions,
+      ...plPlWorkoutReminder,
+      ...plPlWorkoutSession,
+      ...plPlWorkoutSettings,
+      ...plPlWorkoutSummary,
+      ...plPlWorkoutLogSets,
+      ...plPlWorkoutLogs,
+      ...plPlWorkoutTemplateSets,
+      ...plPlWorkouts,
+      ...plPlYearInReview,
     },
   },
   [PT_BR]: {
@@ -1136,16 +2136,131 @@ const resources = {
       ...ruRuYearInReview,
     },
   },
+  [TR_TR]: {
+    translation: {
+      ...untranslated,
+      ...trTrAccessToken,
+      ...trTrAddMeal,
+      ...trTrAi,
+      ...trTrAiOnboarding,
+      ...trTrBleWorkoutData,
+      ...trTrBodyMetrics,
+      ...trTrBodyFat,
+      ...trTrCamera,
+      ...trTrCardio,
+      ...trTrCoach,
+      ...trTrComeback,
+      ...trTrCommon,
+      ...trTrCreateWorkout,
+      ...trTrCurrentGoalsCard,
+      ...trTrCycle,
+      ...trTrDailySummaryCard,
+      ...trTrDatePicker,
+      ...trTrEatingPhaseBadge,
+      ...trTrEditFitnessDetails,
+      ...trTrEditPersonalInfo,
+      ...trTrEditScreenInfo,
+      ...trTrEditSetDetails,
+      ...trTrEmptyStates,
+      ...trTrEndWorkout,
+      ...trTrErrors,
+      ...trTrExerciseGoals,
+      ...trTrExerciseTransition,
+      ...trTrExercises,
+      ...trTrExpiresIn,
+      ...trTrFocus,
+      ...trTrFood,
+      ...trTrFoodSearch,
+      ...trTrFoodFoodPortions,
+      ...trTrFreeTraining,
+      ...trTrGoalHistoryCard,
+      ...trTrGoalsManagement,
+      ...trTrHealthConnect,
+      ...trTrHeightPicker,
+      ...trTrHome,
+      ...trTrImageViewer,
+      ...trTrLock,
+      ...trTrLogSetPerformance,
+      ...trTrMealFoods,
+      ...trTrMeals,
+      ...trTrMuscleLoad,
+      ...trTrNotes,
+      ...trTrNotifications,
+      ...trTrNutrition,
+      ...trTrNutritionGoals,
+      ...trTrNutritionLogs,
+      ...trTrOnboarding,
+      ...trTrOpticalTransfer,
+      ...trTrOptionsSelector,
+      ...trTrPastWorkoutHistory,
+      ...trTrPortionSizes,
+      ...trTrProfile,
+      ...trTrProgress,
+      ...trTrReplaceExercise,
+      ...trTrRestOver,
+      ...trTrRestTimer,
+      ...trTrSessionFeedback,
+      ...trTrSettings,
+      ...trTrSnackbar,
+      ...trTrSpiderChart,
+      ...trTrStartWorkout,
+      ...trTrStrengthLevels,
+      ...trTrTimePicker,
+      ...trTrTokenType,
+      ...trTrUserMenu,
+      ...trTrWebsite,
+      ...trTrWebsiteAlternativesPages,
+      ...trTrWebsitePrograms,
+      ...trTrWebsiteToolCalorieDeficit,
+      ...trTrWebsiteToolDeloadCalculator,
+      ...trTrWebsiteToolNetCarbs,
+      ...trTrWebsiteToolNutritionLogTemplate,
+      ...trTrWebsiteToolOneRepMax,
+      ...trTrWebsiteToolPlateCalculator,
+      ...trTrWebsiteToolProgressiveOverload,
+      ...trTrWebsiteToolProteinCalculator,
+      ...trTrWebsiteToolRpeChart,
+      ...trTrWebsiteToolStrengthLevel,
+      ...trTrWebsiteToolWarmUpCalculator,
+      ...trTrWebsiteToolWorkoutLogTemplate,
+      ...trTrWebsiteTools,
+      ...trTrWeeklyStreakCard,
+      ...trTrWhatsNew,
+      ...trTrWidgets,
+      ...trTrWorkTimer,
+      ...trTrWorkout,
+      ...trTrWorkoutDetail,
+      ...trTrWorkoutDetails,
+      ...trTrWorkoutHistory,
+      ...trTrWorkoutImport,
+      ...trTrWorkoutLog,
+      ...trTrWorkoutOptions,
+      ...trTrWorkoutReminder,
+      ...trTrWorkoutSession,
+      ...trTrWorkoutSettings,
+      ...trTrWorkoutSummary,
+      ...trTrWorkoutLogSets,
+      ...trTrWorkoutLogs,
+      ...trTrWorkoutTemplateSets,
+      ...trTrWorkouts,
+      ...trTrYearInReview,
+    },
+  },
 };
 
 export type LanguageKeys = keyof typeof resources;
 
 export const LOCALE_MAP = {
+  [DE_DE]: localeDe,
   [EN_US]: localeEnUS,
   [ES_ES]: localeEs,
+  [FR_FR]: localeFr,
+  [IT_IT]: localeIt,
   [NL_NL]: localeNl,
+  [PL_PL]: localePl,
   [PT_BR]: localePtBR,
   [RU_RU]: localeRu,
+  [TR_TR]: localeTr,
 };
 
 export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];
@@ -1155,32 +2270,42 @@ const systemLocales = Localization.getLocales();
 i18n.use(initReactI18next).init({
   // compatibilityJSON: 'v3',
   debug: __DEV__,
-  fallbackLng: EN_US,
+  fallbackLng: DE_DE,
   interpolation: {
     escapeValue: false,
   },
   lng:
     systemLocales.find((locale) => AVAILABLE_LANGUAGES.includes(locale.languageTag as LanguageKeys))
-      ?.languageTag || EN_US,
+      ?.languageTag || DE_DE,
   resources,
 });
 
 export const languageLabels: Record<string, string> = {
+  [DE_DE]: i18n.t('untranslated.de-de.name'),
   [EN_US]: i18n.t('untranslated.en-us.name'),
   [ES_ES]: i18n.t('untranslated.es-es.name'),
+  [FR_FR]: i18n.t('untranslated.fr-fr.name'),
+  [IT_IT]: i18n.t('untranslated.it-it.name'),
   [NL_NL]: i18n.t('untranslated.nl-nl.name'),
+  [PL_PL]: i18n.t('untranslated.pl-pl.name'),
   [PT_BR]: i18n.t('untranslated.pt-br.name'),
   [RU_RU]: i18n.t('untranslated.ru-ru.name'),
+  [TR_TR]: i18n.t('untranslated.tr-tr.name'),
 };
 
 export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 // Language multipliers for UI layout calculations based on IBM Globalization Design Guide expansion factors.
 export const LANGUAGE_MULTIPLIERS: Record<string, number> = {
+  'de-DE': 1.3,
   'es-ES': 1.25,
+  'fr-FR': 1.28,
+  'it-IT': 1.18,
   'nl-NL': 1.22,
+  'pl-PL': 1.2,
   'pt-BR': 1.2,
   'ru-RU': 0.95,
+  'tr-TR': 1.2,
 };
 
 // Mirror the active language to localStorage so the static landing panel

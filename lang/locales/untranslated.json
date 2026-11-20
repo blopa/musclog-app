@@ -1,19 +1,34 @@
 {
   "untranslated": {
+    "de-de": {
+      "name": "Deutsch (Deutschland)"
+    },
     "en-us": {
       "name": "American English"
     },
     "es-es": {
       "name": "Español de España"
     },
+    "fr-fr": {
+      "name": "Français (France)"
+    },
+    "it-it": {
+      "name": "Italiano (Italia)"
+    },
     "nl-nl": {
       "name": "Nederlands (Nederland)"
+    },
+    "pl-pl": {
+      "name": "Polski (Polska)"
     },
     "pt-br": {
       "name": "Português (Brasil)"
     },
     "ru-ru": {
       "name": "Русский (Россия)"
+    },
+    "tr-tr": {
+      "name": "Türkçe (Türkiye)"
     }
   }
 }

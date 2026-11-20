@@ -1,0 +1,15 @@
+{
+  "workoutOptions": {
+    "title": "Workout options",
+    "cancelWorkout": "Cancel workout",
+    "cancelWorkoutDesc": "Discard this workout and return to workouts list",
+    "finishWorkout": "Finish workout",
+    "finishWorkoutDesc": "Complete this workout and view summary",
+    "previewWorkout": "Preview full workout",
+    "previewWorkoutDesc": "See all exercises in this plan",
+    "workoutSettings": "Workout settings",
+    "workoutSettingsDesc": "Timers, audio, and preferences",
+    "endWorkout": "End workout",
+    "endWorkoutDesc": "Finish and save progress"
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "common": {
+    "clear": "Clear",
+    "value": "Value",
+    "name": "Name",
+    "next": "Next",
+    "context": "Context",
+    "processing": "processing...",
+    "bootMayTakeMinutes": "Please wait and keep the app open. This can take several minutes. The progress bar may look stuck, but we're still working.",
+    "success": "Success",
+    "saveError": "Failed to save changes",
+    "saveErrorSubtitle": "Please try again",
+    "error_description": "An unexpected error occurred. Please try again.",
+    "back": "Back",
+    "select": "Select...",
+    "today": "Today",
+    "none": "None",
+    "amount_kcal": "{{amount}}",
+    "duplicateFailed": "Duplicate failed",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{count}} days ago",
+    "oneWeekAgo": "1 week ago",
+    "weeksAgo": "{{count}} weeks ago",
+    "monthsAgo": "{{count}} months ago",
+    "monthsAgo_one": "{{count}} month ago",
+    "monthsAgo_other": "{{count}} months ago",
+    "oneMonthFromNow": "1 month from now",
+    "monthsFromNow": "{{count}} months from now",
+    "seeAll": "See all",
+    "kcal": "kcal",
+    "min": "min",
+    "cancel": "Cancel",
+    "tryAgain": "Try again",
+    "photo": "Photo",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "save": "Save",
+    "category": "Category",
+    "active": "Active",
+    "edit": "Edit",
+    "status": "Status",
+    "timezone": "Timezone",
+    "timezonePlaceholder": "+00:00",
+    "invalidTimezone": "Enter a timezone offset like +00:00, +05:30, or -04:00.",
+    "change": "Change",
+    "confirm": "Confirm",
+    "decreaseValue": "Decrease value",
+    "delete": "Delete",
+    "error": "Error",
+    "loadMore": "Load more",
+    "goHome": "Go home",
+    "increaseValue": "Increase value",
+    "ok": "Ok",
+    "deleteConfirmMessage": "Are you sure you want to delete {{name}}?",
+    "deleteFailed": "Failed to delete",
+    "saveChanges": "Save changes",
+    "close": "Close",
+    "install": "Install",
+    "createNew": "Create new",
+    "heightFormatMetric": "{{value}} cm",
+    "heightFormatImperial": "{{feet}}' {{inches}}\"",
+    "weightFormatKg": "{{value}} kg",
+    "weightFormatLbs": "{{value}} lbs",
+    "weightFormatG": "{{value}}g",
+    "units": {
+      "g": "g",
+      "oz": "oz"
+    },
+    "eatingPhase": "Eating phase",
+    "description": "Description",
+    "loadMultiplier": "Load multiplier",
+    "deleteSuccess": "Deleted successfully",
+    "notFound": "Not found",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
+    "time": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "appName": "MUSCLOG",
+    "selectIcon": "Select icon",
+    "selectIconLabel": "Select icon",
+    "icon": "Icon",
+    "archived": "Archived",
+    "descriptions": {
+      "none": "None"
+    },
+    "duration": {
+      "hoursOnly": "{{hours}}h",
+      "hoursMinutes": "{{hours}}h {{minutes}}m",
+      "minutesOnly": "{{minutes}}m",
+      "minutesShort": "{{minutes}} mins"
+    },
+    "days": {
+      "label": "Days",
+      "letter": {
+        "sun": "S",
+        "mon": "M",
+        "tue": "T",
+        "wed": "W",
+        "thu": "T",
+        "fri": "F",
+        "sat": "S"
+      },
+      "short": {
+        "sun": "SUN",
+        "mon": "MON",
+        "tue": "TUE",
+        "wed": "WED",
+        "thu": "THU",
+        "fri": "FRI",
+        "sat": "SAT"
+      }
+    },
+    "hide": "Hide",
+    "show": "Show",
+    "debugDetails": "Debug details",
+    "errorMessage": "Error message",
+    "errorStack": "Error stack",
+    "componentStack": "Component stack",
+    "userAgent": "User agent",
+    "app": {
+      "title": "Musclog - Fitness & nutrition tracker"
+    },
+    "nutrition": {
+      "title": "Musclog - Nutrition",
+      "food": {
+        "title": "Musclog - Food log"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Workout",
+      "workouts": {
+        "title": "Musclog - Workouts"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Progress"
+    },
+    "profile": {
+      "title": "Musclog - Profile"
+    },
+    "settings": {
+      "title": "Musclog - Settings"
+    },
+    "cycle": {
+      "title": "Musclog - Cycle"
+    },
+    "relativeTime": {
+      "now": "just now",
+      "minutes": "{{value}}m ago",
+      "hours": "{{value}}h ago",
+      "days": "{{value}}d ago"
+    },
+    "a11y": {
+      "notifications": "Notifications",
+      "editProfile": "Edit profile",
+      "previousDay": "Previous day",
+      "nextDay": "Next day",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "openCamera": "Open camera",
+      "chooseFromGallery": "Choose from gallery",
+      "takePhoto": "Take photo",
+      "increase": "Increase",
+      "decrease": "Decrease",
+      "moreInfo": "More information",
+      "moreOptions": "More options",
+      "add": "Add",
+      "dismiss": "Dismiss",
+      "remove": "Remove",
+      "scanBarcode": "Scan barcode",
+      "send": "Send",
+      "attachFile": "Attach a file",
+      "removeImage": "Remove image",
+      "choosePhoto": "Choose a photo",
+      "chooseIcon": "Choose icon",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "filter": "Filter",
+      "clearSearch": "Clear search",
+      "showValue": "Show value",
+      "hideValue": "Hide value"
+    },
+    "externalAssistant": {
+      "copied": "Instructions copied",
+      "copiedPaste": "Instructions copied. Paste them into the chat if the box is empty.",
+      "copy": "Copy",
+      "errors": {
+        "empty": "There is nothing to import.",
+        "fileRead": "That file could not be read. Try another one, or paste the text instead."
+      },
+      "fallback": "Couldn't open the app or site. The instructions are copied: open ChatGPT or Claude yourself and paste them.",
+      "leaveSection": "Step 1: ask the assistant",
+      "openChatgpt": "Open ChatGPT",
+      "openClaude": "Open Claude",
+      "pasteJson": "Paste JSON",
+      "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
+      "share": "Share"
+    },
+    "energyUnit": {
+      "kcal": "kcal",
+      "kj": "kJ"
+    }
+  }
+}

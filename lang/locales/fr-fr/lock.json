@@ -1,0 +1,42 @@
+{
+  "lock": {
+    "settings": {
+      "title": "App lock",
+      "subtitle": "Ask for fingerprint, face or device PIN",
+      "hint": "Ask for your fingerprint, face or device PIN before showing the areas you choose. They lock again after the app has been in the background for 30 seconds.",
+      "note": "This is a screen lock. Your data stays encrypted and on this phone; exported backups are separate files that you control.",
+      "noCredential": "Set up a screen lock or biometrics on your device first.",
+      "coveredByApp": "Covered by locking the whole app"
+    },
+    "areas": {
+      "app": {
+        "label": "Whole app",
+        "hint": "Ask before anything in Musclog is shown"
+      },
+      "cycle": {
+        "label": "Cycle tracking",
+        "hint": "Periods, symptoms and predictions",
+        "lockedTitle": "Cycle tracking is locked",
+        "lockedDescription": "Authenticate to see your cycle records."
+      },
+      "workout": {
+        "label": "Workouts",
+        "hint": "Plans, sessions and workout history",
+        "lockedTitle": "Workouts are locked",
+        "lockedDescription": "Authenticate to see your workouts."
+      },
+      "nutrition": {
+        "label": "Nutrition",
+        "hint": "Food diary, meals and weekly targets",
+        "lockedTitle": "Nutrition is locked",
+        "lockedDescription": "Authenticate to see your nutrition data."
+      },
+      "progress": {
+        "label": "Progress",
+        "hint": "Charts, trends and body measurements",
+        "lockedTitle": "Progress is locked",
+        "lockedDescription": "Authenticate to see your progress."
+      }
+    }
+  }
+}

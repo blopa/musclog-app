@@ -1,0 +1,18 @@
+{
+  "sessionFeedback": {
+    "title": "Session feedback",
+    "subtitle": "Rate your performance",
+    "difficulty": "Difficulty",
+    "exhaustion": "Exhaustion",
+    "enjoyment": "Enjoyment",
+    "easy": "Easy",
+    "extreme": "Extreme",
+    "fresh": "Fresh",
+    "drained": "Drained",
+    "disliked": "Disliked",
+    "loved": "Loved",
+    "submit": "Submit feedback",
+    "notes": "Notes",
+    "notesPlaceholder": "How did it go? Anything to remember next time?"
+  }
+}

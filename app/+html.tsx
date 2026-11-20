@@ -5,11 +5,16 @@ import { WEBSITE_LOCALES } from '@/components/website/localeRoutes';
 import { qrCodeSvgData } from '@/components/website/qrCodeSvg';
 import { GOOGLE_PLAY_URL } from '@/components/website/storeLinks';
 import { websiteLoggyCss } from '@/components/website/websiteLoggyAssets';
+import deDeWebsite from '@/lang/locales/de-de/website.json';
 import enUsWebsite from '@/lang/locales/en-us/website.json';
 import esEsWebsite from '@/lang/locales/es-es/website.json';
+import frFrWebsite from '@/lang/locales/fr-fr/website.json';
+import itItWebsite from '@/lang/locales/it-it/website.json';
 import nlNlWebsite from '@/lang/locales/nl-nl/website.json';
+import plPlWebsite from '@/lang/locales/pl-pl/website.json';
 import ptBrWebsite from '@/lang/locales/pt-br/website.json';
 import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
+import trTrWebsite from '@/lang/locales/tr-tr/website.json';
 import { DEFAULT_THEME_BY_MODE } from '@/theme.registry';
 import { themeCssVariables } from '@/theme.tokens';
 import { THEME_MIRROR_STORAGE_KEY } from '@/utils/themeMirror';
@@ -48,6 +53,11 @@ const LANDING_TRANSLATIONS: Record<string, LandingCopy> = {
   'nl-NL': nlNlWebsite.website.landing,
   'pt-BR': ptBrWebsite.website.landing,
   'ru-RU': ruRuWebsite.website.landing,
+  'de-DE': deDeWebsite.website.landing,
+  'fr-FR': frFrWebsite.website.landing,
+  'it-IT': itItWebsite.website.landing,
+  'pl-PL': plPlWebsite.website.landing,
+  'tr-TR': trTrWebsite.website.landing,
 };
 
 /**

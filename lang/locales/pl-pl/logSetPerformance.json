@@ -1,0 +1,11 @@
+{
+  "logSetPerformance": {
+    "title": "Log set performance",
+    "difficulty": "Difficulty (RPE)",
+    "easy": "Easy",
+    "moderate": "Moderate",
+    "failure": "Failure",
+    "cancel": "Cancel",
+    "logSet": "Log set"
+  }
+}

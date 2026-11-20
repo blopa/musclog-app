@@ -1,0 +1,55 @@
+{
+  "websiteToolWarmUpCalculator": {
+    "title": "Warm-up calculator",
+    "intro": "Enter your working weight and get the warm-up sets that lead up to it, with the plates for each side of the bar when you lift a barbell.",
+    "form": {
+      "working": "Working weight",
+      "workingHint": "The weight of the set you are building up to.",
+      "equipmentLabel": "Equipment",
+      "equipment": {
+        "barbell": "Barbell",
+        "dumbbell": "Dumbbell",
+        "machine": "Machine or cable"
+      }
+    },
+    "problems": {
+      "working": "Enter the working weight as a number above 0 and at most {{max}}."
+    },
+    "results": {
+      "title": "Warm-up sets",
+      "set": "Set",
+      "weight": "Weight",
+      "reps": "Reps",
+      "plates": "Plates per side",
+      "working": "Working set",
+      "target": "Target",
+      "emptyBar": "Empty bar",
+      "plateLine": "{{count}} × {{weight}}",
+      "rest": "Rest about {{seconds}} seconds between warm-up sets.",
+      "barIsWarmUp": "Your working weight is so close to the bar that the bar is the warm-up. Go straight to your first set.",
+      "noRamp": "This weight is too light for a warm-up ramp. Start at your working weight.",
+      "workingNotLoadable": "Your gym cannot load the working weight exactly. The warm-ups use the nearest loadable weights."
+    },
+    "sections": [
+      {
+        "title": "How the ramp is built",
+        "body": [
+          "Each warm-up set is a share of the working weight: 40% for 5 reps, 60% for 3 reps and 80% for 2 reps. Each one is heavier and shorter than the last, so you arrive at the working weight warm without being tired.",
+          "On a barbell, the ramp opens with the empty bar for 10 reps when the first ramp set is well above it. Every weight is rounded to what your plates can make, and a warm-up within 10% of the working weight is dropped."
+        ]
+      },
+      {
+        "title": "These are Musclog's choices",
+        "body": [
+          "The percentages, the reps and the rest between sets are a common prescription that Musclog uses. They are product choices, not results from a study. Change them to suit how you feel."
+        ]
+      },
+      {
+        "title": "Barbell, dumbbell or machine",
+        "body": [
+          "On a barbell the plates for each side are shown, so you can load every warm-up from your gym's plates. Dumbbells and machines skip the bar and plates and use the standard increments of a typical gym."
+        ]
+      }
+    ]
+  }
+}
