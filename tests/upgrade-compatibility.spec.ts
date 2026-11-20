@@ -47,7 +47,7 @@ test.describe('SDK 58 compatibility', () => {
     const unprefixedByDesign = registeredPaths.filter(
       (path) => localePrefixesFor(path).length === 0
     );
-    // Every other registered path is an OLD address: a static page that forwards to English.
+    // Every other registered path is an unprefixed address: it serves the English page, whose canonical is its /en/… twin.
     const legacyPaths = registeredPaths.filter((path) => localePrefixesFor(path).length > 0);
 
     for (const path of new Set([...sitemapPaths, ...unprefixedByDesign])) {
@@ -130,6 +130,115 @@ test.describe('SDK 58 compatibility', () => {
     await page.reload();
     await expect(page.getByText('My workouts', { exact: true }).first()).toBeVisible({
       timeout: 30000,
+    });
+  });
+
+  test.describe('unprefixed addresses', () => {
+    /** The development server forwards unprefixed addresses instead, so skip without the built copy. */
+    async function requireBuiltDist(request: import('@playwright/test').APIRequestContext) {
+      const response = await request.get(`${base}/tools/one-rep-max`);
+      const html = await response.text();
+      test.skip(
+        !html.includes('id="musclog-unprefixed"'),
+        'needs the built dist (npm run build-android-web): the development server forwards unprefixed addresses instead'
+      );
+    }
+
+    const HYDRATION_ERROR = /hydrat|Minified React error #(418|423|425)/i;
+
+    test('an unprefixed address renders English and settles on /en without a reload', async ({
+      page,
+      request,
+    }) => {
+      test.setTimeout(120000);
+      await requireBuiltDist(request);
+      const pageErrors: Error[] = [];
+      const consoleErrors: string[] = [];
+      let documentRequests = 0;
+      page.on('pageerror', (error) => pageErrors.push(error));
+      page.on('console', (message) => {
+        if (message.type() === 'error') {
+          consoleErrors.push(message.text());
+        }
+      });
+      page.on('request', (req) => {
+        if (req.resourceType() === 'document') {
+          documentRequests += 1;
+        }
+      });
+
+      await page.goto(`${base}/tools/one-rep-max?x=1#top`);
+      await expect(page).toHaveURL(`${base}/en/tools/one-rep-max?x=1#top`);
+      await expect(page.locator('main h1')).toBeVisible();
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      expect(documentRequests).toBe(1);
+
+      await page.getByRole('button', { name: 'Preferences', exact: true }).click();
+      await page.getByRole('tab', { name: 'Language', exact: true }).click();
+      // The picker keeps the query and hash; the link also proves the router read the patched URL.
+      await expect(page.locator('a[hreflang="es"]')).toHaveAttribute(
+        'href',
+        '/es/tools/one-rep-max?x=1#top'
+      );
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors.filter((text) => HYDRATION_ERROR.test(text))).toEqual([]);
+    });
+
+    test("a stored non-English language opens that language's page", async ({ page, request }) => {
+      test.setTimeout(120000);
+      await requireBuiltDist(request);
+      const pageErrors: Error[] = [];
+      const consoleErrors: string[] = [];
+      page.on('pageerror', (error) => pageErrors.push(error));
+      page.on('console', (message) => {
+        if (message.type() === 'error') {
+          consoleErrors.push(message.text());
+        }
+      });
+      await page.context().addInitScript(() => {
+        try {
+          window.localStorage.setItem('musclog_lang', 'es-ES');
+        } catch {}
+      });
+
+      await page.goto(`${base}/tools/one-rep-max?x=1`);
+      await expect(page).toHaveURL(`${base}/es/tools/one-rep-max?x=1`);
+      await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+      await expect(page.locator('main h1')).toBeVisible();
+
+      await page.goto(`${base}/blog`);
+      await expect(page).toHaveURL(`${base}/en/blog`);
+      await expect(page.locator('main h1')).toBeVisible();
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors.filter((text) => HYDRATION_ERROR.test(text))).toEqual([]);
+    });
+
+    test('unprefixed addresses are readable without JavaScript', async ({ browser, request }) => {
+      test.setTimeout(120000);
+      await requireBuiltDist(request);
+      const context = await browser.newContext({ javaScriptEnabled: false });
+      try {
+        const cases = [
+          { path: '/tools/one-rep-max', canonical: `${ORIGIN}/en/tools/one-rep-max` },
+          { path: '/', canonical: `${ORIGIN}/en` },
+          { path: '/home', canonical: `${ORIGIN}/en` },
+        ];
+        for (const { path, canonical } of cases) {
+          const page = await context.newPage();
+          await page.goto(`${base}${path}`);
+          await expect(page).toHaveURL(`${base}${path}`);
+          await expect(page.locator('main h1')).toBeVisible();
+          await expect(page.locator('main h1')).not.toHaveText('');
+          await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /.+/);
+          await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+          await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonical);
+          await page.close();
+        }
+      } finally {
+        await context.close();
+      }
     });
   });
 });

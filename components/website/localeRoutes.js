@@ -3,12 +3,10 @@
  * path gets its language prefix, which pages are translated, and the `hreflang` set of a page.
  *
  * Every public page lives under a language prefix, English included (`/en/tools/protein-calculator`,
- * `/es/tools/protein-calculator`, `/pt-br/…`). An address with no prefix (`/tools/protein-calculator`)
- * is an old link: the static export ships a tiny page at it that forwards the visitor to `/en/…`.
- * The site is static files on GitHub Pages, so that forwarding happens in the browser.
+ * `/es/tools/protein-calculator`, `/pt-br/…`). An address with no prefix (`/tools/protein-calculator`) shows the English page: after the static export `scripts/write-unprefixed-pages.js` copies each English page to its unprefixed twin and gives it an inline script that settles the address (in place to `/en/…`, or to the page of the language the visitor chose before).
  *
  * This is plain CommonJS because `scripts/generate-web-seo-files.js` and
- * `scripts/write-legacy-redirects.js` run outside the app bundle and must read the same rules the
+ * `scripts/write-unprefixed-pages.js` run outside the app bundle and must read the same rules the
  * router and the components use (the arrangement `blogRoutes.js` and `programRoutes.js` already
  * have). Paths passed in here are LOGICAL paths, the ones `websiteRoutes.json` lists
  * (`/tools/protein-calculator`, `/`): the prefix is added by `localizedPath`, never written by hand.
@@ -159,7 +157,7 @@ function hreflangAlternatePaths(path) {
 }
 
 /**
- * Where an old, unprefixed address goes: the same page in English, query and hash kept. `null` when
+ * The English `/en/…` address of an unprefixed one, query and hash kept (the development server forwards there; the build copies that page to the unprefixed address instead). `null` when
  * the address already has a prefix, is not a website page, or is deliberately unprefixed.
  */
 function legacyForwardPath(pathname, search = '', hash = '') {

@@ -26,7 +26,7 @@ export default function Index() {
     runEntryOnboardingRedirect(router, 'index.web', pathname);
   }, [navigationState?.key, pathname, router]);
 
-  // The public home page is `/en`, `/es`, …: the bare address is an old one and forwards to English.
+  // The public home page is `/en`, `/es`, …: this is what the export renders at the bare address before `scripts/write-unprefixed-pages.js` replaces `dist/index.html` with a copy of the English home page; the bare address forwards to English only on the development server.
   if (isProduction()) {
     return <LegacyForward to="/en" />;
   }
