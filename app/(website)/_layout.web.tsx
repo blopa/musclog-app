@@ -14,8 +14,7 @@ export default function WebsiteLayout() {
   useWebsiteLanguage();
   const forwardTo = legacyForwardPath(usePathname());
 
-  // `/tools` is read by the router as `[locale]` = "tools". The exported site has a static page for
-  // every old address; this is what the development server shows instead.
+  // `/tools` is read by the router as `[locale]` = "tools". The exported site serves a copy of the English page at every unprefixed address (`scripts/write-unprefixed-pages.js`); this is what the development server shows instead.
   if (forwardTo) {
     return <LegacyForward to={forwardTo} />;
   }

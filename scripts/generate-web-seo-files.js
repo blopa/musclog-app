@@ -18,8 +18,7 @@
  * Every public page lives under a language prefix (components/website/localeRoutes.js is the one
  * source of those rules). A translated page gets one sitemap <url> per locale, each carrying the
  * same full hreflang set (x-default is English); English-only pages (the blog) get one /en/ <url>
- * and no alternates. Unprefixed addresses are old links that forward in the browser
- * (scripts/write-legacy-redirects.js), so they are never listed. llms.txt links English URLs.
+ * and no alternates. An unprefixed address serves a copy of the English page (scripts/write-unprefixed-pages.js) whose canonical is the `/en/…` URL, so it is never listed. llms.txt links English URLs.
  */
 const fs = require('fs');
 const projectLinks = require('../constants/projectLinks.json');

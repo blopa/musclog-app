@@ -44,7 +44,7 @@ const MAY_RENDER_WEBSITE_LOGGY: Record<string, string> = {
   'app/(website)/[locale]/faq.web.tsx': 'above the questions (thinking)',
   'app/(website)/[locale]/index.web.tsx': 'the one introduction on the homepage (wave)',
   'components/website/LegacyForward.tsx':
-    'the page an old unprefixed address shows while it forwards to /en (thinking)',
+    'the page the development server shows while an unprefixed address forwards to /en (thinking)',
   'app/(website)/open.web.tsx':
     'the page an assistant link lands on (reading, review before saving)',
 };

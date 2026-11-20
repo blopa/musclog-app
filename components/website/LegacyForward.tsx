@@ -7,9 +7,7 @@ import { WebsiteLoggy } from './WebsiteLoggy';
 import { WebsiteShell } from './WebsiteShell';
 
 /**
- * The page behind an old, unprefixed address (`/tools/protein-calculator`, `/`): it forwards the
- * browser to the same page in English (`/en/tools/protein-calculator`). The site is static files, so
- * this is the browser's job. It sits in the normal header and footer and says what is happening
+ * The page the development server shows behind an unprefixed address (`/tools/protein-calculator`, `/`): it forwards the browser to the same page in English (`/en/tools/protein-calculator`). The exported site never ships it: `scripts/write-unprefixed-pages.js` serves a copy of the English page at every such address. It sits in the normal header and footer and says what is happening
  * (with the link for anyone the script does not reach) instead of showing a bare path.
  *
  * `to` is the destination without query or hash; they are read from the address bar, because the
