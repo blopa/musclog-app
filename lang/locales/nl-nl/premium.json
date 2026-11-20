@@ -20,7 +20,7 @@
     "resetConfirm": "Resetten",
     "consent": {
       "title": "AI-verzoeken naar Premium sturen?",
-      "body": "Je berichten en eventuele foto’s die je naar de AI stuurt, gaan naar de Musclog Premium-dienst. Die stuurt ze door naar OpenRouter, dat ze naar de aanbieder van het AI-model stuurt. Alleen eindpunten met zero data retention (ZDR) worden gebruikt: daar wordt niets opgeslagen of voor training gebruikt. Je kunt dit op elk moment uitzetten.",
+      "body": "Je berichten en eventuele foto’s die je naar de AI stuurt, gaan naar de Musclog Premium-dienst. Die stuurt ze door naar OpenRouter, dat ze naar de aanbieder van het AI-model stuurt. Alleen eindpunten met zero data retention (ZDR) worden gebruikt: die aanbieders bewaren je inhoud niet en gebruiken die niet voor training. De Musclog-dienst bewaart alleen gebruikstellingen, nooit je berichten of foto’s. Je kunt dit op elk moment uitzetten.",
       "confirm": "Premium-AI gebruiken",
       "cancel": "Niet nu"
     },

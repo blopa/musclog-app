@@ -174,7 +174,7 @@
       },
       "hostedSubscription": {
         "title": "Premium isn't active on this device",
-        "description": "Restore your purchase, renew the subscription, or use your own key."
+        "description": "Restore your purchase, subscribe to Premium, or use your own key."
       },
       "hostedUnavailable": {
         "title": "Premium is unavailable",

@@ -174,7 +174,7 @@
       },
       "hostedSubscription": {
         "title": "Premium nie jest aktywne na tym urządzeniu",
-        "description": "Przywróć zakup, odnów subskrypcję lub użyj własnego klucza."
+        "description": "Przywróć zakup, zasubskrybuj Premium lub użyj własnego klucza."
       },
       "hostedUnavailable": {
         "title": "Premium jest niedostępne",

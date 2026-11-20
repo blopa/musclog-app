@@ -20,7 +20,7 @@
     "resetConfirm": "Resetuj",
     "consent": {
       "title": "Wysyłać żądania AI do Premium?",
-      "body": "Twoje wiadomości i zdjęcia, które wysyłasz do AI, trafiają do usługi Musclog Premium. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): nic na nich nie jest zapisywane ani wykorzystywane do uczenia. Możesz to wyłączyć w dowolnym momencie.",
+      "body": "Twoje wiadomości i zdjęcia, które wysyłasz do AI, trafiają do usługi Musclog Premium. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. Usługa Musclog przechowuje wyłącznie liczniki użycia, nigdy Twoich wiadomości ani zdjęć. Możesz to wyłączyć w dowolnym momencie.",
       "confirm": "Używaj AI Premium",
       "cancel": "Nie teraz"
     },

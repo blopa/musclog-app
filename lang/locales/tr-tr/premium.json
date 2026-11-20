@@ -20,7 +20,7 @@
     "resetConfirm": "Sıfırla",
     "consent": {
       "title": "YZ istekleri Premium’a gönderilsin mi?",
-      "body": "YZ’ye gönderdiğiniz mesajlar ve fotoğraflar Musclog Premium hizmetine gider. Hizmet bunları OpenRouter’a iletir, o da YZ model sağlayıcısına gönderir. Yalnızca sıfır veri saklama (ZDR) uç noktaları kullanılır: bunlarda hiçbir şey saklanmaz ve model eğitimi için kullanılmaz. Bunu istediğiniz zaman kapatabilirsiniz.",
+      "body": "YZ’ye gönderdiğiniz mesajlar ve fotoğraflar Musclog Premium hizmetine gider. Hizmet bunları OpenRouter’a iletir, o da YZ model sağlayıcısına gönderir. Yalnızca sıfır veri saklama (ZDR) uç noktaları kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve model eğitimi için kullanmaz. Musclog hizmeti yalnızca kullanım sayılarını tutar, asla mesajlarınızı veya fotoğraflarınızı tutmaz. Bunu istediğiniz zaman kapatabilirsiniz.",
       "confirm": "Premium YZ’yi kullan",
       "cancel": "Şimdi değil"
     },

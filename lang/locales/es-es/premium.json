@@ -20,7 +20,7 @@
     "resetConfirm": "Restablecer",
     "consent": {
       "title": "¿Enviar las solicitudes de IA a Premium?",
-      "body": "Tus mensajes y las fotos que envíes a la IA se envían al servicio Musclog Premium. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se usan endpoints de retención cero de datos (ZDR): en ellos no se guarda nada ni se usa para entrenar modelos. Puedes desactivarlo en cualquier momento.",
+      "body": "Tus mensajes y las fotos que envíes a la IA se envían al servicio Musclog Premium. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se usan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar modelos. El servicio de Musclog solo guarda recuentos de uso, nunca tus mensajes ni tus fotos. Puedes desactivarlo en cualquier momento.",
       "confirm": "Usar IA Premium",
       "cancel": "Ahora no"
     },

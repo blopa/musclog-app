@@ -5,7 +5,7 @@ export type RecoveryAction =
   /** Enter a new key for the same provider. */
   | 'replaceKey'
   | 'switchProvider'
-  /** Musclog Premium: start or renew the subscription. */
+  /** Musclog Premium: subscribe or restore. */
   | 'renewPremium'
   /** Musclog Premium: restore the purchase on this device. */
   | 'restorePremium'

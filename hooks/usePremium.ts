@@ -1,6 +1,15 @@
 // The one hook the Premium screens use (plan 11 item 7). When Premium is switched off in this build
 // it does nothing: no service call, no subscription, and the view stays "loading".
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -34,7 +43,15 @@ export type UsePremium = {
   recordConsent(): Promise<void>;
 };
 
+/**
+ * Test-fixture seam only: `/app/test/modals` wraps `PremiumModal` in a provider so every Premium
+ * state can be rendered with no service, no flag and no network. The default is null, so nothing
+ * in the app ever sets it and `usePremium` behaves as before.
+ */
+export const PremiumFixtureContext = createContext<UsePremium | null>(null);
+
 export function usePremium(): UsePremium {
+  const fixture = useContext(PremiumFixtureContext);
   const enabled = isPremiumUiEnabled();
   const [overview, setOverview] = useState<PremiumOverview | null>(null);
   const [lastActionFailure, setLastActionFailure] = useState<PremiumActionFailure | null>(null);
@@ -219,18 +236,20 @@ export function usePremium(): UsePremium {
     [enabled, overview, lastActionFailure, signal, busy]
   );
 
-  return {
-    enabled,
-    view,
-    priceString: enabled ? (overview?.priceString ?? null) : null,
-    busy,
-    useHostedAi,
-    subscribe,
-    restore,
-    refresh,
-    setUseHostedAi,
-    reset,
-    consentNeeded,
-    recordConsent,
-  };
+  return (
+    fixture ?? {
+      enabled,
+      view,
+      priceString: enabled ? (overview?.priceString ?? null) : null,
+      busy,
+      useHostedAi,
+      subscribe,
+      restore,
+      refresh,
+      setUseHostedAi,
+      reset,
+      consentNeeded,
+      recordConsent,
+    }
+  );
 }

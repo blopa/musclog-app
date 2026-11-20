@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { createElement, type ReactNode } from 'react';
 
 const mockFlag = jest.fn(() => false);
 jest.mock('@/utils/premium/premiumUiFlag', () => ({ isPremiumUiEnabled: () => mockFlag() }));
@@ -32,7 +33,8 @@ jest.mock('@/services/premium/premiumActions', () => ({
   disableHostedIfRemoved: (...args: unknown[]) => mockActions.disableHostedIfRemoved(...args),
 }));
 
-import { usePremium } from '@/hooks/usePremium';
+import { PREMIUM_FIXTURE_STATES } from '@/components/premium/premiumFixtureStates';
+import { PremiumFixtureContext, usePremium } from '@/hooks/usePremium';
 
 const OVERVIEW = {
   status: 'no_key',
@@ -171,5 +173,18 @@ describe('usePremium', () => {
     expect(mockActions.disableHostedIfRemoved).toHaveBeenCalledWith('removed');
     expect(result.current.useHostedAi).toBe(false);
     expect(result.current.view.notice).toBe('removed');
+  });
+});
+
+describe('usePremium fixture seam', () => {
+  it('returns exactly the value a PremiumFixtureContext provider supplies', () => {
+    const fixture = PREMIUM_FIXTURE_STATES[3].build();
+    const wrapper = ({ children }: { children: ReactNode }) =>
+      createElement(PremiumFixtureContext.Provider, { value: fixture }, children);
+
+    const { result } = renderHook(() => usePremium(), { wrapper });
+
+    expect(result.current).toBe(fixture);
+    expect(result.current.view.phase).toBe('exhausted');
   });
 });

@@ -264,7 +264,8 @@ export const UNAUDITED_ROUTES: UnauditedRoute[] = [
 
 /**
  * The fixture buttons the app-store capture spec does not click but the audit does: a modal it
- * never captures, and four inline pickers that open a date/time sheet.
+ * never captures, four inline pickers that open a date/time sheet, and the eight Premium states
+ * (unreleased, so never in a store screenshot).
  */
 export const AUDIT_ONLY_MODAL_BUTTONS = [
   'Open Cycle Settings Modal',
@@ -272,6 +273,14 @@ export const AUDIT_ONLY_MODAL_BUTTONS = [
   'Time (default)',
   'Date (compact)',
   'Time (compact)',
+  'Open Premium Modal (Loading)',
+  'Open Premium Modal (Not Subscribed)',
+  'Open Premium Modal (Active)',
+  'Open Premium Modal (Exhausted)',
+  'Open Premium Modal (Removed)',
+  'Open Premium Modal (Revoked)',
+  'Open Premium Modal (At Capacity)',
+  'Open Premium Modal (Offline)',
 ];
 
 export const MODAL_AUDIT_BUTTONS: string[] = [...MODAL_BUTTON_TEXTS, ...AUDIT_ONLY_MODAL_BUTTONS];
@@ -310,10 +319,8 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/cycle/PredictionDetailsSheet.tsx': { flow: 'cycle (prediction details)' },
   'components/cycle/ReminderExplainerSheet.tsx': { flow: 'cycle (reminder explainer)' },
   'components/modals/AINotConfiguredModal.tsx': { fixture: 'Open AI Not Configured Modal' },
-  'components/modals/PremiumModal.tsx': {
-    unaudited:
-      'hidden behind EXPO_PUBLIC_PREMIUM_UI (no build sets it until P7), so the audited web build never offers it; pinned by components/modals/__tests__/PremiumModal.dom.test.tsx, and a fixture button joins this table with the P7 build flag',
-  },
+  // One fixture button per state (the first is named here; the other seven are in MODAL_BUTTON_TEXTS).
+  'components/modals/PremiumModal.tsx': { fixture: 'Open Premium Modal (Loading)' },
   'components/modals/AINutritionTrackingContextModal.tsx': {
     fixture: 'Open AI Nutrition Context Modal',
   },

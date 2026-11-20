@@ -20,7 +20,7 @@
     "resetConfirm": "Zurücksetzen",
     "consent": {
       "title": "KI-Anfragen an Premium senden?",
-      "body": "Deine Nachrichten und alle Fotos, die du an die KI sendest, gehen an den Musclog-Premium-Dienst. Dieser leitet sie an OpenRouter weiter, das sie an den Anbieter des KI-Modells schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) verwendet: Dort wird nichts gespeichert und nicht zum Training genutzt. Du kannst dies jederzeit ausschalten.",
+      "body": "Deine Nachrichten und alle Fotos, die du an die KI sendest, gehen an den Musclog-Premium-Dienst. Dieser leitet sie an OpenRouter weiter, das sie an den Anbieter des KI-Modells schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) verwendet: Diese Anbieter bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. Der Musclog-Dienst speichert nur Nutzungszahlen, nie deine Nachrichten oder Fotos. Du kannst dies jederzeit ausschalten.",
       "confirm": "Premium-KI verwenden",
       "cancel": "Nicht jetzt"
     },

@@ -20,7 +20,7 @@
     "resetConfirm": "Reset",
     "consent": {
       "title": "Send AI requests to Premium?",
-      "body": "Your messages, and any photos you send to the AI, go to the Musclog Premium service. It forwards them to OpenRouter, which sends them to the AI model provider. Only zero data retention (ZDR) endpoints are used: on those, nothing is stored or used for training. You can switch this off at any time.",
+      "body": "Your messages, and any photos you send to the AI, go to the Musclog Premium service. It forwards them to OpenRouter, which sends them to the AI model provider. Only zero data retention (ZDR) endpoints are used: those providers do not keep your content or use it for training. Musclog's service keeps only usage counts, never your messages or photos. You can switch this off at any time.",
       "confirm": "Use Premium AI",
       "cancel": "Not now"
     },

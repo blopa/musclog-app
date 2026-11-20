@@ -51,6 +51,8 @@ import EditWorkoutMetadataModal from '@/components/modals/EditWorkoutMetadataMod
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import ExercisesModal from '@/components/modals/ExercisesModal';
 import { ExternalFoodLogModal } from '@/components/modals/ExternalFoodLogModal';
+import { PremiumModal } from '@/components/modals/PremiumModal';
+import { PREMIUM_FIXTURE_STATES } from '@/components/premium/premiumFixtureStates';
 import { ExternalWorkoutPlanModal } from '@/components/modals/ExternalWorkoutPlanModal';
 import { FilterWorkoutsModal } from '@/components/modals/FilterWorkoutsModal';
 import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
@@ -99,6 +101,7 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/WorkoutService';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
+import { PremiumFixtureContext } from '@/hooks/usePremium';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { localDayStartMs } from '@/utils/calendarDate';
 
@@ -190,6 +193,8 @@ export default function ModalsTestScreen() {
   const [isCreateWorkoutOptionsVisible, setIsCreateWorkoutOptionsVisible] = useState(false);
   const [isExternalWorkoutPlanVisible, setIsExternalWorkoutPlanVisible] = useState(false);
   const [isExternalFoodLogVisible, setIsExternalFoodLogVisible] = useState(false);
+  // Premium Modal: the id of the state to render, null while closed.
+  const [premiumFixtureId, setPremiumFixtureId] = useState<string | null>(null);
 
   // Replace Exercise Modal
   const [isReplaceExerciseVisible, setIsReplaceExerciseVisible] = useState(false);
@@ -693,6 +698,70 @@ export default function ModalsTestScreen() {
               variant="outline"
               width="full"
               onPress={() => setIsExternalFoodLogVisible(true)}
+            />
+          </View>
+
+          {/* Premium Modal, one button per state */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Premium Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Premium screen in each state (loading, subscription, usage, removed, revoked,
+              capacity, offline).
+            </Text>
+            <Button
+              label="Open Premium Modal (Loading)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('loading')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Not Subscribed)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('not-subscribed')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Active)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('active')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Exhausted)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('exhausted')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Removed)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('removed')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Revoked)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('revoked')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (At Capacity)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('at-capacity')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Offline)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('offline')}
             />
           </View>
 
@@ -1902,6 +1971,21 @@ export default function ModalsTestScreen() {
         onClose={() => setIsExternalFoodLogVisible(false)}
         logDate={new Date()}
       />
+
+      {/* One PremiumModal; the fixture context feeds it the chosen state's view. */}
+      <PremiumFixtureContext.Provider
+        value={
+          premiumFixtureId === null
+            ? null
+            : (PREMIUM_FIXTURE_STATES.find((state) => state.id === premiumFixtureId)?.build() ??
+              null)
+        }
+      >
+        <PremiumModal
+          visible={premiumFixtureId !== null}
+          onClose={() => setPremiumFixtureId(null)}
+        />
+      </PremiumFixtureContext.Provider>
 
       <AddFoodModal
         visible={isAddFoodVisible}

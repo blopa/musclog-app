@@ -174,7 +174,7 @@
       },
       "hostedSubscription": {
         "title": "Premium n'est pas actif sur cet appareil",
-        "description": "Restaurez votre achat, renouvelez l’abonnement ou utilisez votre propre clé."
+        "description": "Restaurez votre achat, abonnez-vous à Premium ou utilisez votre propre clé."
       },
       "hostedUnavailable": {
         "title": "Premium est indisponible",
