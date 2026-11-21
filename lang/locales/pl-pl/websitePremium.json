@@ -1,0 +1,75 @@
+{
+  "websitePremium": {
+    "hero": {
+      "title": "AI, które działa bez klucza API",
+      "lead": "Musclog jest bezpłatny i open source i taki pozostanie. Premium to jedna opcjonalna subskrypcja miesięczna, która uruchamia za Ciebie funkcje AI, więc nie trzeba szukać, wklejać ani płacić za żaden klucz.",
+      "cta": "Pobierz Musclog",
+      "note": "Subskrybujesz w aplikacji, na swoje konto App Store lub Google Play."
+    },
+    "free": {
+      "title": "Wszystko inne pozostaje bezpłatne",
+      "body": "Śledzenie treningów i odżywiania, Twoje dane na Twoim urządzeniu i każda inna funkcja aplikacji nie wymagają Premium. Funkcje AI zawsze miały darmowe sposoby korzystania i nadal je mają:",
+      "items": [
+        "Użyj własnego klucza API Google Gemini, OpenAI lub Anthropic Claude i płać temu dostawcy bezpośrednio.",
+        "Skorzystaj z darmowej opcji Musclog AI.",
+        "Użyj AI na urządzeniu lub modelu lokalnego, jeśli Twoje urządzenie to obsługuje.",
+        "Nie korzystaj z tego wcale. Musclog działa w pełni bez AI."
+      ]
+    },
+    "how": {
+      "title": "Jak to działa",
+      "steps": [
+        "Otwórz Ustawienia, potem Ustawienia AI, i wybierz Musclog Premium.",
+        "Zasubskrybuj przez swoje konto w sklepie. Przywróć zakupy przywraca istniejącą subskrypcję.",
+        "Przeczytaj informację o prywatności i włącz \"Używaj Premium do AI\". Dopóki tego nie zrobisz, nic nie jest wysyłane.",
+        "Korzystaj z trenera, śledzenia posiłków i planów treningowych tak jak z każdego innego dostawcy."
+      ]
+    },
+    "allowance": {
+      "title": "Miesięczny limit, widoczny w aplikacji",
+      "body": "Każdy okres subskrypcji obejmuje limit korzystania z AI. Aplikacja pokazuje, ile go wykorzystano i kiedy się odnawia. To jeden limit dla subskrypcji, wspólny dla wszystkich urządzeń, na których z niej korzystasz.",
+      "usedUp": "Gdy wyczerpiesz limit, AI przestaje działać do odnowienia okresu. Reszta Musclog nadal działa, a Ty sam możesz przełączyć się na własny klucz lub opcję darmową. Musclog nigdy nie przełącza AI na innego dostawcę bez pytania, bo zmieniłoby to, kto otrzymuje Twoje wiadomości."
+    },
+    "privacy": {
+      "title": "Co dzieje się z Twoimi wiadomościami",
+      "body": "Gdy Premium jest włączone, Twoje żądania AI trafiają do usługi Musclog, która przekazuje je do OpenRouter, a ten do modelu AI. Żądania są wysyłane wyłącznie do dostawców oferujących zerową retencję danych (ZDR), a usługa nie przechowuje treści Twoich wiadomości ani zdjęć. Prowadzi licznik użycia za okres Twojej subskrypcji oraz identyfikator każdego urządzenia, na którym używasz Premium.",
+      "consent": "Aplikacja prosi o zgodę, zanim cokolwiek wyśle do Premium, i pyta ponownie, jeśli przywrócisz kopię zapasową na innym urządzeniu.",
+      "link": "Przeczytaj politykę prywatności"
+    },
+    "subscription": {
+      "title": "Subskrypcja",
+      "items": [
+        "Jest rozliczana miesięcznie przez App Store lub Google Play, według ceny pokazanej w sklepie.",
+        "Odnawia się automatycznie, dopóki jej nie anulujesz na swoim koncie w sklepie. Anulowanie zatrzymuje kolejne odnowienie.",
+        "Subskrypcje na iOS i Androida są oddzielne, więc subskrypcja kupiona na jednej nie przechodzi na drugą.",
+        "Konto Musclog nie jest potrzebne. Subskrypcja jest sprawdzana przez sklep."
+      ],
+      "terms": "Warunki korzystania"
+    },
+    "faq": {
+      "title": "Pytania",
+      "items": [
+        {
+          "q": "Czy Musclog nadal jest darmowy?",
+          "a": "Tak. Aplikacja jest darmowa i open source. Premium jest opcjonalne i służy tylko do uruchamiania za Ciebie funkcji AI."
+        },
+        {
+          "q": "Czy potrzebuję Premium, żeby korzystać z funkcji AI?",
+          "a": "Nie. Możesz użyć własnego klucza API, darmowej opcji Musclog AI albo modeli na urządzeniu i lokalnych. Premium to opcja, w której nic nie trzeba konfigurować."
+        },
+        {
+          "q": "Czy mogę używać tego na kilku urządzeniach?",
+          "a": "Tak. Jedna subskrypcja obejmuje Twoje urządzenia na tym samym koncie w sklepie, a one dzielą jeden limit. Przywrócenie zakupów dodaje urządzenie."
+        },
+        {
+          "q": "Co, jeśli wyczerpię limit?",
+          "a": "AI czeka na kolejny okres. Cała reszta Musclog nadal działa, a inną opcję AI możesz wybrać w każdej chwili."
+        },
+        {
+          "q": "Jak anulować?",
+          "a": "W ustawieniach subskrypcji App Store lub Google Play. Aplikacja ma przycisk Zarządzaj subskrypcją, który otwiera właściwą stronę."
+        }
+      ]
+    }
+  }
+}

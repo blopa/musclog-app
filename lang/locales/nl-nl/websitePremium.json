@@ -1,0 +1,75 @@
+{
+  "websitePremium": {
+    "hero": {
+      "title": "AI die werkt zonder API-sleutel",
+      "lead": "Musclog is gratis en open source, en blijft dat. Premium is één optioneel maandabonnement dat de AI-functies voor je draait, dus er is geen sleutel om te zoeken, in te plakken of te betalen.",
+      "cta": "Haal Musclog",
+      "note": "Je neemt een abonnement in de app, met je App Store- of Google Play-account."
+    },
+    "free": {
+      "title": "Al het andere blijft gratis",
+      "body": "Training- en voedingsregistratie, je gegevens op je eigen apparaat en elke andere functie van de app hebben geen Premium nodig. De AI-functies hebben altijd gratis manieren gehad, en die zijn er nog steeds:",
+      "items": [
+        "Gebruik je eigen API-sleutel van Google Gemini, OpenAI of Anthropic Claude, en betaal die aanbieder rechtstreeks.",
+        "Gebruik de gratis Musclog AI-optie.",
+        "Gebruik AI op het apparaat of een lokaal model, waar je apparaat dat ondersteunt.",
+        "Gebruik niets daarvan. Musclog werkt volledig zonder AI."
+      ]
+    },
+    "how": {
+      "title": "Hoe het werkt",
+      "steps": [
+        "Open Instellingen, dan AI-instellingen, en kies Musclog Premium.",
+        "Abonneer je met je storeaccount. Aankopen herstellen haalt een bestaand abonnement terug.",
+        "Lees de privacyverklaring en zet \"Premium gebruiken voor mijn AI\" aan. Er wordt niets verstuurd tot je dat doet.",
+        "Gebruik de coach, maaltijdregistratie en trainingsschema's zoals bij elke andere aanbieder."
+      ]
+    },
+    "allowance": {
+      "title": "Een maandelijks tegoed, zichtbaar in de app",
+      "body": "Elke abonnementsperiode heeft een tegoed aan AI-gebruik. De app laat zien hoeveel je ervan hebt gebruikt en wanneer het vernieuwt. Het is één tegoed voor het abonnement, gedeeld door alle apparaten waarop je het gebruikt.",
+      "usedUp": "Als je het helemaal opgebruikt, stopt de AI tot de periode vernieuwt. De rest van Musclog blijft werken, en je kunt zelf overschakelen naar je eigen sleutel of de gratis optie. Musclog schakelt je AI nooit naar een andere aanbieder zonder te vragen, omdat dat zou veranderen wie je berichten ontvangt."
+    },
+    "privacy": {
+      "title": "Wat er met je berichten gebeurt",
+      "body": "Als Premium aan staat, gaan je AI-verzoeken naar de eigen dienst van Musclog, die ze doorstuurt naar OpenRouter, dat ze aan het AI-model doorgeeft. Verzoeken worden alleen naar aanbieders gestuurd die zero data retention (ZDR) bieden, en de dienst slaat de tekst van je berichten en afbeeldingen niet op. Ze houdt een teller van het gebruik bij voor je abonnementsperiode, en een identificatie per apparaat waarop je Premium gebruikt.",
+      "consent": "De app vraagt om je toestemming voordat er iets naar Premium wordt gestuurd, en vraagt dat opnieuw als je een back-up op een ander apparaat herstelt.",
+      "link": "Lees het privacybeleid"
+    },
+    "subscription": {
+      "title": "Het abonnement",
+      "items": [
+        "Het wordt maandelijks gefactureerd door de App Store of Google Play, tegen de prijs die je store toont.",
+        "Het verlengt zich automatisch tot je het opzegt in je storeaccount. Opzeggen stopt de volgende verlenging.",
+        "iOS- en Android-abonnementen staan los van elkaar, dus een abonnement dat je op de ene kocht, gaat niet naar de andere.",
+        "Er is geen Musclog-account nodig. Je abonnement wordt via je store gecontroleerd."
+      ],
+      "terms": "Gebruiksvoorwaarden"
+    },
+    "faq": {
+      "title": "Vragen",
+      "items": [
+        {
+          "q": "Is Musclog nog steeds gratis?",
+          "a": "Ja. De app is gratis en open source. Premium is optioneel en betaalt alleen voor het draaien van de AI-functies voor jou."
+        },
+        {
+          "q": "Heb ik Premium nodig om de AI-functies te gebruiken?",
+          "a": "Nee. Je kunt je eigen API-sleutel gebruiken, de gratis Musclog AI-optie, of modellen op het apparaat en lokale modellen. Premium is de optie waarbij niets hoeft te worden ingesteld."
+        },
+        {
+          "q": "Kan ik het op meer dan één apparaat gebruiken?",
+          "a": "Ja. Eén abonnement dekt je apparaten op hetzelfde storeaccount, en ze delen één tegoed. Aankopen herstellen voegt een apparaat toe."
+        },
+        {
+          "q": "Wat als ik het tegoed opbruik?",
+          "a": "De AI wacht op de volgende periode. Al het andere in Musclog blijft werken, en je kunt op elk moment een andere AI-optie kiezen."
+        },
+        {
+          "q": "Hoe zeg ik op?",
+          "a": "In je App Store- of Google Play-abonnementsinstellingen. De app heeft een knop Abonnement beheren die de juiste pagina opent."
+        }
+      ]
+    }
+  }
+}
