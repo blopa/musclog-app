@@ -29,8 +29,9 @@ import {
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
+import { providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
-import { requestOptions, withLlmRetry } from './llmRetry';
+import { withLlmRetry } from './llmRetry';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
@@ -274,12 +275,10 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     apiKey: config.apiKey ?? 'unused',
     baseURL: config.baseUrl,
     dangerouslyAllowBrowser: true,
-    // Hosted requests retry through `withLlmRetry`'s own backoff: the SDK would repeat a 503 that
-    // the Worker says must not be repeated (`daily_full`, `hosted_disabled`).
-    maxRetries: config.provider === 'hosted' ? 0 : undefined,
-    // The Idempotency-Key is per logical request, so it is passed per call (`requestOptions`), never
-    // here: static default headers would go on every request of the client.
-    defaultHeaders: undefined,
+    // A provider whose retries are `withLlmRetry`'s alone turns the SDK's own off (hosted policy).
+    // Per-request headers (the hosted idempotency key) are passed per call through the `options` that
+    // `withLlmRetry` hands the request, never as client defaults.
+    maxRetries: providerPolicyFor(config.provider).sdkMaxRetries,
     fetch: pinFetch,
   });
 }
@@ -401,12 +400,9 @@ async function streamOpenAiText(
   return withLlmRetry(
     operation,
     config,
-    async (signal, touch, meta) => {
+    async (_signal, touch, options) => {
       sink.reset();
-      const chunks = await client.chat.completions.create(
-        { ...payload, stream: true },
-        requestOptions(signal, meta)
-      );
+      const chunks = await client.chat.completions.create({ ...payload, stream: true }, options);
       for await (const chunk of chunks) {
         touch();
         const delta = chunk.choices[0]?.delta?.content;
@@ -983,8 +979,8 @@ async function sendViaOpenAI(
       return parseCoachResponse(streamedRaw || '{}');
     }
 
-    const completion = await withLlmRetry('sendViaOpenAI', config, (signal, _touch, meta) =>
-      client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+    const completion = await withLlmRetry('sendViaOpenAI', config, (_signal, _touch, options) =>
+      client.chat.completions.create(requestPayload, options)
     );
 
     await logLlmDebugEvent({
@@ -1321,8 +1317,8 @@ async function generateText(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry('generateText', config, (signal, _touch, meta) =>
-    client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+  const completion = await withLlmRetry('generateText', config, (_signal, _touch, options) =>
+    client.chat.completions.create(requestPayload, options)
   );
 
   await logLlmDebugEvent({
@@ -1480,8 +1476,10 @@ async function generateTextWithHistory(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry('generateTextWithHistory', config, (signal, _touch, meta) =>
-    client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+  const completion = await withLlmRetry(
+    'generateTextWithHistory',
+    config,
+    (_signal, _touch, options) => client.chat.completions.create(requestPayload, options)
   );
 
   await logLlmDebugEvent({
@@ -1665,8 +1663,8 @@ export async function requestStructured<T = unknown>(
     config,
   });
 
-  const completion = await withLlmRetry(operation, config, (signal, _touch, meta) =>
-    client.chat.completions.create(payload, requestOptions(signal, meta))
+  const completion = await withLlmRetry(operation, config, (_signal, _touch, options) =>
+    client.chat.completions.create(payload, options)
   );
   await logLlmDebugEvent({
     provider: config.provider,
@@ -1723,19 +1721,6 @@ const CLAUDE_IMAGE_TYPES: readonly ClaudeImageType[] = [
 /** Claude takes four image types; anything else is sent as the JPEG the camera pipeline produces. */
 function claudeImageType(mimeType: string): ClaudeImageType {
   return CLAUDE_IMAGE_TYPES.find((type) => type === mimeType) ?? 'image/jpeg';
-}
-
-/**
- * Hosted photos only. Loaded inline because the image codec is a native module that the other
- * providers never need (the pattern of services/premium/revenueCat.ts).
- */
-function prepareHostedImageLazily(
-  base64: string,
-  mimeType: string
-): Promise<{ base64: string; mimeType: string }> {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const hostedImage: typeof import('@/utils/hostedImage') = require('@/utils/hostedImage');
-  return hostedImage.prepareHostedImage(base64, mimeType);
 }
 
 async function generateWithImageStructured<T>(
@@ -1871,12 +1856,12 @@ async function generateWithImageStructured<T>(
 
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
-  // Hosted photos are resized and re-encoded to the Worker's advertised limits first; BYOK and
-  // gateway requests send the photo as it is.
-  const image =
-    config.provider === 'hosted'
-      ? await prepareHostedImageLazily(base64Image, mimeType)
-      : { base64: base64Image, mimeType };
+  // A provider that limits photos (hosted: the Worker's advertised limits) prepares them first;
+  // every other request sends the photo as it is.
+  const prepareImage = providerPolicyFor(config.provider).prepareImage;
+  const image = prepareImage
+    ? await prepareImage(base64Image, mimeType)
+    : { base64: base64Image, mimeType };
   const dataUrl = `data:${image.mimeType};base64,${image.base64}`;
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
@@ -1911,8 +1896,7 @@ async function generateWithImageStructured<T>(
   const completion = await withLlmRetry(
     'generateWithImageStructured',
     config,
-    (signal, _touch, meta) =>
-      client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+    (_signal, _touch, options) => client.chat.completions.create(requestPayload, options)
   );
 
   await logLlmDebugEvent({

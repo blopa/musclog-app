@@ -269,10 +269,10 @@ describe('hosted idempotency', () => {
     expect(seen[1].headers['idempotency-key']).toBe(seen[0].headers['idempotency-key']);
   });
 
-  it('keeps the key on the withLlmRetry callback meta, and the same one on each attempt', async () => {
+  it('hands the request its options with the key, and the same one on each attempt', async () => {
     const keys: (string | undefined)[] = [];
-    const request = jest.fn(async (_signal: AbortSignal, _touch: () => void, meta) => {
-      keys.push(meta.idempotencyKey);
+    const request = jest.fn(async (_signal: AbortSignal, _touch: () => void, options) => {
+      keys.push(options.headers?.['Idempotency-Key']);
       if (keys.length < 3) {
         throw Object.assign(new Error('x'), { status: 503 });
       }
@@ -293,11 +293,10 @@ describe('hosted idempotency', () => {
     const start = source.indexOf('function buildOpenAIClient');
     const end = source.indexOf('\n}\n', start);
     const body = source.slice(start, end);
-    // The expression of `defaultHeaders`, up to the next option; comments are not part of it.
-    const headers = body.slice(body.indexOf('defaultHeaders:'), body.indexOf('fetch: pinFetch'));
-
-    expect(headers).toContain('defaultHeaders: undefined');
-    expect(headers).not.toMatch(/Idempotency-Key/i);
-    expect(headers).not.toMatch(/idempotencyKey/);
+    // The client sets no default headers at all: the key travels per call, through the options
+    // `withLlmRetry` hands the request.
+    expect(body).not.toMatch(/defaultHeaders/);
+    expect(body).not.toMatch(/Idempotency-Key/i);
+    expect(body).not.toMatch(/idempotencyKey/);
   });
 });

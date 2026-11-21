@@ -35,37 +35,21 @@ import type { PremiumNotice } from '@/utils/premium/premiumUiState';
 /** What a notice looks like: info is neutral, warning and error are the status hues. */
 export type PremiumNoticeTone = 'info' | 'warning' | 'error';
 
-/** One whole key per notice, so the translation check sees every string the screen can show. */
-export const PREMIUM_NOTICE_KEYS: Record<PremiumNotice, string> = {
-  offline: 'premium.notice.offline',
-  purchase_cancelled: 'premium.notice.purchase_cancelled',
-  purchase_failed: 'premium.notice.purchase_failed',
-  restore_nothing: 'premium.notice.restore_nothing',
-  confirming: 'premium.notice.confirming',
-  removed: 'premium.notice.removed',
-  revoked: 'premium.notice.revoked',
-  exhausted: 'premium.notice.exhausted',
-  at_capacity: 'premium.notice.at_capacity',
-  unavailable: 'premium.notice.unavailable',
-  not_accepting: 'premium.notice.not_accepting',
-  not_available: 'premium.notice.not_available',
-  warning80: 'premium.notice.warning80',
-};
-
-export const PREMIUM_NOTICE_TONE: Record<PremiumNotice, PremiumNoticeTone> = {
-  offline: 'warning',
-  purchase_cancelled: 'info',
-  purchase_failed: 'error',
-  restore_nothing: 'info',
-  confirming: 'info',
-  removed: 'warning',
-  revoked: 'warning',
-  exhausted: 'warning',
-  at_capacity: 'info',
-  unavailable: 'error',
-  not_accepting: 'info',
-  not_available: 'info',
-  warning80: 'warning',
+/** One entry per notice: its whole translation key (so the translation check sees each string) and its tone. */
+export const PREMIUM_NOTICES: Record<PremiumNotice, { key: string; tone: PremiumNoticeTone }> = {
+  offline: { key: 'premium.notice.offline', tone: 'warning' },
+  purchase_cancelled: { key: 'premium.notice.purchase_cancelled', tone: 'info' },
+  purchase_failed: { key: 'premium.notice.purchase_failed', tone: 'error' },
+  restore_nothing: { key: 'premium.notice.restore_nothing', tone: 'info' },
+  confirming: { key: 'premium.notice.confirming', tone: 'info' },
+  removed: { key: 'premium.notice.removed', tone: 'warning' },
+  revoked: { key: 'premium.notice.revoked', tone: 'warning' },
+  exhausted: { key: 'premium.notice.exhausted', tone: 'warning' },
+  at_capacity: { key: 'premium.notice.at_capacity', tone: 'info' },
+  unavailable: { key: 'premium.notice.unavailable', tone: 'error' },
+  not_accepting: { key: 'premium.notice.not_accepting', tone: 'info' },
+  not_available: { key: 'premium.notice.not_available', tone: 'info' },
+  warning80: { key: 'premium.notice.warning80', tone: 'warning' },
 };
 
 /** One whole key per busy line (stage of a purchase, reset, switch), so the translation check sees each. */
@@ -183,7 +167,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
   };
 
   const notice = view.notice;
-  const noticeTone = notice ? PREMIUM_NOTICE_TONE[notice] : null;
+  const noticeTone = notice ? PREMIUM_NOTICES[notice].tone : null;
   const noticeColor = toneColor(noticeTone, theme);
 
   const renderNotice = () => {
@@ -193,10 +177,10 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
 
     const text =
       notice === 'exhausted' && renewal
-        ? t(PREMIUM_NOTICE_KEYS[notice], { date: renewal })
+        ? t(PREMIUM_NOTICES[notice].key, { date: renewal })
         : notice === 'exhausted'
           ? t('premium.notice.exhaustedNoDate')
-          : t(PREMIUM_NOTICE_KEYS[notice]);
+          : t(PREMIUM_NOTICES[notice].key);
 
     return (
       <View

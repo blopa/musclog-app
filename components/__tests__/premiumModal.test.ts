@@ -1,11 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import {
-  hostedToggleDecision,
-  PREMIUM_NOTICE_KEYS,
-  PREMIUM_NOTICE_TONE,
-} from '@/components/modals/PremiumModal';
+import { hostedToggleDecision, PREMIUM_NOTICES } from '@/components/modals/PremiumModal';
 import type { PremiumNotice } from '@/utils/premium/premiumUiState';
 
 // The pure helpers live beside the component, so the module is loaded for them. Its UI imports pull
@@ -46,14 +42,14 @@ const ALL_NOTICES: PremiumNotice[] = [
   'warning80',
 ];
 
-describe('PREMIUM_NOTICE_KEYS', () => {
-  it.each(ALL_NOTICES)('has a whole key for %s', (notice) => {
-    expect(PREMIUM_NOTICE_KEYS[notice]).toBe(`premium.notice.${notice}`);
-    expect(PREMIUM_NOTICE_TONE[notice]).toMatch(/^(info|warning|error)$/);
+describe('PREMIUM_NOTICES', () => {
+  it.each(ALL_NOTICES)('has a whole key and a tone for %s', (notice) => {
+    expect(PREMIUM_NOTICES[notice].key).toBe(`premium.notice.${notice}`);
+    expect(PREMIUM_NOTICES[notice].tone).toMatch(/^(info|warning|error)$/);
   });
 
   it('has no entries beyond the PremiumNotice values', () => {
-    expect(Object.keys(PREMIUM_NOTICE_KEYS).sort()).toEqual([...ALL_NOTICES].sort());
+    expect(Object.keys(PREMIUM_NOTICES).sort()).toEqual([...ALL_NOTICES].sort());
   });
 });
 

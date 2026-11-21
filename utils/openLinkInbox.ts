@@ -1,3 +1,4 @@
+import { createListeners } from '@/utils/createListeners';
 import type { OpenLink, OpenLinkKind } from '@/utils/openLink';
 
 /**
@@ -6,24 +7,19 @@ import type { OpenLink, OpenLinkKind } from '@/utils/openLink';
  */
 
 let pending: OpenLink | null = null;
-const pendingListeners = new Set<() => void>();
+const { subscribe: subscribePending, notify: notifyPending } = createListeners();
 
 /** The payload of the link that opened the app, kept for the screen it routed to. */
 export function setPendingOpenLink(link: OpenLink | null) {
   pending = link;
-  pendingListeners.forEach((listener) => listener());
+  notifyPending();
 }
 
 /**
  * Calls `listener` whenever a link is stored, so a screen that is already open can pick up a link
  * that arrives while it is showing. {@link takePendingOpenLink} stays the only consumer.
  */
-export function subscribePendingOpenLink(listener: () => void): () => void {
-  pendingListeners.add(listener);
-  return () => {
-    pendingListeners.delete(listener);
-  };
-}
+export const subscribePendingOpenLink = subscribePending;
 
 /** Hands the pending payload to its screen exactly once; another kind's payload stays put. */
 export function takePendingOpenLink(kind: OpenLinkKind): OpenLink | null {

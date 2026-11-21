@@ -96,7 +96,7 @@ On whether every rule can be absolute: some risks cannot be eliminated, only bou
 - **The provider tables that need a `hosted` member:**
   - `CoachAIProvider` and `PROVIDER_CONFIGS` (`coachAI.ts:310`, `:320`)
   - `AI_PROVIDER_KINDS` and `AI_PROVIDER_STRENGTH` (`constants/ai.ts:49`, `:64`)
-  - `PROVIDER_PROBES` and `PROVIDER_PRIORITY` (`services/AiService.ts:99`, `:149`)
+  - `PROVIDER_PROBES` and `AI_PROVIDER_KINDS` (the priority order, `services/AiService.ts`)
   - three hand-written copies in `context/SettingsContext.tsx` (`:592`, `:616`, `:651`)
   - `PROVIDER_LABELS` (`utils/aiErrors.ts:160`), `components/aiOnboarding/providerNames.ts`, `AISettingsModal.tsx`, `app/app/onboarding/ai-provider.tsx`, `AINotConfiguredModal.tsx`
 - **Errors:**

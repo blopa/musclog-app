@@ -1,3 +1,5 @@
+import { createListeners } from '../createListeners';
+
 // What Premium is doing right now, kept at module level so it outlives the screen that started it:
 // closing the modal mid-purchase must not lose the stage, the result or the consent question.
 // Pure and relative-import-only (no React, no service). Never persisted, never carries a token.
@@ -29,11 +31,11 @@ const IDLE: Snapshot = { activity: null, consentPending: false, unseenFailure: n
 
 let snapshot: Snapshot = IDLE;
 let slowTimer: ReturnType<typeof setTimeout> | undefined;
-const listeners = new Set<() => void>();
+const { subscribe, notify } = createListeners();
 
 function publish(next: Snapshot): void {
   snapshot = next;
-  listeners.forEach((listener) => listener());
+  notify();
 }
 
 function clearSlowTimer(): void {
@@ -41,13 +43,7 @@ function clearSlowTimer(): void {
   slowTimer = undefined;
 }
 
-export function subscribePremiumActivity(listener: () => void): () => void {
-  listeners.add(listener);
-
-  return () => {
-    listeners.delete(listener);
-  };
-}
+export const subscribePremiumActivity = subscribe;
 
 export function getPremiumActivity(): PremiumActivity | null {
   return snapshot.activity;

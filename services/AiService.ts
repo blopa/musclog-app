@@ -181,13 +181,10 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
   },
 };
 
-/** Which provider wins when several are usable, first to last: the one canonical order. */
-const PROVIDER_PRIORITY: readonly CoachAIProvider[] = AI_PROVIDER_KINDS;
-
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings, from the first usable provider in
-   * `PROVIDER_PRIORITY`: Musclog Premium (hosted, first when switched on in a Premium build), the
+   * `AI_PROVIDER_KINDS`: Musclog Premium (hosted, first when switched on in a Premium build), the
    * Musclog free-tier gateway (it overrides every other provider when enabled), on-device AI, a local
    * LLM, then a Gemini, an OpenAI or a Claude key. Every provider is probed in
    * parallel, since the first AI call of a session used to wait for a dozen settings read one
@@ -196,7 +193,8 @@ export class AiService {
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
       const [builders, language] = await Promise.all([
-        Promise.all(PROVIDER_PRIORITY.map((provider) => PROVIDER_PROBES[provider]())),
+        // AI_PROVIDER_KINDS is the one canonical priority order (first to last usable provider wins).
+        Promise.all(AI_PROVIDER_KINDS.map((provider) => PROVIDER_PROBES[provider]())),
         SettingsService.getLanguage(),
       ]);
       const build = builders.find((candidate) => candidate !== null);

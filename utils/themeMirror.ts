@@ -1,5 +1,6 @@
 import type { ThemeId, ThemeOption } from '@/constants/settings';
 import { themeCssVariables } from '@/theme.tokens';
+import { createListeners } from '@/utils/createListeners';
 
 /**
  * The theme preference as the web build can always reach it.
@@ -53,7 +54,7 @@ function read(): null | ThemeMirror {
 }
 
 let snapshot = read();
-const listeners = new Set<() => void>();
+const { subscribe, notify } = createListeners();
 
 function commit(next: ThemeMirror): void {
   snapshot = next;
@@ -64,15 +65,10 @@ function commit(next: ThemeMirror): void {
     // A full or blocked store costs the pre-paint optimisation, nothing else.
   }
 
-  for (const listener of listeners) {
-    listener();
-  }
+  notify();
 }
 
-export function subscribeToThemeMirror(listener: () => void): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
+export const subscribeToThemeMirror = subscribe;
 
 export function getThemeMirror(): null | ThemeMirror {
   return snapshot;

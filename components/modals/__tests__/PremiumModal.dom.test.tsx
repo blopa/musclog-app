@@ -1,11 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { Linking } from 'react-native';
 
-import {
-  PREMIUM_BUSY_KEYS,
-  PREMIUM_NOTICE_KEYS,
-  PremiumModal,
-} from '@/components/modals/PremiumModal';
+import { PREMIUM_BUSY_KEYS, PREMIUM_NOTICES, PremiumModal } from '@/components/modals/PremiumModal';
 import { PREMIUM_BENEFITS } from '@/components/premium/PremiumPaywall';
 import { usePremium } from '@/hooks/usePremium';
 import {
@@ -116,7 +112,7 @@ describe('PremiumModal', () => {
 
   describe('notices', () => {
     // 'exhausted' depends on the renewal date and has its own tests below.
-    const plainNotices = (Object.keys(PREMIUM_NOTICE_KEYS) as PremiumNotice[]).filter(
+    const plainNotices = (Object.keys(PREMIUM_NOTICES) as PremiumNotice[]).filter(
       (notice) => notice !== 'exhausted'
     );
 
@@ -131,7 +127,7 @@ describe('PremiumModal', () => {
 
       renderModal();
 
-      expect(screen.getByText(PREMIUM_NOTICE_KEYS[notice])).toBeTruthy();
+      expect(screen.getByText(PREMIUM_NOTICES[notice].key)).toBeTruthy();
     });
 
     it('renders the dated exhausted notice with the renewal date', () => {

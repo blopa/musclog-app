@@ -1,5 +1,3 @@
-import { randomUUID } from 'expo-crypto';
-
 import {
   AiCancelledError,
   AiInvalidKeyError,
@@ -7,14 +5,7 @@ import {
   toUserFacingAiError,
 } from './aiErrors';
 import type { CoachAIConfig, CoachAIProvider } from './coachAI';
-import {
-  hostedGrantError,
-  isRetryableHostedError,
-  noteHostedError,
-  toHostedAiError,
-} from './hostedAiError';
-import { setHostedSignal } from './premium/hostedSignal';
-import { whileHostedBackingOff } from './premium/hostedWait';
+import { providerPolicyFor } from './hostedProviderPolicy';
 
 const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
 const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
@@ -78,8 +69,8 @@ const LLM_REQUEST_TIMEOUT_MS = 60_000;
  */
 async function runWithAbort<T>(
   config: CoachAIConfig,
-  request: (signal: AbortSignal, touch: () => void, meta: HostedRequestMeta) => Promise<T>,
-  meta: HostedRequestMeta
+  request: LlmRequest<T>,
+  headers: Record<string, string> | undefined
 ): Promise<T> {
   const controller = new AbortController();
   let timedOut = false;
@@ -101,7 +92,11 @@ async function runWithAbort<T>(
   }
 
   try {
-    return await request(controller.signal, arm, meta);
+    return await request(
+      controller.signal,
+      arm,
+      headers ? { signal: controller.signal, headers } : { signal: controller.signal }
+    );
   } catch (error) {
     if (timedOut) {
       throw new AiTimeoutError();
@@ -119,59 +114,28 @@ async function runWithAbort<T>(
 }
 
 /**
- * What one logical request carries to every HTTP attempt. The idempotency key is created once per
- * logical request (hosted only), so a retry is recognised by the Worker as the same request.
+ * The per-call options of an OpenAI-compatible request: the abort signal and, for a provider with
+ * request headers (hosted: the `Idempotency-Key`), those headers, the same on every attempt. The
+ * request callback receives them ready to pass, so no call site can forget either.
  */
-export type HostedRequestMeta = { idempotencyKey?: string };
+export type LlmRequestOptions = { signal: AbortSignal; headers?: Record<string, string> };
 
-/**
- * The per-call request options of every OpenAI-compatible request: the abort signal and, for a hosted
- * request, the `Idempotency-Key` header, so no call site can forget either. Non-hosted requests
- * send no header.
- */
-export function requestOptions(
+export type LlmRequest<T> = (
   signal: AbortSignal,
-  meta: HostedRequestMeta
-): { signal: AbortSignal; headers?: Record<string, string> } {
-  return meta.idempotencyKey
-    ? { signal, headers: { 'Idempotency-Key': meta.idempotencyKey } }
-    : { signal };
-}
+  touch: () => void,
+  options: LlmRequestOptions
+) => Promise<T>;
 
 /** What the retry loop has already spent on one logical request. */
-type RetryState = { attempt: number; timeoutRetried: boolean };
+export type RetryState = { attempt: number; timeoutRetried: boolean };
 
 /** Either the error to throw, or how long to wait and which budget the retry spends. */
-type RetryDecision =
+export type RetryDecision =
   { error: unknown } | { delayMs: number; log: string; spends: 'attempt' | 'timeout' };
 
 /**
- * One logical request's meta: a hosted request gets one idempotency key for every attempt, so the
- * Worker recognises a retry as the same request.
- */
-function newRequestMeta(config: CoachAIConfig): HostedRequestMeta {
-  return { idempotencyKey: config.provider === 'hosted' ? randomUUID() : undefined };
-}
-
-/** A hosted session token that could not be minted sends nothing: the typed error says why. */
-function assertConfigUsable(config: CoachAIConfig): void {
-  if (config.hostedGrantFailure) {
-    const grantError = hostedGrantError(config.hostedGrantFailure);
-    noteHostedError(grantError);
-    throw grantError;
-  }
-}
-
-function noteRequestSucceeded(provider: CoachAIProvider): void {
-  if (provider === 'hosted') {
-    setHostedSignal('ok');
-  }
-}
-
-/**
- * Decides what a failed attempt means: a hosted failure follows the Worker's rules (retry only the
- * statuses it says are safe, same idempotency key); every other failure follows the shared rules.
- * Pure apart from noting a hosted failure for the Premium screens.
+ * Decides what a failed attempt means: a provider with its own rules (hosted) answers first, every
+ * other failure follows the shared rules.
  */
 function classifyLlmFailure(
   operation: string,
@@ -184,18 +148,12 @@ function classifyLlmFailure(
   const delayMs = LLM_RETRY_DELAYS_MS[state.attempt];
   const hasAttemptsLeft = state.attempt < LLM_RETRY_DELAYS_MS.length;
 
-  const hosted = provider === 'hosted' ? toHostedAiError(error) : null;
-  if (hosted) {
-    noteHostedError(hosted);
-    if (!isRetryableHostedError(hosted) || hasStreamed || !hasAttemptsLeft) {
-      return { error: hosted };
-    }
-
-    return {
-      delayMs,
-      spends: 'attempt',
-      log: `[coachAI] ${operation} hosted ${hosted.hostedKind}; retrying in ${delayMs}ms with the same idempotency key`,
-    };
+  const own = providerPolicyFor(provider).classifyFailure?.(operation, error, state, {
+    hasStreamed,
+    delayMs,
+  });
+  if (own) {
+    return own;
   }
 
   // A wrong key never gets better by asking again, and is not retried.
@@ -232,11 +190,11 @@ function classifyLlmFailure(
   };
 }
 
-/** Exported for tests; not part of the module's public surface. */
+/** Runs one logical request with its timeout, cancel and retries; see the provider policies for the rest. */
 export async function withLlmRetry<T>(
   operation: string,
   config: CoachAIConfig,
-  request: (signal: AbortSignal, touch: () => void, meta: HostedRequestMeta) => Promise<T>,
+  request: LlmRequest<T>,
   options?: {
     /**
      * True once a streaming request has shown text. A retry would restart the reply under the
@@ -247,14 +205,15 @@ export async function withLlmRetry<T>(
 ): Promise<T> {
   const provider = config.provider;
   const state: RetryState = { attempt: 0, timeoutRetried: false };
-  const meta = newRequestMeta(config);
+  const policy = providerPolicyFor(provider);
+  const headers = policy.requestHeaders?.();
 
-  assertConfigUsable(config);
+  policy.assertUsable?.(config);
 
   while (true) {
     try {
-      const value = await runWithAbort(config, request, meta);
-      noteRequestSucceeded(provider);
+      const value = await runWithAbort(config, request, headers);
+      policy.onSuccess?.();
 
       return value;
     } catch (rawError) {
@@ -277,11 +236,7 @@ export async function withLlmRetry<T>(
       if (decision.delayMs > 0) {
         const delayMs = decision.delayMs;
 
-        if (provider === 'hosted') {
-          await whileHostedBackingOff(() => sleep(delayMs));
-        } else {
-          await sleep(delayMs);
-        }
+        await (policy.backOff ?? ((wait) => wait()))(() => sleep(delayMs));
       }
     }
   }
