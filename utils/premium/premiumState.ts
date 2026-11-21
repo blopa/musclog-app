@@ -1,7 +1,8 @@
 // Pure model of what the Premium Worker says (plan sections 6.1, 10, 11). No React Native, no
 // storage: relative imports only, because the Worker's own tests load this file too.
 
-import { isRecord } from '@/utils/isRecord';
+// eslint-disable-next-line no-relative-import-paths/no-relative-import-paths -- the Worker's Vitest run cannot resolve the `@/` alias, so this file must stay relative.
+import { isRecord } from '../isRecord';
 
 /** Refresh the session token this long before it expires (plan 11 item 3). */
 export const TOKEN_REFRESH_MARGIN_MS = 5 * 60_000;
