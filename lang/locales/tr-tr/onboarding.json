@@ -272,28 +272,46 @@
       "continue": "Devam et"
     },
     "musclogApi": {
-      "title": "Musclog Yapay Zekâ",
-      "freeBadge": "Ücretsiz",
-      "subtitle": "Antrenmanın ve beslenmen hakkında yapay zekâ içgörüleri al.",
-      "features": {
-        "coach": {
-          "title": "Yapay zekâ antrenman asistanı",
-          "desc": "Egzersiz önerileri ve form ipuçları al"
+      "heading": "Bir YZ koçu eklensin mi?",
+      "intro": "Musclog, YZ olmadan da tam olarak çalışır. YZ ile bir koçla sohbet edebilir, öğünü anlatarak kaydedebilir ve sana yazılmış bir antrenman planı alabilirsin.",
+      "choicesLabel": "YZ seçenekleri",
+      "options": {
+        "premium": {
+          "title": "Musclog Premium",
+          "badge": "En gizli seçenek",
+          "price": "Ayda {{price}}",
+          "priceUnknown": "Aylık abonelik",
+          "points": {
+            "private": "YZ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz",
+            "allowance": "Kendi aylık kotan",
+            "noSetup": "Kurulacak anahtar veya hesap yok"
+          }
         },
-        "insights": {
-          "title": "İlerleme içgörüleri",
-          "desc": "Antrenmanının kişiselleştirilmiş analizi"
+        "free": {
+          "title": "Ücretsiz YZ",
+          "price": "Ücretsiz",
+          "points": {
+            "noSetup": "Kurulacak anahtar veya hesap yok",
+            "limit": "Herkesin paylaştığı günlük bir sınır; erken bitebilir",
+            "privacy": "Gizli değil: Google gönderdiğin verileri saklayabilir ve inceleyebilir"
+          }
         },
-        "recommendations": {
-          "title": "Akıllı öneriler",
-          "desc": "Yapay zekâ destekli antrenman ve beslenme tavsiyeleri"
+        "none": {
+          "title": "Şimdilik YZ yok",
+          "points": {
+            "works": "Kayıt, planlar ve grafikler aynı şekilde çalışır",
+            "later": "YZ'yi istediğin zaman Ayarlar'dan açabilirsin"
+          }
         }
       },
       "dataSharingTitle": "Veri paylaşım bildirimi",
       "dataSharingBody": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler (ör. antrenmanların, öğünlerin, vücut ölçülerin veya sohbet mesajların) yanıtı yazmak için OpenRouter üzerinden Google AI Studio'nun ücretsiz katmanına gönderilir. Google gönderilenleri (kimlik bilgileri çıkarılmış olarak) saklayabilir, ürünlerini geliştirmek için kullanabilir ve insanların incelemesini sağlayabilir; bu yüzden ücretsiz katman gizli değildir: kişisel veya hassas bilgi girme. Ücretsiz katman yalnızca yetişkinler (18+) içindir. Bu sana uygun değilse kapalı bırakabilirsin. Bir yapay zekâ özelliğini kullanana kadar hiçbir şey gönderilmez. Ücretsiz katmanı kullanan herkesin paylaştığı günlük bir sınır vardır; bu yüzden gün içinde erken bitebilir ve ücretsiz katman bazen kullanılamayabilir.",
       "readPrivacyPolicy": "Gizlilik Politikamızı oku",
-      "enable": "Musclog Yapay Zekâ'yı etkinleştir",
-      "noThanks": "Hayır teşekkürler, yapay zekâsız devam et"
+      "cta": {
+        "premium": "Premium ile devam et",
+        "free": "Ücretsiz YZ'yi aç",
+        "none": "YZ olmadan devam et"
+      }
     },
     "setGoals": {
       "title": "Akıllı hedef",

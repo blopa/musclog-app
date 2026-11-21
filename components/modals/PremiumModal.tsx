@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Linking, Platform, Text, View } from 'react-native';
 
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
+import {
+  PremiumBenefitList,
+  PremiumComparison,
+  PremiumPaywallHero,
+} from '@/components/premium/PremiumPaywall';
 import { formatRenewalDate, PremiumUsageBar } from '@/components/premium/PremiumUsageBar';
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
@@ -184,28 +189,60 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     />
   );
 
-  const renderNotSubscribed = () => (
-    <View className="gap-3">
-      {premium.priceString ? (
-        <Text
-          style={{ color: theme.colors.text.primary, fontSize: theme.typography.fontSize.base }}
-        >
-          {t('premium.price', { price: premium.priceString })}
-        </Text>
-      ) : null}
-      {view.canSubscribe ? (
-        <Button
-          label={t('premium.subscribe')}
-          variant="accent"
-          width="full"
+  /**
+   * The paywall's pinned footer: the store's price, the one filled button and a quiet Restore.
+   * The button names the price, so what a tap costs is never only in the small print (3.1.2(c)).
+   */
+  const renderPaywallFooter = () => {
+    if (!view.canSubscribe && !view.canRestore) {
+      return null;
+    }
+
+    // Beside Subscribe, Restore is a quiet link; on its own it is the screen's one button.
+    let restoreAction: ReactNode = null;
+
+    if (view.canRestore && view.canSubscribe) {
+      restoreAction = (
+        <TextButton
+          label={t('premium.restore')}
+          align="center"
           disabled={busy}
-          loading={busy ? pressed === 'subscribe' : undefined}
-          onPress={() => runStore('subscribe', () => premium.subscribe())}
+          onPress={() => runStore('restore', () => premium.restore())}
         />
-      ) : null}
-      {view.canRestore ? renderRestore('outline') : null}
-    </View>
-  );
+      );
+    } else if (view.canRestore) {
+      restoreAction = renderRestore('accent');
+    }
+
+    return (
+      <View className="gap-2">
+        {view.canSubscribe ? (
+          <>
+            <Button
+              label={
+                premium.priceString
+                  ? t('premium.paywall.cta', { price: premium.priceString })
+                  : t('premium.subscribe')
+              }
+              variant="accent"
+              size="lg"
+              width="full"
+              disabled={busy}
+              loading={busy ? pressed === 'subscribe' : undefined}
+              onPress={() => runStore('subscribe', () => premium.subscribe())}
+            />
+            <Text
+              className="text-center"
+              style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.xs }}
+            >
+              {t('premium.paywall.reassurance')}
+            </Text>
+          </>
+        ) : null}
+        {restoreAction}
+      </View>
+    );
+  };
 
   const renderUsable = () => (
     <View className="gap-4">
@@ -271,7 +308,12 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
         );
       case 'not_subscribed':
       case 'revoked':
-        return renderNotSubscribed();
+        return (
+          <View className="gap-8">
+            <PremiumBenefitList />
+            <PremiumComparison priceString={premium.priceString} />
+          </View>
+        );
       case 'active':
       case 'exhausted':
         return renderUsable();
@@ -301,14 +343,25 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           variant: 'destructive' as const,
         };
 
+  const isPaywall = view.phase === 'not_subscribed' || view.phase === 'revoked';
+
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('premium.title')}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('premium.title')}
+      footer={isPaywall ? renderPaywallFooter() : undefined}
+    >
       <View className="gap-6 px-5 pb-6 pt-3">
-        <Text
-          style={{ color: theme.colors.text.primary, fontSize: theme.typography.fontSize.base }}
-        >
-          {t('premium.benefit')}
-        </Text>
+        {isPaywall ? (
+          <PremiumPaywallHero />
+        ) : (
+          <Text
+            style={{ color: theme.colors.text.primary, fontSize: theme.typography.fontSize.base }}
+          >
+            {t('premium.benefit')}
+          </Text>
+        )}
 
         {renderNotice()}
 

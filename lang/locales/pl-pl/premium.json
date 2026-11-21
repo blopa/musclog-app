@@ -31,7 +31,7 @@
     "privacy": "Polityka prywatności",
     "card": {
       "checking": "Sprawdzanie Premium…",
-      "notSubscribed": "AI w chmurze bez klucza do konfigurowania",
+      "notSubscribed": "Prywatne AI w chmurze w subskrypcji, bez klucza do konfigurowania",
       "active": "Wykorzystano {{pct}}% · wspólne dla wszystkich Twoich urządzeń",
       "exhausted": "Limit na ten okres wyczerpany",
       "removed": "Usunięto z tej subskrypcji",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium nie przyjmuje obecnie nowych subskrybentów.",
       "not_available": "Premium nie jest obecnie dostępne w tym sklepie.",
       "warning80": "Wykorzystano większość limitu AI Premium na ten okres."
+    },
+    "paywall": {
+      "headline": "Twój trener AI, gotowy do działania",
+      "subhead": "Musclog Premium uruchamia AI za Ciebie: bez klucza, bez konta, a dostawcy AI nie zachowują niczego, co wysyłasz. Cała reszta Musclog pozostaje bezpłatna.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nic do konfigurowania",
+          "desc": "Bez klucza API i konta. Zasubskrybuj, a trener, zapisywanie posiłków i plany treningowe działają od razu."
+        },
+        "private": {
+          "title": "Prywatne z założenia",
+          "desc": "Używani są tylko dostawcy z zerową retencją danych: nie zachowują Twoich wiadomości i nie uczą na nich modeli. Musclog przechowuje wyłącznie liczniki użycia."
+        },
+        "allowance": {
+          "title": "Twój własny limit",
+          "desc": "Miesięczny limit dla Twojej subskrypcji, a nie dzienny limit, który dzielą wszyscy użytkownicy darmowi."
+        },
+        "devices": {
+          "title": "Na wszystkich Twoich urządzeniach",
+          "desc": "Dodaj kolejny telefon lub tablet, używając opcji Przywróć zakupy. Współdzielą jeden limit."
+        },
+        "openSource": {
+          "title": "Wspiera rozwój Musclog",
+          "desc": "Musclog jest open source. Premium finansuje hostowane AI i wspiera rozwój aplikacji."
+        }
+      },
+      "compare": {
+        "title": "Wersja darmowa czy Premium",
+        "free": "Wersja darmowa",
+        "premium": "Premium",
+        "privacy": {
+          "label": "Co wysyłasz",
+          "free": "Google może to zachowywać, sprawdzać i wykorzystywać do uczenia",
+          "premium": "Nie zachowywane, nie wykorzystywane do uczenia"
+        },
+        "limit": {
+          "label": "Limit",
+          "free": "Jeden dzienny limit dla wszystkich",
+          "premium": "Twój własny miesięczny limit"
+        },
+        "price": {
+          "label": "Cena",
+          "free": "Za darmo",
+          "premiumUnknown": "Subskrypcja miesięczna"
+        }
+      },
+      "cta": "Subskrybuj za {{price}} miesięcznie",
+      "reassurance": "Odnawia się co miesiąc. Anulujesz w dowolnym momencie na koncie w sklepie."
     }
   }
 }

@@ -31,7 +31,7 @@
     "privacy": "Política de privacidade",
     "card": {
       "checking": "Verificando o Premium…",
-      "notSubscribed": "IA hospedada, sem chave para configurar",
+      "notSubscribed": "IA hospedada e privada, sem chave para configurar",
       "active": "{{pct}}% usado · compartilhado por todos os seus dispositivos",
       "exhausted": "Cota deste período esgotada",
       "removed": "Removido desta assinatura",
@@ -52,6 +52,54 @@
       "not_accepting": "O Premium não está aceitando novos assinantes no momento.",
       "not_available": "O Premium não está disponível nesta loja no momento.",
       "warning80": "Você usou a maior parte da cota de IA Premium deste período."
+    },
+    "paywall": {
+      "headline": "Seu coach de IA, pronto para usar",
+      "subhead": "O Musclog Premium roda a IA para você: sem chave, sem conta, e os provedores de IA não guardam nada do que você envia. Todo o resto do Musclog continua grátis.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nada para configurar",
+          "desc": "Sem chave de API e sem conta. Assine, e o coach, o registro de refeições e os planos de treino funcionam na hora."
+        },
+        "private": {
+          "title": "Privado por design",
+          "desc": "Só são usados provedores com retenção zero de dados: eles não guardam suas mensagens nem as usam para treinamento. O Musclog guarda apenas contagens de uso."
+        },
+        "allowance": {
+          "title": "Sua própria cota",
+          "desc": "Uma cota mensal para a sua assinatura, não o limite diário que todos os usuários gratuitos dividem."
+        },
+        "devices": {
+          "title": "Em todos os seus dispositivos",
+          "desc": "Adicione outro celular ou tablet com Restaurar compras. Eles compartilham uma cota."
+        },
+        "openSource": {
+          "title": "Mantém o Musclog funcionando",
+          "desc": "O Musclog é código aberto. O Premium paga a IA hospedada e apoia o desenvolvimento."
+        }
+      },
+      "compare": {
+        "title": "Plano gratuito ou Premium",
+        "free": "Plano gratuito",
+        "premium": "Premium",
+        "privacy": {
+          "label": "O que você envia",
+          "free": "O Google pode guardar, revisar e usar para treinamento",
+          "premium": "Não é guardado, nem usado para treinamento"
+        },
+        "limit": {
+          "label": "Limite",
+          "free": "Um limite diário compartilhado por todos",
+          "premium": "Sua própria cota mensal"
+        },
+        "price": {
+          "label": "Preço",
+          "free": "Grátis",
+          "premiumUnknown": "Assinatura mensal"
+        }
+      },
+      "cta": "Assine por {{price}} por mês",
+      "reassurance": "Renova todo mês. Cancele quando quiser na sua conta da loja."
     }
   }
 }

@@ -272,28 +272,46 @@
       "continue": "Continua"
     },
     "musclogApi": {
-      "title": "Musclog AI",
-      "freeBadge": "Gratis",
-      "subtitle": "Ricevi analisi IA su allenamento e alimentazione.",
-      "features": {
-        "coach": {
-          "title": "Assistente IA per l'allenamento",
-          "desc": "Ricevi suggerimenti sugli esercizi e consigli sulla tecnica"
+      "heading": "Aggiungere un coach IA?",
+      "intro": "Musclog funziona completamente senza IA. Con l'IA puoi chattare con un coach, registrare un pasto descrivendolo e ricevere un piano di allenamento scritto per te.",
+      "choicesLabel": "Opzioni IA",
+      "options": {
+        "premium": {
+          "title": "Musclog Premium",
+          "badge": "Il più privato",
+          "price": "{{price}} al mese",
+          "priceUnknown": "Abbonamento mensile",
+          "points": {
+            "private": "I fornitori di IA non conservano nulla di ciò che invii",
+            "allowance": "La tua quota mensile",
+            "noSetup": "Nessuna chiave o account da configurare"
+          }
         },
-        "insights": {
-          "title": "Analisi dei progressi",
-          "desc": "Analisi personalizzata del tuo allenamento"
+        "free": {
+          "title": "IA gratuita",
+          "price": "Gratis",
+          "points": {
+            "noSetup": "Nessuna chiave o account da configurare",
+            "limit": "Un limite giornaliero condiviso da tutti, che può esaurirsi presto",
+            "privacy": "Non privata: Google può conservare ed esaminare ciò che invii"
+          }
         },
-        "recommendations": {
-          "title": "Consigli intelligenti",
-          "desc": "Consigli su allenamento e alimentazione basati sull'IA"
+        "none": {
+          "title": "Nessuna IA per ora",
+          "points": {
+            "works": "Registrazione, piani e grafici funzionano allo stesso modo",
+            "later": "Attiva l'IA in qualsiasi momento nelle Impostazioni"
+          }
         }
       },
       "dataSharingTitle": "Informativa sulla condivisione dei dati",
       "dataSharingBody": "Quando usi una funzione AI, ciò di cui ha bisogno (ad esempio i tuoi allenamenti, pasti, misure corporee o messaggi della chat) viene inviato tramite OpenRouter al piano gratuito di Google AI Studio per scrivere la risposta. Google può conservare ciò che viene inviato, usarlo per migliorare i propri prodotti e farlo esaminare da persone (senza identificativi), quindi il piano gratuito non è privato: non inserire informazioni personali o sensibili. Il piano gratuito è riservato agli adulti (18+). Se non ti va bene, lascialo disattivato. Non viene inviato nulla finché non usi una funzione AI. C'è un limite giornaliero condiviso da tutti quelli che usano il piano gratuito, quindi può esaurirsi presto nella giornata, e il piano gratuito a volte può non essere disponibile.",
       "readPrivacyPolicy": "Leggi la nostra Informativa sulla privacy",
-      "enable": "Attiva Musclog AI",
-      "noThanks": "No grazie, continua senza IA"
+      "cta": {
+        "premium": "Continua con Premium",
+        "free": "Attiva l'IA gratuita",
+        "none": "Continua senza IA"
+      }
     },
     "setGoals": {
       "title": "Obiettivo intelligente",

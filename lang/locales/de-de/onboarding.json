@@ -272,28 +272,46 @@
       "continue": "Weiter"
     },
     "musclogApi": {
-      "title": "Musclog KI",
-      "freeBadge": "Kostenlos",
-      "subtitle": "Erhalte KI-Einblicke in dein Training und deine Ernährung.",
-      "features": {
-        "coach": {
-          "title": "KI-Trainingsassistent",
-          "desc": "Erhalte Übungsvorschläge und Tipps zur Technik"
+      "heading": "KI-Coach hinzufügen?",
+      "intro": "Musclog funktioniert vollständig ohne KI. Mit KI kannst du mit einem Coach chatten, eine Mahlzeit durch Beschreiben erfassen und dir einen Trainingsplan erstellen lassen.",
+      "choicesLabel": "KI-Optionen",
+      "options": {
+        "premium": {
+          "title": "Musclog Premium",
+          "badge": "Am privatesten",
+          "price": "{{price}} im Monat",
+          "priceUnknown": "Monatliches Abo",
+          "points": {
+            "private": "Die KI-Anbieter behalten nichts, was du sendest",
+            "allowance": "Dein eigenes Monatskontingent",
+            "noSetup": "Kein Schlüssel und kein Konto nötig"
+          }
         },
-        "insights": {
-          "title": "Fortschrittsanalysen",
-          "desc": "Persönliche Auswertung deines Trainings"
+        "free": {
+          "title": "Kostenlose KI",
+          "price": "Kostenlos",
+          "points": {
+            "noSetup": "Kein Schlüssel und kein Konto nötig",
+            "limit": "Ein Tageslimit für alle, das früh aufgebraucht sein kann",
+            "privacy": "Nicht privat: Google darf speichern und prüfen, was du sendest"
+          }
         },
-        "recommendations": {
-          "title": "Intelligente Empfehlungen",
-          "desc": "KI-gestützte Tipps zu Training und Ernährung"
+        "none": {
+          "title": "Vorerst keine KI",
+          "points": {
+            "works": "Erfassen, Pläne und Diagramme funktionieren gleich",
+            "later": "Du kannst KI jederzeit in den Einstellungen aktivieren"
+          }
         }
       },
       "dataSharingTitle": "Hinweis zur Datenweitergabe",
       "dataSharingBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu erstellen. Google darf das Gesendete speichern, zur Verbesserung seiner Produkte verwenden und von Menschen (ohne Kennungen) prüfen lassen, daher ist der kostenlose Tarif nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene ab 18 Jahren. Wenn dir das nicht passt, lass die Option aus. Es wird nichts gesendet, bis du eine KI-Funktion nutzt. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, sodass es früh am Tag aufgebraucht sein kann, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
       "readPrivacyPolicy": "Datenschutzerklärung lesen",
-      "enable": "Musclog KI aktivieren",
-      "noThanks": "Nein danke, ohne KI fortfahren"
+      "cta": {
+        "premium": "Mit Premium fortfahren",
+        "free": "Kostenlose KI aktivieren",
+        "none": "Ohne KI fortfahren"
+      }
     },
     "setGoals": {
       "title": "Intelligentes Ziel",

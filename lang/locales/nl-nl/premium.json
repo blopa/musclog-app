@@ -31,7 +31,7 @@
     "privacy": "Privacybeleid",
     "card": {
       "checking": "Premium wordt gecontroleerd…",
-      "notSubscribed": "AI die voor je draait, zonder sleutel om in te stellen",
+      "notSubscribed": "Gehoste AI die privé is, zonder sleutel om in te stellen",
       "active": "{{pct}}% gebruikt · gedeeld door al je apparaten",
       "exhausted": "Tegoed voor deze periode op",
       "removed": "Verwijderd uit dit abonnement",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium neemt op dit moment geen nieuwe abonnees aan.",
       "not_available": "Premium is nu niet beschikbaar in deze store.",
       "warning80": "Je hebt het grootste deel van het Premium-AI-tegoed van deze periode gebruikt."
+    },
+    "paywall": {
+      "headline": "Je AI-coach, klaar om te gebruiken",
+      "subhead": "Musclog Premium draait de AI voor je: geen sleutel, geen account, en de AI-aanbieders bewaren niets van wat je verstuurt. Al het andere in Musclog blijft gratis.",
+      "benefits": {
+        "noSetup": {
+          "title": "Niets om in te stellen",
+          "desc": "Geen API-sleutel en geen account. Abonneer je en de coach, het loggen van maaltijden en de trainingsschema's werken meteen."
+        },
+        "private": {
+          "title": "Privé by design",
+          "desc": "Er worden alleen aanbieders met zero data retention gebruikt: zij bewaren je berichten niet en gebruiken ze niet voor training. Musclog bewaart alleen gebruikstellingen."
+        },
+        "allowance": {
+          "title": "Je eigen tegoed",
+          "desc": "Een maandelijks tegoed voor je abonnement, niet de dagelijkse limiet die elke gratis gebruiker deelt."
+        },
+        "devices": {
+          "title": "Op al je apparaten",
+          "desc": "Voeg een andere telefoon of tablet toe met Aankopen herstellen. Ze delen één tegoed."
+        },
+        "openSource": {
+          "title": "Houdt Musclog draaiende",
+          "desc": "Musclog is open source. Premium betaalt de gehoste AI en steunt de ontwikkeling."
+        }
+      },
+      "compare": {
+        "title": "Gratis versie of Premium",
+        "free": "Gratis versie",
+        "premium": "Premium",
+        "privacy": {
+          "label": "Wat je verstuurt",
+          "free": "Google mag het bewaren, beoordelen en gebruiken voor training",
+          "premium": "Niet bewaard, niet gebruikt voor training"
+        },
+        "limit": {
+          "label": "Limiet",
+          "free": "Eén dagelijkse limiet voor iedereen",
+          "premium": "Je eigen maandelijkse tegoed"
+        },
+        "price": {
+          "label": "Prijs",
+          "free": "Gratis",
+          "premiumUnknown": "Maandabonnement"
+        }
+      },
+      "cta": "Abonneer je voor {{price}} per maand",
+      "reassurance": "Wordt maandelijks verlengd. Zeg op wanneer je wilt in je accountinstellingen van de winkel."
     }
   }
 }

@@ -11,6 +11,7 @@ const NOT_CONFIGURED = read('components/modals/AINotConfiguredModal.tsx');
 const SETTINGS = read('components/modals/AISettingsModal.tsx');
 const PROVIDER = read('app/app/onboarding/ai-provider.tsx');
 const CHAT = read('app/app/onboarding/ai-chat.tsx');
+const MUSCLOG_API = read('app/app/onboarding/musclog-api.tsx');
 
 describe('AINotConfiguredModal Premium row', () => {
   it('reads usePremium and gates the Premium button on enabled', () => {
@@ -80,5 +81,38 @@ describe('AI-setup chat recovery actions', () => {
       /case 'renewPremium':\s*case 'restorePremium':\s*setPremiumVisible\(true\);/
     );
     expect(CHAT).toContain('<PremiumModal visible={premiumVisible}');
+  });
+});
+
+describe('onboarding AI choice screen', () => {
+  it('feeds usePremium and isMusclogGatewayAvailable into availableAiChoices', () => {
+    expect(MUSCLOG_API).toContain("import { usePremium } from '@/hooks/usePremium'");
+    expect(MUSCLOG_API).toContain(
+      "import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability'"
+    );
+    expect(MUSCLOG_API).toMatch(
+      /availableAiChoices\(\{\s*premiumEnabled: premium\.enabled,\s*freeTierAvailable: isMusclogGatewayAvailable\(\),?\s*\}\)/
+    );
+  });
+
+  it('shows the data-sharing notice only while the free tier is selected', () => {
+    const start = MUSCLOG_API.indexOf("selected === 'free' ? (");
+    const notice = MUSCLOG_API.indexOf("t('onboarding.musclogApi.dataSharingBody')");
+    expect(start).toBeGreaterThan(-1);
+    expect(notice).toBeGreaterThan(start);
+    // Nothing else renders the notice.
+    expect(MUSCLOG_API.split('onboarding.musclogApi.dataSharingBody')).toHaveLength(2);
+  });
+
+  it('turns the free tier on only from the free choice', () => {
+    // The only write goes through finish(enableFreeTier) and the only finish(true) is the free case.
+    expect(MUSCLOG_API.match(/setUseMusclogFreeTier\(/g)).toHaveLength(1);
+    expect(MUSCLOG_API).toContain('setUseMusclogFreeTier(enableFreeTier)');
+    expect(MUSCLOG_API.match(/finish\(true\)/g)).toHaveLength(1);
+    expect(MUSCLOG_API).toMatch(/case 'free':\s*finish\(true\);/);
+  });
+
+  it('opens PremiumModal as a child', () => {
+    expect(MUSCLOG_API).toContain('<PremiumModal visible={premiumVisible}');
   });
 });

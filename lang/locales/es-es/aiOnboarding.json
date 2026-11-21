@@ -119,7 +119,7 @@
       "useExternal": "Usar ChatGPT o Claude en su lugar",
       "useSaved": "Usar la clave guardada",
       "premiumTitle": "Musclog Premium",
-      "premiumHint": "IA alojada con suscripción, sin clave"
+      "premiumHint": "IA alojada privada con suscripción, sin clave"
     },
     "recovery": {
       "actions": {

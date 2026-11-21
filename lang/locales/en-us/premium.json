@@ -31,7 +31,7 @@
     "privacy": "Privacy policy",
     "card": {
       "checking": "Checking Premium…",
-      "notSubscribed": "Hosted AI with no key to set up",
+      "notSubscribed": "Private hosted AI, no key to set up",
       "active": "{{pct}}% used · shared by all your devices",
       "exhausted": "Allowance used up for this period",
       "removed": "Removed from this subscription",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium is not taking new subscribers right now.",
       "not_available": "Premium isn't available in this store right now.",
       "warning80": "You have used most of this period's Premium AI allowance."
+    },
+    "paywall": {
+      "headline": "Your AI coach, ready to go",
+      "subhead": "Musclog Premium runs the AI for you: no key, no account, and the AI providers keep nothing you send. Everything else in Musclog stays free.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nothing to set up",
+          "desc": "No API key and no account. Subscribe, and the coach, meal logging and workout plans work right away."
+        },
+        "private": {
+          "title": "Private by design",
+          "desc": "Only zero data retention providers are used: they don't keep your messages or train on them. Musclog keeps only usage counts."
+        },
+        "allowance": {
+          "title": "Your own allowance",
+          "desc": "A monthly allowance for your subscription, not the daily limit every free user shares."
+        },
+        "devices": {
+          "title": "On all your devices",
+          "desc": "Add another phone or tablet with Restore purchases. They share one allowance."
+        },
+        "openSource": {
+          "title": "Keeps Musclog going",
+          "desc": "Musclog is open source. Premium pays for the hosted AI and supports its development."
+        }
+      },
+      "compare": {
+        "title": "Free tier or Premium",
+        "free": "Free tier",
+        "premium": "Premium",
+        "privacy": {
+          "label": "What you send",
+          "free": "Google may keep, review and train on it",
+          "premium": "Not kept, not used for training"
+        },
+        "limit": {
+          "label": "Limit",
+          "free": "One daily limit shared by everyone",
+          "premium": "Your own monthly allowance"
+        },
+        "price": {
+          "label": "Price",
+          "free": "Free",
+          "premiumUnknown": "Monthly subscription"
+        }
+      },
+      "cta": "Subscribe for {{price}} a month",
+      "reassurance": "Renews monthly. Cancel any time in your store account."
     }
   }
 }

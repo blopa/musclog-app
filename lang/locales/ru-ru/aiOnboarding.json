@@ -119,7 +119,7 @@
       "useExternal": "Использовать ChatGPT или Claude",
       "useSaved": "Использовать сохранённый ключ",
       "premiumTitle": "Musclog Premium",
-      "premiumHint": "ИИ в облаке по подписке, ключ не нужен"
+      "premiumHint": "Приватный ИИ в облаке по подписке, ключ не нужен"
     },
     "recovery": {
       "actions": {

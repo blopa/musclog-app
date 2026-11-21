@@ -235,28 +235,46 @@
       "birthdayEstimated": "Geschat op basis van je leeftijd. Kies je geboortedatum als je die weet."
     },
     "musclogApi": {
-      "title": "Musclog AI",
-      "freeBadge": "Gratis",
-      "subtitle": "Krijg AI-inzichten over je training en voeding.",
-      "features": {
-        "coach": {
-          "title": "AI Trainingsassistent",
-          "desc": "Ontvang oefensuggesties en tips voor juiste uitvoering"
+      "heading": "Een AI-coach toevoegen?",
+      "intro": "Musclog werkt volledig zonder AI. Met AI kun je chatten met een coach, een maaltijd loggen door hem te beschrijven en een trainingsplan laten schrijven voor jou.",
+      "choicesLabel": "AI-opties",
+      "options": {
+        "premium": {
+          "title": "Musclog Premium",
+          "badge": "Het meest privé",
+          "price": "{{price}} per maand",
+          "priceUnknown": "Maandabonnement",
+          "points": {
+            "private": "De AI-aanbieders bewaren niets van wat je verstuurt",
+            "allowance": "Je eigen maandelijkse tegoed",
+            "noSetup": "Geen sleutel of account om in te stellen"
+          }
         },
-        "insights": {
-          "title": "Voortgangsinzichten",
-          "desc": "Persoonlijke analyse van je training"
+        "free": {
+          "title": "Gratis AI",
+          "price": "Gratis",
+          "points": {
+            "noSetup": "Geen sleutel of account om in te stellen",
+            "limit": "Een dagelijkse limiet die iedereen deelt, die vroeg op de dag op kan zijn",
+            "privacy": "Niet privé: Google mag bewaren en beoordelen wat je verstuurt"
+          }
         },
-        "recommendations": {
-          "title": "Slimme Aanbevelingen",
-          "desc": "AI-gestuurde trainings- en voedingsadviezen"
+        "none": {
+          "title": "Voorlopig geen AI",
+          "points": {
+            "works": "Loggen, plannen en grafieken werken hetzelfde",
+            "later": "Zet AI op elk moment aan in Instellingen"
+          }
         }
       },
       "dataSharingTitle": "Melding over Gegevensdeling",
       "dataSharingBody": "Wanneer je een AI-functie gebruikt, wordt wat ze nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmaten of chatberichten) via OpenRouter naar het gratis niveau van Google AI Studio gestuurd om het antwoord te schrijven. Google mag wat er wordt verstuurd bewaren, gebruiken om zijn producten te verbeteren en door mensen (zonder identificatiegegevens) laten beoordelen, dus het gratis niveau is niet privé: voer geen persoonlijke of gevoelige informatie in. Het gratis niveau is alleen voor volwassenen (18+). Als dat niet oké voor je is, laat het uit. Er wordt niets verstuurd totdat je een AI-functie gebruikt. Er is een dagelijkse limiet die iedereen die het gratis niveau gebruikt deelt, dus die kan vroeg op de dag al op zijn, en het gratis niveau kan soms niet beschikbaar zijn.",
       "readPrivacyPolicy": "Lees ons Privacybeleid",
-      "enable": "Musclog AI inschakelen",
-      "noThanks": "Nee bedankt, doorgaan zonder AI"
+      "cta": {
+        "premium": "Doorgaan met Premium",
+        "free": "Gratis AI aanzetten",
+        "none": "Doorgaan zonder AI"
+      }
     },
     "setGoals": {
       "title": "Smart Goal",

@@ -31,7 +31,7 @@
     "privacy": "Política de privacidad",
     "card": {
       "checking": "Comprobando Premium…",
-      "notSubscribed": "IA alojada sin clave que configurar",
+      "notSubscribed": "IA alojada privada, sin clave que configurar",
       "active": "{{pct}} % usado · compartido por todos tus dispositivos",
       "exhausted": "Cuota agotada para este periodo",
       "removed": "Eliminado de esta suscripción",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium no admite nuevos suscriptores en este momento.",
       "not_available": "Premium no está disponible en esta tienda por ahora.",
       "warning80": "Has usado la mayor parte de la cuota de IA Premium de este periodo."
+    },
+    "paywall": {
+      "headline": "Tu entrenador de IA, listo para usar",
+      "subhead": "Musclog Premium ejecuta la IA por ti: sin clave, sin cuenta, y los proveedores de IA no guardan nada de lo que envías. Todo lo demás en Musclog sigue siendo gratis.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nada que configurar",
+          "desc": "Sin clave de API ni cuenta. Suscríbete y el entrenador, el registro de comidas y los planes de entrenamiento funcionan al momento."
+        },
+        "private": {
+          "title": "Privado por diseño",
+          "desc": "Solo se usan proveedores con retención cero de datos: no guardan tus mensajes ni los usan para entrenar. Musclog solo guarda recuentos de uso."
+        },
+        "allowance": {
+          "title": "Tu propia cuota",
+          "desc": "Una cuota mensual para tu suscripción, no el límite diario que comparten todos los usuarios gratuitos."
+        },
+        "devices": {
+          "title": "En todos tus dispositivos",
+          "desc": "Añade otro teléfono o tablet con Restaurar compras. Comparten una sola cuota."
+        },
+        "openSource": {
+          "title": "Mantiene vivo Musclog",
+          "desc": "Musclog es de código abierto. Premium paga la IA alojada y apoya su desarrollo."
+        }
+      },
+      "compare": {
+        "title": "Nivel gratuito o Premium",
+        "free": "Nivel gratuito",
+        "premium": "Premium",
+        "privacy": {
+          "label": "Lo que envías",
+          "free": "Google puede conservarlo, revisarlo y usarlo para entrenar",
+          "premium": "No se conserva ni se usa para entrenar"
+        },
+        "limit": {
+          "label": "Límite",
+          "free": "Un límite diario compartido por todos",
+          "premium": "Tu propia cuota mensual"
+        },
+        "price": {
+          "label": "Precio",
+          "free": "Gratis",
+          "premiumUnknown": "Suscripción mensual"
+        }
+      },
+      "cta": "Suscríbete por {{price}} al mes",
+      "reassurance": "Se renueva cada mes. Cancela cuando quieras desde tu cuenta de la tienda."
     }
   }
 }

@@ -31,7 +31,7 @@
     "privacy": "Datenschutzerklärung",
     "card": {
       "checking": "Premium wird geprüft…",
-      "notSubscribed": "KI ohne Schlüssel einrichten",
+      "notSubscribed": "Private gehostete KI im Abo, kein Schlüssel nötig",
       "active": "{{pct}} % verbraucht · von allen deinen Geräten gemeinsam genutzt",
       "exhausted": "Kontingent für diesen Zeitraum aufgebraucht",
       "removed": "Von diesem Abo entfernt",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium nimmt derzeit keine neuen Abonnenten auf.",
       "not_available": "Premium ist derzeit in diesem Store nicht verfügbar.",
       "warning80": "Du hast den größten Teil des Premium-KI-Kontingents für diesen Zeitraum verbraucht."
+    },
+    "paywall": {
+      "headline": "Dein KI-Coach, sofort einsatzbereit",
+      "subhead": "Musclog Premium betreibt die KI für dich: kein Schlüssel, kein Konto, und die KI-Anbieter behalten nichts, was du senden. Alles andere in Musclog bleibt kostenlos.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nichts einzurichten",
+          "desc": "Kein API-Schlüssel und kein Konto. Abonniere, und Coach, Mahlzeitenerfassung und Trainingspläne funktionieren sofort."
+        },
+        "private": {
+          "title": "Von Grund auf privat",
+          "desc": "Es werden nur Anbieter mit Zero Data Retention genutzt: Sie speichern deine Nachrichten nicht und trainieren nicht damit. Musclog speichert nur Nutzungszahlen."
+        },
+        "allowance": {
+          "title": "Dein eigenes Kontingent",
+          "desc": "Ein monatliches Kontingent für dein Abo, nicht das tägliche Limit, das sich alle kostenlosen Nutzer teilen."
+        },
+        "devices": {
+          "title": "Auf all deinen Geräten",
+          "desc": "Füge mit „Käufe wiederherstellen“ ein weiteres Telefon oder Tablet hinzu. Alle teilen sich ein Kontingent."
+        },
+        "openSource": {
+          "title": "Hält Musclog am Laufen",
+          "desc": "Musclog ist Open Source. Premium finanziert die gehostete KI und unterstützt die Entwicklung."
+        }
+      },
+      "compare": {
+        "title": "Kostenlose Stufe oder Premium",
+        "free": "Kostenlose Stufe",
+        "premium": "Premium",
+        "privacy": {
+          "label": "Was du sendest",
+          "free": "Google darf es speichern, prüfen und zum Training verwenden",
+          "premium": "Wird nicht gespeichert und nicht zum Training verwendet"
+        },
+        "limit": {
+          "label": "Limit",
+          "free": "Ein Tageslimit für alle",
+          "premium": "Dein eigenes Monatskontingent"
+        },
+        "price": {
+          "label": "Preis",
+          "free": "Kostenlos",
+          "premiumUnknown": "Monatliches Abo"
+        }
+      },
+      "cta": "Für {{price}} im Monat abonnieren",
+      "reassurance": "Verlängert sich monatlich. Kündige jederzeit in deinem Store-Konto."
     }
   }
 }

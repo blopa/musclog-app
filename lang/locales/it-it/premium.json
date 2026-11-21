@@ -31,7 +31,7 @@
     "privacy": "Informativa sulla privacy",
     "card": {
       "checking": "Verifica di Premium…",
-      "notSubscribed": "IA ospitata, senza chiave da configurare",
+      "notSubscribed": "IA ospitata e privata con abbonamento, senza chiave",
       "active": "{{pct}} % usato · condiviso da tutti i tuoi dispositivi",
       "exhausted": "Quota esaurita per questo periodo",
       "removed": "Rimosso da questo abbonamento",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium non accetta nuovi abbonati in questo momento.",
       "not_available": "Premium non è disponibile su questo store in questo momento.",
       "warning80": "Hai usato gran parte della quota di IA Premium di questo periodo."
+    },
+    "paywall": {
+      "headline": "Il tuo coach IA, pronto all'uso",
+      "subhead": "Musclog Premium gestisce l'IA per te: nessuna chiave, nessun account, e i fornitori di IA non conservano nulla di ciò che invii. Tutto il resto di Musclog resta gratuito.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nulla da configurare",
+          "desc": "Nessuna chiave API e nessun account. Abbonati e il coach, la registrazione dei pasti e i piani di allenamento funzionano subito."
+        },
+        "private": {
+          "title": "Privato per progettazione",
+          "desc": "Vengono usati solo fornitori con zero conservazione dei dati: non conservano i tuoi messaggi e non li usano per l'addestramento. Musclog conserva solo conteggi di utilizzo."
+        },
+        "allowance": {
+          "title": "La tua quota",
+          "desc": "Una quota mensile per il tuo abbonamento, non il limite giornaliero che condividono tutti gli utenti gratuiti."
+        },
+        "devices": {
+          "title": "Su tutti i tuoi dispositivi",
+          "desc": "Aggiungi un altro telefono o tablet con Ripristina acquisti. Condividono una sola quota."
+        },
+        "openSource": {
+          "title": "Fa crescere Musclog",
+          "desc": "Musclog è open source. Premium finanzia l'IA ospitata e sostiene lo sviluppo."
+        }
+      },
+      "compare": {
+        "title": "Piano gratuito o Premium",
+        "free": "Piano gratuito",
+        "premium": "Premium",
+        "privacy": {
+          "label": "Cosa invii",
+          "free": "Google può conservarlo, esaminarlo e usarlo per l'addestramento",
+          "premium": "Non conservato, non usato per l'addestramento"
+        },
+        "limit": {
+          "label": "Limite",
+          "free": "Un limite giornaliero condiviso da tutti",
+          "premium": "La tua quota mensile"
+        },
+        "price": {
+          "label": "Prezzo",
+          "free": "Gratis",
+          "premiumUnknown": "Abbonamento mensile"
+        }
+      },
+      "cta": "Abbonati a {{price}} al mese",
+      "reassurance": "Si rinnova ogni mese. Annulla in qualsiasi momento dal tuo account dello store."
     }
   }
 }

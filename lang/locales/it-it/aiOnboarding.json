@@ -119,7 +119,7 @@
       "useExternal": "Usa invece ChatGPT o Claude",
       "useSaved": "Usa la chiave salvata",
       "premiumTitle": "Musclog Premium",
-      "premiumHint": "IA ospitata con abbonamento, senza chiave"
+      "premiumHint": "IA ospitata e privata con abbonamento, senza chiave da configurare"
     },
     "recovery": {
       "actions": {

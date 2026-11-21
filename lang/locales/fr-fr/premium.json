@@ -31,7 +31,7 @@
     "privacy": "Politique de confidentialité",
     "card": {
       "checking": "Vérification de Premium…",
-      "notSubscribed": "IA hébergée, sans clé à configurer",
+      "notSubscribed": "IA hébergée et privée, sur abonnement, sans clé",
       "active": "{{pct}} % utilisé · partagé par tous vos appareils",
       "exhausted": "Quota épuisé pour cette période",
       "removed": "Retiré de cet abonnement",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium n'accepte pas de nouveaux abonnés pour le moment.",
       "not_available": "Premium n'est pas disponible sur cette boutique pour le moment.",
       "warning80": "Vous avez utilisé la plus grande partie du quota d'IA Premium de cette période."
+    },
+    "paywall": {
+      "headline": "Ton coach IA, prêt à l'emploi",
+      "subhead": "Musclog Premium fait tourner l'IA pour toi : pas de clé, pas de compte, et les fournisseurs d'IA ne conservent rien de ce que tu envoies. Tout le reste de Musclog reste gratuit.",
+      "benefits": {
+        "noSetup": {
+          "title": "Rien à configurer",
+          "desc": "Pas de clé API ni de compte. Abonne-toi, et le coach, la saisie des repas et les programmes fonctionnent tout de suite."
+        },
+        "private": {
+          "title": "Privé par conception",
+          "desc": "Seuls des fournisseurs à rétention de données nulle sont utilisés : ils ne gardent pas tes messages et ne s'en servent pas pour l'entraînement. Musclog ne conserve que des compteurs d'utilisation."
+        },
+        "allowance": {
+          "title": "Ton propre quota",
+          "desc": "Un quota mensuel lié à ton abonnement, et non la limite quotidienne que partagent tous les utilisateurs gratuits."
+        },
+        "devices": {
+          "title": "Sur tous tes appareils",
+          "desc": "Ajoute un autre téléphone ou une tablette avec Restaurer les achats. Ils partagent un seul quota."
+        },
+        "openSource": {
+          "title": "Fait vivre Musclog",
+          "desc": "Musclog est open source. Premium finance l'IA hébergée et soutient son développement."
+        }
+      },
+      "compare": {
+        "title": "Offre gratuite ou Premium",
+        "free": "Offre gratuite",
+        "premium": "Premium",
+        "privacy": {
+          "label": "Ce que tu envoies",
+          "free": "Google peut le conserver, le relire et l'utiliser pour l'entraînement",
+          "premium": "Non conservé, non utilisé pour l'entraînement"
+        },
+        "limit": {
+          "label": "Limite",
+          "free": "Une limite quotidienne partagée par tous",
+          "premium": "Ton propre quota mensuel"
+        },
+        "price": {
+          "label": "Prix",
+          "free": "Gratuit",
+          "premiumUnknown": "Abonnement mensuel"
+        }
+      },
+      "cta": "S'abonner pour {{price}} par mois",
+      "reassurance": "Renouvellement mensuel. Résilie à tout moment depuis ton compte sur la boutique."
     }
   }
 }

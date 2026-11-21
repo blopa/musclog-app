@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { Linking } from 'react-native';
 
 import { PREMIUM_NOTICE_KEYS, PremiumModal } from '@/components/modals/PremiumModal';
+import { PREMIUM_BENEFITS } from '@/components/premium/PremiumPaywall';
 import { usePremium } from '@/hooks/usePremium';
 import { PREMIUM_PRIVACY_URL, PREMIUM_TERMS_URL } from '@/utils/premium/premiumLinks';
 import {
@@ -33,11 +34,12 @@ jest.mock('react-i18next', () => ({
 }));
 // The real modal chrome is out of scope here: render its children only while visible.
 jest.mock('@/components/modals/FullScreenModal', () => ({
-  FullScreenModal: ({ visible, children, title }: any) =>
+  FullScreenModal: ({ visible, children, title, footer }: any) =>
     visible ? (
       <div>
         <h1>{title}</h1>
         {children}
+        {footer}
       </div>
     ) : null,
 }));
@@ -303,6 +305,80 @@ describe('PremiumModal', () => {
 
       fireEvent.click(screen.getByText('premium.privacy'));
       expect(openURL).toHaveBeenLastCalledWith(PREMIUM_PRIVACY_URL);
+    });
+  });
+
+  describe('paywall', () => {
+    it('shows the headline, every benefit and the comparison when not subscribed', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })))
+      );
+
+      renderModal();
+
+      expect(screen.getByText('premium.paywall.headline')).toBeTruthy();
+      for (const { titleKey } of PREMIUM_BENEFITS) {
+        expect(screen.getByText(titleKey)).toBeTruthy();
+      }
+      expect(screen.getByText('premium.paywall.compare.title')).toBeTruthy();
+    });
+
+    it('labels the CTA with the price when the store gave one', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })), { priceString: '$4.99' })
+      );
+
+      renderModal();
+
+      expect(
+        screen.getByText('premium.paywall.cta:' + JSON.stringify({ price: '$4.99' }))
+      ).toBeTruthy();
+      expect(screen.queryByText('premium.subscribe')).toBeNull();
+    });
+
+    it('falls back to the plain Subscribe label with no price', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })), { priceString: null })
+      );
+
+      renderModal();
+
+      expect(screen.getByText('premium.subscribe')).toBeTruthy();
+    });
+
+    it('shows the reassurance only when it can subscribe', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })))
+      );
+      const { unmount } = renderModal();
+      expect(screen.getByText('premium.paywall.reassurance')).toBeTruthy();
+      unmount();
+
+      mockUsePremium.mockReturnValue(premiumWith(buildPremiumViewModel(input({ config: null }))));
+      renderModal();
+      expect(screen.queryByText('premium.paywall.reassurance')).toBeNull();
+    });
+
+    it('shows Restore alongside Subscribe', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ config: CONFIG_ON })))
+      );
+
+      renderModal();
+
+      expect(screen.getByText('premium.subscribe')).toBeTruthy();
+      expect(screen.getByText('premium.restore')).toBeTruthy();
+    });
+
+    it('shows the benefit text and no paywall headline when active', () => {
+      mockUsePremium.mockReturnValue(
+        premiumWith(buildPremiumViewModel(input({ status: 'active' as never })))
+      );
+
+      renderModal();
+
+      expect(screen.getByText('premium.benefit')).toBeTruthy();
+      expect(screen.queryByText('premium.paywall.headline')).toBeNull();
     });
   });
 

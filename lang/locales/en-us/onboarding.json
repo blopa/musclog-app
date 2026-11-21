@@ -272,28 +272,46 @@
       "continue": "Continue"
     },
     "musclogApi": {
-      "title": "Musclog AI",
-      "freeBadge": "Free",
-      "subtitle": "Get AI insights on your training and nutrition.",
-      "features": {
-        "coach": {
-          "title": "AI workout assistant",
-          "desc": "Get exercise suggestions and form tips"
+      "heading": "Add an AI coach?",
+      "intro": "Musclog works fully without AI. With it, you can chat with a coach, log a meal by describing it and get a workout plan written for you.",
+      "choicesLabel": "AI options",
+      "options": {
+        "premium": {
+          "title": "Musclog Premium",
+          "badge": "Most private",
+          "price": "{{price}} a month",
+          "priceUnknown": "Monthly subscription",
+          "points": {
+            "private": "The AI providers keep nothing you send",
+            "allowance": "Your own monthly allowance",
+            "noSetup": "No key or account to set up"
+          }
         },
-        "insights": {
-          "title": "Progress insights",
-          "desc": "Personalized analysis of your training"
+        "free": {
+          "title": "Free AI",
+          "price": "Free",
+          "points": {
+            "noSetup": "No key or account to set up",
+            "limit": "A daily limit shared by everyone, which can run out early",
+            "privacy": "Not private: Google may keep and review what you send"
+          }
         },
-        "recommendations": {
-          "title": "Smart recommendations",
-          "desc": "AI-powered workout and nutrition advice"
+        "none": {
+          "title": "No AI for now",
+          "points": {
+            "works": "Logging, plans and charts all work the same",
+            "later": "Turn AI on any time in Settings"
+          }
         }
       },
       "dataSharingTitle": "Data sharing notice",
       "dataSharingBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults (18+). If that is not OK for you, leave it off. Nothing is sent until you use an AI feature. There is a daily limit shared by everyone who uses the free tier, so it can run out early in the day, and the free tier may sometimes be unavailable.",
       "readPrivacyPolicy": "Read our Privacy Policy",
-      "enable": "Enable Musclog AI",
-      "noThanks": "No thanks, continue without AI"
+      "cta": {
+        "premium": "Continue with Premium",
+        "free": "Turn on free AI",
+        "none": "Continue without AI"
+      }
     },
     "setGoals": {
       "title": "Smart goal",

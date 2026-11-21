@@ -119,7 +119,7 @@
       "useExternal": "Use ChatGPT or Claude instead",
       "useSaved": "Use the saved key",
       "premiumTitle": "Musclog Premium",
-      "premiumHint": "Hosted AI on a subscription, no key needed"
+      "premiumHint": "Private hosted AI on a subscription, no key needed"
     },
     "recovery": {
       "actions": {

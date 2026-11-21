@@ -31,7 +31,7 @@
     "privacy": "Gizlilik politikası",
     "card": {
       "checking": "Premium kontrol ediliyor…",
-      "notSubscribed": "Kurulacak anahtar gerektirmeden barındırılan YZ",
+      "notSubscribed": "Abonelikle gelen gizli barındırılan YZ, anahtar gerekmez",
       "active": "%{{pct}} kullanıldı · tüm cihazlarınızla paylaşılıyor",
       "exhausted": "Bu dönem için kota kullanıldı",
       "removed": "Bu aboneliden kaldırıldı",
@@ -52,6 +52,54 @@
       "not_accepting": "Premium şu anda yeni abone kabul etmiyor.",
       "not_available": "Premium şu anda bu mağazada kullanılamıyor.",
       "warning80": "Bu dönemin Premium YZ kotasının büyük bölümünü kullandınız."
+    },
+    "paywall": {
+      "headline": "Yapay zekâ koçun, hazır",
+      "subhead": "Musclog Premium yapay zekâyı senin yerine çalıştırır: anahtar yok, hesap yok ve yapay zekâ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz. Musclog'un geri kalanı ücretsiz kalır.",
+      "benefits": {
+        "noSetup": {
+          "title": "Kurulacak bir şey yok",
+          "desc": "API anahtarı ve hesap gerekmez. Abone ol; koç, öğün kaydı ve antrenman planları hemen çalışır."
+        },
+        "private": {
+          "title": "Tasarımı gereği gizli",
+          "desc": "Yalnızca sıfır veri saklama yapan sağlayıcılar kullanılır: mesajlarını saklamazlar ve model eğitiminde kullanmazlar. Musclog yalnızca kullanım sayılarını tutar."
+        },
+        "allowance": {
+          "title": "Kendi kotan",
+          "desc": "Aboneliğine özel aylık bir kota; herkesin paylaştığı günlük sınır değil."
+        },
+        "devices": {
+          "title": "Tüm cihazlarında",
+          "desc": "Satın alımları geri yükle seçeneğiyle başka bir telefon ya da tablet ekle. Hepsi tek bir kotayı paylaşır."
+        },
+        "openSource": {
+          "title": "Musclog'un devamını sağlar",
+          "desc": "Musclog açık kaynaklıdır. Premium barındırılan yapay zekâyı finanse eder ve geliştirmesini destekler."
+        }
+      },
+      "compare": {
+        "title": "Ücretsiz katman mı, Premium mu",
+        "free": "Ücretsiz katman",
+        "premium": "Premium",
+        "privacy": {
+          "label": "Gönderdiğin veriler",
+          "free": "Google saklayabilir, inceleyebilir ve eğitimde kullanabilir",
+          "premium": "Saklanmaz, eğitimde kullanılmaz"
+        },
+        "limit": {
+          "label": "Sınır",
+          "free": "Herkesin paylaştığı tek bir günlük sınır",
+          "premium": "Kendi aylık kotan"
+        },
+        "price": {
+          "label": "Fiyat",
+          "free": "Ücretsiz",
+          "premiumUnknown": "Aylık abonelik"
+        }
+      },
+      "cta": "Ayda {{price}} karşılığında abone ol",
+      "reassurance": "Her ay yenilenir. Mağaza hesabınızdan istediğiniz zaman iptal edin."
     }
   }
 }
