@@ -3,6 +3,17 @@
     "title": "Musclog Premium",
     "benefit": "AI w chmurze bez klucza do konfigurowania. Musclog Premium uruchamia AI za Ciebie w ramach miesięcznego limitu.",
     "loading": "Sprawdzanie statusu Premium…",
+    "progress": {
+      "store": "Oczekiwanie na sklep…",
+      "confirming": "Potwierdzanie subskrypcji…",
+      "slow": "Wciąż potwierdzamy, może to potrwać kilka sekund",
+      "reset": "Resetowanie Premium na tym urządzeniu…",
+      "toggle": "Aktualizowanie ustawienia AI…"
+    },
+    "wait": {
+      "working": "Premium AI wciąż pracuje…",
+      "busy": "Premium AI jest zajęte, ponawiam próbę…"
+    },
     "price": "{{price}} miesięcznie",
     "subscribe": "Subskrybuj",
     "restore": "Przywróć zakupy",

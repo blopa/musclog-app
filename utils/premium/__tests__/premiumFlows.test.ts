@@ -310,6 +310,16 @@ describe('enrollWithRetry', () => {
     expect(ENROLL_RETRY_DELAYS_MS).toEqual([2000, 4000, 8000]);
   });
 
+  it('reports `confirming` before every attempt, and works without a listener', async () => {
+    const sleep = jest.fn(async () => undefined);
+    const onProgress = jest.fn();
+    const { fetch } = makeFetch(lagThenSucceed(2));
+
+    await enrollWithRetry({ ...deps(fetch, realSigner()), sleep, onProgress });
+
+    expect(onProgress.mock.calls).toEqual([['confirming'], ['confirming'], ['confirming']]);
+  });
+
   it('stops retrying as soon as an attempt succeeds', async () => {
     const sleep = jest.fn(async () => undefined);
     const { fetch, calls } = makeFetch(lagThenSucceed(1));

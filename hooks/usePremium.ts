@@ -22,6 +22,17 @@ import {
 } from '@/services/premium/premiumActions';
 import { purchaseAndEnroll, restoreAndEnroll } from '@/services/premium/premiumService';
 import { getHostedSignal, subscribeHostedSignal } from '@/utils/premium/hostedSignal';
+import {
+  beginPremiumActivity,
+  endPremiumActivity,
+  getPremiumActivity,
+  type PremiumActivity,
+  type PremiumActivityKind,
+  type PremiumProgress,
+  reportPremiumProgress,
+  subscribePremiumActivity,
+  takeUnseenPremiumFailure,
+} from '@/utils/premium/premiumActivity';
 import { needsPremiumConsent, PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
@@ -32,6 +43,8 @@ export type UsePremium = {
   view: PremiumViewModel;
   priceString: string | null;
   busy: boolean;
+  /** What is running (and its stage), from a store that outlives the screen; null when idle. */
+  activity: PremiumActivity | null;
   useHostedAi: boolean;
   subscribe(): Promise<boolean>;
   restore(): Promise<boolean>;
@@ -69,7 +82,12 @@ export function usePremium(): UsePremium {
   const enabled = isPremiumUiEnabled();
   const [overview, setOverview] = useState<PremiumOverview | null>(null);
   const [lastActionFailure, setLastActionFailure] = useState<PremiumActionFailure | null>(null);
-  const [busy, setBusy] = useState(false);
+  const activity = useSyncExternalStore(
+    subscribePremiumActivity,
+    getPremiumActivity,
+    getPremiumActivity
+  );
+  const busy = activity !== null;
   const { useHostedAi, premiumConsentVersion: consentVersion } = useSettings();
   const mounted = useRef(true);
   const signal = useSyncExternalStore(subscribeHostedSignal, getHostedSignal, getHostedSignal);
@@ -79,6 +97,24 @@ export function usePremium(): UsePremium {
 
     return () => {
       mounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    // An action that failed while no screen was mounted: show its result now (after the effect,
+    // so no state is set synchronously inside it).
+    let cancelled = false;
+
+    Promise.resolve().then(() => {
+      const failure = cancelled ? null : takeUnseenPremiumFailure();
+
+      if (failure) {
+        setLastActionFailure(failure);
+      }
+    });
+
+    return () => {
+      cancelled = true;
     };
   }, []);
 
@@ -117,52 +153,73 @@ export function usePremium(): UsePremium {
     };
   }, [enabled, applyOverview]);
 
+  // One action at a time, tracked in a store that outlives this hook: closing the screen neither
+  // stops the service call nor loses its result (a finished purchase still asks for consent later).
   const runAction = useCallback(
-    async (action: () => Promise<{ ok: true } | { ok: false; failure: PremiumActionFailure }>) => {
-      setBusy(true);
+    async (
+      kind: PremiumActivityKind,
+      action: (
+        onProgress: (stage: PremiumProgress) => void
+      ) => Promise<{ ok: true } | { ok: false; failure: PremiumActionFailure }>
+    ) => {
+      if (!beginPremiumActivity(kind)) {
+        return false;
+      }
+
+      let outcome: Parameters<typeof endPremiumActivity>[1] = { ok: false, failure: null };
 
       try {
-        const result = await action();
-
-        if (!mounted.current) {
-          return false;
-        }
+        const result = await action(reportPremiumProgress);
 
         if (result.ok) {
-          setLastActionFailure(null);
-          await refresh();
+          outcome = { ok: true };
+
+          // Flipping the AI switch changes nothing the Worker reports: no reload, notice stays.
+          if (mounted.current && kind !== 'toggle') {
+            setLastActionFailure(null);
+            await refresh();
+          }
 
           return true;
         }
 
-        setLastActionFailure(result.failure);
+        outcome = { ok: false, failure: result.failure };
+
+        if (mounted.current) {
+          setLastActionFailure(result.failure);
+          takeUnseenPremiumFailure();
+        }
 
         return false;
       } finally {
-        if (mounted.current) {
-          setBusy(false);
-        }
+        endPremiumActivity(kind, outcome);
       }
     },
     [refresh]
   );
 
   const liveActions = useMemo<PremiumActions>(() => {
-    const subscribe = () => runAction(purchaseAndEnroll);
-    const restore = () => runAction(restoreAndEnroll);
+    const subscribe = () => runAction('subscribe', (onProgress) => purchaseAndEnroll(onProgress));
+    const restore = () => runAction('restore', (onProgress) => restoreAndEnroll(onProgress));
 
     const setUseHostedAi = async (on: boolean) => {
-      await SettingsService.set(SETTINGS.useHostedAi, on);
+      await runAction('toggle', async () => {
+        await SettingsService.set(SETTINGS.useHostedAi, on);
+
+        return { ok: true };
+      });
     };
 
     const reset = async () => {
-      await resetPremiumOnThisDevice();
+      await runAction('reset', async () => {
+        await resetPremiumOnThisDevice();
 
-      if (mounted.current) {
-        setLastActionFailure(null);
-      }
+        if (mounted.current) {
+          setLastActionFailure(null);
+        }
 
-      await refresh();
+        return { ok: true };
+      });
     };
 
     const recordConsent = async () => {
@@ -199,6 +256,7 @@ export function usePremium(): UsePremium {
       view,
       priceString: enabled ? (overview?.priceString ?? null) : null,
       busy,
+      activity,
       useHostedAi,
       ...actions,
       consentNeeded,

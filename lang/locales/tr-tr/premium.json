@@ -3,6 +3,17 @@
     "title": "Musclog Premium",
     "benefit": "Kurulacak anahtar gerektirmeden barındırılan YZ. Musclog Premium, aylık bir kota ile YZ’yi sizin için çalıştırır.",
     "loading": "Premium durumunuz kontrol ediliyor…",
+    "progress": {
+      "store": "Mağaza bekleniyor…",
+      "confirming": "Aboneliğiniz doğrulanıyor…",
+      "slow": "Hâlâ doğrulanıyor, birkaç saniye sürebilir",
+      "reset": "Bu cihazda Premium sıfırlanıyor…",
+      "toggle": "Yapay zeka ayarınız güncelleniyor…"
+    },
+    "wait": {
+      "working": "Premium yapay zeka hâlâ çalışıyor…",
+      "busy": "Premium yapay zeka meşgul, yeniden deneniyor…"
+    },
     "price": "Ayda {{price}}",
     "subscribe": "Abone ol",
     "restore": "Satın alımları geri yükle",

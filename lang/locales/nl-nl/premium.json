@@ -3,6 +3,17 @@
     "title": "Musclog Premium",
     "benefit": "AI die voor je draait, zonder sleutel om in te stellen. Musclog Premium voert de AI voor je uit met een maandelijks tegoed.",
     "loading": "Je Premium-status wordt gecontroleerd…",
+    "progress": {
+      "store": "Wachten op de store…",
+      "confirming": "Je abonnement wordt bevestigd…",
+      "slow": "Nog steeds bevestigen, dit kan enkele seconden duren",
+      "reset": "Premium wordt op dit apparaat gereset…",
+      "toggle": "Je AI-instelling wordt bijgewerkt…"
+    },
+    "wait": {
+      "working": "Premium-AI is nog bezig…",
+      "busy": "Premium-AI is bezet, opnieuw proberen…"
+    },
     "price": "{{price}} per maand",
     "subscribe": "Abonneren",
     "restore": "Aankopen herstellen",

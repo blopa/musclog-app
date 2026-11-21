@@ -163,7 +163,7 @@ function noticeOf(input: PremiumViewInput, phase: PremiumPhase): PremiumNotice |
 
 export function buildPremiumViewModel(input: PremiumViewInput): PremiumViewModel {
   const phase = applySignal(phaseOf(input.status), input.signal);
-  const { config, usage, busy } = input;
+  const { config, usage } = input;
   const usable = phase === 'active' || phase === 'exhausted';
 
   return {
@@ -174,9 +174,10 @@ export function buildPremiumViewModel(input: PremiumViewInput): PremiumViewModel
       (phase === 'not_subscribed' || phase === 'revoked') &&
       config !== null &&
       config.enabled !== false &&
-      config.acceptingNew === true &&
-      !busy,
-    canRestore: (phase === 'not_subscribed' || phase === 'removed' || phase === 'revoked') && !busy,
+      config.acceptingNew === true,
+    // Busy no longer hides these: the buttons stay on screen (disabled, with a spinner and the
+    // stage line) so a purchase in progress is never a blank footer.
+    canRestore: phase === 'not_subscribed' || phase === 'removed' || phase === 'revoked',
     showUsage: usage !== null && usable,
     usedPct: usage !== null && usable ? usage.usedPct : null,
     resetsAt: usage !== null && usable ? usage.resetsAt : null,

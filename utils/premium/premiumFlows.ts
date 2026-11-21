@@ -110,9 +110,12 @@ export async function enrollWithRetry(
   deps: FlowDeps & {
     sleep: (ms: number) => Promise<void>;
     delaysMs?: readonly number[];
+    /** Called before every attempt (the first and each retry), so a screen can say what is happening. */
+    onProgress?: (stage: 'confirming') => void;
   }
 ): Promise<FlowResult<SessionGrant>> {
   const delays = deps.delaysMs ?? ENROLL_RETRY_DELAYS_MS;
+  deps.onProgress?.('confirming');
   let result = await enrollDevice(deps);
 
   for (const delay of delays) {
@@ -121,6 +124,7 @@ export async function enrollWithRetry(
     }
 
     await deps.sleep(delay);
+    deps.onProgress?.('confirming');
     result = await enrollDevice(deps);
   }
 

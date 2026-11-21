@@ -65,9 +65,9 @@ describe('phase', () => {
 });
 
 describe('canSubscribe', () => {
-  it('needs not_subscribed, an enabled accepting config and no busy action', () => {
+  it('needs not_subscribed, an enabled accepting config; busy keeps it on screen', () => {
     expect(view({ status: 'no_key' }).canSubscribe).toBe(true);
-    expect(view({ status: 'no_key', busy: true }).canSubscribe).toBe(false);
+    expect(view({ status: 'no_key', busy: true }).canSubscribe).toBe(true);
     expect(view({ status: 'active' }).canSubscribe).toBe(false);
     expect(view({ status: 'no_key', config: null }).canSubscribe).toBe(false);
     expect(view({ status: 'no_key', config: { ...OPEN, enabled: false } }).canSubscribe).toBe(
@@ -80,10 +80,10 @@ describe('canSubscribe', () => {
 });
 
 describe('canRestore', () => {
-  it('is offered when not subscribed, removed or revoked, and not while busy', () => {
+  it('is offered when not subscribed, removed or revoked, and stays on screen while busy', () => {
     expect(view({ status: 'not_enrolled' }).canRestore).toBe(true);
     expect(view({ status: 'removed' }).canRestore).toBe(true);
-    expect(view({ status: 'no_key', busy: true }).canRestore).toBe(false);
+    expect(view({ status: 'no_key', busy: true }).canRestore).toBe(true);
     expect(view({ status: 'active' }).canRestore).toBe(false);
     expect(view({ status: 'exhausted' }).canRestore).toBe(false);
     expect(view({ status: 'revoked' }).canRestore).toBe(true);

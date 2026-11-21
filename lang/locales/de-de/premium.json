@@ -3,6 +3,17 @@
     "title": "Musclog Premium",
     "benefit": "KI ohne Schlüssel einrichten. Musclog Premium betreibt die KI für dich mit einem monatlichen Kontingent.",
     "loading": "Dein Premium-Status wird geprüft…",
+    "progress": {
+      "store": "Warten auf den Store…",
+      "confirming": "Dein Abo wird bestätigt…",
+      "slow": "Die Bestätigung dauert noch an, das kann einige Sekunden dauern",
+      "reset": "Premium wird auf diesem Gerät zurückgesetzt…",
+      "toggle": "Deine KI-Einstellung wird aktualisiert…"
+    },
+    "wait": {
+      "working": "Premium-KI arbeitet noch…",
+      "busy": "Premium-KI ist ausgelastet, neuer Versuch…"
+    },
     "price": "{{price}} pro Monat",
     "subscribe": "Abonnieren",
     "restore": "Käufe wiederherstellen",

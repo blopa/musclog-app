@@ -3,6 +3,7 @@
 // that state. Pure: no React Native, no service, no network.
 import type { UsePremium } from '@/hooks/usePremium';
 import type { HostedSignal } from '@/utils/premium/hostedSignal';
+import type { PremiumActivity } from '@/utils/premium/premiumActivity';
 import type {
   HostedConfig,
   PremiumActionFailure,
@@ -37,12 +38,14 @@ type FixtureInput = {
   usage?: UsageSnapshot | null;
   lastActionFailure?: PremiumActionFailure | null;
   signal?: HostedSignal | null;
+  activity?: PremiumActivity | null;
 };
 
 function noopActions(): Omit<UsePremium, 'view' | 'priceString'> {
   return {
     enabled: true,
     busy: false,
+    activity: null,
     useHostedAi: false,
     subscribe: async () => false,
     restore: async () => false,
@@ -62,10 +65,16 @@ function premiumFor(input: FixtureInput, priceString: string | null = '€4.99')
     usage: input.usage ?? null,
     lastActionFailure: input.lastActionFailure ?? null,
     signal: input.signal ?? null,
-    busy: false,
+    busy: input.activity != null,
   };
 
-  return { ...noopActions(), view: buildPremiumViewModel(viewInput), priceString };
+  return {
+    ...noopActions(),
+    busy: input.activity != null,
+    activity: input.activity ?? null,
+    view: buildPremiumViewModel(viewInput),
+    priceString,
+  };
 }
 
 export const PREMIUM_FIXTURE_STATES: readonly PremiumFixtureState[] = [
@@ -111,5 +120,47 @@ export const PREMIUM_FIXTURE_STATES: readonly PremiumFixtureState[] = [
     label: 'Offline',
     build: () =>
       premiumFor({ status: 'not_enrolled', config: CONFIG_ON, lastActionFailure: 'network' }),
+  },
+  // Busy states, appended (never reordered): the audit reaches them as 'Open Premium Modal (<label>)'.
+  {
+    id: 'store-wait',
+    label: 'Waiting For Store',
+    build: () =>
+      premiumFor({
+        status: 'not_enrolled',
+        config: CONFIG_ON,
+        activity: { kind: 'subscribe', stage: 'store' },
+      }),
+  },
+  {
+    id: 'confirming',
+    label: 'Confirming Subscription',
+    build: () =>
+      premiumFor({
+        status: 'not_enrolled',
+        config: CONFIG_ON,
+        activity: { kind: 'subscribe', stage: 'confirming' },
+      }),
+  },
+  {
+    id: 'confirming-slow',
+    label: 'Confirming Slowly',
+    build: () =>
+      premiumFor({
+        status: 'not_enrolled',
+        config: CONFIG_ON,
+        activity: { kind: 'restore', stage: 'slow' },
+      }),
+  },
+  {
+    id: 'resetting',
+    label: 'Resetting',
+    build: () =>
+      premiumFor({
+        status: 'active',
+        config: CONFIG_ON,
+        usage: usage(40),
+        activity: { kind: 'reset', stage: null },
+      }),
   },
 ];

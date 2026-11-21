@@ -64,6 +64,7 @@ import { WorkoutService } from '@/database/services/WorkoutService';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useHostedWaitCue } from '@/hooks/useHostedWaitCue';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
@@ -627,6 +628,12 @@ type CoachModalProps = {
   initialIntention?: ChatIntention;
 };
 
+/** One whole key per line, so the translation check sees both. */
+const HOSTED_WAIT_KEYS = {
+  working: 'premium.wait.working',
+  busy: 'premium.wait.busy',
+} as const;
+
 export function CoachModal({
   visible,
   onClose,
@@ -768,6 +775,8 @@ export function CoachModal({
   // The typing dots are for the wait before the reply starts; once its words are showing they
   // would sit under them.
   const isWaitingForReply = isSending && !streamingMessage;
+  // Only for Premium: a slow hosted reply says so, calmly, under the notice area.
+  const hostedWaitLine = useHostedWaitCue(aiProvider === 'hosted' && isWaitingForReply);
 
   const displayMessages = [
     ...(streamingMessage ? [streamingMessage] : []),
@@ -1450,6 +1459,19 @@ export function CoachModal({
             variant="elevated"
           />
         </View>
+
+        {hostedWaitLine ? (
+          <View
+            className="border-b px-4 py-2"
+            style={{ borderColor: theme.colors.border.light }}
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
+            <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+              {t(HOSTED_WAIT_KEYS[hostedWaitLine])}
+            </Text>
+          </View>
+        ) : null}
 
         {aiProvider === 'gateway' ? (
           <View

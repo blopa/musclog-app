@@ -42,7 +42,10 @@ test.describe('Premium screenshots', () => {
     const button = page.getByText(PAYWALL_BUTTON).first();
     await button.scrollIntoViewIfNeeded();
     await button.click();
-    await page.getByText('Log faster with AI, nothing to set up').first().waitFor({ timeout: 30000 });
+    await page
+      .getByText('Log faster with AI, nothing to set up')
+      .first()
+      .waitFor({ timeout: 30000 });
     await shot('01-paywall', 1500);
 
     await page.mouse.move(100, 300);

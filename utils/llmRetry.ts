@@ -14,6 +14,7 @@ import {
   toHostedAiError,
 } from './hostedAiError';
 import { setHostedSignal } from './premium/hostedSignal';
+import { whileHostedBackingOff } from './premium/hostedWait';
 
 const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
 const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
@@ -274,7 +275,13 @@ export async function withLlmRetry<T>(
       }
 
       if (decision.delayMs > 0) {
-        await sleep(decision.delayMs);
+        const delayMs = decision.delayMs;
+
+        if (provider === 'hosted') {
+          await whileHostedBackingOff(() => sleep(delayMs));
+        } else {
+          await sleep(delayMs);
+        }
       }
     }
   }

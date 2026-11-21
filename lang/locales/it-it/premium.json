@@ -3,6 +3,17 @@
     "title": "Musclog Premium",
     "benefit": "IA ospitata, senza chiave da configurare. Musclog Premium esegue l'IA per te con una quota mensile.",
     "loading": "Verifica dello stato Premium…",
+    "progress": {
+      "store": "In attesa dello store…",
+      "confirming": "Conferma dell'abbonamento in corso…",
+      "slow": "Conferma ancora in corso, può richiedere alcuni secondi",
+      "reset": "Ripristino di Premium su questo dispositivo…",
+      "toggle": "Aggiornamento dell'impostazione IA…"
+    },
+    "wait": {
+      "working": "L'IA Premium sta ancora lavorando…",
+      "busy": "L'IA Premium è occupata, nuovo tentativo…"
+    },
     "price": "{{price}} al mese",
     "subscribe": "Abbonati",
     "restore": "Ripristina acquisti",

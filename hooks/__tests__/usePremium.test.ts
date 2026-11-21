@@ -42,6 +42,12 @@ jest.mock('@/services/premium/premiumService', () => ({
 
 import { PREMIUM_FIXTURE_STATES } from '@/components/premium/premiumFixtureStates';
 import { PremiumFixtureContext, usePremium } from '@/hooks/usePremium';
+import {
+  getPremiumActivity,
+  getPremiumConsentPending,
+  resetPremiumActivity,
+  takeUnseenPremiumFailure,
+} from '@/utils/premium/premiumActivity';
 
 const OVERVIEW = {
   status: 'no_key',
@@ -59,6 +65,7 @@ const OVERVIEW = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  resetPremiumActivity();
   mockFlag.mockReturnValue(true);
   mockSettingsState = { useHostedAi: false, premiumConsentVersion: null };
   mockActions.loadPremiumOverview.mockResolvedValue(OVERVIEW);
@@ -190,5 +197,122 @@ describe('usePremium fixture seam', () => {
 
     expect(result.current).toBe(fixture);
     expect(result.current.view.phase).toBe('exhausted');
+  });
+});
+
+describe('usePremium busy tracking and closing mid-action', () => {
+  it('exposes the stage the service reports and is busy until the call ends', async () => {
+    let finish: (value: unknown) => void = () => undefined;
+    mockActions.subscribe.mockImplementation(
+      (onProgress: (stage: string) => void) =>
+        new Promise((resolve) => {
+          onProgress('store');
+          finish = resolve;
+        })
+    );
+    const { result } = renderHook(() => usePremium());
+
+    await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
+    let pending: Promise<boolean> = Promise.resolve(false);
+
+    act(() => {
+      pending = result.current.subscribe();
+    });
+    expect(result.current.busy).toBe(true);
+    expect(result.current.activity).toEqual({ kind: 'subscribe', stage: 'store' });
+
+    await act(async () => {
+      finish({ ok: true, value: {} });
+      await pending;
+    });
+    expect(result.current.busy).toBe(false);
+    expect(result.current.activity).toBeNull();
+  });
+
+  it('keeps the action alive when the screen closes, and leaves the consent question pending', async () => {
+    let finish: (value: unknown) => void = () => undefined;
+    mockActions.subscribe.mockImplementation(() => new Promise((resolve) => (finish = resolve)));
+    const first = renderHook(() => usePremium());
+
+    await waitFor(() => expect(first.result.current.view.phase).toBe('not_subscribed'));
+    let pending: Promise<boolean> = Promise.resolve(false);
+
+    act(() => {
+      pending = first.result.current.subscribe();
+    });
+    first.unmount(); // the modal is closed while the purchase is in flight
+
+    // Reopened: the same action is still shown as running.
+    const second = renderHook(() => usePremium());
+    expect(second.result.current.busy).toBe(true);
+    expect(getPremiumActivity()?.kind).toBe('subscribe');
+
+    // A second tap cannot start a second purchase.
+    let again = true;
+    await act(async () => {
+      again = await second.result.current.subscribe();
+    });
+    expect(again).toBe(false);
+    expect(mockActions.subscribe).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      finish({ ok: true, value: {} });
+      await pending;
+    });
+    expect(getPremiumActivity()).toBeNull();
+    expect(getPremiumConsentPending()).toBe(true);
+    expect(second.result.current.busy).toBe(false);
+  });
+
+  it('shows a failure that ended while the screen was closed when it opens again', async () => {
+    let finish: (value: unknown) => void = () => undefined;
+    mockActions.subscribe.mockImplementation(() => new Promise((resolve) => (finish = resolve)));
+    const first = renderHook(() => usePremium());
+
+    await waitFor(() => expect(first.result.current.view.phase).toBe('not_subscribed'));
+    let pending: Promise<boolean> = Promise.resolve(false);
+
+    act(() => {
+      pending = first.result.current.subscribe();
+    });
+    first.unmount();
+    await act(async () => {
+      finish({ ok: false, failure: 'purchase_failed' });
+      await pending;
+    });
+    expect(getPremiumConsentPending()).toBe(false);
+
+    const second = renderHook(() => usePremium());
+
+    await waitFor(() => expect(second.result.current.view.notice).toBe('purchase_failed'));
+    expect(takeUnseenPremiumFailure()).toBeNull();
+  });
+
+  it('reports reset and the AI switch as busy while they run', async () => {
+    let release: () => void = () => undefined;
+    mockActions.resetPremiumOnThisDevice.mockImplementation(
+      () => new Promise<undefined>((resolve) => (release = () => resolve(undefined)))
+    );
+    const { result } = renderHook(() => usePremium());
+
+    await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
+    let pending: Promise<void> = Promise.resolve();
+
+    act(() => {
+      pending = result.current.reset();
+    });
+    expect(result.current.activity).toEqual({ kind: 'reset', stage: null });
+
+    await act(async () => {
+      release();
+      await pending;
+    });
+    expect(result.current.busy).toBe(false);
+
+    await act(async () => {
+      await result.current.setUseHostedAi(true);
+    });
+    expect(result.current.busy).toBe(false);
+    expect(mockActions.loadPremiumOverview).toHaveBeenCalledTimes(2); // mount + reset, not the switch
   });
 });

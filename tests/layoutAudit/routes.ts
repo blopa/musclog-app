@@ -281,6 +281,10 @@ export const AUDIT_ONLY_MODAL_BUTTONS = [
   'Open Premium Modal (Revoked)',
   'Open Premium Modal (At Capacity)',
   'Open Premium Modal (Offline)',
+  'Open Premium Modal (Waiting For Store)',
+  'Open Premium Modal (Confirming Subscription)',
+  'Open Premium Modal (Confirming Slowly)',
+  'Open Premium Modal (Resetting)',
 ];
 
 export const MODAL_AUDIT_BUTTONS: string[] = [...MODAL_BUTTON_TEXTS, ...AUDIT_ONLY_MODAL_BUTTONS];

@@ -1,9 +1,18 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { Linking } from 'react-native';
 
-import { PREMIUM_NOTICE_KEYS, PremiumModal } from '@/components/modals/PremiumModal';
+import {
+  PREMIUM_BUSY_KEYS,
+  PREMIUM_NOTICE_KEYS,
+  PremiumModal,
+} from '@/components/modals/PremiumModal';
 import { PREMIUM_BENEFITS } from '@/components/premium/PremiumPaywall';
 import { usePremium } from '@/hooks/usePremium';
+import {
+  beginPremiumActivity,
+  endPremiumActivity,
+  resetPremiumActivity,
+} from '@/utils/premium/premiumActivity';
 import { PREMIUM_PRIVACY_URL, PREMIUM_TERMS_URL } from '@/utils/premium/premiumLinks';
 import {
   buildPremiumViewModel,
@@ -74,6 +83,7 @@ function premiumWith(view: PremiumViewModel, extra: Record<string, unknown> = {}
     view,
     priceString: null,
     busy: false,
+    activity: null,
     useHostedAi: false,
     subscribe: jest.fn(async () => false),
     restore: jest.fn(async () => false),
@@ -388,5 +398,97 @@ describe('PremiumModal', () => {
     renderModal();
 
     expect(screen.getByText('premium.loading')).toBeTruthy();
+  });
+});
+
+describe('PremiumModal busy feedback', () => {
+  const paywall = buildPremiumViewModel(input({ config: CONFIG_ON, busy: true }));
+  const activeView = buildPremiumViewModel(
+    input({
+      status: 'active' as never,
+      usage: { usedPct: 10, resetsAt: null, devices: { count: 1, max: 3 } } as never,
+    })
+  );
+
+  beforeEach(() => {
+    mockUsePremium.mockReset();
+    resetPremiumActivity();
+  });
+
+  it.each([
+    ['store', 'subscribe'],
+    ['confirming', 'subscribe'],
+    ['slow', 'restore'],
+  ] as const)('shows the %s stage line in the paywall footer, keeps the buttons', (stage, kind) => {
+    mockUsePremium.mockReturnValue(premiumWith(paywall, { busy: true, activity: { kind, stage } }));
+
+    renderModal();
+
+    const line = screen.getByText(PREMIUM_BUSY_KEYS[stage]);
+    expect(line.closest('[aria-live]')?.getAttribute('aria-live')).toBe('polite');
+    expect(screen.getByText('premium.subscribe')).toBeTruthy();
+    // The quiet Restore link beside it is disabled while anything runs.
+    expect(
+      screen.getByText('premium.restore').closest('[aria-disabled]')?.getAttribute('aria-disabled')
+    ).toBe('true');
+  });
+
+  it('shows no line when idle', () => {
+    mockUsePremium.mockReturnValue(premiumWith(paywall));
+    renderModal();
+
+    Object.values(PREMIUM_BUSY_KEYS).forEach((key) => expect(screen.queryByText(key)).toBeNull());
+  });
+
+  it('shows a status line and disables the switch and reset while resetting', () => {
+    mockUsePremium.mockReturnValue(
+      premiumWith(activeView, { busy: true, activity: { kind: 'reset', stage: null } })
+    );
+
+    renderModal();
+
+    expect(screen.getByText(PREMIUM_BUSY_KEYS.reset)).toBeTruthy();
+    expect((screen.getByRole('switch') as HTMLInputElement).disabled).toBe(true);
+    expect(
+      (screen.getByText('premium.reset').closest('button') as HTMLButtonElement).disabled
+    ).toBe(true);
+  });
+
+  it('shows a status line while the AI switch is being saved', () => {
+    mockUsePremium.mockReturnValue(
+      premiumWith(activeView, { busy: true, activity: { kind: 'toggle', stage: null } })
+    );
+
+    renderModal();
+
+    expect(screen.getByText(PREMIUM_BUSY_KEYS.toggle)).toBeTruthy();
+  });
+
+  it('asks the consent question on open when a purchase finished while it was closed', async () => {
+    beginPremiumActivity('subscribe');
+    endPremiumActivity('subscribe', { ok: true });
+    mockUsePremium.mockReturnValue(premiumWith(activeView, { consentNeeded: jest.fn(() => true) }));
+
+    renderModal();
+
+    expect(await screen.findByText('premium.consent.title')).toBeTruthy();
+  });
+
+  it('does not ask again when consent is already on record, and asks only once', async () => {
+    beginPremiumActivity('restore');
+    endPremiumActivity('restore', { ok: true });
+    mockUsePremium.mockReturnValue(
+      premiumWith(activeView, { consentNeeded: jest.fn(() => false) })
+    );
+
+    const { unmount } = renderModal();
+    await act(async () => undefined);
+    expect(screen.queryByText('premium.consent.title')).toBeNull();
+    unmount();
+
+    mockUsePremium.mockReturnValue(premiumWith(activeView, { consentNeeded: jest.fn(() => true) }));
+    renderModal();
+    await act(async () => undefined);
+    expect(screen.queryByText('premium.consent.title')).toBeNull();
   });
 });

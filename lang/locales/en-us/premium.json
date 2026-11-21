@@ -3,6 +3,17 @@
     "title": "Musclog Premium",
     "benefit": "Hosted AI with no key to set up. Musclog Premium runs the AI for you on a monthly allowance.",
     "loading": "Checking your Premium status…",
+    "progress": {
+      "store": "Waiting for the store…",
+      "confirming": "Confirming your subscription…",
+      "slow": "Still confirming, this can take a few seconds",
+      "reset": "Resetting Premium on this device…",
+      "toggle": "Updating your AI setting…"
+    },
+    "wait": {
+      "working": "Premium AI is still working…",
+      "busy": "Premium AI is busy, retrying…"
+    },
     "price": "{{price}} a month",
     "subscribe": "Subscribe",
     "restore": "Restore purchases",

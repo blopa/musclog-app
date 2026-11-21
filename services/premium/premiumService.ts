@@ -199,10 +199,13 @@ async function purchaseStep(step: 'purchase' | 'restore'): Promise<PurchaseStepR
 }
 
 function buyOrRestoreThenEnroll(
-  step: 'purchase' | 'restore'
+  step: 'purchase' | 'restore',
+  onProgress?: (stage: 'store' | 'confirming') => void
 ): Promise<PremiumResult<SessionGrant>> {
   return withBaseUrl(async (baseUrl) => {
     const startedIn = session.begin();
+
+    onProgress?.('store');
     const done = await purchaseStep(step);
 
     if ('failure' in done) {
@@ -210,16 +213,18 @@ function buyOrRestoreThenEnroll(
     }
 
     return enrollAndRemember(done.rcId, startedIn, () =>
-      enrollWithRetry({ ...flowDeps(baseUrl), sleep })
+      enrollWithRetry({ ...flowDeps(baseUrl), sleep, onProgress })
     );
   });
 }
 
 /** Subscribe under the key-derived id, then enroll. RevenueCat is configured lazily, here. */
-export const purchaseAndEnroll = () => buyOrRestoreThenEnroll('purchase');
+export const purchaseAndEnroll = (onProgress?: (stage: 'store' | 'confirming') => void) =>
+  buyOrRestoreThenEnroll('purchase', onProgress);
 
 /** Store-verified restore under this device's id (this is also how a second device is added). */
-export const restoreAndEnroll = () => buyOrRestoreThenEnroll('restore');
+export const restoreAndEnroll = (onProgress?: (stage: 'store' | 'confirming') => void) =>
+  buyOrRestoreThenEnroll('restore', onProgress);
 
 function mintAndRemember(rcId: string): Promise<PremiumResult<SessionGrant>> {
   return withBaseUrl(async (baseUrl) => {

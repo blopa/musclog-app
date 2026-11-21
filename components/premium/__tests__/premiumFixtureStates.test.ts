@@ -10,7 +10,7 @@ describe('PREMIUM_FIXTURE_STATES', () => {
     return state.build();
   };
 
-  it('lists the eight states in order', () => {
+  it('lists the states in order (busy states appended)', () => {
     expect(PREMIUM_FIXTURE_STATES.map((state) => state.id)).toEqual([
       'loading',
       'not-subscribed',
@@ -20,6 +20,10 @@ describe('PREMIUM_FIXTURE_STATES', () => {
       'revoked',
       'at-capacity',
       'offline',
+      'store-wait',
+      'confirming',
+      'confirming-slow',
+      'resetting',
     ]);
   });
 
@@ -65,5 +69,14 @@ describe('PREMIUM_FIXTURE_STATES', () => {
     await expect(byId('active').subscribe()).resolves.toBe(false);
     await expect(byId('active').restore()).resolves.toBe(false);
     expect(byId('active').consentNeeded(true)).toBe(false);
+  });
+
+  it('builds the busy states with the stage the modal shows', () => {
+    expect(byId('store-wait').activity).toEqual({ kind: 'subscribe', stage: 'store' });
+    expect(byId('confirming').activity?.stage).toBe('confirming');
+    expect(byId('confirming-slow').activity).toEqual({ kind: 'restore', stage: 'slow' });
+    expect(byId('resetting').activity?.kind).toBe('reset');
+    expect(byId('confirming').busy).toBe(true);
+    expect(byId('confirming').view.canSubscribe).toBe(true);
   });
 });

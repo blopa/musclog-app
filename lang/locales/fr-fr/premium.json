@@ -3,6 +3,17 @@
     "title": "Musclog Premium",
     "benefit": "IA hébergée, sans clé à configurer. Musclog Premium fait tourner l'IA pour vous, dans la limite d'un quota mensuel.",
     "loading": "Vérification de votre statut Premium…",
+    "progress": {
+      "store": "En attente de la boutique…",
+      "confirming": "Confirmation de votre abonnement…",
+      "slow": "Confirmation en cours, cela peut prendre quelques secondes",
+      "reset": "Réinitialisation de Premium sur cet appareil…",
+      "toggle": "Mise à jour de votre réglage IA…"
+    },
+    "wait": {
+      "working": "L'IA Premium travaille toujours…",
+      "busy": "Votre IA Premium est occupée, nouvelle tentative…"
+    },
     "price": "{{price}} par mois",
     "subscribe": "S'abonner",
     "restore": "Restaurer les achats",

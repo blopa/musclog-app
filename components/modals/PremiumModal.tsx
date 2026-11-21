@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Linking, Platform, Text, View } from 'react-native';
 
@@ -18,6 +18,13 @@ import { usePremium } from '@/hooks/usePremium';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import {
+  busyLineFor,
+  getPremiumConsentPending,
+  type PremiumBusyLine,
+  subscribePremiumActivity,
+  takePremiumConsentPending,
+} from '@/utils/premium/premiumActivity';
 import {
   manageSubscriptionUrl,
   PREMIUM_PRIVACY_URL,
@@ -61,6 +68,15 @@ export const PREMIUM_NOTICE_TONE: Record<PremiumNotice, PremiumNoticeTone> = {
   warning80: 'warning',
 };
 
+/** One whole key per busy line (stage of a purchase, reset, switch), so the translation check sees each. */
+export const PREMIUM_BUSY_KEYS: Record<PremiumBusyLine, string> = {
+  store: 'premium.progress.store',
+  confirming: 'premium.progress.confirming',
+  slow: 'premium.progress.slow',
+  reset: 'premium.progress.reset',
+  toggle: 'premium.progress.toggle',
+};
+
 /**
  * What the switch does for a requested value. Turning it on needs the consent first, unless the
  * person already gave it for this version of the terms.
@@ -100,9 +116,14 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
   const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const premium = usePremium();
-  const { view, busy } = premium;
+  const { view, busy, activity } = premium;
+  const busyLine = busyLineFor(activity);
+  const consentPending = useSyncExternalStore(
+    subscribePremiumActivity,
+    getPremiumConsentPending,
+    getPremiumConsentPending
+  );
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const [pressed, setPressed] = useState<'subscribe' | 'restore' | null>(null);
   // One ConfirmationModal serves both questions: two siblings would hit the iOS presenter bug.
   const [dialogOpen, setDialogOpen] = useSubModalVisibility(visible);
   const [dialog, setDialog] = useState<PremiumDialog>('consent');
@@ -114,20 +135,33 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     setDialogOpen(true);
   };
 
-  const runStore = async (kind: 'subscribe' | 'restore', action: () => Promise<boolean>) => {
-    setPressed(kind);
-
-    try {
-      const ok = await action();
-
-      // A purchase or restore that succeeds still needs the consent before the switch can turn on.
-      if (ok && premium.consentNeeded(true)) {
-        openDialog('consent');
-      }
-    } finally {
-      setPressed(null);
+  // A purchase or restore that succeeded still needs the consent before the switch can turn on. The
+  // question is pending in a store, so it is asked even when the modal was closed while it finished.
+  useEffect(() => {
+    if (!visible || !consentPending || busy) {
+      return;
     }
-  };
+
+    let cancelled = false;
+
+    // Deferred a tick so no state is set synchronously inside the effect.
+    Promise.resolve().then(() => {
+      if (cancelled || !takePremiumConsentPending()) {
+        return;
+      }
+
+      if (premium.consentNeeded(true)) {
+        setDialog('consent');
+        setDialogOpen(true);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [visible, consentPending, busy, premium, setDialogOpen]);
+
+  const isActing = (kind: 'subscribe' | 'restore') => activity?.kind === kind;
 
   const handleToggle = async (on: boolean) => {
     if (hostedToggleDecision(on, premium.consentNeeded(true)) === 'ask_consent') {
@@ -178,14 +212,40 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     );
   };
 
+  /** A polite status line with a spinner; never a countdown or a percentage. */
+  const renderBusyLine = () => {
+    if (!busyLine) {
+      return null;
+    }
+
+    return (
+      <View
+        className="flex-row items-center gap-3"
+        role="status"
+        accessibilityRole="alert"
+        accessibilityLiveRegion="polite"
+      >
+        <ActivityIndicator color={theme.colors.accent.primary} />
+        <Text
+          className="min-w-0 flex-1"
+          style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}
+        >
+          {t(PREMIUM_BUSY_KEYS[busyLine])}
+        </Text>
+      </View>
+    );
+  };
+
   const renderRestore = (variant: 'outline' | 'accent') => (
     <Button
       label={t('premium.restore')}
       variant={variant}
       width="full"
       disabled={busy}
-      loading={busy ? pressed === 'restore' : undefined}
-      onPress={() => runStore('restore', () => premium.restore())}
+      loading={busy ? isActing('restore') : undefined}
+      onPress={() => {
+        premium.restore();
+      }}
     />
   );
 
@@ -207,7 +267,9 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           label={t('premium.restore')}
           align="center"
           disabled={busy}
-          onPress={() => runStore('restore', () => premium.restore())}
+          onPress={() => {
+            premium.restore();
+          }}
         />
       );
     } else if (view.canRestore) {
@@ -216,6 +278,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
 
     return (
       <View className="gap-2">
+        {renderBusyLine()}
         {view.canSubscribe ? (
           <>
             <Button
@@ -228,8 +291,10 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
               size="lg"
               width="full"
               disabled={busy}
-              loading={busy ? pressed === 'subscribe' : undefined}
-              onPress={() => runStore('subscribe', () => premium.subscribe())}
+              loading={busy ? isActing('subscribe') : undefined}
+              onPress={() => {
+                premium.subscribe();
+              }}
             />
             <Text
               className="text-center"
@@ -259,6 +324,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           })}
         </Text>
       ) : null}
+      {renderBusyLine()}
       <ToggleInput
         items={[
           {
@@ -318,7 +384,12 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
       case 'exhausted':
         return renderUsable();
       case 'removed':
-        return view.canRestore ? renderRestore('accent') : null;
+        return (
+          <View className="gap-4">
+            {renderBusyLine()}
+            {view.canRestore ? renderRestore('accent') : null}
+          </View>
+        );
       default:
         return null;
     }
