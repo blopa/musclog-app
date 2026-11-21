@@ -335,16 +335,16 @@ describe('hosted errors', () => {
       expect(hostedGrantError('network').hostedKind).toBe('unavailable');
     });
 
-    it('ignores a grant failure on a non-hosted provider', async () => {
-      const request = jest.fn().mockResolvedValue('ok');
+    it('cannot carry a grant failure on a non-hosted provider (type-level)', () => {
       const config: CoachAIConfig = {
         provider: 'openai',
         model: 'm',
         apiKey: 'k',
+        // @ts-expect-error the failure exists only on the hosted variant of the config
         hostedGrantFailure: 'unknown_device',
       };
 
-      await expect(withLlmRetry('test', config, request)).resolves.toBe('ok');
+      expect(config.provider).toBe('openai');
     });
 
     it('marks the Premium signal when the device was removed', async () => {

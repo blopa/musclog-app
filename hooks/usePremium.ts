@@ -13,6 +13,7 @@ import {
 
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
+import { useSettings } from '@/hooks/useSettings';
 import {
   disableHostedIfRemoved,
   loadPremiumOverview,
@@ -54,8 +55,7 @@ export function usePremium(): UsePremium {
   const [overview, setOverview] = useState<PremiumOverview | null>(null);
   const [lastActionFailure, setLastActionFailure] = useState<PremiumActionFailure | null>(null);
   const [busy, setBusy] = useState(false);
-  const [useHostedAi, setUseHostedAiState] = useState(false);
-  const [consentVersion, setConsentVersion] = useState<number | null>(null);
+  const { useHostedAi, premiumConsentVersion: consentVersion } = useSettings();
   const mounted = useRef(true);
   const signal = useSyncExternalStore(subscribeHostedSignal, getHostedSignal, getHostedSignal);
 
@@ -73,12 +73,7 @@ export function usePremium(): UsePremium {
     }
 
     setOverview(next);
-
-    if (await disableHostedIfRemoved(next.status)) {
-      if (mounted.current) {
-        setUseHostedAiState(false);
-      }
-    }
+    await disableHostedIfRemoved(next.status);
   }, []);
 
   const refresh = useCallback(async () => {
@@ -103,22 +98,6 @@ export function usePremium(): UsePremium {
         }
 
         return undefined;
-      })
-      .catch(() => undefined);
-
-    SettingsService.get(SETTINGS.useHostedAi)
-      .then((value) => {
-        if (!cancelled) {
-          setUseHostedAiState(value);
-        }
-      })
-      .catch(() => undefined);
-
-    SettingsService.get(SETTINGS.premiumConsentVersion)
-      .then((value) => {
-        if (!cancelled) {
-          setConsentVersion(value);
-        }
       })
       .catch(() => undefined);
 
@@ -180,10 +159,6 @@ export function usePremium(): UsePremium {
       }
 
       await SettingsService.set(SETTINGS.useHostedAi, on);
-
-      if (mounted.current) {
-        setUseHostedAiState(on);
-      }
     },
     [enabled]
   );
@@ -196,7 +171,6 @@ export function usePremium(): UsePremium {
     await resetPremiumOnThisDevice();
 
     if (mounted.current) {
-      setUseHostedAiState(false);
       setLastActionFailure(null);
     }
 
@@ -214,10 +188,6 @@ export function usePremium(): UsePremium {
     }
 
     await SettingsService.set(SETTINGS.premiumConsentVersion, PREMIUM_CONSENT_VERSION);
-
-    if (mounted.current) {
-      setConsentVersion(PREMIUM_CONSENT_VERSION);
-    }
   }, [enabled]);
 
   const view = useMemo(

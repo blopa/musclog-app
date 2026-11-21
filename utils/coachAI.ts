@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { Content, Part } from '@google/genai';
 import { randomUUID } from 'expo-crypto';
 import OpenAI from 'openai';
+import type { Stream } from 'openai/streaming';
 
 import { MUSCLOG_GATEWAY_MAX_TOKENS, MUSCLOG_GATEWAY_PROVIDER } from '@/constants/gateway';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
@@ -273,16 +274,127 @@ async function runWithAbort<T>(
 export type HostedRequestMeta = { idempotencyKey?: string };
 
 /**
- * The request options for an OpenAI SDK call: the abort signal, plus the `Idempotency-Key` header
- * when the request is a hosted one. Non-hosted requests send no such header.
+ * The one way a chat completion is sent: it owns the abort signal and, for a hosted request, the
+ * `Idempotency-Key` header, so no call site can forget either. Non-hosted requests send no header.
  */
-function requestOptions(
+function createCompletion(
+  client: OpenAI,
+  payload: OpenAI.Chat.ChatCompletionCreateParamsStreaming,
   signal: AbortSignal,
   meta: HostedRequestMeta
-): { signal: AbortSignal; headers?: Record<string, string> } {
-  return meta.idempotencyKey
-    ? { signal, headers: { 'Idempotency-Key': meta.idempotencyKey } }
-    : { signal };
+): Promise<Stream<OpenAI.Chat.ChatCompletionChunk>>;
+function createCompletion(
+  client: OpenAI,
+  payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
+  signal: AbortSignal,
+  meta: HostedRequestMeta
+): Promise<OpenAI.Chat.ChatCompletion>;
+function createCompletion(
+  client: OpenAI,
+  payload: OpenAI.Chat.ChatCompletionCreateParams,
+  signal: AbortSignal,
+  meta: HostedRequestMeta
+): Promise<Stream<OpenAI.Chat.ChatCompletionChunk> | OpenAI.Chat.ChatCompletion> {
+  return client.chat.completions.create(
+    payload as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
+    meta.idempotencyKey
+      ? { signal, headers: { 'Idempotency-Key': meta.idempotencyKey } }
+      : { signal }
+  );
+}
+
+/** What the retry loop has already spent on one logical request. */
+type RetryState = { attempt: number; timeoutRetried: boolean };
+
+/** Either the error to throw, or how long to wait and which budget the retry spends. */
+type RetryDecision =
+  { error: unknown } | { delayMs: number; log: string; spends: 'attempt' | 'timeout' };
+
+/**
+ * One logical request's meta: a hosted request gets one idempotency key for every attempt, so the
+ * Worker recognises a retry as the same request.
+ */
+function newRequestMeta(config: CoachAIConfig): HostedRequestMeta {
+  return { idempotencyKey: config.provider === 'hosted' ? randomUUID() : undefined };
+}
+
+/** A hosted session token that could not be minted sends nothing: the typed error says why. */
+function assertConfigUsable(config: CoachAIConfig): void {
+  if (config.hostedGrantFailure) {
+    const grantError = hostedGrantError(config.hostedGrantFailure);
+    noteHostedError(grantError);
+    throw grantError;
+  }
+}
+
+function noteRequestSucceeded(provider: CoachAIProvider): void {
+  if (provider === 'hosted') {
+    setHostedSignal('ok');
+  }
+}
+
+/**
+ * Decides what a failed attempt means: a hosted failure follows the Worker's rules (retry only the
+ * statuses it says are safe, same idempotency key); every other failure follows the shared rules.
+ * Pure apart from noting a hosted failure for the Premium screens.
+ */
+function classifyLlmFailure(
+  operation: string,
+  provider: CoachAIProvider,
+  error: unknown,
+  state: RetryState,
+  options?: { hasStreamed?: () => boolean }
+): RetryDecision {
+  const hasStreamed = options?.hasStreamed?.() ?? false;
+  const delayMs = LLM_RETRY_DELAYS_MS[state.attempt];
+  const hasAttemptsLeft = state.attempt < LLM_RETRY_DELAYS_MS.length;
+
+  const hosted = provider === 'hosted' ? toHostedAiError(error) : null;
+  if (hosted) {
+    noteHostedError(hosted);
+    if (!isRetryableHostedError(hosted) || hasStreamed || !hasAttemptsLeft) {
+      return { error: hosted };
+    }
+
+    return {
+      delayMs,
+      spends: 'attempt',
+      log: `[coachAI] ${operation} hosted ${hosted.hostedKind}; retrying in ${delayMs}ms with the same idempotency key`,
+    };
+  }
+
+  // A wrong key never gets better by asking again, and is not retried.
+  const userFacing = toUserFacingAiError(error, provider);
+  if (userFacing instanceof AiInvalidKeyError) {
+    return { error: userFacing };
+  }
+
+  if (hasStreamed) {
+    return { error: userFacing ?? error };
+  }
+
+  if (userFacing instanceof AiTimeoutError) {
+    // A stalled request usually stays stalled: one more try, not three.
+    return state.timeoutRetried
+      ? { error: userFacing }
+      : {
+          delayMs: 0,
+          spends: 'timeout',
+          log: `[coachAI] ${operation} timed out on ${provider}; retrying once`,
+        };
+  }
+
+  if (!hasAttemptsLeft || !shouldRetryLlmError(error)) {
+    return { error };
+  }
+
+  const status = getErrorStatus(error);
+
+  return {
+    delayMs,
+    spends: 'attempt',
+    log: `[coachAI] ${operation} transient ${status ?? 'unknown'} from ${provider}; retrying in ${delayMs}ms (attempt ${state.attempt + 2}/${LLM_RETRY_DELAYS_MS.length + 1})`,
+  };
 }
 
 /** Exported for tests; not part of the module's public surface. */
@@ -299,24 +411,15 @@ export async function withLlmRetry<T>(
   }
 ): Promise<T> {
   const provider = config.provider;
-  let attempt = 0;
-  let timeoutRetried = false;
-  const idempotencyKey = provider === 'hosted' ? randomUUID() : undefined;
-  const meta: HostedRequestMeta = { idempotencyKey };
+  const state: RetryState = { attempt: 0, timeoutRetried: false };
+  const meta = newRequestMeta(config);
 
-  // The session token could not be minted: no request is sent, the typed error says why.
-  if (provider === 'hosted' && config.hostedGrantFailure) {
-    const grantError = hostedGrantError(config.hostedGrantFailure);
-    noteHostedError(grantError);
-    throw grantError;
-  }
+  assertConfigUsable(config);
 
   while (true) {
     try {
       const value = await runWithAbort(config, request, meta);
-      if (provider === 'hosted') {
-        setHostedSignal('ok');
-      }
+      noteRequestSucceeded(provider);
 
       return value;
     } catch (rawError) {
@@ -324,63 +427,21 @@ export async function withLlmRetry<T>(
         throw rawError;
       }
 
-      // Hosted failures have their own classification and retry rule (same idempotency key).
-      const hosted = provider === 'hosted' ? toHostedAiError(rawError) : null;
-      if (hosted) {
-        noteHostedError(hosted);
-        const canRetry =
-          isRetryableHostedError(hosted) &&
-          !options?.hasStreamed?.() &&
-          attempt < LLM_RETRY_DELAYS_MS.length;
-        if (!canRetry) {
-          throw hosted;
-        }
-
-        const delayMs = LLM_RETRY_DELAYS_MS[attempt];
-        console.warn(
-          `[coachAI] ${operation} hosted ${hosted.hostedKind}; retrying in ${delayMs}ms with the same idempotency key`
-        );
-        attempt += 1;
-        await sleep(delayMs);
-        continue;
+      const decision = classifyLlmFailure(operation, provider, rawError, state, options);
+      if ('error' in decision) {
+        throw decision.error;
       }
 
-      const error = rawError;
-      // A wrong key never gets better by asking again, and is not retried.
-      const userFacing = toUserFacingAiError(error, provider);
-      if (userFacing instanceof AiInvalidKeyError) {
-        throw userFacing;
+      console.warn(decision.log);
+      if (decision.spends === 'timeout') {
+        state.timeoutRetried = true;
+      } else {
+        state.attempt += 1;
       }
 
-      if (options?.hasStreamed?.()) {
-        throw userFacing ?? error;
+      if (decision.delayMs > 0) {
+        await sleep(decision.delayMs);
       }
-
-      if (userFacing instanceof AiTimeoutError) {
-        // A stalled request usually stays stalled: one more try, not three.
-        if (timeoutRetried) {
-          throw userFacing;
-        }
-
-        timeoutRetried = true;
-        console.warn(`[coachAI] ${operation} timed out on ${provider}; retrying once`);
-        continue;
-      }
-
-      if (attempt >= LLM_RETRY_DELAYS_MS.length || !shouldRetryLlmError(error)) {
-        throw error;
-      }
-
-      const delayMs = LLM_RETRY_DELAYS_MS[attempt];
-      const nextAttempt = attempt + 2;
-      const status = getErrorStatus(error);
-
-      console.warn(
-        `[coachAI] ${operation} transient ${status ?? 'unknown'} from ${provider}; retrying in ${delayMs}ms (attempt ${nextAttempt}/${LLM_RETRY_DELAYS_MS.length + 1})`
-      );
-
-      attempt += 1;
-      await sleep(delayMs);
     }
   }
 }
@@ -396,6 +457,9 @@ export interface ProviderConfig {
   enableMemories: boolean;
 }
 
+/** The context budget of every provider with a large context window. */
+const LARGE_CONTEXT_CHAR_BUDGET = 64000;
+
 export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   'on-device': {
     maxCharBudget: 4500, // Tight cap per Apple Intelligence optimization spec
@@ -405,21 +469,21 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     enableMemories: false,
   },
   gemini: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
     enableMemories: true,
   },
   openai: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
     enableMemories: true,
   },
   claude: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
@@ -433,14 +497,14 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     enableMemories: true,
   },
   gateway: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
     enableMemories: true,
   },
   hosted: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
@@ -448,7 +512,7 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   },
 };
 
-export type CoachAIConfig = {
+type CoachAIConfigFields = {
   provider: CoachAIProvider;
   apiKey?: string;
   model: string;
@@ -458,12 +522,19 @@ export type CoachAIConfig = {
   signal?: AbortSignal;
   /** Overrides the default request timeout, in milliseconds. */
   timeoutMs?: number;
-  /**
-   * Hosted only: the session token could not be minted (set by `AiService`). Requests then fail
-   * with the matching hosted error without being sent.
-   */
-  hostedGrantFailure?: PremiumActionFailure;
 };
+
+/**
+ * A config that can send, or a hosted one whose session token could not be minted (built by
+ * `AiService`): the second carries why, and its requests fail with the matching hosted error
+ * without being sent, so the data recipient never changes silently. The failure exists only on the
+ * hosted variant.
+ */
+export type CoachAIConfig = CoachAIConfigFields &
+  (
+    | { hostedGrantFailure?: undefined }
+    | { provider: 'hosted'; hostedGrantFailure: PremiumActionFailure }
+  );
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
   // Free-tier requests are pinned to one OpenRouter provider with no fallbacks (see
@@ -493,7 +564,7 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     // Hosted requests retry through `withLlmRetry`'s own backoff: the SDK would repeat a 503 that
     // the Worker says must not be repeated (`daily_full`, `hosted_disabled`).
     maxRetries: config.provider === 'hosted' ? 0 : undefined,
-    // The Idempotency-Key is per logical request, so it is passed per call (`requestOptions`), never
+    // The Idempotency-Key is per logical request, so it is passed per call (`createCompletion`), never
     // here: static default headers would go on every request of the client.
     defaultHeaders: undefined,
     fetch: pinFetch,
@@ -619,10 +690,7 @@ async function streamOpenAiText(
     config,
     async (signal, touch, meta) => {
       sink.reset();
-      const chunks = await client.chat.completions.create(
-        { ...payload, stream: true },
-        requestOptions(signal, meta)
-      );
+      const chunks = await createCompletion(client, { ...payload, stream: true }, signal, meta);
       for await (const chunk of chunks) {
         touch();
         const delta = chunk.choices[0]?.delta?.content;
@@ -1200,7 +1268,7 @@ async function sendViaOpenAI(
     }
 
     const completion = await withLlmRetry('sendViaOpenAI', config, (signal, _touch, meta) =>
-      client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+      createCompletion(client, requestPayload, signal, meta)
     );
 
     await logLlmDebugEvent({
@@ -1538,7 +1606,7 @@ async function generateText(
   }
 
   const completion = await withLlmRetry('generateText', config, (signal, _touch, meta) =>
-    client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+    createCompletion(client, requestPayload, signal, meta)
   );
 
   await logLlmDebugEvent({
@@ -1697,7 +1765,7 @@ async function generateTextWithHistory(
   }
 
   const completion = await withLlmRetry('generateTextWithHistory', config, (signal, _touch, meta) =>
-    client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+    createCompletion(client, requestPayload, signal, meta)
   );
 
   await logLlmDebugEvent({
@@ -1882,7 +1950,7 @@ export async function requestStructured<T = unknown>(
   });
 
   const completion = await withLlmRetry(operation, config, (signal, _touch, meta) =>
-    client.chat.completions.create(payload, requestOptions(signal, meta))
+    createCompletion(client, payload, signal, meta)
   );
   await logLlmDebugEvent({
     provider: config.provider,
@@ -2127,8 +2195,7 @@ async function generateWithImageStructured<T>(
   const completion = await withLlmRetry(
     'generateWithImageStructured',
     config,
-    (signal, _touch, meta) =>
-      client.chat.completions.create(requestPayload, requestOptions(signal, meta))
+    (signal, _touch, meta) => createCompletion(client, requestPayload, signal, meta)
   );
 
   await logLlmDebugEvent({

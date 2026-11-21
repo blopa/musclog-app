@@ -7,7 +7,12 @@ import { createElement, type ReactNode } from 'react';
 const mockFlag = jest.fn(() => false);
 jest.mock('@/utils/premium/premiumUiFlag', () => ({ isPremiumUiEnabled: () => mockFlag() }));
 
-const mockSettingsGet = jest.fn();
+let mockSettingsState: { useHostedAi: boolean; premiumConsentVersion: number | null } = {
+  useHostedAi: false,
+  premiumConsentVersion: null,
+};
+jest.mock('@/hooks/useSettings', () => ({ useSettings: () => mockSettingsState }));
+
 const mockSettingsSet = jest.fn(async () => undefined);
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
@@ -55,9 +60,7 @@ const OVERVIEW = {
 beforeEach(() => {
   jest.clearAllMocks();
   mockFlag.mockReturnValue(true);
-  mockSettingsGet.mockImplementation(async (setting: { type: string }) =>
-    setting.type === 'premium_consent_version' ? null : false
-  );
+  mockSettingsState = { useHostedAi: false, premiumConsentVersion: null };
   mockActions.loadPremiumOverview.mockResolvedValue(OVERVIEW);
   mockActions.subscribe.mockResolvedValue({ ok: true, value: {} });
   mockActions.restore.mockResolvedValue({ ok: false, failure: 'restore_failed' });
@@ -73,7 +76,6 @@ describe('usePremium', () => {
     expect(result.current.view.phase).toBe('loading');
     expect(result.current.priceString).toBeNull();
     expect(mockActions.loadPremiumOverview).not.toHaveBeenCalled();
-    expect(mockSettingsGet).not.toHaveBeenCalled();
 
     await act(async () => {
       await result.current.subscribe();
@@ -135,7 +137,6 @@ describe('usePremium', () => {
       expect.objectContaining({ type: 'use_hosted_ai' }),
       true
     );
-    expect(result.current.useHostedAi).toBe(true);
   });
 
   it('asks for consent when turning on, and records it once', async () => {
@@ -152,7 +153,10 @@ describe('usePremium', () => {
       expect.objectContaining({ type: 'premium_consent_version' }),
       1
     );
-    expect(result.current.consentNeeded(true)).toBe(false);
+    mockSettingsState = { ...mockSettingsState, premiumConsentVersion: 1 };
+    const { result: after } = renderHook(() => usePremium());
+
+    expect(after.current.consentNeeded(true)).toBe(false);
   });
 
   it('reset clears hosted AI and reloads', async () => {
@@ -163,20 +167,15 @@ describe('usePremium', () => {
       await result.current.reset();
     });
     expect(mockActions.resetPremiumOnThisDevice).toHaveBeenCalled();
-    expect(result.current.useHostedAi).toBe(false);
   });
 
   it('turns hosted AI off when the overview says the subscription was removed', async () => {
     mockActions.loadPremiumOverview.mockResolvedValue({ ...OVERVIEW, status: 'removed' });
     mockActions.disableHostedIfRemoved.mockResolvedValue(true);
-    mockSettingsGet.mockImplementation(async (setting: { type: string }) =>
-      setting.type === 'use_hosted_ai' ? true : null
-    );
     const { result } = renderHook(() => usePremium());
 
     await waitFor(() => expect(result.current.view.phase).toBe('removed'));
     expect(mockActions.disableHostedIfRemoved).toHaveBeenCalledWith('removed');
-    expect(result.current.useHostedAi).toBe(false);
     expect(result.current.view.notice).toBe('removed');
   });
 });

@@ -21,6 +21,9 @@ jest.mock('react-i18next', () => ({
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: { get: jest.fn(async () => null), observe: jest.fn() },
 }));
+jest.mock('@/hooks/useSettings', () => ({
+  useSettings: () => ({ useHostedAi: false, premiumConsentVersion: null }),
+}));
 jest.mock('@/hooks/usePremium', () => {
   const actual = jest.requireActual('@/hooks/usePremium');
 

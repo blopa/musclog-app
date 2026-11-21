@@ -132,11 +132,10 @@ export async function enrollThisDevice(): Promise<PremiumResult<SessionGrant>> {
   return result;
 }
 
-async function purchaseStep(
-  step: 'purchase' | 'restore'
-): Promise<
-  { rcId: string } | { failure: 'purchase_cancelled' | 'purchase_failed' | 'restore_failed' }
-> {
+type PurchaseStepResult =
+  { rcId: string } | { failure: 'purchase_cancelled' | 'purchase_failed' | 'restore_failed' };
+
+async function purchaseStep(step: 'purchase' | 'restore'): Promise<PurchaseStepResult> {
   const key = await getOrCreateDeviceKey();
 
   try {

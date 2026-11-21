@@ -111,6 +111,7 @@ import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 const REGISTERED_SETTINGS = [
   'enableClaude',
   'useHostedAi',
+  'premiumConsentVersion',
   'cycleShowPredictions',
   'cycleShowFertility',
   'cycleNotificationStyle',
@@ -233,7 +234,7 @@ type SettingsState = RegisteredSettings & {
  * `useMemo` on the context value instead.
  */
 type NonPrimitiveFields<T> = {
-  [K in keyof T]-?: T[K] extends boolean | number | string ? never : K;
+  [K in keyof T]-?: T[K] extends boolean | number | string | null ? never : K;
 }[keyof T];
 const _settingsStateIsFlat: NonPrimitiveFields<SettingsState> extends never ? true : never = true;
 void _settingsStateIsFlat;

@@ -7,7 +7,7 @@
  * and a bare 400 stays an ordinary error.
  */
 import type { CoachAIProvider } from './coachAI';
-import { type HostedErrorKind, hostedErrorKindOf } from './hostedAiError';
+import { HostedAiError, hostedErrorKindOf } from './hostedAiError';
 
 export class AiInvalidKeyError extends Error {
   readonly provider: CoachAIProvider;
@@ -187,17 +187,16 @@ export function describeAiError(
     return t('errors.aiTimeout');
   }
 
-  const hosted = hostedErrorKindOf(error);
-  if (hosted) {
-    return describeHostedError(hosted, error, t, locale);
+  if (error instanceof HostedAiError) {
+    return describeHostedError(error, t, locale);
   }
 
   return null;
 }
 
 /** The date a hosted budget resets, formatted for the locale, or `null` when it is not a date. */
-function formatResetDate(error: unknown, locale?: string): string | null {
-  const resetsAt = (error as { resetsAt?: unknown }).resetsAt;
+function formatResetDate(error: HostedAiError, locale?: string): string | null {
+  const { resetsAt } = error;
   if (typeof resetsAt !== 'string') {
     return null;
   }
@@ -215,12 +214,11 @@ function formatResetDate(error: unknown, locale?: string): string | null {
 }
 
 function describeHostedError(
-  kind: HostedErrorKind,
-  error: unknown,
+  error: HostedAiError,
   t: (key: string, options?: Record<string, unknown>) => string,
   locale?: string
 ): string {
-  switch (kind) {
+  switch (error.hostedKind) {
     case 'budget': {
       const date = formatResetDate(error, locale);
       return date ? t('errors.hostedBudget', { date }) : t('errors.hostedBudgetNoDate');
