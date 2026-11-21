@@ -56,6 +56,20 @@ describe('parseConfig accepts', () => {
     expect(parseConfig(prodEnv()).ok).toBe(true);
   });
 
+  // TEMPORARY with src/configSchema.ts (2.17.0 internal testing): revert both in 2.17.1.
+  it("production with environments ['production','sandbox']", () => {
+    expect(
+      parseConfig(
+        prodEnv(
+          {},
+          testConfig({
+            revenuecat: { environments: ['production', 'sandbox'], product_ids: ['p'] },
+          })
+        )
+      ).ok
+    ).toBe(true);
+  });
+
   it('allows provider.only', () => {
     const c = mutate((c) => (c.provider.only = ['deepinfra']));
     expect(parseConfig(baseEnv(c)).ok).toBe(true);
@@ -152,15 +166,6 @@ describe('parseConfig rejects', () => {
   it("production with environments ['sandbox']", () => {
     rejected(
       prodEnv({}, testConfig({ revenuecat: { environments: ['sandbox'], product_ids: ['p'] } }))
-    );
-  });
-
-  it("production with environments ['production','sandbox']", () => {
-    rejected(
-      prodEnv(
-        {},
-        testConfig({ revenuecat: { environments: ['production', 'sandbox'], product_ids: ['p'] } })
-      )
     );
   });
 

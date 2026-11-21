@@ -176,8 +176,11 @@ export function parseConfig(
     }
     if (workerEnv === 'production') {
       const e = c.revenuecat.environments;
-      if (e.length !== 1 || e[0] !== 'production') {
-        errors.push("revenuecat.environments: must be exactly ['production'] in production");
+      // TEMPORARY (2.17.0 internal testing, revert in 2.17.1 together with the wrangler.toml
+      // environments value): production may also accept sandbox purchases, so license testers can
+      // test without paying. It must still include 'production'; 'sandbox' alone is refused.
+      if (!e.includes('production') || e.some((x) => x !== 'production' && x !== 'sandbox')) {
+        errors.push("revenuecat.environments: must include 'production' in production");
       }
       if (c.revenuecat.product_ids.length === 0) {
         errors.push('revenuecat.product_ids: must be non-empty in production');
