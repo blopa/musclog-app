@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.16.10",
+    "version": "2.17.0",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android", "web"],
@@ -216,7 +216,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
       "associatedDomains": ["applinks:musclog.app"],
-      "buildNumber": "338",
+      "buildNumber": "339",
       "entitlements": {
         "com.apple.developer.usernotifications.time-sensitive": true
       },
@@ -326,7 +326,7 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-      "versionCode": 338,
+      "versionCode": 339,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
         "backgroundColor": "#0d1210"
