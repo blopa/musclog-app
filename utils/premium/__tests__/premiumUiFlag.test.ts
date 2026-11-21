@@ -11,8 +11,14 @@ describe('isPremiumUiEnabledFor', () => {
     expect(isPremiumUiEnabledFor({ platform, flag: '1' })).toBe(true);
   });
 
-  it('is off on web even with the flag set', () => {
+  it('is off on a production web build even with the flag set', () => {
     expect(isPremiumUiEnabledFor({ platform: 'web', flag: '1' })).toBe(false);
+    expect(isPremiumUiEnabledFor({ platform: 'web', flag: '1', dev: false })).toBe(false);
+  });
+
+  it('is on for web under the development server with the flag set', () => {
+    expect(isPremiumUiEnabledFor({ platform: 'web', flag: '1', dev: true })).toBe(true);
+    expect(isPremiumUiEnabledFor({ platform: 'web', flag: undefined, dev: true })).toBe(false);
   });
 
   it.each(['0', 'true', 'yes', ' 1', '', undefined])(
