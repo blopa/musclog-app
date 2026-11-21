@@ -355,9 +355,9 @@
       "musclogFreeTier": {
         "sectionTitle": "Musclog gratis niveau",
         "toggle": "Musclog Gratis Niveau LLM gebruiken",
-        "toggleSubtitle": "Gebruikt Google Gemini, dat kan gebruiken wat je verstuurt. Er geldt een dagelijkse limiet.",
+        "toggleSubtitle": "Draait op het gratis niveau van Google, dat kan gebruiken wat je verstuurt. Er geldt een dagelijkse limiet.",
         "activeNote": "Gratis niveau is actief. Je eigen API-sleutels worden niet gebruikt.",
-        "consentTitle": "Gegevens delen met Google Gemini?",
+        "consentTitle": "Gegevens delen met Google?",
         "consentBody": "Wanneer je een AI-functie gebruikt, wordt wat ze nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmaten of chatberichten) via OpenRouter naar het gratis niveau van Google AI Studio gestuurd om het antwoord te schrijven. Google mag wat er wordt verstuurd bewaren, gebruiken om zijn producten te verbeteren en door mensen (zonder identificatiegegevens) laten beoordelen, dus het gratis niveau is niet privé: voer geen persoonlijke of gevoelige informatie in. Het gratis niveau is alleen voor volwassenen (18+). Als dat niet oké voor je is, laat het uit. Er wordt niets verstuurd totdat je een AI-functie gebruikt. Er is een dagelijkse limiet en het gratis niveau kan soms niet beschikbaar zijn.",
         "consentConfirm": "Akkoord en inschakelen"
       },

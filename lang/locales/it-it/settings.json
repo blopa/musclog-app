@@ -355,9 +355,9 @@
       "musclogFreeTier": {
         "sectionTitle": "Piano gratuito di Musclog",
         "toggle": "Usa l'LLM del piano gratuito di Musclog",
-        "toggleSubtitle": "Usa Google Gemini, che può usare ciò che invii. Si applica un limite giornaliero.",
+        "toggleSubtitle": "Funziona con il piano gratuito di Google, che può usare ciò che invii. Si applica un limite giornaliero.",
         "activeNote": "Il piano gratuito è attivo. Le tue chiavi API non vengono usate.",
-        "consentTitle": "Condividere i dati con Google Gemini?",
+        "consentTitle": "Condividere i dati con Google?",
         "consentBody": "Quando usi una funzione AI, ciò di cui ha bisogno (ad esempio i tuoi allenamenti, pasti, misure corporee o messaggi della chat) viene inviato tramite OpenRouter al piano gratuito di Google AI Studio per scrivere la risposta. Google può conservare ciò che viene inviato, usarlo per migliorare i propri prodotti e farlo esaminare da persone (senza identificativi), quindi il piano gratuito non è privato: non inserire informazioni personali o sensibili. Il piano gratuito è riservato agli adulti (18+). Se non ti va bene, lascialo disattivato. Non viene inviato nulla finché non usi una funzione AI. C'è un limite giornaliero e il piano gratuito a volte può non essere disponibile.",
         "consentConfirm": "Accetto e attivo"
       },

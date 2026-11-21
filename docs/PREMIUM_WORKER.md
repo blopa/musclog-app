@@ -83,13 +83,13 @@ The v2 secret key gets only `customer_information:subscriptions:read` and `custo
 
 Set by the maintainer in EAS (`eas env:create`, environment `production`, visibility plain text or sensitive; all are PUBLIC SDK values or URLs, never a secret). The `premium-harness` profile must not inherit the production-only ones in a way that sends it to a production track; it needs the two SDK keys and the base URL only to run G2/G9.
 
-| Variable                             | Value                                                   | Read by                                                      | Notes                                                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Variable                             | Value                                                   | Read by                                               | Notes                                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `EXPO_PUBLIC_REVENUECAT_IOS_KEY`     | RevenueCat public SDK key, Apple app (`appl_...`)       | `services/premium/premiumService.ts`, `revenueCat.ts` | Not the v2 secret key.                                                                                                                    |
-| `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` | RevenueCat public SDK key, Google app (`goog_...`)      | same                                                         | Not the v2 secret key.                                                                                                                    |
-| `EXPO_PUBLIC_HOSTED_AI_BASE_URL`     | `https://ai.musclog.app` (staging: the workers.dev URL) | `services/premium/premiumService.ts`                         | Never `api.musclog.app`.                                                                                                                  |
-| `EXPO_PUBLIC_PREMIUM_UI`             | `1` only on the release that ships Premium              | `utils/premium/premiumUiFlag.ts`                             | Default off; `premiumUiFlag.test.ts` forbids it in `eas.json`, `app.json`, `package.json`, so set it as an EAS environment variable only. |
-| `EXPO_PUBLIC_PREMIUM_HARNESS`        | `1` only through the `premium-harness` profile          | `utils/premium/harnessGuard.ts`                              | Never in production.                                                                                                                      |
+| `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` | RevenueCat public SDK key, Google app (`goog_...`)      | same                                                  | Not the v2 secret key.                                                                                                                    |
+| `EXPO_PUBLIC_HOSTED_AI_BASE_URL`     | `https://ai.musclog.app` (staging: the workers.dev URL) | `services/premium/premiumService.ts`                  | Never `api.musclog.app`.                                                                                                                  |
+| `EXPO_PUBLIC_PREMIUM_UI`             | `1` only on the release that ships Premium              | `utils/premium/premiumUiFlag.ts`                      | Default off; `premiumUiFlag.test.ts` forbids it in `eas.json`, `app.json`, `package.json`, so set it as an EAS environment variable only. |
+| `EXPO_PUBLIC_PREMIUM_HARNESS`        | `1` only through the `premium-harness` profile          | `utils/premium/harnessGuard.ts`                       | Never in production.                                                                                                                      |
 
 Worker side (in `wrangler.toml`, then deploy; not EAS): `revenuecat.project_id`, `revenuecat.product_ids` (the store product ids as RevenueCat reports them), `revenuecat.environments` (`["sandbox"]` staging, `["production"]` production), `HOSTED_AI_ENABLED = "true"` only when intended, and `min_app_version` equal to the first app version that ships Premium.
 
@@ -145,6 +145,10 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 ## The app side (P6, hidden)
 
 The app's provider, errors, image resize and Premium UI exist but are invisible: they need a build made with `EXPO_PUBLIC_PREMIUM_UI=1`, which no EAS profile sets until P7. See the "Premium provider, errors and UI" bullet in `AGENTS.md`. A client request carries `Idempotency-Key` (one per logical request) and the Worker's `x-should-retry: false` answers are retried only by the app's own backoff.
+
+## The legacy AI Gateway (temporary)
+
+The free tier used to run through a Cloudflare AI Gateway (`musclog`, dashboard-made, not in `infra/`) with the Google AI Studio key stored as its BYOK key. Since 2026-11-21 the app calls OpenRouter's free Gemma model directly (`constants/gateway.ts`), but every released build older than that still calls the gateway, so **leave it running**. Retire it once Play's version distribution shows almost no installs on the old builds: revoke the gateway token (the old `EXPO_PUBLIC_MUSCLOG_GATEWAY_AUTH_TOKEN` value), delete the gateway and its Google key, and delete this section and the note at the top of `infra/premium/main.tf`. An old build then fails with its normal "free AI unavailable" error and offers the own-key route.
 
 ## Retention and removing a device identifier on request
 

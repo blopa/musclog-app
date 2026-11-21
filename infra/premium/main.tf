@@ -1,3 +1,10 @@
+# NOT managed here, and TEMPORARY: the legacy Cloudflare AI Gateway ("musclog", created by hand in the
+# dashboard, no Terraform). Released app versions (before the free tier moved to OpenRouter on
+# 2026-11-21) still send their free-tier requests to it, so it stays up, with its token and the
+# Google AI Studio key, until most installs have updated. Then revoke the gateway token and delete
+# the gateway and its BYOK key in the Cloudflare dashboard. Nothing in this repository calls it any
+# more (docs/PREMIUM_WORKER.md -> The legacy AI Gateway).
+
 # Path B (docs/plans/musclog-premium.md section 5): wrangler uploads the Worker code and keeps
 # its secrets; Terraform owns everything around the script. There is deliberately NO
 # cloudflare_workers_script resource and NO secret resource of any kind, so no secret can
