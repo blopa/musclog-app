@@ -115,6 +115,7 @@ import deDeTokenType from './locales/de-de/token_type.json';
 import deDeUserMenu from './locales/de-de/userMenu.json';
 import deDeWebsite from './locales/de-de/website.json';
 import deDeWebsiteAlternativesPages from './locales/de-de/websiteAlternativesPages.json';
+import deDeWebsitePremium from './locales/de-de/websitePremium.json';
 import deDeWebsitePrograms from './locales/de-de/websitePrograms.json';
 import deDeWebsiteToolCalorieDeficit from './locales/de-de/websiteToolCalorieDeficit.json';
 import deDeWebsiteToolDeloadCalculator from './locales/de-de/websiteToolDeloadCalculator.json';
@@ -222,6 +223,7 @@ import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWebsite from './locales/en-us/website.json';
 import enUsWebsiteAlternativesPages from './locales/en-us/websiteAlternativesPages.json';
+import enUsWebsitePremium from './locales/en-us/websitePremium.json';
 import enUsWebsitePrograms from './locales/en-us/websitePrograms.json';
 import enUsWebsiteToolCalorieDeficit from './locales/en-us/websiteToolCalorieDeficit.json';
 import enUsWebsiteToolDeloadCalculator from './locales/en-us/websiteToolDeloadCalculator.json';
@@ -329,6 +331,7 @@ import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
 import esEsWebsite from './locales/es-es/website.json';
 import esEsWebsiteAlternativesPages from './locales/es-es/websiteAlternativesPages.json';
+import esEsWebsitePremium from './locales/es-es/websitePremium.json';
 import esEsWebsitePrograms from './locales/es-es/websitePrograms.json';
 import esEsWebsiteToolCalorieDeficit from './locales/es-es/websiteToolCalorieDeficit.json';
 import esEsWebsiteToolDeloadCalculator from './locales/es-es/websiteToolDeloadCalculator.json';
@@ -436,6 +439,7 @@ import frFrTokenType from './locales/fr-fr/token_type.json';
 import frFrUserMenu from './locales/fr-fr/userMenu.json';
 import frFrWebsite from './locales/fr-fr/website.json';
 import frFrWebsiteAlternativesPages from './locales/fr-fr/websiteAlternativesPages.json';
+import frFrWebsitePremium from './locales/fr-fr/websitePremium.json';
 import frFrWebsitePrograms from './locales/fr-fr/websitePrograms.json';
 import frFrWebsiteToolCalorieDeficit from './locales/fr-fr/websiteToolCalorieDeficit.json';
 import frFrWebsiteToolDeloadCalculator from './locales/fr-fr/websiteToolDeloadCalculator.json';
@@ -543,6 +547,7 @@ import itItTokenType from './locales/it-it/token_type.json';
 import itItUserMenu from './locales/it-it/userMenu.json';
 import itItWebsite from './locales/it-it/website.json';
 import itItWebsiteAlternativesPages from './locales/it-it/websiteAlternativesPages.json';
+import itItWebsitePremium from './locales/it-it/websitePremium.json';
 import itItWebsitePrograms from './locales/it-it/websitePrograms.json';
 import itItWebsiteToolCalorieDeficit from './locales/it-it/websiteToolCalorieDeficit.json';
 import itItWebsiteToolDeloadCalculator from './locales/it-it/websiteToolDeloadCalculator.json';
@@ -650,6 +655,7 @@ import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
 import nlNlWebsite from './locales/nl-nl/website.json';
 import nlNlWebsiteAlternativesPages from './locales/nl-nl/websiteAlternativesPages.json';
+import nlNlWebsitePremium from './locales/nl-nl/websitePremium.json';
 import nlNlWebsitePrograms from './locales/nl-nl/websitePrograms.json';
 import nlNlWebsiteToolCalorieDeficit from './locales/nl-nl/websiteToolCalorieDeficit.json';
 import nlNlWebsiteToolDeloadCalculator from './locales/nl-nl/websiteToolDeloadCalculator.json';
@@ -757,6 +763,7 @@ import plPlTokenType from './locales/pl-pl/token_type.json';
 import plPlUserMenu from './locales/pl-pl/userMenu.json';
 import plPlWebsite from './locales/pl-pl/website.json';
 import plPlWebsiteAlternativesPages from './locales/pl-pl/websiteAlternativesPages.json';
+import plPlWebsitePremium from './locales/pl-pl/websitePremium.json';
 import plPlWebsitePrograms from './locales/pl-pl/websitePrograms.json';
 import plPlWebsiteToolCalorieDeficit from './locales/pl-pl/websiteToolCalorieDeficit.json';
 import plPlWebsiteToolDeloadCalculator from './locales/pl-pl/websiteToolDeloadCalculator.json';
@@ -864,6 +871,7 @@ import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
 import ptBrWebsite from './locales/pt-br/website.json';
 import ptBrWebsiteAlternativesPages from './locales/pt-br/websiteAlternativesPages.json';
+import ptBrWebsitePremium from './locales/pt-br/websitePremium.json';
 import ptBrWebsitePrograms from './locales/pt-br/websitePrograms.json';
 import ptBrWebsiteToolCalorieDeficit from './locales/pt-br/websiteToolCalorieDeficit.json';
 import ptBrWebsiteToolDeloadCalculator from './locales/pt-br/websiteToolDeloadCalculator.json';
@@ -971,6 +979,7 @@ import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
 import ruRuWebsite from './locales/ru-ru/website.json';
 import ruRuWebsiteAlternativesPages from './locales/ru-ru/websiteAlternativesPages.json';
+import ruRuWebsitePremium from './locales/ru-ru/websitePremium.json';
 import ruRuWebsitePrograms from './locales/ru-ru/websitePrograms.json';
 import ruRuWebsiteToolCalorieDeficit from './locales/ru-ru/websiteToolCalorieDeficit.json';
 import ruRuWebsiteToolDeloadCalculator from './locales/ru-ru/websiteToolDeloadCalculator.json';
@@ -1078,6 +1087,7 @@ import trTrTokenType from './locales/tr-tr/token_type.json';
 import trTrUserMenu from './locales/tr-tr/userMenu.json';
 import trTrWebsite from './locales/tr-tr/website.json';
 import trTrWebsiteAlternativesPages from './locales/tr-tr/websiteAlternativesPages.json';
+import trTrWebsitePremium from './locales/tr-tr/websitePremium.json';
 import trTrWebsitePrograms from './locales/tr-tr/websitePrograms.json';
 import trTrWebsiteToolCalorieDeficit from './locales/tr-tr/websiteToolCalorieDeficit.json';
 import trTrWebsiteToolDeloadCalculator from './locales/tr-tr/websiteToolDeloadCalculator.json';
@@ -1231,6 +1241,7 @@ const resources = {
       ...deDeUserMenu,
       ...deDeWebsite,
       ...deDeWebsiteAlternativesPages,
+      ...deDeWebsitePremium,
       ...deDeWebsitePrograms,
       ...deDeWebsiteToolCalorieDeficit,
       ...deDeWebsiteToolDeloadCalculator,
@@ -1342,6 +1353,7 @@ const resources = {
       ...enUsUserMenu,
       ...enUsWebsite,
       ...enUsWebsiteAlternativesPages,
+      ...enUsWebsitePremium,
       ...enUsWebsitePrograms,
       ...enUsWebsiteToolCalorieDeficit,
       ...enUsWebsiteToolDeloadCalculator,
@@ -1453,6 +1465,7 @@ const resources = {
       ...esEsUserMenu,
       ...esEsWebsite,
       ...esEsWebsiteAlternativesPages,
+      ...esEsWebsitePremium,
       ...esEsWebsitePrograms,
       ...esEsWebsiteToolCalorieDeficit,
       ...esEsWebsiteToolDeloadCalculator,
@@ -1564,6 +1577,7 @@ const resources = {
       ...frFrUserMenu,
       ...frFrWebsite,
       ...frFrWebsiteAlternativesPages,
+      ...frFrWebsitePremium,
       ...frFrWebsitePrograms,
       ...frFrWebsiteToolCalorieDeficit,
       ...frFrWebsiteToolDeloadCalculator,
@@ -1675,6 +1689,7 @@ const resources = {
       ...itItUserMenu,
       ...itItWebsite,
       ...itItWebsiteAlternativesPages,
+      ...itItWebsitePremium,
       ...itItWebsitePrograms,
       ...itItWebsiteToolCalorieDeficit,
       ...itItWebsiteToolDeloadCalculator,
@@ -1786,6 +1801,7 @@ const resources = {
       ...nlNlUserMenu,
       ...nlNlWebsite,
       ...nlNlWebsiteAlternativesPages,
+      ...nlNlWebsitePremium,
       ...nlNlWebsitePrograms,
       ...nlNlWebsiteToolCalorieDeficit,
       ...nlNlWebsiteToolDeloadCalculator,
@@ -1897,6 +1913,7 @@ const resources = {
       ...plPlUserMenu,
       ...plPlWebsite,
       ...plPlWebsiteAlternativesPages,
+      ...plPlWebsitePremium,
       ...plPlWebsitePrograms,
       ...plPlWebsiteToolCalorieDeficit,
       ...plPlWebsiteToolDeloadCalculator,
@@ -2008,6 +2025,7 @@ const resources = {
       ...ptBrUserMenu,
       ...ptBrWebsite,
       ...ptBrWebsiteAlternativesPages,
+      ...ptBrWebsitePremium,
       ...ptBrWebsitePrograms,
       ...ptBrWebsiteToolCalorieDeficit,
       ...ptBrWebsiteToolDeloadCalculator,
@@ -2119,6 +2137,7 @@ const resources = {
       ...ruRuUserMenu,
       ...ruRuWebsite,
       ...ruRuWebsiteAlternativesPages,
+      ...ruRuWebsitePremium,
       ...ruRuWebsitePrograms,
       ...ruRuWebsiteToolCalorieDeficit,
       ...ruRuWebsiteToolDeloadCalculator,
@@ -2230,6 +2249,7 @@ const resources = {
       ...trTrUserMenu,
       ...trTrWebsite,
       ...trTrWebsiteAlternativesPages,
+      ...trTrWebsitePremium,
       ...trTrWebsitePrograms,
       ...trTrWebsiteToolCalorieDeficit,
       ...trTrWebsiteToolDeloadCalculator,
