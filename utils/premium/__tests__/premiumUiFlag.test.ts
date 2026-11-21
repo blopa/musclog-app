@@ -4,32 +4,40 @@ import path from 'path';
 import { isPremiumUiEnabledFor } from '@/utils/premium/premiumUiFlag';
 
 const root = path.resolve(__dirname, '../../..');
-const FLAG = 'EXPO_PUBLIC_PREMIUM_UI';
+const FLAG = 'EXPO_PUBLIC_HIDE_PREMIUM_UI';
 
 describe('isPremiumUiEnabledFor', () => {
-  it.each(['ios', 'android'])('is on for a native %s build with the flag set to 1', (platform) => {
-    expect(isPremiumUiEnabledFor({ platform, flag: '1' })).toBe(true);
+  it.each(['ios', 'android'])('is on for a native %s build unless hidden', (platform) => {
+    expect(isPremiumUiEnabledFor({ platform, hide: undefined })).toBe(true);
+    expect(isPremiumUiEnabledFor({ platform, hide: '0' })).toBe(true);
   });
 
-  it('is off on a production web build even with the flag set', () => {
-    expect(isPremiumUiEnabledFor({ platform: 'web', flag: '1' })).toBe(false);
-    expect(isPremiumUiEnabledFor({ platform: 'web', flag: '1', dev: false })).toBe(false);
+  it.each(['ios', 'android'])(
+    'is off for a native %s build with the kill switch set to 1',
+    (platform) => {
+      expect(isPremiumUiEnabledFor({ platform, hide: '1' })).toBe(false);
+    }
+  );
+
+  it('is off on a production web build', () => {
+    expect(isPremiumUiEnabledFor({ platform: 'web', hide: undefined })).toBe(false);
+    expect(isPremiumUiEnabledFor({ platform: 'web', hide: undefined, dev: false })).toBe(false);
   });
 
-  it('is on for web under the development server with the flag set', () => {
-    expect(isPremiumUiEnabledFor({ platform: 'web', flag: '1', dev: true })).toBe(true);
-    expect(isPremiumUiEnabledFor({ platform: 'web', flag: undefined, dev: true })).toBe(false);
+  it('is on for web under the development server unless hidden', () => {
+    expect(isPremiumUiEnabledFor({ platform: 'web', hide: undefined, dev: true })).toBe(true);
+    expect(isPremiumUiEnabledFor({ platform: 'web', hide: '1', dev: true })).toBe(false);
   });
 
-  it.each(['0', 'true', 'yes', ' 1', '', undefined])(
-    'is off unless the flag is exactly "1" (%p)',
-    (flag) => {
-      expect(isPremiumUiEnabledFor({ platform: 'ios', flag })).toBe(false);
+  it.each(['true', 'yes', ' 1', '', undefined])(
+    'only the exact string "1" hides it (%p)',
+    (hide) => {
+      expect(isPremiumUiEnabledFor({ platform: 'ios', hide })).toBe(true);
     }
   );
 });
 
-describe('build configuration never switches Premium UI on', () => {
+describe('build configuration never sets the kill switch', () => {
   it.each(['eas.json', 'app.json', 'package.json'])('%s does not mention the flag', (file) => {
     const text = fs.readFileSync(path.join(root, file), 'utf8');
     expect(text).not.toContain(FLAG);
@@ -57,7 +65,8 @@ describe('the flag is read in one place', () => {
     const owner = path.join(root, 'utils/premium/premiumUiFlag.ts');
     const readers = sourceFiles(root)
       .filter((file) => fs.readFileSync(file, 'utf8').includes(FLAG))
-      .filter((file) => file !== __filename);
+      .filter((file) => file !== __filename)
+      .filter((file) => !/jest\.setup(\.jsdom)?\.js$/.test(file));
 
     expect(readers).toEqual([owner]);
   });

@@ -1,5 +1,5 @@
-// Render tests for the Premium entry rows. With the Premium build flag off (the default here, since
-// EXPO_PUBLIC_PREMIUM_UI is never set in Jest) the real usePremium() reports enabled=false and the
+// Render tests for the Premium entry rows. With the Premium kill switch on (the default here, since
+// jest.setup sets EXPO_PUBLIC_HIDE_PREMIUM_UI=1) the real usePremium() reports enabled=false and the
 // rows must render nothing. A forced enabled=true is the sanity check that the rows can be seen.
 import { render, screen } from '@testing-library/react';
 import { createElement } from 'react';

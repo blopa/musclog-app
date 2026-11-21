@@ -1,3 +1,6 @@
+// Premium UI is on by default in builds; hide it here so suites that do not test it see it off.
+process.env.EXPO_PUBLIC_HIDE_PREMIUM_UI = '1';
+
 // Global mocks
 
 // mock the __DEV__ global variable
