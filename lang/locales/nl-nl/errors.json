@@ -12,7 +12,7 @@
     "aiCreditsError": "AI-servicequotum overschreden. Controleer je API-sleutel of probeer het later opnieuw.",
     "aiProcessingError": "Sorry, ik had moeite om dat verzoek te verwerken. Probeer het over een moment opnieuw.",
     "aiProcessingErrorTitle": "Fout bij verwerken verzoek",
-    "gatewayDailyLimitError": "Het gratis AI-niveau is op dit moment niet beschikbaar (de dagelijkse limiet is mogelijk op). Probeer het later opnieuw of voeg je eigen API-sleutel toe in de AI-instellingen.",
+    "gatewayDailyLimitError": "Het gratis AI-niveau is op dit moment niet beschikbaar (de dagelijkse limiet, die alle gebruikers delen, is mogelijk op). Probeer het later opnieuw of voeg je eigen API-sleutel toe in de AI-instellingen.",
     "gatewayDailyLimitErrorTitle": "Gratis niveau niet beschikbaar",
     "databaseError": {
       "title": "Databasefout",

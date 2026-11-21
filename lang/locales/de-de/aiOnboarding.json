@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Schlüssel prüfen und weiter",
-      "gatewayHint": "Kein Konto und kein Schlüssel nötig. Es gilt ein Tageslimit.",
+      "gatewayHint": "Kein Konto und kein Schlüssel nötig. Das Tageslimit teilen sich alle Nutzer.",
       "intro": "Wähle die KI, die dir die Fragen stellt. Dein eigener Schlüssel funktioniert danach weiterhin in Musclog.",
       "keyLabel": "API-Schlüssel",
       "keyNetwork": "{{provider}} konnte zur Prüfung des Schlüssels nicht erreicht werden. Prüfe deine Verbindung und versuche es erneut.",
@@ -141,7 +141,7 @@
         "title": "Diese KI hat kein Guthaben mehr"
       },
       "gatewayLimit": {
-        "description": "Die kostenlose Musclog AI hat ein tägliches Limit. Versuche es morgen erneut, verwende deinen eigenen Schlüssel oder wähle einen anderen Weg.",
+        "description": "Das tägliche Limit der kostenlosen Musclog AI teilen sich alle, die sie nutzen, und es ist aufgebraucht. Versuche es morgen erneut, verwende deinen eigenen Schlüssel oder wähle einen anderen Weg.",
         "title": "Das kostenlose Tageslimit ist erreicht"
       },
       "invalidKey": {

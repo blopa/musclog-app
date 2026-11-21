@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Vérifier la clé et continuer",
-      "gatewayHint": "Pas de compte ni de clé. Une limite quotidienne s'applique.",
+      "gatewayHint": "Pas de compte ni de clé. La limite quotidienne est partagée par tous les utilisateurs.",
       "intro": "Choisis l'IA qui te posera les questions. Ta propre clé continuera de fonctionner dans Musclog ensuite.",
       "keyLabel": "Clé d'API",
       "keyNetwork": "Impossible de joindre {{provider}} pour vérifier la clé. Vérifie ta connexion et réessaie.",
@@ -141,7 +141,7 @@
         "title": "Cette IA n'a plus de crédit"
       },
       "gatewayLimit": {
-        "description": "Musclog IA gratuite a une limite quotidienne. Réessaie demain, utilise ta propre clé, ou choisis une autre façon.",
+        "description": "La limite quotidienne de Musclog IA gratuite est partagée par tous ceux qui l'utilisent, et elle est atteinte. Réessaie demain, utilise ta propre clé, ou choisis une autre façon.",
         "title": "La limite quotidienne gratuite est atteinte"
       },
       "invalidKey": {

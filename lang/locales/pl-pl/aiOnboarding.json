@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Sprawdź klucz i kontynuuj",
-      "gatewayHint": "Bez konta i klucza. Obowiązuje dzienny limit.",
+      "gatewayHint": "Bez konta i klucza. Dzienny limit jest wspólny dla wszystkich użytkowników.",
       "intro": "Wybierz AI, które zada ci pytania. Twój własny klucz będzie dalej działał w Musclog.",
       "keyLabel": "Klucz API",
       "keyNetwork": "Nie udało się połączyć z {{provider}}, żeby sprawdzić klucz. Sprawdź połączenie i spróbuj ponownie.",
@@ -141,7 +141,7 @@
         "title": "Ta AI nie ma już kredytu"
       },
       "gatewayLimit": {
-        "description": "Darmowe AI Musclog ma dzienny limit. Spróbuj jutro, użyj własnego klucza albo wybierz inny sposób.",
+        "description": "Dzienny limit darmowego AI Musclog jest wspólny dla wszystkich korzystających z niego i został wyczerpany. Spróbuj jutro, użyj własnego klucza albo wybierz inny sposób.",
         "title": "Osiągnięto darmowy dzienny limit"
       },
       "invalidKey": {

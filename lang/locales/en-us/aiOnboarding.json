@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Check key and continue",
-      "gatewayHint": "No account or key. A daily limit applies.",
+      "gatewayHint": "No account or key. The daily limit is shared by all users.",
       "intro": "Pick the AI that will ask you the questions. Your own key keeps working in Musclog afterwards.",
       "keyLabel": "API key",
       "keyNetwork": "Couldn't reach {{provider}} to check the key. Check your connection and try again.",
@@ -141,7 +141,7 @@
         "title": "This AI has no credit left"
       },
       "gatewayLimit": {
-        "description": "Free Musclog AI has a daily limit. Try again tomorrow, use your own key, or choose another way.",
+        "description": "The free daily limit is shared by everyone using Free Musclog AI, and it has been used up. Try again tomorrow, use your own key, or choose another way.",
         "title": "The free daily limit is reached"
       },
       "invalidKey": {

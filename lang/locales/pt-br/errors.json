@@ -12,7 +12,7 @@
     "aiCreditsError": "Limite de uso do serviço de IA excedido. Por favor, verifique sua chave de API ou tente novamente mais tarde.",
     "aiProcessingError": "Desculpe, tive dificuldade para processar essa solicitação. Por favor, tente novamente em um momento.",
     "aiProcessingErrorTitle": "Erro ao processar solicitação",
-    "gatewayDailyLimitError": "O nível gratuito de IA está indisponível no momento (o limite diário pode ter sido atingido). Tente novamente mais tarde ou adicione sua própria chave de API nas configurações de IA.",
+    "gatewayDailyLimitError": "O nível gratuito de IA está indisponível no momento (o limite diário, compartilhado por todos os usuários, pode ter sido atingido). Tente novamente mais tarde ou adicione sua própria chave de API nas configurações de IA.",
     "gatewayDailyLimitErrorTitle": "Nível gratuito indisponível",
     "databaseError": {
       "title": "Erro de Banco de Dados",

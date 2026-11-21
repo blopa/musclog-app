@@ -12,7 +12,7 @@
     "aiCreditsError": "Quota du service IA dépassé. Vérifie ta clé API ou réessaie plus tard.",
     "aiProcessingError": "Désolé, j'ai eu du mal à traiter cette demande. Réessaie dans un instant.",
     "aiProcessingErrorTitle": "Erreur lors du traitement de la demande",
-    "gatewayDailyLimitError": "L'offre gratuite d'IA est indisponible pour le moment (sa limite quotidienne est peut-être atteinte). Réessaie plus tard ou ajoute ta propre clé API dans les paramètres IA.",
+    "gatewayDailyLimitError": "L'offre gratuite d'IA est indisponible pour le moment (sa limite quotidienne, partagée par tous les utilisateurs, est peut-être atteinte). Réessaie plus tard ou ajoute ta propre clé API dans les paramètres IA.",
     "gatewayDailyLimitErrorTitle": "Offre gratuite indisponible",
     "databaseError": {
       "title": "Erreur de base de données",

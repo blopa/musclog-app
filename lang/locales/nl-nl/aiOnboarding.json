@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Sleutel controleren en doorgaan",
-      "gatewayHint": "Geen account of sleutel. Er geldt een daglimiet.",
+      "gatewayHint": "Geen account of sleutel. De daglimiet wordt door alle gebruikers gedeeld.",
       "intro": "Kies de AI die je de vragen stelt. Je eigen sleutel blijft daarna in Musclog werken.",
       "keyLabel": "API-sleutel",
       "keyNetwork": "Kon {{provider}} niet bereiken om de sleutel te controleren. Controleer je verbinding en probeer opnieuw.",
@@ -141,7 +141,7 @@
         "title": "Deze AI heeft geen tegoed meer"
       },
       "gatewayLimit": {
-        "description": "Gratis Musclog AI heeft een daglimiet. Probeer morgen opnieuw, gebruik je eigen sleutel of kies een andere manier.",
+        "description": "De daglimiet van Gratis Musclog AI wordt gedeeld door iedereen die het gebruikt, en is op. Probeer morgen opnieuw, gebruik je eigen sleutel of kies een andere manier.",
         "title": "De gratis daglimiet is bereikt"
       },
       "invalidKey": {

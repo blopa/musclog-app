@@ -12,7 +12,7 @@
     "aiCreditsError": "Yapay zeka hizmetinin kotası aşıldı. Lütfen API anahtarını kontrol et ya da daha sonra tekrar dene.",
     "aiProcessingError": "Üzgünüm, bu isteği işlerken sorun yaşadım. Lütfen birazdan tekrar dene.",
     "aiProcessingErrorTitle": "İstek işlenirken hata oluştu",
-    "gatewayDailyLimitError": "Ücretsiz yapay zekâ katmanı şu anda kullanılamıyor (günlük sınırı dolmuş olabilir). Daha sonra tekrar dene veya yapay zekâ ayarlarında kendi API anahtarını ekle.",
+    "gatewayDailyLimitError": "Ücretsiz yapay zekâ katmanı şu anda kullanılamıyor (herkesin paylaştığı günlük sınır dolmuş olabilir). Daha sonra tekrar dene veya yapay zekâ ayarlarında kendi API anahtarını ekle.",
     "gatewayDailyLimitErrorTitle": "Ücretsiz katman kullanılamıyor",
     "databaseError": {
       "title": "Veritabanı hatası",

@@ -12,7 +12,7 @@
     "aiCreditsError": "Quota del servizio IA superata. Controlla la chiave API o riprova più tardi.",
     "aiProcessingError": "Mi dispiace, ho avuto problemi a elaborare quella richiesta. Riprova tra un momento.",
     "aiProcessingErrorTitle": "Errore nell'elaborazione della richiesta",
-    "gatewayDailyLimitError": "Il piano AI gratuito non è disponibile al momento (il limite giornaliero potrebbe essere esaurito). Riprova più tardi o aggiungi la tua chiave API nelle impostazioni AI.",
+    "gatewayDailyLimitError": "Il piano AI gratuito non è disponibile al momento (il limite giornaliero, condiviso da tutti gli utenti, potrebbe essere esaurito). Riprova più tardi o aggiungi la tua chiave API nelle impostazioni AI.",
     "gatewayDailyLimitErrorTitle": "Piano gratuito non disponibile",
     "databaseError": {
       "title": "Errore del database",

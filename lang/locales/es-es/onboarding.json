@@ -253,7 +253,7 @@
         }
       },
       "dataSharingTitle": "Aviso de Compartición de Datos",
-      "dataSharingBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales o mensajes de chat) se envía a través de OpenRouter al nivel gratuito de Google AI Studio para redactar la respuesta. Google puede conservar lo enviado, usarlo para mejorar sus productos y hacer que personas (sin identificadores) lo revisen, así que el nivel gratuito no es privado: no introduzcas información personal ni sensible. El nivel gratuito es solo para adultos (18+). Si no te parece bien, déjalo desactivado. No se envía nada hasta que uses una función de IA. Hay un límite diario y el nivel gratuito a veces puede no estar disponible.",
+      "dataSharingBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales o mensajes de chat) se envía a través de OpenRouter al nivel gratuito de Google AI Studio para redactar la respuesta. Google puede conservar lo enviado, usarlo para mejorar sus productos y hacer que personas (sin identificadores) lo revisen, así que el nivel gratuito no es privado: no introduzcas información personal ni sensible. El nivel gratuito es solo para adultos (18+). Si no te parece bien, déjalo desactivado. No se envía nada hasta que uses una función de IA. Hay un límite diario que comparten todos los que usan el nivel gratuito, así que puede agotarse pronto en el día, y el nivel gratuito a veces puede no estar disponible.",
       "readPrivacyPolicy": "Leer nuestra Política de Privacidad",
       "enable": "Activar Musclog AI",
       "noThanks": "No gracias, continuar sin IA"

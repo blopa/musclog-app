@@ -12,7 +12,7 @@
     "aiCreditsError": "AI service quota exceeded. Please check your API key or try again later.",
     "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
     "aiProcessingErrorTitle": "Error processing request",
-    "gatewayDailyLimitError": "The free AI tier is unavailable right now (its daily limit may be used up). Try again later or add your own API key in AI Settings.",
+    "gatewayDailyLimitError": "The free AI tier is unavailable right now (its daily limit, shared by all users, may be used up). Try again later or add your own API key in AI Settings.",
     "gatewayDailyLimitErrorTitle": "Free tier unavailable",
     "databaseError": {
       "title": "Database error",

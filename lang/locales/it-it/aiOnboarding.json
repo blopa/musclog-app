@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Verifica la chiave e continua",
-      "gatewayHint": "Nessun account né chiave. Si applica un limite giornaliero.",
+      "gatewayHint": "Nessun account né chiave. Il limite giornaliero è condiviso da tutti gli utenti.",
       "intro": "Scegli l'IA che ti farà le domande. La tua chiave continuerà a funzionare in Musclog anche dopo.",
       "keyLabel": "Chiave API",
       "keyNetwork": "Impossibile contattare {{provider}} per verificare la chiave. Controlla la connessione e riprova.",
@@ -141,7 +141,7 @@
         "title": "Questa IA non ha più credito"
       },
       "gatewayLimit": {
-        "description": "La Musclog AI gratuita ha un limite giornaliero. Riprova domani, usa la tua chiave o scegli un altro modo.",
+        "description": "Il limite giornaliero della Musclog AI gratuita è condiviso da tutti quelli che la usano, ed è esaurito. Riprova domani, usa la tua chiave o scegli un altro modo.",
         "title": "Limite giornaliero gratuito raggiunto"
       },
       "invalidKey": {

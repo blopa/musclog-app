@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Anahtarı kontrol et ve devam et",
-      "gatewayHint": "Hesap ya da anahtar gerekmez. Günlük bir limit vardır.",
+      "gatewayHint": "Hesap ya da anahtar gerekmez. Günlük limit tüm kullanıcılar arasında paylaşılır.",
       "intro": "Sana soruları soracak yapay zekayı seç. Kendi anahtarın sonrasında da Musclog'da çalışmaya devam eder.",
       "keyLabel": "API anahtarı",
       "keyNetwork": "Anahtarı kontrol etmek için {{provider}} ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
@@ -141,7 +141,7 @@
         "title": "Bu yapay zekanın kredisi kalmadı"
       },
       "gatewayLimit": {
-        "description": "Ücretsiz Musclog AI'ın günlük bir limiti var. Yarın tekrar dene, kendi anahtarını kullan ya da başka bir yol seç.",
+        "description": "Ücretsiz Musclog AI'ın günlük limiti, onu kullanan herkesle paylaşılır ve bu limit dolmuştur. Yarın tekrar dene, kendi anahtarını kullan ya da başka bir yol seç.",
         "title": "Ücretsiz günlük limite ulaşıldı"
       },
       "invalidKey": {
