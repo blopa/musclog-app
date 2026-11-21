@@ -1,3 +1,4 @@
+import { AI_PROVIDER_KINDS } from '@/constants/ai';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
@@ -112,18 +113,24 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
     return async (language) => {
       const baseUrl = hostedAiBaseUrl();
       const grant = baseUrl ? await getSessionGrant() : null;
-      const base = {
-        provider: 'hosted',
-        baseUrl: baseUrl ?? '',
-        model: 'musclog-hosted',
-        language,
-      } as const;
+      const model = 'musclog-hosted';
 
-      if (grant?.ok) {
-        return { ...base, apiKey: grant.value.sessionToken };
+      if (baseUrl && grant?.ok) {
+        return {
+          provider: 'hosted',
+          baseUrl,
+          apiKey: grant.value.sessionToken,
+          model,
+          language,
+        };
       }
 
-      return { ...base, apiKey: '', hostedGrantFailure: grant ? grant.failure : 'not_available' };
+      return {
+        provider: 'hosted',
+        model,
+        language,
+        hostedGrantFailure: grant && !grant.ok ? grant.failure : 'not_available',
+      };
     };
   },
   // The free tier is offered in the native apps only (`musclogGatewayAvailability`), so its key is
@@ -174,16 +181,8 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
   },
 };
 
-/** Which provider wins when several are usable, first to last. */
-const PROVIDER_PRIORITY = [
-  'hosted',
-  'gateway',
-  'on-device',
-  'local',
-  'gemini',
-  'openai',
-  'claude',
-] as const satisfies readonly CoachAIProvider[];
+/** Which provider wins when several are usable, first to last: the one canonical order. */
+const PROVIDER_PRIORITY: readonly CoachAIProvider[] = AI_PROVIDER_KINDS;
 
 export class AiService {
   /**

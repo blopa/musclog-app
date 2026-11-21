@@ -42,6 +42,21 @@ export type UsePremium = {
   recordConsent(): Promise<void>;
 };
 
+type PremiumActions = Pick<
+  UsePremium,
+  'subscribe' | 'restore' | 'refresh' | 'setUseHostedAi' | 'reset' | 'recordConsent'
+>;
+
+// Handed out while Premium is switched off: every action is a no-op, so no callback checks the flag.
+const INERT_ACTIONS: PremiumActions = {
+  subscribe: async () => false,
+  restore: async () => false,
+  refresh: async () => undefined,
+  setUseHostedAi: async () => undefined,
+  reset: async () => undefined,
+  recordConsent: async () => undefined,
+};
+
 /**
  * Test-fixture seam only: `/app/test/modals` wraps `PremiumModal` in a provider so every Premium
  * state can be rendered with no service, no flag and no network. The default is null, so nothing
@@ -77,12 +92,8 @@ export function usePremium(): UsePremium {
   }, []);
 
   const refresh = useCallback(async () => {
-    if (!enabled) {
-      return;
-    }
-
     await applyOverview(await loadPremiumOverview());
-  }, [enabled, applyOverview]);
+  }, [applyOverview]);
 
   useEffect(() => {
     if (!enabled) {
@@ -136,59 +147,35 @@ export function usePremium(): UsePremium {
     [refresh]
   );
 
-  const subscribe = useCallback(async () => {
-    if (!enabled) {
-      return false;
-    }
+  const liveActions = useMemo<PremiumActions>(() => {
+    const subscribe = () => runAction(purchaseAndEnroll);
+    const restore = () => runAction(restoreAndEnroll);
 
-    return runAction(purchaseAndEnroll);
-  }, [enabled, runAction]);
+    const setUseHostedAi = async (on: boolean) => {
+      await SettingsService.set(SETTINGS.useHostedAi, on);
+    };
 
-  const restore = useCallback(async () => {
-    if (!enabled) {
-      return false;
-    }
+    const reset = async () => {
+      await resetPremiumOnThisDevice();
 
-    return runAction(restoreAndEnroll);
-  }, [enabled, runAction]);
-
-  const setUseHostedAi = useCallback(
-    async (on: boolean) => {
-      if (!enabled) {
-        return;
+      if (mounted.current) {
+        setLastActionFailure(null);
       }
 
-      await SettingsService.set(SETTINGS.useHostedAi, on);
-    },
-    [enabled]
-  );
+      await refresh();
+    };
 
-  const reset = useCallback(async () => {
-    if (!enabled) {
-      return;
-    }
+    const recordConsent = async () => {
+      await SettingsService.set(SETTINGS.premiumConsentVersion, PREMIUM_CONSENT_VERSION);
+    };
 
-    await resetPremiumOnThisDevice();
-
-    if (mounted.current) {
-      setLastActionFailure(null);
-    }
-
-    await refresh();
-  }, [enabled, refresh]);
+    return { subscribe, restore, refresh, setUseHostedAi, reset, recordConsent };
+  }, [runAction, refresh]);
 
   const consentNeeded = useCallback(
     (nextValue: boolean) => needsPremiumConsent(consentVersion, useHostedAi, nextValue),
     [consentVersion, useHostedAi]
   );
-
-  const recordConsent = useCallback(async () => {
-    if (!enabled) {
-      return;
-    }
-
-    await SettingsService.set(SETTINGS.premiumConsentVersion, PREMIUM_CONSENT_VERSION);
-  }, [enabled]);
 
   const view = useMemo(
     () =>
@@ -204,6 +191,8 @@ export function usePremium(): UsePremium {
     [enabled, overview, lastActionFailure, signal, busy]
   );
 
+  const actions = enabled ? liveActions : INERT_ACTIONS;
+
   return (
     fixture ?? {
       enabled,
@@ -211,13 +200,8 @@ export function usePremium(): UsePremium {
       priceString: enabled ? (overview?.priceString ?? null) : null,
       busy,
       useHostedAi,
-      subscribe,
-      restore,
-      refresh,
-      setUseHostedAi,
-      reset,
+      ...actions,
       consentNeeded,
-      recordConsent,
     }
   );
 }

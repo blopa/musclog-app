@@ -93,7 +93,6 @@ describe('AiService hosted (Musclog Premium) probe', () => {
 
     await expect(AiService.getAiConfig()).resolves.toMatchObject({
       provider: 'hosted',
-      apiKey: '',
       hostedGrantFailure: 'not_available',
     });
     expect(mockGrant).not.toHaveBeenCalled();
@@ -135,8 +134,6 @@ describe('AiService hosted (Musclog Premium) probe', () => {
     const config = await AiService.getAiConfig();
     expect(config).toEqual({
       provider: 'hosted',
-      baseUrl: 'https://hosted.example',
-      apiKey: '',
       model: 'musclog-hosted',
       language: 'en-US',
       hostedGrantFailure: 'unknown_device',

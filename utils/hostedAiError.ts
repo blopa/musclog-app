@@ -18,15 +18,72 @@ export type HostedErrorKind =
   | 'busy' // 409 in_progress and 429
   | 'alreadyProcessed'; // 409 already_processed: the person must resend
 
-const MESSAGES: Record<HostedErrorKind, string> = {
-  budget: 'Musclog Premium: the monthly allowance is used up',
-  dailyLimit: 'Musclog Premium: the daily limit is reached',
-  subscription: 'Musclog Premium: no active subscription on this device',
-  removed: 'Musclog Premium: this device was removed from the subscription',
-  unavailable: 'Musclog Premium is temporarily unavailable',
-  dailyFull: 'Musclog Premium: at capacity today',
-  busy: 'Musclog Premium is busy, try again shortly',
-  alreadyProcessed: 'Musclog Premium already answered this request; please send it again',
+type HostedSignal = Parameters<typeof setHostedSignal>[0];
+
+interface HostedKindSpec {
+  /** Fixed English message on the error; the Worker's own text never reaches the user. */
+  message: string;
+  /** What the Premium screens are told (`premium/hostedSignal.ts`), or `null` for none. */
+  signal: HostedSignal | null;
+  /** The translation key `describeAiError` shows. Literal, so `check-translations` sees it. */
+  i18nKey: string;
+  /** Whether `withLlmRetry` may repeat the request with the same idempotency key by default. */
+  retryable: boolean;
+}
+
+/**
+ * The one description of every hosted kind: its message, the signal it sends, its copy key and
+ * whether it is retryable by default. `Record` makes a new kind fail the build until it is here.
+ */
+export const HOSTED_KINDS: Record<HostedErrorKind, HostedKindSpec> = {
+  budget: {
+    message: 'Musclog Premium: the monthly allowance is used up',
+    signal: 'exhausted',
+    i18nKey: 'errors.hostedBudget',
+    retryable: false,
+  },
+  dailyLimit: {
+    message: 'Musclog Premium: the daily limit is reached',
+    signal: null,
+    i18nKey: 'errors.hostedDailyLimit',
+    retryable: false,
+  },
+  subscription: {
+    message: 'Musclog Premium: no active subscription on this device',
+    signal: null,
+    i18nKey: 'errors.hostedSubscription',
+    retryable: false,
+  },
+  removed: {
+    message: 'Musclog Premium: this device was removed from the subscription',
+    signal: 'removed',
+    i18nKey: 'errors.hostedRemoved',
+    retryable: false,
+  },
+  unavailable: {
+    message: 'Musclog Premium is temporarily unavailable',
+    signal: 'unavailable',
+    i18nKey: 'errors.hostedUnavailable',
+    retryable: false,
+  },
+  dailyFull: {
+    message: 'Musclog Premium: at capacity today',
+    signal: 'daily_full',
+    i18nKey: 'errors.hostedDailyFull',
+    retryable: false,
+  },
+  busy: {
+    message: 'Musclog Premium is busy, try again shortly',
+    signal: null,
+    i18nKey: 'errors.hostedBusy',
+    retryable: true,
+  },
+  alreadyProcessed: {
+    message: 'Musclog Premium already answered this request; please send it again',
+    signal: null,
+    i18nKey: 'errors.hostedAlreadyProcessed',
+    retryable: false,
+  },
 };
 
 export class HostedAiError extends Error {
@@ -40,10 +97,10 @@ export class HostedAiError extends Error {
     kind: HostedErrorKind,
     options: { retryable?: boolean; resetsAt?: string; retryAfterSeconds?: number } = {}
   ) {
-    super(MESSAGES[kind]);
+    super(HOSTED_KINDS[kind].message);
     this.name = 'HostedAiError';
     this.hostedKind = kind;
-    this.retryable = options.retryable ?? kind === 'busy';
+    this.retryable = options.retryable ?? HOSTED_KINDS[kind].retryable;
     this.resetsAt = options.resetsAt;
     this.retryAfterSeconds = options.retryAfterSeconds;
   }
@@ -90,10 +147,38 @@ type SdkFailure = {
   headers?: { get?: (name: string) => string | null | undefined };
 };
 
+/** The fields of a Worker error body that decide the hosted kind. */
+export interface WorkerBody {
+  code: string;
+  resetsAt?: string;
+  retryAfterSeconds?: number;
+}
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+  typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {};
+
+/**
+ * Reads the Worker's body from an SDK failure. The Worker sends `{ error: { code, message,
+ * retry_after?, resets_at? } }`; the SDK keeps that body on `error.error`, so the fields come from
+ * the inner object when there is one. `retry_after` falls back to the `retry-after` header.
+ */
+export function readWorkerBody(failure: SdkFailure): WorkerBody {
+  const body = asRecord(failure.error);
+  const inner = typeof body.error === 'object' && body.error !== null ? asRecord(body.error) : body;
+  const headerValue =
+    typeof failure.headers?.get === 'function' ? failure.headers.get('retry-after') : undefined;
+  const resetsAt = typeof inner.resets_at === 'string' ? inner.resets_at : undefined;
+
+  return {
+    code: typeof inner.code === 'string' ? inner.code : '',
+    resetsAt,
+    retryAfterSeconds: numericSeconds(inner.retry_after) ?? numericSeconds(headerValue),
+  };
+}
+
 /**
  * Maps an SDK failure from the Musclog Worker to a hosted error, or `null` when it is not one the
- * Worker produces. The Worker's body is `{ error: { code, message, retry_after?, resets_at? } }`;
- * the SDK keeps that body on `error.error`, so the code is read from the inner object.
+ * Worker produces.
  */
 export function toHostedAiError(error: unknown): HostedAiError | null {
   if (error instanceof HostedAiError) {
@@ -106,19 +191,7 @@ export function toHostedAiError(error: unknown): HostedAiError | null {
   }
 
   const { status } = failure;
-  const body = (
-    typeof failure.error === 'object' && failure.error !== null ? failure.error : {}
-  ) as Record<string, unknown>;
-  const inner = (
-    typeof body.error === 'object' && body.error !== null ? body.error : body
-  ) as Record<string, unknown>;
-  const code = typeof inner.code === 'string' ? inner.code : '';
-  const resetsAt = typeof inner.resets_at === 'string' ? inner.resets_at : undefined;
-  const retryAfterSeconds =
-    numericSeconds(inner.retry_after) ??
-    numericSeconds(
-      typeof failure.headers?.get === 'function' ? failure.headers.get('retry-after') : undefined
-    );
+  const { code, resetsAt, retryAfterSeconds } = readWorkerBody(failure);
 
   if (/error code: ?1027/i.test(String(failure.message ?? '')) || code === '1027') {
     return new HostedAiError('unavailable');
@@ -154,20 +227,5 @@ export function toHostedAiError(error: unknown): HostedAiError | null {
 
 /** Reports a hosted failure to the Premium screens (see `premium/hostedSignal.ts`). */
 export function noteHostedError(error: HostedAiError): void {
-  switch (error.hostedKind) {
-    case 'budget':
-      setHostedSignal('exhausted');
-      return;
-    case 'dailyFull':
-      setHostedSignal('daily_full');
-      return;
-    case 'unavailable':
-      setHostedSignal('unavailable');
-      return;
-    case 'removed':
-      setHostedSignal('removed');
-      return;
-    default:
-      setHostedSignal(null);
-  }
+  setHostedSignal(HOSTED_KINDS[error.hostedKind].signal);
 }

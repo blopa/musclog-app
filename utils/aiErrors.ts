@@ -7,7 +7,7 @@
  * and a bare 400 stays an ordinary error.
  */
 import type { CoachAIProvider } from './coachAI';
-import { HostedAiError, hostedErrorKindOf } from './hostedAiError';
+import { HOSTED_KINDS, HostedAiError, hostedErrorKindOf } from './hostedAiError';
 
 export class AiInvalidKeyError extends Error {
   readonly provider: CoachAIProvider;
@@ -218,28 +218,13 @@ function describeHostedError(
   t: (key: string, options?: Record<string, unknown>) => string,
   locale?: string
 ): string {
-  switch (error.hostedKind) {
-    case 'budget': {
-      const date = formatResetDate(error, locale);
-      return date ? t('errors.hostedBudget', { date }) : t('errors.hostedBudgetNoDate');
-    }
-
-    case 'dailyLimit':
-      return t('errors.hostedDailyLimit');
-
-    case 'subscription':
-      return t('errors.hostedSubscription');
-    case 'removed':
-      return t('errors.hostedRemoved');
-    case 'unavailable':
-      return t('errors.hostedUnavailable');
-    case 'dailyFull':
-      return t('errors.hostedDailyFull');
-    case 'busy':
-      return t('errors.hostedBusy');
-    case 'alreadyProcessed':
-      return t('errors.hostedAlreadyProcessed');
+  if (error.hostedKind === 'budget') {
+    // The one kind with a variant: the reset date is named when the Worker gave a usable one.
+    const date = formatResetDate(error, locale);
+    return date ? t(HOSTED_KINDS.budget.i18nKey, { date }) : t('errors.hostedBudgetNoDate');
   }
+
+  return t(HOSTED_KINDS[error.hostedKind].i18nKey);
 }
 
 /** Providers for which the Cancel/timeout machinery and a key test make sense. */

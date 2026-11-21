@@ -67,18 +67,50 @@ function flowDeps(baseUrl: string): FlowDeps {
   return { baseUrl, fetch: platformFetch, sign: signer };
 }
 
-// The token lives in memory only: it is never stored, logged or backed up.
-let cached: { rcId: string; grant: SessionGrant } | null = null;
-let inFlightSession: Promise<PremiumResult<SessionGrant>> | null = null;
-// Bumped by a reset: an enroll or session that started before it must not write the old id back.
-let generation = 0;
+async function withBaseUrl<T>(
+  fn: (baseUrl: string) => Promise<PremiumResult<T>>
+): Promise<PremiumResult<T>> {
+  const baseUrl = hostedAiBaseUrl();
+
+  if (!baseUrl) {
+    return { ok: false, failure: 'not_available' };
+  }
+
+  return fn(baseUrl);
+}
+
+/**
+ * The session token lives in memory only: it is never stored, logged or backed up. `generation` is
+ * bumped by a reset, so an enroll or session that started before it must not write the old id back.
+ */
+class SessionState {
+  cached: { rcId: string; grant: SessionGrant } | null = null;
+  inFlight: Promise<PremiumResult<SessionGrant>> | null = null;
+  private generation = 0;
+
+  begin(): number {
+    return this.generation;
+  }
+
+  isCurrent(token: number): boolean {
+    return token === this.generation;
+  }
+
+  reset(): void {
+    this.generation += 1;
+    this.cached = null;
+    this.inFlight = null;
+  }
+}
+
+const session = new SessionState();
 
 async function remember(rcId: string, grant: SessionGrant, startedIn: number): Promise<void> {
-  if (startedIn !== generation) {
+  if (!session.isCurrent(startedIn)) {
     return;
   }
 
-  cached = { rcId, grant };
+  session.cached = { rcId, grant };
   await savePremiumLocalState({
     rcId,
     removed: false,
@@ -90,11 +122,11 @@ async function remember(rcId: string, grant: SessionGrant, startedIn: number): P
 }
 
 async function markRemoved(startedIn: number): Promise<void> {
-  if (startedIn !== generation) {
+  if (!session.isCurrent(startedIn)) {
     return;
   }
 
-  cached = null;
+  session.cached = null;
   await savePremiumLocalState({ removed: true });
 }
 
@@ -111,25 +143,30 @@ export async function getPremiumStatus(): Promise<PremiumStatus> {
   });
 }
 
-/** Enrolls this device (one attempt). Use after the subscription is known to exist. */
-export async function enrollThisDevice(): Promise<PremiumResult<SessionGrant>> {
-  const baseUrl = hostedAiBaseUrl();
-
-  if (!baseUrl) {
-    return { ok: false, failure: 'not_available' };
-  }
-
-  const startedIn = generation;
-  const key = await getOrCreateDeviceKey();
-  const result = await enrollDevice(flowDeps(baseUrl));
+async function enrollAndRemember(
+  rcId: string,
+  startedIn: number,
+  enroll: () => Promise<PremiumResult<SessionGrant>>
+): Promise<PremiumResult<SessionGrant>> {
+  const result = await enroll();
 
   if (!result.ok) {
     return { ok: false, failure: result.failure };
   }
 
-  await remember(key.rcId, result.value, startedIn);
+  await remember(rcId, result.value, startedIn);
 
   return result;
+}
+
+/** Enrolls this device (one attempt). Use after the subscription is known to exist. */
+export function enrollThisDevice(): Promise<PremiumResult<SessionGrant>> {
+  return withBaseUrl(async (baseUrl) => {
+    const startedIn = session.begin();
+    const key = await getOrCreateDeviceKey();
+
+    return enrollAndRemember(key.rcId, startedIn, () => enrollDevice(flowDeps(baseUrl)));
+  });
 }
 
 type PurchaseStepResult =
@@ -161,31 +198,21 @@ async function purchaseStep(step: 'purchase' | 'restore'): Promise<PurchaseStepR
   }
 }
 
-async function buyOrRestoreThenEnroll(
+function buyOrRestoreThenEnroll(
   step: 'purchase' | 'restore'
 ): Promise<PremiumResult<SessionGrant>> {
-  const baseUrl = hostedAiBaseUrl();
+  return withBaseUrl(async (baseUrl) => {
+    const startedIn = session.begin();
+    const done = await purchaseStep(step);
 
-  if (!baseUrl) {
-    return { ok: false, failure: 'not_available' };
-  }
+    if ('failure' in done) {
+      return { ok: false, failure: done.failure };
+    }
 
-  const startedIn = generation;
-  const done = await purchaseStep(step);
-
-  if ('failure' in done) {
-    return { ok: false, failure: done.failure };
-  }
-
-  const result = await enrollWithRetry({ ...flowDeps(baseUrl), sleep });
-
-  if (!result.ok) {
-    return { ok: false, failure: result.failure };
-  }
-
-  await remember(done.rcId, result.value, startedIn);
-
-  return result;
+    return enrollAndRemember(done.rcId, startedIn, () =>
+      enrollWithRetry({ ...flowDeps(baseUrl), sleep })
+    );
+  });
 }
 
 /** Subscribe under the key-derived id, then enroll. RevenueCat is configured lazily, here. */
@@ -194,32 +221,28 @@ export const purchaseAndEnroll = () => buyOrRestoreThenEnroll('purchase');
 /** Store-verified restore under this device's id (this is also how a second device is added). */
 export const restoreAndEnroll = () => buyOrRestoreThenEnroll('restore');
 
-async function mintAndRemember(rcId: string): Promise<PremiumResult<SessionGrant>> {
-  const baseUrl = hostedAiBaseUrl();
+function mintAndRemember(rcId: string): Promise<PremiumResult<SessionGrant>> {
+  return withBaseUrl(async (baseUrl) => {
+    const startedIn = session.begin();
+    const result = await mintSession(flowDeps(baseUrl));
 
-  if (!baseUrl) {
-    return { ok: false, failure: 'not_available' };
-  }
+    if (result.ok) {
+      await remember(rcId, result.value, startedIn);
 
-  const startedIn = generation;
-  const result = await mintSession(flowDeps(baseUrl));
+      return result;
+    }
 
-  if (result.ok) {
-    await remember(rcId, result.value, startedIn);
+    if (session.isCurrent(startedIn)) {
+      session.cached = null;
+    }
 
-    return result;
-  }
+    if (result.failure === 'unknown_device') {
+      // Evicted or removed from the subscription: report it, never re-enroll silently.
+      await markRemoved(startedIn);
+    }
 
-  if (startedIn === generation) {
-    cached = null;
-  }
-
-  if (result.failure === 'unknown_device') {
-    // Evicted or removed from the subscription: report it, never re-enroll silently.
-    await markRemoved(startedIn);
-  }
-
-  return { ok: false, failure: result.failure };
+    return { ok: false, failure: result.failure };
+  });
 }
 
 /** A usable session token, refreshed 5 minutes before it expires. Never enrolls by itself. */
@@ -235,6 +258,8 @@ export async function getSessionGrant(): Promise<PremiumResult<SessionGrant>> {
     return { ok: false, failure: 'unknown_device' };
   }
 
+  const { cached } = session;
+
   if (
     cached &&
     cached.rcId === key.rcId &&
@@ -243,74 +268,70 @@ export async function getSessionGrant(): Promise<PremiumResult<SessionGrant>> {
     return { ok: true, value: cached.grant };
   }
 
-  if (!inFlightSession) {
+  if (!session.inFlight) {
     const run = mintAndRemember(key.rcId);
 
-    inFlightSession = run;
+    session.inFlight = run;
 
     const clear = () => {
-      if (inFlightSession === run) {
-        inFlightSession = null;
+      if (session.inFlight === run) {
+        session.inFlight = null;
       }
     };
 
     run.then(clear, clear);
   }
 
-  return inFlightSession;
+  return session.inFlight;
 }
 
 /** `/v1/usage`: a percentage and a status. Retries once with a new token if the cached one died. */
-export async function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
-  const baseUrl = hostedAiBaseUrl();
+export function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
+  return withBaseUrl(async (baseUrl) => {
+    const startedIn = session.begin();
 
-  if (!baseUrl) {
-    return { ok: false, failure: 'not_available' };
-  }
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const grant = await getSessionGrant();
 
-  const startedIn = generation;
-
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const grant = await getSessionGrant();
-
-    if (!grant.ok) {
-      return grant;
-    }
-
-    const result = await hostedUsage(baseUrl, grant.value.sessionToken, platformFetch);
-
-    if (result.ok) {
-      const usage = parseUsage(result.body);
-
-      if (!usage) {
-        return { ok: false, failure: 'invalid_response' };
+      if (!grant.ok) {
+        return grant;
       }
 
-      await savePremiumLocalState({
-        lastStatus: usage.status,
-        usedPct: usage.usedPct,
-        resetsAt: usage.resetsAt,
-        devices: usage.devices,
-      });
+      const result = await hostedUsage(baseUrl, grant.value.sessionToken, platformFetch);
 
-      return { ok: true, value: usage };
+      if (result.ok) {
+        const usage = parseUsage(result.body);
+
+        if (!usage) {
+          return { ok: false, failure: 'invalid_response' };
+        }
+
+        await savePremiumLocalState({
+          lastStatus: usage.status,
+          usedPct: usage.usedPct,
+          resetsAt: usage.resetsAt,
+          devices: usage.devices,
+        });
+
+        return { ok: true, value: usage };
+      }
+
+      const failure = failureKindOf(result);
+
+      if (failure === 'unauthorized' && attempt === 0) {
+        session.cached = null;
+        continue;
+      }
+
+      if (failure === 'unknown_device') {
+        await markRemoved(startedIn);
+      }
+
+      return { ok: false, failure };
     }
 
-    const failure = failureKindOf(result);
-
-    if (failure === 'unauthorized' && attempt === 0) {
-      cached = null;
-      continue;
-    }
-
-    if (failure === 'unknown_device') {
-      await markRemoved(startedIn);
-    }
-
-    return { ok: false, failure };
-  }
-
-  return { ok: false, failure: 'unknown' };
+    return { ok: false, failure: 'unknown' };
+  });
 }
 
 // `/v1/config` is public and read by the Premium screen and by every hosted photo, so a burst of
@@ -318,34 +339,30 @@ export async function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot
 const CONFIG_CACHE_MS = 5 * 60 * 1000;
 let cachedConfig: { value: HostedConfig; at: number } | null = null;
 
-export async function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>> {
-  const baseUrl = hostedAiBaseUrl();
+export function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>> {
+  return withBaseUrl(async (baseUrl) => {
+    const now = Date.now();
 
-  if (!baseUrl) {
-    return { ok: false, failure: 'not_available' };
-  }
+    if (cachedConfig && now - cachedConfig.at < CONFIG_CACHE_MS) {
+      return { ok: true, value: cachedConfig.value };
+    }
 
-  const now = Date.now();
+    const result = await hostedConfig(baseUrl, platformFetch);
 
-  if (cachedConfig && now - cachedConfig.at < CONFIG_CACHE_MS) {
-    return { ok: true, value: cachedConfig.value };
-  }
+    if (!result.ok) {
+      return { ok: false, failure: failureKindOf(result) };
+    }
 
-  const result = await hostedConfig(baseUrl, platformFetch);
+    const config = parseHostedConfig(result.body);
 
-  if (!result.ok) {
-    return { ok: false, failure: failureKindOf(result) };
-  }
+    if (!config) {
+      return { ok: false, failure: 'invalid_response' };
+    }
 
-  const config = parseHostedConfig(result.body);
+    cachedConfig = { value: config, at: now };
 
-  if (!config) {
-    return { ok: false, failure: 'invalid_response' };
-  }
-
-  cachedConfig = { value: config, at: now };
-
-  return { ok: true, value: config };
+    return { ok: true, value: config };
+  });
 }
 
 export function resetPremiumConfigCache(): void {
@@ -359,9 +376,7 @@ export function resetPremiumConfigCache(): void {
  * is configured here (it is configured lazily by the next purchase or restore).
  */
 export async function resetPremium(): Promise<{ rcId: string; revenueCatSwitched: boolean }> {
-  generation += 1;
-  cached = null;
-  inFlightSession = null;
+  session.reset();
   await clearPremiumLocalState();
 
   const fresh = await resetDeviceKey();

@@ -8,7 +8,8 @@ import {
   isRetryableHostedError,
   toHostedAiError,
 } from '@/utils/hostedAiError';
-import { type CoachAIConfig, reportAiError, withLlmRetry } from '@/utils/coachAI';
+import { type CoachAIConfig, reportAiError } from '@/utils/coachAI';
+import { withLlmRetry } from '@/utils/llmRetry';
 import { getHostedSignal, setHostedSignal } from '@/utils/premium/hostedSignal';
 import { handleError } from '@/utils/handleError';
 

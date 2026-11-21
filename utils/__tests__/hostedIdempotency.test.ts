@@ -6,8 +6,8 @@ import {
   estimateNutritionFromPhoto,
   getNutritionInsights,
   sendCoachMessage,
-  withLlmRetry,
 } from '../coachAI';
+import { withLlmRetry } from '../llmRetry';
 
 jest.mock('../gemini', () => ({
   configureBasicGenAI: jest.fn(),

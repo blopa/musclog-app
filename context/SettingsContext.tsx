@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
+  AI_PROVIDER_KINDS,
   type AiProviderKind,
   DEFAULT_CLAUDE_MODEL,
   DEFAULT_GEMINI_MODEL,
@@ -596,33 +597,20 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   // UI after an enrollment; the probe in AiService is the real authority on whether it answers.
   const hostedOn = isPremiumUiEnabled() && state.useHostedAi;
 
-  // Mirrors AiService.getAiConfig() priority: hosted → gateway → on-device → local → gemini → openai → claude.
+  // Which providers are usable right now; the winner is the first one in `AI_PROVIDER_KINDS`, the
+  // same order `AiService.getAiConfig()` uses.
   const aiProvider = useMemo<AiProviderKind | null>(() => {
-    if (hostedOn) {
-      return 'hosted';
-    }
+    const usable: Record<AiProviderKind, boolean> = {
+      hosted: hostedOn,
+      gateway: effectiveUseMusclogGateway(state.useMusclogFreeTier),
+      'on-device': state.useOnDeviceAi,
+      local: state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '',
+      gemini: state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '',
+      openai: state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '',
+      claude: state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '',
+    };
 
-    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
-      return 'gateway';
-    }
-
-    if (state.useOnDeviceAi) {
-      return 'on-device';
-    }
-
-    if (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') {
-      return 'local';
-    }
-
-    if (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') {
-      return 'gemini';
-    }
-
-    if (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') {
-      return 'openai';
-    }
-
-    return state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '' ? 'claude' : null;
+    return AI_PROVIDER_KINDS.find((kind) => usable[kind]) ?? null;
   }, [
     hostedOn,
     state.useMusclogFreeTier,
