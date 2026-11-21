@@ -119,40 +119,9 @@ async function run(
   rl.model = config.model;
 
   // 5. The caller's live period, diagnosing why there is none.
-  let period = await findLivePeriod(db, claims.rc, now);
-  if (!period) {
-    if (await isBreakerOpen(db)) throw new ApiError(503, 'hosted_disabled');
-    const df = await db
-      .prepare("SELECT value FROM meta WHERE key = 'daily_full'")
-      .first<{ value: string }>();
-    if (df?.value === '1') throw new ApiError(503, 'daily_full');
-    const dev = await db
-      .prepare("SELECT lineage_key FROM devices WHERE rc_id = ?1 AND status = 'active'")
-      .bind(claims.rc)
-      .first<{ lineage_key: string }>();
-    if (!dev) throw new ApiError(401, 'unknown_device');
-    const latest = await db
-      .prepare(
-        'SELECT rc_subscription_id FROM periods WHERE lineage_key = ?1 ORDER BY period_start DESC LIMIT 1'
-      )
-      .bind(dev.lineage_key)
-      .first<{ rc_subscription_id: string }>();
-    if (!latest) throw new ApiError(403, 'subscription_required');
-    try {
-      const v = await reverifySubscription(ctx, latest.rc_subscription_id, now);
-      if (v.status === 'lapsed') throw new ApiError(403, 'subscription_required');
-    } catch (e) {
-      if (e instanceof RevenueCatUnavailableError)
-        throw new ApiError(503, 'entitlement_unavailable');
-      throw e;
-    }
-    period = await findLivePeriod(db, claims.rc, now);
-    if (!period) throw new ApiError(403, 'subscription_required');
-  }
+  const period = await requirePeriod(ctx, claims.rc, now);
   rl.lineage = lineagePrefix(period.lineage_key);
-  const pk = period.payment_key;
-  const pct = budgetPct(period, r, now);
-  const budgetHeader = { 'x-musclog-budget-remaining-pct': String(pct) };
+  const budgetHeader = { 'x-musclog-budget-remaining-pct': String(budgetPct(period, r, now)) };
   const fail = (
     status: number,
     code: ErrorCode,
@@ -168,7 +137,7 @@ async function run(
   const bh = await sha256Hex(bodyText);
 
   // 7. Reserve. A D1 failure fails closed, with no upstream call.
-  const day = dayKey(now);
+  const pk = period.payment_key;
   let outcome: ReserveOutcome;
   try {
     outcome = (
@@ -180,7 +149,7 @@ async function run(
         r,
         hold: deps.randomHex(),
         now,
-        day,
+        day: dayKey(now),
         maxReq: config.limits.max_requests_per_day,
         maxInflight: config.limits.max_inflight,
       })
@@ -188,75 +157,29 @@ async function run(
   } catch {
     return fail(503, 'hosted_disabled', {}, { severity: 'error' });
   }
-  switch (outcome) {
-    case 'admitted':
-      break;
-    case 'in_progress':
-      return fail(409, 'in_progress', { retry_after: 2 });
-    case 'already_processed':
-      return fail(409, 'already_processed');
-    case 'idempotency_mismatch':
-      return fail(422, 'idempotency_mismatch');
-    case 'budget_exhausted':
-      return fail(402, 'budget_exhausted', {
-        used_pct: usedPct(period, now),
-        resets_at: isoTime(period.period_end),
-      });
-    case 'daily_limit':
-      return fail(402, 'daily_limit', {
-        resets_at: isoTime((Math.floor(now / DAY_MS) + 1) * DAY_MS),
-      });
-    case 'busy':
-      return fail(429, 'busy', { retry_after: 2 });
-    case 'hosted_disabled':
-      return fail(503, 'hosted_disabled');
-    case 'daily_full':
-      return fail(503, 'daily_full');
-    case 'no_device':
-      return fail(401, 'unknown_device');
-    case 'no_period':
-      return fail(403, 'subscription_required');
+  if (outcome !== 'admitted') {
+    const refusal = RESERVE_REFUSALS[outcome](period, now);
+    return fail(refusal.status, refusal.code, refusal.extra);
   }
 
   // 8-9. Upstream call and settlement.
-  const settle = async (final: 'settled' | 'refunded', a: number) => {
-    let overrun = false;
-    try {
-      const out = await settleWithOverrun(
-        db,
-        { pk, id: idemKey, final, a, now: deps.now(), day: dayKey(deps.now()) },
-        r,
-        config.breaker.overruns_24h
-      );
-      overrun = out.overrun;
-    } catch {
-      // The cron sweep charges r after expiry: fail closed.
-      emit({ status: 500, code: 'settle_failed', severity: 'error' });
-    }
-    return { overrun };
+  const relay: Relay = {
+    ctx,
+    r,
+    emit,
+    budgetHeader,
+    settle: (final, a) => settleCharge(ctx, { pk, id: idemKey, final, a }, r, emit),
+    lookupCost: (id) => lookupGenerationCost(ctx, id),
   };
-  const lookupCost = async (id: string | null): Promise<number | null> => {
-    if (!id) return null;
-    for (let i = 0; i < GENERATION_TRIES; i++) {
-      try {
-        const g = await deps.openrouter.getGeneration(id);
-        if (g && Number.isFinite(g.total_cost) && g.total_cost >= 0)
-          return costToMicro(g.total_cost);
-      } catch {
-        /* retry */
-      }
-      if (i < GENERATION_TRIES - 1) await deps.sleep(1000 * 2 ** i);
-    }
-    return null;
-  };
-
   const ac = new AbortController();
   let timedOut = false;
-  const timeoutMs = req.stream ? TIMEOUTS.streamIdleMs : TIMEOUTS.overallMs;
-  const timer = setTimeout(() => {
-    timedOut = true;
-    ac.abort();
-  }, timeoutMs);
+  const timer = setTimeout(
+    () => {
+      timedOut = true;
+      ac.abort();
+    },
+    req.stream ? TIMEOUTS.streamIdleMs : TIMEOUTS.overallMs
+  );
 
   let res: Response;
   try {
@@ -264,93 +187,257 @@ async function run(
   } catch {
     clearTimeout(timer);
     // Unknown outcome: charged at the reservation.
-    const status = timedOut ? 504 : 502;
-    const code = timedOut ? 'upstream_timeout' : 'upstream_error';
-    const done = settle('settled', r).then((s) =>
-      emit({ status, code, cost_u: r, overrun: s.overrun })
-    );
-    ctx.exec.waitUntil(done);
-    return errorResponse(status, code, {}, budgetHeader);
+    return failAfterCharge(relay, timedOut, r);
   }
 
   if (!res.ok) {
     clearTimeout(timer);
-    await res.body?.cancel().catch(() => {});
-    const s = res.status;
-    let status = 502;
-    let code: ErrorCode = 'upstream_error';
-    let severity: LogEvent['severity'];
-    if (s === 402 || s === 403) {
-      status = 503;
-      code = 'hosted_disabled';
-      severity = 'high';
-      try {
-        await openBreaker(db, s === 402 ? 'upstream_402' : 'upstream_403');
-      } catch {
-        /* logged below; the refund still runs */
-      }
-    } else if (s === 404) {
-      status = 503;
-      code = 'hosted_disabled';
-      severity = 'high';
-    }
-    ctx.exec.waitUntil(
-      settle('refunded', 0).then(() => emit({ status, code, cost_u: 0, severity }))
-    );
-    return errorResponse(status, code, {}, budgetHeader);
+    return refuseUpstream(relay, db, res);
   }
 
   const genHeader = res.headers.get('x-generation-id');
-
   if (!req.stream) {
-    let text: string;
-    try {
-      text = await res.text();
-    } catch {
-      clearTimeout(timer);
-      const status = timedOut ? 504 : 502;
-      const code = timedOut ? 'upstream_timeout' : 'upstream_error';
-      ctx.exec.waitUntil(
-        (async () => {
-          const a = (await lookupCost(genHeader)) ?? r;
-          const s = await settle('settled', a);
-          emit({ status, code, cost_u: a, overrun: s.overrun });
-        })()
-      );
-      return errorResponse(status, code, {}, budgetHeader);
-    }
-    clearTimeout(timer);
-    const usage = parseJsonUsage(text);
-    ctx.exec.waitUntil(
-      (async () => {
-        const a =
-          usage.costUsd !== null
-            ? costToMicro(usage.costUsd)
-            : ((await lookupCost(genHeader ?? usage.id)) ?? r);
-        const s = await settle('settled', a);
-        const tokens =
-          usage.promptTokens !== null && usage.completionTokens !== null
-            ? usage.promptTokens + usage.completionTokens
-            : undefined;
-        emit({ status: 200, tokens, cost_u: a, overrun: s.overrun });
-      })()
-    );
-    return new Response(text, {
-      status: 200,
-      headers: { 'content-type': 'application/json', ...budgetHeader },
-    });
+    return relayJson(relay, res, genHeader, timer, () => timedOut);
   }
 
-  // Streaming: relay every byte, keep a 2 KB tail, settle when the stream ends however it ends.
   clearTimeout(timer);
+  return relayStream(relay, res, genHeader, ac);
+}
+
+// ----- step 5: the live period --------------------------------------------------------------
+
+/** The caller's live period, or the ApiError that says why there is none. */
+async function requirePeriod(ctx: Ctx, rc: string, now: number): Promise<PeriodRow> {
+  const db = ctx.env.DB;
+  const period = await findLivePeriod(db, rc, now);
+  if (period) return period;
+
+  if (await isBreakerOpen(db)) throw new ApiError(503, 'hosted_disabled');
+  const df = await db
+    .prepare("SELECT value FROM meta WHERE key = 'daily_full'")
+    .first<{ value: string }>();
+  if (df?.value === '1') throw new ApiError(503, 'daily_full');
+  const dev = await db
+    .prepare("SELECT lineage_key FROM devices WHERE rc_id = ?1 AND status = 'active'")
+    .bind(rc)
+    .first<{ lineage_key: string }>();
+  if (!dev) throw new ApiError(401, 'unknown_device');
+  const latest = await db
+    .prepare(
+      'SELECT rc_subscription_id FROM periods WHERE lineage_key = ?1 ORDER BY period_start DESC LIMIT 1'
+    )
+    .bind(dev.lineage_key)
+    .first<{ rc_subscription_id: string }>();
+  if (!latest) throw new ApiError(403, 'subscription_required');
+  try {
+    const v = await reverifySubscription(ctx, latest.rc_subscription_id, now);
+    if (v.status === 'lapsed') throw new ApiError(403, 'subscription_required');
+  } catch (e) {
+    if (e instanceof RevenueCatUnavailableError) throw new ApiError(503, 'entitlement_unavailable');
+    throw e;
+  }
+  const revived = await findLivePeriod(db, rc, now);
+  if (!revived) throw new ApiError(403, 'subscription_required');
+  return revived;
+}
+
+// ----- step 7: what each refused reservation answers ----------------------------------------
+
+type Refusal = { status: number; code: ErrorCode; extra?: ErrorExtra };
+
+const RESERVE_REFUSALS: Record<
+  Exclude<ReserveOutcome, 'admitted'>,
+  (period: PeriodRow, now: number) => Refusal
+> = {
+  in_progress: () => ({ status: 409, code: 'in_progress', extra: { retry_after: 2 } }),
+  already_processed: () => ({ status: 409, code: 'already_processed' }),
+  idempotency_mismatch: () => ({ status: 422, code: 'idempotency_mismatch' }),
+  budget_exhausted: (period, now) => ({
+    status: 402,
+    code: 'budget_exhausted',
+    extra: { used_pct: usedPct(period, now), resets_at: isoTime(period.period_end) },
+  }),
+  daily_limit: (_period, now) => ({
+    status: 402,
+    code: 'daily_limit',
+    extra: { resets_at: isoTime((Math.floor(now / DAY_MS) + 1) * DAY_MS) },
+  }),
+  busy: () => ({ status: 429, code: 'busy', extra: { retry_after: 2 } }),
+  hosted_disabled: () => ({ status: 503, code: 'hosted_disabled' }),
+  daily_full: () => ({ status: 503, code: 'daily_full' }),
+  no_device: () => ({ status: 401, code: 'unknown_device' }),
+  no_period: () => ({ status: 403, code: 'subscription_required' }),
+};
+
+// ----- steps 8-9: the upstream call and its settlement --------------------------------------
+
+type EmitLog = (e: Omit<LogEvent, 'route' | 'latency_ms' | 'lineage_prefix' | 'model'>) => void;
+
+/** What every way of ending the upstream call needs: the reservation, the log and the settle. */
+interface Relay {
+  ctx: Ctx;
+  /** The reservation bound, in micro-USD: charged when the real cost is unknown. */
+  r: number;
+  emit: EmitLog;
+  budgetHeader: Record<string, string>;
+  settle(final: 'settled' | 'refunded', a: number): Promise<{ overrun: boolean }>;
+  lookupCost(id: string | null): Promise<number | null>;
+}
+
+async function settleCharge(
+  ctx: Ctx,
+  charge: { pk: string; id: string; final: 'settled' | 'refunded'; a: number },
+  r: number,
+  emit: EmitLog
+): Promise<{ overrun: boolean }> {
+  const { deps } = ctx;
+  try {
+    const out = await settleWithOverrun(
+      ctx.env.DB,
+      { ...charge, now: deps.now(), day: dayKey(deps.now()) },
+      r,
+      ctx.config.breaker.overruns_24h
+    );
+    return { overrun: out.overrun };
+  } catch {
+    // The cron sweep charges r after expiry: fail closed.
+    emit({ status: 500, code: 'settle_failed', severity: 'error' });
+    return { overrun: false };
+  }
+}
+
+/** The generation's real cost from OpenRouter (retried with backoff), or null. */
+async function lookupGenerationCost(ctx: Ctx, id: string | null): Promise<number | null> {
+  if (!id) return null;
+  for (let i = 0; i < GENERATION_TRIES; i++) {
+    try {
+      const g = await ctx.deps.openrouter.getGeneration(id);
+      if (g && Number.isFinite(g.total_cost) && g.total_cost >= 0) return costToMicro(g.total_cost);
+    } catch {
+      /* retry */
+    }
+    if (i < GENERATION_TRIES - 1) await ctx.deps.sleep(1000 * 2 ** i);
+  }
+  return null;
+}
+
+/** Settles at the measured cost (the reservation when none is known) and logs the result. */
+async function settleAndLog(
+  relay: Relay,
+  cost: { costUsd: number | null; generationIds: (string | null)[] },
+  log: { status: number; code?: string; tokens?: number }
+): Promise<void> {
+  let a: number | null = cost.costUsd !== null ? costToMicro(cost.costUsd) : null;
+  if (a === null) {
+    for (const id of cost.generationIds) {
+      a = await relay.lookupCost(id);
+      if (a !== null) break;
+    }
+  }
+  const charged = a ?? relay.r;
+  const s = await relay.settle('settled', charged);
+  relay.emit({ ...log, cost_u: charged, overrun: s.overrun });
+}
+
+const tokensOf = (u: { promptTokens: number | null; completionTokens: number | null }) =>
+  u.promptTokens !== null && u.completionTokens !== null
+    ? u.promptTokens + u.completionTokens
+    : undefined;
+
+/** The upstream call failed or timed out with an unknown outcome: charged at the reservation. */
+function failAfterCharge(relay: Relay, timedOut: boolean, a: number): Response {
+  const status = timedOut ? 504 : 502;
+  const code = timedOut ? 'upstream_timeout' : 'upstream_error';
+  relay.ctx.exec.waitUntil(
+    relay
+      .settle('settled', a)
+      .then((s) => relay.emit({ status, code, cost_u: a, overrun: s.overrun }))
+  );
+  return errorResponse(status, code, {}, relay.budgetHeader);
+}
+
+/** The upstream answered with an error status: refund, and open the breaker for 402/403. */
+async function refuseUpstream(
+  relay: Relay,
+  db: Ctx['env']['DB'],
+  res: Response
+): Promise<Response> {
+  await res.body?.cancel().catch(() => {});
+  const s = res.status;
+  let status = 502;
+  let code: ErrorCode = 'upstream_error';
+  let severity: LogEvent['severity'];
+  if (s === 402 || s === 403) {
+    status = 503;
+    code = 'hosted_disabled';
+    severity = 'high';
+    try {
+      await openBreaker(db, s === 402 ? 'upstream_402' : 'upstream_403');
+    } catch {
+      /* logged below; the refund still runs */
+    }
+  } else if (s === 404) {
+    status = 503;
+    code = 'hosted_disabled';
+    severity = 'high';
+  }
+  relay.ctx.exec.waitUntil(
+    relay.settle('refunded', 0).then(() => relay.emit({ status, code, cost_u: 0, severity }))
+  );
+  return errorResponse(status, code, {}, relay.budgetHeader);
+}
+
+async function relayJson(
+  relay: Relay,
+  res: Response,
+  genHeader: string | null,
+  timer: ReturnType<typeof setTimeout>,
+  timedOut: () => boolean
+): Promise<Response> {
+  let text: string;
+  try {
+    text = await res.text();
+  } catch {
+    clearTimeout(timer);
+    const status = timedOut() ? 504 : 502;
+    const code = timedOut() ? 'upstream_timeout' : 'upstream_error';
+    relay.ctx.exec.waitUntil(
+      settleAndLog(relay, { costUsd: null, generationIds: [genHeader] }, { status, code })
+    );
+    return errorResponse(status, code, {}, relay.budgetHeader);
+  }
+  clearTimeout(timer);
+  const usage = parseJsonUsage(text);
+  relay.ctx.exec.waitUntil(
+    settleAndLog(
+      relay,
+      { costUsd: usage.costUsd, generationIds: [genHeader ?? usage.id] },
+      { status: 200, tokens: tokensOf(usage) }
+    )
+  );
+  return new Response(text, {
+    status: 200,
+    headers: { 'content-type': 'application/json', ...relay.budgetHeader },
+  });
+}
+
+/** Relays every byte, keeps a 2 KB tail, and settles when the stream ends however it ends. */
+function relayStream(
+  relay: Relay,
+  res: Response,
+  genHeader: string | null,
+  ac: AbortController
+): Response {
   const body = res.body;
   if (!body) {
-    ctx.exec.waitUntil(
-      settle('settled', r).then((s) =>
-        emit({ status: 502, code: 'upstream_error', cost_u: r, overrun: s.overrun })
-      )
+    relay.ctx.exec.waitUntil(
+      relay
+        .settle('settled', relay.r)
+        .then((s) =>
+          relay.emit({ status: 502, code: 'upstream_error', cost_u: relay.r, overrun: s.overrun })
+        )
     );
-    return errorResponse(502, 'upstream_error', {}, budgetHeader);
+    return errorResponse(502, 'upstream_error', {}, relay.budgetHeader);
   }
   const tail = new TailBuffer();
   const ts = new TransformStream<Uint8Array, Uint8Array>();
@@ -406,34 +493,27 @@ async function run(
       await writer.abort(new Error('upstream_stream_failed')).catch(() => {});
     }
     const t = parseTail(tail.text());
-    const a =
-      t.costUsd !== null
-        ? costToMicro(t.costUsd)
-        : ((await lookupCost(genHeader ?? tail.generationId())) ?? r);
-    const s = await settle('settled', a);
-    const tokens =
-      t.promptTokens !== null && t.completionTokens !== null
-        ? t.promptTokens + t.completionTokens
-        : undefined;
-    emit({
-      status: 200,
-      code:
-        ended === 'end' && !t.error
-          ? undefined
-          : `stream_${ended ?? 'end'}${t.error ? '_error' : ''}`,
-      tokens,
-      cost_u: a,
-      overrun: s.overrun,
-    });
+    await settleAndLog(
+      relay,
+      { costUsd: t.costUsd, generationIds: [genHeader ?? tail.generationId()] },
+      {
+        status: 200,
+        code:
+          ended === 'end' && !t.error
+            ? undefined
+            : `stream_${ended ?? 'end'}${t.error ? '_error' : ''}`,
+        tokens: tokensOf(t),
+      }
+    );
   })();
-  ctx.exec.waitUntil(pump);
+  relay.ctx.exec.waitUntil(pump);
 
   return new Response(ts.readable, {
     status: 200,
     headers: {
       'content-type': 'text/event-stream',
       'cache-control': 'no-store',
-      ...budgetHeader,
+      ...relay.budgetHeader,
     },
   });
 }

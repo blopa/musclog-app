@@ -18,7 +18,7 @@ import {
   getConfiguredAppUserId,
   logInTo,
   restorePurchases,
-} from '@/services/premium/revenueCatHarness';
+} from '@/services/premium/revenueCat';
 import { hexToBytes } from '@/utils/premium/deviceKeyCrypto';
 import { type FetchLike, hostedConfig, hostedUsage } from '@/utils/premium/hostedClient';
 import {
@@ -47,6 +47,9 @@ export function hostedAiBaseUrl(): string | null {
   return url ? url : null;
 }
 
+/** The platform `fetch`, read at call time (tests replace it), typed for the pure flows. */
+const platformFetch: FetchLike = (url, init) => fetch(url, init) as ReturnType<FetchLike>;
+
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /** Adapts the key store (hex strings) to the pure flows (bytes). */
@@ -61,7 +64,7 @@ const signer: Signer = async (purpose, nonce) => {
 };
 
 function flowDeps(baseUrl: string): FlowDeps {
-  return { baseUrl, fetch: fetch as unknown as FetchLike, sign: signer };
+  return { baseUrl, fetch: platformFetch, sign: signer };
 }
 
 // The token lives in memory only: it is never stored, logged or backed up.
@@ -78,7 +81,6 @@ async function remember(rcId: string, grant: SessionGrant, startedIn: number): P
   cached = { rcId, grant };
   await savePremiumLocalState({
     rcId,
-    enrolledAtMs: Date.now(),
     removed: false,
     lastStatus: 'active',
     usedPct: grant.usedPct,
@@ -276,11 +278,7 @@ export async function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot
       return grant;
     }
 
-    const result = await hostedUsage(
-      baseUrl,
-      grant.value.sessionToken,
-      fetch as unknown as FetchLike
-    );
+    const result = await hostedUsage(baseUrl, grant.value.sessionToken, platformFetch);
 
     if (result.ok) {
       const usage = parseUsage(result.body);
@@ -316,6 +314,11 @@ export async function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot
   return { ok: false, failure: 'unknown' };
 }
 
+// `/v1/config` is public and read by the Premium screen and by every hosted photo, so a burst of
+// them makes one request.
+const CONFIG_CACHE_MS = 5 * 60 * 1000;
+let cachedConfig: { value: HostedConfig; at: number } | null = null;
+
 export async function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>> {
   const baseUrl = hostedAiBaseUrl();
 
@@ -323,7 +326,13 @@ export async function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>>
     return { ok: false, failure: 'not_available' };
   }
 
-  const result = await hostedConfig(baseUrl, fetch as unknown as FetchLike);
+  const now = Date.now();
+
+  if (cachedConfig && now - cachedConfig.at < CONFIG_CACHE_MS) {
+    return { ok: true, value: cachedConfig.value };
+  }
+
+  const result = await hostedConfig(baseUrl, platformFetch);
 
   if (!result.ok) {
     return { ok: false, failure: failureKindOf(result) };
@@ -331,13 +340,23 @@ export async function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>>
 
   const config = parseHostedConfig(result.body);
 
-  return config ? { ok: true, value: config } : { ok: false, failure: 'invalid_response' };
+  if (!config) {
+    return { ok: false, failure: 'invalid_response' };
+  }
+
+  cachedConfig = { value: config, at: now };
+
+  return { ok: true, value: config };
+}
+
+export function resetPremiumConfigCache(): void {
+  cachedConfig = null;
 }
 
 /**
  * "Reset Premium on this device": forget the enrollment, make a new key (so a new `rc_id`) and
  * point RevenueCat at it. The person then restores and enrolls again. The old device row ages
- * out of the subscription's 3-device set. If the SDK was never configured in this run, nothing
+ * out of the subscription's device allowance. If the SDK was never configured in this run, nothing
  * is configured here (it is configured lazily by the next purchase or restore).
  */
 export async function resetPremium(): Promise<{ rcId: string; revenueCatSwitched: boolean }> {

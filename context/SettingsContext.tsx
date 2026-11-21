@@ -595,32 +595,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   // UI after an enrollment; the probe in AiService is the real authority on whether it answers.
   const hostedOn = isPremiumUiEnabled() && state.useHostedAi;
 
-  const isAiConfigured = useMemo(() => {
-    const useMusclogGateway = effectiveUseMusclogGateway(state.useMusclogFreeTier);
-
-    return (
-      hostedOn ||
-      useMusclogGateway ||
-      state.useOnDeviceAi ||
-      (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
-      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') ||
-      (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
-    );
-  }, [
-    hostedOn,
-    state.useMusclogFreeTier,
-    state.useOnDeviceAi,
-    state.enableLocalLlm,
-    state.localLlmBaseUrl,
-    state.enableGoogleGemini,
-    decryptedApiKeys.googleGeminiApiKey,
-    state.enableOpenAi,
-    decryptedApiKeys.openAiApiKey,
-    state.enableClaude,
-    decryptedApiKeys.claudeApiKey,
-  ]);
-
+  // Mirrors AiService.getAiConfig() priority: hosted → gateway → on-device → local → gemini → openai → claude.
   const aiProvider = useMemo<AiProviderKind | null>(() => {
     if (hostedOn) {
       return 'hosted';
@@ -661,41 +636,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.claudeApiKey,
   ]);
 
-  // Mirrors AiService.getAiConfig() priority: hosted → gateway → on-device → local → gemini → openai → claude.
+  const isAiConfigured = aiProvider !== null;
+
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
   // when it would be the active provider. Hosted takes photos: /v1/config decides at call time.
-  const isAiMealPhotoEnabled = useMemo(() => {
-    if (hostedOn) {
-      return true;
-    }
-
-    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
-      return true;
-    }
-
-    if (state.useOnDeviceAi) {
-      return false;
-    }
-
-    return (
-      (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
-      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') ||
-      (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
-    );
-  }, [
-    hostedOn,
-    state.useMusclogFreeTier,
-    state.useOnDeviceAi,
-    state.enableLocalLlm,
-    state.localLlmBaseUrl,
-    state.enableGoogleGemini,
-    decryptedApiKeys.googleGeminiApiKey,
-    state.enableOpenAi,
-    decryptedApiKeys.openAiApiKey,
-    state.enableClaude,
-    decryptedApiKeys.claudeApiKey,
-  ]);
+  const isAiMealPhotoEnabled = aiProvider !== null && aiProvider !== 'on-device';
 
   // Parsed here rather than in `deriveStateFromMap`, so the array is allocated once per
   // actual change instead of once per settings emission — see `homeActionsRaw`.

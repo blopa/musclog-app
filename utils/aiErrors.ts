@@ -7,6 +7,7 @@
  * and a bare 400 stays an ordinary error.
  */
 import type { CoachAIProvider } from './coachAI';
+import { type HostedErrorKind, hostedErrorKindOf } from './hostedAiError';
 
 export class AiInvalidKeyError extends Error {
   readonly provider: CoachAIProvider;
@@ -32,35 +33,6 @@ export class AiCancelledError extends Error {
     super(message);
     this.name = 'AiCancelledError';
   }
-}
-
-/**
- * The hosted (Musclog Premium) failures. The classes live in `coachAI.ts`, which imports this module,
- * so this file reads them by their `hostedKind` tag instead of importing them (no cycle).
- */
-export type HostedErrorKind =
-  'budget' | 'subscription' | 'removed' | 'unavailable' | 'dailyFull' | 'busy' | 'alreadyProcessed';
-
-const HOSTED_ERROR_KINDS: ReadonlySet<string> = new Set<HostedErrorKind>([
-  'budget',
-  'subscription',
-  'removed',
-  'unavailable',
-  'dailyFull',
-  'busy',
-  'alreadyProcessed',
-]);
-
-/** The hosted failure kind of a thrown error, or `null` for anything else. */
-export function hostedErrorKindOf(error: unknown): HostedErrorKind | null {
-  if (typeof error !== 'object' || error === null) {
-    return null;
-  }
-
-  const kind = (error as { hostedKind?: unknown }).hostedKind;
-  return typeof kind === 'string' && HOSTED_ERROR_KINDS.has(kind)
-    ? (kind as HostedErrorKind)
-    : null;
 }
 
 /** Providers where the user supplies the key. Gateway, hosted and on-device never become a key error. */
@@ -253,6 +225,9 @@ function describeHostedError(
       const date = formatResetDate(error, locale);
       return date ? t('errors.hostedBudget', { date }) : t('errors.hostedBudgetNoDate');
     }
+
+    case 'dailyLimit':
+      return t('errors.hostedDailyLimit');
 
     case 'subscription':
       return t('errors.hostedSubscription');

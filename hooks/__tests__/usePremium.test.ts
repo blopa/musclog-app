@@ -26,11 +26,13 @@ const mockActions = {
 };
 jest.mock('@/services/premium/premiumActions', () => ({
   loadPremiumOverview: (...args: unknown[]) => mockActions.loadPremiumOverview(...args),
-  subscribe: (...args: unknown[]) => mockActions.subscribe(...args),
-  restore: (...args: unknown[]) => mockActions.restore(...args),
-  setUseHostedAi: (...args: unknown[]) => mockActions.setUseHostedAi(...args),
   resetPremiumOnThisDevice: (...args: unknown[]) => mockActions.resetPremiumOnThisDevice(...args),
   disableHostedIfRemoved: (...args: unknown[]) => mockActions.disableHostedIfRemoved(...args),
+}));
+
+jest.mock('@/services/premium/premiumService', () => ({
+  purchaseAndEnroll: (...args: unknown[]) => mockActions.subscribe(...args),
+  restoreAndEnroll: (...args: unknown[]) => mockActions.restore(...args),
 }));
 
 import { PREMIUM_FIXTURE_STATES } from '@/components/premium/premiumFixtureStates';
@@ -122,14 +124,17 @@ describe('usePremium', () => {
     expect(result.current.view.notice).toBe('purchase_cancelled');
   });
 
-  it('switches the hosted setting on and off through the actions', async () => {
+  it('switches the hosted setting on and off in the settings', async () => {
     const { result } = renderHook(() => usePremium());
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     await act(async () => {
       await result.current.setUseHostedAi(true);
     });
-    expect(mockActions.setUseHostedAi).toHaveBeenCalledWith(true);
+    expect(mockSettingsSet).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'use_hosted_ai' }),
+      true
+    );
     expect(result.current.useHostedAi).toBe(true);
   });
 

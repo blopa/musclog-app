@@ -1,11 +1,7 @@
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
-import {
-  getPremiumStatus,
-  getSessionGrant,
-  hostedAiBaseUrl,
-} from '@/services/premium/premiumService';
+import { getSessionGrant, hostedAiBaseUrl } from '@/services/premium/premiumService';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
@@ -103,44 +99,31 @@ type ProviderBuilder = (language: string) => Promise<CoachAIConfig>;
  * only the reads that decided it, never a config build with its side effects.
  */
 const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | null>> = {
-  // Musclog Premium. Usable only in a Premium build, with the person's switch on, a configured
-  // base URL and this device enrolled. The grant is minted inside the builder, so a provider that
-  // loses the race never mints a token. When the grant fails (removed, offline) the config is still
-  // returned, carrying the failure: the request then throws a typed error instead of falling
-  // through to another provider, which would change who receives the data (plan 8.6).
+  // Musclog Premium. Used whenever the person's switch is on in a Premium build: the data
+  // recipient never changes silently (plan 8.6), so this provider never steps aside for another.
+  // When it cannot answer (not enrolled, removed, offline, no base URL) the config still comes back,
+  // carrying the failure, and the request throws a typed error instead of being sent elsewhere. The
+  // grant is minted inside the builder, so a provider that loses the race never mints a token.
   hosted: async () => {
     if (!isPremiumUiEnabled() || !(await SettingsService.get(SETTINGS.useHostedAi))) {
       return null;
     }
 
-    const baseUrl = hostedAiBaseUrl();
-    if (!baseUrl) {
-      return null;
-    }
-
-    const status = await getPremiumStatus();
-    if (status === 'no_key' || status === 'not_enrolled') {
-      return null;
-    }
-
     return async (language) => {
-      const grant = await getSessionGrant();
-      return grant.ok
-        ? {
-            provider: 'hosted',
-            baseUrl,
-            apiKey: grant.value.sessionToken,
-            model: 'musclog-hosted',
-            language,
-          }
-        : {
-            provider: 'hosted',
-            baseUrl,
-            apiKey: '',
-            model: 'musclog-hosted',
-            language,
-            hostedGrantFailure: grant.failure,
-          };
+      const baseUrl = hostedAiBaseUrl();
+      const grant = baseUrl ? await getSessionGrant() : null;
+      const base = {
+        provider: 'hosted',
+        baseUrl: baseUrl ?? '',
+        model: 'musclog-hosted',
+        language,
+      } as const;
+
+      if (grant?.ok) {
+        return { ...base, apiKey: grant.value.sessionToken };
+      }
+
+      return { ...base, apiKey: '', hostedGrantFailure: grant ? grant.failure : 'not_available' };
     };
   },
   // On web production builds, CORS blocks browser→Cloudflare direct calls.

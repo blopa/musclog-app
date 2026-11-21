@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { EnglishOnlyNotice } from '@/components/website/EnglishOnlyNotice';
 import {
   DEFAULT_LOCALE_PREFIX,
+  LANGUAGE_STORAGE_KEY,
   localeForLanguage,
   localeScopeOf,
   localizedPath,
@@ -28,7 +29,6 @@ import { THEME_DEFINITIONS } from '@/theme.registry';
 import { setMirroredThemePreference } from '@/utils/themeMirror';
 
 const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
-const LANGUAGE_STORAGE_KEY = 'musclog_lang';
 // The native names are by design untranslated: each language is named in itself.
 const LANGUAGE_LABELS: Record<string, { badge: string; label: string }> = {
   en: { badge: 'EN', label: 'English' },

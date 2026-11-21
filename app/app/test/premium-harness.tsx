@@ -35,7 +35,7 @@ import {
   restorePurchases,
   revenueCatApiKey,
   syncPurchases,
-} from '@/services/premium/revenueCatHarness';
+} from '@/services/premium/revenueCat';
 import {
   generateDeviceKey,
   hexToBytes,

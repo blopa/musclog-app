@@ -247,8 +247,9 @@ export const generateMetadata: GenerateMetadataFunction = async (_request, param
     );
   }
 
-  const programsCopy =
-    PROGRAMS_COPY[language.toLowerCase() as keyof typeof PROGRAMS_COPY].websitePrograms;
+  const programsCopy = (
+    PROGRAMS_COPY[language.toLowerCase() as keyof typeof PROGRAMS_COPY] ?? PROGRAMS_COPY['en-us']
+  ).websitePrograms;
   const summaries = programsCopy.summaries as Record<string, string>;
   return metadataForPage(
     {

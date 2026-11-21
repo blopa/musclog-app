@@ -14,7 +14,7 @@ jest.mock('@/services/premium/premiumService', () => ({
   resetPremium: jest.fn(async () => ({ rcId: 'x', revenueCatSwitched: false })),
   restoreAndEnroll: jest.fn(),
 }));
-jest.mock('@/services/premium/revenueCatHarness', () => ({
+jest.mock('@/services/premium/revenueCat', () => ({
   getMonthlyPriceString: jest.fn(async () => '€2.99'),
 }));
 jest.mock('@/services/premium/deviceKeyStore', () => ({
@@ -23,7 +23,7 @@ jest.mock('@/services/premium/deviceKeyStore', () => ({
 
 import { SETTINGS } from '@/constants/settingDefinitions';
 import * as premiumService from '@/services/premium/premiumService';
-import * as harness from '@/services/premium/revenueCatHarness';
+import * as harness from '@/services/premium/revenueCat';
 import * as actions from '@/services/premium/premiumActions';
 
 const service = jest.mocked(premiumService);
@@ -94,21 +94,6 @@ describe('premiumActions', () => {
 
     expect(out.config).toBeNull();
     expect(out.configFailure).toBe('network');
-  });
-
-  it('subscribe and restore return the result and never switch hosted AI on', async () => {
-    service.purchaseAndEnroll.mockResolvedValue({ ok: true, value: USAGE as never });
-    service.restoreAndEnroll.mockResolvedValue({ ok: false, failure: 'restore_failed' });
-
-    await expect(actions.subscribe()).resolves.toEqual({ ok: true, value: USAGE });
-    await expect(actions.restore()).resolves.toEqual({ ok: false, failure: 'restore_failed' });
-    expect(mockSet).not.toHaveBeenCalled();
-  });
-
-  it('setUseHostedAi writes the setting', async () => {
-    await actions.setUseHostedAi(true);
-
-    expect(mockSet).toHaveBeenCalledWith(SETTINGS.useHostedAi, true);
   });
 
   it('resetPremiumOnThisDevice resets and switches hosted AI off', async () => {

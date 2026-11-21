@@ -1,20 +1,14 @@
 import OpenAI from 'openai';
 
-import { describeAiError, hostedErrorKindOf, rethrowUserFacingAiError } from '@/utils/aiErrors';
+import { describeAiError, rethrowUserFacingAiError } from '@/utils/aiErrors';
 import {
-  type CoachAIConfig,
-  HostedAlreadyProcessedError,
-  HostedBudgetError,
-  HostedBusyError,
-  HostedRemovedError,
-  HostedSubscriptionError,
-  HostedUnavailableError,
+  HostedAiError,
+  hostedErrorKindOf,
   hostedGrantError,
   isRetryableHostedError,
-  reportAiError,
   toHostedAiError,
-  withLlmRetry,
-} from '@/utils/coachAI';
+} from '@/utils/hostedAiError';
+import { type CoachAIConfig, reportAiError, withLlmRetry } from '@/utils/coachAI';
 import { getHostedSignal, setHostedSignal } from '@/utils/premium/hostedSignal';
 import { handleError } from '@/utils/handleError';
 
@@ -104,10 +98,25 @@ describe('hosted errors', () => {
         },
       });
 
-      expect(error).toBeInstanceOf(HostedBudgetError);
-      expect((error as HostedBudgetError).resetsAt).toBe('2026-12-01T00:00:00Z');
+      expect(hostedErrorKindOf(error)).toBe('budget');
+      expect((error as HostedAiError).resetsAt).toBe('2026-12-01T00:00:00Z');
       expect(attempts).toBe(1);
       expect(getHostedSignal()).toBe('exhausted');
+    });
+
+    it('402 daily_limit is the daily cap, not the used-up allowance, and leaves the usage signal alone', async () => {
+      const { error, attempts } = await failWith({
+        status: 402,
+        body: {
+          error: { code: 'daily_limit', message: 'x', resets_at: '2026-12-02T00:00:00Z' },
+        },
+      });
+
+      expect(hostedErrorKindOf(error)).toBe('dailyLimit');
+      expect((error as HostedAiError).resetsAt).toBe('2026-12-02T00:00:00Z');
+      expect(attempts).toBe(1);
+      expect(getHostedSignal()).toBeNull();
+      expect(describeAiError(error, (key) => key)).toBe('errors.hostedDailyLimit');
     });
 
     it('403 is a subscription error, not a removal', async () => {
@@ -116,20 +125,19 @@ describe('hosted errors', () => {
         body: { error: { code: 'subscription_required', message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedSubscriptionError);
-      expect(error).not.toBeInstanceOf(HostedRemovedError);
+      expect(hostedErrorKindOf(error)).toBe('subscription');
+      expect(hostedErrorKindOf(error)).not.toBe('removed');
       expect(attempts).toBe(1);
     });
 
-    it('401 unknown_device is a removal, which is also a subscription error', async () => {
+    it('401 unknown_device is a removal', async () => {
       const { error, attempts } = await failWith({
         status: 401,
         body: { error: { code: 'unknown_device', message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedRemovedError);
-      expect(error).toBeInstanceOf(HostedSubscriptionError);
-      expect((error as HostedRemovedError).hostedKind).toBe('removed');
+      expect(hostedErrorKindOf(error)).toBe('removed');
+      expect((error as HostedAiError).hostedKind).toBe('removed');
       expect(attempts).toBe(1);
       expect(getHostedSignal()).toBe('removed');
     });
@@ -140,7 +148,7 @@ describe('hosted errors', () => {
         body: { error: { code: 'token_expired', message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedUnavailableError);
+      expect(hostedErrorKindOf(error)).toBe('unavailable');
       expect(isRetryableHostedError(error)).toBe(false);
       expect(attempts).toBe(1);
     });
@@ -152,7 +160,7 @@ describe('hosted errors', () => {
         headers: { 'x-should-retry': 'false' },
       });
 
-      expect(error).toBeInstanceOf(HostedBusyError);
+      expect(hostedErrorKindOf(error)).toBe('busy');
       expect(attempts).toBe(4);
     });
 
@@ -162,7 +170,7 @@ describe('hosted errors', () => {
         body: { error: { code: 'already_processed', message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedAlreadyProcessedError);
+      expect(hostedErrorKindOf(error)).toBe('alreadyProcessed');
       expect(attempts).toBe(1);
     });
 
@@ -172,8 +180,8 @@ describe('hosted errors', () => {
         body: { error: { code: 'rate_limited', message: 'x', retry_after: 7 } },
       });
 
-      expect(error).toBeInstanceOf(HostedBusyError);
-      expect((error as HostedBusyError).retryAfterSeconds).toBe(7);
+      expect(hostedErrorKindOf(error)).toBe('busy');
+      expect((error as HostedAiError).retryAfterSeconds).toBe(7);
       expect(attempts).toBe(4);
     });
 
@@ -183,7 +191,7 @@ describe('hosted errors', () => {
         body: { error: { message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedUnavailableError);
+      expect(hostedErrorKindOf(error)).toBe('unavailable');
       expect(isRetryableHostedError(error)).toBe(false);
       expect(attempts).toBe(1);
     });
@@ -194,7 +202,7 @@ describe('hosted errors', () => {
         body: { error: { message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedUnavailableError);
+      expect(hostedErrorKindOf(error)).toBe('unavailable');
       expect(attempts).toBe(4);
     });
 
@@ -204,7 +212,7 @@ describe('hosted errors', () => {
         body: { error: { code: 'daily_full', message: 'x' } },
       });
 
-      expect((error as HostedUnavailableError).hostedKind).toBe('dailyFull');
+      expect((error as HostedAiError).hostedKind).toBe('dailyFull');
       expect(attempts).toBe(1);
       expect(getHostedSignal()).toBe('daily_full');
     });
@@ -215,7 +223,7 @@ describe('hosted errors', () => {
         body: { error: { code: 'hosted_disabled', message: 'x' } },
       });
 
-      expect((error as HostedUnavailableError).hostedKind).toBe('unavailable');
+      expect((error as HostedAiError).hostedKind).toBe('unavailable');
       expect(attempts).toBe(1);
     });
 
@@ -225,7 +233,7 @@ describe('hosted errors', () => {
         body: { error: { code: 'upstream', message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedUnavailableError);
+      expect(hostedErrorKindOf(error)).toBe('unavailable');
       expect(attempts).toBe(4);
     });
 
@@ -235,14 +243,14 @@ describe('hosted errors', () => {
         body: { error: { message: 'x' } },
       });
 
-      expect(error).toBeInstanceOf(HostedUnavailableError);
+      expect(hostedErrorKindOf(error)).toBe('unavailable');
       expect(attempts).toBe(4);
     });
 
     it('Cloudflare 1027 is unavailable and not retried', async () => {
       const { error, attempts } = await failWith({ status: 503, body: 'error code: 1027' });
 
-      expect(error).toBeInstanceOf(HostedUnavailableError);
+      expect(hostedErrorKindOf(error)).toBe('unavailable');
       expect(attempts).toBe(1);
     });
 
@@ -285,49 +293,46 @@ describe('hosted errors', () => {
       .create({ model: 'm', messages: [] })
       .catch((e: unknown) => e);
 
-    expect((toHostedAiError(sdkError) as HostedUnavailableError).hostedKind).toBe('dailyFull');
+    expect(toHostedAiError(sdkError).hostedKind).toBe('dailyFull');
     expect(toHostedAiError(new Error('plain'))).toBeNull();
   });
 
   describe('retry rules', () => {
     it('retries only busy and retryable unavailable errors', () => {
-      expect(isRetryableHostedError(new HostedBusyError())).toBe(true);
-      expect(
-        isRetryableHostedError(new HostedUnavailableError('unavailable', { retryable: true }))
-      ).toBe(true);
-      expect(isRetryableHostedError(new HostedUnavailableError('unavailable'))).toBe(false);
-      expect(isRetryableHostedError(new HostedUnavailableError('dailyFull'))).toBe(false);
-      expect(isRetryableHostedError(new HostedBudgetError())).toBe(false);
-      expect(isRetryableHostedError(new HostedSubscriptionError())).toBe(false);
-      expect(isRetryableHostedError(new HostedRemovedError())).toBe(false);
-      expect(isRetryableHostedError(new HostedAlreadyProcessedError())).toBe(false);
+      expect(isRetryableHostedError(new HostedAiError('busy'))).toBe(true);
+      expect(isRetryableHostedError(new HostedAiError('unavailable', { retryable: true }))).toBe(
+        true
+      );
+      expect(isRetryableHostedError(new HostedAiError('unavailable'))).toBe(false);
+      expect(isRetryableHostedError(new HostedAiError('dailyFull'))).toBe(false);
+      expect(isRetryableHostedError(new HostedAiError('budget'))).toBe(false);
+      expect(isRetryableHostedError(new HostedAiError('subscription'))).toBe(false);
+      expect(isRetryableHostedError(new HostedAiError('removed'))).toBe(false);
+      expect(isRetryableHostedError(new HostedAiError('alreadyProcessed'))).toBe(false);
     });
   });
 
   describe('session token grant failures', () => {
     it.each([
-      ['unknown_device', HostedRemovedError],
-      ['not_enrolled', HostedSubscriptionError],
-      ['subscription_required', HostedSubscriptionError],
-      ['network', HostedUnavailableError],
-      ['purchase_failed', HostedUnavailableError],
-    ] as const)(
-      '%s maps to the typed error without sending a request',
-      async (failure, Expected) => {
-        const request = jest.fn();
-        const config: CoachAIConfig = { ...HOSTED, hostedGrantFailure: failure };
+      ['unknown_device', 'removed'],
+      ['not_enrolled', 'subscription'],
+      ['subscription_required', 'subscription'],
+      ['network', 'unavailable'],
+      ['purchase_failed', 'unavailable'],
+    ] as const)('%s maps to the typed error without sending a request', async (failure, kind) => {
+      const request = jest.fn();
+      const config: CoachAIConfig = { ...HOSTED, hostedGrantFailure: failure };
 
-        const error = await withLlmRetry('test', config, request).catch((e: unknown) => e);
+      const error = await withLlmRetry('test', config, request).catch((e: unknown) => e);
 
-        expect(error).toBeInstanceOf(Expected);
-        expect(request).not.toHaveBeenCalled();
-      }
-    );
+      expect(hostedErrorKindOf(error)).toBe(kind);
+      expect(request).not.toHaveBeenCalled();
+    });
 
     it('hostedGrantError maps the failures the same way', () => {
-      expect(hostedGrantError('unknown_device')).toBeInstanceOf(HostedRemovedError);
-      expect(hostedGrantError('not_enrolled')).toBeInstanceOf(HostedSubscriptionError);
-      expect(hostedGrantError('network')).toBeInstanceOf(HostedUnavailableError);
+      expect(hostedGrantError('unknown_device').hostedKind).toBe('removed');
+      expect(hostedGrantError('not_enrolled').hostedKind).toBe('subscription');
+      expect(hostedGrantError('network').hostedKind).toBe('unavailable');
     });
 
     it('ignores a grant failure on a non-hosted provider', async () => {
@@ -367,12 +372,12 @@ describe('hosted errors', () => {
       handle.mockClear();
 
       for (const error of [
-        new HostedBudgetError(),
-        new HostedSubscriptionError(),
-        new HostedRemovedError(),
-        new HostedUnavailableError('unavailable'),
-        new HostedBusyError(),
-        new HostedAlreadyProcessedError(),
+        new HostedAiError('budget'),
+        new HostedAiError('subscription'),
+        new HostedAiError('removed'),
+        new HostedAiError('unavailable'),
+        new HostedAiError('busy'),
+        new HostedAiError('alreadyProcessed'),
       ]) {
         reportAiError(error, 'coachAI.test');
       }
@@ -394,17 +399,15 @@ describe('hosted errors', () => {
   });
 
   describe('aiErrors', () => {
-    it('reads the hosted kind by duck typing and rejects unknown values', () => {
-      expect(hostedErrorKindOf(new HostedBudgetError())).toBe('budget');
-      expect(hostedErrorKindOf({ hostedKind: 'busy' })).toBe('busy');
-      expect(hostedErrorKindOf({ hostedKind: 'nope' })).toBeNull();
+    it('reads the hosted kind of a hosted error and nothing else', () => {
+      expect(hostedErrorKindOf(new HostedAiError('budget'))).toBe('budget');
+      expect(hostedErrorKindOf({ hostedKind: 'busy' })).toBeNull();
       expect(hostedErrorKindOf(new Error('x'))).toBeNull();
       expect(hostedErrorKindOf(null)).toBeNull();
     });
 
     it('rethrows every hosted error and nothing else', () => {
-      expect(() => rethrowUserFacingAiError(new HostedBudgetError())).toThrow(HostedBudgetError);
-      expect(() => rethrowUserFacingAiError({ hostedKind: 'removed' })).toThrow();
+      expect(() => rethrowUserFacingAiError(new HostedAiError('budget'))).toThrow(HostedAiError);
       expect(() => rethrowUserFacingAiError(new Error('x'))).not.toThrow();
     });
 
@@ -414,7 +417,7 @@ describe('hosted errors', () => {
 
       it('formats the budget reset date for the locale', () => {
         const text = describeAiError(
-          new HostedBudgetError({ resetsAt: '2026-12-01T12:00:00Z' }),
+          new HostedAiError('budget', { resetsAt: '2026-12-01T12:00:00Z' }),
           t,
           'en-US'
         );
@@ -423,19 +426,19 @@ describe('hosted errors', () => {
       });
 
       it('falls back to the no-date budget text when there is no usable date', () => {
-        expect(describeAiError(new HostedBudgetError(), t)).toBe('errors.hostedBudgetNoDate');
-        expect(describeAiError(new HostedBudgetError({ resetsAt: 'not a date' }), t)).toBe(
+        expect(describeAiError(new HostedAiError('budget'), t)).toBe('errors.hostedBudgetNoDate');
+        expect(describeAiError(new HostedAiError('budget', { resetsAt: 'not a date' }), t)).toBe(
           'errors.hostedBudgetNoDate'
         );
       });
 
       it.each([
-        [new HostedSubscriptionError(), 'errors.hostedSubscription'],
-        [new HostedRemovedError(), 'errors.hostedRemoved'],
-        [new HostedUnavailableError('unavailable'), 'errors.hostedUnavailable'],
-        [new HostedUnavailableError('dailyFull'), 'errors.hostedDailyFull'],
-        [new HostedBusyError(), 'errors.hostedBusy'],
-        [new HostedAlreadyProcessedError(), 'errors.hostedAlreadyProcessed'],
+        [new HostedAiError('subscription'), 'errors.hostedSubscription'],
+        [new HostedAiError('removed'), 'errors.hostedRemoved'],
+        [new HostedAiError('unavailable'), 'errors.hostedUnavailable'],
+        [new HostedAiError('dailyFull'), 'errors.hostedDailyFull'],
+        [new HostedAiError('busy'), 'errors.hostedBusy'],
+        [new HostedAiError('alreadyProcessed'), 'errors.hostedAlreadyProcessed'],
       ])('uses the literal key for %s', (error, key) => {
         expect(describeAiError(error, t)).toBe(key);
       });

@@ -29,6 +29,7 @@
     "hostedRemoved": "To urządzenie zostało usunięte z Twojej subskrypcji Premium. Przywróć zakupy w ustawieniach Premium, aby dodać je ponownie.",
     "hostedUnavailable": "Musclog Premium jest teraz niedostępne. Spróbuj ponownie za chwilę.",
     "hostedDailyFull": "AI Premium jest przeciążone do jutra (UTC).",
+    "hostedDailyLimit": "Osiągnięto dzienny limit AI Premium. Zeruje się o północy (UTC). W międzyczasie możesz użyć własnego klucza lub darmowego poziomu.",
     "hostedBusy": "Musclog Premium jest zajęte. Spróbuj ponownie za kilka sekund.",
     "hostedAlreadyProcessed": "To żądanie zostało już obsłużone. Wyślij je ponownie."
   }

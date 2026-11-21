@@ -18,6 +18,7 @@ import {
   localeForLanguage,
   localePrefixesFor,
   localizedPath,
+  WEBSITE_LOCALES,
 } from './localeRoutes';
 import websiteRoutes from './websiteRoutes.json';
 
@@ -43,18 +44,7 @@ const translations = {
   'pl-pl': pl.website,
   'tr-tr': tr.website,
 };
-const OG_LOCALES = [
-  'en_US',
-  'es_ES',
-  'nl_NL',
-  'pt_BR',
-  'ru_RU',
-  'de_DE',
-  'fr_FR',
-  'it_IT',
-  'pl_PL',
-  'tr_TR',
-];
+const OG_LOCALES = WEBSITE_LOCALES.map((locale) => locale.ogLocale);
 
 export function websiteCopy(language = 'en-us') {
   return translations[language.toLowerCase() as keyof typeof translations] ?? translations['en-us'];

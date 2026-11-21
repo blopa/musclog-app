@@ -46,26 +46,18 @@ jest.mock('@/utils/premium/premiumUiFlag', () => ({
   isPremiumUiEnabled: () => mockFlag,
 }));
 
-const mockStatus = jest.fn();
 const mockBaseUrl = jest.fn();
 const mockGrant = jest.fn();
 jest.mock('@/services/premium/premiumService', () => ({
-  getPremiumStatus: () => mockStatus(),
   hostedAiBaseUrl: () => mockBaseUrl(),
   getSessionGrant: () => mockGrant(),
 }));
 
-function reset(options: {
-  flag?: boolean;
-  hosted?: boolean;
-  status?: string;
-  baseUrl?: string | null;
-}) {
+function reset(options: { flag?: boolean; hosted?: boolean; baseUrl?: string | null }) {
   for (const key of Object.keys(store)) delete store[key];
   for (const key of Object.keys(named)) delete named[key];
   mockFlag = options.flag ?? true;
   store[SETTINGS.useHostedAi.type] = options.hosted ?? true;
-  mockStatus.mockResolvedValue(options.status ?? 'active');
   mockBaseUrl.mockReturnValue(
     options.baseUrl === undefined ? 'https://hosted.example' : options.baseUrl
   );
@@ -94,15 +86,29 @@ describe('AiService hosted (Musclog Premium) probe', () => {
     expect(mockGrant).not.toHaveBeenCalled();
   });
 
-  it('is null when no base URL is configured (the web stub)', async () => {
+  it('still answers as hosted, carrying not_available, when no base URL is configured', async () => {
     reset({ baseUrl: null });
-    await expect(AiService.getAiConfigForProvider('hosted')).resolves.toBeNull();
+    named.getEnableGoogleGemini = true;
+    named.getGoogleGeminiApiKey = 'gemini-key';
+
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({
+      provider: 'hosted',
+      apiKey: '',
+      hostedGrantFailure: 'not_available',
+    });
+    expect(mockGrant).not.toHaveBeenCalled();
   });
 
-  it.each(['no_key', 'not_enrolled'] as const)('is null when the status is %s', async (status) => {
-    reset({ status });
-    await expect(AiService.getAiConfigForProvider('hosted')).resolves.toBeNull();
-    expect(mockGrant).not.toHaveBeenCalled();
+  it('never steps aside for another provider when this device is not enrolled', async () => {
+    reset({});
+    named.getEnableGoogleGemini = true;
+    named.getGoogleGeminiApiKey = 'gemini-key';
+    mockGrant.mockResolvedValue({ ok: false, failure: 'not_enrolled' });
+
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({
+      provider: 'hosted',
+      hostedGrantFailure: 'not_enrolled',
+    });
   });
 
   it('wins over a configured gateway and uses the session token as the key', async () => {

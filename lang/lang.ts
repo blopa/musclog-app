@@ -2290,13 +2290,13 @@ const systemLocales = Localization.getLocales();
 i18n.use(initReactI18next).init({
   // compatibilityJSON: 'v3',
   debug: __DEV__,
-  fallbackLng: DE_DE,
+  fallbackLng: DEFAULT_LANG,
   interpolation: {
     escapeValue: false,
   },
   lng:
     systemLocales.find((locale) => AVAILABLE_LANGUAGES.includes(locale.languageTag as LanguageKeys))
-      ?.languageTag || DE_DE,
+      ?.languageTag || DEFAULT_LANG,
   resources,
 });
 

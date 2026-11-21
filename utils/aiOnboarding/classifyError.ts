@@ -1,10 +1,5 @@
-import {
-  AiCancelledError,
-  AiInvalidKeyError,
-  AiTimeoutError,
-  type HostedErrorKind,
-  hostedErrorKindOf,
-} from '@/utils/aiErrors';
+import { AiCancelledError, AiInvalidKeyError, AiTimeoutError } from '@/utils/aiErrors';
+import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { AiOnboardingErrorKind } from '@/utils/aiOnboarding/chatState';
 import {
   AiCreditsError,
@@ -21,6 +16,7 @@ const HOSTED_KIND_TO_RECOVERY: Record<
   >
 > = {
   budget: 'hostedBudget',
+  dailyLimit: 'hostedBudget',
   subscription: 'hostedSubscription',
   removed: 'hostedSubscription',
   unavailable: 'hostedUnavailable',
@@ -47,7 +43,7 @@ export function classifyAiOnboardingError(error: unknown): AiOnboardingErrorKind
     return 'gatewayLimit';
   }
 
-  // Before the generic credits check: a hosted budget error is also an AiCreditsError.
+  // Before the generic credits check: a hosted budget error counts as a credits error too.
   const hosted = hostedErrorKindOf(error);
   if (hosted) {
     return HOSTED_KIND_TO_RECOVERY[hosted];

@@ -28,3 +28,5 @@ export const fetchPremiumConfig = () => unavailable<HostedConfig>();
 export async function resetPremium(): Promise<{ rcId: string; revenueCatSwitched: boolean }> {
   throw new Error('Premium identity is not available on web');
 }
+
+export function resetPremiumConfigCache(): void {}

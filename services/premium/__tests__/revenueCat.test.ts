@@ -26,13 +26,13 @@ const platform = { OS: 'ios' };
 
 jest.mock('react-native', () => ({ Platform: platform }));
 
-type Harness = typeof import('../revenueCatHarness');
+type Harness = typeof import('../revenueCat');
 
 function load(): Harness {
   let mod!: Harness;
 
   jest.isolateModules(() => {
-    mod = require('../revenueCatHarness');
+    mod = require('../revenueCat');
   });
 
   return mod;
@@ -45,7 +45,7 @@ beforeEach(() => {
   process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY = 'android-key';
 });
 
-describe('revenueCatHarness', () => {
+describe('revenueCat', () => {
   it('does not touch the SDK on import', () => {
     load();
 
@@ -172,7 +172,7 @@ describe('revenueCatHarness', () => {
   });
 
   it('has no logOut path', () => {
-    const src = fs.readFileSync(path.join(__dirname, '..', 'revenueCatHarness.ts'), 'utf8');
+    const src = fs.readFileSync(path.join(__dirname, '..', 'revenueCat.ts'), 'utf8');
 
     expect(src).not.toContain('logOut');
   });

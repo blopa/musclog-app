@@ -18,10 +18,8 @@ import {
   loadPremiumOverview,
   type PremiumOverview,
   resetPremiumOnThisDevice,
-  restore as restoreAction,
-  setUseHostedAi as setUseHostedAiAction,
-  subscribe as subscribeAction,
 } from '@/services/premium/premiumActions';
+import { purchaseAndEnroll, restoreAndEnroll } from '@/services/premium/premiumService';
 import { getHostedSignal, subscribeHostedSignal } from '@/utils/premium/hostedSignal';
 import { needsPremiumConsent, PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
@@ -164,7 +162,7 @@ export function usePremium(): UsePremium {
       return false;
     }
 
-    return runAction(() => subscribeAction());
+    return runAction(purchaseAndEnroll);
   }, [enabled, runAction]);
 
   const restore = useCallback(async () => {
@@ -172,7 +170,7 @@ export function usePremium(): UsePremium {
       return false;
     }
 
-    return runAction(() => restoreAction());
+    return runAction(restoreAndEnroll);
   }, [enabled, runAction]);
 
   const setUseHostedAi = useCallback(
@@ -181,7 +179,7 @@ export function usePremium(): UsePremium {
         return;
       }
 
-      await setUseHostedAiAction(on);
+      await SettingsService.set(SETTINGS.useHostedAi, on);
 
       if (mounted.current) {
         setUseHostedAiState(on);

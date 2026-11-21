@@ -6,7 +6,7 @@ import {
   HOSTED_BODY_OVERHEAD_BYTES,
   HOSTED_REQUEST_BODY_CAP_BYTES,
 } from '@/utils/premium/hostedImagePlan';
-import { prepareHostedImage, resetHostedImageConfigCache } from '@/utils/hostedImage';
+import { prepareHostedImage } from '@/utils/hostedImage';
 
 jest.mock('react-native', () => ({
   Image: { getSize: jest.fn() },
@@ -55,7 +55,6 @@ function encoderAt(scale: number) {
 describe('prepareHostedImage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    resetHostedImageConfigCache();
     fetchConfig.mockResolvedValue(CONFIG_OK);
     jest.spyOn(console, 'warn').mockImplementation(() => undefined);
   });
@@ -125,24 +124,16 @@ describe('prepareHostedImage', () => {
     expect(console.warn).toHaveBeenCalled();
   });
 
-  it('caches the config so a burst of photos makes one request', async () => {
+  it('throws a hosted unavailable error when the Worker has photos switched off', async () => {
+    fetchConfig.mockResolvedValue({
+      ok: true,
+      value: { ...CONFIG_OK.value, visionEnabled: false },
+    });
     setSize(800, 600);
 
-    await prepareHostedImage('AAAA', 'image/jpeg');
-    await prepareHostedImage('AAAA', 'image/jpeg');
-
-    expect(fetchConfig).toHaveBeenCalledTimes(1);
-  });
-
-  it('refetches the config after the cache expires', async () => {
-    setSize(800, 600);
-    const now = jest.spyOn(Date, 'now');
-
-    now.mockReturnValue(1_000_000);
-    await prepareHostedImage('AAAA', 'image/jpeg');
-    now.mockReturnValue(1_000_000 + 5 * 60 * 1000 + 1);
-    await prepareHostedImage('AAAA', 'image/jpeg');
-
-    expect(fetchConfig).toHaveBeenCalledTimes(2);
+    await expect(prepareHostedImage('AAAA', 'image/jpeg')).rejects.toMatchObject({
+      hostedKind: 'unavailable',
+    });
+    expect(manipulate).not.toHaveBeenCalled();
   });
 });

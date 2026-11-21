@@ -1,6 +1,6 @@
 // Web has no Premium: every action reports it, nothing is read or written.
 import type { PremiumOverview } from '@/services/premium/premiumActions';
-import type { PremiumResult, PremiumStatus, SessionGrant } from '@/utils/premium/premiumState';
+import type { PremiumStatus } from '@/utils/premium/premiumState';
 
 export async function loadPremiumOverview(): Promise<PremiumOverview> {
   return {
@@ -11,16 +11,6 @@ export async function loadPremiumOverview(): Promise<PremiumOverview> {
     priceString: null,
   };
 }
-
-export function subscribe(): Promise<PremiumResult<SessionGrant>> {
-  return Promise.resolve({ ok: false, failure: 'not_available' });
-}
-
-export function restore(): Promise<PremiumResult<SessionGrant>> {
-  return Promise.resolve({ ok: false, failure: 'not_available' });
-}
-
-export async function setUseHostedAi(_on: boolean): Promise<void> {}
 
 export async function resetPremiumOnThisDevice(): Promise<void> {}
 

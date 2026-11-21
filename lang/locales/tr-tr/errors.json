@@ -29,6 +29,7 @@
     "hostedRemoved": "Bu cihaz Premium aboneliğinizden kaldırıldı. Yeniden eklemek için Premium ayarlarında satın alımları geri yükleyin.",
     "hostedUnavailable": "Musclog Premium şu anda kullanılamıyor. Birazdan tekrar deneyin.",
     "hostedDailyFull": "Premium YZ yarına kadar (UTC) kapasitesinde.",
+    "hostedDailyLimit": "Premium YZ'nin günlük sınırına ulaştın. Gece yarısı (UTC) sıfırlanır. Bu sırada kendi anahtarını veya ücretsiz katmanı kullanabilirsin.",
     "hostedBusy": "Musclog Premium meşgul. Birkaç saniye sonra tekrar deneyin.",
     "hostedAlreadyProcessed": "Bu istek zaten işlendi. Lütfen yeniden gönderin."
   }

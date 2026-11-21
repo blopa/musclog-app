@@ -29,6 +29,7 @@
     "hostedRemoved": "Questo dispositivo è stato rimosso dal tuo abbonamento Premium. Ripristina gli acquisti nelle impostazioni Premium per aggiungerlo di nuovo.",
     "hostedUnavailable": "Musclog Premium non è disponibile in questo momento. Riprova tra poco.",
     "hostedDailyFull": "L'IA Premium è al limite di capacità fino a domani (UTC).",
+    "hostedDailyLimit": "Hai raggiunto il limite giornaliero dell'IA Premium. Si azzera a mezzanotte (UTC). Nel frattempo puoi usare la tua chiave o il livello gratuito.",
     "hostedBusy": "Musclog Premium è occupato. Riprova tra qualche secondo.",
     "hostedAlreadyProcessed": "Questa richiesta è già stata gestita. Inviala di nuovo."
   }

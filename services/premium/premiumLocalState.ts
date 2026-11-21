@@ -10,7 +10,6 @@ export type PremiumStatusKind = 'active' | 'exhausted' | 'revoked';
 export type PremiumLocalState = {
   /** The key-derived id this device enrolled with. */
   rcId: string | null;
-  enrolledAtMs: number | null;
   /** The Worker answered 401 unknown_device. */
   removed: boolean;
   lastStatus: PremiumStatusKind | null;
@@ -23,7 +22,6 @@ export type PremiumLocalState = {
 
 export const EMPTY_PREMIUM_LOCAL_STATE: PremiumLocalState = {
   rcId: null,
-  enrolledAtMs: null,
   removed: false,
   lastStatus: null,
   usedPct: null,
@@ -36,10 +34,6 @@ const STATUS_KINDS: readonly PremiumStatusKind[] = ['active', 'exhausted', 'revo
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function parseNonNegativeNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
 function parsePercent(value: unknown): number | null {
@@ -97,7 +91,6 @@ export function parsePremiumLocalState(raw: string | null): PremiumLocalState {
 
   return {
     rcId,
-    enrolledAtMs: parseNonNegativeNumber(data.enrolledAtMs),
     removed: data.removed === true,
     lastStatus,
     usedPct,

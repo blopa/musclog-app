@@ -13,9 +13,10 @@ import {
   getConfiguredAppUserId,
   logInTo,
   restorePurchases,
-} from '@/services/premium/revenueCatHarness';
+} from '@/services/premium/revenueCat';
 import {
   fetchPremiumConfig,
+  resetPremiumConfigCache,
   getPremiumStatus,
   getSessionGrant,
   enrollThisDevice,
@@ -51,7 +52,7 @@ jest.mock('@/services/premium/deviceKeyStore', () => ({
   signWithDeviceKey: jest.fn(),
 }));
 
-jest.mock('@/services/premium/revenueCatHarness', () => ({
+jest.mock('@/services/premium/revenueCat', () => ({
   configureRevenueCat: jest.fn(),
   buyMonthly: jest.fn(),
   restorePurchases: jest.fn(),
@@ -188,6 +189,7 @@ function wireSigning() {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  resetPremiumConfigCache();
   process.env.EXPO_PUBLIC_HOSTED_AI_BASE_URL = BASE;
 
   saved = new Map();
@@ -258,7 +260,7 @@ describe('module load', () => {
 
       require('@/services/premium/premiumService');
       const store = require('@/services/premium/deviceKeyStore');
-      const harness = require('@/services/premium/revenueCatHarness');
+      const harness = require('@/services/premium/revenueCat');
 
       expect(fetchSpy).not.toHaveBeenCalled();
       expect(store.getOrCreateDeviceKey).not.toHaveBeenCalled();
@@ -531,6 +533,24 @@ describe('refreshPremiumUsage', () => {
 });
 
 describe('fetchPremiumConfig', () => {
+  it('caches a good config for five minutes, so a burst of photos makes one request', async () => {
+    const now = jest.spyOn(Date, 'now');
+
+    now.mockReturnValue(1_000_000);
+    await fetchPremiumConfig();
+    await fetchPremiumConfig();
+    const configCalls = () =>
+      fetchMock.mock.calls.filter(([url]: [string]) => String(url).endsWith('/v1/config')).length;
+
+    expect(configCalls()).toBe(1);
+
+    now.mockReturnValue(1_000_000 + 5 * 60 * 1000 + 1);
+    await fetchPremiumConfig();
+
+    expect(configCalls()).toBe(2);
+    now.mockRestore();
+  });
+
   it('parses the Worker config', async () => {
     expect(await fetchPremiumConfig()).toEqual({
       ok: true,

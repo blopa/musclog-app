@@ -39,7 +39,6 @@ describe('round trip', () => {
   it('loads back what was saved', async () => {
     const written = await savePremiumLocalState({
       rcId: RC_ID,
-      enrolledAtMs: 1_700_000_000_000,
       lastStatus: 'exhausted',
       usedPct: 42,
       resetsAt: '2026-12-01T00:00:00.000Z',
@@ -78,7 +77,6 @@ describe('parsePremiumLocalState tolerance', () => {
     const parsed = parsePremiumLocalState(
       JSON.stringify({
         rcId: RC_ID,
-        enrolledAtMs: '2026',
         removed: 'yes',
         lastStatus: 'maybe',
         usedPct: 50,
@@ -99,7 +97,6 @@ describe('parsePremiumLocalState tolerance', () => {
     ['rcId too short', { rcId: 'mlg1_abc' }],
     ['usedPct above 100', { usedPct: 101 }],
     ['usedPct negative', { usedPct: -1 }],
-    ['negative enrolledAtMs', { enrolledAtMs: -5 }],
     ['non-finite usedPct', { usedPct: null }],
     ['fractional device count', { devices: { count: 1.5, max: 3 } }],
     ['negative device count', { devices: { count: -1, max: 3 } }],
@@ -115,12 +112,11 @@ describe('parsePremiumLocalState tolerance', () => {
 
   it('accepts boundary values', () => {
     const parsed = parsePremiumLocalState(
-      JSON.stringify({ usedPct: 100, devices: { count: 3, max: 3 }, enrolledAtMs: 0 })
+      JSON.stringify({ usedPct: 100, devices: { count: 3, max: 3 } })
     );
 
     expect(parsed.usedPct).toBe(100);
     expect(parsed.devices).toEqual({ count: 3, max: 3 });
-    expect(parsed.enrolledAtMs).toBe(0);
   });
 
   it('never returns a session token, even when one is stored', async () => {

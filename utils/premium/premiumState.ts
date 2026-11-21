@@ -1,7 +1,8 @@
 // Pure model of what the Premium Worker says (plan sections 6.1, 10, 11). No React Native, no
 // storage: relative imports only, because the Worker's own tests load this file too.
 
-export const PREMIUM_DEVICES_MAX_FALLBACK = 3;
+import { isRecord } from '../isRecord';
+
 /** Refresh the session token this long before it expires (plan 11 item 3). */
 export const TOKEN_REFRESH_MARGIN_MS = 5 * 60_000;
 
@@ -49,9 +50,6 @@ export type HostedConfig = {
 
 export type PremiumStatus =
   'no_key' | 'not_enrolled' | 'active' | 'exhausted' | 'revoked' | 'removed';
-
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** Maps a Worker answer to one failure kind. Never carries a message from the server. */
 export function failureKindOf(result: {

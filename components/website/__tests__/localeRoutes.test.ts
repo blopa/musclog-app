@@ -14,8 +14,14 @@ import {
   WEBSITE_LOCALES,
 } from '../localeRoutes';
 import routes from '../websiteRoutes.json';
+import { LANGUAGE_STORAGE_KEY } from '../localeRoutes';
+import { LANDING_LANGUAGE_STORAGE_KEY } from '@/lang/lang';
 
 describe('website locales', () => {
+  it('shares the language storage key with the generated landing script', () => {
+    expect(LANGUAGE_STORAGE_KEY).toBe(LANDING_LANGUAGE_STORAGE_KEY);
+  });
+
   it('has one URL prefix per bundled language, English first', () => {
     const directories = readdirSync(join(__dirname, '../../../lang/locales'), {
       withFileTypes: true,

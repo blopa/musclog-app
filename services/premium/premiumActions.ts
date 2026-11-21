@@ -7,18 +7,14 @@ import { loadDeviceKeyInfo } from '@/services/premium/deviceKeyStore';
 import {
   fetchPremiumConfig,
   getPremiumStatus,
-  purchaseAndEnroll,
   refreshPremiumUsage,
   resetPremium,
-  restoreAndEnroll,
 } from '@/services/premium/premiumService';
-import { getMonthlyPriceString } from '@/services/premium/revenueCatHarness';
+import { getMonthlyPriceString } from '@/services/premium/revenueCat';
 import type {
   HostedConfig,
   PremiumActionFailure,
-  PremiumResult,
   PremiumStatus,
-  SessionGrant,
   UsageSnapshot,
 } from '@/utils/premium/premiumState';
 
@@ -32,8 +28,7 @@ export type PremiumOverview = {
 
 /** Reads everything the Premium screen shows. Called only when the screen asks, never at boot. */
 export async function loadPremiumOverview(): Promise<PremiumOverview> {
-  const status = await getPremiumStatus();
-  const configResult = await fetchPremiumConfig();
+  const [status, configResult] = await Promise.all([getPremiumStatus(), fetchPremiumConfig()]);
   const config = configResult.ok ? configResult.value : null;
   const configFailure = configResult.ok ? null : configResult.failure;
 
@@ -54,20 +49,6 @@ export async function loadPremiumOverview(): Promise<PremiumOverview> {
   }
 
   return { status, usage, config, configFailure, priceString };
-}
-
-/** Buys a month, then enrolls this device. The caller turns hosted AI on only after consent. */
-export function subscribe(): Promise<PremiumResult<SessionGrant>> {
-  return purchaseAndEnroll();
-}
-
-/** Store-verified restore under this device's id; also how a second device is added. */
-export function restore(): Promise<PremiumResult<SessionGrant>> {
-  return restoreAndEnroll();
-}
-
-export async function setUseHostedAi(on: boolean): Promise<void> {
-  await SettingsService.set(SETTINGS.useHostedAi, on);
 }
 
 /** Forgets the enrollment on this device and switches hosted AI off with it. */
