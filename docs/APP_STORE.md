@@ -272,7 +272,28 @@ release setting. (The category, age rating and review contact are reachable with
 off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards to
 Google Gemini; keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.
 
-**Premium (decided 2026-11-20, nothing shipped yet):** `expo.ios.privacyManifests` now also declares Purchase History and Device ID (`rc_id`), both not linked, no tracking, App Functionality (pinned by `iosPrivacyConfig.test.ts`); answer the App Store Connect labels the same way, and RevenueCat's SDK manifest must be seen merged after `npm run prebuild:ios` on a Mac. The review note says: no account can be created in the app (a device-derived id, no email or name), so 5.1.1(v) does not apply, "Reset Premium" forgets the device key and enrollment, and the subscription is managed in the App Store; a Restore purchases button is in the Premium screen; the free tier and own-key AI need no purchase. The description carries the 3.1.2(c) text (monthly, auto-renewal, cancel at least 24 hours before renewal, Terms link) with no price: the price shown is the store's own string. The device-limit wording is an open decision (see the plan, section 16).
+**Premium (decided 2026-11-20, nothing shipped yet):** `expo.ios.privacyManifests` now also declares Purchase History and Device ID (`rc_id`), both not linked, no tracking, App Functionality (pinned by `iosPrivacyConfig.test.ts`); answer the App Store Connect labels the same way, and RevenueCat's SDK manifest must be seen merged after `npm run prebuild:ios` on a Mac. The review note says: no account can be created in the app (a device-derived id, no email or name), so 5.1.1(v) does not apply, "Reset Premium" forgets the device key and enrollment, and the subscription is managed in the App Store; a Restore purchases button is in the Premium screen; the free tier and own-key AI need no purchase. The description carries the 3.1.2(c) text (monthly, auto-renewal, cancel at least 24 hours before renewal, Terms link) with no price: the price shown is the store's own string.
+
+### Premium: App Privacy labels and App Review notes (drafted 2026-11-21; nothing entered in App Store Connect)
+
+**App Privacy labels** (maintainer enters them; they must match `expo.ios.privacyManifests`, which `iosPrivacyConfig.test.ts` partly pins). Everything below: not used for tracking, not linked to the person's identity (there is no account), purpose App Functionality.
+
+| Label                                               | Answer                | Why                                                                                                                                            |
+| --------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Purchases → Purchase History                        | Collected, not linked | RevenueCat reads subscription state from the store.                                                                                            |
+| Identifiers → Device ID                             | Collected, not linked | The per-install `rc_id` (a hash of an on-device key), not the advertising id.                                                                  |
+| User Content → Other User Content, Photos or Videos | Collected, not linked | Chat text and an optional meal photo sent through Premium to the Worker and OpenRouter (processors, zero-retention providers, nothing stored). |
+| Diagnostics → Crash Data (existing)                 | Collected, not linked | Unchanged (Sentry, can be turned off).                                                                                                         |
+
+The RevenueCat iOS SDK ships its own privacy manifest: after `npm run prebuild:ios` on a Mac, read the merged result (`ios/` build output, or `Pods/RevenueCat/.../PrivacyInfo.xcprivacy`) and make sure no collected type or required-reason API appears that the app-level manifest lacks. Re-run `scripts/appstore.sh audit` and `scripts/release-ios.sh check` afterwards.
+
+**App Review notes** (describe only; no demo account exists because there is no account):
+
+1. No account can be created in the app: no email, name or login. Premium is tied to a device-derived identifier made on the device, so guideline 5.1.1(v) (account deletion) does not apply. "Reset Premium on this device" (the Premium card in AI settings opens the Premium screen) forgets this device's key and enrollment; it does not cancel the subscription.
+2. Premium is one auto-renewing monthly subscription for a hosted AI allowance. Everything else, including the free AI route and own-key providers, needs no purchase. The price shown is the App Store's own string; the 3.1.2(c) text (what it gives, monthly, auto-renewal, cancel at least 24 hours before renewal, Terms and Privacy links) is in the description and in the Premium screen.
+3. **Restore Purchases** is the "Restore purchases" button in the Premium screen (the Premium card in AI settings). It is also how a second device is added. Manage or cancel: the "Manage subscription" button opens the App Store's subscriptions page.
+4. To see it: sign in with a sandbox Apple Account on the review device and subscribe in the Premium screen. The nine other languages follow the system language.
+5. Family Sharing is off; there are no offers or free trials.
 
 ## The Premium identity harness build
 
