@@ -37,6 +37,10 @@
           "title": "Fitness and Macro Calculator | Musclog",
           "description": "Estimate calories, macros, BMI, FFMI, and goal targets with Musclog's fitness calculator, then use the plan in the app."
         },
+        "premium": {
+          "title": "Musclog Premium: AI without an API key",
+          "description": "Musclog stays free and open source. Premium is an optional monthly subscription that runs the AI features for you, with no API key to set up."
+        },
         "faq": {
           "title": "Musclog FAQ",
           "description": "Find answers about Musclog's privacy model, nutrition math, workout tracking, AI features, and open-source fitness methodology."

@@ -1,0 +1,75 @@
+{
+  "websitePremium": {
+    "hero": {
+      "title": "IA que funciona sin clave de API",
+      "lead": "Musclog es gratis y de código abierto, y así seguirá. Premium es una suscripción mensual opcional que ejecuta las funciones de IA por ti, así que no hay ninguna clave que buscar, pegar ni pagar.",
+      "cta": "Consigue Musclog",
+      "note": "Te suscribes desde la app, con tu cuenta de App Store o Google Play."
+    },
+    "free": {
+      "title": "Todo lo demás sigue siendo gratis",
+      "body": "El seguimiento de entrenamientos y nutrición, tus datos en tu propio dispositivo y el resto de funciones de la app no necesitan Premium. Las funciones de IA siempre han tenido vías gratuitas, y siguen teniéndolas:",
+      "items": [
+        "Usa tu propia clave de API de Google Gemini, OpenAI o Anthropic Claude, y paga directamente a ese proveedor.",
+        "Usa la opción gratuita Musclog AI.",
+        "Usa IA en el dispositivo o un modelo local, si tu dispositivo lo admite.",
+        "No uses nada de esto. Musclog funciona por completo sin IA."
+      ]
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "steps": [
+        "Abre Ajustes, luego Ajustes de IA, y elige Musclog Premium.",
+        "Suscríbete con tu cuenta de la tienda. Restaurar compras recupera una suscripción existente.",
+        "Lee el aviso de privacidad y activa \"Usar Premium para mi IA\". No se envía nada hasta que lo hagas.",
+        "Usa el coach, el registro de comidas y los planes de entrenamiento como con cualquier otro proveedor."
+      ]
+    },
+    "allowance": {
+      "title": "Una cuota mensual, visible en la app",
+      "body": "Cada periodo de suscripción incluye una cuota de uso de IA. La app muestra cuánto has usado y cuándo se renueva. Es una sola cuota para la suscripción, compartida por todos los dispositivos en los que la uses.",
+      "usedUp": "Si la agotas, la IA se detiene hasta que se renueve el periodo. El resto de Musclog sigue funcionando, y puedes cambiar tú mismo a tu propia clave o a la opción gratuita. Musclog nunca cambia tu IA a otro proveedor sin preguntarte, porque eso cambiaría quién recibe tus mensajes."
+    },
+    "privacy": {
+      "title": "Qué pasa con tus mensajes",
+      "body": "Con Premium activado, tus solicitudes de IA van al servicio propio de Musclog, que las reenvía a OpenRouter, y OpenRouter las pasa al modelo de IA. Las solicitudes solo se envían a proveedores que ofrecen retención cero de datos, y el servicio no guarda el texto de tus mensajes ni tus imágenes. Lleva un recuento de uso de tu periodo de suscripción y un identificador de cada dispositivo en el que uses Premium.",
+      "consent": "La app te pide consentimiento antes de enviar nada a Premium, y vuelve a pedirlo si restauras una copia de seguridad en otro dispositivo.",
+      "link": "Leer la política de privacidad"
+    },
+    "subscription": {
+      "title": "La suscripción",
+      "items": [
+        "Se factura mensualmente a través de App Store o Google Play, al precio que muestre tu tienda.",
+        "Se renueva automáticamente hasta que la canceles en tu cuenta de la tienda. Cancelar detiene la siguiente renovación.",
+        "Las suscripciones de iOS y Android son independientes, así que una comprada en una no se traslada a la otra.",
+        "No necesitas una cuenta de Musclog. Tu suscripción se comprueba a través de tu tienda."
+      ],
+      "terms": "Condiciones de uso"
+    },
+    "faq": {
+      "title": "Preguntas",
+      "items": [
+        {
+          "q": "¿Musclog sigue siendo gratis?",
+          "a": "Sí. La app es gratuita y de código abierto. Premium es opcional y solo sirve para ejecutar las funciones de IA por ti."
+        },
+        {
+          "q": "¿Necesito Premium para usar las funciones de IA?",
+          "a": "No. Puedes usar tu propia clave de API, la opción gratuita Musclog AI o modelos en el dispositivo y locales. Premium es la opción en la que no hay nada que configurar."
+        },
+        {
+          "q": "¿Puedo usarlo en más de un dispositivo?",
+          "a": "Sí. Una suscripción cubre tus dispositivos de la misma cuenta de la tienda, y comparten una cuota. Restaurar compras añade un dispositivo."
+        },
+        {
+          "q": "¿Qué pasa si me quedo sin cuota?",
+          "a": "La IA espera al siguiente periodo. Todo lo demás en Musclog sigue funcionando, y puedes elegir otra opción de IA en cualquier momento."
+        },
+        {
+          "q": "¿Cómo cancelo?",
+          "a": "En los ajustes de suscripción de App Store o Google Play. La app tiene un botón Gestionar suscripción que abre la página correcta."
+        }
+      ]
+    }
+  }
+}

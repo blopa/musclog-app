@@ -246,6 +246,13 @@ describe('generate-web-seo-files localized sitemap', () => {
     }
   });
 
+  it('keeps the unlisted /premium page out of the sitemap and llms.txt', () => {
+    for (const entry of parsed) {
+      expect(entry.loc).not.toMatch(/\/premium(\/|$)/);
+    }
+    expect(generateLlmsTxt()).not.toContain('/premium');
+  });
+
   it('keeps robots.txt disallowing the unprefixed noindex routes', () => {
     expect(generateRobotsTxt()).toContain('Disallow: /open');
     expect(generateRobotsTxt()).toContain('Disallow: /test');

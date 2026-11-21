@@ -61,6 +61,10 @@
           "title": "Musclog a confronto con le alternative: confronto onesto",
           "description": "Scopri come Musclog si confronta con MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy e altri per privacy, alimentazione, allenamenti e monitoraggio della salute complessiva."
         },
+        "premium": {
+          "title": "Musclog Premium: IA senza chiave API",
+          "description": "Musclog resta gratuito e open source. Premium è un abbonamento mensile facoltativo che esegue per te le funzioni IA, senza bisogno di configurare una chiave API."
+        },
         "blog": {
           "title": "Blog di Musclog: fitness e tecnologia open source",
           "description": "Leggi articoli su Musclog, sviluppo open source, privacy, tecnologia del fitness e le idee alla base dell'app."

@@ -20,6 +20,10 @@
     "robots": "noindex, nofollow, noarchive",
     "locales": "none"
   },
+  "premium": {
+    "path": "/premium",
+    "robots": "noindex, nofollow, noarchive"
+  },
   "exercises": {
     "path": "/exercises",
     "llms": {

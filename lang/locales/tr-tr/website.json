@@ -61,6 +61,10 @@
           "title": "Musclog ve Alternatifleri — Dürüst Uygulama Karşılaştırması",
           "description": "Musclog'un MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy ve diğerleriyle gizlilik, beslenme, antrenman ve bütünsel sağlık takibi açısından nasıl karşılaştığını gör."
         },
+        "premium": {
+          "title": "Musclog Premium: API anahtarı olmadan YZ",
+          "description": "Musclog ücretsiz ve açık kaynaklı kalır. Premium, YZ özelliklerini senin yerine çalıştıran isteğe bağlı aylık bir aboneliktir; kurulacak bir API anahtarı yoktur."
+        },
         "blog": {
           "title": "Musclog Blogu — Açık Kaynaklı Fitness ve Teknoloji",
           "description": "Musclog, açık kaynaklı geliştirme, gizlilik, fitness teknolojisi ve uygulamanın arkasındaki fikirler hakkında yazıları oku."

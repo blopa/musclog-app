@@ -1,0 +1,75 @@
+{
+  "websitePremium": {
+    "hero": {
+      "title": "L'IA qui fonctionne sans clé d'API",
+      "lead": "Musclog est gratuit et open source, et il le restera. Premium est un abonnement mensuel facultatif qui fait tourner les fonctions d'IA pour toi, sans clé à trouver, à coller ou à payer.",
+      "cta": "Obtenir Musclog",
+      "note": "Tu t'abonnes dans l'app, avec ton compte App Store ou Google Play."
+    },
+    "free": {
+      "title": "Tout le reste reste gratuit",
+      "body": "Le suivi des séances et de la nutrition, tes données sur ton propre appareil et toutes les autres fonctions de l'app ne nécessitent pas Premium. Les fonctions d'IA ont toujours eu des accès gratuits, et ils restent disponibles :",
+      "items": [
+        "Utilise ta propre clé d'API Google Gemini, OpenAI ou Anthropic Claude, et paie directement ce fournisseur.",
+        "Utilise l'option gratuite Musclog AI.",
+        "Utilise l'IA sur l'appareil ou un modèle local, si ton appareil le permet.",
+        "N'utilise rien de tout cela. Musclog fonctionne entièrement sans IA."
+      ]
+    },
+    "how": {
+      "title": "Comment ça marche",
+      "steps": [
+        "Ouvre Réglages, puis Réglages IA, et choisis Musclog Premium.",
+        "Abonne-toi avec ton compte store. Restaurer les achats rétablit un abonnement existant.",
+        "Lis l'avis de confidentialité et active « Utiliser Premium pour mon IA ». Rien n'est envoyé tant que tu ne l'as pas fait.",
+        "Utilise le coach, le suivi des repas et les plans d'entraînement comme avec n'importe quel autre fournisseur."
+      ]
+    },
+    "allowance": {
+      "title": "Un quota mensuel, affiché dans l'app",
+      "body": "Chaque période d'abonnement comprend un quota d'utilisation de l'IA. L'app affiche la part utilisée et la date de renouvellement. C'est un quota unique pour l'abonnement, partagé par tous les appareils sur lesquels tu l'utilises.",
+      "usedUp": "Si tu l'épuises, l'IA s'arrête jusqu'au renouvellement de la période. Le reste de Musclog continue de fonctionner, et tu peux toi-même passer à ta propre clé ou à l'option gratuite. Musclog ne change jamais ton IA de fournisseur sans te le demander, car cela changerait qui reçoit tes messages."
+    },
+    "privacy": {
+      "title": "Ce qu'il advient de tes messages",
+      "body": "Quand Premium est activé, tes requêtes d'IA partent vers le service propre à Musclog, qui les transmet à OpenRouter, lequel les envoie au modèle d'IA. Les requêtes ne sont envoyées qu'à des fournisseurs qui proposent une rétention de données nulle, et le service ne conserve ni le texte de tes messages ni tes images. Il compte l'utilisation pour ta période d'abonnement et conserve un identifiant pour chaque appareil sur lequel tu utilises Premium.",
+      "consent": "L'app te demande ton accord avant d'envoyer quoi que ce soit à Premium, et te le redemande si tu restaures une sauvegarde sur un autre appareil.",
+      "link": "Lire la politique de confidentialité"
+    },
+    "subscription": {
+      "title": "L'abonnement",
+      "items": [
+        "Il est facturé chaque mois par l'App Store ou Google Play, au prix affiché par ton store.",
+        "Il se renouvelle automatiquement jusqu'à ce que tu le résilies dans ton compte store. Résilier arrête le prochain renouvellement.",
+        "Les abonnements iOS et Android sont séparés : un abonnement acheté sur l'un ne passe pas sur l'autre.",
+        "Aucun compte Musclog n'est nécessaire. Ton abonnement est vérifié par ton store."
+      ],
+      "terms": "Conditions d'utilisation"
+    },
+    "faq": {
+      "title": "Questions",
+      "items": [
+        {
+          "q": "Musclog est-il toujours gratuit ?",
+          "a": "Oui. L'app est gratuite et open source. Premium est facultatif et ne sert qu'à faire tourner les fonctions d'IA pour toi."
+        },
+        {
+          "q": "Ai-je besoin de Premium pour utiliser les fonctions d'IA ?",
+          "a": "Non. Tu peux utiliser ta propre clé d'API, l'option gratuite Musclog AI, ou des modèles sur l'appareil et locaux. Premium est l'option sans rien à configurer."
+        },
+        {
+          "q": "Puis-je l'utiliser sur plusieurs appareils ?",
+          "a": "Oui. Un abonnement couvre tes appareils du même compte store, et ils partagent un quota. Restaurer les achats ajoute un appareil."
+        },
+        {
+          "q": "Que se passe-t-il si je n'ai plus de quota ?",
+          "a": "L'IA attend la période suivante. Tout le reste de Musclog continue de fonctionner, et tu peux choisir une autre option d'IA à tout moment."
+        },
+        {
+          "q": "Comment résilier ?",
+          "a": "Dans les réglages d'abonnement de l'App Store ou de Google Play. L'app a un bouton Gérer l'abonnement qui ouvre la bonne page."
+        }
+      ]
+    }
+  }
+}

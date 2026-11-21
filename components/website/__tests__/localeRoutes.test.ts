@@ -133,6 +133,14 @@ describe('locale scope', () => {
     expect(unprefixed.sort()).toEqual(['open', 'test']);
   });
 
+  it('registers /premium as an unlisted translated route', () => {
+    const premium = routes.premium as { path: string; robots?: string; llms?: unknown };
+    expect(premium.path).toBe('/premium');
+    expect(premium.robots).toContain('noindex');
+    expect(premium.llms).toBeUndefined();
+    expect(localePrefixesFor('/premium')).toHaveLength(10);
+  });
+
   it('publishes a translated route in every locale', () => {
     expect(localePrefixesFor('/tools/rpe-chart')).toEqual([
       'en',
