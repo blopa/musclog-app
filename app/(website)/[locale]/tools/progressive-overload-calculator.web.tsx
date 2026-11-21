@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { GymFields } from '@/components/website/tools/GymFields';
 import {
   MAX_OVERLOAD_REPS,
@@ -28,7 +29,6 @@ import { BODY_TEXT, INPUT_BORDER, MUTED } from '@/components/website/websiteColo
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import type { ProgressionMode } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function ProgressiveOverloadToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolProgressiveOverload' });

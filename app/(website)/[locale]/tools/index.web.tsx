@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { StoreButtons } from '@/components/website/StoreButtons';
 import {
   stripSiteName,
@@ -13,7 +14,6 @@ import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import { BODY_TEXT, BRAND_GREEN_BRIGHT, ink } from '@/components/website/websiteColors';
 import { fixedMetadataFor, fixedPageSeo } from '@/components/website/websiteMetadata';
 import websiteRoutes from '@/components/website/websiteRoutes.json';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 /** Whole keys, so `check-translations` sees every one of them. */
 const GROUP_COPY: Record<ToolGroup, { title: string; body: string }> = {

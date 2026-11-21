@@ -235,13 +235,12 @@
       "birthdayEstimated": "Geschat op basis van je leeftijd. Kies je geboortedatum als je die weet."
     },
     "musclogApi": {
-      "heading": "Een AI-coach toevoegen?",
-      "intro": "Musclog werkt volledig zonder AI. Met AI kun je chatten met een coach, een maaltijd loggen door hem te beschrijven en een trainingsplan laten schrijven voor jou.",
+      "heading": "Sneller loggen met AI?",
+      "intro": "Musclog werkt volledig zonder AI. Met AI kun je een maaltijd loggen door hem te beschrijven, chatten met een coach en een trainingsplan laten schrijven.",
       "choicesLabel": "AI-opties",
       "options": {
         "premium": {
           "title": "Musclog Premium",
-          "badge": "Het meest privé",
           "price": "{{price}} per maand",
           "priceUnknown": "Maandabonnement",
           "points": {
@@ -263,7 +262,7 @@
           "title": "Voorlopig geen AI",
           "points": {
             "works": "Loggen, plannen en grafieken werken hetzelfde",
-            "later": "Zet AI op elk moment aan in Instellingen"
+            "later": "Zet AI op elk moment aan in Instellingen, met Premium of je eigen Gemini-, OpenAI- of Claude-sleutel"
           }
         }
       },

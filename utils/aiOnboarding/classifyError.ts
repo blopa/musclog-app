@@ -1,5 +1,4 @@
 import { AiCancelledError, AiInvalidKeyError, AiTimeoutError } from '@/utils/aiErrors';
-import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { AiOnboardingErrorKind } from '@/utils/aiOnboarding/chatState';
 import {
   AiCreditsError,
@@ -7,6 +6,7 @@ import {
   isAiConnectionError,
   isAiCreditsError,
 } from '@/utils/coachAI';
+import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 
 const HOSTED_KIND_TO_RECOVERY: Record<
   HostedErrorKind,

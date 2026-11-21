@@ -69,7 +69,15 @@ describe('app/app/test/_layout.tsx guard', () => {
     expect(source).toContain(
       "const isScreenshotFixture =\n    Platform.OS === 'web' &&\n    process.env.EXPO_PUBLIC_SCREENSHOT_MODE === '1' &&\n    segments.at(-1) === 'modals';"
     );
-    expect(source).toContain('if (isProduction() && !isScreenshotFixture && !isPremiumHarness) {');
+    expect(source).toContain(
+      'if (isProduction() && !isScreenshotFixture && !isAiChoiceFixture && !isPremiumHarness) {'
+    );
+  });
+
+  it('lets the AI-choice fixture past only on web in screenshot mode', () => {
+    expect(source).toContain(
+      "const isAiChoiceFixture =\n    Platform.OS === 'web' &&\n    process.env.EXPO_PUBLIC_SCREENSHOT_MODE === '1' &&\n    segments.at(-1) === 'ai-choice';"
+    );
   });
 });
 

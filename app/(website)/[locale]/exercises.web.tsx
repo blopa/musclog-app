@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { exerciseSearchFromQuery } from '@/components/website/exerciseSearchParam';
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -29,7 +30,6 @@ import {
   matchesExerciseSearch,
 } from '@/utils/exerciseSearch';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 ('use client');
 
 const MUSCLE_GROUPS = [

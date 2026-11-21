@@ -22,4 +22,17 @@ describe('the "more below" scroll cue', () => {
     expect(modal).toMatch(/<ScrollView\s+\{\.\.\.scrollProps\}/);
     expect(modal).toMatch(/\{FadeIndicator\}/);
   });
+
+  it('is an opt-in of FullScreenModal that sits above the footer, and the Premium paywall uses it', () => {
+    const modal = read('components/modals/FullScreenModal.tsx').replace(/\s+/g, ' ');
+
+    expect(modal).toContain('scrollCue = false');
+    expect(modal).toContain('{...(scrollCue ? scrollHandlers : {})}');
+    expect(modal).toMatch(
+      /\{scrollCue \? \( <View pointerEvents="box-none"[^>]*bottom: footerHeight/
+    );
+    // The chevron scrolls the body's own ref, the caller's when it passed one.
+    expect(modal).toContain('const bodyRef = scrollViewRef ?? ownScrollRef');
+    expect(read('components/modals/PremiumModal.tsx')).toContain('scrollCue={isPaywall}');
+  });
 });

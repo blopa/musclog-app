@@ -91,7 +91,7 @@ describe('onboarding AI choice screen', () => {
       "import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability'"
     );
     expect(MUSCLOG_API).toMatch(
-      /availableAiChoices\(\{\s*premiumEnabled: premium\.enabled,\s*freeTierAvailable: isMusclogGatewayAvailable\(\),?\s*\}\)/
+      /availableAiChoices\(\{\s*premiumEnabled: premium\.enabled,\s*freeTierAvailable: fixture\?\.freeTierAvailable \?\? isMusclogGatewayAvailable\(\),?\s*\}\)/
     );
   });
 

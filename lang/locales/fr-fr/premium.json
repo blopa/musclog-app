@@ -54,7 +54,7 @@
       "warning80": "Vous avez utilisé la plus grande partie du quota d'IA Premium de cette période."
     },
     "paywall": {
-      "headline": "Ton coach IA, prêt à l'emploi",
+      "headline": "Saisir plus vite avec l'IA, rien à configurer",
       "subhead": "Musclog Premium fait tourner l'IA pour toi : pas de clé, pas de compte, et les fournisseurs d'IA ne conservent rien de ce que tu envoies. Tout le reste de Musclog reste gratuit.",
       "benefits": {
         "noSetup": {
@@ -62,7 +62,7 @@
           "desc": "Pas de clé API ni de compte. Abonne-toi, et le coach, la saisie des repas et les programmes fonctionnent tout de suite."
         },
         "private": {
-          "title": "Privé par conception",
+          "title": "Rétention de données nulle",
           "desc": "Seuls des fournisseurs à rétention de données nulle sont utilisés : ils ne gardent pas tes messages et ne s'en servent pas pour l'entraînement. Musclog ne conserve que des compteurs d'utilisation."
         },
         "allowance": {

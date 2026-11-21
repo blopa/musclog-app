@@ -20,39 +20,39 @@ Files: `schema.sql` (plan 9 tables; `pending` state added, `settle_token` droppe
 
 ## Results (20 tests, all pass)
 
-| # | Test | Result |
-|---|------|--------|
-| 1 | Revision-2 bug reproduced. Two requests in flight (r=100 each), settle a=60 once: `spent 60, reserved 100, inflight 1`. Replay of the old batch: `spent 120` (double charge), `reserved 0` (the other request's hold silently released by the MAX(0) clamp), `inflight 0`, `day_requests 2`. | PASS (bug shown) |
-| 2 | Reserve batch replayed 5x after commit: period row byte-identical. Settle batch run 6x: charged once. Reserve replay after settle does not resurrect the hold (outcome `already_processed`). | PASS |
-| 3 | 100 concurrent reserves (r=100, cap 3750): exactly 37 admitted, 63 `budget_exhausted`, `spent+reserved = 3700`. 37 concurrent settles with varied amounts: reserved 0, inflight 0, spent exact. `max_inflight=2`: 2 of 20 admitted, 18 `busy`. | PASS |
-| 4 | Same req_id, other token: `in_progress` while held; `already_processed` after settled or expired; refunded re-admitted once (10 concurrent re-admits admit exactly 1, replaying the re-admit batch is a no-op). Refund charges 0. | PASS |
-| 5 | Crash then sweep charges `reserved_u` once; late settle and second sweep are no-ops. Sweep racing 20 settles: each reservation charged once, `spent_u` = sum of `settled_u`. Sweep ignores recent activity and unexpired holds. Stale sweep leaves a re-admitted refunded hold untouched. Sweep batch replayed 4x charges the row's own `reserved_u` once. `isAdmitted` truth table. | PASS |
-| 5b | `daily_full`: below `globalMax` reserves are admitted and the cron writes nothing when unchanged; at `globalMax` the flag flips, 10 concurrent reserves are all refused with zero writes and unchanged tables; next day the cron reopens admission. | PASS |
-| 6 | Overrun (a=450, r=100) charged in full, once over 3 attempts. | PASS |
-| 7 | `reserved_u < 0` and `inflight < 0` CHECKs fire and roll back the whole settle batch; the financial CHECK rejects a doubled cap and rolls back the earlier statement. | PASS |
-| 8 | Cost measurement, below. | PASS |
+| #   | Test                                                                                                                                                                                                                                                                                                                                                                                 | Result           |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| 1   | Revision-2 bug reproduced. Two requests in flight (r=100 each), settle a=60 once: `spent 60, reserved 100, inflight 1`. Replay of the old batch: `spent 120` (double charge), `reserved 0` (the other request's hold silently released by the MAX(0) clamp), `inflight 0`, `day_requests 2`.                                                                                         | PASS (bug shown) |
+| 2   | Reserve batch replayed 5x after commit: period row byte-identical. Settle batch run 6x: charged once. Reserve replay after settle does not resurrect the hold (outcome `already_processed`).                                                                                                                                                                                         | PASS             |
+| 3   | 100 concurrent reserves (r=100, cap 3750): exactly 37 admitted, 63 `budget_exhausted`, `spent+reserved = 3700`. 37 concurrent settles with varied amounts: reserved 0, inflight 0, spent exact. `max_inflight=2`: 2 of 20 admitted, 18 `busy`.                                                                                                                                       | PASS             |
+| 4   | Same req_id, other token: `in_progress` while held; `already_processed` after settled or expired; refunded re-admitted once (10 concurrent re-admits admit exactly 1, replaying the re-admit batch is a no-op). Refund charges 0.                                                                                                                                                    | PASS             |
+| 5   | Crash then sweep charges `reserved_u` once; late settle and second sweep are no-ops. Sweep racing 20 settles: each reservation charged once, `spent_u` = sum of `settled_u`. Sweep ignores recent activity and unexpired holds. Stale sweep leaves a re-admitted refunded hold untouched. Sweep batch replayed 4x charges the row's own `reserved_u` once. `isAdmitted` truth table. | PASS             |
+| 5b  | `daily_full`: below `globalMax` reserves are admitted and the cron writes nothing when unchanged; at `globalMax` the flag flips, 10 concurrent reserves are all refused with zero writes and unchanged tables; next day the cron reopens admission.                                                                                                                                  | PASS             |
+| 6   | Overrun (a=450, r=100) charged in full, once over 3 attempts.                                                                                                                                                                                                                                                                                                                        | PASS             |
+| 7   | `reserved_u < 0` and `inflight < 0` CHECKs fire and roll back the whole settle batch; the financial CHECK rejects a doubled cap and rolls back the earlier statement.                                                                                                                                                                                                                | PASS             |
+| 8   | Cost measurement, below.                                                                                                                                                                                                                                                                                                                                                             | PASS             |
 
 ## Cost (D1 result `meta.rows_written` / `rows_read`, as exposed by Miniflare)
 
-| Operation | rows written | rows read |
-|---|---|---|
-| Reserve batch (3 statements) | 3 | 8 |
-| Read-back of the reservation row | 0 | 1 |
-| Settle batch (2 statements) | 2 | 5 |
-| Reserve refused (budget, or `daily_full`) incl. diagnose | 0 | 3 to 4 |
-| Period creation (row + `periods_lineage` + `periods_end` indexes) | 3 | 0 |
-| Device insert (incl. unique partial index) | 3 | 0 |
-| Prune reservations, per deleted row | 1 | about 2: it scans the whole table (4,001 read for 4,000 rows) |
-| Prune periods, per deleted row (row + 2 indexes) | 3 per row measured as `rows_written` 1 per row in Miniflare's meta (1,500 for 1,500); budget 3 as for the insert | 1 per deleted row (1,501 read) |
-| Prune reservations on an empty table | 0 | 1 |
+| Operation                                                         | rows written                                                                                                     | rows read                                                     |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Reserve batch (3 statements)                                      | 3                                                                                                                | 8                                                             |
+| Read-back of the reservation row                                  | 0                                                                                                                | 1                                                             |
+| Settle batch (2 statements)                                       | 2                                                                                                                | 5                                                             |
+| Reserve refused (budget, or `daily_full`) incl. diagnose          | 0                                                                                                                | 3 to 4                                                        |
+| Period creation (row + `periods_lineage` + `periods_end` indexes) | 3                                                                                                                | 0                                                             |
+| Device insert (incl. unique partial index)                        | 3                                                                                                                | 0                                                             |
+| Prune reservations, per deleted row                               | 1                                                                                                                | about 2: it scans the whole table (4,001 read for 4,000 rows) |
+| Prune periods, per deleted row (row + 2 indexes)                  | 3 per row measured as `rows_written` 1 per row in Miniflare's meta (1,500 for 1,500); budget 3 as for the insert | 1 per deleted row (1,501 read)                                |
+| Prune reservations on an empty table                              | 0                                                                                                                | 1                                                             |
 
 Cron reads per run (one run = sweep scan + `updateDailyFull`; both read the live periods through `periods_end`):
 
-| Periods in table | live (in window) | sweep reads | `daily_full` reads | reads per run |
-|---|---|---|---|---|
-| 1,500 | 1,500 | 1,500 | 1,500 | 3,000 |
-| 3,000 (1,500 live + 1,500 history) | 1,500 | 1,500 | 1,501 | 3,001 (history is not read) |
-| 3,000 | 3,000 | 3,000 | 3,001 | 6,001 |
+| Periods in table                   | live (in window) | sweep reads | `daily_full` reads | reads per run               |
+| ---------------------------------- | ---------------- | ----------- | ------------------ | --------------------------- |
+| 1,500                              | 1,500            | 1,500       | 1,500              | 3,000                       |
+| 3,000 (1,500 live + 1,500 history) | 1,500            | 1,500       | 1,501              | 3,001 (history is not read) |
+| 3,000                              | 3,000            | 3,000       | 3,001              | 6,001                       |
 
 History no longer costs reads (the old design read 21k rows per sweep). `daily_full` writes: 2 on the first insert, then 0 when unchanged (2 per flip). Sweep writes only when it finds stale holds.
 
@@ -64,15 +64,16 @@ Size, measured by `size_after` growth (page granular): about **121 B per reserva
 
 Mix at 1,500 subscribers: 0.70x1500x2 + 0.25x1500x5 + 0.05x1500x30 = 2,100 + 1,875 + 2,250 = **6,225 requests/day**. Cron at a 15-minute interval = 96 runs/day.
 
-| | Mix, 1,500 subs | Mix with 3,000 live period rows | Worst case 60 req/day x 1,500 = 90,000 req/day, no global stop |
-|---|---|---|---|
-| Rows written/day | 6,225 x 6 + 1,500 x 0.2 = **about 37.7k (38%)** | same | 540k (5.4x, FAILS) |
-| Rows read/day, requests | 6,225 x 22 = 137k | 137k | 1.98M |
-| Rows read/day, cron | 96 x 3,000 = 288k | 96 x 6,001 = 576k | 288k |
-| Rows read/day, total | **about 425k (8.5%)** | about 713k (14%) | about 2.3M |
-| Storage | 6,225 x 8 days x 150 B = 7.5 MB + 3,000 periods (60-day retention) x 350 B = 1 MB, **about 9 MB (2%)** | about 10 MB | about 109 MB |
+|                         | Mix, 1,500 subs                                                                                        | Mix with 3,000 live period rows | Worst case 60 req/day x 1,500 = 90,000 req/day, no global stop |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------- | -------------------------------------------------------------- |
+| Rows written/day        | 6,225 x 6 + 1,500 x 0.2 = **about 37.7k (38%)**                                                        | same                            | 540k (5.4x, FAILS)                                             |
+| Rows read/day, requests | 6,225 x 22 = 137k                                                                                      | 137k                            | 1.98M                                                          |
+| Rows read/day, cron     | 96 x 3,000 = 288k                                                                                      | 96 x 6,001 = 576k               | 288k                                                           |
+| Rows read/day, total    | **about 425k (8.5%)**                                                                                  | about 713k (14%)                | about 2.3M                                                     |
+| Storage                 | 6,225 x 8 days x 150 B = 7.5 MB + 3,000 periods (60-day retention) x 350 B = 1 MB, **about 9 MB (2%)** | about 10 MB                     | about 109 MB                                                   |
 
 Writes are the binding quota. **Maximum requests/day with 40% headroom (60% of each limit):**
+
 - writes: (60,000 - 300) / 6 = **9,950 requests/day** (full limit would be 16,600).
 - reads: (3,000,000 - 288,000) / 22 = about 123,000, not binding.
 - So `globalMax` for `updateDailyFull` should be at most about **9,900 settled requests/day** (about 6.6 requests per subscriber per day averaged over 1,500; the mix averages 4.15). With the flag set at that value the 60 req/day worst case is stopped by the global flag instead of exhausting the DB: the first about 165 subscribers using 60 req/day, or any combination, consume it, the rest get `daily_full`.
@@ -83,6 +84,7 @@ Writes are the binding quota. **Maximum requests/day with 40% headroom (60% of e
 Fixed in this revision: the sweep/re-admission race (flaw 1 earlier), and the read-back admitting by token only.
 
 Remaining:
+
 1. **`daily_full` is a global kill switch.** One abuser consuming `globalMax` shuts out everyone until the next day. Per-subscriber `max_requests_per_day` and `daily_cap_u` bound this to (globalMax / per-subscriber max) subscribers acting together; size it accordingly. The flag also works on settled counts, so `day_requests` includes refunded requests (they count, as in the settle SQL).
 2. **Refused requests are not free**: 3 to 4 reads each and no writes. Rate-limit upstream: 1M refused requests/day would exhaust the 5M read limit.
 3. **Prune of reservations is still a full scan** (about 8 of the 22 reads per request). Acceptable (137k reads/day at the mix); per-period PK-prefix pruning would be cheaper if reads ever matter.

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { type NetCarbsConvention, netCarbsResult } from '@/components/website/tools/netCarbsModel';
 import {
   ChoiceField,
@@ -13,7 +14,6 @@ import { ToolLayout, type ToolSection } from '@/components/website/tools/ToolLay
 import { BODY_TEXT, BODY_TEXT_SOFT } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function NetCarbsToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolNetCarbs' });

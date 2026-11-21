@@ -33,10 +33,18 @@ export function loadSnapshot(): Map<string, ModelInfo> {
 
 export function pickModels(arg: string | undefined): ModelInfo[] {
   const snap = loadSnapshot();
-  const ids = arg ? arg.split(',').map((s) => s.trim()).filter(Boolean) : DEFAULT_MODELS;
+  const ids = arg
+    ? arg
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : DEFAULT_MODELS;
   return ids.map((id) => {
     const m = snap.get(id);
-    if (!m) throw new Error(`Model ${id} is not in fixtures/models.snapshot.json (not ZDR-eligible, or run "npm run shortlist" first).`);
+    if (!m)
+      throw new Error(
+        `Model ${id} is not in fixtures/models.snapshot.json (not ZDR-eligible, or run "npm run shortlist" first).`
+      );
     return m;
   });
 }
@@ -50,7 +58,10 @@ export function parseArgs(argv = process.argv.slice(2)) {
     if (!argv[i].startsWith('--')) continue;
     const k = argv[i].slice(2);
     const next = argv[i + 1];
-    if (next !== undefined && !next.startsWith('--')) { flags.set(k, next); i++; } else flags.set(k, true);
+    if (next !== undefined && !next.startsWith('--')) {
+      flags.set(k, next);
+      i++;
+    } else flags.set(k, true);
   }
   return {
     str: (k: string) => (typeof flags.get(k) === 'string' ? (flags.get(k) as string) : undefined),
@@ -65,9 +76,12 @@ export function resolveMode(a: ReturnType<typeof parseArgs>): Mode {
   if (!live) return { live: false, maxUsd: a.num('max-usd', Infinity) };
   const maxUsd = a.num('max-usd', NaN);
   if (!Number.isFinite(maxUsd) || maxUsd <= 0) {
-    throw new Error('--live requires --max-usd <positive number>. Refusing to run without a spending guard.');
+    throw new Error(
+      '--live requires --max-usd <positive number>. Refusing to run without a spending guard.'
+    );
   }
-  if (!process.env.OPENROUTER_API_KEY) throw new Error('--live requires OPENROUTER_API_KEY in the environment.');
+  if (!process.env.OPENROUTER_API_KEY)
+    throw new Error('--live requires OPENROUTER_API_KEY in the environment.');
   return { live, maxUsd };
 }
 
@@ -93,8 +107,10 @@ export function percentile(xs: number[], p: number): number | null {
   const s = [...xs].sort((a, b) => a - b);
   return s[Math.min(s.length - 1, Math.max(0, Math.ceil((p / 100) * s.length) - 1))];
 }
-export const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
-export const fmt = (n: number | null | undefined, d = 2) => (n == null || Number.isNaN(n) ? 'n/a' : n.toFixed(d));
+export const mean = (xs: number[]) =>
+  xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+export const fmt = (n: number | null | undefined, d = 2) =>
+  n == null || Number.isNaN(n) ? 'n/a' : n.toFixed(d);
 
 // ---- Transport ---------------------------------------------------------------------------------------------
 export type ChatResult = {
@@ -151,16 +167,27 @@ export class LiveTransport implements Transport {
         const data = line.slice(5).trim();
         if (data === '[DONE]') continue;
         let j: any;
-        try { j = JSON.parse(data); } catch { continue; }
+        try {
+          j = JSON.parse(data);
+        } catch {
+          continue;
+        }
         if (j.error) error = j.error;
         if (j.usage) usage = j.usage; // docs: the final chunk before [DONE] carries usage
         const c = j.choices?.[0];
         if (c?.finish_reason) finish = c.finish_reason;
         const d = c?.delta;
-        if (d?.content) { if (ttft === null) ttft = performance.now() - t0; content += d.content; }
+        if (d?.content) {
+          if (ttft === null) ttft = performance.now() - t0;
+          content += d.content;
+        }
         for (const tc of d?.tool_calls ?? []) {
           if (ttft === null) ttft = performance.now() - t0;
-          const slot = (calls[tc.index ?? 0] ??= { id: tc.id, type: 'function', function: { name: '', arguments: '' } });
+          const slot = (calls[tc.index ?? 0] ??= {
+            id: tc.id,
+            type: 'function',
+            function: { name: '', arguments: '' },
+          });
           if (tc.id) slot.id = tc.id;
           if (tc.function?.name) slot.function.name += tc.function.name;
           if (tc.function?.arguments) slot.function.arguments += tc.function.arguments;
@@ -169,7 +196,12 @@ export class LiveTransport implements Transport {
     }
     const message: any = { role: 'assistant', content };
     if (calls.length) message.tool_calls = calls.filter(Boolean);
-    return { status: res.status, json: { choices: [{ message, finish_reason: finish }], usage, error }, latencyMs: performance.now() - t0, ttftMs: ttft };
+    return {
+      status: res.status,
+      json: { choices: [{ message, finish_reason: finish }], usage, error },
+      latencyMs: performance.now() - t0,
+      ttftMs: ttft,
+    };
   }
 }
 
@@ -182,14 +214,23 @@ function sample(schema: any, seed: number, depth = 0): any {
   switch (schema.type) {
     case 'object': {
       const o: any = {};
-      for (const [k, v] of Object.entries<any>(schema.properties ?? {})) o[k] = sample(v, seed + k.length, depth + 1);
+      for (const [k, v] of Object.entries<any>(schema.properties ?? {}))
+        o[k] = sample(v, seed + k.length, depth + 1);
       return o;
     }
-    case 'array': return Array.from({ length: Math.max(schema.minItems ?? 1, 1) + (depth === 1 ? 1 : 0) }, (_, i) => sample(schema.items, seed + i, depth + 1));
-    case 'number': return 20 + (seed % 200);
-    case 'integer': return 1 + (seed % 10);
-    case 'boolean': return true;
-    default: return 'mock text ' + (seed % 97);
+    case 'array':
+      return Array.from(
+        { length: Math.max(schema.minItems ?? 1, 1) + (depth === 1 ? 1 : 0) },
+        (_, i) => sample(schema.items, seed + i, depth + 1)
+      );
+    case 'number':
+      return 20 + (seed % 200);
+    case 'integer':
+      return 1 + (seed % 10);
+    case 'boolean':
+      return true;
+    default:
+      return 'mock text ' + (seed % 97);
   }
 }
 
@@ -205,16 +246,30 @@ export class MockTransport implements Transport {
   constructor(private snapshot = loadSnapshot()) {}
   async chat(body: any, opts: CallOpts): Promise<ChatResult> {
     const model = this.snapshot.get(body.model);
-    const text = JSON.stringify(body.messages.map((m: any) => (typeof m.content === 'string' ? m.content : (m.content ?? []).filter((p: any) => p.type === 'text').map((p: any) => p.text)))) + JSON.stringify(body.tools ?? '') + JSON.stringify(body.response_format ?? '');
+    const text =
+      JSON.stringify(
+        body.messages.map((m: any) =>
+          typeof m.content === 'string'
+            ? m.content
+            : (m.content ?? []).filter((p: any) => p.type === 'text').map((p: any) => p.text)
+        )
+      ) +
+      JSON.stringify(body.tools ?? '') +
+      JSON.stringify(body.response_format ?? '');
     let promptTokens = Math.ceil(text.length / 4);
     let pixels = 0;
     for (const m of body.messages) {
-      if (Array.isArray(m.content)) for (const p of m.content) if (p.type === 'image_url') {
-        promptTokens += await imageTokensFor(body.model, p.image_url.url);
-        const buf = Buffer.from(p.image_url.url.slice(p.image_url.url.indexOf(',') + 1), 'base64');
-        const md = await sharp(buf).metadata();
-        pixels = (md.width ?? 0) * (md.height ?? 0);
-      }
+      if (Array.isArray(m.content))
+        for (const p of m.content)
+          if (p.type === 'image_url') {
+            promptTokens += await imageTokensFor(body.model, p.image_url.url);
+            const buf = Buffer.from(
+              p.image_url.url.slice(p.image_url.url.indexOf(',') + 1),
+              'base64'
+            );
+            const md = await sharp(buf).metadata();
+            pixels = (md.width ?? 0) * (md.height ?? 0);
+          }
     }
     const seed = hashInt(body.model + text.slice(0, 400) + JSON.stringify(opts.meta ?? {}));
     const latency = 400 + (seed % 1500) + pixels / 5000;
@@ -224,17 +279,49 @@ export class MockTransport implements Transport {
     let completion: number;
     if (toolsPresent && !sawToolResult) {
       const t = body.tools[0].function;
-      message = { role: 'assistant', content: null, tool_calls: [{ id: 'call_' + (seed % 9999), type: 'function', function: { name: t.name, arguments: JSON.stringify(sample(t.parameters, seed)) } }] };
+      message = {
+        role: 'assistant',
+        content: null,
+        tool_calls: [
+          {
+            id: 'call_' + (seed % 9999),
+            type: 'function',
+            function: { name: t.name, arguments: JSON.stringify(sample(t.parameters, seed)) },
+          },
+        ],
+      };
       completion = 40;
     } else if (body.response_format?.json_schema?.schema) {
       const out = sample(body.response_format.json_schema.schema, seed);
       const gold = opts.meta?.gold;
       if (gold && out.meals) {
-        const noise = 1 + (((seed % 1000) / 1000 - 0.5) * 2) * (0.35 - Math.min(0.25, pixels / 4e6 * 0.4)); // smaller image, noisier
-        out.meals = [{ mealType: 'lunch', mealName: 'mock dish', ingredients: [{ name: 'mock', kcal: gold.kcal * noise, protein: gold.protein * noise, carbs: gold.carbs * noise, fat: gold.fat * noise, fiber: 3, grams: gold.grams ?? 300 }] }];
+        const noise =
+          1 + ((seed % 1000) / 1000 - 0.5) * 2 * (0.35 - Math.min(0.25, (pixels / 4e6) * 0.4)); // smaller image, noisier
+        out.meals = [
+          {
+            mealType: 'lunch',
+            mealName: 'mock dish',
+            ingredients: [
+              {
+                name: 'mock',
+                kcal: gold.kcal * noise,
+                protein: gold.protein * noise,
+                carbs: gold.carbs * noise,
+                fat: gold.fat * noise,
+                fiber: 3,
+                grams: gold.grams ?? 300,
+              },
+            ],
+          },
+        ];
       } else if (gold) {
-        const noise = 1 + (((seed % 1000) / 1000 - 0.5) * 0.1);
-        Object.assign(out, { kcal: gold.kcal * noise, protein: gold.protein * noise, carbs: gold.carbs * noise, fat: gold.fat * noise });
+        const noise = 1 + ((seed % 1000) / 1000 - 0.5) * 0.1;
+        Object.assign(out, {
+          kcal: gold.kcal * noise,
+          protein: gold.protein * noise,
+          carbs: gold.carbs * noise,
+          fat: gold.fat * noise,
+        });
       }
       // ~2% of calls from the two weakest mock models drop a required field, so the validity metric has teeth.
       if (/nano|qwen3\.5-9b/.test(body.model) && seed % 50 === 0) delete out[Object.keys(out)[0]];
@@ -245,9 +332,26 @@ export class MockTransport implements Transport {
       completion = 12;
     }
     const reasoning = model?.reasoningSupported ? 30 + (seed % 120) : 0;
-    const cost = model ? (promptTokens * model.promptPer1M + (completion + reasoning) * model.completionPer1M) / 1e6 : 0;
-    const usage = { prompt_tokens: promptTokens, completion_tokens: completion + reasoning, total_tokens: promptTokens + completion + reasoning, cost, completion_tokens_details: { reasoning_tokens: reasoning } };
-    return { status: 200, json: { id: 'gen-mock', choices: [{ message, finish_reason: message.tool_calls ? 'tool_calls' : 'stop' }], usage }, latencyMs: latency, ttftMs: opts.stream ? latency * 0.35 : null };
+    const cost = model
+      ? (promptTokens * model.promptPer1M + (completion + reasoning) * model.completionPer1M) / 1e6
+      : 0;
+    const usage = {
+      prompt_tokens: promptTokens,
+      completion_tokens: completion + reasoning,
+      total_tokens: promptTokens + completion + reasoning,
+      cost,
+      completion_tokens_details: { reasoning_tokens: reasoning },
+    };
+    return {
+      status: 200,
+      json: {
+        id: 'gen-mock',
+        choices: [{ message, finish_reason: message.tool_calls ? 'tool_calls' : 'stop' }],
+        usage,
+      },
+      latencyMs: latency,
+      ttftMs: opts.stream ? latency * 0.35 : null,
+    };
   }
 }
 

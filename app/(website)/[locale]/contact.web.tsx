@@ -2,6 +2,7 @@ import { ExternalLink, Mail, MessageSquare, Send, Shield } from 'lucide-react-na
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT_SOFT,
   BRAND_GREEN,
@@ -12,7 +13,6 @@ import {
 } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { DISCORD_INVITE_URL, GITHUB_REPO_URL, SUPPORT_MAILTO_URL } from '@/constants/misc';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 ('use client');
 
 interface FormState {

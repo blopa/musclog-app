@@ -62,16 +62,40 @@ export const SETTLE_RES = `UPDATE reservations SET state = :final, settled_u = :
   WHERE payment_key = :pk AND req_id = :id AND state = 'held'`;
 
 export interface ReserveInput {
-  pk: string; id: string; rc: string; r: number; hold: string; now: number;
-  ttlMs?: number; day: string; maxReq: number; maxInflight: number;
+  pk: string;
+  id: string;
+  rc: string;
+  r: number;
+  hold: string;
+  now: number;
+  ttlMs?: number;
+  day: string;
+  maxReq: number;
+  maxInflight: number;
 }
 export type ReserveOutcome =
-  | 'admitted' | 'in_progress' | 'already_processed' | 'budget_exhausted' | 'daily_limit'
-  | 'busy' | 'hosted_disabled' | 'daily_full' | 'no_period' | 'no_device';
+  | 'admitted'
+  | 'in_progress'
+  | 'already_processed'
+  | 'budget_exhausted'
+  | 'daily_limit'
+  | 'busy'
+  | 'hosted_disabled'
+  | 'daily_full'
+  | 'no_period'
+  | 'no_device';
 
 const rp = (i: ReserveInput): Params => ({
-  pk: i.pk, id: i.id, rc: i.rc, r: i.r, hold: i.hold, now: i.now, exp: i.now + (i.ttlMs ?? 120000),
-  day: i.day, max_requests_per_day: i.maxReq, max_inflight: i.maxInflight,
+  pk: i.pk,
+  id: i.id,
+  rc: i.rc,
+  r: i.r,
+  hold: i.hold,
+  now: i.now,
+  exp: i.now + (i.ttlMs ?? 120000),
+  day: i.day,
+  max_requests_per_day: i.maxReq,
+  max_inflight: i.maxInflight,
 });
 
 /** Statements of one reserve attempt. `readmit` swaps statement 1 for the refunded variant. */
@@ -85,7 +109,10 @@ export function reserveStatements(db: Db, i: ReserveInput, readmit = false) {
 }
 
 export async function getReservation(db: Db, pk: string, id: string) {
-  return db.prepare('SELECT * FROM reservations WHERE payment_key = ?1 AND req_id = ?2').bind(pk, id).first();
+  return db
+    .prepare('SELECT * FROM reservations WHERE payment_key = ?1 AND req_id = ?2')
+    .bind(pk, id)
+    .first();
 }
 
 /** Admitted only when this attempt's token owns the row AND it is held (a replay after settle is not admitted). */
@@ -106,8 +133,11 @@ export async function reserve(db: Db, i: ReserveInput) {
   let outcome: ReserveOutcome;
   if (row) {
     if (isAdmitted(row, i.hold)) outcome = 'admitted';
-    else if (row.hold_token === i.hold) outcome = row.state === 'pending' ? 'in_progress' : 'already_processed';
-    else outcome = row.state === 'held' || row.state === 'pending' ? 'in_progress' : 'already_processed';
+    else if (row.hold_token === i.hold)
+      outcome = row.state === 'pending' ? 'in_progress' : 'already_processed';
+    else
+      outcome =
+        row.state === 'held' || row.state === 'pending' ? 'in_progress' : 'already_processed';
   } else outcome = await diagnose(db, i);
   return { outcome, row, metas };
 }
@@ -117,10 +147,17 @@ async function diagnose(db: Db, i: ReserveInput): Promise<ReserveOutcome> {
   if (br?.value === 'open') return 'hosted_disabled';
   const df: any = await db.prepare("SELECT value FROM meta WHERE key = 'daily_full'").first();
   if (df?.value === '1') return 'daily_full';
-  const dev: any = await db.prepare("SELECT 1 AS x FROM devices WHERE rc_id = ?1 AND status = 'active'").bind(i.rc).first();
+  const dev: any = await db
+    .prepare("SELECT 1 AS x FROM devices WHERE rc_id = ?1 AND status = 'active'")
+    .bind(i.rc)
+    .first();
   if (!dev) return 'no_device';
-  const p: any = await db.prepare('SELECT * FROM periods WHERE payment_key = ?1').bind(i.pk).first();
-  if (!p || p.status !== 'active' || i.now < p.period_start || i.now >= p.period_end) return 'no_period';
+  const p: any = await db
+    .prepare('SELECT * FROM periods WHERE payment_key = ?1')
+    .bind(i.pk)
+    .first();
+  if (!p || p.status !== 'active' || i.now < p.period_start || i.now >= p.period_end)
+    return 'no_period';
   const cap = i.now < p.early_until ? p.early_cap_u : p.cap_u;
   if (p.spent_u + p.reserved_u + i.r > cap) return 'budget_exhausted';
   const sameDay = p.day === i.day;
@@ -130,9 +167,23 @@ async function diagnose(db: Db, i: ReserveInput): Promise<ReserveOutcome> {
   return 'no_period';
 }
 
-export interface SettleInput { pk: string; id: string; final: 'settled' | 'refunded' | 'expired'; a: number; now: number; day: string }
+export interface SettleInput {
+  pk: string;
+  id: string;
+  final: 'settled' | 'refunded' | 'expired';
+  a: number;
+  now: number;
+  day: string;
+}
 export function settleStatements(db: Db, s: SettleInput) {
-  const p: Params = { pk: s.pk, id: s.id, final: s.final, a: s.final === 'refunded' ? 0 : s.a, now: s.now, day: s.day };
+  const p: Params = {
+    pk: s.pk,
+    id: s.id,
+    final: s.final,
+    a: s.final === 'refunded' ? 0 : s.a,
+    now: s.now,
+    day: s.day,
+  };
   return [stmt(db, SETTLE_PERIOD, p), stmt(db, SETTLE_RES, p)];
 }
 export async function settle(db: Db, s: SettleInput) {
@@ -162,12 +213,21 @@ export function sweepStatements(db: Db, s: { pk: string; id: string; now: number
 /** Cron sweep over periods that ended less than a day ago (uses periods_end). */
 export async function sweep(db: Db, now: number, day: string) {
   const metas: any[] = [];
-  const ps = await db.prepare('SELECT payment_key FROM periods WHERE period_end > ?1 AND reserved_u > 0 AND last_activity_at < ?2')
-    .bind(now - DAY_MS, now - STALE_MS).all();
+  const ps = await db
+    .prepare(
+      'SELECT payment_key FROM periods WHERE period_end > ?1 AND reserved_u > 0 AND last_activity_at < ?2'
+    )
+    .bind(now - DAY_MS, now - STALE_MS)
+    .all();
   metas.push(ps.meta);
   let swept = 0;
   for (const { payment_key } of ps.results as any[]) {
-    const rs = await db.prepare("SELECT req_id FROM reservations WHERE payment_key = ?1 AND state = 'held' AND expires_at < ?2").bind(payment_key, now).all();
+    const rs = await db
+      .prepare(
+        "SELECT req_id FROM reservations WHERE payment_key = ?1 AND state = 'held' AND expires_at < ?2"
+      )
+      .bind(payment_key, now)
+      .all();
     metas.push(rs.meta);
     for (const r of rs.results as any[]) {
       const out = await db.batch(sweepStatements(db, { pk: payment_key, id: r.req_id, now, day }));
@@ -181,17 +241,30 @@ export async function sweep(db: Db, now: number, day: string) {
 /** Cron: sets meta.daily_full to '1' when today's settled request count over live periods reaches globalMax.
  *  Writes only when the value changes. */
 export async function updateDailyFull(db: Db, now: number, day: string, globalMax: number) {
-  return db.prepare(`INSERT INTO meta (key, value)
+  return db
+    .prepare(
+      `INSERT INTO meta (key, value)
       SELECT 'daily_full', CASE WHEN COALESCE(SUM(CASE WHEN day = ?1 THEN day_requests ELSE 0 END), 0) >= ?2 THEN '1' ELSE '0' END
       FROM periods WHERE period_end > ?3
-    ON CONFLICT(key) DO UPDATE SET value = excluded.value WHERE value != excluded.value`).bind(day, globalMax, now - DAY_MS).run();
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value WHERE value != excluded.value`
+    )
+    .bind(day, globalMax, now - DAY_MS)
+    .run();
 }
 
 export const PRUNE_MS = 7 * 86_400_000;
 export const PERIOD_PRUNE_MS = 60 * 86_400_000;
 /** Returns the two DELETE results: reservations (7 days) and periods ended more than 60 days ago. */
 export async function prune(db: Db, now: number) {
-  const res = await db.prepare("DELETE FROM reservations WHERE state IN ('settled','refunded','expired') AND settled_at < ?1").bind(now - PRUNE_MS).run();
-  const per = await db.prepare('DELETE FROM periods WHERE period_end < ?1').bind(now - PERIOD_PRUNE_MS).run();
+  const res = await db
+    .prepare(
+      "DELETE FROM reservations WHERE state IN ('settled','refunded','expired') AND settled_at < ?1"
+    )
+    .bind(now - PRUNE_MS)
+    .run();
+  const per = await db
+    .prepare('DELETE FROM periods WHERE period_end < ?1')
+    .bind(now - PERIOD_PRUNE_MS)
+    .run();
   return { reservations: res, periods: per };
 }

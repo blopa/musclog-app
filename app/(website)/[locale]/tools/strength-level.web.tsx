@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   checkStrength,
   type StrengthLift,
@@ -33,7 +34,6 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import type { StrengthGender } from '@/utils/relativeStrength';
 import type { StrengthLevel } from '@/utils/strengthLevel';
 import { kgToDisplay } from '@/utils/unitConversion';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 const GENDERS: StrengthGender[] = ['male', 'female', 'other'];
 

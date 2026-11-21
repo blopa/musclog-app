@@ -272,13 +272,12 @@
       "continue": "Devam et"
     },
     "musclogApi": {
-      "heading": "Bir YZ koçu eklensin mi?",
-      "intro": "Musclog, YZ olmadan da tam olarak çalışır. YZ ile bir koçla sohbet edebilir, öğünü anlatarak kaydedebilir ve sana yazılmış bir antrenman planı alabilirsin.",
+      "heading": "YZ ile daha hızlı kaydedilsin mi?",
+      "intro": "Musclog, YZ olmadan da tam olarak çalışır. YZ ile bir öğünü anlatarak kaydedebilir, bir koçla sohbet edebilir ve sana yazılmış bir antrenman planı alabilirsin.",
       "choicesLabel": "YZ seçenekleri",
       "options": {
         "premium": {
           "title": "Musclog Premium",
-          "badge": "En gizli seçenek",
           "price": "Ayda {{price}}",
           "priceUnknown": "Aylık abonelik",
           "points": {
@@ -300,7 +299,7 @@
           "title": "Şimdilik YZ yok",
           "points": {
             "works": "Kayıt, planlar ve grafikler aynı şekilde çalışır",
-            "later": "YZ'yi istediğin zaman Ayarlar'dan açabilirsin"
+            "later": "YZ'yi istediğin zaman Ayarlar'dan aç: Premium ile ya da kendi Gemini, OpenAI veya Claude anahtarınla"
           }
         }
       },

@@ -272,13 +272,12 @@
       "continue": "Dalej"
     },
     "musclogApi": {
-      "heading": "Dodać trenera AI?",
-      "intro": "Musclog działa w pełni bez AI. Z AI możesz rozmawiać z trenerem, zapisać posiłek, opisując go, i otrzymać plan treningowy napisany dla Ciebie.",
+      "heading": "Szybciej zapisywać z AI?",
+      "intro": "Musclog działa w pełni bez AI. Z AI możesz zapisać posiłek, opisując go, porozmawiać z trenerem i otrzymać plan treningowy napisany dla Ciebie.",
       "choicesLabel": "Opcje AI",
       "options": {
         "premium": {
           "title": "Musclog Premium",
-          "badge": "Najbardziej prywatne",
           "price": "{{price}} miesięcznie",
           "priceUnknown": "Subskrypcja miesięczna",
           "points": {
@@ -300,7 +299,7 @@
           "title": "Na razie bez AI",
           "points": {
             "works": "Zapisywanie, plany i wykresy działają tak samo",
-            "later": "Włączysz AI w dowolnym momencie w Ustawieniach"
+            "later": "Włączysz AI w dowolnym momencie w Ustawieniach, z Premium lub własnym kluczem Gemini, OpenAI albo Claude"
           }
         }
       },

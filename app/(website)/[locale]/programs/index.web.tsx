@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { programPath } from '@/components/website/programRoutes';
 import { listPrograms, workoutCount } from '@/components/website/programs/programsModel';
 import { StoreButtons } from '@/components/website/StoreButtons';
@@ -12,7 +13,6 @@ import {
   ink,
 } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function ProgramsIndexPage() {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'websitePrograms' });

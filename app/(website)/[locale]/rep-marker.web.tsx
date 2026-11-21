@@ -11,6 +11,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   ACCEL_CHANNELS,
   ACCEL_DEFAULT,
@@ -44,7 +45,6 @@ import {
   type RecordingJson,
   type RepMarker,
 } from '@/utils/repMarkerData';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 ('use client');
 
 // ── Main page ───────────────────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 // Pure model of what the Premium Worker says (plan sections 6.1, 10, 11). No React Native, no
 // storage: relative imports only, because the Worker's own tests load this file too.
 
-import { isRecord } from '../isRecord';
+import { isRecord } from '@/utils/isRecord';
 
 /** Refresh the session token this long before it expires (plan 11 item 3). */
 export const TOKEN_REFRESH_MARGIN_MS = 5 * 60_000;

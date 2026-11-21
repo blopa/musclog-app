@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT_SOFT,
   BRAND_GREEN_BRIGHT,
@@ -22,7 +23,6 @@ import { WebsiteLoggy } from '@/components/website/WebsiteLoggy';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { FaqPageJsonLd, type FaqPageJsonLdItem } from '@/components/website/WebsiteStructuredData';
 import { SUPPORT_MAILTO_URL } from '@/constants/misc';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 ('use client');
 
 // ---------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Image } from 'react-native';
 
-import { HostedAiError } from '@/utils/hostedAiError';
 import { fetchPremiumConfig } from '@/services/premium/premiumService';
+import { HostedAiError } from '@/utils/hostedAiError';
 import {
   base64DecodedBytes,
   DEFAULT_HOSTED_IMAGE,

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { PROTEIN_GOALS, proteinPlan } from '@/components/website/tools/proteinCalculatorModel';
 import {
   ChoiceField,
@@ -17,7 +18,6 @@ import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import type { FitnessGoal } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { kgToDisplay } from '@/utils/unitConversion';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 /** Each goal's label key, written out whole so the translation checker can see every one. */
 const GOAL_LABEL_KEYS = {

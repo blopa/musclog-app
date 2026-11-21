@@ -272,13 +272,12 @@
       "continue": "Continue"
     },
     "musclogApi": {
-      "heading": "Add an AI coach?",
-      "intro": "Musclog works fully without AI. With it, you can chat with a coach, log a meal by describing it and get a workout plan written for you.",
+      "heading": "Track faster with AI?",
+      "intro": "Musclog works fully without AI. With it, you can log a meal by describing it, chat with a coach and get a workout plan written for you.",
       "choicesLabel": "AI options",
       "options": {
         "premium": {
           "title": "Musclog Premium",
-          "badge": "Most private",
           "price": "{{price}} a month",
           "priceUnknown": "Monthly subscription",
           "points": {
@@ -300,7 +299,7 @@
           "title": "No AI for now",
           "points": {
             "works": "Logging, plans and charts all work the same",
-            "later": "Turn AI on any time in Settings"
+            "later": "Turn AI on any time in Settings, with Premium or your own Gemini, OpenAI or Claude key"
           }
         }
       },

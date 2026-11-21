@@ -12,6 +12,7 @@ import {
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -45,7 +46,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 ('use client');
 
 const CYAN = hue('info');

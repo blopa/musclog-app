@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   calculateRpeTarget,
   CALCULATOR_RPES,
@@ -23,7 +24,6 @@ import { BODY_TEXT, BODY_TEXT_SOFT, CARD_BORDER, MUTED } from '@/components/webs
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { kgToDisplay } from '@/utils/unitConversion';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function RpeChartToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolRpeChart' });

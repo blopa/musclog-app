@@ -9,7 +9,7 @@ The plan sets `Idempotency-Key` in `defaultHeaders` inside `buildOpenAIClient`. 
 logical request, but only by coincidence**, and the user's requirement ("generate a key for each logical request, not when
 constructing a reusable client") is not what the code guarantees:
 
-- Every OpenAI-compatible call site builds a *fresh* client for the call (`utils/coachAI.ts:1031, 1400, 1553, 1752, 1971`),
+- Every OpenAI-compatible call site builds a _fresh_ client for the call (`utils/coachAI.ts:1031, 1400, 1553, 1752, 1971`),
   so a client lives exactly one logical call. A key in `defaultHeaders` would therefore not be shared across two logical calls
   today.
 - Nothing enforces that. Any future client cache, a module-level client, or a helper that issues two requests through one
@@ -37,14 +37,14 @@ Retry layers in this file:
 OpenAI-compatible call sites (all go through `chat.completions.create`; `grep` found no other OpenAI use outside
 `utils/aiKeyTest.ts:57`, which builds its own client with `maxRetries: 0` and sends a key-test list call, not a logical request):
 
-| Function | Client built | `withLlmRetry` calls per logical request | Request |
-|---|---|---|---|
-| `sendViaOpenAI` (`:1024`) | `:1031`, outside the loop, before the branch | 1: via `streamOpenAiText` (`:1079`) OR `:1098` (exclusive) | chat |
-| `generateText` (`:1309`) | `:1400` | 1: `streamOpenAiText` (`:1418`) OR `:1436` | text |
-| `generateTextWithHistory` (`:1456`) | `:1553` | 1: `streamOpenAiText` (`:1577`) OR `:1595` | text with history |
-| `requestStructured` (`:1666`, used by `generateStructured` `:1794` and `sendStructuredChatTurn`) | `:1752` | 1 (`:1780`) | structured |
-| `generateWithImageStructured` (`:1840`; used by `extractRecipe` `:2029/2051`, `trackMeal` `:2200`, `estimateNutritionFromPhoto` `:2604`, label photo `:2664`) | `:1971` | 1 (`:2004`) | structured + image |
-| `streamOpenAiText` (`:509`) | takes the caller's client | 1 (`:516`) | streaming, `{ ...payload, stream: true }` at `:521` |
+| Function                                                                                                                                                      | Client built                                 | `withLlmRetry` calls per logical request                   | Request                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------- |
+| `sendViaOpenAI` (`:1024`)                                                                                                                                     | `:1031`, outside the loop, before the branch | 1: via `streamOpenAiText` (`:1079`) OR `:1098` (exclusive) | chat                                                |
+| `generateText` (`:1309`)                                                                                                                                      | `:1400`                                      | 1: `streamOpenAiText` (`:1418`) OR `:1436`                 | text                                                |
+| `generateTextWithHistory` (`:1456`)                                                                                                                           | `:1553`                                      | 1: `streamOpenAiText` (`:1577`) OR `:1595`                 | text with history                                   |
+| `requestStructured` (`:1666`, used by `generateStructured` `:1794` and `sendStructuredChatTurn`)                                                              | `:1752`                                      | 1 (`:1780`)                                                | structured                                          |
+| `generateWithImageStructured` (`:1840`; used by `extractRecipe` `:2029/2051`, `trackMeal` `:2200`, `estimateNutritionFromPhoto` `:2604`, label photo `:2664`) | `:1971`                                      | 1 (`:2004`)                                                | structured + image                                  |
+| `streamOpenAiText` (`:509`)                                                                                                                                   | takes the caller's client                    | 1 (`:516`)                                                 | streaming, `{ ...payload, stream: true }` at `:521` |
 
 Gemini (`:489`, `:1008`, `:1370`, `:1521`, `:1727`, `:1921`) and Claude (`runClaude` `:568/:585`) also use `withLlmRetry` once per
 logical request; they are irrelevant to the hosted OpenAI-compatible path but follow the same pattern, which is why the wrapper

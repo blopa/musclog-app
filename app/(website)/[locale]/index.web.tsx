@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { StoreButtons } from '@/components/website/StoreButtons';
 import {
   BODY_TEXT,
@@ -24,7 +25,6 @@ import { useThemeId } from '@/hooks/useTheme';
 import { DEFAULT_THEME_BY_MODE, THEME_DEFINITIONS } from '@/theme.registry';
 import { trackDemoStart } from '@/utils/websiteAnalytics';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
 const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);

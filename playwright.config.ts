@@ -4,6 +4,7 @@ export default defineConfig({
   testMatch: [
     '**/tests/screenshot-automation.spec.ts',
     '**/tests/screenshot-wrapped.spec.ts',
+    '**/tests/screenshot-premium.spec.ts',
     '**/tests/upgrade-compatibility.spec.ts',
   ],
   timeout: 600000,

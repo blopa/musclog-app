@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { GymFields } from '@/components/website/tools/GymFields';
 import {
   MAX_PLATE_TARGET,
@@ -19,7 +20,6 @@ import { useToolGym, useToolUnits } from '@/components/website/tools/useToolStat
 import { BODY_TEXT, BODY_TEXT_SOFT, MUTED } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function PlateCalculatorToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolPlateCalculator' });

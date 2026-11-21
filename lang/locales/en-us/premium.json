@@ -54,7 +54,7 @@
       "warning80": "You have used most of this period's Premium AI allowance."
     },
     "paywall": {
-      "headline": "Your AI coach, ready to go",
+      "headline": "Log faster with AI, nothing to set up",
       "subhead": "Musclog Premium runs the AI for you: no key, no account, and the AI providers keep nothing you send. Everything else in Musclog stays free.",
       "benefits": {
         "noSetup": {
@@ -62,7 +62,7 @@
           "desc": "No API key and no account. Subscribe, and the coach, meal logging and workout plans work right away."
         },
         "private": {
-          "title": "Private by design",
+          "title": "Zero data retention",
           "desc": "Only zero data retention providers are used: they don't keep your messages or train on them. Musclog keeps only usage counts."
         },
         "allowance": {

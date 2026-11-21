@@ -13,7 +13,18 @@ const IMG = { prompt: 1500 + 1100, completion: 450 + 600 };
 // One rep of bench-models: [input tokens, output tokens incl. reasoning] per call
 // (meal photo, label photo, 2 track_meal, workout plan, 3 coach chats, 2 tool round trips = 2 calls each).
 const REP_CALLS = [
-  [2600, 1050], [2300, 450], [900, 900], [900, 900], [1400, 2500], [500, 600], [500, 600], [500, 600], [700, 400], [700, 300], [800, 400], [800, 300],
+  [2600, 1050],
+  [2300, 450],
+  [900, 900],
+  [900, 900],
+  [1400, 2500],
+  [500, 600],
+  [500, 600],
+  [500, 600],
+  [700, 400],
+  [700, 300],
+  [800, 400],
+  [800, 300],
 ];
 
 let totalModels = 0;
@@ -28,4 +39,6 @@ for (const m of models) {
   totalImages += ib;
   console.log(`${m.id} | ${mb.toFixed(3)} | ${ib.toFixed(2)} (${calls})`);
 }
-console.log(`TOTAL models-bench ${totalModels.toFixed(2)}, images-bench ${totalImages.toFixed(2)}, together ${(totalModels + totalImages).toFixed(2)} USD (plus 5.5% credit fee, $0.80 minimum per purchase)`);
+console.log(
+  `TOTAL models-bench ${totalModels.toFixed(2)}, images-bench ${totalImages.toFixed(2)}, together ${(totalModels + totalImages).toFixed(2)} USD (plus 5.5% credit fee, $0.80 minimum per purchase)`
+);

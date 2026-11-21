@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronDown } from 'lucide-react-native';
-import { useRef, useState } from 'react';
+import { type RefObject, useRef, useState } from 'react';
 import type { ScrollViewInstance } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
@@ -12,12 +12,14 @@ import { useTheme } from './useTheme';
  * A vertical scroller's "there is more below" cue: a fade into the surface the scroller sits on
  * (never a fixed scrim, which turned the bottom of a light theme dark) and a chevron that scrolls
  * to the end. Spread `scrollProps` on the ScrollView, render `FadeIndicator` over it, and use the
- * returned `scrollRef` for any scrolling of your own.
+ * returned `scrollRef` for any scrolling of your own. A scroller whose ref the caller already owns
+ * passes it in, so the chevron scrolls that one.
  */
-export function useScrollFade() {
+export function useScrollFade(externalRef?: RefObject<ScrollViewInstance | null>) {
   const theme = useTheme();
   const surface = useSurfaceColor();
-  const scrollRef = useRef<ScrollViewInstance>(null);
+  const ownRef = useRef<ScrollViewInstance>(null);
+  const scrollRef = externalRef ?? ownRef;
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isScrollable, setIsScrollable] = useState(false);
   const layoutHeightRef = useRef(0);

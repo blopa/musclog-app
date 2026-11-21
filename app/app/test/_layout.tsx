@@ -10,13 +10,20 @@ export default function TestRoutesLayout() {
     Platform.OS === 'web' &&
     process.env.EXPO_PUBLIC_SCREENSHOT_MODE === '1' &&
     segments.at(-1) === 'modals';
+
+  // The onboarding AI-choice fixture, for the app-store captures only (same two conditions).
+  const isAiChoiceFixture =
+    Platform.OS === 'web' &&
+    process.env.EXPO_PUBLIC_SCREENSHOT_MODE === '1' &&
+    segments.at(-1) === 'ai-choice';
+
   const isPremiumHarness = isHarnessRouteAllowed({
     lastSegment: segments.at(-1),
     platform: Platform.OS,
     flag: process.env.EXPO_PUBLIC_PREMIUM_HARNESS,
   });
 
-  if (isProduction() && !isScreenshotFixture && !isPremiumHarness) {
+  if (isProduction() && !isScreenshotFixture && !isAiChoiceFixture && !isPremiumHarness) {
     return <Redirect href="/app" />;
   }
 

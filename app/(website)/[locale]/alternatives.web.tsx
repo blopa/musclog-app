@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { COMPETITORS } from '@/components/website/alternatives/competitors';
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import {
   BODY_TEXT_SOFT,
@@ -27,7 +28,6 @@ import {
 } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 ('use client');
 
 // ---------------------------------------------------------------------------

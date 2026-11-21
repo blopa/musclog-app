@@ -54,7 +54,7 @@
       "warning80": "Du hast den größten Teil des Premium-KI-Kontingents für diesen Zeitraum verbraucht."
     },
     "paywall": {
-      "headline": "Dein KI-Coach, sofort einsatzbereit",
+      "headline": "Schneller erfassen mit KI, ohne Einrichtung",
       "subhead": "Musclog Premium betreibt die KI für dich: kein Schlüssel, kein Konto, und die KI-Anbieter behalten nichts, was du senden. Alles andere in Musclog bleibt kostenlos.",
       "benefits": {
         "noSetup": {
@@ -62,7 +62,7 @@
           "desc": "Kein API-Schlüssel und kein Konto. Abonniere, und Coach, Mahlzeitenerfassung und Trainingspläne funktionieren sofort."
         },
         "private": {
-          "title": "Von Grund auf privat",
+          "title": "Zero Data Retention",
           "desc": "Es werden nur Anbieter mit Zero Data Retention genutzt: Sie speichern deine Nachrichten nicht und trainieren nicht damit. Musclog speichert nur Nutzungszahlen."
         },
         "allowance": {

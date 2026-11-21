@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   DELOAD_EQUIPMENT,
   DELOAD_TARGET_RIR,
@@ -26,7 +27,6 @@ import { MAX_WORKING_WEIGHT } from '@/components/website/tools/warmUpCalculatorM
 import { BODY_TEXT, BODY_TEXT_SOFT, CARD_BORDER, MUTED } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function DeloadCalculatorToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolDeloadCalculator' });

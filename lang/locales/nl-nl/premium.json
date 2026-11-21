@@ -54,7 +54,7 @@
       "warning80": "Je hebt het grootste deel van het Premium-AI-tegoed van deze periode gebruikt."
     },
     "paywall": {
-      "headline": "Je AI-coach, klaar om te gebruiken",
+      "headline": "Sneller loggen met AI, niets in te stellen",
       "subhead": "Musclog Premium draait de AI voor je: geen sleutel, geen account, en de AI-aanbieders bewaren niets van wat je verstuurt. Al het andere in Musclog blijft gratis.",
       "benefits": {
         "noSetup": {
@@ -62,7 +62,7 @@
           "desc": "Geen API-sleutel en geen account. Abonneer je en de coach, het loggen van maaltijden en de trainingsschema's werken meteen."
         },
         "private": {
-          "title": "Privé by design",
+          "title": "Zero data retention",
           "desc": "Er worden alleen aanbieders met zero data retention gebruikt: zij bewaren je berichten niet en gebruiken ze niet voor training. Musclog bewaart alleen gebruikstellingen."
         },
         "allowance": {

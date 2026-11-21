@@ -29,8 +29,16 @@ The script selects dishes with 150-1200 kcal, at least 120 g and at least 2 ingr
 
 ```json
 [
-  { "image": "nutrition5k/images/dish_1564687046.png", "kcal": 374.8, "protein": 33.7, "carbs": 20.5, "fat": 29.1,
-    "grams": 308, "kind": "plated", "source": "Nutrition5k dish_1564687046 (CC BY 4.0, Google Research)" }
+  {
+    "image": "nutrition5k/images/dish_1564687046.png",
+    "kcal": 374.8,
+    "protein": 33.7,
+    "carbs": 20.5,
+    "fat": 29.1,
+    "grams": 308,
+    "kind": "plated",
+    "source": "Nutrition5k dish_1564687046 (CC BY 4.0, Google Research)"
+  }
 ]
 ```
 

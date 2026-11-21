@@ -272,13 +272,12 @@
       "continue": "Continua"
     },
     "musclogApi": {
-      "heading": "Aggiungere un coach IA?",
-      "intro": "Musclog funziona completamente senza IA. Con l'IA puoi chattare con un coach, registrare un pasto descrivendolo e ricevere un piano di allenamento scritto per te.",
+      "heading": "Registrare più in fretta con l'IA?",
+      "intro": "Musclog funziona completamente senza IA. Con l'IA puoi registrare un pasto descrivendolo, chattare con un coach e ricevere un piano di allenamento scritto per te.",
       "choicesLabel": "Opzioni IA",
       "options": {
         "premium": {
           "title": "Musclog Premium",
-          "badge": "Il più privato",
           "price": "{{price}} al mese",
           "priceUnknown": "Abbonamento mensile",
           "points": {
@@ -300,7 +299,7 @@
           "title": "Nessuna IA per ora",
           "points": {
             "works": "Registrazione, piani e grafici funzionano allo stesso modo",
-            "later": "Attiva l'IA in qualsiasi momento nelle Impostazioni"
+            "later": "Attiva l'IA in qualsiasi momento nelle Impostazioni, con Premium o con la tua chiave Gemini, OpenAI o Claude"
           }
         }
       },

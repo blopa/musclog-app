@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { GymFields } from '@/components/website/tools/GymFields';
 import {
   ChoiceField,
@@ -21,7 +22,6 @@ import {
 import { BODY_TEXT, BODY_TEXT_SOFT, CARD_BORDER, MUTED } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function WarmUpCalculatorToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolWarmUpCalculator' });

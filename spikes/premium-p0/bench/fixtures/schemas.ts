@@ -51,7 +51,11 @@ export const TRACK_MEAL_SCHEMA: JsonSchema = {
       items: {
         type: 'object',
         properties: {
-          mealType: { type: 'string', enum: ['breakfast', 'lunch', 'dinner', 'snack'], description: 'Type of meal' },
+          mealType: {
+            type: 'string',
+            enum: ['breakfast', 'lunch', 'dinner', 'snack'],
+            description: 'Type of meal',
+          },
           mealName: {
             type: 'string',
             description:
@@ -64,13 +68,19 @@ export const TRACK_MEAL_SCHEMA: JsonSchema = {
             items: {
               type: 'object',
               properties: {
-                name: { type: 'string', description: 'Name of the ingredient (e.g., "Basmati Rice", "Chicken Breast")' },
+                name: {
+                  type: 'string',
+                  description: 'Name of the ingredient (e.g., "Basmati Rice", "Chicken Breast")',
+                },
                 kcal: { type: 'number', description: 'Kilocalories' },
                 carbs: { type: 'number', description: 'Carbohydrates in grams' },
                 fat: { type: 'number', description: 'Fat in grams' },
                 protein: { type: 'number', description: 'Protein in grams' },
                 fiber: { type: 'number', description: 'Fiber in grams' },
-                grams: { type: 'number', description: 'Estimated weight of this ingredient in grams' },
+                grams: {
+                  type: 'number',
+                  description: 'Estimated weight of this ingredient in grams',
+                },
               },
               required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'],
             },
@@ -101,8 +111,14 @@ export const ESTIMATE_MACROS_SCHEMA: JsonSchema = {
 export const WORKOUT_PLAN_SCHEMA: JsonSchema = {
   type: 'object',
   properties: {
-    planTitle: { type: 'string', description: 'Name of the plan as a whole (for example "Push Pull Legs"), not one workout' },
-    description: { type: 'string', description: 'A brief description of the workout plan to show the user' },
+    planTitle: {
+      type: 'string',
+      description: 'Name of the plan as a whole (for example "Push Pull Legs"), not one workout',
+    },
+    description: {
+      type: 'string',
+      description: 'A brief description of the workout plan to show the user',
+    },
     workoutPlan: {
       type: 'array',
       description: 'Array of individual workouts in the plan',
@@ -112,18 +128,29 @@ export const WORKOUT_PLAN_SCHEMA: JsonSchema = {
         properties: {
           title: { type: 'string', description: 'Workout name (e.g., "Push Day", "Leg Day")' },
           description: { type: 'string', description: 'Brief description of the workout focus' },
-          recurringOnWeekDay: { type: 'string', description: 'Day of week: "monday", "tuesday", etc.' },
+          recurringOnWeekDay: {
+            type: 'string',
+            description: 'Day of week: "monday", "tuesday", etc.',
+          },
           exercises: {
             type: 'array',
-            description: 'List of exercises in this workout. Use the exact exercise id from the available exercises list.',
+            description:
+              'List of exercises in this workout. Use the exact exercise id from the available exercises list.',
             minItems: 1,
             items: {
               type: 'object',
               properties: {
-                exerciseId: { type: 'string', description: 'The exact id of the exercise from the available exercises list (required)' },
+                exerciseId: {
+                  type: 'string',
+                  description:
+                    'The exact id of the exercise from the available exercises list (required)',
+                },
                 reps: { type: 'number', description: 'Target number of reps per set' },
                 sets: { type: 'number', description: 'Number of sets to perform' },
-                oneRepMaxPercentage: { type: 'number', description: 'Percentage of estimated 1RM to use (e.g., 75 for 75%)' },
+                oneRepMaxPercentage: {
+                  type: 'number',
+                  description: 'Percentage of estimated 1RM to use (e.g., 75 for 75%)',
+                },
               },
               required: ['exerciseId', 'reps', 'sets', 'oneRepMaxPercentage'],
             },
@@ -140,7 +167,10 @@ export const WORKOUT_PLAN_SCHEMA: JsonSchema = {
 export const COACH_RESPONSE_SCHEMA: JsonSchema = {
   type: 'object',
   properties: {
-    msg4User: { type: 'string', description: 'The full response to display to the user in the chat.' },
+    msg4User: {
+      type: 'string',
+      description: 'The full response to display to the user in the chat.',
+    },
     sumMsg: {
       type: 'string',
       description:
@@ -151,7 +181,10 @@ export const COACH_RESPONSE_SCHEMA: JsonSchema = {
       description:
         "A shortened version of the user's message trimmed to 1 sentence. Keep their voice and key intent — write it as they would say it, not as a description of what they said.",
     },
-    remember_me: { type: 'string', description: 'A short sentence with something important to remember about the user.' },
+    remember_me: {
+      type: 'string',
+      description: 'A short sentence with something important to remember about the user.',
+    },
   },
   required: ['msg4User', 'sumMsg', 'sumUserMsg'],
 };
@@ -164,7 +197,8 @@ export function makeSchemaStrict(schema: any): any {
     for (const key of Object.keys(properties)) properties[key] = makeSchemaStrict(properties[key]);
     return { ...schema, properties, additionalProperties: false };
   }
-  if (schema.type === 'array' && schema.items) return { ...schema, items: makeSchemaStrict(schema.items) };
+  if (schema.type === 'array' && schema.items)
+    return { ...schema, items: makeSchemaStrict(schema.items) };
   return schema;
 }
 

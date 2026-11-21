@@ -54,7 +54,7 @@
       "warning80": "Bu dönemin Premium YZ kotasının büyük bölümünü kullandınız."
     },
     "paywall": {
-      "headline": "Yapay zekâ koçun, hazır",
+      "headline": "YZ ile daha hızlı kaydet, kurulum gerektirmez",
       "subhead": "Musclog Premium yapay zekâyı senin yerine çalıştırır: anahtar yok, hesap yok ve yapay zekâ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz. Musclog'un geri kalanı ücretsiz kalır.",
       "benefits": {
         "noSetup": {
@@ -62,7 +62,7 @@
           "desc": "API anahtarı ve hesap gerekmez. Abone ol; koç, öğün kaydı ve antrenman planları hemen çalışır."
         },
         "private": {
-          "title": "Tasarımı gereği gizli",
+          "title": "Sıfır veri saklama",
           "desc": "Yalnızca sıfır veri saklama yapan sağlayıcılar kullanılır: mesajlarını saklamazlar ve model eğitiminde kullanmazlar. Musclog yalnızca kullanım sayılarını tutar."
         },
         "allowance": {

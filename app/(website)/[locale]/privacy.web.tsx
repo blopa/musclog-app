@@ -1,6 +1,7 @@
 import { Database, Globe, Lock, Mail, Shield, Smartphone } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT_SOFT,
   brand,
@@ -12,7 +13,6 @@ import {
 } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 const DEFINITION_KEYS = [
   'application',

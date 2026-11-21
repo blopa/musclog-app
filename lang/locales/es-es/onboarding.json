@@ -235,13 +235,12 @@
       "birthdayEstimated": "Estimada a partir de tu edad. Elige tu fecha de nacimiento si la sabes."
     },
     "musclogApi": {
-      "heading": "¿Añadir un entrenador de IA?",
-      "intro": "Musclog funciona completamente sin IA. Con ella, puedes chatear con un entrenador, registrar una comida describiéndola y recibir un plan de entrenamiento escrito para ti.",
+      "heading": "¿Registrar más rápido con IA?",
+      "intro": "Musclog funciona por completo sin IA. Con ella puedes registrar una comida describiéndola, chatear con un entrenador y recibir un plan de entrenamiento escrito para ti.",
       "choicesLabel": "Opciones de IA",
       "options": {
         "premium": {
           "title": "Musclog Premium",
-          "badge": "Lo más privado",
           "price": "{{price}} al mes",
           "priceUnknown": "Suscripción mensual",
           "points": {
@@ -263,7 +262,7 @@
           "title": "Sin IA por ahora",
           "points": {
             "works": "El registro, los planes y los gráficos funcionan igual",
-            "later": "Activa la IA en cualquier momento en Ajustes"
+            "later": "Activa la IA en cualquier momento en Ajustes, con Premium o con tu propia clave de Gemini, OpenAI o Claude"
           }
         }
       },

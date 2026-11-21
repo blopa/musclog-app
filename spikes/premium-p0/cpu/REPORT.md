@@ -11,13 +11,13 @@ Sizes are the **JPEG bytes**; the JSON body is about 4/3 larger (base64): 100 KB
 
 ## Node results (ms, p50 / p99)
 
-| JPEG | JSON.parse | allowlist rebuild | JSON.stringify | parse+allowlist+stringify |
-|---|---|---|---|---|
-| 100 KB | 0.06 / 0.47 | 0.001 / 0.27 | 0.11 / 0.49 | 0.22 / 0.87 |
-| 250 KB | 0.15 / 0.62 | 0.001 / 0.03 | 0.36 / 1.12 | 0.54 / 2.18 |
-| 500 KB | 0.31 / 1.36 | 0.001 / 0.03 | 0.74 / 1.72 | 1.02 / 1.96 |
-| 1 MB | 0.57 / 2.32 | 0.001 / 0.03 | 1.41 / 2.85 | 1.97 / 4.39 |
-| 2 MB | 1.20 / 5.10 | 0.001 / 0.03 | 2.74 / 5.38 | 3.81 / 6.53 |
+| JPEG   | JSON.parse  | allowlist rebuild | JSON.stringify | parse+allowlist+stringify |
+| ------ | ----------- | ----------------- | -------------- | ------------------------- |
+| 100 KB | 0.06 / 0.47 | 0.001 / 0.27      | 0.11 / 0.49    | 0.22 / 0.87               |
+| 250 KB | 0.15 / 0.62 | 0.001 / 0.03      | 0.36 / 1.12    | 0.54 / 2.18               |
+| 500 KB | 0.31 / 1.36 | 0.001 / 0.03      | 0.74 / 1.72    | 1.02 / 1.96               |
+| 1 MB   | 0.57 / 2.32 | 0.001 / 0.03      | 1.41 / 2.85    | 1.97 / 4.39               |
+| 2 MB   | 1.20 / 5.10 | 0.001 / 0.03      | 2.74 / 5.38    | 3.81 / 6.53               |
 
 Other pieces (p50 / p99): HMAC-SHA256 token verify 0.009 / 0.15; ECDSA P-256 `importKey` + `verify` 0.13 / 0.41;
 SSE tail scan (2,000 chunks, keep last 2 KB, find the final `usage` object, `JSON.parse` it) 0.06 / 0.20.

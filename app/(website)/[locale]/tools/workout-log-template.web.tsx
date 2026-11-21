@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { ChoiceField, ToolNotice, ToolPanel } from '@/components/website/tools/ToolFields';
 import { ToolLayout, type ToolSection } from '@/components/website/tools/ToolLayout';
 import { useToolUnits } from '@/components/website/tools/useToolState';
@@ -21,7 +22,6 @@ import {
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 type CheckState = LogCheck | { ok: false; problem: 'read' } | null;
 

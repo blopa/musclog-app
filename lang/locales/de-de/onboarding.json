@@ -272,13 +272,12 @@
       "continue": "Weiter"
     },
     "musclogApi": {
-      "heading": "KI-Coach hinzufügen?",
-      "intro": "Musclog funktioniert vollständig ohne KI. Mit KI kannst du mit einem Coach chatten, eine Mahlzeit durch Beschreiben erfassen und dir einen Trainingsplan erstellen lassen.",
+      "heading": "Schneller mit KI erfassen?",
+      "intro": "Musclog funktioniert vollständig ohne KI. Mit KI kannst du eine Mahlzeit einfach beschreiben, mit einem Coach chatten und dir einen Trainingsplan schreiben lassen.",
       "choicesLabel": "KI-Optionen",
       "options": {
         "premium": {
           "title": "Musclog Premium",
-          "badge": "Am privatesten",
           "price": "{{price}} im Monat",
           "priceUnknown": "Monatliches Abo",
           "points": {
@@ -300,7 +299,7 @@
           "title": "Vorerst keine KI",
           "points": {
             "works": "Erfassen, Pläne und Diagramme funktionieren gleich",
-            "later": "Du kannst KI jederzeit in den Einstellungen aktivieren"
+            "later": "Schalte KI jederzeit in den Einstellungen ein, mit Premium oder deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel"
           }
         }
       },

@@ -1,6 +1,6 @@
 export default {
   async fetch() {
-    return new Response("ok");
+    return new Response('ok');
   },
   async scheduled() {},
 };

@@ -54,7 +54,7 @@
       "warning80": "Wykorzystano większość limitu AI Premium na ten okres."
     },
     "paywall": {
-      "headline": "Twój trener AI, gotowy do działania",
+      "headline": "Szybciej zapisujesz z AI, nic nie trzeba konfigurować",
       "subhead": "Musclog Premium uruchamia AI za Ciebie: bez klucza, bez konta, a dostawcy AI nie zachowują niczego, co wysyłasz. Cała reszta Musclog pozostaje bezpłatna.",
       "benefits": {
         "noSetup": {
@@ -62,7 +62,7 @@
           "desc": "Bez klucza API i konta. Zasubskrybuj, a trener, zapisywanie posiłków i plany treningowe działają od razu."
         },
         "private": {
-          "title": "Prywatne z założenia",
+          "title": "Zerowa retencja danych",
           "desc": "Używani są tylko dostawcy z zerową retencją danych: nie zachowują Twoich wiadomości i nie uczą na nich modeli. Musclog przechowuje wyłącznie liczniki użycia."
         },
         "allowance": {

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,10 +9,12 @@ import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { AiChoiceCard } from '@/components/onboarding/AiChoiceCard';
+import { AiChoiceFixtureContext } from '@/components/onboarding/aiChoiceFixture';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { SettingsService } from '@/database/services/SettingsService';
 import { usePremium } from '@/hooks/usePremium';
+import { useScrollFade } from '@/hooks/useScrollFade';
 import { useTheme } from '@/hooks/useTheme';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { type AiChoice, availableAiChoices, defaultAiChoice } from '@/utils/onboardingAiChoice';
@@ -30,6 +32,10 @@ export default function MusclogApiScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const premium = usePremium();
+  const fixture = useContext(AiChoiceFixtureContext);
+  // On a small screen the last card can sit below the fold: the cue says there is more.
+  const { scrollProps, FadeIndicator } = useScrollFade();
+  const [footerHeight, setFooterHeight] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   // The person asked for Premium. The screen stays open until the hosted switch is on, which
   // happens only after a purchase or restore and the Premium consent inside the Premium screen.
@@ -39,7 +45,7 @@ export default function MusclogApiScreen() {
 
   const choices = availableAiChoices({
     premiumEnabled: premium.enabled,
-    freeTierAvailable: isMusclogGatewayAvailable(),
+    freeTierAvailable: fixture?.freeTierAvailable ?? isMusclogGatewayAvailable(),
   });
   const [selected, setSelected] = useState<AiChoice>(() => defaultAiChoice(choices));
 
@@ -108,8 +114,9 @@ export default function MusclogApiScreen() {
         ) : null}
 
         <ScrollView
+          {...scrollProps}
           className="flex-1"
-          contentContainerStyle={{ paddingBottom: 160 }}
+          contentContainerStyle={{ paddingBottom: footerHeight + 24 }}
           showsVerticalScrollIndicator={false}
         >
           <View className="gap-6 px-6 pt-6">
@@ -145,7 +152,6 @@ export default function MusclogApiScreen() {
                 <AiChoiceCard
                   testID="ai-choice-premium"
                   title={t('onboarding.musclogApi.options.premium.title')}
-                  badge={t('onboarding.musclogApi.options.premium.badge')}
                   price={premiumPrice}
                   selected={selected === 'premium'}
                   onPress={() => setSelected('premium')}
@@ -241,7 +247,14 @@ export default function MusclogApiScreen() {
           </View>
         </ScrollView>
 
-        <BottomButtonWrapper>
+        <View
+          pointerEvents="box-none"
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: footerHeight }}
+        >
+          {FadeIndicator}
+        </View>
+
+        <BottomButtonWrapper onHeightChange={setFooterHeight}>
           <Button
             testID="ai-choice-continue"
             label={t(CTA_KEYS[selected])}
