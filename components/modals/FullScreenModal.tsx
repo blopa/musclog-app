@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
-import { footerClearance } from '@/components/modals/footerClearance';
+import { footerClearance, scrollCueBottom } from '@/components/modals/footerClearance';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useScrollFade } from '@/hooks/useScrollFade';
@@ -199,7 +199,13 @@ export function FullScreenModal({
             {scrollCue ? (
               <View
                 pointerEvents="box-none"
-                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: footerHeight }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: scrollCueBottom(footerHeight),
+                }}
               >
                 {FadeIndicator}
               </View>

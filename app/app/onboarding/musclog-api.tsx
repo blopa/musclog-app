@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
+import { scrollCueBottom } from '@/components/modals/footerClearance';
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { AiChoiceCard } from '@/components/onboarding/AiChoiceCard';
 import { AiChoiceFixtureContext } from '@/components/onboarding/aiChoiceFixture';
@@ -249,7 +250,13 @@ export default function MusclogApiScreen() {
 
         <View
           pointerEvents="box-none"
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: footerHeight }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: scrollCueBottom(footerHeight),
+          }}
         >
           {FadeIndicator}
         </View>
