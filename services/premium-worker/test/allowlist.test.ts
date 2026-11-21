@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { allowlistRequest } from '../src/proxy/allowlist';
+import { allowlistRequest, assertPremiumPrivacy } from '../src/proxy/allowlist';
 import { reservationBound } from '../src/proxy/bound';
 import { ApiError } from '../src/http';
 import { testConfig } from './fakes/ctx';
@@ -292,5 +292,34 @@ describe('reservationBound', () => {
     expect(reservationBound(r, cfg)).toBe(Math.ceil(raw * 1.1) + 7);
     const tiny = { ...r, textBytes: 0, images: 0, maxTokens: 1 };
     expect(reservationBound(tiny, testConfig())).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('premium privacy invariant', () => {
+  it('every upstream body carries zdr, data_collection deny and no fallbacks', () => {
+    const { body } = allowlistRequest(base, config);
+    expect(body.provider).toMatchObject({
+      zdr: true,
+      data_collection: 'deny',
+      allow_fallbacks: false,
+    });
+  });
+
+  it('pins only and order together when the config names providers', () => {
+    const pinned = testConfig({ provider: { only: ['vetted'] } });
+    expect(allowlistRequest(base, pinned).body.provider).toMatchObject({
+      only: ['vetted'],
+      order: ['vetted'],
+    });
+  });
+
+  it.each([
+    { zdr: true, allow_fallbacks: false },
+    { data_collection: 'deny', allow_fallbacks: false },
+    { zdr: true, data_collection: 'allow', allow_fallbacks: false },
+    { zdr: true, data_collection: 'deny' },
+    undefined,
+  ])('assertPremiumPrivacy throws for %j', (provider) => {
+    expect(() => assertPremiumPrivacy({ provider })).toThrow('premium_privacy_invariant_violated');
   });
 });

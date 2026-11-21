@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Chat",
+    "freeTierNotice": "Gratis niveau: berichten gaan naar Google AI Studio, dat ze mag bewaren, gebruiken om zijn producten te verbeteren en door mensen laten beoordelen. Voer geen persoonlijke of gevoelige informatie in. Alleen voor volwassenen (18+).",
     "you": "Jij",
     "status": "Online",
     "statusOffline": "Offline",

@@ -66,6 +66,7 @@ import { type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages'
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { formatTimeInTimezone } from '@/utils/calendarDate';
@@ -636,6 +637,7 @@ export function CoachModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const persona = useCoachPersona();
+  const { aiProvider } = useSettings();
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const insets = useAppSafeAreaInsets();
   const router = useRouter();
@@ -1448,6 +1450,18 @@ export function CoachModal({
             variant="elevated"
           />
         </View>
+
+        {aiProvider === 'gateway' ? (
+          <View
+            className="border-b px-4 py-2"
+            style={{ borderColor: theme.colors.border.light }}
+            accessibilityRole="text"
+          >
+            <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+              {t('coach.freeTierNotice')}
+            </Text>
+          </View>
+        ) : null}
 
         <View
           className="flex-1"

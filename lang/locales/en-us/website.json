@@ -581,7 +581,7 @@
     "privacy": {
       "titleStart": "Privacy",
       "titleHighlight": "Policy",
-      "lastUpdated": "Last updated: November 19, 2026",
+      "lastUpdated": "Last updated: November 21, 2026",
       "highlights": {
         "dataProtection": {
           "title": "Data Protection",
@@ -679,10 +679,11 @@
             "content1": "The Musclog application can be used fully offline, except for food searches, optional AI features and crash reports. Musclog does not send Your workout, nutrition, health or profile data to Our servers, except when You use the free Musclog AI option or Musclog Premium, described below.",
             "content2": "Musclog offers optional AI features. They stay off until You choose a provider: Your own OpenAI, Anthropic Claude or Google Gemini API key, an on-device model such as Apple Intelligence on iOS, a local or self-hosted LLM endpoint, the free Musclog AI option, or Musclog Premium, an optional monthly subscription.",
             "content3": "If you choose to use an AI feature, the data that you decide to submit will be sent to the provider or endpoint you configure. If you use a self-hosted local model under your own control, that data may remain within your own environment. If you use a third-party hosted endpoint, including a hosted local-model service, that provider may process the data in accordance with its own terms and privacy practices. Musclog does not control how external providers process data you send to them.",
-            "content4": "If You choose the free Musclog AI option, Your requests are sent through Cloudflare AI Gateway, operated for Musclog, and answered by Google Gemini using an API key managed by Musclog. A request contains only what You send to the AI feature, such as chat messages, meal photos, or the workout, nutrition and body details that feature needs. Requests may be kept in the gateway's logs for a limited time to monitor errors and abuse, and are processed by Cloudflare and Google under their own terms.",
+            "content4": "If You choose the free Musclog AI option, Your requests are sent through OpenRouter, an AI routing service, to Google AI Studio (a Gemma model), using an API key managed by Musclog. A request contains only what You send to the AI feature, such as chat messages, meal photos, or the workout, nutrition and body details that feature needs. OpenRouter does not store the content of requests; it keeps request details such as their size and timing. Google answers these requests under the Gemini API terms for free use: Google may store the requests and replies, use them to improve its products and machine learning technologies, and have human reviewers read them. Google removes identifiers such as Your account before human review, but do not enter personal or sensitive information in the free Musclog AI option, and do not use it for anything You do not want Google to see. The free Musclog AI option is for adults only (18 and over), because Google's terms do not allow this free service in apps likely to be used by people under 18. Musclog Premium is different: it uses only providers set to zero data retention. The free option depends on Google's free daily limits and may be unavailable at times.",
             "contentPremium": "If You subscribe to Musclog Premium, Your AI requests are sent to Musclog's own service, which runs on Cloudflare Workers, and from there to OpenRouter, which passes them only to AI providers set to zero data retention and no training on Your data. A request contains only what You send to the AI feature, such as chat messages, meal photos, or the workout, nutrition and body details that feature needs. Musclog's service does not store the content of Your requests or the replies. It keeps only an identifier derived from a key that exists on Your Device, usage counts, and a short fingerprint of each request so that a retried request is not counted twice. RevenueCat receives that identifier and Your store purchase status to confirm that Your subscription is active. Musclog does not receive Your name, email address or payment details: payment is handled by Apple or Google. Premium is separate from the free Musclog AI option and is turned on only after You agree to this in the application.",
             "content5": "You should review the privacy policies of the providers You choose, including:",
             "cloudflarePrivacyPolicy": "Cloudflare Privacy Policy",
+            "openrouterPrivacyPolicy": "OpenRouter Privacy Policy",
             "openaiPrivacyPolicy": "OpenAI Privacy Policy",
             "anthropicPrivacyPolicy": "Anthropic Privacy Policy",
             "googlePrivacyPolicy": "Google Privacy Policy",
@@ -726,7 +727,7 @@
           "title": "Sharing Your Personal Data",
           "items": [
             "With the providers You choose: food searches go to the food database You select, and AI requests go to the AI provider You configure.",
-            "With Service Providers that run parts of the Service for Us: Sentry (crash reports), Cloudflare and Google (the free Musclog AI option), Cloudflare, OpenRouter and RevenueCat (Musclog Premium), GitHub and Cloudflare (hosting the website), and Google Analytics (the website, only after You accept analytics).",
+            "With Service Providers that run parts of the Service for Us: Sentry (crash reports), OpenRouter and Google (the free Musclog AI option), Cloudflare, OpenRouter and RevenueCat (Musclog Premium), GitHub and Cloudflare (hosting the website), and Google Analytics (the website, only after You accept analytics).",
             "When required by law, as described in \"Disclosure of Your Personal Data\".",
             "With Your consent, for example when You export or share data yourself.",
             "We do not sell Your data or share it with advertisers or data brokers."
@@ -734,7 +735,7 @@
         },
         "retention": {
           "title": "Retention of Your Personal Data",
-          "content": "Data in the application stays on Your Device until You delete it or uninstall the application. Anonymous crash reports are kept by Sentry for a limited period and then deleted. Requests sent through the free Musclog AI option may be kept in the gateway's logs for a limited period. Musclog Premium's service keeps the fingerprint of each request for 7 days after it is answered, usage counts for 60 days after the billing period they belong to ends, and the device identifier until You ask Us to remove it (see \"Delete Your Personal Data\" below: contact Us by email). It keeps no message or photo content. Website analytics data is kept as described in \"Website Analytics\"."
+          "content": "Data in the application stays on Your Device until You delete it or uninstall the application. Anonymous crash reports are kept by Sentry for a limited period and then deleted. OpenRouter does not store the content of requests sent through the free Musclog AI option; Google may keep them as described in \"Optional AI Features\". Musclog Premium's service keeps the fingerprint of each request for 7 days after it is answered, usage counts for 60 days after the billing period they belong to ends, and the device identifier until You ask Us to remove it (see \"Delete Your Personal Data\" below: contact Us by email). It keeps no message or photo content. Website analytics data is kept as described in \"Website Analytics\"."
         },
         "transfer": {
           "title": "Transfer of Your Personal Data",

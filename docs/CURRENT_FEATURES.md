@@ -55,7 +55,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Browse every completed session from the Workouts screen menu ("Workout history"), not only from Home's "See all". Previewing a workout also has a "View past sessions" button that lists every time you did that specific workout, newest first, over all time
 - Import workouts by pasting text — AI parses it into a session
 - AI errors you can act on say so: a rejected Gemini/OpenAI/Claude key names the provider and points to AI settings, a stalled request times out (retried once) instead of spinning forever, and the AI photo scan has a Cancel button. A "Test key" button in AI settings checks a key while you set it up
-- Turning on the free Musclog AI tier first says that requests go through Musclog's servers to Google Gemini and what they contain, and asks you to agree (onboarding, AI settings and the AI-assisted setup); nothing is sent until you use an AI feature
+- Turning on the free Musclog AI tier first says that requests go through OpenRouter to Google AI Studio's free tier, what they contain, that Google may keep, review and use them to improve its products, not to enter personal or sensitive information, and that it is for adults (18+), and asks you to agree; the coach chat repeats a short notice while it is active (onboarding, AI settings and the AI-assisted setup); nothing is sent until you use an AI feature
 - Keep screen awake during active workout sessions
 - Optional session feedback from the workout summary: difficulty, exhaustion, enjoyment, and notes; a failed save keeps the form open for retry.
 - Add, replace, or skip exercises mid-session

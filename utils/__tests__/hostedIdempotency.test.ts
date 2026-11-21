@@ -294,12 +294,9 @@ describe('hosted idempotency', () => {
     const end = source.indexOf('\n}\n', start);
     const body = source.slice(start, end);
     // The expression of `defaultHeaders`, up to the next option; comments are not part of it.
-    const headers = body.slice(
-      body.indexOf('defaultHeaders:'),
-      body.indexOf('fetch: devWebProxyFetch')
-    );
+    const headers = body.slice(body.indexOf('defaultHeaders:'), body.indexOf('fetch: pinFetch'));
 
-    expect(headers).toContain('gatewayByokAlias');
+    expect(headers).toContain('defaultHeaders: undefined');
     expect(headers).not.toMatch(/Idempotency-Key/i);
     expect(headers).not.toMatch(/idempotencyKey/);
   });

@@ -224,6 +224,18 @@ function parseToolChoice(v: unknown): unknown {
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
+/**
+ * Runtime guard for the Premium privacy invariant: account-level ZDR is off at OpenRouter, so this
+ * per-request `provider` object is the only thing keeping a request off providers that retain or
+ * train on data. Throws (never sends) when any of the three fields is missing or different.
+ */
+export function assertPremiumPrivacy(body: Record<string, unknown>): void {
+  const p = body.provider;
+  if (!isObj(p) || p.zdr !== true || p.data_collection !== 'deny' || p.allow_fallbacks !== false) {
+    throw new Error('premium_privacy_invariant_violated');
+  }
+}
+
 export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedRequest {
   if (!isObj(input)) return bad('body');
   onlyKeys(input, TOP_LEVEL, '');
@@ -283,12 +295,13 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
         completion: prices.completion_per_mtok,
         image: prices.image_per_image,
       },
-      ...(provider.only ? { only: provider.only } : {}),
+      ...(provider.only ? { only: provider.only, order: provider.only } : {}),
     },
     messages,
     stream,
     max_tokens: maxTokens,
   };
+  assertPremiumPrivacy(body);
   if (input.temperature !== undefined)
     body.temperature = Math.min(limits.temperature_max, Math.max(0, input.temperature as number));
   if (limits.reasoning !== null) body.reasoning = { effort: limits.reasoning };

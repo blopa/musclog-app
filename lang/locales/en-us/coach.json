@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Chat",
+    "freeTierNotice": "Free tier: messages go to Google AI Studio, which may keep them, use them to improve its products and let people review them. Do not enter personal or sensitive information. Adults (18+) only.",
     "you": "You",
     "status": "Online",
     "statusOffline": "Offline",

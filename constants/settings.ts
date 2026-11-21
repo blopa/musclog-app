@@ -553,7 +553,6 @@ export const FOOD_DIARY_GROUPING_SETTING_TYPE = 'food_diary_grouping';
 export const HOME_ACTIONS_SETTING_TYPE = 'home_actions';
 
 export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
-export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
 export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
 
 /**

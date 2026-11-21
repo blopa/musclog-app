@@ -290,7 +290,7 @@
         }
       },
       "dataSharingTitle": "Informacja o udostępnianiu danych",
-      "dataSharingBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (np. twoje treningi, posiłki, pomiary ciała albo wiadomości w czacie), jest wysyłane przez serwery Musclog do Gemini AI od Google, żeby napisać odpowiedź. Nic nie jest wysyłane, dopóki z czegoś nie skorzystasz. Darmowy plan ma ograniczoną liczbę zapytań dziennie.",
+      "dataSharingBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (na przykład Twoje treningi, posiłki, pomiary ciała lub wiadomości czatu), jest wysyłane przez OpenRouter do darmowego poziomu Google AI Studio, żeby napisać odpowiedź. Google może przechowywać wysłane dane, wykorzystywać je do ulepszania swoich produktów i zlecać ich przegląd ludziom (bez identyfikatorów), dlatego darmowy poziom nie jest prywatny: nie wpisuj danych osobowych ani wrażliwych. Darmowy poziom jest tylko dla dorosłych (18+). Jeśli Ci to nie odpowiada, zostaw go wyłączonego. Nic nie jest wysyłane, dopóki nie skorzystasz z funkcji AI. Obowiązuje dzienny limit, a darmowy poziom może czasem być niedostępny.",
       "readPrivacyPolicy": "Przeczytaj naszą Politykę prywatności",
       "enable": "Włącz Musclog AI",
       "noThanks": "Nie, dziękuję, kontynuuj bez AI"

@@ -355,10 +355,10 @@
       "musclogFreeTier": {
         "sectionTitle": "Nível gratuito do Musclog",
         "toggle": "Usar LLM Gratuito do Musclog",
-        "toggleSubtitle": "Usa o Google Gemini. Há um limite diário de solicitações.",
+        "toggleSubtitle": "Usa o Google Gemini, que pode usar o que você envia. Há um limite diário.",
         "activeNote": "Nível gratuito ativo. Suas próprias chaves de API não são usadas.",
         "consentTitle": "Compartilhar dados com o Google Gemini?",
-        "consentBody": "Quando você usa um recurso de IA, o que ele precisa (por exemplo seus treinos, refeições, medidas corporais ou mensagens de chat) é enviado pelos servidores da Musclog ao Gemini, a IA do Google, para escrever a resposta. Nada é enviado até você usar um recurso. O nível gratuito tem um número limitado de solicitações por dia.",
+        "consentBody": "Quando você usa um recurso de IA, o que ele precisa (por exemplo seus treinos, refeições, medidas corporais ou mensagens de chat) é enviado pelo OpenRouter ao nível gratuito do Google AI Studio para escrever a resposta. O Google pode manter o que é enviado, usá-lo para melhorar seus produtos e fazer com que pessoas (sem identificadores) o revisem, então o nível gratuito não é privado: não insira informações pessoais ou sensíveis. O nível gratuito é apenas para adultos (18+). Se isso não for aceitável para você, deixe desativado. Nada é enviado até você usar um recurso de IA. Há um limite diário, e o nível gratuito às vezes pode ficar indisponível.",
         "consentConfirm": "Concordar e ativar"
       },
       "testKey": "Testar chave",

@@ -355,10 +355,10 @@
       "musclogFreeTier": {
         "sectionTitle": "Musclog-Gratistarif",
         "toggle": "Musclog-Gratis-LLM verwenden",
-        "toggleSubtitle": "Nutzt Google Gemini. Es gilt ein Tageslimit für Anfragen.",
+        "toggleSubtitle": "Nutzt Google Gemini, das verwenden kann, was du sendest. Es gilt ein Tageslimit.",
         "activeNote": "Der Gratistarif ist aktiv. Deine eigenen API-Schlüssel werden nicht verwendet.",
         "consentTitle": "Daten mit Google Gemini teilen?",
-        "consentBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über die Server von Musclog an Googles KI Gemini gesendet, um die Antwort zu erstellen. Es wird nichts gesendet, solange du keine Funktion nutzt. Der Gratistarif hat ein begrenztes Anfragenkontingent pro Tag.",
+        "consentBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu erstellen. Google darf das Gesendete speichern, zur Verbesserung seiner Produkte verwenden und von Menschen (ohne Kennungen) prüfen lassen, daher ist der kostenlose Tarif nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene ab 18 Jahren. Wenn dir das nicht passt, lass die Option aus. Es wird nichts gesendet, bis du eine KI-Funktion nutzt. Es gibt ein Tageslimit, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
         "consentConfirm": "Zustimmen und aktivieren"
       },
       "testKey": "Schlüssel testen",

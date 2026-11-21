@@ -290,7 +290,7 @@
         }
       },
       "dataSharingTitle": "Avis sur le partage des données",
-      "dataSharingBody": "Lorsque tu utilises une fonction IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations ou tes messages de chat) est envoyé via les serveurs de Musclog à Gemini de Google pour rédiger la réponse. Rien n'est envoyé tant que tu ne l'utilises pas. L'offre gratuite a un nombre limité de requêtes par jour.",
+      "dataSharingBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations ou tes messages de chat) est envoyé via OpenRouter à l'offre gratuite de Google AI Studio pour rédiger la réponse. Google peut conserver ce qui est envoyé, l'utiliser pour améliorer ses produits et le faire relire par des personnes (sans identifiants), donc l'offre gratuite n'est pas privée : n'y saisis aucune information personnelle ou sensible. L'offre gratuite est réservée aux adultes (18+). Si cela ne te convient pas, laisse-la désactivée. Rien n'est envoyé tant que tu n'utilises pas une fonction d'IA. Il existe une limite quotidienne, et l'offre gratuite peut parfois être indisponible.",
       "readPrivacyPolicy": "Lire notre Politique de confidentialité",
       "enable": "Activer Musclog IA",
       "noThanks": "Non merci, continuer sans IA"

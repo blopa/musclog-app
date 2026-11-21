@@ -290,7 +290,7 @@
         }
       },
       "dataSharingTitle": "Data sharing notice",
-      "dataSharingBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through Musclog's servers to Google's Gemini AI to write the reply. Nothing is sent until you use one. The free tier has a limited number of requests per day.",
+      "dataSharingBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults (18+). If that is not OK for you, leave it off. Nothing is sent until you use an AI feature. There is a daily limit, and the free tier may sometimes be unavailable.",
       "readPrivacyPolicy": "Read our Privacy Policy",
       "enable": "Enable Musclog AI",
       "noThanks": "No thanks, continue without AI"

@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Chat",
+    "freeTierNotice": "Piano gratuito: i messaggi vanno a Google AI Studio, che può conservarli, usarli per migliorare i suoi prodotti e farli esaminare da persone. Non inserire informazioni personali o sensibili. Solo per adulti (18+).",
     "you": "Tu",
     "status": "Online",
     "statusOffline": "Offline",

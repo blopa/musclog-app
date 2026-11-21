@@ -269,8 +269,8 @@ from-captures --kind ipad` copies one locale into `ios/appstore/screenshots/<app
 
 Pricing and availability, the App Privacy ("nutrition label") answers, the export compliance questions and the
 release setting. (The category, age rating and review contact are reachable with `--with-settings`.) The app stores everything on the device and sends food lookups, crash reports (Sentry, can be turned
-off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards to
-Google Gemini; keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.
+off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards through
+OpenRouter to Google Gemini on free quota (Google may use it to improve its products); keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.
 
 **Premium (decided 2026-11-20, nothing shipped yet):** `expo.ios.privacyManifests` now also declares Purchase History and Device ID (`rc_id`), both not linked, no tracking, App Functionality (pinned by `iosPrivacyConfig.test.ts`); answer the App Store Connect labels the same way, and RevenueCat's SDK manifest must be seen merged after `npm run prebuild:ios` on a Mac. The review note says: no account can be created in the app (a device-derived id, no email or name), so 5.1.1(v) does not apply, "Reset Premium" forgets the device key and enrollment, and the subscription is managed in the App Store; a Restore purchases button is in the Premium screen; the free tier and own-key AI need no purchase. The description carries the 3.1.2(c) text (monthly, auto-renewal, cancel at least 24 hours before renewal, Terms link) with no price: the price shown is the store's own string.
 

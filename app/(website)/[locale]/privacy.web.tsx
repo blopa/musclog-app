@@ -348,6 +348,16 @@ export default function Privacy() {
                     </a>
                     ,{' '}
                     <a
+                      href="https://openrouter.ai/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                      style={{ color: BRAND_GREEN_BRIGHT }}
+                    >
+                      {t('sections.collecting.optionalAi.openrouterPrivacyPolicy')}
+                    </a>
+                    ,{' '}
+                    <a
                       href="https://openai.com/policies/privacy-policy/"
                       target="_blank"
                       rel="noopener noreferrer"

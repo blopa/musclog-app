@@ -92,24 +92,23 @@ silently. A model that only works with a refusal fallback or a beta header goes 
 
 ### 4. Gateway model (the free tier)
 
-`constants/gateway.ts` `MUSCLOG_GATEWAY_MODEL` is the model behind the Musclog free-tier gateway
-(Cloudflare AI Gateway, Google AI Studio provider). Its default is a string literal of the form
-`google-ai-studio/<gemini-model-id>`, and `EXPO_PUBLIC_MUSCLOG_GATEWAY_MODEL` overrides it. Every free
-tier request uses it, so it is the one model the maintainer pays for. Update the default the same
-way as the lists:
+`constants/gateway.ts` `MUSCLOG_GATEWAY_MODEL` is the model behind the Musclog free tier (OpenRouter,
+with the maintainer's Google AI Studio key stored there as BYOK). Its default is a string literal of
+the form `google/<model-id>:free` (an OpenRouter model id; today `google/gemma-4-31b-it:free`, Google's unpaid tier), and `EXPO_PUBLIC_MUSCLOG_GATEWAY_MODEL`
+overrides it. Every free tier request uses it, so it is the one model the maintainer pays for. Update
+the default the same way as the lists:
 
-- Keep the `google-ai-studio/` prefix and the `??` env override; change only the model id after the
-  prefix.
+- Keep the `google/` prefix and the `??` env override; change only the model id after the prefix.
 - Pick from the Gemini list you just decided, in the cheap/fast tier (Flash or Flash-Lite), not the
   flagship. It must meet the step 2 rules: image input and text output, not shut down or limited to
   existing users, no shutdown date within ~90 days, stable over `-preview` unless no stable
   equivalent exists.
 - If the current default still meets those rules, **leave it**; do not churn it just because a
   newer model exists. Say so in the report.
-- Cross-check the exact id in two sources, and confirm Cloudflare's Google AI Studio provider docs
-  (https://developers.cloudflare.com/ai-gateway/usage/providers/google-ai-studio/) accept it.
-  Cloudflare can lag Google by days, so an id found only on Google's side goes in the report as
-  unverified and the default stays as is.
+- Cross-check the exact id against `https://openrouter.ai/api/v1/models/<id>/endpoints` and confirm a
+  `Google AI Studio` endpoint (`google-ai-studio`, the `MUSCLOG_GATEWAY_PROVIDER` pin) is listed:
+  requests are pinned to it with no fallbacks. OpenRouter can lag Google by days, so an id found only
+  on Google's side goes in the report as unverified and the default stays as is.
 - Gateway requests go through the OpenAI-compatible path, so none of the Gemini thinking-level
   work in step 3 applies to it. Still check that the new model does not reject a parameter that
   `GatewayService`/`utils/coachAI.ts` send.

@@ -126,8 +126,8 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
       return { ...base, apiKey: '', hostedGrantFailure: grant ? grant.failure : 'not_available' };
     };
   },
-  // On web production builds, CORS blocks browser→Cloudflare direct calls.
-  // In development the client uses a CORS proxy (see buildOpenAIClient).
+  // The free tier is offered in the native apps only (`musclogGatewayAvailability`), so its key is
+  // not used from the public website.
   gateway: async () =>
     effectiveUseMusclogGateway(await SettingsService.getUseMusclogFreeTier())
       ? async (language) => GatewayService.buildGatewayConfig(language)

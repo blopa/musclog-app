@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Czat",
+    "freeTierNotice": "Darmowy poziom: wiadomości trafiają do Google AI Studio, które może je przechowywać, wykorzystywać do ulepszania swoich produktów i zlecać ich przegląd ludziom. Nie wpisuj danych osobowych ani wrażliwych. Tylko dla dorosłych (18+).",
     "you": "Ty",
     "status": "Online",
     "statusOffline": "Offline",

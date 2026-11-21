@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Chat",
+    "freeTierNotice": "Kostenloser Tarif: Nachrichten gehen an Google AI Studio, das sie speichern, zur Verbesserung seiner Produkte verwenden und von Menschen prüfen lassen darf. Keine persönlichen oder sensiblen Informationen eingeben. Nur für Erwachsene (18+).",
     "you": "Du",
     "status": "Online",
     "statusOffline": "Offline",

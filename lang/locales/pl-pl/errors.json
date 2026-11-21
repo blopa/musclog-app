@@ -12,8 +12,8 @@
     "aiCreditsError": "Przekroczono limit usługi AI. Sprawdź klucz API albo spróbuj ponownie później.",
     "aiProcessingError": "Nie udało się przetworzyć tego żądania. Spróbuj ponownie za chwilę.",
     "aiProcessingErrorTitle": "Błąd przetwarzania żądania",
-    "gatewayDailyLimitError": "Osiągnięto dzienny limit darmowej AI. Spróbuj jutro albo dodaj własny klucz API w ustawieniach AI.",
-    "gatewayDailyLimitErrorTitle": "Osiągnięto dzienny limit",
+    "gatewayDailyLimitError": "Darmowy poziom AI jest obecnie niedostępny (dzienny limit mógł się wyczerpać). Spróbuj później lub dodaj własny klucz API w ustawieniach AI.",
+    "gatewayDailyLimitErrorTitle": "Darmowy poziom niedostępny",
     "databaseError": {
       "title": "Błąd bazy danych",
       "description": "Wystąpił błąd bazy danych. Zgłaszanie błędów zostało włączone, aby pomóc rozwiązać problem."

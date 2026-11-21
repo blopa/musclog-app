@@ -82,7 +82,7 @@ On whether every rule can be absolute: some risks cannot be eliminated, only bou
 
 ## 2. Existing codebase analysis
 
-- **There is no backend, wrangler or Terraform config in the repo.** Today's free tier is Cloudflare AI Gateway (`services/GatewayService.ts`, `constants/gateway.ts`). It authenticates with a shared static token baked into the bundle (`EXPO_PUBLIC_MUSCLOG_GATEWAY_AUTH_TOKEN`), so it is not reusable as an entitlement system. Treat it as a separate security follow-up.
+- **There is no backend, wrangler or Terraform config in the repo.** Today's free tier is Cloudflare AI Gateway (`services/GatewayService.ts`, `constants/gateway.ts`). It authenticates with a shared static token baked into the bundle (`EXPO_PUBLIC_MUSCLOG_GATEWAY_AUTH_TOKEN`), so it is not reusable as an entitlement system. Treat it as a separate security follow-up. (2026-11-21: the free tier moved to OpenRouter with BYOK; the bundled token is now a guardrail-restricted OpenRouter key, see AGENTS.md → AI & LLM Integration.)
 - **The reuse point is the OpenAI-compatible path.** Every AI function ends in `buildOpenAIClient(config)` (`utils/coachAI.ts:379-400`):
   - chat: `sendViaOpenAI` (`:1024`)
   - text: `:1400` and `:1553`

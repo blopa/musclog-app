@@ -3,11 +3,11 @@ import { Content, Part } from '@google/genai';
 import { randomUUID } from 'expo-crypto';
 import OpenAI from 'openai';
 
+import { MUSCLOG_GATEWAY_MAX_TOKENS, MUSCLOG_GATEWAY_PROVIDER } from '@/constants/gateway';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
-import { isProduction } from '@/utils/app';
 import {
   hostedErrorKindOf,
   hostedGrantError,
@@ -35,6 +35,7 @@ import {
   claudeStreamDelta,
   extractClaudeText,
 } from './claude';
+import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
 import { readJsonStringField } from './jsonStringFieldStream';
@@ -95,7 +96,15 @@ export function isAiCreditsError(error: any): boolean {
   const status = error?.status ?? error?.response?.status;
   const code = error?.error?.code ?? error?.code;
   const message = (error?.message ?? '').toLowerCase();
-  if (status === 429) {
+  if (status === 429 || status === 402) {
+    return true;
+  }
+
+  // OpenRouter: a spent guardrail budget or key limit answers 403 with the limit's source.
+  if (
+    status === 403 &&
+    String(error?.error?.metadata?.limit_source ?? '').startsWith('openrouter_')
+  ) {
     return true;
   }
 
@@ -445,8 +454,6 @@ export type CoachAIConfig = {
   model: string;
   baseUrl?: string;
   language?: string;
-  gatewayByokAlias?: string;
-  gatewayUserId?: string;
   /** Aborts the request when the caller cancels (a Cancel button). */
   signal?: AbortSignal;
   /** Overrides the default request timeout, in milliseconds. */
@@ -459,12 +466,24 @@ export type CoachAIConfig = {
 };
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
-  // In web dev mode, route gateway requests through a local CORS proxy —
-  // Cloudflare AI Gateway doesn't return CORS headers for browser preflights.
-  const devWebProxyFetch =
-    !isProduction() && config.provider === 'gateway'
-      ? (url: RequestInfo | URL, init?: RequestInit) =>
-          fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, init)
+  // Free-tier requests are pinned to one OpenRouter provider with no fallbacks (see
+  // `withGatewayProviderPin`); OpenRouter answers browser CORS preflights, so no proxy is needed.
+  const pinFetch: typeof fetch | undefined =
+    config.provider === 'gateway' && MUSCLOG_GATEWAY_PROVIDER
+      ? (url, init) =>
+          fetch(
+            url,
+            init?.body === undefined
+              ? init
+              : {
+                  ...init,
+                  body: withGatewayProviderPin(
+                    init.body,
+                    MUSCLOG_GATEWAY_PROVIDER,
+                    MUSCLOG_GATEWAY_MAX_TOKENS
+                  ),
+                }
+          )
       : undefined;
 
   return new OpenAI({
@@ -475,14 +494,9 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     // the Worker says must not be repeated (`daily_full`, `hosted_disabled`).
     maxRetries: config.provider === 'hosted' ? 0 : undefined,
     // The Idempotency-Key is per logical request, so it is passed per call (`requestOptions`), never
-    // here: these default headers are static and go on every request of the client.
-    defaultHeaders: config.gatewayByokAlias
-      ? {
-          'cf-aig-byok-alias': config.gatewayByokAlias,
-          ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
-        }
-      : undefined,
-    fetch: devWebProxyFetch,
+    // here: static default headers would go on every request of the client.
+    defaultHeaders: undefined,
+    fetch: pinFetch,
   });
 }
 
@@ -2361,7 +2375,7 @@ export async function sendCoachMessage(
     return sendViaOpenAI(config, history, sanitizedMessage, context, stream);
   }
 
-  // Gateway uses OpenAI-compatible protocol via Cloudflare AI Gateway
+  // Gateway (the free tier) uses the OpenAI-compatible protocol via OpenRouter
   if (config.provider === 'gateway') {
     return sendViaOpenAI(config, history, sanitizedMessage, context, stream);
   }
