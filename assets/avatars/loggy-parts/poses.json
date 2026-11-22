@@ -160,7 +160,7 @@
         "leg-r/standing",
         "arm-l/hip",
         "hand-l/hip",
-        "arm-r/dracula",
+        "arm-r/wave",
         {
           "group": "body",
           "children": [
@@ -171,7 +171,7 @@
             "bow-tie/dracula"
           ]
         },
-        "hand-r/dracula"
+        "hand-r/wave"
       ],
       "animated": {
         "upper": ["arm-l", "hand-l", "arm-r", "body", "hand-r"]
@@ -438,7 +438,9 @@
         "leg-r/standing",
         "arm-l/hip",
         "hand-l/hip",
-        "arm-r/sherlock",
+        "magnifier/magnify",
+        "arm-r/magnify",
+        "hand-r/magnify",
         {
           "group": "body",
           "children": [
@@ -448,9 +450,7 @@
             "capelet/sherlock",
             "pipe/sherlock"
           ]
-        },
-        "magnifier/sherlock",
-        "hand-r/sherlock"
+        }
       ]
     },
     "shrug": {

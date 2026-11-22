@@ -15,7 +15,7 @@ const ANIMATION: LoggyAnimation = {
   loopMs: 3600,
   layers: {
     'hand-r': {
-      origin: [475, 264],
+      origin: [448, 191],
       durationMs: 3600,
       easing: 'ease-in-out',
       fns: ['rotate'],
@@ -85,18 +85,9 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
         <Path fill="#1b314d" d={LOGGY_PATHS.p72f34403} />
         <Path fill={colors.body} d={LOGGY_PATHS.pa7a2152b} />
         <Path fill={colors.body} d={LOGGY_PATHS.pfea0c139} />
-        <Path
-          fill="#1b314d"
-          d="M370 289c15-2 22 7 34 12 16 8 31 7 42-2 8-7 12-19 14-38l31-1c-2 23-8 40-19 52-17 20-39 26-61 22-17-3-30-9-40-17Z"
-        />
-        <Path
-          fill={colors.body}
-          d="M374 294c11-2 19 7 29 12 18 9 34 7 46-3 10-9 14-23 16-43h21c-2 21-7 37-18 49-15 18-35 24-56 20-16-3-29-9-38-16Z"
-        />
-        <Path
-          fill={colors.shade}
-          d="M427 322c6-4 11-3 14-3-2 4-9 6-14 3m18-3c4-4 8-5 12-5-2 4-8 7-12 5"
-        />
+        <Path fill="#1b314d" d={LOGGY_PATHS.p617d69d7} />
+        <Path fill={colors.body} d={LOGGY_PATHS.p38202b0c} />
+        <Path fill="#1b314d" d={LOGGY_PATHS.p3c7b063b} />
         <Path fill="#1b314d" d={LOGGY_PATHS.pddf5256f} />
         <Path fill={colors.body} d={LOGGY_PATHS.pff7348c0} />
         <Path fill={colors.shade} d={LOGGY_PATHS.p1fa8cce8} />
@@ -213,14 +204,9 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
           d="m235 355 17 7-16-2Zm0 14 17-4h-16Zm54-14-17 7 16-2Zm0 14-17-4h16Zm-22 16c0 7-10 7-10 0s10-7 10 0m0 15c0 7-10 7-10 0s10-7 10 0"
         />
         <LoggyLayer clock={clock} layer={ANIMATION.layers['hand-r']}>
-          <Path
-            fill="#1b314d"
-            d="M460 268c1-8 0-14-5-19-4-4-8-6-9-13s-5-10-10-14c-7-5-8-10-4-14 5-6 13-5 19-1 4 2 7 5 9 8 0-12 0-25 3-33 2-7 6-9 11-8 7 1 9 6 9 13l-2 20c4-9 8-20 13-25 4-5 9-5 13-2 6 4 6 9 3 15l-8 18c6-6 13-12 18-12 6 0 10 4 10 9s-4 10-9 15l-9 9c-2 8-6 15-12 20-4 4-9 6-11 14Z"
-          />
-          <Path
-            fill={colors.body}
-            d="M465 270c1-10-1-19-7-24-4-4-7-5-8-11-1-7-6-11-11-15q-7.5-6-3-9c4-4 9-3 13 0 6 3 9 8 12 12 3 1 8 2 11 6 4 4 5 9 5 14-4-7-7-11-12-13-3-2-6-1-8-3 5-9 7-20 7-29 1-13 3-19 7-19 5-1 8 3 7 9l-2 26c7 4 13 8 18 13-4-7-10-11-14-13 4-9 10-23 15-29 3-3 6-3 9-1 3 3 3 6 1 11l-8 20c5 3 8 5 11 8 6-8 12-18 16-17 6 2 0 10-6 16l-10 10c-2 9-5 15-11 19-5 4-11 5-13 19Z"
-          />
+          <Path fill="#1b314d" d={LOGGY_PATHS.pbc1edc07} />
+          <Path fill={colors.body} d={LOGGY_PATHS.p3fd75ff9} />
+          <Path fill={colors.body} d={LOGGY_PATHS.p8065e91b} />
         </LoggyLayer>
       </LoggyLayer>
     </Svg>

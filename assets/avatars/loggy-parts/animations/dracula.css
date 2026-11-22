@@ -1,6 +1,6 @@
 /* One unhurried wave, with a slight lift through the upper body. */
 #hand-r {
-  transform-origin: 475px 264px;
+  transform-origin: 448px 191px;
   animation: loggy-dracula-wave 3.6s ease-in-out infinite;
 }
 #upper {
