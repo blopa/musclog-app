@@ -267,6 +267,41 @@ describe('app client against the Worker', () => {
     expect(pb?.usedPct).toBe(pa?.usedPct);
   });
 
+  it('9. /v1/usage parses in every state the Worker can answer, at the exact wire shape', async () => {
+    const h = harness();
+    const d = device();
+    h.rc.addSubscription(d.rcId, { id: 'sub_main' });
+    const { net, deps } = flows(h, honest(d));
+    const grant = value(await enrollDevice(deps));
+    const read = async () => {
+      const res = await hostedUsage(BASE, grant.sessionToken, net.fetch);
+      expect(res.ok).toBe(true);
+      return res.body;
+    };
+
+    // Active, partly used: the raw body has exactly these keys, a whole-number percentage and an ISO time.
+    await env.DB.prepare('UPDATE periods SET spent_u = early_cap_u / 3').run();
+    const partial = await read();
+    expect(Object.keys(partial as object).sort()).toEqual([
+      'devices',
+      'resets_at',
+      'status',
+      'used_pct',
+    ]);
+    expect(Number.isInteger((partial as { used_pct: number }).used_pct)).toBe(true);
+    expect(parseUsage(partial)).toMatchObject({ status: 'active', devices: { count: 1, max: 25 } });
+    expect(parseUsage(partial)?.usedPct).toBeGreaterThan(0);
+    expect(parseUsage(partial)?.usedPct).toBeLessThan(100);
+
+    // Exhausted: still a usable phase, so the app must show the bar at 100%.
+    await env.DB.prepare('UPDATE periods SET spent_u = early_cap_u * 10').run();
+    expect(parseUsage(await read())).toMatchObject({ status: 'exhausted', usedPct: 100 });
+
+    // Revoked: the Worker answers 200 with status revoked and used_pct 100.
+    await env.DB.prepare("UPDATE periods SET status = 'revoked'").run();
+    expect(parseUsage(await read())).toMatchObject({ status: 'revoked', usedPct: 100 });
+  });
+
   it('8. hostedConfig reads the enabled config', async () => {
     const h = harness();
     const res = await hostedConfig(BASE, network(h).fetch);
