@@ -19,6 +19,8 @@ export interface Env {
   SESSION_HMAC_KEY: string;
   /** Secret, optional. The previous HMAC key, accepted for verification only during rotation. */
   SESSION_HMAC_KEY_PREVIOUS?: string;
+  /** Sentry DSN (not a secret). Unset in local and test: the SDK stays off. See src/sentry.ts. */
+  SENTRY_DSN?: string;
   /** Rate-limit binding (wrangler.toml `ratelimits`). Required in production and staging (src/limiter.ts); optional in local and test. */
   RATE_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
 }

@@ -1,5 +1,6 @@
 // Router and composition root. createApp(makeDeps) lets tests inject fake upstreams; the
 // production entry point (src/index.ts) uses defaultDeps.
+import * as Sentry from '@sentry/cloudflare';
 import type { AiConfig } from './config';
 import { parseConfig } from './configSchema';
 import type { Ctx } from './context';
@@ -71,6 +72,9 @@ export function createApp(makeDeps: MakeDeps = defaultDeps): ExportedHandler<Env
         return await route.handler(request, ctx);
       } catch (e) {
         if (e instanceof ApiError) return errorResponse(e.status, e.code, e.extra);
+        // The router answers 503 itself, so withSentry never sees this error: report it here
+        // (src/sentry.ts drops the message and everything from the request).
+        Sentry.captureException(e, { tags: { route: url.pathname, code: 'internal' } });
         ctx.deps.log.log({ route: url.pathname, status: 500, code: 'internal', severity: 'error' });
         return errorResponse(503, 'hosted_disabled');
       }

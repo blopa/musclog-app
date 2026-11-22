@@ -32,6 +32,7 @@ simple = { limit = 30, period = 60 }
 
 [env.production.vars]
 WORKER_ENV = "production"
+SENTRY_DSN = "https://d6aef5d418bc8ae2a0bf2523681cb4d0@o4507421287972864.ingest.de.sentry.io/4512477181313104"
 HOSTED_AI_ENABLED = "true"
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 REVENUECAT_BASE_URL = "https://api.revenuecat.com/v2"
@@ -52,6 +53,7 @@ simple = { limit = 30, period = 60 }
 
 [env.staging.vars]
 WORKER_ENV = "staging"
+SENTRY_DSN = "https://d6aef5d418bc8ae2a0bf2523681cb4d0@o4507421287972864.ingest.de.sentry.io/4512477181313104"
 HOSTED_AI_ENABLED = "true"
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 REVENUECAT_BASE_URL = "https://api.revenuecat.com/v2"

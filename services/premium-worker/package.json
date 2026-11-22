@@ -11,6 +11,7 @@
     "migrations:local": "wrangler d1 migrations apply DB --local --env local"
   },
   "dependencies": {
+    "@sentry/cloudflare": "11.16.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

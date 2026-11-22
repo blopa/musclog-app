@@ -49,6 +49,10 @@ Both Terraform plans are shown before anything is applied. The state is local an
 
 The Worker logs only `LogEvent` fields (route, status, code, severity). `[observability] enabled = true` in `wrangler.toml` keeps them in the Cloudflare dashboard (Workers → the Worker → Logs) for a few days. Live, from `services/premium-worker` (the directory matters: elsewhere wrangler finds no `[env.production]`): `npx wrangler tail --env production` (or `--env staging`). A refused enroll shows as `/v1/enroll` with its code (`subscription_required`, `entitlement_unavailable`, …). The app reports its own side to Sentry as `premium-<stage>-<failure>` (AGENTS.md, Premium app identity).
 
+## Sentry for the Worker
+
+`src/index.ts` wraps the handler in `Sentry.withSentry(sentryOptions, …)` (`@sentry/cloudflare`, pinned exact; project `werules/musclog-premium-worker`). `SENTRY_DSN` is a plain var in `[env.production.vars]` and `[env.staging.vars]` (a DSN is not a secret); local and test have none, so the SDK sends nothing there. The Worker's content-free rule holds for Sentry too, in `src/sentry.ts`: `scrubEvent` drops the request, user, breadcrumbs, extras and message, blanks every exception message (an upstream failure could echo content) and keeps only the exception type, stack, runtime/trace context and the tags `route`, `status`, `code`, `severity`; breadcrumbs are off, and the Sentry project has IP-address scrubbing and data scrubbing on (the ingest otherwise attaches the caller's IP). Traces: 10% in production, all in staging. The router's catch answers 503 itself, so `src/app.ts` calls `Sentry.captureException` there; cron errors propagate to `withSentry`. Stack traces are of the bundled file until source maps are uploaded (not set up). Pinned by `test/sentry.test.ts`.
+
 ## Configuration and the kill switch
 
 `AI_CONFIG_JSON` (plain text in each `[env.*.vars]`) is validated on cold start; an invalid config serves nothing. The ZDR invariant (`provider.zdr = true`, `data_collection = "deny"`) cannot be relaxed. Change it in `wrangler.toml`, run the tests, then deploy.
