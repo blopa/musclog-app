@@ -763,6 +763,34 @@ export default function ModalsTestScreen() {
               width="full"
               onPress={() => setPremiumFixtureId('offline')}
             />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Waiting For Store)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('store-wait')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Confirming Subscription)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('confirming')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Confirming Slowly)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('confirming-slow')}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Premium Modal (Resetting)"
+              variant="outline"
+              width="full"
+              onPress={() => setPremiumFixtureId('resetting')}
+            />
           </View>
 
           {/* Add Meal Modal */}
