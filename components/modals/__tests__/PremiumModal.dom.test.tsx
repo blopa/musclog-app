@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { Linking } from 'react-native';
 
-import { PREMIUM_BUSY_KEYS, PREMIUM_NOTICES, PremiumModal } from '@/components/modals/PremiumModal';
+import { PREMIUM_BUSY_KEYS, PremiumModal } from '@/components/modals/PremiumModal';
+import { PREMIUM_NOTICES } from '@/components/premium/premiumNotices';
 import { PREMIUM_BENEFITS } from '@/components/premium/PremiumPaywall';
 import { usePremium } from '@/hooks/usePremium';
 import {

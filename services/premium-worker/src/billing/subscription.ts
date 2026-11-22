@@ -1,6 +1,7 @@
 // Pure subscription rules (plan 6.1 enroll filters, 6.2 covering transaction, 13 rows 1 and 3).
 import type { AiConfig } from '../config';
 import type { RcSubscription, RcTransaction } from '../upstream/types';
+import { sha256HexOfText } from '../identity/crypto';
 
 export function qualifies(
   sub: RcSubscription,
@@ -54,10 +55,5 @@ export function isFirstTransaction(txs: RcTransaction[], tx: RcTransaction): boo
   );
 }
 
-async function sha256Hex(text: string): Promise<string> {
-  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-export const paymentKey = (store: string, txId: string) => sha256Hex(`${store}:${txId}`);
-export const lineageKey = (store: string, subId: string) => sha256Hex(`${store}:${subId}`);
+export const paymentKey = (store: string, txId: string) => sha256HexOfText(`${store}:${txId}`);
+export const lineageKey = (store: string, subId: string) => sha256HexOfText(`${store}:${subId}`);

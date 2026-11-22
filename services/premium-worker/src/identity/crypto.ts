@@ -19,6 +19,11 @@ export async function sha256Hex(bytes: Uint8Array<ArrayBuffer>): Promise<string>
   return hex(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)));
 }
 
+/** SHA-256 of the UTF-8 bytes of `text`, lowercase hex. */
+export async function sha256HexOfText(text: string): Promise<string> {
+  return sha256Hex(te.encode(text));
+}
+
 export async function deriveRcId(publicKey: Uint8Array<ArrayBuffer>): Promise<string> {
   return 'mlg1_' + (await sha256Hex(publicKey));
 }

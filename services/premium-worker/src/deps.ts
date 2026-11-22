@@ -4,6 +4,7 @@ import type { OpenRouterClient, RevenueCatClient } from './upstream/types';
 import { createOpenRouterClient } from './upstream/openrouter';
 import { createRevenueCatClient } from './upstream/revenuecat';
 import type { AiConfig } from './config';
+import { hex } from './identity/crypto';
 
 /** Everything with side effects outside D1. Tests pass fakes through createApp. */
 export interface Deps {
@@ -17,8 +18,7 @@ export interface Deps {
 }
 
 export function randomHex(bytes = 16): string {
-  const b = crypto.getRandomValues(new Uint8Array(bytes));
-  return [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  return hex(crypto.getRandomValues(new Uint8Array(bytes)));
 }
 
 export function defaultDeps(env: Env, config: AiConfig): Deps {

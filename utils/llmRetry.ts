@@ -6,6 +6,7 @@ import {
 } from './aiErrors';
 import type { CoachAIConfig, CoachAIProvider } from './coachAI';
 import { providerPolicyFor } from './hostedProviderPolicy';
+import type { LlmRequest, RetryDecision, RetryState } from './llmRetryTypes';
 
 const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
 const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
@@ -112,26 +113,6 @@ async function runWithAbort<T>(
     config.signal?.removeEventListener('abort', onExternalAbort);
   }
 }
-
-/**
- * The per-call options of an OpenAI-compatible request: the abort signal and, for a provider with
- * request headers (hosted: the `Idempotency-Key`), those headers, the same on every attempt. The
- * request callback receives them ready to pass, so no call site can forget either.
- */
-export type LlmRequestOptions = { signal: AbortSignal; headers?: Record<string, string> };
-
-export type LlmRequest<T> = (
-  signal: AbortSignal,
-  touch: () => void,
-  options: LlmRequestOptions
-) => Promise<T>;
-
-/** What the retry loop has already spent on one logical request. */
-export type RetryState = { attempt: number; timeoutRetried: boolean };
-
-/** Either the error to throw, or how long to wait and which budget the retry spends. */
-export type RetryDecision =
-  { error: unknown } | { delayMs: number; log: string; spends: 'attempt' | 'timeout' };
 
 /**
  * Decides what a failed attempt means: a provider with its own rules (hosted) answers first, every

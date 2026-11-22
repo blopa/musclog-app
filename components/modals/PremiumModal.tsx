@@ -5,6 +5,11 @@ import { ActivityIndicator, Linking, Platform, Text, View } from 'react-native';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
 import {
+  PREMIUM_NOTICES,
+  premiumNoticeCopy,
+  type PremiumNoticeTone,
+} from '@/components/premium/premiumNotices';
+import {
   PremiumBenefitList,
   PremiumComparison,
   PremiumPaywallHero,
@@ -30,27 +35,6 @@ import {
   PREMIUM_PRIVACY_URL,
   PREMIUM_TERMS_URL,
 } from '@/utils/premium/premiumLinks';
-import type { PremiumNotice } from '@/utils/premium/premiumUiState';
-
-/** What a notice looks like: info is neutral, warning and error are the status hues. */
-export type PremiumNoticeTone = 'info' | 'warning' | 'error';
-
-/** One entry per notice: its whole translation key (so the translation check sees each string) and its tone. */
-export const PREMIUM_NOTICES: Record<PremiumNotice, { key: string; tone: PremiumNoticeTone }> = {
-  offline: { key: 'premium.notice.offline', tone: 'warning' },
-  purchase_cancelled: { key: 'premium.notice.purchase_cancelled', tone: 'info' },
-  purchase_failed: { key: 'premium.notice.purchase_failed', tone: 'error' },
-  restore_nothing: { key: 'premium.notice.restore_nothing', tone: 'info' },
-  confirming: { key: 'premium.notice.confirming', tone: 'info' },
-  removed: { key: 'premium.notice.removed', tone: 'warning' },
-  revoked: { key: 'premium.notice.revoked', tone: 'warning' },
-  exhausted: { key: 'premium.notice.exhausted', tone: 'warning' },
-  at_capacity: { key: 'premium.notice.at_capacity', tone: 'info' },
-  unavailable: { key: 'premium.notice.unavailable', tone: 'error' },
-  not_accepting: { key: 'premium.notice.not_accepting', tone: 'info' },
-  not_available: { key: 'premium.notice.not_available', tone: 'info' },
-  warning80: { key: 'premium.notice.warning80', tone: 'warning' },
-};
 
 /** One whole key per busy line (stage of a purchase, reset, switch), so the translation check sees each. */
 export const PREMIUM_BUSY_KEYS: Record<PremiumBusyLine, string> = {
@@ -60,21 +44,6 @@ export const PREMIUM_BUSY_KEYS: Record<PremiumBusyLine, string> = {
   reset: 'premium.progress.reset',
   toggle: 'premium.progress.toggle',
 };
-
-/**
- * What the switch does for a requested value. Turning it on needs the consent first, unless the
- * person already gave it for this version of the terms.
- */
-export function hostedToggleDecision(
-  next: boolean,
-  consentNeeded: boolean
-): 'off' | 'on' | 'ask_consent' {
-  if (!next) {
-    return 'off';
-  }
-
-  return consentNeeded ? 'ask_consent' : 'on';
-}
 
 /** The text colour a notice of this tone is drawn in. */
 function toneColor(tone: PremiumNoticeTone | null, theme: Theme): string {
@@ -100,7 +69,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
   const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const premium = usePremium();
-  const { view, busy, activity } = premium;
+  const { view, busy, activity, consentNeeded } = premium;
   const busyLine = busyLineFor(activity);
   const consentPending = useSyncExternalStore(
     subscribePremiumActivity,
@@ -134,7 +103,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
         return;
       }
 
-      if (premium.consentNeeded(true)) {
+      if (consentNeeded(true)) {
         setDialog('consent');
         setDialogOpen(true);
       }
@@ -143,12 +112,12 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     return () => {
       cancelled = true;
     };
-  }, [visible, consentPending, busy, premium, setDialogOpen]);
+  }, [visible, consentPending, busy, consentNeeded, setDialogOpen]);
 
   const isActing = (kind: 'subscribe' | 'restore') => activity?.kind === kind;
 
   const handleToggle = async (on: boolean) => {
-    if (hostedToggleDecision(on, premium.consentNeeded(true)) === 'ask_consent') {
+    if (consentNeeded(on)) {
       openDialog('consent');
 
       return;
@@ -175,12 +144,8 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
       return null;
     }
 
-    const text =
-      notice === 'exhausted' && renewal
-        ? t(PREMIUM_NOTICES[notice].key, { date: renewal })
-        : notice === 'exhausted'
-          ? t('premium.notice.exhaustedNoDate')
-          : t(PREMIUM_NOTICES[notice].key);
+    const { key, params } = premiumNoticeCopy(notice, renewal);
+    const text = t(key, params);
 
     return (
       <View

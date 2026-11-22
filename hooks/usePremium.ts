@@ -55,6 +55,9 @@ export type UsePremium = {
   recordConsent(): Promise<void>;
 };
 
+/** What a Premium action reports: it went through, or it failed for a reason the screen shows. */
+type ActionResult = { ok: true } | { ok: false; failure: PremiumActionFailure };
+
 type PremiumActions = Pick<
   UsePremium,
   'subscribe' | 'restore' | 'refresh' | 'setUseHostedAi' | 'reset' | 'recordConsent'
@@ -118,11 +121,8 @@ export function usePremium(): UsePremium {
     };
   }, []);
 
+  // Setting state after unmount is a no-op, and a removed device must switch hosted AI off either way.
   const applyOverview = useCallback(async (next: PremiumOverview) => {
-    if (!mounted.current) {
-      return;
-    }
-
     setOverview(next);
     await disableHostedIfRemoved(next.status);
   }, []);
@@ -158,9 +158,9 @@ export function usePremium(): UsePremium {
   const runAction = useCallback(
     async (
       kind: PremiumActivityKind,
-      action: (
-        onProgress: (stage: PremiumProgress) => void
-      ) => Promise<{ ok: true } | { ok: false; failure: PremiumActionFailure }>
+      action: (onProgress: (stage: PremiumProgress) => void) => Promise<ActionResult>,
+      // Flipping the AI switch changes nothing the Worker reports: no reload, the notice stays.
+      reloadAfter = true
     ) => {
       if (!beginPremiumActivity(kind)) {
         return false;
@@ -174,8 +174,7 @@ export function usePremium(): UsePremium {
         if (result.ok) {
           outcome = { ok: true };
 
-          // Flipping the AI switch changes nothing the Worker reports: no reload, notice stays.
-          if (mounted.current && kind !== 'toggle') {
+          if (mounted.current && reloadAfter) {
             setLastActionFailure(null);
             await refresh();
           }
@@ -203,11 +202,15 @@ export function usePremium(): UsePremium {
     const restore = () => runAction('restore', (onProgress) => restoreAndEnroll(onProgress));
 
     const setUseHostedAi = async (on: boolean) => {
-      await runAction('toggle', async () => {
-        await SettingsService.set(SETTINGS.useHostedAi, on);
+      await runAction(
+        'toggle',
+        async () => {
+          await SettingsService.set(SETTINGS.useHostedAi, on);
 
-        return { ok: true };
-      });
+          return { ok: true };
+        },
+        false
+      );
     };
 
     const reset = async () => {
@@ -249,17 +252,23 @@ export function usePremium(): UsePremium {
   );
 
   const actions = enabled ? liveActions : INERT_ACTIONS;
+  const priceString = enabled ? (overview?.priceString ?? null) : null;
 
-  return (
-    fixture ?? {
+  // One stable object per change: a consumer that lists the hook's result in an effect's
+  // dependencies must not re-run it on every render.
+  const live = useMemo<UsePremium>(
+    () => ({
       enabled,
       view,
-      priceString: enabled ? (overview?.priceString ?? null) : null,
+      priceString,
       busy,
       activity,
       useHostedAi,
       ...actions,
       consentNeeded,
-    }
+    }),
+    [enabled, view, priceString, busy, activity, useHostedAi, actions, consentNeeded]
   );
+
+  return fixture ?? live;
 }

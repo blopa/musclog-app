@@ -399,6 +399,18 @@ async function streamGeminiText(
   );
 }
 
+/** One non-streaming OpenAI-compatible completion, retried and timed out by `withLlmRetry`. */
+function createOpenAiCompletion(
+  client: OpenAI,
+  operation: string,
+  config: CoachAIConfig,
+  payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming
+) {
+  return withLlmRetry(operation, config, (_signal, _touch, options) =>
+    client.chat.completions.create(payload, options)
+  );
+}
+
 async function streamOpenAiText(
   client: OpenAI,
   payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
@@ -988,8 +1000,11 @@ async function sendViaOpenAI(
       return parseCoachResponse(streamedRaw || '{}');
     }
 
-    const completion = await withLlmRetry('sendViaOpenAI', config, (_signal, _touch, options) =>
-      client.chat.completions.create(requestPayload, options)
+    const completion = await createOpenAiCompletion(
+      client,
+      'sendViaOpenAI',
+      config,
+      requestPayload
     );
 
     await logLlmDebugEvent({
@@ -1326,9 +1341,7 @@ async function generateText(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry('generateText', config, (_signal, _touch, options) =>
-    client.chat.completions.create(requestPayload, options)
-  );
+  const completion = await createOpenAiCompletion(client, 'generateText', config, requestPayload);
 
   await logLlmDebugEvent({
     provider: config.provider,
@@ -1485,10 +1498,11 @@ async function generateTextWithHistory(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry(
+  const completion = await createOpenAiCompletion(
+    client,
     'generateTextWithHistory',
     config,
-    (_signal, _touch, options) => client.chat.completions.create(requestPayload, options)
+    requestPayload
   );
 
   await logLlmDebugEvent({
@@ -1672,9 +1686,7 @@ export async function requestStructured<T = unknown>(
     config,
   });
 
-  const completion = await withLlmRetry(operation, config, (_signal, _touch, options) =>
-    client.chat.completions.create(payload, options)
-  );
+  const completion = await createOpenAiCompletion(client, operation, config, payload);
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
@@ -1902,10 +1914,11 @@ async function generateWithImageStructured<T>(
     config,
   });
 
-  const completion = await withLlmRetry(
+  const completion = await createOpenAiCompletion(
+    client,
     'generateWithImageStructured',
     config,
-    (_signal, _touch, options) => client.chat.completions.create(requestPayload, options)
+    requestPayload
   );
 
   await logLlmDebugEvent({

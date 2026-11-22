@@ -13,6 +13,7 @@ import {
   type ErrorCode,
   type ErrorExtra,
 } from '../http';
+import { sha256HexOfText } from '../identity/crypto';
 import { bearerToken, verifySessionToken } from '../identity/token';
 import {
   findLivePeriod,
@@ -34,12 +35,6 @@ export const TIMEOUTS = { overallMs: 55_000, streamIdleMs: 30_000 };
 const KEY_RE = /^[A-Za-z0-9_-]{8,128}$/;
 const DAY_MS = 86_400_000;
 const GENERATION_TRIES = 3;
-const te = new TextEncoder();
-
-async function sha256Hex(text: string): Promise<string> {
-  const d = new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(text)));
-  return [...d].map((x) => x.toString(16).padStart(2, '0')).join('');
-}
 
 /** USD -> whole micro-USD, rounded up. The 1e9 detour removes float noise (0.00123 * 1e6). */
 export const costToMicro = (usd: number): number => Math.ceil(Math.round(usd * 1e9) / 1e3);
@@ -134,7 +129,7 @@ async function run(
 
   // 6. The upstream body and its hash (the Idempotency-Key is bound to it).
   const bodyText = JSON.stringify({ ...req.body, user: period.lineage_key.slice(0, 16) });
-  const bh = await sha256Hex(bodyText);
+  const bh = await sha256HexOfText(bodyText);
 
   // 7. Reserve. A D1 failure fails closed, with no upstream call.
   const pk = period.payment_key;

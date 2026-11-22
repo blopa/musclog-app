@@ -21,6 +21,15 @@ import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { type AiChoice, availableAiChoices, defaultAiChoice } from '@/utils/onboardingAiChoice';
 import { websitePageUrl } from '@/utils/websiteUrl';
 
+type ChoicePoint = { kind: 'plus' | 'minus'; text: string };
+
+type ChoiceCard = {
+  testID: string;
+  title: string;
+  price: string | undefined;
+  points: ChoicePoint[];
+};
+
 /** One whole key per choice, so the translation check sees every label the button can show. */
 const CTA_KEYS: Record<AiChoice, string> = {
   premium: 'onboarding.musclogApi.cta.premium',
@@ -107,6 +116,39 @@ export default function MusclogApiScreen() {
     ? t('onboarding.musclogApi.options.premium.price', { price: premium.priceString })
     : t('onboarding.musclogApi.options.premium.priceUnknown');
 
+  /** Every card's copy, one whole key per string so the translation check sees each one. */
+  const choiceCards: Record<AiChoice, ChoiceCard> = {
+    premium: {
+      testID: 'ai-choice-premium',
+      title: t('onboarding.musclogApi.options.premium.title'),
+      price: premiumPrice,
+      points: [
+        { kind: 'plus', text: t('onboarding.musclogApi.options.premium.points.private') },
+        { kind: 'plus', text: t('onboarding.musclogApi.options.premium.points.allowance') },
+        { kind: 'plus', text: t('onboarding.musclogApi.options.premium.points.noSetup') },
+      ],
+    },
+    free: {
+      testID: 'ai-choice-free',
+      title: t('onboarding.musclogApi.options.free.title'),
+      price: t('onboarding.musclogApi.options.free.price'),
+      points: [
+        { kind: 'plus', text: t('onboarding.musclogApi.options.free.points.noSetup') },
+        { kind: 'minus', text: t('onboarding.musclogApi.options.free.points.limit') },
+        { kind: 'minus', text: t('onboarding.musclogApi.options.free.points.privacy') },
+      ],
+    },
+    none: {
+      testID: 'ai-choice-none',
+      title: t('onboarding.musclogApi.options.none.title'),
+      price: undefined,
+      points: [
+        { kind: 'plus', text: t('onboarding.musclogApi.options.none.points.works') },
+        { kind: 'plus', text: t('onboarding.musclogApi.options.none.points.later') },
+      ],
+    },
+  };
+
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
@@ -149,56 +191,22 @@ export default function MusclogApiScreen() {
               accessibilityRole="radiogroup"
               accessibilityLabel={t('onboarding.musclogApi.choicesLabel')}
             >
-              {choices.includes('premium') ? (
-                <AiChoiceCard
-                  testID="ai-choice-premium"
-                  title={t('onboarding.musclogApi.options.premium.title')}
-                  price={premiumPrice}
-                  selected={selected === 'premium'}
-                  onPress={() => setSelected('premium')}
-                  disabled={isSaving}
-                  points={[
-                    {
-                      kind: 'plus',
-                      text: t('onboarding.musclogApi.options.premium.points.private'),
-                    },
-                    {
-                      kind: 'plus',
-                      text: t('onboarding.musclogApi.options.premium.points.allowance'),
-                    },
-                    {
-                      kind: 'plus',
-                      text: t('onboarding.musclogApi.options.premium.points.noSetup'),
-                    },
-                  ]}
-                />
-              ) : null}
-              {choices.includes('free') ? (
-                <AiChoiceCard
-                  testID="ai-choice-free"
-                  title={t('onboarding.musclogApi.options.free.title')}
-                  price={t('onboarding.musclogApi.options.free.price')}
-                  selected={selected === 'free'}
-                  onPress={() => setSelected('free')}
-                  disabled={isSaving}
-                  points={[
-                    { kind: 'plus', text: t('onboarding.musclogApi.options.free.points.noSetup') },
-                    { kind: 'minus', text: t('onboarding.musclogApi.options.free.points.limit') },
-                    { kind: 'minus', text: t('onboarding.musclogApi.options.free.points.privacy') },
-                  ]}
-                />
-              ) : null}
-              <AiChoiceCard
-                testID="ai-choice-none"
-                title={t('onboarding.musclogApi.options.none.title')}
-                selected={selected === 'none'}
-                onPress={() => setSelected('none')}
-                disabled={isSaving}
-                points={[
-                  { kind: 'plus', text: t('onboarding.musclogApi.options.none.points.works') },
-                  { kind: 'plus', text: t('onboarding.musclogApi.options.none.points.later') },
-                ]}
-              />
+              {choices.map((choice) => {
+                const card = choiceCards[choice];
+
+                return (
+                  <AiChoiceCard
+                    key={choice}
+                    testID={card.testID}
+                    title={card.title}
+                    price={card.price}
+                    selected={selected === choice}
+                    onPress={() => setSelected(choice)}
+                    disabled={isSaving}
+                    points={card.points}
+                  />
+                );
+              })}
             </View>
 
             {/* The free tier's consent (App Store 5.1.2(i)): shown above the button that turns it on. */}

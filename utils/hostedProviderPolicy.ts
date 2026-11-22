@@ -7,7 +7,7 @@ import {
   noteHostedError,
   toHostedAiError,
 } from './hostedAiError';
-import type { RetryDecision, RetryState } from './llmRetry';
+import type { RetryDecision, RetryState } from './llmRetryTypes';
 import { setHostedSignal } from './premium/hostedSignal';
 import { whileHostedBackingOff } from './premium/hostedWait';
 

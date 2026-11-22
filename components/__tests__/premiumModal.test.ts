@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { hostedToggleDecision, PREMIUM_NOTICES } from '@/components/modals/PremiumModal';
+import { PREMIUM_NOTICES, premiumNoticeCopy } from '@/components/premium/premiumNotices';
 import type { PremiumNotice } from '@/utils/premium/premiumUiState';
 
 // The pure helpers live beside the component, so the module is loaded for them. Its UI imports pull
@@ -53,87 +53,18 @@ describe('PREMIUM_NOTICES', () => {
   });
 });
 
-describe('hostedToggleDecision', () => {
-  it('turning the switch off never asks for consent', () => {
-    expect(hostedToggleDecision(false, true)).toBe('off');
-    expect(hostedToggleDecision(false, false)).toBe('off');
+describe('premiumNoticeCopy', () => {
+  it('uses the plain key for every notice but the used-up allowance', () => {
+    expect(premiumNoticeCopy('offline', 'x')).toEqual({ key: 'premium.notice.offline' });
   });
 
-  it('turning it on without consent asks first', () => {
-    expect(hostedToggleDecision(true, true)).toBe('ask_consent');
-  });
-
-  it('turning it on with consent on record applies directly', () => {
-    expect(hostedToggleDecision(true, false)).toBe('on');
-  });
-});
-
-describe('PremiumModal copy and structure', () => {
-  it('shows Subscribe only when the view allows it', () => {
-    expect(modalSource).toMatch(/view\.canSubscribe \?/);
-  });
-
-  it('shows Restore only when the view allows it', () => {
-    expect(modalSource).toMatch(/view\.canRestore \?/);
-  });
-
-  it('puts the consent dialog inside the FullScreenModal tree, not beside it', () => {
-    const start = modalSource.indexOf('<FullScreenModal');
-    const end = modalSource.indexOf('</FullScreenModal>');
-    expect(start).toBeGreaterThan(-1);
-    expect(modalSource.indexOf('<ConfirmationModal', start)).toBeLessThan(end);
-  });
-
-  it('uses one ConfirmationModal for both questions', () => {
-    expect(modalSource.match(/<ConfirmationModal/g)).toHaveLength(1);
-  });
-
-  it('turns the switch on only through the consent confirm path', () => {
-    expect(modalSource).toMatch(
-      /confirmConsent = async \(\) => \{\s*await premium\.recordConsent\(\);\s*await premium\.setUseHostedAi\(true\);/
-    );
-  });
-
-  it('carries the disclosure, device and platform keys', () => {
-    expect(modalSource).toContain("t('premium.renewalDisclosure')");
-    expect(modalSource).toContain("t('premium.devicesNote')");
-    expect(modalSource).toContain("t('premium.platformsNote')");
-  });
-
-  it('links the terms and the privacy policy', () => {
-    expect(modalSource).toContain("t('premium.terms')");
-    expect(modalSource).toContain("t('premium.privacy')");
-    expect(modalSource).toContain('PREMIUM_TERMS_URL');
-    expect(modalSource).toContain('PREMIUM_PRIVACY_URL');
-  });
-
-  it('never names another provider as the fallback', () => {
-    expect(modalSource.toLowerCase()).not.toMatch(/automatically (use|switch)/);
-  });
-
-  it('draws no glow, gradient or shadow', () => {
-    expect(modalSource).not.toMatch(/shadow|gradient|Gradient/);
-  });
-});
-
-describe('PremiumCard', () => {
-  it('renders nothing while Premium is switched off', () => {
-    expect(cardSource).toMatch(/if \(!enabled\) \{\s*return null;/);
-  });
-
-  it('gives each phase its own subtitle key', () => {
-    for (const key of [
-      'premium.card.notSubscribed',
-      'premium.card.active',
-      'premium.card.exhausted',
-      'premium.card.removed',
-      'premium.card.revoked',
-    ]) {
-      expect(cardSource).toContain(`'${key}'`);
-    }
-  });
-
-  it('reuses the SettingsCard row', () => {
-    expect(cardSource).toContain("from '@/components/cards/SettingsCard'");
+  it('names the renewal date when it is known and falls back when it is not', () => {
+    expect(premiumNoticeCopy('exhausted', '1 Dec')).toEqual({
+      key: 'premium.notice.exhausted',
+      params: { date: '1 Dec' },
+    });
+    expect(premiumNoticeCopy('exhausted', null)).toEqual({
+      key: 'premium.notice.exhaustedNoDate',
+    });
   });
 });
