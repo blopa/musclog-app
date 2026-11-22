@@ -1,5 +1,5 @@
 /**
- * The onboarding AI step's choices: Musclog Premium, the free tier, or no AI. Pure, so which
+ * The onboarding AI step's choices: Musclog Iron, the free tier, or no AI. Pure, so which
  * options a build offers and which one starts selected are tested without React.
  */
 export type AiChoice = 'premium' | 'free' | 'none';

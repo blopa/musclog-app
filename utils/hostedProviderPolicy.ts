@@ -44,7 +44,7 @@ export type ProviderPolicy = {
 };
 
 /**
- * Musclog Premium. A hosted request carries one idempotency key for every attempt, so the Worker
+ * Musclog Iron. A hosted request carries one idempotency key for every attempt, so the Worker
  * recognises a retry; it retries only the statuses the Worker says are safe; and its SDK retries are
  * off, since the SDK would repeat a 503 that must not be repeated (`daily_full`, `hosted_disabled`).
  */

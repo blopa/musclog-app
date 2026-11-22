@@ -1,4 +1,4 @@
-// Device-local Musclog Premium state (plan 6.1). One JSON string in AsyncStorage under
+// Device-local Musclog Iron state (plan 6.1). One JSON string in AsyncStorage under
 // PREMIUM_DEVICE_STATE. It never holds a token: unknown keys are dropped on every read and write.
 // Storage failures never reach callers: a read returns the empty state, a write is swallowed.
 import AsyncStorage from '@react-native-async-storage/async-storage';

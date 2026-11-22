@@ -16,7 +16,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {} }));
 
-describe('classifyAiOnboardingError for Musclog Premium', () => {
+describe('classifyAiOnboardingError for Musclog Iron', () => {
   it.each([
     [new HostedAiError('budget'), 'hostedBudget'],
     [new HostedAiError('subscription'), 'hostedSubscription'],

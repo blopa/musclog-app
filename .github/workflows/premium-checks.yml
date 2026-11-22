@@ -1,4 +1,4 @@
-# Checks for the Musclog Premium Worker and its infrastructure (docs/plans/musclog-premium.md,
+# Checks for the Musclog Iron Worker and its infrastructure (docs/plans/musclog-premium.md,
 # section 5). Checks only: no job here applies, deploys or reads a secret. State is a local
 # encrypted file and every account call is made by hand with scripts/premium-deploy.sh.
 # utils/__tests__/premiumChecksWorkflow.test.ts pins these rules.

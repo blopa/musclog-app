@@ -100,7 +100,7 @@ type ProviderBuilder = (language: string) => Promise<CoachAIConfig>;
  * only the reads that decided it, never a config build with its side effects.
  */
 const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | null>> = {
-  // Musclog Premium. Used whenever the person's switch is on in a Premium build: the data
+  // Musclog Iron. Used whenever the person's switch is on in a Premium build: the data
   // recipient never changes silently (plan 8.6), so this provider never steps aside for another.
   // When it cannot answer (not enrolled, removed, offline, no base URL) the config still comes back,
   // carrying the failure, and the request throws a typed error instead of being sent elsewhere. The
@@ -186,7 +186,7 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings, from the first usable provider in
-   * `AI_PROVIDER_KINDS`: Musclog Premium (hosted, first when switched on in a Premium build), the
+   * `AI_PROVIDER_KINDS`: Musclog Iron (hosted, first when switched on in a Premium build), the
    * Musclog free-tier gateway (it overrides every other provider when enabled), on-device AI, a local
    * LLM, then a Gemini, an OpenAI or a Claude key. Every provider is probed in
    * parallel, since the first AI call of a session used to wait for a dozen settings read one

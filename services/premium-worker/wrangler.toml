@@ -1,4 +1,4 @@
-# Musclog Premium Worker (docs/plans/musclog-premium.md, Path B: wrangler uploads code and keeps
+# Musclog Iron Worker (docs/plans/musclog-premium.md, Path B: wrangler uploads code and keeps
 # secrets; Terraform owns D1, the custom domain, workers.dev/previews off and the cron schedules).
 # Secrets are NEVER listed here: OPENROUTER_API_KEY, REVENUECAT_V2_SECRET_KEY, SESSION_HMAC_KEY
 # (and SESSION_HMAC_KEY_PREVIOUS during rotation) are set with `wrangler secret put --env <env>`.

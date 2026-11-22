@@ -593,7 +593,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     canReadSettingsDb,
   ]);
 
-  // Musclog Premium is first in AiService's priority. The setting is only turned on by the Premium
+  // Musclog Iron is first in AiService's priority. The setting is only turned on by the Premium
   // UI after an enrollment; the probe in AiService is the real authority on whether it answers.
   const hostedOn = isPremiumUiEnabled() && state.useHostedAi;
 

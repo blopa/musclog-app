@@ -612,7 +612,7 @@ export function AISettingsModal({
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
-        {/* Musclog Premium: renders nothing while Premium is switched off in this build. */}
+        {/* Musclog Iron: renders nothing while Premium is switched off in this build. */}
         <PremiumCard onPress={() => setPremiumVisible(true)} />
 
         {/* Musclog Free Tier Section — hidden on web production builds (CORS/quota constraints) */}

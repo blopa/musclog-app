@@ -5,9 +5,9 @@ export type RecoveryAction =
   /** Enter a new key for the same provider. */
   | 'replaceKey'
   | 'switchProvider'
-  /** Musclog Premium: subscribe or restore. */
+  /** Musclog Iron: subscribe or restore. */
   | 'renewPremium'
-  /** Musclog Premium: restore the purchase on this device. */
+  /** Musclog Iron: restore the purchase on this device. */
   | 'restorePremium'
   /** Free AI hit its daily limit: the way on is the person's own key. */
   | 'ownKey'

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploys the Musclog Premium Worker (docs/PREMIUM_WORKER.md, plan section 5, Path B).
+# Deploys the Musclog Iron Worker (docs/PREMIUM_WORKER.md, plan section 5, Path B).
 #
 #   scripts/premium-deploy.sh <staging|production> [--dry-run]
 #

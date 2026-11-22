@@ -259,7 +259,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
-      // Musclog Premium (plan musclog-premium section 11 item 8): a restore never turns hosted AI
+      // Musclog Iron (plan musclog-premium section 11 item 8): a restore never turns hosted AI
       // on. Skipping the row leaves the setting at its default (off).
       if (tableName === 'settings' && isRestoreForcedOffSetting(String(raw.type))) {
         continue;

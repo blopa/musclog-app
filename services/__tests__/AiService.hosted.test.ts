@@ -69,7 +69,7 @@ function reset(options: { flag?: boolean; hosted?: boolean; baseUrl?: string | n
   named.getLanguage = 'en-US';
 }
 
-describe('AiService hosted (Musclog Premium) probe', () => {
+describe('AiService hosted (Musclog Iron) probe', () => {
   beforeEach(() => reset({}));
 
   it('is null when the Premium build flag is off, even with the setting on', async () => {

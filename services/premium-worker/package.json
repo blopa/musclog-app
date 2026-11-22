@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Musclog Premium hosted-AI Worker (docs/plans/musclog-premium.md). Standalone package: own node_modules, never imported by the app.",
+  "description": "Musclog Iron hosted-AI Worker (docs/plans/musclog-premium.md). Standalone package: own node_modules, never imported by the app.",
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

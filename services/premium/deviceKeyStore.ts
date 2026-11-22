@@ -1,4 +1,4 @@
-// Device key storage for Musclog Premium (plan 6.1). Native only (web stub: deviceKeyStore.web.ts).
+// Device key storage for Musclog Iron (plan 6.1). Native only (web stub: deviceKeyStore.web.ts).
 import { p256 } from '@noble/curves/nist.js';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';

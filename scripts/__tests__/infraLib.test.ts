@@ -57,7 +57,7 @@ describe('diffByLookupKey', () => {
   it('reports creates and field-level updates', () => {
     const d = diffByLookupKey(
       [
-        { lookup_key: 'premium', display_name: 'Musclog Premium' },
+        { lookup_key: 'premium', display_name: 'Musclog Iron' },
         { lookup_key: 'new', display_name: 'New' },
       ],
       live
@@ -67,7 +67,7 @@ describe('diffByLookupKey', () => {
       {
         lookup_key: 'premium',
         id: 'e1',
-        changes: { display_name: { from: 'Premium', to: 'Musclog Premium' } },
+        changes: { display_name: { from: 'Premium', to: 'Musclog Iron' } },
       },
     ]);
   });

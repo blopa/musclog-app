@@ -1,5 +1,5 @@
 /**
- * Musclog Premium (hosted) failures: one error class, one kind per thing the person can act on, and
+ * Musclog Iron (hosted) failures: one error class, one kind per thing the person can act on, and
  * the one function that reads a Worker answer. Relative imports only, so `aiErrors.ts` can read the
  * kind without a cycle and the Worker's tests could load it.
  *
@@ -43,49 +43,49 @@ interface HostedKindSpec {
  */
 export const HOSTED_KINDS: Record<HostedErrorKind, HostedKindSpec> = {
   budget: {
-    message: 'Musclog Premium: the monthly allowance is used up',
+    message: 'Musclog Iron: the monthly allowance is used up',
     signal: 'exhausted',
     i18nKey: 'errors.hostedBudget',
     retryable: false,
   },
   dailyLimit: {
-    message: 'Musclog Premium: the daily limit is reached',
+    message: 'Musclog Iron: the daily limit is reached',
     signal: null,
     i18nKey: 'errors.hostedDailyLimit',
     retryable: false,
   },
   subscription: {
-    message: 'Musclog Premium: no active subscription on this device',
+    message: 'Musclog Iron: no active subscription on this device',
     signal: null,
     i18nKey: 'errors.hostedSubscription',
     retryable: false,
   },
   removed: {
-    message: 'Musclog Premium: this device was removed from the subscription',
+    message: 'Musclog Iron: this device was removed from the subscription',
     signal: 'removed',
     i18nKey: 'errors.hostedRemoved',
     retryable: false,
   },
   unavailable: {
-    message: 'Musclog Premium is temporarily unavailable',
+    message: 'Musclog Iron is temporarily unavailable',
     signal: 'unavailable',
     i18nKey: 'errors.hostedUnavailable',
     retryable: false,
   },
   dailyFull: {
-    message: 'Musclog Premium: at capacity today',
+    message: 'Musclog Iron: at capacity today',
     signal: 'daily_full',
     i18nKey: 'errors.hostedDailyFull',
     retryable: false,
   },
   busy: {
-    message: 'Musclog Premium is busy, try again shortly',
+    message: 'Musclog Iron is busy, try again shortly',
     signal: null,
     i18nKey: 'errors.hostedBusy',
     retryable: true,
   },
   alreadyProcessed: {
-    message: 'Musclog Premium already answered this request; please send it again',
+    message: 'Musclog Iron already answered this request; please send it again',
     signal: null,
     i18nKey: 'errors.hostedAlreadyProcessed',
     retryable: false,

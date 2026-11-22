@@ -615,7 +615,7 @@
             },
             "company": {
               "term": "Şirket",
-              "def": "(bu Sözleşmede \"Musclog\", \"Biz\", \"Bizi\" veya \"Bizim\" olarak anılır) Amsterdam, Hollanda’da Jubingaga Supply tarafından yayımlanan Musclog’u ifade eder."
+              "def": "(bu Sözleşmede \"Musclog\", \"Biz\", \"Bizi\" veya \"Bizim\" olarak anılır) Amsterdam, Hollanda’da Jubinganga Supply tarafından yayımlanan Musclog’u ifade eder."
             },
             "device": {
               "term": "Cihaz",
@@ -801,7 +801,7 @@
         },
         "controller": {
           "title": "Verilerinden kim sorumlu",
-          "content": "Musclog, Hollanda’da kayıtlı bir şahıs işletmesi olan Jubingaga Supply tarafından yayımlanır (KVK 72255145). Bu Gizlilik Politikasında anlatılan Kişisel Verilerin veri sorumlusudur. İletişim: support@musclog.app, PO Box 69307, 1060 CJ Amsterdam, Hollanda, +31 6 5882 8627."
+          "content": "Musclog, Hollanda’da kayıtlı bir şahıs işletmesi olan Jubinganga Supply tarafından yayımlanır (KVK 72255145). Bu Gizlilik Politikasında anlatılan Kişisel Verilerin veri sorumlusudur. İletişim: support@musclog.app, PO Box 69307, 1060 CJ Amsterdam, Hollanda, +31 6 5882 8627."
         },
         "legalBasis": {
           "title": "Verileri neden işliyoruz (hukuki dayanaklar)",
@@ -887,7 +887,7 @@
           },
           "company": {
             "term": "Şirket",
-            "def": "Musclog’u ifade eder; Jubingaga Supply (KVK 72255145), PO Box 69307, 1060 CJ Amsterdam, Hollanda tarafından yayımlanan bu açık kaynaklı uygulamanın geliştiricisi ve bakımcısıdır."
+            "def": "Musclog’u ifade eder; Jubinganga Supply (KVK 72255145), PO Box 69307, 1060 CJ Amsterdam, Hollanda tarafından yayımlanan bu açık kaynaklı uygulamanın geliştiricisi ve bakımcısıdır."
           },
           "device": {
             "term": "Cihaz",
@@ -994,7 +994,7 @@
         "description": "Buraya yazdığın hiçbir şeyi saklamıyoruz. Mesajın doğrudan e-posta kutumuza gider; sunucu yok, kayıt yok."
       },
       "pageTitle": "İletişim | Musclog",
-      "operator": "Musclog, Hollanda’da kayıtlı bir şahıs işletmesi olan Jubingaga Supply tarafından yayımlanır (KVK 72255145). Adres: PO Box 69307, 1060 CJ Amsterdam, Hollanda. Telefon: +31 6 5882 8627."
+      "operator": "Musclog, Hollanda’da kayıtlı bir şahıs işletmesi olan Jubinganga Supply tarafından yayımlanır (KVK 72255145). Adres: PO Box 69307, 1060 CJ Amsterdam, Hollanda. Telefon: +31 6 5882 8627."
     },
     "calculator": {
       "pageTitle": "TDEE Hesaplayıcı | Musclog",

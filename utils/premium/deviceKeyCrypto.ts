@@ -1,4 +1,4 @@
-// Device key crypto for Musclog Premium (plan 6.1). Pure: no react-native or expo imports.
+// Device key crypto for Musclog Iron (plan 6.1). Pure: no react-native or expo imports.
 // The Worker (services/premium-worker/src/identity/crypto.ts) verifies exactly what this signs.
 import { p256 } from '@noble/curves/nist.js';
 import { sha256 } from '@noble/hashes/sha2.js';

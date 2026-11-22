@@ -460,7 +460,7 @@ export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
 export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
 
 /**
- * Setting type for routing AI requests through Musclog Premium's hosted service (stored in
+ * Setting type for routing AI requests through Musclog Iron's hosted service (stored in
  * WatermelonDB settings table). value: 'true' | 'false'. Device-specific enrollment: never
  * included in a backup, and a restore always lands on the default (off).
  */

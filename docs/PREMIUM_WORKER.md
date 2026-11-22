@@ -1,4 +1,4 @@
-# Musclog Premium Worker runbook
+# Musclog Iron Worker runbook
 
 Operating guide for `services/premium-worker/` (the hosted-AI backend). Design: `docs/plans/musclog-premium.md` (revision 3). **Every command below that touches Cloudflare, OpenRouter or RevenueCat is not yet verified against a real account (gate G1).** No account or credential exists yet; the first real run is also the test of this document.
 

@@ -34,7 +34,7 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   // moments of one session, not data.
   COACH_REPLY_JOURNAL,
   COACH_RESTORED_COMPOSER,
-  // Device-local Musclog Premium state: another device's copy would claim an enrollment its own
+  // Device-local Musclog Iron state: another device's copy would claim an enrollment its own
   // key never made.
   PREMIUM_DEVICE_STATE,
   // Per-device copy of the crash report switch, rebuilt from the settings table.

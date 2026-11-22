@@ -1,4 +1,4 @@
-// Consent to send requests to Musclog Premium (plan 8.6). Pure: no storage here.
+// Consent to send requests to Musclog Iron (plan 8.6). Pure: no storage here.
 
 /**
  * Bump when the data recipients or the wording of the consent change: a stored older version asks
