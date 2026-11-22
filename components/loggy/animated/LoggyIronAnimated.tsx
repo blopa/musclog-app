@@ -174,7 +174,7 @@ const ANIMATION: LoggyAnimation = {
 
 function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
   return (
-    <Svg viewBox="-80 0 640 640" {...props}>
+    <Svg viewBox="-115 0 675 640" {...props}>
       <Path
         fill="#5b7079"
         stroke="#1b314d"
@@ -530,4 +530,4 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
   );
 }
 
-export const LoggyIronAnimated: LoggyAnimatedPose = { Art, animation: ANIMATION, size: [640, 640] };
+export const LoggyIronAnimated: LoggyAnimatedPose = { Art, animation: ANIMATION, size: [675, 640] };
