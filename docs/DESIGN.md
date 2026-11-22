@@ -61,7 +61,9 @@ ground with the ink, highlight, mark and track drawn on it, and is held to AA in
 (header, progress, buttons) still follows the theme.
 
 Food in his hands is not him: the lettuce in the salad bowl and on the fork is drawn in fixed
-greens (`s19`–`s21` of `palette.css`), so it stays a salad in every theme.
+greens (`s19`–`s21` of `palette.css`), so it stays a salad in every theme. The same goes for the
+iron of the `iron` pose (the Musclog Iron Loggy: dumbbell overhead, hand on hip, VIP rosette, an
+"IRON" kettlebell): its dumbbell and kettlebell use the fixed iron greys `s22`–`s25`.
 
 Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, never a literal
 white or the regular on-surface ink.

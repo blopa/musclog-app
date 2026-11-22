@@ -49,7 +49,8 @@
     "lifting",
     "salad",
     "shrug",
-    "reading"
+    "reading",
+    "iron"
   ],
   "poses": {
     "celebrating": {
@@ -192,6 +193,35 @@
       ],
       "animated": {
         "upper": ["arm-l", "hand-l", "body", "arm-r", "hand-r"]
+      }
+    },
+    "iron": {
+      "viewBox": "-80 0 640 640",
+      "face": "iron",
+      "layers": [
+        "kettlebell/iron",
+        "leg-l/standing",
+        "leg-r/standing",
+        "sparkles/iron",
+        "arm-l/iron",
+        {
+          "group": "body",
+          "children": [
+            "log/default",
+            "leaf/default",
+            "sweatband/default",
+            "@face",
+            "badge/iron",
+            "drops/iron"
+          ]
+        },
+        "arm-r/hip",
+        "hand-r/hip",
+        "dumbbell-l/iron",
+        "hand-l/iron"
+      ],
+      "animated": {
+        "upper": ["arm-l", "body", "arm-r", "hand-r", "dumbbell-l", "hand-l"]
       }
     },
     "lifting": {

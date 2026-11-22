@@ -1,0 +1,86 @@
+/* Loggy, Musclog Iron: one dumbbell pressed overhead, the other hand on his hip. The
+   dumbbell arm lowers a little from the shoulder and presses back up, his upper body dips
+   with the rep while his shoes and the kettlebell stay planted, the swish lines and sweat
+   drops pulse at the top of the press, the VIP rosette swings on its ribbons, the leaf
+   sways and the two sparkles twinkle in alternating phase. Every layer opens and ends on
+   the still's own frame. */
+#upper {
+    animation: loggy-rep-bob 3s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3s ease-in-out infinite;
+}
+#arm-l, #dumbbell-l, #hand-l {
+    transform-origin: 145px 290px;
+    animation: loggy-press 3s ease-in-out infinite;
+}
+#arm-l-swish {
+    transform-origin: 30px 220px;
+    animation: loggy-swish 3s ease-in-out infinite;
+}
+#badge {
+    transform-origin: 308px 372px;
+    animation: loggy-badge-swing 3s ease-in-out infinite;
+}
+#drops-l {
+    transform-origin: 160px 262px;
+    animation: loggy-drops 3s ease-in-out infinite;
+}
+#drops-r {
+    transform-origin: 352px 258px;
+    animation: loggy-drops 3s ease-in-out infinite;
+}
+#sparkle-l {
+    transform-origin: 214px 52px;
+    animation: loggy-sparkle-l 3s ease-in-out infinite;
+}
+#sparkle-r {
+    transform-origin: 450px 254px;
+    animation: loggy-sparkle-r 3s ease-in-out infinite;
+}
+
+@keyframes loggy-rep-bob {
+    0%, 70%, 100% { transform: translateY(0); }
+    30% { transform: translateY(2px); }
+    52% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    32% { transform: rotate(-3deg); }
+    58% { transform: rotate(5deg); }
+    80% { transform: rotate(-1.5deg); }
+}
+@keyframes loggy-press {
+    0%, 72%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(-7deg); }
+    54% { transform: rotate(1.2deg); }
+    62% { transform: rotate(-0.4deg); }
+}
+@keyframes loggy-swish {
+    0%, 40%, 72%, 100% { transform: scale(1, 1); }
+    54% { transform: scale(1.25, 1.25); }
+}
+@keyframes loggy-badge-swing {
+    0%, 100% { transform: rotate(0deg); }
+    34% { transform: rotate(-4deg); }
+    60% { transform: rotate(3deg); }
+    80% { transform: rotate(-1deg); }
+}
+@keyframes loggy-drops {
+    0%, 40%, 80%, 100% { transform: scale(1, 1); }
+    56% { transform: scale(1.18, 1.18); }
+}
+@keyframes loggy-sparkle-l {
+    0%, 100% { transform: scale(1, 1); }
+    25% { transform: scale(.7, .7); }
+    55% { transform: scale(1.18, 1.18); }
+}
+@keyframes loggy-sparkle-r {
+    0%, 100% { transform: scale(1, 1); }
+    45% { transform: scale(1.18, 1.18); }
+    75% { transform: scale(.7, .7); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

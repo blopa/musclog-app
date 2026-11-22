@@ -8,6 +8,7 @@ import { LoggyDefaultAnimated } from '@/components/loggy/animated/LoggyDefaultAn
 import { LoggyDrinkingAnimated } from '@/components/loggy/animated/LoggyDrinkingAnimated';
 import { LoggyEatingAnimated } from '@/components/loggy/animated/LoggyEatingAnimated';
 import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated';
+import { LoggyIronAnimated } from '@/components/loggy/animated/LoggyIronAnimated';
 import { LoggyLiftingAnimated } from '@/components/loggy/animated/LoggyLiftingAnimated';
 import { LoggyMagnifyAnimated } from '@/components/loggy/animated/LoggyMagnifyAnimated';
 import { LoggyNutritionAnimated } from '@/components/loggy/animated/LoggyNutritionAnimated';
@@ -31,6 +32,7 @@ export const LOGGY_POSES = {
   drinking: LoggyDrinkingAnimated,
   eating: LoggyEatingAnimated,
   flex: LoggyFlexAnimated,
+  iron: LoggyIronAnimated,
   lifting: LoggyLiftingAnimated,
   magnify: LoggyMagnifyAnimated,
   nutrition: LoggyNutritionAnimated,

@@ -101,3 +101,23 @@
   stroke-linejoin: round;
   stroke-width: 4.8;
 }
+
+/* iron: the Musclog Iron dumbbell and kettlebell */
+.s22 {
+  fill: #5b7079;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 4.8;
+}
+.s23 {
+  fill: #748b92;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 4.8;
+}
+.s24 {
+  fill: #a9c0c2;
+} /* iron highlight */
+.s25 {
+  fill: #465a63;
+} /* iron in shade */
