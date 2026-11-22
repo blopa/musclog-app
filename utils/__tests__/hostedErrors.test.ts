@@ -368,17 +368,17 @@ describe('hosted errors', () => {
   });
 
   describe('Sentry', () => {
-    it('keeps every hosted error out of Sentry', () => {
+    it('keeps the normal hosted states out of Sentry', () => {
       const handle = handleError as jest.Mock;
       handle.mockClear();
 
       for (const error of [
         new HostedAiError('budget'),
+        new HostedAiError('dailyLimit'),
         new HostedAiError('subscription'),
         new HostedAiError('removed'),
-        new HostedAiError('unavailable'),
+        new HostedAiError('dailyFull'),
         new HostedAiError('busy'),
-        new HostedAiError('alreadyProcessed'),
       ]) {
         reportAiError(error, 'coachAI.test');
       }
@@ -387,6 +387,17 @@ describe('hosted errors', () => {
         expect(call[2]).toEqual({ sendToSentry: false });
       }
       expect(handle).toHaveBeenCalledTimes(6);
+    });
+
+    it('sends the hosted faults to Sentry: unavailable and alreadyProcessed', () => {
+      const handle = handleError as jest.Mock;
+      handle.mockClear();
+
+      reportAiError(new HostedAiError('unavailable'), 'coachAI.test');
+      reportAiError(new HostedAiError('alreadyProcessed'), 'coachAI.test');
+
+      expect(handle.mock.calls[0][2]).toEqual({ sendToSentry: true });
+      expect(handle.mock.calls[1][2]).toEqual({ sendToSentry: true });
     });
 
     it('still reports an ordinary bug', () => {

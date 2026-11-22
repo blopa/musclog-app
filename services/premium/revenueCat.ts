@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 
+import { reportPremiumFailure } from '@/services/premium/premiumTelemetry';
 import {
   summarizeCustomerInfo,
   summarizePurchase,
@@ -211,7 +212,13 @@ export async function getMonthlyPriceString(rcId: string): Promise<string | null
     }
 
     return pkg?.product.priceString ?? null;
-  } catch {
+  } catch (e) {
+    const code = (e as { code?: unknown } | null)?.code;
+
+    reportPremiumFailure('price', 'unknown', {
+      storeErrorCode: code === undefined || code === null ? 'none' : String(code),
+    });
+
     return null;
   }
 }

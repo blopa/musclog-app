@@ -128,6 +128,9 @@ void _exact;
 
 const ENVIRONMENTS = ['production', 'staging', 'local', 'test'];
 
+/** A RevenueCat product id as API v2 reports it on a subscription (`prod` + its own suffix). */
+const REVENUECAT_PRODUCT_ID = /^prod[A-Za-z0-9_]+$/;
+
 const isUrl = (s: string) => {
   try {
     new URL(s);
@@ -184,6 +187,18 @@ export function parseConfig(
       }
       if (c.revenuecat.product_ids.length === 0) {
         errors.push('revenuecat.product_ids: must be non-empty in production');
+      }
+    }
+    // RevenueCat v2 reports a subscription's `product_id` as its OWN id (`prod…`), never the store
+    // identifier (`musclog_premium_monthly`, `…:monthly`). A store identifier here matches no
+    // subscription, so every paid enroll fails with subscription_required: refuse it on cold start.
+    if (workerEnv === 'production' || workerEnv === 'staging') {
+      const notRcIds = c.revenuecat.product_ids.filter((id) => !REVENUECAT_PRODUCT_ID.test(id));
+      if (notRcIds.length > 0) {
+        errors.push(
+          'revenuecat.product_ids: must be RevenueCat product ids (prod…), not store identifiers: ' +
+            notRcIds.join(', ')
+        );
       }
     }
   }

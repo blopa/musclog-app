@@ -63,7 +63,7 @@ describe('parseConfig accepts', () => {
         prodEnv(
           {},
           testConfig({
-            revenuecat: { environments: ['production', 'sandbox'], product_ids: ['p'] },
+            revenuecat: { environments: ['production', 'sandbox'], product_ids: ['prod_x'] },
           })
         )
       ).ok
@@ -165,9 +165,35 @@ describe('parseConfig rejects', () => {
 
   it("production with environments ['sandbox']", () => {
     rejected(
-      prodEnv({}, testConfig({ revenuecat: { environments: ['sandbox'], product_ids: ['p'] } }))
+      prodEnv(
+        {},
+        testConfig({ revenuecat: { environments: ['sandbox'], product_ids: ['prod_x'] } })
+      )
     );
   });
+
+  // RevenueCat v2 reports `product_id` as its own `prod…` id; a store identifier never matches.
+  it.each([['production'], ['staging']])(
+    '%s with store identifiers instead of RevenueCat product ids',
+    (workerEnv) => {
+      const cfg = testConfig({
+        revenuecat: {
+          environments: ['production'],
+          product_ids: ['musclog_premium_monthly', 'musclog_premium_monthly:monthly'],
+        },
+      });
+      const errors = rejected(
+        baseEnv(cfg, {
+          WORKER_ENV: workerEnv,
+          OPENROUTER_BASE_URL: OFFICIAL_OPENROUTER_BASE_URL,
+          REVENUECAT_BASE_URL: OFFICIAL_REVENUECAT_BASE_URL,
+        })
+      );
+      expect(errors.join('\n')).toContain(
+        'must be RevenueCat product ids (prod…), not store identifiers: musclog_premium_monthly, musclog_premium_monthly:monthly'
+      );
+    }
+  );
 
   it('production with a mock base URL', () => {
     rejected(prodEnv({ OPENROUTER_BASE_URL: 'https://mock.example/api/v1' }));

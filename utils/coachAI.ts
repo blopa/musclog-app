@@ -7,7 +7,7 @@ import { DebugDumpService } from '@/database/services/DebugDumpService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
-import { hostedErrorKindOf } from '@/utils/hostedAiError';
+import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
 import { notifyUserFacingAiError } from './aiErrorNotice';
@@ -136,18 +136,27 @@ export function isAiConnectionError(error: unknown): boolean {
 }
 
 /**
+ * Hosted Premium kinds that reach Sentry: `unavailable` (the Worker failed: 5xx, hosted_disabled,
+ * an expired session) and `alreadyProcessed` (the app's idempotency key is broken). Every other
+ * hosted kind (budget, daily limit, subscription, removed, daily full, busy) is the subscriber's
+ * normal state or a retry the app already handles, so it stays out.
+ */
+const HOSTED_KINDS_REPORTED = new Set<HostedErrorKind>(['unavailable', 'alreadyProcessed']);
+
+/**
  * A rate limit or exhausted quota is the provider refusing the request, not a Musclog bug: it is
  * reported to the user (see `AiCreditsError`) but must not reach Sentry, where every busy hour on a
  * shared key or the gateway's daily cap filed an unactionable `429 status code (no body)` event.
  * A dropped connection (`isAiConnectionError`) is likewise the user's network, not ours.
  */
 export function reportAiError(error: unknown, context: string): void {
+  const hostedKind = hostedErrorKindOf(error);
   handleError(error, context, {
     sendToSentry:
       !isAiCreditsError(error) &&
       !isAiConnectionError(error) &&
-      // Typed Premium failures are the Worker's answer (budget, subscription, capacity), not a bug.
-      hostedErrorKindOf(error) === null &&
+      // Typed Premium failures are the Worker's answer, except the kinds that are real faults.
+      (hostedKind === null || HOSTED_KINDS_REPORTED.has(hostedKind)) &&
       // A rejected key, a timeout and a cancel are the user's configuration or network, not bugs.
       !(
         error instanceof AiInvalidKeyError ||

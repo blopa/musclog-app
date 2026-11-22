@@ -12,6 +12,7 @@ import {
   loadPremiumLocalState,
   savePremiumLocalState,
 } from '@/services/premium/premiumLocalState';
+import { reportPremiumFailure } from '@/services/premium/premiumTelemetry';
 import {
   buyMonthly,
   configureRevenueCat,
@@ -25,9 +26,11 @@ import {
   enrollDevice,
   enrollWithRetry,
   type FlowDeps,
+  type FlowResult,
   mintSession,
   type Signer,
 } from '@/utils/premium/premiumFlows';
+import type { PremiumStage } from '@/utils/premium/premiumReport';
 import {
   derivePremiumStatus,
   failureKindOf,
@@ -68,11 +71,14 @@ function flowDeps(baseUrl: string): FlowDeps {
 }
 
 async function withBaseUrl<T>(
+  stage: PremiumStage,
   fn: (baseUrl: string) => Promise<PremiumResult<T>>
 ): Promise<PremiumResult<T>> {
   const baseUrl = hostedAiBaseUrl();
 
   if (!baseUrl) {
+    reportPremiumFailure(stage, 'not_available');
+
     return { ok: false, failure: 'not_available' };
   }
 
@@ -146,11 +152,13 @@ export async function getPremiumStatus(): Promise<PremiumStatus> {
 async function enrollAndRemember(
   rcId: string,
   startedIn: number,
-  enroll: () => Promise<PremiumResult<SessionGrant>>
+  enroll: () => Promise<FlowResult<SessionGrant>>
 ): Promise<PremiumResult<SessionGrant>> {
   const result = await enroll();
 
   if (!result.ok) {
+    reportPremiumFailure('enroll', result.failure, { status: result.status });
+
     return { ok: false, failure: result.failure };
   }
 
@@ -161,7 +169,7 @@ async function enrollAndRemember(
 
 /** Enrolls this device (one attempt). Use after the subscription is known to exist. */
 export function enrollThisDevice(): Promise<PremiumResult<SessionGrant>> {
-  return withBaseUrl(async (baseUrl) => {
+  return withBaseUrl('enroll', async (baseUrl) => {
     const startedIn = session.begin();
     const key = await getOrCreateDeviceKey();
 
@@ -171,6 +179,15 @@ export function enrollThisDevice(): Promise<PremiumResult<SessionGrant>> {
 
 type PurchaseStepResult =
   { rcId: string } | { failure: 'purchase_cancelled' | 'purchase_failed' | 'restore_failed' };
+
+const STORE_ALREADY_PURCHASED = '6';
+const STORE_CANCELLED = '1';
+
+function storeErrorCodeOf(e: unknown): string | undefined {
+  const code = (e as { code?: unknown } | null)?.code;
+
+  return code === undefined || code === null ? undefined : String(code);
+}
 
 async function purchaseStep(step: 'purchase' | 'restore'): Promise<PurchaseStepResult> {
   const key = await getOrCreateDeviceKey();
@@ -186,13 +203,34 @@ async function purchaseStep(step: 'purchase' | 'restore'): Promise<PurchaseStepR
 
     return { rcId: key.rcId };
   } catch (e) {
+    const code = storeErrorCodeOf(e);
+
     if (step === 'purchase') {
-      return {
-        failure: (e as { userCancelled?: boolean }).userCancelled
-          ? 'purchase_cancelled'
-          : 'purchase_failed',
-      };
+      if (code === STORE_ALREADY_PURCHASED) {
+        // The store says this account already owns it: restore under this id and carry on.
+        try {
+          await restorePurchases();
+
+          return { rcId: key.rcId };
+        } catch (restoreError) {
+          reportPremiumFailure('restore', 'restore_failed', {
+            storeErrorCode: storeErrorCodeOf(restoreError) ?? 'none',
+          });
+
+          return { failure: 'restore_failed' };
+        }
+      }
+
+      if ((e as { userCancelled?: boolean }).userCancelled || code === STORE_CANCELLED) {
+        return { failure: 'purchase_cancelled' };
+      }
+
+      reportPremiumFailure('purchase', 'purchase_failed', { storeErrorCode: code ?? 'none' });
+
+      return { failure: 'purchase_failed' };
     }
+
+    reportPremiumFailure('restore', 'restore_failed', { storeErrorCode: code ?? 'none' });
 
     return { failure: 'restore_failed' };
   }
@@ -202,7 +240,7 @@ function buyOrRestoreThenEnroll(
   step: 'purchase' | 'restore',
   onProgress?: (stage: 'store' | 'confirming') => void
 ): Promise<PremiumResult<SessionGrant>> {
-  return withBaseUrl(async (baseUrl) => {
+  return withBaseUrl(step, async (baseUrl) => {
     const startedIn = session.begin();
 
     onProgress?.('store');
@@ -227,7 +265,7 @@ export const restoreAndEnroll = (onProgress?: (stage: 'store' | 'confirming') =>
   buyOrRestoreThenEnroll('restore', onProgress);
 
 function mintAndRemember(rcId: string): Promise<PremiumResult<SessionGrant>> {
-  return withBaseUrl(async (baseUrl) => {
+  return withBaseUrl('session', async (baseUrl) => {
     const startedIn = session.begin();
     const result = await mintSession(flowDeps(baseUrl));
 
@@ -236,6 +274,8 @@ function mintAndRemember(rcId: string): Promise<PremiumResult<SessionGrant>> {
 
       return result;
     }
+
+    reportPremiumFailure('session', result.failure, { status: result.status });
 
     if (session.isCurrent(startedIn)) {
       session.cached = null;
@@ -292,7 +332,7 @@ export async function getSessionGrant(): Promise<PremiumResult<SessionGrant>> {
 
 /** `/v1/usage`: a percentage and a status. Retries once with a new token if the cached one died. */
 export function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
-  return withBaseUrl(async (baseUrl) => {
+  return withBaseUrl('usage', async (baseUrl) => {
     const startedIn = session.begin();
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -308,6 +348,8 @@ export function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
         const usage = parseUsage(result.body);
 
         if (!usage) {
+          reportPremiumFailure('usage', 'invalid_response', { status: result.status });
+
           return { ok: false, failure: 'invalid_response' };
         }
 
@@ -328,6 +370,8 @@ export function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
         continue;
       }
 
+      reportPremiumFailure('usage', failure, { status: result.status });
+
       if (failure === 'unknown_device') {
         await markRemoved(startedIn);
       }
@@ -345,7 +389,7 @@ const CONFIG_CACHE_MS = 5 * 60 * 1000;
 let cachedConfig: { value: HostedConfig; at: number } | null = null;
 
 export function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>> {
-  return withBaseUrl(async (baseUrl) => {
+  return withBaseUrl('config', async (baseUrl) => {
     const now = Date.now();
 
     if (cachedConfig && now - cachedConfig.at < CONFIG_CACHE_MS) {
@@ -355,12 +399,18 @@ export function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>> {
     const result = await hostedConfig(baseUrl, platformFetch);
 
     if (!result.ok) {
-      return { ok: false, failure: failureKindOf(result) };
+      const failure = failureKindOf(result);
+
+      reportPremiumFailure('config', failure, { status: result.status });
+
+      return { ok: false, failure };
     }
 
     const config = parseHostedConfig(result.body);
 
     if (!config) {
+      reportPremiumFailure('config', 'invalid_response', { status: result.status });
+
       return { ok: false, failure: 'invalid_response' };
     }
 

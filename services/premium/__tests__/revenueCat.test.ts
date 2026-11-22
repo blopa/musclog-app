@@ -22,6 +22,10 @@ const mockFactory = jest.fn(() => ({
 
 jest.mock('react-native-purchases', () => mockFactory());
 
+jest.mock('@/services/premium/premiumTelemetry', () => ({
+  reportPremiumFailure: jest.fn(),
+}));
+
 const platform = { OS: 'ios' };
 
 jest.mock('react-native', () => ({ Platform: platform }));

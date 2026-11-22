@@ -25,6 +25,7 @@ import {
   resetPremium,
   restoreAndEnroll,
 } from '@/services/premium/premiumService';
+import { reportPremiumFailure } from '@/services/premium/premiumTelemetry';
 import {
   EMPTY_PREMIUM_LOCAL_STATE,
   loadPremiumLocalState,
@@ -59,6 +60,12 @@ jest.mock('@/services/premium/revenueCat', () => ({
   logInTo: jest.fn(),
   getConfiguredAppUserId: jest.fn(),
 }));
+
+jest.mock('@/services/premium/premiumTelemetry', () => ({
+  reportPremiumFailure: jest.fn(),
+}));
+
+const report = reportPremiumFailure as jest.Mock;
 
 const BASE = 'https://ai.test';
 const SESSION_TOKEN = 'SESSION-TOKEN-SECRET-42';
@@ -309,6 +316,52 @@ describe('purchaseAndEnroll', () => {
 
     expect(await purchaseAndEnroll()).toEqual({ ok: false, failure: 'purchase_failed' });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('continues with a restore and enroll when the store says the product is already owned', async () => {
+    rc.buyMonthly.mockRejectedValueOnce(Object.assign(new Error('owned'), { code: 6 }));
+
+    const result = await purchaseAndEnroll();
+
+    expect(result.ok).toBe(true);
+    expect(rc.restorePurchases).toHaveBeenCalledTimes(1);
+    expect(requestsTo('/v1/enroll')).toHaveLength(1);
+    expect(report).not.toHaveBeenCalled();
+  });
+
+  it('reports restore_failed when the already-owned restore throws', async () => {
+    rc.buyMonthly.mockRejectedValueOnce(Object.assign(new Error('owned'), { code: '6' }));
+    rc.restorePurchases.mockRejectedValueOnce(Object.assign(new Error('x'), { code: 9 }));
+
+    expect(await purchaseAndEnroll()).toEqual({ ok: false, failure: 'restore_failed' });
+    expect(report).toHaveBeenCalledWith('restore', 'restore_failed', { storeErrorCode: '9' });
+  });
+
+  it('does not report a cancelled purchase', async () => {
+    rc.buyMonthly.mockRejectedValueOnce(Object.assign(new Error('c'), { code: 1 }));
+
+    expect(await purchaseAndEnroll()).toEqual({ ok: false, failure: 'purchase_cancelled' });
+    expect(report).not.toHaveBeenCalled();
+  });
+
+  it('reports a generic purchase error with its store error code', async () => {
+    rc.buyMonthly.mockRejectedValueOnce(Object.assign(new Error('x'), { code: 5 }));
+
+    await purchaseAndEnroll();
+
+    expect(report).toHaveBeenCalledWith('purchase', 'purchase_failed', { storeErrorCode: '5' });
+  });
+
+  it('reports a failed enroll with its HTTP status', async () => {
+    fetchMock = workerFetch({
+      'POST /v1/enroll': () => jsonResponse(403, { error: { code: 'subscription_required' } }),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const result = await purchaseAndEnroll();
+
+    expect(result).toEqual({ ok: false, failure: 'subscription_required' });
+    expect(report).toHaveBeenCalledWith('enroll', 'subscription_required', { status: 403 });
   });
 
   it('retries the enroll on subscription lag before succeeding', async () => {

@@ -45,6 +45,10 @@ Rotating `SESSION_HMAC_KEY` (the Worker accepts the previous key for verificatio
 
 Both Terraform plans are shown before anything is applied. The state is local and encrypted (`TF_ENCRYPTION`, passphrase kept outside the repo). There is no CI apply: `.github/workflows/premium-checks.yml` only runs the Worker's tests and types, `tofu init -backend=false`/`fmt -check`/`validate`, `shellcheck` and both `--dry-run`s, with no secret. The D1 database has `prevent_destroy`.
 
+## Reading the logs
+
+The Worker logs only `LogEvent` fields (route, status, code, severity). `[observability] enabled = true` in `wrangler.toml` keeps them in the Cloudflare dashboard (Workers → the Worker → Logs) for a few days. Live, from `services/premium-worker` (the directory matters: elsewhere wrangler finds no `[env.production]`): `npx wrangler tail --env production` (or `--env staging`). A refused enroll shows as `/v1/enroll` with its code (`subscription_required`, `entitlement_unavailable`, …). The app reports its own side to Sentry as `premium-<stage>-<failure>` (AGENTS.md, Premium app identity).
+
 ## Configuration and the kill switch
 
 `AI_CONFIG_JSON` (plain text in each `[env.*.vars]`) is validated on cold start; an invalid config serves nothing. The ZDR invariant (`provider.zdr = true`, `data_collection = "deny"`) cannot be relaxed. Change it in `wrangler.toml`, run the tests, then deploy.
@@ -91,7 +95,7 @@ Set by the maintainer in EAS (`eas env:create`, environment `production`, visibi
 | `EXPO_PUBLIC_HIDE_PREMIUM_UI`        | `1` hides Premium (kill switch); unset shows it         | `utils/premium/premiumUiFlag.ts`                      | Default on since 2.17.0; `premiumUiFlag.test.ts` forbids it in `eas.json`, `app.json`, `package.json`, so set it as an EAS environment variable only. |
 | `EXPO_PUBLIC_PREMIUM_HARNESS`        | `1` only through the `premium-harness` profile          | `utils/premium/harnessGuard.ts`                       | Never in production.                                                                                                                                  |
 
-Worker side (in `wrangler.toml`, then deploy; not EAS): `revenuecat.project_id`, `revenuecat.product_ids` (the store product ids as RevenueCat reports them), `revenuecat.environments` (`["sandbox"]` staging, `["production"]` production), `HOSTED_AI_ENABLED = "true"` only when intended, and `min_app_version` equal to the first app version that ships Premium.
+Worker side (in `wrangler.toml`, then deploy; not EAS): `revenuecat.project_id`, `revenuecat.product_ids` (the **RevenueCat product ids** `prod…`, which is what API v2 puts in a subscription's `product_id`; NOT the store identifiers `musclog_premium_monthly` / `musclog_premium_monthly:monthly`, which match nothing so every enroll fails with `subscription_required`; the validator refuses a non-`prod` id in staging and production), `revenuecat.environments` (`["sandbox"]` staging, `["production"]` production), `HOSTED_AI_ENABLED = "true"` only when intended, and `min_app_version` equal to the first app version that ships Premium.
 
 **Links.** The Terms, Privacy and subscription-management URLs are NOT in `constants/projectLinks.json` (the plan's P7 checklist said they would be): they are constants in `utils/premium/premiumLinks.ts` (`PREMIUM_TERMS_URL` and `PREMIUM_PRIVACY_URL` are the website's `/en/terms` and `/en/privacy`; `MANAGE_SUBSCRIPTION_URLS` are Apple's and Google's own subscription pages). Nothing to set; on deploy day only check that the two website pages are live and carry the Premium sections.
 
@@ -142,7 +146,7 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 `services/premium-worker/test/appClient.test.ts` imports the app's own pure client (`utils/premium/premiumFlows.ts`, `premiumState.ts`, `hostedClient.ts`, `deviceKeyCrypto.ts`) and runs it against the real handlers in Miniflare, so the signed string, the response shapes and the retry rules cannot drift apart. Those app files must keep relative imports only (the `@/` alias does not exist in the Worker package) and compile under its `noUncheckedIndexedAccess`.
 
-## The app side (P6, hidden)
+## The app side (P6)
 
 The app's provider, errors, image resize and Premium UI: since 2.17.0 they show on every native build unless `EXPO_PUBLIC_HIDE_PREMIUM_UI=1` is set as an EAS variable. See the "Premium provider, errors and UI" bullet in `AGENTS.md`. A client request carries `Idempotency-Key` (one per logical request) and the Worker's `x-should-retry: false` answers are retried only by the app's own backoff.
 
