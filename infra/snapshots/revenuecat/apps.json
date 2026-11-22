@@ -1,0 +1,41 @@
+[
+  {
+    "created_at": 1795297940276,
+    "custom_url_scheme": "rc-5b04704d4e",
+    "id": "app5b04704d4e",
+    "name": "Musclog (Play Store)",
+    "object": "app",
+    "play_store": {
+      "custom_url_scheme": "rc-5b04704d4e",
+      "package_name": "com.werules.logger",
+      "play_service_account_credentials_configured": true
+    },
+    "project_id": "projdce70efc",
+    "type": "play_store"
+  },
+  {
+    "created_at": 1795218285566,
+    "custom_url_scheme": "rc-66a920773c",
+    "id": "app66a920773c",
+    "name": "Test Store",
+    "object": "app",
+    "project_id": "projdce70efc",
+    "type": "test_store"
+  },
+  {
+    "app_store": {
+      "app_store_connect_api_key_configured": false,
+      "app_store_connect_vendor_number": null,
+      "bundle_id": "com.werules.logger",
+      "custom_url_scheme": "rc-ee0d8e66c6",
+      "subscription_key_configured": true
+    },
+    "created_at": 1795297910768,
+    "custom_url_scheme": "rc-ee0d8e66c6",
+    "id": "appee0d8e66c6",
+    "name": "Musclog (App Store)",
+    "object": "app",
+    "project_id": "projdce70efc",
+    "type": "app_store"
+  }
+]

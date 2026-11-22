@@ -159,3 +159,37 @@ describe('the pages of 2.16.0', () => {
     expect(issues).toContain('2.16.0.json.pages[0].blocks[0]: primary must be a boolean');
   });
 });
+
+describe('the page of 2.17.5', () => {
+  const release = whatsNewReleases.find((candidate) => candidate.version === '2.17.5');
+  const page = release?.pages.find((candidate) => candidate.id === 'premium');
+
+  it('is a Premium page gated by the premium condition', () => {
+    expect(release?.pages).toHaveLength(1);
+    expect(page?.requires).toBe('premium');
+  });
+
+  it('has an info block, one primary button that opens Premium and three highlights', () => {
+    const blocks = page?.blocks ?? [];
+    expect(blocks.map((block) => block.type)).toEqual(['info', 'action', 'featureList']);
+    const action = blocks[1] as { action: string; primary?: boolean };
+    expect(action.action).toBe('openPremium');
+    expect(action.primary).toBe(true);
+    expect((blocks[2] as { items: unknown[] }).items).toHaveLength(3);
+    expect(WHATS_NEW_ACTION_CATALOG.openPremium).toEqual({ kind: 'modal' });
+  });
+
+  it('opens on its own Premium banner, gated like the page, with three promises', () => {
+    expect(release?.intro).toMatchObject({
+      titleKey: 'whatsNew.releases.v2_17_5.intro.title',
+      pose: 'iron',
+      requires: 'premium',
+    });
+    expect(release?.intro?.items).toHaveLength(3);
+
+    const copy = JSON.parse(readFileSync(join(root, 'lang/locales/en-us/whatsNew.json'), 'utf8'));
+    const { description } = copy.whatsNew.releases.v2_17_5.intro;
+    expect(description).toMatch(/first and last time/);
+    expect(description).toMatch(/100% free/);
+  });
+});

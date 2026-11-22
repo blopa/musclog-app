@@ -30,15 +30,16 @@ const path = require('node:path');
 
 const {
   DEFAULT_LOCALE_PREFIX,
+  LANGUAGE_STORAGE_KEY,
   WEBSITE_LOCALES,
   legacyForwardPath,
   localePrefixesFor,
   localizedPath,
 } = require('../components/website/localeRoutes');
-const { sitemapLogicalPaths } = require('./generate-web-seo-files');
+const { noindexPrefixedLogicalPaths, sitemapLogicalPaths } = require('./generate-web-seo-files');
 
-/** What the language picker writes (`WebsitePreferences.tsx`); the only language readable pre-boot. */
-const STORED_LANGUAGE_KEY = 'musclog_lang';
+/** The language picker's storage key (shared with `WebsitePreferences.tsx`); the only language readable pre-boot. */
+const STORED_LANGUAGE_KEY = LANGUAGE_STORAGE_KEY;
 const SCRIPT_ID = 'musclog-unprefixed';
 
 /** `{ 'es-es': '/es/tools/x', … }`: the non-English pages this logical path is published in. */
@@ -134,7 +135,7 @@ function unprefixedTargets() {
   ];
   const seen = new Set(['/', '/home']);
 
-  for (const logicalPath of sitemapLogicalPaths()) {
+  for (const logicalPath of [...sitemapLogicalPaths(), ...noindexPrefixedLogicalPaths()]) {
     if (seen.has(logicalPath) || !legacyForwardPath(logicalPath)) {
       continue;
     }

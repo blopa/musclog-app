@@ -6,10 +6,10 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { settingsGetMock } from '@/database/services/__tests__/settingsGetMock';
 import { getActiveCoachPersona } from '@/services/coachPersona';
 
-import { getBaseSystemPrompt, getPersonaSystemPrompt } from '../prompts';
+import { getBaseSystemPrompt, getChatReplyRules, getPersonaSystemPrompt } from '../prompts';
 
 jest.mock('@/database/services/AiCustomPromptService', () => ({
-  AiCustomPromptService: { getActivePrompts: jest.fn() },
+  AiCustomPromptService: { getActivePrompts: jest.fn(), getMemoriesForPrompt: jest.fn() },
 }));
 
 jest.mock('@/database/services/SettingsService', () => ({
@@ -17,12 +17,12 @@ jest.mock('@/database/services/SettingsService', () => ({
 }));
 
 const mockPrompts = AiCustomPromptService.getActivePrompts as jest.Mock;
+const mockMemories = AiCustomPromptService.getMemoriesForPrompt as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockPrompts.mockImplementation(async (_context: unknown, type: string) =>
-    type === 'system' ? [{ content: 'USER-CUSTOM-PROMPT' }] : [{ content: 'USER-MEMORY' }]
-  );
+  mockPrompts.mockImplementation(async () => [{ content: 'USER-CUSTOM-PROMPT' }]);
+  mockMemories.mockResolvedValue([{ content: 'USER-MEMORY', createdAt: Date.now() }]);
   SettingsService.get = settingsGetMock({ coachPersona: 'loggy' });
 });
 
@@ -32,7 +32,18 @@ describe('getBaseSystemPrompt', () => {
 
     expect(prompt).not.toContain('Loggy');
     expect(prompt).not.toContain('Persona:');
-    expect(prompt).toContain('remember_me');
+    // The reply fields belong to the chat only: structured prompts share this base.
+    expect(prompt).not.toContain('remember_me');
+    expect(prompt).not.toContain('msg4User');
+  });
+
+  it('keeps the chat reply format, timestamps and memory rule in the chat-only block', () => {
+    const rules = getChatReplyRules();
+
+    expect(rules).toContain('msg4User');
+    expect(rules).toContain('remember_me');
+    expect(rules).toContain('timestamp');
+    expect(rules).toContain('Never write such a timestamp yourself');
   });
 
   it('keeps the established tone for a prompt that carries no persona', async () => {
@@ -40,7 +51,7 @@ describe('getBaseSystemPrompt', () => {
     const persona = await getActiveCoachPersona('gemini');
     const voiced = await getBaseSystemPrompt('en-US', 'general', 'gemini', persona);
 
-    expect(plain).toContain('1. TONE: Friendly, professional, and human-like. Use colloquial');
+    expect(plain).toContain('1. TONE: Warm, direct and human, like a coach who knows them');
     // With a persona the voice is the persona's, so the core's tone line points at it instead.
     expect(voiced).toContain('1. TONE: Clear, practical');
     expect(voiced).toContain('The persona section below sets the exact voice');
@@ -50,7 +61,7 @@ describe('getBaseSystemPrompt', () => {
     const persona = await getActiveCoachPersona('gemini');
     const prompt = await getBaseSystemPrompt('en-US', 'general', 'gemini', persona);
 
-    const rules = prompt.indexOf('Conversation Guidelines');
+    const rules = prompt.indexOf('How to talk');
     const personaAt = prompt.indexOf('Persona: your name is Loggy');
     const custom = prompt.indexOf('USER-CUSTOM-PROMPT');
     const memory = prompt.indexOf('USER-MEMORY');

@@ -98,6 +98,7 @@ import deDeOpticalTransfer from './locales/de-de/opticalTransfer.json';
 import deDeOptionsSelector from './locales/de-de/optionsSelector.json';
 import deDePastWorkoutHistory from './locales/de-de/pastWorkoutHistory.json';
 import deDePortionSizes from './locales/de-de/portionSizes.json';
+import deDePremium from './locales/de-de/premium.json';
 import deDeProfile from './locales/de-de/profile.json';
 import deDeProgress from './locales/de-de/progress.json';
 import deDeReplaceExercise from './locales/de-de/replaceExercise.json';
@@ -114,6 +115,7 @@ import deDeTokenType from './locales/de-de/token_type.json';
 import deDeUserMenu from './locales/de-de/userMenu.json';
 import deDeWebsite from './locales/de-de/website.json';
 import deDeWebsiteAlternativesPages from './locales/de-de/websiteAlternativesPages.json';
+import deDeWebsitePremium from './locales/de-de/websitePremium.json';
 import deDeWebsitePrograms from './locales/de-de/websitePrograms.json';
 import deDeWebsiteToolCalorieDeficit from './locales/de-de/websiteToolCalorieDeficit.json';
 import deDeWebsiteToolDeloadCalculator from './locales/de-de/websiteToolDeloadCalculator.json';
@@ -204,6 +206,7 @@ import enUsOpticalTransfer from './locales/en-us/opticalTransfer.json';
 import enUsOptionsSelector from './locales/en-us/optionsSelector.json';
 import enUsPastWorkoutHistory from './locales/en-us/pastWorkoutHistory.json';
 import enUsPortionSizes from './locales/en-us/portionSizes.json';
+import enUsPremium from './locales/en-us/premium.json';
 import enUsProfile from './locales/en-us/profile.json';
 import enUsProgress from './locales/en-us/progress.json';
 import enUsReplaceExercise from './locales/en-us/replaceExercise.json';
@@ -220,6 +223,7 @@ import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWebsite from './locales/en-us/website.json';
 import enUsWebsiteAlternativesPages from './locales/en-us/websiteAlternativesPages.json';
+import enUsWebsitePremium from './locales/en-us/websitePremium.json';
 import enUsWebsitePrograms from './locales/en-us/websitePrograms.json';
 import enUsWebsiteToolCalorieDeficit from './locales/en-us/websiteToolCalorieDeficit.json';
 import enUsWebsiteToolDeloadCalculator from './locales/en-us/websiteToolDeloadCalculator.json';
@@ -310,6 +314,7 @@ import esEsOpticalTransfer from './locales/es-es/opticalTransfer.json';
 import esEsOptionsSelector from './locales/es-es/optionsSelector.json';
 import esEsPastWorkoutHistory from './locales/es-es/pastWorkoutHistory.json';
 import esEsPortionSizes from './locales/es-es/portionSizes.json';
+import esEsPremium from './locales/es-es/premium.json';
 import esEsProfile from './locales/es-es/profile.json';
 import esEsProgress from './locales/es-es/progress.json';
 import esEsReplaceExercise from './locales/es-es/replaceExercise.json';
@@ -326,6 +331,7 @@ import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
 import esEsWebsite from './locales/es-es/website.json';
 import esEsWebsiteAlternativesPages from './locales/es-es/websiteAlternativesPages.json';
+import esEsWebsitePremium from './locales/es-es/websitePremium.json';
 import esEsWebsitePrograms from './locales/es-es/websitePrograms.json';
 import esEsWebsiteToolCalorieDeficit from './locales/es-es/websiteToolCalorieDeficit.json';
 import esEsWebsiteToolDeloadCalculator from './locales/es-es/websiteToolDeloadCalculator.json';
@@ -416,6 +422,7 @@ import frFrOpticalTransfer from './locales/fr-fr/opticalTransfer.json';
 import frFrOptionsSelector from './locales/fr-fr/optionsSelector.json';
 import frFrPastWorkoutHistory from './locales/fr-fr/pastWorkoutHistory.json';
 import frFrPortionSizes from './locales/fr-fr/portionSizes.json';
+import frFrPremium from './locales/fr-fr/premium.json';
 import frFrProfile from './locales/fr-fr/profile.json';
 import frFrProgress from './locales/fr-fr/progress.json';
 import frFrReplaceExercise from './locales/fr-fr/replaceExercise.json';
@@ -432,6 +439,7 @@ import frFrTokenType from './locales/fr-fr/token_type.json';
 import frFrUserMenu from './locales/fr-fr/userMenu.json';
 import frFrWebsite from './locales/fr-fr/website.json';
 import frFrWebsiteAlternativesPages from './locales/fr-fr/websiteAlternativesPages.json';
+import frFrWebsitePremium from './locales/fr-fr/websitePremium.json';
 import frFrWebsitePrograms from './locales/fr-fr/websitePrograms.json';
 import frFrWebsiteToolCalorieDeficit from './locales/fr-fr/websiteToolCalorieDeficit.json';
 import frFrWebsiteToolDeloadCalculator from './locales/fr-fr/websiteToolDeloadCalculator.json';
@@ -522,6 +530,7 @@ import itItOpticalTransfer from './locales/it-it/opticalTransfer.json';
 import itItOptionsSelector from './locales/it-it/optionsSelector.json';
 import itItPastWorkoutHistory from './locales/it-it/pastWorkoutHistory.json';
 import itItPortionSizes from './locales/it-it/portionSizes.json';
+import itItPremium from './locales/it-it/premium.json';
 import itItProfile from './locales/it-it/profile.json';
 import itItProgress from './locales/it-it/progress.json';
 import itItReplaceExercise from './locales/it-it/replaceExercise.json';
@@ -538,6 +547,7 @@ import itItTokenType from './locales/it-it/token_type.json';
 import itItUserMenu from './locales/it-it/userMenu.json';
 import itItWebsite from './locales/it-it/website.json';
 import itItWebsiteAlternativesPages from './locales/it-it/websiteAlternativesPages.json';
+import itItWebsitePremium from './locales/it-it/websitePremium.json';
 import itItWebsitePrograms from './locales/it-it/websitePrograms.json';
 import itItWebsiteToolCalorieDeficit from './locales/it-it/websiteToolCalorieDeficit.json';
 import itItWebsiteToolDeloadCalculator from './locales/it-it/websiteToolDeloadCalculator.json';
@@ -628,6 +638,7 @@ import nlNlOpticalTransfer from './locales/nl-nl/opticalTransfer.json';
 import nlNlOptionsSelector from './locales/nl-nl/optionsSelector.json';
 import nlNlPastWorkoutHistory from './locales/nl-nl/pastWorkoutHistory.json';
 import nlNlPortionSizes from './locales/nl-nl/portionSizes.json';
+import nlNlPremium from './locales/nl-nl/premium.json';
 import nlNlProfile from './locales/nl-nl/profile.json';
 import nlNlProgress from './locales/nl-nl/progress.json';
 import nlNlReplaceExercise from './locales/nl-nl/replaceExercise.json';
@@ -644,6 +655,7 @@ import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
 import nlNlWebsite from './locales/nl-nl/website.json';
 import nlNlWebsiteAlternativesPages from './locales/nl-nl/websiteAlternativesPages.json';
+import nlNlWebsitePremium from './locales/nl-nl/websitePremium.json';
 import nlNlWebsitePrograms from './locales/nl-nl/websitePrograms.json';
 import nlNlWebsiteToolCalorieDeficit from './locales/nl-nl/websiteToolCalorieDeficit.json';
 import nlNlWebsiteToolDeloadCalculator from './locales/nl-nl/websiteToolDeloadCalculator.json';
@@ -734,6 +746,7 @@ import plPlOpticalTransfer from './locales/pl-pl/opticalTransfer.json';
 import plPlOptionsSelector from './locales/pl-pl/optionsSelector.json';
 import plPlPastWorkoutHistory from './locales/pl-pl/pastWorkoutHistory.json';
 import plPlPortionSizes from './locales/pl-pl/portionSizes.json';
+import plPlPremium from './locales/pl-pl/premium.json';
 import plPlProfile from './locales/pl-pl/profile.json';
 import plPlProgress from './locales/pl-pl/progress.json';
 import plPlReplaceExercise from './locales/pl-pl/replaceExercise.json';
@@ -750,6 +763,7 @@ import plPlTokenType from './locales/pl-pl/token_type.json';
 import plPlUserMenu from './locales/pl-pl/userMenu.json';
 import plPlWebsite from './locales/pl-pl/website.json';
 import plPlWebsiteAlternativesPages from './locales/pl-pl/websiteAlternativesPages.json';
+import plPlWebsitePremium from './locales/pl-pl/websitePremium.json';
 import plPlWebsitePrograms from './locales/pl-pl/websitePrograms.json';
 import plPlWebsiteToolCalorieDeficit from './locales/pl-pl/websiteToolCalorieDeficit.json';
 import plPlWebsiteToolDeloadCalculator from './locales/pl-pl/websiteToolDeloadCalculator.json';
@@ -840,6 +854,7 @@ import ptBrOpticalTransfer from './locales/pt-br/opticalTransfer.json';
 import ptBrOptionsSelector from './locales/pt-br/optionsSelector.json';
 import ptBrPastWorkoutHistory from './locales/pt-br/pastWorkoutHistory.json';
 import ptBrPortionSizes from './locales/pt-br/portionSizes.json';
+import ptBrPremium from './locales/pt-br/premium.json';
 import ptBrProfile from './locales/pt-br/profile.json';
 import ptBrProgress from './locales/pt-br/progress.json';
 import ptBrReplaceExercise from './locales/pt-br/replaceExercise.json';
@@ -856,6 +871,7 @@ import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
 import ptBrWebsite from './locales/pt-br/website.json';
 import ptBrWebsiteAlternativesPages from './locales/pt-br/websiteAlternativesPages.json';
+import ptBrWebsitePremium from './locales/pt-br/websitePremium.json';
 import ptBrWebsitePrograms from './locales/pt-br/websitePrograms.json';
 import ptBrWebsiteToolCalorieDeficit from './locales/pt-br/websiteToolCalorieDeficit.json';
 import ptBrWebsiteToolDeloadCalculator from './locales/pt-br/websiteToolDeloadCalculator.json';
@@ -946,6 +962,7 @@ import ruRuOpticalTransfer from './locales/ru-ru/opticalTransfer.json';
 import ruRuOptionsSelector from './locales/ru-ru/optionsSelector.json';
 import ruRuPastWorkoutHistory from './locales/ru-ru/pastWorkoutHistory.json';
 import ruRuPortionSizes from './locales/ru-ru/portionSizes.json';
+import ruRuPremium from './locales/ru-ru/premium.json';
 import ruRuProfile from './locales/ru-ru/profile.json';
 import ruRuProgress from './locales/ru-ru/progress.json';
 import ruRuReplaceExercise from './locales/ru-ru/replaceExercise.json';
@@ -962,6 +979,7 @@ import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
 import ruRuWebsite from './locales/ru-ru/website.json';
 import ruRuWebsiteAlternativesPages from './locales/ru-ru/websiteAlternativesPages.json';
+import ruRuWebsitePremium from './locales/ru-ru/websitePremium.json';
 import ruRuWebsitePrograms from './locales/ru-ru/websitePrograms.json';
 import ruRuWebsiteToolCalorieDeficit from './locales/ru-ru/websiteToolCalorieDeficit.json';
 import ruRuWebsiteToolDeloadCalculator from './locales/ru-ru/websiteToolDeloadCalculator.json';
@@ -1052,6 +1070,7 @@ import trTrOpticalTransfer from './locales/tr-tr/opticalTransfer.json';
 import trTrOptionsSelector from './locales/tr-tr/optionsSelector.json';
 import trTrPastWorkoutHistory from './locales/tr-tr/pastWorkoutHistory.json';
 import trTrPortionSizes from './locales/tr-tr/portionSizes.json';
+import trTrPremium from './locales/tr-tr/premium.json';
 import trTrProfile from './locales/tr-tr/profile.json';
 import trTrProgress from './locales/tr-tr/progress.json';
 import trTrReplaceExercise from './locales/tr-tr/replaceExercise.json';
@@ -1068,6 +1087,7 @@ import trTrTokenType from './locales/tr-tr/token_type.json';
 import trTrUserMenu from './locales/tr-tr/userMenu.json';
 import trTrWebsite from './locales/tr-tr/website.json';
 import trTrWebsiteAlternativesPages from './locales/tr-tr/websiteAlternativesPages.json';
+import trTrWebsitePremium from './locales/tr-tr/websitePremium.json';
 import trTrWebsitePrograms from './locales/tr-tr/websitePrograms.json';
 import trTrWebsiteToolCalorieDeficit from './locales/tr-tr/websiteToolCalorieDeficit.json';
 import trTrWebsiteToolDeloadCalculator from './locales/tr-tr/websiteToolDeloadCalculator.json';
@@ -1204,6 +1224,7 @@ const resources = {
       ...deDeOptionsSelector,
       ...deDePastWorkoutHistory,
       ...deDePortionSizes,
+      ...deDePremium,
       ...deDeProfile,
       ...deDeProgress,
       ...deDeReplaceExercise,
@@ -1220,6 +1241,7 @@ const resources = {
       ...deDeUserMenu,
       ...deDeWebsite,
       ...deDeWebsiteAlternativesPages,
+      ...deDeWebsitePremium,
       ...deDeWebsitePrograms,
       ...deDeWebsiteToolCalorieDeficit,
       ...deDeWebsiteToolDeloadCalculator,
@@ -1314,6 +1336,7 @@ const resources = {
       ...enUsOptionsSelector,
       ...enUsPastWorkoutHistory,
       ...enUsPortionSizes,
+      ...enUsPremium,
       ...enUsProfile,
       ...enUsProgress,
       ...enUsReplaceExercise,
@@ -1330,6 +1353,7 @@ const resources = {
       ...enUsUserMenu,
       ...enUsWebsite,
       ...enUsWebsiteAlternativesPages,
+      ...enUsWebsitePremium,
       ...enUsWebsitePrograms,
       ...enUsWebsiteToolCalorieDeficit,
       ...enUsWebsiteToolDeloadCalculator,
@@ -1424,6 +1448,7 @@ const resources = {
       ...esEsOptionsSelector,
       ...esEsPastWorkoutHistory,
       ...esEsPortionSizes,
+      ...esEsPremium,
       ...esEsProfile,
       ...esEsProgress,
       ...esEsReplaceExercise,
@@ -1440,6 +1465,7 @@ const resources = {
       ...esEsUserMenu,
       ...esEsWebsite,
       ...esEsWebsiteAlternativesPages,
+      ...esEsWebsitePremium,
       ...esEsWebsitePrograms,
       ...esEsWebsiteToolCalorieDeficit,
       ...esEsWebsiteToolDeloadCalculator,
@@ -1534,6 +1560,7 @@ const resources = {
       ...frFrOptionsSelector,
       ...frFrPastWorkoutHistory,
       ...frFrPortionSizes,
+      ...frFrPremium,
       ...frFrProfile,
       ...frFrProgress,
       ...frFrReplaceExercise,
@@ -1550,6 +1577,7 @@ const resources = {
       ...frFrUserMenu,
       ...frFrWebsite,
       ...frFrWebsiteAlternativesPages,
+      ...frFrWebsitePremium,
       ...frFrWebsitePrograms,
       ...frFrWebsiteToolCalorieDeficit,
       ...frFrWebsiteToolDeloadCalculator,
@@ -1644,6 +1672,7 @@ const resources = {
       ...itItOptionsSelector,
       ...itItPastWorkoutHistory,
       ...itItPortionSizes,
+      ...itItPremium,
       ...itItProfile,
       ...itItProgress,
       ...itItReplaceExercise,
@@ -1660,6 +1689,7 @@ const resources = {
       ...itItUserMenu,
       ...itItWebsite,
       ...itItWebsiteAlternativesPages,
+      ...itItWebsitePremium,
       ...itItWebsitePrograms,
       ...itItWebsiteToolCalorieDeficit,
       ...itItWebsiteToolDeloadCalculator,
@@ -1754,6 +1784,7 @@ const resources = {
       ...nlNlOptionsSelector,
       ...nlNlPastWorkoutHistory,
       ...nlNlPortionSizes,
+      ...nlNlPremium,
       ...nlNlProfile,
       ...nlNlProgress,
       ...nlNlReplaceExercise,
@@ -1770,6 +1801,7 @@ const resources = {
       ...nlNlUserMenu,
       ...nlNlWebsite,
       ...nlNlWebsiteAlternativesPages,
+      ...nlNlWebsitePremium,
       ...nlNlWebsitePrograms,
       ...nlNlWebsiteToolCalorieDeficit,
       ...nlNlWebsiteToolDeloadCalculator,
@@ -1864,6 +1896,7 @@ const resources = {
       ...plPlOptionsSelector,
       ...plPlPastWorkoutHistory,
       ...plPlPortionSizes,
+      ...plPlPremium,
       ...plPlProfile,
       ...plPlProgress,
       ...plPlReplaceExercise,
@@ -1880,6 +1913,7 @@ const resources = {
       ...plPlUserMenu,
       ...plPlWebsite,
       ...plPlWebsiteAlternativesPages,
+      ...plPlWebsitePremium,
       ...plPlWebsitePrograms,
       ...plPlWebsiteToolCalorieDeficit,
       ...plPlWebsiteToolDeloadCalculator,
@@ -1974,6 +2008,7 @@ const resources = {
       ...ptBrOptionsSelector,
       ...ptBrPastWorkoutHistory,
       ...ptBrPortionSizes,
+      ...ptBrPremium,
       ...ptBrProfile,
       ...ptBrProgress,
       ...ptBrReplaceExercise,
@@ -1990,6 +2025,7 @@ const resources = {
       ...ptBrUserMenu,
       ...ptBrWebsite,
       ...ptBrWebsiteAlternativesPages,
+      ...ptBrWebsitePremium,
       ...ptBrWebsitePrograms,
       ...ptBrWebsiteToolCalorieDeficit,
       ...ptBrWebsiteToolDeloadCalculator,
@@ -2084,6 +2120,7 @@ const resources = {
       ...ruRuOptionsSelector,
       ...ruRuPastWorkoutHistory,
       ...ruRuPortionSizes,
+      ...ruRuPremium,
       ...ruRuProfile,
       ...ruRuProgress,
       ...ruRuReplaceExercise,
@@ -2100,6 +2137,7 @@ const resources = {
       ...ruRuUserMenu,
       ...ruRuWebsite,
       ...ruRuWebsiteAlternativesPages,
+      ...ruRuWebsitePremium,
       ...ruRuWebsitePrograms,
       ...ruRuWebsiteToolCalorieDeficit,
       ...ruRuWebsiteToolDeloadCalculator,
@@ -2194,6 +2232,7 @@ const resources = {
       ...trTrOptionsSelector,
       ...trTrPastWorkoutHistory,
       ...trTrPortionSizes,
+      ...trTrPremium,
       ...trTrProfile,
       ...trTrProgress,
       ...trTrReplaceExercise,
@@ -2210,6 +2249,7 @@ const resources = {
       ...trTrUserMenu,
       ...trTrWebsite,
       ...trTrWebsiteAlternativesPages,
+      ...trTrWebsitePremium,
       ...trTrWebsitePrograms,
       ...trTrWebsiteToolCalorieDeficit,
       ...trTrWebsiteToolDeloadCalculator,
@@ -2270,13 +2310,13 @@ const systemLocales = Localization.getLocales();
 i18n.use(initReactI18next).init({
   // compatibilityJSON: 'v3',
   debug: __DEV__,
-  fallbackLng: DE_DE,
+  fallbackLng: DEFAULT_LANG,
   interpolation: {
     escapeValue: false,
   },
   lng:
     systemLocales.find((locale) => AVAILABLE_LANGUAGES.includes(locale.languageTag as LanguageKeys))
-      ?.languageTag || DE_DE,
+      ?.languageTag || DEFAULT_LANG,
   resources,
 });
 

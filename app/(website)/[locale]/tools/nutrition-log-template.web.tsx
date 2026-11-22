@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   foodEatenFromPer100g,
   NUTRITION_LOG_DOWNLOADS,
@@ -21,7 +22,6 @@ import {
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function NutritionLogTemplateToolPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'websiteToolNutritionLogTemplate' });

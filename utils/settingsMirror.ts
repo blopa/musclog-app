@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { SETTINGS_MIRROR_STORAGE_KEY } from '@/constants/misc';
 import type { ThemeOption, Units } from '@/constants/settings';
+import { createListeners } from '@/utils/createListeners';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 
 /**
@@ -33,13 +34,7 @@ export type MirroredSettings = {
 
 let snapshot: MirroredSettings | null = null;
 let hydration: Promise<void> | null = null;
-const listeners = new Set<() => void>();
-
-function notify(): void {
-  for (const listener of listeners) {
-    listener();
-  }
-}
+const { subscribe, notify } = createListeners();
 
 /** Anything that does not look like a mirror written by this module is no mirror at all. */
 function parseMirror(raw: string): MirroredSettings | null {
@@ -93,10 +88,7 @@ export function getSettingsMirror(): MirroredSettings | null {
   return snapshot;
 }
 
-export function subscribeToSettingsMirror(listener: () => void): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
+export const subscribeToSettingsMirror = subscribe;
 
 /** Server snapshot for `useSyncExternalStore`: static rendering has no storage. */
 export function getServerSettingsMirror(): null {

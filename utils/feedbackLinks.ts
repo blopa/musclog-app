@@ -49,3 +49,34 @@ export function buildSupportMailto(env: FeedbackEnvironment): string {
   ].join('\n');
   return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
+
+/** The longest reply quoted in a report mail: mail clients refuse very long `mailto:` links. */
+export const AI_REPLY_REPORT_MAX_CHARS = 1500;
+
+/**
+ * A support email that reports one AI reply. The reply text is quoted in the body for the person to
+ * read, edit or delete before sending; nothing is sent by the app. `subject` and `intro` arrive
+ * translated, the environment block stays in English like the support mail's.
+ */
+export function buildAiReplyReportMailto(
+  env: FeedbackEnvironment,
+  copy: { subject: string; intro: string; reply: string }
+): string {
+  const reply =
+    copy.reply.length > AI_REPLY_REPORT_MAX_CHARS
+      ? `${copy.reply.slice(0, AI_REPLY_REPORT_MAX_CHARS)}…`
+      : copy.reply;
+  const body = [
+    copy.intro,
+    '',
+    '',
+    '---',
+    reply,
+    '---',
+    `App version: ${formatAppVersion(env)}`,
+    `Platform: ${platformLabel(env)}`,
+    `Language: ${env.locale}`,
+  ].join('\n');
+
+  return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(copy.subject)}&body=${encodeURIComponent(body)}`;
+}

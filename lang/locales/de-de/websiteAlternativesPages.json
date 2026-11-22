@@ -19,12 +19,12 @@
           {
             "topic": "Kostenlose Version",
             "them": "Speichert unbegrenzt Trainings, ist aber auf 3 eigene Routinen begrenzt.",
-            "musclog": "Es gibt keine Begrenzung für Routinen, und nichts ist hinter einem Abo verborgen."
+            "musclog": "Es gibt keine Begrenzung für Routinen, und alle Trackingfunktionen sind kostenlos."
           },
           {
             "topic": "Bezahlter Tarif",
             "them": "Strong PRO hebt das Routinen-Limit auf: 4,99 $ pro Monat oder 29,99 $ pro Jahr (Preise im U.S. App Store).",
-            "musclog": "Kostenlos und Open Source (GPL-3.0). Es gibt keine bezahlte Stufe."
+            "musclog": "Kostenlos und Open Source (GPL-3.0). Die einzige kostenpflichtige Option ist ein optionales monatliches Musclog-Iron-Abo für gehostete KI."
           }
         ],
         "import": "Musclog kann einen CSV-Export von Strong importieren: Einstellungen, Backups und Daten, Trainings importieren. Es ordnet Übungsnamen dem eigenen Katalog zu, fragt nach, wenn etwas nicht zugeordnet werden kann, und zeigt eine Prüfung, bevor etwas gespeichert wird. Denselben Export zweimal zu importieren erzeugt keine doppelten Einheiten, und ein Import lässt sich rückgängig machen.",

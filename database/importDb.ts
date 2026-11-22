@@ -1,7 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
 
-import { ASYNC_STORAGE_EXCLUDED_KEYS, RESTORE_ORDER } from '@/constants/exportImport';
+import {
+  ASYNC_STORAGE_EXCLUDED_KEYS,
+  isRestoreForcedOffSetting,
+  RESTORE_ORDER,
+} from '@/constants/exportImport';
 import { getExportPlatform, isSameExportPlatform } from '@/constants/platform';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
@@ -252,6 +256,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       // Exports include WatermelonDB's internal tombstones for diagnostics.
       // Restoring them would resurrect records the local database considers deleted.
       if (raw._status === 'deleted') {
+        continue;
+      }
+
+      // Musclog Iron (plan musclog-premium section 11 item 8): a restore never turns hosted AI
+      // on. Skipping the row leaves the setting at its default (off).
+      if (tableName === 'settings' && isRestoreForcedOffSetting(String(raw.type))) {
         continue;
       }
 

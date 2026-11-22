@@ -19,12 +19,12 @@
           {
             "topic": "Plan gratuito",
             "them": "Guarda entrenamientos ilimitados, pero está limitado a 3 rutinas personalizadas.",
-            "musclog": "No hay límite de rutinas y nada está bloqueado tras una suscripción."
+            "musclog": "No hay límite de rutinas, y todas las funciones de seguimiento son gratuitas."
           },
           {
             "topic": "Plan de pago",
             "them": "Strong PRO elimina el límite de rutinas: $4.99 al mes o $29.99 al año (precios de la App Store de EE. UU.).",
-            "musclog": "Libre y de código abierto (GPL-3.0). No hay nivel de pago."
+            "musclog": "Libre y de código abierto (GPL-3.0). El único pago opcional es una suscripción mensual a Musclog Iron para IA alojada."
           }
         ],
         "import": "Musclog puede importar una exportación CSV de Strong: Ajustes, Copias y datos, Importar entrenamientos. Asocia los nombres de los ejercicios con su propio catálogo, te pregunta por los que no puede asociar y muestra una revisión antes de guardar nada. Importar el mismo archivo dos veces no duplica las sesiones, y una importación se puede deshacer.",

@@ -19,12 +19,12 @@
           {
             "topic": "Versione gratuita",
             "them": "Salva allenamenti illimitati, ma è limitata a 3 schede personalizzate.",
-            "musclog": "Non c'è limite alle schede e nulla è bloccato dietro un abbonamento."
+            "musclog": "Non c'è limite alle schede, e ogni funzione di monitoraggio è gratuita."
           },
           {
             "topic": "Piano a pagamento",
             "them": "Strong PRO rimuove il limite delle schede: 4,99 $ al mese o 29,99 $ all'anno (prezzi dell'App Store statunitense).",
-            "musclog": "Gratuita e open source (GPL-3.0). Non esiste un livello a pagamento."
+            "musclog": "Gratuita e open source (GPL-3.0). L'unica opzione a pagamento è un abbonamento mensile facoltativo a Musclog Iron per l'AI ospitata."
           }
         ],
         "import": "Musclog può importare un'esportazione CSV di Strong: Impostazioni, Backup e dati, Importa allenamenti. Abbina i nomi degli esercizi al proprio catalogo e chiede di quelli che non riesce a riconoscere, mostrando una revisione prima di salvare qualsiasi cosa. Importare lo stesso file due volte non duplica le sessioni, e un'importazione può essere annullata.",

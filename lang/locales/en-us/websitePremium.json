@@ -1,0 +1,75 @@
+{
+  "websitePremium": {
+    "hero": {
+      "title": "AI that works without an API key",
+      "lead": "Musclog is free and open source, and it stays that way. Musclog Iron is one optional monthly subscription that runs the AI features for you, so there is no key to find, paste or pay for.",
+      "cta": "Get Musclog",
+      "note": "You subscribe inside the app, with your App Store or Google Play account."
+    },
+    "free": {
+      "title": "Everything else stays free",
+      "body": "Workout and nutrition tracking, your data on your own device, and every other feature of the app do not need Musclog Iron. The AI features have always had free ways in, and they still do:",
+      "items": [
+        "Use your own Google Gemini, OpenAI or Anthropic Claude API key, and pay that provider directly.",
+        "Use the free Musclog AI option.",
+        "Use on-device AI or a local model, where your device supports it.",
+        "Use none of it. Musclog works fully without AI."
+      ]
+    },
+    "how": {
+      "title": "How it works",
+      "steps": [
+        "Open Settings, then AI settings, and choose Musclog Iron.",
+        "Subscribe with your store account. Restore purchases brings an existing subscription back.",
+        "Read the privacy notice and turn on \"Use Musclog Iron for my AI\". Nothing is sent until you do.",
+        "Use the coach, meal tracking and workout plans as you would with any other provider."
+      ]
+    },
+    "allowance": {
+      "title": "A monthly allowance, shown in the app",
+      "body": "Each subscription period comes with an allowance of AI use. The app shows how much of it you have used and when it renews. It is one allowance for the subscription, shared by all the devices you use it on.",
+      "usedUp": "If you use it all, the AI stops until the period renews. The rest of Musclog keeps working, and you can switch to your own key or the free option yourself. Musclog never switches your AI to another provider without asking, because that would change who receives your messages."
+    },
+    "privacy": {
+      "title": "What happens to your messages",
+      "body": "When Musclog Iron is on, your AI requests go to Musclog's own service, which forwards them to OpenRouter, which passes them to the AI model. Requests are sent only to providers that offer zero data retention, and the service does not store your message text or images. It keeps a count of usage for your subscription period, and an identifier for each device you use Musclog Iron on.",
+      "consent": "The app asks for your consent before it sends anything to Musclog Iron, and asks again if you restore a backup on another device.",
+      "link": "Read the privacy policy"
+    },
+    "subscription": {
+      "title": "The subscription",
+      "items": [
+        "It is billed monthly by the App Store or Google Play, at the price your store shows.",
+        "It renews automatically until you cancel it in your store account. Cancelling stops the next renewal.",
+        "iOS and Android subscriptions are separate, so a subscription bought on one does not move to the other.",
+        "No account with Musclog is needed. Your subscription is checked through your store."
+      ],
+      "terms": "Terms of use"
+    },
+    "faq": {
+      "title": "Questions",
+      "items": [
+        {
+          "q": "Is Musclog still free?",
+          "a": "Yes. The app is free and open source. Musclog Iron is optional and only pays for running the AI features for you."
+        },
+        {
+          "q": "Do I need Musclog Iron to use the AI features?",
+          "a": "No. You can use your own API key, the free Musclog AI option, or on-device and local models. Musclog Iron is the option with nothing to set up."
+        },
+        {
+          "q": "Can I use it on more than one device?",
+          "a": "Yes. One subscription covers your devices on the same store account, and they share one allowance. Restore purchases adds a device."
+        },
+        {
+          "q": "What if I run out of the allowance?",
+          "a": "The AI waits for the next period. Everything else in Musclog keeps working, and you can choose another AI option at any time."
+        },
+        {
+          "q": "How do I cancel?",
+          "a": "In your App Store or Google Play subscription settings. The app has a Manage subscription button that opens the right page."
+        }
+      ]
+    }
+  }
+}

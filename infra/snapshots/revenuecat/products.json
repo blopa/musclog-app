@@ -1,0 +1,34 @@
+[
+  {
+    "app_id": "appee0d8e66c6",
+    "created_at": 1795298003273,
+    "display_name": "Musclog Premium",
+    "id": "prod08e9d10127",
+    "object": "product",
+    "one_time": null,
+    "state": "active",
+    "store_identifier": "musclog_premium_monthly",
+    "subscription": {
+      "duration": null,
+      "grace_period_duration": null,
+      "trial_duration": null
+    },
+    "type": "subscription"
+  },
+  {
+    "app_id": "app5b04704d4e",
+    "created_at": 1795298930221,
+    "display_name": null,
+    "id": "prod2e8d9c63bf",
+    "object": "product",
+    "one_time": null,
+    "state": "active",
+    "store_identifier": "musclog_premium_monthly:monthly",
+    "subscription": {
+      "duration": null,
+      "grace_period_duration": null,
+      "trial_duration": null
+    },
+    "type": "subscription"
+  }
+]

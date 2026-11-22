@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WasmBoyJoypadState } from 'wasmboy';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { isProduction } from '@/utils/app';
 import {
@@ -12,7 +13,6 @@ import {
 } from '@/utils/decodeGameBoySave';
 import { shouldSeedDevData } from '@/utils/file';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 const GB_SCREEN_WIDTH = 160;
 const GB_SCREEN_HEIGHT = 144;

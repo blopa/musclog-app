@@ -1,0 +1,98 @@
+# Musclog Iron Worker (docs/plans/musclog-premium.md, Path B: wrangler uploads code and keeps
+# secrets; Terraform owns D1, the custom domain, workers.dev/previews off and the cron schedules).
+# Secrets are NEVER listed here: OPENROUTER_API_KEY, REVENUECAT_V2_SECRET_KEY, SESSION_HMAC_KEY
+# (and SESSION_HMAC_KEY_PREVIOUS during rotation) are set with `wrangler secret put --env <env>`.
+# The cron schedules are owned by Terraform (infra/premium); only `local` declares them for
+# `wrangler dev --test-scheduled`. AI_CONFIG_JSON is plain text and validated on cold start.
+name = "musclog-premium"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+preview_urls = false
+
+# Workers Logs: keeps the Worker's own log lines (LogEvent fields only: route, status, code,
+# severity; never content, keys, rc_ids or IPs) in the dashboard for a few days, so a failed
+# enroll can be read after the fact instead of only through a live `wrangler tail`.
+[observability]
+enabled = true
+
+# Our own LogEvent lines stay. The automatic per-request "invocation log" is off: its contents are
+# Cloudflare's, and the Worker promises no token, rc_id or IP in what it keeps.
+[observability.logs]
+enabled = true
+invocation_logs = false
+
+[env.production]
+name = "musclog-premium"
+workers_dev = false
+preview_urls = false
+d1_databases = [{ binding = "DB", database_name = "musclog-premium-db", database_id = "00000000-0000-0000-0000-000000000000", migrations_dir = "migrations" }]
+
+# One limiter for /v1/challenge (keyed by IP) and /v1/chat/completions (keyed by device); the
+# namespace id is unique per account. src/limiter.ts refuses to serve here without it.
+[[env.production.ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }
+
+[env.production.vars]
+WORKER_ENV = "production"
+SENTRY_DSN = "https://d6aef5d418bc8ae2a0bf2523681cb4d0@o4507421287972864.ingest.de.sentry.io/4512477181313104"
+HOSTED_AI_ENABLED = "true"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+REVENUECAT_BASE_URL = "https://api.revenuecat.com/v2"
+AI_CONFIG_JSON = '{"version":1,"model":"openai/gpt-6-luna","prices":{"prompt_per_mtok":0.1,"completion_per_mtok":0.5,"image_per_image":0,"request_fee_u":0},"provider":{"zdr":true,"data_collection":"deny","require_parameters":true,"allow_fallbacks":false},"features":{"chat":{"max_tokens":1500,"temperature_max":1.2,"reasoning":"low"},"structured":{"max_tokens":4000,"temperature_max":1.0,"reasoning":"low"},"vision":{"max_tokens":2000,"temperature_max":1.0,"reasoning":"low"}},"vision_enabled":false,"image":{"max_px":1024,"max_bytes":400000,"quality":75,"max_images":1,"tokens_max":0},"finance":{"spend_share":0.5,"estimate_haircut":0.03,"fx_haircut":0.05,"rc_fee_rate":0.01,"rc_fee_vat_factor":1.27,"infra_per_period_u":0,"openrouter_fee":1.055,"early_share":0.25,"early_days":3,"daily_share":0.4,"max_cap_u":2000000,"global_share":0.55,"price_slack":1.1},"limits":{"max_requests_per_day":60,"max_inflight":2,"global_max_requests_per_day":9900,"max_subscribers":1500,"max_devices":25,"body_max_bytes":524288,"max_messages":64,"max_tools":32,"max_stop":4,"response_format_max_bytes":32768},"revenuecat":{"project_id":"projdce70efc","product_ids":["prod08e9d10127","prod2e8d9c63bf"],"environments":["production"],"grace_ms":{"app_store":0,"play_store":0}},"reconciliation":{"tolerance_share":0.03,"tolerance_u":500000},"breaker":{"overruns_24h":3},"min_app_version":"2.17.0"}'
+
+[env.staging]
+name = "musclog-premium-staging"
+workers_dev = true
+preview_urls = false
+d1_databases = [{ binding = "DB", database_name = "musclog-premium-staging-db", database_id = "00000000-0000-0000-0000-000000000000", migrations_dir = "migrations" }]
+
+# One limiter for /v1/challenge (keyed by IP) and /v1/chat/completions (keyed by device); the
+# namespace id is unique per account. src/limiter.ts refuses to serve here without it.
+[[env.staging.ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 30, period = 60 }
+
+[env.staging.vars]
+WORKER_ENV = "staging"
+SENTRY_DSN = "https://d6aef5d418bc8ae2a0bf2523681cb4d0@o4507421287972864.ingest.de.sentry.io/4512477181313104"
+HOSTED_AI_ENABLED = "true"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+REVENUECAT_BASE_URL = "https://api.revenuecat.com/v2"
+AI_CONFIG_JSON = '{"version":1,"model":"openai/gpt-6-luna","prices":{"prompt_per_mtok":0.1,"completion_per_mtok":0.5,"image_per_image":0,"request_fee_u":0},"provider":{"zdr":true,"data_collection":"deny","require_parameters":true,"allow_fallbacks":false},"features":{"chat":{"max_tokens":1500,"temperature_max":1.2,"reasoning":"low"},"structured":{"max_tokens":4000,"temperature_max":1.0,"reasoning":"low"},"vision":{"max_tokens":2000,"temperature_max":1.0,"reasoning":"low"}},"vision_enabled":false,"image":{"max_px":1024,"max_bytes":400000,"quality":75,"max_images":1,"tokens_max":0},"finance":{"spend_share":0.5,"estimate_haircut":0.03,"fx_haircut":0.05,"rc_fee_rate":0.01,"rc_fee_vat_factor":1.27,"infra_per_period_u":0,"openrouter_fee":1.055,"early_share":0.25,"early_days":3,"daily_share":0.4,"max_cap_u":2000000,"global_share":0.55,"price_slack":1.1},"limits":{"max_requests_per_day":60,"max_inflight":2,"global_max_requests_per_day":9900,"max_subscribers":1500,"max_devices":25,"body_max_bytes":524288,"max_messages":64,"max_tools":32,"max_stop":4,"response_format_max_bytes":32768},"revenuecat":{"project_id":"projdce70efc","product_ids":["prod08e9d10127","prod2e8d9c63bf"],"environments":["sandbox"],"grace_ms":{"app_store":0,"play_store":0}},"reconciliation":{"tolerance_share":0.03,"tolerance_u":500000},"breaker":{"overruns_24h":3},"min_app_version":"2.17.0"}'
+
+# `wrangler dev --env local`: Miniflare D1, secrets from the git-ignored .dev.vars,
+# upstream URLs pointing at local mocks.
+[env.local]
+name = "musclog-premium-local"
+d1_databases = [{ binding = "DB", database_name = "musclog-premium-local-db", database_id = "00000000-0000-0000-0000-000000000000", migrations_dir = "migrations" }]
+
+[env.local.triggers]
+crons = ["*/15 * * * *", "30 0 * * *"]
+
+[env.local.vars]
+WORKER_ENV = "local"
+HOSTED_AI_ENABLED = "true"
+OPENROUTER_BASE_URL = "http://127.0.0.1:8788/api/v1"
+REVENUECAT_BASE_URL = "http://127.0.0.1:8789/v2"
+AI_CONFIG_JSON = '{"version":1,"model":"openai/gpt-6-luna","prices":{"prompt_per_mtok":0.1,"completion_per_mtok":0.5,"image_per_image":0,"request_fee_u":0},"provider":{"zdr":true,"data_collection":"deny","require_parameters":true,"allow_fallbacks":false},"features":{"chat":{"max_tokens":1500,"temperature_max":1.2,"reasoning":"low"},"structured":{"max_tokens":4000,"temperature_max":1.0,"reasoning":"low"},"vision":{"max_tokens":2000,"temperature_max":1.0,"reasoning":"low"}},"vision_enabled":false,"image":{"max_px":1024,"max_bytes":400000,"quality":75,"max_images":1,"tokens_max":0},"finance":{"spend_share":0.5,"estimate_haircut":0.03,"fx_haircut":0.05,"rc_fee_rate":0.01,"rc_fee_vat_factor":1.27,"infra_per_period_u":0,"openrouter_fee":1.055,"early_share":0.25,"early_days":3,"daily_share":0.4,"max_cap_u":2000000,"global_share":0.55,"price_slack":1.1},"limits":{"max_requests_per_day":60,"max_inflight":2,"global_max_requests_per_day":9900,"max_subscribers":1500,"max_devices":25,"body_max_bytes":524288,"max_messages":64,"max_tools":32,"max_stop":4,"response_format_max_bytes":32768},"revenuecat":{"project_id":"proj_test","product_ids":["prod_monthly"],"environments":["sandbox","production"],"grace_ms":{"app_store":0,"play_store":0}},"reconciliation":{"tolerance_share":0.03,"tolerance_u":500000},"breaker":{"overruns_24h":3},"min_app_version":"2.17.0"}'
+
+# Vitest (@cloudflare/vitest-plugin). Dummy secrets: tests inject fake upstreams and never
+# reach the network.
+[env.test]
+name = "musclog-premium-test"
+d1_databases = [{ binding = "DB", database_name = "musclog-premium-test-db", database_id = "00000000-0000-0000-0000-000000000000", migrations_dir = "migrations" }]
+
+[env.test.vars]
+WORKER_ENV = "test"
+HOSTED_AI_ENABLED = "true"
+OPENROUTER_BASE_URL = "https://openrouter.invalid/api/v1"
+REVENUECAT_BASE_URL = "https://revenuecat.invalid/v2"
+OPENROUTER_API_KEY = "test-openrouter-key"
+REVENUECAT_V2_SECRET_KEY = "test-revenuecat-key"
+SESSION_HMAC_KEY = "test-session-hmac-key-0123456789abcdef"
+AI_CONFIG_JSON = '{"version":1,"model":"openai/gpt-6-luna","prices":{"prompt_per_mtok":0.1,"completion_per_mtok":0.5,"image_per_image":0,"request_fee_u":0},"provider":{"zdr":true,"data_collection":"deny","require_parameters":true,"allow_fallbacks":false},"features":{"chat":{"max_tokens":1500,"temperature_max":1.2,"reasoning":"low"},"structured":{"max_tokens":4000,"temperature_max":1.0,"reasoning":"low"},"vision":{"max_tokens":2000,"temperature_max":1.0,"reasoning":"low"}},"vision_enabled":false,"image":{"max_px":1024,"max_bytes":400000,"quality":75,"max_images":1,"tokens_max":0},"finance":{"spend_share":0.5,"estimate_haircut":0.03,"fx_haircut":0.05,"rc_fee_rate":0.01,"rc_fee_vat_factor":1.27,"infra_per_period_u":0,"openrouter_fee":1.055,"early_share":0.25,"early_days":3,"daily_share":0.4,"max_cap_u":2000000,"global_share":0.55,"price_slack":1.1},"limits":{"max_requests_per_day":60,"max_inflight":2,"global_max_requests_per_day":9900,"max_subscribers":1500,"max_devices":25,"body_max_bytes":524288,"max_messages":64,"max_tools":32,"max_stop":4,"response_format_max_bytes":32768},"revenuecat":{"project_id":"proj_test","product_ids":["prod_monthly"],"environments":["production"],"grace_ms":{"app_store":0,"play_store":0}},"reconciliation":{"tolerance_share":0.03,"tolerance_u":500000},"breaker":{"overruns_24h":3},"min_app_version":"2.17.0"}'

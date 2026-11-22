@@ -7,6 +7,8 @@
  * and a bare 400 stays an ordinary error.
  */
 import type { CoachAIProvider } from './coachAI';
+import { formatMediumDate } from './formatMediumDate';
+import { HOSTED_KINDS, HostedAiError, hostedErrorKindOf } from './hostedAiError';
 
 export class AiInvalidKeyError extends Error {
   readonly provider: CoachAIProvider;
@@ -34,7 +36,7 @@ export class AiCancelledError extends Error {
   }
 }
 
-/** Providers where the user supplies the key. Gateway and on-device never become a key error. */
+/** Providers where the user supplies the key. Gateway, hosted and on-device never become a key error. */
 const USER_KEY_PROVIDERS: ReadonlySet<CoachAIProvider> = new Set(['gemini', 'openai', 'claude']);
 
 /** The fields the provider SDKs put on a failure; every one may be absent. */
@@ -151,7 +153,9 @@ export function rethrowUserFacingAiError(error: unknown): void {
   if (
     error instanceof AiInvalidKeyError ||
     error instanceof AiTimeoutError ||
-    error instanceof AiCancelledError
+    error instanceof AiCancelledError ||
+    // Every hosted failure is typed and user-actionable; none may turn into the generic credits text.
+    hostedErrorKindOf(error) !== null
   ) {
     throw error;
   }
@@ -163,6 +167,7 @@ const PROVIDER_LABELS: Record<CoachAIProvider, string> = {
   claude: 'Claude',
   local: 'Local',
   gateway: 'Musclog',
+  hosted: 'Musclog Iron',
   'on-device': 'On-device',
 };
 
@@ -172,7 +177,8 @@ const PROVIDER_LABELS: Record<CoachAIProvider, string> = {
  */
 export function describeAiError(
   error: unknown,
-  t: (key: string, options?: Record<string, unknown>) => string
+  t: (key: string, options?: Record<string, unknown>) => string,
+  locale?: string
 ): string | null {
   if (error instanceof AiInvalidKeyError) {
     return t('errors.aiInvalidApiKey', { provider: PROVIDER_LABELS[error.provider] });
@@ -182,7 +188,25 @@ export function describeAiError(
     return t('errors.aiTimeout');
   }
 
+  if (error instanceof HostedAiError) {
+    return describeHostedError(error, t, locale);
+  }
+
   return null;
+}
+
+function describeHostedError(
+  error: HostedAiError,
+  t: (key: string, options?: Record<string, unknown>) => string,
+  locale?: string
+): string {
+  if (error.hostedKind === 'budget') {
+    // The one kind with a variant: the reset date is named when the Worker gave a usable one.
+    const date = formatMediumDate(error.resetsAt, locale ?? 'en');
+    return date ? t(HOSTED_KINDS.budget.i18nKey, { date }) : t('errors.hostedBudgetNoDate');
+  }
+
+  return t(HOSTED_KINDS[error.hostedKind].i18nKey);
 }
 
 /** Providers for which the Cancel/timeout machinery and a key test make sense. */

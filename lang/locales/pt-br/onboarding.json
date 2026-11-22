@@ -158,8 +158,8 @@
       "getStarted": "Começar",
       "termsAndPrivacy": "Ao continuar, você concorda com nossos Termos e Política de Privacidade.",
       "appName": "Musclog",
-      "tagline": "Levante, Registre, Repita",
-      "description": "Acompanhe seu progresso com insights baseados em dados e alcance seus objetivos de fitness.",
+      "tagline": "Gratuito, 100% seu",
+      "description": "Acompanhe seus treinos e sua nutrição com total privacidade. Sem contas, sem nuvem. Tudo é gratuito, exceto a cota opcional do Musclog Iron.",
       "viewTerms": "Ver Termos",
       "preparingApp": "Preparando o app para você...",
       "migratingPreamble": "Atualizando do Musclog anterior. Estamos trazendo seus dados.",
@@ -235,28 +235,45 @@
       "birthdayEstimated": "Estimada a partir da sua idade. Escolha sua data de nascimento se souber."
     },
     "musclogApi": {
-      "title": "Musclog AI",
-      "freeBadge": "Grátis",
-      "subtitle": "Receba insights de IA sobre seu treino e sua alimentação.",
-      "features": {
-        "coach": {
-          "title": "Assistente de Treino IA",
-          "desc": "Receba sugestões de exercícios e dicas de forma"
+      "heading": "Registrar mais rápido com IA?",
+      "intro": "O Musclog funciona totalmente sem IA. Com ela, você pode registrar uma refeição descrevendo-a, conversar com um coach e receber um plano de treino escrito para você.",
+      "choicesLabel": "Opções de IA",
+      "options": {
+        "premium": {
+          "title": "Musclog Iron",
+          "price": "{{price}} por mês",
+          "priceUnknown": "Assinatura mensal",
+          "points": {
+            "private": "Os provedores de IA não guardam nada do que você envia",
+            "allowance": "Sua própria cota mensal",
+            "noSetup": "Sem chave ou conta para configurar"
+          }
         },
-        "insights": {
-          "title": "Análise de Progresso",
-          "desc": "Análise personalizada do seu treinamento"
+        "free": {
+          "title": "IA grátis",
+          "price": "Grátis",
+          "points": {
+            "noSetup": "Sem chave ou conta para configurar",
+            "limit": "Um limite diário compartilhado por todos, que pode acabar cedo",
+            "privacy": "Não é privada: o Google pode guardar e revisar o que você envia"
+          }
         },
-        "recommendations": {
-          "title": "Recomendações Inteligentes",
-          "desc": "Conselhos de treino e nutrição com IA"
+        "none": {
+          "title": "Sem IA por enquanto",
+          "points": {
+            "works": "Registro, planos e gráficos funcionam do mesmo jeito",
+            "later": "Ative a IA a qualquer momento em Configurações, com o Musclog Iron ou sua própria chave do Gemini, OpenAI ou Claude"
+          }
         }
       },
       "dataSharingTitle": "Aviso de Compartilhamento de Dados",
-      "dataSharingBody": "Quando você usa um recurso de IA, o que ele precisa (por exemplo seus treinos, refeições, medidas corporais ou mensagens de chat) é enviado pelos servidores da Musclog ao Gemini, a IA do Google, para escrever a resposta. Nada é enviado até você usar um recurso. O nível gratuito tem um número limitado de solicitações por dia.",
+      "dataSharingBody": "Quando você usa um recurso de IA, o que ele precisa (por exemplo seus treinos, refeições, medidas corporais ou mensagens de chat) é enviado pelo OpenRouter ao nível gratuito do Google AI Studio para escrever a resposta. O Google pode manter o que é enviado, usá-lo para melhorar seus produtos e fazer com que pessoas (sem identificadores) o revisem, então o nível gratuito não é privado: não insira informações pessoais ou sensíveis. O nível gratuito é apenas para adultos (18+). Se isso não for aceitável para você, deixe desativado. Nada é enviado até você usar um recurso de IA. Há um limite diário compartilhado por todos que usam o nível gratuito, então ele pode acabar cedo no dia, e o nível gratuito às vezes pode ficar indisponível.",
       "readPrivacyPolicy": "Leia nossa Política de Privacidade",
-      "enable": "Ativar Musclog AI",
-      "noThanks": "Não obrigado, continuar sem IA"
+      "cta": {
+        "premium": "Continuar com o Musclog Iron",
+        "free": "Ativar IA grátis",
+        "none": "Continuar sem IA"
+      }
     },
     "setGoals": {
       "title": "Cálculo Inteligente",

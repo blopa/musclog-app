@@ -158,8 +158,8 @@
       "getStarted": "Aan de slag",
       "termsAndPrivacy": "Door door te gaan, ga je akkoord met onze Voorwaarden & Privacybeleid.",
       "appName": "Musclog",
-      "tagline": "Lift, Log, Repeat",
-      "description": "Houd je voortgang bij met data-gedreven inzichten en behaal je fitnessdoelen.",
+      "tagline": "Gratis, 100% van jou",
+      "description": "Houd je trainingen en voeding bij met volledige privacy. Geen accounts, geen cloud. Alles is gratis behalve het optionele AI-tegoed van Musclog Iron.",
       "viewTerms": "Voorwaarden bekijken",
       "preparingApp": "De app voorbereiden...",
       "migratingPreamble": "Upgraden van de vorige Musclog. We zetten je gegevens over.",
@@ -235,28 +235,45 @@
       "birthdayEstimated": "Geschat op basis van je leeftijd. Kies je geboortedatum als je die weet."
     },
     "musclogApi": {
-      "title": "Musclog AI",
-      "freeBadge": "Gratis",
-      "subtitle": "Krijg AI-inzichten over je training en voeding.",
-      "features": {
-        "coach": {
-          "title": "AI Trainingsassistent",
-          "desc": "Ontvang oefensuggesties en tips voor juiste uitvoering"
+      "heading": "Sneller loggen met AI?",
+      "intro": "Musclog werkt volledig zonder AI. Met AI kun je een maaltijd loggen door hem te beschrijven, chatten met een coach en een trainingsplan laten schrijven.",
+      "choicesLabel": "AI-opties",
+      "options": {
+        "premium": {
+          "title": "Musclog Iron",
+          "price": "{{price}} per maand",
+          "priceUnknown": "Maandabonnement",
+          "points": {
+            "private": "De AI-aanbieders bewaren niets van wat je verstuurt",
+            "allowance": "Je eigen maandelijkse tegoed",
+            "noSetup": "Geen sleutel of account om in te stellen"
+          }
         },
-        "insights": {
-          "title": "Voortgangsinzichten",
-          "desc": "Persoonlijke analyse van je training"
+        "free": {
+          "title": "Gratis AI",
+          "price": "Gratis",
+          "points": {
+            "noSetup": "Geen sleutel of account om in te stellen",
+            "limit": "Een dagelijkse limiet die iedereen deelt, die vroeg op de dag op kan zijn",
+            "privacy": "Niet privé: Google mag bewaren en beoordelen wat je verstuurt"
+          }
         },
-        "recommendations": {
-          "title": "Slimme Aanbevelingen",
-          "desc": "AI-gestuurde trainings- en voedingsadviezen"
+        "none": {
+          "title": "Voorlopig geen AI",
+          "points": {
+            "works": "Loggen, plannen en grafieken werken hetzelfde",
+            "later": "Zet AI op elk moment aan in Instellingen, met Musclog Iron of je eigen Gemini-, OpenAI- of Claude-sleutel"
+          }
         }
       },
       "dataSharingTitle": "Melding over Gegevensdeling",
-      "dataSharingBody": "Wanneer je een AI-functie gebruikt, wordt wat die nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmetingen of chatberichten) via de servers van Musclog naar Gemini, de AI van Google, gestuurd om het antwoord te schrijven. Er wordt niets verzonden tot je er een gebruikt. Het gratis abonnement heeft een beperkt aantal verzoeken per dag.",
+      "dataSharingBody": "Wanneer je een AI-functie gebruikt, wordt wat ze nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmaten of chatberichten) via OpenRouter naar het gratis niveau van Google AI Studio gestuurd om het antwoord te schrijven. Google mag wat er wordt verstuurd bewaren, gebruiken om zijn producten te verbeteren en door mensen (zonder identificatiegegevens) laten beoordelen, dus het gratis niveau is niet privé: voer geen persoonlijke of gevoelige informatie in. Het gratis niveau is alleen voor volwassenen (18+). Als dat niet oké voor je is, laat het uit. Er wordt niets verstuurd totdat je een AI-functie gebruikt. Er is een dagelijkse limiet die iedereen die het gratis niveau gebruikt deelt, dus die kan vroeg op de dag al op zijn, en het gratis niveau kan soms niet beschikbaar zijn.",
       "readPrivacyPolicy": "Lees ons Privacybeleid",
-      "enable": "Musclog AI inschakelen",
-      "noThanks": "Nee bedankt, doorgaan zonder AI"
+      "cta": {
+        "premium": "Doorgaan met Musclog Iron",
+        "free": "Gratis AI aanzetten",
+        "none": "Doorgaan zonder AI"
+      }
     },
     "setGoals": {
       "title": "Smart Goal",

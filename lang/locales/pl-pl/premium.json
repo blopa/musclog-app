@@ -1,0 +1,117 @@
+{
+  "premium": {
+    "title": "Musclog Iron",
+    "benefit": "AI w chmurze bez klucza do konfigurowania. Musclog Iron uruchamia AI za Ciebie w ramach miesięcznego limitu.",
+    "loading": "Sprawdzanie statusu Musclog Iron…",
+    "progress": {
+      "store": "Oczekiwanie na sklep…",
+      "confirming": "Potwierdzanie subskrypcji…",
+      "slow": "Wciąż potwierdzamy, może to potrwać kilka sekund",
+      "reset": "Resetowanie Musclog Iron na tym urządzeniu…",
+      "toggle": "Aktualizowanie ustawienia AI…"
+    },
+    "wait": {
+      "working": "AI w Musclog Iron wciąż pracuje…",
+      "busy": "AI w Musclog Iron jest zajęte, ponawiam próbę…"
+    },
+    "price": "{{price}} miesięcznie",
+    "subscribe": "Subskrybuj",
+    "restore": "Przywróć zakupy",
+    "usage": {
+      "used": "Wykorzystano {{pct}}% limitu tego okresu",
+      "renews": "Odnawia się {{date}}"
+    },
+    "devices": "Wspólne dla wszystkich Twoich urządzeń",
+    "useForAi": "Używaj Musclog Iron do AI",
+    "useForAiHint": "Żądania trafiają do usługi Musclog Iron, która przekazuje je do OpenRouter.",
+    "manage": "Zarządzaj subskrypcją",
+    "reset": "Zresetuj Musclog Iron na tym urządzeniu",
+    "resetTitle": "Zresetować Musclog Iron na tym urządzeniu?",
+    "resetBody": "To usunie rejestrację Musclog Iron tego urządzenia i utworzy nowy klucz urządzenia. Subskrypcja nie zostanie anulowana. Przywrócenie zakupów doda to urządzenie z powrotem.",
+    "resetConfirm": "Resetuj",
+    "consent": {
+      "title": "Wysyłać żądania AI do Musclog Iron?",
+      "body": "Twoje wiadomości i zdjęcia, które wysyłasz do AI, trafiają do usługi Musclog Iron. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. Usługa Musclog nigdy nie przechowuje Twoich wiadomości ani zdjęć; zachowuje tylko identyfikator tego urządzenia i liczniki użycia. Możesz to wyłączyć w dowolnym momencie.",
+      "confirm": "Używaj AI w Musclog Iron",
+      "cancel": "Nie teraz"
+    },
+    "renewalDisclosure": "Musclog Iron to subskrypcja miesięczna, która odnawia się automatycznie. Płatność zostaje pobrana z Twojego konta App Store lub Google Play po potwierdzeniu. Subskrypcja odnawia się, chyba że anulujesz ją co najmniej 24 godziny przed końcem bieżącego okresu. Zarządzaj nią lub anuluj ją w ustawieniach konta w sklepie. Wyświetlana cena to kwota pobierana przez sklep.",
+    "devicesNote": "Jedna subskrypcja i jeden limit, wspólne dla wszystkich Twoich urządzeń.",
+    "platformsNote": "Subskrypcje na iOS i Androida są oddzielne.",
+    "terms": "Warunki korzystania",
+    "privacy": "Polityka prywatności",
+    "card": {
+      "checking": "Sprawdzanie Musclog Iron…",
+      "notSubscribed": "Prywatne AI w chmurze w subskrypcji, bez klucza do konfigurowania",
+      "active": "Wykorzystano {{pct}}% · wspólne dla wszystkich Twoich urządzeń",
+      "activeNoUsage": "Aktywne · wspólne dla wszystkich Twoich urządzeń",
+      "exhausted": "Limit na ten okres wyczerpany",
+      "removed": "Usunięto z tej subskrypcji",
+      "revoked": "Musclog Iron jest nieaktywny"
+    },
+    "notice": {
+      "offline": "Brak połączenia. Musclog Iron potrzebuje połączenia, aby sprawdzić subskrypcję.",
+      "purchase_cancelled": "Zakup anulowany. Nic nie zostało pobrane.",
+      "purchase_failed": "Zakup nie został zrealizowany. Spróbuj ponownie lub sprawdź swoje konto w sklepie.",
+      "restore_nothing": "Nie znaleziono aktywnej subskrypcji Musclog Iron dla tego konta w sklepie.",
+      "confirming": "Twój zakup jest jeszcze potwierdzany. Spróbuj ponownie za minutę.",
+      "removed": "To urządzenie zostało usunięte z tej subskrypcji, ponieważ dodano wiele nowszych urządzeń. Przywrócenie zakupów doda to urządzenie ponownie.",
+      "revoked": "Musclog Iron nie jest już aktywny dla tej subskrypcji.",
+      "exhausted": "Limit Musclog Iron na ten okres został wykorzystany. Odnawia się {{date}}. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",
+      "exhaustedNoDate": "Limit Musclog Iron na ten okres został wykorzystany. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",
+      "at_capacity": "AI w Musclog Iron jest przeciążone do jutra (UTC).",
+      "unavailable": "Musclog Iron jest teraz niedostępny. Spróbuj ponownie później.",
+      "not_accepting": "Musclog Iron nie przyjmuje obecnie nowych subskrybentów.",
+      "not_available": "Musclog Iron nie jest obecnie dostępny w tym sklepie.",
+      "warning80": "Wykorzystano większość limitu Musclog Iron na ten okres."
+    },
+    "paywall": {
+      "headline": "Szybciej zapisujesz z AI, nic nie trzeba konfigurować",
+      "subhead": "Musclog Iron uruchamia AI za Ciebie: bez klucza, bez konta i tylko u dostawców AI, którzy nie zatrzymują tego, co wysyłasz. Reszta Musclog pozostaje bezpłatna.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nic do konfigurowania",
+          "desc": "Bez klucza API i konta. Zasubskrybuj, a trener, zapisywanie posiłków i plany treningowe działają od razu."
+        },
+        "private": {
+          "title": "Zerowa retencja danych",
+          "desc": "Używani są wyłącznie dostawcy z zerową retencją danych: nie przechowują Twoich wiadomości i nie trenują na nich. Musclog także ich nie przechowuje; zachowuje tylko liczniki użycia i identyfikator urządzenia."
+        },
+        "allowance": {
+          "title": "Twój własny limit",
+          "desc": "Miesięczny limit dla Twojej subskrypcji, a nie dzienny limit, który dzielą wszyscy użytkownicy darmowi."
+        },
+        "devices": {
+          "title": "Na wszystkich Twoich urządzeniach",
+          "desc": "Dodaj kolejny telefon lub tablet, używając opcji Przywróć zakupy. Współdzielą jeden limit."
+        },
+        "openSource": {
+          "title": "Wspiera rozwój Musclog",
+          "desc": "Musclog jest open source. Musclog Iron finansuje hostowane AI i wspiera rozwój aplikacji."
+        }
+      },
+      "compare": {
+        "title": "Wersja darmowa czy Musclog Iron",
+        "free": "Wersja darmowa",
+        "premium": "Iron",
+        "privacy": {
+          "label": "Co wysyłasz",
+          "free": "Google może to zachowywać, sprawdzać i wykorzystywać do uczenia",
+          "premium": "Nie zachowywane, nie wykorzystywane do uczenia"
+        },
+        "limit": {
+          "label": "Limit",
+          "free": "Jeden dzienny limit dla wszystkich",
+          "premium": "Twój własny miesięczny limit"
+        },
+        "price": {
+          "label": "Cena",
+          "free": "Za darmo",
+          "premiumUnknown": "Subskrypcja miesięczna"
+        }
+      },
+      "cta": "Subskrybuj za {{price}} miesięcznie",
+      "reassurance": "Odnawia się co miesiąc. Anulujesz w dowolnym momencie na koncie w sklepie."
+    }
+  }
+}

@@ -460,6 +460,16 @@ export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
 export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
 
 /**
+ * Setting type for routing AI requests through Musclog Iron's hosted service (stored in
+ * WatermelonDB settings table). value: 'true' | 'false'. Device-specific enrollment: never
+ * included in a backup, and a restore always lands on the default (off).
+ */
+export const USE_HOSTED_AI_SETTING_TYPE = 'use_hosted_ai';
+
+/** Version of the Premium consent the person last gave on this device (device-local, never backed up). */
+export const PREMIUM_CONSENT_VERSION_SETTING_TYPE = 'premium_consent_version';
+
+/**
  * Setting type for how many days of nutrition log history to send to the LLM.
  * value: 'none' | '7' | '30' | '60' | '90'.
  */
@@ -543,7 +553,6 @@ export const FOOD_DIARY_GROUPING_SETTING_TYPE = 'food_diary_grouping';
 export const HOME_ACTIONS_SETTING_TYPE = 'home_actions';
 
 export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
-export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
 export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
 
 /**

@@ -1,0 +1,18 @@
+{
+  "_fake": true,
+  "items": [
+    {
+      "id": "sub_old",
+      "customer_id": "mlg1_b",
+      "original_customer_id": "mlg1_a",
+      "gives_access": true
+    },
+    {
+      "id": "sub_older",
+      "customer_id": "mlg1_a",
+      "original_customer_id": "mlg1_a",
+      "gives_access": false
+    }
+  ],
+  "next_page": null
+}

@@ -355,14 +355,17 @@
       "musclogFreeTier": {
         "sectionTitle": "Offre gratuite Musclog",
         "toggle": "Utiliser le LLM de l'offre gratuite Musclog",
-        "toggleSubtitle": "Utilise Google Gemini. Une limite de requêtes quotidienne s'applique.",
+        "toggleSubtitle": "Fonctionne avec l'offre gratuite de Google, qui peut utiliser ce que tu envoies. La limite quotidienne est partagée par tous les utilisateurs.",
         "activeNote": "L'offre gratuite est active. Tes propres clés API ne sont pas utilisées.",
-        "consentTitle": "Partager les données avec Google Gemini ?",
-        "consentBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, repas, mesures corporelles ou messages de chat) est envoyé via les serveurs de Musclog à l'IA Gemini de Google pour écrire la réponse. Rien n'est envoyé tant que tu n'utilises pas une fonction. L'offre gratuite a un nombre limité de requêtes par jour.",
+        "consentTitle": "Partager les données avec Google ?",
+        "consentBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations ou tes messages de chat) est envoyé via OpenRouter à l'offre gratuite de Google AI Studio pour rédiger la réponse. Google peut conserver ce qui est envoyé, l'utiliser pour améliorer ses produits et le faire relire par des personnes (sans identifiants), donc l'offre gratuite n'est pas privée : n'y saisis aucune information personnelle ou sensible. L'offre gratuite est réservée aux adultes (18+). Si cela ne te convient pas, laisse-la désactivée. Rien n'est envoyé tant que tu n'utilises pas une fonction d'IA. Il existe une limite quotidienne partagée par tous les utilisateurs de l'offre gratuite, qui peut donc être atteinte tôt dans la journée, et l'offre gratuite peut parfois être indisponible.",
         "consentConfirm": "J'accepte et j'active"
       },
       "testKey": "Tester la clé",
-      "testingKey": "Test en cours…"
+      "testingKey": "Test en cours…",
+      "premium": {
+        "activeNote": "Musclog Iron répond à vos requêtes d'IA. Vos propres clés et l'offre gratuite ne sont pas utilisées tant qu'il est activé."
+      }
     },
     "visualSettings": {
       "title": "Apparence et accueil",

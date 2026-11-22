@@ -1,3 +1,5 @@
+import { createListeners } from '@/utils/createListeners';
+
 export type BootProgressSnapshot = {
   active: boolean;
   completed: number;
@@ -20,13 +22,7 @@ const EMPTY_BOOT_PROGRESS: BootProgressState = {
 };
 
 let state = EMPTY_BOOT_PROGRESS;
-const listeners = new Set<() => void>();
-
-function emit() {
-  for (const listener of listeners) {
-    listener();
-  }
-}
+const { subscribe, notify: emit } = createListeners();
 
 function setBootProgress(next: BootProgressState) {
   state = next;
@@ -96,7 +92,4 @@ export function getBootProgressSnapshot(): BootProgressSnapshot {
   return { active, completed, total, target };
 }
 
-export function subscribeBootProgress(listener: () => void): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
+export const subscribeBootProgress = subscribe;

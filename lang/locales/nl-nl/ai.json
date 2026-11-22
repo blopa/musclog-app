@@ -9,7 +9,8 @@
       "tipApiKey": "Gebruik OpenAI of Google Gemini API-sleutels via de AI-instellingen.",
       "tipFeatures": "Eenmaal geconfigureerd, worden je berichten naar het model gestuurd dat je kiest.",
       "openSettings": "Open AI-instellingen",
-      "notNow": "Niet nu"
+      "notNow": "Niet nu",
+      "premium": "Musclog Iron ophalen"
     },
     "providers": {
       "openAIGemini": "OpenAI of Google Gemini"

@@ -1,5 +1,6 @@
 import { AiCancelledError, AiInvalidKeyError, AiTimeoutError } from '../aiErrors';
-import { type CoachAIConfig, withLlmRetry } from '../coachAI';
+import { type CoachAIConfig } from '../coachAI';
+import { withLlmRetry } from '../llmRetry';
 
 jest.mock('../gemini', () => ({
   configureBasicGenAI: jest.fn(),

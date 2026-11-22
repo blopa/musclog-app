@@ -3,8 +3,8 @@
     "title": "Yenilikler",
     "intro": {
       "inside": "Bu turda neler var",
-      "title": "Musclog'u kendine göre ayarla",
-      "description": "Birkaç şey değişti. Hızlıca göz at ve sana uyanı seç. Değişiklikler dokundukça kaydedilir; bu turu Ayarlar'dan yeniden açabilirsin.",
+      "title": "Musclog'da neler yeni",
+      "description": "Uygulamayı son açtığından beri değişenler burada. Hızlıca göz at; bu turu istediğin zaman Ayarlar'dan yeniden açabilirsin.",
       "truncated": "Bu turu en son öne çıkanlarla sınırlı tuttuk."
     },
     "next": "İleri",
@@ -234,6 +234,39 @@
           },
           "action": {
             "label": "İlerlemeyi aç"
+          }
+        }
+      },
+      "v2_17_5": {
+        "intro": {
+          "title": "Musclog Iron ile tanış",
+          "description": "Sana bu kadar büyük bir afişi ilk ve son kez gösteriyoruz. Musclog Iron tamamen isteğe bağlı: Musclog'u %100 ücretsiz kullanmaya devam edebilirsin. Senin rahatlığın için var ve uygulamanın geliştirilmesini finanse etmeye yardımcı olur.",
+          "items": {
+            "optional": "%100 isteğe bağlı, asla zorunlu değil",
+            "ai": "Kurulum gerektirmeden çalışan YZ",
+            "support": "Musclog'un yaşamasını ve geliştirilmesini sağlar"
+          }
+        },
+        "premium": {
+          "title": "Musclog Iron nasıl çalışır",
+          "description": "Musclog ücretsiz, açık kaynaklı ve tek bir geliştirici tarafından yapılıyor. Musclog Iron, YZ'yi hiçbir kurulum yapmadan kullanmanın isteğe bağlı bir yolu; uygulamayı beğendiysen desteklemenin de bir yolu.",
+          "items": {
+            "free": {
+              "label": "Geri kalan her şey ücretsiz kalır",
+              "description": "Kayıt, antrenman, ilerleme ve verilerin ücretsiz. Ücretsiz katman ve kendi YZ anahtarların çalışmaya devam eder."
+            },
+            "tokens": {
+              "label": "Abonelik YZ'nin parasını öder",
+              "description": "YZ'yi çalıştırmak ücretsiz değil: her yanıt jeton harcar. Abonelik bunları karşılar ve YZ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz."
+            },
+            "oneDeveloper": {
+              "label": "Tek bir kişi tarafından yapılıyor",
+              "description": "Mağazanın payı ve YZ maliyetlerinden sonra her abonelikten bana yaklaşık €1 kalıyor. Musclog'u ayakta tutan bu."
+            }
+          },
+          "action": {
+            "label": "Musclog Iron'a bak",
+            "description": "Ayarlar → YZ bölümünde de bulabilirsin."
           }
         }
       }

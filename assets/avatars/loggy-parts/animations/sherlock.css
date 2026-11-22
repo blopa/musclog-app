@@ -1,0 +1,129 @@
+/* Loggy quietly inspects through the glass. The pipe's ember breathes and three puffs of smoke
+   rise in turn: each lifts, swells, thins out, then re-forms small over the bowl. */
+#magnifier,
+#arm-r,
+#hand-r {
+  transform-origin: 372px 336px;
+  animation: loggy-inspect 4.8s ease-in-out infinite;
+}
+#pipe-ember {
+  transform-origin: 397px 298px;
+  animation: loggy-ember 2.4s ease-in-out infinite;
+}
+#smoke-1 {
+  transform-origin: 392px 266px;
+  animation: loggy-smoke-1 4.8s ease-in-out infinite;
+}
+#smoke-2 {
+  transform-origin: 392px 230px;
+  animation: loggy-smoke-2 4.8s ease-in-out infinite;
+}
+#smoke-3 {
+  transform-origin: 390px 215px;
+  animation: loggy-smoke-3 4.8s ease-in-out infinite;
+}
+
+@keyframes loggy-inspect {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-3deg);
+  }
+  68% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes loggy-ember {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes loggy-smoke-1 {
+  0%,
+  100% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+  18% {
+    transform: translate(5px, -14px) scale(1.15, 1.15);
+    opacity: 0.7;
+  }
+  34% {
+    transform: translate(-3px, -32px) scale(1.4, 1.4);
+    opacity: 0;
+  }
+  38% {
+    transform: translate(0px, 0px) scale(0.4, 0.4);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+}
+@keyframes loggy-smoke-2 {
+  0%,
+  100% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+  22% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(-5px, -14px) scale(1.15, 1.15);
+    opacity: 0.7;
+  }
+  56% {
+    transform: translate(4px, -32px) scale(1.4, 1.4);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(0px, 0px) scale(0.4, 0.4);
+    opacity: 0;
+  }
+  72% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+}
+@keyframes loggy-smoke-3 {
+  0%,
+  100% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+  44% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+  62% {
+    transform: translate(4px, -14px) scale(1.15, 1.15);
+    opacity: 0.7;
+  }
+  78% {
+    transform: translate(-4px, -30px) scale(1.4, 1.4);
+    opacity: 0;
+  }
+  82% {
+    transform: translate(0px, 0px) scale(0.4, 0.4);
+    opacity: 0;
+  }
+  94% {
+    transform: translate(0px, 0px) scale(1, 1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #loggy-idle,
+  #loggy-idle * {
+    animation: none !important;
+  }
+}

@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Chat",
+    "freeTierNotice": "Gratis niveau: berichten gaan naar Google AI Studio, dat ze mag bewaren, gebruiken om zijn producten te verbeteren en door mensen laten beoordelen. Voer geen persoonlijke of gevoelige informatie in. Alleen voor volwassenen (18+).",
     "you": "Jij",
     "status": "Online",
     "statusOffline": "Offline",
@@ -116,7 +117,11 @@
       "delete": "Verwijderen",
       "deleteDesc": "Verwijder dit bericht uit het gesprek",
       "copied": "Bericht gekopieerd naar klembord",
-      "deleted": "Bericht verwijderd"
+      "deleted": "Bericht verwijderd",
+      "report": "Een probleem melden",
+      "reportDesc": "Mail een probleem met dit antwoord",
+      "reportSubject": "Probleem met een AI-antwoord van Musclog",
+      "reportIntro": "Wat klopte er niet aan dit antwoord? (Je kunt de tekst hieronder bewerken of verwijderen voordat je verzendt.)"
     },
     "sendViaOpenAI": "Verzenden via OpenAI",
     "personas": {

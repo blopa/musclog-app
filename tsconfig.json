@@ -40,6 +40,9 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "gameboy",
+    "spikes",
+    "services/premium-worker",
+    "infra",
     "training-data/.venv",
     "training-data/output",
     "utils/repCountingModel/*.js"

@@ -1,0 +1,117 @@
+{
+  "premium": {
+    "title": "Musclog Iron",
+    "benefit": "Hosted AI with no key to set up. Musclog Iron runs the AI for you on a monthly allowance.",
+    "loading": "Checking your Musclog Iron status…",
+    "progress": {
+      "store": "Waiting for the store…",
+      "confirming": "Confirming your subscription…",
+      "slow": "Still confirming, this can take a few seconds",
+      "reset": "Resetting Musclog Iron on this device…",
+      "toggle": "Updating your AI setting…"
+    },
+    "wait": {
+      "working": "Musclog Iron is still working…",
+      "busy": "Musclog Iron is busy, retrying…"
+    },
+    "price": "{{price}} a month",
+    "subscribe": "Subscribe",
+    "restore": "Restore purchases",
+    "usage": {
+      "used": "{{pct}}% of this period's allowance used",
+      "renews": "Renews {{date}}"
+    },
+    "devices": "Shared by all your devices",
+    "useForAi": "Use Musclog Iron for my AI",
+    "useForAiHint": "Requests go to the Musclog Iron service, which forwards them to OpenRouter.",
+    "manage": "Manage subscription",
+    "reset": "Reset Musclog Iron on this device",
+    "resetTitle": "Reset Musclog Iron on this device?",
+    "resetBody": "This forgets this device's Musclog Iron enrollment and makes a new device key. Your subscription is not cancelled. Restore purchases adds this device back.",
+    "resetConfirm": "Reset",
+    "consent": {
+      "title": "Send AI requests to Musclog Iron?",
+      "body": "Your messages, and any photos you send to the AI, go to the Musclog Iron service. It forwards them to OpenRouter, which sends them to the AI model provider. Only zero data retention (ZDR) endpoints are used: those providers do not keep your content or use it for training. Musclog's service never stores your messages or photos; it keeps only an identifier for this device and usage counts. You can switch this off at any time.",
+      "confirm": "Use Musclog Iron",
+      "cancel": "Not now"
+    },
+    "renewalDisclosure": "Musclog Iron is a monthly subscription that renews automatically. Payment is charged to your App Store or Google Play account at confirmation. It renews unless you cancel at least 24 hours before the current period ends. Manage or cancel it in your store account settings. The price shown is what the store charges.",
+    "devicesNote": "One subscription and one allowance, shared by all your devices.",
+    "platformsNote": "iOS and Android subscriptions are separate.",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "card": {
+      "checking": "Checking Musclog Iron…",
+      "notSubscribed": "Private hosted AI, no key to set up",
+      "active": "{{pct}}% used · shared by all your devices",
+      "activeNoUsage": "Active · shared by all your devices",
+      "exhausted": "Allowance used up for this period",
+      "removed": "Removed from this subscription",
+      "revoked": "Musclog Iron is not active"
+    },
+    "notice": {
+      "offline": "You're offline. Musclog Iron needs a connection to check your subscription.",
+      "purchase_cancelled": "Purchase cancelled. Nothing was charged.",
+      "purchase_failed": "The purchase did not go through. Try again, or check your store account.",
+      "restore_nothing": "No active Musclog Iron subscription was found for this store account.",
+      "confirming": "Your purchase is still being confirmed. Try again in a minute.",
+      "removed": "This device was removed from this subscription because many newer devices were added. Restore purchases adds this device again.",
+      "revoked": "Musclog Iron is no longer active for this subscription.",
+      "exhausted": "This period's Musclog Iron allowance is used up. It renews on {{date}}. Musclog keeps working, and you can use your own key or the free tier.",
+      "exhaustedNoDate": "This period's Musclog Iron allowance is used up. Musclog keeps working, and you can use your own key or the free tier.",
+      "at_capacity": "Musclog Iron is at capacity until tomorrow (UTC).",
+      "unavailable": "Musclog Iron is unavailable right now. Try again later.",
+      "not_accepting": "Musclog Iron is not taking new subscribers right now.",
+      "not_available": "Musclog Iron isn't available in this store right now.",
+      "warning80": "You have used most of this period's Musclog Iron allowance."
+    },
+    "paywall": {
+      "headline": "Log faster with AI, nothing to set up",
+      "subhead": "Musclog Iron runs the AI for you: no key, no account, and only AI providers that keep nothing you send. Everything else in Musclog stays free.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nothing to set up",
+          "desc": "No API key and no account. Subscribe, and the coach, meal logging and workout plans work right away."
+        },
+        "private": {
+          "title": "Zero data retention",
+          "desc": "Only zero data retention providers are used: they don't keep your messages or train on them. Musclog never stores them either; it keeps only usage counts and a device identifier."
+        },
+        "allowance": {
+          "title": "Your own allowance",
+          "desc": "A monthly allowance for your subscription, not the daily limit every free user shares."
+        },
+        "devices": {
+          "title": "On all your devices",
+          "desc": "Add another phone or tablet with Restore purchases. They share one allowance."
+        },
+        "openSource": {
+          "title": "Keeps Musclog going",
+          "desc": "Musclog is open source. Musclog Iron pays for the hosted AI and supports its development."
+        }
+      },
+      "compare": {
+        "title": "Free tier or Musclog Iron",
+        "free": "Free tier",
+        "premium": "Iron",
+        "privacy": {
+          "label": "What you send",
+          "free": "Google may keep, review and train on it",
+          "premium": "Not kept, not used for training"
+        },
+        "limit": {
+          "label": "Limit",
+          "free": "One daily limit shared by everyone",
+          "premium": "Your own monthly allowance"
+        },
+        "price": {
+          "label": "Price",
+          "free": "Free",
+          "premiumUnknown": "Monthly subscription"
+        }
+      },
+      "cta": "Subscribe for {{price}} a month",
+      "reassurance": "Renews monthly. Cancel any time in your store account."
+    }
+  }
+}

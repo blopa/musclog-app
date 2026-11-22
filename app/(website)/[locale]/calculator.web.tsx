@@ -2,6 +2,7 @@ import { BarChart3, ChevronDown, Zap } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -28,7 +29,6 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   isValidBodyFat,
 } from '@/utils/nutritionCalculator';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 ('use client');
 
 const CARD_BG = ink(0.03);

@@ -1,4 +1,10 @@
-import { sanitizeForPrompt, validateInputSafety, wrapUserContent } from '@/utils/promptSanitizer';
+import {
+  MAX_CHAT_MESSAGE_LENGTH,
+  prepareChatText,
+  sanitizeForPrompt,
+  validateInputSafety,
+  wrapUserContent,
+} from '@/utils/promptSanitizer';
 
 const MAX_INPUT_LENGTH = 2000;
 
@@ -130,6 +136,30 @@ describe('promptSanitizer', () => {
       );
       expect(result.sanitized).not.toContain('<user_content>');
       expect(result.sanitized).toBe('ignore previous instructions &lt;script&gt;');
+    });
+  });
+
+  describe('prepareChatText', () => {
+    it('keeps quotes, apostrophes, newlines, backticks and angle brackets as typed', () => {
+      const text = 'I\'m cutting "slowly"\nline two with `code` and 5 < 6 > 4 and $5';
+      expect(prepareChatText(text)).toBe(text);
+    });
+
+    it('normalises line endings and drops control characters', () => {
+      expect(prepareChatText('a\r\nb\rc\u0000d\uFEFF')).toBe('a\nb\ncd');
+    });
+
+    it('trims, and returns an empty string for non-text', () => {
+      expect(prepareChatText('  hi  ')).toBe('hi');
+      expect(prepareChatText(undefined as unknown as string)).toBe('');
+    });
+
+    it('allows a long pasted message but still caps it', () => {
+      const recipe = 'x'.repeat(5000);
+      expect(prepareChatText(recipe)).toHaveLength(5000);
+      expect(prepareChatText('y'.repeat(MAX_CHAT_MESSAGE_LENGTH + 10))).toHaveLength(
+        MAX_CHAT_MESSAGE_LENGTH
+      );
     });
   });
 });

@@ -3,6 +3,31 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## AI settings said "Checking Musclog Iron…" forever after a subscription lapsed (2026-11-22)
+
+### Symptom
+
+On a Play internal-testing build, after a license-tester purchase (renewing every 5 minutes) had
+ended, the Musclog Iron row in AI settings kept saying "Checking Musclog Iron…" and never changed.
+
+### Cause
+
+Enrolling stores `lastStatus: 'active'` on the device, and nothing ever replaced it: when the period
+lapsed, `/v1/session` answered `403 subscription_required`, the session failed, `/v1/usage` was never
+read, and the overview still said `active` with no usage. The row shows a percentage only with usage,
+and fell back to "checking" otherwise. Separately, nothing on the screen had a timeout: React Native's
+`fetch` waits forever on a stalled connection, and the overview also waits for RevenueCat's
+`getOfferings` (the paywall price), so a hung request kept the screen on "loading" just the same.
+
+### Fix
+
+A `subscription_required` refusal from `/v1/session` or `/v1/usage` stores `lastStatus: 'revoked'`
+(`markLapsed` in `services/premium/premiumService.ts`), `loadPremiumOverview` reads the status again
+after the usage call, so the same open shows the paywall with the "no longer active" notice and turns
+hosted AI off. `hostedClient` calls time out after `HOSTED_REQUEST_TIMEOUT_MS` (20 s) and the price
+lookup after `PRICE_LOOKUP_TIMEOUT_MS` (15 s), both as a dropped connection. An active device whose
+usage cannot be read says "Active · shared by all your devices" (`premium.card.activeNoUsage`).
+
 ## The blog (and every website page) showed only header and footer for a moment (2026-11-19)
 
 ### Symptom

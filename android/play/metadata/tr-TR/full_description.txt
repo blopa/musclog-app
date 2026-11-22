@@ -1,20 +1,20 @@
-<b>Antrenmanlarını ve yediklerini tek uygulamada kaydet: hesap yok, reklam yok, abonelik yok.</b>
+<b>Antrenmanlarını ve yediklerini tek uygulamada kaydet: hesap yok, reklam yok.</b>
 Musclog, ücretsiz ve açık kaynaklı bir antrenman takibi ve kalori sayacıdır. Son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir, yiyecek barkodlarını tarar ve internetsiz çalışır. Verilerin telefonunda kalır.
 
-Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça.
+Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya), Rusça, Almanca, Fransızca, İtalyanca, Lehçe ve Türkçe.
 
 <b>Hiçbir şey kilitli değil</b>
 • Sınırsız antrenman rutini ve programı, tüm geçmişinle birlikte.
-• Barkod tarayıcı, besin etiketi tarama ve yiyecek arama herkes için uygulamada.
-• Tüm grafikler, dışa aktarma ve yedekleme abonelik olmadan dahil.
+• Barkod tarayıcı, etiket tarama ve yiyecek arama herkes için.
+• Tüm grafikler, dışa aktarma ve yedekleme dahil ve ücretsiz.
 
 <b>Antrenman günlüğü ve spor salonu takibi</b>
-• Setleri, tekrarları ve ağırlığı saniyeler içinde kaydet: dinlenme sayacı, ısınma setleri, süperset ve her egzersiz için notlarla.
+• Setleri, tekrarları ve ağırlığı saniyeler içinde kaydet: dinlenme sayacı, ısınma setleri, süperset ve notlarla.
 • Kademeli yüklenme basitleşti: Musclog son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir ve değiştirdiği her sayıyı açıklar. Çift ilerleme, doğrusal veya yüzdeye dayalı kuralları seç ya da tam kontrolü elinde tut.
 • Eforu RPE veya yedekte kalan tekrar (RIR) ile takip et.
 • Fotoğraflı ve hedef kaslı 870'ten fazla egzersiz, kendi dilinde aranabilir; ya da kendininkini ekle.
-• Hazır antrenman programları: Push Pull Legs, Üst/Alt, Full Body, PHUL, 5 günlük bölmeler ve evde ya da ekipmansız kısa rutinler. Ya da kendi haftalık veya döngüsel programını oluştur.
-• Salonunun bar ve plakaları için plaka hesaplayıcı, kg veya lb olarak, istersen egzersiz bazında.
+• Hazır antrenman programları: Push Pull Legs, Üst/Alt, Full Body, PHUL, 5 günlük bölmeler ve evde ya da ekipmansız kısa rutinler. Ya da kendi programını oluştur.
+• Salonun bar ve plakaları için plaka hesaplayıcı, kg veya lb.
 • Makine doluyken ya da bir yer ağrıyorken egzersizi değiştir; Musclog neyden kaçınacağını hatırlasın.
 • Geçmişini Strong, Hevy veya FitNotes'tan içe aktar.
 
@@ -32,19 +32,22 @@ Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Port
 
 <b>Vücut takibi</b>
 • Kilo, vücut yağı, vücut ölçüleri ve ruh hali, grafiklerle.
-• İsteğe bağlı adet döngüsü takibi: adetleri ve belirtileri kaydet, kendi düzenini gör. Tahminler yalnızca tahmindir ve döngü evresine göre antrenman tavsiyesi verilmez.
-• Kilo, beslenme, antrenman ve vücut ölçüleri için Health Connect senkronizasyonu.
+• İsteğe bağlı adet döngüsü takibi: adetleri ve belirtileri kaydet, kendi düzenini gör. Tahminler yalnızca tahmindir; evreye göre antrenman tavsiyesi yoktur.
+• Health Connect senkronizasyonu: kilo, beslenme, antrenman ve vücut ölçüleri.
 
 <b>Yapay zekâ, yalnızca istersen</b>
-• Kendi Gemini, OpenAI veya Claude anahtarınla, yerel bir modelle ya da uygulamaya yerleşik ücretsiz seçenekle bir fitness koçuyla sohbet et, fotoğraftan öğün tahmini yap ve antrenman programı oluştur.
+• Gemini, OpenAI veya Claude anahtarınla, yerel bir modelle ya da uygulamadaki ücretsiz seçenekle koçla sohbet et, fotoğraftan öğün tahmin et ve antrenman programı oluştur.
 • Ya da ChatGPT veya Claude'da bir program hazırla ya da bir öğünü tarif et ve Musclog'a aktar.
 • Koçun seninle nasıl konuşacağını seç. Musclog'da hiçbir şey yapay zekâ gerektirmez.
 
+<b>Musclog Iron (isteğe bağlı)</b>
+Musclog Iron, kendi anahtarın olmadan yapay zekâ isteklerini yanıtlayan aylık bir aboneliktir. Ödeme mağaza hesabından tahsil edilir ve iptal etmediğin sürece her ay otomatik yenilenir; yenilemeden en az 24 saat önce mağaza hesabı ayarlarından iptal edebilirsin. Musclog'un geri kalanı ücretsiz kalır. Koşullar: https://musclog.app/en/terms
+
 <b>Tasarımdan itibaren gizli</b>
 • Kilo, vücut yağı ve yemek günlükleri cihazında şifrelenir.
-• Tüm uygulamayı ya da yalnızca döngü, antrenman, yemek veya ilerleme verilerini telefonunun biyometrisi veya kilit koduyla kilitle.
+• Tüm uygulamayı ya da yalnızca döngü, antrenman, yemek veya ilerleme verilerini biyometrik veya kilit koduyla kilitle.
 • Verilerini dışa aktar veya yedekle ya da QR kodları tarayarak bulut olmadan başka bir telefona taşı.
 • Anonim çökme raporları hataların düzeltilmesine yardımcı olur ve ayarlardan kapatılabilir.
-• Ana ekran widget'ları, birkaç renk teması ve İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça dil desteği.
+• Ana ekran widget'ları ve birkaç renk teması.
 
 Lift, Log, Repeat.

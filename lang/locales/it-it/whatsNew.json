@@ -3,8 +3,8 @@
     "title": "Novità",
     "intro": {
       "inside": "Cosa c'è in questo giro",
-      "title": "Rendi Musclog tuo",
-      "description": "Alcune cose sono cambiate. Dai un'occhiata e scegli ciò che fa per te. Le modifiche si salvano quando tocchi; puoi rivedere questo giro nelle Impostazioni.",
+      "title": "Novità di Musclog",
+      "description": "Ecco cosa è cambiato dall'ultima volta che hai aperto l'app. Dai un'occhiata; puoi rivedere questo giro quando vuoi nelle Impostazioni.",
       "truncated": "Abbiamo limitato questo giro alle novità più importanti."
     },
     "next": "Avanti",
@@ -234,6 +234,39 @@
           },
           "action": {
             "label": "Apri i progressi"
+          }
+        }
+      },
+      "v2_17_5": {
+        "intro": {
+          "title": "Scopri Musclog Iron",
+          "description": "È la prima e l'ultima volta che ti mostriamo un banner così grande. Musclog Iron è totalmente facoltativo: puoi continuare a usare Musclog al 100% gratis. È pensato per la tua comodità e aiuta a finanziare lo sviluppo dell'app.",
+          "items": {
+            "optional": "100% facoltativo, mai obbligatorio",
+            "ai": "IA che funziona subito, senza chiavi da configurare",
+            "support": "Tiene in vita Musclog e il suo sviluppo"
+          }
+        },
+        "premium": {
+          "title": "Come funziona Musclog Iron",
+          "description": "Musclog è gratuito, open source e realizzato da un solo sviluppatore. Musclog Iron è un modo facoltativo per usare l'AI senza configurare nulla, e un modo per sostenere l'app se ti piace.",
+          "items": {
+            "free": {
+              "label": "Tutto il resto resta gratuito",
+              "description": "Registrazione, allenamenti, progressi e i tuoi dati non costano nulla. Il piano gratuito e le tue chiavi AI continuano a funzionare."
+            },
+            "tokens": {
+              "label": "L'abbonamento paga l'AI",
+              "description": "L'AI non è gratuita da far girare: ogni risposta consuma token. Il tuo abbonamento li copre, e i fornitori AI non conservano nulla di ciò che invii."
+            },
+            "oneDeveloper": {
+              "label": "Fatto da una sola persona",
+              "description": "Dopo la quota dello store e i costi dell'AI, di ogni abbonamento restano per me circa 1 €. È ciò che tiene in vita Musclog."
+            }
+          },
+          "action": {
+            "label": "Scopri Musclog Iron",
+            "description": "Lo trovi anche in Impostazioni → AI."
           }
         }
       }

@@ -1,0 +1,17 @@
+<?xml-stylesheet type="text/css" href="../palette.css"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 0 640 640">
+	<g id="sparkles">
+		<g id="sparkle-l">
+			<path class="s12" d="m214 31q2.4 17.6 15 21q-12.6 3.4-15 21q-2.4-17.6-15-21q12.6-3.4 15-21z"/>
+		</g>
+		<g id="sparkle-l-dot">
+			<path class="s12" d="m182.5 31c0-2.5 2-4.5 4.5-4.5c2.5 0 4.5 2 4.5 4.5c0 2.5-2 4.5-4.5 4.5c-2.5 0-4.5-2-4.5-4.5z"/>
+		</g>
+		<g id="sparkle-r">
+			<path class="s12" d="m450 225q3.4 24.4 21 29q-17.6 4.6-21 29q-3.4-24.4-21-29q17.6-4.6 21-29z"/>
+		</g>
+		<g id="sparkle-r-dot">
+			<path class="s12" d="m419.5 222c0-2.5 2-4.5 4.5-4.5c2.5 0 4.5 2 4.5 4.5c0 2.5-2 4.5-4.5 4.5c-2.5 0-4.5-2-4.5-4.5z"/>
+		</g>
+	</g>
+</svg>

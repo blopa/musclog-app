@@ -4,7 +4,7 @@
 #   scripts/release-ios.sh check [--online] [--all-platforms]
 #   scripts/release-ios.sh build [--ipa-out FILE]
 #   scripts/release-ios.sh testflight [--group NAME[,NAME...]] [--beta-review] [--ipa FILE] [--skip-build] [--eas-submit] [--dry-run]
-#   scripts/release-ios.sh submit (--latest | --build-id ID) [--version X.Y.Z] [--yes] [--dry-run]
+#   scripts/release-ios.sh submit (--latest | --build-id ID) --confirm-not-harness [--version X.Y.Z] [--yes] [--dry-run]
 #   scripts/release-ios.sh status
 #   scripts/release-ios.sh review
 #
@@ -169,9 +169,10 @@ cmd_testflight() {
 
 # --- submit ------------------------------------------------------------------------------------------------
 cmd_submit() {
-  local id="" latest=0 version="" yes=0 dry=0 app
+  local id="" latest=0 version="" yes=0 dry=0 app not_harness=0
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      --confirm-not-harness) not_harness=1; shift ;;
       --build-id) id="${2:?--build-id needs a value}"; shift 2 ;;
       --latest) latest=1; shift ;;
       --version) version="${2:?--version needs a value}"; shift 2 ;;
@@ -180,6 +181,9 @@ cmd_submit() {
       *) die "submit: unknown option $1" ;;
     esac
   done
+  # TestFlight may hold a hand-uploaded premium-harness build (docs/PREMIUM_WORKER.md); submitting sends it to review.
+  [[ "$not_harness" -eq 1 || "$dry" -eq 1 ]] \
+    || die "submit needs --confirm-not-harness: check that the build was made with the production EAS profile, not premium-harness."
   cmd_check
   app="$(asc_app_id)"
   version="${version:-$(app_version)}"

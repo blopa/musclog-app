@@ -38,6 +38,8 @@ const WEBSITE_LOCALES = [
 ];
 
 const DEFAULT_LOCALE_PREFIX = 'en';
+/** The localStorage key the language picker writes and the pre-boot script reads. */
+const LANGUAGE_STORAGE_KEY = 'musclog_lang';
 const X_DEFAULT = 'x-default';
 
 const LOCALE_BY_PREFIX = new Map(WEBSITE_LOCALES.map((locale) => [locale.prefix, locale]));
@@ -171,6 +173,7 @@ function legacyForwardPath(pathname, search = '', hash = '') {
 
 module.exports = {
   DEFAULT_LOCALE_PREFIX,
+  LANGUAGE_STORAGE_KEY,
   WEBSITE_LOCALES,
   X_DEFAULT,
   hreflangAlternatePaths,

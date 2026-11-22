@@ -2,11 +2,13 @@ import Anthropic from '@anthropic-ai/sdk';
 import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
+import { MUSCLOG_GATEWAY_MAX_TOKENS, MUSCLOG_GATEWAY_PROVIDER } from '@/constants/gateway';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
-import { isProduction } from '@/utils/app';
+import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
+import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
 import { notifyUserFacingAiError } from './aiErrorNotice';
 import {
@@ -14,7 +16,6 @@ import {
   AiInvalidKeyError,
   AiTimeoutError,
   rethrowUserFacingAiError,
-  toUserFacingAiError,
 } from './aiErrors';
 import {
   buildClaudeClient,
@@ -25,9 +26,14 @@ import {
   claudeStreamDelta,
   extractClaudeText,
 } from './claude';
+import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
+import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
+import { providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
+import { withLlmRetry } from './llmRetry';
+import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
@@ -60,7 +66,7 @@ import {
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
-import { wrapUserContent } from './promptSanitizer';
+import { prepareChatText, wrapUserContent } from './promptSanitizer';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -77,14 +83,23 @@ export class GatewayRateLimitError extends AiCreditsError {
 }
 
 export function isAiCreditsError(error: any): boolean {
-  if (error instanceof AiCreditsError) {
+  // A used-up Premium allowance is a credits problem too (the person can use their own key).
+  if (error instanceof AiCreditsError || hostedErrorKindOf(error) === 'budget') {
     return true;
   }
 
   const status = error?.status ?? error?.response?.status;
   const code = error?.error?.code ?? error?.code;
   const message = (error?.message ?? '').toLowerCase();
-  if (status === 429) {
+  if (status === 429 || status === 402) {
+    return true;
+  }
+
+  // OpenRouter: a spent guardrail budget or key limit answers 403 with the limit's source.
+  if (
+    status === 403 &&
+    String(error?.error?.metadata?.limit_source ?? '').startsWith('openrouter_')
+  ) {
     return true;
   }
 
@@ -123,16 +138,27 @@ export function isAiConnectionError(error: unknown): boolean {
 }
 
 /**
+ * Hosted Premium kinds that reach Sentry: `unavailable` (the Worker failed: 5xx, hosted_disabled,
+ * an expired session) and `alreadyProcessed` (the app's idempotency key is broken). Every other
+ * hosted kind (budget, daily limit, subscription, removed, daily full, busy) is the subscriber's
+ * normal state or a retry the app already handles, so it stays out.
+ */
+const HOSTED_KINDS_REPORTED = new Set<HostedErrorKind>(['unavailable', 'alreadyProcessed']);
+
+/**
  * A rate limit or exhausted quota is the provider refusing the request, not a Musclog bug: it is
  * reported to the user (see `AiCreditsError`) but must not reach Sentry, where every busy hour on a
  * shared key or the gateway's daily cap filed an unactionable `429 status code (no body)` event.
  * A dropped connection (`isAiConnectionError`) is likewise the user's network, not ours.
  */
 export function reportAiError(error: unknown, context: string): void {
+  const hostedKind = hostedErrorKindOf(error);
   handleError(error, context, {
     sendToSentry:
       !isAiCreditsError(error) &&
       !isAiConnectionError(error) &&
+      // Typed Premium failures are the Worker's answer, except the kinds that are real faults.
+      (hostedKind === null || HOSTED_KINDS_REPORTED.has(hostedKind)) &&
       // A rejected key, a timeout and a cancel are the user's configuration or network, not bugs.
       !(
         error instanceof AiInvalidKeyError ||
@@ -142,172 +168,8 @@ export function reportAiError(error: unknown, context: string): void {
   });
 }
 
-const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
-const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
-
-function getErrorStatus(error: any): number | undefined {
-  return error?.status ?? error?.response?.status;
-}
-
-function getErrorCode(error: any): string {
-  return String(error?.error?.code ?? error?.code ?? '').toLowerCase();
-}
-
-function getErrorMessage(error: any): string {
-  return String(error?.message ?? '').toLowerCase();
-}
-
-function isQuotaStyleError(error: any): boolean {
-  const code = getErrorCode(error);
-  const message = getErrorMessage(error);
-
-  if (code === 'insufficient_quota') {
-    return true;
-  }
-
-  return (
-    message.includes('quota') ||
-    message.includes('insufficient_quota') ||
-    message.includes('resource_exhausted') ||
-    message.includes('billing') ||
-    message.includes('daily limit')
-  );
-}
-
-function shouldRetryLlmError(error: any): boolean {
-  const status = getErrorStatus(error);
-  if (status === undefined || !RETRYABLE_LLM_STATUSES.has(status)) {
-    return false;
-  }
-
-  if (status === 429 && isQuotaStyleError(error)) {
-    return false;
-  }
-
-  return true;
-}
-
-async function sleep(ms: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/** Image analysis uploads a photo and structured plans can think for a while: 60 s is generous but finite. */
-const LLM_REQUEST_TIMEOUT_MS = 60_000;
-
-/**
- * Runs one request with a timeout and an optional caller cancel, handing the request an abort
- * signal. A timeout becomes `AiTimeoutError` and a cancel `AiCancelledError`, whatever the SDK
- * threw when it was aborted (each throws a different thing).
- *
- * The request also gets `touch()`. A streaming request calls it per chunk, which turns the timeout
- * into an idle timeout: a long answer that keeps flowing is never cut, a stalled one still is.
- */
-async function runWithAbort<T>(
-  config: CoachAIConfig,
-  request: (signal: AbortSignal, touch: () => void) => Promise<T>
-): Promise<T> {
-  const controller = new AbortController();
-  let timedOut = false;
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const arm = () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      timedOut = true;
-      controller.abort();
-    }, config.timeoutMs ?? LLM_REQUEST_TIMEOUT_MS);
-  };
-
-  arm();
-  const onExternalAbort = () => controller.abort();
-  if (config.signal?.aborted) {
-    controller.abort();
-  } else {
-    config.signal?.addEventListener('abort', onExternalAbort);
-  }
-
-  try {
-    return await request(controller.signal, arm);
-  } catch (error) {
-    if (timedOut) {
-      throw new AiTimeoutError();
-    }
-
-    if (config.signal?.aborted) {
-      throw new AiCancelledError();
-    }
-
-    throw error;
-  } finally {
-    clearTimeout(timer);
-    config.signal?.removeEventListener('abort', onExternalAbort);
-  }
-}
-
-/** Exported for tests; not part of the module's public surface. */
-export async function withLlmRetry<T>(
-  operation: string,
-  config: CoachAIConfig,
-  request: (signal: AbortSignal, touch: () => void) => Promise<T>,
-  options?: {
-    /**
-     * True once a streaming request has shown text. A retry would restart the reply under the
-     * user's eyes, so from then on a failure is thrown, not retried.
-     */
-    hasStreamed?: () => boolean;
-  }
-): Promise<T> {
-  const provider = config.provider;
-  let attempt = 0;
-  let timeoutRetried = false;
-
-  while (true) {
-    try {
-      return await runWithAbort(config, request);
-    } catch (error) {
-      if (error instanceof AiCancelledError) {
-        throw error;
-      }
-
-      // A wrong key never gets better by asking again, and is not retried.
-      const userFacing = toUserFacingAiError(error, provider);
-      if (userFacing instanceof AiInvalidKeyError) {
-        throw userFacing;
-      }
-
-      if (options?.hasStreamed?.()) {
-        throw userFacing ?? error;
-      }
-
-      if (userFacing instanceof AiTimeoutError) {
-        // A stalled request usually stays stalled: one more try, not three.
-        if (timeoutRetried) {
-          throw userFacing;
-        }
-
-        timeoutRetried = true;
-        console.warn(`[coachAI] ${operation} timed out on ${provider}; retrying once`);
-        continue;
-      }
-
-      if (attempt >= LLM_RETRY_DELAYS_MS.length || !shouldRetryLlmError(error)) {
-        throw error;
-      }
-
-      const delayMs = LLM_RETRY_DELAYS_MS[attempt];
-      const nextAttempt = attempt + 2;
-      const status = getErrorStatus(error);
-
-      console.warn(
-        `[coachAI] ${operation} transient ${status ?? 'unknown'} from ${provider}; retrying in ${delayMs}ms (attempt ${nextAttempt}/${LLM_RETRY_DELAYS_MS.length + 1})`
-      );
-
-      attempt += 1;
-      await sleep(delayMs);
-    }
-  }
-}
-
-export type CoachAIProvider = 'gemini' | 'openai' | 'claude' | 'on-device' | 'local' | 'gateway';
+export type CoachAIProvider =
+  'gemini' | 'openai' | 'claude' | 'on-device' | 'local' | 'gateway' | 'hosted';
 
 export interface ProviderConfig {
   maxCharBudget: number; // Maximum character budget for the total request context
@@ -316,6 +178,9 @@ export interface ProviderConfig {
   enableFoundationFoods: boolean;
   enableMemories: boolean;
 }
+
+/** The context budget of every provider with a large context window. */
+const LARGE_CONTEXT_CHAR_BUDGET = 64000;
 
 export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   'on-device': {
@@ -326,21 +191,21 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     enableMemories: false,
   },
   gemini: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
     enableMemories: true,
   },
   openai: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
     enableMemories: true,
   },
   claude: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
@@ -354,7 +219,14 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     enableMemories: true,
   },
   gateway: {
-    maxCharBudget: 64000,
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+  hosted: {
+    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
     promptComplexity: 'standard',
     enableContextInjection: true,
     enableFoundationFoods: true,
@@ -362,40 +234,63 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   },
 };
 
-export type CoachAIConfig = {
+type CoachAIConfigFields = {
   provider: CoachAIProvider;
   apiKey?: string;
   model: string;
   baseUrl?: string;
   language?: string;
-  gatewayByokAlias?: string;
-  gatewayUserId?: string;
   /** Aborts the request when the caller cancels (a Cancel button). */
   signal?: AbortSignal;
   /** Overrides the default request timeout, in milliseconds. */
   timeoutMs?: number;
 };
 
+/**
+ * A config that can send, or a hosted one whose session token could not be minted (built by
+ * `AiService`): the second carries why, and its requests fail with the matching hosted error
+ * without being sent, so the data recipient never changes silently. The failure exists only on the
+ * hosted variant.
+ */
+export type CoachAIConfig =
+  | (CoachAIConfigFields & { hostedGrantFailure?: undefined })
+  | (Omit<CoachAIConfigFields, 'provider' | 'apiKey' | 'baseUrl'> & {
+      provider: 'hosted';
+      hostedGrantFailure: PremiumActionFailure;
+      apiKey?: undefined;
+      baseUrl?: undefined;
+    });
+
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
-  // In web dev mode, route gateway requests through a local CORS proxy —
-  // Cloudflare AI Gateway doesn't return CORS headers for browser preflights.
-  const devWebProxyFetch =
-    !isProduction() && config.provider === 'gateway'
-      ? (url: RequestInfo | URL, init?: RequestInit) =>
-          fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, init)
+  // Free-tier requests are pinned to one OpenRouter provider with no fallbacks (see
+  // `withGatewayProviderPin`); OpenRouter answers browser CORS preflights, so no proxy is needed.
+  const pinFetch: typeof fetch | undefined =
+    config.provider === 'gateway' && MUSCLOG_GATEWAY_PROVIDER
+      ? (url, init) =>
+          fetch(
+            url,
+            init?.body === undefined
+              ? init
+              : {
+                  ...init,
+                  body: withGatewayProviderPin(
+                    init.body,
+                    MUSCLOG_GATEWAY_PROVIDER,
+                    MUSCLOG_GATEWAY_MAX_TOKENS
+                  ),
+                }
+          )
       : undefined;
 
   return new OpenAI({
     apiKey: config.apiKey ?? 'unused',
     baseURL: config.baseUrl,
     dangerouslyAllowBrowser: true,
-    defaultHeaders: config.gatewayByokAlias
-      ? {
-          'cf-aig-byok-alias': config.gatewayByokAlias,
-          ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
-        }
-      : undefined,
-    fetch: devWebProxyFetch,
+    // A provider whose retries are `withLlmRetry`'s alone turns the SDK's own off (hosted policy).
+    // Per-request headers (the hosted idempotency key) are passed per call through the `options` that
+    // `withLlmRetry` hands the request, never as client defaults.
+    maxRetries: providerPolicyFor(config.provider).sdkMaxRetries,
+    fetch: pinFetch,
   });
 }
 
@@ -419,14 +314,12 @@ async function logLlmDebugEvent(params: {
   }
 }
 
-export type ChatHistoryEntry = {
-  role: 'user' | 'coach';
-  content: string;
-};
+export type ChatHistoryEntry = HistoryTurn;
 
 export type CoachResponse = {
   msg4User: string;
-  sumMsg: string;
+  /** Only older replies and the templated ones carry one; the model is no longer asked for it. */
+  sumMsg?: string;
   sumUserMsg?: string;
   rememberMe?: string;
 };
@@ -491,18 +384,33 @@ async function streamGeminiText(
     config,
     async (signal, touch) => {
       sink.reset();
+      let usage: LlmUsage | null = null;
       const chunks = await genModel.generateContentStream({ contents, abortSignal: signal });
       for await (const chunk of chunks) {
         touch();
+        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
         const { text } = extractGeminiText(chunk);
         if (text) {
           sink.onDelta(text);
         }
       }
 
+      noteUsage(config, operation, usage);
       return sink.raw();
     },
     { hasStreamed: sink.hasEmitted }
+  );
+}
+
+/** One non-streaming OpenAI-compatible completion, retried and timed out by `withLlmRetry`. */
+function createOpenAiCompletion(
+  client: OpenAI,
+  operation: string,
+  config: CoachAIConfig,
+  payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming
+) {
+  return withLlmRetry(operation, config, (_signal, _touch, options) =>
+    client.chat.completions.create(payload, options)
   );
 }
 
@@ -516,17 +424,21 @@ async function streamOpenAiText(
   return withLlmRetry(
     operation,
     config,
-    async (signal, touch) => {
+    async (_signal, touch, options) => {
       sink.reset();
-      const chunks = await client.chat.completions.create({ ...payload, stream: true }, { signal });
+      let usage: LlmUsage | null = null;
+      const chunks = await client.chat.completions.create({ ...payload, stream: true }, options);
       for await (const chunk of chunks) {
         touch();
+        // Only present when the provider sends it (OpenRouter does, on the last chunk).
+        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
         const delta = chunk.choices[0]?.delta?.content;
         if (delta) {
           sink.onDelta(delta);
         }
       }
 
+      noteUsage(config, operation, usage);
       return sink.raw();
     },
     { hasStreamed: sink.hasEmitted }
@@ -544,10 +456,14 @@ async function buildClaudeParams(
   config: CoachAIConfig,
   system: string,
   messages: Anthropic.MessageParam[],
-  options?: { schema?: object }
+  options?: { schema?: object; cache?: boolean }
 ): Promise<ClaudeParams> {
   return {
     model: config.model,
+    // Automatic prompt caching: the rules, persona, profile and data are the same from one message
+    // to the next, so only the newest turn is paid for in full. Chat only: a one-off request
+    // would pay the cache write for nothing.
+    ...(options?.cache ? { cache_control: { type: 'ephemeral' as const } } : {}),
     max_tokens: CLAUDE_MAX_TOKENS,
     system,
     messages,
@@ -599,6 +515,7 @@ async function runClaude(
           }
         }
 
+        noteUsage(config, operation, await finalClaudeUsage(events));
         return sink.raw();
       },
       { hasStreamed: sink.hasEmitted }
@@ -607,6 +524,7 @@ async function runClaude(
     const message = await withLlmRetry(operation, config, (signal) =>
       client.messages.create(params, { signal })
     );
+    noteUsage(config, operation, extractLlmUsage(message));
     text = extractClaudeText(message).text;
   }
 
@@ -759,46 +677,31 @@ export type NutritionEntry = {
   sugar?: number;
 };
 
-const LENGTH_SOFT_LIMIT = 50;
-
 const baseSchemaProperties = {
   msg4User: {
     type: 'string',
     description: 'The full response to display to the user in the chat.',
-  },
-  sumMsg: {
-    type: 'string',
-    description:
-      'A shortened version of msg4User trimmed to 1-2 sentences. Keep the same first-person voice and key points — write it as you would say it, not as a description of what you said.',
-  },
-};
-
-const sumUserMsgProperty = {
-  sumUserMsg: {
-    type: 'string',
-    description:
-      "A shortened version of the user's message trimmed to 1 sentence. Keep their voice and key intent — write it as they would say it, not as a description of what they said.",
   },
 };
 
 const rememberMeProperty = {
   remember_me: {
     type: 'string',
-    description: 'A short sentence with something important to remember about the user.',
+    description:
+      'A short neutral fact worth keeping about the user for months (an injury, a preference, equipment, a schedule, a goal). An empty string when there is nothing.',
   },
 };
 
-function buildResponseSchema(includeUserSummary: boolean) {
-  const properties = {
-    ...baseSchemaProperties,
-    ...(includeUserSummary ? sumUserMsgProperty : {}),
-    ...rememberMeProperty,
-  };
-
+/**
+ * `remember_me` is required (an empty string means "nothing"): strict structured output wants every
+ * property listed, and a small model fills a required field more reliably than it opts into an
+ * optional one.
+ */
+function buildResponseSchema() {
   return {
     type: 'object',
-    properties,
-    required: includeUserSummary ? ['msg4User', 'sumMsg', 'sumUserMsg'] : ['msg4User', 'sumMsg'],
+    properties: { ...baseSchemaProperties, ...rememberMeProperty },
+    required: ['msg4User', 'remember_me'],
   };
 }
 
@@ -870,12 +773,12 @@ function parseCoachResponse(raw: string): CoachResponse {
     const parsed = JSON.parse(cleanJson);
     return {
       msg4User: parsed.msg4User ?? raw,
-      sumMsg: parsed.sumMsg ?? raw,
+      sumMsg: parsed.sumMsg ?? undefined,
       sumUserMsg: parsed.sumUserMsg ?? undefined,
       rememberMe: parsed.remember_me ?? undefined,
     };
   } catch {
-    return { msg4User: raw, sumMsg: raw };
+    return { msg4User: raw };
   }
 }
 
@@ -921,6 +824,40 @@ function makeSchemaStrict(schema: any): any {
   return schema;
 }
 
+/**
+ * The chat system prompt. A session the conversation already carries in full (the workout just
+ * finished) is left out of the prompt's own list of recent workouts, or the model reads it twice.
+ */
+function chatSystemPrompt(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> {
+  return getChatMessagePromptContent(config.language, undefined, context, config.provider, {
+    excludeWorkoutLogIds: history.flatMap((entry) =>
+      entry.workoutLogId ? [entry.workoutLogId] : []
+    ),
+  });
+}
+
+/** The usage of a finished Claude stream. Telemetry only: whatever goes wrong, the reply stands. */
+async function finalClaudeUsage(events: {
+  finalMessage?: () => Promise<unknown>;
+}): Promise<LlmUsage | null> {
+  try {
+    return extractLlmUsage(await events.finalMessage?.());
+  } catch {
+    return null;
+  }
+}
+
+/** Keeps what a request cost, so cache hits and bloat can be seen. */
+function noteUsage(config: CoachAIConfig, operation: string, usage: LlmUsage | null): void {
+  if (usage) {
+    recordLlmUsage({ operation, provider: config.provider, usage });
+  }
+}
+
 // --- Provider Implementations ---
 
 async function sendViaGemini(
@@ -931,26 +868,15 @@ async function sendViaGemini(
   stream?: CoachStream
 ): Promise<CoachResponse> {
   const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.gemini;
-  const systemPrompt = await getChatMessagePromptContent(
-    config.language,
-    undefined,
-    context,
-    config.provider
-  );
+  const systemPrompt = await chatSystemPrompt(config, history, context);
   const systemParts: Part[] = [{ text: systemPrompt }];
-  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
 
   const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
   // Gemini does not promise the schema's property order, and the reply is shown from the first
   // property while the rest is still being written.
   const responseSchema = {
-    ...buildResponseSchema(includeUserSummary),
-    propertyOrdering: [
-      'msg4User',
-      'sumMsg',
-      ...(includeUserSummary ? ['sumUserMsg'] : []),
-      'remember_me',
-    ],
+    ...buildResponseSchema(),
+    propertyOrdering: ['msg4User', 'remember_me'],
   };
 
   const genModel = await configureBasicGenAI(
@@ -1017,6 +943,7 @@ async function sendViaGemini(
     config,
   });
 
+  noteUsage(config, 'sendViaGemini', extractLlmUsage(result));
   const raw = extractRawText(result);
   return parseCoachResponse(raw);
 }
@@ -1029,15 +956,9 @@ async function sendViaOpenAI(
   stream?: CoachStream
 ): Promise<CoachResponse> {
   const client = buildOpenAIClient(config);
-  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
   const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
 
-  const systemPrompt = await getChatMessagePromptContent(
-    config.language,
-    undefined,
-    context,
-    config.provider
-  );
+  const systemPrompt = await chatSystemPrompt(config, history, context);
 
   const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
   const normalized = normalizeHistory(truncatedHistory);
@@ -1051,7 +972,7 @@ async function sendViaOpenAI(
     { role: 'user', content: userMessage },
   ];
 
-  const schema = makeSchemaStrict(buildResponseSchema(includeUserSummary));
+  const schema = makeSchemaStrict(buildResponseSchema());
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages,
@@ -1095,8 +1016,11 @@ async function sendViaOpenAI(
       return parseCoachResponse(streamedRaw || '{}');
     }
 
-    const completion = await withLlmRetry('sendViaOpenAI', config, (signal) =>
-      client.chat.completions.create(requestPayload, { signal })
+    const completion = await createOpenAiCompletion(
+      client,
+      'sendViaOpenAI',
+      config,
+      requestPayload
     );
 
     await logLlmDebugEvent({
@@ -1107,6 +1031,7 @@ async function sendViaOpenAI(
       config,
     });
 
+    noteUsage(config, 'sendViaOpenAI', extractLlmUsage(completion));
     const raw = completion.choices[0]?.message?.content ?? '{}';
     return parseCoachResponse(raw);
   } catch (error) {
@@ -1162,19 +1087,13 @@ async function sendViaClaude(
   context?: 'nutrition' | 'exercise' | 'general',
   stream?: CoachStream
 ): Promise<CoachResponse> {
-  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
-  const systemPrompt = await getChatMessagePromptContent(
-    config.language,
-    undefined,
-    context,
-    config.provider
-  );
+  const systemPrompt = await chatSystemPrompt(config, history, context);
   const truncatedHistory = truncateHistoryByBudget(history, PROVIDER_CONFIGS.claude.maxCharBudget);
   const params = await buildClaudeParams(
     config,
     systemPrompt,
     buildClaudeMessages(truncatedHistory, userMessage),
-    { schema: buildResponseSchema(includeUserSummary) }
+    { schema: buildResponseSchema(), cache: true }
   );
 
   const sink = stream ? createStreamSink(stream, 'coachJson') : null;
@@ -1433,9 +1352,7 @@ async function generateText(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry('generateText', config, (signal) =>
-    client.chat.completions.create(requestPayload, { signal })
-  );
+  const completion = await createOpenAiCompletion(client, 'generateText', config, requestPayload);
 
   await logLlmDebugEvent({
     provider: config.provider,
@@ -1592,8 +1509,11 @@ async function generateTextWithHistory(
     return streamedRaw.trim();
   }
 
-  const completion = await withLlmRetry('generateTextWithHistory', config, (signal) =>
-    client.chat.completions.create(requestPayload, { signal })
+  const completion = await createOpenAiCompletion(
+    client,
+    'generateTextWithHistory',
+    config,
+    requestPayload
   );
 
   await logLlmDebugEvent({
@@ -1777,9 +1697,7 @@ export async function requestStructured<T = unknown>(
     config,
   });
 
-  const completion = await withLlmRetry(operation, config, (signal) =>
-    client.chat.completions.create(payload, { signal })
-  );
+  const completion = await createOpenAiCompletion(client, operation, config, payload);
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
@@ -1970,7 +1888,13 @@ async function generateWithImageStructured<T>(
 
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
-  const dataUrl = `data:${mimeType};base64,${base64Image}`;
+  // A provider that limits photos (hosted: the Worker's advertised limits) prepares them first;
+  // every other request sends the photo as it is.
+  const prepareImage = providerPolicyFor(config.provider).prepareImage;
+  const image = prepareImage
+    ? await prepareImage(base64Image, mimeType)
+    : { base64: base64Image, mimeType };
+  const dataUrl = `data:${image.mimeType};base64,${image.base64}`;
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
@@ -2001,8 +1925,11 @@ async function generateWithImageStructured<T>(
     config,
   });
 
-  const completion = await withLlmRetry('generateWithImageStructured', config, (signal) =>
-    client.chat.completions.create(requestPayload, { signal })
+  const completion = await createOpenAiCompletion(
+    client,
+    'generateWithImageStructured',
+    config,
+    requestPayload
   );
 
   await logLlmDebugEvent({
@@ -2229,12 +2156,19 @@ export async function sendCoachMessage(
   context?: 'nutrition' | 'exercise' | 'general',
   stream?: CoachStream
 ): Promise<CoachResponse> {
-  // Wrap user message with delimiters to prevent prompt injection attacks
-  const sanitizedMessage = wrapUserContent(userMessage);
+  // The person's own message goes through as typed (see `prepareChatText`); it used to be escaped
+  // as if it were text spliced into a template, so the model read "I\'m" and "\n".
+  const text = prepareChatText(userMessage);
 
+  // On-device keeps its tight budget and its own date line, so nothing is added there.
   if (config.provider === 'on-device') {
-    return sendViaOnDevice(config, history, sanitizedMessage, context, stream);
+    return sendViaOnDevice(config, history, text, context, stream);
   }
+
+  // Every user turn carries the time it was sent, the newest also how long the pause was.
+  const tagged = tagTurnsWithTime(history, text, Date.now());
+  history = tagged.history;
+  const sanitizedMessage = tagged.userMessage;
 
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context, stream);
@@ -2244,16 +2178,8 @@ export async function sendCoachMessage(
     return sendViaClaude(config, history, sanitizedMessage, context, stream);
   }
 
-  // Local provider uses OpenAI-compatible API but with a custom base URL
-  if (config.provider === 'local') {
-    return sendViaOpenAI(config, history, sanitizedMessage, context, stream);
-  }
-
-  // Gateway uses OpenAI-compatible protocol via Cloudflare AI Gateway
-  if (config.provider === 'gateway') {
-    return sendViaOpenAI(config, history, sanitizedMessage, context, stream);
-  }
-
+  // OpenAI, local (custom base URL), gateway (the free tier, via OpenRouter) and hosted all speak
+  // the OpenAI-compatible protocol.
   return sendViaOpenAI(config, history, sanitizedMessage, context, stream);
 }
 

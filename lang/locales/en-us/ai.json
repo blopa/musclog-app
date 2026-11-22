@@ -9,7 +9,8 @@
       "tipApiKey": "Use OpenAI or Google Gemini API keys from AI settings.",
       "tipFeatures": "Once configured, your messages are sent to the model you choose.",
       "openSettings": "Open AI settings",
-      "notNow": "Not now"
+      "notNow": "Not now",
+      "premium": "Get Musclog Iron"
     },
     "providers": {
       "openAIGemini": "OpenAI or Google Gemini"

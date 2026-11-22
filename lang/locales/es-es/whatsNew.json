@@ -3,8 +3,8 @@
     "title": "Novedades",
     "intro": {
       "inside": "Qué incluye este recorrido",
-      "title": "Musclog a tu medida",
-      "description": "Algunas cosas han cambiado. Echa un vistazo y elige lo que mejor te funcione. Los cambios se guardan al tocar; puedes volver a este recorrido desde Ajustes.",
+      "title": "Novedades de Musclog",
+      "description": "Esto es lo que ha cambiado desde la última vez que abriste la app. Echa un vistazo; puedes volver a este recorrido cuando quieras desde Ajustes.",
       "truncated": "Este recorrido incluye solo las novedades más recientes."
     },
     "next": "Siguiente",
@@ -234,6 +234,39 @@
           },
           "action": {
             "label": "Abrir Progreso"
+          }
+        }
+      },
+      "v2_17_5": {
+        "intro": {
+          "title": "Conoce Musclog Iron",
+          "description": "Es la primera y última vez que te mostramos un banner tan grande. Musclog Iron es totalmente opcional: puedes seguir usando Musclog 100 % gratis. Está pensado para tu comodidad y ayuda a pagar el desarrollo de la app.",
+          "items": {
+            "optional": "100 % opcional, nunca obligatorio",
+            "ai": "IA que funciona sin más, sin claves que configurar",
+            "support": "Mantiene vivo Musclog y en desarrollo"
+          }
+        },
+        "premium": {
+          "title": "Cómo funciona Musclog Iron",
+          "description": "Musclog es gratis, de código abierto y lo hace una sola persona. Musclog Iron es una forma opcional de usar la IA sin configurar nada, y una manera de apoyar la app si te gusta.",
+          "items": {
+            "free": {
+              "label": "Todo lo demás sigue siendo gratis",
+              "description": "Registrar, entrenamientos, progreso y tus datos no cuestan nada. El nivel gratuito y tus propias claves de IA siguen funcionando."
+            },
+            "tokens": {
+              "label": "Tu suscripción paga la IA",
+              "description": "La IA no es gratis de ejecutar: cada respuesta consume tokens. Tu suscripción los cubre, y los proveedores de IA no se quedan con lo que envías."
+            },
+            "oneDeveloper": {
+              "label": "Hecho por una sola persona",
+              "description": "Tras la parte de la tienda y los costes de la IA, a mí me quedan solo unos €1 de cada suscripción. Es lo que mantiene Musclog en marcha."
+            }
+          },
+          "action": {
+            "label": "Ver Musclog Iron",
+            "description": "También lo encontrarás en Ajustes → IA."
           }
         }
       }

@@ -1,3 +1,6 @@
+// Premium UI is on by default in builds; hide it here so suites that do not test it see it off.
+process.env.EXPO_PUBLIC_HIDE_PREMIUM_UI = '1';
+
 // Setup file for jsdom environment (hook tests)
 // This file is used instead of the default jest.setup.js to avoid React Native setup conflicts
 // No React Native setup is loaded here, preventing window property conflicts

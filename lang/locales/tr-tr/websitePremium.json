@@ -1,0 +1,75 @@
+{
+  "websitePremium": {
+    "hero": {
+      "title": "API anahtarı olmadan çalışan YZ",
+      "lead": "Musclog ücretsiz ve açık kaynaklıdır, öyle de kalacak. Musclog Iron, YZ özelliklerini senin yerine çalıştıran isteğe bağlı aylık bir aboneliktir; bulup yapıştıracağın ya da ödeyeceğin bir anahtar yoktur.",
+      "cta": "Musclog’u al",
+      "note": "Aboneliğe uygulama içinden, App Store ya da Google Play hesabınla katılırsın."
+    },
+    "free": {
+      "title": "Geri kalan her şey ücretsiz kalır",
+      "body": "Antrenman ve beslenme takibi, verilerinin kendi cihazında olması ve uygulamanın diğer tüm özellikleri Musclog Iron gerektirmez. YZ özelliklerinin her zaman ücretsiz yolları oldu ve hâlâ var:",
+      "items": [
+        "Kendi Google Gemini, OpenAI ya da Anthropic Claude API anahtarını kullan ve ücreti doğrudan sağlayıcıya öde.",
+        "Ücretsiz Musclog AI seçeneğini kullan.",
+        "Cihazın destekliyorsa cihaz üzerinde YZ ya da yerel bir model kullan.",
+        "Hiçbirini kullanma. Musclog YZ olmadan da tam olarak çalışır."
+      ]
+    },
+    "how": {
+      "title": "Nasıl çalışır",
+      "steps": [
+        "Ayarlar’ı, ardından YZ ayarları’nı aç ve Musclog Iron’ı seç.",
+        "Mağaza hesabınla abone ol. Satın alımları geri yükle, var olan bir aboneliği geri getirir.",
+        "Gizlilik bildirimini oku ve \"YZ’m için Musclog Iron’ı kullan\" seçeneğini aç. Bunu yapana kadar hiçbir şey gönderilmez.",
+        "Koçu, öğün takibini ve antrenman planlarını diğer sağlayıcılarda olduğu gibi kullan."
+      ]
+    },
+    "allowance": {
+      "title": "Uygulamada gösterilen aylık kota",
+      "body": "Her abonelik dönemi bir YZ kullanım kotasıyla gelir. Uygulama ne kadarını kullandığını ve ne zaman yenilendiğini gösterir. Bu, aboneliğe ait tek bir kotadır ve onu kullandığın tüm cihazlarla paylaşılır.",
+      "usedUp": "Kotanın tamamını kullanırsan dönem yenilenene kadar YZ durur. Musclog’un geri kalanı çalışmaya devam eder ve kendi anahtarına ya da ücretsiz seçeneğe kendin geçebilirsin. Musclog, mesajlarını kimin aldığını değiştireceği için YZ’ni sormadan başka bir sağlayıcıya asla geçirmez."
+    },
+    "privacy": {
+      "title": "Mesajlarına ne olur",
+      "body": "Musclog Iron açıkken YZ isteklerin Musclog’un kendi hizmetine gider; hizmet bunları OpenRouter’a iletir, o da YZ modeline gönderir. İstekler yalnızca sıfır veri saklama sunan sağlayıcılara gönderilir ve hizmet mesaj metnini ya da görselleri saklamaz. Abonelik dönemin için bir kullanım sayısı ve Musclog Iron kullandığın her cihaz için bir tanımlayıcı tutar.",
+      "consent": "Uygulama, Musclog Iron’a hiçbir şey göndermeden önce onayını ister ve bir yedeği başka bir cihazda geri yüklersen yeniden sorar.",
+      "link": "Gizlilik politikasını oku"
+    },
+    "subscription": {
+      "title": "Abonelik",
+      "items": [
+        "App Store ya da Google Play tarafından aylık olarak, mağazanın gösterdiği fiyatla tahsil edilir.",
+        "Mağaza hesabındaki aboneliğini iptal edene kadar otomatik yenilenir. İptal etmek bir sonraki yenilemeyi durdurur.",
+        "iOS ve Android abonelikleri ayrıdır; birinde satın alınan abonelik diğerine geçmez.",
+        "Musclog’da hesap gerekmez. Aboneliğin mağazan üzerinden doğrulanır."
+      ],
+      "terms": "Kullanım koşulları"
+    },
+    "faq": {
+      "title": "Sorular",
+      "items": [
+        {
+          "q": "Musclog hâlâ ücretsiz mi?",
+          "a": "Evet. Uygulama ücretsiz ve açık kaynaklıdır. Musclog Iron isteğe bağlıdır ve yalnızca YZ özelliklerini senin yerine çalıştırmanın maliyetini karşılar."
+        },
+        {
+          "q": "YZ özelliklerini kullanmak için Musclog Iron gerekli mi?",
+          "a": "Hayır. Kendi API anahtarını, ücretsiz Musclog AI seçeneğini ya da cihaz üzerindeki ve yerel modelleri kullanabilirsin. Musclog Iron, kurulacak hiçbir şeyin olmadığı seçenektir."
+        },
+        {
+          "q": "Birden fazla cihazda kullanabilir miyim?",
+          "a": "Evet. Tek bir abonelik, aynı mağaza hesabındaki cihazlarını kapsar ve hepsi tek bir kotayı paylaşır. Satın alımları geri yüklemek bir cihaz ekler."
+        },
+        {
+          "q": "Kotam biterse ne olur?",
+          "a": "YZ bir sonraki döneme kadar bekler. Musclog’un geri kalanı çalışmaya devam eder ve istediğin zaman başka bir YZ seçeneği seçebilirsin."
+        },
+        {
+          "q": "Nasıl iptal ederim?",
+          "a": "App Store ya da Google Play abonelik ayarlarından. Uygulamada doğru sayfayı açan bir Aboneliği yönet düğmesi var."
+        }
+      ]
+    }
+  }
+}

@@ -12,16 +12,16 @@
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
-		46F78BF4E92244FEAB65164D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 79CE519896CD401B95A72681 /* PrivacyInfo.xcprivacy */; };
-		0575CA1A70524D308BC4FCFD /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF54C29088544FA8BBF5B120 /* index.swift */; };
-		A7256ED99C484E0FA1678E25 /* Nutrition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103CD7FB45E74C40AC193F25 /* Nutrition.swift */; };
-		94B40A4A89FC4579A8F80260 /* SmartCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B887CE40B3445281F66A94 /* SmartCamera.swift */; };
-		BAFE736BAFCB43A4B5EB70FF /* ActivityHeatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F8D2F93D9E4B4981359BBE /* ActivityHeatmap.swift */; };
-		120BB192536B4990B23C69BD /* Cycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701C8F46345D416FAECF3329 /* Cycle.swift */; };
-		CF2ED36F87DB415682EFB9EA /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 26314779B81A44A0863E6E4F /* ExpoWidgetsTarget.appex */; };
-		AB9B44D25DA047F5A198AF02 /* ExpoWidgetsTarget.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 6467341735EF43F2918E11F5 /* ExpoWidgetsTarget.entitlements */; };
-		10CD6FF973A74EE4B9DEC510 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 089525027A134DC7B6D9E542 /* Info.plist */; };
-		1F551A210C8B4B6894E5040F /* ExpoWidgetsLayoutRegistry.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A5C8A4510014A83ADC6CAB1 /* ExpoWidgetsLayoutRegistry.config.json */; };
+		E701C472C4AC47489D17F4D2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D201231BF62341128EB6A8B9 /* PrivacyInfo.xcprivacy */; };
+		484C58E66A5941758A70C026 /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5096464CAC84997858B4F5F /* index.swift */; };
+		2E8A208692C943DDB0A4944D /* Nutrition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4655BDA794A143CD975B960F /* Nutrition.swift */; };
+		4A4006858D73473D87B9625A /* SmartCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF77D5068B747B99DA174D8 /* SmartCamera.swift */; };
+		9E93070BEFD44E7C8D8C0D50 /* ActivityHeatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD3024EFEE40A0993C92BD /* ActivityHeatmap.swift */; };
+		0613D9E1D435410BAABF4F18 /* Cycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42CB94BFC83C4D138990F577 /* Cycle.swift */; };
+		F9A65ED390C54509B10D594C /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9E1E2C21323B439885D597DA /* ExpoWidgetsTarget.appex */; };
+		BC0639ACF1DB440C8C55C702 /* ExpoWidgetsTarget.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = D6009A37852D453C9E4F8BA7 /* ExpoWidgetsTarget.entitlements */; };
+		AFF7F689B9E7420AB3546B8B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AE9C2A4BEBED46EBA7922186 /* Info.plist */; };
+		F1A3C1CAB8394CDE99459F3B /* ExpoWidgetsLayoutRegistry.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 43B4251254A44516AFC8B957 /* ExpoWidgetsLayoutRegistry.config.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,16 +34,16 @@
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MusclogLiftLogRepeat/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = MusclogLiftLogRepeat/SceneDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* MusclogLiftLogRepeat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MusclogLiftLogRepeat-Bridging-Header.h"; path = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h"; sourceTree = "<group>"; };
-		79CE519896CD401B95A72681 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; name = "PrivacyInfo.xcprivacy"; path = "MusclogLiftLogRepeat/PrivacyInfo.xcprivacy"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		26314779B81A44A0863E6E4F /* ExpoWidgetsTarget.appex */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.appex"; path = "ExpoWidgetsTarget.appex"; sourceTree = BUILT_PRODUCTS_DIR; fileEncoding = undefined; lastKnownFileType = undefined; explicitFileType = wrapper.app-extension; includeInIndex = 0; };
-		AF54C29088544FA8BBF5B120 /* index.swift */ = {isa = PBXFileReference; name = "index.swift"; path = "index.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		103CD7FB45E74C40AC193F25 /* Nutrition.swift */ = {isa = PBXFileReference; name = "Nutrition.swift"; path = "Nutrition.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		E5B887CE40B3445281F66A94 /* SmartCamera.swift */ = {isa = PBXFileReference; name = "SmartCamera.swift"; path = "SmartCamera.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		92F8D2F93D9E4B4981359BBE /* ActivityHeatmap.swift */ = {isa = PBXFileReference; name = "ActivityHeatmap.swift"; path = "ActivityHeatmap.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		701C8F46345D416FAECF3329 /* Cycle.swift */ = {isa = PBXFileReference; name = "Cycle.swift"; path = "Cycle.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		6467341735EF43F2918E11F5 /* ExpoWidgetsTarget.entitlements */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.entitlements"; path = "ExpoWidgetsTarget.entitlements"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		089525027A134DC7B6D9E542 /* Info.plist */ = {isa = PBXFileReference; name = "Info.plist"; path = "Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		6A5C8A4510014A83ADC6CAB1 /* ExpoWidgetsLayoutRegistry.config.json */ = {isa = PBXFileReference; name = "ExpoWidgetsLayoutRegistry.config.json"; path = "ExpoWidgetsLayoutRegistry.config.json"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D201231BF62341128EB6A8B9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; name = "PrivacyInfo.xcprivacy"; path = "MusclogLiftLogRepeat/PrivacyInfo.xcprivacy"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9E1E2C21323B439885D597DA /* ExpoWidgetsTarget.appex */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.appex"; path = "ExpoWidgetsTarget.appex"; sourceTree = BUILT_PRODUCTS_DIR; fileEncoding = undefined; lastKnownFileType = undefined; explicitFileType = wrapper.app-extension; includeInIndex = 0; };
+		E5096464CAC84997858B4F5F /* index.swift */ = {isa = PBXFileReference; name = "index.swift"; path = "index.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		4655BDA794A143CD975B960F /* Nutrition.swift */ = {isa = PBXFileReference; name = "Nutrition.swift"; path = "Nutrition.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		CFF77D5068B747B99DA174D8 /* SmartCamera.swift */ = {isa = PBXFileReference; name = "SmartCamera.swift"; path = "SmartCamera.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		9EBD3024EFEE40A0993C92BD /* ActivityHeatmap.swift */ = {isa = PBXFileReference; name = "ActivityHeatmap.swift"; path = "ActivityHeatmap.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		42CB94BFC83C4D138990F577 /* Cycle.swift */ = {isa = PBXFileReference; name = "Cycle.swift"; path = "Cycle.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		D6009A37852D453C9E4F8BA7 /* ExpoWidgetsTarget.entitlements */ = {isa = PBXFileReference; name = "ExpoWidgetsTarget.entitlements"; path = "ExpoWidgetsTarget.entitlements"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AE9C2A4BEBED46EBA7922186 /* Info.plist */ = {isa = PBXFileReference; name = "Info.plist"; path = "Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		43B4251254A44516AFC8B957 /* ExpoWidgetsLayoutRegistry.config.json */ = {isa = PBXFileReference; name = "ExpoWidgetsLayoutRegistry.config.json"; path = "ExpoWidgetsLayoutRegistry.config.json"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +54,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		40EE56BE1681459985685C1A /* Frameworks */ = {
+		6943E5DB2F074F47B3933232 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -74,7 +74,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				79CE519896CD401B95A72681 /* PrivacyInfo.xcprivacy */,
+				D201231BF62341128EB6A8B9 /* PrivacyInfo.xcprivacy */,
 			);
 			name = MusclogLiftLogRepeat;
 			sourceTree = "<group>";
@@ -101,7 +101,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				68359967E86648D98BE9F94B /* ExpoWidgetsTarget */,
+				9590BD2A650A4C6D8396A35E /* ExpoWidgetsTarget */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -112,7 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */,
-				26314779B81A44A0863E6E4F /* ExpoWidgetsTarget.appex */,
+				9E1E2C21323B439885D597DA /* ExpoWidgetsTarget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,17 +126,17 @@
 			path = MusclogLiftLogRepeat/Supporting;
 			sourceTree = "<group>";
 		};
-		68359967E86648D98BE9F94B /* ExpoWidgetsTarget */ = {
+		9590BD2A650A4C6D8396A35E /* ExpoWidgetsTarget */ = {
 			isa = PBXGroup;
 			children = (
-				6467341735EF43F2918E11F5 /* ExpoWidgetsTarget.entitlements */,
-				089525027A134DC7B6D9E542 /* Info.plist */,
-				6A5C8A4510014A83ADC6CAB1 /* ExpoWidgetsLayoutRegistry.config.json */,
-				AF54C29088544FA8BBF5B120 /* index.swift */,
-				103CD7FB45E74C40AC193F25 /* Nutrition.swift */,
-				E5B887CE40B3445281F66A94 /* SmartCamera.swift */,
-				92F8D2F93D9E4B4981359BBE /* ActivityHeatmap.swift */,
-				701C8F46345D416FAECF3329 /* Cycle.swift */,
+				D6009A37852D453C9E4F8BA7 /* ExpoWidgetsTarget.entitlements */,
+				AE9C2A4BEBED46EBA7922186 /* Info.plist */,
+				43B4251254A44516AFC8B957 /* ExpoWidgetsLayoutRegistry.config.json */,
+				E5096464CAC84997858B4F5F /* index.swift */,
+				4655BDA794A143CD975B960F /* Nutrition.swift */,
+				CFF77D5068B747B99DA174D8 /* SmartCamera.swift */,
+				9EBD3024EFEE40A0993C92BD /* ActivityHeatmap.swift */,
+				42CB94BFC83C4D138990F577 /* Cycle.swift */,
 			);
 			name = ExpoWidgetsTarget;
 			path = ExpoWidgetsTarget;
@@ -155,30 +155,30 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				C6D864466FC241108DF4869B /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
-				2B7A76BCEEF64D2DAF2E7868 /* Embed Foundation Extensions */,
-				93E7CA34F53F41D48234C54B /* Upload Debug Symbols to Sentry */,
+				0100151C1CB4405FAF588450 /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
+				4184C836CAE2481691EC76AA /* Embed Foundation Extensions */,
+				FF1F884D3C6B41A98123F36C /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				713EC480A93046ABB6FF2EE6 /* PBXTargetDependency */,
+				8B83B1FDF138427F9615D91D /* PBXTargetDependency */,
 			);
 			name = MusclogLiftLogRepeat;
 			productName = MusclogLiftLogRepeat;
 			productReference = 13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DF1E10F2E78647E1B56BD563 /* ExpoWidgetsTarget */ = {
+		DD8842DD736046EEA389C832 /* ExpoWidgetsTarget */ = {
 			isa = PBXNativeTarget;
 			name = ExpoWidgetsTarget;
 			productName = ExpoWidgetsTarget;
-			productReference = 26314779B81A44A0863E6E4F;
+			productReference = 9E1E2C21323B439885D597DA;
 			productType = "com.apple.product-type.app-extension";
-			buildConfigurationList = 90CFDD0363F845B192B8FB32;
+			buildConfigurationList = 4F40A38DFC554E14BD02EAC2;
 			buildPhases = (
-				4D0E2A8313814366AFDEF770 /* Sources */,
-				40EE56BE1681459985685C1A /* Frameworks */,
+				B9373458DAA84C2795A1F1BF /* Sources */,
+				6943E5DB2F074F47B3933232 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +196,7 @@
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
 					};
-					DF1E10F2E78647E1B56BD563 = {
+					DD8842DD736046EEA389C832 = {
 						LastSwiftMigration = 1250;
 					};
 				};
@@ -215,7 +215,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* MusclogLiftLogRepeat */,
-				DF1E10F2E78647E1B56BD563 /* ExpoWidgetsTarget */,
+				DD8842DD736046EEA389C832 /* ExpoWidgetsTarget */,
 			);
 		};
 /* End PBXProject section */
@@ -228,7 +228,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				46F78BF4E92244FEAB65164D /* PrivacyInfo.xcprivacy in Resources */,
+				E701C472C4AC47489D17F4D2 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,7 +296,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C6D864466FC241108DF4869B /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
+		0100151C1CB4405FAF588450 /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -351,7 +351,7 @@ if [ \"$IS_DEBUG_BUILD\" != \"1\" ]; then
 fi
 ";
 		};
-		93E7CA34F53F41D48234C54B /* Upload Debug Symbols to Sentry */ = {
+		FF1F884D3C6B41A98123F36C /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -377,15 +377,15 @@ fi
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4D0E2A8313814366AFDEF770 /* Sources */ = {
+		B9373458DAA84C2795A1F1BF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0575CA1A70524D308BC4FCFD /* index.swift in Sources */,
-				A7256ED99C484E0FA1678E25 /* Nutrition.swift in Sources */,
-				94B40A4A89FC4579A8F80260 /* SmartCamera.swift in Sources */,
-				BAFE736BAFCB43A4B5EB70FF /* ActivityHeatmap.swift in Sources */,
-				120BB192536B4990B23C69BD /* Cycle.swift in Sources */,
+				484C58E66A5941758A70C026 /* index.swift in Sources */,
+				2E8A208692C943DDB0A4944D /* Nutrition.swift in Sources */,
+				4A4006858D73473D87B9625A /* SmartCamera.swift in Sources */,
+				9E93070BEFD44E7C8D8C0D50 /* ActivityHeatmap.swift in Sources */,
+				0613D9E1D435410BAABF4F18 /* Cycle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -571,7 +571,7 @@ fi
 			};
 			name = Release;
 		};
-		D1745B8EAC7A4B83AB6FF554 /* Debug */ = {
+		0A5C4487E6784C7CABD1128E /* Debug */ = {
 			name = Debug;
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -579,19 +579,19 @@ fi
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				INFOPLIST_FILE = ExpoWidgetsTarget/Info.plist;
-				CURRENT_PROJECT_VERSION = "334";
+				CURRENT_PROJECT_VERSION = "338";
 				IPHONEOS_DEPLOYMENT_TARGET = "16.4";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger.ExpoWidgetsTarget";
 				GENERATE_INFOPLIST_FILE = "YES";
 				INFOPLIST_KEY_CFBundleDisplayName = ExpoWidgetsTarget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MARKETING_VERSION = "2.16.6";
+				MARKETING_VERSION = "2.16.10";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				CODE_SIGN_ENTITLEMENTS = "ExpoWidgetsTarget/ExpoWidgetsTarget.entitlements";
 				APPLICATION_EXTENSION_API_ONLY = "YES";
 			};
 		};
-		ED9FC819FE5248658623D9B0 /* Release */ = {
+		AC222262072B4EA79E7203B1 /* Release */ = {
 			name = Release;
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -599,13 +599,13 @@ fi
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				INFOPLIST_FILE = ExpoWidgetsTarget/Info.plist;
-				CURRENT_PROJECT_VERSION = "334";
+				CURRENT_PROJECT_VERSION = "338";
 				IPHONEOS_DEPLOYMENT_TARGET = "16.4";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.werules.logger.ExpoWidgetsTarget";
 				GENERATE_INFOPLIST_FILE = "YES";
 				INFOPLIST_KEY_CFBundleDisplayName = ExpoWidgetsTarget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MARKETING_VERSION = "2.16.6";
+				MARKETING_VERSION = "2.16.10";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				CODE_SIGN_ENTITLEMENTS = "ExpoWidgetsTarget/ExpoWidgetsTarget.entitlements";
 				APPLICATION_EXTENSION_API_ONLY = "YES";
@@ -632,11 +632,11 @@ fi
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		90CFDD0363F845B192B8FB32 /* Build configuration list for PBXNativeTarget "ExpoWidgetsTarget" */ = {
+		4F40A38DFC554E14BD02EAC2 /* Build configuration list for PBXNativeTarget "ExpoWidgetsTarget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D1745B8EAC7A4B83AB6FF554 /* Debug */,
-				ED9FC819FE5248658623D9B0 /* Release */,
+				0A5C4487E6784C7CABD1128E /* Debug */,
+				AC222262072B4EA79E7203B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -644,29 +644,29 @@ fi
 /* End XCConfigurationList section */
 
 /* Begin PBXTargetDependency section */
-		713EC480A93046ABB6FF2EE6 /* PBXTargetDependency */ = {
+		8B83B1FDF138427F9615D91D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DF1E10F2E78647E1B56BD563 /* ExpoWidgetsTarget */;
-			targetProxy = 2658685142C54232BC9803A6 /* PBXContainerItemProxy */;
+			target = DD8842DD736046EEA389C832 /* ExpoWidgetsTarget */;
+			targetProxy = 5F5F1FDEFB2E44A6BA4B5A7D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXContainerItemProxy section */
-		2658685142C54232BC9803A6 /* PBXContainerItemProxy */ = {
+		5F5F1FDEFB2E44A6BA4B5A7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = DF1E10F2E78647E1B56BD563;
+			remoteGlobalIDString = DD8842DD736046EEA389C832;
 			remoteInfo = ExpoWidgetsTarget;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		2B7A76BCEEF64D2DAF2E7868 /* Embed Foundation Extensions */ = {
+		4184C836CAE2481691EC76AA /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF2ED36F87DB415682EFB9EA /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */,
+				F9A65ED390C54509B10D594C /* ExpoWidgetsTarget.appex in Embed Foundation Extensions */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			name = "Embed Foundation Extensions";

@@ -22,6 +22,8 @@ export function BottomButtonWrapper({
 
   const renderContent = () => (
     <View
+      // `pt-6` is BOTTOM_BUTTON_TOP_FADE (components/modals/footerClearance.ts): a "more below"
+      // cue above this bar ends there.
       className="px-6 pb-6 pt-6"
       style={{
         // On web the outer FullScreenModal container already applies paddingBottom: insets.bottom

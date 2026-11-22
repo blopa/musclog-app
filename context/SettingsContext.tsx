@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
+  AI_PROVIDER_KINDS,
   type AiProviderKind,
   DEFAULT_CLAUDE_MODEL,
   DEFAULT_GEMINI_MODEL,
@@ -94,6 +95,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 import {
   getSettingsMirror,
   type MirroredSettings,
@@ -109,6 +111,8 @@ import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
  */
 const REGISTERED_SETTINGS = [
   'enableClaude',
+  'useHostedAi',
+  'premiumConsentVersion',
   'cycleShowPredictions',
   'cycleShowFertility',
   'cycleNotificationStyle',
@@ -231,7 +235,7 @@ type SettingsState = RegisteredSettings & {
  * `useMemo` on the context value instead.
  */
 type NonPrimitiveFields<T> = {
-  [K in keyof T]-?: T[K] extends boolean | number | string ? never : K;
+  [K in keyof T]-?: T[K] extends boolean | number | string | null ? never : K;
 }[keyof T];
 const _settingsStateIsFlat: NonPrimitiveFields<SettingsState> extends never ? true : never = true;
 void _settingsStateIsFlat;
@@ -589,53 +593,26 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     canReadSettingsDb,
   ]);
 
-  const isAiConfigured = useMemo(() => {
-    const useMusclogGateway = effectiveUseMusclogGateway(state.useMusclogFreeTier);
+  // Musclog Iron is first in AiService's priority. The setting is only turned on by the Premium
+  // UI after an enrollment; the probe in AiService is the real authority on whether it answers.
+  const hostedOn = isPremiumUiEnabled() && state.useHostedAi;
 
-    return (
-      useMusclogGateway ||
-      state.useOnDeviceAi ||
-      (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
-      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') ||
-      (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
-    );
-  }, [
-    state.useMusclogFreeTier,
-    state.useOnDeviceAi,
-    state.enableLocalLlm,
-    state.localLlmBaseUrl,
-    state.enableGoogleGemini,
-    decryptedApiKeys.googleGeminiApiKey,
-    state.enableOpenAi,
-    decryptedApiKeys.openAiApiKey,
-    state.enableClaude,
-    decryptedApiKeys.claudeApiKey,
-  ]);
-
+  // Which providers are usable right now; the winner is the first one in `AI_PROVIDER_KINDS`, the
+  // same order `AiService.getAiConfig()` uses.
   const aiProvider = useMemo<AiProviderKind | null>(() => {
-    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
-      return 'gateway';
-    }
+    const usable: Record<AiProviderKind, boolean> = {
+      hosted: hostedOn,
+      gateway: effectiveUseMusclogGateway(state.useMusclogFreeTier),
+      'on-device': state.useOnDeviceAi,
+      local: state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '',
+      gemini: state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '',
+      openai: state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '',
+      claude: state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '',
+    };
 
-    if (state.useOnDeviceAi) {
-      return 'on-device';
-    }
-
-    if (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') {
-      return 'local';
-    }
-
-    if (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') {
-      return 'gemini';
-    }
-
-    if (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') {
-      return 'openai';
-    }
-
-    return state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '' ? 'claude' : null;
+    return AI_PROVIDER_KINDS.find((kind) => usable[kind]) ?? null;
   }, [
+    hostedOn,
     state.useMusclogFreeTier,
     state.useOnDeviceAi,
     state.enableLocalLlm,
@@ -648,36 +625,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.claudeApiKey,
   ]);
 
-  // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai → claude.
+  const isAiConfigured = aiProvider !== null;
+
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
-  // when it would be the active provider.
-  const isAiMealPhotoEnabled = useMemo(() => {
-    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
-      return true;
-    }
-
-    if (state.useOnDeviceAi) {
-      return false;
-    }
-
-    return (
-      (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
-      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') ||
-      (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
-    );
-  }, [
-    state.useMusclogFreeTier,
-    state.useOnDeviceAi,
-    state.enableLocalLlm,
-    state.localLlmBaseUrl,
-    state.enableGoogleGemini,
-    decryptedApiKeys.googleGeminiApiKey,
-    state.enableOpenAi,
-    decryptedApiKeys.openAiApiKey,
-    state.enableClaude,
-    decryptedApiKeys.claudeApiKey,
-  ]);
+  // when it would be the active provider. Hosted takes photos: /v1/config decides at call time.
+  const isAiMealPhotoEnabled = aiProvider !== null && aiProvider !== 'on-device';
 
   // Parsed here rather than in `deriveStateFromMap`, so the array is allocated once per
   // actual change instead of once per settings emission — see `homeActionsRaw`.

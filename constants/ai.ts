@@ -47,6 +47,7 @@ export const DEFAULT_CLAUDE_MODEL = CLAUDE_MODELS.CLAUDE_OPUS_5_5.value;
 
 /** Which provider answers AI requests; the order mirrors `AiService.getAiConfig()`'s priority. */
 export const AI_PROVIDER_KINDS = [
+  'hosted',
   'gateway',
   'on-device',
   'local',
@@ -62,6 +63,7 @@ export type AiProviderKind = (typeof AI_PROVIDER_KINDS)[number];
  * guess more on a dish they cannot see well, so tips that lean on AI say so for them.
  */
 export const AI_PROVIDER_STRENGTH: Record<AiProviderKind, 'strong' | 'basic'> = {
+  hosted: 'strong',
   gateway: 'strong',
   gemini: 'strong',
   openai: 'strong',

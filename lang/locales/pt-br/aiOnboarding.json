@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Verificar chave e continuar",
-      "gatewayHint": "Sem conta nem chave. Há um limite diário.",
+      "gatewayHint": "Sem conta nem chave. O limite diário é compartilhado por todos os usuários.",
       "intro": "Escolha a IA que fará as perguntas. Sua própria chave continua funcionando no Musclog depois.",
       "keyLabel": "Chave de API",
       "keyNetwork": "Não foi possível falar com {{provider}} para verificar a chave. Confira sua conexão e tente de novo.",
@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Modelo local",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Abrir o Google AI Studio",
       "openClaude": "Abrir a página de chaves da Claude",
@@ -116,7 +117,9 @@
       },
       "title": "Escolha sua IA",
       "useExternal": "Usar o ChatGPT ou o Claude em vez disso",
-      "useSaved": "Usar a chave salva"
+      "useSaved": "Usar a chave salva",
+      "premiumTitle": "Musclog Iron",
+      "premiumHint": "IA hospedada e privada por assinatura, sem chave"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Substituir a chave",
         "retry": "Tentar de novo",
         "switchProvider": "Escolher outra IA",
-        "useExternal": "Usar o ChatGPT ou o Claude"
+        "useExternal": "Usar o ChatGPT ou o Claude",
+        "renewPremium": "Abrir o Musclog Iron",
+        "restorePremium": "Restaurar compras"
       },
       "cancelled": {
         "description": "Sua mensagem voltou para a caixa de texto.",
@@ -136,7 +141,7 @@
         "title": "Esta IA está sem crédito"
       },
       "gatewayLimit": {
-        "description": "A IA gratuita do Musclog tem um limite diário. Tente amanhã, use sua própria chave ou escolha outra forma.",
+        "description": "O limite diário da IA gratuita do Musclog é compartilhado por todos que a usam, e ele já foi atingido. Tente amanhã, use sua própria chave ou escolha outra forma.",
         "title": "O limite diário gratuito foi atingido"
       },
       "invalidKey": {
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "A IA não conseguiu responder. Tente de novo ou escolha outra forma.",
         "title": "Algo deu errado"
+      },
+      "hostedBudget": {
+        "title": "Cota do Musclog Iron esgotada",
+        "description": "Sua cota é renovada com o próximo período. Enquanto isso, você pode usar sua própria chave ou terminar a configuração manualmente."
+      },
+      "hostedSubscription": {
+        "title": "O Musclog Iron não está ativo neste dispositivo",
+        "description": "Restaure sua compra, assine o Musclog Iron ou use sua própria chave."
+      },
+      "hostedUnavailable": {
+        "title": "O Musclog Iron está indisponível",
+        "description": "Não foi possível acessar o Musclog Iron agora. Tente novamente ou use outra opção."
+      },
+      "hostedBusy": {
+        "title": "O Musclog Iron está ocupado",
+        "description": "Muitas solicitações ao mesmo tempo. Tente novamente em alguns segundos."
       }
     },
     "review": {

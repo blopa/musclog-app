@@ -194,7 +194,7 @@ it for each version (Apple requires it from the second version on).
 `audit` (the vendored `metadata-audit.py`) has no suppression list, so these stay in its output; each was read and decided (2026-11-18):
 
 - **`BOTH-PLACEHOLDER` ("todo") in `es-ES` and `pt-BR`**: false positive, "todo" is the word for "all".
-- **`APPLE-3.1.2-MISLEADING-PRICING` in `en-US`**: false positive, triggered by "no subscription". Musclog has no subscription, purchase or paywall.
+- **`APPLE-3.1.2-MISLEADING-PRICING`**: the listing used to trigger it with "no subscription"; since 2026-11-20 the copy says everything except the optional hosted AI allowance is free and carries the 3.1.2(c) disclosures (monthly, auto-renewing, cancel in the store account, Terms link, no price). If the guard still reports it, fix the wording, do not add a known entry.
 - **`CHINA-AI-REFERENCES` (ChatGPT/Claude, all locales)**: kept on purpose. The line "build a plan or describe a meal in ChatGPT or Claude and bring it into Musclog" is the description of a shipped feature (`utils/aiWorkoutPlan/`, `utils/aiFoodLog/`). The rule only matters for the China mainland storefront: leave that territory out of the app's availability in App Store Connect, or neutralise that one bullet before adding it.
 - Text that describes a platform feature is written so it is true on both stores (app lock is "biometrics or passcode", not "fingerprint or PIN"; "Health Connect" becomes "Apple Health" in the converter). Do not reintroduce platform-specific wording in the Play text.
 
@@ -269,5 +269,33 @@ from-captures --kind ipad` copies one locale into `ios/appstore/screenshots/<app
 
 Pricing and availability, the App Privacy ("nutrition label") answers, the export compliance questions and the
 release setting. (The category, age rating and review contact are reachable with `--with-settings`.) The app stores everything on the device and sends food lookups, crash reports (Sentry, can be turned
-off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards to
-Google Gemini; keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.
+off) and AI requests to the services the person picks, plus the optional Musclog free tier, which forwards through
+OpenRouter to Google Gemini on free quota (Google may use it to improve its products); keep the privacy labels consistent with that and with `expo.ios.privacyManifests` in `app.json`.
+
+**Premium (decided 2026-11-20, nothing shipped yet):** `expo.ios.privacyManifests` now also declares Purchase History and Device ID (`rc_id`), both not linked, no tracking, App Functionality (pinned by `iosPrivacyConfig.test.ts`); answer the App Store Connect labels the same way, and RevenueCat's SDK manifest must be seen merged after `npm run prebuild:ios` on a Mac. The review note says: no account can be created in the app (a device-derived id, no email or name), so 5.1.1(v) does not apply, "Reset Premium" forgets the device key and enrollment, and the subscription is managed in the App Store; a Restore purchases button is in the Premium screen; the free tier and own-key AI need no purchase. The description carries the 3.1.2(c) text (monthly, auto-renewal, cancel at least 24 hours before renewal, Terms link) with no price: the price shown is the store's own string.
+
+### Premium: App Privacy labels and App Review notes (drafted 2026-11-21; nothing entered in App Store Connect)
+
+**App Privacy labels** (maintainer enters them; they must match `expo.ios.privacyManifests`, which `iosPrivacyConfig.test.ts` partly pins). Everything below: not used for tracking, not linked to the person's identity (there is no account); the purposes are in each row.
+
+| Label                               | Answer                | Why                                                                                                                                                                                                                                                                             |
+| ----------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Purchases → Purchase History        | Collected, not linked | RevenueCat reads subscription state from the store. Purposes **Analytics and App Functionality** (RevenueCat's App Privacy guide: "All RevenueCat users must select these two options").                                                                                        |
+| Identifiers → User ID               | Collected, not linked | The app user id given to RevenueCat is a custom id (`rc_id`, a hash of an on-device key): RevenueCat's guide says a custom app user ID means selecting User ID. Purposes Analytics and App Functionality.                                                                       |
+| Identifiers → Device ID             | Collected, not linked | The same per-install `rc_id`, which also identifies the device to the Premium Worker. Not the advertising id. App Functionality.                                                                                                                                                |
+| User Content → Other User Content   | Collected, not linked | Chat text and workout, nutrition and body details sent through Premium to the Worker and OpenRouter (processors, zero-retention providers, nothing stored). **Photos or Videos**: hosted vision is off, so Premium sends no photo; keep the row only for the AI routes that do. |
+| Diagnostics → Crash Data (existing) | Collected, not linked | Unchanged (Sentry, can be turned off; the Worker also reports content-free errors).                                                                                                                                                                                             |
+
+`app.json` `expo.ios.privacyManifests` and the committed `ios/MusclogLiftLogRepeat/PrivacyInfo.xcprivacy` carry the same list (regenerated on 2026-11-22: the committed file had lacked Purchase History and Device ID since the Premium work, and `iosPrivacyConfig.test.ts` now checks every collected type of `app.json` is in it). Everything above: not used for tracking, not linked to the person's identity (there is no account). The RevenueCat iOS SDK ships its own privacy manifest: after `npm run prebuild:ios` on a Mac, read the merged result (`ios/` build output, or `Pods/RevenueCat/.../PrivacyInfo.xcprivacy`) and make sure no collected type or required-reason API appears that the app-level manifest lacks. Re-run `scripts/appstore.sh audit` and `scripts/release-ios.sh check` afterwards.
+
+**App Review notes** (describe only; no demo account exists because there is no account):
+
+1. No account can be created in the app: no email, name or login. Premium is tied to a device-derived identifier made on the device, so guideline 5.1.1(v) (account deletion) does not apply. "Reset Premium on this device" (the Premium card in AI settings opens the Premium screen) forgets this device's key and enrollment; it does not cancel the subscription.
+2. Premium is one auto-renewing monthly subscription for a hosted AI allowance. Everything else, including the free AI route and own-key providers, needs no purchase. The price shown is the App Store's own string; the 3.1.2(c) text (what it gives, monthly, auto-renewal, cancel at least 24 hours before renewal, Terms and Privacy links) is in the description and in the Premium screen.
+3. **Restore Purchases** is the "Restore purchases" button in the Premium screen (the Premium card in AI settings). It is also how a second device is added. Manage or cancel: the "Manage subscription" button opens the App Store's subscriptions page.
+4. To see it: sign in with a sandbox Apple Account on the review device and subscribe in the Premium screen. The nine other languages follow the system language.
+5. Family Sharing is off; there are no offers or free trials.
+
+## The Premium identity harness build
+
+`eas build --profile premium-harness` (extends `production`, sets `EXPO_PUBLIC_PREMIUM_HARNESS=1`) makes the build that runs the RevenueCat sandbox matrix (`docs/PREMIUM_WORKER.md` → Running G2 and G9). It goes to TestFlight only, never to App Review or a release. The app links `react-native-purchases` (it adds its own privacy manifest), so the App Privacy labels must disclose the RevenueCat SDK before a release that contains it; re-run the compliance guard then.

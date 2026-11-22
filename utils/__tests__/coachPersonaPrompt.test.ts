@@ -29,13 +29,28 @@ describe('buildCoachPersonaBlock', () => {
   it('keeps summaries and memories neutral, and the rules out of the persona`s reach', () => {
     const block = buildCoachPersonaBlock(preset);
 
-    expect(block).toContain('sumMsg, sumUserMsg, remember_me');
+    expect(block).toContain('(remember_me)');
     expect(block).toContain('plain, neutral language');
     expect(block).toContain('never changes numbers, safety advice, your scope');
   });
 
   it('restricts the voice to text shown directly to the user', () => {
     expect(buildCoachPersonaBlock(preset)).toContain('ONLY in the text shown directly to the user');
+  });
+
+  it('keeps a character light, drops it when the person is struggling, and carries it into the reply language', () => {
+    const block = buildCoachPersonaBlock(preset);
+
+    expect(block).toContain('one or two flourishes');
+    expect(block).toContain('Drop the act and speak plainly and kindly');
+    expect(block).toContain('Never mock their body, weight, effort or progress');
+    expect(block).toContain('language of your reply');
+  });
+
+  it('gives Loggy a character of his own and keeps Sherlock to the data he was given', () => {
+    expect(COACH_PRESETS.loggy.voice).toContain('You are Loggy');
+    expect(COACH_PRESETS.loggy.voice).not.toContain('Use colloquial language and emojis');
+    expect(COACH_PRESETS.sherlock.voice).toContain('deducing only from the data you were given');
   });
 
   it('sanitizes what the user wrote, but not our own preset copy', () => {

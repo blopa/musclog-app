@@ -12,8 +12,8 @@
     "aiCreditsError": "Yapay zeka hizmetinin kotası aşıldı. Lütfen API anahtarını kontrol et ya da daha sonra tekrar dene.",
     "aiProcessingError": "Üzgünüm, bu isteği işlerken sorun yaşadım. Lütfen birazdan tekrar dene.",
     "aiProcessingErrorTitle": "İstek işlenirken hata oluştu",
-    "gatewayDailyLimitError": "Günlük ücretsiz yapay zeka limitine ulaşıldı. Yarın tekrar dene ya da Yapay Zeka Ayarları'na kendi API anahtarını ekle.",
-    "gatewayDailyLimitErrorTitle": "Günlük limite ulaşıldı",
+    "gatewayDailyLimitError": "Ücretsiz yapay zekâ katmanı şu anda kullanılamıyor (herkesin paylaştığı günlük sınır dolmuş olabilir). Daha sonra tekrar dene veya yapay zekâ ayarlarında kendi API anahtarını ekle.",
+    "gatewayDailyLimitErrorTitle": "Ücretsiz katman kullanılamıyor",
     "databaseError": {
       "title": "Veritabanı hatası",
       "description": "Bir veritabanı hatası oluştu. Bu sorunu çözmeye yardımcı olmak için hata raporlama etkinleştirildi."
@@ -22,6 +22,15 @@
     "aiTimeout": "Bu çok uzun sürüyor. Tekrar dene.",
     "aiKeyTestOk": "Anahtar kabul edildi",
     "aiKeyTestRejected": "Anahtar reddedildi. Kontrol edip tekrar dene.",
-    "aiKeyTestNetwork": "Sağlayıcıya ulaşılamadı. Bağlantını kontrol et."
+    "aiKeyTestNetwork": "Sağlayıcıya ulaşılamadı. Bağlantını kontrol et.",
+    "hostedBudget": "Bu dönemin Musclog Iron kotası kullanıldı. {{date}} tarihinde yenilenir. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
+    "hostedBudgetNoDate": "Bu dönemin Musclog Iron kotası kullanıldı. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
+    "hostedSubscription": "Musclog Iron bu cihazda etkin bir aboneliğe sahip değil. Musclog Iron ayarlarında satın almanızı geri yükleyin veya abone olun.",
+    "hostedRemoved": "Bu cihaz Musclog Iron aboneliğinizden kaldırıldı. Yeniden eklemek için Musclog Iron ayarlarında satın alımları geri yükleyin.",
+    "hostedUnavailable": "Musclog Iron şu anda kullanılamıyor. Birazdan tekrar deneyin.",
+    "hostedDailyFull": "Musclog Iron yarına kadar (UTC) kapasitesinde.",
+    "hostedDailyLimit": "Musclog Iron'ın günlük sınırına ulaştın. Gece yarısı (UTC) sıfırlanır. Bu sırada kendi anahtarını veya ücretsiz katmanı kullanabilirsin.",
+    "hostedBusy": "Musclog Iron meşgul. Birkaç saniye sonra tekrar deneyin.",
+    "hostedAlreadyProcessed": "Bu istek zaten işlendi. Lütfen yeniden gönderin."
   }
 }

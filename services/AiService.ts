@@ -1,11 +1,14 @@
+import { AI_PROVIDER_KINDS } from '@/constants/ai';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
+import { getSessionGrant, hostedAiBaseUrl } from '@/services/premium/premiumService';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { isOnDeviceAiAvailable } from '@/utils/onDeviceAi';
+import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 
 /**
  * The Gemini model to use, with a stored model that is no longer supported replaced by the
@@ -97,8 +100,43 @@ type ProviderBuilder = (language: string) => Promise<CoachAIConfig>;
  * only the reads that decided it, never a config build with its side effects.
  */
 const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | null>> = {
-  // On web production builds, CORS blocks browser→Cloudflare direct calls.
-  // In development the client uses a CORS proxy (see buildOpenAIClient).
+  // Musclog Iron. Used whenever the person's switch is on in a Premium build: the data
+  // recipient never changes silently (plan 8.6), so this provider never steps aside for another.
+  // When it cannot answer (not enrolled, removed, offline, no base URL) the config still comes back,
+  // carrying the failure, and the request throws a typed error instead of being sent elsewhere. The
+  // grant is minted inside the builder, so a provider that loses the race never mints a token.
+  hosted: async () => {
+    if (!isPremiumUiEnabled() || !(await SettingsService.get(SETTINGS.useHostedAi))) {
+      return null;
+    }
+
+    return async (language) => {
+      const baseUrl = hostedAiBaseUrl();
+      const grant = baseUrl ? await getSessionGrant() : null;
+      const model = 'musclog-hosted';
+
+      if (baseUrl && grant?.ok) {
+        return {
+          provider: 'hosted',
+          // The OpenAI SDK appends `/chat/completions` to this, and the Worker serves it under
+          // `/v1`: the bare host answered 404 on the first real Premium chat.
+          baseUrl: `${baseUrl.replace(/\/+$/, '')}/v1`,
+          apiKey: grant.value.sessionToken,
+          model,
+          language,
+        };
+      }
+
+      return {
+        provider: 'hosted',
+        model,
+        language,
+        hostedGrantFailure: grant && !grant.ok ? grant.failure : 'not_available',
+      };
+    };
+  },
+  // The free tier is offered in the native apps only (`musclogGatewayAvailability`), so its key is
+  // not used from the public website.
   gateway: async () =>
     effectiveUseMusclogGateway(await SettingsService.getUseMusclogFreeTier())
       ? async (language) => GatewayService.buildGatewayConfig(language)
@@ -145,28 +183,20 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
   },
 };
 
-/** Which provider wins when several are usable, first to last. */
-const PROVIDER_PRIORITY = [
-  'gateway',
-  'on-device',
-  'local',
-  'gemini',
-  'openai',
-  'claude',
-] as const satisfies readonly CoachAIProvider[];
-
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings, from the first usable provider in
-   * `PROVIDER_PRIORITY`: the Musclog free-tier gateway (it overrides every other provider when
-   * enabled), on-device AI, a local LLM, then a Gemini, an OpenAI or a Claude key. Every provider is probed in
+   * `AI_PROVIDER_KINDS`: Musclog Iron (hosted, first when switched on in a Premium build), the
+   * Musclog free-tier gateway (it overrides every other provider when enabled), on-device AI, a local
+   * LLM, then a Gemini, an OpenAI or a Claude key. Every provider is probed in
    * parallel, since the first AI call of a session used to wait for a dozen settings read one
    * after another; the priority only decides which of the answers wins.
    */
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
       const [builders, language] = await Promise.all([
-        Promise.all(PROVIDER_PRIORITY.map((provider) => PROVIDER_PROBES[provider]())),
+        // AI_PROVIDER_KINDS is the one canonical priority order (first to last usable provider wins).
+        Promise.all(AI_PROVIDER_KINDS.map((provider) => PROVIDER_PROBES[provider]())),
         SettingsService.getLanguage(),
       ]);
       const build = builders.find((candidate) => candidate !== null);

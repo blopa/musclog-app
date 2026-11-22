@@ -1,0 +1,27 @@
+{
+  "name": "musclog-premium-worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Musclog Iron hosted-AI Worker (docs/plans/musclog-premium.md). Standalone package: own node_modules, never imported by the app.",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "dev": "wrangler dev --env local",
+    "migrations:local": "wrangler d1 migrations apply DB --local --env local"
+  },
+  "dependencies": {
+    "@sentry/cloudflare": "11.16.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "1.8.5",
+    "@cloudflare/workers-types": "^5.20261101.0",
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0",
+    "fast-check": "^4.10.3",
+    "typescript": "~6.0.3",
+    "vitest": "4.1.12",
+    "wrangler": "4.165.0"
+  }
+}

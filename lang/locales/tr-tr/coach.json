@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Sohbet",
+    "freeTierNotice": "Ücretsiz katman: mesajlar Google AI Studio'ya gider; Google bunları saklayabilir, ürünlerini geliştirmek için kullanabilir ve insanların incelemesini sağlayabilir. Kişisel veya hassas bilgi girme. Yalnızca yetişkinler (18+).",
     "you": "Sen",
     "status": "Çevrimiçi",
     "statusOffline": "Çevrimdışı",
@@ -116,7 +117,11 @@
       "delete": "Sil",
       "deleteDesc": "Bu mesajı sohbetten kaldır",
       "copied": "Mesaj panoya kopyalandı",
-      "deleted": "Mesaj silindi"
+      "deleted": "Mesaj silindi",
+      "report": "Sorun bildir",
+      "reportDesc": "Bu yanıtla ilgili sorunu e-posta ile bildir",
+      "reportSubject": "Musclog yapay zekâ yanıtıyla ilgili sorun",
+      "reportIntro": "Bu yanıtta ne yanlıştı? (Göndermeden önce aşağıdaki metni düzenleyebilir veya silebilirsin.)"
     },
     "sendViaOpenAI": "OpenAI ile gönder",
     "personas": {

@@ -19,6 +19,7 @@ export function SettingsCard({
   icon,
   title,
   subtitle,
+  subtitleLines = 1,
   onPress,
   rightIcon,
   titleColor,
@@ -26,6 +27,8 @@ export function SettingsCard({
   icon: ReactNode;
   title: string;
   subtitle: string;
+  /** Lines the subtitle may use before it is cut (default 1). */
+  subtitleLines?: number;
   onPress: () => void;
   rightIcon?: ReactNode;
   titleColor?: string;
@@ -87,7 +90,7 @@ export function SettingsCard({
             fontSize: theme.typography.fontSize.sm,
             color: theme.colors.text.secondary,
           }}
-          numberOfLines={1}
+          numberOfLines={subtitleLines}
         >
           {subtitle}
         </Text>

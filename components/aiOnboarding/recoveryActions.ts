@@ -5,6 +5,10 @@ export type RecoveryAction =
   /** Enter a new key for the same provider. */
   | 'replaceKey'
   | 'switchProvider'
+  /** Musclog Iron: subscribe or restore. */
+  | 'renewPremium'
+  /** Musclog Iron: restore the purchase on this device. */
+  | 'restorePremium'
   /** Free AI hit its daily limit: the way on is the person's own key. */
   | 'ownKey'
   | 'useExternal'
@@ -62,6 +66,26 @@ export const RECOVERY: Record<AiOnboardingErrorKind, Recovery> = {
     descriptionKey: 'aiOnboarding.recovery.unavailable.description',
     actions: ['switchProvider', 'useExternal', 'continueGuided'],
   },
+  hostedBudget: {
+    titleKey: 'aiOnboarding.recovery.hostedBudget.title',
+    descriptionKey: 'aiOnboarding.recovery.hostedBudget.description',
+    actions: ['ownKey', 'useExternal', 'continueGuided'],
+  },
+  hostedSubscription: {
+    titleKey: 'aiOnboarding.recovery.hostedSubscription.title',
+    descriptionKey: 'aiOnboarding.recovery.hostedSubscription.description',
+    actions: ['restorePremium', 'renewPremium', 'ownKey', 'continueGuided'],
+  },
+  hostedUnavailable: {
+    titleKey: 'aiOnboarding.recovery.hostedUnavailable.title',
+    descriptionKey: 'aiOnboarding.recovery.hostedUnavailable.description',
+    actions: ['retry', 'ownKey', 'useExternal', 'continueGuided'],
+  },
+  hostedBusy: {
+    titleKey: 'aiOnboarding.recovery.hostedBusy.title',
+    descriptionKey: 'aiOnboarding.recovery.hostedBusy.description',
+    actions: ['retry', 'continueGuided'],
+  },
   unknown: {
     titleKey: 'aiOnboarding.recovery.unknown.title',
     descriptionKey: 'aiOnboarding.recovery.unknown.description',
@@ -76,4 +100,6 @@ export const RECOVERY_ACTION_LABEL_KEYS: Record<RecoveryAction, string> = {
   ownKey: 'aiOnboarding.recovery.actions.ownKey',
   useExternal: 'aiOnboarding.recovery.actions.useExternal',
   continueGuided: 'aiOnboarding.recovery.actions.continueGuided',
+  renewPremium: 'aiOnboarding.recovery.actions.renewPremium',
+  restorePremium: 'aiOnboarding.recovery.actions.restorePremium',
 };

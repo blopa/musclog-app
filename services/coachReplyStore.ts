@@ -1,5 +1,6 @@
 import type { ConversationContext } from '@/constants/chat';
 import type ChatMessage from '@/database/models/ChatMessage';
+import { createListeners } from '@/utils/createListeners';
 
 /**
  * What the app can observe about the coach reply being written: its text so far, and how it ended.
@@ -42,22 +43,16 @@ export type CoachReplyEvent =
 
 let snapshot: CoachReplySnapshot | null = null;
 let activeJobId: string | null = null;
-const snapshotListeners = new Set<() => void>();
+const { subscribe: subscribeSnapshot, notify: notifySnapshot } = createListeners();
 const eventListeners = new Set<(event: CoachReplyEvent) => void>();
 const viewers = new Map<ConversationContext, number>();
 
 export function setCoachReplySnapshot(next: CoachReplySnapshot | null) {
   snapshot = next;
-  snapshotListeners.forEach((listener) => listener());
+  notifySnapshot();
 }
 
-export function subscribeCoachReply(listener: () => void): () => void {
-  snapshotListeners.add(listener);
-
-  return () => {
-    snapshotListeners.delete(listener);
-  };
-}
+export const subscribeCoachReply = subscribeSnapshot;
 
 export function getCoachReplySnapshot(): CoachReplySnapshot | null {
   return snapshot;

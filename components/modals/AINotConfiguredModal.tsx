@@ -2,7 +2,10 @@ import { Bot, KeyRound, Sparkles, Wand2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { PremiumModal } from '@/components/modals/PremiumModal';
 import { Button } from '@/components/theme/Button';
+import { usePremium } from '@/hooks/usePremium';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -21,8 +24,21 @@ export function AINotConfiguredModal({
 }: AINotConfiguredModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const premium = usePremium();
+  const [premiumVisible, setPremiumVisible] = useSubModalVisibility(visible);
 
-  const footer = onOpenAISettings ? (
+  // Premium is offered only in builds where it is switched on; otherwise the footer is unchanged.
+  const premiumButton = premium.enabled ? (
+    <Button
+      label={t('ai.notConfiguredModal.premium')}
+      variant="accent"
+      width="full"
+      onPress={() => setPremiumVisible(true)}
+      icon={Sparkles}
+    />
+  ) : null;
+
+  const settingsFooter = onOpenAISettings ? (
     <View className="gap-3">
       <Button
         label={t('ai.notConfiguredModal.openSettings')}
@@ -43,6 +59,16 @@ export function AINotConfiguredModal({
     </View>
   ) : (
     <Button label={t('common.close')} variant="accent" width="full" onPress={onClose} />
+  );
+
+  // With Premium off this is exactly the footer that shipped before.
+  const footer = premium.enabled ? (
+    <View className="gap-3">
+      {premiumButton}
+      {settingsFooter}
+    </View>
+  ) : (
+    settingsFooter
   );
 
   return (
@@ -146,6 +172,7 @@ export function AINotConfiguredModal({
           </View>
         </View>
       </View>
+      <PremiumModal visible={premiumVisible} onClose={() => setPremiumVisible(false)} />
     </FullScreenModal>
   );
 }

@@ -3,8 +3,8 @@
     "title": "Neuigkeiten",
     "intro": {
       "inside": "Was in dieser Tour steckt",
-      "title": "Mach Musclog zu deinem",
-      "description": "Ein paar Dinge haben sich geändert. Schau kurz rein und wähle, was für dich passt. Änderungen werden beim Antippen gespeichert; du findest diese Tour in den Einstellungen wieder.",
+      "title": "Neu in Musclog",
+      "description": "Das hat sich seit deinem letzten Besuch geändert. Schau kurz rein; du findest diese Tour jederzeit in den Einstellungen wieder.",
       "truncated": "Wir haben diese Tour auf die neuesten Highlights beschränkt."
     },
     "next": "Weiter",
@@ -234,6 +234,39 @@
           },
           "action": {
             "label": "Fortschritt öffnen"
+          }
+        }
+      },
+      "v2_17_5": {
+        "intro": {
+          "title": "Lerne Musclog Iron kennen",
+          "description": "Das ist das erste und letzte Mal, dass wir dir ein so großes Banner zeigen. Musclog Iron ist völlig optional: Du kannst Musclog weiterhin zu 100 % kostenlos nutzen. Es ist für deine Bequemlichkeit da und hilft, die Entwicklung der App zu finanzieren.",
+          "items": {
+            "optional": "100 % optional, nie erforderlich",
+            "ai": "KI, die einfach funktioniert, ohne Schlüssel einzurichten",
+            "support": "Hält Musclog am Leben und in Entwicklung"
+          }
+        },
+        "premium": {
+          "title": "So funktioniert Musclog Iron",
+          "description": "Musclog ist kostenlos, Open Source und wird von einer einzigen Person entwickelt. Musclog Iron ist eine optionale Möglichkeit, die KI ohne Einrichtung zu nutzen, und eine Möglichkeit, die App zu unterstützen, wenn sie dir gefällt.",
+          "items": {
+            "free": {
+              "label": "Alles andere bleibt kostenlos",
+              "description": "Erfassen, Training, Fortschritt und deine Daten kosten nichts. Die kostenlose Stufe und deine eigenen KI-Schlüssel funktionieren weiterhin."
+            },
+            "tokens": {
+              "label": "Dein Abo bezahlt die KI",
+              "description": "Die KI ist im Betrieb nicht kostenlos: Jede Antwort kostet Tokens. Dein Abo deckt sie ab, und die KI-Anbieter behalten nichts von dem, was du senden."
+            },
+            "oneDeveloper": {
+              "label": "Von einer Person gemacht",
+              "description": "Nach dem Anteil des Stores und den KI-Kosten bleiben von jedem Abo nur rund 1 € für mich übrig. Damit halte ich Musclog am Laufen."
+            }
+          },
+          "action": {
+            "label": "Musclog Iron ansehen",
+            "description": "Du findest es auch unter Einstellungen → KI."
           }
         }
       }

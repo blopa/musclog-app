@@ -1,0 +1,21 @@
+{
+  "_fake": true,
+  "items": [
+    {
+      "id": "sub_fake1",
+      "customer_id": "mlg1_a",
+      "original_customer_id": "mlg1_a",
+      "store": "app_store",
+      "environment": "sandbox",
+      "ownership": "purchased",
+      "status": "active",
+      "gives_access": true,
+      "product_id": "prod_fake",
+      "store_subscription_identifier": "2000000000001",
+      "starts_at": 1789000000000,
+      "current_period_starts_at": 1789000000000,
+      "current_period_ends_at": 1789000300000
+    }
+  ],
+  "next_page": null
+}

@@ -15,3 +15,22 @@ export function footerClearance(footerHeight: number, minimum: number, gap: numb
 
   return Math.max(minimum, footerHeight + gap);
 }
+
+/**
+ * The top of a `BottomButtonWrapper`: its padding above the buttons, which is a gradient that is
+ * still see-through, so body content shows through it.
+ */
+export const BOTTOM_BUTTON_TOP_FADE = 24;
+
+/**
+ * Where a "more below" cue sits above a footer that floats over the scroller: its bottom edge goes
+ * where the footer's gradient begins, so the cue's fade and the footer's fade meet instead of
+ * leaving a strip of undimmed content (and the chevron floating away from the button) between them.
+ */
+export function scrollCueBottom(footerHeight: number): number {
+  if (!Number.isFinite(footerHeight) || footerHeight <= 0) {
+    return 0;
+  }
+
+  return Math.max(0, footerHeight - BOTTOM_BUTTON_TOP_FADE);
+}

@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Проверить ключ и продолжить",
-      "gatewayHint": "Без аккаунта и ключа. Действует дневной лимит.",
+      "gatewayHint": "Без аккаунта и ключа. Дневной лимит общий для всех пользователей.",
       "intro": "Выберите ИИ, который будет задавать вопросы. Ваш ключ продолжит работать в Musclog и потом.",
       "keyLabel": "Ключ API",
       "keyNetwork": "Не удалось связаться с {{provider}} для проверки ключа. Проверьте соединение и повторите попытку.",
@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Локальная модель",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Открыть Google AI Studio",
       "openClaude": "Открыть страницу ключей Claude",
@@ -116,7 +117,9 @@
       },
       "title": "Выберите ИИ",
       "useExternal": "Использовать ChatGPT или Claude",
-      "useSaved": "Использовать сохранённый ключ"
+      "useSaved": "Использовать сохранённый ключ",
+      "premiumTitle": "Musclog Iron",
+      "premiumHint": "Приватный ИИ в облаке по подписке, ключ не нужен"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Заменить ключ",
         "retry": "Повторить",
         "switchProvider": "Выбрать другой ИИ",
-        "useExternal": "Использовать ChatGPT или Claude"
+        "useExternal": "Использовать ChatGPT или Claude",
+        "renewPremium": "Открыть Musclog Iron",
+        "restorePremium": "Восстановить покупки"
       },
       "cancelled": {
         "description": "Ваше сообщение вернулось в поле ввода.",
@@ -136,7 +141,7 @@
         "title": "У этого ИИ закончился кредит"
       },
       "gatewayLimit": {
-        "description": "У бесплатного ИИ Musclog есть дневной лимит. Попробуйте завтра, используйте свой ключ или выберите другой способ.",
+        "description": "Дневной лимит бесплатного ИИ Musclog общий для всех, кто им пользуется, и он уже исчерпан. Попробуйте завтра, используйте свой ключ или выберите другой способ.",
         "title": "Достигнут бесплатный дневной лимит"
       },
       "invalidKey": {
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "ИИ не смог ответить. Повторите попытку или выберите другой способ.",
         "title": "Что-то пошло не так"
+      },
+      "hostedBudget": {
+        "title": "Лимит Musclog Iron исчерпан",
+        "description": "Лимит обновится со следующим периодом. А пока можно использовать свой ключ или завершить настройку вручную."
+      },
+      "hostedSubscription": {
+        "title": "Musclog Iron не активен на этом устройстве",
+        "description": "Восстановите покупку, оформите подписку Musclog Iron или используйте свой ключ."
+      },
+      "hostedUnavailable": {
+        "title": "Musclog Iron недоступен",
+        "description": "Сейчас не удаётся связаться с Musclog Iron. Попробуйте снова или выберите другой вариант."
+      },
+      "hostedBusy": {
+        "title": "Musclog Iron занят",
+        "description": "Слишком много запросов одновременно. Попробуйте через несколько секунд."
       }
     },
     "review": {

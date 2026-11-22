@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Check key and continue",
-      "gatewayHint": "No account or key. A daily limit applies.",
+      "gatewayHint": "No account or key. The daily limit is shared by all users.",
       "intro": "Pick the AI that will ask you the questions. Your own key keeps working in Musclog afterwards.",
       "keyLabel": "API key",
       "keyNetwork": "Couldn't reach {{provider}} to check the key. Check your connection and try again.",
@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Local model",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Open Google AI Studio",
       "openClaude": "Open the Claude keys page",
@@ -116,7 +117,9 @@
       },
       "title": "Choose your AI",
       "useExternal": "Use ChatGPT or Claude instead",
-      "useSaved": "Use the saved key"
+      "useSaved": "Use the saved key",
+      "premiumTitle": "Musclog Iron",
+      "premiumHint": "Private hosted AI on a subscription, no key needed"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "Replace the key",
         "retry": "Try again",
         "switchProvider": "Choose another AI",
-        "useExternal": "Use ChatGPT or Claude"
+        "useExternal": "Use ChatGPT or Claude",
+        "renewPremium": "Open Musclog Iron",
+        "restorePremium": "Restore purchases"
       },
       "cancelled": {
         "description": "Your message is back in the box.",
@@ -136,7 +141,7 @@
         "title": "This AI has no credit left"
       },
       "gatewayLimit": {
-        "description": "Free Musclog AI has a daily limit. Try again tomorrow, use your own key, or choose another way.",
+        "description": "The free daily limit is shared by everyone using Free Musclog AI, and it has been used up. Try again tomorrow, use your own key, or choose another way.",
         "title": "The free daily limit is reached"
       },
       "invalidKey": {
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "The AI couldn't answer. Try again, or choose another way.",
         "title": "Something went wrong"
+      },
+      "hostedBudget": {
+        "title": "Musclog Iron allowance used up",
+        "description": "Your allowance renews with the next period. Meanwhile you can use your own key, or finish setup by hand."
+      },
+      "hostedSubscription": {
+        "title": "Musclog Iron isn't active on this device",
+        "description": "Restore your purchase, subscribe to Musclog Iron, or use your own key."
+      },
+      "hostedUnavailable": {
+        "title": "Musclog Iron is unavailable",
+        "description": "Musclog Iron can't be reached right now. Try again, or use another option."
+      },
+      "hostedBusy": {
+        "title": "Musclog Iron is busy",
+        "description": "Too many requests at once. Try again in a few seconds."
       }
     },
     "review": {

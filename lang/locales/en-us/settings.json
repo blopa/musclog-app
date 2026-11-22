@@ -355,14 +355,17 @@
       "musclogFreeTier": {
         "sectionTitle": "Musclog free tier",
         "toggle": "Use Musclog free tier LLM",
-        "toggleSubtitle": "Uses Google Gemini. Daily request limit applies.",
+        "toggleSubtitle": "Runs on Google's free tier, which may use what you send. The daily limit is shared by all users.",
         "activeNote": "Free tier is active. Your own API keys are not used.",
-        "consentTitle": "Share data with Google Gemini?",
-        "consentBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through Musclog's servers to Google's Gemini AI to write the reply. Nothing is sent until you use one. The free tier has a limited number of requests per day.",
+        "consentTitle": "Share data with Google?",
+        "consentBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults (18+). If that is not OK for you, leave it off. Nothing is sent until you use an AI feature. There is a daily limit shared by everyone who uses the free tier, so it can run out early in the day, and the free tier may sometimes be unavailable.",
         "consentConfirm": "Agree and enable"
       },
       "testKey": "Test key",
-      "testingKey": "Testing…"
+      "testingKey": "Testing…",
+      "premium": {
+        "activeNote": "Musclog Iron is answering your AI requests. Your own keys and the free tier are not used while it is on."
+      }
     },
     "visualSettings": {
       "title": "Appearance and home",

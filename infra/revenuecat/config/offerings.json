@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "lookup_key": "default",
+      "display_name": "Musclog Iron",
+      "is_current": true,
+      "packages": [
+        {
+          "lookup_key": "$rc_monthly",
+          "display_name": "Monthly",
+          "products": ["musclog_premium_monthly", "musclog_premium_monthly:monthly"]
+        }
+      ]
+    }
+  ]
+}

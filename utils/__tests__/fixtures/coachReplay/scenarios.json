@@ -1,0 +1,405 @@
+[
+  {
+    "name": "rejected-advice-is-not-repeated",
+    "source": "2024-08-22 real chat: coach suggested HIIT to someone cutting who said hunger is the problem",
+    "context": "general",
+    "history": [
+      {
+        "role": "user",
+        "content": "I did half my usual sets and I'm not even sore. I'm cutting at 1700 kcal. Did I mess up my progress?",
+        "hoursAgo": 0.1
+      },
+      {
+        "role": "coach",
+        "content": "Not feeling sore doesn't mean you underperformed. Consider adding some HIIT to ramp up calorie burn without increasing volume.",
+        "hoursAgo": 0.09
+      }
+    ],
+    "userMessage": "I don't want to add HIIT because it will ramp up my hunger too. I'm just walking a lot.",
+    "requestChecks": {
+      "lastCoachTurnVerbatim": true,
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Does not suggest HIIT or any extra cardio again",
+      "Acknowledges the hunger concern in a sentence",
+      "Under about 80 words, no list",
+      "Does not open with generic praise"
+    ]
+  },
+  {
+    "name": "short-thanks-gets-a-short-reply",
+    "source": "2024-08-22 and 2026-03-17 real chats: 'Top' and 'Hehe ok thank you' got a canned offer of more help",
+    "context": "general",
+    "history": [
+      {
+        "role": "coach",
+        "content": "Keep your strength sessions heavy and keep walking; that is a solid plan.",
+        "hoursAgo": 0.05
+      }
+    ],
+    "userMessage": "Top",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "One short line, at most two sentences",
+      "No 'let me know if you have more questions' or 'I am here to help'",
+      "No recap of the plan"
+    ]
+  },
+  {
+    "name": "one-session-is-not-two",
+    "source": "2026-03-25 real chat: one finished workout was described as two sessions with 7 personal records",
+    "context": "exercise",
+    "history": [
+      {
+        "role": "user",
+        "content": "I completed the workout \"Free Training\" (36m, 3120 kg, 3 personal records).",
+        "hoursAgo": 0.02,
+        "workoutLogId": "w-latest"
+      }
+    ],
+    "userMessage": "What do you think of this workout I've just finished?",
+    "requestChecks": {
+      "excludesWorkoutFromPrompt": "w-latest",
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Talks about exactly one session and three personal records",
+      "Invents no second workout and no figure that is not in the data",
+      "Names at least one concrete lift from the session"
+    ]
+  },
+  {
+    "name": "back-after-weeks",
+    "source": "no gap handling today: a person returning after three weeks was answered as if the last message were a minute old",
+    "context": "general",
+    "history": [
+      {
+        "role": "user",
+        "content": "Should I try keto?",
+        "hoursAgo": 504
+      },
+      {
+        "role": "coach",
+        "content": "You can reach your goal with a moderate deficit; keto is not required.",
+        "hoursAgo": 503.9
+      }
+    ],
+    "userMessage": "Hey, I'm back. Missed three weeks because of a cold.",
+    "requestChecks": {
+      "newestMessageMentionsPause": true,
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Welcomes them back in a line and mentions the cold without lecturing",
+      "Does not resume the keto topic unprompted",
+      "Suggests an easy restart, not a full-volume week"
+    ]
+  },
+  {
+    "name": "can-i-still-eat-today",
+    "source": "synthetic scenario for remaining-budget questions: the coach must answer from today's remaining calories and protein, not generic meal advice",
+    "context": "nutrition",
+    "history": [],
+    "userMessage": "I have 600 kcal left today and I still haven't hit protein. Can I still eat a big pizza tonight?",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Nutrition today (eaten/target): calories 1600/2200 kcal, protein 95/160 g, carbs 150/220 g, fat 45/70 g, fiber 16/30 g.\n- Weight: stable over the last 28 days.\n- Workout today: nothing planned or logged.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Uses the 600 kcal and the 65 g protein gap from the snapshot, not invented figures",
+      "Says plainly whether a big pizza fits, and what would still fit around it",
+      "Suggests a protein-heavy option for the remaining budget",
+      "No more than one question"
+    ]
+  },
+  {
+    "name": "stalled-lift-asks-why",
+    "source": "synthetic scenario for a stalled lift: the coach should read the logged sessions before guessing causes",
+    "context": "exercise",
+    "history": [
+      {
+        "role": "user",
+        "content": "bench has been stuck at 80 kg for like 5 weeks",
+        "hoursAgo": 30
+      },
+      {
+        "role": "coach",
+        "content": "Let us look at the last few sessions and what you logged for reps in reserve.",
+        "hoursAgo": 29.9
+      }
+    ],
+    "userMessage": "why won't it move? I'm eating enough and sleeping ok I think",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Bench press, last 4 sessions: 80 kg x 6, 80 kg x 6, 80 kg x 5, 80 kg x 6; average rated RIR 1.\n- Nutrition, last 7 days (average): calories 2050 kcal, protein 118 g.\n- Weight: up 0.4 kg over the last 28 days.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Refers to the logged bench sessions (80 kg, reps 5 to 6) rather than generic reasons",
+      "Offers one or two concrete levers, such as a rep target or a small load change, with a reason",
+      "Does not invent sleep or stress numbers the app does not have",
+      "Asks at most one question"
+    ]
+  },
+  {
+    "name": "venting-bad-week-pt",
+    "source": "synthetic scenario for venting (Portuguese): acknowledge first, do not dump a plan on someone who is tired",
+    "context": "general",
+    "history": [],
+    "userMessage": "Semana horrível, não treinei nada e comi lixo quase todo dia. Estou me sentindo um fracasso.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Replies in Portuguese",
+      "Acknowledges the bad week and the feeling before anything else",
+      "Gives at most one small next step, not a full plan or a list",
+      "Does not shame or lecture about the food eaten"
+    ]
+  },
+  {
+    "name": "back-after-three-weeks-es",
+    "source": "synthetic scenario for a return after about three weeks (Spanish): the restart should be easy, not a full-volume week",
+    "context": "general",
+    "history": [
+      {
+        "role": "user",
+        "content": "Cuántas proteínas necesito al día?",
+        "hoursAgo": 520
+      },
+      {
+        "role": "coach",
+        "content": "Alrededor de 1,6 a 2,2 g por kilo de peso corporal suele bastar.",
+        "hoursAgo": 519.9
+      }
+    ],
+    "userMessage": "¡Hola de nuevo! Estuve tres semanas sin entrenar por un viaje de trabajo.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Replies in Spanish with a short welcome back that mentions the trip",
+      "Does not resume the protein topic unprompted",
+      "Suggests an easy restart, not a full-volume week",
+      "No more than one question"
+    ]
+  },
+  {
+    "name": "pain-suggests-professional",
+    "source": "synthetic scenario for pain: suggest a professional without diagnosing or naming a condition",
+    "context": "exercise",
+    "history": [],
+    "userMessage": "My left knee hurts sharply when I go down on squats, like a pinch. Is it my meniscus?",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Workout today: \"Leg Day\" is planned, not done yet.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Does not diagnose the knee or name a specific tissue as the cause",
+      "Recommends a doctor or physiotherapist, especially for sharp pain",
+      "Suggests stopping or avoiding the painful movement for now",
+      "Does not give rehab exercises as a substitute for a professional assessment"
+    ]
+  },
+  {
+    "name": "full-plan-request-ru",
+    "source": "synthetic scenario for a full plan request (Russian): a longer answer is fine, but it must match the stated goal and language",
+    "context": "exercise",
+    "history": [],
+    "userMessage": "Составь мне план тренировок на 4 дня в неделю, я новичок, цель — набрать мышечную массу. Тренируюсь в зале.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Replies in Russian",
+      "Lays out four training days, each with named exercises and sets",
+      "Matches the stated goal (muscle gain) and the novice level, with a sensible rep range",
+      "Does not invent a fitness test result or a body measurement"
+    ]
+  },
+  {
+    "name": "one-word-reply",
+    "source": "synthetic scenario for a one-word reply to an open question: the coach should take it as an answer and move on briefly",
+    "context": "general",
+    "history": [
+      {
+        "role": "coach",
+        "content": "Do you want me to plan tomorrow's session around your shoulder, or keep it as planned?",
+        "hoursAgo": 0.2
+      }
+    ],
+    "userMessage": "Planned",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Treats \"Planned\" as the answer to the shoulder question",
+      "Confirms in one or two short sentences",
+      "Does not ask the same question again"
+    ]
+  },
+  {
+    "name": "thank-you-after-advice",
+    "source": "synthetic scenario for a thank-you after advice: a warm one-liner, no new offer of help",
+    "context": "general",
+    "history": [
+      {
+        "role": "coach",
+        "content": "Take a rest day tomorrow and keep protein near 150 g; the soreness should ease by Thursday.",
+        "hoursAgo": 0.5
+      }
+    ],
+    "userMessage": "thanks, that really helped, I was worried about it",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "One short line, at most two sentences",
+      "No \"let me know if you have more questions\" or \"I am here to help\"",
+      "Does not repeat the rest-day plan"
+    ]
+  },
+  {
+    "name": "off-topic-request",
+    "source": "synthetic scenario for an off-topic request: decline briefly and steer back to training or nutrition",
+    "context": "general",
+    "history": [],
+    "userMessage": "Can you write me a Python script that scrapes flight prices from a travel site?",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Declines the coding task in a sentence without a lecture",
+      "Offers to help with training or nutrition instead",
+      "Writes no code"
+    ]
+  },
+  {
+    "name": "ambiguous-needs-clarifying-question",
+    "source": "synthetic scenario for a question that needs one clarifying question: the answer depends on goal and bodyweight, which the snapshot does not give",
+    "context": "nutrition",
+    "history": [],
+    "userMessage": "Is 140 g of protein a day enough for me?",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Nutrition today (eaten/target): calories 0/2400 kcal, protein 0/150 g.\n- Weight: not recorded in the last 28 days.\n- Goal: not set.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Gives a general range for protein per kilogram and says the answer depends on bodyweight and goal",
+      "Asks exactly one clarifying question, such as their bodyweight or goal",
+      "Does not state a verdict on the 140 g without knowing bodyweight",
+      "Invents no weight figure"
+    ]
+  },
+  {
+    "name": "new-injury-is-remembered",
+    "source": "synthetic scenario for a new injury: the reply should acknowledge it and the memory should record it for later sessions",
+    "context": "exercise",
+    "history": [],
+    "userMessage": "Heads up, I tweaked my lower back deadlifting today, nothing serious I think. Keep it in mind for the next weeks.",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Workout today: \"Pull Day\" is planned, not done yet.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Acknowledges the lower back tweak and says it will be considered",
+      "Does not diagnose or downplay it as nothing",
+      "Suggests avoiding heavy hinging until it settles, or a professional if it persists",
+      "Remembers the injury: remember_me is not empty and names the lower back"
+    ]
+  },
+  {
+    "name": "goal-changed-supersedes-old-fact",
+    "source": "synthetic scenario for a changed goal: the new goal replaces the old cut, and the memory should say so",
+    "context": "general",
+    "history": [
+      {
+        "role": "user",
+        "content": "I'm cutting, keeping calories at 1700.",
+        "hoursAgo": 800
+      },
+      {
+        "role": "coach",
+        "content": "Good, keep protein high while you cut.",
+        "hoursAgo": 799.9
+      }
+    ],
+    "userMessage": "Update: I stopped cutting. I'm doing a lean bulk now, going up to around 2800 kcal.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Accepts the new goal (lean bulk) and does not argue for the old cut",
+      "Uses the 2800 kcal figure the person gave, and does not reuse 1700",
+      "remember_me records the new goal and that the cut is over"
+    ]
+  },
+  {
+    "name": "unknown-data-says-so",
+    "source": "synthetic scenario for a question the app holds no data for: the coach must say it does not know, not invent a number",
+    "context": "exercise",
+    "history": [],
+    "userMessage": "What was my bench 1RM last March? I want to compare it with now.",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Bench press, last 4 sessions: 90 kg x 5, 90 kg x 5, 92.5 kg x 4, 92.5 kg x 5.\n- Strength history: the app holds no entries before the last 90 days.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Says it does not have bench data from last March",
+      "Offers the recent sessions (90 to 92.5 kg) as what it can compare with",
+      "Invents no 1RM figure for March"
+    ]
+  },
+  {
+    "name": "lighter-week-active",
+    "source": "synthetic scenario for a lighter week decided in the Weekly Review: the coach should explain it from the snapshot, not call it a mistake",
+    "context": "exercise",
+    "history": [],
+    "userMessage": "Why is today's workout so light? The weights are way down from last week.",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Weekly Review decision (this week): lighter week, working sets 2 instead of 3, loads about 10% below last session.\n- Workout today: \"Push Day\" is planned, not done yet.\n- Nutrition today (eaten/target): calories 900/2300 kcal, protein 60/150 g.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Explains it is the lighter week the person chose in their Weekly Review",
+      "Uses the 10 percent and the 2 working sets from the snapshot",
+      "Does not call the lighter week a regression or invent a reason beyond the review"
+    ]
+  },
+  {
+    "name": "hunger-on-deficit-day-es",
+    "source": "synthetic scenario for hunger on a deficit day (Spanish): practical fullness advice that stays inside the remaining calories",
+    "context": "nutrition",
+    "history": [],
+    "userMessage": "¡Tengo muchísima hambre, me quedan pocas calorías y es solo las 6 de la tarde!",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Nutrition today (eaten/target): calories 1550/1900 kcal, protein 110/150 g, carbs 120/180 g, fat 50/60 g, fiber 18/30 g.\n- Weight: down 0.5 kg over the last 28 days.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Replies in Spanish",
+      "Uses the 350 kcal left from the snapshot and keeps any suggestion inside it",
+      "Suggests high-protein or high-fiber, filling foods, not a crash or skipping meals",
+      "Does not call the hunger a failure or moralise about it"
+    ]
+  },
+  {
+    "name": "recipe-request-pt",
+    "source": "synthetic scenario for a recipe request (Portuguese): the recipe must fit the stated limit and use plain ingredients",
+    "context": "nutrition",
+    "history": [],
+    "userMessage": "Me dá uma receita de almoço com mais de 40 g de proteína e menos de 500 kcal, sem muito trabalho.",
+    "snapshot": "Right now, read from the app (today so far; use only these numbers, never invent others):\n- Nutrition today (eaten/target): calories 0/2200 kcal, protein 0/160 g.",
+    "requestChecks": {
+      "userTurnsTimeTagged": true
+    },
+    "replyRubric": [
+      "Replies in Portuguese",
+      "Gives one simple recipe whose listed portions fit under 500 kcal and over 40 g of protein",
+      "Lists ingredients with grams and short steps",
+      "Does not invent a brand or a nutrition label figure"
+    ]
+  }
+]

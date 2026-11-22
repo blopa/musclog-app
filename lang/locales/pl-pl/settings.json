@@ -355,14 +355,17 @@
       "musclogFreeTier": {
         "sectionTitle": "Darmowy poziom Musclog",
         "toggle": "Użyj darmowego LLM Musclog",
-        "toggleSubtitle": "Korzysta z Google Gemini. Obowiązuje dzienny limit zapytań.",
+        "toggleSubtitle": "Działa na darmowym poziomie Google, który może wykorzystać to, co wysyłasz. Dzienny limit jest wspólny dla wszystkich użytkowników.",
         "activeNote": "Darmowy poziom jest aktywny. Twoje własne klucze API nie są używane.",
-        "consentTitle": "Udostępnić dane Google Gemini?",
-        "consentBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (na przykład Twoje treningi, posiłki, pomiary ciała lub wiadomości czatu), jest wysyłane przez serwery Musclog do Google Gemini, który pisze odpowiedź. Nic nie jest wysyłane, dopóki nie skorzystasz z funkcji. Darmowy poziom ma ograniczoną liczbę zapytań dziennie.",
+        "consentTitle": "Udostępnić dane Google?",
+        "consentBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (na przykład Twoje treningi, posiłki, pomiary ciała lub wiadomości czatu), jest wysyłane przez OpenRouter do darmowego poziomu Google AI Studio, żeby napisać odpowiedź. Google może przechowywać wysłane dane, wykorzystywać je do ulepszania swoich produktów i zlecać ich przegląd ludziom (bez identyfikatorów), dlatego darmowy poziom nie jest prywatny: nie wpisuj danych osobowych ani wrażliwych. Darmowy poziom jest tylko dla dorosłych (18+). Jeśli Ci to nie odpowiada, zostaw go wyłączonego. Nic nie jest wysyłane, dopóki nie skorzystasz z funkcji AI. Obowiązuje dzienny limit wspólny dla wszystkich korzystających z darmowego poziomu, więc może się wyczerpać już wcześnie w ciągu dnia, a darmowy poziom może czasem być niedostępny.",
         "consentConfirm": "Zgadzam się i włączam"
       },
       "testKey": "Sprawdź klucz",
-      "testingKey": "Sprawdzanie…"
+      "testingKey": "Sprawdzanie…",
+      "premium": {
+        "activeNote": "Musclog Iron odpowiada na Twoje żądania AI. Dopóki jest włączone, Twoje własne klucze i wersja darmowa nie są używane."
+      }
     },
     "visualSettings": {
       "title": "Wygląd i ekran główny",

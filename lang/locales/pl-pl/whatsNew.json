@@ -3,8 +3,8 @@
     "title": "Co nowego",
     "intro": {
       "inside": "Co jest w tym przewodniku",
-      "title": "Dopasuj Musclog do siebie",
-      "description": "Kilka rzeczy się zmieniło. Rzuć szybko okiem i wybierz to, co ci odpowiada. Zmiany zapisują się od razu po dotknięciu; ten przewodnik możesz obejrzeć ponownie w Ustawieniach.",
+      "title": "Nowości w Musclog",
+      "description": "Oto, co zmieniło się od ostatniego otwarcia aplikacji. Rzuć okiem; ten przewodnik możesz obejrzeć ponownie w Ustawieniach w dowolnej chwili.",
       "truncated": "Ograniczyliśmy ten przewodnik do najważniejszych nowości."
     },
     "next": "Dalej",
@@ -234,6 +234,39 @@
           },
           "action": {
             "label": "Otwórz postępy"
+          }
+        }
+      },
+      "v2_17_5": {
+        "intro": {
+          "title": "Poznaj Musclog Iron",
+          "description": "To pierwszy i ostatni raz, kiedy pokazujemy Ci tak duży baner. Musclog Iron jest całkowicie opcjonalny: możesz dalej korzystać z Musclog w 100% za darmo. Jest po to, by było Ci wygodniej, i pomaga finansować rozwój aplikacji.",
+          "items": {
+            "optional": "100% opcjonalne, nigdy wymagane",
+            "ai": "AI, które po prostu działa, bez kluczy do konfigurowania",
+            "support": "Utrzymuje Musclog przy życiu i w rozwoju"
+          }
+        },
+        "premium": {
+          "title": "Jak działa Musclog Iron",
+          "description": "Musclog jest darmowy, open source i tworzony przez jedną osobę. Musclog Iron to opcjonalny sposób, by korzystać z AI bez żadnej konfiguracji, i sposób na wsparcie aplikacji, jeśli Ci się podoba.",
+          "items": {
+            "free": {
+              "label": "Reszta zostaje za darmo",
+              "description": "Zapisywanie, treningi, postępy i Twoje dane nic nie kosztują. Wersja darmowa i Twoje własne klucze AI nadal działają."
+            },
+            "tokens": {
+              "label": "Subskrypcja płaci za AI",
+              "description": "AI nie jest darmowe w działaniu: każda odpowiedź kosztuje tokeny. Subskrypcja je pokrywa, a dostawcy AI nie zachowują niczego, co wyślesz."
+            },
+            "oneDeveloper": {
+              "label": "Tworzy to jedna osoba",
+              "description": "Po prowizji sklepu i kosztach AI z każdej subskrypcji zostaje mi około €1. To właśnie utrzymuje Musclog przy życiu."
+            }
+          },
+          "action": {
+            "label": "Zobacz Musclog Iron",
+            "description": "Znajdziesz to też w Ustawienia → AI."
           }
         }
       }

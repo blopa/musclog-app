@@ -49,7 +49,11 @@
     "lifting",
     "salad",
     "shrug",
-    "reading"
+    "reading",
+    "iron",
+    "sherlock",
+    "dracula",
+    "cthulhu"
   ],
   "poses": {
     "celebrating": {
@@ -107,6 +111,25 @@
         "upper": ["arm-l", "hand-l", "body", "scoop", "arm-r", "tub", "hand-r"]
       }
     },
+    "cthulhu": {
+      "viewBox": "-10 0 550 640",
+      "face": "cthulhu",
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "wing-l/cthulhu",
+        "wing-r/cthulhu",
+        "arm-l/cthulhu",
+        "arm-r/cthulhu",
+        {
+          "group": "body",
+          "children": ["log/default", "temples/cthulhu", "@face", "tentacles/cthulhu"]
+        }
+      ],
+      "animated": {
+        "upper": ["wing-l", "wing-r", "arm-l", "arm-r", "body"]
+      }
+    },
     "default": {
       "viewBox": "0 0 512 640",
       "face": "default",
@@ -126,6 +149,32 @@
       ],
       "animated": {
         "alternateFaces": true
+      }
+    },
+    "dracula": {
+      "viewBox": "0 0 550 640",
+      "face": "dracula",
+      "layers": [
+        "cape/dracula",
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/hip",
+        "hand-l/hip",
+        "arm-r/wave",
+        {
+          "group": "body",
+          "children": [
+            "log/default",
+            "collar/dracula",
+            "leaf-crown/dracula",
+            "@face",
+            "bow-tie/dracula"
+          ]
+        },
+        "hand-r/wave"
+      ],
+      "animated": {
+        "upper": ["arm-l", "hand-l", "arm-r", "body", "hand-r"]
       }
     },
     "drinking": {
@@ -192,6 +241,29 @@
       ],
       "animated": {
         "upper": ["arm-l", "hand-l", "body", "arm-r", "hand-r"]
+      }
+    },
+    "iron": {
+      "viewBox": "-115 0 675 640",
+      "face": "iron",
+      "layers": [
+        "kettlebell/iron",
+        "leg-l/standing",
+        "leg-r/standing",
+        "sparkles/iron",
+        "arm-l/iron",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face", "badge/iron"]
+        },
+        "arm-r/hip",
+        "hand-r/hip",
+        "drops/iron",
+        "dumbbell-l/iron",
+        "hand-l/iron"
+      ],
+      "animated": {
+        "upper": ["arm-l", "body", "arm-r", "hand-r", "drops", "dumbbell-l", "hand-l"]
       }
     },
     "lifting": {
@@ -357,6 +429,29 @@
       "animated": {
         "upper": ["arm-l", "body", "fork", "hand-l", "bowl", "hand-r"]
       }
+    },
+    "sherlock": {
+      "viewBox": "20 0 590 640",
+      "face": "sherlock",
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/hip",
+        "hand-l/hip",
+        "magnifier/magnify",
+        "arm-r/magnify",
+        "hand-r/magnify",
+        {
+          "group": "body",
+          "children": [
+            "log/default",
+            "@face",
+            "deerstalker/sherlock",
+            "capelet/sherlock",
+            "pipe/sherlock"
+          ]
+        }
+      ]
     },
     "shrug": {
       "viewBox": "-15 0 560 640",

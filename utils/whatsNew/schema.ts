@@ -44,7 +44,23 @@ export type WhatsNewBlock = BlockBase &
   );
 /** `requires` shows the page only to people for whom that condition holds. */
 export type WhatsNewPage = BlockBase & { blocks: WhatsNewBlock[]; requires?: WhatsNewCondition };
-export type WhatsNewRelease = { version: string; pages: WhatsNewPage[] };
+/**
+ * A release's own first page, shown in place of the generic "What's new in Musclog" intro when
+ * this release is the newest one in the tour. `requires` gates it like a page; `items` are short
+ * promises drawn as large rows under the description.
+ */
+export type WhatsNewIntroCopy = {
+  titleKey: WhatsNewKey;
+  descriptionKey?: WhatsNewKey;
+  pose?: WhatsNewPoseName;
+  requires?: WhatsNewCondition;
+  items?: { id: string; icon: WhatsNewIconName; labelKey: WhatsNewKey }[];
+};
+export type WhatsNewRelease = {
+  version: string;
+  pages: WhatsNewPage[];
+  intro?: WhatsNewIntroCopy;
+};
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -257,7 +273,78 @@ export function parseWhatsNewRelease(
     return value as WhatsNewBlock;
   };
 
-  properties(raw, ['version', 'pages'], fileName);
+  // A broken intro is dropped on its own: the tour falls back to the generic first page.
+  const parseIntro = (value: unknown, path: string): WhatsNewIntroCopy | undefined => {
+    if (!isObject(value)) {
+      issue(path, 'invalid intro');
+      return undefined;
+    }
+
+    properties(value, ['titleKey', 'descriptionKey', 'pose', 'requires', 'items'], path);
+    if (!copy(value, ['titleKey'], path)) {
+      return undefined;
+    }
+
+    if (value.pose !== undefined && !contains(WHATS_NEW_POSES, value.pose)) {
+      issue(path, 'unknown pose');
+      return undefined;
+    }
+
+    if (value.requires !== undefined && !contains(WHATS_NEW_CONDITIONS, value.requires)) {
+      issue(path, 'unknown requires condition');
+      return undefined;
+    }
+
+    let items: WhatsNewIntroCopy['items'];
+    if (value.items !== undefined) {
+      if (!Array.isArray(value.items)) {
+        issue(path, 'invalid items');
+        return undefined;
+      }
+
+      const itemIds = new Set<string>();
+      items = value.items.filter(
+        (item, index): item is NonNullable<WhatsNewIntroCopy['items']>[number] => {
+          const itemPath = `${path}.items[${index}]`;
+          if (!isObject(item)) {
+            issue(itemPath, 'invalid item');
+            return false;
+          }
+
+          properties(item, ['id', 'icon', 'labelKey'], itemPath);
+          if (typeof item.id !== 'string' || !item.id.trim() || itemIds.has(item.id)) {
+            issue(itemPath, 'invalid or duplicate id');
+            return false;
+          }
+
+          itemIds.add(item.id);
+          if (!isKey(item.labelKey)) {
+            issue(itemPath, 'invalid labelKey');
+            return false;
+          }
+
+          if (!contains(WHATS_NEW_ICONS, item.icon)) {
+            issue(itemPath, 'missing or unknown icon');
+            return false;
+          }
+
+          return true;
+        }
+      );
+    }
+
+    return {
+      titleKey: value.titleKey as WhatsNewKey,
+      ...(value.descriptionKey ? { descriptionKey: value.descriptionKey as WhatsNewKey } : {}),
+      ...(value.pose ? { pose: value.pose as WhatsNewPoseName } : {}),
+      ...(value.requires ? { requires: value.requires as WhatsNewCondition } : {}),
+      ...(items?.length ? { items } : {}),
+    };
+  };
+
+  properties(raw, ['version', 'pages', 'intro'], fileName);
+  const intro = raw.intro === undefined ? undefined : parseIntro(raw.intro, `${fileName}.intro`);
+
   const pages: WhatsNewPage[] = [];
   const pageIds = new Set<string>();
   if (!Array.isArray(raw.pages)) {
@@ -307,5 +394,5 @@ export function parseWhatsNewRelease(
     issue(fileName, 'empty release');
   }
 
-  return { release: { version, pages }, issues };
+  return { release: { version, pages, ...(intro ? { intro } : {}) }, issues };
 }

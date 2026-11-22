@@ -1,6 +1,7 @@
 import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT_SOFT,
   brand,
@@ -10,10 +11,11 @@ import {
 } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 export default function Terms() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.terms' });
+  // The operator line is shared by the privacy, terms and contact pages, so it lives under contact.
+  const { t: tWebsite } = useTranslation(undefined, { keyPrefix: 'website.contact' });
 
   const highlights = [
     {
@@ -89,6 +91,33 @@ export default function Terms() {
       content: (
         <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
           {t('sections.links.content')}
+        </p>
+      ),
+    },
+    {
+      title: t('sections.subscription.title'),
+      content: (
+        <>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content1')}
+          </p>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content2')}
+          </p>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content3')}
+          </p>
+          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content4')}
+          </p>
+        </>
+      ),
+    },
+    {
+      title: t('sections.aiOutput.title'),
+      content: (
+        <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+          {t('sections.aiOutput.content')}
         </p>
       ),
     },
@@ -231,6 +260,9 @@ export default function Terms() {
               >
                 {SUPPORT_EMAIL}
               </a>
+            </p>
+            <p className="mt-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+              {tWebsite('operator')}
             </p>
           </div>
         </div>

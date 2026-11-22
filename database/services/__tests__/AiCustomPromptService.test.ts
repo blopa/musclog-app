@@ -45,6 +45,9 @@ jest.mock('../SettingsService', () => ({
   setMaxAiMemories: jest.fn().mockResolvedValue(undefined),
 }));
 
+import SettingsServiceMock from '../SettingsService';
+
+const SettingsServiceMock_ = SettingsServiceMock as any;
 const mockDatabase = database as jest.Mocked<typeof database>;
 
 describe('AiCustomPromptService', () => {
@@ -104,6 +107,125 @@ describe('AiCustomPromptService', () => {
 
       expect(mockCollection.query).toHaveBeenCalled();
       expect(mockQuery.extend).toHaveBeenCalled();
+    });
+  });
+
+  describe('shared memories', () => {
+    const DAY = 24 * 60 * 60 * 1000;
+
+    const memoryRow = (id: string, content: string, createdAt: number, context = 'nutrition') => ({
+      id,
+      content,
+      context,
+      type: 'memory',
+      createdAt,
+      update: jest.fn().mockResolvedValue(undefined),
+    });
+
+    const setUpMemories = (rows: any[], maxMemories = 50) => {
+      const create = jest.fn((builder: (prompt: any) => void) => {
+        const prompt: any = {};
+        builder(prompt);
+        return Promise.resolve(prompt);
+      });
+      const fetch = jest.fn().mockResolvedValue(rows);
+      const query = jest.fn().mockReturnValue({ fetch });
+      (SettingsServiceMock_.getMaxAiMemories as jest.Mock).mockResolvedValue(maxMemories);
+      mockDatabase.get.mockReturnValue({ query, create } as any);
+      return { create, query };
+    };
+
+    it('does not insert a duplicate and returns the existing memory untouched', async () => {
+      const existing = memoryRow('m1', 'Has a bad left knee', Date.now() - DAY);
+      const { create } = setUpMemories([existing]);
+
+      const result = await AiCustomPromptService.createPrompt(
+        'Memory',
+        'has a BAD left knee!',
+        true,
+        'exercise',
+        'memory'
+      );
+
+      expect(create).not.toHaveBeenCalled();
+      expect(result).toBe(existing);
+      expect(existing.update).not.toHaveBeenCalled();
+    });
+
+    it('soft-deletes a superseded memory and inserts the new one with its own context', async () => {
+      const old = memoryRow('m1', 'Has a bad left knee', Date.now() - DAY);
+      const { create } = setUpMemories([old]);
+
+      await AiCustomPromptService.createPrompt(
+        'Memory',
+        'Has a bad right knee',
+        true,
+        'exercise',
+        'memory'
+      );
+
+      expect(old.update).toHaveBeenCalledTimes(1);
+      const record: any = {};
+      old.update.mock.calls[0][0](record);
+      expect(record.deletedAt).toEqual(expect.any(Number));
+      expect(record.updatedAt).toBe(record.deletedAt);
+
+      expect(create).toHaveBeenCalledTimes(1);
+      const prompt: any = {};
+      create.mock.calls[0][0](prompt);
+      expect(prompt.content).toBe('Has a bad right knee');
+      expect(prompt.type).toBe('memory');
+      expect(prompt.context).toBe('exercise');
+    });
+
+    it('inserts an unrelated memory as new', async () => {
+      const old = memoryRow('m1', 'Prefers morning sessions', Date.now() - DAY);
+      const { create } = setUpMemories([old]);
+
+      await AiCustomPromptService.createPrompt(
+        'Memory',
+        'Vegetarian since 2020',
+        true,
+        'nutrition',
+        'memory'
+      );
+
+      expect(old.update).not.toHaveBeenCalled();
+      expect(create).toHaveBeenCalledTimes(1);
+    });
+
+    it('counts the cap across contexts and evicts the oldest first', async () => {
+      const rows = [
+        memoryRow('new', 'Trains at night only', Date.now() - 1, 'nutrition'),
+        memoryRow('mid', 'Owns a home gym', Date.now() - 2, 'exercise'),
+        memoryRow('old', 'Lives near the coast', Date.now() - 3, 'general'),
+      ];
+      const { create, query } = setUpMemories(rows, 2);
+
+      await AiCustomPromptService.createPrompt('Memory', 'Likes rowing', true, 'general', 'memory');
+
+      // The query carries no context filter, so memories of every context count.
+      const clauses = query.mock.calls[0];
+      expect(JSON.stringify(clauses)).not.toContain('"context"');
+      expect(rows[0].update).not.toHaveBeenCalled();
+      expect(rows[1].update).toHaveBeenCalledTimes(1);
+      expect(rows[2].update).toHaveBeenCalledTimes(1);
+      expect(create).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns memories of every context, newest first', async () => {
+      const rows = [memoryRow('a', 'x', 2)];
+      const fetch = jest.fn().mockResolvedValue(rows);
+      const query = jest.fn().mockReturnValue({ fetch });
+      mockDatabase.get.mockReturnValue({ query } as any);
+
+      const result = await AiCustomPromptService.getMemoriesForPrompt();
+
+      expect(result).toBe(rows);
+      const clauses = JSON.stringify(query.mock.calls[0]);
+      expect(clauses).not.toContain('"context"');
+      expect(clauses).toContain('"memory"');
+      expect(clauses).toContain('"created_at"');
     });
   });
 });

@@ -66,6 +66,7 @@ import {
   trackMeal,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
+import { HISTORY_WINDOW_TURNS, historyText } from '@/utils/coachHistory';
 import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
@@ -598,44 +599,81 @@ export function useChatMessages(
           return;
         }
 
-        // 4. Build chat history with system context and compression
-        // Cap at 20 messages, use summarized_message if available.
-        // Exclude the current user message from history — we pass it separately to sendCoachMessage
-        // so it is not sent twice to the LLM.
-        // Filter to only include messages from the current conversation context.
-        const maxHistoryLength = 20;
+        // 4. Build the chat history.
+        // The last VERBATIM_TURNS turns go back word for word (their wording, numbers and voice are
+        // what keep a reply part of one conversation); older ones in the window are shortened
+        // locally. Exclude the current user message: it is passed separately to sendCoachMessage
+        // so it is not sent twice. Only messages of this conversation context count.
         const contextFilteredHistory = rawMessagesRef.current.filter(
           (record) => record.context === conversationContext
         );
 
-        const slicedHistory = contextFilteredHistory.slice(-maxHistoryLength);
+        const slicedHistory = contextFilteredHistory.slice(-HISTORY_WINDOW_TURNS);
         const historyWithoutCurrentMessage = slicedHistory.slice(0, -1);
 
-        // Workout-completed messages are shown as Loggy in the UI but sent to the LLM as user
-        // messages with rich content. We always recompute from payload so old messages get the
-        // full JSON/linguistic summary too.
-        const buildHistoryEntry = async (record: ChatMessage): Promise<ChatHistoryEntry> => {
-          let role: 'user' | 'coach' = record.sender as 'user' | 'coach';
-          let content = record.summarizedMessage ?? record.message;
-          if (record.payloadJson) {
-            try {
-              const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
-              if (isWorkoutCompletedPayload(payload) && payload.workoutLogId) {
-                role = 'user';
-                content = await buildWorkoutCompletedSummaryForLLM(payload.workoutLogId, {
+        const parsePayload = (record: ChatMessage): ChatMessagePayload | null => {
+          if (!record.payloadJson) {
+            return null;
+          }
+
+          try {
+            return JSON.parse(record.payloadJson) as ChatMessagePayload;
+          } catch {
+            return null; // malformed payload
+          }
+        };
+
+        // A finished-workout card is shown as Loggy in the UI but sent as a user message. Only the
+        // newest one is expanded into the full session (it is a lot of tokens, and the older ones
+        // are in the prompt's own workout history); the others are a single line.
+        const newestWorkoutCardIndex = historyWithoutCurrentMessage.reduce(
+          (found, record, index) => {
+            const payload = parsePayload(record);
+            return payload && isWorkoutCompletedPayload(payload) && payload.workoutLogId
+              ? index
+              : found;
+          },
+          -1
+        );
+
+        const buildHistoryEntry = async (
+          record: ChatMessage,
+          index: number
+        ): Promise<ChatHistoryEntry> => {
+          const at = record.createdAt;
+          const payload = parsePayload(record);
+          if (payload && isWorkoutCompletedPayload(payload) && payload.workoutLogId) {
+            if (index === newestWorkoutCardIndex) {
+              return {
+                role: 'user',
+                at,
+                workoutLogId: payload.workoutLogId,
+                content: await buildWorkoutCompletedSummaryForLLM(payload.workoutLogId, {
                   volumeStr: payload.volume ?? '0',
                   durationStr: payload.duration ?? '0m',
                   personalRecords: payload.personalRecords ?? 0,
                   weightUnit: payload.weightUnit ?? 'kg',
                   format: 'json',
-                });
-              }
-            } catch {
-              // ignore malformed payload
+                }),
+              };
             }
+
+            return {
+              role: 'user',
+              at,
+              content: `I completed the workout "${payload.workoutName}" (${payload.duration ?? '0m'}, ${payload.volume ?? '0'}, ${payload.personalRecords ?? 0} personal records).`,
+            };
           }
 
-          return { role, content };
+          return {
+            role: record.sender as 'user' | 'coach',
+            at,
+            content: historyText(
+              record.message,
+              record.summarizedMessage,
+              historyWithoutCurrentMessage.length - 1 - index
+            ),
+          };
         };
 
         const historyEntries = await Promise.all(

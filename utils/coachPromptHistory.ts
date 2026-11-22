@@ -67,12 +67,19 @@ type WorkoutHistoryEntry = {
   item: WorkoutHistoryItem;
 };
 
+/** English weekday names, fixed so the prompt never depends on the device locale. */
+const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
+/**
+ * Nutrition day keys are UTC-normalized (`utcNormalizedDayKey`), so the calendar
+ * day is read from the UTC parts. Output: `YYYY-MM-DD Ddd`.
+ */
 function formatNutritionLogDayKey(dayKeyMs: number): string {
   const d = new Date(dayKeyMs);
+  const yyyy = String(d.getUTCFullYear()).padStart(4, '0');
   const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
   const dd = String(d.getUTCDate()).padStart(2, '0');
-  const yy = String(d.getUTCFullYear() % 100).padStart(2, '0');
-  return `${mm}/${dd}/${yy}`;
+  return `${yyyy}-${mm}-${dd} ${WEEKDAY_NAMES[d.getUTCDay()]}`;
 }
 
 function formatNutritionLogTime(ms: number, timezone?: string): string {
@@ -82,13 +89,13 @@ function formatNutritionLogTime(ms: number, timezone?: string): string {
   ).padStart(2, '0')}`;
 }
 
-/** Local-calendar MM/DD/YY for the day an instant `ms` falls on (device timezone). */
-function formatLocalMmDdYy(ms: number): string {
+/** Local-calendar `YYYY-MM-DD Ddd` for the day an instant `ms` falls on (device timezone). */
+function formatLocalDayLabel(ms: number): string {
   const d = new Date(ms);
+  const yyyy = String(d.getFullYear()).padStart(4, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
-  const yy = String(d.getFullYear() % 100).padStart(2, '0');
-  return `${mm}/${dd}/${yy}`;
+  return `${yyyy}-${mm}-${dd} ${WEEKDAY_NAMES[d.getDay()]}`;
 }
 
 /** Compact weight label in the user's unit, e.g. "200kg" / "82.5kg" / "441lbs". */
@@ -96,6 +103,30 @@ function formatWorkoutWeight(kg: number, units: Units): string {
   const display = kgToDisplay(kg, units);
   const rounded = Math.round(display * 10) / 10;
   return `${rounded}${getWeightUnit(units)}`;
+}
+
+/** Compact workout text: a day heading per day, then one `- ` line per workout and an indented line per exercise. */
+function renderWorkoutDayLines(entries: WorkoutHistoryEntry[]): string[] {
+  const byDay = new Map<string, WorkoutHistoryItem[]>();
+  for (const { dayKey, item } of entries) {
+    const items = byDay.get(dayKey) ?? [];
+    items.push(item);
+    byDay.set(dayKey, items);
+  }
+
+  const lines: string[] = [];
+  for (const [dayKey, items] of byDay) {
+    lines.push(dayKey);
+    for (const item of items) {
+      lines.push(`- ${item.name}, ${item.duration}, volume ${item.volume}`);
+      for (const exercise of item.exercises) {
+        const sets = exercise.sets.map((set) => `${set.weight} x${set.reps}`).join(', ');
+        lines.push(`  ${exercise.name}: ${sets}`);
+      }
+    }
+  }
+
+  return lines;
 }
 
 async function mergeNutritionLogIntoBuckets(
@@ -193,7 +224,7 @@ async function buildWorkoutHistoryEntry(
       : 0;
 
     return {
-      dayKey: formatLocalMmDdYy(workoutLog.startedAt),
+      dayKey: formatLocalDayLabel(workoutLog.startedAt),
       item: {
         name: workoutLog.workoutName,
         duration: `${durationMin}min`,
@@ -249,7 +280,7 @@ export const getNutritionLogHistoryPrompt = async (): Promise<string> => {
     }
 
     return [
-      "The user's recent nutrition log history, grouped by day (MM/DD/YY, oldest first). " +
+      "The user's recent nutrition log history, grouped by day (YYYY-MM-DD Ddd, oldest first). " +
         'kcal=calories, p=protein, c=carbs (includes fiber), f=fat, time=24h local time logged.',
       '```json',
       JSON.stringify(groupNutritionHistory(entries)),
@@ -265,8 +296,9 @@ export const getNutritionLogHistoryPrompt = async (): Promise<string> => {
  * Compact workout history for the AI coach, gated by
  * `SettingsService.getWorkoutHistoryDays()` ('none' disables this entirely).
  * Each workout lists its name, duration, total volume, and exercises with their
- * sets ({ weight, reps }), grouped by local calendar day (MM/DD/YY, oldest first).
- * Weights are formatted in the user's unit. Returns '' when the setting is 'none'
+ * sets, grouped by local calendar day (`YYYY-MM-DD Ddd`, oldest first) as compact text:
+ * a day heading, then `- name, duration, volume` per workout and `  Exercise: weight xreps, …`
+ * lines. Weights are formatted in the user's unit. Returns '' when the setting is 'none'
  * or there is no workout history to send.
  */
 export const getWorkoutLogHistoryPrompt = async (): Promise<string> => {
@@ -302,22 +334,54 @@ export const getWorkoutLogHistoryPrompt = async (): Promise<string> => {
       return '';
     }
 
-    const grouped: Record<string, WorkoutHistoryItem[]> = {};
-    for (const { dayKey, item } of entries) {
-      grouped[dayKey] ??= [];
-      grouped[dayKey].push(item);
-    }
-
     return [
-      "The user's recent workout history, grouped by day (MM/DD/YY, oldest first). " +
-        'Each workout has its name, duration, total volume, and exercises with their sets ' +
-        `(weight and reps). Weights are in the user's preferred unit (${getWeightUnit(units)}).`,
-      '```json',
-      JSON.stringify(grouped),
-      '```',
+      "The user's recent workout history, oldest first. Each workout: name, duration, total " +
+        'volume, then exercises with sets as weight x reps. ' +
+        `Weights are in the user's preferred unit (${getWeightUnit(units)}).`,
+      ...renderWorkoutDayLines(entries),
     ].join('\n');
   } catch (error) {
     console.error('[coachPromptHistory] Error fetching workout history:', error);
+    return '';
+  }
+};
+
+/**
+ * The user's most recent workouts (no day range), oldest first, rendered with the
+ * same compact text as the history block. Returns '' when there are no usable
+ * workouts or on error.
+ */
+export const getRecentWorkoutsPrompt = async (
+  count: number,
+  excludeWorkoutLogIds: readonly string[] = []
+): Promise<string> => {
+  try {
+    const units = await SettingsService.getUnits();
+    // Sessions the conversation already carries in full (the one just finished) are left out, or
+    // the model reads the same session twice and counts it as two.
+    const excluded = new Set(excludeWorkoutLogIds);
+    const fetched = await WorkoutService.getWorkoutHistory(undefined, count + excluded.size);
+    const logs = fetched.filter((log) => !excluded.has(log.id)).slice(0, count);
+    if (logs.length === 0) {
+      return '';
+    }
+
+    const entries = (
+      await Promise.all([...logs].reverse().map((log) => buildWorkoutHistoryEntry(log, units)))
+    ).filter((entry): entry is WorkoutHistoryEntry => entry != null);
+
+    if (entries.length === 0) {
+      return '';
+    }
+
+    return [
+      "The user's most recent workouts, oldest first. Each workout: name, duration, total " +
+        'volume, then exercises with sets as weight x reps. ' +
+        `Weights are in the user's preferred unit (${getWeightUnit(units)}).`,
+      ...renderWorkoutDayLines(entries),
+    ].join('\n');
+  } catch (error) {
+    console.error('[coachPromptHistory] Error fetching recent workouts:', error);
     return '';
   }
 };

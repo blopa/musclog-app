@@ -5,13 +5,13 @@
       "id": "APPLE-2.1-STAGING-BACKEND",
       "file": "app/+native-intent.tsx",
       "checked": "2026-11-18",
-      "reason": "The match is `http://localhost${path}` in a template literal that only turns an incoming widget path into a URL object to read its query string (new URL needs a base). Nothing is fetched. The AI gateway comes from an env var (constants/gateway.ts); the local-LLM default http://localhost:11434/v1 is a user-entered Ollama address (context/SettingsContext.tsx, AISettingsModal.tsx), not a backend the release depends on. The guard reports only the first file it matches, so after a change in this area run `appstore_guard_gate.py --raw` and read every hit."
+      "reason": "The match is `http://localhost${path}` in a template literal that only turns an incoming widget path into a URL object to read its query string (new URL needs a base). Nothing is fetched. The AI gateway comes from an env var (constants/gateway.ts) and so does the Premium Worker URL (EXPO_PUBLIC_HOSTED_AI_BASE_URL, unset until release); the local-LLM default http://localhost:11434/v1 is a user-entered Ollama address (context/SettingsContext.tsx, AISettingsModal.tsx), not a backend the release depends on. The guard reports only the first file it matches, so after a change in this area run `appstore_guard_gate.py --raw` and read every hit."
     },
     {
       "id": "APPLE-5.1.1-NO-ACCOUNT-DELETION",
       "file": "database/schema.ts",
       "checked": "2026-11-18",
-      "reason": "Musclog has no account: no sign-up, login, cloud or server profile. Onboarding makes a profile on the device (currentUserSyncId is a local UUID). The match is the `external_account_id // OAuth provider ID` column comment and the unused UserService.linkOAuthAccount/unlinkOAuthAccount (called only by their own test). Everything the person entered is deleted in-app from Settings > Backups and data (clear all data). Re-check if a real sign-in is ever added."
+      "reason": "Musclog has no account: no sign-up, login, email, name or cloud profile (decision of 2026-11-20: Premium's device-derived rc_id and Worker record are not an account; 'Reset Premium' forgets the device key and enrollment, and the subscription is managed in the store). Onboarding makes a profile on the device (currentUserSyncId is a local UUID). The match is the `external_account_id // OAuth provider ID` column comment and the unused UserService.linkOAuthAccount/unlinkOAuthAccount (called only by their own test). Everything the person entered is deleted in-app from Settings > Backups and data (clear all data). Re-check if a real sign-in is ever added."
     },
     {
       "id": "APPLE-GAMBLING-BRAZIL-LICENSE",
@@ -29,7 +29,7 @@
       "id": "BOTH-SUBSCRIPTION-HARD-CANCEL",
       "file": "components/cameraShutter.ts",
       "checked": "2026-11-18",
-      "reason": "The text matched is a code comment about a native camera call that 'cannot be cancelled'. Musclog has no subscription, purchase or membership; everything is free."
+      "reason": "The text matched is a code comment about a native camera call that 'cannot be cancelled'. The code has no subscription, purchase or membership screen outside the optional Premium feature (hidden behind a build flag until its release; it is cancelled in the store account, which the app links through manageSubscriptionUrl)."
     },
     {
       "id": "BOTH-LOOTBOX-ODDS",

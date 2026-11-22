@@ -1,13 +1,18 @@
 import { WHATS_NEW_MAX_PAGES } from '@/constants/whatsNew';
 
 import { EMPTY_WHATS_NEW_CONTEXT, type WhatsNewContext } from './catalog';
-import type { WhatsNewBlock, WhatsNewKey, WhatsNewRelease } from './schema';
+import type { WhatsNewBlock, WhatsNewIntroCopy, WhatsNewKey, WhatsNewRelease } from './schema';
 import { compareVersions, parseAppVersion, parseVersion } from './version';
 
 export type WhatsNewFlow = {
   pages: { key: string; version: string; blocks: WhatsNewBlock[] }[];
   releaseVersions: string[];
   truncated: boolean;
+  /**
+   * The newest release's own first page, when it has one whose condition holds; `null` keeps the
+   * generic intro. Only a release with pages in this tour can supply it.
+   */
+  intro: WhatsNewIntroCopy | null;
 };
 type FlowInput = {
   releases: readonly WhatsNewRelease[];
@@ -42,7 +47,7 @@ export function selectWhatsNewFlow({
   maxPages = WHATS_NEW_MAX_PAGES,
   context = EMPTY_WHATS_NEW_CONTEXT,
 }: FlowInput & { seenThrough: string | null }): WhatsNewFlow {
-  const empty: WhatsNewFlow = { pages: [], releaseVersions: [], truncated: false };
+  const empty: WhatsNewFlow = { pages: [], releaseVersions: [], truncated: false, intro: null };
   if (!parseAppVersion(currentVersion)) {
     return empty;
   }
@@ -65,11 +70,15 @@ export function selectWhatsNewFlow({
     remaining -= selected.length;
     return selected;
   });
+  // `groups` is newest first here, so the first release with pages in the tour is the newest.
+  const newestShown = eligible.find((_, index) => groups[index].length > 0);
+  const intro = newestShown?.intro;
   const pages = groups.reverse().flat();
   return {
     pages,
     releaseVersions: [...new Set(pages.map((page) => page.version))],
     truncated: total > pages.length,
+    intro: intro && (!intro.requires || context[intro.requires]) ? intro : null,
   };
 }
 
@@ -88,7 +97,7 @@ export function selectReplayFlow(input: FlowInput): WhatsNewFlow {
     }
   }
 
-  return { pages: [], releaseVersions: [], truncated: false };
+  return { pages: [], releaseVersions: [], truncated: false, intro: null };
 }
 
 /**

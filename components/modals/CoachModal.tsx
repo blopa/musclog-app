@@ -6,6 +6,7 @@ import i18n, { type TFunction } from 'i18next';
 import {
   Copy,
   Dumbbell,
+  Flag,
   Images,
   Paperclip,
   Send as SendIcon,
@@ -23,6 +24,7 @@ import {
   Image,
   type ImageSourcePropType,
   Keyboard,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -64,14 +66,18 @@ import { WorkoutService } from '@/database/services/WorkoutService';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useHostedWaitCue } from '@/hooks/useHostedWaitCue';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import { getAppBuildInfo } from '@/utils/appBuildInfo';
 import { formatTimeInTimezone } from '@/utils/calendarDate';
 import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import { createThumbnail } from '@/utils/file';
+import { buildAiReplyReportMailto } from '@/utils/feedbackLinks';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
@@ -626,6 +632,12 @@ type CoachModalProps = {
   initialIntention?: ChatIntention;
 };
 
+/** One whole key per line, so the translation check sees both. */
+const HOSTED_WAIT_KEYS = {
+  working: 'premium.wait.working',
+  busy: 'premium.wait.busy',
+} as const;
+
 export function CoachModal({
   visible,
   onClose,
@@ -636,6 +648,7 @@ export function CoachModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const persona = useCoachPersona();
+  const { aiProvider } = useSettings();
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const insets = useAppSafeAreaInsets();
   const router = useRouter();
@@ -766,6 +779,8 @@ export function CoachModal({
   // The typing dots are for the wait before the reply starts; once its words are showing they
   // would sit under them.
   const isWaitingForReply = isSending && !streamingMessage;
+  // Only for Premium: a slow hosted reply says so, calmly, under the notice area.
+  const hostedWaitLine = useHostedWaitCue(aiProvider === 'hosted' && isWaitingForReply);
 
   const displayMessages = [
     ...(streamingMessage ? [streamingMessage] : []),
@@ -978,6 +993,31 @@ export function CoachModal({
                 shareText(selectedMessage.text ?? '').catch(() => {});
               },
             },
+            // Only the coach's own replies (user id 2) can be reported: Google Play's AI-content
+            // guidance expects a way to flag a generated reply from inside the app.
+            ...(selectedMessage.user?._id === 2
+              ? [
+                  {
+                    icon: Flag,
+                    iconColor: theme.colors.text.primary,
+                    title: t('coach.message.report'),
+                    description: t('coach.message.reportDesc'),
+                    onPress: () => {
+                      setSelectedMessage(null);
+                      Linking.openURL(
+                        buildAiReplyReportMailto(
+                          { ...getAppBuildInfo(), locale },
+                          {
+                            subject: t('coach.message.reportSubject'),
+                            intro: t('coach.message.reportIntro'),
+                            reply: selectedMessage.text ?? '',
+                          }
+                        )
+                      ).catch(() => {});
+                    },
+                  },
+                ]
+              : []),
             {
               icon: Trash2,
               iconColor: theme.colors.status.error50,
@@ -993,6 +1033,7 @@ export function CoachModal({
           ]
         : [],
     [
+      locale,
       selectedMessage,
       shareText,
       showSnackbar,
@@ -1448,6 +1489,31 @@ export function CoachModal({
             variant="elevated"
           />
         </View>
+
+        {hostedWaitLine ? (
+          <View
+            className="border-b px-4 py-2"
+            style={{ borderColor: theme.colors.border.light }}
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
+            <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+              {t(HOSTED_WAIT_KEYS[hostedWaitLine])}
+            </Text>
+          </View>
+        ) : null}
+
+        {aiProvider === 'gateway' ? (
+          <View
+            className="border-b px-4 py-2"
+            style={{ borderColor: theme.colors.border.light }}
+            accessibilityRole="text"
+          >
+            <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+              {t('coach.freeTierNotice')}
+            </Text>
+          </View>
+        ) : null}
 
         <View
           className="flex-1"

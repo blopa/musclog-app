@@ -3,8 +3,8 @@
     "title": "What's new",
     "intro": {
       "inside": "What's in this tour",
-      "title": "Make Musclog your own",
-      "description": "A few things have changed. Take a quick look and choose what works for you. Changes save as you tap; you can revisit this tour in Settings.",
+      "title": "What's new in Musclog",
+      "description": "Here's what changed since you last opened the app. Take a quick look; you can revisit this tour any time in Settings.",
       "truncated": "We’ve kept this tour to the latest highlights."
     },
     "next": "Next",
@@ -234,6 +234,39 @@
           },
           "action": {
             "label": "Open progress"
+          }
+        }
+      },
+      "v2_17_5": {
+        "intro": {
+          "title": "Meet Musclog Iron",
+          "description": "This is the first and last time we'll show you a big banner like this. Musclog Iron is completely optional: you can keep using Musclog 100% free. It's there for your convenience, and it helps pay for the app's development.",
+          "items": {
+            "optional": "100% optional, never required",
+            "ai": "AI that just works, no keys to set up",
+            "support": "Keeps Musclog alive and in development"
+          }
+        },
+        "premium": {
+          "title": "How Musclog Iron works",
+          "description": "Musclog is free, open source and made by one developer. Musclog Iron is an optional way to use the AI without setting anything up, and a way to support the app if you like it.",
+          "items": {
+            "free": {
+              "label": "Everything else stays free",
+              "description": "Logging, workouts, progress and your data cost nothing. The free tier and your own AI keys keep working."
+            },
+            "tokens": {
+              "label": "Your subscription pays for the AI",
+              "description": "The AI is not free to run: each reply costs tokens. Your subscription covers them, and the AI providers keep nothing you send."
+            },
+            "oneDeveloper": {
+              "label": "Made by one person",
+              "description": "After the store's cut and the AI costs, only around €1 of each subscription is left for me. It is what keeps Musclog going."
+            }
+          },
+          "action": {
+            "label": "See Musclog Iron",
+            "description": "You can also find it in Settings → AI."
           }
         }
       }

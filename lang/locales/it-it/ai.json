@@ -9,7 +9,8 @@
       "tipApiKey": "Usa le chiavi API di OpenAI o Google Gemini dalle impostazioni IA.",
       "tipFeatures": "Una volta configurata, i tuoi messaggi vengono inviati al modello che scegli.",
       "openSettings": "Apri impostazioni IA",
-      "notNow": "Non ora"
+      "notNow": "Non ora",
+      "premium": "Ottieni Musclog Iron"
     },
     "providers": {
       "openAIGemini": "OpenAI o Google Gemini"

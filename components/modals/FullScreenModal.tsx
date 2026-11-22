@@ -1,7 +1,7 @@
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, type ScrollViewInstance, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
   KeyboardAwareScrollViewRef,
@@ -10,9 +10,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
-import { footerClearance } from '@/components/modals/footerClearance';
+import { footerClearance, scrollCueBottom } from '@/components/modals/footerClearance';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
+import { useScrollFade } from '@/hooks/useScrollFade';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -38,6 +39,12 @@ type FullScreenModalProps = {
    * picked Sherlock must not see Loggy appear in their chat.
    */
   confettiWithLoggy?: boolean;
+  /**
+   * Shows the "more below" cue (a fade into the surface and a chevron that scrolls to the end)
+   * while the body runs past the screen. It sits above the footer. Off by default: most modals
+   * are short, and a cue on all of them would be noise.
+   */
+  scrollCue?: boolean;
 };
 
 export function FullScreenModal({
@@ -55,9 +62,18 @@ export function FullScreenModal({
   scrollViewRef,
   showConfetti = false,
   confettiWithLoggy = true,
+  scrollCue = false,
 }: FullScreenModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  // The body's ref is the caller's when given; the cue's chevron scrolls the same scroller.
+  const ownScrollRef = useRef<KeyboardAwareScrollViewRef>(null);
+  const bodyRef = scrollViewRef ?? ownScrollRef;
+  const { scrollProps, FadeIndicator } = useScrollFade(
+    bodyRef as unknown as RefObject<ScrollViewInstance | null>
+  );
+  // Everything but the ref, which the body already has.
+  const { ref: _cueRef, ...scrollHandlers } = scrollProps;
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
   // The footer floats over the body, so the body pads by the footer's real height: a footer that
   // wraps (stacked buttons at large text or in a long translation) is taller than the fixed room
@@ -155,7 +171,8 @@ export function FullScreenModal({
           <View className="flex-1" pointerEvents="box-none">
             {scrollable ? (
               <KeyboardAwareScrollView
-                ref={scrollViewRef}
+                ref={bodyRef}
+                {...(scrollCue ? scrollHandlers : {})}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
                 style={webScrollViewStyle}
@@ -177,6 +194,22 @@ export function FullScreenModal({
                 {children}
               </View>
             )}
+
+            {/* "more below" cue, above the footer that floats over the body */}
+            {scrollCue ? (
+              <View
+                pointerEvents="box-none"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: scrollCueBottom(footerHeight),
+                }}
+              >
+                {FadeIndicator}
+              </View>
+            ) : null}
 
             {/* optional footer */}
             {footer ? (

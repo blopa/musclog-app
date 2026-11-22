@@ -12,8 +12,8 @@
     "aiCreditsError": "Cuota de servicio de IA excedida. Por favor, comprueba tu clave API o inténtalo de nuevo más tarde.",
     "aiProcessingError": "Lo siento, tuve problemas al procesar esa solicitud. Por favor, inténtalo de nuevo en un momento.",
     "aiProcessingErrorTitle": "Error al procesar la solicitud",
-    "gatewayDailyLimitError": "Límite diario de IA gratuita alcanzado. Inténtalo de nuevo mañana o añade tu propia clave API en los Ajustes de IA.",
-    "gatewayDailyLimitErrorTitle": "Límite Diario Alcanzado",
+    "gatewayDailyLimitError": "El nivel gratuito de IA no está disponible en este momento (es posible que se haya agotado su límite diario, que comparten todos los usuarios). Inténtalo más tarde o añade tu propia clave de API en los ajustes de IA.",
+    "gatewayDailyLimitErrorTitle": "Nivel gratuito no disponible",
     "databaseError": {
       "title": "Error de Base de Datos",
       "description": "Ocurrió un error en la base de datos. Se ha activado el informe de errores para ayudar a resolver este problema."
@@ -22,6 +22,15 @@
     "aiTimeout": "Está tardando demasiado. Inténtalo de nuevo.",
     "aiKeyTestOk": "Clave aceptada",
     "aiKeyTestRejected": "Clave rechazada. Revísala e inténtalo de nuevo.",
-    "aiKeyTestNetwork": "No se pudo contactar con el proveedor. Revisa tu conexión."
+    "aiKeyTestNetwork": "No se pudo contactar con el proveedor. Revisa tu conexión.",
+    "hostedBudget": "La cuota de Musclog Iron de este periodo se ha agotado. Se renueva el {{date}}. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+    "hostedBudgetNoDate": "La cuota de Musclog Iron de este periodo se ha agotado. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+    "hostedSubscription": "Musclog Iron no tiene una suscripción activa en este dispositivo. Restaura tu compra o suscríbete en los ajustes de Musclog Iron.",
+    "hostedRemoved": "Este dispositivo se ha eliminado de tu suscripción a Musclog Iron. Restaura las compras en los ajustes de Musclog Iron para volver a añadirlo.",
+    "hostedUnavailable": "Musclog Iron no está disponible ahora mismo. Inténtalo de nuevo en un momento.",
+    "hostedDailyFull": "Musclog Iron está al límite de capacidad hasta mañana (UTC).",
+    "hostedDailyLimit": "Has alcanzado el límite diario de Musclog Iron. Se restablece a medianoche (UTC). Mientras tanto puedes usar tu propia clave o el nivel gratuito.",
+    "hostedBusy": "Musclog Iron está ocupado. Inténtalo de nuevo en unos segundos.",
+    "hostedAlreadyProcessed": "Esa solicitud ya se procesó. Envíala de nuevo."
   }
 }

@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Chat",
+    "freeTierNotice": "Piano gratuito: i messaggi vanno a Google AI Studio, che può conservarli, usarli per migliorare i suoi prodotti e farli esaminare da persone. Non inserire informazioni personali o sensibili. Solo per adulti (18+).",
     "you": "Tu",
     "status": "Online",
     "statusOffline": "Offline",
@@ -116,7 +117,11 @@
       "delete": "Elimina",
       "deleteDesc": "Rimuovi questo messaggio dalla conversazione",
       "copied": "Messaggio copiato negli appunti",
-      "deleted": "Messaggio eliminato"
+      "deleted": "Messaggio eliminato",
+      "report": "Segnala un problema",
+      "reportDesc": "Segnala via email un problema con questa risposta",
+      "reportSubject": "Problema con una risposta dell'IA di Musclog",
+      "reportIntro": "Cosa non andava in questa risposta? (Puoi modificare o eliminare il testo qui sotto prima di inviare.)"
     },
     "sendViaOpenAI": "Invia tramite OpenAI",
     "personas": {

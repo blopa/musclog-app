@@ -12,8 +12,8 @@
     "aiCreditsError": "Przekroczono limit usługi AI. Sprawdź klucz API albo spróbuj ponownie później.",
     "aiProcessingError": "Nie udało się przetworzyć tego żądania. Spróbuj ponownie za chwilę.",
     "aiProcessingErrorTitle": "Błąd przetwarzania żądania",
-    "gatewayDailyLimitError": "Osiągnięto dzienny limit darmowej AI. Spróbuj jutro albo dodaj własny klucz API w ustawieniach AI.",
-    "gatewayDailyLimitErrorTitle": "Osiągnięto dzienny limit",
+    "gatewayDailyLimitError": "Darmowy poziom AI jest obecnie niedostępny (dzienny limit, wspólny dla wszystkich użytkowników, mógł się wyczerpać). Spróbuj później lub dodaj własny klucz API w ustawieniach AI.",
+    "gatewayDailyLimitErrorTitle": "Darmowy poziom niedostępny",
     "databaseError": {
       "title": "Błąd bazy danych",
       "description": "Wystąpił błąd bazy danych. Zgłaszanie błędów zostało włączone, aby pomóc rozwiązać problem."
@@ -22,6 +22,15 @@
     "aiTimeout": "To trwa zbyt długo. Spróbuj ponownie.",
     "aiKeyTestOk": "Klucz zaakceptowany",
     "aiKeyTestRejected": "Klucz odrzucony. Sprawdź go i spróbuj ponownie.",
-    "aiKeyTestNetwork": "Nie udało się połączyć z dostawcą. Sprawdź połączenie."
+    "aiKeyTestNetwork": "Nie udało się połączyć z dostawcą. Sprawdź połączenie.",
+    "hostedBudget": "Limit Musclog Iron na ten okres został wykorzystany. Odnawia się {{date}}. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",
+    "hostedBudgetNoDate": "Limit Musclog Iron na ten okres został wykorzystany. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",
+    "hostedSubscription": "Musclog Iron nie ma aktywnej subskrypcji na tym urządzeniu. Przywróć zakup lub zasubskrybuj w ustawieniach Musclog Iron.",
+    "hostedRemoved": "To urządzenie zostało usunięte z Twojej subskrypcji Musclog Iron. Przywróć zakupy w ustawieniach Musclog Iron, aby dodać je ponownie.",
+    "hostedUnavailable": "Musclog Iron jest teraz niedostępny. Spróbuj ponownie za chwilę.",
+    "hostedDailyFull": "AI w Musclog Iron jest przeciążone do jutra (UTC).",
+    "hostedDailyLimit": "Osiągnięto dzienny limit Musclog Iron. Zeruje się o północy (UTC). W międzyczasie możesz użyć własnego klucza lub darmowego poziomu.",
+    "hostedBusy": "Musclog Iron jest zajęty. Spróbuj ponownie za kilka sekund.",
+    "hostedAlreadyProcessed": "To żądanie zostało już obsłużone. Wyślij je ponownie."
   }
 }

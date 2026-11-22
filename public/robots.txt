@@ -5,6 +5,7 @@
 User-agent: *
 Allow: /
 Disallow: /open
+Disallow: /premium
 Disallow: /test
 
 # AI assistants / answer engines — explicitly allowed for citation and

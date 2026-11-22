@@ -3,8 +3,8 @@
     "title": "Nouveautés",
     "intro": {
       "inside": "Ce qu'il y a dans cette visite",
-      "title": "Fais de Musclog le tien",
-      "description": "Quelques éléments ont changé. Jette un œil rapide et choisis ce qui te convient. Les changements s'enregistrent dès que tu tapes ; tu peux revoir cette visite dans les Réglages.",
+      "title": "Nouveautés de Musclog",
+      "description": "Voici ce qui a changé depuis ta dernière visite. Jette un œil rapide ; tu peux revoir cette visite à tout moment dans les Réglages.",
       "truncated": "Nous avons limité cette visite aux points forts les plus récents."
     },
     "next": "Suivant",
@@ -234,6 +234,39 @@
           },
           "action": {
             "label": "Ouvrir la progression"
+          }
+        }
+      },
+      "v2_17_5": {
+        "intro": {
+          "title": "Découvrez Musclog Iron",
+          "description": "C'est la première et la dernière fois que nous vous affichons une grande bannière comme celle-ci. Musclog Iron est totalement facultatif : vous pouvez continuer à utiliser Musclog à 100 % gratuitement. Il est là pour votre confort et aide à financer le développement de l'application.",
+          "items": {
+            "optional": "100 % facultatif, jamais obligatoire",
+            "ai": "Une IA qui fonctionne sans rien configurer",
+            "support": "Fait vivre Musclog et son développement"
+          }
+        },
+        "premium": {
+          "title": "Comment fonctionne Musclog Iron",
+          "description": "Musclog est gratuit, open source et développé par une seule personne. Musclog Iron est un moyen facultatif d'utiliser l'IA sans rien configurer, et une façon de soutenir l'application si elle vous plaît.",
+          "items": {
+            "free": {
+              "label": "Tout le reste reste gratuit",
+              "description": "L'enregistrement, les séances, la progression et vos données ne coûtent rien. La formule gratuite et vos propres clés d'IA continuent de fonctionner."
+            },
+            "tokens": {
+              "label": "Votre abonnement finance l'IA",
+              "description": "L'IA n'est pas gratuite à faire tourner : chaque réponse consomme des tokens. Votre abonnement les couvre, et les fournisseurs d'IA ne conservent rien de ce que vous envoyez."
+            },
+            "oneDeveloper": {
+              "label": "Fait par une seule personne",
+              "description": "Après la part du store et les coûts de l'IA, il ne reste qu'environ 1 € de chaque abonnement pour moi. C'est ce qui fait vivre Musclog."
+            }
+          },
+          "action": {
+            "label": "Découvrir Musclog Iron",
+            "description": "Vous le trouverez aussi dans Réglages → IA."
           }
         }
       }

@@ -209,7 +209,7 @@ describe('pageHeadlineDetailKeys', () => {
     const flow = selectReplayFlow({
       releases: whatsNewReleases,
       currentVersion: '2.15.2',
-      context: { cycleTracking: true },
+      context: { cycleTracking: true, premium: false },
     });
     const details = flow.pages.map(pageHeadlineDetailKeys);
     expect(details).toHaveLength(9);
@@ -237,7 +237,7 @@ describe('conditional pages', () => {
       },
     ],
   };
-  const keys = (context?: { cycleTracking: boolean }) =>
+  const keys = (context?: { cycleTracking: boolean; premium: boolean }) =>
     selectWhatsNewFlow({
       releases: [gated],
       seenThrough: null,
@@ -247,15 +247,37 @@ describe('conditional pages', () => {
 
   test('hides a gated page unless its condition holds', () => {
     expect(keys()).toEqual(['2.14.0:all']);
-    expect(keys({ cycleTracking: false })).toEqual(['2.14.0:all']);
-    expect(keys({ cycleTracking: true })).toEqual(['2.14.0:all', '2.14.0:cycle']);
+    expect(keys({ cycleTracking: false, premium: false })).toEqual(['2.14.0:all']);
+    expect(keys({ cycleTracking: true, premium: false })).toEqual(['2.14.0:all', '2.14.0:cycle']);
+  });
+
+  test('the premium condition gates a page the same way', () => {
+    const premiumRelease: WhatsNewRelease = {
+      version: '2.14.0',
+      pages: [
+        {
+          id: 'premium',
+          requires: 'premium',
+          blocks: [{ id: 'info', type: 'info', titleKey: 'whatsNew.title' }],
+        },
+      ],
+    };
+    const pages = (premium: boolean) =>
+      selectWhatsNewFlow({
+        releases: [premiumRelease],
+        seenThrough: null,
+        currentVersion: '2.14.0',
+        context: { cycleTracking: false, premium },
+      }).pages.length;
+    expect(pages(false)).toBe(0);
+    expect(pages(true)).toBe(1);
   });
 
   test('replay applies the same gate', () => {
-    const replay = (context?: { cycleTracking: boolean }) =>
+    const replay = (context?: { cycleTracking: boolean; premium: boolean }) =>
       selectReplayFlow({ releases: [gated], currentVersion: '2.14.0', context }).pages.length;
     expect(replay()).toBe(1);
-    expect(replay({ cycleTracking: true })).toBe(2);
+    expect(replay({ cycleTracking: true, premium: false })).toBe(2);
   });
 
   test('a release whose only page is gated yields no flow without the condition', () => {
@@ -263,5 +285,59 @@ describe('conditional pages', () => {
     expect(
       selectWhatsNewFlow({ releases: [only], seenThrough: null, currentVersion: '2.14.0' }).pages
     ).toEqual([]);
+  });
+});
+
+describe('the intro a release brings', () => {
+  const intro = { titleKey: 'whatsNew.title' as const };
+  const withIntro = (version: string, extra: Partial<WhatsNewRelease['intro']> = {}) => ({
+    ...release(version, 1),
+    intro: { ...intro, ...extra },
+  });
+
+  it('is the newest shown release’s intro, kept for a merged tour', () => {
+    const flow = selectWhatsNewFlow({
+      releases: [withIntro('2.13.0', { titleKey: 'whatsNew.done' }), withIntro('2.14.0')],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    });
+    expect(flow.intro).toEqual(intro);
+    expect(flow.releaseVersions).toEqual(['2.13.0', '2.14.0']);
+  });
+
+  it('is not borrowed from an older release when the newest has none', () => {
+    const flow = selectWhatsNewFlow({
+      releases: [withIntro('2.13.0'), release('2.14.0', 1)],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    });
+    expect(flow.intro).toBeNull();
+  });
+
+  it('falls to the next release when the newest one shows no page', () => {
+    const gated = withIntro('2.14.0', { requires: 'premium' });
+    gated.pages[0].requires = 'premium';
+    const flow = selectWhatsNewFlow({
+      releases: [withIntro('2.13.0'), gated],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    });
+    expect(flow.releaseVersions).toEqual(['2.13.0']);
+    expect(flow.intro).toEqual(intro);
+  });
+
+  it('honours its own condition', () => {
+    const input = {
+      releases: [withIntro('2.14.0', { requires: 'premium' })],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    };
+    expect(selectWhatsNewFlow(input).intro).toBeNull();
+    expect(
+      selectWhatsNewFlow({ ...input, context: { cycleTracking: false, premium: true } }).intro
+    ).toMatchObject({ requires: 'premium' });
+    expect(
+      selectReplayFlow({ ...input, context: { cycleTracking: false, premium: true } }).intro
+    ).not.toBeNull();
   });
 });

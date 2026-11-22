@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Czat",
+    "freeTierNotice": "Darmowy poziom: wiadomości trafiają do Google AI Studio, które może je przechowywać, wykorzystywać do ulepszania swoich produktów i zlecać ich przegląd ludziom. Nie wpisuj danych osobowych ani wrażliwych. Tylko dla dorosłych (18+).",
     "you": "Ty",
     "status": "Online",
     "statusOffline": "Offline",
@@ -116,7 +117,11 @@
       "delete": "Usuń",
       "deleteDesc": "Usuń tę wiadomość z rozmowy",
       "copied": "Skopiowano wiadomość do schowka",
-      "deleted": "Wiadomość usunięta"
+      "deleted": "Wiadomość usunięta",
+      "report": "Zgłoś problem",
+      "reportDesc": "Zgłoś e-mailem problem z tą odpowiedzią",
+      "reportSubject": "Problem z odpowiedzią AI w Musclog",
+      "reportIntro": "Co było nie tak z tą odpowiedzią? (Przed wysłaniem możesz edytować lub usunąć poniższy tekst.)"
     },
     "sendViaOpenAI": "Wyślij przez OpenAI",
     "personas": {

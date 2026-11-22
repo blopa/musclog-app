@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
 import { BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
 import { WebsiteLoggy } from '@/components/website/WebsiteLoggy';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { trackStoreButtonClick, withPlayReferrer } from '@/utils/websiteAnalytics';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 function AppleLogo() {
   return (

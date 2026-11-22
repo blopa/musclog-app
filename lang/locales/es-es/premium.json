@@ -1,0 +1,117 @@
+{
+  "premium": {
+    "title": "Musclog Iron",
+    "benefit": "IA alojada sin clave que configurar. Musclog Iron ejecuta la IA por ti con una cuota mensual.",
+    "loading": "Comprobando tu estado de Musclog Iron…",
+    "progress": {
+      "store": "Esperando a la tienda…",
+      "confirming": "Confirmando tu suscripción…",
+      "slow": "Sigue confirmando, puede tardar unos segundos",
+      "reset": "Restableciendo Musclog Iron en este dispositivo…",
+      "toggle": "Actualizando tu ajuste de IA…"
+    },
+    "wait": {
+      "working": "Musclog Iron sigue trabajando…",
+      "busy": "Musclog Iron está ocupado, reintentando…"
+    },
+    "price": "{{price}} al mes",
+    "subscribe": "Suscribirse",
+    "restore": "Restaurar compras",
+    "usage": {
+      "used": "{{pct}} % de la cuota de este periodo utilizada",
+      "renews": "Se renueva el {{date}}"
+    },
+    "devices": "Compartido por todos tus dispositivos",
+    "useForAi": "Usar Musclog Iron para mi IA",
+    "useForAiHint": "Las solicitudes se envían al servicio Musclog Iron, que las reenvía a OpenRouter.",
+    "manage": "Gestionar suscripción",
+    "reset": "Restablecer Musclog Iron en este dispositivo",
+    "resetTitle": "¿Restablecer Musclog Iron en este dispositivo?",
+    "resetBody": "Esto olvida la inscripción de Musclog Iron de este dispositivo y crea una clave nueva. Tu suscripción no se cancela. Restaurar compras vuelve a añadir este dispositivo.",
+    "resetConfirm": "Restablecer",
+    "consent": {
+      "title": "¿Enviar las solicitudes de IA a Musclog Iron?",
+      "body": "Tus mensajes y las fotos que envíes a la IA se envían al servicio de Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se utilizan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar. El servicio de Musclog nunca almacena tus mensajes ni tus fotos; solo guarda un identificador de este dispositivo y los recuentos de uso. Puedes desactivarlo en cualquier momento.",
+      "confirm": "Usar Musclog Iron",
+      "cancel": "Ahora no"
+    },
+    "renewalDisclosure": "Musclog Iron es una suscripción mensual que se renueva automáticamente. El pago se carga a tu cuenta de App Store o Google Play al confirmar la compra. Se renueva salvo que la canceles al menos 24 horas antes de que termine el periodo actual. Gestiónala o cancélala en los ajustes de tu cuenta de la tienda. El precio mostrado es el que cobra la tienda.",
+    "devicesNote": "Una suscripción y una sola cuota, compartidas por todos tus dispositivos.",
+    "platformsNote": "Las suscripciones de iOS y Android son independientes.",
+    "terms": "Condiciones de uso",
+    "privacy": "Política de privacidad",
+    "card": {
+      "checking": "Comprobando Musclog Iron…",
+      "notSubscribed": "IA alojada privada, sin clave que configurar",
+      "active": "{{pct}} % usado · compartido por todos tus dispositivos",
+      "activeNoUsage": "Activo · compartido por todos tus dispositivos",
+      "exhausted": "Cuota agotada para este periodo",
+      "removed": "Eliminado de esta suscripción",
+      "revoked": "Musclog Iron no está activo"
+    },
+    "notice": {
+      "offline": "Estás sin conexión. Musclog Iron necesita conexión para comprobar tu suscripción.",
+      "purchase_cancelled": "Compra cancelada. No se ha cobrado nada.",
+      "purchase_failed": "La compra no se completó. Inténtalo de nuevo o revisa tu cuenta de la tienda.",
+      "restore_nothing": "No se encontró ninguna suscripción activa de Musclog Iron para esta cuenta de la tienda.",
+      "confirming": "Tu compra aún se está confirmando. Inténtalo de nuevo en un minuto.",
+      "removed": "Este dispositivo se ha eliminado de esta suscripción porque se han añadido muchos dispositivos más recientes. Restaurar compras vuelve a añadir este dispositivo.",
+      "revoked": "Musclog Iron ya no está activo para esta suscripción.",
+      "exhausted": "La cuota de Musclog Iron de este periodo se ha agotado. Se renueva el {{date}}. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+      "exhaustedNoDate": "La cuota de Musclog Iron de este periodo se ha agotado. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
+      "at_capacity": "Musclog Iron está al límite de capacidad hasta mañana (UTC).",
+      "unavailable": "Musclog Iron no está disponible ahora mismo. Inténtalo más tarde.",
+      "not_accepting": "Musclog Iron no admite nuevos suscriptores en este momento.",
+      "not_available": "Musclog Iron no está disponible en esta tienda por ahora.",
+      "warning80": "Has usado la mayor parte de la cuota de Musclog Iron de este periodo."
+    },
+    "paywall": {
+      "headline": "Registra más rápido con IA, sin nada que configurar",
+      "subhead": "Musclog Iron ejecuta la IA por ti: sin clave, sin cuenta y solo con proveedores de IA que no guardan nada de lo que envías. Todo lo demás de Musclog sigue siendo gratis.",
+      "benefits": {
+        "noSetup": {
+          "title": "Nada que configurar",
+          "desc": "Sin clave de API ni cuenta. Suscríbete y el entrenador, el registro de comidas y los planes de entrenamiento funcionan al momento."
+        },
+        "private": {
+          "title": "Retención cero de datos",
+          "desc": "Solo se usan proveedores de retención cero de datos: no guardan tus mensajes ni los usan para entrenar. Musclog tampoco los almacena nunca; solo conserva recuentos de uso y un identificador de dispositivo."
+        },
+        "allowance": {
+          "title": "Tu propia cuota",
+          "desc": "Una cuota mensual para tu suscripción, no el límite diario que comparten todos los usuarios gratuitos."
+        },
+        "devices": {
+          "title": "En todos tus dispositivos",
+          "desc": "Añade otro teléfono o tablet con Restaurar compras. Comparten una sola cuota."
+        },
+        "openSource": {
+          "title": "Mantiene vivo Musclog",
+          "desc": "Musclog es de código abierto. Musclog Iron paga la IA alojada y apoya su desarrollo."
+        }
+      },
+      "compare": {
+        "title": "Nivel gratuito o Musclog Iron",
+        "free": "Nivel gratuito",
+        "premium": "Iron",
+        "privacy": {
+          "label": "Lo que envías",
+          "free": "Google puede conservarlo, revisarlo y usarlo para entrenar",
+          "premium": "No se conserva ni se usa para entrenar"
+        },
+        "limit": {
+          "label": "Límite",
+          "free": "Un límite diario compartido por todos",
+          "premium": "Tu propia cuota mensual"
+        },
+        "price": {
+          "label": "Precio",
+          "free": "Gratis",
+          "premiumUnknown": "Suscripción mensual"
+        }
+      },
+      "cta": "Suscríbete por {{price}} al mes",
+      "reassurance": "Se renueva cada mes. Cancela cuando quieras desde tu cuenta de la tienda."
+    }
+  }
+}

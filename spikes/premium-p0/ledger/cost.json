@@ -1,0 +1,84 @@
+{
+  "deviceInsert": {
+    "w": 3,
+    "r": 0
+  },
+  "periodInsert": {
+    "w": 3,
+    "r": 0
+  },
+  "reserveBatch": {
+    "w": 3,
+    "r": 8
+  },
+  "reserveBatchPerStmt": [
+    {
+      "w": 1,
+      "r": 3
+    },
+    {
+      "w": 1,
+      "r": 3
+    },
+    {
+      "w": 1,
+      "r": 2
+    }
+  ],
+  "readback": {
+    "w": 0,
+    "r": 1
+  },
+  "settle": {
+    "w": 2,
+    "r": 5
+  },
+  "settlePerStmt": [
+    {
+      "w": 1,
+      "r": 3
+    },
+    {
+      "w": 1,
+      "r": 2
+    }
+  ],
+  "rejectedReserve": {
+    "w": 0,
+    "r": 3
+  },
+  "bytesPerReservationRow": 120.832,
+  "pruneReservations2000of4000": {
+    "w": 2000,
+    "r": 4001,
+    "changes": 2000
+  },
+  "bytesPerPeriodRow": 335.872,
+  "cron_1500_live": {
+    "periodRowsInTable": 1500,
+    "sweepReads": 1500,
+    "globalFlagReads": 1500,
+    "globalFlagWrites": 2
+  },
+  "cron_1500_live_plus_1500_history": {
+    "periodRowsInTable": 3000,
+    "sweepReads": 1500,
+    "globalFlagReads": 1501,
+    "globalFlagWrites": 0
+  },
+  "cron_3000_live": {
+    "periodRowsInTable": 3000,
+    "sweepReads": 3000,
+    "globalFlagReads": 3001,
+    "globalFlagWrites": 0
+  },
+  "prunePeriods1500of3000": {
+    "w": 1500,
+    "r": 1501,
+    "changes": 1500
+  },
+  "pruneReservationsOnEmptyTable": {
+    "w": 0,
+    "r": 1
+  }
+}

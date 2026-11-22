@@ -61,7 +61,9 @@ ground with the ink, highlight, mark and track drawn on it, and is held to AA in
 (header, progress, buttons) still follows the theme.
 
 Food in his hands is not him: the lettuce in the salad bowl and on the fork is drawn in fixed
-greens (`s19`–`s21` of `palette.css`), so it stays a salad in every theme.
+greens (`s19`–`s21` of `palette.css`), so it stays a salad in every theme. The same goes for the
+iron of the `iron` pose (the Musclog Iron Loggy: dumbbell overhead, hand on hip, VIP rosette, an
+"IRON" kettlebell): its dumbbell and kettlebell use the fixed iron greys `s22`–`s25`.
 
 Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, never a literal
 white or the regular on-surface ink.
@@ -538,7 +540,7 @@ subtitle.
     `lifting`).
   - **Beginnings.** The onboarding landing (`default`, in place of the app mark the splash already
     showed), the last setup step (`lifting`), the first page of What's new (a random `pointing`,
-    `wave`, `flex` or `default`; a later page keeps its icon unless it names a
+    `wave`, `flex` or `default`, or, when a release brings its own intro, its `pose` drawn larger as a banner: 2.17.5's `iron` Musclog Iron page; a later page keeps its icon unless it names a
     `pose` — the 2.16.0 pages do, each the page's own subject: `running`, `writing`, `trophy`, `flex`, `magnify`, sized
     from the window height in `WhatsNewPicture`) and the one-time Weekly Review welcome (`pointing`, at the board that explains the ritual).
   - **Finishing a workout** (`celebrating`, or `trophy` when the session set a personal record). The confetti on that screen

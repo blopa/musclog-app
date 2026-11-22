@@ -3,7 +3,13 @@ import path from 'node:path';
 
 import { GITHUB_REPO_URL, SUPPORT_EMAIL } from '@/constants/misc';
 import { formatAppVersion } from '@/utils/appVersionLabel';
-import { buildIssueUrl, buildSupportMailto, type FeedbackEnvironment } from '@/utils/feedbackLinks';
+import {
+  AI_REPLY_REPORT_MAX_CHARS,
+  buildAiReplyReportMailto,
+  buildIssueUrl,
+  buildSupportMailto,
+  type FeedbackEnvironment,
+} from '@/utils/feedbackLinks';
 
 const env: FeedbackEnvironment = {
   appVersion: '2.12.3',
@@ -96,5 +102,34 @@ describe('formatAppVersion', () => {
   it('appends the build only when there is one', () => {
     expect(formatAppVersion({ appVersion: '1.0.0', buildNumber: 7 })).toBe('1.0.0 (Build 7)');
     expect(formatAppVersion({ appVersion: '1.0.0', buildNumber: null })).toBe('1.0.0');
+  });
+});
+
+describe('buildAiReplyReportMailto', () => {
+  const copy = {
+    subject: 'Problem with an AI reply',
+    intro: 'What was wrong?',
+    reply: 'Eat 10 eggs.',
+  };
+
+  it('writes to the support address, quotes the reply and names the environment', () => {
+    const url = buildAiReplyReportMailto(env, copy);
+    const [head, query] = url.split('?');
+    const params = new URLSearchParams(query);
+
+    expect(head).toBe(`mailto:${SUPPORT_EMAIL}`);
+    expect(params.get('subject')).toBe(copy.subject);
+    expect(params.get('body')).toContain('What was wrong?');
+    expect(params.get('body')).toContain('Eat 10 eggs.');
+    expect(params.get('body')).toContain(`App version: ${formatAppVersion(env)}`);
+    expect(params.get('body')).toContain('Language: pt-BR');
+  });
+
+  it('cuts a very long reply so the link stays usable', () => {
+    const url = buildAiReplyReportMailto(env, { ...copy, reply: 'x'.repeat(5000) });
+    const body = new URLSearchParams(url.split('?')[1]).get('body') ?? '';
+
+    expect(body).toContain('x'.repeat(AI_REPLY_REPORT_MAX_CHARS));
+    expect(body).not.toContain('x'.repeat(AI_REPLY_REPORT_MAX_CHARS + 1));
   });
 });

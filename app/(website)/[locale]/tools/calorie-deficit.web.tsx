@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   CALORIE_ACTIVITY_LEVELS,
   calorieDeficitPlan,
@@ -25,7 +26,6 @@ import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import type { Gender } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { kgToDisplay } from '@/utils/unitConversion';
-import { localeStaticParams } from '@/components/website/localeStaticParams';
 
 /** The local calendar day as `YYYY-MM-DD`, for the date input's minimum. */
 function localIsoDay(date: Date): string {

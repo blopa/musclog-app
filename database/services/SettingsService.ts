@@ -36,7 +36,6 @@ import {
   LOCAL_LLM_BASE_URL_SETTING_TYPE,
   LOCAL_LLM_MODEL_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
-  MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
@@ -1284,14 +1283,6 @@ export class SettingsService {
 
   static async getUseMusclogFreeTier(): Promise<boolean> {
     return SettingsService.getBooleanSetting(USE_MUSCLOG_FREE_TIER_SETTING_TYPE, false);
-  }
-
-  static async setMusclogGatewayAnonymousId(id: string) {
-    await SettingsService.setStringSetting(MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE, id);
-  }
-
-  static async getMusclogGatewayAnonymousId(): Promise<string> {
-    return SettingsService.getStringSetting(MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE, '');
   }
 
   /**

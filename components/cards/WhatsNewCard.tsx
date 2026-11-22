@@ -8,6 +8,7 @@ import { WhatsNewModal } from '@/components/whatsNew/WhatsNewModal';
 import { whatsNewReleases } from '@/data/whatsNew/releases';
 import { useTheme } from '@/hooks/useTheme';
 import { getAppVersion } from '@/utils/appVersion';
+import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 import { selectReplayFlow } from '@/utils/whatsNew/flow';
 
 import { SettingsCard } from './SettingsCard';
@@ -23,7 +24,7 @@ export function WhatsNewCard() {
       selectReplayFlow({
         releases: whatsNewReleases,
         currentVersion: getAppVersion(),
-        context: { cycleTracking },
+        context: { cycleTracking, premium: isPremiumUiEnabled() },
       }),
     [cycleTracking]
   );

@@ -1,0 +1,22 @@
+<?xml-stylesheet type="text/css" href="../palette.css"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 0 640 700">
+	<g id="face-cthulhu">
+		<g id="face-cthulhu-brow-l">
+			<path class="s0" d="M 188 247 C 199 239 211 241 223 248 C 234 255 242 256 249 250 C 246 263 238 266 225 262 C 213 257 202 252 190 253 Z"/>
+		</g>
+		<g id="face-cthulhu-eye-l">
+			<path class="s0" d="M 196 253 C 196 267 202 278 213 280 C 224 281 233 276 236 264 C 224 259 210 254 196 253 Z"/>
+			<path class="s2" d="M 201 256 C 200 262 202 270 205 273 L 213 272 L 210 267 L 219 265 Z"/>
+		</g>
+		<g id="face-cthulhu-brow-r">
+			<path class="s0" d="M 276 250 C 283 256 291 255 302 248 C 314 241 326 239 337 247 L 335 253 C 323 252 312 257 300 262 C 287 266 279 263 276 250 Z"/>
+		</g>
+		<g id="face-cthulhu-eye-r">
+			<path class="s0" d="M 329 253 C 329 267 323 278 312 280 C 301 281 292 276 289 264 C 301 259 315 254 329 253 Z"/>
+			<path class="s2" d="M 294 263 C 294 269 296 275 300 277 L 306 275 L 303 271 L 312 268 Z"/>
+		</g>
+		<g id="face-cthulhu-extras">
+			<path class="s0" d="M 205 288 C 217 293 228 293 236 287 C 231 296 218 298 205 288 Z M 320 288 C 308 293 297 293 289 287 C 294 296 307 298 320 288 Z"/>
+		</g>
+	</g>
+</svg>

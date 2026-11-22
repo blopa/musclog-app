@@ -16,6 +16,7 @@ import { localNextDayStartMsFromDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import { absoluteFileUri } from './absoluteFileUri';
 import ActivityHeatmapWidget from './ActivityHeatmapWidget';
 import { loadActivityWidgetDays, subscribeToActivityChanges } from './activityWidgetData';
 import {
@@ -94,7 +95,7 @@ async function copyCameraImage(): Promise<string> {
       destination.delete();
     }
 
-    new File(asset.localUri).copy(destination);
+    new File(absoluteFileUri(asset.localUri)).copy(destination);
   }
 
   // A fresh handle: the one above still reports the state from before delete() and copy().

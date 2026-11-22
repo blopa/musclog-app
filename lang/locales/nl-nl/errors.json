@@ -12,8 +12,8 @@
     "aiCreditsError": "AI-servicequotum overschreden. Controleer je API-sleutel of probeer het later opnieuw.",
     "aiProcessingError": "Sorry, ik had moeite om dat verzoek te verwerken. Probeer het over een moment opnieuw.",
     "aiProcessingErrorTitle": "Fout bij verwerken verzoek",
-    "gatewayDailyLimitError": "Dagelijkse gratis AI-limiet bereikt. Probeer het morgen opnieuw of voeg je eigen API-sleutel toe bij de AI-instellingen.",
-    "gatewayDailyLimitErrorTitle": "Dagelijkse limiet bereikt",
+    "gatewayDailyLimitError": "Het gratis AI-niveau is op dit moment niet beschikbaar (de dagelijkse limiet, die alle gebruikers delen, is mogelijk op). Probeer het later opnieuw of voeg je eigen API-sleutel toe in de AI-instellingen.",
+    "gatewayDailyLimitErrorTitle": "Gratis niveau niet beschikbaar",
     "databaseError": {
       "title": "Databasefout",
       "description": "Er is een databasefout opgetreden. Foutrapportage is ingeschakeld om dit probleem te helpen oplossen."
@@ -22,6 +22,15 @@
     "aiTimeout": "Dit duurt te lang. Probeer het opnieuw.",
     "aiKeyTestOk": "Sleutel geaccepteerd",
     "aiKeyTestRejected": "Sleutel geweigerd. Controleer hem en probeer opnieuw.",
-    "aiKeyTestNetwork": "Kon de provider niet bereiken. Controleer je verbinding."
+    "aiKeyTestNetwork": "Kon de provider niet bereiken. Controleer je verbinding.",
+    "hostedBudget": "Het AI-tegoed van Musclog Iron van deze periode is op. Het wordt op {{date}} vernieuwd. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+    "hostedBudgetNoDate": "Het AI-tegoed van Musclog Iron van deze periode is op. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+    "hostedSubscription": "Musclog Iron heeft geen actief abonnement op dit apparaat. Herstel je aankoop of abonneer je in de Musclog Iron-instellingen.",
+    "hostedRemoved": "Dit apparaat is uit je Musclog Iron-abonnement verwijderd. Herstel de aankopen in de Musclog Iron-instellingen om het weer toe te voegen.",
+    "hostedUnavailable": "Musclog Iron is nu niet beschikbaar. Probeer het zo opnieuw.",
+    "hostedDailyFull": "Musclog Iron zit tot morgen (UTC) aan de capaciteitsgrens.",
+    "hostedDailyLimit": "Je hebt de dagelijkse limiet van Musclog Iron bereikt. Die wordt om middernacht (UTC) gereset. Je kunt intussen je eigen sleutel of de gratis variant gebruiken.",
+    "hostedBusy": "Musclog Iron is bezet. Probeer het over een paar seconden opnieuw.",
+    "hostedAlreadyProcessed": "Dit verzoek is al verwerkt. Stuur het opnieuw."
   }
 }

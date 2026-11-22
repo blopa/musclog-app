@@ -1,10 +1,10 @@
-<b>Log your workouts and your food in one app: no account, no ads, no subscription.</b>
+<b>Log your workouts and your food in one app: no account and no ads.</b>
 Musclog is a free, open source workout tracker and calorie counter. It suggests your next weight and reps from your last session, scans food barcodes, and works offline. Your data stays on your phone.
 
 <b>Nothing locked away</b>
 • Unlimited workout routines and plans, and your full history.
 • The barcode scanner, nutrition label scanning and food search are in the app for everyone.
-• Every chart, export and backup is included, with no subscription.
+• Every chart, export and backup is included and free.
 
 <b>Workout log and gym tracker</b>
 • Log sets, reps and weight in seconds, with a rest timer, warm-up sets, supersets and notes for every exercise.
@@ -38,11 +38,14 @@ Musclog is a free, open source workout tracker and calorie counter. It suggests 
 • Or build a plan or describe a meal in ChatGPT or Claude and bring it into Musclog.
 • Choose how the coach talks to you. Nothing in Musclog requires AI.
 
+<b>Musclog Iron (optional)</b>
+Musclog Iron is a monthly subscription that answers AI requests without your own key. Payment is charged to your store account and it renews automatically every month unless you cancel in your store account settings at least 24 hours before renewal. Everything else in Musclog stays free. Terms: https://musclog.app/en/terms
+
 <b>Private by design</b>
 • Weight, body fat and food logs are encrypted on your device.
 • Lock the whole app, or only your cycle, workout, food or progress data, with your phone's biometrics or passcode.
 • Export or back up your data, or move it to another phone by scanning QR codes, with no cloud.
 • Anonymous crash reports help fix bugs and can be turned off in settings.
-• Home screen widgets, several color themes, and English, Español, Nederlands, Português (Brasil) and Русский.
+• Home screen widgets, several color themes, and English, Español, Nederlands, Português (Brasil), Русский, Deutsch, Français, Italiano, Polski and Türkçe.
 
 Lift, Log, Repeat.

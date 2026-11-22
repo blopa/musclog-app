@@ -74,7 +74,7 @@
     },
     "provider": {
       "checkKey": "Sleutel controleren en doorgaan",
-      "gatewayHint": "Geen account of sleutel. Er geldt een daglimiet.",
+      "gatewayHint": "Geen account of sleutel. De daglimiet wordt door alle gebruikers gedeeld.",
       "intro": "Kies de AI die je de vragen stelt. Je eigen sleutel blijft daarna in Musclog werken.",
       "keyLabel": "API-sleutel",
       "keyNetwork": "Kon {{provider}} niet bereiken om de sleutel te controleren. Controleer je verbinding en probeer opnieuw.",
@@ -89,7 +89,8 @@
         "gemini": "Google Gemini",
         "local": "Lokaal model",
         "onDevice": "Apple Intelligence",
-        "openai": "OpenAI"
+        "openai": "OpenAI",
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Google AI Studio openen",
       "openClaude": "De Claude-sleutelpagina openen",
@@ -116,7 +117,9 @@
       },
       "title": "Kies je AI",
       "useExternal": "Gebruik in plaats daarvan ChatGPT of Claude",
-      "useSaved": "De opgeslagen sleutel gebruiken"
+      "useSaved": "De opgeslagen sleutel gebruiken",
+      "premiumTitle": "Musclog Iron",
+      "premiumHint": "Gehoste AI op abonnement, geen sleutel nodig, en privé"
     },
     "recovery": {
       "actions": {
@@ -125,7 +128,9 @@
         "replaceKey": "De sleutel vervangen",
         "retry": "Opnieuw proberen",
         "switchProvider": "Een andere AI kiezen",
-        "useExternal": "ChatGPT of Claude gebruiken"
+        "useExternal": "ChatGPT of Claude gebruiken",
+        "renewPremium": "Musclog Iron openen",
+        "restorePremium": "Aankopen herstellen"
       },
       "cancelled": {
         "description": "Je bericht staat weer in het tekstvak.",
@@ -136,7 +141,7 @@
         "title": "Deze AI heeft geen tegoed meer"
       },
       "gatewayLimit": {
-        "description": "Gratis Musclog AI heeft een daglimiet. Probeer morgen opnieuw, gebruik je eigen sleutel of kies een andere manier.",
+        "description": "De daglimiet van Gratis Musclog AI wordt gedeeld door iedereen die het gebruikt, en is op. Probeer morgen opnieuw, gebruik je eigen sleutel of kies een andere manier.",
         "title": "De gratis daglimiet is bereikt"
       },
       "invalidKey": {
@@ -162,6 +167,22 @@
       "unknown": {
         "description": "De AI kon niet antwoorden. Probeer opnieuw of kies een andere manier.",
         "title": "Er ging iets mis"
+      },
+      "hostedBudget": {
+        "title": "Musclog Iron-tegoed op",
+        "description": "Je tegoed wordt vernieuwd met de volgende periode. Tot die tijd kun je je eigen sleutel gebruiken of de installatie handmatig afronden."
+      },
+      "hostedSubscription": {
+        "title": "Musclog Iron is niet actief op dit apparaat",
+        "description": "Herstel je aankoop, abonneer je op Musclog Iron of gebruik je eigen sleutel."
+      },
+      "hostedUnavailable": {
+        "title": "Musclog Iron is niet beschikbaar",
+        "description": "Musclog Iron is nu niet bereikbaar. Probeer het opnieuw of kies een andere optie."
+      },
+      "hostedBusy": {
+        "title": "Musclog Iron is bezet",
+        "description": "Te veel verzoeken tegelijk. Probeer het over een paar seconden opnieuw."
       }
     },
     "review": {

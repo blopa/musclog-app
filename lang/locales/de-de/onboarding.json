@@ -158,8 +158,8 @@
       "getStarted": "Loslegen",
       "termsAndPrivacy": "Wenn du fortfährst, stimmst du unseren Nutzungsbedingungen & Datenschutzbestimmungen zu.",
       "appName": "Musclog",
-      "tagline": "100 % kostenlos, 100 % deins",
-      "description": "Erfasse deine Trainings und deine Ernährung mit vollem Datenschutz. Keine Konten, keine Cloud, keine Abos.",
+      "tagline": "Kostenlos, 100 % deins",
+      "description": "Erfasse deine Trainings und deine Ernährung mit vollem Datenschutz. Keine Konten, keine Cloud. Alles ist kostenlos außer dem optionalen KI-Kontingent von Musclog Iron.",
       "storedLocally": "Alle Daten werden lokal auf deinem Gerät gespeichert",
       "viewTerms": "Nutzungsbedingungen ansehen",
       "preparingApp": "Die App wird für dich vorbereitet …",
@@ -272,28 +272,45 @@
       "continue": "Weiter"
     },
     "musclogApi": {
-      "title": "Musclog KI",
-      "freeBadge": "Kostenlos",
-      "subtitle": "Erhalte KI-Einblicke in dein Training und deine Ernährung.",
-      "features": {
-        "coach": {
-          "title": "KI-Trainingsassistent",
-          "desc": "Erhalte Übungsvorschläge und Tipps zur Technik"
+      "heading": "Schneller mit KI erfassen?",
+      "intro": "Musclog funktioniert vollständig ohne KI. Mit KI kannst du eine Mahlzeit einfach beschreiben, mit einem Coach chatten und dir einen Trainingsplan schreiben lassen.",
+      "choicesLabel": "KI-Optionen",
+      "options": {
+        "premium": {
+          "title": "Musclog Iron",
+          "price": "{{price}} im Monat",
+          "priceUnknown": "Monatliches Abo",
+          "points": {
+            "private": "Die KI-Anbieter behalten nichts, was du sendest",
+            "allowance": "Dein eigenes Monatskontingent",
+            "noSetup": "Kein Schlüssel und kein Konto nötig"
+          }
         },
-        "insights": {
-          "title": "Fortschrittsanalysen",
-          "desc": "Persönliche Auswertung deines Trainings"
+        "free": {
+          "title": "Kostenlose KI",
+          "price": "Kostenlos",
+          "points": {
+            "noSetup": "Kein Schlüssel und kein Konto nötig",
+            "limit": "Ein Tageslimit für alle, das früh aufgebraucht sein kann",
+            "privacy": "Nicht privat: Google darf speichern und prüfen, was du sendest"
+          }
         },
-        "recommendations": {
-          "title": "Intelligente Empfehlungen",
-          "desc": "KI-gestützte Tipps zu Training und Ernährung"
+        "none": {
+          "title": "Vorerst keine KI",
+          "points": {
+            "works": "Erfassen, Pläne und Diagramme funktionieren gleich",
+            "later": "Schalte KI jederzeit in den Einstellungen ein, mit Musclog Iron oder deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel"
+          }
         }
       },
       "dataSharingTitle": "Hinweis zur Datenweitergabe",
-      "dataSharingBody": "Wenn du eine KI-Funktion nutzt, werden die dafür nötigen Daten (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten) über die Server von Musclog an Googles KI Gemini gesendet, damit die Antwort erstellt werden kann. Es wird nichts gesendet, solange du keine KI-Funktion nutzt. Die kostenlose Stufe hat eine begrenzte Anzahl Anfragen pro Tag.",
+      "dataSharingBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu erstellen. Google darf das Gesendete speichern, zur Verbesserung seiner Produkte verwenden und von Menschen (ohne Kennungen) prüfen lassen, daher ist der kostenlose Tarif nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene ab 18 Jahren. Wenn dir das nicht passt, lass die Option aus. Es wird nichts gesendet, bis du eine KI-Funktion nutzt. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, sodass es früh am Tag aufgebraucht sein kann, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
       "readPrivacyPolicy": "Datenschutzerklärung lesen",
-      "enable": "Musclog KI aktivieren",
-      "noThanks": "Nein danke, ohne KI fortfahren"
+      "cta": {
+        "premium": "Mit Musclog Iron fortfahren",
+        "free": "Kostenlose KI aktivieren",
+        "none": "Ohne KI fortfahren"
+      }
     },
     "setGoals": {
       "title": "Intelligentes Ziel",

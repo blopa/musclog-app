@@ -9,7 +9,8 @@
       "tipApiKey": "Verwende OpenAI- oder Google-Gemini-API-Schlüssel aus den KI-Einstellungen.",
       "tipFeatures": "Sobald alles eingerichtet ist, werden deine Nachrichten an das Modell gesendet, das du wählst.",
       "openSettings": "KI-Einstellungen öffnen",
-      "notNow": "Nicht jetzt"
+      "notNow": "Nicht jetzt",
+      "premium": "Musclog Iron holen"
     },
     "providers": {
       "openAIGemini": "OpenAI oder Google Gemini"

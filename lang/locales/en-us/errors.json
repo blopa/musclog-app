@@ -12,8 +12,8 @@
     "aiCreditsError": "AI service quota exceeded. Please check your API key or try again later.",
     "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
     "aiProcessingErrorTitle": "Error processing request",
-    "gatewayDailyLimitError": "Daily free AI limit reached. Try again tomorrow or add your own API key in AI Settings.",
-    "gatewayDailyLimitErrorTitle": "Daily limit reached",
+    "gatewayDailyLimitError": "The free AI tier is unavailable right now (its daily limit, shared by all users, may be used up). Try again later or add your own API key in AI Settings.",
+    "gatewayDailyLimitErrorTitle": "Free tier unavailable",
     "databaseError": {
       "title": "Database error",
       "description": "A database error occurred. Error reporting has been enabled to help resolve this issue."
@@ -22,6 +22,15 @@
     "aiTimeout": "This is taking too long. Try again.",
     "aiKeyTestOk": "Key accepted",
     "aiKeyTestRejected": "Key rejected. Check it and try again.",
-    "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection."
+    "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection.",
+    "hostedBudget": "This period's Musclog Iron allowance is used up. It renews on {{date}}. Musclog keeps working, and you can use your own key or the free tier.",
+    "hostedBudgetNoDate": "This period's Musclog Iron allowance is used up. Musclog keeps working, and you can use your own key or the free tier.",
+    "hostedSubscription": "Musclog Iron has no active subscription on this device. Restore your purchase or subscribe in Musclog Iron settings.",
+    "hostedRemoved": "This device was removed from your Musclog Iron subscription. Restore purchases in Musclog Iron settings to add it again.",
+    "hostedUnavailable": "Musclog Iron is unavailable right now. Try again in a moment.",
+    "hostedDailyFull": "Musclog Iron is at capacity until tomorrow (UTC).",
+    "hostedDailyLimit": "You have reached today's Musclog Iron limit. It resets at midnight (UTC). You can use your own key or the free tier meanwhile.",
+    "hostedBusy": "Musclog Iron is busy. Try again in a few seconds.",
+    "hostedAlreadyProcessed": "That request was already handled. Please send it again."
   }
 }

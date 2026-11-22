@@ -355,14 +355,17 @@
       "musclogFreeTier": {
         "sectionTitle": "Musclog-Gratistarif",
         "toggle": "Musclog-Gratis-LLM verwenden",
-        "toggleSubtitle": "Nutzt Google Gemini. Es gilt ein Tageslimit für Anfragen.",
+        "toggleSubtitle": "Läuft im kostenlosen Tarif von Google, der verwenden kann, was du sendest. Das Tageslimit teilen sich alle Nutzer.",
         "activeNote": "Der Gratistarif ist aktiv. Deine eigenen API-Schlüssel werden nicht verwendet.",
-        "consentTitle": "Daten mit Google Gemini teilen?",
-        "consentBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über die Server von Musclog an Googles KI Gemini gesendet, um die Antwort zu erstellen. Es wird nichts gesendet, solange du keine Funktion nutzt. Der Gratistarif hat ein begrenztes Anfragenkontingent pro Tag.",
+        "consentTitle": "Daten mit Google teilen?",
+        "consentBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu erstellen. Google darf das Gesendete speichern, zur Verbesserung seiner Produkte verwenden und von Menschen (ohne Kennungen) prüfen lassen, daher ist der kostenlose Tarif nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene ab 18 Jahren. Wenn dir das nicht passt, lass die Option aus. Es wird nichts gesendet, bis du eine KI-Funktion nutzt. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, sodass es früh am Tag aufgebraucht sein kann, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
         "consentConfirm": "Zustimmen und aktivieren"
       },
       "testKey": "Schlüssel testen",
-      "testingKey": "Wird getestet…"
+      "testingKey": "Wird getestet…",
+      "premium": {
+        "activeNote": "Musclog Iron beantwortet deine KI-Anfragen. Solange es eingeschaltet ist, werden deine eigenen Schlüssel und die kostenlose Stufe nicht verwendet."
+      }
     },
     "visualSettings": {
       "title": "Darstellung und Startseite",

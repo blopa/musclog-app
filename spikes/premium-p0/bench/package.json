@@ -1,0 +1,21 @@
+{
+  "name": "musclog-spike-bench",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "shortlist": "tsx scripts/shortlist.ts",
+    "bench:models": "tsx scripts/bench-models.ts",
+    "bench:images": "tsx scripts/bench-images.ts",
+    "dry-run": "tsx scripts/dry-run-all.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "sharp": "^0.34.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

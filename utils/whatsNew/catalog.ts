@@ -29,9 +29,12 @@ export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
 /**
  * Loggy poses an info block may show in place of its icon (a subset of `LoggyPoseName`). Each is
  * the joke or the job of the page that names it: `running` introduces him, `writing` is the
- * import, `trophy` the year story, `flex` strength levels and `magnify` the training-load map.
+ * import, `trophy` the year story, `flex` strength levels and `magnify` the training-load map;
+ * `iron` (dumbbell overhead, VIP rosette, an IRON kettlebell) opens the Musclog Iron tour.
  */
 export const WHATS_NEW_POSES = [
+  'celebrating',
+  'iron',
   'running',
   'writing',
   'trophy',
@@ -41,11 +44,11 @@ export const WHATS_NEW_POSES = [
 export type WhatsNewPoseName = (typeof WHATS_NEW_POSES)[number];
 
 /** Facts about the person's data that can gate a whole page of a release. */
-export const WHATS_NEW_CONDITIONS = ['cycleTracking'] as const;
+export const WHATS_NEW_CONDITIONS = ['cycleTracking', 'premium'] as const;
 export type WhatsNewCondition = (typeof WHATS_NEW_CONDITIONS)[number];
 export type WhatsNewContext = Record<WhatsNewCondition, boolean>;
 /** Nothing is known: every conditional page stays hidden. */
-export const EMPTY_WHATS_NEW_CONTEXT: WhatsNewContext = { cycleTracking: false };
+export const EMPTY_WHATS_NEW_CONTEXT: WhatsNewContext = { cycleTracking: false, premium: false };
 
 export const WHATS_NEW_SETTINGS = [
   'workoutView',
@@ -106,6 +109,7 @@ export const WHATS_NEW_ACTIONS = [
   'openWorkoutImport',
   'openYearInReview',
   'openProgress',
+  'openPremium',
 ] as const;
 export type WhatsNewAction = (typeof WHATS_NEW_ACTIONS)[number];
 export const WHATS_NEW_ACTION_CATALOG = {
@@ -117,6 +121,7 @@ export const WHATS_NEW_ACTION_CATALOG = {
   openWorkoutImport: { kind: 'modal' },
   openYearInReview: { kind: 'route', route: YEAR_IN_REVIEW_ROUTE },
   openProgress: { kind: 'route', route: '/app/progress' },
+  openPremium: { kind: 'modal' },
 } as const satisfies Record<WhatsNewAction, { kind: 'modal' } | { kind: 'route'; route: string }>;
 export type WhatsNewRoute = Extract<
   (typeof WHATS_NEW_ACTION_CATALOG)[WhatsNewAction],
