@@ -95,7 +95,7 @@ Set by the maintainer in EAS (`eas env:create`, environment `production`, visibi
 | `EXPO_PUBLIC_HIDE_PREMIUM_UI`        | `1` hides Premium (kill switch); unset shows it         | `utils/premium/premiumUiFlag.ts`                      | Default on since 2.17.0; `premiumUiFlag.test.ts` forbids it in `eas.json`, `app.json`, `package.json`, so set it as an EAS environment variable only. |
 | `EXPO_PUBLIC_PREMIUM_HARNESS`        | `1` only through the `premium-harness` profile          | `utils/premium/harnessGuard.ts`                       | Never in production.                                                                                                                                  |
 
-Worker side (in `wrangler.toml`, then deploy; not EAS): `revenuecat.project_id`, `revenuecat.product_ids` (the **RevenueCat product ids** `prod…`, which is what API v2 puts in a subscription's `product_id`; NOT the store identifiers `musclog_premium_monthly` / `musclog_premium_monthly:monthly`, which match nothing so every enroll fails with `subscription_required`; the validator refuses a non-`prod` id in staging and production), `revenuecat.environments` (`["sandbox"]` staging, `["production"]` production), `HOSTED_AI_ENABLED = "true"` only when intended, and `min_app_version` equal to the first app version that ships Premium.
+Worker side (in `wrangler.toml`, then deploy; not EAS): `revenuecat.project_id`, `revenuecat.product_ids` (the **RevenueCat product ids** `prod…`, which is what API v2 puts in a subscription's `product_id`; NOT the store identifiers `musclog_premium_monthly` / `musclog_premium_monthly:monthly`, which match nothing so every enroll fails with `subscription_required`; the validator refuses a non-`prod` id in staging and production), `revenuecat.environments` (`["sandbox"]` staging, `["production"]` production; sandbox testing goes through the staging Worker by building the harness with `EXPO_PUBLIC_HOSTED_AI_BASE_URL` set to it, never by a client flag, since the Worker cannot trust one), `HOSTED_AI_ENABLED = "true"` only when intended, and `min_app_version` equal to the first app version that ships Premium.
 
 **Links.** The Terms, Privacy and subscription-management URLs are NOT in `constants/projectLinks.json` (the plan's P7 checklist said they would be): they are constants in `utils/premium/premiumLinks.ts` (`PREMIUM_TERMS_URL` and `PREMIUM_PRIVACY_URL` are the website's `/en/terms` and `/en/privacy`; `MANAGE_SUBSCRIPTION_URLS` are Apple's and Google's own subscription pages). Nothing to set; on deploy day only check that the two website pages are live and carry the Premium sections.
 
@@ -140,7 +140,7 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 **G11.** In the same build tap Run crypto timing (30 runs; 100 for the p95) and copy the log. Only a release build counts (a dev build is 10-100x slower). The screen also reports `BigInt` and `crypto.getRandomValues`. The Android 12+ extraction rules are checked at build time by `utils/premium/__tests__/androidSecureStoreBackup.test.ts`.
 
-**Afterwards:** write the matrix results into plan section 16, delete the sandbox customers' notes you do not need, rotate nothing (the harness holds no secret), and never promote a `premium-harness` build to production.
+**Afterwards:** write the matrix results into plan section 16, delete the sandbox customers' notes you do not need, rotate nothing (the harness holds no secret), and never promote a `premium-harness` build to production. The release scripts enforce it as far as a script can: `release-android.sh upload --track production` refuses `--file`, and `promote … production` (Android) and `submit` (iOS) need `--confirm-not-harness`, because a hand-uploaded harness build may sit on the internal track or TestFlight.
 
 ## The app client's contract test
 
@@ -192,3 +192,5 @@ Export D1 (`npx wrangler d1 export musclog-premium-db --remote --output backup.s
 - `tofu apply` from CI, or an apply without reading the plan.
 - `api.musclog.app` for this Worker.
 - Relaxing ZDR or `data_collection`.
+
+**Rate limiting.** `wrangler.toml` binds `RATE_LIMITER` (Workers Rate Limiting, `[[env.<env>.ratelimits]]`, 30 per 60 s, namespace ids 1001 production / 1002 staging; one limiter keyed by IP on `/v1/challenge` and by device on `/v1/chat/completions`). `src/limiter.ts` fails closed (503 `hosted_disabled`, severity high log) when the binding is missing in `production` or `staging`; `local` and `test` run without it.

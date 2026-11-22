@@ -1,3 +1,4 @@
+import { enforceRateLimit } from '../src/limiter';
 import { env } from 'cloudflare:test';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -118,6 +119,27 @@ describe('GET /v1/challenge', () => {
     expect(await code(res)).toBe('busy');
     expect(keys).toEqual(['challenge:203.0.113.9']);
     expect(JSON.stringify(h.deps.logs)).not.toContain('203.0.113.9');
+  });
+});
+
+describe('rate limiter binding', () => {
+  const ctxFor = (WORKER_ENV: string) => {
+    const logs: unknown[] = [];
+    const ctx = { env: { WORKER_ENV }, deps: { log: { log: (e: unknown) => logs.push(e) } } };
+    return { ctx: ctx as unknown as Parameters<typeof enforceRateLimit>[0], logs };
+  };
+
+  it.each(['production', 'staging'])('a missing binding in %s fails closed', async (workerEnv) => {
+    const { ctx, logs } = ctxFor(workerEnv);
+    await expect(enforceRateLimit(ctx, 'k', 1)).rejects.toMatchObject({
+      status: 503,
+      code: 'hosted_disabled',
+    });
+    expect(JSON.stringify(logs)).toContain('rate_limiter');
+  });
+
+  it.each(['local', 'test'])('a missing binding in %s is allowed', async (workerEnv) => {
+    await expect(enforceRateLimit(ctxFor(workerEnv).ctx, 'k', 1)).resolves.toBeUndefined();
   });
 });
 

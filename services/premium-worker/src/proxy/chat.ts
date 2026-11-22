@@ -22,6 +22,7 @@ import {
   type PeriodRow,
   type ReserveOutcome,
 } from '../ledger';
+import { enforceRateLimit } from '../limiter';
 import { lineagePrefix, type LogEvent } from '../log';
 import { reverifySubscription } from '../billing/periods';
 import { RevenueCatUnavailableError } from '../upstream/types';
@@ -95,11 +96,8 @@ async function run(
   if (!idemKey || !KEY_RE.test(idemKey))
     throw new ApiError(400, 'invalid_request', { path: 'header.Idempotency-Key' });
 
-  // 3. Optional rate limiter.
-  if (env.RATE_LIMITER) {
-    const { success } = await env.RATE_LIMITER.limit({ key: 'chat:' + claims.rc });
-    if (!success) throw new ApiError(429, 'busy', { retry_after: 2 });
-  }
+  // 3. Rate limiter (required in production and staging).
+  await enforceRateLimit(ctx, 'chat:' + claims.rc, 2);
 
   // 4. Body cap before any D1 work, then the allowlist and the reservation bound.
   const raw = await readBodyCapped(request, config.limits.body_max_bytes);

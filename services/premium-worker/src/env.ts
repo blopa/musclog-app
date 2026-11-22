@@ -19,6 +19,6 @@ export interface Env {
   SESSION_HMAC_KEY: string;
   /** Secret, optional. The previous HMAC key, accepted for verification only during rotation. */
   SESSION_HMAC_KEY_PREVIOUS?: string;
-  /** Optional rate-limit binding; only bound if gate G3 shows it exists on Free. */
+  /** Rate-limit binding (wrangler.toml `ratelimits`). Required in production and staging (src/limiter.ts); optional in local and test. */
   RATE_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
 }

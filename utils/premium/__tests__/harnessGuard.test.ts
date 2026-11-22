@@ -112,3 +112,17 @@ describe('eas.json premium-harness profile', () => {
     expect(readRoot('app.json')).not.toContain('EXPO_PUBLIC_PREMIUM_HARNESS');
   });
 });
+
+describe('release scripts keep a premium-harness build off production', () => {
+  const android = readRoot('scripts/release-android.sh');
+  const ios = readRoot('scripts/release-ios.sh');
+
+  it('refuses a bundle passed by path on the production track', () => {
+    expect(android).toMatch(/"\$track" == "production" && -n "\$aab"/);
+  });
+
+  it('needs an explicit confirmation to promote to production or submit for review', () => {
+    expect(android).toMatch(/"\$to" == "production" && "\$not_harness" -eq 0/);
+    expect(ios).toMatch(/"\$not_harness" -eq 1/);
+  });
+});

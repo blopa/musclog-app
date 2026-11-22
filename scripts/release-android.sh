@@ -5,7 +5,7 @@
 #   scripts/release-android.sh check [--file AAB]
 #   scripts/release-android.sh upload [--track internal|alpha|beta|production] [--rollout F]
 #                                     [--notes FILE] [--file AAB] [--skip-build] [--dry-run]
-#   scripts/release-android.sh promote FROM TO [--rollout F]
+#   scripts/release-android.sh promote FROM TO [--rollout F] [--confirm-not-harness]   (required when TO is production)
 #   scripts/release-android.sh rollout update F | halt | resume | complete [--track T]
 #   scripts/release-android.sh status
 #
@@ -119,6 +119,11 @@ cmd_upload() {
   fi
   rollout="${rollout:-1}"
   valid_fraction "$rollout" || die "--rollout must be a number above 0 and at most 1."
+  # A premium-harness build (docs/PREMIUM_WORKER.md) carries the identity test screen: only the bundle this
+  # script builds with the production profile may reach the production track, never one passed by path.
+  if [[ "$track" == "production" && -n "$aab" ]]; then
+    die "--file is refused on the production track: a premium-harness bundle must never go there. Let 'upload' build it."
+  fi
   [[ -z "$notes" || -s "$notes" ]] || die "--notes file '$notes' is missing or empty."
 
   require_gplay
@@ -142,11 +147,12 @@ cmd_upload() {
 }
 
 cmd_promote() {
-  local from="${1:-}" to="${2:-}" rollout=""
+  local from="${1:-}" to="${2:-}" rollout="" not_harness=0
   [[ -n "$from" && -n "$to" ]] || usage 1
   shift 2
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      --confirm-not-harness) not_harness=1; shift ;;
       --rollout) rollout="${2:?}"; shift 2 ;;
       *) die "promote: unknown option $1" ;;
     esac
@@ -158,6 +164,10 @@ cmd_promote() {
   fi
   rollout="${rollout:-1}"
   valid_fraction "$rollout" || die "--rollout must be above 0 and at most 1."
+  # Internal testing may hold a hand-uploaded premium-harness build; promoting copies whatever is there.
+  if [[ "$to" == "production" && "$not_harness" -eq 0 ]]; then
+    die "promoting to production needs --confirm-not-harness: check that the release on '$from' was built with the production EAS profile, not premium-harness."
+  fi
   require_gplay; use_profile
   gplay promote --package "$PACKAGE" --from "$from" --to "$to" --rollout "$rollout" --pretty
 }
