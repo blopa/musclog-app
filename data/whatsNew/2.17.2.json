@@ -1,0 +1,51 @@
+{
+  "version": "2.17.2",
+  "pages": [
+    {
+      "id": "premium",
+      "requires": "premium",
+      "blocks": [
+        {
+          "id": "premium",
+          "type": "info",
+          "icon": "heart",
+          "titleKey": "whatsNew.releases.v2_17_2.premium.title",
+          "descriptionKey": "whatsNew.releases.v2_17_2.premium.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openPremium",
+          "icon": "bot",
+          "labelKey": "whatsNew.releases.v2_17_2.premium.action.label",
+          "primary": true,
+          "descriptionKey": "whatsNew.releases.v2_17_2.premium.action.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "free",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_17_2.premium.items.free.label",
+              "descriptionKey": "whatsNew.releases.v2_17_2.premium.items.free.description"
+            },
+            {
+              "id": "tokens",
+              "icon": "bot",
+              "labelKey": "whatsNew.releases.v2_17_2.premium.items.tokens.label",
+              "descriptionKey": "whatsNew.releases.v2_17_2.premium.items.tokens.description"
+            },
+            {
+              "id": "oneDeveloper",
+              "icon": "heart",
+              "labelKey": "whatsNew.releases.v2_17_2.premium.items.oneDeveloper.label",
+              "descriptionKey": "whatsNew.releases.v2_17_2.premium.items.oneDeveloper.description"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

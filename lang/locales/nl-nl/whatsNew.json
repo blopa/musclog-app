@@ -236,6 +236,30 @@
             "label": "Voortgang openen"
           }
         }
+      },
+      "v2_17_2": {
+        "premium": {
+          "title": "Musclog Premium is er",
+          "description": "Musclog is gratis, open source en gemaakt door één ontwikkelaar. Premium is een optionele manier om de AI te gebruiken zonder iets in te stellen, en een manier om de app te steunen als je hem goed vindt.",
+          "items": {
+            "free": {
+              "label": "Al het andere blijft gratis",
+              "description": "Loggen, trainingen, voortgang en je gegevens kosten niets. Het gratis niveau en je eigen AI-sleutels blijven werken."
+            },
+            "tokens": {
+              "label": "Je abonnement betaalt de AI",
+              "description": "De AI is niet gratis om te draaien: elk antwoord kost tokens. Je abonnement dekt die kosten, en de AI-aanbieders houden niets wat je verstuurt."
+            },
+            "oneDeveloper": {
+              "label": "Gemaakt door één persoon",
+              "description": "Na het aandeel van de store en de AI-kosten blijft van elk abonnement maar ongeveer €1 over voor mij. Daarmee blijft Musclog draaien."
+            }
+          },
+          "action": {
+            "label": "Bekijk Musclog Premium",
+            "description": "Je vindt het ook onder Instellingen → AI."
+          }
+        }
       }
     }
   }

@@ -159,3 +159,23 @@ describe('the pages of 2.16.0', () => {
     expect(issues).toContain('2.16.0.json.pages[0].blocks[0]: primary must be a boolean');
   });
 });
+
+describe('the page of 2.17.2', () => {
+  const release = whatsNewReleases.find((candidate) => candidate.version === '2.17.2');
+  const page = release?.pages.find((candidate) => candidate.id === 'premium');
+
+  it('is a Premium page gated by the premium condition', () => {
+    expect(release?.pages).toHaveLength(1);
+    expect(page?.requires).toBe('premium');
+  });
+
+  it('has an info block, one primary button that opens Premium and three highlights', () => {
+    const blocks = page?.blocks ?? [];
+    expect(blocks.map((block) => block.type)).toEqual(['info', 'action', 'featureList']);
+    const action = blocks[1] as { action: string; primary?: boolean };
+    expect(action.action).toBe('openPremium');
+    expect(action.primary).toBe(true);
+    expect((blocks[2] as { items: unknown[] }).items).toHaveLength(3);
+    expect(WHATS_NEW_ACTION_CATALOG.openPremium).toEqual({ kind: 'modal' });
+  });
+});

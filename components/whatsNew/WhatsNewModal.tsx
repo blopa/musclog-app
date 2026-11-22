@@ -5,6 +5,7 @@ import { AccessibilityInfo, ScrollView, Text, View } from 'react-native';
 
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
 import { LogCardioModal } from '@/components/modals/LogCardioModal';
+import { PremiumModal } from '@/components/modals/PremiumModal';
 import { WorkoutImportModal } from '@/components/modals/WorkoutImportModal';
 import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { Button } from '@/components/theme/Button';
@@ -53,6 +54,8 @@ function renderActionModal(
       return <LogCardioModal visible={visible} onClose={onClose} />;
     case 'openWorkoutImport':
       return <WorkoutImportModal visible={visible} onClose={onClose} />;
+    case 'openPremium':
+      return <PremiumModal visible={visible} onClose={onClose} />;
     default:
       return unhandledModalAction(action);
   }

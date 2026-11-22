@@ -236,6 +236,30 @@
             "label": "Abrir Progresso"
           }
         }
+      },
+      "v2_17_2": {
+        "premium": {
+          "title": "O Musclog Premium chegou",
+          "description": "O Musclog é gratuito, de código aberto e feito por uma pessoa só. O Premium é uma forma opcional de usar a IA sem configurar nada, e uma forma de apoiar o app se você gosta dele.",
+          "items": {
+            "free": {
+              "label": "Todo o resto continua gratuito",
+              "description": "Registros, treinos, progresso e seus dados não custam nada. O plano gratuito e suas próprias chaves de IA continuam funcionando."
+            },
+            "tokens": {
+              "label": "Sua assinatura paga a IA",
+              "description": "A IA não é de graça para rodar: cada resposta gasta tokens. Sua assinatura cobre isso, e os provedores de IA não guardam o que você envia."
+            },
+            "oneDeveloper": {
+              "label": "Feito por uma pessoa",
+              "description": "Depois da parte da loja e dos custos de IA, sobram só uns €1 de cada assinatura para mim. É isso que mantém o Musclog funcionando."
+            }
+          },
+          "action": {
+            "label": "Ver o Musclog Premium",
+            "description": "Você também encontra em Configurações → IA."
+          }
+        }
       }
     }
   }

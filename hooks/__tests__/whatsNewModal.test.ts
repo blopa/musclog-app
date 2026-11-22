@@ -58,6 +58,10 @@ jest.mock('@/components/modals/WorkoutImportModal', () => ({
   WorkoutImportModal: ({ onClose }: any) =>
     require('react').createElement('button', { onClick: onClose }, 'Close import'),
 }));
+jest.mock('@/components/modals/PremiumModal', () => ({
+  PremiumModal: ({ onClose }: any) =>
+    require('react').createElement('button', { onClick: onClose }, 'Close premium'),
+}));
 jest.mock('@/components/modals/LogCardioModal', () => ({
   LogCardioModal: ({ onClose }: any) =>
     require('react').createElement('button', { onClick: onClose }, 'Close cardio'),

@@ -236,6 +236,30 @@
             "label": "İlerlemeyi aç"
           }
         }
+      },
+      "v2_17_2": {
+        "premium": {
+          "title": "Musclog Premium yayında",
+          "description": "Musclog ücretsiz, açık kaynaklı ve tek bir geliştirici tarafından yapılıyor. Premium, YZ'yi hiçbir kurulum yapmadan kullanmanın isteğe bağlı bir yolu; uygulamayı beğendiysen desteklemenin de bir yolu.",
+          "items": {
+            "free": {
+              "label": "Geri kalan her şey ücretsiz kalır",
+              "description": "Kayıt, antrenman, ilerleme ve verilerin ücretsiz. Ücretsiz katman ve kendi YZ anahtarların çalışmaya devam eder."
+            },
+            "tokens": {
+              "label": "Abonelik YZ'nin parasını öder",
+              "description": "YZ'yi çalıştırmak ücretsiz değil: her yanıt jeton harcar. Abonelik bunları karşılar ve YZ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz."
+            },
+            "oneDeveloper": {
+              "label": "Tek bir kişi tarafından yapılıyor",
+              "description": "Mağazanın payı ve YZ maliyetlerinden sonra her abonelikten bana yaklaşık €1 kalıyor. Musclog'u ayakta tutan bu."
+            }
+          },
+          "action": {
+            "label": "Musclog Premium'a bak",
+            "description": "Ayarlar → YZ bölümünde de bulabilirsin."
+          }
+        }
       }
     }
   }

@@ -236,6 +236,30 @@
             "label": "Apri i progressi"
           }
         }
+      },
+      "v2_17_2": {
+        "premium": {
+          "title": "Musclog Premium è arrivato",
+          "description": "Musclog è gratuito, open source e realizzato da un solo sviluppatore. Premium è un modo facoltativo per usare l'AI senza configurare nulla, e un modo per sostenere l'app se ti piace.",
+          "items": {
+            "free": {
+              "label": "Tutto il resto resta gratuito",
+              "description": "Registrazione, allenamenti, progressi e i tuoi dati non costano nulla. Il piano gratuito e le tue chiavi AI continuano a funzionare."
+            },
+            "tokens": {
+              "label": "L'abbonamento paga l'AI",
+              "description": "L'AI non è gratuita da far girare: ogni risposta consuma token. Il tuo abbonamento li copre, e i fornitori AI non conservano nulla di ciò che invii."
+            },
+            "oneDeveloper": {
+              "label": "Fatto da una sola persona",
+              "description": "Dopo la quota dello store e i costi dell'AI, di ogni abbonamento restano per me circa 1 €. È ciò che tiene in vita Musclog."
+            }
+          },
+          "action": {
+            "label": "Scopri Musclog Premium",
+            "description": "Lo trovi anche in Impostazioni → AI."
+          }
+        }
       }
     }
   }

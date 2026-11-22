@@ -236,6 +236,30 @@
             "label": "Fortschritt öffnen"
           }
         }
+      },
+      "v2_17_2": {
+        "premium": {
+          "title": "Musclog Premium ist da",
+          "description": "Musclog ist kostenlos, Open Source und wird von einer einzigen Person entwickelt. Premium ist eine optionale Möglichkeit, die KI ohne Einrichtung zu nutzen, und eine Möglichkeit, die App zu unterstützen, wenn sie dir gefällt.",
+          "items": {
+            "free": {
+              "label": "Alles andere bleibt kostenlos",
+              "description": "Erfassen, Training, Fortschritt und deine Daten kosten nichts. Die kostenlose Stufe und deine eigenen KI-Schlüssel funktionieren weiterhin."
+            },
+            "tokens": {
+              "label": "Dein Abo bezahlt die KI",
+              "description": "Die KI ist im Betrieb nicht kostenlos: Jede Antwort kostet Tokens. Dein Abo deckt sie ab, und die KI-Anbieter behalten nichts von dem, was du senden."
+            },
+            "oneDeveloper": {
+              "label": "Von einer Person gemacht",
+              "description": "Nach dem Anteil des Stores und den KI-Kosten bleiben von jedem Abo nur rund 1 € für mich übrig. Damit halte ich Musclog am Laufen."
+            }
+          },
+          "action": {
+            "label": "Musclog Premium ansehen",
+            "description": "Du findest es auch unter Einstellungen → KI."
+          }
+        }
       }
     }
   }
