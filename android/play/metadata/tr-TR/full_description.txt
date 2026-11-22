@@ -40,8 +40,8 @@ Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Port
 • Ya da ChatGPT veya Claude'da bir program hazırla ya da bir öğünü tarif et ve Musclog'a aktar.
 • Koçun seninle nasıl konuşacağını seç. Musclog'da hiçbir şey yapay zekâ gerektirmez.
 
-<b>Musclog Premium (isteğe bağlı)</b>
-Musclog Premium, kendi anahtarın olmadan yapay zekâ isteklerini yanıtlayan aylık bir aboneliktir. Ödeme mağaza hesabından tahsil edilir ve iptal etmediğin sürece her ay otomatik yenilenir; yenilemeden en az 24 saat önce mağaza hesabı ayarlarından iptal edebilirsin. Musclog'un geri kalanı ücretsiz kalır. Koşullar: https://musclog.app/en/terms
+<b>Musclog Iron (isteğe bağlı)</b>
+Musclog Iron, kendi anahtarın olmadan yapay zekâ isteklerini yanıtlayan aylık bir aboneliktir. Ödeme mağaza hesabından tahsil edilir ve iptal etmediğin sürece her ay otomatik yenilenir; yenilemeden en az 24 saat önce mağaza hesabı ayarlarından iptal edebilirsin. Musclog'un geri kalanı ücretsiz kalır. Koşullar: https://musclog.app/en/terms
 
 <b>Tasarımdan itibaren gizli</b>
 • Kilo, vücut yağı ve yemek günlükleri cihazında şifrelenir.

@@ -90,7 +90,7 @@
         "local": "Lokaal model",
         "onDevice": "Apple Intelligence",
         "openai": "OpenAI",
-        "hosted": "Musclog Premium"
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Google AI Studio openen",
       "openClaude": "De Claude-sleutelpagina openen",
@@ -118,7 +118,7 @@
       "title": "Kies je AI",
       "useExternal": "Gebruik in plaats daarvan ChatGPT of Claude",
       "useSaved": "De opgeslagen sleutel gebruiken",
-      "premiumTitle": "Musclog Premium",
+      "premiumTitle": "Musclog Iron",
       "premiumHint": "Gehoste AI op abonnement, geen sleutel nodig, en privé"
     },
     "recovery": {
@@ -129,7 +129,7 @@
         "retry": "Opnieuw proberen",
         "switchProvider": "Een andere AI kiezen",
         "useExternal": "ChatGPT of Claude gebruiken",
-        "renewPremium": "Premium openen",
+        "renewPremium": "Musclog Iron openen",
         "restorePremium": "Aankopen herstellen"
       },
       "cancelled": {
@@ -169,19 +169,19 @@
         "title": "Er ging iets mis"
       },
       "hostedBudget": {
-        "title": "Premium-tegoed op",
+        "title": "Musclog Iron-tegoed op",
         "description": "Je tegoed wordt vernieuwd met de volgende periode. Tot die tijd kun je je eigen sleutel gebruiken of de installatie handmatig afronden."
       },
       "hostedSubscription": {
-        "title": "Premium is niet actief op dit apparaat",
-        "description": "Herstel je aankoop, abonneer je op Premium of gebruik je eigen sleutel."
+        "title": "Musclog Iron is niet actief op dit apparaat",
+        "description": "Herstel je aankoop, abonneer je op Musclog Iron of gebruik je eigen sleutel."
       },
       "hostedUnavailable": {
-        "title": "Premium is niet beschikbaar",
-        "description": "Musclog Premium is nu niet bereikbaar. Probeer het opnieuw of kies een andere optie."
+        "title": "Musclog Iron is niet beschikbaar",
+        "description": "Musclog Iron is nu niet bereikbaar. Probeer het opnieuw of kies een andere optie."
       },
       "hostedBusy": {
-        "title": "Premium is bezet",
+        "title": "Musclog Iron is bezet",
         "description": "Te veel verzoeken tegelijk. Probeer het over een paar seconden opnieuw."
       }
     },

@@ -159,7 +159,7 @@
       "termsAndPrivacy": "Wenn du fortfährst, stimmst du unseren Nutzungsbedingungen & Datenschutzbestimmungen zu.",
       "appName": "Musclog",
       "tagline": "Kostenlos, 100 % deins",
-      "description": "Erfasse deine Trainings und deine Ernährung mit vollem Datenschutz. Keine Konten, keine Cloud. Alles ist kostenlos außer dem optionalen KI-Kontingent von Premium.",
+      "description": "Erfasse deine Trainings und deine Ernährung mit vollem Datenschutz. Keine Konten, keine Cloud. Alles ist kostenlos außer dem optionalen KI-Kontingent von Musclog Iron.",
       "storedLocally": "Alle Daten werden lokal auf deinem Gerät gespeichert",
       "viewTerms": "Nutzungsbedingungen ansehen",
       "preparingApp": "Die App wird für dich vorbereitet …",
@@ -277,7 +277,7 @@
       "choicesLabel": "KI-Optionen",
       "options": {
         "premium": {
-          "title": "Musclog Premium",
+          "title": "Musclog Iron",
           "price": "{{price}} im Monat",
           "priceUnknown": "Monatliches Abo",
           "points": {
@@ -299,7 +299,7 @@
           "title": "Vorerst keine KI",
           "points": {
             "works": "Erfassen, Pläne und Diagramme funktionieren gleich",
-            "later": "Schalte KI jederzeit in den Einstellungen ein, mit Premium oder deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel"
+            "later": "Schalte KI jederzeit in den Einstellungen ein, mit Musclog Iron oder deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel"
           }
         }
       },
@@ -307,7 +307,7 @@
       "dataSharingBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu erstellen. Google darf das Gesendete speichern, zur Verbesserung seiner Produkte verwenden und von Menschen (ohne Kennungen) prüfen lassen, daher ist der kostenlose Tarif nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene ab 18 Jahren. Wenn dir das nicht passt, lass die Option aus. Es wird nichts gesendet, bis du eine KI-Funktion nutzt. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, sodass es früh am Tag aufgebraucht sein kann, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
       "readPrivacyPolicy": "Datenschutzerklärung lesen",
       "cta": {
-        "premium": "Mit Premium fortfahren",
+        "premium": "Mit Musclog Iron fortfahren",
         "free": "Kostenlose KI aktivieren",
         "none": "Ohne KI fortfahren"
       }

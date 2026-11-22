@@ -159,7 +159,7 @@
       "termsAndPrivacy": "En continuant, tu acceptes nos Conditions et notre Politique de confidentialité.",
       "appName": "Musclog",
       "tagline": "Gratuit, 100 % à toi",
-      "description": "Suis tes séances et ta nutrition en toute confidentialité. Pas de compte, pas de cloud. Tout est gratuit, sauf le forfait IA Premium facultatif.",
+      "description": "Suis tes séances et ta nutrition en toute confidentialité. Pas de compte, pas de cloud. Tout est gratuit, sauf le forfait IA Musclog Iron facultatif.",
       "storedLocally": "Toutes les données sont stockées localement sur ton appareil",
       "viewTerms": "Voir les conditions",
       "preparingApp": "Préparation de l'application...",
@@ -277,7 +277,7 @@
       "choicesLabel": "Options IA",
       "options": {
         "premium": {
-          "title": "Musclog Premium",
+          "title": "Musclog Iron",
           "price": "{{price}} par mois",
           "priceUnknown": "Abonnement mensuel",
           "points": {
@@ -299,7 +299,7 @@
           "title": "Pas d'IA pour l'instant",
           "points": {
             "works": "La saisie, les programmes et les graphiques fonctionnent de la même façon",
-            "later": "Active l'IA à tout moment dans les Réglages, avec Premium ou ta propre clé Gemini, OpenAI ou Claude"
+            "later": "Active l'IA à tout moment dans les Réglages, avec Musclog Iron ou ta propre clé Gemini, OpenAI ou Claude"
           }
         }
       },
@@ -307,7 +307,7 @@
       "dataSharingBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations ou tes messages de chat) est envoyé via OpenRouter à l'offre gratuite de Google AI Studio pour rédiger la réponse. Google peut conserver ce qui est envoyé, l'utiliser pour améliorer ses produits et le faire relire par des personnes (sans identifiants), donc l'offre gratuite n'est pas privée : n'y saisis aucune information personnelle ou sensible. L'offre gratuite est réservée aux adultes (18+). Si cela ne te convient pas, laisse-la désactivée. Rien n'est envoyé tant que tu n'utilises pas une fonction d'IA. Il existe une limite quotidienne partagée par tous les utilisateurs de l'offre gratuite, qui peut donc être atteinte tôt dans la journée, et l'offre gratuite peut parfois être indisponible.",
       "readPrivacyPolicy": "Lire notre Politique de confidentialité",
       "cta": {
-        "premium": "Continuer avec Premium",
+        "premium": "Continuer avec Musclog Iron",
         "free": "Activer l'IA gratuite",
         "none": "Continuer sans IA"
       }

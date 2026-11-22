@@ -16,7 +16,7 @@ function renderCard(overrides: Partial<React.ComponentProps<typeof AiChoiceCard>
   const onPress = jest.fn();
   render(
     <AiChoiceCard
-      title="Musclog Premium"
+      title="Musclog Iron"
       badge="Most private"
       price="$4.99 / month"
       points={POINTS}
@@ -33,7 +33,7 @@ describe('AiChoiceCard', () => {
   it('renders the title, badge, price and every point', () => {
     renderCard();
 
-    expect(screen.getByText('Musclog Premium')).toBeTruthy();
+    expect(screen.getByText('Musclog Iron')).toBeTruthy();
     expect(screen.getByText('Most private')).toBeTruthy();
     expect(screen.getByText('$4.99 / month')).toBeTruthy();
     expect(screen.getByText('Works at once')).toBeTruthy();
@@ -66,7 +66,7 @@ describe('AiChoiceCard', () => {
     renderCard();
 
     expect(screen.getByRole('radio').getAttribute('aria-label')).toBe(
-      'Musclog Premium, $4.99 / month'
+      'Musclog Iron, $4.99 / month'
     );
   });
 

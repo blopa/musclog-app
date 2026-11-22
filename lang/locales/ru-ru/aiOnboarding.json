@@ -90,7 +90,7 @@
         "local": "Локальная модель",
         "onDevice": "Apple Intelligence",
         "openai": "OpenAI",
-        "hosted": "Musclog Premium"
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Открыть Google AI Studio",
       "openClaude": "Открыть страницу ключей Claude",
@@ -118,7 +118,7 @@
       "title": "Выберите ИИ",
       "useExternal": "Использовать ChatGPT или Claude",
       "useSaved": "Использовать сохранённый ключ",
-      "premiumTitle": "Musclog Premium",
+      "premiumTitle": "Musclog Iron",
       "premiumHint": "Приватный ИИ в облаке по подписке, ключ не нужен"
     },
     "recovery": {
@@ -129,7 +129,7 @@
         "retry": "Повторить",
         "switchProvider": "Выбрать другой ИИ",
         "useExternal": "Использовать ChatGPT или Claude",
-        "renewPremium": "Открыть Premium",
+        "renewPremium": "Открыть Musclog Iron",
         "restorePremium": "Восстановить покупки"
       },
       "cancelled": {
@@ -169,19 +169,19 @@
         "title": "Что-то пошло не так"
       },
       "hostedBudget": {
-        "title": "Лимит Premium исчерпан",
+        "title": "Лимит Musclog Iron исчерпан",
         "description": "Лимит обновится со следующим периодом. А пока можно использовать свой ключ или завершить настройку вручную."
       },
       "hostedSubscription": {
-        "title": "Premium не активен на этом устройстве",
-        "description": "Восстановите покупку, оформите подписку Premium или используйте свой ключ."
+        "title": "Musclog Iron не активен на этом устройстве",
+        "description": "Восстановите покупку, оформите подписку Musclog Iron или используйте свой ключ."
       },
       "hostedUnavailable": {
-        "title": "Premium недоступен",
-        "description": "Сейчас не удаётся связаться с Musclog Premium. Попробуйте снова или выберите другой вариант."
+        "title": "Musclog Iron недоступен",
+        "description": "Сейчас не удаётся связаться с Musclog Iron. Попробуйте снова или выберите другой вариант."
       },
       "hostedBusy": {
-        "title": "Premium занят",
+        "title": "Musclog Iron занят",
         "description": "Слишком много запросов одновременно. Попробуйте через несколько секунд."
       }
     },

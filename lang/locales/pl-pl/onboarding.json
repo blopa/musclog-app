@@ -159,7 +159,7 @@
       "termsAndPrivacy": "Kontynuując, akceptujesz nasz Regulamin i Politykę prywatności.",
       "appName": "Musclog",
       "tagline": "Za darmo, 100% twoje",
-      "description": "Śledź treningi i odżywianie z pełną prywatnością. Bez kont i chmury. Wszystko jest za darmo oprócz opcjonalnego pakietu AI Premium.",
+      "description": "Śledź treningi i odżywianie z pełną prywatnością. Bez kont i chmury. Wszystko jest za darmo oprócz opcjonalnego pakietu AI Musclog Iron.",
       "storedLocally": "Wszystkie dane są przechowywane lokalnie na twoim urządzeniu",
       "viewTerms": "Zobacz regulamin",
       "preparingApp": "Przygotowywanie aplikacji...",
@@ -277,7 +277,7 @@
       "choicesLabel": "Opcje AI",
       "options": {
         "premium": {
-          "title": "Musclog Premium",
+          "title": "Musclog Iron",
           "price": "{{price}} miesięcznie",
           "priceUnknown": "Subskrypcja miesięczna",
           "points": {
@@ -299,7 +299,7 @@
           "title": "Na razie bez AI",
           "points": {
             "works": "Zapisywanie, plany i wykresy działają tak samo",
-            "later": "Włączysz AI w dowolnym momencie w Ustawieniach, z Premium lub własnym kluczem Gemini, OpenAI albo Claude"
+            "later": "Włączysz AI w dowolnym momencie w Ustawieniach, z Musclog Iron lub własnym kluczem Gemini, OpenAI albo Claude"
           }
         }
       },
@@ -307,7 +307,7 @@
       "dataSharingBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (na przykład Twoje treningi, posiłki, pomiary ciała lub wiadomości czatu), jest wysyłane przez OpenRouter do darmowego poziomu Google AI Studio, żeby napisać odpowiedź. Google może przechowywać wysłane dane, wykorzystywać je do ulepszania swoich produktów i zlecać ich przegląd ludziom (bez identyfikatorów), dlatego darmowy poziom nie jest prywatny: nie wpisuj danych osobowych ani wrażliwych. Darmowy poziom jest tylko dla dorosłych (18+). Jeśli Ci to nie odpowiada, zostaw go wyłączonego. Nic nie jest wysyłane, dopóki nie skorzystasz z funkcji AI. Obowiązuje dzienny limit wspólny dla wszystkich korzystających z darmowego poziomu, więc może się wyczerpać już wcześnie w ciągu dnia, a darmowy poziom może czasem być niedostępny.",
       "readPrivacyPolicy": "Przeczytaj naszą Politykę prywatności",
       "cta": {
-        "premium": "Kontynuuj z Premium",
+        "premium": "Kontynuuj z Musclog Iron",
         "free": "Włącz darmowe AI",
         "none": "Kontynuuj bez AI"
       }

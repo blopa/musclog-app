@@ -40,8 +40,8 @@ Aplikacja jest dostępna po angielsku, hiszpańsku, niderlandzku, portugalsku (B
 • Możesz też ułożyć plan lub opisać posiłek w ChatGPT albo Claude i przenieść go do Musclog.
 • Wybierz, jak trener ma się do Ciebie zwracać. Nic w Musclog nie wymaga AI.
 
-<b>Musclog Premium (opcjonalnie)</b>
-Musclog Premium to miesięczna subskrypcja, która odpowiada na zapytania AI bez Twojego własnego klucza. Płatność jest pobierana z konta w Twoim sklepie i odnawia się automatycznie co miesiąc, chyba że anulujesz ją w ustawieniach konta w sklepie co najmniej 24 godziny przed odnowieniem. Wszystko inne w Musclog pozostaje bezpłatne. Regulamin: https://musclog.app/en/terms
+<b>Musclog Iron (opcjonalnie)</b>
+Musclog Iron to miesięczna subskrypcja, która odpowiada na zapytania AI bez Twojego własnego klucza. Płatność jest pobierana z konta w Twoim sklepie i odnawia się automatycznie co miesiąc, chyba że anulujesz ją w ustawieniach konta w sklepie co najmniej 24 godziny przed odnowieniem. Wszystko inne w Musclog pozostaje bezpłatne. Regulamin: https://musclog.app/en/terms
 
 <b>Prywatność od podstaw</b>
 • Waga, tkanka tłuszczowa i dziennik żywieniowy są szyfrowane na Twoim urządzeniu.

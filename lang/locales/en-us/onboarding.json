@@ -159,7 +159,7 @@
       "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
       "appName": "Musclog",
       "tagline": "Free to use, 100% yours",
-      "description": "Track your workouts and nutrition with complete privacy. No accounts, no cloud. Everything is free except the optional Premium AI allowance.",
+      "description": "Track your workouts and nutrition with complete privacy. No accounts, no cloud. Everything is free except the optional Musclog Iron allowance.",
       "storedLocally": "All data stored locally on your device",
       "viewTerms": "View terms",
       "preparingApp": "Preparing the app for you...",
@@ -277,7 +277,7 @@
       "choicesLabel": "AI options",
       "options": {
         "premium": {
-          "title": "Musclog Premium",
+          "title": "Musclog Iron",
           "price": "{{price}} a month",
           "priceUnknown": "Monthly subscription",
           "points": {
@@ -299,7 +299,7 @@
           "title": "No AI for now",
           "points": {
             "works": "Logging, plans and charts all work the same",
-            "later": "Turn AI on any time in Settings, with Premium or your own Gemini, OpenAI or Claude key"
+            "later": "Turn AI on any time in Settings, with Musclog Iron or your own Gemini, OpenAI or Claude key"
           }
         }
       },
@@ -307,7 +307,7 @@
       "dataSharingBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults (18+). If that is not OK for you, leave it off. Nothing is sent until you use an AI feature. There is a daily limit shared by everyone who uses the free tier, so it can run out early in the day, and the free tier may sometimes be unavailable.",
       "readPrivacyPolicy": "Read our Privacy Policy",
       "cta": {
-        "premium": "Continue with Premium",
+        "premium": "Continue with Musclog Iron",
         "free": "Turn on free AI",
         "none": "Continue without AI"
       }

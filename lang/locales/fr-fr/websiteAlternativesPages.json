@@ -24,7 +24,7 @@
           {
             "topic": "Offre payante",
             "them": "Strong PRO supprime la limite de programmes : 4,99 $ par mois ou 29,99 $ par an (prix de l'App Store américain).",
-            "musclog": "Gratuite et open source (GPL-3.0). La seule option payante est un abonnement mensuel Premium facultatif pour l'IA hébergée."
+            "musclog": "Gratuite et open source (GPL-3.0). La seule option payante est un abonnement mensuel Musclog Iron facultatif pour l'IA hébergée."
           }
         ],
         "import": "Musclog peut importer un export CSV de Strong : Réglages, Sauvegardes et données, Importer des séances. Il associe les noms d'exercices à son propre catalogue, te demande pour ceux qu'il ne reconnaît pas, et affiche un examen avant tout enregistrement. Importer deux fois le même fichier ne duplique pas les séances, et un import peut être annulé.",

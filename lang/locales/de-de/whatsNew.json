@@ -239,8 +239,8 @@
       },
       "v2_17_5": {
         "intro": {
-          "title": "Lerne Musclog Premium kennen",
-          "description": "Das ist das erste und letzte Mal, dass wir dir ein so großes Banner zeigen. Premium ist völlig optional: Du kannst Musclog weiterhin zu 100 % kostenlos nutzen. Es ist für deine Bequemlichkeit da und hilft, die Entwicklung der App zu finanzieren.",
+          "title": "Lerne Musclog Iron kennen",
+          "description": "Das ist das erste und letzte Mal, dass wir dir ein so großes Banner zeigen. Musclog Iron ist völlig optional: Du kannst Musclog weiterhin zu 100 % kostenlos nutzen. Es ist für deine Bequemlichkeit da und hilft, die Entwicklung der App zu finanzieren.",
           "items": {
             "optional": "100 % optional, nie erforderlich",
             "ai": "KI, die einfach funktioniert, ohne Schlüssel einzurichten",
@@ -248,8 +248,8 @@
           }
         },
         "premium": {
-          "title": "So funktioniert Premium",
-          "description": "Musclog ist kostenlos, Open Source und wird von einer einzigen Person entwickelt. Premium ist eine optionale Möglichkeit, die KI ohne Einrichtung zu nutzen, und eine Möglichkeit, die App zu unterstützen, wenn sie dir gefällt.",
+          "title": "So funktioniert Musclog Iron",
+          "description": "Musclog ist kostenlos, Open Source und wird von einer einzigen Person entwickelt. Musclog Iron ist eine optionale Möglichkeit, die KI ohne Einrichtung zu nutzen, und eine Möglichkeit, die App zu unterstützen, wenn sie dir gefällt.",
           "items": {
             "free": {
               "label": "Alles andere bleibt kostenlos",
@@ -265,7 +265,7 @@
             }
           },
           "action": {
-            "label": "Musclog Premium ansehen",
+            "label": "Musclog Iron ansehen",
             "description": "Du findest es auch unter Einstellungen → KI."
           }
         }

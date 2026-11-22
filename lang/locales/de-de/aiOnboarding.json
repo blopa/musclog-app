@@ -90,7 +90,7 @@
         "local": "Lokales Modell",
         "onDevice": "Apple Intelligence",
         "openai": "OpenAI",
-        "hosted": "Musclog Premium"
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Google AI Studio öffnen",
       "openClaude": "Seite für Claude-Schlüssel öffnen",
@@ -118,7 +118,7 @@
       "title": "Wähle deine KI",
       "useExternal": "Stattdessen ChatGPT oder Claude verwenden",
       "useSaved": "Gespeicherten Schlüssel verwenden",
-      "premiumTitle": "Musclog Premium",
+      "premiumTitle": "Musclog Iron",
       "premiumHint": "Gehostete KI im Abo, Privatsphäre inklusive, kein Schlüssel nötig"
     },
     "recovery": {
@@ -129,7 +129,7 @@
         "retry": "Erneut versuchen",
         "switchProvider": "Andere KI wählen",
         "useExternal": "ChatGPT oder Claude verwenden",
-        "renewPremium": "Premium öffnen",
+        "renewPremium": "Musclog Iron öffnen",
         "restorePremium": "Käufe wiederherstellen"
       },
       "cancelled": {
@@ -169,19 +169,19 @@
         "title": "Etwas ist schiefgelaufen"
       },
       "hostedBudget": {
-        "title": "Premium-Kontingent aufgebraucht",
+        "title": "Musclog-Iron-Kontingent aufgebraucht",
         "description": "Dein Kontingent wird mit dem nächsten Zeitraum erneuert. Bis dahin kannst du deinen eigenen Schlüssel verwenden oder die Einrichtung von Hand abschließen."
       },
       "hostedSubscription": {
-        "title": "Premium ist auf diesem Gerät nicht aktiv",
-        "description": "Stelle deinen Kauf wieder her, abonniere Premium oder verwende deinen eigenen Schlüssel."
+        "title": "Musclog Iron ist auf diesem Gerät nicht aktiv",
+        "description": "Stelle deinen Kauf wieder her, abonniere Musclog Iron oder verwende deinen eigenen Schlüssel."
       },
       "hostedUnavailable": {
-        "title": "Premium ist nicht verfügbar",
-        "description": "Musclog Premium ist gerade nicht erreichbar. Versuche es erneut oder wähle eine andere Option."
+        "title": "Musclog Iron ist nicht verfügbar",
+        "description": "Musclog Iron ist gerade nicht erreichbar. Versuche es erneut oder wähle eine andere Option."
       },
       "hostedBusy": {
-        "title": "Premium ist beschäftigt",
+        "title": "Musclog Iron ist beschäftigt",
         "description": "Zu viele Anfragen auf einmal. Versuche es in wenigen Sekunden erneut."
       }
     },

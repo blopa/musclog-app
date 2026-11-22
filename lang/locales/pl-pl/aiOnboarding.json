@@ -90,7 +90,7 @@
         "local": "Model lokalny",
         "onDevice": "Apple Intelligence",
         "openai": "OpenAI",
-        "hosted": "Musclog Premium"
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Otwórz Google AI Studio",
       "openClaude": "Otwórz stronę kluczy Claude",
@@ -118,7 +118,7 @@
       "title": "Wybierz swoje AI",
       "useExternal": "Użyj ChatGPT lub Claude zamiast tego",
       "useSaved": "Użyj zapisanego klucza",
-      "premiumTitle": "Musclog Premium",
+      "premiumTitle": "Musclog Iron",
       "premiumHint": "Prywatne AI w chmurze w ramach subskrypcji, bez klucza"
     },
     "recovery": {
@@ -129,7 +129,7 @@
         "retry": "Spróbuj ponownie",
         "switchProvider": "Wybierz inne AI",
         "useExternal": "Użyj ChatGPT lub Claude",
-        "renewPremium": "Otwórz Premium",
+        "renewPremium": "Otwórz Musclog Iron",
         "restorePremium": "Przywróć zakupy"
       },
       "cancelled": {
@@ -169,19 +169,19 @@
         "title": "Coś poszło nie tak"
       },
       "hostedBudget": {
-        "title": "Wyczerpano limit Premium",
+        "title": "Wyczerpano limit Musclog Iron",
         "description": "Limit odnowi się wraz z kolejnym okresem. Do tego czasu możesz użyć własnego klucza albo dokończyć konfigurację ręcznie."
       },
       "hostedSubscription": {
-        "title": "Premium nie jest aktywne na tym urządzeniu",
-        "description": "Przywróć zakup, zasubskrybuj Premium lub użyj własnego klucza."
+        "title": "Musclog Iron nie jest aktywny na tym urządzeniu",
+        "description": "Przywróć zakup, zasubskrybuj Musclog Iron lub użyj własnego klucza."
       },
       "hostedUnavailable": {
-        "title": "Premium jest niedostępne",
-        "description": "Nie można teraz połączyć się z Musclog Premium. Spróbuj ponownie albo wybierz inną opcję."
+        "title": "Musclog Iron jest niedostępny",
+        "description": "Nie można teraz połączyć się z Musclog Iron. Spróbuj ponownie albo wybierz inną opcję."
       },
       "hostedBusy": {
-        "title": "Premium jest zajęte",
+        "title": "Musclog Iron jest zajęty",
         "description": "Zbyt wiele żądań naraz. Spróbuj ponownie za kilka sekund."
       }
     },

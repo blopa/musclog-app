@@ -159,7 +159,7 @@
       "termsAndPrivacy": "Al continuar, aceptas nuestros Términos y Política de Privacidad.",
       "appName": "Musclog",
       "tagline": "Gratis, 100% tuyo",
-      "description": "Registra tus entrenamientos y tu nutrición con total privacidad. Sin cuentas, sin nube. Todo es gratis excepto la cuota opcional de IA Premium.",
+      "description": "Registra tus entrenamientos y tu nutrición con total privacidad. Sin cuentas, sin nube. Todo es gratis excepto la cuota opcional de Musclog Iron.",
       "viewTerms": "Ver Términos",
       "preparingApp": "Preparando la app para ti...",
       "migratingPreamble": "Actualizando desde el Musclog anterior. Estamos trayendo tus datos.",
@@ -240,7 +240,7 @@
       "choicesLabel": "Opciones de IA",
       "options": {
         "premium": {
-          "title": "Musclog Premium",
+          "title": "Musclog Iron",
           "price": "{{price}} al mes",
           "priceUnknown": "Suscripción mensual",
           "points": {
@@ -262,7 +262,7 @@
           "title": "Sin IA por ahora",
           "points": {
             "works": "El registro, los planes y los gráficos funcionan igual",
-            "later": "Activa la IA en cualquier momento en Ajustes, con Premium o con tu propia clave de Gemini, OpenAI o Claude"
+            "later": "Activa la IA en cualquier momento en Ajustes, con Musclog Iron o con tu propia clave de Gemini, OpenAI o Claude"
           }
         }
       },
@@ -270,7 +270,7 @@
       "dataSharingBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales o mensajes de chat) se envía a través de OpenRouter al nivel gratuito de Google AI Studio para redactar la respuesta. Google puede conservar lo enviado, usarlo para mejorar sus productos y hacer que personas (sin identificadores) lo revisen, así que el nivel gratuito no es privado: no introduzcas información personal ni sensible. El nivel gratuito es solo para adultos (18+). Si no te parece bien, déjalo desactivado. No se envía nada hasta que uses una función de IA. Hay un límite diario que comparten todos los que usan el nivel gratuito, así que puede agotarse pronto en el día, y el nivel gratuito a veces puede no estar disponible.",
       "readPrivacyPolicy": "Leer nuestra Política de Privacidad",
       "cta": {
-        "premium": "Continuar con Premium",
+        "premium": "Continuar con Musclog Iron",
         "free": "Activar IA gratuita",
         "none": "Continuar sin IA"
       }

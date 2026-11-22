@@ -239,8 +239,8 @@
       },
       "v2_17_5": {
         "intro": {
-          "title": "Conoce Musclog Premium",
-          "description": "Es la primera y última vez que te mostramos un banner tan grande. Premium es totalmente opcional: puedes seguir usando Musclog 100 % gratis. Está pensado para tu comodidad y ayuda a pagar el desarrollo de la app.",
+          "title": "Conoce Musclog Iron",
+          "description": "Es la primera y última vez que te mostramos un banner tan grande. Musclog Iron es totalmente opcional: puedes seguir usando Musclog 100 % gratis. Está pensado para tu comodidad y ayuda a pagar el desarrollo de la app.",
           "items": {
             "optional": "100 % opcional, nunca obligatorio",
             "ai": "IA que funciona sin más, sin claves que configurar",
@@ -248,8 +248,8 @@
           }
         },
         "premium": {
-          "title": "Cómo funciona Premium",
-          "description": "Musclog es gratis, de código abierto y lo hace una sola persona. Premium es una forma opcional de usar la IA sin configurar nada, y una manera de apoyar la app si te gusta.",
+          "title": "Cómo funciona Musclog Iron",
+          "description": "Musclog es gratis, de código abierto y lo hace una sola persona. Musclog Iron es una forma opcional de usar la IA sin configurar nada, y una manera de apoyar la app si te gusta.",
           "items": {
             "free": {
               "label": "Todo lo demás sigue siendo gratis",
@@ -265,7 +265,7 @@
             }
           },
           "action": {
-            "label": "Ver Musclog Premium",
+            "label": "Ver Musclog Iron",
             "description": "También lo encontrarás en Ajustes → IA."
           }
         }

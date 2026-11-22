@@ -24,7 +24,7 @@
           {
             "topic": "Ücretli plan",
             "them": "Strong PRO rutin sınırını kaldırır: ayda 4,99 $ ya da yılda 29,99 $ (ABD App Store fiyatları).",
-            "musclog": "Ücretsiz ve açık kaynak (GPL-3.0). Tek ücretli seçenek, barındırılan yapay zekâ için isteğe bağlı aylık bir Premium aboneliğidir."
+            "musclog": "Ücretsiz ve açık kaynak (GPL-3.0). Tek ücretli seçenek, barındırılan yapay zekâ için isteğe bağlı aylık bir Musclog Iron aboneliğidir."
           }
         ],
         "import": "Musclog bir Strong CSV dışa aktarımını içe aktarabilir: Ayarlar, Yedeklemeler ve veriler, Antrenmanları içe aktar. Egzersiz adlarını kendi kataloğuyla eşleştirir, eşleşmeyenler hakkında sana sorar ve hiçbir şey kaydedilmeden önce bir inceleme ekranı gösterir. Aynı dosyayı iki kez içe aktarmak seansları çoğaltmaz ve içe aktarma geri alınabilir.",

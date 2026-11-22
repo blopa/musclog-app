@@ -2,13 +2,13 @@
   "websitePremium": {
     "hero": {
       "title": "KI, die ohne API-Schlüssel funktioniert",
-      "lead": "Musclog ist kostenlos und Open Source, und das bleibt so. Premium ist ein optionales monatliches Abo, das die KI-Funktionen für dich betreibt, sodass du keinen Schlüssel suchen, eintragen oder bezahlen musst.",
+      "lead": "Musclog ist kostenlos und Open Source, und das bleibt so. Musclog Iron ist ein optionales monatliches Abo, das die KI-Funktionen für dich betreibt, sodass du keinen Schlüssel suchen, eintragen oder bezahlen musst.",
       "cta": "Musclog holen",
       "note": "Du abonnierst direkt in der App, mit deinem App-Store- oder Google-Play-Konto."
     },
     "free": {
       "title": "Alles andere bleibt kostenlos",
-      "body": "Training- und Ernährungstracking, deine Daten auf deinem eigenen Gerät und alle anderen Funktionen der App brauchen kein Premium. Die KI-Funktionen hatten schon immer kostenlose Wege, und die gibt es weiterhin:",
+      "body": "Training- und Ernährungstracking, deine Daten auf deinem eigenen Gerät und alle anderen Funktionen der App brauchen kein Musclog Iron. Die KI-Funktionen hatten schon immer kostenlose Wege, und die gibt es weiterhin:",
       "items": [
         "Nutze deinen eigenen API-Schlüssel für Google Gemini, OpenAI oder Anthropic Claude und bezahle den Anbieter direkt.",
         "Nutze die kostenlose Option Musclog AI.",
@@ -19,9 +19,9 @@
     "how": {
       "title": "So funktioniert es",
       "steps": [
-        "Öffne die Einstellungen, dann die KI-Einstellungen, und wähle Musclog Premium.",
+        "Öffne die Einstellungen, dann die KI-Einstellungen, und wähle Musclog Iron.",
         "Abonniere mit deinem Store-Konto. Mit „Käufe wiederherstellen“ kommt ein bestehendes Abo zurück.",
-        "Lies den Datenschutzhinweis und aktiviere „Premium für meine KI verwenden“. Es wird nichts gesendet, bevor du das tust.",
+        "Lies den Datenschutzhinweis und aktiviere „Musclog Iron für meine KI verwenden“. Es wird nichts gesendet, bevor du das tust.",
         "Nutze Coach, Mahlzeiten-Tracking und Trainingspläne wie bei jedem anderen Anbieter."
       ]
     },
@@ -32,8 +32,8 @@
     },
     "privacy": {
       "title": "Was mit deinen Nachrichten passiert",
-      "body": "Wenn Premium aktiv ist, gehen deine KI-Anfragen an den eigenen Dienst von Musclog, der sie an OpenRouter weiterleitet, und OpenRouter gibt sie an das KI-Modell weiter. Anfragen gehen nur an Anbieter mit Zero Data Retention, und der Dienst speichert weder deinen Nachrichtentext noch deine Bilder. Er zählt die Nutzung für deinen Abozeitraum und speichert eine Kennung für jedes Gerät, auf dem du Premium nutzt.",
-      "consent": "Die App fragt dich um Zustimmung, bevor sie etwas an Premium sendet, und fragt erneut, wenn du ein Backup auf einem anderen Gerät wiederherstellst.",
+      "body": "Wenn Musclog Iron aktiv ist, gehen deine KI-Anfragen an den eigenen Dienst von Musclog, der sie an OpenRouter weiterleitet, und OpenRouter gibt sie an das KI-Modell weiter. Anfragen gehen nur an Anbieter mit Zero Data Retention, und der Dienst speichert weder deinen Nachrichtentext noch deine Bilder. Er zählt die Nutzung für deinen Abozeitraum und speichert eine Kennung für jedes Gerät, auf dem du Musclog Iron nutzt.",
+      "consent": "Die App fragt dich um Zustimmung, bevor sie etwas an Musclog Iron sendet, und fragt erneut, wenn du ein Backup auf einem anderen Gerät wiederherstellst.",
       "link": "Datenschutzerklärung lesen"
     },
     "subscription": {
@@ -51,11 +51,11 @@
       "items": [
         {
           "q": "Ist Musclog weiterhin kostenlos?",
-          "a": "Ja. Die App ist kostenlos und Open Source. Premium ist optional und deckt nur den Betrieb der KI-Funktionen für dich ab."
+          "a": "Ja. Die App ist kostenlos und Open Source. Musclog Iron ist optional und deckt nur den Betrieb der KI-Funktionen für dich ab."
         },
         {
-          "q": "Brauche ich Premium, um die KI-Funktionen zu nutzen?",
-          "a": "Nein. Du kannst deinen eigenen API-Schlüssel nutzen, die kostenlose Option Musclog AI oder On-Device- und lokale Modelle. Premium ist die Option, bei der du nichts einrichten musst."
+          "q": "Brauche ich Musclog Iron, um die KI-Funktionen zu nutzen?",
+          "a": "Nein. Du kannst deinen eigenen API-Schlüssel nutzen, die kostenlose Option Musclog AI oder On-Device- und lokale Modelle. Musclog Iron ist die Option, bei der du nichts einrichten musst."
         },
         {
           "q": "Kann ich es auf mehreren Geräten nutzen?",

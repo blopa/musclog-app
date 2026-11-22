@@ -159,7 +159,7 @@
       "termsAndPrivacy": "Devam ederek Koşullarımızı ve Gizlilik Politikamızı kabul etmiş olursun.",
       "appName": "Musclog",
       "tagline": "Ücretsiz, %100 senin",
-      "description": "Antrenmanlarını ve beslenmeni tam gizlilikle takip et. Hesap yok, bulut yok. Opsiyonel Premium YZ kotası dışında her şey ücretsiz.",
+      "description": "Antrenmanlarını ve beslenmeni tam gizlilikle takip et. Hesap yok, bulut yok. Opsiyonel Musclog Iron kotası dışında her şey ücretsiz.",
       "storedLocally": "Tüm veriler cihazında yerel olarak saklanır",
       "viewTerms": "Koşulları gör",
       "preparingApp": "Uygulama senin için hazırlanıyor...",
@@ -277,7 +277,7 @@
       "choicesLabel": "YZ seçenekleri",
       "options": {
         "premium": {
-          "title": "Musclog Premium",
+          "title": "Musclog Iron",
           "price": "Ayda {{price}}",
           "priceUnknown": "Aylık abonelik",
           "points": {
@@ -299,7 +299,7 @@
           "title": "Şimdilik YZ yok",
           "points": {
             "works": "Kayıt, planlar ve grafikler aynı şekilde çalışır",
-            "later": "YZ'yi istediğin zaman Ayarlar'dan aç: Premium ile ya da kendi Gemini, OpenAI veya Claude anahtarınla"
+            "later": "YZ'yi istediğin zaman Ayarlar'dan aç: Musclog Iron ile ya da kendi Gemini, OpenAI veya Claude anahtarınla"
           }
         }
       },
@@ -307,7 +307,7 @@
       "dataSharingBody": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler (ör. antrenmanların, öğünlerin, vücut ölçülerin veya sohbet mesajların) yanıtı yazmak için OpenRouter üzerinden Google AI Studio'nun ücretsiz katmanına gönderilir. Google gönderilenleri (kimlik bilgileri çıkarılmış olarak) saklayabilir, ürünlerini geliştirmek için kullanabilir ve insanların incelemesini sağlayabilir; bu yüzden ücretsiz katman gizli değildir: kişisel veya hassas bilgi girme. Ücretsiz katman yalnızca yetişkinler (18+) içindir. Bu sana uygun değilse kapalı bırakabilirsin. Bir yapay zekâ özelliğini kullanana kadar hiçbir şey gönderilmez. Ücretsiz katmanı kullanan herkesin paylaştığı günlük bir sınır vardır; bu yüzden gün içinde erken bitebilir ve ücretsiz katman bazen kullanılamayabilir.",
       "readPrivacyPolicy": "Gizlilik Politikamızı oku",
       "cta": {
-        "premium": "Premium ile devam et",
+        "premium": "Musclog Iron ile devam et",
         "free": "Ücretsiz YZ'yi aç",
         "none": "YZ olmadan devam et"
       }

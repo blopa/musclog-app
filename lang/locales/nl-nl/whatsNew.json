@@ -239,8 +239,8 @@
       },
       "v2_17_5": {
         "intro": {
-          "title": "Maak kennis met Musclog Premium",
-          "description": "Dit is de eerste en laatste keer dat we je zo'n grote banner tonen. Premium is volledig optioneel: je kunt Musclog gewoon 100% gratis blijven gebruiken. Het is er voor jouw gemak en helpt de ontwikkeling van de app betalen.",
+          "title": "Maak kennis met Musclog Iron",
+          "description": "Dit is de eerste en laatste keer dat we je zo'n grote banner tonen. Musclog Iron is volledig optioneel: je kunt Musclog gewoon 100% gratis blijven gebruiken. Het is er voor jouw gemak en helpt de ontwikkeling van de app betalen.",
           "items": {
             "optional": "100% optioneel, nooit verplicht",
             "ai": "AI die gewoon werkt, zonder sleutels om in te stellen",
@@ -248,8 +248,8 @@
           }
         },
         "premium": {
-          "title": "Zo werkt Premium",
-          "description": "Musclog is gratis, open source en gemaakt door één ontwikkelaar. Premium is een optionele manier om de AI te gebruiken zonder iets in te stellen, en een manier om de app te steunen als je hem goed vindt.",
+          "title": "Zo werkt Musclog Iron",
+          "description": "Musclog is gratis, open source en gemaakt door één ontwikkelaar. Musclog Iron is een optionele manier om de AI te gebruiken zonder iets in te stellen, en een manier om de app te steunen als je hem goed vindt.",
           "items": {
             "free": {
               "label": "Al het andere blijft gratis",
@@ -265,7 +265,7 @@
             }
           },
           "action": {
-            "label": "Bekijk Musclog Premium",
+            "label": "Bekijk Musclog Iron",
             "description": "Je vindt het ook onder Instellingen → AI."
           }
         }

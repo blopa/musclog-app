@@ -40,8 +40,8 @@ Die App ist auf Englisch, Spanisch, Niederländisch, Portugiesisch (Brasilien) u
 • Oder erstelle einen Plan oder beschreibe eine Mahlzeit in ChatGPT oder Claude und übernimm ihn in Musclog.
 • Bestimme den Stil des Coachs. Nichts in Musclog setzt KI voraus.
 
-<b>Musclog Premium (optional)</b>
-Musclog Premium ist ein monatliches Abo, das KI-Anfragen ohne eigenen Schlüssel beantwortet. Die Zahlung wird über dein Store-Konto abgebucht, und sie verlängert sich jeden Monat automatisch, außer du kündigst mindestens 24 Stunden vor der Verlängerung in den Kontoeinstellungen deines Stores. Alles andere in Musclog bleibt kostenlos. Nutzungsbedingungen: https://musclog.app/en/terms
+<b>Musclog Iron (optional)</b>
+Musclog Iron ist ein monatliches Abo, das KI-Anfragen ohne eigenen Schlüssel beantwortet. Die Zahlung wird über dein Store-Konto abgebucht, und sie verlängert sich jeden Monat automatisch, außer du kündigst mindestens 24 Stunden vor der Verlängerung in den Kontoeinstellungen deines Stores. Alles andere in Musclog bleibt kostenlos. Nutzungsbedingungen: https://musclog.app/en/terms
 
 <b>Privatsphäre von Grund auf</b>
 • Gewicht, Körperfett und Ernährungsprotokolle sind auf dem Gerät verschlüsselt.

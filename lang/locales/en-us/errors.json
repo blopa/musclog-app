@@ -23,14 +23,14 @@
     "aiKeyTestOk": "Key accepted",
     "aiKeyTestRejected": "Key rejected. Check it and try again.",
     "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection.",
-    "hostedBudget": "This period's Premium AI allowance is used up. It renews on {{date}}. Musclog keeps working, and you can use your own key or the free tier.",
-    "hostedBudgetNoDate": "This period's Premium AI allowance is used up. Musclog keeps working, and you can use your own key or the free tier.",
-    "hostedSubscription": "Musclog Premium has no active subscription on this device. Restore your purchase or subscribe in Premium settings.",
-    "hostedRemoved": "This device was removed from your Premium subscription. Restore purchases in Premium settings to add it again.",
-    "hostedUnavailable": "Musclog Premium is unavailable right now. Try again in a moment.",
-    "hostedDailyFull": "Premium AI is at capacity until tomorrow (UTC).",
-    "hostedDailyLimit": "You have reached today's Premium AI limit. It resets at midnight (UTC). You can use your own key or the free tier meanwhile.",
-    "hostedBusy": "Musclog Premium is busy. Try again in a few seconds.",
+    "hostedBudget": "This period's Musclog Iron allowance is used up. It renews on {{date}}. Musclog keeps working, and you can use your own key or the free tier.",
+    "hostedBudgetNoDate": "This period's Musclog Iron allowance is used up. Musclog keeps working, and you can use your own key or the free tier.",
+    "hostedSubscription": "Musclog Iron has no active subscription on this device. Restore your purchase or subscribe in Musclog Iron settings.",
+    "hostedRemoved": "This device was removed from your Musclog Iron subscription. Restore purchases in Musclog Iron settings to add it again.",
+    "hostedUnavailable": "Musclog Iron is unavailable right now. Try again in a moment.",
+    "hostedDailyFull": "Musclog Iron is at capacity until tomorrow (UTC).",
+    "hostedDailyLimit": "You have reached today's Musclog Iron limit. It resets at midnight (UTC). You can use your own key or the free tier meanwhile.",
+    "hostedBusy": "Musclog Iron is busy. Try again in a few seconds.",
     "hostedAlreadyProcessed": "That request was already handled. Please send it again."
   }
 }

@@ -1,18 +1,18 @@
 {
   "premium": {
-    "title": "Musclog Premium",
-    "benefit": "IA hébergée, sans clé à configurer. Musclog Premium fait tourner l'IA pour vous, dans la limite d'un quota mensuel.",
-    "loading": "Vérification de votre statut Premium…",
+    "title": "Musclog Iron",
+    "benefit": "IA hébergée, sans clé à configurer. Musclog Iron fait tourner l'IA pour vous, dans la limite d'un quota mensuel.",
+    "loading": "Vérification de votre statut Musclog Iron…",
     "progress": {
       "store": "En attente de la boutique…",
       "confirming": "Confirmation de votre abonnement…",
       "slow": "Confirmation en cours, cela peut prendre quelques secondes",
-      "reset": "Réinitialisation de Premium sur cet appareil…",
+      "reset": "Réinitialisation de Musclog Iron sur cet appareil…",
       "toggle": "Mise à jour de votre réglage IA…"
     },
     "wait": {
-      "working": "L'IA Premium travaille toujours…",
-      "busy": "Votre IA Premium est occupée, nouvelle tentative…"
+      "working": "Musclog Iron travaille toujours…",
+      "busy": "Musclog Iron est occupé, nouvelle tentative…"
     },
     "price": "{{price}} par mois",
     "subscribe": "S'abonner",
@@ -22,51 +22,51 @@
       "renews": "Se renouvelle le {{date}}"
     },
     "devices": "Partagé par tous vos appareils",
-    "useForAi": "Utiliser Premium pour mon IA",
-    "useForAiHint": "Les requêtes passent par le service Musclog Premium, qui les transmet à OpenRouter.",
+    "useForAi": "Utiliser Musclog Iron pour mon IA",
+    "useForAiHint": "Les requêtes passent par le service Musclog Iron, qui les transmet à OpenRouter.",
     "manage": "Gérer l'abonnement",
-    "reset": "Réinitialiser Premium sur cet appareil",
-    "resetTitle": "Réinitialiser Premium sur cet appareil ?",
-    "resetBody": "Cela supprime l'inscription Premium de cet appareil et crée une nouvelle clé d'appareil. Votre abonnement n'est pas résilié. Restaurer les achats rajoute cet appareil.",
+    "reset": "Réinitialiser Musclog Iron sur cet appareil",
+    "resetTitle": "Réinitialiser Musclog Iron sur cet appareil ?",
+    "resetBody": "Cela supprime l'inscription à Musclog Iron de cet appareil et crée une nouvelle clé d'appareil. Votre abonnement n'est pas résilié. Restaurer les achats rajoute cet appareil.",
     "resetConfirm": "Réinitialiser",
     "consent": {
-      "title": "Envoyer les requêtes d'IA à Premium ?",
-      "body": "Vos messages, ainsi que les photos que vous envoyez à l'IA, sont transmis au service Musclog Premium. Il les transmet à OpenRouter, qui les envoie au fournisseur du modèle d'IA. Seuls les points de terminaison à rétention de données nulle (ZDR) sont utilisés : ces fournisseurs ne conservent pas vos contenus et ne les utilisent pas pour l'entraînement. Le service de Musclog ne conserve que des compteurs d'utilisation, jamais vos messages ni vos photos. Vous pouvez désactiver cette option à tout moment.",
-      "confirm": "Utiliser Premium IA",
+      "title": "Envoyer les requêtes d'IA à Musclog Iron ?",
+      "body": "Vos messages, ainsi que les photos que vous envoyez à l'IA, sont transmis au service Musclog Iron. Il les transmet à OpenRouter, qui les envoie au fournisseur du modèle d'IA. Seuls les points de terminaison à rétention de données nulle (ZDR) sont utilisés : ces fournisseurs ne conservent pas vos contenus et ne les utilisent pas pour l'entraînement. Le service de Musclog ne conserve que des compteurs d'utilisation, jamais vos messages ni vos photos. Vous pouvez désactiver cette option à tout moment.",
+      "confirm": "Utiliser Musclog Iron",
       "cancel": "Pas maintenant"
     },
-    "renewalDisclosure": "Musclog Premium est un abonnement mensuel à renouvellement automatique. Le paiement est débité de votre compte App Store ou Google Play lors de la confirmation. L'abonnement se renouvelle sauf si vous le résiliez au moins 24 heures avant la fin de la période en cours. Gérez ou résiliez-le dans les réglages de votre compte sur la boutique. Le prix affiché est celui que facture la boutique.",
+    "renewalDisclosure": "Musclog Iron est un abonnement mensuel à renouvellement automatique. Le paiement est débité de votre compte App Store ou Google Play lors de la confirmation. L'abonnement se renouvelle sauf si vous le résiliez au moins 24 heures avant la fin de la période en cours. Gérez ou résiliez-le dans les réglages de votre compte sur la boutique. Le prix affiché est celui que facture la boutique.",
     "devicesNote": "Un abonnement et un seul quota, partagés par tous vos appareils.",
     "platformsNote": "Les abonnements iOS et Android sont distincts.",
     "terms": "Conditions d'utilisation",
     "privacy": "Politique de confidentialité",
     "card": {
-      "checking": "Vérification de Premium…",
+      "checking": "Vérification de Musclog Iron…",
       "notSubscribed": "IA hébergée et privée, sur abonnement, sans clé",
       "active": "{{pct}} % utilisé · partagé par tous vos appareils",
       "exhausted": "Quota épuisé pour cette période",
       "removed": "Retiré de cet abonnement",
-      "revoked": "Premium n'est pas actif"
+      "revoked": "Musclog Iron n'est pas actif"
     },
     "notice": {
-      "offline": "Vous êtes hors ligne. Premium a besoin d'une connexion pour vérifier votre abonnement.",
+      "offline": "Vous êtes hors ligne. Musclog Iron a besoin d'une connexion pour vérifier votre abonnement.",
       "purchase_cancelled": "Achat annulé. Aucun montant n’a été débité.",
       "purchase_failed": "L'achat n'a pas abouti. Réessayez, ou vérifiez votre compte sur la boutique.",
-      "restore_nothing": "Aucun abonnement Premium actif n'a été trouvé pour ce compte sur la boutique.",
+      "restore_nothing": "Aucun abonnement Musclog Iron actif n'a été trouvé pour ce compte sur la boutique.",
       "confirming": "Votre achat est encore en cours de confirmation. Réessayez dans une minute.",
       "removed": "Cet appareil a été retiré de cet abonnement parce que de nombreux nouveaux appareils ont été ajoutés. Restaurer les achats rajoute cet appareil.",
-      "revoked": "Premium n'est plus actif pour cet abonnement.",
-      "exhausted": "Le quota d'IA Premium de cette période est épuisé. Il se renouvelle le {{date}}. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
-      "exhaustedNoDate": "Le quota d'IA Premium de cette période est épuisé. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
-      "at_capacity": "Premium IA est saturé jusqu'à demain (UTC).",
-      "unavailable": "Premium est indisponible pour le moment. Réessayez plus tard.",
-      "not_accepting": "Premium n'accepte pas de nouveaux abonnés pour le moment.",
-      "not_available": "Premium n'est pas disponible sur cette boutique pour le moment.",
-      "warning80": "Vous avez utilisé la plus grande partie du quota d'IA Premium de cette période."
+      "revoked": "Musclog Iron n'est plus actif pour cet abonnement.",
+      "exhausted": "Le quota d'IA de Musclog Iron de cette période est épuisé. Il se renouvelle le {{date}}. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
+      "exhaustedNoDate": "Le quota d'IA de Musclog Iron de cette période est épuisé. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
+      "at_capacity": "Musclog Iron est saturé jusqu'à demain (UTC).",
+      "unavailable": "Musclog Iron est indisponible pour le moment. Réessayez plus tard.",
+      "not_accepting": "Musclog Iron n'accepte pas de nouveaux abonnés pour le moment.",
+      "not_available": "Musclog Iron n'est pas disponible sur cette boutique pour le moment.",
+      "warning80": "Vous avez utilisé la plus grande partie du quota d'IA de Musclog Iron de cette période."
     },
     "paywall": {
       "headline": "Saisir plus vite avec l'IA, rien à configurer",
-      "subhead": "Musclog Premium fait tourner l'IA pour toi : pas de clé, pas de compte, et les fournisseurs d'IA ne conservent rien de ce que tu envoies. Tout le reste de Musclog reste gratuit.",
+      "subhead": "Musclog Iron fait tourner l'IA pour toi : pas de clé, pas de compte, et les fournisseurs d'IA ne conservent rien de ce que tu envoies. Tout le reste de Musclog reste gratuit.",
       "benefits": {
         "noSetup": {
           "title": "Rien à configurer",
@@ -86,13 +86,13 @@
         },
         "openSource": {
           "title": "Fait vivre Musclog",
-          "desc": "Musclog est open source. Premium finance l'IA hébergée et soutient son développement."
+          "desc": "Musclog est open source. Musclog Iron finance l'IA hébergée et soutient son développement."
         }
       },
       "compare": {
-        "title": "Offre gratuite ou Premium",
+        "title": "Offre gratuite ou Musclog Iron",
         "free": "Offre gratuite",
-        "premium": "Premium",
+        "premium": "Iron",
         "privacy": {
           "label": "Ce que tu envoies",
           "free": "Google peut le conserver, le relire et l'utiliser pour l'entraînement",

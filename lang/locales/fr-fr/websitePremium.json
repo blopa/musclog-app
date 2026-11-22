@@ -2,13 +2,13 @@
   "websitePremium": {
     "hero": {
       "title": "L'IA qui fonctionne sans clé d'API",
-      "lead": "Musclog est gratuit et open source, et il le restera. Premium est un abonnement mensuel facultatif qui fait tourner les fonctions d'IA pour toi, sans clé à trouver, à coller ou à payer.",
+      "lead": "Musclog est gratuit et open source, et il le restera. Musclog Iron est un abonnement mensuel facultatif qui fait tourner les fonctions d'IA pour toi, sans clé à trouver, à coller ou à payer.",
       "cta": "Obtenir Musclog",
       "note": "Tu t'abonnes dans l'app, avec ton compte App Store ou Google Play."
     },
     "free": {
       "title": "Tout le reste reste gratuit",
-      "body": "Le suivi des séances et de la nutrition, tes données sur ton propre appareil et toutes les autres fonctions de l'app ne nécessitent pas Premium. Les fonctions d'IA ont toujours eu des accès gratuits, et ils restent disponibles :",
+      "body": "Le suivi des séances et de la nutrition, tes données sur ton propre appareil et toutes les autres fonctions de l'app ne nécessitent pas Musclog Iron. Les fonctions d'IA ont toujours eu des accès gratuits, et ils restent disponibles :",
       "items": [
         "Utilise ta propre clé d'API Google Gemini, OpenAI ou Anthropic Claude, et paie directement ce fournisseur.",
         "Utilise l'option gratuite Musclog AI.",
@@ -19,9 +19,9 @@
     "how": {
       "title": "Comment ça marche",
       "steps": [
-        "Ouvre Réglages, puis Réglages IA, et choisis Musclog Premium.",
+        "Ouvre Réglages, puis Réglages IA, et choisis Musclog Iron.",
         "Abonne-toi avec ton compte store. Restaurer les achats rétablit un abonnement existant.",
-        "Lis l'avis de confidentialité et active « Utiliser Premium pour mon IA ». Rien n'est envoyé tant que tu ne l'as pas fait.",
+        "Lis l'avis de confidentialité et active « Utiliser Musclog Iron pour mon IA ». Rien n'est envoyé tant que tu ne l'as pas fait.",
         "Utilise le coach, le suivi des repas et les plans d'entraînement comme avec n'importe quel autre fournisseur."
       ]
     },
@@ -32,8 +32,8 @@
     },
     "privacy": {
       "title": "Ce qu'il advient de tes messages",
-      "body": "Quand Premium est activé, tes requêtes d'IA partent vers le service propre à Musclog, qui les transmet à OpenRouter, lequel les envoie au modèle d'IA. Les requêtes ne sont envoyées qu'à des fournisseurs qui proposent une rétention de données nulle, et le service ne conserve ni le texte de tes messages ni tes images. Il compte l'utilisation pour ta période d'abonnement et conserve un identifiant pour chaque appareil sur lequel tu utilises Premium.",
-      "consent": "L'app te demande ton accord avant d'envoyer quoi que ce soit à Premium, et te le redemande si tu restaures une sauvegarde sur un autre appareil.",
+      "body": "Quand Musclog Iron est activé, tes requêtes d'IA partent vers le service propre à Musclog, qui les transmet à OpenRouter, lequel les envoie au modèle d'IA. Les requêtes ne sont envoyées qu'à des fournisseurs qui proposent une rétention de données nulle, et le service ne conserve ni le texte de tes messages ni tes images. Il compte l'utilisation pour ta période d'abonnement et conserve un identifiant pour chaque appareil sur lequel tu utilises Musclog Iron.",
+      "consent": "L'app te demande ton accord avant d'envoyer quoi que ce soit à Musclog Iron, et te le redemande si tu restaures une sauvegarde sur un autre appareil.",
       "link": "Lire la politique de confidentialité"
     },
     "subscription": {
@@ -51,11 +51,11 @@
       "items": [
         {
           "q": "Musclog est-il toujours gratuit ?",
-          "a": "Oui. L'app est gratuite et open source. Premium est facultatif et ne sert qu'à faire tourner les fonctions d'IA pour toi."
+          "a": "Oui. L'app est gratuite et open source. Musclog Iron est facultatif et ne sert qu'à faire tourner les fonctions d'IA pour toi."
         },
         {
-          "q": "Ai-je besoin de Premium pour utiliser les fonctions d'IA ?",
-          "a": "Non. Tu peux utiliser ta propre clé d'API, l'option gratuite Musclog AI, ou des modèles sur l'appareil et locaux. Premium est l'option sans rien à configurer."
+          "q": "Ai-je besoin de Musclog Iron pour utiliser les fonctions d'IA ?",
+          "a": "Non. Tu peux utiliser ta propre clé d'API, l'option gratuite Musclog AI, ou des modèles sur l'appareil et locaux. Musclog Iron est l'option sans rien à configurer."
         },
         {
           "q": "Puis-je l'utiliser sur plusieurs appareils ?",

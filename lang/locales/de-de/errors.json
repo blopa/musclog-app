@@ -23,14 +23,14 @@
     "aiKeyTestOk": "Schlüssel akzeptiert",
     "aiKeyTestRejected": "Schlüssel abgelehnt. Prüfe ihn und versuche es erneut.",
     "aiKeyTestNetwork": "Der Anbieter ist nicht erreichbar. Prüfe deine Verbindung.",
-    "hostedBudget": "Das Premium-KI-Kontingent für diesen Zeitraum ist aufgebraucht. Es wird am {{date}} erneuert. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
-    "hostedBudgetNoDate": "Das Premium-KI-Kontingent für diesen Zeitraum ist aufgebraucht. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
-    "hostedSubscription": "Musclog Premium hat auf diesem Gerät kein aktives Abo. Stelle deinen Kauf wieder her oder abonniere in den Premium-Einstellungen.",
-    "hostedRemoved": "Dieses Gerät wurde aus deinem Premium-Abo entfernt. Stelle die Käufe in den Premium-Einstellungen wieder her, um es erneut hinzuzufügen.",
-    "hostedUnavailable": "Musclog Premium ist gerade nicht verfügbar. Versuche es gleich noch einmal.",
-    "hostedDailyFull": "Premium-KI ist bis morgen (UTC) ausgelastet.",
-    "hostedDailyLimit": "Du hast das heutige Premium-KI-Limit erreicht. Es wird um Mitternacht (UTC) zurückgesetzt. Bis dahin kannst du deinen eigenen Schlüssel oder die kostenlose Stufe nutzen.",
-    "hostedBusy": "Musclog Premium ist beschäftigt. Versuche es in wenigen Sekunden erneut.",
+    "hostedBudget": "Das KI-Kontingent von Musclog Iron für diesen Zeitraum ist aufgebraucht. Es wird am {{date}} erneuert. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
+    "hostedBudgetNoDate": "Das KI-Kontingent von Musclog Iron für diesen Zeitraum ist aufgebraucht. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
+    "hostedSubscription": "Musclog Iron hat auf diesem Gerät kein aktives Abo. Stelle deinen Kauf wieder her oder abonniere in den Musclog-Iron-Einstellungen.",
+    "hostedRemoved": "Dieses Gerät wurde aus deinem Musclog-Iron-Abo entfernt. Stelle die Käufe in den Musclog-Iron-Einstellungen wieder her, um es erneut hinzuzufügen.",
+    "hostedUnavailable": "Musclog Iron ist gerade nicht verfügbar. Versuche es gleich noch einmal.",
+    "hostedDailyFull": "Musclog Iron ist bis morgen (UTC) ausgelastet.",
+    "hostedDailyLimit": "Du hast das heutige KI-Limit von Musclog Iron erreicht. Es wird um Mitternacht (UTC) zurückgesetzt. Bis dahin kannst du deinen eigenen Schlüssel oder die kostenlose Stufe nutzen.",
+    "hostedBusy": "Musclog Iron ist beschäftigt. Versuche es in wenigen Sekunden erneut.",
     "hostedAlreadyProcessed": "Diese Anfrage wurde bereits bearbeitet. Bitte sende sie erneut."
   }
 }

@@ -1,18 +1,18 @@
 {
   "premium": {
-    "title": "Musclog Premium",
-    "benefit": "AI die voor je draait, zonder sleutel om in te stellen. Musclog Premium voert de AI voor je uit met een maandelijks tegoed.",
-    "loading": "Je Premium-status wordt gecontroleerd…",
+    "title": "Musclog Iron",
+    "benefit": "AI die voor je draait, zonder sleutel om in te stellen. Musclog Iron voert de AI voor je uit met een maandelijks tegoed.",
+    "loading": "Je Musclog Iron-status wordt gecontroleerd…",
     "progress": {
       "store": "Wachten op de store…",
       "confirming": "Je abonnement wordt bevestigd…",
       "slow": "Nog steeds bevestigen, dit kan enkele seconden duren",
-      "reset": "Premium wordt op dit apparaat gereset…",
+      "reset": "Musclog Iron wordt op dit apparaat gereset…",
       "toggle": "Je AI-instelling wordt bijgewerkt…"
     },
     "wait": {
-      "working": "Premium-AI is nog bezig…",
-      "busy": "Premium-AI is bezet, opnieuw proberen…"
+      "working": "Musclog Iron is nog bezig…",
+      "busy": "Musclog Iron is bezet, opnieuw proberen…"
     },
     "price": "{{price}} per maand",
     "subscribe": "Abonneren",
@@ -22,51 +22,51 @@
       "renews": "Vernieuwt op {{date}}"
     },
     "devices": "Gedeeld door al je apparaten",
-    "useForAi": "Premium gebruiken voor mijn AI",
-    "useForAiHint": "Verzoeken gaan naar de Musclog Premium-dienst, die ze doorstuurt naar OpenRouter.",
+    "useForAi": "Musclog Iron gebruiken voor mijn AI",
+    "useForAiHint": "Verzoeken gaan naar de Musclog Iron-dienst, die ze doorstuurt naar OpenRouter.",
     "manage": "Abonnement beheren",
-    "reset": "Premium op dit apparaat resetten",
-    "resetTitle": "Premium op dit apparaat resetten?",
-    "resetBody": "Hiermee wordt de Premium-registratie van dit apparaat vergeten en wordt een nieuwe apparaatsleutel gemaakt. Je abonnement wordt niet opgezegd. Aankopen herstellen voegt dit apparaat weer toe.",
+    "reset": "Musclog Iron op dit apparaat resetten",
+    "resetTitle": "Musclog Iron op dit apparaat resetten?",
+    "resetBody": "Hiermee wordt de Musclog Iron-registratie van dit apparaat vergeten en wordt een nieuwe apparaatsleutel gemaakt. Je abonnement wordt niet opgezegd. Aankopen herstellen voegt dit apparaat weer toe.",
     "resetConfirm": "Resetten",
     "consent": {
-      "title": "AI-verzoeken naar Premium sturen?",
-      "body": "Je berichten en eventuele foto’s die je naar de AI stuurt, gaan naar de Musclog Premium-dienst. Die stuurt ze door naar OpenRouter, dat ze naar de aanbieder van het AI-model stuurt. Alleen eindpunten met zero data retention (ZDR) worden gebruikt: die aanbieders bewaren je inhoud niet en gebruiken die niet voor training. De Musclog-dienst bewaart alleen gebruikstellingen, nooit je berichten of foto’s. Je kunt dit op elk moment uitzetten.",
-      "confirm": "Premium-AI gebruiken",
+      "title": "AI-verzoeken naar Musclog Iron sturen?",
+      "body": "Je berichten en eventuele foto’s die je naar de AI stuurt, gaan naar de Musclog Iron-dienst. Die stuurt ze door naar OpenRouter, dat ze naar de aanbieder van het AI-model stuurt. Alleen eindpunten met zero data retention (ZDR) worden gebruikt: die aanbieders bewaren je inhoud niet en gebruiken die niet voor training. De Musclog-dienst bewaart alleen gebruikstellingen, nooit je berichten of foto’s. Je kunt dit op elk moment uitzetten.",
+      "confirm": "Musclog Iron gebruiken",
       "cancel": "Niet nu"
     },
-    "renewalDisclosure": "Musclog Premium is een maandabonnement dat automatisch wordt verlengd. De betaling wordt bij bevestiging afgeschreven van je App Store- of Google Play-account. Het abonnement verlengt zich tenzij je het minstens 24 uur voor het einde van de huidige periode opzegt. Beheer of zeg het op in de accountinstellingen van je store. De getoonde prijs is wat de store in rekening brengt.",
+    "renewalDisclosure": "Musclog Iron is een maandabonnement dat automatisch wordt verlengd. De betaling wordt bij bevestiging afgeschreven van je App Store- of Google Play-account. Het abonnement verlengt zich tenzij je het minstens 24 uur voor het einde van de huidige periode opzegt. Beheer of zeg het op in de accountinstellingen van je store. De getoonde prijs is wat de store in rekening brengt.",
     "devicesNote": "Eén abonnement en één tegoed, gedeeld door al je apparaten.",
     "platformsNote": "iOS- en Android-abonnementen staan los van elkaar.",
     "terms": "Gebruiksvoorwaarden",
     "privacy": "Privacybeleid",
     "card": {
-      "checking": "Premium wordt gecontroleerd…",
+      "checking": "Musclog Iron wordt gecontroleerd…",
       "notSubscribed": "Gehoste AI die privé is, zonder sleutel om in te stellen",
       "active": "{{pct}}% gebruikt · gedeeld door al je apparaten",
       "exhausted": "Tegoed voor deze periode op",
       "removed": "Verwijderd uit dit abonnement",
-      "revoked": "Premium is niet actief"
+      "revoked": "Musclog Iron is niet actief"
     },
     "notice": {
-      "offline": "Je bent offline. Premium heeft een verbinding nodig om je abonnement te controleren.",
+      "offline": "Je bent offline. Musclog Iron heeft een verbinding nodig om je abonnement te controleren.",
       "purchase_cancelled": "Aankoop geannuleerd. Er is niets in rekening gebracht.",
       "purchase_failed": "De aankoop is niet gelukt. Probeer het opnieuw of controleer je storeaccount.",
-      "restore_nothing": "Er is geen actief Premium-abonnement gevonden voor dit storeaccount.",
+      "restore_nothing": "Er is geen actief Musclog Iron-abonnement gevonden voor dit storeaccount.",
       "confirming": "Je aankoop wordt nog bevestigd. Probeer het over een minuut opnieuw.",
       "removed": "Dit apparaat is uit dit abonnement verwijderd omdat er veel nieuwere apparaten zijn toegevoegd. Aankopen herstellen voegt dit apparaat weer toe.",
-      "revoked": "Premium is niet langer actief voor dit abonnement.",
-      "exhausted": "Het Premium-AI-tegoed van deze periode is op. Het wordt op {{date}} vernieuwd. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
-      "exhaustedNoDate": "Het Premium-AI-tegoed van deze periode is op. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
-      "at_capacity": "Premium-AI zit tot morgen (UTC) aan de capaciteitsgrens.",
-      "unavailable": "Premium is nu niet beschikbaar. Probeer het later opnieuw.",
-      "not_accepting": "Premium neemt op dit moment geen nieuwe abonnees aan.",
-      "not_available": "Premium is nu niet beschikbaar in deze store.",
-      "warning80": "Je hebt het grootste deel van het Premium-AI-tegoed van deze periode gebruikt."
+      "revoked": "Musclog Iron is niet langer actief voor dit abonnement.",
+      "exhausted": "Het AI-tegoed van Musclog Iron van deze periode is op. Het wordt op {{date}} vernieuwd. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+      "exhaustedNoDate": "Het AI-tegoed van Musclog Iron van deze periode is op. Musclog blijft werken, en je kunt je eigen sleutel of de gratis versie gebruiken.",
+      "at_capacity": "Musclog Iron zit tot morgen (UTC) aan de capaciteitsgrens.",
+      "unavailable": "Musclog Iron is nu niet beschikbaar. Probeer het later opnieuw.",
+      "not_accepting": "Musclog Iron neemt op dit moment geen nieuwe abonnees aan.",
+      "not_available": "Musclog Iron is nu niet beschikbaar in deze store.",
+      "warning80": "Je hebt het grootste deel van het AI-tegoed van Musclog Iron van deze periode gebruikt."
     },
     "paywall": {
       "headline": "Sneller loggen met AI, niets in te stellen",
-      "subhead": "Musclog Premium draait de AI voor je: geen sleutel, geen account, en de AI-aanbieders bewaren niets van wat je verstuurt. Al het andere in Musclog blijft gratis.",
+      "subhead": "Musclog Iron draait de AI voor je: geen sleutel, geen account, en de AI-aanbieders bewaren niets van wat je verstuurt. Al het andere in Musclog blijft gratis.",
       "benefits": {
         "noSetup": {
           "title": "Niets om in te stellen",
@@ -86,13 +86,13 @@
         },
         "openSource": {
           "title": "Houdt Musclog draaiende",
-          "desc": "Musclog is open source. Premium betaalt de gehoste AI en steunt de ontwikkeling."
+          "desc": "Musclog is open source. Musclog Iron betaalt de gehoste AI en steunt de ontwikkeling."
         }
       },
       "compare": {
-        "title": "Gratis versie of Premium",
+        "title": "Gratis versie of Musclog Iron",
         "free": "Gratis versie",
-        "premium": "Premium",
+        "premium": "Iron",
         "privacy": {
           "label": "Wat je verstuurt",
           "free": "Google mag het bewaren, beoordelen en gebruiken voor training",

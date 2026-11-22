@@ -159,7 +159,7 @@
       "termsAndPrivacy": "Continuando, accetti i nostri Termini e la nostra Informativa sulla privacy.",
       "appName": "Musclog",
       "tagline": "Gratuita, 100% tua",
-      "description": "Registra allenamenti e alimentazione con privacy totale. Nessun account, nessun cloud. Tutto è gratuito tranne il pacchetto IA Premium facoltativo.",
+      "description": "Registra allenamenti e alimentazione con privacy totale. Nessun account, nessun cloud. Tutto è gratuito tranne il pacchetto IA facoltativo di Musclog Iron.",
       "storedLocally": "Tutti i dati sono salvati localmente sul tuo dispositivo",
       "viewTerms": "Leggi i termini",
       "preparingApp": "Preparazione dell'app in corso...",
@@ -277,7 +277,7 @@
       "choicesLabel": "Opzioni IA",
       "options": {
         "premium": {
-          "title": "Musclog Premium",
+          "title": "Musclog Iron",
           "price": "{{price}} al mese",
           "priceUnknown": "Abbonamento mensile",
           "points": {
@@ -299,7 +299,7 @@
           "title": "Nessuna IA per ora",
           "points": {
             "works": "Registrazione, piani e grafici funzionano allo stesso modo",
-            "later": "Attiva l'IA in qualsiasi momento nelle Impostazioni, con Premium o con la tua chiave Gemini, OpenAI o Claude"
+            "later": "Attiva l'IA in qualsiasi momento nelle Impostazioni, con Musclog Iron o con la tua chiave Gemini, OpenAI o Claude"
           }
         }
       },
@@ -307,7 +307,7 @@
       "dataSharingBody": "Quando usi una funzione AI, ciò di cui ha bisogno (ad esempio i tuoi allenamenti, pasti, misure corporee o messaggi della chat) viene inviato tramite OpenRouter al piano gratuito di Google AI Studio per scrivere la risposta. Google può conservare ciò che viene inviato, usarlo per migliorare i propri prodotti e farlo esaminare da persone (senza identificativi), quindi il piano gratuito non è privato: non inserire informazioni personali o sensibili. Il piano gratuito è riservato agli adulti (18+). Se non ti va bene, lascialo disattivato. Non viene inviato nulla finché non usi una funzione AI. C'è un limite giornaliero condiviso da tutti quelli che usano il piano gratuito, quindi può esaurirsi presto nella giornata, e il piano gratuito a volte può non essere disponibile.",
       "readPrivacyPolicy": "Leggi la nostra Informativa sulla privacy",
       "cta": {
-        "premium": "Continua con Premium",
+        "premium": "Continua con Musclog Iron",
         "free": "Attiva l'IA gratuita",
         "none": "Continua senza IA"
       }

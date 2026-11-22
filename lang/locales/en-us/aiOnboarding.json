@@ -90,7 +90,7 @@
         "local": "Local model",
         "onDevice": "Apple Intelligence",
         "openai": "OpenAI",
-        "hosted": "Musclog Premium"
+        "hosted": "Musclog Iron"
       },
       "openGemini": "Open Google AI Studio",
       "openClaude": "Open the Claude keys page",
@@ -118,7 +118,7 @@
       "title": "Choose your AI",
       "useExternal": "Use ChatGPT or Claude instead",
       "useSaved": "Use the saved key",
-      "premiumTitle": "Musclog Premium",
+      "premiumTitle": "Musclog Iron",
       "premiumHint": "Private hosted AI on a subscription, no key needed"
     },
     "recovery": {
@@ -129,7 +129,7 @@
         "retry": "Try again",
         "switchProvider": "Choose another AI",
         "useExternal": "Use ChatGPT or Claude",
-        "renewPremium": "Open Premium",
+        "renewPremium": "Open Musclog Iron",
         "restorePremium": "Restore purchases"
       },
       "cancelled": {
@@ -169,19 +169,19 @@
         "title": "Something went wrong"
       },
       "hostedBudget": {
-        "title": "Premium allowance used up",
+        "title": "Musclog Iron allowance used up",
         "description": "Your allowance renews with the next period. Meanwhile you can use your own key, or finish setup by hand."
       },
       "hostedSubscription": {
-        "title": "Premium isn't active on this device",
-        "description": "Restore your purchase, subscribe to Premium, or use your own key."
+        "title": "Musclog Iron isn't active on this device",
+        "description": "Restore your purchase, subscribe to Musclog Iron, or use your own key."
       },
       "hostedUnavailable": {
-        "title": "Premium is unavailable",
-        "description": "Musclog Premium can't be reached right now. Try again, or use another option."
+        "title": "Musclog Iron is unavailable",
+        "description": "Musclog Iron can't be reached right now. Try again, or use another option."
       },
       "hostedBusy": {
-        "title": "Premium is busy",
+        "title": "Musclog Iron is busy",
         "description": "Too many requests at once. Try again in a few seconds."
       }
     },

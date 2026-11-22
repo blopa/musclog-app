@@ -38,8 +38,8 @@ Musclog is een gratis, open source fitnesslogboek en calorieënteller. De app st
 • Of maak een schema of beschrijf een maaltijd in ChatGPT of Claude en breng het over naar Musclog.
 • Kies hoe de coach tegen je praat. Niets in Musclog vereist AI.
 
-<b>Musclog Premium (optioneel)</b>
-Musclog Premium is een maandelijks abonnement dat AI-verzoeken beantwoordt zonder je eigen sleutel. De betaling wordt van je store-account afgeschreven en het abonnement wordt elke maand automatisch verlengd, tenzij je het uiterlijk 24 uur vóór de verlenging opzegt in de instellingen van je store-account. Al het andere in Musclog blijft gratis. Voorwaarden: https://musclog.app/en/terms
+<b>Musclog Iron (optioneel)</b>
+Musclog Iron is een maandelijks abonnement dat AI-verzoeken beantwoordt zonder je eigen sleutel. De betaling wordt van je store-account afgeschreven en het abonnement wordt elke maand automatisch verlengd, tenzij je het uiterlijk 24 uur vóór de verlenging opzegt in de instellingen van je store-account. Al het andere in Musclog blijft gratis. Voorwaarden: https://musclog.app/en/terms
 
 <b>Privé door ontwerp</b>
 • Gewicht, vetpercentage en voedingslogs worden op je toestel versleuteld.

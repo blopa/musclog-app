@@ -38,8 +38,8 @@ Musclog is a free, open source workout tracker and calorie counter. It suggests 
 • Or build a plan or describe a meal in ChatGPT or Claude and bring it into Musclog.
 • Choose how the coach talks to you. Nothing in Musclog requires AI.
 
-<b>Musclog Premium (optional)</b>
-Musclog Premium is a monthly subscription that answers AI requests without your own key. Payment is charged to your store account and it renews automatically every month unless you cancel in your store account settings at least 24 hours before renewal. Everything else in Musclog stays free. Terms: https://musclog.app/en/terms
+<b>Musclog Iron (optional)</b>
+Musclog Iron is a monthly subscription that answers AI requests without your own key. Payment is charged to your store account and it renews automatically every month unless you cancel in your store account settings at least 24 hours before renewal. Everything else in Musclog stays free. Terms: https://musclog.app/en/terms
 
 <b>Private by design</b>
 • Weight, body fat and food logs are encrypted on your device.

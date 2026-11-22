@@ -23,14 +23,14 @@
     "aiKeyTestOk": "Clé acceptée",
     "aiKeyTestRejected": "Clé refusée. Vérifie-la et réessaie.",
     "aiKeyTestNetwork": "Impossible de joindre le fournisseur. Vérifie ta connexion.",
-    "hostedBudget": "Le quota d'IA Premium de cette période est épuisé. Il se renouvelle le {{date}}. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
-    "hostedBudgetNoDate": "Le quota d'IA Premium de cette période est épuisé. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
-    "hostedSubscription": "Musclog Premium n'a pas d'abonnement actif sur cet appareil. Restaurez votre achat ou abonnez-vous dans les réglages Premium.",
-    "hostedRemoved": "Cet appareil a été retiré de votre abonnement Premium. Restaurez les achats dans les réglages Premium pour le rajouter.",
-    "hostedUnavailable": "Musclog Premium est indisponible pour le moment. Réessayez dans un instant.",
-    "hostedDailyFull": "Premium IA est saturé jusqu'à demain (UTC).",
-    "hostedDailyLimit": "Vous avez atteint la limite quotidienne de l'IA Premium. Elle est réinitialisée à minuit (UTC). Vous pouvez utiliser votre propre clé ou l'offre gratuite en attendant.",
-    "hostedBusy": "Musclog Premium est occupé. Réessayez dans quelques secondes.",
+    "hostedBudget": "Le quota d'IA de Musclog Iron de cette période est épuisé. Il se renouvelle le {{date}}. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
+    "hostedBudgetNoDate": "Le quota d'IA de Musclog Iron de cette période est épuisé. Musclog continue de fonctionner, et vous pouvez utiliser votre propre clé ou l'offre gratuite.",
+    "hostedSubscription": "Musclog Iron n'a pas d'abonnement actif sur cet appareil. Restaurez votre achat ou abonnez-vous dans les réglages de Musclog Iron.",
+    "hostedRemoved": "Cet appareil a été retiré de votre abonnement Musclog Iron. Restaurez les achats dans les réglages de Musclog Iron pour le rajouter.",
+    "hostedUnavailable": "Musclog Iron est indisponible pour le moment. Réessayez dans un instant.",
+    "hostedDailyFull": "Musclog Iron est saturé jusqu'à demain (UTC).",
+    "hostedDailyLimit": "Vous avez atteint la limite quotidienne de Musclog Iron. Elle est réinitialisée à minuit (UTC). Vous pouvez utiliser votre propre clé ou l'offre gratuite en attendant.",
+    "hostedBusy": "Musclog Iron est occupé. Réessayez dans quelques secondes.",
     "hostedAlreadyProcessed": "Cette requête a déjà été traitée. Veuillez la renvoyer."
   }
 }

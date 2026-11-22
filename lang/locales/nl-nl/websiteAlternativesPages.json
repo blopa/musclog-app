@@ -24,7 +24,7 @@
           {
             "topic": "Betaald plan",
             "them": "Strong PRO verwijdert de routinelimiet: $4.99 per maand of $29.99 per jaar (U.S. App Store-prijzen).",
-            "musclog": "Gratis en open source (GPL-3.0). De enige betaalde optie is een optioneel maandelijks Premium-abonnement voor gehoste AI."
+            "musclog": "Gratis en open source (GPL-3.0). De enige betaalde optie is een optioneel maandelijks Musclog Iron-abonnement voor gehoste AI."
           }
         ],
         "import": "Musclog kan een Strong-CSV-export importeren: Instellingen, Back-ups en gegevens, Trainingen importeren. Het koppelt oefeningnamen aan de eigen catalogus, vraagt naar namen die het niet kan koppelen en toont een overzicht voordat er iets wordt opgeslagen. Hetzelfde bestand twee keer importeren maakt geen dubbele sessies, en een import kan ongedaan worden gemaakt.",

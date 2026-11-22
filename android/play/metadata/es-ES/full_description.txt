@@ -38,8 +38,8 @@ Musclog es un registro de entrenamiento y contador de calorías gratuito y de c�
 • O crea un plan o describe una comida en ChatGPT o Claude y llévalo a Musclog.
 • Elige cómo te habla el coach. Nada requiere IA.
 
-<b>Musclog Premium (opcional)</b>
-Musclog Premium es una suscripción mensual que responde a las peticiones de IA sin tu propia clave. El pago se carga en tu cuenta de la tienda y se renueva cada mes salvo que lo canceles en los ajustes de tu cuenta de la tienda al menos 24 horas antes de la renovación. Todo lo demás de Musclog sigue siendo gratuito. Condiciones: https://musclog.app/en/terms
+<b>Musclog Iron (opcional)</b>
+Musclog Iron es una suscripción mensual que responde a las peticiones de IA sin tu propia clave. El pago se carga en tu cuenta de la tienda y se renueva cada mes salvo que lo canceles en los ajustes de tu cuenta de la tienda al menos 24 horas antes de la renovación. Todo lo demás de Musclog sigue siendo gratuito. Condiciones: https://musclog.app/en/terms
 
 <b>Privado por diseño</b>
 • El peso, la grasa corporal y los registros de comidas se cifran en tu dispositivo.

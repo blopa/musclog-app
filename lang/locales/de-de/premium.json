@@ -1,18 +1,18 @@
 {
   "premium": {
-    "title": "Musclog Premium",
-    "benefit": "KI ohne Schlüssel einrichten. Musclog Premium betreibt die KI für dich mit einem monatlichen Kontingent.",
-    "loading": "Dein Premium-Status wird geprüft…",
+    "title": "Musclog Iron",
+    "benefit": "KI ohne Schlüssel einrichten. Musclog Iron betreibt die KI für dich mit einem monatlichen Kontingent.",
+    "loading": "Dein Musclog-Iron-Status wird geprüft…",
     "progress": {
       "store": "Warten auf den Store…",
       "confirming": "Dein Abo wird bestätigt…",
       "slow": "Die Bestätigung dauert noch an, das kann einige Sekunden dauern",
-      "reset": "Premium wird auf diesem Gerät zurückgesetzt…",
+      "reset": "Musclog Iron wird auf diesem Gerät zurückgesetzt…",
       "toggle": "Deine KI-Einstellung wird aktualisiert…"
     },
     "wait": {
-      "working": "Premium-KI arbeitet noch…",
-      "busy": "Premium-KI ist ausgelastet, neuer Versuch…"
+      "working": "Musclog Iron arbeitet noch…",
+      "busy": "Musclog Iron ist ausgelastet, neuer Versuch…"
     },
     "price": "{{price}} pro Monat",
     "subscribe": "Abonnieren",
@@ -22,51 +22,51 @@
       "renews": "Verlängert sich am {{date}}"
     },
     "devices": "Von allen deinen Geräten gemeinsam genutzt",
-    "useForAi": "Premium für meine KI verwenden",
-    "useForAiHint": "Anfragen gehen an den Musclog-Premium-Dienst, der sie an OpenRouter weiterleitet.",
+    "useForAi": "Musclog Iron für meine KI verwenden",
+    "useForAiHint": "Anfragen gehen an den Musclog-Iron-Dienst, der sie an OpenRouter weiterleitet.",
     "manage": "Abo verwalten",
-    "reset": "Premium auf diesem Gerät zurücksetzen",
-    "resetTitle": "Premium auf diesem Gerät zurücksetzen?",
-    "resetBody": "Dies entfernt die Premium-Registrierung dieses Geräts und erstellt einen neuen Geräteschlüssel. Dein Abo wird nicht gekündigt. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt.",
+    "reset": "Musclog Iron auf diesem Gerät zurücksetzen",
+    "resetTitle": "Musclog Iron auf diesem Gerät zurücksetzen?",
+    "resetBody": "Dies entfernt die Musclog-Iron-Registrierung dieses Geräts und erstellt einen neuen Geräteschlüssel. Dein Abo wird nicht gekündigt. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt.",
     "resetConfirm": "Zurücksetzen",
     "consent": {
-      "title": "KI-Anfragen an Premium senden?",
-      "body": "Deine Nachrichten und alle Fotos, die du an die KI sendest, gehen an den Musclog-Premium-Dienst. Dieser leitet sie an OpenRouter weiter, das sie an den Anbieter des KI-Modells schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) verwendet: Diese Anbieter bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. Der Musclog-Dienst speichert nur Nutzungszahlen, nie deine Nachrichten oder Fotos. Du kannst dies jederzeit ausschalten.",
-      "confirm": "Premium-KI verwenden",
+      "title": "KI-Anfragen an Musclog Iron senden?",
+      "body": "Deine Nachrichten und alle Fotos, die du an die KI sendest, gehen an den Musclog-Iron-Dienst. Dieser leitet sie an OpenRouter weiter, das sie an den Anbieter des KI-Modells schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) verwendet: Diese Anbieter bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. Der Musclog-Dienst speichert nur Nutzungszahlen, nie deine Nachrichten oder Fotos. Du kannst dies jederzeit ausschalten.",
+      "confirm": "Musclog Iron verwenden",
       "cancel": "Nicht jetzt"
     },
-    "renewalDisclosure": "Musclog Premium ist ein monatliches Abo mit automatischer Verlängerung. Die Zahlung wird bei der Bestätigung deinem App-Store- bzw. Google-Play-Konto belastet. Das Abo verlängert sich, sofern du es nicht mindestens 24 Stunden vor Ende des laufenden Zeitraums kündigst. Verwalte oder kündige es in den Kontoeinstellungen deines Stores. Der angezeigte Preis ist der Preis, den der Store berechnet.",
+    "renewalDisclosure": "Musclog Iron ist ein monatliches Abo mit automatischer Verlängerung. Die Zahlung wird bei der Bestätigung deinem App-Store- bzw. Google-Play-Konto belastet. Das Abo verlängert sich, sofern du es nicht mindestens 24 Stunden vor Ende des laufenden Zeitraums kündigst. Verwalte oder kündige es in den Kontoeinstellungen deines Stores. Der angezeigte Preis ist der Preis, den der Store berechnet.",
     "devicesNote": "Ein Abo und ein Kontingent, gemeinsam genutzt von allen deinen Geräten.",
     "platformsNote": "iOS- und Android-Abos sind getrennt.",
     "terms": "Nutzungsbedingungen",
     "privacy": "Datenschutzerklärung",
     "card": {
-      "checking": "Premium wird geprüft…",
+      "checking": "Musclog Iron wird geprüft…",
       "notSubscribed": "Private gehostete KI im Abo, kein Schlüssel nötig",
       "active": "{{pct}} % verbraucht · von allen deinen Geräten gemeinsam genutzt",
       "exhausted": "Kontingent für diesen Zeitraum aufgebraucht",
       "removed": "Von diesem Abo entfernt",
-      "revoked": "Premium ist nicht aktiv"
+      "revoked": "Musclog Iron ist nicht aktiv"
     },
     "notice": {
       "offline": "Du bist offline. Für die Prüfung deines Abos wird eine Verbindung benötigt.",
       "purchase_cancelled": "Kauf abgebrochen. Es wurde nichts berechnet.",
       "purchase_failed": "Der Kauf ist nicht abgeschlossen worden. Versuche es erneut oder prüfe dein Store-Konto.",
-      "restore_nothing": "Für dieses Store-Konto wurde kein aktives Premium-Abo gefunden.",
+      "restore_nothing": "Für dieses Store-Konto wurde kein aktives Musclog-Iron-Abo gefunden.",
       "confirming": "Dein Kauf wird noch bestätigt. Versuche es in einer Minute erneut.",
       "removed": "Dieses Gerät wurde von diesem Abo entfernt, weil viele neuere Geräte hinzugefügt wurden. Mit „Käufe wiederherstellen“ wird dieses Gerät wieder hinzugefügt.",
-      "revoked": "Premium ist für dieses Abo nicht mehr aktiv.",
-      "exhausted": "Das Premium-KI-Kontingent für diesen Zeitraum ist aufgebraucht. Es wird am {{date}} erneuert. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
-      "exhaustedNoDate": "Das Premium-KI-Kontingent für diesen Zeitraum ist aufgebraucht. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
-      "at_capacity": "Premium-KI ist bis morgen (UTC) ausgelastet.",
-      "unavailable": "Premium ist gerade nicht verfügbar. Versuche es später erneut.",
-      "not_accepting": "Premium nimmt derzeit keine neuen Abonnenten auf.",
-      "not_available": "Premium ist derzeit in diesem Store nicht verfügbar.",
-      "warning80": "Du hast den größten Teil des Premium-KI-Kontingents für diesen Zeitraum verbraucht."
+      "revoked": "Musclog Iron ist für dieses Abo nicht mehr aktiv.",
+      "exhausted": "Das KI-Kontingent von Musclog Iron für diesen Zeitraum ist aufgebraucht. Es wird am {{date}} erneuert. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
+      "exhaustedNoDate": "Das KI-Kontingent von Musclog Iron für diesen Zeitraum ist aufgebraucht. Musclog funktioniert weiter, und du kannst deinen eigenen Schlüssel oder die kostenlose Stufe verwenden.",
+      "at_capacity": "Musclog Iron ist bis morgen (UTC) ausgelastet.",
+      "unavailable": "Musclog Iron ist gerade nicht verfügbar. Versuche es später erneut.",
+      "not_accepting": "Musclog Iron nimmt derzeit keine neuen Abonnenten auf.",
+      "not_available": "Musclog Iron ist derzeit in diesem Store nicht verfügbar.",
+      "warning80": "Du hast den größten Teil des KI-Kontingents von Musclog Iron für diesen Zeitraum verbraucht."
     },
     "paywall": {
       "headline": "Schneller erfassen mit KI, ohne Einrichtung",
-      "subhead": "Musclog Premium betreibt die KI für dich: kein Schlüssel, kein Konto, und die KI-Anbieter behalten nichts, was du senden. Alles andere in Musclog bleibt kostenlos.",
+      "subhead": "Musclog Iron betreibt die KI für dich: kein Schlüssel, kein Konto, und die KI-Anbieter behalten nichts, was du senden. Alles andere in Musclog bleibt kostenlos.",
       "benefits": {
         "noSetup": {
           "title": "Nichts einzurichten",
@@ -86,13 +86,13 @@
         },
         "openSource": {
           "title": "Hält Musclog am Laufen",
-          "desc": "Musclog ist Open Source. Premium finanziert die gehostete KI und unterstützt die Entwicklung."
+          "desc": "Musclog ist Open Source. Musclog Iron finanziert die gehostete KI und unterstützt die Entwicklung."
         }
       },
       "compare": {
-        "title": "Kostenlose Stufe oder Premium",
+        "title": "Kostenlose Stufe oder Musclog Iron",
         "free": "Kostenlose Stufe",
-        "premium": "Premium",
+        "premium": "Iron",
         "privacy": {
           "label": "Was du sendest",
           "free": "Google darf es speichern, prüfen und zum Training verwenden",

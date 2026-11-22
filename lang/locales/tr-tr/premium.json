@@ -1,18 +1,18 @@
 {
   "premium": {
-    "title": "Musclog Premium",
-    "benefit": "Kurulacak anahtar gerektirmeden barındırılan YZ. Musclog Premium, aylık bir kota ile YZ’yi sizin için çalıştırır.",
-    "loading": "Premium durumunuz kontrol ediliyor…",
+    "title": "Musclog Iron",
+    "benefit": "Kurulacak anahtar gerektirmeden barındırılan YZ. Musclog Iron, aylık bir kota ile YZ’yi sizin için çalıştırır.",
+    "loading": "Musclog Iron durumunuz kontrol ediliyor…",
     "progress": {
       "store": "Mağaza bekleniyor…",
       "confirming": "Aboneliğiniz doğrulanıyor…",
       "slow": "Hâlâ doğrulanıyor, birkaç saniye sürebilir",
-      "reset": "Bu cihazda Premium sıfırlanıyor…",
+      "reset": "Bu cihazda Musclog Iron sıfırlanıyor…",
       "toggle": "Yapay zeka ayarınız güncelleniyor…"
     },
     "wait": {
-      "working": "Premium yapay zeka hâlâ çalışıyor…",
-      "busy": "Premium yapay zeka meşgul, yeniden deneniyor…"
+      "working": "Musclog Iron yapay zekası hâlâ çalışıyor…",
+      "busy": "Musclog Iron yapay zekası meşgul, yeniden deneniyor…"
     },
     "price": "Ayda {{price}}",
     "subscribe": "Abone ol",
@@ -22,51 +22,51 @@
       "renews": "{{date}} tarihinde yenilenir"
     },
     "devices": "Tüm cihazlarınızla paylaşılır",
-    "useForAi": "YZ’m için Premium’u kullan",
-    "useForAiHint": "İstekler Musclog Premium hizmetine gider ve oradan OpenRouter’a iletilir.",
+    "useForAi": "YZ’m için Musclog Iron’ı kullan",
+    "useForAiHint": "İstekler Musclog Iron hizmetine gider ve oradan OpenRouter’a iletilir.",
     "manage": "Aboneliği yönet",
-    "reset": "Bu cihazda Premium’u sıfırla",
-    "resetTitle": "Bu cihazda Premium sıfırlansın mı?",
-    "resetBody": "Bu, bu cihazın Premium kaydını unutur ve yeni bir cihaz anahtarı oluşturur. Aboneliğiniz iptal edilmez. Satın alımları geri yüklemek bu cihazı yeniden ekler.",
+    "reset": "Bu cihazda Musclog Iron’ı sıfırla",
+    "resetTitle": "Bu cihazda Musclog Iron sıfırlansın mı?",
+    "resetBody": "Bu, bu cihazın Musclog Iron kaydını unutur ve yeni bir cihaz anahtarı oluşturur. Aboneliğiniz iptal edilmez. Satın alımları geri yüklemek bu cihazı yeniden ekler.",
     "resetConfirm": "Sıfırla",
     "consent": {
-      "title": "YZ istekleri Premium’a gönderilsin mi?",
-      "body": "YZ’ye gönderdiğiniz mesajlar ve fotoğraflar Musclog Premium hizmetine gider. Hizmet bunları OpenRouter’a iletir, o da YZ model sağlayıcısına gönderir. Yalnızca sıfır veri saklama (ZDR) uç noktaları kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve model eğitimi için kullanmaz. Musclog hizmeti yalnızca kullanım sayılarını tutar, asla mesajlarınızı veya fotoğraflarınızı tutmaz. Bunu istediğiniz zaman kapatabilirsiniz.",
-      "confirm": "Premium YZ’yi kullan",
+      "title": "YZ istekleri Musclog Iron’a gönderilsin mi?",
+      "body": "YZ’ye gönderdiğiniz mesajlar ve fotoğraflar Musclog Iron hizmetine gider. Hizmet bunları OpenRouter’a iletir, o da YZ model sağlayıcısına gönderir. Yalnızca sıfır veri saklama (ZDR) uç noktaları kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve model eğitimi için kullanmaz. Musclog hizmeti yalnızca kullanım sayılarını tutar, asla mesajlarınızı veya fotoğraflarınızı tutmaz. Bunu istediğiniz zaman kapatabilirsiniz.",
+      "confirm": "Musclog Iron YZ’sini kullan",
       "cancel": "Şimdi değil"
     },
-    "renewalDisclosure": "Musclog Premium, otomatik yenilenen aylık bir aboneliktir. Ödeme, onaylandığında App Store veya Google Play hesabınızdan tahsil edilir. Mevcut dönemin bitiminden en az 24 saat önce iptal etmezseniz abonelik yenilenir. Aboneliği mağaza hesabı ayarlarınızdan yönetebilir veya iptal edebilirsiniz. Gösterilen fiyat, mağazanın tahsil ettiği fiyattır.",
+    "renewalDisclosure": "Musclog Iron, otomatik yenilenen aylık bir aboneliktir. Ödeme, onaylandığında App Store veya Google Play hesabınızdan tahsil edilir. Mevcut dönemin bitiminden en az 24 saat önce iptal etmezseniz abonelik yenilenir. Aboneliği mağaza hesabı ayarlarınızdan yönetebilir veya iptal edebilirsiniz. Gösterilen fiyat, mağazanın tahsil ettiği fiyattır.",
     "devicesNote": "Tek bir abonelik ve tek bir hak, tüm cihazlarınızla paylaşılır.",
     "platformsNote": "iOS ve Android abonelikleri ayrıdır.",
     "terms": "Kullanım koşulları",
     "privacy": "Gizlilik politikası",
     "card": {
-      "checking": "Premium kontrol ediliyor…",
+      "checking": "Musclog Iron kontrol ediliyor…",
       "notSubscribed": "Abonelikle gelen gizli barındırılan YZ, anahtar gerekmez",
       "active": "%{{pct}} kullanıldı · tüm cihazlarınızla paylaşılıyor",
       "exhausted": "Bu dönem için kota kullanıldı",
       "removed": "Bu aboneliden kaldırıldı",
-      "revoked": "Premium etkin değil"
+      "revoked": "Musclog Iron etkin değil"
     },
     "notice": {
-      "offline": "Çevrimdışısınız. Premium’un aboneliğinizi kontrol etmesi için bağlantı gerekir.",
+      "offline": "Çevrimdışısınız. Musclog Iron’ın aboneliğinizi kontrol etmesi için bağlantı gerekir.",
       "purchase_cancelled": "Satın alma iptal edildi. Hiçbir ücret alınmadı.",
       "purchase_failed": "Satın alma tamamlanamadı. Yeniden deneyin veya mağaza hesabınızı kontrol edin.",
-      "restore_nothing": "Bu mağaza hesabı için etkin bir Premium aboneliği bulunamadı.",
+      "restore_nothing": "Bu mağaza hesabı için etkin bir Musclog Iron aboneliği bulunamadı.",
       "confirming": "Satın alımınız hâlâ onaylanıyor. Bir dakika sonra tekrar deneyin.",
       "removed": "Daha birçok yeni cihaz eklendiği için bu cihaz bu abonelikten kaldırıldı. Satın alımları geri yüklemek bu cihazı yeniden ekler.",
-      "revoked": "Bu abonelik için Premium artık etkin değil.",
-      "exhausted": "Bu dönemin Premium YZ kotası kullanıldı. {{date}} tarihinde yenilenir. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
-      "exhaustedNoDate": "Bu dönemin Premium YZ kotası kullanıldı. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
-      "at_capacity": "Premium YZ yarına kadar (UTC) kapasitesinde.",
-      "unavailable": "Premium şu anda kullanılamıyor. Daha sonra tekrar deneyin.",
-      "not_accepting": "Premium şu anda yeni abone kabul etmiyor.",
-      "not_available": "Premium şu anda bu mağazada kullanılamıyor.",
-      "warning80": "Bu dönemin Premium YZ kotasının büyük bölümünü kullandınız."
+      "revoked": "Bu abonelik için Musclog Iron artık etkin değil.",
+      "exhausted": "Bu dönemin Musclog Iron kotası kullanıldı. {{date}} tarihinde yenilenir. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
+      "exhaustedNoDate": "Bu dönemin Musclog Iron kotası kullanıldı. Musclog çalışmaya devam eder; kendi anahtarınızı veya ücretsiz katmanı kullanabilirsiniz.",
+      "at_capacity": "Musclog Iron yarına kadar (UTC) kapasitesinde.",
+      "unavailable": "Musclog Iron şu anda kullanılamıyor. Daha sonra tekrar deneyin.",
+      "not_accepting": "Musclog Iron şu anda yeni abone kabul etmiyor.",
+      "not_available": "Musclog Iron şu anda bu mağazada kullanılamıyor.",
+      "warning80": "Bu dönemin Musclog Iron kotasının büyük bölümünü kullandınız."
     },
     "paywall": {
       "headline": "YZ ile daha hızlı kaydet, kurulum gerektirmez",
-      "subhead": "Musclog Premium yapay zekâyı senin yerine çalıştırır: anahtar yok, hesap yok ve yapay zekâ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz. Musclog'un geri kalanı ücretsiz kalır.",
+      "subhead": "Musclog Iron yapay zekâyı senin yerine çalıştırır: anahtar yok, hesap yok ve yapay zekâ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz. Musclog'un geri kalanı ücretsiz kalır.",
       "benefits": {
         "noSetup": {
           "title": "Kurulacak bir şey yok",
@@ -86,13 +86,13 @@
         },
         "openSource": {
           "title": "Musclog'un devamını sağlar",
-          "desc": "Musclog açık kaynaklıdır. Premium barındırılan yapay zekâyı finanse eder ve geliştirmesini destekler."
+          "desc": "Musclog açık kaynaklıdır. Musclog Iron barındırılan yapay zekâyı finanse eder ve geliştirmesini destekler."
         }
       },
       "compare": {
-        "title": "Ücretsiz katman mı, Premium mu",
+        "title": "Ücretsiz katman mı, Musclog Iron mu",
         "free": "Ücretsiz katman",
-        "premium": "Premium",
+        "premium": "Iron",
         "privacy": {
           "label": "Gönderdiğin veriler",
           "free": "Google saklayabilir, inceleyebilir ve eğitimde kullanabilir",

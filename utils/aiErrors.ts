@@ -166,7 +166,7 @@ const PROVIDER_LABELS: Record<CoachAIProvider, string> = {
   claude: 'Claude',
   local: 'Local',
   gateway: 'Musclog',
-  hosted: 'Musclog Premium',
+  hosted: 'Musclog Iron',
   'on-device': 'On-device',
 };
 

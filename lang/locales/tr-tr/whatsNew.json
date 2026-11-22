@@ -239,8 +239,8 @@
       },
       "v2_17_5": {
         "intro": {
-          "title": "Musclog Premium ile tanış",
-          "description": "Sana bu kadar büyük bir afişi ilk ve son kez gösteriyoruz. Premium tamamen isteğe bağlı: Musclog'u %100 ücretsiz kullanmaya devam edebilirsin. Senin rahatlığın için var ve uygulamanın geliştirilmesini finanse etmeye yardımcı olur.",
+          "title": "Musclog Iron ile tanış",
+          "description": "Sana bu kadar büyük bir afişi ilk ve son kez gösteriyoruz. Musclog Iron tamamen isteğe bağlı: Musclog'u %100 ücretsiz kullanmaya devam edebilirsin. Senin rahatlığın için var ve uygulamanın geliştirilmesini finanse etmeye yardımcı olur.",
           "items": {
             "optional": "%100 isteğe bağlı, asla zorunlu değil",
             "ai": "Kurulum gerektirmeden çalışan YZ",
@@ -248,8 +248,8 @@
           }
         },
         "premium": {
-          "title": "Premium nasıl çalışır",
-          "description": "Musclog ücretsiz, açık kaynaklı ve tek bir geliştirici tarafından yapılıyor. Premium, YZ'yi hiçbir kurulum yapmadan kullanmanın isteğe bağlı bir yolu; uygulamayı beğendiysen desteklemenin de bir yolu.",
+          "title": "Musclog Iron nasıl çalışır",
+          "description": "Musclog ücretsiz, açık kaynaklı ve tek bir geliştirici tarafından yapılıyor. Musclog Iron, YZ'yi hiçbir kurulum yapmadan kullanmanın isteğe bağlı bir yolu; uygulamayı beğendiysen desteklemenin de bir yolu.",
           "items": {
             "free": {
               "label": "Geri kalan her şey ücretsiz kalır",
@@ -265,7 +265,7 @@
             }
           },
           "action": {
-            "label": "Musclog Premium'a bak",
+            "label": "Musclog Iron'a bak",
             "description": "Ayarlar → YZ bölümünde de bulabilirsin."
           }
         }

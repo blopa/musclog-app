@@ -24,7 +24,7 @@
           {
             "topic": "Plano pago",
             "them": "O Strong PRO remove o limite de rotinas: $4.99 por mês ou $29.99 por ano (preços da App Store dos EUA).",
-            "musclog": "Gratuito e de código aberto (GPL-3.0). O único pagamento opcional é uma assinatura mensal do Premium para IA hospedada."
+            "musclog": "Gratuito e de código aberto (GPL-3.0). O único pagamento opcional é uma assinatura mensal do Musclog Iron para IA hospedada."
           }
         ],
         "import": "O Musclog pode importar uma exportação CSV do Strong: Configurações, Backups e dados, Importar treinos. Ele associa os nomes dos exercícios ao próprio catálogo, pergunta sobre os que não consegue associar e mostra uma revisão antes de salvar qualquer coisa. Importar o mesmo arquivo duas vezes não duplica as sessões, e a importação pode ser desfeita.",
