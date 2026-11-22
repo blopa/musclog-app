@@ -144,7 +144,7 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 ## The app client's contract test
 
-`services/premium-worker/test/appClient.test.ts` imports the app's own pure client (`utils/premium/premiumFlows.ts`, `premiumState.ts`, `hostedClient.ts`, `deviceKeyCrypto.ts`) and runs it against the real handlers in Miniflare, so the signed string, the response shapes and the retry rules cannot drift apart. Those app files must keep relative imports only (the `@/` alias does not exist in the Worker package) and compile under its `noUncheckedIndexedAccess`.
+`services/premium-worker/test/appClient.test.ts` imports the app's own pure client (`utils/premium/premiumFlows.ts`, `premiumState.ts`, `hostedClient.ts`, `deviceKeyCrypto.ts`) and runs it against the real handlers in Miniflare, so the signed string, the response shapes and the retry rules cannot drift apart. Those app files must keep relative imports only (the `@/` alias does not exist in the Worker package) and compile under its `noUncheckedIndexedAccess`. Their npm imports (`@noble/curves`, `@noble/hashes`) resolve from the Worker package's own `node_modules`, not the repo root's: CI installs only this package, so `vitest.config.ts` (`resolve.alias`) and `tsconfig.json` (`paths`) point those two at it, and a new npm import in these files needs the same line and a devDependency here at the same exact version. Reproduce CI with a checkout that has no root `node_modules` (a `git worktree` plus a copy of this package's `node_modules`); the repo's own tree hides the problem.
 
 ## The app side (P6)
 

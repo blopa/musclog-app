@@ -21,7 +21,8 @@ export async function sha256Hex(bytes: Uint8Array<ArrayBuffer>): Promise<string>
 
 /** SHA-256 of the UTF-8 bytes of `text`, lowercase hex. */
 export async function sha256HexOfText(text: string): Promise<string> {
-  return sha256Hex(te.encode(text));
+  // A fresh copy is always ArrayBuffer-backed: which type encode() declares depends on the lib set.
+  return sha256Hex(new Uint8Array(te.encode(text)));
 }
 
 export async function deriveRcId(publicKey: Uint8Array<ArrayBuffer>): Promise<string> {

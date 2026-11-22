@@ -10,6 +10,17 @@ export default defineConfig({
   // package, and the lookup would otherwise find the root tsconfig (`expo/tsconfig.base`), which this
   // job does not install.
   tsconfig: './tsconfig.json',
+  // The same files import @noble/curves and @noble/hashes, which Node resolves from the repo root's
+  // node_modules (the app's install). This job installs only this package, so point those imports at
+  // the copy it pins itself (same exact versions as the root package.json).
+  resolve: {
+    alias: [
+      {
+        find: /^@noble\/(curves|hashes)\//,
+        replacement: `${path.join(import.meta.dirname, 'node_modules/@noble')}/$1/`,
+      },
+    ],
+  },
   plugins: [
     cloudflareTest(async () => ({
       wrangler: { configPath: './wrangler.toml', environment: 'test' },
