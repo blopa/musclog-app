@@ -211,17 +211,17 @@
             "leaf/default",
             "sweatband/default",
             "@face",
-            "badge/iron",
-            "drops/iron"
+            "badge/iron"
           ]
         },
         "arm-r/hip",
         "hand-r/hip",
+        "drops/iron",
         "dumbbell-l/iron",
         "hand-l/iron"
       ],
       "animated": {
-        "upper": ["arm-l", "body", "arm-r", "hand-r", "dumbbell-l", "hand-l"]
+        "upper": ["arm-l", "body", "arm-r", "hand-r", "drops", "dumbbell-l", "hand-l"]
       }
     },
     "lifting": {

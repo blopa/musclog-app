@@ -339,6 +339,12 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
             d="m306.4 383.2-3.3 11.7h-2.5l-3.2-11.7h2.2l1.8 7q0 .1.1.4 0 .3.1.7l.2.8q0 .4.1.7 0-.4.1-.9.1-.6.2-1 .1-.5.2-.7l1.8-7zm5 11.7h-4.6v-1.3l1.2-.6v-7.9l-1.2-.6v-1.3h4.6v1.3l-1.1.6v7.9l1.1.6zm4.8-11.7q1.9 0 2.9.9.9 1 .9 2.7 0 1.2-.4 2-.4.9-1.3 1.4-.8.5-2.2.5h-.8v4.2H313v-11.7zm-.1 1.9h-.8v3.7h.6q.8 0 1.3-.5.5-.4.5-1.4 0-1.8-1.6-1.8"
           />
         </LoggyLayer>
+        <Path fill="#1b314d" d={LOGGY_PATHS.pcd40bc79} />
+        <Path fill={colors.body} d={LOGGY_PATHS.p43c60828} />
+        <Path fill="#1b314d" d={LOGGY_PATHS.pe52d31e4} />
+        <Path fill="#1b314d" d={LOGGY_PATHS.pd8050cd2} />
+        <Path fill={colors.body} d={LOGGY_PATHS.pe43904d7} />
+        <Path fill="#1b314d" d={LOGGY_PATHS.p5805c83f} />
         <LoggyLayer clock={clock} layer={ANIMATION.layers['drops-l']}>
           <Path
             fill="#1b314d"
@@ -367,12 +373,6 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
             d="M357.7 243.7c2.2 9.2 5.9 16.3 5.9 22.7 0 5.7-2.6 9.3-5.9 9.3-3.4 0-5.9-3.6-5.9-9.3 0-6.4 3.6-13.5 5.9-22.7"
           />
         </LoggyLayer>
-        <Path fill="#1b314d" d={LOGGY_PATHS.pcd40bc79} />
-        <Path fill={colors.body} d={LOGGY_PATHS.p43c60828} />
-        <Path fill="#1b314d" d={LOGGY_PATHS.pe52d31e4} />
-        <Path fill="#1b314d" d={LOGGY_PATHS.pd8050cd2} />
-        <Path fill={colors.body} d={LOGGY_PATHS.pe43904d7} />
-        <Path fill="#1b314d" d={LOGGY_PATHS.p5805c83f} />
         <LoggyLayer clock={clock} layer={ANIMATION.layers['dumbbell-l']}>
           <Path
             fill="#5b7079"
