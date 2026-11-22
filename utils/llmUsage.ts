@@ -158,3 +158,22 @@ export function summarizeLlmUsage(list: readonly LlmUsageEntry[]): LlmUsageSumma
     cacheHitShare,
   };
 }
+
+/** Rough characters per token for mixed English text; only for a human-readable size estimate. */
+const CHARS_PER_TOKEN_ESTIMATE = 4;
+
+/**
+ * One line saying how big each block of a prompt is, biggest first, with a rough token estimate
+ * (characters / 4: other languages cost more). Used by the dev log so the heaviest block of the
+ * coach's system prompt is visible instead of guessed.
+ */
+export function describePromptBlocks(blocks: readonly { name: string; text: string }[]): string {
+  const sized = blocks
+    .filter((block) => block.text.length > 0)
+    .map((block) => ({ name: block.name, chars: block.text.length }))
+    .sort((a, b) => b.chars - a.chars);
+  const total = sized.reduce((sum, block) => sum + block.chars, 0);
+  const parts = sized.map((block) => `${block.name} ${block.chars}`);
+
+  return `${parts.join(', ')} | total ${total} chars (~${Math.round(total / CHARS_PER_TOKEN_ESTIMATE)} tokens)`;
+}

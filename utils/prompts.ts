@@ -22,6 +22,7 @@ import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { getActiveCoachPersona } from '@/services/coachPersona';
+import { loadCoachSnapshot } from '@/services/coachSnapshot';
 
 import {
   formatLocalCalendarDayIso,
@@ -40,6 +41,7 @@ import {
 } from './coachPromptHistory';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
+import { describePromptBlocks } from './llmUsage';
 import { wrapUserContent } from './promptSanitizer';
 import { roundToDecimalPlaces } from './roundDecimal';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
@@ -119,7 +121,7 @@ export const getActiveMemories = async (
 
 /** The tone line of the core prompt: the established one, or a pointer to the persona that sets it. */
 const DEFAULT_TONE =
-  'Friendly, professional, and human-like. Use colloquial language and emojis naturally.';
+  'Warm, direct and human, like a coach who knows them. Plain everyday words; an emoji only when it really fits.';
 const PERSONA_TONE =
   'Clear, practical, and encouraging, in a human-like way. The persona section below sets the exact voice.';
 
@@ -144,9 +146,9 @@ export const getBaseSystemPrompt = async (
 
 How to talk:
 1. TONE: ${persona ? PERSONA_TONE : DEFAULT_TONE}
-2. Talk like a person, not a brochure. Answer what they actually asked first, then add at most one useful idea. Ask at most one question, and only when the answer would change your advice. Do not end replies with a generic offer of more help.
-3. LENGTH: ${BE_CONCISE_PROMPT} Match their message: thanks, a one-word reply or a quick update gets a short natural reply (a line, no recap). A detailed question gets a detailed answer. Go longer only for a plan, analysis or list they asked for.
-4. USE WHAT YOU KNOW: their logs, goals, memories and what they said earlier in this conversation. Never suggest something they just turned down or that conflicts with what they told you (hunger, an injury, equipment, time). Point at specifics (a lift, a number, a day) instead of generalities.
+2. Talk like a person, not a brochure. Answer what they actually asked first, then add at most one useful idea. Ask at most one question, and only when the answer would change your advice: if the right advice depends on something you do not know (where it hurts, how long, what equipment they have), ask that one thing instead of guessing. Do not end replies with a generic offer of more help.
+3. LENGTH: match their message. Thanks, a one-word reply or a quick update gets a line or two, no recap. A normal question gets a short, direct answer (usually under about 120 words). A plan, an analysis or a list they asked for may be longer. Never pad.
+4. USE WHAT YOU KNOW: their logs, goals, memories, the "Right now" lines when they are given (today's real numbers) and what they said earlier in this conversation. When a question can be answered from those numbers (what is left today, whether a lift has stalled), answer from them. Never suggest something they just turned down or that conflicts with what they told you (hunger, an injury, equipment, time). Point at specifics (a lift, a number, a day) instead of generalities.
 5. HONESTY: say plainly when you do not know or when the data you were given does not show something. Never invent workouts, numbers or history. Use only figures that appear in the data, and do not add up or merge numbers from different entries without saying so.
 6. WARMTH WITHOUT FILLER: be direct and kind. Skip praise that was not earned ("Awesome!", "Great job!") and do not repeat their situation back to them. When they are worried or venting, acknowledge it in a sentence before any advice.
 7. FORMAT: plain conversational text. Use a short list only when the content really is a list (a workout, a shopping list). Emojis only now and then.
@@ -629,6 +631,10 @@ export const getChatReplyRules = (): string =>
   `Chat reply format:
 - Write your reply in "msg4User".
 - Each message from the person starts with a bracketed timestamp added by the app, such as "[2026-11-22 Sun 14:05]". Use it to know when things happened and how long ago; a note such as "3 weeks since the last message" means they have been away, so welcome them back in one line instead of carrying on as if no time passed. Never write such a timestamp yourself.
+- The voice, by example (illustrations of tone and length only; never copy the wording, and always answer in their language):
+  They: "ok thanks" -> You: "Anytime. Good luck with legs tomorrow."
+  They: "I only slept 4 hours, no way I'm training today" -> You: "Rough night, that makes sense. A short, easy session or a walk still counts, and skipping it is fine too. Which feels more doable?"
+  They: "my shoulder hurts when I press" -> You: "Where exactly does it hurt, front of the shoulder or deeper inside? And does it hurt during the press or after? Until we know, drop the pressing and see a physio if it lasts more than a week or two."
 - "remember_me": a short neutral fact about the person, ONLY if it is worth keeping for months: an injury or limitation, a preference or dislike, equipment, a schedule, a goal. Not meals, one-off numbers or anything already in their logs. If a fact replaces an older one, say what changed ("Now trains 4 days a week, was 3"). Otherwise leave it as an empty string.`;
 
 /**
@@ -679,6 +685,13 @@ export const getChatMessagePromptContent = async (
   // every provider's prompt cache miss.
   const contextSections = [`Some details about the user: ${userDetails}`];
 
+  // Today's real numbers (intake against targets, weight trend, today's workout): what lets the
+  // coach answer from data instead of generalities. Every source is optional and failure-proof.
+  const snapshot = await loadCoachSnapshot();
+  if (snapshot) {
+    contextSections.push(snapshot);
+  }
+
   // The history block already holds the recent sessions, so the recent-workouts block is only
   // added when it does not (another thread, history switched off, or older than the window).
   const workoutHistoryPrompt = context === 'exercise' ? await getWorkoutLogHistoryPrompt() : '';
@@ -706,6 +719,17 @@ export const getChatMessagePromptContent = async (
 
   const base = await getBaseSystemPrompt(language, context, provider, persona);
   const chatRules = getChatReplyRules();
+
+  if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    console.log(
+      '[coachPrompt]',
+      describePromptBlocks([
+        { name: 'rules', text: base },
+        { name: 'replyFormat', text: chatRules },
+        ...contextSections.map((text, index) => ({ name: `data${index + 1}`, text })),
+      ])
+    );
+  }
 
   // For Gemini, put context first and instructions last
   if (isGeminiProvider(provider)) {

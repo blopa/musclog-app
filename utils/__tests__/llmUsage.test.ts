@@ -1,4 +1,5 @@
 import {
+  describePromptBlocks,
   clearLlmUsage,
   extractLlmUsage,
   getRecentLlmUsage,
@@ -203,5 +204,17 @@ describe('usage log', () => {
     ];
 
     expect(summarizeLlmUsage(list).cacheHitShare).toBe(0.33);
+  });
+});
+
+describe('describePromptBlocks', () => {
+  it('lists blocks biggest first with a total and a token estimate, skipping empty ones', () => {
+    const line = describePromptBlocks([
+      { name: 'rules', text: 'a'.repeat(400) },
+      { name: 'empty', text: '' },
+      { name: 'snapshot', text: 'b'.repeat(800) },
+    ]);
+
+    expect(line).toBe('snapshot 800, rules 400 | total 1200 chars (~300 tokens)');
   });
 });

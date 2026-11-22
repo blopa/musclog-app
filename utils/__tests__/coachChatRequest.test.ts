@@ -181,3 +181,36 @@ describe('replay scenarios (request side)', () => {
     }
   );
 });
+
+describe('replay scenario shape', () => {
+  const CONTEXTS = ['general', 'nutrition', 'exercise'];
+  const ROLES = ['user', 'coach'];
+
+  it('keeps every scenario well formed', () => {
+    const names = scenarios.map((s) => s.name);
+    expect(new Set(names).size).toBe(names.length);
+
+    for (const s of scenarios) {
+      expect(s.name.trim().length).toBeGreaterThan(0);
+      expect(CONTEXTS).toContain(s.context);
+      expect(s.userMessage.trim().length).toBeGreaterThan(0);
+      expect(s.replyRubric.length).toBeGreaterThanOrEqual(2);
+      s.replyRubric.forEach((line) => expect(line.trim().length).toBeGreaterThan(0));
+      for (const turn of s.history) {
+        expect(ROLES).toContain(turn.role);
+        expect(typeof turn.hoursAgo).toBe('number');
+        expect(turn.hoursAgo).toBeGreaterThanOrEqual(0);
+      }
+      const snapshot = (s as { snapshot?: string }).snapshot;
+      if (snapshot !== undefined) {
+        expect(snapshot.startsWith('Right now, read from the app')).toBe(true);
+      }
+    }
+  });
+
+  it('has at least 20 scenarios, 4 of them non-English', () => {
+    expect(scenarios.length).toBeGreaterThanOrEqual(20);
+    const nonAscii = scenarios.filter((s) => /[^\x00-\x7F]/.test(s.userMessage));
+    expect(nonAscii.length).toBeGreaterThanOrEqual(4);
+  });
+});

@@ -51,7 +51,7 @@ describe('getBaseSystemPrompt', () => {
     const persona = await getActiveCoachPersona('gemini');
     const voiced = await getBaseSystemPrompt('en-US', 'general', 'gemini', persona);
 
-    expect(plain).toContain('1. TONE: Friendly, professional, and human-like. Use colloquial');
+    expect(plain).toContain('1. TONE: Warm, direct and human, like a coach who knows them');
     // With a persona the voice is the persona's, so the core's tone line points at it instead.
     expect(voiced).toContain('1. TONE: Clear, practical');
     expect(voiced).toContain('The persona section below sets the exact voice');
