@@ -160,8 +160,8 @@ describe('the pages of 2.16.0', () => {
   });
 });
 
-describe('the page of 2.17.2', () => {
-  const release = whatsNewReleases.find((candidate) => candidate.version === '2.17.2');
+describe('the page of 2.17.3', () => {
+  const release = whatsNewReleases.find((candidate) => candidate.version === '2.17.3');
   const page = release?.pages.find((candidate) => candidate.id === 'premium');
 
   it('is a Premium page gated by the premium condition', () => {

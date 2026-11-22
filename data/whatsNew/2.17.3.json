@@ -1,0 +1,51 @@
+{
+  "version": "2.17.3",
+  "pages": [
+    {
+      "id": "premium",
+      "requires": "premium",
+      "blocks": [
+        {
+          "id": "premium",
+          "type": "info",
+          "icon": "heart",
+          "titleKey": "whatsNew.releases.v2_17_3.premium.title",
+          "descriptionKey": "whatsNew.releases.v2_17_3.premium.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openPremium",
+          "icon": "bot",
+          "labelKey": "whatsNew.releases.v2_17_3.premium.action.label",
+          "primary": true,
+          "descriptionKey": "whatsNew.releases.v2_17_3.premium.action.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "free",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_17_3.premium.items.free.label",
+              "descriptionKey": "whatsNew.releases.v2_17_3.premium.items.free.description"
+            },
+            {
+              "id": "tokens",
+              "icon": "bot",
+              "labelKey": "whatsNew.releases.v2_17_3.premium.items.tokens.label",
+              "descriptionKey": "whatsNew.releases.v2_17_3.premium.items.tokens.description"
+            },
+            {
+              "id": "oneDeveloper",
+              "icon": "heart",
+              "labelKey": "whatsNew.releases.v2_17_3.premium.items.oneDeveloper.label",
+              "descriptionKey": "whatsNew.releases.v2_17_3.premium.items.oneDeveloper.description"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
