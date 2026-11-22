@@ -587,6 +587,8 @@ module.exports = {
   GENERATED_NOTE,
   PARTS_DIR,
   STILL_DIR,
+  buildAnimated,
+  buildStill,
   findStale,
   generateAll,
   loadLibrary,

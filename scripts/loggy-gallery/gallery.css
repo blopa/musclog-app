@@ -1,0 +1,423 @@
+/*
+ * The look of assets/avatars/index.html (inlined by scripts/generate-loggy-gallery.js). The page
+ * takes its colours from the chosen theme through the --page-* variables gallery.js sets, and
+ * Loggy takes his greens from --loggy-body/--loggy-shade/--loggy-deep, which every SVG's palette
+ * already reads.
+ */
+:root {
+  --page-base: #0d1210;
+  --page-card: #171c19;
+  --page-raised: #202522;
+  --page-border: #313834;
+  --page-text: #dce5de;
+  --page-text-2: #a3ada9;
+  --page-brand: #29a577;
+  --stage: var(--page-card);
+  --thumb: 200px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page-base);
+  color: var(--page-text);
+  font:
+    15px/1.45 Manrope,
+    'Noto Sans',
+    system-ui,
+    sans-serif;
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--page-brand);
+}
+
+code,
+pre {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────────── */
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--page-base);
+  border-bottom: 1px solid var(--page-border);
+}
+
+.toolbar h1 {
+  margin: 0 8px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.group > .label {
+  color: var(--page-text-2);
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+.chip {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid var(--page-border);
+  border-radius: 8px;
+  background: var(--page-card);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chip:hover {
+  background: var(--page-raised);
+}
+
+.chip[aria-pressed='true'] {
+  border-color: var(--page-brand);
+  background: var(--page-raised);
+}
+
+.swatches {
+  display: inline-flex;
+}
+
+.swatches i {
+  width: 12px;
+  height: 18px;
+}
+
+.swatches i:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.swatches i:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.color-input {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--page-text-2);
+}
+
+.color-input input {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--page-border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+select,
+input[type='range'] {
+  accent-color: var(--page-brand);
+}
+
+select {
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 1px solid var(--page-border);
+  border-radius: 8px;
+  background: var(--page-card);
+}
+
+.time {
+  min-width: 52px;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--page-text-2);
+}
+
+/* ── Tabs and sections ───────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 16px 24px 0;
+}
+
+.tabs button {
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--page-text-2);
+}
+
+.tabs button[aria-selected='true'] {
+  color: var(--page-text);
+  border-bottom-color: var(--page-brand);
+}
+
+main {
+  padding: 8px 24px 48px;
+}
+
+section > h2 {
+  margin: 28px 0 4px;
+  font-size: 17px;
+}
+
+section > p {
+  margin: 0 0 12px;
+  color: var(--page-text-2);
+  max-width: 70ch;
+}
+
+.part-group {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--page-border);
+}
+
+.part-group h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.part-group h3 small {
+  color: var(--page-text-2);
+  font-weight: 600;
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--thumb), 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid var(--page-border);
+  border-radius: 12px;
+  background: var(--page-card);
+  text-align: left;
+  overflow: hidden;
+}
+
+button.card {
+  cursor: pointer;
+}
+
+button.card:hover {
+  border-color: var(--page-brand);
+}
+
+/* The drawing is pinned inside the stage, so the stage's aspect ratio alone sets its size (an SVG
+   left in the flow would size the stage to the drawing's own proportions). */
+.stage {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--stage);
+}
+
+.stage > div {
+  position: absolute;
+  inset: 10px;
+  width: auto;
+  height: auto;
+}
+
+.caption {
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--page-border);
+}
+
+.caption b {
+  display: block;
+  font-size: 14px;
+}
+
+.caption span {
+  display: block;
+  color: var(--page-text-2);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+/* ── Palette ─────────────────────────────────────────────────────────────── */
+
+.palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.palette div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--page-border);
+  border-radius: 8px;
+  background: var(--page-card);
+  font-size: 13px;
+}
+
+.palette i {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.palette small {
+  display: block;
+  color: var(--page-text-2);
+}
+
+/* ── Pose detail ─────────────────────────────────────────────────────────── */
+
+dialog {
+  width: min(1100px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 1px solid var(--page-border);
+  border-radius: 16px;
+  background: var(--page-base);
+  color: var(--page-text);
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+.detail-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--page-border);
+}
+
+.detail-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.detail-body {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 760px) {
+  .detail-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pair .stage {
+  aspect-ratio: 4 / 5;
+}
+
+.side h3 {
+  margin: 16px 0 6px;
+  font-size: 14px;
+}
+
+.side h3:first-child {
+  margin-top: 0;
+}
+
+.layers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.layers ul {
+  margin: 0;
+  padding-left: 18px;
+  list-style: none;
+}
+
+.layers label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.layers code {
+  color: var(--page-text-2);
+}
+
+.refs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.refs code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--page-raised);
+}
+
+pre {
+  max-height: 260px;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  border-radius: 8px;
+  background: var(--page-card);
+  border: 1px solid var(--page-border);
+}
+
+.close {
+  min-width: 36px;
+  min-height: 36px;
+}

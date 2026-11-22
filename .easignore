@@ -168,3 +168,6 @@ ios/appstore
 .asc
 
 .presence/
+
+# Loggy gallery (local tool, generated)
+assets/avatars/index.html
