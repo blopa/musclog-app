@@ -70,6 +70,65 @@ describe('GET /v1/usage', () => {
     expect(await code(res)).toBe('subscription_required');
   });
 
+  describe('a period that ended while the token is still valid', () => {
+    // The device's period ended a minute ago but the session token has not expired: usage used to
+    // answer 403 here while chat (which re-verifies) kept working.
+    async function expired() {
+      const e = await enrolled();
+      const now = e.h.deps.now();
+      await env.DB.prepare('UPDATE periods SET period_end = ?1')
+        .bind(now - 60_000)
+        .run();
+      return { ...e, now };
+    }
+
+    it('re-verifies with RevenueCat and reports the renewed period', async () => {
+      const { h, token, now } = await expired();
+      h.rc.setTransactions('sub_main', [
+        h.rc.tx({ id: 'tx_old' }),
+        h.rc.tx({
+          id: 'tx_renewal',
+          purchased_at: now - 60_000,
+          expiration_date: now + 29 * DAY_MS,
+        }),
+      ]);
+      const res = await h.usage(token);
+      expect(res.status).toBe(200);
+      expect(await json(res)).toEqual({
+        used_pct: 0,
+        resets_at: new Date(now + 29 * DAY_MS).toISOString(),
+        status: 'active',
+        devices: { count: 1, max: 25 },
+      });
+      expect(
+        (await env.DB.prepare('SELECT COUNT(*) AS n FROM periods').first<{ n: number }>())!.n
+      ).toBe(2);
+    });
+
+    it('a subscription RevenueCat no longer honours is still 403', async () => {
+      const { h, token } = await expired();
+      h.rc.remove('sub_main');
+      const res = await h.usage(token);
+      expect(res.status).toBe(403);
+      expect(await code(res)).toBe('subscription_required');
+    });
+
+    it('RevenueCat being unreachable is 503 entitlement_unavailable, not a 403', async () => {
+      const { h, token } = await expired();
+      h.rc.unavailable = true;
+      const res = await h.usage(token);
+      expect(res.status).toBe(503);
+      expect(await code(res)).toBe('entitlement_unavailable');
+    });
+
+    it('a live period never calls RevenueCat', async () => {
+      const { h, token } = await enrolled();
+      h.rc.calls.getSubscription = 0;
+      expect((await h.usage(token)).status).toBe(200);
+      expect(h.rc.calls.getSubscription).toBe(0);
+    });
+  });
+
   it('forged, malformed, missing and expired tokens are 401 unauthorized', async () => {
     const { h, token } = await enrolled();
     const forged = token.slice(0, -3) + (token.endsWith('AAA') ? 'BBB' : 'AAA');
