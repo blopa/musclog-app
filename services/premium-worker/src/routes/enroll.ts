@@ -1,6 +1,6 @@
 // POST /v1/enroll (plan 6.1). Every cheap check runs before the first RevenueCat call, and the
 // period is created before any device write so an identity conflict leaves no device row.
-import { assertPeriodExists, preparePeriod } from '../billing/periods';
+import { assertPeriodExists, preparePeriod, withRevenueCat } from '../billing/periods';
 import { selectEnrollSubscription } from '../billing/subscription';
 import type { Ctx } from '../context';
 import { stmt } from '../db';
@@ -17,7 +17,6 @@ import { fromB64url } from '../identity/token';
 import { ApiError } from '../http';
 import { enforceRateLimit, limiterAddress } from '../limiter';
 import { findLivePeriod } from '../ledger';
-import { RevenueCatUnavailableError } from '../upstream/types';
 
 const UPSERT = `INSERT INTO devices (rc_id, public_key, lineage_key, status, last_nonce_ts, verified_at, created_at)
 VALUES (:rc, :pub, :lk, 'active', :ts, :now, :now)
@@ -61,19 +60,14 @@ export async function handleEnroll(request: Request, ctx: Ctx): Promise<Response
 
     // 3. the subscription (first RevenueCat call)
     const now = ctx.deps.now();
-    let prepared;
-    try {
+    const prepared = await withRevenueCat(async () => {
       const subs = await ctx.deps.revenuecat.listCustomerSubscriptions(body.rc_id);
       const sel = selectEnrollSubscription(subs, body.rc_id, ctx.config);
       if (!sel.ok) throw new ApiError(sel.status, sel.code);
       // 4. the covering transaction and the period, before any device write
       const txs = await ctx.deps.revenuecat.listTransactions(sel.sub.id);
-      prepared = await preparePeriod(ctx, sel.sub, txs, now);
-    } catch (e) {
-      if (e instanceof RevenueCatUnavailableError)
-        throw new ApiError(503, 'entitlement_unavailable');
-      throw e;
-    }
+      return preparePeriod(ctx, sel.sub, txs, now);
+    });
     setLineage(prepared.lineageKey);
     await prepared.statement.run();
     await assertPeriodExists(ctx, prepared.paymentKey, prepared.lineageKey);

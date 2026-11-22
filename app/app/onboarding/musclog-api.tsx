@@ -41,7 +41,7 @@ export default function MusclogApiScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const premium = usePremium();
+  const premium = usePremium({ load: true });
   const fixture = useContext(AiChoiceFixtureContext);
   // On a small screen the last card can sit below the fold: the cue says there is more.
   const { scrollProps, FadeIndicator } = useScrollFade();

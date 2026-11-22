@@ -1,11 +1,11 @@
 // Shared by the identity routes: body parsing, device and period reads, the response shape and
 // the one-line request log.
 import type { Ctx } from '../context';
-import { effectiveCap } from '../finance';
+import { effectiveCap, usedPct } from '../finance';
 import { ApiError, isoTime, jsonResponse, readBodyCapped } from '../http';
 import type { PeriodRow } from '../ledger';
 import { lineagePrefix } from '../log';
-import { mintSessionToken } from './token';
+import { bearerToken, mintSessionToken, verifySessionToken, type SessionClaims } from './token';
 
 export const IDENTITY_BODY_MAX = 4096;
 export const ENTITLEMENT_CACHE_MS = 6 * 3_600_000;
@@ -55,6 +55,31 @@ export function getDevice(db: D1Database, rcId: string): Promise<DeviceRow | nul
   return db.prepare('SELECT * FROM devices WHERE rc_id = ?1').bind(rcId).first<DeviceRow>();
 }
 
+/** The bearer session token's claims, or 401 unauthorized. */
+export async function requireSession(
+  request: Request,
+  ctx: Ctx,
+  now: number
+): Promise<SessionClaims> {
+  const token = bearerToken(request);
+  const claims = token
+    ? await verifySessionToken(
+        [ctx.env.SESSION_HMAC_KEY, ctx.env.SESSION_HMAC_KEY_PREVIOUS],
+        token,
+        now
+      )
+    : null;
+  if (!claims) throw new ApiError(401, 'unauthorized');
+  return claims;
+}
+
+/** The device when it is enrolled and active, else 401 unknown_device. */
+export async function requireActiveDevice(db: D1Database, rcId: string): Promise<DeviceRow> {
+  const device = await getDevice(db, rcId);
+  if (!device || device.status !== 'active') throw new ApiError(401, 'unknown_device');
+  return device;
+}
+
 export const deviceKeyBytes = (d: DeviceRow): Uint8Array<ArrayBuffer> =>
   new Uint8Array(d.public_key as ArrayBuffer | number[]);
 
@@ -72,14 +97,6 @@ export function latestPeriod(db: D1Database, lineageKey: string): Promise<Period
     .prepare('SELECT * FROM periods WHERE lineage_key = ?1 ORDER BY period_start DESC LIMIT 1')
     .bind(lineageKey)
     .first<PeriodRow>();
-}
-
-/** Percentage of the effective cap in use (spent + reserved), 0..100, never money. */
-export function usedPct(p: PeriodRow, now: number): number {
-  const cap = effectiveCap(p, now);
-  const used = p.spent_u + p.reserved_u;
-  if (cap <= 0) return 100;
-  return Math.min(100, Math.ceil((100 * used) / cap));
 }
 
 export const isExhausted = (p: PeriodRow, now: number): boolean =>

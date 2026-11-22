@@ -4,7 +4,7 @@
 import { isBreakerOpen, openBreaker } from '../breaker';
 import type { Ctx } from '../context';
 import { dayKey } from '../db';
-import { effectiveCap } from '../finance';
+import { DAY_MS, effectiveCap, usedPct } from '../finance';
 import {
   ApiError,
   errorResponse,
@@ -14,7 +14,7 @@ import {
   type ErrorExtra,
 } from '../http';
 import { sha256HexOfText } from '../identity/crypto';
-import { bearerToken, verifySessionToken } from '../identity/token';
+import { requireSession } from '../identity/devices';
 import {
   findLivePeriod,
   reserve,
@@ -24,8 +24,7 @@ import {
 } from '../ledger';
 import { enforceRateLimit } from '../limiter';
 import { lineagePrefix, type LogEvent } from '../log';
-import { reverifySubscription } from '../billing/periods';
-import { RevenueCatUnavailableError } from '../upstream/types';
+import { renewedLivePeriod } from '../billing/periods';
 import { allowlistRequest } from './allowlist';
 import { reservationBound } from './bound';
 import { parseJsonUsage, parseTail, TailBuffer } from './sse';
@@ -34,20 +33,17 @@ import { parseJsonUsage, parseTail, TailBuffer } from './sse';
 export const TIMEOUTS = { overallMs: 55_000, streamIdleMs: 30_000 };
 
 const KEY_RE = /^[A-Za-z0-9_-]{8,128}$/;
-const DAY_MS = 86_400_000;
 const GENERATION_TRIES = 3;
 
 /** USD -> whole micro-USD, rounded up. The 1e9 detour removes float noise (0.00123 * 1e6). */
 export const costToMicro = (usd: number): number => Math.ceil(Math.round(usd * 1e9) / 1e3);
 
+/** Percentage of the cap left after this request's reservation `r`, 0..100. */
 const budgetPct = (p: PeriodRow, r: number, now: number): number => {
   const cap = effectiveCap(p, now);
+  if (cap <= 0) return 0;
   const left = (cap - p.spent_u - p.reserved_u - r) / cap;
   return Math.min(100, Math.max(0, Math.floor(left * 100)));
-};
-const usedPct = (p: PeriodRow, now: number): number => {
-  const cap = effectiveCap(p, now);
-  return Math.min(100, Math.max(0, Math.floor(((p.spent_u + p.reserved_u) / cap) * 100)));
 };
 
 interface RequestLog {
@@ -85,11 +81,7 @@ async function run(
   const now = deps.now();
 
   // 1. Session token.
-  const token = bearerToken(request);
-  const claims = token
-    ? await verifySessionToken([env.SESSION_HMAC_KEY, env.SESSION_HMAC_KEY_PREVIOUS], token, now)
-    : null;
-  if (!claims) throw new ApiError(401, 'unauthorized');
+  const claims = await requireSession(request, ctx, now);
 
   // 2. Idempotency-Key.
   const idemKey = request.headers.get('idempotency-key');
@@ -215,21 +207,7 @@ async function requirePeriod(ctx: Ctx, rc: string, now: number): Promise<PeriodR
     .bind(rc)
     .first<{ lineage_key: string }>();
   if (!dev) throw new ApiError(401, 'unknown_device');
-  const latest = await db
-    .prepare(
-      'SELECT rc_subscription_id FROM periods WHERE lineage_key = ?1 ORDER BY period_start DESC LIMIT 1'
-    )
-    .bind(dev.lineage_key)
-    .first<{ rc_subscription_id: string }>();
-  if (!latest) throw new ApiError(403, 'subscription_required');
-  try {
-    const v = await reverifySubscription(ctx, latest.rc_subscription_id, now);
-    if (v.status === 'lapsed') throw new ApiError(403, 'subscription_required');
-  } catch (e) {
-    if (e instanceof RevenueCatUnavailableError) throw new ApiError(503, 'entitlement_unavailable');
-    throw e;
-  }
-  const revived = await findLivePeriod(db, rc, now);
+  const revived = await renewedLivePeriod(ctx, rc, dev.lineage_key, now);
   if (!revived) throw new ApiError(403, 'subscription_required');
   return revived;
 }
@@ -337,16 +315,37 @@ const tokensOf = (u: { promptTokens: number | null; completionTokens: number | n
     ? u.promptTokens + u.completionTokens
     : undefined;
 
-/** The upstream call failed or timed out with an unknown outcome: charged at the reservation. */
-function failAfterCharge(relay: Relay, timedOut: boolean, a: number): Response {
-  const status = timedOut ? 504 : 502;
-  const code = timedOut ? 'upstream_timeout' : 'upstream_error';
+/**
+ * Ends a request that failed after the reservation: settles it (charged `charge`, or refunded),
+ * logs the outcome in the background and answers the error.
+ */
+function endWithError(
+  relay: Relay,
+  end: {
+    final: 'settled' | 'refunded';
+    charge: number;
+    status: number;
+    code: ErrorCode;
+    severity?: LogEvent['severity'];
+  }
+): Response {
+  const { final, charge, status, code, severity } = end;
   relay.ctx.exec.waitUntil(
     relay
-      .settle('settled', a)
-      .then((s) => relay.emit({ status, code, cost_u: a, overrun: s.overrun }))
+      .settle(final, charge)
+      .then((s) => relay.emit({ status, code, cost_u: charge, overrun: s.overrun, severity }))
   );
   return errorResponse(status, code, {}, relay.budgetHeader);
+}
+
+/** The upstream call failed or timed out with an unknown outcome: charged at the reservation. */
+function failAfterCharge(relay: Relay, timedOut: boolean, a: number): Response {
+  return endWithError(relay, {
+    final: 'settled',
+    charge: a,
+    status: timedOut ? 504 : 502,
+    code: timedOut ? 'upstream_timeout' : 'upstream_error',
+  });
 }
 
 /** The upstream answered with an error status: refund, and open the breaker for 402/403. */
@@ -374,10 +373,7 @@ async function refuseUpstream(
     code = 'hosted_disabled';
     severity = 'high';
   }
-  relay.ctx.exec.waitUntil(
-    relay.settle('refunded', 0).then(() => relay.emit({ status, code, cost_u: 0, severity }))
-  );
-  return errorResponse(status, code, {}, relay.budgetHeader);
+  return endWithError(relay, { final: 'refunded', charge: 0, status, code, severity });
 }
 
 async function relayJson(
@@ -423,14 +419,12 @@ function relayStream(
 ): Response {
   const body = res.body;
   if (!body) {
-    relay.ctx.exec.waitUntil(
-      relay
-        .settle('settled', relay.r)
-        .then((s) =>
-          relay.emit({ status: 502, code: 'upstream_error', cost_u: relay.r, overrun: s.overrun })
-        )
-    );
-    return errorResponse(502, 'upstream_error', {}, relay.budgetHeader);
+    return endWithError(relay, {
+      final: 'settled',
+      charge: relay.r,
+      status: 502,
+      code: 'upstream_error',
+    });
   }
   const tail = new TailBuffer();
   const ts = new TransformStream<Uint8Array, Uint8Array>();

@@ -7,10 +7,10 @@ import {
   deviceKeyBytes,
   ENTITLEMENT_CACHE_MS,
   ENTITLEMENT_STALE_DENY_MS,
-  getDevice,
   latestPeriod,
   logged,
   readFields,
+  requireActiveDevice,
   tokenResponse,
 } from '../identity/devices';
 import { verifyNonce } from '../identity/nonce';
@@ -27,8 +27,7 @@ export async function handleSession(request: Request, ctx: Ctx): Promise<Respons
     await enforceRateLimit(ctx, 'session-id:' + body.rc_id, 10);
     const db = ctx.env.DB;
 
-    const device = await getDevice(db, body.rc_id);
-    if (!device || device.status !== 'active') throw new ApiError(401, 'unknown_device');
+    const device = await requireActiveDevice(db, body.rc_id);
     setLineage(device.lineage_key);
 
     const ts = await verifyNonce(ctx, body.nonce);

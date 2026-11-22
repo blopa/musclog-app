@@ -306,7 +306,8 @@ export function AISettingsModal({
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
   const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
   const [premiumVisible, setPremiumVisible] = useState(false);
-  const premium = usePremium();
+  // Loads the overview while this screen is open; `PremiumCard` below reads the same store.
+  const premium = usePremium({ load: visible });
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);

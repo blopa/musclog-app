@@ -1,6 +1,6 @@
 /**
  * Rule table for the Premium view model (plan 11 item 7). Each row is one branch:
- * status null -> loading; no_key/not_enrolled -> not_subscribed; active/exhausted/revoked/removed;
+ * status null -> loading; not_enrolled -> not_subscribed; active/exhausted/revoked/removed;
  * a config that is disabled or not accepting; a failed config read; the action failures; the
  * Worker's signal; the 80% warning.
  */
@@ -47,7 +47,7 @@ describe('PREMIUM_WARNING_PCT', () => {
 describe('phase', () => {
   it.each<[PremiumStatus | null, string]>([
     [null, 'loading'],
-    ['no_key', 'not_subscribed'],
+    ['not_enrolled', 'not_subscribed'],
     ['not_enrolled', 'not_subscribed'],
     ['active', 'active'],
     ['exhausted', 'exhausted'],
@@ -66,16 +66,16 @@ describe('phase', () => {
 
 describe('canSubscribe', () => {
   it('needs not_subscribed, an enabled accepting config; busy keeps it on screen', () => {
-    expect(view({ status: 'no_key' }).canSubscribe).toBe(true);
-    expect(view({ status: 'no_key', busy: true }).canSubscribe).toBe(true);
+    expect(view({ status: 'not_enrolled' }).canSubscribe).toBe(true);
+    expect(view({ status: 'not_enrolled', busy: true }).canSubscribe).toBe(true);
     expect(view({ status: 'active' }).canSubscribe).toBe(false);
-    expect(view({ status: 'no_key', config: null }).canSubscribe).toBe(false);
-    expect(view({ status: 'no_key', config: { ...OPEN, enabled: false } }).canSubscribe).toBe(
+    expect(view({ status: 'not_enrolled', config: null }).canSubscribe).toBe(false);
+    expect(view({ status: 'not_enrolled', config: { ...OPEN, enabled: false } }).canSubscribe).toBe(
       false
     );
-    expect(view({ status: 'no_key', config: { ...OPEN, acceptingNew: false } }).canSubscribe).toBe(
-      false
-    );
+    expect(
+      view({ status: 'not_enrolled', config: { ...OPEN, acceptingNew: false } }).canSubscribe
+    ).toBe(false);
   });
 });
 
@@ -83,7 +83,7 @@ describe('canRestore', () => {
   it('is offered when not subscribed, removed or revoked, and stays on screen while busy', () => {
     expect(view({ status: 'not_enrolled' }).canRestore).toBe(true);
     expect(view({ status: 'removed' }).canRestore).toBe(true);
-    expect(view({ status: 'no_key', busy: true }).canRestore).toBe(true);
+    expect(view({ status: 'not_enrolled', busy: true }).canRestore).toBe(true);
     expect(view({ status: 'active' }).canRestore).toBe(false);
     expect(view({ status: 'exhausted' }).canRestore).toBe(false);
     expect(view({ status: 'revoked' }).canRestore).toBe(true);
@@ -107,7 +107,7 @@ describe('usage and hosted switch', () => {
   it('offers the hosted switch only when active', () => {
     expect(view({ status: 'active' }).canUseHosted).toBe(true);
     expect(view({ status: 'exhausted' }).canUseHosted).toBe(false);
-    expect(view({ status: 'no_key' }).canUseHosted).toBe(false);
+    expect(view({ status: 'not_enrolled' }).canUseHosted).toBe(false);
   });
 });
 

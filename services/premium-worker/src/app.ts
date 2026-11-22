@@ -38,6 +38,12 @@ export function loadConfig(env: Env): ReturnType<typeof parseConfig> {
   return cached.result;
 }
 
+/** The answer while hosted AI is off or its config is invalid: the config route gets its own body. */
+function disabledResponse(pathname: string): Response {
+  if (pathname === '/v1/config') return handleConfigDisabled();
+  return errorResponse(503, 'hosted_disabled');
+}
+
 export function createApp(makeDeps: MakeDeps = defaultDeps): ExportedHandler<Env> {
   return {
     async fetch(request, env, exec) {
@@ -55,14 +61,10 @@ export function createApp(makeDeps: MakeDeps = defaultDeps): ExportedHandler<Env
           code: 'config_invalid',
           severity: 'high',
         });
-        if (url.pathname === '/v1/config') return handleConfigDisabled();
-        return errorResponse(503, 'hosted_disabled');
+        return disabledResponse(url.pathname);
       }
       const config: AiConfig = parsed.config;
-      if (env.HOSTED_AI_ENABLED !== 'true') {
-        if (url.pathname === '/v1/config') return handleConfigDisabled();
-        return errorResponse(503, 'hosted_disabled');
-      }
+      if (env.HOSTED_AI_ENABLED !== 'true') return disabledResponse(url.pathname);
 
       const ctx: Ctx = { env, config, deps: makeDeps(env, config), exec };
       try {

@@ -7,10 +7,14 @@
 export const PREMIUM_CONSENT_VERSION = 1;
 
 /** True only when turning hosted AI ON without a consent to the current version on record. */
-export function needsPremiumConsent(
-  storedVersion: number | null,
-  currentlyOn: boolean,
-  nextValue: boolean
-): boolean {
+export function needsPremiumConsent({
+  storedVersion,
+  currentlyOn,
+  nextValue,
+}: {
+  storedVersion: number | null;
+  currentlyOn: boolean;
+  nextValue: boolean;
+}): boolean {
   return !currentlyOn && nextValue && storedVersion !== PREMIUM_CONSENT_VERSION;
 }

@@ -11,6 +11,7 @@ import {
   hostedEnroll,
   hostedSession,
   hostedUsage,
+  redactTokens,
   toBase64Url,
 } from '@/utils/premium/hostedClient';
 
@@ -106,8 +107,8 @@ describe('hosted requests', () => {
       fakeFetch(200, body)
     );
 
-    expect(JSON.stringify(r.redacted)).not.toContain('abcdefghijklmnop');
-    expect(r.redacted).toEqual({
+    expect(JSON.stringify(redactTokens(r.body))).not.toContain('abcdefghijklmnop');
+    expect(redactTokens(r.body)).toEqual({
       session_token: '<token len=16 prefix=abcdefgh>',
       nested: { token: '<token len=11 prefix=12345678>' },
       n: 1,

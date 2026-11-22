@@ -3,26 +3,23 @@
 
 // eslint-disable-next-line no-relative-import-paths/no-relative-import-paths -- the Worker's Vitest run cannot resolve the `@/` alias, so this file must stay relative.
 import { isRecord } from '../isRecord';
+import { IDENTITY_ERROR_CODES } from './workerError';
 
 /** Refresh the session token this long before it expires (plan 11 item 3). */
 export const TOKEN_REFRESH_MARGIN_MS = 5 * 60_000;
 
-/** Worker error codes the app tells apart. Anything else is `unknown`. */
-const KNOWN_CODES = [
-  'subscription_required',
-  'revenue_unverified',
-  'id_key_mismatch',
-  'bad_signature',
-  'stale_nonce',
-  'unknown_device',
-  'identity_conflict',
-  'entitlement_unavailable',
-  'unauthorized',
-  'invalid_request',
-] as const;
+/** Period statuses the Worker reports on `/v1/usage` and `/v1/session`. */
+export const PREMIUM_PERIOD_STATUSES = ['active', 'exhausted', 'revoked'] as const;
 
+export type PremiumPeriodStatus = (typeof PREMIUM_PERIOD_STATUSES)[number];
+
+/** Identity codes the app tells apart (from `workerError.ts`). Anything else is `unknown`. */
 export type PremiumFailureKind =
-  (typeof KNOWN_CODES)[number] | 'unavailable' | 'network' | 'invalid_response' | 'unknown';
+  | (typeof IDENTITY_ERROR_CODES)[number]
+  | 'unavailable'
+  | 'network'
+  | 'invalid_response'
+  | 'unknown';
 
 export type PremiumDevices = { count: number; max: number };
 
@@ -37,7 +34,7 @@ export type SessionGrant = {
 export type UsageSnapshot = {
   usedPct: number;
   resetsAt: string;
-  status: 'active' | 'exhausted' | 'revoked';
+  status: PremiumPeriodStatus;
   devices: PremiumDevices;
 };
 
@@ -49,8 +46,8 @@ export type HostedConfig = {
   minAppVersion: string | null;
 };
 
-export type PremiumStatus =
-  'no_key' | 'not_enrolled' | 'active' | 'exhausted' | 'revoked' | 'removed';
+/** What the app shows: a period status once enrolled, or why there is none. */
+export type PremiumStatus = 'not_enrolled' | 'removed' | PremiumPeriodStatus;
 
 /** Maps a Worker answer to one failure kind. Never carries a message from the server. */
 export function failureKindOf(result: {
@@ -63,7 +60,7 @@ export function failureKindOf(result: {
 
   const code = result.errorCode;
 
-  if (code !== null && (KNOWN_CODES as readonly string[]).includes(code)) {
+  if (code !== null && (IDENTITY_ERROR_CODES as readonly string[]).includes(code)) {
     return code as PremiumFailureKind;
   }
 
@@ -78,7 +75,8 @@ export function isEntitlementLag(kind: PremiumFailureKind): boolean {
   return kind === 'subscription_required' || kind === 'entitlement_unavailable';
 }
 
-function parseDevices(value: unknown): PremiumDevices | null {
+/** `{ count, max }` with whole numbers, `max >= 1` and `count <= max`, else null. */
+export function parseDevices(value: unknown): PremiumDevices | null {
   if (!isRecord(value)) {
     return null;
   }
@@ -100,10 +98,16 @@ function parseDevices(value: unknown): PremiumDevices | null {
   return { count, max };
 }
 
-function parsePct(value: unknown): number | null {
+/** A percentage from 0 to 100, else null. */
+export function parsePercent(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100
     ? value
     : null;
+}
+
+/** An ISO instant, else null (a non-string, the empty string or anything `Date.parse` cannot read). */
+export function parseIsoDate(value: unknown): string | null {
+  return typeof value === 'string' && !Number.isNaN(Date.parse(value)) ? value : null;
 }
 
 /** `/v1/enroll` and `/v1/session` share one response shape. */
@@ -114,8 +118,8 @@ export function parseSessionGrant(body: unknown): SessionGrant | null {
 
   const token = body.session_token;
   const expiresAtMs = typeof body.expires_at === 'string' ? Date.parse(body.expires_at) : NaN;
-  const usedPct = parsePct(body.period.used_pct);
-  const resetsAt = body.period.resets_at;
+  const usedPct = parsePercent(body.period.used_pct);
+  const resetsAt = parseIsoDate(body.period.resets_at);
   const devices = parseDevices(body.devices);
 
   if (
@@ -123,8 +127,7 @@ export function parseSessionGrant(body: unknown): SessionGrant | null {
     token.length === 0 ||
     !Number.isFinite(expiresAtMs) ||
     usedPct === null ||
-    typeof resetsAt !== 'string' ||
-    !Number.isFinite(Date.parse(resetsAt)) ||
+    resetsAt === null ||
     devices === null
   ) {
     return null;
@@ -138,21 +141,16 @@ export function parseUsage(body: unknown): UsageSnapshot | null {
     return null;
   }
 
-  const status = body.status;
-  const usedPct = parsePct(body.used_pct);
+  const status = PREMIUM_PERIOD_STATUSES.find((kind) => kind === body.status);
+  const usedPct = parsePercent(body.used_pct);
+  const resetsAt = parseIsoDate(body.resets_at);
   const devices = parseDevices(body.devices);
 
-  if (
-    (status !== 'active' && status !== 'exhausted' && status !== 'revoked') ||
-    usedPct === null ||
-    typeof body.resets_at !== 'string' ||
-    !Number.isFinite(Date.parse(body.resets_at)) ||
-    devices === null
-  ) {
+  if (status === undefined || usedPct === null || resetsAt === null || devices === null) {
     return null;
   }
 
-  return { usedPct, resetsAt: body.resets_at, status, devices };
+  return { usedPct, resetsAt, status, devices };
 }
 
 export function parseHostedConfig(body: unknown): HostedConfig | null {
@@ -188,15 +186,10 @@ export function tokenNeedsRefresh(
 
 /** What the app shows. Status comes from the Worker's answers, never from local CustomerInfo. */
 export function derivePremiumStatus(input: {
-  hasKey: boolean;
   enrolledRcId: string | null;
   removed: boolean;
-  lastStatus: 'active' | 'exhausted' | 'revoked' | null;
+  lastStatus: PremiumPeriodStatus | null;
 }): PremiumStatus {
-  if (!input.hasKey) {
-    return 'no_key';
-  }
-
   if (input.removed) {
     return 'removed';
   }

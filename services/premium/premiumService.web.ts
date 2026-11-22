@@ -15,7 +15,7 @@ export function hostedAiBaseUrl(): string | null {
 }
 
 export async function getPremiumStatus(): Promise<PremiumStatus> {
-  return 'no_key';
+  return 'not_enrolled';
 }
 
 export const enrollThisDevice = () => unavailable<SessionGrant>();

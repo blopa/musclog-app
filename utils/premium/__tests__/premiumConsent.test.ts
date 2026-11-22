@@ -4,16 +4,38 @@ import { manageSubscriptionUrl, PREMIUM_PRIVACY_URL, PREMIUM_TERMS_URL } from '.
 describe('needsPremiumConsent', () => {
   it('asks only when turning on without the current version on record', () => {
     expect(PREMIUM_CONSENT_VERSION).toBe(1);
-    expect(needsPremiumConsent(null, false, true)).toBe(true);
-    expect(needsPremiumConsent(0, false, true)).toBe(true);
-    expect(needsPremiumConsent(PREMIUM_CONSENT_VERSION - 1, false, true)).toBe(true);
-    expect(needsPremiumConsent(PREMIUM_CONSENT_VERSION, false, true)).toBe(false);
+    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: false, nextValue: true })).toBe(
+      true
+    );
+    expect(needsPremiumConsent({ storedVersion: 0, currentlyOn: false, nextValue: true })).toBe(
+      true
+    );
+    expect(
+      needsPremiumConsent({
+        storedVersion: PREMIUM_CONSENT_VERSION - 1,
+        currentlyOn: false,
+        nextValue: true,
+      })
+    ).toBe(true);
+    expect(
+      needsPremiumConsent({
+        storedVersion: PREMIUM_CONSENT_VERSION,
+        currentlyOn: false,
+        nextValue: true,
+      })
+    ).toBe(false);
   });
 
   it('never asks when turning off or when already on', () => {
-    expect(needsPremiumConsent(null, true, false)).toBe(false);
-    expect(needsPremiumConsent(null, false, false)).toBe(false);
-    expect(needsPremiumConsent(null, true, true)).toBe(false);
+    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: true, nextValue: false })).toBe(
+      false
+    );
+    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: false, nextValue: false })).toBe(
+      false
+    );
+    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: true, nextValue: true })).toBe(
+      false
+    );
   });
 });
 

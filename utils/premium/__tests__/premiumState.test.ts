@@ -8,19 +8,7 @@ import {
   TOKEN_REFRESH_MARGIN_MS,
   tokenNeedsRefresh,
 } from '@/utils/premium/premiumState';
-
-const KNOWN_CODES = [
-  'subscription_required',
-  'revenue_unverified',
-  'id_key_mismatch',
-  'bad_signature',
-  'stale_nonce',
-  'unknown_device',
-  'identity_conflict',
-  'entitlement_unavailable',
-  'unauthorized',
-  'invalid_request',
-];
+import { IDENTITY_ERROR_CODES } from '@/utils/premium/workerError';
 
 const GOOD_GRANT = {
   session_token: 'tok-abc',
@@ -35,7 +23,7 @@ describe('failureKindOf', () => {
     expect(failureKindOf({ status: 500, errorCode: 'network' })).toBe('network');
   });
 
-  it.each(KNOWN_CODES)('keeps the known code %s at a 4xx status', (code) => {
+  it.each(IDENTITY_ERROR_CODES)('keeps the known code %s at a 4xx status', (code) => {
     expect(failureKindOf({ status: 401, errorCode: code })).toBe(code);
   });
 
@@ -204,11 +192,7 @@ describe('tokenNeedsRefresh', () => {
 });
 
 describe('derivePremiumStatus', () => {
-  const base = { hasKey: true, enrolledRcId: 'mlg1_x', removed: false, lastStatus: null } as const;
-
-  it('is no_key without a device key, whatever else is set', () => {
-    expect(derivePremiumStatus({ ...base, hasKey: false, lastStatus: 'active' })).toBe('no_key');
-  });
+  const base = { enrolledRcId: 'mlg1_x', removed: false, lastStatus: null } as const;
 
   it('is removed when removed, even with no enrollment (removed beats not_enrolled)', () => {
     expect(derivePremiumStatus({ ...base, enrolledRcId: null, removed: true })).toBe('removed');
@@ -218,8 +202,11 @@ describe('derivePremiumStatus', () => {
     expect(derivePremiumStatus({ ...base, removed: true, lastStatus: 'active' })).toBe('removed');
   });
 
-  it('is not_enrolled with a key but no enrollment', () => {
+  it('is not_enrolled without an enrolled id (no device key means no enrollment)', () => {
     expect(derivePremiumStatus({ ...base, enrolledRcId: null })).toBe('not_enrolled');
+    expect(derivePremiumStatus({ ...base, enrolledRcId: null, lastStatus: 'active' })).toBe(
+      'not_enrolled'
+    );
   });
 
   it('is active when enrolled and no status has been seen yet', () => {

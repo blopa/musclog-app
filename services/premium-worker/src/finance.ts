@@ -81,3 +81,19 @@ export function effectiveCap(
 ): number {
   return now < p.early_until ? p.early_cap_u : p.cap_u;
 }
+
+/** The columns a period's usage is read from. */
+export interface PeriodUsage {
+  cap_u: number;
+  early_cap_u: number;
+  early_until: number;
+  spent_u: number;
+  reserved_u: number;
+}
+
+/** Percentage of the effective cap in use (spent + reserved), 0..100, rounded up, never money. */
+export function usedPct(p: PeriodUsage, now: number): number {
+  const cap = effectiveCap(p, now);
+  if (cap <= 0) return 100;
+  return Math.min(100, Math.ceil((100 * (p.spent_u + p.reserved_u)) / cap));
+}

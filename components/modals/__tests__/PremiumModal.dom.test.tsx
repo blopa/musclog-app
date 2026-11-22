@@ -8,6 +8,7 @@ import { usePremium } from '@/hooks/usePremium';
 import {
   beginPremiumActivity,
   endPremiumActivity,
+  getPremiumActionFailure,
   resetPremiumActivity,
 } from '@/utils/premium/premiumActivity';
 import { PREMIUM_PRIVACY_URL, PREMIUM_TERMS_URL } from '@/utils/premium/premiumLinks';
@@ -487,5 +488,23 @@ describe('PremiumModal busy feedback', () => {
     renderModal();
     await act(async () => undefined);
     expect(screen.queryByText('premium.consent.title')).toBeNull();
+  });
+});
+
+describe('PremiumModal closing dismisses the last failure', () => {
+  it('clears a cancelled-purchase failure when the modal closes, so a reopen shows no stale notice', () => {
+    mockUsePremium.mockReturnValue(premiumWith(buildPremiumViewModel(input())));
+    beginPremiumActivity('subscribe');
+    endPremiumActivity('subscribe', { ok: false, failure: 'purchase_cancelled' });
+    expect(getPremiumActionFailure()).toBe('purchase_cancelled');
+
+    const { rerender } = render(<PremiumModal visible onClose={jest.fn()} />);
+    rerender(<PremiumModal visible={false} onClose={jest.fn()} />);
+
+    expect(getPremiumActionFailure()).toBeNull();
+
+    rerender(<PremiumModal visible onClose={jest.fn()} />);
+    expect(getPremiumActionFailure()).toBeNull();
+    expect(screen.queryByText(PREMIUM_NOTICES.purchase_cancelled.key)).toBeNull();
   });
 });

@@ -26,11 +26,13 @@ const mockActions = {
   loadPremiumOverview: jest.fn(),
   subscribe: jest.fn(),
   restore: jest.fn(),
-  setUseHostedAi: jest.fn(async () => undefined),
   resetPremiumOnThisDevice: jest.fn(async () => undefined),
   disableHostedIfRemoved: jest.fn(async () => false),
 };
+// The real subscribe/restore/record actions run (they turn hosted AI on after consent); only the
+// overview loader, the reset and the Worker calls underneath them are replaced.
 jest.mock('@/services/premium/premiumActions', () => ({
+  ...jest.requireActual('@/services/premium/premiumActions'),
   loadPremiumOverview: (...args: unknown[]) => mockActions.loadPremiumOverview(...args),
   resetPremiumOnThisDevice: (...args: unknown[]) => mockActions.resetPremiumOnThisDevice(...args),
   disableHostedIfRemoved: (...args: unknown[]) => mockActions.disableHostedIfRemoved(...args),
@@ -39,21 +41,29 @@ jest.mock('@/services/premium/premiumActions', () => ({
 jest.mock('@/services/premium/premiumService', () => ({
   purchaseAndEnroll: (...args: unknown[]) => mockActions.subscribe(...args),
   restoreAndEnroll: (...args: unknown[]) => mockActions.restore(...args),
+  getPremiumStatus: jest.fn(),
+  fetchPremiumConfig: jest.fn(),
+  refreshPremiumUsage: jest.fn(),
+  resetPremium: jest.fn(),
 }));
+jest.mock('@/services/premium/revenueCat', () => ({ getMonthlyPriceString: jest.fn() }));
+jest.mock('@/services/premium/deviceKeyStore', () => ({ getOrCreateDeviceKey: jest.fn() }));
 
 import { PREMIUM_FIXTURE_STATES } from '@/components/premium/premiumFixtureStates';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
 import { PremiumFixtureContext, usePremium } from '@/hooks/usePremium';
+import { resetPremiumStore } from '@/services/premium/premiumStore';
 import {
+  dismissPremiumActionFailure,
+  getPremiumActionFailure,
   getPremiumActivity,
   getPremiumConsentPending,
   resetPremiumActivity,
-  takeUnseenPremiumFailure,
 } from '@/utils/premium/premiumActivity';
 
 const OVERVIEW = {
-  status: 'no_key',
+  status: 'not_enrolled',
   usage: null,
   config: {
     enabled: true,
@@ -69,6 +79,7 @@ const OVERVIEW = {
 beforeEach(() => {
   jest.clearAllMocks();
   resetPremiumActivity();
+  resetPremiumStore();
   mockFlag.mockReturnValue(true);
   mockSettingsState = { useHostedAi: false, premiumConsentVersion: null };
   mockSettingsGet.mockResolvedValue(null);
@@ -94,8 +105,19 @@ describe('usePremium', () => {
     expect(mockActions.subscribe).not.toHaveBeenCalled();
   });
 
-  it('loads the overview once on mount and exposes the view and price', async () => {
+  it('makes no request when the caller does not ask for the overview', async () => {
     const { result } = renderHook(() => usePremium());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(mockActions.loadPremiumOverview).not.toHaveBeenCalled();
+    expect(result.current.view.phase).toBe('loading');
+    expect(result.current.priceString).toBeNull();
+  });
+
+  it('loads the overview once when asked and exposes the view and price', async () => {
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     expect(mockActions.loadPremiumOverview).toHaveBeenCalledTimes(1);
@@ -105,7 +127,7 @@ describe('usePremium', () => {
 
   it('subscribe returns true, reloads, and clears the last failure', async () => {
     mockActions.restore.mockResolvedValueOnce({ ok: false, failure: 'restore_failed' });
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     await act(async () => {
@@ -126,7 +148,7 @@ describe('usePremium', () => {
   it('switches hosted AI on after a restore when the consent is already on file', async () => {
     mockSettingsGet.mockResolvedValue(PREMIUM_CONSENT_VERSION);
     mockActions.restore.mockResolvedValueOnce({ ok: true, value: {} });
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     await act(async () => {
@@ -136,7 +158,7 @@ describe('usePremium', () => {
   });
 
   it('leaves hosted AI off after a purchase when the consent is not on file yet', async () => {
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     await act(async () => {
@@ -147,7 +169,7 @@ describe('usePremium', () => {
 
   it('subscribe returns false and keeps the failure on a cancelled purchase', async () => {
     mockActions.subscribe.mockResolvedValue({ ok: false, failure: 'purchase_cancelled' });
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     let ok = true;
@@ -160,7 +182,7 @@ describe('usePremium', () => {
   });
 
   it('switches the hosted setting on and off in the settings', async () => {
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     await act(async () => {
@@ -173,7 +195,7 @@ describe('usePremium', () => {
   });
 
   it('asks for consent when turning on, and records it once', async () => {
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     expect(result.current.consentNeeded(true)).toBe(true);
@@ -193,7 +215,7 @@ describe('usePremium', () => {
   });
 
   it('reset clears hosted AI and reloads', async () => {
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     await act(async () => {
@@ -205,7 +227,7 @@ describe('usePremium', () => {
   it('turns hosted AI off when the overview says the subscription was removed', async () => {
     mockActions.loadPremiumOverview.mockResolvedValue({ ...OVERVIEW, status: 'removed' });
     mockActions.disableHostedIfRemoved.mockResolvedValue(true);
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('removed'));
     expect(mockActions.disableHostedIfRemoved).toHaveBeenCalledWith('removed');
@@ -236,7 +258,7 @@ describe('usePremium busy tracking and closing mid-action', () => {
           finish = resolve;
         })
     );
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     let pending: Promise<boolean> = Promise.resolve(false);
@@ -258,7 +280,7 @@ describe('usePremium busy tracking and closing mid-action', () => {
   it('keeps the action alive when the screen closes, and leaves the consent question pending', async () => {
     let finish: (value: unknown) => void = () => undefined;
     mockActions.subscribe.mockImplementation(() => new Promise((resolve) => (finish = resolve)));
-    const first = renderHook(() => usePremium());
+    const first = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(first.result.current.view.phase).toBe('not_subscribed'));
     let pending: Promise<boolean> = Promise.resolve(false);
@@ -290,10 +312,53 @@ describe('usePremium busy tracking and closing mid-action', () => {
     expect(second.result.current.busy).toBe(false);
   });
 
+  it('keeps a failure that happened while a screen was open until it is dismissed', async () => {
+    mockActions.subscribe.mockResolvedValue({ ok: false, failure: 'purchase_cancelled' });
+    const { result } = renderHook(() => usePremium({ load: true }));
+
+    await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
+    await act(async () => {
+      await result.current.subscribe();
+    });
+    expect(result.current.view.notice).toBe('purchase_cancelled');
+
+    // Rendering again does not consume it: it stays until the screen dismisses it.
+    const { result: again } = renderHook(() => usePremium());
+    expect(again.current.view.notice).toBe('purchase_cancelled');
+    expect(getPremiumActionFailure()).toBe('purchase_cancelled');
+
+    act(() => {
+      dismissPremiumActionFailure();
+    });
+    expect(result.current.view.notice).toBeNull();
+    expect(again.current.view.notice).toBeNull();
+  });
+
+  it('reloads the overview in the store when an action finishes after the screen unmounted', async () => {
+    let finish: (value: unknown) => void = () => undefined;
+    mockActions.subscribe.mockImplementation(() => new Promise((resolve) => (finish = resolve)));
+    const first = renderHook(() => usePremium({ load: true }));
+
+    await waitFor(() => expect(first.result.current.view.phase).toBe('not_subscribed'));
+    mockActions.loadPremiumOverview.mockClear();
+    let pending: Promise<boolean> = Promise.resolve(false);
+
+    act(() => {
+      pending = first.result.current.subscribe();
+    });
+    first.unmount();
+    await act(async () => {
+      finish({ ok: true, value: {} });
+      await pending;
+    });
+
+    expect(mockActions.loadPremiumOverview).toHaveBeenCalledTimes(1);
+  });
+
   it('shows a failure that ended while the screen was closed when it opens again', async () => {
     let finish: (value: unknown) => void = () => undefined;
     mockActions.subscribe.mockImplementation(() => new Promise((resolve) => (finish = resolve)));
-    const first = renderHook(() => usePremium());
+    const first = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(first.result.current.view.phase).toBe('not_subscribed'));
     let pending: Promise<boolean> = Promise.resolve(false);
@@ -308,10 +373,10 @@ describe('usePremium busy tracking and closing mid-action', () => {
     });
     expect(getPremiumConsentPending()).toBe(false);
 
-    const second = renderHook(() => usePremium());
+    const second = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(second.result.current.view.notice).toBe('purchase_failed'));
-    expect(takeUnseenPremiumFailure()).toBeNull();
+    expect(getPremiumActionFailure()).toBe('purchase_failed');
   });
 
   it('reports reset and the AI switch as busy while they run', async () => {
@@ -319,7 +384,7 @@ describe('usePremium busy tracking and closing mid-action', () => {
     mockActions.resetPremiumOnThisDevice.mockImplementation(
       () => new Promise<undefined>((resolve) => (release = () => resolve(undefined)))
     );
-    const { result } = renderHook(() => usePremium());
+    const { result } = renderHook(() => usePremium({ load: true }));
 
     await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
     let pending: Promise<void> = Promise.resolve();

@@ -1,15 +1,17 @@
 import { Platform } from 'react-native';
+import type { PurchasesOfferings, PurchasesPackage } from 'react-native-purchases';
 
 import { reportPremiumFailure } from '@/services/premium/premiumTelemetry';
-import {
-  summarizeCustomerInfo,
-  summarizePurchase,
-  toJsonSafe,
-} from '@/utils/premium/harnessResult';
+import { RC_ID_PATTERN } from '@/utils/premium/deviceKeyCrypto';
+import { summarizeCustomerInfo, summarizePurchase } from '@/utils/premium/harnessResult';
 
 // The SDK is imported lazily, inside the functions, so it can never initialise at boot.
-const RC_ID_PATTERN = /^mlg1_[0-9a-f]{64}$/;
 const NOT_CONFIGURED = 'RevenueCat is not configured: call configure first';
+
+/** RevenueCat's store error codes the app tells apart. */
+export const STORE_CANCELLED = '1';
+export const STORE_NETWORK_ERROR = '10';
+export const STORE_ALREADY_PURCHASED = '6';
 
 let configuredAppUserId: string | null = null;
 let sdkConfigured = false;
@@ -30,7 +32,7 @@ export function getConfiguredAppUserId(): string | null {
   return configuredAppUserId;
 }
 
-function loadPurchases() {
+export function purchasesSdk() {
   // Inline require keeps the SDK lazy under Metro and Jest alike.
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const mod: typeof import('react-native-purchases') = require('react-native-purchases');
@@ -38,10 +40,36 @@ function loadPurchases() {
   return mod.default;
 }
 
-function requireConfigured(): void {
+export function requireConfigured(): void {
   if (!sdkConfigured || configuredAppUserId === null) {
     throw new Error(NOT_CONFIGURED);
   }
+}
+
+/** The store error code of a thrown RevenueCat error, or `undefined` when it carries none. */
+export function storeErrorCodeOf(e: unknown): string | undefined {
+  const code = (e as { code?: unknown } | null)?.code;
+
+  return code === undefined || code === null ? undefined : String(code);
+}
+
+/** The monthly package: the current offering's, else the first MONTHLY package of any offering. */
+export function findMonthlyPackage(offerings: PurchasesOfferings): PurchasesPackage | null {
+  const current = offerings.current?.monthly ?? null;
+
+  if (current) {
+    return current;
+  }
+
+  for (const offering of Object.values(offerings.all ?? {})) {
+    const pkg = offering.availablePackages.find((p) => p.packageType === 'MONTHLY');
+
+    if (pkg) {
+      return pkg;
+    }
+  }
+
+  return null;
 }
 
 export async function configureRevenueCat(
@@ -57,7 +85,7 @@ export async function configureRevenueCat(
     throw new Error('RevenueCat API key is missing for this platform');
   }
 
-  const Purchases = loadPurchases();
+  const Purchases = purchasesSdk();
 
   if (sdkConfigured) {
     const current = await Purchases.getAppUserID();
@@ -85,48 +113,27 @@ export async function configureRevenueCat(
   return { appUserID: rcId, alreadyConfigured: false, matchesRequested: true };
 }
 
-export async function fetchOfferings(): Promise<unknown> {
-  requireConfigured();
+/**
+ * Makes RevenueCat act as `rcId`. Configures it first; when it was already configured under another
+ * id (an earlier `logInTo` failed and was swallowed), logs in to `rcId`. A failure throws.
+ */
+export async function ensureRevenueCatIdentity(rcId: string): Promise<void> {
+  const { matchesRequested } = await configureRevenueCat(rcId);
 
-  const Purchases = loadPurchases();
-  const offerings = await Purchases.getOfferings();
-
-  return toJsonSafe({
-    currentOfferingId: offerings.current?.identifier ?? null,
-    offerings: Object.values(offerings.all ?? {}).map((o) => ({
-      identifier: o.identifier,
-      packages: o.availablePackages.map((p) => ({
-        identifier: p.identifier,
-        packageType: p.packageType,
-        productIdentifier: p.product.identifier,
-        priceString: p.product.priceString,
-        currency: p.product.currencyCode,
-        price: p.product.price,
-      })),
-    })),
-  });
+  if (!matchesRequested) {
+    await logInTo(rcId);
+  }
 }
 
 export async function buyMonthly(): Promise<ReturnType<typeof summarizePurchase>> {
   requireConfigured();
 
-  const Purchases = loadPurchases();
+  const Purchases = purchasesSdk();
   const offerings = await Purchases.getOfferings();
-  const all = Object.values(offerings.all ?? {});
-  let pkg = offerings.current?.monthly ?? null;
+  const pkg = findMonthlyPackage(offerings);
 
   if (!pkg) {
-    for (const offering of all) {
-      pkg = offering.availablePackages.find((p) => p.packageType === 'MONTHLY') ?? null;
-
-      if (pkg) {
-        break;
-      }
-    }
-  }
-
-  if (!pkg) {
-    const found = all
+    const found = Object.values(offerings.all ?? {})
       .map(
         (o) =>
           `${o.identifier}: [${o.availablePackages.map((p) => `${p.identifier}/${p.packageType}`).join(', ')}]`
@@ -142,19 +149,9 @@ export async function buyMonthly(): Promise<ReturnType<typeof summarizePurchase>
 export async function restorePurchases(): Promise<ReturnType<typeof summarizeCustomerInfo>> {
   requireConfigured();
 
-  const Purchases = loadPurchases();
+  const Purchases = purchasesSdk();
 
   return summarizeCustomerInfo(await Purchases.restorePurchases());
-}
-
-export async function syncPurchases(): Promise<{ ok: true }> {
-  requireConfigured();
-
-  const Purchases = loadPurchases();
-
-  await Purchases.syncPurchases();
-
-  return { ok: true };
 }
 
 export async function logInTo(
@@ -168,24 +165,12 @@ export async function logInTo(
     throw new Error('App user id is empty');
   }
 
-  const Purchases = loadPurchases();
+  const Purchases = purchasesSdk();
   const result = await Purchases.logIn(id);
 
   configuredAppUserId = id;
 
   return { created: result.created, customerInfo: summarizeCustomerInfo(result.customerInfo) };
-}
-
-export async function getCustomerInfoDump(): Promise<{
-  summary: ReturnType<typeof summarizeCustomerInfo>;
-  raw: unknown;
-}> {
-  requireConfigured();
-
-  const Purchases = loadPurchases();
-  const info = await Purchases.getCustomerInfo();
-
-  return { summary: summarizeCustomerInfo(info), raw: toJsonSafe(info) };
 }
 
 /**
@@ -194,31 +179,18 @@ export async function getCustomerInfoDump(): Promise<{
  */
 export async function getMonthlyPriceString(rcId: string): Promise<string | null> {
   try {
-    await configureRevenueCat(rcId);
+    await ensureRevenueCatIdentity(rcId);
 
-    const Purchases = loadPurchases();
-    const offerings = await Purchases.getOfferings();
-    const all = Object.values(offerings.all ?? {});
-    let pkg = offerings.current?.monthly ?? null;
-
-    if (!pkg) {
-      for (const offering of all) {
-        pkg = offering.availablePackages.find((p) => p.packageType === 'MONTHLY') ?? null;
-
-        if (pkg) {
-          break;
-        }
-      }
-    }
+    const pkg = findMonthlyPackage(await purchasesSdk().getOfferings());
 
     return pkg?.product.priceString ?? null;
   } catch (e) {
-    const code = (e as { code?: unknown } | null)?.code;
+    const code = storeErrorCodeOf(e);
 
     // RevenueCat's NETWORK_ERROR (10) is a dropped connection, not a fault: no subscribe price
     // is shown and the next open retries, so it is not reported.
-    reportPremiumFailure('price', String(code) === '10' ? 'network' : 'unknown', {
-      storeErrorCode: code === undefined || code === null ? 'none' : String(code),
+    reportPremiumFailure('price', code === STORE_NETWORK_ERROR ? 'network' : 'unknown', {
+      storeErrorCode: code ?? 'none',
     });
 
     return null;

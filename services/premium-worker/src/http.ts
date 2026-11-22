@@ -52,6 +52,9 @@ const MESSAGES: Record<ErrorCode, string> = {
   method_not_allowed: 'Method not allowed.',
 };
 
+/** Every code the Worker can answer, for tests that check the contract with the app. */
+export const ERROR_CODES = Object.keys(MESSAGES) as ErrorCode[];
+
 export interface ErrorExtra {
   /** Seconds; also sent as the Retry-After header. */
   retry_after?: number;

@@ -28,14 +28,16 @@ import {
 import {
   buyMonthly,
   configureRevenueCat,
-  fetchOfferings,
   getConfiguredAppUserId,
-  getCustomerInfoDump,
   logInTo,
   restorePurchases,
   revenueCatApiKey,
-  syncPurchases,
 } from '@/services/premium/revenueCat';
+import {
+  fetchOfferings,
+  getCustomerInfoDump,
+  syncPurchases,
+} from '@/services/premium/revenueCatHarness';
 import {
   generateDeviceKey,
   hexToBytes,
@@ -56,6 +58,7 @@ import {
   hostedEnroll,
   type HostedResult,
   hostedSession,
+  redactTokens,
 } from '@/utils/premium/hostedClient';
 import { summarizeTimings, type TimingSummary } from '@/utils/premium/timingStats';
 
@@ -427,7 +430,7 @@ function HostedSection({ keyState, runner }: { keyState: KeyState; runner: Runne
   const shown = (result: HostedResult) => ({
     status: result.status,
     errorCode: result.errorCode,
-    body: result.redacted,
+    body: redactTokens(result.body),
   });
 
   const enroll = async () => {

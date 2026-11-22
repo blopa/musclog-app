@@ -7,6 +7,7 @@
  * and a bare 400 stays an ordinary error.
  */
 import type { CoachAIProvider } from './coachAI';
+import { formatMediumDate } from './formatMediumDate';
 import { HOSTED_KINDS, HostedAiError, hostedErrorKindOf } from './hostedAiError';
 
 export class AiInvalidKeyError extends Error {
@@ -194,25 +195,6 @@ export function describeAiError(
   return null;
 }
 
-/** The date a hosted budget resets, formatted for the locale, or `null` when it is not a date. */
-function formatResetDate(error: HostedAiError, locale?: string): string | null {
-  const { resetsAt } = error;
-  if (typeof resetsAt !== 'string') {
-    return null;
-  }
-
-  const date = new Date(resetsAt);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  try {
-    return new Intl.DateTimeFormat(locale ?? 'en', { dateStyle: 'medium' }).format(date);
-  } catch {
-    return null;
-  }
-}
-
 function describeHostedError(
   error: HostedAiError,
   t: (key: string, options?: Record<string, unknown>) => string,
@@ -220,7 +202,7 @@ function describeHostedError(
 ): string {
   if (error.hostedKind === 'budget') {
     // The one kind with a variant: the reset date is named when the Worker gave a usable one.
-    const date = formatResetDate(error, locale);
+    const date = formatMediumDate(error.resetsAt, locale ?? 'en');
     return date ? t(HOSTED_KINDS.budget.i18nKey, { date }) : t('errors.hostedBudgetNoDate');
   }
 

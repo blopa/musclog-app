@@ -1,5 +1,6 @@
 // Thin client for the Premium Worker identity routes (services/premium-worker/src/routes).
-// Pure: fetch is injected. The harness log only ever sees `redacted`, never a usable token.
+// Pure: fetch is injected. A caller that logs a body passes it through `redactTokens` first.
+import { parseWorkerError } from './workerError';
 
 export type FetchLike = (
   url: string,
@@ -11,7 +12,6 @@ export type HostedResult = {
   ok: boolean;
   errorCode: string | null;
   body: unknown;
-  redacted: unknown;
 };
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -65,22 +65,6 @@ export function redactTokens(value: unknown): unknown {
   return value;
 }
 
-function errorCodeOf(body: unknown): string | null {
-  if (typeof body !== 'object' || body === null) {
-    return null;
-  }
-
-  const error = (body as { error?: unknown }).error;
-
-  if (typeof error !== 'object' || error === null) {
-    return null;
-  }
-
-  const code = (error as { code?: unknown }).code;
-
-  return typeof code === 'string' ? code : null;
-}
-
 async function call(
   baseUrl: string,
   path: string,
@@ -124,14 +108,13 @@ async function call(
     return {
       status: response.status,
       ok: response.ok,
-      errorCode: response.ok ? null : (errorCodeOf(body) ?? 'unknown'),
+      errorCode: response.ok ? null : parseWorkerError(body).code || 'unknown',
       body,
-      redacted: redactTokens(body),
     };
   } catch (e) {
     const message = { message: e instanceof Error ? e.message : String(e) };
 
-    return { status: 0, ok: false, errorCode: 'network', body: message, redacted: message };
+    return { status: 0, ok: false, errorCode: 'network', body: message };
   }
 }
 

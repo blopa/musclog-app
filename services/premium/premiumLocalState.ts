@@ -4,20 +4,28 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { PREMIUM_DEVICE_STATE } from '@/constants/misc';
-
-export type PremiumStatusKind = 'active' | 'exhausted' | 'revoked';
+import { isRecord } from '@/utils/isRecord';
+import { RC_ID_PATTERN } from '@/utils/premium/deviceKeyCrypto';
+import {
+  parseDevices,
+  parseIsoDate,
+  parsePercent,
+  PREMIUM_PERIOD_STATUSES,
+  type PremiumDevices,
+  type PremiumPeriodStatus,
+} from '@/utils/premium/premiumState';
 
 export type PremiumLocalState = {
   /** The key-derived id this device enrolled with. */
   rcId: string | null;
   /** The Worker answered 401 unknown_device. */
   removed: boolean;
-  lastStatus: PremiumStatusKind | null;
+  lastStatus: PremiumPeriodStatus | null;
   /** 0..100, last value from the Worker. */
   usedPct: number | null;
   /** ISO string. */
   resetsAt: string | null;
-  devices: { count: number; max: number } | null;
+  devices: PremiumDevices | null;
 };
 
 export const EMPTY_PREMIUM_LOCAL_STATE: PremiumLocalState = {
@@ -28,42 +36,6 @@ export const EMPTY_PREMIUM_LOCAL_STATE: PremiumLocalState = {
   resetsAt: null,
   devices: null,
 };
-
-const RC_ID_PATTERN = /^mlg1_[0-9a-f]{64}$/;
-const STATUS_KINDS: readonly PremiumStatusKind[] = ['active', 'exhausted', 'revoked'];
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function parsePercent(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100
-    ? value
-    : null;
-}
-
-function parseDevices(value: unknown): PremiumLocalState['devices'] {
-  if (!isPlainObject(value)) {
-    return null;
-  }
-
-  const { count, max } = value;
-  const countOk = typeof count === 'number' && Number.isInteger(count) && count >= 0;
-  const maxOk = typeof max === 'number' && Number.isInteger(max) && max >= 1;
-  if (!countOk || !maxOk || count > max) {
-    return null;
-  }
-
-  return { count, max };
-}
-
-function parseResetsAt(value: unknown): string | null {
-  if (typeof value !== 'string' || value.length === 0 || Number.isNaN(Date.parse(value))) {
-    return null;
-  }
-
-  return value;
-}
 
 /**
  * Pure and tolerant: bad JSON, wrong types, unknown keys and out-of-range values fall back
@@ -81,12 +53,12 @@ export function parsePremiumLocalState(raw: string | null): PremiumLocalState {
     return { ...EMPTY_PREMIUM_LOCAL_STATE };
   }
 
-  if (!isPlainObject(data)) {
+  if (!isRecord(data)) {
     return { ...EMPTY_PREMIUM_LOCAL_STATE };
   }
 
   const rcId = typeof data.rcId === 'string' && RC_ID_PATTERN.test(data.rcId) ? data.rcId : null;
-  const lastStatus = STATUS_KINDS.find((kind) => kind === data.lastStatus) ?? null;
+  const lastStatus = PREMIUM_PERIOD_STATUSES.find((kind) => kind === data.lastStatus) ?? null;
   const usedPct = parsePercent(data.usedPct);
 
   return {
@@ -94,7 +66,7 @@ export function parsePremiumLocalState(raw: string | null): PremiumLocalState {
     removed: data.removed === true,
     lastStatus,
     usedPct,
-    resetsAt: parseResetsAt(data.resetsAt),
+    resetsAt: parseIsoDate(data.resetsAt),
     devices: parseDevices(data.devices),
   };
 }

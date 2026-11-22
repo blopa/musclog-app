@@ -3,9 +3,15 @@ import type { Store } from '../config';
 import type { Ctx } from '../context';
 import { stmt } from '../db';
 import { computePeriodCaps } from '../finance';
+import { latestPeriod } from '../identity/devices';
 import { ApiError } from '../http';
+import { findLivePeriod, type PeriodRow } from '../ledger';
 import { lineagePrefix } from '../log';
-import type { RcSubscription, RcTransaction } from '../upstream/types';
+import {
+  RevenueCatUnavailableError,
+  type RcSubscription,
+  type RcTransaction,
+} from '../upstream/types';
 import {
   coveringTransaction,
   isFirstTransaction,
@@ -148,4 +154,33 @@ export async function reverifySubscription(
   const txs = await ctx.deps.revenuecat.listTransactions(sub.id);
   const { paymentKey, lineageKey } = await ensurePeriod(ctx, sub, txs, now);
   return { status: 'active', paymentKey, lineageKey, sub };
+}
+
+/** Runs a RevenueCat call; an unavailable RevenueCat is a 503 entitlement_unavailable. */
+export async function withRevenueCat<T>(run: () => Promise<T>): Promise<T> {
+  try {
+    return await run();
+  } catch (e) {
+    if (e instanceof RevenueCatUnavailableError) throw new ApiError(503, 'entitlement_unavailable');
+    throw e;
+  }
+}
+
+/**
+ * A renewal: the next period does not exist until RevenueCat is asked. Re-verifies the lineage's
+ * latest subscription and returns the live period when it is still active, else null.
+ */
+export async function renewedLivePeriod(
+  ctx: Ctx,
+  rcId: string,
+  lineageKey: string,
+  now: number
+): Promise<PeriodRow | null> {
+  const latest = await latestPeriod(ctx.env.DB, lineageKey);
+  if (!latest) return null;
+  const verified = await withRevenueCat(() =>
+    reverifySubscription(ctx, latest.rc_subscription_id, now)
+  );
+  if (verified.status !== 'active') return null;
+  return findLivePeriod(ctx.env.DB, rcId, now);
 }

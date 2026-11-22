@@ -25,6 +25,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import {
   busyLineFor,
+  dismissPremiumActionFailure,
   getPremiumConsentPending,
   type PremiumBusyLine,
   subscribePremiumActivity,
@@ -68,7 +69,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
-  const premium = usePremium();
+  const premium = usePremium({ load: visible });
   const { view, busy, activity, consentNeeded } = premium;
   const busyLine = busyLineFor(activity);
   const consentPending = useSyncExternalStore(
@@ -82,6 +83,16 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
   const [dialog, setDialog] = useState<PremiumDialog>('consent');
   const renewal = formatRenewalDate(view.resetsAt, locale);
   const manageUrl = manageSubscriptionUrl(Platform.OS);
+
+  // A failure belongs to the screen it was shown on: closing it forgets it, so the next open starts
+  // clean (one that landed while closed is shown on the next open).
+  useEffect(() => {
+    if (!visible) {
+      return undefined;
+    }
+
+    return dismissPremiumActionFailure;
+  }, [visible]);
 
   const openDialog = (next: PremiumDialog) => {
     setDialog(next);

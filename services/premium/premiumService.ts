@@ -15,13 +15,21 @@ import {
 import { reportPremiumFailure } from '@/services/premium/premiumTelemetry';
 import {
   buyMonthly,
-  configureRevenueCat,
+  ensureRevenueCatIdentity,
   getConfiguredAppUserId,
   logInTo,
   restorePurchases,
+  STORE_ALREADY_PURCHASED,
+  STORE_CANCELLED,
+  storeErrorCodeOf,
 } from '@/services/premium/revenueCat';
 import { hexToBytes } from '@/utils/premium/deviceKeyCrypto';
-import { type FetchLike, hostedConfig, hostedUsage } from '@/utils/premium/hostedClient';
+import {
+  type FetchLike,
+  hostedConfig,
+  type HostedResult,
+  hostedUsage,
+} from '@/utils/premium/hostedClient';
 import type { PremiumProgress } from '@/utils/premium/premiumActivity';
 import {
   enrollDevice,
@@ -97,7 +105,7 @@ async function withBaseUrl<T>(
  */
 class SessionState {
   private cached: { rcId: string; grant: SessionGrant } | null = null;
-  inFlight: Promise<PremiumResult<SessionGrant>> | null = null;
+  private inFlight: Promise<PremiumResult<SessionGrant>> | null = null;
   private generation = 0;
 
   begin(): number {
@@ -124,6 +132,27 @@ class SessionState {
 
   remember(rcId: string, grant: SessionGrant): void {
     this.cached = { rcId, grant };
+  }
+
+  /** The request already in flight, or `run` started now. It clears itself once settled. */
+  shared(run: () => Promise<PremiumResult<SessionGrant>>): Promise<PremiumResult<SessionGrant>> {
+    if (this.inFlight) {
+      return this.inFlight;
+    }
+
+    const pending = run();
+
+    this.inFlight = pending;
+
+    const clear = () => {
+      if (this.inFlight === pending) {
+        this.inFlight = null;
+      }
+    };
+
+    pending.then(clear, clear);
+
+    return pending;
   }
 
   reset(): void {
@@ -160,13 +189,18 @@ async function markRemoved(startedIn: number): Promise<void> {
   await savePremiumLocalState({ removed: true });
 }
 
-export async function getPremiumStatus(): Promise<PremiumStatus> {
+/** The device key and the local record, and whether that record is this device's enrollment. */
+async function loadEnrollment() {
   const key = await loadDeviceKeyInfo().catch(() => null);
   const local = await loadPremiumLocalState();
-  const enrolledHere = key !== null && local.rcId === key.rcId;
+
+  return { key, local, enrolledHere: key !== null && local.rcId === key.rcId };
+}
+
+export async function getPremiumStatus(): Promise<PremiumStatus> {
+  const { local, enrolledHere } = await loadEnrollment();
 
   return derivePremiumStatus({
-    hasKey: key !== null,
     enrolledRcId: enrolledHere ? local.rcId : null,
     removed: enrolledHere && local.removed,
     lastStatus: local.lastStatus,
@@ -204,19 +238,10 @@ export function enrollThisDevice(): Promise<PremiumResult<SessionGrant>> {
 type PurchaseStepResult =
   { rcId: string } | { failure: 'purchase_cancelled' | 'purchase_failed' | 'restore_failed' };
 
-const STORE_ALREADY_PURCHASED = '6';
-const STORE_CANCELLED = '1';
-
-function storeErrorCodeOf(e: unknown): string | undefined {
-  const code = (e as { code?: unknown } | null)?.code;
-
-  return code === undefined || code === null ? undefined : String(code);
-}
-
 /** Store-verified restore under the key-derived id; reports a store refusal and says it failed. */
 async function restoreStep(rcId: string): Promise<PurchaseStepResult> {
   try {
-    await configureRevenueCat(rcId);
+    await ensureRevenueCatIdentity(rcId);
     await restorePurchases();
 
     return { rcId };
@@ -231,7 +256,7 @@ async function restoreStep(rcId: string): Promise<PurchaseStepResult> {
 
 async function purchaseStep(rcId: string): Promise<PurchaseStepResult> {
   try {
-    await configureRevenueCat(rcId);
+    await ensureRevenueCatIdentity(rcId);
     await buyMonthly();
 
     return { rcId };
@@ -310,10 +335,9 @@ function mintAndRemember(rcId: string): Promise<PremiumResult<SessionGrant>> {
 
 /** A usable session token, refreshed 5 minutes before it expires. Never enrolls by itself. */
 export async function getSessionGrant(): Promise<PremiumResult<SessionGrant>> {
-  const key = await loadDeviceKeyInfo().catch(() => null);
-  const local = await loadPremiumLocalState();
+  const { key, local, enrolledHere } = await loadEnrollment();
 
-  if (key === null || local.rcId !== key.rcId) {
+  if (key === null || !enrolledHere) {
     return { ok: false, failure: 'not_enrolled' };
   }
 
@@ -327,82 +351,81 @@ export async function getSessionGrant(): Promise<PremiumResult<SessionGrant>> {
     return { ok: true, value: usable };
   }
 
-  if (!session.inFlight) {
-    const run = mintAndRemember(key.rcId);
-
-    session.inFlight = run;
-
-    const clear = () => {
-      if (session.inFlight === run) {
-        session.inFlight = null;
-      }
-    };
-
-    run.then(clear, clear);
-  }
-
-  return session.inFlight;
+  return session.shared(() => mintAndRemember(key.rcId));
 }
 
-type UsageAttempt =
-  | { done: PremiumResult<UsageSnapshot> }
-  | { failed: ReturnType<typeof failureKindOf>; status: number };
+type GrantFailure = Extract<PremiumResult<SessionGrant>, { ok: false }>;
+
+/**
+ * Calls a session route with the cached token. A token the Worker refuses is dropped and the call
+ * is made once more with a new one; any other answer (including a failure) is returned as it is.
+ */
+async function withSessionToken(
+  call: (token: string) => Promise<HostedResult>
+): Promise<{ ok: true; result: HostedResult } | { ok: false; grant: GrantFailure }> {
+  const grant = await getSessionGrant();
+
+  if (!grant.ok) {
+    return { ok: false, grant };
+  }
+
+  let result = await call(grant.value.sessionToken);
+
+  if (!result.ok && failureKindOf(result) === 'unauthorized') {
+    session.invalidateToken();
+
+    const again = await getSessionGrant();
+
+    if (!again.ok) {
+      return { ok: false, grant: again };
+    }
+
+    result = await call(again.value.sessionToken);
+  }
+
+  return { ok: true, result };
+}
 
 /** `/v1/usage`: a percentage and a status. Retries once with a new token if the cached one died. */
 export function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
   return withBaseUrl('usage', async (baseUrl) => {
     const startedIn = session.begin();
+    const outcome = await withSessionToken((token) => hostedUsage(baseUrl, token, platformFetch));
 
-    const attempt = async (): Promise<UsageAttempt> => {
-      const grant = await getSessionGrant();
+    if (!outcome.ok) {
+      return outcome.grant;
+    }
 
-      if (!grant.ok) {
-        return { done: grant };
+    const { result } = outcome;
+
+    if (!result.ok) {
+      const failure = failureKindOf(result);
+
+      reportPremiumFailure('usage', failure, { status: result.status });
+
+      if (failure === 'unknown_device') {
+        await markRemoved(startedIn);
       }
 
-      const result = await hostedUsage(baseUrl, grant.value.sessionToken, platformFetch);
-
-      if (result.ok) {
-        const usage = parseUsage(result.body);
-
-        if (!usage) {
-          reportPremiumFailure('usage', 'invalid_response', { status: result.status });
-
-          return { done: { ok: false, failure: 'invalid_response' } };
-        }
-
-        await savePremiumLocalState({
-          lastStatus: usage.status,
-          usedPct: usage.usedPct,
-          resetsAt: usage.resetsAt,
-          devices: usage.devices,
-        });
-
-        return { done: { ok: true, value: usage } };
-      }
-
-      return { failed: failureKindOf(result), status: result.status };
-    };
-
-    let outcome = await attempt();
-
-    if ('failed' in outcome && outcome.failed === 'unauthorized') {
-      // The cached token died: mint a new one and ask once more.
-      session.invalidateToken();
-      outcome = await attempt();
+      return { ok: false, failure };
     }
 
-    if ('done' in outcome) {
-      return outcome.done;
+    const usage = parseUsage(result.body);
+
+    if (!usage) {
+      reportPremiumFailure('usage', 'invalid_response', { status: result.status });
+
+      return { ok: false, failure: 'invalid_response' };
     }
 
-    reportPremiumFailure('usage', outcome.failed, { status: outcome.status });
+    await savePremiumLocalState({
+      lastStatus: usage.status,
+      usedPct: usage.usedPct,
+      resetsAt: usage.resetsAt,
+      devices: usage.devices,
+    });
 
-    if (outcome.failed === 'unknown_device') {
-      await markRemoved(startedIn);
-    }
-
-    return { ok: false, failure: outcome.failed };
+    return { ok: true, value: usage };
   });
 }
 

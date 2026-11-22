@@ -1,40 +1,28 @@
-// The one hook the Premium screens use (plan 11 item 7). When Premium is switched off in this build
-// it does nothing: no service call, no subscription, and the view stays "loading".
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+// The one hook the Premium screens use (plan 11 item 7). It only reads: the overview, the activity
+// and the last failure live in module-level stores (`services/premium/premiumStore.ts`,
+// `utils/premium/premiumActivity.ts`) that outlive every screen. When Premium is switched off in this
+// build it does nothing: no service call, no subscription, and the view stays "loading".
+import { createContext, useContext, useEffect, useMemo, useSyncExternalStore } from 'react';
 
-import { SETTINGS } from '@/constants/settingDefinitions';
-import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
+import { recordPremiumConsent } from '@/services/premium/premiumActions';
 import {
-  disableHostedIfRemoved,
-  loadPremiumOverview,
-  type PremiumOverview,
-  resetPremiumOnThisDevice,
-} from '@/services/premium/premiumActions';
-import { purchaseAndEnroll, restoreAndEnroll } from '@/services/premium/premiumService';
+  getPremiumOverview,
+  refreshPremiumOverview,
+  resetPremiumDevice,
+  restorePremium,
+  setUseHostedAi,
+  subscribePremium,
+  subscribePremiumOverview,
+} from '@/services/premium/premiumStore';
 import { getHostedSignal, subscribeHostedSignal } from '@/utils/premium/hostedSignal';
 import {
-  beginPremiumActivity,
-  endPremiumActivity,
+  getPremiumActionFailure,
   getPremiumActivity,
   type PremiumActivity,
-  type PremiumActivityKind,
-  type PremiumProgress,
-  reportPremiumProgress,
   subscribePremiumActivity,
-  takeUnseenPremiumFailure,
 } from '@/utils/premium/premiumActivity';
-import { needsPremiumConsent, PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
-import type { PremiumActionFailure } from '@/utils/premium/premiumState';
+import { needsPremiumConsent } from '@/utils/premium/premiumConsent';
 import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 import { buildPremiumViewModel, type PremiumViewModel } from '@/utils/premium/premiumUiState';
 
@@ -55,13 +43,21 @@ export type UsePremium = {
   recordConsent(): Promise<void>;
 };
 
-/** What a Premium action reports: it went through, or it failed for a reason the screen shows. */
-type ActionResult = { ok: true } | { ok: false; failure: PremiumActionFailure };
-
 type PremiumActions = Pick<
   UsePremium,
   'subscribe' | 'restore' | 'refresh' | 'setUseHostedAi' | 'reset' | 'recordConsent'
 >;
+
+const LIVE_ACTIONS: PremiumActions = {
+  subscribe: subscribePremium,
+  restore: restorePremium,
+  refresh: refreshPremiumOverview,
+  setUseHostedAi,
+  reset: async () => {
+    await resetPremiumDevice();
+  },
+  recordConsent: recordPremiumConsent,
+};
 
 // Handed out while Premium is switched off: every action is a no-op, so no callback checks the flag.
 const INERT_ACTIONS: PremiumActions = {
@@ -80,185 +76,37 @@ const INERT_ACTIONS: PremiumActions = {
  */
 export const PremiumFixtureContext = createContext<UsePremium | null>(null);
 
-export function usePremium(): UsePremium {
+/**
+ * `load` asks for the overview (one shared request, read again each time it turns on): only a screen
+ * that shows it passes it, so a component that merely checks `enabled` costs no request.
+ */
+export function usePremium({ load = false }: { load?: boolean } = {}): UsePremium {
   const fixture = useContext(PremiumFixtureContext);
   const enabled = isPremiumUiEnabled();
-  const [overview, setOverview] = useState<PremiumOverview | null>(null);
-  const [lastActionFailure, setLastActionFailure] = useState<PremiumActionFailure | null>(null);
+  const overview = useSyncExternalStore(
+    subscribePremiumOverview,
+    getPremiumOverview,
+    getPremiumOverview
+  );
   const activity = useSyncExternalStore(
     subscribePremiumActivity,
     getPremiumActivity,
     getPremiumActivity
   );
-  const busy = activity !== null;
-  const { useHostedAi, premiumConsentVersion: consentVersion } = useSettings();
-  const mounted = useRef(true);
+  const lastActionFailure = useSyncExternalStore(
+    subscribePremiumActivity,
+    getPremiumActionFailure,
+    getPremiumActionFailure
+  );
   const signal = useSyncExternalStore(subscribeHostedSignal, getHostedSignal, getHostedSignal);
+  const { useHostedAi, premiumConsentVersion: consentVersion } = useSettings();
+  const busy = activity !== null;
 
   useEffect(() => {
-    mounted.current = true;
-
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    // An action that failed while no screen was mounted: show its result now (after the effect,
-    // so no state is set synchronously inside it).
-    let cancelled = false;
-
-    Promise.resolve().then(() => {
-      const failure = cancelled ? null : takeUnseenPremiumFailure();
-
-      if (failure) {
-        setLastActionFailure(failure);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Setting state after unmount is a no-op, and a removed device must switch hosted AI off either way.
-  const applyOverview = useCallback(async (next: PremiumOverview) => {
-    setOverview(next);
-    await disableHostedIfRemoved(next.status);
-  }, []);
-
-  const refresh = useCallback(async () => {
-    await applyOverview(await loadPremiumOverview());
-  }, [applyOverview]);
-
-  useEffect(() => {
-    if (!enabled) {
-      return;
+    if (enabled && load) {
+      refreshPremiumOverview();
     }
-
-    let cancelled = false;
-
-    loadPremiumOverview()
-      .then((next) => {
-        if (!cancelled) {
-          return applyOverview(next);
-        }
-
-        return undefined;
-      })
-      .catch(() => undefined);
-
-    return () => {
-      cancelled = true;
-    };
-  }, [enabled, applyOverview]);
-
-  // One action at a time, tracked in a store that outlives this hook: closing the screen neither
-  // stops the service call nor loses its result (a finished purchase still asks for consent later).
-  const runAction = useCallback(
-    async (
-      kind: PremiumActivityKind,
-      action: (onProgress: (stage: PremiumProgress) => void) => Promise<ActionResult>,
-      // Flipping the AI switch changes nothing the Worker reports: no reload, the notice stays.
-      reloadAfter = true
-    ) => {
-      if (!beginPremiumActivity(kind)) {
-        return false;
-      }
-
-      let outcome: Parameters<typeof endPremiumActivity>[1] = { ok: false, failure: null };
-
-      try {
-        const result = await action(reportPremiumProgress);
-
-        if (result.ok) {
-          outcome = { ok: true };
-
-          if (mounted.current && reloadAfter) {
-            setLastActionFailure(null);
-            await refresh();
-          }
-
-          return true;
-        }
-
-        outcome = { ok: false, failure: result.failure };
-
-        if (mounted.current) {
-          setLastActionFailure(result.failure);
-          takeUnseenPremiumFailure();
-        }
-
-        return false;
-      } finally {
-        endPremiumActivity(kind, outcome);
-      }
-    },
-    [refresh]
-  );
-
-  const liveActions = useMemo<PremiumActions>(() => {
-    // A purchase or restore only enrolls the device. When the consent for this version is already on
-    // file (a reset keeps it) the switch has no question left to wait for, so it goes on here; without
-    // the consent it stays off and PremiumModal asks. Read at call time, never from a render snapshot.
-    const switchOnWhenConsented = async () => {
-      const stored = await SettingsService.get(SETTINGS.premiumConsentVersion);
-
-      if (!needsPremiumConsent(stored, false, true)) {
-        await SettingsService.set(SETTINGS.useHostedAi, true);
-      }
-    };
-
-    const enrollThenSwitchOn =
-      (enroll: (onProgress: (stage: PremiumProgress) => void) => Promise<ActionResult>) =>
-      async (onProgress: (stage: PremiumProgress) => void): Promise<ActionResult> => {
-        const result = await enroll(onProgress);
-
-        if (result.ok) {
-          await switchOnWhenConsented().catch(() => undefined);
-        }
-
-        return result;
-      };
-
-    const subscribe = () => runAction('subscribe', enrollThenSwitchOn(purchaseAndEnroll));
-    const restore = () => runAction('restore', enrollThenSwitchOn(restoreAndEnroll));
-
-    const setUseHostedAi = async (on: boolean) => {
-      await runAction(
-        'toggle',
-        async () => {
-          await SettingsService.set(SETTINGS.useHostedAi, on);
-
-          return { ok: true };
-        },
-        false
-      );
-    };
-
-    const reset = async () => {
-      await runAction('reset', async () => {
-        await resetPremiumOnThisDevice();
-
-        if (mounted.current) {
-          setLastActionFailure(null);
-        }
-
-        return { ok: true };
-      });
-    };
-
-    const recordConsent = async () => {
-      await SettingsService.set(SETTINGS.premiumConsentVersion, PREMIUM_CONSENT_VERSION);
-    };
-
-    return { subscribe, restore, refresh, setUseHostedAi, reset, recordConsent };
-  }, [runAction, refresh]);
-
-  const consentNeeded = useCallback(
-    (nextValue: boolean) => needsPremiumConsent(consentVersion, useHostedAi, nextValue),
-    [consentVersion, useHostedAi]
-  );
+  }, [enabled, load]);
 
   const view = useMemo(
     () =>
@@ -274,7 +122,7 @@ export function usePremium(): UsePremium {
     [enabled, overview, lastActionFailure, signal, busy]
   );
 
-  const actions = enabled ? liveActions : INERT_ACTIONS;
+  const actions = enabled ? LIVE_ACTIONS : INERT_ACTIONS;
   const priceString = enabled ? (overview?.priceString ?? null) : null;
 
   // One stable object per change: a consumer that lists the hook's result in an effect's
@@ -288,9 +136,14 @@ export function usePremium(): UsePremium {
       activity,
       useHostedAi,
       ...actions,
-      consentNeeded,
+      consentNeeded: (nextValue) =>
+        needsPremiumConsent({
+          storedVersion: consentVersion,
+          currentlyOn: useHostedAi,
+          nextValue,
+        }),
     }),
-    [enabled, view, priceString, busy, activity, useHostedAi, actions, consentNeeded]
+    [enabled, view, priceString, busy, activity, useHostedAi, actions, consentVersion]
   );
 
   return fixture ?? live;

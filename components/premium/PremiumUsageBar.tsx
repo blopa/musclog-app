@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import { formatMediumDate } from '@/utils/formatMediumDate';
 import { PREMIUM_WARNING_PCT } from '@/utils/premium/premiumUiState';
 
 export type PremiumUsageTone = 'normal' | 'warning' | 'error';
@@ -23,21 +24,7 @@ export function usageTone(usedPct: number): PremiumUsageTone {
 
 /** The renewal date in the app language, or null when the stored instant is missing or unreadable. */
 export function formatRenewalDate(iso: string | null, locale: string): string | null {
-  if (!iso) {
-    return null;
-  }
-
-  const date = new Date(iso);
-
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  try {
-    return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
-  } catch {
-    return null;
-  }
+  return formatMediumDate(iso, locale);
 }
 
 function fillColorFor(tone: PremiumUsageTone, theme: Theme): string {

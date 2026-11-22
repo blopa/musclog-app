@@ -93,6 +93,41 @@ describe('revenueCat', () => {
     expect(h.getConfiguredAppUserId()).toBe(RC_ID);
   });
 
+  it('ensureRevenueCatIdentity logs in when the SDK was configured under another id', async () => {
+    const h = load();
+    const OTHER = `mlg1_${'b'.repeat(64)}`;
+
+    await h.configureRevenueCat(OTHER);
+    purchases.getAppUserID.mockResolvedValueOnce(OTHER);
+    purchases.logIn.mockResolvedValue({ created: false, customerInfo: {} });
+
+    await h.ensureRevenueCatIdentity(RC_ID);
+
+    expect(purchases.logIn).toHaveBeenCalledWith(RC_ID);
+    expect(h.getConfiguredAppUserId()).toBe(RC_ID);
+  });
+
+  it('ensureRevenueCatIdentity does not log in when the id already matches', async () => {
+    const h = load();
+
+    await h.configureRevenueCat(RC_ID);
+    purchases.logIn.mockClear();
+    await h.ensureRevenueCatIdentity(RC_ID);
+
+    expect(purchases.logIn).not.toHaveBeenCalled();
+  });
+
+  it('ensureRevenueCatIdentity lets a failed log-in throw', async () => {
+    const h = load();
+    const OTHER = `mlg1_${'b'.repeat(64)}`;
+
+    await h.configureRevenueCat(OTHER);
+    purchases.getAppUserID.mockResolvedValueOnce(OTHER);
+    purchases.logIn.mockRejectedValueOnce(new Error('offline'));
+
+    await expect(h.ensureRevenueCatIdentity(RC_ID)).rejects.toThrow('offline');
+  });
+
   it('buyMonthly refuses before configure and picks current.monthly', async () => {
     const h = load();
 

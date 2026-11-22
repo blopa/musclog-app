@@ -3,7 +3,7 @@
 // and an overrun settle records itself for the breaker in the same batch.
 import { recordOverrunStatements } from './breaker';
 import { stmt, type Params } from './db';
-import { DAY_MS } from './finance';
+import { DAY_MS, effectiveCap } from './finance';
 
 export { DAY_MS };
 
@@ -209,7 +209,7 @@ async function diagnose(db: D1Database, i: ReserveInput): Promise<ReserveOutcome
     .first<PeriodRow>();
   if (!p || p.status !== 'active' || i.now < p.period_start || i.now >= p.period_end)
     return 'no_period';
-  const cap = i.now < p.early_until ? p.early_cap_u : p.cap_u;
+  const cap = effectiveCap(p, i.now);
   if (p.spent_u + p.reserved_u + i.r > cap) return 'budget_exhausted';
   const sameDay = p.day === i.day;
   if ((sameDay ? p.day_spent_u : 0) + p.reserved_u + i.r > p.daily_cap_u) return 'daily_limit';

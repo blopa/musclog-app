@@ -11,12 +11,16 @@ export type PremiumActivityKind = 'subscribe' | 'restore' | 'reset' | 'toggle';
 export type PremiumProgress = 'store' | 'confirming';
 
 /** The stage shown to the person: `slow` is `confirming` after `SLOW_CONFIRM_MS`. */
-export type PremiumStage = PremiumProgress | 'slow';
+export type PremiumActivityStage = PremiumProgress | 'slow';
 
 /** One line per thing Premium can be busy with (a whole-key table in the modal maps it to copy). */
-export type PremiumBusyLine = PremiumStage | 'reset' | 'toggle';
+export type PremiumBusyLine = PremiumActivityStage | 'reset' | 'toggle';
 
-export type PremiumActivity = { kind: PremiumActivityKind; stage: PremiumStage | null };
+export type PremiumActivity = { kind: PremiumActivityKind; stage: PremiumActivityStage | null };
+
+/** How an activity ended: it went through, or it failed for a reason the screen shows. */
+export type PremiumActivityOutcome =
+  { ok: true } | { ok: false; failure: PremiumActionFailure | null };
 
 /** After this long confirming, the line admits it is slow. No countdown, no percentage. */
 export const SLOW_CONFIRM_MS = 6000;
@@ -24,10 +28,11 @@ export const SLOW_CONFIRM_MS = 6000;
 type Snapshot = {
   activity: PremiumActivity | null;
   consentPending: boolean;
-  unseenFailure: PremiumActionFailure | null;
+  /** The last action's failure, until a new action starts, one succeeds or the screen is closed. */
+  failure: PremiumActionFailure | null;
 };
 
-const IDLE: Snapshot = { activity: null, consentPending: false, unseenFailure: null };
+const IDLE: Snapshot = { activity: null, consentPending: false, failure: null };
 
 let snapshot: Snapshot = IDLE;
 let slowTimer: ReturnType<typeof setTimeout> | undefined;
@@ -77,7 +82,7 @@ export function beginPremiumActivity(kind: PremiumActivityKind): boolean {
   publish({
     ...snapshot,
     activity: { kind, stage: isPurchase ? 'store' : null },
-    unseenFailure: null,
+    failure: null,
   });
 
   return true;
@@ -115,12 +120,12 @@ export function reportPremiumProgress(progress: PremiumProgress): void {
 
 /**
  * Ends the running activity. A purchase or restore that went through leaves the consent question
- * pending, so a modal that was closed meanwhile still asks it on its next open; a failure that
- * nobody saw is kept for the next screen that mounts.
+ * pending, so a modal that was closed meanwhile still asks it on its next open; a failure stays in
+ * the store, so a screen that was closed meanwhile shows it when it opens.
  */
 export function endPremiumActivity(
   kind: PremiumActivityKind,
-  outcome: { ok: true } | { ok: false; failure: PremiumActionFailure | null }
+  outcome: PremiumActivityOutcome
 ): void {
   clearSlowTimer();
 
@@ -133,7 +138,7 @@ export function endPremiumActivity(
   publish({
     activity: null,
     consentPending: snapshot.consentPending || (isPurchase && outcome.ok),
-    unseenFailure: outcome.ok ? null : outcome.failure,
+    failure: outcome.ok ? null : outcome.failure,
   });
 }
 
@@ -148,15 +153,16 @@ export function takePremiumConsentPending(): boolean {
   return was;
 }
 
-/** The failure of an action that ended while no screen was showing it, once. */
-export function takeUnseenPremiumFailure(): PremiumActionFailure | null {
-  const failure = snapshot.unseenFailure;
+/** The failure of the last action, or null. */
+export function getPremiumActionFailure(): PremiumActionFailure | null {
+  return snapshot.failure;
+}
 
-  if (failure !== null) {
-    publish({ ...snapshot, unseenFailure: null });
+/** Forgets the last failure; the Premium screen calls it when it closes, so a reopen starts clean. */
+export function dismissPremiumActionFailure(): void {
+  if (snapshot.failure !== null) {
+    publish({ ...snapshot, failure: null });
   }
-
-  return failure;
 }
 
 /** Tests only. */

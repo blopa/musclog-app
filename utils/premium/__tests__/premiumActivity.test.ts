@@ -8,7 +8,8 @@ import {
   resetPremiumActivity,
   SLOW_CONFIRM_MS,
   takePremiumConsentPending,
-  takeUnseenPremiumFailure,
+  dismissPremiumActionFailure,
+  getPremiumActionFailure,
 } from '@/utils/premium/premiumActivity';
 
 beforeEach(() => {
@@ -92,16 +93,26 @@ describe('premiumActivity results that outlive a screen', () => {
     expect(getPremiumConsentPending()).toBe(false);
   });
 
-  it('keeps an unseen failure for the next screen, once, and clears it on the next start', () => {
+  it('keeps the last failure in the store until it is dismissed or a new action starts', () => {
     beginPremiumActivity('subscribe');
     endPremiumActivity('subscribe', { ok: false, failure: 'purchase_failed' });
 
-    expect(takeUnseenPremiumFailure()).toBe('purchase_failed');
-    expect(takeUnseenPremiumFailure()).toBeNull();
+    expect(getPremiumActionFailure()).toBe('purchase_failed');
+    expect(getPremiumActionFailure()).toBe('purchase_failed');
 
+    dismissPremiumActionFailure();
+    expect(getPremiumActionFailure()).toBeNull();
+  });
+
+  it('clears the failure when a new action starts, and when one succeeds', () => {
     beginPremiumActivity('subscribe');
     endPremiumActivity('subscribe', { ok: false, failure: 'network' });
     beginPremiumActivity('restore');
-    expect(takeUnseenPremiumFailure()).toBeNull();
+    expect(getPremiumActionFailure()).toBeNull();
+    endPremiumActivity('restore', { ok: false, failure: 'restore_failed' });
+    expect(getPremiumActionFailure()).toBe('restore_failed');
+    beginPremiumActivity('reset');
+    endPremiumActivity('reset', { ok: true });
+    expect(getPremiumActionFailure()).toBeNull();
   });
 });

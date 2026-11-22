@@ -45,12 +45,16 @@ export function generateDeviceKey(seed?: Uint8Array): {
   return { secretKey, publicKey: p256.getPublicKey(secretKey, false) };
 }
 
+/** The ONE definition of the key-derived id's shape (the Worker's `identity/crypto.ts` derives the same). */
+export const RC_ID_PREFIX = 'mlg1_';
+export const RC_ID_PATTERN = /^mlg1_[0-9a-f]{64}$/;
+
 export function deriveRcId(publicKey65: Uint8Array): string {
   if (publicKey65.length !== 65 || publicKey65[0] !== 4) {
     throw new Error('Expected a 65-byte uncompressed P-256 public key');
   }
 
-  return 'mlg1_' + bytesToHex(sha256(publicKey65));
+  return RC_ID_PREFIX + bytesToHex(sha256(publicKey65));
 }
 
 export function buildSigningString(

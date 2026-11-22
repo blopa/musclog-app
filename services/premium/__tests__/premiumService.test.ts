@@ -10,6 +10,7 @@ import {
 import {
   buyMonthly,
   configureRevenueCat,
+  ensureRevenueCatIdentity,
   getConfiguredAppUserId,
   logInTo,
   restorePurchases,
@@ -56,10 +57,15 @@ jest.mock('@/services/premium/deviceKeyStore', () => ({
 
 jest.mock('@/services/premium/revenueCat', () => ({
   configureRevenueCat: jest.fn(),
+  ensureRevenueCatIdentity: jest.fn(),
   buyMonthly: jest.fn(),
   restorePurchases: jest.fn(),
   logInTo: jest.fn(),
   getConfiguredAppUserId: jest.fn(),
+  STORE_ALREADY_PURCHASED: '6',
+  STORE_CANCELLED: '1',
+  storeErrorCodeOf: (e: { code?: unknown } | null) =>
+    e?.code === undefined || e?.code === null ? undefined : String(e.code),
 }));
 
 jest.mock('@/services/premium/premiumTelemetry', () => ({
@@ -82,6 +88,7 @@ const keyStore = {
 };
 const rc = {
   configureRevenueCat: configureRevenueCat as jest.Mock,
+  ensureRevenueCatIdentity: ensureRevenueCatIdentity as jest.Mock,
   buyMonthly: buyMonthly as jest.Mock,
   restorePurchases: restorePurchases as jest.Mock,
   logInTo: logInTo as jest.Mock,
@@ -231,6 +238,14 @@ beforeEach(() => {
 
     return { appUserID: keys.rcId, alreadyConfigured: false, matchesRequested: true };
   });
+  // Mirrors the real helper: configure, then log in when the SDK answers under another id.
+  rc.ensureRevenueCatIdentity.mockImplementation(async (rcId: string) => {
+    const configured = await rc.configureRevenueCat(rcId);
+
+    if (!configured.matchesRequested) {
+      await rc.logInTo(rcId);
+    }
+  });
   rc.buyMonthly.mockImplementation(async () => {
     order.push('buy');
 
@@ -284,6 +299,7 @@ describe('purchaseAndEnroll', () => {
     const result = await purchaseAndEnroll();
 
     expect(result.ok).toBe(true);
+    expect(rc.ensureRevenueCatIdentity).toHaveBeenCalledWith(keys.rcId);
     expect(rc.configureRevenueCat).toHaveBeenCalledWith(keys.rcId);
     expect(order.slice(0, 3)).toEqual(['key', 'configure', 'buy']);
     expect(requestsTo('/v1/enroll')).toHaveLength(1);
@@ -671,10 +687,10 @@ describe('fetchPremiumConfig', () => {
 });
 
 describe('getPremiumStatus', () => {
-  it('is no_key when there is no device key', async () => {
+  it('is not_enrolled when there is no device key', async () => {
     keyStore.loadDeviceKeyInfo.mockResolvedValueOnce(null);
 
-    expect(await getPremiumStatus()).toBe('no_key');
+    expect(await getPremiumStatus()).toBe('not_enrolled');
   });
 
   it('is not_enrolled when the local state names another rcId', async () => {

@@ -7,6 +7,12 @@
  */
 import { setHostedSignal } from './premium/hostedSignal';
 import type { PremiumActionFailure } from './premium/premiumState';
+import {
+  numericSeconds,
+  parseWorkerError,
+  type WorkerError,
+  type WorkerErrorCode,
+} from './premium/workerError';
 
 export type HostedErrorKind =
   | 'budget' // the period's allowance is used up (402 budget_exhausted)
@@ -131,14 +137,6 @@ export function hostedGrantError(failure: PremiumActionFailure): HostedAiError {
 
 const RETRYABLE_STATUSES = new Set([502, 503, 504]);
 
-const numericSeconds = (value: unknown): number | undefined => {
-  const seconds = typeof value === 'number' ? value : Number(value);
-
-  return value !== undefined && value !== null && Number.isFinite(seconds) && seconds >= 0
-    ? seconds
-    : undefined;
-};
-
 /** What an OpenAI SDK failure exposes: `status`, the parsed body on `error`, and `headers`. */
 type SdkFailure = {
   status?: unknown;
@@ -147,34 +145,23 @@ type SdkFailure = {
   headers?: { get?: (name: string) => string | null | undefined };
 };
 
-/** The fields of a Worker error body that decide the hosted kind. */
-export interface WorkerBody {
-  code: string;
-  resetsAt?: string;
-  retryAfterSeconds?: number;
-}
-
-const asRecord = (value: unknown): Record<string, unknown> =>
-  typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {};
-
 /**
- * Reads the Worker's body from an SDK failure. The Worker sends `{ error: { code, message,
- * retry_after?, resets_at? } }`; the SDK keeps that body on `error.error`, so the fields come from
- * the inner object when there is one. `retry_after` falls back to the `retry-after` header.
+ * Reads the Worker's body from an SDK failure (`parseWorkerError` reads the envelope). The SDK keeps
+ * the body on `error.error`. `retry_after` falls back to the `retry-after` header.
  */
-export function readWorkerBody(failure: SdkFailure): WorkerBody {
-  const body = asRecord(failure.error);
-  const inner = typeof body.error === 'object' && body.error !== null ? asRecord(body.error) : body;
+export function readWorkerBody(failure: SdkFailure): WorkerError {
+  const parsed = parseWorkerError(failure.error);
   const headerValue =
     typeof failure.headers?.get === 'function' ? failure.headers.get('retry-after') : undefined;
-  const resetsAt = typeof inner.resets_at === 'string' ? inner.resets_at : undefined;
 
   return {
-    code: typeof inner.code === 'string' ? inner.code : '',
-    resetsAt,
-    retryAfterSeconds: numericSeconds(inner.retry_after) ?? numericSeconds(headerValue),
+    ...parsed,
+    retryAfterSeconds: parsed.retryAfterSeconds ?? numericSeconds(headerValue),
   };
 }
+
+/** Whether a Worker code equals one the app reacts to; a misspelt literal is a type error. */
+const is = (code: string, expected: WorkerErrorCode): boolean => code === expected;
 
 /**
  * Maps an SDK failure from the Musclog Worker to a hosted error, or `null` when it is not one the
@@ -197,29 +184,29 @@ export function toHostedAiError(error: unknown): HostedAiError | null {
     return new HostedAiError('unavailable');
   }
 
-  if (code === 'daily_full') {
+  if (is(code, 'daily_full')) {
     return new HostedAiError('dailyFull');
   }
 
   switch (status) {
     case 402:
-      return new HostedAiError(code === 'daily_limit' ? 'dailyLimit' : 'budget', { resetsAt });
+      return new HostedAiError(is(code, 'daily_limit') ? 'dailyLimit' : 'budget', { resetsAt });
     case 403:
       return new HostedAiError('subscription');
     case 401:
-      return new HostedAiError(code === 'unknown_device' ? 'removed' : 'unavailable');
+      return new HostedAiError(is(code, 'unknown_device') ? 'removed' : 'unavailable');
     case 409:
-      if (code === 'in_progress') {
+      if (is(code, 'in_progress')) {
         return new HostedAiError('busy', { retryAfterSeconds });
       }
 
-      return code === 'already_processed' ? new HostedAiError('alreadyProcessed') : null;
+      return is(code, 'already_processed') ? new HostedAiError('alreadyProcessed') : null;
     case 429:
       return new HostedAiError('busy', { retryAfterSeconds });
     default:
       return status >= 500
         ? new HostedAiError('unavailable', {
-            retryable: code !== 'hosted_disabled' && RETRYABLE_STATUSES.has(status),
+            retryable: !is(code, 'hosted_disabled') && RETRYABLE_STATUSES.has(status),
           })
         : null;
   }
