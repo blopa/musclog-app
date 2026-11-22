@@ -1,0 +1,22 @@
+[
+  {
+    "created_at": "2026-03-22T22:33:57.909Z",
+    "created_by": null,
+    "default_guardrail_id": "a2602ae2-45f3-55c3-9dbc-9f9f2bf7a600",
+    "default_image_model": null,
+    "default_provider_sort": null,
+    "default_text_model": null,
+    "description": null,
+    "disabled_server_tools": null,
+    "id": "6f7976d8-2f26-55d8-a77a-ea0d45216d9e",
+    "include_byok_in_budgets": false,
+    "io_logging_api_key_ids": null,
+    "io_logging_sampling_rate": 1,
+    "is_data_discount_logging_enabled": false,
+    "is_observability_broadcast_enabled": false,
+    "is_observability_io_logging_enabled": false,
+    "name": "Default Workspace",
+    "slug": "default",
+    "updated_at": null
+  }
+]

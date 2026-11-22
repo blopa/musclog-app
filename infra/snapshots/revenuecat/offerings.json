@@ -1,0 +1,24 @@
+[
+  {
+    "created_at": 1795305128342,
+    "display_name": "Musclog Premium",
+    "id": "ofrngdd679ace9b",
+    "is_current": true,
+    "lookup_key": "default",
+    "metadata": null,
+    "object": "offering",
+    "packages": [
+      {
+        "created_at": 1795305167869,
+        "display_name": "Monthly",
+        "id": "pkge7f4555392b",
+        "lookup_key": "$rc_monthly",
+        "object": "package",
+        "position": 1
+      }
+    ],
+    "paywall_id": null,
+    "project_id": "projdce70efc",
+    "state": "active"
+  }
+]
