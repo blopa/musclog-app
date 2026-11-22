@@ -53,17 +53,204 @@ const ANIMATION: LoggyAnimation = {
       ],
       animatesOpacity: false,
     },
-    'pipe-smoke': {
-      origin: [0, 0],
+    'pipe-ember': {
+      origin: [397, 298],
+      durationMs: 2400,
+      easing: 'ease-in-out',
+      fns: [],
+      frames: [
+        { at: 0, args: [], opacity: 1 },
+        { at: 0.5, args: [], opacity: 0.45 },
+        { at: 1, args: [], opacity: 1 },
+      ],
+      animatesOpacity: true,
+    },
+    'smoke-1': {
+      origin: [392, 266],
       durationMs: 4800,
       easing: 'ease-in-out',
-      fns: ['translate'],
+      fns: ['translate', 'scale'],
       frames: [
-        { at: 0, args: [[0, 0]] },
-        { at: 0.5, args: [[0, -2]] },
-        { at: 1, args: [[0, 0]] },
+        {
+          at: 0,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 0.18,
+          args: [
+            [5, -14],
+            [1.15, 1.15],
+          ],
+          opacity: 0.7,
+        },
+        {
+          at: 0.34,
+          args: [
+            [-3, -32],
+            [1.4, 1.4],
+          ],
+          opacity: 0,
+        },
+        {
+          at: 0.38,
+          args: [
+            [0, 0],
+            [0.4, 0.4],
+          ],
+          opacity: 0,
+        },
+        {
+          at: 0.5,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 1,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
       ],
-      animatesOpacity: false,
+      animatesOpacity: true,
+    },
+    'smoke-2': {
+      origin: [392, 230],
+      durationMs: 4800,
+      easing: 'ease-in-out',
+      fns: ['translate', 'scale'],
+      frames: [
+        {
+          at: 0,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 0.22,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 0.4,
+          args: [
+            [-5, -14],
+            [1.15, 1.15],
+          ],
+          opacity: 0.7,
+        },
+        {
+          at: 0.56,
+          args: [
+            [4, -32],
+            [1.4, 1.4],
+          ],
+          opacity: 0,
+        },
+        {
+          at: 0.6,
+          args: [
+            [0, 0],
+            [0.4, 0.4],
+          ],
+          opacity: 0,
+        },
+        {
+          at: 0.72,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 1,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+      ],
+      animatesOpacity: true,
+    },
+    'smoke-3': {
+      origin: [390, 215],
+      durationMs: 4800,
+      easing: 'ease-in-out',
+      fns: ['translate', 'scale'],
+      frames: [
+        {
+          at: 0,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 0.44,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 0.62,
+          args: [
+            [4, -14],
+            [1.15, 1.15],
+          ],
+          opacity: 0.7,
+        },
+        {
+          at: 0.78,
+          args: [
+            [-4, -30],
+            [1.4, 1.4],
+          ],
+          opacity: 0,
+        },
+        {
+          at: 0.82,
+          args: [
+            [0, 0],
+            [0.4, 0.4],
+          ],
+          opacity: 0,
+        },
+        {
+          at: 0.94,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+        {
+          at: 1,
+          args: [
+            [0, 0],
+            [1, 1],
+          ],
+          opacity: 1,
+        },
+      ],
+      animatesOpacity: true,
     },
   },
 };
@@ -322,12 +509,17 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
         fill="#1b314d"
         d="M416 297.2c0 2.8-8.3 5-18.5 5s-18.5-2.2-18.5-5 8.3-5 18.5-5 18.5 2.2 18.5 5"
       />
-      <Path fill="#2c5351" d="M411.5 299.2c0 1.7-6.3 3-14 3s-14-1.3-14-3 6.3-3 14-3 14 1.3 14 3" />
+      <LoggyLayer clock={clock} layer={ANIMATION.layers['pipe-ember']}>
+        <Path
+          fill="#2c5351"
+          d="M411.5 299.2c0 1.7-6.3 3-14 3s-14-1.3-14-3 6.3-3 14-3 14 1.3 14 3"
+        />
+      </LoggyLayer>
       <Path
         fill="#fcf9f4"
         d="M414 306c3.3 8.8 1.2 21.5-7 27 4.2-8.8 5.7-17.5 7-27m-9.1 31.2c0 .8-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4.6-1.4 1.4-1.4 1.4.6 1.4 1.4"
       />
-      <LoggyLayer clock={clock} layer={ANIMATION.layers['pipe-smoke']}>
+      <LoggyLayer clock={clock} layer={ANIMATION.layers['smoke-1']}>
         <Path
           fill="#1b314d"
           d="M403.6 260.7c0 5.3-4.3 9.6-9.6 9.6s-9.6-4.3-9.6-9.6 4.3-9.6 9.6-9.6 9.6 4.3 9.6 9.6m4.6 8c0 5.3-4.3 9.6-9.6 9.6s-9.6-4.3-9.6-9.6 4.3-9.6 9.6-9.6 9.6 4.3 9.6 9.6m-9.2 0c0 5.3-4.3 9.6-9.6 9.6s-9.6-4.3-9.6-9.6 4.3-9.6 9.6-9.6 9.6 4.3 9.6 9.6"
@@ -336,6 +528,8 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
           fill="#e1ece8"
           d="M400.2 260.7c0 3.4-2.8 6.2-6.2 6.2s-6.2-2.8-6.2-6.2c0-3.5 2.8-6.2 6.2-6.2s6.2 2.7 6.2 6.2m4.6 8c0 3.4-2.8 6.2-6.2 6.2s-6.2-2.8-6.2-6.2c0-3.5 2.8-6.2 6.2-6.2s6.2 2.7 6.2 6.2m-9.2 0c0 3.4-2.8 6.2-6.2 6.2s-6.2-2.8-6.2-6.2c0-3.5 2.8-6.2 6.2-6.2s6.2 2.7 6.2 6.2"
         />
+      </LoggyLayer>
+      <LoggyLayer clock={clock} layer={ANIMATION.layers['smoke-2']}>
         <Path
           fill="#1b314d"
           d="M405.5 227.8c0 5.8-4.7 10.5-10.5 10.5s-10.5-4.7-10.5-10.5 4.7-10.5 10.5-10.5 10.5 4.7 10.5 10.5m0 10.4c0 5.8-4.7 10.5-10.5 10.5s-10.5-4.7-10.5-10.5 4.7-10.5 10.5-10.5 10.5 4.7 10.5 10.5m-8.9-5.2c0 5.8-4.8 10.5-10.6 10.5s-10.5-4.7-10.5-10.5 4.7-10.5 10.5-10.5 10.6 4.7 10.6 10.5"
@@ -344,6 +538,8 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
           fill="#e1ece8"
           d="M402.1 227.8c0 4-3.2 7.1-7.1 7.1s-7.1-3.1-7.1-7.1c0-3.9 3.2-7.1 7.1-7.1s7.1 3.2 7.1 7.1m0 10.4c0 3.9-3.2 7.1-7.1 7.1s-7.1-3.2-7.1-7.1c0-4 3.2-7.1 7.1-7.1s7.1 3.1 7.1 7.1m-8.9-5.2c0 3.9-3.2 7.1-7.2 7.1-3.9 0-7.1-3.2-7.1-7.1s3.2-7.1 7.1-7.1c4 0 7.2 3.2 7.2 7.1"
         />
+      </LoggyLayer>
+      <LoggyLayer clock={clock} layer={ANIMATION.layers['smoke-3']}>
         <Path
           fill="#1b314d"
           d="M397.6 215c0 4.2-3.4 7.6-7.6 7.6s-7.6-3.4-7.6-7.6 3.4-7.6 7.6-7.6 7.6 3.4 7.6 7.6"
