@@ -249,6 +249,11 @@ function sitemapLogicalPaths() {
   ];
 }
 
+/** Public pages kept out of the sitemap (noindex) that still exist under a language prefix, e.g. `/premium`. */
+function noindexPrefixedLogicalPaths() {
+  return noindexRoutes.map((route) => route.path);
+}
+
 function generateRobotsTxt() {
   const disallowLines = noindexRoutes.map((route) => `Disallow: ${route.path}`).join('\n');
   const aiBlocks = AI_CRAWLER_USER_AGENTS.map((agent) => `User-agent: ${agent}\nAllow: /\n`).join(
@@ -355,6 +360,7 @@ module.exports = {
   generateLlmsTxt,
   generateRobotsTxt,
   generateSitemapXml,
+  noindexPrefixedLogicalPaths,
   sitemapLogicalPaths,
   SITE_ORIGIN,
 };

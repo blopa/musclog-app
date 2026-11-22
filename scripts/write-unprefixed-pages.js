@@ -36,7 +36,7 @@ const {
   localePrefixesFor,
   localizedPath,
 } = require('../components/website/localeRoutes');
-const { sitemapLogicalPaths } = require('./generate-web-seo-files');
+const { noindexPrefixedLogicalPaths, sitemapLogicalPaths } = require('./generate-web-seo-files');
 
 /** The language picker's storage key (shared with `WebsitePreferences.tsx`); the only language readable pre-boot. */
 const STORED_LANGUAGE_KEY = LANGUAGE_STORAGE_KEY;
@@ -135,7 +135,7 @@ function unprefixedTargets() {
   ];
   const seen = new Set(['/', '/home']);
 
-  for (const logicalPath of sitemapLogicalPaths()) {
+  for (const logicalPath of [...sitemapLogicalPaths(), ...noindexPrefixedLogicalPaths()]) {
     if (seen.has(logicalPath) || !legacyForwardPath(logicalPath)) {
       continue;
     }

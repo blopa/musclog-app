@@ -6,6 +6,10 @@ import { defineConfig } from 'vitest/config';
 // Every test runs inside workerd with a real (Miniflare) D1. Upstreams (RevenueCat,
 // OpenRouter) are injected fakes, so no test ever reaches the network.
 export default defineConfig({
+  // Pin the worker's own tsconfig: test/appClient.test.ts loads the app's utils from outside this
+  // package, and the lookup would otherwise find the root tsconfig (`expo/tsconfig.base`), which this
+  // job does not install.
+  tsconfig: './tsconfig.json',
   plugins: [
     cloudflareTest(async () => ({
       wrangler: { configPath: './wrangler.toml', environment: 'test' },
