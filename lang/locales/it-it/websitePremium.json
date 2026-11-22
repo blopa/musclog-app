@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Cosa succede ai tuoi messaggi",
-      "body": "Con Musclog Iron attivo, le richieste IA vanno al servizio di Musclog, che le inoltra a OpenRouter, che le passa al modello IA. Le richieste vengono inviate solo a fornitori che offrono zero conservazione dei dati (ZDR), e il servizio non conserva il testo dei tuoi messaggi né le immagini. Tiene un conteggio dell'utilizzo per il periodo del tuo abbonamento e un identificativo per ogni dispositivo su cui usi Musclog Iron.",
+      "body": "Con Musclog Iron attivo, le richieste IA vanno al servizio di Musclog, che le inoltra a OpenRouter, che le passa al modello IA. Le richieste vengono inviate solo a fornitori che offrono zero conservazione dei dati (ZDR), e il servizio non conserva il testo dei tuoi messaggi né le immagini. Tiene un conteggio dell'utilizzo per il periodo del tuo abbonamento e un identificativo per ogni dispositivo su cui usi Musclog Iron. OpenRouter verifica inoltre tutte le richieste per materiale di abuso sessuale su minori e può conservare una richiesta segnalata, come descrive la propria politica.",
       "consent": "L'app ti chiede il consenso prima di inviare qualsiasi cosa a Musclog Iron, e lo chiede di nuovo se ripristini un backup su un altro dispositivo.",
       "link": "Leggi l'informativa sulla privacy"
     },

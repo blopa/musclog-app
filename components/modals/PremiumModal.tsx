@@ -443,6 +443,9 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           confirmLabel={dialogCopy.confirm}
           cancelLabel={dialogCopy.cancel}
           variant={dialogCopy.variant}
+          // The consent text is long and longer still in other languages: on a small screen the body
+          // scrolls and the buttons stay on screen.
+          scrollable
         />
       </View>
     </FullScreenModal>

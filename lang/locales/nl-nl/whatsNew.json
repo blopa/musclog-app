@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Je abonnement betaalt de AI",
-              "description": "De AI is niet gratis om te draaien: elk antwoord kost tokens. Je abonnement dekt die kosten, en de AI-aanbieders houden niets wat je verstuurt."
+              "description": "De AI is niet gratis om te draaien: elk antwoord kost tokens. Je abonnement dekt die kosten, en er worden alleen AI-aanbieders met zero data retention gebruikt."
             },
             "oneDeveloper": {
               "label": "Gemaakt door één persoon",

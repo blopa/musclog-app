@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "What happens to your messages",
-      "body": "When Musclog Iron is on, your AI requests go to Musclog's own service, which forwards them to OpenRouter, which passes them to the AI model. Requests are sent only to providers that offer zero data retention, and the service does not store your message text or images. It keeps a count of usage for your subscription period, and an identifier for each device you use Musclog Iron on.",
+      "body": "When Musclog Iron is on, your AI requests go to Musclog's own service, which forwards them to OpenRouter, which passes them to the AI model. Requests are sent only to providers that offer zero data retention, and the service does not store your message text or images. OpenRouter also screens all requests for child sexual abuse material and may keep one it flags, as its own policy describes. It keeps a count of usage for your subscription period, and an identifier for each device you use Musclog Iron on.",
       "consent": "The app asks for your consent before it sends anything to Musclog Iron, and asks again if you restore a backup on another device.",
       "link": "Read the privacy policy"
     },

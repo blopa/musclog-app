@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Abonelik YZ'nin parasını öder",
-              "description": "YZ'yi çalıştırmak ücretsiz değil: her yanıt jeton harcar. Abonelik bunları karşılar ve YZ sağlayıcıları gönderdiğin hiçbir şeyi saklamaz."
+              "description": "YZ'yi çalıştırmak ücretsiz değil: her yanıt jeton harcar. Abonelik bunları karşılar ve yalnızca sıfır saklamalı YZ sağlayıcıları kullanılır."
             },
             "oneDeveloper": {
               "label": "Tek bir kişi tarafından yapılıyor",

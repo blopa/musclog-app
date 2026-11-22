@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Sua assinatura paga a IA",
-              "description": "A IA não é de graça para rodar: cada resposta gasta tokens. Sua assinatura cobre isso, e os provedores de IA não guardam o que você envia."
+              "description": "A IA não é de graça para rodar: cada resposta gasta tokens. Sua assinatura cobre isso, e só são usados provedores de IA com retenção zero."
             },
             "oneDeveloper": {
               "label": "Feito por uma pessoa",

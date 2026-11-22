@@ -31,7 +31,7 @@
     "resetConfirm": "Reset",
     "consent": {
       "title": "Send AI requests to Musclog Iron?",
-      "body": "Your messages, and any photos you send to the AI, go to the Musclog Iron service. It forwards them to OpenRouter, which sends them to the AI model provider. Only zero data retention (ZDR) endpoints are used: those providers do not keep your content or use it for training. Musclog's service never stores your messages or photos; it keeps only an identifier for this device and usage counts. You can switch this off at any time.",
+      "body": "Your messages, and the details an AI feature needs to answer, such as your workouts, meals and body measurements, go to the Musclog Iron service. It forwards them to OpenRouter, which sends them to the AI model provider. Only zero data retention (ZDR) endpoints are used: those providers do not keep your content or use it for training. OpenRouter also screens every request for child sexual abuse material and may keep a request it flags. Some of these details are health-related, and by agreeing you give your explicit consent to them being processed this way. Musclog's service never stores your messages; it keeps only an identifier for this device and usage counts. You can switch this off at any time.",
       "confirm": "Use Musclog Iron",
       "cancel": "Not now"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Log faster with AI, nothing to set up",
-      "subhead": "Musclog Iron runs the AI for you: no key, no account, and only AI providers that keep nothing you send. Everything else in Musclog stays free.",
+      "subhead": "Musclog Iron runs the AI for you: no key, no account, and only zero data retention AI providers. Everything else in Musclog stays free.",
       "benefits": {
         "noSetup": {
           "title": "Nothing to set up",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Zero data retention",
-          "desc": "Only zero data retention providers are used: they don't keep your messages or train on them. Musclog never stores them either; it keeps only usage counts and a device identifier."
+          "desc": "Only zero data retention providers are used: they don't keep your messages or train on them, apart from a screening for child abuse material that the law requires. Musclog never stores them either; it keeps only usage counts and a device identifier."
         },
         "allowance": {
           "title": "Your own allowance",
@@ -97,7 +97,7 @@
         "privacy": {
           "label": "What you send",
           "free": "Google may keep, review and train on it",
-          "premium": "Not kept, not used for training"
+          "premium": "Zero retention, no training"
         },
         "limit": {
           "label": "Limit",

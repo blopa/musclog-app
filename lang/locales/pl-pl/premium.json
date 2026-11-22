@@ -31,7 +31,7 @@
     "resetConfirm": "Resetuj",
     "consent": {
       "title": "Wysyłać żądania AI do Musclog Iron?",
-      "body": "Twoje wiadomości i zdjęcia, które wysyłasz do AI, trafiają do usługi Musclog Iron. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. Usługa Musclog nigdy nie przechowuje Twoich wiadomości ani zdjęć; zachowuje tylko identyfikator tego urządzenia i liczniki użycia. Możesz to wyłączyć w dowolnym momencie.",
+      "body": "Twoje wiadomości oraz szczegóły potrzebne funkcjom AI do odpowiedzi, takie jak treningi, posiłki i pomiary ciała, trafiają do usługi Musclog Iron. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. OpenRouter sprawdza też każde zapytanie pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci i może zachować zapytanie, które oznaczy. Część tych danych dotyczy zdrowia, dlatego zgadzając się, wyrażasz wyraźną zgodę na ich przetwarzanie w ten sposób. Usługa Musclog nigdy nie przechowuje Twoich wiadomości; zachowuje tylko identyfikator tego urządzenia i liczniki użycia. Możesz to wyłączyć w dowolnym momencie.",
       "confirm": "Używaj AI w Musclog Iron",
       "cancel": "Nie teraz"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Szybciej zapisujesz z AI, nic nie trzeba konfigurować",
-      "subhead": "Musclog Iron uruchamia AI za Ciebie: bez klucza, bez konta i tylko u dostawców AI, którzy nie zatrzymują tego, co wysyłasz. Reszta Musclog pozostaje bezpłatna.",
+      "subhead": "Musclog Iron uruchamia AI za Ciebie: bez klucza, bez konta i tylko u dostawców AI z zerową retencją danych. Reszta Musclog pozostaje bezpłatna.",
       "benefits": {
         "noSetup": {
           "title": "Nic do konfigurowania",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Zerowa retencja danych",
-          "desc": "Używani są wyłącznie dostawcy z zerową retencją danych: nie przechowują Twoich wiadomości i nie trenują na nich. Musclog także ich nie przechowuje; zachowuje tylko liczniki użycia i identyfikator urządzenia."
+          "desc": "Używani są wyłącznie dostawcy z zerową retencją danych: nie przechowują Twoich wiadomości i nie trenują na nich, poza skanowaniem pod kątem materiałów przedstawiających wykorzystywanie dzieci, którego wymaga prawo. Musclog także ich nie przechowuje; zachowuje tylko liczniki użycia i identyfikator urządzenia."
         },
         "allowance": {
           "title": "Twój własny limit",
@@ -97,7 +97,7 @@
         "privacy": {
           "label": "Co wysyłasz",
           "free": "Google może to zachowywać, sprawdzać i wykorzystywać do uczenia",
-          "premium": "Nie zachowywane, nie wykorzystywane do uczenia"
+          "premium": "Zerowa retencja, bez uczenia"
         },
         "limit": {
           "label": "Limit",

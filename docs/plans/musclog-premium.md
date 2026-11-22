@@ -399,7 +399,7 @@ noble 2.4.0 `p256.sign(msg, sk)` prehashes with SHA-256 by default, which is exa
 - In the code: the config validator rejects any config without `zdr: true` and `data_collection: "deny"`. A unit test pins it. No runtime flag turns it off.
 - At the account: the OpenRouter privacy setting is **"ZDR only"**, which also excludes Safety Retention endpoints. A model with no ZDR endpoint must fail, not fall back.
 - **Daily ZDR re-check:** a daily cron reads the public `GET https://openrouter.ai/api/v1/endpoints/zdr` and confirms that the configured model still has an endpoint with `safety_retention: false` at or under the pinned prices. If not, the **breaker opens** (fail closed). This is also how a provider change (such as Google's) is caught.
-- Planned CSAM screening of inference requests (2026-10-27) also covers ZDR traffic; the consent copy must say so.
+- OpenRouter screens all inference requests for CSAM, ZDR traffic included, and may keep a flagged request for review, reporting and legal preservation (its ZDR docs, 2026-10-27). **Done 2026-11-22:** the consent (`premium.consent.body`, `PREMIUM_CONSENT_VERSION` 2), the privacy policy (`contentPremium`, `content4`), the paywall and the website Premium page say so. A future change to what the consent names bumps the version again.
 - **Consequence [V]: Google Gemini is not eligible.** Google requires Safety Retention since 2026-10-18.
 - Changing the invariant later would need all of these: your explicit decision, new consent copy with a stored consent version so every user re-consents, privacy policy and store label updates, and a changelog entry.
 

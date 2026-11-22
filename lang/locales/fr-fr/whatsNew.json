@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Votre abonnement finance l'IA",
-              "description": "L'IA n'est pas gratuite à faire tourner : chaque réponse consomme des tokens. Votre abonnement les couvre, et les fournisseurs d'IA ne conservent rien de ce que vous envoyez."
+              "description": "L'IA n'est pas gratuite à faire tourner : chaque réponse consomme des tokens. Votre abonnement les couvre, et seuls des fournisseurs d'IA à conservation zéro sont utilisés."
             },
             "oneDeveloper": {
               "label": "Fait par une seule personne",

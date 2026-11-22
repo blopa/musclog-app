@@ -31,7 +31,7 @@
     "resetConfirm": "Sıfırla",
     "consent": {
       "title": "YZ istekleri Musclog Iron’a gönderilsin mi?",
-      "body": "Yapay zekâya gönderdiğiniz mesajlar ve fotoğraflar Musclog Iron hizmetine gider. Hizmet bunları OpenRouter’a iletir; OpenRouter de yapay zekâ model sağlayıcısına gönderir. Yalnızca sıfır veri saklamalı (ZDR) uç noktalar kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve eğitim için kullanmaz. Musclog’un hizmeti mesajlarınızı veya fotoğraflarınızı asla saklamaz; yalnızca bu cihaz için bir tanımlayıcı ile kullanım sayılarını tutar. Bunu istediğiniz zaman kapatabilirsiniz.",
+      "body": "Yapay zekâya gönderdiğiniz mesajlar ve bir yapay zekâ özelliğinin yanıt vermek için ihtiyaç duyduğu bilgiler, örneğin antrenmanlar, öğünler ve vücut ölçümleri, Musclog Iron hizmetine gider. Hizmet bunları OpenRouter’a iletir; OpenRouter de yapay zekâ model sağlayıcısına gönderir. Yalnızca sıfır veri saklamalı (ZDR) uç noktalar kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve eğitim için kullanmaz. OpenRouter ayrıca her isteği çocuk cinsel istismarı içeren materyal açısından tarar ve işaretlediği bir isteği saklayabilir. Bu bilgilerin bir kısmı sağlıkla ilgilidir; kabul ederek bunların bu şekilde işlenmesine açık rızanızı vermiş olursunuz. Musclog’un hizmeti mesajlarınızı asla saklamaz; yalnızca bu cihaz için bir tanımlayıcı ile kullanım sayılarını tutar. Bunu istediğiniz zaman kapatabilirsiniz.",
       "confirm": "Musclog Iron YZ’sini kullan",
       "cancel": "Şimdi değil"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "YZ ile daha hızlı kaydet, kurulum gerektirmez",
-      "subhead": "Musclog Iron yapay zekâyı sizin için çalıştırır: anahtar yok, hesap yok ve gönderdiğiniz hiçbir şeyi saklamayan yapay zekâ sağlayıcıları. Musclog’un geri kalanı ücretsiz kalır.",
+      "subhead": "Musclog Iron yapay zekâyı sizin için çalıştırır: anahtar yok, hesap yok ve yalnızca sıfır veri saklamalı yapay zekâ sağlayıcıları. Musclog’un geri kalanı ücretsiz kalır.",
       "benefits": {
         "noSetup": {
           "title": "Kurulacak bir şey yok",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Sıfır veri saklama",
-          "desc": "Yalnızca sıfır veri saklamalı sağlayıcılar kullanılır: mesajlarınızı saklamazlar ve onlarla eğitim yapmazlar. Musclog da bunları asla saklamaz; yalnızca kullanım sayılarını ve bir cihaz tanımlayıcısını tutar."
+          "desc": "Yalnızca sıfır veri saklamalı sağlayıcılar kullanılır: mesajlarınızı saklamazlar ve onlarla eğitim yapmazlar, yasanın gerektirdiği çocuk istismarı materyali taraması dışında. Musclog da bunları asla saklamaz; yalnızca kullanım sayılarını ve bir cihaz tanımlayıcısını tutar."
         },
         "allowance": {
           "title": "Kendi kotan",
@@ -97,7 +97,7 @@
         "privacy": {
           "label": "Gönderdiğin veriler",
           "free": "Google saklayabilir, inceleyebilir ve eğitimde kullanabilir",
-          "premium": "Saklanmaz, eğitimde kullanılmaz"
+          "premium": "Sıfır saklama, eğitim yok"
         },
         "limit": {
           "label": "Sınır",
