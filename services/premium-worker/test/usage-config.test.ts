@@ -1,4 +1,4 @@
-import { enforceRateLimit } from '../src/limiter';
+import { enforceRateLimit, limiterAddress } from '../src/limiter';
 import { env } from 'cloudflare:test';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -119,6 +119,40 @@ describe('GET /v1/challenge', () => {
     expect(await code(res)).toBe('busy');
     expect(keys).toEqual(['challenge:203.0.113.9']);
     expect(JSON.stringify(h.deps.logs)).not.toContain('203.0.113.9');
+  });
+});
+
+describe('identity routes are rate limited too', () => {
+  const limiter = (keys: string[]) => ({
+    limit: async ({ key }: { key: string }) => {
+      keys.push(key);
+      return { success: false };
+    },
+  });
+
+  it.each(['/v1/enroll', '/v1/session'])('%s answers 429 before reading the body', async (path) => {
+    const h = harness();
+    const keys: string[] = [];
+    const res = await h.call(
+      path,
+      { method: 'POST', headers: { 'cf-connecting-ip': '203.0.113.9' }, body: '{}' },
+      { RATE_LIMITER: limiter(keys) }
+    );
+    expect(res.status).toBe(429);
+    expect(keys).toHaveLength(1);
+    expect(keys[0]).toMatch(/^(enroll|session):203\.0\.113\.9$/);
+  });
+
+  it.each(['production', 'staging'])('refuses a request with no address in %s', (workerEnv) => {
+    const ctx = { env: { WORKER_ENV: workerEnv } } as unknown as Parameters<
+      typeof limiterAddress
+    >[1];
+    expect(() => limiterAddress(new Request('https://x.test/'), ctx)).toThrow();
+  });
+
+  it('shares a fallback key only where nothing public can reach the Worker', () => {
+    const ctx = { env: { WORKER_ENV: 'test' } } as unknown as Parameters<typeof limiterAddress>[1];
+    expect(limiterAddress(new Request('https://x.test/'), ctx)).toBe('unknown');
   });
 });
 

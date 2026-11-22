@@ -16,12 +16,15 @@ import {
 import { verifyNonce } from '../identity/nonce';
 import { fromB64url } from '../identity/token';
 import { ApiError } from '../http';
+import { enforceRateLimit, limiterAddress } from '../limiter';
 import { findLivePeriod } from '../ledger';
 import { RevenueCatUnavailableError } from '../upstream/types';
 
 export async function handleSession(request: Request, ctx: Ctx): Promise<Response> {
   return logged(ctx, '/v1/session', async (setLineage) => {
+    await enforceRateLimit(ctx, 'session:' + limiterAddress(request, ctx), 10);
     const body = await readFields(request, ['rc_id', 'nonce', 'signature']);
+    await enforceRateLimit(ctx, 'session-id:' + body.rc_id, 10);
     const db = ctx.env.DB;
 
     const device = await getDevice(db, body.rc_id);

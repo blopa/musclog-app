@@ -25,3 +25,15 @@ export async function enforceRateLimit(ctx: Ctx, key: string, retryAfter: number
   const { success } = await limiter.limit({ key });
   if (!success) throw new ApiError(429, 'busy', { retry_after: retryAfter });
 }
+
+/**
+ * The caller's address, only ever used as a limiter key (never stored or logged). Where the
+ * limiter is required the Cloudflare header must be present: a shared fallback bucket would let
+ * one caller exhaust everyone's allowance, so a request without it is refused.
+ */
+export function limiterAddress(request: Request, ctx: Ctx): string {
+  const ip = request.headers.get('cf-connecting-ip');
+  if (ip) return ip;
+  if (REQUIRED_IN.includes(ctx.env.WORKER_ENV)) throw new ApiError(400, 'invalid_request');
+  return 'unknown';
+}

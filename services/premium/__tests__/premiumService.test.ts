@@ -15,6 +15,7 @@ import {
   restorePurchases,
 } from '@/services/premium/revenueCat';
 import {
+  hostedAiBaseUrl,
   fetchPremiumConfig,
   resetPremiumConfigCache,
   getPremiumStatus,
@@ -758,5 +759,18 @@ describe('resetPremium', () => {
 
     expect(await loadPremiumLocalState()).toEqual(EMPTY_PREMIUM_LOCAL_STATE);
     expect(await getPremiumStatus()).toBe('not_enrolled');
+  });
+});
+
+describe('the Worker URL scheme', () => {
+  // Jest defines __DEV__ as true and read-only, so the production refusal of plain http is the
+  // same expression with the flag false; here: https and the development http pass, others do not.
+  it('accepts https and development http, refuses other schemes', () => {
+    process.env.EXPO_PUBLIC_HOSTED_AI_BASE_URL = 'https://worker.example';
+    expect(hostedAiBaseUrl()).toBe('https://worker.example');
+    process.env.EXPO_PUBLIC_HOSTED_AI_BASE_URL = 'http://127.0.0.1:8787';
+    expect(hostedAiBaseUrl()).toBe('http://127.0.0.1:8787');
+    process.env.EXPO_PUBLIC_HOSTED_AI_BASE_URL = 'ftp://worker.example';
+    expect(hostedAiBaseUrl()).toBeNull();
   });
 });

@@ -48,7 +48,12 @@ import {
 export function hostedAiBaseUrl(): string | null {
   const url = process.env.EXPO_PUBLIC_HOSTED_AI_BASE_URL;
 
-  return url ? url : null;
+  if (!url) {
+    return null;
+  }
+
+  // The session token travels to this address: plain http is for a local Worker in development only.
+  return url.startsWith('https://') || (__DEV__ && url.startsWith('http://')) ? url : null;
 }
 
 /** The platform `fetch`, read at call time (tests replace it), typed for the pure flows. */

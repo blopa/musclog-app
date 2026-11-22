@@ -15,6 +15,7 @@ import {
 import { verifyNonce } from '../identity/nonce';
 import { fromB64url } from '../identity/token';
 import { ApiError } from '../http';
+import { enforceRateLimit, limiterAddress } from '../limiter';
 import { findLivePeriod } from '../ledger';
 import { RevenueCatUnavailableError } from '../upstream/types';
 
@@ -32,7 +33,11 @@ const EVICT = `UPDATE devices SET status = 'revoked' WHERE rc_id IN (
 
 export async function handleEnroll(request: Request, ctx: Ctx): Promise<Response> {
   return logged(ctx, '/v1/enroll', async (setLineage) => {
+    // A challenge nonce is not tied to a device, so the challenge limiter alone does not bound
+    // enrolls (each costs RevenueCat calls): limit per address, then per device id.
+    await enforceRateLimit(ctx, 'enroll:' + limiterAddress(request, ctx), 10);
     const body = await readFields(request, ['rc_id', 'public_key', 'nonce', 'signature']);
+    await enforceRateLimit(ctx, 'enroll-id:' + body.rc_id, 10);
     const db = ctx.env.DB;
 
     // 1. key and id
