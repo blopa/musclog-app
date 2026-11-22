@@ -1,7 +1,7 @@
 <b>Zapisuj treningi i posiłki w jednej aplikacji: bez konta i bez reklam.</b>
 Musclog to bezpłatny dziennik treningowy z licznikiem kalorii i otwartym kodem. Podpowiada ciężar i powtórzenia na następny trening na podstawie ostatniego, skanuje kody kreskowe produktów i działa offline. Twoje dane zostają w telefonie.
 
-Aplikacja jest dostępna po angielsku, hiszpańsku, niderlandzku, portugalsku (Brazylia) i rosyjsku.
+Aplikacja jest dostępna po angielsku, hiszpańsku, niderlandzku, portugalsku (Brazylia), rosyjsku, niemiecku, francusku, włosku, polsku i turecku.
 
 <b>Nic nie jest zablokowane</b>
 • Nieograniczona liczba planów i rutyn oraz cała historia.
@@ -48,6 +48,6 @@ Musclog Iron to miesięczna subskrypcja, która odpowiada na zapytania AI bez Tw
 • Zablokuj całą aplikację lub tylko dane o cyklu, treningach, jedzeniu albo postępach (biometria lub kod).
 • Eksportuj, twórz kopie zapasowe lub przenieś dane na inny telefon skanem kodów QR, bez chmury.
 • Anonimowe raporty o błędach pomagają je naprawiać; można je wyłączyć.
-• Widżety na ekran główny, kilka motywów kolorystycznych oraz języki: angielski, hiszpański, niderlandzki, portugalski (Brazylia) i rosyjski.
+• Widżety na ekran główny i kilka motywów kolorystycznych.
 
 Lift, Log, Repeat.

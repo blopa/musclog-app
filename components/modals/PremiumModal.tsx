@@ -33,9 +33,10 @@ import {
 } from '@/utils/premium/premiumActivity';
 import {
   manageSubscriptionUrl,
-  PREMIUM_PRIVACY_URL,
-  PREMIUM_TERMS_URL,
+  PREMIUM_PRIVACY_PATH,
+  PREMIUM_TERMS_PATH,
 } from '@/utils/premium/premiumLinks';
+import { websitePageUrl } from '@/utils/websiteUrl';
 
 /** One whole key per busy line (stage of a purchase, reset, switch), so the translation check sees each. */
 export const PREMIUM_BUSY_KEYS: Record<PremiumBusyLine, string> = {
@@ -419,13 +420,15 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
             <TextButton
               label={t('premium.terms')}
               onPress={() => {
-                Linking.openURL(PREMIUM_TERMS_URL).catch(() => undefined);
+                Linking.openURL(websitePageUrl(PREMIUM_TERMS_PATH, locale)).catch(() => undefined);
               }}
             />
             <TextButton
               label={t('premium.privacy')}
               onPress={() => {
-                Linking.openURL(PREMIUM_PRIVACY_URL).catch(() => undefined);
+                Linking.openURL(websitePageUrl(PREMIUM_PRIVACY_PATH, locale)).catch(
+                  () => undefined
+                );
               }}
             />
           </View>

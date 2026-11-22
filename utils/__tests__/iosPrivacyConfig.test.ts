@@ -53,17 +53,44 @@ describe('iOS privacy configuration', () => {
     }
   });
 
-  it('declares the Premium data types: purchase history and the per-install device id', () => {
-    const types = expo.ios.privacyManifests.NSPrivacyCollectedDataTypes.map(
-      (type: { NSPrivacyCollectedDataType: string }) => type.NSPrivacyCollectedDataType
-    );
+  it('declares the Premium data types: purchase history, the user id and the device id', () => {
+    const collected: {
+      NSPrivacyCollectedDataType: string;
+      NSPrivacyCollectedDataTypePurposes: string[];
+    }[] = expo.ios.privacyManifests.NSPrivacyCollectedDataTypes;
+    const types = collected.map((type) => type.NSPrivacyCollectedDataType);
 
     expect(types).toEqual(
       expect.arrayContaining([
         'NSPrivacyCollectedDataTypePurchaseHistory',
+        // The RevenueCat app user id is the per-install id made from the device key.
+        'NSPrivacyCollectedDataTypeUserID',
         'NSPrivacyCollectedDataTypeDeviceID',
       ])
     );
+
+    // RevenueCat's own App Privacy guidance: purchase history and a custom app user id are used for
+    // Analytics (its dashboards) and App Functionality (the entitlement check).
+    for (const name of ['PurchaseHistory', 'UserID']) {
+      const entry = collected.find(
+        (type) => type.NSPrivacyCollectedDataType === `NSPrivacyCollectedDataType${name}`
+      );
+
+      expect(entry?.NSPrivacyCollectedDataTypePurposes).toEqual(
+        expect.arrayContaining([
+          'NSPrivacyCollectedDataTypePurposeAnalytics',
+          'NSPrivacyCollectedDataTypePurposeAppFunctionality',
+        ])
+      );
+    }
+  });
+
+  it('ships every collected data type of app.json in the committed iOS manifest', () => {
+    const xml = read(PRIVACY_INFO);
+
+    for (const type of expo.ios.privacyManifests.NSPrivacyCollectedDataTypes) {
+      expect(xml).toContain(type.NSPrivacyCollectedDataType);
+    }
   });
 
   it('ships the generated manifest in the committed iOS project', () => {

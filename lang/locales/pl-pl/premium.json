@@ -31,7 +31,7 @@
     "resetConfirm": "Resetuj",
     "consent": {
       "title": "Wysyłać żądania AI do Musclog Iron?",
-      "body": "Twoje wiadomości i zdjęcia, które wysyłasz do AI, trafiają do usługi Musclog Iron. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. Usługa Musclog przechowuje wyłącznie liczniki użycia, nigdy Twoich wiadomości ani zdjęć. Możesz to wyłączyć w dowolnym momencie.",
+      "body": "Twoje wiadomości i zdjęcia, które wysyłasz do AI, trafiają do usługi Musclog Iron. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. Usługa Musclog nigdy nie przechowuje Twoich wiadomości ani zdjęć; zachowuje tylko identyfikator tego urządzenia i liczniki użycia. Możesz to wyłączyć w dowolnym momencie.",
       "confirm": "Używaj AI w Musclog Iron",
       "cancel": "Nie teraz"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Szybciej zapisujesz z AI, nic nie trzeba konfigurować",
-      "subhead": "Musclog Iron uruchamia AI za Ciebie: bez klucza, bez konta, a dostawcy AI nie zachowują niczego, co wysyłasz. Cała reszta Musclog pozostaje bezpłatna.",
+      "subhead": "Musclog Iron uruchamia AI za Ciebie: bez klucza, bez konta i tylko u dostawców AI, którzy nie zatrzymują tego, co wysyłasz. Reszta Musclog pozostaje bezpłatna.",
       "benefits": {
         "noSetup": {
           "title": "Nic do konfigurowania",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Zerowa retencja danych",
-          "desc": "Używani są tylko dostawcy z zerową retencją danych: nie zachowują Twoich wiadomości i nie uczą na nich modeli. Musclog przechowuje wyłącznie liczniki użycia."
+          "desc": "Używani są wyłącznie dostawcy z zerową retencją danych: nie przechowują Twoich wiadomości i nie trenują na nich. Musclog także ich nie przechowuje; zachowuje tylko liczniki użycia i identyfikator urządzenia."
         },
         "allowance": {
           "title": "Twój własny limit",

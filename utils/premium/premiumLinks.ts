@@ -18,7 +18,7 @@ export function manageSubscriptionUrl(platform: string): string | null {
   return null;
 }
 
-// The website's `/terms` and `/privacy` routes (components/website/websiteRoutes.json) under the
-// English prefix, the same addresses `localizedPath` builds.
-export const PREMIUM_TERMS_URL = 'https://musclog.app/en/terms';
-export const PREMIUM_PRIVACY_URL = 'https://musclog.app/en/privacy';
+// The website's `/terms` and `/privacy` routes (components/website/websiteRoutes.json), in the
+// app's language through `websitePageUrl` (the same addresses `localizedPath` builds).
+export const PREMIUM_TERMS_PATH = '/terms';
+export const PREMIUM_PRIVACY_PATH = '/privacy';

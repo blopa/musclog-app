@@ -46,6 +46,6 @@ Musclog Iron is een maandelijks abonnement dat AI-verzoeken beantwoordt zonder j
 • Vergrendel de hele app of alleen cyclus-, training-, voedings- of voortgangsgegevens, met biometrie of toegangscode.
 • Exporteer of maak een back-up van je gegevens, of verplaats ze met QR-codes naar een andere telefoon, zonder cloud.
 • Anonieme crashrapporten helpen fouten op te lossen en kun je in de instellingen uitzetten.
-• Widgets op het beginscherm, meerdere kleurthema's, en English, Español, Nederlands, Português (Brasil) en Русский.
+• Widgets, kleurthema's en talen: English, Español, Nederlands, Português (Brasil), Русский, Deutsch, Français, Italiano, Polski en Türkçe.
 
 Lift, Log, Repeat.

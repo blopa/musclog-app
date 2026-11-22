@@ -1,5 +1,6 @@
 import { needsPremiumConsent, PREMIUM_CONSENT_VERSION } from '../premiumConsent';
-import { manageSubscriptionUrl, PREMIUM_PRIVACY_URL, PREMIUM_TERMS_URL } from '../premiumLinks';
+import { manageSubscriptionUrl, PREMIUM_PRIVACY_PATH, PREMIUM_TERMS_PATH } from '../premiumLinks';
+import { websitePageUrl } from '../../websiteUrl';
 
 describe('needsPremiumConsent', () => {
   it('asks only when turning on without the current version on record', () => {
@@ -49,8 +50,10 @@ describe('premium links', () => {
     expect(manageSubscriptionUrl('windows')).toBeNull();
   });
 
-  it('points at the English terms and privacy pages', () => {
-    expect(PREMIUM_TERMS_URL).toBe('https://musclog.app/en/terms');
-    expect(PREMIUM_PRIVACY_URL).toBe('https://musclog.app/en/privacy');
+  it('points at the terms and privacy pages in the app language', () => {
+    expect(websitePageUrl(PREMIUM_TERMS_PATH, 'en-US')).toBe('https://musclog.app/en/terms');
+    expect(websitePageUrl(PREMIUM_PRIVACY_PATH, 'en-US')).toBe('https://musclog.app/en/privacy');
+    expect(websitePageUrl(PREMIUM_TERMS_PATH, 'nl-NL')).toBe('https://musclog.app/nl/terms');
+    expect(websitePageUrl(PREMIUM_PRIVACY_PATH, 'pt-BR')).toBe('https://musclog.app/pt-br/privacy');
   });
 });

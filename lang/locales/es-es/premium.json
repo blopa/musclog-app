@@ -31,7 +31,7 @@
     "resetConfirm": "Restablecer",
     "consent": {
       "title": "¿Enviar las solicitudes de IA a Musclog Iron?",
-      "body": "Tus mensajes y las fotos que envíes a la IA se envían al servicio Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se usan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar modelos. El servicio de Musclog solo guarda recuentos de uso, nunca tus mensajes ni tus fotos. Puedes desactivarlo en cualquier momento.",
+      "body": "Tus mensajes y las fotos que envíes a la IA se envían al servicio de Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se utilizan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar. El servicio de Musclog nunca almacena tus mensajes ni tus fotos; solo guarda un identificador de este dispositivo y los recuentos de uso. Puedes desactivarlo en cualquier momento.",
       "confirm": "Usar Musclog Iron",
       "cancel": "Ahora no"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Registra más rápido con IA, sin nada que configurar",
-      "subhead": "Musclog Iron ejecuta la IA por ti: sin clave, sin cuenta, y los proveedores de IA no guardan nada de lo que envías. Todo lo demás en Musclog sigue siendo gratis.",
+      "subhead": "Musclog Iron ejecuta la IA por ti: sin clave, sin cuenta y solo con proveedores de IA que no guardan nada de lo que envías. Todo lo demás de Musclog sigue siendo gratis.",
       "benefits": {
         "noSetup": {
           "title": "Nada que configurar",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Retención cero de datos",
-          "desc": "Solo se usan proveedores con retención cero de datos: no guardan tus mensajes ni los usan para entrenar. Musclog solo guarda recuentos de uso."
+          "desc": "Solo se usan proveedores de retención cero de datos: no guardan tus mensajes ni los usan para entrenar. Musclog tampoco los almacena nunca; solo conserva recuentos de uso y un identificador de dispositivo."
         },
         "allowance": {
           "title": "Tu propia cuota",

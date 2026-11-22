@@ -31,7 +31,7 @@
     "resetConfirm": "Zurücksetzen",
     "consent": {
       "title": "KI-Anfragen an Musclog Iron senden?",
-      "body": "Deine Nachrichten und alle Fotos, die du an die KI sendest, gehen an den Musclog-Iron-Dienst. Dieser leitet sie an OpenRouter weiter, das sie an den Anbieter des KI-Modells schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) verwendet: Diese Anbieter bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. Der Musclog-Dienst speichert nur Nutzungszahlen, nie deine Nachrichten oder Fotos. Du kannst dies jederzeit ausschalten.",
+      "body": "Deine Nachrichten und alle Fotos, die du an die KI sendest, gehen an den Dienst Musclog Iron. Er leitet sie an OpenRouter weiter, der sie an den KI-Modellanbieter schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) genutzt: Diese Anbieter bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. Der Dienst von Musclog speichert deine Nachrichten oder Fotos nie; er behält nur eine Kennung für dieses Gerät und Nutzungszähler. Du kannst dies jederzeit ausschalten.",
       "confirm": "Musclog Iron verwenden",
       "cancel": "Nicht jetzt"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Schneller erfassen mit KI, ohne Einrichtung",
-      "subhead": "Musclog Iron betreibt die KI für dich: kein Schlüssel, kein Konto, und die KI-Anbieter behalten nichts, was du senden. Alles andere in Musclog bleibt kostenlos.",
+      "subhead": "Musclog Iron betreibt die KI für dich: kein Schlüssel, kein Konto, und nur KI-Anbieter, die nichts von dem behalten, was du sendest. Alles Übrige in Musclog bleibt kostenlos.",
       "benefits": {
         "noSetup": {
           "title": "Nichts einzurichten",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Zero Data Retention",
-          "desc": "Es werden nur Anbieter mit Zero Data Retention genutzt: Sie speichern deine Nachrichten nicht und trainieren nicht damit. Musclog speichert nur Nutzungszahlen."
+          "desc": "Es werden nur Anbieter mit Zero Data Retention genutzt: Sie bewahren deine Nachrichten nicht auf und trainieren nicht damit. Musclog speichert sie ebenfalls nie; es behält nur Nutzungszähler und eine Gerätekennung."
         },
         "allowance": {
           "title": "Dein eigenes Kontingent",

@@ -27,6 +27,8 @@ const DEFINITION_KEYS = [
 
 export default function Privacy() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.privacy' });
+  // The operator line is shared by the privacy, terms and contact pages, so it lives under contact.
+  const { t: tWebsite } = useTranslation(undefined, { keyPrefix: 'website.contact' });
 
   const highlights = [
     {
@@ -56,6 +58,8 @@ export default function Privacy() {
     returnObjects: true,
   }) as string[];
   const useOfDataItems = t('sections.useOfData.items', { returnObjects: true }) as string[];
+  const legalBasisItems = t('sections.legalBasis.items', { returnObjects: true }) as string[];
+  const rightsItems = t('sections.rights.items', { returnObjects: true }) as string[];
   const sharingItems = t('sections.sharing.items', { returnObjects: true }) as string[];
   const disclosureItems = t('sections.disclosure.items', { returnObjects: true }) as string[];
   const analyticsItems = t('sections.analytics.items', { returnObjects: true }) as string[];
@@ -229,6 +233,16 @@ export default function Privacy() {
                   </li>
                 ))}
               </ul>
+            </section>
+
+            {/* Who is responsible */}
+            <section>
+              <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                {t('sections.controller.title')}
+              </h2>
+              <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.controller.content')}
+              </p>
             </section>
 
             {/* Collecting and Using Your Personal Data */}
@@ -433,6 +447,24 @@ export default function Privacy() {
               </ul>
             </section>
 
+            {/* Legal bases */}
+            <section>
+              <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                {t('sections.legalBasis.title')}
+              </h2>
+              <p className="mb-3 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.legalBasis.content')}
+              </p>
+              <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
+                {legalBasisItems.map((item, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="mt-0.5 text-text-primary">›</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
             {/* Sharing Your Personal Data */}
             <section>
               <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
@@ -475,6 +507,27 @@ export default function Privacy() {
               </h2>
               <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
                 {t('sections.deletion.content')}
+              </p>
+            </section>
+
+            {/* Rights */}
+            <section>
+              <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                {t('sections.rights.title')}
+              </h2>
+              <p className="mb-3 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.rights.content')}
+              </p>
+              <ul className="mb-4 space-y-1.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
+                {rightsItems.map((item, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="mt-0.5 text-text-primary">›</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.rights.how')}
               </p>
             </section>
 
@@ -624,6 +677,9 @@ export default function Privacy() {
               >
                 {SUPPORT_EMAIL}
               </a>
+            </p>
+            <p className="mt-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+              {tWebsite('operator')}
             </p>
           </div>
         </div>

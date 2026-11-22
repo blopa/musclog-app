@@ -6,6 +6,7 @@ import i18n, { type TFunction } from 'i18next';
 import {
   Copy,
   Dumbbell,
+  Flag,
   Images,
   Paperclip,
   Send as SendIcon,
@@ -23,6 +24,7 @@ import {
   Image,
   type ImageSourcePropType,
   Keyboard,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -70,10 +72,12 @@ import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import { getAppBuildInfo } from '@/utils/appBuildInfo';
 import { formatTimeInTimezone } from '@/utils/calendarDate';
 import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import { createThumbnail } from '@/utils/file';
+import { buildAiReplyReportMailto } from '@/utils/feedbackLinks';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
@@ -989,6 +993,31 @@ export function CoachModal({
                 shareText(selectedMessage.text ?? '').catch(() => {});
               },
             },
+            // Only the coach's own replies (user id 2) can be reported: Google Play's AI-content
+            // guidance expects a way to flag a generated reply from inside the app.
+            ...(selectedMessage.user?._id === 2
+              ? [
+                  {
+                    icon: Flag,
+                    iconColor: theme.colors.text.primary,
+                    title: t('coach.message.report'),
+                    description: t('coach.message.reportDesc'),
+                    onPress: () => {
+                      setSelectedMessage(null);
+                      Linking.openURL(
+                        buildAiReplyReportMailto(
+                          { ...getAppBuildInfo(), locale },
+                          {
+                            subject: t('coach.message.reportSubject'),
+                            intro: t('coach.message.reportIntro'),
+                            reply: selectedMessage.text ?? '',
+                          }
+                        )
+                      ).catch(() => {});
+                    },
+                  },
+                ]
+              : []),
             {
               icon: Trash2,
               iconColor: theme.colors.status.error50,
@@ -1004,6 +1033,7 @@ export function CoachModal({
           ]
         : [],
     [
+      locale,
       selectedMessage,
       shareText,
       showSnackbar,

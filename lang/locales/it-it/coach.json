@@ -117,7 +117,11 @@
       "delete": "Elimina",
       "deleteDesc": "Rimuovi questo messaggio dalla conversazione",
       "copied": "Messaggio copiato negli appunti",
-      "deleted": "Messaggio eliminato"
+      "deleted": "Messaggio eliminato",
+      "report": "Segnala un problema",
+      "reportDesc": "Segnala via email un problema con questa risposta",
+      "reportSubject": "Problema con una risposta dell'IA di Musclog",
+      "reportIntro": "Cosa non andava in questa risposta? (Puoi modificare o eliminare il testo qui sotto prima di inviare.)"
     },
     "sendViaOpenAI": "Invia tramite OpenAI",
     "personas": {

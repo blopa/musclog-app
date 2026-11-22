@@ -31,7 +31,7 @@
     "resetConfirm": "Resetten",
     "consent": {
       "title": "AI-verzoeken naar Musclog Iron sturen?",
-      "body": "Je berichten en eventuele foto’s die je naar de AI stuurt, gaan naar de Musclog Iron-dienst. Die stuurt ze door naar OpenRouter, dat ze naar de aanbieder van het AI-model stuurt. Alleen eindpunten met zero data retention (ZDR) worden gebruikt: die aanbieders bewaren je inhoud niet en gebruiken die niet voor training. De Musclog-dienst bewaart alleen gebruikstellingen, nooit je berichten of foto’s. Je kunt dit op elk moment uitzetten.",
+      "body": "Uw berichten en de foto's die U naar de AI stuurt, gaan naar de dienst van Musclog Iron. Die stuurt ze door naar OpenRouter, dat ze naar de AI-modelaanbieder stuurt. Er worden alleen endpoints met zero data retention (ZDR) gebruikt: die aanbieders bewaren Uw inhoud niet en gebruiken ze niet voor training. De dienst van Musclog bewaart Uw berichten of foto's nooit; zij bewaart alleen een identificatie voor dit apparaat en gebruiksaantallen. U kunt dit op elk moment uitschakelen.",
       "confirm": "Musclog Iron gebruiken",
       "cancel": "Niet nu"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Sneller loggen met AI, niets in te stellen",
-      "subhead": "Musclog Iron draait de AI voor je: geen sleutel, geen account, en de AI-aanbieders bewaren niets van wat je verstuurt. Al het andere in Musclog blijft gratis.",
+      "subhead": "Musclog Iron draait de AI voor U: geen sleutel, geen account en alleen AI-aanbieders die niets bewaren van wat U stuurt. Al het andere in Musclog blijft gratis.",
       "benefits": {
         "noSetup": {
           "title": "Niets om in te stellen",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Zero data retention",
-          "desc": "Er worden alleen aanbieders met zero data retention gebruikt: zij bewaren je berichten niet en gebruiken ze niet voor training. Musclog bewaart alleen gebruikstellingen."
+          "desc": "Er worden alleen aanbieders met zero data retention gebruikt: zij bewaren Uw berichten niet en trainen er niet op. Musclog bewaart ze ook nooit; alleen gebruiksaantallen en een apparaatidentificatie."
         },
         "allowance": {
           "title": "Je eigen tegoed",

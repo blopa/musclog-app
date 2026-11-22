@@ -17,6 +17,12 @@ preview_urls = false
 [observability]
 enabled = true
 
+# Our own LogEvent lines stay. The automatic per-request "invocation log" is off: its contents are
+# Cloudflare's, and the Worker promises no token, rc_id or IP in what it keeps.
+[observability.logs]
+enabled = true
+invocation_logs = false
+
 [env.production]
 name = "musclog-premium"
 workers_dev = false

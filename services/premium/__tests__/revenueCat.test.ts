@@ -17,7 +17,7 @@ const purchases = {
 const mockFactory = jest.fn(() => ({
   __esModule: true,
   default: purchases,
-  LOG_LEVEL: { DEBUG: 'DEBUG' },
+  LOG_LEVEL: { DEBUG: 'DEBUG', ERROR: 'ERROR' },
 }));
 
 jest.mock('react-native-purchases', () => mockFactory());
@@ -91,6 +91,23 @@ describe('revenueCat', () => {
     expect(second.alreadyConfigured).toBe(true);
     expect(second.matchesRequested).toBe(true);
     expect(h.getConfiguredAppUserId()).toBe(RC_ID);
+  });
+
+  it('logs at DEBUG only in development and at ERROR in a release build', async () => {
+    const globals = globalThis as { __DEV__?: boolean };
+    const original = globals.__DEV__;
+
+    try {
+      globals.__DEV__ = false;
+      await load().configureRevenueCat(RC_ID);
+      expect(purchases.setLogLevel).toHaveBeenLastCalledWith('ERROR');
+
+      globals.__DEV__ = true;
+      await load().configureRevenueCat(RC_ID);
+      expect(purchases.setLogLevel).toHaveBeenLastCalledWith('DEBUG');
+    } finally {
+      globals.__DEV__ = original;
+    }
   });
 
   it('ensureRevenueCatIdentity logs in when the SDK was configured under another id', async () => {

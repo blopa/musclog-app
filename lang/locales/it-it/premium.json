@@ -31,7 +31,7 @@
     "resetConfirm": "Reimposta",
     "consent": {
       "title": "Inviare le richieste IA a Musclog Iron?",
-      "body": "I tuoi messaggi e le foto che invii all'IA vanno al servizio Musclog Iron. Questo li inoltra a OpenRouter, che li invia al fornitore del modello IA. Vengono usati solo endpoint con zero conservazione dei dati (ZDR): questi fornitori non conservano i tuoi contenuti né li usano per l'addestramento. Il servizio Musclog conserva solo conteggi di utilizzo, mai i tuoi messaggi o le tue foto. Puoi disattivarlo in qualsiasi momento.",
+      "body": "I Tuoi messaggi e le foto che invii all'AI vanno al servizio Musclog Iron. Quest'ultimo le inoltra a OpenRouter, che le invia al provider del modello AI. Vengono usati solo endpoint con zero conservazione dei dati (ZDR): questi provider non conservano i Tuoi contenuti né li usano per l'addestramento. Il servizio di Musclog non memorizza mai i Tuoi messaggi o foto; conserva solo un identificativo per questo dispositivo e i contatori di utilizzo. Puoi disattivare questa funzione in qualsiasi momento.",
       "confirm": "Usa Musclog Iron",
       "cancel": "Non ora"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Registri più in fretta con l'IA, nulla da configurare",
-      "subhead": "Musclog Iron gestisce l'IA per te: nessuna chiave, nessun account, e i fornitori di IA non conservano nulla di ciò che invii. Tutto il resto di Musclog resta gratuito.",
+      "subhead": "Musclog Iron fa funzionare l'AI per Te: nessuna chiave, nessun account e solo provider AI che non conservano nulla di ciò che invii. Tutto il resto di Musclog resta gratuito.",
       "benefits": {
         "noSetup": {
           "title": "Nulla da configurare",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Zero conservazione dei dati",
-          "desc": "Vengono usati solo fornitori con zero conservazione dei dati: non conservano i tuoi messaggi e non li usano per l'addestramento. Musclog conserva solo conteggi di utilizzo."
+          "desc": "Vengono usati solo provider con zero conservazione dei dati: non conservano i Tuoi messaggi e non li usano per addestrare i modelli. Musclog non li memorizza nemmeno; conserva solo contatori di utilizzo e un identificativo di dispositivo."
         },
         "allowance": {
           "title": "La tua quota",

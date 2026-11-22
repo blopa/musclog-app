@@ -99,8 +99,12 @@ export async function configureRevenueCat(
       // eslint-disable-next-line @typescript-eslint/no-require-imports
     }: typeof import('react-native-purchases') = require('react-native-purchases');
 
-    if (LOG_LEVEL?.DEBUG) {
-      await Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+    // DEBUG prints the SDK's requests, including the app user id, to the device log. That is for
+    // development only: a release build reports errors and nothing else.
+    const level = __DEV__ ? LOG_LEVEL?.DEBUG : LOG_LEVEL?.ERROR;
+
+    if (level) {
+      await Purchases.setLogLevel(level);
     }
   } catch {
     // log level is best effort

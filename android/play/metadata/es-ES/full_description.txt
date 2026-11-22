@@ -12,7 +12,7 @@ Musclog es un registro de entrenamiento y contador de calorías gratuito y de c�
 • Controla el esfuerzo con RPE o repeticiones en reserva (RIR).
 • Más de 870 ejercicios con fotos y músculos objetivo, con búsqueda en tu idioma, o añade los tuyos.
 • Planes listos: Push Pull Legs, Torso/Pierna, Cuerpo completo, PHUL, 5 días y rutinas cortas en casa o sin material. O crea tu rutina semanal o rotativa.
-• Calculadora de discos para la barra de tu gimnasio, en kg o lb, por ejercicio si quieres.
+• Calculadora de discos para la barra de tu gimnasio, en kg o lb.
 • Cambia un ejercicio cuando una máquina está ocupada o algo te duele, y deja que Musclog recuerde qué evitar.
 • Importa tu historial desde Strong, Hevy o FitNotes.
 
@@ -46,6 +46,6 @@ Musclog Iron es una suscripción mensual que responde a las peticiones de IA sin
 • Bloquea toda la app o solo ciclo, entrenamiento, comidas o progreso, con biometría o código del móvil.
 • Exporta o respalda tus datos, o pásalos a otro móvil con códigos QR, sin nube.
 • Los informes de fallos anónimos ayudan a corregir errores y se desactivan en ajustes.
-• Widgets de inicio, varios temas de color, y English, Español, Nederlands, Português (Brasil) y Русский.
+• Widgets, temas de color e idiomas: English, Español, Nederlands, Português (Brasil), Русский, Deutsch, Français, Italiano, Polski y Türkçe.
 
 Lift, Log, Repeat.

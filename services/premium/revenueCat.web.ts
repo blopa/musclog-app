@@ -6,6 +6,9 @@ export const STORE_CANCELLED = '1';
 export const STORE_NETWORK_ERROR = '10';
 export const STORE_ALREADY_PURCHASED = '6';
 
+/** Web has no store to wait for; the constant exists so the web twin exports everything the native module does. */
+export const PRICE_LOOKUP_TIMEOUT_MS = 15_000;
+
 export function revenueCatApiKey(): string | null {
   return null;
 }

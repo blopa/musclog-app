@@ -75,6 +75,12 @@ export default function Contact() {
             <p className="mx-auto max-w-lg leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('description')}
             </p>
+            <p
+              className="mx-auto mt-3 max-w-lg text-sm leading-relaxed"
+              style={{ color: BODY_TEXT_SOFT }}
+            >
+              {t('operator')}
+            </p>
           </div>
 
           {/* Two-column layout */}

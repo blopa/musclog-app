@@ -1,7 +1,7 @@
 <b>Antrenmanlarını ve yediklerini tek uygulamada kaydet: hesap yok, reklam yok.</b>
 Musclog, ücretsiz ve açık kaynaklı bir antrenman takibi ve kalori sayacıdır. Son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir, yiyecek barkodlarını tarar ve internetsiz çalışır. Verilerin telefonunda kalır.
 
-Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça.
+Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya), Rusça, Almanca, Fransızca, İtalyanca, Lehçe ve Türkçe.
 
 <b>Hiçbir şey kilitli değil</b>
 • Sınırsız antrenman rutini ve programı, tüm geçmişinle birlikte.
@@ -48,6 +48,6 @@ Musclog Iron, kendi anahtarın olmadan yapay zekâ isteklerini yanıtlayan aylı
 • Tüm uygulamayı ya da yalnızca döngü, antrenman, yemek veya ilerleme verilerini biyometrik veya kilit koduyla kilitle.
 • Verilerini dışa aktar veya yedekle ya da QR kodları tarayarak bulut olmadan başka bir telefona taşı.
 • Anonim çökme raporları hataların düzeltilmesine yardımcı olur ve ayarlardan kapatılabilir.
-• Ana ekran widget'ları, birkaç renk teması ve İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya) ve Rusça dil desteği.
+• Ana ekran widget'ları ve birkaç renk teması.
 
 Lift, Log, Repeat.

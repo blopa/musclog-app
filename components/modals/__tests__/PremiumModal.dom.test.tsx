@@ -11,7 +11,8 @@ import {
   getPremiumActionFailure,
   resetPremiumActivity,
 } from '@/utils/premium/premiumActivity';
-import { PREMIUM_PRIVACY_URL, PREMIUM_TERMS_URL } from '@/utils/premium/premiumLinks';
+import { PREMIUM_PRIVACY_PATH, PREMIUM_TERMS_PATH } from '@/utils/premium/premiumLinks';
+import { websitePageUrl } from '@/utils/websiteUrl';
 import {
   buildPremiumViewModel,
   type PremiumNotice,
@@ -309,10 +310,10 @@ describe('PremiumModal', () => {
       renderModal();
 
       fireEvent.click(screen.getByText('premium.terms'));
-      expect(openURL).toHaveBeenLastCalledWith(PREMIUM_TERMS_URL);
+      expect(openURL).toHaveBeenLastCalledWith(websitePageUrl(PREMIUM_TERMS_PATH, 'en-US'));
 
       fireEvent.click(screen.getByText('premium.privacy'));
-      expect(openURL).toHaveBeenLastCalledWith(PREMIUM_PRIVACY_URL);
+      expect(openURL).toHaveBeenLastCalledWith(websitePageUrl(PREMIUM_PRIVACY_PATH, 'en-US'));
     });
   });
 
