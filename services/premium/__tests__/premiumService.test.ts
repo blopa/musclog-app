@@ -617,6 +617,50 @@ describe('fetchPremiumConfig', () => {
     });
   });
 
+  it('retries once after a 5xx, so a transient edge error is not reported', async () => {
+    jest.useFakeTimers();
+    let calls = 0;
+
+    fetchMock = workerFetch({
+      'GET /v1/config': () => {
+        calls += 1;
+
+        return calls === 1
+          ? jsonResponse(504, { error: { code: 'gateway' } })
+          : jsonResponse(200, {
+              enabled: true,
+              accepting_new: true,
+              vision_enabled: false,
+              image: null,
+            });
+      },
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const pending = fetchPremiumConfig();
+
+    await jest.advanceTimersByTimeAsync(1000);
+
+    expect(await pending).toMatchObject({ ok: true });
+    expect(calls).toBe(2);
+    expect(reportPremiumFailure).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
+  it('reports a config that keeps failing after the retry', async () => {
+    jest.useFakeTimers();
+    fetchMock = workerFetch({ 'GET /v1/config': () => jsonResponse(504, {}) });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const pending = fetchPremiumConfig();
+
+    await jest.advanceTimersByTimeAsync(1000);
+
+    expect(await pending).toEqual({ ok: false, failure: 'unavailable' });
+    expect(reportPremiumFailure).toHaveBeenCalledWith('config', 'unavailable', { status: 504 });
+    jest.useRealTimers();
+  });
+
   it('reports invalid_response for a body that does not parse', async () => {
     fetchMock = workerFetch({ 'GET /v1/config': () => jsonResponse(200, { enabled: 'yes' }) });
     global.fetch = fetchMock as unknown as typeof fetch;

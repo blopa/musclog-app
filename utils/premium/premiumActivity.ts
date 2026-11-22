@@ -1,4 +1,4 @@
-import { createListeners } from '../createListeners';
+import { createListeners } from '@/utils/createListeners';
 
 // What Premium is doing right now, kept at module level so it outlives the screen that started it:
 // closing the modal mid-purchase must not lose the stage, the result or the consent question.

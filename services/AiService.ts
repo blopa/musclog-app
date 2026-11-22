@@ -118,7 +118,9 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
       if (baseUrl && grant?.ok) {
         return {
           provider: 'hosted',
-          baseUrl,
+          // The OpenAI SDK appends `/chat/completions` to this, and the Worker serves it under
+          // `/v1`: the bare host answered 404 on the first real Premium chat.
+          baseUrl: `${baseUrl.replace(/\/+$/, '')}/v1`,
           apiKey: grant.value.sessionToken,
           model,
           language,

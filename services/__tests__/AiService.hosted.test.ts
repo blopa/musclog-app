@@ -110,13 +110,22 @@ describe('AiService hosted (Musclog Premium) probe', () => {
     });
   });
 
+  it('points the OpenAI client at /v1 and tolerates a trailing slash in the base URL', async () => {
+    reset({ baseUrl: 'https://hosted.example/' });
+
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({
+      provider: 'hosted',
+      baseUrl: 'https://hosted.example/v1',
+    });
+  });
+
   it('wins over a configured gateway and uses the session token as the key', async () => {
     reset({});
     named.getUseMusclogFreeTier = true;
 
     await expect(AiService.getAiConfig()).resolves.toEqual({
       provider: 'hosted',
-      baseUrl: 'https://hosted.example',
+      baseUrl: 'https://hosted.example/v1',
       apiKey: 'session-token',
       model: 'musclog-hosted',
       language: 'en-US',

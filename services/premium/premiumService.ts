@@ -386,6 +386,8 @@ export function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
 // `/v1/config` is public and read by the Premium screen and by every hosted photo, so a burst of
 // them makes one request.
 const CONFIG_CACHE_MS = 5 * 60 * 1000;
+const CONFIG_RETRY_DELAY_MS = 800;
+const CONFIG_RETRY_KINDS: ReadonlySet<string> = new Set(['unavailable', 'network']);
 let cachedConfig: { value: HostedConfig; at: number } | null = null;
 
 export function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>> {
@@ -396,7 +398,14 @@ export function fetchPremiumConfig(): Promise<PremiumResult<HostedConfig>> {
       return { ok: true, value: cachedConfig.value };
     }
 
-    const result = await hostedConfig(baseUrl, platformFetch);
+    let result = await hostedConfig(baseUrl, platformFetch);
+
+    // `/v1/config` is public and idempotent: one quiet retry absorbs an edge 5xx or a dropped
+    // connection (a 504 reached Sentry on the first day) before anything is reported.
+    if (!result.ok && CONFIG_RETRY_KINDS.has(failureKindOf(result))) {
+      await sleep(CONFIG_RETRY_DELAY_MS);
+      result = await hostedConfig(baseUrl, platformFetch);
+    }
 
     if (!result.ok) {
       const failure = failureKindOf(result);
