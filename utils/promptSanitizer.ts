@@ -136,3 +136,31 @@ export const sanitizeForPrompt = (
     isSafe: true,
   };
 };
+
+/**
+ * Longest chat message sent to the model. Far above `MAX_INPUT_LENGTH`: people paste whole recipes
+ * and training logs into the chat, and cutting one off silently makes the coach answer a different
+ * question than the one asked.
+ */
+export const MAX_CHAT_MESSAGE_LENGTH = 8000;
+
+/**
+ * The person's own chat message, as the model should read it. It only drops what is not text
+ * (control characters, a byte-order mark) and normalises line endings; quotes, apostrophes,
+ * newlines, backticks and angle brackets are kept as typed. `sanitizeUserInput` escapes them,
+ * which is right for text spliced into a structured prompt but made the coach read "I\'m" and
+ * "line one\nline two" in a conversation. The chat message is the person talking to their own
+ * coach, so it is a turn in the conversation, not a place text can break out of; the app's data
+ * blocks are told apart by the system prompt instead.
+ */
+export const prepareChatText = (input: string): string => {
+  if (!input || typeof input !== 'string') {
+    return '';
+  }
+
+  return input
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F﻿]/g, '')
+    .trim()
+    .slice(0, MAX_CHAT_MESSAGE_LENGTH);
+};

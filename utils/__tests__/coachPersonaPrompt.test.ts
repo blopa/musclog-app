@@ -29,7 +29,7 @@ describe('buildCoachPersonaBlock', () => {
   it('keeps summaries and memories neutral, and the rules out of the persona`s reach', () => {
     const block = buildCoachPersonaBlock(preset);
 
-    expect(block).toContain('sumMsg, sumUserMsg, remember_me');
+    expect(block).toContain('(remember_me)');
     expect(block).toContain('plain, neutral language');
     expect(block).toContain('never changes numbers, safety advice, your scope');
   });

@@ -26,12 +26,14 @@ import {
   claudeStreamDelta,
   extractClaudeText,
 } from './claude';
+import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
 import { providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
+import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
@@ -64,7 +66,7 @@ import {
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
-import { wrapUserContent } from './promptSanitizer';
+import { prepareChatText, wrapUserContent } from './promptSanitizer';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -312,14 +314,12 @@ async function logLlmDebugEvent(params: {
   }
 }
 
-export type ChatHistoryEntry = {
-  role: 'user' | 'coach';
-  content: string;
-};
+export type ChatHistoryEntry = HistoryTurn;
 
 export type CoachResponse = {
   msg4User: string;
-  sumMsg: string;
+  /** Only older replies and the templated ones carry one; the model is no longer asked for it. */
+  sumMsg?: string;
   sumUserMsg?: string;
   rememberMe?: string;
 };
@@ -384,15 +384,18 @@ async function streamGeminiText(
     config,
     async (signal, touch) => {
       sink.reset();
+      let usage: LlmUsage | null = null;
       const chunks = await genModel.generateContentStream({ contents, abortSignal: signal });
       for await (const chunk of chunks) {
         touch();
+        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
         const { text } = extractGeminiText(chunk);
         if (text) {
           sink.onDelta(text);
         }
       }
 
+      noteUsage(config, operation, usage);
       return sink.raw();
     },
     { hasStreamed: sink.hasEmitted }
@@ -423,15 +426,19 @@ async function streamOpenAiText(
     config,
     async (_signal, touch, options) => {
       sink.reset();
+      let usage: LlmUsage | null = null;
       const chunks = await client.chat.completions.create({ ...payload, stream: true }, options);
       for await (const chunk of chunks) {
         touch();
+        // Only present when the provider sends it (OpenRouter does, on the last chunk).
+        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
         const delta = chunk.choices[0]?.delta?.content;
         if (delta) {
           sink.onDelta(delta);
         }
       }
 
+      noteUsage(config, operation, usage);
       return sink.raw();
     },
     { hasStreamed: sink.hasEmitted }
@@ -449,10 +456,14 @@ async function buildClaudeParams(
   config: CoachAIConfig,
   system: string,
   messages: Anthropic.MessageParam[],
-  options?: { schema?: object }
+  options?: { schema?: object; cache?: boolean }
 ): Promise<ClaudeParams> {
   return {
     model: config.model,
+    // Automatic prompt caching: the rules, persona, profile and data are the same from one message
+    // to the next, so only the newest turn is paid for in full. Chat only: a one-off request
+    // would pay the cache write for nothing.
+    ...(options?.cache ? { cache_control: { type: 'ephemeral' as const } } : {}),
     max_tokens: CLAUDE_MAX_TOKENS,
     system,
     messages,
@@ -504,6 +515,7 @@ async function runClaude(
           }
         }
 
+        noteUsage(config, operation, await finalClaudeUsage(events));
         return sink.raw();
       },
       { hasStreamed: sink.hasEmitted }
@@ -512,6 +524,7 @@ async function runClaude(
     const message = await withLlmRetry(operation, config, (signal) =>
       client.messages.create(params, { signal })
     );
+    noteUsage(config, operation, extractLlmUsage(message));
     text = extractClaudeText(message).text;
   }
 
@@ -664,46 +677,31 @@ export type NutritionEntry = {
   sugar?: number;
 };
 
-const LENGTH_SOFT_LIMIT = 50;
-
 const baseSchemaProperties = {
   msg4User: {
     type: 'string',
     description: 'The full response to display to the user in the chat.',
-  },
-  sumMsg: {
-    type: 'string',
-    description:
-      'A shortened version of msg4User trimmed to 1-2 sentences. Keep the same first-person voice and key points — write it as you would say it, not as a description of what you said.',
-  },
-};
-
-const sumUserMsgProperty = {
-  sumUserMsg: {
-    type: 'string',
-    description:
-      "A shortened version of the user's message trimmed to 1 sentence. Keep their voice and key intent — write it as they would say it, not as a description of what they said.",
   },
 };
 
 const rememberMeProperty = {
   remember_me: {
     type: 'string',
-    description: 'A short sentence with something important to remember about the user.',
+    description:
+      'A short neutral fact worth keeping about the user for months (an injury, a preference, equipment, a schedule, a goal). An empty string when there is nothing.',
   },
 };
 
-function buildResponseSchema(includeUserSummary: boolean) {
-  const properties = {
-    ...baseSchemaProperties,
-    ...(includeUserSummary ? sumUserMsgProperty : {}),
-    ...rememberMeProperty,
-  };
-
+/**
+ * `remember_me` is required (an empty string means "nothing"): strict structured output wants every
+ * property listed, and a small model fills a required field more reliably than it opts into an
+ * optional one.
+ */
+function buildResponseSchema() {
   return {
     type: 'object',
-    properties,
-    required: includeUserSummary ? ['msg4User', 'sumMsg', 'sumUserMsg'] : ['msg4User', 'sumMsg'],
+    properties: { ...baseSchemaProperties, ...rememberMeProperty },
+    required: ['msg4User', 'remember_me'],
   };
 }
 
@@ -775,12 +773,12 @@ function parseCoachResponse(raw: string): CoachResponse {
     const parsed = JSON.parse(cleanJson);
     return {
       msg4User: parsed.msg4User ?? raw,
-      sumMsg: parsed.sumMsg ?? raw,
+      sumMsg: parsed.sumMsg ?? undefined,
       sumUserMsg: parsed.sumUserMsg ?? undefined,
       rememberMe: parsed.remember_me ?? undefined,
     };
   } catch {
-    return { msg4User: raw, sumMsg: raw };
+    return { msg4User: raw };
   }
 }
 
@@ -826,6 +824,40 @@ function makeSchemaStrict(schema: any): any {
   return schema;
 }
 
+/**
+ * The chat system prompt. A session the conversation already carries in full (the workout just
+ * finished) is left out of the prompt's own list of recent workouts, or the model reads it twice.
+ */
+function chatSystemPrompt(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> {
+  return getChatMessagePromptContent(config.language, undefined, context, config.provider, {
+    excludeWorkoutLogIds: history.flatMap((entry) =>
+      entry.workoutLogId ? [entry.workoutLogId] : []
+    ),
+  });
+}
+
+/** The usage of a finished Claude stream. Telemetry only: whatever goes wrong, the reply stands. */
+async function finalClaudeUsage(events: {
+  finalMessage?: () => Promise<unknown>;
+}): Promise<LlmUsage | null> {
+  try {
+    return extractLlmUsage(await events.finalMessage?.());
+  } catch {
+    return null;
+  }
+}
+
+/** Keeps what a request cost, so cache hits and bloat can be seen. */
+function noteUsage(config: CoachAIConfig, operation: string, usage: LlmUsage | null): void {
+  if (usage) {
+    recordLlmUsage({ operation, provider: config.provider, usage });
+  }
+}
+
 // --- Provider Implementations ---
 
 async function sendViaGemini(
@@ -836,26 +868,15 @@ async function sendViaGemini(
   stream?: CoachStream
 ): Promise<CoachResponse> {
   const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.gemini;
-  const systemPrompt = await getChatMessagePromptContent(
-    config.language,
-    undefined,
-    context,
-    config.provider
-  );
+  const systemPrompt = await chatSystemPrompt(config, history, context);
   const systemParts: Part[] = [{ text: systemPrompt }];
-  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
 
   const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
   // Gemini does not promise the schema's property order, and the reply is shown from the first
   // property while the rest is still being written.
   const responseSchema = {
-    ...buildResponseSchema(includeUserSummary),
-    propertyOrdering: [
-      'msg4User',
-      'sumMsg',
-      ...(includeUserSummary ? ['sumUserMsg'] : []),
-      'remember_me',
-    ],
+    ...buildResponseSchema(),
+    propertyOrdering: ['msg4User', 'remember_me'],
   };
 
   const genModel = await configureBasicGenAI(
@@ -922,6 +943,7 @@ async function sendViaGemini(
     config,
   });
 
+  noteUsage(config, 'sendViaGemini', extractLlmUsage(result));
   const raw = extractRawText(result);
   return parseCoachResponse(raw);
 }
@@ -934,15 +956,9 @@ async function sendViaOpenAI(
   stream?: CoachStream
 ): Promise<CoachResponse> {
   const client = buildOpenAIClient(config);
-  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
   const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
 
-  const systemPrompt = await getChatMessagePromptContent(
-    config.language,
-    undefined,
-    context,
-    config.provider
-  );
+  const systemPrompt = await chatSystemPrompt(config, history, context);
 
   const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
   const normalized = normalizeHistory(truncatedHistory);
@@ -956,7 +972,7 @@ async function sendViaOpenAI(
     { role: 'user', content: userMessage },
   ];
 
-  const schema = makeSchemaStrict(buildResponseSchema(includeUserSummary));
+  const schema = makeSchemaStrict(buildResponseSchema());
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages,
@@ -1015,6 +1031,7 @@ async function sendViaOpenAI(
       config,
     });
 
+    noteUsage(config, 'sendViaOpenAI', extractLlmUsage(completion));
     const raw = completion.choices[0]?.message?.content ?? '{}';
     return parseCoachResponse(raw);
   } catch (error) {
@@ -1070,19 +1087,13 @@ async function sendViaClaude(
   context?: 'nutrition' | 'exercise' | 'general',
   stream?: CoachStream
 ): Promise<CoachResponse> {
-  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
-  const systemPrompt = await getChatMessagePromptContent(
-    config.language,
-    undefined,
-    context,
-    config.provider
-  );
+  const systemPrompt = await chatSystemPrompt(config, history, context);
   const truncatedHistory = truncateHistoryByBudget(history, PROVIDER_CONFIGS.claude.maxCharBudget);
   const params = await buildClaudeParams(
     config,
     systemPrompt,
     buildClaudeMessages(truncatedHistory, userMessage),
-    { schema: buildResponseSchema(includeUserSummary) }
+    { schema: buildResponseSchema(), cache: true }
   );
 
   const sink = stream ? createStreamSink(stream, 'coachJson') : null;
@@ -2145,12 +2156,19 @@ export async function sendCoachMessage(
   context?: 'nutrition' | 'exercise' | 'general',
   stream?: CoachStream
 ): Promise<CoachResponse> {
-  // Wrap user message with delimiters to prevent prompt injection attacks
-  const sanitizedMessage = wrapUserContent(userMessage);
+  // The person's own message goes through as typed (see `prepareChatText`); it used to be escaped
+  // as if it were text spliced into a template, so the model read "I\'m" and "\n".
+  const text = prepareChatText(userMessage);
 
+  // On-device keeps its tight budget and its own date line, so nothing is added there.
   if (config.provider === 'on-device') {
-    return sendViaOnDevice(config, history, sanitizedMessage, context, stream);
+    return sendViaOnDevice(config, history, text, context, stream);
   }
+
+  // Every user turn carries the time it was sent, the newest also how long the pause was.
+  const tagged = tagTurnsWithTime(history, text, Date.now());
+  history = tagged.history;
+  const sanitizedMessage = tagged.userMessage;
 
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context, stream);

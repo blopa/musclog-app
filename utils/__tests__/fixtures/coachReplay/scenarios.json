@@ -1,0 +1,86 @@
+[
+  {
+    "name": "rejected-advice-is-not-repeated",
+    "source": "2024-08-22 real chat: coach suggested HIIT to someone cutting who said hunger is the problem",
+    "context": "general",
+    "history": [
+      {
+        "role": "user",
+        "content": "I did half my usual sets and I'm not even sore. I'm cutting at 1700 kcal. Did I mess up my progress?",
+        "hoursAgo": 0.1
+      },
+      {
+        "role": "coach",
+        "content": "Not feeling sore doesn't mean you underperformed. Consider adding some HIIT to ramp up calorie burn without increasing volume.",
+        "hoursAgo": 0.09
+      }
+    ],
+    "userMessage": "I don't want to add HIIT because it will ramp up my hunger too. I'm just walking a lot.",
+    "requestChecks": { "lastCoachTurnVerbatim": true, "userTurnsTimeTagged": true },
+    "replyRubric": [
+      "Does not suggest HIIT or any extra cardio again",
+      "Acknowledges the hunger concern in a sentence",
+      "Under about 80 words, no list",
+      "Does not open with generic praise"
+    ]
+  },
+  {
+    "name": "short-thanks-gets-a-short-reply",
+    "source": "2024-08-22 and 2026-03-17 real chats: 'Top' and 'Hehe ok thank you' got a canned offer of more help",
+    "context": "general",
+    "history": [
+      {
+        "role": "coach",
+        "content": "Keep your strength sessions heavy and keep walking; that is a solid plan.",
+        "hoursAgo": 0.05
+      }
+    ],
+    "userMessage": "Top",
+    "requestChecks": { "userTurnsTimeTagged": true },
+    "replyRubric": [
+      "One short line, at most two sentences",
+      "No 'let me know if you have more questions' or 'I am here to help'",
+      "No recap of the plan"
+    ]
+  },
+  {
+    "name": "one-session-is-not-two",
+    "source": "2026-03-25 real chat: one finished workout was described as two sessions with 7 personal records",
+    "context": "exercise",
+    "history": [
+      {
+        "role": "user",
+        "content": "I completed the workout \"Free Training\" (36m, 3120 kg, 3 personal records).",
+        "hoursAgo": 0.02,
+        "workoutLogId": "w-latest"
+      }
+    ],
+    "userMessage": "What do you think of this workout I've just finished?",
+    "requestChecks": { "excludesWorkoutFromPrompt": "w-latest", "userTurnsTimeTagged": true },
+    "replyRubric": [
+      "Talks about exactly one session and three personal records",
+      "Invents no second workout and no figure that is not in the data",
+      "Names at least one concrete lift from the session"
+    ]
+  },
+  {
+    "name": "back-after-weeks",
+    "source": "no gap handling today: a person returning after three weeks was answered as if the last message were a minute old",
+    "context": "general",
+    "history": [
+      { "role": "user", "content": "Should I try keto?", "hoursAgo": 504 },
+      {
+        "role": "coach",
+        "content": "You can reach your goal with a moderate deficit; keto is not required.",
+        "hoursAgo": 503.9
+      }
+    ],
+    "userMessage": "Hey, I'm back. Missed three weeks because of a cold.",
+    "requestChecks": { "newestMessageMentionsPause": true, "userTurnsTimeTagged": true },
+    "replyRubric": [
+      "Welcomes them back in a line and mentions the cold without lecturing",
+      "Does not resume the keto topic unprompted",
+      "Suggests an easy restart, not a full-volume week"
+    ]
+  }
+]

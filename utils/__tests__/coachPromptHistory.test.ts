@@ -3,6 +3,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import {
   getNutritionLogHistoryPrompt,
+  getRecentWorkoutsPrompt,
   getWorkoutLogHistoryPrompt,
 } from '@/utils/coachPromptHistory';
 import { differenceInCalendarDays, startOfDay } from 'date-fns';
@@ -69,6 +70,11 @@ const parsePromptJson = (prompt: string) => {
   return JSON.parse(lines[lines.indexOf('```json') + 1]);
 };
 
+/** The workout block after its one-line header: day headings and `- ` / indented lines. */
+const workoutBody = (prompt: string) => prompt.split('\n').slice(1);
+
+const DATE_HEADING = /^\d{4}-\d{2}-\d{2} (Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/;
+
 describe('coachPromptHistory', () => {
   let consoleErrorSpy: jest.SpyInstance;
 
@@ -130,10 +136,10 @@ describe('coachPromptHistory', () => {
 
       const grouped = parsePromptJson(await getNutritionLogHistoryPrompt());
 
-      expect(Object.keys(grouped)).toEqual(['05/19/26', '05/20/26']);
-      expect(grouped['05/20/26'].map((e: any) => e.name)).toEqual(['Oats', 'Steak']);
-      expect(grouped['05/20/26'][0].time).toBe('08:00');
-      expect(grouped['05/20/26'][1].time).toBe('19:00');
+      expect(Object.keys(grouped)).toEqual(['2026-05-19 Tue', '2026-05-20 Wed']);
+      expect(grouped['2026-05-20 Wed'].map((e: any) => e.name)).toEqual(['Oats', 'Steak']);
+      expect(grouped['2026-05-20 Wed'][0].time).toBe('08:00');
+      expect(grouped['2026-05-20 Wed'][1].time).toBe('19:00');
     });
 
     it('rounds macros and labels them with the compact kcal/p/c/f keys', async () => {
@@ -151,7 +157,7 @@ describe('coachPromptHistory', () => {
 
       const grouped = parsePromptJson(await getNutritionLogHistoryPrompt());
 
-      expect(grouped['05/20/26'][0]).toEqual({
+      expect(grouped['2026-05-20 Wed'][0]).toEqual({
         name: 'Oats',
         kcal: 350,
         p: '13g',
@@ -190,8 +196,8 @@ describe('coachPromptHistory', () => {
 
       const grouped = parsePromptJson(await getNutritionLogHistoryPrompt());
 
-      expect(grouped['05/20/26']).toHaveLength(1);
-      expect(grouped['05/20/26'][0]).toEqual({
+      expect(grouped['2026-05-20 Wed']).toHaveLength(1);
+      expect(grouped['2026-05-20 Wed'][0]).toEqual({
         name: 'Chicken Bowl',
         kcal: 500,
         p: '40g',
@@ -221,8 +227,8 @@ describe('coachPromptHistory', () => {
 
       const grouped = parsePromptJson(await getNutritionLogHistoryPrompt());
 
-      expect(grouped['05/19/26']).toHaveLength(1);
-      expect(grouped['05/20/26']).toHaveLength(1);
+      expect(grouped['2026-05-19 Tue']).toHaveLength(1);
+      expect(grouped['2026-05-20 Wed']).toHaveLength(1);
     });
 
     it('falls back to the log display name when a grouped meal has no stored meal name', async () => {
@@ -237,7 +243,7 @@ describe('coachPromptHistory', () => {
 
       const grouped = parsePromptJson(await getNutritionLogHistoryPrompt());
 
-      expect(grouped['05/20/26'][0].name).toBe('Rice');
+      expect(grouped['2026-05-20 Wed'][0].name).toBe('Rice');
       expect(log.getDisplayName).toHaveBeenCalled();
     });
 
@@ -264,6 +270,7 @@ describe('coachPromptHistory', () => {
 
       const prompt = await getNutritionLogHistoryPrompt();
 
+      expect(prompt).toContain('YYYY-MM-DD Ddd, oldest first');
       expect(prompt).toContain('c=carbs (includes fiber)');
       expect(prompt).toContain('24h local time logged');
       expect(prompt).toContain('```json');
@@ -344,24 +351,13 @@ describe('coachPromptHistory', () => {
       mockGetWorkoutHistory.mockResolvedValue([{ id: 'w1' }]);
       mockGetWorkoutWithDetails.mockResolvedValue(workoutDetails());
 
-      const grouped = parsePromptJson(await getWorkoutLogHistoryPrompt());
+      const prompt = await getWorkoutLogHistoryPrompt();
 
-      expect(grouped['05/20/26']).toEqual([
-        {
-          name: 'Push Day',
-          duration: '60min',
-          volume: '5000kg',
-          exercises: [
-            {
-              name: 'Bench Press',
-              sets: [
-                { weight: '100kg', reps: 5 },
-                { weight: '100kg', reps: 4 },
-              ],
-            },
-            { name: 'Lateral Raise', sets: [{ weight: '40kg', reps: 12 }] },
-          ],
-        },
+      expect(workoutBody(prompt)).toEqual([
+        '2026-05-20 Wed',
+        '- Push Day, 60min, volume 5000kg',
+        '  Bench Press: 100kg x5, 100kg x4',
+        '  Lateral Raise: 40kg x12',
       ]);
     });
 
@@ -384,10 +380,12 @@ describe('coachPromptHistory', () => {
         })
       );
 
-      const grouped = parsePromptJson(await getWorkoutLogHistoryPrompt());
+      const prompt = await getWorkoutLogHistoryPrompt();
 
-      expect(grouped['05/20/26'][0].exercises).toEqual([
-        { name: 'Bench Press', sets: [{ weight: '100kg', reps: 5 }] },
+      expect(workoutBody(prompt)).toEqual([
+        '2026-05-20 Wed',
+        '- Push Day, 60min, volume 5000kg',
+        '  Bench Press: 100kg x5',
       ]);
     });
 
@@ -402,11 +400,10 @@ describe('coachPromptHistory', () => {
       );
 
       const prompt = await getWorkoutLogHistoryPrompt();
-      const grouped = parsePromptJson(prompt);
 
       expect(prompt).toContain('preferred unit (lbs)');
-      expect(grouped['05/20/26'][0].exercises[0].sets[0].weight).toBe('220.5lbs');
-      expect(grouped['05/20/26'][0].volume).toBe('11023.1lbs');
+      expect(workoutBody(prompt)).toContain('  Bench Press: 220.5lbs x5');
+      expect(workoutBody(prompt)).toContain('- Push Day, 60min, volume 11023.1lbs');
     });
 
     it('reports a zero duration for a workout that was never completed', async () => {
@@ -417,9 +414,9 @@ describe('coachPromptHistory', () => {
         workoutDetails({ workoutLog: { completedAt: null } })
       );
 
-      const grouped = parsePromptJson(await getWorkoutLogHistoryPrompt());
+      const prompt = await getWorkoutLogHistoryPrompt();
 
-      expect(grouped['05/20/26'][0].duration).toBe('0min');
+      expect(workoutBody(prompt)).toContain('- Push Day, 0min, volume 5000kg');
     });
 
     it('drops sets whose exercise is missing, and the whole workout when none resolve', async () => {
@@ -448,12 +445,12 @@ describe('coachPromptHistory', () => {
         return workoutDetails();
       });
 
-      const grouped = parsePromptJson(await getWorkoutLogHistoryPrompt());
+      const prompt = await getWorkoutLogHistoryPrompt();
 
-      expect(Object.values(grouped).flat()).toHaveLength(1);
+      expect(workoutBody(prompt).filter((line) => line.startsWith('- '))).toHaveLength(1);
     });
 
-    it('groups multiple workouts recorded on the same day under one day key', async () => {
+    it('groups multiple workouts recorded on the same day under one day heading', async () => {
       mockGetWorkoutHistoryDays.mockResolvedValue('30');
       mockGetUnits.mockResolvedValue('metric');
       mockGetWorkoutHistory.mockResolvedValue([{ id: 'w1' }, { id: 'w2' }]);
@@ -461,10 +458,68 @@ describe('coachPromptHistory', () => {
         workoutDetails({ workoutLog: { workoutName: id === 'w1' ? 'AM' : 'PM' } })
       );
 
-      const grouped = parsePromptJson(await getWorkoutLogHistoryPrompt());
+      const prompt = await getWorkoutLogHistoryPrompt();
+      const body = workoutBody(prompt);
 
-      expect(Object.keys(grouped)).toEqual(['05/20/26']);
-      expect(grouped['05/20/26'].map((w: any) => w.name)).toEqual(['PM', 'AM']);
+      expect(body.filter((line) => !line.startsWith(' ') && !line.startsWith('- '))).toEqual([
+        '2026-05-20 Wed',
+      ]);
+      expect(
+        body.filter((line) => line.startsWith('- ')).map((line) => line.split(',')[0])
+      ).toEqual(['- PM', '- AM']);
+    });
+
+    it('uses a YYYY-MM-DD Ddd heading for every day and no JSON fence', async () => {
+      mockGetWorkoutHistoryDays.mockResolvedValue('30');
+      mockGetUnits.mockResolvedValue('metric');
+      mockGetWorkoutHistory.mockResolvedValue([{ id: 'w1' }]);
+      mockGetWorkoutWithDetails.mockResolvedValue(workoutDetails());
+
+      const prompt = await getWorkoutLogHistoryPrompt();
+
+      expect(prompt).not.toContain('```');
+      expect(prompt).toContain('oldest first');
+      const headings = workoutBody(prompt).filter(
+        (line) => !line.startsWith(' ') && !line.startsWith('- ')
+      );
+      expect(headings).toHaveLength(1);
+      expect(headings[0]).toMatch(DATE_HEADING);
+      expect(headings[0]).toBe('2026-05-20 Wed');
+    });
+
+    it('lists the most recent workouts oldest first through getRecentWorkoutsPrompt', async () => {
+      mockGetUnits.mockResolvedValue('metric');
+      mockGetWorkoutHistory.mockResolvedValue([{ id: 'new' }, { id: 'old' }]);
+      mockGetWorkoutWithDetails.mockImplementation(async (id: string) =>
+        workoutDetails({
+          workoutLog: {
+            workoutName: id === 'new' ? 'Pull Day' : 'Push Day',
+            startedAt: localNoon(2026, id === 'new' ? 5 : 4, 22, 9),
+          },
+        })
+      );
+
+      const prompt = await getRecentWorkoutsPrompt(2);
+
+      expect(mockGetWorkoutHistory).toHaveBeenCalledWith(undefined, 2);
+      expect(prompt.split('\n')[0]).toContain("The user's most recent workouts, oldest first.");
+      expect(prompt).toContain('preferred unit (kg)');
+      expect(
+        workoutBody(prompt)
+          .filter((line) => line.startsWith('- '))
+          .map((line) => line.split(',')[0])
+      ).toEqual(['- Push Day', '- Pull Day']);
+      expect(workoutBody(prompt)[0]).toBe('2026-04-22 Wed');
+    });
+
+    it("getRecentWorkoutsPrompt returns '' when there are no workouts or the read fails", async () => {
+      mockGetUnits.mockResolvedValue('metric');
+      mockGetWorkoutHistory.mockResolvedValue([]);
+      await expect(getRecentWorkoutsPrompt(5)).resolves.toBe('');
+
+      mockGetWorkoutHistory.mockRejectedValue(new Error('db down'));
+      await expect(getRecentWorkoutsPrompt(5)).resolves.toBe('');
+      expect(consoleErrorSpy).toHaveBeenCalled();
     });
 
     it("returns '' when the history query throws", async () => {

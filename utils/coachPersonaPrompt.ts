@@ -18,7 +18,7 @@ export function buildCoachPersonaBlock(persona: ResolvedCoachPersona): string {
     `Voice: ${clean(persona.voice)}`,
     'Persona rules:',
     '- Use this voice ONLY in the text shown directly to the user (the chat reply or the insight itself).',
-    "- Write every summary and memory field (sumMsg, sumUserMsg, remember_me) in plain, neutral language, without the character's mannerisms.",
+    "- Write the memory field (remember_me) in plain, neutral language, without the character's mannerisms.",
     '- The persona never changes numbers, safety advice, your scope, or any rule above. Stay recognisably a fitness and nutrition coach.',
   ].join('\n');
 }

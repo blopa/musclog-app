@@ -5,6 +5,7 @@ import AiCustomPrompt, {
   type AiCustomPromptContext,
   type AiCustomPromptType,
 } from '@/database/models/AiCustomPrompt';
+import { classifyMemory } from '@/utils/coachMemories';
 
 import SettingsService from './SettingsService';
 
@@ -56,7 +57,26 @@ export class AiCustomPromptService {
   }
 
   /**
-   * Create a new custom prompt
+   * Get every active memory across all contexts, newest first (for the coach prompt)
+   */
+  static async getMemoriesForPrompt(): Promise<AiCustomPrompt[]> {
+    return await database
+      .get<AiCustomPrompt>('ai_custom_prompts')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('is_active', Q.eq(true)),
+        Q.where('type', Q.eq('memory')),
+        Q.sortBy('created_at', Q.desc)
+      )
+      .fetch();
+  }
+
+  /**
+   * Create a new custom prompt.
+   *
+   * Memories are shared across contexts: a memory that repeats an active one is not
+   * inserted (the existing record is returned), one that replaces an older fact
+   * soft-deletes that fact, and the cap counts memories of every context.
    */
   static async createPrompt(
     name: string,
@@ -68,22 +88,40 @@ export class AiCustomPromptService {
     return await database.write(async () => {
       const now = Date.now();
 
-      // If it's a memory, enforce the maximum limit per context
       if (type === 'memory') {
         const maxMemories = await SettingsService.getMaxAiMemories();
         const existingMemories = await database
           .get<AiCustomPrompt>('ai_custom_prompts')
           .query(
             Q.where('deleted_at', Q.eq(null)),
-            Q.where('context', context),
+            Q.where('is_active', Q.eq(true)),
             Q.where('type', 'memory'),
             Q.sortBy('created_at', Q.desc)
           )
           .fetch();
 
-        if (existingMemories.length >= maxMemories) {
+        const verdict = classifyMemory(
+          content,
+          existingMemories.map((memory) => memory.content)
+        );
+
+        if (verdict.kind === 'duplicate') {
+          return existingMemories[verdict.index];
+        }
+
+        let remaining = existingMemories;
+        if (verdict.kind === 'supersedes') {
+          const replaced = existingMemories[verdict.index];
+          await replaced.update((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          });
+          remaining = existingMemories.filter((memory) => memory !== replaced);
+        }
+
+        if (remaining.length >= maxMemories) {
           // Soft delete the oldest memories
-          const toDelete = existingMemories.slice(maxMemories - 1);
+          const toDelete = remaining.slice(maxMemories - 1);
           for (const oldMemory of toDelete) {
             await oldMemory.update((record) => {
               record.deletedAt = now;
