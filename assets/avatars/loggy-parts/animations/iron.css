@@ -24,11 +24,11 @@
     animation: loggy-badge-swing 3s ease-in-out infinite;
 }
 #drops-l {
-    transform-origin: 160px 262px;
+    transform-origin: 155px 257px;
     animation: loggy-drops 3s ease-in-out infinite;
 }
 #drops-r {
-    transform-origin: 352px 258px;
+    transform-origin: 375px 254px;
     animation: loggy-drops 3s ease-in-out infinite;
 }
 #sparkle-l {
