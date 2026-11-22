@@ -287,3 +287,57 @@ describe('conditional pages', () => {
     ).toEqual([]);
   });
 });
+
+describe('the intro a release brings', () => {
+  const intro = { titleKey: 'whatsNew.title' as const };
+  const withIntro = (version: string, extra: Partial<WhatsNewRelease['intro']> = {}) => ({
+    ...release(version, 1),
+    intro: { ...intro, ...extra },
+  });
+
+  it('is the newest shown release’s intro, kept for a merged tour', () => {
+    const flow = selectWhatsNewFlow({
+      releases: [withIntro('2.13.0', { titleKey: 'whatsNew.done' }), withIntro('2.14.0')],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    });
+    expect(flow.intro).toEqual(intro);
+    expect(flow.releaseVersions).toEqual(['2.13.0', '2.14.0']);
+  });
+
+  it('is not borrowed from an older release when the newest has none', () => {
+    const flow = selectWhatsNewFlow({
+      releases: [withIntro('2.13.0'), release('2.14.0', 1)],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    });
+    expect(flow.intro).toBeNull();
+  });
+
+  it('falls to the next release when the newest one shows no page', () => {
+    const gated = withIntro('2.14.0', { requires: 'premium' });
+    gated.pages[0].requires = 'premium';
+    const flow = selectWhatsNewFlow({
+      releases: [withIntro('2.13.0'), gated],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    });
+    expect(flow.releaseVersions).toEqual(['2.13.0']);
+    expect(flow.intro).toEqual(intro);
+  });
+
+  it('honours its own condition', () => {
+    const input = {
+      releases: [withIntro('2.14.0', { requires: 'premium' })],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+    };
+    expect(selectWhatsNewFlow(input).intro).toBeNull();
+    expect(
+      selectWhatsNewFlow({ ...input, context: { cycleTracking: false, premium: true } }).intro
+    ).toMatchObject({ requires: 'premium' });
+    expect(
+      selectReplayFlow({ ...input, context: { cycleTracking: false, premium: true } }).intro
+    ).not.toBeNull();
+  });
+});

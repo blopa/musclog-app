@@ -3,13 +3,13 @@ import { compareVersions } from '@/utils/whatsNew/version';
 
 import v2_15_2 from './2.15.2.json';
 import v2_16_0 from './2.16.0.json';
-import v2_17_3 from './2.17.3.json';
+import v2_17_5 from './2.17.5.json';
 
 // Metro needs explicit imports. The registry test checks these against the directory.
 export const WHATS_NEW_RELEASE_FILES = {
   '2.15.2.json': v2_15_2,
   '2.16.0.json': v2_16_0,
-  '2.17.3.json': v2_17_3,
+  '2.17.5.json': v2_17_5,
 };
 export const whatsNewReleases = Object.entries(WHATS_NEW_RELEASE_FILES)
   .flatMap(([fileName, raw]) => {

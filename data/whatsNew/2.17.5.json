@@ -1,0 +1,74 @@
+{
+  "version": "2.17.5",
+  "intro": {
+    "titleKey": "whatsNew.releases.v2_17_5.intro.title",
+    "descriptionKey": "whatsNew.releases.v2_17_5.intro.description",
+    "pose": "celebrating",
+    "requires": "premium",
+    "items": [
+      {
+        "id": "optional",
+        "icon": "shield",
+        "labelKey": "whatsNew.releases.v2_17_5.intro.items.optional"
+      },
+      {
+        "id": "ai",
+        "icon": "bot",
+        "labelKey": "whatsNew.releases.v2_17_5.intro.items.ai"
+      },
+      {
+        "id": "support",
+        "icon": "heart",
+        "labelKey": "whatsNew.releases.v2_17_5.intro.items.support"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "id": "premium",
+      "requires": "premium",
+      "blocks": [
+        {
+          "id": "premium",
+          "type": "info",
+          "icon": "heart",
+          "titleKey": "whatsNew.releases.v2_17_5.premium.title",
+          "descriptionKey": "whatsNew.releases.v2_17_5.premium.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openPremium",
+          "icon": "bot",
+          "labelKey": "whatsNew.releases.v2_17_5.premium.action.label",
+          "primary": true,
+          "descriptionKey": "whatsNew.releases.v2_17_5.premium.action.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "free",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_17_5.premium.items.free.label",
+              "descriptionKey": "whatsNew.releases.v2_17_5.premium.items.free.description"
+            },
+            {
+              "id": "tokens",
+              "icon": "bot",
+              "labelKey": "whatsNew.releases.v2_17_5.premium.items.tokens.label",
+              "descriptionKey": "whatsNew.releases.v2_17_5.premium.items.tokens.description"
+            },
+            {
+              "id": "oneDeveloper",
+              "icon": "heart",
+              "labelKey": "whatsNew.releases.v2_17_5.premium.items.oneDeveloper.label",
+              "descriptionKey": "whatsNew.releases.v2_17_5.premium.items.oneDeveloper.description"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

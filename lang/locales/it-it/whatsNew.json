@@ -237,9 +237,18 @@
           }
         }
       },
-      "v2_17_3": {
+      "v2_17_5": {
+        "intro": {
+          "title": "Scopri Musclog Premium",
+          "description": "È la prima e l'ultima volta che ti mostriamo un banner così grande. Premium è totalmente facoltativo: puoi continuare a usare Musclog al 100% gratis. È pensato per la tua comodità e aiuta a finanziare lo sviluppo dell'app.",
+          "items": {
+            "optional": "100% facoltativo, mai obbligatorio",
+            "ai": "IA che funziona subito, senza chiavi da configurare",
+            "support": "Tiene in vita Musclog e il suo sviluppo"
+          }
+        },
         "premium": {
-          "title": "Musclog Premium è arrivato",
+          "title": "Come funziona Premium",
           "description": "Musclog è gratuito, open source e realizzato da un solo sviluppatore. Premium è un modo facoltativo per usare l'AI senza configurare nulla, e un modo per sostenere l'app se ti piace.",
           "items": {
             "free": {

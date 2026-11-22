@@ -237,9 +237,18 @@
           }
         }
       },
-      "v2_17_3": {
+      "v2_17_5": {
+        "intro": {
+          "title": "Meet Musclog Premium",
+          "description": "This is the first and last time we'll show you a big banner like this. Premium is completely optional: you can keep using Musclog 100% free. It's there for your convenience, and it helps pay for the app's development.",
+          "items": {
+            "optional": "100% optional, never required",
+            "ai": "AI that just works, no keys to set up",
+            "support": "Keeps Musclog alive and in development"
+          }
+        },
         "premium": {
-          "title": "Musclog Premium is here",
+          "title": "How Premium works",
           "description": "Musclog is free, open source and made by one developer. Premium is an optional way to use the AI without setting anything up, and a way to support the app if you like it.",
           "items": {
             "free": {

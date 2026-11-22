@@ -237,9 +237,18 @@
           }
         }
       },
-      "v2_17_3": {
+      "v2_17_5": {
+        "intro": {
+          "title": "Musclog Premium ile tanış",
+          "description": "Sana bu kadar büyük bir afişi ilk ve son kez gösteriyoruz. Premium tamamen isteğe bağlı: Musclog'u %100 ücretsiz kullanmaya devam edebilirsin. Senin rahatlığın için var ve uygulamanın geliştirilmesini finanse etmeye yardımcı olur.",
+          "items": {
+            "optional": "%100 isteğe bağlı, asla zorunlu değil",
+            "ai": "Kurulum gerektirmeden çalışan YZ",
+            "support": "Musclog'un yaşamasını ve geliştirilmesini sağlar"
+          }
+        },
         "premium": {
-          "title": "Musclog Premium yayında",
+          "title": "Premium nasıl çalışır",
           "description": "Musclog ücretsiz, açık kaynaklı ve tek bir geliştirici tarafından yapılıyor. Premium, YZ'yi hiçbir kurulum yapmadan kullanmanın isteğe bağlı bir yolu; uygulamayı beğendiysen desteklemenin de bir yolu.",
           "items": {
             "free": {

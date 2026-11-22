@@ -538,7 +538,7 @@ subtitle.
     `lifting`).
   - **Beginnings.** The onboarding landing (`default`, in place of the app mark the splash already
     showed), the last setup step (`lifting`), the first page of What's new (a random `pointing`,
-    `wave`, `flex` or `default`; a later page keeps its icon unless it names a
+    `wave`, `flex` or `default`, or, when a release brings its own intro, its `pose` drawn larger as a banner: 2.17.5's `celebrating` Premium page; a later page keeps its icon unless it names a
     `pose` — the 2.16.0 pages do, each the page's own subject: `running`, `writing`, `trophy`, `flex`, `magnify`, sized
     from the window height in `WhatsNewPicture`) and the one-time Weekly Review welcome (`pointing`, at the board that explains the ritual).
   - **Finishing a workout** (`celebrating`, or `trophy` when the session set a personal record). The confetti on that screen

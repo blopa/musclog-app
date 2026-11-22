@@ -130,3 +130,59 @@ test('accepts a known page condition and rejects an unknown one', () => {
     'unknown requires condition'
   );
 });
+
+describe('a release intro', () => {
+  const withIntro = (intro: unknown) =>
+    parseWhatsNewRelease(
+      {
+        version: '2.14.2',
+        intro,
+        pages: [{ id: 'p', blocks: [{ id: 'b', type: 'info', titleKey: 'whatsNew.title' }] }],
+      },
+      '2.14.2.json'
+    );
+
+  it('keeps a valid intro with its pose, condition and items', () => {
+    const intro = {
+      titleKey: 'whatsNew.title',
+      descriptionKey: 'whatsNew.next',
+      pose: 'celebrating',
+      requires: 'premium',
+      items: [{ id: 'a', icon: 'heart', labelKey: 'whatsNew.done' }],
+    };
+    const result = withIntro(intro);
+
+    expect(result.issues).toEqual([]);
+    expect(result.release?.intro).toEqual(intro);
+  });
+
+  it('drops only the intro when it is broken, keeping the pages', () => {
+    for (const intro of [
+      'nope',
+      { descriptionKey: 'whatsNew.next' },
+      { titleKey: 'whatsNew.title', pose: 'dance' },
+      { titleKey: 'whatsNew.title', requires: 'nope' },
+      { titleKey: 'whatsNew.title', items: 'nope' },
+    ]) {
+      const result = withIntro(intro);
+      expect(result.release?.intro).toBeUndefined();
+      expect(result.release?.pages).toHaveLength(1);
+      expect(result.issues).not.toEqual([]);
+    }
+  });
+
+  it('drops a bad item and keeps the others', () => {
+    const result = withIntro({
+      titleKey: 'whatsNew.title',
+      items: [
+        { id: 'a', icon: 'heart', labelKey: 'whatsNew.done' },
+        { id: 'a', icon: 'heart', labelKey: 'whatsNew.done' },
+        { id: 'b', icon: 'rocket', labelKey: 'whatsNew.done' },
+        { id: 'c', icon: 'heart', labelKey: 'nope' },
+      ],
+    });
+
+    expect(result.release?.intro?.items?.map((item) => item.id)).toEqual(['a']);
+    expect(result.issues).toHaveLength(3);
+  });
+});
