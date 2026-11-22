@@ -198,8 +198,31 @@ export function usePremium(): UsePremium {
   );
 
   const liveActions = useMemo<PremiumActions>(() => {
-    const subscribe = () => runAction('subscribe', (onProgress) => purchaseAndEnroll(onProgress));
-    const restore = () => runAction('restore', (onProgress) => restoreAndEnroll(onProgress));
+    // A purchase or restore only enrolls the device. When the consent for this version is already on
+    // file (a reset keeps it) the switch has no question left to wait for, so it goes on here; without
+    // the consent it stays off and PremiumModal asks. Read at call time, never from a render snapshot.
+    const switchOnWhenConsented = async () => {
+      const stored = await SettingsService.get(SETTINGS.premiumConsentVersion);
+
+      if (!needsPremiumConsent(stored, false, true)) {
+        await SettingsService.set(SETTINGS.useHostedAi, true);
+      }
+    };
+
+    const enrollThenSwitchOn =
+      (enroll: (onProgress: (stage: PremiumProgress) => void) => Promise<ActionResult>) =>
+      async (onProgress: (stage: PremiumProgress) => void): Promise<ActionResult> => {
+        const result = await enroll(onProgress);
+
+        if (result.ok) {
+          await switchOnWhenConsented().catch(() => undefined);
+        }
+
+        return result;
+      };
+
+    const subscribe = () => runAction('subscribe', enrollThenSwitchOn(purchaseAndEnroll));
+    const restore = () => runAction('restore', enrollThenSwitchOn(restoreAndEnroll));
 
     const setUseHostedAi = async (on: boolean) => {
       await runAction(

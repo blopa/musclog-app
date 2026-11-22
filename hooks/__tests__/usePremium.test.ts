@@ -13,7 +13,8 @@ let mockSettingsState: { useHostedAi: boolean; premiumConsentVersion: number | n
 };
 jest.mock('@/hooks/useSettings', () => ({ useSettings: () => mockSettingsState }));
 
-const mockSettingsSet = jest.fn(async () => undefined);
+const mockSettingsGet = jest.fn(async (..._args: unknown[]): Promise<unknown> => null);
+const mockSettingsSet = jest.fn(async (..._args: unknown[]): Promise<unknown> => undefined);
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     get: (...args: unknown[]) => mockSettingsGet(...args),
@@ -41,6 +42,8 @@ jest.mock('@/services/premium/premiumService', () => ({
 }));
 
 import { PREMIUM_FIXTURE_STATES } from '@/components/premium/premiumFixtureStates';
+import { SETTINGS } from '@/constants/settingDefinitions';
+import { PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
 import { PremiumFixtureContext, usePremium } from '@/hooks/usePremium';
 import {
   getPremiumActivity,
@@ -68,6 +71,7 @@ beforeEach(() => {
   resetPremiumActivity();
   mockFlag.mockReturnValue(true);
   mockSettingsState = { useHostedAi: false, premiumConsentVersion: null };
+  mockSettingsGet.mockResolvedValue(null);
   mockActions.loadPremiumOverview.mockResolvedValue(OVERVIEW);
   mockActions.subscribe.mockResolvedValue({ ok: true, value: {} });
   mockActions.restore.mockResolvedValue({ ok: false, failure: 'restore_failed' });
@@ -117,6 +121,28 @@ describe('usePremium', () => {
     expect(ok).toBe(true);
     expect(result.current.view.notice).toBeNull();
     expect(mockActions.loadPremiumOverview).toHaveBeenCalledTimes(2);
+  });
+
+  it('switches hosted AI on after a restore when the consent is already on file', async () => {
+    mockSettingsGet.mockResolvedValue(PREMIUM_CONSENT_VERSION);
+    mockActions.restore.mockResolvedValueOnce({ ok: true, value: {} });
+    const { result } = renderHook(() => usePremium());
+
+    await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
+    await act(async () => {
+      await result.current.restore();
+    });
+    expect(mockSettingsSet).toHaveBeenCalledWith(SETTINGS.useHostedAi, true);
+  });
+
+  it('leaves hosted AI off after a purchase when the consent is not on file yet', async () => {
+    const { result } = renderHook(() => usePremium());
+
+    await waitFor(() => expect(result.current.view.phase).toBe('not_subscribed'));
+    await act(async () => {
+      await result.current.subscribe();
+    });
+    expect(mockSettingsSet).not.toHaveBeenCalledWith(SETTINGS.useHostedAi, true);
   });
 
   it('subscribe returns false and keeps the failure on a cancelled purchase', async () => {
