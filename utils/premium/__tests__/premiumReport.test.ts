@@ -55,3 +55,9 @@ describe('premiumFailureReport', () => {
     ]);
   });
 });
+
+describe('price stage network failure', () => {
+  it('is not reported', () => {
+    expect(premiumFailureReport('price', 'network', { storeErrorCode: '10' })).toBeNull();
+  });
+});

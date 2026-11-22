@@ -215,7 +215,9 @@ export async function getMonthlyPriceString(rcId: string): Promise<string | null
   } catch (e) {
     const code = (e as { code?: unknown } | null)?.code;
 
-    reportPremiumFailure('price', 'unknown', {
+    // RevenueCat's NETWORK_ERROR (10) is a dropped connection, not a fault: no subscribe price
+    // is shown and the next open retries, so it is not reported.
+    reportPremiumFailure('price', String(code) === '10' ? 'network' : 'unknown', {
       storeErrorCode: code === undefined || code === null ? 'none' : String(code),
     });
 
