@@ -182,7 +182,7 @@ describe('the page of 2.17.5', () => {
   it('opens on its own Premium banner, gated like the page, with three promises', () => {
     expect(release?.intro).toMatchObject({
       titleKey: 'whatsNew.releases.v2_17_5.intro.title',
-      pose: 'celebrating',
+      pose: 'iron',
       requires: 'premium',
     });
     expect(release?.intro?.items).toHaveLength(3);

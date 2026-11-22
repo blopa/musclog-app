@@ -30,10 +30,11 @@ export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
  * Loggy poses an info block may show in place of its icon (a subset of `LoggyPoseName`). Each is
  * the joke or the job of the page that names it: `running` introduces him, `writing` is the
  * import, `trophy` the year story, `flex` strength levels and `magnify` the training-load map;
- * `celebrating` opens the Premium tour.
+ * `iron` (dumbbell overhead, VIP rosette, an IRON kettlebell) opens the Musclog Iron tour.
  */
 export const WHATS_NEW_POSES = [
   'celebrating',
+  'iron',
   'running',
   'writing',
   'trophy',
