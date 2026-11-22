@@ -32,6 +32,7 @@ import {
   EMPTY_PREMIUM_LOCAL_STATE,
   loadPremiumLocalState,
 } from '@/services/premium/premiumLocalState';
+import { HOSTED_REQUEST_TIMEOUT_MS } from '@/utils/premium/hostedClient';
 import {
   bytesToHex,
   deriveRcId,
@@ -262,8 +263,13 @@ beforeEach(() => {
   fetchMock = workerFetch();
   global.fetch = fetchMock as unknown as typeof fetch;
 
-  // enrollWithRetry sleeps through setTimeout: run every timer at once so no test waits.
-  jest.spyOn(global, 'setTimeout').mockImplementation(((cb: () => void) => {
+  // enrollWithRetry sleeps through setTimeout: run every sleep at once so no test waits. The hosted
+  // client's request timeout (HOSTED_REQUEST_TIMEOUT_MS) must never fire, or every call would fail.
+  jest.spyOn(global, 'setTimeout').mockImplementation(((cb: () => void, ms?: number) => {
+    if (ms !== undefined && ms >= HOSTED_REQUEST_TIMEOUT_MS) {
+      return 0;
+    }
+
     cb();
 
     return 0;
@@ -683,6 +689,53 @@ describe('fetchPremiumConfig', () => {
     global.fetch = fetchMock as unknown as typeof fetch;
 
     expect(await fetchPremiumConfig()).toEqual({ ok: false, failure: 'invalid_response' });
+  });
+});
+
+describe('a lapsed subscription', () => {
+  const REFUSED = {
+    error: { code: 'subscription_required', message: 'no active subscription' },
+  };
+
+  it('keeps the device enrolled but revoked when the session mint is refused with subscription_required', async () => {
+    jest.spyOn(Date, 'now').mockReturnValue(NOW);
+    await enrollThisDevice();
+    expect(await getPremiumStatus()).toBe('active');
+
+    jest.spyOn(Date, 'now').mockReturnValue(NOW + 2 * HOUR);
+    fetchMock = workerFetch({
+      'POST /v1/session': () => jsonResponse(403, REFUSED),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    expect(await getSessionGrant()).toEqual({ ok: false, failure: 'subscription_required' });
+    expect(stateOf()).toMatchObject({ lastStatus: 'revoked', rcId: keys.rcId, removed: false });
+    expect(await getPremiumStatus()).toBe('revoked');
+  });
+
+  it('keeps the device enrolled but revoked when usage is refused with subscription_required', async () => {
+    await enrollThisDevice();
+    expect(await getPremiumStatus()).toBe('active');
+
+    fetchMock = workerFetch({
+      'GET /v1/usage': () => jsonResponse(403, REFUSED),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    expect(await refreshPremiumUsage()).toEqual({ ok: false, failure: 'subscription_required' });
+    expect(stateOf()).toMatchObject({ lastStatus: 'revoked', rcId: keys.rcId, removed: false });
+    expect(await getPremiumStatus()).toBe('revoked');
+  });
+
+  it('still reports removed (not revoked) for unknown_device on usage', async () => {
+    await enrollThisDevice();
+    fetchMock = workerFetch({
+      'GET /v1/usage': () => jsonResponse(401, { error: { code: 'unknown_device' } }),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await refreshPremiumUsage();
+    expect(await getPremiumStatus()).toBe('removed');
   });
 });
 

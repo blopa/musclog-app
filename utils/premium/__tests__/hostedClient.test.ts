@@ -10,6 +10,7 @@ import {
   hostedConfig,
   hostedEnroll,
   hostedSession,
+  HOSTED_REQUEST_TIMEOUT_MS,
   hostedUsage,
   redactTokens,
   toBase64Url,
@@ -208,5 +209,50 @@ describe('hosted config and usage', () => {
       ok: false,
       errorCode: 'network',
     });
+  });
+});
+
+describe('request timeout', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('turns a fetch that never answers into status 0 and network after the timeout', async () => {
+    jest.useFakeTimers();
+    const f: FetchLike = () => new Promise(() => undefined);
+    const pending = hostedConfig('https://w', f);
+
+    await jest.advanceTimersByTimeAsync(HOSTED_REQUEST_TIMEOUT_MS - 1);
+    let settled = false;
+
+    void pending.then(() => {
+      settled = true;
+    });
+    await Promise.resolve();
+    expect(settled).toBe(false);
+
+    await jest.advanceTimersByTimeAsync(1);
+    expect(await pending).toMatchObject({ status: 0, ok: false, errorCode: 'network' });
+  });
+
+  it('times out when the body never finishes', async () => {
+    jest.useFakeTimers();
+    const f: FetchLike = async () => ({
+      status: 200,
+      ok: true,
+      json: () => new Promise(() => undefined),
+    });
+    const pending = hostedConfig('https://w', f);
+
+    await jest.advanceTimersByTimeAsync(HOSTED_REQUEST_TIMEOUT_MS);
+    expect(await pending).toMatchObject({ status: 0, ok: false, errorCode: 'network' });
+  });
+
+  it('leaves a fast answer unchanged and no timer pending', async () => {
+    jest.useFakeTimers();
+    const r = await hostedChallenge('https://w', fakeFetch(200, { nonce: 'n1' }));
+
+    expect(r).toMatchObject({ status: 200, ok: true, body: { nonce: 'n1' } });
+    expect(jest.getTimerCount()).toBe(0);
   });
 });

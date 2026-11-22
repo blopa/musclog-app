@@ -104,6 +104,39 @@ describe('premiumActions', () => {
     expect(RC.getMonthlyPriceString).not.toHaveBeenCalled();
   });
 
+  it('shows revoked in the same call when the usage call finds the subscription lapsed', async () => {
+    service.getPremiumStatus.mockResolvedValueOnce('active').mockResolvedValueOnce('revoked');
+    service.refreshPremiumUsage.mockResolvedValue({ ok: false, failure: 'subscription_required' });
+
+    const out = await actions.loadPremiumOverview();
+
+    expect(out.status).toBe('revoked');
+    expect(out.usage).toBeNull();
+    expect(service.getPremiumStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows exhausted in the same call when the usage body says so', async () => {
+    service.getPremiumStatus.mockResolvedValueOnce('active').mockResolvedValueOnce('exhausted');
+    service.refreshPremiumUsage.mockResolvedValue({
+      ok: true,
+      value: { ...USAGE, status: 'exhausted' as never, usedPct: 100 },
+    });
+
+    const out = await actions.loadPremiumOverview();
+
+    expect(out.status).toBe('exhausted');
+    expect(out.usage?.usedPct).toBe(100);
+  });
+
+  it('reads the price in the same call when the subscription lapsed and the config accepts', async () => {
+    service.getPremiumStatus.mockResolvedValueOnce('active').mockResolvedValueOnce('revoked');
+    service.refreshPremiumUsage.mockResolvedValue({ ok: false, failure: 'subscription_required' });
+
+    const out = await actions.loadPremiumOverview();
+
+    expect(out.priceString).toBe('€2.99');
+  });
+
   it('keeps a config failure as the failure, not a thrown error', async () => {
     service.getPremiumStatus.mockResolvedValue('not_enrolled');
     service.fetchPremiumConfig.mockResolvedValue({ ok: false, failure: 'network' });

@@ -44,6 +44,7 @@
       "checking": "Sprawdzanie Musclog Iron…",
       "notSubscribed": "Prywatne AI w chmurze w subskrypcji, bez klucza do konfigurowania",
       "active": "Wykorzystano {{pct}}% · wspólne dla wszystkich Twoich urządzeń",
+      "activeNoUsage": "Aktywne · wspólne dla wszystkich Twoich urządzeń",
       "exhausted": "Limit na ten okres wyczerpany",
       "removed": "Usunięto z tej subskrypcji",
       "revoked": "Musclog Iron jest nieaktywny"

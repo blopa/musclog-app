@@ -44,6 +44,7 @@
       "checking": "Verificando o Musclog Iron…",
       "notSubscribed": "IA hospedada e privada, sem chave para configurar",
       "active": "{{pct}}% usado · compartilhado por todos os seus dispositivos",
+      "activeNoUsage": "Ativo · compartilhado por todos os seus dispositivos",
       "exhausted": "Cota deste período esgotada",
       "removed": "Removido desta assinatura",
       "revoked": "O Musclog Iron não está ativo"

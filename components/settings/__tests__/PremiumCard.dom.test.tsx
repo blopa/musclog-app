@@ -118,7 +118,7 @@ describe('PremiumCard', () => {
     expect(screen.getByText('premium.card.active:{"pct":"42","count":"2","max":"3"}')).toBeTruthy();
   });
 
-  it('falls back to the checking subtitle when active but usage is not known yet', () => {
+  it('says active, never checking, when the status is read but usage could not be', () => {
     mockUsePremium.mockReturnValue(
       premiumWith(
         buildPremiumViewModel({
@@ -135,7 +135,8 @@ describe('PremiumCard', () => {
 
     render(<PremiumCard onPress={jest.fn()} />);
 
-    expect(screen.getByText('premium.card.checking')).toBeTruthy();
+    expect(screen.getByText('premium.card.activeNoUsage')).toBeTruthy();
+    expect(screen.queryByText('premium.card.checking')).toBeNull();
   });
 
   it.each([

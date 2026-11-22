@@ -44,6 +44,7 @@
       "checking": "Musclog Iron wordt gecontroleerd…",
       "notSubscribed": "Gehoste AI die privé is, zonder sleutel om in te stellen",
       "active": "{{pct}}% gebruikt · gedeeld door al je apparaten",
+      "activeNoUsage": "Actief · gedeeld door al je apparaten",
       "exhausted": "Tegoed voor deze periode op",
       "removed": "Verwijderd uit dit abonnement",
       "revoked": "Musclog Iron is niet actief"

@@ -210,6 +210,22 @@ describe('revenueCat', () => {
     await expect(h.getMonthlyPriceString(RC_ID)).resolves.toBeNull();
   });
 
+  it('getMonthlyPriceString is null after PRICE_LOOKUP_TIMEOUT_MS when the store never answers', async () => {
+    jest.useFakeTimers();
+
+    try {
+      const h = load();
+
+      purchases.getOfferings.mockReturnValue(new Promise(() => undefined));
+      const pending = h.getMonthlyPriceString(RC_ID);
+
+      await jest.advanceTimersByTimeAsync(h.PRICE_LOOKUP_TIMEOUT_MS);
+      await expect(pending).resolves.toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('has no logOut path', () => {
     const src = fs.readFileSync(path.join(__dirname, '..', 'revenueCat.ts'), 'utf8');
 

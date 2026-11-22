@@ -27,7 +27,9 @@ function useCardSubtitle(view: PremiumViewModel): string {
         });
       }
 
-      return t('premium.card.checking');
+      // The check finished but the usage could not be read (offline, Worker busy): say it is active,
+      // never "checking", which read as a spinner that never ends.
+      return t('premium.card.activeNoUsage');
     case 'exhausted':
       return t('premium.card.exhausted');
     case 'removed':

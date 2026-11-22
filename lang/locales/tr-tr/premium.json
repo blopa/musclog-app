@@ -44,6 +44,7 @@
       "checking": "Musclog Iron kontrol ediliyor…",
       "notSubscribed": "Abonelikle gelen gizli barındırılan YZ, anahtar gerekmez",
       "active": "%{{pct}} kullanıldı · tüm cihazlarınızla paylaşılıyor",
+      "activeNoUsage": "Aktif · tüm cihazlarınızla paylaşılıyor",
       "exhausted": "Bu dönem için kota kullanıldı",
       "removed": "Bu aboneliden kaldırıldı",
       "revoked": "Musclog Iron etkin değil"

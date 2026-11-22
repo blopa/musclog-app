@@ -44,6 +44,7 @@
       "checking": "Vérification de Musclog Iron…",
       "notSubscribed": "IA hébergée et privée, sur abonnement, sans clé",
       "active": "{{pct}} % utilisé · partagé par tous vos appareils",
+      "activeNoUsage": "Actif · partagé par tous vos appareils",
       "exhausted": "Quota épuisé pour cette période",
       "removed": "Retiré de cet abonnement",
       "revoked": "Musclog Iron n'est pas actif"

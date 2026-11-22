@@ -44,6 +44,7 @@
       "checking": "Musclog Iron wird geprüft…",
       "notSubscribed": "Private gehostete KI im Abo, kein Schlüssel nötig",
       "active": "{{pct}} % verbraucht · von allen deinen Geräten gemeinsam genutzt",
+      "activeNoUsage": "Aktiv · von allen deinen Geräten gemeinsam genutzt",
       "exhausted": "Kontingent für diesen Zeitraum aufgebraucht",
       "removed": "Von diesem Abo entfernt",
       "revoked": "Musclog Iron ist nicht aktiv"

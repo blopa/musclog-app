@@ -177,11 +177,34 @@ export async function logInTo(
  * The localized price of the monthly package, for the subscribe button. Configures the SDK under
  * the given key-derived id first (never anonymous); any failure is null, never a thrown error.
  */
+/** How long the paywall waits for the store's price before it shows the screen without one. */
+export const PRICE_LOOKUP_TIMEOUT_MS = 15_000;
+
+/** Rejects with RevenueCat's network code when `work` takes longer than `ms`. */
+function withStoreTimeout<T>(work: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timedOut = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(Object.assign(new Error('store timed out'), { code: STORE_NETWORK_ERROR })),
+      ms
+    );
+  });
+
+  return Promise.race([work, timedOut]).finally(() => clearTimeout(timer));
+}
+
 export async function getMonthlyPriceString(rcId: string): Promise<string | null> {
   try {
-    await ensureRevenueCatIdentity(rcId);
+    // The whole Premium overview waits for this: a store that never answers must not leave the
+    // screen on "Checking…" forever. A timeout reads as a dropped connection (not reported).
+    const pkg = await withStoreTimeout(
+      (async () => {
+        await ensureRevenueCatIdentity(rcId);
 
-    const pkg = findMonthlyPackage(await purchasesSdk().getOfferings());
+        return findMonthlyPackage(await purchasesSdk().getOfferings());
+      })(),
+      PRICE_LOOKUP_TIMEOUT_MS
+    );
 
     return pkg?.product.priceString ?? null;
   } catch (e) {

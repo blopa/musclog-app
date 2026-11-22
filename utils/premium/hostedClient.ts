@@ -7,6 +7,9 @@ export type FetchLike = (
   init?: { method?: string; headers?: Record<string, string>; body?: string }
 ) => Promise<{ status: number; ok: boolean; json(): Promise<unknown> }>;
 
+/** How long an identity-route call may take before it counts as a dropped connection. */
+export const HOSTED_REQUEST_TIMEOUT_MS = 20_000;
+
 export type HostedResult = {
   status: number;
   ok: boolean;
@@ -95,7 +98,7 @@ async function call(
     init.body = JSON.stringify(payload);
   }
 
-  try {
+  const request = async (): Promise<HostedResult> => {
     const response = await fetchImpl(url, init);
     let body: unknown = null;
 
@@ -111,10 +114,28 @@ async function call(
       errorCode: response.ok ? null : parseWorkerError(body).code || 'unknown',
       body,
     };
+  };
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    // React Native's fetch has no timeout of its own: a connection that stalls (or a body that never
+    // finishes) would leave the Premium screen waiting forever, so a slow answer counts as a
+    // dropped connection.
+    const timedOut = new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error(`timed out after ${HOSTED_REQUEST_TIMEOUT_MS} ms`)),
+        HOSTED_REQUEST_TIMEOUT_MS
+      );
+    });
+
+    return await Promise.race([request(), timedOut]);
   } catch (e) {
     const message = { message: e instanceof Error ? e.message : String(e) };
 
     return { status: 0, ok: false, errorCode: 'network', body: message };
+  } finally {
+    clearTimeout(timer);
   }
 }
 

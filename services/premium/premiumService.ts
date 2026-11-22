@@ -46,6 +46,7 @@ import {
   type HostedConfig,
   parseHostedConfig,
   parseUsage,
+  type PremiumActionFailure,
   type PremiumResult,
   type PremiumStatus,
   type SessionGrant,
@@ -189,6 +190,31 @@ async function markRemoved(startedIn: number): Promise<void> {
   await savePremiumLocalState({ removed: true });
 }
 
+/**
+ * The Worker no longer finds a qualifying subscription (it lapsed, was cancelled or refunded): the
+ * device stays enrolled (a new purchase or restore needs no re-enroll) but its last known status is
+ * `revoked`. Without this the record kept saying `active` after the period ended, and the Premium
+ * screens waited for usage that never came.
+ */
+async function markLapsed(startedIn: number): Promise<void> {
+  if (!session.isCurrent(startedIn)) {
+    return;
+  }
+
+  session.invalidateToken();
+  await savePremiumLocalState({ lastStatus: 'revoked' });
+}
+
+/** What a refused session or usage call means for the device-local record. */
+async function noteIdentityFailure(failure: PremiumActionFailure, startedIn: number) {
+  if (failure === 'unknown_device') {
+    // Evicted or removed from the subscription: report it, never re-enroll silently.
+    await markRemoved(startedIn);
+  } else if (failure === 'subscription_required') {
+    await markLapsed(startedIn);
+  }
+}
+
 /** The device key and the local record, and whether that record is this device's enrollment. */
 async function loadEnrollment() {
   const key = await loadDeviceKeyInfo().catch(() => null);
@@ -324,10 +350,7 @@ function mintAndRemember(rcId: string): Promise<PremiumResult<SessionGrant>> {
       session.invalidateToken();
     }
 
-    if (result.failure === 'unknown_device') {
-      // Evicted or removed from the subscription: report it, never re-enroll silently.
-      await markRemoved(startedIn);
-    }
+    await noteIdentityFailure(result.failure, startedIn);
 
     return { ok: false, failure: result.failure };
   });
@@ -402,10 +425,7 @@ export function refreshPremiumUsage(): Promise<PremiumResult<UsageSnapshot>> {
       const failure = failureKindOf(result);
 
       reportPremiumFailure('usage', failure, { status: result.status });
-
-      if (failure === 'unknown_device') {
-        await markRemoved(startedIn);
-      }
+      await noteIdentityFailure(failure, startedIn);
 
       return { ok: false, failure };
     }

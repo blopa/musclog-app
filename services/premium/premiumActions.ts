@@ -35,16 +35,23 @@ export type PremiumOverview = {
 
 /** Reads everything the Premium screen shows. Called only when the screen asks, never at boot. */
 export async function loadPremiumOverview(): Promise<PremiumOverview> {
-  const [status, configResult] = await Promise.all([getPremiumStatus(), fetchPremiumConfig()]);
+  const [storedStatus, configResult] = await Promise.all([
+    getPremiumStatus(),
+    fetchPremiumConfig(),
+  ]);
   const config = configResult.ok ? configResult.value : null;
   const configFailure = configResult.ok ? null : configResult.failure;
 
+  let status = storedStatus;
   let usage: UsageSnapshot | null = null;
 
   if (status === 'active' || status === 'exhausted') {
     const result = await refreshPremiumUsage();
 
     usage = result.ok ? result.value : null;
+    // The usage call records what the Worker answered (a new period status, a lapsed subscription,
+    // a removed device): read the status again so this screen shows it, not the stored guess.
+    status = await getPremiumStatus();
   }
 
   // The paywall names the store's price. A device that has never subscribed has no key yet, so the

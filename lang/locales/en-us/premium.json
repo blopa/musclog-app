@@ -44,6 +44,7 @@
       "checking": "Checking Musclog Iron…",
       "notSubscribed": "Private hosted AI, no key to set up",
       "active": "{{pct}}% used · shared by all your devices",
+      "activeNoUsage": "Active · shared by all your devices",
       "exhausted": "Allowance used up for this period",
       "removed": "Removed from this subscription",
       "revoked": "Musclog Iron is not active"
