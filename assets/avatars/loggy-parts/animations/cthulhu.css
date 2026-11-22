@@ -1,0 +1,46 @@
+/* The little wings unfurl in opposite directions as Loggy gently bobs. */
+#wing-l {
+  transform-origin: 148px 275px;
+  animation: loggy-wing-l 4.2s ease-in-out infinite;
+}
+#wing-r {
+  transform-origin: 383px 275px;
+  animation: loggy-wing-r 4.2s ease-in-out infinite;
+}
+#upper {
+  animation: loggy-cthulhu-bob 4.2s ease-in-out infinite;
+}
+
+@keyframes loggy-wing-l {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+@keyframes loggy-wing-r {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes loggy-cthulhu-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #loggy-idle,
+  #loggy-idle * {
+    animation: none !important;
+  }
+}

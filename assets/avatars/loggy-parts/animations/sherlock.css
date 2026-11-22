@@ -1,0 +1,38 @@
+/* Loggy quietly inspects through the glass, with the pipe smoke drifting upward. */
+#magnifier,
+#arm-r,
+#hand-r {
+  transform-origin: 372px 336px;
+  animation: loggy-inspect 4.8s ease-in-out infinite;
+}
+#pipe-smoke {
+  animation: loggy-smoke 4.8s ease-in-out infinite;
+}
+
+@keyframes loggy-inspect {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-3deg);
+  }
+  68% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes loggy-smoke {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #loggy-idle,
+  #loggy-idle * {
+    animation: none !important;
+  }
+}

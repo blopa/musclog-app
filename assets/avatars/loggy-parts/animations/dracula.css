@@ -1,0 +1,42 @@
+/* One unhurried wave, with a slight lift through the upper body. */
+#hand-r {
+  transform-origin: 475px 264px;
+  animation: loggy-dracula-wave 3.6s ease-in-out infinite;
+}
+#upper {
+  animation: loggy-dracula-breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes loggy-dracula-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  22% {
+    transform: rotate(6deg);
+  }
+  42% {
+    transform: rotate(1deg);
+  }
+  62% {
+    transform: rotate(6deg);
+  }
+  82% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes loggy-dracula-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #loggy-idle,
+  #loggy-idle * {
+    animation: none !important;
+  }
+}

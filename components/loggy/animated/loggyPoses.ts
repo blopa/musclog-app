@@ -4,7 +4,9 @@
 import { LoggyCelebratingAnimated } from '@/components/loggy/animated/LoggyCelebratingAnimated';
 import { LoggyCoffeeAnimated } from '@/components/loggy/animated/LoggyCoffeeAnimated';
 import { LoggyCreatineAnimated } from '@/components/loggy/animated/LoggyCreatineAnimated';
+import { LoggyCthulhuAnimated } from '@/components/loggy/animated/LoggyCthulhuAnimated';
 import { LoggyDefaultAnimated } from '@/components/loggy/animated/LoggyDefaultAnimated';
+import { LoggyDraculaAnimated } from '@/components/loggy/animated/LoggyDraculaAnimated';
 import { LoggyDrinkingAnimated } from '@/components/loggy/animated/LoggyDrinkingAnimated';
 import { LoggyEatingAnimated } from '@/components/loggy/animated/LoggyEatingAnimated';
 import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated';
@@ -17,6 +19,7 @@ import { LoggyPointingAnimated } from '@/components/loggy/animated/LoggyPointing
 import { LoggyReadingAnimated } from '@/components/loggy/animated/LoggyReadingAnimated';
 import { LoggyRunningAnimated } from '@/components/loggy/animated/LoggyRunningAnimated';
 import { LoggySaladAnimated } from '@/components/loggy/animated/LoggySaladAnimated';
+import { LoggySherlockAnimated } from '@/components/loggy/animated/LoggySherlockAnimated';
 import { LoggyShrugAnimated } from '@/components/loggy/animated/LoggyShrugAnimated';
 import { LoggyThinkingAnimated } from '@/components/loggy/animated/LoggyThinkingAnimated';
 import { LoggyTrophyAnimated } from '@/components/loggy/animated/LoggyTrophyAnimated';
@@ -28,7 +31,9 @@ export const LOGGY_POSES = {
   celebrating: LoggyCelebratingAnimated,
   coffee: LoggyCoffeeAnimated,
   creatine: LoggyCreatineAnimated,
+  cthulhu: LoggyCthulhuAnimated,
   default: LoggyDefaultAnimated,
+  dracula: LoggyDraculaAnimated,
   drinking: LoggyDrinkingAnimated,
   eating: LoggyEatingAnimated,
   flex: LoggyFlexAnimated,
@@ -41,6 +46,7 @@ export const LOGGY_POSES = {
   reading: LoggyReadingAnimated,
   running: LoggyRunningAnimated,
   salad: LoggySaladAnimated,
+  sherlock: LoggySherlockAnimated,
   shrug: LoggyShrugAnimated,
   thinking: LoggyThinkingAnimated,
   trophy: LoggyTrophyAnimated,
