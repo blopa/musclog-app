@@ -42,12 +42,13 @@ jest.mock('react-i18next', () => ({
 }));
 // The real modal chrome is out of scope here: render its children only while visible.
 jest.mock('@/components/modals/FullScreenModal', () => ({
-  FullScreenModal: ({ visible, children, title, footer }: any) =>
+  FullScreenModal: ({ visible, children, title, footer, overlay }: any) =>
     visible ? (
       <div>
         <h1>{title}</h1>
         {children}
         {footer}
+        {overlay}
       </div>
     ) : null,
 }));
