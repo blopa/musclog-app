@@ -2136,7 +2136,7 @@ async function extractRecipe(
 
   if (base64Image) {
     if (config.provider === 'on-device') {
-      // TODO: for now, on-device cant parse images
+      // Downloaded models identify photos through estimateNutritionFromPhoto.
       return null;
     }
 
@@ -2464,6 +2464,15 @@ export async function trackMeal(
   base64Image?: string,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
+  if (config.provider === 'on-device' && base64Image) {
+    return estimateNutritionFromPhoto(
+      config,
+      base64Image,
+      { description: userMessage, tags: [] },
+      onProgress
+    );
+  }
+
   try {
     reportMealProgress(onProgress, { step: 'reading', photo: Boolean(base64Image) });
     const useThinkingMode = await SettingsService.getUseThinkingMode();
@@ -2481,11 +2490,6 @@ export async function trackMeal(
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     if (base64Image) {
-      if (config.provider === 'on-device') {
-        // TODO: for now, on-device cant parse images
-        return null;
-      }
-
       const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
       const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
       const fromPhoto = await generateWithImageStructured<TrackMealResponse>(
@@ -2864,6 +2868,7 @@ async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
 async function estimateMealFromPhotoOnDevice(
   config: CoachAIConfig,
   base64Image: string,
+  context?: MealPhotoContext | null,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   reportMealProgress(onProgress, { step: 'reading', photo: true });
@@ -2874,7 +2879,15 @@ async function estimateMealFromPhotoOnDevice(
   const { base64, mimeType } = await aiImage.prepareOnDeviceImage(rawBase64, rawMime);
 
   const systemPrompt = localFoodIdentifyPrompt();
-  const messages = [{ role: 'user' as const, content: 'What foods are in this photo?' }];
+  const details = wrapUserContent([context?.description, ...(context?.tags ?? [])].join(' '));
+  const messages = [
+    {
+      role: 'user' as const,
+      content: details
+        ? `What foods are in this photo?\nMeal notes: ${details}`
+        : 'What foods are in this photo?',
+    },
+  ];
   await logLlmDebugEvent({
     provider: 'on-device',
     direction: 'request',
@@ -2920,16 +2933,24 @@ export async function estimateNutritionFromPhoto(
   context?: MealPhotoContext | null,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
-  // Apple's system model takes no images; the downloaded model does once its projector is installed.
-  if (config.provider === 'on-device' && !config.vision) {
-    return null;
+  if (config.provider === 'on-device') {
+    if (onDeviceEngineOf(config) !== 'gguf') {
+      throw new OnDeviceUnavailableError('photosUnsupported');
+    }
+
+    if (!config.vision) {
+      throw new OnDeviceUnavailableError('photosNotInstalled');
+    }
+
+    try {
+      return await estimateMealFromPhotoOnDevice(config, base64Image, context, onProgress);
+    } catch (error) {
+      reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
+      throw error;
+    }
   }
 
   try {
-    if (config.provider === 'on-device') {
-      return await estimateMealFromPhotoOnDevice(config, base64Image, onProgress);
-    }
-
     reportMealProgress(onProgress, { step: 'reading', photo: true });
     const useThinkingMode = await SettingsService.getUseThinkingMode();
     if (useThinkingMode) {
