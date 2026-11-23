@@ -132,9 +132,30 @@ describe('parseHostedConfig', () => {
       enabled: true,
       acceptingNew: true,
       visionEnabled: false,
+      reasoningEffort: false,
       image: { maxPx: 1024, maxBytes: 500000, quality: 0.8 },
       minAppVersion: '2.17.0',
     });
+  });
+
+  it('reads reasoning_effort only when it is exactly true', () => {
+    expect(parseHostedConfig({ ...good, reasoning_effort: true })?.reasoningEffort).toBe(true);
+    expect(parseHostedConfig({ ...good })?.reasoningEffort).toBe(false);
+    expect(parseHostedConfig({ ...good, reasoning_effort: 'true' })?.reasoningEffort).toBe(false);
+    expect(parseHostedConfig({ ...good, reasoning_effort: 1 })?.reasoningEffort).toBe(false);
+  });
+
+  it('reads the disabled answer as no reasoning effort', () => {
+    expect(
+      parseHostedConfig({
+        enabled: false,
+        accepting_new: false,
+        vision_enabled: false,
+        reasoning_effort: false,
+        image: null,
+        minAppVersion: null,
+      })?.reasoningEffort
+    ).toBe(false);
   });
 
   it("reads the Worker's whole-percent JPEG quality as a 0 to 1 fraction", () => {

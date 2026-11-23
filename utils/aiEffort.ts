@@ -28,6 +28,18 @@ export const AI_TASK_EFFORT: Record<AiTask, { normal: AiEffort; thinking: AiEffo
   planning: { normal: 'medium', thinking: 'high' },
 };
 
+/** What an OpenAI-protocol request's `reasoning_effort` can say. */
+export type ReasoningEffortValue = 'low' | 'medium' | 'high';
+
+/**
+ * The `reasoning_effort` for a job's effort. `low`, `medium` and `high` are the values every OpenAI
+ * reasoning model takes (and the only ones the Musclog Iron Worker accepts); `minimal` is sent as
+ * `low` because not every model lists anything below it.
+ */
+export function reasoningEffortValue(effort: AiEffort): ReasoningEffortValue {
+  return effort === 'minimal' ? 'low' : effort;
+}
+
 export function effortFor(task: AiTask, useThinkingMode: boolean): AiEffort {
   const row = AI_TASK_EFFORT[task];
   return useThinkingMode ? row.thinking : row.normal;

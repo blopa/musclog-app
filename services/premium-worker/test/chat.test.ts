@@ -484,6 +484,24 @@ describe('request validation through the endpoint', () => {
     expect(sent).not.toHaveProperty('stream_options');
   });
 
+  it('a client reasoning_effort is clamped to the ceiling and never forwarded', async () => {
+    const or = fakeOpenRouter(jsonCompletion(0.001));
+    const cfg = testConfig();
+    cfg.features.chat.reasoning = 'low';
+    cfg.features.chat.reasoning_max = 'medium';
+    const { res, done } = await call({
+      or,
+      config: cfg,
+      body: chatBody({ reasoning_effort: 'high' }),
+    });
+    expect(res.status).toBe(200);
+    await res.text();
+    await done();
+    const sent = or.calls[0]!.body;
+    expect(sent.reasoning).toEqual({ effort: 'medium' });
+    expect(sent).not.toHaveProperty('reasoning_effort');
+  });
+
   it('a structured request is derived as structured', async () => {
     const or = fakeOpenRouter(jsonCompletion(0.001));
     const { res, done } = await call({

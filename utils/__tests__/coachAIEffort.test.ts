@@ -3,6 +3,7 @@ import { type CoachAIConfig, requestStructured } from '../coachAI';
 const mockCreate = jest.fn();
 const mockClaudeCreate = jest.fn();
 const mockThinking = { on: false };
+const mockFetchPremiumConfig = jest.fn();
 
 jest.mock('openai', () => {
   const OpenAIMock = jest.fn().mockImplementation(() => ({
@@ -28,6 +29,9 @@ jest.mock('../onDeviceAi', () => ({
   sendOnDeviceMessage: jest.fn(),
   sendOnDeviceStructured: jest.fn(),
   streamOnDeviceMessage: jest.fn(),
+}));
+jest.mock('@/services/premium/premiumService', () => ({
+  fetchPremiumConfig: (...args: unknown[]) => mockFetchPremiumConfig(...args),
 }));
 jest.mock('../gemini', () => ({ configureBasicGenAI: jest.fn() }));
 jest.mock('../handleError', () => ({ handleError: jest.fn() }));
@@ -71,6 +75,7 @@ describe('reasoning effort per job', () => {
     mockCreate.mockResolvedValue(openAiReply);
     mockClaudeCreate.mockResolvedValue(claudeReply);
     mockThinking.on = false;
+    mockFetchPremiumConfig.mockReset();
   });
 
   describe('openai provider', () => {
@@ -122,18 +127,44 @@ describe('reasoning effort per job', () => {
         expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('reasoning_effort');
       }
     );
+  });
 
-    it('hosted never carries reasoning_effort', async () => {
+  describe('musclog iron (hosted)', () => {
+    const hosted = {
+      provider: 'hosted',
+      model: 'hosted-model',
+      apiKey: 'session-token',
+      baseUrl: 'https://worker.example/v1',
+    } as CoachAIConfig;
+
+    it('follows the table once the Worker says it takes a per-request effort', async () => {
+      mockFetchPremiumConfig.mockResolvedValue({ ok: true, value: { reasoningEffort: true } });
+      await requestStructured(hosted, request('planning'));
+      expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'medium' });
+
       mockThinking.on = true;
-      await requestStructured(
-        {
-          provider: 'hosted',
-          model: 'hosted-model',
-          apiKey: 'session-token',
-          baseUrl: 'https://worker.example/v1',
-        } as CoachAIConfig,
-        request('planning')
-      );
+      await requestStructured(hosted, request('extraction'));
+      expect(mockCreate.mock.calls[1][0]).toMatchObject({ reasoning_effort: 'high' });
+    });
+
+    it('sends nothing to a Worker that does not take it (an older deploy would answer 400)', async () => {
+      mockFetchPremiumConfig.mockResolvedValue({ ok: true, value: { reasoningEffort: false } });
+      mockThinking.on = true;
+      await requestStructured(hosted, request('planning'));
+      expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('reasoning_effort');
+    });
+
+    it.each([
+      ['a failed config read', () => mockFetchPremiumConfig.mockResolvedValue({ ok: false })],
+      [
+        'a throwing config read',
+        () => mockFetchPremiumConfig.mockRejectedValue(new Error('offline')),
+      ],
+    ])('still sends the request, without an effort, after %s', async (_name, arrange) => {
+      arrange();
+      mockThinking.on = true;
+      await requestStructured(hosted, request('planning'));
+      expect(mockCreate).toHaveBeenCalledTimes(1);
       expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('reasoning_effort');
     });
   });

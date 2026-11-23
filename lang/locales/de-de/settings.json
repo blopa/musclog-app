@@ -346,6 +346,7 @@
       "memorySettings": "Gedächtniseinstellungen",
       "useThinkingMode": "Denkmodus verwenden",
       "useThinkingModeSubtitle": "Erlaubt KI-Anbietern tieferes Nachdenken, wo unterstützt. Das verbraucht mehr Tokens und kann die Kosten erhöhen.",
+      "useThinkingModeIronNote": "Mit Musclog Iron verbrauchen tieferes Nachdenken und zusätzliche Prüfungen mehr von deinem monatlichen KI-Kontingent.",
       "maxAiMemories": "Maximale KI-Erinnerungen",
       "maxAiMemoriesSubtitle": "Anzahl früherer Nachrichten, die in Gesprächen gemerkt werden",
       "nutritionLogHistoryDays": "An die KI gesendeter Ernährungsverlauf",

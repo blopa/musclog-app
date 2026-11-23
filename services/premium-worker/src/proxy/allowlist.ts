@@ -1,7 +1,7 @@
 // Request allowlist (plan 7 "Shape"): the client body is rebuilt field by field, never filtered
 // by deletion, so nothing it sends reaches OpenRouter unless it is named here. Errors carry a
 // field path and never the content.
-import type { AiConfig, Feature } from '../config';
+import { type AiConfig, type Feature, REASONING_EFFORTS, type ReasoningEffort } from '../config';
 import { ApiError } from '../http';
 
 export interface AllowlistedRequest {
@@ -43,6 +43,7 @@ const TOP_LEVEL = [
   'stop',
   'model',
   'stream_options',
+  'reasoning_effort',
 ] as const;
 
 const ROLES = ['system', 'user', 'assistant', 'tool'] as const;
@@ -225,6 +226,30 @@ function parseToolChoice(v: unknown): unknown {
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
 /**
+ * The `reasoning.effort` sent upstream. The client may ask for a level (`reasoning_effort`), never
+ * above the feature's ceiling (`reasoning_max`, else `reasoning`); asking for none gets the feature's
+ * default. A feature with no ceiling sends no reasoning whatever the client asks. Pure, so the same
+ * rule is tested without a request.
+ */
+export function effectiveReasoning(
+  limits: { reasoning: ReasoningEffort | null; reasoning_max?: ReasoningEffort | null },
+  requested: ReasoningEffort | undefined
+): ReasoningEffort | null {
+  const ceiling = limits.reasoning_max === undefined ? limits.reasoning : limits.reasoning_max;
+  if (ceiling === null) {
+    return null;
+  }
+
+  if (requested === undefined) {
+    return limits.reasoning;
+  }
+
+  return REASONING_EFFORTS.indexOf(requested) <= REASONING_EFFORTS.indexOf(ceiling)
+    ? requested
+    : ceiling;
+}
+
+/**
  * Runtime guard for the Premium privacy invariant: account-level ZDR is off at OpenRouter, so this
  * per-request `provider` object is the only thing keeping a request off providers that retain or
  * train on data. Throws (never sends) when any of the three fields is missing or different.
@@ -270,6 +295,16 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
     else return bad('stop');
   }
 
+  let requestedReasoning: ReasoningEffort | undefined;
+  if (input.reasoning_effort !== undefined) {
+    if (
+      typeof input.reasoning_effort !== 'string' ||
+      !(REASONING_EFFORTS as readonly string[]).includes(input.reasoning_effort)
+    )
+      return bad('reasoning_effort');
+    requestedReasoning = input.reasoning_effort as ReasoningEffort;
+  }
+
   if (input.temperature !== undefined && !finite(input.temperature)) return bad('temperature');
   if (input.max_tokens !== undefined && !finite(input.max_tokens)) return bad('max_tokens');
 
@@ -304,7 +339,8 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
   assertPremiumPrivacy(body);
   if (input.temperature !== undefined)
     body.temperature = Math.min(limits.temperature_max, Math.max(0, input.temperature as number));
-  if (limits.reasoning !== null) body.reasoning = { effort: limits.reasoning };
+  const reasoning = effectiveReasoning(limits, requestedReasoning);
+  if (reasoning !== null) body.reasoning = { effort: reasoning };
   if (responseFormat) body.response_format = responseFormat;
   if (tools) body.tools = tools;
   if (toolChoice !== undefined) body.tool_choice = toolChoice;

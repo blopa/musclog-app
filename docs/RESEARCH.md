@@ -341,6 +341,8 @@ Claude (already the default, and the request sends only `max_tokens`, `system`, 
 `output_config`); switching the OpenAI path to the Responses API (the same function serves local
 servers, the free tier and Iron, which speak Chat Completions).
 
+**Musclog Iron.** The Worker used to force one `reasoning` per feature, so the table could not reach it. It now accepts the app's per-request ask and clamps it to a per-feature ceiling (`reasoning_max`, shipped as `medium`), and the app asks only when `/v1/config` says the deployed Worker takes the field. What this does not settle: with `high` clamped to `medium`, "Use thinking mode" lifts chat and extraction to `medium` on Iron but not further; and `medium` inside the `chat` feature's 1500 `max_tokens` has not been run, so a long insight could be truncated by its own reasoning. Check both on staging before the production deploy, and raise `reasoning_max` and `max_tokens` together.
+
 **Open.** `reasoning_effort` is sent as `low`/`medium`/`high` because every OpenAI reasoning model
 takes those; whether each model in `OPENAI_MODELS` accepts it has not been run against the live API
 (re-check when the list changes). Nothing measures whether the effort table improves answers: that

@@ -12,6 +12,9 @@ export async function handleConfig(_request: Request, ctx: Ctx): Promise<Respons
     accepting_new: row?.value !== '0',
     vision_enabled: c.vision_enabled,
     image: { maxPx: c.image.max_px, maxBytes: c.image.max_bytes, quality: c.image.quality },
+    // This Worker accepts `reasoning_effort` in a request body. An app sends it only when this is
+    // true, so an app that is newer than the deployed Worker never gets a 400 for an unknown field.
+    reasoning_effort: true,
     minAppVersion: c.min_app_version,
   });
 }
@@ -23,6 +26,7 @@ export function handleConfigDisabled(): Response {
     accepting_new: false,
     vision_enabled: false,
     image: null,
+    reasoning_effort: false,
     minAppVersion: null,
   });
 }

@@ -10,7 +10,7 @@ import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
-import { type AiEffort, type AiTask, effortFor } from './aiEffort';
+import { type AiEffort, type AiTask, effortFor, type ReasoningEffortValue } from './aiEffort';
 import { notifyUserFacingAiError } from './aiErrorNotice';
 import {
   AiCancelledError,
@@ -270,20 +270,17 @@ async function resolveEffort(task: AiTask): Promise<AiEffort> {
 }
 
 /**
- * OpenAI's own reasoning control, sent only to the provider that is OpenAI itself: a local server,
- * the free tier and Musclog Iron speak the same protocol but their models may reject the field.
- * `low`, `medium` and `high` are the values every OpenAI reasoning model takes; `minimal` is sent as
- * `low` because not every model lists anything below it.
+ * The `reasoning_effort` of an OpenAI-protocol request: the provider's own rule decides whether it
+ * sends one (`ProviderPolicy.reasoningEffort`: OpenAI itself and Musclog Iron, never a local server
+ * or the free tier, whose models may reject the field).
  */
-function openAiReasoning(
+async function openAiReasoning(
   config: CoachAIConfig,
   effort: AiEffort
-): { reasoning_effort?: 'low' | 'medium' | 'high' } {
-  if (config.provider !== 'openai') {
-    return {};
-  }
+): Promise<{ reasoning_effort?: ReasoningEffortValue }> {
+  const reasoning = await providerPolicyFor(config.provider).reasoningEffort?.(effort);
 
-  return { reasoning_effort: effort === 'minimal' ? 'low' : effort };
+  return reasoning ? { reasoning_effort: reasoning } : {};
 }
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
@@ -1001,7 +998,7 @@ async function sendViaOpenAI(
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages,
-    ...openAiReasoning(config, await resolveEffort('chat')),
+    ...(await openAiReasoning(config, await resolveEffort('chat'))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -1357,7 +1354,7 @@ async function generateText(
       { role: 'system', content: promptWithLang },
       { role: 'user', content: sanitizedUserMessage },
     ],
-    ...openAiReasoning(config, await resolveEffort(task)),
+    ...(await openAiReasoning(config, await resolveEffort(task))),
   };
 
   await logLlmDebugEvent({
@@ -1521,7 +1518,7 @@ async function generateTextWithHistory(
       ...historyMessages,
       { role: 'user', content: sanitizedFinalUserMessage },
     ],
-    ...openAiReasoning(config, await resolveEffort(task)),
+    ...(await openAiReasoning(config, await resolveEffort(task))),
   };
 
   await logLlmDebugEvent({
@@ -1725,7 +1722,7 @@ export async function requestStructured<T = unknown>(
       })),
       { role: 'user', content: userMessage },
     ],
-    ...openAiReasoning(config, await resolveEffort(task)),
+    ...(await openAiReasoning(config, await resolveEffort(task))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -1968,7 +1965,7 @@ async function generateWithImageStructured<T>(
         ],
       },
     ],
-    ...openAiReasoning(config, await resolveEffort(task)),
+    ...(await openAiReasoning(config, await resolveEffort(task))),
     response_format: {
       type: 'json_schema',
       json_schema: {

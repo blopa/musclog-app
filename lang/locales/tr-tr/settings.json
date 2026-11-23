@@ -346,6 +346,7 @@
       "memorySettings": "Bellek ayarları",
       "useThinkingMode": "Düşünme modunu kullan",
       "useThinkingModeSubtitle": "Desteklendiğinde yapay zekâ sağlayıcılarının daha derin akıl yürütmesine izin ver. Daha fazla token kullanır ve maliyeti artırabilir.",
+      "useThinkingModeIronNote": "Musclog Iron ile daha derin düşünme ve ek kontroller aylık yapay zekâ kotanızdan daha fazla kullanır.",
       "maxAiMemories": "En fazla yapay zekâ belleği",
       "maxAiMemoriesSubtitle": "Konuşmalarda hatırlanacak önceki mesaj sayısı",
       "nutritionLogHistoryDays": "Yapay zekâya gönderilen beslenme kaydı geçmişi",

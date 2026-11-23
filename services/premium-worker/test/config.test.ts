@@ -264,3 +264,19 @@ describe('limits.max_devices', () => {
     expect(parseConfig(withDevices(50)).ok).toBe(true);
   });
 });
+
+describe('feature reasoning_max', () => {
+  const withChatMax = (value: unknown) =>
+    mutate((c) => {
+      if (value === 'absent') delete c.features.chat.reasoning_max;
+      else c.features.chat.reasoning_max = value;
+    });
+
+  it.each(['low', 'medium', 'high', null, 'absent'])('accepts reasoning_max %s', (value) => {
+    expect(parseConfig(baseEnv(withChatMax(value))).ok).toBe(true);
+  });
+
+  it("rejects reasoning_max 'max'", () => {
+    expect(rejected(baseEnv(withChatMax('max'))).join()).toContain('reasoning_max');
+  });
+});

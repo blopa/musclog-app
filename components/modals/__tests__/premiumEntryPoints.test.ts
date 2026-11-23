@@ -45,10 +45,13 @@ describe('AISettingsModal Premium entry', () => {
   });
 
   it('shows the active note only when Premium is on, active and the hosted switch is on', () => {
+    // One definition, used by the active note and by the thinking-mode allowance note.
     expect(SETTINGS).toMatch(
-      /premium\.enabled &&\s*premium\.view\.phase === 'active' &&\s*premium\.useHostedAi \?/
+      /const isMusclogIronActive =\s*premium\.enabled &&\s*premium\.view\.phase === 'active' &&\s*premium\.useHostedAi;/
     );
+    expect(SETTINGS).toMatch(/\{isMusclogIronActive \?/);
     expect(SETTINGS).toContain("t('settings.aiSettings.premium.activeNote')");
+    expect(SETTINGS).toContain("t('settings.aiSettings.useThinkingModeIronNote')");
   });
 
   it('renders PremiumModal inside the modal tree', () => {

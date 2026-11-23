@@ -42,6 +42,8 @@ export type HostedConfig = {
   enabled: boolean;
   acceptingNew: boolean;
   visionEnabled: boolean;
+  // The app sends a per-request reasoning effort only when the Worker says it takes one.
+  reasoningEffort: boolean;
   image: { maxPx: number; maxBytes: number; quality: number } | null;
   minAppVersion: string | null;
 };
@@ -176,6 +178,7 @@ export function parseHostedConfig(body: unknown): HostedConfig | null {
     enabled: body.enabled,
     acceptingNew: body.accepting_new === true,
     visionEnabled: body.vision_enabled === true,
+    reasoningEffort: body.reasoning_effort === true,
     image: parsedImage,
     minAppVersion: typeof body.minAppVersion === 'string' ? body.minAppVersion : null,
   };

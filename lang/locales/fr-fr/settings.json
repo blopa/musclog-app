@@ -346,6 +346,7 @@
       "memorySettings": "Réglages de la mémoire",
       "useThinkingMode": "Utiliser le mode réflexion",
       "useThinkingModeSubtitle": "Autorise les fournisseurs d'IA à raisonner plus en profondeur quand c'est pris en charge. Cela consomme plus de jetons et peut augmenter le coût.",
+      "useThinkingModeIronNote": "Avec Musclog Iron, une réflexion plus approfondie et les vérifications supplémentaires utilisent davantage de votre quota mensuel d'IA.",
       "maxAiMemories": "Nombre maximal de souvenirs de l'IA",
       "maxAiMemoriesSubtitle": "Nombre de messages précédents à retenir dans les conversations",
       "nutritionLogHistoryDays": "Historique nutritionnel envoyé à l'IA",

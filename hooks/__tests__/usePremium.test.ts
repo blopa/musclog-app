@@ -69,6 +69,7 @@ const OVERVIEW = {
     enabled: true,
     acceptingNew: true,
     visionEnabled: false,
+    reasoningEffort: false,
     image: null,
     minAppVersion: null,
   },
