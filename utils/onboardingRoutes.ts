@@ -40,9 +40,50 @@ export const PERSONALIZED_SETUP_STEPS = PERSONALIZED_STEP.firstWorkout;
 const coachPersonaRoute = (quickStep: number) =>
   `${COACH_PERSONA_ROUTE}?quickStep=${quickStep}&quickTotal=${PERSONALIZED_SETUP_STEPS}`;
 
-/** The Musclog AI step, which hands on to the coach step right after it. */
+/** The first screen of the AI step: "run AI on your device?". */
+export const ON_DEVICE_AI_ROUTE = '/app/onboarding/on-device-ai';
+/** Which local AI to use: Apple Intelligence, the downloadable model, or later. */
+export const ON_DEVICE_AI_OPTIONS_ROUTE = '/app/onboarding/on-device-ai-options';
+/** The other options (Musclog Iron, the free tier, no AI), reached when local AI is declined. */
+export const MUSCLOG_API_ROUTE = '/app/onboarding/musclog-api';
+
+export type AiStepParams = {
+  /** Where the step hands on to: already decoded, encoded here exactly once. */
+  nextRoute: string;
+  quickStep?: number;
+  quickTotal?: number;
+};
+
+/**
+ * A route of the AI step. All three screens (`on-device-ai`, `on-device-ai-options`,
+ * `musclog-api`) take the same parameters and pass them on to one another, so one function spells
+ * them and the nested `nextRoute` is encoded exactly once.
+ */
+export function aiStepRoute(
+  screen: typeof ON_DEVICE_AI_ROUTE | typeof ON_DEVICE_AI_OPTIONS_ROUTE | typeof MUSCLOG_API_ROUTE,
+  { nextRoute, quickStep, quickTotal }: AiStepParams
+): string {
+  const step = quickStep != null ? `&quickStep=${quickStep}` : '';
+  const total = quickTotal != null ? `&quickTotal=${quickTotal}` : '';
+
+  return `${screen}?nextRoute=${encodeURIComponent(nextRoute)}${step}${total}`;
+}
+
+/**
+ * Where the AI step goes once local AI is chosen. A personalized setup would ask for a coach next,
+ * but on-device AI is always Loggy (`resolveCoachPersona`), so that question is skipped.
+ */
+export function routeAfterLocalAi(nextRoute: string): string {
+  return nextRoute.startsWith(COACH_PERSONA_ROUTE) ? NUTRITION_RESULTS_ROUTE : nextRoute;
+}
+
+/** The AI step, which hands on to the coach step right after it. */
 const musclogApiRoute = (quickStep: number) =>
-  `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(coachPersonaRoute(quickStep + 1))}&quickStep=${quickStep}&quickTotal=${PERSONALIZED_SETUP_STEPS}`;
+  aiStepRoute(ON_DEVICE_AI_ROUTE, {
+    nextRoute: coachPersonaRoute(quickStep + 1),
+    quickStep,
+    quickTotal: PERSONALIZED_SETUP_STEPS,
+  });
 
 /** The route of the cycle-setup screen the personalized cycle question opens. */
 export const personalizedCycleSetupRoute = (tracking: string, nextRoute: string) =>

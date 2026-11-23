@@ -7,6 +7,7 @@ import {
   type AiImageTier,
   DEFAULT_AI_IMAGE_TIER,
   limitsForTier,
+  ON_DEVICE_IMAGE_CEILING,
   OWN_KEY_IMAGE_CEILING,
 } from '@/utils/aiImagePlan';
 import {
@@ -105,4 +106,14 @@ export async function prepareOwnKeyImage(base64: string, mimeType: string): Prom
   const tier = await loadAiImageTier();
 
   return resizeForAi(base64, mimeType, limitsForTier(tier, OWN_KEY_IMAGE_CEILING));
+}
+
+/** Prepares a photo for the downloaded on-device model: the person's tier, capped at what it can use. */
+export async function prepareOnDeviceImage(
+  base64: string,
+  mimeType: string
+): Promise<PreparedImage> {
+  const tier = await loadAiImageTier();
+
+  return resizeForAi(base64, mimeType, limitsForTier(tier, ON_DEVICE_IMAGE_CEILING));
 }

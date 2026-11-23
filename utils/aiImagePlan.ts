@@ -37,6 +37,16 @@ export const OWN_KEY_IMAGE_CEILING: HostedImageLimits = {
   quality: 0.95,
 };
 
+/**
+ * What the downloaded on-device model is given: its vision encoder takes 512 px tiles, so more
+ * pixels cost time and memory without adding detail it can use. Lowers the tier, never raises it.
+ */
+export const ON_DEVICE_IMAGE_CEILING: HostedImageLimits = {
+  maxPx: 768,
+  maxBytes: 4 * 1024 * 1024,
+  quality: 0.85,
+};
+
 /** Reads a stored tier, treating anything unrecognized (a newer build, a hand-edited backup) as the default. */
 export function parseAiImageTier(raw: string | null | undefined): AiImageTier {
   return AI_IMAGE_TIER_ORDER.find((tier) => tier === raw) ?? DEFAULT_AI_IMAGE_TIER;

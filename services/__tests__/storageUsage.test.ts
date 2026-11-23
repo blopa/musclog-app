@@ -29,6 +29,11 @@ jest.mock('expo-file-system/legacy', () => ({
     mockDeleted.push(uri);
   }),
 }));
+const mockDeleteLocalModel = jest.fn(async () => undefined);
+jest.mock('@/services/localModels/modelStore', () => ({
+  getLocalModelRoot: () => 'file:///data/files/local-ai',
+  deleteLocalModel: () => mockDeleteLocalModel(),
+}));
 jest.mock('@/database/preMigrationBackup', () => ({
   getStoredBackups: jest.fn(async () => mockBackups),
 }));
@@ -50,6 +55,8 @@ beforeEach(() => {
     'file:///data/musclog.db-wal': { size: 200 },
     'file:///data/files/foods': { dir: true, children: ['a.jpg'] },
     'file:///data/files/foods/a.jpg': { size: 300 },
+    'file:///data/files/local-ai': { dir: true, children: ['m.gguf'] },
+    'file:///data/files/local-ai/m.gguf': { size: 7000 },
     'file:///data/files/exercise-images': { dir: true, children: ['x__0.webp', 'x__1.webp'] },
     'file:///data/files/exercise-images/x__0.webp': { size: 40 },
     'file:///data/files/exercise-images/x__1.webp': { size: 60 },
@@ -79,10 +86,11 @@ describe('measureStorage', () => {
       sensorRecordings: 0,
       recoveryPoints: 900,
       exerciseImages: 100,
+      localAiModels: 7000,
       // old.csv + new.csv + ImagePicker/p.jpg; not backup.json, not ble-workout-tracking
       temporary: 5 + 7 + 20,
     });
-    expect(report?.totalBytes).toBe(1200 + 300 + 900 + 100 + 32);
+    expect(report?.totalBytes).toBe(1200 + 300 + 900 + 100 + 7000 + 32);
   });
 });
 
@@ -90,6 +98,12 @@ describe('clearStorageCategory', () => {
   it('clears exercise pictures and reports what it freed', async () => {
     await expect(clearStorageCategory('exerciseImages')).resolves.toBe(100);
     expect(mockDeleted).toEqual(['file:///data/files/exercise-images']);
+  });
+
+  it('deletes the downloaded model through its store, so a loaded model is unloaded first', async () => {
+    await expect(clearStorageCategory('localAiModels')).resolves.toBe(7000);
+    expect(mockDeleteLocalModel).toHaveBeenCalledTimes(1);
+    expect(mockDeleted).toEqual([]);
   });
 
   it('removes only old temporary files, never a backup or the live recording', async () => {

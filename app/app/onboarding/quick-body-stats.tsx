@@ -30,6 +30,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
+import { aiStepRoute, ON_DEVICE_AI_ROUTE } from '@/utils/onboardingRoutes';
 import { parseTrainingSetup, planWeightGoal } from '@/utils/onboardingTraining';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
@@ -197,7 +198,11 @@ export default function QuickBodyStatsScreen() {
 
       await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
       router.navigate(
-        `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true')}&quickStep=5&quickTotal=7`
+        aiStepRoute(ON_DEVICE_AI_ROUTE, {
+          nextRoute: '/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true',
+          quickStep: 5,
+          quickTotal: 7,
+        }) as never
       );
     } catch (e) {
       console.error('Error in quick body stats:', e);

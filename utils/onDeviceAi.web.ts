@@ -1,4 +1,15 @@
+import type { AppleAvailability } from '@/modules/on-device-ai';
+
 export type OnDeviceMessage = { role: 'user' | 'assistant'; content: string };
+
+/** Apple Intelligence exists on iOS only. */
+export async function getAppleAvailability(): Promise<AppleAvailability> {
+  return 'unsupportedOs';
+}
+
+export async function isAppleLocaleSupported(_languageTag: string): Promise<boolean> {
+  return false;
+}
 
 export async function isOnDeviceAiCapable(): Promise<boolean> {
   return false;

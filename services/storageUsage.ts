@@ -9,6 +9,7 @@ import { Platform } from 'react-native';
 
 import { DATABASE_NAME } from '@/constants/database';
 import { getStoredBackups } from '@/database/preMigrationBackup';
+import { deleteLocalModel, getLocalModelRoot } from '@/services/localModels/modelStore';
 import {
   type CacheEntry,
   type ClearableStorageCategoryId,
@@ -152,12 +153,14 @@ export async function measureStorage(): Promise<StorageReport | null> {
   }
 
   const documents = withTrailingSlash(documentDirectory);
-  const [database, photoSizes, sensor, exerciseImages, cacheEntries, protectedUris] =
+  const localModelRoot = getLocalModelRoot();
+  const [database, photoSizes, sensor, exerciseImages, localAiModels, cacheEntries, protectedUris] =
     await Promise.all([
       databaseBytes(),
       Promise.all(USER_PHOTO_DIRECTORIES.map((name) => sizeOf(`${documents}${name}`))),
       sizeOf(`${documents}${SENSOR_RECORDING_DIRECTORY}`),
       sizeOf(`${documents}${EXERCISE_IMAGE_CACHE_DIRECTORY}`),
+      localModelRoot ? sizeOf(localModelRoot) : Promise.resolve(0),
       readCacheEntries(),
       protectedBackupUris(),
     ]);
@@ -175,6 +178,7 @@ export async function measureStorage(): Promise<StorageReport | null> {
     { id: 'sensorRecordings', bytes: sensor },
     { id: 'recoveryPoints', bytes: recoveryPoints },
     { id: 'exerciseImages', bytes: exerciseImages },
+    { id: 'localAiModels', bytes: localAiModels },
     { id: 'temporary', bytes: temporary },
   ];
 
@@ -201,6 +205,15 @@ async function clearExerciseImages(): Promise<number> {
   return before;
 }
 
+/** Deletes the downloaded on-device AI model (unloading it first); AI settings downloads it again. */
+async function clearLocalAiModels(): Promise<number> {
+  const root = getLocalModelRoot();
+  const before = root ? await sizeOf(root) : 0;
+  await deleteLocalModel();
+
+  return before;
+}
+
 /**
  * Deletes leftover export, share and photo-editing files older than an hour. Registered safety
  * backups, the live sensor recording and every library-owned cache directory are left alone.
@@ -219,5 +232,12 @@ export async function clearStorageCategory(id: ClearableStorageCategoryId): Prom
     throw new Error('Storage cleanup is not available on this platform');
   }
 
-  return id === 'exerciseImages' ? clearExerciseImages() : clearTemporaryFiles();
+  switch (id) {
+    case 'exerciseImages':
+      return clearExerciseImages();
+    case 'localAiModels':
+      return clearLocalAiModels();
+    default:
+      return clearTemporaryFiles();
+  }
 }

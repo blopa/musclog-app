@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 
 import { MUSCLOG_GATEWAY_MAX_TOKENS, MUSCLOG_GATEWAY_PROVIDER } from '@/constants/gateway';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
+import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
@@ -16,6 +17,7 @@ import {
   AiCancelledError,
   AiInvalidKeyError,
   AiTimeoutError,
+  OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
 import {
@@ -37,7 +39,21 @@ import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
+import { validateAgainstSchema } from './aiSchemaValidate';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
+import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
+import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
+import {
+  buildPhotoMeal,
+  type FoodCandidate,
+  type IdentifiedFood,
+  LOCAL_FOOD_IDENTIFY_SCHEMA,
+  localFoodIdentifyPrompt,
+  mealTypeForHour,
+  parseIdentifiedFoods,
+  pickFoodMatch,
+  searchTermsFor,
+} from './localFoodPhoto';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -247,6 +263,10 @@ type CoachAIConfigFields = {
   signal?: AbortSignal;
   /** Overrides the default request timeout, in milliseconds. */
   timeoutMs?: number;
+  /** `on-device` only: which engine answers. Absent means Apple's system model. */
+  engine?: OnDeviceEngine;
+  /** `on-device` only: the engine can read a food photo (the downloaded model with its projector). */
+  vision?: boolean;
 };
 
 /**
@@ -1128,6 +1148,59 @@ async function sendViaClaude(
   }
 }
 
+/** Which engine an `on-device` config runs; Apple's system model unless the config says otherwise. */
+function onDeviceEngineOf(config: CoachAIConfig): OnDeviceEngine {
+  return config.engine ?? 'apple';
+}
+
+/** The context budget of the engine behind an `on-device` config. */
+function onDeviceBudget(config: CoachAIConfig): number {
+  return ON_DEVICE_CONTEXT_CHARS[onDeviceEngineOf(config)];
+}
+
+/**
+ * One plain-text generation on the on-device engine. The downloaded model goes through
+ * `withLlmRetry` (idle timeout, cancel, never retried once text is on screen); Apple's system
+ * model keeps its own path.
+ */
+async function runOnDeviceText(
+  config: CoachAIConfig,
+  operation: string,
+  messages: { role: 'user' | 'assistant'; content: string }[],
+  systemPrompt: string | undefined,
+  sink: StreamSink | null
+): Promise<string> {
+  if (onDeviceEngineOf(config) === 'gguf') {
+    return withLlmRetry(
+      operation,
+      config,
+      async (signal, touch) => {
+        sink?.reset();
+        if (!sink) {
+          return sendLocalMessage(messages, systemPrompt, signal);
+        }
+
+        await streamLocalMessage(
+          messages,
+          systemPrompt,
+          (delta) => {
+            touch();
+            sink.onDelta(delta);
+          },
+          signal
+        );
+
+        return sink.raw();
+      },
+      { hasStreamed: () => sink?.hasEmitted() ?? false }
+    );
+  }
+
+  return sink
+    ? streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
+    : sendOnDeviceMessage(messages, systemPrompt);
+}
+
 async function sendViaOnDevice(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
@@ -1137,7 +1210,6 @@ async function sendViaOnDevice(
 ): Promise<CoachResponse> {
   const sink = stream ? createStreamSink(stream, 'plain') : null;
   try {
-    const providerConfig = PROVIDER_CONFIGS['on-device'];
     const systemPrompt = await getChatMessagePromptContent(
       config.language,
       undefined,
@@ -1147,7 +1219,7 @@ async function sendViaOnDevice(
 
     const truncatedHistory = truncateHistoryByBudget(
       history,
-      providerConfig.maxCharBudget - userMessage.length
+      onDeviceBudget(config) - userMessage.length
     );
     const normalized = normalizeHistory(truncatedHistory);
 
@@ -1167,9 +1239,7 @@ async function sendViaOnDevice(
       config,
     });
 
-    const raw = sink
-      ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
-      : await sendOnDeviceMessage(messages, systemPrompt);
+    const raw = await runOnDeviceText(config, 'sendViaOnDevice', messages, systemPrompt, sink);
 
     await logLlmDebugEvent({
       provider: 'on-device',
@@ -1184,15 +1254,7 @@ async function sendViaOnDevice(
       sumMsg: raw?.slice(0, 120) ?? '',
     };
   } catch (error) {
-    reportAiError(error, 'coachAI.sendViaOnDevice');
-    if (sink?.hasEmitted()) {
-      throw error;
-    }
-
-    return {
-      msg4User: i18n.t('errors.aiProcessingError'),
-      sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
-    };
+    return failedCoachReply(error, config, 'sendViaOnDevice', sink);
   }
 }
 
@@ -1214,7 +1276,7 @@ async function generateTextOnDevice(
 ): Promise<string> {
   const truncatedHistory = truncateHistoryByBudget(
     history,
-    PROVIDER_CONFIGS['on-device'].maxCharBudget - userMessage.length
+    onDeviceBudget(config) - userMessage.length
   );
   const messages = [
     ...normalizeHistory(truncatedHistory).map((entry) => ({
@@ -1233,9 +1295,7 @@ async function generateTextOnDevice(
   });
 
   const sink = stream ? createStreamSink(stream, 'plain') : null;
-  const raw = sink
-    ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
-    : await sendOnDeviceMessage(messages, systemPrompt);
+  const raw = await runOnDeviceText(config, 'generateText', messages, systemPrompt, sink);
 
   await logLlmDebugEvent({
     provider: 'on-device',
@@ -1582,7 +1642,7 @@ function getSchemaFromFunctionDeclaration(fn: {
   };
 }
 
-export type StructuredDialect = 'openai' | 'gemini' | 'claude' | 'on-device';
+export type StructuredDialect = 'openai' | 'gemini' | 'claude' | 'on-device' | 'gguf';
 
 export type StructuredRequest = {
   /** Names the call in debug dumps and retry logs. */
@@ -1603,6 +1663,34 @@ export type StructuredResult<T = unknown> =
   { kind: 'ok'; value: T } | { kind: 'malformed'; raw: string };
 
 const MALFORMED_RAW_PREVIEW_CHARS = 500;
+
+/**
+ * The shape gate for the downloaded on-device model: a value that parsed but does not match the schema it
+ * was asked for is `malformed`, so no feature normalizer ever reads it. Cloud providers enforce the
+ * schema server-side and their callers already tolerate a partial answer, so they are not checked.
+ */
+function checkStructuredShape<T>(
+  result: StructuredResult<T>,
+  schema: object,
+  operation: string
+): StructuredResult<T> {
+  if (result.kind !== 'ok') {
+    return result;
+  }
+
+  const check = validateAgainstSchema(result.value, schema);
+  if (check.ok) {
+    return result;
+  }
+
+  // The path names a field, never a value, so nothing the person wrote is logged.
+  console.warn(`[coachAI] ${operation}: on-device reply failed the schema at ${check.path}`);
+
+  return {
+    kind: 'malformed',
+    raw: JSON.stringify(result.value).slice(0, MALFORMED_RAW_PREVIEW_CHARS),
+  };
+}
 
 function parseStructuredJson<T>(raw: string): StructuredResult<T> {
   try {
@@ -1632,6 +1720,7 @@ export async function requestStructured<T = unknown>(
   const task = request.task ?? 'extraction';
 
   if (config.provider === 'on-device') {
+    const engine = onDeviceEngineOf(config);
     const messages = [
       ...history.map((entry) => ({
         role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
@@ -1639,7 +1728,7 @@ export async function requestStructured<T = unknown>(
       })),
       { role: 'user' as const, content: userMessage },
     ];
-    const schema = request.buildSchema('on-device');
+    const schema = request.buildSchema(engine === 'gguf' ? 'gguf' : 'on-device');
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'request',
@@ -1648,18 +1737,33 @@ export async function requestStructured<T = unknown>(
       config,
     });
 
-    const value = await sendOnDeviceStructured<T>(messages, systemPrompt, schema);
+    let result: StructuredResult<T>;
+    if (engine === 'gguf') {
+      // Grammar-constrained by the engine, then parsed and checked here: the engine is not trusted
+      // to have honoured the schema.
+      const raw = await withLlmRetry(operation, config, (signal) =>
+        sendLocalStructuredRaw(messages, systemPrompt, schema, { signal })
+      );
+      result = parseStructuredJson<T>(raw);
+    } else {
+      const value = await sendOnDeviceStructured<T>(messages, systemPrompt, schema);
+      result =
+        value === null || value === undefined
+          ? { kind: 'malformed', raw: '' }
+          : { kind: 'ok', value };
+    }
+
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'response',
       operation,
-      payload: value,
+      payload: result,
       config,
     });
 
-    return value === null || value === undefined
-      ? { kind: 'malformed', raw: '' }
-      : { kind: 'ok', value };
+    // Apple's guided generation is enforced by the OS; the downloaded model's grammar is enforced
+    // by a runtime we do not control, so its answer is checked before anything reads it.
+    return engine === 'gguf' ? checkStructuredShape(result, schema, operation) : result;
   }
 
   if (config.provider === 'gemini') {
@@ -1777,7 +1881,11 @@ async function generateStructured<T>(
     return result.kind === 'ok' ? result.value : null;
   } catch (error) {
     // The on-device model has no retry layer to classify its failures, so a bad run is "no answer".
-    if (config.provider !== 'on-device') {
+    if (
+      config.provider !== 'on-device' ||
+      error instanceof OnDeviceUnavailableError ||
+      error instanceof AiCancelledError
+    ) {
       throw error;
     }
 
@@ -2727,6 +2835,81 @@ export type MealPhotoContext = {
   tags: string[];
 };
 
+/** Foods this phone already has whose names share a word with `name`, merged and deduplicated. */
+async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
+  const byId = new Map<string, FoodCandidate>();
+  for (const term of searchTermsFor(name)) {
+    for (const food of await FoodService.searchFoods(term)) {
+      byId.set(food.id, {
+        id: food.id,
+        name: food.name,
+        kcal: food.calories ?? 0,
+        protein: food.protein ?? 0,
+        carbs: food.carbs ?? 0,
+        fat: food.fat ?? 0,
+        fiber: food.fiber ?? 0,
+      });
+    }
+  }
+
+  return [...byId.values()];
+}
+
+/**
+ * Reads a meal photo with the downloaded on-device model: it names what it sees and guesses grams
+ * (grammar-constrained, never asked for calories), the names are matched to foods this phone has,
+ * and anything unmatched is estimated by name through the same follow-up the cloud path uses.
+ * Returns null when nothing recognisable is in the photo; the review screen takes it from there.
+ */
+async function estimateMealFromPhotoOnDevice(
+  config: CoachAIConfig,
+  base64Image: string,
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackMealResponse | null> {
+  reportMealProgress(onProgress, { step: 'reading', photo: true });
+  const rawBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+  const rawMime = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
+  const { base64, mimeType } = await aiImage.prepareOnDeviceImage(rawBase64, rawMime);
+
+  const systemPrompt = localFoodIdentifyPrompt();
+  const messages = [{ role: 'user' as const, content: 'What foods are in this photo?' }];
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'request',
+    operation: 'estimateNutritionFromPhoto',
+    payload: { systemPrompt, messages, schema: LOCAL_FOOD_IDENTIFY_SCHEMA },
+    config,
+  });
+
+  const raw = await withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
+    sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
+      image: `data:${mimeType};base64,${base64}`,
+      signal,
+    })
+  );
+  const parsed = checkStructuredShape(
+    parseStructuredJson<unknown>(raw),
+    LOCAL_FOOD_IDENTIFY_SCHEMA,
+    'estimateNutritionFromPhoto'
+  );
+  const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
+  if (foods.length === 0) {
+    return null;
+  }
+
+  const matches = new Map<string, FoodCandidate | null>();
+  for (const food of foods) {
+    matches.set(food.name, pickFoodMatch(food.name, await candidateFoodsFor(food.name)));
+  }
+
+  const hour = new Date().getHours();
+  const meal = buildPhotoMeal(foods, matches, mealTypeForHour(hour));
+
+  return refineTrackedMeals(config, meal, onProgress);
+}
+
 /**
  * Estimate nutrition from a meal photo.
  * Returns a TrackMealResponse with ingredients breakdown, similar to trackMeal.
@@ -2737,12 +2920,16 @@ export async function estimateNutritionFromPhoto(
   context?: MealPhotoContext | null,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
-  if (config.provider === 'on-device') {
-    // TODO: for now, on-device cant parse images
+  // Apple's system model takes no images; the downloaded model does once its projector is installed.
+  if (config.provider === 'on-device' && !config.vision) {
     return null;
   }
 
   try {
+    if (config.provider === 'on-device') {
+      return await estimateMealFromPhotoOnDevice(config, base64Image, onProgress);
+    }
+
     reportMealProgress(onProgress, { step: 'reading', photo: true });
     const useThinkingMode = await SettingsService.getUseThinkingMode();
     if (useThinkingMode) {

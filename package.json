@@ -239,6 +239,7 @@
     "i18next": "26.7.2",
     "ics": "3.12.1",
     "intl-pluralrules": "2.0.1",
+    "llama.rn": "0.12.9",
     "lucide-react-native": "1.76.0",
     "markdown-it": "^15.0.3",
     "mermaid": "^12.3.0",

@@ -36,6 +36,7 @@ import {
   type HomeHeatmapLayout,
   type HomeHeatmaps,
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
+  ON_DEVICE_ENGINE_SETTING_TYPE,
   parseAppLockScopes,
   parseCycleNotificationStyle,
   parseEnergyUnit,
@@ -71,6 +72,7 @@ import {
   parseComebackState,
   serializeComebackState,
 } from '@/utils/comeback/comebackState';
+import { type OnDeviceEngineChoice, parseOnDeviceEngineChoice } from '@/utils/onDeviceEngine';
 import { clampRestSeconds } from '@/utils/restTimer';
 
 /**
@@ -120,6 +122,11 @@ export const SETTINGS = {
   useHostedAi: booleanSetting(USE_HOSTED_AI_SETTING_TYPE, false),
   /** How much detail a photo keeps on its way to any AI provider; unknown values read as the default. */
   aiImageQuality: choiceSetting<AiImageTier>(AI_IMAGE_QUALITY_SETTING_TYPE, parseAiImageTier),
+  /** Which engine answers when on-device AI is on; resolve it with `resolveOnDeviceEngine`. */
+  onDeviceEngine: choiceSetting<OnDeviceEngineChoice>(
+    ON_DEVICE_ENGINE_SETTING_TYPE,
+    parseOnDeviceEngineChoice
+  ),
   /** Consent version for hosted AI (`utils/premium/premiumConsent.ts`); null until given. */
   premiumConsentVersion: {
     type: PREMIUM_CONSENT_VERSION_SETTING_TYPE,

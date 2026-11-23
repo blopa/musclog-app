@@ -1,4 +1,15 @@
+import type { AppleAvailability } from '@/modules/on-device-ai';
+
 export type OnDeviceMessage = { role: 'user' | 'assistant'; content: string };
+
+/** Apple Intelligence exists on iOS only; the Android and web builds never reach it. */
+export async function getAppleAvailability(): Promise<AppleAvailability> {
+  return 'unsupportedOs';
+}
+
+export async function isAppleLocaleSupported(_languageTag: string): Promise<boolean> {
+  return false;
+}
 
 /**
  * Fast check — iOS device supports Apple Intelligence (Foundation Models).
@@ -17,25 +28,25 @@ export async function isOnDeviceAiAvailable(): Promise<boolean> {
 }
 
 export async function sendOnDeviceMessage(
-  messages: OnDeviceMessage[],
-  systemPrompt?: string
+  _messages: OnDeviceMessage[],
+  _systemPrompt?: string
 ): Promise<string> {
   return '';
 }
 
 export async function streamOnDeviceMessage(
-  messages: OnDeviceMessage[],
-  systemPrompt: string | undefined,
-  onDelta: (delta: string) => void,
-  signal?: AbortSignal
+  _messages: OnDeviceMessage[],
+  _systemPrompt: string | undefined,
+  _onDelta: (delta: string) => void,
+  _signal?: AbortSignal
 ): Promise<string> {
   return '';
 }
 
 export async function sendOnDeviceStructured<T>(
-  messages: OnDeviceMessage[],
-  systemPrompt: string,
-  schema: object
+  _messages: OnDeviceMessage[],
+  _systemPrompt: string,
+  _schema: object
 ): Promise<T | null> {
   return null;
 }

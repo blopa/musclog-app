@@ -37,6 +37,7 @@ const CATEGORY_NAME_KEYS: Record<StorageCategoryId, string> = {
   sensorRecordings: 'settings.advancedSettings.storage.categories.sensorRecordings.name',
   recoveryPoints: 'settings.advancedSettings.storage.categories.recoveryPoints.name',
   exerciseImages: 'settings.advancedSettings.storage.categories.exerciseImages.name',
+  localAiModels: 'settings.advancedSettings.storage.categories.localAiModels.name',
   temporary: 'settings.advancedSettings.storage.categories.temporary.name',
 };
 
@@ -46,11 +47,13 @@ const CATEGORY_DESCRIPTION_KEYS: Record<StorageCategoryId, string> = {
   sensorRecordings: 'settings.advancedSettings.storage.categories.sensorRecordings.description',
   recoveryPoints: 'settings.advancedSettings.storage.categories.recoveryPoints.description',
   exerciseImages: 'settings.advancedSettings.storage.categories.exerciseImages.description',
+  localAiModels: 'settings.advancedSettings.storage.categories.localAiModels.description',
   temporary: 'settings.advancedSettings.storage.categories.temporary.description',
 };
 
 const CLEAR_MESSAGE_KEYS: Record<ClearableStorageCategoryId, string> = {
   exerciseImages: 'settings.advancedSettings.storage.clearMessage.exerciseImages',
+  localAiModels: 'settings.advancedSettings.storage.clearMessage.localAiModels',
   temporary: 'settings.advancedSettings.storage.clearMessage.temporary',
 };
 

@@ -2,12 +2,12 @@ import { AI_PROVIDER_KINDS } from '@/constants/ai';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
+import { refreshOnDeviceStatus } from '@/services/localModels/onDeviceStatusStore';
 import { getSessionGrant, hostedAiBaseUrl } from '@/services/premium/premiumService';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
-import { isOnDeviceAiAvailable } from '@/utils/onDeviceAi';
 import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 
 /**
@@ -141,9 +141,22 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
     effectiveUseMusclogGateway(await SettingsService.getUseMusclogFreeTier())
       ? async (language) => GatewayService.buildGatewayConfig(language)
       : null,
+  // Chosen on-device AI never steps aside for another provider: the data recipient would change.
+  // When the engine is not ready (nothing downloaded yet, Apple Intelligence off) the config still
+  // comes back and the request throws `OnDeviceUnavailableError`, which says what to fix.
   'on-device': async () =>
-    (await SettingsService.getUseOnDeviceAi()) && (await isOnDeviceAiAvailable())
-      ? async (language) => ({ provider: 'on-device', model: 'on-device', language })
+    (await SettingsService.getUseOnDeviceAi())
+      ? async (language) => {
+          const status = await refreshOnDeviceStatus();
+
+          return {
+            provider: 'on-device',
+            model: 'on-device',
+            language,
+            engine: status.engine,
+            vision: status.capabilities.vision,
+          };
+        }
       : null,
   local: async () => {
     const [enabled, baseUrlRaw] = await Promise.all([
