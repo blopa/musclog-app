@@ -802,7 +802,7 @@ export default function SmartCameraModal({
             visible={isAddFoodModalVisible}
             onClose={handleAddFoodClose}
             onMealTypeSelect={handleMealTypeSelect}
-            onAiCameraPress={handleAiCameraPress}
+            onAiCameraPress={isAIVisionEnabled ? handleAiCameraPress : undefined}
             onScanBarcodePress={handleScanBarcodePress}
             onSearchFoodPress={handleSearchFoodPress}
             onCreateCustomFoodPress={handleCreateCustomFood}

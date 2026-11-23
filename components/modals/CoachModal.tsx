@@ -651,7 +651,7 @@ export function CoachModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const persona = useCoachPersona();
-  const { aiProvider } = useSettings();
+  const { aiProvider, isAiMealPhotoEnabled } = useSettings();
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const insets = useAppSafeAreaInsets();
   const router = useRouter();
@@ -1338,7 +1338,7 @@ export function CoachModal({
         composerSeedText,
         clearComposerSeed,
         handleAttachFile,
-        pendingIntention === TRACK_MEAL && !photoSendInProgress,
+        pendingIntention === TRACK_MEAL && isAiMealPhotoEnabled && !photoSendInProgress,
         composerResetKey
       ),
     [
@@ -1348,6 +1348,7 @@ export function CoachModal({
       clearComposerSeed,
       handleAttachFile,
       pendingIntention,
+      isAiMealPhotoEnabled,
       photoSendInProgress,
       composerResetKey,
     ]
