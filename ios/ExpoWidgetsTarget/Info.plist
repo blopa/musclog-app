@@ -10,8 +10,8 @@
   <key>ExpoWidgetsAppGroupIdentifier</key>
   <string>group.com.werules.logger</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.18.1</string>
+	<string>2.18.2</string>
 	<key>CFBundleVersion</key>
-	<string>349</string>
+	<string>350</string>
 </dict>
 </plist>
