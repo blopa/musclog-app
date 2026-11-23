@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Subskrypcja płaci za AI",
-              "description": "AI nie jest darmowe w działaniu: każda odpowiedź kosztuje tokeny. Subskrypcja je pokrywa, a dostawcy AI nie zachowują niczego, co wyślesz."
+              "description": "AI nie jest darmowe w działaniu: każda odpowiedź kosztuje tokeny. Subskrypcja je pokrywa, i używani są wyłącznie dostawcy AI z zerową retencją danych."
             },
             "oneDeveloper": {
               "label": "Tworzy to jedna osoba",

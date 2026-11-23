@@ -111,6 +111,16 @@ function pickRung<Layout>(
 }
 
 /**
+ * The line height for text drawn at a fitted `fontSize`. A class such as `text-4xl` fixes its own
+ * line height, so a size set inline above it (40 over a ~35 line) leaves a line box shorter than
+ * the glyphs and Android clips the descenders ("g", "p", "y"). Deriving the line height from the
+ * size actually drawn keeps it in step.
+ */
+export function lineHeightFor(fontSize: number, ratio: number): number {
+  return Math.ceil(fontSize * ratio);
+}
+
+/**
  * The font size at which the label's longest word fits `availableWidth` on a line, between
  * `minSize` and `maxSize`. Before the width is known (`null`, the first frame) it is `maxSize`.
  */

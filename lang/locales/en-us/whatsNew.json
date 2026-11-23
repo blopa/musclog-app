@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Your subscription pays for the AI",
-              "description": "The AI is not free to run: each reply costs tokens. Your subscription covers them, and the AI providers keep nothing you send."
+              "description": "The AI is not free to run: each reply costs tokens. Your subscription covers them, and only zero-retention AI providers are used."
             },
             "oneDeveloper": {
               "label": "Made by one person",

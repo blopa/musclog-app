@@ -153,6 +153,7 @@ function ReleaseIntro({ intro }: { intro: NonNullable<WhatsNewFlow['intro']> }) 
           accessibilityRole="header"
           size={40}
           minSize={30}
+          lineHeightRatio={1.2}
           className="text-center text-4xl font-bold text-text-primary"
         >
           {t(intro.titleKey)}

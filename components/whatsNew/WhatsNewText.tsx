@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 import { Text } from 'react-native';
 
 import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
-import { fitLabelFontSize } from '@/utils/fitText';
+import { fitLabelFontSize, lineHeightFor } from '@/utils/fitText';
 
 type Props = Omit<ComponentProps<typeof Text>, 'children' | 'style'> & {
   children: string;
@@ -10,6 +10,12 @@ type Props = Omit<ComponentProps<typeof Text>, 'children' | 'style'> & {
   size: number;
   /** The smallest size worth drawing; below it a word overflows rather than shrinks further. */
   minSize: number;
+  /**
+   * Line height as a multiple of the drawn size, for text whose `size` is larger than its class's
+   * own line height (a 40pt title on `text-4xl`): without it the line box is shorter than the
+   * glyphs and a descender is cut off. Leave it out when the class sets a line height that fits.
+   */
+  lineHeightRatio?: number;
 };
 
 /**
@@ -17,12 +23,20 @@ type Props = Omit<ComponentProps<typeof Text>, 'children' | 'style'> & {
  * compound such as "Oefeningsbeperkingen" cannot wrap, so the width it is given decides the size.
  * The width is measured after layout, so the first frame draws `size` and the correction follows.
  */
-export function WhatsNewText({ children, size, minSize, ...props }: Props) {
+export function WhatsNewText({ children, size, minSize, lineHeightRatio, ...props }: Props) {
   const { width, fontScale, onLayout } = useMeasuredWidth();
   const fontSize = fitLabelFontSize(children, width, { maxSize: size, minSize, fontScale });
 
   return (
-    <Text {...props} onLayout={onLayout} style={{ fontSize }}>
+    <Text
+      {...props}
+      onLayout={onLayout}
+      style={
+        lineHeightRatio === undefined
+          ? { fontSize }
+          : { fontSize, lineHeight: lineHeightFor(fontSize, lineHeightRatio) }
+      }
+    >
       {children}
     </Text>
   );

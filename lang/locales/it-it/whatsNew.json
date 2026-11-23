@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "L'abbonamento paga l'AI",
-              "description": "L'AI non è gratuita da far girare: ogni risposta consuma token. Il tuo abbonamento li copre, e i fornitori AI non conservano nulla di ciò che invii."
+              "description": "L'AI non è gratuita da far girare: ogni risposta consuma token. Il tuo abbonamento li copre, e vengono usati solo fornitori AI con zero conservazione dei dati."
             },
             "oneDeveloper": {
               "label": "Fatto da una sola persona",

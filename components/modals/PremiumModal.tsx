@@ -197,6 +197,31 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     );
   };
 
+  /** On the paywall the wait is a centered loader over a dim layer, not a line squeezed above the button. */
+  const renderBusyOverlay = () => {
+    if (!busyLine) {
+      return null;
+    }
+
+    return (
+      <View
+        className="items-center gap-3 rounded-card px-6 py-5"
+        role="status"
+        accessibilityRole="alert"
+        accessibilityLiveRegion="polite"
+        style={{ backgroundColor: theme.colors.background.card }}
+      >
+        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        <Text
+          className="text-center"
+          style={{ color: theme.colors.text.primary, fontSize: theme.typography.fontSize.sm }}
+        >
+          {t(PREMIUM_BUSY_KEYS[busyLine])}
+        </Text>
+      </View>
+    );
+  };
+
   const renderRestore = (variant: 'outline' | 'accent') => (
     <Button
       label={t('premium.restore')}
@@ -239,7 +264,6 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
 
     return (
       <View className="gap-2">
-        {renderBusyLine()}
         {view.canSubscribe ? (
           <>
             <Button
@@ -384,6 +408,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
       title={t('premium.title')}
       footer={isPaywall ? renderPaywallFooter() : undefined}
       scrollCue={isPaywall}
+      overlay={isPaywall ? renderBusyOverlay() : undefined}
     >
       <View className="gap-6 px-5 pb-6 pt-3">
         {isPaywall ? (
@@ -443,6 +468,9 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           confirmLabel={dialogCopy.confirm}
           cancelLabel={dialogCopy.cancel}
           variant={dialogCopy.variant}
+          // The consent text is long and longer still in other languages: on a small screen the body
+          // scrolls and the buttons stay on screen.
+          scrollable
         />
       </View>
     </FullScreenModal>

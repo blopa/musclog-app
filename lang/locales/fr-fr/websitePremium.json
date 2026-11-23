@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Ce qu'il advient de tes messages",
-      "body": "Quand Musclog Iron est activé, tes requêtes d'IA partent vers le service propre à Musclog, qui les transmet à OpenRouter, lequel les envoie au modèle d'IA. Les requêtes ne sont envoyées qu'à des fournisseurs qui proposent une rétention de données nulle, et le service ne conserve ni le texte de tes messages ni tes images. Il compte l'utilisation pour ta période d'abonnement et conserve un identifiant pour chaque appareil sur lequel tu utilises Musclog Iron.",
+      "body": "Quand Musclog Iron est activé, tes requêtes d'IA partent vers le service propre à Musclog, qui les transmet à OpenRouter, lequel les envoie au modèle d'IA. Les requêtes ne sont envoyées qu'à des fournisseurs qui proposent une rétention de données nulle, et le service ne conserve ni le texte de tes messages ni tes images. Il compte l'utilisation pour ta période d'abonnement et conserve un identifiant pour chaque appareil sur lequel tu utilises Musclog Iron. OpenRouter contrôle aussi toutes les requêtes à la recherche de contenus d'abus sexuels sur mineurs et peut conserver une requête signalée, comme le décrit sa propre politique.",
       "consent": "L'app te demande ton accord avant d'envoyer quoi que ce soit à Musclog Iron, et te le redemande si tu restaures une sauvegarde sur un autre appareil.",
       "link": "Lire la politique de confidentialité"
     },

@@ -206,9 +206,9 @@ describe('usePremium', () => {
     });
     expect(mockSettingsSet).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'premium_consent_version' }),
-      1
+      PREMIUM_CONSENT_VERSION
     );
-    mockSettingsState = { ...mockSettingsState, premiumConsentVersion: 1 };
+    mockSettingsState = { ...mockSettingsState, premiumConsentVersion: PREMIUM_CONSENT_VERSION };
     const { result: after } = renderHook(() => usePremium());
 
     expect(after.current.consentNeeded(true)).toBe(false);

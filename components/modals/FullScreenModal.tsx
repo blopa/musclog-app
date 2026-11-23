@@ -45,6 +45,8 @@ type FullScreenModalProps = {
    * are short, and a cue on all of them would be noise.
    */
   scrollCue?: boolean;
+  /** Drawn over the whole body, footer included (a blocking loader). Taps on it are swallowed. */
+  overlay?: ReactNode;
 };
 
 export function FullScreenModal({
@@ -63,6 +65,7 @@ export function FullScreenModal({
   showConfetti = false,
   confettiWithLoggy = true,
   scrollCue = false,
+  overlay,
 }: FullScreenModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -217,6 +220,24 @@ export function FullScreenModal({
                 {footer}
                 <View style={{ height: theme.spacing.margin.base }} />
               </BottomButtonWrapper>
+            ) : null}
+
+            {overlay ? (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  padding: theme.spacing.padding.base,
+                }}
+              >
+                {overlay}
+              </View>
             ) : null}
           </View>
         </SwipeToReturnWrapper>

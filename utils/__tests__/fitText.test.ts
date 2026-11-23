@@ -8,8 +8,21 @@ import {
   layoutIconRow,
   layoutTableColumns,
   layoutToggleRow,
+  lineHeightFor,
   longestWord,
 } from '@/utils/fitText';
+
+describe('lineHeightFor', () => {
+  it('keeps the line box taller than the glyphs at the size actually drawn', () => {
+    // The "Meet Musclog Iron" title: 40pt over text-4xl's ~35pt line clipped the "g".
+    expect(lineHeightFor(40, 1.2)).toBeGreaterThan(40);
+    expect(lineHeightFor(30, 1.2)).toBe(36);
+  });
+
+  it('rounds up to a whole point so it never lands below the ratio', () => {
+    expect(lineHeightFor(31, 1.2)).toBe(38);
+  });
+});
 
 describe('longestWord', () => {
   it('is the widest word, across spaces and line breaks', () => {

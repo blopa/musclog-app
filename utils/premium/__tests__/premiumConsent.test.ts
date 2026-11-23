@@ -4,7 +4,7 @@ import { websitePageUrl } from '../../websiteUrl';
 
 describe('needsPremiumConsent', () => {
   it('asks only when turning on without the current version on record', () => {
-    expect(PREMIUM_CONSENT_VERSION).toBe(1);
+    expect(PREMIUM_CONSENT_VERSION).toBe(2);
     expect(needsPremiumConsent({ storedVersion: null, currentlyOn: false, nextValue: true })).toBe(
       true
     );

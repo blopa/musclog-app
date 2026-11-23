@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Dein Abo bezahlt die KI",
-              "description": "Die KI ist im Betrieb nicht kostenlos: Jede Antwort kostet Tokens. Dein Abo deckt sie ab, und die KI-Anbieter behalten nichts von dem, was du senden."
+              "description": "Die KI ist im Betrieb nicht kostenlos: Jede Antwort kostet Tokens. Dein Abo deckt sie ab, und es werden nur KI-Anbieter mit Zero Data Retention genutzt."
             },
             "oneDeveloper": {
               "label": "Von einer Person gemacht",

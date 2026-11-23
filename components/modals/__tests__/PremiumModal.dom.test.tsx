@@ -42,19 +42,20 @@ jest.mock('react-i18next', () => ({
 }));
 // The real modal chrome is out of scope here: render its children only while visible.
 jest.mock('@/components/modals/FullScreenModal', () => ({
-  FullScreenModal: ({ visible, children, title, footer }: any) =>
+  FullScreenModal: ({ visible, children, title, footer, overlay }: any) =>
     visible ? (
       <div>
         <h1>{title}</h1>
         {children}
         {footer}
+        {overlay}
       </div>
     ) : null,
 }));
 jest.mock('@/components/modals/ConfirmationModal', () => ({
-  ConfirmationModal: ({ visible, onConfirm, confirmLabel, title }: any) =>
+  ConfirmationModal: ({ visible, onConfirm, confirmLabel, title, scrollable }: any) =>
     visible ? (
-      <div>
+      <div data-scrollable={scrollable ? 'true' : 'false'}>
         <span>{title}</span>
         <button onClick={() => onConfirm()}>{confirmLabel}</button>
       </div>
@@ -255,6 +256,11 @@ describe('PremiumModal', () => {
       fireEvent.click(screen.getByRole('switch'));
 
       expect(screen.getByText('premium.consent.title')).toBeTruthy();
+      // The consent text is long (and longer in other languages): its body must scroll on a small
+      // screen so the buttons never fall below the fold.
+      expect(screen.getByText('premium.consent.title').parentElement?.dataset.scrollable).toBe(
+        'true'
+      );
       expect(premium.setUseHostedAi).not.toHaveBeenCalled();
       expect(premium.recordConsent).not.toHaveBeenCalled();
     });

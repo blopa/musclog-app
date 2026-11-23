@@ -31,7 +31,7 @@
     "resetConfirm": "Restablecer",
     "consent": {
       "title": "¿Enviar las solicitudes de IA a Musclog Iron?",
-      "body": "Tus mensajes y las fotos que envíes a la IA se envían al servicio de Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se utilizan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar. El servicio de Musclog nunca almacena tus mensajes ni tus fotos; solo guarda un identificador de este dispositivo y los recuentos de uso. Puedes desactivarlo en cualquier momento.",
+      "body": "Tus mensajes y los datos que una función de IA necesita para responder, como tus entrenamientos, comidas y medidas corporales, se envían al servicio de Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se utilizan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar. OpenRouter también somete a control todas las solicitudes para detectar material de abuso sexual infantil y puede conservar una solicitud que marque. Algunos de estos datos están relacionados con la salud, y al aceptar das tu consentimiento explícito para que se procesen de esta manera. El servicio de Musclog nunca almacena tus mensajes; solo guarda un identificador de este dispositivo y los recuentos de uso. Puedes desactivarlo en cualquier momento.",
       "confirm": "Usar Musclog Iron",
       "cancel": "Ahora no"
     },
@@ -67,7 +67,7 @@
     },
     "paywall": {
       "headline": "Registra más rápido con IA, sin nada que configurar",
-      "subhead": "Musclog Iron ejecuta la IA por ti: sin clave, sin cuenta y solo con proveedores de IA que no guardan nada de lo que envías. Todo lo demás de Musclog sigue siendo gratis.",
+      "subhead": "Musclog Iron ejecuta la IA por ti: sin clave, sin cuenta y solo con proveedores de IA de retención cero de datos. Todo lo demás de Musclog sigue siendo gratis.",
       "benefits": {
         "noSetup": {
           "title": "Nada que configurar",
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Retención cero de datos",
-          "desc": "Solo se usan proveedores de retención cero de datos: no guardan tus mensajes ni los usan para entrenar. Musclog tampoco los almacena nunca; solo conserva recuentos de uso y un identificador de dispositivo."
+          "desc": "Solo se usan proveedores de retención cero de datos: no guardan tus mensajes ni los usan para entrenar, salvo un control contra material de abuso sexual infantil que exige la ley. Musclog tampoco los almacena nunca; solo conserva recuentos de uso y un identificador de dispositivo."
         },
         "allowance": {
           "title": "Tu propia cuota",
@@ -97,7 +97,7 @@
         "privacy": {
           "label": "Lo que envías",
           "free": "Google puede conservarlo, revisarlo y usarlo para entrenar",
-          "premium": "No se conserva ni se usa para entrenar"
+          "premium": "Retención cero, sin entrenamiento"
         },
         "limit": {
           "label": "Límite",

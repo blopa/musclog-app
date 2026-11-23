@@ -257,7 +257,7 @@
             },
             "tokens": {
               "label": "Tu suscripción paga la IA",
-              "description": "La IA no es gratis de ejecutar: cada respuesta consume tokens. Tu suscripción los cubre, y los proveedores de IA no se quedan con lo que envías."
+              "description": "La IA no es gratis de ejecutar: cada respuesta consume tokens. Tu suscripción los cubre, y solo se usan proveedores de IA con retención cero."
             },
             "oneDeveloper": {
               "label": "Hecho por una sola persona",
