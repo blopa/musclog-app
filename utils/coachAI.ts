@@ -8,6 +8,7 @@ import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
+import { reportLocalOutcome, traceLocalModel } from '@/services/localModels/runTrace';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
@@ -2877,6 +2878,12 @@ async function estimateMealFromPhotoOnDevice(
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
   const { base64, mimeType } = await aiImage.prepareOnDeviceImage(rawBase64, rawMime);
+  traceLocalModel('photo-prepared', {
+    inputChars: rawBase64.length,
+    outputChars: base64.length,
+    mimeType,
+    resized: base64 !== rawBase64,
+  });
 
   const systemPrompt = localFoodIdentifyPrompt();
   const details = wrapUserContent([context?.description, ...(context?.tags ?? [])].join(' '));
@@ -2909,8 +2916,20 @@ async function estimateMealFromPhotoOnDevice(
   );
   const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
   if (foods.length === 0) {
+    // The person sees a generic failure and no exception exists: say which of the three it was.
+    let outcome = 'bad-shape';
+    if (raw.trim() === '') {
+      outcome = 'empty-reply';
+    } else if (parsed.kind === 'ok') {
+      outcome = 'no-foods';
+    }
+
+    await reportLocalOutcome(outcome, { replyChars: raw.length, shape: parsed.kind });
+
     return null;
   }
+
+  traceLocalModel('photo-identified', { foods: foods.length });
 
   const matches = new Map<string, FoodCandidate | null>();
   for (const food of foods) {

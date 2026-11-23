@@ -6,6 +6,7 @@ import {
   COACH_RESTORED_COMPOSER,
   CRASH_REPORT_CONSENT_KEY,
   LOCAL_MODEL_DOWNLOAD_STATE,
+  LOCAL_MODEL_RUN_MARKER,
   PERSONALIZED_BODY_DRAFT,
   PREMIUM_DEVICE_STATE,
   REVIEW_PROMPT_STATE,
@@ -44,6 +45,8 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   REVIEW_PROMPT_STATE,
   // Resume data of a model download on THIS device; meaningless anywhere else.
   LOCAL_MODEL_DOWNLOAD_STATE,
+  // Where a run was when the process died on THIS device; not data.
+  LOCAL_MODEL_RUN_MARKER,
 ]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
