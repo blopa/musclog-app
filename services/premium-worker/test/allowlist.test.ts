@@ -462,3 +462,112 @@ describe('client reasoning_effort', () => {
     ).toBe('high');
   });
 });
+
+describe('max_tokens_by_effort', () => {
+  type Effort = 'low' | 'medium' | 'high';
+  type ChatLimits = {
+    reasoning: Effort | null;
+    reasoning_max?: Effort | null;
+    max_tokens: number;
+    max_tokens_by_effort?: Partial<Record<Effort, number>>;
+  };
+
+  /** A chat config whose limits are exactly `limits` (keys left out of the object stay absent). */
+  function chatWithLimits(limits: ChatLimits): AiConfig {
+    const c = structuredClone(config) as AiConfig;
+    const chat = c.features.chat as unknown as Record<string, unknown>;
+    for (const key of ['reasoning', 'reasoning_max', 'max_tokens', 'max_tokens_by_effort']) {
+      delete chat[key];
+    }
+    Object.assign(chat, limits);
+    return c;
+  }
+
+  const byEffort = { medium: 3000, high: 4500 };
+  const withEffort: ChatLimits = {
+    reasoning: 'low',
+    reasoning_max: 'high',
+    max_tokens: 1500,
+    max_tokens_by_effort: byEffort,
+  };
+  const effortOf = (body: Record<string, unknown>) =>
+    (body.reasoning as { effort: string } | undefined)?.effort;
+
+  it('uses max_tokens when the client sends no effort (the default low has no entry)', () => {
+    const r = allowlistRequest(base, chatWithLimits(withEffort));
+    expect(effortOf(r.body)).toBe('low');
+    expect(r.body.max_tokens).toBe(1500);
+    expect(r.maxTokens).toBe(1500);
+  });
+
+  it('takes the entry of the effort sent upstream', () => {
+    const cfg = chatWithLimits(withEffort);
+    const medium = allowlistRequest({ ...base, reasoning_effort: 'medium' }, cfg);
+    expect(effortOf(medium.body)).toBe('medium');
+    expect(medium.body.max_tokens).toBe(3000);
+    expect(medium.maxTokens).toBe(3000);
+
+    const high = allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg);
+    expect(effortOf(high.body)).toBe('high');
+    expect(high.body.max_tokens).toBe(4500);
+    expect(high.maxTokens).toBe(4500);
+  });
+
+  it('a client max_tokens still lowers the effort entry', () => {
+    const r = allowlistRequest(
+      { ...base, reasoning_effort: 'high', max_tokens: 800 },
+      chatWithLimits(withEffort)
+    );
+    expect(r.body.max_tokens).toBe(800);
+    expect(r.maxTokens).toBe(800);
+  });
+
+  it('uses the entry of the EFFECTIVE effort when the ceiling clamps the request', () => {
+    const cfg = chatWithLimits({ ...withEffort, reasoning_max: 'medium' });
+    const r = allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg);
+    expect(effortOf(r.body)).toBe('medium');
+    expect(r.body.max_tokens).toBe(3000);
+    expect(r.maxTokens).toBe(3000);
+  });
+
+  it('sends max_tokens when no reasoning is sent, even with entries present', () => {
+    const cfg = chatWithLimits({ ...withEffort, reasoning: null, reasoning_max: null });
+    const r = allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg);
+    expect(r.body).not.toHaveProperty('reasoning');
+    expect(r.body.max_tokens).toBe(1500);
+    expect(r.maxTokens).toBe(1500);
+  });
+
+  it('without max_tokens_by_effort every effort uses max_tokens', () => {
+    const cfg = chatWithLimits({ ...withEffort, max_tokens_by_effort: undefined });
+    for (const level of [undefined, 'low', 'medium', 'high'] as const) {
+      const input = level === undefined ? base : { ...base, reasoning_effort: level };
+      expect(allowlistRequest(input, cfg).body.max_tokens).toBe(1500);
+    }
+  });
+
+  it('honours an entry smaller than max_tokens literally (the default low is sent)', () => {
+    const cfg = chatWithLimits({ ...withEffort, max_tokens_by_effort: { low: 1000 } });
+    const r = allowlistRequest(base, cfg);
+    expect(effortOf(r.body)).toBe('low');
+    expect(r.body.max_tokens).toBe(1000);
+    expect(r.maxTokens).toBe(1000);
+  });
+});
+
+describe('reservationBound follows the effort-specific maxTokens', () => {
+  it('a larger maxTokens from a higher effort raises the bound by the exact formula', () => {
+    const cfg = testConfig();
+    const low = allowlistRequest({ messages: [{ role: 'user', content: 'x'.repeat(1000) }] }, cfg);
+    const a = { ...low, maxTokens: 1500 };
+    const b = { ...low, maxTokens: 4500 };
+    const { prices, finance } = cfg;
+    const inTok = Math.ceil(low.textBytes / 2) + Math.ceil(low.schemaToolsBytes / 2);
+    const raw = (completion: number) =>
+      inTok * prices.prompt_per_mtok + completion * prices.completion_per_mtok;
+    const expectedDiff =
+      Math.ceil(raw(4500) * finance.price_slack) - Math.ceil(raw(1500) * finance.price_slack);
+    expect(reservationBound(b, cfg) - reservationBound(a, cfg)).toBe(expectedDiff);
+    expect(reservationBound(b, cfg)).toBeGreaterThan(reservationBound(a, cfg));
+  });
+});

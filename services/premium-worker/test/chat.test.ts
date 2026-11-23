@@ -551,3 +551,25 @@ describe('body cap', () => {
     expect(or.calls).toHaveLength(0);
   });
 });
+
+describe('max_tokens_by_effort end to end', () => {
+  it('a high client effort gets the high entry upstream and settles', async () => {
+    const or = fakeOpenRouter(jsonCompletion(0.001));
+    const cfg = testConfig();
+    cfg.features.chat.reasoning = 'low';
+    cfg.features.chat.reasoning_max = 'high';
+    cfg.features.chat.max_tokens_by_effort = { high: 4500 };
+    const { res, done } = await call({
+      or,
+      config: cfg,
+      body: chatBody({ reasoning_effort: 'high' }),
+    });
+    expect(res.status).toBe(200);
+    await res.text();
+    await done();
+    const sent = or.calls[0]!.body;
+    expect(sent.max_tokens).toBe(4500);
+    expect(sent.reasoning).toEqual({ effort: 'high' });
+    expect(sent).not.toHaveProperty('reasoning_effort');
+  });
+});
