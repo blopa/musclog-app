@@ -15,6 +15,7 @@
 import { AppState, Platform } from 'react-native';
 
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
+import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { captureException } from '@/utils/sentry';
 
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
@@ -322,7 +323,16 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
         throw new AiCancelledError();
       }
 
-      logLocal('reply', { chars: (result.text ?? '').length, text: result.text });
+      // `content` is what llama.cpp's own chat parser left (what llama-server returns as the message);
+      // `text` is the raw stream, control tokens included. Prefer the parsed one, clean either.
+      const replyText = stripTemplateTokens(
+        result.content?.trim() ? result.content : (result.text ?? '')
+      );
+      logLocal('reply', {
+        chars: (result.text ?? '').length,
+        cleanedChars: replyText.length,
+        text: result.text,
+      });
       logLocal('timings', result.timings);
       traceLocalModel('completion-done', {
         replyChars: (result.text ?? '').length,
@@ -333,7 +343,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       });
 
       return {
-        text: result.text ?? '',
+        text: replyText,
         timings: {
           promptMs: result.timings?.prompt_ms,
           predictedMs: result.timings?.predicted_ms,

@@ -56,7 +56,7 @@ import {
   pickFoodMatch,
   searchTermsFor,
 } from './localFoodPhoto';
-import { diagnoseLocalReply } from './localReplyShape';
+import { diagnoseLocalReply, jsonSpan, stripTemplateTokens } from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
@@ -1701,13 +1701,22 @@ function checkStructuredShape<T>(
 }
 
 function parseStructuredJson<T>(raw: string): StructuredResult<T> {
-  try {
-    const clean = raw.replace(/```json|```/g, '').trim();
-    if (clean) {
+  const clean = stripTemplateTokens(raw.replace(/```json|```/g, ''));
+  if (clean) {
+    try {
       return { kind: 'ok', value: JSON.parse(clean) as T };
+    } catch {
+      // Not plain JSON: try the JSON inside the text before calling it malformed.
     }
-  } catch {
-    // Not JSON: reported as malformed below.
+
+    const span = jsonSpan(clean);
+    if (span) {
+      try {
+        return { kind: 'ok', value: JSON.parse(span) as T };
+      } catch {
+        // Reported as malformed below.
+      }
+    }
   }
 
   return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };

@@ -87,6 +87,13 @@ afterEach(() => {
 });
 
 describe('generateWithLocalModel', () => {
+  it('strips chat-template control tokens from the reply', async () => {
+    mockCompletionImpl = async () => ({ text: '<|im_start|>assistant {"items":[]}<|im_end|>' });
+    const result = await generateWithLocalModel({ messages });
+
+    expect(result.text).toBe('{"items":[]}');
+  });
+
   it('loads lazily, streams tokens and returns the text', async () => {
     expect(isLocalModelLoaded()).toBe(false);
     const deltas: string[] = [];

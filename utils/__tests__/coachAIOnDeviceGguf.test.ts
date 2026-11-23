@@ -115,6 +115,21 @@ describe('requestStructured on the downloaded engine', () => {
     expect(result.kind).toBe('malformed');
   });
 
+  it('reads JSON behind a leaked chat-template header (a real Pixel 10 Pro reply)', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue('<|im_start|>assistant { "answer": "ok" }');
+
+    expect(await requestStructured(gguf, request)).toEqual({
+      kind: 'ok',
+      value: { answer: 'ok' },
+    });
+  });
+
+  it('reads JSON that has a sentence around it', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue('Sure! {"answer":"ok"} Anything else?');
+
+    expect((await requestStructured(gguf, request)).kind).toBe('ok');
+  });
+
   it('turns text that is not JSON into malformed', async () => {
     mockSendLocalStructuredRaw.mockResolvedValue('Sure! Here you go');
     expect((await requestStructured(gguf, request)).kind).toBe('malformed');
