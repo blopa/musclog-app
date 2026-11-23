@@ -576,19 +576,31 @@ export function useChatMessages(
           setPendingCoachMessage(null);
         }
 
-        // 2. Persist user message and prepend to UI immediately
+        // Photo estimates should not appear in history until the estimate succeeds. The image
+        // remains in the composer while this async work runs, and a failed estimate leaves no
+        // persisted chat row to clean up.
+        const deferredTrackMealMessage = pendingIntention === TRACK_MEAL && !!base64Image;
+        // 2. Persist ordinary messages immediately. Track Meal saves its message after success.
         const imagePayload: ImagePayload | undefined = base64Image
           ? { type: 'image', image: base64Image }
           : undefined;
-        userRecord = await ChatService.saveMessage({
-          sender: 'user',
-          message: text.trim() || (base64Image ? t('coach.imageSent') : ''),
-          context: conversationContext,
-          payloadJson: imagePayload ? JSON.stringify(imagePayload) : undefined,
-        });
-        rawMessagesRef.current = [...rawMessagesRef.current, userRecord];
-        setMessages((prev) => [toGiftedMessage(userRecord!), ...prev]);
-        setCurrentOffset((prev) => prev + 1);
+        const saveUserMessage = async () => {
+          const savedRecord = await ChatService.saveMessage({
+            sender: 'user',
+            message: text.trim() || (base64Image ? t('coach.imageSent') : ''),
+            context: conversationContext,
+            payloadJson: imagePayload ? JSON.stringify(imagePayload) : undefined,
+          });
+          rawMessagesRef.current = [...rawMessagesRef.current, savedRecord];
+          setMessages((prev) => [toGiftedMessage(savedRecord), ...prev]);
+          setCurrentOffset((prev) => prev + 1);
+
+          return savedRecord;
+        };
+
+        if (!deferredTrackMealMessage) {
+          userRecord = await saveUserMessage();
+        }
 
         // 3. Read AI config via AiService
         const aiConfig = await AiService.getAiConfig();
@@ -927,8 +939,12 @@ export function useChatMessages(
           };
           payloadJson = JSON.stringify(trackMealPayload);
 
-          await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-          setPendingIntention(null);
+          if (deferredTrackMealMessage) {
+            userRecord = await saveUserMessage();
+          } else {
+            await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+            setPendingIntention(null);
+          }
         } else {
           // Default: a regular chat message, written (and saved) by the reply service
           if (!userRecord) {
@@ -960,6 +976,12 @@ export function useChatMessages(
         rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
         setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
         setCurrentOffset((prev) => prev + 1);
+        if (deferredTrackMealMessage) {
+          await AsyncStorage.removeItem(CHAT_INTENTION_KEY).catch((error) => {
+            handleError(error, 'useChatMessages.clearTrackMealIntention');
+          });
+          setPendingIntention(null);
+        }
       } catch (error) {
         console.error('[useChatMessages] sendMessage error:', error);
         if (userRecord) {
@@ -968,17 +990,19 @@ export function useChatMessages(
           await ChatService.deleteMessage(recordId).catch(() => {});
           rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
           setMessages((prev) => prev.filter((m) => m._id !== recordId));
-          setFailedMessageText(text.trim());
-          // A rejected key or a timeout is something the user can act on, so say which.
-          const actionable = describeAiError(error, t);
-          if (error instanceof AiCreditsError || isAiCreditsError(error)) {
-            setEphemeralCreditsError(true);
-            setEphemeralErrorMessage(t('coach.errors.creditsExhausted'));
-          } else if (actionable) {
-            setEphemeralErrorMessage(actionable);
-          } else {
-            setEphemeralErrorMessage(t('coach.errors.generalError'));
-          }
+        }
+
+        setFailedMessageText(text.trim());
+        // A rejected key or a timeout is something the user can act on, so say which. This also
+        // covers Track Meal, whose user row is deliberately not saved until analysis succeeds.
+        const actionable = describeAiError(error, t);
+        if (error instanceof AiCreditsError || isAiCreditsError(error)) {
+          setEphemeralCreditsError(true);
+          setEphemeralErrorMessage(t('coach.errors.creditsExhausted'));
+        } else if (actionable) {
+          setEphemeralErrorMessage(actionable);
+        } else {
+          setEphemeralErrorMessage(t('coach.errors.generalError'));
         }
       } finally {
         setIsSending(false);

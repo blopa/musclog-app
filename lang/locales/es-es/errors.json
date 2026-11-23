@@ -33,6 +33,8 @@
     "hostedBusy": "Musclog Iron está ocupado. Inténtalo de nuevo en unos segundos.",
     "hostedAlreadyProcessed": "Esa solicitud ya se procesó. Envíala de nuevo.",
     "onDeviceNotReady": "La IA en el dispositivo aún no está lista. Termina de configurarla en Ajustes de IA o elige otra IA.",
+    "onDevicePhotosNotInstalled": "En Ajustes de IA, vuelve a instalar el modelo con la comprensión de fotos activada para usar fotos de comidas sin conexión.",
+    "onDevicePhotosUnsupported": "Apple Intelligence no puede analizar fotos de comidas aquí. Elige en Ajustes de IA un modelo compatible con fotos.",
     "onDeviceLoadFailed": "La IA en el dispositivo no pudo iniciarse, normalmente porque el teléfono tiene poca memoria. Cierra otras aplicaciones e inténtalo de nuevo."
   }
 }

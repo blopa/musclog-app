@@ -256,10 +256,10 @@ flowchart TD
 
 Decision: **one multimodal model, no separate text model**. Architecture B needs two downloads (≈322 MB + 192 MB), two loads per photo turn, and model switching. The model never computes macros, so B gains nothing.
 
-The photo pipeline (gguf with `vision`) is new code behind the existing `estimateNutritionFromPhoto` entry:
+The photo pipeline (GGUF with `vision`) is shared by Smart Camera and the coach's Track meal action. Both enter through `estimateNutritionFromPhoto`, including when thinking mode is enabled. The optional photo understanding download installs the vision projector. Smart Camera keeps failures visible in the viewfinder, and the coach keeps the attachment in the composer until it has a meal estimate to review.
 
 1. Resize through `utils/aiImagePlan.ts`, with a new on-device ceiling of 768 px (512 px tiles).
-2. **Identify, don't estimate**: a small schema `localFoodIdentify` with `{ items: [{ name, portionHint?, estimatedGrams?, confidence }] }`, decoded under its grammar at temperature 0. No calorie or macro field exists for the model to invent.
+2. **Identify foods** with a small schema `{ items: [{ name, grams }] }`, decoded under its grammar at temperature 0. Text or tags supplied with the photo can help identify the foods.
 3. **Match to our own data**: `FoodService.searchFoods` (`database/services/FoodService.ts:471`) over local foods and the bundled foundation foods (USDA and common seeds), so it works offline. When online and allowed, use the existing food search source. Only an unambiguous match is taken; anything else is left for the person, the same rule as `findExerciseByName`.
 4. Build the existing trackMeal payload with `foodId`s and run it through `NutritionService.normalizeAiMealIngredients`, so macros come from the database × grams.
 5. Open the existing meal review / `LogMealModal`, where every item, gram amount and unmatched name is editable before saving. Nothing is logged without that tap.
