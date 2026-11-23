@@ -22,7 +22,6 @@ import { getLocalModelSnapshot, refreshLocalModel, subscribeLocalModel } from '.
  * `SettingsContext`, so a static import would load it into every screen and test.
  */
 function readAppleAvailability(): Promise<AppleAvailability> {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   return (
     require('@/utils/onDeviceAi') as typeof import('@/utils/onDeviceAi')
   ).getAppleAvailability();

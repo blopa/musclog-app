@@ -15,7 +15,6 @@ import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditM
 import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
 import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
 import { AINutritionTrackingContextModal } from '@/components/modals/AINutritionTrackingContextModal';
-import { ThirdPartyNoticesModal } from '@/components/modals/ThirdPartyNoticesModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
 import BodyMetricsHistoryModal from '@/components/modals/BodyMetricsHistoryModal';
@@ -85,6 +84,7 @@ import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScannedFoodDetailsModal } from '@/components/modals/ScannedFoodDetailsModal';
 import { SelectModal } from '@/components/modals/SelectModal';
 import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
+import { ThirdPartyNoticesModal } from '@/components/modals/ThirdPartyNoticesModal';
 import { TimePickerInput } from '@/components/modals/TimePickerInput';
 import { TimePickerModal } from '@/components/modals/TimePickerModal';
 import { UserMenuModal } from '@/components/modals/UserMenuModal';

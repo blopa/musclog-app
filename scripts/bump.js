@@ -25,10 +25,14 @@ function bumpVersion(version, bumpType) {
     throw new Error(`Invalid version format: ${version}`);
   }
 
+  // A bigger bump resets what is below it (2.17.8 --minor is 2.18.0, not 2.18.8).
   if (bumpType === 'major') {
     parts[0] += 1;
+    parts[1] = 0;
+    parts[2] = 0;
   } else if (bumpType === 'minor') {
     parts[1] += 1;
+    parts[2] = 0;
   } else {
     parts[2] += 1;
   }

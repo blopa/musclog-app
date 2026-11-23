@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 // The release script is CommonJS because it runs directly under Node in CI.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { assertReleaseVersionsMatch, bumpProjectVersions } = require('../bump');
+const { assertReleaseVersionsMatch, bumpProjectVersions, bumpVersion } = require('../bump');
 
 let projectDir: string;
 
@@ -74,8 +74,14 @@ it('keeps the widget extension version and build in sync when it exists', () => 
   );
   bumpProjectVersions(projectDir, 'minor');
   const widgetInfo = readFileSync(join(projectDir, 'ios/ExpoWidgetsTarget/Info.plist'), 'utf8');
-  expect(widgetInfo).toContain('<string>2.12.2</string>');
+  expect(widgetInfo).toContain('<string>2.12.0</string>');
   expect(widgetInfo).toContain('<string>297</string>');
+});
+
+it('resets the lower parts on a minor or major bump', () => {
+  expect(bumpVersion('2.17.8', 'minor')).toBe('2.18.0');
+  expect(bumpVersion('2.17.8', 'major')).toBe('3.0.0');
+  expect(bumpVersion('2.17.8', 'patch')).toBe('2.17.9');
 });
 
 it('refuses to bump an already inconsistent project', () => {
