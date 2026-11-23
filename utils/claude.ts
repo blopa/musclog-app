@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 
+import type { AiEffort } from './aiEffort';
 import type { ChatHistoryEntry } from './coachAI';
 
 /**
@@ -14,15 +15,23 @@ export const CLAUDE_MAX_TOKENS = 16_000;
 /** A streamed reply has no timeout pressure, so the model gets room to think and answer. */
 export const CLAUDE_STREAM_MAX_TOKENS = 64_000;
 
-export type ClaudeEffort = 'low' | 'high';
+export type ClaudeEffort = 'low' | 'medium' | 'high';
 
 /**
- * Claude 5.5 models always think and there is no way to turn it off, only to ask for less. Chat and
- * extraction want a quick answer; the user's thinking-mode setting is the explicit way to ask for
- * more.
+ * Claude 5.5 models always think and there is no way to turn it off, so effort is the only lever.
+ * The caller chooses the effort per kind of job (see `utils/aiEffort.ts`); Claude has no level
+ * below `low`, so `minimal` maps to `low`.
  */
-export function claudeEffort(useThinkingMode: boolean): ClaudeEffort {
-  return useThinkingMode ? 'high' : 'low';
+export function claudeEffort(effort: AiEffort): ClaudeEffort {
+  switch (effort) {
+    case 'minimal':
+    case 'low':
+      return 'low';
+    case 'medium':
+      return 'medium';
+    case 'high':
+      return 'high';
+  }
 }
 
 /**

@@ -485,6 +485,22 @@
       "mealLoggingFailed": "Falha ao registrar refeição. Por favor, tente novamente.",
       "analysisSuccess": "{{name}}: {{kcal}}, P {{protein}}g C {{carbs}}g F {{fat}}g"
     },
+    "aiProgress": {
+      "reading": "Lendo sua descrição…",
+      "readingPhoto": "Olhando sua foto…",
+      "estimating_one": "Estimando {{count}} ingrediente…",
+      "estimating_few": "Estimando {{count}} ingredientes…",
+      "estimating_many": "Estimando {{count}} ingredientes…",
+      "estimating_other": "Estimando {{count}} ingredientes…",
+      "estimatingWithMatches_one": "Encontrado {{matched}} nos seus alimentos, estimando mais {{count}}…",
+      "estimatingWithMatches_few": "Encontrado {{matched}} nos seus alimentos, estimando mais {{count}}…",
+      "estimatingWithMatches_many": "Encontrado {{matched}} nos seus alimentos, estimando mais {{count}}…",
+      "estimatingWithMatches_other": "Encontrado {{matched}} nos seus alimentos, estimando mais {{count}}…",
+      "rechecking_one": "Revisando {{count}} ingrediente…",
+      "rechecking_few": "Revisando {{count}} ingredientes…",
+      "rechecking_many": "Revisando {{count}} ingredientes…",
+      "rechecking_other": "Revisando {{count}} ingredientes…"
+    },
     "aiNutritionContext": {
       "title": "Adicionar Contexto para IA",
       "describeYourMeal": "Descreva sua refeição",

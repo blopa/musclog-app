@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { allowlistRequest, assertPremiumPrivacy } from '../src/proxy/allowlist';
+import { allowlistRequest, assertPremiumPrivacy, effectiveReasoning } from '../src/proxy/allowlist';
+import type { AiConfig } from '../src/config';
 import { reservationBound } from '../src/proxy/bound';
 import { ApiError } from '../src/http';
 import { testConfig } from './fakes/ctx';
@@ -339,5 +340,234 @@ describe('premium privacy invariant', () => {
     undefined,
   ])('assertPremiumPrivacy throws for %j', (provider) => {
     expect(() => assertPremiumPrivacy({ provider })).toThrow('premium_privacy_invariant_violated');
+  });
+});
+
+describe('client reasoning_effort', () => {
+  type Effort = 'low' | 'medium' | 'high';
+
+  /** A chat-feature config with the given reasoning and ceiling (`undefined` = key absent). */
+  function chatWith(reasoning: Effort | null, reasoningMax?: Effort | null): AiConfig {
+    const c = structuredClone(config) as AiConfig & {
+      features: { chat: { reasoning: unknown; reasoning_max?: unknown } };
+    };
+    c.features.chat.reasoning = reasoning;
+    if (reasoningMax === undefined) delete c.features.chat.reasoning_max;
+    else c.features.chat.reasoning_max = reasoningMax;
+    return c;
+  }
+
+  const effortOf = (body: Record<string, unknown>) =>
+    (body.reasoning as { effort: string } | undefined)?.effort;
+
+  it.each(['low', 'medium', 'high'])('accepts %s', (level) => {
+    const r = allowlistRequest({ ...base, reasoning_effort: level }, config);
+    expect(r.body).not.toHaveProperty('reasoning_effort');
+  });
+
+  it.each(['max', 'HIGH', 5, null, ''])('rejects %j with path reasoning_effort', (value) => {
+    const e = rejected({ ...base, reasoning_effort: value });
+    expect(e.status).toBe(400);
+    expect(e.code).toBe('invalid_request');
+    expect(e.extra.path).toBe('reasoning_effort');
+  });
+
+  it('cannot raise effort above a config without reasoning_max', () => {
+    const cfg = chatWith('low');
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg).body)).toBe('low');
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'low' }, cfg).body)).toBe('low');
+    expect(effortOf(allowlistRequest(base, cfg).body)).toBe('low');
+  });
+
+  it('lets the client lower effort below reasoning_max and clamps above it', () => {
+    const cfg = chatWith('low', 'medium');
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg).body)).toBe(
+      'medium'
+    );
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'medium' }, cfg).body)).toBe(
+      'medium'
+    );
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'low' }, cfg).body)).toBe('low');
+    expect(effortOf(allowlistRequest(base, cfg).body)).toBe('low');
+  });
+
+  it('keeps the default above the ceiling (operator choice) and clamps requests to it', () => {
+    const cfg = chatWith('medium', 'low');
+    expect(effortOf(allowlistRequest(base, cfg).body)).toBe('medium');
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg).body)).toBe('low');
+  });
+
+  it('sends no reasoning when the feature has none and no ceiling is set', () => {
+    const cfg = chatWith(null);
+    for (const level of [undefined, 'low', 'high'] as const) {
+      const input = level === undefined ? base : { ...base, reasoning_effort: level };
+      expect(allowlistRequest(input, cfg).body).not.toHaveProperty('reasoning');
+    }
+  });
+
+  it('sends no reasoning when reasoning_max is null, whatever the client asks', () => {
+    const cfg = chatWith('low', null);
+    for (const level of [undefined, 'low', 'high'] as const) {
+      const input = level === undefined ? base : { ...base, reasoning_effort: level };
+      expect(allowlistRequest(input, cfg).body).not.toHaveProperty('reasoning');
+    }
+  });
+
+  it('a null default with a high ceiling sends nothing by default and caps the request', () => {
+    const cfg = chatWith(null, 'high');
+    expect(allowlistRequest(base, cfg).body).not.toHaveProperty('reasoning');
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'medium' }, cfg).body)).toBe(
+      'medium'
+    );
+  });
+
+  describe('effectiveReasoning', () => {
+    it.each<[Effort | null, Effort | null | undefined, Effort | undefined, Effort | null]>([
+      ['low', undefined, 'high', 'low'],
+      ['low', undefined, 'low', 'low'],
+      ['low', undefined, undefined, 'low'],
+      ['low', 'medium', 'high', 'medium'],
+      ['low', 'medium', 'medium', 'medium'],
+      ['low', 'medium', 'low', 'low'],
+      ['low', 'medium', undefined, 'low'],
+      ['medium', 'low', undefined, 'medium'],
+      ['medium', 'low', 'high', 'low'],
+      [null, undefined, 'high', null],
+      [null, undefined, undefined, null],
+      ['low', null, 'high', null],
+      ['low', null, undefined, null],
+      [null, 'high', undefined, null],
+      [null, 'high', 'medium', 'medium'],
+    ])('reasoning %j, reasoning_max %j, requested %j => %j', (reasoning, max, requested, out) => {
+      const limits = max === undefined ? { reasoning } : { reasoning, reasoning_max: max };
+      expect(effectiveReasoning(limits, requested)).toBe(out);
+    });
+  });
+
+  it('derives the feature from the body and uses that feature’s own ceiling', async () => {
+    const cfg = structuredClone(config) as AiConfig;
+    cfg.features.chat.reasoning = 'low';
+    cfg.features.chat.reasoning_max = 'low';
+    cfg.features.structured.reasoning = 'low';
+    cfg.features.structured.reasoning_max = 'high';
+    const schema = {
+      type: 'json_schema',
+      json_schema: { name: 'x', strict: true, schema: { type: 'object' } },
+    };
+    expect(effortOf(allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg).body)).toBe('low');
+    expect(
+      effortOf(
+        allowlistRequest({ ...base, reasoning_effort: 'high', response_format: schema }, cfg).body
+      )
+    ).toBe('high');
+  });
+});
+
+describe('max_tokens_by_effort', () => {
+  type Effort = 'low' | 'medium' | 'high';
+  type ChatLimits = {
+    reasoning: Effort | null;
+    reasoning_max?: Effort | null;
+    max_tokens: number;
+    max_tokens_by_effort?: Partial<Record<Effort, number>>;
+  };
+
+  /** A chat config whose limits are exactly `limits` (keys left out of the object stay absent). */
+  function chatWithLimits(limits: ChatLimits): AiConfig {
+    const c = structuredClone(config) as AiConfig;
+    const chat = c.features.chat as unknown as Record<string, unknown>;
+    for (const key of ['reasoning', 'reasoning_max', 'max_tokens', 'max_tokens_by_effort']) {
+      delete chat[key];
+    }
+    Object.assign(chat, limits);
+    return c;
+  }
+
+  const byEffort = { medium: 3000, high: 4500 };
+  const withEffort: ChatLimits = {
+    reasoning: 'low',
+    reasoning_max: 'high',
+    max_tokens: 1500,
+    max_tokens_by_effort: byEffort,
+  };
+  const effortOf = (body: Record<string, unknown>) =>
+    (body.reasoning as { effort: string } | undefined)?.effort;
+
+  it('uses max_tokens when the client sends no effort (the default low has no entry)', () => {
+    const r = allowlistRequest(base, chatWithLimits(withEffort));
+    expect(effortOf(r.body)).toBe('low');
+    expect(r.body.max_tokens).toBe(1500);
+    expect(r.maxTokens).toBe(1500);
+  });
+
+  it('takes the entry of the effort sent upstream', () => {
+    const cfg = chatWithLimits(withEffort);
+    const medium = allowlistRequest({ ...base, reasoning_effort: 'medium' }, cfg);
+    expect(effortOf(medium.body)).toBe('medium');
+    expect(medium.body.max_tokens).toBe(3000);
+    expect(medium.maxTokens).toBe(3000);
+
+    const high = allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg);
+    expect(effortOf(high.body)).toBe('high');
+    expect(high.body.max_tokens).toBe(4500);
+    expect(high.maxTokens).toBe(4500);
+  });
+
+  it('a client max_tokens still lowers the effort entry', () => {
+    const r = allowlistRequest(
+      { ...base, reasoning_effort: 'high', max_tokens: 800 },
+      chatWithLimits(withEffort)
+    );
+    expect(r.body.max_tokens).toBe(800);
+    expect(r.maxTokens).toBe(800);
+  });
+
+  it('uses the entry of the EFFECTIVE effort when the ceiling clamps the request', () => {
+    const cfg = chatWithLimits({ ...withEffort, reasoning_max: 'medium' });
+    const r = allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg);
+    expect(effortOf(r.body)).toBe('medium');
+    expect(r.body.max_tokens).toBe(3000);
+    expect(r.maxTokens).toBe(3000);
+  });
+
+  it('sends max_tokens when no reasoning is sent, even with entries present', () => {
+    const cfg = chatWithLimits({ ...withEffort, reasoning: null, reasoning_max: null });
+    const r = allowlistRequest({ ...base, reasoning_effort: 'high' }, cfg);
+    expect(r.body).not.toHaveProperty('reasoning');
+    expect(r.body.max_tokens).toBe(1500);
+    expect(r.maxTokens).toBe(1500);
+  });
+
+  it('without max_tokens_by_effort every effort uses max_tokens', () => {
+    const cfg = chatWithLimits({ ...withEffort, max_tokens_by_effort: undefined });
+    for (const level of [undefined, 'low', 'medium', 'high'] as const) {
+      const input = level === undefined ? base : { ...base, reasoning_effort: level };
+      expect(allowlistRequest(input, cfg).body.max_tokens).toBe(1500);
+    }
+  });
+
+  it('honours an entry smaller than max_tokens literally (the default low is sent)', () => {
+    const cfg = chatWithLimits({ ...withEffort, max_tokens_by_effort: { low: 1000 } });
+    const r = allowlistRequest(base, cfg);
+    expect(effortOf(r.body)).toBe('low');
+    expect(r.body.max_tokens).toBe(1000);
+    expect(r.maxTokens).toBe(1000);
+  });
+});
+
+describe('reservationBound follows the effort-specific maxTokens', () => {
+  it('a larger maxTokens from a higher effort raises the bound by the exact formula', () => {
+    const cfg = testConfig();
+    const low = allowlistRequest({ messages: [{ role: 'user', content: 'x'.repeat(1000) }] }, cfg);
+    const a = { ...low, maxTokens: 1500 };
+    const b = { ...low, maxTokens: 4500 };
+    const { prices, finance } = cfg;
+    const inTok = Math.ceil(low.textBytes / 2) + Math.ceil(low.schemaToolsBytes / 2);
+    const raw = (completion: number) =>
+      inTok * prices.prompt_per_mtok + completion * prices.completion_per_mtok;
+    const expectedDiff =
+      Math.ceil(raw(4500) * finance.price_slack) - Math.ceil(raw(1500) * finance.price_slack);
+    expect(reservationBound(b, cfg) - reservationBound(a, cfg)).toBe(expectedDiff);
+    expect(reservationBound(b, cfg)).toBeGreaterThan(reservationBound(a, cfg));
   });
 });

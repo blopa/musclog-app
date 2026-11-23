@@ -278,7 +278,7 @@ describe('sendStructuredChatTurn: Gemini', () => {
     expect(result).toEqual({ kind: 'ok', value: { reply: 'hola' } });
     expect(buildGeminiGenerationConfig).toHaveBeenCalledWith('gemini-x', {
       responseSchema: expect.anything(),
-      thinking: 'low',
+      effort: 'low',
     });
     const contents = mockGenerateContent.mock.calls[0][0].contents;
     expect(contents.map((c: { role: string }) => c.role)).toEqual(['user', 'model', 'user']);

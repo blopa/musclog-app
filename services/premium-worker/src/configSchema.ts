@@ -20,6 +20,15 @@ const feature = z
     max_tokens: int.min(1).max(32000),
     temperature_max: num.min(0).max(2),
     reasoning: z.enum(['low', 'medium', 'high']).nullable(),
+    reasoning_max: z.enum(['low', 'medium', 'high']).nullable().optional(),
+    max_tokens_by_effort: z
+      .object({
+        low: int.min(1).max(32000).optional(),
+        medium: int.min(1).max(32000).optional(),
+        high: int.min(1).max(32000).optional(),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 

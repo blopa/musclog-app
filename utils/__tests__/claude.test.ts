@@ -106,8 +106,12 @@ describe('claudeStreamDelta', () => {
 });
 
 describe('claudeEffort', () => {
-  it('asks for little thinking unless the user opted into thinking mode', () => {
-    expect(claudeEffort(false)).toBe('low');
-    expect(claudeEffort(true)).toBe('high');
+  it.each([
+    ['minimal', 'low'],
+    ['low', 'low'],
+    ['medium', 'medium'],
+    ['high', 'high'],
+  ] as const)('maps %s to %s', (effort, expected) => {
+    expect(claudeEffort(effort)).toBe(expected);
   });
 });

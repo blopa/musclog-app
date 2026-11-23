@@ -333,6 +333,8 @@ export function AISettingsModal({
   const [premiumVisible, setPremiumVisible] = useState(false);
   // Loads the overview while this screen is open; `PremiumCard` below reads the same store.
   const premium = usePremium({ load: visible });
+  const isMusclogIronActive =
+    premium.enabled && premium.view.phase === 'active' && premium.useHostedAi;
   const { aiImageQuality } = useSettings();
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
@@ -675,7 +677,7 @@ export function AISettingsModal({
           </View>
         ) : null}
 
-        {premium.enabled && premium.view.phase === 'active' && premium.useHostedAi ? (
+        {isMusclogIronActive ? (
           <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
             {t('settings.aiSettings.premium.activeNote')}
           </Text>
@@ -865,7 +867,9 @@ export function AISettingsModal({
                 {
                   key: 'use-thinking-mode',
                   label: t('settings.aiSettings.useThinkingMode'),
-                  subtitle: t('settings.aiSettings.useThinkingModeSubtitle'),
+                  subtitle: isMusclogIronActive
+                    ? `${t('settings.aiSettings.useThinkingModeSubtitle')} ${t('settings.aiSettings.useThinkingModeIronNote')}`
+                    : t('settings.aiSettings.useThinkingModeSubtitle'),
                   value: debouncedUseThinkingMode,
                   onValueChange: handleUseThinkingModeChange,
                   icon: (

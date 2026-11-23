@@ -15,9 +15,28 @@ export interface FeatureLimits {
   max_tokens: number;
   /** Upper bound for `temperature`; the client value is clamped to [0, temperature_max]. */
   temperature_max: number;
-  /** `reasoning.effort` forced on the upstream body, or null to send no `reasoning`. */
+  /**
+   * `reasoning.effort` sent upstream when the client names none, or null to send no `reasoning`.
+   * It is also the client's ceiling unless `reasoning_max` says otherwise.
+   */
   reasoning: ReasoningEffort | null;
+  /**
+   * The highest `reasoning.effort` a client may ask for with `reasoning_effort` (it can always ask
+   * for less). Absent means `reasoning`: an unchanged config never lets a client raise its cost.
+   * null means the client may not ask for reasoning at all. Reasoning tokens are billed as output
+   * and count inside `max_tokens`, so raise this together with `max_tokens`.
+   */
+  reasoning_max?: ReasoningEffort | null;
+  /**
+   * `max_tokens` for a request that goes upstream with that `reasoning.effort`, in place of
+   * `max_tokens`: a higher effort spends more of the budget thinking, so it gets more room. An effort
+   * with no entry (and a request with no reasoning) uses `max_tokens`. The reservation bound follows
+   * the value used, so the ledger still holds a worst case for what can be spent.
+   */
+  max_tokens_by_effort?: Partial<Record<ReasoningEffort, number>>;
 }
+
+export const REASONING_EFFORTS: readonly ReasoningEffort[] = ['low', 'medium', 'high'];
 
 export interface AiConfig {
   version: 1;
@@ -58,9 +77,9 @@ export interface AiConfig {
     quality: number;
     max_images: number;
     /**
-   * IMAGE_TOKENS_MAX (plan 8.2 step 1): the worst case, in tokens, one image can add to a request,
-   * used only to bound the reservation. Must be > 0 when vision_enabled.
-   */
+     * IMAGE_TOKENS_MAX (plan 8.2 step 1): the worst case, in tokens, one image can add to a request,
+     * used only to bound the reservation. Must be > 0 when vision_enabled.
+     */
     tokens_max: number;
   };
   /** Plan 8.1. The schema CHECK hard-codes 500 and 1055, so spend_share <= 0.5 and openrouter_fee >= 1.055. */

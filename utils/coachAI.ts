@@ -10,6 +10,7 @@ import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
+import { type AiEffort, type AiTask, effortFor, type ReasoningEffortValue } from './aiEffort';
 import { notifyUserFacingAiError } from './aiErrorNotice';
 import {
   AiCancelledError,
@@ -34,6 +35,8 @@ import { providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
+import { type MealEstimateProgressListener } from './mealEstimateProgress';
+import { ingredientMacroProblems } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
@@ -261,6 +264,25 @@ export type CoachAIConfig =
       baseUrl?: undefined;
     });
 
+/** The effort a job gets: its row of `AI_TASK_EFFORT`, or `high` when "Use thinking mode" is on. */
+async function resolveEffort(task: AiTask): Promise<AiEffort> {
+  return effortFor(task, await SettingsService.getUseThinkingMode());
+}
+
+/**
+ * The `reasoning_effort` of an OpenAI-protocol request: the provider's own rule decides whether it
+ * sends one (`ProviderPolicy.reasoningEffort`: OpenAI itself and Musclog Iron, never a local server
+ * or the free tier, whose models may reject the field).
+ */
+async function openAiReasoning(
+  config: CoachAIConfig,
+  effort: AiEffort
+): Promise<{ reasoning_effort?: ReasoningEffortValue }> {
+  const reasoning = await providerPolicyFor(config.provider).reasoningEffort?.(effort);
+
+  return reasoning ? { reasoning_effort: reasoning } : {};
+}
+
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
   // Free-tier requests are pinned to one OpenRouter provider with no fallbacks (see
   // `withGatewayProviderPin`); OpenRouter answers browser CORS preflights, so no proxy is needed.
@@ -456,20 +478,20 @@ async function buildClaudeParams(
   config: CoachAIConfig,
   system: string,
   messages: Anthropic.MessageParam[],
-  options?: { schema?: object; cache?: boolean }
+  options: { task: AiTask; schema?: object; cache?: boolean }
 ): Promise<ClaudeParams> {
   return {
     model: config.model,
     // Automatic prompt caching: the rules, persona, profile and data are the same from one message
     // to the next, so only the newest turn is paid for in full. Chat only: a one-off request
     // would pay the cache write for nothing.
-    ...(options?.cache ? { cache_control: { type: 'ephemeral' as const } } : {}),
+    ...(options.cache ? { cache_control: { type: 'ephemeral' as const } } : {}),
     max_tokens: CLAUDE_MAX_TOKENS,
     system,
     messages,
     output_config: {
-      effort: claudeEffort(await SettingsService.getUseThinkingMode()),
-      ...(options?.schema
+      effort: claudeEffort(await resolveEffort(options.task)),
+      ...(options.schema
         ? { format: { type: 'json_schema', schema: makeSchemaStrict(options.schema) } }
         : {}),
     },
@@ -883,10 +905,10 @@ async function sendViaGemini(
     {
       apiKey: config.apiKey,
       model: config.model,
-      generationConfig: {
-        responseMimeType: 'application/json',
+      generationConfig: buildGeminiGenerationConfig(config.model, {
         responseSchema,
-      },
+        effort: await resolveEffort('chat'),
+      }),
     },
     systemParts
   );
@@ -976,6 +998,7 @@ async function sendViaOpenAI(
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages,
+    ...(await openAiReasoning(config, await resolveEffort('chat'))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -1093,7 +1116,7 @@ async function sendViaClaude(
     config,
     systemPrompt,
     buildClaudeMessages(truncatedHistory, userMessage),
-    { schema: buildResponseSchema(), cache: true }
+    { task: 'chat', schema: buildResponseSchema(), cache: true }
   );
 
   const sink = stream ? createStreamSink(stream, 'coachJson') : null;
@@ -1229,7 +1252,8 @@ async function generateText(
   config: CoachAIConfig,
   systemPrompt: string,
   userMessage: string = INSIGHTS_USER_MESSAGE,
-  stream?: CoachStream
+  stream?: CoachStream,
+  task: AiTask = 'insight'
 ): Promise<string> {
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedUserMessage = wrapUserContent(userMessage);
@@ -1262,6 +1286,10 @@ async function generateText(
       {
         apiKey: config.apiKey,
         model: config.model,
+        generationConfig: buildGeminiGenerationConfig(config.model, {
+          effort: await resolveEffort(task),
+          json: false,
+        }),
       },
       [{ text: promptWithLang } as Part]
     );
@@ -1303,9 +1331,12 @@ async function generateText(
   }
 
   if (config.provider === 'claude') {
-    const params = await buildClaudeParams(config, promptWithLang, [
-      { role: 'user', content: sanitizedUserMessage },
-    ]);
+    const params = await buildClaudeParams(
+      config,
+      promptWithLang,
+      [{ role: 'user', content: sanitizedUserMessage }],
+      { task }
+    );
     const raw = await runClaude(
       config,
       'generateText',
@@ -1323,6 +1354,7 @@ async function generateText(
       { role: 'system', content: promptWithLang },
       { role: 'user', content: sanitizedUserMessage },
     ],
+    ...(await openAiReasoning(config, await resolveEffort(task))),
   };
 
   await logLlmDebugEvent({
@@ -1375,7 +1407,8 @@ async function generateTextWithHistory(
   systemPrompt: string,
   recentConversation: ChatHistoryEntry[],
   finalUserMessage: string,
-  stream?: CoachStream
+  stream?: CoachStream,
+  task: AiTask = 'insight'
 ): Promise<string> {
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedFinalUserMessage = wrapUserContent(finalUserMessage);
@@ -1413,6 +1446,10 @@ async function generateTextWithHistory(
       {
         apiKey: config.apiKey,
         model: config.model,
+        generationConfig: buildGeminiGenerationConfig(config.model, {
+          effort: await resolveEffort(task),
+          json: false,
+        }),
       },
       [{ text: systemPrompt } as Part]
     );
@@ -1455,7 +1492,8 @@ async function generateTextWithHistory(
     const params = await buildClaudeParams(
       config,
       systemPrompt,
-      buildClaudeMessages(recentConversation, sanitizedFinalUserMessage)
+      buildClaudeMessages(recentConversation, sanitizedFinalUserMessage),
+      { task }
     );
     const raw = await runClaude(
       config,
@@ -1480,6 +1518,7 @@ async function generateTextWithHistory(
       ...historyMessages,
       { role: 'user', content: sanitizedFinalUserMessage },
     ],
+    ...(await openAiReasoning(config, await resolveEffort(task))),
   };
 
   await logLlmDebugEvent({
@@ -1556,6 +1595,8 @@ export type StructuredRequest = {
   userMessage: string;
   /** Each provider takes the schema in a slightly different dialect. */
   buildSchema: (dialect: StructuredDialect) => object;
+  /** What kind of job this is, which decides how hard the model reasons. Defaults to extraction. */
+  task?: AiTask;
 };
 
 export type StructuredResult<T = unknown> =
@@ -1588,6 +1629,7 @@ export async function requestStructured<T = unknown>(
   request: StructuredRequest
 ): Promise<StructuredResult<T>> {
   const { operation, schemaName, systemPrompt, history, userMessage } = request;
+  const task = request.task ?? 'extraction';
 
   if (config.provider === 'on-device') {
     const messages = [
@@ -1626,11 +1668,11 @@ export async function requestStructured<T = unknown>(
       {
         apiKey: config.apiKey,
         model: config.model,
-        // Structured extraction does not need a long chain of thought; the user's thinking-mode
-        // setting is the explicit way to ask for it.
+        // How hard it thinks follows the kind of job (`utils/aiEffort.ts`); the user's thinking-mode
+        // setting is the explicit way to ask for more.
         generationConfig: buildGeminiGenerationConfig(config.model, {
           responseSchema: schema,
-          thinking: (await SettingsService.getUseThinkingMode()) ? 'default' : 'low',
+          effort: await resolveEffort(task),
         }),
       },
       [{ text: systemPrompt } as Part]
@@ -1663,7 +1705,7 @@ export async function requestStructured<T = unknown>(
       config,
       systemPrompt,
       buildClaudeMessages(history, userMessage),
-      { schema: request.buildSchema('claude') }
+      { task, schema: request.buildSchema('claude') }
     );
 
     return parseStructuredJson<T>(await runClaude(config, operation, params));
@@ -1680,6 +1722,7 @@ export async function requestStructured<T = unknown>(
       })),
       { role: 'user', content: userMessage },
     ],
+    ...(await openAiReasoning(config, await resolveEffort(task))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -1714,13 +1757,15 @@ async function generateStructured<T>(
   systemPrompt: string,
   userMessage: string,
   schema: object,
-  schemaName: string = 'response'
+  schemaName: string = 'response',
+  task: AiTask = 'extraction'
 ): Promise<T | null> {
   const lang = config.language ?? DEFAULT_LANG;
 
   try {
     const result = await requestStructured<T>(config, {
       operation: 'generateStructured',
+      task,
       schemaName,
       systemPrompt: `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`,
       history: [],
@@ -1776,7 +1821,8 @@ async function generateWithImageStructured<T>(
   rawMimeType: string,
   schema: object,
   schemaName: string = 'response',
-  userMessageSuffix?: string
+  userMessageSuffix?: string,
+  task: AiTask = 'extraction'
 ): Promise<T | null> {
   // Every provider gets the photo at the detail the person chose in AI settings. Musclog Iron has
   // its own step: it also holds the photo to the Worker's limits, and refuses it while the Worker
@@ -1831,11 +1877,9 @@ async function generateWithImageStructured<T>(
       {
         apiKey: config.apiKey,
         model: config.model,
-        // Structured extraction does not need a long chain of thought; the user's thinking-mode
-        // setting is the explicit way to ask for it.
         generationConfig: buildGeminiGenerationConfig(config.model, {
           responseSchema: schema,
-          thinking: (await SettingsService.getUseThinkingMode()) ? 'default' : 'low',
+          effort: await resolveEffort(task),
         }),
       },
       [{ text: systemPrompt } as Part]
@@ -1897,7 +1941,7 @@ async function generateWithImageStructured<T>(
           ],
         },
       ],
-      { schema }
+      { task, schema }
     );
     const result = parseStructuredJson<T>(
       await runClaude(config, 'generateWithImageStructured', params)
@@ -1921,6 +1965,7 @@ async function generateWithImageStructured<T>(
         ],
       },
     ],
+    ...(await openAiReasoning(config, await resolveEffort(task))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -2032,10 +2077,194 @@ async function estimateMissingIngredients(
   );
 }
 
-async function trackMealWithThinking(
+/** Progress is a courtesy to the screen: a listener that throws must never fail an estimate. */
+function reportMealProgress(
+  listener: MealEstimateProgressListener | undefined,
+  progress: Parameters<MealEstimateProgressListener>[0]
+): void {
+  try {
+    listener?.(progress);
+  } catch {
+    // Ignored on purpose.
+  }
+}
+
+/** An ingredient with no numbers at all: the model named it but gave no energy or macros. */
+function hasNoNumbers(ingredient: TrackMealIngredient): boolean {
+  return !(
+    ingredient.kcal > 0 ||
+    ingredient.protein > 0 ||
+    ingredient.carbs > 0 ||
+    ingredient.fat > 0
+  );
+}
+
+/** The estimate for `target`: the one with its name, else the one in its place when counts agree. */
+function estimateFor(
+  target: { name: string },
+  index: number,
+  count: number,
+  estimates: TrackMealIngredient[]
+): TrackMealIngredient | undefined {
+  const key = target.name.trim().toLowerCase();
+  return (
+    estimates.find((estimate) => estimate.name.trim().toLowerCase() === key) ??
+    (estimates.length === count ? estimates[index] : undefined)
+  );
+}
+
+function withEstimatedMacros(
+  target: TrackMealIngredient,
+  estimate: TrackMealIngredient
+): TrackMealIngredient {
+  return {
+    ...target,
+    kcal: estimate.kcal,
+    protein: estimate.protein,
+    carbs: estimate.carbs,
+    fat: estimate.fat,
+    fiber: estimate.fiber,
+  };
+}
+
+/**
+ * Re-estimates the ingredients of a meal whose numbers cannot all be true (`mealPlausibility`):
+ * energy that the macros do not add up to, macros that weigh more than the ingredient, and so on.
+ * Only ingredients without a match in the person's own foods are checked, since a match's numbers
+ * come from the database. It is one extra request, made only when something is off, and an
+ * estimate replaces the original only when it has fewer problems. A failed re-estimate leaves the
+ * meal as it was: this is a refinement, never a reason to fail the estimate.
+ */
+async function recheckImplausibleIngredients(
+  config: CoachAIConfig,
+  mealName: string,
+  ingredients: TrackMealIngredient[],
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackMealIngredient[]> {
+  const suspects = ingredients.filter(
+    (ingredient) => !ingredient.foodId && ingredientMacroProblems(ingredient).length > 0
+  );
+  if (suspects.length === 0) {
+    return ingredients;
+  }
+
+  reportMealProgress(onProgress, { step: 'rechecking', count: suspects.length });
+
+  try {
+    const estimated = await estimateMissingIngredients(
+      config,
+      suspects.map(({ name, grams }) => ({ name, grams })),
+      ingredients.filter((ingredient) => ingredient.foodId),
+      mealName
+    );
+    const estimates = estimated?.ingredients ?? [];
+
+    return ingredients.map((ingredient) => {
+      const suspectIndex = suspects.indexOf(ingredient);
+      if (suspectIndex < 0) {
+        return ingredient;
+      }
+
+      const estimate = estimateFor(ingredient, suspectIndex, suspects.length, estimates);
+      if (!estimate) {
+        return ingredient;
+      }
+
+      const better = withEstimatedMacros(ingredient, estimate);
+      return ingredientMacroProblems(better).length < ingredientMacroProblems(ingredient).length
+        ? better
+        : ingredient;
+    });
+  } catch (error) {
+    if (error instanceof AiCancelledError) {
+      throw error;
+    }
+
+    reportAiError(error, 'coachAI.recheckImplausibleIngredients');
+    return ingredients;
+  }
+}
+
+/**
+ * What a one-request estimate gets before it is shown or logged. The model may name a food id
+ * this database does not have (it invents ids, or sends the string "null"); the lookup then drops
+ * the id and keeps the model's numbers, which for a foundation-food match are zeros, so the
+ * ingredient would be logged at 0 kcal. Those ingredients are estimated in a follow-up request, the
+ * same step the verified path makes; then every ingredient that is not the person's own food gets
+ * the plausibility check. With nothing to fix it makes no request.
+ */
+async function refineTrackedMeals(
+  config: CoachAIConfig,
+  response: TrackMealResponse,
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackMealResponse> {
+  const meals: TrackedMeal[] = [];
+
+  for (const meal of response.meals ?? []) {
+    const original = meal.ingredients ?? [];
+    const claimedFoodId = original.map((ingredient) => Boolean(ingredient.foodId));
+    // Deliberately unguarded: a failed lookup must reject, never leave every id looking unmatched.
+    let ingredients = await NutritionService.normalizeAiMealIngredients(original);
+
+    const unnumbered = ingredients.filter(
+      (ingredient, index) => claimedFoodId[index] && !ingredient.foodId && hasNoNumbers(ingredient)
+    );
+    if (unnumbered.length > 0) {
+      const matched = ingredients.filter((ingredient) => ingredient.foodId);
+      reportMealProgress(onProgress, {
+        step: 'estimating',
+        count: unnumbered.length,
+        matched: matched.length,
+      });
+
+      try {
+        const estimated = await estimateMissingIngredients(
+          config,
+          unnumbered.map(({ name, grams }) => ({ name, grams })),
+          matched,
+          meal.mealName ?? meal.mealType
+        );
+        const estimates = estimated?.ingredients ?? [];
+        ingredients = ingredients.map((ingredient) => {
+          const index = unnumbered.indexOf(ingredient);
+          const estimate =
+            index < 0 ? undefined : estimateFor(ingredient, index, unnumbered.length, estimates);
+          return estimate ? withEstimatedMacros(ingredient, estimate) : ingredient;
+        });
+      } catch (error) {
+        if (error instanceof AiCancelledError) {
+          throw error;
+        }
+
+        reportAiError(error, 'coachAI.refineTrackedMeals');
+      }
+    }
+
+    meals.push({
+      ...meal,
+      ingredients: await recheckImplausibleIngredients(
+        config,
+        meal.mealName ?? meal.mealType,
+        ingredients,
+        onProgress
+      ),
+    });
+  }
+
+  return { ...response, meals };
+}
+
+/**
+ * The verified meal estimate, used when "Use thinking mode" is on: it separates what the model can
+ * read (the recipe: meals, ingredients, grams, the foods of the person it recognises) from what it
+ * must work out (the numbers of what is left), checking each claimed food id against the database
+ * in between. Slower than one request, with more of the work done by code and less left to chance.
+ */
+async function trackMealVerified(
   config: CoachAIConfig,
   userMessage: string,
-  base64Image?: string
+  base64Image?: string,
+  onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   const recipeResponse = await extractRecipe(config, userMessage, base64Image);
   if (!recipeResponse?.meals?.length) {
@@ -2071,6 +2300,11 @@ async function trackMealWithThinking(
     let fullIngredients: TrackMealIngredient[] = matched;
 
     if (newIngredients.length > 0) {
+      reportMealProgress(onProgress, {
+        step: 'estimating',
+        count: newIngredients.length,
+        matched: matched.length,
+      });
       const estimated = await estimateMissingIngredients(
         config,
         newIngredients,
@@ -2101,7 +2335,13 @@ async function trackMealWithThinking(
   }
 
   for (const meal of resultMeals) {
-    meal.ingredients = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
+    const normalized = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
+    meal.ingredients = await recheckImplausibleIngredients(
+      config,
+      meal.mealName ?? meal.mealType,
+      normalized,
+      onProgress
+    );
   }
 
   return { meals: resultMeals };
@@ -2113,12 +2353,14 @@ async function trackMealWithThinking(
 export async function trackMeal(
   config: CoachAIConfig,
   userMessage: string,
-  base64Image?: string
+  base64Image?: string,
+  onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   try {
+    reportMealProgress(onProgress, { step: 'reading', photo: Boolean(base64Image) });
     const useThinkingMode = await SettingsService.getUseThinkingMode();
     if (useThinkingMode) {
-      return await trackMealWithThinking(config, userMessage, base64Image);
+      return await trackMealVerified(config, userMessage, base64Image, onProgress);
     }
 
     const lang = config.language ?? DEFAULT_LANG;
@@ -2138,7 +2380,7 @@ export async function trackMeal(
 
       const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
       const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-      return await generateWithImageStructured<TrackMealResponse>(
+      const fromPhoto = await generateWithImageStructured<TrackMealResponse>(
         config,
         systemPrompt,
         base64,
@@ -2147,15 +2389,17 @@ export async function trackMeal(
         'trackMeal',
         userMessage
       );
+      return fromPhoto ? await refineTrackedMeals(config, fromPhoto, onProgress) : null;
     }
 
-    return await generateStructured<TrackMealResponse>(
+    const parsed = await generateStructured<TrackMealResponse>(
       config,
       systemPrompt,
       userMessage,
       schema,
       'trackMeal'
     );
+    return parsed ? await refineTrackedMeals(config, parsed, onProgress) : null;
   } catch (error) {
     notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.trackMeal');
@@ -2281,7 +2525,8 @@ export async function generateMealPlan(
       systemPrompt,
       userMessage,
       schema,
-      'generateMealPlan'
+      'generateMealPlan',
+      'planning'
     );
     return parsed ?? null;
   } catch (error) {
@@ -2321,7 +2566,8 @@ export async function generateWorkoutPlan(
       systemPrompt,
       userMessage,
       schema,
-      'generateWorkoutPlan'
+      'generateWorkoutPlan',
+      'planning'
     );
     return parsed ?? null;
   } catch (error) {
@@ -2353,7 +2599,8 @@ export async function calculateNextWorkoutVolume(
       systemPrompt,
       userMessage,
       schema,
-      'calculateNextWorkoutVolume'
+      'calculateNextWorkoutVolume',
+      'planning'
     );
     return parsed ?? null;
   } catch (error) {
@@ -2487,7 +2734,8 @@ export type MealPhotoContext = {
 export async function estimateNutritionFromPhoto(
   config: CoachAIConfig,
   base64Image: string,
-  context?: MealPhotoContext | null
+  context?: MealPhotoContext | null,
+  onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   if (config.provider === 'on-device') {
     // TODO: for now, on-device cant parse images
@@ -2495,6 +2743,7 @@ export async function estimateNutritionFromPhoto(
   }
 
   try {
+    reportMealProgress(onProgress, { step: 'reading', photo: true });
     const useThinkingMode = await SettingsService.getUseThinkingMode();
     if (useThinkingMode) {
       let thinkingUserMessage = 'Analyze this meal photo.';
@@ -2506,7 +2755,7 @@ export async function estimateNutritionFromPhoto(
         thinkingUserMessage += `\nTags: ${context.tags.join(', ')}`;
       }
 
-      return await trackMealWithThinking(config, thinkingUserMessage, base64Image);
+      return await trackMealVerified(config, thinkingUserMessage, base64Image, onProgress);
     }
 
     const customPrompts = await getActiveCustomPrompts();
@@ -2551,16 +2800,9 @@ export async function estimateNutritionFromPhoto(
       userMessageSuffix
     );
 
-    // Normalize ingredients if foundation foods were matched (foodId present with zero macros)
-    if (parsed?.meals) {
-      for (const meal of parsed.meals) {
-        if (meal.ingredients) {
-          meal.ingredients = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
-        }
-      }
-    }
-
-    return parsed ?? null;
+    // Foundation-food matches arrive with zero macros: the lookup fills the real values in, and an
+    // id the database does not have is estimated in a follow-up request instead of logged at 0 kcal.
+    return parsed?.meals ? await refineTrackedMeals(config, parsed, onProgress) : (parsed ?? null);
   } catch (error) {
     notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.estimateNutritionFromPhoto');

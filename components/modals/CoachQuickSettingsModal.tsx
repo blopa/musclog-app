@@ -70,7 +70,9 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
     {
       key: 'use-thinking-mode',
       label: t('settings.aiSettings.useThinkingMode'),
-      subtitle: t('settings.aiSettings.useThinkingModeSubtitle'),
+      subtitle: settings.useHostedAi
+        ? `${t('settings.aiSettings.useThinkingModeSubtitle')} ${t('settings.aiSettings.useThinkingModeIronNote')}`
+        : t('settings.aiSettings.useThinkingModeSubtitle'),
       value: useThinkingMode,
       onValueChange: setUseThinkingMode,
       icon: (

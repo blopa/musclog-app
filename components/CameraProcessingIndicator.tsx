@@ -4,11 +4,15 @@ import { Animated, Text, View } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 
 import { useTheme } from '@/hooks/useTheme';
+import { type MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 
 export const CameraProcessingIndicator = ({
   cameraMode = null,
+  statusLine = null,
 }: {
   cameraMode?: 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan' | null;
+  /** The current step of an AI meal estimate; replaces the sub text while given. */
+  statusLine?: MealEstimateProgressLine | null;
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -109,8 +113,9 @@ export const CameraProcessingIndicator = ({
         <Text
           className="mt-2 text-center text-xs"
           style={{ color: theme.colors.overlay.alwaysWhite70 }}
+          accessibilityLiveRegion={statusLine ? 'polite' : undefined}
         >
-          {getSubText()}
+          {statusLine ? t(statusLine.key, statusLine.options) : getSubText()}
         </Text>
       </View>
     </View>

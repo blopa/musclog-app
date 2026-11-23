@@ -38,6 +38,7 @@ const CONFIG_OK = {
     enabled: true,
     acceptingNew: true,
     visionEnabled: true,
+    reasoningEffort: true,
     image: { maxPx: 1568, maxBytes: 900 * 1024, quality: 0.85 },
     minAppVersion: null,
   },

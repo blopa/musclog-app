@@ -264,3 +264,48 @@ describe('limits.max_devices', () => {
     expect(parseConfig(withDevices(50)).ok).toBe(true);
   });
 });
+
+describe('feature reasoning_max', () => {
+  const withChatMax = (value: unknown) =>
+    mutate((c) => {
+      if (value === 'absent') delete c.features.chat.reasoning_max;
+      else c.features.chat.reasoning_max = value;
+    });
+
+  it.each(['low', 'medium', 'high', null, 'absent'])('accepts reasoning_max %s', (value) => {
+    expect(parseConfig(baseEnv(withChatMax(value))).ok).toBe(true);
+  });
+
+  it("rejects reasoning_max 'max'", () => {
+    expect(rejected(baseEnv(withChatMax('max'))).join()).toContain('reasoning_max');
+  });
+});
+
+describe('feature max_tokens_by_effort', () => {
+  const withChatEffort = (value: unknown) =>
+    mutate((c) => {
+      if (value === 'absent') delete c.features.chat.max_tokens_by_effort;
+      else c.features.chat.max_tokens_by_effort = value;
+    });
+
+  it.each([
+    {},
+    { low: 1000 },
+    { medium: 3000 },
+    { high: 4500 },
+    { low: 1, medium: 2, high: 32000 },
+  ])('accepts %j', (value) => {
+    expect(parseConfig(baseEnv(withChatEffort(value))).ok).toBe(true);
+  });
+
+  it('accepts an absent key', () => {
+    expect(parseConfig(baseEnv(withChatEffort('absent'))).ok).toBe(true);
+  });
+
+  it.each([{ max: 1 }, { high: 0 }, { high: 1.5 }, { high: 32001 }, { low: -1 }])(
+    'rejects %j',
+    (value) => {
+      expect(rejected(baseEnv(withChatEffort(value))).join()).toContain('max_tokens_by_effort');
+    }
+  );
+});

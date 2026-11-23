@@ -1314,10 +1314,14 @@ Two separate problems:
 
 - Report context through `captureContext` (`tags.context`, plus `extra` for structured data), never
   through a hint's `data`. `utils/__tests__/handleError.test.ts` checks this.
-- Treat an LLM `foodId` as a claim that the database must confirm. `trackMealWithThinking` runs
+- Treat an LLM `foodId` as a claim that the database must confirm. `trackMealVerified` (formerly `trackMealWithThinking`) runs
   claimed ids through `normalizeAiMealIngredients` before splitting known from unknown ingredients,
   and sends unconfirmed ones to estimation. `utils/__tests__/coachAITrackMealThinking.test.ts`
-  checks this. The prompt now says to omit `foodId` rather than leave it null.
+  checks this. The prompt now says to omit `foodId` rather than leave it null. The normal
+  (single-request) path used to skip the check: an invented id came back as zeros and the ingredient
+  was logged at 0 kcal unless thinking mode was on. `refineTrackedMeals` now makes the same
+  confirmation and estimates the unconfirmed ingredients in a follow-up request on every path
+  (`utils/__tests__/coachAITrackMealRefine.test.ts`).
 
 ## `syncDailySteps is not a function` on web and iOS
 

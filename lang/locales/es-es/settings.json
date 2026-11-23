@@ -346,6 +346,7 @@
       "memorySettings": "Ajustes de memoria",
       "useThinkingMode": "Usar modo de razonamiento",
       "useThinkingModeSubtitle": "Permitir que los proveedores de IA usen razonamiento más profundo cuando sea compatible. Esto consume más tokens y puede aumentar el costo.",
+      "useThinkingModeIronNote": "Con Musclog Iron, pensar más a fondo y las comprobaciones extra usan más de tu cupo mensual de IA.",
       "maxAiMemories": "Máximo de Memorias de IA",
       "maxAiMemoriesSubtitle": "Número de mensajes anteriores que se recordarán en las conversaciones",
       "nutritionLogHistoryDays": "Historial de registro de nutrición enviado a la IA",

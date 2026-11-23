@@ -22,6 +22,7 @@ const CONFIG_ON: HostedConfig = {
   enabled: true,
   acceptingNew: true,
   visionEnabled: true,
+  reasoningEffort: true,
   image: null,
   minAppVersion: null,
 };

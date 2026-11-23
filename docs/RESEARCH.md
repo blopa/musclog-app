@@ -311,6 +311,44 @@ value (Gemini 3 Pro `LOW`, 2.5 Pro budget 128) rather than zero.
 `AiService.getAiConfig` no longer awaits up to a dozen settings reads in sequence. If the log shows a
 slow `settings-read` or `image-read` on the first scan after boot, record the cause in `docs/FIXES.md`.
 
+## Reasoning effort per job
+
+Source: a competitive review of how Claude, ChatGPT/OpenAI, Gemini, Copilot and Cursor handle
+"thinking" (2026-11-23). What we took, and what we deliberately did not.
+
+**Taken.** (1) "Thinking" was three different things behind one boolean: provider effort (Claude,
+structured Gemini), a different workflow (meal tracking) and nothing (Gemini chat, OpenAI). Effort is
+now a per-job table (`utils/aiEffort.ts`), and the setting only lifts every job to `high`. The
+numbers (extraction `minimal`, chat `low`, insight and planning `medium`) are product choices: fast
+replies matter more than depth for a meal scan or a chat turn, and an analysis of weeks of data or a
+plan built from several constraints earns more. (2) The multi-step meal path was the strongest part
+of the old behaviour; its core (confirm each claimed food id against the database, estimate the
+rest) now runs on every path, because an invented id logged at 0 kcal was a bug, not a mode. (3)
+Checks that code can do beat a second model: `utils/mealPlausibility.ts` flags numbers that cannot
+all be true and re-estimates only those, once. Alcohol (7 kcal/g, mostly no macros) is the known
+false positive: it costs one extra request and the original is kept when the estimate does not improve. (4)
+Progress is shown from steps the code really takes, with counts it has (`food.aiProgress.*`), never
+a paraphrase of model reasoning (a model's stated reasoning is not a faithful account of why it
+answered, and a wrong rationale lowers trust more than none).
+
+**Not taken**, on purpose: a classifier that scores each message's difficulty (one more request of
+latency on every chat turn; the job kind is already known to the caller); multi-agent and
+parallel-analysis workflows and Gemini thought signatures (they pay off in multi-turn tool loops,
+and the coach has no tools); an AI reviewer pass over chat replies (doubles cost and wait of the
+commonest action, no evidence it helps coaching); product A/B tests on "corrected within five
+minutes" (the app has no product analytics, by design); sending `thinking: {type: 'adaptive'}` to
+Claude (already the default, and the request sends only `max_tokens`, `system`, `messages` and
+`output_config`); switching the OpenAI path to the Responses API (the same function serves local
+servers, the free tier and Iron, which speak Chat Completions).
+
+**Musclog Iron.** The Worker used to force one `reasoning` per feature, so the table could not reach it. It now accepts the app's per-request ask, clamps it to a per-feature ceiling (`reasoning_max`, shipped as `high`) and gives a higher effort more `max_tokens` (`max_tokens_by_effort`, because reasoning tokens count inside the limit and a long answer could otherwise be cut off by its own thinking); the app asks only when `/v1/config` says the deployed Worker takes the field. The token numbers are estimates: none was run against the live model, so the first staging run should look for `finish_reason: length` and for the real cost at `high`.
+
+**Open.** `reasoning_effort` is sent as `low`/`medium`/`high` because every OpenAI reasoning model
+takes those; whether each model in `OPENAI_MODELS` accepts it has not been run against the live API
+(re-check when the list changes). Nothing measures whether the effort table improves answers: the
+plan for doing it (variants, cases, metrics, how to read the result) is
+`docs/AI_EFFORT_EVALUATION.md`.
+
 ## Photo viewer, saving and feedback links
 
 **Why "save" is the share sheet.** Saving straight to the gallery needs `expo-media-library`, which

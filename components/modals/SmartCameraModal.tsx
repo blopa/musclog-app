@@ -40,6 +40,10 @@ import {
 } from '@/utils/coachAI';
 import { copyImageToDocumentDirectory, readFileAsStringAsync } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import {
+  type MealEstimateProgressLine,
+  mealEstimateProgressLine,
+} from '@/utils/mealEstimateProgress';
 import { createPhaseTimer } from '@/utils/phaseTimer';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -229,6 +233,7 @@ export default function SmartCameraModal({
   const [aiPhotoUri, setAiPhotoUri] = useState<string | undefined>(undefined);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isProcessingAi, setIsProcessingAi] = useState(false);
+  const [mealProgress, setMealProgress] = useState<MealEstimateProgressLine | null>(null);
   // Aborts the in-flight AI request when the user taps Cancel on the processing overlay.
   const aiAbortRef = useRef<AbortController | null>(null);
   /** Synthetic product from AI label (OCR or vision) for FoodMealTrackingDetailsModal */
@@ -359,6 +364,7 @@ export default function SmartCameraModal({
   const processAiPhoto = useCallback(
     async (fileUri: string) => {
       setIsProcessingAi(true);
+      setMealProgress(null);
       setAiPhotoUri(fileUri);
       const abortController = new AbortController();
       aiAbortRef.current = abortController;
@@ -452,7 +458,12 @@ export default function SmartCameraModal({
             return;
           }
 
-          const result = await estimateNutritionFromPhoto(aiConfig, base64, aiContext ?? undefined);
+          const result = await estimateNutritionFromPhoto(
+            aiConfig,
+            base64,
+            aiContext ?? undefined,
+            (progress) => setMealProgress(mealEstimateProgressLine(progress))
+          );
           timer.mark('request');
           if (abortController.signal.aborted) {
             return;
@@ -513,6 +524,7 @@ export default function SmartCameraModal({
         timer.log(outcome);
         aiAbortRef.current = null;
         setIsProcessingAi(false);
+        setMealProgress(null);
       }
     },
     [
@@ -687,6 +699,7 @@ export default function SmartCameraModal({
       <SmartCameraShell
         visible={visible}
         onClose={handleClose}
+        processingStatus={mealProgress}
         permissionGranted={permissionGranted}
         onRequestPermission={onRequestPermission}
         cameraSlot={

@@ -485,6 +485,22 @@
       "mealLoggingFailed": "Nie udało się zapisać posiłku. Spróbuj ponownie.",
       "analysisSuccess": "{{name}}: {{kcal}}, B {{protein}} g, W {{carbs}} g, T {{fat}} g"
     },
+    "aiProgress": {
+      "reading": "Czytamy twój opis…",
+      "readingPhoto": "Oglądamy twoje zdjęcie…",
+      "estimating_one": "Szacujemy {{count}} składnik…",
+      "estimating_few": "Szacujemy {{count}} składniki…",
+      "estimating_many": "Szacujemy {{count}} składników…",
+      "estimating_other": "Szacujemy {{count}} składnika…",
+      "estimatingWithMatches_one": "Dopasowano {{matched}} do twoich produktów, szacujemy jeszcze {{count}}…",
+      "estimatingWithMatches_few": "Dopasowano {{matched}} do twoich produktów, szacujemy jeszcze {{count}}…",
+      "estimatingWithMatches_many": "Dopasowano {{matched}} do twoich produktów, szacujemy jeszcze {{count}}…",
+      "estimatingWithMatches_other": "Dopasowano {{matched}} do twoich produktów, szacujemy jeszcze {{count}}…",
+      "rechecking_one": "Sprawdzamy ponownie {{count}} składnik…",
+      "rechecking_few": "Sprawdzamy ponownie {{count}} składniki…",
+      "rechecking_many": "Sprawdzamy ponownie {{count}} składników…",
+      "rechecking_other": "Sprawdzamy ponownie {{count}} składnika…"
+    },
     "aiNutritionContext": {
       "title": "Dodaj kontekst dla AI",
       "describeYourMeal": "Opisz swój posiłek",

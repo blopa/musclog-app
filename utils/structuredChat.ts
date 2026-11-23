@@ -58,7 +58,13 @@ export async function sendStructuredChatTurn(
   }
 
   try {
-    return await requestStructured(config, { ...request, systemPrompt, history, userMessage });
+    return await requestStructured(config, {
+      task: 'chat',
+      ...request,
+      systemPrompt,
+      history,
+      userMessage,
+    });
   } catch (error) {
     rethrowUserFacingAiError(error);
     reportAiError(error, `coachAI.sendStructuredChatTurn[${request.operation}]`);

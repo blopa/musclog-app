@@ -660,6 +660,7 @@ export function CoachModal({
     streamingMessage,
     pendingIntention,
     isSending,
+    trackMealProgress,
     isLoadingMore,
     hasMore,
     loadMore,
@@ -1499,6 +1500,19 @@ export function CoachModal({
           >
             <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
               {t(HOSTED_WAIT_KEYS[hostedWaitLine])}
+            </Text>
+          </View>
+        ) : null}
+
+        {trackMealProgress ? (
+          <View
+            className="border-b px-4 py-2"
+            style={{ borderColor: theme.colors.border.light }}
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
+            <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+              {t(trackMealProgress.key, trackMealProgress.options)}
             </Text>
           </View>
         ) : null}

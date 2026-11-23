@@ -485,6 +485,22 @@
       "mealLoggingFailed": "Bijhouden van maaltijd mislukt. Probeer het opnieuw.",
       "analysisSuccess": "{{name}}: {{kcal}}, E {{protein}}g K {{carbs}}g V {{fat}}g"
     },
+    "aiProgress": {
+      "reading": "Je beschrijving lezen…",
+      "readingPhoto": "Je foto bekijken…",
+      "estimating_one": "{{count}} ingrediënt inschatten…",
+      "estimating_few": "{{count}} ingrediënten inschatten…",
+      "estimating_many": "{{count}} ingrediënten inschatten…",
+      "estimating_other": "{{count}} ingrediënten inschatten…",
+      "estimatingWithMatches_one": "{{matched}} gevonden in je voedingsmiddelen, nog {{count}} inschatten…",
+      "estimatingWithMatches_few": "{{matched}} gevonden in je voedingsmiddelen, nog {{count}} inschatten…",
+      "estimatingWithMatches_many": "{{matched}} gevonden in je voedingsmiddelen, nog {{count}} inschatten…",
+      "estimatingWithMatches_other": "{{matched}} gevonden in je voedingsmiddelen, nog {{count}} inschatten…",
+      "rechecking_one": "{{count}} ingrediënt nakijken…",
+      "rechecking_few": "{{count}} ingrediënten nakijken…",
+      "rechecking_many": "{{count}} ingrediënten nakijken…",
+      "rechecking_other": "{{count}} ingrediënten nakijken…"
+    },
     "aiNutritionContext": {
       "title": "Context toevoegen voor AI",
       "describeYourMeal": "Beschrijf je maaltijd",

@@ -247,6 +247,7 @@ describe('GET /v1/config', () => {
       vision_enabled: true,
       image: { maxPx: 1568, maxBytes: 400000, quality: 85 },
       minAppVersion: '2.17.0',
+      reasoning_effort: true,
     });
   });
 
@@ -268,6 +269,7 @@ describe('GET /v1/config', () => {
       vision_enabled: false,
       image: null,
       minAppVersion: null,
+      reasoning_effort: false,
     });
   });
 });

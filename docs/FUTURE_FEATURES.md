@@ -153,6 +153,9 @@ and the existing 1RM/consistency behavior intact.
 
 ## AI, platform automation, and continuity
 
+- Offline evaluation of the AI effort table, the meal refinement and Musclog Iron's token limits
+  against frozen cases (meal text and photos with known macros, the coach replay scenarios, plans):
+  `docs/AI_EFFORT_EVALUATION.md`. Not built yet; the document says what to build and how to read it.
 - Inline voice input for Loggy that uses the same send path as typed messages and preserves image
   attachments and armed intentions.
 - Ordered AI-provider failover on top of the shared error classification, bounded retry and

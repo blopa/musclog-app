@@ -1,5 +1,6 @@
 import { randomUUID } from 'expo-crypto';
 
+import { type AiEffort, type ReasoningEffortValue, reasoningEffortValue } from './aiEffort';
 import type { CoachAIConfig, CoachAIProvider } from './coachAI';
 import {
   hostedGrantError,
@@ -36,6 +37,12 @@ export type ProviderPolicy = {
   backOff?: (wait: () => Promise<void>) => Promise<void>;
   /** The OpenAI SDK's own retry count: 0 when this provider's retries are `withLlmRetry`'s alone. */
   sdkMaxRetries?: number;
+  /**
+   * The `reasoning_effort` this provider's requests carry for a job's effort, or undefined to send
+   * none. Only providers that take the field have it: a local server, the free tier and any model
+   * that might reject it send nothing.
+   */
+  reasoningEffort?: (effort: AiEffort) => Promise<ReasoningEffortValue | undefined>;
   /**
    * This provider's own photo step, in place of the default one every provider gets (the detail the
    * person chose in AI settings, with no provider limit above it).
@@ -81,6 +88,20 @@ const HOSTED_POLICY: ProviderPolicy = {
   onSuccess: () => setHostedSignal('ok'),
   backOff: (wait) => whileHostedBackingOff(wait),
   sdkMaxRetries: 0,
+  // The Worker keeps its own ceiling per feature and clamps what is asked, but an older Worker has no
+  // such field and answers an unknown one with a 400. So the app sends it only once `/v1/config`
+  // (cached for five minutes) says this Worker takes it, and never lets a config problem block a request.
+  reasoningEffort: async (effort) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const premium: typeof import('@/services/premium/premiumService') = require('@/services/premium/premiumService');
+      const result = await premium.fetchPremiumConfig();
+
+      return result.ok && result.value.reasoningEffort ? reasoningEffortValue(effort) : undefined;
+    } catch {
+      return undefined;
+    }
+  },
   // Holds the person's chosen detail to the Worker's limits and refuses photos while the Worker has
   // them off. Loaded inline because it reads the Worker's config, which text requests never need (the
   // pattern of services/premium/revenueCat.ts).
@@ -92,8 +113,14 @@ const HOSTED_POLICY: ProviderPolicy = {
   },
 };
 
+/** OpenAI itself takes the field on every model it lists (`OPENAI_MODELS`). */
+const OPENAI_POLICY: ProviderPolicy = {
+  reasoningEffort: async (effort) => reasoningEffortValue(effort),
+};
+
 const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
   hosted: HOSTED_POLICY,
+  openai: OPENAI_POLICY,
 };
 
 /** The provider's own rules, or an empty policy when it follows the shared ones. */

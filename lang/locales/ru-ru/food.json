@@ -485,6 +485,22 @@
       "mealLoggingFailed": "Не удалось записать приём пищи. Пожалуйста, попробуйте снова.",
       "analysisSuccess": "{{name}}: {{kcal}}, Б {{protein}}г У {{carbs}}г Ж {{fat}}г"
     },
+    "aiProgress": {
+      "reading": "Читаем ваше описание…",
+      "readingPhoto": "Смотрим на ваше фото…",
+      "estimating_one": "Оцениваем {{count}} ингредиент…",
+      "estimating_few": "Оцениваем {{count}} ингредиента…",
+      "estimating_many": "Оцениваем {{count}} ингредиентов…",
+      "estimating_other": "Оцениваем {{count}} ингредиента…",
+      "estimatingWithMatches_one": "Сопоставлено с вашими продуктами: {{matched}}, оцениваем ещё {{count}}…",
+      "estimatingWithMatches_few": "Сопоставлено с вашими продуктами: {{matched}}, оцениваем ещё {{count}}…",
+      "estimatingWithMatches_many": "Сопоставлено с вашими продуктами: {{matched}}, оцениваем ещё {{count}}…",
+      "estimatingWithMatches_other": "Сопоставлено с вашими продуктами: {{matched}}, оцениваем ещё {{count}}…",
+      "rechecking_one": "Перепроверяем {{count}} ингредиент…",
+      "rechecking_few": "Перепроверяем {{count}} ингредиента…",
+      "rechecking_many": "Перепроверяем {{count}} ингредиентов…",
+      "rechecking_other": "Перепроверяем {{count}} ингредиента…"
+    },
     "aiNutritionContext": {
       "title": "Добавить контекст для ИИ",
       "describeYourMeal": "Опишите ваш приём пищи",
