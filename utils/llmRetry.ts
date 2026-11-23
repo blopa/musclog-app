@@ -191,13 +191,36 @@ export async function withLlmRetry<T>(
 
   policy.assertUsable?.(config);
 
+  const traced = provider === 'on-device';
   while (true) {
+    const attemptStartedAt = Date.now();
+    if (traced) {
+      console.log('[LocalModel] attempt', {
+        operation,
+        attempt: state.attempt,
+        timeoutRetried: state.timeoutRetried,
+        timeoutMs: config.timeoutMs ?? LLM_REQUEST_TIMEOUT_MS,
+      });
+    }
+
     try {
       const value = await runWithAbort(config, request, headers);
       policy.onSuccess?.();
+      if (traced) {
+        console.log('[LocalModel] attempt ok', { operation, ms: Date.now() - attemptStartedAt });
+      }
 
       return value;
     } catch (rawError) {
+      if (traced) {
+        console.log('[LocalModel] attempt failed', {
+          operation,
+          ms: Date.now() - attemptStartedAt,
+          error:
+            rawError instanceof Error ? `${rawError.name}: ${rawError.message}` : String(rawError),
+        });
+      }
+
       if (rawError instanceof AiCancelledError) {
         throw rawError;
       }

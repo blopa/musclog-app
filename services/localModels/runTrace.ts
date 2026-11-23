@@ -30,6 +30,22 @@ type RunMarker = {
 /** Greppable in `adb logcat` (React Native prints console.log under the ReactNativeJS tag). */
 export const LOCAL_MODEL_LOG_TAG = '[LocalModel]';
 
+/** One greppable line in `adb logcat`; never sent to Sentry, so it may carry the model's own text. */
+export function logLocal(message: string, ...rest: unknown[]): void {
+  console.log(LOCAL_MODEL_LOG_TAG, message, ...rest);
+}
+
+/** An error as one loggable string: name, message and the first stack lines. */
+export function describeLogError(error: unknown): string {
+  if (error instanceof Error) {
+    const reason = (error as { reason?: unknown }).reason;
+
+    return `${error.name}: ${error.message}${reason ? ` (reason ${String(reason)})` : ''}\n${(error.stack ?? '').split('\n').slice(0, 6).join('\n')}`;
+  }
+
+  return String(error);
+}
+
 export function traceLocalModel(message: string, data?: TraceData): void {
   // Same fields as the Sentry breadcrumb, so a phone on a cable and a field report read alike.
   console.log(LOCAL_MODEL_LOG_TAG, message, data ? JSON.stringify(data) : '');

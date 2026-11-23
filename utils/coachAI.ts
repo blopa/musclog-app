@@ -8,7 +8,13 @@ import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
-import { reportLocalOutcome, traceLocalModel } from '@/services/localModels/runTrace';
+import {
+  describeLogError,
+  LOCAL_MODEL_LOG_TAG,
+  logLocal,
+  reportLocalOutcome,
+  traceLocalModel,
+} from '@/services/localModels/runTrace';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
@@ -50,6 +56,7 @@ import {
   pickFoodMatch,
   searchTermsFor,
 } from './localFoodPhoto';
+import { diagnoseLocalReply } from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
@@ -2873,6 +2880,12 @@ async function estimateMealFromPhotoOnDevice(
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   reportMealProgress(onProgress, { step: 'reading', photo: true });
+  logLocal('photo flow start', {
+    inputChars: base64Image.length,
+    hasContext: Boolean(context?.description || context?.tags?.length),
+    engine: onDeviceEngineOf(config),
+    vision: config.vision,
+  });
   const rawBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
   const rawMime = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -2903,12 +2916,14 @@ async function estimateMealFromPhotoOnDevice(
     config,
   });
 
+  logLocal('photo request', { mimeType, base64Chars: base64.length, systemPrompt });
   const raw = await withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
     sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
       image: `data:${mimeType};base64,${base64}`,
       signal,
     })
   );
+  logLocal('photo raw reply', { chars: raw.length, text: raw });
   const parsed = checkStructuredShape(
     parseStructuredJson<unknown>(raw),
     LOCAL_FOOD_IDENTIFY_SCHEMA,
@@ -2924,22 +2939,49 @@ async function estimateMealFromPhotoOnDevice(
       outcome = 'no-foods';
     }
 
-    await reportLocalOutcome(outcome, { replyChars: raw.length, shape: parsed.kind });
+    const diagnosis = diagnoseLocalReply(raw, LOCAL_FOOD_IDENTIFY_SCHEMA);
+    // The whole reply stays on the phone (adb logcat); Sentry gets its skeleton only.
+    console.log(LOCAL_MODEL_LOG_TAG, `rejected reply (${diagnosis.reason}):`, raw);
+    await reportLocalOutcome(outcome, {
+      replyChars: raw.length,
+      shape: parsed.kind,
+      reason: diagnosis.reason,
+      skeleton: diagnosis.skeleton,
+    });
 
     return null;
   }
 
   traceLocalModel('photo-identified', { foods: foods.length });
+  logLocal('photo foods', foods);
 
   const matches = new Map<string, FoodCandidate | null>();
   for (const food of foods) {
-    matches.set(food.name, pickFoodMatch(food.name, await candidateFoodsFor(food.name)));
+    const candidates = await candidateFoodsFor(food.name);
+    const match = pickFoodMatch(food.name, candidates);
+    logLocal('photo match', {
+      name: food.name,
+      candidates: candidates.length,
+      matched: match?.name ?? null,
+    });
+    matches.set(food.name, match);
   }
 
   const hour = new Date().getHours();
   const meal = buildPhotoMeal(foods, matches, mealTypeForHour(hour));
+  logLocal('photo meal built', {
+    mealType: meal.meals?.[0]?.mealType,
+    ingredients: meal.meals?.[0]?.ingredients?.length ?? 0,
+  });
 
-  return refineTrackedMeals(config, meal, onProgress);
+  const refined = await refineTrackedMeals(config, meal, onProgress);
+  logLocal('photo refined', {
+    meals: refined.meals?.length ?? 0,
+    ingredients:
+      refined.meals?.reduce((total, entry) => total + (entry.ingredients?.length ?? 0), 0) ?? 0,
+  });
+
+  return refined;
 }
 
 /**
@@ -2953,6 +2995,11 @@ export async function estimateNutritionFromPhoto(
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   if (config.provider === 'on-device') {
+    logLocal('estimateNutritionFromPhoto', {
+      engine: onDeviceEngineOf(config),
+      vision: config.vision,
+      model: config.model,
+    });
     if (onDeviceEngineOf(config) !== 'gguf') {
       throw new OnDeviceUnavailableError('photosUnsupported');
     }
@@ -2964,6 +3011,7 @@ export async function estimateNutritionFromPhoto(
     try {
       return await estimateMealFromPhotoOnDevice(config, base64Image, context, onProgress);
     } catch (error) {
+      logLocal('photo flow threw', describeLogError(error));
       reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
       throw error;
     }

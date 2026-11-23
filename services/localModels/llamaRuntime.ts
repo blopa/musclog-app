@@ -18,7 +18,14 @@ import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { captureException } from '@/utils/sentry';
 
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
-import { clearLocalRun, LOCAL_MODEL_LOG_TAG, markLocalRun, traceLocalModel } from './runTrace';
+import {
+  clearLocalRun,
+  describeLogError,
+  LOCAL_MODEL_LOG_TAG,
+  logLocal,
+  markLocalRun,
+  traceLocalModel,
+} from './runTrace';
 
 type LlamaModule = typeof import('llama.rn');
 type LlamaContext = import('llama.rn').LlamaContext;
@@ -76,6 +83,7 @@ function clearIdleTimer() {
 
 /** Frees the model and everything attached to it. Safe to call when nothing is loaded. */
 export async function unloadLocalModel(): Promise<void> {
+  logLocal('unloading model', { loaded: context !== null });
   clearIdleTimer();
   const current = context;
   context = null;
@@ -95,6 +103,7 @@ export async function unloadLocalModel(): Promise<void> {
 function scheduleIdleUnload() {
   clearIdleTimer();
   idleTimer = setTimeout(() => {
+    logLocal('idle timeout reached; unloading', { busy });
     if (!busy) {
       void unloadLocalModel();
     }
@@ -108,6 +117,7 @@ function installLifecycle() {
 
   lifecycleInstalled = true;
   AppState.addEventListener('change', (next) => {
+    logLocal('app state', next, { busy, loaded: context !== null });
     if (next === 'background' && !busy) {
       void unloadLocalModel();
     }
@@ -134,6 +144,14 @@ async function ensureContext(): Promise<LlamaContext> {
   installLifecycle();
   const loadStartedAt = Date.now();
   traceLocalModel('load-start', { model: installed.manifest.id });
+  logLocal('load params', {
+    modelPath: installed.modelPath,
+    projectorPath: installed.projectorPath,
+    contextTokens: installed.manifest.contextTokens,
+    imageMaxTokens: installed.manifest.imageMaxTokens,
+    gpuLayers: Platform.OS === 'ios' ? 99 : 0,
+    platform: Platform.OS,
+  });
   try {
     const next = await llama().initLlama({
       model: plainPath(installed.modelPath),
@@ -149,7 +167,7 @@ async function ensureContext(): Promise<LlamaContext> {
 
     return next;
   } catch (error) {
-    console.log(LOCAL_MODEL_LOG_TAG, 'load failed', error);
+    console.log(LOCAL_MODEL_LOG_TAG, 'load failed', describeLogError(error));
     // Tags only: no prompt, path or content.
     void captureException(error, {
       captureContext: { tags: { context: 'localModels.load', model: installed.manifest.id } },
@@ -178,7 +196,7 @@ async function attachProjector(
       image_max_tokens: imageMaxTokens,
     });
   } catch (error) {
-    console.log(LOCAL_MODEL_LOG_TAG, 'projector threw', error);
+    console.log(LOCAL_MODEL_LOG_TAG, 'projector threw', describeLogError(error));
     void captureException(error, {
       captureContext: { tags: { context: 'localModels.projector', model } },
     });
@@ -226,6 +244,17 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   const imageChars = params.image?.length ?? 0;
   const modelId = (await getInstalledLocalModel().catch(() => null))?.manifest.id ?? 'unknown';
   // Written before each native call: a process that dies inside one leaves it for the next boot.
+  logLocal('request', {
+    messages: params.messages.map((message) => `${message.role}:${message.content.length}`),
+    structured: Boolean(params.schema),
+    schemaKeys: params.schema ? Object.keys(params.schema) : [],
+    maxTokens: params.maxTokens ?? 1024,
+    temperature: params.temperature ?? 0.2,
+    image: params.image ? `${params.image.slice(0, 30)}… (${params.image.length} chars)` : null,
+    queued: queue !== undefined,
+    loaded: context !== null,
+    projectorAttached,
+  });
   const mark = (phase: 'load' | 'projector' | 'completion') =>
     markLocalRun({ phase, model: modelId, hasImage, imageChars });
   try {
@@ -293,6 +322,8 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
         throw new AiCancelledError();
       }
 
+      logLocal('reply', { chars: (result.text ?? '').length, text: result.text });
+      logLocal('timings', result.timings);
       traceLocalModel('completion-done', {
         replyChars: (result.text ?? '').length,
         promptMs: result.timings?.prompt_ms,
@@ -313,7 +344,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
     } catch (error) {
       // A native failure while generating (a cancel is the caller's own doing).
       if (!(error instanceof AiCancelledError) && !params.signal?.aborted) {
-        console.log(LOCAL_MODEL_LOG_TAG, 'completion threw', error);
+        console.log(LOCAL_MODEL_LOG_TAG, 'completion threw', describeLogError(error));
         void captureException(error, {
           captureContext: {
             tags: { context: 'localModels.completion', model: modelId, hasImage: String(hasImage) },
