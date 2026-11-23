@@ -11,8 +11,12 @@ export interface Env {
   /** Upstream base URLs. Production must use the official ones; local may point at mocks. */
   OPENROUTER_BASE_URL: string;
   REVENUECAT_BASE_URL: string;
+  /** Otari's base URL (the alternative Iron upstream). Production and staging must use the official one when `otari` is configured. */
+  OTARI_BASE_URL: string;
   /** Secret. OpenRouter inference key (dedicated, limited, prepaid). */
   OPENROUTER_API_KEY: string;
+  /** Secret, optional. Otari key (dedicated, budget-limited, scope usage:read as well). Without it the Otari upstream cannot be selected. */
+  OTARI_API_KEY?: string;
   /** Secret. RevenueCat v2 key with only customer_information:subscriptions:read and customers:read. */
   REVENUECAT_V2_SECRET_KEY: string;
   /** Secret. HMAC key for nonces and session tokens (at least 32 bytes). */

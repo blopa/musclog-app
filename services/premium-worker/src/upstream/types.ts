@@ -88,3 +88,33 @@ export interface OpenRouterClient {
   /** GET /endpoints/zdr (public, unauthenticated). */
   listZdrEndpoints(): Promise<ZdrEndpoint[]>;
 }
+
+// ---------- Otari (Mozilla AI's OpenAI-compatible gateway) ----------
+
+/** The two gateways Iron chat requests can go through; the D1 `meta` row `upstream` picks one. */
+export type UpstreamName = 'openrouter' | 'otari';
+
+export interface OtariUsageSummary {
+  /** Spend of the key in the window, USD (its `totals.cost`). */
+  costUsd: number;
+  requests: number;
+  errors: number;
+  /** Requests Otari could not price: their cost is missing from `costUsd`. */
+  unpriced: number;
+}
+
+export interface OtariBudget {
+  /** `budgets_enforced`: false when no limit applies to the key. */
+  enforced: boolean;
+  /** USD left on the tightest limit, null when there is none. */
+  remainingUsd: number | null;
+}
+
+export interface OtariClient {
+  /** POST /chat/completions with the already-built Otari body. Returns the raw upstream response. */
+  chatCompletions(body: string, init: { signal: AbortSignal }): Promise<Response>;
+  /** GET /key/usage/summary for [startMs, endMs) (sent as epoch seconds), no dimensions. */
+  usageSummary(startMs: number, endMs: number): Promise<OtariUsageSummary>;
+  /** GET /key/budget. */
+  budget(): Promise<OtariBudget>;
+}

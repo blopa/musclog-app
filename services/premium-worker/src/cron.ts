@@ -5,7 +5,8 @@ import type { Ctx } from './context';
 import { dayKey } from './db';
 import { DAY_MS } from './finance';
 import { prune, sweep, updateDailyFull } from './ledger';
-import type { ZdrEndpoint } from './upstream/types';
+import { activeUpstream } from './upstream/select';
+import type { UpstreamName, ZdrEndpoint } from './upstream/types';
 
 const ZDR_ATTEMPTS = 3;
 
@@ -17,10 +18,18 @@ async function step(ctx: Ctx, name: string, fn: () => Promise<void>): Promise<vo
   }
 }
 
-async function open(ctx: Ctx, reason: BreakerReason, code: string): Promise<void> {
+async function open(
+  ctx: Ctx,
+  reason: BreakerReason,
+  code: string,
+  upstream?: UpstreamName
+): Promise<void> {
   await openBreaker(ctx.env.DB, reason);
-  ctx.deps.log.log({ route: 'cron', status: 503, code, severity: 'high' });
+  ctx.deps.log.log({ route: 'cron', status: 503, code, severity: 'high', upstream });
 }
+
+/** Below this many USD left on the Otari key's budget, the daily cron warns. */
+const OTARI_BUDGET_LOW_USD = 2;
 
 const permille = (x: number) => Math.round(x * 1000);
 
@@ -88,11 +97,11 @@ async function zdrRecheck(ctx: Ctx): Promise<void> {
     }
   }
   if (endpoints === null) {
-    await open(ctx, 'zdr_check_failed', 'zdr_check_failed');
+    await open(ctx, 'zdr_check_failed', 'zdr_check_failed', 'openrouter');
     return;
   }
   if (!endpoints.some((e) => isEligible(e, ctx.config))) {
-    await open(ctx, 'zdr_unavailable', 'zdr_unavailable');
+    await open(ctx, 'zdr_unavailable', 'zdr_unavailable', 'openrouter');
   }
 }
 
@@ -126,8 +135,8 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
     await store();
     return;
   }
-  const delta = usage_u - prev.usage_u;
-  if (delta < 0) {
+  const orDelta = usage_u - prev.usage_u;
+  if (orDelta < 0) {
     await store();
     ctx.deps.log.log({
       route: 'cron',
@@ -137,6 +146,33 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
     });
     return;
   }
+  // Spend through Otari since the baseline. It only ever adds to the gateway side, so a failed call
+  // (counted as 0) can make the gap smaller, never open the breaker falsely.
+  let otari_u = 0;
+  if (ctx.deps.otari) {
+    try {
+      const summary = await ctx.deps.otari.usageSummary(prev.at, now);
+      otari_u = Math.round(summary.costUsd * 1e6);
+      if (summary.unpriced > 0) {
+        ctx.deps.log.log({
+          route: 'cron',
+          status: 500,
+          code: 'otari_unpriced_requests',
+          severity: 'high',
+          upstream: 'otari',
+        });
+      }
+    } catch {
+      ctx.deps.log.log({
+        route: 'cron',
+        status: 500,
+        code: 'reconciliation_otari_unavailable',
+        severity: 'high',
+        upstream: 'otari',
+      });
+    }
+  }
+  const delta = orDelta + otari_u;
   const ledger = await db
     .prepare(
       `SELECT COALESCE(SUM(settled_u), 0) AS u FROM reservations
@@ -170,7 +206,24 @@ export async function runDaily(ctx: Ctx): Promise<void> {
       .bind(ctx.config.limits.max_subscribers, now)
       .run();
   });
-  await step(ctx, 'zdr_recheck', () => zdrRecheck(ctx));
+  // The ZDR list is OpenRouter's: it says nothing about an Otari-served request, whose data recipient
+  // is pinned by the selector instead (assertOtariPinned, the Otari-Provider check).
+  await step(ctx, 'zdr_recheck', async () => {
+    if ((await activeUpstream(ctx)) === 'openrouter') await zdrRecheck(ctx);
+  });
   await step(ctx, 'reconciliation', () => reconcile(ctx, now));
+  await step(ctx, 'otari_budget', async () => {
+    if (!ctx.deps.otari) return;
+    const b = await ctx.deps.otari.budget();
+    if (b.remainingUsd !== null && b.remainingUsd < OTARI_BUDGET_LOW_USD) {
+      ctx.deps.log.log({
+        route: 'cron',
+        status: 500,
+        code: 'otari_budget_low',
+        severity: 'high',
+        upstream: 'otari',
+      });
+    }
+  });
   ctx.deps.log.log({ route: 'cron', status: 200, code: 'daily' });
 }

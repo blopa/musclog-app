@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One entry point for the RevenueCat / OpenRouter infrastructure (docs/INFRASTRUCTURE.md).
+# One entry point for the RevenueCat / OpenRouter / Otari infrastructure (docs/INFRASTRUCTURE.md).
 #   scripts/infra.sh status|validate|plan|apply|export|report [args]
 # Never prints a secret. `apply` is a dry run unless you pass --yes.
 set -euo pipefail
@@ -16,6 +16,7 @@ case "$cmd" in
     echo "REVENUECAT_INFRA_KEY:      $(have REVENUECAT_INFRA_KEY)"
     echo "REVENUECAT_PROJECT_ID:     $(have REVENUECAT_PROJECT_ID)"
     echo "TF_ENCRYPTION:             $(have TF_ENCRYPTION)"
+    echo "OTARI_USAGE_KEY:           $(have OTARI_USAGE_KEY)"
     ;;
   validate)
     node -e "for (const n of ['entitlements','offerings','products']) { const f='$ROOT/infra/revenuecat/config/'+n+'.json'; const j=JSON.parse(require('fs').readFileSync(f,'utf8')); if(!Array.isArray(j.items)) throw new Error(f+': items must be an array'); } console.log('revenuecat config: ok')"
@@ -34,10 +35,12 @@ case "$cmd" in
   export)
     node "$ROOT/scripts/infra/revenuecat.js" export "$@"
     node "$ROOT/scripts/infra/openrouter.js" export "$@"
+    node "$ROOT/scripts/infra/otari.js" export "$@"
     ;;
   report)
     node "$ROOT/scripts/infra/revenuecat.js" report --json "$@"
     node "$ROOT/scripts/infra/openrouter.js" report --json "$@"
+    node "$ROOT/scripts/infra/otari.js" report --json "$@"
     ;;
   *)
     echo "usage: $0 status|validate|plan|apply|export|report" >&2

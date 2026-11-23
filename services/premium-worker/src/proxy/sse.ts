@@ -17,7 +17,12 @@ const isObj = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);
 
-function readUsage(u: unknown): Omit<ParsedUsage, 'error'> | null {
+export type UsageRead = Omit<ParsedUsage, 'error'>;
+/** Reads a response's `usage` object; null when it carries no usable cost. One per gateway. */
+export type UsageReader = (usage: unknown) => UsageRead | null;
+
+/** OpenRouter: `usage.cost`, a number of USD. */
+export const openRouterUsage: UsageReader = (u) => {
   if (!isObj(u)) return null;
   const cost = num(u.cost);
   if (cost === null || cost < 0) return null;
@@ -26,11 +31,24 @@ function readUsage(u: unknown): Omit<ParsedUsage, 'error'> | null {
     promptTokens: num(u.prompt_tokens),
     completionTokens: num(u.completion_tokens),
   };
-}
+};
+
+/** Otari: `usage.cost_usd`, a six-decimal USD string (a number is accepted too). */
+export const otariUsage: UsageReader = (u) => {
+  if (!isObj(u)) return null;
+  const raw = u.cost_usd;
+  const cost = typeof raw === 'string' && raw.trim() !== '' ? num(Number(raw)) : num(raw);
+  if (cost === null || cost < 0) return null;
+  return {
+    costUsd: cost,
+    promptTokens: num(u.prompt_tokens),
+    completionTokens: num(u.completion_tokens),
+  };
+};
 
 /** The last usage object with a numeric cost, and whether the tail ends in an error chunk. */
-export function parseTail(text: string): ParsedUsage {
-  let usage: Omit<ParsedUsage, 'error'> = {
+export function parseTail(text: string, readUsage: UsageReader = openRouterUsage): ParsedUsage {
+  let usage: UsageRead = {
     costUsd: null,
     promptTokens: null,
     completionTokens: null,
@@ -60,7 +78,10 @@ export function parseTail(text: string): ParsedUsage {
 }
 
 /** Non-stream response body: usage and the generation id. Never throws. */
-export function parseJsonUsage(body: string): ParsedUsage & { id: string | null } {
+export function parseJsonUsage(
+  body: string,
+  readUsage: UsageReader = openRouterUsage
+): ParsedUsage & { id: string | null } {
   try {
     const j: unknown = JSON.parse(body);
     if (isObj(j)) {

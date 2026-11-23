@@ -31,10 +31,25 @@ export const QUARTER_HOURLY_CRON = '*/15 * * * *';
 export const DAILY_CRON = '30 0 * * *';
 
 // Parsed once per isolate per config text (a config change is a new deploy, so a new isolate).
-let cached: { text: string; env: string; result: ReturnType<typeof parseConfig> } | null = null;
+let cached: {
+  text: string;
+  env: string;
+  otariUrl: string | undefined;
+  result: ReturnType<typeof parseConfig>;
+} | null = null;
 export function loadConfig(env: Env): ReturnType<typeof parseConfig> {
-  if (!cached || cached.text !== env.AI_CONFIG_JSON || cached.env !== env.WORKER_ENV) {
-    cached = { text: env.AI_CONFIG_JSON, env: env.WORKER_ENV, result: parseConfig(env) };
+  if (
+    !cached ||
+    cached.text !== env.AI_CONFIG_JSON ||
+    cached.env !== env.WORKER_ENV ||
+    cached.otariUrl !== env.OTARI_BASE_URL
+  ) {
+    cached = {
+      text: env.AI_CONFIG_JSON,
+      env: env.WORKER_ENV,
+      otariUrl: env.OTARI_BASE_URL,
+      result: parseConfig(env),
+    };
   }
   return cached.result;
 }

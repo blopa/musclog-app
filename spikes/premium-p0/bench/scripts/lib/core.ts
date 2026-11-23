@@ -31,15 +31,45 @@ export function loadSnapshot(): Map<string, ModelInfo> {
   return new Map(rows.map((r) => [r.id, r]));
 }
 
-export function pickModels(arg: string | undefined): ModelInfo[] {
+/** Which gateway the calls go to. OpenRouter is the default; Otari takes pinned selectors (`provider:model`). */
+export type Gateway = 'openrouter' | 'otari';
+
+/**
+ * Pre-call price estimate for an Otari selector that is not in the snapshot. Otari's own prices are
+ * not in the repo; this only sizes the --max-usd guard before a call. The real cost of every call is
+ * the `usage.cost_usd` the gateway returns, which is what the report records.
+ */
+export const OTARI_ESTIMATE_PER_1M = { promptPer1M: 5, completionPer1M: 15 };
+
+/** Otari text-bench default: the pinned selectors from the Musclog Iron shortlist. */
+export const DEFAULT_OTARI_MODELS = [
+  'deepinfra:z-ai/glm-5.3-flash',
+  'deepinfra:deepseek/deepseek-v4.1-flash',
+  'deepinfra:alibaba/qwen3.8-flash',
+  'mistral:mistralai/mistral-small-4',
+  'deepinfra:google/gemma-4-31b-it',
+];
+
+/** Otari image-bench default (bench-images.ts). */
+export const DEFAULT_OTARI_IMAGE_MODELS = [
+  'deepinfra:alibaba/qwen3-vl-30b-a3b-instruct',
+  'deepinfra:nvidia/nemotron-3.5-super-vl-120b-a12b',
+];
+
+export function pickModels(
+  arg: string | undefined,
+  gateway: Gateway = 'openrouter',
+  defaults: string[] = gateway === 'otari' ? DEFAULT_OTARI_MODELS : DEFAULT_MODELS
+): ModelInfo[] {
   const snap = loadSnapshot();
   const ids = arg
     ? arg
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean)
-    : DEFAULT_MODELS;
+    : defaults;
   return ids.map((id) => {
+    if (gateway === 'otari') return otariModel(id, snap);
     const m = snap.get(id);
     if (!m)
       throw new Error(
@@ -49,8 +79,28 @@ export function pickModels(arg: string | undefined): ModelInfo[] {
   });
 }
 
+/** An Otari selector as a ModelInfo. Prices and reasoning support come from the snapshot when the bare model id matches there. */
+export function otariModel(selector: string, snap = loadSnapshot()): ModelInfo {
+  const colon = selector.indexOf(':');
+  if (colon <= 0 || colon === selector.length - 1)
+    throw new Error(
+      `Otari model "${selector}" must be a pinned selector "provider:model" (e.g. deepinfra:z-ai/glm-5.3-flash).`
+    );
+  const bare = selector.slice(colon + 1);
+  const known = snap.get(bare);
+  return {
+    id: selector,
+    cheapestZdrEndpoint: 'otari',
+    promptPer1M: known?.promptPer1M ?? OTARI_ESTIMATE_PER_1M.promptPer1M,
+    completionPer1M: known?.completionPer1M ?? OTARI_ESTIMATE_PER_1M.completionPer1M,
+    context: known?.context ?? 32768,
+    maxCompletion: known?.maxCompletion ?? 4096,
+    reasoningSupported: known?.reasoningSupported ?? false,
+  };
+}
+
 // ---- CLI -------------------------------------------------------------------------------------------------
-export type Mode = { live: boolean; maxUsd: number };
+export type Mode = { live: boolean; maxUsd: number; gateway: Gateway };
 
 export function parseArgs(argv = process.argv.slice(2)) {
   const flags = new Map<string, string | true>();
@@ -70,19 +120,28 @@ export function parseArgs(argv = process.argv.slice(2)) {
   };
 }
 
+export function parseGateway(raw: string | undefined): Gateway {
+  if (raw === undefined || raw === 'openrouter') return 'openrouter';
+  if (raw === 'otari') return 'otari';
+  throw new Error(`--gateway must be "openrouter" or "otari" (got "${raw}").`);
+}
+
 export function resolveMode(a: ReturnType<typeof parseArgs>): Mode {
   const live = a.has('live');
+  const gateway = parseGateway(a.str('gateway'));
   if (live && a.has('dry-run')) throw new Error('--live and --dry-run are mutually exclusive.');
-  if (!live) return { live: false, maxUsd: a.num('max-usd', Infinity) };
+  if (!live) return { live: false, maxUsd: a.num('max-usd', Infinity), gateway };
   const maxUsd = a.num('max-usd', NaN);
   if (!Number.isFinite(maxUsd) || maxUsd <= 0) {
     throw new Error(
       '--live requires --max-usd <positive number>. Refusing to run without a spending guard.'
     );
   }
-  if (!process.env.OPENROUTER_API_KEY)
+  if (gateway === 'otari' && !process.env.OTARI_API_KEY)
+    throw new Error('--live --gateway otari requires OTARI_API_KEY in the environment.');
+  if (gateway === 'openrouter' && !process.env.OPENROUTER_API_KEY)
     throw new Error('--live requires OPENROUTER_API_KEY in the environment.');
-  return { live, maxUsd };
+  return { live, maxUsd, gateway };
 }
 
 // ---- Budget guard -----------------------------------------------------------------------------------------
@@ -113,18 +172,26 @@ export const fmt = (n: number | null | undefined, d = 2) =>
   n == null || Number.isNaN(n) ? 'n/a' : n.toFixed(d);
 
 // ---- Transport ---------------------------------------------------------------------------------------------
+export type GatewayHeaders = {
+  /** `Otari-Provider`: the provider that actually served the call. */
+  provider?: string;
+  /** `Otari-Fallback`: true when the gateway moved the call to another provider. */
+  fallback?: boolean;
+};
 export type ChatResult = {
   status: number;
   json: any; // normalised non-streaming shape: { choices:[{message,finish_reason}], usage, error? }
   latencyMs: number;
   ttftMs: number | null;
+  /** Only the Otari transport (and its mock) fills this. */
+  headers?: GatewayHeaders;
 };
 export type CallOpts = { stream: boolean; meta?: Record<string, any> };
 export interface Transport {
   chat(body: any, opts: CallOpts): Promise<ChatResult>;
 }
 
-/** Provider routing the Worker will force (plan section 7), plus max_price pinned from the snapshot. */
+/** Provider routing the Worker will force (plan section 7), plus max_price pinned from the snapshot. OpenRouter only. */
 export function providerBlock(model: ModelInfo) {
   return {
     zdr: true,
@@ -136,18 +203,88 @@ export function providerBlock(model: ModelInfo) {
   };
 }
 
+/**
+ * The gateway-specific fields of a request body. OpenRouter gets its `provider` routing block and a
+ * `reasoning` object; Otari gets only `reasoning_effort` (its routing is the pinned selector itself).
+ */
+export function gatewayExtras(model: ModelInfo, gateway: Gateway): Record<string, unknown> {
+  if (gateway === 'otari') return model.reasoningSupported ? { reasoning_effort: 'low' } : {};
+  return {
+    provider: providerBlock(model),
+    ...(model.reasoningSupported ? { reasoning: { effort: 'low' } } : {}),
+  };
+}
+
+/** USD cost of one call. OpenRouter reports a number in `usage.cost`; Otari reports a USD string in `usage.cost_usd`. */
+export function costOf(usage: any): number {
+  if (typeof usage?.cost === 'number' && Number.isFinite(usage.cost)) return usage.cost;
+  if (usage?.cost_usd !== undefined) {
+    const n = Number(usage.cost_usd);
+    if (Number.isFinite(n)) return n;
+  }
+  return 0;
+}
+
+/**
+ * Otari routing check: a call served by another provider than the selector's prefix, or one the gateway
+ * marked as a fallback, is a failure. Returns the reason, or undefined when the call is fine.
+ */
+export function routeProblem(
+  model: ModelInfo,
+  r: ChatResult,
+  gateway: Gateway
+): string | undefined {
+  if (gateway !== 'otari' || !r.headers) return undefined;
+  const prefix = model.id.slice(0, model.id.indexOf(':')).toLowerCase();
+  const served = r.headers.provider?.toLowerCase();
+  if (served && served !== prefix) return `route: served by ${served}, not ${prefix}`;
+  if (r.headers.fallback === true) return 'route: gateway fallback used';
+  return undefined;
+}
+
+/** One chat call plus the Otari routing check. `routeError` is set when the call must count as a failure. */
+export async function checkedChat(
+  t: Transport,
+  model: ModelInfo,
+  body: any,
+  opts: CallOpts,
+  gateway: Gateway
+): Promise<ChatResult & { routeError?: string }> {
+  const r = await t.chat(body, opts);
+  return { ...r, routeError: routeProblem(model, r, gateway) };
+}
+
+const OTARI_URL = 'https://eu.api.otari.ai/api/v1/chat/completions';
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
 export class LiveTransport implements Transport {
-  private key = process.env.OPENROUTER_API_KEY!; // never logged, never written
+  // never logged, never written
+  private key = process.env.OPENROUTER_API_KEY!;
+  constructor(private gateway: Gateway = 'openrouter') {
+    if (gateway === 'otari') this.key = process.env.OTARI_API_KEY!;
+  }
   async chat(body: any, opts: CallOpts): Promise<ChatResult> {
     const t0 = performance.now();
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const otari = this.gateway === 'otari';
+    const payload = { ...body };
+    if (opts.stream) {
+      payload.stream = true;
+      if (otari) payload.stream_options = { include_usage: true };
+    }
+    const res = await fetch(otari ? OTARI_URL : OPENROUTER_URL, {
       method: 'POST',
       headers: { Authorization: `Bearer ${this.key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(opts.stream ? { ...body, stream: true } : body),
+      body: JSON.stringify(payload),
     });
+    const headers: GatewayHeaders | undefined = otari
+      ? {
+          provider: res.headers.get('Otari-Provider') ?? undefined,
+          fallback: res.headers.get('Otari-Fallback') === 'true',
+        }
+      : undefined;
     if (!opts.stream || !res.ok || !res.body) {
       const json = await res.json().catch(() => ({ error: { message: 'unparseable body' } }));
-      return { status: res.status, json, latencyMs: performance.now() - t0, ttftMs: null };
+      return { status: res.status, json, latencyMs: performance.now() - t0, ttftMs: null, headers };
     }
     let ttft: number | null = null;
     let content = '';
@@ -201,6 +338,7 @@ export class LiveTransport implements Transport {
       json: { choices: [{ message, finish_reason: finish }], usage, error },
       latencyMs: performance.now() - t0,
       ttftMs: ttft,
+      headers,
     };
   }
 }
@@ -243,7 +381,10 @@ export async function imageTokensFor(model: string, dataUrl: string): Promise<nu
 }
 
 export class MockTransport implements Transport {
-  constructor(private snapshot = loadSnapshot()) {}
+  constructor(
+    private snapshot = loadSnapshot(),
+    private gateway: Gateway = 'openrouter'
+  ) {}
   async chat(body: any, opts: CallOpts): Promise<ChatResult> {
     const model = this.snapshot.get(body.model);
     const text =
@@ -335,13 +476,16 @@ export class MockTransport implements Transport {
     const cost = model
       ? (promptTokens * model.promptPer1M + (completion + reasoning) * model.completionPer1M) / 1e6
       : 0;
-    const usage = {
+    const usage: Record<string, unknown> = {
       prompt_tokens: promptTokens,
       completion_tokens: completion + reasoning,
       total_tokens: promptTokens + completion + reasoning,
-      cost,
       completion_tokens_details: { reasoning_tokens: reasoning },
     };
+    // Same shape each gateway really sends: a number for OpenRouter, a USD string for Otari.
+    if (this.gateway === 'otari') usage.cost_usd = cost.toFixed(8);
+    else usage.cost = cost;
+    const isOtari = this.gateway === 'otari';
     return {
       status: 200,
       json: {
@@ -351,12 +495,17 @@ export class MockTransport implements Transport {
       },
       latencyMs: latency,
       ttftMs: opts.stream ? latency * 0.35 : null,
+      headers: isOtari
+        ? { provider: String(body.model).split(':')[0], fallback: false }
+        : undefined,
     };
   }
 }
 
 export function makeTransport(mode: Mode): Transport {
-  return mode.live ? new LiveTransport() : new MockTransport();
+  return mode.live
+    ? new LiveTransport(mode.gateway)
+    : new MockTransport(loadSnapshot(), mode.gateway);
 }
 
 export const fileExists = existsSync;

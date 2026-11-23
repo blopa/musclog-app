@@ -4,11 +4,13 @@ import { describe, expect, it } from 'vitest';
 import { createApp } from '../src/app';
 import {
   OFFICIAL_OPENROUTER_BASE_URL,
+  OFFICIAL_OTARI_BASE_URL,
   OFFICIAL_REVENUECAT_BASE_URL,
   type AiConfig,
 } from '../src/config';
 import { parseConfig } from '../src/configSchema';
 import { testConfig, testDeps } from './fakes/ctx';
+import { OTARI_CONFIG } from './fakes/otari';
 
 type Env = Parameters<typeof parseConfig>[0];
 
@@ -308,4 +310,105 @@ describe('feature max_tokens_by_effort', () => {
       expect(rejected(baseEnv(withChatEffort(value))).join()).toContain('max_tokens_by_effort');
     }
   );
+});
+
+describe('the otari block', () => {
+  const withOtari = (fn: (o: Record<string, any>) => void = () => {}) =>
+    mutate((c) => {
+      c.otari = JSON.parse(JSON.stringify(OTARI_CONFIG));
+      fn(c.otari);
+    });
+  const errorsOf = (cfg: unknown, over: Partial<Env> = {}) =>
+    rejected(baseEnv(cfg, over)).join('\n');
+
+  it('is optional and a valid block is accepted', () => {
+    expect(parseConfig(baseEnv(testConfig())).ok).toBe(true);
+    expect(parseConfig(baseEnv(withOtari())).ok).toBe(true);
+  });
+
+  it('a valid block passes in production with the official URL', () => {
+    const cfg = {
+      ...testConfig({ revenuecat: { environments: ['production'], product_ids: ['prod_x'] } }),
+      otari: OTARI_CONFIG,
+    };
+    const env = prodEnv({ OTARI_BASE_URL: OFFICIAL_OTARI_BASE_URL }, cfg);
+    expect(parseConfig(env).ok).toBe(true);
+  });
+
+  it.each(['production', 'staging'])(
+    '%s requires the official Otari URL once the block exists',
+    (workerEnv) => {
+      const cfg =
+        workerEnv === 'production'
+          ? testConfig({ revenuecat: { environments: ['production'], product_ids: ['prod_x'] } })
+          : testConfig();
+      const e = (over: Partial<Env>) =>
+        baseEnv(
+          { ...cfg, otari: OTARI_CONFIG },
+          {
+            WORKER_ENV: workerEnv,
+            OPENROUTER_BASE_URL: OFFICIAL_OPENROUTER_BASE_URL,
+            REVENUECAT_BASE_URL: OFFICIAL_REVENUECAT_BASE_URL,
+            ...over,
+          }
+        );
+      expect(parseConfig(e({ OTARI_BASE_URL: OFFICIAL_OTARI_BASE_URL })).ok).toBe(true);
+      expect(rejected(e({ OTARI_BASE_URL: 'https://mock.example/api/v1' })).join()).toContain(
+        'OTARI_BASE_URL'
+      );
+      expect(rejected(e({})).join()).toContain('OTARI_BASE_URL'); // unset
+      // without the block the Otari URL is not checked
+      const noBlock = baseEnv(cfg, {
+        WORKER_ENV: workerEnv,
+        OPENROUTER_BASE_URL: OFFICIAL_OPENROUTER_BASE_URL,
+        REVENUECAT_BASE_URL: OFFICIAL_REVENUECAT_BASE_URL,
+      });
+      expect(parseConfig(noBlock).ok).toBe(true);
+    }
+  );
+
+  it('local and test accept any valid URL and refuse a malformed one', () => {
+    expect(
+      parseConfig(baseEnv(testConfig(), { OTARI_BASE_URL: 'http://127.0.0.1:8790/api/v1' })).ok
+    ).toBe(true);
+    expect(errorsOf(testConfig(), { OTARI_BASE_URL: 'not a url' })).toContain('OTARI_BASE_URL');
+  });
+
+  it('a model that is not pinned', () => {
+    expect(errorsOf(withOtari((o) => (o.models.chat.model = 'z-ai/glm-5.3-flash')))).toContain(
+      'otari.models.chat.model'
+    );
+  });
+
+  it('a model whose provider is not in providers', () => {
+    expect(
+      errorsOf(withOtari((o) => (o.models.vision.model = 'together:z-ai/glm-vision')))
+    ).toContain('otari.models.vision.model: provider is not in otari.providers');
+  });
+
+  it('an uppercase provider prefix', () => {
+    expect(errorsOf(withOtari((o) => (o.models.chat.model = 'DeepInfra:z-ai/glm')))).toContain(
+      'provider is not in'
+    );
+  });
+
+  it('allows a google/ catalogue id (the refusal is OpenRouter-only)', () => {
+    expect(
+      parseConfig(baseEnv(withOtari((o) => (o.models.chat.model = 'deepinfra:google/gemma-4')))).ok
+    ).toBe(true);
+  });
+
+  it('empty or duplicate or malformed providers', () => {
+    rejected(baseEnv(withOtari((o) => (o.providers = []))));
+    rejected(baseEnv(withOtari((o) => (o.providers = ['deepinfra', 'deepinfra']))));
+    rejected(baseEnv(withOtari((o) => (o.providers = ['Deep_Infra']))));
+  });
+
+  it('missing models, negative prices and unknown keys', () => {
+    rejected(baseEnv(withOtari((o) => delete o.models.vision)));
+    rejected(baseEnv(withOtari((o) => (o.models.chat.prices.prompt_per_mtok = -1))));
+    rejected(baseEnv(withOtari((o) => (o.models.chat.extra = 1))));
+    rejected(baseEnv(withOtari((o) => (o.extra = 1))));
+    rejected(baseEnv(withOtari((o) => delete o.models.chat.prices.image_per_image)));
+  });
 });

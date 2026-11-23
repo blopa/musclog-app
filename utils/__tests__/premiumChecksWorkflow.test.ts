@@ -42,6 +42,25 @@ describe('premium-checks workflow (checks only, never an apply or a deploy)', ()
     expect(invocations.some((line) => line.includes(' production '))).toBe(true);
   });
 
+  it('runs scripts/premium-upstream.sh only as a dry run, never with --yes', () => {
+    const invocations = code
+      .split('\n')
+      .filter((line) => /premium-upstream\.sh\s+\S+/.test(line) && /run:\s+scripts\//.test(line));
+
+    expect(invocations).toHaveLength(2);
+    expect(invocations.some((line) => /\bstaging status --dry-run$/.test(line.trim()))).toBe(true);
+    expect(invocations.some((line) => /\bproduction status --dry-run$/.test(line.trim()))).toBe(
+      true
+    );
+    expect(invocations.some((line) => /--yes|--consent-ready/.test(line))).toBe(false);
+  });
+
+  it('shellchecks both scripts at warning severity', () => {
+    expect(code).toContain(
+      'shellcheck --severity=warning scripts/premium-deploy.sh scripts/premium-upstream.sh'
+    );
+  });
+
   it('pins every action by a full commit SHA', () => {
     const uses = [...code.matchAll(/^\s*(?:-\s*)?uses:\s*(\S+)/gm)].map((match) => match[1]);
 
@@ -66,6 +85,7 @@ describe('premium-checks workflow (checks only, never an apply or a deploy)', ()
       'services/premium-worker/**',
       'infra/premium/**',
       'scripts/premium-deploy.sh',
+      'scripts/premium-upstream.sh',
       'docs/PREMIUM_WORKER.md',
       WORKFLOW,
     ]) {

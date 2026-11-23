@@ -1,7 +1,11 @@
 // Model benchmark (plan section 7 / gate G5 inputs): schema validity, refusals, latency, tokens, cost.
 //   dry-run (default, offline, mock):  tsx scripts/bench-models.ts
 //   live (spends money):               OPENROUTER_API_KEY=... tsx scripts/bench-models.ts --live --max-usd 1.5
-// Options: --models id,id  --reps N  --stream  --out results/models
+//   Otari gateway (pinned selectors):  OTARI_API_KEY=... tsx scripts/bench-models.ts --live --gateway otari --max-usd 3 \
+//                                        --models deepinfra:z-ai/glm-5.3-flash,deepinfra:google/gemma-4-31b-it
+// Options: --models id,id  --gateway openrouter|otari (default openrouter)  --reps N  --stream  --out results/models
+//          --max-usd N (required with --live)
+// Otari: a call served by another provider than the selector's prefix, or one the gateway marked as a fallback, counts as an error.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Ajv from 'ajv';
@@ -9,14 +13,17 @@ import sharp from 'sharp';
 import {
   Budget,
   ROOT,
+  checkedChat,
+  costOf,
   fmt,
+  gatewayExtras,
   makeTransport,
   mean,
   parseArgs,
   percentile,
   pickModels,
-  providerBlock,
   resolveMode,
+  type Mode,
   type ModelInfo,
   type Transport,
 } from './lib/core.ts';
@@ -197,14 +204,13 @@ async function runOne(
   rep: number,
   budget: Budget,
   stream: boolean,
-  mode: { live: boolean }
+  mode: Mode
 ): Promise<Rec | 'budget'> {
   const base: any = {
     model: model.id,
     messages: fx.messages,
     max_tokens: Math.min(fx.maxTokens, model.maxCompletion),
-    provider: providerBlock(model),
-    ...(model.reasoningSupported ? { reasoning: { effort: 'low' } } : {}),
+    ...gatewayExtras(model, mode.gateway),
   };
   if (fx.kind === 'schema')
     base.response_format = {
@@ -247,15 +253,25 @@ async function runOne(
     rec.prompt += u.prompt_tokens ?? 0;
     rec.completion += u.completion_tokens ?? 0;
     rec.reasoning += u.completion_tokens_details?.reasoning_tokens ?? 0;
-    const c = typeof u.cost === 'number' ? u.cost : 0;
+    const c = costOf(u);
     rec.cost += c;
     budget.record(c);
   };
 
-  const r1 = await t.chat(base, { stream, meta: { fixture: fx.type } });
+  const r1 = await checkedChat(
+    t,
+    model,
+    base,
+    { stream, meta: { fixture: fx.type } },
+    mode.gateway
+  );
   rec.latencyMs += r1.latencyMs;
   rec.ttftMs = r1.ttftMs;
   addUsage(r1);
+  if (r1.routeError) {
+    rec.error = r1.routeError.slice(0, 120);
+    return rec;
+  }
   if (r1.status !== 200 || r1.json?.error) {
     rec.error = `HTTP ${r1.status} ${r1.json?.error?.code ?? r1.json?.error?.message ?? ''}`.slice(
       0,
@@ -301,9 +317,20 @@ async function runOne(
       { role: 'tool', tool_call_id: call.id, content: fx.toolResult },
     ],
   };
-  const r2 = await t.chat(follow, { stream, meta: { fixture: fx.type } });
+  const r2 = await checkedChat(
+    t,
+    model,
+    follow,
+    { stream, meta: { fixture: fx.type } },
+    mode.gateway
+  );
   rec.latencyMs += r2.latencyMs;
   addUsage(r2);
+  if (r2.routeError) {
+    rec.error = r2.routeError.slice(0, 120);
+    rec.valid = false;
+    return rec;
+  }
   const text = r2.json?.choices?.[0]?.message?.content;
   rec.emptyOrRefused = !text || !String(text).trim();
   rec.valid = r2.status === 200 && !rec.emptyOrRefused;
@@ -362,7 +389,7 @@ export function toMarkdown(rows: ReturnType<typeof summarise>, meta: string) {
 export async function main(argv?: string[]) {
   const a = parseArgs(argv);
   const mode = resolveMode(a);
-  const models = pickModels(a.str('models'));
+  const models = pickModels(a.str('models'), mode.gateway); // defaults per gateway (DEFAULT_MODELS / DEFAULT_OTARI_MODELS)
   const reps = a.num('reps', 3);
   const stream = a.has('stream');
   const fixtures = await buildFixtures();
@@ -381,8 +408,10 @@ export async function main(argv?: string[]) {
         recs.push(r);
       }
   const rows = summarise(recs);
-  const meta = `Mode: ${mode.live ? 'LIVE' : 'DRY-RUN (mock transport, numbers are NOT measurements)'}. Models: ${models.map((m) => m.id).join(', ')}. Reps: ${reps}. Streaming: ${stream}. Spent: $${budget.spent.toFixed(4)}${mode.live ? ` of $${mode.maxUsd}` : ''}${stopped ? ' (STOPPED early by --max-usd guard)' : ''}.`;
-  const out = a.str('out') ?? join('results', mode.live ? 'models-live' : 'models-dryrun');
+  const meta = `Mode: ${mode.live ? 'LIVE' : 'DRY-RUN (mock transport, numbers are NOT measurements)'}. Gateway: ${mode.gateway}. Models: ${models.map((m) => m.id).join(', ')}. Reps: ${reps}. Streaming: ${stream}. Spent: $${budget.spent.toFixed(4)}${mode.live ? ` of $${mode.maxUsd}` : ''}${stopped ? ' (STOPPED early by --max-usd guard)' : ''}.`;
+  const suffix = mode.gateway === 'otari' ? '-otari' : '';
+  const out =
+    a.str('out') ?? join('results', (mode.live ? 'models-live' : 'models-dryrun') + suffix);
   mkdirSync(join(ROOT, 'results'), { recursive: true });
   writeFileSync(join(ROOT, `${out}.json`), JSON.stringify({ meta, rows, records: recs }, null, 1));
   writeFileSync(join(ROOT, `${out}.md`), toMarkdown(rows, meta));

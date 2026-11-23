@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseJsonUsage, parseTail, TailBuffer, TAIL_BYTES } from '../src/proxy/sse';
+import { otariUsage, parseJsonUsage, parseTail, TailBuffer, TAIL_BYTES } from '../src/proxy/sse';
+import { otariSseChunks, otariUsageObject } from './fakes/otari';
 import { sseChunks } from './fakes/openrouter';
 
 describe('parseTail', () => {
@@ -76,5 +77,28 @@ describe('parseJsonUsage', () => {
     expect(parseJsonUsage('{"id":"g"}').costUsd).toBeNull();
     expect(parseJsonUsage('not json').costUsd).toBeNull();
     expect(parseJsonUsage('[1]').id).toBeNull();
+  });
+});
+
+describe('the Otari usage reader', () => {
+  it('reads the six-decimal cost_usd string from the last stream chunk', () => {
+    const t = parseTail(otariSseChunks({ cost: '0.004560' }).join(''), otariUsage);
+    expect(t).toEqual({ costUsd: 0.00456, promptTokens: 100, completionTokens: 50, error: false });
+  });
+
+  it('reads a non-stream body, and ignores OpenRouter-shaped cost', () => {
+    const body = JSON.stringify({ id: 'x', usage: otariUsageObject('0.001230') });
+    expect(parseJsonUsage(body, otariUsage)).toMatchObject({ costUsd: 0.00123, id: 'x' });
+    expect(parseJsonUsage(JSON.stringify({ usage: { cost: 0.5 } }), otariUsage).costUsd).toBeNull();
+    expect(parseJsonUsage(JSON.stringify({ usage: { cost_usd: '0.5' } })).costUsd).toBeNull();
+  });
+
+  it.each(['', ' ', 'abc', '-0.1', 'NaN', null, {}])('refuses cost_usd %j', (v) => {
+    expect(otariUsage({ cost_usd: v })).toBeNull();
+  });
+
+  it('accepts a numeric cost_usd and a zero cost', () => {
+    expect(otariUsage({ cost_usd: 0.25 })?.costUsd).toBe(0.25);
+    expect(otariUsage({ cost_usd: '0.000000' })?.costUsd).toBe(0);
   });
 });

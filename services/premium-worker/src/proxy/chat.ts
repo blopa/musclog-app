@@ -25,9 +25,24 @@ import {
 import { enforceRateLimit } from '../limiter';
 import { lineagePrefix, type LogEvent } from '../log';
 import { renewedLivePeriod } from '../billing/periods';
+import { activeUpstream } from '../upstream/select';
+import type { UpstreamName } from '../upstream/types';
 import { allowlistRequest } from './allowlist';
 import { reservationBound } from './bound';
-import { parseJsonUsage, parseTail, TailBuffer } from './sse';
+import {
+  openRouterUsage,
+  otariUsage,
+  parseJsonUsage,
+  parseTail,
+  TailBuffer,
+  type UsageReader,
+} from './sse';
+import {
+  assertOtariPinned,
+  buildOpenRouterBody,
+  buildOtariBody,
+  selectorProvider,
+} from './upstreamBody';
 
 /** Patchable by tests so none of them waits 30 s. */
 export const TIMEOUTS = { overallMs: 55_000, streamIdleMs: 30_000 };
@@ -49,17 +64,21 @@ const budgetPct = (p: PeriodRow, r: number, now: number): number => {
 interface RequestLog {
   lineage?: string;
   model?: string;
+  upstream?: UpstreamName;
 }
+
+type EmitArg = Omit<LogEvent, 'route' | 'latency_ms' | 'lineage_prefix' | 'model' | 'upstream'>;
 
 export async function handleChatCompletions(request: Request, ctx: Ctx): Promise<Response> {
   const started = ctx.deps.now();
   const rl: RequestLog = {};
-  const emit = (e: Omit<LogEvent, 'route' | 'latency_ms' | 'lineage_prefix' | 'model'>) =>
+  const emit = (e: EmitArg) =>
     ctx.deps.log.log({
       route: '/v1/chat/completions',
       latency_ms: ctx.deps.now() - started,
       lineage_prefix: rl.lineage,
       model: rl.model,
+      upstream: rl.upstream,
       ...e,
     });
   try {
@@ -70,12 +89,7 @@ export async function handleChatCompletions(request: Request, ctx: Ctx): Promise
   }
 }
 
-async function run(
-  request: Request,
-  ctx: Ctx,
-  rl: RequestLog,
-  emit: (e: Omit<LogEvent, 'route' | 'latency_ms' | 'lineage_prefix' | 'model'>) => void
-): Promise<Response> {
+async function run(request: Request, ctx: Ctx, rl: RequestLog, emit: EmitLog): Promise<Response> {
   const { env, config, deps } = ctx;
   const db = env.DB;
   const now = deps.now();
@@ -100,8 +114,10 @@ async function run(
     throw new ApiError(400, 'invalid_request', { path: 'body' });
   }
   const req = allowlistRequest(parsed, config);
-  const r = reservationBound(req, config);
-  rl.model = config.model;
+  // The gateway is chosen once per request; the body, the bound, the call and the settlement follow it.
+  const upstream = await activeUpstream(ctx);
+  const r = reservationBound(req, config, upstream);
+  rl.upstream = upstream;
 
   // 5. The caller's live period, diagnosing why there is none.
   const period = await requirePeriod(ctx, claims.rc, now);
@@ -117,9 +133,20 @@ async function run(
     return errorResponse(status, code, extra, budgetHeader);
   };
 
-  // 6. The upstream body and its hash (the Idempotency-Key is bound to it).
-  const bodyText = JSON.stringify({ ...req.body, user: period.lineage_key.slice(0, 16) });
-  const bh = await sha256HexOfText(bodyText);
+  // 6. The upstream body and its hash. The Idempotency-Key is bound to the gateway-NEUTRAL body
+  // (plus `user`), so flipping the toggle between a request and its retry is not a mismatch.
+  const user = period.lineage_key.slice(0, 16);
+  const bh = await sha256HexOfText(JSON.stringify({ ...req.neutral, user }));
+  let upstreamBody: Record<string, unknown>;
+  if (upstream === 'otari') {
+    const otari = config.otari!; // activeUpstream returns 'otari' only with the block present
+    upstreamBody = buildOtariBody(req.neutral, otari, req.feature, env.WORKER_ENV);
+    assertOtariPinned(upstreamBody, otari);
+  } else {
+    upstreamBody = buildOpenRouterBody(req.neutral, config); // asserts the privacy invariant
+  }
+  rl.model = String(upstreamBody.model);
+  const bodyText = JSON.stringify({ ...upstreamBody, user });
 
   // 7. Reserve. A D1 failure fails closed, with no upstream call.
   const pk = period.payment_key;
@@ -151,6 +178,9 @@ async function run(
   const relay: Relay = {
     ctx,
     r,
+    upstream,
+    readUsage: upstream === 'otari' ? otariUsage : openRouterUsage,
+    unexpectedProvider: false,
     emit,
     budgetHeader,
     settle: (final, a) => settleCharge(ctx, { pk, id: idemKey, final, a }, r, emit),
@@ -168,7 +198,10 @@ async function run(
 
   let res: Response;
   try {
-    res = await deps.openrouter.chatCompletions(bodyText, { signal: ac.signal });
+    res =
+      upstream === 'otari'
+        ? await deps.otari!.chatCompletions(bodyText, { signal: ac.signal })
+        : await deps.openrouter.chatCompletions(bodyText, { signal: ac.signal });
   } catch {
     clearTimeout(timer);
     // Unknown outcome: charged at the reservation.
@@ -180,7 +213,21 @@ async function run(
     return refuseUpstream(relay, db, res);
   }
 
-  const genHeader = res.headers.get('x-generation-id');
+  if (upstream === 'otari') {
+    // The selector pins one provider and never falls back; this checks Otari kept to it. The response
+    // is relayed and settled either way, then the breaker opens (relayed answers cannot be recalled).
+    const served = res.headers.get('otari-provider');
+    const pinned = selectorProvider(upstreamBody.model);
+    relay.unexpectedProvider =
+      (served !== null && served.toLowerCase() !== pinned) ||
+      res.headers.get('otari-fallback')?.toLowerCase() === 'true';
+    // No header means the provider could not be checked. The pinned selector still never falls back,
+    // so this is not a breach, but it must be visible: the check above silently stops working.
+    if (served === null)
+      emit({ status: res.status, code: 'otari_provider_unverified', severity: 'error' });
+  }
+  // OpenRouter's generation lookup has no Otari counterpart: its cost is in the usage object or unknown.
+  const genHeader = upstream === 'otari' ? null : res.headers.get('x-generation-id');
   if (!req.stream) {
     return relayJson(relay, res, genHeader, timer, () => timedOut);
   }
@@ -242,13 +289,18 @@ const RESERVE_REFUSALS: Record<
 
 // ----- steps 8-9: the upstream call and its settlement --------------------------------------
 
-type EmitLog = (e: Omit<LogEvent, 'route' | 'latency_ms' | 'lineage_prefix' | 'model'>) => void;
+type EmitLog = (e: EmitArg) => void;
 
 /** What every way of ending the upstream call needs: the reservation, the log and the settle. */
 interface Relay {
   ctx: Ctx;
   /** The reservation bound, in micro-USD: charged when the real cost is unknown. */
   r: number;
+  upstream: UpstreamName;
+  /** Reads the gateway's `usage` object (cost shape differs per gateway). */
+  readUsage: UsageReader;
+  /** Otari answered from another provider than the pinned one, or fell back: open the breaker once settled. */
+  unexpectedProvider: boolean;
   emit: EmitLog;
   budgetHeader: Record<string, string>;
   settle(final: 'settled' | 'refunded', a: number): Promise<{ overrun: boolean }>;
@@ -308,6 +360,14 @@ async function settleAndLog(
   const charged = a ?? relay.r;
   const s = await relay.settle('settled', charged);
   relay.emit({ ...log, cost_u: charged, overrun: s.overrun });
+  if (relay.unexpectedProvider) {
+    try {
+      await openBreaker(relay.ctx.env.DB, 'upstream_unexpected_provider');
+    } catch {
+      /* logged below */
+    }
+    relay.emit({ status: 503, code: 'upstream_unexpected_provider', severity: 'high' });
+  }
 }
 
 const tokensOf = (u: { promptTokens: number | null; completionTokens: number | null }) =>
@@ -396,11 +456,14 @@ async function relayJson(
     return errorResponse(status, code, {}, relay.budgetHeader);
   }
   clearTimeout(timer);
-  const usage = parseJsonUsage(text);
+  const usage = parseJsonUsage(text, relay.readUsage);
   relay.ctx.exec.waitUntil(
     settleAndLog(
       relay,
-      { costUsd: usage.costUsd, generationIds: [genHeader ?? usage.id] },
+      {
+        costUsd: usage.costUsd,
+        generationIds: relay.upstream === 'otari' ? [] : [genHeader ?? usage.id],
+      },
       { status: 200, tokens: tokensOf(usage) }
     )
   );
@@ -479,10 +542,13 @@ function relayStream(
       await reader.cancel().catch(() => {});
       await writer.abort(new Error('upstream_stream_failed')).catch(() => {});
     }
-    const t = parseTail(tail.text());
+    const t = parseTail(tail.text(), relay.readUsage);
     await settleAndLog(
       relay,
-      { costUsd: t.costUsd, generationIds: [genHeader ?? tail.generationId()] },
+      {
+        costUsd: t.costUsd,
+        generationIds: relay.upstream === 'otari' ? [] : [genHeader ?? tail.generationId()],
+      },
       {
         status: 200,
         code:

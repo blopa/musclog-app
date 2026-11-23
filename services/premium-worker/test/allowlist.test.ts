@@ -1,10 +1,21 @@
 import { describe, expect, it } from 'vitest';
 
-import { allowlistRequest, assertPremiumPrivacy, effectiveReasoning } from '../src/proxy/allowlist';
+import {
+  allowlistRequest as allowlistNeutral,
+  assertPremiumPrivacy,
+  effectiveReasoning,
+} from '../src/proxy/allowlist';
+import { buildOpenRouterBody } from '../src/proxy/upstreamBody';
 import type { AiConfig } from '../src/config';
 import { reservationBound } from '../src/proxy/bound';
 import { ApiError } from '../src/http';
 import { testConfig } from './fakes/ctx';
+
+/** The validated request plus the OpenRouter body built from it (what `.body` was before the split). */
+function allowlistRequest(input: unknown, cfg: AiConfig) {
+  const r = allowlistNeutral(input, cfg);
+  return { ...r, body: buildOpenRouterBody(r.neutral, cfg) };
+}
 
 const config = testConfig();
 const visionConfig = testConfig({ vision_enabled: true, image: { tokens_max: 1000 } });

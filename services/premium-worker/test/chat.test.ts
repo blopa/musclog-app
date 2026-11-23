@@ -12,6 +12,16 @@ import {
 } from './fakes/openrouter';
 import { testConfig } from './fakes/ctx';
 import {
+  fakeOtari,
+  OTARI_CONFIG,
+  otariJsonCompletion,
+  otariSseChunks,
+  otariSseCompletion,
+} from './fakes/otari';
+import { selectorProvider } from '../src/proxy/upstreamBody';
+import {
+  OTARI_KEY,
+  useOtari,
   call,
   chatBody,
   IDEM,
@@ -33,6 +43,7 @@ const patched = { ...TIMEOUTS };
 
 beforeAll(() => {
   watch.secrets.add(env.OPENROUTER_API_KEY);
+  watch.secrets.add(OTARI_KEY);
 });
 beforeEach(async () => {
   await wipe(env.DB);
@@ -44,6 +55,13 @@ afterEach(async () => {
   // Privacy invariant (plan 13 row 6): every upstream body in the suite.
   const model = testConfig().model;
   for (const rec of allRecorded) {
+    if (rec.upstream === 'otari') {
+      // Otari: the data recipient is pinned by the selector, and nothing OpenRouter-shaped is sent.
+      expect(rec.body).not.toHaveProperty('provider');
+      expect(rec.body).not.toHaveProperty('reasoning');
+      expect(OTARI_CONFIG.providers).toContain(selectorProvider(rec.body.model));
+      continue;
+    }
     expect(rec.body.provider.zdr).toBe(true);
     expect(rec.body.provider.data_collection).toBe('deny');
     expect(rec.body.model).toBe(model);
@@ -571,5 +589,188 @@ describe('max_tokens_by_effort end to end', () => {
     expect(sent.max_tokens).toBe(4500);
     expect(sent.reasoning).toEqual({ effort: 'high' });
     expect(sent).not.toHaveProperty('reasoning_effort');
+  });
+});
+
+describe('the Otari upstream (D1 toggle)', () => {
+  beforeEach(() => useOtari());
+
+  it('non-stream success sends a pinned Otari body and charges usage.cost_usd', async () => {
+    const otari = fakeOtari(otariJsonCompletion('0.001230'));
+    const { res, deps, done } = await call({ otari });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { id: string }).id).toBe('chatcmpl-otari-1');
+    await done();
+    expect(await onlyReservation()).toMatchObject({ state: 'settled', settled_u: 1230 });
+    const sent = otari.calls[0]!.body;
+    expect(sent).toMatchObject({
+      model: 'deepinfra:z-ai/glm-5.3-flash',
+      user: 'lin-pk1',
+      stream: false,
+      reasoning_effort: 'low',
+      metadata: { app: 'musclog-iron', env: 'test', feature: 'chat' },
+    });
+    expect(sent).not.toHaveProperty('provider');
+    expect(sent).not.toHaveProperty('reasoning');
+    expect(sent).not.toHaveProperty('stream_options');
+    const log = deps.logs.find((l) => l.status === 200 && l.cost_u === 1230);
+    expect(log).toMatchObject({ upstream: 'otari', model: 'deepinfra:z-ai/glm-5.3-flash' });
+  });
+
+  it('streaming success relays every byte, asks for usage and charges the last usage chunk', async () => {
+    const chunks = otariSseChunks({ cost: '0.004560', pieces: ['a', 'b'] });
+    const otari = fakeOtari({ kind: 'sse', chunks, headers: { 'otari-provider': 'deepinfra' } });
+    const { res, done } = await call({ otari, body: chatBody({ stream: true }) });
+    expect(await res.text()).toBe(chunks.join(''));
+    await done();
+    expect(await onlyReservation()).toMatchObject({ state: 'settled', settled_u: 4560 });
+    expect(otari.calls[0]!.body.stream_options).toEqual({ include_usage: true });
+  });
+
+  it.each([
+    ['non-stream', false, otariJsonCompletion(null)],
+    ['stream', true, otariSseCompletion(null)],
+  ])(
+    '%s with no cost charges the reservation (no generation lookup exists)',
+    async (_n, stream, script) => {
+      const otari = fakeOtari(script);
+      const { res, deps, done } = await call({ otari, body: chatBody({ stream }) });
+      await res.text();
+      await done();
+      const row = await onlyReservation();
+      expect(row.settled_u).toBe(row.reserved_u);
+      expect(deps.sleeps).toEqual([]);
+    }
+  );
+
+  it('prices the reservation with the Otari prices', async () => {
+    const or = fakeOpenRouter(jsonCompletion(0.001));
+    const a = await call({ or, config: testConfig({ otari: OTARI_CONFIG }), key: 'idem-or-0001' });
+    await a.res.text();
+    await a.done();
+    await useOtari();
+    const otari = fakeOtari(otariJsonCompletion(null));
+    const b = await call({ otari, key: 'idem-ot-0001' });
+    await b.res.text();
+    await b.done();
+    const rows = await reservations();
+    const reserved = (id: string) => rows.find((r) => r.req_id === id)!.reserved_u;
+    expect(reserved('idem-ot-0001')).not.toBe(reserved('idem-or-0001'));
+  });
+
+  it('an Otari answer from another provider is relayed and settled, then opens the breaker', async () => {
+    const otari = fakeOtari(otariJsonCompletion('0.001000', { 'otari-provider': 'together' }));
+    const { res, deps, done } = await call({ otari });
+    expect(res.status).toBe(200);
+    await res.text();
+    await done();
+    expect(await onlyReservation()).toMatchObject({ state: 'settled', settled_u: 1000 });
+    expect(await meta('breaker')).toBe('open');
+    expect(await meta('breaker_reason')).toBe('upstream_unexpected_provider');
+    expect(deps.logs).toContainEqual(
+      expect.objectContaining({
+        code: 'upstream_unexpected_provider',
+        severity: 'high',
+        upstream: 'otari',
+      })
+    );
+  });
+
+  it('Otari-Fallback: true opens the breaker too (streams as well)', async () => {
+    const otari = fakeOtari(
+      otariSseCompletion('0.001000', { 'otari-provider': 'deepinfra', 'otari-fallback': 'true' })
+    );
+    const { res, done } = await call({ otari, body: chatBody({ stream: true }) });
+    await res.text();
+    await done();
+    expect(await meta('breaker_reason')).toBe('upstream_unexpected_provider');
+  });
+
+  it('the expected provider header (any case) leaves the breaker closed', async () => {
+    const otari = fakeOtari(
+      otariJsonCompletion('0.001000', { 'otari-provider': 'DeepInfra', 'otari-fallback': 'false' })
+    );
+    const { res, deps, done } = await call({ otari });
+    await res.text();
+    await done();
+    expect(await meta('breaker')).toBeNull();
+    expect(deps.logs).not.toContainEqual(
+      expect.objectContaining({ code: 'otari_provider_unverified' })
+    );
+  });
+
+  it('a missing Otari-Provider header is logged as unverified, without opening the breaker', async () => {
+    const otari = fakeOtari(otariJsonCompletion('0.001000', {}));
+    const { res, deps, done } = await call({ otari });
+    expect(res.status).toBe(200);
+    await res.text();
+    await done();
+    expect(await meta('breaker')).toBeNull();
+    expect(deps.logs).toContainEqual(
+      expect.objectContaining({
+        code: 'otari_provider_unverified',
+        severity: 'error',
+        upstream: 'otari',
+      })
+    );
+  });
+
+  it('upstream 500 is refunded; 402 opens the breaker, like OpenRouter', async () => {
+    const a = await call({ otari: fakeOtari({ kind: 'http', status: 500 }) });
+    expect(a.res.status).toBe(502);
+    await a.done();
+    expect(await onlyReservation()).toMatchObject({ state: 'refunded' });
+    const b = await call({ otari: fakeOtari({ kind: 'http', status: 402 }), key: 'idem-key-0002' });
+    expect(b.res.status).toBe(503);
+    await b.done();
+    expect(await meta('breaker_reason')).toBe('upstream_402');
+  });
+
+  it('a network error is 502 and charged the reservation', async () => {
+    const { res, done } = await call({ otari: fakeOtari({ kind: 'throw' }) });
+    expect(res.status).toBe(502);
+    await done();
+    const row = await onlyReservation();
+    expect(row.settled_u).toBe(row.reserved_u);
+  });
+
+  it('flipping the toggle between a request and its retry is not an idempotency mismatch', async () => {
+    const or = fakeOpenRouter({ kind: 'http', status: 500 });
+    await useOtari('openrouter');
+    const first = await call({ or, config: testConfig({ otari: OTARI_CONFIG }) });
+    expect(first.res.status).toBe(502);
+    await first.done();
+    await useOtari();
+    const retry = await call({ otari: fakeOtari(otariJsonCompletion('0.001000')) });
+    expect(retry.res.status).toBe(200);
+    await retry.res.text();
+    await retry.done();
+  });
+
+  it('the toggle on without an Otari key serves through OpenRouter and logs it', async () => {
+    const or = fakeOpenRouter(jsonCompletion(0.001));
+    const { res, deps, done } = await call({
+      or,
+      config: testConfig({ otari: OTARI_CONFIG }),
+    });
+    expect(res.status).toBe(200);
+    await res.text();
+    await done();
+    expect(or.calls).toHaveLength(1);
+    expect(deps.logs).toContainEqual(
+      expect.objectContaining({ code: 'upstream_misconfigured', severity: 'high' })
+    );
+  });
+
+  it('OpenRouter request logs name their upstream', async () => {
+    await useOtari('openrouter');
+    const or = fakeOpenRouter(jsonCompletion(0.001));
+    const { res, deps, done } = await call({ or });
+    await res.text();
+    await done();
+    expect(deps.logs.filter((l) => l.route === '/v1/chat/completions')).not.toHaveLength(0);
+    for (const l of deps.logs.filter((l) => l.route === '/v1/chat/completions')) {
+      expect(l.upstream).toBe('openrouter');
+    }
   });
 });

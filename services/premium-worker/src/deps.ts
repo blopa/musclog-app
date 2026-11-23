@@ -1,7 +1,8 @@
 import { consoleLogger, type Logger } from './log';
 import type { Env } from './env';
-import type { OpenRouterClient, RevenueCatClient } from './upstream/types';
+import type { OpenRouterClient, OtariClient, RevenueCatClient } from './upstream/types';
 import { createOpenRouterClient } from './upstream/openrouter';
+import { createOtariClient } from './upstream/otari';
 import { createRevenueCatClient } from './upstream/revenuecat';
 import type { AiConfig } from './config';
 import { hex } from './identity/crypto';
@@ -10,6 +11,8 @@ import { hex } from './identity/crypto';
 export interface Deps {
   revenuecat: RevenueCatClient;
   openrouter: OpenRouterClient;
+  /** Built only when OTARI_API_KEY is set; null otherwise (the toggle then means OpenRouter). */
+  otari: OtariClient | null;
   log: Logger;
   now(): number;
   /** 32 hex chars of CSPRNG output (hold tokens, nonce randomness). */
@@ -32,6 +35,9 @@ export function defaultDeps(env: Env, config: AiConfig): Deps {
       baseUrl: env.OPENROUTER_BASE_URL,
       apiKey: env.OPENROUTER_API_KEY,
     }),
+    otari: env.OTARI_API_KEY
+      ? createOtariClient({ baseUrl: env.OTARI_BASE_URL, apiKey: env.OTARI_API_KEY })
+      : null,
     log: consoleLogger(0.1),
     now: () => Date.now(),
     randomHex: () => randomHex(),
