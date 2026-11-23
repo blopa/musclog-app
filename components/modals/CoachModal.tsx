@@ -477,8 +477,11 @@ function SeededComposer({
 
   // Sync the seed into GiftedChat's internal state so Send uses it
   useEffect(() => {
-    if (seedText != null && propsWithText.onTextChanged) {
-      propsWithText.onTextChanged(seedText);
+    if (seedText != null) {
+      // GiftedChat's input reports edits through textInputProps.onChangeText (it has no
+      // onTextChanged), which is also how its internal text, and so Send, learns of the seed.
+      propsWithText.textInputProps?.onChangeText?.(seedText);
+      propsWithText.onTextChanged?.(seedText);
     }
     // Intentionally not including props to run only when seedText is set
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -491,6 +494,7 @@ function SeededComposer({
     }
 
     propsWithText.onTextChanged?.(newText);
+    propsWithText.textInputProps?.onChangeText?.(newText);
   };
 
   return (
@@ -513,6 +517,7 @@ function SeededComposer({
         {...({ ...props, text, onTextChanged } as ComposerProps)}
         textInputProps={{
           ...props.textInputProps,
+          onChangeText: onTextChanged,
           style: [styles.composerTextInput, props.textInputProps?.style],
           placeholder: t('coach.placeholder'),
           placeholderTextColor: theme.colors.text.tertiary,
