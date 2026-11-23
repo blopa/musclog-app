@@ -345,10 +345,9 @@ servers, the free tier and Iron, which speak Chat Completions).
 
 **Open.** `reasoning_effort` is sent as `low`/`medium`/`high` because every OpenAI reasoning model
 takes those; whether each model in `OPENAI_MODELS` accepts it has not been run against the live API
-(re-check when the list changes). Nothing measures whether the effort table improves answers: that
-would need a frozen set of meal-estimation and coaching fixtures scored on calorie error, id
-accuracy and numeric claims, run for each effort setting (`utils/__tests__/fixtures/coachReplay/`
-is the existing seed for replies).
+(re-check when the list changes). Nothing measures whether the effort table improves answers: the
+plan for doing it (variants, cases, metrics, how to read the result) is
+`docs/AI_EFFORT_EVALUATION.md`.
 
 ## Photo viewer, saving and feedback links
 
