@@ -13,11 +13,11 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Share, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import scenariosFile from '@/data/localAiBench/scenarios.json';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useTheme } from '@/hooks/useTheme';
 import { AiService } from '@/services/AiService';
 import { generateWithLocalModel } from '@/services/localModels/llamaRuntime';
-import scenariosFile from '@/data/localAiBench/scenarios.json';
 import { requestStructured } from '@/utils/coachAI';
 import {
   type BenchScenario,
