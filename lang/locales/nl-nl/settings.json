@@ -352,6 +352,7 @@
       "useThinkingMode": "Denkmodus gebruiken",
       "useThinkingModeSubtitle": "Laat AI-providers diepere redenering gebruiken wanneer dit wordt ondersteund. Dit verbruikt meer tokens en kan de kosten verhogen.",
       "useThinkingModeIronNote": "Met Musclog Iron gebruiken dieper nadenken en extra controles meer van je maandelijkse AI-tegoed.",
+      "localLlmThinkingEnabled": "Denkmodus ingeschakeld, want lokale modellen kosten niets extra. Je kunt het uitzetten in de AI-instellingen.",
       "maxAiMemories": "Max AI-herinneringen",
       "maxAiMemoriesSubtitle": "Aantal vorige berichten om te onthouden in gesprekken",
       "nutritionLogHistoryDays": "Voedingsloggeschiedenis verzonden naar AI",

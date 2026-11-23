@@ -352,6 +352,7 @@
       "useThinkingMode": "Użyj trybu myślenia",
       "useThinkingModeSubtitle": "Pozwól dostawcom AI na głębsze rozumowanie, gdy jest ono obsługiwane. Zużywa to więcej tokenów i może zwiększać koszt.",
       "useThinkingModeIronNote": "W Musclog Iron głębsze myślenie i dodatkowe sprawdzenia zużywają więcej Twojego miesięcznego limitu AI.",
+      "localLlmThinkingEnabled": "Tryb myślenia włączony, bo modele lokalne nic dodatkowo nie kosztują. Możesz go wyłączyć w ustawieniach AI.",
       "maxAiMemories": "Maks. liczba wspomnień AI",
       "maxAiMemoriesSubtitle": "Liczba poprzednich wiadomości pamiętanych w rozmowach",
       "nutritionLogHistoryDays": "Historia wpisów żywieniowych wysyłana do AI",

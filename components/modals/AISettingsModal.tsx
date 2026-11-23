@@ -33,6 +33,7 @@ import {
   OPENAI_MODELS,
 } from '@/constants/ai';
 import { SETTINGS } from '@/constants/settingDefinitions';
+import { useSnackbar } from '@/context/SnackbarContext';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { usePremium } from '@/hooks/usePremium';
@@ -369,6 +370,30 @@ export function AISettingsModal({
     handleWorkoutHistoryDaysChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
+  const { showSnackbar } = useSnackbar();
+
+  // A local model costs nothing per call, so deeper thinking is only upside: switching the
+  // local LLM on also turns thinking mode on (once, and only if it was off), and says so.
+  const handleEnableLocalLlmWithThinking = useCallback(
+    (enabled: boolean) => {
+      handleEnableLocalLlmChange(enabled);
+
+      if (enabled && !debouncedEnableLocalLlm && !debouncedUseThinkingMode) {
+        handleUseThinkingModeChange(true);
+        showSnackbar('success', t('settings.aiSettings.localLlmThinkingEnabled'), {
+          duration: 5000,
+        });
+      }
+    },
+    [
+      debouncedEnableLocalLlm,
+      debouncedUseThinkingMode,
+      handleEnableLocalLlmChange,
+      handleUseThinkingModeChange,
+      showSnackbar,
+      t,
+    ]
+  );
   const musclogGatewayAvailable = isMusclogGatewayAvailable();
   const useMusclogGateway = effectiveUseMusclogGateway(debouncedUseMusclogFreeTier);
 
@@ -468,7 +493,7 @@ export function AISettingsModal({
       key: 'enable-local-llm',
       label: t('settings.aiSettings.enableLocalLlm'),
       value: debouncedEnableLocalLlm,
-      onValueChange: handleEnableLocalLlmChange,
+      onValueChange: handleEnableLocalLlmWithThinking,
       icon: (
         <View
           style={{

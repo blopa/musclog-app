@@ -352,6 +352,7 @@
       "useThinkingMode": "Use thinking mode",
       "useThinkingModeSubtitle": "Allow AI providers to use deeper reasoning when supported. This uses more tokens and may increase cost.",
       "useThinkingModeIronNote": "With Musclog Iron, deeper thinking and extra checks use more of your monthly AI allowance.",
+      "localLlmThinkingEnabled": "Thinking mode turned on, since local models cost nothing extra. You can turn it off in AI settings.",
       "maxAiMemories": "Max AI memories",
       "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",
       "nutritionLogHistoryDays": "Nutrition log history sent to AI",
