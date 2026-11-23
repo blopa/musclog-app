@@ -31,7 +31,7 @@
     "resetConfirm": "Réinitialiser",
     "consent": {
       "title": "Envoyer les requêtes d'IA à Musclog Iron ?",
-      "body": "Tes messages, ainsi que les informations dont une fonction d'IA a besoin pour répondre, comme tes entraînements, tes repas et tes mesures corporelles, sont transmis au service Musclog Iron. Il les transfère à OpenRouter, qui les envoie au fournisseur du modèle d'IA. Seuls des points d'accès à conservation zéro des données (ZDR) sont utilisés : ces fournisseurs ne conservent pas ton contenu et ne l'utilisent pas pour l'entraînement. OpenRouter contrôle aussi chaque requête pour détecter les abus sexuels sur mineurs et peut conserver une requête signalée. Certaines de ces informations concernent la santé ; en acceptant, tu consens explicitement à ce qu'elles soient traitées de cette manière. Le service de Musclog ne stocke jamais tes messages ; il ne conserve qu'un identifiant pour cet appareil et des compteurs d'utilisation. Tu peux désactiver cette fonction à tout moment.",
+      "body": "Tes messages, tes photos de repas, ainsi que les informations dont une fonction d'IA a besoin pour répondre, comme tes entraînements, tes repas et tes mesures corporelles, sont transmis au service Musclog Iron. Il les transfère à OpenRouter, qui les envoie au fournisseur du modèle d'IA. Seuls des points d'accès à conservation zéro des données (ZDR) sont utilisés : ces fournisseurs ne conservent pas ton contenu et ne l'utilisent pas pour l'entraînement. OpenRouter contrôle aussi chaque requête pour détecter les abus sexuels sur mineurs et peut conserver une requête signalée. Certaines de ces informations concernent la santé ; en acceptant, tu consens explicitement à ce qu'elles soient traitées de cette manière. Le service de Musclog ne stocke jamais tes messages ; il ne conserve qu'un identifiant pour cet appareil et des compteurs d'utilisation. Tu peux désactiver cette fonction à tout moment.",
       "confirm": "Utiliser Musclog Iron",
       "cancel": "Pas maintenant"
     },
@@ -71,7 +71,7 @@
       "benefits": {
         "noSetup": {
           "title": "Rien à configurer",
-          "desc": "Pas de clé API ni de compte. Abonne-toi, et le coach, la saisie des repas et les programmes fonctionnent tout de suite."
+          "desc": "Pas de clé API ni de compte. Abonne-toi, et le coach, la saisie des repas (texte ou photo) et les programmes fonctionnent tout de suite."
         },
         "private": {
           "title": "Rétention de données nulle",

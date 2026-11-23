@@ -152,6 +152,8 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 ## The app side (P6)
 
+**Photos:** hosted vision is on (`vision_enabled` and `image.tokens_max` in `AI_CONFIG_JSON`) with an estimated `tokens_max`; the benchmark that will measure it, and the device checks to do first, are in `docs/PHOTO_BENCHMARK.md`.
+
 The app's provider, errors, image resize and Premium UI: since 2.17.0 they show on every native build unless `EXPO_PUBLIC_HIDE_PREMIUM_UI=1` is set as an EAS variable. See the "Premium provider, errors and UI" bullet in `AGENTS.md`. A client request carries `Idempotency-Key` (one per logical request) and the Worker's `x-should-retry: false` answers are retried only by the app's own backoff.
 
 ## The legacy AI Gateway (temporary)

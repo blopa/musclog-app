@@ -31,7 +31,7 @@
     "resetConfirm": "Zurücksetzen",
     "consent": {
       "title": "KI-Anfragen an Musclog Iron senden?",
-      "body": "Deine Nachrichten sowie die Angaben, die eine KI-Funktion zum Antworten braucht, etwa deine Trainings- und Mahlzeitendaten sowie Körpermaße, gehen an den Dienst Musclog Iron. Er leitet sie an OpenRouter weiter, der sie an den KI-Modellanbieter schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) genutzt: Diese Anbieter bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. OpenRouter prüft außerdem jede Anfrage auf Darstellungen sexuellen Kindesmissbrauchs und kann eine markierte Anfrage behalten. Einige dieser Angaben betreffen die Gesundheit; mit deiner Zustimmung willigst du ausdrücklich ein, dass sie auf diese Weise verarbeitet werden. Der Dienst von Musclog speichert deine Nachrichten nie; er behält nur eine Kennung für dieses Gerät und Nutzungszähler. Du kannst dies jederzeit ausschalten.",
+      "body": "Deine Nachrichten, Mahlzeitenfotos sowie die Angaben, die eine KI-Funktion zum Antworten braucht, etwa deine Trainings- und Mahlzeitendaten sowie Körpermaße, gehen an den Dienst Musclog Iron. Er leitet sie an OpenRouter weiter, der sie an den KI-Modellanbieter schickt. Es werden nur Endpunkte mit Zero Data Retention (ZDR) genutzt: Diese Anbieter bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. OpenRouter prüft außerdem jede Anfrage auf Darstellungen sexuellen Kindesmissbrauchs und kann eine markierte Anfrage behalten. Einige dieser Angaben betreffen die Gesundheit; mit deiner Zustimmung willigst du ausdrücklich ein, dass sie auf diese Weise verarbeitet werden. Der Dienst von Musclog speichert deine Nachrichten nie; er behält nur eine Kennung für dieses Gerät und Nutzungszähler. Du kannst dies jederzeit ausschalten.",
       "confirm": "Musclog Iron verwenden",
       "cancel": "Nicht jetzt"
     },
@@ -71,7 +71,7 @@
       "benefits": {
         "noSetup": {
           "title": "Nichts einzurichten",
-          "desc": "Kein API-Schlüssel und kein Konto. Abonniere, und Coach, Mahlzeitenerfassung und Trainingspläne funktionieren sofort."
+          "desc": "Kein API-Schlüssel und kein Konto. Abonniere, und Coach, Mahlzeitenerfassung (per Text oder Foto) und Trainingspläne funktionieren sofort."
         },
         "private": {
           "title": "Zero Data Retention",

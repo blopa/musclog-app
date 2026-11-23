@@ -47,14 +47,20 @@ export interface AiConfig {
     only?: string[];
   };
   features: Record<Feature, FeatureLimits>;
-  /** Hosted vision stays off until G6 sets `image.tokens_max`. */
+  /**
+   * Photos through Musclog Iron. On requires `image.tokens_max` > 0. It is on since 2026-11-23 with an
+   * estimated `tokens_max`; the measured value is the pending G6 benchmark (`docs/PHOTO_BENCHMARK.md`).
+   */
   vision_enabled: boolean;
   image: {
     max_px: number;
     max_bytes: number;
     quality: number;
     max_images: number;
-    /** IMAGE_TOKENS_MAX (plan 8.2 step 1); must be > 0 when vision_enabled. */
+    /**
+   * IMAGE_TOKENS_MAX (plan 8.2 step 1): the worst case, in tokens, one image can add to a request,
+   * used only to bound the reservation. Must be > 0 when vision_enabled.
+   */
     tokens_max: number;
   };
   /** Plan 8.1. The schema CHECK hard-codes 500 and 1055, so spend_share <= 0.5 and openrouter_fee >= 1.055. */

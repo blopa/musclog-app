@@ -376,7 +376,6 @@ He opens the one-time announcement tour that introduces Iron, and the tour tells
 
 ## What is not done
 
-- **Photos.** Hosted vision is off in the Worker's config, so a photo meal needs your own key or the free option. The Worker supports images; I have not tested enough photos to switch it on. The app asks the Worker whether photos are on, and says so instead of sending a request that would be refused.
 - **No remove-device call.** See the table above.
 - **The full identity test matrix.** I designed a twenty-step test of how RevenueCat behaves across restores, resets and transfers, and built the harness for it. What I have actually run is the real thing, end to end, with a real card. The matrix is still open.
 - **Play's real-time notifications** are not connected yet.

@@ -31,7 +31,7 @@
     "resetConfirm": "Resetuj",
     "consent": {
       "title": "Wysyłać żądania AI do Musclog Iron?",
-      "body": "Twoje wiadomości oraz szczegóły potrzebne funkcjom AI do odpowiedzi, takie jak treningi, posiłki i pomiary ciała, trafiają do usługi Musclog Iron. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. OpenRouter sprawdza też każde zapytanie pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci i może zachować zapytanie, które oznaczy. Część tych danych dotyczy zdrowia, dlatego zgadzając się, wyrażasz wyraźną zgodę na ich przetwarzanie w ten sposób. Usługa Musclog nigdy nie przechowuje Twoich wiadomości; zachowuje tylko identyfikator tego urządzenia i liczniki użycia. Możesz to wyłączyć w dowolnym momencie.",
+      "body": "Twoje wiadomości, zdjęcia posiłków oraz szczegóły potrzebne funkcjom AI do odpowiedzi, takie jak treningi, posiłki i pomiary ciała, trafiają do usługi Musclog Iron. Ta przekazuje je do OpenRouter, który wysyła je do dostawcy modelu AI. Używane są wyłącznie punkty końcowe z zerową retencją danych (ZDR): ci dostawcy nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. OpenRouter sprawdza też każde zapytanie pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci i może zachować zapytanie, które oznaczy. Część tych danych dotyczy zdrowia, dlatego zgadzając się, wyrażasz wyraźną zgodę na ich przetwarzanie w ten sposób. Usługa Musclog nigdy nie przechowuje Twoich wiadomości; zachowuje tylko identyfikator tego urządzenia i liczniki użycia. Możesz to wyłączyć w dowolnym momencie.",
       "confirm": "Używaj AI w Musclog Iron",
       "cancel": "Nie teraz"
     },
@@ -71,7 +71,7 @@
       "benefits": {
         "noSetup": {
           "title": "Nic do konfigurowania",
-          "desc": "Bez klucza API i konta. Zasubskrybuj, a trener, zapisywanie posiłków i plany treningowe działają od razu."
+          "desc": "Bez klucza API i konta. Zasubskrybuj, a trener, zapisywanie posiłków (tekstem lub zdjęciem) i plany treningowe działają od razu."
         },
         "private": {
           "title": "Zerowa retencja danych",

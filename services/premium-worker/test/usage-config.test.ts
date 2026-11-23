@@ -244,7 +244,7 @@ describe('GET /v1/config', () => {
     expect(await json(res)).toEqual({
       enabled: true,
       accepting_new: true,
-      vision_enabled: false,
+      vision_enabled: true,
       image: { maxPx: 1568, maxBytes: 400000, quality: 85 },
       minAppVersion: '2.17.0',
     });

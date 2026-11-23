@@ -31,7 +31,7 @@
     "resetConfirm": "Reimposta",
     "consent": {
       "title": "Inviare le richieste IA a Musclog Iron?",
-      "body": "I Tuoi messaggi, insieme ai dettagli di cui una funzione AI ha bisogno per rispondere, come allenamenti, pasti e misure corporee, vanno al servizio Musclog Iron. Quest'ultimo li inoltra a OpenRouter, che li invia al provider del modello AI. Vengono usati solo endpoint con zero conservazione dei dati (ZDR): questi provider non conservano i Tuoi contenuti né li usano per l'addestramento. OpenRouter verifica inoltre ogni richiesta per materiale di abuso sessuale su minori e può conservare una richiesta che segnala. Alcuni di questi dettagli riguardano la salute; accettando, acconsenti esplicitamente al loro trattamento in questo modo. Il servizio di Musclog non memorizza mai i Tuoi messaggi; conserva solo un identificativo per questo dispositivo e i contatori di utilizzo. Puoi disattivare questa funzione in qualsiasi momento.",
+      "body": "I Tuoi messaggi, le foto dei pasti, insieme ai dettagli di cui una funzione AI ha bisogno per rispondere, come allenamenti, pasti e misure corporee, vanno al servizio Musclog Iron. Quest'ultimo li inoltra a OpenRouter, che li invia al provider del modello AI. Vengono usati solo endpoint con zero conservazione dei dati (ZDR): questi provider non conservano i Tuoi contenuti né li usano per l'addestramento. OpenRouter verifica inoltre ogni richiesta per materiale di abuso sessuale su minori e può conservare una richiesta che segnala. Alcuni di questi dettagli riguardano la salute; accettando, acconsenti esplicitamente al loro trattamento in questo modo. Il servizio di Musclog non memorizza mai i Tuoi messaggi; conserva solo un identificativo per questo dispositivo e i contatori di utilizzo. Puoi disattivare questa funzione in qualsiasi momento.",
       "confirm": "Usa Musclog Iron",
       "cancel": "Non ora"
     },
@@ -71,7 +71,7 @@
       "benefits": {
         "noSetup": {
           "title": "Nulla da configurare",
-          "desc": "Nessuna chiave API e nessun account. Abbonati e il coach, la registrazione dei pasti e i piani di allenamento funzionano subito."
+          "desc": "Nessuna chiave API e nessun account. Abbonati e il coach, la registrazione dei pasti (con testo o foto) e i piani di allenamento funzionano subito."
         },
         "private": {
           "title": "Zero conservazione dei dati",

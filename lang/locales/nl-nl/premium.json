@@ -31,7 +31,7 @@
     "resetConfirm": "Resetten",
     "consent": {
       "title": "AI-verzoeken naar Musclog Iron sturen?",
-      "body": "Uw berichten en de gegevens die een AI-functie nodig heeft om te antwoorden, zoals Uw trainingen, maaltijden en lichaamsmaten, gaan naar de dienst van Musclog Iron. Die stuurt ze door naar OpenRouter, dat ze naar de AI-modelaanbieder stuurt. Er worden alleen endpoints met zero data retention (ZDR) gebruikt: die aanbieders bewaren Uw inhoud niet en gebruiken ze niet voor training. OpenRouter controleert ook elk verzoek op materiaal van seksueel kindermisbruik en kan een verzoek dat het markeert bewaren. Sommige van deze gegevens hebben betrekking op de gezondheid, en door in te stemmen geeft U uitdrukkelijk toestemming om ze zo te laten verwerken. De dienst van Musclog bewaart Uw berichten nooit; zij bewaart alleen een identificatie voor dit apparaat en gebruiksaantallen. U kunt dit op elk moment uitschakelen.",
+      "body": "Uw berichten, maaltijdfoto's en de gegevens die een AI-functie nodig heeft om te antwoorden, zoals Uw trainingen, maaltijden en lichaamsmaten, gaan naar de dienst van Musclog Iron. Die stuurt ze door naar OpenRouter, dat ze naar de AI-modelaanbieder stuurt. Er worden alleen endpoints met zero data retention (ZDR) gebruikt: die aanbieders bewaren Uw inhoud niet en gebruiken ze niet voor training. OpenRouter controleert ook elk verzoek op materiaal van seksueel kindermisbruik en kan een verzoek dat het markeert bewaren. Sommige van deze gegevens hebben betrekking op de gezondheid, en door in te stemmen geeft U uitdrukkelijk toestemming om ze zo te laten verwerken. De dienst van Musclog bewaart Uw berichten nooit; zij bewaart alleen een identificatie voor dit apparaat en gebruiksaantallen. U kunt dit op elk moment uitschakelen.",
       "confirm": "Musclog Iron gebruiken",
       "cancel": "Niet nu"
     },
@@ -71,7 +71,7 @@
       "benefits": {
         "noSetup": {
           "title": "Niets om in te stellen",
-          "desc": "Geen API-sleutel en geen account. Abonneer je en de coach, het loggen van maaltijden en de trainingsschema's werken meteen."
+          "desc": "Geen API-sleutel en geen account. Abonneer je en de coach, het loggen van maaltijden (met tekst of foto) en de trainingsschema's werken meteen."
         },
         "private": {
           "title": "Zero data retention",

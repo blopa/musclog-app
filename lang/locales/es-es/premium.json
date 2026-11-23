@@ -31,7 +31,7 @@
     "resetConfirm": "Restablecer",
     "consent": {
       "title": "¿Enviar las solicitudes de IA a Musclog Iron?",
-      "body": "Tus mensajes y los datos que una función de IA necesita para responder, como tus entrenamientos, comidas y medidas corporales, se envían al servicio de Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se utilizan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar. OpenRouter también somete a control todas las solicitudes para detectar material de abuso sexual infantil y puede conservar una solicitud que marque. Algunos de estos datos están relacionados con la salud, y al aceptar das tu consentimiento explícito para que se procesen de esta manera. El servicio de Musclog nunca almacena tus mensajes; solo guarda un identificador de este dispositivo y los recuentos de uso. Puedes desactivarlo en cualquier momento.",
+      "body": "Tus mensajes, las fotos de tus comidas y los datos que una función de IA necesita para responder, como tus entrenamientos, comidas y medidas corporales, se envían al servicio de Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se utilizan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar. OpenRouter también somete a control todas las solicitudes para detectar material de abuso sexual infantil y puede conservar una solicitud que marque. Algunos de estos datos están relacionados con la salud, y al aceptar das tu consentimiento explícito para que se procesen de esta manera. El servicio de Musclog nunca almacena tus mensajes; solo guarda un identificador de este dispositivo y los recuentos de uso. Puedes desactivarlo en cualquier momento.",
       "confirm": "Usar Musclog Iron",
       "cancel": "Ahora no"
     },
@@ -71,7 +71,7 @@
       "benefits": {
         "noSetup": {
           "title": "Nada que configurar",
-          "desc": "Sin clave de API ni cuenta. Suscríbete y el entrenador, el registro de comidas y los planes de entrenamiento funcionan al momento."
+          "desc": "Sin clave de API ni cuenta. Suscríbete y el entrenador, el registro de comidas (por texto o foto) y los planes de entrenamiento funcionan al momento."
         },
         "private": {
           "title": "Retención cero de datos",
