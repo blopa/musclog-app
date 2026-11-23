@@ -582,7 +582,7 @@
     "privacy": {
       "titleStart": "Privacy",
       "titleHighlight": "Policy",
-      "lastUpdated": "Last updated: November 22, 2026",
+      "lastUpdated": "Last updated: November 23, 2026",
       "highlights": {
         "dataProtection": {
           "title": "Data Protection",
@@ -728,6 +728,7 @@
           "title": "Sharing Your Personal Data",
           "items": [
             "With the providers You choose: food searches go to the food database You select, and AI requests go to the AI provider You configure.",
+            "With Hugging Face, if You choose to download the on-device AI model: like any file download, the request tells Hugging Face Your device's IP address. The model then runs on Your device, and what You ask it stays on Your device.",
             "With Service Providers that run parts of the Service for Us: Sentry (crash reports, and error reports from Musclog Iron's service that contain no message content or identifiers), OpenRouter and Google (the free Musclog AI option), Cloudflare, OpenRouter and RevenueCat (Musclog Iron), GitHub and Cloudflare (hosting the website), and Google Analytics (the website, only after You accept analytics).",
             "When required by law, as described in \"Disclosure of Your Personal Data\".",
             "With Your consent, for example when You export or share data yourself.",

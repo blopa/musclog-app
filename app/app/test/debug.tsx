@@ -102,6 +102,7 @@ const APP_SCREENS = [
   { name: 'Test: Reps Recording', route: '/app/test/reps-recording', category: 'Test' },
   { name: 'Test: Nutrition Debug', route: '/app/test/nutrition-debug', category: 'Test' },
   { name: 'Test: Optical Transfer', route: '/app/test/optical-bench', category: 'Test' },
+  { name: 'Test: On-device AI', route: '/app/test/local-ai-bench', category: 'Test' },
 ];
 
 export default function DebugTestScreen() {

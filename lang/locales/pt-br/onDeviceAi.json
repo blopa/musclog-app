@@ -1,0 +1,151 @@
+{
+  "onDeviceAi": {
+    "model": {
+      "name": "{{name}} da {{vendor}}",
+      "size": "Tamanho do download: {{size}}",
+      "photos": {
+        "label": "Incluir reconhecimento de fotos",
+        "hint": "Permite que o modelo leia fotos de refeições. Adiciona {{size}}."
+      },
+      "freeSpace": "Espaço livre neste celular: {{size}}",
+      "notEnoughSpace": "Espaço insuficiente: são necessários {{needed}} e o celular tem {{free}} livres.",
+      "mobileData": "Você está usando dados móveis. O download é de {{size}}.",
+      "languageNote": "Este modelo funciona melhor em inglês e em alguns outros idiomas. Respostas no seu idioma podem ser mais fracas.",
+      "license": "Licença: {{license}}",
+      "readLicense": "Ler a licença",
+      "updateAvailable": "Há uma versão mais recente do modelo disponível.",
+      "state": {
+        "readyWithPhotos": "Pronto. Funciona offline, com fotos de refeições.",
+        "readyText": "Pronto. Funciona offline, só para texto.",
+        "paused": "Pausado: {{received}} de {{total}}",
+        "downloading": "Baixando: {{received}} de {{total}}",
+        "verifying": "Verificando o download…",
+        "installing": "Finalizando a instalação…"
+      },
+      "failure": {
+        "noSpace": "O celular ficou sem espaço. Libere um pouco e tente de novo.",
+        "network": "A conexão caiu. Tente de novo quando estiver online.",
+        "checksum": "O arquivo baixado não passou na verificação e foi removido. Tente de novo.",
+        "interrupted": "O download foi interrompido. Tente de novo.",
+        "http": "O servidor de download não respondeu como esperado. Tente mais tarde.",
+        "storage": "Não foi possível salvar o modelo neste celular."
+      },
+      "actions": {
+        "download": "Baixar ({{size}})",
+        "retry": "Tentar de novo",
+        "pause": "Pausar",
+        "resume": "Retomar",
+        "cancel": "Cancelar",
+        "update": "Atualizar o modelo",
+        "delete": "Excluir o modelo"
+      },
+      "delete": {
+        "title": "Excluir o modelo?",
+        "message": "A IA no dispositivo deixa de funcionar até você baixar o modelo novamente. Seus dados não são afetados."
+      }
+    },
+    "apple": {
+      "title": "Apple Intelligence",
+      "status": {
+        "ready": "Pronto. Roda no seu iPhone e funciona offline.",
+        "appleOff": "A Apple Intelligence está desativada. Ative-a nos Ajustes do iOS para usar.",
+        "appleNotReady": "O iOS ainda está preparando a Apple Intelligence. Tente de novo daqui a pouco."
+      },
+      "openSettings": "Abrir Ajustes do iOS",
+      "languageNote": "A Apple Intelligence pode ainda não oferecer suporte ao seu idioma. As respostas podem voltar para o inglês."
+    },
+    "onboarding": {
+      "ask": {
+        "heading": "IA no seu celular",
+        "intro": "O coach do Musclog pode rodar inteiramente neste celular. O que você digita não sai do aparelho e funciona offline.",
+        "choicesLabel": "Usar IA que roda neste celular",
+        "yes": {
+          "title": "Sim, rodar IA neste celular",
+          "points": {
+            "private": "Suas mensagens nunca saem do celular",
+            "offline": "Funciona sem conexão",
+            "free": "Sem conta, chave ou assinatura"
+          }
+        },
+        "no": {
+          "title": "Não, mostrar outras opções",
+          "points": {
+            "other": "Musclog Iron, o plano gratuito ou sua própria chave",
+            "later": "Você pode ativar a IA local depois, nos Ajustes"
+          }
+        },
+        "cta": {
+          "yes": "Continuar",
+          "no": "Mostrar outras opções"
+        }
+      },
+      "options": {
+        "heading": "Escolha como ela roda",
+        "intro": "Escolha a IA que roda neste celular.",
+        "choicesLabel": "Opções de IA no dispositivo",
+        "apple": {
+          "title": "Apple Intelligence",
+          "points": {
+            "builtIn": "Integrada ao iOS, nada para baixar",
+            "private": "Roda neste iPhone"
+          }
+        },
+        "model": {
+          "title": "Modelo baixado",
+          "points": {
+            "download": "Um download, depois funciona offline",
+            "photos": "Pode ler fotos de refeições se você incluí-las"
+          }
+        },
+        "later": {
+          "title": "Configurar depois",
+          "points": {
+            "later": "Escolha nos Ajustes quando quiser"
+          }
+        },
+        "cta": {
+          "apple": "Usar Apple Intelligence",
+          "model": "Baixar e continuar",
+          "later": "Continuar sem IA"
+        },
+        "downloadNote": "O download continua em segundo plano. As respostas do coach começam quando ele terminar."
+      }
+    },
+    "useOwnKey": "Usar sua própria chave de API ou um servidor local",
+    "settings": {
+      "sectionTitle": "IA neste celular",
+      "toggle": "Usar IA neste celular",
+      "toggleSubtitle": "As respostas são geradas no dispositivo. O que você pergunta não sai dele.",
+      "engineLabel": "Qual IA roda neste celular",
+      "engine": {
+        "apple": "Apple Intelligence",
+        "model": "Modelo baixado"
+      },
+      "priorityNote": "O Musclog Iron e o plano gratuito têm prioridade enquanto estiverem ativados. Desative-os para usar a IA deste celular.",
+      "privacyNote": "Seus dados ficam neste celular e nunca são enviados para um servidor."
+    },
+    "notReady": {
+      "title": "A IA deste celular não está pronta",
+      "message": {
+        "needsDownload": "O modelo ainda não foi baixado. Baixe-o para começar a conversar.",
+        "downloading": "O modelo ainda está sendo baixado. O coach vai funcionar quando terminar.",
+        "downloadFailed": "O download do modelo falhou. Tente baixar de novo.",
+        "appleOff": "A Apple Intelligence está desativada nos Ajustes do iOS.",
+        "appleNotReady": "O iOS ainda está preparando a Apple Intelligence. Tente de novo daqui a pouco.",
+        "appleNotEligible": "Este iPhone não consegue rodar a Apple Intelligence.",
+        "unsupported": "Este celular não consegue rodar IA no dispositivo."
+      },
+      "download": "Baixar o modelo",
+      "openIosSettings": "Abrir Ajustes do iOS",
+      "openAiSettings": "Abrir ajustes de IA",
+      "chooseAnother": "Escolher outra IA"
+    },
+    "notices": {
+      "title": "Avisos de terceiros",
+      "intro": "O Musclog é feito com software de código aberto e um modelo aberto. Estas são as licenças que se aplicam.",
+      "link": "Avisos de terceiros",
+      "linkSubtitle": "Software de código aberto e o modelo do dispositivo",
+      "openLink": "Abrir o texto completo"
+    }
+  }
+}

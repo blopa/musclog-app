@@ -7,15 +7,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
+import { ConnectedAISettingsModal } from '@/components/modals/ConnectedAISettingsModal';
 import { scrollCueBottom } from '@/components/modals/footerClearance';
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { AiChoiceCard } from '@/components/onboarding/AiChoiceCard';
 import { AiChoiceFixtureContext } from '@/components/onboarding/aiChoiceFixture';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
+import { TextButton } from '@/components/theme/TextButton';
 import { SettingsService } from '@/database/services/SettingsService';
 import { usePremium } from '@/hooks/usePremium';
 import { useScrollFade } from '@/hooks/useScrollFade';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { type AiChoice, availableAiChoices, defaultAiChoice } from '@/utils/onboardingAiChoice';
@@ -52,6 +55,10 @@ export default function MusclogApiScreen() {
   const [premiumRequested, setPremiumRequested] = useState(false);
   const premiumVisible = premiumRequested && !premium.useHostedAi;
   const handedOn = useRef(false);
+  // The quiet way out for people with their own key or a local server.
+  const { isAiConfigured } = useSettings();
+  const [aiSettingsOpen, setAiSettingsOpen] = useState(false);
+  const [aiSettingsOpened, setAiSettingsOpened] = useState(false);
 
   const choices = availableAiChoices({
     premiumEnabled: premium.enabled,
@@ -92,6 +99,14 @@ export default function MusclogApiScreen() {
       finish(false);
     }
   }, [premiumRequested, premium.useHostedAi, finish]);
+
+  // Closing the AI settings with a provider set up carries on, like finishing the step.
+  useEffect(() => {
+    if (aiSettingsOpened && !aiSettingsOpen && isAiConfigured && !handedOn.current) {
+      handedOn.current = true;
+      finish(false);
+    }
+  }, [aiSettingsOpened, aiSettingsOpen, isAiConfigured, finish]);
 
   const handleContinue = () => {
     switch (selected) {
@@ -280,8 +295,20 @@ export default function MusclogApiScreen() {
             disabled={isSaving}
             loading={isSaving}
           />
+          <TextButton
+            testID="ai-choice-own-key"
+            label={t('onDeviceAi.useOwnKey')}
+            onPress={() => {
+              setAiSettingsOpened(true);
+              setAiSettingsOpen(true);
+            }}
+          />
         </BottomButtonWrapper>
 
+        <ConnectedAISettingsModal
+          visible={aiSettingsOpen}
+          onClose={() => setAiSettingsOpen(false)}
+        />
         <PremiumModal visible={premiumVisible} onClose={() => setPremiumRequested(false)} />
       </SafeAreaView>
     </MasterLayout>

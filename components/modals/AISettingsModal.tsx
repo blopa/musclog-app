@@ -15,6 +15,7 @@ import { Linking, Platform, Pressable, Text, View } from 'react-native';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
+import { OnDeviceAiSection } from '@/components/settings/OnDeviceAiSection';
 import { PremiumCard } from '@/components/settings/PremiumCard';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
@@ -44,7 +45,6 @@ import {
   effectiveUseMusclogGateway,
   isMusclogGatewayAvailable,
 } from '@/utils/musclogGatewayAvailability';
-import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { HistoryPickerField } from './aiHistorySettings';
@@ -337,9 +337,6 @@ export function AISettingsModal({
     premium.enabled && premium.view.phase === 'active' && premium.useHostedAi;
   const { aiImageQuality } = useSettings();
 
-  const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
-  const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
-
   // Use debounced settings for instant UI updates
   const {
     enableGoogleGemini: debouncedEnableGoogleGemini,
@@ -374,39 +371,6 @@ export function AISettingsModal({
   } = useDebouncedSettings(500);
   const musclogGatewayAvailable = isMusclogGatewayAvailable();
   const useMusclogGateway = effectiveUseMusclogGateway(debouncedUseMusclogFreeTier);
-
-  const reloadOnDeviceAiState = useCallback(async () => {
-    if (Platform.OS !== 'ios') {
-      return;
-    }
-
-    try {
-      const capable = await isOnDeviceAiCapable();
-      setIsOnDeviceCapable(capable);
-      if (!capable) {
-        setIsOnDeviceReady(false);
-        return;
-      }
-
-      const ready = await isOnDeviceAiAvailable();
-      setIsOnDeviceReady(ready);
-    } catch {
-      setIsOnDeviceCapable(false);
-      setIsOnDeviceReady(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!visible || Platform.OS !== 'ios') {
-      return;
-    }
-
-    const reload = () => {
-      void reloadOnDeviceAiState();
-    };
-
-    reload();
-  }, [visible, reloadOnDeviceAiState]);
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -802,49 +766,11 @@ export function AISettingsModal({
               }
             />
 
-            {/* Apple Intelligence Section (iOS only) */}
-            {Platform.OS === 'ios' && isOnDeviceCapable ? (
-              <View className="gap-3">
-                <Text
-                  className="px-5 text-xs font-semibold"
-                  style={{ color: theme.colors.accent.primary }}
-                >
-                  {t('settings.aiSettings.onDeviceAi.sectionTitle')}
-                </Text>
-
-                <ToggleInput
-                  items={[
-                    {
-                      key: 'use-on-device-ai',
-                      label: t('settings.aiSettings.onDeviceAi.toggle'),
-                      subtitle: isOnDeviceReady
-                        ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
-                        : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
-                      value: debouncedUseOnDeviceAi,
-                      onValueChange: handleUseOnDeviceAiChange,
-                      icon: (
-                        <View
-                          style={{
-                            width: theme.size['8'],
-                            height: theme.size['8'],
-                            borderRadius: theme.borderRadius.full / 2,
-                            backgroundColor: theme.colors.status.success20,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <Cpu size={theme.iconSize.md} color={theme.colors.status.success} />
-                        </View>
-                      ),
-                    },
-                  ]}
-                />
-
-                <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
-                  {t('settings.aiSettings.onDeviceAi.privacyNote')}
-                </Text>
-              </View>
-            ) : null}
+            <OnDeviceAiSection
+              enabled={debouncedUseOnDeviceAi}
+              onEnabledChange={handleUseOnDeviceAiChange}
+              hostedProviderActive={isMusclogIronActive || debouncedUseMusclogFreeTier}
+            />
           </View>
         </View>
 

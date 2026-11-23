@@ -8,14 +8,25 @@ import * as Device from 'expo-device';
 import { AppState, Platform } from 'react-native';
 
 import { SETTINGS } from '@/constants/settingDefinitions';
-import type { AppleAvailability } from '@/modules/on-device-ai';
 import { SettingsService } from '@/database/services/SettingsService';
+import type { AppleAvailability } from '@/modules/on-device-ai';
 import { evaluateLocalModelDevice } from '@/utils/localModels/deviceGate';
-import { getAppleAvailability } from '@/utils/onDeviceAi';
 import { type OnDeviceEngineChoice, resolveOnDeviceEngine } from '@/utils/onDeviceEngine';
 import { deriveOnDeviceStatus, type OnDeviceStatus } from '@/utils/onDeviceStatus';
 
 import { getLocalModelSnapshot, refreshLocalModel, subscribeLocalModel } from './modelStore';
+
+/**
+ * Apple's availability is read through an inline require: `utils/onDeviceAi.ios` imports the
+ * Apple AI package, which throws where its native module is absent, and this store is reached from
+ * `SettingsContext`, so a static import would load it into every screen and test.
+ */
+function readAppleAvailability(): Promise<AppleAvailability> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return (
+    require('@/utils/onDeviceAi') as typeof import('@/utils/onDeviceAi')
+  ).getAppleAvailability();
+}
 
 type Readings = {
   engineChoice: OnDeviceEngineChoice;
@@ -87,7 +98,7 @@ export async function refreshOnDeviceStatus(): Promise<OnDeviceStatus> {
   wire();
   const [engineChoice, appleAvailability] = await Promise.all([
     readChoice().catch(() => readings.engineChoice),
-    getAppleAvailability(),
+    readAppleAvailability(),
     refreshLocalModel(),
   ]);
   readings = { engineChoice, appleAvailability };

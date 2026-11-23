@@ -10,9 +10,9 @@ import { SettingsCard } from '@/components/cards/SettingsCard';
 import { WhatsNewCard } from '@/components/cards/WhatsNewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
-import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { AppLockSettingsModal } from '@/components/modals/AppLockSettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import { ConnectedAISettingsModal } from '@/components/modals/ConnectedAISettingsModal';
 import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { ManageBleDevicesModal } from '@/components/modals/ManageBleDevicesModal';
@@ -23,10 +23,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
-import { SETTINGS } from '@/constants/settingDefinitions';
 import { YEAR_IN_REVIEW_ROUTE } from '@/constants/yearInReviewRoute';
-import { SettingsService } from '@/database/services/SettingsService';
-import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { isAppLockSupported } from '@/utils/appLock';
 import { yearReviewSeason } from '@/utils/yearInReview/season';
@@ -37,17 +34,6 @@ export default function SettingsScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
-  const {
-    googleGeminiApiKey,
-    googleGeminiModel,
-    openAiApiKey,
-    openAiModel,
-    claudeApiKey,
-    claudeModel,
-    localLlmApiKey,
-    localLlmModel,
-    localLlmBaseUrl,
-  } = useSettings();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isCycleSettingsVisible, setCycleSettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
@@ -58,42 +44,6 @@ export default function SettingsScreen() {
   const [isBleDevicesVisible, setBleDevicesVisible] = useState(false);
   const [isAppLockVisible, setAppLockVisible] = useState(false);
   const [isWorkoutSettingsVisible, setWorkoutSettingsVisible] = useState(false);
-
-  const handleGoogleGeminiApiKeyChange = async (value: string) => {
-    await SettingsService.setGoogleGeminiApiKey(value);
-  };
-
-  const handleGoogleGeminiModelChange = async (value: string) => {
-    await SettingsService.setGoogleGeminiModel(value);
-  };
-
-  const handleOpenAiApiKeyChange = async (value: string) => {
-    await SettingsService.setOpenAiApiKey(value);
-  };
-
-  const handleOpenAiModelChange = async (value: string) => {
-    await SettingsService.setOpenAiModel(value);
-  };
-
-  const handleClaudeApiKeyChange = async (value: string) => {
-    await SettingsService.setClaudeApiKey(value);
-  };
-
-  const handleClaudeModelChange = async (value: string) => {
-    await SettingsService.set(SETTINGS.claudeModel, value);
-  };
-
-  const handleLocalLlmApiKeyChange = async (value: string) => {
-    await SettingsService.setLocalLlmApiKey(value);
-  };
-
-  const handleLocalLlmModelChange = async (value: string) => {
-    await SettingsService.setLocalLlmModel(value);
-  };
-
-  const handleLocalLlmBaseUrlChange = async (value: string) => {
-    await SettingsService.setLocalLlmBaseUrl(value);
-  };
 
   /** One settings row: a neutral icon, the section's title and subtitle, a chevron. */
   const row = (icon: MaterialIconName, title: string, subtitle: string, onPress: () => void) => (
@@ -220,27 +170,9 @@ export default function SettingsScreen() {
         </AnimatedContent>
       </ScrollView>
 
-      <AISettingsModal
+      <ConnectedAISettingsModal
         visible={isAISettingsVisible}
         onClose={() => setAISettingsVisible(false)}
-        googleGeminiApiKey={googleGeminiApiKey}
-        onGoogleGeminiApiKeyChange={handleGoogleGeminiApiKeyChange}
-        geminiModel={googleGeminiModel}
-        onGeminiModelPress={handleGoogleGeminiModelChange}
-        openAiApiKey={openAiApiKey}
-        onOpenAiApiKeyChange={handleOpenAiApiKeyChange}
-        openAiModel={openAiModel}
-        onOpenAiModelPress={handleOpenAiModelChange}
-        claudeApiKey={claudeApiKey}
-        onClaudeApiKeyChange={handleClaudeApiKeyChange}
-        claudeModel={claudeModel}
-        onClaudeModelPress={handleClaudeModelChange}
-        localLlmApiKey={localLlmApiKey}
-        onLocalLlmApiKeyChange={handleLocalLlmApiKeyChange}
-        localLlmModel={localLlmModel}
-        onLocalLlmModelChange={handleLocalLlmModelChange}
-        localLlmBaseUrl={localLlmBaseUrl}
-        onLocalLlmBaseUrlChange={handleLocalLlmBaseUrlChange}
       />
       <BasicSettingsModal
         visible={isBasicSettingsVisible}

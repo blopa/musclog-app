@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "notSupported": ["Log 3 sets of bench press", "My last set was 8 reps"],
+  "scenarios": [
+    {
+      "id": "track-meal-en",
+      "language": "en",
+      "kind": "structured",
+      "label": "Track a typed meal",
+      "systemPrompt": "Extract the foods of the meal. Reply only with JSON.",
+      "userMessage": "Add 150 g of chicken and rice to my lunch",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "mealType": { "type": "string", "enum": ["breakfast", "lunch", "dinner", "snack"] },
+          "foods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "name": { "type": "string" }, "grams": { "type": "number" } },
+              "required": ["name", "grams"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["mealType", "foods"],
+        "additionalProperties": false
+      },
+      "expect": {
+        "mealType": "lunch",
+        "foodNamesInclude": ["chicken", "rice"],
+        "gramsWithin": 0.25
+      }
+    },
+    {
+      "id": "track-meal-pt",
+      "language": "pt",
+      "kind": "structured",
+      "label": "Registrar uma refeição digitada",
+      "systemPrompt": "Extraia os alimentos da refeição. Responda apenas com JSON.",
+      "userMessage": "Adicione 150 g de frango e arroz ao meu almoço",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "mealType": { "type": "string", "enum": ["breakfast", "lunch", "dinner", "snack"] },
+          "foods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "name": { "type": "string" }, "grams": { "type": "number" } },
+              "required": ["name", "grams"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["mealType", "foods"],
+        "additionalProperties": false
+      },
+      "expect": {
+        "mealType": "lunch",
+        "foodNamesInclude": ["frango", "arroz"],
+        "gramsWithin": 0.25
+      }
+    },
+    {
+      "id": "yesterday-en",
+      "language": "en",
+      "kind": "text",
+      "label": "What did I train yesterday?",
+      "systemPrompt": "You are a concise fitness coach. Answer from the data given.",
+      "userMessage": "What did I train yesterday?",
+      "expect": { "nonEmpty": true }
+    },
+    {
+      "id": "protein-today-pt",
+      "language": "pt",
+      "kind": "text",
+      "label": "Quanta proteína comi hoje?",
+      "systemPrompt": "Você é um treinador conciso. Responda com base nos dados fornecidos.",
+      "userMessage": "Quanta proteína comi hoje?",
+      "expect": { "nonEmpty": true }
+    },
+    {
+      "id": "photo-identify",
+      "language": "en",
+      "kind": "photo",
+      "label": "Identify the foods in a photo (manual: needs a photo from docs/PHOTO_BENCHMARK.md)",
+      "systemPrompt": "Name each food on the plate.",
+      "userMessage": "What is on this plate?",
+      "expect": { "nonEmpty": true }
+    }
+  ]
+}

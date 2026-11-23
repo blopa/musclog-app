@@ -1,0 +1,151 @@
+{
+  "onDeviceAi": {
+    "model": {
+      "name": "{{vendor}} tarafından {{name}}",
+      "size": "İndirme boyutu: {{size}}",
+      "photos": {
+        "label": "Fotoğraf anlamayı dahil et",
+        "hint": "Modelin yemek fotoğraflarını okumasını sağlar. {{size}} ekler."
+      },
+      "freeSpace": "Bu telefonda boş alan: {{size}}",
+      "notEnoughSpace": "Yeterli alan yok: {{needed}} gerekiyor, telefonda {{free}} boş alan var.",
+      "mobileData": "Mobil veri kullanıyorsunuz. İndirme {{size}} tutacak.",
+      "languageNote": "Bu model en iyi İngilizce ve birkaç başka dilde çalışır. Kendi dilinizdeki yanıtlar daha zayıf olabilir.",
+      "license": "Lisans: {{license}}",
+      "readLicense": "Lisansı oku",
+      "updateAvailable": "Modelin daha yeni bir sürümü mevcut.",
+      "state": {
+        "readyWithPhotos": "Hazır. Çevrimdışı çalışır, yemek fotoğraflarıyla.",
+        "readyText": "Hazır. Çevrimdışı çalışır, yalnızca metin için.",
+        "paused": "Duraklatıldı: {{received}} / {{total}}",
+        "downloading": "İndiriliyor: {{received}} / {{total}}",
+        "verifying": "İndirme kontrol ediliyor…",
+        "installing": "Kurulum tamamlanıyor…"
+      },
+      "failure": {
+        "noSpace": "Telefonda yer kalmadı. Biraz yer açıp tekrar deneyin.",
+        "network": "Bağlantı koptu. Çevrimiçi olduğunuzda tekrar deneyin.",
+        "checksum": "İndirilen dosya kontrolden geçemedi ve silindi. Tekrar deneyin.",
+        "interrupted": "İndirme kesildi. Tekrar deneyin.",
+        "http": "İndirme sunucusu beklenen şekilde yanıt vermedi. Daha sonra tekrar deneyin.",
+        "storage": "Model bu telefona kaydedilemedi."
+      },
+      "actions": {
+        "download": "İndir ({{size}})",
+        "retry": "Tekrar dene",
+        "pause": "Duraklat",
+        "resume": "Devam et",
+        "cancel": "İptal",
+        "update": "Modeli güncelle",
+        "delete": "Modeli sil"
+      },
+      "delete": {
+        "title": "Model silinsin mi?",
+        "message": "Modeli yeniden indirene kadar cihaz üzerindeki yapay zekâ çalışmaz. Verileriniz etkilenmez."
+      }
+    },
+    "apple": {
+      "title": "Apple Intelligence",
+      "status": {
+        "ready": "Hazır. iPhone'unuzda çalışır ve çevrimdışı kullanılabilir.",
+        "appleOff": "Apple Intelligence kapalı. Kullanmak için iOS Ayarları'ndan açın.",
+        "appleNotReady": "iOS hâlâ Apple Intelligence'ı hazırlıyor. Biraz sonra tekrar deneyin."
+      },
+      "openSettings": "iOS Ayarları'nı aç",
+      "languageNote": "Apple Intelligence dilinizi henüz desteklemiyor olabilir. Yanıtlar İngilizceye dönebilir."
+    },
+    "onboarding": {
+      "ask": {
+        "heading": "Telefonunuzda yapay zekâ",
+        "intro": "Musclog koçu tamamen bu telefonda çalışabilir. Yazdıklarınız cihazdan çıkmaz ve çevrimdışı çalışır.",
+        "choicesLabel": "Bu telefonda çalışan yapay zekâyı kullan",
+        "yes": {
+          "title": "Evet, yapay zekâyı bu telefonda çalıştır",
+          "points": {
+            "private": "Mesajlarınız asla telefondan çıkmaz",
+            "offline": "Bağlantı olmadan çalışır",
+            "free": "Hesap, anahtar veya abonelik gerekmez"
+          }
+        },
+        "no": {
+          "title": "Hayır, başka seçenekleri göster",
+          "points": {
+            "other": "Musclog Iron, ücretsiz katman veya kendi anahtarınız",
+            "later": "Yerel yapay zekâyı daha sonra Ayarlar'dan açabilirsiniz"
+          }
+        },
+        "cta": {
+          "yes": "Devam et",
+          "no": "Diğer seçenekleri göster"
+        }
+      },
+      "options": {
+        "heading": "Nasıl çalışacağını seçin",
+        "intro": "Bu telefonda çalışacak yapay zekâyı seçin.",
+        "choicesLabel": "Cihaz üzerinde yapay zekâ seçenekleri",
+        "apple": {
+          "title": "Apple Intelligence",
+          "points": {
+            "builtIn": "iOS'a dahil, indirilecek bir şey yok",
+            "private": "Bu iPhone'da çalışır"
+          }
+        },
+        "model": {
+          "title": "İndirilen model",
+          "points": {
+            "download": "Tek indirme, sonra çevrimdışı çalışır",
+            "photos": "Dahil ederseniz yemek fotoğraflarını okuyabilir"
+          }
+        },
+        "later": {
+          "title": "Daha sonra kur",
+          "points": {
+            "later": "Hazır olduğunuzda Ayarlar'dan seçin"
+          }
+        },
+        "cta": {
+          "apple": "Apple Intelligence'ı kullan",
+          "model": "İndir ve devam et",
+          "later": "Yapay zekâ olmadan devam et"
+        },
+        "downloadNote": "İndirme arka planda devam eder. Koçun yanıtları indirme bittiğinde başlar."
+      }
+    },
+    "useOwnKey": "Kendi API anahtarınızı veya yerel bir sunucuyu kullanın",
+    "settings": {
+      "sectionTitle": "Bu telefonda yapay zekâ",
+      "toggle": "Bu telefonda yapay zekâyı kullan",
+      "toggleSubtitle": "Yanıtlar cihaz üzerinde üretilir. Sorduklarınız cihazdan çıkmaz.",
+      "engineLabel": "Bu telefonda hangi yapay zekâ çalışır",
+      "engine": {
+        "apple": "Apple Intelligence",
+        "model": "İndirilen model"
+      },
+      "priorityNote": "Musclog Iron ve ücretsiz katman açık olduklarında öncelikli çalışır. Bu telefondaki yapay zekâyı kullanmak için kapatın.",
+      "privacyNote": "Verileriniz bu telefonda kalır ve asla bir sunucuya gönderilmez."
+    },
+    "notReady": {
+      "title": "Bu telefondaki yapay zekâ hazır değil",
+      "message": {
+        "needsDownload": "Model henüz indirilmedi. Sohbete başlamak için indirin.",
+        "downloading": "Model hâlâ indiriliyor. İndirme bitince koç çalışmaya başlar.",
+        "downloadFailed": "Model indirilemedi. İndirmeyi tekrar deneyin.",
+        "appleOff": "Apple Intelligence, iOS Ayarları'nda kapalı.",
+        "appleNotReady": "iOS hâlâ Apple Intelligence'ı hazırlıyor. Biraz sonra tekrar deneyin.",
+        "appleNotEligible": "Bu iPhone Apple Intelligence'ı çalıştıramaz.",
+        "unsupported": "Bu telefon cihaz üzerinde yapay zekâyı çalıştıramaz."
+      },
+      "download": "Modeli indir",
+      "openIosSettings": "iOS Ayarları'nı aç",
+      "openAiSettings": "Yapay zekâ ayarlarını aç",
+      "chooseAnother": "Başka bir yapay zekâ seç"
+    },
+    "notices": {
+      "title": "Üçüncü taraf bildirimleri",
+      "intro": "Musclog açık kaynak yazılım ve açık bir model üzerine kuruludur. Geçerli olan lisanslar bunlardır.",
+      "link": "Üçüncü taraf bildirimleri",
+      "linkSubtitle": "Açık kaynak yazılım ve cihazdaki model",
+      "openLink": "Tam metni aç"
+    }
+  }
+}

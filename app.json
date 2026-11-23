@@ -21,6 +21,7 @@
       "./plugins/withThemeAppIcons",
       "./plugins/withOptionalHardwareFeatures",
       "expo-system-ui",
+      "./plugins/withLlamaRn",
       "react-native-edge-to-edge",
       [
         "expo-localization",

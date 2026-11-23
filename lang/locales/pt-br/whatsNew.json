@@ -269,6 +269,30 @@
             "description": "Você também encontra em Configurações → IA."
           }
         }
+      },
+      "v2_18_0": {
+        "onDeviceAi": {
+          "title": "IA que roda no seu celular",
+          "description": "O treinador do Musclog agora pode rodar inteiramente neste celular. Nada do que você digita sai do aparelho, e funciona sem internet. É gratuito, sem conta nem chave.",
+          "action": {
+            "label": "Configurar a IA neste celular",
+            "description": "Escolha a Apple Intelligence ou um modelo pequeno baixado."
+          },
+          "items": {
+            "private": {
+              "label": "Fica no seu celular",
+              "description": "Suas mensagens são respondidas no aparelho, nunca enviadas a um servidor."
+            },
+            "offline": {
+              "label": "Funciona offline",
+              "description": "Depois de um download único, não é preciso conexão."
+            },
+            "photos": {
+              "label": "Fotos de refeições",
+              "description": "O modelo baixado pode ler a foto da sua refeição, se você escolher incluir essa parte."
+            }
+          }
+        }
       }
     }
   }

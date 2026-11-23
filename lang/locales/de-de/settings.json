@@ -239,13 +239,18 @@
           "temporary": {
             "name": "Temporäre Dateien",
             "description": "Überreste von Exporten, Teilen und Fotobearbeitung"
+          },
+          "localAiModels": {
+            "name": "KI-Modell auf dem Gerät",
+            "description": "Das KI-Modell, das zum Ausführen auf diesem Telefon heruntergeladen wurde. Du kannst es in den KI-Einstellungen erneut herunterladen"
           }
         },
         "clear": "Leeren",
         "clearTitle": "{{name}} leeren?",
         "clearMessage": {
           "exerciseImages": "Die Bilder werden beim nächsten Anzeigen einer Übung erneut geladen. Deine Daten sind nicht betroffen.",
-          "temporary": "Entfernt Überreste, die älter als eine Stunde sind. Deine Daten und Sicherheits-Backups bleiben unberührt."
+          "temporary": "Entfernt Überreste, die älter als eine Stunde sind. Deine Daten und Sicherheits-Backups bleiben unberührt.",
+          "localAiModels": "Die KI auf dem Gerät funktioniert erst wieder, wenn du das Modell in den KI-Einstellungen erneut herunterlädst. Deine Daten bleiben unberührt."
         },
         "freed": "{{size}} freigegeben",
         "nothingToClear": "Nichts zum Leeren",

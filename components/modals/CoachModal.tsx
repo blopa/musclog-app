@@ -47,7 +47,7 @@ import { ChatMealCard } from '@/components/cards/ChatMealCard';
 import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '@/components/cards/ChatWorkoutCompletedCard';
 import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
-import { COACH_INTENTIONS } from '@/components/coach/coachIntentions';
+import { COACH_INTENTIONS, intentionNeedsCloudAi } from '@/components/coach/coachIntentions';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
@@ -1216,7 +1216,9 @@ export function CoachModal({
           paddingHorizontal: theme.spacing.padding.base,
         }}
       >
-        {CHAT_INTENTIONS.map((intention) => {
+        {CHAT_INTENTIONS.filter(
+          (intention) => !intentionNeedsCloudAi(intention, aiProvider ?? '')
+        ).map((intention) => {
           const { icon: Icon, iconColor, labelKey } = COACH_INTENTIONS[intention];
           const isArmed = pendingIntention === intention;
 

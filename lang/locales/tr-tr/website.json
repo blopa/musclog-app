@@ -582,7 +582,7 @@
     "privacy": {
       "titleStart": "Gizlilik",
       "titleHighlight": "Politikası",
-      "lastUpdated": "Son güncelleme: 22 Kasım 2026",
+      "lastUpdated": "Son güncelleme: 23 Kasım 2026",
       "highlights": {
         "dataProtection": {
           "title": "Veri koruma",
@@ -728,6 +728,7 @@
           "title": "Kişisel verilerinin paylaşılması",
           "items": [
             "Seçtiğin sağlayıcılarla: besin aramaları seçtiğin besin veritabanına, yapay zekâ istekleri ise yapılandırdığın yapay zekâ sağlayıcısına gider.",
+            "Hugging Face ile, yapay zekâ modelini cihaza indirmeyi seçersen: her dosya indirmesinde olduğu gibi, istek Hugging Face'e cihazının IP adresini iletir. Model daha sonra cihazında çalışır ve ona sorduğun şeyler cihazında kalır.",
             "Hizmetin bölümlerini bizim adımıza çalıştıran hizmet sağlayıcılarıyla: Sentry (çökme raporları ile Musclog Iron hizmetinden mesaj içeriği veya tanımlayıcı içermeyen hata raporları), OpenRouter ve Google (ücretsiz Musclog AI seçeneği), Cloudflare, OpenRouter ve RevenueCat (Musclog Iron), GitHub ve Cloudflare (web sitesini barındırma) ve Google Analytics (web sitesi; yalnızca analitiği kabul ettikten sonra).",
             "\"Kişisel verilerinin ifşası\" bölümünde anlatıldığı gibi yasa gerektirdiğinde.",
             "Örneğin verilerini kendin dışa aktarır ya da paylaşırsan, senin rızanla.",

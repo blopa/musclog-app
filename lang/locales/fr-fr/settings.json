@@ -239,13 +239,18 @@
           "temporary": {
             "name": "Fichiers temporaires",
             "description": "Restes des exports, partages et retouches de photos"
+          },
+          "localAiModels": {
+            "name": "Modèle d'IA sur l'appareil",
+            "description": "Le modèle d'IA téléchargé pour fonctionner sur ce téléphone. Vous pouvez le télécharger à nouveau dans les réglages de l'IA"
           }
         },
         "clear": "Vider",
         "clearTitle": "Vider {{name}} ?",
         "clearMessage": {
           "exerciseImages": "Les images seront retéléchargées la prochaine fois qu'un exercice s'affichera. Tes données ne sont pas touchées.",
-          "temporary": "Supprime les fichiers restants de plus d'une heure. Tes données et sauvegardes de sécurité ne sont pas touchées."
+          "temporary": "Supprime les fichiers restants de plus d'une heure. Tes données et sauvegardes de sécurité ne sont pas touchées.",
+          "localAiModels": "L'IA sur l'appareil ne fonctionne plus tant que vous ne téléchargez pas à nouveau le modèle dans les réglages de l'IA. Vos données ne sont pas affectées."
         },
         "freed": "{{size}} libérés",
         "nothingToClear": "Rien à vider",

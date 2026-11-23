@@ -4,8 +4,8 @@
  */
 import {
   DEFAULT_LOCAL_MODEL_SELECTION,
-  NOT_INSTALLED,
   type LocalModelSelection,
+  NOT_INSTALLED,
 } from '@/utils/localModels/install';
 
 import type { InstalledLocalModel, LocalModelSnapshot } from './modelStore';

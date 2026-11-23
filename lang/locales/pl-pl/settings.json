@@ -239,13 +239,18 @@
           "temporary": {
             "name": "Pliki tymczasowe",
             "description": "Pozostałości po eksporcie, udostępnianiu i edycji zdjęć"
+          },
+          "localAiModels": {
+            "name": "Model AI na urządzeniu",
+            "description": "Model AI pobrany do działania na tym telefonie. Możesz pobrać go ponownie w ustawieniach AI"
           }
         },
         "clear": "Wyczyść",
         "clearTitle": "Wyczyścić: {{name}}?",
         "clearMessage": {
           "exerciseImages": "Zdjęcia pobiorą się ponownie, gdy następnym razem pokażemy ćwiczenie. Twoje dane pozostaną bez zmian.",
-          "temporary": "Usuwa pozostałe pliki starsze niż godzinę. Twoje dane i kopie bezpieczeństwa pozostaną bez zmian."
+          "temporary": "Usuwa pozostałe pliki starsze niż godzinę. Twoje dane i kopie bezpieczeństwa pozostaną bez zmian.",
+          "localAiModels": "AI na urządzeniu przestanie działać, dopóki ponownie nie pobierzesz modelu w ustawieniach AI. Twoje dane nie zostaną naruszone."
         },
         "freed": "Zwolniono {{size}}",
         "nothingToClear": "Nie ma nic do wyczyszczenia",

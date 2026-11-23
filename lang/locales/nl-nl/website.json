@@ -582,7 +582,7 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 22 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 23 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -728,6 +728,7 @@
           "title": "Delen van uw Persoonsgegevens",
           "items": [
             "Met de providers die u kiest: zoekopdrachten naar voeding gaan naar de voedingsdatabase die u selecteert en AI-verzoeken gaan naar de AI-provider die u configureert.",
+            "Met Hugging Face, als u het AI-model op het apparaat wilt downloaden: net als bij elk bestandsdownload vertelt het verzoek Hugging Face het IP-adres van uw apparaat. Het model draait daarna op uw apparaat, en wat u het vraagt blijft op uw apparaat.",
             "Met Serviceproviders die delen van de Service voor Ons uitvoeren: Sentry (crashrapporten, en foutrapporten van de dienst van Musclog Iron die geen berichtinhoud of identificaties bevatten), OpenRouter en Google (de gratis Musclog AI-optie), Cloudflare, OpenRouter en RevenueCat (Musclog Iron), GitHub en Cloudflare (hosting van de website) en Google Analytics (de website, alleen nadat U analyse accepteert).",
             "Wanneer de wet dit vereist, zoals beschreven onder \"Openbaarmaking van uw Persoonsgegevens\".",
             "Met uw toestemming, bijvoorbeeld wanneer u zelf gegevens exporteert of deelt.",

@@ -82,7 +82,7 @@ export function WhatsNewDebugSection() {
               selectReplayFlow({
                 releases: [release],
                 currentVersion: release.version,
-                context: { cycleTracking: true, premium: true },
+                context: { cycleTracking: true, premium: true, onDeviceAiPossible: true },
               })
             )
           }

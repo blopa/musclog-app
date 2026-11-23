@@ -269,6 +269,30 @@
             "description": "You can also find it in Settings → AI."
           }
         }
+      },
+      "v2_18_0": {
+        "onDeviceAi": {
+          "title": "AI that runs on your phone",
+          "description": "Musclog's coach can now run entirely on this phone. Nothing you type leaves the device, and it works offline. It is free, with no account or key.",
+          "action": {
+            "label": "Set up AI on this phone",
+            "description": "Choose Apple Intelligence or a small downloaded model."
+          },
+          "items": {
+            "private": {
+              "label": "Stays on your phone",
+              "description": "Your messages are answered on the device, never sent to a server."
+            },
+            "offline": {
+              "label": "Works offline",
+              "description": "After a one-time download, no connection is needed."
+            },
+            "photos": {
+              "label": "Meal photos",
+              "description": "The downloaded model can read a photo of your meal, if you choose to include that part."
+            }
+          }
+        }
       }
     }
   }

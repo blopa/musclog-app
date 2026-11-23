@@ -4,12 +4,12 @@
  */
 import type { AppleAvailability } from '@/modules/on-device-ai';
 
+import { downloadFraction, type LocalModelInstallState } from './localModels/install';
 import {
   type OnDeviceCapabilities,
-  type OnDeviceEngine,
   onDeviceCapabilities,
+  type OnDeviceEngine,
 } from './onDeviceEngine';
-import { downloadFraction, type LocalModelInstallState } from './localModels/install';
 
 export type OnDeviceStatusState =
   /** Can answer now. */

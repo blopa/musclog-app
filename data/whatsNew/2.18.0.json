@@ -1,0 +1,51 @@
+{
+  "version": "2.18.0",
+  "pages": [
+    {
+      "id": "onDeviceAi",
+      "requires": "onDeviceAiPossible",
+      "blocks": [
+        {
+          "id": "onDeviceAi",
+          "type": "info",
+          "icon": "bot",
+          "titleKey": "whatsNew.releases.v2_18_0.onDeviceAi.title",
+          "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openOnDeviceAiSetup",
+          "icon": "bot",
+          "labelKey": "whatsNew.releases.v2_18_0.onDeviceAi.action.label",
+          "primary": true,
+          "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.action.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "private",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.private.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.private.description"
+            },
+            {
+              "id": "offline",
+              "icon": "bot",
+              "labelKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.offline.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.offline.description"
+            },
+            {
+              "id": "photos",
+              "icon": "activity",
+              "labelKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.photos.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.photos.description"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

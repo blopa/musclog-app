@@ -4,8 +4,8 @@
  */
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
-import { refreshOnDeviceStatus } from '@/services/localModels/onDeviceStatusStore';
 import { startLocalModelDownload } from '@/services/localModels/modelStore';
+import { refreshOnDeviceStatus } from '@/services/localModels/onDeviceStatusStore';
 import type { LocalModelSelection } from '@/utils/localModels/install';
 import type { OnDeviceEngineChoice } from '@/utils/onDeviceEngine';
 

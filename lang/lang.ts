@@ -94,6 +94,7 @@ import deDeNutrition from './locales/de-de/nutrition.json';
 import deDeNutritionLogs from './locales/de-de/nutrition_logs.json';
 import deDeNutritionGoals from './locales/de-de/nutritionGoals.json';
 import deDeOnboarding from './locales/de-de/onboarding.json';
+import deDeOnDeviceAi from './locales/de-de/onDeviceAi.json';
 import deDeOpticalTransfer from './locales/de-de/opticalTransfer.json';
 import deDeOptionsSelector from './locales/de-de/optionsSelector.json';
 import deDePastWorkoutHistory from './locales/de-de/pastWorkoutHistory.json';
@@ -202,6 +203,7 @@ import enUsNutrition from './locales/en-us/nutrition.json';
 import enUsNutritionLogs from './locales/en-us/nutrition_logs.json';
 import enUsNutritionGoals from './locales/en-us/nutritionGoals.json';
 import enUsOnboarding from './locales/en-us/onboarding.json';
+import enUsOnDeviceAi from './locales/en-us/onDeviceAi.json';
 import enUsOpticalTransfer from './locales/en-us/opticalTransfer.json';
 import enUsOptionsSelector from './locales/en-us/optionsSelector.json';
 import enUsPastWorkoutHistory from './locales/en-us/pastWorkoutHistory.json';
@@ -310,6 +312,7 @@ import esEsNutrition from './locales/es-es/nutrition.json';
 import esEsNutritionLogs from './locales/es-es/nutrition_logs.json';
 import esEsNutritionGoals from './locales/es-es/nutritionGoals.json';
 import esEsOnboarding from './locales/es-es/onboarding.json';
+import esEsOnDeviceAi from './locales/es-es/onDeviceAi.json';
 import esEsOpticalTransfer from './locales/es-es/opticalTransfer.json';
 import esEsOptionsSelector from './locales/es-es/optionsSelector.json';
 import esEsPastWorkoutHistory from './locales/es-es/pastWorkoutHistory.json';
@@ -418,6 +421,7 @@ import frFrNutrition from './locales/fr-fr/nutrition.json';
 import frFrNutritionLogs from './locales/fr-fr/nutrition_logs.json';
 import frFrNutritionGoals from './locales/fr-fr/nutritionGoals.json';
 import frFrOnboarding from './locales/fr-fr/onboarding.json';
+import frFrOnDeviceAi from './locales/fr-fr/onDeviceAi.json';
 import frFrOpticalTransfer from './locales/fr-fr/opticalTransfer.json';
 import frFrOptionsSelector from './locales/fr-fr/optionsSelector.json';
 import frFrPastWorkoutHistory from './locales/fr-fr/pastWorkoutHistory.json';
@@ -526,6 +530,7 @@ import itItNutrition from './locales/it-it/nutrition.json';
 import itItNutritionLogs from './locales/it-it/nutrition_logs.json';
 import itItNutritionGoals from './locales/it-it/nutritionGoals.json';
 import itItOnboarding from './locales/it-it/onboarding.json';
+import itItOnDeviceAi from './locales/it-it/onDeviceAi.json';
 import itItOpticalTransfer from './locales/it-it/opticalTransfer.json';
 import itItOptionsSelector from './locales/it-it/optionsSelector.json';
 import itItPastWorkoutHistory from './locales/it-it/pastWorkoutHistory.json';
@@ -634,6 +639,7 @@ import nlNlNutrition from './locales/nl-nl/nutrition.json';
 import nlNlNutritionLogs from './locales/nl-nl/nutrition_logs.json';
 import nlNlNutritionGoals from './locales/nl-nl/nutritionGoals.json';
 import nlNlOnboarding from './locales/nl-nl/onboarding.json';
+import nlNlOnDeviceAi from './locales/nl-nl/onDeviceAi.json';
 import nlNlOpticalTransfer from './locales/nl-nl/opticalTransfer.json';
 import nlNlOptionsSelector from './locales/nl-nl/optionsSelector.json';
 import nlNlPastWorkoutHistory from './locales/nl-nl/pastWorkoutHistory.json';
@@ -742,6 +748,7 @@ import plPlNutrition from './locales/pl-pl/nutrition.json';
 import plPlNutritionLogs from './locales/pl-pl/nutrition_logs.json';
 import plPlNutritionGoals from './locales/pl-pl/nutritionGoals.json';
 import plPlOnboarding from './locales/pl-pl/onboarding.json';
+import plPlOnDeviceAi from './locales/pl-pl/onDeviceAi.json';
 import plPlOpticalTransfer from './locales/pl-pl/opticalTransfer.json';
 import plPlOptionsSelector from './locales/pl-pl/optionsSelector.json';
 import plPlPastWorkoutHistory from './locales/pl-pl/pastWorkoutHistory.json';
@@ -850,6 +857,7 @@ import ptBrNutrition from './locales/pt-br/nutrition.json';
 import ptBrNutritionLogs from './locales/pt-br/nutrition_logs.json';
 import ptBrNutritionGoals from './locales/pt-br/nutritionGoals.json';
 import ptBrOnboarding from './locales/pt-br/onboarding.json';
+import ptBrOnDeviceAi from './locales/pt-br/onDeviceAi.json';
 import ptBrOpticalTransfer from './locales/pt-br/opticalTransfer.json';
 import ptBrOptionsSelector from './locales/pt-br/optionsSelector.json';
 import ptBrPastWorkoutHistory from './locales/pt-br/pastWorkoutHistory.json';
@@ -958,6 +966,7 @@ import ruRuNutrition from './locales/ru-ru/nutrition.json';
 import ruRuNutritionLogs from './locales/ru-ru/nutrition_logs.json';
 import ruRuNutritionGoals from './locales/ru-ru/nutritionGoals.json';
 import ruRuOnboarding from './locales/ru-ru/onboarding.json';
+import ruRuOnDeviceAi from './locales/ru-ru/onDeviceAi.json';
 import ruRuOpticalTransfer from './locales/ru-ru/opticalTransfer.json';
 import ruRuOptionsSelector from './locales/ru-ru/optionsSelector.json';
 import ruRuPastWorkoutHistory from './locales/ru-ru/pastWorkoutHistory.json';
@@ -1066,6 +1075,7 @@ import trTrNutrition from './locales/tr-tr/nutrition.json';
 import trTrNutritionLogs from './locales/tr-tr/nutrition_logs.json';
 import trTrNutritionGoals from './locales/tr-tr/nutritionGoals.json';
 import trTrOnboarding from './locales/tr-tr/onboarding.json';
+import trTrOnDeviceAi from './locales/tr-tr/onDeviceAi.json';
 import trTrOpticalTransfer from './locales/tr-tr/opticalTransfer.json';
 import trTrOptionsSelector from './locales/tr-tr/optionsSelector.json';
 import trTrPastWorkoutHistory from './locales/tr-tr/pastWorkoutHistory.json';
@@ -1219,6 +1229,7 @@ const resources = {
       ...deDeNutrition,
       ...deDeNutritionGoals,
       ...deDeNutritionLogs,
+      ...deDeOnDeviceAi,
       ...deDeOnboarding,
       ...deDeOpticalTransfer,
       ...deDeOptionsSelector,
@@ -1331,6 +1342,7 @@ const resources = {
       ...enUsNutrition,
       ...enUsNutritionGoals,
       ...enUsNutritionLogs,
+      ...enUsOnDeviceAi,
       ...enUsOnboarding,
       ...enUsOpticalTransfer,
       ...enUsOptionsSelector,
@@ -1443,6 +1455,7 @@ const resources = {
       ...esEsNutrition,
       ...esEsNutritionGoals,
       ...esEsNutritionLogs,
+      ...esEsOnDeviceAi,
       ...esEsOnboarding,
       ...esEsOpticalTransfer,
       ...esEsOptionsSelector,
@@ -1555,6 +1568,7 @@ const resources = {
       ...frFrNutrition,
       ...frFrNutritionGoals,
       ...frFrNutritionLogs,
+      ...frFrOnDeviceAi,
       ...frFrOnboarding,
       ...frFrOpticalTransfer,
       ...frFrOptionsSelector,
@@ -1667,6 +1681,7 @@ const resources = {
       ...itItNutrition,
       ...itItNutritionGoals,
       ...itItNutritionLogs,
+      ...itItOnDeviceAi,
       ...itItOnboarding,
       ...itItOpticalTransfer,
       ...itItOptionsSelector,
@@ -1779,6 +1794,7 @@ const resources = {
       ...nlNlNutrition,
       ...nlNlNutritionGoals,
       ...nlNlNutritionLogs,
+      ...nlNlOnDeviceAi,
       ...nlNlOnboarding,
       ...nlNlOpticalTransfer,
       ...nlNlOptionsSelector,
@@ -1891,6 +1907,7 @@ const resources = {
       ...plPlNutrition,
       ...plPlNutritionGoals,
       ...plPlNutritionLogs,
+      ...plPlOnDeviceAi,
       ...plPlOnboarding,
       ...plPlOpticalTransfer,
       ...plPlOptionsSelector,
@@ -2003,6 +2020,7 @@ const resources = {
       ...ptBrNutrition,
       ...ptBrNutritionGoals,
       ...ptBrNutritionLogs,
+      ...ptBrOnDeviceAi,
       ...ptBrOnboarding,
       ...ptBrOpticalTransfer,
       ...ptBrOptionsSelector,
@@ -2115,6 +2133,7 @@ const resources = {
       ...ruRuNutrition,
       ...ruRuNutritionGoals,
       ...ruRuNutritionLogs,
+      ...ruRuOnDeviceAi,
       ...ruRuOnboarding,
       ...ruRuOpticalTransfer,
       ...ruRuOptionsSelector,
@@ -2227,6 +2246,7 @@ const resources = {
       ...trTrNutrition,
       ...trTrNutritionGoals,
       ...trTrNutritionLogs,
+      ...trTrOnDeviceAi,
       ...trTrOnboarding,
       ...trTrOpticalTransfer,
       ...trTrOptionsSelector,

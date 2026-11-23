@@ -239,13 +239,18 @@
           "temporary": {
             "name": "Arquivos temporários",
             "description": "Sobras de exportações, compartilhamentos e edição de fotos"
+          },
+          "localAiModels": {
+            "name": "Modelo de IA no dispositivo",
+            "description": "O modelo de IA baixado para rodar neste celular. Você pode baixá-lo de novo em Configurações de IA"
           }
         },
         "clear": "Limpar",
         "clearTitle": "Limpar {{name}}?",
         "clearMessage": {
           "exerciseImages": "As imagens são baixadas de novo na próxima vez que um exercício for exibido. Seus dados não são afetados.",
-          "temporary": "Remove arquivos restantes com mais de uma hora. Seus dados e backups de segurança não são afetados."
+          "temporary": "Remove arquivos restantes com mais de uma hora. Seus dados e backups de segurança não são afetados.",
+          "localAiModels": "A IA no dispositivo deixa de funcionar até você baixar o modelo de novo em Configurações de IA. Seus dados não são afetados."
         },
         "freed": "{{size}} liberados",
         "nothingToClear": "Nada para limpar",

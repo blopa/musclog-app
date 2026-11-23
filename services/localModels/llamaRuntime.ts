@@ -14,8 +14,8 @@
  */
 import { AppState, Platform } from 'react-native';
 
-import { captureException } from '@/utils/sentry';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
+import { captureException } from '@/utils/sentry';
 
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
 
@@ -210,6 +210,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
     const onAbort = () => {
       void ctx.stopCompletion();
     };
+
     params.signal?.addEventListener('abort', onAbort);
     try {
       const result = await ctx.completion(

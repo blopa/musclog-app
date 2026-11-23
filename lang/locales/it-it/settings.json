@@ -239,13 +239,18 @@
           "temporary": {
             "name": "File temporanei",
             "description": "Residui di esportazioni, condivisioni e modifica delle foto"
+          },
+          "localAiModels": {
+            "name": "Modello AI sul dispositivo",
+            "description": "Il modello AI scaricato per funzionare su questo telefono. Puoi scaricarlo di nuovo nelle impostazioni AI"
           }
         },
         "clear": "Svuota",
         "clearTitle": "Svuotare {{name}}?",
         "clearMessage": {
           "exerciseImages": "Le immagini si scaricano di nuovo la prossima volta che viene mostrato un esercizio. I tuoi dati non cambiano.",
-          "temporary": "Rimuove i file residui più vecchi di un'ora. I tuoi dati e i backup di sicurezza non vengono toccati."
+          "temporary": "Rimuove i file residui più vecchi di un'ora. I tuoi dati e i backup di sicurezza non vengono toccati.",
+          "localAiModels": "L'AI sul dispositivo smette di funzionare finché non scarichi di nuovo il modello nelle impostazioni AI. I tuoi dati non vengono modificati."
         },
         "freed": "Liberati {{size}}",
         "nothingToClear": "Niente da svuotare",

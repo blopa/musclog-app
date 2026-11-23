@@ -4,7 +4,7 @@ Active plan. Work the phases in order, tick the status table as each ships, fold
 into `AGENTS.md`, `docs/CURRENT_FEATURES.md` and `docs/RESEARCH.md`, then delete this file and its
 line in `AGENTS.md`.
 
-**Status, 2026-11-23.** Research and plan only; nothing is implemented, no dependency is installed.
+**Status, 2026-11-23.** Implemented in code (sessions 1 and 2, see the status table and "Implementation status"); not yet run on any device.
 The model sizes, speeds and benchmarks below are vendor figures from model cards and docs read on
 that date, not measurements of ours; P0 and P7 replace them with measurements.
 
@@ -25,7 +25,7 @@ usable with no AI.
 
 Done and tested (Jest, `tsc` clean): P1 (native helper `modules/on-device-ai`, `constants/localModels.ts`, `utils/localModels/*`, `services/localModels/modelStore.ts`), P2 (`llamaRuntime.ts`, `utils/onDeviceLocal.ts`, `utils/onDeviceEngine.ts`, `utils/onDeviceStatus.ts`, `onDeviceStatusStore.ts`, `hooks/useOnDeviceStatus.ts`, `coachAI.ts` wiring, `aiSchemaValidate.ts`, `AiService` probe, `SettingsContext`), P3 native side (Swift availability reasons, not compiled or run on a device), the pure and orchestration half of P6 (`utils/localFoodPhoto.ts`, `estimateMealFromPhotoOnDevice`), the storage category, `LocalModelCard`, `services/onDeviceAiSetup.ts`, onboarding route helpers.
 
-Not done: the two onboarding screens, the `musclog-api` own-key link, Settings section, `AINotConfiguredModal` variant, notices modal, What's New page, all non-English copy, `app.json` llama.rn plugin and prebuild, benchmark route, privacy policy, store and doc updates (P8). Nothing has run on a device (P0 and P7 need phones and builds).
+Session 2 added the two onboarding screens, the `musclog-api` own-key link (`ConnectedAISettingsModal`), the Settings section (`OnDeviceAiSection`), the `AINotConfiguredModal` `localNotReady` variant, `ON_DEVICE_INTENTIONS` (meal and workout plans stay cloud-only), the snapshot in the on-device prompt, the notices modal, the 2.18.0 What's New page, all ten locales, the `llama.rn` plugin in `app.json`, the bench route and the docs. Still open: `npm run prebuild:android|ios` (maintainer), every device check, P7 numbers, store listing text, and an older complete model revision as a fallback while an update downloads.
 
 Deviations from the plan below, on purpose: (1) the downloaded model lives in Android `noBackupFilesDir` (module `storageDirectory()`), not behind a backup-rules plugin; (2) `aiSchemaValidate` gates the downloaded engine only (Apple's guided generation is OS-enforced, cloud providers are server-enforced and their callers tolerate partial answers); (3) a chosen on-device provider never falls back, so `PROVIDER_PROBES['on-device']` returns a config whenever `use_on_device_ai` is on and the request throws `OnDeviceUnavailableError`; (4) unmatched photo items are estimated by name through `refineTrackedMeals` instead of being left blank; (5) the choice order on `musclog-api` stays Iron, free, none; (6) a killed download restarts its file (resume data exists only after a clean pause), and an older installed revision is not used while a new one downloads.
 
@@ -387,17 +387,17 @@ Rejected candidates:
 
 Each phase gets the orchestration split from AGENTS.md. Judgment work (runtime lifecycle, provider wiring) is kept or given to `worker`; mechanical work (locales, manifest, notices data, tests to a spec) goes to `worker-lite`. Each phase runs the relevant Jest suites, `npm run typecheck`, `npm run lint:eslint`, prettier on changed files and translation checks, and updates docs.
 
-| Phase | What                                              | Status  |
-| ----- | ------------------------------------------------- | ------- |
-| P0    | Spike: llama.rn in a dev build on both platforms  | pending |
-| P1    | Native helper module + model store                | pending |
-| P2    | gguf engine + provider wiring + schema validation | pending |
-| P3    | Apple availability reasons                        | pending |
-| P4    | Onboarding redesign                               | pending |
-| P5    | Settings, storage, notices, What's New            | pending |
-| P6    | On-device food photos                             | pending |
-| P7    | Benchmark + thresholds                            | pending |
-| P8    | Release docs, privacy policy, store check         | pending |
+| Phase | What                                              | Status                                                          |
+| ----- | ------------------------------------------------- | --------------------------------------------------------------- |
+| P0    | Spike: llama.rn in a dev build on both platforms  | needs devices (spike never run)                                 |
+| P1    | Native helper module + model store                | done in code                                                    |
+| P2    | gguf engine + provider wiring + schema validation | done in code                                                    |
+| P3    | Apple availability reasons                        | done in code (Swift never compiled)                             |
+| P4    | Onboarding redesign                               | done in code                                                    |
+| P5    | Settings, storage, notices, What's New            | done in code                                                    |
+| P6    | On-device food photos                             | done in code (not measured)                                     |
+| P7    | Benchmark + thresholds                            | bench route written, runs need phones                           |
+| P8    | Release docs, privacy policy, store check         | docs and privacy policy done; store listings wait for a release |
 
 **P0 Spike (go/no-go)**
 

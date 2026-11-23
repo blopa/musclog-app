@@ -142,6 +142,11 @@ describe('a release intro', () => {
       '2.14.2.json'
     );
 
+  it('accepts the on-device AI condition on a page and on an intro', () => {
+    const intro = { titleKey: 'whatsNew.title', requires: 'onDeviceAiPossible' };
+    expect(withIntro(intro).issues).toEqual([]);
+  });
+
   it('keeps a valid intro with its pose, condition and items', () => {
     const intro = {
       titleKey: 'whatsNew.title',

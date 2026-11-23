@@ -1,0 +1,151 @@
+{
+  "onDeviceAi": {
+    "model": {
+      "name": "{{name}} od {{vendor}}",
+      "size": "Rozmiar pobierania: {{size}}",
+      "photos": {
+        "label": "Uwzględnij rozpoznawanie zdjęć",
+        "hint": "Pozwala modelowi odczytywać zdjęcia posiłków. Dodaje {{size}}."
+      },
+      "freeSpace": "Wolne miejsce na tym telefonie: {{size}}",
+      "notEnoughSpace": "Za mało miejsca: potrzeba {{needed}}, a w telefonie wolne jest {{free}}.",
+      "mobileData": "Korzystasz z transmisji danych komórkowych. Pobieranie waży {{size}}.",
+      "languageNote": "Ten model działa najlepiej po angielsku i kilku innych językach. Odpowiedzi w Twoim języku mogą być słabsze.",
+      "license": "Licencja: {{license}}",
+      "readLicense": "Przeczytaj licencję",
+      "updateAvailable": "Dostępna jest nowsza wersja modelu.",
+      "state": {
+        "readyWithPhotos": "Gotowe. Działa offline, z zdjęciami posiłków.",
+        "readyText": "Gotowe. Działa offline, tylko dla tekstu.",
+        "paused": "Wstrzymano: {{received}} z {{total}}",
+        "downloading": "Pobieranie: {{received}} z {{total}}",
+        "verifying": "Sprawdzanie pobranego pliku…",
+        "installing": "Kończenie instalacji…"
+      },
+      "failure": {
+        "noSpace": "W telefonie zabrakło miejsca. Zwolnij je i spróbuj ponownie.",
+        "network": "Połączenie zostało przerwane. Spróbuj ponownie, gdy będziesz online.",
+        "checksum": "Pobrany plik nie przeszedł sprawdzenia i został usunięty. Spróbuj ponownie.",
+        "interrupted": "Pobieranie zostało przerwane. Spróbuj ponownie.",
+        "http": "Serwer pobierania nie odpowiedział tak, jak oczekiwano. Spróbuj ponownie później.",
+        "storage": "Nie udało się zapisać modelu na tym telefonie."
+      },
+      "actions": {
+        "download": "Pobierz ({{size}})",
+        "retry": "Spróbuj ponownie",
+        "pause": "Wstrzymaj",
+        "resume": "Wznów",
+        "cancel": "Anuluj",
+        "update": "Zaktualizuj model",
+        "delete": "Usuń model"
+      },
+      "delete": {
+        "title": "Usunąć model?",
+        "message": "AI na urządzeniu przestanie działać, dopóki ponownie nie pobierzesz modelu. Twoje dane nie zostaną zmienione."
+      }
+    },
+    "apple": {
+      "title": "Apple Intelligence",
+      "status": {
+        "ready": "Gotowe. Działa na iPhonie i offline.",
+        "appleOff": "Apple Intelligence jest wyłączona. Włącz ją w Ustawieniach iOS, aby z niej korzystać.",
+        "appleNotReady": "iOS wciąż przygotowuje Apple Intelligence. Spróbuj ponownie za chwilę."
+      },
+      "openSettings": "Otwórz Ustawienia iOS",
+      "languageNote": "Apple Intelligence może jeszcze nie obsługiwać Twojego języka. Odpowiedzi mogą wracać do angielskiego."
+    },
+    "onboarding": {
+      "ask": {
+        "heading": "AI na Twoim telefonie",
+        "intro": "Coach Musclog może działać w całości na tym telefonie. To, co wpisujesz, nie opuszcza urządzenia, a aplikacja działa offline.",
+        "choicesLabel": "Użyj AI działającego na tym telefonie",
+        "yes": {
+          "title": "Tak, uruchom AI na tym telefonie",
+          "points": {
+            "private": "Twoje wiadomości nigdy nie opuszczają telefonu",
+            "offline": "Działa bez połączenia",
+            "free": "Bez konta, klucza i subskrypcji"
+          }
+        },
+        "no": {
+          "title": "Nie, pokaż inne opcje",
+          "points": {
+            "other": "Musclog Iron, wersja darmowa lub własny klucz",
+            "later": "Lokalne AI możesz włączyć później w Ustawieniach"
+          }
+        },
+        "cta": {
+          "yes": "Dalej",
+          "no": "Pokaż inne opcje"
+        }
+      },
+      "options": {
+        "heading": "Wybierz sposób działania",
+        "intro": "Wybierz AI, które działa na tym telefonie.",
+        "choicesLabel": "Opcje AI na urządzeniu",
+        "apple": {
+          "title": "Apple Intelligence",
+          "points": {
+            "builtIn": "Wbudowane w iOS, nic do pobierania",
+            "private": "Działa na tym iPhonie"
+          }
+        },
+        "model": {
+          "title": "Pobrany model",
+          "points": {
+            "download": "Jedno pobieranie, potem działa offline",
+            "photos": "Może odczytywać zdjęcia posiłków, jeśli je uwzględnisz"
+          }
+        },
+        "later": {
+          "title": "Skonfiguruj później",
+          "points": {
+            "later": "Wybierzesz to w Ustawieniach, kiedy będziesz gotowy"
+          }
+        },
+        "cta": {
+          "apple": "Użyj Apple Intelligence",
+          "model": "Pobierz i kontynuuj",
+          "later": "Kontynuuj bez AI"
+        },
+        "downloadNote": "Pobieranie trwa w tle. Odpowiedzi coacha zaczną się po jego zakończeniu."
+      }
+    },
+    "useOwnKey": "Użyj własnego klucza API lub lokalnego serwera",
+    "settings": {
+      "sectionTitle": "AI na tym telefonie",
+      "toggle": "Używaj AI na tym telefonie",
+      "toggleSubtitle": "Odpowiedzi powstają na urządzeniu. To, o co pytasz, go nie opuszcza.",
+      "engineLabel": "Które AI działa na tym telefonie",
+      "engine": {
+        "apple": "Apple Intelligence",
+        "model": "Pobrany model"
+      },
+      "priorityNote": "Musclog Iron i wersja darmowa mają pierwszeństwo, dopóki są włączone. Wyłącz je, aby używać AI na tym telefonie.",
+      "privacyNote": "Twoje dane zostają na tym telefonie i nigdy nie są wysyłane na serwer."
+    },
+    "notReady": {
+      "title": "AI na tym telefonie nie jest gotowe",
+      "message": {
+        "needsDownload": "Model nie został jeszcze pobrany. Pobierz go, aby zacząć rozmowę.",
+        "downloading": "Model wciąż się pobiera. Coach zacznie działać po zakończeniu pobierania.",
+        "downloadFailed": "Pobieranie modelu nie powiodło się. Spróbuj pobrać go ponownie.",
+        "appleOff": "Apple Intelligence jest wyłączona w Ustawieniach iOS.",
+        "appleNotReady": "iOS wciąż przygotowuje Apple Intelligence. Spróbuj ponownie za chwilę.",
+        "appleNotEligible": "Ten iPhone nie może uruchomić Apple Intelligence.",
+        "unsupported": "Ten telefon nie może uruchomić AI na urządzeniu."
+      },
+      "download": "Pobierz model",
+      "openIosSettings": "Otwórz Ustawienia iOS",
+      "openAiSettings": "Otwórz ustawienia AI",
+      "chooseAnother": "Wybierz inne AI"
+    },
+    "notices": {
+      "title": "Informacje o podmiotach trzecich",
+      "intro": "Musclog opiera się na oprogramowaniu open source i otwartym modelu. Oto licencje, które mają zastosowanie.",
+      "link": "Informacje o podmiotach trzecich",
+      "linkSubtitle": "Oprogramowanie open source i model na urządzeniu",
+      "openLink": "Otwórz pełny tekst"
+    }
+  }
+}

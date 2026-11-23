@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IMessage } from 'react-native-gifted-chat';
 
+import { intentionNeedsCloudAi } from '@/components/coach/coachIntentions';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
@@ -786,7 +787,7 @@ export function useChatMessages(
 
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
-              aiConfig.provider === 'on-device'
+              intentionNeedsCloudAi(GENERATE_MEAL_PLAN, aiConfig.provider)
                 ? t('coach.errors.featureRequiresCloudAi')
                 : t('coach.errors.mealPlanGenerationFailed')
             );
@@ -841,7 +842,7 @@ export function useChatMessages(
 
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
-              aiConfig.provider === 'on-device'
+              intentionNeedsCloudAi(GENERATE_MY_WORKOUTS, aiConfig.provider)
                 ? t('coach.errors.featureRequiresCloudAi')
                 : t('coach.errors.workoutGenerationFailed')
             );
@@ -882,7 +883,7 @@ export function useChatMessages(
 
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
-              aiConfig.provider === 'on-device'
+              intentionNeedsCloudAi(TRACK_MEAL, aiConfig.provider)
                 ? t('coach.errors.featureRequiresCloudAi')
                 : t('coach.errors.trackMealFailed')
             );

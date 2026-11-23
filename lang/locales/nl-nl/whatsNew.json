@@ -269,6 +269,30 @@
             "description": "Je vindt het ook onder Instellingen → AI."
           }
         }
+      },
+      "v2_18_0": {
+        "onDeviceAi": {
+          "title": "AI die op je telefoon draait",
+          "description": "De coach van Musclog kan nu volledig op deze telefoon draaien. Wat je typt verlaat het toestel niet, en het werkt offline. Het is gratis, zonder account of sleutel.",
+          "action": {
+            "label": "AI op deze telefoon instellen",
+            "description": "Kies Apple Intelligence of een klein gedownload model."
+          },
+          "items": {
+            "private": {
+              "label": "Blijft op je telefoon",
+              "description": "Je berichten worden op het toestel beantwoord, nooit naar een server gestuurd."
+            },
+            "offline": {
+              "label": "Werkt offline",
+              "description": "Na een eenmalige download is geen verbinding nodig."
+            },
+            "photos": {
+              "label": "Maaltijdfoto's",
+              "description": "Het gedownloade model kan een foto van je maaltijd lezen, als je dat onderdeel wilt meenemen."
+            }
+          }
+        }
       }
     }
   }

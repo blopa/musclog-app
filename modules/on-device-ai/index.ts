@@ -38,4 +38,9 @@ export type OnDeviceAiNativeModule = {
   setExcludedFromBackup(path: string): Promise<boolean>;
 };
 
-export const onDeviceAiModule = requireOptionalNativeModule<OnDeviceAiNativeModule>('OnDeviceAi');
+// A runtime without the native-module loader (a unit test, an old Expo) reads as "no module", the
+// same as a build that does not contain it; every caller already copes with `null`.
+export const onDeviceAiModule: OnDeviceAiNativeModule | null =
+  typeof requireOptionalNativeModule === 'function'
+    ? requireOptionalNativeModule<OnDeviceAiNativeModule>('OnDeviceAi')
+    : null;

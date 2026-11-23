@@ -6,8 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { useMenstrualCycleContext } from '@/components/MenstrualCycleContext';
 import { WhatsNewModal } from '@/components/whatsNew/WhatsNewModal';
 import { whatsNewReleases } from '@/data/whatsNew/releases';
+import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useTheme } from '@/hooks/useTheme';
 import { getAppVersion } from '@/utils/appVersion';
+import { hasLocalAiOption } from '@/utils/onDeviceStatus';
 import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 import { selectReplayFlow } from '@/utils/whatsNew/flow';
 
@@ -19,14 +21,16 @@ export function WhatsNewCard() {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const { isActive: cycleTracking } = useMenstrualCycleContext();
+  const onDeviceStatus = useOnDeviceStatus({ refresh: true });
+  const onDeviceAiPossible = hasLocalAiOption(onDeviceStatus);
   const flow = useMemo(
     () =>
       selectReplayFlow({
         releases: whatsNewReleases,
         currentVersion: getAppVersion(),
-        context: { cycleTracking, premium: isPremiumUiEnabled() },
+        context: { cycleTracking, premium: isPremiumUiEnabled(), onDeviceAiPossible },
       }),
-    [cycleTracking]
+    [cycleTracking, onDeviceAiPossible]
   );
   if (!flow.pages.length) {
     return null;

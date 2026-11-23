@@ -20,6 +20,7 @@ import {
   OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
+import { validateAgainstSchema } from './aiSchemaValidate';
 import {
   buildClaudeClient,
   buildClaudeMessages,
@@ -37,12 +38,6 @@ import { providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
-import { type MealEstimateProgressListener } from './mealEstimateProgress';
-import { ingredientMacroProblems } from './mealPlausibility';
-import { validateAgainstSchema } from './aiSchemaValidate';
-import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
-import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
-import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
 import {
   buildPhotoMeal,
   type FoodCandidate,
@@ -54,6 +49,11 @@ import {
   pickFoodMatch,
   searchTermsFor,
 } from './localFoodPhoto';
+import { type MealEstimateProgressListener } from './mealEstimateProgress';
+import { ingredientMacroProblems } from './mealPlausibility';
+import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
+import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
+import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,

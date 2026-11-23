@@ -130,6 +130,12 @@ export const ONBOARDING_ROUTES: AuditRoute[] = [
   },
   { name: 'first-workout', path: '/onboarding/first-workout', file: 'onboarding/first-workout' },
   { name: 'health-connect', path: '/onboarding/health-connect', file: 'onboarding/health-connect' },
+  { name: 'on-device-ai', path: '/onboarding/on-device-ai', file: 'onboarding/on-device-ai' },
+  {
+    name: 'on-device-ai-options',
+    path: '/onboarding/on-device-ai-options',
+    file: 'onboarding/on-device-ai-options',
+  },
   { name: 'musclog-api', path: '/onboarding/musclog-api', file: 'onboarding/musclog-api' },
   { name: 'ai-setup', path: '/onboarding/ai-setup', file: 'onboarding/ai-setup' },
   { name: 'ai-provider', path: '/onboarding/ai-provider', file: 'onboarding/ai-provider' },
@@ -329,6 +335,10 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
     fixture: 'Open AI Nutrition Context Modal',
   },
   'components/modals/AISettingsModal.tsx': { fixture: 'Open AI Settings Modal' },
+  'components/modals/ConnectedAISettingsModal.tsx': {
+    unaudited: 'a wrapper that hands stored settings to AISettingsModal, which has its own button',
+  },
+  'components/modals/ThirdPartyNoticesModal.tsx': { fixture: 'Open Third Party Notices Modal' },
   'components/modals/AddExerciseModal.tsx': { fixture: 'Open Add Exercise Modal' },
   'components/modals/AddExerciseToSessionModal.tsx': {
     fixture: 'Open Add Exercise To Session Modal',

@@ -582,7 +582,7 @@
     "privacy": {
       "titleStart": "Polityka",
       "titleHighlight": "prywatności",
-      "lastUpdated": "Ostatnia aktualizacja: 22 listopada 2026",
+      "lastUpdated": "Ostatnia aktualizacja: 23 listopada 2026",
       "highlights": {
         "dataProtection": {
           "title": "Ochrona danych",
@@ -728,6 +728,7 @@
           "title": "Udostępnianie Twoich danych osobowych",
           "items": [
             "Wybranym przez Ciebie dostawcom: wyszukiwania produktów trafiają do wybranej bazy produktów, a zapytania AI do skonfigurowanego dostawcy AI.",
+            "Z Hugging Face, jeśli zdecydujesz się pobrać model AI na urządzenie: jak każde pobieranie pliku, żądanie przekazuje Hugging Face adres IP Twojego urządzenia. Model działa następnie na Twoim urządzeniu, a to, o co go pytasz, pozostaje na Twoim urządzeniu.",
             "Podmiotom przetwarzającym, które obsługują części Usługi w Naszym imieniu: Sentry (raporty o awariach oraz raporty o błędach z usługi Musclog Iron, które nie zawierają treści wiadomości ani identyfikatorów), OpenRouter i Google (darmowa opcja Musclog AI), Cloudflare, OpenRouter i RevenueCat (Musclog Iron), GitHub i Cloudflare (hosting strony internetowej) oraz Google Analytics (strona internetowa, wyłącznie po zaakceptowaniu analityki przez Ciebie).",
             "Gdy wymaga tego prawo, jak opisano w „Ujawnianie Twoich danych osobowych”.",
             "Za Twoją zgodą, na przykład gdy sam eksportujesz lub udostępniasz dane.",

@@ -269,6 +269,30 @@
             "description": "También lo encontrarás en Ajustes → IA."
           }
         }
+      },
+      "v2_18_0": {
+        "onDeviceAi": {
+          "title": "IA que funciona en tu teléfono",
+          "description": "El entrenador de Musclog ahora puede funcionar por completo en este teléfono. Lo que escribes no sale del dispositivo, y funciona sin conexión. Es gratis, sin cuenta ni clave.",
+          "action": {
+            "label": "Configurar la IA en este teléfono",
+            "description": "Elige Apple Intelligence o un modelo pequeño descargado."
+          },
+          "items": {
+            "private": {
+              "label": "Se queda en tu teléfono",
+              "description": "Tus mensajes se responden en el dispositivo, nunca se envían a un servidor."
+            },
+            "offline": {
+              "label": "Funciona sin conexión",
+              "description": "Tras una descarga única, no hace falta conexión."
+            },
+            "photos": {
+              "label": "Fotos de comidas",
+              "description": "El modelo descargado puede leer una foto de tu comida, si decides incluir esa parte."
+            }
+          }
+        }
       }
     }
   }

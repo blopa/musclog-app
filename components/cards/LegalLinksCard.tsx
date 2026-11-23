@@ -1,9 +1,10 @@
 import { ExternalLink } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, type StyleProp, View, type ViewStyle } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
+import { ThirdPartyNoticesModal } from '@/components/modals/ThirdPartyNoticesModal';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
 import { SUPPORT_PROJECT_DONATION_URL } from '@/constants/misc';
@@ -22,6 +23,7 @@ interface LegalLinksCardProps {
 export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
+  const [noticesVisible, setNoticesVisible] = useState(false);
 
   const supportHref = useMemo((): string | null => {
     if (Platform.OS === 'web') {
@@ -63,6 +65,12 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
           trailing={externalCue}
           onPress={() => openLink(websitePageUrl('/privacy', i18n.language))}
         />
+        <ListRow
+          variant="grouped"
+          title={t('onDeviceAi.notices.link')}
+          subtitle={t('onDeviceAi.notices.linkSubtitle')}
+          onPress={() => setNoticesVisible(true)}
+        />
         {supportHref !== null ? (
           <ListRow
             variant="grouped"
@@ -72,6 +80,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
           />
         ) : null}
       </ListGroup>
+      <ThirdPartyNoticesModal visible={noticesVisible} onClose={() => setNoticesVisible(false)} />
     </View>
   );
 }

@@ -269,6 +269,30 @@
             "description": "Lo trovi anche in Impostazioni → AI."
           }
         }
+      },
+      "v2_18_0": {
+        "onDeviceAi": {
+          "title": "IA che gira sul tuo telefono",
+          "description": "Il coach di Musclog ora può funzionare interamente su questo telefono. Quello che scrivi non lascia il dispositivo, e funziona offline. È gratuito, senza account né chiave.",
+          "action": {
+            "label": "Configura l'IA su questo telefono",
+            "description": "Scegli Apple Intelligence o un piccolo modello scaricato."
+          },
+          "items": {
+            "private": {
+              "label": "Resta sul tuo telefono",
+              "description": "I tuoi messaggi vengono elaborati sul dispositivo, mai inviati a un server."
+            },
+            "offline": {
+              "label": "Funziona offline",
+              "description": "Dopo un download una tantum, non serve alcuna connessione."
+            },
+            "photos": {
+              "label": "Foto dei pasti",
+              "description": "Il modello scaricato può leggere una foto del tuo pasto, se scegli di includere questa parte."
+            }
+          }
+        }
       }
     }
   }
