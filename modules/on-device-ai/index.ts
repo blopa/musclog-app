@@ -18,9 +18,9 @@ export type AppleAvailability =
  * `android/…/OnDeviceAiModule.kt`):
  * - `appleAvailability` / `appleSupportsLocale`: the reasons `@react-native-ai/apple` 0.12 hides
  *   behind one boolean.
- * - `storageDirectory`: where downloaded models live. On Android that is `noBackupFilesDir`, which
- *   Auto Backup never copies (a 300 MB model would exceed its 25 MB limit and stop the app's data
- *   backups); on iOS it is the document directory, excluded from iCloud backups below.
+ * - `storageDirectory`: where downloaded models live. On Android that is `filesDir/local-ai`
+ *   (expo-file-system cannot write under `noBackupFilesDir`), which the app's include-only backup
+ *   rules leave out (a 300 MB model would exceed Auto Backup's 25 MB limit); on iOS it is the document directory, excluded from iCloud backups below.
  * - `sha256File`: hashes a file in 1 MB chunks off the shared module queue (JS hashing 300 MB
  *   would block the thread for tens of seconds).
  * - `setExcludedFromBackup`: iOS `isExcludedFromBackup`; a no-op on Android.

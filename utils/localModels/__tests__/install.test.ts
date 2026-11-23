@@ -135,6 +135,16 @@ describe('classifyDownloadFailure', () => {
     expect(classifyDownloadFailure(null, 'Download cancelled')).toBe('interrupted');
     expect(classifyDownloadFailure(null, 'Network request failed')).toBe('network');
   });
+
+  it('does not call an unnamed or storage failure "offline"', () => {
+    expect(
+      classifyDownloadFailure(
+        null,
+        "Call to function 'ExponentFileSystem.makeDirectoryAsync' has been rejected. Location 'file:///x' isn't writable."
+      )
+    ).toBe('storage');
+    expect(classifyDownloadFailure(null, 'something odd')).toBe('interrupted');
+  });
 });
 
 describe('modelSupportsLanguage', () => {

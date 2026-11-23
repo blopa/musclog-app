@@ -34,6 +34,7 @@ import {
   type LocalModelInstallState,
   type LocalModelSelection,
   modelFileUrl,
+  NETWORK_MESSAGE,
   NOT_INSTALLED,
   parseInstalledRecord,
   staleInstallFolders,
@@ -449,10 +450,23 @@ class ChecksumError extends Error {
   }
 }
 
-/** Starts (or restarts) the download of `selection`. Resolves when it ends in any state. */
+/**
+ * Starts (or restarts) the download of `selection`. Resolves when it ends in any state and never
+ * rejects: callers fire it with `void`, so a throw here would be an unhandled rejection.
+ */
 export async function startLocalModelDownload(
   selection: LocalModelSelection = snapshot.selection
 ): Promise<void> {
+  try {
+    await runLocalModelDownload(selection);
+  } catch (error) {
+    active = null;
+    fail('storage');
+    void handleError(error, 'localModels.download', { showSnackbar: false });
+  }
+}
+
+async function runLocalModelDownload(selection: LocalModelSelection): Promise<void> {
   const root = rootUri();
   if (!root || !onDeviceAiModule) {
     publish({ supported: false });
@@ -502,7 +516,7 @@ export async function startLocalModelDownload(
         const message = error instanceof Error ? error.message : String(error);
         const reason = classifyDownloadFailure(status, message);
         fail(reason);
-        if (reason === 'network' && !/network|timed out|offline|connection/i.test(message)) {
+        if (reason !== 'noSpace' && !NETWORK_MESSAGE.test(message)) {
           // Anything we cannot name is worth a report; plain connectivity is not.
           void handleError(error, 'localModels.download', { showSnackbar: false });
         }

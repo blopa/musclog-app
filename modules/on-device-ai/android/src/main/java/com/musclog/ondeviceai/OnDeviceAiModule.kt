@@ -2,6 +2,7 @@ package com.musclog.ondeviceai
 
 import android.net.Uri
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
@@ -22,11 +23,13 @@ class OnDeviceAiModule : Module() {
 
     Function("appleSupportsLocale") { _: String -> false }
 
-    // `noBackupFilesDir` is never copied by Auto Backup. The app's document directory is, and a
-    // model larger than Auto Backup's 25 MB limit would make the whole app's backup fail.
+    // Must live under `filesDir`: expo-file-system only lets JS write below `filesDir` and
+    // `cacheDir` (a path that does not exist yet under any other folder reads as "isn't writable",
+    // which is what `noBackupFilesDir` did). Auto Backup still skips it: the app's backup rules
+    // (expo-secure-store's) are an include list of shared preferences only.
     Function("storageDirectory") {
       val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-      "file://" + File(context.noBackupFilesDir, "local-ai").absolutePath
+      "file://" + File(context.filesDir, "local-ai").absolutePath
     }
 
     // Own dispatcher: Expo's default queue is one thread shared by every module function.
@@ -45,7 +48,7 @@ class OnDeviceAiModule : Module() {
       }
     }
 
-    // iOS flags files for iCloud exclusion; Android keeps models in `noBackupFilesDir` already.
+    // iOS flags files for iCloud exclusion; Android's backup rules already leave the folder out.
     AsyncFunction("setExcludedFromBackup") { _: String -> false }
   }
 

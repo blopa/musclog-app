@@ -197,6 +197,10 @@ export function staleInstallFolders(
   return folders.filter((name) => name !== keep);
 }
 
+/** Messages of a transport that really is offline or flaky. */
+export const NETWORK_MESSAGE =
+  /network|timed out|timeout|offline|connection|unable to resolve|unknownhost|socket|ssl|internet/i;
+
 /**
  * A failure from the transport, mapped to a reason the UI can say in words. `status` is the HTTP
  * status when there was one; `message` the thrown error's text.
@@ -214,11 +218,28 @@ export function classifyDownloadFailure(
     return 'noSpace';
   }
 
+  if (
+    text.includes('writable') ||
+    text.includes('readable') ||
+    text.includes('eacces') ||
+    text.includes('permission') ||
+    text.includes('directory') ||
+    text.includes('ioexception') ||
+    text.includes('read-only')
+  ) {
+    return 'storage';
+  }
+
   if (text.includes('cancel') || text.includes('abort')) {
     return 'interrupted';
   }
 
-  return 'network';
+  if (NETWORK_MESSAGE.test(text)) {
+    return 'network';
+  }
+
+  // Not something we can name: say "interrupted, try again" rather than blaming the connection.
+  return 'interrupted';
 }
 
 /** Does the app's language appear in the model's trained languages? `pt-BR` matches `pt`. */
