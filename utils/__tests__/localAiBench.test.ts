@@ -1,4 +1,4 @@
-import scenariosFile from './fixtures/localAiBench/scenarios.json';
+import scenariosFile from '@/data/localAiBench/scenarios.json';
 import {
   type BenchScenario,
   type BenchScenarioFile,

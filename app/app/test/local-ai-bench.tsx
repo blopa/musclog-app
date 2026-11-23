@@ -1,5 +1,5 @@
 /**
- * On-device AI bench: runs `utils/__tests__/fixtures/localAiBench/scenarios.json` through the real
+ * On-device AI bench: runs `data/localAiBench/scenarios.json` through the real
  * `requestStructured` path (and the engine directly for text, to read its timings), scores each
  * reply with the pure `utils/localAiBench.ts` and shares the result as JSON.
  *
@@ -17,7 +17,7 @@ import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useTheme } from '@/hooks/useTheme';
 import { AiService } from '@/services/AiService';
 import { generateWithLocalModel } from '@/services/localModels/llamaRuntime';
-import scenariosFile from '@/utils/__tests__/fixtures/localAiBench/scenarios.json';
+import scenariosFile from '@/data/localAiBench/scenarios.json';
 import { requestStructured } from '@/utils/coachAI';
 import {
   type BenchScenario,

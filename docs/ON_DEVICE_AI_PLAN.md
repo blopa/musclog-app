@@ -339,7 +339,7 @@ Rejected candidates:
 
 **Harness**: a dev-only `/app/test/local-ai-bench` (pattern: `optical-bench.tsx`), guarded like every other test route.
 
-- It runs `utils/__tests__/fixtures/localAiBench/scenarios.json` through the **real** `requestStructured` / `sendCoachMessage` paths.
+- It runs `data/localAiBench/scenarios.json` through the **real** `requestStructured` / `sendCoachMessage` paths.
 - It exports a JSON result through the share sheet.
 - A Jest test checks each scenario's shape and expected-field rules offline, with a fake engine.
 
