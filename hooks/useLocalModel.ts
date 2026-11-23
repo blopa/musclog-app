@@ -8,5 +8,5 @@ import {
 
 /** The downloaded on-device model's install state; updates as a download progresses. */
 export function useLocalModel(): LocalModelSnapshot {
-  return useSyncExternalStore(subscribeLocalModel, getLocalModelSnapshot);
+  return useSyncExternalStore(subscribeLocalModel, getLocalModelSnapshot, getLocalModelSnapshot);
 }

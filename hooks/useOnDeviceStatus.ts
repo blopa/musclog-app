@@ -18,5 +18,9 @@ export function useOnDeviceStatus({ refresh = false }: { refresh?: boolean } = {
     }
   }, [refresh]);
 
-  return useSyncExternalStore(subscribeOnDeviceStatus, getOnDeviceStatusSnapshot);
+  return useSyncExternalStore(
+    subscribeOnDeviceStatus,
+    getOnDeviceStatusSnapshot,
+    getOnDeviceStatusSnapshot
+  );
 }
