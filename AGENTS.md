@@ -39,7 +39,8 @@ The agent files hold the same pins (`utils/__tests__/agentOrchestration.test.ts`
 
 - `npm start`: Start Expo development server
 - `npm run start-clear`: Start with cleared cache
-- `npm run web`: Start for web development (http://localhost:8081)
+- `npm run web`: Start for web development (http://localhost:8081), app and website together
+- `npm run web:app` / `npm run web:site`: the same dev server with `MUSCLOG_WEB_TARGET=app|website`, which makes `metro.config.js` block the other route tree (`app/(website)` or `app/app`; they never import each other), so Metro crawls half the files and holds a smaller module graph (first web bundle measured at about 3.2 GB for `app`, 3.7 GB for `site`, 4.6 GB for both). In `site` mode `/app/...` routes do not exist, and in `app` mode the website pages do not. Only a web dev server sets it; native commands and static exports leave it unset. Pinned by nothing but the config check that rejects any other value.
 - `npm run android`: Run on Android emulator
 - `npm run android-device`: Run on physical Android device (no build cache)
 - `npm run ios`: Run on iOS simulator/device
