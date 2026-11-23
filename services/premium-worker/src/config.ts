@@ -27,6 +27,13 @@ export interface FeatureLimits {
    * and count inside `max_tokens`, so raise this together with `max_tokens`.
    */
   reasoning_max?: ReasoningEffort | null;
+  /**
+   * `max_tokens` for a request that goes upstream with that `reasoning.effort`, in place of
+   * `max_tokens`: a higher effort spends more of the budget thinking, so it gets more room. An effort
+   * with no entry (and a request with no reasoning) uses `max_tokens`. The reservation bound follows
+   * the value used, so the ledger still holds a worst case for what can be spent.
+   */
+  max_tokens_by_effort?: Partial<Record<ReasoningEffort, number>>;
 }
 
 export const REASONING_EFFORTS: readonly ReasoningEffort[] = ['low', 'medium', 'high'];

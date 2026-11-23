@@ -312,10 +312,15 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
     acc.images > 0 ? 'vision' : responseFormat !== undefined ? 'structured' : 'chat';
   const limits = config.features[feature];
 
+  // A higher effort spends more of the budget thinking, so it may get a larger `max_tokens`.
+  const reasoning = effectiveReasoning(limits, requestedReasoning);
+  const tokenLimit =
+    (reasoning === null ? undefined : limits.max_tokens_by_effort?.[reasoning]) ??
+    limits.max_tokens;
   const maxTokens =
     input.max_tokens === undefined
-      ? limits.max_tokens
-      : Math.min(limits.max_tokens, Math.max(1, Math.floor(input.max_tokens as number)));
+      ? tokenLimit
+      : Math.min(tokenLimit, Math.max(1, Math.floor(input.max_tokens as number)));
 
   const { prices, provider } = config;
   const body: Record<string, unknown> = {
@@ -339,7 +344,6 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
   assertPremiumPrivacy(body);
   if (input.temperature !== undefined)
     body.temperature = Math.min(limits.temperature_max, Math.max(0, input.temperature as number));
-  const reasoning = effectiveReasoning(limits, requestedReasoning);
   if (reasoning !== null) body.reasoning = { effort: reasoning };
   if (responseFormat) body.response_format = responseFormat;
   if (tools) body.tools = tools;
