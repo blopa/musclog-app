@@ -8,16 +8,22 @@ import {
   NOT_INSTALLED,
 } from '@/utils/localModels/install';
 
+import { isDevWebLocalModel } from './devWebBridge';
 import type { InstalledLocalModel, LocalModelSnapshot } from './modelStore';
 
 export type { InstalledLocalModel, LocalModelSnapshot };
 
+// Under the dev server the model "is installed": `llamaRuntime.web.ts` forwards to a desktop
+// llama-server (`devWebBridge.ts`). Production web stays unsupported.
+const devBridge = isDevWebLocalModel();
 const snapshot: LocalModelSnapshot = {
-  supported: false,
-  state: NOT_INSTALLED,
+  supported: devBridge,
+  state: devBridge
+    ? { kind: 'ready', revision: 'dev-web-bridge', withProjector: true }
+    : NOT_INSTALLED,
   selection: DEFAULT_LOCAL_MODEL_SELECTION,
   updateAvailable: false,
-  projectorInstalled: false,
+  projectorInstalled: devBridge,
 };
 
 export function getLocalModelSnapshot(): LocalModelSnapshot {

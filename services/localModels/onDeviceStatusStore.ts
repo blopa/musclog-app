@@ -14,6 +14,7 @@ import { evaluateLocalModelDevice } from '@/utils/localModels/deviceGate';
 import { type OnDeviceEngineChoice, resolveOnDeviceEngine } from '@/utils/onDeviceEngine';
 import { deriveOnDeviceStatus, type OnDeviceStatus } from '@/utils/onDeviceStatus';
 
+import { isDevWebLocalModel } from './devWebBridge';
 import { getLocalModelSnapshot, refreshLocalModel, subscribeLocalModel } from './modelStore';
 
 /**
@@ -42,6 +43,11 @@ const listeners = new Set<() => void>();
 let wired = false;
 
 function deviceOk(): boolean {
+  // The dev web bridge runs on the desktop's llama-server, so the phone gate does not apply.
+  if (isDevWebLocalModel()) {
+    return true;
+  }
+
   return evaluateLocalModelDevice({
     platform: Platform.OS,
     totalMemoryBytes: Device.totalMemory,
