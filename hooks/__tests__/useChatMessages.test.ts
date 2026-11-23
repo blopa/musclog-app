@@ -6,13 +6,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { CHAT_INTENTION_KEY } from '@/constants/chat';
+import { NutritionService } from '@/database/services/NutritionService';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import {
   emitCoachReplyEvent,
   setActiveCoachReplyId,
   setCoachReplySnapshot,
 } from '@/services/coachReplyStore';
-import { consumeRestoredComposerText, startCoachReply } from '@/services/coachReplyStream';
+import {
+  consumeRestoredComposerText,
+  persistCoachReply,
+  startCoachReply,
+} from '@/services/coachReplyStream';
+import type { TrackMealResponse } from '@/utils/coachAI';
 
 const mockGetMessagesByContext = jest.fn();
 const mockSaveMessage = jest.fn();
@@ -54,7 +60,9 @@ jest.mock('@/database/services/ChatService', () => ({
   },
 }));
 jest.mock('@/database/services/NutritionGoalService', () => ({ NutritionGoalService: {} }));
-jest.mock('@/database/services/NutritionService', () => ({ NutritionService: {} }));
+jest.mock('@/database/services/NutritionService', () => ({
+  NutritionService: { normalizeAiMealIngredients: jest.fn() },
+}));
 jest.mock('@/database/services/NutritionTargetService', () => ({ NutritionTargetService: {} }));
 jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {} }));
 jest.mock('@/database/services/UserMetricService', () => ({ UserMetricService: {} }));
@@ -78,7 +86,9 @@ jest.mock('@/utils/coachAI', () => {
     trackMeal: jest.fn(),
   };
 });
-jest.mock('@/utils/file', () => ({ saveBase64ImageToFile: jest.fn() }));
+jest.mock('@/utils/file', () => ({
+  saveBase64ImageToFile: jest.fn().mockResolvedValue('meal.jpg'),
+}));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 jest.mock('@/utils/nutritionAI', () => ({ processMealPlanResponse: jest.fn() }));
 jest.mock('@/utils/nutritionCalculator', () => ({
@@ -372,6 +382,90 @@ describe('useChatMessages with the reply service', () => {
           endDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
         })
       );
+    });
+
+    it('does not persist a Track Meal photo when its estimate fails', async () => {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, 'TRACK_MEAL');
+      const { trackMeal } = jest.requireMock('@/utils/coachAI');
+      trackMeal.mockResolvedValue(null);
+      const { result } = await loaded('nutrition');
+
+      await act(async () => {
+        await result.current.sendMessage('Lunch', 'base64-photo');
+      });
+
+      expect(trackMeal).toHaveBeenCalledWith(
+        expect.anything(),
+        'Lunch',
+        'base64-photo',
+        expect.any(Function)
+      );
+      expect(mockSaveMessage).not.toHaveBeenCalled();
+      expect(result.current.messages).toHaveLength(0);
+      expect(result.current.failedMessageText).toBe('Lunch');
+      expect(result.current.ephemeralErrorAsMessage?.text).toBe('coach.errors.trackMealFailed');
+      expect(result.current.isSending).toBe(false);
+    });
+
+    it('adds the Track Meal photo to history only once its estimate is ready', async () => {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, 'TRACK_MEAL');
+      const { trackMeal } = jest.requireMock('@/utils/coachAI');
+      const estimate: TrackMealResponse = {
+        meals: [
+          {
+            mealType: 'lunch',
+            ingredients: [{ name: 'Rice', grams: 100, kcal: 130, protein: 3, carbs: 28, fat: 0 }],
+          },
+        ],
+      };
+      const { promise, resolve } = Promise.withResolvers<TrackMealResponse>();
+      trackMeal.mockReturnValueOnce(promise);
+      jest
+        .mocked(NutritionService.normalizeAiMealIngredients)
+        .mockResolvedValueOnce(estimate.meals[0].ingredients);
+      mockSaveMessage.mockResolvedValueOnce(record('u1', 'user', 'Lunch'));
+      jest
+        .mocked(persistCoachReply)
+        .mockResolvedValueOnce(record('c1', 'coach', 'Estimate ready') as never);
+
+      const { result } = await loaded('nutrition');
+      let send: Promise<void> | undefined;
+      act(() => {
+        send = result.current.sendMessage('Lunch', 'base64-photo');
+      });
+      await waitFor(() => expect(trackMeal).toHaveBeenCalled());
+      expect(result.current.isSending).toBe(true);
+      expect(mockSaveMessage).not.toHaveBeenCalled();
+
+      await act(async () => {
+        resolve(estimate);
+        await send;
+      });
+
+      expect(mockSaveMessage).toHaveBeenCalledTimes(1);
+      expect(mockSaveMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          payloadJson: JSON.stringify({ type: 'image', image: 'base64-photo' }),
+        })
+      );
+      expect(result.current.messages.map((message) => message._id)).toEqual(['c1', 'u1']);
+      expect(result.current.pendingIntention).toBeNull();
+    });
+
+    it('restores the Track Meal text and reports a thrown estimate error', async () => {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, 'TRACK_MEAL');
+      const { trackMeal } = jest.requireMock('@/utils/coachAI');
+      trackMeal.mockRejectedValue(new Error('analysis failed'));
+      const { result } = await loaded('nutrition');
+
+      await act(async () => {
+        await result.current.sendMessage('Dinner', 'base64-photo');
+      });
+
+      expect(mockSaveMessage).not.toHaveBeenCalled();
+      expect(result.current.messages).toHaveLength(0);
+      expect(result.current.failedMessageText).toBe('Dinner');
+      expect(result.current.ephemeralErrorAsMessage?.text).toBe('coach.errors.generalError');
     });
   });
 });

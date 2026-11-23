@@ -552,6 +552,7 @@ const renderInputToolbar = (
   onClearIntention: () => void,
   attachedImage: { uri: string } | null,
   onRemoveImage: () => void,
+  photoSendInProgress: boolean,
   t: TFunction
 ) => {
   const styles = getStyles(theme);
@@ -574,6 +575,7 @@ const renderInputToolbar = (
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t('common.a11y.removeImage')}
+              disabled={photoSendInProgress}
               onPress={onRemoveImage}
               className="absolute -right-2 -top-2 rounded-full p-1 shadow-sm"
               style={{ backgroundColor: theme.colors.background.hairline }}
@@ -602,6 +604,7 @@ const renderInputToolbar = (
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t('common.a11y.remove')}
+              disabled={photoSendInProgress}
               onPress={onClearIntention}
               className="p-0.5"
             >
@@ -700,6 +703,7 @@ export function CoachModal({
     ingredients: TrackMealIngredient[];
   } | null>(null);
   const [attachedImage, setAttachedImage] = useState<{ uri: string; base64: string } | null>(null);
+  const photoSendInProgress = isSending && attachedImage !== null;
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isQuickSettingsVisible, setIsQuickSettingsVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
@@ -794,16 +798,17 @@ export function CoachModal({
     (newMessages: ExtendedIMessage[] = []) => {
       const text = newMessages[0]?.text;
       const image = attachedImage?.base64;
-      if (text || image) {
+      if (!isSending && (text || image)) {
         // sendMessage clears the hook's failedMessageText but not our local seed, so the
         // composer would repopulate with the prefill right after sending.
         setPrefillText(null);
         sendMessage(text ?? '', image);
-        setAttachedImage(null);
+        // Keep the photo in the composer while Track Meal runs. On success the intention is
+        // disarmed and the existing effect clears it; on failure the image remains retryable.
         setComposerResetKey((k) => k + 1);
       }
     },
-    [sendMessage, attachedImage]
+    [sendMessage, attachedImage, isSending]
   );
 
   /** Shows the intention's prompt as a parked coach message above the composer. */
@@ -1225,6 +1230,7 @@ export function CoachModal({
           return (
             <Pressable
               key={intention}
+              disabled={photoSendInProgress}
               onPress={() => void toggleIntention(intention)}
               className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
               style={{
@@ -1242,7 +1248,7 @@ export function CoachModal({
         })}
       </ScrollView>
     );
-  }, [pendingIntention, t, theme, toggleIntention]);
+  }, [aiProvider, pendingIntention, photoSendInProgress, t, theme, toggleIntention]);
 
   const headerRight = useMemo(
     () => (
@@ -1317,9 +1323,10 @@ export function CoachModal({
         handleClearIntention,
         attachedImage,
         () => setAttachedImage(null),
+        photoSendInProgress,
         t
       ),
-    [theme, pendingIntention, handleClearIntention, attachedImage, t]
+    [theme, pendingIntention, handleClearIntention, attachedImage, photoSendInProgress, t]
   );
 
   const gcRenderComposer = useCallback(
@@ -1331,7 +1338,7 @@ export function CoachModal({
         composerSeedText,
         clearComposerSeed,
         handleAttachFile,
-        pendingIntention === TRACK_MEAL,
+        pendingIntention === TRACK_MEAL && !photoSendInProgress,
         composerResetKey
       ),
     [
@@ -1341,6 +1348,7 @@ export function CoachModal({
       clearComposerSeed,
       handleAttachFile,
       pendingIntention,
+      photoSendInProgress,
       composerResetKey,
     ]
   );
@@ -1488,7 +1496,11 @@ export function CoachModal({
           <SegmentedControl
             options={conversationContextOptions}
             value={conversationContext}
-            onValueChange={(value) => handleConversationContextChange(value as ConversationContext)}
+            onValueChange={(value) => {
+              if (!photoSendInProgress) {
+                handleConversationContextChange(value as ConversationContext);
+              }
+            }}
             variant="elevated"
           />
         </View>

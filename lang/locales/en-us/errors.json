@@ -21,6 +21,8 @@
     "aiInvalidApiKey": "Your {{provider}} API key was rejected. Check it in AI settings.",
     "aiTimeout": "This is taking too long. Try again.",
     "onDeviceNotReady": "On-device AI isn't ready yet. Finish setting it up in AI settings, or choose another AI.",
+    "onDevicePhotosNotInstalled": "In AI settings, reinstall the model with photo understanding enabled to use meal photos offline.",
+    "onDevicePhotosUnsupported": "Apple Intelligence can’t analyze meal photos here. Choose a model that supports photos in AI settings.",
     "onDeviceLoadFailed": "On-device AI couldn't start, usually because the phone is low on memory. Close other apps and try again.",
     "aiKeyTestOk": "Key accepted",
     "aiKeyTestRejected": "Key rejected. Check it and try again.",

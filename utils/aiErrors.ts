@@ -41,7 +41,8 @@ export class AiCancelledError extends Error {
  * ready, or it failed to load (usually memory). There is deliberately no fallback to another
  * provider, because the data recipient would change; the person is told what to fix.
  */
-export type OnDeviceUnavailableReason = 'notReady' | 'loadFailed';
+export type OnDeviceUnavailableReason =
+  'notReady' | 'loadFailed' | 'photosNotInstalled' | 'photosUnsupported';
 
 export class OnDeviceUnavailableError extends Error {
   readonly reason: OnDeviceUnavailableReason;
@@ -207,9 +208,16 @@ export function describeAiError(
   }
 
   if (error instanceof OnDeviceUnavailableError) {
-    return error.reason === 'notReady'
-      ? t('errors.onDeviceNotReady')
-      : t('errors.onDeviceLoadFailed');
+    switch (error.reason) {
+      case 'notReady':
+        return t('errors.onDeviceNotReady');
+      case 'loadFailed':
+        return t('errors.onDeviceLoadFailed');
+      case 'photosNotInstalled':
+        return t('errors.onDevicePhotosNotInstalled');
+      case 'photosUnsupported':
+        return t('errors.onDevicePhotosUnsupported');
+    }
   }
 
   if (error instanceof HostedAiError) {

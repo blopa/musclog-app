@@ -33,6 +33,8 @@
     "hostedBusy": "Musclog Iron ist beschäftigt. Versuche es in wenigen Sekunden erneut.",
     "hostedAlreadyProcessed": "Diese Anfrage wurde bereits bearbeitet. Bitte sende sie erneut.",
     "onDeviceNotReady": "Die KI auf dem Gerät ist noch nicht bereit. Schließe die Einrichtung in den KI-Einstellungen ab oder wähle eine andere KI.",
+    "onDevicePhotosNotInstalled": "Installiere das Modell in den KI-Einstellungen erneut und aktiviere die Fotoerkennung, um Mahlzeitenfotos offline zu verwenden.",
+    "onDevicePhotosUnsupported": "Apple Intelligence kann hier keine Mahlzeitenfotos analysieren. Wähle in den KI-Einstellungen ein Modell mit Foto-Unterstützung.",
     "onDeviceLoadFailed": "Die KI auf dem Gerät konnte nicht gestartet werden, meist weil das Telefon wenig Speicher hat. Schließe andere Apps und versuche es erneut."
   }
 }

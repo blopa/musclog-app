@@ -4,6 +4,7 @@ import {
   estimateNutritionFromPhoto,
   requestStructured,
   sendCoachMessage,
+  trackMeal,
 } from '../coachAI';
 import { LOCAL_PHOTO_UNMATCHED_FOOD_ID } from '../localFoodPhoto';
 
@@ -12,6 +13,7 @@ const mockStreamLocalMessage = jest.fn();
 const mockSendLocalStructuredRaw = jest.fn();
 const mockSearchFoods = jest.fn();
 const mockSendAppleStructured = jest.fn();
+const mockGetUseThinkingMode = jest.fn().mockResolvedValue(false);
 
 jest.mock('../onDeviceAi', () => ({
   sendOnDeviceMessage: jest.fn(),
@@ -40,7 +42,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: jest.fn().mockResolvedValue(false),
+    getUseThinkingMode: () => mockGetUseThinkingMode(),
     getSendFoundationFoodsToLlm: jest.fn().mockResolvedValue(false),
   },
 }));
@@ -91,6 +93,7 @@ beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
   jest.clearAllMocks();
+  mockGetUseThinkingMode.mockResolvedValue(false);
 });
 
 afterEach(() => jest.restoreAllMocks());
@@ -175,10 +178,44 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
     fiber: 0.4,
   });
 
-  it('returns null when the model cannot see photos', async () => {
-    const result = await estimateNutritionFromPhoto({ ...gguf, vision: false }, 'AAAA');
-    expect(result).toBeNull();
+  it('rejects when the GGUF projector is not installed', async () => {
+    await expect(
+      estimateNutritionFromPhoto({ ...gguf, vision: false }, 'AAAA')
+    ).rejects.toMatchObject({
+      reason: 'photosNotInstalled',
+    });
     expect(mockSendLocalStructuredRaw).not.toHaveBeenCalled();
+  });
+
+  it('rejects photos on the Apple model with its unsupported reason', async () => {
+    await expect(
+      estimateNutritionFromPhoto({ ...gguf, engine: 'apple', vision: true }, 'AAAA')
+    ).rejects.toMatchObject({ reason: 'photosUnsupported' });
+  });
+
+  it('routes Track Meal photos through local identification in thinking mode with context', async () => {
+    mockGetUseThinkingMode.mockResolvedValue(true);
+    mockSendLocalStructuredRaw.mockResolvedValue('{"items":[{"name":"rice","grams":150}]}');
+    mockSearchFoods.mockResolvedValue([food('food-rice', 'White rice')]);
+
+    const result = await trackMeal(gguf, 'steamed jasmine rice', 'data:image/jpeg;base64,AAAA');
+
+    const [messages, , schemaSent, options] = mockSendLocalStructuredRaw.mock.calls[0];
+    expect(messages[0].content).toMatch(/photo/i);
+    expect(messages[0].content).toContain('steamed jasmine rice');
+    expect(schemaSent).toBeDefined();
+    expect(options.image).toBe('data:image/jpeg;base64,AAAA');
+    expect(result?.meals[0].ingredients).toEqual(
+      expect.arrayContaining([expect.objectContaining({ foodId: 'food-rice', kcal: 195 })])
+    );
+  });
+
+  it('lets a camera model load failure reach the caller', async () => {
+    mockSendLocalStructuredRaw.mockRejectedValue(new OnDeviceUnavailableError('loadFailed'));
+
+    await expect(estimateNutritionFromPhoto(gguf, 'AAAA')).rejects.toMatchObject({
+      reason: 'loadFailed',
+    });
   });
 
   it('names foods, matches the ones the phone has and estimates the rest by name', async () => {
