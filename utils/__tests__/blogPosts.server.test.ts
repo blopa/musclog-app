@@ -357,34 +357,35 @@ const answer: number = 42;
       await Promise.all(
         Array.from({ length: total }, (_, index) => {
           const date = `2026-04-${String(total - index).padStart(2, '0')}`;
-          const highlight =
-            index === 0
-              ? '\nhighlightOnTag: [workout-history]'
-              : index === BLOG_POSTS_PER_PAGE + 1
-                ? '\nhighlightOnTag: [workout-history]'
-                : index === total - 1
-                  ? '\nhighlightOnTag: [nutrition-guide]'
-                  : '';
-          const tags =
-            index === total - 1
-              ? '[nutrition-guide]'
-              : index <= BLOG_POSTS_PER_PAGE
-                ? '[workout-history]'
-                : '[]';
+          const tags = index < BLOG_POSTS_PER_PAGE + 1 ? '[workout-history]' : '[]';
           return writeFile(
             path.join(directory, `post-${index}.md`),
-            `---\ntitle: Post ${index}\ndate: ${date}\ncategory: updates\ntags: ${tags}${highlight}\n---\nBody.\n`
+            `---\ntitle: Post ${index}\ndate: ${date}\ncategory: updates\ntags: ${tags}\n---\nBody.\n`
           );
         })
       );
+      await Promise.all([
+        writeFile(
+          path.join(directory, 'new-guide.md'),
+          '---\ntitle: New guide\ndate: 2026-05-03\ncategory: updates\ntags: []\nhighlightOnTag: [workout-history]\n---\nGuide.\n'
+        ),
+        writeFile(
+          path.join(directory, 'old-guide.md'),
+          '---\ntitle: Old guide\ndate: 2026-01-01\ncategory: updates\ntags: []\nhighlightOnTag: [workout-history]\n---\nGuide.\n'
+        ),
+        writeFile(
+          path.join(directory, 'nutrition-guide.md'),
+          '---\ntitle: Nutrition guide\ndate: 2026-05-01\ncategory: updates\ntags: [nutrition-guide]\nhighlightOnTag: [nutrition-guide]\n---\nGuide.\n'
+        ),
+      ]);
 
       const firstPage = await loadBlogTagPage('workout-history', 1, directory);
       const secondPage = await loadBlogTagPage('workout-history', 2, directory);
       const otherTagPage = await loadBlogTagPage('nutrition-guide', 1, directory);
 
       expect(firstPage.highlightedPosts?.map((post) => post.slug)).toEqual([
-        'post-0',
-        `post-${BLOG_POSTS_PER_PAGE + 1}`,
+        'new-guide',
+        'old-guide',
       ]);
       expect(firstPage.highlightedPosts?.[1].tags).not.toContain('workout-history');
       expect(firstPage.posts).toHaveLength(BLOG_POSTS_PER_PAGE);
@@ -402,9 +403,7 @@ const answer: number = 42;
         totalPages: 2,
         totalPosts: BLOG_POSTS_PER_PAGE + 1,
       });
-      expect(otherTagPage.highlightedPosts?.map((post) => post.slug)).toEqual([
-        `post-${total - 1}`,
-      ]);
+      expect(otherTagPage.highlightedPosts?.map((post) => post.slug)).toEqual(['nutrition-guide']);
       expect(
         otherTagPage.highlightedPosts?.every((post) =>
           post.highlightOnTag?.includes('nutrition-guide')
