@@ -55,7 +55,7 @@ export async function sendLocalStructuredRaw(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
   schema: object,
-  options: Pick<LocalGenerateParams, 'image' | 'signal' | 'maxTokens'> = {}
+  options: Pick<LocalGenerateParams, 'image' | 'signal' | 'maxTokens' | 'temperature'> = {}
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),

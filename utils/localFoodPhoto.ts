@@ -13,6 +13,13 @@ export const MAX_IDENTIFIED_FOODS = 12;
 export const MIN_IDENTIFIED_GRAMS = 5;
 export const MAX_IDENTIFIED_GRAMS = 1500;
 export const DEFAULT_IDENTIFIED_GRAMS = 100;
+/** Longest food name asked for and kept: a bounded string cannot run on until the token limit. */
+export const MAX_IDENTIFIED_NAME_CHARS = 80;
+/**
+ * A first reply at temperature 0 that is not usable is retried once warmer: the same prompt at 0
+ * would only give the same words again.
+ */
+export const LOCAL_PHOTO_RETRY_TEMPERATURE = 0.3;
 
 /**
  * The food id of an item the database had no match for. It names no row, so the lookup that
@@ -34,7 +41,7 @@ export const LOCAL_FOOD_IDENTIFY_SCHEMA = {
         type: 'object',
         required: ['name', 'grams'],
         properties: {
-          name: { type: 'string' },
+          name: { type: 'string', maxLength: MAX_IDENTIFIED_NAME_CHARS },
           grams: { type: 'number' },
         },
       },
@@ -76,7 +83,9 @@ export function parseIdentifiedFoods(value: unknown): IdentifiedFood[] {
 
     const rawName = (entry as { name?: unknown }).name;
     const name =
-      typeof rawName === 'string' ? rawName.trim().replace(/\s+/g, ' ').slice(0, 80) : '';
+      typeof rawName === 'string'
+        ? rawName.trim().replace(/\s+/g, ' ').slice(0, MAX_IDENTIFIED_NAME_CHARS)
+        : '';
     if (!name) {
       continue;
     }

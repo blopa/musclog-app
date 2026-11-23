@@ -50,6 +50,7 @@ import {
   type FoodCandidate,
   type IdentifiedFood,
   LOCAL_FOOD_IDENTIFY_SCHEMA,
+  LOCAL_PHOTO_RETRY_TEMPERATURE,
   localFoodIdentifyPrompt,
   mealTypeForHour,
   parseIdentifiedFoods,
@@ -2926,18 +2927,37 @@ async function estimateMealFromPhotoOnDevice(
   });
 
   logLocal('photo request', { mimeType, base64Chars: base64.length, systemPrompt });
-  const raw = await withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
-    sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
-      image: `data:${mimeType};base64,${base64}`,
-      signal,
-    })
-  );
+  const askForPhoto = (temperature?: number) =>
+    withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
+      sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
+        image: `data:${mimeType};base64,${base64}`,
+        signal,
+        ...(temperature === undefined ? {} : { temperature }),
+      })
+    );
+
+  const readPhotoReply = (text: string) =>
+    checkStructuredShape(
+      parseStructuredJson<unknown>(text),
+      LOCAL_FOOD_IDENTIFY_SCHEMA,
+      'estimateNutritionFromPhoto'
+    );
+
+  let raw = await askForPhoto();
   logLocal('photo raw reply', { chars: raw.length, text: raw });
-  const parsed = checkStructuredShape(
-    parseStructuredJson<unknown>(raw),
-    LOCAL_FOOD_IDENTIFY_SCHEMA,
-    'estimateNutritionFromPhoto'
-  );
+  let parsed = readPhotoReply(raw);
+  if (parsed.kind !== 'ok') {
+    // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
+    // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
+    logLocal('photo reply unusable; retrying once', {
+      temperature: LOCAL_PHOTO_RETRY_TEMPERATURE,
+    });
+    traceLocalModel('photo-retry', { firstReplyChars: raw.length });
+    raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
+    logLocal('photo raw reply (retry)', { chars: raw.length, text: raw });
+    parsed = readPhotoReply(raw);
+  }
+
   const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
   if (foods.length === 0) {
     // The person sees a generic failure and no exception exists: say which of the three it was.

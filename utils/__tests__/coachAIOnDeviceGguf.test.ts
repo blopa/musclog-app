@@ -286,8 +286,31 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
     expect(await estimateNutritionFromPhoto(gguf, 'AAAA')).toBeNull();
   });
 
-  it('returns null when the reply breaks the schema', async () => {
+  it('returns null when the reply breaks the schema, after one warmer retry', async () => {
     mockSendLocalStructuredRaw.mockResolvedValue('{"foods":["rice"]}');
     expect(await estimateNutritionFromPhoto(gguf, 'AAAA')).toBeNull();
+
+    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(2);
+    expect(mockSendLocalStructuredRaw.mock.calls[0][3].temperature).toBeUndefined();
+    expect(mockSendLocalStructuredRaw.mock.calls[1][3].temperature).toBe(0.3);
+  });
+
+  it('uses the retry when the first reply is unusable', async () => {
+    mockSendLocalStructuredRaw
+      .mockResolvedValueOnce('not json at all')
+      .mockResolvedValueOnce('{"items":[{"name":"white rice","grams":150}]}');
+    mockSearchFoods.mockImplementation(async () => [food('food-rice', 'White rice')]);
+
+    const result = await estimateNutritionFromPhoto(gguf, 'AAAA');
+
+    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(2);
+    expect(result?.meals[0].ingredients.length).toBeGreaterThan(0);
+  });
+
+  it('does not retry an empty but valid list', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue('{"items":[]}');
+    await estimateNutritionFromPhoto(gguf, 'AAAA');
+
+    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(1);
   });
 });

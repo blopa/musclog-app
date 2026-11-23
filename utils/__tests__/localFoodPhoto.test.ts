@@ -4,6 +4,7 @@ import {
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_UNMATCHED_FOOD_ID,
   MAX_IDENTIFIED_FOODS,
+  MAX_IDENTIFIED_NAME_CHARS,
   mealTypeForHour,
   parseIdentifiedFoods,
   pickFoodMatch,
@@ -145,5 +146,13 @@ describe('mealTypeForHour', () => {
     expect(mealTypeForHour(19)).toBe('dinner');
     expect(mealTypeForHour(23)).toBe('snack');
     expect(mealTypeForHour(3)).toBe('snack');
+  });
+});
+
+describe('LOCAL_FOOD_IDENTIFY_SCHEMA name bound', () => {
+  it('asks for names no longer than the parser keeps', () => {
+    expect(LOCAL_FOOD_IDENTIFY_SCHEMA.properties.items.items.properties.name.maxLength).toBe(
+      MAX_IDENTIFIED_NAME_CHARS
+    );
   });
 });
