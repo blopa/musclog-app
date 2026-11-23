@@ -47,7 +47,7 @@ has no Android submit config, `appVersionSource` is `local` (EAS `autoIncrement`
 adds preflight, staged rollouts and promotion in one tool.
 
 ```
-npm run bump-app-version        # you bump; the scripts never do
+npm run bump-app-version        # you bump; the scripts never do (also bump-minor, bump-major, bump-specific <x.y.z>)
 scripts/release-android.sh build [--local]
 scripts/release-android.sh check
 scripts/release-android.sh upload --track internal [--notes FILE] [--dry-run]

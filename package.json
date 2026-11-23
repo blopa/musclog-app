@@ -66,6 +66,7 @@
     "bump-app-version": "node scripts/bump.js",
     "bump-minor": "node scripts/bump.js --minor",
     "bump-major": "node scripts/bump.js --major",
+    "bump-specific": "node scripts/bump.js --specific",
     "report-modal-issue": "node scripts/report-modal-issues.js",
     "compress-blog-images": "node scripts/compress-blog-images.js",
     "check-translations": "node scripts/check-translations.js",
