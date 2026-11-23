@@ -36,7 +36,10 @@ export type ProviderPolicy = {
   backOff?: (wait: () => Promise<void>) => Promise<void>;
   /** The OpenAI SDK's own retry count: 0 when this provider's retries are `withLlmRetry`'s alone. */
   sdkMaxRetries?: number;
-  /** Prepares a photo before it is sent. */
+  /**
+   * This provider's own photo step, in place of the default one every provider gets (the detail the
+   * person chose in AI settings, with no provider limit above it).
+   */
   prepareImage?: (
     base64: string,
     mimeType: string
@@ -78,7 +81,8 @@ const HOSTED_POLICY: ProviderPolicy = {
   onSuccess: () => setHostedSignal('ok'),
   backOff: (wait) => whileHostedBackingOff(wait),
   sdkMaxRetries: 0,
-  // Loaded inline because the image codec is a native module the other providers never need (the
+  // Holds the person's chosen detail to the Worker's limits and refuses photos while the Worker has
+  // them off. Loaded inline because it reads the Worker's config, which text requests never need (the
   // pattern of services/premium/revenueCat.ts).
   prepareImage: (base64, mimeType) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports

@@ -303,6 +303,28 @@
       "useOcrBeforeAiOnDeviceSubtitle": "Obrigatório para Apple Intelligence. O OCR converte imagens em texto antes de enviar.",
       "sendFoundationFoodsToLlm": "Enviar Foundation Foods para IA",
       "sendFoundationFoodsToLlmSubtitle": "Melhorar correspondência de ingredientes usando o banco de dados de foundation foods",
+      "photoQuality": {
+        "title": "Qualidade da foto",
+        "intro": "Quanto detalhe uma foto mantém ao ser enviada para a IA, com qualquer provedor. Uma foto mais nítida é mais fácil de ler, mas tem mais tokens: mais da sua cota do Musclog Iron ou do que a sua própria chave cobra, e demora um pouco mais.",
+        "tier": {
+          "low": {
+            "label": "Baixa",
+            "hint": "A menor foto. Menos tokens, então menos cota ou uso da API, e a mais rápida. Letras miúdas podem ficar borradas."
+          },
+          "medium": {
+            "label": "Média",
+            "hint": "O padrão. Um bom equilíbrio entre detalhe e tokens para a maioria das refeições."
+          },
+          "high": {
+            "label": "Alta",
+            "hint": "Mais detalhe para pratos misturados e rótulos. Mais tokens do que a Média."
+          },
+          "max": {
+            "label": "Máxima",
+            "hint": "A foto mais nítida, para letras miúdas e pratos cheios. O máximo de tokens, então a maior cota ou uso da API, e a mais lenta."
+          }
+        }
+      },
       "getOpenAiKey": "Obter Chave OpenAI",
       "customPrompts": "Prompts de Sistema Personalizados",
       "customPromptsSubtitle": "Adicione suas próprias instruções a todos os recursos de IA",

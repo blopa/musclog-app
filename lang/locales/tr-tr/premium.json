@@ -31,7 +31,7 @@
     "resetConfirm": "Sıfırla",
     "consent": {
       "title": "YZ istekleri Musclog Iron’a gönderilsin mi?",
-      "body": "Yapay zekâya gönderdiğiniz mesajlar ve bir yapay zekâ özelliğinin yanıt vermek için ihtiyaç duyduğu bilgiler, örneğin antrenmanlar, öğünler ve vücut ölçümleri, Musclog Iron hizmetine gider. Hizmet bunları OpenRouter’a iletir; OpenRouter de yapay zekâ model sağlayıcısına gönderir. Yalnızca sıfır veri saklamalı (ZDR) uç noktalar kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve eğitim için kullanmaz. OpenRouter ayrıca her isteği çocuk cinsel istismarı içeren materyal açısından tarar ve işaretlediği bir isteği saklayabilir. Bu bilgilerin bir kısmı sağlıkla ilgilidir; kabul ederek bunların bu şekilde işlenmesine açık rızanızı vermiş olursunuz. Musclog’un hizmeti mesajlarınızı asla saklamaz; yalnızca bu cihaz için bir tanımlayıcı ile kullanım sayılarını tutar. Bunu istediğiniz zaman kapatabilirsiniz.",
+      "body": "Yapay zekâya gönderdiğiniz mesajlar, öğün fotoğrafları ve bir yapay zekâ özelliğinin yanıt vermek için ihtiyaç duyduğu bilgiler, örneğin antrenmanlar, öğünler ve vücut ölçümleri, Musclog Iron hizmetine gider. Hizmet bunları OpenRouter’a iletir; OpenRouter de yapay zekâ model sağlayıcısına gönderir. Yalnızca sıfır veri saklamalı (ZDR) uç noktalar kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve eğitim için kullanmaz. OpenRouter ayrıca her isteği çocuk cinsel istismarı içeren materyal açısından tarar ve işaretlediği bir isteği saklayabilir. Bu bilgilerin bir kısmı sağlıkla ilgilidir; kabul ederek bunların bu şekilde işlenmesine açık rızanızı vermiş olursunuz. Musclog’un hizmeti mesajlarınızı asla saklamaz; yalnızca bu cihaz için bir tanımlayıcı ile kullanım sayılarını tutar. Bunu istediğiniz zaman kapatabilirsiniz.",
       "confirm": "Musclog Iron YZ’sini kullan",
       "cancel": "Şimdi değil"
     },
@@ -71,7 +71,7 @@
       "benefits": {
         "noSetup": {
           "title": "Kurulacak bir şey yok",
-          "desc": "API anahtarı ve hesap gerekmez. Abone ol; koç, öğün kaydı ve antrenman planları hemen çalışır."
+          "desc": "API anahtarı ve hesap gerekmez. Abone ol; koç, öğün kaydı (yazıyla veya fotoğrafla) ve antrenman planları hemen çalışır."
         },
         "private": {
           "title": "Sıfır veri saklama",

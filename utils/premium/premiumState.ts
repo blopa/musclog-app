@@ -164,7 +164,12 @@ export function parseHostedConfig(body: unknown): HostedConfig | null {
     typeof image.maxPx === 'number' &&
     typeof image.maxBytes === 'number' &&
     typeof image.quality === 'number'
-      ? { maxPx: image.maxPx, maxBytes: image.maxBytes, quality: image.quality }
+      ? {
+          maxPx: image.maxPx,
+          maxBytes: image.maxBytes,
+          // The Worker keeps JPEG quality as a whole percent (1 to 100); the app works in 0 to 1.
+          quality: image.quality / 100,
+        }
       : null;
 
   return {

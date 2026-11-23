@@ -1755,15 +1755,35 @@ function claudeImageType(mimeType: string): ClaudeImageType {
   return CLAUDE_IMAGE_TYPES.find((type) => type === mimeType) ?? 'image/jpeg';
 }
 
+/**
+ * Loaded inline because the image codec is a native module that text-only requests never need (the
+ * pattern of `utils/hostedProviderPolicy.ts` and `services/premium/revenueCat.ts`).
+ */
+function prepareOwnKeyImageLazily(
+  base64: string,
+  mimeType: string
+): Promise<{ base64: string; mimeType: string }> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
+
+  return aiImage.prepareOwnKeyImage(base64, mimeType);
+}
+
 async function generateWithImageStructured<T>(
   config: CoachAIConfig,
   systemPrompt: string,
-  base64Image: string,
-  mimeType: string,
+  rawBase64Image: string,
+  rawMimeType: string,
   schema: object,
   schemaName: string = 'response',
   userMessageSuffix?: string
 ): Promise<T | null> {
+  // Every provider gets the photo at the detail the person chose in AI settings. Musclog Iron has
+  // its own step: it also holds the photo to the Worker's limits, and refuses it while the Worker
+  // has photos off.
+  const prepareImage = providerPolicyFor(config.provider).prepareImage ?? prepareOwnKeyImageLazily;
+  const { base64: base64Image, mimeType } = await prepareImage(rawBase64Image, rawMimeType);
+
   // Wrap user message suffix with delimiters to prevent prompt injection
   const sanitizedSuffix = userMessageSuffix?.trim()
     ? wrapUserContent(userMessageSuffix.trim())
@@ -1888,13 +1908,7 @@ async function generateWithImageStructured<T>(
 
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
-  // A provider that limits photos (hosted: the Worker's advertised limits) prepares them first;
-  // every other request sends the photo as it is.
-  const prepareImage = providerPolicyFor(config.provider).prepareImage;
-  const image = prepareImage
-    ? await prepareImage(base64Image, mimeType)
-    : { base64: base64Image, mimeType };
-  const dataUrl = `data:${image.mimeType};base64,${image.base64}`;
+  const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [

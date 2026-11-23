@@ -118,7 +118,25 @@ describe('messages', () => {
 
 describe('images', () => {
   it('rejects an image while vision is disabled', () => {
-    expect(rejected({ messages: [img()] }).extra.path).toBe('messages[0].content[1]');
+    const off = testConfig({ vision_enabled: false });
+
+    expect(rejected({ messages: [img()] }, off).extra.path).toBe('messages[0].content[1]');
+  });
+
+  it('ships with vision on and a positive IMAGE_TOKENS_MAX (the committed config)', () => {
+    expect(config.vision_enabled).toBe(true);
+    expect(config.image.tokens_max).toBeGreaterThan(0);
+    // Every size a quality tier can produce (up to 1568 px on a side) is under the bound: about
+    // 1568 x 1568 / 750 tokens, so the reservation never undercounts a photo.
+    expect(config.image.tokens_max).toBeGreaterThanOrEqual(Math.ceil((1568 * 1568) / 750));
+    expect(config.image.max_px).toBeGreaterThanOrEqual(1568);
+  });
+
+  it('adds the image bound to the reservation of a photo request', () => {
+    const photo = allowlistRequest({ messages: [img()] }, config);
+    const textOnly = allowlistRequest(base, config);
+
+    expect(reservationBound(photo, config)).toBeGreaterThan(reservationBound(textOnly, config));
   });
 
   it('accepts a data URL with vision on and derives the vision feature', () => {

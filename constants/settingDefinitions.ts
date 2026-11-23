@@ -8,6 +8,7 @@ import {
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
+  AI_IMAGE_QUALITY_SETTING_TYPE,
   ANIMATED_LOGGY_SETTING_TYPE,
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
@@ -64,6 +65,7 @@ import {
   type WorkoutAutonomy,
   YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
 } from '@/constants/settings';
+import { type AiImageTier, parseAiImageTier } from '@/utils/aiImagePlan';
 import {
   type ComebackState,
   parseComebackState,
@@ -116,6 +118,8 @@ export const SETTINGS = {
   claudeModel: textSetting(CLAUDE_MODEL_SETTING_TYPE),
   enableClaude: booleanSetting(ENABLE_CLAUDE_SETTING_TYPE, true),
   useHostedAi: booleanSetting(USE_HOSTED_AI_SETTING_TYPE, false),
+  /** How much detail a photo keeps on its way to any AI provider; unknown values read as the default. */
+  aiImageQuality: choiceSetting<AiImageTier>(AI_IMAGE_QUALITY_SETTING_TYPE, parseAiImageTier),
   /** Consent version for hosted AI (`utils/premium/premiumConsent.ts`); null until given. */
   premiumConsentVersion: {
     type: PREMIUM_CONSENT_VERSION_SETTING_TYPE,

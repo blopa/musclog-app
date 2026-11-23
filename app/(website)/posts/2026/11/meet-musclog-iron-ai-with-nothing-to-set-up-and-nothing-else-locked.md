@@ -10,7 +10,7 @@ Musclog is free, open source, has no ads and has no accounts. That is not changi
 
 There is one part of the app that has always been a little annoying, though: the AI. The coach, meal logging from a sentence and workout plan generation all need an AI model behind them, and until now that meant getting your own API key from Google, OpenAI or Anthropic, pasting it into the settings and paying that provider yourself. If you like that, it is a good deal. A lot of people just want to type "two eggs and toast" and have it logged.
 
-**Musclog Iron** is for them. It is an optional monthly subscription that runs the AI for you. You subscribe, you switch it on, and the coach, the meal logging and the workout plans work. No key, no account, nothing to configure.
+**Musclog Iron** is for them. It is an optional monthly subscription that runs the AI for you. You subscribe, you switch it on, and the coach, the meal logging (by text or from a photo) and the workout plans work. No key, no account, nothing to configure.
 
 It is also, plainly, a way to support the app. Musclog is made by one person, and I would rather it paid for itself by letting you choose to pay for something optional than by selling your data or showing you ads. I will say exactly where the money goes further down.
 
@@ -86,7 +86,6 @@ He opens a one-time tour in the app that explains Iron in a few lines. It tells 
 
 ## What is not there yet
 
-- **Photos.** Photo analysis is not part of Iron yet. If you want to log a meal from a photo, use your own key or the free option.
 - **No free trial.** The free options above are the way to try AI in Musclog before you pay for anything.
 - **iOS.** I have tested Iron end to end on Android with a real card. The iOS app is still in TestFlight while I finish the App Store listing, so treat iOS as the one that comes after.
 - **Translations.** The Iron screens and the policy are available in all ten of the app's languages, but nine of them are machine-translated and still need a native speaker to read them. If you spot something odd, please tell me.

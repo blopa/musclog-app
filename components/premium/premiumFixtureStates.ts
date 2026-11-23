@@ -21,7 +21,7 @@ export type PremiumFixtureState = {
 const CONFIG_ON: HostedConfig = {
   enabled: true,
   acceptingNew: true,
-  visionEnabled: false,
+  visionEnabled: true,
   image: null,
   minAppVersion: null,
 };

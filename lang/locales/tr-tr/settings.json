@@ -303,6 +303,28 @@
       "useOcrBeforeAiOnDeviceSubtitle": "Apple Intelligence için gerekli. OCR, göndermeden önce görselleri metne çevirir.",
       "sendFoundationFoodsToLlm": "Temel besinleri yapay zekâya gönder",
       "sendFoundationFoodsToLlmSubtitle": "Temel besinler veritabanını kullanarak malzeme eşleştirmesini iyileştir",
+      "photoQuality": {
+        "title": "Fotoğraf kalitesi",
+        "intro": "Bir fotoğraf, hangi sağlayıcıyla olursa olsun YZ’ye gönderilirken ne kadar ayrıntı korur. Daha net bir fotoğrafı okumak daha kolaydır ama daha fazla token içerir: Musclog Iron kotanızdan veya kendi anahtarınızın faturalandırdığından daha çok harcar ve biraz daha uzun sürer.",
+        "tier": {
+          "low": {
+            "label": "Düşük",
+            "hint": "En küçük fotoğraf. En az token, yani en az kota veya API kullanımı, ve en hızlısı. Küçük yazılar bulanık çıkabilir."
+          },
+          "medium": {
+            "label": "Orta",
+            "hint": "Varsayılan. Çoğu öğün için ayrıntı ile token arasında iyi bir denge."
+          },
+          "high": {
+            "label": "Yüksek",
+            "hint": "Karışık tabaklar ve etiketler için daha fazla ayrıntı. Orta’dan daha fazla token."
+          },
+          "max": {
+            "label": "En yüksek",
+            "hint": "En net fotoğraf, küçük yazılar ve dolu tabaklar için. En çok token, yani en çok kota veya API kullanımı, ve en yavaşı."
+          }
+        }
+      },
       "getOpenAiKey": "OpenAI anahtarı al",
       "customPrompts": "Özel sistem istemleri",
       "customPromptsSubtitle": "Tüm yapay zekâ özelliklerine kendi talimatlarını ekle",

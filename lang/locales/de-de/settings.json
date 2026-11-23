@@ -303,6 +303,28 @@
       "useOcrBeforeAiOnDeviceSubtitle": "Für Apple Intelligence erforderlich. OCR wandelt Bilder vor dem Senden in Text um.",
       "sendFoundationFoodsToLlm": "Basis-Lebensmittel an die KI senden",
       "sendFoundationFoodsToLlmSubtitle": "Zuordnung von Zutaten mit der Basis-Lebensmitteldatenbank verbessern",
+      "photoQuality": {
+        "title": "Fotoqualität",
+        "intro": "Wie viele Details ein Foto behält, wenn es an die KI gesendet wird, bei jedem Anbieter. Ein schärferes Foto ist leichter zu lesen, hat aber mehr Tokens: mehr von deinem Musclog-Iron-Kontingent oder von dem, was dein eigener Schlüssel berechnet, und es dauert etwas länger.",
+        "tier": {
+          "low": {
+            "label": "Niedrig",
+            "hint": "Das kleinste Foto. Die wenigsten Tokens, also am wenigsten Kontingent oder API-Nutzung, und am schnellsten. Kleingedrucktes kann verschwimmen."
+          },
+          "medium": {
+            "label": "Mittel",
+            "hint": "Die Standardeinstellung. Ein guter Kompromiss aus Detail und Tokens für die meisten Mahlzeiten."
+          },
+          "high": {
+            "label": "Hoch",
+            "hint": "Mehr Details für gemischte Teller und Etiketten. Mehr Tokens als Mittel."
+          },
+          "max": {
+            "label": "Maximal",
+            "hint": "Das schärfste Foto, für Kleingedrucktes und volle Teller. Die meisten Tokens, also am meisten Kontingent oder API-Nutzung, und am langsamsten."
+          }
+        }
+      },
       "getOpenAiKey": "OpenAI-Schlüssel holen",
       "customPrompts": "Eigene Systemanweisungen",
       "customPromptsSubtitle": "Füge deine eigenen Anweisungen zu allen KI-Funktionen hinzu",

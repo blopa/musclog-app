@@ -14,7 +14,8 @@ import { useTheme } from '@/hooks/useTheme';
 /**
  * What Premium gives, in the order the paywall lists it. Every line must stay true of the Worker as
  * configured: ZDR-only routing (`assertPremiumPrivacy`), an allowance per subscription shared by its
- * devices, no account, and text features only (hosted vision is off), so no line mentions photos.
+ * devices, no account, and meal photos (hosted vision is on, `vision_enabled` in the Worker's
+ * `AI_CONFIG_JSON`), so a line may mention them.
  */
 export const PREMIUM_BENEFITS: readonly {
   id: string;

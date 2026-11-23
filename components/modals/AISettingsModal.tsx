@@ -20,6 +20,7 @@ import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { SectionLabel } from '@/components/theme/SectionLabel';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import {
@@ -30,10 +31,14 @@ import {
   GEMINI_MODELS,
   OPENAI_MODELS,
 } from '@/constants/ai';
+import { SETTINGS } from '@/constants/settingDefinitions';
+import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { usePremium } from '@/hooks/usePremium';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { needsFreeTierConsent } from '@/utils/aiConsent';
+import { AI_IMAGE_TIER_ORDER, type AiImageTier } from '@/utils/aiImagePlan';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
 import {
   effectiveUseMusclogGateway,
@@ -52,6 +57,26 @@ const AI_KEY_TEST_MESSAGE_KEYS = {
   rejected: 'errors.aiKeyTestRejected',
   network: 'errors.aiKeyTestNetwork',
 } as const satisfies Record<AiKeyTestResult, string>;
+
+/** One whole key per photo quality tier (label and what it means), so the translation check sees each. */
+export const AI_IMAGE_TIER_KEYS: Record<AiImageTier, { label: string; hint: string }> = {
+  low: {
+    label: 'settings.aiSettings.photoQuality.tier.low.label',
+    hint: 'settings.aiSettings.photoQuality.tier.low.hint',
+  },
+  medium: {
+    label: 'settings.aiSettings.photoQuality.tier.medium.label',
+    hint: 'settings.aiSettings.photoQuality.tier.medium.hint',
+  },
+  high: {
+    label: 'settings.aiSettings.photoQuality.tier.high.label',
+    hint: 'settings.aiSettings.photoQuality.tier.high.hint',
+  },
+  max: {
+    label: 'settings.aiSettings.photoQuality.tier.max.label',
+    hint: 'settings.aiSettings.photoQuality.tier.max.hint',
+  },
+};
 
 type AIIntegrationCardProps = {
   sectionTitle: string;
@@ -308,6 +333,7 @@ export function AISettingsModal({
   const [premiumVisible, setPremiumVisible] = useState(false);
   // Loads the overview while this screen is open; `PremiumCard` below reads the same store.
   const premium = usePremium({ load: visible });
+  const { aiImageQuality } = useSettings();
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
@@ -946,6 +972,36 @@ export function AISettingsModal({
               },
             ]}
           />
+          {/* Photos shrink before they leave the device on native; web sends them as they are. */}
+          {Platform.OS !== 'web' ? (
+            <View
+              className="mt-4 gap-2 px-1"
+              style={{ opacity: debouncedUseOnDeviceAi ? 0.4 : 1 }}
+              pointerEvents={debouncedUseOnDeviceAi ? 'none' : 'auto'}
+            >
+              <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
+                {t('settings.aiSettings.photoQuality.title')}
+              </Text>
+              <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                {t('settings.aiSettings.photoQuality.intro')}
+              </Text>
+              <SegmentedControl
+                variant="pill"
+                fullWidth
+                value={aiImageQuality}
+                onValueChange={(value) => {
+                  void SettingsService.set(SETTINGS.aiImageQuality, value as AiImageTier);
+                }}
+                options={AI_IMAGE_TIER_ORDER.map((tier) => ({
+                  value: tier,
+                  label: t(AI_IMAGE_TIER_KEYS[tier].label),
+                }))}
+              />
+              <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                {t(AI_IMAGE_TIER_KEYS[aiImageQuality].hint)}
+              </Text>
+            </View>
+          ) : null}
         </View>
 
         {/* Coach personality */}

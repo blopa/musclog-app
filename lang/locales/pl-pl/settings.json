@@ -303,6 +303,28 @@
       "useOcrBeforeAiOnDeviceSubtitle": "Wymagane dla Apple Intelligence. OCR zamienia obrazy na tekst przed wysłaniem.",
       "sendFoundationFoodsToLlm": "Wysyłaj produkty podstawowe do AI",
       "sendFoundationFoodsToLlmSubtitle": "Popraw dopasowanie składników dzięki bazie produktów podstawowych",
+      "photoQuality": {
+        "title": "Jakość zdjęcia",
+        "intro": "Ile szczegółów zachowuje zdjęcie wysyłane do AI, u dowolnego dostawcy. Ostrzejsze zdjęcie łatwiej odczytać, ale ma więcej tokenów: więcej limitu Musclog Iron lub tego, co nalicza Twój własny klucz, i trwa to nieco dłużej.",
+        "tier": {
+          "low": {
+            "label": "Niska",
+            "hint": "Najmniejsze zdjęcie. Najmniej tokenów, więc najmniej limitu lub zużycia API, i najszybsze. Drobny druk może się rozmywać."
+          },
+          "medium": {
+            "label": "Średnia",
+            "hint": "Domyślna. Dobra równowaga między szczegółami a tokenami przy większości posiłków."
+          },
+          "high": {
+            "label": "Wysoka",
+            "hint": "Więcej szczegółów dla mieszanych talerzy i etykiet. Więcej tokenów niż Średnia."
+          },
+          "max": {
+            "label": "Maksymalna",
+            "hint": "Najostrzejsze zdjęcie, do drobnego druku i pełnych talerzy. Najwięcej tokenów, więc najwięcej limitu lub zużycia API, i najwolniejsze."
+          }
+        }
+      },
       "getOpenAiKey": "Pobierz klucz OpenAI",
       "customPrompts": "Własne instrukcje systemowe",
       "customPromptsSubtitle": "Dodaj własne wskazówki do wszystkich funkcji AI",
