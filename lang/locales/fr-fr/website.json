@@ -386,6 +386,7 @@
         "empty": "Aucun article trouvé avec l'étiquette {{tag}}.",
         "listLabel": "Articles du blog avec l'étiquette {{tag}}"
       },
+      "highlightedPosts": "Commencez ici",
       "tagsPage": {
         "title": "Étiquettes du blog",
         "description": "Toutes les étiquettes utilisées sur le blog Musclog. Plus une étiquette est grande, plus elle regroupe d'articles.",

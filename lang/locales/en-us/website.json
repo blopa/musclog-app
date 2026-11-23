@@ -386,6 +386,7 @@
         "empty": "No posts were found with the tag {{tag}}.",
         "listLabel": "{{tag}} blog posts"
       },
+      "highlightedPosts": "Start here",
       "tagsPage": {
         "title": "Blog tags",
         "description": "Every tag used on the Musclog blog. The bigger a tag, the more articles carry it.",

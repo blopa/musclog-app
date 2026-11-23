@@ -3,6 +3,7 @@ title: 'Moving your workout history from Strong, Hevy or FitNotes'
 date: '2026-11-12'
 category: 'guides'
 description: 'How to bring a Strong, Hevy or FitNotes CSV into Musclog: where the import lives, how exercise names are matched, what you review, and how undo and re-imports work.'
+highlightOnTag: ['workout-history']
 tags: ['Workout history', 'Import', 'Strong', 'Hevy', 'FitNotes', 'Musclog']
 ---
 

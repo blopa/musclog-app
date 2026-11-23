@@ -386,6 +386,7 @@
         "empty": "No se encontraron artículos con la etiqueta {{tag}}.",
         "listLabel": "Artículos de blog con la etiqueta {{tag}}"
       },
+      "highlightedPosts": "Empieza aquí",
       "tagsPage": {
         "title": "Etiquetas del blog",
         "description": "Todas las etiquetas usadas en el blog de Musclog. Cuanto más grande es una etiqueta, más artículos la llevan.",

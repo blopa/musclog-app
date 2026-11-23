@@ -386,6 +386,7 @@
         "empty": "Nie znaleziono wpisów z tagiem {{tag}}.",
         "listLabel": "Wpisy na blogu z tagiem {{tag}}"
       },
+      "highlightedPosts": "Zacznij tutaj",
       "tagsPage": {
         "title": "Tagi bloga",
         "description": "Wszystkie tagi używane na blogu Musclog. Im większy tag, tym więcej artykułów go ma.",

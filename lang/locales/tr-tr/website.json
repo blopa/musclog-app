@@ -386,6 +386,7 @@
         "empty": "{{tag}} etiketiyle yazı bulunamadı.",
         "listLabel": "{{tag}} blog yazıları"
       },
+      "highlightedPosts": "Buradan başlayın",
       "tagsPage": {
         "title": "Blog etiketleri",
         "description": "Musclog blogunda kullanılan tüm etiketler. Etiket ne kadar büyükse, o etiketi taşıyan yazı o kadar çok demektir.",

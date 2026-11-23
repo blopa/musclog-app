@@ -18,6 +18,7 @@ export interface BlogPostSummary {
   category: string;
   date: string;
   excerpt: string;
+  highlightOnTag?: string[];
   slug: string;
   tags: string[];
   title: string;
@@ -29,6 +30,7 @@ export interface BlogPost extends BlogPostSummary {
 
 export interface BlogPostPage {
   currentPage: number;
+  highlightedPosts?: BlogPostSummary[];
   posts: BlogPostSummary[];
   totalPages: number;
   totalPosts: number;
@@ -49,6 +51,7 @@ interface BlogPostFrontmatter {
   category?: unknown;
   date?: unknown;
   description?: unknown;
+  highlightOnTag?: unknown;
   tags?: unknown;
   title?: unknown;
 }
@@ -157,6 +160,22 @@ function normalizeCategory(value: unknown, relativePath: string): string {
   return category;
 }
 
+function normalizeHighlightOnTag(value: unknown, relativePath: string): string[] {
+  if (
+    !Array.isArray(value) ||
+    value.some(
+      (tag) => typeof tag !== 'string' || tag.trim() === '' || !SAFE_CATEGORY_KEY.test(tag.trim())
+    )
+  ) {
+    throw frontmatterError(
+      relativePath,
+      '"highlightOnTag" must be an array of non-empty lowercase, kebab-case tag slugs'
+    );
+  }
+
+  return [...new Set(value.map((tag: string) => tag.trim()))];
+}
+
 function excerptFromContent(content: string): string {
   const prose = content
     .replace(/```[\s\S]*?```/g, ' ')
@@ -210,7 +229,7 @@ export function parseBlogPostSummary(markdown: string, relativePath: string): Bl
       ? excerptFromContent(content)
       : requiredString(frontmatter.description, 'description', normalizedPath);
 
-  return {
+  const summary: BlogPostSummary = {
     category: normalizeCategory(frontmatter.category, normalizedPath),
     date: normalizeDate(frontmatter.date, normalizedPath),
     excerpt: description,
@@ -218,6 +237,12 @@ export function parseBlogPostSummary(markdown: string, relativePath: string): Bl
     tags: normalizeTags(frontmatter.tags, normalizedPath),
     title: requiredString(frontmatter.title, 'title', normalizedPath),
   };
+
+  if (frontmatter.highlightOnTag !== undefined) {
+    summary.highlightOnTag = normalizeHighlightOnTag(frontmatter.highlightOnTag, normalizedPath);
+  }
+
+  return summary;
 }
 
 export function renderBlogPostMarkdown(markdown: string): string {
@@ -473,6 +498,8 @@ export async function loadBlogTagPage(
   return {
     tag,
     tagLabel: summary.label,
+    highlightedPosts:
+      currentPage === 1 ? posts.filter((post) => post.highlightOnTag?.includes(tag)) : [],
     ...paginateBlogPosts(tagPosts, currentPage),
   };
 }

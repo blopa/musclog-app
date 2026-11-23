@@ -264,6 +264,45 @@ const answer: number = 42;
     );
   });
 
+  describe('highlightOnTag frontmatter', () => {
+    const markdown = (field: string) =>
+      `---\ntitle: Guide\ndate: 2026-08-09\ncategory: updates\ntags: []\n${field}\n---\nGuide body.`;
+
+    it('keeps the old summary shape when absent and accepts an empty list', () => {
+      expect(parseBlogPostSummary(markdown(''), 'guide.md')).not.toHaveProperty('highlightOnTag');
+      expect(parseBlogPostSummary(markdown('highlightOnTag: []'), 'guide.md')).toHaveProperty(
+        'highlightOnTag',
+        []
+      );
+    });
+
+    it('trims valid slugs and removes duplicates while preserving order', () => {
+      const summary = parseBlogPostSummary(
+        markdown('highlightOnTag: [workout-history, " strength-guide ", workout-history]'),
+        'guide.md'
+      );
+
+      expect(summary.highlightOnTag).toEqual(['workout-history', 'strength-guide']);
+    });
+
+    it.each([
+      ['null', 'null'],
+      ['a scalar', 'workout-history'],
+      ['non-string entry', '[workout-history, 2]'],
+      ['empty entry', '[""]'],
+      ['space-only entry', '["   "]'],
+      ['spaces in slug', '["workout history"]'],
+      ['uppercase slug', '[Workout-history]'],
+      ['path traversal', '["../private"]'],
+    ])('rejects %s and reports the source path', (_case, value) => {
+      expect(() =>
+        parseBlogPostSummary(markdown(`highlightOnTag: ${value}`), '2026/08/bad-guide.md')
+      ).toThrow(
+        'Invalid blog frontmatter in 2026/08/bad-guide.md: "highlightOnTag" must be an array of non-empty lowercase, kebab-case tag slugs'
+      );
+    });
+  });
+
   it('rejects path traversal in post slugs', async () => {
     await expect(loadBlogPost(['..', 'secrets'])).rejects.toThrow('Invalid blog post slug');
   });
@@ -309,6 +348,71 @@ const answer: number = 42;
       await expect(loadBlogTagPage('expo', 2, directory)).rejects.toThrow(
         'Blog page 2 does not exist'
       );
+    });
+
+    it('returns all matching highlights only on page one without changing tag pagination', async () => {
+      const directory = await mkdtemp(path.join(tmpdir(), 'musclog-blog-tag-highlights-'));
+      temporaryDirectories.push(directory);
+      const total = BLOG_POSTS_PER_PAGE + 2;
+      await Promise.all(
+        Array.from({ length: total }, (_, index) => {
+          const date = `2026-04-${String(total - index).padStart(2, '0')}`;
+          const highlight =
+            index === 0
+              ? '\nhighlightOnTag: [workout-history]'
+              : index === BLOG_POSTS_PER_PAGE + 1
+                ? '\nhighlightOnTag: [workout-history]'
+                : index === total - 1
+                  ? '\nhighlightOnTag: [nutrition-guide]'
+                  : '';
+          const tags =
+            index === total - 1
+              ? '[nutrition-guide]'
+              : index <= BLOG_POSTS_PER_PAGE
+                ? '[workout-history]'
+                : '[]';
+          return writeFile(
+            path.join(directory, `post-${index}.md`),
+            `---\ntitle: Post ${index}\ndate: ${date}\ncategory: updates\ntags: ${tags}${highlight}\n---\nBody.\n`
+          );
+        })
+      );
+
+      const firstPage = await loadBlogTagPage('workout-history', 1, directory);
+      const secondPage = await loadBlogTagPage('workout-history', 2, directory);
+      const otherTagPage = await loadBlogTagPage('nutrition-guide', 1, directory);
+
+      expect(firstPage.highlightedPosts?.map((post) => post.slug)).toEqual([
+        'post-0',
+        `post-${BLOG_POSTS_PER_PAGE + 1}`,
+      ]);
+      expect(firstPage.highlightedPosts?.[1].tags).not.toContain('workout-history');
+      expect(firstPage.posts).toHaveLength(BLOG_POSTS_PER_PAGE);
+      expect(firstPage.posts.every((post) => post.tags.includes('workout-history'))).toBe(true);
+      expect(firstPage).toMatchObject({
+        currentPage: 1,
+        totalPages: 2,
+        totalPosts: BLOG_POSTS_PER_PAGE + 1,
+      });
+      expect(secondPage.highlightedPosts).toEqual([]);
+      expect(secondPage.posts).toHaveLength(1);
+      expect(secondPage.posts[0].slug).toBe(`post-${BLOG_POSTS_PER_PAGE}`);
+      expect(secondPage).toMatchObject({
+        currentPage: 2,
+        totalPages: 2,
+        totalPosts: BLOG_POSTS_PER_PAGE + 1,
+      });
+      expect(otherTagPage.highlightedPosts?.map((post) => post.slug)).toEqual([
+        `post-${total - 1}`,
+      ]);
+      expect(
+        otherTagPage.highlightedPosts?.every((post) =>
+          post.highlightOnTag?.includes('nutrition-guide')
+        )
+      ).toBe(true);
+      expect(
+        firstPage.highlightedPosts?.some((post) => post.highlightOnTag?.includes('nutrition-guide'))
+      ).toBe(false);
     });
 
     it('resolves the static route template to the first tag', async () => {

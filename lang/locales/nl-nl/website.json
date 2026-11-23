@@ -386,6 +386,7 @@
         "empty": "Er zijn geen artikelen gevonden met de tag {{tag}}.",
         "listLabel": "Blogartikelen met de tag {{tag}}"
       },
+      "highlightedPosts": "Begin hier",
       "tagsPage": {
         "title": "Blogtags",
         "description": "Alle tags die op de Musclog-blog worden gebruikt. Hoe groter een tag, hoe meer artikelen hem hebben.",

@@ -1,5 +1,5 @@
 ---
-title: 'RPE and RIR explained, with a chart you can use tomorrow'
+title: 'RPE and RIR Explained: Meaning, Scale and Chart'
 date: '2026-04-23'
 category: 'training'
 description: 'What RPE and reps in reserve mean, how the two convert, how to rate a set, and a chart of effort against your one-rep max with a worked example.'
