@@ -303,6 +303,28 @@
       "useOcrBeforeAiOnDeviceSubtitle": "Required for Apple Intelligence. OCR converts images to text before sending.",
       "sendFoundationFoodsToLlm": "Send Foundation Foods to AI",
       "sendFoundationFoodsToLlmSubtitle": "Improve ingredient matching using the foundation foods database",
+      "photoQuality": {
+        "title": "Photo quality",
+        "intro": "How much detail a photo keeps when it is sent to the AI, with any provider. A sharper photo is easier to read but is more tokens: more of your Musclog Iron allowance or of what your own key is billed for, and it takes a little longer.",
+        "tier": {
+          "low": {
+            "label": "Low",
+            "hint": "The smallest photo. Fewest tokens, so the least allowance or API usage, and the fastest. Small print may blur."
+          },
+          "medium": {
+            "label": "Medium",
+            "hint": "The default. A good balance of detail and tokens for most meals."
+          },
+          "high": {
+            "label": "High",
+            "hint": "More detail for mixed plates and labels. More tokens than Medium."
+          },
+          "max": {
+            "label": "Max",
+            "hint": "The sharpest photo, for small print and busy plates. The most tokens, so the most allowance or API usage, and the slowest."
+          }
+        }
+      },
       "getOpenAiKey": "Get OpenAI key",
       "customPrompts": "Custom system prompts",
       "customPromptsSubtitle": "Add your own instructions to all AI features",

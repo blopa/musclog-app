@@ -466,6 +466,14 @@ export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
  */
 export const USE_HOSTED_AI_SETTING_TYPE = 'use_hosted_ai';
 
+/**
+ * Setting type for how much detail a photo keeps when it is sent to an AI model, whichever
+ * provider answers (Musclog Iron, the free tier or the person's own key).
+ * value: 'low' | 'medium' | 'high' | 'max' (default 'medium'; see `utils/aiImagePlan.ts`).
+ * A preference, not an enrollment: it is backed up and restored like the other AI preferences.
+ */
+export const AI_IMAGE_QUALITY_SETTING_TYPE = 'ai_image_quality';
+
 /** Version of the Premium consent the person last gave on this device (device-local, never backed up). */
 export const PREMIUM_CONSENT_VERSION_SETTING_TYPE = 'premium_consent_version';
 

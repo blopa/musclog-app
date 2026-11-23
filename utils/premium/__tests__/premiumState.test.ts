@@ -132,9 +132,15 @@ describe('parseHostedConfig', () => {
       enabled: true,
       acceptingNew: true,
       visionEnabled: false,
-      image: { maxPx: 1024, maxBytes: 500000, quality: 80 },
+      image: { maxPx: 1024, maxBytes: 500000, quality: 0.8 },
       minAppVersion: '2.17.0',
     });
+  });
+
+  it("reads the Worker's whole-percent JPEG quality as a 0 to 1 fraction", () => {
+    expect(
+      parseHostedConfig({ ...good, image: { maxPx: 1568, maxBytes: 400000, quality: 85 } })?.image
+    ).toEqual({ maxPx: 1568, maxBytes: 400000, quality: 0.85 });
   });
 
   it('maps a null image to null', () => {
@@ -145,11 +151,11 @@ describe('parseHostedConfig', () => {
     const parsed = parseHostedConfig({
       ...good,
       surprise: 1,
-      image: { maxPx: 1, maxBytes: 2, quality: 3, extra: 4 },
+      image: { maxPx: 1, maxBytes: 2, quality: 50, extra: 4 },
     });
 
     expect(parsed).not.toHaveProperty('surprise');
-    expect(parsed?.image).toEqual({ maxPx: 1, maxBytes: 2, quality: 3 });
+    expect(parsed?.image).toEqual({ maxPx: 1, maxBytes: 2, quality: 0.5 });
   });
 
   it('treats non-true accepting_new and vision_enabled as false', () => {

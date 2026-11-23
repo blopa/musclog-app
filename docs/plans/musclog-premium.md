@@ -738,7 +738,7 @@ All errors use `{ error: { code, message, retry_after?, resets_at? } }`. Upstrea
    - `already_processed` maps to a specific "please resend" message.
    - These errors are kept out of Sentry. `classifyError` gets recovery actions: renew, restore, or switch to BYOK.
 5. **Premium status** comes from `/v1/session` and `/v1/usage`, never from local `CustomerInfo` (after an ownership move RevenueCat shows the old device as not entitled).
-6. **Images:** the app resizes and compresses to the `/v1/config` values that G6 selects, inside the 512 KB body cap. The resize applies to the hosted path only, so BYOK is unchanged.
+6. **Images:** the person picks one of four photo quality tiers in AI settings (`ai_image_quality`: 512, 768, 1024 or 1568 px on the long edge, default the second lowest; `utils/aiImagePlan.ts`). The tier applies to every provider. For Musclog Iron the `/v1/config` values (`max_px`, `max_bytes`, `quality`) are a ceiling the tier is held to, inside the 512 KB body cap, so G6 can still lower them; an own key or the free tier has no ceiling above the tier (4 MB, under Claude's 5 MB image limit). This replaces the earlier "hosted path only, BYOK unchanged" rule: with it, a BYOK photo no longer goes out at full camera resolution.
 7. **UI:**
    - `PremiumCard` in AI settings.
    - `PremiumModal`: a one-sentence benefit, the store price string, Subscribe (hidden when `accepting_new` is false), **Restore purchases**, the renewal and cancellation disclosures, Terms and Privacy links, "One subscription works on up to 3 of your devices", and "iOS and Android subscriptions are separate".

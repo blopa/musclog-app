@@ -112,6 +112,7 @@ import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 const REGISTERED_SETTINGS = [
   'enableClaude',
   'useHostedAi',
+  'aiImageQuality',
   'premiumConsentVersion',
   'cycleShowPredictions',
   'cycleShowFertility',
