@@ -49,7 +49,9 @@ jest.mock('../handleError', () => ({ handleError: jest.fn() }));
 jest.mock('@/database/services/DebugDumpService', () => ({
   DebugDumpService: { logJsonEvent: jest.fn() },
 }));
-jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {} }));
+jest.mock('@/database/services/SettingsService', () => ({
+  SettingsService: { getUseThinkingMode: jest.fn().mockResolvedValue(false) },
+}));
 
 const openai: CoachAIConfig = { provider: 'openai', model: 'gpt', apiKey: 'k', language: 'en-US' };
 const gemini: CoachAIConfig = { provider: 'gemini', model: 'g', apiKey: 'k', language: 'en-US' };

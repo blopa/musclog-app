@@ -13,6 +13,7 @@ import { SmartCameraModePicker } from '@/components/SmartCameraModePicker';
 import { Button } from '@/components/theme/Button';
 import type { CameraMode } from '@/constants/camera';
 import { useTheme } from '@/hooks/useTheme';
+import { type MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -50,6 +51,8 @@ type SmartCameraShellProps = {
   isLoading: boolean;
   /** When given, the processing overlay offers a Cancel button that calls it. */
   onCancelLoading?: () => void;
+  /** The current step of an AI meal estimate, shown under the spinner while processing. */
+  processingStatus?: MealEstimateProgressLine | null;
   cameraMode: CameraMode;
   flashEnabled: boolean;
   onFlashToggle: () => void;
@@ -83,6 +86,7 @@ function SmartCameraShellBody({
   cameraSlot,
   isLoading,
   onCancelLoading,
+  processingStatus,
   cameraMode,
   flashEnabled,
   onFlashToggle,
@@ -195,7 +199,7 @@ function SmartCameraShellBody({
             className="absolute inset-0 z-30"
             style={{ backgroundColor: theme.colors.overlay.scrim90 }}
           >
-            <CameraProcessingIndicator cameraMode={cameraMode} />
+            <CameraProcessingIndicator cameraMode={cameraMode} statusLine={processingStatus} />
             {onCancelLoading ? (
               <View className="absolute bottom-16 left-0 right-0 items-center">
                 <Button

@@ -485,6 +485,22 @@
       "mealLoggingFailed": "Mahlzeit konnte nicht erfasst werden. Bitte versuche es noch einmal.",
       "analysisSuccess": "{{name}}: {{kcal}}, P {{protein}}g KH {{carbs}}g F {{fat}}g"
     },
+    "aiProgress": {
+      "reading": "Deine Beschreibung wird gelesen…",
+      "readingPhoto": "Dein Foto wird angesehen…",
+      "estimating_one": "{{count}} Zutat wird geschätzt…",
+      "estimating_few": "{{count}} Zutaten werden geschätzt…",
+      "estimating_many": "{{count}} Zutaten werden geschätzt…",
+      "estimating_other": "{{count}} Zutaten werden geschätzt…",
+      "estimatingWithMatches_one": "{{matched}} in deinen Lebensmitteln gefunden, weitere {{count}} werden geschätzt…",
+      "estimatingWithMatches_few": "{{matched}} in deinen Lebensmitteln gefunden, weitere {{count}} werden geschätzt…",
+      "estimatingWithMatches_many": "{{matched}} in deinen Lebensmitteln gefunden, weitere {{count}} werden geschätzt…",
+      "estimatingWithMatches_other": "{{matched}} in deinen Lebensmitteln gefunden, weitere {{count}} werden geschätzt…",
+      "rechecking_one": "{{count}} Zutat wird nochmals geprüft…",
+      "rechecking_few": "{{count}} Zutaten werden nochmals geprüft…",
+      "rechecking_many": "{{count}} Zutaten werden nochmals geprüft…",
+      "rechecking_other": "{{count}} Zutaten werden nochmals geprüft…"
+    },
     "aiNutritionContext": {
       "title": "Kontext für die KI hinzufügen",
       "describeYourMeal": "Beschreibe deine Mahlzeit",

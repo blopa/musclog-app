@@ -43,7 +43,7 @@ jest.mock('@/database/services/NutritionService', () => ({
   },
 }));
 
-describe('trackMeal (thinking mode)', () => {
+describe('trackMeal (thinking mode: verified path)', () => {
   beforeEach(() => {
     mockSendOnDeviceStructured.mockReset();
   });

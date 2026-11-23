@@ -28,6 +28,10 @@ import AiService from '@/services/AiService';
 import { aiIngredientMacrosPer100g } from '@/utils/carbsConvention';
 import { trackMeal } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
+import {
+  type MealEstimateProgressLine,
+  mealEstimateProgressLine,
+} from '@/utils/mealEstimateProgress';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
 import { AddMealModal } from './AddMealModal';
@@ -154,6 +158,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   const [deleteMealId, setDeleteMealId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGeneratingMealAI, setIsGeneratingMealAI] = useState(false);
+  const [mealProgress, setMealProgress] = useState<MealEstimateProgressLine | null>(null);
   const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
   const [sendMealId, setSendMealId] = useState<string | null>(null);
   const [importVisible, setImportVisible] = useState(false);
@@ -312,6 +317,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
       }
 
       setIsGeneratingMealAI(true);
+      setMealProgress(null);
       try {
         const userContent = [
           context.description.trim(),
@@ -322,7 +328,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
           .filter(Boolean)
           .join('. ');
 
-        const result = await trackMeal(aiConfig, userContent);
+        const result = await trackMeal(aiConfig, userContent, undefined, (progress) =>
+          setMealProgress(mealEstimateProgressLine(progress))
+        );
         if (!result || result.meals.length === 0) {
           showSnackbar('error', t('meals.generateAI.errorMessage'));
           return;
@@ -372,6 +380,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         });
       } finally {
         setIsGeneratingMealAI(false);
+        setMealProgress(null);
       }
     },
     [refresh, showSnackbar, t, triggerConfetti]
@@ -493,6 +502,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   );
 
   const showLoading = isLoading || isTransforming || isGeneratingMealAI;
+  const generatingText = mealProgress
+    ? t(mealProgress.key, mealProgress.options)
+    : t('meals.generateAI.generating');
 
   const getEmptyStateTitle = () => {
     if (searchQuery.trim()) {
@@ -594,7 +606,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
                     fontSize: theme.typography.fontSize.sm,
                   }}
                 >
-                  {isGeneratingMealAI ? t('meals.generateAI.generating') : t('meals.loadingMeals')}
+                  {isGeneratingMealAI ? generatingText : t('meals.loadingMeals')}
                 </Text>
               </View>
             ) : (

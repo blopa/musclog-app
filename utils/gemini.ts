@@ -12,6 +12,7 @@ import type { ChatCompletionMessageParam } from 'openai/resources';
 
 import { DEFAULT_GEMINI_MODEL } from '@/constants/ai';
 
+import type { AiEffort } from './aiEffort';
 import { AiInvalidKeyError } from './aiErrors';
 import { captureMessage } from './sentry';
 
@@ -237,14 +238,17 @@ export function geminiModelFamily(model: string | undefined): GeminiModelFamily 
 }
 
 /**
- * The generation config for a JSON call. `thinking: 'low'` asks the model to think as little as it
- * is allowed to (structured extraction); `'default'` leaves thinking to the model, which is what
- * the user's "thinking mode" setting asks for. Exactly one of `thinkingLevel` / `thinkingBudget`
- * is ever set, and an unknown model gets neither rather than a field it might reject.
+ * The generation config for a JSON call, for the given per-job effort (`utils/aiEffort.ts`).
+ * `minimal` asks the model to think as little as its family allows (the family's lowest level or
+ * budget, `GEMINI_MODEL_CAPABILITIES.structured`); `low` and `medium` map to the matching
+ * `thinkingLevel` on level families; `high` leaves thinking to the model's own default. On budget
+ * families (2.5) `minimal` and `low` use the lowest budget and `medium`/`high` leave it to the
+ * model. Exactly one of `thinkingLevel` / `thinkingBudget` is ever set, and an unknown model gets
+ * neither rather than a field it might reject.
  */
 export function buildGeminiGenerationConfig(
   model: string | undefined,
-  options: { responseSchema?: unknown; thinking: 'low' | 'default'; json?: boolean }
+  options: { responseSchema?: unknown; effort: AiEffort; json?: boolean }
 ): Record<string, unknown> {
   const config: Record<string, unknown> = {};
   if (options.json !== false) {
@@ -255,14 +259,31 @@ export function buildGeminiGenerationConfig(
     config.responseSchema = options.responseSchema;
   }
 
-  if (options.thinking === 'low') {
-    const capability = GEMINI_MODEL_CAPABILITIES[geminiModelFamily(model)];
-    if (capability.kind === 'level') {
-      config.thinkingConfig = { thinkingLevel: capability.structured };
-    } else if (capability.kind === 'budget') {
+  const capability = GEMINI_MODEL_CAPABILITIES[geminiModelFamily(model)];
+  if (capability.kind === 'level') {
+    const level = levelForEffort(options.effort, capability.structured);
+    if (level !== undefined) {
+      config.thinkingConfig = { thinkingLevel: level };
+    }
+  } else if (capability.kind === 'budget') {
+    if (options.effort === 'minimal' || options.effort === 'low') {
       config.thinkingConfig = { thinkingBudget: capability.structured };
     }
   }
 
   return config;
+}
+
+/** The thinking level for an effort, or `undefined` to leave the model's own default. */
+function levelForEffort(effort: AiEffort, lowest: ThinkingLevel): ThinkingLevel | undefined {
+  switch (effort) {
+    case 'minimal':
+      return lowest;
+    case 'low':
+      return ThinkingLevel.LOW;
+    case 'medium':
+      return ThinkingLevel.MEDIUM;
+    case 'high':
+      return undefined;
+  }
 }

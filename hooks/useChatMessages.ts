@@ -69,6 +69,10 @@ import {
 import { HISTORY_WINDOW_TURNS, historyText } from '@/utils/coachHistory';
 import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import {
+  type MealEstimateProgressLine,
+  mealEstimateProgressLine,
+} from '@/utils/mealEstimateProgress';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -219,6 +223,8 @@ export type UseChatMessagesResult = {
   isLoading: boolean;
   isLoadingMore: boolean;
   isSending: boolean;
+  /** The current step of a tracked-meal estimate, or null when none is running. */
+  trackMealProgress: MealEstimateProgressLine | null;
   hasMore: boolean;
   loadMore: () => Promise<void>;
   sendMessage: (text: string, base64Image?: string) => Promise<void>;
@@ -271,6 +277,7 @@ export function useChatMessages(
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [trackMealProgress, setTrackMealProgress] = useState<MealEstimateProgressLine | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [failedMessageText, setFailedMessageText] = useState<string | null>(null);
@@ -862,7 +869,9 @@ export function useChatMessages(
           });
           return;
         } else if (pendingIntention === TRACK_MEAL) {
-          const result = await trackMeal(aiConfig, text.trim(), base64Image);
+          const result = await trackMeal(aiConfig, text.trim(), base64Image, (progress) =>
+            setTrackMealProgress(mealEstimateProgressLine(progress))
+          );
           if (!result || result.meals.length === 0) {
             if (userRecord) {
               const recordId = userRecord.id;
@@ -972,6 +981,7 @@ export function useChatMessages(
         }
       } finally {
         setIsSending(false);
+        setTrackMealProgress(null);
       }
     },
     [isSending, t, clearFailedMessageText, conversationContext, formatEnergyWithUnit]
@@ -1114,6 +1124,7 @@ export function useChatMessages(
     isLoading,
     isLoadingMore,
     isSending: isSending || isReplyPending,
+    trackMealProgress,
     hasMore,
     loadMore,
     sendMessage,

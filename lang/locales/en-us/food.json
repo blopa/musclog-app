@@ -485,6 +485,22 @@
       "mealLoggingFailed": "Failed to log meal. Please try again.",
       "analysisSuccess": "{{name}}: {{kcal}}, P {{protein}}g C {{carbs}}g F {{fat}}g"
     },
+    "aiProgress": {
+      "reading": "Reading your description…",
+      "readingPhoto": "Looking at your photo…",
+      "estimating_one": "Estimating {{count}} ingredient…",
+      "estimating_few": "Estimating {{count}} ingredients…",
+      "estimating_many": "Estimating {{count}} ingredients…",
+      "estimating_other": "Estimating {{count}} ingredients…",
+      "estimatingWithMatches_one": "Matched {{matched}} to your foods, estimating {{count}} more…",
+      "estimatingWithMatches_few": "Matched {{matched}} to your foods, estimating {{count}} more…",
+      "estimatingWithMatches_many": "Matched {{matched}} to your foods, estimating {{count}} more…",
+      "estimatingWithMatches_other": "Matched {{matched}} to your foods, estimating {{count}} more…",
+      "rechecking_one": "Double-checking {{count}} ingredient…",
+      "rechecking_few": "Double-checking {{count}} ingredients…",
+      "rechecking_many": "Double-checking {{count}} ingredients…",
+      "rechecking_other": "Double-checking {{count}} ingredients…"
+    },
     "aiNutritionContext": {
       "title": "Add context for AI",
       "describeYourMeal": "Describe your meal",

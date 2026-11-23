@@ -186,7 +186,7 @@ The measurement is an app-measured fact, not user text, so it must not go throug
 `wrapUserContent`/the user description suffix. Today:
 
 - `estimateNutritionFromPhoto(config, base64Image, context)` (`utils/coachAI.ts`) has two branches:
-  thinking mode (`trackMealWithThinking` → `extractRecipe` → `generateWithImageStructured` with the
+  thinking mode (`trackMealVerified` → `extractRecipe` → `generateWithImageStructured` with the
   user message as the suffix) and normal mode (`getMealAnalysisPrompt` +
   `generateWithImageStructured` with description/tags as the suffix).
 - `generateWithImageStructured` builds the user text as
@@ -201,7 +201,7 @@ Change:
   `measuredContext` to the user text **after** the sanitized suffix, unsanitized and unwrapped (it is
   our own string). Every provider branch already reads the same `userText`; confirm that while
   editing.
-- Thread it through `trackMealWithThinking` and `extractRecipe` as an optional trailing argument so
+- Thread it through `trackMealVerified` and `extractRecipe` as an optional trailing argument so
   the thinking branch gets it too.
 - `estimateNutritionFromPhoto` builds the string with `portionScalePromptSection` once and passes it
   to whichever branch runs. Nothing else calls it with a scale (chat `trackMeal` stays as is).
