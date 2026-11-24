@@ -56,6 +56,14 @@ scripts/release-android.sh upload --track production --rollout 0.1
 scripts/release-android.sh rollout update 0.5 | halt | resume | complete
 ```
 
+**No EAS cloud minutes, no computer needed:** `.github/workflows/build-android-aab.yml` ("Build Android AAB",
+manual `workflow_dispatch` only) runs `eas build --local` with the `production` profile on a GitHub runner,
+refuses a debug-signed bundle and attaches `musclog-<version>-<code>.aab` to the run as an artifact (14 days).
+It needs the repository secret `EXPO_TOKEN` (signing credentials and the plain-text/sensitive EAS environment
+variables come from EAS; a variable with visibility "Secret" does not reach a local build, so
+`SENTRY_AUTH_TOKEN` can be added as a repository secret too). It never uploads to Play: download the artifact
+and use `scripts/release-android.sh upload --file <aab>` when you decide to.
+
 `upload` defaults to the internal track; production refuses without `--rollout`. Before uploading it runs
 `gplay preflight --fail-on warning` and refuses unless the local versionCode is above every code on Play
 (Play spends a code even on a rejected upload). `--notes FILE` is plain en-US text or a JSON array of
