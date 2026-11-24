@@ -9,6 +9,23 @@ const meal = {
 };
 
 describe('applyMealReview', () => {
+  it('carries the English name of a missing ingredient, trimmed, and none when it gave none', () => {
+    const { added } = applyMealReview(meal, {
+      missingIngredients: [
+        { name: 'Azeite', englishName: '  olive oil ', grams: 10 },
+        { name: 'Sal', englishName: '   ', grams: 1 },
+        { name: 'Pimenta', grams: 1 },
+      ],
+      corrections: [],
+    });
+
+    expect(added).toEqual([
+      { name: 'Azeite', englishName: 'olive oil', grams: 10 },
+      { name: 'Sal', grams: 1 },
+      { name: 'Pimenta', grams: 1 },
+    ]);
+  });
+
   it('scales a corrected ingredient by the gram ratio', () => {
     const { meal: out, added } = applyMealReview(meal, {
       corrections: [{ name: 'rice', grams: 200 }],

@@ -40,6 +40,7 @@ import {
 } from './claude';
 import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
 import { combineExtractions } from './extractionConsensus';
+import { resolveFoundationRefs, resolveFoundationRefsInMeals } from './foundationFoodList';
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
@@ -54,6 +55,7 @@ import {
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_RETRY_TEMPERATURE,
   localFoodIdentifyPrompt,
+  matchNameOf,
   mealTypeForHour,
   mergeFoodsAcrossPhotos,
   parseIdentifiedFoods,
@@ -105,6 +107,7 @@ import {
   getExtractionArbiterMessage,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
+  getFoundationFoodsPrompt,
   getGenerateMealPlanFunctions,
   getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
@@ -137,6 +140,8 @@ import {
   getTrackMealFunctions,
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
+  type FoundationFoodsPrompt,
+  type MealSchemaDialect,
 } from './prompts';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
 import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
@@ -271,7 +276,9 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     maxCharBudget: 8000,
     promptComplexity: 'standard',
     enableContextInjection: true,
-    enableFoundationFoods: false,
+    // The whole list (about 11 KB, a few thousand tokens) goes to a custom server too; the person can
+    // still turn "Send foundation foods to AI" off, and the server needs a context window to hold it.
+    enableFoundationFoods: true,
     enableMemories: true,
   },
   gateway: {
@@ -733,6 +740,8 @@ export type TrackMealResponse = {
 
 export type RecipeIngredient = {
   name: string;
+  /** The food's plain English name, used only to find it among the stored foods; never shown. */
+  englishName?: string;
   grams: number;
   foodId?: string;
 };
@@ -1734,6 +1743,15 @@ function structuredDialect(config: CoachAIConfig): StructuredDialect {
 }
 
 /**
+ * The dialect the meal schemas (recipe, estimate, review, meal plan) are built in: the provider's own,
+ * except a custom local server, which enforces no schema, so none of the lookup fields is required
+ * of it (a missing required field would cost a repair request on every estimate).
+ */
+function mealSchemaDialect(config: CoachAIConfig): MealSchemaDialect {
+  return config.provider === 'local' ? 'optional' : structuredDialect(config);
+}
+
+/**
  * The one place a reply that must match a JSON schema is requested from a provider: the on-device
  * model, Gemini, Claude, or an OpenAI-compatible endpoint. A reply that is not valid JSON comes back as
  * `malformed`; a provider failure is thrown as it happened, for the caller to classify.
@@ -2202,6 +2220,26 @@ async function generateWithImagesStructured<T>(
   return read.kind === 'ok' ? read.value : null;
 }
 
+/**
+ * The foundation foods this request offers the model, with the map that reads its answer back, or
+ * null when this provider leaves them out (the on-device model has no room) or the person turned
+ * "Send foundation foods to AI" off. Built once per request: the prompt and the reading of the answer
+ * use the same object, so a food's reference number always means the line the model saw.
+ */
+async function foundationFoodsFor(
+  config: CoachAIConfig,
+  style: 'estimate' | 'recipe'
+): Promise<FoundationFoodsPrompt | null> {
+  const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
+  if (!providerConfig.enableFoundationFoods) {
+    return null;
+  }
+
+  return (await SettingsService.getSendFoundationFoodsToLlm())
+    ? getFoundationFoodsPrompt(style)
+    : null;
+}
+
 async function extractRecipe(
   config: CoachAIConfig,
   userMessage: string,
@@ -2209,12 +2247,9 @@ async function extractRecipe(
   observation?: MealObservation
 ): Promise<RecipeExtractionResponse | null> {
   const lang = config.language ?? DEFAULT_LANG;
-  const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
-  const includeFoundationFoods = providerConfig.enableFoundationFoods
-    ? await SettingsService.getSendFoundationFoodsToLlm()
-    : false;
-  const systemPrompt = await getRecipeExtractionPrompt(includeFoundationFoods, lang);
-  const fns = getRecipeExtractionFunctions(includeFoundationFoods);
+  const foundation = await foundationFoodsFor(config, 'recipe');
+  const systemPrompt = await getRecipeExtractionPrompt(foundation, lang);
+  const fns = getRecipeExtractionFunctions(foundation !== null, mealSchemaDialect(config));
   const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
   // A first look is notes for the request, never a replacement for the photo or description.
   const message = observation
@@ -2227,7 +2262,7 @@ async function extractRecipe(
       return null;
     }
 
-    return generateWithImagesStructured<RecipeExtractionResponse>(
+    const fromPhoto = await generateWithImagesStructured<RecipeExtractionResponse>(
       config,
       systemPrompt,
       images,
@@ -2237,15 +2272,20 @@ async function extractRecipe(
       'extraction',
       { prepared: true }
     );
+
+    // A reference number the model returned becomes the real food id here, against the list it saw.
+    return fromPhoto ? resolveFoundationRefsInMeals(fromPhoto, foundation) : null;
   }
 
-  return generateStructured<RecipeExtractionResponse>(
+  const fromText = await generateStructured<RecipeExtractionResponse>(
     config,
     systemPrompt,
     message,
     schema,
     'extractRecipe'
   );
+
+  return fromText ? resolveFoundationRefsInMeals(fromText, foundation) : null;
 }
 
 /**
@@ -2505,15 +2545,20 @@ async function recheckImplausibleIngredients(
 async function refineTrackedMeals(
   config: CoachAIConfig,
   response: TrackMealResponse,
-  onProgress?: MealEstimateProgressListener
+  onProgress?: MealEstimateProgressListener,
+  foundation: FoundationFoodsPrompt | null = null
 ): Promise<TrackMealResponse> {
   const meals: TrackedMeal[] = [];
 
   for (const meal of response.meals ?? []) {
     const original = meal.ingredients ?? [];
+    // Who named a food is read from the model's own answer, before its reference numbers become ids:
+    // a reference that names nothing is an invented id, and an invented id with no numbers is estimated.
     const claimedFoodId = original.map((ingredient) => Boolean(ingredient.foodId));
     // Deliberately unguarded: a failed lookup must reject, never leave every id looking unmatched.
-    let ingredients = await NutritionService.normalizeAiMealIngredients(original);
+    let ingredients = await NutritionService.normalizeAiMealIngredients(
+      resolveFoundationRefs(original, foundation)
+    );
 
     const unnumbered = ingredients.filter(
       (ingredient, index) => claimedFoodId[index] && !ingredient.foodId && hasNoNumbers(ingredient)
@@ -2584,29 +2629,31 @@ async function trackMealVerified(
   const resultMeals: TrackedMeal[] = [];
 
   for (const meal of recipeResponse.meals) {
-    const claimedStubs: TrackMealIngredient[] = meal.ingredients
-      .filter((i) => i.foodId)
-      .map((i) => ({
-        name: i.name,
-        grams: i.grams,
-        foodId: i.foodId,
-        kcal: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        fiber: 0,
-      }));
+    const claimedSource = meal.ingredients.filter((i) => i.foodId);
+    const claimedStubs: TrackMealIngredient[] = claimedSource.map((i) => ({
+      name: i.name,
+      grams: i.grams,
+      foodId: i.foodId,
+      kcal: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+    }));
 
     // A claimed foodId only counts once the database confirms it: the model sometimes
     // sends the string "null" or an invented id, and treating those as matches would
     // skip estimation and log the ingredient at 0 kcal.
     const normalizedClaimed = await NutritionService.normalizeAiMealIngredients(claimedStubs);
     const claimed = normalizedClaimed.filter((i) => i.foodId);
+    // The lookup keeps its input order, so an unconfirmed claim is found by position and keeps the
+    // English name the model gave it.
+    const unconfirmed = claimedSource.filter((_, index) => !normalizedClaimed[index]?.foodId);
     // What the model named without a (confirmed) id is looked up by name in the person's own foods
     // before it is estimated, so a food they already have is never re-estimated.
     const byName = await matchIngredientsToOwnFoods([
       ...meal.ingredients.filter((i) => !i.foodId),
-      ...normalizedClaimed.filter((i) => !i.foodId).map((i) => ({ name: i.name, grams: i.grams })),
+      ...unconfirmed,
     ]);
     const matched = [...claimed, ...byName.matched];
     const newIngredients = byName.unmatched;
@@ -2774,7 +2821,9 @@ async function requestMealReview(
   images: readonly MealImage[] = []
 ): Promise<MealReview | null> {
   const systemPrompt = getMealReviewPrompt(meal, config.language ?? DEFAULT_LANG);
-  const schema = getSchemaFromFunctionDeclaration((getMealReviewFunctions() as any)[0]);
+  const schema = getSchemaFromFunctionDeclaration(
+    (getMealReviewFunctions(mealSchemaDialect(config)) as any)[0]
+  );
 
   if (images.length > 0 && config.provider !== 'on-device') {
     return generateWithImagesStructured<MealReview>(
@@ -2884,12 +2933,9 @@ export async function trackMeal(
     }
 
     const lang = config.language ?? DEFAULT_LANG;
-    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
-    const includeFoundationFoods = providerConfig.enableFoundationFoods
-      ? await SettingsService.getSendFoundationFoodsToLlm()
-      : false;
-    const systemPrompt = await getMealAnalysisPrompt(includeFoundationFoods, lang);
-    const fns = getTrackMealFunctions(includeFoundationFoods);
+    const foundation = await foundationFoodsFor(config, 'estimate');
+    const systemPrompt = await getMealAnalysisPrompt(foundation, lang);
+    const fns = getTrackMealFunctions(foundation !== null, mealSchemaDialect(config));
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     if (images.length > 0) {
@@ -2903,7 +2949,7 @@ export async function trackMeal(
         'extraction',
         { prepared: true }
       );
-      return fromPhoto ? await refineTrackedMeals(config, fromPhoto, onProgress) : null;
+      return fromPhoto ? await refineTrackedMeals(config, fromPhoto, onProgress, foundation) : null;
     }
 
     const parsed = await generateStructured<TrackMealResponse>(
@@ -2913,7 +2959,7 @@ export async function trackMeal(
       schema,
       'trackMeal'
     );
-    return parsed ? await refineTrackedMeals(config, parsed, onProgress) : null;
+    return parsed ? await refineTrackedMeals(config, parsed, onProgress, foundation) : null;
   } catch (error) {
     notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.trackMeal');
@@ -3163,25 +3209,23 @@ export async function generateMealPlan(
 ): Promise<GenerateMealPlanResponse | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
-    const includeFoundationFoods = providerConfig.enableFoundationFoods
-      ? await SettingsService.getSendFoundationFoodsToLlm()
-      : false;
+    // One list for the whole plan: a revision round reads its answer against the list the first one saw.
+    const foundation = await foundationFoodsFor(config, 'estimate');
     const systemPrompt = await getGenerateMealPlanPrompt(
       lang,
       macroTargets,
       undefined,
       context,
-      includeFoundationFoods
+      foundation
     );
 
     const userMessage =
       history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
       '\n\nGenerate the meal plan.';
 
-    const fns = getGenerateMealPlanFunctions(includeFoundationFoods);
+    const fns = getGenerateMealPlanFunctions(foundation !== null, mealSchemaDialect(config));
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    return await generatePlan<GenerateMealPlanResponse>(
+    const plan = await generatePlan<GenerateMealPlanResponse>(
       config,
       (extra) =>
         generateStructured<GenerateMealPlanResponse>(
@@ -3194,6 +3238,10 @@ export async function generateMealPlan(
         ),
       (plan) => mealPlanFindings(plan, macroTargets)
     );
+
+    // The references stay as the model wrote them while a critique round re-reads the plan, so a
+    // revision speaks the same language as the list in the system prompt; the real ids come last.
+    return plan ? resolveFoundationRefsInMeals(plan, foundation) : null;
   } catch (error) {
     notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.generateMealPlan');
@@ -3396,14 +3444,17 @@ export async function getWorkoutVolumeInsights(
 export type { MealPhotoContext };
 
 /**
- * Foods this phone already has whose names share a word with `name`, merged and deduplicated and
- * capped at `MAX_FOOD_CANDIDATES` (best candidates first, so the cap never changes the match). A food
- * whose numbers are per serving is left out: a match is scaled by grams from per-100 g numbers.
+ * Foods this phone already has whose names or descriptions share a word with `name`, merged and
+ * deduplicated and capped at `MAX_FOOD_CANDIDATES` (best candidates first, so the cap never changes
+ * the match). A food whose numbers are per serving is left out: a match is scaled by grams from
+ * per-100 g numbers.
  */
 async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
   const byId = new Map<string, FoodCandidate>();
   for (const term of searchTermsFor(name)) {
-    for (const food of await FoodService.searchFoods(term)) {
+    // The description is searched too: a foundation food's is its generic English name
+    // ("Lettuce, leaf, green, raw") under a product-like `name`.
+    for (const food of await FoodService.searchFoods(term, { includeDescription: true })) {
       if (food.nutritionBasis === 'per_serving') {
         continue;
       }
@@ -3411,6 +3462,7 @@ async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
       byId.set(food.id, {
         id: food.id,
         name: food.name,
+        ...(food.description ? { description: food.description } : {}),
         kcal: food.calories ?? 0,
         protein: food.protein ?? 0,
         carbs: food.carbs ?? 0,
@@ -3425,16 +3477,16 @@ async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
 
 /**
  * Ingredients with no food id, looked up BY NAME in the foods this phone has (the person's own,
- * saved and foundation foods), whichever provider made the estimate: a model sees at most 200
- * foundation foods and a local server none, so the ids it claims miss almost everything the person
- * actually eats. A match (`pickFoodMatch`: every significant word, the fewest extra words, a tie is
- * no match) keeps the model's name and grams and takes that food's own numbers scaled to the grams;
+ * saved and foundation foods), whichever provider made the estimate: a model is offered only the
+ * foundation foods, so the ids it claims miss almost everything the person actually eats. A match (`pickFoodMatch`: every significant word of the name or description, the
+ * fewest extra words, a tie is no match) keeps the model's name and grams and takes that food's own
+ * numbers scaled to the grams;
  * everything else is returned unchanged for the estimate request. The model's wording is kept so the
  * person reads their own language. Best effort: a failed lookup leaves every ingredient unmatched,
  * which only costs the estimate it would have saved.
  */
 async function matchIngredientsToOwnFoods(
-  ingredients: readonly { name: string; grams: number }[]
+  ingredients: readonly { name: string; grams: number; englishName?: string }[]
 ): Promise<{
   matched: TrackMealIngredient[];
   unmatched: { name: string; grams: number }[];
@@ -3443,8 +3495,12 @@ async function matchIngredientsToOwnFoods(
   const unmatched: { name: string; grams: number }[] = [];
 
   try {
-    for (const { name, grams } of ingredients) {
-      const match = pickFoodMatch(name, await candidateFoodsFor(name));
+    for (const ingredient of ingredients) {
+      const { name, grams } = ingredient;
+      // Stored foods are named in English, the model's wording is in the person's language: the
+      // English name (when it gave one) is what is compared, the person's wording is what is kept.
+      const lookupName = matchNameOf(ingredient);
+      const match = pickFoodMatch(lookupName, await candidateFoodsFor(lookupName));
       if (match) {
         stubs.push({ name, grams, foodId: match.id, kcal: 0, protein: 0, carbs: 0, fat: 0 });
       } else {
@@ -3617,7 +3673,8 @@ async function estimateMealFromPhotoOnDevice(
 
   const matches = new Map<string, FoodCandidate | null>();
   for (const food of foods) {
-    matches.set(food.name, pickFoodMatch(food.name, await candidateFoodsFor(food.name)));
+    const lookupName = matchNameOf(food);
+    matches.set(food.name, pickFoodMatch(lookupName, await candidateFoodsFor(lookupName)));
   }
 
   const hour = new Date().getHours();
@@ -3679,18 +3736,15 @@ export async function estimateNutritionFromPhoto(
     }
 
     const customPrompts = await getActiveCustomPrompts();
-    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
-    const includeFoundationFoods = providerConfig.enableFoundationFoods
-      ? await SettingsService.getSendFoundationFoodsToLlm()
-      : false;
+    const foundation = await foundationFoodsFor(config, 'estimate');
 
-    const baseSystemPrompt = await getMealAnalysisPrompt(includeFoundationFoods);
+    const baseSystemPrompt = await getMealAnalysisPrompt(foundation);
     const systemPrompt = customPrompts
       ? `${baseSystemPrompt}\n\n${customPrompts}`
       : baseSystemPrompt;
 
     // Use getTrackMealFunctions to get an array of meals with ingredients breakdown
-    const fns = getTrackMealFunctions(includeFoundationFoods);
+    const fns = getTrackMealFunctions(foundation !== null, mealSchemaDialect(config));
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     const userMessageSuffix = [multiPhotoNote, contextText].filter(Boolean).join('\n') || undefined;
@@ -3708,7 +3762,9 @@ export async function estimateNutritionFromPhoto(
 
     // Foundation-food matches arrive with zero macros: the lookup fills the real values in, and an
     // id the database does not have is estimated in a follow-up request instead of logged at 0 kcal.
-    return parsed?.meals ? await refineTrackedMeals(config, parsed, onProgress) : (parsed ?? null);
+    return parsed?.meals
+      ? await refineTrackedMeals(config, parsed, onProgress, foundation)
+      : (parsed ?? null);
   } catch (error) {
     notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.estimateNutritionFromPhoto');

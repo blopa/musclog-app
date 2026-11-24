@@ -466,16 +466,29 @@ export class FoodService {
   }
 
   /**
-   * Search foods by name
+   * Search foods by name. With `includeDescription` a food also matches on its description: the
+   * bundled USDA foundation foods carry a generic description ("Lettuce, leaf, green, raw") under
+   * a product-like name, which is what an ingredient name should be compared with. Every other
+   * caller keeps the name-only search.
    */
-  static async searchFoods(searchTerm: string): Promise<Food[]> {
+  static async searchFoods(
+    searchTerm: string,
+    options: { includeDescription?: boolean } = {}
+  ): Promise<Food[]> {
     if (!database) {
       return [];
     }
 
+    const pattern = `%${searchTerm}%`;
+
     return await database
       .get<Food>('foods')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        options.includeDescription
+          ? Q.or(Q.where('name', Q.like(pattern)), Q.where('description', Q.like(pattern)))
+          : Q.where('name', Q.like(pattern))
+      )
       .fetch();
   }
 
@@ -710,6 +723,27 @@ export class FoodService {
     return await database
       .get<Food>('foods')
       .query(Q.where('source', 'foundation'), Q.where('deleted_at', Q.eq(null)), Q.take(limit))
+      .fetch();
+  }
+
+  /**
+   * Foundation foods in name order, up to `limit`: the set a meal estimate offers the model
+   * (`utils/foundationFoodList.ts` sorts again for a result that is the same on every adapter). The
+   * order in the query only makes the cut, if one is ever needed, the same one every time.
+   */
+  static async getFoundationFoodsSorted(limit: number): Promise<Food[]> {
+    if (!database) {
+      return [];
+    }
+
+    return await database
+      .get<Food>('foods')
+      .query(
+        Q.where('source', 'foundation'),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('name', Q.asc),
+        Q.take(limit)
+      )
       .fetch();
   }
 

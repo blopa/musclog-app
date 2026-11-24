@@ -29,7 +29,21 @@ export const LOCAL_PHOTO_RETRY_TEMPERATURE = 0.3;
  */
 export const LOCAL_PHOTO_UNMATCHED_FOOD_ID = 'local-photo-unmatched';
 
-export type IdentifiedFood = { name: string; grams: number };
+export type IdentifiedFood = {
+  name: string;
+  grams: number;
+  /** The plain English name when `name` is not English; only for matching, never shown. */
+  englishName?: string;
+};
+
+/**
+ * The name a food is looked up by: its English name when it has one, else the name it was given.
+ * Stored foods are named in English, so a name in another language finds nothing by its own words.
+ * The wording the person reads is always `name`.
+ */
+export function matchNameOf(food: { name: string; englishName?: string }): string {
+  return food.englishName?.trim() || food.name;
+}
 
 /** A food's name as readings are compared: case, accents and spacing do not count. */
 function foodKey(name: string): string {
@@ -54,6 +68,7 @@ export function voteIdentifiedFoods(readings: IdentifiedFood[][]): IdentifiedFoo
 
   const order: string[] = [];
   const spelling = new Map<string, string>();
+  const english = new Map<string, string>();
   const grams = new Map<string, number[]>();
   for (const reading of readings) {
     const totals = new Map<string, number>();
@@ -66,6 +81,10 @@ export function voteIdentifiedFoods(readings: IdentifiedFood[][]): IdentifiedFoo
       if (!spelling.has(key)) {
         spelling.set(key, food.name);
         order.push(key);
+      }
+
+      if (food.englishName && !english.has(key)) {
+        english.set(key, food.englishName);
       }
 
       totals.set(key, (totals.get(key) ?? 0) + food.grams);
@@ -83,7 +102,15 @@ export function voteIdentifiedFoods(readings: IdentifiedFood[][]): IdentifiedFoo
       return [];
     }
 
-    return [{ name: spelling.get(key) ?? key, grams: Math.round(median(seen)) }];
+    const englishName = english.get(key);
+
+    return [
+      {
+        name: spelling.get(key) ?? key,
+        grams: Math.round(median(seen)),
+        ...(englishName ? { englishName } : {}),
+      },
+    ];
   });
 }
 
@@ -107,11 +134,16 @@ export function mergeFoodsAcrossPhotos(
       }
 
       const existing = merged.get(key);
-      if (!existing) {
-        merged.set(key, { name: food.name, grams: food.grams });
-      } else if (food.grams > existing.grams) {
+      const englishName = food.englishName ?? existing?.englishName;
+      if (!existing || food.grams > existing.grams) {
         // Map keeps the original insertion position when a key is set again.
-        merged.set(key, { name: food.name, grams: food.grams });
+        merged.set(key, {
+          name: food.name,
+          grams: food.grams,
+          ...(englishName ? { englishName } : {}),
+        });
+      } else if (!existing.englishName && englishName) {
+        merged.set(key, { ...existing, englishName });
       }
     }
   }
@@ -133,6 +165,8 @@ export const LOCAL_FOOD_IDENTIFY_SCHEMA = {
         properties: {
           name: { type: 'string', maxLength: MAX_IDENTIFIED_NAME_CHARS },
           grams: { type: 'number' },
+          // Optional, to keep a 450M model's grammar small: left out, matching falls back to `name`.
+          englishName: { type: 'string', maxLength: MAX_IDENTIFIED_NAME_CHARS },
         },
       },
     },
@@ -146,6 +180,7 @@ export function localFoodIdentifyPrompt(): string {
     // and "orange juice" as examples it answered with them on 8 of 10 Nutrition5k plates, most of
     // which held neither (docs/ON_DEVICE_AI_PLAN.md, P7 notes).
     'Name each item with a short, common food name in English. One item per food; do not group a plate into one item.',
+    'Leave "englishName" out unless "name" is not in English; then give the plain English food name there.',
     `For each item give "grams": your best guess of its weight on the plate, a whole number between ${MIN_IDENTIFIED_GRAMS} and ${MAX_IDENTIFIED_GRAMS}.`,
     'Never give calories or nutrients. If you cannot see any food, return an empty list.',
     'Reply with JSON only.',
@@ -184,11 +219,20 @@ export function parseIdentifiedFoods(value: unknown): IdentifiedFood[] {
     }
 
     const grams = clampGrams((entry as { grams?: unknown }).grams);
+    const rawEnglish = (entry as { englishName?: unknown }).englishName;
+    const read =
+      typeof rawEnglish === 'string'
+        ? rawEnglish.trim().replace(/\s+/g, ' ').slice(0, MAX_IDENTIFIED_NAME_CHARS)
+        : '';
     const key = name.toLowerCase();
     const existing = byName.get(key);
+    // Said only when it adds something: the same words as `name` change nothing.
+    const englishName =
+      existing?.englishName ?? (read && read.toLowerCase() !== key ? read : undefined);
     byName.set(key, {
       name: existing?.name ?? name,
       grams: existing ? Math.min(MAX_IDENTIFIED_GRAMS, existing.grams + grams) : grams,
+      ...(englishName ? { englishName } : {}),
     });
     if (byName.size >= MAX_IDENTIFIED_FOODS) {
       break;
@@ -215,6 +259,8 @@ export function mealTypeForHour(hour: number): TrackedMeal['mealType'] {
 export type FoodCandidate = {
   id: string;
   name: string;
+  /** What the food is, in the words of its source (a foundation food's is its generic English name). */
+  description?: string;
   kcal: number;
   protein: number;
   carbs: number;
@@ -270,6 +316,35 @@ export function searchTermsFor(name: string): string[] {
   return [...new Set(tokenize(name))].sort((a, b) => b.length - a.length).slice(0, 3);
 }
 
+type CandidateScore = { covered: number; extra: number };
+
+/** How many wanted words a text carries, and how many words it has besides them. */
+function scoreWords(wanted: ReadonlySet<string>, text: string): CandidateScore {
+  const have = new Set(tokenize(text));
+  const covered = [...wanted].filter((word) => have.has(word)).length;
+
+  return { covered, extra: have.size - covered };
+}
+
+/**
+ * A candidate is scored on the words of its name OR of its description, whichever fits the wanted
+ * words better (more covered, then fewer extra words). The two are never pooled: a word from the
+ * name and another from the description do not make a match together.
+ */
+function scoreCandidate(wanted: ReadonlySet<string>, candidate: FoodCandidate): CandidateScore {
+  const byName = scoreWords(wanted, candidate.name);
+  if (!candidate.description) {
+    return byName;
+  }
+
+  const byDescription = scoreWords(wanted, candidate.description);
+  const descriptionFitsBetter =
+    byDescription.covered > byName.covered ||
+    (byDescription.covered === byName.covered && byDescription.extra < byName.extra);
+
+  return descriptionFitsBetter ? byDescription : byName;
+}
+
 /**
  * The one candidate this name clearly means, or null. A candidate must carry every significant word
  * of the name; among those, the one with the fewest extra words wins, and a tie is no match (the
@@ -285,12 +360,7 @@ export function pickFoodMatch(
   }
 
   const scored = candidates
-    .map((candidate) => {
-      const have = new Set(tokenize(candidate.name));
-      const covered = [...wanted].filter((word) => have.has(word)).length;
-
-      return { candidate, covered, extra: have.size - covered };
-    })
+    .map((candidate) => ({ candidate, ...scoreCandidate(wanted, candidate) }))
     .filter((entry) => entry.covered === wanted.size)
     .sort((a, b) => a.extra - b.extra);
 
@@ -323,12 +393,7 @@ export function limitFoodCandidates(
   const wanted = new Set(tokenize(name));
 
   return candidates
-    .map((candidate) => {
-      const have = new Set(tokenize(candidate.name));
-      const covered = [...wanted].filter((word) => have.has(word)).length;
-
-      return { candidate, covered, extra: have.size - covered };
-    })
+    .map((candidate) => ({ candidate, ...scoreCandidate(wanted, candidate) }))
     .sort((a, b) => b.covered - a.covered || a.extra - b.extra)
     .slice(0, limit)
     .map((entry) => entry.candidate);

@@ -254,7 +254,7 @@ describe('trackMeal: unmatched ingredients are matched to the person’s foods b
     expect(result?.meals[0].ingredients[0].foodId).toBeUndefined();
   });
 
-  it('works for a cloud provider too (a custom server that sees no foundation foods)', async () => {
+  it('works for a cloud provider too (a custom local server)', async () => {
     useFoods([stored('own-chicken', 'Chicken breast')]);
     const reply = (value: unknown) => ({
       choices: [{ message: { content: JSON.stringify(value) } }],

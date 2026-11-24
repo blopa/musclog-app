@@ -8,6 +8,7 @@ import {
   MAX_FOOD_CANDIDATES,
   MAX_IDENTIFIED_FOODS,
   MAX_IDENTIFIED_NAME_CHARS,
+  matchNameOf,
   mealTypeForHour,
   mergeFoodsAcrossPhotos,
   parseIdentifiedFoods,
@@ -19,7 +20,7 @@ import {
 } from '../localFoodPhoto';
 import { validateAgainstSchema } from '../aiSchemaValidate';
 
-const food = (id: string, name: string): FoodCandidate => ({
+const food = (id: string, name: string, description?: string): FoodCandidate => ({
   id,
   name,
   kcal: 100,
@@ -27,6 +28,7 @@ const food = (id: string, name: string): FoodCandidate => ({
   carbs: 1,
   fat: 1,
   fiber: 0,
+  ...(description ? { description } : {}),
 });
 
 describe('parseIdentifiedFoods', () => {
@@ -345,5 +347,197 @@ describe('limitFoodCandidates', () => {
         3
       )
     ).toHaveLength(3);
+  });
+});
+
+describe('matchNameOf', () => {
+  it('uses the English name when it has one', () => {
+    expect(matchNameOf({ name: 'Брокколи', englishName: ' Broccoli ' })).toBe('Broccoli');
+  });
+
+  it('falls back to the name when the English name is missing or blank', () => {
+    expect(matchNameOf({ name: 'Rice' })).toBe('Rice');
+    expect(matchNameOf({ name: 'Rice', englishName: '' })).toBe('Rice');
+    expect(matchNameOf({ name: 'Rice', englishName: '   ' })).toBe('Rice');
+  });
+});
+
+describe('pickFoodMatch with descriptions', () => {
+  it('cannot match a name written in a non-Latin script by its own words', () => {
+    expect(pickFoodMatch('брокколи', [food('b1', 'Broccoli, raw')])).toBeNull();
+    expect(pickFoodMatch('broccoli', [food('b1', 'Broccoli, raw')])?.id).toBe('b1');
+  });
+
+  it('matches a candidate on its description when the name does not carry the word', () => {
+    const described = food('d1', 'Spring Mix Salad', 'Lettuce, leaf, green, raw');
+
+    expect(pickFoodMatch('lettuce', [described])?.id).toBe('d1');
+    expect(pickFoodMatch('lettuce', [food('d1', 'Spring Mix Salad')])).toBeNull();
+  });
+
+  it('prefers the description with fewer extra words over a longer name', () => {
+    const candidates = [
+      food('a', 'Spring Mix a Medley of Baby Lettuces & Greens', 'Lettuce, leaf, green, raw'),
+      food('b', 'Mixed Salad Bowl With Lettuce Tomato And Cucumber'),
+    ];
+
+    expect(pickFoodMatch('lettuce', candidates)?.id).toBe('a');
+  });
+
+  it('stays unmatched when a name and a description tie on extra words', () => {
+    const candidates = [food('a', 'Lettuce Salad'), food('b', 'Plain Greens', 'Lettuce Leaf')];
+
+    expect(pickFoodMatch('lettuce', candidates)).toBeNull();
+  });
+
+  it('never pools words across the name and the description', () => {
+    const candidate = food('c', 'Broccoli', 'Florets, frozen');
+
+    expect(pickFoodMatch('broccoli florets', [candidate])).toBeNull();
+  });
+
+  it('scores a candidate without a description exactly as before', () => {
+    expect(pickFoodMatch('rice', [food('a', 'Rice white')])?.id).toBe('a');
+  });
+});
+
+describe('limitFoodCandidates with descriptions', () => {
+  it('keeps a description match ahead of worse candidates in a cut', () => {
+    const noise = Array.from({ length: 60 }, (_, index) =>
+      food(`n${index}`, `Rice variety ${index}`)
+    );
+    const list = [...noise, food('desc', 'Spring Mix Salad', 'Lettuce, leaf')];
+    const capped = limitFoodCandidates('lettuce', list);
+
+    expect(capped).toHaveLength(MAX_FOOD_CANDIDATES);
+    expect(capped[0].id).toBe('desc');
+    expect(pickFoodMatch('lettuce', capped)?.id).toBe(pickFoodMatch('lettuce', list)?.id);
+  });
+});
+
+describe('parseIdentifiedFoods englishName', () => {
+  it('reads a trimmed, whitespace-collapsed English name', () => {
+    expect(
+      parseIdentifiedFoods({
+        items: [{ name: '  Брокколи  ', grams: 100, englishName: '  Broccoli   raw ' }],
+      })
+    ).toEqual([{ name: 'Брокколи', grams: 100, englishName: 'Broccoli raw' }]);
+  });
+
+  it('caps the English name at the name limit', () => {
+    expect(
+      parseIdentifiedFoods({ items: [{ name: 'Soup', englishName: 'b'.repeat(200) }] })
+    ).toEqual([{ name: 'Soup', grams: 100, englishName: 'b'.repeat(MAX_IDENTIFIED_NAME_CHARS) }]);
+  });
+
+  it('leaves the key out when the English name is blank or the same words as the name', () => {
+    const [blank] = parseIdentifiedFoods({ items: [{ name: 'Rice', englishName: '   ' }] });
+    const [same] = parseIdentifiedFoods({ items: [{ name: 'Rice', englishName: 'RICE' }] });
+
+    expect(blank).not.toHaveProperty('englishName');
+    expect(same).not.toHaveProperty('englishName');
+  });
+
+  it('keeps the first English name when a repeat names the food again', () => {
+    expect(
+      parseIdentifiedFoods({
+        items: [
+          { name: 'Брокколи', grams: 50, englishName: 'Broccoli' },
+          { name: 'брокколи', grams: 50, englishName: 'Other' },
+        ],
+      })
+    ).toEqual([{ name: 'Брокколи', grams: 100, englishName: 'Broccoli' }]);
+  });
+
+  it('has no englishName key on entries that did not give one', () => {
+    const [entry] = parseIdentifiedFoods({ items: [{ name: 'Egg', grams: 50 }] });
+
+    expect(entry).not.toHaveProperty('englishName');
+  });
+});
+
+describe('LOCAL_FOOD_IDENTIFY_SCHEMA englishName', () => {
+  const item = LOCAL_FOOD_IDENTIFY_SCHEMA.properties.items.items;
+
+  it('bounds englishName and leaves it optional', () => {
+    expect(item.properties.englishName.maxLength).toBe(MAX_IDENTIFIED_NAME_CHARS);
+    expect(item.required).toEqual(['name', 'grams']);
+  });
+
+  it('validates answers with and without an English name', () => {
+    expect(
+      validateAgainstSchema(
+        { items: [{ name: 'брокколи', grams: 100, englishName: 'broccoli' }] },
+        LOCAL_FOOD_IDENTIFY_SCHEMA
+      ).ok
+    ).toBe(true);
+    expect(
+      validateAgainstSchema({ items: [{ name: 'rice', grams: 100 }] }, LOCAL_FOOD_IDENTIFY_SCHEMA)
+        .ok
+    ).toBe(true);
+  });
+
+  it('is mentioned by the prompt', () => {
+    expect(localFoodIdentifyPrompt()).toMatch(/englishName/);
+  });
+});
+
+describe('voteIdentifiedFoods englishName', () => {
+  it('keeps the first non-empty English name seen across readings', () => {
+    expect(
+      voteIdentifiedFoods([
+        [{ name: 'Брокколи', grams: 100 }],
+        [{ name: 'брокколи', grams: 120, englishName: 'Broccoli' }],
+        [{ name: 'Брокколи', grams: 110 }],
+      ])
+    ).toEqual([{ name: 'Брокколи', grams: 110, englishName: 'Broccoli' }]);
+  });
+
+  it('has no englishName key when no reading gave one', () => {
+    const [entry] = voteIdentifiedFoods([
+      [{ name: 'Rice', grams: 100 }],
+      [{ name: 'rice', grams: 200 }],
+    ]);
+
+    expect(entry).toEqual({ name: 'Rice', grams: 150 });
+    expect(entry).not.toHaveProperty('englishName');
+  });
+
+  it('keeps the first English name when readings disagree', () => {
+    expect(
+      voteIdentifiedFoods([
+        [{ name: 'Pão', grams: 60, englishName: 'Bread' }],
+        [{ name: 'Pão', grams: 60, englishName: 'Loaf' }],
+      ])
+    ).toEqual([{ name: 'Pão', grams: 60, englishName: 'Bread' }]);
+  });
+});
+
+describe('mergeFoodsAcrossPhotos englishName', () => {
+  it('carries an English name over to the larger entry that lacks one', () => {
+    expect(
+      mergeFoodsAcrossPhotos([
+        [{ name: 'Брокколи', grams: 50, englishName: 'Broccoli' }],
+        [{ name: 'брокколи', grams: 120 }],
+      ])
+    ).toEqual([{ name: 'брокколи', grams: 120, englishName: 'Broccoli' }]);
+  });
+
+  it('lets the larger entry keep its own English name', () => {
+    expect(
+      mergeFoodsAcrossPhotos([
+        [{ name: 'Egg', grams: 50, englishName: 'Ovo' }],
+        [{ name: 'egg', grams: 90, englishName: 'Egg' }],
+      ])
+    ).toEqual([{ name: 'egg', grams: 90, englishName: 'Egg' }]);
+  });
+
+  it('keeps the larger entry own English name over a smaller one', () => {
+    expect(
+      mergeFoodsAcrossPhotos([
+        [{ name: 'Брокколи', grams: 120, englishName: 'Broccoli' }],
+        [{ name: 'брокколи', grams: 50, englishName: 'Florets' }],
+      ])
+    ).toEqual([{ name: 'Брокколи', grams: 120, englishName: 'Broccoli' }]);
   });
 });

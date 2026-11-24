@@ -11,6 +11,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
     lt: jest.fn((value: unknown) => ({ kind: 'lt', value })),
     like: jest.fn((value: unknown) => ({ kind: 'like', value })),
+    or: jest.fn((...conditions: unknown[]) => ({ kind: 'or', conditions })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
     take: jest.fn((count: number) => ({ kind: 'take', count })),
@@ -423,6 +424,47 @@ describe('FoodService', () => {
         { field: 'source', condition: 'foundation' },
         { field: 'deleted_at', condition: IS_NULL },
         { kind: 'take', count: 50 },
+      ]);
+    });
+
+    it('reads foundation foods sorted by name with the given limit', async () => {
+      const map = wire();
+
+      await FoodService.getFoundationFoodsSorted(25);
+
+      expect(map.foods.queryClauses[0]).toEqual([
+        { field: 'source', condition: 'foundation' },
+        { field: 'deleted_at', condition: IS_NULL },
+        { kind: 'sortBy', field: 'name', direction: 'asc' },
+        { kind: 'take', count: 25 },
+      ]);
+    });
+
+    it('searches names only by default', async () => {
+      const map = wire();
+
+      await FoodService.searchFoods('rice');
+
+      expect(map.foods.queryClauses[0]).toEqual([
+        { field: 'deleted_at', condition: IS_NULL },
+        { field: 'name', condition: { kind: 'like', value: '%rice%' } },
+      ]);
+    });
+
+    it('searches names or descriptions when includeDescription is set', async () => {
+      const map = wire();
+
+      await FoodService.searchFoods('rice', { includeDescription: true });
+
+      expect(map.foods.queryClauses[0]).toEqual([
+        { field: 'deleted_at', condition: IS_NULL },
+        {
+          kind: 'or',
+          conditions: [
+            { field: 'name', condition: { kind: 'like', value: '%rice%' } },
+            { field: 'description', condition: { kind: 'like', value: '%rice%' } },
+          ],
+        },
       ]);
     });
   });

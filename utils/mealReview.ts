@@ -6,7 +6,8 @@
 import type { TrackedMeal, TrackMealIngredient } from './coachAI';
 import { normalizeIngredientName } from './mealConsensus';
 
-export type MealReviewItem = { name: string; grams: number };
+/** `englishName` is the plain English name of a missing ingredient, used only to find it among the stored foods. */
+export type MealReviewItem = { name: string; grams: number; englishName?: string };
 
 export type MealReview = {
   missingIngredients?: MealReviewItem[];
@@ -63,7 +64,12 @@ export function applyMealReview(
     const key = isUsable(item) ? normalizeIngredientName(item.name) : '';
     if (key && !listed.has(key)) {
       listed.add(key);
-      added.push({ name: item.name.trim(), grams: item.grams });
+      const englishName = typeof item.englishName === 'string' ? item.englishName.trim() : '';
+      added.push({
+        name: item.name.trim(),
+        grams: item.grams,
+        ...(englishName ? { englishName } : {}),
+      });
     }
   }
 

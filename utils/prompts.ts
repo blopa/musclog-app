@@ -32,6 +32,7 @@ import {
   MS_PER_SOLAR_DAY,
   parseLocalCalendarDate,
 } from './calendarDate';
+import type { StructuredDialect } from './coachAI';
 import { formatMemoriesForPrompt } from './coachMemories';
 import { buildCoachPersonaBlock } from './coachPersonaPrompt';
 import {
@@ -41,6 +42,11 @@ import {
 } from './coachPromptHistory';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
+import {
+  buildFoundationFoodList,
+  FOUNDATION_FOODS_PROMPT_CAP,
+  type FoundationFoodList,
+} from './foundationFoodList';
 import { describePromptBlocks } from './llmUsage';
 import { wrapUserContent } from './promptSanitizer';
 import { roundToDecimalPlaces } from './roundDecimal';
@@ -1293,67 +1299,66 @@ const MACRO_CALORIE_NOTE =
   'Keep in mind the relation between macros and calories: 1g protein ≈ 4 kcal, 1g carbs ≈ 4 kcal, 1g fat ≈ 9 kcal, 1g fiber ≈ 2 kcal. Ensure your kcal estimate is consistent with the macros you return.';
 
 /**
- * Get the foundation foods prompt part
+ * The foundation foods block of a meal prompt, with the map that reads the model's answer back:
+ * `text` is what goes into the system prompt and `idByRef` turns a reference number the model
+ * returns into the real food id (`resolveFoundationRefs`). They come from ONE call, so a request
+ * always reads its answer against the list it actually sent.
  */
-export const getFoundationFoodsPrompt = async (): Promise<string> => {
-  try {
-    const foundationFoods = await FoodService.getFoundationFoods(200);
-    if (foundationFoods.length === 0) {
-      return '';
-    }
-
-    const foodList = foundationFoods.map((f) => ({
-      id: f.id,
-      name: f.name,
-      protein: f.protein,
-      carbs: f.carbs,
-      fat: f.fat,
-    }));
-
-    return [
-      'You MUST prioritize matching ingredients to the "foundation foods" provided in the list below.',
-      'If an ingredient matches a foundation food, return its exact "foodId" from the list and the estimated "grams". When "foodId" is provided, you still need to provide the name, but you can omit or provide 0 for kcal, protein, carbs, fat and fiber as they will be fetched from the database using the "foodId".',
-      'If no foundation food is a good match, return the ingredient with its full macronutrients (kcal, protein, carbs, fat, fiber, grams) and omit "foodId" entirely.',
-      'Foundation Foods List (macros per 100g):',
-      '```json',
-      JSON.stringify(foodList, null, 2),
-      '```',
-    ].join('\n');
-  } catch (error) {
-    console.error('[prompts] Error fetching foundation foods:', error);
-    return '';
-  }
+export type FoundationFoodsPrompt = {
+  text: string;
+  idByRef: FoundationFoodList['idByRef'];
+  count: number;
 };
 
-export const getFoundationFoodsRecipePrompt = async (): Promise<string> => {
+/** `estimate`: the model also returns macros for what does not match; `recipe`: names and grams only. */
+export type FoundationFoodsPromptStyle = 'estimate' | 'recipe';
+
+/**
+ * Every foundation food, one `reference|name` line each in a stable order, or null when there are
+ * none (or the read failed: a meal estimate never fails because this list could not be built).
+ * No UUIDs and no macros: a matched food's numbers come from the database, scaled to the grams.
+ */
+export const getFoundationFoodsPrompt = async (
+  style: FoundationFoodsPromptStyle = 'estimate'
+): Promise<FoundationFoodsPrompt | null> => {
   try {
-    const foundationFoods = await FoodService.getFoundationFoods(200);
-    if (foundationFoods.length === 0) {
-      return '';
+    const foods = await FoodService.getFoundationFoodsSorted(FOUNDATION_FOODS_PROMPT_CAP);
+    const list = buildFoundationFoodList(foods);
+    if (!list) {
+      return null;
     }
 
-    const foodList = foundationFoods.map((f) => ({ id: f.id, name: f.name }));
+    const lines =
+      style === 'estimate'
+        ? [
+            'You MUST prioritize matching ingredients to the "foundation foods" in the list below. Each line is "reference|name".',
+            'If an ingredient matches a foundation food, return that line\'s reference number (digits only, for example "12") as "foodId", together with your own "name" and the estimated "grams". When "foodId" is provided you can omit or provide 0 for kcal, protein, carbs, fat and fiber: they are fetched from the database using the "foodId".',
+            'If no foundation food is a good match, return the ingredient with its full macronutrients (kcal, protein, carbs, fat, fiber, grams) and omit "foodId" (or send null). Never invent a reference number.',
+            'Foundation Foods List (reference|name):',
+          ]
+        : [
+            'You MUST prioritize matching ingredients to the "foundation foods" list below. Each line is "reference|name".',
+            'If an ingredient matches a foundation food, return that line\'s reference number (digits only, for example "12") as "foodId". Do NOT invent reference numbers.',
+            'If no match exists, omit "foodId" (or send null).',
+            'Foundation Foods (for matching only, no macros needed), reference|name:',
+          ];
 
-    return [
-      'You MUST prioritize matching ingredients to the "foundation foods" list below.',
-      'If an ingredient matches a foundation food, return its exact "foodId". Do NOT invent IDs.',
-      'If no match exists, omit "foodId" entirely.',
-      'Foundation Foods (for matching only — no macros needed):',
-      '```json',
-      JSON.stringify(foodList, null, 2),
-      '```',
-    ].join('\n');
+    return {
+      text: [...lines, '```', list.listing, '```'].join('\n'),
+      idByRef: list.idByRef,
+      count: list.count,
+    };
   } catch (error) {
-    console.error('[prompts] Error fetching foundation foods for recipe extraction:', error);
-    return '';
+    console.error('[prompts] Error fetching foundation foods:', error);
+    return null;
   }
 };
 
 export const getRecipeExtractionPrompt = async (
-  includeFoundationFoods: boolean = false,
+  foundationFoods: FoundationFoodsPrompt | null = null,
   language?: string
 ): Promise<string> => {
-  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsRecipePrompt() : '';
+  const foundationPrompt = foundationFoods?.text ?? '';
   const sections = [
     'You are an expert nutritionist and chef.',
     'Identify ALL meals in the user message or photo and break each into individual ingredients.',
@@ -1365,12 +1370,14 @@ export const getRecipeExtractionPrompt = async (
     sections.push(foundationPrompt);
   }
 
+  sections.push(ENGLISH_NAME_PROMPT_NOTE);
+
   if (language) {
     sections.push(`Your response must be in ${language}.`);
   }
 
   sections.push(
-    'Return only ingredient names, gram amounts, and foundation food IDs where matched.'
+    'Return only ingredient names (with their English names), gram amounts, and foundation food reference numbers where matched.'
   );
 
   return sections.join('\n');
@@ -1447,7 +1454,7 @@ export const getMealReviewPrompt = (
     '```',
     '',
     "Compare it with the person's description and/or the photo and answer two things:",
-    '1. missingIngredients: things that were eaten but are not listed (cooking oil, butter, sauce, dressing, a drink). Only list one when the description or photo gives evidence for it; never invent ingredients.',
+    '1. missingIngredients: things that were eaten but are not listed (cooking oil, butter, sauce, dressing, a drink). Only list one when the description or photo gives evidence for it; never invent ingredients. Give each one its "englishName" too: its plain English food name, used only to look the food up in a database and never shown (repeat "name" when that is already English).',
     '2. corrections: listed ingredients whose gram amount looks clearly wrong, with the corrected grams. Use the exact listed name.',
     'Empty lists are a valid, often correct answer. Do not return macros.',
   ];
@@ -1459,42 +1466,48 @@ export const getMealReviewPrompt = (
   return sections.join('\n');
 };
 
-export const getMealReviewFunctions = ():
-  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
-  {
-    name: 'reviewMealEstimate',
-    description:
-      'Name the ingredients missing from a meal estimate and the portions that look wrong.',
-    parameters: {
-      type: 'object',
-      properties: {
-        missingIngredients: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: { type: 'string', description: 'Name of the ingredient that was eaten' },
-              grams: { type: 'number', description: 'Estimated weight in grams' },
+export const getMealReviewFunctions = (
+  dialect: MealSchemaDialect = 'gemini'
+): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  const added = foodLookupProperties(dialect, { foodId: false, englishName: true });
+
+  return [
+    {
+      name: 'reviewMealEstimate',
+      description:
+        'Name the ingredients missing from a meal estimate and the portions that look wrong.',
+      parameters: {
+        type: 'object',
+        properties: {
+          missingIngredients: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string', description: 'Name of the ingredient that was eaten' },
+                grams: { type: 'number', description: 'Estimated weight in grams' },
+                ...added.properties,
+              },
+              required: ['name', 'grams', ...added.required],
             },
-            required: ['name', 'grams'],
+          },
+          corrections: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string', description: 'The listed ingredient name, exactly' },
+                grams: { type: 'number', description: 'The corrected weight in grams' },
+              },
+              required: ['name', 'grams'],
+            },
           },
         },
-        corrections: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: { type: 'string', description: 'The listed ingredient name, exactly' },
-              grams: { type: 'number', description: 'The corrected weight in grams' },
-            },
-            required: ['name', 'grams'],
-          },
-        },
+        required: ['missingIngredients', 'corrections'],
       },
-      required: ['missingIngredients', 'corrections'],
     },
-  },
-];
+  ];
+};
 
 /**
  * The first look at a meal (Thinking: Tokenmaxxing). Structured output, so persona-free.
@@ -1672,13 +1685,13 @@ export const getGenerateMealPlanPrompt = async (
   macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
   eatingPhase?: string,
   context?: 'nutrition' | 'exercise' | 'general',
-  includeFoundationFoods: boolean = false
+  foundationFoods: FoundationFoodsPrompt | null = null
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
-  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
+  const foundationPrompt = foundationFoods?.text ?? '';
 
   const macroContext = macroTargets
     ? `The user's daily nutrition targets are: ${macroTargets.calories} kcal, ${macroTargets.protein}g protein, ${macroTargets.carbs}g carbs, ${macroTargets.fat}g fat, ${macroTargets.fiber}g fiber.`
@@ -1720,10 +1733,10 @@ export function getMultiPhotoMealNote(photoCount: number): string {
  * Used for both chat-based meal tracking and direct photo analysis.
  */
 export const getMealAnalysisPrompt = async (
-  includeFoundationFoods: boolean = false,
+  foundationFoods: FoundationFoodsPrompt | null = null,
   language?: string
 ): Promise<string> => {
-  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
+  const foundationPrompt = foundationFoods?.text ?? '';
   const sections = [
     'You are an expert nutritionist with extensive knowledge of food composition and recipe breakdown.',
     "Analyze ALL meals and snacks mentioned in the user's message or photo.",
@@ -1737,7 +1750,7 @@ export const getMealAnalysisPrompt = async (
     sections.push(foundationPrompt);
   }
 
-  sections.push(MACRO_CALORIE_NOTE);
+  sections.push(ENGLISH_NAME_PROMPT_NOTE, MACRO_CALORIE_NOTE);
 
   if (language) {
     sections.push(`Your response must be in ${language}.`);
@@ -2172,13 +2185,66 @@ export const getParseRetrospectiveNutritionFunctions = ():
 };
 
 /**
- * Function schema for meal tracking with multiple ingredients
+ * The dialect a meal schema is written in: a provider's own, or `optional` for a custom local server,
+ * which enforces no schema on its side. A required field it leaves out fails our own shape check and
+ * costs a repair request, so for it (and for the small on-device models) nothing here is required.
  */
+export type MealSchemaDialect = StructuredDialect | 'optional';
+
+/**
+ * What the ingredient schemas of a meal estimate carry to let code find the person's food: the
+ * `foodId` (the reference number of a foundation food line, only when that list was sent) and the
+ * `englishName` (the food's plain English name, used only for matching and never shown, while `name`
+ * stays in the person's language). OpenAI's strict mode lists every property as required, so there
+ * `foodId` is a required nullable and `englishName` a required string; the other cloud dialects
+ * keep `foodId` optional and require `englishName`; the small on-device models (`on-device`,
+ * `gguf`) and a custom local server (`optional`) are left to omit both, to keep their grammar small.
+ */
+function foodLookupProperties(
+  dialect: MealSchemaDialect,
+  options: { foodId: boolean; englishName: boolean }
+): { properties: Record<string, object>; required: string[] } {
+  const properties: Record<string, object> = {};
+  const required: string[] = [];
+
+  if (options.foodId) {
+    const description =
+      'The reference number (the digits before "|") of the matching line in the foundation foods list. Omit it when no line matches.';
+    if (dialect === 'openai') {
+      properties.foodId = {
+        type: ['string', 'null'],
+        description: `${description} null when none matches.`,
+      };
+      required.push('foodId');
+    } else {
+      properties.foodId = { type: 'string', description };
+    }
+  }
+
+  if (options.englishName) {
+    properties.englishName = {
+      type: 'string',
+      description:
+        'The plain English name of this food (for example "broccoli", "chicken breast"), used only to look it up in a food database and never shown. The same as "name" when that is already English.',
+    };
+    if (dialect === 'openai' || dialect === 'gemini' || dialect === 'claude') {
+      required.push('englishName');
+    }
+  }
+
+  return { properties, required };
+}
+
+/** The sentence of a meal prompt that asks for `englishName`, next to the schema field. */
+export const ENGLISH_NAME_PROMPT_NOTE =
+  'Also give each ingredient "englishName": its plain English food name (for example "broccoli", "chicken breast"). It is used only to look the food up in a database and is never shown; when "name" is already English, repeat it.';
+
 /**
  * Function schema for meal plan generation
  */
 export const getGenerateMealPlanFunctions = (
-  includeFoundationFoods: boolean = false
+  includeFoundationFoods: boolean = false,
+  dialect: MealSchemaDialect = 'gemini'
 ): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   const ingredientProperties: any = {
     name: { type: 'string' },
@@ -2189,13 +2255,14 @@ export const getGenerateMealPlanFunctions = (
     fiber: { type: 'number' },
     grams: { type: 'number' },
   };
+  const ingredientRequired = ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'];
 
-  if (includeFoundationFoods) {
-    ingredientProperties.foodId = {
-      type: 'string',
-      description: 'The local ID of the matched foundation food from the provided list.',
-    };
-  }
+  const lookup = foodLookupProperties(dialect, {
+    foodId: includeFoundationFoods,
+    englishName: false,
+  });
+  Object.assign(ingredientProperties, lookup.properties);
+  ingredientRequired.push(...lookup.required);
 
   return [
     {
@@ -2228,7 +2295,7 @@ export const getGenerateMealPlanFunctions = (
                   items: {
                     type: 'object',
                     properties: ingredientProperties,
-                    required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'],
+                    required: ingredientRequired,
                   },
                 },
               },
@@ -2243,7 +2310,8 @@ export const getGenerateMealPlanFunctions = (
 };
 
 export const getTrackMealFunctions = (
-  includeFoundationFoods: boolean = false
+  includeFoundationFoods: boolean = false,
+  dialect: MealSchemaDialect = 'gemini'
 ): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   const ingredientProperties: any = {
     name: {
@@ -2260,12 +2328,12 @@ export const getTrackMealFunctions = (
 
   const ingredientRequired = ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'];
 
-  if (includeFoundationFoods) {
-    ingredientProperties.foodId = {
-      type: 'string',
-      description: 'The local ID of the matched foundation food from the provided list.',
-    };
-  }
+  const lookup = foodLookupProperties(dialect, {
+    foodId: includeFoundationFoods,
+    englishName: true,
+  });
+  Object.assign(ingredientProperties, lookup.properties);
+  ingredientRequired.push(...lookup.required);
 
   const ingredientSchema = {
     type: 'object',
@@ -2316,19 +2384,21 @@ export const getTrackMealFunctions = (
 };
 
 export const getRecipeExtractionFunctions = (
-  includeFoundationFoods: boolean = false
+  includeFoundationFoods: boolean = false,
+  dialect: MealSchemaDialect = 'gemini'
 ): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   const ingredientProperties: any = {
     name: { type: 'string', description: 'Name of the ingredient' },
     grams: { type: 'number', description: 'Estimated weight in grams' },
   };
+  const ingredientRequired = ['name', 'grams'];
 
-  if (includeFoundationFoods) {
-    ingredientProperties.foodId = {
-      type: 'string',
-      description: 'The exact ID of the matched foundation food.',
-    };
-  }
+  const lookup = foodLookupProperties(dialect, {
+    foodId: includeFoundationFoods,
+    englishName: true,
+  });
+  Object.assign(ingredientProperties, lookup.properties);
+  ingredientRequired.push(...lookup.required);
 
   return [
     {
@@ -2359,7 +2429,7 @@ export const getRecipeExtractionFunctions = (
                   items: {
                     type: 'object',
                     properties: ingredientProperties,
-                    required: ['name', 'grams'],
+                    required: ingredientRequired,
                   },
                 },
               },
@@ -2452,7 +2522,8 @@ export const getEstimateMacrosFunctions = (
   if (includeFoundationFoods) {
     properties.foodId = {
       type: 'string',
-      description: 'The local ID of the matched foundation food from the provided list.',
+      description:
+        'The reference number (the digits before "|") of the matching line in the foundation foods list. Omit it when no line matches.',
     };
   }
 
