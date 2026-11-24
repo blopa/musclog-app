@@ -372,7 +372,7 @@
           },
           "high": {
             "name": "Hoog",
-            "description": "Gemiddeld, plus een tweede verzoek dat het antwoord nakijkt en corrigeert wat niet klopt."
+            "description": "Gemiddeld, plus een controle van maaltijden, analyses en schema's, en twee keer lezen van etiketten en imports."
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",

@@ -175,8 +175,8 @@
       "f1": "Intelligentes Training-Tracking",
       "f2": "KI-Fotoerfassung der Ernährung",
       "f3": "Detaillierte Fortschrittsdiagramme",
-      "f4": "100 % privat und auf dem Gerät",
-      "tagline": "KI-gestütztes Fitness- und Ernährungs-Tracking – kostenlos und quelloffen.",
+      "f4": "Deine Daten bleiben auf deinem Gerät",
+      "tagline": "Fitness- und Ernährungs-Tracking mit optionaler KI – kostenlos und quelloffen.",
       "qrcode_title": "Lade die App herunter",
       "qrcode_text": "Scanne, um Musclog herunterzuladen"
     },
@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "KI-Coach",
-          "description": "Chatte mit Loggy über Training und Essen oder schätze eine Mahlzeit anhand eines Fotos. Optional, mit deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel."
+          "description": "Chatte mit Loggy über Training und Essen oder schätze eine Mahlzeit anhand eines Fotos. Optional: mit deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel, mit Musclog Iron, der kostenlosen Option, einem lokalen Modell oder KI auf deinem Handy."
         },
         "barcode": {
           "title": "Barcode-Scanner",

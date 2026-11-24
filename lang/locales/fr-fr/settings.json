@@ -372,7 +372,7 @@
           },
           "high": {
             "name": "Élevé",
-            "description": "Moyen, plus une seconde requête qui relit la réponse et corrige ce qui ne colle pas."
+            "description": "Moyen, plus une relecture des repas, des analyses et des plans, et deux lectures des étiquettes et des imports."
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",

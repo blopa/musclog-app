@@ -372,7 +372,7 @@
           },
           "high": {
             "name": "Alto",
-            "description": "Medio, più una seconda richiesta che rivede la risposta e corregge ciò che non torna."
+            "description": "Medio, più una revisione di pasti, analisi e piani, e due letture di etichette e importazioni."
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",

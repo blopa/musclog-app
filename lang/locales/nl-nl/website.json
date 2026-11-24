@@ -175,8 +175,8 @@
       "f1": "Slimme workouttracking",
       "f2": "AI-fotologging voor voeding",
       "f3": "Gedetailleerde voortgangsgrafieken",
-      "f4": "100% privé en op uw apparaat",
-      "tagline": "AI-gestuurde fitness- en voedingsregistratie — gratis en open source.",
+      "f4": "Uw gegevens blijven op uw apparaat",
+      "tagline": "Fitness- en voedingsregistratie met optionele AI — gratis en open source.",
       "qrcode_title": "Download de App",
       "qrcode_text": "Scan om te downloaden Musclog"
     },
@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "AI-coach",
-          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel, met je eigen Gemini-, OpenAI- of Claude-sleutel."
+          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel: met je eigen Gemini-, OpenAI- of Claude-sleutel, met Musclog Iron, de gratis optie, een lokaal model of AI op je telefoon."
         },
         "barcode": {
           "title": "Barcodescanner",

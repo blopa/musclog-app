@@ -175,8 +175,8 @@
       "f1": "Monitoraggio intelligente degli allenamenti",
       "f2": "Registrazione alimentare da foto con AI",
       "f3": "Grafici dettagliati dei progressi",
-      "f4": "100% privato e sul dispositivo",
-      "tagline": "Monitoraggio di fitness e alimentazione con AI: gratuito e open source.",
+      "f4": "I tuoi dati restano sul tuo dispositivo",
+      "tagline": "Monitoraggio di fitness e alimentazione con AI opzionale: gratuito e open source.",
       "qrcode_title": "Scarica l'app",
       "qrcode_text": "Scansiona per scaricare Musclog"
     },
@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Coach AI",
-          "description": "Chatta con Loggy di allenamento e alimentazione, oppure stima un pasto da una foto. Facoltativo, con la tua chiave di Gemini, OpenAI o Claude."
+          "description": "Chatta con Loggy di allenamento e alimentazione, oppure stima un pasto da una foto. Facoltativo: con la tua chiave di Gemini, OpenAI o Claude, con Musclog Iron, l'opzione gratuita, un modello locale o l'AI sul tuo telefono."
         },
         "barcode": {
           "title": "Scanner di codici a barre",

@@ -175,8 +175,8 @@
       "f1": "Smart workout tracking",
       "f2": "AI photo nutrition logging",
       "f3": "Detailed progress charts",
-      "f4": "100% private & on-device",
-      "tagline": "AI-powered fitness & nutrition tracking — free & open source.",
+      "f4": "Your data stays on your device",
+      "tagline": "Fitness & nutrition tracking with optional AI — free & open source.",
       "qrcode_title": "Download the App",
       "qrcode_text": "Scan to download Musclog"
     },
@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "AI coach",
-          "description": "Chat with Loggy about training and food, or estimate a meal from a photo. Optional, with your own Gemini, OpenAI or Claude key."
+          "description": "Chat with Loggy about training and food, or estimate a meal from a photo. Optional: use your own Gemini, OpenAI or Claude key, Musclog Iron, the free option, a local model or AI on your phone."
         },
         "barcode": {
           "title": "Barcode scanner",

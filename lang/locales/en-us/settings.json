@@ -372,7 +372,7 @@
           },
           "high": {
             "name": "High",
-            "description": "Medium, plus a second request that reviews the answer and fixes what doesn't add up."
+            "description": "Medium, plus a review of meals, insights and plans, and two readings of labels and imports."
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",

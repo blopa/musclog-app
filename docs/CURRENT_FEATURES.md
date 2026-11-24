@@ -57,6 +57,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - AI errors you can act on say so: a rejected Gemini/OpenAI/Claude key names the provider and points to AI settings, a stalled request times out (retried once) instead of spinning forever, and the AI photo scan has a Cancel button. A "Test key" button in AI settings checks a key while you set it up
 - **AI settings are two screens**: Settings → AI providers (Musclog Iron, the free tier, your own Gemini/OpenAI/Claude keys and models, a local server, AI on your phone) and Settings → AI behavior (daily insights, thinking level, memory and history, photo processing and OCR, the coach's personality, custom prompts). `AISettingsModal` also opens the second from a row, so onboarding reaches both.
 - **Thinking levels**: Settings → AI behavior (and the coach's quick settings) set how hard the AI thinks: Off (fast), Medium (thinks harder and checks a meal's foods against your database first), High (adds a second request that reviews each answer: missed ingredients, figures the data does not hold, plan problems) and Tokenmaxxing (three independent answers compared by code, or for a meal a first look taken twice independently and each look estimated twice, with only the foods every look agrees on kept; two review rounds, and coach replies drafted and double-checked before you see them). It works with your own key, Musclog Iron and the AI on your phone; the free Musclog AI tier always answers at Off because its daily allowance is shared by everyone. On Musclog Iron, moving up to High explains that it uses more of the monthly allowance, and Tokenmaxxing also asks for your fingerprint, face or device PIN. Daily background insights never run above Medium.
+- **Code checks what the AI writes, at every level**: a meal's numbers must add up (energy against the macros, macros against the grams, no more than pure fat per gram), and ones that cannot are estimated again once and, if still impossible, made to agree; a food the AI claims to recognise is confirmed against your own foods before its numbers are used; a reply that is not valid JSON is cleaned, repaired, and for a small local or on-phone model checked against its schema and, if still broken, repaired by the model once; generated workouts drop or swap exercises you restricted and take their weights from your own history; every AI result opens in a review before anything is saved. See `docs/THINKING_LEVELS.md` for every request each level makes and everything around it.
 - Turning on the free Musclog AI tier first says that requests go through OpenRouter to Google AI Studio's free tier, what they contain, that Google may keep, review and use them to improve its products, not to enter personal or sensitive information, and that it is for adults (18+), and asks you to agree; the coach chat repeats a short notice while it is active (onboarding, AI settings and the AI-assisted setup); nothing is sent until you use an AI feature
 - Keep screen awake during active workout sessions
 - Optional session feedback from the workout summary: difficulty, exhaustion, enjoyment, and notes; a failed save keeps the form open for retry.
@@ -159,7 +160,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Custom body measurements: waist, chest, arms, hips, thighs, calves, neck, shoulders, and any custom metric
 - Full metric history with trend visualization
 - Automatic metric/imperial unit conversion throughout
-- AI-powered weight prediction based on logged trends (optional)
+- Weight projection from your logged trend and calorie target (optional; a calculation, not an AI request)
 
 ---
 
@@ -277,7 +278,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary's gradient is chosen
   by the active theme — a flat card surface in Kinetic Light, a contrast-matched colorful sweep in
   the dark themes and in Kinetic Blush
-- Configurable AI provider (OpenAI / Google Gemini / local LLM) with model and API key settings
+- Configurable AI provider (Musclog Iron, the free tier, AI on your phone, a local server, or your own Google Gemini, OpenAI or Anthropic Claude key) with model and API key settings
 - Food search source configuration
 - Toggle: OCR before AI, intuitive eating mode, weight prediction, daily prompts, cycle tracking
 - Carb convention setting (include or exclude fiber in carbs display)

@@ -86,7 +86,7 @@
       "title": "Bilans nutritionnels",
       "searchPlaceholder": "Rechercher des bilans...",
       "noCheckins": "Aucun bilan pour l'instant",
-      "noCheckinsDesc": "Les bilans sont créés quand tu configures un objectif nutritionnel calculé par l'IA",
+      "noCheckinsDesc": "Les bilans sont créés quand tu configures un objectif nutritionnel",
       "endOfHistory": "Tous les bilans sont chargés",
       "checkinOptions": "Options du bilan",
       "editCheckin": "Modifier le bilan",

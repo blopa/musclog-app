@@ -175,8 +175,8 @@
       "f1": "Akıllı antrenman takibi",
       "f2": "Yapay zekâ ile fotoğraftan beslenme kaydı",
       "f3": "Ayrıntılı ilerleme grafikleri",
-      "f4": "%100 özel ve cihaz üstü",
-      "tagline": "Yapay zekâ destekli fitness ve beslenme takibi — ücretsiz ve açık kaynaklı.",
+      "f4": "Verilerin cihazında kalır",
+      "tagline": "İsteğe bağlı yapay zekâlı fitness ve beslenme takibi — ücretsiz ve açık kaynaklı.",
       "qrcode_title": "Uygulamayı indir",
       "qrcode_text": "Musclog'u indirmek için tara"
     },
@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Yapay zekâ koçu",
-          "description": "Antrenman ve yiyecekler hakkında Loggy ile sohbet et ya da bir öğünü fotoğraftan tahmin ettir. İsteğe bağlı; kendi Gemini, OpenAI veya Claude anahtarınla çalışır."
+          "description": "Antrenman ve yiyecekler hakkında Loggy ile sohbet et ya da bir öğünü fotoğraftan tahmin ettir. İsteğe bağlı: kendi Gemini, OpenAI veya Claude anahtarınla, Musclog Iron ile, ücretsiz seçenekle, yerel bir modelle ya da telefonundaki yapay zekâyla."
         },
         "barcode": {
           "title": "Barkod tarayıcı",

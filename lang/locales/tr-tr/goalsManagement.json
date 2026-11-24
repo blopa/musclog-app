@@ -86,7 +86,7 @@
       "title": "Beslenme kontrolleri",
       "searchPlaceholder": "Kontrol ara...",
       "noCheckins": "Henüz kontrol yok",
-      "noCheckinsDesc": "Kontroller, yapay zekâ ile hesaplanan bir beslenme hedefi kurduğunda oluşturulur",
+      "noCheckinsDesc": "Kontroller, bir beslenme hedefi kurduğunda oluşturulur",
       "endOfHistory": "Tüm kontroller yüklendi",
       "checkinOptions": "Kontrol seçenekleri",
       "editCheckin": "Kontrolü düzenle",

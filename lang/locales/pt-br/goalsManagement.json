@@ -86,7 +86,7 @@
       "title": "Check-ins de Nutrição",
       "searchPlaceholder": "Pesquisar check-ins...",
       "noCheckins": "Nenhum check-in ainda",
-      "noCheckinsDesc": "Check-ins são criados quando você configura uma meta de nutrição calculada por IA",
+      "noCheckinsDesc": "Check-ins são criados quando você configura uma meta de nutrição",
       "endOfHistory": "Todos os check-ins carregados",
       "checkinOptions": "Opções de check-in",
       "editCheckin": "Editar check-in",

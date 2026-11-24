@@ -86,7 +86,7 @@
       "title": "Ernährungs-Check-ins",
       "searchPlaceholder": "Check-ins suchen …",
       "noCheckins": "Noch keine Check-ins",
-      "noCheckinsDesc": "Check-ins werden angelegt, wenn du ein KI-berechnetes Ernährungsziel einrichtest",
+      "noCheckinsDesc": "Check-ins werden angelegt, wenn du ein Ernährungsziel einrichtest",
       "endOfHistory": "Alle Check-ins geladen",
       "checkinOptions": "Optionen für Check-ins",
       "editCheckin": "Check-in bearbeiten",

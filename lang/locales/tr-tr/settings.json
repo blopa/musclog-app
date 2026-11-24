@@ -372,7 +372,7 @@
           },
           "high": {
             "name": "Yüksek",
-            "description": "Orta seviye, artı yanıtı gözden geçirip tutarsız olanı düzelten ikinci bir istek."
+            "description": "Orta seviye, artı öğünlerin, analizlerin ve planların gözden geçirilmesi ile etiketlerin ve içe aktarmaların iki kez okunması."
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",

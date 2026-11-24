@@ -33,7 +33,7 @@ Musclog logs your lifts and your food in one app. Data lives on your device (sen
 
 - **Train:** plans, explained progression, plate math, rest timers, weekly review
 - **Eat:** food diary, barcode and label scanning, macros, and a calorie target that follows your weight trend
-- **Optional:** AI coaching with your own API key, cycle tracking, Health Connect and HealthKit
+- **Optional:** AI coaching and meal-photo estimates (your own key, a free tier, Musclog Iron, or entirely on your phone), cycle tracking, Health Connect and HealthKit
 - **Import:** Strong, Hevy and FitNotes CSV exports
 
 ### What leaves your device
@@ -41,7 +41,7 @@ Musclog logs your lifts and your food in one app. Data lives on your device (sen
 Nothing is uploaded to a Musclog server. Some features contact third parties only when you use them:
 
 - Food search: Open Food Facts and USDA by default (the "All" source). USDA search needs an API key in the build (`EXPO_PUBLIC_USDA_API_KEY`); without one only Open Food Facts is used. You can pick a single source, the Musclog barcode database, or none in Settings → Basic settings.
-- AI coach and photo analysis: Google Gemini, OpenAI or Claude, using your own key, only if you enable it. There is also an opt-in Musclog free tier that forwards requests through OpenRouter to Google AI Studio's free Gemma model (Google may use what is sent to improve its products); it asks for consent before it is turned on. Musclog Iron (formerly Musclog Premium), an optional monthly subscription for a hosted AI allowance (no key needed), shows by default on native builds (the `EXPO_PUBLIC_HIDE_PREMIUM_UI=1` EAS variable hides it); everything else in the app stays free.
+- AI coach and photo analysis: nothing is sent until you choose a provider. Your own Google Gemini, OpenAI or Anthropic Claude key sends requests to that provider; a local or self-hosted server sends them to the address you give; AI on your phone (Apple Intelligence on iOS 26, or a downloaded model) answers on the device and needs the network only for the one-time model download. There is also an opt-in Musclog free tier that forwards requests through OpenRouter to Google AI Studio's free Gemma model (Google may use what is sent to improve its products); it asks for consent before it is turned on. Musclog Iron (formerly Musclog Premium), an optional monthly subscription for a hosted AI allowance (no key needed), sends requests through Musclog's own service and an AI gateway (OpenRouter or Otari) to zero-data-retention providers only, and shows by default on native builds (the `EXPO_PUBLIC_HIDE_PREMIUM_UI=1` EAS variable hides it); everything else in the app stays free.
 - Crash reports (Sentry): on by default and sent only if the build includes a Sentry DSN; you can turn them off under Settings → Backups and data ("Anonymous bug report"). A report holds the error and where it happened, the app version and the device model; no name, email, workouts, food or body data.
 
 ### Get involved
@@ -86,7 +86,7 @@ Licensed under [GPL-3.0](LICENSE). Bundled exercise data is CC0 (free-exercise-d
 - **Custom Foods & Meals**: Create your own food entries and save meal templates for quick access
 - **Meal Display**: AI-generated and saved meals are shown as a single item (not individual ingredients) in the food log
 - **Micronutrient Tracking**: Track 40+ vitamins and minerals beyond basic macros
-- **AI Macro Estimation**: Use AI vision to estimate nutrition from food photos or nutrition label images; optionally run local OCR before sending to AI
+- **AI Macro Estimation**: Use AI vision to estimate nutrition from up to five photos of one meal, a description, or a nutrition label; optionally run local OCR before sending to AI. Every estimate opens in a review before anything is saved, and code checks the numbers first (energy against macros, macros against grams, claimed foods against your own foods)
 - **Retrospective Logging**: Log meals for past dates
 - **Fasting Days**: Optionally mark a no-food day as an intentional fast so it counts as a real 0-calorie day in your TDEE, averages, and streaks — while forgotten (unflagged) empty days are skipped
 - **Empirical TDEE**: Calorie needs estimated from logged intake and smoothed trend-weight changes
@@ -115,7 +115,7 @@ Licensed under [GPL-3.0](LICENSE). Bundled exercise data is CC0 (free-exercise-d
 
 - Visualize fitness progress with charts and graphs
 - Track body metrics with a smoothed weight trend, editable scale readings, body fat %, and custom measurements
-- Daily and weekly AI-generated insights on workouts and nutrition
+- Daily and weekly AI-generated insights on workouts and nutrition (at higher thinking levels, code lists every figure the data does not hold and the AI corrects it)
 - **Recent training load**: a body map of what you trained this week, and weekly sets per muscle
 - **Strength levels** for your main lifts, compared with your body weight
 - **Your year in Musclog**: a shareable look back at your year, each December
@@ -123,12 +123,14 @@ Licensed under [GPL-3.0](LICENSE). Bundled exercise data is CC0 (free-exercise-d
 
 ### 🧠 AI Coach
 
-- **Dual AI Support**: Google Gemini (2.0/2.5, via API key) or OpenAI (GPT-4, GPT-4o, O1, O3)
-- **In-App Chat**: Conversational AI coach for workout and nutrition advice
+- **Your choice of provider**: Musclog Iron (hosted, no key), the Musclog free tier, AI on your phone (Apple Intelligence, or a downloaded on-device model that can read meal photos), a local or self-hosted server, or your own Google Gemini, OpenAI or Anthropic Claude key. Only one answers at a time, in a fixed order, and Musclog Iron and on-device AI never silently fall back to another provider
+- **In-App Chat**: Conversational AI coach for workout and nutrition advice, answered as it is written; it knows today's intake against your targets, your weight trend and your workout, and keeps memories shared across its chats
 - **Photo Analysis**: AI-powered food photo and nutrition label analysis; optional local OCR pre-processing
-- **Workout Generation**: AI-generated workout plans tailored to your goals
+- **Thinking levels**: Off, Medium, High and Tokenmaxxing set how hard the AI thinks and how many requests a job makes. Higher levels read a meal's recipe and confirm its foods against your own, review and fact-check answers, and read labels and imports several times and compare them. There are no tools and no agent loops: the app's code decides every extra request and whether a second answer replaces the first. See [THINKING_LEVELS.md](docs/THINKING_LEVELS.md) for every request each level makes
+- **Workout Generation**: AI-generated workout plans tailored to your goals; exercises you restricted are swapped or dropped, and weights come from your own history
+- **Bring your own assistant**: build a workout plan or log food in ChatGPT or Claude and bring it into Musclog with a link, pasted JSON or a file, no AI provider needed
 - **Custom System Prompts**: Create and toggle multiple context-specific prompts (general, nutrition, exercise)
-- **Flexible Config**: Choose model, configure API keys, set insight frequency, control conversation history length
+- **Flexible Config**: Choose model, configure API keys, set insight frequency, control conversation history length and photo quality
 
 ### 📝 Notes
 
@@ -175,7 +177,7 @@ Licensed under [GPL-3.0](LICENSE). Bundled exercise data is CC0 (free-exercise-d
 | Icons          | Lucide React Native                                                  |
 | Charts         | Victory Native (Skia)                                                |
 | Graphics       | @shopify/react-native-skia                                           |
-| AI             | Google Generative AI + OpenAI SDK                                    |
+| AI             | Gemini, OpenAI and Claude SDKs, llama.rn, Apple Intelligence         |
 | Camera / OCR   | react-native-vision-camera, Quagga2, ZXing, ML Kit OCR, Tesseract.js |
 | Health         | react-native-health-connect (Android)                                |
 |                | @kingstinct/react-native-healthkit (iOS)                             |

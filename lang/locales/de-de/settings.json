@@ -372,7 +372,7 @@
           },
           "high": {
             "name": "Hoch",
-            "description": "Mittel, plus eine zweite Anfrage, die die Antwort prüft und korrigiert, was nicht zusammenpasst."
+            "description": "Mittel, plus eine Prüfung von Mahlzeiten, Auswertungen und Plänen und zwei Lesedurchgänge für Etiketten und Importe."
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",

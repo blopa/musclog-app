@@ -175,8 +175,8 @@
       "f1": "Inteligentne śledzenie treningów",
       "f2": "Zapis posiłków ze zdjęcia przez AI",
       "f3": "Szczegółowe wykresy postępów",
-      "f4": "100% prywatne i na urządzeniu",
-      "tagline": "Śledzenie treningów i odżywiania wspierane przez AI – darmowe i open source.",
+      "f4": "Twoje dane zostają na urządzeniu",
+      "tagline": "Śledzenie treningów i odżywiania z opcjonalnym AI – darmowe i open source.",
       "qrcode_title": "Pobierz aplikację",
       "qrcode_text": "Zeskanuj, aby pobrać Musclog"
     },
@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Trener AI",
-          "description": "Rozmawiaj z Loggy o treningu i jedzeniu albo oszacuj posiłek ze zdjęcia. Opcjonalne, z Twoim własnym kluczem Gemini, OpenAI lub Claude."
+          "description": "Rozmawiaj z Loggy o treningu i jedzeniu albo oszacuj posiłek ze zdjęcia. Opcjonalne: z Twoim własnym kluczem Gemini, OpenAI lub Claude, z Musclog Iron, z darmową opcją, z lokalnym modelem lub z AI na telefonie."
         },
         "barcode": {
           "title": "Skaner kodów kreskowych",

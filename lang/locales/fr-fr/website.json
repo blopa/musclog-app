@@ -175,8 +175,8 @@
       "f1": "Suivi intelligent des séances",
       "f2": "Journal nutritionnel par photo grâce à l'IA",
       "f3": "Graphiques de progression détaillés",
-      "f4": "100 % privé et sur l'appareil",
-      "tagline": "Suivi sportif et nutritionnel propulsé par l'IA, gratuit et open source.",
+      "f4": "Tes données restent sur ton appareil",
+      "tagline": "Suivi sportif et nutritionnel avec IA facultative, gratuit et open source.",
       "qrcode_title": "Télécharger l'application",
       "qrcode_text": "Scanne pour télécharger Musclog"
     },
@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Coach IA",
-          "description": "Discute avec Loggy de l'entraînement et de l'alimentation, ou estime un repas à partir d'une photo. Facultatif, avec ta propre clé Gemini, OpenAI ou Claude."
+          "description": "Discute avec Loggy de l'entraînement et de l'alimentation, ou estime un repas à partir d'une photo. Facultatif : avec ta propre clé Gemini, OpenAI ou Claude, avec Musclog Iron, l'option gratuite, un modèle local ou l'IA de ton téléphone."
         },
         "barcode": {
           "title": "Scanner de codes-barres",

@@ -372,7 +372,7 @@
           },
           "high": {
             "name": "Wysoki",
-            "description": "Średni, plus drugie zapytanie, które przegląda odpowiedź i poprawia to, co się nie zgadza."
+            "description": "Średni, plus przegląd posiłków, analiz i planów oraz dwukrotny odczyt etykiet i importów."
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",

@@ -86,7 +86,7 @@
       "title": "Nutrition check-ins",
       "searchPlaceholder": "Search check-ins...",
       "noCheckins": "No check-ins yet",
-      "noCheckinsDesc": "Check-ins are created when you set up an AI-calculated nutrition goal",
+      "noCheckinsDesc": "Check-ins are created when you set up a nutrition goal",
       "endOfHistory": "All check-ins loaded",
       "checkinOptions": "Check-in options",
       "editCheckin": "Edit check-in",

@@ -7,20 +7,22 @@
 1. **Does effort pay for itself?** For each kind of job (`chat`, `extraction`, `insight`, `planning`), is a higher effort better by more than the noise, and is the gain worth the extra latency and tokens? Today the table says extraction `minimal`, chat `low`, insight and planning `medium` at the Off level, `high` everywhere at Medium and High, `max` at Tokenmaxxing. Any row could be wrong.
 2. **Is the meal refinement worth its extra requests?** It re-estimates ingredients with an invented food id or implausible numbers. Does it reduce calorie and macro error, and how often does it fire for nothing (alcohol, oils)?
 3. **Are Iron's token limits right?** `max_tokens_by_effort` (chat 1500/3000/4500, structured 4000/6000/9000, vision 2000/3500/5000) are estimates. The run measures how much a model really spends thinking at each effort, and how often an answer is cut off (`finish_reason: length`).
-4. **Which thinking level is worth recommending?** Medium (`high` plus the verified meal path), High (one review round) and Tokenmaxxing (three samples, two review rounds) each cost more than the last, and Iron users pay with their allowance.
+4. **Which thinking level is worth recommending?** Medium (`high` plus the verified meal path), High (one review round for meals, insights and plans, two readings of a label or an import) and Tokenmaxxing (two first looks and four verified samples per meal, two review rounds, three readings of a label or an import, a coach reply drafted and reviewed) each cost more than the last, and Iron users pay with their allowance. `docs/THINKING_LEVELS.md` lists every request each level makes.
 
 ## 2. What to compare
 
-Run every case under each variant, on the same model, with the same prompts and data.
+Run every case under each variant, on the same model, with the same prompts and data. The variants named after a level are that level exactly as `THINKING_PIPELINE` (`utils/aiThinkingLevel.ts`) and `AI_TASK_EFFORT` (`utils/aiEffort.ts`) define it.
 
-| Variant        | Effort                                  | Meal path                          | What it stands for                      |
-| -------------- | --------------------------------------- | ---------------------------------- | --------------------------------------- |
-| `flat-low`     | `low` for every job                     | single request, no refinement      | roughly the behavior before 2026-11-23  |
-| `table`        | `AI_TASK_EFFORT[task].normal` (default) | single request plus refinement     | the Off thinking level                  |
-| `table-no-fix` | the table                               | single request, refinement skipped | isolates the refinement from the effort |
-| `thinking`     | `high` for every job                    | `trackMealVerified`                | the Medium thinking level               |
+| Variant        | Effort                                                                                       | Extra requests                                                                                                                                         | What it stands for                      |
+| -------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
+| `flat-low`     | `low` for every job                                                                          | none; a meal is one request, with no refinement                                                                                                        | roughly the behavior before 2026-11-23  |
+| `off`          | `AI_TASK_EFFORT[task].off` (extraction `minimal`, chat `low`, insight and planning `medium`) | a meal is one request plus the refinement (`refineTrackedMeals`)                                                                                       | the Off thinking level                  |
+| `off-no-fix`   | the same as `off`                                                                            | a meal is one request, refinement skipped                                                                                                              | isolates the refinement from the effort |
+| `medium`       | `high` for every job                                                                         | a meal takes the verified path once (`trackMealVerified`)                                                                                              | the Medium thinking level               |
+| `high`         | `high` for every job                                                                         | `medium`, plus one review round (meals, insights, plans) and two readings of a label or an import                                                      | the High thinking level                 |
+| `tokenmaxxing` | `max` for every job                                                                          | two first looks and four verified samples per meal, two review rounds, three readings of a label or an import, a coach reply drafted and then reviewed | the Tokenmaxxing thinking level         |
 
-Add `flat-medium` if `table` and `thinking` differ a lot and you want to know whether the middle is enough. Run each provider that matters separately (Gemini default model, OpenAI default model, Claude default model, and Iron's `openai/gpt-6-luna` through OpenRouter): a result on one does not transfer.
+Add `flat-medium` if `off` and `medium` differ a lot and you want to know whether the middle is enough. Run each provider that matters separately (Gemini default model, OpenAI default model, Claude default model, and Iron's `openai/gpt-6-luna` through OpenRouter): a result on one does not transfer.
 
 ## 3. The cases
 
