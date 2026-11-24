@@ -1006,7 +1006,10 @@ async function sendViaOpenAI(
 
   const systemPrompt = await chatSystemPrompt(config, history, context);
 
-  const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
+  const policy = providerPolicyFor(config.provider);
+  const recentHistory =
+    policy.maxChatHistoryTurns === undefined ? history : history.slice(-policy.maxChatHistoryTurns);
+  const truncatedHistory = truncateHistoryByBudget(recentHistory, providerConfig.maxCharBudget);
   const normalized = normalizeHistory(truncatedHistory);
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
@@ -1022,6 +1025,7 @@ async function sendViaOpenAI(
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages,
+    ...policy.chatSampling,
     ...(await openAiReasoning(config, await resolveEffort('chat'))),
     response_format: {
       type: 'json_schema',
