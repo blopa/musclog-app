@@ -408,7 +408,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
       onClose={onClose}
       title={t('premium.title')}
       footer={isPaywall ? renderPaywallFooter() : undefined}
-      scrollCue={isPaywall}
+      scrollCue={isPaywall ? 'full' : 'subtle'}
       overlay={isPaywall ? renderBusyOverlay() : undefined}
     >
       <View className="gap-6 px-5 pb-6 pt-3">

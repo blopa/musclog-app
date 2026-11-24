@@ -23,17 +23,25 @@ describe('the "more below" scroll cue', () => {
     expect(modal).toMatch(/\{FadeIndicator\}/);
   });
 
-  it('is an opt-in of FullScreenModal that sits above the footer, and the Premium paywall uses it', () => {
+  it('is on by default in every FullScreenModal that owns its scroller, above the footer', () => {
     const modal = read('components/modals/FullScreenModal.tsx').replace(/\s+/g, ' ');
 
-    expect(modal).toContain('scrollCue = false');
-    expect(modal).toContain('{...(scrollCue ? scrollHandlers : {})}');
+    // Subtle unless a modal asks for the full cue or none.
+    expect(modal).toContain("scrollCue?: ScrollCueVariant | 'none'");
+    expect(modal).toContain("scrollCue = 'subtle'");
+    expect(modal).toContain("scrollCue === 'full' ? 'full' : 'subtle'");
+    // A body that scrolls itself (`scrollable={false}`) draws its own cue, never a second one.
+    expect(modal).toContain("const showsScrollCue = scrollable && scrollCue !== 'none'");
+    expect(modal).toContain('{...(showsScrollCue ? scrollHandlers : {})}');
     expect(modal).toMatch(
-      /\{scrollCue \? \( <View pointerEvents="box-none"[^>]*bottom: scrollCueBottom\(footerHeight\)/
+      /\{showsScrollCue \? \( <View pointerEvents="box-none"[^>]*bottom: scrollCueBottom\(footerHeight\)/
     );
     // The chevron scrolls the body's own ref, the caller's when it passed one.
     expect(modal).toContain('const bodyRef = scrollViewRef ?? ownScrollRef');
-    expect(read('components/modals/PremiumModal.tsx')).toContain('scrollCue={isPaywall}');
+    // The paywall's point is below the fold, so it keeps the full cue.
+    expect(read('components/modals/PremiumModal.tsx')).toContain(
+      "scrollCue={isPaywall ? 'full' : 'subtle'}"
+    );
     // Drawn after the footer: the chevron reaches into the footer's see-through top padding, which
     // took its taps while the footer was drawn on top.
     expect(modal.indexOf('<BottomButtonWrapper')).toBeLessThan(
@@ -41,7 +49,7 @@ describe('the "more below" scroll cue', () => {
     );
   });
 
-  it('has a subtle variant, a shorter fade and a smaller chevron, that the food log forms use', () => {
+  it('has a subtle variant, a shorter fade and a smaller chevron', () => {
     const hook = read('hooks/useScrollFade.tsx').replace(/\s+/g, ' ');
 
     expect(hook).toContain("export type ScrollCueVariant = 'full' | 'subtle'");
@@ -62,14 +70,6 @@ describe('the "more below" scroll cue', () => {
     expect(hook).toContain('const slop = (44 - look.disc) / 2');
     expect(hook).toContain('bottom: Math.min(slop, look.bottom)');
     expect(hook).toContain("accessibilityLabel={t('common.a11y.scrollDown')}");
-
-    const modal = read('components/modals/FullScreenModal.tsx').replace(/\s+/g, ' ');
-    expect(modal).toContain('scrollCue?: boolean | ScrollCueVariant');
-    expect(modal).toContain("scrollCue === 'subtle' ? 'subtle' : 'full'");
-    expect(read('components/modals/LogMealModal.tsx')).toContain('scrollCue="subtle"');
-    expect(read('components/modals/FoodMealTrackingDetailsModal.tsx')).toContain(
-      'scrollCue="subtle"'
-    );
   });
 
   it('ends above a floating footer where its gradient starts, not at its full height', () => {

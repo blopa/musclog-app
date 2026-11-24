@@ -1678,7 +1678,6 @@ export function FoodMealTrackingDetailsModal({
         onClose={onClose}
         title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
         scrollable={true}
-        scrollCue="subtle"
         scrollViewRef={scrollViewRef}
         headerRight={
           mode !== 'meal' ? (
