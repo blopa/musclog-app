@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Özel fitness, beslenme ve ilerleme takibini gösteren Musclog uygulama önizlemesi.",
+      "image": {
+        "headline": "Akıllı antrenman, doğru beslenme",
+        "subline": "Antrenman kaydı ve beslenme takibi, tek bir özel açık kaynak uygulamada.",
+        "items": {
+          "workouts": {
+            "title": "Antrenman takibi",
+            "description": "Set, tekrar ve ağırlıkları saniyeler içinde."
+          },
+          "food": {
+            "title": "Öğün takibi",
+            "description": "Barkodu tara ya da öğününün fotoğrafını çek."
+          },
+          "progress": {
+            "title": "İlerleme grafikleri",
+            "description": "Ağırlık, güç ve beslenme eğilimleri zamanla."
+          },
+          "privacy": {
+            "title": "Gizlilik öncelikli",
+            "description": "Verilerin cihazında kalır."
+          }
+        }
+      },
       "keywords": "Musclog, fitness takipçisi, antrenman takipçisi, beslenme takipçisi, makro takipçisi, açık kaynaklı fitness uygulaması, yerel öncelikli uygulama",
       "routes": {
         "home": {

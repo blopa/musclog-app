@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Voorvertoning van Musclog met private fitness-, voedings- en voortgangstracking.",
+      "image": {
+        "headline": "Train slimmer, eet beter",
+        "subline": "Workouts loggen en voeding bijhouden in één privé, open-source app.",
+        "items": {
+          "workouts": {
+            "title": "Workouts bijhouden",
+            "description": "Sets, reps en gewichten in seconden loggen."
+          },
+          "food": {
+            "title": "Maaltijden bijhouden",
+            "description": "Scan een barcode of fotografeer een maaltijd."
+          },
+          "progress": {
+            "title": "Voortgangsgrafieken",
+            "description": "Trends in gewicht, kracht en voeding."
+          },
+          "privacy": {
+            "title": "Privacy by design",
+            "description": "Je gegevens blijven op je apparaat."
+          }
+        }
+      },
       "keywords": "Musclog, fitness tracker, workout tracker, voeding tracker, macro tracker, open source fitness app, local-first app",
       "routes": {
         "home": {

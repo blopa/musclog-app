@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Musclog-App-Vorschau mit privatem Fitness-, Ernährungs- und Fortschritts-Tracking.",
+      "image": {
+        "headline": "Besser trainieren, besser essen",
+        "subline": "Trainingsprotokoll und Ernährungstracking in einer privaten Open-Source-App.",
+        "items": {
+          "workouts": {
+            "title": "Trainingsprotokoll",
+            "description": "Sätze, Wdh. und Gewichte in Sekunden erfassen."
+          },
+          "food": {
+            "title": "Mahlzeiten erfassen",
+            "description": "Barcode scannen oder Mahlzeit fotografieren."
+          },
+          "progress": {
+            "title": "Fortschrittsdiagramme",
+            "description": "Verläufe von Gewicht, Kraft und Ernährung."
+          },
+          "privacy": {
+            "title": "Privat von Grund auf",
+            "description": "Deine Daten bleiben auf deinem Gerät."
+          }
+        }
+      },
       "keywords": "Musclog, Fitness-Tracker, Trainings-Tracker, Ernährungs-Tracker, Makro-Tracker, Open-Source-Fitness-App, Local-First-App",
       "routes": {
         "home": {

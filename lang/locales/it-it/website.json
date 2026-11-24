@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Anteprima dell'app Musclog con monitoraggio privato di fitness, alimentazione e progressi.",
+      "image": {
+        "headline": "Allena meglio, mangia meglio",
+        "subline": "Diario di allenamento e alimentazione in un'app privata e open source.",
+        "items": {
+          "workouts": {
+            "title": "Diario allenamenti",
+            "description": "Serie, ripetizioni e carichi in pochi secondi."
+          },
+          "food": {
+            "title": "Diario dei pasti",
+            "description": "Scansiona un codice a barre o fotografa il pasto."
+          },
+          "progress": {
+            "title": "Grafici dei progressi",
+            "description": "Andamento di peso, forza e alimentazione."
+          },
+          "privacy": {
+            "title": "Privata per design",
+            "description": "I tuoi dati restano sul tuo dispositivo."
+          }
+        }
+      },
       "keywords": "Musclog, tracker fitness, tracker allenamenti, tracker alimentare, tracker macronutrienti, app fitness open source, app local-first",
       "routes": {
         "home": {

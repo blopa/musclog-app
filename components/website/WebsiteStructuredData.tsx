@@ -9,10 +9,10 @@ import {
   localizedPath,
   parsePublicPath,
 } from './localeRoutes';
-import { absoluteUrl, SITE_ORIGIN } from './websiteMetadata';
+import { absoluteUrl, seoImageUrl } from './websiteMetadata';
 
 const SITE_NAME = 'Musclog';
-const LOGO_URL = `${SITE_ORIGIN}/images/seo-image.png`;
+const LOGO_URL = seoImageUrl(DEFAULT_LOCALE_PREFIX);
 const SAME_AS = [GITHUB_REPO_URL, 'https://instagram.com/musclog.app'];
 /** The organisation and the site are one entity in every language, named by the default-language home. */
 const ENTITY_URL = absoluteUrl(localizedPath('/', DEFAULT_LOCALE_PREFIX));

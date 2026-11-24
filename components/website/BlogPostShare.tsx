@@ -21,8 +21,12 @@ import {
 
 import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 
+import { DEFAULT_LOCALE_PREFIX } from './localeRoutes';
 import { BODY_TEXT_SOFT, ink } from './websiteColors';
-import { absoluteUrl, SEO_IMAGE_URL } from './websiteMetadata';
+import { absoluteUrl, seoImageUrl } from './websiteMetadata';
+
+/** Posts are published in English only, so they are shared with the English preview image. */
+const SHARE_IMAGE_URL = seoImageUrl(DEFAULT_LOCALE_PREFIX);
 
 /**
  * Every icon is drawn monochrome — a transparent background plus `currentColor` on the glyph — so
@@ -122,14 +126,14 @@ export function BlogPostShare({ canonicalPath, description, title }: BlogPostSha
 
         <PinterestShareButton
           url={url}
-          media={SEO_IMAGE_URL}
+          media={SHARE_IMAGE_URL}
           description={summary}
           {...chrome('pinterest', 'Pinterest')}
         >
           <PinterestIcon {...ICON_PROPS} />
         </PinterestShareButton>
 
-        <VKShareButton url={url} title={title} image={SEO_IMAGE_URL} {...chrome('vk', 'VK')}>
+        <VKShareButton url={url} title={title} image={SHARE_IMAGE_URL} {...chrome('vk', 'VK')}>
           <VKIcon {...ICON_PROPS} />
         </VKShareButton>
       </div>

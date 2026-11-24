@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Musclog app preview showing private fitness, nutrition, and progress tracking.",
+      "image": {
+        "headline": "Train better, eat better",
+        "subline": "Workout logging and nutrition tracking in one private, open-source app.",
+        "items": {
+          "workouts": {
+            "title": "Workout tracking",
+            "description": "Log sets, reps and weights in seconds."
+          },
+          "food": {
+            "title": "Meal tracking",
+            "description": "Scan a barcode or photograph a meal to log it."
+          },
+          "progress": {
+            "title": "Progress charts",
+            "description": "Weight, strength and nutrition trends over time."
+          },
+          "privacy": {
+            "title": "Private by design",
+            "description": "Your data stays on your device."
+          }
+        }
+      },
       "keywords": "Musclog, fitness tracker, workout tracker, nutrition tracker, macro tracker, open source fitness app, local-first app",
       "routes": {
         "home": {

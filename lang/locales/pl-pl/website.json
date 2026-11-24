@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Podgląd aplikacji Musclog pokazujący prywatne śledzenie treningów, odżywiania i postępów.",
+      "image": {
+        "headline": "Trenuj mądrzej, jedz lepiej",
+        "subline": "Zapis treningów i odżywiania w jednej prywatnej aplikacji open source.",
+        "items": {
+          "workouts": {
+            "title": "Dziennik treningów",
+            "description": "Serie, powtórzenia i ciężary w kilka sekund."
+          },
+          "food": {
+            "title": "Śledzenie posiłków",
+            "description": "Zeskanuj kod kreskowy lub sfotografuj posiłek."
+          },
+          "progress": {
+            "title": "Wykresy postępów",
+            "description": "Trendy wagi, siły i odżywiania w czasie."
+          },
+          "privacy": {
+            "title": "Prywatna z założenia",
+            "description": "Dane zostają na urządzeniu."
+          }
+        }
+      },
       "keywords": "Musclog, tracker treningów, tracker treningowy, tracker odżywiania, tracker makroskładników, aplikacja fitness open source, aplikacja lokalna",
       "routes": {
         "home": {

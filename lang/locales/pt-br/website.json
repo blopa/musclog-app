@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Previa do app Musclog mostrando acompanhamento privado de fitness, nutricao e progresso.",
+      "image": {
+        "headline": "Treine melhor e coma melhor",
+        "subline": "Registro de treinos e nutrição em um app privado e de código aberto.",
+        "items": {
+          "workouts": {
+            "title": "Registro de treinos",
+            "description": "Registre séries, reps e cargas em segundos."
+          },
+          "food": {
+            "title": "Registro de refeições",
+            "description": "Escaneie o código ou fotografe a refeição."
+          },
+          "progress": {
+            "title": "Gráficos de progresso",
+            "description": "Tendências de peso, força e nutrição."
+          },
+          "privacy": {
+            "title": "Privado por design",
+            "description": "Seus dados ficam no seu dispositivo."
+          }
+        }
+      },
       "keywords": "Musclog, app de fitness, rastreador de treino, rastreador nutricional, macros, app fitness open source, app local-first",
       "routes": {
         "home": {

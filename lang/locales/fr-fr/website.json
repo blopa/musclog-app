@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Aperçu de l'application Musclog montrant le suivi privé des entraînements, de la nutrition et de la progression.",
+      "image": {
+        "headline": "Mieux s'entraîner, mieux manger",
+        "subline": "Suivi des séances et de l'alimentation dans une app privée et open source.",
+        "items": {
+          "workouts": {
+            "title": "Suivi des séances",
+            "description": "Séries, reps et charges, en quelques secondes."
+          },
+          "food": {
+            "title": "Suivi des repas",
+            "description": "Scannez un code-barres ou photographiez un repas."
+          },
+          "progress": {
+            "title": "Courbes de progression",
+            "description": "Poids, force et nutrition au fil du temps."
+          },
+          "privacy": {
+            "title": "Privée par conception",
+            "description": "Vos données restent sur votre appareil."
+          }
+        }
+      },
       "keywords": "Musclog, suivi sportif, suivi des séances, suivi nutritionnel, suivi des macros, application fitness open source, application locale d'abord",
       "routes": {
         "home": {

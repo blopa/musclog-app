@@ -56,14 +56,14 @@ describe('blog post share row', () => {
   });
 
   it('builds the shared URL from the SEO origin rather than a second copy of it', () => {
-    expect(source).toContain("import { absoluteUrl, SEO_IMAGE_URL } from './websiteMetadata'");
+    expect(source).toContain("import { absoluteUrl, seoImageUrl } from './websiteMetadata'");
     expect(source).toContain('const url = absoluteUrl(href(canonicalPath))');
     expect(source).not.toMatch(/https:\/\/musclog\.app/);
   });
 
   it('gives the image-first networks an absolute image, which they require', () => {
-    expect(source).toMatch(/media=\{SEO_IMAGE_URL\}/);
-    expect(source).toMatch(/image=\{SEO_IMAGE_URL\}/);
+    expect(source).toMatch(/media=\{SHARE_IMAGE_URL\}/);
+    expect(source).toMatch(/image=\{SHARE_IMAGE_URL\}/);
   });
 
   it('stacks the heading above the buttons on narrow screens, and beside them on wide ones', () => {

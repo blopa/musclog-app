@@ -135,3 +135,6 @@ assets/avatars/index.html
 # Android build artifacts
 *.aab
 *.apk
+
+# Link-preview images, drawn by scripts/generate-seo-images.js on every web start and build
+public/images/seo/
