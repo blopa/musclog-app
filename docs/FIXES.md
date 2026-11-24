@@ -3,6 +3,39 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## The Android download grew by 31 MB in 2.18.0 (2026-11-24)
+
+### Symptom
+
+Play reported 73.8 MB for 2.18.0, up from 42.4 MB for 2.17.8.
+
+### Cause
+
+On-device AI added `llama.rn` 0.12.9, which ships a prebuilt llama.cpp once per ARM CPU generation and
+picks one at runtime: seven arm64 libraries of about 10 MB each (69 MB raw, about 27 MB compressed),
+two x86_64 ones, plus Hexagon NPU helper libraries it copies into the app's assets at build time. They
+were already stripped. Nothing else in the release added more than a few hundred KB.
+
+### Fix
+
+`plugins/withLlamaRn.js` excludes three variants no phone needs and stops the Hexagon asset copy (about
+13 MB less per arm64 download, 35 MB less in the raw APK): `v8_2_dotprod_i8mm_hexagon_opencl` (the
+`dotprod_i8mm` CPU code plus NPU/GPU backends the app never uses, since Android loads models with
+`n_gpu_layers: 0`), `v8_2_i8mm` (i8mm without dot product, which no shipping core has) and `v8_2` (fp16
+without dot product, a few 2017-2018 chips that now run plain `v8`). The loader catches the missing
+library and tries the next variant. Pinned by `plugins/__tests__/withLlamaRn.test.ts`.
+
+### Cost and alternatives
+
+- **Downloading the libraries with the model** is against Google Play's Device and Network Abuse policy
+  (no executable code from outside Play), and App Store guideline 2.5.2 forbids it on iOS. The allowed
+  way is an on-demand Play Feature Delivery module, which needs a patched loader
+  (`SplitInstallHelper.loadLibrary`) and does not reach sideloaded APKs; not done yet.
+- **Separate bundles for newer phones** do not work: Play splits by ABI and API level, never by CPU
+  feature, and a new Android version still ships on cores without dot product.
+- **Dropping `v8_2_dotprod` too** would save about 4 MB more and make 2018-2022 phones run the slower
+  plain `v8` build.
+
 ## AI settings said "Checking Musclog Iron…" forever after a subscription lapsed (2026-11-22)
 
 ### Symptom
