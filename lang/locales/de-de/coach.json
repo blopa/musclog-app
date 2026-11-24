@@ -5,6 +5,7 @@
     "you": "Du",
     "status": "Online",
     "statusOffline": "Offline",
+    "statusOnDevice": "KI auf dem Gerät",
     "context": {
       "general": "Allgemein",
       "exercise": "Fitness",

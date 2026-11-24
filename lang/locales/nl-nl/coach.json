@@ -5,6 +5,7 @@
     "you": "Jij",
     "status": "Online",
     "statusOffline": "Offline",
+    "statusOnDevice": "AI op het apparaat",
     "context": {
       "general": "Algemeen",
       "exercise": "Fitness",

@@ -5,6 +5,7 @@
     "you": "Sen",
     "status": "Çevrimiçi",
     "statusOffline": "Çevrimdışı",
+    "statusOnDevice": "Cihaz üzerinde yapay zekâ",
     "context": {
       "general": "Genel",
       "exercise": "Fitness",

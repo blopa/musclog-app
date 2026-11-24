@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Wat er met je berichten gebeurt",
-      "body": "Als Musclog Iron aan staat, gaan je AI-verzoeken naar de eigen dienst van Musclog, die ze doorstuurt naar OpenRouter, dat ze aan het AI-model doorgeeft. Verzoeken worden alleen naar aanbieders gestuurd die zero data retention (ZDR) bieden, en de dienst slaat de tekst van je berichten en afbeeldingen niet op. Ze houdt een teller van het gebruik bij voor je abonnementsperiode, en een identificatie per apparaat waarop je Musclog Iron gebruikt. OpenRouter controleert ook alle verzoeken op materiaal van seksueel kindermisbruik en kan een verzoek dat het markeert bewaren, zoals het eigen beleid beschrijft.",
+      "body": "Als Musclog Iron aan staat, gaan je AI-verzoeken naar de eigen dienst van Musclog, die ze doorstuurt via een AI-gateway, OpenRouter of Otari van Mozilla.ai, naar het AI-model. Verzoeken worden alleen naar aanbieders gestuurd die zero data retention (ZDR) bieden, en de dienst slaat de tekst van je berichten en afbeeldingen niet op. OpenRouter controleert ook alle verzoeken op materiaal van seksueel kindermisbruik en kan een verzoek dat het markeert bewaren, zoals het eigen beleid beschrijft; Otari zegt de inhoud van verzoeken niet op te slaan. De dienst van Musclog houdt een teller van het gebruik bij voor je abonnementsperiode, en een identificatie per apparaat waarop je Musclog Iron gebruikt.",
       "consent": "De app vraagt om je toestemming voordat er iets naar Musclog Iron wordt gestuurd, en vraagt dat opnieuw als je een back-up op een ander apparaat herstelt.",
       "link": "Lees het privacybeleid"
     },

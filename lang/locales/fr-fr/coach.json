@@ -5,6 +5,7 @@
     "you": "Toi",
     "status": "En ligne",
     "statusOffline": "Hors ligne",
+    "statusOnDevice": "IA sur l'appareil",
     "context": {
       "general": "Général",
       "exercise": "Sport",

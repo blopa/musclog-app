@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Was mit deinen Nachrichten passiert",
-      "body": "Wenn Musclog Iron aktiv ist, gehen deine KI-Anfragen an den eigenen Dienst von Musclog, der sie an OpenRouter weiterleitet, und OpenRouter gibt sie an das KI-Modell weiter. Anfragen gehen nur an Anbieter mit Zero Data Retention, und der Dienst speichert weder deinen Nachrichtentext noch deine Bilder. Er zählt die Nutzung für deinen Abozeitraum und speichert eine Kennung für jedes Gerät, auf dem du Musclog Iron nutzt. OpenRouter prüft außerdem alle Anfragen auf Darstellungen sexuellen Kindesmissbrauchs und kann eine markierte Anfrage behalten, wie es seine eigenen Richtlinien beschreiben.",
+      "body": "Wenn Musclog Iron aktiv ist, gehen deine KI-Anfragen an den eigenen Dienst von Musclog, der sie über ein KI-Gateway, OpenRouter oder Otari von Mozilla.ai, an das KI-Modell weiterleitet. Anfragen gehen nur an Anbieter mit Zero Data Retention, und der Dienst speichert weder deinen Nachrichtentext noch deine Bilder. Der Dienst von Musclog zählt die Nutzung für deinen Abozeitraum und speichert eine Kennung für jedes Gerät, auf dem du Musclog Iron nutzt. OpenRouter prüft außerdem alle Anfragen auf Darstellungen sexuellen Kindesmissbrauchs und kann eine markierte Anfrage behalten, wie es seine eigenen Richtlinien beschreiben; Otari gibt an, den Inhalt von Anfragen nicht zu speichern.",
       "consent": "Die App fragt dich um Zustimmung, bevor sie etwas an Musclog Iron sendet, und fragt erneut, wenn du ein Backup auf einem anderen Gerät wiederherstellst.",
       "link": "Datenschutzerklärung lesen"
     },

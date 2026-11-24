@@ -18,6 +18,7 @@ import { formatRenewalDate, PremiumUsageBar } from '@/components/premium/Premium
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import { AI_GATEWAY_LINKS } from '@/constants/aiGatewayLinks';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { usePremium } from '@/hooks/usePremium';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
@@ -456,6 +457,22 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
                 );
               }}
             />
+          </View>
+          <Text
+            style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}
+          >
+            {t('common.aiGateways.intro')}
+          </Text>
+          <View className="flex-row flex-wrap gap-4">
+            {AI_GATEWAY_LINKS.map((link) => (
+              <TextButton
+                key={link.id}
+                label={t(link.labelKey)}
+                onPress={() => {
+                  Linking.openURL(link.url).catch(() => undefined);
+                }}
+              />
+            ))}
           </View>
         </View>
 

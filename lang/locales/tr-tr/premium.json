@@ -23,7 +23,7 @@
     },
     "devices": "Tüm cihazlarınızla paylaşılır",
     "useForAi": "YZ’m için Musclog Iron’ı kullan",
-    "useForAiHint": "İstekler Musclog Iron hizmetine gider ve oradan OpenRouter’a iletilir.",
+    "useForAiHint": "İstekler Musclog Iron hizmetine gider ve oradan bir yapay zekâ ağ geçidi üzerinden, OpenRouter veya Otari’ye iletilir.",
     "manage": "Aboneliği yönet",
     "reset": "Bu cihazda Musclog Iron’ı sıfırla",
     "resetTitle": "Bu cihazda Musclog Iron sıfırlansın mı?",
@@ -31,7 +31,7 @@
     "resetConfirm": "Sıfırla",
     "consent": {
       "title": "YZ istekleri Musclog Iron’a gönderilsin mi?",
-      "body": "Yapay zekâya gönderdiğiniz mesajlar, öğün fotoğrafları ve bir yapay zekâ özelliğinin yanıt vermek için ihtiyaç duyduğu bilgiler, örneğin antrenmanlar, öğünler ve vücut ölçümleri, Musclog Iron hizmetine gider. Hizmet bunları OpenRouter’a iletir; OpenRouter de yapay zekâ model sağlayıcısına gönderir. Yalnızca sıfır veri saklamalı (ZDR) uç noktalar kullanılır: bu sağlayıcılar içeriğinizi saklamaz ve eğitim için kullanmaz. OpenRouter ayrıca her isteği çocuk cinsel istismarı içeren materyal açısından tarar ve işaretlediği bir isteği saklayabilir. Bu bilgilerin bir kısmı sağlıkla ilgilidir; kabul ederek bunların bu şekilde işlenmesine açık rızanızı vermiş olursunuz. Musclog’un hizmeti mesajlarınızı asla saklamaz; yalnızca bu cihaz için bir tanımlayıcı ile kullanım sayılarını tutar. Bunu istediğiniz zaman kapatabilirsiniz.",
+      "body": "Yapay zekâya gönderdiğiniz mesajlar, öğün fotoğrafları ve bir yapay zekâ özelliğinin yanıt vermek için ihtiyaç duyduğu bilgiler, örneğin antrenmanlar, öğünler ve vücut ölçümleri, Musclog Iron hizmetine gider. Hizmet bunları bir yapay zekâ ağ geçidi, OpenRouter veya Otari (Mozilla.ai’den) üzerinden yapay zekâ model sağlayıcısına iletir. Hangi ağ geçidinin kullanılacağını Musclog seçer ve bu rıza her ikisini de kapsar. Yalnızca sıfır veri saklamalı (ZDR) sağlayıcılar kullanılır: içeriğinizi saklamazlar ve eğitim için kullanmazlar. OpenRouter her isteği çocuk cinsel istismarı içeren materyal açısından tarar ve işaretlediği bir isteği saklayabilir; Otari ise isteklerin içeriğini saklamadığını belirtir. Bu bilgilerin bir kısmı sağlıkla ilgilidir; kabul ederek bunların bu şekilde işlenmesine açık rızanızı vermiş olursunuz. Musclog’un hizmeti mesajlarınızı asla saklamaz; yalnızca bu cihaz için bir tanımlayıcı ile kullanım sayılarını tutar. OpenRouter ve Otari’nin gizlilik politikaları ve şartları Musclog Iron ekranının altında bağlantı olarak verilmiştir. Bunu istediğiniz zaman kapatabilirsiniz.",
       "confirm": "Musclog Iron YZ’sini kullan",
       "cancel": "Şimdi değil"
     },
@@ -75,7 +75,7 @@
         },
         "private": {
           "title": "Sıfır veri saklama",
-          "desc": "Yalnızca sıfır veri saklamalı sağlayıcılar kullanılır: mesajlarınızı saklamazlar ve onlarla eğitim yapmazlar, yasanın gerektirdiği çocuk istismarı materyali taraması dışında. Musclog da bunları asla saklamaz; yalnızca kullanım sayılarını ve bir cihaz tanımlayıcısını tutar."
+          "desc": "Yalnızca sıfır veri saklamalı sağlayıcılar kullanılır: mesajlarınızı saklamazlar ve onlarla eğitim yapmazlar, OpenRouter’ın yasanın gerektirdiği çocuk istismarı materyali taraması dışında. Musclog da bunları asla saklamaz; yalnızca kullanım sayılarını ve bir cihaz tanımlayıcısını tutar."
         },
         "allowance": {
           "title": "Kendi kotan",

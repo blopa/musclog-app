@@ -202,6 +202,13 @@
     "energyUnit": {
       "kcal": "kcal",
       "kj": "kJ"
+    },
+    "aiGateways": {
+      "intro": "Musclog Iron stuurt verzoeken door via OpenRouter of Otari:",
+      "openrouterPrivacy": "Privacybeleid van OpenRouter",
+      "openrouterTerms": "Voorwaarden van OpenRouter",
+      "otariPrivacy": "Privacyverklaring van Otari",
+      "otariTerms": "Voorwaarden van Otari"
     }
   }
 }

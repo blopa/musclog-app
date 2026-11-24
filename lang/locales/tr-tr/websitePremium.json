@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Mesajlarına ne olur",
-      "body": "Musclog Iron açıkken YZ isteklerin Musclog’un kendi hizmetine gider; hizmet bunları OpenRouter’a iletir, o da YZ modeline gönderir. İstekler yalnızca sıfır veri saklama sunan sağlayıcılara gönderilir ve hizmet mesaj metnini ya da görselleri saklamaz. Abonelik dönemin için bir kullanım sayısı ve Musclog Iron kullandığın her cihaz için bir tanımlayıcı tutar. OpenRouter ayrıca tüm istekleri çocuk cinsel istismarı içeren materyal açısından tarar ve kendi politikasında belirttiği gibi işaretlediği bir isteği saklayabilir.",
+      "body": "Musclog Iron açıkken YZ isteklerin Musclog’un kendi hizmetine gider; hizmet bunları bir yapay zekâ ağ geçidi, OpenRouter veya Otari (Mozilla.ai’den) üzerinden YZ modeline iletir. İstekler yalnızca sıfır veri saklama sunan sağlayıcılara gönderilir ve hizmet mesaj metnini ya da görselleri saklamaz. Musclog’un hizmeti abonelik dönemin için bir kullanım sayısı ve Musclog Iron kullandığın her cihaz için bir tanımlayıcı tutar. OpenRouter ayrıca tüm istekleri çocuk cinsel istismarı içeren materyal açısından tarar ve kendi politikasında belirttiği gibi işaretlediği bir isteği saklayabilir; Otari ise isteklerin içeriğini saklamadığını belirtir.",
       "consent": "Uygulama, Musclog Iron’a hiçbir şey göndermeden önce onayını ister ve bir yedeği başka bir cihazda geri yüklersen yeniden sorar.",
       "link": "Gizlilik politikasını oku"
     },

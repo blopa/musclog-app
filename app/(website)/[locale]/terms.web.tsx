@@ -1,6 +1,7 @@
 import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { AiGatewayLinks } from '@/components/website/AiGatewayLinks';
 import { localeStaticParams } from '@/components/website/localeStaticParams';
 import {
   BODY_TEXT_SOFT,
@@ -101,6 +102,7 @@ export default function Terms() {
           <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.subscription.content1')}
           </p>
+          <AiGatewayLinks />
           <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.subscription.content2')}
           </p>

@@ -321,6 +321,21 @@ describe('PremiumModal', () => {
       fireEvent.click(screen.getByText('premium.privacy'));
       expect(openURL).toHaveBeenLastCalledWith(websitePageUrl(PREMIUM_PRIVACY_PATH, 'en-US'));
     });
+
+    it('opens each AI gateway privacy policy and terms', () => {
+      renderModal();
+
+      expect(screen.getByText('common.aiGateways.intro')).toBeTruthy();
+      for (const link of [
+        ['common.aiGateways.openrouterPrivacy', 'https://openrouter.ai/privacy'],
+        ['common.aiGateways.openrouterTerms', 'https://openrouter.ai/terms'],
+        ['common.aiGateways.otariPrivacy', 'https://otari.ai/privacy'],
+        ['common.aiGateways.otariTerms', 'https://otari.ai/terms'],
+      ]) {
+        fireEvent.click(screen.getByText(link[0]));
+        expect(openURL).toHaveBeenLastCalledWith(link[1]);
+      }
+    });
   });
 
   describe('paywall', () => {
