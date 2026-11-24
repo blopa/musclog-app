@@ -69,6 +69,11 @@ import {
 } from './localReplyShape';
 import { consensusMeals } from './mealConsensus';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
+import {
+  formatMealObservation,
+  type MealObservation,
+  parseMealObservation,
+} from './mealObservation';
 import { ingredientMacroProblems, reconcileIngredientMacros } from './mealPlausibility';
 import { applyMealReview, type MealReview } from './mealReview';
 import { ungroundedFigures } from './numberGrounding';
@@ -101,6 +106,8 @@ import {
   getInsightFactCheckMessage,
   getMealAnalysisPrompt,
   getMealCritiquePrompt,
+  getMealObservationFunctions,
+  getMealObservationPrompt,
   getMealReviewFunctions,
   getMealReviewPrompt,
   getMissingIngredientsMacrosPrompt,
@@ -2165,7 +2172,8 @@ async function generateWithImageStructured<T>(
 async function extractRecipe(
   config: CoachAIConfig,
   userMessage: string,
-  base64Image?: string
+  base64Image?: string,
+  observation?: MealObservation
 ): Promise<RecipeExtractionResponse | null> {
   const lang = config.language ?? DEFAULT_LANG;
   const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
@@ -2175,6 +2183,10 @@ async function extractRecipe(
   const systemPrompt = await getRecipeExtractionPrompt(includeFoundationFoods, lang);
   const fns = getRecipeExtractionFunctions(includeFoundationFoods);
   const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+  // A first look is notes for the request, never a replacement for the photo or description.
+  const message = observation
+    ? `${userMessage}\n\n${formatMealObservation(observation)}`
+    : userMessage;
 
   if (base64Image) {
     if (config.provider === 'on-device') {
@@ -2191,16 +2203,50 @@ async function extractRecipe(
       mimeType,
       schema,
       'extractRecipe',
-      userMessage
+      message
     );
   }
 
   return generateStructured<RecipeExtractionResponse>(
     config,
     systemPrompt,
-    userMessage,
+    message,
     schema,
     'extractRecipe'
+  );
+}
+
+/**
+ * One structured "first look" at a meal (Tokenmaxxing): what is there, how big it looks, what fat,
+ * sauce or drink is visible or likely, and what is unsure. No grams and no macros, so seeing stays
+ * apart from estimating. A reply that cannot be read is no look (null), never a failed estimate.
+ */
+async function observeMeal(
+  config: CoachAIConfig,
+  userMessage: string,
+  base64Image?: string
+): Promise<MealObservation | null> {
+  const systemPrompt = getMealObservationPrompt(config.language ?? DEFAULT_LANG);
+  const schema = getSchemaFromFunctionDeclaration((getMealObservationFunctions() as any)[0]);
+
+  if (base64Image) {
+    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+    const raw = await generateWithImageStructured<unknown>(
+      config,
+      systemPrompt,
+      base64,
+      mimeType,
+      schema,
+      'observeMeal',
+      userMessage
+    );
+
+    return parseMealObservation(raw);
+  }
+
+  return parseMealObservation(
+    await generateStructured<unknown>(config, systemPrompt, userMessage, schema, 'observeMeal')
   );
 }
 
@@ -2496,9 +2542,10 @@ async function trackMealVerified(
   config: CoachAIConfig,
   userMessage: string,
   base64Image?: string,
-  onProgress?: MealEstimateProgressListener
+  onProgress?: MealEstimateProgressListener,
+  observation?: MealObservation
 ): Promise<TrackMealResponse | null> {
-  const recipeResponse = await extractRecipe(config, userMessage, base64Image);
+  const recipeResponse = await extractRecipe(config, userMessage, base64Image, observation);
   if (!recipeResponse?.meals?.length) {
     return null;
   }
@@ -2594,10 +2641,49 @@ async function trackMealThinking(
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   const pipeline = THINKING_PIPELINE[level];
+  // The on-device model has no first look: a small model invents detail when asked to describe.
+  const mealLooks = config.provider === 'on-device' ? null : pipeline.mealLooks;
+
+  // Each first look is its own request, so a mistake in one never reaches every sample. A look that
+  // fails or reads as nothing is left out; with none left the estimate goes on without looks (an
+  // extra request can only help, never fail the estimate), and a cancel stops everything.
+  let looks: MealObservation[] = [];
+  if (mealLooks) {
+    reportMealProgress(onProgress, { step: 'observing', photo: Boolean(base64Image) });
+    try {
+      looks = await runSamples(config, mealLooks.looks, () =>
+        observeMeal(config, userMessage, base64Image)
+      );
+    } catch (error) {
+      if (error instanceof AiCancelledError) {
+        throw error;
+      }
+
+      reportAiError(error, 'coachAI.observeMeal');
+    }
+  }
+
+  // With looks: `samplesPerLook` samples per look, sample `i` reading look `floor(i / perLook)`, and
+  // `lookOf` remembers which look each ANSWERED sample read (`runSamples` leaves failed ones out).
+  const perLook = mealLooks?.samplesPerLook ?? 1;
+  const total = looks.length > 0 ? looks.length * perLook : pipeline.samples;
+  const lookOf: number[] = [];
   // Only the first sample reports its steps: several samples at once would interleave their lines.
-  const samples = await runSamples(config, pipeline.samples, (index) =>
-    trackMealVerified(config, userMessage, base64Image, index === 0 ? onProgress : undefined)
-  );
+  const samples = await runSamples(config, total, async (index) => {
+    const look = looks.length > 0 ? Math.floor(index / perLook) : -1;
+    const answer = await trackMealVerified(
+      config,
+      userMessage,
+      base64Image,
+      index === 0 ? onProgress : undefined,
+      look >= 0 ? looks[look] : undefined
+    );
+    if (answer) {
+      lookOf[index] = look;
+    }
+
+    return answer;
+  });
   if (samples.length === 0) {
     return null;
   }
@@ -2605,7 +2691,9 @@ async function trackMealThinking(
   let draft = samples[0];
   if (samples.length > 1) {
     reportMealProgress(onProgress, { step: 'comparing', count: samples.length });
-    draft = consensusMeals(samples);
+    // `lookOf` is indexed by request, so keep the entries of the samples that answered, in order.
+    const answeredLooks = lookOf.filter((look) => look !== undefined);
+    draft = consensusMeals(samples, looks.length > 1 ? answeredLooks : undefined);
   }
 
   if (pipeline.reviewRounds === 0) {

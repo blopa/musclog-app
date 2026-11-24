@@ -1,8 +1,13 @@
-// Combines several independent estimates of one meal into one (Tokenmaxxing: three samples).
-// Pure and relative-import-only. The rule is a vote, then a median: an ingredient only one of
-// three readings found is left out (a reading that saw something the others did not is more often
-// wrong than right), and every number is the median of what the readings said, per gram, so one
-// wild figure never moves the result.
+// Combines several independent estimates of one meal into one (Tokenmaxxing).
+// Pure and relative-import-only. Two keep rules, then one median:
+// - Ungrouped: a vote. An ingredient is kept only when strictly more than half of the samples
+//   found it (a reading that saw something the others did not is more often wrong than right).
+// - Grouped (`groups[i]` is the independent first look sample i came from): an ingredient is kept
+//   only when it was seen under EVERY group that remains after the layout filter. An error inside
+//   one look must not be outvoted into the result by that look's own samples alone. With fewer
+//   than two groups left it falls back to the plain vote.
+// Every number is the median of what the readings said, per gram, so one wild figure never moves
+// the result.
 
 import { median } from 'simple-statistics';
 
@@ -74,13 +79,16 @@ function mergeIngredient(occurrences: TrackMealIngredient[]): TrackMealIngredien
   return merged;
 }
 
-function mergeMeals(meals: TrackedMeal[]): TrackedMeal {
+function mergeMeals(meals: TrackedMeal[], groups?: number[]): TrackedMeal {
   const first = meals[0];
   const need = meals.length / 2;
+  const distinctGroups = groups ? [...new Set(groups)] : [];
+  const byGroupRule = distinctGroups.length >= 2;
   const order: string[] = [];
   const byName = new Map<string, TrackMealIngredient[]>();
+  const groupsByName = new Map<string, Set<number>>();
 
-  for (const meal of meals) {
+  for (const [index, meal] of meals.entries()) {
     const seenInMeal = new Set<string>();
     for (const ingredient of meal.ingredients ?? []) {
       const key = normalizeIngredientName(ingredient.name);
@@ -95,35 +103,53 @@ function mergeMeals(meals: TrackedMeal[]): TrackedMeal {
       }
 
       byName.get(key)!.push(ingredient);
+      if (groups) {
+        if (!groupsByName.has(key)) {
+          groupsByName.set(key, new Set());
+        }
+
+        groupsByName.get(key)!.add(groups[index]);
+      }
     }
   }
 
+  const kept = (key: string): boolean =>
+    byGroupRule
+      ? distinctGroups.every((group) => groupsByName.get(key)?.has(group))
+      : byName.get(key)!.length > need;
+
   return {
     ...first,
-    ingredients: order
-      .filter((key) => byName.get(key)!.length > need)
-      .map((key) => mergeIngredient(byName.get(key)!)),
+    ingredients: order.filter(kept).map((key) => mergeIngredient(byName.get(key)!)),
   };
 }
 
 /**
  * One meal estimate from several. With one sample it is returned as it is. The layout (how many
  * meals) is the most common one among the samples, the first sample's on a tie, and only samples
- * with that layout are merged, meal by meal.
+ * with that layout are merged, meal by meal. `groups[i]` is the look (group) `samples[i]` came
+ * from; see the header for how groups change the keep rule.
  */
-export function consensusMeals(samples: TrackMealResponse[]): TrackMealResponse {
+export function consensusMeals(samples: TrackMealResponse[], groups?: number[]): TrackMealResponse {
   if (samples.length <= 1) {
     return samples[0];
   }
 
   const counts = samples.map((sample) => sample.meals?.length ?? 0);
   const layout = mostCommon(counts);
-  const agreeing = samples.filter((sample) => (sample.meals?.length ?? 0) === layout);
+  const agreeingIndexes = samples
+    .map((_, index) => index)
+    .filter((index) => (samples[index].meals?.length ?? 0) === layout);
+  const agreeing = agreeingIndexes.map((index) => samples[index]);
+  const agreeingGroups = groups ? agreeingIndexes.map((index) => groups[index]) : undefined;
 
   return {
     ...agreeing[0],
     meals: Array.from({ length: layout }, (_, position) =>
-      mergeMeals(agreeing.map((sample) => sample.meals[position]))
+      mergeMeals(
+        agreeing.map((sample) => sample.meals[position]),
+        agreeingGroups
+      )
     ),
   };
 }

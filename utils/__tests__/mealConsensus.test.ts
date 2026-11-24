@@ -81,6 +81,42 @@ describe('consensusMeals', () => {
     expect(result.meals[1].ingredients[0].name).toBe('Toast');
   });
 
+  describe('with groups', () => {
+    const names = (result: ReturnType<typeof consensusMeals>) =>
+      result.meals[0].ingredients.map((i) => i.name);
+    const rice = { meals: [meal([ing('Rice', 100, 130)])] };
+    const riceButter = { meals: [meal([ing('Rice', 100, 130), ing('Butter', 5, 36)])] };
+
+    it('drops an ingredient found only under one look, even in both its samples', () => {
+      const result = consensusMeals([riceButter, riceButter, rice, rice], [0, 0, 1, 1]);
+      expect(names(result)).toEqual(['Rice']);
+    });
+
+    it('keeps an ingredient found once under each look', () => {
+      const result = consensusMeals([riceButter, rice, riceButter, rice], [0, 0, 1, 1]);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('falls back to the majority when fewer than 2 groups remain', () => {
+      const result = consensusMeals([riceButter, riceButter, rice], [0, 0, 0]);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('filters by layout first and uses the groups that remain', () => {
+      const two = { meals: [meal([ing('Egg', 50, 70)]), meal([ing('Toast', 30, 80)])] };
+      // The only group-1 sample has another layout, so one group remains: majority rule.
+      const result = consensusMeals([riceButter, riceButter, rice, two], [0, 0, 0, 1]);
+      expect(result.meals).toHaveLength(1);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('matches the ungrouped result when no groups are given', () => {
+      const samples = [riceButter, rice, riceButter, rice];
+      expect(consensusMeals(samples)).toEqual(consensusMeals(samples, undefined));
+      expect(names(consensusMeals(samples))).toEqual(['Rice']);
+    });
+  });
+
   it('breaks a tie of counts with the first sample', () => {
     const one = { meals: [meal([ing('Rice', 100, 130)])] };
     const two = { meals: [meal([ing('Egg', 50, 70)]), meal([ing('Toast', 30, 80)])] };

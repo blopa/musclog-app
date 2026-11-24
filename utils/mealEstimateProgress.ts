@@ -6,6 +6,8 @@
 export type MealEstimateProgress =
   /** The first request is on its way: reading the description or looking at the photo. */
   | { step: 'reading'; photo: boolean }
+  /** A first look at the description or photo notes what is in the meal before anything is estimated (Tokenmaxxing). */
+  | { step: 'observing'; photo: boolean }
   /**
    * A follow-up request estimates `count` ingredients that have no numbers yet: the ones the model
    * named without numbers, or matched to a food id this database does not have. `matched` is how
@@ -25,6 +27,8 @@ export type MealEstimateProgressListener = (progress: MealEstimateProgress) => v
 export const MEAL_ESTIMATE_PROGRESS_KEYS = {
   reading: 'food.aiProgress.reading',
   readingPhoto: 'food.aiProgress.readingPhoto',
+  observing: 'food.aiProgress.observing',
+  observingPhoto: 'food.aiProgress.observingPhoto',
   estimating: 'food.aiProgress.estimating',
   estimatingWithMatches: 'food.aiProgress.estimatingWithMatches',
   rechecking: 'food.aiProgress.rechecking',
@@ -45,6 +49,12 @@ export function mealEstimateProgressLine(progress: MealEstimateProgress): MealEs
         key: progress.photo
           ? MEAL_ESTIMATE_PROGRESS_KEYS.readingPhoto
           : MEAL_ESTIMATE_PROGRESS_KEYS.reading,
+      };
+    case 'observing':
+      return {
+        key: progress.photo
+          ? MEAL_ESTIMATE_PROGRESS_KEYS.observingPhoto
+          : MEAL_ESTIMATE_PROGRESS_KEYS.observing,
       };
     case 'estimating':
       return progress.matched > 0

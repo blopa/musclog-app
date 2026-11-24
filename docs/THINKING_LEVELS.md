@@ -38,15 +38,18 @@ looping, and every loop has a fixed upper limit.** A level can make a job slower
   disputed (`extractWithConsensus` in `utils/coachAI.ts`).
 - **Verified meal path**: read the recipe, check each food id the model claims against your
   database, estimate only the rest, recheck numbers that cannot be true.
+- **First look** (Tokenmaxxing meals only): a structured note of what is in the meal, with no grams
+  or macros (`observeMeal`, `utils/mealObservation.ts`). It is handed to the recipe request as
+  notes beside the photo or description, which still win where they disagree.
 
 ## What each level is
 
-| Level        | Effort per request | Extra requests                                                                                                  |
-| ------------ | ------------------ | --------------------------------------------------------------------------------------------------------------- |
-| Off          | per job (below)    | none                                                                                                            |
-| Medium       | `high` everywhere  | meals take the verified path. Nothing else changes                                                              |
-| High         | `high` everywhere  | Medium, plus 1 review round (meals, insights, plans), and 2 readings for labels and imports                     |
-| Tokenmaxxing | `max` everywhere   | Medium, plus 3 samples, 2 review rounds, 3 readings for labels and imports, and chat replies drafted + reviewed |
+| Level        | Effort per request | Extra requests                                                                                                                         |
+| ------------ | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Off          | per job (below)    | none                                                                                                                                   |
+| Medium       | `high` everywhere  | meals take the verified path. Nothing else changes                                                                                     |
+| High         | `high` everywhere  | Medium, plus 1 review round (meals, insights, plans), and 2 readings for labels and imports                                            |
+| Tokenmaxxing | `max` everywhere   | Medium, plus 2 first looks and 4 meal samples, 2 review rounds, 3 readings for labels and imports, and chat replies drafted + reviewed |
 
 Effort per job at **Off** (`AI_TASK_EFFORT`): reading something into fixed fields (a meal, a label,
 an import) `minimal`; a chat reply `low`; an analysis of your data or a plan `medium`. Medium and
@@ -54,15 +57,17 @@ High both use `high`; they differ in how many requests are made, not in how hard
 
 The pipeline table (`THINKING_PIPELINE`) is exactly this:
 
-| Level        | verifiedMeal | reviewRounds | samples | chatReview |
-| ------------ | ------------ | ------------ | ------- | ---------- |
-| Off          | no           | 0            | 1       | no         |
-| Medium       | yes          | 0            | 1       | no         |
-| High         | yes          | 1            | 1       | no         |
-| Tokenmaxxing | yes          | 2            | 3       | yes        |
+| Level        | verifiedMeal | reviewRounds | samples | chatReview | mealLooks                   |
+| ------------ | ------------ | ------------ | ------- | ---------- | --------------------------- |
+| Off          | no           | 0            | 1       | no         | none                        |
+| Medium       | yes          | 0            | 1       | no         | none                        |
+| High         | yes          | 1            | 1       | no         | none                        |
+| Tokenmaxxing | yes          | 2            | 3       | yes        | 2 looks, 2 samples per look |
 
 Labels and imports use `extractionSamples`, which is 2 at High (two readings are what show where a
-reading is unsure) and the table's `samples` otherwise.
+reading is unsure) and the table's `samples` otherwise. For meals, `mealLooks` replaces `samples`
+when it is set (Tokenmaxxing), so `samples: 3` there is only what labels, imports and the
+no-look fallback use.
 
 ## Every LLM job, one by one
 
@@ -83,14 +88,23 @@ Used by: the coach's Track meal, My Meals' generator, the camera's AI photo. Cod
 - **High**: the verified path once, then 1 review round per meal: the model sees the estimate next
   to your text or photo and lists what is missing or off, code applies it, +1 to estimate what was
   added, +1 recheck. The review replaces the estimate only if it has no more implausible numbers.
-- **Tokenmaxxing**: the verified path 3 times (samples), combined by `consensusMeals`
-  (`utils/mealConsensus.ts`: an ingredient stays if most samples have it, grams and macros are the
-  median), then up to 2 review rounds. Roughly 8 to 15 requests for one meal.
+- **Tokenmaxxing**: first, 2 independent first looks (`observeMeal`, run together on a cloud model).
+  Then the verified path 4 times: 2 samples read each look. The samples are combined by
+  `consensusMeals(samples, groups)` (`utils/mealConsensus.ts`): an ingredient stays only if it was
+  seen under **both** looks (so a mistake inside one look cannot be outvoted into the result by that
+  look's own two samples), and grams and macros are the median of all samples. Then up to 2 review
+  rounds. Roughly 12 to 20 requests for one meal. Each look is a separate request on purpose: one
+  shared look would put the same perception mistake into every sample and the vote would hide it.
+  If one look fails or reads as nothing, the other still feeds its 2 samples; if both fail, it falls
+  back to 3 plain samples with no look. The photo is still sent with every sample, so a wrong look
+  can be corrected. A typed meal gets a look too: it lists what you said plus the usual hidden parts
+  (cooking fat, dressing) as low-confidence assumptions. The on-device model skips the looks. The
+  progress line says "Taking a careful first look at your photo…" while they run.
 
 On the phone (on-device model), a meal **photo** is its own path
 (`estimateMealFromPhotoOnDevice`): the photo is read once (Off, Medium), twice (High) or three times
 (Tokenmaxxing), a food stays if at least half of the readings name it, names are matched to your
-foods, the rest is estimated, then the usual recheck. No review rounds. A broken reply gets a warmer
+foods, the rest is estimated, then the usual recheck. No first look and no review rounds. A broken reply gets a warmer
 retry and then one text-only repair request, whatever the level.
 
 ### Read a nutrition label (photo or text)
@@ -210,6 +224,6 @@ translates it:
 | add a review step to a new job                        | use `runSamples` / `reviewAndRevise` from `utils/aiPasses.ts`, with a code `accept` rule                      |
 | add a new kind of job                                 | name its task (`chat`, `extraction`, `insight`, `planning`) when calling `requestStructured` / `generateText` |
 
-Tests: `utils/__tests__/{aiThinkingLevel,aiPasses,mealConsensus,mealReview,extractionConsensus,numberGrounding,planFindings,coachAIExtractionConsensus,coachAIReviewPasses,coachAIStreaming,coachAITrackMealThinking,aiEffort,coachAIEffort}.test.ts`.
+Tests: `utils/__tests__/{aiThinkingLevel,aiPasses,mealConsensus,mealObservation,coachAIMealLooks,mealReview,extractionConsensus,numberGrounding,planFindings,coachAIExtractionConsensus,coachAIReviewPasses,coachAIStreaming,coachAITrackMealThinking,aiEffort,coachAIEffort}.test.ts`.
 The reasoning behind the choices is in `docs/RESEARCH.md` (Reasoning effort per job). Nobody has
 measured yet whether the extra requests improve the answers; the numbers are product choices.

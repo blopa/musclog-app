@@ -488,6 +488,8 @@
     "aiProgress": {
       "reading": "Je beschrijving lezen…",
       "readingPhoto": "Je foto bekijken…",
+      "observing": "Alles in je beschrijving noteren…",
+      "observingPhoto": "Je foto zorgvuldig bekijken…",
       "estimating_one": "{{count}} ingrediënt inschatten…",
       "estimating_few": "{{count}} ingrediënten inschatten…",
       "estimating_many": "{{count}} ingrediënten inschatten…",

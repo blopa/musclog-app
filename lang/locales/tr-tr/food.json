@@ -488,6 +488,8 @@
     "aiProgress": {
       "reading": "Açıklamanız okunuyor…",
       "readingPhoto": "Fotoğrafınıza bakılıyor…",
+      "observing": "Açıklamanızdaki her şey not ediliyor…",
+      "observingPhoto": "Fotoğrafınıza dikkatle ilk bakış atılıyor…",
       "estimating_one": "{{count}} malzeme tahmin ediliyor…",
       "estimating_few": "{{count}} malzeme tahmin ediliyor…",
       "estimating_many": "{{count}} malzeme tahmin ediliyor…",

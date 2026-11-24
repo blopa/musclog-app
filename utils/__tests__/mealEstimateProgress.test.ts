@@ -18,6 +18,18 @@ describe('mealEstimateProgressLine', () => {
     });
   });
 
+  it('reports the first look at a description with the observing key and no options', () => {
+    expect(mealEstimateProgressLine({ step: 'observing', photo: false })).toEqual({
+      key: 'food.aiProgress.observing',
+    });
+  });
+
+  it('reports the first look at a photo with its own observing key and no options', () => {
+    expect(mealEstimateProgressLine({ step: 'observing', photo: true })).toEqual({
+      key: 'food.aiProgress.observingPhoto',
+    });
+  });
+
   it('uses the plain estimating key when nothing was matched', () => {
     expect(mealEstimateProgressLine({ step: 'estimating', count: 3, matched: 0 })).toEqual({
       key: 'food.aiProgress.estimating',

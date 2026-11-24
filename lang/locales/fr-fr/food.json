@@ -488,6 +488,8 @@
     "aiProgress": {
       "reading": "Lecture de votre description…",
       "readingPhoto": "Analyse de votre photo…",
+      "observing": "Relevé de tout ce que décrit votre texte…",
+      "observingPhoto": "Premier examen attentif de votre photo…",
       "estimating_one": "Estimation de {{count}} ingrédient…",
       "estimating_few": "Estimation de {{count}} ingrédients…",
       "estimating_many": "Estimation de {{count}} ingrédients…",

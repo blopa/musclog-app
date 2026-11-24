@@ -79,13 +79,25 @@ export type ThinkingPipeline = {
   samples: number;
   /** A coach chat reply is drafted unseen, then reviewed, and only the review is shown. */
   chatReview: boolean;
+  /**
+   * Meals only. Independent "first looks" at the meal (a structured note of what is there, no
+   * grams), each feeding `samplesPerLook` verified samples, so a mistake in one look never reaches
+   * every sample. When set it replaces `samples` for meals; `null` means no first look.
+   */
+  mealLooks: { looks: number; samplesPerLook: number } | null;
 };
 
 export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
-  off: { verifiedMeal: false, reviewRounds: 0, samples: 1, chatReview: false },
-  medium: { verifiedMeal: true, reviewRounds: 0, samples: 1, chatReview: false },
-  high: { verifiedMeal: true, reviewRounds: 1, samples: 1, chatReview: false },
-  tokenmaxxing: { verifiedMeal: true, reviewRounds: 2, samples: 3, chatReview: true },
+  off: { verifiedMeal: false, reviewRounds: 0, samples: 1, chatReview: false, mealLooks: null },
+  medium: { verifiedMeal: true, reviewRounds: 0, samples: 1, chatReview: false, mealLooks: null },
+  high: { verifiedMeal: true, reviewRounds: 1, samples: 1, chatReview: false, mealLooks: null },
+  tokenmaxxing: {
+    verifiedMeal: true,
+    reviewRounds: 2,
+    samples: 3,
+    chatReview: true,
+    mealLooks: { looks: 2, samplesPerLook: 2 },
+  },
 };
 
 /**

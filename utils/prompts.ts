@@ -1496,6 +1496,70 @@ export const getMealReviewFunctions = ():
   },
 ];
 
+/**
+ * The first look at a meal (Thinking: Tokenmaxxing). Structured output, so persona-free.
+ * Seeing is kept apart from estimating: the answer holds no grams and no macros, and is handed
+ * to the recipe extraction as notes.
+ */
+export const getMealObservationPrompt = (language?: string): string => {
+  const sections = [
+    'You are looking at a meal, from a photo and/or a written description, before anyone estimates it.',
+    'Describe what is there. Do NOT return calories, macros or weights in grams.',
+    '1. items: everything visible or stated. For each give the name, the portion in VISUAL words (for example "about a fist", "half the plate", "two slices"), how it was prepared if you can tell, and your confidence (high, medium or low).',
+    '2. scaleCues: anything that shows the size of the portions (plate size, cutlery, a hand, packaging, a cup).',
+    '3. addedFats: visible added fats, sauces, dressings, toppings and drinks.',
+    '4. extras: other things that are visibly or explicitly part of the meal and do not fit above.',
+    '5. uncertain: things that might be present but you cannot tell.',
+    'For a written description with no photo, also add the usual hidden parts (cooking oil, butter, dressing) as items with low confidence.',
+    'Never invent foods that neither the photo nor the description supports.',
+    'If the input shows several separate meals, set mealCount to how many.',
+  ];
+
+  if (language) {
+    sections.push(`Your response must be in ${language}.`);
+  }
+
+  return sections.join('\n');
+};
+
+export const getMealObservationFunctions = ():
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
+  {
+    name: 'observeMeal',
+    description: 'Describe a meal in detail, without grams or macros.',
+    parameters: {
+      type: 'object',
+      properties: {
+        mealCount: { type: 'number', description: 'How many separate meals the input shows' },
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', description: 'Name of the food' },
+              portion: {
+                type: 'string',
+                description: 'The portion in visual words, never grams',
+              },
+              preparation: {
+                type: 'string',
+                description: 'How it was prepared, or an empty string when unknown',
+              },
+              confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+            },
+            required: ['name', 'portion', 'preparation', 'confidence'],
+          },
+        },
+        scaleCues: { type: 'array', items: { type: 'string' } },
+        addedFats: { type: 'array', items: { type: 'string' } },
+        extras: { type: 'array', items: { type: 'string' } },
+        uncertain: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['mealCount', 'items', 'scaleCues', 'addedFats', 'extras', 'uncertain'],
+    },
+  },
+];
+
 /** On-device prompts: a tiny model is best at a nutrition-facts label per 100 g, by name only. */
 export const getOnDeviceLabelPrompt = (names: string[]): string =>
   `Nutrition facts labels, per 100 g, for each food in this list:\n${JSON.stringify(names)}`;

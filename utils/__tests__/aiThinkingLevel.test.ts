@@ -61,13 +61,22 @@ describe('THINKING_PIPELINE', () => {
       reviewRounds: 0,
       samples: 1,
       chatReview: false,
+      mealLooks: null,
     });
     expect(THINKING_PIPELINE.medium).toEqual({
       verifiedMeal: true,
       reviewRounds: 0,
       samples: 1,
       chatReview: false,
+      mealLooks: null,
     });
+  });
+
+  it('gives only tokenmaxxing first looks at a meal: two looks, two samples each', () => {
+    expect(THINKING_PIPELINE.off.mealLooks).toBeNull();
+    expect(THINKING_PIPELINE.medium.mealLooks).toBeNull();
+    expect(THINKING_PIPELINE.high.mealLooks).toBeNull();
+    expect(THINKING_PIPELINE.tokenmaxxing.mealLooks).toEqual({ looks: 2, samplesPerLook: 2 });
   });
 
   it('never does less as the level goes up', () => {
