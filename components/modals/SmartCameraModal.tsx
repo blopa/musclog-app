@@ -27,7 +27,6 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
-import { describeLogError, logLocal } from '@/services/localModels/runTrace';
 import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
 import { describeAiError } from '@/utils/aiErrors';
@@ -452,13 +451,6 @@ export default function SmartCameraModal({
           timer.mark('image-read');
           const aiConfig = withCancel(await AiService.getAiConfig());
           timer.mark('settings-read');
-          logLocal('smart camera meal photo', {
-            fileUri,
-            base64Chars: base64.length,
-            provider: aiConfig?.provider ?? null,
-            engine: aiConfig?.provider === 'on-device' ? aiConfig.engine : undefined,
-            vision: aiConfig?.provider === 'on-device' ? aiConfig.vision : undefined,
-          });
           if (!aiConfig) {
             outcome = 'error';
             setMealPhotoError(t('food.aiCamera.aiNotConfigured'));
@@ -472,10 +464,6 @@ export default function SmartCameraModal({
             (progress) => setMealProgress(mealEstimateProgressLine(progress))
           );
           timer.mark('request');
-          logLocal('smart camera result', {
-            hasResult: Boolean(result),
-            aborted: abortController.signal.aborted,
-          });
           if (abortController.signal.aborted) {
             outcome = 'cancelled';
             return;
@@ -483,10 +471,6 @@ export default function SmartCameraModal({
 
           const mealForLogging = result ? mapTrackMealResponseToMeal(result) : null;
           if (!result || !mealForLogging) {
-            logLocal('smart camera: no usable meal', {
-              hasResult: Boolean(result),
-              mapped: Boolean(mealForLogging),
-            });
             outcome = 'error';
             setMealPhotoError(t('food.aiCamera.aiAnalysisFailed'));
             return;
@@ -509,7 +493,6 @@ export default function SmartCameraModal({
       } catch (error) {
         outcome = abortController.signal.aborted ? 'cancelled' : 'error';
         console.error('[SmartCamera] Error processing AI photo:', error);
-        logLocal('smart camera caught', describeLogError(error));
         if (!abortController.signal.aborted) {
           const message = describeAiError(error, t) ?? t('food.aiCamera.aiAnalysisFailed');
           if (cameraMode === 'ai-meal-photo') {

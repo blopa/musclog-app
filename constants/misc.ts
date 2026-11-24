@@ -46,8 +46,6 @@ export const COACH_REPLY_JOURNAL = 'coachReplyJournal';
  * this phone's), so it is excluded from backups.
  */
 export const LOCAL_MODEL_DOWNLOAD_STATE = 'localModelDownloadState';
-/** Where a downloaded-model run was when it started; a leftover one means the process died mid-run. */
-export const LOCAL_MODEL_RUN_MARKER = 'localModelRunMarker';
 
 /**
  * The text of a message whose reply failed while nobody was looking at the chat, kept so the

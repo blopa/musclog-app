@@ -19,14 +19,6 @@ import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { captureException } from '@/utils/sentry';
 
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
-import {
-  clearLocalRun,
-  describeLogError,
-  LOCAL_MODEL_LOG_TAG,
-  logLocal,
-  markLocalRun,
-  traceLocalModel,
-} from './runTrace';
 
 type LlamaModule = typeof import('llama.rn');
 type LlamaContext = import('llama.rn').LlamaContext;
@@ -84,7 +76,6 @@ function clearIdleTimer() {
 
 /** Frees the model and everything attached to it. Safe to call when nothing is loaded. */
 export async function unloadLocalModel(): Promise<void> {
-  logLocal('unloading model', { loaded: context !== null });
   clearIdleTimer();
   const current = context;
   context = null;
@@ -104,7 +95,6 @@ export async function unloadLocalModel(): Promise<void> {
 function scheduleIdleUnload() {
   clearIdleTimer();
   idleTimer = setTimeout(() => {
-    logLocal('idle timeout reached; unloading', { busy });
     if (!busy) {
       void unloadLocalModel();
     }
@@ -118,7 +108,6 @@ function installLifecycle() {
 
   lifecycleInstalled = true;
   AppState.addEventListener('change', (next) => {
-    logLocal('app state', next, { busy, loaded: context !== null });
     if (next === 'background' && !busy) {
       void unloadLocalModel();
     }
@@ -143,16 +132,6 @@ async function ensureContext(): Promise<LlamaContext> {
   }
 
   installLifecycle();
-  const loadStartedAt = Date.now();
-  traceLocalModel('load-start', { model: installed.manifest.id });
-  logLocal('load params', {
-    modelPath: installed.modelPath,
-    projectorPath: installed.projectorPath,
-    contextTokens: installed.manifest.contextTokens,
-    imageMaxTokens: installed.manifest.imageMaxTokens,
-    gpuLayers: Platform.OS === 'ios' ? 99 : 0,
-    platform: Platform.OS,
-  });
   try {
     const next = await llama().initLlama({
       model: plainPath(installed.modelPath),
@@ -164,11 +143,9 @@ async function ensureContext(): Promise<LlamaContext> {
       ctx_shift: false,
     });
     context = next;
-    traceLocalModel('load-done', { ms: Date.now() - loadStartedAt });
 
     return next;
   } catch (error) {
-    console.log(LOCAL_MODEL_LOG_TAG, 'load failed', describeLogError(error));
     // Tags only: no prompt, path or content.
     void captureException(error, {
       captureContext: { tags: { context: 'localModels.load', model: installed.manifest.id } },
@@ -177,44 +154,21 @@ async function ensureContext(): Promise<LlamaContext> {
   }
 }
 
-async function attachProjector(
-  ctx: LlamaContext,
-  path: string,
-  imageMaxTokens: number,
-  model: string
-) {
+async function attachProjector(ctx: LlamaContext, path: string, imageMaxTokens: number) {
   if (projectorAttached) {
     return;
   }
 
-  const startedAt = Date.now();
-  traceLocalModel('projector-start', { model, imageMaxTokens });
-  let ok = false;
-  try {
-    ok = await ctx.initMultimodal({
-      path: plainPath(path),
-      use_gpu: Platform.OS === 'ios',
-      image_max_tokens: imageMaxTokens,
-    });
-  } catch (error) {
-    console.log(LOCAL_MODEL_LOG_TAG, 'projector threw', describeLogError(error));
-    void captureException(error, {
-      captureContext: { tags: { context: 'localModels.projector', model } },
-    });
-    throw error;
-  }
-
+  const ok = await ctx.initMultimodal({
+    path: plainPath(path),
+    use_gpu: Platform.OS === 'ios',
+    image_max_tokens: imageMaxTokens,
+  });
   if (!ok) {
-    console.log(LOCAL_MODEL_LOG_TAG, 'projector returned false');
-    const failure = new OnDeviceUnavailableError('loadFailed', 'initMultimodal returned false');
-    void captureException(failure, {
-      captureContext: { tags: { context: 'localModels.projector', model } },
-    });
-    throw failure;
+    throw new OnDeviceUnavailableError('loadFailed');
   }
 
   projectorAttached = true;
-  traceLocalModel('projector-done', { ms: Date.now() - startedAt });
 }
 
 function withPhoto(messages: LocalChatMessage[], image: string) {
@@ -241,55 +195,18 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
   clearIdleTimer();
   busy = true;
-  const hasImage = Boolean(params.image);
-  const imageChars = params.image?.length ?? 0;
-  const modelId = (await getInstalledLocalModel().catch(() => null))?.manifest.id ?? 'unknown';
-  // Written before each native call: a process that dies inside one leaves it for the next boot.
-  logLocal('request', {
-    messages: params.messages.map((message) => `${message.role}:${message.content.length}`),
-    structured: Boolean(params.schema),
-    schemaKeys: params.schema ? Object.keys(params.schema) : [],
-    maxTokens: params.maxTokens ?? 1024,
-    temperature: params.temperature ?? 0.2,
-    image: params.image ? `${params.image.slice(0, 30)}… (${params.image.length} chars)` : null,
-    queued: queue !== undefined,
-    loaded: context !== null,
-    projectorAttached,
-  });
-  const mark = (phase: 'load' | 'projector' | 'completion') =>
-    markLocalRun({ phase, model: modelId, hasImage, imageChars });
   try {
-    if (!context) {
-      await mark('load');
-    }
-
     const ctx = await ensureContext();
     let usedProjector = false;
     if (params.image) {
       const installed = await getInstalledLocalModel();
       if (!installed?.projectorPath) {
-        traceLocalModel('projector-missing', { model: modelId });
         throw new OnDeviceUnavailableError('notReady');
       }
 
-      await mark('projector');
-      await attachProjector(
-        ctx,
-        installed.projectorPath,
-        installed.manifest.imageMaxTokens,
-        modelId
-      );
+      await attachProjector(ctx, installed.projectorPath, installed.manifest.imageMaxTokens);
       usedProjector = true;
     }
-
-    await mark('completion');
-    traceLocalModel('completion-start', {
-      hasImage,
-      imageChars,
-      structured: Boolean(params.schema),
-      messages: params.messages.length,
-      promptChars: params.messages.reduce((total, message) => total + message.content.length, 0),
-    });
 
     const onAbort = () => {
       void ctx.stopCompletion();
@@ -328,19 +245,6 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       const replyText = stripTemplateTokens(
         result.content?.trim() ? result.content : (result.text ?? '')
       );
-      logLocal('reply', {
-        chars: (result.text ?? '').length,
-        cleanedChars: replyText.length,
-        text: result.text,
-      });
-      logLocal('timings', result.timings);
-      traceLocalModel('completion-done', {
-        replyChars: (result.text ?? '').length,
-        promptMs: result.timings?.prompt_ms,
-        predictedMs: result.timings?.predicted_ms,
-        promptTokens: result.timings?.prompt_n,
-        predictedTokens: result.timings?.predicted_n,
-      });
 
       return {
         text: replyText,
@@ -351,19 +255,6 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
           predictedPerSecond: result.timings?.predicted_per_second,
         },
       };
-    } catch (error) {
-      // A native failure while generating (a cancel is the caller's own doing).
-      if (!(error instanceof AiCancelledError) && !params.signal?.aborted) {
-        console.log(LOCAL_MODEL_LOG_TAG, 'completion threw', describeLogError(error));
-        void captureException(error, {
-          captureContext: {
-            tags: { context: 'localModels.completion', model: modelId, hasImage: String(hasImage) },
-            extra: { imageChars, structured: Boolean(params.schema) },
-          },
-        });
-      }
-
-      throw error;
     } finally {
       params.signal?.removeEventListener('abort', onAbort);
       if (usedProjector) {
@@ -374,7 +265,6 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
     }
   } finally {
     busy = false;
-    void clearLocalRun();
     scheduleIdleUnload();
   }
 }

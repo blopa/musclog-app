@@ -8,13 +8,6 @@ import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
-import {
-  describeLogError,
-  LOCAL_MODEL_LOG_TAG,
-  logLocal,
-  reportLocalOutcome,
-  traceLocalModel,
-} from '@/services/localModels/runTrace';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
@@ -59,12 +52,7 @@ import {
   pickFoodMatch,
   searchTermsFor,
 } from './localFoodPhoto';
-import {
-  diagnoseLocalReply,
-  jsonSpan,
-  repairReplyJson,
-  stripTemplateTokens,
-} from './localReplyShape';
+import { jsonSpan, repairReplyJson, stripTemplateTokens } from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
@@ -2904,24 +2892,11 @@ async function estimateMealFromPhotoOnDevice(
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   reportMealProgress(onProgress, { step: 'reading', photo: true });
-  logLocal('photo flow start', {
-    inputChars: base64Image.length,
-    hasContext: Boolean(context?.description || context?.tags?.length),
-    engine: onDeviceEngineOf(config),
-    vision: config.vision,
-  });
   const rawBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
   const rawMime = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
   const { base64, mimeType } = await aiImage.prepareOnDeviceImage(rawBase64, rawMime);
-  traceLocalModel('photo-prepared', {
-    inputChars: rawBase64.length,
-    outputChars: base64.length,
-    mimeType,
-    resized: base64 !== rawBase64,
-  });
-
   const systemPrompt = localFoodIdentifyPrompt();
   const details = wrapUserContent([context?.description, ...(context?.tags ?? [])].join(' '));
   const messages = [
@@ -2940,7 +2915,6 @@ async function estimateMealFromPhotoOnDevice(
     config,
   });
 
-  logLocal('photo request', { mimeType, base64Chars: base64.length, systemPrompt });
   const askForPhoto = (temperature?: number) =>
     withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
       sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
@@ -2958,18 +2932,12 @@ async function estimateMealFromPhotoOnDevice(
     );
 
   let raw = await askForPhoto();
-  logLocal('photo raw reply', { chars: raw.length, text: raw });
   let parsed = readPhotoReply(raw);
   if (parsed.kind !== 'ok') {
     // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
     // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
-    logLocal('photo reply unusable; retrying once', {
-      temperature: LOCAL_PHOTO_RETRY_TEMPERATURE,
-    });
-    traceLocalModel('photo-retry', { firstReplyChars: raw.length });
     const firstRaw = raw;
     raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
-    logLocal('photo raw reply (retry)', { chars: raw.length, text: raw });
     parsed = readPhotoReply(raw);
 
     // Last resort before giving up: one text-only call that is asked to correct the broken reply
@@ -2977,10 +2945,6 @@ async function estimateMealFromPhotoOnDevice(
     // only ever runs after both photo attempts failed, so a good run never pays for it.
     const broken = [raw, firstRaw].find((text) => text.trim() !== '');
     if (parsed.kind !== 'ok' && broken) {
-      logLocal('photo reply still unusable; asking the model to repair it', {
-        brokenChars: broken.length,
-      });
-      traceLocalModel('photo-repair-call', { brokenChars: broken.length });
       try {
         const repairedRaw = await withLlmRetry(
           'estimateNutritionFromPhoto.repair',
@@ -2993,81 +2957,33 @@ async function estimateMealFromPhotoOnDevice(
               { signal }
             )
         );
-        logLocal('photo repair reply', { chars: repairedRaw.length, text: repairedRaw });
         const repairedParsed = readPhotoReply(repairedRaw);
         if (repairedParsed.kind === 'ok') {
           parsed = repairedParsed;
           raw = repairedRaw;
-          // Worth knowing in Sentry: the broken reply was recoverable by the model.
-          await reportLocalOutcome('model-repaired', {
-            brokenChars: broken.length,
-            ...diagnoseLocalReply(broken, LOCAL_FOOD_IDENTIFY_SCHEMA),
-          });
         }
       } catch (repairError) {
         // A cancel is the person's; any other failure of the repair call leaves the original failure.
         if (repairError instanceof AiCancelledError) {
           throw repairError;
         }
-
-        logLocal('photo repair call failed', describeLogError(repairError));
       }
     }
   }
 
   const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
   if (foods.length === 0) {
-    // The person sees a generic failure and no exception exists: say which of the three it was.
-    let outcome = 'bad-shape';
-    if (raw.trim() === '') {
-      outcome = 'empty-reply';
-    } else if (parsed.kind === 'ok') {
-      outcome = 'no-foods';
-    }
-
-    const diagnosis = diagnoseLocalReply(raw, LOCAL_FOOD_IDENTIFY_SCHEMA);
-    // The whole reply stays on the phone (adb logcat); Sentry gets its skeleton only.
-    console.log(LOCAL_MODEL_LOG_TAG, `rejected reply (${diagnosis.reason}):`, raw);
-    await reportLocalOutcome(outcome, {
-      replyChars: raw.length,
-      shape: parsed.kind,
-      reason: diagnosis.reason,
-      skeleton: diagnosis.skeleton,
-    });
-
     return null;
   }
 
-  traceLocalModel('photo-identified', { foods: foods.length });
-  logLocal('photo foods', foods);
-
   const matches = new Map<string, FoodCandidate | null>();
   for (const food of foods) {
-    const candidates = await candidateFoodsFor(food.name);
-    const match = pickFoodMatch(food.name, candidates);
-    logLocal('photo match', {
-      name: food.name,
-      candidates: candidates.length,
-      matched: match?.name ?? null,
-    });
-    matches.set(food.name, match);
+    matches.set(food.name, pickFoodMatch(food.name, await candidateFoodsFor(food.name)));
   }
 
   const hour = new Date().getHours();
   const meal = buildPhotoMeal(foods, matches, mealTypeForHour(hour));
-  logLocal('photo meal built', {
-    mealType: meal.meals?.[0]?.mealType,
-    ingredients: meal.meals?.[0]?.ingredients?.length ?? 0,
-  });
-
-  const refined = await refineTrackedMeals(config, meal, onProgress);
-  logLocal('photo refined', {
-    meals: refined.meals?.length ?? 0,
-    ingredients:
-      refined.meals?.reduce((total, entry) => total + (entry.ingredients?.length ?? 0), 0) ?? 0,
-  });
-
-  return refined;
+  return refineTrackedMeals(config, meal, onProgress);
 }
 
 /**
@@ -3081,11 +2997,6 @@ export async function estimateNutritionFromPhoto(
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   if (config.provider === 'on-device') {
-    logLocal('estimateNutritionFromPhoto', {
-      engine: onDeviceEngineOf(config),
-      vision: config.vision,
-      model: config.model,
-    });
     if (onDeviceEngineOf(config) !== 'gguf') {
       throw new OnDeviceUnavailableError('photosUnsupported');
     }
@@ -3097,7 +3008,6 @@ export async function estimateNutritionFromPhoto(
     try {
       return await estimateMealFromPhotoOnDevice(config, base64Image, context, onProgress);
     } catch (error) {
-      logLocal('photo flow threw', describeLogError(error));
       reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
       throw error;
     }

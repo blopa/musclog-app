@@ -23,7 +23,6 @@ import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import { recoverInterruptedCoachReply } from '@/services/coachReplyStream';
 import { healthDataSyncService } from '@/services/healthDataSync';
-import { reportInterruptedLocalRun } from '@/services/localModels/runTrace';
 import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
@@ -128,10 +127,6 @@ export function AppBoot() {
           // .catch((err) => captureBootException(err, 'HealthDataSync.bootSync'))
           // purposely error silently since the user choose to not allow it.
           .catch(() => undefined)
-      ),
-      // A downloaded-model run the process did not survive (native crash, killed for memory).
-      reportInterruptedLocalRun().catch((err) =>
-        captureBootException(err, 'reportInterruptedLocalRun')
       ),
       // Before the daily insights, so a reply the app was closed on is settled first.
       waitForDbReady()

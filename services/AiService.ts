@@ -148,12 +148,6 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
     (await SettingsService.getUseOnDeviceAi())
       ? async (language) => {
           const status = await refreshOnDeviceStatus();
-          console.log('[LocalModel] on-device status', {
-            engine: status.engine,
-            state: status.state,
-            vision: status.capabilities.vision,
-            progress: status.progress,
-          });
 
           return {
             provider: 'on-device',
