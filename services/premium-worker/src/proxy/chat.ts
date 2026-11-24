@@ -49,6 +49,7 @@ export const TIMEOUTS = { overallMs: 55_000, streamIdleMs: 30_000 };
 
 const KEY_RE = /^[A-Za-z0-9_-]{8,128}$/;
 const GENERATION_TRIES = 3;
+const REQUIRED_CONSENT_VERSION = '4';
 
 /** USD -> whole micro-USD, rounded up. The 1e9 detour removes float noise (0.00123 * 1e6). */
 export const costToMicro = (usd: number): number => Math.ceil(Math.round(usd * 1e9) / 1e3);
@@ -114,14 +115,17 @@ async function run(request: Request, ctx: Ctx, rl: RequestLog, emit: EmitLog): P
     throw new ApiError(400, 'invalid_request', { path: 'body' });
   }
   const req = allowlistRequest(parsed, config);
-  // The gateway is chosen once per request; the body, the bound, the call and the settlement follow it.
-  const upstream = await activeUpstream(ctx);
-  const r = reservationBound(req, config, upstream);
-  rl.upstream = upstream;
-
-  // 5. The caller's live period, diagnosing why there is none.
+  // 5. The caller's live period, diagnosing why there is none, then the gateway and its consent.
   const period = await requirePeriod(ctx, claims.rc, now);
   rl.lineage = lineagePrefix(period.lineage_key);
+  const upstream = await activeUpstream(ctx);
+  rl.upstream = upstream;
+  if (
+    upstream === 'otari' &&
+    request.headers.get('x-musclog-consent-version') !== REQUIRED_CONSENT_VERSION
+  )
+    throw new ApiError(403, 'consent_required');
+  const r = reservationBound(req, config, upstream);
   const budgetHeader = { 'x-musclog-budget-remaining-pct': String(budgetPct(period, r, now)) };
   const fail = (
     status: number,

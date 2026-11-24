@@ -139,7 +139,6 @@ export function usePremium({ load = false }: { load?: boolean } = {}): UsePremiu
       consentNeeded: (nextValue) =>
         needsPremiumConsent({
           storedVersion: consentVersion,
-          currentlyOn: useHostedAi,
           nextValue,
         }),
     }),

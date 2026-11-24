@@ -263,7 +263,7 @@ export async function withLlmRetry<T>(
   const provider = config.provider;
   const state: RetryState = { attempt: 0, timeoutRetried: false };
   const policy = providerPolicyFor(config);
-  const headers = policy.requestHeaders?.();
+  const headers = policy.requestHeaders?.(config);
 
   policy.assertUsable?.(config);
 

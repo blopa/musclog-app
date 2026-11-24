@@ -1,0 +1,113 @@
+import { act, renderHook } from '@testing-library/react';
+
+import { useMealPhotoEstimate } from '../useMealPhotoEstimate';
+import { AiService } from '@/services/AiService';
+import { estimateNutritionFromPhoto } from '@/utils/coachAI';
+import { readFileAsStringAsync } from '@/utils/file';
+
+jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+jest.mock('@/hooks/useEnergyUnit', () => ({
+  useEnergyUnit: () => ({ formatEnergyWithUnit: String }),
+}));
+jest.mock('@/hooks/useFormatAppNumber', () => ({
+  useFormatAppNumber: () => ({ formatRoundedDecimal: String }),
+}));
+jest.mock('@/services/AiService', () => ({
+  AiService: { getAiConfig: jest.fn() },
+}));
+jest.mock('@/utils/coachAI', () => ({ estimateNutritionFromPhoto: jest.fn() }));
+jest.mock('@/utils/file', () => ({ readFileAsStringAsync: jest.fn() }));
+jest.mock('@/utils/snackbarService', () => ({ showSnackbar: jest.fn() }));
+
+test('submits all photos and hands the first photo and named meal to logging', async () => {
+  jest.mocked(AiService.getAiConfig).mockResolvedValue({} as never);
+  jest.mocked(readFileAsStringAsync).mockImplementation(async (uri) => `base64:${uri}`);
+  jest.mocked(estimateNutritionFromPhoto).mockResolvedValue({
+    meals: [
+      {
+        mealName: 'AI name',
+        ingredients: [{ kcal: 100, protein: 10, carbs: 12, fat: 2, grams: 50 }],
+      },
+    ],
+  } as never);
+  const onSuccess = jest.fn();
+  const onFailure = jest.fn();
+  const hook = renderHook(() =>
+    useMealPhotoEstimate({
+      abortRef: { current: null },
+      setProcessing: jest.fn(),
+      setProgress: jest.fn(),
+      setError: jest.fn(),
+      onSuccess,
+    })
+  );
+  await act(async () =>
+    hook.result.current({ photos: ['first', 'second'], name: ' Dinner ', onFailure })
+  );
+  expect(estimateNutritionFromPhoto).toHaveBeenCalledWith(
+    expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    ['base64:first', 'base64:second'],
+    undefined,
+    expect.any(Function)
+  );
+  expect(onSuccess).toHaveBeenCalledWith(
+    expect.objectContaining({ name: 'Dinner', calories: 100 }),
+    expect.any(Array),
+    'first'
+  );
+  expect(onFailure).not.toHaveBeenCalled();
+});
+
+test('reopens the detailed draft on failure or cancellation', async () => {
+  jest.mocked(AiService.getAiConfig).mockResolvedValue({} as never);
+  jest.mocked(estimateNutritionFromPhoto).mockResolvedValue(null);
+  const onSuccess = jest.fn();
+  const onFailure = jest.fn();
+  const setError = jest.fn();
+  const hook = renderHook(() =>
+    useMealPhotoEstimate({
+      abortRef: { current: null },
+      setProcessing: jest.fn(),
+      setProgress: jest.fn(),
+      setError,
+      onSuccess,
+    })
+  );
+  await act(async () => hook.result.current({ photos: ['first'], onFailure }));
+  expect(onFailure).toHaveBeenCalledTimes(1);
+  expect(setError).toHaveBeenLastCalledWith('food.aiCamera.aiAnalysisFailed');
+  expect(onSuccess).not.toHaveBeenCalled();
+});
+
+test('cancelling an estimate returns to the preserved draft without handing off a meal', async () => {
+  jest.mocked(AiService.getAiConfig).mockResolvedValue({} as never);
+  let finishRequest: (value: never) => void = () => {};
+  jest.mocked(estimateNutritionFromPhoto).mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finishRequest = resolve;
+      })
+  );
+  const abortRef: { current: AbortController | null } = { current: null };
+  const onSuccess = jest.fn();
+  const onFailure = jest.fn();
+  const hook = renderHook(() =>
+    useMealPhotoEstimate({
+      abortRef,
+      setProcessing: jest.fn(),
+      setProgress: jest.fn(),
+      setError: jest.fn(),
+      onSuccess,
+    })
+  );
+  await act(async () => {
+    const pending = hook.result.current({ photos: ['first'], onFailure });
+    await Promise.resolve();
+    await Promise.resolve();
+    abortRef.current?.abort();
+    finishRequest(null as never);
+    await pending;
+  });
+  expect(onFailure).toHaveBeenCalledTimes(1);
+  expect(onSuccess).not.toHaveBeenCalled();
+});

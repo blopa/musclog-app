@@ -27,6 +27,7 @@
     "hostedBudgetNoDate": "Limit Musclog Iron na ten okres został wykorzystany. Musclog nadal działa, a możesz użyć własnego klucza lub wersji darmowej.",
     "hostedSubscription": "Musclog Iron nie ma aktywnej subskrypcji na tym urządzeniu. Przywróć zakup lub zasubskrybuj w ustawieniach Musclog Iron.",
     "hostedRemoved": "To urządzenie zostało usunięte z Twojej subskrypcji Musclog Iron. Przywróć zakupy w ustawieniach Musclog Iron, aby dodać je ponownie.",
+    "hostedConsentRequired": "Sprawdź zaktualizowaną zgodę w ustawieniach Musclog Iron.",
     "hostedUnavailable": "Musclog Iron jest teraz niedostępny. Spróbuj ponownie za chwilę.",
     "hostedDailyFull": "AI w Musclog Iron jest przeciążone do jutra (UTC).",
     "hostedDailyLimit": "Osiągnięto dzienny limit Musclog Iron. Zeruje się o północy (UTC). W międzyczasie możesz użyć własnego klucza lub darmowego poziomu.",

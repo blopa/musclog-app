@@ -209,6 +209,19 @@ describe('generateWithLocalModel', () => {
     expect(mockContext.stopCompletion).toHaveBeenCalled();
   });
 
+  it('does not start completion if cancelled while attaching the projector', async () => {
+    const controller = new AbortController();
+    mockContext.initMultimodal.mockImplementationOnce(async () => {
+      controller.abort();
+      return true;
+    });
+    await expect(
+      generateWithLocalModel({ messages, image: 'file:///photo.jpg', signal: controller.signal })
+    ).rejects.toBeInstanceOf(AiCancelledError);
+    expect(mockContext.completion).not.toHaveBeenCalled();
+    expect(mockContext.releaseMultimodal).toHaveBeenCalled();
+  });
+
   it('does not start when already aborted', async () => {
     const controller = new AbortController();
     controller.abort();

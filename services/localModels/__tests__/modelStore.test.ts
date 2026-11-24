@@ -91,7 +91,7 @@ jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
 jest.mock('@/modules/on-device-ai', () => ({
   onDeviceAiModule: {
-    storageDirectory: () => 'file:///no-backup/local-ai',
+    storageDirectory: jest.fn(() => 'file:///no-backup/local-ai'),
     sha256File: jest.fn(async (path: string) => {
       const { DEFAULT_LOCAL_MODEL: model } = jest.requireActual('@/constants/localModels');
       const file = model.files.find((f: { path: string }) => path.endsWith(f.path));
@@ -113,6 +113,8 @@ import {
   cancelLocalModelDownload,
   deleteLocalModel,
   getInstalledLocalModel,
+  getLocalModelSpaceCheck,
+  pauseLocalModelDownload,
   getLocalModelSnapshot,
   refreshLocalModel,
   registerLocalModelUnloader,
@@ -133,6 +135,96 @@ beforeEach(() => {
 });
 
 describe('startLocalModelDownload', () => {
+  it('does not reject if the storage directory lookup fails', async () => {
+    const native = jest.requireMock('@/modules/on-device-ai').onDeviceAiModule;
+    native.storageDirectory.mockImplementationOnce(() => {
+      throw new Error('storage');
+    });
+    await expect(startLocalModelDownload()).resolves.toBeUndefined();
+    expect(getLocalModelSnapshot().state).toEqual({ kind: 'failed', reason: 'storage' });
+  });
+
+  it('treats unreadable partial files as unavailable for reuse', async () => {
+    const fs = jest.requireMock('expo-file-system/legacy');
+    fs.getInfoAsync.mockRejectedValueOnce(new Error('storage'));
+    mockFree = 100e6;
+    await expect(getLocalModelSpaceCheck({ withProjector: false })).resolves.toMatchObject({
+      enough: false,
+    });
+  });
+
+  it('continues a download when native pause fails', async () => {
+    const fs = jest.requireMock('expo-file-system/legacy');
+    let finish!: (result: { status: number; uri: string }) => void;
+    let started!: () => void;
+    const ready = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    fs.createDownloadResumable.mockImplementationOnce((_url: string, dest: string) => ({
+      downloadAsync: () => {
+        started();
+        return new Promise((resolve) => {
+          finish = resolve;
+        });
+      },
+      pauseAsync: async () => {
+        throw new Error('pause failed');
+      },
+    }));
+    const download = startLocalModelDownload({ withProjector: false });
+    await ready;
+    const pause = pauseLocalModelDownload();
+    await Promise.resolve();
+    const file = DEFAULT_LOCAL_MODEL.files.find((item) => item.role === 'model')!;
+    const dest = `${ROOT}/.partial/${DEFAULT_LOCAL_MODEL.id}@${DEFAULT_LOCAL_MODEL.revision}/${file.path}`;
+    mockFs.set(dest, { dir: false, size: file.bytes });
+    finish({ status: 200, uri: dest });
+    await Promise.all([pause, download]);
+    expect(getLocalModelSnapshot().state.kind).toBe('ready');
+  });
+
+  it('reserves the download before checking disk space', async () => {
+    await Promise.all([
+      startLocalModelDownload({ withProjector: false }),
+      startLocalModelDownload({ withProjector: false }),
+    ]);
+    expect(mockUrls).toHaveLength(1);
+    expect(getLocalModelSnapshot().state.kind).toBe('ready');
+  });
+
+  it('waits for a cancelled admission check before allowing another start', async () => {
+    const fs = jest.requireMock('expo-file-system/legacy');
+    let release!: (bytes: number) => void;
+    fs.getFreeDiskStorageAsync.mockImplementationOnce(
+      () =>
+        new Promise<number>((resolve) => {
+          release = resolve;
+        })
+    );
+    const first = startLocalModelDownload({ withProjector: false });
+    const cancelling = cancelLocalModelDownload();
+    await startLocalModelDownload({ withProjector: false });
+    release(10e9);
+    await Promise.all([first, cancelling]);
+    expect(mockUrls).toHaveLength(0);
+    expect(getLocalModelSnapshot().state.kind).toBe('notInstalled');
+  });
+
+  it('reuses a complete partial file when checking free space', async () => {
+    const model = DEFAULT_LOCAL_MODEL.files.find((file) => file.role === 'model')!;
+    mockFs.set(
+      `${ROOT}/.partial/${DEFAULT_LOCAL_MODEL.id}@${DEFAULT_LOCAL_MODEL.revision}/${model.path}`,
+      {
+        dir: false,
+        size: model.bytes,
+      }
+    );
+    mockFree = 350e6;
+    await startLocalModelDownload({ withProjector: false });
+    expect(getLocalModelSnapshot().state.kind).toBe('ready');
+    expect(mockUrls).toHaveLength(0);
+  });
+
   it('downloads both files, verifies them and installs atomically', async () => {
     await startLocalModelDownload({ withProjector: true });
 

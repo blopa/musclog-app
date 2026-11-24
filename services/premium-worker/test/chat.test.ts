@@ -595,6 +595,28 @@ describe('max_tokens_by_effort end to end', () => {
 describe('the Otari upstream (D1 toggle)', () => {
   beforeEach(() => useOtari());
 
+  it.each([undefined, '3', '04'])(
+    'requires current consent before reserving or forwarding (header %s)',
+    async (version) => {
+      const otari = fakeOtari(otariJsonCompletion('0.001000'));
+      const { res, done } = await call({
+        otari,
+        consentVersion: null,
+        headers: version === undefined ? {} : { 'x-musclog-consent-version': version },
+      });
+      expect(res.status).toBe(403);
+      expect(await res.json()).toMatchObject({
+        error: {
+          code: 'consent_required',
+          message: 'Review the updated Musclog Iron consent to continue.',
+        },
+      });
+      await done();
+      expect(otari.calls).toHaveLength(0);
+      expect(await reservations()).toHaveLength(0);
+    }
+  );
+
   it('non-stream success sends a pinned Otari body and charges usage.cost_usd', async () => {
     const otari = fakeOtari(otariJsonCompletion('0.001230'));
     const { res, deps, done } = await call({ otari });

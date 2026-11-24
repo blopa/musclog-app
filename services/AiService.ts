@@ -8,6 +8,7 @@ import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/ut
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import { PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
 import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 
 /**
@@ -116,12 +117,16 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
       const model = 'musclog-hosted';
 
       if (baseUrl && grant?.ok) {
+        const consentVersion = await SettingsService.get(SETTINGS.premiumConsentVersion);
         return {
           provider: 'hosted',
           // The OpenAI SDK appends `/chat/completions` to this, and the Worker serves it under
           // `/v1`: the bare host answered 404 on the first real Premium chat.
           baseUrl: `${baseUrl.replace(/\/+$/, '')}/v1`,
           apiKey: grant.value.sessionToken,
+          ...(consentVersion === PREMIUM_CONSENT_VERSION
+            ? { hostedConsentVersion: consentVersion }
+            : {}),
           model,
           language,
         };

@@ -87,6 +87,43 @@ describe('consensusMeals', () => {
     expect(result.meals[1].ingredients[0].name).toBe('Toast');
   });
 
+  it('aligns meals by unique meal type when sample order differs', () => {
+    const breakfast = {
+      ...meal([ing('Egg', 50, 70)]),
+      mealType: 'breakfast' as const,
+      mealName: 'Breakfast',
+    };
+    const lunch = {
+      ...meal([ing('Rice', 100, 130)]),
+      mealType: 'lunch' as const,
+      mealName: 'Lunch',
+    };
+    const result = consensusMeals([
+      { meals: [breakfast, lunch] },
+      {
+        meals: [
+          { ...lunch, ingredients: [ing('Rice', 110, 143)] },
+          { ...breakfast, ingredients: [ing('Egg', 60, 84)] },
+        ],
+      },
+    ]);
+
+    expect(result.meals.map((item) => item.mealType)).toEqual(['breakfast', 'lunch']);
+    expect(result.meals.map((item) => item.ingredients[0].name)).toEqual(['Egg', 'Rice']);
+    expect(result.meals.map((item) => item.ingredients[0].grams)).toEqual([55, 105]);
+  });
+
+  it('keeps a complete sample meal when repeated types cannot be aligned by name', () => {
+    const first = { ...meal([ing('Pasta', 100, 150)]), mealName: 'Meal A' };
+    const second = { ...meal([ing('Soup', 200, 80)]), mealName: 'Meal B' };
+    const result = consensusMeals([{ meals: [first, second] }, { meals: [second, first] }]);
+
+    expect(result.meals.map((item) => item.ingredients)).toEqual([
+      first.ingredients,
+      second.ingredients,
+    ]);
+  });
+
   describe('with groups', () => {
     const names = (result: ReturnType<typeof consensusMeals>) =>
       result.meals[0].ingredients.map((i) => i.name);

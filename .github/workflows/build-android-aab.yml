@@ -36,17 +36,11 @@ jobs:
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       EAS_BUILD_PROFILE: production
-      SUBMIT_TO_INTERNAL: ${{ inputs.submit_to_internal }}
-      PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
     steps:
       - name: Check the Expo token is set
         run: |
           if [ -z "$EXPO_TOKEN" ]; then
             echo "::error::Add the repository secret EXPO_TOKEN (Settings -> Secrets and variables -> Actions)."
-            exit 1
-          fi
-          if [ "$SUBMIT_TO_INTERNAL" = "true" ] && [ -z "$PLAY_SERVICE_ACCOUNT_JSON" ]; then
-            echo "::error::Submitting needs the repository secret PLAY_SERVICE_ACCOUNT_JSON (the Play service account key, whole JSON)."
             exit 1
           fi
 
@@ -148,7 +142,13 @@ jobs:
 
       - name: Sign in to Google Play
         if: inputs.submit_to_internal
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
         run: |
+          if [ -z "$PLAY_SERVICE_ACCOUNT_JSON" ]; then
+            echo "::error::Submitting needs the repository secret PLAY_SERVICE_ACCOUNT_JSON (the Play service account key, whole JSON)."
+            exit 1
+          fi
           umask 077
           mkdir -p "$HOME/keys"
           printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > "$HOME/keys/musclog-play-service-account.json"

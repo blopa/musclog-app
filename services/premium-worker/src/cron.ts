@@ -146,14 +146,16 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
     });
     return;
   }
-  // Spend through Otari since the baseline. It only ever adds to the gateway side, so a failed call
-  // (counted as 0) can make the gap smaller, never open the breaker falsely.
+  // Spend through Otari since the baseline. Do not advance the baseline unless its whole usage
+  // window is accounted for; otherwise the next run could permanently skip missing spend.
   let otari_u = 0;
+  let usageComplete = true;
   if (ctx.deps.otari) {
     try {
       const summary = await ctx.deps.otari.usageSummary(prev.at, now);
       otari_u = Math.round(summary.costUsd * 1e6);
       if (summary.unpriced > 0) {
+        usageComplete = false;
         ctx.deps.log.log({
           route: 'cron',
           status: 500,
@@ -163,6 +165,7 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
         });
       }
     } catch {
+      usageComplete = false;
       ctx.deps.log.log({
         route: 'cron',
         status: 500,
@@ -185,7 +188,7 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
   if (delta - ledger_u > tol.tolerance_share * ledger_u + tol.tolerance_u) {
     await open(ctx, 'reconciliation', 'reconciliation_gap');
   }
-  await store();
+  if (usageComplete) await store();
 }
 
 export async function runDaily(ctx: Ctx): Promise<void> {

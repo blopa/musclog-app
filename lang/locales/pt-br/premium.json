@@ -30,6 +30,7 @@
     "resetBody": "Isso esquece a adesão ao Musclog Iron deste dispositivo e cria uma nova chave de dispositivo. Sua assinatura não é cancelada. Restaurar compras adiciona este dispositivo de volta.",
     "resetConfirm": "Redefinir",
     "consent": {
+      "review": "Revisar o consentimento atualizado",
       "title": "Enviar solicitações de IA ao Musclog Iron?",
       "body": "Suas mensagens, suas fotos de refeições e os dados de que um recurso de IA precisa para responder, como seus treinos, refeições e medidas corporais, vão para o serviço Musclog Iron. Ele os encaminha por um gateway de IA, o OpenRouter ou o Otari (da Mozilla.ai), ao provedor do modelo de IA. O Musclog escolhe qual gateway é usado, e este consentimento cobre ambos. Só são usados provedores com retenção zero de dados (ZDR): eles não guardam seu conteúdo nem o usam para treinamento. O OpenRouter faz a triagem de todas as solicitações em busca de material de abuso sexual infantil e pode manter uma solicitação que sinalizar; o Otari afirma que não armazena o conteúdo das solicitações. Alguns desses dados são relacionados à saúde e, ao concordar, você dá seu consentimento explícito para que sejam processados dessa forma. O serviço do Musclog nunca armazena suas mensagens; ele guarda apenas um identificador deste dispositivo e contagens de uso. As políticas de privacidade e os termos do OpenRouter e do Otari estão linkados no final da tela do Musclog Iron. Você pode desativar isso a qualquer momento.",
       "confirm": "Usar o Musclog Iron",

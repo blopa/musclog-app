@@ -15,7 +15,7 @@ import { DEFAULT_LOCAL_MODEL } from '@/constants/localModels';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useScrollFade } from '@/hooks/useScrollFade';
 import { useTheme } from '@/hooks/useTheme';
-import { getFreeDiskBytes } from '@/services/localModels/modelStore';
+import { getFreeDiskBytes, getLocalModelSpaceCheck } from '@/services/localModels/modelStore';
 import { enableOnDeviceAi } from '@/services/onDeviceAiSetup';
 import {
   checkSpace,
@@ -98,7 +98,18 @@ export default function OnDeviceAiOptionsScreen() {
     };
   }, [offersApple, i18n.language]);
 
-  const space = checkSpace(freeBytes, DEFAULT_LOCAL_MODEL, selection);
+  const [space, setSpace] = useState(() => checkSpace(null, DEFAULT_LOCAL_MODEL, selection));
+  useEffect(() => {
+    let cancelled = false;
+    void getLocalModelSpaceCheck(selection).then((result) => {
+      if (!cancelled) {
+        setSpace(result);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selection]);
   const blockedBySpace = selected === 'model' && freeBytes !== null && !space.enough;
 
   const handleContinue = async () => {

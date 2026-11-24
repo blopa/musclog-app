@@ -91,6 +91,8 @@ const macros = {
 function answerByKind(
   options: {
     failLooks?: number;
+    failRecipeLooks?: number[];
+    cancelRecipeLook?: number;
     kcalPerEstimate?: (n: number) => number;
     uncertain?: string[];
     implausible?: boolean;
@@ -107,8 +109,16 @@ function answerByKind(
         }
 
         return reply({ ...observation(), uncertain: options.uncertain ?? [] });
-      case 'extractRecipe':
+      case 'extractRecipe': {
+        const text = params.messages.at(-1).content;
+        if (options.cancelRecipeLook && text.includes(`Rice look ${options.cancelRecipeLook}`)) {
+          throw new AiCancelledError();
+        }
+        if (options.failRecipeLooks?.some((look) => text.includes(`Rice look ${look}`))) {
+          throw new Error('recipe failed');
+        }
         return reply(recipe);
+      }
       case 'estimateMissingIngredients': {
         const n = estimates++;
         const kcal = options.kcalPerEstimate?.(n) ?? 195;
@@ -251,6 +261,37 @@ describe('meal estimate first looks', () => {
     expect(recipes).toHaveLength(3);
     expect(recipes.some((call) => userTextOf(call).includes('FIRST LOOK'))).toBe(false);
     expect(result?.meals).toHaveLength(1);
+  });
+
+  it('keeps first-stage estimates when every second-stage sample fails', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    answerByKind({ uncertain: ['oil'], failRecipeLooks: [2] });
+
+    const result = await trackMeal(openai, 'a bowl of rice');
+
+    expect(result?.meals).toHaveLength(1);
+  });
+
+  it('tries plain samples when all estimates with looks fail', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    answerByKind({ failRecipeLooks: [1, 2] });
+
+    const result = await trackMeal(openai, 'a bowl of rice');
+
+    expect(result?.meals).toHaveLength(1);
+    expect(callsFor('extractRecipe').some((call) => !userTextOf(call).includes('FIRST LOOK'))).toBe(
+      true
+    );
+  });
+
+  it('stops on cancellation during the second stage without plain fallback', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    answerByKind({ uncertain: ['oil'], cancelRecipeLook: 2 });
+
+    await expect(trackMeal(openai, 'a bowl of rice')).resolves.toBeNull();
+    expect(callsFor('extractRecipe').every((call) => userTextOf(call).includes('FIRST LOOK'))).toBe(
+      true
+    );
   });
 
   it('stops at a cancel during the first look without sampling', async () => {

@@ -71,7 +71,7 @@ export async function loadPremiumOverview(): Promise<PremiumOverview> {
 async function switchOnWhenConsented(): Promise<void> {
   const storedVersion = await SettingsService.get(SETTINGS.premiumConsentVersion);
 
-  if (!needsPremiumConsent({ storedVersion, currentlyOn: false, nextValue: true })) {
+  if (!needsPremiumConsent({ storedVersion, nextValue: true })) {
     await SettingsService.set(SETTINGS.useHostedAi, true);
   }
 }

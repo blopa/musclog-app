@@ -220,6 +220,10 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
     params.signal?.addEventListener('abort', onAbort);
     try {
+      if (params.signal?.aborted) {
+        throw new AiCancelledError();
+      }
+
       const result = await ctx.completion(
         {
           messages: params.image ? withPhoto(params.messages, params.image) : params.messages,

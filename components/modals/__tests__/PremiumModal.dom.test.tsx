@@ -265,6 +265,28 @@ describe('PremiumModal', () => {
       expect(premium.recordConsent).not.toHaveBeenCalled();
     });
 
+    it('offers consent review for enabled AI with stale consent, even after allowance is exhausted', () => {
+      const exhausted = buildPremiumViewModel(
+        input({
+          status: 'exhausted' as never,
+          usage: { usedPct: 100, resetsAt: null, devices: { count: 1, max: 3 } } as never,
+        })
+      );
+      const premium = premiumWith(exhausted, {
+        useHostedAi: true,
+        consentNeeded: jest.fn(() => true),
+      });
+      mockUsePremium.mockReturnValue(premium);
+
+      renderModal();
+
+      fireEvent.click(screen.getByText('premium.consent.review'));
+
+      expect(screen.getByText('premium.consent.title')).toBeTruthy();
+      expect(premium.recordConsent).not.toHaveBeenCalled();
+      expect(premium.setUseHostedAi).not.toHaveBeenCalled();
+    });
+
     it('records consent and then enables AI when the consent is confirmed', async () => {
       const calls: string[] = [];
       const premium = premiumWith(activeView, {

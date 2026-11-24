@@ -1,11 +1,12 @@
 import { randomUUID } from 'expo-crypto';
 import { MessageSquareText } from 'lucide-react-native';
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { type ComponentProps, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { MealDraftButton } from '@/components/camera/MealDraftButton';
 import { MealPhotoDetailsModal } from '@/components/camera/MealPhotoDetailsModal';
+import { useMealPhotoEstimate } from '@/components/camera/useMealPhotoEstimate';
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import {
@@ -25,7 +26,6 @@ import {
 } from '@/hooks/useCameraCaptureFlow';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMealPhotoLimit } from '@/hooks/useMealPhotoLimit';
 import { useSettings } from '@/hooks/useSettings';
@@ -35,19 +35,14 @@ import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
 import { describeAiError } from '@/utils/aiErrors';
 import {
-  estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
   extractMacrosFromLabelText,
   type MacroEstimate,
   type TrackMealIngredient,
-  type TrackMealResponse,
 } from '@/utils/coachAI';
 import { copyImageToDocumentDirectory, readFileAsStringAsync } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
-import {
-  type MealEstimateProgressLine,
-  mealEstimateProgressLine,
-} from '@/utils/mealEstimateProgress';
+import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 import { mealPhotoContextFromDraft } from '@/utils/mealPhotoContext';
 import { EMPTY_MEAL_PHOTO_DRAFT, mealPhotoDraftReducer } from '@/utils/mealPhotoDraft';
 import { createPhaseTimer } from '@/utils/phaseTimer';
@@ -230,7 +225,6 @@ export default function SmartCameraModal({
 }: CameraModalProps) {
   const { t, i18n } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
-  const { formatRoundedDecimal } = useFormatAppNumber();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
@@ -257,7 +251,9 @@ export default function SmartCameraModal({
     'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
   >('all');
   const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
-  const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
+  const [selectedMealForLogging, setSelectedMealForLogging] = useState<
+    ComponentProps<typeof LogMealModal>['meal'] | null
+  >(null);
   const [aiIngredients, setAiIngredients] = useState<TrackMealIngredient[] | undefined>(undefined);
   const [aiPhotoUri, setAiPhotoUri] = useState<string | undefined>(undefined);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
@@ -308,35 +304,6 @@ export default function SmartCameraModal({
 
   const isCameraActive =
     visible && !barcode.isSearchingBarcode && !isProcessingAi && !isAnyChildModalVisible;
-
-  /** Map AI TrackMealResponse to the shape LogMealModal expects (calories from kcal). */
-  const mapTrackMealResponseToMeal = useCallback(
-    (result: TrackMealResponse) => {
-      const allIngredients = result.meals.flatMap((m) => m.ingredients);
-      if (allIngredients.length === 0) {
-        return null;
-      }
-
-      const totalGrams = allIngredients.reduce((sum, ing) => sum + (ing.grams || 0), 0);
-      const totalKcal = allIngredients.reduce((sum, ing) => sum + ing.kcal, 0);
-      const totalProtein = allIngredients.reduce((sum, ing) => sum + ing.protein, 0);
-      const totalCarbs = allIngredients.reduce((sum, ing) => sum + ing.carbs, 0);
-      const totalFat = allIngredients.reduce((sum, ing) => sum + ing.fat, 0);
-      const mealName =
-        result.meals[0]?.mealName || result.meals[0]?.mealType || t('meals.customMeal');
-
-      return {
-        name: mealName,
-        type: t('meals.customMeal'),
-        calories: totalKcal,
-        protein: totalProtein,
-        carbs: totalCarbs,
-        fat: totalFat,
-        grams: totalGrams,
-      };
-    },
-    [t]
-  );
 
   /** Map AI label macro result to synthetic SearchResultProduct for FoodMealTrackingDetailsModal. */
   const macroEstimateToSearchResultProduct = useCallback(
@@ -395,90 +362,33 @@ export default function SmartCameraModal({
     visible && (isProcessingAi || barcode.isSearchingBarcode)
   );
 
-  /**
-   * The detailed flow's estimate: every photo of the draft and its optional details in ONE request.
-   * The sheet closes while it runs (the camera's processing overlay shows the steps), and comes back
-   * with the draft intact and the reason when the estimate fails or is cancelled.
-   */
-  const runMealEstimate = useCallback(async () => {
-    setIsMealDetailsVisible(false);
-    setIsProcessingAi(true);
-    setMealPhotoError(null);
-    setMealProgress(null);
-    setAiPhotoUri(mealDraft.photos[0]);
-    const abortController = new AbortController();
-    aiAbortRef.current = abortController;
-    const timer = createPhaseTimer('SmartCamera.aiMealPhotos');
-    let outcome = 'done';
-    let reopenWithError: string | null = null;
-    try {
-      const images = await Promise.all(
-        mealDraft.photos.map((uri) =>
-          readFileAsStringAsync(uri, { encoding: 'base64' } as { encoding: 'base64' })
-        )
-      );
-      timer.mark('images-read');
-      const baseConfig = await AiService.getAiConfig();
-      const aiConfig = baseConfig ? { ...baseConfig, signal: abortController.signal } : null;
-      timer.mark('settings-read');
-      if (!aiConfig) {
-        outcome = 'error';
-        reopenWithError = t('food.aiCamera.aiNotConfigured');
-        return;
-      }
-
-      const result = await estimateNutritionFromPhoto(
-        aiConfig,
-        images,
-        mealPhotoContextFromDraft(mealDraft),
-        (progress) => setMealProgress(mealEstimateProgressLine(progress))
-      );
-      timer.mark('request');
-      if (abortController.signal.aborted) {
-        outcome = 'cancelled';
-        return;
-      }
-
-      const mapped = result ? mapTrackMealResponseToMeal(result) : null;
-      if (!result || !mapped) {
-        outcome = 'error';
-        reopenWithError = t('food.aiCamera.aiAnalysisFailed');
-        return;
-      }
-
-      const typedName = mealDraft.name.trim();
-      const mealForLogging = typedName ? { ...mapped, name: typedName } : mapped;
-      showSnackbar(
-        'success',
-        t('food.aiCamera.analysisSuccess', {
-          name: mealForLogging.name,
-          kcal: formatEnergyWithUnit(mealForLogging.calories),
-          protein: formatRoundedDecimal(mealForLogging.protein, 2),
-          carbs: formatRoundedDecimal(mealForLogging.carbs, 2),
-          fat: formatRoundedDecimal(mealForLogging.fat, 2),
-        })
-      );
-      setSelectedMealForLogging(mealForLogging);
-      setAiIngredients(result.meals.flatMap((meal) => meal.ingredients));
+  const submitMealEstimate = useMealPhotoEstimate({
+    abortRef: aiAbortRef,
+    setProcessing: setIsProcessingAi,
+    setProgress: setMealProgress,
+    setError: setMealPhotoError,
+    onSuccess: (meal, ingredients, photo) => {
+      setAiPhotoUri(photo);
+      setSelectedMealForLogging(meal);
+      setAiIngredients(ingredients);
+      dispatchMealDraft({ type: 'reset' });
       setIsLogMealModalVisible(true);
-    } catch (error) {
-      outcome = abortController.signal.aborted ? 'cancelled' : 'error';
-      console.error('[SmartCamera] Error estimating meal photos:', error);
-      if (!abortController.signal.aborted) {
-        reopenWithError = describeAiError(error, t) ?? t('food.aiCamera.aiAnalysisFailed');
-      }
-    } finally {
-      timer.log(outcome);
-      aiAbortRef.current = null;
-      setIsProcessingAi(false);
-      setMealProgress(null);
-      if (outcome !== 'done') {
-        // Nothing the person entered is lost: the sheet returns as it was, with the reason.
-        setMealPhotoError(reopenWithError);
-        setIsMealDetailsVisible(true);
-      }
+    },
+  });
+
+  const runMealEstimate = () => {
+    if (aiAbortRef.current || mealDraft.photos.length === 0) {
+      return;
     }
-  }, [mealDraft, mapTrackMealResponseToMeal, formatEnergyWithUnit, formatRoundedDecimal, t]);
+
+    setIsMealDetailsVisible(false);
+    void submitMealEstimate({
+      photos: mealDraft.photos,
+      context: mealPhotoContextFromDraft(mealDraft),
+      name: mealDraft.name,
+      onFailure: () => setIsMealDetailsVisible(true),
+    });
+  };
 
   const processAiPhoto = useCallback(
     async (fileUri: string) => {
@@ -487,6 +397,15 @@ export default function SmartCameraModal({
         setMealPhotoError(null);
         dispatchMealDraft({ type: 'addPhoto', uri: fileUri, limit: mealPhotoLimit });
         setIsMealDetailsVisible(true);
+        return;
+      }
+
+      if (cameraMode === 'ai-meal-photo') {
+        await submitMealEstimate({ photos: [fileUri], context: aiContext ?? undefined });
+        return;
+      }
+
+      if (aiAbortRef.current) {
         return;
       }
 
@@ -569,62 +488,13 @@ export default function SmartCameraModal({
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
             }
           }
-        } else if (cameraMode === 'ai-meal-photo') {
-          const base64 = await readFileAsStringAsync(fileUri, {
-            encoding: 'base64',
-          } as { encoding: 'base64' });
-          timer.mark('image-read');
-          const aiConfig = withCancel(await AiService.getAiConfig());
-          timer.mark('settings-read');
-          if (!aiConfig) {
-            outcome = 'error';
-            setMealPhotoError(t('food.aiCamera.aiNotConfigured'));
-            return;
-          }
-
-          const result = await estimateNutritionFromPhoto(
-            aiConfig,
-            base64,
-            aiContext ?? undefined,
-            (progress) => setMealProgress(mealEstimateProgressLine(progress))
-          );
-          timer.mark('request');
-          if (abortController.signal.aborted) {
-            outcome = 'cancelled';
-            return;
-          }
-
-          const mealForLogging = result ? mapTrackMealResponseToMeal(result) : null;
-          if (!result || !mealForLogging) {
-            outcome = 'error';
-            setMealPhotoError(t('food.aiCamera.aiAnalysisFailed'));
-            return;
-          }
-
-          showSnackbar(
-            'success',
-            t('food.aiCamera.analysisSuccess', {
-              name: mealForLogging.name,
-              kcal: formatEnergyWithUnit(mealForLogging.calories),
-              protein: formatRoundedDecimal(mealForLogging.protein, 2),
-              carbs: formatRoundedDecimal(mealForLogging.carbs, 2),
-              fat: formatRoundedDecimal(mealForLogging.fat, 2),
-            })
-          );
-          setSelectedMealForLogging(mealForLogging);
-          setAiIngredients(result.meals.flatMap((meal) => meal.ingredients));
-          setIsLogMealModalVisible(true);
         }
       } catch (error) {
         outcome = abortController.signal.aborted ? 'cancelled' : 'error';
         console.error('[SmartCamera] Error processing AI photo:', error);
         if (!abortController.signal.aborted) {
           const message = describeAiError(error, t) ?? t('food.aiCamera.aiAnalysisFailed');
-          if (cameraMode === 'ai-meal-photo') {
-            setMealPhotoError(message);
-          } else {
-            showSnackbar('error', message);
-          }
+          showSnackbar('error', message);
         }
       } finally {
         timer.log(outcome);
@@ -638,13 +508,12 @@ export default function SmartCameraModal({
       detailedMealFlow,
       mealPhotoLimit,
       aiContext,
-      formatRoundedDecimal,
       formatEnergyWithUnit,
       isAIVisionEnabled,
       i18n.language,
       i18n.resolvedLanguage,
       macroEstimateToSearchResultProduct,
-      mapTrackMealResponseToMeal,
+      submitMealEstimate,
       t,
       useOcrBeforeAi,
     ]
@@ -723,10 +592,9 @@ export default function SmartCameraModal({
         const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
         const scale = portionGrams / baseGrams;
         const isSingleFood = !aiIngredients || aiIngredients.length <= 1;
-        const persistedImageUri =
-          !selectedMealForLogging.foodId && aiPhotoUri
-            ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
-            : undefined;
+        const persistedImageUri = aiPhotoUri
+          ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
+          : undefined;
 
         await NutritionService.logCustomMeal(
           {
@@ -735,7 +603,6 @@ export default function SmartCameraModal({
             protein: selectedMealForLogging.protein * scale,
             carbs: selectedMealForLogging.carbs * scale,
             fat: selectedMealForLogging.fat * scale,
-            foodId: selectedMealForLogging.foodId,
             imageUrl: persistedImageUri,
           },
           date,

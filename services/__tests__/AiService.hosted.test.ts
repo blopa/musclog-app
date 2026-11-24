@@ -1,4 +1,5 @@
 import { SETTINGS } from '@/constants/settingDefinitions';
+import { PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
 
 import AiService from '../AiService';
 
@@ -159,6 +160,17 @@ describe('AiService hosted (Musclog Iron) probe', () => {
       language: 'en-US',
       hostedGrantFailure: 'unknown_device',
     });
+  });
+
+  it('attaches only the current consent recorded on this device', async () => {
+    store[SETTINGS.premiumConsentVersion.type] = 3;
+    expect(await AiService.getAiConfig()).not.toHaveProperty('hostedConsentVersion');
+
+    store[SETTINGS.premiumConsentVersion.type] = PREMIUM_CONSENT_VERSION;
+    expect(await AiService.getAiConfig()).toHaveProperty(
+      'hostedConsentVersion',
+      PREMIUM_CONSENT_VERSION
+    );
   });
 
   it('mints the grant only when the builder runs, not while probing a losing provider', async () => {

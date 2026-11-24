@@ -31,6 +31,7 @@
     "hostedBudgetNoDate": "This period's Musclog Iron allowance is used up. Musclog keeps working, and you can use your own key or the free tier.",
     "hostedSubscription": "Musclog Iron has no active subscription on this device. Restore your purchase or subscribe in Musclog Iron settings.",
     "hostedRemoved": "This device was removed from your Musclog Iron subscription. Restore purchases in Musclog Iron settings to add it again.",
+    "hostedConsentRequired": "Review the updated consent in Musclog Iron settings.",
     "hostedUnavailable": "Musclog Iron is unavailable right now. Try again in a moment.",
     "hostedDailyFull": "Musclog Iron is at capacity until tomorrow (UTC).",
     "hostedDailyLimit": "You have reached today's Musclog Iron limit. It resets at midnight (UTC). You can use your own key or the free tier meanwhile.",

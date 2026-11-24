@@ -326,6 +326,15 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           },
         ]}
       />
+      {premium.useHostedAi && consentNeeded(true) ? (
+        <Button
+          label={t('premium.consent.review')}
+          variant="outline"
+          width="full"
+          disabled={busy}
+          onPress={() => openDialog('consent')}
+        />
+      ) : null}
       {manageUrl ? (
         <Button
           label={t('premium.manage')}

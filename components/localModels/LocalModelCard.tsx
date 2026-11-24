@@ -15,6 +15,7 @@ import {
   cancelLocalModelDownload,
   deleteLocalModel,
   getFreeDiskBytes,
+  getLocalModelSpaceCheck,
   pauseLocalModelDownload,
   resumeLocalModelDownload,
   startLocalModelDownload,
@@ -91,7 +92,18 @@ export function LocalModelCard({
 
   const state = model.state;
   const total = totalDownloadBytes(manifest, selection);
-  const space = checkSpace(freeBytes, manifest, selection);
+  const [space, setSpace] = useState(() => checkSpace(null, manifest, selection));
+  useEffect(() => {
+    let cancelled = false;
+    void getLocalModelSpaceCheck(selection).then((result) => {
+      if (!cancelled) {
+        setSpace(result);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selection, state.kind]);
   const idle = state.kind === 'notInstalled' || state.kind === 'failed';
   const showToggle = Boolean(onSelectionChange) && idle;
   const textSecondary = {

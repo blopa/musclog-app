@@ -22,7 +22,7 @@ export type ChatPenalties = { frequency_penalty: number; presence_penalty: numbe
  */
 export type ProviderPolicy = {
   /** Headers of one logical request, built once and sent on every attempt (an idempotency key). */
-  requestHeaders?: () => Record<string, string>;
+  requestHeaders?: (config: CoachAIConfig) => Record<string, string>;
   /** Throws before anything is sent when the config can never answer. */
   assertUsable?: (config: CoachAIConfig) => void;
   /**
@@ -89,7 +89,12 @@ export type ProviderPolicy = {
  * handed to the shared transient rules.
  */
 const HOSTED_POLICY: ProviderPolicy = {
-  requestHeaders: () => ({ 'Idempotency-Key': randomUUID() }),
+  requestHeaders: (config) => ({
+    'Idempotency-Key': randomUUID(),
+    ...(config.hostedConsentVersion === undefined
+      ? {}
+      : { 'X-Musclog-Consent-Version': String(config.hostedConsentVersion) }),
+  }),
   assertUsable: (config) => {
     // A session token that could not be minted sends nothing: the typed error says why.
     if (config.hostedGrantFailure) {

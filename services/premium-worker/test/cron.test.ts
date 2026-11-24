@@ -395,13 +395,17 @@ describe('runDaily', () => {
       expect(await metaValue('breaker_reason')).toBe('reconciliation');
     });
 
-    it('a failing Otari call counts 0, logs high and cannot open the breaker', async () => {
+    it('a failing Otari call leaves the baseline unchanged so the next successful run checks the full window', async () => {
+      const first = withBoth({ usage: 10 });
+      await runDaily(first.ctx);
       const ot = fakeOtari({ kind: 'throw' });
       ot.summary = new Error('otari_http_500');
-      const later = await twoRuns(withBoth({ usage: 10.6, otari: ot }));
+      const later = withBoth({ usage: 10.6, otari: ot });
+      later.deps.advance(DAY_MS);
       await settleAt(600_000, NOW + 1000);
       await runDaily(later.ctx);
       expect(await isBreakerOpen(db)).toBe(false);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 10_000_000, at: NOW });
       expect(later.deps.logs).toContainEqual({
         route: 'cron',
         status: 500,
@@ -409,16 +413,36 @@ describe('runDaily', () => {
         severity: 'high',
         upstream: 'otari',
       });
+
+      const recoveredOtari = fakeOtari({ kind: 'throw' });
+      recoveredOtari.summary = { costUsd: 1, requests: 1, errors: 0, unpriced: 0 };
+      const recovered = withBoth({ usage: 11.5, otari: recoveredOtari });
+      recovered.deps.advance(2 * DAY_MS);
+      await runDaily(recovered.ctx);
+      expect(recoveredOtari.summaryCalls).toEqual([{ startMs: NOW, endMs: NOW + 2 * DAY_MS }]);
+      expect(await metaValue('breaker_reason')).toBe('reconciliation');
     });
 
-    it('unpriced Otari requests are logged high', async () => {
+    it('unpriced Otari requests are logged high and leave the baseline for a complete later query', async () => {
+      await runDaily(withBoth({ usage: 10 }).ctx);
       const ot = fakeOtari({ kind: 'throw' });
       ot.summary = { costUsd: 0, requests: 2, errors: 0, unpriced: 2 };
-      const later = await twoRuns(withBoth({ usage: 10, otari: ot }));
+      const later = withBoth({ usage: 10, otari: ot });
+      later.deps.advance(DAY_MS);
       await runDaily(later.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 10_000_000, at: NOW });
       expect(later.deps.logs).toContainEqual(
         expect.objectContaining({ code: 'otari_unpriced_requests', severity: 'high' })
       );
+
+      const recoveredOtari = fakeOtari({ kind: 'throw' });
+      recoveredOtari.summary = { costUsd: 0, requests: 0, errors: 0, unpriced: 0 };
+      const recovered = withBoth({ usage: 11.5, otari: recoveredOtari });
+      recovered.deps.advance(2 * DAY_MS);
+      await settleAt(600_000, NOW + 1000);
+      await runDaily(recovered.ctx);
+      expect(recoveredOtari.summaryCalls).toEqual([{ startMs: NOW, endMs: NOW + 2 * DAY_MS }]);
+      expect(await metaValue('breaker_reason')).toBe('reconciliation');
     });
 
     it('no Otari client means the OpenRouter-only logic and no Otari call', async () => {

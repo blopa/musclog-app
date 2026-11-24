@@ -120,6 +120,41 @@ function mergeMeals(meals: TrackedMeal[], groups?: number[]): TrackedMeal {
   };
 }
 
+const normalizedMealName = (meal: TrackedMeal): string =>
+  normalizeIngredientName(meal.mealName ?? '');
+
+/** Return source indexes in reference order only when every meal has a unique identity. */
+function alignMeals(reference: TrackedMeal[], candidate: TrackedMeal[]): number[] | undefined {
+  if (reference.length === 1 && candidate.length === 1) {
+    return [0];
+  }
+
+  const typeCounts = new Map<string, number>();
+  for (const { mealType } of reference) {
+    typeCounts.set(mealType, (typeCounts.get(mealType) ?? 0) + 1);
+  }
+
+  const indexes: number[] = [];
+  const used = new Set<number>();
+  for (const meal of reference) {
+    const repeated = typeCounts.get(meal.mealType) !== 1;
+    const name = repeated ? normalizedMealName(meal) : '';
+    const matches = candidate.flatMap((item, index) =>
+      item.mealType === meal.mealType && (!repeated || (name && normalizedMealName(item) === name))
+        ? [index]
+        : []
+    );
+    if (matches.length !== 1 || used.has(matches[0])) {
+      return undefined;
+    }
+
+    indexes.push(matches[0]);
+    used.add(matches[0]);
+  }
+
+  return used.size === candidate.length ? indexes : undefined;
+}
+
 /**
  * One meal estimate from several. With one sample it is returned as it is. The layout (how many
  * meals) is the most common one among the samples, the first sample's on a tie, and only samples
@@ -138,12 +173,24 @@ export function consensusMeals(samples: TrackMealResponse[], groups?: number[]):
     .filter((index) => (samples[index].meals?.length ?? 0) === layout);
   const agreeing = agreeingIndexes.map((index) => samples[index]);
   const agreeingGroups = groups ? agreeingIndexes.map((index) => groups[index]) : undefined;
+  const reference = agreeing[0];
+  const referenceMeals = reference.meals ?? [];
+  const aligned = [referenceMeals];
+  for (const sample of agreeing.slice(1)) {
+    const meals = sample.meals ?? [];
+    const order = alignMeals(referenceMeals, meals);
+    if (!order) {
+      return reference;
+    }
+
+    aligned.push(order.map((index) => meals[index]));
+  }
 
   return {
-    ...agreeing[0],
-    meals: Array.from({ length: layout }, (_, position) =>
+    ...reference,
+    meals: referenceMeals.map((_, position) =>
       mergeMeals(
-        agreeing.map((sample) => sample.meals[position]),
+        aligned.map((meals) => meals[position]),
         agreeingGroups
       )
     ),
@@ -183,8 +230,13 @@ export function mealsAgree(
     return false;
   }
 
+  const alignment = alignMeals(left, right);
+  if (!alignment) {
+    return false;
+  }
+
   return left.every((meal, position) => {
-    const other = right[position];
+    const other = right[alignment[position]];
     const keys = ingredientKeys(meal);
     const otherKeys = ingredientKeys(other);
     if (keys.size !== otherKeys.size || [...keys].some((key) => !otherKeys.has(key))) {

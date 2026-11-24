@@ -1,6 +1,24 @@
 import { providerPolicyFor } from '../providerPolicy';
+import { toHostedAiError } from '../hostedAiError';
+import { PREMIUM_CONSENT_VERSION } from '../premium/premiumConsent';
 
 describe('providerPolicyFor', () => {
+  it('includes recorded consent on hosted requests and leaves legacy requests unmarked', () => {
+    const config = { provider: 'hosted', model: 'musclog-hosted' } as const;
+    const policy = providerPolicyFor(config);
+    expect(policy.requestHeaders?.(config)).not.toHaveProperty('X-Musclog-Consent-Version');
+    expect(
+      policy.requestHeaders?.({ ...config, hostedConsentVersion: PREMIUM_CONSENT_VERSION })
+    ).toHaveProperty('X-Musclog-Consent-Version', String(PREMIUM_CONSENT_VERSION));
+  });
+
+  it('tells the person to review consent without retrying a refused hosted request', () => {
+    expect(toHostedAiError({ status: 403, error: { code: 'consent_required' } })).toMatchObject({
+      hostedKind: 'consentRequired',
+      retryable: false,
+    });
+  });
+
   it('gives a custom local server and the downloaded model the same small-model rules', () => {
     const local = providerPolicyFor({ provider: 'local' });
     const gguf = providerPolicyFor({ provider: 'on-device', engine: 'gguf' });

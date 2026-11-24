@@ -18,6 +18,7 @@ const HOSTED_KIND_TO_RECOVERY: Record<
   budget: 'hostedBudget',
   dailyLimit: 'hostedBudget',
   subscription: 'hostedSubscription',
+  consentRequired: 'hostedUnavailable',
   removed: 'hostedSubscription',
   unavailable: 'hostedUnavailable',
   dailyFull: 'hostedUnavailable',

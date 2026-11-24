@@ -50,6 +50,12 @@ export async function getFreeDiskBytes(): Promise<number | null> {
   return null;
 }
 
+export async function getLocalModelSpaceCheck(
+  _selection: LocalModelSelection
+): Promise<{ enough: true }> {
+  return { enough: true };
+}
+
 export async function startLocalModelDownload(_selection?: LocalModelSelection): Promise<void> {}
 
 export async function pauseLocalModelDownload(): Promise<void> {}

@@ -85,6 +85,8 @@ type ActiveDownload = {
   resumable: FileSystem.DownloadResumable | null;
   paused: boolean;
   cancelled: boolean;
+  done: Promise<void>;
+  stopTask: Promise<void> | null;
 };
 
 let active: ActiveDownload | null = null;
@@ -237,6 +239,10 @@ export async function refreshLocalModel(): Promise<void> {
     }
   }
 
+  if (active) {
+    return;
+  }
+
   if (current) {
     publish({
       supported: true,
@@ -255,6 +261,10 @@ export async function refreshLocalModel(): Promise<void> {
   const saved = await readSaved();
   const selection = saved?.selection ?? snapshot.selection;
   const received = await partialBytes(root, selection);
+  if (active) {
+    return;
+  }
+
   if (saved && received > 0) {
     publish({
       supported: true,
@@ -326,6 +336,43 @@ export async function getFreeDiskBytes(): Promise<number | null> {
   }
 }
 
+/** Checks the space still needed after accounting for files a retry can reuse. */
+export async function getLocalModelSpaceCheck(selection: LocalModelSelection) {
+  const free = await getFreeDiskBytes();
+  try {
+    const root = rootUri();
+    if (!root || free === null) {
+      return checkSpace(free, manifest, selection);
+    }
+
+    const saved = await readSaved();
+    let reusable = 0;
+    for (const file of filesFor(manifest, selection)) {
+      try {
+        const info = await FileSystem.getInfoAsync(`${partialUri(root)}/${file.path}`);
+        if (
+          info.exists &&
+          !info.isDirectory &&
+          (info.size === file.bytes ||
+            (saved?.path === file.path &&
+              saved.selection.withProjector === selection.withProjector))
+        ) {
+          reusable += Math.min(info.size, file.bytes);
+        }
+      } catch {
+        // An unreadable file cannot be counted as reusable.
+      }
+    }
+
+    const result = checkSpace(free + reusable, manifest, selection);
+    return result.enough
+      ? result
+      : { ...result, freeBytes: free, neededBytes: result.neededBytes - reusable };
+  } catch {
+    return checkSpace(free, manifest, selection);
+  }
+}
+
 function fail(reason: LocalModelFailure) {
   publish({ state: { kind: 'failed', reason } });
 }
@@ -338,10 +385,15 @@ class DownloadHttpError extends Error {
 
 async function downloadFiles(
   root: string,
-  selection: LocalModelSelection
+  selection: LocalModelSelection,
+  owner: ActiveDownload
 ): Promise<'done' | 'stopped'> {
   const dir = partialUri(root);
   await ensureDirectory(dir);
+  if (owner.paused || owner.cancelled) {
+    return 'stopped';
+  }
+
   const total = totalDownloadBytes(manifest, selection);
   let completed = 0;
   let lastPublish = 0;
@@ -349,6 +401,10 @@ async function downloadFiles(
   for (const file of filesFor(manifest, selection)) {
     const destination = `${dir}/${file.path}`;
     const existing = await FileSystem.getInfoAsync(destination);
+    if (owner.paused || owner.cancelled) {
+      return 'stopped';
+    }
+
     if (existing.exists && !existing.isDirectory && existing.size === file.bytes) {
       completed += file.bytes;
       publish({ state: { kind: 'downloading', receivedBytes: completed, totalBytes: total } });
@@ -356,10 +412,21 @@ async function downloadFiles(
     }
 
     const saved = await readSaved();
-    const resumeData = saved && saved.path === file.path ? saved.resumeData : undefined;
+    if (owner.paused || owner.cancelled) {
+      return 'stopped';
+    }
+
+    const resumeData =
+      saved && saved.path === file.path && saved.selection.withProjector === selection.withProjector
+        ? saved.resumeData
+        : undefined;
     if (!resumeData && existing.exists) {
       // A partial file nothing can resume: fetch it again from the start.
       await removeQuietly(destination);
+    }
+
+    if (owner.paused || owner.cancelled) {
+      return 'stopped';
     }
 
     const baseBytes = completed;
@@ -369,7 +436,12 @@ async function downloadFiles(
       {},
       (progress) => {
         const now = Date.now();
-        if (now - lastPublish >= PROGRESS_PUBLISH_MS) {
+        if (
+          active === owner &&
+          !owner.paused &&
+          !owner.cancelled &&
+          now - lastPublish >= PROGRESS_PUBLISH_MS
+        ) {
           lastPublish = now;
           publish({
             state: {
@@ -382,12 +454,10 @@ async function downloadFiles(
       },
       resumeData
     );
-    if (active) {
-      active.resumable = resumable;
-    }
+    owner.resumable = resumable;
 
     const result = await resumable.downloadAsync();
-    if (active?.cancelled || active?.paused) {
+    if (owner.cancelled || owner.paused) {
       return 'stopped';
     }
 
@@ -396,6 +466,10 @@ async function downloadFiles(
     }
 
     await writeSaved(null);
+    if (owner.cancelled || owner.paused) {
+      return 'stopped';
+    }
+
     completed += file.bytes;
     publish({ state: { kind: 'downloading', receivedBytes: completed, totalBytes: total } });
   }
@@ -403,7 +477,17 @@ async function downloadFiles(
   return 'done';
 }
 
-async function verifyAndInstall(root: string, selection: LocalModelSelection): Promise<void> {
+async function verifyAndInstall(
+  root: string,
+  selection: LocalModelSelection,
+  owner: ActiveDownload
+): Promise<void> {
+  const checkStopped = () => {
+    if (owner.cancelled || owner.paused) {
+      throw new Error('Download stopped');
+    }
+  };
+
   const native = onDeviceAiModule;
   if (!native) {
     throw new Error('On-device AI module is not available');
@@ -413,6 +497,7 @@ async function verifyAndInstall(root: string, selection: LocalModelSelection): P
   const dir = partialUri(root);
   for (const file of filesFor(manifest, selection)) {
     const digest = await native.sha256File(`${dir}/${file.path}`);
+    checkStopped();
     if (digest.toLowerCase() !== file.sha256) {
       await removeQuietly(`${root}/.partial`);
       await writeSaved(null);
@@ -420,13 +505,17 @@ async function verifyAndInstall(root: string, selection: LocalModelSelection): P
     }
   }
 
+  checkStopped();
   publish({ state: { kind: 'installing' } });
   const modelsDir = modelsUri(root);
   const target = `${modelsDir}/${installFolderName(manifest)}`;
   await removeQuietly(target);
+  checkStopped();
   await ensureDirectory(target);
+  checkStopped();
   for (const file of filesFor(manifest, selection)) {
     await FileSystem.moveAsync({ from: `${dir}/${file.path}`, to: `${target}/${file.path}` });
+    checkStopped();
   }
 
   // Last: its presence is what says every file above is in place.
@@ -434,6 +523,11 @@ async function verifyAndInstall(root: string, selection: LocalModelSelection): P
     `${target}/${INSTALLED_FILE}`,
     JSON.stringify(buildInstalledRecord(manifest, selection, Date.now()))
   );
+  if (owner.cancelled || owner.paused) {
+    await removeQuietly(target);
+    checkStopped();
+  }
+
   await native.setExcludedFromBackup(root).catch(() => false);
   await removeQuietly(`${root}/.partial`);
   await writeSaved(null);
@@ -457,58 +551,74 @@ class ChecksumError extends Error {
 export async function startLocalModelDownload(
   selection: LocalModelSelection = snapshot.selection
 ): Promise<void> {
-  try {
-    await runLocalModelDownload(selection);
-  } catch (error) {
-    active = null;
-    fail('storage');
-    void handleError(error, 'localModels.download', { showSnackbar: false });
-  }
-}
-
-async function runLocalModelDownload(selection: LocalModelSelection): Promise<void> {
-  const root = rootUri();
-  if (!root || !onDeviceAiModule) {
-    publish({ supported: false });
-
-    return;
-  }
-
   if (active) {
     return;
   }
 
-  const space = checkSpace(await getFreeDiskBytes(), manifest, selection);
-  if (!space.enough) {
-    publish({ selection });
-    fail('noSpace');
-
+  let root: string | null;
+  try {
+    root = rootUri();
+  } catch (error) {
+    fail('storage');
+    void handleError(error, 'localModels.download', { showSnackbar: false });
     return;
   }
 
-  active = { resumable: null, paused: false, cancelled: false };
-  publish({
-    selection,
-    state: {
-      kind: 'downloading',
-      receivedBytes: 0,
-      totalBytes: totalDownloadBytes(manifest, selection),
-    },
-  });
+  if (!root || !onDeviceAiModule) {
+    publish({ supported: false });
+    return;
+  }
 
+  const owner: ActiveDownload = {
+    resumable: null,
+    paused: false,
+    cancelled: false,
+    done: Promise.resolve(),
+    stopTask: null,
+  };
+  active = owner;
+  owner.done = runLocalModelDownload(root, selection, owner);
+  await owner.done;
+}
+
+async function runLocalModelDownload(
+  root: string,
+  selection: LocalModelSelection,
+  owner: ActiveDownload
+): Promise<void> {
   try {
-    const outcome = await downloadFiles(root, selection);
-    if (outcome === 'done') {
-      await verifyAndInstall(root, selection);
-      active = null;
-      await refreshLocalModel();
-
+    const space = await getLocalModelSpaceCheck(selection);
+    if (owner.cancelled || owner.paused) {
       return;
     }
-  } catch (error) {
-    const wasStopped = active?.cancelled || active?.paused;
-    if (!wasStopped) {
+
+    if (!space.enough) {
+      publish({ selection });
+      fail('noSpace');
+      return;
+    }
+
+    publish({
+      selection,
+      state: {
+        kind: 'downloading',
+        receivedBytes: 0,
+        totalBytes: totalDownloadBytes(manifest, selection),
+      },
+    });
+    const outcome = await downloadFiles(root, selection, owner);
+    if (outcome === 'done' && !owner.cancelled && !owner.paused) {
+      owner.resumable = null;
+      await verifyAndInstall(root, selection, owner);
+      if (owner.cancelled || owner.paused) {
+        return;
+      }
+
       active = null;
+      await refreshLocalModel();
+    }
+  } catch (error) {
+    if (!owner.cancelled && !owner.paused && active === owner) {
       if (error instanceof ChecksumError) {
         fail('checksum');
       } else {
@@ -517,74 +627,124 @@ async function runLocalModelDownload(selection: LocalModelSelection): Promise<vo
         const reason = classifyDownloadFailure(status, message);
         fail(reason);
         if (reason !== 'noSpace' && !NETWORK_MESSAGE.test(message)) {
-          // Anything we cannot name is worth a report; plain connectivity is not.
           void handleError(error, 'localModels.download', { showSnackbar: false });
         }
       }
-
-      return;
+    }
+  } finally {
+    if (active === owner && !owner.cancelled && !owner.paused) {
+      active = null;
     }
   }
-
-  // Stopped by pause or cancel; those functions publish their own state.
-  active = null;
 }
 
 export async function pauseLocalModelDownload(): Promise<void> {
-  if (!active?.resumable || active.paused) {
+  const owner = active;
+  if (!owner?.resumable || owner.paused || owner.cancelled) {
     return;
   }
 
-  active.paused = true;
-  try {
-    const state = await active.resumable.pauseAsync();
-    const received = snapshot.state.kind === 'downloading' ? snapshot.state.receivedBytes : 0;
-    const path = state.fileUri.split('/').pop() ?? '';
-    if (state.resumeData) {
-      await writeSaved({
-        revision: manifest.revision,
-        path,
-        selection: snapshot.selection,
-        resumeData: state.resumeData,
-      });
-    }
+  owner.paused = true;
+  const resumable = owner.resumable;
+  owner.stopTask = (async () => {
+    try {
+      const state = await resumable.pauseAsync();
+      await owner.done;
+      if (owner.cancelled || active !== owner) {
+        return;
+      }
 
-    publish({
-      state: {
-        kind: 'paused',
-        receivedBytes: received,
-        totalBytes: totalDownloadBytes(manifest, snapshot.selection),
-      },
-    });
-  } catch {
-    // The task already ended: the runner publishes the real outcome.
-  }
+      const received = snapshot.state.kind === 'downloading' ? snapshot.state.receivedBytes : 0;
+      if (state.resumeData) {
+        await writeSaved({
+          revision: manifest.revision,
+          path: state.fileUri.split('/').pop() ?? '',
+          selection: snapshot.selection,
+          resumeData: state.resumeData,
+        });
+      }
+
+      if (owner.cancelled || active !== owner) {
+        return;
+      }
+
+      publish({
+        state: {
+          kind: 'paused',
+          receivedBytes: received,
+          totalBytes: totalDownloadBytes(manifest, snapshot.selection),
+        },
+      });
+    } catch {
+      owner.paused = false;
+      await owner.done;
+      if (active === owner && !owner.cancelled) {
+        active = null;
+        if (snapshot.state.kind === 'downloading') {
+          await refreshLocalModel();
+        }
+      }
+    } finally {
+      if (active === owner && !owner.cancelled && owner.paused) {
+        active = null;
+      }
+    }
+  })();
+  await owner.stopTask;
 }
 
 export async function resumeLocalModelDownload(): Promise<void> {
-  active = null;
+  if (active) {
+    return;
+  }
+
   await startLocalModelDownload(snapshot.selection);
 }
 
 export async function cancelLocalModelDownload(): Promise<void> {
   const root = rootUri();
-  if (active) {
-    active.cancelled = true;
-    try {
-      await active.resumable?.pauseAsync();
-    } catch {
-      // Already finished or never started.
+  let owner = active;
+  if (!owner) {
+    owner = {
+      resumable: null,
+      paused: false,
+      cancelled: true,
+      done: Promise.resolve(),
+      stopTask: null,
+    };
+    active = owner;
+  } else {
+    if (owner.cancelled) {
+      return;
     }
 
-    active = null;
+    owner.cancelled = true;
+    if (owner.stopTask) {
+      await owner.stopTask;
+    } else {
+      try {
+        await owner.resumable?.pauseAsync();
+      } catch {
+        /* Already finished. */
+      }
+
+      await owner.done;
+    }
   }
 
   if (root) {
+    if (snapshot.state.kind === 'installing') {
+      await removeQuietly(`${modelsUri(root)}/${installFolderName(manifest)}`);
+    }
+
     await removeQuietly(`${root}/.partial`);
   }
 
   await writeSaved(null);
-  publish({ state: NOT_INSTALLED });
+  if (active === owner) {
+    publish({ state: NOT_INSTALLED });
+    active = null;
+  }
 }
 
 /** Removes the installed model and anything half-downloaded. The runtime is unloaded first. */
