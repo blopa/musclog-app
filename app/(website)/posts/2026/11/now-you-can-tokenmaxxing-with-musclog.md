@@ -37,10 +37,45 @@ That switch is now four levels: **Off, Medium, High and Tokenmaxxing.** Off and 
 
 **Tokenmaxxing** is High, turned up:
 
-- **Meals** are estimated three times, independently. An ingredient stays only if at least two of the three estimates have it, and its grams and macros are the median of what they said. Then the review runs twice.
+- **Meals** are estimated three times, independently. An ingredient stays only if at least two of the three estimates have it, and its grams and macros are the median of what they said. Then come up to two rounds of review.
 - **Insights and plans** get two rounds of review instead of one; the second fact-check round also tightens the wording.
 - **Labels and imports** are read three times, and each field is settled by majority or median. Only a field none of the readings agree on goes back to the model.
 - **The coach writes every chat reply twice.** It drafts an answer you never see, then reviews it against your conversation and your app data, and the reviewed version is the one that appears. While it does, the chat says "Double-checking my answer…".
+
+## Every request, one by one
+
+First, what these requests are **not**: there are no tools, no function calling and no agent loops. Every request is a plain question to the model, answered as text or as JSON in a fixed shape. The model never decides to call something or to go around again. Musclog's code decides, and every loop has a fixed limit: a level can never make a job run forever.
+
+This is how many requests each job makes with a cloud model or your own key (the "+" parts only happen when they are needed):
+
+| What you do                                                                                       | Off                                                                             | Medium                                                                              | High                                                               | Tokenmaxxing                                                                       |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Track a meal (text or photo): the camera, My Meals, "Track meal" in the coach                     | 1, +1 for foods your database did not match, +1 for numbers that cannot be true | read the recipe, estimate what your database did not match, recheck: usually 2 to 3 | the Medium steps, then 1 review (+1 for what it added, +1 recheck) | the Medium steps 3 times, then up to 2 reviews (each +1 for additions, +1 recheck) |
+| Read a nutrition label (photo or text)                                                            | 1                                                                               | 1                                                                                   | 2 readings, +1 only if they disagree                               | 3 readings, +1 only if they disagree                                               |
+| Import workouts, a food log or a past day written in words                                        | 1                                                                               | 1                                                                                   | 2 readings, +1 only if they disagree                               | 3 readings, +1 only if they disagree                                               |
+| Chat with the coach                                                                               | 1                                                                               | 1                                                                                   | 1                                                                  | 2: an unseen draft, then the reviewed reply you read                               |
+| Coach insights: progress analysis, nutrition check, meal critique, feedback on a finished workout | 1                                                                               | 1                                                                                   | the answer, then 1 fact check                                      | the answer, then up to 2 fact checks                                               |
+| Workout plan or meal plan                                                                         | 1                                                                               | 1                                                                                   | the plan, then 1 critique                                          | the plan, then up to 2 critiques                                                   |
+| The daily insights Musclog prepares in the background                                             | 1                                                                               | 1                                                                                   | 1 (never above Medium)                                             | 1 (never above Medium)                                                             |
+| The AI setup chat in onboarding                                                                   | 1 per message                                                                   | 1 per message                                                                       | 1 per message                                                      | 1 per message                                                                      |
+
+A few details the table hides:
+
+- **A review round can stop early.** If a review does not improve the answer, or fails, Musclog keeps the answer it had and does not ask again.
+- **The meal numbers are per meal.** A photo with two meals in it gets a review for each.
+- **The three answers run together on a cloud model, but one after another on your phone or a local server,** because those have one engine that answers one request at a time.
+- **The AI setup chat only gets the reasoning effort.** It makes no extra requests at any level.
+- **On the phone, the meal photo is its own path.** It is read once, twice or three times (Off and Medium, High, Tokenmaxxing), matched to your foods, and what is left is estimated. It has no review round.
+
+The other half of a level is how hard each request thinks (the provider's own reasoning setting, where it has one):
+
+| Kind of request                                         | Off     | Medium | High | Tokenmaxxing |
+| ------------------------------------------------------- | ------- | ------ | ---- | ------------ |
+| Reading a meal, a label or an import into fixed fields  | minimal | high   | high | max          |
+| A chat reply                                            | low     | high   | high | max          |
+| An analysis of your data, a workout plan or a meal plan | medium  | high   | high | max          |
+
+This is why Medium and High feel similar per request: both ask for `high`. High differs in how many requests it makes, not in how hard each one thinks.
 
 ## Code decides, not the model
 
