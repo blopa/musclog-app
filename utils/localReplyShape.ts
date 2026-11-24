@@ -60,3 +60,22 @@ export function repairReplyJson(text: string): unknown {
 
   return undefined;
 }
+
+/** The most of a broken reply sent back for repair; real replies are a few hundred characters. */
+export const MAX_JSON_REPAIR_INPUT_CHARS = 2000;
+
+/**
+ * System prompt of the last-resort repair call: text only, the schema the reply had to match. Used
+ * for any local model's structured reply; the photo flow keeps its own food-specific wording.
+ */
+export function jsonRepairPrompt(schema: object): string {
+  return [
+    'You repair one malformed JSON reply. Return only the corrected JSON, with no other text.',
+    `It must match this JSON Schema: ${JSON.stringify(schema)}`,
+    'Keep every value that can be read. Do not invent values or change amounts. Drop any item that cannot be read.',
+  ].join('\n');
+}
+
+export function jsonRepairMessage(broken: string): string {
+  return `Malformed JSON:\n${broken.slice(0, MAX_JSON_REPAIR_INPUT_CHARS)}`;
+}

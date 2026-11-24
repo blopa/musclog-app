@@ -52,7 +52,13 @@ import {
   pickFoodMatch,
   searchTermsFor,
 } from './localFoodPhoto';
-import { jsonSpan, repairReplyJson, stripTemplateTokens } from './localReplyShape';
+import {
+  jsonRepairMessage,
+  jsonRepairPrompt,
+  jsonSpan,
+  repairReplyJson,
+  stripTemplateTokens,
+} from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
@@ -813,19 +819,32 @@ function extractRawText(response: any): string {
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
-  try {
-    // Handle cases where the model might wrap JSON in markdown blocks
-    const cleanJson = raw.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(cleanJson);
+  // The same ladder every structured reply gets (fences and template tokens, the JSON inside text,
+  // `jsonrepair`), so almost-JSON from a small model is not shown to the person as raw JSON.
+  const parsed = parseStructuredJson<Record<string, unknown>>(raw);
+  if (parsed.kind === 'ok' && typeof parsed.value === 'object' && parsed.value !== null) {
+    const value = parsed.value;
+    const text = (field: string): string | undefined =>
+      typeof value[field] === 'string' ? (value[field] as string) : undefined;
+
     return {
-      msg4User: parsed.msg4User ?? raw,
-      sumMsg: parsed.sumMsg ?? undefined,
-      sumUserMsg: parsed.sumUserMsg ?? undefined,
-      rememberMe: parsed.remember_me ?? undefined,
+      msg4User: text('msg4User') ?? raw,
+      sumMsg: text('sumMsg'),
+      sumUserMsg: text('sumUserMsg'),
+      rememberMe: text('remember_me'),
     };
-  } catch {
-    return { msg4User: raw };
   }
+
+  // Cut off or too broken to repair: the reply field itself can often still be read.
+  const stripped = stripTemplateTokens(raw);
+  if (stripped.replace(/^```(?:json)?\s*/i, '').startsWith('{')) {
+    const message = readJsonStringField(stripped, 'msg4User');
+    if (message.trim()) {
+      return { msg4User: message };
+    }
+  }
+
+  return { msg4User: stripped || raw };
 }
 
 function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): Content[] {
@@ -1729,6 +1748,114 @@ function parseStructuredJson<T>(raw: string): StructuredResult<T> {
   return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
 }
 
+/** Models whose structured replies may be wrong in ways cloud providers' server-side schemas prevent. */
+function isLocalModel(config: CoachAIConfig): boolean {
+  return (
+    config.provider === 'local' ||
+    (config.provider === 'on-device' && onDeviceEngineOf(config) === 'gguf')
+  );
+}
+
+/**
+ * Last resort for a local model's structured reply: one text-only call that is asked to correct the
+ * broken reply against the schema, read by the same parser and shape check. It runs only after the
+ * parser, `jsonrepair` and the schema check all failed, so a good reply never pays for it. A failure
+ * of the repair call leaves the original failure; only a cancel is rethrown.
+ */
+async function repairStructuredWithModel<T>(
+  config: CoachAIConfig,
+  operation: string,
+  broken: string,
+  schema: object,
+  prompts?: { system: string; message: string }
+): Promise<StructuredResult<T> | null> {
+  if (!broken.trim()) {
+    return null;
+  }
+
+  const system = prompts?.system ?? jsonRepairPrompt(schema);
+  const message = prompts?.message ?? jsonRepairMessage(broken);
+
+  try {
+    let repairedRaw: string;
+    if (config.provider === 'local') {
+      const completion = await createOpenAiCompletion(
+        buildOpenAIClient(config),
+        `${operation}.repair`,
+        config,
+        {
+          model: config.model,
+          messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: message },
+          ],
+          response_format: {
+            type: 'json_schema',
+            json_schema: { name: 'repair', strict: true, schema: makeSchemaStrict(schema) },
+          },
+        }
+      );
+      repairedRaw = completion.choices[0]?.message?.content ?? '';
+    } else {
+      repairedRaw = await withLlmRetry(`${operation}.repair`, config, (signal) =>
+        sendLocalStructuredRaw([{ role: 'user', content: message }], system, schema, { signal })
+      );
+    }
+
+    return checkStructuredShape(parseStructuredJson<T>(repairedRaw), schema, `${operation}.repair`);
+  } catch (error) {
+    if (error instanceof AiCancelledError) {
+      throw error;
+    }
+
+    return null;
+  }
+}
+
+/**
+ * The shared finish for a structured reply from a local model (the downloaded one or a custom
+ * server): when it is malformed, ask the model once to repair it. For a custom server a reply that
+ * parsed but misses part of the schema is kept as it was if the repair does not improve it, because
+ * callers of an OpenAI-compatible endpoint have always tolerated a partial answer.
+ */
+async function reviveLocalStructured<T>(
+  config: CoachAIConfig,
+  operation: string,
+  result: StructuredResult<T>,
+  schema: object,
+  prompts?: { system: string; message: string }
+): Promise<StructuredResult<T>> {
+  if (!isLocalModel(config)) {
+    return result;
+  }
+
+  let current = result;
+  let original: StructuredResult<T> | null = null;
+  if (config.provider === 'local' && result.kind === 'ok') {
+    const checked = checkStructuredShape(result, schema, operation);
+    if (checked.kind === 'ok') {
+      return result;
+    }
+
+    original = result;
+    current = checked;
+  }
+
+  if (current.kind === 'ok') {
+    return current;
+  }
+
+  const repaired = await repairStructuredWithModel<T>(
+    config,
+    operation,
+    current.raw,
+    schema,
+    prompts
+  );
+
+  return repaired?.kind === 'ok' ? repaired : (original ?? current);
+}
+
 /**
  * The one place a reply that must match a JSON schema is requested from a provider: the on-device
  * model, Gemini, Claude, or an OpenAI-compatible endpoint. A reply that is not valid JSON comes back as
@@ -1737,6 +1864,15 @@ function parseStructuredJson<T>(raw: string): StructuredResult<T> {
  * typed errors) are both thin callers of this.
  */
 export async function requestStructured<T = unknown>(
+  config: CoachAIConfig,
+  request: StructuredRequest
+): Promise<StructuredResult<T>> {
+  const result = await requestStructuredOnce<T>(config, request);
+
+  return reviveLocalStructured(config, request.operation, result, request.buildSchema('openai'));
+}
+
+async function requestStructuredOnce<T = unknown>(
   config: CoachAIConfig,
   request: StructuredRequest
 ): Promise<StructuredResult<T>> {
@@ -2136,12 +2272,16 @@ async function generateWithImageStructured<T>(
     return null;
   }
 
-  try {
-    const clean = raw.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean) as T;
-  } catch {
-    return null;
-  }
+  // The same ladder as every structured reply (fences, JSON inside text, `jsonrepair`), and for a
+  // custom local server one repair call by the model.
+  const read = await reviveLocalStructured(
+    config,
+    'generateWithImageStructured',
+    parseStructuredJson<T>(raw),
+    strictSchema
+  );
+
+  return read.kind === 'ok' ? read.value : null;
 }
 
 async function extractRecipe(
@@ -2949,28 +3089,15 @@ async function estimateMealFromPhotoOnDevice(
     // only ever runs after both photo attempts failed, so a good run never pays for it.
     const broken = [raw, firstRaw].find((text) => text.trim() !== '');
     if (parsed.kind !== 'ok' && broken) {
-      try {
-        const repairedRaw = await withLlmRetry(
-          'estimateNutritionFromPhoto.repair',
-          config,
-          (signal) =>
-            sendLocalStructuredRaw(
-              [{ role: 'user', content: localJsonRepairMessage(broken) }],
-              localJsonRepairPrompt(),
-              LOCAL_FOOD_IDENTIFY_SCHEMA,
-              { signal }
-            )
-        );
-        const repairedParsed = readPhotoReply(repairedRaw);
-        if (repairedParsed.kind === 'ok') {
-          parsed = repairedParsed;
-          raw = repairedRaw;
-        }
-      } catch (repairError) {
-        // A cancel is the person's; any other failure of the repair call leaves the original failure.
-        if (repairError instanceof AiCancelledError) {
-          throw repairError;
-        }
+      const repaired = await repairStructuredWithModel<unknown>(
+        config,
+        'estimateNutritionFromPhoto',
+        broken,
+        LOCAL_FOOD_IDENTIFY_SCHEMA,
+        { system: localJsonRepairPrompt(), message: localJsonRepairMessage(broken) }
+      );
+      if (repaired?.kind === 'ok') {
+        parsed = repaired;
       }
     }
   }
