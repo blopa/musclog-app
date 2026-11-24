@@ -265,7 +265,7 @@
       "subtitle": "Bekijk en bewerk je gespreksgeschiedenis"
     },
     "aiSettings": {
-      "title": "AI-instellingen",
+      "title": "AI-aanbieders",
       "save": "Opslaan",
       "saved": "Opgeslagen",
       "googleGeminiIntegration": "Google Gemini integratie",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Selecteer het model dat voor alle AI-functies wordt gebruikt",
       "selectOpenAiModel": "Selecteer OpenAI model",
       "selectOpenAiModelSubtitle": "Selecteer het model dat voor alle AI-functies wordt gebruikt",
-      "subtitle": "Instellingen voor alle AI die in deze app wordt gebruikt",
+      "subtitle": "Welke AI antwoordt: Musclog, je eigen sleutels of je telefoon",
       "imageProcessing": "Beeldverwerking",
       "useOcrBeforeAi": "OCR gebruiken voor AI",
       "useOcrBeforeAiSubtitle": "Verwerk afbeeldingen lokaal met OCR en stuur tekst in plaats daarvan",
@@ -431,6 +431,10 @@
       "premium": {
         "activeNote": "Musclog Iron beantwoordt je AI-verzoeken. Je eigen sleutels en de gratis versie worden niet gebruikt zolang het aan staat."
       }
+    },
+    "aiBehavior": {
+      "title": "AI-gedrag",
+      "subtitle": "Denken, geheugen, foto's, persoonlijkheid en prompts"
     },
     "visualSettings": {
       "title": "Uiterlijk en start",

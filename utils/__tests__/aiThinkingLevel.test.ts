@@ -40,10 +40,11 @@ describe('effectiveThinkingLevel', () => {
     }
   });
 
-  it('caps a background task at high', () => {
+  it('caps a background task at medium', () => {
     expect(effectiveThinkingLevel('tokenmaxxing', { provider: 'hosted', background: true })).toBe(
-      'high'
+      'medium'
     );
+    expect(effectiveThinkingLevel('high', { provider: 'hosted', background: true })).toBe('medium');
     expect(effectiveThinkingLevel('medium', { provider: 'hosted', background: true })).toBe(
       'medium'
     );

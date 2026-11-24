@@ -265,7 +265,7 @@
       "subtitle": "View and edit your conversation history"
     },
     "aiSettings": {
-      "title": "AI settings",
+      "title": "AI providers",
       "save": "Save",
       "saved": "Saved",
       "googleGeminiIntegration": "Google Gemini integration",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Select the model to be used by all AI features",
       "selectOpenAiModel": "Select OpenAI model",
       "selectOpenAiModelSubtitle": "Select the model to be used by all AI features",
-      "subtitle": "Settings for all the AI used on this app",
+      "subtitle": "Which AI answers: Musclog, your own keys or your phone",
       "imageProcessing": "Image processing",
       "useOcrBeforeAi": "Use OCR before sending to AI",
       "useOcrBeforeAiSubtitle": "Process images locally with OCR and send text instead",
@@ -753,6 +753,10 @@
           }
         }
       }
+    },
+    "aiBehavior": {
+      "title": "AI behavior",
+      "subtitle": "Thinking, memory, photos, personality and prompts"
     }
   }
 }

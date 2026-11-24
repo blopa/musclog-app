@@ -328,6 +328,24 @@
               "description": "Usa tu propia clave de API o Musclog Iron, en Ajustes → IA. Ambos envían tu petición a un modelo mucho más grande en la nube."
             }
           }
+        },
+        "thinking": {
+          "title": "Haz que la IA piense más a fondo",
+          "description": "Una nueva opción hace que la IA revise su propio trabajo antes de responder. Desactivado es lo más rápido; Tokenmaxxing es lo más lento y lo más minucioso.",
+          "items": {
+            "levels": {
+              "label": "Elige cuánto piensa",
+              "description": "Desactivado, Medio, Alto o Tokenmaxxing, en Ajustes → Comportamiento de la IA. Cada nivel superior hace más peticiones para revisar la respuesta."
+            },
+            "checks": {
+              "label": "El código revisa las respuestas",
+              "description": "Las comidas se leen varias veces y se comparan, y los planes y análisis se revisan con tus propios números."
+            },
+            "cost": {
+              "label": "Más lento y consume más",
+              "description": "En Musclog Iron usa más de tu cuota mensual, y la Musclog AI gratuita responde siempre en Desactivado. No hemos medido cuánto mejoran las respuestas."
+            }
+          }
         }
       }
     }

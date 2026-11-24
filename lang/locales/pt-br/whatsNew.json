@@ -328,6 +328,24 @@
               "description": "Use sua própria chave de API ou o Musclog Iron, em Configurações → IA. Os dois enviam seu pedido para um modelo muito maior na nuvem."
             }
           }
+        },
+        "thinking": {
+          "title": "Faça a IA pensar mais",
+          "description": "Uma nova configuração permite que a IA confira o próprio trabalho antes de responder. Desligado é o mais rápido; Tokenmaxxing é o mais lento e o mais completo.",
+          "items": {
+            "levels": {
+              "label": "Escolha o quanto ela pensa",
+              "description": "Desligado, Médio, Alto ou Tokenmaxxing, em Configurações → Comportamento da IA. Cada nível acima faz mais pedidos para conferir a resposta."
+            },
+            "checks": {
+              "label": "O código confere as respostas",
+              "description": "As refeições são lidas várias vezes e comparadas, e planos e análises são conferidos com os seus próprios números."
+            },
+            "cost": {
+              "label": "Mais lento, e custa mais",
+              "description": "No Musclog Iron usa mais da sua cota mensal, e o Musclog AI gratuito responde sempre no nível Desligado. Ainda não medimos quanto isso melhora as respostas."
+            }
+          }
         }
       }
     }

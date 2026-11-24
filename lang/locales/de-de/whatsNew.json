@@ -328,6 +328,24 @@
               "description": "Nutze deinen eigenen API-Schlüssel oder Musclog Iron, in Einstellungen → KI. Beide schicken deine Anfrage an ein viel größeres Modell in der Cloud."
             }
           }
+        },
+        "thinking": {
+          "title": "Die KI länger nachdenken lassen",
+          "description": "Eine neue Einstellung lässt die KI ihre eigene Arbeit prüfen, bevor sie antwortet. Aus ist am schnellsten, Tokenmaxxing am langsamsten und gründlichsten.",
+          "items": {
+            "levels": {
+              "label": "Wähle, wie stark sie nachdenkt",
+              "description": "Aus, Mittel, Hoch oder Tokenmaxxing, in Einstellungen → KI-Verhalten. Jede Stufe macht mehr Anfragen, um die Antwort gegenzuprüfen."
+            },
+            "checks": {
+              "label": "Code prüft die Antworten",
+              "description": "Mahlzeiten werden mehrfach gelesen und verglichen, Pläne und Auswertungen werden mit deinen eigenen Zahlen geprüft."
+            },
+            "cost": {
+              "label": "Langsamer und teurer",
+              "description": "Mit Musclog Iron verbraucht es mehr vom monatlichen Kontingent, und die kostenlose Musclog-KI antwortet immer auf Aus. Wir haben nicht gemessen, wie stark es die Antworten verbessert."
+            }
+          }
         }
       }
     }

@@ -265,7 +265,7 @@
       "subtitle": "Przeglądaj i edytuj historię rozmów"
     },
     "aiSettings": {
-      "title": "Ustawienia AI",
+      "title": "Dostawcy AI",
       "save": "Zapisz",
       "saved": "Zapisano",
       "googleGeminiIntegration": "Integracja z Google Gemini",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Wybierz model, którego będą używać wszystkie funkcje AI",
       "selectOpenAiModel": "Wybierz model OpenAI",
       "selectOpenAiModelSubtitle": "Wybierz model, którego będą używać wszystkie funkcje AI",
-      "subtitle": "Ustawienia całej AI używanej w tej aplikacji",
+      "subtitle": "Które AI odpowiada: Musclog, twoje własne klucze czy telefon",
       "imageProcessing": "Przetwarzanie obrazów",
       "useOcrBeforeAi": "Użyj OCR przed wysłaniem do AI",
       "useOcrBeforeAiSubtitle": "Przetwarzaj obrazy lokalnie za pomocą OCR i wysyłaj tekst",
@@ -431,6 +431,10 @@
       "premium": {
         "activeNote": "Musclog Iron odpowiada na Twoje żądania AI. Dopóki jest włączone, Twoje własne klucze i wersja darmowa nie są używane."
       }
+    },
+    "aiBehavior": {
+      "title": "Zachowanie AI",
+      "subtitle": "Myślenie, pamięć, zdjęcia, osobowość i prompty"
     },
     "visualSettings": {
       "title": "Wygląd i ekran główny",

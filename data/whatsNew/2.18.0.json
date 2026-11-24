@@ -123,6 +123,43 @@
           ]
         }
       ]
+    },
+    {
+      "id": "thinking",
+      "blocks": [
+        {
+          "id": "thinking",
+          "type": "info",
+          "icon": "settings",
+          "pose": "flex",
+          "titleKey": "whatsNew.releases.v2_18_0.thinking.title",
+          "descriptionKey": "whatsNew.releases.v2_18_0.thinking.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "levels",
+              "icon": "trendingUp",
+              "labelKey": "whatsNew.releases.v2_18_0.thinking.items.levels.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.thinking.items.levels.description"
+            },
+            {
+              "id": "checks",
+              "icon": "circleCheck",
+              "labelKey": "whatsNew.releases.v2_18_0.thinking.items.checks.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.thinking.items.checks.description"
+            },
+            {
+              "id": "cost",
+              "icon": "timer",
+              "labelKey": "whatsNew.releases.v2_18_0.thinking.items.cost.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.thinking.items.cost.description"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

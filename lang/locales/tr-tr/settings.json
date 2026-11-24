@@ -265,7 +265,7 @@
       "subtitle": "Konuşma geçmişini görüntüle ve düzenle"
     },
     "aiSettings": {
-      "title": "Yapay zekâ ayarları",
+      "title": "Yapay zekâ sağlayıcıları",
       "save": "Kaydet",
       "saved": "Kaydedildi",
       "googleGeminiIntegration": "Google Gemini entegrasyonu",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Tüm yapay zekâ özelliklerinin kullanacağı modeli seç",
       "selectOpenAiModel": "OpenAI modelini seç",
       "selectOpenAiModelSubtitle": "Tüm yapay zekâ özelliklerinin kullanacağı modeli seç",
-      "subtitle": "Bu uygulamada kullanılan tüm yapay zekânın ayarları",
+      "subtitle": "Hangi yapay zekâ yanıtlıyor: Musclog, kendi anahtarlarınız ya da telefonunuz",
       "imageProcessing": "Görsel işleme",
       "useOcrBeforeAi": "Yapay zekâya göndermeden önce OCR kullan",
       "useOcrBeforeAiSubtitle": "Görselleri yerelde OCR ile işle ve bunun yerine metin gönder",
@@ -431,6 +431,10 @@
       "premium": {
         "activeNote": "Musclog Iron YZ isteklerinizi yanıtlıyor. Açıkken kendi anahtarlarınız ve ücretsiz katman kullanılmaz."
       }
+    },
+    "aiBehavior": {
+      "title": "Yapay zekâ davranışı",
+      "subtitle": "Düşünme, bellek, fotoğraflar, kişilik ve istemler"
     },
     "visualSettings": {
       "title": "Görünüm ve ana ekran",

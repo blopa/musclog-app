@@ -265,7 +265,7 @@
       "subtitle": "Gesprächsverlauf ansehen und bearbeiten"
     },
     "aiSettings": {
-      "title": "KI-Einstellungen",
+      "title": "KI-Anbieter",
       "save": "Speichern",
       "saved": "Gespeichert",
       "googleGeminiIntegration": "Google-Gemini-Integration",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Wähle das Modell, das alle KI-Funktionen verwenden",
       "selectOpenAiModel": "OpenAI-Modell auswählen",
       "selectOpenAiModelSubtitle": "Wähle das Modell, das alle KI-Funktionen verwenden",
-      "subtitle": "Einstellungen für alle KI-Funktionen dieser App",
+      "subtitle": "Welche KI antwortet: Musclog, deine eigenen Schlüssel oder dein Telefon",
       "imageProcessing": "Bildverarbeitung",
       "useOcrBeforeAi": "OCR vor dem Senden an die KI verwenden",
       "useOcrBeforeAiSubtitle": "Bilder lokal per OCR verarbeiten und stattdessen Text senden",
@@ -431,6 +431,10 @@
       "premium": {
         "activeNote": "Musclog Iron beantwortet deine KI-Anfragen. Solange es eingeschaltet ist, werden deine eigenen Schlüssel und die kostenlose Stufe nicht verwendet."
       }
+    },
+    "aiBehavior": {
+      "title": "KI-Verhalten",
+      "subtitle": "Denken, Gedächtnis, Fotos, Persönlichkeit und Prompts"
     },
     "visualSettings": {
       "title": "Darstellung und Startseite",

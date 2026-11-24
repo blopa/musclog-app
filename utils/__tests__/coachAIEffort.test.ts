@@ -222,7 +222,7 @@ describe('reasoning effort per job', () => {
       expect(await thinkingLevelFor(gateway)).toBe('off');
     });
 
-    it('caps a background task at high', async () => {
+    it('caps a background task at medium', async () => {
       mockThinking.level = 'tokenmaxxing';
       const cfg = {
         provider: 'claude',
@@ -230,7 +230,7 @@ describe('reasoning effort per job', () => {
         apiKey: 'k',
         background: true,
       } as CoachAIConfig;
-      expect(await thinkingLevelFor(cfg)).toBe('high');
+      expect(await thinkingLevelFor(cfg)).toBe('medium');
       await requestStructured(cfg, request('planning'));
       expect(mockClaudeCreate.mock.calls[0][0].output_config).toMatchObject({ effort: 'high' });
     });

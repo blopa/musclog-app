@@ -274,6 +274,7 @@ export const UNAUDITED_ROUTES: UnauditedRoute[] = [
  * (unreleased, so never in a store screenshot).
  */
 export const AUDIT_ONLY_MODAL_BUTTONS = [
+  'Open AI Behavior Modal',
   'Open Cycle Settings Modal',
   'Date (default)',
   'Time (default)',
@@ -335,6 +336,7 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
     fixture: 'Open AI Nutrition Context Modal',
   },
   'components/modals/AISettingsModal.tsx': { fixture: 'Open AI Settings Modal' },
+  'components/modals/AIBehaviorSettingsModal.tsx': { fixture: 'Open AI Behavior Modal' },
   'components/modals/ConnectedAISettingsModal.tsx': {
     unaudited: 'a wrapper that hands stored settings to AISettingsModal, which has its own button',
   },

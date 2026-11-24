@@ -33,7 +33,7 @@ export function thinkingLevelRank(level: ThinkingLevel): number {
 }
 
 /** The highest level a background task (daily insights) may run at, with nobody watching it. */
-export const BACKGROUND_THINKING_CEILING: ThinkingLevel = 'high';
+export const BACKGROUND_THINKING_CEILING: ThinkingLevel = 'medium';
 
 /**
  * The providers the person can choose a level for. The Musclog free tier is not one: it runs on a

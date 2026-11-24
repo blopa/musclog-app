@@ -265,7 +265,7 @@
       "subtitle": "Visualizza e modifica la cronologia delle conversazioni"
     },
     "aiSettings": {
-      "title": "Impostazioni AI",
+      "title": "Fornitori AI",
       "save": "Salva",
       "saved": "Salvato",
       "googleGeminiIntegration": "Integrazione Google Gemini",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Scegli il modello usato da tutte le funzioni AI",
       "selectOpenAiModel": "Scegli il modello OpenAI",
       "selectOpenAiModelSubtitle": "Scegli il modello usato da tutte le funzioni AI",
-      "subtitle": "Impostazioni per tutte le AI usate in questa app",
+      "subtitle": "Quali AI rispondono: Musclog, le tue chiavi o il telefono",
       "imageProcessing": "Elaborazione delle immagini",
       "useOcrBeforeAi": "Usa l'OCR prima dell'invio all'AI",
       "useOcrBeforeAiSubtitle": "Elabora le immagini in locale con l'OCR e invia invece il testo",
@@ -431,6 +431,10 @@
       "premium": {
         "activeNote": "Musclog Iron sta rispondendo alle tue richieste IA. Le tue chiavi e il piano gratuito non vengono usati mentre è attivo."
       }
+    },
+    "aiBehavior": {
+      "title": "Comportamento AI",
+      "subtitle": "Ragionamento, memoria, foto, personalità e prompt"
     },
     "visualSettings": {
       "title": "Aspetto e home",

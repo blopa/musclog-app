@@ -10,6 +10,7 @@ import { SettingsCard } from '@/components/cards/SettingsCard';
 import { WhatsNewCard } from '@/components/cards/WhatsNewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { AIBehaviorSettingsModal } from '@/components/modals/AIBehaviorSettingsModal';
 import { AppLockSettingsModal } from '@/components/modals/AppLockSettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
 import { ConnectedAISettingsModal } from '@/components/modals/ConnectedAISettingsModal';
@@ -35,6 +36,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
+  const [isAIBehaviorVisible, setAIBehaviorVisible] = useState(false);
   const [isCycleSettingsVisible, setCycleSettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isDataSettingsVisible, setDataSettingsVisible] = useState(false);
@@ -148,6 +150,12 @@ export default function SettingsScreen() {
                 t('settings.aiSettings.subtitle'),
                 () => setAISettingsVisible(true)
               )}
+              {row(
+                'psychology',
+                t('settings.aiBehavior.title'),
+                t('settings.aiBehavior.subtitle'),
+                () => setAIBehaviorVisible(true)
+              )}
             </ListGroup>
 
             <ListGroup title={t('settings.groups.data')}>
@@ -173,6 +181,10 @@ export default function SettingsScreen() {
       <ConnectedAISettingsModal
         visible={isAISettingsVisible}
         onClose={() => setAISettingsVisible(false)}
+      />
+      <AIBehaviorSettingsModal
+        visible={isAIBehaviorVisible}
+        onClose={() => setAIBehaviorVisible(false)}
       />
       <BasicSettingsModal
         visible={isBasicSettingsVisible}

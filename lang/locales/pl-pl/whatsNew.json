@@ -328,6 +328,24 @@
               "description": "Użyj własnego klucza API albo Musclog Iron, w Ustawienia → AI. Oba wysyłają twoje zapytanie do znacznie większego modelu w chmurze."
             }
           }
+        },
+        "thinking": {
+          "title": "Niech AI myśli mocniej",
+          "description": "Nowe ustawienie pozwala AI sprawdzić własną pracę, zanim odpowie. Wył. jest najszybszy; Tokenmaxxing jest najwolniejszy i najstaranniejszy.",
+          "items": {
+            "levels": {
+              "label": "Wybierz, jak mocno myśli",
+              "description": "Wył., Średni, Wysoki lub Tokenmaxxing, w Ustawienia → Zachowanie AI. Każdy wyższy poziom wykonuje więcej zapytań, by sprawdzić odpowiedź."
+            },
+            "checks": {
+              "label": "Kod sprawdza odpowiedzi",
+              "description": "Posiłki są odczytywane kilka razy i porównywane, a plany i wnioski sprawdzane według twoich liczb."
+            },
+            "cost": {
+              "label": "Wolniej i drożej",
+              "description": "W Musclog Iron zużywa więcej miesięcznego limitu, a darmowa Musclog AI zawsze odpowiada na poziomie Wył. Nie mierzyliśmy, o ile poprawia odpowiedzi."
+            }
+          }
         }
       }
     }

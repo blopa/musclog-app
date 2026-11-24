@@ -265,7 +265,7 @@
       "subtitle": "Ver y editar tu historial de conversaciones"
     },
     "aiSettings": {
-      "title": "Ajustes de IA",
+      "title": "Proveedores de IA",
       "save": "Guardar",
       "saved": "Guardado",
       "googleGeminiIntegration": "Integración con Google Gemini",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Selecciona el modelo que usarán todas las funciones de IA",
       "selectOpenAiModel": "Seleccionar modelo de OpenAI",
       "selectOpenAiModelSubtitle": "Selecciona el modelo que usarán todas las funciones de IA",
-      "subtitle": "Ajustes para toda la IA utilizada en esta app",
+      "subtitle": "Qué IA responde: Musclog, tus propias claves o tu teléfono",
       "imageProcessing": "Procesamiento de imágenes",
       "useOcrBeforeAi": "Usar OCR antes de enviar a la IA",
       "useOcrBeforeAiSubtitle": "Procesar imágenes localmente con OCR y enviar texto en su lugar",
@@ -431,6 +431,10 @@
       "premium": {
         "activeNote": "Musclog Iron está respondiendo a tus solicitudes de IA. Tus propias claves y el nivel gratuito no se usan mientras esté activado."
       }
+    },
+    "aiBehavior": {
+      "title": "Comportamiento de la IA",
+      "subtitle": "Razonamiento, memoria, fotos, personalidad y prompts"
     },
     "visualSettings": {
       "title": "Apariencia e inicio",

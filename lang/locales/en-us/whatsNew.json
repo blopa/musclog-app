@@ -328,6 +328,24 @@
               "description": "Use your own API key or Musclog Iron, in Settings → AI. Both send your request to a much larger model in the cloud."
             }
           }
+        },
+        "thinking": {
+          "title": "Make the AI think harder",
+          "description": "A new setting lets the AI check its own work before it answers. Off is the fastest; Tokenmaxxing is the slowest and most thorough.",
+          "items": {
+            "levels": {
+              "label": "Pick how hard it thinks",
+              "description": "Off, Medium, High or Tokenmaxxing, in Settings → AI behavior. Each step up makes more requests to double-check the answer."
+            },
+            "checks": {
+              "label": "Code checks the answers",
+              "description": "Meals are read several times and compared, and plans and insights are checked against your own numbers."
+            },
+            "cost": {
+              "label": "Slower, and it costs more",
+              "description": "On Musclog Iron it uses more of your monthly allowance, and the free Musclog AI always answers at Off. We have not measured how much it improves answers."
+            }
+          }
         }
       }
     }

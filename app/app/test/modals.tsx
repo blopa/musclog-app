@@ -11,6 +11,7 @@ import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { AddMealModal } from '@/components/modals/AddMealModal';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { AIBehaviorSettingsModal } from '@/components/modals/AIBehaviorSettingsModal';
 import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
 import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
@@ -144,6 +145,7 @@ export default function ModalsTestScreen() {
   const [isAppBehaviorSettingsVisible, setIsAppBehaviorSettingsVisible] = useState(false);
   // AI Settings Modal
   const [isAiSettingsVisible, setIsAiSettingsVisible] = useState(false);
+  const [isAiBehaviorVisible, setIsAiBehaviorVisible] = useState(false);
   const [isAiNotConfiguredVisible, setIsAiNotConfiguredVisible] = useState(false);
   // Filter Workouts Modal
   const [isFilterWorkoutsVisible, setIsFilterWorkoutsVisible] = useState(false);
@@ -478,6 +480,13 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsAiSettingsVisible(true)}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open AI Behavior Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAiBehaviorVisible(true)}
             />
             <View className="h-3" />
             <Button
@@ -2222,6 +2231,11 @@ export default function ModalsTestScreen() {
         onClose={() => setIsAiSettingsVisible(false)}
         onGetOpenAiKeyPress={() => console.log('Get OpenAI Key pressed')}
         onOpenAiModelPress={() => console.log('OpenAI model pressed')}
+      />
+
+      <AIBehaviorSettingsModal
+        visible={isAiBehaviorVisible}
+        onClose={() => setIsAiBehaviorVisible(false)}
       />
 
       <AINotConfiguredModal

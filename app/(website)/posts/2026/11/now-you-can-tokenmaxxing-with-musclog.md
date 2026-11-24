@@ -19,8 +19,8 @@ For a while, Musclog had one switch for how hard its AI should work: **Use think
 
 That switch is now four levels: **Off, Medium, High and Tokenmaxxing.** Off and Medium are exactly the old off and on. High and Tokenmaxxing are new, and they do not just ask the model to think harder. They make Musclog **ask more than once and check the answers against each other**, with code, not the model, deciding which answer wins.
 
-![The Thinking level sheet in Musclog's AI settings, with four options: Off, Medium, High and Tokenmaxxing, each with a one-line description](/images/blog/2026/11/thinking-levels-sheet.webp 'The four levels, in Settings → AI settings.')
-![Musclog's AI settings with the Thinking level row set to Tokenmaxxing](/images/blog/2026/11/thinking-level-tokenmaxxing.webp 'The row shows the level you picked and what it does.')
+![The Thinking level sheet in Musclog's AI behavior settings, with four options: Off, Medium, High and Tokenmaxxing, each with a one-line description](/images/blog/2026/11/thinking-levels-sheet.webp 'The four levels, in Settings → AI behavior.')
+![Musclog's AI behavior settings with the Thinking level row set to Tokenmaxxing](/images/blog/2026/11/thinking-level-tokenmaxxing.webp 'The row shows the level you picked and what it does.')
 
 ## What each level does
 
@@ -65,7 +65,7 @@ With your own API key, that is your bill. Pick the level for what you want: Off 
 - **Musclog Iron**: all four levels, with a warning. Every request counts against your monthly allowance, so moving up to High tells you that first, and Tokenmaxxing also asks for your fingerprint, face or phone PIN. It never costs more than the subscription: when the allowance for the period is used up, it renews with the next one.
 - **The free Musclog AI tier**: always Off. Everyone on the free tier shares one daily allowance, and if a few people turned on Tokenmaxxing they would use it up for everyone else. The setting stays where you left it, so it comes back if you switch to another provider.
 
-One more limit: the daily insights Musclog prepares in the background never run above High, since nobody is watching them.
+One more limit: the daily insights Musclog prepares in the background never run above Medium, since nobody is watching them.
 
 ## Is it actually better?
 
@@ -73,4 +73,4 @@ Honestly: I do not know yet, and I am not going to pretend I do. Asking a model 
 
 What I can say is that none of it is a black box. Every check is code you can read in [the repository](https://github.com/blopa/musclog-app), every estimate still opens in a review before anything is saved, and the progress line under a meal estimate only ever describes a step Musclog is really taking ("Comparing 3 estimates…", "Checking for anything missed…").
 
-The levels are in Settings → AI settings, and in the coach's quick settings, in the next update.
+The levels are in Settings → AI behavior, and in the coach's quick settings, in the next update.

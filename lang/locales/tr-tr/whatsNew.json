@@ -328,6 +328,24 @@
               "description": "Kendi API anahtarınızı ya da Musclog Iron'u Ayarlar → YZ bölümünden kullanın. İkisi de isteğinizi bulutta çok daha büyük bir modele gönderir."
             }
           }
+        },
+        "thinking": {
+          "title": "Yapay zekâ daha çok düşünsün",
+          "description": "Yeni bir ayar, yapay zekânın yanıtlamadan önce kendi işini kontrol etmesini sağlar. Kapalı en hızlısı; Tokenmaxxing en yavaş ve en kapsamlı olanıdır.",
+          "items": {
+            "levels": {
+              "label": "Ne kadar düşüneceğini seçin",
+              "description": "Kapalı, Orta, Yüksek veya Tokenmaxxing, Ayarlar → Yapay zekâ davranışı bölümünde. Her basamak yükseldikçe yanıtı kontrol etmek için daha fazla istek yapılır."
+            },
+            "checks": {
+              "label": "Kod yanıtları denetler",
+              "description": "Öğünler birkaç kez okunup karşılaştırılır; planlar ve analizler kendi sayılarınızla denetlenir."
+            },
+            "cost": {
+              "label": "Daha yavaş ve daha pahalı",
+              "description": "Musclog Iron'da aylık kotanızdan daha fazla harcar; ücretsiz Musclog AI ise her zaman Kapalı düzeyde yanıtlar. Yanıtları ne kadar iyileştirdiğini henüz ölçmedik."
+            }
+          }
         }
       }
     }

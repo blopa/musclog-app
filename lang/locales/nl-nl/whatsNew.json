@@ -328,6 +328,24 @@
               "description": "Gebruik je eigen API-sleutel of Musclog Iron, via Instellingen → AI. Beide sturen je verzoek naar een veel groter model in de cloud."
             }
           }
+        },
+        "thinking": {
+          "title": "Laat de AI harder nadenken",
+          "description": "Een nieuwe instelling laat de AI zijn eigen werk controleren voordat hij antwoordt. Uit is het snelst; Tokenmaxxing is het traagst en grondigst.",
+          "items": {
+            "levels": {
+              "label": "Kies hoe hard het denkt",
+              "description": "Uit, Gemiddeld, Hoog of Tokenmaxxing, via Instellingen → AI-gedrag. Elke stap omhoog doet meer verzoeken om het antwoord na te kijken."
+            },
+            "checks": {
+              "label": "Code controleert de antwoorden",
+              "description": "Maaltijden worden meerdere keren gelezen en vergeleken, en plannen en inzichten worden gecontroleerd tegen je eigen cijfers."
+            },
+            "cost": {
+              "label": "Trager, en het kost meer",
+              "description": "Bij Musclog Iron gebruikt het meer van je maandelijkse tegoed, en de gratis Musclog AI antwoordt altijd op Uit. We hebben niet gemeten hoeveel het antwoorden verbetert."
+            }
+          }
         }
       }
     }
