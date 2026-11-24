@@ -200,6 +200,7 @@ export function LogMealModal({
       title={t('meals.logMeal')}
       footer={footer}
       scrollable
+      scrollCue="subtle"
       closable={!isLogging}
     >
       <View className="mb-6 mt-6 gap-6 px-4">

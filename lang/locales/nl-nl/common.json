@@ -181,7 +181,8 @@
       "filter": "Filteren",
       "clearSearch": "Zoekopdracht wissen",
       "showValue": "Waarde tonen",
-      "hideValue": "Waarde verbergen"
+      "hideValue": "Waarde verbergen",
+      "scrollDown": "Naar beneden scrollen"
     },
     "externalAssistant": {
       "copied": "Instructies gekopieerd",

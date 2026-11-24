@@ -181,7 +181,8 @@
       "filter": "Filtrer",
       "clearSearch": "Effacer la recherche",
       "showValue": "Afficher la valeur",
-      "hideValue": "Masquer la valeur"
+      "hideValue": "Masquer la valeur",
+      "scrollDown": "Faire défiler vers le bas"
     },
     "externalAssistant": {
       "copied": "Instructions copiées",

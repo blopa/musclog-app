@@ -181,7 +181,8 @@
       "filter": "Filtre",
       "clearSearch": "Aramayı temizle",
       "showValue": "Değeri göster",
-      "hideValue": "Değeri gizle"
+      "hideValue": "Değeri gizle",
+      "scrollDown": "Aşağı kaydır"
     },
     "externalAssistant": {
       "copied": "Talimatlar kopyalandı",

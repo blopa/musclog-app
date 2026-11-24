@@ -13,7 +13,7 @@ import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { footerClearance, scrollCueBottom } from '@/components/modals/footerClearance';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
-import { useScrollFade } from '@/hooks/useScrollFade';
+import { type ScrollCueVariant, useScrollFade } from '@/hooks/useScrollFade';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -42,9 +42,10 @@ type FullScreenModalProps = {
   /**
    * Shows the "more below" cue (a fade into the surface and a chevron that scrolls to the end)
    * while the body runs past the screen. It sits above the footer. Off by default: most modals
-   * are short, and a cue on all of them would be noise.
+   * are short, and a cue on all of them would be noise. `true` is the full cue; `'subtle'` is the
+   * short fade and small chevron for a form whose last rows only slip under the footer button.
    */
-  scrollCue?: boolean;
+  scrollCue?: boolean | ScrollCueVariant;
   /** Drawn over the whole body, footer included (a blocking loader). Taps on it are swallowed. */
   overlay?: ReactNode;
 };
@@ -73,7 +74,8 @@ export function FullScreenModal({
   const ownScrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const bodyRef = scrollViewRef ?? ownScrollRef;
   const { scrollProps, FadeIndicator } = useScrollFade(
-    bodyRef as unknown as RefObject<ScrollViewInstance | null>
+    bodyRef as unknown as RefObject<ScrollViewInstance | null>,
+    scrollCue === 'subtle' ? 'subtle' : 'full'
   );
   // Everything but the ref, which the body already has.
   const { ref: _cueRef, ...scrollHandlers } = scrollProps;
@@ -198,7 +200,17 @@ export function FullScreenModal({
               </View>
             )}
 
-            {/* "more below" cue, above the footer that floats over the body */}
+            {/* optional footer */}
+            {footer ? (
+              <BottomButtonWrapper onHeightChange={setFooterHeight}>
+                {footer}
+                <View style={{ height: theme.spacing.margin.base }} />
+              </BottomButtonWrapper>
+            ) : null}
+
+            {/* "more below" cue, ending where the footer's button begins. Drawn after the footer so the
+                chevron, which reaches into the footer's see-through top padding, stays tappable;
+                the fade itself ignores touches. */}
             {scrollCue ? (
               <View
                 pointerEvents="box-none"
@@ -212,14 +224,6 @@ export function FullScreenModal({
               >
                 {FadeIndicator}
               </View>
-            ) : null}
-
-            {/* optional footer */}
-            {footer ? (
-              <BottomButtonWrapper onHeightChange={setFooterHeight}>
-                {footer}
-                <View style={{ height: theme.spacing.margin.base }} />
-              </BottomButtonWrapper>
             ) : null}
 
             {overlay ? (

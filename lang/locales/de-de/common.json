@@ -181,7 +181,8 @@
       "filter": "Filter",
       "clearSearch": "Suche leeren",
       "showValue": "Wert anzeigen",
-      "hideValue": "Wert ausblenden"
+      "hideValue": "Wert ausblenden",
+      "scrollDown": "Nach unten scrollen"
     },
     "externalAssistant": {
       "copied": "Anleitung kopiert",
