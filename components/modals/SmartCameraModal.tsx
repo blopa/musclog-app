@@ -4,9 +4,9 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import { MealDraftButton } from '@/components/camera/MealDraftButton';
 import { MealPhotoDetailsModal } from '@/components/camera/MealPhotoDetailsModal';
+import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import {
   SmartCameraPlaceholder,

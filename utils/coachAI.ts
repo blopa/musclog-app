@@ -70,11 +70,13 @@ import {
 } from './localReplyShape';
 import { consensusMeals } from './mealConsensus';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
+import { MAX_MEAL_IMAGES, type MealImage, toMealImage, toMealImages } from './mealImages';
 import {
   formatMealObservation,
   type MealObservation,
   parseMealObservation,
 } from './mealObservation';
+import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
 import { ingredientMacroProblems, reconcileIngredientMacros } from './mealPlausibility';
 import { applyMealReview, type MealReview } from './mealReview';
 import { ungroundedFigures } from './numberGrounding';
@@ -134,8 +136,6 @@ import {
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
-import { type MealImage, MAX_MEAL_IMAGES, toMealImage, toMealImages } from './mealImages';
-import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
 import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
 

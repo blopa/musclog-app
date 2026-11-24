@@ -15,6 +15,7 @@ jest.mock('@/utils/whatsNew/settingIO', () => ({
       reviewWeekday: 1,
       showLoggy: true,
       animatedLoggy: true,
+      aiMealCameraFlow: 'detailed',
     }).map(([setting, value]) => [setting, { read: jest.fn(async () => value) }])
   ),
   writeWhatsNewSetting: jest.fn(async () => undefined),
