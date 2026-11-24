@@ -139,10 +139,20 @@ const LOCAL_POLICY: ProviderPolicy = {
   maxChatHistoryTurns: LOCAL_MAX_CHAT_HISTORY_TURNS,
 };
 
+/**
+ * The on-device models (the downloaded one and Apple's) get the same two chat rules. Apple's engine
+ * takes no sampling fields, so only the turn cap reaches it.
+ */
+const ON_DEVICE_POLICY: ProviderPolicy = {
+  chatSampling: LOCAL_CHAT_SAMPLING,
+  maxChatHistoryTurns: LOCAL_MAX_CHAT_HISTORY_TURNS,
+};
+
 const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
   hosted: HOSTED_POLICY,
   openai: OPENAI_POLICY,
   local: LOCAL_POLICY,
+  'on-device': ON_DEVICE_POLICY,
 };
 
 /** The provider's own rules, or an empty policy when it follows the shared ones. */

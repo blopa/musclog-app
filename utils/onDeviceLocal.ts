@@ -22,11 +22,13 @@ function toMessages(messages: LocalMessage[], systemPrompt: string | undefined) 
 export async function sendLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  penalties?: LocalGenerateParams['penalties']
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     signal,
+    ...(penalties ? { penalties } : {}),
   });
 
   return result.text;
@@ -36,12 +38,14 @@ export async function streamLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
   onDelta: (delta: string) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  penalties?: LocalGenerateParams['penalties']
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     onDelta,
     signal,
+    ...(penalties ? { penalties } : {}),
   });
 
   return result.text;

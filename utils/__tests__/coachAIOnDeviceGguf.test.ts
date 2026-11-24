@@ -182,6 +182,49 @@ describe('sendCoachMessage on the downloaded engine', () => {
     expect(mockSendLocalMessage).not.toHaveBeenCalled();
   });
 
+  it('hides leaked chat-template tokens while streaming and in the saved reply', async () => {
+    mockStreamLocalMessage.mockImplementation(
+      async (_m: unknown, _s: unknown, onDelta: (d: string) => void) => {
+        onDelta('<|im_start|>assistant ');
+        onDelta('Anytime!<|im_e');
+        onDelta('nd|>');
+
+        return '';
+      }
+    );
+    const seen: string[] = [];
+    const reply = await sendCoachMessage(gguf, [], 'thanks', 'general', {
+      onText: (text) => seen.push(text),
+    });
+
+    expect(reply.msg4User).toBe('Anytime!');
+    expect(seen.every((text) => !text.includes('<|'))).toBe(true);
+  });
+
+  it('sends only the latest turns, with a repetition penalty', async () => {
+    mockSendLocalMessage.mockResolvedValue('Anytime!');
+    const history = Array.from({ length: 10 }, (_, i) => ({
+      role: i % 2 === 0 ? ('user' as const) : ('coach' as const),
+      content: `turn ${i}`,
+      at: 1_700_000_000_000 + i * 1000,
+    }));
+
+    await sendCoachMessage(gguf, history, 'thanks');
+
+    const [messages, , , penalties] = mockSendLocalMessage.mock.calls[0];
+    // 6 history turns + the new message
+    expect(messages).toHaveLength(7);
+    expect(messages[0].content).toBe('turn 4');
+    expect(penalties).toEqual({ frequency_penalty: 0.4, presence_penalty: 0.4 });
+  });
+
+  it('never penalises a structured reply', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue('{"answer":"x"}');
+    await requestStructured(gguf, request);
+
+    expect(mockSendLocalStructuredRaw.mock.calls[0][3]).not.toHaveProperty('penalties');
+  });
+
   it('rethrows a typed not-ready error instead of a generic apology', async () => {
     mockSendLocalMessage.mockRejectedValue(new OnDeviceUnavailableError('loadFailed'));
     await expect(sendCoachMessage(gguf, [], 'hi')).rejects.toMatchObject({ reason: 'loadFailed' });

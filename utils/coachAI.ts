@@ -34,7 +34,7 @@ import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
-import { providerPolicyFor } from './hostedProviderPolicy';
+import { type ProviderPolicy, providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
@@ -57,6 +57,7 @@ import {
   jsonRepairPrompt,
   jsonSpan,
   repairReplyJson,
+  stripStreamingTemplateTokens,
   stripTemplateTokens,
 } from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
@@ -404,7 +405,8 @@ function createStreamSink(stream: CoachStream, mode: 'plain' | 'coachJson'): Str
   return {
     onDelta: (delta) => {
       raw += delta;
-      const visible = mode === 'plain' ? raw.trimStart() : readJsonStringField(raw, 'msg4User');
+      const visible =
+        mode === 'plain' ? stripStreamingTemplateTokens(raw) : readJsonStringField(raw, 'msg4User');
       if (!visible || visible === shown) {
         return;
       }
@@ -1195,37 +1197,47 @@ async function runOnDeviceText(
   operation: string,
   messages: { role: 'user' | 'assistant'; content: string }[],
   systemPrompt: string | undefined,
-  sink: StreamSink | null
+  sink: StreamSink | null,
+  penalties?: ProviderPolicy['chatSampling']
 ): Promise<string> {
+  // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person, streamed
+  // or not, whichever engine wrote the text.
   if (onDeviceEngineOf(config) === 'gguf') {
-    return withLlmRetry(
+    const text = await withLlmRetry(
       operation,
       config,
       async (signal, touch) => {
         sink?.reset();
         if (!sink) {
-          return sendLocalMessage(messages, systemPrompt, signal);
+          return sendLocalMessage(messages, systemPrompt, signal, penalties);
         }
 
-        await streamLocalMessage(
+        const streamed = await streamLocalMessage(
           messages,
           systemPrompt,
           (delta) => {
             touch();
             sink.onDelta(delta);
           },
-          signal
+          signal,
+          penalties
         );
 
-        return sink.raw();
+        // The runtime's text is llama.cpp's parsed message, already cleaned; the raw stream is the
+        // fallback when it parsed to nothing.
+        return streamed || sink.raw();
       },
       { hasStreamed: () => sink?.hasEmitted() ?? false }
     );
+
+    return stripTemplateTokens(text);
   }
 
-  return sink
-    ? streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
-    : sendOnDeviceMessage(messages, systemPrompt);
+  const text = sink
+    ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
+    : await sendOnDeviceMessage(messages, systemPrompt);
+
+  return stripTemplateTokens(text ?? '');
 }
 
 async function sendViaOnDevice(
@@ -1244,8 +1256,15 @@ async function sendViaOnDevice(
       'on-device'
     );
 
+    // The same two rules as a custom local server: only the latest turns, and (on the downloaded
+    // model) a repetition penalty, so a one-word follow-up does not get the last answer back.
+    const policy = providerPolicyFor(config.provider);
+    const recentHistory =
+      policy.maxChatHistoryTurns === undefined
+        ? history
+        : history.slice(-policy.maxChatHistoryTurns);
     const truncatedHistory = truncateHistoryByBudget(
-      history,
+      recentHistory,
       onDeviceBudget(config) - userMessage.length
     );
     const normalized = normalizeHistory(truncatedHistory);
@@ -1266,7 +1285,14 @@ async function sendViaOnDevice(
       config,
     });
 
-    const raw = await runOnDeviceText(config, 'sendViaOnDevice', messages, systemPrompt, sink);
+    const raw = await runOnDeviceText(
+      config,
+      'sendViaOnDevice',
+      messages,
+      systemPrompt,
+      sink,
+      policy.chatSampling
+    );
 
     await logLlmDebugEvent({
       provider: 'on-device',
@@ -1398,7 +1424,7 @@ async function generateText(
         config,
       });
 
-      return streamedRaw.trim();
+      return stripTemplateTokens(streamedRaw);
     }
 
     const result = await withLlmRetry('generateText', config, (signal) =>
@@ -1468,7 +1494,7 @@ async function generateText(
       config,
     });
 
-    return streamedRaw.trim();
+    return stripTemplateTokens(streamedRaw);
   }
 
   const completion = await createOpenAiCompletion(client, 'generateText', config, requestPayload);
@@ -1481,8 +1507,7 @@ async function generateText(
     config,
   });
 
-  const raw = completion.choices[0]?.message?.content ?? '';
-  return raw.trim();
+  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
 }
 
 /**
@@ -1556,7 +1581,7 @@ async function generateTextWithHistory(
         config,
       });
 
-      return streamedRaw.trim();
+      return stripTemplateTokens(streamedRaw);
     }
 
     const result = await withLlmRetry('generateTextWithHistory', config, (signal) =>
@@ -1632,7 +1657,7 @@ async function generateTextWithHistory(
       config,
     });
 
-    return streamedRaw.trim();
+    return stripTemplateTokens(streamedRaw);
   }
 
   const completion = await createOpenAiCompletion(
@@ -1650,8 +1675,7 @@ async function generateTextWithHistory(
     config,
   });
 
-  const raw = completion.choices[0]?.message?.content ?? '';
-  return raw.trim();
+  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
 }
 
 function getSchemaFromFunctionDeclaration(fn: {
@@ -1867,9 +1891,24 @@ export async function requestStructured<T = unknown>(
   config: CoachAIConfig,
   request: StructuredRequest
 ): Promise<StructuredResult<T>> {
-  const result = await requestStructuredOnce<T>(config, request);
+  // The schema is built once, in whichever dialect the request used, and the repair step reuses it.
+  let built: { dialect: StructuredDialect; schema: object } | null = null;
+  const buildSchema = (dialect: StructuredDialect) => {
+    if (built?.dialect !== dialect) {
+      built = { dialect, schema: request.buildSchema(dialect) };
+    }
 
-  return reviveLocalStructured(config, request.operation, result, request.buildSchema('openai'));
+    return built.schema;
+  };
+
+  const result = await requestStructuredOnce<T>(config, { ...request, buildSchema });
+  if (!isLocalModel(config)) {
+    return result;
+  }
+
+  const schema = buildSchema(config.provider === 'local' ? 'openai' : 'gguf');
+
+  return reviveLocalStructured(config, request.operation, result, schema);
 }
 
 async function requestStructuredOnce<T = unknown>(
@@ -2185,12 +2224,8 @@ async function generateWithImageStructured<T>(
       return null;
     }
 
-    try {
-      const clean = raw.replace(/```json|```/g, '').trim();
-      return JSON.parse(clean) as T;
-    } catch {
-      return null;
-    }
+    const read = parseStructuredJson<T>(raw);
+    return read.kind === 'ok' ? read.value : null;
   }
 
   if (config.provider === 'claude') {

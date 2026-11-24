@@ -116,6 +116,21 @@ describe('generateWithLocalModel', () => {
     });
   });
 
+  it('maps chat repetition penalties to llama.cpp, and sends none by default', async () => {
+    await generateWithLocalModel({
+      messages,
+      penalties: { frequency_penalty: 0.4, presence_penalty: 0.4 },
+    });
+    await generateWithLocalModel({ messages });
+
+    expect(mockContext.completion.mock.calls[0][0]).toMatchObject({
+      penalty_freq: 0.4,
+      penalty_present: 0.4,
+    });
+    expect(mockContext.completion.mock.calls[1][0]).not.toHaveProperty('penalty_freq');
+    expect(mockContext.completion.mock.calls[1][0]).not.toHaveProperty('penalty_present');
+  });
+
   it('attaches the projector only for a photo and releases it afterwards', async () => {
     await generateWithLocalModel({ messages, image: 'file:///photo.jpg' });
 

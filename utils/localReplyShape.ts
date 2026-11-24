@@ -16,6 +16,19 @@ export function stripTemplateTokens(text: string): string {
   return text.replace(TEMPLATE_HEADER, '').replace(TEMPLATE_TOKEN, '').trim();
 }
 
+/** A token still arriving at the end of a stream (`<|im_e`), hidden until it completes or not. */
+const PARTIAL_TEMPLATE_TOKEN = /<\|[A-Za-z0-9_]*\|?$/;
+
+/** `stripTemplateTokens` for text that is still being streamed: also hides a half-written token. */
+export function stripStreamingTemplateTokens(text: string): string {
+  // Only the start is trimmed: the trailing space of a word still being written is kept.
+  return text
+    .replace(PARTIAL_TEMPLATE_TOKEN, '')
+    .replace(TEMPLATE_HEADER, '')
+    .replace(TEMPLATE_TOKEN, '')
+    .trimStart();
+}
+
 /**
  * The JSON inside a reply that has other text around it: from the first `{` or `[` to the last
  * matching closer. Null when there is no such span. The caller still parses and schema-checks it.
