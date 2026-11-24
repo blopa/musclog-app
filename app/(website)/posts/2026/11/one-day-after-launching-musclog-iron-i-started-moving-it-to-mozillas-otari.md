@@ -1,14 +1,14 @@
 ---
-title: "One day after launching Musclog Iron, I started moving it to Mozilla's Otari"
+title: 'One day after launching Musclog Iron, I started moving it to Otari from Mozilla.ai'
 date: '2026-11-23'
 category: 'engineering'
-description: 'Musclog Iron launched on OpenRouter, and the next day I learned about Otari, an open source AI gateway from Mozilla.ai. Here is why a privacy-first workout app chose it, what Otari does, and how the Iron server can now run on either gateway, switched with one command and no deploy.'
+description: 'Musclog Iron launched on OpenRouter, and the next day I learned about Otari, an open source AI gateway from Mozilla.ai, a company separate from Mozilla that Mozilla backs. Here is why a privacy-first workout app chose it, what Otari does, and how the Iron server can now run on either gateway, switched with one command and no deploy.'
 tags:
   [
     'Musclog',
     'Musclog Iron',
     'Otari',
-    'Mozilla',
+    'Mozilla.ai',
     'OpenRouter',
     'Cloudflare Workers',
     'D1',
@@ -20,7 +20,7 @@ tags:
 
 Musclog Iron went live yesterday. It is the optional subscription that runs Musclog's AI features for you, through a small server of mine that forwards requests to an AI gateway. I wrote about [what Iron is](/blog/2026/11/meet-musclog-iron-ai-with-nothing-to-set-up-and-nothing-else-locked) and about [how the server works](/blog/2026/11/hosted-ai-for-an-app-with-no-accounts-a-device-key-a-worker-and-a-spend-ledger), and it launched on [OpenRouter](https://openrouter.ai).
 
-Not even a day later I learned about **[Otari](https://otari.ai)**, an AI gateway from [Mozilla.ai](https://www.mozilla.ai/product/otari), and it stopped me in my tracks. Musclog is the workout app that cares a lot about privacy: no accounts, no ads, your data on your phone, every line of code in the open. Mozilla has spent decades being the internet company that cares about exactly the same things. If Iron's requests have to pass through a gateway, I want it to be one that is open source and built by people whose whole reputation is privacy.
+Not even a day later I learned about **[Otari](https://otari.ai)**, an AI gateway from [Mozilla.ai](https://www.mozilla.ai/product/otari), and it stopped me in my tracks. A quick note on the name, because it confused me too: Mozilla.ai is its own company, separate from Mozilla (the Firefox people), though Mozilla invests in it. Musclog is the workout app that cares a lot about privacy: no accounts, no ads, your data on your phone, every line of code in the open. If Iron's requests have to pass through a gateway, I want it to be one that is open source and built by a team that shares those values, and Otari is exactly that.
 
 So Musclog Iron is moving to Otari. This post is about why, what Otari does, and how I built the move so that it takes one command.
 
