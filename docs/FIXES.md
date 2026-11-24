@@ -1314,9 +1314,10 @@ failure in the app.
   new AI catch site. `utils/__tests__/coachAIErrorReporting.test.ts` checks this.
 - Dropped connections are excluded the same way (2.12.2+306: `Connection error.` caused by
   `fetch failed: java.io.IOException: unexpected end of stream on https://gateway.ai.cloudflare.com/...`
-  in `coachAI.generateMealPlan`). The OpenAI SDK retries connection failures twice on its own
-  (`maxRetries` defaults to 2), so one that surfaces is the device's network, not the app.
-  `reportAiError` also skips Sentry when `isAiConnectionError(error)` is true: an OpenAI
+  in `coachAI.generateMealPlan`). The request had already been retried (then by the OpenAI SDK's
+  default `maxRetries` of 2, now by `withLlmRetry` alone, with the SDKs set to 0), so one that
+  surfaces is the device's network, not the app.
+  `reportAiError` also skips Sentry when `isAiConnectionError(error)` (`utils/aiErrors.ts`) is true: an OpenAI
   `APIConnectionError` (including its timeout subclass), or a raw `fetch failed: …` or
   `Network request failed` error from the Gemini path. The user still sees the feature's error message, and
   their text is restored so they can retry.

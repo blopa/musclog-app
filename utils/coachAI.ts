@@ -18,6 +18,7 @@ import {
   AiCancelledError,
   AiInvalidKeyError,
   AiTimeoutError,
+  isAiConnectionError,
   OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
@@ -48,6 +49,7 @@ import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from '.
 import {
   buildPhotoMeal,
   type FoodCandidate,
+  limitFoodCandidates,
   type IdentifiedFood,
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_RETRY_TEMPERATURE,
@@ -189,23 +191,6 @@ export function isAiCreditsError(error: any): boolean {
   }
 
   return false;
-}
-
-/**
- * The request never got a response: the device dropped the connection (flaky mobile data, a
- * backgrounded app, `unexpected end of stream` from OkHttp). The OpenAI SDK has already retried
- * these twice (`maxRetries` defaults to 2) by the time one surfaces, so it is the user's network,
- * not a Musclog bug. Covers the OpenAI SDK's wrapper (and its timeout subclass) plus the raw fetch
- * failures the Gemini SDK lets through: expo/fetch's `fetch failed: …` and RN's
- * `Network request failed`.
- */
-export function isAiConnectionError(error: unknown): boolean {
-  if (error instanceof OpenAI.APIConnectionError || error instanceof Anthropic.APIConnectionError) {
-    return true;
-  }
-
-  const message = String((error as any)?.message ?? '').toLowerCase();
-  return message.startsWith('fetch failed:') || message === 'network request failed';
 }
 
 /**
@@ -390,10 +375,11 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     apiKey: config.apiKey ?? 'unused',
     baseURL: config.baseUrl,
     dangerouslyAllowBrowser: true,
-    // A provider whose retries are `withLlmRetry`'s alone turns the SDK's own off (hosted policy).
-    // Per-request headers (the hosted idempotency key) are passed per call through the `options` that
-    // `withLlmRetry` hands the request, never as client defaults.
-    maxRetries: providerPolicyFor(config).sdkMaxRetries,
+    // `withLlmRetry` is the only retry loop: the SDK's own (two retries by default) would repeat a
+    // failure inside every one of its attempts. Per-request headers (the hosted idempotency key) are
+    // passed per call through the `options` that `withLlmRetry` hands the request, never as client
+    // defaults.
+    maxRetries: 0,
     fetch: pinFetch,
   });
 }
@@ -598,7 +584,7 @@ async function runClaude(
   params: ClaudeParams,
   sink?: StreamSink | null
 ): Promise<string> {
-  const client = buildClaudeClient(config.apiKey);
+  const client = buildClaudeClient(config.apiKey, 0);
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'request',
@@ -2615,11 +2601,15 @@ async function trackMealVerified(
     // sends the string "null" or an invented id, and treating those as matches would
     // skip estimation and log the ingredient at 0 kcal.
     const normalizedClaimed = await NutritionService.normalizeAiMealIngredients(claimedStubs);
-    const matched = normalizedClaimed.filter((i) => i.foodId);
-    const newIngredients = [
+    const claimed = normalizedClaimed.filter((i) => i.foodId);
+    // What the model named without a (confirmed) id is looked up by name in the person's own foods
+    // before it is estimated, so a food they already have is never re-estimated.
+    const byName = await matchIngredientsToOwnFoods([
       ...meal.ingredients.filter((i) => !i.foodId),
       ...normalizedClaimed.filter((i) => !i.foodId).map((i) => ({ name: i.name, grams: i.grams })),
-    ];
+    ]);
+    const matched = [...claimed, ...byName.matched];
+    const newIngredients = byName.unmatched;
 
     let fullIngredients: TrackMealIngredient[] = matched;
 
@@ -2822,25 +2812,35 @@ async function reviewTrackedMeal(
   }
 
   const mealName = corrected.mealName ?? corrected.mealType;
-  const estimated = await estimateMissingIngredients(
-    config,
-    added,
-    corrected.ingredients.filter((ingredient) => ingredient.foodId),
-    mealName
-  );
-  const estimates = estimated?.ingredients ?? [];
-  const additions = added.flatMap((item, index) => {
-    const estimate = estimateFor(item, index, added.length, estimates);
+  // An addition the person already has a food for is taken from it, not estimated.
+  const { matched: addedFromOwnFoods, unmatched: addedToEstimate } =
+    await matchIngredientsToOwnFoods(added);
+  let estimates: MissingIngredientMacrosResponse['ingredients'] = [];
+  if (addedToEstimate.length > 0) {
+    const estimated = await estimateMissingIngredients(
+      config,
+      addedToEstimate,
+      [...corrected.ingredients.filter((ingredient) => ingredient.foodId), ...addedFromOwnFoods],
+      mealName
+    );
+    estimates = estimated?.ingredients ?? [];
+  }
 
-    return estimate
-      ? [
-          withEstimatedMacros(
-            { name: item.name, grams: item.grams, kcal: 0, protein: 0, carbs: 0, fat: 0 },
-            estimate
-          ),
-        ]
-      : [];
-  });
+  const additions = [
+    ...addedFromOwnFoods,
+    ...addedToEstimate.flatMap((item, index) => {
+      const estimate = estimateFor(item, index, addedToEstimate.length, estimates);
+
+      return estimate
+        ? [
+            withEstimatedMacros(
+              { name: item.name, grams: item.grams, kcal: 0, protein: 0, carbs: 0, fat: 0 },
+              estimate
+            ),
+          ]
+        : [];
+    }),
+  ];
   if (additions.length === 0) {
     return corrected;
   }
@@ -3395,11 +3395,19 @@ export async function getWorkoutVolumeInsights(
 
 export type { MealPhotoContext };
 
-/** Foods this phone already has whose names share a word with `name`, merged and deduplicated. */
+/**
+ * Foods this phone already has whose names share a word with `name`, merged and deduplicated and
+ * capped at `MAX_FOOD_CANDIDATES` (best candidates first, so the cap never changes the match). A food
+ * whose numbers are per serving is left out: a match is scaled by grams from per-100 g numbers.
+ */
 async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
   const byId = new Map<string, FoodCandidate>();
   for (const term of searchTermsFor(name)) {
     for (const food of await FoodService.searchFoods(term)) {
+      if (food.nutritionBasis === 'per_serving') {
+        continue;
+      }
+
       byId.set(food.id, {
         id: food.id,
         name: food.name,
@@ -3412,7 +3420,58 @@ async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
     }
   }
 
-  return [...byId.values()];
+  return limitFoodCandidates(name, [...byId.values()]);
+}
+
+/**
+ * Ingredients with no food id, looked up BY NAME in the foods this phone has (the person's own,
+ * saved and foundation foods), whichever provider made the estimate: a model sees at most 200
+ * foundation foods and a local server none, so the ids it claims miss almost everything the person
+ * actually eats. A match (`pickFoodMatch`: every significant word, the fewest extra words, a tie is
+ * no match) keeps the model's name and grams and takes that food's own numbers scaled to the grams;
+ * everything else is returned unchanged for the estimate request. The model's wording is kept so the
+ * person reads their own language. Best effort: a failed lookup leaves every ingredient unmatched,
+ * which only costs the estimate it would have saved.
+ */
+async function matchIngredientsToOwnFoods(
+  ingredients: readonly { name: string; grams: number }[]
+): Promise<{
+  matched: TrackMealIngredient[];
+  unmatched: { name: string; grams: number }[];
+}> {
+  const stubs: TrackMealIngredient[] = [];
+  const unmatched: { name: string; grams: number }[] = [];
+
+  try {
+    for (const { name, grams } of ingredients) {
+      const match = pickFoodMatch(name, await candidateFoodsFor(name));
+      if (match) {
+        stubs.push({ name, grams, foodId: match.id, kcal: 0, protein: 0, carbs: 0, fat: 0 });
+      } else {
+        unmatched.push({ name, grams });
+      }
+    }
+
+    if (stubs.length === 0) {
+      return { matched: [], unmatched };
+    }
+
+    const normalized = await NutritionService.normalizeAiMealIngredients(stubs);
+    const matched = normalized.filter((ingredient) => ingredient.foodId);
+    // An id the lookup dropped (the food vanished meanwhile) goes back to the estimate.
+    for (const ingredient of normalized.filter((item) => !item.foodId)) {
+      unmatched.push({ name: ingredient.name, grams: ingredient.grams });
+    }
+
+    return { matched, unmatched };
+  } catch (error) {
+    reportAiError(error, 'coachAI.matchIngredientsToOwnFoods');
+
+    return {
+      matched: [],
+      unmatched: ingredients.map(({ name, grams }) => ({ name, grams })),
+    };
+  }
 }
 
 /**

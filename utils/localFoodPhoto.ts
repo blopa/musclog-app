@@ -301,6 +301,39 @@ export function pickFoodMatch(
   return scored.length > 1 && scored[0].extra === scored[1].extra ? null : scored[0].candidate;
 }
 
+/** The most candidates a name match ranks: a common word ("rice") can name hundreds of foods. */
+export const MAX_FOOD_CANDIDATES = 50;
+
+/**
+ * At most `limit` candidates for a name, the ones `pickFoodMatch` would prefer first: those that
+ * carry every significant word, fewest extra words first, then the partial ones. `pickFoodMatch`
+ * therefore answers the same on the capped list as on the whole one (its winner, and any tie at the
+ * top, always survive the cut); the cap only stops it from ranking a huge result. A list within the
+ * limit is returned as it is.
+ */
+export function limitFoodCandidates(
+  name: string,
+  candidates: readonly FoodCandidate[],
+  limit: number = MAX_FOOD_CANDIDATES
+): FoodCandidate[] {
+  if (candidates.length <= limit) {
+    return [...candidates];
+  }
+
+  const wanted = new Set(tokenize(name));
+
+  return candidates
+    .map((candidate) => {
+      const have = new Set(tokenize(candidate.name));
+      const covered = [...wanted].filter((word) => have.has(word)).length;
+
+      return { candidate, covered, extra: have.size - covered };
+    })
+    .sort((a, b) => b.covered - a.covered || a.extra - b.extra)
+    .slice(0, limit)
+    .map((entry) => entry.candidate);
+}
+
 /**
  * The review payload: matched items carry their food id (the lookup fills the real numbers in at
  * normalization), the rest carry the unmatched id and zeros until the estimate follow-up runs.

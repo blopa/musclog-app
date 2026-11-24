@@ -2,10 +2,12 @@
 // Pure and relative-import-only. Two keep rules, then one median:
 // - Ungrouped: a vote. An ingredient is kept only when strictly more than half of the samples
 //   found it (a reading that saw something the others did not is more often wrong than right).
-// - Grouped (`groups[i]` is the independent first look sample i came from): an ingredient is kept
-//   only when it was seen under EVERY group that remains after the layout filter. An error inside
-//   one look must not be outvoted into the result by that look's own samples alone. With fewer
-//   than two groups left it falls back to the plain vote.
+// - Grouped (`groups[i]` is the independent first look sample i came from, and at least two looks
+//   remain after the layout filter): an ingredient is kept when AT LEAST half of the answered
+//   samples found it, whichever look they came from (with four samples, two). Requiring every look
+//   to agree let one look that missed the cooking oil or the dressing delete it from the meal, so
+//   a food that one look's two samples both saw is enough; a single sample of four still is not.
+//   With fewer than two groups left it falls back to the plain vote.
 // Every number is the median of what the readings said, per gram, so one wild figure never moves
 // the result.
 
@@ -82,13 +84,11 @@ function mergeIngredient(occurrences: TrackMealIngredient[]): TrackMealIngredien
 function mergeMeals(meals: TrackedMeal[], groups?: number[]): TrackedMeal {
   const first = meals[0];
   const need = meals.length / 2;
-  const distinctGroups = groups ? [...new Set(groups)] : [];
-  const byGroupRule = distinctGroups.length >= 2;
+  const byGroupRule = groups ? new Set(groups).size >= 2 : false;
   const order: string[] = [];
   const byName = new Map<string, TrackMealIngredient[]>();
-  const groupsByName = new Map<string, Set<number>>();
 
-  for (const [index, meal] of meals.entries()) {
+  for (const meal of meals) {
     const seenInMeal = new Set<string>();
     for (const ingredient of meal.ingredients ?? []) {
       const key = normalizeIngredientName(ingredient.name);
@@ -103,20 +103,15 @@ function mergeMeals(meals: TrackedMeal[], groups?: number[]): TrackedMeal {
       }
 
       byName.get(key)!.push(ingredient);
-      if (groups) {
-        if (!groupsByName.has(key)) {
-          groupsByName.set(key, new Set());
-        }
-
-        groupsByName.get(key)!.add(groups[index]);
-      }
     }
   }
 
-  const kept = (key: string): boolean =>
-    byGroupRule
-      ? distinctGroups.every((group) => groupsByName.get(key)?.has(group))
-      : byName.get(key)!.length > need;
+  // One entry per sample that found the ingredient (a sample names it once, see `seenInMeal`).
+  const kept = (key: string): boolean => {
+    const found = byName.get(key)!.length;
+
+    return byGroupRule ? found >= need : found > need;
+  };
 
   return {
     ...first,

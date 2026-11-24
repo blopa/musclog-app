@@ -38,8 +38,13 @@ export type ProviderPolicy = {
   onSuccess?: () => void;
   /** Wraps the wait before a retry. */
   backOff?: (wait: () => Promise<void>) => Promise<void>;
-  /** The OpenAI SDK's own retry count: 0 when this provider's retries are `withLlmRetry`'s alone. */
-  sdkMaxRetries?: number;
+  /**
+   * False when a failure this policy's `classifyFailure` did not claim (a dropped connection, a
+   * 408 or a bare 5xx the Worker did not answer) is thrown instead of retried by the shared rules.
+   * Defaults to true. A provider SDK's own retries are off for every provider (`withLlmRetry` is the
+   * one retry loop), so this is the only place a provider opts out of the shared transient retries.
+   */
+  retriesTransientFailures?: boolean;
   /**
    * The `reasoning_effort` this provider's requests carry for a job's effort, or undefined to send
    * none. Only providers that take the field have it: a local server, the free tier and any model
@@ -72,8 +77,9 @@ export type ProviderPolicy = {
 
 /**
  * Musclog Iron. A hosted request carries one idempotency key for every attempt, so the Worker
- * recognises a retry; it retries only the statuses the Worker says are safe; and its SDK retries are
- * off, since the SDK would repeat a 503 that must not be repeated (`daily_full`, `hosted_disabled`).
+ * recognises a retry, and it retries only the statuses the Worker says are safe (never a 503 that
+ * must not be repeated: `daily_full`, `hosted_disabled`). A failure the Worker did not answer is not
+ * handed to the shared transient rules.
  */
 const HOSTED_POLICY: ProviderPolicy = {
   requestHeaders: () => ({ 'Idempotency-Key': randomUUID() }),
@@ -104,7 +110,7 @@ const HOSTED_POLICY: ProviderPolicy = {
   },
   onSuccess: () => setHostedSignal('ok'),
   backOff: (wait) => whileHostedBackingOff(wait),
-  sdkMaxRetries: 0,
+  retriesTransientFailures: false,
   // The Worker keeps its own ceiling per feature and clamps what is asked, but an older Worker has no
   // such field and answers an unknown one with a 400. So the app sends it only once `/v1/config`
   // (cached for five minutes) says this Worker takes it, and never lets a config problem block a request.

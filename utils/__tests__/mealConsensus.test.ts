@@ -87,14 +87,41 @@ describe('consensusMeals', () => {
     const rice = { meals: [meal([ing('Rice', 100, 130)])] };
     const riceButter = { meals: [meal([ing('Rice', 100, 130), ing('Butter', 5, 36)])] };
 
-    it('drops an ingredient found only under one look, even in both its samples', () => {
+    it('keeps an ingredient that both samples of one look found (an oil the other look missed)', () => {
       const result = consensusMeals([riceButter, riceButter, rice, rice], [0, 0, 1, 1]);
-      expect(names(result)).toEqual(['Rice']);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('drops an ingredient only a single sample of four found', () => {
+      expect(names(consensusMeals([riceButter, rice, rice, rice], [0, 0, 1, 1]))).toEqual(['Rice']);
+      expect(names(consensusMeals([rice, rice, rice, riceButter], [0, 0, 1, 1]))).toEqual(['Rice']);
     });
 
     it('keeps an ingredient found once under each look', () => {
       const result = consensusMeals([riceButter, rice, riceButter, rice], [0, 0, 1, 1]);
       expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('needs at least half of the answered samples: two of three, not one of three', () => {
+      expect(names(consensusMeals([riceButter, rice, rice], [0, 0, 1]))).toEqual(['Rice']);
+      expect(names(consensusMeals([riceButter, riceButter, rice], [0, 1, 1]))).toEqual([
+        'Rice',
+        'Butter',
+      ]);
+    });
+
+    it('still takes the median grams and per-gram numbers of the samples that found it', () => {
+      const withButter = (grams: number) => ({
+        meals: [meal([ing('Rice', 100, 130), ing('Butter', grams, grams * 7.2)])],
+      });
+      const result = consensusMeals(
+        [withButter(10), withButter(20), withButter(40), rice],
+        [0, 0, 1, 1]
+      );
+      const butter = result.meals[0].ingredients.find((item) => item.name === 'Butter');
+
+      expect(butter?.grams).toBe(20);
+      expect(butter?.kcal).toBe(144);
     });
 
     it('falls back to the majority when fewer than 2 groups remain', () => {
@@ -110,10 +137,12 @@ describe('consensusMeals', () => {
       expect(names(result)).toEqual(['Rice', 'Butter']);
     });
 
-    it('matches the ungrouped result when no groups are given', () => {
+    it('matches the ungrouped result when no groups are given, which stays strictly more than half', () => {
       const samples = [riceButter, rice, riceButter, rice];
       expect(consensusMeals(samples)).toEqual(consensusMeals(samples, undefined));
       expect(names(consensusMeals(samples))).toEqual(['Rice']);
+      // The same samples with two looks keep the half that found it.
+      expect(names(consensusMeals(samples, [0, 0, 1, 1]))).toEqual(['Rice', 'Butter']);
     });
   });
 

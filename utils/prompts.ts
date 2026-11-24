@@ -2478,6 +2478,10 @@ export const getEstimateMacrosFunctions = (
  * The last turn of a coach reply's review round (highest thinking level). The system prompt and the
  * history are the chat's own; this message holds the person's message and the draft written for it.
  * The draft is a quoted block, so whatever it says is read as text to check, never as instructions.
+ *
+ * It is the one second pass no code judges, so it is a checklist, not an open "improve this": four
+ * named checks, and a draft that passes all of them comes back UNCHANGED. An open review can make a
+ * correct answer worse (longer, more hedged, a different voice), and nothing downstream would notice.
  */
 export const getChatReviewInstruction = (
   language: string,
@@ -2486,9 +2490,13 @@ export const getChatReviewInstruction = (
 ): string =>
   [
     'Review round. Below are the message the person just sent and a draft reply to it.',
-    'Check the draft against the conversation so far and against the app data in your instructions (profile, snapshot, workouts, meals).',
-    'Write the final reply in the same reply format: keep what is right, fix any fact that contradicts the app data or the conversation, and fill in what the draft missed.',
-    `Keep your persona voice and the length rules, and answer in the language the person writes in (the app language is ${language}).`,
+    'Run the draft through these four checks, against the conversation so far and against the app data in your instructions (profile, snapshot, workouts, meals):',
+    '1. Facts: a number or fact in the draft that contradicts the app data or the conversation. Fix it.',
+    '2. Unsupported claims: a claim about the person that nothing in the conversation or the app data supports. Remove it.',
+    '3. Safety: if the message or the data involves pain or injury symptoms, signs of an eating disorder, an extreme calorie deficit, pregnancy or medication, narrow the advice, give no optimisation advice that could cause harm, and suggest a qualified professional.',
+    `4. Fit: the draft answers what was asked, in your persona voice, within the length rules, in the language the person writes in (the app language is ${language}). If it does not, fix that.`,
+    'If the draft passes all four checks, reply with the draft UNCHANGED, word for word. Do not polish it, add to it, lengthen it or change its voice; change only what a check above requires.',
+    'Use the same reply format as the draft was written in.',
     'Never mention that a draft, a review or a second pass exists.',
     '',
     "The person's message:",

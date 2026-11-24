@@ -54,16 +54,16 @@ looping, and every loop has a fixed upper limit.** A level can make a job slower
 
 ## What each level is
 
-| Level        | Effort per request | Extra requests                                                                                                                         |
-| ------------ | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Off          | per job (below)    | none                                                                                                                                   |
-| Medium       | `high` everywhere  | meals take the verified path. Nothing else changes                                                                                     |
-| High         | `high` everywhere  | Medium, plus 1 review round (meals, insights, plans), and 2 readings for labels and imports                                            |
-| Tokenmaxxing | `max` everywhere   | Medium, plus 2 first looks and 4 meal samples, 2 review rounds, 3 readings for labels and imports, and chat replies drafted + reviewed |
+| Level        | Effort per request       | Extra requests                                                                                                                         |
+| ------------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Off          | per job (below)          | none                                                                                                                                   |
+| Medium       | `high`; reading `medium` | meals take the verified path. Nothing else changes                                                                                     |
+| High         | `high`; reading `medium` | Medium, plus 1 review round (meals, insights, plans), and 2 readings for labels and imports                                            |
+| Tokenmaxxing | `max`; reading `high`    | Medium, plus 2 first looks and 4 meal samples, 2 review rounds, 3 readings for labels and imports, and chat replies drafted + reviewed |
 
 Effort per job at **Off** (`AI_TASK_EFFORT`): reading something into fixed fields (a meal, a label,
 an import) `minimal`; a chat reply `low`; an analysis of your data or a plan `medium`. Medium and
-High both use `high`; they differ in how many requests are made, not in how hard each thinks.
+High use `high` for chats, analyses and plans and `medium` for reading; Tokenmaxxing uses `max` for those and `high` for reading. Medium and High differ in how many requests are made, not in how hard each thinks. Reading never gets `max`: it is a lookup, so Tokenmaxxing spends its extra on more samples and consensus instead.
 
 The pipeline table (`THINKING_PIPELINE`) is exactly this:
 
@@ -93,16 +93,21 @@ Used by: the coach's Track meal, My Meals' generator, the camera's AI photo. Cod
   them (`refineTrackedMeals`); ingredients whose numbers cannot be true get +1 request to re-estimate
   (`recheckImplausibleIngredients`, which keeps the new numbers only if they have fewer problems).
   Usually 1 request, at most 3.
-- **Medium**: the verified path. (1) read the recipe, (2) estimate the foods your database did not
-  match, (3) recheck implausible numbers. Usually 2 to 3.
+- **Medium**: the verified path. (1) read the recipe, (2) take what your own foods already cover:
+  an id the model claimed counts only when the database has it, and every ingredient still without
+  one is looked up **by name** in your foods (any provider; see the table in section 4), (3)
+  estimate the rest, (4) recheck implausible numbers. Usually 2 to 3, and 1 when your foods cover
+  everything.
 - **High**: the verified path once, then 1 review round per meal: the model sees the estimate next
   to your text or photo and lists what is missing or off, code applies it, +1 to estimate what was
-  added, +1 recheck. The review replaces the estimate only if it has no more implausible numbers.
+  added (an addition one of your foods matches by name is taken from that food instead), +1 recheck. The review replaces the estimate only if it has no more implausible numbers.
 - **Tokenmaxxing**: first, 2 independent first looks (`observeMeal`, run together on a cloud model).
   Then the verified path 4 times: 2 samples read each look. The samples are combined by
-  `consensusMeals(samples, groups)` (`utils/mealConsensus.ts`): an ingredient stays only if it was
-  seen under **both** looks (so a mistake inside one look cannot be outvoted into the result by that
-  look's own two samples), and grams and macros are the median of all samples. Then up to 2 review
+  `consensusMeals(samples, groups)` (`utils/mealConsensus.ts`): an ingredient stays when **at least
+  half of the answered samples** found it, whichever look they came from (with four samples, two),
+  so a cooking oil or a dressing that one look missed is not deleted while a single sample of four
+  that found something alone is still dropped (a plain vote with no looks needs strictly more than
+  half), and grams and macros are the median of the samples that found it. Then up to 2 review
   rounds. Roughly 12 to 20 requests for one meal. Each look is a separate request on purpose: one
   shared look would put the same perception mistake into every sample and the vote would hide it.
   If one look fails or reads as nothing, the other still feeds its 2 samples; if both fail, it falls
@@ -146,7 +151,13 @@ label (1 / 1 / 2 + arbiter / 3 + arbiter).
   history) checks it against the conversation and your app data. Only the review is streamed, with
   "Double-checking my answer…" until text arrives. If the review fails or comes back empty, you get
   the draft. This is the only job where the second answer is not judged by a code rule: it is kept
-  unless it is empty or failed.
+  unless it is empty or failed. So the review is a **checklist**, not an open "improve this"
+  (`getChatReviewInstruction`, `utils/prompts.ts`): (1) a number or fact that contradicts the app
+  data or the conversation is fixed, (2) a claim about you that nothing supports is removed, (3) for
+  pain or injury symptoms, signs of an eating disorder, an extreme deficit, pregnancy or medication
+  the advice is narrowed, no optimisation advice that could harm is given and a qualified
+  professional is suggested, (4) the reply answers what was asked, in the persona's voice and length
+  rules and in your language. A draft that passes all four comes back **unchanged**, word for word.
 
 The chat's "armed" intentions reuse the jobs on this page: Track meal is the meal job, Meal plan and
 Workout plan are plans, Analyze progress is a workout insight, Nutrition check is a nutrition insight.
@@ -255,19 +266,31 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 - **Timeout** 60 s. For a streamed reply it is an **idle** timeout (every chunk resets it), so a long
   answer that keeps flowing is never cut. `CoachAIConfig.timeoutMs` overrides it, `signal` cancels.
   A timeout is retried **once**, at once. Cancel throws `AiCancelledError` and stops everything.
-- **Transient failures** (429 that does not read as a quota or billing problem, 503, 529): up to 3
-  more tries after 1, 2 and 4 seconds.
+- **Transient failures**: a request timeout (408), a 429 that does not read as a quota or billing
+  problem, 500, 502, 503, 504, 529, and a **dropped connection** (`isAiConnectionError`,
+  `utils/aiErrors.ts`: the OpenAI and Anthropic SDKs' `APIConnectionError`, expo/fetch's
+  `fetch failed: ...`, React Native's `Network request failed`). Up to 3 more tries after about 1, 2
+  and 4 seconds, **each wait spread by jitter** to between half and one and a half times its base
+  (`jitteredDelayMs`), so a burst of failures does not come back together.
+- **`Retry-After`** (seconds or an HTTP date, read from the response headers an OpenAI or Anthropic
+  `APIError` carries): a provider that says how long to wait is waited for instead of the backoff,
+  when that is at most 10 seconds; a longer ask is not waited for and the failure is thrown at once.
 - **Never retried**: a wrong key (Gemini answers it with a 400 carrying `API_KEY_INVALID`, so a bare
-  400 stays ordinary), any other status, and any failure after a streamed reply has shown text (a
-  retry would restart the reply under the person's eyes).
-- **Retries stack.** For OpenAI-compatible providers and Claude the SDK's own retries (default 2)
-  run inside each attempt, so one logical request can reach the provider more often than the four
-  attempts above. Only Musclog Iron turns the SDK's retries off (`sdkMaxRetries: 0`).
+  400 stays ordinary), any other 4xx, and any failure after a streamed reply has shown text (a retry
+  would restart the reply under the person's eyes).
+- **`withLlmRetry` is the only retry loop.** The OpenAI client (`buildOpenAIClient`) and the Claude
+  client (`buildClaudeClient(key, 0)`) are built with `maxRetries: 0`, so one logical request reaches
+  the provider at most four times (before, the SDKs' own two retries ran inside each of those
+  attempts, up to twelve). The Gemini SDK retries nothing unless asked and is asked nothing, so its
+  failures follow the same rules and nothing else. "Test key" calls (`utils/aiKeyTest.ts`) also use 0.
 - **Musclog Iron** (`HOSTED_POLICY`, `utils/providerPolicy.ts`): one `Idempotency-Key` (`randomUUID`)
   per logical request, sent on every attempt; it retries only what the Worker says is safe (502,
   503, 504 except `daily_full` and `hosted_disabled`, 409 `in_progress`, 429) and never 401, 402, 403
-  or `already_processed`; the wait is shown in the coach as "busy, retrying". Every sample, look and
-  review round is its own logical request with its own key.
+  or `already_processed`; the wait is shown in the coach as "busy, retrying". It keeps its own
+  classification and its un-jittered 1, 2, 4 second waits: `retriesTransientFailures: false` keeps a
+  failure the Worker did not answer (a dropped connection, a bare 408) out of the shared transient
+  retries above, as before. Every sample, look and review round is its own logical request with its
+  own key.
 - A typed failure is mapped once, here (`toUserFacingAiError`: invalid key, timeout; hosted kinds
   `budget`, `dailyLimit`, `subscription`, `removed`, `unavailable`, `dailyFull`, `busy`,
   `alreadyProcessed`) and shown by `describeAiError`. Typed errors, rate limits and dropped
@@ -313,19 +336,20 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 
 ### 4. What code decides instead of the model
 
-| Where              | The rule (code, not the model)                                                                                                                                                                                                                           | File                                                |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| Meal numbers       | Energy must be within 25% (or 30 kcal) of `4 protein + 4 net carbs + 9 fat + 2 fiber`; macro mass at most 5% (+1 g) over the grams; at most 9.5 kcal per gram (+5); no macros with energy and no energy with macros                                      | `utils/mealPlausibility.ts`                         |
-| Meal numbers, last | Whatever is still impossible after one re-estimate has its macros scaled down to the grams and its energy set from the macros, so the review never shows figures that contradict each other                                                              | `reconcileIngredientMacros`                         |
-| Food ids           | A food id the model claims only counts when the database has it (the model invents ids and sends the string "null"); the person's own foods keep their own numbers and are never re-estimated                                                            | `NutritionService.normalizeAiMealIngredients`       |
-| Carbs              | AI carbs are net; the stored value is net + fiber                                                                                                                                                                                                        | `totalCarbsForFoodSource('ai', ...)`                |
-| Meal samples       | Median grams and median macros per gram; an ingredient needs a majority of samples, or every first look when there are looks                                                                                                                             | `utils/mealConsensus.ts`                            |
-| Meal review        | The review only names what is missing and which grams look wrong; code applies it, added foods are estimated and rechecked, and the result replaces the estimate only if it has no more problems                                                         | `utils/mealReview.ts`, `countMealProblems`          |
-| Labels and imports | Per field: numbers agree within 5% (or 0.5), the median wins; text, booleans and nulls by vote; arrays by the most common length; disputed fields are listed and only they go to the arbiter                                                             | `utils/extractionConsensus.ts`                      |
-| Insights           | Every figure in the text that the data does not hold (dates, years and counts up to 10 excluded; locale separators read both ways; within 1% or a rounding) is listed for the fact check; the correction is kept only with no more of them               | `utils/numberGrounding.ts`                          |
-| Plans              | Findings listed by code (an exercise twice in a workout, sets or reps that make no sense, a meal-plan day more than 10% off the asked calories or protein, ingredient numbers that do not add up) drive the critique                                     | `utils/planFindings.ts`                             |
-| Generated workouts | Exercise ids are resolved against the catalogue; a restricted or unavailable exercise is swapped for the best same-region substitute or dropped; the weights are the person's estimated 1RM x the percentage the model gave, computed from their history | `utils/workoutAI.ts` (`processWorkoutPlanResponse`) |
-| Memories           | The model returns `remember_me`; an exact repeat is dropped, a near repeat (word overlap of 0.6 or more) replaces the older one, the cap counts across the three chat threads, newest wins                                                               | `utils/coachMemories.ts`                            |
+| Where              | The rule (code, not the model)                                                                                                                                                                                                                                                                                                                                        | File                                                |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Meal numbers       | Energy must be within 25% (or 30 kcal) of `4 protein + 4 net carbs + 9 fat + 2 fiber`; macro mass at most 5% (+1 g) over the grams; at most 9.5 kcal per gram (+5); no macros with energy and no energy with macros                                                                                                                                                   | `utils/mealPlausibility.ts`                         |
+| Meal numbers, last | Whatever is still impossible after one re-estimate has its macros scaled down to the grams and its energy set from the macros, so the review never shows figures that contradict each other                                                                                                                                                                           | `reconcileIngredientMacros`                         |
+| Food ids           | A food id the model claims only counts when the database has it (the model invents ids and sends the string "null"); the person's own foods keep their own numbers and are never re-estimated                                                                                                                                                                         | `NutritionService.normalizeAiMealIngredients`       |
+| Food by name       | On the verified path (Medium and up, every provider), an ingredient with no confirmed id, and each one a review adds, is matched by name to the foods on the phone: every significant word, fewest extra words, a tie is no match, per-serving foods never; the match keeps the model's name and takes the food's own numbers, and the estimate request never sees it | `matchIngredientsToOwnFoods`, `pickFoodMatch`       |
+| Carbs              | AI carbs are net; the stored value is net + fiber                                                                                                                                                                                                                                                                                                                     | `totalCarbsForFoodSource('ai', ...)`                |
+| Meal samples       | Median grams and median macros per gram; an ingredient needs a majority of samples, or at least half of them when there are two or more first looks                                                                                                                                                                                                                   | `utils/mealConsensus.ts`                            |
+| Meal review        | The review only names what is missing and which grams look wrong; code applies it, added foods are estimated and rechecked, and the result replaces the estimate only if it has no more problems                                                                                                                                                                      | `utils/mealReview.ts`, `countMealProblems`          |
+| Labels and imports | Per field: numbers agree within 5% (or 0.5), the median wins; text, booleans and nulls by vote; arrays by the most common length; disputed fields are listed and only they go to the arbiter                                                                                                                                                                          | `utils/extractionConsensus.ts`                      |
+| Insights           | Every figure in the text that the data does not hold (dates, years and counts up to 10 excluded; locale separators read both ways; within 1% or a rounding) is listed for the fact check; the correction is kept only with no more of them                                                                                                                            | `utils/numberGrounding.ts`                          |
+| Plans              | Findings listed by code (an exercise twice in a workout, sets or reps that make no sense, a meal-plan day more than 10% off the asked calories or protein, ingredient numbers that do not add up) drive the critique                                                                                                                                                  | `utils/planFindings.ts`                             |
+| Generated workouts | Exercise ids are resolved against the catalogue; a restricted or unavailable exercise is swapped for the best same-region substitute or dropped; the weights are the person's estimated 1RM x the percentage the model gave, computed from their history                                                                                                              | `utils/workoutAI.ts` (`processWorkoutPlanResponse`) |
+| Memories           | The model returns `remember_me`; an exact repeat is dropped, a near repeat (word overlap of 0.6 or more) replaces the older one, the cap counts across the three chat threads, newest wins                                                                                                                                                                            | `utils/coachMemories.ts`                            |
 
 ### 5. Photos
 
@@ -404,10 +428,19 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 - **High changes nothing for a chat reply or the setup chat**: both are one request at `high` effort,
   the same as Medium. Only Tokenmaxxing adds the draft-and-review.
 - **The Tokenmaxxing chat review is the one second answer code does not judge**: it is kept unless
-  it is empty or failed.
+  it is empty or failed. Its instruction is a four-point checklist that returns a passing draft
+  unchanged, which narrows how much it can change, but nothing checks that the model obeyed it.
+- **Matching a meal's ingredients to your foods by name works mostly in English.** The bundled
+  foundation foods (529: 225 USDA, 304 common) are stored under their English names whatever the
+  app language, and the model names ingredients in the app language, so a Spanish, Dutch, German,
+  French, Italian, Polish, Portuguese or Turkish name matches only where the words coincide
+  (pasta, pizza, banana) or where you saved the food under that wording. `tokenize` keeps only
+  a-z0-9, so a Russian name has no words, searches nothing and is always estimated. The rule that
+  the match with the fewest extra words wins can also pick another product that contains the
+  words ("Olive oil" over "Olive oil, extra virgin" when you saved an "Olive Oil Mayo"). A
+  `per_serving` food is never matched. `FoodService.searchFoods` is an unbounded LIKE per word; the
+  candidates it returns are ranked and cut to 50 (`limitFoodCandidates`) before matching.
 - **On-device photo at High keeps a food named by either of two readings** (above).
-- **Stacked retries** (section 2): the SDK's own retries run inside `withLlmRetry`'s on every
-  provider except Musclog Iron.
 - **Structured prompts get escaping only.** The delimiter wrapper for untrusted text is unused.
 - **A long meal is slow on a phone**: Tokenmaxxing makes its samples one after another on the
   on-device model and a local server.
@@ -415,20 +448,20 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 
 ## Where to change things
 
-| I want to…                                            | Edit                                                                                                          |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| make a level think harder or softer                   | `AI_TASK_EFFORT` in `utils/aiEffort.ts`                                                                       |
-| change how many requests a level makes                | `THINKING_PIPELINE` / `extractionSamples` in `utils/aiThinkingLevel.ts`                                       |
-| change what a level asks for on Iron                  | `thinkingLevelChangeGate` in the same file                                                                    |
-| change which jobs the free tier or background can use | `providerAllowsThinking`, `BACKGROUND_THINKING_CEILING`, same file                                            |
-| add a review step to a new job                        | use `runSamples` / `reviewAndRevise` from `utils/aiPasses.ts`, with a code `accept` rule                      |
-| add a new kind of job                                 | name its task (`chat`, `extraction`, `insight`, `planning`) when calling `requestStructured` / `generateText` |
-| change retries, backoff or the timeout                | `utils/llmRetry.ts` (`LLM_RETRY_DELAYS_MS`, `LLM_REQUEST_TIMEOUT_MS`)                                         |
-| give a provider its own rule (headers, penalties)     | its entry in `utils/providerPolicy.ts`, never a `provider === 'x'` branch in `coachAI.ts`                     |
-| change how a broken reply is read or repaired         | `parseStructuredJson`, `checkStructuredShape`, `jsonRepairPrompt` in `utils/localReplyShape.ts`               |
-| change what counts as an impossible meal number       | the constants in `utils/mealPlausibility.ts`                                                                  |
-| change the provider order                             | `AI_PROVIDER_KINDS` in `constants/ai.ts` (and `PROVIDER_PROBES` in `services/AiService.ts`)                   |
+| I want to…                                                    | Edit                                                                                                                  |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| make a level think harder or softer                           | `AI_TASK_EFFORT` in `utils/aiEffort.ts`                                                                               |
+| change how many requests a level makes                        | `THINKING_PIPELINE` / `extractionSamples` in `utils/aiThinkingLevel.ts`                                               |
+| change what a level asks for on Iron                          | `thinkingLevelChangeGate` in the same file                                                                            |
+| change which jobs the free tier or background can use         | `providerAllowsThinking`, `BACKGROUND_THINKING_CEILING`, same file                                                    |
+| add a review step to a new job                                | use `runSamples` / `reviewAndRevise` from `utils/aiPasses.ts`, with a code `accept` rule                              |
+| add a new kind of job                                         | name its task (`chat`, `extraction`, `insight`, `planning`) when calling `requestStructured` / `generateText`         |
+| change retries, backoff, jitter, `Retry-After` or the timeout | `utils/llmRetry.ts` (`RETRYABLE_LLM_STATUSES`, `LLM_RETRY_DELAYS_MS`, `MAX_RETRY_AFTER_MS`, `LLM_REQUEST_TIMEOUT_MS`) |
+| give a provider its own rule (headers, penalties)             | its entry in `utils/providerPolicy.ts`, never a `provider === 'x'` branch in `coachAI.ts`                             |
+| change how a broken reply is read or repaired                 | `parseStructuredJson`, `checkStructuredShape`, `jsonRepairPrompt` in `utils/localReplyShape.ts`                       |
+| change what counts as an impossible meal number               | the constants in `utils/mealPlausibility.ts`                                                                          |
+| change the provider order                                     | `AI_PROVIDER_KINDS` in `constants/ai.ts` (and `PROVIDER_PROBES` in `services/AiService.ts`)                           |
 
-Tests: `utils/__tests__/{aiThinkingLevel,aiPasses,mealConsensus,mealObservation,coachAIMealLooks,mealReview,extractionConsensus,numberGrounding,planFindings,coachAIExtractionConsensus,coachAIReviewPasses,coachAIStreaming,coachAITrackMealThinking,aiEffort,coachAIEffort}.test.ts`.
+Tests: `utils/__tests__/{aiThinkingLevel,aiPasses,mealConsensus,mealObservation,coachAIMealLooks,mealReview,extractionConsensus,numberGrounding,planFindings,coachAIExtractionConsensus,coachAIReviewPasses,coachAIStreaming,coachAITrackMealThinking,aiEffort,coachAIEffort,llmRetry,llmRetryOwner,coachAIMatchOwnFoods,localFoodPhoto,chatReviewInstruction}.test.ts`.
 The reasoning behind the choices is in `docs/RESEARCH.md` (Reasoning effort per job). Nobody has
 measured yet whether the extra requests improve the answers; the numbers are product choices.

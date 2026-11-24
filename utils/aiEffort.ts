@@ -6,8 +6,11 @@
 // (`utils/aiThinkingLevel.ts`); `utils/coachAI.ts` translates the answer for the provider. At `off`
 // each job gets what it needs: a quick chat reply and a mechanical extraction think little, an
 // analysis of weeks of data or a plan built from several constraints thinks more. `medium` and
-// `high` lift every job to `high` (they differ in how many requests a job makes, not in effort) and
-// `tokenmaxxing` asks for `max`, the most each provider takes. These are product choices, not
+// `high` lift chat, insight and planning to `high` (they differ in how many requests a job makes,
+// not in effort) and `tokenmaxxing` asks them for `max`, the most each provider takes. Reading
+// something into a fixed shape (`extraction`) never gets the maximum: it is a lookup of what is on
+// the page or the plate, so it stops at `medium` at Medium and High and at `high` at Tokenmaxxing,
+// which spends its extra on more samples and consensus instead. These are product choices, not
 // measurements (`docs/RESEARCH.md` -> Reasoning effort per job).
 
 import type { ThinkingLevel } from './aiThinkingLevel';
@@ -27,7 +30,7 @@ export type AiTask =
 
 export const AI_TASK_EFFORT: Record<AiTask, Record<ThinkingLevel, AiEffort>> = {
   chat: { off: 'low', medium: 'high', high: 'high', tokenmaxxing: 'max' },
-  extraction: { off: 'minimal', medium: 'high', high: 'high', tokenmaxxing: 'max' },
+  extraction: { off: 'minimal', medium: 'medium', high: 'medium', tokenmaxxing: 'high' },
   insight: { off: 'medium', medium: 'high', high: 'high', tokenmaxxing: 'max' },
   planning: { off: 'medium', medium: 'high', high: 'high', tokenmaxxing: 'max' },
 };

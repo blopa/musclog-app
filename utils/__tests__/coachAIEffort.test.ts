@@ -91,9 +91,23 @@ describe('reasoning effort per job', () => {
       expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'low' });
     });
 
-    it('sends high effort for an extraction job with thinking on', async () => {
+    it('sends medium effort for an extraction job at medium and high, high at tokenmaxxing', async () => {
+      mockThinking.level = 'medium';
+      await requestStructured(openai, request('extraction'));
+      expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'medium' });
+
       mockThinking.level = 'high';
       await requestStructured(openai, request('extraction'));
+      expect(mockCreate.mock.calls[1][0]).toMatchObject({ reasoning_effort: 'medium' });
+
+      mockThinking.level = 'tokenmaxxing';
+      await requestStructured(openai, request('extraction'));
+      expect(mockCreate.mock.calls[2][0]).toMatchObject({ reasoning_effort: 'high' });
+    });
+
+    it('sends high effort for a planning job with thinking on', async () => {
+      mockThinking.level = 'high';
+      await requestStructured(openai, request('planning'));
       expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'high' });
     });
 
@@ -143,8 +157,11 @@ describe('reasoning effort per job', () => {
       expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'medium' });
 
       mockThinking.level = 'high';
-      await requestStructured(hosted, request('extraction'));
+      await requestStructured(hosted, request('planning'));
       expect(mockCreate.mock.calls[1][0]).toMatchObject({ reasoning_effort: 'high' });
+
+      await requestStructured(hosted, request('extraction'));
+      expect(mockCreate.mock.calls[2][0]).toMatchObject({ reasoning_effort: 'medium' });
     });
 
     it('sends nothing to a Worker that does not take it (an older deploy would answer 400)', async () => {
@@ -191,6 +208,16 @@ describe('reasoning effort per job', () => {
       mockThinking.level = 'high';
       await requestStructured(claude, request('planning'));
       expect(mockClaudeCreate.mock.calls[0][0].output_config).toMatchObject({ effort: 'high' });
+    });
+
+    it('sends medium output effort for an extraction job at high, never max', async () => {
+      mockThinking.level = 'high';
+      await requestStructured(claude, request('extraction'));
+      expect(mockClaudeCreate.mock.calls[0][0].output_config).toMatchObject({ effort: 'medium' });
+
+      mockThinking.level = 'tokenmaxxing';
+      await requestStructured(claude, request('extraction'));
+      expect(mockClaudeCreate.mock.calls[1][0].output_config).toMatchObject({ effort: 'high' });
     });
   });
   describe('tokenmaxxing', () => {

@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 
-import { isAiConnectionError, trackMeal } from '../coachAI';
+import { isAiConnectionError } from '../aiErrors';
+import { trackMeal } from '../coachAI';
 import { handleError } from '../handleError';
 
 const mockSendOnDeviceStructured = jest.fn();

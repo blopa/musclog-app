@@ -39,12 +39,14 @@ export function claudeEffort(effort: AiEffort): ClaudeEffort {
 /**
  * `dangerouslyAllowBrowser` is required on web and harmless on native: the key is the user's own,
  * entered in Settings and stored encrypted, so it is never a shared secret shipped in the bundle.
+ * `maxRetries` has no default on purpose: `withLlmRetry` is the one retry loop, so a request passes 0
+ * (the SDK's own two retries would repeat a failure inside each of its attempts).
  */
-export function buildClaudeClient(apiKey: string | undefined, maxRetries?: number): Anthropic {
+export function buildClaudeClient(apiKey: string | undefined, maxRetries: number): Anthropic {
   return new Anthropic({
     apiKey: apiKey ?? 'unused',
     dangerouslyAllowBrowser: true,
-    ...(maxRetries === undefined ? {} : { maxRetries }),
+    maxRetries,
   });
 }
 

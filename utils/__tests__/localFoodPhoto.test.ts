@@ -2,8 +2,10 @@ import {
   buildPhotoMeal,
   type FoodCandidate,
   LOCAL_FOOD_IDENTIFY_SCHEMA,
+  limitFoodCandidates,
   LOCAL_PHOTO_UNMATCHED_FOOD_ID,
   localFoodIdentifyPrompt,
+  MAX_FOOD_CANDIDATES,
   MAX_IDENTIFIED_FOODS,
   MAX_IDENTIFIED_NAME_CHARS,
   mealTypeForHour,
@@ -290,5 +292,58 @@ describe('mergeFoodsAcrossPhotos', () => {
       { name: 'egg', grams: 55 },
       { name: 'Toast', grams: 30 },
     ]);
+  });
+});
+
+describe('limitFoodCandidates', () => {
+  const many = (count: number, make: (index: number) => string) =>
+    Array.from({ length: count }, (_, index) => food(`f${index}`, make(index)));
+
+  it('returns a list within the limit as it is', () => {
+    const list = [food('a', 'Rice white'), food('b', 'Rice brown')];
+
+    expect(limitFoodCandidates('rice', list)).toEqual(list);
+    expect(MAX_FOOD_CANDIDATES).toBe(50);
+  });
+
+  it('caps a huge result at the limit, the best candidates first', () => {
+    // 200 partial matches (a word of the name missing) and the one candidate that carries both.
+    const list = [...many(200, (i) => `Rice variety ${i}`), food('best', 'Rice white')];
+    const capped = limitFoodCandidates('white rice', list);
+
+    expect(capped).toHaveLength(MAX_FOOD_CANDIDATES);
+    expect(capped[0].id).toBe('best');
+  });
+
+  it('never changes what pickFoodMatch answers', () => {
+    const noise = many(120, (i) => `Rice dish number ${i}`);
+    const winner = food('winner', 'Rice, white');
+    const list = [...noise, winner];
+
+    expect(pickFoodMatch('white rice', limitFoodCandidates('white rice', list))?.id).toBe(
+      pickFoodMatch('white rice', list)?.id
+    );
+    expect(pickFoodMatch('white rice', limitFoodCandidates('white rice', list))?.id).toBe('winner');
+  });
+
+  it('keeps a tie at the top a tie, so a cut never invents a match', () => {
+    const list = [
+      ...many(80, (i) => `Rice flour ${i}`),
+      food('a', 'Rice white'),
+      food('b', 'Rice brown'),
+    ];
+
+    expect(pickFoodMatch('rice', list)).toBeNull();
+    expect(pickFoodMatch('rice', limitFoodCandidates('rice', list))).toBeNull();
+  });
+
+  it('takes an explicit limit', () => {
+    expect(
+      limitFoodCandidates(
+        'rice',
+        many(10, (i) => `Rice ${i}`),
+        3
+      )
+    ).toHaveLength(3);
   });
 });

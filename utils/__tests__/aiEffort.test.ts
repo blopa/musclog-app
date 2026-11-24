@@ -18,16 +18,25 @@ describe('effortFor', () => {
     expect(effortFor('planning', 'off')).toBe('medium');
   });
 
-  it('lifts every job to high at medium and high, which differ in requests, not effort', () => {
-    for (const task of TASKS) {
+  it('lifts chat, insight and planning to high at medium and high, which differ in requests, not effort', () => {
+    for (const task of TASKS.filter((name) => name !== 'extraction')) {
       expect(effortFor(task, 'medium')).toBe('high');
       expect(effortFor(task, 'high')).toBe('high');
     }
   });
 
-  it('asks for the most at tokenmaxxing', () => {
-    for (const task of TASKS) {
+  it('asks chat, insight and planning for the most at tokenmaxxing', () => {
+    for (const task of TASKS.filter((name) => name !== 'extraction')) {
       expect(effortFor(task, 'tokenmaxxing')).toBe('max');
+    }
+  });
+
+  it('never gives a reading task the maximum: medium at medium and high, high at tokenmaxxing', () => {
+    expect(effortFor('extraction', 'medium')).toBe('medium');
+    expect(effortFor('extraction', 'high')).toBe('medium');
+    expect(effortFor('extraction', 'tokenmaxxing')).toBe('high');
+    for (const level of THINKING_LEVELS) {
+      expect(effortFor('extraction', level)).not.toBe('max');
     }
   });
 

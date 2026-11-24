@@ -26,7 +26,7 @@ That switch is now four levels: **Off, Medium, High and Tokenmaxxing.** Off and 
 
 **Off** is fast. Each kind of job thinks as much as it needs: reading a meal or a nutrition label thinks the least, a chat reply a little more, and an analysis of weeks of your data or a workout plan the most.
 
-**Medium** is the old thinking mode. Every request reasons at the highest regular effort, and meal estimates take the careful path: the model first lists the foods and grams, Musclog checks every food it claims to recognise against your own foods, and only the rest is estimated.
+**Medium** is the old thinking mode. A chat reply, an analysis of your data and a plan reason at the highest regular effort (reading a meal, a label or an import at a middle one), and meal estimates take the careful path: the model first lists the foods and grams, Musclog checks every food it claims to recognise against your own foods, looks the others up by name in your foods, and only what is still left is estimated.
 
 **High** is Medium plus a second look at almost everything:
 
@@ -37,10 +37,10 @@ That switch is now four levels: **Off, Medium, High and Tokenmaxxing.** Off and 
 
 **Tokenmaxxing** is High, turned up:
 
-- **Meals** start with a first look. Before anything is estimated, the model describes the scene in a sentence or two, the way a person would: "A hand holding a regular-size dinner plate with rice and curry, taken at a restaurant, from above." It also notes where the meal was served (restaurant portions are often bigger than home ones), what the food is on and how big that is (a regular dinner plate is about 26 cm), what in the picture shows the scale (a fork, a hand, a can), and then each food with how much of the plate it fills. No weights, only the context that makes a weight guess better. It does this twice, separately. Each of the two looks then feeds two independent estimates, so four in all. An ingredient stays only if it shows up under **both** looks, and its grams and macros are the median of what the estimates said. Then come up to two rounds of review. The photo is still sent with every estimate, so a wrong first look can be corrected by looking again.
+- **Meals** start with a first look. Before anything is estimated, the model describes the scene in a sentence or two, the way a person would: "A hand holding a regular-size dinner plate with rice and curry, taken at a restaurant, from above." It also notes where the meal was served (restaurant portions are often bigger than home ones), what the food is on and how big that is (a regular dinner plate is about 26 cm), what in the picture shows the scale (a fork, a hand, a can), and then each food with how much of the plate it fills. No weights, only the context that makes a weight guess better. It does this twice, separately. Each of the two looks then feeds two independent estimates, so four in all. An ingredient stays if at least half of the four estimates found it, whichever look they came from, so a cooking oil one look missed is not lost, and its grams and macros are the median of what those estimates said. Then come up to two rounds of review. The photo is still sent with every estimate, so a wrong first look can be corrected by looking again.
 - **Insights and plans** get two rounds of review instead of one; the second fact-check round also tightens the wording.
 - **Labels and imports** are read three times, and each field is settled by majority or median. Only a field none of the readings agree on goes back to the model.
-- **The coach writes every chat reply twice.** It drafts an answer you never see, then reviews it against your conversation and your app data, and the reviewed version is the one that appears. While it does, the chat says "Double-checking my answer…".
+- **The coach writes every chat reply twice.** It drafts an answer you never see, then runs it through a short checklist against your conversation and your app data (a number that contradicts your data, a claim about you that nothing supports, a safety topic such as pain, an eating-disorder sign, an extreme deficit, pregnancy or medication, and whether it answers what you asked), and the checked version is the one that appears. A draft that passes every check comes back unchanged. While it does, the chat says "Double-checking my answer…".
 
 ## Every request, one by one
 
@@ -70,13 +70,13 @@ A few details the table hides:
 
 The other half of a level is how hard each request thinks (the provider's own reasoning setting, where it has one):
 
-| Kind of request                                         | Off     | Medium | High | Tokenmaxxing |
-| ------------------------------------------------------- | ------- | ------ | ---- | ------------ |
-| Reading a meal, a label or an import into fixed fields  | minimal | high   | high | max          |
-| A chat reply                                            | low     | high   | high | max          |
-| An analysis of your data, a workout plan or a meal plan | medium  | high   | high | max          |
+| Kind of request                                         | Off     | Medium | High   | Tokenmaxxing |
+| ------------------------------------------------------- | ------- | ------ | ------ | ------------ |
+| Reading a meal, a label or an import into fixed fields  | minimal | medium | medium | high         |
+| A chat reply                                            | low     | high   | high   | max          |
+| An analysis of your data, a workout plan or a meal plan | medium  | high   | high   | max          |
 
-This is why Medium and High feel similar per request: both ask for `high`. High differs in how many requests it makes, not in how hard each one thinks.
+This is why Medium and High feel similar per request: both ask for the same effort. High differs in how many requests it makes, not in how hard each one thinks. Reading is the one kind of request that never gets the maximum, at any level: Tokenmaxxing spends its extra on more readings that are compared, not on more thinking per reading.
 
 ## Code decides, not the model
 
@@ -96,7 +96,7 @@ With your own API key, that is your bill. Pick the level for what you want: Off 
 
 ## Where it is available
 
-- **Your own key** (Gemini, OpenAI, Claude) and **your own local server**: all four levels. Tokenmaxxing also asks Claude and Gemini for their highest reasoning setting.
+- **Your own key** (Gemini, OpenAI, Claude) and **your own local server**: all four levels. Tokenmaxxing also asks Claude and Gemini for their highest reasoning setting for chats, analyses and plans.
 - **The AI on your phone**: all four levels. The model on the phone has no reasoning setting at all, so for it the levels are only about the extra checks. That may be where they help the most: [a small model](/blog/2026/11/musclogs-ai-now-runs-on-your-phone) mislabels foods and misjudges weights often, and a mistake one reading makes is less likely to show up in all of them. At High and above the photo is read more than once (the extra readings slightly less strictly, so they can differ), a food stays only if at least half the readings name it, its grams are the median, and each nutrition label is asked for more than once too. The cost is time, not money.
 - **Musclog Iron**: all four levels, with a warning. Every request counts against your monthly allowance, so moving up to High tells you that first, and Tokenmaxxing also asks for your fingerprint, face or phone PIN. It never costs more than the subscription: when the allowance for the period is used up, it renews with the next one.
 - **The free Musclog AI tier**: always Off. Everyone on the free tier shares one daily allowance, and if a few people turned on Tokenmaxxing they would use it up for everyone else. The setting stays where you left it, so it comes back if you switch to another provider.

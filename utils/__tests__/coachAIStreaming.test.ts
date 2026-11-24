@@ -322,7 +322,8 @@ describe('streaming coach replies', () => {
 
     it('does not review a draft that failed', async () => {
       mockSettingsGet.mockResolvedValue('tokenmaxxing');
-      mockCreate.mockRejectedValueOnce(Object.assign(new Error('boom'), { status: 500 }));
+      // A 400 is not retried (a 500 now is, by withLlmRetry), so the draft fails for good.
+      mockCreate.mockRejectedValueOnce(Object.assign(new Error('boom'), { status: 400 }));
 
       await sendCoachMessage(openai, [], 'hello', 'general', { onText: () => {} });
 

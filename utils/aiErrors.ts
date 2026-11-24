@@ -143,6 +143,36 @@ export function isAiTimeoutError(error: unknown): boolean {
 }
 
 /**
+ * The request never got a response: the device dropped the connection (flaky mobile data, a
+ * backgrounded app, `unexpected end of stream` from OkHttp). It is the user's network, not a
+ * Musclog bug, and `withLlmRetry` repeats it (the provider SDKs' own retries are off). Covers the
+ * OpenAI and Anthropic SDKs' wrapper (and its timeout subclass) plus the raw fetch failures the
+ * Gemini SDK lets through: expo/fetch's `fetch failed: …` and RN's `Network request failed`.
+ */
+export function isAiConnectionError(error: unknown): boolean {
+  // The SDKs are loaded here, when a failure is classified, and not at the top of the
+  // module: many components and hooks import this file for the typed errors and must not load them
+  // (the pattern of services/premium/revenueCat.ts). A class that is missing, as in a partly mocked
+  // SDK, is skipped rather than throwing from inside the classification of another failure.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const openAiModule = require('openai');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const anthropicModule = require('@anthropic-ai/sdk');
+  const connectionClasses = [
+    (openAiModule?.default ?? openAiModule)?.APIConnectionError,
+    (anthropicModule?.default ?? anthropicModule)?.APIConnectionError,
+  ].filter(
+    (candidate): candidate is new (...args: never[]) => Error => typeof candidate === 'function'
+  );
+  if (connectionClasses.some((connectionClass) => error instanceof connectionClass)) {
+    return true;
+  }
+
+  const message = String((error as any)?.message ?? '').toLowerCase();
+  return message.startsWith('fetch failed:') || message === 'network request failed';
+}
+
+/**
  * The single classification point for "the user can fix this": maps a raw failure to a typed error,
  * or `null` when it is something else (a bug, a rate limit, a dropped connection). Credit and rate
  * limit errors keep their own classes in `coachAI.ts`.
