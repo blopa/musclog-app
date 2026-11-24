@@ -18,7 +18,12 @@ export async function resizeForAi(
   return { base64, mimeType };
 }
 
-export async function prepareOwnKeyImage(base64: string, mimeType: string): Promise<PreparedImage> {
+export async function prepareOwnKeyImage(
+  base64: string,
+  mimeType: string,
+  // Unused on web: nothing is resized.
+  _count: number = 1
+): Promise<PreparedImage> {
   return { base64, mimeType };
 }
 

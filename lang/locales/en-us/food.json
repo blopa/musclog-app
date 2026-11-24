@@ -506,7 +506,19 @@
       "comparing_one": "Comparing {{count}} estimate…",
       "comparing_few": "Comparing {{count}} estimates…",
       "comparing_many": "Comparing {{count}} estimates…",
-      "comparing_other": "Comparing {{count}} estimates…"
+      "comparing_other": "Comparing {{count}} estimates…",
+      "readingPhotos_one": "Looking at your photo…",
+      "readingPhotos_other": "Looking at your {{count}} photos…",
+      "observingPhotos_one": "Taking a careful first look at your photo…",
+      "observingPhotos_other": "Taking a careful first look at your {{count}} photos…",
+      "identifyingPhoto_one": "Looking at photo {{index}} of {{count}}…",
+      "identifyingPhoto_other": "Looking at photo {{index}} of {{count}}…",
+      "readingPhotos_few": "Looking at your {{count}} photos…",
+      "readingPhotos_many": "Looking at your {{count}} photos…",
+      "observingPhotos_few": "Taking a careful first look at your {{count}} photos…",
+      "observingPhotos_many": "Taking a careful first look at your {{count}} photos…",
+      "identifyingPhoto_few": "Looking at photo {{index}} of {{count}}…",
+      "identifyingPhoto_many": "Looking at photo {{index}} of {{count}}…"
     },
     "aiNutritionContext": {
       "title": "Add context for AI",
@@ -716,6 +728,43 @@
         "logError": "Couldn't log the food. Try again."
       },
       "linkError": "The link from your assistant couldn't be read. {{reason}} Paste the JSON block from the chat instead."
+    },
+    "mealPhotos": {
+      "title": "Your meal",
+      "photoCount_one": "{{count}} of {{max}} photo",
+      "photoCount_other": "{{count}} of {{max}} photos",
+      "addPhoto": "Add a photo",
+      "removePhoto": "Remove photo {{index}}",
+      "optionalHint": "Everything below is optional.",
+      "nameLabel": "Meal name",
+      "namePlaceholder": "e.g. Chicken and rice",
+      "descriptionLabel": "Anything else we should know?",
+      "descriptionPlaceholder": "e.g. I ate half, no dressing",
+      "originLabel": "Where is it from?",
+      "origin": {
+        "home": "Home cooked",
+        "restaurant": "Restaurant",
+        "takeaway": "Takeaway",
+        "packaged": "Packaged"
+      },
+      "addedFatLabel": "Oil, butter or sauces added?",
+      "addedFat": {
+        "none": "None",
+        "some": "A little",
+        "lots": "A lot"
+      },
+      "tagsLabel": "Tags",
+      "estimate": "Estimate",
+      "reviewPhotos_one": "Review {{count}} photo",
+      "reviewPhotos_other": "Review {{count}} photos",
+      "discardTitle": "Discard this meal?",
+      "discardMessage": "Your photos and notes will be lost.",
+      "discard": "Discard",
+      "keepEditing": "Keep editing",
+      "photoCount_few": "{{count}} of {{max}} photos",
+      "photoCount_many": "{{count}} of {{max}} photos",
+      "reviewPhotos_few": "Review {{count}} photos",
+      "reviewPhotos_many": "Review {{count}} photos"
     }
   }
 }

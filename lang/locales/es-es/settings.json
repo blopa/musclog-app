@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "Cámara de comidas con IA",
+        "description": "Cómo funciona la cámara al fotografiar una comida.",
+        "detailed": "Detallado",
+        "quick": "Rápido",
+        "detailedHint": "Tras cada foto, revisa hasta 5 fotos y añade detalles opcionales (nombre, notas, procedencia) antes de estimar.",
+        "quickHint": "Estima justo después de hacer la foto. Añade contexto antes de la toma con el botón de mensaje."
+      },
       "getOpenAiKey": "Conseguir Clave de OpenAI",
       "customPrompts": "Prompts de Sistema Personalizados",
       "customPromptsSubtitle": "Añade tus propias instrucciones a todas las funciones de IA",

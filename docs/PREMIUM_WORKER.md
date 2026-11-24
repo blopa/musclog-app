@@ -178,6 +178,8 @@ It only issues GET requests. G9 is the "proceeds present" line per transaction a
 
 ## The app side (P6)
 
+**Several photos per request (2026-11-24).** `image.max_images` is 5 and `limits.body_max_bytes` is 1048576 (the schema's ceiling) in every `AI_CONFIG_JSON`, so one meal estimate can carry up to 5 `image_url` parts in one user message; per-image `max_bytes` (400000) and `max_px` (1568) are unchanged. The body cap is what really bounds the set: 5 base64 photos must fit in 1 MB together, so the app has to shrink each below the per-image limit when it sends several. The reservation bound grows with the count (`images × tokens_max` input tokens, plus `images × image_per_image`): 5 images at `tokens_max` 4096 reserve about 20k extra input tokens, about 2 000 micro-USD at the shipped prompt price, far below `finance.max_cap_u`. `GET /v1/config` now advertises `image.maxImages` and `image.bodyMaxBytes` next to `maxPx`, `maxBytes` and `quality`; an app that finds neither (an older Worker) falls back to 1 image and a 512 KB body, and older apps ignore the new fields. Deploy the Worker before the app release that sends several photos.
+
 **Photos:** hosted vision is on (`vision_enabled` and `image.tokens_max` in `AI_CONFIG_JSON`) with an estimated `tokens_max`; the benchmark that will measure it, and the device checks to do first, are in `docs/PHOTO_BENCHMARK.md`.
 
 The app's provider, errors, image resize and Premium UI: since 2.17.0 they show on every native build unless `EXPO_PUBLIC_HIDE_PREMIUM_UI=1` is set as an EAS variable. See the "Premium provider, errors and UI" bullet in `AGENTS.md`. A client request carries `Idempotency-Key` (one per logical request) and the Worker's `x-should-retry: false` answers are retried only by the app's own backoff.

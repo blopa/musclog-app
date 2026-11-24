@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "Appareil photo de repas IA",
+        "description": "Comment fonctionne l'appareil photo lorsque vous photographiez un repas.",
+        "detailed": "Détaillé",
+        "quick": "Rapide",
+        "detailedHint": "Après chaque photo, vérifiez jusqu'à 5 photos et ajoutez des détails facultatifs (nom, notes, provenance) avant l'estimation.",
+        "quickHint": "Estimez juste après la photo. Ajoutez le contexte avant la prise de vue avec le bouton message."
+      },
       "getOpenAiKey": "Obtenir une clé OpenAI",
       "customPrompts": "Instructions système personnalisées",
       "customPromptsSubtitle": "Ajoute tes propres consignes à toutes les fonctions d'IA",

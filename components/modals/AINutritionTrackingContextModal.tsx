@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { MEAL_CONTEXT_TAGS } from '@/constants/mealContextTags';
 import { useTheme } from '@/hooks/useTheme';
 
 type AINutritionTrackingContextModalProps = {
@@ -36,13 +37,7 @@ export function AINutritionTrackingContextModal({
   const [mealDescription, setMealDescription] = useState(initialDescription);
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
 
-  const quickTags = [
-    t('food.aiNutritionContext.quickTagHighProtein'),
-    t('food.aiNutritionContext.quickTagLowCarb'),
-    t('food.aiNutritionContext.quickTagLargeServing'),
-    t('food.aiNutritionContext.quickTagEatingOut'),
-    t('food.aiNutritionContext.quickTagVegan'),
-  ];
+  const quickTags = MEAL_CONTEXT_TAGS.map((tag) => t(tag.labelKey));
 
   const handleToggleTag = (tag: string) => {
     const newTags = selectedTags.includes(tag)

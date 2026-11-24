@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "Yapay zeka öğün kamerası",
+        "description": "Bir öğünün fotoğrafını çektiğinizde kameranın nasıl çalıştığı.",
+        "detailed": "Ayrıntılı",
+        "quick": "Hızlı",
+        "detailedHint": "Her fotoğraftan sonra en fazla 5 fotoğrafı gözden geçirip tahmin etmeden önce isteğe bağlı ayrıntı (ad, not, nereden geldiği) ekleyebilirsiniz.",
+        "quickHint": "Fotoğrafı çektikten hemen sonra tahmin edin. Çekimden önce bağlamı mesaj düğmesiyle ekleyin."
+      },
       "getOpenAiKey": "OpenAI anahtarı al",
       "customPrompts": "Özel sistem istemleri",
       "customPromptsSubtitle": "Tüm yapay zekâ özelliklerine kendi talimatlarını ekle",

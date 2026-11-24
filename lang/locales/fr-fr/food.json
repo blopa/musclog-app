@@ -506,7 +506,19 @@
       "comparing_one": "Comparaison de {{count}} estimation…",
       "comparing_few": "Comparaison de {{count}} estimations…",
       "comparing_many": "Comparaison de {{count}} estimations…",
-      "comparing_other": "Comparaison de {{count}} estimations…"
+      "comparing_other": "Comparaison de {{count}} estimations…",
+      "readingPhotos_one": "Analyse de votre photo…",
+      "readingPhotos_other": "Analyse de vos {{count}} photos…",
+      "observingPhotos_one": "Premier examen attentif de votre photo…",
+      "observingPhotos_other": "Premier examen attentif de vos {{count}} photos…",
+      "identifyingPhoto_one": "Analyse de la photo {{index}} sur {{count}}…",
+      "identifyingPhoto_other": "Analyse de la photo {{index}} sur {{count}}…",
+      "readingPhotos_few": "Analyse de vos {{count}} photos…",
+      "readingPhotos_many": "Analyse de vos {{count}} photos…",
+      "observingPhotos_few": "Premier examen attentif de vos {{count}} photos…",
+      "observingPhotos_many": "Premier examen attentif de vos {{count}} photos…",
+      "identifyingPhoto_few": "Analyse de la photo {{index}} sur {{count}}…",
+      "identifyingPhoto_many": "Analyse de la photo {{index}} sur {{count}}…"
     },
     "aiNutritionContext": {
       "title": "Ajouter du contexte pour l'IA",
@@ -716,6 +728,43 @@
         "logError": "Impossible de saisir l'aliment. Réessaie."
       },
       "linkError": "Le lien de ton assistant n'a pas pu être lu. {{reason}} Colle plutôt le bloc JSON de la conversation."
+    },
+    "mealPhotos": {
+      "title": "Votre repas",
+      "photoCount_one": "{{count}} sur {{max}} photo",
+      "photoCount_other": "{{count}} sur {{max}} photos",
+      "addPhoto": "Ajouter une photo",
+      "removePhoto": "Supprimer la photo {{index}}",
+      "optionalHint": "Tout ce qui suit est facultatif.",
+      "nameLabel": "Nom du repas",
+      "namePlaceholder": "ex. Poulet et riz",
+      "descriptionLabel": "Autre chose à nous signaler ?",
+      "descriptionPlaceholder": "ex. J'en ai mangé la moitié, sans sauce",
+      "originLabel": "D'où vient-il ?",
+      "origin": {
+        "home": "Fait maison",
+        "restaurant": "Restaurant",
+        "takeaway": "À emporter",
+        "packaged": "Emballé"
+      },
+      "addedFatLabel": "Huile, beurre ou sauces ajoutés ?",
+      "addedFat": {
+        "none": "Aucun",
+        "some": "Un peu",
+        "lots": "Beaucoup"
+      },
+      "tagsLabel": "Étiquettes",
+      "estimate": "Estimer",
+      "reviewPhotos_one": "Vérifier {{count}} photo",
+      "reviewPhotos_other": "Vérifier {{count}} photos",
+      "discardTitle": "Supprimer ce repas ?",
+      "discardMessage": "Vos photos et notes seront perdues.",
+      "discard": "Supprimer",
+      "keepEditing": "Continuer la modification",
+      "photoCount_few": "{{count}} sur {{max}} photos",
+      "photoCount_many": "{{count}} sur {{max}} photos",
+      "reviewPhotos_few": "Vérifier {{count}} photos",
+      "reviewPhotos_many": "Vérifier {{count}} photos"
     }
   }
 }

@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "AI-maaltijdcamera",
+        "description": "Hoe de camera werkt wanneer je een maaltijd fotografeert.",
+        "detailed": "Uitgebreid",
+        "quick": "Snel",
+        "detailedHint": "Na elke foto bekijk je tot 5 foto's en voeg je optionele details toe (naam, notities, herkomst) voordat er geschat wordt.",
+        "quickHint": "Schat meteen na het maken van de foto. Voeg context toe vóór de opname met de berichtknop."
+      },
       "getOpenAiKey": "Vraag OpenAI sleutel aan",
       "customPrompts": "Aangepaste systeem-prompts",
       "customPromptsSubtitle": "Voeg je eigen instructies toe aan alle AI-functies",

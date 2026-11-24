@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Voeg meer toe aan je maaltijdfoto",
+          "description": "Na het maken van een foto kun je nu tot 5 foto's van dezelfde maaltijd toevoegen en Musclog iets meer vertellen voordat het schat. Alles wat je toevoegt is optioneel.",
+          "flow": {
+            "title": "Zo werkt de AI-maaltijdcamera",
+            "description": "Je kunt dit altijd wijzigen via Instellingen → AI-gedrag.",
+            "detailed": {
+              "label": "Uitgebreid",
+              "description": "Bekijk je foto's en voeg details toe voordat het schat."
+            },
+            "quick": {
+              "label": "Snel",
+              "description": "Schatten direct na de foto, zoals voorheen."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Tot 5 foto's van één maaltijd",
+              "description": "Voeg een andere hoek of een close-up toe voordat je schat. Ze worden samen als één maaltijd verstuurd, dus een voedingsmiddel dat op twee foto's te zien is, wordt één keer geteld. Een aanbieder die minder foto's accepteert, beperkt het aantal."
+            },
+            "details": {
+              "label": "Vertel wat een foto niet kan laten zien",
+              "description": "Voeg een naam toe, een notitie zoals „half opgegeten, zonder dressing”, of het thuis gemaakt of uit een restaurant was, en of er olie of boter aan is toegevoegd."
+            },
+            "cover": {
+              "label": "De eerste foto wordt bewaard",
+              "description": "Alleen de eerste foto wordt opgeslagen bij de gelogde maaltijd. De andere worden alleen voor de schatting gebruikt."
+            }
+          }
+        },
         "thinking": {
           "title": "Laat de AI harder nadenken",
           "description": "Een nieuwe instelling laat de AI zijn eigen werk controleren voordat hij antwoordt. Uit is het snelst; Tokenmaxxing is het traagst en grondigst.",

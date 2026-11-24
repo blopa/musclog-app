@@ -7,6 +7,7 @@ import {
   MAX_IDENTIFIED_FOODS,
   MAX_IDENTIFIED_NAME_CHARS,
   mealTypeForHour,
+  mergeFoodsAcrossPhotos,
   parseIdentifiedFoods,
   photoMealName,
   pickFoodMatch,
@@ -234,5 +235,60 @@ describe('voteIdentifiedFoods', () => {
         [{ name: 'bread', grams: 40 }],
       ])
     ).toEqual([{ name: 'rice', grams: 160 }]);
+  });
+});
+
+describe('mergeFoodsAcrossPhotos', () => {
+  it('unions foods in first-seen order, photo 0 first', () => {
+    expect(
+      mergeFoodsAcrossPhotos([
+        [
+          { name: 'Rice', grams: 100 },
+          { name: 'Egg', grams: 50 },
+        ],
+        [
+          { name: 'Beans', grams: 80 },
+          { name: 'Rice', grams: 90 },
+        ],
+      ])
+    ).toEqual([
+      { name: 'Rice', grams: 100 },
+      { name: 'Egg', grams: 50 },
+      { name: 'Beans', grams: 80 },
+    ]);
+  });
+
+  it('matches by normalized name and keeps the larger grams with its spelling', () => {
+    expect(
+      mergeFoodsAcrossPhotos([
+        [{ name: 'Rice', grams: 100 }],
+        [{ name: '  RICE ', grams: 150 }],
+        [{ name: 'rice', grams: 120 }],
+      ])
+    ).toEqual([{ name: '  RICE ', grams: 150 }]);
+  });
+
+  it('never sums grams', () => {
+    expect(
+      mergeFoodsAcrossPhotos([[{ name: 'Egg', grams: 60 }], [{ name: 'Egg', grams: 60 }]])
+    ).toEqual([{ name: 'Egg', grams: 60 }]);
+  });
+
+  it('ignores empty photos and returns a single list deduped within itself', () => {
+    expect(mergeFoodsAcrossPhotos([])).toEqual([]);
+    expect(mergeFoodsAcrossPhotos([[], []])).toEqual([]);
+    expect(
+      mergeFoodsAcrossPhotos([
+        [],
+        [
+          { name: 'Egg', grams: 40 },
+          { name: 'Toast', grams: 30 },
+          { name: 'egg', grams: 55 },
+        ],
+      ])
+    ).toEqual([
+      { name: 'egg', grams: 55 },
+      { name: 'Toast', grams: 30 },
+    ]);
   });
 });

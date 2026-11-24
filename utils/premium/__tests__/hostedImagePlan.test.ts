@@ -2,6 +2,7 @@ import {
   base64DecodedBytes,
   DEFAULT_HOSTED_IMAGE,
   effectiveImageLimits,
+  hostedDecodedBytesLimit,
   HOSTED_BODY_OVERHEAD_BYTES,
   HOSTED_REQUEST_BODY_CAP_BYTES,
   nextQuality,
@@ -93,5 +94,30 @@ describe('nextQuality', () => {
     expect(nextQuality(0.4)).toBe(0.3);
     expect(nextQuality(0.3)).toBeNull();
     expect(nextQuality(0.2)).toBeNull();
+  });
+});
+
+describe('hostedDecodedBytesLimit', () => {
+  it('matches the single-photo limit by default', () => {
+    expect(hostedDecodedBytesLimit()).toBe(
+      Math.floor(((HOSTED_REQUEST_BODY_CAP_BYTES - HOSTED_BODY_OVERHEAD_BYTES) * 3) / 4)
+    );
+  });
+
+  it('shares a 1 MiB body between five photos, counting the overhead once', () => {
+    expect(hostedDecodedBytesLimit(1024 * 1024, 5)).toBe(
+      Math.floor(((1024 * 1024 - HOSTED_BODY_OVERHEAD_BYTES) * 3) / 4 / 5)
+    );
+  });
+
+  it('feeds effectiveImageLimits through count and bodyMaxBytes', () => {
+    const config = { maxPx: 1024, maxBytes: 900 * 1024, quality: 0.7 };
+
+    expect(effectiveImageLimits(config, { count: 5, bodyMaxBytes: 1024 * 1024 }).maxBytes).toBe(
+      hostedDecodedBytesLimit(1024 * 1024, 5)
+    );
+    expect(effectiveImageLimits(config, { count: 1, bodyMaxBytes: null })).toEqual(
+      effectiveImageLimits(config)
+    );
   });
 });

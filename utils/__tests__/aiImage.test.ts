@@ -67,6 +67,21 @@ describe('prepareOwnKeyImage', () => {
     }
   );
 
+  it('splits the byte budget between photos and lowers the pixel cap', async () => {
+    getSetting.mockResolvedValue('max');
+    setSize(4000, 3000);
+    // 4 MiB / 40 photos is ~105 KB each, under the 120 KB line.
+    manipulate.mockImplementation(smallEncoder());
+
+    await prepareOwnKeyImage('A'.repeat(4_000_000), 'image/png', 40);
+
+    expect(manipulate).toHaveBeenCalledWith(
+      expect.anything(),
+      [{ resize: { width: 768, height: 576 } }],
+      expect.anything()
+    );
+  });
+
   it('never enlarges a photo that is already inside the tier', async () => {
     setSize(600, 450);
 

@@ -177,8 +177,19 @@ describe('images', () => {
   });
 
   it('rejects too many images', () => {
+    const cfg = testConfig({ vision_enabled: true, image: { tokens_max: 1000, max_images: 1 } });
     const two = { role: 'user', content: [...img().content, ...img().content] };
-    expect(rejected({ messages: [two] }, visionConfig).status).toBe(400);
+    expect(rejected({ messages: [two] }, cfg).status).toBe(400);
+  });
+
+  it('accepts 5 images and rejects 6 with max_images 5', () => {
+    const cfg = testConfig({ vision_enabled: true, image: { tokens_max: 1000, max_images: 5 } });
+    const n = (k: number) => ({
+      role: 'user',
+      content: Array.from({ length: k }, () => img().content).flat(),
+    });
+    expect(allowlistRequest({ messages: [n(5)] }, cfg).images).toBe(5);
+    expect(rejected({ messages: [n(6)] }, cfg).status).toBe(400);
   });
 
   it('rejects an image whose decoded size is over image.max_bytes', () => {

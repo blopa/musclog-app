@@ -2,7 +2,9 @@ import {
   AI_IMAGE_TIER_ORDER,
   AI_IMAGE_TIERS,
   DEFAULT_AI_IMAGE_TIER,
+  limitsForImageCount,
   limitsForTier,
+  MULTI_IMAGE_MIN_SHARE_BYTES,
   OWN_KEY_IMAGE_CEILING,
   parseAiImageTier,
 } from '@/utils/aiImagePlan';
@@ -80,5 +82,27 @@ describe('limitsForTier', () => {
     expect(limits.maxPx).toBe(DEFAULT_HOSTED_IMAGE.maxPx);
     expect(limits.quality).toBe(DEFAULT_HOSTED_IMAGE.quality);
     expect(limitsForTier('low', effectiveImageLimits(DEFAULT_HOSTED_IMAGE)).maxPx).toBe(512);
+  });
+});
+
+describe('limitsForImageCount', () => {
+  const base = { maxPx: 1568, maxBytes: 480 * 1024, quality: 0.8 };
+
+  it('returns equal limits for one photo and clamps bad counts to one', () => {
+    expect(limitsForImageCount(base, 1)).toEqual(base);
+    expect(limitsForImageCount(base, 0)).toEqual(base);
+    expect(limitsForImageCount(base, Number.NaN)).toEqual(base);
+  });
+
+  it('splits the byte budget and floors the count', () => {
+    expect(limitsForImageCount(base, 2).maxBytes).toBe(240 * 1024);
+    expect(limitsForImageCount(base, 2.9).maxBytes).toBe(240 * 1024);
+    expect(limitsForImageCount(base, 2).maxPx).toBe(1568);
+  });
+
+  it('caps the pixel size when the share is below 120 KB, never raising it', () => {
+    expect(MULTI_IMAGE_MIN_SHARE_BYTES).toBe(120 * 1024);
+    expect(limitsForImageCount(base, 5).maxPx).toBe(768);
+    expect(limitsForImageCount({ ...base, maxPx: 512 }, 5).maxPx).toBe(512);
   });
 });

@@ -19,9 +19,18 @@ const QUALITY_STEP = 0.1;
 
 // The image travels as base64, which inflates it by 4/3, so the decoded image may be at
 // most this many bytes for the whole body to fit under the cap.
-const HOSTED_DECODED_BYTES_LIMIT = Math.floor(
-  ((HOSTED_REQUEST_BODY_CAP_BYTES - HOSTED_BODY_OVERHEAD_BYTES) * 3) / 4
-);
+// The overhead is counted once, and the rest is shared by the images of the request.
+export function hostedDecodedBytesLimit(
+  bodyCapBytes: number = HOSTED_REQUEST_BODY_CAP_BYTES,
+  count: number = 1
+): number {
+  const images = Math.max(1, Math.floor(count) || 1);
+
+  return Math.floor(((bodyCapBytes - HOSTED_BODY_OVERHEAD_BYTES) * 3) / 4 / images);
+}
+
+// How many photos one request carries when the Worker does not say.
+export const DEFAULT_HOSTED_MAX_IMAGES = 1;
 
 export type HostedImageLimits = { maxPx: number; maxBytes: number; quality: number };
 
@@ -50,7 +59,8 @@ function finiteOr(value: number, fallback: number): number {
 }
 
 export function effectiveImageLimits(
-  config: { maxPx: number; maxBytes: number; quality: number } | null
+  config: { maxPx: number; maxBytes: number; quality: number } | null,
+  options?: { count?: number; bodyMaxBytes?: number | null }
 ): HostedImageLimits {
   const source = config ?? DEFAULT_HOSTED_IMAGE;
 
@@ -58,7 +68,10 @@ export function effectiveImageLimits(
     maxPx: Math.round(clamp(finiteOr(source.maxPx, DEFAULT_HOSTED_IMAGE.maxPx), MIN_PX, MAX_PX)),
     maxBytes: Math.min(
       finiteOr(source.maxBytes, DEFAULT_HOSTED_IMAGE.maxBytes),
-      HOSTED_DECODED_BYTES_LIMIT
+      hostedDecodedBytesLimit(
+        options?.bodyMaxBytes ?? HOSTED_REQUEST_BODY_CAP_BYTES,
+        options?.count
+      )
     ),
     quality: clamp(
       finiteOr(source.quality, DEFAULT_HOSTED_IMAGE.quality),

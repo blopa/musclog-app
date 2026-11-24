@@ -10,6 +10,7 @@ import { SectionLabel } from '@/components/theme/SectionLabel';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { SETTINGS } from '@/constants/settingDefinitions';
+import { AI_MEAL_CAMERA_FLOWS, type AiMealCameraFlow } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSettings } from '@/hooks/useSettings';
@@ -19,6 +20,18 @@ import { AI_IMAGE_TIER_ORDER, type AiImageTier } from '@/utils/aiImagePlan';
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { HistoryPickerField } from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
+
+/** One whole key per meal camera flow (label and what it does), so the translation check sees each. */
+export const AI_MEAL_CAMERA_FLOW_KEYS: Record<AiMealCameraFlow, { label: string; hint: string }> = {
+  detailed: {
+    label: 'settings.aiSettings.mealCameraFlow.detailed',
+    hint: 'settings.aiSettings.mealCameraFlow.detailedHint',
+  },
+  quick: {
+    label: 'settings.aiSettings.mealCameraFlow.quick',
+    hint: 'settings.aiSettings.mealCameraFlow.quickHint',
+  },
+};
 
 /** One whole key per photo quality tier (label and what it means), so the translation check sees each. */
 export const AI_IMAGE_TIER_KEYS: Record<AiImageTier, { label: string; hint: string }> = {
@@ -54,7 +67,7 @@ export function AIBehaviorSettingsModal({ visible, onClose }: AIBehaviorSettings
   const theme = useTheme();
   const { t } = useTranslation();
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
-  const { aiImageQuality, aiProvider } = useSettings();
+  const { aiImageQuality, aiMealCameraFlow, aiProvider } = useSettings();
 
   const {
     dailyNutritionInsights: debouncedDailyNutritionInsights,
@@ -270,6 +283,29 @@ export function AIBehaviorSettingsModal({ visible, onClose }: AIBehaviorSettings
               </Text>
             </View>
           ) : null}
+          <View className="mt-4 gap-2 px-1">
+            <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
+              {t('settings.aiSettings.mealCameraFlow.title')}
+            </Text>
+            <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+              {t('settings.aiSettings.mealCameraFlow.description')}
+            </Text>
+            <SegmentedControl
+              variant="pill"
+              fullWidth
+              value={aiMealCameraFlow}
+              onValueChange={(value) => {
+                void SettingsService.set(SETTINGS.aiMealCameraFlow, value as AiMealCameraFlow);
+              }}
+              options={AI_MEAL_CAMERA_FLOWS.map((flow) => ({
+                value: flow,
+                label: t(AI_MEAL_CAMERA_FLOW_KEYS[flow].label),
+              }))}
+            />
+            <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+              {t(AI_MEAL_CAMERA_FLOW_KEYS[aiMealCameraFlow].hint)}
+            </Text>
+          </View>
         </View>
 
         {/* Coach personality */}

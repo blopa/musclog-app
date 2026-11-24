@@ -9,6 +9,8 @@ import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
   AI_IMAGE_QUALITY_SETTING_TYPE,
+  AI_MEAL_CAMERA_FLOW_SETTING_TYPE,
+  type AiMealCameraFlow,
   ANIMATED_LOGGY_SETTING_TYPE,
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
@@ -37,6 +39,7 @@ import {
   type HomeHeatmaps,
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
   ON_DEVICE_ENGINE_SETTING_TYPE,
+  parseAiMealCameraFlow,
   parseAppLockScopes,
   parseCycleNotificationStyle,
   parseEnergyUnit,
@@ -210,6 +213,10 @@ export const SETTINGS = {
   foodDiaryCompact: booleanSetting(FOOD_DIARY_COMPACT_SETTING_TYPE, false),
   animatedLoggy: booleanSetting(ANIMATED_LOGGY_SETTING_TYPE, true),
   showLoggy: booleanSetting(SHOW_LOGGY_SETTING_TYPE, true),
+  aiMealCameraFlow: choiceSetting<AiMealCameraFlow>(
+    AI_MEAL_CAMERA_FLOW_SETTING_TYPE,
+    parseAiMealCameraFlow
+  ),
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping

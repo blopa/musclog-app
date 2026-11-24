@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Yemek fotoğrafınıza daha fazlasını ekleyin",
+          "description": "Fotoğraf çektikten sonra aynı yemeğin en fazla 5 fotoğrafını ekleyebilir ve tahmin yapılmadan önce Musclog'a biraz daha bilgi verebilirsiniz. Eklediğiniz her şey isteğe bağlıdır.",
+          "flow": {
+            "title": "Yapay zekâ yemek kamerası nasıl çalışır",
+            "description": "Bunu istediğiniz zaman Ayarlar → Yapay zekâ davranışı bölümünden değiştirebilirsiniz.",
+            "detailed": {
+              "label": "Ayrıntılı",
+              "description": "Tahmin yapmadan önce fotoğraflarınızı gözden geçirin ve ayrıntı ekleyin."
+            },
+            "quick": {
+              "label": "Hızlı",
+              "description": "Eskisi gibi, fotoğraftan hemen sonra tahmin yapın."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Bir yemeğin en fazla 5 fotoğrafı",
+              "description": "Tahmin yapmadan önce başka bir açı veya yakın çekim ekleyin. Hepsi tek bir yemek olarak birlikte gönderilir; bu yüzden iki fotoğrafta görünen bir besin yalnızca bir kez sayılır. Daha az fotoğraf kabul eden bir sağlayıcı bu sayıyı sınırlar."
+            },
+            "details": {
+              "label": "Fotoğrafın gösteremediklerini anlatın",
+              "description": "Bir ad, \"yarısını yedim, sossuz\" gibi bir not, yemeğin evde mi yoksa restoranda mı yapıldığı ve yağ ya da tereyağı eklenip eklenmediği bilgisini ekleyin."
+            },
+            "cover": {
+              "label": "İlk fotoğraf saklanır",
+              "description": "Kaydedilen yemekle yalnızca ilk fotoğraf kaydedilir. Diğerleri yalnızca tahmin için kullanılır."
+            }
+          }
+        },
         "thinking": {
           "title": "Yapay zekâ daha çok düşünsün",
           "description": "Yeni bir ayar, yapay zekânın yanıtlamadan önce kendi işini kontrol etmesini sağlar. Kapalı en hızlısı; Tokenmaxxing en yavaş ve en kapsamlı olanıdır.",

@@ -114,6 +114,7 @@ const REGISTERED_SETTINGS = [
   'enableClaude',
   'useHostedAi',
   'aiImageQuality',
+  'aiMealCameraFlow',
   'onDeviceEngine',
   'premiumConsentVersion',
   'cycleShowPredictions',

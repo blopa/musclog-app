@@ -561,6 +561,13 @@ export const FOOD_DIARY_COMPACT_SETTING_TYPE = 'food_diary_compact';
 export const FOOD_DIARY_GROUPING_SETTING_TYPE = 'food_diary_grouping';
 
 /**
+ * Setting type for the camera flow of an AI meal estimate. value: 'detailed' | 'quick'
+ * (default 'detailed': the photo opens a details sheet where several photos and a note can be
+ * added first; 'quick' keeps the original one-photo flow). A display preference, backed up.
+ */
+export const AI_MEAL_CAMERA_FLOW_SETTING_TYPE = 'ai_meal_camera_flow';
+
+/**
  * Setting type for which quick actions the home screen shows.
  * value: JSON array of `HomeActionKey`, at most `MAX_HOME_ACTIONS` entries.
  * Parse it with `parseHomeActions` from `@/constants/homeActions`.
@@ -665,6 +672,14 @@ export type FoodDiaryGrouping = (typeof FOOD_DIARY_GROUPING_OPTIONS)[number];
 /** Anything unrecognized (a newer build, a hand-edited backup) keeps today's category layout. */
 export function parseFoodDiaryGrouping(raw: string | null | undefined): FoodDiaryGrouping {
   return FOOD_DIARY_GROUPING_OPTIONS.find((option) => option === raw) ?? 'categories';
+}
+
+export const AI_MEAL_CAMERA_FLOWS = ['detailed', 'quick'] as const;
+export type AiMealCameraFlow = (typeof AI_MEAL_CAMERA_FLOWS)[number];
+
+/** Anything unrecognized (a newer build, a hand-edited backup) keeps the detailed flow. */
+export function parseAiMealCameraFlow(raw: string | null | undefined): AiMealCameraFlow {
+  return AI_MEAL_CAMERA_FLOWS.find((option) => option === raw) ?? 'detailed';
 }
 
 /** The heatmaps a `homeHeatmaps` choice shows, in display order. */

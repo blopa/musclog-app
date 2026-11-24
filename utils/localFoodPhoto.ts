@@ -87,6 +87,38 @@ export function voteIdentifiedFoods(readings: IdentifiedFood[][]): IdentifiedFoo
   });
 }
 
+/**
+ * Several photos of the SAME meal (the downloaded model reads one image per request) made into one
+ * list. A food is matched across photos by the same key `voteIdentifiedFoods` uses (case, accents
+ * and spacing; no plural folding). Photos overlap, so a food seen in several of them is counted
+ * ONCE and the entry with the larger `grams` wins: summing would count the same plate again for
+ * every angle. The kept entry brings its own spelling; foods come out in first-seen order, photo 0
+ * first. Empty lists are ignored, and a name that repeats inside one list is deduped the same way.
+ */
+export function mergeFoodsAcrossPhotos(
+  perPhoto: readonly (readonly IdentifiedFood[])[]
+): IdentifiedFood[] {
+  const merged = new Map<string, IdentifiedFood>();
+  for (const photo of perPhoto) {
+    for (const food of photo) {
+      const key = foodKey(food.name);
+      if (!key) {
+        continue;
+      }
+
+      const existing = merged.get(key);
+      if (!existing) {
+        merged.set(key, { name: food.name, grams: food.grams });
+      } else if (food.grams > existing.grams) {
+        // Map keeps the original insertion position when a key is set again.
+        merged.set(key, { name: food.name, grams: food.grams });
+      }
+    }
+  }
+
+  return [...merged.values()];
+}
+
 /** What the model is asked for: names and grams, nothing else. */
 export const LOCAL_FOOD_IDENTIFY_SCHEMA = {
   type: 'object',

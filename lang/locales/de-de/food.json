@@ -506,7 +506,19 @@
       "comparing_one": "{{count}} Schätzung wird verglichen…",
       "comparing_few": "{{count}} Schätzungen werden verglichen…",
       "comparing_many": "{{count}} Schätzungen werden verglichen…",
-      "comparing_other": "{{count}} Schätzungen werden verglichen…"
+      "comparing_other": "{{count}} Schätzungen werden verglichen…",
+      "readingPhotos_one": "Dein Foto wird angesehen…",
+      "readingPhotos_other": "Deine {{count}} Fotos werden angesehen…",
+      "observingPhotos_one": "Dein Foto wird genau betrachtet…",
+      "observingPhotos_other": "Deine {{count}} Fotos werden genau betrachtet…",
+      "identifyingPhoto_one": "Foto {{index}} von {{count}} wird betrachtet…",
+      "identifyingPhoto_other": "Foto {{index}} von {{count}} wird betrachtet…",
+      "readingPhotos_few": "Deine {{count}} Fotos werden angesehen…",
+      "readingPhotos_many": "Deine {{count}} Fotos werden angesehen…",
+      "observingPhotos_few": "Deine {{count}} Fotos werden genau betrachtet…",
+      "observingPhotos_many": "Deine {{count}} Fotos werden genau betrachtet…",
+      "identifyingPhoto_few": "Foto {{index}} von {{count}} wird betrachtet…",
+      "identifyingPhoto_many": "Foto {{index}} von {{count}} wird betrachtet…"
     },
     "aiNutritionContext": {
       "title": "Kontext für die KI hinzufügen",
@@ -716,6 +728,43 @@
         "logError": "Das Lebensmittel konnte nicht erfasst werden. Versuche es noch einmal."
       },
       "linkError": "Der Link von deinem Assistenten konnte nicht gelesen werden. {{reason}} Füge stattdessen den JSON-Block aus dem Chat ein."
+    },
+    "mealPhotos": {
+      "title": "Deine Mahlzeit",
+      "photoCount_one": "{{count}} von {{max}} Foto",
+      "photoCount_other": "{{count}} von {{max}} Fotos",
+      "addPhoto": "Foto hinzufügen",
+      "removePhoto": "Foto {{index}} entfernen",
+      "optionalHint": "Alles unten ist optional.",
+      "nameLabel": "Name der Mahlzeit",
+      "namePlaceholder": "z. B. Hähnchen mit Reis",
+      "descriptionLabel": "Gibt es noch etwas, das wir wissen sollten?",
+      "descriptionPlaceholder": "z. B. Habe die Hälfte gegessen, ohne Dressing",
+      "originLabel": "Woher stammt es?",
+      "origin": {
+        "home": "Selbst gekocht",
+        "restaurant": "Restaurant",
+        "takeaway": "Takeaway",
+        "packaged": "Fertigprodukt"
+      },
+      "addedFatLabel": "Öl, Butter oder Soßen hinzugefügt?",
+      "addedFat": {
+        "none": "Nein",
+        "some": "Ein wenig",
+        "lots": "Viel"
+      },
+      "tagsLabel": "Tags",
+      "estimate": "Schätzen",
+      "reviewPhotos_one": "{{count}} Foto prüfen",
+      "reviewPhotos_other": "{{count}} Fotos prüfen",
+      "discardTitle": "Diese Mahlzeit verwerfen?",
+      "discardMessage": "Deine Fotos und Notizen gehen verloren.",
+      "discard": "Verwerfen",
+      "keepEditing": "Weiter bearbeiten",
+      "photoCount_few": "{{count}} von {{max}} Fotos",
+      "photoCount_many": "{{count}} von {{max}} Fotos",
+      "reviewPhotos_few": "{{count}} Fotos prüfen",
+      "reviewPhotos_many": "{{count}} Fotos prüfen"
     }
   }
 }

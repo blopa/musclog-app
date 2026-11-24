@@ -506,7 +506,19 @@
       "comparing_one": "Сравниваем {{count}} оценку…",
       "comparing_few": "Сравниваем {{count}} оценки…",
       "comparing_many": "Сравниваем {{count}} оценок…",
-      "comparing_other": "Сравниваем {{count}} оценки…"
+      "comparing_other": "Сравниваем {{count}} оценки…",
+      "readingPhotos_one": "Смотрим на ваше фото…",
+      "readingPhotos_few": "Смотрим на ваши {{count}} фото…",
+      "readingPhotos_many": "Смотрим на ваши {{count}} фото…",
+      "readingPhotos_other": "Смотрим на ваши {{count}} фото…",
+      "observingPhotos_one": "Внимательно смотрим на ваше фото…",
+      "observingPhotos_few": "Внимательно смотрим на ваши {{count}} фото…",
+      "observingPhotos_many": "Внимательно смотрим на ваши {{count}} фото…",
+      "observingPhotos_other": "Внимательно смотрим на ваши {{count}} фото…",
+      "identifyingPhoto_one": "Смотрим на фото {{index}} из {{count}}…",
+      "identifyingPhoto_few": "Смотрим на фото {{index}} из {{count}}…",
+      "identifyingPhoto_many": "Смотрим на фото {{index}} из {{count}}…",
+      "identifyingPhoto_other": "Смотрим на фото {{index}} из {{count}}…"
     },
     "aiNutritionContext": {
       "title": "Добавить контекст для ИИ",
@@ -716,6 +728,43 @@
         "logError": "Не удалось записать продукт. Попробуйте ещё раз."
       },
       "linkError": "Не удалось прочитать ссылку от вашего ассистента. {{reason}} Вставьте вместо неё блок JSON из чата."
+    },
+    "mealPhotos": {
+      "title": "Ваше блюдо",
+      "photoCount_one": "{{count}} из {{max}} фото",
+      "photoCount_few": "{{count}} из {{max}} фото",
+      "photoCount_many": "{{count}} из {{max}} фото",
+      "photoCount_other": "{{count}} из {{max}} фото",
+      "addPhoto": "Добавить фото",
+      "removePhoto": "Удалить фото {{index}}",
+      "optionalHint": "Всё ниже необязательно.",
+      "nameLabel": "Название блюда",
+      "namePlaceholder": "напр. Курица с рисом",
+      "descriptionLabel": "Что ещё нам стоит знать?",
+      "descriptionPlaceholder": "напр. Съел половину, без соуса",
+      "originLabel": "Откуда блюдо?",
+      "origin": {
+        "home": "Домашнее",
+        "restaurant": "Ресторан",
+        "takeaway": "На вынос",
+        "packaged": "Готовое"
+      },
+      "addedFatLabel": "Добавлены масло, сливочное масло или соусы?",
+      "addedFat": {
+        "none": "Нет",
+        "some": "Немного",
+        "lots": "Много"
+      },
+      "tagsLabel": "Метки",
+      "estimate": "Оценить",
+      "reviewPhotos_one": "Проверить {{count}} фото",
+      "reviewPhotos_few": "Проверить {{count}} фото",
+      "reviewPhotos_many": "Проверить {{count}} фото",
+      "reviewPhotos_other": "Проверить {{count}} фото",
+      "discardTitle": "Удалить это блюдо?",
+      "discardMessage": "Фото и заметки будут потеряны.",
+      "discard": "Удалить",
+      "keepEditing": "Продолжить редактирование"
     }
   }
 }

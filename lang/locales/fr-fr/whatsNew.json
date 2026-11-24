@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Ajoute plus de détails à ta photo de repas",
+          "description": "Après la photo, tu peux maintenant ajouter jusqu'à 5 photos du même repas et en dire un peu plus à Musclog avant l'estimation. Tout ce que tu ajoutes est facultatif.",
+          "flow": {
+            "title": "Comment fonctionne l'appareil photo IA pour les repas",
+            "description": "Tu peux modifier cela à tout moment dans Réglages → Comportement de l'IA.",
+            "detailed": {
+              "label": "Détaillé",
+              "description": "Vérifie tes photos et ajoute des détails avant l'estimation."
+            },
+            "quick": {
+              "label": "Rapide",
+              "description": "Estimer juste après la photo, comme avant."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Jusqu'à 5 photos d'un repas",
+              "description": "Ajoute un autre angle ou un gros plan avant l'estimation. Elles sont envoyées ensemble comme un seul repas, donc un aliment visible sur deux photos n'est compté qu'une fois. Un fournisseur qui accepte moins de photos limite le nombre."
+            },
+            "details": {
+              "label": "Dis ce qu'une photo ne peut pas montrer",
+              "description": "Ajoute un nom, une note comme « mangé la moitié, sans sauce », si c'était fait maison ou au restaurant, et si de l'huile ou du beurre a été ajouté."
+            },
+            "cover": {
+              "label": "La première photo est conservée",
+              "description": "Seule la première photo est enregistrée avec le repas. Les autres servent uniquement à l'estimation."
+            }
+          }
+        },
         "thinking": {
           "title": "Faire réfléchir davantage l'IA",
           "description": "Un nouveau réglage permet à l'IA de vérifier son propre travail avant de répondre. Désactivé est le plus rapide ; Tokenmaxxing est le plus lent et le plus minutieux.",

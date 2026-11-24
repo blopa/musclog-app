@@ -90,7 +90,7 @@ describe('photo preparation per provider', () => {
 
     await estimateNutritionFromPhoto(OPENAI, 'AAAA');
 
-    expect(prepareOwnKeyImage).toHaveBeenCalledWith('AAAA', expect.stringMatching(/^image\//));
+    expect(prepareOwnKeyImage).toHaveBeenCalledWith('AAAA', expect.stringMatching(/^image\//), 1);
     expect(prepareHostedImage).not.toHaveBeenCalled();
     expect(bodies).toHaveLength(1);
     expect(bodies[0]).toContain('data:image/jpeg;base64,own-key-prepared');

@@ -64,7 +64,9 @@ export type ProviderPolicy = {
    */
   prepareImage?: (
     base64: string,
-    mimeType: string
+    mimeType: string,
+    /** How many photos the request carries, so they can share its size budget. */
+    count?: number
   ) => Promise<{ base64: string; mimeType: string }>;
 };
 
@@ -120,11 +122,11 @@ const HOSTED_POLICY: ProviderPolicy = {
   // Holds the person's chosen detail to the Worker's limits and refuses photos while the Worker has
   // them off. Loaded inline because it reads the Worker's config, which text requests never need (the
   // pattern of services/premium/revenueCat.ts).
-  prepareImage: (base64, mimeType) => {
+  prepareImage: (base64, mimeType, count) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const hostedImage: typeof import('@/utils/hostedImage') = require('@/utils/hostedImage');
 
-    return hostedImage.prepareHostedImage(base64, mimeType);
+    return hostedImage.prepareHostedImage(base64, mimeType, count);
   },
 };
 

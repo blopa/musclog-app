@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Mehr zu deinem Mahlzeitenfoto hinzufügen",
+          "description": "Nach dem Foto kannst du jetzt bis zu 5 Fotos derselben Mahlzeit hinzufügen und Musclog vor der Schätzung etwas mehr dazu erzählen. Alles, was du hinzufügst, ist optional.",
+          "flow": {
+            "title": "So funktioniert die KI-Mahlzeitenkamera",
+            "description": "Du kannst das jederzeit unter Einstellungen → KI-Verhalten ändern.",
+            "detailed": {
+              "label": "Ausführlich",
+              "description": "Prüfe deine Fotos und ergänze Details, bevor geschätzt wird."
+            },
+            "quick": {
+              "label": "Schnell",
+              "description": "Schätzen direkt nach dem Foto, wie bisher."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Bis zu 5 Fotos einer Mahlzeit",
+              "description": "Füge vor der Schätzung einen weiteren Blickwinkel oder eine Nahaufnahme hinzu. Sie werden gemeinsam als eine Mahlzeit gesendet, sodass ein Lebensmittel, das auf zwei Fotos zu sehen ist, nur einmal gezählt wird. Ein Anbieter, der weniger Fotos annimmt, begrenzt die Anzahl."
+            },
+            "details": {
+              "label": "Sag, was ein Foto nicht zeigen kann",
+              "description": "Füge einen Namen hinzu, eine Notiz wie „halb gegessen, ohne Dressing“, ob es selbst gekocht oder aus einem Restaurant war und ob Öl oder Butter dazukam."
+            },
+            "cover": {
+              "label": "Das erste Foto bleibt erhalten",
+              "description": "Nur das erste Foto wird mit der protokollierten Mahlzeit gespeichert. Die anderen werden nur für die Schätzung verwendet."
+            }
+          }
+        },
         "thinking": {
           "title": "Die KI länger nachdenken lassen",
           "description": "Eine neue Einstellung lässt die KI ihre eigene Arbeit prüfen, bevor sie antwortet. Aus ist am schnellsten, Tokenmaxxing am langsamsten und gründlichsten.",

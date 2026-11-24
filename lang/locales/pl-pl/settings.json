@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "Aparat do posiłków z AI",
+        "description": "Jak działa aparat, gdy fotografujesz posiłek.",
+        "detailed": "Szczegółowo",
+        "quick": "Szybko",
+        "detailedHint": "Po każdym zdjęciu przejrzyj do 5 zdjęć i dodaj opcjonalne szczegóły (nazwę, notatki, skąd pochodzi), zanim nastąpi szacowanie.",
+        "quickHint": "Szacuj zaraz po zrobieniu zdjęcia. Dodaj kontekst przed zdjęciem, przyciskiem wiadomości."
+      },
       "getOpenAiKey": "Pobierz klucz OpenAI",
       "customPrompts": "Własne instrukcje systemowe",
       "customPromptsSubtitle": "Dodaj własne wskazówki do wszystkich funkcji AI",

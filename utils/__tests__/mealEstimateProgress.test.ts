@@ -30,6 +30,33 @@ describe('mealEstimateProgressLine', () => {
     });
   });
 
+  it('reports several photos with their own keys and the count', () => {
+    expect(mealEstimateProgressLine({ step: 'reading', photo: true, photoCount: 3 })).toEqual({
+      key: 'food.aiProgress.readingPhotos',
+      options: { count: 3 },
+    });
+    expect(mealEstimateProgressLine({ step: 'observing', photo: true, photoCount: 2 })).toEqual({
+      key: 'food.aiProgress.observingPhotos',
+      options: { count: 2 },
+    });
+  });
+
+  it('keeps the single-photo keys for photoCount 1 and for text', () => {
+    expect(mealEstimateProgressLine({ step: 'reading', photo: true, photoCount: 1 })).toEqual({
+      key: 'food.aiProgress.readingPhoto',
+    });
+    expect(mealEstimateProgressLine({ step: 'observing', photo: false, photoCount: 3 })).toEqual({
+      key: 'food.aiProgress.observing',
+    });
+  });
+
+  it('reports the on-device photo being identified with its place and count', () => {
+    expect(mealEstimateProgressLine({ step: 'identifying', index: 2, count: 3 })).toEqual({
+      key: 'food.aiProgress.identifyingPhoto',
+      options: { count: 3, index: 2 },
+    });
+  });
+
   it('uses the plain estimating key when nothing was matched', () => {
     expect(mealEstimateProgressLine({ step: 'estimating', count: 3, matched: 0 })).toEqual({
       key: 'food.aiProgress.estimating',
@@ -82,7 +109,15 @@ describe('MEAL_ESTIMATE_PROGRESS_KEYS', () => {
 
   it('exists in the English food locale', () => {
     const root = JSON.parse(fs.readFileSync(FOOD_JSON, 'utf8'));
-    const PLURAL = new Set(['estimating', 'estimatingWithMatches', 'rechecking', 'comparing']);
+    const PLURAL = new Set([
+      'estimating',
+      'estimatingWithMatches',
+      'rechecking',
+      'comparing',
+      'readingPhotos',
+      'observingPhotos',
+      'identifyingPhoto',
+    ]);
     for (const [name, value] of Object.entries(MEAL_ESTIMATE_PROGRESS_KEYS)) {
       const segments = value.split('.');
       const leaf = segments[segments.length - 1];

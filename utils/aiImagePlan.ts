@@ -66,3 +66,26 @@ export function limitsForTier(tier: AiImageTier, ceiling: HostedImageLimits): Ho
     quality: Math.min(wanted.quality, ceiling.quality),
   };
 }
+
+/** Below this share of the byte budget per photo, the pixel size is lowered too. */
+export const MULTI_IMAGE_MIN_SHARE_BYTES = 120 * 1024;
+
+const MULTI_IMAGE_MAX_PX = 768;
+
+/**
+ * The limits each photo is prepared with when `count` photos share one request: the byte budget is
+ * split evenly, and a small share also caps the pixel size (never raises it).
+ */
+export function limitsForImageCount(limits: HostedImageLimits, count: number): HostedImageLimits {
+  const images = Math.max(1, Math.floor(count) || 1);
+  const maxBytes = Math.floor(limits.maxBytes / images);
+
+  return {
+    ...limits,
+    maxBytes,
+    maxPx:
+      maxBytes < MULTI_IMAGE_MIN_SHARE_BYTES
+        ? Math.min(limits.maxPx, MULTI_IMAGE_MAX_PX)
+        : limits.maxPx,
+  };
+}

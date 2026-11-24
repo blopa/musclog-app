@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Add more to your meal photo",
+          "description": "After you take a photo, you can now add up to 5 photos of the same meal and tell Musclog a little more about it before it estimates. Everything you add is optional.",
+          "flow": {
+            "title": "How the AI meal camera works",
+            "description": "You can change this any time in Settings → AI behavior.",
+            "detailed": {
+              "label": "Detailed",
+              "description": "Review your photos and add details before estimating."
+            },
+            "quick": {
+              "label": "Quick",
+              "description": "Estimate right after the photo, like before."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Up to 5 photos of one meal",
+              "description": "Add another angle or a close-up before you estimate. They are sent together as one meal, so a food that shows in two photos is counted once. A provider that accepts fewer photos limits the number."
+            },
+            "details": {
+              "label": "Tell it what a photo can't show",
+              "description": "Add a name, a note like \"ate half, no dressing\", whether it was home cooked or from a restaurant, and whether oil or butter was added."
+            },
+            "cover": {
+              "label": "The first photo is kept",
+              "description": "Only the first photo is saved with the logged meal. The others are used for the estimate only."
+            }
+          }
+        },
         "thinking": {
           "title": "Make the AI think harder",
           "description": "A new setting lets the AI check its own work before it answers. Off is the fastest; Tokenmaxxing is the slowest and most thorough.",

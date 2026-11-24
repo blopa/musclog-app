@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Añade más a la foto de tu comida",
+          "description": "Después de hacer una foto, ya puedes añadir hasta 5 fotos de la misma comida y contarle a Musclog un poco más antes de que estime. Todo lo que añadas es opcional.",
+          "flow": {
+            "title": "Cómo funciona la cámara de comidas con IA",
+            "description": "Puedes cambiarlo en cualquier momento en Ajustes → Comportamiento de la IA.",
+            "detailed": {
+              "label": "Detallado",
+              "description": "Revisa tus fotos y añade detalles antes de estimar."
+            },
+            "quick": {
+              "label": "Rápido",
+              "description": "Estimar justo después de la foto, como antes."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Hasta 5 fotos de una comida",
+              "description": "Añade otro ángulo o un primer plano antes de estimar. Se envían juntas como una sola comida, así que un alimento que aparece en dos fotos se cuenta una vez. Un proveedor que acepte menos fotos limita el número."
+            },
+            "details": {
+              "label": "Cuéntale lo que una foto no puede mostrar",
+              "description": "Añade un nombre, una nota como «comí la mitad, sin aderezo», si fue casera o de un restaurante, y si se añadió aceite o mantequilla."
+            },
+            "cover": {
+              "label": "Se conserva la primera foto",
+              "description": "Solo la primera foto se guarda con la comida registrada. Las demás se usan únicamente para la estimación."
+            }
+          }
+        },
         "thinking": {
           "title": "Haz que la IA piense más a fondo",
           "description": "Una nueva opción hace que la IA revise su propio trabajo antes de responder. Desactivado es lo más rápido; Tokenmaxxing es lo más lento y lo más minucioso.",

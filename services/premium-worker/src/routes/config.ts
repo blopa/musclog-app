@@ -15,7 +15,13 @@ export async function handleConfig(_request: Request, ctx: Ctx): Promise<Respons
     enabled: true,
     accepting_new: row?.value !== '0',
     vision_enabled: c.vision_enabled && visionServable,
-    image: { maxPx: c.image.max_px, maxBytes: c.image.max_bytes, quality: c.image.quality },
+    image: {
+      maxPx: c.image.max_px,
+      maxBytes: c.image.max_bytes,
+      quality: c.image.quality,
+      maxImages: c.image.max_images,
+      bodyMaxBytes: c.limits.body_max_bytes,
+    },
     // This Worker accepts `reasoning_effort` in a request body. An app sends it only when this is
     // true, so an app that is newer than the deployed Worker never gets a 400 for an unknown field.
     reasoning_effort: true,

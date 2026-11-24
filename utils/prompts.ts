@@ -1699,6 +1699,23 @@ export const getGenerateMealPlanPrompt = async (
 };
 
 /**
+ * The note every request of a multi-photo meal estimate carries in its user message, so the system
+ * prompts can keep saying "the photo": several photos are one meal seen more than once, and a food
+ * that shows up in two of them is still one food. Empty for a single photo.
+ */
+export function getMultiPhotoMealNote(photoCount: number): string {
+  if (photoCount <= 1) {
+    return '';
+  }
+
+  return [
+    `These ${photoCount} photos show ONE meal: different angles, parts or close-ups of the same food.`,
+    'A photo may show a menu, a label or a receipt instead of the food; use it as information about the meal.',
+    'Count each food once, even when it appears in several photos, and judge its amount from the photo that shows it best.',
+  ].join(' ');
+}
+
+/**
  * System prompt for meal analysis (text or photo).
  * Used for both chat-based meal tracking and direct photo analysis.
  */

@@ -506,7 +506,19 @@
       "comparing_one": "{{count}} tahmin karşılaştırılıyor…",
       "comparing_few": "{{count}} tahmin karşılaştırılıyor…",
       "comparing_many": "{{count}} tahmin karşılaştırılıyor…",
-      "comparing_other": "{{count}} tahmin karşılaştırılıyor…"
+      "comparing_other": "{{count}} tahmin karşılaştırılıyor…",
+      "readingPhotos_one": "Fotoğrafınıza bakılıyor…",
+      "readingPhotos_other": "{{count}} fotoğrafınıza bakılıyor…",
+      "observingPhotos_one": "Fotoğrafınıza dikkatle ilk bakış atılıyor…",
+      "observingPhotos_other": "{{count}} fotoğrafınıza dikkatle ilk bakış atılıyor…",
+      "identifyingPhoto_one": "{{count}} fotoğrafın {{index}}. fotoğrafına bakılıyor…",
+      "identifyingPhoto_other": "{{count}} fotoğrafın {{index}}. fotoğrafına bakılıyor…",
+      "readingPhotos_few": "{{count}} fotoğrafınıza bakılıyor…",
+      "readingPhotos_many": "{{count}} fotoğrafınıza bakılıyor…",
+      "observingPhotos_few": "{{count}} fotoğrafınıza dikkatle ilk bakış atılıyor…",
+      "observingPhotos_many": "{{count}} fotoğrafınıza dikkatle ilk bakış atılıyor…",
+      "identifyingPhoto_few": "{{count}} fotoğrafın {{index}}. fotoğrafına bakılıyor…",
+      "identifyingPhoto_many": "{{count}} fotoğrafın {{index}}. fotoğrafına bakılıyor…"
     },
     "aiNutritionContext": {
       "title": "Yapay zekâ için bağlam ekle",
@@ -716,6 +728,43 @@
         "logError": "Besin kaydedilemedi. Tekrar dene."
       },
       "linkError": "Asistanın bağlantısı okunamadı. {{reason}} Bunun yerine sohbetteki JSON bloğunu yapıştır."
+    },
+    "mealPhotos": {
+      "title": "Öğününüz",
+      "photoCount_one": "{{count}} / {{max}} fotoğraf",
+      "photoCount_other": "{{count}} / {{max}} fotoğraf",
+      "addPhoto": "Fotoğraf ekle",
+      "removePhoto": "{{index}}. fotoğrafı kaldır",
+      "optionalHint": "Aşağıdaki her şey isteğe bağlıdır.",
+      "nameLabel": "Öğün adı",
+      "namePlaceholder": "ör. Tavuklu pilav",
+      "descriptionLabel": "Bilmemiz gereken başka bir şey var mı?",
+      "descriptionPlaceholder": "ör. Yarısını yedim, sossuz",
+      "originLabel": "Nereden geliyor?",
+      "origin": {
+        "home": "Evde yapıldı",
+        "restaurant": "Restoran",
+        "takeaway": "Paket servis",
+        "packaged": "Paketli"
+      },
+      "addedFatLabel": "Yağ, tereyağı ya da sos eklendi mi?",
+      "addedFat": {
+        "none": "Hayır",
+        "some": "Biraz",
+        "lots": "Çok"
+      },
+      "tagsLabel": "Etiketler",
+      "estimate": "Tahmin et",
+      "reviewPhotos_one": "{{count}} fotoğrafı gözden geçir",
+      "reviewPhotos_other": "{{count}} fotoğrafı gözden geçir",
+      "discardTitle": "Bu öğün silinsin mi?",
+      "discardMessage": "Fotoğraflarınız ve notlarınız kaybolacak.",
+      "discard": "Sil",
+      "keepEditing": "Düzenlemeye devam et",
+      "photoCount_few": "{{count}} / {{max}} fotoğraf",
+      "photoCount_many": "{{count}} / {{max}} fotoğraf",
+      "reviewPhotos_few": "{{count}} fotoğrafı gözden geçir",
+      "reviewPhotos_many": "{{count}} fotoğrafı gözden geçir"
     }
   }
 }

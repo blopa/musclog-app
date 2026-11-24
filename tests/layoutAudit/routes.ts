@@ -280,6 +280,7 @@ export const AUDIT_ONLY_MODAL_BUTTONS = [
   'Time (default)',
   'Date (compact)',
   'Time (compact)',
+  'Open Meal Photo Details Modal',
   'Open Premium Modal (Loading)',
   'Open Premium Modal (Not Subscribed)',
   'Open Premium Modal (Active)',
@@ -332,6 +333,7 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/AINotConfiguredModal.tsx': { fixture: 'Open AI Not Configured Modal' },
   // One fixture button per state (the first is named here; the other seven are in MODAL_BUTTON_TEXTS).
   'components/modals/PremiumModal.tsx': { fixture: 'Open Premium Modal (Loading)' },
+  'components/camera/MealPhotoDetailsModal.tsx': { fixture: 'Open Meal Photo Details Modal' },
   'components/modals/AINutritionTrackingContextModal.tsx': {
     fixture: 'Open AI Nutrition Context Modal',
   },

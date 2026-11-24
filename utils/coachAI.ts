@@ -53,6 +53,7 @@ import {
   LOCAL_PHOTO_RETRY_TEMPERATURE,
   localFoodIdentifyPrompt,
   mealTypeForHour,
+  mergeFoodsAcrossPhotos,
   parseIdentifiedFoods,
   pickFoodMatch,
   searchTermsFor,
@@ -111,6 +112,7 @@ import {
   getMealReviewFunctions,
   getMealReviewPrompt,
   getMissingIngredientsMacrosPrompt,
+  getMultiPhotoMealNote,
   getNutritionInsightsPrompt,
   getOnDeviceFiberFunctions,
   getOnDeviceFiberPrompt,
@@ -132,6 +134,8 @@ import {
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
+import { type MealImage, MAX_MEAL_IMAGES, toMealImage, toMealImages } from './mealImages';
+import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
 import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
 
@@ -1963,14 +1967,37 @@ function claudeImageType(mimeType: string): ClaudeImageType {
  */
 function prepareOwnKeyImageLazily(
   base64: string,
-  mimeType: string
+  mimeType: string,
+  count?: number
 ): Promise<{ base64: string; mimeType: string }> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
 
-  return aiImage.prepareOwnKeyImage(base64, mimeType);
+  return aiImage.prepareOwnKeyImage(base64, mimeType, count);
 }
 
+/**
+ * Prepares every photo of one request, once: each at the detail the person chose in AI settings,
+ * holding the photos together to what the request may carry (Musclog Iron's body cap is shared by
+ * all of them). A meal estimate prepares its photos once and reuses the result for every look,
+ * sample and review, instead of re-encoding the same photos in each request.
+ */
+export async function prepareMealImages(
+  config: CoachAIConfig,
+  images: readonly MealImage[]
+): Promise<MealImage[]> {
+  const prepareImage = providerPolicyFor(config).prepareImage ?? prepareOwnKeyImageLazily;
+  const count = images.length;
+  const prepared: MealImage[] = [];
+  // One after another: the codec is a native module and each photo can be several megabytes.
+  for (const image of images) {
+    prepared.push(await prepareImage(image.base64, image.mimeType, count));
+  }
+
+  return prepared;
+}
+
+/** One photo through the funnel below (a nutrition label, one photo of a meal). */
 async function generateWithImageStructured<T>(
   config: CoachAIConfig,
   systemPrompt: string,
@@ -1981,11 +2008,34 @@ async function generateWithImageStructured<T>(
   userMessageSuffix?: string,
   task: AiTask = 'extraction'
 ): Promise<T | null> {
-  // Every provider gets the photo at the detail the person chose in AI settings. Musclog Iron has
-  // its own step: it also holds the photo to the Worker's limits, and refuses it while the Worker
-  // has photos off.
-  const prepareImage = providerPolicyFor(config).prepareImage ?? prepareOwnKeyImageLazily;
-  const { base64: base64Image, mimeType } = await prepareImage(rawBase64Image, rawMimeType);
+  return generateWithImagesStructured<T>(
+    config,
+    systemPrompt,
+    [{ base64: rawBase64Image, mimeType: rawMimeType }],
+    schema,
+    schemaName,
+    userMessageSuffix,
+    task
+  );
+}
+
+/**
+ * The single funnel for every provider's photo request, for one photo or several of the same meal.
+ * Every provider gets the photos at the detail the person chose in AI settings. Musclog Iron has
+ * its own step: it also holds the photos to the Worker's limits, and refuses them while the Worker
+ * has photos off. `options.prepared` says the photos were already prepared by `prepareMealImages`.
+ */
+async function generateWithImagesStructured<T>(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  rawImages: readonly MealImage[],
+  schema: object,
+  schemaName: string = 'response',
+  userMessageSuffix?: string,
+  task: AiTask = 'extraction',
+  options?: { prepared?: boolean }
+): Promise<T | null> {
+  const images = options?.prepared ? [...rawImages] : await prepareMealImages(config, rawImages);
 
   // Wrap user message suffix with delimiters to prevent prompt injection
   const sanitizedSuffix = userMessageSuffix?.trim()
@@ -1993,26 +2043,32 @@ async function generateWithImageStructured<T>(
     : '';
 
   const userText =
-    'Analyze this image and return the structured data.' +
+    (images.length > 1
+      ? 'Analyze these images and return the structured data.'
+      : 'Analyze this image and return the structured data.') +
     (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
 
   if (config.provider === 'gemini') {
+    const contents: Content[] = [
+      {
+        parts: [
+          { text: userText } as Part,
+          ...images.map(
+            (image) =>
+              ({
+                inlineData: {
+                  data: image.base64,
+                  mimeType: image.mimeType,
+                },
+              }) as Part
+          ),
+        ],
+        role: 'user',
+      },
+    ];
     const requestPayload = {
       model: config.model,
-      contents: [
-        {
-          parts: [
-            { text: userText } as Part,
-            {
-              inlineData: {
-                data: base64Image,
-                mimeType: mimeType,
-              },
-            } as Part,
-          ],
-          role: 'user',
-        },
-      ],
+      contents,
       config: {
         responseMimeType: 'application/json',
         responseSchema: schema,
@@ -2041,21 +2097,6 @@ async function generateWithImageStructured<T>(
       },
       [{ text: systemPrompt } as Part]
     );
-
-    const contents: Content[] = [
-      {
-        parts: [
-          { text: userText } as Part,
-          {
-            inlineData: {
-              data: base64Image,
-              mimeType: mimeType,
-            },
-          } as Part,
-        ],
-        role: 'user',
-      },
-    ];
 
     const result = await withLlmRetry('generateWithImageStructured', config, (signal) =>
       genModel.generateContent({ contents, abortSignal: signal })
@@ -2086,10 +2127,14 @@ async function generateWithImageStructured<T>(
         {
           role: 'user',
           content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: claudeImageType(mimeType), data: base64Image },
-            },
+            ...images.map((image) => ({
+              type: 'image' as const,
+              source: {
+                type: 'base64' as const,
+                media_type: claudeImageType(image.mimeType),
+                data: image.base64,
+              },
+            })),
             { type: 'text', text: userText },
           ],
         },
@@ -2105,7 +2150,6 @@ async function generateWithImageStructured<T>(
 
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
-  const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
@@ -2114,7 +2158,10 @@ async function generateWithImageStructured<T>(
         role: 'user',
         content: [
           { type: 'text', text: userText },
-          { type: 'image_url', image_url: { url: dataUrl } },
+          ...images.map((image) => ({
+            type: 'image_url' as const,
+            image_url: { url: `data:${image.mimeType};base64,${image.base64}` },
+          })),
         ],
       },
     ],
@@ -2172,7 +2219,7 @@ async function generateWithImageStructured<T>(
 async function extractRecipe(
   config: CoachAIConfig,
   userMessage: string,
-  base64Image?: string,
+  images: readonly MealImage[] = [],
   observation?: MealObservation
 ): Promise<RecipeExtractionResponse | null> {
   const lang = config.language ?? DEFAULT_LANG;
@@ -2188,22 +2235,21 @@ async function extractRecipe(
     ? `${userMessage}\n\n${formatMealObservation(observation)}`
     : userMessage;
 
-  if (base64Image) {
+  if (images.length > 0) {
     if (config.provider === 'on-device') {
       // Downloaded models identify photos through estimateNutritionFromPhoto.
       return null;
     }
 
-    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-    return generateWithImageStructured<RecipeExtractionResponse>(
+    return generateWithImagesStructured<RecipeExtractionResponse>(
       config,
       systemPrompt,
-      base64,
-      mimeType,
+      images,
       schema,
       'extractRecipe',
-      message
+      message,
+      'extraction',
+      { prepared: true }
     );
   }
 
@@ -2224,22 +2270,21 @@ async function extractRecipe(
 async function observeMeal(
   config: CoachAIConfig,
   userMessage: string,
-  base64Image?: string
+  images: readonly MealImage[] = []
 ): Promise<MealObservation | null> {
   const systemPrompt = getMealObservationPrompt(config.language ?? DEFAULT_LANG);
   const schema = getSchemaFromFunctionDeclaration((getMealObservationFunctions() as any)[0]);
 
-  if (base64Image) {
-    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-    const raw = await generateWithImageStructured<unknown>(
+  if (images.length > 0) {
+    const raw = await generateWithImagesStructured<unknown>(
       config,
       systemPrompt,
-      base64,
-      mimeType,
+      images,
       schema,
       'observeMeal',
-      userMessage
+      userMessage,
+      'extraction',
+      { prepared: true }
     );
 
     return parseMealObservation(raw);
@@ -2541,11 +2586,11 @@ async function refineTrackedMeals(
 async function trackMealVerified(
   config: CoachAIConfig,
   userMessage: string,
-  base64Image?: string,
+  images: readonly MealImage[] = [],
   onProgress?: MealEstimateProgressListener,
   observation?: MealObservation
 ): Promise<TrackMealResponse | null> {
-  const recipeResponse = await extractRecipe(config, userMessage, base64Image, observation);
+  const recipeResponse = await extractRecipe(config, userMessage, images, observation);
   if (!recipeResponse?.meals?.length) {
     return null;
   }
@@ -2637,7 +2682,7 @@ async function trackMealThinking(
   config: CoachAIConfig,
   level: ThinkingLevel,
   userMessage: string,
-  base64Image?: string,
+  images: readonly MealImage[] = [],
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   const pipeline = THINKING_PIPELINE[level];
@@ -2649,10 +2694,14 @@ async function trackMealThinking(
   // extra request can only help, never fail the estimate), and a cancel stops everything.
   let looks: MealObservation[] = [];
   if (mealLooks) {
-    reportMealProgress(onProgress, { step: 'observing', photo: Boolean(base64Image) });
+    reportMealProgress(onProgress, {
+      step: 'observing',
+      photo: images.length > 0,
+      photoCount: images.length,
+    });
     try {
       looks = await runSamples(config, mealLooks.looks, () =>
-        observeMeal(config, userMessage, base64Image)
+        observeMeal(config, userMessage, images)
       );
     } catch (error) {
       if (error instanceof AiCancelledError) {
@@ -2674,7 +2723,7 @@ async function trackMealThinking(
     const answer = await trackMealVerified(
       config,
       userMessage,
-      base64Image,
+      images,
       index === 0 ? onProgress : undefined,
       look >= 0 ? looks[look] : undefined
     );
@@ -2707,7 +2756,7 @@ async function trackMealThinking(
       reportMealProgress(onProgress, { step: 'reviewing' });
       const meals: TrackedMeal[] = [];
       for (const meal of current.meals) {
-        meals.push(await reviewTrackedMeal(config, meal, userMessage, base64Image, onProgress));
+        meals.push(await reviewTrackedMeal(config, meal, userMessage, images, onProgress));
       }
 
       return { ...current, meals };
@@ -2732,23 +2781,21 @@ async function requestMealReview(
   config: CoachAIConfig,
   meal: TrackedMeal,
   userMessage: string,
-  base64Image?: string
+  images: readonly MealImage[] = []
 ): Promise<MealReview | null> {
   const systemPrompt = getMealReviewPrompt(meal, config.language ?? DEFAULT_LANG);
   const schema = getSchemaFromFunctionDeclaration((getMealReviewFunctions() as any)[0]);
 
-  if (base64Image && config.provider !== 'on-device') {
-    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-
-    return generateWithImageStructured<MealReview>(
+  if (images.length > 0 && config.provider !== 'on-device') {
+    return generateWithImagesStructured<MealReview>(
       config,
       systemPrompt,
-      base64,
-      mimeType,
+      images,
       schema,
       'reviewMealEstimate',
-      userMessage
+      userMessage,
+      'extraction',
+      { prepared: true }
     );
   }
 
@@ -2765,10 +2812,10 @@ async function reviewTrackedMeal(
   config: CoachAIConfig,
   meal: TrackedMeal,
   userMessage: string,
-  base64Image?: string,
+  images: readonly MealImage[] = [],
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackedMeal> {
-  const review = await requestMealReview(config, meal, userMessage, base64Image);
+  const review = await requestMealReview(config, meal, userMessage, images);
   const { meal: corrected, added } = applyMealReview(meal, review);
   if (added.length === 0) {
     return corrected;
@@ -2829,9 +2876,11 @@ export async function trackMeal(
 
   try {
     reportMealProgress(onProgress, { step: 'reading', photo: Boolean(base64Image) });
+    // One photo of the chat, prepared once for every request that follows.
+    const images = base64Image ? await prepareMealImages(config, [toMealImage(base64Image)]) : [];
     const level = await thinkingLevelFor(config);
     if (THINKING_PIPELINE[level].verifiedMeal) {
-      return await trackMealThinking(config, level, userMessage, base64Image, onProgress);
+      return await trackMealThinking(config, level, userMessage, images, onProgress);
     }
 
     const lang = config.language ?? DEFAULT_LANG;
@@ -2843,17 +2892,16 @@ export async function trackMeal(
     const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
-    if (base64Image) {
-      const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-      const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-      const fromPhoto = await generateWithImageStructured<TrackMealResponse>(
+    if (images.length > 0) {
+      const fromPhoto = await generateWithImagesStructured<TrackMealResponse>(
         config,
         systemPrompt,
-        base64,
-        mimeType,
+        images,
         schema,
         'trackMeal',
-        userMessage
+        userMessage,
+        'extraction',
+        { prepared: true }
       );
       return fromPhoto ? await refineTrackedMeals(config, fromPhoto, onProgress) : null;
     }
@@ -3345,13 +3393,7 @@ export async function getWorkoutVolumeInsights(
   }
 }
 
-/**
- * Optional context from the user to improve meal photo estimation (e.g. description + tags).
- */
-export type MealPhotoContext = {
-  description: string;
-  tags: string[];
-};
+export type { MealPhotoContext };
 
 /** Foods this phone already has whose names share a word with `name`, merged and deduplicated. */
 async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
@@ -3381,18 +3423,22 @@ async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
  */
 async function estimateMealFromPhotoOnDevice(
   config: CoachAIConfig,
-  base64Image: string,
+  rawImages: readonly MealImage[],
   context?: MealPhotoContext | null,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
-  reportMealProgress(onProgress, { step: 'reading', photo: true });
-  const rawBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-  const rawMime = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+  reportMealProgress(onProgress, { step: 'reading', photo: true, photoCount: rawImages.length });
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
-  const { base64, mimeType } = await aiImage.prepareOnDeviceImage(rawBase64, rawMime);
+  // The engine takes one image per request, so every photo is prepared (and later read) alone.
+  const images: MealImage[] = [];
+  for (const raw of rawImages) {
+    images.push(await aiImage.prepareOnDeviceImage(raw.base64, raw.mimeType));
+  }
+
   const systemPrompt = localFoodIdentifyPrompt();
-  const details = wrapUserContent([context?.description, ...(context?.tags ?? [])].join(' '));
+  const formattedContext = formatMealPhotoContext(context);
+  const details = formattedContext ? wrapUserContent(formattedContext) : '';
   const messages = [
     {
       role: 'user' as const,
@@ -3409,10 +3455,10 @@ async function estimateMealFromPhotoOnDevice(
     config,
   });
 
-  const askForPhoto = (temperature?: number) =>
+  const askForPhoto = (image: MealImage, temperature?: number) =>
     withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
       sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
-        image: `data:${mimeType};base64,${base64}`,
+        image: `data:${image.mimeType};base64,${image.base64}`,
         signal,
         ...(temperature === undefined ? {} : { temperature }),
       })
@@ -3426,14 +3472,17 @@ async function estimateMealFromPhotoOnDevice(
     );
 
   // One reading of the photo. `firstTemperature` lets a further sample differ from the first.
-  const identifyFoods = async (firstTemperature?: number): Promise<IdentifiedFood[]> => {
-    let raw = await askForPhoto(firstTemperature);
+  const identifyFoods = async (
+    image: MealImage,
+    firstTemperature?: number
+  ): Promise<IdentifiedFood[]> => {
+    let raw = await askForPhoto(image, firstTemperature);
     let parsed = readPhotoReply(raw);
     if (parsed.kind !== 'ok') {
       // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
       // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
       const firstRaw = raw;
-      raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
+      raw = await askForPhoto(image, LOCAL_PHOTO_RETRY_TEMPERATURE);
       parsed = readPhotoReply(raw);
 
       // Last resort before giving up: one text-only call that is asked to correct the broken reply
@@ -3459,17 +3508,50 @@ async function estimateMealFromPhotoOnDevice(
   // From High up the photo is read more than once, one reading after another (the phone has one
   // engine), and a food stays only when at least half the readings name it.
   const readings = extractionSamples(await thinkingLevelFor(config));
-  const foods =
+  const identifyPhoto = async (image: MealImage): Promise<IdentifiedFood[]> =>
     readings <= 1
-      ? await identifyFoods()
+      ? identifyFoods(image)
       : voteIdentifiedFoods(
           await runSamples(config, readings, async (index) => {
             const found = await identifyFoods(
+              image,
               index === 0 ? undefined : LOCAL_PHOTO_RETRY_TEMPERATURE
             );
             return found.length > 0 ? found : null;
           })
         );
+
+  // Each photo is read on its own, one after another (the phone has one engine), and the lists are
+  // merged in code: a food in several photos is one food, at its largest estimated portion. A photo
+  // that fails is left out; only when none was readable does the estimate fail (a cancel stops all).
+  const perPhoto: IdentifiedFood[][] = [];
+  let failure: unknown;
+  for (const [index, image] of images.entries()) {
+    if (images.length > 1) {
+      reportMealProgress(onProgress, {
+        step: 'identifying',
+        index: index + 1,
+        count: images.length,
+      });
+    }
+
+    try {
+      perPhoto.push(await identifyPhoto(image));
+    } catch (error) {
+      if (error instanceof AiCancelledError || images.length === 1) {
+        throw error;
+      }
+
+      failure ??= error;
+      reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
+    }
+  }
+
+  const foods = mergeFoodsAcrossPhotos(perPhoto);
+  if (foods.length === 0 && failure && perPhoto.length === 0) {
+    throw failure;
+  }
+
   if (foods.length === 0) {
     return null;
   }
@@ -3490,10 +3572,17 @@ async function estimateMealFromPhotoOnDevice(
  */
 export async function estimateNutritionFromPhoto(
   config: CoachAIConfig,
-  base64Image: string,
+  photos: string | readonly string[],
   context?: MealPhotoContext | null,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
+  // One photo or up to `MAX_MEAL_IMAGES` of the same meal, as data URLs or bare base64.
+  const rawImages = toMealImages(photos).slice(0, MAX_MEAL_IMAGES);
+  if (rawImages.length === 0) {
+    return null;
+  }
+
+  const photoCount = rawImages.length;
   if (config.provider === 'on-device') {
     if (onDeviceEngineOf(config) !== 'gguf') {
       throw new OnDeviceUnavailableError('photosUnsupported');
@@ -3504,7 +3593,7 @@ export async function estimateNutritionFromPhoto(
     }
 
     try {
-      return await estimateMealFromPhotoOnDevice(config, base64Image, context, onProgress);
+      return await estimateMealFromPhotoOnDevice(config, rawImages, context, onProgress);
     } catch (error) {
       reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
       throw error;
@@ -3512,19 +3601,22 @@ export async function estimateNutritionFromPhoto(
   }
 
   try {
-    reportMealProgress(onProgress, { step: 'reading', photo: true });
+    reportMealProgress(onProgress, { step: 'reading', photo: true, photoCount });
+    // Prepared once: every look, sample and review below reuses these, never re-encodes them.
+    const images = await prepareMealImages(config, rawImages);
+    const multiPhotoNote = getMultiPhotoMealNote(photoCount);
+    const contextText = formatMealPhotoContext(context);
     const level = await thinkingLevelFor(config);
     if (THINKING_PIPELINE[level].verifiedMeal) {
-      let thinkingUserMessage = 'Analyze this meal photo.';
-      if (context?.description?.trim()) {
-        thinkingUserMessage += `\nUser description: ${context.description.trim()}`;
-      }
+      const thinkingUserMessage = [
+        photoCount > 1 ? 'Analyze these meal photos.' : 'Analyze this meal photo.',
+        multiPhotoNote,
+        contextText,
+      ]
+        .filter(Boolean)
+        .join('\n');
 
-      if (context?.tags?.length) {
-        thinkingUserMessage += `\nTags: ${context.tags.join(', ')}`;
-      }
-
-      return await trackMealThinking(config, level, thinkingUserMessage, base64Image, onProgress);
+      return await trackMealThinking(config, level, thinkingUserMessage, images, onProgress);
     }
 
     const customPrompts = await getActiveCustomPrompts();
@@ -3538,35 +3630,21 @@ export async function estimateNutritionFromPhoto(
       ? `${baseSystemPrompt}\n\n${customPrompts}`
       : baseSystemPrompt;
 
-    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-
     // Use getTrackMealFunctions to get an array of meals with ingredients breakdown
     const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
-    let userMessageSuffix: string | undefined;
-    if (context && (context.description.trim() || context.tags.length > 0)) {
-      const parts: string[] = [];
-      if (context.description.trim()) {
-        parts.push(`User description: ${context.description.trim()}`);
-      }
+    const userMessageSuffix = [multiPhotoNote, contextText].filter(Boolean).join('\n') || undefined;
 
-      if (context.tags.length > 0) {
-        parts.push(`Tags: ${context.tags.join(', ')}`);
-      }
-
-      userMessageSuffix = parts.join('\n');
-    }
-
-    const parsed = await generateWithImageStructured<TrackMealResponse>(
+    const parsed = await generateWithImagesStructured<TrackMealResponse>(
       config,
       systemPrompt,
-      base64,
-      mimeType,
+      images,
       schema,
       'trackMeal',
-      userMessageSuffix
+      userMessageSuffix,
+      'extraction',
+      { prepared: true }
     );
 
     // Foundation-food matches arrive with zero macros: the lookup fills the real values in, and an

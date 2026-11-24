@@ -43,6 +43,10 @@ export const WHATS_NEW_SETTING_IO: SettingIO = {
     read: () => SettingsService.get(SETTINGS.animatedLoggy),
     write: (v) => SettingsService.set(SETTINGS.animatedLoggy, v),
   },
+  aiMealCameraFlow: {
+    read: () => SettingsService.get(SETTINGS.aiMealCameraFlow),
+    write: (v) => SettingsService.set(SETTINGS.aiMealCameraFlow, v),
+  },
   reviewWeekday: {
     read: () => SettingsService.get(SETTINGS.reviewWeekday),
     write: async (value) => {

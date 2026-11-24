@@ -245,7 +245,7 @@ describe('GET /v1/config', () => {
       enabled: true,
       accepting_new: true,
       vision_enabled: true,
-      image: { maxPx: 1568, maxBytes: 400000, quality: 85 },
+      image: { maxPx: 1568, maxBytes: 400000, quality: 85, maxImages: 5, bodyMaxBytes: 1048576 },
       minAppVersion: '2.17.0',
       reasoning_effort: true,
     });

@@ -125,6 +125,64 @@
       ]
     },
     {
+      "id": "mealCamera",
+      "blocks": [
+        {
+          "id": "mealCamera",
+          "type": "info",
+          "icon": "camera",
+          "pose": "writing",
+          "titleKey": "whatsNew.releases.v2_18_0.mealCamera.title",
+          "descriptionKey": "whatsNew.releases.v2_18_0.mealCamera.description"
+        },
+        {
+          "id": "flow",
+          "type": "choice",
+          "setting": "aiMealCameraFlow",
+          "titleKey": "whatsNew.releases.v2_18_0.mealCamera.flow.title",
+          "descriptionKey": "whatsNew.releases.v2_18_0.mealCamera.flow.description",
+          "options": [
+            {
+              "value": "detailed",
+              "icon": "camera",
+              "labelKey": "whatsNew.releases.v2_18_0.mealCamera.flow.detailed.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.mealCamera.flow.detailed.description"
+            },
+            {
+              "value": "quick",
+              "icon": "timer",
+              "labelKey": "whatsNew.releases.v2_18_0.mealCamera.flow.quick.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.mealCamera.flow.quick.description"
+            }
+          ]
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "photos",
+              "icon": "camera",
+              "labelKey": "whatsNew.releases.v2_18_0.mealCamera.items.photos.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.mealCamera.items.photos.description"
+            },
+            {
+              "id": "details",
+              "icon": "list",
+              "labelKey": "whatsNew.releases.v2_18_0.mealCamera.items.details.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.mealCamera.items.details.description"
+            },
+            {
+              "id": "cover",
+              "icon": "circleCheck",
+              "labelKey": "whatsNew.releases.v2_18_0.mealCamera.items.cover.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.mealCamera.items.cover.description"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "thinking",
       "blocks": [
         {

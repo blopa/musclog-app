@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Dodaj więcej do zdjęcia posiłku",
+          "description": "Po zrobieniu zdjęcia możesz teraz dodać do 5 zdjęć tego samego posiłku i opowiedzieć Musclogowi trochę więcej, zanim oszacuje wartości. Wszystko, co dodasz, jest opcjonalne.",
+          "flow": {
+            "title": "Jak działa aparat AI do posiłków",
+            "description": "Możesz to zmienić w dowolnym momencie w Ustawienia → Zachowanie AI.",
+            "detailed": {
+              "label": "Szczegółowy",
+              "description": "Przejrzyj zdjęcia i dodaj szczegóły przed oszacowaniem."
+            },
+            "quick": {
+              "label": "Szybki",
+              "description": "Szacowanie zaraz po zdjęciu, jak dotąd."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Do 5 zdjęć jednego posiłku",
+              "description": "Dodaj kolejne ujęcie lub zbliżenie przed oszacowaniem. Są wysyłane razem jako jeden posiłek, więc produkt widoczny na dwóch zdjęciach liczy się raz. Dostawca, który przyjmuje mniej zdjęć, ogranicza tę liczbę."
+            },
+            "details": {
+              "label": "Powiedz, czego zdjęcie nie pokaże",
+              "description": "Dodaj nazwę, notatkę w stylu „zjedzone pół, bez sosu”, informację, czy danie było domowe, czy z restauracji, i czy dodano olej lub masło."
+            },
+            "cover": {
+              "label": "Pierwsze zdjęcie zostaje zachowane",
+              "description": "Tylko pierwsze zdjęcie jest zapisywane z zarejestrowanym posiłkiem. Pozostałe są używane wyłącznie do oszacowania."
+            }
+          }
+        },
         "thinking": {
           "title": "Niech AI myśli mocniej",
           "description": "Nowe ustawienie pozwala AI sprawdzić własną pracę, zanim odpowie. Wył. jest najszybszy; Tokenmaxxing jest najwolniejszy i najstaranniejszy.",

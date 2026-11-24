@@ -461,3 +461,101 @@ describe('estimateNutritionFromPhoto on the downloaded engine, by thinking level
     expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['White rice']);
   });
 });
+
+describe('estimateNutritionFromPhoto on the downloaded engine, with several photos', () => {
+  const rice = {
+    id: 'food-rice',
+    name: 'White rice',
+    calories: 130,
+    protein: 2.7,
+    carbs: 28,
+    fat: 0.3,
+    fiber: 0.4,
+  };
+  const items = (...list: [string, number][]) =>
+    JSON.stringify({ items: list.map(([name, grams]) => ({ name, grams })) });
+  const PHOTOS = [
+    'data:image/jpeg;base64,AAAA',
+    'data:image/jpeg;base64,BBBB',
+    'data:image/jpeg;base64,CCCC',
+  ];
+
+  beforeEach(() => {
+    mockSearchFoods.mockImplementation(async (term: string) =>
+      term === 'rice' || term === 'white' ? [rice] : []
+    );
+  });
+
+  it('reads each photo on its own, with one image per request', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue(items(['white rice', 150]));
+
+    await estimateNutritionFromPhoto(gguf, PHOTOS);
+
+    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(3);
+    expect(mockSendLocalStructuredRaw.mock.calls.map(([, , , options]) => options.image)).toEqual(
+      PHOTOS
+    );
+  });
+
+  it('merges foods across photos: the same food is one ingredient at the larger grams', async () => {
+    mockSendLocalStructuredRaw
+      .mockResolvedValueOnce(items(['white rice', 150], ['mystery stew', 200]))
+      .mockResolvedValueOnce(items(['White Rice', 220]))
+      .mockResolvedValueOnce(items(['mystery stew', 100]))
+      .mockResolvedValue(
+        JSON.stringify({
+          foods: [{ name: 'mystery stew', kcal: 150, protein: 10, carbs: 10, fat: 7.5 }],
+        })
+      );
+
+    const result = await estimateNutritionFromPhoto(gguf, PHOTOS);
+
+    const ingredients = result?.meals[0].ingredients ?? [];
+    expect(ingredients).toHaveLength(2);
+    expect(ingredients.find((i) => /rice/i.test(i.name))).toMatchObject({ grams: 220 });
+    expect(ingredients.find((i) => i.name === 'mystery stew')).toMatchObject({ grams: 200 });
+  });
+
+  it('reports identifying 1..3 of 3, and nothing for a single photo', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue(items(['white rice', 150]));
+    const onProgress = jest.fn();
+
+    await estimateNutritionFromPhoto(gguf, PHOTOS, undefined, onProgress);
+
+    const identifying = onProgress.mock.calls
+      .map(([progress]) => progress)
+      .filter((progress) => progress.step === 'identifying');
+    expect(identifying).toEqual([
+      { step: 'identifying', index: 1, count: 3 },
+      { step: 'identifying', index: 2, count: 3 },
+      { step: 'identifying', index: 3, count: 3 },
+    ]);
+    expect(onProgress).toHaveBeenCalledWith({ step: 'reading', photo: true, photoCount: 3 });
+
+    onProgress.mockClear();
+    await estimateNutritionFromPhoto(gguf, PHOTOS[0], undefined, onProgress);
+    expect(onProgress.mock.calls.some(([progress]) => progress.step === 'identifying')).toBe(false);
+  });
+
+  it('survives one failing photo among several', async () => {
+    mockSendLocalStructuredRaw
+      .mockRejectedValueOnce(new Error('boom'))
+      .mockResolvedValue(items(['white rice', 150]));
+
+    const result = await estimateNutritionFromPhoto(gguf, PHOTOS);
+
+    expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['White rice']);
+  });
+
+  it('fails when every photo fails', async () => {
+    mockSendLocalStructuredRaw.mockRejectedValue(new Error('boom'));
+
+    await expect(estimateNutritionFromPhoto(gguf, PHOTOS)).rejects.toThrow('boom');
+  });
+
+  it('lets a cancel through even with several photos', async () => {
+    mockSendLocalStructuredRaw.mockRejectedValue(new AiCancelledError());
+
+    await expect(estimateNutritionFromPhoto(gguf, PHOTOS)).rejects.toBeInstanceOf(AiCancelledError);
+  });
+});

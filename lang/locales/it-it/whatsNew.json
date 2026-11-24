@@ -329,6 +329,36 @@
             }
           }
         },
+        "mealCamera": {
+          "title": "Aggiungi altro alla foto del pasto",
+          "description": "Dopo aver scattato una foto, ora puoi aggiungere fino a 5 foto dello stesso pasto e raccontare a Musclog qualcosa in più prima che stimi. Tutto ciò che aggiungi è facoltativo.",
+          "flow": {
+            "title": "Come funziona la fotocamera IA per i pasti",
+            "description": "Puoi cambiarlo in qualsiasi momento in Impostazioni → Comportamento AI.",
+            "detailed": {
+              "label": "Dettagliato",
+              "description": "Controlla le foto e aggiungi dettagli prima di stimare."
+            },
+            "quick": {
+              "label": "Rapido",
+              "description": "Stima subito dopo la foto, come prima."
+            }
+          },
+          "items": {
+            "photos": {
+              "label": "Fino a 5 foto di un pasto",
+              "description": "Aggiungi un'altra angolazione o un primo piano prima di stimare. Vengono inviate insieme come un unico pasto, quindi un alimento visibile in due foto viene conteggiato una volta sola. Un fornitore che accetta meno foto limita il numero."
+            },
+            "details": {
+              "label": "Spiega ciò che una foto non può mostrare",
+              "description": "Aggiungi un nome, una nota come «mangiato metà, senza condimento», se era fatto in casa o al ristorante, e se sono stati aggiunti olio o burro."
+            },
+            "cover": {
+              "label": "Si conserva la prima foto",
+              "description": "Solo la prima foto viene salvata con il pasto registrato. Le altre servono solo per la stima."
+            }
+          }
+        },
         "thinking": {
           "title": "Fai pensare di più l'IA",
           "description": "Una nuova impostazione permette all'IA di controllare il proprio lavoro prima di rispondere. Disattivato è il più veloce; Tokenmaxxing è il più lento e il più accurato.",
