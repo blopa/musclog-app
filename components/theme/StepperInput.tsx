@@ -292,7 +292,9 @@ export const StepperInput: FC<StepperInputProps> = ({
         >
           <Plus
             size={theme.iconSize.lg}
-            color={isPortion ? theme.colors.text.alwaysWhite : theme.colors.accent.primary}
+            // The portion variant fills this button with the accent, so its glyph is the theme's
+            // ink-on-accent (near-black on Scope's lime), not white, which washes out on a light accent.
+            color={isPortion ? theme.colors.text.onAccent : theme.colors.accent.primary}
           />
         </Pressable>
       </View>

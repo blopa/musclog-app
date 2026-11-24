@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
 
+import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
 import { useTheme } from '@/hooks/useTheme';
 
 import { CardVariant, resolveCardSurface } from './cardSurface';
@@ -56,6 +57,16 @@ export function GenericCard({
     borderWidth: surface.borderWidth,
   };
 
+  // A card paints its own fill, so anything inside it that fades "into the background" (a scroll
+  // cue on a chip row) must fade into THIS fill, not the screen behind it: on a dark theme the
+  // card is a step lighter than the page, and a fade to the page colour ends in a visible band.
+  // The hero card is a gradient with no single fill, so it publishes nothing.
+  const surfaced = surface.backgroundColor ? (
+    <SurfaceColorProvider color={surface.backgroundColor}>{children}</SurfaceColorProvider>
+  ) : (
+    children
+  );
+
   const content = isHero ? (
     <LinearGradient
       colors={theme.colors.gradients.colorfulCard}
@@ -66,7 +77,7 @@ export function GenericCard({
       {children}
     </LinearGradient>
   ) : (
-    children
+    surfaced
   );
 
   if (isPressable) {
