@@ -31,6 +31,10 @@
     "hostedDailyFull": "Musclog Iron est saturé jusqu'à demain (UTC).",
     "hostedDailyLimit": "Vous avez atteint la limite quotidienne de Musclog Iron. Elle est réinitialisée à minuit (UTC). Vous pouvez utiliser votre propre clé ou l'offre gratuite en attendant.",
     "hostedBusy": "Musclog Iron est occupé. Réessayez dans quelques secondes.",
-    "hostedAlreadyProcessed": "Cette requête a déjà été traitée. Veuillez la renvoyer."
+    "hostedAlreadyProcessed": "Cette requête a déjà été traitée. Veuillez la renvoyer.",
+    "onDeviceNotReady": "L'IA sur l'appareil n'est pas encore prête. Terminez sa configuration dans les réglages de l'IA, ou choisissez une autre IA.",
+    "onDevicePhotosNotInstalled": "Dans les réglages de l’IA, réinstallez le modèle en activant la compréhension des photos pour utiliser les photos de repas hors ligne.",
+    "onDevicePhotosUnsupported": "Apple Intelligence ne peut pas analyser les photos de repas ici. Choisissez un modèle compatible avec les photos dans les réglages de l’IA.",
+    "onDeviceLoadFailed": "L'IA sur l'appareil n'a pas pu démarrer, généralement parce que le téléphone manque de mémoire. Fermez les autres applications et réessayez."
   }
 }

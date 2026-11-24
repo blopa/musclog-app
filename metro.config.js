@@ -23,6 +23,28 @@ config.resolver.blockList = [
   ),
 ];
 
+// `MUSCLOG_WEB_TARGET=app|website` (`npm run web:app` / `web:site`) keeps Metro from crawling the
+// other route tree: the two never import each other, so a dev session working on one of them
+// carries half the files, a smaller module graph and a smaller heap. Unset (plain `npm run web`,
+// every native command and every export) serves both, as before.
+const WEB_TARGET_BLOCKED_TREE = { app: 'app/(website)', website: 'app/app' };
+const webTarget = process.env.MUSCLOG_WEB_TARGET;
+
+if (webTarget && !(webTarget in WEB_TARGET_BLOCKED_TREE)) {
+  throw new Error(`MUSCLOG_WEB_TARGET must be "app" or "website", got "${webTarget}"`);
+}
+
+if (webTarget) {
+  config.resolver.blockList = [
+    ...[].concat(config.resolver.blockList),
+    new RegExp(
+      `^${path
+        .join(__dirname, WEB_TARGET_BLOCKED_TREE[webTarget])
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\\\/]`
+    ),
+  ];
+}
+
 // Sharp is a Node-only native module; stub it so Metro never tries to load it.
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === 'sharp' || moduleName.startsWith('sharp/')) {

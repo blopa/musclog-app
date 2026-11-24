@@ -3,6 +3,7 @@ title: "How to track gym progress: a beginner's guide"
 date: '2026-11-08'
 category: 'guides'
 description: 'What to track at the gym as a beginner, how to log it in minutes, and how to tell it is working. A step-by-step guide with screenshots from the Musclog app.'
+highlightOnTag: ['workout-history']
 tags:
   [
     'Gym',

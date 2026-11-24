@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.17.8",
+  "version": "2.18.3",
   "engines": {
     "node": "26.x"
   },
@@ -66,6 +66,7 @@
     "bump-app-version": "node scripts/bump.js",
     "bump-minor": "node scripts/bump.js --minor",
     "bump-major": "node scripts/bump.js --major",
+    "bump-specific": "node scripts/bump.js --specific",
     "report-modal-issue": "node scripts/report-modal-issues.js",
     "compress-blog-images": "node scripts/compress-blog-images.js",
     "check-translations": "node scripts/check-translations.js",
@@ -116,6 +117,9 @@
     "ios": "expo run:ios",
     "android-device": "expo run:android --no-build-cache --device",
     "web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && NODE_OPTIONS=--max-old-space-size=8192 expo start --web",
+    "web:app": "MUSCLOG_WEB_TARGET=app npm run web",
+    "web:site": "MUSCLOG_WEB_TARGET=website npm run web",
+    "web:local-llm": "bash scripts/web-with-local-llm.sh",
     "test": "jest --watchAll",
     "test:ci": "jest --ci --runInBand --silent",
     "lint": "expo lint",
@@ -239,6 +243,8 @@
     "i18next": "26.7.2",
     "ics": "3.12.1",
     "intl-pluralrules": "2.0.1",
+    "jsonrepair": "^3.15.0",
+    "llama.rn": "0.12.9",
     "lucide-react-native": "1.76.0",
     "markdown-it": "^15.0.3",
     "mermaid": "^12.3.0",

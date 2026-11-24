@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
 import type { ChatIntention } from '@/constants/chat';
+import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useSettings } from '@/hooks/useSettings';
 
 import { AINotConfiguredModal } from './modals/AINotConfiguredModal';
@@ -28,7 +29,11 @@ const CoachContext = createContext<CoachContextType | undefined>(undefined);
 
 export function CoachProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { isAiConfigured } = useSettings();
+  const { isAiConfigured, aiProvider } = useSettings();
+  const onDeviceStatus = useOnDeviceStatus();
+  const [notConfiguredVariant, setNotConfiguredVariant] = useState<
+    'notConfigured' | 'localNotReady'
+  >('notConfigured');
   const [isVisible, setIsVisible] = useState(false);
   const [isNotConfiguredVisible, setIsNotConfiguredVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
@@ -39,6 +44,15 @@ export function CoachProvider({ children }: { children: ReactNode }) {
       if (!isAiConfigured) {
         // CoachModal never mounts here, so the options would have nothing to apply to — don't
         // stash them, or they'd outlive the request that carried them.
+        setNotConfiguredVariant('notConfigured');
+        setIsNotConfiguredVisible(true);
+        return;
+      }
+
+      // On-device AI is the provider that would answer but cannot yet: say why instead of a chat
+      // that fails on its first message.
+      if (aiProvider === 'on-device' && onDeviceStatus.state !== 'ready') {
+        setNotConfiguredVariant('localNotReady');
         setIsNotConfiguredVisible(true);
         return;
       }
@@ -46,7 +60,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
       setOpenOptions(options ?? null);
       setIsVisible(true);
     },
-    [isAiConfigured]
+    [isAiConfigured, aiProvider, onDeviceStatus.state]
   );
 
   const closeCoach = useCallback(() => {
@@ -76,6 +90,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
       ) : null}
       <AINotConfiguredModal
         visible={isNotConfiguredVisible}
+        variant={notConfiguredVariant}
         onClose={() => setIsNotConfiguredVisible(false)}
         onOpenAISettings={() => {
           setIsNotConfiguredVisible(false);

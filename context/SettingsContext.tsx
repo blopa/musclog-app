@@ -92,7 +92,9 @@ import { database } from '@/database';
 import { isDbReady, waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
+import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { DEFAULT_LANG } from '@/lang/lang';
+import { refreshOnDeviceStatus } from '@/services/localModels/onDeviceStatusStore';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
@@ -113,6 +115,7 @@ const REGISTERED_SETTINGS = [
   'enableClaude',
   'useHostedAi',
   'aiImageQuality',
+  'onDeviceEngine',
   'premiumConsentVersion',
   'cycleShowPredictions',
   'cycleShowFertility',
@@ -628,9 +631,20 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const isAiConfigured = aiProvider !== null;
 
-  // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
-  // when it would be the active provider. Hosted takes photos: /v1/config decides at call time.
-  const isAiMealPhotoEnabled = aiProvider !== null && aiProvider !== 'on-device';
+  // Apple's system model takes no images, so photo features are off when it would answer. The
+  // downloaded model reads photos once its projector is installed. Hosted takes photos: /v1/config
+  // decides at call time.
+  const onDeviceStatus = useOnDeviceStatus();
+  const isAiMealPhotoEnabled =
+    aiProvider !== null && (aiProvider !== 'on-device' || onDeviceStatus.capabilities.vision);
+
+  // The status is read from the system, so it is refreshed once the settings are known and
+  // whenever the person switches on-device AI (or its engine) on or off.
+  useEffect(() => {
+    if (!state.isLoading && state.useOnDeviceAi) {
+      void refreshOnDeviceStatus();
+    }
+  }, [state.isLoading, state.useOnDeviceAi, state.onDeviceEngine]);
 
   // Parsed here rather than in `deriveStateFromMap`, so the array is allocated once per
   // actual change instead of once per settings emission — see `homeActionsRaw`.

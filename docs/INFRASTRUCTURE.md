@@ -1,4 +1,4 @@
-# Infrastructure runbook: RevenueCat and OpenRouter
+# Infrastructure runbook: RevenueCat, OpenRouter and Otari
 
 What is managed as code, how to change it, and what still lives only in a dashboard. Cloudflare (D1, domain, crons, the Worker) is separate: `docs/PREMIUM_WORKER.md`.
 
@@ -11,8 +11,11 @@ What is managed as code, how to change it, and what still lives only in a dashbo
 | RevenueCat products and prices                                      | The stores (`scripts/play.sh` / gplay, `scripts/appstore.sh`)               | Never from here; only exported for reference |
 | Key **values**, Worker secrets                                      | `wrangler secret put`, dashboards                                           | Never from here                              |
 | Cloudflare                                                          | `infra/premium`                                                             | `scripts/premium-deploy.sh`                  |
+| Otari workspace, keys, budgets, providers                           | The otari.ai dashboard (hosted Otari has no admin API for tenants)          | By hand; `scripts/infra.sh report` observes  |
 
 Still dashboard-only (no API or provider support found): RevenueCat paywalls, store credentials, restore behaviour (must stay "Transfer to new App User ID", see `docs/PREMIUM_WORKER.md`), webhooks if ever needed; OpenRouter account-level settings (ZDR, "allow free endpoints that train on request data", auto top-up). The workspace default guardrail is not managed (it is unconfigured; the free tier has its own guardrail instead).
+
+**Otari** (the optional Iron upstream, `docs/PREMIUM_WORKER.md` → The upstream toggle) is dashboard-only: on hosted otari.ai a tenant has no master key, and an API key can read only its OWN budget and usage (`/key/budget`, `/key/usage/summary|series` with the `usage:read` scope). Kept by hand in the dashboard: workspace `musclog-iron` with "Require zero data retention" on, its enabled providers and their models (the unused ones off), one key per environment (`musclog-iron-staging`, later the production one: scopes `inference:run` and `usage:read` only, "Only selected" models, its own monthly budget picked on the key form), auto top-up and recurring top-up off. There are no configurable spend alerts or webhooks (Otari emails owners when the balance is used up); the Worker's daily `otari_budget` step and `report` fill that gap. Check after any dashboard change: `scripts/infra.sh report` with `OTARI_EXPECTED_PROVIDERS` set warns on a provider that should not be serving.
 
 ## Setup (once per machine)
 
@@ -23,6 +26,8 @@ OPENROUTER_MANAGEMENT_KEY=...   # a management key; cannot spend credits
 REVENUECAT_INFRA_KEY=...        # v2 secret key, NOT the Premium Worker's; config read/write, no customer permissions
 REVENUECAT_PROJECT_ID=proj...
 TF_ENCRYPTION='key_provider "pbkdf2" "main" { passphrase = "..." }'
+OTARI_USAGE_KEY=...             # optional: an Otari key with usage:read (it reads only its own usage)
+OTARI_EXPECTED_PROVIDERS=deepinfra,mistral   # optional: report warns on any other provider
 ```
 
 `scripts/infra-init-passphrase.sh` fills the passphrase with a random one (idempotent, prints nothing). Load before use: `set -a; source ~/keys/musclog-infra.env; set +a`, then `scripts/infra.sh status` must show all four as set. The OpenTofu state (`infra/openrouter/terraform.tfstate`) is local, encrypted and git-ignored; losing the passphrase loses nothing permanent, because the state only mirrors OpenRouter and can be rebuilt with `import` blocks.
@@ -31,14 +36,15 @@ TF_ENCRYPTION='key_provider "pbkdf2" "main" { passphrase = "..." }'
 
 `scripts/infra.sh <command>`: it never prints a secret, never deletes, and `apply` is a dry run without `--yes`.
 
-| Command    | Does                                                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `status`   | Which credentials are set (names only).                                                                                                           |
-| `validate` | Parses the RevenueCat config; `tofu validate` for OpenRouter.                                                                                     |
-| `plan`     | RevenueCat drift (entitlements, offerings, missing packages), then `tofu plan`.                                                                   |
-| `apply`    | RevenueCat only: creates and updates by `lookup_key`; a change to a price-like field needs `--allow-pricing`. OpenRouter is `tofu apply` by hand. |
-| `export`   | Sanitized live snapshots into `infra/snapshots/` (secrets redacted, personal fields dropped). Never edits desired files.                          |
-| `report`   | JSON summary: OpenRouter credits and per-key usage, keys expiring within 60 days, RevenueCat metrics overview. No customer data.                  |
+| Command    | Does                                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`   | Which credentials are set (names only).                                                                                                                                                                                         |
+| `validate` | Parses the RevenueCat config; `tofu validate` for OpenRouter.                                                                                                                                                                   |
+| `plan`     | RevenueCat drift (entitlements, offerings, missing packages), then `tofu plan`.                                                                                                                                                 |
+| `apply`    | RevenueCat only: creates and updates by `lookup_key`; a change to a price-like field needs `--allow-pricing`. OpenRouter is `tofu apply` by hand.                                                                               |
+| `export`   | Sanitized live snapshots into `infra/snapshots/` (secrets redacted, personal fields dropped). Never edits desired files.                                                                                                        |
+| `report`   | JSON summary: OpenRouter credits and per-key usage, keys expiring within 60 days, RevenueCat metrics overview. No customer data.                                                                                                |
+|            | Plus Otari (`scripts/infra/otari.js`, last 30 days, `--env` filters on the request tag): cost, requests, errors, unpriced requests, latency, cost by model, provider and feature, errors by status, budget left, with warnings. |
 
 ## Routine changes
 

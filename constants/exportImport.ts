@@ -5,6 +5,7 @@ import {
   COACH_REPLY_JOURNAL,
   COACH_RESTORED_COMPOSER,
   CRASH_REPORT_CONSENT_KEY,
+  LOCAL_MODEL_DOWNLOAD_STATE,
   PERSONALIZED_BODY_DRAFT,
   PREMIUM_DEVICE_STATE,
   REVIEW_PROMPT_STATE,
@@ -41,6 +42,8 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   CRASH_REPORT_CONSENT_KEY,
   // Device-local history of store-rating requests; another device's must not carry over.
   REVIEW_PROMPT_STATE,
+  // Resume data of a model download on THIS device; meaningless anywhere else.
+  LOCAL_MODEL_DOWNLOAD_STATE,
 ]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';

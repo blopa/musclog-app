@@ -671,6 +671,12 @@ export const getChatMessagePromptContent = async (
       optimizedContext,
     ];
 
+    // Today's numbers in a few lines, so a small model answers from data. Never throws.
+    const snapshot = await loadCoachSnapshot();
+    if (snapshot) {
+      sections.push(snapshot);
+    }
+
     return sections.join('\n');
   }
 

@@ -1,0 +1,151 @@
+{
+  "onDeviceAi": {
+    "model": {
+      "name": "{{name}} by {{vendor}}",
+      "size": "Download size: {{size}}",
+      "photos": {
+        "label": "Include photo understanding",
+        "hint": "Lets the model read meal photos. Adds {{size}}."
+      },
+      "freeSpace": "Free space on this phone: {{size}}",
+      "notEnoughSpace": "Not enough space: this needs {{needed}} and the phone has {{free}} free.",
+      "mobileData": "You are on mobile data. The download is {{size}}.",
+      "languageNote": "This model works best in English and a few other languages. Answers in your language may be weaker.",
+      "license": "License: {{license}}",
+      "readLicense": "Read the license",
+      "updateAvailable": "A newer version of the model is available.",
+      "state": {
+        "readyWithPhotos": "Ready. Works offline, with meal photos.",
+        "readyText": "Ready. Works offline, for text only.",
+        "paused": "Paused: {{received}} of {{total}}",
+        "downloading": "Downloading: {{received}} of {{total}}",
+        "verifying": "Checking the download…",
+        "installing": "Finishing the install…"
+      },
+      "failure": {
+        "noSpace": "The phone ran out of space. Free some up and try again.",
+        "network": "The connection dropped. Try again when you are online.",
+        "checksum": "The downloaded file did not pass the check and was removed. Try again.",
+        "interrupted": "The download was interrupted. Try again.",
+        "http": "The download server did not answer as expected. Try again later.",
+        "storage": "The model could not be saved on this phone."
+      },
+      "actions": {
+        "download": "Download ({{size}})",
+        "retry": "Try again",
+        "pause": "Pause",
+        "resume": "Resume",
+        "cancel": "Cancel",
+        "update": "Update the model",
+        "delete": "Delete the model"
+      },
+      "delete": {
+        "title": "Delete the model?",
+        "message": "On-device AI stops working until you download the model again. Your data is not affected."
+      }
+    },
+    "apple": {
+      "title": "Apple Intelligence",
+      "status": {
+        "ready": "Ready. Runs on your iPhone, works offline.",
+        "appleOff": "Apple Intelligence is switched off. Turn it on in iOS Settings to use it.",
+        "appleNotReady": "iOS is still preparing Apple Intelligence. Try again in a little while."
+      },
+      "openSettings": "Open iOS Settings",
+      "languageNote": "Apple Intelligence may not support your language yet. Answers can fall back to English."
+    },
+    "onboarding": {
+      "ask": {
+        "heading": "AI on your phone",
+        "intro": "Musclog's coach can run entirely on this phone. Nothing you type leaves the device and it works offline.",
+        "choicesLabel": "Use AI that runs on this phone",
+        "yes": {
+          "title": "Yes, run AI on this phone",
+          "points": {
+            "private": "Your messages never leave the phone",
+            "offline": "Works without a connection",
+            "free": "No account, key or subscription"
+          }
+        },
+        "no": {
+          "title": "No, show me other options",
+          "points": {
+            "other": "Musclog Iron, the free tier or your own key",
+            "later": "You can switch on local AI later in Settings"
+          }
+        },
+        "cta": {
+          "yes": "Continue",
+          "no": "Show other options"
+        }
+      },
+      "options": {
+        "heading": "Choose how it runs",
+        "intro": "Pick the AI that runs on this phone.",
+        "choicesLabel": "On-device AI options",
+        "apple": {
+          "title": "Apple Intelligence",
+          "points": {
+            "builtIn": "Built into iOS, nothing to download",
+            "private": "Runs on this iPhone"
+          }
+        },
+        "model": {
+          "title": "Downloaded model",
+          "points": {
+            "download": "One download, then it works offline",
+            "photos": "Can read meal photos if you include them"
+          }
+        },
+        "later": {
+          "title": "Set up later",
+          "points": {
+            "later": "Choose in Settings when you are ready"
+          }
+        },
+        "cta": {
+          "apple": "Use Apple Intelligence",
+          "model": "Download and continue",
+          "later": "Continue without AI"
+        },
+        "downloadNote": "The download keeps going in the background. Coach answers start once it finishes."
+      }
+    },
+    "useOwnKey": "Use your own API key or a local server",
+    "settings": {
+      "sectionTitle": "AI on this phone",
+      "toggle": "Use AI on this phone",
+      "toggleSubtitle": "Answers are produced on the device. Nothing you ask leaves it.",
+      "engineLabel": "Which AI runs on this phone",
+      "engine": {
+        "apple": "Apple Intelligence",
+        "model": "Downloaded model"
+      },
+      "priorityNote": "Musclog Iron and the free tier take priority while they are on. Turn them off to use AI on this phone.",
+      "privacyNote": "Your data stays on this phone and is never sent to a server."
+    },
+    "notReady": {
+      "title": "AI on this phone isn't ready",
+      "message": {
+        "needsDownload": "The model is not downloaded yet. Download it to start chatting.",
+        "downloading": "The model is still downloading. The coach will work once it finishes.",
+        "downloadFailed": "The model download failed. Try the download again.",
+        "appleOff": "Apple Intelligence is switched off in iOS Settings.",
+        "appleNotReady": "iOS is still preparing Apple Intelligence. Try again in a little while.",
+        "appleNotEligible": "This iPhone cannot run Apple Intelligence.",
+        "unsupported": "This phone cannot run AI on the device."
+      },
+      "download": "Download the model",
+      "openIosSettings": "Open iOS Settings",
+      "openAiSettings": "Open AI settings",
+      "chooseAnother": "Choose another AI"
+    },
+    "notices": {
+      "title": "Third-party notices",
+      "intro": "Musclog is built on open source software and an open model. These are the licenses that apply.",
+      "link": "Third-party notices",
+      "linkSubtitle": "Open source software and the on-device model",
+      "openLink": "Open the full text"
+    }
+  }
+}

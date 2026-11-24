@@ -107,6 +107,10 @@ build-ios` does): that script is stale, strips the `ExpoWidgetsTarget` dependenc
   After approval the version is released by its release setting in App Store Connect (manual by default).
 - `ITSAppUsesNonExemptEncryption` is `false` in `app.json`, so builds do not wait on export compliance.
 
+## On-device AI and the listing (2026-11-23)
+
+Same rule as Android: the on-device AI collects nothing, and the model download only exposes the IP address to Hugging Face (no App Privacy label change). The app now links `llama.rn`, which adds the `kernel.extended-virtual-addressing` and `kernel.increased-memory-limit` entitlements on production builds through its config plugin; run `npm run prebuild:ios` (keep only the entitlements and project changes a real native change needs, then `git ls-files -d android ios | xargs git checkout --`), re-run `scripts/appstore-guard.sh` and check the privacy manifest test. Listing text describes only what the iOS build does: Apple Intelligence on iOS 26 or the downloaded model, never Android or Google Play.
+
 ## The compliance gate
 
 Every `check` (so every `build`, `testflight` and `submit`) runs `scripts/appstore-guard.sh`: the vendored

@@ -93,4 +93,5 @@ export const MODAL_BUTTON_TEXTS = [
   'Open Saved For Later Modal',
   'Open External Workout Plan Modal',
   'Open External Food Log Modal',
+  'Open Third Party Notices Modal',
 ];

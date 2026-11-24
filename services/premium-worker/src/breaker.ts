@@ -10,7 +10,8 @@ export type BreakerReason =
   | 'reconciliation'
   | 'overruns'
   | 'upstream_402'
-  | 'upstream_403';
+  | 'upstream_403'
+  | 'upstream_unexpected_provider';
 
 const UPSERT_IF_CHANGED = `ON CONFLICT(key) DO UPDATE SET value = excluded.value WHERE value != excluded.value`;
 

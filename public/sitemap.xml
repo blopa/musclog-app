@@ -6201,6 +6201,9 @@
     <loc>https://musclog.app/en/blog/category/product-updates</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/category/product-updates/page/2</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/category/retro</loc>
   </url>
   <url>
@@ -6282,7 +6285,13 @@
     <loc>https://musclog.app/en/blog/tag/claude</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/cloudflare-workers</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/cycle-tracking</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/d1</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/deadlift</loc>
@@ -6351,6 +6360,9 @@
     <loc>https://musclog.app/en/blog/tag/github-pages</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/google-play</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/gym</loc>
   </url>
   <url>
@@ -6402,6 +6414,9 @@
     <loc>https://musclog.app/en/blog/tag/macros</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/mozilla</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/muscle-building</loc>
   </url>
   <url>
@@ -6418,6 +6433,9 @@
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/musclog/page/5</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/musclog-iron</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/nativewind</loc>
@@ -6447,7 +6465,16 @@
     <loc>https://musclog.app/en/blog/tag/open-source</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/openrouter</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/opentofu</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/optical-transfer</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/otari</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/performance</loc>
@@ -6513,6 +6540,9 @@
     <loc>https://musclog.app/en/blog/tag/returning-to-gym</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/revenuecat</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/rewrite</loc>
   </url>
   <url>
@@ -6549,10 +6579,16 @@
     <loc>https://musclog.app/en/blog/tag/strong</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/subscription</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/svg</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/tdee</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/terraform</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/tinkercad</loc>
@@ -6702,6 +6738,9 @@
     <loc>https://musclog.app/en/blog/2026/11/double-progression-explained</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/2026/11/hosted-ai-for-an-app-with-no-accounts-a-device-key-a-worker-and-a-spend-ledger</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/2026/11/how-much-protein-do-you-need-by-goal-and-body-weight</loc>
   </url>
   <url>
@@ -6720,6 +6759,9 @@
     <loc>https://musclog.app/en/blog/2026/11/i-stopped-after-a-summer-of-travel-so-musclog-can-ease-you-back-in</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/2026/11/meet-musclog-iron-ai-with-nothing-to-set-up-and-nothing-else-locked</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/2026/11/move-your-workout-history-from-strong-hevy-or-fitnotes</loc>
   </url>
   <url>
@@ -6730,6 +6772,9 @@
   </url>
   <url>
     <loc>https://musclog.app/en/blog/2026/11/net-carbs-vs-total-carbs-us-and-eu-labels</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/2026/11/one-day-after-launching-musclog-iron-i-started-moving-it-to-mozillas-otari</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/2026/11/push-pull-legs-a-free-program-you-can-open-in-your-app</loc>

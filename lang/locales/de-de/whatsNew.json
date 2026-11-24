@@ -269,6 +269,30 @@
             "description": "Du findest es auch unter Einstellungen → KI."
           }
         }
+      },
+      "v2_18_0": {
+        "onDeviceAi": {
+          "title": "KI, die auf deinem Telefon läuft",
+          "description": "Der Coach von Musclog kann jetzt komplett auf diesem Telefon laufen. Was du eingibst, verlässt das Gerät nicht, und es funktioniert offline. Es ist kostenlos, ohne Konto oder Schlüssel.",
+          "action": {
+            "label": "KI auf diesem Telefon einrichten",
+            "description": "Wähle Apple Intelligence oder ein kleines heruntergeladenes Modell."
+          },
+          "items": {
+            "private": {
+              "label": "Bleibt auf deinem Telefon",
+              "description": "Deine Nachrichten werden auf dem Gerät beantwortet, nie auf einem Server."
+            },
+            "offline": {
+              "label": "Funktioniert offline",
+              "description": "Nach einem einmaligen Download ist keine Verbindung nötig."
+            },
+            "photos": {
+              "label": "Mahlzeitenfotos",
+              "description": "Das heruntergeladene Modell kann ein Foto deiner Mahlzeit lesen, wenn du diesen Teil einschließen möchtest."
+            }
+          }
+        }
       }
     }
   }

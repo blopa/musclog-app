@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import {
   OFFICIAL_OPENROUTER_BASE_URL,
+  OFFICIAL_OTARI_BASE_URL,
   OFFICIAL_REVENUECAT_BASE_URL,
   type AiConfig,
   type ConfigResult,
@@ -33,6 +34,29 @@ const feature = z
   .strict();
 
 const uniqueStrings = (arr: string[]) => new Set(arr).size === arr.length;
+
+const otariModel = z
+  .object({
+    model: z.string().regex(/^[a-z0-9-]+:[a-z0-9._-]+\/[a-z0-9._:-]+$/i, 'invalid pinned model'),
+    prices: z
+      .object({
+        prompt_per_mtok: num.min(0),
+        completion_per_mtok: num.min(0),
+        image_per_image: num.min(0),
+      })
+      .strict(),
+  })
+  .strict();
+
+const otari = z
+  .object({
+    providers: z
+      .array(z.string().regex(/^[a-z0-9-]+$/, 'invalid provider'))
+      .min(1)
+      .refine(uniqueStrings, 'must be unique'),
+    models: z.object({ chat: otariModel, structured: otariModel, vision: otariModel }).strict(),
+  })
+  .strict();
 
 const schema = z
   .object({
@@ -125,6 +149,7 @@ const schema = z
       .strict(),
     breaker: z.object({ overruns_24h: int.min(1) }).strict(),
     min_app_version: z.string().regex(/^\d+\.\d+\.\d+$/),
+    otari: otari.optional(),
   })
   .strict();
 
@@ -150,7 +175,8 @@ const isUrl = (s: string) => {
 };
 
 export function parseConfig(
-  env: Pick<Env, 'AI_CONFIG_JSON' | 'WORKER_ENV' | 'OPENROUTER_BASE_URL' | 'REVENUECAT_BASE_URL'>
+  env: Pick<Env, 'AI_CONFIG_JSON' | 'WORKER_ENV' | 'OPENROUTER_BASE_URL' | 'REVENUECAT_BASE_URL'> &
+    Partial<Pick<Env, 'OTARI_BASE_URL'>>
 ): ConfigResult {
   const errors: string[] = [];
   let raw: unknown;
@@ -186,6 +212,14 @@ export function parseConfig(
     if (c.vision_enabled && c.image.max_images < 1) {
       errors.push('image.max_images: must be >= 1 when vision_enabled');
     }
+    if (c.otari) {
+      for (const [feature, m] of Object.entries(c.otari.models)) {
+        const prefix = m.model.split(':', 1)[0]!;
+        if (!c.otari.providers.includes(prefix)) {
+          errors.push(`otari.models.${feature}.model: provider is not in otari.providers`);
+        }
+      }
+    }
     if (workerEnv === 'production') {
       const e = c.revenuecat.environments;
       // Production accepts real purchases only: a sandbox (test) purchase never unlocks the
@@ -218,7 +252,13 @@ export function parseConfig(
     if (env.REVENUECAT_BASE_URL !== OFFICIAL_REVENUECAT_BASE_URL) {
       errors.push('REVENUECAT_BASE_URL: must be the official URL in ' + workerEnv);
     }
+    if (parsed.success && parsed.data.otari && env.OTARI_BASE_URL !== OFFICIAL_OTARI_BASE_URL) {
+      errors.push('OTARI_BASE_URL: must be the official URL in ' + workerEnv);
+    }
   } else if (ENVIRONMENTS.includes(workerEnv)) {
+    if (env.OTARI_BASE_URL !== undefined && !isUrl(env.OTARI_BASE_URL)) {
+      errors.push('OTARI_BASE_URL: not a valid URL');
+    }
     if (!isUrl(env.OPENROUTER_BASE_URL)) errors.push('OPENROUTER_BASE_URL: not a valid URL');
     if (!isUrl(env.REVENUECAT_BASE_URL)) errors.push('REVENUECAT_BASE_URL: not a valid URL');
   }

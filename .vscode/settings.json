@@ -1,0 +1,37 @@
+{
+  // This is an Expo / TypeScript project. The Java and Gradle extensions otherwise import every
+  // build.gradle under node_modules (react-native and expo libraries, each pinning its own
+  // Gradle version) and start one Gradle daemon per version: ~12 GB of RAM, which froze the machine.
+  "java.import.gradle.enabled": false,
+  "java.import.maven.enabled": false,
+  "java.autobuild.enabled": false,
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/android/**",
+    "**/ios/**",
+    "**/modules/**",
+    "**/promo-video/**",
+    "**/spikes/**"
+  ],
+  "gradle.autoDetect": "off",
+  "gradle.nestedProjects": false,
+
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.expo/**": true,
+    "**/android/build/**": true,
+    "**/android/app/build/**": true,
+    "**/android/.gradle/**": true,
+    "**/ios/Pods/**": true,
+    "**/layout-audit-report/**": true,
+    "**/coverage/**": true,
+    "**/screenshots/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/layout-audit-report": true
+  }
+}

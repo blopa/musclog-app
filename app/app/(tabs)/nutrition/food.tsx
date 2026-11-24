@@ -153,6 +153,7 @@ export default function FoodScreen() {
   const {
     units,
     isAiConfigured,
+    isAiMealPhotoEnabled,
     intuitiveEatingMode,
     nutritionDisplay,
     enableFastedDay,
@@ -1235,12 +1236,13 @@ export default function FoodScreen() {
     ? () => openDiaryCamera('barcode-scan', { withMealType: false })
     : undefined;
 
-  const handleAddFoodAiCamera = hasCamera
-    ? () => {
-        closeAddFoodModal();
-        openDiaryCamera('ai-meal-photo');
-      }
-    : undefined;
+  const handleAddFoodAiCamera =
+    hasCamera && isAiMealPhotoEnabled
+      ? () => {
+          closeAddFoodModal();
+          openDiaryCamera('ai-meal-photo');
+        }
+      : undefined;
 
   const handleAddFoodBarcode = hasCamera
     ? () => {

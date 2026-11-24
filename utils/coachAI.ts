@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 
 import { MUSCLOG_GATEWAY_MAX_TOKENS, MUSCLOG_GATEWAY_PROVIDER } from '@/constants/gateway';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
+import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
@@ -16,8 +17,10 @@ import {
   AiCancelledError,
   AiInvalidKeyError,
   AiTimeoutError,
+  OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
+import { validateAgainstSchema } from './aiSchemaValidate';
 import {
   buildClaudeClient,
   buildClaudeMessages,
@@ -31,13 +34,37 @@ import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
-import { providerPolicyFor } from './hostedProviderPolicy';
+import { type ProviderPolicy, providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
+import {
+  buildPhotoMeal,
+  type FoodCandidate,
+  type IdentifiedFood,
+  LOCAL_FOOD_IDENTIFY_SCHEMA,
+  LOCAL_PHOTO_RETRY_TEMPERATURE,
+  localFoodIdentifyPrompt,
+  localJsonRepairMessage,
+  localJsonRepairPrompt,
+  mealTypeForHour,
+  parseIdentifiedFoods,
+  pickFoodMatch,
+  searchTermsFor,
+} from './localFoodPhoto';
+import {
+  jsonRepairMessage,
+  jsonRepairPrompt,
+  jsonSpan,
+  repairReplyJson,
+  stripStreamingTemplateTokens,
+  stripTemplateTokens,
+} from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
+import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
+import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -247,6 +274,10 @@ type CoachAIConfigFields = {
   signal?: AbortSignal;
   /** Overrides the default request timeout, in milliseconds. */
   timeoutMs?: number;
+  /** `on-device` only: which engine answers. Absent means Apple's system model. */
+  engine?: OnDeviceEngine;
+  /** `on-device` only: the engine can read a food photo (the downloaded model with its projector). */
+  vision?: boolean;
 };
 
 /**
@@ -374,7 +405,10 @@ function createStreamSink(stream: CoachStream, mode: 'plain' | 'coachJson'): Str
   return {
     onDelta: (delta) => {
       raw += delta;
-      const visible = mode === 'plain' ? raw.trimStart() : readJsonStringField(raw, 'msg4User');
+      // Leaked template tokens are held back in both modes; in JSON mode first, or a reply behind
+      // a `<|im_start|>assistant` header reads as non-JSON and streams as raw text.
+      const cleaned = stripStreamingTemplateTokens(raw);
+      const visible = mode === 'plain' ? cleaned : readJsonStringField(cleaned, 'msg4User');
       if (!visible || visible === shown) {
         return;
       }
@@ -789,19 +823,32 @@ function extractRawText(response: any): string {
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
-  try {
-    // Handle cases where the model might wrap JSON in markdown blocks
-    const cleanJson = raw.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(cleanJson);
+  // The same ladder every structured reply gets (fences and template tokens, the JSON inside text,
+  // `jsonrepair`), so almost-JSON from a small model is not shown to the person as raw JSON.
+  const parsed = parseStructuredJson<Record<string, unknown>>(raw);
+  if (parsed.kind === 'ok' && typeof parsed.value === 'object' && parsed.value !== null) {
+    const value = parsed.value;
+    const text = (field: string): string | undefined =>
+      typeof value[field] === 'string' ? (value[field] as string) : undefined;
+
     return {
-      msg4User: parsed.msg4User ?? raw,
-      sumMsg: parsed.sumMsg ?? undefined,
-      sumUserMsg: parsed.sumUserMsg ?? undefined,
-      rememberMe: parsed.remember_me ?? undefined,
+      msg4User: text('msg4User') ?? raw,
+      sumMsg: text('sumMsg'),
+      sumUserMsg: text('sumUserMsg'),
+      rememberMe: text('remember_me'),
     };
-  } catch {
-    return { msg4User: raw };
   }
+
+  // Cut off or too broken to repair: the reply field itself can often still be read.
+  const stripped = stripTemplateTokens(raw);
+  if (stripped.replace(/^```(?:json)?\s*/i, '').startsWith('{')) {
+    const message = readJsonStringField(stripped, 'msg4User');
+    if (message.trim()) {
+      return { msg4User: message };
+    }
+  }
+
+  return { msg4User: stripped || raw };
 }
 
 function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): Content[] {
@@ -982,7 +1029,10 @@ async function sendViaOpenAI(
 
   const systemPrompt = await chatSystemPrompt(config, history, context);
 
-  const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
+  const policy = providerPolicyFor(config.provider);
+  const recentHistory =
+    policy.maxChatHistoryTurns === undefined ? history : history.slice(-policy.maxChatHistoryTurns);
+  const truncatedHistory = truncateHistoryByBudget(recentHistory, providerConfig.maxCharBudget);
   const normalized = normalizeHistory(truncatedHistory);
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
@@ -998,6 +1048,7 @@ async function sendViaOpenAI(
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages,
+    ...policy.chatSampling,
     ...(await openAiReasoning(config, await resolveEffort('chat'))),
     response_format: {
       type: 'json_schema',
@@ -1128,6 +1179,69 @@ async function sendViaClaude(
   }
 }
 
+/** Which engine an `on-device` config runs; Apple's system model unless the config says otherwise. */
+function onDeviceEngineOf(config: CoachAIConfig): OnDeviceEngine {
+  return config.engine ?? 'apple';
+}
+
+/** The context budget of the engine behind an `on-device` config. */
+function onDeviceBudget(config: CoachAIConfig): number {
+  return ON_DEVICE_CONTEXT_CHARS[onDeviceEngineOf(config)];
+}
+
+/**
+ * One plain-text generation on the on-device engine. The downloaded model goes through
+ * `withLlmRetry` (idle timeout, cancel, never retried once text is on screen); Apple's system
+ * model keeps its own path.
+ */
+async function runOnDeviceText(
+  config: CoachAIConfig,
+  operation: string,
+  messages: { role: 'user' | 'assistant'; content: string }[],
+  systemPrompt: string | undefined,
+  sink: StreamSink | null,
+  penalties?: ProviderPolicy['chatSampling']
+): Promise<string> {
+  // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person, streamed
+  // or not, whichever engine wrote the text.
+  if (onDeviceEngineOf(config) === 'gguf') {
+    const text = await withLlmRetry(
+      operation,
+      config,
+      async (signal, touch) => {
+        sink?.reset();
+        if (!sink) {
+          return sendLocalMessage(messages, systemPrompt, signal, penalties);
+        }
+
+        const streamed = await streamLocalMessage(
+          messages,
+          systemPrompt,
+          (delta) => {
+            touch();
+            sink.onDelta(delta);
+          },
+          signal,
+          penalties
+        );
+
+        // The runtime's text is llama.cpp's parsed message, already cleaned; the raw stream is the
+        // fallback when it parsed to nothing.
+        return streamed || sink.raw();
+      },
+      { hasStreamed: () => sink?.hasEmitted() ?? false }
+    );
+
+    return stripTemplateTokens(text);
+  }
+
+  const text = sink
+    ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
+    : await sendOnDeviceMessage(messages, systemPrompt);
+
+  return stripTemplateTokens(text ?? '');
+}
+
 async function sendViaOnDevice(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
@@ -1137,7 +1251,6 @@ async function sendViaOnDevice(
 ): Promise<CoachResponse> {
   const sink = stream ? createStreamSink(stream, 'plain') : null;
   try {
-    const providerConfig = PROVIDER_CONFIGS['on-device'];
     const systemPrompt = await getChatMessagePromptContent(
       config.language,
       undefined,
@@ -1145,9 +1258,16 @@ async function sendViaOnDevice(
       'on-device'
     );
 
+    // The same two rules as a custom local server: only the latest turns, and (on the downloaded
+    // model) a repetition penalty, so a one-word follow-up does not get the last answer back.
+    const policy = providerPolicyFor(config.provider);
+    const recentHistory =
+      policy.maxChatHistoryTurns === undefined
+        ? history
+        : history.slice(-policy.maxChatHistoryTurns);
     const truncatedHistory = truncateHistoryByBudget(
-      history,
-      providerConfig.maxCharBudget - userMessage.length
+      recentHistory,
+      onDeviceBudget(config) - userMessage.length
     );
     const normalized = normalizeHistory(truncatedHistory);
 
@@ -1167,9 +1287,14 @@ async function sendViaOnDevice(
       config,
     });
 
-    const raw = sink
-      ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
-      : await sendOnDeviceMessage(messages, systemPrompt);
+    const raw = await runOnDeviceText(
+      config,
+      'sendViaOnDevice',
+      messages,
+      systemPrompt,
+      sink,
+      policy.chatSampling
+    );
 
     await logLlmDebugEvent({
       provider: 'on-device',
@@ -1184,15 +1309,7 @@ async function sendViaOnDevice(
       sumMsg: raw?.slice(0, 120) ?? '',
     };
   } catch (error) {
-    reportAiError(error, 'coachAI.sendViaOnDevice');
-    if (sink?.hasEmitted()) {
-      throw error;
-    }
-
-    return {
-      msg4User: i18n.t('errors.aiProcessingError'),
-      sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
-    };
+    return failedCoachReply(error, config, 'sendViaOnDevice', sink);
   }
 }
 
@@ -1214,7 +1331,7 @@ async function generateTextOnDevice(
 ): Promise<string> {
   const truncatedHistory = truncateHistoryByBudget(
     history,
-    PROVIDER_CONFIGS['on-device'].maxCharBudget - userMessage.length
+    onDeviceBudget(config) - userMessage.length
   );
   const messages = [
     ...normalizeHistory(truncatedHistory).map((entry) => ({
@@ -1233,9 +1350,7 @@ async function generateTextOnDevice(
   });
 
   const sink = stream ? createStreamSink(stream, 'plain') : null;
-  const raw = sink
-    ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
-    : await sendOnDeviceMessage(messages, systemPrompt);
+  const raw = await runOnDeviceText(config, 'generateText', messages, systemPrompt, sink);
 
   await logLlmDebugEvent({
     provider: 'on-device',
@@ -1311,7 +1426,7 @@ async function generateText(
         config,
       });
 
-      return streamedRaw.trim();
+      return stripTemplateTokens(streamedRaw);
     }
 
     const result = await withLlmRetry('generateText', config, (signal) =>
@@ -1381,7 +1496,7 @@ async function generateText(
       config,
     });
 
-    return streamedRaw.trim();
+    return stripTemplateTokens(streamedRaw);
   }
 
   const completion = await createOpenAiCompletion(client, 'generateText', config, requestPayload);
@@ -1394,8 +1509,7 @@ async function generateText(
     config,
   });
 
-  const raw = completion.choices[0]?.message?.content ?? '';
-  return raw.trim();
+  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
 }
 
 /**
@@ -1469,7 +1583,7 @@ async function generateTextWithHistory(
         config,
       });
 
-      return streamedRaw.trim();
+      return stripTemplateTokens(streamedRaw);
     }
 
     const result = await withLlmRetry('generateTextWithHistory', config, (signal) =>
@@ -1545,7 +1659,7 @@ async function generateTextWithHistory(
       config,
     });
 
-    return streamedRaw.trim();
+    return stripTemplateTokens(streamedRaw);
   }
 
   const completion = await createOpenAiCompletion(
@@ -1563,8 +1677,7 @@ async function generateTextWithHistory(
     config,
   });
 
-  const raw = completion.choices[0]?.message?.content ?? '';
-  return raw.trim();
+  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
 }
 
 function getSchemaFromFunctionDeclaration(fn: {
@@ -1582,7 +1695,7 @@ function getSchemaFromFunctionDeclaration(fn: {
   };
 }
 
-export type StructuredDialect = 'openai' | 'gemini' | 'claude' | 'on-device';
+export type StructuredDialect = 'openai' | 'gemini' | 'claude' | 'on-device' | 'gguf';
 
 export type StructuredRequest = {
   /** Names the call in debug dumps and retry logs. */
@@ -1604,17 +1717,169 @@ export type StructuredResult<T = unknown> =
 
 const MALFORMED_RAW_PREVIEW_CHARS = 500;
 
+/**
+ * The shape gate for the downloaded on-device model: a value that parsed but does not match the schema it
+ * was asked for is `malformed`, so no feature normalizer ever reads it. Cloud providers enforce the
+ * schema server-side and their callers already tolerate a partial answer, so they are not checked.
+ */
+function checkStructuredShape<T>(
+  result: StructuredResult<T>,
+  schema: object,
+  operation: string
+): StructuredResult<T> {
+  if (result.kind !== 'ok') {
+    return result;
+  }
+
+  const check = validateAgainstSchema(result.value, schema);
+  if (check.ok) {
+    return result;
+  }
+
+  // The path names a field, never a value, so nothing the person wrote is logged.
+  console.warn(`[coachAI] ${operation}: on-device reply failed the schema at ${check.path}`);
+
+  return {
+    kind: 'malformed',
+    raw: JSON.stringify(result.value).slice(0, MALFORMED_RAW_PREVIEW_CHARS),
+  };
+}
+
 function parseStructuredJson<T>(raw: string): StructuredResult<T> {
-  try {
-    const clean = raw.replace(/```json|```/g, '').trim();
-    if (clean) {
+  const clean = stripTemplateTokens(raw.replace(/```json|```/g, ''));
+  if (clean) {
+    try {
       return { kind: 'ok', value: JSON.parse(clean) as T };
+    } catch {
+      // Not plain JSON: try the JSON inside the text before calling it malformed.
     }
-  } catch {
-    // Not JSON: reported as malformed below.
+
+    const span = jsonSpan(clean);
+    if (span) {
+      try {
+        return { kind: 'ok', value: JSON.parse(span) as T };
+      } catch {
+        // Try the repair below.
+      }
+    }
+
+    // Almost-JSON (trailing commas, single quotes, a reply cut off by the token limit). The schema
+    // check that follows is still the judge of whether the repaired value is usable.
+    const repaired = repairReplyJson(clean);
+    if (repaired !== undefined) {
+      return { kind: 'ok', value: repaired as T };
+    }
   }
 
   return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
+}
+
+/** Models whose structured replies may be wrong in ways cloud providers' server-side schemas prevent. */
+function isLocalModel(config: CoachAIConfig): boolean {
+  return (
+    config.provider === 'local' ||
+    (config.provider === 'on-device' && onDeviceEngineOf(config) === 'gguf')
+  );
+}
+
+/**
+ * Last resort for a local model's structured reply: one text-only call that is asked to correct the
+ * broken reply against the schema, read by the same parser and shape check. It runs only after the
+ * parser, `jsonrepair` and the schema check all failed, so a good reply never pays for it. A failure
+ * of the repair call leaves the original failure; only a cancel is rethrown.
+ */
+async function repairStructuredWithModel<T>(
+  config: CoachAIConfig,
+  operation: string,
+  broken: string,
+  schema: object,
+  prompts?: { system: string; message: string }
+): Promise<StructuredResult<T> | null> {
+  if (!broken.trim()) {
+    return null;
+  }
+
+  const system = prompts?.system ?? jsonRepairPrompt(schema);
+  const message = prompts?.message ?? jsonRepairMessage(broken);
+
+  try {
+    let repairedRaw: string;
+    if (config.provider === 'local') {
+      const completion = await createOpenAiCompletion(
+        buildOpenAIClient(config),
+        `${operation}.repair`,
+        config,
+        {
+          model: config.model,
+          messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: message },
+          ],
+          response_format: {
+            type: 'json_schema',
+            json_schema: { name: 'repair', strict: true, schema: makeSchemaStrict(schema) },
+          },
+        }
+      );
+      repairedRaw = completion.choices[0]?.message?.content ?? '';
+    } else {
+      repairedRaw = await withLlmRetry(`${operation}.repair`, config, (signal) =>
+        sendLocalStructuredRaw([{ role: 'user', content: message }], system, schema, { signal })
+      );
+    }
+
+    return checkStructuredShape(parseStructuredJson<T>(repairedRaw), schema, `${operation}.repair`);
+  } catch (error) {
+    if (error instanceof AiCancelledError) {
+      throw error;
+    }
+
+    return null;
+  }
+}
+
+/**
+ * The shared finish for a structured reply from a local model (the downloaded one or a custom
+ * server): when it is malformed, ask the model once to repair it. For a custom server a reply that
+ * parsed but misses part of the schema is kept as it was if the repair does not improve it, because
+ * callers of an OpenAI-compatible endpoint have always tolerated a partial answer.
+ */
+async function reviveLocalStructured<T>(
+  config: CoachAIConfig,
+  operation: string,
+  result: StructuredResult<T>,
+  schema: object,
+  prompts?: { system: string; message: string }
+): Promise<StructuredResult<T>> {
+  if (!isLocalModel(config)) {
+    return result;
+  }
+
+  let current = result;
+  let original: StructuredResult<T> | null = null;
+  if (config.provider === 'local' && result.kind === 'ok') {
+    const checked = checkStructuredShape(result, schema, operation);
+    if (checked.kind === 'ok') {
+      return result;
+    }
+
+    original = result;
+    current = checked;
+  }
+
+  if (current.kind === 'ok') {
+    return current;
+  }
+
+  const repaired = await repairStructuredWithModel<T>(
+    config,
+    operation,
+    current.raw,
+    schema,
+    prompts
+  );
+
+  return repaired?.kind === 'ok' ? repaired : (original ?? current);
 }
 
 /**
@@ -1628,10 +1893,35 @@ export async function requestStructured<T = unknown>(
   config: CoachAIConfig,
   request: StructuredRequest
 ): Promise<StructuredResult<T>> {
+  // The schema is built once, in whichever dialect the request used, and the repair step reuses it.
+  let built: { dialect: StructuredDialect; schema: object } | null = null;
+  const buildSchema = (dialect: StructuredDialect) => {
+    if (built?.dialect !== dialect) {
+      built = { dialect, schema: request.buildSchema(dialect) };
+    }
+
+    return built.schema;
+  };
+
+  const result = await requestStructuredOnce<T>(config, { ...request, buildSchema });
+  if (!isLocalModel(config)) {
+    return result;
+  }
+
+  const schema = buildSchema(config.provider === 'local' ? 'openai' : 'gguf');
+
+  return reviveLocalStructured(config, request.operation, result, schema);
+}
+
+async function requestStructuredOnce<T = unknown>(
+  config: CoachAIConfig,
+  request: StructuredRequest
+): Promise<StructuredResult<T>> {
   const { operation, schemaName, systemPrompt, history, userMessage } = request;
   const task = request.task ?? 'extraction';
 
   if (config.provider === 'on-device') {
+    const engine = onDeviceEngineOf(config);
     const messages = [
       ...history.map((entry) => ({
         role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
@@ -1639,7 +1929,7 @@ export async function requestStructured<T = unknown>(
       })),
       { role: 'user' as const, content: userMessage },
     ];
-    const schema = request.buildSchema('on-device');
+    const schema = request.buildSchema(engine === 'gguf' ? 'gguf' : 'on-device');
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'request',
@@ -1648,18 +1938,33 @@ export async function requestStructured<T = unknown>(
       config,
     });
 
-    const value = await sendOnDeviceStructured<T>(messages, systemPrompt, schema);
+    let result: StructuredResult<T>;
+    if (engine === 'gguf') {
+      // Grammar-constrained by the engine, then parsed and checked here: the engine is not trusted
+      // to have honoured the schema.
+      const raw = await withLlmRetry(operation, config, (signal) =>
+        sendLocalStructuredRaw(messages, systemPrompt, schema, { signal })
+      );
+      result = parseStructuredJson<T>(raw);
+    } else {
+      const value = await sendOnDeviceStructured<T>(messages, systemPrompt, schema);
+      result =
+        value === null || value === undefined
+          ? { kind: 'malformed', raw: '' }
+          : { kind: 'ok', value };
+    }
+
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'response',
       operation,
-      payload: value,
+      payload: result,
       config,
     });
 
-    return value === null || value === undefined
-      ? { kind: 'malformed', raw: '' }
-      : { kind: 'ok', value };
+    // Apple's guided generation is enforced by the OS; the downloaded model's grammar is enforced
+    // by a runtime we do not control, so its answer is checked before anything reads it.
+    return engine === 'gguf' ? checkStructuredShape(result, schema, operation) : result;
   }
 
   if (config.provider === 'gemini') {
@@ -1777,7 +2082,11 @@ async function generateStructured<T>(
     return result.kind === 'ok' ? result.value : null;
   } catch (error) {
     // The on-device model has no retry layer to classify its failures, so a bad run is "no answer".
-    if (config.provider !== 'on-device') {
+    if (
+      config.provider !== 'on-device' ||
+      error instanceof OnDeviceUnavailableError ||
+      error instanceof AiCancelledError
+    ) {
       throw error;
     }
 
@@ -1917,12 +2226,8 @@ async function generateWithImageStructured<T>(
       return null;
     }
 
-    try {
-      const clean = raw.replace(/```json|```/g, '').trim();
-      return JSON.parse(clean) as T;
-    } catch {
-      return null;
-    }
+    const read = parseStructuredJson<T>(raw);
+    return read.kind === 'ok' ? read.value : null;
   }
 
   if (config.provider === 'claude') {
@@ -2004,12 +2309,16 @@ async function generateWithImageStructured<T>(
     return null;
   }
 
-  try {
-    const clean = raw.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean) as T;
-  } catch {
-    return null;
-  }
+  // The same ladder as every structured reply (fences, JSON inside text, `jsonrepair`), and for a
+  // custom local server one repair call by the model.
+  const read = await reviveLocalStructured(
+    config,
+    'generateWithImageStructured',
+    parseStructuredJson<T>(raw),
+    strictSchema
+  );
+
+  return read.kind === 'ok' ? read.value : null;
 }
 
 async function extractRecipe(
@@ -2028,7 +2337,7 @@ async function extractRecipe(
 
   if (base64Image) {
     if (config.provider === 'on-device') {
-      // TODO: for now, on-device cant parse images
+      // Downloaded models identify photos through estimateNutritionFromPhoto.
       return null;
     }
 
@@ -2356,6 +2665,15 @@ export async function trackMeal(
   base64Image?: string,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
+  if (config.provider === 'on-device' && base64Image) {
+    return estimateNutritionFromPhoto(
+      config,
+      base64Image,
+      { description: userMessage, tags: [] },
+      onProgress
+    );
+  }
+
   try {
     reportMealProgress(onProgress, { step: 'reading', photo: Boolean(base64Image) });
     const useThinkingMode = await SettingsService.getUseThinkingMode();
@@ -2373,11 +2691,6 @@ export async function trackMeal(
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     if (base64Image) {
-      if (config.provider === 'on-device') {
-        // TODO: for now, on-device cant parse images
-        return null;
-      }
-
       const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
       const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
       const fromPhoto = await generateWithImageStructured<TrackMealResponse>(
@@ -2727,6 +3040,120 @@ export type MealPhotoContext = {
   tags: string[];
 };
 
+/** Foods this phone already has whose names share a word with `name`, merged and deduplicated. */
+async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
+  const byId = new Map<string, FoodCandidate>();
+  for (const term of searchTermsFor(name)) {
+    for (const food of await FoodService.searchFoods(term)) {
+      byId.set(food.id, {
+        id: food.id,
+        name: food.name,
+        kcal: food.calories ?? 0,
+        protein: food.protein ?? 0,
+        carbs: food.carbs ?? 0,
+        fat: food.fat ?? 0,
+        fiber: food.fiber ?? 0,
+      });
+    }
+  }
+
+  return [...byId.values()];
+}
+
+/**
+ * Reads a meal photo with the downloaded on-device model: it names what it sees and guesses grams
+ * (grammar-constrained, never asked for calories), the names are matched to foods this phone has,
+ * and anything unmatched is estimated by name through the same follow-up the cloud path uses.
+ * Returns null when nothing recognisable is in the photo; the review screen takes it from there.
+ */
+async function estimateMealFromPhotoOnDevice(
+  config: CoachAIConfig,
+  base64Image: string,
+  context?: MealPhotoContext | null,
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackMealResponse | null> {
+  reportMealProgress(onProgress, { step: 'reading', photo: true });
+  const rawBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+  const rawMime = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
+  const { base64, mimeType } = await aiImage.prepareOnDeviceImage(rawBase64, rawMime);
+  const systemPrompt = localFoodIdentifyPrompt();
+  const details = wrapUserContent([context?.description, ...(context?.tags ?? [])].join(' '));
+  const messages = [
+    {
+      role: 'user' as const,
+      content: details
+        ? `What foods are in this photo?\nMeal notes: ${details}`
+        : 'What foods are in this photo?',
+    },
+  ];
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'request',
+    operation: 'estimateNutritionFromPhoto',
+    payload: { systemPrompt, messages, schema: LOCAL_FOOD_IDENTIFY_SCHEMA },
+    config,
+  });
+
+  const askForPhoto = (temperature?: number) =>
+    withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
+      sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
+        image: `data:${mimeType};base64,${base64}`,
+        signal,
+        ...(temperature === undefined ? {} : { temperature }),
+      })
+    );
+
+  const readPhotoReply = (text: string) =>
+    checkStructuredShape(
+      parseStructuredJson<unknown>(text),
+      LOCAL_FOOD_IDENTIFY_SCHEMA,
+      'estimateNutritionFromPhoto'
+    );
+
+  let raw = await askForPhoto();
+  let parsed = readPhotoReply(raw);
+  if (parsed.kind !== 'ok') {
+    // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
+    // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
+    const firstRaw = raw;
+    raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
+    parsed = readPhotoReply(raw);
+
+    // Last resort before giving up: one text-only call that is asked to correct the broken reply
+    // (no photo, so the projector stays unloaded), read by the same parser and schema check. It
+    // only ever runs after both photo attempts failed, so a good run never pays for it.
+    const broken = [raw, firstRaw].find((text) => text.trim() !== '');
+    if (parsed.kind !== 'ok' && broken) {
+      const repaired = await repairStructuredWithModel<unknown>(
+        config,
+        'estimateNutritionFromPhoto',
+        broken,
+        LOCAL_FOOD_IDENTIFY_SCHEMA,
+        { system: localJsonRepairPrompt(), message: localJsonRepairMessage(broken) }
+      );
+      if (repaired?.kind === 'ok') {
+        parsed = repaired;
+      }
+    }
+  }
+
+  const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
+  if (foods.length === 0) {
+    return null;
+  }
+
+  const matches = new Map<string, FoodCandidate | null>();
+  for (const food of foods) {
+    matches.set(food.name, pickFoodMatch(food.name, await candidateFoodsFor(food.name)));
+  }
+
+  const hour = new Date().getHours();
+  const meal = buildPhotoMeal(foods, matches, mealTypeForHour(hour));
+  return refineTrackedMeals(config, meal, onProgress);
+}
+
 /**
  * Estimate nutrition from a meal photo.
  * Returns a TrackMealResponse with ingredients breakdown, similar to trackMeal.
@@ -2738,8 +3165,20 @@ export async function estimateNutritionFromPhoto(
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   if (config.provider === 'on-device') {
-    // TODO: for now, on-device cant parse images
-    return null;
+    if (onDeviceEngineOf(config) !== 'gguf') {
+      throw new OnDeviceUnavailableError('photosUnsupported');
+    }
+
+    if (!config.vision) {
+      throw new OnDeviceUnavailableError('photosNotInstalled');
+    }
+
+    try {
+      return await estimateMealFromPhotoOnDevice(config, base64Image, context, onProgress);
+    } catch (error) {
+      reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
+      throw error;
+    }
   }
 
   try {

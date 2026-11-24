@@ -1,0 +1,151 @@
+{
+  "onDeviceAi": {
+    "model": {
+      "name": "{{name}} van {{vendor}}",
+      "size": "Downloadgrootte: {{size}}",
+      "photos": {
+        "label": "Fotoherkenning meenemen",
+        "hint": "Laat het model maaltijdfoto's lezen. Voegt {{size}} toe."
+      },
+      "freeSpace": "Vrije ruimte op deze telefoon: {{size}}",
+      "notEnoughSpace": "Niet genoeg ruimte: dit heeft {{needed}} nodig en de telefoon heeft {{free}} vrij.",
+      "mobileData": "Je gebruikt mobiele data. De download is {{size}}.",
+      "languageNote": "Dit model werkt het best in het Engels en een paar andere talen. Antwoorden in jouw taal kunnen minder goed zijn.",
+      "license": "Licentie: {{license}}",
+      "readLicense": "Lees de licentie",
+      "updateAvailable": "Er is een nieuwere versie van het model beschikbaar.",
+      "state": {
+        "readyWithPhotos": "Klaar. Werkt offline, met maaltijdfoto's.",
+        "readyText": "Klaar. Werkt offline, alleen voor tekst.",
+        "paused": "Gepauzeerd: {{received}} van {{total}}",
+        "downloading": "Downloaden: {{received}} van {{total}}",
+        "verifying": "De download wordt gecontroleerd…",
+        "installing": "De installatie wordt afgerond…"
+      },
+      "failure": {
+        "noSpace": "De telefoon heeft geen ruimte meer. Maak wat vrij en probeer het opnieuw.",
+        "network": "De verbinding is weggevallen. Probeer het opnieuw als je online bent.",
+        "checksum": "Het gedownloade bestand is niet goedgekeurd en is verwijderd. Probeer het opnieuw.",
+        "interrupted": "De download is onderbroken. Probeer het opnieuw.",
+        "http": "De downloadserver reageerde niet zoals verwacht. Probeer het later opnieuw.",
+        "storage": "Het model kon niet op deze telefoon worden opgeslagen."
+      },
+      "actions": {
+        "download": "Downloaden ({{size}})",
+        "retry": "Opnieuw proberen",
+        "pause": "Pauzeren",
+        "resume": "Hervatten",
+        "cancel": "Annuleren",
+        "update": "Het model bijwerken",
+        "delete": "Het model verwijderen"
+      },
+      "delete": {
+        "title": "Het model verwijderen?",
+        "message": "AI op het apparaat stopt met werken totdat je het model opnieuw downloadt. Je gegevens blijven ongewijzigd."
+      }
+    },
+    "apple": {
+      "title": "Apple Intelligence",
+      "status": {
+        "ready": "Klaar. Draait op je iPhone en werkt offline.",
+        "appleOff": "Apple Intelligence staat uit. Zet het aan in de Instellingen van iOS om het te gebruiken.",
+        "appleNotReady": "iOS bereidt Apple Intelligence nog voor. Probeer het over een tijdje opnieuw."
+      },
+      "openSettings": "Instellingen van iOS openen",
+      "languageNote": "Apple Intelligence ondersteunt jouw taal misschien nog niet. Antwoorden kunnen in het Engels terugvallen."
+    },
+    "onboarding": {
+      "ask": {
+        "heading": "AI op je telefoon",
+        "intro": "De coach van Musclog kan volledig op deze telefoon draaien. Wat je typt verlaat het apparaat niet en het werkt offline.",
+        "choicesLabel": "AI gebruiken die op deze telefoon draait",
+        "yes": {
+          "title": "Ja, AI op deze telefoon draaien",
+          "points": {
+            "private": "Je berichten verlaten de telefoon nooit",
+            "offline": "Werkt zonder verbinding",
+            "free": "Geen account, sleutel of abonnement nodig"
+          }
+        },
+        "no": {
+          "title": "Nee, toon me andere opties",
+          "points": {
+            "other": "Musclog Iron, het gratis niveau of je eigen sleutel",
+            "later": "Je kunt lokale AI later aanzetten in de Instellingen"
+          }
+        },
+        "cta": {
+          "yes": "Doorgaan",
+          "no": "Andere opties tonen"
+        }
+      },
+      "options": {
+        "heading": "Kies hoe het draait",
+        "intro": "Kies de AI die op deze telefoon draait.",
+        "choicesLabel": "Opties voor AI op het apparaat",
+        "apple": {
+          "title": "Apple Intelligence",
+          "points": {
+            "builtIn": "Ingebouwd in iOS, niets om te downloaden",
+            "private": "Draait op deze iPhone"
+          }
+        },
+        "model": {
+          "title": "Gedownload model",
+          "points": {
+            "download": "Eén download, daarna werkt het offline",
+            "photos": "Kan maaltijdfoto's lezen als je die meeneemt"
+          }
+        },
+        "later": {
+          "title": "Later instellen",
+          "points": {
+            "later": "Kies het in de Instellingen wanneer je er klaar voor bent"
+          }
+        },
+        "cta": {
+          "apple": "Apple Intelligence gebruiken",
+          "model": "Downloaden en doorgaan",
+          "later": "Doorgaan zonder AI"
+        },
+        "downloadNote": "De download loopt door op de achtergrond. Antwoorden van de coach beginnen zodra hij klaar is."
+      }
+    },
+    "useOwnKey": "Gebruik je eigen API-sleutel of een lokale server",
+    "settings": {
+      "sectionTitle": "AI op deze telefoon",
+      "toggle": "AI op deze telefoon gebruiken",
+      "toggleSubtitle": "Antwoorden worden op het apparaat gemaakt. Wat je vraagt verlaat het niet.",
+      "engineLabel": "Welke AI op deze telefoon draait",
+      "engine": {
+        "apple": "Apple Intelligence",
+        "model": "Gedownload model"
+      },
+      "priorityNote": "Musclog Iron en het gratis niveau hebben voorrang zolang ze aan staan. Zet ze uit om AI op deze telefoon te gebruiken.",
+      "privacyNote": "Je gegevens blijven op deze telefoon en worden nooit naar een server gestuurd."
+    },
+    "notReady": {
+      "title": "AI op deze telefoon is niet klaar",
+      "message": {
+        "needsDownload": "Het model is nog niet gedownload. Download het om te gaan chatten.",
+        "downloading": "Het model wordt nog gedownload. De coach werkt zodra dat klaar is.",
+        "downloadFailed": "Het downloaden van het model is mislukt. Probeer de download opnieuw.",
+        "appleOff": "Apple Intelligence staat uit in de Instellingen van iOS.",
+        "appleNotReady": "iOS bereidt Apple Intelligence nog voor. Probeer het over een tijdje opnieuw.",
+        "appleNotEligible": "Deze iPhone kan Apple Intelligence niet draaien.",
+        "unsupported": "Deze telefoon kan geen AI op het apparaat draaien."
+      },
+      "download": "Het model downloaden",
+      "openIosSettings": "Instellingen van iOS openen",
+      "openAiSettings": "AI-instellingen openen",
+      "chooseAnother": "Een andere AI kiezen"
+    },
+    "notices": {
+      "title": "Kennisgevingen van derden",
+      "intro": "Musclog is gebouwd op open-sourcesoftware en een open model. Dit zijn de licenties die van toepassing zijn.",
+      "link": "Kennisgevingen van derden",
+      "linkSubtitle": "Open-sourcesoftware en het model op het apparaat",
+      "openLink": "De volledige tekst openen"
+    }
+  }
+}

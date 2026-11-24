@@ -239,13 +239,18 @@
           "temporary": {
             "name": "Geçici dosyalar",
             "description": "Dışa aktarma, paylaşma ve fotoğraf düzenlemeden kalanlar"
+          },
+          "localAiModels": {
+            "name": "Cihaz üzerindeki yapay zekâ modeli",
+            "description": "Bu telefonda çalışmak için indirilen yapay zekâ modeli. Yapay zekâ ayarlarından yeniden indirebilirsiniz"
           }
         },
         "clear": "Temizle",
         "clearTitle": "{{name}} temizlensin mi?",
         "clearMessage": {
           "exerciseImages": "Görseller, bir egzersiz bir dahaki sefere gösterildiğinde yeniden indirilir. Verilerin etkilenmez.",
-          "temporary": "Bir saatten eski artık dosyalar kaldırılır. Verilerin ve güvenlik yedeklerin etkilenmez."
+          "temporary": "Bir saatten eski artık dosyalar kaldırılır. Verilerin ve güvenlik yedeklerin etkilenmez.",
+          "localAiModels": "Yapay zekâ ayarlarından modeli yeniden indirene kadar cihaz üzerindeki yapay zekâ çalışmaz. Verileriniz etkilenmez."
         },
         "freed": "{{size}} boşaltıldı",
         "nothingToClear": "Temizlenecek bir şey yok",
@@ -347,6 +352,7 @@
       "useThinkingMode": "Düşünme modunu kullan",
       "useThinkingModeSubtitle": "Desteklendiğinde yapay zekâ sağlayıcılarının daha derin akıl yürütmesine izin ver. Daha fazla token kullanır ve maliyeti artırabilir.",
       "useThinkingModeIronNote": "Musclog Iron ile daha derin düşünme ve ek kontroller aylık yapay zekâ kotanızdan daha fazla kullanır.",
+      "localLlmThinkingEnabled": "Düşünme modu açıldı, çünkü yerel modeller ek maliyet getirmez. Yapay zekâ ayarlarından kapatabilirsin.",
       "maxAiMemories": "En fazla yapay zekâ belleği",
       "maxAiMemoriesSubtitle": "Konuşmalarda hatırlanacak önceki mesaj sayısı",
       "nutritionLogHistoryDays": "Yapay zekâya gönderilen beslenme kaydı geçmişi",

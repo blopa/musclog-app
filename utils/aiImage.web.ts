@@ -21,3 +21,10 @@ export async function resizeForAi(
 export async function prepareOwnKeyImage(base64: string, mimeType: string): Promise<PreparedImage> {
   return { base64, mimeType };
 }
+
+export async function prepareOnDeviceImage(
+  base64: string,
+  mimeType: string
+): Promise<PreparedImage> {
+  return { base64, mimeType };
+}

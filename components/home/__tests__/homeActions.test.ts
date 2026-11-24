@@ -40,9 +40,9 @@ describe('HOME_ACTIONS', () => {
 describe('log_cardio', () => {
   it('is offered on every device, because logging a walk needs nothing from the device', () => {
     for (const context of [
-      { isAiConfigured: true, isWeb: false, hasCamera: true },
-      { isAiConfigured: false, isWeb: false, hasCamera: true },
-      { isAiConfigured: false, isWeb: true, hasCamera: true },
+      { isAiConfigured: true, isAiMealPhotoEnabled: true, isWeb: false, hasCamera: true },
+      { isAiConfigured: false, isAiMealPhotoEnabled: false, isWeb: false, hasCamera: true },
+      { isAiConfigured: false, isAiMealPhotoEnabled: false, isWeb: true, hasCamera: true },
     ]) {
       expect(HOME_ACTIONS.log_cardio.isAvailable(context)).toBe(true);
     }
@@ -91,7 +91,12 @@ describe('orderHomeActionRows', () => {
 });
 
 describe('HOME_ACTIONS[key].isAvailable', () => {
-  const native = { isAiConfigured: true, isWeb: false, hasCamera: true };
+  const native = {
+    isAiConfigured: true,
+    isAiMealPhotoEnabled: true,
+    isWeb: false,
+    hasCamera: true,
+  };
   const isAvailable = (key: HomeActionKey, context: HomeActionContext) =>
     HOME_ACTIONS[key].isAvailable(context);
 
@@ -100,6 +105,14 @@ describe('HOME_ACTIONS[key].isAvailable', () => {
   it('hides the AI photo action when no provider is configured', () => {
     expect(isAvailable('ai_photo', native)).toBe(true);
     expect(isAvailable('ai_photo', { ...native, isAiConfigured: false })).toBe(false);
+  });
+
+  it('hides the AI photo action when the provider cannot read photos (Apple Intelligence)', () => {
+    expect(isAvailable('ai_photo', { ...native, isAiMealPhotoEnabled: false })).toBe(false);
+  });
+
+  it('hides the AI photo action when the provider cannot read photos (Apple Intelligence)', () => {
+    expect(isAvailable('ai_photo', { ...native, isAiMealPhotoEnabled: false })).toBe(false);
   });
 
   it('hides the camera-backed actions on web regardless of AI config', () => {
@@ -130,9 +143,9 @@ describe('HOME_ACTIONS[key].isAvailable', () => {
   it('has no permanently unavailable action', () => {
     for (const key of HOME_ACTION_KEYS) {
       const reachable = [
-        { isAiConfigured: true, isWeb: false, hasCamera: true },
-        { isAiConfigured: false, isWeb: false, hasCamera: true },
-        { isAiConfigured: true, isWeb: true, hasCamera: true },
+        { isAiConfigured: true, isAiMealPhotoEnabled: true, isWeb: false, hasCamera: true },
+        { isAiConfigured: false, isAiMealPhotoEnabled: false, isWeb: false, hasCamera: true },
+        { isAiConfigured: true, isAiMealPhotoEnabled: true, isWeb: true, hasCamera: true },
       ].some((context) => isAvailable(key, context));
 
       expect(reachable).toBe(true);

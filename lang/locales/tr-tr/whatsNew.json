@@ -269,6 +269,30 @@
             "description": "Ayarlar → YZ bölümünde de bulabilirsin."
           }
         }
+      },
+      "v2_18_0": {
+        "onDeviceAi": {
+          "title": "Telefonunuzda çalışan yapay zeka",
+          "description": "Musclog koçu artık tamamen bu telefonda çalışabilir. Yazdığınız hiçbir şey cihazdan ayrılmaz ve çevrimdışı çalışır. Ücretsizdir, hesap ya da anahtar gerektirmez.",
+          "action": {
+            "label": "Bu telefonda yapay zekayı kur",
+            "description": "Apple Intelligence'ı ya da indirilen küçük bir modeli seç."
+          },
+          "items": {
+            "private": {
+              "label": "Telefonunda kalır",
+              "description": "Mesajlarınız cihazda yanıtlanır, asla bir sunucuya gönderilmez."
+            },
+            "offline": {
+              "label": "Çevrimdışı çalışır",
+              "description": "Tek seferlik bir indirmeden sonra bağlantı gerekmez."
+            },
+            "photos": {
+              "label": "Yemek fotoğrafları",
+              "description": "İndirilen model, bu kısmı dahil etmeyi seçersen yemeğinin fotoğrafını okuyabilir."
+            }
+          }
+        }
       }
     }
   }

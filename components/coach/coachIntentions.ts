@@ -85,3 +85,22 @@ export const COACH_INTENTIONS: Record<ChatIntention, CoachIntentionConfig> = {
     bannerLabelKey: 'coach.actions.nutritionCheck',
   },
 };
+
+/**
+ * Which intentions AI on this phone can carry out. A plan is a long, schema-bound answer that the
+ * small on-device models do not produce reliably, so meal plans and workout plans are left to a
+ * cloud provider; the rest are short or one-meal answers. `Record` again: a new intention must
+ * say which side it is on.
+ */
+export const ON_DEVICE_INTENTIONS: Record<ChatIntention, boolean> = {
+  [GENERATE_MY_WORKOUTS]: false,
+  [GENERATE_MEAL_PLAN]: false,
+  [ANALYZE_PROGRESS]: true,
+  [TRACK_MEAL]: true,
+  [NUTRITION_CHECK]: true,
+};
+
+/** Does `provider` need a cloud AI for this intention? */
+export function intentionNeedsCloudAi(intention: ChatIntention, provider: string): boolean {
+  return provider === 'on-device' && !ON_DEVICE_INTENTIONS[intention];
+}

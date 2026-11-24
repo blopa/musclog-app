@@ -21,9 +21,21 @@ jest.mock('@/services/GatewayService', () => ({
 jest.mock('@/utils/musclogGatewayAvailability', () => ({
   effectiveUseMusclogGateway: (v: boolean) => v,
 }));
-jest.mock('@/utils/onDeviceAi', () => ({
-  isOnDeviceAiAvailable: jest.fn().mockResolvedValue(true),
-}));
+jest.mock('@/services/localModels/onDeviceStatusStore', () => {
+  const mockStatus = {
+    engine: 'apple',
+    state: 'ready',
+    progress: null,
+    capabilities: { engine: 'apple', vision: false, contextChars: 4500 },
+    updateAvailable: false,
+  };
+
+  return {
+    refreshOnDeviceStatus: jest.fn().mockResolvedValue(mockStatus),
+    getOnDeviceStatusSnapshot: () => mockStatus,
+    subscribeOnDeviceStatus: () => () => undefined,
+  };
+});
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
 /** Settings read through a `SettingDefinition`, keyed by their stored type. */
@@ -248,6 +260,8 @@ describe('AiService.getAiConfigForProvider', () => {
       provider: 'on-device',
       model: 'on-device',
       language: 'en-US',
+      engine: 'apple',
+      vision: false,
     });
   });
 
@@ -265,10 +279,14 @@ describe('AiService.getAiConfigForProvider', () => {
     await expect(AiService.getAiConfigForProvider('gateway')).resolves.toBeNull();
     await expect(AiService.getAiConfigForProvider('on-device')).resolves.toBeNull();
 
-    const { isOnDeviceAiAvailable } = jest.requireMock('@/utils/onDeviceAi');
-    isOnDeviceAiAvailable.mockResolvedValueOnce(false);
+    // Chosen on-device AI answers with its config even when the engine is not ready: the request
+    // then fails with a typed error, never by quietly going to another provider.
     setSettings({ getUseOnDeviceAi: true });
-    await expect(AiService.getAiConfigForProvider('on-device')).resolves.toBeNull();
+    await expect(AiService.getAiConfigForProvider('on-device')).resolves.toMatchObject({
+      provider: 'on-device',
+      engine: 'apple',
+      vision: false,
+    });
   });
 
   it('returns null instead of throwing when a read fails', async () => {

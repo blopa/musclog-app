@@ -1,0 +1,151 @@
+{
+  "onDeviceAi": {
+    "model": {
+      "name": "{{name}} von {{vendor}}",
+      "size": "Downloadgröße: {{size}}",
+      "photos": {
+        "label": "Fotoerkennung einbeziehen",
+        "hint": "Lässt das Modell Mahlzeitenfotos auswerten. Fügt {{size}} hinzu."
+      },
+      "freeSpace": "Freier Speicher auf diesem Gerät: {{size}}",
+      "notEnoughSpace": "Nicht genug Speicher: Es werden {{needed}} benötigt, das Gerät hat {{free}} frei.",
+      "mobileData": "Du bist im Mobilfunknetz. Der Download ist {{size}} groß.",
+      "languageNote": "Dieses Modell funktioniert am besten auf Englisch und einigen weiteren Sprachen. Antworten in deiner Sprache können schwächer ausfallen.",
+      "license": "Lizenz: {{license}}",
+      "readLicense": "Lizenz lesen",
+      "updateAvailable": "Eine neuere Version des Modells ist verfügbar.",
+      "state": {
+        "readyWithPhotos": "Bereit. Funktioniert offline, mit Mahlzeitenfotos.",
+        "readyText": "Bereit. Funktioniert offline, nur für Text.",
+        "paused": "Pausiert: {{received}} von {{total}}",
+        "downloading": "Wird heruntergeladen: {{received}} von {{total}}",
+        "verifying": "Download wird geprüft…",
+        "installing": "Installation wird abgeschlossen…"
+      },
+      "failure": {
+        "noSpace": "Auf dem Gerät ist der Speicher voll. Gib etwas Platz frei und versuche es erneut.",
+        "network": "Die Verbindung ist abgebrochen. Versuche es erneut, wenn du online bist.",
+        "checksum": "Die heruntergeladene Datei hat die Prüfung nicht bestanden und wurde entfernt. Versuche es erneut.",
+        "interrupted": "Der Download wurde unterbrochen. Versuche es erneut.",
+        "http": "Der Download-Server hat nicht wie erwartet geantwortet. Versuche es später erneut.",
+        "storage": "Das Modell konnte auf diesem Gerät nicht gespeichert werden."
+      },
+      "actions": {
+        "download": "Herunterladen ({{size}})",
+        "retry": "Erneut versuchen",
+        "pause": "Pausieren",
+        "resume": "Fortsetzen",
+        "cancel": "Abbrechen",
+        "update": "Modell aktualisieren",
+        "delete": "Modell löschen"
+      },
+      "delete": {
+        "title": "Modell löschen?",
+        "message": "KI auf diesem Gerät funktioniert erst wieder, wenn du das Modell erneut herunterlädst. Deine Daten bleiben unverändert."
+      }
+    },
+    "apple": {
+      "title": "Apple Intelligence",
+      "status": {
+        "ready": "Bereit. Läuft auf deinem iPhone und funktioniert offline.",
+        "appleOff": "Apple Intelligence ist ausgeschaltet. Schalte es in den iOS-Einstellungen ein, um es zu nutzen.",
+        "appleNotReady": "iOS bereitet Apple Intelligence noch vor. Versuche es in einer Weile erneut."
+      },
+      "openSettings": "iOS-Einstellungen öffnen",
+      "languageNote": "Apple Intelligence unterstützt deine Sprache möglicherweise noch nicht. Antworten können auf Englisch zurückfallen."
+    },
+    "onboarding": {
+      "ask": {
+        "heading": "KI auf deinem Gerät",
+        "intro": "Der Coach von Musclog kann komplett auf diesem Gerät laufen. Was du eingibst, verlässt das Gerät nicht, und es funktioniert offline.",
+        "choicesLabel": "KI verwenden, die auf diesem Gerät läuft",
+        "yes": {
+          "title": "Ja, KI auf diesem Gerät ausführen",
+          "points": {
+            "private": "Deine Nachrichten verlassen das Gerät nie",
+            "offline": "Funktioniert ohne Verbindung",
+            "free": "Kein Konto, kein Schlüssel und kein Abo"
+          }
+        },
+        "no": {
+          "title": "Nein, andere Optionen anzeigen",
+          "points": {
+            "other": "Musclog Iron, die kostenlose Stufe oder dein eigener Schlüssel",
+            "later": "Du kannst die lokale KI später in den Einstellungen aktivieren"
+          }
+        },
+        "cta": {
+          "yes": "Weiter",
+          "no": "Andere Optionen anzeigen"
+        }
+      },
+      "options": {
+        "heading": "Wähle, wie sie läuft",
+        "intro": "Wähle die KI, die auf diesem Gerät läuft.",
+        "choicesLabel": "Optionen für KI auf dem Gerät",
+        "apple": {
+          "title": "Apple Intelligence",
+          "points": {
+            "builtIn": "In iOS integriert, nichts herunterzuladen",
+            "private": "Läuft auf diesem iPhone"
+          }
+        },
+        "model": {
+          "title": "Heruntergeladenes Modell",
+          "points": {
+            "download": "Ein Download, danach funktioniert es offline",
+            "photos": "Kann Mahlzeitenfotos auswerten, wenn du sie einbeziehst"
+          }
+        },
+        "later": {
+          "title": "Später einrichten",
+          "points": {
+            "later": "Wähle es in den Einstellungen, wenn du soweit bist"
+          }
+        },
+        "cta": {
+          "apple": "Apple Intelligence verwenden",
+          "model": "Herunterladen und weiter",
+          "later": "Ohne KI fortfahren"
+        },
+        "downloadNote": "Der Download läuft im Hintergrund weiter. Coach-Antworten starten, sobald er fertig ist."
+      }
+    },
+    "useOwnKey": "Eigenen API-Schlüssel oder einen lokalen Server verwenden",
+    "settings": {
+      "sectionTitle": "KI auf diesem Gerät",
+      "toggle": "KI auf diesem Gerät verwenden",
+      "toggleSubtitle": "Antworten entstehen auf dem Gerät. Was du fragst, verlässt es nicht.",
+      "engineLabel": "Welche KI auf diesem Gerät läuft",
+      "engine": {
+        "apple": "Apple Intelligence",
+        "model": "Heruntergeladenes Modell"
+      },
+      "priorityNote": "Musclog Iron und die kostenlose Stufe haben Vorrang, solange sie aktiv sind. Schalte sie aus, um KI auf diesem Gerät zu nutzen.",
+      "privacyNote": "Deine Daten bleiben auf diesem Gerät und werden nie an einen Server gesendet."
+    },
+    "notReady": {
+      "title": "KI auf diesem Gerät ist nicht bereit",
+      "message": {
+        "needsDownload": "Das Modell ist noch nicht heruntergeladen. Lade es herunter, um mit dem Coach zu chatten.",
+        "downloading": "Das Modell wird noch heruntergeladen. Der Coach funktioniert, sobald der Download fertig ist.",
+        "downloadFailed": "Der Download des Modells ist fehlgeschlagen. Versuche den Download erneut.",
+        "appleOff": "Apple Intelligence ist in den iOS-Einstellungen ausgeschaltet.",
+        "appleNotReady": "iOS bereitet Apple Intelligence noch vor. Versuche es in einer Weile erneut.",
+        "appleNotEligible": "Dieses iPhone kann Apple Intelligence nicht ausführen.",
+        "unsupported": "Dieses Gerät kann KI nicht auf dem Gerät ausführen."
+      },
+      "download": "Modell herunterladen",
+      "openIosSettings": "iOS-Einstellungen öffnen",
+      "openAiSettings": "KI-Einstellungen öffnen",
+      "chooseAnother": "Andere KI wählen"
+    },
+    "notices": {
+      "title": "Hinweise von Drittanbietern",
+      "intro": "Musclog basiert auf Open-Source-Software und einem offenen Modell. Dies sind die jeweils geltenden Lizenzen.",
+      "link": "Hinweise von Drittanbietern",
+      "linkSubtitle": "Open-Source-Software und das Modell auf dem Gerät",
+      "openLink": "Vollständigen Text öffnen"
+    }
+  }
+}

@@ -108,6 +108,7 @@ export default function HomeScreen() {
   });
   const {
     isAiConfigured,
+    isAiMealPhotoEnabled,
     intuitiveEatingMode,
     nutritionDisplay,
     homeSummaryCard,
@@ -725,7 +726,7 @@ export default function HomeScreen() {
         visible={isAddFoodVisible}
         onClose={handleCloseAddFood}
         onMealTypeSelect={handleMealTypeSelect}
-        onAiCameraPress={hasCamera ? handleAiCameraPress : undefined}
+        onAiCameraPress={hasCamera && isAiMealPhotoEnabled ? handleAiCameraPress : undefined}
         onScanBarcodePress={hasCamera ? handleScanBarcodePress : undefined}
         onSearchFoodPress={handleSearchFoodPress}
         onCreateCustomFoodPress={handleCreateCustomFoodPress}

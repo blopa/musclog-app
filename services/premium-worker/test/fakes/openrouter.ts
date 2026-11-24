@@ -23,6 +23,8 @@ export interface Recorded {
   body: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   text: string;
   signal: AbortSignal;
+  /** Which fake recorded it; absent means OpenRouter (the privacy assertion is upstream-aware). */
+  upstream?: 'openrouter' | 'otari';
 }
 
 /** Every recording of every fake in the test file; the privacy invariant is asserted over it. */
@@ -75,7 +77,7 @@ function abortError(): Error {
   return e;
 }
 
-function respond(s: Script, signal: AbortSignal): Promise<Response> | Response {
+export function respond(s: Script, signal: AbortSignal): Promise<Response> | Response {
   switch (s.kind) {
     case 'json':
       return new Response(JSON.stringify(s.body), {

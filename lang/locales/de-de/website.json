@@ -386,6 +386,7 @@
         "empty": "Es wurden keine Beiträge mit dem Tag {{tag}} gefunden.",
         "listLabel": "Blogbeiträge mit dem Tag {{tag}}"
       },
+      "highlightedPosts": "Hier starten",
       "tagsPage": {
         "title": "Blog-Tags",
         "description": "Jeder Tag, der im Musclog-Blog verwendet wird. Je größer ein Tag, desto mehr Artikel tragen ihn.",
@@ -581,7 +582,7 @@
     "privacy": {
       "titleStart": "Datenschutz",
       "titleHighlight": "erklärung",
-      "lastUpdated": "Zuletzt aktualisiert: 22. November 2026",
+      "lastUpdated": "Zuletzt aktualisiert: 23. November 2026",
       "highlights": {
         "dataProtection": {
           "title": "Datenschutz",
@@ -727,6 +728,7 @@
           "title": "Weitergabe deiner personenbezogenen Daten",
           "items": [
             "An die Anbieter, die du wählst: Lebensmittelsuchen gehen an die Lebensmitteldatenbank, die du auswählst, und KI-Anfragen an den KI-Anbieter, den du konfigurierst.",
+            "Mit Hugging Face, wenn du das KI-Modell auf dem Gerät herunterladen möchtest: Wie bei jedem Datei-Download teilt die Anfrage Hugging Face die IP-Adresse deines Geräts mit. Das Modell läuft danach auf deinem Gerät, und was du es fragst, bleibt auf deinem Gerät.",
             "An Dienstleister, die Teile des Dienstes für Uns betreiben: Sentry (Absturzberichte und Fehlerberichte des Dienstes von Musclog Iron ohne Nachrichteninhalt oder Kennungen), OpenRouter und Google (die kostenlose Option Musclog AI), Cloudflare, OpenRouter und RevenueCat (Musclog Iron), GitHub und Cloudflare (Hosting der Website) sowie Google Analytics (die Website, nur nachdem du Analyse akzeptiert hast).",
             "Wenn es das Gesetz verlangt, wie unter „Offenlegung deiner personenbezogenen Daten“ beschrieben.",
             "Mit deiner Einwilligung, etwa wenn du Daten selbst exportierst oder teilst.",

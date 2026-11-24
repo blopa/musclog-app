@@ -19,21 +19,77 @@ function parseBumpType(argv) {
   return hasMajor ? 'major' : hasMinor ? 'minor' : 'patch';
 }
 
+const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
+
+function compareVersions(a, b) {
+  const left = a.split('.').map(Number);
+  const right = b.split('.').map(Number);
+  for (let i = 0; i < 3; i += 1) {
+    if (left[i] !== right[i]) {
+      return left[i] - right[i];
+    }
+  }
+
+  return 0;
+}
+
+/**
+ * What the command line asks for: `--major`, `--minor`, nothing (patch), or
+ * `--specific <x.y.z>` (an exact version, for when the next one is not a plain increment).
+ * Returns the bump type, or `{ version }` for an exact one.
+ */
+function parseBumpRequest(argv) {
+  const index = argv.indexOf('--specific');
+  if (index === -1) {
+    return parseBumpType(argv);
+  }
+
+  const rest = argv.filter((_, i) => i !== index && i !== index + 1);
+  if (rest.length > 0) {
+    throw new Error('Use --specific <x.y.z> on its own');
+  }
+
+  const version = argv[index + 1];
+  if (!version || !VERSION_PATTERN.test(version)) {
+    throw new Error(`--specific needs a version like 2.18.0, got ${version ?? 'nothing'}`);
+  }
+
+  return { version };
+}
+
 function bumpVersion(version, bumpType) {
   const parts = version.split('.').map((part) => Number.parseInt(part, 10));
   if (parts.length !== 3 || parts.some(Number.isNaN)) {
     throw new Error(`Invalid version format: ${version}`);
   }
 
+  // A bigger bump resets what is below it (2.17.8 --minor is 2.18.0, not 2.18.8).
   if (bumpType === 'major') {
     parts[0] += 1;
+    parts[1] = 0;
+    parts[2] = 0;
   } else if (bumpType === 'minor') {
     parts[1] += 1;
+    parts[2] = 0;
   } else {
     parts[2] += 1;
   }
 
   return parts.join('.');
+}
+
+// An exact version must be well formed and not older than the current one (the stores refuse a
+// lower version). The build number still goes up by one, as for every bump.
+function exactVersion(currentVersion, requested) {
+  if (!VERSION_PATTERN.test(requested)) {
+    throw new Error(`Invalid version format: ${requested}`);
+  }
+
+  if (compareVersions(requested, currentVersion) < 0) {
+    throw new Error(`${requested} is older than the current version ${currentVersion}`);
+  }
+
+  return requested;
 }
 
 function readJson(filePath) {
@@ -149,7 +205,10 @@ function renameAppStoreVersionFolder(projectDir, fromVersion, toVersion) {
 function bumpProjectVersions(projectDir, bumpType) {
   const current = assertReleaseVersionsMatch(projectDir);
   const files = releasePaths(projectDir);
-  const nextVersion = bumpVersion(current.appVersion, bumpType);
+  const nextVersion =
+    typeof bumpType === 'object'
+      ? exactVersion(current.appVersion, bumpType.version)
+      : bumpVersion(current.appVersion, bumpType);
   const nextBuild = current.appBuild + 1;
   const packageJson = readJson(files.package);
   const app = readJson(files.app);
@@ -229,7 +288,7 @@ function bumpProjectVersions(projectDir, bumpType) {
 
 if (require.main === module) {
   const projectDir = path.resolve(process.cwd());
-  const result = bumpProjectVersions(projectDir, parseBumpType(process.argv.slice(2)));
+  const result = bumpProjectVersions(projectDir, parseBumpRequest(process.argv.slice(2)));
   console.log(`Release: ${result.version} (${result.build})`);
 }
 
@@ -237,6 +296,7 @@ module.exports = {
   assertReleaseVersionsMatch,
   bumpProjectVersions,
   bumpVersion,
+  parseBumpRequest,
   parseBumpType,
   readReleaseVersions,
 };

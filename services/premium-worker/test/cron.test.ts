@@ -6,6 +6,8 @@ import { runDaily, runQuarterHourly } from '../src/cron';
 import { reserve, settle, type ReserveInput } from '../src/ledger';
 import type { OpenRouterClient, OpenRouterKeyInfo, ZdrEndpoint } from '../src/upstream/types';
 import { makeCtx, testConfig, testDeps, throwingOpenRouter } from './fakes/ctx';
+import { fakeOtari, OTARI_CONFIG, type FakeOtari } from './fakes/otari';
+import { resetUpstreamCache } from '../src/upstream/select';
 import { DAY, DAY_MS, NOW, getPeriod, seed, wipe } from './fakes/seed';
 
 const db = env.DB;
@@ -334,6 +336,156 @@ describe('runDaily', () => {
         severity: 'error',
       });
       expect(await metaValue('accepting_new')).toBe('1');
+    });
+  });
+
+  describe('with Otari', () => {
+    const withBoth = (o: { usage: number; otari?: FakeOtari | null; toggle?: 'otari' }) => {
+      const or = fakeOpenRouter({
+        key: async () => ({ usage: o.usage, limit: null, limit_remaining: null }),
+      });
+      const deps = testDeps({
+        openrouter: or,
+        otari: o.otari === undefined ? fakeOtari({ kind: 'throw' }) : o.otari,
+      });
+      return {
+        deps,
+        or,
+        ctx: makeCtx({
+          config: testConfig({ otari: OTARI_CONFIG }),
+          deps,
+          env: { OTARI_API_KEY: 'k' },
+        }),
+      };
+    };
+    const useToggle = async () => {
+      await db.prepare("INSERT INTO meta (key, value) VALUES ('upstream', 'otari')").run();
+      resetUpstreamCache();
+    };
+    const settleAt = async (amount: number, at: number) => {
+      await seed(db, { cap: 5_000_000 });
+      const i = rin({ r: amount, now: at });
+      await reserve(db, i);
+      await settle(db, { pk: 'pk1', id: i.id, final: 'settled', a: amount, now: at, day: DAY });
+    };
+    /** A baseline run, then a second run a day later against `later`. */
+    const twoRuns = async (later: ReturnType<typeof withBoth>, firstUsage = 10) => {
+      await runDaily(withBoth({ usage: firstUsage }).ctx);
+      later.deps.advance(DAY_MS);
+      return later;
+    };
+
+    it('the gateway delta is OpenRouter plus Otari, compared with the whole ledger', async () => {
+      const ot = fakeOtari({ kind: 'throw' });
+      ot.summary = { costUsd: 0.4, requests: 5, errors: 0, unpriced: 0 };
+      const later = await twoRuns(withBoth({ usage: 10.6, otari: ot }));
+      await settleAt(1_000_000, NOW + 1000); // OpenRouter 600_000 + Otari 400_000 = ledger
+      await runDaily(later.ctx);
+      expect(await isBreakerOpen(db)).toBe(false);
+      expect(ot.summaryCalls).toEqual([{ startMs: NOW, endMs: NOW + DAY_MS }]);
+      expect(JSON.parse((await metaValue('recon'))!).usage_u).toBe(10_600_000);
+    });
+
+    it('Otari spend the ledger never saw opens reconciliation', async () => {
+      const ot = fakeOtari({ kind: 'throw' });
+      ot.summary = { costUsd: 2, requests: 5, errors: 0, unpriced: 0 };
+      const later = await twoRuns(withBoth({ usage: 10.6, otari: ot }));
+      await settleAt(600_000, NOW + 1000); // ledger = OpenRouter alone; Otari 2 USD is the gap
+      await runDaily(later.ctx);
+      expect(await metaValue('breaker_reason')).toBe('reconciliation');
+    });
+
+    it('a failing Otari call counts 0, logs high and cannot open the breaker', async () => {
+      const ot = fakeOtari({ kind: 'throw' });
+      ot.summary = new Error('otari_http_500');
+      const later = await twoRuns(withBoth({ usage: 10.6, otari: ot }));
+      await settleAt(600_000, NOW + 1000);
+      await runDaily(later.ctx);
+      expect(await isBreakerOpen(db)).toBe(false);
+      expect(later.deps.logs).toContainEqual({
+        route: 'cron',
+        status: 500,
+        code: 'reconciliation_otari_unavailable',
+        severity: 'high',
+        upstream: 'otari',
+      });
+    });
+
+    it('unpriced Otari requests are logged high', async () => {
+      const ot = fakeOtari({ kind: 'throw' });
+      ot.summary = { costUsd: 0, requests: 2, errors: 0, unpriced: 2 };
+      const later = await twoRuns(withBoth({ usage: 10, otari: ot }));
+      await runDaily(later.ctx);
+      expect(later.deps.logs).toContainEqual(
+        expect.objectContaining({ code: 'otari_unpriced_requests', severity: 'high' })
+      );
+    });
+
+    it('no Otari client means the OpenRouter-only logic and no Otari call', async () => {
+      const later = await twoRuns(withBoth({ usage: 10.6, otari: null }));
+      await settleAt(600_000, NOW + 1000);
+      await runDaily(later.ctx);
+      expect(await isBreakerOpen(db)).toBe(false);
+    });
+
+    it('the ZDR re-check is skipped while Otari is the active upstream, and runs on OpenRouter', async () => {
+      await useToggle();
+      const a = withBoth({ usage: 1 });
+      let zdrCalls = 0;
+      a.or.listZdrEndpoints = async () => {
+        zdrCalls++;
+        return [];
+      };
+      await runDaily(a.ctx);
+      expect(zdrCalls).toBe(0);
+      expect(await isBreakerOpen(db)).toBe(false);
+      await db.prepare("UPDATE meta SET value = 'openrouter' WHERE key = 'upstream'").run();
+      resetUpstreamCache();
+      await runDaily(a.ctx);
+      expect(zdrCalls).toBe(1); // an empty list opens zdr_unavailable
+      expect(await metaValue('breaker_reason')).toBe('zdr_unavailable');
+    });
+
+    describe('otari_budget', () => {
+      const run = async (b: FakeOtari['budgetResult']) => {
+        const ot = fakeOtari({ kind: 'throw' });
+        ot.budgetResult = b;
+        const s = withBoth({ usage: 1, otari: ot });
+        await runDaily(s.ctx);
+        return { ...s, ot };
+      };
+      it('warns high below 2 USD', async () => {
+        const { deps } = await run({ enforced: true, remainingUsd: 1.99 });
+        expect(deps.logs).toContainEqual({
+          route: 'cron',
+          status: 500,
+          code: 'otari_budget_low',
+          severity: 'high',
+          upstream: 'otari',
+        });
+      });
+      it('stays quiet at 2 USD, with no limit, and without a client', async () => {
+        for (const b of [
+          { enforced: true, remainingUsd: 2 },
+          { enforced: false, remainingUsd: null },
+        ]) {
+          const { deps } = await run(b);
+          expect(deps.logs.some((l) => l.code === 'otari_budget_low')).toBe(false);
+        }
+        const none = withBoth({ usage: 1, otari: null });
+        await runDaily(none.ctx);
+        expect(none.deps.logs.some((l) => l.code === 'otari_budget_low')).toBe(false);
+      });
+      it('a failing call is isolated: logged as a failed step, the others still run', async () => {
+        const { deps } = await run(new Error('otari_http_500'));
+        expect(deps.logs).toContainEqual({
+          route: 'cron',
+          status: 500,
+          code: 'otari_budget_failed',
+          severity: 'error',
+        });
+        expect(deps.logs).toContainEqual(expect.objectContaining({ code: 'daily' }));
+      });
     });
   });
 });

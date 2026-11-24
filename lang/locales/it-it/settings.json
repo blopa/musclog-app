@@ -239,13 +239,18 @@
           "temporary": {
             "name": "File temporanei",
             "description": "Residui di esportazioni, condivisioni e modifica delle foto"
+          },
+          "localAiModels": {
+            "name": "Modello AI sul dispositivo",
+            "description": "Il modello AI scaricato per funzionare su questo telefono. Puoi scaricarlo di nuovo nelle impostazioni AI"
           }
         },
         "clear": "Svuota",
         "clearTitle": "Svuotare {{name}}?",
         "clearMessage": {
           "exerciseImages": "Le immagini si scaricano di nuovo la prossima volta che viene mostrato un esercizio. I tuoi dati non cambiano.",
-          "temporary": "Rimuove i file residui più vecchi di un'ora. I tuoi dati e i backup di sicurezza non vengono toccati."
+          "temporary": "Rimuove i file residui più vecchi di un'ora. I tuoi dati e i backup di sicurezza non vengono toccati.",
+          "localAiModels": "L'AI sul dispositivo smette di funzionare finché non scarichi di nuovo il modello nelle impostazioni AI. I tuoi dati non vengono modificati."
         },
         "freed": "Liberati {{size}}",
         "nothingToClear": "Niente da svuotare",
@@ -347,6 +352,7 @@
       "useThinkingMode": "Usa la modalità di ragionamento",
       "useThinkingModeSubtitle": "Consenti ai provider AI di ragionare più a fondo quando è supportato. Usa più token e può aumentare il costo.",
       "useThinkingModeIronNote": "Con Musclog Iron, ragionare più a fondo e i controlli extra usano più del tuo limite mensile di IA.",
+      "localLlmThinkingEnabled": "Modalità ragionamento attivata, perché i modelli locali non costano nulla in più. Puoi disattivarla nelle impostazioni IA.",
       "maxAiMemories": "Memorie AI massime",
       "maxAiMemoriesSubtitle": "Numero di messaggi precedenti da ricordare nelle conversazioni",
       "nutritionLogHistoryDays": "Cronologia alimentare inviata all'AI",

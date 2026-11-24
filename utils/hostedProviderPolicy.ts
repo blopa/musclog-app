@@ -44,6 +44,13 @@ export type ProviderPolicy = {
    */
   reasoningEffort?: (effort: AiEffort) => Promise<ReasoningEffortValue | undefined>;
   /**
+   * Sampling fields added to a free-chat reply only (never to structured extraction, where a
+   * repetition penalty would fight the repeated keys and numbers of a JSON answer).
+   */
+  chatSampling?: { frequency_penalty?: number; presence_penalty?: number };
+  /** The most turns of history a free-chat reply is sent, for a model that copies its own replies. */
+  maxChatHistoryTurns?: number;
+  /**
    * This provider's own photo step, in place of the default one every provider gets (the detail the
    * person chose in AI settings, with no provider limit above it).
    */
@@ -118,9 +125,34 @@ const OPENAI_POLICY: ProviderPolicy = {
   reasoningEffort: async (effort) => reasoningEffortValue(effort),
 };
 
+/**
+ * A local model is usually small. Left alone it copies its own earlier replies, so a one-word
+ * follow-up ("ok", "thanks") gets the previous answer back, over and over. Two things break that:
+ * a repetition penalty (the servers behind a custom base URL take the standard fields) and a short
+ * history, so its own replies are not most of what it reads.
+ */
+export const LOCAL_CHAT_SAMPLING = { frequency_penalty: 0.4, presence_penalty: 0.4 };
+export const LOCAL_MAX_CHAT_HISTORY_TURNS = 6;
+
+const LOCAL_POLICY: ProviderPolicy = {
+  chatSampling: LOCAL_CHAT_SAMPLING,
+  maxChatHistoryTurns: LOCAL_MAX_CHAT_HISTORY_TURNS,
+};
+
+/**
+ * The on-device models (the downloaded one and Apple's) get the same two chat rules. Apple's engine
+ * takes no sampling fields, so only the turn cap reaches it.
+ */
+const ON_DEVICE_POLICY: ProviderPolicy = {
+  chatSampling: LOCAL_CHAT_SAMPLING,
+  maxChatHistoryTurns: LOCAL_MAX_CHAT_HISTORY_TURNS,
+};
+
 const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
   hosted: HOSTED_POLICY,
   openai: OPENAI_POLICY,
+  local: LOCAL_POLICY,
+  'on-device': ON_DEVICE_POLICY,
 };
 
 /** The provider's own rules, or an empty policy when it follows the shared ones. */

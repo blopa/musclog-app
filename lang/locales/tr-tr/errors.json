@@ -31,6 +31,10 @@
     "hostedDailyFull": "Musclog Iron yarına kadar (UTC) kapasitesinde.",
     "hostedDailyLimit": "Musclog Iron'ın günlük sınırına ulaştın. Gece yarısı (UTC) sıfırlanır. Bu sırada kendi anahtarını veya ücretsiz katmanı kullanabilirsin.",
     "hostedBusy": "Musclog Iron meşgul. Birkaç saniye sonra tekrar deneyin.",
-    "hostedAlreadyProcessed": "Bu istek zaten işlendi. Lütfen yeniden gönderin."
+    "hostedAlreadyProcessed": "Bu istek zaten işlendi. Lütfen yeniden gönderin.",
+    "onDeviceNotReady": "Cihaz üzerindeki yapay zekâ henüz hazır değil. Yapay zekâ ayarlarında kurulumu tamamlayın veya başka bir yapay zekâ seçin.",
+    "onDevicePhotosNotInstalled": "Yemek fotoğraflarını çevrimdışı kullanmak için yapay zekâ ayarlarından fotoğraf anlama özelliğini etkinleştirerek modeli yeniden indirin.",
+    "onDevicePhotosUnsupported": "Apple Intelligence burada yemek fotoğraflarını analiz edemiyor. Yapay zekâ ayarlarından fotoğrafları destekleyen bir model seçin.",
+    "onDeviceLoadFailed": "Cihaz üzerindeki yapay zekâ başlatılamadı; genellikle telefonda bellek azaldığında olur. Diğer uygulamaları kapatıp tekrar deneyin."
   }
 }

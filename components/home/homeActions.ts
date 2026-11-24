@@ -15,6 +15,8 @@ import { DEFAULT_HOME_ACTIONS, HomeActionKey, MIN_HOME_ACTIONS } from '@/constan
 /** What an action needs to know about this device to say whether it can be offered. */
 export type HomeActionContext = {
   isAiConfigured: boolean;
+  /** The provider can read a photo (`isAiMealPhotoEnabled`): false for Apple Intelligence. */
+  isAiMealPhotoEnabled: boolean;
   isWeb: boolean;
   /** Whether the device has a camera at all (`useHasCamera`); permission is a separate matter. */
   hasCamera: boolean;
@@ -62,7 +64,8 @@ export const HOME_ACTIONS: Record<HomeActionKey, HomeActionConfig> = {
     tone: 'accent',
     // Gated on the provider per the AI-affordance rule: an action inside a menu or a grid
     // must not advertise AI, because tapping it would dead-end.
-    isAvailable: ({ isAiConfigured, isWeb, hasCamera }) => isAiConfigured && !isWeb && hasCamera,
+    isAvailable: ({ isAiConfigured, isAiMealPhotoEnabled, isWeb, hasCamera }) =>
+      isAiConfigured && isAiMealPhotoEnabled && !isWeb && hasCamera,
   },
   my_meals: {
     labelKey: 'home.actions.myMeals',

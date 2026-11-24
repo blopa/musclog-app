@@ -1,6 +1,11 @@
 import {
   AI_SETUP_ROUTE,
   aiSetupRoute,
+  aiStepRoute,
+  MUSCLOG_API_ROUTE,
+  ON_DEVICE_AI_OPTIONS_ROUTE,
+  ON_DEVICE_AI_ROUTE,
+  routeAfterLocalAi,
   personalizedCycleRoutes,
   PROFILE_RESULTS_ROUTE,
   PROFILE_ROUTE,
@@ -15,7 +20,7 @@ describe('personalizedCycleRoutes', () => {
   it('goes through the Musclog AI step by default, with the step numbers the screens show', () => {
     const { direct, afterCycle } = personalizedCycleRoutes(false);
 
-    expect(direct).toContain('/app/onboarding/musclog-api?');
+    expect(direct).toContain('/app/onboarding/on-device-ai?');
     expect(direct).toContain('quickStep=8&quickTotal=11');
     expect(afterCycle).toContain('quickStep=9&quickTotal=11');
   });
@@ -130,5 +135,45 @@ describe('AI setup routes', () => {
     expect(resolveAiSetupMode('onboarding')).toBe('onboarding');
     expect(resolveAiSetupMode('nonsense')).toBe('onboarding');
     expect(resolveAiSetupMode(undefined)).toBe('onboarding');
+  });
+});
+
+describe('the AI step routes', () => {
+  it('encodes the nested next route exactly once and keeps the step numbers', () => {
+    const route = aiStepRoute(ON_DEVICE_AI_OPTIONS_ROUTE, {
+      nextRoute: '/app/onboarding/coach-persona?quickStep=9&quickTotal=11',
+      quickStep: 8,
+      quickTotal: 11,
+    });
+    const url = new URL(route, 'https://x');
+
+    expect(url.pathname).toBe('/app/onboarding/on-device-ai-options');
+    expect(url.searchParams.get('nextRoute')).toBe(
+      '/app/onboarding/coach-persona?quickStep=9&quickTotal=11'
+    );
+    expect(url.searchParams.get('quickStep')).toBe('8');
+    expect(url.searchParams.get('quickTotal')).toBe('11');
+  });
+
+  it('omits the step numbers when there are none', () => {
+    expect(aiStepRoute(MUSCLOG_API_ROUTE, { nextRoute: '/app' })).toBe(
+      '/app/onboarding/musclog-api?nextRoute=%2Fapp'
+    );
+  });
+
+  it('hands the personalized flow to the first screen of the AI step', () => {
+    const { direct } = personalizedCycleRoutes(false);
+
+    expect(direct.startsWith(`${ON_DEVICE_AI_ROUTE}?`)).toBe(true);
+  });
+
+  it('skips the coach question after local AI, and leaves every other route alone', () => {
+    expect(routeAfterLocalAi('/app/onboarding/coach-persona?quickStep=9&quickTotal=11')).toBe(
+      '/app/onboarding/nutrition-goals-results?aiGenerated=true&personalizedSetup=true'
+    );
+    expect(
+      routeAfterLocalAi('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true')
+    ).toBe('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true');
+    expect(routeAfterLocalAi('/app')).toBe('/app');
   });
 });

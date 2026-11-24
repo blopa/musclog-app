@@ -29,6 +29,7 @@ cd services/premium-worker
 npx wrangler secret put OPENROUTER_API_KEY --env <env>
 npx wrangler secret put REVENUECAT_V2_SECRET_KEY --env <env>
 npx wrangler secret put SESSION_HMAC_KEY --env <env>   # at least 32 random bytes
+npx wrangler secret put OTARI_API_KEY --env <env>      # optional: only for the Otari upstream (scopes inference:run, usage:read)
 ```
 
 Rotating `SESSION_HMAC_KEY` (the Worker accepts the previous key for verification only): put the OLD value into `SESSION_HMAC_KEY_PREVIOUS`, put the NEW value into `SESSION_HMAC_KEY`, wait one hour (token lifetime), then `npx wrangler secret delete SESSION_HMAC_KEY_PREVIOUS --env <env>`.
@@ -61,19 +62,40 @@ The Worker logs only `LogEvent` fields (route, status, code, severity). `[observ
 
 Kill switch: set `HOSTED_AI_ENABLED = "false"` in the environment's `[vars]` and deploy (anything but `"true"` disables hosted AI with `503 hosted_disabled`). Both environments ship with it `"true"` since the internal-track tests (2026-11-22); set it to `"false"` to switch hosted AI off for everyone. The production app release is what exposes Musclog Iron to people (the released 2.16.7 has no Premium code), so the Worker being on does not.
 
+## The upstream toggle (OpenRouter or Otari)
+
+Iron chat requests go to OpenRouter (the default) or to Otari (Mozilla AI's gateway, `https://eu.api.otari.ai/api/v1`), chosen by the D1 row `meta.upstream` with no deploy. The free tier is not affected (the app calls OpenRouter directly).
+
+```bash
+scripts/premium-upstream.sh <staging|production> status
+scripts/premium-upstream.sh <staging|production> set <openrouter|otari>        # dry run: prints the SQL
+scripts/premium-upstream.sh <staging|production> set <openrouter|otari> --yes  # writes it
+```
+
+- The Worker reads the row at most every 30 s per isolate (`src/upstream/select.ts`); the app's `/v1/config` cache settles within 5 minutes (`vision_enabled` follows the active upstream).
+- `otari` is honoured only when the environment's `AI_CONFIG_JSON` has an `otari` block and `OTARI_API_KEY` is set; otherwise the Worker serves OpenRouter and logs `upstream_misconfigured` (high). The script refuses `set otari` without the block, and on production without `--consent-ready`: **the Iron consent text and the privacy policy must name Otari (all ten locales, `PREMIUM_CONSENT_VERSION` bumped) before production uses it.**
+- The `otari` block: `{ "providers": ["deepinfra"], "models": { "chat" | "structured" | "vision": { "model": "<provider>:<catalog id>", "prices": { "prompt_per_mtok", "completion_per_mtok", "image_per_image" } } } }`. Every model is a pinned selector whose provider is in `providers`; a pinned selector never falls back. The reservation bound uses these prices.
+- Privacy: Otari has no per-request ZDR flag. Zero data retention is the workspace setting "Require zero data retention" (workspace `musclog-iron`), the key's allowed models and the workspace's enabled providers are set in the dashboard, and the Worker refuses to send an unpinned body (`assertOtariPinned`, `src/proxy/upstreamBody.ts`). Each answer's `Otari-Provider` must equal the pinned provider and `Otari-Fallback` must not be `true`, or the breaker opens (`upstream_unexpected_provider`); a missing `Otari-Provider` header logs `otari_provider_unverified`.
+- Cost comes from `usage.cost_usd`; there is no generation lookup, so an unknown cost charges the reservation. Requests carry `metadata` `app`, `env` and `feature` (no person or device), which the Otari usage API and `scripts/infra.sh report` filter on.
+- Cron: the OpenRouter ZDR recheck runs only while OpenRouter is active. Reconciliation adds Otari's spend for the window (`/key/usage/summary`, the key needs `usage:read`) to OpenRouter's, so a flip mid-window stays balanced; `reconciliation_otari_unavailable` and `otari_unpriced_requests` are logged high. The daily `otari_budget` step logs `otari_budget_low` below $2 left (Otari has no spend alerts of its own).
+- The Idempotency-Key binds to the gateway-neutral body, so a retry across a flip is not a mismatch.
+
 ## The breaker
 
 `meta.breaker` is `open` or `closed`; `meta.breaker_reason` says why. While open, requests are refused. `meta.daily_full` resets itself the next UTC day (cron); `accepting_new` is recomputed by cron.
 
-| Reason             | Meaning                                                | Check before resetting                                 |
-| ------------------ | ------------------------------------------------------ | ------------------------------------------------------ |
-| `global_spend`     | ledger spend exceeded `global_share` of net proceeds   | the ledger rows; refunds; is `finance` still right     |
-| `zdr_unavailable`  | the daily check found no ZDR endpoint at pinned prices | OpenRouter model page; change model or prices first    |
-| `zdr_check_failed` | the ZDR check itself failed                            | OpenRouter reachable? Re-run the cron before resetting |
-| `reconciliation`   | OpenRouter `usage_daily` differs from the ledger       | unmetered cost: find it, do not just reset             |
-| `overruns`         | 3 settlements above their reservation in 24 h          | prices in config vs OpenRouter; `meta.overruns`        |
-| `upstream_402`     | OpenRouter out of credit                               | top up first (below)                                   |
-| `upstream_403`     | key limit reached or key revoked                       | key limit and key status in OpenRouter                 |
+| Reason                         | Meaning                                                | Check before resetting                                                         |
+| ------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `global_spend`                 | ledger spend exceeded `global_share` of net proceeds   | the ledger rows; refunds; is `finance` still right                             |
+| `zdr_unavailable`              | the daily check found no ZDR endpoint at pinned prices | OpenRouter model page; change model or prices first                            |
+| `zdr_check_failed`             | the ZDR check itself failed                            | OpenRouter reachable? Re-run the cron before resetting                         |
+| `reconciliation`               | OpenRouter `usage_daily` differs from the ledger       | unmetered cost: find it, do not just reset                                     |
+| `overruns`                     | 3 settlements above their reservation in 24 h          | prices in config vs OpenRouter; `meta.overruns`                                |
+| `upstream_402`                 | OpenRouter out of credit                               | top up first (below)                                                           |
+| `upstream_403`                 | key limit reached or key revoked                       | key limit and key status in OpenRouter                                         |
+| `upstream_unexpected_provider` | Otari served from another provider or fell back        | `wrangler tail`; the workspace providers and key models in the Otari dashboard |
+
+On Otari, 402 means the balance is used up and 403 a budget (`Otari-Error-Code: budget_exceeded`), a model the key may not call, or a provider the workspace refuses; both open the same breaker reasons.
 
 Read: `npx wrangler d1 execute musclog-premium-db --remote --env production --command "SELECT key, value FROM meta"`. Reset only after the cause is understood:
 
@@ -84,6 +106,8 @@ npx wrangler d1 execute musclog-premium-db --remote --env production --command "
 ## OpenRouter funding
 
 Prepaid credits, **auto top-up off**. Every top-up is at least $15 (the fee has a $0.80 minimum) and at most `spend_share` (0.5) times the month's expected net proceeds. The inference key has a `limit` with monthly reset, set by hand to about the monthly top-up. OpenRouter answers 402 when credits end and 403 at the key limit; both open the breaker.
+
+Otari (only while it is the upstream, or about to be): prepaid balance, auto top-up and recurring top-up off. Each top-up adds a 4.5% fee and VAT; `finance.openrouter_fee` (1.055, the schema floor) stays the fee bound for both gateways. Each environment's key has its own budget (`musclog-iron-staging-monthly`, `musclog-iron-monthly`), attached on the key form. Spend, budget and errors: `scripts/infra.sh report` (`docs/INFRASTRUCTURE.md`).
 
 ## RevenueCat
 
@@ -191,7 +215,7 @@ Reservations and periods carry no `rc_id` (they are keyed by the payment key), s
 
 ## Cleanup (end of the experiment)
 
-Export D1 (`npx wrangler d1 export musclog-premium-db --remote --output backup.sql`), remove `prevent_destroy` from `infra/premium/main.tf`, `tofu destroy` in each workspace, delete the Worker, revoke the OpenRouter, RevenueCat and Cloudflare keys.
+Export D1 (`npx wrangler d1 export musclog-premium-db --remote --output backup.sql`), remove `prevent_destroy` from `infra/premium/main.tf`, `tofu destroy` in each workspace, delete the Worker, revoke the OpenRouter, Otari, RevenueCat and Cloudflare keys.
 
 ## Never
 

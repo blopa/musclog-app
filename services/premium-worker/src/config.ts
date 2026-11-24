@@ -38,6 +38,20 @@ export interface FeatureLimits {
 
 export const REASONING_EFFORTS: readonly ReasoningEffort[] = ['low', 'medium', 'high'];
 
+/** One Otari model and its pinned prices (USD per 1M tokens; `image_per_image` is USD per image). */
+export interface OtariModel {
+  /** Pinned selector `provider:catalog/id`: it names one provider and never falls back. */
+  model: string;
+  prices: { prompt_per_mtok: number; completion_per_mtok: number; image_per_image: number };
+}
+
+/** Everything the Otari upstream needs. Absent means Otari cannot be selected. */
+export interface OtariConfig {
+  /** Provider prefixes a selector may name (the data-recipient allowlist, like `provider.only`). */
+  providers: string[];
+  models: Record<Feature, OtariModel>;
+}
+
 export interface AiConfig {
   version: 1;
   /** OpenRouter model id; the client never chooses it. */
@@ -82,7 +96,7 @@ export interface AiConfig {
      */
     tokens_max: number;
   };
-  /** Plan 8.1. The schema CHECK hard-codes 500 and 1055, so spend_share <= 0.5 and openrouter_fee >= 1.055. */
+  /** Plan 8.1. The schema CHECK hard-codes 500 and 1055, so spend_share <= 0.5 and openrouter_fee >= 1.055 (gateway fee bound: OpenRouter 5.5%, Otari 4.5%). */
   finance: {
     spend_share: number;
     estimate_haircut: number;
@@ -133,12 +147,19 @@ export interface AiConfig {
     overruns_24h: number;
   };
   min_app_version: string;
+  /**
+   * The Otari alternative to OpenRouter for Musclog Iron requests (chosen at runtime by the D1 `meta`
+   * row `upstream`). Optional: without it the toggle can only mean OpenRouter. `vision` is used only
+   * while `vision_enabled`.
+   */
+  otari?: OtariConfig;
 }
 
 export const SCHEMA_SPEND_SHARE_PERMILLE = 500; // CHECK (cap_u * 1055 <= net_proceeds_u * 500)
 export const SCHEMA_OPENROUTER_FEE_PERMILLE = 1055;
 
 export const OFFICIAL_OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
+export const OFFICIAL_OTARI_BASE_URL = 'https://eu.api.otari.ai/api/v1';
 export const OFFICIAL_REVENUECAT_BASE_URL = 'https://api.revenuecat.com/v2';
 
 export type ConfigResult = { ok: true; config: AiConfig } | { ok: false; errors: string[] };

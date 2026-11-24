@@ -33,9 +33,21 @@ jest.mock('@/services/GatewayService', () => ({
 jest.mock('@/utils/musclogGatewayAvailability', () => ({
   effectiveUseMusclogGateway: (v: boolean) => v,
 }));
-jest.mock('@/utils/onDeviceAi', () => ({
-  isOnDeviceAiAvailable: jest.fn().mockResolvedValue(true),
-}));
+jest.mock('@/services/localModels/onDeviceStatusStore', () => {
+  const mockStatus = {
+    engine: 'apple',
+    state: 'ready',
+    progress: null,
+    capabilities: { engine: 'apple', vision: false, contextChars: 4500 },
+    updateAvailable: false,
+  };
+
+  return {
+    refreshOnDeviceStatus: jest.fn().mockResolvedValue(mockStatus),
+    getOnDeviceStatusSnapshot: () => mockStatus,
+    subscribeOnDeviceStatus: () => () => undefined,
+  };
+});
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
 let mockFlag = false;

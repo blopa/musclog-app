@@ -114,6 +114,7 @@ function patchProperty(field: PatchField, dialect: StructuredDialect): Record<st
       };
     case 'claude':
     case 'on-device':
+    case 'gguf':
       return {
         type: field.type,
         ...(enumValues ? { enum: [...enumValues] } : {}),

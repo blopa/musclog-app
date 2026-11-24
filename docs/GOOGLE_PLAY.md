@@ -47,7 +47,7 @@ has no Android submit config, `appVersionSource` is `local` (EAS `autoIncrement`
 adds preflight, staged rollouts and promotion in one tool.
 
 ```
-npm run bump-app-version        # you bump; the scripts never do
+npm run bump-app-version        # you bump; the scripts never do (also bump-minor, bump-major, bump-specific <x.y.z>)
 scripts/release-android.sh build [--local]
 scripts/release-android.sh check
 scripts/release-android.sh upload --track internal [--notes FILE] [--dry-run]
@@ -106,6 +106,10 @@ positions against paywalled apps without naming them. Since the Musclog Iron dec
 Content rating, target audience, the Data safety form, category, countries and pricing stay in Play
 Console. The app collects anonymous crash reports (Sentry, on by default, user can turn them off) and sends
 food lookups and AI requests to the services the user picks; keep the Data safety form consistent with that.
+
+## On-device AI and the listing (2026-11-23)
+
+The on-device AI (Apple Intelligence on iOS, a downloaded model everywhere) collects nothing: what the person asks never leaves the phone. The only network contact is the one-off model download from Hugging Face, which sees the device's IP address like any file download. Data safety: no new data type; do not declare the download as sharing. Listing text may say the AI can run on the phone, offline and without a key, but only once a build containing it is released, and must say it needs a download and a phone with enough room. Do not claim speeds, accuracy or photo quality until the P7 bench has been run on phones. Update all ten listing locales together.
 
 ## Musclog Iron: Data safety draft (revised 2026-11-22; the form is entered by hand, never through gplay)
 

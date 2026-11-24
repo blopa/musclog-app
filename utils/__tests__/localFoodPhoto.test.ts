@@ -1,0 +1,170 @@
+import {
+  buildPhotoMeal,
+  type FoodCandidate,
+  LOCAL_FOOD_IDENTIFY_SCHEMA,
+  LOCAL_PHOTO_UNMATCHED_FOOD_ID,
+  localJsonRepairMessage,
+  localJsonRepairPrompt,
+  MAX_IDENTIFIED_FOODS,
+  MAX_REPAIR_INPUT_CHARS,
+  MAX_IDENTIFIED_NAME_CHARS,
+  mealTypeForHour,
+  parseIdentifiedFoods,
+  pickFoodMatch,
+  searchTermsFor,
+  tokenize,
+} from '../localFoodPhoto';
+import { validateAgainstSchema } from '../aiSchemaValidate';
+
+const food = (id: string, name: string): FoodCandidate => ({
+  id,
+  name,
+  kcal: 100,
+  protein: 1,
+  carbs: 1,
+  fat: 1,
+  fiber: 0,
+});
+
+describe('parseIdentifiedFoods', () => {
+  it('reads names and grams and clamps the grams', () => {
+    expect(
+      parseIdentifiedFoods({
+        items: [
+          { name: '  white   rice ', grams: 180.4 },
+          { name: 'salt', grams: 0 },
+          { name: 'feast', grams: 99999 },
+        ],
+      })
+    ).toEqual([
+      { name: 'white rice', grams: 180 },
+      { name: 'salt', grams: 5 },
+      { name: 'feast', grams: 1500 },
+    ]);
+  });
+
+  it('defaults a missing weight and merges repeats', () => {
+    expect(parseIdentifiedFoods({ items: [{ name: 'Egg' }, { name: 'egg', grams: 50 }] })).toEqual([
+      { name: 'Egg', grams: 150 },
+    ]);
+  });
+
+  it('drops junk and caps the list', () => {
+    expect(parseIdentifiedFoods(null)).toEqual([]);
+    expect(parseIdentifiedFoods({ items: 'no' })).toEqual([]);
+    expect(parseIdentifiedFoods({ items: [null, 3, { name: '' }, { name: 5 }] })).toEqual([]);
+    const many = {
+      items: Array.from({ length: 40 }, (_, i) => ({ name: `food ${i}`, grams: 10 })),
+    };
+    expect(parseIdentifiedFoods(many)).toHaveLength(MAX_IDENTIFIED_FOODS);
+  });
+});
+
+describe('the identify schema', () => {
+  it('accepts a good answer and rejects calories-style output', () => {
+    expect(
+      validateAgainstSchema({ items: [{ name: 'rice', grams: 100 }] }, LOCAL_FOOD_IDENTIFY_SCHEMA)
+        .ok
+    ).toBe(true);
+    expect(
+      validateAgainstSchema({ items: [{ name: 'rice' }] }, LOCAL_FOOD_IDENTIFY_SCHEMA).ok
+    ).toBe(false);
+    expect(validateAgainstSchema({ foods: [] }, LOCAL_FOOD_IDENTIFY_SCHEMA).ok).toBe(false);
+  });
+});
+
+describe('tokenize and searchTermsFor', () => {
+  it('drops filler, accents and plurals', () => {
+    expect(tokenize('Grilled Chicken Breasts')).toEqual(['chicken', 'breast']);
+    expect(tokenize('Açaí with bananas')).toEqual(['acai', 'banana']);
+  });
+
+  it('searches the longest words first, at most three', () => {
+    expect(searchTermsFor('smoked salmon fillet with dill')).toEqual([
+      'smoked',
+      'salmon',
+      'fillet',
+    ]);
+  });
+});
+
+describe('pickFoodMatch', () => {
+  it('takes the candidate with the fewest extra words that covers the name', () => {
+    const pick = pickFoodMatch('chicken breast', [
+      food('a', 'Chicken breast'),
+      food('b', 'Chicken breast, skinless, boneless'),
+      food('c', 'Chicken thigh'),
+    ]);
+    expect(pick?.id).toBe('a');
+  });
+
+  it('returns null when two candidates are equally close', () => {
+    expect(pickFoodMatch('rice', [food('a', 'Rice white'), food('b', 'Rice brown')])).toBeNull();
+  });
+
+  it('returns null when no candidate carries every word', () => {
+    expect(
+      pickFoodMatch('salmon steak', [food('a', 'Salmon'), food('b', 'Beef steak')])
+    ).toBeNull();
+    expect(pickFoodMatch('', [food('a', 'Rice')])).toBeNull();
+  });
+});
+
+describe('buildPhotoMeal', () => {
+  it('uses the matched food id and the unmatched sentinel otherwise, with no numbers', () => {
+    const foods = [
+      { name: 'rice', grams: 150 },
+      { name: 'mystery stew', grams: 200 },
+    ];
+    const meal = buildPhotoMeal(
+      foods,
+      new Map([
+        ['rice', food('f1', 'Rice, white')],
+        ['mystery stew', null],
+      ]),
+      'lunch'
+    );
+
+    expect(meal.meals).toHaveLength(1);
+    expect(meal.meals[0].mealType).toBe('lunch');
+    expect(meal.meals[0].ingredients).toEqual([
+      { name: 'Rice, white', grams: 150, foodId: 'f1', kcal: 0, protein: 0, carbs: 0, fat: 0 },
+      {
+        name: 'mystery stew',
+        grams: 200,
+        foodId: LOCAL_PHOTO_UNMATCHED_FOOD_ID,
+        kcal: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+      },
+    ]);
+  });
+});
+
+describe('mealTypeForHour', () => {
+  it('maps the clock to the diary meals', () => {
+    expect(mealTypeForHour(8)).toBe('breakfast');
+    expect(mealTypeForHour(12)).toBe('lunch');
+    expect(mealTypeForHour(19)).toBe('dinner');
+    expect(mealTypeForHour(23)).toBe('snack');
+    expect(mealTypeForHour(3)).toBe('snack');
+  });
+});
+
+describe('LOCAL_FOOD_IDENTIFY_SCHEMA name bound', () => {
+  it('asks for names no longer than the parser keeps', () => {
+    expect(LOCAL_FOOD_IDENTIFY_SCHEMA.properties.items.items.properties.name.maxLength).toBe(
+      MAX_IDENTIFIED_NAME_CHARS
+    );
+  });
+});
+
+describe('repair call prompts', () => {
+  it('names the schema and caps what is sent back', () => {
+    expect(localJsonRepairPrompt()).toContain('"items"');
+    expect(localJsonRepairMessage('x'.repeat(MAX_REPAIR_INPUT_CHARS + 500)).length).toBeLessThan(
+      MAX_REPAIR_INPUT_CHARS + 40
+    );
+  });
+});

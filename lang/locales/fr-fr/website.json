@@ -386,6 +386,7 @@
         "empty": "Aucun article trouvé avec l'étiquette {{tag}}.",
         "listLabel": "Articles du blog avec l'étiquette {{tag}}"
       },
+      "highlightedPosts": "Commencez ici",
       "tagsPage": {
         "title": "Étiquettes du blog",
         "description": "Toutes les étiquettes utilisées sur le blog Musclog. Plus une étiquette est grande, plus elle regroupe d'articles.",
@@ -581,7 +582,7 @@
     "privacy": {
       "titleStart": "Politique de",
       "titleHighlight": "confidentialité",
-      "lastUpdated": "Dernière mise à jour : 22 novembre 2026",
+      "lastUpdated": "Dernière mise à jour : 23 novembre 2026",
       "highlights": {
         "dataProtection": {
           "title": "Protection des données",
@@ -727,6 +728,7 @@
           "title": "Partage de tes données personnelles",
           "items": [
             "Avec les fournisseurs que tu choisis : les recherches d'aliments vont à la base d'aliments que tu sélectionnes, et les requêtes d'IA vont au fournisseur d'IA que tu configures.",
+            "Avec Hugging Face, si tu choisis de télécharger le modèle d'IA sur l'appareil : comme tout téléchargement de fichier, la requête communique à Hugging Face l'adresse IP de ton appareil. Le modèle fonctionne ensuite sur ton appareil, et ce que tu lui demandes reste sur ton appareil.",
             "Avec des prestataires de services qui exécutent certaines parties du Service pour Nous : Sentry (rapports de plantage, et rapports d'erreurs du service de Musclog Iron ne contenant aucun contenu de message ni identifiant), OpenRouter et Google (l'option gratuite Musclog AI), Cloudflare, OpenRouter et RevenueCat (Musclog Iron), GitHub et Cloudflare (hébergement du site web), ainsi que Google Analytics (le site web, uniquement après que tu as accepté les statistiques).",
             "Lorsque la loi l'exige, comme décrit dans « Divulgation de tes données personnelles ».",
             "Avec ton consentement, par exemple lorsque tu exportes ou partages toi-même des données.",

@@ -2,6 +2,8 @@
 // response, token, key, rc_id or IP cannot be logged by accident: there is no free-text field.
 // Error and overrun lines are always kept; everything else is sampled at `sampleRate`.
 
+import type { UpstreamName } from './upstream/types';
+
 export interface LogEvent {
   route: string;
   status: number;
@@ -10,6 +12,8 @@ export interface LogEvent {
   /** First 8 hex chars of the lineage key (a hash), never an rc_id. */
   lineage_prefix?: string;
   model?: string;
+  /** Which gateway served (or would have served) the request: 'openrouter' | 'otari'. */
+  upstream?: UpstreamName;
   tokens?: number;
   cost_u?: number;
   overrun?: boolean;
@@ -28,6 +32,7 @@ const ALLOWED = new Set<keyof LogEvent>([
   'latency_ms',
   'lineage_prefix',
   'model',
+  'upstream',
   'tokens',
   'cost_u',
   'overrun',

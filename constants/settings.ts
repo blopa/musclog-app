@@ -460,6 +460,13 @@ export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
 export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
 
 /**
+ * Setting type for which engine answers when on-device AI is on.
+ * value: 'auto' | 'apple' | 'gguf' (default 'auto': Apple Intelligence on iOS, the downloaded
+ * model elsewhere; see `utils/onDeviceEngine.ts`). A preference, backed up like the other AI ones.
+ */
+export const ON_DEVICE_ENGINE_SETTING_TYPE = 'on_device_engine';
+
+/**
  * Setting type for routing AI requests through Musclog Iron's hosted service (stored in
  * WatermelonDB settings table). value: 'true' | 'false'. Device-specific enrollment: never
  * included in a backup, and a restore always lands on the default (off).

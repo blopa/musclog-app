@@ -1,30 +1,54 @@
-import { Bot, KeyRound, Sparkles, Wand2 } from 'lucide-react-native';
+import { Bot, Download, KeyRound, Settings2, Sparkles, Wand2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { Button } from '@/components/theme/Button';
+import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { usePremium } from '@/hooks/usePremium';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
+import { startLocalModelDownload } from '@/services/localModels/modelStore';
+import { disableOnDeviceAi } from '@/services/onDeviceAiSetup';
+import { DEFAULT_LOCAL_MODEL_SELECTION } from '@/utils/localModels/install';
+import type { OnDeviceStatusState } from '@/utils/onDeviceStatus';
 
 import { FullScreenModal } from './FullScreenModal';
+
+/** One whole key per state the on-device AI can be stuck in. */
+const NOT_READY_MESSAGE_KEYS: Record<Exclude<OnDeviceStatusState, 'ready'>, string> = {
+  needsDownload: 'onDeviceAi.notReady.message.needsDownload',
+  downloading: 'onDeviceAi.notReady.message.downloading',
+  downloadFailed: 'onDeviceAi.notReady.message.downloadFailed',
+  appleOff: 'onDeviceAi.notReady.message.appleOff',
+  appleNotReady: 'onDeviceAi.notReady.message.appleNotReady',
+  appleNotEligible: 'onDeviceAi.notReady.message.appleNotEligible',
+  unsupported: 'onDeviceAi.notReady.message.unsupported',
+};
 
 type AINotConfiguredModalProps = {
   visible: boolean;
   onClose: () => void;
   /** When set, shows a primary action to open AI settings (parent usually closes the modal in this handler). */
   onOpenAISettings?: () => void;
+  /**
+   * `localNotReady`: AI on this phone is the chosen provider but cannot answer yet (model not
+   * downloaded, Apple Intelligence off). It says why and offers the fix.
+   */
+  variant?: 'notConfigured' | 'localNotReady';
 };
 
 export function AINotConfiguredModal({
   visible,
   onClose,
   onOpenAISettings,
+  variant = 'notConfigured',
 }: AINotConfiguredModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const premium = usePremium();
+  const status = useOnDeviceStatus();
+  const notReady = variant === 'localNotReady';
   const [premiumVisible, setPremiumVisible] = useSubModalVisibility(visible);
 
   // Premium is offered only in builds where it is switched on; otherwise the footer is unchanged.
@@ -61,8 +85,58 @@ export function AINotConfiguredModal({
     <Button label={t('common.close')} variant="accent" width="full" onPress={onClose} />
   );
 
+  const notReadyFooter = (
+    <View className="gap-3">
+      {status.state === 'needsDownload' || status.state === 'downloadFailed' ? (
+        <Button
+          label={t('onDeviceAi.notReady.download')}
+          variant="accent"
+          width="full"
+          icon={Download}
+          onPress={() => {
+            void startLocalModelDownload(DEFAULT_LOCAL_MODEL_SELECTION);
+            onClose();
+          }}
+        />
+      ) : null}
+      {status.state === 'appleOff' ? (
+        <Button
+          label={t('onDeviceAi.notReady.openIosSettings')}
+          variant="accent"
+          width="full"
+          icon={Settings2}
+          onPress={() => void Linking.openSettings()}
+        />
+      ) : null}
+      {onOpenAISettings ? (
+        <Button
+          label={t('onDeviceAi.notReady.openAiSettings')}
+          variant="outline"
+          width="full"
+          icon={KeyRound}
+          onPress={() => {
+            onOpenAISettings();
+            onClose();
+          }}
+        />
+      ) : null}
+      <Button
+        label={t('onDeviceAi.notReady.chooseAnother')}
+        variant="outline"
+        width="full"
+        onPress={() => {
+          void disableOnDeviceAi();
+          onOpenAISettings?.();
+          onClose();
+        }}
+      />
+    </View>
+  );
+
   // With Premium off this is exactly the footer that shipped before.
-  const footer = premium.enabled ? (
+  const footer = notReady ? (
+    notReadyFooter
+  ) : premium.enabled ? (
     <View className="gap-3">
       {premiumButton}
       {settingsFooter}
@@ -75,8 +149,12 @@ export function AINotConfiguredModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('ai.notConfiguredModal.title')}
-      subtitle={t('ai.notConfiguredModal.subtitle')}
+      title={t(notReady ? 'onDeviceAi.notReady.title' : 'ai.notConfiguredModal.title')}
+      subtitle={
+        notReady && status.state !== 'ready'
+          ? t(NOT_READY_MESSAGE_KEYS[status.state])
+          : t('ai.notConfiguredModal.subtitle')
+      }
       footer={footer}
     >
       <View className="justify-start px-5 pb-4 pt-3">

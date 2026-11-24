@@ -89,6 +89,7 @@ describe('planTemporaryCleanup', () => {
 describe('storage categories', () => {
   it('offers to clear only rebuildable data', () => {
     expect(isClearableStorageCategory('exerciseImages')).toBe(true);
+    expect(isClearableStorageCategory('localAiModels')).toBe(true);
     expect(isClearableStorageCategory('temporary')).toBe(true);
     expect(isClearableStorageCategory('database')).toBe(false);
     expect(isClearableStorageCategory('photos')).toBe(false);

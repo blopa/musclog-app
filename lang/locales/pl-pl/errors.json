@@ -31,6 +31,10 @@
     "hostedDailyFull": "AI w Musclog Iron jest przeciążone do jutra (UTC).",
     "hostedDailyLimit": "Osiągnięto dzienny limit Musclog Iron. Zeruje się o północy (UTC). W międzyczasie możesz użyć własnego klucza lub darmowego poziomu.",
     "hostedBusy": "Musclog Iron jest zajęty. Spróbuj ponownie za kilka sekund.",
-    "hostedAlreadyProcessed": "To żądanie zostało już obsłużone. Wyślij je ponownie."
+    "hostedAlreadyProcessed": "To żądanie zostało już obsłużone. Wyślij je ponownie.",
+    "onDeviceNotReady": "AI na urządzeniu nie jest jeszcze gotowe. Dokończ konfigurację w ustawieniach AI albo wybierz inną AI.",
+    "onDevicePhotosNotInstalled": "W ustawieniach AI zainstaluj ponownie model z włączoną obsługą zdjęć, aby korzystać ze zdjęć posiłków offline.",
+    "onDevicePhotosUnsupported": "Apple Intelligence nie może tutaj analizować zdjęć posiłków. Wybierz w ustawieniach AI model obsługujący zdjęcia.",
+    "onDeviceLoadFailed": "AI na urządzeniu nie mogło się uruchomić, zwykle dlatego, że w telefonie brakuje pamięci. Zamknij inne aplikacje i spróbuj ponownie."
   }
 }

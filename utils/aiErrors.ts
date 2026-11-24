@@ -36,6 +36,24 @@ export class AiCancelledError extends Error {
   }
 }
 
+/**
+ * The on-device model cannot answer right now: nothing is installed yet, the system model is not
+ * ready, or it failed to load (usually memory). There is deliberately no fallback to another
+ * provider, because the data recipient would change; the person is told what to fix.
+ */
+export type OnDeviceUnavailableReason =
+  'notReady' | 'loadFailed' | 'photosNotInstalled' | 'photosUnsupported';
+
+export class OnDeviceUnavailableError extends Error {
+  readonly reason: OnDeviceUnavailableReason;
+
+  constructor(reason: OnDeviceUnavailableReason, message = 'The on-device AI is not available') {
+    super(message);
+    this.name = 'OnDeviceUnavailableError';
+    this.reason = reason;
+  }
+}
+
 /** Providers where the user supplies the key. Gateway, hosted and on-device never become a key error. */
 const USER_KEY_PROVIDERS: ReadonlySet<CoachAIProvider> = new Set(['gemini', 'openai', 'claude']);
 
@@ -154,6 +172,7 @@ export function rethrowUserFacingAiError(error: unknown): void {
     error instanceof AiInvalidKeyError ||
     error instanceof AiTimeoutError ||
     error instanceof AiCancelledError ||
+    error instanceof OnDeviceUnavailableError ||
     // Every hosted failure is typed and user-actionable; none may turn into the generic credits text.
     hostedErrorKindOf(error) !== null
   ) {
@@ -186,6 +205,19 @@ export function describeAiError(
 
   if (error instanceof AiTimeoutError) {
     return t('errors.aiTimeout');
+  }
+
+  if (error instanceof OnDeviceUnavailableError) {
+    switch (error.reason) {
+      case 'notReady':
+        return t('errors.onDeviceNotReady');
+      case 'loadFailed':
+        return t('errors.onDeviceLoadFailed');
+      case 'photosNotInstalled':
+        return t('errors.onDevicePhotosNotInstalled');
+      case 'photosUnsupported':
+        return t('errors.onDevicePhotosUnsupported');
+    }
   }
 
   if (error instanceof HostedAiError) {

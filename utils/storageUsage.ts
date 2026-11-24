@@ -11,12 +11,20 @@ export const STORAGE_CATEGORY_IDS = [
   'sensorRecordings',
   'recoveryPoints',
   'exerciseImages',
+  'localAiModels',
   'temporary',
 ] as const;
 export type StorageCategoryId = (typeof STORAGE_CATEGORY_IDS)[number];
 
-/** The only categories the app offers to clear: both are rebuilt or recreated on demand. */
-export const CLEARABLE_STORAGE_CATEGORY_IDS = ['exerciseImages', 'temporary'] as const;
+/**
+ * The only categories the app offers to clear: each is rebuilt or downloaded again on demand
+ * (the on-device AI model comes back with one tap in AI settings).
+ */
+export const CLEARABLE_STORAGE_CATEGORY_IDS = [
+  'exerciseImages',
+  'localAiModels',
+  'temporary',
+] as const;
 export type ClearableStorageCategoryId = (typeof CLEARABLE_STORAGE_CATEGORY_IDS)[number];
 
 export function isClearableStorageCategory(

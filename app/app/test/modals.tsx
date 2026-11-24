@@ -84,6 +84,7 @@ import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScannedFoodDetailsModal } from '@/components/modals/ScannedFoodDetailsModal';
 import { SelectModal } from '@/components/modals/SelectModal';
 import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
+import { ThirdPartyNoticesModal } from '@/components/modals/ThirdPartyNoticesModal';
 import { TimePickerInput } from '@/components/modals/TimePickerInput';
 import { TimePickerModal } from '@/components/modals/TimePickerModal';
 import { UserMenuModal } from '@/components/modals/UserMenuModal';
@@ -193,6 +194,7 @@ export default function ModalsTestScreen() {
   const [isCreateWorkoutOptionsVisible, setIsCreateWorkoutOptionsVisible] = useState(false);
   const [isExternalWorkoutPlanVisible, setIsExternalWorkoutPlanVisible] = useState(false);
   const [isExternalFoodLogVisible, setIsExternalFoodLogVisible] = useState(false);
+  const [isThirdPartyNoticesVisible, setIsThirdPartyNoticesVisible] = useState(false);
   // Premium Modal: the id of the state to render, null while closed.
   const [premiumFixtureId, setPremiumFixtureId] = useState<string | null>(null);
 
@@ -698,6 +700,13 @@ export default function ModalsTestScreen() {
               variant="outline"
               width="full"
               onPress={() => setIsExternalFoodLogVisible(true)}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open Third Party Notices Modal"
+              variant="outline"
+              width="full"
+              onPress={() => setIsThirdPartyNoticesVisible(true)}
             />
           </View>
 
@@ -2201,6 +2210,11 @@ export default function ModalsTestScreen() {
           console.log('Exercise added:', data);
           setIsAddExerciseVisible(false);
         }}
+      />
+
+      <ThirdPartyNoticesModal
+        visible={isThirdPartyNoticesVisible}
+        onClose={() => setIsThirdPartyNoticesVisible(false)}
       />
 
       <AISettingsModal

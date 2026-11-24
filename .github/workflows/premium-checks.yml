@@ -10,6 +10,7 @@ on:
       - 'services/premium-worker/**'
       - 'infra/premium/**'
       - 'scripts/premium-deploy.sh'
+      - 'scripts/premium-upstream.sh'
       - 'docs/PREMIUM_WORKER.md'
       - '.github/workflows/premium-checks.yml'
   push:
@@ -18,6 +19,7 @@ on:
       - 'services/premium-worker/**'
       - 'infra/premium/**'
       - 'scripts/premium-deploy.sh'
+      - 'scripts/premium-upstream.sh'
       - 'docs/PREMIUM_WORKER.md'
       - '.github/workflows/premium-checks.yml'
   workflow_dispatch:
@@ -107,7 +109,7 @@ jobs:
 
       # shellcheck comes with the ubuntu-latest image.
       - name: Shellcheck
-        run: shellcheck --severity=warning scripts/premium-deploy.sh
+        run: shellcheck --severity=warning scripts/premium-deploy.sh scripts/premium-upstream.sh
 
       # An empty environment on purpose: a dry run needs no credential.
       - name: Dry run, staging
@@ -115,3 +117,10 @@ jobs:
 
       - name: Dry run, production
         run: scripts/premium-deploy.sh production --dry-run
+
+      # The upstream toggle without --yes: a status reads nothing and a set is a dry run.
+      - name: Upstream toggle dry run, staging
+        run: scripts/premium-upstream.sh staging status --dry-run
+
+      - name: Upstream toggle dry run, production
+        run: scripts/premium-upstream.sh production status --dry-run

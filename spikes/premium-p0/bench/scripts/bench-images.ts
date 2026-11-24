@@ -1,22 +1,30 @@
 // Image benchmark (gate G6): long edge x JPEG quality per model, error vs gold and vs the full-resolution run.
 //   dry-run (default, offline, mock):  tsx scripts/bench-images.ts
 //   live (spends money):               OPENROUTER_API_KEY=... tsx scripts/bench-images.ts --live --max-usd 3
-// Options: --models id,id  --manifest data/manifest.json  --edges 512,768,1024,1280,1568  --qualities 60,75,85
+//   Otari gateway (pinned selectors):  OTARI_API_KEY=... tsx scripts/bench-images.ts --live --gateway otari --max-usd 3 \
+//                                        --models deepinfra:alibaba/qwen3-vl-30b-a3b-instruct,deepinfra:nvidia/nemotron-3.5-super-vl-120b-a12b
+// Options: --models id,id  --gateway openrouter|otari (default openrouter)  --manifest data/manifest.json
+//          --edges 512,768,1024,1280,1568  --qualities 60,75,85
 //          --photos N (use the first N manifest rows)  --out results/images
 // Manifest rows: { image: path relative to data/, kcal, protein, carbs, fat, kind: plated|packaged|label|restaurant|mixed, grams? }
+// Otari: a call served by another provider than the selector's prefix, or one the gateway marked as a fallback, counts as an error.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import sharp from 'sharp';
 import {
   Budget,
+  DEFAULT_MODELS,
+  DEFAULT_OTARI_IMAGE_MODELS,
   ROOT,
+  checkedChat,
+  costOf,
   fmt,
+  gatewayExtras,
   makeTransport,
   mean,
   parseArgs,
   percentile,
   pickModels,
-  providerBlock,
   resolveMode,
   type ModelInfo,
 } from './lib/core.ts';
@@ -109,7 +117,11 @@ const macroPct = (p: Macros, g: Macros) =>
 export async function main(argv?: string[]) {
   const a = parseArgs(argv);
   const mode = resolveMode(a);
-  const models: ModelInfo[] = pickModels(a.str('models'));
+  const models: ModelInfo[] = pickModels(
+    a.str('models'),
+    mode.gateway,
+    mode.gateway === 'otari' ? DEFAULT_OTARI_IMAGE_MODELS : DEFAULT_MODELS
+  );
   const edges = (a.str('edges') ?? '512,768,1024,1280,1568').split(',').map(Number);
   const qualities = (a.str('qualities') ?? '60,75,85').split(',').map(Number);
   const dataDir = join(ROOT, 'data');
@@ -140,8 +152,7 @@ export async function main(argv?: string[]) {
     const body: any = {
       model: model.id,
       max_tokens: Math.min(maxTokens, model.maxCompletion),
-      provider: providerBlock(model),
-      ...(model.reasoningSupported ? { reasoning: { effort: 'low' } } : {}),
+      ...gatewayExtras(model, mode.gateway),
       messages: [
         { role: 'system', content: F.MEAL_ANALYSIS_PROMPT },
         { role: 'user', content },
@@ -161,8 +172,8 @@ export async function main(argv?: string[]) {
       body.max_tokens
     );
     if (mode.live && !budget.allows(est)) return null;
-    const r = await t.chat(body, { stream: false, meta });
-    budget.record(r.json?.usage?.cost);
+    const r = await checkedChat(t, model, body, { stream: false, meta }, mode.gateway);
+    budget.record(costOf(r.json?.usage));
     return r;
   };
 
@@ -210,11 +221,14 @@ export async function main(argv?: string[]) {
           bytes: img.bytes,
           width: img.w,
           height: img.h,
-          pred: r.status === 200 ? macrosOf(r.json?.choices?.[0]?.message?.content) : null,
-          error: r.status === 200 ? undefined : `HTTP ${r.status}`,
+          pred:
+            r.status === 200 && !r.routeError
+              ? macrosOf(r.json?.choices?.[0]?.message?.content)
+              : null,
+          error: r.routeError ?? (r.status === 200 ? undefined : `HTTP ${r.status}`),
           prompt,
           imageTokens: prompt ? Math.max(0, prompt - (baseline.get(model.id) ?? 0)) : null,
-          cost: typeof u?.cost === 'number' ? u.cost : 0,
+          cost: costOf(u),
           latencyMs: r.latencyMs,
         });
       }

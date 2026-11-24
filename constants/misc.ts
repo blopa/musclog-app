@@ -41,6 +41,13 @@ export const UNREAD_CHAT_MESSAGES_COUNT = 'unreadChatMessages';
 export const COACH_REPLY_JOURNAL = 'coachReplyJournal';
 
 /**
+ * Where a paused or interrupted on-device model download stands: the file it was fetching and the
+ * resume data the native downloader gave back. Device-local (another phone's partial file is not
+ * this phone's), so it is excluded from backups.
+ */
+export const LOCAL_MODEL_DOWNLOAD_STATE = 'localModelDownloadState';
+
+/**
  * The text of a message whose reply failed while nobody was looking at the chat, kept so the
  * composer is filled with it the next time that conversation opens. Encrypted, local only.
  */

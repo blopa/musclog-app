@@ -4,6 +4,7 @@ import {
   selectReplayFlow,
   selectWhatsNewFlow,
 } from '../whatsNew/flow';
+import type { WhatsNewContext } from '../whatsNew/catalog';
 import type { WhatsNewBlock, WhatsNewRelease } from '../whatsNew/schema';
 
 function release(version: string, count = 2): WhatsNewRelease {
@@ -209,7 +210,7 @@ describe('pageHeadlineDetailKeys', () => {
     const flow = selectReplayFlow({
       releases: whatsNewReleases,
       currentVersion: '2.15.2',
-      context: { cycleTracking: true, premium: false },
+      context: { cycleTracking: true, premium: false, onDeviceAiPossible: false },
     });
     const details = flow.pages.map(pageHeadlineDetailKeys);
     expect(details).toHaveLength(9);
@@ -237,7 +238,7 @@ describe('conditional pages', () => {
       },
     ],
   };
-  const keys = (context?: { cycleTracking: boolean; premium: boolean }) =>
+  const keys = (context?: WhatsNewContext) =>
     selectWhatsNewFlow({
       releases: [gated],
       seenThrough: null,
@@ -247,8 +248,13 @@ describe('conditional pages', () => {
 
   test('hides a gated page unless its condition holds', () => {
     expect(keys()).toEqual(['2.14.0:all']);
-    expect(keys({ cycleTracking: false, premium: false })).toEqual(['2.14.0:all']);
-    expect(keys({ cycleTracking: true, premium: false })).toEqual(['2.14.0:all', '2.14.0:cycle']);
+    expect(keys({ cycleTracking: false, premium: false, onDeviceAiPossible: false })).toEqual([
+      '2.14.0:all',
+    ]);
+    expect(keys({ cycleTracking: true, premium: false, onDeviceAiPossible: false })).toEqual([
+      '2.14.0:all',
+      '2.14.0:cycle',
+    ]);
   });
 
   test('the premium condition gates a page the same way', () => {
@@ -267,17 +273,39 @@ describe('conditional pages', () => {
         releases: [premiumRelease],
         seenThrough: null,
         currentVersion: '2.14.0',
-        context: { cycleTracking: false, premium },
+        context: { cycleTracking: false, premium, onDeviceAiPossible: false },
       }).pages.length;
     expect(pages(false)).toBe(0);
     expect(pages(true)).toBe(1);
   });
 
   test('replay applies the same gate', () => {
-    const replay = (context?: { cycleTracking: boolean; premium: boolean }) =>
+    const replay = (context?: WhatsNewContext) =>
       selectReplayFlow({ releases: [gated], currentVersion: '2.14.0', context }).pages.length;
     expect(replay()).toBe(1);
-    expect(replay({ cycleTracking: true, premium: false })).toBe(2);
+    expect(replay({ cycleTracking: true, premium: false, onDeviceAiPossible: false })).toBe(2);
+  });
+
+  test('the on-device AI condition gates a page the same way', () => {
+    const onDeviceRelease: WhatsNewRelease = {
+      version: '2.18.0',
+      pages: [
+        {
+          id: 'onDeviceAi',
+          requires: 'onDeviceAiPossible',
+          blocks: [{ id: 'info', type: 'info', titleKey: 'whatsNew.title' }],
+        },
+      ],
+    };
+    const pages = (onDeviceAiPossible: boolean) =>
+      selectWhatsNewFlow({
+        releases: [onDeviceRelease],
+        seenThrough: null,
+        currentVersion: '2.18.0',
+        context: { cycleTracking: false, premium: false, onDeviceAiPossible },
+      }).pages.length;
+    expect(pages(false)).toBe(0);
+    expect(pages(true)).toBe(1);
   });
 
   test('a release whose only page is gated yields no flow without the condition', () => {
@@ -334,10 +362,16 @@ describe('the intro a release brings', () => {
     };
     expect(selectWhatsNewFlow(input).intro).toBeNull();
     expect(
-      selectWhatsNewFlow({ ...input, context: { cycleTracking: false, premium: true } }).intro
+      selectWhatsNewFlow({
+        ...input,
+        context: { cycleTracking: false, premium: true, onDeviceAiPossible: false },
+      }).intro
     ).toMatchObject({ requires: 'premium' });
     expect(
-      selectReplayFlow({ ...input, context: { cycleTracking: false, premium: true } }).intro
+      selectReplayFlow({
+        ...input,
+        context: { cycleTracking: false, premium: true, onDeviceAiPossible: false },
+      }).intro
     ).not.toBeNull();
   });
 });

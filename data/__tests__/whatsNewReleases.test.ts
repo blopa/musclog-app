@@ -193,3 +193,26 @@ describe('the page of 2.17.5', () => {
     expect(description).toMatch(/100% free/);
   });
 });
+
+describe('the on-device AI page of 2.18.0', () => {
+  const release = whatsNewReleases.find((candidate) => candidate.version === '2.18.0');
+  const page = release?.pages.find((candidate) => candidate.id === 'onDeviceAi');
+
+  it('is gated on local AI being available and leads with its headline', () => {
+    expect(page?.requires).toBe('onDeviceAiPossible');
+    expect(page?.blocks[0]).toMatchObject({
+      type: 'info',
+      titleKey: 'whatsNew.releases.v2_18_0.onDeviceAi.title',
+    });
+  });
+
+  it('opens the on-device AI setup from one primary action, back to Settings', () => {
+    const action = page?.blocks.find((block) => block.type === 'action');
+
+    expect(action).toMatchObject({ type: 'action', action: 'openOnDeviceAiSetup', primary: true });
+    expect(WHATS_NEW_ACTION_CATALOG.openOnDeviceAiSetup).toEqual({
+      kind: 'route',
+      route: '/app/onboarding/on-device-ai?nextRoute=%2Fapp%2Fsettings',
+    });
+  });
+});

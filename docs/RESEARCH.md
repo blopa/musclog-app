@@ -810,3 +810,12 @@ Notes that explain the choices:
   get the policy as instructions only; none of them has a documented file-based way to bind a worker
   to a cheaper model that this repo could configure without per-user settings. Gemini CLI reads
   `GEMINI.md` unless `context.fileName` lists `AGENTS.md`; it is not configured here.
+
+## On-device AI (2026-11-23)
+
+- **Why one model.** Maintainer decision D2: a single downloadable model, LFM2.5-VL-450M (text and vision), run by llama.rn 0.12.9 (pinned exactly, with the bundled llama.cpp), plus Apple Intelligence on iOS through `@react-native-ai/apple` 0.12. The sizes, speeds and benchmarks in `docs/ON_DEVICE_AI_PLAN.md` are vendor figures read on 2026-11-23; **none is a measurement of ours** until the P0 spike and P7 bench (`app/app/test/local-ai-bench.tsx`, pass bars in plan section 12: 98% valid structured output, 80% correct food names, text TTFT 2 s on a 6 GB Android, photo identify 10 s, no OOM in 50 runs) are run on phones.
+- **Structured output is checked, not trusted.** The gguf engine is grammar-constrained by llama.cpp, then parsed and checked against the schema by `utils/aiSchemaValidate.ts`. Apple's guided generation is OS-enforced and cloud providers are server-enforced, so only the downloaded engine is validated here.
+- **License.** LFM Open License v1.0 permits commercial use below a revenue threshold of US$10M a year. **Review trigger: re-read the license and talk to Liquid AI before Musclog's annual revenue approaches US$10M**, or earlier if the license text changes (the pinned revision does not, but a model update does). The app links the license text instead of copying it. llama.rn and llama.cpp are MIT.
+- **Fallback if llama.rn or LFM stops working on a platform**: MNN (the "Pocket" style runtime) is the researched alternative runtime; it would replace `services/localModels/llamaRuntime.ts` only, because every caller goes through `generateWithLocalModel`.
+- **Network.** The download tells Hugging Face the device's IP address, like any file download, and nothing else about the person. The privacy policy says so (all ten locales). Everything after the download is offline.
+- **Open items needing devices**: whether llama.rn 0.12.9's llama.cpp loads LFM2.5-VL (else move to `0.13.0-rc.*`), size delta of the release build, iOS 17 and armeabi-v7a behaviour, peak RAM, and that the Swift availability module compiles and maps `SystemLanguageModel.Availability` correctly.

@@ -201,6 +201,25 @@ describe('streaming coach replies', () => {
       expect(seen[seen.length - 1]).toBe(result.msg4User);
     });
 
+    it('streams only msg4User when a local model leaks a template header before the JSON', async () => {
+      const leaked = `<|im_start|>assistant ${reply}<|im_end|>`;
+      mockCreate.mockResolvedValue(openAiChunks(...(leaked.match(/.{1,5}/gs) ?? [])));
+      const seen: string[] = [];
+
+      const result = await sendCoachMessage(
+        { ...openai, provider: 'local', baseUrl: 'http://localhost:1234/v1' },
+        [],
+        'tell me about squats',
+        'general',
+        { onText: (text) => seen.push(text) }
+      );
+
+      expect(result.msg4User).toBe('Squats are great — "heavy" ones too.');
+      for (const text of seen) {
+        expect(result.msg4User.startsWith(text)).toBe(true);
+      }
+    });
+
     it('throws, rather than saving a friendly error as the answer, when it fails after text was shown', async () => {
       mockCreate.mockResolvedValue(
         chunksThenFailure(pieces.slice(0, 4), Object.assign(new Error('boom'), { status: 500 }))

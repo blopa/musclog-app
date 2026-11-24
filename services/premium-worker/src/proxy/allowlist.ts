@@ -4,9 +4,27 @@
 import { type AiConfig, type Feature, REASONING_EFFORTS, type ReasoningEffort } from '../config';
 import { ApiError } from '../http';
 
+/**
+ * The validated client request with no gateway-specific field: no model, no `provider`, no
+ * `reasoning` object. `src/proxy/upstreamBody.ts` turns it into the body one upstream accepts.
+ * `reasoning` is the effective effort (already clamped), null for none.
+ */
+export interface NeutralBody {
+  messages: unknown[];
+  stream: boolean;
+  max_tokens: number;
+  temperature?: number;
+  reasoning: ReasoningEffort | null;
+  response_format?: Json;
+  tools?: Json[];
+  tool_choice?: unknown;
+  parallel_tool_calls?: boolean;
+  stop?: string | string[];
+}
+
 export interface AllowlistedRequest {
-  /** Upstream body WITHOUT `user` (chat.ts adds it). */
-  body: Record<string, unknown>;
+  /** Gateway-neutral body WITHOUT `user` (chat.ts adds it). */
+  neutral: NeutralBody;
   feature: Feature;
   stream: boolean;
   maxTokens: number;
@@ -322,37 +340,21 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
       ? tokenLimit
       : Math.min(tokenLimit, Math.max(1, Math.floor(input.max_tokens as number)));
 
-  const { prices, provider } = config;
-  const body: Record<string, unknown> = {
-    model: config.model,
-    provider: {
-      zdr: true,
-      data_collection: 'deny',
-      require_parameters: true,
-      allow_fallbacks: false,
-      max_price: {
-        prompt: prices.prompt_per_mtok,
-        completion: prices.completion_per_mtok,
-        image: prices.image_per_image,
-      },
-      ...(provider.only ? { only: provider.only, order: provider.only } : {}),
-    },
-    messages,
-    stream,
-    max_tokens: maxTokens,
-  };
-  assertPremiumPrivacy(body);
+  const neutral: NeutralBody = { messages, stream, max_tokens: maxTokens, reasoning };
   if (input.temperature !== undefined)
-    body.temperature = Math.min(limits.temperature_max, Math.max(0, input.temperature as number));
-  if (reasoning !== null) body.reasoning = { effort: reasoning };
-  if (responseFormat) body.response_format = responseFormat;
-  if (tools) body.tools = tools;
-  if (toolChoice !== undefined) body.tool_choice = toolChoice;
-  if (input.parallel_tool_calls !== undefined) body.parallel_tool_calls = input.parallel_tool_calls;
-  if (stop !== undefined) body.stop = stop;
+    neutral.temperature = Math.min(
+      limits.temperature_max,
+      Math.max(0, input.temperature as number)
+    );
+  if (responseFormat) neutral.response_format = responseFormat;
+  if (tools) neutral.tools = tools;
+  if (toolChoice !== undefined) neutral.tool_choice = toolChoice;
+  if (input.parallel_tool_calls !== undefined)
+    neutral.parallel_tool_calls = input.parallel_tool_calls as boolean;
+  if (stop !== undefined) neutral.stop = stop;
 
   return {
-    body,
+    neutral,
     feature,
     stream,
     maxTokens,

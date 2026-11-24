@@ -31,6 +31,10 @@
     "hostedDailyFull": "Musclog Iron zit tot morgen (UTC) aan de capaciteitsgrens.",
     "hostedDailyLimit": "Je hebt de dagelijkse limiet van Musclog Iron bereikt. Die wordt om middernacht (UTC) gereset. Je kunt intussen je eigen sleutel of de gratis variant gebruiken.",
     "hostedBusy": "Musclog Iron is bezet. Probeer het over een paar seconden opnieuw.",
-    "hostedAlreadyProcessed": "Dit verzoek is al verwerkt. Stuur het opnieuw."
+    "hostedAlreadyProcessed": "Dit verzoek is al verwerkt. Stuur het opnieuw.",
+    "onDeviceNotReady": "On-device AI is nog niet klaar. Rond de instelling af in de AI-instellingen, of kies een andere AI.",
+    "onDevicePhotosNotInstalled": "Installeer het model opnieuw via de AI-instellingen met fotoherkenning ingeschakeld om maaltijd foto’s offline te gebruiken.",
+    "onDevicePhotosUnsupported": "Apple Intelligence kan hier geen maaltijd foto’s analyseren. Kies in de AI-instellingen een model met fotoondersteuning.",
+    "onDeviceLoadFailed": "On-device AI kon niet starten, meestal omdat de telefoon weinig geheugen heeft. Sluit andere apps af en probeer het opnieuw."
   }
 }

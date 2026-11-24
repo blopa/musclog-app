@@ -97,6 +97,7 @@ export function BlogPostListing({
   tag,
   tagLabel,
   currentPage,
+  highlightedPosts = [],
   posts,
   totalPages,
 }: BlogPostListingProps) {
@@ -131,6 +132,26 @@ export function BlogPostListing({
           <p className="mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
             {copy.description}
           </p>
+          {tag && currentPage === 1 && highlightedPosts.length > 0 ? (
+            <section aria-label={t('highlightedPosts')} className="mt-5 max-w-2xl">
+              <ul className="space-y-4">
+                {highlightedPosts.map((post) => (
+                  <li key={post.slug}>
+                    <a
+                      href={href(blogPostPath(post.slug))}
+                      className="font-bold underline underline-offset-4 transition-colors hover:text-accent-pale"
+                      style={{ color: BRAND_GREEN_BRIGHT }}
+                    >
+                      {post.title}
+                    </a>
+                    <p className="mt-1 leading-relaxed" style={{ color: BODY_TEXT }}>
+                      {post.excerpt}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
           {category || tag ? null : (
             <p className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-bold">
               <a

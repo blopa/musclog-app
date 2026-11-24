@@ -16,11 +16,16 @@ import { useSettings } from '@/hooks/useSettings';
  * remember to pass.
  */
 export function useAvailableHomeActions(): readonly HomeActionKey[] {
-  const { isAiConfigured } = useSettings();
+  const { isAiConfigured, isAiMealPhotoEnabled } = useSettings();
   const hasCamera = useHasCamera();
 
   return useMemo(() => {
-    const context = { isAiConfigured, isWeb: Platform.OS === 'web', hasCamera };
+    const context = {
+      isAiConfigured,
+      isAiMealPhotoEnabled,
+      isWeb: Platform.OS === 'web',
+      hasCamera,
+    };
     return HOME_ACTION_KEYS.filter((key) => HOME_ACTIONS[key].isAvailable(context));
-  }, [isAiConfigured, hasCamera]);
+  }, [isAiConfigured, isAiMealPhotoEnabled, hasCamera]);
 }

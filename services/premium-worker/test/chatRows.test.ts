@@ -4,8 +4,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { countingDb } from './fakes/countingDb';
 import { fakeOpenRouter, jsonCompletion, sseCompletion } from './fakes/openrouter';
+import { fakeOtari, otariJsonCompletion, otariSseCompletion } from './fakes/otari';
 import { seed, wipe } from './fakes/seed';
-import { call, chatBody } from './chatHarness';
+import { call, chatBody, useOtari } from './chatHarness';
 
 beforeEach(async () => {
   await wipe(env.DB);
@@ -50,5 +51,31 @@ describe('rows written per request', () => {
     expect((await call({ or, env: { DB: b.db } })).res.status).toBe(503);
     expect(b.rowsWritten()).toBe(0);
     expect(or.calls).toHaveLength(0);
+  });
+});
+
+describe('rows written per request on Otari', () => {
+  it('a full non-stream request writes the same 5 rows (the toggle is only read)', async () => {
+    await useOtari();
+    const counting = countingDb(env.DB);
+    const otari = fakeOtari(otariJsonCompletion('0.000500'));
+    const { res, done } = await call({ otari, env: { DB: counting.db } });
+    await res.text();
+    await done();
+    expect(counting.rowsWritten()).toBe(5);
+  });
+
+  it('a full streaming request writes <= 6 rows', async () => {
+    await useOtari();
+    const counting = countingDb(env.DB);
+    const otari = fakeOtari(otariSseCompletion('0.000500'));
+    const { res, done } = await call({
+      otari,
+      body: chatBody({ stream: true }),
+      env: { DB: counting.db },
+    });
+    await res.text();
+    await done();
+    expect(counting.rowsWritten()).toBeLessThanOrEqual(6);
   });
 });

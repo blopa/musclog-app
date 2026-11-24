@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import wranglerToml from '../wrangler.toml?raw';
 
+import { OFFICIAL_OTARI_BASE_URL } from '../src/config';
 import { parseConfig } from '../src/configSchema';
 import { testConfig } from './fakes/ctx';
 
@@ -52,6 +53,24 @@ describe('wrangler.toml AI_CONFIG_JSON', () => {
       });
       expect(r.ok, `${env}: ${r.ok ? '' : r.errors.join(', ')}`).toBe(true);
     }
+  });
+
+  it('every environment block sets OTARI_BASE_URL, official in production and staging', () => {
+    const urls = [...wranglerToml.matchAll(/^\[(env\.[^\]]+)\.vars\]|^OTARI_BASE_URL = "(.*)"$/gm)];
+    const byEnv: Record<string, string> = {};
+    let current = '';
+    for (const m of urls) {
+      if (m[1]) current = m[1];
+      else byEnv[current] = m[2]!;
+    }
+    expect(Object.keys(byEnv).sort()).toEqual([
+      'env.local',
+      'env.production',
+      'env.staging',
+      'env.test',
+    ]);
+    expect(byEnv['env.production']).toBe(OFFICIAL_OTARI_BASE_URL);
+    expect(byEnv['env.staging']).toBe(OFFICIAL_OTARI_BASE_URL);
   });
 
   it('the test fixture still uses the same feature shape as the wrangler values', () => {

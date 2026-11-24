@@ -5,7 +5,7 @@ import type { AiConfig } from '../../src/config';
 import type { Ctx } from '../../src/context';
 import type { Deps } from '../../src/deps';
 import type { LogEvent } from '../../src/log';
-import type { OpenRouterClient, RevenueCatClient } from '../../src/upstream/types';
+import type { OpenRouterClient, OtariClient, RevenueCatClient } from '../../src/upstream/types';
 
 export const NOW = 1_800_000_000_000; // 2027-01-15T08:00:00.000Z
 export const DAY_MS = 86_400_000;
@@ -54,6 +54,12 @@ export const throwingOpenRouter: OpenRouterClient = {
   listZdrEndpoints: unexpected('openrouter.listZdrEndpoints'),
 };
 
+export const throwingOtari: OtariClient = {
+  chatCompletions: unexpected('otari.chatCompletions'),
+  usageSummary: unexpected('otari.usageSummary'),
+  budget: unexpected('otari.budget'),
+};
+
 export interface TestDeps extends Deps {
   logs: LogEvent[];
   /** Moves the fake clock. */
@@ -70,6 +76,7 @@ export function testDeps(over: Partial<Deps> = {}): TestDeps {
   const d: TestDeps = {
     revenuecat: throwingRevenueCat,
     openrouter: throwingOpenRouter,
+    otari: null,
     log: { log: (e) => logs.push(e) },
     now: () => t,
     randomHex: () => (++n).toString(16).padStart(32, '0'),

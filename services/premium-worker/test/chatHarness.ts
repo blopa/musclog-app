@@ -5,8 +5,10 @@ import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:
 import { createApp } from '../src/app';
 import type { LogEvent } from '../src/log';
 import { mintSessionToken } from '../src/identity/token';
-import { NOW, testConfig, testDeps, type TestDeps } from './fakes/ctx';
+import { NOW, testConfig, testDeps, throwingOpenRouter, type TestDeps } from './fakes/ctx';
 import type { FakeOpenRouter } from './fakes/openrouter';
+import { OTARI_CONFIG, type FakeOtari } from './fakes/otari';
+import { resetUpstreamCache } from '../src/upstream/select';
 import type { AiConfig } from '../src/config';
 
 export { NOW };
@@ -31,8 +33,22 @@ export async function tokenFor(rc = 'rc1', at = NOW): Promise<string> {
   return token;
 }
 
+export const OTARI_KEY = 'test-otari-key';
+
+/** Flips the D1 toggle to Otari (the 30 s cache is cleared so the next request reads it). */
+export async function useOtari(value = 'otari'): Promise<void> {
+  await env.DB.prepare(
+    "INSERT INTO meta (key, value) VALUES ('upstream', ?1) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+  )
+    .bind(value)
+    .run();
+  resetUpstreamCache();
+}
+
 export interface CallOptions {
-  or: FakeOpenRouter;
+  or?: FakeOpenRouter;
+  /** An Otari fake: gives the Worker an Otari key, the `otari` config block and the client. */
+  otari?: FakeOtari;
   body?: unknown;
   /** Raw body, used instead of JSON.stringify(body) (oversize and stream bodies). */
   rawBody?: BodyInit;
@@ -57,7 +73,14 @@ let holdSeq = 0;
 const uniqueHold = () => (++holdSeq).toString(16).padStart(32, '0');
 
 export async function call(o: CallOptions): Promise<CallResult> {
-  const deps = o.deps ?? testDeps({ openrouter: o.or, randomHex: uniqueHold });
+  const deps =
+    o.deps ??
+    testDeps({
+      openrouter: o.or ?? throwingOpenRouter,
+      otari: o.otari ?? null,
+      randomHex: uniqueHold,
+    });
+  const config = o.config ?? (o.otari ? testConfig({ otari: OTARI_CONFIG }) : undefined);
   const headers: Record<string, string> = { 'content-type': 'application/json', ...o.headers };
   const key = o.key === undefined ? IDEM : o.key;
   if (key !== null) {
@@ -72,7 +95,12 @@ export async function call(o: CallOptions): Promise<CallResult> {
     body: o.rawBody ?? JSON.stringify(o.body ?? chatBody()),
   });
   const exec = createExecutionContext();
-  const e = { ...env, ...(o.config ? { AI_CONFIG_JSON: JSON.stringify(o.config) } : {}), ...o.env };
+  const e = {
+    ...env,
+    ...(config ? { AI_CONFIG_JSON: JSON.stringify(config) } : {}),
+    ...(o.otari ? { OTARI_API_KEY: OTARI_KEY } : {}),
+    ...o.env,
+  };
   const res = await createApp(() => deps).fetch!(request as never, e as never, exec);
   watch.logs.push(...deps.logs);
   return { res, exec, deps, done: () => waitOnExecutionContext(exec) };

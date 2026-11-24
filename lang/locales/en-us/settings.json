@@ -236,6 +236,10 @@
             "name": "Exercise pictures",
             "description": "Downloaded demonstration images. They download again when needed"
           },
+          "localAiModels": {
+            "name": "On-device AI model",
+            "description": "The AI model downloaded to run on this phone. You can download it again in AI settings"
+          },
           "temporary": {
             "name": "Temporary files",
             "description": "Leftovers from exports, sharing and photo editing"
@@ -245,6 +249,7 @@
         "clearTitle": "Clear {{name}}?",
         "clearMessage": {
           "exerciseImages": "The pictures download again the next time an exercise is shown. Your data is not affected.",
+          "localAiModels": "On-device AI stops working until you download the model again in AI settings. Your data is not affected.",
           "temporary": "Removes leftover files older than an hour. Your data and safety backups are not affected."
         },
         "freed": "Freed {{size}}",
@@ -347,6 +352,7 @@
       "useThinkingMode": "Use thinking mode",
       "useThinkingModeSubtitle": "Allow AI providers to use deeper reasoning when supported. This uses more tokens and may increase cost.",
       "useThinkingModeIronNote": "With Musclog Iron, deeper thinking and extra checks use more of your monthly AI allowance.",
+      "localLlmThinkingEnabled": "Thinking mode turned on, since local models cost nothing extra. You can turn it off in AI settings.",
       "maxAiMemories": "Max AI memories",
       "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",
       "nutritionLogHistoryDays": "Nutrition log history sent to AI",
