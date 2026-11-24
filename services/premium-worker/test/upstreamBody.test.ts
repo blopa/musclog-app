@@ -4,6 +4,7 @@ import { allowlistRequest } from '../src/proxy/allowlist';
 import { reservationBound } from '../src/proxy/bound';
 import {
   assertOtariPinned,
+  assertPremiumPrivacy,
   buildOpenRouterBody,
   buildOtariBody,
   selectorProvider,
@@ -133,5 +134,20 @@ describe('reservationBound per upstream', () => {
     const inTokens = Math.ceil(r.textBytes / 2);
     const raw = inTokens * 0.2 + r.maxTokens * 0.8;
     expect(ot).toBe(Math.max(1, Math.ceil(raw * cfg.finance.price_slack) + 7));
+  });
+});
+
+describe('assertPremiumPrivacy', () => {
+  it('accepts valid OpenRouter privacy settings and rejects missing or weakened fields', () => {
+    expect(() =>
+      assertPremiumPrivacy({
+        provider: { zdr: true, data_collection: 'deny', allow_fallbacks: false },
+      })
+    ).not.toThrow();
+    expect(() =>
+      assertPremiumPrivacy({
+        provider: { zdr: false, data_collection: 'deny', allow_fallbacks: false },
+      })
+    ).toThrow('premium_privacy_invariant_violated');
   });
 });

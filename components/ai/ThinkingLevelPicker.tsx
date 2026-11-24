@@ -1,5 +1,4 @@
 import { Cpu } from 'lucide-react-native';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -8,6 +7,7 @@ import { BottomPopUp } from '@/components/BottomPopUp';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { ListRow } from '@/components/theme/ListRow';
 import type { AiProviderKind } from '@/constants/ai';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { THINKING_LEVELS, type ThinkingLevel } from '@/utils/aiThinkingLevel';
 
@@ -16,6 +16,8 @@ type ThinkingLevelPickerProps = {
   onChange: (level: ThinkingLevel) => void;
   /** The active provider; the free tier allows no thinking. */
   provider: AiProviderKind | null;
+  /** Host modal visibility; closes the picker sheet and confirmation dialog when the parent closes. */
+  parentVisible?: boolean;
 };
 
 // Whole-key tables: check-translations cannot see keys built from a template string.
@@ -50,15 +52,21 @@ const CONFIRM_TOKENMAXXING = {
 };
 
 /** The settings row for how hard the AI thinks: four levels, with the notes each provider needs. */
-export function ThinkingLevelPicker({ value, onChange, provider }: ThinkingLevelPickerProps) {
+export function ThinkingLevelPicker({
+  value,
+  onChange,
+  provider,
+  parentVisible = true,
+}: ThinkingLevelPickerProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useSubModalVisibility(parentVisible);
   const { allowed, pending, request, cancel, confirm } = useThinkingLevelChange({
     value,
     provider,
     onChange,
     authPrompt: t('settings.aiSettings.thinkingLevel.confirmTokenmaxxing.authPrompt'),
+    parentVisible,
   });
 
   const describe = (level: ThinkingLevel) => {

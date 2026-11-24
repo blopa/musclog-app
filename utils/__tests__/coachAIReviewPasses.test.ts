@@ -76,7 +76,9 @@ describe('insight fact-check rounds', () => {
     await expect(insights()).resolves.toBe('You ate 120 g of protein.');
     expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(lastUserMessage(1)).toContain('Figures not found in the data: 150');
-    expect(lastUserMessage(1)).toContain('You ate 150 g of protein.');
+    // The draft is the model's own previous turn, not quoted inside the instruction.
+    const turns = mockCreate.mock.calls[1][0].messages;
+    expect(turns.at(-2)).toEqual({ role: 'assistant', content: 'You ate 150 g of protein.' });
   });
 
   it('refuses a correction that invents more figures', async () => {
@@ -185,9 +187,9 @@ describe('plan critique rounds', () => {
     const result = await generateWorkoutPlan(openai, []);
 
     expect(mockCreate).toHaveBeenCalledTimes(2);
-    // The user message of a structured request is escaped, quotes included.
     expect(lastUserMessage(1)).toContain('lists exercise 1 more than once.');
-    expect(lastUserMessage(1)).toContain('--- ANSWER ---');
+    // The answer under review is the model's own previous turn.
+    expect(mockCreate.mock.calls[1][0].messages.at(-2).role).toBe('assistant');
     expect(result?.workoutPlan[0].exercises.map((e) => e.exerciseId)).toEqual(['1', '2']);
   });
 

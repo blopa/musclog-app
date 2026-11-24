@@ -5,6 +5,7 @@
  * (`platformModuleParity`).
  */
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
+import { stripTemplateTokens } from '@/utils/localReplyShape';
 
 import { devLocalModelBaseUrl, isDevWebLocalModel } from './devWebBridge';
 import type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult } from './llamaRuntime';
@@ -12,12 +13,23 @@ import type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult } from 
 export type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult };
 
 export const LOCAL_MODEL_IDLE_MS = 120_000;
+export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
 
 let queue: Promise<unknown> = Promise.resolve();
 let loaded = false;
 
-export async function unloadLocalModel(): Promise<void> {
-  loaded = false;
+export function unloadLocalModel(): Promise<void> {
+  const turn = queue.then(
+    () => {
+      loaded = false;
+    },
+    () => {
+      loaded = false;
+    }
+  );
+  queue = turn.catch(() => undefined);
+
+  return turn;
 }
 
 export function isLocalModelLoaded(): boolean {
@@ -55,6 +67,12 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
     max_tokens: params.maxTokens ?? 1024,
     temperature: params.temperature ?? 0.2,
     stream: false,
+    ...(params.penalties
+      ? {
+          frequency_penalty: params.penalties.frequency_penalty,
+          presence_penalty: params.penalties.presence_penalty,
+        }
+      : {}),
     ...(params.schema
       ? {
           response_format: {
@@ -102,7 +120,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       predicted_per_second?: number;
     };
   };
-  const reply = json.choices?.[0]?.message?.content ?? '';
+  const reply = stripTemplateTokens(json.choices?.[0]?.message?.content ?? '');
   params.onDelta?.(reply);
   console.info('[devLocalModel] reply in', Date.now() - startedAt, 'ms:', reply);
 

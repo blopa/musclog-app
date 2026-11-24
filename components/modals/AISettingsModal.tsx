@@ -1,4 +1,4 @@
-import { Bot, ChevronDown, ChevronRight, Settings2 } from 'lucide-react-native';
+import { Bot, ChevronDown, Settings2 } from 'lucide-react-native';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, Text, View } from 'react-native';
@@ -8,6 +8,7 @@ import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { OnDeviceAiSection } from '@/components/settings/OnDeviceAiSection';
 import { PremiumCard } from '@/components/settings/PremiumCard';
 import { Button } from '@/components/theme/Button';
+import { ListRow } from '@/components/theme/ListRow';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
@@ -19,9 +20,13 @@ import {
   GEMINI_MODELS,
   OPENAI_MODELS,
 } from '@/constants/ai';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { usePremium } from '@/hooks/usePremium';
+import { useSettings } from '@/hooks/useSettings';
+import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { needsFreeTierConsent } from '@/utils/aiConsent';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
@@ -263,34 +268,38 @@ type AISettingsModalProps = {
   onLocalLlmBaseUrlChange?: (value: string) => void;
 };
 
+type ModelMenuKey = 'gemini' | 'openai' | 'claude';
+
 export function AISettingsModal({
   visible,
   onClose,
-  googleGeminiApiKey = '',
+  googleGeminiApiKey,
   onGoogleGeminiApiKeyChange,
-  geminiModel = DEFAULT_GEMINI_MODEL,
+  geminiModel,
   onGeminiModelPress,
-  openAiApiKey = '',
+  openAiApiKey,
   onOpenAiApiKeyChange,
   onGetOpenAiKeyPress,
-  openAiModel = DEFAULT_OPENAI_MODEL,
+  openAiModel,
   onOpenAiModelPress,
-  claudeApiKey = '',
+  claudeApiKey,
   onClaudeApiKeyChange,
-  claudeModel = DEFAULT_CLAUDE_MODEL,
+  claudeModel,
   onClaudeModelPress,
-  localLlmApiKey = '',
+  localLlmApiKey,
   onLocalLlmApiKeyChange,
-  localLlmModel = 'llama3',
+  localLlmModel,
   onLocalLlmModelChange,
-  localLlmBaseUrl = 'http://localhost:11434/v1',
+  localLlmBaseUrl,
   onLocalLlmBaseUrlChange,
 }: AISettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
-  const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
-  const [claudeModelMenuVisible, setClaudeModelMenuVisible] = useState(false);
+  const settings = useSettings();
+  const [activeModelMenu, setActiveModelMenu] = useSubModalState<ModelMenuKey | null>(
+    visible,
+    null
+  );
   const [behaviorVisible, setBehaviorVisible] = useState(false);
   const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
   const [premiumVisible, setPremiumVisible] = useState(false);
@@ -299,20 +308,29 @@ export function AISettingsModal({
   const isMusclogIronActive =
     premium.enabled && premium.view.phase === 'active' && premium.useHostedAi;
 
+  const resolvedGeminiApiKey = googleGeminiApiKey ?? settings.googleGeminiApiKey ?? '';
+  const resolvedGeminiModel = geminiModel ?? settings.googleGeminiModel ?? DEFAULT_GEMINI_MODEL;
+  const resolvedOpenAiApiKey = openAiApiKey ?? settings.openAiApiKey ?? '';
+  const resolvedOpenAiModel = openAiModel ?? settings.openAiModel ?? DEFAULT_OPENAI_MODEL;
+  const resolvedClaudeApiKey = claudeApiKey ?? settings.claudeApiKey ?? '';
+  const resolvedClaudeModel = claudeModel ?? settings.claudeModel ?? DEFAULT_CLAUDE_MODEL;
+  const resolvedLocalLlmApiKey = localLlmApiKey ?? settings.localLlmApiKey ?? '';
+  const resolvedLocalLlmModel = localLlmModel ?? settings.localLlmModel ?? 'llama3';
+  const resolvedLocalLlmBaseUrl =
+    localLlmBaseUrl ?? settings.localLlmBaseUrl ?? 'http://localhost:11434/v1';
+
   // Use debounced settings for instant UI updates
   const {
     enableGoogleGemini: debouncedEnableGoogleGemini,
     enableOpenAi: debouncedEnableOpenAi,
     enableClaude: debouncedEnableClaude,
     enableLocalLlm: debouncedEnableLocalLlm,
-    useOnDeviceAi: debouncedUseOnDeviceAi,
     useMusclogFreeTier: debouncedUseMusclogFreeTier,
     thinkingLevel: debouncedThinkingLevel,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
     handleEnableClaudeChange,
     handleEnableLocalLlmChange,
-    handleUseOnDeviceAiChange,
     handleUseMusclogFreeTierChange,
     handleThinkingLevelChange,
     flushAllPendingChanges,
@@ -356,60 +374,86 @@ export function AISettingsModal({
   }, [visible, flushAllPendingChanges]);
 
   // Local state for API keys & local LLM configs (to avoid saving on every keystroke)
-  const [localGeminiApiKey, setLocalGeminiApiKey] = useState(googleGeminiApiKey);
-  const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(openAiApiKey);
-  const [localClaudeApiKey, setLocalClaudeApiKey] = useState(claudeApiKey);
-  const [localStateLlmApiKey, setLocalStateLlmApiKey] = useState(localLlmApiKey);
-  const [localStateLlmModel, setLocalStateLlmModel] = useState(localLlmModel);
-  const [localStateLlmBaseUrl, setLocalStateLlmBaseUrl] = useState(localLlmBaseUrl);
+  const [localGeminiApiKey, setLocalGeminiApiKey] = useState(resolvedGeminiApiKey);
+  const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(resolvedOpenAiApiKey);
+  const [localClaudeApiKey, setLocalClaudeApiKey] = useState(resolvedClaudeApiKey);
+  const [localStateLlmApiKey, setLocalStateLlmApiKey] = useState(resolvedLocalLlmApiKey);
+  const [localStateLlmModel, setLocalStateLlmModel] = useState(resolvedLocalLlmModel);
+  const [localStateLlmBaseUrl, setLocalStateLlmBaseUrl] = useState(resolvedLocalLlmBaseUrl);
 
   // Track if there are unsaved changes
-  const hasGeminiKeyChanges = localGeminiApiKey !== googleGeminiApiKey;
-  const hasOpenAiKeyChanges = localOpenAiApiKey !== openAiApiKey;
-  const hasClaudeKeyChanges = localClaudeApiKey !== claudeApiKey;
+  const hasGeminiKeyChanges = localGeminiApiKey !== resolvedGeminiApiKey;
+  const hasOpenAiKeyChanges = localOpenAiApiKey !== resolvedOpenAiApiKey;
+  const hasClaudeKeyChanges = localClaudeApiKey !== resolvedClaudeApiKey;
   const hasLocalLlmChanges =
-    localStateLlmApiKey !== localLlmApiKey ||
-    localStateLlmModel !== localLlmModel ||
-    localStateLlmBaseUrl !== localLlmBaseUrl;
+    localStateLlmApiKey !== resolvedLocalLlmApiKey ||
+    localStateLlmModel !== resolvedLocalLlmModel ||
+    localStateLlmBaseUrl !== resolvedLocalLlmBaseUrl;
 
   // Save handlers
   const handleSaveGeminiApiKey = () => {
-    onGoogleGeminiApiKeyChange?.(localGeminiApiKey);
+    if (onGoogleGeminiApiKeyChange) {
+      onGoogleGeminiApiKeyChange(localGeminiApiKey);
+    } else {
+      void SettingsService.setGoogleGeminiApiKey(localGeminiApiKey);
+    }
   };
 
   const handleSaveClaudeApiKey = () => {
-    onClaudeApiKeyChange?.(localClaudeApiKey);
+    if (onClaudeApiKeyChange) {
+      onClaudeApiKeyChange(localClaudeApiKey);
+    } else {
+      void SettingsService.setClaudeApiKey(localClaudeApiKey);
+    }
   };
 
   const handleSaveOpenAiApiKey = () => {
-    onOpenAiApiKeyChange?.(localOpenAiApiKey);
+    if (onOpenAiApiKeyChange) {
+      onOpenAiApiKeyChange(localOpenAiApiKey);
+    } else {
+      void SettingsService.setOpenAiApiKey(localOpenAiApiKey);
+    }
   };
 
   const handleSaveLocalLlmConfig = () => {
-    onLocalLlmApiKeyChange?.(localStateLlmApiKey);
-    onLocalLlmModelChange?.(localStateLlmModel);
-    onLocalLlmBaseUrlChange?.(localStateLlmBaseUrl);
+    if (onLocalLlmApiKeyChange) {
+      onLocalLlmApiKeyChange(localStateLlmApiKey);
+    } else {
+      void SettingsService.setLocalLlmApiKey(localStateLlmApiKey);
+    }
+
+    if (onLocalLlmModelChange) {
+      onLocalLlmModelChange(localStateLlmModel);
+    } else {
+      void SettingsService.setLocalLlmModel(localStateLlmModel);
+    }
+
+    if (onLocalLlmBaseUrlChange) {
+      onLocalLlmBaseUrlChange(localStateLlmBaseUrl);
+    } else {
+      void SettingsService.setLocalLlmBaseUrl(localStateLlmBaseUrl);
+    }
   };
 
-  // Sync local state when props change (e.g., when modal opens with saved values)
+  // Sync local state when props or stored settings change (e.g., when modal opens with saved values)
   useEffect(() => {
     const sync = () => {
-      setLocalGeminiApiKey(googleGeminiApiKey);
-      setLocalOpenAiApiKey(openAiApiKey);
-      setLocalClaudeApiKey(claudeApiKey);
-      setLocalStateLlmApiKey(localLlmApiKey);
-      setLocalStateLlmModel(localLlmModel);
-      setLocalStateLlmBaseUrl(localLlmBaseUrl);
+      setLocalGeminiApiKey(resolvedGeminiApiKey);
+      setLocalOpenAiApiKey(resolvedOpenAiApiKey);
+      setLocalClaudeApiKey(resolvedClaudeApiKey);
+      setLocalStateLlmApiKey(resolvedLocalLlmApiKey);
+      setLocalStateLlmModel(resolvedLocalLlmModel);
+      setLocalStateLlmBaseUrl(resolvedLocalLlmBaseUrl);
     };
 
     sync();
   }, [
-    googleGeminiApiKey,
-    openAiApiKey,
-    claudeApiKey,
-    localLlmApiKey,
-    localLlmModel,
-    localLlmBaseUrl,
+    resolvedGeminiApiKey,
+    resolvedOpenAiApiKey,
+    resolvedClaudeApiKey,
+    resolvedLocalLlmApiKey,
+    resolvedLocalLlmModel,
+    resolvedLocalLlmBaseUrl,
   ]);
 
   const geminiToggleItems = [
@@ -506,27 +550,67 @@ export function AISettingsModal({
 
   const geminiModelMenuItems: BottomPopUpMenuItem[] = Object.values(GEMINI_MODELS).map((model) => ({
     icon: Bot,
-    selected: model.model === geminiModel,
+    selected: model.model === resolvedGeminiModel,
     title: model.model,
     description: `Google Gemini ${model.model}`,
-    onPress: () => onGeminiModelPress?.(model.model),
+    onPress: () => {
+      if (onGeminiModelPress) {
+        onGeminiModelPress(model.model);
+      } else {
+        void SettingsService.setGoogleGeminiModel(model.model);
+      }
+    },
   }));
 
   const openAiModelMenuItems: BottomPopUpMenuItem[] = Object.values(OPENAI_MODELS).map((model) => ({
     icon: Bot,
-    selected: model.model === openAiModel,
+    selected: model.model === resolvedOpenAiModel,
     title: model.model,
     description: `OpenAI ${model.model}`,
-    onPress: () => onOpenAiModelPress?.(model.model),
+    onPress: () => {
+      if (onOpenAiModelPress) {
+        onOpenAiModelPress(model.model);
+      } else {
+        void SettingsService.setOpenAiModel(model.model);
+      }
+    },
   }));
 
   const claudeModelMenuItems: BottomPopUpMenuItem[] = Object.values(CLAUDE_MODELS).map((model) => ({
     icon: Bot,
-    selected: model.model === claudeModel,
+    selected: model.model === resolvedClaudeModel,
     title: model.model,
     description: `Anthropic ${model.model}`,
-    onPress: () => onClaudeModelPress?.(model.model),
+    onPress: () => {
+      if (onClaudeModelPress) {
+        onClaudeModelPress(model.model);
+      } else {
+        void SettingsService.set(SETTINGS.claudeModel, model.model);
+      }
+    },
   }));
+
+  const modelMenuConfigs: Record<
+    ModelMenuKey,
+    { title: string; subtitle: string; items: BottomPopUpMenuItem[] }
+  > = {
+    gemini: {
+      title: t('settings.aiSettings.selectGeminiModel'),
+      subtitle: t('settings.aiSettings.selectGeminiModelSubtitle'),
+      items: geminiModelMenuItems,
+    },
+    openai: {
+      title: t('settings.aiSettings.selectOpenAiModel'),
+      subtitle: t('settings.aiSettings.selectOpenAiModelSubtitle'),
+      items: openAiModelMenuItems,
+    },
+    claude: {
+      title: t('settings.aiSettings.selectClaudeModel'),
+      subtitle: t('settings.aiSettings.selectClaudeModelSubtitle'),
+      items: claudeModelMenuItems,
+    },
+  };
+  const currentModelMenu = activeModelMenu ? modelMenuConfigs[activeModelMenu] : null;
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
@@ -595,8 +679,8 @@ export function AISettingsModal({
               onTestKey={() => testApiKey('gemini', localGeminiApiKey)}
               hasUnsavedChanges={hasGeminiKeyChanges}
               modelLabel={t('settings.aiSettings.geminiModel')}
-              modelValue={geminiModel}
-              onModelPress={() => setGeminiModelMenuVisible(true)}
+              modelValue={resolvedGeminiModel}
+              onModelPress={() => setActiveModelMenu('gemini')}
             />
 
             {/* OpenAI Integration Section */}
@@ -624,8 +708,8 @@ export function AISettingsModal({
               onTestKey={() => testApiKey('openai', localOpenAiApiKey)}
               hasUnsavedChanges={hasOpenAiKeyChanges}
               modelLabel={t('settings.aiSettings.openAiModel')}
-              modelValue={openAiModel}
-              onModelPress={() => setOpenAiModelMenuVisible(true)}
+              modelValue={resolvedOpenAiModel}
+              onModelPress={() => setActiveModelMenu('openai')}
               modelFallbackText={t('settings.aiSettings.selectModel')}
             />
 
@@ -643,8 +727,8 @@ export function AISettingsModal({
               onTestKey={() => testApiKey('claude', localClaudeApiKey)}
               hasUnsavedChanges={hasClaudeKeyChanges}
               modelLabel={t('settings.aiSettings.claudeModel')}
-              modelValue={claudeModel}
-              onModelPress={() => setClaudeModelMenuVisible(true)}
+              modelValue={resolvedClaudeModel}
+              onModelPress={() => setActiveModelMenu('claude')}
               modelFallbackText={t('settings.aiSettings.selectModel')}
             />
 
@@ -694,80 +778,42 @@ export function AISettingsModal({
             />
 
             <OnDeviceAiSection
-              enabled={debouncedUseOnDeviceAi}
-              onEnabledChange={handleUseOnDeviceAiChange}
               hostedProviderActive={isMusclogIronActive || debouncedUseMusclogFreeTier}
             />
           </View>
         </View>
 
         {/* Everything around the providers (thinking, memory, photos, persona, prompts) lives on its own screen. */}
-        <View>
-          <Pressable
-            onPress={() => setBehaviorVisible(true)}
-            accessibilityRole="button"
-            className="overflow-hidden rounded-control border bg-bg-card active:bg-bg-overlay"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <View className="flex-row items-center justify-between p-4">
-              <View className="min-w-0 flex-1 flex-row items-center gap-3">
-                <View
-                  style={{
-                    width: theme.size['8'],
-                    height: theme.size['8'],
-                    borderRadius: theme.borderRadius.full / 2,
-                    backgroundColor: theme.colors.accent.primary20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                </View>
-                <View className="min-w-0 flex-1">
-                  <Text className="text-sm font-medium text-text-primary">
-                    {t('settings.aiBehavior.title')}
-                  </Text>
-                  <Text className="text-xs text-text-secondary" style={{ marginTop: 2 }}>
-                    {t('settings.aiBehavior.subtitle')}
-                  </Text>
-                </View>
-              </View>
-              <View className="shrink-0 justify-center pl-2">
-                <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-              </View>
+        <ListRow
+          variant="card"
+          title={t('settings.aiBehavior.title')}
+          subtitle={t('settings.aiBehavior.subtitle')}
+          onPress={() => setBehaviorVisible(true)}
+          leading={
+            <View
+              style={{
+                width: theme.size['8'],
+                height: theme.size['8'],
+                borderRadius: theme.borderRadius.full / 2,
+                backgroundColor: theme.colors.accent.primary20,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
-          </Pressable>
-        </View>
+          }
+        />
 
         <LegalLinksCard />
 
-        {/* Model Selection Menus */}
+        {/* Model Selection Menu */}
         <BottomPopUpMenu
-          visible={geminiModelMenuVisible}
-          onClose={() => setGeminiModelMenuVisible(false)}
-          title={t('settings.aiSettings.selectGeminiModel')}
-          subtitle={t('settings.aiSettings.selectGeminiModelSubtitle')}
-          items={geminiModelMenuItems}
-        />
-
-        <BottomPopUpMenu
-          visible={openAiModelMenuVisible}
-          onClose={() => setOpenAiModelMenuVisible(false)}
-          title={t('settings.aiSettings.selectOpenAiModel')}
-          subtitle={t('settings.aiSettings.selectOpenAiModelSubtitle')}
-          items={openAiModelMenuItems}
-        />
-
-        <BottomPopUpMenu
-          visible={claudeModelMenuVisible}
-          onClose={() => setClaudeModelMenuVisible(false)}
-          title={t('settings.aiSettings.selectClaudeModel')}
-          subtitle={t('settings.aiSettings.selectClaudeModelSubtitle')}
-          items={claudeModelMenuItems}
+          visible={currentModelMenu !== null}
+          onClose={() => setActiveModelMenu(null)}
+          title={currentModelMenu?.title ?? ''}
+          subtitle={currentModelMenu?.subtitle ?? ''}
+          items={currentModelMenu?.items ?? []}
         />
 
         {/* Inside this FullScreenModal's tree, and never open together with a menu. */}

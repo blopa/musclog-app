@@ -124,8 +124,8 @@ export function AINotConfiguredModal({
         label={t('onDeviceAi.notReady.chooseAnother')}
         variant="outline"
         width="full"
-        onPress={() => {
-          void disableOnDeviceAi();
+        onPress={async () => {
+          await disableOnDeviceAi();
           onOpenAISettings?.();
           onClose();
         }}
@@ -133,10 +133,7 @@ export function AINotConfiguredModal({
     </View>
   );
 
-  // With Premium off this is exactly the footer that shipped before.
-  const footer = notReady ? (
-    notReadyFooter
-  ) : premium.enabled ? (
+  const configuredFallback = premium.enabled ? (
     <View className="gap-3">
       {premiumButton}
       {settingsFooter}
@@ -144,6 +141,9 @@ export function AINotConfiguredModal({
   ) : (
     settingsFooter
   );
+
+  // With Premium off this is exactly the footer that shipped before.
+  const footer = notReady ? notReadyFooter : configuredFallback;
 
   return (
     <FullScreenModal

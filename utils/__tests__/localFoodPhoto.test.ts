@@ -1,11 +1,7 @@
 import {
-  buildPhotoMeal,
   type FoodCandidate,
   LOCAL_FOOD_IDENTIFY_SCHEMA,
-  limitFoodCandidates,
-  LOCAL_PHOTO_UNMATCHED_FOOD_ID,
   localFoodIdentifyPrompt,
-  MAX_FOOD_CANDIDATES,
   MAX_IDENTIFIED_FOODS,
   MAX_IDENTIFIED_NAME_CHARS,
   matchNameOf,
@@ -15,6 +11,7 @@ import {
   photoMealName,
   pickFoodMatch,
   voteIdentifiedFoods,
+  searchSpellingsFor,
   searchTermsFor,
   tokenize,
 } from '../localFoodPhoto';
@@ -46,6 +43,17 @@ describe('parseIdentifiedFoods', () => {
       { name: 'salt', grams: 5 },
       { name: 'feast', grams: 1500 },
     ]);
+  });
+
+  it('merges accent and case variants of one name, keeping the first spelling', () => {
+    expect(
+      parseIdentifiedFoods({
+        items: [
+          { name: 'Café', grams: 100 },
+          { name: 'cafe', grams: 50 },
+        ],
+      })
+    ).toEqual([{ name: 'Café', grams: 150 }]);
   });
 
   it('defaults a missing weight and merges repeats', () => {
@@ -124,38 +132,6 @@ describe('pickFoodMatch', () => {
   });
 });
 
-describe('buildPhotoMeal', () => {
-  it('uses the matched food id and the unmatched sentinel otherwise, with no numbers', () => {
-    const foods = [
-      { name: 'rice', grams: 150 },
-      { name: 'mystery stew', grams: 200 },
-    ];
-    const meal = buildPhotoMeal(
-      foods,
-      new Map([
-        ['rice', food('f1', 'Rice, white')],
-        ['mystery stew', null],
-      ]),
-      'lunch'
-    );
-
-    expect(meal.meals).toHaveLength(1);
-    expect(meal.meals[0].mealType).toBe('lunch');
-    expect(meal.meals[0].ingredients).toEqual([
-      { name: 'Rice, white', grams: 150, foodId: 'f1', kcal: 0, protein: 0, carbs: 0, fat: 0 },
-      {
-        name: 'mystery stew',
-        grams: 200,
-        foodId: LOCAL_PHOTO_UNMATCHED_FOOD_ID,
-        kcal: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-      },
-    ]);
-  });
-});
-
 describe('mealTypeForHour', () => {
   it('maps the clock to the diary meals', () => {
     expect(mealTypeForHour(8)).toBe('breakfast');
@@ -187,12 +163,6 @@ describe('photoMealName', () => {
     expect(name!.length).toBeLessThanOrEqual(MAX_IDENTIFIED_NAME_CHARS + 1);
     expect(name!.endsWith('…')).toBe(true);
     expect(name).not.toMatch(/, …$/);
-  });
-
-  it('is carried by the review payload', () => {
-    const meal = buildPhotoMeal([{ name: 'steak', grams: 250 }], new Map(), 'lunch');
-
-    expect(meal.meals[0]).toMatchObject({ mealType: 'lunch', mealName: 'Steak' });
   });
 });
 
@@ -297,59 +267,6 @@ describe('mergeFoodsAcrossPhotos', () => {
   });
 });
 
-describe('limitFoodCandidates', () => {
-  const many = (count: number, make: (index: number) => string) =>
-    Array.from({ length: count }, (_, index) => food(`f${index}`, make(index)));
-
-  it('returns a list within the limit as it is', () => {
-    const list = [food('a', 'Rice white'), food('b', 'Rice brown')];
-
-    expect(limitFoodCandidates('rice', list)).toEqual(list);
-    expect(MAX_FOOD_CANDIDATES).toBe(50);
-  });
-
-  it('caps a huge result at the limit, the best candidates first', () => {
-    // 200 partial matches (a word of the name missing) and the one candidate that carries both.
-    const list = [...many(200, (i) => `Rice variety ${i}`), food('best', 'Rice white')];
-    const capped = limitFoodCandidates('white rice', list);
-
-    expect(capped).toHaveLength(MAX_FOOD_CANDIDATES);
-    expect(capped[0].id).toBe('best');
-  });
-
-  it('never changes what pickFoodMatch answers', () => {
-    const noise = many(120, (i) => `Rice dish number ${i}`);
-    const winner = food('winner', 'Rice, white');
-    const list = [...noise, winner];
-
-    expect(pickFoodMatch('white rice', limitFoodCandidates('white rice', list))?.id).toBe(
-      pickFoodMatch('white rice', list)?.id
-    );
-    expect(pickFoodMatch('white rice', limitFoodCandidates('white rice', list))?.id).toBe('winner');
-  });
-
-  it('keeps a tie at the top a tie, so a cut never invents a match', () => {
-    const list = [
-      ...many(80, (i) => `Rice flour ${i}`),
-      food('a', 'Rice white'),
-      food('b', 'Rice brown'),
-    ];
-
-    expect(pickFoodMatch('rice', list)).toBeNull();
-    expect(pickFoodMatch('rice', limitFoodCandidates('rice', list))).toBeNull();
-  });
-
-  it('takes an explicit limit', () => {
-    expect(
-      limitFoodCandidates(
-        'rice',
-        many(10, (i) => `Rice ${i}`),
-        3
-      )
-    ).toHaveLength(3);
-  });
-});
-
 describe('matchNameOf', () => {
   it('uses the English name when it has one', () => {
     expect(matchNameOf({ name: 'Брокколи', englishName: ' Broccoli ' })).toBe('Broccoli');
@@ -398,20 +315,6 @@ describe('pickFoodMatch with descriptions', () => {
 
   it('scores a candidate without a description exactly as before', () => {
     expect(pickFoodMatch('rice', [food('a', 'Rice white')])?.id).toBe('a');
-  });
-});
-
-describe('limitFoodCandidates with descriptions', () => {
-  it('keeps a description match ahead of worse candidates in a cut', () => {
-    const noise = Array.from({ length: 60 }, (_, index) =>
-      food(`n${index}`, `Rice variety ${index}`)
-    );
-    const list = [...noise, food('desc', 'Spring Mix Salad', 'Lettuce, leaf')];
-    const capped = limitFoodCandidates('lettuce', list);
-
-    expect(capped).toHaveLength(MAX_FOOD_CANDIDATES);
-    expect(capped[0].id).toBe('desc');
-    expect(pickFoodMatch('lettuce', capped)?.id).toBe(pickFoodMatch('lettuce', list)?.id);
   });
 });
 
@@ -539,5 +442,20 @@ describe('mergeFoodsAcrossPhotos englishName', () => {
         [{ name: 'брокколи', grams: 50, englishName: 'Florets' }],
       ])
     ).toEqual([{ name: 'Брокколи', grams: 120, englishName: 'Broccoli' }]);
+  });
+});
+
+describe('searchSpellingsFor', () => {
+  it('asks for the folded and the accented spelling of the first word', () => {
+    expect(searchSpellingsFor('Açaí bowl')).toEqual(['acai', 'açaí']);
+    expect(searchSpellingsFor('Jalapeños')).toEqual(['jalapeno', 'jalapeño']);
+  });
+
+  it('asks once when the accents change nothing', () => {
+    expect(searchSpellingsFor('Chicken breasts')).toEqual(['chicken']);
+  });
+
+  it('asks nothing when the name has no searchable word', () => {
+    expect(searchSpellingsFor('и')).toEqual([]);
   });
 });

@@ -11,9 +11,9 @@ import { WhatsNewCard } from '@/components/cards/WhatsNewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AIBehaviorSettingsModal } from '@/components/modals/AIBehaviorSettingsModal';
+import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { AppLockSettingsModal } from '@/components/modals/AppLockSettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
-import { ConnectedAISettingsModal } from '@/components/modals/ConnectedAISettingsModal';
 import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { ManageBleDevicesModal } from '@/components/modals/ManageBleDevicesModal';
@@ -178,10 +178,7 @@ export default function SettingsScreen() {
         </AnimatedContent>
       </ScrollView>
 
-      <ConnectedAISettingsModal
-        visible={isAISettingsVisible}
-        onClose={() => setAISettingsVisible(false)}
-      />
+      <AISettingsModal visible={isAISettingsVisible} onClose={() => setAISettingsVisible(false)} />
       <AIBehaviorSettingsModal
         visible={isAIBehaviorVisible}
         onClose={() => setAIBehaviorVisible(false)}

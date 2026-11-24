@@ -23,8 +23,10 @@ jest.mock('@/utils/musclogGatewayAvailability', () => ({
 }));
 jest.mock('@/services/localModels/onDeviceStatusStore', () => {
   const mockStatus = {
+    initialized: true,
     engine: 'apple',
     state: 'ready',
+    appleState: 'ready',
     progress: null,
     capabilities: { engine: 'apple', vision: false, contextChars: 4500 },
     updateAvailable: false,

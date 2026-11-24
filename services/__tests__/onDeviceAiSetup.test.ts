@@ -2,6 +2,7 @@ const mockSetUse = jest.fn();
 const mockSet = jest.fn();
 const mockStart = jest.fn();
 const mockRefresh = jest.fn();
+const mockHandleError = jest.fn();
 
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
@@ -14,6 +15,9 @@ jest.mock('@/services/localModels/modelStore', () => ({
 }));
 jest.mock('@/services/localModels/onDeviceStatusStore', () => ({
   refreshOnDeviceStatus: (...a: unknown[]) => mockRefresh(...a),
+}));
+jest.mock('@/utils/handleError', () => ({
+  handleError: (...a: unknown[]) => mockHandleError(...a),
 }));
 
 import { SETTINGS } from '@/constants/settingDefinitions';
@@ -41,9 +45,9 @@ describe('enableOnDeviceAi', () => {
 
   it('does not wait for the download to finish', async () => {
     mockStart.mockReturnValue(new Promise(() => undefined));
-    await expect(
-      enableOnDeviceAi('gguf', { download: { withProjector: true } })
-    ).resolves.toBeUndefined();
+    await expect(enableOnDeviceAi('gguf', { download: { withProjector: true } })).resolves.toBe(
+      true
+    );
   });
 });
 
@@ -57,5 +61,37 @@ describe('disableOnDeviceAi and setOnDeviceEngine', () => {
     await setOnDeviceEngine('apple');
     expect(mockSet).toHaveBeenCalledWith(SETTINGS.onDeviceEngine, 'apple');
     expect(mockSetUse).not.toHaveBeenCalled();
+  });
+});
+
+describe('a failed settings write', () => {
+  // Every caller is a tap handler or a `void` call: a rejection would be unhandled and unreported.
+  it.each([
+    ['enable', () => enableOnDeviceAi('apple'), mockSetUse, 'onDeviceAi.enable'],
+    ['disable', () => disableOnDeviceAi(), mockSetUse, 'onDeviceAi.disable'],
+    ['engine', () => setOnDeviceEngine('gguf'), mockSet, 'onDeviceAi.engine'],
+  ])(
+    '%s resolves false and reports once instead of rejecting',
+    async (_name, run, write, context) => {
+      const failure = new Error('database locked');
+      write.mockRejectedValueOnce(failure);
+
+      await expect(run()).resolves.toBe(false);
+      expect(mockHandleError).toHaveBeenCalledTimes(1);
+      expect(mockHandleError).toHaveBeenCalledWith(failure, context, { showSnackbar: false });
+    }
+  );
+
+  it('starts no download when the choice could not be saved', async () => {
+    mockSetUse.mockRejectedValueOnce(new Error('database locked'));
+
+    await enableOnDeviceAi('gguf', { download: { withProjector: true } });
+    expect(mockStart).not.toHaveBeenCalled();
+  });
+
+  it('resolves true when everything was saved', async () => {
+    await expect(disableOnDeviceAi()).resolves.toBe(true);
+    await expect(setOnDeviceEngine('apple')).resolves.toBe(true);
+    expect(mockHandleError).not.toHaveBeenCalled();
   });
 });

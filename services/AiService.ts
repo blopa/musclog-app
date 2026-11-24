@@ -2,7 +2,10 @@ import { AI_PROVIDER_KINDS } from '@/constants/ai';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
-import { refreshOnDeviceStatus } from '@/services/localModels/onDeviceStatusStore';
+import {
+  getOnDeviceStatusSnapshot,
+  refreshOnDeviceStatus,
+} from '@/services/localModels/onDeviceStatusStore';
 import { getSessionGrant, hostedAiBaseUrl } from '@/services/premium/premiumService';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
@@ -152,7 +155,8 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
   'on-device': async () =>
     (await SettingsService.getUseOnDeviceAi())
       ? async (language) => {
-          const status = await refreshOnDeviceStatus();
+          const snapshot = getOnDeviceStatusSnapshot();
+          const status = snapshot.initialized ? snapshot : await refreshOnDeviceStatus();
 
           return {
             provider: 'on-device',

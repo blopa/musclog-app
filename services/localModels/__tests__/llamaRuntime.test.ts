@@ -1,3 +1,4 @@
+import { reportAiEvent } from '@/utils/aiTelemetry';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 
 const mockInstalled: {
@@ -32,6 +33,7 @@ const mockContext = {
   }),
 };
 
+jest.mock('@/utils/aiTelemetry', () => ({ reportAiEvent: jest.fn() }));
 jest.mock('llama.rn', () => ({
   initLlama: jest.fn(async () => {
     if (mockInitShouldFail) {
@@ -55,6 +57,7 @@ import {
   generateWithLocalModel,
   isLocalModelLoaded,
   LOCAL_MODEL_IDLE_MS,
+  LOCAL_PROJECTOR_IDLE_MS,
   unloadLocalModel,
 } from '../llamaRuntime';
 
@@ -77,8 +80,8 @@ beforeEach(async () => {
 
     return { text: 'hello', timings: { predicted_per_second: 30 } };
   };
-  jest.clearAllMocks();
   await unloadLocalModel();
+  jest.clearAllMocks();
   mockCalls.length = 0;
 });
 
@@ -131,10 +134,10 @@ describe('generateWithLocalModel', () => {
     expect(mockContext.completion.mock.calls[1][0]).not.toHaveProperty('penalty_present');
   });
 
-  it('attaches the projector only for a photo and releases it afterwards', async () => {
+  it('attaches the projector only for a photo and releases it after a short idle', async () => {
     await generateWithLocalModel({ messages, image: 'file:///photo.jpg' });
 
-    expect(mockCalls).toEqual(['init', 'attach', 'detach']);
+    expect(mockCalls).toEqual(['init', 'attach']);
     const sent = mockContext.completion.mock.calls[0][0] as { messages: { content: unknown }[] };
     expect(sent.messages[0].content).toEqual([
       { type: 'text', text: 'hi' },
@@ -143,6 +146,32 @@ describe('generateWithLocalModel', () => {
 
     mockCalls.length = 0;
     await generateWithLocalModel({ messages });
+    expect(mockCalls).toEqual([]);
+
+    await jest.advanceTimersByTimeAsync(LOCAL_PROJECTOR_IDLE_MS + 10);
+    expect(mockCalls).toEqual(['detach']);
+    expect(isLocalModelLoaded()).toBe(true);
+  });
+
+  it('keeps the projector across consecutive photo requests', async () => {
+    await generateWithLocalModel({ messages, image: 'file:///a.jpg' });
+    await jest.advanceTimersByTimeAsync(LOCAL_PROJECTOR_IDLE_MS - 1000);
+    await generateWithLocalModel({ messages, image: 'file:///b.jpg' });
+    await jest.advanceTimersByTimeAsync(LOCAL_PROJECTOR_IDLE_MS - 1000);
+
+    expect(mockCalls).toEqual(['init', 'attach']);
+    expect(mockContext.initMultimodal).toHaveBeenCalledTimes(1);
+
+    await jest.advanceTimersByTimeAsync(2000);
+    expect(mockCalls).toEqual(['init', 'attach', 'detach']);
+  });
+
+  it('a pending projector release is cleared when the model unloads', async () => {
+    await generateWithLocalModel({ messages, image: 'file:///a.jpg' });
+    await unloadLocalModel();
+    mockCalls.length = 0;
+    await jest.advanceTimersByTimeAsync(LOCAL_PROJECTOR_IDLE_MS + 10);
+
     expect(mockCalls).toEqual([]);
   });
 
@@ -219,7 +248,18 @@ describe('generateWithLocalModel', () => {
       generateWithLocalModel({ messages, image: 'file:///photo.jpg', signal: controller.signal })
     ).rejects.toBeInstanceOf(AiCancelledError);
     expect(mockContext.completion).not.toHaveBeenCalled();
+    await jest.advanceTimersByTimeAsync(LOCAL_PROJECTOR_IDLE_MS + 10);
     expect(mockContext.releaseMultimodal).toHaveBeenCalled();
+  });
+
+  it('reports a projector that cannot be attached, and fails the photo request', async () => {
+    mockContext.initMultimodal.mockImplementationOnce(async () => false);
+
+    await expect(
+      generateWithLocalModel({ messages, image: 'file:///photo.jpg' })
+    ).rejects.toMatchObject({ reason: 'loadFailed' });
+    expect(mockContext.completion).not.toHaveBeenCalled();
+    expect(reportAiEvent).toHaveBeenCalledWith('local-model-projector-failed', expect.any(Object));
   });
 
   it('does not start when already aborted', async () => {
@@ -248,5 +288,173 @@ describe('idle unload', () => {
     await generateWithLocalModel({ messages });
     await jest.advanceTimersByTimeAsync(LOCAL_MODEL_IDLE_MS - 1000);
     expect(isLocalModelLoaded()).toBe(true);
+  });
+});
+
+describe('unloadLocalModel serialization', () => {
+  it('stops active completion and waits for the queue before releasing', async () => {
+    let releaseCompletion!: () => void;
+    let completionStarted!: () => void;
+    const started = new Promise<void>((resolve) => {
+      completionStarted = resolve;
+    });
+    mockCompletionImpl = async () => {
+      mockCalls.push('completionStart');
+      completionStarted();
+      await new Promise<void>((resolve) => {
+        releaseCompletion = resolve;
+      });
+      mockCalls.push('completionEnd');
+
+      return { text: 'partial' };
+    };
+
+    const gen = generateWithLocalModel({ messages });
+    await started;
+
+    const unload = unloadLocalModel();
+    await Promise.resolve();
+    try {
+      expect(mockCalls).toEqual(['init', 'completionStart', 'stop']);
+      expect(mockContext.release).not.toHaveBeenCalled();
+    } finally {
+      releaseCompletion();
+      await Promise.all([gen.catch(() => undefined), unload]);
+    }
+
+    expect(mockCalls).toEqual([
+      'init',
+      'completionStart',
+      'stop',
+      'completionEnd',
+      'detach',
+      'release',
+    ]);
+    expect(isLocalModelLoaded()).toBe(false);
+  });
+
+  it('reports a generation stopped by an unload as a cancel, not a finished reply', async () => {
+    let releaseCompletion!: () => void;
+    let completionStarted!: () => void;
+    const started = new Promise<void>((resolve) => {
+      completionStarted = resolve;
+    });
+    mockCompletionImpl = async () => {
+      completionStarted();
+      await new Promise<void>((resolve) => {
+        releaseCompletion = resolve;
+      });
+
+      return { text: 'half a rep' };
+    };
+
+    const gen = generateWithLocalModel({ messages });
+    const outcome = gen.then(
+      (value) => ({ value }),
+      (error) => ({ error })
+    );
+    await started;
+    const unload = unloadLocalModel();
+    releaseCompletion();
+    await unload;
+
+    const result = await outcome;
+    expect((result as { error?: unknown }).error).toBeInstanceOf(AiCancelledError);
+
+    // The next request is not poisoned by the earlier stop.
+    mockCompletionImpl = async () => ({ text: 'fine' });
+    await expect(generateWithLocalModel({ messages })).resolves.toMatchObject({ text: 'fine' });
+  });
+
+  it('waits for an in-flight initLlama before releasing the context', async () => {
+    const llama = jest.requireMock('llama.rn');
+    let finishInit!: (ctx: typeof mockContext) => void;
+    let initStarted!: () => void;
+    const started = new Promise<void>((resolve) => {
+      initStarted = resolve;
+    });
+    llama.initLlama.mockImplementationOnce(() => {
+      mockCalls.push('initStart');
+      initStarted();
+
+      return new Promise((resolve) => {
+        finishInit = resolve;
+      });
+    });
+
+    const gen = generateWithLocalModel({ messages });
+    await started;
+
+    const unload = unloadLocalModel();
+    await Promise.resolve();
+    try {
+      expect(mockContext.release).not.toHaveBeenCalled();
+    } finally {
+      finishInit(mockContext);
+      await Promise.all([gen, unload]);
+    }
+
+    expect(mockCalls).toEqual(['initStart', 'detach', 'release']);
+    expect(isLocalModelLoaded()).toBe(false);
+  });
+});
+
+describe('llamaRuntime.web', () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.resetModules();
+  });
+
+  it('forwards penalties, strips template tokens and serializes unload', async () => {
+    let webModule!: typeof import('../llamaRuntime.web');
+    let resolveFetch!: (value: Response) => void;
+    const fetchMock = jest.fn(
+      () =>
+        new Promise<Response>((resolve) => {
+          resolveFetch = resolve;
+        })
+    );
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    jest.isolateModules(() => {
+      jest.doMock('../devWebBridge', () => ({
+        isDevWebLocalModel: () => true,
+        devLocalModelBaseUrl: () => 'http://localhost:8080',
+      }));
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      webModule = require('../llamaRuntime.web');
+    });
+
+    const deltas: string[] = [];
+    const gen = webModule.generateWithLocalModel({
+      messages,
+      penalties: { frequency_penalty: 0.4, presence_penalty: 0.4 },
+      onDelta: (delta) => deltas.push(delta),
+    });
+    await Promise.resolve();
+
+    const unload = webModule.unloadLocalModel();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body).toMatchObject({
+      frequency_penalty: 0.4,
+      presence_penalty: 0.4,
+    });
+
+    resolveFetch({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          choices: [{ message: { content: '<|im_start|>assistant hello<|im_end|>' } }],
+        }),
+    } as unknown as Response);
+
+    const [result] = await Promise.all([gen, unload]);
+    expect(result.text).toBe('hello');
+    expect(deltas).toEqual(['hello']);
+    expect(webModule.isLocalModelLoaded()).toBe(false);
   });
 });

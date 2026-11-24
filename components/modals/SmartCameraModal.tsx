@@ -6,6 +6,7 @@ import { Text, View } from 'react-native';
 
 import { MealDraftButton } from '@/components/camera/MealDraftButton';
 import { MealPhotoDetailsModal } from '@/components/camera/MealPhotoDetailsModal';
+import { useCameraAiProcessing } from '@/components/camera/useCameraAiProcessing';
 import { useMealPhotoEstimate } from '@/components/camera/useMealPhotoEstimate';
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
@@ -30,10 +31,8 @@ import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMealPhotoLimit } from '@/hooks/useMealPhotoLimit';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import AiService from '@/services/AiService';
 import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
-import { describeAiError } from '@/utils/aiErrors';
 import {
   extractMacrosFromLabelPhoto,
   extractMacrosFromLabelText,
@@ -44,8 +43,11 @@ import { copyImageToDocumentDirectory, readFileAsStringAsync } from '@/utils/fil
 import { handleError } from '@/utils/handleError';
 import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 import { mealPhotoContextFromDraft } from '@/utils/mealPhotoContext';
-import { EMPTY_MEAL_PHOTO_DRAFT, mealPhotoDraftReducer } from '@/utils/mealPhotoDraft';
-import { createPhaseTimer } from '@/utils/phaseTimer';
+import {
+  EMPTY_MEAL_PHOTO_DRAFT,
+  mealCameraControls,
+  mealPhotoDraftReducer,
+} from '@/utils/mealPhotoDraft';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { AddFoodModal } from './AddFoodModal';
@@ -230,11 +232,11 @@ export default function SmartCameraModal({
   const [cameraMode, setCameraMode] = useState<CameraMode>(
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
   );
-  const { aiMealCameraFlow } = useSettings();
+  const { aiMealCameraFlow, aiProvider } = useSettings();
   const detailedMealFlow = aiMealCameraFlow === 'detailed';
   const [mealDraft, dispatchMealDraft] = useReducer(mealPhotoDraftReducer, EMPTY_MEAL_PHOTO_DRAFT);
   const [isMealDetailsVisible, setIsMealDetailsVisible] = useState(false);
-  const mealPhotoLimit = useMealPhotoLimit(visible && detailedMealFlow);
+  const mealPhotoLimit = useMealPhotoLimit(visible && detailedMealFlow, aiProvider);
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
@@ -278,6 +280,26 @@ export default function SmartCameraModal({
     isSearchingBarcodeRef.current = false;
     onClose();
   }, [isSearchingBarcodeRef, onClose]);
+
+  const mealCamera = mealCameraControls({
+    detailedFlow: detailedMealFlow,
+    isMealPhotoMode: cameraMode === 'ai-meal-photo',
+    draft: mealDraft,
+    limit: mealPhotoLimit,
+  });
+
+  // The camera's own close (X and Android back). While it is open only to add photos to a
+  // draft, closing goes back to the details sheet instead of throwing the draft away. A running
+  // estimate keeps the old behaviour (close cancels it), since the sheet cannot start another.
+  const handleShellClose = () => {
+    if (mealCamera.addingToDraft && !isProcessingAi) {
+      setIsMealDetailsVisible(true);
+
+      return;
+    }
+
+    handleClose();
+  };
 
   const opticalOffer = useOpticalStreamOffer({
     detected: barcode.isOpticalStreamDetected,
@@ -339,6 +361,8 @@ export default function SmartCameraModal({
 
   useEffect(() => {
     if (!visible) {
+      aiAbortRef.current?.abort();
+      aiAbortRef.current = null;
       const reset = () => {
         setIsContextModalVisible(false);
         setIsMealDetailsVisible(false);
@@ -357,10 +381,23 @@ export default function SmartCameraModal({
     }
   }, [visible, isSearchingBarcodeRef]);
 
+  useEffect(() => {
+    return () => {
+      aiAbortRef.current?.abort();
+      aiAbortRef.current = null;
+    };
+  }, []);
+
   useKeepScreenAwake(
     'smart-camera-processing',
     visible && (isProcessingAi || barcode.isSearchingBarcode)
   );
+
+  const runCameraAiTask = useCameraAiProcessing({
+    abortRef: aiAbortRef,
+    setProcessing: setIsProcessingAi,
+    setProgress: setMealProgress,
+  });
 
   const submitMealEstimate = useMealPhotoEstimate({
     abortRef: aiAbortRef,
@@ -397,111 +434,77 @@ export default function SmartCameraModal({
         setMealPhotoError(null);
         dispatchMealDraft({ type: 'addPhoto', uri: fileUri, limit: mealPhotoLimit });
         setIsMealDetailsVisible(true);
+
         return;
       }
 
       if (cameraMode === 'ai-meal-photo') {
         await submitMealEstimate({ photos: [fileUri], context: aiContext ?? undefined });
+
         return;
       }
 
-      if (aiAbortRef.current) {
+      if (cameraMode !== 'ai-label-scan' || aiAbortRef.current) {
         return;
       }
 
-      setIsProcessingAi(true);
       setMealPhotoError(null);
-      setMealProgress(null);
       setAiPhotoUri(fileUri);
-      const abortController = new AbortController();
-      aiAbortRef.current = abortController;
-      const timer = createPhaseTimer('SmartCamera.aiPhoto');
-      let outcome = 'done';
-      // The same config, plus the cancel signal. `getAiConfig` returns a fresh object per call.
-      const withCancel = <C extends { signal?: AbortSignal }>(config: C | null): C | null =>
-        config ? { ...config, signal: abortController.signal } : null;
-      try {
-        if (cameraMode === 'ai-label-scan') {
-          const aiConfig = withCancel(await AiService.getAiConfig());
-          if (!aiConfig) {
-            showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
-            return;
-          }
+
+      await runCameraAiTask({
+        timerName: 'SmartCamera.aiPhoto',
+        logLabel: 'Error processing AI photo',
+        onError: (message) => showSnackbar('error', message),
+        task: async ({ signal, config }) => {
+          let result: MacroEstimate | null = null;
 
           // On-device meal vision identifies foods. Label scanning uses OCR and text extraction.
-          if (useOcrBeforeAi || !isAIVisionEnabled || aiConfig.provider === 'on-device') {
+          if (useOcrBeforeAi || !isAIVisionEnabled || config.provider === 'on-device') {
             const ocrLanguage = i18n.resolvedLanguage ?? i18n.language;
             const { text } = await ocrRecognizeText(fileUri, ocrLanguage);
+            if (signal.aborted) {
+              return null;
+            }
+
             if (!text.trim()) {
-              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
-              return;
+              return t('food.aiCamera.aiAnalysisFailed');
             }
 
-            const result = await extractMacrosFromLabelText(aiConfig, text, aiContext ?? undefined);
-            if (abortController.signal.aborted) {
-              return;
-            }
-
-            if (result) {
-              showSnackbar(
-                'success',
-                t('food.aiCamera.analysisSuccess', {
-                  name: result.name,
-                  kcal: formatEnergyWithUnit(result.kcal),
-                  protein: result.protein,
-                  carbs: result.carbs,
-                  fat: result.fat,
-                })
-              );
-              setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
-            } else {
-              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
-            }
+            result = await extractMacrosFromLabelText(config, text, aiContext ?? undefined);
           } else {
             const base64 = await readFileAsStringAsync(fileUri, {
               encoding: 'base64',
             } as { encoding: 'base64' });
-
-            const result = await extractMacrosFromLabelPhoto(
-              aiConfig,
-              base64,
-              aiContext ?? undefined
-            );
-
-            if (abortController.signal.aborted) {
-              return;
+            if (signal.aborted) {
+              return null;
             }
 
-            if (result) {
-              showSnackbar(
-                'success',
-                t('food.aiCamera.analysisSuccess', {
-                  name: result.name,
-                  kcal: formatEnergyWithUnit(result.kcal),
-                  protein: result.protein,
-                  carbs: result.carbs,
-                  fat: result.fat,
-                })
-              );
-              setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
-            } else {
-              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
-            }
+            result = await extractMacrosFromLabelPhoto(config, base64, aiContext ?? undefined);
           }
-        }
-      } catch (error) {
-        outcome = abortController.signal.aborted ? 'cancelled' : 'error';
-        console.error('[SmartCamera] Error processing AI photo:', error);
-        if (!abortController.signal.aborted) {
-          const message = describeAiError(error, t) ?? t('food.aiCamera.aiAnalysisFailed');
-          showSnackbar('error', message);
-        }
-      } finally {
-        timer.log(outcome);
-        aiAbortRef.current = null;
-        setIsProcessingAi(false);
-        setMealProgress(null);
-      }
+
+          if (signal.aborted) {
+            return null;
+          }
+
+          if (!result) {
+            return t('food.aiCamera.aiAnalysisFailed');
+          }
+
+          showSnackbar(
+            'success',
+            t('food.aiCamera.analysisSuccess', {
+              name: result.name,
+              kcal: formatEnergyWithUnit(result.kcal),
+              protein: result.protein,
+              carbs: result.carbs,
+              fat: result.fat,
+            })
+          );
+          setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
+
+          return null;
+        },
+      });
     },
     [
       cameraMode,
@@ -513,6 +516,7 @@ export default function SmartCameraModal({
       i18n.language,
       i18n.resolvedLanguage,
       macroEstimateToSearchResultProduct,
+      runCameraAiTask,
       submitMealEstimate,
       t,
       useOcrBeforeAi,
@@ -523,11 +527,39 @@ export default function SmartCameraModal({
     cameraRef,
     quality: isBarcodeScanning ? BARCODE_PHOTO_QUALITY : AI_PHOTO_QUALITY,
     process: isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto,
+    gallerySelectionLimit: mealCamera.gallerySelectionLimit,
   });
 
   // Barcode mode reads the live preview, so it offers no shutter at all; omitting the handler is
   // what hides the button (see SmartCameraShell's `onShutterPress`).
-  const shutterPress = isBarcodeScanning ? undefined : takePicture;
+  // A full draft (added to from the details sheet) has no slot left: the shutter and gallery send
+  // the person back to the sheet, where a photo can be removed, instead of taking a photo that
+  // the draft would drop.
+  const isDraftFull = mealCamera.addingToDraft && !mealCamera.canAddPhoto;
+
+  const handleShutterPress = useCallback(() => {
+    if (isDraftFull) {
+      setIsMealDetailsVisible(true);
+
+      return;
+    }
+
+    takePicture();
+  }, [isDraftFull, takePicture]);
+
+  const handleGalleryPress = useCallback(() => {
+    if (isDraftFull) {
+      setIsMealDetailsVisible(true);
+
+      return;
+    }
+
+    pickFromGallery();
+  }, [isDraftFull, pickFromGallery]);
+
+  // Barcode mode reads the live preview, so it offers no shutter at all; omitting the handler is
+  // what hides the button (see SmartCameraShell's `onShutterPress`).
+  const shutterPress = isBarcodeScanning ? undefined : handleShutterPress;
 
   const handleFlashToggle = useCallback(() => {
     setFlashEnabled((prev) => !prev);
@@ -683,12 +715,14 @@ export default function SmartCameraModal({
   }
 
   const barcodeNotice = isBarcodeScanning ? opticalOffer.notice : null;
+  // Switching modes while adding photos to a meal draft would orphan the draft.
+  const showModePicker = !hideCameraModePicker && !mealCamera.addingToDraft;
 
   return (
     <>
       <SmartCameraShell
         visible={visible}
-        onClose={handleClose}
+        onClose={handleShellClose}
         processingStatus={mealProgress}
         permissionGranted={permissionGranted}
         onRequestPermission={onRequestPermission}
@@ -724,7 +758,7 @@ export default function SmartCameraModal({
         cameraMode={cameraMode}
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}
-        onGalleryPress={pickFromGallery}
+        onGalleryPress={handleGalleryPress}
         onShutterPress={shutterPress}
         bottomRightControl={bottomRightControl}
         // Keep persistent photo errors and barcode notices in the same in-flow slot.
@@ -743,7 +777,7 @@ export default function SmartCameraModal({
             barcodeNotice
           )
         }
-        showModePicker={!hideCameraModePicker}
+        showModePicker={showModePicker}
         isAiEnabled={isAiEnabled}
         isAIVisionEnabled={isAIVisionEnabled}
         onModeChange={handleModeChange}
@@ -816,7 +850,7 @@ export default function SmartCameraModal({
             onTryAiScan={handleAiCameraPress}
             onSearchAgain={handleScanBarcodePress}
             onCreateCustom={handleCreateCustomFood}
-            isAiEnabled={isAiEnabled}
+            isAiEnabled={isAIVisionEnabled}
           />
         ) : null}
 

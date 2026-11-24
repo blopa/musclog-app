@@ -1,3 +1,4 @@
+import { reportAiEvent } from '../aiTelemetry';
 import { type CoachAIConfig, requestStructured, sendCoachMessage } from '../coachAI';
 
 const mockCreate = jest.fn();
@@ -18,6 +19,7 @@ jest.mock('../prompts', () => ({
   getChatMessagePromptContent: jest.fn().mockResolvedValue('SYSTEM'),
 }));
 jest.mock('../handleError', () => ({ handleError: jest.fn() }));
+jest.mock('../aiTelemetry', () => ({ reportAiEvent: jest.fn() }));
 jest.mock('@/database/services/DebugDumpService', () => ({
   DebugDumpService: { logJsonEvent: jest.fn() },
 }));
@@ -126,7 +128,10 @@ describe('local structured replies', () => {
   const say = (content: string) =>
     mockCreate.mockResolvedValueOnce({ choices: [{ message: { content } }] });
 
-  beforeEach(() => mockCreate.mockReset());
+  beforeEach(() => {
+    mockCreate.mockReset();
+    jest.mocked(reportAiEvent).mockClear();
+  });
 
   it('repairs almost-JSON without asking the model again', async () => {
     say("{'n': 3,}");
@@ -146,6 +151,11 @@ describe('local structured replies', () => {
     expect(result).toEqual({ kind: 'ok', value: { n: 7 } });
     expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(mockCreate.mock.calls[1][0].messages[1].content).toContain('I cannot do that');
+    // Counted, so how often a small model needs the repair is visible.
+    expect(reportAiEvent).toHaveBeenCalledWith('ai-structured-reply-repaired', {
+      provider: 'local',
+      operation: 'test',
+    });
   });
 
   it('keeps a partial reply when the repair does not improve it', async () => {
@@ -155,6 +165,10 @@ describe('local structured replies', () => {
     const result = await requestStructured(config('local'), request);
 
     expect(result).toEqual({ kind: 'ok', value: { other: 1 } });
+    expect(reportAiEvent).toHaveBeenCalledWith('ai-structured-reply-unusable', {
+      provider: 'local',
+      operation: 'test',
+    });
   });
 
   it('is malformed when nothing works, and never repairs for a cloud provider', async () => {
@@ -166,5 +180,13 @@ describe('local structured replies', () => {
     say('nope');
     expect((await requestStructured(config('openai'), request)).kind).toBe('malformed');
     expect(mockCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports nothing when the reply was usable as it came', async () => {
+    say('{"n": 1}');
+
+    await requestStructured(config('local'), request);
+
+    expect(reportAiEvent).not.toHaveBeenCalled();
   });
 });

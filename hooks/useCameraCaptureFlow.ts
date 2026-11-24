@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { CameraViewRef } from '@/components/CameraView';
 import { openCropperAsync } from '@/utils/file';
-import { pickImageFromGallery } from '@/utils/galleryImagePicker';
+import { pickImagesFromGallery } from '@/utils/galleryImagePicker';
 import { showSnackbar } from '@/utils/snackbarService';
 
 /** Barcode photos tolerate more compression than AI photos, which need legible label text. */
@@ -26,8 +26,13 @@ type UseCameraCaptureFlowOptions = {
    * recompressed before the crop).
    */
   quality: number;
-  /** Receives the cropped image path. */
+  /** Receives the cropped image path. Called once per image, in pick order. */
   process: (fileUri: string) => Promise<void>;
+  /**
+   * How many images one gallery pick may return (default 1). Each picked image goes through the
+   * crop tool in turn; a cancelled crop drops only that image.
+   */
+  gallerySelectionLimit?: number;
 };
 
 /**
@@ -39,11 +44,16 @@ type UseCameraCaptureFlowOptions = {
  * Camera-session concerns (the silent warm-up capture, one capture in flight at a time) are owned
  * by the CameraView wrapper itself.
  */
-export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraCaptureFlowOptions) {
+export function useCameraCaptureFlow({
+  cameraRef,
+  quality,
+  process,
+  gallerySelectionLimit = 1,
+}: UseCameraCaptureFlowOptions) {
   const { t } = useTranslation();
 
-  const cropAndProcess = useCallback(
-    async (imageUri: string): Promise<void> => {
+  const crop = useCallback(
+    async (imageUri: string): Promise<string | null> => {
       const startedAt = Date.now();
       const cropped = await openCropperAsync({
         imageUri,
@@ -52,13 +62,22 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       });
       logPhase('crop step', startedAt);
 
+      return cropped?.path ?? null;
+    },
+    [quality]
+  );
+
+  const cropAndProcess = useCallback(
+    async (imageUri: string): Promise<void> => {
+      const cropped = await crop(imageUri);
+
       if (!cropped) {
         return;
       }
 
-      await process(cropped.path);
+      await process(cropped);
     },
-    [quality, process]
+    [crop, process]
   );
 
   /** Captures a photo and routes it through the same crop UI as a gallery pick. */
@@ -81,7 +100,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
 
   const pickFromGallery = useCallback(async () => {
     try {
-      // No media-library permission request: pickImageFromGallery uses the modern system photo
+      // No media-library permission request: pickImagesFromGallery uses the modern system photo
       // picker (Android ACTION_PICK_IMAGES / iOS PHPicker), which returns only the user-picked
       // item through a temporary content grant. Skipping the request also removes an Expo async
       // call from the single shared `modulesQueue` thread whose boot-time saturation is the real
@@ -91,24 +110,47 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       // value is only a red flag when the picker was slow to *appear* (the reported symptom:
       // the picker UI not showing for ~25s on the first pick after a cold boot).
       const pickerStartedAt = Date.now();
-      const uri = await pickImageFromGallery();
+      const uris = await pickImagesFromGallery(gallerySelectionLimit);
       logPhase('gallery picker', pickerStartedAt);
 
-      if (!uri) {
+      if (uris.length === 0) {
         return;
       }
 
+      // Crop every image first, then hand them over: `process` may open a sheet, and the next
+      // crop tool must not be presented over it.
+      const cropped: string[] = [];
+      let failed = false;
+      for (const uri of uris) {
+        try {
+          const path = await crop(uri);
+          if (path) {
+            cropped.push(path);
+          }
+        } catch (error) {
+          console.error('Error cropping gallery image:', error);
+          failed = true;
+          break;
+        }
+      }
+
       try {
-        await cropAndProcess(uri);
+        for (const path of cropped) {
+          await process(path);
+        }
       } catch (error) {
-        console.error('Error cropping gallery image:', error);
+        console.error('Error processing gallery image:', error);
+        failed = true;
+      }
+
+      if (failed) {
         showSnackbar('error', t('food.aiCamera.cameraError'));
       }
     } catch (error) {
       console.error('Error picking image from gallery:', error);
       showSnackbar('error', t('food.aiCamera.galleryError'));
     }
-  }, [cropAndProcess, t]);
+  }, [crop, gallerySelectionLimit, process, t]);
 
   return { takePicture, pickFromGallery };
 }

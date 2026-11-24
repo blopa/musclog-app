@@ -52,3 +52,17 @@ describe('providerPolicyFor', () => {
     }
   });
 });
+
+describe('runsSamplesSequentially', () => {
+  it('is set for the small model and both on-device engines only', () => {
+    expect(providerPolicyFor({ provider: 'local' }).runsSamplesSequentially).toBe(true);
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).runsSamplesSequentially
+    ).toBe(true);
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'apple' }).runsSamplesSequentially
+    ).toBe(true);
+    expect(providerPolicyFor({ provider: 'openai' }).runsSamplesSequentially).toBeUndefined();
+    expect(providerPolicyFor({ provider: 'hosted' }).runsSamplesSequentially).toBeUndefined();
+  });
+});

@@ -1,45 +1,60 @@
+import type Food from '@/database/models/Food';
 import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
 
-import type { TrackMealIngredient } from './coachAI';
+import { reportAiError, type TrackMealIngredient } from './coachAI';
 import {
   type FoodCandidate,
-  limitFoodCandidates,
   matchNameOf,
   pickFoodMatch,
+  searchSpellingsFor,
   searchTermsFor,
 } from './localFoodPhoto';
 
-/**
- * Foods this phone already has whose names or descriptions share a word with `name`, merged and
- * deduplicated and capped at `MAX_FOOD_CANDIDATES` (best candidates first, so the cap never changes
- * the match). A food whose numbers are per serving is left out: a match is scaled by grams from
- * per-100 g numbers.
- */
-export async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
-  const byId = new Map<string, FoodCandidate>();
-  for (const term of searchTermsFor(name)) {
-    // The description is searched too: a foundation food's is its generic English name
-    // ("Lettuce, leaf, green, raw") under a product-like `name`.
-    for (const food of await FoodService.searchFoods(term, { includeDescription: true })) {
-      if (food.nutritionBasis === 'per_serving') {
-        continue;
-      }
+function toFoodCandidate(food: Food): FoodCandidate | null {
+  if (food.nutritionBasis === 'per_serving') {
+    return null;
+  }
 
-      byId.set(food.id, {
-        id: food.id,
-        name: food.name,
-        ...(food.description ? { description: food.description } : {}),
-        kcal: food.calories ?? 0,
-        protein: food.protein ?? 0,
-        carbs: food.carbs ?? 0,
-        fat: food.fat ?? 0,
-        fiber: food.fiber ?? 0,
-      });
+  return {
+    id: food.id,
+    name: food.name,
+    ...(food.description ? { description: food.description } : {}),
+    kcal: food.calories ?? 0,
+    protein: food.protein ?? 0,
+    carbs: food.carbs ?? 0,
+    fat: food.fat ?? 0,
+    fiber: food.fiber ?? 0,
+  };
+}
+
+/**
+ * Every food that can match an ingredient, fetched with the first word of `searchSpellingsFor` per
+ * ingredient (the longest word, folded and with its accents). A match must carry every word of the
+ * name, so it must carry that word too. The matches are a superset of every possible match when the
+ * stored name carries the same accents as the lookup name, or none. A stored name with accents
+ * looked up without them is not found, because the database search does not fold accents. No cut is
+ * applied: a limit in name order could hide the right food, or cut one of two tied foods and turn a
+ * tie (no match) into a confident match on the survivor.
+ */
+async function fetchCandidatesForTerms(terms: readonly string[]): Promise<FoodCandidate[]> {
+  const uniqueTerms = [...new Set(terms.filter(Boolean))];
+  if (uniqueTerms.length === 0) {
+    return [];
+  }
+
+  // Without a limit the search returns every match of each term.
+  const foods = await FoodService.searchFoodsByTerms(uniqueTerms, { includeDescription: true });
+
+  const byId = new Map<string, FoodCandidate>();
+  for (const food of foods) {
+    const candidate = toFoodCandidate(food);
+    if (candidate) {
+      byId.set(candidate.id, candidate);
     }
   }
 
-  return limitFoodCandidates(name, [...byId.values()]);
+  return [...byId.values()];
 }
 
 /**
@@ -53,7 +68,6 @@ export async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> 
  * which only costs the estimate it would have saved.
  */
 export async function matchIngredientsToOwnFoods(
-  reportAiError: (error: unknown, context: string) => void,
   ingredients: readonly { name: string; grams: number; englishName?: string }[]
 ): Promise<{
   matched: TrackMealIngredient[];
@@ -63,12 +77,20 @@ export async function matchIngredientsToOwnFoods(
   const unmatched: { name: string; grams: number }[] = [];
 
   try {
-    for (const ingredient of ingredients) {
-      const { name, grams } = ingredient;
+    const entries = ingredients.map((ingredient) => {
       // Stored foods are named in English, the model's wording is in the person's language: the
       // English name (when it gave one) is what is compared, the person's wording is what is kept.
       const lookupName = matchNameOf(ingredient);
-      const match = pickFoodMatch(lookupName, await candidateFoodsFor(lookupName));
+
+      return { ingredient, lookupName, terms: searchTermsFor(lookupName) };
+    });
+    const candidates = await fetchCandidatesForTerms(
+      entries.flatMap((entry) => searchSpellingsFor(entry.lookupName))
+    );
+
+    for (const { ingredient, lookupName, terms } of entries) {
+      const { name, grams } = ingredient;
+      const match = terms.length > 0 ? pickFoodMatch(lookupName, candidates) : null;
       if (match) {
         stubs.push({ name, grams, foodId: match.id, kcal: 0, protein: 0, carbs: 0, fat: 0 });
       } else {

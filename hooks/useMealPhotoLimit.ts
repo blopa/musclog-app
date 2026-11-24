@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import AiService from '@/services/AiService';
+import type { AiProviderKind } from '@/constants/ai';
+import { AiService } from '@/services/AiService';
 import { MAX_MEAL_PHOTOS, photoLimit } from '@/utils/mealPhotoDraft';
+
+const fallbackLimitForProvider = (aiProvider?: AiProviderKind | null): number =>
+  aiProvider === 'hosted' ? photoLimit(1) : MAX_MEAL_PHOTOS;
 
 /**
  * How many photos one AI meal estimate may carry right now: at most `MAX_MEAL_PHOTOS`, held to what
@@ -11,8 +15,15 @@ import { MAX_MEAL_PHOTOS, photoLimit } from '@/utils/mealPhotoDraft';
  * read, or when it cannot be, the answer is the safe one-photo limit for Musclog Iron and the
  * maximum for the rest.
  */
-export function useMealPhotoLimit(active: boolean): number {
-  const [limit, setLimit] = useState(MAX_MEAL_PHOTOS);
+export function useMealPhotoLimit(active: boolean, aiProvider?: AiProviderKind | null): number {
+  const fallback = fallbackLimitForProvider(aiProvider);
+  const [limit, setLimit] = useState(fallback);
+  const [trackedProvider, setTrackedProvider] = useState(aiProvider);
+
+  if (trackedProvider !== aiProvider) {
+    setTrackedProvider(aiProvider);
+    setLimit(fallback);
+  }
 
   useEffect(() => {
     if (!active) {
@@ -35,11 +46,11 @@ export function useMealPhotoLimit(active: boolean): number {
         }
 
         if (!cancelled) {
-          setLimit(photoLimit(undefined));
+          setLimit(config ? photoLimit(undefined) : fallbackLimitForProvider(aiProvider));
         }
       } catch {
         if (!cancelled) {
-          setLimit(photoLimit(undefined));
+          setLimit(fallbackLimitForProvider(aiProvider));
         }
       }
     };
@@ -49,7 +60,7 @@ export function useMealPhotoLimit(active: boolean): number {
     return () => {
       cancelled = true;
     };
-  }, [active]);
+  }, [active, aiProvider]);
 
   return limit;
 }

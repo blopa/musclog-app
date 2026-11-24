@@ -5,9 +5,8 @@
 // never fail it, so only a cancel propagates. Relative imports only.
 
 import { AiCancelledError } from './aiErrors';
-
-/** A provider with one engine that answers one request at a time: samples go one after another. */
-const SEQUENTIAL_PROVIDERS = new Set(['on-device', 'local']);
+import type { CoachAIConfig } from './coachAI';
+import { providerPolicyFor } from './providerPolicy';
 
 /**
  * Runs a job `count` times and returns every answer it gave, in order. Cloud providers run the
@@ -17,16 +16,21 @@ const SEQUENTIAL_PROVIDERS = new Set(['on-device', 'local']);
  * answers nothing is left out; a cancel stops everything. When no sample answers, the first
  * failure is rethrown, so a wrong key or an exhausted allowance still reaches the person as it
  * would with one request.
+ *
+ * A failure that is left out because other samples answered is swallowed, so it is handed to
+ * `onDroppedFailure` (callers pass `reportAiError` with their context): nobody else will see it.
+ * When nothing answered, the rethrown failure is the report and the callback is not called.
  */
 export async function runSamples<T>(
-  config: { provider: string },
+  config: Pick<CoachAIConfig, 'provider' | 'engine'>,
   count: number,
-  run: (index: number) => Promise<T | null | undefined>
+  run: (index: number) => Promise<T | null | undefined>,
+  options: { onDroppedFailure?: (error: unknown) => void } = {}
 ): Promise<T[]> {
   const total = Math.max(1, Math.floor(count));
   const settled: PromiseSettledResult<T | null | undefined>[] = [];
 
-  if (SEQUENTIAL_PROVIDERS.has(config.provider)) {
+  if (providerPolicyFor(config).runsSamplesSequentially) {
     for (let index = 0; index < total; index++) {
       try {
         settled.push({ status: 'fulfilled', value: await run(index) });
@@ -47,6 +51,7 @@ export async function runSamples<T>(
   const cancelled = settled.find(
     (result) => result.status === 'rejected' && result.reason instanceof AiCancelledError
   );
+
   if (cancelled?.status === 'rejected') {
     throw cancelled.reason;
   }
@@ -54,9 +59,16 @@ export async function runSamples<T>(
   const answers = settled.flatMap((result) =>
     result.status === 'fulfilled' && result.value != null ? [result.value] : []
   );
-  const firstFailure = settled.find((result) => result.status === 'rejected');
-  if (answers.length === 0 && firstFailure?.status === 'rejected') {
-    throw firstFailure.reason;
+
+  const failures = settled.flatMap((result) =>
+    result.status === 'rejected' ? [result.reason as unknown] : []
+  );
+  if (answers.length === 0 && failures.length > 0) {
+    throw failures[0];
+  }
+
+  for (const failure of failures) {
+    options.onDroppedFailure?.(failure);
   }
 
   return answers;

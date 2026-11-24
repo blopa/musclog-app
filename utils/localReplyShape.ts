@@ -114,6 +114,7 @@ export type StructuredResult<T = unknown> =
   | { kind: 'ok'; value: T }
   | {
       kind: 'malformed';
+      /** The full reply text (or the value's JSON), so the repair request sees every item. */
       raw: string;
       /**
        * Set when the provider cut the reply off at its token limit and the reply was therefore not
@@ -122,8 +123,6 @@ export type StructuredResult<T = unknown> =
       reason?: 'truncated';
       finishReason?: string;
     };
-
-const MALFORMED_RAW_PREVIEW_CHARS = 500;
 
 /**
  * The shape gate for a small local model (the downloaded one or a custom server): a value that
@@ -150,7 +149,7 @@ export function checkStructuredShape<T>(
 
   return {
     kind: 'malformed',
-    raw: JSON.stringify(result.value).slice(0, MALFORMED_RAW_PREVIEW_CHARS),
+    raw: JSON.stringify(result.value),
   };
 }
 
@@ -180,5 +179,5 @@ export function parseStructuredJson<T>(raw: string): StructuredResult<T> {
     }
   }
 
-  return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
+  return { kind: 'malformed', raw };
 }

@@ -33,13 +33,19 @@ looping, and every loop has a fixed upper limit.** A level can make a job slower
 - **Request**: one call to the model.
 - **Sample**: one independent answer to the same job. Several samples are combined by code
   (`runSamples` in `utils/aiPasses.ts`). Cloud providers run them together; the on-device model and a
-  local server run them one after another (they have one engine).
+  local server run them one after another (they have one engine). A sample that fails while others
+  answer is left out and reported to Sentry (`onDroppedFailure`); nobody else would see it.
 - **Review round**: ask the model to check an answer it (or an earlier request) wrote, then let
   **code** decide if the corrected version replaces the old one (`reviewAndRevise`, same file). A
   round that is refused, empty or fails ends the loop and keeps the answer you had. Only Cancel
-  stops everything.
+  stops everything. A round is a **follow-up** of the original request (`followUpOf`,
+  `utils/coachAI.ts`): the same system prompt, history, photos and user message, then the answer
+  under review as the model's own previous turn, whole, then the instruction.
 - **Arbiter**: one extra request that is made only when samples disagree, told which fields are
-  disputed (`extractWithConsensus` in `utils/coachAI.ts`).
+  disputed (`extractWithConsensus` in `utils/coachAI.ts`). Its answer settles only those fields,
+  matched to the readings the way they were matched to each other: by key, by name or date for a
+  list of named entries such as workouts, by position otherwise
+  (`combineExtractions(readings, { arbiter })`).
 - **Verified meal path**: read the recipe, check each food id the model claims against your
   database, estimate only the rest, recheck numbers that cannot be true.
 - **First look** (Tokenmaxxing meals only): the scene and contents of the meal, with no calories
@@ -135,7 +141,7 @@ food stays if at least half of the readings name it (`voteIdentifiedFoods`: `cei
 readings, with the median grams, so **at High, with two readings, a food named by either one
 stays**; at Tokenmaxxing two of three are needed), the lists of several photos are merged with a
 food in more than one photo counted once at its largest portion (`mergeFoodsAcrossPhotos`, never
-summed), names are matched to your foods (`candidateFoodsFor`, `pickFoodMatch`), the rest is
+summed), names are matched to your foods (`matchIngredientsToOwnFoods`, `pickFoodMatch`), the rest is
 estimated by name, then the usual recheck. No first look and no review rounds. A reading that does
 not parse or fails the schema gets one warmer retry (temperature 0.3), then one text-only repair
 request, whatever the level.
@@ -162,10 +168,12 @@ label (1 / 1 / 2 + arbiter / up to 3 readings + arbiter).
 `sendCoachMessage`. Effort: `low` at Off, `high` at Medium and High, `max` at Tokenmaxxing.
 
 - Off, Medium, High: 1 request, streamed.
-- Tokenmaxxing: 2. The first reply is written unseen, then a review request (same system prompt and
-  history) checks it against the conversation and your app data. Only the review is streamed, with
-  "Double-checking my answer…" until text arrives. If the review fails or comes back empty, you get
-  the draft. This is the only job where the second answer is not judged by a code rule: it is kept
+- Tokenmaxxing: 2. The first reply is written unseen, then a review request (the same system
+  prompt, built once for both, and history) checks it against the conversation and your app data.
+  Only the review is streamed, with "Double-checking my answer…" until text arrives. If the review
+  fails or comes back empty, you get the draft; if the draft itself fails, you get the same apology
+  a single request would give. Every provider's sender only sends and throws; `sendCoachMessage`
+  turns a failure into the apology (or a typed error) once, for all four. This is the only job where the second answer is not judged by a code rule: it is kept
   unless it is empty or failed. So the review is a **checklist**, not an open "improve this"
   (`getChatReviewInstruction`, `utils/prompts.ts`): (1) a number or fact that contradicts the app
   data or the conversation is fixed, (2) a claim about you that nothing supports is removed, (3) for
@@ -198,8 +206,8 @@ and the daily background insights.
 `generatePlan`, used by `generateWorkoutPlan` and `generateMealPlan`. Effort is `planning`.
 
 - Off, Medium: 1 request.
-- High: +1 critique round. The same request again, plus the current plan and the problems code found
-  in it (`utils/planFindings.ts`: an exercise twice in a workout, sets or reps that make no sense, a
+- High: +1 critique round. The same request again, then the current plan as the model's own previous
+  answer and, as the next message, the problems code found in it (`utils/planFindings.ts`: an exercise twice in a workout, sets or reps that make no sense, a
   meal-plan day more than 10% off the calories or protein asked for, ingredient numbers that do not
   add up). The critique always runs, even when the list says "none". The revision is kept only if it
   has no more problems than the plan it replaces.
@@ -255,9 +263,14 @@ translates it:
 1. **Code decides whether a second answer wins**, except the Tokenmaxxing chat review. Meals: fewer
    implausible numbers. Plans: fewer findings. Insights: fewer ungrounded figures.
 2. **An extra request can only help, never fail the answer.** A failed or empty review keeps what
-   you had. A failed sample is dropped; if every sample fails, the first error is shown as it would
-   be for one request.
-3. Review prompts quote model output between `--- ANSWER ---` style markers, never angle brackets.
+   you had. A failed sample is dropped (and reported); if every sample fails, the first error is
+   shown as it would be for one request.
+3. **What a pass adds is trusted text, sent after the original request** (`followUpOf`). Only the
+   person's own words go through `wrapUserContent`, which cuts at 2,000 characters and escapes
+   quotes and newlines, and only once, in the original request. Before 2.18.0 the review text went
+   through it too, so a meal-plan critique arrived cut before the plan and a fact-check saw its draft
+   with literal `\n`. The arbiter's readings are quoted inside its instruction between
+   `--- READING n ---` markers.
 4. Progress lines (`food.aiProgress.*`) only describe a step the code is really taking, never a
    guess at what the model is thinking.
 5. **Early exit skips requests, it never skips a check that disagreed.** At Tokenmaxxing a stage that
@@ -324,7 +337,7 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   listed by hand), Gemini `responseSchema` (the chat reply orders `msg4User` first with
   `propertyOrdering`, so streaming can show it early), Claude `output_config.format`. The model never
   calls a function: the app's "function declarations" are only schemas
-  (`getSchemaFromFunctionDeclaration`).
+  (`schemaOfFunction`).
 - **Every reply then goes through one parse ladder** (`parseStructuredJson`,
   `utils/localReplyShape.ts`): strip code fences and chat-template tokens (`<|im_start|>assistant`)
   -> `JSON.parse` -> the JSON span inside surrounding text -> `jsonrepair` (trailing commas, single
@@ -346,7 +359,8 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 - **A small model's reply is also shape-checked** (`checkStructuredShape` over our own small JSON
   Schema checker, `utils/aiSchemaValidate.ts`: type, nullable, required, enum, items, minimum,
   maximum, minItems, maxItems; an unknown keyword passes). That applies when the provider policy sets
-  `repairsStructuredReplies`: a custom local server and the downloaded on-device model. The
+  `repairsStructuredReplies`: a custom local server and the downloaded on-device model, in one place
+  (`reviveLocalStructured`). The
   downloaded model is grammar-constrained by llama.cpp (`response_format: json_schema`, default
   temperature 0.2, `n_predict` 1024) and still checked, because the runtime is not trusted to have
   honoured it. Apple's model is guided by the OS and is not checked.
@@ -356,7 +370,8 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   same structured path and checked again. It is kept only when it does better (a reply that parsed
   but missed part of the schema stays when the repair is no better); a cancel rethrows, any other
   failure keeps the original. Cloud providers are never repaired by a second call.
-- **Plain text** is cleaned of template tokens in one place (`generateTextWithHistory`); a streamed
+- **Plain text** is cleaned of template tokens in one place (`send` in `generateInsight`, the only
+  plain-text path); a streamed
   reply holds back a half-written `<|im_...` so it never flickers on screen. The chat reply reads
   `msg4User` out of a cut-off object instead of ever showing raw JSON (`parseCoachResponse`).
 - **Three gates in a row**: the schema (shape), each feature's own normalizer (meaning), and the
@@ -471,7 +486,10 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   foundation foods (529: 225 USDA, 304 common) are stored under their English names whatever the
   app language, and the model names ingredients in the app language, so every meal schema also asks
   for an `englishName` (matching only, never shown) and the match compares that, falling back to
-  `name`. A food you saved in your own language is still found only by words that coincide with
+  `name`. The food table is searched without folding accents, so the search asks for the name's
+  longest word both folded and as written (`searchSpellingsFor`): a stored "Açaí bowl" is found for
+  "açaí bowl", and for "acai bowl" only when it is stored without accents. A stored name with
+  accents looked up without them is not found. A food you saved in your own language is still found only by words that coincide with
   what the model wrote in the English name. `tokenize` keeps only a-z0-9, so a name with no
   English name (a Russian one, from a model that skipped the field) has no words, searches nothing
   and is always estimated. The one-request estimate (thinking Off) asks for `englishName` too but
@@ -480,7 +498,9 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   the match with the fewest extra words wins can also pick another product that contains the
   words ("Olive oil" over "Olive oil, extra virgin" when you saved an "Olive Oil Mayo"). A
   `per_serving` food is never matched. `FoodService.searchFoods` is an unbounded LIKE per word; the
-  candidates it returns are ranked and cut to 50 (`limitFoodCandidates`) before matching.
+  name match asks `searchFoodsByTerms` for ONE word per ingredient (the longest, which every match must
+  carry) and takes every food that has it, uncapped, so a very common word costs a larger read but
+  never hides the right food.
 - **On-device photo at High keeps a food named by either of two readings** (above).
 - **Structured prompts get escaping only.** The delimiter wrapper for untrusted text is unused.
 - **A long meal is slow on a phone**: Tokenmaxxing makes its samples one after another on the

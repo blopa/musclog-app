@@ -5,18 +5,16 @@ import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import {
   type AiImageTier,
+  base64DecodedBytes,
   DEFAULT_AI_IMAGE_TIER,
+  type ImageLimits,
   limitsForImageCount,
   limitsForTier,
+  nextQuality,
   ON_DEVICE_IMAGE_CEILING,
   OWN_KEY_IMAGE_CEILING,
-} from '@/utils/aiImagePlan';
-import {
-  base64DecodedBytes,
-  type HostedImageLimits,
-  nextQuality,
   planResize,
-} from '@/utils/premium/hostedImagePlan';
+} from '@/utils/aiImagePlan';
 
 export type PreparedImage = { base64: string; mimeType: string };
 
@@ -43,7 +41,7 @@ function readSize(dataUri: string): Promise<{ width: number; height: number }> {
 export async function resizeForAi(
   base64: string,
   mimeType: string,
-  limits: HostedImageLimits
+  limits: ImageLimits
 ): Promise<PreparedImage> {
   const original = { base64, mimeType };
 

@@ -118,4 +118,54 @@ describe('withLlamaRn', () => {
       "n_gpu_layers: Platform.OS === 'ios' ? 99 : 0"
     );
   });
+
+  it('forwards { enableOpenCLAndHexagon: false, ...props } to llama.rn outside Jest', () => {
+    const llamaPluginSource = fs.readFileSync(
+      path.join(ROOT, 'node_modules/llama.rn/lib/module/expo-plugin/withLlamaRN.js'),
+      'utf8'
+    );
+    expect(llamaPluginSource).toContain('enableOpenCLAndHexagon = true');
+
+    const mockPlugin = jest.fn((config: unknown) => config);
+    const mockWithAppBuildGradle = jest.fn((config: unknown, fn: (c: any) => any) => {
+      fn({ modResults: { contents: TEMPLATE } });
+      return config;
+    });
+    const prevWorkerId = process.env.JEST_WORKER_ID;
+
+    try {
+      delete process.env.JEST_WORKER_ID;
+      jest.isolateModules(() => {
+        jest.doMock('expo/config-plugins', () => ({
+          withAppBuildGradle: mockWithAppBuildGradle,
+        }));
+        jest.doMock('llama.rn/app.plugin.js', () => ({ default: mockPlugin }));
+
+        const withLlamaRn = require('../withLlamaRn');
+        const baseConfig = { name: 'musclog' };
+
+        withLlamaRn(baseConfig);
+        expect(mockPlugin).toHaveBeenLastCalledWith(baseConfig, {
+          enableOpenCLAndHexagon: false,
+        });
+
+        withLlamaRn(baseConfig, { forceCxx20: false });
+        expect(mockPlugin).toHaveBeenLastCalledWith(baseConfig, {
+          enableOpenCLAndHexagon: false,
+          forceCxx20: false,
+        });
+
+        withLlamaRn(baseConfig, { enableOpenCLAndHexagon: true });
+        expect(mockPlugin).toHaveBeenLastCalledWith(baseConfig, {
+          enableOpenCLAndHexagon: true,
+        });
+      });
+    } finally {
+      if (prevWorkerId !== undefined) {
+        process.env.JEST_WORKER_ID = prevWorkerId;
+      }
+      jest.dontMock('expo/config-plugins');
+      jest.dontMock('llama.rn/app.plugin.js');
+    }
+  });
 });

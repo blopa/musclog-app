@@ -3,6 +3,7 @@
 // field path and never the content.
 import { type AiConfig, type Feature, REASONING_EFFORTS, type ReasoningEffort } from '../config';
 import { ApiError } from '../http';
+import { isObj, type Json } from '../upstream/http';
 
 /**
  * The validated client request with no gateway-specific field: no model, no `provider`, no
@@ -35,8 +36,6 @@ export interface AllowlistedRequest {
   schemaToolsBytes: number;
 }
 
-type Json = Record<string, unknown>;
-const isObj = (v: unknown): v is Json => typeof v === 'object' && v !== null && !Array.isArray(v);
 const te = new TextEncoder();
 const bytes = (s: string) => te.encode(s).length;
 
@@ -201,10 +200,14 @@ function parseResponseFormat(v: unknown, config: AiConfig): Json {
   return out;
 }
 
-function pick(o: Json, keys: string[]): Json {
-  const out: Json = {};
-  for (const k of keys) if (o[k] !== undefined) out[k] = o[k];
-  return out;
+/** Copies keys from `source` to `target` when their value is not `undefined`, preserving key order. */
+export function assignDefined(target: Json, source: Json, keys: readonly string[]): Json {
+  for (const k of keys) if (source[k] !== undefined) target[k] = source[k];
+  return target;
+}
+
+function pick(o: Json, keys: readonly string[]): Json {
+  return assignDefined({}, o, keys);
 }
 
 function parseTools(v: unknown, config: AiConfig): Json[] {
@@ -265,18 +268,6 @@ export function effectiveReasoning(
   return REASONING_EFFORTS.indexOf(requested) <= REASONING_EFFORTS.indexOf(ceiling)
     ? requested
     : ceiling;
-}
-
-/**
- * Runtime guard for the Premium privacy invariant: account-level ZDR is off at OpenRouter, so this
- * per-request `provider` object is the only thing keeping a request off providers that retain or
- * train on data. Throws (never sends) when any of the three fields is missing or different.
- */
-export function assertPremiumPrivacy(body: Record<string, unknown>): void {
-  const p = body.provider;
-  if (!isObj(p) || p.zdr !== true || p.data_collection !== 'deny' || p.allow_fallbacks !== false) {
-    throw new Error('premium_privacy_invariant_violated');
-  }
 }
 
 export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedRequest {
@@ -346,12 +337,17 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
       limits.temperature_max,
       Math.max(0, input.temperature as number)
     );
-  if (responseFormat) neutral.response_format = responseFormat;
-  if (tools) neutral.tools = tools;
-  if (toolChoice !== undefined) neutral.tool_choice = toolChoice;
-  if (input.parallel_tool_calls !== undefined)
-    neutral.parallel_tool_calls = input.parallel_tool_calls as boolean;
-  if (stop !== undefined) neutral.stop = stop;
+  assignDefined(
+    neutral as unknown as Json,
+    {
+      response_format: responseFormat,
+      tools,
+      tool_choice: toolChoice,
+      parallel_tool_calls: input.parallel_tool_calls,
+      stop,
+    },
+    ['response_format', 'tools', 'tool_choice', 'parallel_tool_calls', 'stop']
+  );
 
   return {
     neutral,

@@ -1,12 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import {
-  type CoachAIConfig,
-  estimateNutritionFromPhoto,
-  getNutritionInsights,
-  sendCoachMessage,
-} from '../coachAI';
+import { type CoachAIConfig, getNutritionInsights, sendCoachMessage } from '../coachAI';
+import { estimateNutritionFromPhoto } from '../coachMealEstimate';
 import { withLlmRetry } from '../llmRetry';
 
 jest.mock('../gemini', () => ({

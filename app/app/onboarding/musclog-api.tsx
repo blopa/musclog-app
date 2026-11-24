@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
-import { ConnectedAISettingsModal } from '@/components/modals/ConnectedAISettingsModal';
+import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { scrollCueBottom } from '@/components/modals/footerClearance';
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { AiChoiceCard } from '@/components/onboarding/AiChoiceCard';
@@ -72,7 +72,7 @@ export default function MusclogApiScreen() {
     quickTotal?: string;
   }>();
 
-  const resolvedNextRoute = nextRoute ? decodeURIComponent(nextRoute) : '/app';
+  const resolvedNextRoute = nextRoute || '/app';
   const quickStepNum = quickStep ? Number(quickStep) : null;
   const quickTotalNum = quickTotal ? Number(quickTotal) : 6;
 
@@ -305,10 +305,7 @@ export default function MusclogApiScreen() {
           />
         </BottomButtonWrapper>
 
-        <ConnectedAISettingsModal
-          visible={aiSettingsOpen}
-          onClose={() => setAiSettingsOpen(false)}
-        />
+        <AISettingsModal visible={aiSettingsOpen} onClose={() => setAiSettingsOpen(false)} />
         <PremiumModal visible={premiumVisible} onClose={() => setPremiumRequested(false)} />
       </SafeAreaView>
     </MasterLayout>

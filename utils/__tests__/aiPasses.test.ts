@@ -56,6 +56,61 @@ describe('runSamples', () => {
     ).rejects.toBe(first);
   });
 
+  it('hands every failure it swallows to onDroppedFailure, so a lost sample is not silent', async () => {
+    const dropped: unknown[] = [];
+    const flaky = new Error('flaky');
+    const answers = await runSamples(
+      { provider: 'openai' },
+      3,
+      async (index) => {
+        if (index === 1) {
+          throw flaky;
+        }
+
+        return index;
+      },
+      { onDroppedFailure: (error) => dropped.push(error) }
+    );
+
+    expect(answers).toEqual([0, 2]);
+    expect(dropped).toEqual([flaky]);
+  });
+
+  it('reports nothing through onDroppedFailure when every sample failed (the rethrow is the report)', async () => {
+    const dropped: unknown[] = [];
+    const first = new Error('first');
+    await expect(
+      runSamples(
+        { provider: 'local' },
+        2,
+        async (index) => {
+          throw index === 0 ? first : new Error('second');
+        },
+        { onDroppedFailure: (error) => dropped.push(error) }
+      )
+    ).rejects.toBe(first);
+    expect(dropped).toEqual([]);
+  });
+
+  it('never hands a cancel to onDroppedFailure', async () => {
+    const dropped: unknown[] = [];
+    await expect(
+      runSamples(
+        { provider: 'gemini' },
+        2,
+        async (index) => {
+          if (index === 0) {
+            throw new AiCancelledError();
+          }
+
+          return index;
+        },
+        { onDroppedFailure: (error) => dropped.push(error) }
+      )
+    ).rejects.toBeInstanceOf(AiCancelledError);
+    expect(dropped).toEqual([]);
+  });
+
   it('answers an empty list when every sample answered nothing', async () => {
     await expect(runSamples({ provider: 'gemini' }, 3, async () => null)).resolves.toEqual([]);
   });

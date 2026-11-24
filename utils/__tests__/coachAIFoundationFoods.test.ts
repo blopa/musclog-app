@@ -1,6 +1,7 @@
 import { SettingsService } from '@/database/services/SettingsService';
 
-import { type CoachAIConfig, generateMealPlan, trackMeal } from '../coachAI';
+import { type CoachAIConfig, generateMealPlan } from '../coachAI';
+import { trackMeal } from '../coachMealEstimate';
 
 /**
  * The foundation foods a meal estimate offers: every one of them, one `reference|name` line each in a
@@ -41,6 +42,14 @@ jest.mock('@/database/services/SettingsService', () => ({
 jest.mock('@/database/services/FoodService', () => ({
   FoodService: {
     searchFoods: (...args: unknown[]) => mockSearchFoods(...args),
+    searchFoodsByTerms: async (terms: string[], options: { includeDescription?: boolean }) =>
+      (
+        await Promise.all(
+          terms.map((term) =>
+            mockSearchFoods(term, { includeDescription: options.includeDescription })
+          )
+        )
+      ).flat(),
     getFoundationFoodsSorted: (...args: unknown[]) => mockFoundation(...args),
   },
 }));

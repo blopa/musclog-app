@@ -9,7 +9,8 @@
  */
 import { median } from 'simple-statistics';
 
-import type { TrackedMeal, TrackMealIngredient, TrackMealResponse } from './coachAI';
+import type { TrackedMeal } from './coachAI';
+import { normalizeFoodName } from './foodName';
 
 export const MAX_IDENTIFIED_FOODS = 12;
 export const MIN_IDENTIFIED_GRAMS = 5;
@@ -22,12 +23,6 @@ export const MAX_IDENTIFIED_NAME_CHARS = 80;
  * would only give the same words again.
  */
 export const LOCAL_PHOTO_RETRY_TEMPERATURE = 0.3;
-
-/**
- * The food id of an item the database had no match for. It names no row, so the lookup that
- * resolves ids drops it and the estimate follow-up fills the numbers in; it is never stored.
- */
-export const LOCAL_PHOTO_UNMATCHED_FOOD_ID = 'local-photo-unmatched';
 
 export type IdentifiedFood = {
   name: string;
@@ -43,16 +38,6 @@ export type IdentifiedFood = {
  */
 export function matchNameOf(food: { name: string; englishName?: string }): string {
   return food.englishName?.trim() || food.name;
-}
-
-/** A food's name as readings are compared: case, accents and spacing do not count. */
-function foodKey(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 /**
@@ -73,7 +58,7 @@ export function voteIdentifiedFoods(readings: IdentifiedFood[][]): IdentifiedFoo
   for (const reading of readings) {
     const totals = new Map<string, number>();
     for (const food of reading) {
-      const key = foodKey(food.name);
+      const key = normalizeFoodName(food.name);
       if (!key) {
         continue;
       }
@@ -128,7 +113,7 @@ export function mergeFoodsAcrossPhotos(
   const merged = new Map<string, IdentifiedFood>();
   for (const photo of perPhoto) {
     for (const food of photo) {
-      const key = foodKey(food.name);
+      const key = normalizeFoodName(food.name);
       if (!key) {
         continue;
       }
@@ -224,11 +209,11 @@ export function parseIdentifiedFoods(value: unknown): IdentifiedFood[] {
       typeof rawEnglish === 'string'
         ? rawEnglish.trim().replace(/\s+/g, ' ').slice(0, MAX_IDENTIFIED_NAME_CHARS)
         : '';
-    const key = name.toLowerCase();
+    const key = normalizeFoodName(name);
     const existing = byName.get(key);
     // Said only when it adds something: the same words as `name` change nothing.
     const englishName =
-      existing?.englishName ?? (read && read.toLowerCase() !== key ? read : undefined);
+      existing?.englishName ?? (read && normalizeFoodName(read) !== key ? read : undefined);
     byName.set(key, {
       name: existing?.name ?? name,
       grams: existing ? Math.min(MAX_IDENTIFIED_GRAMS, existing.grams + grams) : grams,
@@ -316,6 +301,33 @@ export function searchTermsFor(name: string): string[] {
   return [...new Set(tokenize(name))].sort((a, b) => b.length - a.length).slice(0, 3);
 }
 
+/**
+ * The word `searchTermsFor(name)` searches first, in every spelling a stored food may use: folded
+ * (as `tokenize` writes it) and with the accents `name` was written with. One entry when they are
+ * the same, none when the name has no searchable word. The database search does not fold accents,
+ * so both are asked for; a stored name with accents looked up WITHOUT them is still not found.
+ */
+export function searchSpellingsFor(name: string): string[] {
+  const first = searchTermsFor(name)[0];
+  if (first === undefined) {
+    return [];
+  }
+
+  const word = name
+    .toLowerCase()
+    .split(/[^a-z0-9À-ɏ]+/)
+    .find((candidate) => tokenize(candidate)[0] === first);
+  if (word === undefined) {
+    return [first];
+  }
+
+  // The same naive singular `tokenize` applies, kept on the accented spelling.
+  const accented =
+    word.length > 3 && word.endsWith('s') && !word.endsWith('ss') ? word.slice(0, -1) : word;
+
+  return [...new Set([first, accented])];
+}
+
 type CandidateScore = { covered: number; extra: number };
 
 /** How many wanted words a text carries, and how many words it has besides them. */
@@ -369,62 +381,6 @@ export function pickFoodMatch(
   }
 
   return scored.length > 1 && scored[0].extra === scored[1].extra ? null : scored[0].candidate;
-}
-
-/** The most candidates a name match ranks: a common word ("rice") can name hundreds of foods. */
-export const MAX_FOOD_CANDIDATES = 50;
-
-/**
- * At most `limit` candidates for a name, the ones `pickFoodMatch` would prefer first: those that
- * carry every significant word, fewest extra words first, then the partial ones. `pickFoodMatch`
- * therefore answers the same on the capped list as on the whole one (its winner, and any tie at the
- * top, always survive the cut); the cap only stops it from ranking a huge result. A list within the
- * limit is returned as it is.
- */
-export function limitFoodCandidates(
-  name: string,
-  candidates: readonly FoodCandidate[],
-  limit: number = MAX_FOOD_CANDIDATES
-): FoodCandidate[] {
-  if (candidates.length <= limit) {
-    return [...candidates];
-  }
-
-  const wanted = new Set(tokenize(name));
-
-  return candidates
-    .map((candidate) => ({ candidate, ...scoreCandidate(wanted, candidate) }))
-    .sort((a, b) => b.covered - a.covered || a.extra - b.extra)
-    .slice(0, limit)
-    .map((entry) => entry.candidate);
-}
-
-/**
- * The review payload: matched items carry their food id (the lookup fills the real numbers in at
- * normalization), the rest carry the unmatched id and zeros until the estimate follow-up runs.
- */
-export function buildPhotoMeal(
-  foods: readonly IdentifiedFood[],
-  matches: ReadonlyMap<string, FoodCandidate | null>,
-  mealType: TrackedMeal['mealType']
-): TrackMealResponse {
-  const ingredients: TrackMealIngredient[] = foods.map((food) => {
-    const match = matches.get(food.name) ?? null;
-
-    return {
-      name: match?.name ?? food.name,
-      grams: food.grams,
-      foodId: match?.id ?? LOCAL_PHOTO_UNMATCHED_FOOD_ID,
-      kcal: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-    };
-  });
-
-  const mealName = photoMealName(ingredients.map((ingredient) => ingredient.name));
-
-  return { meals: [{ mealType, ...(mealName ? { mealName } : {}), ingredients }] };
 }
 
 /**

@@ -71,6 +71,11 @@ export type ProviderPolicy = {
    */
   rejectsTruncatedStructuredReplies?: boolean;
   /**
+   * One engine answers one request at a time (the on-device model, a local server), so the samples
+   * of a job run one after another instead of queueing behind each other or fighting for memory.
+   */
+  runsSamplesSequentially?: boolean;
+  /**
    * This provider's own photo step, in place of the default one every provider gets (the detail the
    * person chose in AI settings, with no provider limit above it).
    */
@@ -169,6 +174,7 @@ const SMALL_MODEL_POLICY: ProviderPolicy = {
   chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
   maxChatHistoryTurns: 6,
   repairsStructuredReplies: true,
+  runsSamplesSequentially: true,
 };
 
 /**
@@ -177,6 +183,7 @@ const SMALL_MODEL_POLICY: ProviderPolicy = {
  */
 const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
   maxChatHistoryTurns: SMALL_MODEL_POLICY.maxChatHistoryTurns,
+  runsSamplesSequentially: true,
 };
 
 const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {

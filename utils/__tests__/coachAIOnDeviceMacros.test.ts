@@ -1,5 +1,6 @@
 import { AiCancelledError } from '../aiErrors';
-import { type CoachAIConfig, trackMeal } from '../coachAI';
+import { type CoachAIConfig } from '../coachAI';
+import { trackMeal } from '../coachMealEstimate';
 
 const mockSendStructured = jest.fn();
 const mockGetNutritionDisplay = jest.fn();
@@ -146,8 +147,8 @@ describe('on-device missing-ingredient macros', () => {
       .mockResolvedValueOnce(labelReply)
       .mockRejectedValueOnce(new AiCancelledError());
 
-    // trackMeal turns a cancel into null (no meal), unlike a plain fiber failure, which keeps it.
-    await expect(trackMeal(ON_DEVICE, 'almonds')).resolves.toBeNull();
+    // A cancel reaches the caller as it is (no meal), unlike a plain fiber failure, which keeps the meal.
+    await expect(trackMeal(ON_DEVICE, 'almonds')).rejects.toBeInstanceOf(AiCancelledError);
   });
 
   it('keeps the old kcal and fiber schema for another provider', async () => {

@@ -1,12 +1,6 @@
 import { AiCancelledError, OnDeviceUnavailableError } from '../aiErrors';
-import {
-  type CoachAIConfig,
-  estimateNutritionFromPhoto,
-  requestStructured,
-  sendCoachMessage,
-  trackMeal,
-} from '../coachAI';
-import { LOCAL_PHOTO_UNMATCHED_FOOD_ID } from '../localFoodPhoto';
+import { type CoachAIConfig, requestStructured, sendCoachMessage } from '../coachAI';
+import { estimateNutritionFromPhoto, trackMeal } from '../coachMealEstimate';
 
 const mockSendLocalMessage = jest.fn();
 const mockStreamLocalMessage = jest.fn();
@@ -48,7 +42,17 @@ jest.mock('@/database/services/SettingsService', () => ({
   },
 }));
 jest.mock('@/database/services/FoodService', () => ({
-  FoodService: { searchFoods: (...args: unknown[]) => mockSearchFoods(...args) },
+  FoodService: {
+    searchFoods: (...args: unknown[]) => mockSearchFoods(...args),
+    searchFoodsByTerms: async (terms: string[], options: { includeDescription?: boolean }) =>
+      (
+        await Promise.all(
+          terms.map((term) =>
+            mockSearchFoods(term, { includeDescription: options.includeDescription })
+          )
+        )
+      ).flat(),
+  },
 }));
 jest.mock('@/database/services/NutritionService', () => ({
   NutritionService: {
@@ -317,13 +321,14 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
     expect(options.image).toBe('data:image/jpeg;base64,AAAA');
 
     const ingredients = result?.meals[0].ingredients ?? [];
-    expect(ingredients.find((i) => i.name === 'White rice')).toMatchObject({
+    // The person's own wording is kept; the numbers are the matched food's.
+    expect(ingredients.find((i) => i.name === 'white rice')).toMatchObject({
       foodId: 'food-rice',
       kcal: 195,
     });
     const stew = ingredients.find((i) => i.name === 'mystery stew');
     expect(stew?.kcal).toBe(300);
-    expect(stew?.foodId).not.toBe(LOCAL_PHOTO_UNMATCHED_FOOD_ID);
+    expect(stew?.foodId).toBeUndefined();
   });
 
   it('returns null when nothing recognisable is in the photo', async () => {
@@ -458,7 +463,7 @@ describe('estimateNutritionFromPhoto on the downloaded engine, by thinking level
     const result = await estimateNutritionFromPhoto(gguf, 'data:image/jpeg;base64,AAAA');
 
     expect(photoCalls()).toBe(3);
-    expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['White rice']);
+    expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['white rice']);
   });
 });
 
@@ -544,7 +549,7 @@ describe('estimateNutritionFromPhoto on the downloaded engine, with several phot
 
     const result = await estimateNutritionFromPhoto(gguf, PHOTOS);
 
-    expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['White rice']);
+    expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['white rice']);
   });
 
   it('fails when every photo fails', async () => {

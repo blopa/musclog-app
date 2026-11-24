@@ -83,9 +83,10 @@ jest.mock('@/utils/coachAI', () => {
     isAiCreditsError: (error: unknown) => error instanceof AiCreditsError,
     generateMealPlan: jest.fn(),
     generateWorkoutPlan: jest.fn(),
-    trackMeal: jest.fn(),
+    reportAiError: jest.fn(),
   };
 });
+jest.mock('@/utils/coachMealEstimate', () => ({ trackMeal: jest.fn() }));
 jest.mock('@/utils/file', () => ({
   saveBase64ImageToFile: jest.fn().mockResolvedValue('meal.jpg'),
 }));
@@ -386,7 +387,7 @@ describe('useChatMessages with the reply service', () => {
 
     it('does not persist a Track Meal photo when its estimate fails', async () => {
       await AsyncStorage.setItem(CHAT_INTENTION_KEY, 'TRACK_MEAL');
-      const { trackMeal } = jest.requireMock('@/utils/coachAI');
+      const { trackMeal } = jest.requireMock('@/utils/coachMealEstimate');
       trackMeal.mockResolvedValue(null);
       const { result } = await loaded('nutrition');
 
@@ -403,13 +404,14 @@ describe('useChatMessages with the reply service', () => {
       expect(mockSaveMessage).not.toHaveBeenCalled();
       expect(result.current.messages).toHaveLength(0);
       expect(result.current.failedMessageText).toBe('Lunch');
+      expect(result.current.failedMessageImage).toBe('base64-photo');
       expect(result.current.ephemeralErrorAsMessage?.text).toBe('coach.errors.trackMealFailed');
       expect(result.current.isSending).toBe(false);
     });
 
     it('adds the Track Meal photo to history only once its estimate is ready', async () => {
       await AsyncStorage.setItem(CHAT_INTENTION_KEY, 'TRACK_MEAL');
-      const { trackMeal } = jest.requireMock('@/utils/coachAI');
+      const { trackMeal } = jest.requireMock('@/utils/coachMealEstimate');
       const estimate: TrackMealResponse = {
         meals: [
           {
@@ -463,7 +465,7 @@ describe('useChatMessages with the reply service', () => {
 
     it('restores the Track Meal text and reports a thrown estimate error', async () => {
       await AsyncStorage.setItem(CHAT_INTENTION_KEY, 'TRACK_MEAL');
-      const { trackMeal } = jest.requireMock('@/utils/coachAI');
+      const { trackMeal } = jest.requireMock('@/utils/coachMealEstimate');
       trackMeal.mockRejectedValue(new Error('analysis failed'));
       const { result } = await loaded('nutrition');
 
@@ -476,6 +478,9 @@ describe('useChatMessages with the reply service', () => {
       expect(result.current.failedMessageText).toBe('Dinner');
       expect(result.current.failedMessageImage).toBe('base64-photo');
       expect(result.current.ephemeralErrorAsMessage?.text).toBe('coach.errors.generalError');
+      // The failure reaches Sentry with where it happened, not just the console.
+      const { reportAiError } = jest.requireMock('@/utils/coachAI');
+      expect(reportAiError).toHaveBeenCalledWith(expect.any(Error), 'useChatMessages.sendMessage');
     });
   });
 });

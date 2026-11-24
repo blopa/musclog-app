@@ -2,7 +2,12 @@
  * The subscribe/notify pair every small in-memory store needs (`useSyncExternalStore` takes
  * `subscribe` as is). Pure and import-free, so `utils/premium/` may import it relatively.
  */
-export function createListeners(): { subscribe(listener: () => void): () => void; notify(): void } {
+export function createListeners(): {
+  subscribe(listener: () => void): () => void;
+  notify(): void;
+  /** Drops every listener: for a test seam that resets a store. */
+  clear(): void;
+} {
   const listeners = new Set<() => void>();
 
   return {
@@ -15,6 +20,9 @@ export function createListeners(): { subscribe(listener: () => void): () => void
     },
     notify() {
       listeners.forEach((listener) => listener());
+    },
+    clear() {
+      listeners.clear();
     },
   };
 }

@@ -339,9 +339,6 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   },
   'components/modals/AISettingsModal.tsx': { fixture: 'Open AI Settings Modal' },
   'components/modals/AIBehaviorSettingsModal.tsx': { fixture: 'Open AI Behavior Modal' },
-  'components/modals/ConnectedAISettingsModal.tsx': {
-    unaudited: 'a wrapper that hands stored settings to AISettingsModal, which has its own button',
-  },
   'components/modals/ThirdPartyNoticesModal.tsx': { fixture: 'Open Third Party Notices Modal' },
   'components/modals/AddExerciseModal.tsx': { fixture: 'Open Add Exercise Modal' },
   'components/modals/AddExerciseToSessionModal.tsx': {

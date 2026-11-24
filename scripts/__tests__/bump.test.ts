@@ -154,3 +154,43 @@ it('keeps short arrays in app.json on one line after a bump', () => {
     '"platforms": ["ios", "android", "web"]'
   );
 });
+
+it('rejects an out-of-sync widget extension Info.plist before bumping', () => {
+  writeFixture(
+    'ios/ExpoWidgetsTarget/Info.plist',
+    '<key>CFBundleShortVersionString</key>\n<string>2.10.0</string>\n' +
+      '<key>CFBundleVersion</key>\n<string>296</string>\n'
+  );
+
+  expect(() => assertReleaseVersionsMatch(projectDir)).toThrow('Release version mismatch');
+  expect(() => bumpProjectVersions(projectDir, 'patch')).toThrow('Release version mismatch');
+
+  writeFixture(
+    'ios/ExpoWidgetsTarget/Info.plist',
+    '<key>CFBundleShortVersionString</key>\n<string>2.11.2</string>\n' +
+      '<key>CFBundleVersion</key>\n<string>295</string>\n'
+  );
+  expect(() => assertReleaseVersionsMatch(projectDir)).toThrow('Release build-number mismatch');
+});
+
+it('rejects invalid app.json version or versionCode', () => {
+  writeFixture('app.json', {
+    expo: {
+      android: { versionCode: 0 },
+      ios: { buildNumber: '296' },
+      version: '2.11.2',
+    },
+  });
+  expect(() => assertReleaseVersionsMatch(projectDir)).toThrow(
+    'Invalid app.json expo.android.versionCode'
+  );
+
+  writeFixture('app.json', {
+    expo: {
+      android: { versionCode: 296 },
+      ios: { buildNumber: '296' },
+      version: 'bad',
+    },
+  });
+  expect(() => assertReleaseVersionsMatch(projectDir)).toThrow('Invalid app.json expo.version');
+});

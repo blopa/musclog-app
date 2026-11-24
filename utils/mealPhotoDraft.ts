@@ -1,4 +1,6 @@
-export const MAX_MEAL_PHOTOS = 5;
+import { MAX_MEAL_IMAGES } from './mealImages';
+
+export const MAX_MEAL_PHOTOS = MAX_MEAL_IMAGES;
 
 export type MealOrigin = 'home' | 'restaurant' | 'takeaway' | 'packaged';
 export const MEAL_ORIGINS: readonly MealOrigin[] = ['home', 'restaurant', 'takeaway', 'packaged'];
@@ -94,6 +96,47 @@ export function hasDraftInput(draft: MealPhotoDraft): boolean {
     draft.addedFat !== null ||
     draft.tags.length > 0
   );
+}
+
+export type MealCameraControls = {
+  /**
+   * The camera is open only to add to a draft started in the details sheet: the mode picker is
+   * hidden (another mode would orphan the draft) and close/back returns to the sheet.
+   */
+  addingToDraft: boolean;
+  /** How many images one gallery pick may return: the photo slots left in the draft, at least 1. */
+  gallerySelectionLimit: number;
+  /**
+   * Whether the draft has a free photo slot. When false the shutter and gallery must not take a
+   * photo (the reducer would drop it silently); the person goes back to the details sheet instead.
+   */
+  canAddPhoto: boolean;
+};
+
+/** What the smart camera offers while the detailed meal-photo flow is (or isn't) running. */
+export function mealCameraControls({
+  detailedFlow,
+  isMealPhotoMode,
+  draft,
+  limit,
+}: {
+  detailedFlow: boolean;
+  isMealPhotoMode: boolean;
+  draft: MealPhotoDraft;
+  /** Already `photoLimit(...)`. */
+  limit: number;
+}): MealCameraControls {
+  if (!detailedFlow || !isMealPhotoMode) {
+    return { addingToDraft: false, gallerySelectionLimit: 1, canAddPhoto: true };
+  }
+
+  const remaining = Math.min(limit, MAX_MEAL_PHOTOS) - draft.photos.length;
+
+  return {
+    addingToDraft: hasDraftInput(draft),
+    gallerySelectionLimit: Math.max(1, remaining),
+    canAddPhoto: remaining > 0,
+  };
 }
 
 export function photoLimit(providerMax: number | null | undefined): number {

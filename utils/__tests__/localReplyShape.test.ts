@@ -127,12 +127,13 @@ describe('parseStructuredJson', () => {
     expect(parseStructuredJson('{"a":1,}')).toEqual({ kind: 'ok', value: { a: 1 } });
   });
 
-  it('is malformed for empty or garbage input, with the raw text cut to 500 characters', () => {
+  it('is malformed for empty or garbage input', () => {
     expect(parseStructuredJson('')).toEqual({ kind: 'malformed', raw: '' });
-    const garbage = 'x'.repeat(700);
-    const result = parseStructuredJson(garbage);
-    expect(result.kind).toBe('malformed');
-    expect(result.kind === 'malformed' && result.raw).toHaveLength(500);
+  });
+
+  it('keeps the full raw text of an unparseable reply, so the repair sees all of it', () => {
+    const garbage = 'x'.repeat(1500);
+    expect(parseStructuredJson(garbage)).toEqual({ kind: 'malformed', raw: garbage });
   });
 });
 
@@ -150,11 +151,12 @@ describe('checkStructuredShape', () => {
     expect(checkStructuredShape(ok, schema, 'op')).toBe(ok);
   });
 
-  it('turns a mismatch into malformed with the value truncated', () => {
+  it('turns a mismatch into malformed with the full JSON of the value', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
     const value = { n: 'x'.repeat(700) };
     const result = checkStructuredShape({ kind: 'ok', value }, schema, 'op');
-    expect(result).toEqual({ kind: 'malformed', raw: JSON.stringify(value).slice(0, 500) });
+    expect(JSON.stringify(value).length).toBeGreaterThan(500);
+    expect(result).toEqual({ kind: 'malformed', raw: JSON.stringify(value) });
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });

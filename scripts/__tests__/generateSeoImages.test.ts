@@ -75,4 +75,58 @@ describe('generate-seo-images', () => {
       renderSeoImage({ language: 'en-US', copy, screenshotFile: screenshotFor('en-US') })
     ).rejects.toThrow(/does not fit/);
   });
+
+  it('does not initialize fontconfig on require alone', () => {
+    const prevFontConfig = process.env.FONTCONFIG_FILE;
+    delete process.env.FONTCONFIG_FILE;
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../generate-seo-images') as {
+          copyProblems: (copy: unknown, language: string) => string[];
+        };
+        expect(process.env.FONTCONFIG_FILE).toBeUndefined();
+        expect(mod.copyProblems({}, 'en-US').length).toBeGreaterThan(0);
+      });
+    } finally {
+      if (prevFontConfig !== undefined) {
+        process.env.FONTCONFIG_FILE = prevFontConfig;
+      }
+    }
+  });
+
+  it('parses lucide icon nodes without regex fragility and rejects empty icons', () => {
+    const { lucideIconMarkup: parseIcon } = require('../generate-seo-images') as {
+      lucideIconMarkup: (name: string, readFile?: (file: string) => string) => string;
+    };
+    const fakeModule = [
+      "var createLucideIcon = require('../createLucideIcon.js');",
+      'exports.__iconNode = [',
+      '  ["circle", { cx: 12, cy: 12, r: 10, "stroke-width": "2", key: "k1" }],',
+      '  ["path", { d: "M1 1", label: "a\\"b", key: "k2" }]',
+      '];',
+    ].join('\n');
+
+    expect(parseIcon('fake', () => fakeModule)).toBe(
+      '<circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M1 1" label="a&quot;b"/>'
+    );
+    expect(() => parseIcon('empty', () => 'exports.__iconNode = [];')).toThrow(
+      /has no drawable elements/
+    );
+  });
+
+  it('renders multiple locales concurrently using shared memoized phone layers', async () => {
+    const results = await Promise.all(
+      ['en-US', 'tr-TR'].map((language) =>
+        renderSeoImage({
+          language,
+          copy: imageCopyFor(language),
+          screenshotFile: screenshotFor(language),
+        })
+      )
+    );
+    for (const bytes of results) {
+      const meta = await sharp(bytes).metadata();
+      expect([meta.format, meta.width, meta.height]).toEqual(['jpeg', WIDTH, HEIGHT]);
+    }
+  });
 });

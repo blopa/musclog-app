@@ -7,7 +7,6 @@ import { PasteJsonSheet } from '@/components/aiOnboarding/PasteJsonSheet';
 import { FoodInfoCard } from '@/components/cards/FoodInfoCard';
 import { ExternalAssistantHandoff } from '@/components/externalAssistant/ExternalAssistantHandoff';
 import { FilterTabs } from '@/components/FilterTabs';
-import { inferMealTypeFromHour } from '@/components/nutrition/foodDiaryLayout';
 import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
 import { SectionLabel } from '@/components/theme/SectionLabel';
@@ -47,6 +46,7 @@ import {
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
+import { mealTypeForHour } from '@/utils/localFoodPhoto';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
@@ -176,7 +176,7 @@ export function ExternalFoodLogModal({
         grouping: defaultGrouping(result.ingredients.length, result.log.mealName),
         date: localCalendarDayDate(logDate),
         time: now,
-        mealType: result.log.mealType ?? initialMealType ?? inferMealTypeFromHour(now.getHours()),
+        mealType: result.log.mealType ?? initialMealType ?? mealTypeForHour(now.getHours()),
       });
       return null;
     } catch (error) {

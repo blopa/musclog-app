@@ -33,6 +33,40 @@ export async function pickImageFromGallery(): Promise<string | null> {
 }
 
 /**
+ * Like `pickImageFromGallery`, but lets the user pick up to `limit` images at once (in the order
+ * they tapped them). Resolves `[]` when the user cancels. A `limit` of 1 or less opens the same
+ * single-pick picker as `pickImageFromGallery`. The picker may ignore `selectionLimit` on some
+ * platforms (web), so the result is cut to `limit` here as well.
+ */
+export async function pickImagesFromGallery(limit: number): Promise<string[]> {
+  const max = Number.isFinite(limit) ? Math.max(1, Math.floor(limit)) : 1;
+
+  if (max === 1) {
+    const uri = await pickImageFromGallery();
+
+    return uri ? [uri] : [];
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ['images'],
+    quality: 1,
+    base64: false,
+    allowsMultipleSelection: true,
+    selectionLimit: max,
+    orderedSelection: true,
+  });
+
+  if (result.canceled || !result.assets?.length) {
+    return [];
+  }
+
+  return result.assets
+    .map((asset) => asset.uri)
+    .filter(Boolean)
+    .slice(0, max);
+}
+
+/**
  * The full "pick from gallery" flow: opens the system photo picker, then runs the result through
  * the app's crop tool. Resolves `null` if the user cancels either step. Used by every screen that
  * lets the user attach or upload a photo from the gallery (chat attachments, meal/food/exercise

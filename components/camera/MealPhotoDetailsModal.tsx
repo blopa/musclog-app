@@ -1,8 +1,8 @@
 import { Plus, X } from 'lucide-react-native';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { MealContextFields } from '@/components/camera/MealContextFields';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
 import { Button } from '@/components/theme/Button';
@@ -11,7 +11,7 @@ import { IconButton } from '@/components/theme/IconButton';
 import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
-import { MEAL_CONTEXT_TAGS } from '@/constants/mealContextTags';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import {
   ADDED_FAT_LEVELS,
@@ -75,7 +75,7 @@ export function MealPhotoDetailsModal({
 }: MealPhotoDetailsModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [confirmDiscard, setConfirmDiscard] = useSubModalVisibility(visible);
 
   const canAdd = draft.photos.length < photoLimit;
 
@@ -187,64 +187,50 @@ export function MealPhotoDetailsModal({
             maxLength={80}
             onChangeText={(value) => dispatch({ type: 'setName', value })}
           />
-          <TextInput
-            label={t('food.mealPhotos.descriptionLabel')}
-            placeholder={t('food.mealPhotos.descriptionPlaceholder')}
-            value={draft.description}
+          <MealContextFields
+            description={draft.description}
+            onDescriptionChange={(value) => dispatch({ type: 'setDescription', value })}
+            descriptionLabel={t('food.mealPhotos.descriptionLabel')}
+            descriptionPlaceholder={t('food.mealPhotos.descriptionPlaceholder')}
             maxLength={400}
-            multiline
             numberOfLines={3}
-            onChangeText={(value) => dispatch({ type: 'setDescription', value })}
+            tags={draft.tags}
+            onToggleTag={(value) => dispatch({ type: 'toggleTag', value })}
+            tagsLabel={t('food.mealPhotos.tagsLabel')}
+            middleSlot={
+              <>
+                <View style={{ gap: theme.spacing.gap.sm }}>
+                  <FieldLabel>{t('food.mealPhotos.originLabel')}</FieldLabel>
+                  <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
+                    {MEAL_ORIGINS.map((origin) => (
+                      <Chip
+                        key={origin}
+                        role="radio"
+                        label={t(ORIGIN_KEYS[origin])}
+                        selected={draft.origin === origin}
+                        onPress={() => dispatch({ type: 'toggleOrigin', value: origin })}
+                      />
+                    ))}
+                  </View>
+                </View>
+
+                <View style={{ gap: theme.spacing.gap.sm }}>
+                  <FieldLabel>{t('food.mealPhotos.addedFatLabel')}</FieldLabel>
+                  <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
+                    {ADDED_FAT_LEVELS.map((level) => (
+                      <Chip
+                        key={level}
+                        role="radio"
+                        label={t(ADDED_FAT_KEYS[level])}
+                        selected={draft.addedFat === level}
+                        onPress={() => dispatch({ type: 'toggleAddedFat', value: level })}
+                      />
+                    ))}
+                  </View>
+                </View>
+              </>
+            }
           />
-
-          <View style={{ gap: theme.spacing.gap.sm }}>
-            <FieldLabel>{t('food.mealPhotos.originLabel')}</FieldLabel>
-            <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
-              {MEAL_ORIGINS.map((origin) => (
-                <Chip
-                  key={origin}
-                  role="radio"
-                  label={t(ORIGIN_KEYS[origin])}
-                  selected={draft.origin === origin}
-                  onPress={() => dispatch({ type: 'toggleOrigin', value: origin })}
-                />
-              ))}
-            </View>
-          </View>
-
-          <View style={{ gap: theme.spacing.gap.sm }}>
-            <FieldLabel>{t('food.mealPhotos.addedFatLabel')}</FieldLabel>
-            <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
-              {ADDED_FAT_LEVELS.map((level) => (
-                <Chip
-                  key={level}
-                  role="radio"
-                  label={t(ADDED_FAT_KEYS[level])}
-                  selected={draft.addedFat === level}
-                  onPress={() => dispatch({ type: 'toggleAddedFat', value: level })}
-                />
-              ))}
-            </View>
-          </View>
-
-          <View style={{ gap: theme.spacing.gap.sm }}>
-            <FieldLabel>{t('food.mealPhotos.tagsLabel')}</FieldLabel>
-            <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
-              {MEAL_CONTEXT_TAGS.map((tag) => {
-                const label = t(tag.labelKey);
-
-                return (
-                  <Chip
-                    key={tag.id}
-                    role="checkbox"
-                    label={label}
-                    selected={draft.tags.includes(label)}
-                    onPress={() => dispatch({ type: 'toggleTag', value: label })}
-                  />
-                );
-              })}
-            </View>
-          </View>
         </View>
       </View>
 

@@ -1,4 +1,5 @@
-import { type CoachAIConfig, trackMeal } from '../coachAI';
+import { type CoachAIConfig } from '../coachAI';
+import { trackMeal } from '../coachMealEstimate';
 import { ingredientMacroProblems } from '../mealPlausibility';
 
 const mockSendOnDeviceStructured = jest.fn();

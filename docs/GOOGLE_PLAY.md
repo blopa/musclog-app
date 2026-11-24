@@ -61,12 +61,17 @@ manual `workflow_dispatch` only) runs `eas build --local` with the `production` 
 refuses a debug-signed bundle and attaches `musclog-<version>-<code>.aab` to the run as an artifact (14 days).
 It needs the repository secret `EXPO_TOKEN` (signing credentials and the plain-text/sensitive EAS environment
 variables come from EAS; a variable with visibility "Secret" does not reach a local build, so
-`SENTRY_AUTH_TOKEN` can be added as a repository secret too). It never uploads to Play: download the artifact
-and use `scripts/release-android.sh upload --file <aab>` when you decide to.
+`SENTRY_AUTH_TOKEN` can be added as a repository secret too). By default it never uploads to Play: download the
+artifact and use `scripts/release-android.sh upload --file <aab>` when you decide to. Ticking "Also submit to Play
+internal testing" adds a step that runs that same script against the internal track (the track is written in the
+workflow, so it cannot reach production) and needs the repository secret `PLAY_SERVICE_ACCOUNT_JSON` (the whole
+service-account key). The AAB is uploaded as an artifact before that step, so a failed submission never loses the build.
 
 `upload` defaults to the internal track; production refuses without `--rollout`. Before uploading it runs
-`gplay preflight --fail-on warning` and refuses unless the local versionCode is above every code on Play
-(Play spends a code even on a rejected upload). `--notes FILE` is plain en-US text or a JSON array of
+the offline `gplay preflight` and refuses unless the local versionCode is above every code on Play
+(Play spends a code even on a rejected upload). Preflight blocks on errors only: its warnings (exact alarms, bundle
+size, exported receivers) are printed, and the one known false positive, Expo's public `expo-root.pem`, is listed in
+`PREFLIGHT_KNOWN_FALSE_POSITIVES` in the script (exact scanner, check and file; anything else still fails). `--notes FILE` is plain en-US text or a JSON array of
 `{language, text}`. Bundles are written to `.release/` (git-ignored).
 
 ## Store listing as files

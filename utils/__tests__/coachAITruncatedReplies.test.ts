@@ -239,6 +239,10 @@ describe('structured replies cut off at the token limit', () => {
     const result = await requestStructured(local, request);
 
     expect(result.kind).toBe('ok');
-    expect(mockCaptureMessage).not.toHaveBeenCalled();
+    // Never reported as a cut-off (the ladder stays for this provider); the reply that is still
+    // partial after the repair is the quality signal, and the only one sent.
+    expect(mockCaptureMessage.mock.calls.map((call) => call[0])).toEqual([
+      'ai-structured-reply-unusable',
+    ]);
   });
 });

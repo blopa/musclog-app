@@ -617,6 +617,15 @@ describe('the Otari upstream (D1 toggle)', () => {
     }
   );
 
+  it('accepts a newer consent version than the minimum', async () => {
+    const otari = fakeOtari(otariJsonCompletion('0.001000'));
+    const { res, done } = await call({ otari, consentVersion: '5' });
+    expect(res.status).toBe(200);
+    await res.text();
+    await done();
+    expect(otari.calls).toHaveLength(1);
+  });
+
   it('non-stream success sends a pinned Otari body and charges usage.cost_usd', async () => {
     const otari = fakeOtari(otariJsonCompletion('0.001230'));
     const { res, deps, done } = await call({ otari });
@@ -706,6 +715,34 @@ describe('the Otari upstream (D1 toggle)', () => {
     await res.text();
     await done();
     expect(await meta('breaker_reason')).toBe('upstream_unexpected_provider');
+  });
+
+  it('a streaming 200 with null body still opens the breaker on unexpected provider', async () => {
+    const otari = fakeOtari({ kind: 'throw' });
+    otari.chatCompletions = async (text, init) => {
+      allRecorded.push({
+        body: JSON.parse(text),
+        text,
+        signal: init.signal,
+        upstream: 'otari',
+      });
+      return new Response(null, { status: 200, headers: { 'otari-provider': 'together' } });
+    };
+    const { res, deps, done } = await call({ otari, body: chatBody({ stream: true }) });
+    expect(res.status).toBe(502);
+    await done();
+    const row = await onlyReservation();
+    expect(row.state).toBe('settled');
+    expect(row.settled_u).toBe(row.reserved_u);
+    expect(await meta('breaker')).toBe('open');
+    expect(await meta('breaker_reason')).toBe('upstream_unexpected_provider');
+    expect(deps.logs).toContainEqual(
+      expect.objectContaining({
+        code: 'upstream_unexpected_provider',
+        severity: 'high',
+        upstream: 'otari',
+      })
+    );
   });
 
   it('the expected provider header (any case) leaves the breaker closed', async () => {

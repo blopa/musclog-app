@@ -1,18 +1,88 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { SETTINGS } from '@/constants/settingDefinitions';
-import type {
-  NutritionLogHistoryDays,
-  ProgressionMode,
-  WorkoutHistoryDays,
-} from '@/constants/settings';
+import type { SettingsContextType } from '@/context/SettingsContext';
 import { SettingsService } from '@/database/services/SettingsService';
-import type { ThinkingLevel } from '@/utils/aiThinkingLevel';
 
 import { useSettings } from './useSettings';
 
 type SettingValue = string | boolean | number;
-type SaveFn<T extends SettingValue> = (value: T) => Promise<void>;
+type PendingSave = { value: SettingValue; save: (value: SettingValue) => Promise<void> };
+
+/**
+ * The one list of debounced settings: each key of the settings context and the
+ * function that saves it. The saver of a key takes that key's own value type.
+ * A new setting is one line here.
+ */
+const DEBOUNCED_SETTINGS = {
+  connectHealthData: SettingsService.setConnectHealthData,
+  readHealthData: SettingsService.setReadHealthData,
+  writeHealthData: SettingsService.setWriteHealthData,
+  anonymousBugReport: SettingsService.setAnonymousBugReport,
+  enableGoogleGemini: SettingsService.setEnableGoogleGemini,
+  enableOpenAi: SettingsService.setEnableOpenAi,
+  enableClaude: (value: boolean) => SettingsService.set(SETTINGS.enableClaude, value),
+  enableLocalLlm: SettingsService.setEnableLocalLlm,
+  dailyNutritionInsights: SettingsService.setDailyNutritionInsights,
+  workoutInsights: SettingsService.setWorkoutInsights,
+  notifications: SettingsService.setNotifications,
+  notificationsWorkoutReminders: SettingsService.setNotificationsWorkoutReminders,
+  notificationsActiveWorkout: SettingsService.setNotificationsActiveWorkout,
+  notificationsNutritionOverview: SettingsService.setNotificationsNutritionOverview,
+  notificationsMenstrualCycle: SettingsService.setNotificationsMenstrualCycle,
+  notificationsRestTimer: SettingsService.setNotificationsRestTimer,
+  notificationsWorkoutDuration: SettingsService.setNotificationsWorkoutDuration,
+  useOcrBeforeAi: SettingsService.setUseOcrBeforeAi,
+  useMusclogFreeTier: SettingsService.setUseMusclogFreeTier,
+  sendFoundationFoodsToLlm: SettingsService.setSendFoundationFoodsToLlm,
+  thinkingLevel: (level: SettingsContextType['thinkingLevel']) =>
+    SettingsService.set(SETTINGS.thinkingLevel, level),
+  units: SettingsService.setUnits,
+  foodSearchSource: SettingsService.setFoodSearchSource,
+  conversationContext: SettingsService.setCoachConversationContext,
+  chartTooltipPosition: SettingsService.setChartTooltipPosition,
+  language: SettingsService.setLanguage,
+  maxAiMemories: SettingsService.setMaxAiMemories,
+  showDailyMoodPrompt: SettingsService.setShowDailyMoodPrompt,
+  showDailyWaterPrompt: SettingsService.setShowDailyWaterPrompt,
+  showDailySupplementPrompt: SettingsService.setShowDailySupplementPrompt,
+  alwaysAllowFoodEditing: SettingsService.setAlwaysAllowFoodEditing,
+  showWeightPrediction: SettingsService.setShowWeightPrediction,
+  requireExportEncryption: SettingsService.setRequireExportEncryption,
+  disableMinimumCalories: SettingsService.setDisableMinimumCalories,
+  useBfForCalculations: SettingsService.setUseBfForCalculations,
+  intuitiveEatingMode: SettingsService.setIntuitiveEatingMode,
+  enableFastedDay: SettingsService.setEnableFastedDay,
+  includeFiberInCarbs: SettingsService.setIncludeFiberInCarbs,
+  progressionMode: SettingsService.setProgressionMode,
+  advancedDataManagement: SettingsService.setAdvancedDataManagement,
+  bleGenerateChartPayload: SettingsService.setBleGenerateChartPayload,
+  nutritionLogHistoryDays: SettingsService.setNutritionLogHistoryDays,
+  workoutHistoryDays: SettingsService.setWorkoutHistoryDays,
+  aiImageQuality: (tier: SettingsContextType['aiImageQuality']) =>
+    SettingsService.set(SETTINGS.aiImageQuality, tier),
+  aiMealCameraFlow: (flow: SettingsContextType['aiMealCameraFlow']) =>
+    SettingsService.set(SETTINGS.aiMealCameraFlow, flow),
+} satisfies {
+  [K in keyof SettingsContextType]?: (value: SettingsContextType[K]) => Promise<void>;
+};
+
+const createStore = () => ({
+  pendingKeys: new Set<string>(),
+  timeouts: new Map<string, ReturnType<typeof setTimeout>>(),
+  pendingValues: new Map<string, PendingSave>(),
+});
+
+type DebouncedKey = keyof typeof DEBOUNCED_SETTINGS;
+
+/** Every key of the table, for the keys initialised from the DB and for tests. */
+export const DEBOUNCED_SETTING_KEYS = Object.keys(DEBOUNCED_SETTINGS) as DebouncedKey[];
+
+type Handlers = {
+  [K in DebouncedKey as `handle${Capitalize<K>}Change`]: (value: SettingsContextType[K]) => void;
+};
+
+type OptimisticValues = { [K in DebouncedKey]: SettingsContextType[K] };
 
 /**
  * Settings hook with instant optimistic UI updates and 200ms debounced DB writes.
@@ -34,17 +104,12 @@ export function useDebouncedSettings(debounceMs = 200) {
   // Source of truth for the UI — updated instantly on every user interaction.
   const [localSettings, setLocalSettings] = useState<Record<string, SettingValue>>({});
 
-  // Keys that have a pending debounced write. While a key is here the sync
-  // effect will not overwrite the optimistic local value with the DB value.
-  const pendingKeysRef = useRef<Set<string>>(new Set());
+  // Mutable bookkeeping, created once. `pendingKeys`: keys with a pending debounced write (the
+  // sync effect will not overwrite their optimistic value with the DB value). `timeouts`: one
+  // timer per key. `pendingValues`: the latest value and its own saver per key, so
+  // flushAllPendingChanges writes each one through the save function it was scheduled with.
+  const [store] = useState(createStore);
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
-
-  // One timeout handle per setting key.
-  const timeoutRefs = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-
-  // Pending (latest) value per key — needed so flushAllPendingChanges knows
-  // what to write when the modal closes before the timer fires.
-  const pendingValuesRef = useRef<Record<string, SettingValue>>({});
 
   // --- Initialization ---
   // Populate localSettings from the DB on first load (once isLoading clears).
@@ -52,52 +117,7 @@ export function useDebouncedSettings(debounceMs = 200) {
   useLayoutEffect(() => {
     if (!initialized.current && !actualSettings.isLoading) {
       initialized.current = true;
-      const keys: (keyof typeof actualSettings)[] = [
-        'connectHealthData',
-        'readHealthData',
-        'writeHealthData',
-        'anonymousBugReport',
-        'enableGoogleGemini',
-        'enableOpenAi',
-        'enableClaude',
-        'enableLocalLlm',
-        'dailyNutritionInsights',
-        'workoutInsights',
-        'notifications',
-        'notificationsWorkoutReminders',
-        'notificationsActiveWorkout',
-        'notificationsNutritionOverview',
-        'notificationsMenstrualCycle',
-        'notificationsRestTimer',
-        'notificationsWorkoutDuration',
-        'useOcrBeforeAi',
-        'useOnDeviceAi',
-        'useMusclogFreeTier',
-        'sendFoundationFoodsToLlm',
-        'thinkingLevel',
-        'units',
-        'foodSearchSource',
-        'conversationContext',
-        'chartTooltipPosition',
-        'language',
-        'maxAiMemories',
-        'showDailyMoodPrompt',
-        'showDailyWaterPrompt',
-        'showDailySupplementPrompt',
-        'alwaysAllowFoodEditing',
-        'showWeightPrediction',
-        'requireExportEncryption',
-        'disableMinimumCalories',
-        'useBfForCalculations',
-        'intuitiveEatingMode',
-        'enableFastedDay',
-        'includeFiberInCarbs',
-        'progressionMode',
-        'advancedDataManagement',
-        'bleGenerateChartPayload',
-        'nutritionLogHistoryDays',
-        'workoutHistoryDays',
-      ];
+      const keys = DEBOUNCED_SETTING_KEYS;
 
       const initial: Record<string, SettingValue> = {};
       for (const k of keys) {
@@ -119,523 +139,114 @@ export function useDebouncedSettings(debounceMs = 200) {
       return;
     }
 
-    setLocalSettings((prev) => {
-      const next = { ...prev };
-      let changed = false;
-      for (const key of Object.keys(prev)) {
-        if (pendingKeysRef.current.has(key)) {
-          continue; // user has a pending change for this key — leave it alone
+    // Named helper, not a bare setState in the effect body (`react-hooks/set-state-in-effect`).
+    const syncFromDb = () =>
+      setLocalSettings((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        for (const key of Object.keys(prev)) {
+          if (store.pendingKeys.has(key)) {
+            continue; // user has a pending change for this key — leave it alone
+          }
+
+          const dbVal = actualSettings[key as keyof typeof actualSettings] as SettingValue;
+          if (dbVal !== undefined && prev[key] !== dbVal) {
+            next[key] = dbVal;
+            changed = true;
+          }
         }
 
-        const dbVal = actualSettings[key as keyof typeof actualSettings] as SettingValue;
-        if (dbVal !== undefined && prev[key] !== dbVal) {
-          next[key] = dbVal;
-          changed = true;
-        }
-      }
+        return changed ? next : prev;
+      });
 
-      return changed ? next : prev;
-    });
-  }, [actualSettings]);
+    syncFromDb();
+  }, [actualSettings, store]);
 
-  // --- Generic handler factory ---
-  const createSettingHandler = useCallback(
-    <T extends SettingValue>(settingKey: string, saveFunction: SaveFn<T>) =>
-      (newValue: T) => {
+  // --- Handlers: one per table key, built once per debounce delay ---
+  const handlers = useMemo(() => {
+    const createSettingHandler =
+      (settingKey: string, saveFunction: (value: never) => Promise<void>) =>
+      (newValue: SettingValue) => {
         // 1. Update UI immediately.
         setLocalSettings((prev) => ({ ...prev, [settingKey]: newValue }));
 
         // 2. Mark as pending so the sync effect leaves it alone.
-        pendingKeysRef.current.add(settingKey);
+        store.pendingKeys.add(settingKey);
         setHasPendingChanges(true);
-        pendingValuesRef.current[settingKey] = newValue;
+        // Narrowing the saver's parameter to SettingValue is safe: newValue is a SettingValue.
+        const save = saveFunction as (value: SettingValue) => Promise<void>;
+        store.pendingValues.set(settingKey, { value: newValue, save });
 
         // 3. Reset the debounce timer for this key.
-        if (timeoutRefs.current[settingKey]) {
-          clearTimeout(timeoutRefs.current[settingKey]);
-        }
+        clearTimeout(store.timeouts.get(settingKey));
 
-        timeoutRefs.current[settingKey] = setTimeout(() => {
-          delete timeoutRefs.current[settingKey];
-          delete pendingValuesRef.current[settingKey];
+        store.timeouts.set(
+          settingKey,
+          setTimeout(() => {
+            store.timeouts.delete(settingKey);
+            store.pendingValues.delete(settingKey);
 
-          saveFunction(newValue)
-            .catch((error) => {
-              console.error(`[useDebouncedSettings] Error saving ${settingKey}:`, error);
-              // On failure revert local state to whatever the DB says now.
-              // The sync effect will handle this on the next actualSettings update.
-            })
-            .finally(() => {
-              pendingKeysRef.current.delete(settingKey);
-              setHasPendingChanges(pendingKeysRef.current.size > 0);
-            });
-        }, debounceMs);
-      },
-    [debounceMs]
-  );
-
-  // --- Specific handlers ---
-  const handleConnectHealthDataChange = createSettingHandler(
-    'connectHealthData',
-    SettingsService.setConnectHealthData
-  );
-  const handleReadHealthDataChange = createSettingHandler(
-    'readHealthData',
-    SettingsService.setReadHealthData
-  );
-  const handleWriteHealthDataChange = createSettingHandler(
-    'writeHealthData',
-    SettingsService.setWriteHealthData
-  );
-  const handleAnonymousBugReportChange = createSettingHandler(
-    'anonymousBugReport',
-    SettingsService.setAnonymousBugReport
-  );
-  const handleEnableGoogleGeminiChange = createSettingHandler(
-    'enableGoogleGemini',
-    SettingsService.setEnableGoogleGemini
-  );
-  const handleEnableOpenAiChange = createSettingHandler(
-    'enableOpenAi',
-    SettingsService.setEnableOpenAi
-  );
-  const handleEnableClaudeChange = createSettingHandler('enableClaude', (value: boolean) =>
-    SettingsService.set(SETTINGS.enableClaude, value)
-  );
-  const handleEnableLocalLlmChange = createSettingHandler(
-    'enableLocalLlm',
-    SettingsService.setEnableLocalLlm
-  );
-  const handleDailyNutritionInsightsChange = createSettingHandler(
-    'dailyNutritionInsights',
-    SettingsService.setDailyNutritionInsights
-  );
-  const handleWorkoutInsightsChange = createSettingHandler(
-    'workoutInsights',
-    SettingsService.setWorkoutInsights
-  );
-  const handleNotificationsChange = createSettingHandler(
-    'notifications',
-    SettingsService.setNotifications
-  );
-  const handleNotificationsWorkoutRemindersChange = createSettingHandler(
-    'notificationsWorkoutReminders',
-    SettingsService.setNotificationsWorkoutReminders
-  );
-  const handleNotificationsActiveWorkoutChange = createSettingHandler(
-    'notificationsActiveWorkout',
-    SettingsService.setNotificationsActiveWorkout
-  );
-  const handleNotificationsNutritionOverviewChange = createSettingHandler(
-    'notificationsNutritionOverview',
-    SettingsService.setNotificationsNutritionOverview
-  );
-  const handleNotificationsMenstrualCycleChange = createSettingHandler(
-    'notificationsMenstrualCycle',
-    SettingsService.setNotificationsMenstrualCycle
-  );
-  const handleNotificationsRestTimerChange = createSettingHandler(
-    'notificationsRestTimer',
-    SettingsService.setNotificationsRestTimer
-  );
-  const handleNotificationsWorkoutDurationChange = createSettingHandler(
-    'notificationsWorkoutDuration',
-    SettingsService.setNotificationsWorkoutDuration
-  );
-  const handleUnitsChange = createSettingHandler<'metric' | 'imperial'>(
-    'units',
-    SettingsService.setUnits
-  );
-  const handleUseOcrBeforeAiChange = createSettingHandler(
-    'useOcrBeforeAi',
-    SettingsService.setUseOcrBeforeAi
-  );
-  const handleUseOnDeviceAiChange = useCallback(
-    (newValue: boolean) => {
-      setLocalSettings((prev) => ({
-        ...prev,
-        useOnDeviceAi: newValue,
-        ...(newValue ? { useOcrBeforeAi: true } : {}),
-      }));
-
-      pendingKeysRef.current.add('useOnDeviceAi');
-      setHasPendingChanges(true);
-      pendingValuesRef.current['useOnDeviceAi'] = newValue;
-
-      if (newValue) {
-        pendingKeysRef.current.add('useOcrBeforeAi');
-        pendingValuesRef.current['useOcrBeforeAi'] = true;
-      }
-
-      const schedule = (key: string, save: () => Promise<void>) => {
-        if (timeoutRefs.current[key]) {
-          clearTimeout(timeoutRefs.current[key]);
-        }
-
-        timeoutRefs.current[key] = setTimeout(() => {
-          delete timeoutRefs.current[key];
-          delete pendingValuesRef.current[key];
-          save()
-            .catch((e) => console.error(`[useDebouncedSettings] Error saving ${key}:`, e))
-            .finally(() => {
-              pendingKeysRef.current.delete(key);
-              setHasPendingChanges(pendingKeysRef.current.size > 0);
-            });
-        }, debounceMs);
+            save(newValue)
+              .catch((error) => {
+                console.error(`[useDebouncedSettings] Error saving ${settingKey}:`, error);
+                // On failure revert local state to whatever the DB says now.
+                // The sync effect will handle this on the next actualSettings update.
+              })
+              .finally(() => {
+                store.pendingKeys.delete(settingKey);
+                setHasPendingChanges(store.pendingKeys.size > 0);
+              });
+          }, debounceMs)
+        );
       };
 
-      schedule('useOnDeviceAi', () => SettingsService.setUseOnDeviceAi(newValue));
-      if (newValue) {
-        schedule('useOcrBeforeAi', () => SettingsService.setUseOcrBeforeAi(true));
-      }
-    },
-    [debounceMs]
-  );
-  const handleUseMusclogFreeTierChange = createSettingHandler(
-    'useMusclogFreeTier',
-    SettingsService.setUseMusclogFreeTier
-  );
-  const handleSendFoundationFoodsToLlmChange = createSettingHandler(
-    'sendFoundationFoodsToLlm',
-    SettingsService.setSendFoundationFoodsToLlm
-  );
-  const handleThinkingLevelChange = createSettingHandler('thinkingLevel', (level: ThinkingLevel) =>
-    SettingsService.set(SETTINGS.thinkingLevel, level)
-  );
-  const handleFoodSearchSourceChange = createSettingHandler(
-    'foodSearchSource',
-    SettingsService.setFoodSearchSource
-  );
-  const handleConversationContextChange = createSettingHandler<
-    'general' | 'exercise' | 'nutrition'
-  >('conversationContext', SettingsService.setCoachConversationContext);
-  const handleChartTooltipPositionChange = createSettingHandler<'left' | 'right'>(
-    'chartTooltipPosition',
-    SettingsService.setChartTooltipPosition
-  );
-  const handleLanguageChange = createSettingHandler<string>(
-    'language',
-    SettingsService.setLanguage
-  );
-  const handleMaxAiMemoriesChange = createSettingHandler<number>(
-    'maxAiMemories',
-    SettingsService.setMaxAiMemories
-  );
-  const handleShowDailyMoodPromptChange = createSettingHandler<boolean>(
-    'showDailyMoodPrompt',
-    SettingsService.setShowDailyMoodPrompt
-  );
-  const handleShowDailyWaterPromptChange = createSettingHandler<boolean>(
-    'showDailyWaterPrompt',
-    SettingsService.setShowDailyWaterPrompt
-  );
-  const handleShowDailySupplementPromptChange = createSettingHandler<boolean>(
-    'showDailySupplementPrompt',
-    SettingsService.setShowDailySupplementPrompt
-  );
-  const handleAlwaysAllowFoodEditingChange = createSettingHandler<boolean>(
-    'alwaysAllowFoodEditing',
-    SettingsService.setAlwaysAllowFoodEditing
-  );
-  const handleShowWeightPredictionChange = createSettingHandler<boolean>(
-    'showWeightPrediction',
-    SettingsService.setShowWeightPrediction
-  );
-  const handleRequireExportEncryptionChange = createSettingHandler<boolean>(
-    'requireExportEncryption',
-    SettingsService.setRequireExportEncryption
-  );
-  const handleDisableMinimumCaloriesChange = createSettingHandler<boolean>(
-    'disableMinimumCalories',
-    SettingsService.setDisableMinimumCalories
-  );
-  const handleUseBfForCalculationsChange = createSettingHandler<boolean>(
-    'useBfForCalculations',
-    SettingsService.setUseBfForCalculations
-  );
-  const handleIntuitiveEatingModeChange = createSettingHandler<boolean>(
-    'intuitiveEatingMode',
-    SettingsService.setIntuitiveEatingMode
-  );
-  const handleEnableFastedDayChange = createSettingHandler<boolean>(
-    'enableFastedDay',
-    SettingsService.setEnableFastedDay
-  );
-  const handleIncludeFiberInCarbsChange = createSettingHandler<boolean>(
-    'includeFiberInCarbs',
-    SettingsService.setIncludeFiberInCarbs
-  );
-  const handleProgressionModeChange = createSettingHandler<ProgressionMode>(
-    'progressionMode',
-    SettingsService.setProgressionMode
-  );
-  const handleAdvancedDataManagementChange = createSettingHandler<boolean>(
-    'advancedDataManagement',
-    SettingsService.setAdvancedDataManagement
-  );
-  const handleBleGenerateChartPayloadChange = createSettingHandler<boolean>(
-    'bleGenerateChartPayload',
-    SettingsService.setBleGenerateChartPayload
-  );
-  const handleNutritionLogHistoryDaysChange = createSettingHandler<NutritionLogHistoryDays>(
-    'nutritionLogHistoryDays',
-    SettingsService.setNutritionLogHistoryDays
-  );
-  const handleWorkoutHistoryDaysChange = createSettingHandler<WorkoutHistoryDays>(
-    'workoutHistoryDays',
-    SettingsService.setWorkoutHistoryDays
-  );
+    const built: Record<string, (value: SettingValue) => void> = {};
+    for (const key of DEBOUNCED_SETTING_KEYS) {
+      built[`handle${key.charAt(0).toUpperCase()}${key.slice(1)}Change`] = createSettingHandler(
+        key,
+        DEBOUNCED_SETTINGS[key]
+      );
+    }
+
+    // The one cast at the runtime boundary: the names and value types are the mapped `Handlers`.
+    return built as unknown as Handlers;
+  }, [debounceMs, store]);
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
-    const entries = Object.entries(pendingValuesRef.current);
-    for (const [settingKey, value] of entries) {
-      if (timeoutRefs.current[settingKey]) {
-        clearTimeout(timeoutRefs.current[settingKey]);
-        delete timeoutRefs.current[settingKey];
-      }
-
-      delete pendingValuesRef.current[settingKey];
+    const entries = [...store.pendingValues.entries()];
+    for (const [settingKey, { value, save }] of entries) {
+      clearTimeout(store.timeouts.get(settingKey));
+      store.timeouts.delete(settingKey);
+      store.pendingValues.delete(settingKey);
 
       try {
-        switch (settingKey) {
-          case 'connectHealthData':
-            await SettingsService.setConnectHealthData(value as boolean);
-            break;
-          case 'readHealthData':
-            await SettingsService.setReadHealthData(value as boolean);
-            break;
-          case 'writeHealthData':
-            await SettingsService.setWriteHealthData(value as boolean);
-            break;
-          case 'anonymousBugReport':
-            await SettingsService.setAnonymousBugReport(value as boolean);
-            break;
-          case 'enableGoogleGemini':
-            await SettingsService.setEnableGoogleGemini(value as boolean);
-            break;
-          case 'enableOpenAi':
-            await SettingsService.setEnableOpenAi(value as boolean);
-            break;
-          case 'enableClaude':
-            await SettingsService.set(SETTINGS.enableClaude, value as boolean);
-            break;
-          case 'enableLocalLlm':
-            await SettingsService.setEnableLocalLlm(value as boolean);
-            break;
-          case 'dailyNutritionInsights':
-            await SettingsService.setDailyNutritionInsights(value as boolean);
-            break;
-          case 'workoutInsights':
-            await SettingsService.setWorkoutInsights(value as boolean);
-            break;
-          case 'notifications':
-            await SettingsService.setNotifications(value as boolean);
-            break;
-          case 'notificationsWorkoutReminders':
-            await SettingsService.setNotificationsWorkoutReminders(value as boolean);
-            break;
-          case 'notificationsActiveWorkout':
-            await SettingsService.setNotificationsActiveWorkout(value as boolean);
-            break;
-          case 'notificationsNutritionOverview':
-            await SettingsService.setNotificationsNutritionOverview(value as boolean);
-            break;
-          case 'notificationsMenstrualCycle':
-            await SettingsService.setNotificationsMenstrualCycle(value as boolean);
-            break;
-          case 'notificationsRestTimer':
-            await SettingsService.setNotificationsRestTimer(value as boolean);
-            break;
-          case 'notificationsWorkoutDuration':
-            await SettingsService.setNotificationsWorkoutDuration(value as boolean);
-            break;
-          case 'units':
-            await SettingsService.setUnits(value as 'metric' | 'imperial');
-            break;
-          case 'useOcrBeforeAi':
-            await SettingsService.setUseOcrBeforeAi(value as boolean);
-            break;
-          case 'useOnDeviceAi':
-            await SettingsService.setUseOnDeviceAi(value as boolean);
-            break;
-          case 'useMusclogFreeTier':
-            await SettingsService.setUseMusclogFreeTier(value as boolean);
-            break;
-          case 'sendFoundationFoodsToLlm':
-            await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
-            break;
-          case 'thinkingLevel':
-            await SettingsService.set(SETTINGS.thinkingLevel, value as ThinkingLevel);
-            break;
-          case 'foodSearchSource':
-            await SettingsService.setFoodSearchSource(value as any);
-            break;
-          case 'conversationContext':
-            await SettingsService.setCoachConversationContext(
-              value as 'general' | 'exercise' | 'nutrition'
-            );
-            break;
-          case 'chartTooltipPosition':
-            await SettingsService.setChartTooltipPosition(value as 'left' | 'right');
-            break;
-          case 'language':
-            await SettingsService.setLanguage(value as string);
-            break;
-          case 'maxAiMemories':
-            await SettingsService.setMaxAiMemories(value as number);
-            break;
-          case 'showDailyMoodPrompt':
-            await SettingsService.setShowDailyMoodPrompt(value as boolean);
-            break;
-          case 'showDailyWaterPrompt':
-            await SettingsService.setShowDailyWaterPrompt(value as boolean);
-            break;
-          case 'showDailySupplementPrompt':
-            await SettingsService.setShowDailySupplementPrompt(value as boolean);
-            break;
-          case 'alwaysAllowFoodEditing':
-            await SettingsService.setAlwaysAllowFoodEditing(value as boolean);
-            break;
-          case 'showWeightPrediction':
-            await SettingsService.setShowWeightPrediction(value as boolean);
-            break;
-          case 'requireExportEncryption':
-            await SettingsService.setRequireExportEncryption(value as boolean);
-            break;
-          case 'disableMinimumCalories':
-            await SettingsService.setDisableMinimumCalories(value as boolean);
-            break;
-          case 'useBfForCalculations':
-            await SettingsService.setUseBfForCalculations(value as boolean);
-            break;
-          case 'intuitiveEatingMode':
-            await SettingsService.setIntuitiveEatingMode(value as boolean);
-            break;
-          case 'enableFastedDay':
-            await SettingsService.setEnableFastedDay(value as boolean);
-            break;
-          case 'includeFiberInCarbs':
-            await SettingsService.setIncludeFiberInCarbs(value as boolean);
-            break;
-          case 'progressionMode':
-            await SettingsService.setProgressionMode(value as ProgressionMode);
-            break;
-          case 'advancedDataManagement':
-            await SettingsService.setAdvancedDataManagement(value as boolean);
-            break;
-          case 'bleGenerateChartPayload':
-            await SettingsService.setBleGenerateChartPayload(value as boolean);
-            break;
-          case 'nutritionLogHistoryDays':
-            await SettingsService.setNutritionLogHistoryDays(value as NutritionLogHistoryDays);
-            break;
-          case 'workoutHistoryDays':
-            await SettingsService.setWorkoutHistoryDays(value as WorkoutHistoryDays);
-            break;
-        }
+        await save(value);
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
       } finally {
-        pendingKeysRef.current.delete(settingKey);
-        setHasPendingChanges(pendingKeysRef.current.size > 0);
+        store.pendingKeys.delete(settingKey);
+        setHasPendingChanges(store.pendingKeys.size > 0);
       }
     }
-  }, []);
+  }, [store]);
 
   const cleanup = useCallback(() => {
-    for (const t of Object.values(timeoutRefs.current)) {
+    for (const t of store.timeouts.values()) {
       clearTimeout(t);
     }
 
-    timeoutRefs.current = {};
-  }, []);
+    store.timeouts.clear();
+  }, [store]);
+
+  const optimistic = {} as Record<string, unknown>;
+  for (const key of DEBOUNCED_SETTING_KEYS) {
+    optimistic[key] = localSettings[key] ?? actualSettings[key];
+  }
 
   return {
     // Optimistic (local) values
-    connectHealthData:
-      (localSettings.connectHealthData as boolean) ?? actualSettings.connectHealthData,
-    readHealthData: (localSettings.readHealthData as boolean) ?? actualSettings.readHealthData,
-    writeHealthData: (localSettings.writeHealthData as boolean) ?? actualSettings.writeHealthData,
-    anonymousBugReport:
-      (localSettings.anonymousBugReport as boolean) ?? actualSettings.anonymousBugReport,
-    enableGoogleGemini:
-      (localSettings.enableGoogleGemini as boolean) ?? actualSettings.enableGoogleGemini,
-    enableOpenAi: (localSettings.enableOpenAi as boolean) ?? actualSettings.enableOpenAi,
-    enableClaude: (localSettings.enableClaude as boolean) ?? actualSettings.enableClaude,
-    enableLocalLlm: (localSettings.enableLocalLlm as boolean) ?? actualSettings.enableLocalLlm,
-    dailyNutritionInsights:
-      (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
-    workoutInsights: (localSettings.workoutInsights as boolean) ?? actualSettings.workoutInsights,
-    notifications: (localSettings.notifications as boolean) ?? actualSettings.notifications,
-    notificationsWorkoutReminders:
-      (localSettings.notificationsWorkoutReminders as boolean) ??
-      actualSettings.notificationsWorkoutReminders,
-    notificationsActiveWorkout:
-      (localSettings.notificationsActiveWorkout as boolean) ??
-      actualSettings.notificationsActiveWorkout,
-    notificationsNutritionOverview:
-      (localSettings.notificationsNutritionOverview as boolean) ??
-      actualSettings.notificationsNutritionOverview,
-    notificationsMenstrualCycle:
-      (localSettings.notificationsMenstrualCycle as boolean) ??
-      actualSettings.notificationsMenstrualCycle,
-    notificationsRestTimer:
-      (localSettings.notificationsRestTimer as boolean) ?? actualSettings.notificationsRestTimer,
-    notificationsWorkoutDuration:
-      (localSettings.notificationsWorkoutDuration as boolean) ??
-      actualSettings.notificationsWorkoutDuration,
-    useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
-    useOnDeviceAi: (localSettings.useOnDeviceAi as boolean) ?? actualSettings.useOnDeviceAi,
-    useMusclogFreeTier:
-      (localSettings.useMusclogFreeTier as boolean) ?? actualSettings.useMusclogFreeTier,
-    sendFoundationFoodsToLlm:
-      (localSettings.sendFoundationFoodsToLlm as boolean) ??
-      actualSettings.sendFoundationFoodsToLlm,
-    thinkingLevel: (localSettings.thinkingLevel as ThinkingLevel) ?? actualSettings.thinkingLevel,
-    units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
-    foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
-    language: (localSettings.language as string) ?? actualSettings.language,
-    conversationContext:
-      (localSettings.conversationContext as 'general' | 'exercise' | 'nutrition') ??
-      actualSettings.conversationContext,
-    chartTooltipPosition:
-      (localSettings.chartTooltipPosition as 'left' | 'right') ??
-      actualSettings.chartTooltipPosition,
-    maxAiMemories: (localSettings.maxAiMemories as number) ?? actualSettings.maxAiMemories,
-    showDailyMoodPrompt:
-      (localSettings.showDailyMoodPrompt as boolean) ?? actualSettings.showDailyMoodPrompt,
-    showDailyWaterPrompt:
-      (localSettings.showDailyWaterPrompt as boolean) ?? actualSettings.showDailyWaterPrompt,
-    showDailySupplementPrompt:
-      (localSettings.showDailySupplementPrompt as boolean) ??
-      actualSettings.showDailySupplementPrompt,
-    alwaysAllowFoodEditing:
-      (localSettings.alwaysAllowFoodEditing as boolean) ?? actualSettings.alwaysAllowFoodEditing,
-    showWeightPrediction:
-      (localSettings.showWeightPrediction as boolean) ?? actualSettings.showWeightPrediction,
-    requireExportEncryption:
-      (localSettings.requireExportEncryption as boolean) ?? actualSettings.requireExportEncryption,
-    disableMinimumCalories:
-      (localSettings.disableMinimumCalories as boolean) ?? actualSettings.disableMinimumCalories,
-    useBfForCalculations:
-      (localSettings.useBfForCalculations as boolean) ?? actualSettings.useBfForCalculations,
-    intuitiveEatingMode:
-      (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
-    enableFastedDay: (localSettings.enableFastedDay as boolean) ?? actualSettings.enableFastedDay,
-    includeFiberInCarbs:
-      (localSettings.includeFiberInCarbs as boolean) ?? actualSettings.includeFiberInCarbs,
-    progressionMode:
-      (localSettings.progressionMode as ProgressionMode) ?? actualSettings.progressionMode,
-    advancedDataManagement:
-      (localSettings.advancedDataManagement as boolean) ?? actualSettings.advancedDataManagement,
-    bleGenerateChartPayload:
-      (localSettings.bleGenerateChartPayload as boolean) ?? actualSettings.bleGenerateChartPayload,
-    nutritionLogHistoryDays:
-      (localSettings.nutritionLogHistoryDays as NutritionLogHistoryDays) ??
-      actualSettings.nutritionLogHistoryDays,
-    workoutHistoryDays:
-      (localSettings.workoutHistoryDays as WorkoutHistoryDays) ?? actualSettings.workoutHistoryDays,
+    ...(optimistic as OptimisticValues),
 
     // Confirmed DB values
     actualConnectHealthData: actualSettings.connectHealthData,
@@ -643,50 +254,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     actualWriteHealthData: actualSettings.writeHealthData,
 
     // Handlers
-    handleConnectHealthDataChange,
-    handleReadHealthDataChange,
-    handleWriteHealthDataChange,
-    handleAnonymousBugReportChange,
-    handleEnableGoogleGeminiChange,
-    handleEnableOpenAiChange,
-    handleEnableClaudeChange,
-    handleEnableLocalLlmChange,
-    handleDailyNutritionInsightsChange,
-    handleWorkoutInsightsChange,
-    handleNotificationsChange,
-    handleNotificationsWorkoutRemindersChange,
-    handleNotificationsActiveWorkoutChange,
-    handleNotificationsNutritionOverviewChange,
-    handleNotificationsMenstrualCycleChange,
-    handleNotificationsRestTimerChange,
-    handleNotificationsWorkoutDurationChange,
-    handleUnitsChange,
-    handleUseOcrBeforeAiChange,
-    handleUseOnDeviceAiChange,
-    handleUseMusclogFreeTierChange,
-    handleSendFoundationFoodsToLlmChange,
-    handleThinkingLevelChange,
-    handleFoodSearchSourceChange,
-    handleConversationContextChange,
-    handleChartTooltipPositionChange,
-    handleLanguageChange,
-    handleMaxAiMemoriesChange,
-    handleShowDailyMoodPromptChange,
-    handleShowDailyWaterPromptChange,
-    handleShowDailySupplementPromptChange,
-    handleAlwaysAllowFoodEditingChange,
-    handleShowWeightPredictionChange,
-    handleRequireExportEncryptionChange,
-    handleDisableMinimumCaloriesChange,
-    handleUseBfForCalculationsChange,
-    handleIntuitiveEatingModeChange,
-    handleEnableFastedDayChange,
-    handleIncludeFiberInCarbsChange,
-    handleProgressionModeChange,
-    handleAdvancedDataManagementChange,
-    handleBleGenerateChartPayloadChange,
-    handleNutritionLogHistoryDaysChange,
-    handleWorkoutHistoryDaysChange,
+    ...handlers,
 
     // Utilities
     flushAllPendingChanges,

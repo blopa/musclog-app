@@ -22,9 +22,9 @@ jest.mock('@/utils/file', () => ({
   openCropperAsync: (...args: unknown[]) => mockOpenCropperAsync(...args),
 }));
 
-const mockPickImageFromGallery = jest.fn();
+const mockPickImagesFromGallery = jest.fn();
 jest.mock('@/utils/galleryImagePicker', () => ({
-  pickImageFromGallery: (...args: unknown[]) => mockPickImageFromGallery(...args),
+  pickImagesFromGallery: (...args: unknown[]) => mockPickImagesFromGallery(...args),
 }));
 
 describe('useCameraCaptureFlow', () => {
@@ -33,14 +33,21 @@ describe('useCameraCaptureFlow', () => {
     process = jest.fn().mockResolvedValue(undefined),
     quality = 0.8,
     cameraRef = { current: { takePictureAsync } },
+    gallerySelectionLimit,
   }: {
     takePictureAsync?: jest.Mock;
     process?: jest.Mock;
     quality?: number;
     cameraRef?: { current: { takePictureAsync: jest.Mock } | null };
+    gallerySelectionLimit?: number;
   } = {}) => {
     const { result } = renderHook(() =>
-      useCameraCaptureFlow({ cameraRef: cameraRef as never, quality, process })
+      useCameraCaptureFlow({
+        cameraRef: cameraRef as never,
+        quality,
+        process,
+        gallerySelectionLimit,
+      })
     );
     return { result, takePictureAsync, process };
   };
@@ -49,7 +56,7 @@ describe('useCameraCaptureFlow', () => {
     jest.clearAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => {});
     mockOpenCropperAsync.mockResolvedValue({ path: 'file:///cropped.jpg' });
-    mockPickImageFromGallery.mockResolvedValue('file:///picked.jpg');
+    mockPickImagesFromGallery.mockResolvedValue(['file:///picked.jpg']);
   });
 
   afterEach(() => {
@@ -124,7 +131,7 @@ describe('useCameraCaptureFlow', () => {
 
       await result.current.pickFromGallery();
 
-      expect(mockPickImageFromGallery).toHaveBeenCalledWith();
+      expect(mockPickImagesFromGallery).toHaveBeenCalledWith(1);
       expect(mockOpenCropperAsync).toHaveBeenCalledWith({
         imageUri: 'file:///picked.jpg',
         format: 'jpeg',
@@ -134,7 +141,7 @@ describe('useCameraCaptureFlow', () => {
     });
 
     it('ends silently when the picker is cancelled', async () => {
-      mockPickImageFromGallery.mockResolvedValue(null);
+      mockPickImagesFromGallery.mockResolvedValue([]);
       const { result, process } = renderFlow();
 
       await result.current.pickFromGallery();
@@ -164,13 +171,98 @@ describe('useCameraCaptureFlow', () => {
     });
 
     it('shows the gallery-error snackbar when the picker itself fails', async () => {
-      mockPickImageFromGallery.mockRejectedValue(new Error('picker crashed'));
+      mockPickImagesFromGallery.mockRejectedValue(new Error('picker crashed'));
       const { result, process } = renderFlow();
 
       await result.current.pickFromGallery();
 
       expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.galleryError');
+    });
+  });
+
+  describe('multi-image gallery picks', () => {
+    const mockCropByUri = (failingUri?: string) => {
+      mockOpenCropperAsync.mockImplementation(async ({ imageUri }: { imageUri: string }) => {
+        if (imageUri === failingUri) {
+          throw new Error('crop failed');
+        }
+        return { path: imageUri.replace('picked', 'cropped') };
+      });
+    };
+
+    it('asks the picker for the configured selection limit, defaulting to 1', async () => {
+      const { result } = renderFlow({ gallerySelectionLimit: 4 });
+      await result.current.pickFromGallery();
+      expect(mockPickImagesFromGallery).toHaveBeenLastCalledWith(4);
+
+      const { result: defaultResult } = renderFlow();
+      await defaultResult.current.pickFromGallery();
+      expect(mockPickImagesFromGallery).toHaveBeenLastCalledWith(1);
+    });
+
+    it('crops every picked image in order, then processes each one in order', async () => {
+      mockPickImagesFromGallery.mockResolvedValue([
+        'file:///picked-1.jpg',
+        'file:///picked-2.jpg',
+        'file:///picked-3.jpg',
+      ]);
+      mockCropByUri();
+      const events: string[] = [];
+      mockOpenCropperAsync.mockImplementation(async ({ imageUri }: { imageUri: string }) => {
+        events.push(`crop ${imageUri}`);
+        return { path: imageUri.replace('picked', 'cropped') };
+      });
+      const process = jest.fn(async (path: string) => {
+        events.push(`process ${path}`);
+      });
+      const { result } = renderFlow({ process, gallerySelectionLimit: 3 });
+
+      await result.current.pickFromGallery();
+
+      expect(events).toEqual([
+        'crop file:///picked-1.jpg',
+        'crop file:///picked-2.jpg',
+        'crop file:///picked-3.jpg',
+        'process file:///cropped-1.jpg',
+        'process file:///cropped-2.jpg',
+        'process file:///cropped-3.jpg',
+      ]);
+      expect(process).toHaveBeenCalledTimes(3);
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+    });
+
+    it('drops only the image whose crop is cancelled', async () => {
+      mockPickImagesFromGallery.mockResolvedValue([
+        'file:///picked-1.jpg',
+        'file:///picked-2.jpg',
+        'file:///picked-3.jpg',
+      ]);
+      mockOpenCropperAsync.mockImplementation(async ({ imageUri }: { imageUri: string }) =>
+        imageUri === 'file:///picked-2.jpg' ? null : { path: imageUri.replace('picked', 'cropped') }
+      );
+      const { result, process } = renderFlow({ gallerySelectionLimit: 3 });
+
+      await result.current.pickFromGallery();
+
+      expect(process.mock.calls).toEqual([['file:///cropped-1.jpg'], ['file:///cropped-3.jpg']]);
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+    });
+
+    it('stops cropping after a failed crop, processes the earlier ones and shows the error', async () => {
+      mockPickImagesFromGallery.mockResolvedValue([
+        'file:///picked-1.jpg',
+        'file:///picked-2.jpg',
+        'file:///picked-3.jpg',
+      ]);
+      mockCropByUri('file:///picked-2.jpg');
+      const { result, process } = renderFlow({ gallerySelectionLimit: 3 });
+
+      await result.current.pickFromGallery();
+
+      expect(mockOpenCropperAsync).toHaveBeenCalledTimes(2);
+      expect(process.mock.calls).toEqual([['file:///cropped-1.jpg']]);
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
     });
   });
 });

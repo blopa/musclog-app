@@ -1,5 +1,7 @@
+const path = require('node:path');
 const {
   API,
+  ROOT,
   buildQuery,
   summaryPath,
   buildReport,
@@ -150,6 +152,83 @@ describe('argument parsing', () => {
     expect(expectedProvidersFromEnv()).toBeNull();
     if (before !== undefined) {
       process.env.OTARI_EXPECTED_PROVIDERS = before;
+    }
+  });
+
+  it('handles --days=, --env=, missing values and non-integer formats', () => {
+    expect(parseArgs(['--days=14', '--env=production', '--json'])).toEqual({
+      json: true,
+      days: 14,
+      env: 'production',
+    });
+    expect(() => parseArgs(['--days'])).toThrow('--days takes a whole number from 1 to 366');
+    expect(() => parseArgs(['--days='])).toThrow('--days takes a whole number from 1 to 366');
+    expect(() => parseArgs(['--days', '7.0'])).toThrow('--days takes a whole number from 1 to 366');
+    expect(() => parseArgs(['--days', '1e2'])).toThrow('--days takes a whole number from 1 to 366');
+    expect(() => parseArgs(['--days', '367'])).toThrow('--days takes a whole number from 1 to 366');
+    expect(() => parseArgs(['--env'])).toThrow('--env takes staging or production');
+    expect(() => parseArgs(['--env=dev'])).toThrow('--env takes staging or production');
+    expect(() => parseArgs(['--json=true'])).toThrow('unknown argument: --json=true');
+  });
+});
+
+describe('ROOT and concurrent fetching', () => {
+  it('derives ROOT from __dirname rather than process.argv[1]', () => {
+    expect(ROOT).toBe(path.resolve(__dirname, '..', '..'));
+  });
+
+  it('fetches budget, summary and features concurrently in fetchAll and skips features in export', async () => {
+    const fs = require('node:fs');
+    const mockRequest = jest.fn(async (_api: string, _tok: string, _m: string, reqPath: string) => {
+      if (reqPath === '/key/budget') {
+        return budget;
+      }
+
+      return summary;
+    });
+    const mkdirSpy = jest.spyOn(fs, 'mkdirSync').mockImplementation(() => undefined);
+    const writeSpy = jest.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    const prevKey = process.env.OTARI_USAGE_KEY;
+    process.env.OTARI_USAGE_KEY = 'test-key';
+
+    try {
+      let isolatedOtari!: {
+        fetchAll: (
+          token: string,
+          opts: { days: number; env: string | null }
+        ) => Promise<{
+          features: Record<string, unknown>;
+        }>;
+        cmdExport: (args: string[]) => Promise<void>;
+      };
+      jest.isolateModules(() => {
+        jest.doMock('../infra/http', () => ({ request: mockRequest }));
+        isolatedOtari = require('../infra/otari');
+      });
+
+      const reportData = await isolatedOtari.fetchAll('test-key', { days: 30, env: null });
+      expect(Object.keys(reportData.features)).toEqual(['chat', 'structured', 'vision']);
+      expect(mockRequest).toHaveBeenCalledTimes(5);
+
+      mockRequest.mockClear();
+      await isolatedOtari.cmdExport(['--json']);
+      expect(mockRequest).toHaveBeenCalledTimes(2);
+      expect(mockRequest.mock.calls.map((c) => c[3])).toEqual([
+        '/key/budget',
+        expect.stringContaining('dimensions=model'),
+      ]);
+      expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/^\{.*"exported_to"/));
+    } finally {
+      if (prevKey === undefined) {
+        delete process.env.OTARI_USAGE_KEY;
+      } else {
+        process.env.OTARI_USAGE_KEY = prevKey;
+      }
+      jest.dontMock('../infra/http');
+      mkdirSpy.mockRestore();
+      writeSpy.mockRestore();
+      logSpy.mockRestore();
     }
   });
 });

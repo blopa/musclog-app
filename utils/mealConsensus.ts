@@ -14,13 +14,10 @@
 import { median } from 'simple-statistics';
 
 import type { TrackedMeal, TrackMealIngredient, TrackMealResponse } from './coachAI';
+import { normalizeFoodName } from './foodName';
 import type { MealObservation } from './mealObservation';
 
-/** The key two readings of an ingredient are matched by: no case, accents or extra spaces. */
-export function normalizeIngredientName(name: string): string {
-  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
-}
-
+/** Rounded to one decimal, the precision every merged figure is shown with. */
 const round1 = (value: number): number => Math.round(value * 10) / 10;
 
 const MACRO_KEYS = ['kcal', 'protein', 'carbs', 'fat', 'fiber'] as const;
@@ -82,17 +79,25 @@ function mergeIngredient(occurrences: TrackMealIngredient[]): TrackMealIngredien
   return merged;
 }
 
-function mergeMeals(meals: TrackedMeal[], groups?: number[]): TrackedMeal {
+/**
+ * Which keep rule applies to a layout's samples, given the first look each one came from. With at
+ * least two independent looks an ingredient is kept when at least half of the samples found it;
+ * otherwise it must be strictly more than half. No looks (undefined) means the plain vote.
+ */
+export function keepsAtHalf(agreeingLooks: readonly number[] | undefined): boolean {
+  return agreeingLooks ? new Set(agreeingLooks).size >= 2 : false;
+}
+
+function mergeMeals(meals: TrackedMeal[], keepAtHalf: boolean): TrackedMeal {
   const first = meals[0];
   const need = meals.length / 2;
-  const byGroupRule = groups ? new Set(groups).size >= 2 : false;
   const order: string[] = [];
   const byName = new Map<string, TrackMealIngredient[]>();
 
   for (const meal of meals) {
     const seenInMeal = new Set<string>();
     for (const ingredient of meal.ingredients ?? []) {
-      const key = normalizeIngredientName(ingredient.name);
+      const key = normalizeFoodName(ingredient.name);
       if (!key || seenInMeal.has(key)) {
         continue;
       }
@@ -111,7 +116,7 @@ function mergeMeals(meals: TrackedMeal[], groups?: number[]): TrackedMeal {
   const kept = (key: string): boolean => {
     const found = byName.get(key)!.length;
 
-    return byGroupRule ? found >= need : found > need;
+    return keepAtHalf ? found >= need : found > need;
   };
 
   return {
@@ -120,8 +125,7 @@ function mergeMeals(meals: TrackedMeal[], groups?: number[]): TrackedMeal {
   };
 }
 
-const normalizedMealName = (meal: TrackedMeal): string =>
-  normalizeIngredientName(meal.mealName ?? '');
+const normalizedMealName = (meal: TrackedMeal): string => normalizeFoodName(meal.mealName ?? '');
 
 /** Return source indexes in reference order only when every meal has a unique identity. */
 function alignMeals(reference: TrackedMeal[], candidate: TrackedMeal[]): number[] | undefined {
@@ -158,10 +162,13 @@ function alignMeals(reference: TrackedMeal[], candidate: TrackedMeal[]): number[
 /**
  * One meal estimate from several. With one sample it is returned as it is. The layout (how many
  * meals) is the most common one among the samples, the first sample's on a tie, and only samples
- * with that layout are merged, meal by meal. `groups[i]` is the look (group) `samples[i]` came
- * from; see the header for how groups change the keep rule.
+ * with that layout are merged, meal by meal. `lookOfSample[i]` is the first look `samples[i]` came
+ * from; see `keepsAtHalf` for how the looks change the keep rule.
  */
-export function consensusMeals(samples: TrackMealResponse[], groups?: number[]): TrackMealResponse {
+export function consensusMeals(
+  samples: TrackMealResponse[],
+  lookOfSample?: number[]
+): TrackMealResponse {
   if (samples.length <= 1) {
     return samples[0];
   }
@@ -172,7 +179,9 @@ export function consensusMeals(samples: TrackMealResponse[], groups?: number[]):
     .map((_, index) => index)
     .filter((index) => (samples[index].meals?.length ?? 0) === layout);
   const agreeing = agreeingIndexes.map((index) => samples[index]);
-  const agreeingGroups = groups ? agreeingIndexes.map((index) => groups[index]) : undefined;
+  const keepAtHalf = keepsAtHalf(
+    lookOfSample ? agreeingIndexes.map((index) => lookOfSample[index]) : undefined
+  );
   const reference = agreeing[0];
   const referenceMeals = reference.meals ?? [];
   const aligned = [referenceMeals];
@@ -191,7 +200,7 @@ export function consensusMeals(samples: TrackMealResponse[], groups?: number[]):
     meals: referenceMeals.map((_, position) =>
       mergeMeals(
         aligned.map((meals) => meals[position]),
-        agreeingGroups
+        keepAtHalf
       )
     ),
   };
@@ -209,9 +218,7 @@ const mealKcal = (meal: TrackedMeal): number =>
 
 const ingredientKeys = (meal: TrackedMeal): Set<string> =>
   new Set(
-    (meal.ingredients ?? [])
-      .map((ingredient) => normalizeIngredientName(ingredient.name))
-      .filter(Boolean)
+    (meal.ingredients ?? []).map((ingredient) => normalizeFoodName(ingredient.name)).filter(Boolean)
   );
 
 /**

@@ -1,6 +1,8 @@
-import { ReactNode, RefObject } from 'react';
+import { forwardRef, ReactNode, RefObject, useImperativeHandle } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { useZxing } from 'react-zxing';
+
+import { captureFrameFromVideo } from '@/utils/webCameraCapture';
 
 export { useCameraPermissions } from '@/utils/webCameraPermissions';
 
@@ -12,6 +14,11 @@ export function useHasCamera(): boolean {
   return true;
 }
 
+/** Same shape as the native wrapper's ref (`CameraView.tsx`), so the shared capture flow works. */
+export type CameraViewRef = {
+  takePictureAsync: () => Promise<{ uri: string }>;
+};
+
 type CameraViewProps = {
   [key: string]: any;
   children?: ReactNode;
@@ -21,13 +28,10 @@ type CameraViewProps = {
 };
 
 /** Web-only camera that uses react-zxing under the hood */
-const WebCameraView = ({
-  children,
-  onBarcodeScanned,
-  style,
-  active,
-  ...otherProps
-}: CameraViewProps) => {
+const WebCameraView = forwardRef<CameraViewRef, CameraViewProps>(function WebCameraView(
+  { children, onBarcodeScanned, style },
+  forwardedRef
+) {
   const { ref } = useZxing({
     constraints: {
       audio: false,
@@ -40,6 +44,16 @@ const WebCameraView = ({
       });
     },
   });
+
+  // The browser has no shutter: the shutter grabs the live preview frame instead. Without this
+  // the ref stayed null and the shutter button silently did nothing on web.
+  useImperativeHandle(
+    forwardedRef,
+    () => ({
+      takePictureAsync: () => captureFrameFromVideo(ref.current as HTMLVideoElement | null),
+    }),
+    [ref]
+  );
 
   return (
     <View
@@ -93,22 +107,19 @@ const WebCameraView = ({
       </View>
     </View>
   );
-};
+});
 
-export const CameraView = ({
-  children,
-  onBarcodeScanned,
-  style,
-  active,
-  ...otherProps
-}: CameraViewProps) => {
+export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(function CameraView(
+  { children, onBarcodeScanned, style, active, ...otherProps },
+  ref
+) {
   if (!active) {
     return null;
   }
 
   return (
-    <WebCameraView onBarcodeScanned={onBarcodeScanned} style={style} {...otherProps}>
+    <WebCameraView ref={ref} onBarcodeScanned={onBarcodeScanned} style={style} {...otherProps}>
       {children}
     </WebCameraView>
   );
-};
+});

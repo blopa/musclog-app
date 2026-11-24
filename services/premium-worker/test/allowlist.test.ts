@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  allowlistRequest as allowlistNeutral,
-  assertPremiumPrivacy,
-  effectiveReasoning,
-} from '../src/proxy/allowlist';
-import { buildOpenRouterBody } from '../src/proxy/upstreamBody';
+import { allowlistRequest as allowlistNeutral, effectiveReasoning } from '../src/proxy/allowlist';
+import { assertPremiumPrivacy, buildOpenRouterBody } from '../src/proxy/upstreamBody';
 import type { AiConfig } from '../src/config';
 import { reservationBound } from '../src/proxy/bound';
 import { ApiError } from '../src/http';

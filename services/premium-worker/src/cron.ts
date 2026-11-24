@@ -5,10 +5,15 @@ import type { Ctx } from './context';
 import { dayKey } from './db';
 import { DAY_MS } from './finance';
 import { prune, sweep, updateDailyFull } from './ledger';
-import { activeUpstream } from './upstream/select';
+import { selectGateway } from './upstream/select';
 import type { UpstreamName, ZdrEndpoint } from './upstream/types';
 
 const ZDR_ATTEMPTS = 3;
+/**
+ * Maximum age to hold an incomplete baseline for unpriced Otari requests before advancing:
+ * gives a delayed pricing pass one full daily cycle to settle without wedging reconciliation forever.
+ */
+const MAX_UNPRICED_HOLD_MS = 2 * DAY_MS;
 
 async function step(ctx: Ctx, name: string, fn: () => Promise<void>): Promise<void> {
   try {
@@ -41,23 +46,25 @@ export async function runQuarterHourly(ctx: Ctx): Promise<void> {
   await step(ctx, 'sweep', async () => {
     await sweep(db, now, day);
   });
-  await step(ctx, 'daily_full', async () => {
-    await updateDailyFull(db, now, day, ctx.config.limits.global_max_requests_per_day);
-  });
-  await step(ctx, 'global_spend', async () => {
-    const t = await db
-      .prepare(
-        `SELECT COALESCE(SUM(spent_u + reserved_u), 0) AS used,
-                COALESCE(SUM(CASE WHEN status = 'active' THEN net_proceeds_u ELSE 0 END), 0) AS net
-         FROM periods WHERE period_end > ?1`
-      )
-      .bind(now - DAY_MS)
-      .first<{ used: number; net: number }>();
-    const f = ctx.config.finance;
-    if (t && t.used * permille(f.openrouter_fee) > permille(f.global_share) * t.net) {
-      await open(ctx, 'global_spend', 'global_spend_exceeded');
-    }
-  });
+  await Promise.all([
+    step(ctx, 'daily_full', async () => {
+      await updateDailyFull(db, now, day, ctx.config.limits.global_max_requests_per_day);
+    }),
+    step(ctx, 'global_spend', async () => {
+      const t = await db
+        .prepare(
+          `SELECT COALESCE(SUM(spent_u + reserved_u), 0) AS used,
+                  COALESCE(SUM(CASE WHEN status = 'active' THEN net_proceeds_u ELSE 0 END), 0) AS net
+           FROM periods WHERE period_end > ?1`
+        )
+        .bind(now - DAY_MS)
+        .first<{ used: number; net: number }>();
+      const f = ctx.config.finance;
+      if (t && t.used * permille(f.openrouter_fee) > permille(f.global_share) * t.net) {
+        await open(ctx, 'global_spend', 'global_spend_exceeded');
+      }
+    }),
+  ]);
   ctx.deps.log.log({ route: 'cron', status: 200, code: 'quarter_hourly' });
 }
 
@@ -107,19 +114,22 @@ async function zdrRecheck(ctx: Ctx): Promise<void> {
 
 async function reconcile(ctx: Ctx, now: number): Promise<void> {
   const db = ctx.env.DB;
-  const key = await ctx.deps.openrouter.getKey(); // a failure propagates: baseline untouched
-  const usage_u = Math.round(key.usage * 1e6);
-  const store = () =>
+  const store = (at: number) =>
     db
       .prepare(
         `INSERT INTO meta (key, value) VALUES ('recon', ?1)
          ON CONFLICT(key) DO UPDATE SET value = excluded.value`
       )
-      .bind(JSON.stringify({ usage_u, at: now }))
+      .bind(JSON.stringify({ usage_u, at }))
       .run();
-  const stored = await db
-    .prepare("SELECT value FROM meta WHERE key = 'recon'")
-    .first<{ value: string }>();
+
+  // a getKey failure propagates: baseline untouched
+  const [key, stored] = await Promise.all([
+    ctx.deps.openrouter.getKey(),
+    db.prepare("SELECT value FROM meta WHERE key = 'recon'").first<{ value: string }>(),
+  ]);
+  const usage_u = Math.round(key.usage * 1e6);
+
   let prev: { usage_u: number; at: number } | null = null;
   if (stored) {
     try {
@@ -132,30 +142,34 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
     }
   }
   if (!prev) {
-    await store();
+    await store(now);
     return;
   }
-  const orDelta = usage_u - prev.usage_u;
-  if (orDelta < 0) {
-    await store();
+
+  const rawOrDelta = usage_u - prev.usage_u;
+  const keyReset = rawOrDelta < 0;
+  if (keyReset) {
     ctx.deps.log.log({
       route: 'cron',
       status: 500,
       code: 'reconciliation_key_reset',
       severity: 'high',
     });
-    return;
   }
-  // Spend through Otari since the baseline. Do not advance the baseline unless its whole usage
-  // window is accounted for; otherwise the next run could permanently skip missing spend.
+  const orDelta = keyReset ? 0 : rawOrDelta;
+
+  // Spend through Otari and ledger since the baseline in parallel. Hold the baseline for one
+  // extra day on unpriced requests so delayed pricing can settle, then advance to avoid wedging.
   let otari_u = 0;
-  let usageComplete = true;
-  if (ctx.deps.otari) {
+  let otariAvailable = true;
+  let unpriced = false;
+  const fetchOtari = async () => {
+    if (!ctx.deps.otari) return;
     try {
       const summary = await ctx.deps.otari.usageSummary(prev.at, now);
       otari_u = Math.round(summary.costUsd * 1e6);
       if (summary.unpriced > 0) {
-        usageComplete = false;
+        unpriced = true;
         ctx.deps.log.log({
           route: 'cron',
           status: 500,
@@ -165,7 +179,7 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
         });
       }
     } catch {
-      usageComplete = false;
+      otariAvailable = false;
       ctx.deps.log.log({
         route: 'cron',
         status: 500,
@@ -174,59 +188,72 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
         upstream: 'otari',
       });
     }
-  }
+  };
+  const [, ledger] = await Promise.all([
+    fetchOtari(),
+    db
+      .prepare(
+        `SELECT COALESCE(SUM(settled_u), 0) AS u FROM reservations
+         WHERE state IN ('settled','expired') AND settled_at > ?1 AND settled_at <= ?2`
+      )
+      .bind(prev.at, now)
+      .first<{ u: number }>(),
+  ]);
+
   const delta = orDelta + otari_u;
-  const ledger = await db
-    .prepare(
-      `SELECT COALESCE(SUM(settled_u), 0) AS u FROM reservations
-       WHERE state IN ('settled','expired') AND settled_at > ?1 AND settled_at <= ?2`
-    )
-    .bind(prev.at, now)
-    .first<{ u: number }>();
   const ledger_u = ledger?.u ?? 0;
   const tol = ctx.config.reconciliation;
   if (delta - ledger_u > tol.tolerance_share * ledger_u + tol.tolerance_u) {
     await open(ctx, 'reconciliation', 'reconciliation_gap');
   }
-  if (usageComplete) await store();
+
+  const advanceAt = otariAvailable && (!unpriced || now - prev.at >= MAX_UNPRICED_HOLD_MS);
+  if (advanceAt) {
+    await store(now);
+  } else if (keyReset) {
+    // Record the new OpenRouter key usage immediately while preserving prev.at for Otari retry.
+    await store(prev.at);
+  }
 }
 
 export async function runDaily(ctx: Ctx): Promise<void> {
   const db = ctx.env.DB;
   const now = ctx.deps.now();
 
+  await Promise.all([
+    step(ctx, 'accepting_new', async () => {
+      await db
+        .prepare(
+          `INSERT INTO meta (key, value)
+           SELECT 'accepting_new', CASE WHEN COUNT(DISTINCT lineage_key) >= ?1 THEN '0' ELSE '1' END
+           FROM periods WHERE status = 'active' AND period_start <= ?2 AND ?2 < period_end
+           ON CONFLICT(key) DO UPDATE SET value = excluded.value WHERE value != excluded.value`
+        )
+        .bind(ctx.config.limits.max_subscribers, now)
+        .run();
+    }),
+    // The ZDR list is OpenRouter's: it says nothing about an Otari-served request, whose data
+    // recipient is pinned by the selector instead (assertOtariPinned, the Otari-Provider check).
+    step(ctx, 'zdr_recheck', async () => {
+      if ((await selectGateway(ctx)).shouldRecheckZdr) await zdrRecheck(ctx);
+    }),
+    step(ctx, 'reconciliation', () => reconcile(ctx, now)),
+    step(ctx, 'otari_budget', async () => {
+      if (!ctx.deps.otari) return;
+      const b = await ctx.deps.otari.budget();
+      if (b.remainingUsd !== null && b.remainingUsd < OTARI_BUDGET_LOW_USD) {
+        ctx.deps.log.log({
+          route: 'cron',
+          status: 500,
+          code: 'otari_budget_low',
+          severity: 'high',
+          upstream: 'otari',
+        });
+      }
+    }),
+  ]);
   await step(ctx, 'prune', async () => {
     await prune(db, now);
-  });
-  await step(ctx, 'accepting_new', async () => {
-    await db
-      .prepare(
-        `INSERT INTO meta (key, value)
-         SELECT 'accepting_new', CASE WHEN COUNT(DISTINCT lineage_key) >= ?1 THEN '0' ELSE '1' END
-         FROM periods WHERE status = 'active' AND period_start <= ?2 AND ?2 < period_end
-         ON CONFLICT(key) DO UPDATE SET value = excluded.value WHERE value != excluded.value`
-      )
-      .bind(ctx.config.limits.max_subscribers, now)
-      .run();
-  });
-  // The ZDR list is OpenRouter's: it says nothing about an Otari-served request, whose data recipient
-  // is pinned by the selector instead (assertOtariPinned, the Otari-Provider check).
-  await step(ctx, 'zdr_recheck', async () => {
-    if ((await activeUpstream(ctx)) === 'openrouter') await zdrRecheck(ctx);
-  });
-  await step(ctx, 'reconciliation', () => reconcile(ctx, now));
-  await step(ctx, 'otari_budget', async () => {
-    if (!ctx.deps.otari) return;
-    const b = await ctx.deps.otari.budget();
-    if (b.remainingUsd !== null && b.remainingUsd < OTARI_BUDGET_LOW_USD) {
-      ctx.deps.log.log({
-        route: 'cron',
-        status: 500,
-        code: 'otari_budget_low',
-        severity: 'high',
-        upstream: 'otari',
-      });
-    }
   });
   ctx.deps.log.log({ route: 'cron', status: 200, code: 'daily' });
 }

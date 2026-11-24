@@ -1,4 +1,5 @@
-import { type CoachAIConfig, estimateNutritionFromPhoto, prepareMealImages } from '../coachAI';
+import { type CoachAIConfig, prepareMealImages } from '../coachAI';
+import { estimateNutritionFromPhoto } from '../coachMealEstimate';
 import { configureBasicGenAI } from '../gemini';
 
 import { prepareOwnKeyImage } from '@/utils/aiImage';

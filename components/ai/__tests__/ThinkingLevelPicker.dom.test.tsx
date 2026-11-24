@@ -93,4 +93,55 @@ describe('ThinkingLevelPicker', () => {
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('tokenmaxxing'));
   });
+
+  it('closes the picker sheet when parentVisible becomes false', () => {
+    const { rerender } = render(
+      <ThinkingLevelPicker value="off" onChange={jest.fn()} provider="openai" parentVisible />
+    );
+
+    fireEvent.click(screen.getByTestId('thinking-level-row'));
+    expect(screen.getByTestId('thinking-level-high')).toBeTruthy();
+
+    rerender(
+      <ThinkingLevelPicker
+        value="off"
+        onChange={jest.fn()}
+        provider="openai"
+        parentVisible={false}
+      />
+    );
+    expect(screen.queryByTestId('thinking-level-high')).toBeNull();
+
+    rerender(
+      <ThinkingLevelPicker value="off" onChange={jest.fn()} provider="openai" parentVisible />
+    );
+    expect(screen.queryByTestId('thinking-level-high')).toBeNull();
+  });
+
+  it('clears the confirmation modal when parentVisible becomes false', () => {
+    const onChange = jest.fn();
+    const { rerender } = render(
+      <ThinkingLevelPicker value="medium" onChange={onChange} provider="hosted" parentVisible />
+    );
+
+    fireEvent.click(screen.getByTestId('thinking-level-row'));
+    fireEvent.click(screen.getByTestId('thinking-level-high'));
+    expect(screen.getByText(`${P}.confirmHigh.confirm`)).toBeTruthy();
+
+    rerender(
+      <ThinkingLevelPicker
+        value="medium"
+        onChange={onChange}
+        provider="hosted"
+        parentVisible={false}
+      />
+    );
+    expect(screen.queryByText(`${P}.confirmHigh.confirm`)).toBeNull();
+
+    rerender(
+      <ThinkingLevelPicker value="medium" onChange={onChange} provider="hosted" parentVisible />
+    );
+    expect(screen.queryByText(`${P}.confirmHigh.confirm`)).toBeNull();
+    expect(onChange).not.toHaveBeenCalled();
+  });
 });

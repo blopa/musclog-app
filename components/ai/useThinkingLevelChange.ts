@@ -1,5 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
+import type { AiProviderKind } from '@/constants/ai';
+import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import {
   providerAllowsThinking,
   type ThinkingLevel,
@@ -12,9 +14,10 @@ export type ThinkingLevelPending = { level: ThinkingLevel; auth: boolean } | nul
 
 type Options = {
   value: ThinkingLevel;
-  provider: string | null;
+  provider: AiProviderKind | null;
   onChange: (level: ThinkingLevel) => void;
   authPrompt: string;
+  parentVisible?: boolean;
 };
 
 /**
@@ -22,8 +25,14 @@ type Options = {
  * when it asks nothing, otherwise waits for the person to confirm (and, for Tokenmaxxing, to pass
  * the device check). `onChange` is called only after every step passed.
  */
-export function useThinkingLevelChange({ value, provider, onChange, authPrompt }: Options) {
-  const [pending, setPending] = useState<ThinkingLevelPending>(null);
+export function useThinkingLevelChange({
+  value,
+  provider,
+  onChange,
+  authPrompt,
+  parentVisible = true,
+}: Options) {
+  const [pending, setPending] = useSubModalState<ThinkingLevelPending>(parentVisible, null);
   const allowed = providerAllowsThinking(provider ?? '');
 
   const request = useCallback(
@@ -41,10 +50,10 @@ export function useThinkingLevelChange({ value, provider, onChange, authPrompt }
 
       setPending({ level, auth: gate === 'noteAndAuth' });
     },
-    [allowed, value, provider, onChange]
+    [allowed, value, provider, onChange, setPending]
   );
 
-  const cancel = useCallback(() => setPending(null), []);
+  const cancel = useCallback(() => setPending(null), [setPending]);
 
   const confirm = useCallback(async () => {
     const current = pending;
@@ -59,7 +68,7 @@ export function useThinkingLevelChange({ value, provider, onChange, authPrompt }
     }
 
     onChange(current.level);
-  }, [pending, authPrompt, onChange]);
+  }, [pending, authPrompt, onChange, setPending]);
 
   return { allowed, pending, request, cancel, confirm };
 }

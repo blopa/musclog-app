@@ -1,6 +1,7 @@
 import { SettingsService } from '@/database/services/SettingsService';
 
-import { type CoachAIConfig, trackMeal } from '../coachAI';
+import { type CoachAIConfig } from '../coachAI';
+import { trackMeal } from '../coachMealEstimate';
 
 /**
  * A meal's ingredients that the model named without a confirmed food id are looked up BY NAME in
@@ -39,7 +40,17 @@ jest.mock('@/database/services/SettingsService', () => ({
   },
 }));
 jest.mock('@/database/services/FoodService', () => ({
-  FoodService: { searchFoods: (...args: unknown[]) => mockSearchFoods(...args) },
+  FoodService: {
+    searchFoods: (...args: unknown[]) => mockSearchFoods(...args),
+    searchFoodsByTerms: async (terms: string[], options: { includeDescription?: boolean }) =>
+      (
+        await Promise.all(
+          terms.map((term) =>
+            mockSearchFoods(term, { includeDescription: options.includeDescription })
+          )
+        )
+      ).flat(),
+  },
 }));
 
 // Per 100 g, as the real lookup scales them by grams.

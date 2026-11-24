@@ -1,7 +1,6 @@
 // On web the photo goes to the provider unchanged: the image codec is a native module. This file
 // exists so every export of `utils/aiImage.ts` resolves on every platform.
-import { type AiImageTier, DEFAULT_AI_IMAGE_TIER } from '@/utils/aiImagePlan';
-import type { HostedImageLimits } from '@/utils/premium/hostedImagePlan';
+import { type AiImageTier, DEFAULT_AI_IMAGE_TIER, type ImageLimits } from '@/utils/aiImagePlan';
 
 export type PreparedImage = { base64: string; mimeType: string };
 
@@ -13,7 +12,7 @@ export async function resizeForAi(
   base64: string,
   mimeType: string,
   // Unused on web: nothing is resized.
-  _limits: HostedImageLimits
+  _limits: ImageLimits
 ): Promise<PreparedImage> {
   return { base64, mimeType };
 }

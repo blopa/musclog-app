@@ -58,6 +58,7 @@ describe('effectiveThinkingLevel', () => {
 describe('THINKING_PIPELINE', () => {
   it("keeps today's two behaviours at off and medium", () => {
     expect(THINKING_PIPELINE.off).toEqual({
+      extractionSamples: 1,
       verifiedMeal: false,
       reviewRounds: 0,
       samples: 1,
@@ -66,6 +67,7 @@ describe('THINKING_PIPELINE', () => {
       earlyExit: false,
     });
     expect(THINKING_PIPELINE.medium).toEqual({
+      extractionSamples: 1,
       verifiedMeal: true,
       reviewRounds: 0,
       samples: 1,
@@ -73,6 +75,10 @@ describe('THINKING_PIPELINE', () => {
       mealLooks: null,
       earlyExit: false,
     });
+  });
+
+  it('reads extraction samples from the table', () => {
+    expect(THINKING_LEVELS.map((level) => extractionSamples(level))).toEqual([1, 1, 2, 3]);
   });
 
   it('exits early only at tokenmaxxing', () => {

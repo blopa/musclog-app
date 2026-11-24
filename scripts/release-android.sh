@@ -72,6 +72,34 @@ cmd_build() {
   note "built $out"
 }
 
+# Findings gplay preflight reports that were read and are not problems, as "<scanner>/<check>:<entry>".
+# Only an exact match is dropped, so a real key or keystore in another file still fails the upload.
+#  - secrets/credential_file base/assets/expo-root.pem: Expo's PUBLIC root certificate (BEGIN
+#    CERTIFICATE, no private key) that expo-updates ships; the scanner flags every .pem.
+PREFLIGHT_KNOWN_FALSE_POSITIVES=("secrets/credential_file:base/assets/expo-root.pem")
+
+# Offline preflight over the bundle. It fails only on ERROR findings that are not a known false positive:
+# `--fail-on warning` could never pass for this app (a permission that needs a Play justification, the
+# size budget, a leftover build-metadata file), so warnings are printed, not fatal.
+run_preflight() {
+  local aab="$1" json known remaining
+  json="$(gplay preflight --file "$aab" --fail-on error --output json)" || true
+  jq -e '.findings' >/dev/null 2>&1 <<<"$json" || die "gplay preflight gave no readable report for $aab: $json"
+  known="$(printf '%s\n' "${PREFLIGHT_KNOWN_FALSE_POSITIVES[@]}" | jq -R . | jq -s .)"
+  jq -r --argjson known "$known" '
+    .findings[] | select(.severity == "warning" or .severity == "error")
+    | (.scanner + "/" + .check + ":" + (.entry // "")) as $id
+    | (if (.severity == "error" and ($known | index($id))) then "known false positive" else .severity end) as $label
+    | "  [" + $label + "] " + .scanner + "/" + .check + ": " + .message + (if .entry then " (" + .entry + ")" else "" end)
+  ' <<<"$json" >&2
+  remaining="$(jq --argjson known "$known" '
+    [.findings[] | select(.severity == "error")
+     | select(((.scanner + "/" + .check + ":" + (.entry // "")) as $id | $known | index($id)) | not)] | length
+  ' <<<"$json")"
+  [[ "$remaining" -eq 0 ]] || die "preflight found $remaining error(s), listed above."
+  note "preflight passed (errors: none; warnings above are not blocking)"
+}
+
 cmd_check() {
   local aab=""
   while [[ $# -gt 0 ]]; do
@@ -83,7 +111,7 @@ cmd_check() {
   aab="${aab:-$(default_aab)}"
   require_gplay
   assert_release_signed "$aab"
-  gplay preflight --file "$aab" --fail-on warning --pretty
+  run_preflight "$aab"
 }
 
 # Aborts unless the local versionCode beats every code on Play.
@@ -134,7 +162,7 @@ cmd_upload() {
   fi
   [[ -s "$aab" ]] || die "no bundle at $aab (run 'build' or pass --file)."
   assert_release_signed "$aab"
-  gplay preflight --file "$aab" --fail-on warning >/dev/null || { gplay preflight --file "$aab" --fail-on warning --pretty >&2 || true; die "preflight found problems."; }
+  run_preflight "$aab"
   assert_version_code_is_new
 
   local args=(release --package "$PACKAGE" --track "$track" --bundle "$aab" --rollout "$rollout" --wait)

@@ -3,8 +3,9 @@
  * keeping it from costing the phone more than it must:
  *
  * - Loaded lazily on the first request, never at boot.
- * - The photo projector is attached only for a request that carries a photo and released right
- *   after, so text chat never pays its RAM.
+ * - The photo projector is attached only for a request that carries a photo and kept for
+ *   `LOCAL_PROJECTOR_IDLE_MS` after the last request (a meal reads up to five photos back to back),
+ *   then released, so text chat does not pay its RAM for long.
  * - One request at a time (a second one waits its turn).
  * - Unloaded after `LOCAL_MODEL_IDLE_MS` without a request, when the app goes to the background,
  *   and on an iOS memory warning (the OS kills the app that holds memory it needs).
@@ -15,6 +16,7 @@
 import { AppState, Platform } from 'react-native';
 
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
+import { reportAiEvent } from '@/utils/aiTelemetry';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
 import type { ChatPenalties } from '@/utils/providerPolicy';
 import { captureException } from '@/utils/sentry';
@@ -25,6 +27,7 @@ type LlamaModule = typeof import('llama.rn');
 type LlamaContext = import('llama.rn').LlamaContext;
 
 export const LOCAL_MODEL_IDLE_MS = 120_000;
+export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
 
 export type LocalChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
@@ -62,6 +65,9 @@ let projectorAttached = false;
 let queue: Promise<unknown> = Promise.resolve();
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 let busy = false;
+let projectorTimer: ReturnType<typeof setTimeout> | null = null;
+/** Set when `unloadLocalModel` stopped the running completion: its text is cut short. */
+let stoppedByUnload = false;
 let lifecycleInstalled = false;
 
 function llama(): LlamaModule {
@@ -80,9 +86,38 @@ function clearIdleTimer() {
   }
 }
 
-/** Frees the model and everything attached to it. Safe to call when nothing is loaded. */
-export async function unloadLocalModel(): Promise<void> {
+function clearProjectorTimer() {
+  if (projectorTimer) {
+    clearTimeout(projectorTimer);
+    projectorTimer = null;
+  }
+}
+
+async function releaseProjector(): Promise<void> {
+  if (busy || !context || !projectorAttached) {
+    return;
+  }
+
+  projectorAttached = false;
+  await context.releaseMultimodal().catch(() => undefined);
+}
+
+function scheduleProjectorRelease() {
+  clearProjectorTimer();
+  if (!projectorAttached) {
+    return;
+  }
+
+  projectorTimer = setTimeout(() => {
+    projectorTimer = null;
+    const turn = queue.then(releaseProjector, releaseProjector);
+    queue = turn.catch(() => undefined);
+  }, LOCAL_PROJECTOR_IDLE_MS);
+}
+
+async function performUnload(): Promise<void> {
   clearIdleTimer();
+  clearProjectorTimer();
   const current = context;
   context = null;
   projectorAttached = false;
@@ -96,6 +131,20 @@ export async function unloadLocalModel(): Promise<void> {
   } catch {
     // Already released; nothing is held either way.
   }
+}
+
+/** Frees the model and everything attached to it. Safe to call when nothing is loaded. */
+export function unloadLocalModel(): Promise<void> {
+  clearIdleTimer();
+  if (busy && context) {
+    stoppedByUnload = true;
+    void context.stopCompletion().catch(() => undefined);
+  }
+
+  const turn = queue.then(performUnload, performUnload);
+  queue = turn.catch(() => undefined);
+
+  return turn;
 }
 
 function scheduleIdleUnload() {
@@ -165,12 +214,22 @@ async function attachProjector(ctx: LlamaContext, path: string, imageMaxTokens: 
     return;
   }
 
-  const ok = await ctx.initMultimodal({
-    path: plainPath(path),
-    use_gpu: Platform.OS === 'ios',
-    image_max_tokens: imageMaxTokens,
-  });
+  let ok = false;
+  try {
+    ok = await ctx.initMultimodal({
+      path: plainPath(path),
+      use_gpu: Platform.OS === 'ios',
+      image_max_tokens: imageMaxTokens,
+    });
+  } catch (error) {
+    // Tags only: no prompt, path or content.
+    void captureException(error, {
+      captureContext: { tags: { context: 'localModels.projector' } },
+    });
+  }
+
   if (!ok) {
+    reportAiEvent('local-model-projector-failed', { platform: Platform.OS });
     throw new OnDeviceUnavailableError('loadFailed');
   }
 
@@ -200,10 +259,11 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   }
 
   clearIdleTimer();
+  clearProjectorTimer();
+  stoppedByUnload = false;
   busy = true;
   try {
     const ctx = await ensureContext();
-    let usedProjector = false;
     if (params.image) {
       const installed = await getInstalledLocalModel();
       if (!installed?.projectorPath) {
@@ -211,7 +271,6 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       }
 
       await attachProjector(ctx, installed.projectorPath, installed.manifest.imageMaxTokens);
-      usedProjector = true;
     }
 
     const onAbort = () => {
@@ -252,7 +311,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
         }
       );
 
-      if (params.signal?.aborted) {
+      if (params.signal?.aborted || stoppedByUnload) {
         throw new AiCancelledError();
       }
 
@@ -273,20 +332,19 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       };
     } finally {
       params.signal?.removeEventListener('abort', onAbort);
-      if (usedProjector) {
-        // Photos are rare; the projector's RAM is not worth keeping for the next text turn.
-        await ctx.releaseMultimodal().catch(() => undefined);
-        projectorAttached = false;
-      }
     }
   } finally {
     busy = false;
+    stoppedByUnload = false;
+    scheduleProjectorRelease();
     scheduleIdleUnload();
   }
 }
 
 /** Runs one generation on the local model. Requests are served one at a time, in order. */
 export function generateWithLocalModel(params: LocalGenerateParams): Promise<LocalGenerateResult> {
+  clearIdleTimer();
+  clearProjectorTimer();
   const turn = queue.then(
     () => run(params),
     () => run(params)

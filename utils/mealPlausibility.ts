@@ -5,6 +5,8 @@
 // prompt gives the model. Numbers that came from the person's own food database are never checked:
 // they are authoritative.
 
+import { roundToDecimalPlaces } from './roundDecimal';
+
 export type MacroProblem =
   /** A value is negative or not a number, or the grams are not above zero. */
   | 'invalidValue'
@@ -89,8 +91,10 @@ export function ingredientMacroProblems(ingredient: CheckableIngredient): MacroP
   return problems;
 }
 
-const round1 = (value: number): number => Math.round(value * 10) / 10;
-const nonNegative = (value: number): number => (Number.isFinite(value) && value > 0 ? value : 0);
+/** A number the model gave, made safe: negative or non-finite values become 0. */
+export function clampNonNegative(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
+}
 
 /**
  * The last resort for numbers that still cannot all be true after a re-estimate: a model can
@@ -109,11 +113,11 @@ export function reconcileIngredientMacros<T extends CheckableIngredient>(ingredi
     return ingredient;
   }
 
-  let protein = nonNegative(ingredient.protein);
-  let carbs = nonNegative(ingredient.carbs);
-  let fat = nonNegative(ingredient.fat);
-  let fiber = nonNegative(ingredient.fiber ?? 0);
-  let kcal = nonNegative(ingredient.kcal);
+  let protein = clampNonNegative(ingredient.protein);
+  let carbs = clampNonNegative(ingredient.carbs);
+  let fat = clampNonNegative(ingredient.fat);
+  let fiber = clampNonNegative(ingredient.fiber ?? 0);
+  let kcal = clampNonNegative(ingredient.kcal);
 
   const macroMass = protein + carbs + fat + fiber;
   if (macroMass > ingredient.grams) {
@@ -131,9 +135,9 @@ export function reconcileIngredientMacros<T extends CheckableIngredient>(ingredi
   return {
     ...ingredient,
     kcal,
-    protein: round1(protein),
-    carbs: round1(carbs),
-    fat: round1(fat),
-    fiber: ingredient.fiber === undefined ? undefined : round1(fiber),
+    protein: roundToDecimalPlaces(protein, 1),
+    carbs: roundToDecimalPlaces(carbs, 1),
+    fat: roundToDecimalPlaces(fat, 1),
+    fiber: ingredient.fiber === undefined ? undefined : roundToDecimalPlaces(fiber, 1),
   };
 }

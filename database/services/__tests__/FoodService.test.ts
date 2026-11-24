@@ -11,6 +11,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
     lt: jest.fn((value: unknown) => ({ kind: 'lt', value })),
     like: jest.fn((value: unknown) => ({ kind: 'like', value })),
+    and: jest.fn((...conditions: unknown[]) => ({ kind: 'and', conditions })),
     or: jest.fn((...conditions: unknown[]) => ({ kind: 'or', conditions })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
@@ -440,7 +441,7 @@ describe('FoodService', () => {
       ]);
     });
 
-    it('searches names only by default', async () => {
+    it('searches names only by default and is unbounded without a limit', async () => {
       const map = wire();
 
       await FoodService.searchFoods('rice');
@@ -454,7 +455,7 @@ describe('FoodService', () => {
     it('searches names or descriptions when includeDescription is set', async () => {
       const map = wire();
 
-      await FoodService.searchFoods('rice', { includeDescription: true });
+      await FoodService.searchFoods('rice', { includeDescription: true, limit: 50 });
 
       expect(map.foods.queryClauses[0]).toEqual([
         { field: 'deleted_at', condition: IS_NULL },
@@ -465,7 +466,112 @@ describe('FoodService', () => {
             { field: 'description', condition: { kind: 'like', value: '%rice%' } },
           ],
         },
+        { kind: 'sortBy', field: 'name', direction: 'asc' },
+        { kind: 'take', count: 50 },
       ]);
+    });
+
+    it('returns empty without querying when searchTerm is only SQL LIKE wildcards or non-positive limit', async () => {
+      const map = wire();
+
+      await expect(FoodService.searchFoods('%_\\')).resolves.toEqual([]);
+      await expect(FoodService.searchFoods('rice', { limit: 0 })).resolves.toEqual([]);
+      expect(map.foods).toBeUndefined();
+    });
+
+    it('escapes SQL LIKE wildcards safely and filters exact substring matches', async () => {
+      const map = wire({
+        foods: {
+          rows: [
+            stubFood({ id: 'exact', name: '2% milk' }),
+            stubFood({ id: 'false-positive', name: '200ml milk' }),
+          ],
+        },
+      });
+
+      const results = await FoodService.searchFoods('2% milk');
+
+      expect(results.map((r) => r.id)).toEqual(['exact']);
+      expect(map.foods.queryClauses[0]).toEqual([
+        { field: 'deleted_at', condition: IS_NULL },
+        {
+          kind: 'and',
+          conditions: [
+            { field: 'name', condition: { kind: 'like', value: '%2%' } },
+            { field: 'name', condition: { kind: 'like', value: '% milk%' } },
+          ],
+        },
+      ]);
+    });
+
+    it('runs one sorted, limited query per unique term in searchFoodsByTerms', async () => {
+      const map = wire();
+
+      await FoodService.searchFoodsByTerms(['chicken', 'chicken', 'rice'], {
+        includeDescription: true,
+        limit: 120,
+      });
+
+      const clause = (term: string) => [
+        { field: 'deleted_at', condition: IS_NULL },
+        {
+          kind: 'or',
+          conditions: [
+            { field: 'name', condition: { kind: 'like', value: `%${term}%` } },
+            { field: 'description', condition: { kind: 'like', value: `%${term}%` } },
+          ],
+        },
+        { kind: 'sortBy', field: 'name', direction: 'asc' },
+        { kind: 'take', count: 120 },
+      ];
+
+      expect(map.foods.queryClauses).toEqual([clause('chicken'), clause('rice')]);
+    });
+
+    it('returns every match when no limit is given (more than 200)', async () => {
+      const rows = Array.from({ length: 350 }, (_, i) =>
+        stubFood({ id: `f${i}`, name: `rice ${i}` })
+      );
+      const map = wire({ foods: { rows } });
+
+      const results = await FoodService.searchFoods('rice');
+
+      expect(results).toHaveLength(350);
+      expect(JSON.stringify(map.foods.queryClauses[0])).not.toContain('"take"');
+    });
+
+    it('cuts per term so one term cannot starve another, and de-duplicates by id', async () => {
+      const map = wire();
+      let call = 0;
+      const batches = [
+        [stubFood({ id: 'a1' }), stubFood({ id: 'shared' })],
+        [stubFood({ id: 'shared' }), stubFood({ id: 'b1' })],
+      ];
+      mockDatabase.get.mockImplementation(((table: string) => {
+        const collection = (map[table] ??= makeCollection(table));
+        collection.query.mockImplementation((...clauses: unknown[]) => {
+          collection.queryClauses.push(clauses);
+          const rows = batches[call++] ?? [];
+
+          return { fetch: jest.fn().mockResolvedValue(rows) } as any;
+        });
+
+        return collection;
+      }) as any);
+
+      const results = await FoodService.searchFoodsByTerms(['apple', 'banana'], { limit: 2 });
+
+      expect(map.foods.queryClauses).toHaveLength(2);
+      expect(results.map((f) => f.id)).toEqual(['a1', 'shared', 'b1']);
+    });
+
+    it('returns nothing for a non-finite or non-positive limit in searchFoodsByTerms', async () => {
+      wire();
+
+      await expect(FoodService.searchFoodsByTerms(['rice'], { limit: Infinity })).resolves.toEqual(
+        []
+      );
+      await expect(FoodService.searchFoodsByTerms(['rice'], { limit: -1 })).resolves.toEqual([]);
     });
   });
 

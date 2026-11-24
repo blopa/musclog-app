@@ -27,6 +27,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const vm = require('vm');
 
 const { WEBSITE_LOCALES } = require('../components/website/localeRoutes');
 
@@ -41,10 +42,18 @@ const FONTS = {
   regular: { family: 'Manrope SemiBold', file: path.join(FONT_DIR, 'Manrope-SemiBold.ttf') },
 };
 
+let sharpInstance;
+let fontsRegistered = false;
+
 // Both Manrope weights are made known to fontconfig through a throw-away config that also includes
-// the machine's own, set before sharp first draws text (a `fontfile` option holds one file per text
-// input, and the second weight was then drawn in a fallback font).
-function registerBundledFonts() {
+// the machine's own, lazily before sharp first draws text (a `fontfile` option holds one file per
+// text input, and the second weight was then drawn in a fallback font).
+function ensureBundledFonts() {
+  if (fontsRegistered) {
+    return;
+  }
+
+  fontsRegistered = true;
   const config = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'musclog-fonts-')), 'fonts.conf');
   fs.writeFileSync(
     config,
@@ -56,8 +65,14 @@ function registerBundledFonts() {
   process.on('exit', () => fs.rmSync(path.dirname(config), { recursive: true, force: true }));
 }
 
-registerBundledFonts();
-const sharp = require('sharp');
+function getSharp() {
+  ensureBundledFonts();
+  if (!sharpInstance) {
+    sharpInstance = require('sharp');
+  }
+
+  return sharpInstance;
+}
 
 const WIDTH = 1200;
 const HEIGHT = 630;
@@ -114,7 +129,7 @@ const LUCIDE_ICONS_DIR = path.join(
   'node_modules',
   'lucide-react-native',
   'dist',
-  'esm',
+  'cjs',
   'icons'
 );
 
@@ -124,6 +139,10 @@ function fail(message) {
 
 function escapeMarkup(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function escapeAttr(value) {
+  return escapeMarkup(String(value)).replace(/"/g, '&quot;');
 }
 
 /** `lang/locales/<language>/website.json` -> its `website.seo.image` block. */
@@ -159,6 +178,7 @@ function screenshotFor(language, exists = fs.existsSync) {
 
 /** One block of wrapped text as an RGBA buffer, with the size pango actually laid out. */
 async function textBlock(text, { font, size, color, width, leading }) {
+  const sharp = getSharp();
   const markup = `<span foreground="${color}">${escapeMarkup(text)}</span>`;
   const { data, info } = await sharp({
     text: {
@@ -175,30 +195,58 @@ async function textBlock(text, { font, size, color, width, leading }) {
   return { input: data, width: info.width, height: info.height };
 }
 
+const iconMarkupCache = new Map();
+
+function defaultReadIconFile(file) {
+  return fs.readFileSync(file, 'utf8');
+}
+
 /**
- * A lucide icon's elements as SVG markup, read from the package's module text (the icon data is a
- * plain list of `[tag, { attributes }]` pairs; the package itself is ESM and React-bound).
+ * A lucide icon's elements as SVG markup, evaluated from the package's CommonJS icon module
+ * (`__iconNode` is a plain list of `[tag, { attributes }]` pairs; evaluating with a stubbed
+ * `createLucideIcon` avoids importing `react-native-svg` and avoids fragile regex parsing).
  */
-function lucideIconMarkup(name, readFile = (file) => fs.readFileSync(file, 'utf8')) {
-  const source = readFile(path.join(LUCIDE_ICONS_DIR, `${name}.mjs`));
-  const elements = [
-    ...source.matchAll(
-      /\[\s*"(path|circle|rect|line|polyline|polygon|ellipse)",\s*\{([^}]*)\}\s*\]/g
-    ),
-  ];
-  if (elements.length === 0) {
+function lucideIconMarkup(name, readFile = defaultReadIconFile) {
+  const useCache = readFile === defaultReadIconFile;
+  if (useCache && iconMarkupCache.has(name)) {
+    return iconMarkupCache.get(name);
+  }
+
+  const source = readFile(path.join(LUCIDE_ICONS_DIR, `${name}.js`));
+  const exports = {};
+  const moduleObj = { exports };
+  vm.runInNewContext(source, {
+    exports,
+    module: moduleObj,
+    require: (id) => {
+      if (id.includes('createLucideIcon')) {
+        return () => null;
+      }
+
+      throw new Error(`Unexpected require in lucide icon "${name}": ${id}`);
+    },
+  });
+
+  const nodes = moduleObj.exports.__iconNode ?? moduleObj.exports.__iconData?.node;
+  if (!Array.isArray(nodes) || nodes.length === 0) {
     fail(`lucide icon "${name}" has no drawable elements`);
   }
 
-  return elements
-    .map(([, tag, body]) => {
-      const attributes = [...body.matchAll(/(\w+):\s*"([^"]*)"/g)]
-        .filter(([, key]) => key !== 'key')
-        .map(([, key, value]) => `${key}="${value}"`)
+  const markup = nodes
+    .map(([tag, attrs]) => {
+      const attributes = Object.entries(attrs ?? {})
+        .filter(([key, value]) => key !== 'key' && value !== undefined)
+        .map(([key, value]) => `${key}="${escapeAttr(value)}"`)
         .join(' ');
-      return `<${tag} ${attributes}/>`;
+      return attributes ? `<${tag} ${attributes}/>` : `<${tag}/>`;
     })
     .join('');
+
+  if (useCache) {
+    iconMarkupCache.set(name, markup);
+  }
+
+  return markup;
 }
 
 /** A rounded tile with the item's icon centred in it, as an SVG buffer. */
@@ -239,45 +287,51 @@ async function layoutText(copy, scale) {
   const width = TEXT_RIGHT - TEXT_LEFT;
   const px = (name) => Math.round(SIZES[name] * scale);
   const gap = (name) => Math.round(GAPS[name] * scale);
-  const pieces = [];
-  let y = 0;
-
-  const headline = await balancedHeadline(copy.headline, px('headline'), width);
-  pieces.push({ input: headline.input, left: TEXT_LEFT, top: y });
-  y += headline.height + gap('afterHeadline');
-
-  const subline = await textBlock(copy.subline, {
-    font: FONTS.regular,
-    size: px('subline'),
-    color: MUTED,
-    width,
-    leading: 0.3,
-  });
-  pieces.push({ input: subline.input, left: TEXT_LEFT, top: y });
-  y += subline.height + gap('afterSubline');
-
   const tile = px('tile');
   const textLeft = TEXT_LEFT + tile + gap('tileToText');
   const textWidth = TEXT_RIGHT - textLeft;
-  const rows = [];
-  for (const key of ITEM_KEYS) {
-    const item = copy.items[key];
-    const title = await textBlock(item.title, {
-      font: FONTS.bold,
-      size: px('itemTitle'),
-      color: INK,
-      width: textWidth,
-      leading: 0.1,
-    });
-    const description = await textBlock(item.description, {
+
+  const [headline, subline, rows] = await Promise.all([
+    balancedHeadline(copy.headline, px('headline'), width),
+    textBlock(copy.subline, {
       font: FONTS.regular,
-      size: px('itemDescription'),
+      size: px('subline'),
       color: MUTED,
-      width: textWidth,
+      width,
       leading: 0.3,
-    });
-    rows.push({ key, title, description });
-  }
+    }),
+    Promise.all(
+      ITEM_KEYS.map(async (key) => {
+        const item = copy.items[key];
+        const [title, description] = await Promise.all([
+          textBlock(item.title, {
+            font: FONTS.bold,
+            size: px('itemTitle'),
+            color: INK,
+            width: textWidth,
+            leading: 0.1,
+          }),
+          textBlock(item.description, {
+            font: FONTS.regular,
+            size: px('itemDescription'),
+            color: MUTED,
+            width: textWidth,
+            leading: 0.3,
+          }),
+        ]);
+        return { key, title, description };
+      })
+    ),
+  ]);
+
+  const pieces = [];
+  let y = 0;
+
+  pieces.push({ input: headline.input, left: TEXT_LEFT, top: y });
+  y += headline.height + gap('afterHeadline');
+
+  pieces.push({ input: subline.input, left: TEXT_LEFT, top: y });
+  y += subline.height + gap('afterSubline');
 
   rows.forEach(({ key, title, description }, index) => {
     if (index > 0) {
@@ -339,7 +393,6 @@ function statusBarSvg(width, height, background) {
   const mid = height / 2;
   const unit = height / 30;
   const right = width - 18 * unit;
-  const battery = `<rect x="${right - 22 * unit}" y="${mid - 6 * unit}" width="20" height="12" rx="3" transform="scale(1)" fill="none" stroke="${ink}" stroke-width="${1.6 * unit}"/>`;
   return Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
       `<rect width="${width}" height="${height}" fill="${fill}"/>` +
@@ -354,91 +407,124 @@ function statusBarSvg(width, height, background) {
       // Wi-Fi: a filled quarter fan.
       `<path d="M ${right - 44 * unit} ${mid - 3 * unit} a ${10 * unit} ${10 * unit} 0 0 1 ${16 * unit} 0 l ${-8 * unit} ${9 * unit} z" fill="${ink}"/>` +
       // Battery: a rounded body, its charge, and the terminal.
-      battery.replace(
-        'width="20" height="12" rx="3" transform="scale(1)"',
-        `width="${20 * unit}" height="${12 * unit}" rx="${3 * unit}"`
-      ) +
+      `<rect x="${right - 22 * unit}" y="${mid - 6 * unit}" width="${20 * unit}" height="${12 * unit}" rx="${3 * unit}" fill="none" stroke="${ink}" stroke-width="${1.6 * unit}"/>` +
       `<rect x="${right - 20 * unit}" y="${mid - 4 * unit}" width="${12 * unit}" height="${8 * unit}" rx="${1.5 * unit}" fill="${ink}"/>` +
       `<rect x="${right - 1.4 * unit}" y="${mid - 2.5 * unit}" width="${2 * unit}" height="${5 * unit}" rx="${0.8 * unit}" fill="${ink}"/>` +
       `</svg>`
   );
 }
 
+const PHONE_SCALE = PHONE.scale;
+// One pixel of overlap on every side, so no white seam shows inside the frame's edge.
+const PHONE_SCREEN = {
+  left: PHONE.left + Math.floor(FRAME_SCREEN.left * PHONE_SCALE) - 1,
+  top: PHONE.top + Math.floor(FRAME_SCREEN.top * PHONE_SCALE) - 1,
+  width: Math.ceil(FRAME_SCREEN.width * PHONE_SCALE) + 2,
+};
+const VISIBLE_SCREEN_HEIGHT = HEIGHT - PHONE_SCREEN.top;
+const STATUS_BAR_HEIGHT = Math.round(PHONE_SCREEN.width * STATUS_BAR_SHARE);
+const SCREEN_RADIUS = Math.round(FRAME_SCREEN_RADIUS * PHONE_SCALE);
+const SCREEN_MASK = Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${PHONE_SCREEN.width}" height="${VISIBLE_SCREEN_HEIGHT}">` +
+    `<rect width="${PHONE_SCREEN.width}" height="${VISIBLE_SCREEN_HEIGHT + SCREEN_RADIUS}" rx="${SCREEN_RADIUS}" fill="#fff"/></svg>`
+);
+
+let frameCropPromise;
+const phoneLayersCache = new Map();
+
+function getFrameCrop() {
+  if (!frameCropPromise) {
+    const sharp = getSharp();
+    const frameWidth = Math.round(FRAME_SIZE.width * PHONE_SCALE);
+    const frameHeight = Math.round(FRAME_SIZE.height * PHONE_SCALE);
+    frameCropPromise = sharp(FRAME_FILE)
+      .resize({ width: frameWidth, height: frameHeight })
+      .png()
+      .toBuffer()
+      .then((frame) =>
+        sharp(frame)
+          .extract({ left: 0, top: 0, width: frameWidth, height: HEIGHT - PHONE.top })
+          .toBuffer()
+      )
+      .catch((error) => {
+        frameCropPromise = undefined;
+        throw error;
+      });
+  }
+
+  return frameCropPromise;
+}
+
 /**
  * The phone: the capture (under a drawn status bar, coloured like the capture's top row) placed in
  * the frame's transparent screen, then the frame on top, cut where the image ends.
  */
-async function phoneLayers(screenshotFile) {
-  const s = PHONE.scale;
-  const frameWidth = Math.round(FRAME_SIZE.width * s);
-  const frameHeight = Math.round(FRAME_SIZE.height * s);
-  // One pixel of overlap on every side, so no white seam shows inside the frame's edge.
-  const screen = {
-    left: PHONE.left + Math.floor(FRAME_SCREEN.left * s) - 1,
-    top: PHONE.top + Math.floor(FRAME_SCREEN.top * s) - 1,
-    width: Math.ceil(FRAME_SCREEN.width * s) + 2,
-  };
-  const visibleScreen = HEIGHT - screen.top;
-  const statusHeight = Math.round(screen.width * STATUS_BAR_SHARE);
+function phoneLayers(screenshotFile) {
+  if (phoneLayersCache.has(screenshotFile)) {
+    return phoneLayersCache.get(screenshotFile);
+  }
 
-  const capture = sharp(screenshotFile);
-  const { data: topRow } = await capture
-    .clone()
-    .extract({ left: 0, top: 0, width: 1, height: 1 })
-    .removeAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  const background = { r: topRow[0], g: topRow[1], b: topRow[2] };
-  const shot = await capture
-    .clone()
-    .resize({ width: screen.width })
-    .png()
-    .toBuffer({ resolveWithObject: true });
-  const shotHeight = Math.min(shot.info.height, visibleScreen - statusHeight);
-  const shotCrop = await sharp(shot.data)
-    .extract({ left: 0, top: 0, width: screen.width, height: shotHeight })
-    .toBuffer();
+  const promise = (async () => {
+    const sharp = getSharp();
+    const capture = sharp(screenshotFile);
+    const [{ data: topRow }, shot, frameCrop] = await Promise.all([
+      capture
+        .clone()
+        .extract({ left: 0, top: 0, width: 1, height: 1 })
+        .removeAlpha()
+        .raw()
+        .toBuffer({
+          resolveWithObject: true,
+        }),
+      capture
+        .clone()
+        .resize({ width: PHONE_SCREEN.width })
+        .png()
+        .toBuffer({ resolveWithObject: true }),
+      getFrameCrop(),
+    ]);
+    const background = { r: topRow[0], g: topRow[1], b: topRow[2] };
+    const shotHeight = Math.min(shot.info.height, VISIBLE_SCREEN_HEIGHT - STATUS_BAR_HEIGHT);
+    const shotCrop = await sharp(shot.data)
+      .extract({ left: 0, top: 0, width: PHONE_SCREEN.width, height: shotHeight })
+      .toBuffer();
 
-  // The frame is scaled whole and then cut at the image's bottom edge.
-  const frame = await sharp(FRAME_FILE)
-    .resize({ width: frameWidth, height: frameHeight })
-    .png()
-    .toBuffer();
-  const frameCrop = await sharp(frame)
-    .extract({ left: 0, top: 0, width: frameWidth, height: HEIGHT - PHONE.top })
-    .toBuffer();
+    // Status bar and capture are joined, then clipped to the screen's rounded corners: the frame's
+    // cut-out is rounded but its outline is not opaque past the corners, so a square screen showed.
+    const screenImage = await sharp({
+      create: {
+        width: PHONE_SCREEN.width,
+        height: VISIBLE_SCREEN_HEIGHT,
+        channels: 4,
+        background: { ...background, alpha: 1 },
+      },
+    })
+      .composite([
+        {
+          input: statusBarSvg(PHONE_SCREEN.width, STATUS_BAR_HEIGHT, background),
+          left: 0,
+          top: 0,
+        },
+        { input: shotCrop, left: 0, top: STATUS_BAR_HEIGHT },
+      ])
+      .png()
+      .toBuffer();
+    const roundedScreen = await sharp(screenImage)
+      .composite([{ input: SCREEN_MASK, blend: 'dest-in' }])
+      .png()
+      .toBuffer();
 
-  // Status bar and capture are joined, then clipped to the screen's rounded corners: the frame's
-  // cut-out is rounded but its outline is not opaque past the corners, so a square screen showed.
-  const screenHeight = visibleScreen;
-  const radius = Math.round(FRAME_SCREEN_RADIUS * s);
-  const mask = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${screen.width}" height="${screenHeight}">` +
-      `<rect width="${screen.width}" height="${screenHeight + radius}" rx="${radius}" fill="#fff"/></svg>`
-  );
-  const screenImage = await sharp({
-    create: {
-      width: screen.width,
-      height: screenHeight,
-      channels: 4,
-      background: { ...background, alpha: 1 },
-    },
-  })
-    .composite([
-      { input: statusBarSvg(screen.width, statusHeight, background), left: 0, top: 0 },
-      { input: shotCrop, left: 0, top: statusHeight },
-    ])
-    .png()
-    .toBuffer();
-  const roundedScreen = await sharp(screenImage)
-    .composite([{ input: mask, blend: 'dest-in' }])
-    .png()
-    .toBuffer();
+    return [
+      { input: roundedScreen, left: PHONE_SCREEN.left, top: PHONE_SCREEN.top },
+      { input: frameCrop, left: PHONE.left, top: PHONE.top },
+    ];
+  })().catch((error) => {
+    phoneLayersCache.delete(screenshotFile);
+    throw error;
+  });
 
-  return [
-    { input: roundedScreen, left: screen.left, top: screen.top },
-    { input: frameCrop, left: PHONE.left, top: PHONE.top },
-  ];
+  phoneLayersCache.set(screenshotFile, promise);
+  return promise;
 }
 
 /** The image for one locale as JPEG bytes. */
@@ -452,11 +538,12 @@ async function renderSeoImage({ language, copy, screenshotFile }) {
     fail(`${language}: no Home screenshot at ${path.relative(ROOT, screenshotFile)}`);
   }
 
-  const text = await fitText(copy, language);
+  const sharp = getSharp();
+  const [layers, text] = await Promise.all([phoneLayers(screenshotFile), fitText(copy, language)]);
   return sharp({
     create: { width: WIDTH, height: HEIGHT, channels: 3, background: BACKGROUND },
   })
-    .composite([...(await phoneLayers(screenshotFile)), ...text.composites])
+    .composite([...layers, ...text.composites])
     .jpeg({ quality: 88, mozjpeg: true })
     .toBuffer();
 }
@@ -488,14 +575,16 @@ async function main(argv = process.argv.slice(2)) {
   }
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  for (const job of jobs) {
-    const bytes = await renderSeoImage(job);
-    const file = path.join(OUTPUT_DIR, `${job.prefix}.jpg`);
-    fs.writeFileSync(file, bytes);
-    console.log(
-      `[generate-seo-images] ${path.relative(ROOT, file)} (${Math.round(bytes.length / 1024)} KB)`
-    );
-  }
+  await Promise.all(
+    jobs.map(async (job) => {
+      const bytes = await renderSeoImage(job);
+      const file = path.join(OUTPUT_DIR, `${job.prefix}.jpg`);
+      await fs.promises.writeFile(file, bytes);
+      console.log(
+        `[generate-seo-images] ${path.relative(ROOT, file)} (${Math.round(bytes.length / 1024)} KB)`
+      );
+    })
+  );
 }
 
 module.exports = {

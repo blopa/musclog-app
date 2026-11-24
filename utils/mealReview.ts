@@ -4,7 +4,7 @@
 // back what to estimate; a figure the model gives for an ingredient is never taken as it is.
 
 import type { TrackedMeal, TrackMealIngredient } from './coachAI';
-import { normalizeIngredientName } from './mealConsensus';
+import { normalizeFoodName } from './foodName';
 
 /** `englishName` is the plain English name of a missing ingredient, used only to find it among the stored foods. */
 export type MealReviewItem = { name: string; grams: number; englishName?: string };
@@ -19,7 +19,7 @@ const round1 = (value: number): number => Math.round(value * 10) / 10;
 const isUsable = (item: MealReviewItem | null | undefined): item is MealReviewItem =>
   Boolean(item) &&
   typeof item!.name === 'string' &&
-  normalizeIngredientName(item!.name).length > 0 &&
+  normalizeFoodName(item!.name).length > 0 &&
   typeof item!.grams === 'number' &&
   Number.isFinite(item!.grams) &&
   item!.grams > 0;
@@ -54,14 +54,14 @@ export function applyMealReview(
   const corrections = new Map<string, number>();
   for (const item of review?.corrections ?? []) {
     if (isUsable(item)) {
-      corrections.set(normalizeIngredientName(item.name), item.grams);
+      corrections.set(normalizeFoodName(item.name), item.grams);
     }
   }
 
-  const listed = new Set(meal.ingredients.map(({ name }) => normalizeIngredientName(name)));
+  const listed = new Set(meal.ingredients.map(({ name }) => normalizeFoodName(name)));
   const added: MealReviewItem[] = [];
   for (const item of review?.missingIngredients ?? []) {
-    const key = isUsable(item) ? normalizeIngredientName(item.name) : '';
+    const key = isUsable(item) ? normalizeFoodName(item.name) : '';
     if (key && !listed.has(key)) {
       listed.add(key);
       const englishName = typeof item.englishName === 'string' ? item.englishName.trim() : '';
@@ -77,7 +77,7 @@ export function applyMealReview(
     meal: {
       ...meal,
       ingredients: meal.ingredients.map((ingredient) => {
-        const grams = corrections.get(normalizeIngredientName(ingredient.name));
+        const grams = corrections.get(normalizeFoodName(ingredient.name));
 
         return grams == null ? ingredient : scaled(ingredient, grams);
       }),

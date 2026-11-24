@@ -4,6 +4,15 @@ const {
   diffByLookupKey,
   needsExplicitApproval,
   isEmptyDiff,
+  cliError,
+  requireEnv,
+  buildQuery,
+  numberOrNull,
+  formatNumber,
+  isUnavailable,
+  tryRequest,
+  formatJson,
+  runCli,
 } = require('../infra/lib');
 const { planFrom, managedView } = require('../infra/revenuecat');
 
@@ -98,5 +107,69 @@ describe('revenuecat managed view', () => {
       display_name: 'P',
     });
     expect(typeof planFrom).toBe('function');
+  });
+});
+
+describe('shared CLI, HTTP and formatting helpers', () => {
+  it('creates errors with exitCode and checks required env vars', () => {
+    const err = cliError('bad flag', 2);
+    expect(err.message).toBe('bad flag');
+    expect(err.exitCode).toBe(2);
+
+    expect(() => requireEnv(undefined, 'TEST_INFRA_VAR', 'missing var')).toThrow('missing var');
+    expect(() => requireEnv('', 'TEST_INFRA_VAR')).toThrow('Set TEST_INFRA_VAR.');
+    expect(requireEnv('ok', 'TEST_INFRA_VAR')).toBe('ok');
+  });
+
+  it('formats queries, numbers, JSON and unavailable responses', async () => {
+    expect(buildQuery({ a: null, b: undefined, tag: ['x', 'y'], n: 3 })).toBe('?tag=x&tag=y&n=3');
+    expect(numberOrNull(42)).toBe(42);
+    expect(numberOrNull(Number.NaN)).toBeNull();
+    expect(formatNumber(null)).toBe('n/a');
+    expect(formatNumber(1.2345, 2)).toBe('1.23');
+    expect(isUnavailable({ _unavailable: 'down' })).toBe(true);
+    expect(isUnavailable({ ok: true })).toBe(false);
+    expect(formatJson({ a: 1 }, true)).toBe('{"a":1}');
+    expect(formatJson({ a: 1 }, false)).toBe('{\n  "a": 1\n}');
+
+    await expect(tryRequest(async () => ({ ok: true }))).resolves.toEqual({ ok: true });
+    await expect(
+      tryRequest(async () => {
+        throw new Error('HTTP 503');
+      })
+    ).resolves.toEqual({ _unavailable: 'HTTP 503' });
+  });
+
+  it('dispatches CLI commands and handles unknown commands or errors', async () => {
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => undefined) as never);
+    const errSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    const handler = jest.fn(async (args: string[]) => args);
+
+    try {
+      await expect(
+        runCli({ report: handler }, 'usage: test', ['report', '--json'])
+      ).resolves.toEqual(['--json']);
+      expect(exitSpy).not.toHaveBeenCalled();
+
+      await runCli({ report: handler }, 'usage: test', ['bad']);
+      expect(errSpy).toHaveBeenCalledWith('usage: test');
+      expect(exitSpy).toHaveBeenCalledWith(2);
+
+      exitSpy.mockClear();
+      await runCli(
+        {
+          fail: async () => {
+            throw cliError('boom', 4);
+          },
+        },
+        'usage: test',
+        ['fail']
+      );
+      expect(errSpy).toHaveBeenCalledWith('error: boom');
+      expect(exitSpy).toHaveBeenCalledWith(4);
+    } finally {
+      exitSpy.mockRestore();
+      errSpy.mockRestore();
+    }
   });
 });

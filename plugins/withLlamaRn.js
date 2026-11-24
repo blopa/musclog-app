@@ -87,7 +87,7 @@ function withLlamaRn(config, props) {
   const loaded = require('llama.rn/app.plugin.js');
   const plugin = loaded.default ?? loaded;
 
-  return plugin(slimmed, props);
+  return plugin(slimmed, { enableOpenCLAndHexagon: false, ...props });
 }
 
 module.exports = withLlamaRn;

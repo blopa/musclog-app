@@ -10,7 +10,8 @@ describe('the "more below" scroll cue', () => {
     const hook = read('hooks/useScrollFade.tsx');
 
     expect(hook).toMatch(/useSurfaceColor\(\)/);
-    expect(hook).toMatch(/colors=\{\['transparent', surface\]\}/);
+    expect(hook).toContain('colors={[addOpacityToHex(surface, 0), surface]}');
+    expect(hook).not.toMatch(/colors=\{\['transparent'/);
     expect(hook).not.toMatch(/backdrop90/);
     expect(hook).toMatch(/return \{ scrollProps, FadeIndicator, scrollRef \}/);
   });

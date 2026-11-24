@@ -3,6 +3,7 @@ import {
   MAX_MEAL_PHOTOS,
   canAddMealPhoto,
   hasDraftInput,
+  mealCameraControls,
   mealPhotoDraftReducer as r,
   photoLimit,
 } from '../mealPhotoDraft';
@@ -90,5 +91,112 @@ describe('photoLimit', () => {
     expect(photoLimit(-4)).toBe(1);
     expect(photoLimit(NaN)).toBe(1);
     expect(photoLimit(0.5)).toBe(1);
+  });
+});
+
+describe('mealCameraControls', () => {
+  const photos = (count: number) =>
+    Array.from({ length: count }, (_, index) => `file:///photo-${index}.jpg`);
+
+  it('quick flow is never adding to a draft and picks one image', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: false,
+        isMealPhotoMode: true,
+        draft: { ...E, photos: photos(1) },
+        limit: 5,
+      })
+    ).toEqual({ addingToDraft: false, gallerySelectionLimit: 1, canAddPhoto: true });
+  });
+
+  it('detailed flow in another mode is never adding to a draft and picks one image', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: true,
+        isMealPhotoMode: false,
+        draft: { ...E, photos: photos(1) },
+        limit: 5,
+      })
+    ).toEqual({ addingToDraft: false, gallerySelectionLimit: 1, canAddPhoto: true });
+  });
+
+  it('detailed meal mode with an empty draft offers the full limit but is not adding', () => {
+    expect(
+      mealCameraControls({ detailedFlow: true, isMealPhotoMode: true, draft: E, limit: 5 })
+    ).toEqual({ addingToDraft: false, gallerySelectionLimit: 5, canAddPhoto: true });
+  });
+
+  it('one photo in the draft with limit 5 is adding and leaves 4 slots', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: true,
+        isMealPhotoMode: true,
+        draft: { ...E, photos: photos(1) },
+        limit: 5,
+      })
+    ).toEqual({ addingToDraft: true, gallerySelectionLimit: 4, canAddPhoto: true });
+  });
+
+  it('a name alone (no photos) is adding to the draft and leaves all 5 slots', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: true,
+        isMealPhotoMode: true,
+        draft: { ...E, name: 'Oats' },
+        limit: 5,
+      })
+    ).toEqual({ addingToDraft: true, gallerySelectionLimit: 5, canAddPhoto: true });
+  });
+
+  it('a full draft leaves no slots, so the pick is one image and nothing can be added', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: true,
+        isMealPhotoMode: true,
+        draft: { ...E, photos: photos(5) },
+        limit: 5,
+      })
+    ).toEqual({ addingToDraft: true, gallerySelectionLimit: 1, canAddPhoto: false });
+  });
+
+  it('a draft holding the provider limit cannot take another photo', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: true,
+        isMealPhotoMode: true,
+        draft: { ...E, photos: photos(2) },
+        limit: 2,
+      }).canAddPhoto
+    ).toBe(false);
+  });
+
+  it('a draft with room left can take a photo, and outside the detailed meal flow it always can', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: true,
+        isMealPhotoMode: true,
+        draft: { ...E, photos: photos(1) },
+        limit: 5,
+      }).canAddPhoto
+    ).toBe(true);
+    expect(
+      mealCameraControls({
+        detailedFlow: false,
+        isMealPhotoMode: true,
+        draft: { ...E, photos: photos(5) },
+        limit: 5,
+      }).canAddPhoto
+    ).toBe(true);
+  });
+
+  it('a provider limit of 2 with one photo leaves one slot', () => {
+    expect(
+      mealCameraControls({
+        detailedFlow: true,
+        isMealPhotoMode: true,
+        draft: { ...E, photos: photos(1) },
+        limit: 2,
+      })
+    ).toEqual({ addingToDraft: true, gallerySelectionLimit: 1, canAddPhoto: true });
   });
 });

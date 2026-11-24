@@ -93,6 +93,19 @@ describe('extractions at each thinking level', () => {
     expect(result).toMatchObject({ protein: 12 });
   });
 
+  it('lets the arbiter settle only the disputed field, never one the readings agreed on', async () => {
+    mockThinking.level = 'high';
+    mockCreate
+      .mockResolvedValueOnce(reply(label(10)))
+      .mockResolvedValueOnce(reply(label(16)))
+      // The arbiter settles protein, but also rewrites the calories and the name the readings shared.
+      .mockResolvedValueOnce(reply({ ...label(12), calories: 999, name: 'Something else' }));
+
+    const result = await extractMacrosFromLabelText(openai, 'Protein 12 g');
+
+    expect(result).toMatchObject({ protein: 12, calories: 200, name: 'Oat bar' });
+  });
+
   it('keeps the combined readings when the arbiter fails', async () => {
     mockThinking.level = 'high';
     mockCreate

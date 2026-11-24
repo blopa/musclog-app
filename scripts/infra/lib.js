@@ -120,4 +120,98 @@ function isEmptyDiff(d) {
   return d.create.length === 0 && d.update.length === 0;
 }
 
-module.exports = { sanitize, stableStringify, diffByLookupKey, needsExplicitApproval, isEmptyDiff };
+/** Creates an Error with an attached process exit code. */
+function cliError(message, exitCode = 1) {
+  return Object.assign(new Error(message), { exitCode });
+}
+
+/** Ensures a required environment variable value is present or throws a config error (exit code 4). */
+function requireEnv(value, name, help) {
+  if (!value) {
+    throw cliError(help || `Set ${name}.`, 4);
+  }
+
+  return value;
+}
+
+/** Query string from a params object: arrays become repeated keys, null/undefined are dropped. */
+function buildQuery(params) {
+  const search = new URLSearchParams();
+  for (const [name, value] of Object.entries(params)) {
+    if (value == null) {
+      continue;
+    }
+
+    for (const item of Array.isArray(value) ? value : [value]) {
+      search.append(name, String(item));
+    }
+  }
+
+  const text = search.toString();
+  return text ? `?${text}` : '';
+}
+
+function numberOrNull(value) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function formatNumber(value, digits = 2) {
+  return value == null ? 'n/a' : Number(value).toFixed(digits);
+}
+
+function isUnavailable(value) {
+  return value == null || typeof value !== 'object' || '_unavailable' in value;
+}
+
+/** Wraps an async API call, turning failures into `{ _unavailable: message }`. */
+async function tryRequest(fn) {
+  try {
+    return await fn();
+  } catch (e) {
+    return { _unavailable: e.message };
+  }
+}
+
+function formatJson(data, compact = false) {
+  return compact ? JSON.stringify(data) : JSON.stringify(data, null, 2);
+}
+
+function printJson(data, compact = false) {
+  console.log(formatJson(data, compact));
+}
+
+/** Dispatches `<cmd> [args...]` to `commands[cmd]`, exiting cleanly with usage or error codes. */
+async function runCli(commands, usage, argv = process.argv.slice(2)) {
+  const [cmd, ...args] = argv;
+  if (!commands[cmd]) {
+    console.error(usage);
+    process.exit(2);
+    return undefined;
+  }
+
+  try {
+    return await commands[cmd](args);
+  } catch (e) {
+    console.error(`error: ${e.message}`);
+    process.exit(e.exitCode ?? 1);
+    return undefined;
+  }
+}
+
+module.exports = {
+  sanitize,
+  stableStringify,
+  diffByLookupKey,
+  needsExplicitApproval,
+  isEmptyDiff,
+  cliError,
+  requireEnv,
+  buildQuery,
+  numberOrNull,
+  formatNumber,
+  isUnavailable,
+  tryRequest,
+  formatJson,
+  printJson,
+  runCli,
+};

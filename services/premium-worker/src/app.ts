@@ -9,6 +9,7 @@ import { defaultDeps, type MakeDeps } from './deps';
 import type { Env } from './env';
 import { ApiError, errorResponse } from './http';
 import { consoleLogger } from './log';
+import { sentryLogger } from './logReport';
 import { handleChatCompletions } from './proxy/chat';
 import { handleChallenge } from './routes/challenge';
 import { handleConfig, handleConfigDisabled } from './routes/config';
@@ -34,19 +35,25 @@ export const DAILY_CRON = '30 0 * * *';
 let cached: {
   text: string;
   env: string;
+  openrouterUrl: string;
+  revenuecatUrl: string;
   otariUrl: string | undefined;
   result: ReturnType<typeof parseConfig>;
 } | null = null;
-export function loadConfig(env: Env): ReturnType<typeof parseConfig> {
+export function loadConfig(env: Parameters<typeof parseConfig>[0]): ReturnType<typeof parseConfig> {
   if (
     !cached ||
     cached.text !== env.AI_CONFIG_JSON ||
     cached.env !== env.WORKER_ENV ||
+    cached.openrouterUrl !== env.OPENROUTER_BASE_URL ||
+    cached.revenuecatUrl !== env.REVENUECAT_BASE_URL ||
     cached.otariUrl !== env.OTARI_BASE_URL
   ) {
     cached = {
       text: env.AI_CONFIG_JSON,
       env: env.WORKER_ENV,
+      openrouterUrl: env.OPENROUTER_BASE_URL,
+      revenuecatUrl: env.REVENUECAT_BASE_URL,
       otariUrl: env.OTARI_BASE_URL,
       result: parseConfig(env),
     };
@@ -71,7 +78,7 @@ export function createApp(makeDeps: MakeDeps = defaultDeps): ExportedHandler<Env
       const parsed = loadConfig(env);
       if (!parsed.ok) {
         // Fail closed: an invalid config never serves (plan section 7).
-        consoleLogger().log({
+        sentryLogger(consoleLogger()).log({
           route: url.pathname,
           status: 503,
           code: 'config_invalid',
@@ -98,7 +105,7 @@ export function createApp(makeDeps: MakeDeps = defaultDeps): ExportedHandler<Env
     async scheduled(controller, env, exec) {
       const parsed = loadConfig(env);
       if (!parsed.ok) {
-        consoleLogger().log({
+        sentryLogger(consoleLogger()).log({
           route: 'cron',
           status: 503,
           code: 'config_invalid',

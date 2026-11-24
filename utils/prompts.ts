@@ -102,6 +102,16 @@ export const getActiveCustomPrompts = async (
 };
 
 /**
+ * A system prompt with the person's active custom prompts appended. Every request that estimates or
+ * reads food (a meal, a recipe, a label) goes through it, so what they wrote shapes all of them.
+ */
+export const withCustomPrompts = async (basePrompt: string): Promise<string> => {
+  const customPrompts = await getActiveCustomPrompts();
+
+  return customPrompts ? `${basePrompt}\n\n${customPrompts}` : basePrompt;
+};
+
+/**
  * Get active memories for the conversation context
  */
 export const getActiveMemories = async (
@@ -2582,7 +2592,7 @@ export const getChatReviewInstruction = (
   ].join('\n');
 
 /**
- * Appended to an extraction's own user message (a label, past workouts, a food log) when
+ * Added to an extraction's own user message (a label, past workouts, a food log) when
  * independent readings of the same input disagreed (High and Tokenmaxxing thinking levels). The
  * readings are quoted as data, so whatever they say is checked, never followed.
  */
@@ -2602,37 +2612,28 @@ export const getExtractionArbiterMessage = (readings: unknown[], disputed: strin
   ].join('\n');
 
 /**
- * Appended to a plan's own user message for a critique round (High and Tokenmaxxing thinking
- * levels): the current answer and the problems code found in it. The answer is quoted as data. The
- * markers are words, not angle brackets: a structured request escapes its user message.
+ * The last user turn of a plan's critique round (High and Tokenmaxxing thinking levels). The
+ * original request and the answer under review are already in the conversation (the answer as the
+ * model's own previous message), so this carries only what code found in it.
  */
-export const getPlanReviewMessage = (answer: unknown, findings: string[]): string =>
+export const getPlanReviewInstruction = (findings: string[]): string =>
   [
-    'Review round. Below is an answer already written for this request.',
+    'Review round. Your previous message is an answer already written for the request above.',
     'Check it against the request and the rules above, then return the complete, corrected answer in the same format.',
     'Keep what is right; fix what breaks the request, the rules or the numbers. Do not change it just to change it.',
     '',
     'Problems found by code:',
     ...(findings.length > 0 ? findings.slice(0, 40).map((finding) => `- ${finding}`) : ['- none']),
-    '',
-    '--- ANSWER ---',
-    JSON.stringify(answer),
-    '--- END OF ANSWER ---',
   ].join('\n');
 
 /**
- * The user turn of an insight's fact-check round (High and Tokenmaxxing thinking levels). The system
- * prompt is the insight's own, so the data and the voice stay the same; the draft is quoted as text
- * to check. On a later round the text may also be tightened.
+ * The last user turn of an insight's fact-check round (High and Tokenmaxxing thinking levels). The
+ * system prompt, the request and the draft (the model's own previous message) are the ones it just
+ * answered, so the data and the voice stay the same. On a later round the text may also be tightened.
  */
-export const getInsightFactCheckMessage = (
-  originalRequest: string,
-  draft: string,
-  ungrounded: string[],
-  tighten: boolean
-): string =>
+export const getInsightFactCheckInstruction = (ungrounded: string[], tighten: boolean): string =>
   [
-    'Fact-check round. Below are the request and a draft answer written for it from the data above.',
+    'Fact-check round. Your previous message is a draft answer written for the request above from the data above.',
     'Return the same answer with every figure and claim checked against the data: fix what the data does not support, and remove what you cannot check. A sum, average or difference worked out correctly from the data may stay.',
     tighten
       ? 'Also tighten the wording: say the same things in fewer words, with the same facts.'
@@ -2642,12 +2643,4 @@ export const getInsightFactCheckMessage = (
     ungrounded.length > 0
       ? `Figures not found in the data: ${ungrounded.slice(0, 30).join(', ')}`
       : 'Every figure was found in the data; check the claims around them.',
-    '',
-    '--- REQUEST ---',
-    originalRequest,
-    '--- END OF REQUEST ---',
-    '',
-    '--- DRAFT ---',
-    draft,
-    '--- END OF DRAFT ---',
   ].join('\n');

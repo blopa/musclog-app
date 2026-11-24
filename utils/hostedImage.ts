@@ -1,15 +1,14 @@
 import { fetchPremiumConfig } from '@/services/premium/premiumService';
 import { loadAiImageTier, type PreparedImage, resizeForAi } from '@/utils/aiImage';
-import { limitsForTier } from '@/utils/aiImagePlan';
+import { type ImageLimits, limitsForTier } from '@/utils/aiImagePlan';
 import { HostedAiError } from '@/utils/hostedAiError';
 import {
   DEFAULT_HOSTED_IMAGE,
   DEFAULT_HOSTED_MAX_IMAGES,
   effectiveImageLimits,
-  type HostedImageLimits,
 } from '@/utils/premium/hostedImagePlan';
 
-type HostedPhotoConfig = { limits: HostedImageLimits; visionEnabled: boolean | null };
+type HostedPhotoConfig = { limits: ImageLimits; visionEnabled: boolean | null };
 
 /**
  * The limits for this photo: the person's tier, held to the Worker's photo limits (cached by

@@ -2,7 +2,8 @@ import { act, renderHook } from '@testing-library/react';
 
 import { useMealPhotoEstimate } from '../useMealPhotoEstimate';
 import { AiService } from '@/services/AiService';
-import { estimateNutritionFromPhoto } from '@/utils/coachAI';
+import { reportAiError } from '@/utils/coachAI';
+import { estimateNutritionFromPhoto } from '@/utils/coachMealEstimate';
 import { readFileAsStringAsync } from '@/utils/file';
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
@@ -15,7 +16,8 @@ jest.mock('@/hooks/useFormatAppNumber', () => ({
 jest.mock('@/services/AiService', () => ({
   AiService: { getAiConfig: jest.fn() },
 }));
-jest.mock('@/utils/coachAI', () => ({ estimateNutritionFromPhoto: jest.fn() }));
+jest.mock('@/utils/coachAI', () => ({ reportAiError: jest.fn() }));
+jest.mock('@/utils/coachMealEstimate', () => ({ estimateNutritionFromPhoto: jest.fn() }));
 jest.mock('@/utils/file', () => ({ readFileAsStringAsync: jest.fn() }));
 jest.mock('@/utils/snackbarService', () => ({ showSnackbar: jest.fn() }));
 
@@ -110,4 +112,30 @@ test('cancelling an estimate returns to the preserved draft without handing off 
   });
   expect(onFailure).toHaveBeenCalledTimes(1);
   expect(onSuccess).not.toHaveBeenCalled();
+});
+
+test('reports a failure it did not expect, with the step it happened in, and reopens the draft', async () => {
+  jest.mocked(AiService.getAiConfig).mockResolvedValue({} as never);
+  jest.mocked(readFileAsStringAsync).mockResolvedValue('base64');
+  const failure = new Error('disk full');
+  jest.mocked(estimateNutritionFromPhoto).mockRejectedValue(failure);
+  const onFailure = jest.fn();
+  const setError = jest.fn();
+  const hook = renderHook(() =>
+    useMealPhotoEstimate({
+      abortRef: { current: null },
+      setProcessing: jest.fn(),
+      setProgress: jest.fn(),
+      setError,
+      onSuccess: jest.fn(),
+    })
+  );
+
+  await act(async () => {
+    await hook.result.current({ photos: ['first'], onFailure });
+  });
+
+  expect(reportAiError).toHaveBeenCalledWith(failure, 'SmartCamera.aiMealPhotos');
+  expect(onFailure).toHaveBeenCalledTimes(1);
+  expect(setError).toHaveBeenLastCalledWith('food.aiCamera.aiAnalysisFailed');
 });

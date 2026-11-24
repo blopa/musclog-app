@@ -1,8 +1,8 @@
 import {
   consensusMeals,
+  keepsAtHalf,
   mealsAgree,
   mealStageIsSettled,
-  normalizeIngredientName,
   observationIsUncertain,
 } from '../mealConsensus';
 
@@ -19,12 +19,6 @@ const meal = (ingredients: ReturnType<typeof ing>[]) => ({
   mealType: 'lunch' as const,
   mealName: 'Lunch',
   ingredients,
-});
-
-describe('normalizeIngredientName', () => {
-  it('ignores case, accents and spacing', () => {
-    expect(normalizeIngredientName('  Crème  Fraîche ')).toBe('creme fraiche');
-  });
 });
 
 describe('consensusMeals', () => {
@@ -294,5 +288,23 @@ describe('mealStageIsSettled', () => {
         rechecked: [false, false, false],
       })
     ).toBe(false);
+  });
+});
+
+describe('keepsAtHalf', () => {
+  it('is false when no looks are given', () => {
+    expect(keepsAtHalf(undefined)).toBe(false);
+  });
+
+  it('is false when every agreeing sample came from one look', () => {
+    expect(keepsAtHalf([0, 0])).toBe(false);
+  });
+
+  it('is true when the agreeing samples come from at least two looks', () => {
+    expect(keepsAtHalf([0, 0, 1, 1])).toBe(true);
+  });
+
+  it('is false for a single look even when it is not the first', () => {
+    expect(keepsAtHalf([-1, -1])).toBe(false);
   });
 });

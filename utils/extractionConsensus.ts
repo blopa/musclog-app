@@ -1,5 +1,8 @@
 // Several independent readings of one extraction (a nutrition label, past workouts, a food log),
 // combined field by field, with the fields they disagreed on listed so only those are asked again.
+// An optional arbiter (a fresh reading of the whole input) is threaded through the SAME recursion,
+// aligned the way the readings were (by key, by identity or by index), and settles only the nodes
+// the readings disputed.
 // Pure and relative-import-only. Used from the High thinking level up (`extractionSamples`).
 
 import { median } from 'simple-statistics';
@@ -35,21 +38,23 @@ function childPath(path: string, key: string | number): string {
   return path ? `${path}.${key}` : key;
 }
 
-function combineNumbers(values: number[], path: string): CombinedExtraction {
+function combineNumbers(values: number[], path: string, arbiter: unknown): CombinedExtraction {
   const most = Math.max(
     ...values.map((value) => values.filter((other) => closeEnough(value, other)).length)
   );
   const middle = median(values);
   const integers = values.every((value) => Number.isInteger(value));
+  const agreed = most >= majorityOf(values.length);
 
-  return {
-    value: integers ? Math.round(middle) : middle,
-    disputed: most >= majorityOf(values.length) ? [] : [path],
-  };
+  if (!agreed && arbiter !== undefined) {
+    return { value: arbiter, disputed: [path] };
+  }
+
+  return { value: integers ? Math.round(middle) : middle, disputed: agreed ? [] : [path] };
 }
 
 /** Strings, booleans, nulls and mixed kinds: the reading most samples share, else the first. */
-function combineByVote(values: unknown[], path: string): CombinedExtraction {
+function combineByVote(values: unknown[], path: string, arbiter: unknown): CombinedExtraction {
   const keyOf = (value: unknown) =>
     typeof value === 'string' ? `s:${normalizeText(value)}` : `j:${JSON.stringify(value)}`;
   const counts = new Map<string, number>();
@@ -67,10 +72,111 @@ function combineByVote(values: unknown[], path: string): CombinedExtraction {
     }
   }
 
-  return { value: winner, disputed: best >= majorityOf(values.length) ? [] : [path] };
+  if (best < majorityOf(values.length)) {
+    return { value: arbiter !== undefined ? arbiter : winner, disputed: [path] };
+  }
+
+  return { value: winner, disputed: [] };
 }
 
-function combineArrays(values: unknown[][], path: string): CombinedExtraction {
+const IDENTITY_KEYS = ['date', 'title', 'name', 'productTitle'] as const;
+
+/** `date|title|name|productTitle` (normalized) of an object item; null when it has none. */
+function identityOf(item: unknown): string | null {
+  if (!isPlainObject(item)) {
+    return null;
+  }
+
+  const parts: string[] = [];
+  for (const key of IDENTITY_KEYS) {
+    const value = item[key];
+    if (typeof value === 'string' && value.trim() !== '') {
+      parts.push(normalizeText(value));
+    }
+  }
+
+  return parts.length > 0 ? parts.join('|') : null;
+}
+
+/** Items keyed by a unique identity; null when the list is no array or any item lacks/repeats one. */
+function keyByIdentity(list: unknown): Map<string, unknown> | null {
+  if (!Array.isArray(list)) {
+    return null;
+  }
+
+  const byIdentity = new Map<string, unknown>();
+  for (const item of list) {
+    const identity = identityOf(item);
+    if (identity === null || byIdentity.has(identity)) {
+      return null;
+    }
+
+    byIdentity.set(identity, item);
+  }
+
+  return byIdentity;
+}
+
+/**
+ * Lists whose items all carry a unique identity are matched by identity, so readings that list the
+ * same entries in another order combine per entry (and the arbiter is looked up the same way).
+ * Null when any item lacks one, or repeats one.
+ */
+function combineByIdentity(
+  values: unknown[][],
+  path: string,
+  arbiter: unknown
+): CombinedExtraction | null {
+  const readings: Map<string, unknown>[] = [];
+  for (const value of values) {
+    const byIdentity = keyByIdentity(value);
+    if (byIdentity === null) {
+      return null;
+    }
+
+    readings.push(byIdentity);
+  }
+
+  const order: string[] = [];
+  for (const byIdentity of readings) {
+    for (const identity of byIdentity.keys()) {
+      if (!order.includes(identity)) {
+        order.push(identity);
+      }
+    }
+  }
+
+  const needed = majorityOf(values.length);
+  const kept = order.filter(
+    (identity) => readings.filter((byIdentity) => byIdentity.has(identity)).length >= needed
+  );
+  const identical = order.every((identity) =>
+    readings.every((byIdentity) => byIdentity.has(identity))
+  );
+  const disputed = identical ? [] : [path];
+  const arbiterByIdentity = keyByIdentity(arbiter);
+  const combined: unknown[] = [];
+  kept.forEach((identity, index) => {
+    const item = combineAt(
+      readings
+        .filter((byIdentity) => byIdentity.has(identity))
+        .map((byIdentity) => byIdentity.get(identity)),
+      childPath(path, index),
+      arbiterByIdentity?.get(identity)
+    );
+    combined.push(item.value);
+    disputed.push(...item.disputed);
+  });
+
+  return { value: !identical && Array.isArray(arbiter) ? arbiter : combined, disputed };
+}
+
+function combineArrays(values: unknown[][], path: string, arbiter: unknown): CombinedExtraction {
+  const aligned = combineByIdentity(values, path, arbiter);
+  if (aligned) {
+    return aligned;
+  }
+
   const lengthCounts = new Map<number, number>();
   for (const value of values) {
     lengthCounts.set(value.length, (lengthCounts.get(value.length) ?? 0) + 1);
@@ -84,21 +190,27 @@ function combineArrays(values: unknown[][], path: string): CombinedExtraction {
   }
 
   const agreeing = values.filter((value) => value.length === length);
-  const disputed = agreeing.length === values.length ? [] : [path];
+  const lengthsAgree = agreeing.length === values.length;
+  const disputed = lengthsAgree ? [] : [path];
   const combined: unknown[] = [];
   for (let index = 0; index < length; index++) {
     const item = combineAt(
       agreeing.map((value) => value[index]),
-      childPath(path, index)
+      childPath(path, index),
+      Array.isArray(arbiter) ? arbiter[index] : undefined
     );
     combined.push(item.value);
     disputed.push(...item.disputed);
   }
 
-  return { value: combined, disputed };
+  return { value: !lengthsAgree && Array.isArray(arbiter) ? arbiter : combined, disputed };
 }
 
-function combineObjects(values: Record<string, unknown>[], path: string): CombinedExtraction {
+function combineObjects(
+  values: Record<string, unknown>[],
+  path: string,
+  arbiter: unknown
+): CombinedExtraction {
   const keys: string[] = [];
   for (const value of values) {
     for (const key of Object.keys(value)) {
@@ -108,47 +220,56 @@ function combineObjects(values: Record<string, unknown>[], path: string): Combin
     }
   }
 
+  const arbiterObject = isPlainObject(arbiter) ? arbiter : null;
   const combined: Record<string, unknown> = {};
   const disputed: string[] = [];
   for (const key of keys) {
     const present = values.filter((value) => key in value && value[key] !== undefined);
-    if (present.length < values.length) {
+    const missingSomewhere = present.length < values.length;
+    const settled = arbiterObject ? arbiterObject[key] : undefined;
+    if (missingSomewhere) {
       disputed.push(childPath(path, key));
     }
 
     if (present.length < majorityOf(values.length)) {
+      if (settled !== undefined) {
+        combined[key] = settled;
+      }
+
       continue;
     }
 
     const item = combineAt(
       present.map((value) => value[key]),
-      childPath(path, key)
+      childPath(path, key),
+      settled
     );
-    combined[key] = item.value;
+    combined[key] = missingSomewhere && settled !== undefined ? settled : item.value;
     disputed.push(...item.disputed.filter((entry) => !disputed.includes(entry)));
   }
 
   return { value: combined, disputed };
 }
 
-function combineAt(values: unknown[], path: string): CombinedExtraction {
+/** `arbiter` is the arbiter's value aligned to this node; undefined when it has none here. */
+function combineAt(values: unknown[], path: string, arbiter: unknown): CombinedExtraction {
   if (values.length === 1) {
     return { value: values[0], disputed: [] };
   }
 
   if (values.every((value) => typeof value === 'number' && Number.isFinite(value))) {
-    return combineNumbers(values as number[], path);
+    return combineNumbers(values as number[], path, arbiter);
   }
 
   if (values.every(Array.isArray)) {
-    return combineArrays(values as unknown[][], path);
+    return combineArrays(values as unknown[][], path, arbiter);
   }
 
   if (values.every(isPlainObject)) {
-    return combineObjects(values as Record<string, unknown>[], path);
+    return combineObjects(values as Record<string, unknown>[], path, arbiter);
   }
 
-  return combineByVote(values, path);
+  return combineByVote(values, path, arbiter);
 }
 
 /**
@@ -158,11 +279,21 @@ function combineAt(values: unknown[], path: string): CombinedExtraction {
  * item by item, otherwise the length most readings share wins (the first sample's on a tie); an
  * object keeps a key a strict majority of readings has. With two readings any disagreement is
  * disputed; with three, only a field no two of them agree on. One reading is returned as it is.
+ *
+ * `disputed` always lists what the READINGS disputed. With an `arbiter` (a fresh reading of the
+ * whole input), it settles exactly those places: aligned by key, by identity or by index like the
+ * readings were, it replaces the combined value where it has one (not undefined; at the root not
+ * null) and a place it left out stays as combined. It cannot change what every reading agreed on.
  */
-export function combineExtractions(samples: unknown[]): CombinedExtraction {
+export function combineExtractions(
+  samples: unknown[],
+  options: { arbiter?: unknown } = {}
+): CombinedExtraction {
   if (samples.length === 0) {
     return { value: null, disputed: [] };
   }
 
-  return combineAt(samples, '');
+  const arbiter = options.arbiter === null ? undefined : options.arbiter;
+
+  return combineAt(samples, '', arbiter);
 }

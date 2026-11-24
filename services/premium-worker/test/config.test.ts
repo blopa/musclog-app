@@ -1,7 +1,7 @@
 import { createExecutionContext, env } from 'cloudflare:test';
 import { describe, expect, it } from 'vitest';
 
-import { createApp } from '../src/app';
+import { createApp, loadConfig } from '../src/app';
 import {
   OFFICIAL_OPENROUTER_BASE_URL,
   OFFICIAL_OTARI_BASE_URL,
@@ -410,5 +410,41 @@ describe('the otari block', () => {
     rejected(baseEnv(withOtari((o) => (o.models.chat.extra = 1))));
     rejected(baseEnv(withOtari((o) => (o.extra = 1))));
     rejected(baseEnv(withOtari((o) => delete o.models.chat.prices.image_per_image)));
+  });
+});
+
+describe('loadConfig cache key', () => {
+  it('re-parses when any of the 5 validated env fields changes', () => {
+    const valid = baseEnv(testConfig(), {
+      WORKER_ENV: 'staging',
+      OPENROUTER_BASE_URL: OFFICIAL_OPENROUTER_BASE_URL,
+      REVENUECAT_BASE_URL: OFFICIAL_REVENUECAT_BASE_URL,
+      OTARI_BASE_URL: OFFICIAL_OTARI_BASE_URL,
+    });
+    expect(loadConfig(valid).ok).toBe(true);
+    expect(loadConfig({ ...valid, OPENROUTER_BASE_URL: 'https://mock.example/api/v1' }).ok).toBe(
+      false
+    );
+    expect(loadConfig(valid).ok).toBe(true);
+    expect(loadConfig({ ...valid, REVENUECAT_BASE_URL: 'https://mock.example/v2' }).ok).toBe(false);
+    expect(loadConfig(valid).ok).toBe(true);
+    expect(loadConfig({ ...valid, WORKER_ENV: 'bad' }).ok).toBe(false);
+    expect(loadConfig(valid).ok).toBe(true);
+    expect(loadConfig({ ...valid, AI_CONFIG_JSON: '{bad' }).ok).toBe(false);
+    expect(loadConfig(valid).ok).toBe(true);
+    expect(loadConfig({ ...valid, OTARI_BASE_URL: 'not a url' }).ok).toBe(true);
+    const withOtariCfg = baseEnv(
+      { ...testConfig(), otari: OTARI_CONFIG },
+      {
+        WORKER_ENV: 'staging',
+        OPENROUTER_BASE_URL: OFFICIAL_OPENROUTER_BASE_URL,
+        REVENUECAT_BASE_URL: OFFICIAL_REVENUECAT_BASE_URL,
+        OTARI_BASE_URL: OFFICIAL_OTARI_BASE_URL,
+      }
+    );
+    expect(loadConfig(withOtariCfg).ok).toBe(true);
+    expect(loadConfig({ ...withOtariCfg, OTARI_BASE_URL: 'https://mock.example/otari' }).ok).toBe(
+      false
+    );
   });
 });

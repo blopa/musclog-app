@@ -25,8 +25,10 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
 import AiService from '@/services/AiService';
+import { describeAiError } from '@/utils/aiErrors';
 import { aiIngredientMacrosPer100g } from '@/utils/carbsConvention';
-import { trackMeal } from '@/utils/coachAI';
+import { reportAiError } from '@/utils/coachAI';
+import { trackMeal } from '@/utils/coachMealEstimate';
 import { handleError } from '@/utils/handleError';
 import {
   type MealEstimateProgressLine,
@@ -375,9 +377,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         await refresh();
         showSnackbar('success', t('meals.generateAI.successMessage'));
       } catch (error) {
-        handleError(error, 'MyMealsModal.handleGenerateMealAIWithContext', {
-          snackbarMessage: t('meals.generateAI.errorMessage'),
-        });
+        // A rejected key, a timeout or a spent allowance says what to fix; anything else is ours.
+        reportAiError(error, 'MyMealsModal.handleGenerateMealAIWithContext');
+        showSnackbar('error', describeAiError(error, t) ?? t('meals.generateAI.errorMessage'));
       } finally {
         setIsGeneratingMealAI(false);
         setMealProgress(null);

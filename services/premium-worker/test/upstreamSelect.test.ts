@@ -1,7 +1,12 @@
 import { env } from 'cloudflare:test';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { activeUpstream, resetUpstreamCache, UPSTREAM_CACHE_MS } from '../src/upstream/select';
+import {
+  activeUpstream,
+  resetUpstreamCache,
+  selectGateway,
+  UPSTREAM_CACHE_MS,
+} from '../src/upstream/select';
 import { makeCtx, testConfig, testDeps } from './fakes/ctx';
 import { fakeOtari, OTARI_CONFIG } from './fakes/otari';
 import { wipe } from './fakes/seed';
@@ -104,5 +109,36 @@ describe('activeUpstream', () => {
       'openrouter'
     );
     expect(await activeUpstream(ctx)).toBe('otari'); // the next read worked
+  });
+
+  it('caches raw meta per DB instance so misconfigured or distinct DBs do not poison each other', async () => {
+    await setToggle('otari');
+    const c = full();
+    // 1. Misconfigured call falls back to openrouter, but caches raw 'otari', not resolved 'openrouter'
+    expect((await selectGateway({ ...c.ctx, env: { ...c.ctx.env, OTARI_API_KEY: '' } })).name).toBe(
+      'openrouter'
+    );
+    // 2. Properly configured call on same DB within 30s resolves raw 'otari' -> otari
+    const otariGw = await selectGateway(c.ctx);
+    expect(otariGw.name).toBe('otari');
+    expect(otariGw.requiresConsent).toBe(true);
+    expect(otariGw.shouldRecheckZdr).toBe(false);
+
+    // 3. Separate DB instance with 'openrouter' does not inherit env.DB's cached 'otari'
+    const otherDb = new Proxy(env.DB, {
+      get(t, p, r) {
+        if (p === 'prepare') {
+          return () => ({
+            first: async () => ({ value: 'openrouter' }),
+          });
+        }
+        const v = Reflect.get(t, p, r);
+        return typeof v === 'function' ? v.bind(t) : v;
+      },
+    });
+    const orGw = await selectGateway({ ...c.ctx, env: { ...c.ctx.env, DB: otherDb } });
+    expect(orGw.name).toBe('openrouter');
+    expect(orGw.requiresConsent).toBe(false);
+    expect(orGw.shouldRecheckZdr).toBe(true);
   });
 });

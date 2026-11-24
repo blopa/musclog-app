@@ -1,5 +1,6 @@
 import { AiCancelledError } from '../aiErrors';
-import { type CoachAIConfig, trackMeal } from '../coachAI';
+import { type CoachAIConfig } from '../coachAI';
+import { trackMeal } from '../coachMealEstimate';
 
 const mockCreate = jest.fn();
 const mockThinking: { level: 'off' | 'medium' | 'high' | 'tokenmaxxing' } = { level: 'off' };
@@ -288,7 +289,7 @@ describe('meal estimate first looks', () => {
     mockThinking.level = 'tokenmaxxing';
     answerByKind({ uncertain: ['oil'], cancelRecipeLook: 2 });
 
-    await expect(trackMeal(openai, 'a bowl of rice')).resolves.toBeNull();
+    await expect(trackMeal(openai, 'a bowl of rice')).rejects.toBeInstanceOf(AiCancelledError);
     expect(callsFor('extractRecipe').every((call) => userTextOf(call).includes('FIRST LOOK'))).toBe(
       true
     );
@@ -298,7 +299,7 @@ describe('meal estimate first looks', () => {
     mockThinking.level = 'tokenmaxxing';
     mockCreate.mockRejectedValue(new AiCancelledError());
 
-    await expect(trackMeal(openai, 'a bowl of rice')).resolves.toBeNull();
+    await expect(trackMeal(openai, 'a bowl of rice')).rejects.toBeInstanceOf(AiCancelledError);
     expect(callsFor('observeMeal')).toHaveLength(1);
     expect(callsFor('extractRecipe')).toHaveLength(0);
   });

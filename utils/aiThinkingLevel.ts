@@ -41,8 +41,21 @@ export const BACKGROUND_THINKING_CEILING: ThinkingLevel = 'medium';
  * quota of all; it always runs at `off`.
  */
 export function providerAllowsThinking(provider: string): boolean {
-  return provider !== 'gateway';
+  return PROVIDER_THINKING[provider]?.allowsThinking ?? true;
 }
+
+/**
+ * The one table of what a provider means for thinking levels. Kept here, not in `ProviderPolicy`,
+ * because this module is pure and relative-import-only (the policy pulls in the retry and hosted
+ * stack, and `aiEffort` imports this file).
+ */
+const PROVIDER_THINKING: Record<
+  string,
+  { allowsThinking?: boolean; meteredThinkingNotes?: boolean }
+> = {
+  gateway: { allowsThinking: false },
+  hosted: { meteredThinkingNotes: true },
+};
 
 /**
  * The level a request actually runs at: the stored one, `off` on a provider that allows no
@@ -77,6 +90,8 @@ export type ThinkingPipeline = {
   reviewRounds: number;
   /** Independent answers to one job, combined by code (a meal's median, a field's vote). */
   samples: number;
+  /** Independent readings of a label, a past workout or a food log; two at `high` show where a reading is unsure. */
+  extractionSamples: number;
   /** A coach chat reply is drafted unseen, then reviewed, and only the review is shown. */
   chatReview: boolean;
   /**
@@ -97,6 +112,7 @@ export type ThinkingPipeline = {
 
 export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
   off: {
+    extractionSamples: 1,
     verifiedMeal: false,
     reviewRounds: 0,
     samples: 1,
@@ -105,6 +121,7 @@ export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
     earlyExit: false,
   },
   medium: {
+    extractionSamples: 1,
     verifiedMeal: true,
     reviewRounds: 0,
     samples: 1,
@@ -113,6 +130,7 @@ export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
     earlyExit: false,
   },
   high: {
+    extractionSamples: 2,
     verifiedMeal: true,
     reviewRounds: 1,
     samples: 1,
@@ -121,6 +139,7 @@ export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
     earlyExit: false,
   },
   tokenmaxxing: {
+    extractionSamples: 3,
     verifiedMeal: true,
     reviewRounds: 2,
     samples: 3,
@@ -131,18 +150,13 @@ export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
 };
 
 /**
- * Independent extractions of a label, a past workout or a food log. One more than the other jobs at
- * `high`, since two readings are what shows where a reading is unsure: only the fields they
- * disagree on are asked again.
- */
-/**
  * Readings an extraction takes first when its level exits early: a third is read only if these
  * disagree somewhere. Two is the least that can show agreement.
  */
 export const EXTRACTION_FIRST_READINGS = 2;
 
 export function extractionSamples(level: ThinkingLevel): number {
-  return level === 'high' ? 2 : THINKING_PIPELINE[level].samples;
+  return THINKING_PIPELINE[level].extractionSamples;
 }
 
 export type ThinkingLevelChangeGate = 'none' | 'note' | 'noteAndAuth';
@@ -158,7 +172,10 @@ export function thinkingLevelChangeGate(
   to: ThinkingLevel,
   provider: string
 ): ThinkingLevelChangeGate {
-  if (provider !== 'hosted' || thinkingLevelRank(to) <= thinkingLevelRank(from)) {
+  if (
+    !PROVIDER_THINKING[provider]?.meteredThinkingNotes ||
+    thinkingLevelRank(to) <= thinkingLevelRank(from)
+  ) {
     return 'none';
   }
 

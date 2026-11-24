@@ -6,6 +6,7 @@ import type { ScrollViewInstance } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
 import { useSurfaceColor } from '@/context/SurfaceColorContext';
+import { addOpacityToHex } from '@/theme';
 
 import { useTheme } from './useTheme';
 
@@ -46,24 +47,31 @@ export function useScrollFade(
   const [isScrollable, setIsScrollable] = useState(false);
   const layoutHeightRef = useRef(0);
   const contentHeightRef = useRef(0);
+  const scrollOffsetYRef = useRef(0);
 
-  const checkScrollable = () => {
-    setIsScrollable(contentHeightRef.current > layoutHeightRef.current + 8);
+  const updateScrollState = () => {
+    const layoutHeight = layoutHeightRef.current;
+    const contentHeight = contentHeightRef.current;
+    setIsScrollable(contentHeight > layoutHeight + 8);
+    setIsAtBottom(scrollOffsetYRef.current + layoutHeight >= contentHeight - 8);
   };
 
   const scrollProps = {
     ref: scrollRef,
     onLayout: ({ nativeEvent }: { nativeEvent: any }) => {
       layoutHeightRef.current = nativeEvent.layout.height;
-      checkScrollable();
+      updateScrollState();
     },
     onContentSizeChange: (_w: number, h: number) => {
       contentHeightRef.current = h;
-      checkScrollable();
+      updateScrollState();
     },
     onScroll: ({ nativeEvent }: { nativeEvent: any }) => {
       const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-      setIsAtBottom(contentOffset.y + layoutMeasurement.height >= contentSize.height - 8);
+      scrollOffsetYRef.current = contentOffset.y;
+      layoutHeightRef.current = layoutMeasurement.height;
+      contentHeightRef.current = contentSize.height;
+      updateScrollState();
     },
     scrollEventThrottle: 16,
   };
@@ -72,7 +80,7 @@ export function useScrollFade(
     isScrollable && !isAtBottom ? (
       <>
         <LinearGradient
-          colors={['transparent', surface]}
+          colors={[addOpacityToHex(surface, 0), surface]}
           style={{
             position: 'absolute',
             bottom: 0,
