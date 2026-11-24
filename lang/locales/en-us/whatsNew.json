@@ -272,24 +272,60 @@
       },
       "v2_18_0": {
         "onDeviceAi": {
-          "title": "AI that runs on your phone",
-          "description": "Musclog's coach can now run entirely on this phone. Nothing you type leaves the device, and it works offline. It is free, with no account or key.",
+          "title": "Musclog's AI now runs on your phone",
+          "description": "This is the biggest change to Musclog's AI so far. The coach can now run entirely on this phone: what you type and the photos you take are never sent anywhere, it keeps working in airplane mode, and it costs nothing.",
           "action": {
             "label": "Set up AI on this phone",
-            "description": "Choose Apple Intelligence or a small downloaded model."
+            "description": "Choose Apple Intelligence or a small model you download once."
           },
           "items": {
             "private": {
               "label": "Stays on your phone",
-              "description": "Your messages are answered on the device, never sent to a server."
+              "description": "Your messages and meal photos are answered on the device, never sent to a server."
             },
             "offline": {
               "label": "Works offline",
-              "description": "After a one-time download, no connection is needed."
+              "description": "After a one-time download, no connection is needed. Not even for photos."
             },
-            "photos": {
-              "label": "Meal photos",
-              "description": "The downloaded model can read a photo of your meal, if you choose to include that part."
+            "free": {
+              "label": "Free, for good",
+              "description": "No account, no API key and no subscription. It runs on your phone, so it costs no one anything."
+            }
+          }
+        },
+        "photos": {
+          "title": "Point the camera at your meal",
+          "description": "Include photo understanding in the download and the model can look at a meal photo, name the foods it sees and guess how much of each is on the plate. All on the phone, even offline.",
+          "items": {
+            "realNumbers": {
+              "label": "Your food data first",
+              "description": "The model is not asked for calories. When a food it names is already in Musclog, those numbers are used. Anything else is estimated from its name, so check those first."
+            },
+            "review": {
+              "label": "Nothing is saved until you confirm",
+              "description": "Every food and every gram amount opens in a review you can edit before it goes into your diary."
+            },
+            "where": {
+              "label": "In the camera and the coach",
+              "description": "Use AI meal in the camera, or attach a photo to the coach's Track meal."
+            }
+          }
+        },
+        "honest": {
+          "title": "Small, so check its work",
+          "description": "To fit on a phone, this model is tiny compared with the AI behind cloud chatbots. It will misname foods, misjudge portions and sometimes give wrong advice. Treat it as a companion that nudges you to keep logging, not as a nutritionist: you check the results, and you own the numbers.",
+          "items": {
+            "check": {
+              "label": "Check every result",
+              "description": "Read each food and amount before you save, and fix what is wrong. It takes seconds and keeps your diary honest."
+            },
+            "language": {
+              "label": "Best in English",
+              "description": "It answers best in English and a few other languages. In yours, answers may be weaker."
+            },
+            "stronger": {
+              "label": "Need a stronger model?",
+              "description": "Use your own API key or Musclog Iron, in Settings → AI. Both send your request to a much larger model in the cloud."
             }
           }
         }

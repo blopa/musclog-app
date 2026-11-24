@@ -88,3 +88,52 @@ export function ingredientMacroProblems(ingredient: CheckableIngredient): MacroP
 
   return problems;
 }
+
+const round1 = (value: number): number => Math.round(value * 10) / 10;
+const nonNegative = (value: number): number => (Number.isFinite(value) && value > 0 ? value : 0);
+
+/**
+ * The last resort for numbers that still cannot all be true after a re-estimate: a model can
+ * repeat an impossible answer, and the review must never show figures that contradict each other.
+ * Macros that weigh more than the ingredient are scaled down to its grams, then the energy follows
+ * the macros (the more detailed claim); macros that are all zero leave the energy alone, since
+ * nothing can be invented. This makes the figures agree, not true: the person still checks them.
+ * A consistent ingredient is returned as the same object.
+ */
+export function reconcileIngredientMacros<T extends CheckableIngredient>(ingredient: T): T {
+  if (ingredientMacroProblems(ingredient).length === 0) {
+    return ingredient;
+  }
+
+  if (!Number.isFinite(ingredient.grams) || ingredient.grams <= 0) {
+    return ingredient;
+  }
+
+  let protein = nonNegative(ingredient.protein);
+  let carbs = nonNegative(ingredient.carbs);
+  let fat = nonNegative(ingredient.fat);
+  let fiber = nonNegative(ingredient.fiber ?? 0);
+  let kcal = nonNegative(ingredient.kcal);
+
+  const macroMass = protein + carbs + fat + fiber;
+  if (macroMass > ingredient.grams) {
+    const scale = ingredient.grams / macroMass;
+    protein *= scale;
+    carbs *= scale;
+    fat *= scale;
+    fiber *= scale;
+  }
+
+  if (protein + carbs + fat + fiber >= 0.5) {
+    kcal = Math.round(macroEnergyKcal({ ...ingredient, kcal, protein, carbs, fat, fiber }));
+  }
+
+  return {
+    ...ingredient,
+    kcal,
+    protein: round1(protein),
+    carbs: round1(carbs),
+    fat: round1(fat),
+    fiber: ingredient.fiber === undefined ? undefined : round1(fiber),
+  };
+}

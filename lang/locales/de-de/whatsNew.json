@@ -273,23 +273,59 @@
       "v2_18_0": {
         "onDeviceAi": {
           "title": "KI, die auf deinem Telefon läuft",
-          "description": "Der Coach von Musclog kann jetzt komplett auf diesem Telefon laufen. Was du eingibst, verlässt das Gerät nicht, und es funktioniert offline. Es ist kostenlos, ohne Konto oder Schlüssel.",
+          "description": "Der Coach von Musclog kann jetzt komplett auf diesem Telefon laufen. Was du schreibst und die Fotos, die du machst, werden nirgendwohin geschickt. Er funktioniert auch im Flugmodus und kostet nichts.",
           "action": {
             "label": "KI auf diesem Telefon einrichten",
-            "description": "Wähle Apple Intelligence oder ein kleines heruntergeladenes Modell."
+            "description": "Wähle Apple Intelligence oder ein kleines Modell, das du einmal herunterlädst."
           },
           "items": {
             "private": {
               "label": "Bleibt auf deinem Telefon",
-              "description": "Deine Nachrichten werden auf dem Gerät beantwortet, nie auf einem Server."
+              "description": "Deine Nachrichten und Mahlzeitenfotos werden auf dem Gerät beantwortet, nie an einen Server gesendet."
             },
             "offline": {
               "label": "Funktioniert offline",
-              "description": "Nach einem einmaligen Download ist keine Verbindung nötig."
+              "description": "Nach einem einmaligen Download ist keine Verbindung nötig. Auch nicht für Fotos."
             },
-            "photos": {
-              "label": "Mahlzeitenfotos",
-              "description": "Das heruntergeladene Modell kann ein Foto deiner Mahlzeit lesen, wenn du diesen Teil einschließen möchtest."
+            "free": {
+              "label": "Kostenlos, für immer",
+              "description": "Kein Konto, kein API-Schlüssel und kein Abo. Es läuft auf deinem Telefon, also kostet es niemanden etwas."
+            }
+          }
+        },
+        "photos": {
+          "title": "Richte die Kamera auf deine Mahlzeit",
+          "description": "Wenn du das Erkennen von Fotos im Download einschließt, kann das Modell ein Foto deiner Mahlzeit ansehen, die Lebensmittel benennen, die es erkennt, und schätzen, wie viel von jedem auf dem Teller liegt. Alles auf dem Telefon, auch offline.",
+          "items": {
+            "realNumbers": {
+              "label": "Zuerst deine Lebensmitteldaten",
+              "description": "Das Modell wird nicht nach Kalorien gefragt. Ist ein genanntes Lebensmittel bereits in Musclog, werden diese Zahlen verwendet. Alles andere wird anhand des Namens geschätzt, also prüfe diese zuerst."
+            },
+            "review": {
+              "label": "Nichts wird gespeichert, bevor du bestätigst",
+              "description": "Jedes Lebensmittel und jede Grammangabe öffnet sich in einer Prüfung, die du bearbeiten kannst, bevor sie in dein Tagebuch kommt."
+            },
+            "where": {
+              "label": "In der Kamera und beim Coach",
+              "description": "Nutze KI-Mahlzeit in der Kamera oder hänge ein Foto an Mahlzeit erfassen des Coachs an."
+            }
+          }
+        },
+        "honest": {
+          "title": "Klein, also prüfe seine Arbeit",
+          "description": "Um auf ein Telefon zu passen, ist dieses Modell winzig im Vergleich zur KI hinter Cloud-Chatbots. Es wird Lebensmittel falsch benennen, Portionen falsch einschätzen und manchmal falsche Ratschläge geben. Betrachte es als Begleiter, der dich ans Protokollieren erinnert, nicht als Ernährungsberater: Du prüfst die Ergebnisse und bist für die Zahlen verantwortlich.",
+          "items": {
+            "check": {
+              "label": "Prüfe jedes Ergebnis",
+              "description": "Lies jedes Lebensmittel und jede Menge, bevor du speicherst, und korrigiere, was falsch ist. Es dauert Sekunden und hält dein Tagebuch ehrlich."
+            },
+            "language": {
+              "label": "Am besten auf Englisch",
+              "description": "Es antwortet am besten auf Englisch und einigen anderen Sprachen. In deiner Sprache können die Antworten schwächer sein."
+            },
+            "stronger": {
+              "label": "Brauchst du ein stärkeres Modell?",
+              "description": "Nutze deinen eigenen API-Schlüssel oder Musclog Iron, in Einstellungen → KI. Beide schicken deine Anfrage an ein viel größeres Modell in der Cloud."
             }
           }
         }

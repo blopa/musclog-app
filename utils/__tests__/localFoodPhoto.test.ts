@@ -3,10 +3,12 @@ import {
   type FoodCandidate,
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_UNMATCHED_FOOD_ID,
+  localFoodIdentifyPrompt,
   MAX_IDENTIFIED_FOODS,
   MAX_IDENTIFIED_NAME_CHARS,
   mealTypeForHour,
   parseIdentifiedFoods,
+  photoMealName,
   pickFoodMatch,
   searchTermsFor,
   tokenize,
@@ -67,6 +69,15 @@ describe('the identify schema', () => {
       validateAgainstSchema({ items: [{ name: 'rice' }] }, LOCAL_FOOD_IDENTIFY_SCHEMA).ok
     ).toBe(false);
     expect(validateAgainstSchema({ foods: [] }, LOCAL_FOOD_IDENTIFY_SCHEMA).ok).toBe(false);
+  });
+});
+
+describe('the identify prompt', () => {
+  it('names no example food, because the small model copies examples into its answer', () => {
+    const prompt = localFoodIdentifyPrompt();
+
+    expect(prompt).not.toMatch(/such as|e\.g\.|for example/i);
+    expect(prompt).not.toMatch(/chicken|rice|juice/i);
   });
 });
 
@@ -154,5 +165,27 @@ describe('LOCAL_FOOD_IDENTIFY_SCHEMA name bound', () => {
     expect(LOCAL_FOOD_IDENTIFY_SCHEMA.properties.items.items.properties.name.maxLength).toBe(
       MAX_IDENTIFIED_NAME_CHARS
     );
+  });
+});
+
+describe('photoMealName', () => {
+  it('names the meal after its foods, not the meal type', () => {
+    expect(photoMealName(['steak', 'potatoes', 'cheese'])).toBe('Steak, potatoes, cheese');
+    expect(photoMealName(['rice', ' rice ', ''])).toBe('Rice');
+    expect(photoMealName([])).toBeUndefined();
+  });
+
+  it('cuts a long list at a word, within the name limit', () => {
+    const name = photoMealName(Array.from({ length: 12 }, (_, i) => `vegetable number ${i}`));
+
+    expect(name!.length).toBeLessThanOrEqual(MAX_IDENTIFIED_NAME_CHARS + 1);
+    expect(name!.endsWith('…')).toBe(true);
+    expect(name).not.toMatch(/, …$/);
+  });
+
+  it('is carried by the review payload', () => {
+    const meal = buildPhotoMeal([{ name: 'steak', grams: 250 }], new Map(), 'lunch');
+
+    expect(meal.meals[0]).toMatchObject({ mealType: 'lunch', mealName: 'Steak' });
   });
 });

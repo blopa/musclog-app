@@ -44,6 +44,7 @@ jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getUseThinkingMode: () => mockGetUseThinkingMode(),
     getSendFoundationFoodsToLlm: jest.fn().mockResolvedValue(false),
+    getNutritionDisplay: jest.fn().mockResolvedValue('11101'),
   },
 }));
 jest.mock('@/database/services/FoodService', () => ({
@@ -300,17 +301,7 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
       // The follow-up estimate for the unmatched item.
       .mockResolvedValueOnce(
         JSON.stringify({
-          ingredients: [
-            {
-              name: 'mystery stew',
-              grams: 200,
-              kcal: 300,
-              protein: 20,
-              carbs: 20,
-              fat: 15,
-              fiber: 3,
-            },
-          ],
+          foods: [{ name: 'mystery stew', kcal: 150, protein: 10, carbs: 10, fat: 7.5 }],
         })
       );
     mockSearchFoods.mockImplementation(async (term: string) =>

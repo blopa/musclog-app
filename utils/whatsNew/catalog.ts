@@ -23,6 +23,12 @@ export const WHATS_NEW_ICONS = [
   'share',
   'scale',
   'activity',
+  'camera',
+  'wifiOff',
+  'circleCheck',
+  'key',
+  'languages',
+  'database',
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
 
@@ -30,7 +36,9 @@ export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
  * Loggy poses an info block may show in place of its icon (a subset of `LoggyPoseName`). Each is
  * the joke or the job of the page that names it: `running` introduces him, `writing` is the
  * import, `trophy` the year story, `flex` strength levels and `magnify` the training-load map;
- * `iron` (dumbbell overhead, VIP rosette, an IRON kettlebell) opens the Musclog Iron tour.
+ * `iron` (dumbbell overhead, VIP rosette, an IRON kettlebell) opens the Musclog Iron tour. The
+ * on-device AI pages use `celebrating` (the AI now on the phone), `magnify` (it looks at your meal
+ * photo) and `reading` (you read and check every result).
  */
 export const WHATS_NEW_POSES = [
   'celebrating',
@@ -40,6 +48,7 @@ export const WHATS_NEW_POSES = [
   'trophy',
   'flex',
   'magnify',
+  'reading',
 ] as const satisfies readonly LoggyPoseName[];
 export type WhatsNewPoseName = (typeof WHATS_NEW_POSES)[number];
 

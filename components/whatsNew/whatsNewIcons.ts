@@ -2,10 +2,15 @@ import {
   Activity,
   Bot,
   Calendar,
+  Camera,
+  CircleCheck,
+  Database,
   Dumbbell,
   FileUp,
   Flame,
   Heart,
+  KeyRound,
+  Languages,
   Layout,
   List,
   type LucideIcon,
@@ -19,6 +24,7 @@ import {
   Timer,
   TrendingUp,
   Undo2,
+  WifiOff,
 } from 'lucide-react-native';
 
 import type { WhatsNewIconName } from '@/utils/whatsNew/catalog';
@@ -43,4 +49,10 @@ export const whatsNewIcons: Record<WhatsNewIconName, LucideIcon> = {
   share: Share2,
   scale: Scale,
   activity: Activity,
+  camera: Camera,
+  wifiOff: WifiOff,
+  circleCheck: CircleCheck,
+  key: KeyRound,
+  languages: Languages,
+  database: Database,
 };

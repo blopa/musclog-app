@@ -52,7 +52,10 @@ export const LOCAL_FOOD_IDENTIFY_SCHEMA = {
 export function localFoodIdentifyPrompt(): string {
   return [
     'You look at one photo of a meal and list each distinct food or drink you can see.',
-    'Name each item with a short, common food name in English, such as "grilled chicken breast", "white rice" or "orange juice". One item per food; do not group a plate into one item.',
+    // No example foods here: a 450M model copies them. With "grilled chicken breast", "white rice"
+    // and "orange juice" as examples it answered with them on 8 of 10 Nutrition5k plates, most of
+    // which held neither (docs/ON_DEVICE_AI_PLAN.md, P7 notes).
+    'Name each item with a short, common food name in English. One item per food; do not group a plate into one item.',
     `For each item give "grams": your best guess of its weight on the plate, a whole number between ${MIN_IDENTIFIED_GRAMS} and ${MAX_IDENTIFIED_GRAMS}.`,
     'Never give calories or nutrients. If you cannot see any food, return an empty list.',
     'Reply with JSON only.',
@@ -231,5 +234,27 @@ export function buildPhotoMeal(
     };
   });
 
-  return { meals: [{ mealType, ingredients }] };
+  const mealName = photoMealName(ingredients.map((ingredient) => ingredient.name));
+
+  return { meals: [{ mealType, ...(mealName ? { mealName } : {}), ingredients }] };
+}
+
+/**
+ * What the review calls a photo meal: the foods on it ("Steak, potatoes, cheese"), never the meal
+ * type, which said "breakfast" for any plate photographed before noon. Cut at a word, like a name
+ * the person typed would be, and left out when nothing was found.
+ */
+export function photoMealName(names: readonly string[]): string | undefined {
+  const unique = [...new Set(names.map((name) => name.trim()).filter(Boolean))];
+  if (unique.length === 0) {
+    return undefined;
+  }
+
+  const joined = unique.join(', ');
+  const name =
+    joined.length <= MAX_IDENTIFIED_NAME_CHARS
+      ? joined
+      : `${joined.slice(0, MAX_IDENTIFIED_NAME_CHARS).replace(/[,\s]+\S*$/, '')}…`;
+
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }

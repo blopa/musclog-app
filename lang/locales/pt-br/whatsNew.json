@@ -272,24 +272,60 @@
       },
       "v2_18_0": {
         "onDeviceAi": {
-          "title": "IA que roda no seu celular",
-          "description": "O treinador do Musclog agora pode rodar inteiramente neste celular. Nada do que você digita sai do aparelho, e funciona sem internet. É gratuito, sem conta nem chave.",
+          "title": "A IA do Musclog agora roda no seu celular",
+          "description": "Esta é a maior mudança na IA do Musclog até agora. O treinador agora pode rodar inteiramente neste celular: o que você digita e as fotos que tira nunca são enviadas para lugar nenhum, ele continua funcionando no modo avião e não custa nada.",
           "action": {
             "label": "Configurar a IA neste celular",
-            "description": "Escolha a Apple Intelligence ou um modelo pequeno baixado."
+            "description": "Escolha o Apple Intelligence ou um modelo pequeno que você baixa uma vez."
           },
           "items": {
             "private": {
               "label": "Fica no seu celular",
-              "description": "Suas mensagens são respondidas no aparelho, nunca enviadas a um servidor."
+              "description": "Suas mensagens e fotos de refeições são respondidas no aparelho, nunca enviadas a um servidor."
             },
             "offline": {
               "label": "Funciona offline",
-              "description": "Depois de um download único, não é preciso conexão."
+              "description": "Depois de um download único, não precisa de conexão. Nem para as fotos."
             },
-            "photos": {
-              "label": "Fotos de refeições",
-              "description": "O modelo baixado pode ler a foto da sua refeição, se você escolher incluir essa parte."
+            "free": {
+              "label": "Grátis, para sempre",
+              "description": "Sem conta, sem chave de API e sem assinatura. Ele roda no seu celular, então não custa nada para ninguém."
+            }
+          }
+        },
+        "photos": {
+          "title": "Aponte a câmera para a sua refeição",
+          "description": "Inclua a compreensão de fotos no download e o modelo consegue olhar a foto de uma refeição, nomear os alimentos que vê e estimar quanto de cada um há no prato. Tudo no celular, mesmo offline.",
+          "items": {
+            "realNumbers": {
+              "label": "Primeiro os dados de alimentos",
+              "description": "O modelo não é consultado sobre calorias. Quando um alimento que ele cita já está no Musclog, esses números são usados. O restante é estimado pelo nome, então confira esses primeiro."
+            },
+            "review": {
+              "label": "Nada é salvo até você confirmar",
+              "description": "Cada alimento e cada quantidade em gramas abre numa revisão que você pode editar antes de ir para o diário."
+            },
+            "where": {
+              "label": "Na câmera e no treinador",
+              "description": "Use IA Refeição na câmera, ou anexe uma foto ao Registrar Refeição do treinador."
+            }
+          }
+        },
+        "honest": {
+          "title": "Pequena, então confira o trabalho dela",
+          "description": "Para caber num celular, este modelo é minúsculo perto da IA por trás dos chatbots na nuvem. Ele vai errar nomes de alimentos, julgar mal as porções e às vezes dar conselhos errados. Trate-o como um companheiro que incentiva você a continuar registrando, não como um nutricionista: você confere os resultados e é você quem responde pelos números.",
+          "items": {
+            "check": {
+              "label": "Confira cada resultado",
+              "description": "Leia cada alimento e cada quantidade antes de salvar, e corrija o que estiver errado. Leva segundos e mantém seu diário honesto."
+            },
+            "language": {
+              "label": "Melhor em inglês",
+              "description": "Ele responde melhor em inglês e em alguns outros idiomas. No seu idioma, as respostas podem ser mais fracas."
+            },
+            "stronger": {
+              "label": "Precisa de um modelo mais forte?",
+              "description": "Use sua própria chave de API ou o Musclog Iron, em Configurações → IA. Os dois enviam seu pedido para um modelo muito maior na nuvem."
             }
           }
         }

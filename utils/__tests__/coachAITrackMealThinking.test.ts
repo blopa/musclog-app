@@ -19,6 +19,8 @@ jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getUseThinkingMode: jest.fn().mockResolvedValue(true),
     getSendFoundationFoodsToLlm: jest.fn().mockResolvedValue(true),
+    // Index 3 is fiber: hidden, so the on-device estimate makes no fiber request.
+    getNutritionDisplay: jest.fn().mockResolvedValue('11101'),
   },
 }));
 
@@ -62,8 +64,9 @@ describe('trackMeal (thinking mode: verified path)', () => {
           },
         ],
       })
+      // The on-device estimate asks for a nutrition label per 100 g; 165 kcal at 150 g is 248.
       .mockResolvedValueOnce({
-        ingredients: [{ name: 'Chicken', grams: 150, kcal: 248, protein: 46, carbs: 0, fat: 5 }],
+        foods: [{ name: 'Chicken', kcal: 165, protein: 31, carbs: 0, fat: 3.6 }],
       });
 
     const result = await trackMeal({ provider: 'on-device' } as never, 'chicken and rice');

@@ -58,10 +58,16 @@ import {
   type StructuredResult,
 } from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
-import { ingredientMacroProblems } from './mealPlausibility';
+import { ingredientMacroProblems, reconcileIngredientMacros } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
 import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
+import {
+  fromLabelPer100g,
+  isFiberTracked,
+  type OnDeviceLabel,
+  withLabelFiber,
+} from './onDeviceMacros';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -79,6 +85,11 @@ import {
   getMealCritiquePrompt,
   getMissingIngredientsMacrosPrompt,
   getNutritionInsightsPrompt,
+  getOnDeviceFiberFunctions,
+  getOnDeviceFiberPrompt,
+  getOnDeviceLabelFunctions,
+  getOnDeviceLabelPrompt,
+  getOnDeviceLabelUserMessage,
   getParsePastNutritionFunctions,
   getParsePastNutritionPrompt,
   getParsePastWorkoutsFunctions,
@@ -2154,6 +2165,10 @@ async function estimateMissingIngredients(
   knownIngredients: TrackMealIngredient[],
   mealName: string
 ): Promise<MissingIngredientMacrosResponse | null> {
+  if (config.provider === 'on-device') {
+    return estimateMissingIngredientsOnDevice(config, newIngredients);
+  }
+
   const systemPrompt = getMissingIngredientsMacrosPrompt(
     mealName,
     knownIngredients,
@@ -2169,6 +2184,67 @@ async function estimateMissingIngredients(
     schema,
     'estimateMissingIngredients'
   );
+}
+
+/**
+ * The on-device model is asked for a label per 100 g by name (one request); the figures are scaled
+ * and made consistent in code. With fiber tracked, one more request asks for fiber per 100 g
+ * (never failing the estimate).
+ */
+async function estimateMissingIngredientsOnDevice(
+  config: CoachAIConfig,
+  newIngredients: RecipeIngredient[]
+): Promise<MissingIngredientMacrosResponse | null> {
+  const names = newIngredients.map(({ name }) => name);
+  const labelFns = getOnDeviceLabelFunctions();
+
+  const raw = await generateStructured<{ foods: OnDeviceLabel[] }>(
+    config,
+    getOnDeviceLabelPrompt(names),
+    getOnDeviceLabelUserMessage(),
+    getSchemaFromFunctionDeclaration((labelFns as any)[0]),
+    'estimateMissingIngredients'
+  );
+  if (!raw) {
+    return null;
+  }
+
+  const labels = raw.foods ?? [];
+  let computed = newIngredients.flatMap((target, index) => {
+    const label = estimateFor(target, index, newIngredients.length, labels);
+
+    return label ? [fromLabelPer100g({ ...label, name: target.name }, target.grams)] : [];
+  });
+  if (computed.length === 0) {
+    return { ingredients: [] };
+  }
+
+  if (isFiberTracked(await SettingsService.getNutritionDisplay())) {
+    try {
+      const fiberFns = getOnDeviceFiberFunctions();
+      const fiberReply = await generateStructured<{ foods: { name: string; fiber: number }[] }>(
+        config,
+        getOnDeviceFiberPrompt(computed.map(({ name }) => name)),
+        getOnDeviceLabelUserMessage(),
+        getSchemaFromFunctionDeclaration((fiberFns as any)[0]),
+        'estimateFiber'
+      );
+      const replies = fiberReply?.foods ?? [];
+      computed = computed.map((ingredient, index) => {
+        const reply = estimateFor(ingredient, index, computed.length, replies);
+
+        return reply ? withLabelFiber(ingredient, reply.fiber) : ingredient;
+      });
+    } catch (error) {
+      if (error instanceof AiCancelledError) {
+        throw error;
+      }
+
+      reportAiError(error, 'coachAI.estimateOnDeviceFiber');
+    }
+  }
+
+  return { ingredients: computed };
 }
 
 /** Progress is a courtesy to the screen: a listener that throws must never fail an estimate. */
@@ -2194,12 +2270,12 @@ function hasNoNumbers(ingredient: TrackMealIngredient): boolean {
 }
 
 /** The estimate for `target`: the one with its name, else the one in its place when counts agree. */
-function estimateFor(
+function estimateFor<T extends { name: string }>(
   target: { name: string },
   index: number,
   count: number,
-  estimates: TrackMealIngredient[]
-): TrackMealIngredient | undefined {
+  estimates: T[]
+): T | undefined {
   const key = target.name.trim().toLowerCase();
   return (
     estimates.find((estimate) => estimate.name.trim().toLowerCase() === key) ??
@@ -2226,8 +2302,10 @@ function withEstimatedMacros(
  * energy that the macros do not add up to, macros that weigh more than the ingredient, and so on.
  * Only ingredients without a match in the person's own foods are checked, since a match's numbers
  * come from the database. It is one extra request, made only when something is off, and an
- * estimate replaces the original only when it has fewer problems. A failed re-estimate leaves the
- * meal as it was: this is a refinement, never a reason to fail the estimate.
+ * estimate replaces the original only when it has fewer problems. Whatever is still implausible
+ * afterwards (the retry was as bad, found nothing or failed) goes through
+ * `reconcileIngredientMacros`, so the figures shown never contradict each other; a failed
+ * re-estimate is never a reason to fail the estimate.
  */
 async function recheckImplausibleIngredients(
   config: CoachAIConfig,
@@ -2261,13 +2339,15 @@ async function recheckImplausibleIngredients(
 
       const estimate = estimateFor(ingredient, suspectIndex, suspects.length, estimates);
       if (!estimate) {
-        return ingredient;
+        return reconcileIngredientMacros(ingredient);
       }
 
       const better = withEstimatedMacros(ingredient, estimate);
-      return ingredientMacroProblems(better).length < ingredientMacroProblems(ingredient).length
-        ? better
-        : ingredient;
+      return reconcileIngredientMacros(
+        ingredientMacroProblems(better).length < ingredientMacroProblems(ingredient).length
+          ? better
+          : ingredient
+      );
     });
   } catch (error) {
     if (error instanceof AiCancelledError) {
@@ -2275,7 +2355,9 @@ async function recheckImplausibleIngredients(
     }
 
     reportAiError(error, 'coachAI.recheckImplausibleIngredients');
-    return ingredients;
+    return ingredients.map((ingredient) =>
+      suspects.includes(ingredient) ? reconcileIngredientMacros(ingredient) : ingredient
+    );
   }
 }
 

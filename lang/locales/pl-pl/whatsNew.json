@@ -272,24 +272,60 @@
       },
       "v2_18_0": {
         "onDeviceAi": {
-          "title": "AI działające na twoim telefonie",
-          "description": "Coach Musclog może teraz działać w całości na tym telefonie. Nic, co wpiszesz, nie opuszcza urządzenia, a działa offline. Jest bezpłatny, bez konta i klucza.",
+          "title": "AI Musclog działa teraz na twoim telefonie",
+          "description": "To największa zmiana w AI Musclog do tej pory. Coach może teraz działać w całości na tym telefonie: to, co piszesz, i zdjęcia, które robisz, nigdzie nie są wysyłane. Działa też w trybie samolotowym i nic nie kosztuje.",
           "action": {
             "label": "Skonfiguruj AI na tym telefonie",
-            "description": "Wybierz Apple Intelligence lub mały pobrany model."
+            "description": "Wybierz Apple Intelligence albo mały model, który pobierasz raz."
           },
           "items": {
             "private": {
               "label": "Zostaje na twoim telefonie",
-              "description": "Twoje wiadomości są przetwarzane na urządzeniu, nigdy nie są wysyłane na serwer."
+              "description": "Twoje wiadomości i zdjęcia posiłków są przetwarzane na urządzeniu, nigdy nie trafiają na serwer."
             },
             "offline": {
               "label": "Działa offline",
-              "description": "Po jednorazowym pobraniu nie jest potrzebne połączenie."
+              "description": "Po jednorazowym pobraniu nie potrzeba połączenia. Nawet do zdjęć."
             },
-            "photos": {
-              "label": "Zdjęcia posiłków",
-              "description": "Pobrany model może odczytać zdjęcie twojego posiłku, jeśli zdecydujesz się włączyć tę część."
+            "free": {
+              "label": "Za darmo, na zawsze",
+              "description": "Bez konta, bez klucza API i bez subskrypcji. Działa na twoim telefonie, więc nikomu nic nie kosztuje."
+            }
+          }
+        },
+        "photos": {
+          "title": "Skieruj aparat na swój posiłek",
+          "description": "Dołącz rozpoznawanie zdjęć do pobierania, a model zobaczy zdjęcie posiłku, nazwie widoczne produkty i oszacuje, ile każdego jest na talerzu. Wszystko na telefonie, także offline.",
+          "items": {
+            "realNumbers": {
+              "label": "Najpierw twoje dane o żywności",
+              "description": "Model nie jest pytany o kalorie. Gdy podany przez niego produkt już jest w Musclog, używane są te liczby. Wszystko inne jest szacowane po nazwie, więc sprawdź najpierw te produkty."
+            },
+            "review": {
+              "label": "Nic nie zapisuje się bez potwierdzenia",
+              "description": "Każdy produkt i każda ilość w gramach otwiera się w podglądzie, który możesz edytować, zanim trafi do dziennika."
+            },
+            "where": {
+              "label": "W aparacie i u coacha",
+              "description": "Użyj Posiłek AI w aparacie albo dołącz zdjęcie do Zapisz posiłek u coacha."
+            }
+          }
+        },
+        "honest": {
+          "title": "Mały, więc sprawdzaj jego pracę",
+          "description": "Żeby zmieścić się w telefonie, ten model jest bardzo mały w porównaniu z AI za chatbotami w chmurze. Będzie mylić nazwy produktów, źle oceniać porcje i czasem podawać błędne rady. Traktuj go jak towarzysza, który zachęca do zapisywania posiłków, a nie jak dietetyka: ty sprawdzasz wyniki i ty odpowiadasz za liczby.",
+          "items": {
+            "check": {
+              "label": "Sprawdzaj każdy wynik",
+              "description": "Przeczytaj każdy produkt i każdą ilość, zanim zapiszesz, i popraw to, co jest błędne. Zajmuje to sekundy i utrzymuje dziennik w rzetelności."
+            },
+            "language": {
+              "label": "Najlepiej po angielsku",
+              "description": "Odpowiada najlepiej po angielsku i w kilku innych językach. W twoim języku odpowiedzi mogą być słabsze."
+            },
+            "stronger": {
+              "label": "Potrzebujesz mocniejszego modelu?",
+              "description": "Użyj własnego klucza API albo Musclog Iron, w Ustawienia → AI. Oba wysyłają twoje zapytanie do znacznie większego modelu w chmurze."
             }
           }
         }

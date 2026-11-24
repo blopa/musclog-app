@@ -9,6 +9,7 @@
           "id": "onDeviceAi",
           "type": "info",
           "icon": "bot",
+          "pose": "celebrating",
           "titleKey": "whatsNew.releases.v2_18_0.onDeviceAi.title",
           "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.description"
         },
@@ -33,15 +34,91 @@
             },
             {
               "id": "offline",
-              "icon": "bot",
+              "icon": "wifiOff",
               "labelKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.offline.label",
               "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.offline.description"
             },
             {
-              "id": "photos",
-              "icon": "activity",
-              "labelKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.photos.label",
-              "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.photos.description"
+              "id": "free",
+              "icon": "heart",
+              "labelKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.free.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.onDeviceAi.items.free.description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "photos",
+      "requires": "onDeviceAiPossible",
+      "blocks": [
+        {
+          "id": "photos",
+          "type": "info",
+          "icon": "camera",
+          "pose": "magnify",
+          "titleKey": "whatsNew.releases.v2_18_0.photos.title",
+          "descriptionKey": "whatsNew.releases.v2_18_0.photos.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "realNumbers",
+              "icon": "database",
+              "labelKey": "whatsNew.releases.v2_18_0.photos.items.realNumbers.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.photos.items.realNumbers.description"
+            },
+            {
+              "id": "review",
+              "icon": "circleCheck",
+              "labelKey": "whatsNew.releases.v2_18_0.photos.items.review.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.photos.items.review.description"
+            },
+            {
+              "id": "where",
+              "icon": "camera",
+              "labelKey": "whatsNew.releases.v2_18_0.photos.items.where.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.photos.items.where.description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "honest",
+      "requires": "onDeviceAiPossible",
+      "blocks": [
+        {
+          "id": "honest",
+          "type": "info",
+          "icon": "shield",
+          "pose": "reading",
+          "titleKey": "whatsNew.releases.v2_18_0.honest.title",
+          "descriptionKey": "whatsNew.releases.v2_18_0.honest.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "check",
+              "icon": "circleCheck",
+              "labelKey": "whatsNew.releases.v2_18_0.honest.items.check.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.honest.items.check.description"
+            },
+            {
+              "id": "language",
+              "icon": "languages",
+              "labelKey": "whatsNew.releases.v2_18_0.honest.items.language.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.honest.items.language.description"
+            },
+            {
+              "id": "stronger",
+              "icon": "key",
+              "labelKey": "whatsNew.releases.v2_18_0.honest.items.stronger.label",
+              "descriptionKey": "whatsNew.releases.v2_18_0.honest.items.stronger.description"
             }
           ]
         }
