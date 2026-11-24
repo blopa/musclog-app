@@ -58,6 +58,10 @@ const reply = (value: unknown) => ({ choices: [{ message: { content: JSON.string
 let lookNumber = 0;
 const observation = () => ({
   mealCount: 1,
+  scene: 'A hand holding a regular-size plate with rice, at a restaurant.',
+  setting: 'restaurant',
+  container: 'plate',
+  containerSize: 'about 26 cm across',
   items: [
     { name: `Rice look ${++lookNumber}`, portion: 'a fist', preparation: '', confidence: 'high' },
   ],
@@ -134,6 +138,7 @@ describe('meal estimate first looks', () => {
     expect(lookOfRecipe.filter((look) => look === '1')).toHaveLength(2);
     expect(lookOfRecipe.filter((look) => look === '2')).toHaveLength(2);
     expect(userTextOf(recipes[0])).toContain('--- FIRST LOOK ---');
+    expect(userTextOf(recipes[0])).toContain('Scene: A hand holding a regular-size plate');
     expect(result?.meals[0].ingredients.map((ingredient) => ingredient.name)).toEqual(['Rice']);
   });
 

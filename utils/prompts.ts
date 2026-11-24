@@ -1498,18 +1498,24 @@ export const getMealReviewFunctions = ():
 
 /**
  * The first look at a meal (Thinking: Tokenmaxxing). Structured output, so persona-free.
- * Seeing is kept apart from estimating: the answer holds no grams and no macros, and is handed
- * to the recipe extraction as notes.
+ * Seeing is kept apart from estimating: the answer holds no calories and no weight of any food, and
+ * is handed to the recipe extraction as notes. The scene comes first because portion weights are
+ * only as good as the sense of scale behind them: the container, how big it is, how it is held and
+ * where it was served say more about a portion than the food names do.
  */
 export const getMealObservationPrompt = (language?: string): string => {
   const sections = [
     'You are looking at a meal, from a photo and/or a written description, before anyone estimates it.',
-    'Describe what is there. Do NOT return calories, macros or weights in grams.',
-    '1. items: everything visible or stated. For each give the name, the portion in VISUAL words (for example "about a fist", "half the plate", "two slices"), how it was prepared if you can tell, and your confidence (high, medium or low).',
-    '2. scaleCues: anything that shows the size of the portions (plate size, cutlery, a hand, packaging, a cup).',
-    '3. addedFats: visible added fats, sauces, dressings, toppings and drinks.',
-    '4. extras: other things that are visibly or explicitly part of the meal and do not fit above.',
-    '5. uncertain: things that might be present but you cannot tell.',
+    'Describe the scene first, then what is in it. Do NOT return calories, macros or the weight in grams of any food.',
+    '1. scene: one or two plain sentences, as a person would describe the picture: how the food is held or served, the container, where it was taken and from what angle. For example: "A hand holding a regular-size dinner plate with rice and curry, taken at a restaurant, from above." With no photo, one sentence restating how the meal was described.',
+    '2. setting: where the meal was served (restaurant, canteen, home, takeaway, packaged, street food and so on) or "unknown". Restaurant and takeaway portions are often larger than home ones.',
+    '3. container: what holds the food (plate, bowl, takeaway box, cup, wrapper, hand) or "unknown".',
+    '4. containerSize: how big the container is, judged from the picture, in words or centimetres (the container, never the food). For example "regular dinner plate, about 26 cm across" or "small bowl, about 12 cm". Use things of known size to judge it: a standard dinner plate is about 25 to 28 cm, a fork about 19 cm, an adult hand about 18 cm long, a soda can about 12 cm tall. "unknown" when you cannot tell.',
+    '5. scaleCues: the things in the picture you used to judge size (cutlery, a hand, a can, packaging, the table).',
+    '6. items: everything visible or stated. For each give the name, the portion in VISUAL words including how much of the container it fills (for example "a third of the plate", "heaped, about 3 cm deep", "two slices"), how it was prepared if you can tell, and your confidence (high, medium or low).',
+    '7. addedFats: visible added fats, sauces, dressings, toppings and drinks.',
+    '8. extras: other things that are visibly or explicitly part of the meal and do not fit above.',
+    '9. uncertain: things that might be present but you cannot tell.',
     'For a written description with no photo, also add the usual hidden parts (cooking oil, butter, dressing) as items with low confidence.',
     'Never invent foods that neither the photo nor the description supports.',
     'If the input shows several separate meals, set mealCount to how many.',
@@ -1526,11 +1532,34 @@ export const getMealObservationFunctions = ():
   FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
   {
     name: 'observeMeal',
-    description: 'Describe a meal in detail, without grams or macros.',
+    description: 'Describe the scene and contents of a meal in detail, without calories or grams.',
     parameters: {
       type: 'object',
       properties: {
         mealCount: { type: 'number', description: 'How many separate meals the input shows' },
+        scene: {
+          type: 'string',
+          description:
+            'One or two plain sentences describing the picture: how the food is held or served, the container, the place, the angle',
+        },
+        setting: {
+          type: 'string',
+          description: 'Where the meal was served (restaurant, home, takeaway, ...) or "unknown"',
+        },
+        container: {
+          type: 'string',
+          description: 'What holds the food (plate, bowl, box, cup, hand, ...) or "unknown"',
+        },
+        containerSize: {
+          type: 'string',
+          description:
+            'How big the container is, in words or centimetres, never the food: for example "regular dinner plate, about 26 cm across", or "unknown"',
+        },
+        scaleCues: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'The things in the picture used to judge size',
+        },
         items: {
           type: 'array',
           items: {
@@ -1539,7 +1568,8 @@ export const getMealObservationFunctions = ():
               name: { type: 'string', description: 'Name of the food' },
               portion: {
                 type: 'string',
-                description: 'The portion in visual words, never grams',
+                description:
+                  'The portion in visual words, including how much of the container it fills, never grams',
               },
               preparation: {
                 type: 'string',
@@ -1550,12 +1580,22 @@ export const getMealObservationFunctions = ():
             required: ['name', 'portion', 'preparation', 'confidence'],
           },
         },
-        scaleCues: { type: 'array', items: { type: 'string' } },
         addedFats: { type: 'array', items: { type: 'string' } },
         extras: { type: 'array', items: { type: 'string' } },
         uncertain: { type: 'array', items: { type: 'string' } },
       },
-      required: ['mealCount', 'items', 'scaleCues', 'addedFats', 'extras', 'uncertain'],
+      required: [
+        'mealCount',
+        'scene',
+        'setting',
+        'container',
+        'containerSize',
+        'scaleCues',
+        'items',
+        'addedFats',
+        'extras',
+        'uncertain',
+      ],
     },
   },
 ];

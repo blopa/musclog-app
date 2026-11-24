@@ -38,9 +38,15 @@ looping, and every loop has a fixed upper limit.** A level can make a job slower
   disputed (`extractWithConsensus` in `utils/coachAI.ts`).
 - **Verified meal path**: read the recipe, check each food id the model claims against your
   database, estimate only the rest, recheck numbers that cannot be true.
-- **First look** (Tokenmaxxing meals only): a structured note of what is in the meal, with no grams
-  or macros (`observeMeal`, `utils/mealObservation.ts`). It is handed to the recipe request as
-  notes beside the photo or description, which still win where they disagree.
+- **First look** (Tokenmaxxing meals only): the scene and contents of the meal, with no calories
+  and no weight of any food (`observeMeal`, `utils/mealObservation.ts`). It starts with the scene
+  (a sentence or two such as "A hand holding a regular-size dinner plate with rice and curry, taken
+  at a restaurant, from above"), then the setting (restaurant portions are often larger), the
+  container and how big it is (the container's size in words or cm, never the food's), what in the
+  picture shows the scale, and each food with how much of the container it fills. It exists because
+  grams are only as good as the sense of scale behind them. It is handed to the recipe request as
+  notes beside the photo or description, which still win where they disagree, with one line
+  telling the model to use the container, its size and the setting to judge portions.
 
 ## What each level is
 

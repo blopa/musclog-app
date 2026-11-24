@@ -7,6 +7,14 @@ export type MealObservationItem = {
 
 export type MealObservation = {
   mealCount: number;
+  /** One or two plain sentences: how the food is held or served, the container, the place, the angle. */
+  scene: string;
+  /** Where it was served: restaurant, home, takeaway... Empty when unknown. */
+  setting: string;
+  /** What holds the food: plate, bowl, box, hand... Empty when unknown. */
+  container: string;
+  /** How big the container is, in words or centimetres (never the food). Empty when unknown. */
+  containerSize: string;
   items: MealObservationItem[];
   scaleCues: string[];
   addedFats: string[];
@@ -15,12 +23,20 @@ export type MealObservation = {
 };
 
 const MAX_TEXT_LENGTH = 120;
+const MAX_SCENE_LENGTH = 300;
 const MAX_ITEMS = 20;
 const MAX_OTHER = 10;
 const MAX_MEAL_COUNT = 10;
 
-const cleanText = (value: unknown): string =>
-  typeof value === 'string' ? value.replace(/\s+/g, ' ').trim().slice(0, MAX_TEXT_LENGTH) : '';
+const cleanText = (value: unknown, max = MAX_TEXT_LENGTH): string =>
+  typeof value === 'string' ? value.replace(/\s+/g, ' ').trim().slice(0, max) : '';
+
+/** The model writes "unknown" when it cannot tell; that is no note at all. */
+const cleanNote = (value: unknown, max = MAX_TEXT_LENGTH): string => {
+  const text = cleanText(value, max);
+
+  return /^(unknown|n\/a|none|not sure|unclear)\.?$/i.test(text) ? '' : text;
+};
 
 const readList = (value: unknown): string[] => {
   if (!Array.isArray(value)) {
@@ -28,7 +44,7 @@ const readList = (value: unknown): string[] => {
   }
 
   return value
-    .map(cleanText)
+    .map((entry) => cleanText(entry))
     .filter((text) => text.length > 0)
     .slice(0, MAX_OTHER);
 };
@@ -87,6 +103,10 @@ export function parseMealObservation(value: unknown): MealObservation | null {
 
   return {
     mealCount: readMealCount(raw.mealCount),
+    scene: cleanNote(raw.scene, MAX_SCENE_LENGTH),
+    setting: cleanNote(raw.setting),
+    container: cleanNote(raw.container),
+    containerSize: cleanNote(raw.containerSize),
     items,
     scaleCues: readList(raw.scaleCues),
     addedFats: readList(raw.addedFats),
@@ -100,9 +120,25 @@ const safe = (text: string): string => text.replace(/[<>]/g, ' ').replace(/\s+/g
 /** The block appended to the recipe request. No angle brackets: model output sits between word markers. */
 export function formatMealObservation(obs: MealObservation): string {
   const lines = [
-    'These are notes from a first look at the meal. Where the photo or description disagrees with them, the photo or description wins.',
+    'These are notes from a first look at the meal. Where the photo or description disagrees with them, the photo or description wins. Use the container, how big it is and the setting to judge how large each portion is.',
     '--- FIRST LOOK ---',
   ];
+
+  if (obs.scene) {
+    lines.push(`Scene: ${safe(obs.scene)}`);
+  }
+
+  if (obs.setting) {
+    lines.push(`Setting: ${safe(obs.setting)}`);
+  }
+
+  if (obs.container) {
+    lines.push(
+      `Container: ${safe(obs.container)}${obs.containerSize ? ` (${safe(obs.containerSize)})` : ''}`
+    );
+  } else if (obs.containerSize) {
+    lines.push(`Container size: ${safe(obs.containerSize)}`);
+  }
 
   if (obs.mealCount > 1) {
     lines.push(`Separate meals shown: ${obs.mealCount}`);
