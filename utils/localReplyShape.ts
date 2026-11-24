@@ -6,6 +6,8 @@
  * of each value, and anything that is not JSON has every run of letters and digits flattened. The
  * full text goes to `adb logcat` only (`LOCAL_MODEL_LOG_TAG`), never to Sentry.
  */
+import { jsonrepair } from 'jsonrepair';
+
 import { validateAgainstSchema } from './aiSchemaValidate';
 
 /**
@@ -34,6 +36,35 @@ export function jsonSpan(text: string): string | null {
   const end = text.lastIndexOf(closer);
 
   return end > start ? text.slice(start, end + 1) : null;
+}
+
+/**
+ * Parses almost-JSON with `jsonrepair` (trailing commas, single quotes, unquoted keys, a reply cut
+ * off by the token limit) and returns the value, or `undefined` when nothing usable can be made of
+ * the text. `jsonrepair` rejects prose around the JSON, so it is given the balanced span first and
+ * the text from the first bracket second (a truncated reply has no closing bracket to end a span).
+ * The caller still checks the value against its schema.
+ */
+export function repairReplyJson(text: string): unknown {
+  const start = text.search(/[{[]/);
+  if (start === -1) {
+    return undefined;
+  }
+
+  const candidates = [jsonSpan(text), text.slice(start)];
+  for (const candidate of candidates) {
+    if (!candidate) {
+      continue;
+    }
+
+    try {
+      return JSON.parse(jsonrepair(candidate));
+    } catch {
+      // Try the next candidate.
+    }
+  }
+
+  return undefined;
 }
 
 const MAX_SKELETON_CHARS = 240;

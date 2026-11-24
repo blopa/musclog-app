@@ -1,5 +1,10 @@
 import { LOCAL_FOOD_IDENTIFY_SCHEMA } from '../localFoodPhoto';
-import { diagnoseLocalReply, jsonSpan, stripTemplateTokens } from '../localReplyShape';
+import {
+  diagnoseLocalReply,
+  jsonSpan,
+  repairReplyJson,
+  stripTemplateTokens,
+} from '../localReplyShape';
 
 describe('diagnoseLocalReply', () => {
   it('names a bare array as a schema failure and keeps no values', () => {
@@ -55,5 +60,28 @@ describe('stripTemplateTokens and jsonSpan', () => {
     expect(jsonSpan('Here you go: {"items":[]} hope that helps')).toBe('{"items":[]}');
     expect(jsonSpan('no json here')).toBeNull();
     expect(jsonSpan('} backwards {')).toBeNull();
+  });
+});
+
+describe('repairReplyJson', () => {
+  it('repairs trailing commas and single quotes', () => {
+    expect(repairReplyJson("{'items': [{'name': 'rice', 'grams': 150,},],}")).toEqual({
+      items: [{ name: 'rice', grams: 150 }],
+    });
+  });
+
+  it('closes a reply cut off by the token limit, dropping the half-written item', () => {
+    expect(repairReplyJson('{"items":[{"name":"rice","grams":150},{"name":"chick')).toEqual({
+      items: [{ name: 'rice', grams: 150 }],
+    });
+  });
+
+  it('repairs JSON that has a sentence before and after it', () => {
+    expect(repairReplyJson('Sure! {"items": [],} Hope that helps')).toEqual({ items: [] });
+  });
+
+  it('gives up on text with no JSON in it', () => {
+    expect(repairReplyJson('nothing here')).toBeUndefined();
+    expect(repairReplyJson('')).toBeUndefined();
   });
 });

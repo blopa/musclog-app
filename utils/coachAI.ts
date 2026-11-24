@@ -57,7 +57,12 @@ import {
   pickFoodMatch,
   searchTermsFor,
 } from './localFoodPhoto';
-import { diagnoseLocalReply, jsonSpan, stripTemplateTokens } from './localReplyShape';
+import {
+  diagnoseLocalReply,
+  jsonSpan,
+  repairReplyJson,
+  stripTemplateTokens,
+} from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
@@ -1715,8 +1720,15 @@ function parseStructuredJson<T>(raw: string): StructuredResult<T> {
       try {
         return { kind: 'ok', value: JSON.parse(span) as T };
       } catch {
-        // Reported as malformed below.
+        // Try the repair below.
       }
+    }
+
+    // Almost-JSON (trailing commas, single quotes, a reply cut off by the token limit). The schema
+    // check that follows is still the judge of whether the repaired value is usable.
+    const repaired = repairReplyJson(clean);
+    if (repaired !== undefined) {
+      return { kind: 'ok', value: repaired as T };
     }
   }
 

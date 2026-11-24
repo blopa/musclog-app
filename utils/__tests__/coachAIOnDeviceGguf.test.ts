@@ -124,6 +124,17 @@ describe('requestStructured on the downloaded engine', () => {
     });
   });
 
+  it('repairs almost-JSON, then still checks it against the schema', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue("{'answer': 'ok',}");
+    expect(await requestStructured(gguf, request)).toEqual({
+      kind: 'ok',
+      value: { answer: 'ok' },
+    });
+
+    mockSendLocalStructuredRaw.mockResolvedValue("{'other': 1,}");
+    expect((await requestStructured(gguf, request)).kind).toBe('malformed');
+  });
+
   it('reads JSON that has a sentence around it', async () => {
     mockSendLocalStructuredRaw.mockResolvedValue('Sure! {"answer":"ok"} Anything else?');
 
