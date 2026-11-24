@@ -1,3 +1,4 @@
+import { AiCancelledError } from '../aiErrors';
 import { type CoachAIConfig, trackMeal } from '../coachAI';
 
 const mockCreate = jest.fn();
@@ -81,9 +82,22 @@ const macros = {
   ],
 };
 
-/** Answers each request by what it is: the schema name tells a look, a recipe, macros or a review. */
-function answerByKind(options: { failLooks?: number } = {}) {
+/**
+ * Answers each request by what it is: the schema name tells a look, a recipe, macros or a review.
+ * `kcalPerEstimate` gives the energy of the n-th macro estimate (default: always the same, so the
+ * samples agree), `uncertain` is what each look lists as uncertain, `implausible` makes the first
+ * macro estimate fail the plausibility check (10 kcal for 150 g of rice with 42 g of carbs).
+ */
+function answerByKind(
+  options: {
+    failLooks?: number;
+    kcalPerEstimate?: (n: number) => number;
+    uncertain?: string[];
+    implausible?: boolean;
+  } = {}
+) {
   let failures = options.failLooks ?? 0;
+  let estimates = 0;
   mockCreate.mockImplementation(async (params: any) => {
     switch (params.response_format.json_schema.name) {
       case 'observeMeal':
@@ -92,11 +106,22 @@ function answerByKind(options: { failLooks?: number } = {}) {
           throw new Error('look failed');
         }
 
-        return reply(observation());
+        return reply({ ...observation(), uncertain: options.uncertain ?? [] });
       case 'extractRecipe':
         return reply(recipe);
-      case 'estimateMissingIngredients':
-        return reply(macros);
+      case 'estimateMissingIngredients': {
+        const n = estimates++;
+        const kcal = options.kcalPerEstimate?.(n) ?? 195;
+
+        return reply({
+          ingredients: [
+            {
+              ...macros.ingredients[0],
+              kcal: options.implausible && n === 0 ? 10 : kcal,
+            },
+          ],
+        });
+      }
       case 'reviewMealEstimate':
         return reply({ missingIngredients: [], corrections: [] });
       default:
@@ -124,35 +149,67 @@ describe('meal estimate first looks', () => {
     expect(callsFor('observeMeal')).toHaveLength(0);
   });
 
-  it('takes two looks at tokenmaxxing and gives each to two recipe samples', async () => {
+  it('stops after one look and its two samples when they agree and nothing is uncertain', async () => {
     mockThinking.level = 'tokenmaxxing';
     answerByKind();
+    const progress: { step: string; count?: number }[] = [];
 
-    const result = await trackMeal(openai, 'a bowl of rice');
+    const result = await trackMeal(openai, 'a bowl of rice', undefined, (step) =>
+      progress.push(step)
+    );
+
+    expect(callsFor('observeMeal')).toHaveLength(1);
+    const recipes = callsFor('extractRecipe');
+    expect(recipes).toHaveLength(2);
+    expect(recipes.every((call) => /Rice look 1/.test(userTextOf(call)))).toBe(true);
+    expect(userTextOf(recipes[0])).toContain('--- FIRST LOOK ---');
+    expect(result?.meals[0].ingredients.map((ingredient) => ingredient.name)).toEqual(['Rice']);
+    // The line stays true: one look, then the two samples compared.
+    const steps = progress.map(({ step }) => step);
+    expect(steps.slice(0, 2)).toEqual(['reading', 'observing']);
+    expect(steps.filter((step) => step === 'observing')).toHaveLength(1);
+    expect(progress.find(({ step }) => step === 'comparing')?.count).toBe(2);
+  });
+
+  it('takes the second look and two more samples when the first samples disagree', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    // 195 kcal against 400 kcal in the first stage: more than 15% apart.
+    answerByKind({ kcalPerEstimate: (n) => (n === 1 ? 400 : 195) });
+    const progress: { step: string; count?: number }[] = [];
+
+    const result = await trackMeal(openai, 'a bowl of rice', undefined, (step) =>
+      progress.push(step)
+    );
 
     expect(callsFor('observeMeal')).toHaveLength(2);
     const recipes = callsFor('extractRecipe');
     expect(recipes).toHaveLength(4);
     const lookOfRecipe = recipes.map((call) => /Rice look (\d)/.exec(userTextOf(call))?.[1]);
-    expect(lookOfRecipe.every(Boolean)).toBe(true);
     expect(lookOfRecipe.filter((look) => look === '1')).toHaveLength(2);
     expect(lookOfRecipe.filter((look) => look === '2')).toHaveLength(2);
-    expect(userTextOf(recipes[0])).toContain('--- FIRST LOOK ---');
-    expect(userTextOf(recipes[0])).toContain('Scene: A hand holding a regular-size plate');
     expect(result?.meals[0].ingredients.map((ingredient) => ingredient.name)).toEqual(['Rice']);
+    expect(progress.filter(({ step }) => step === 'observing')).toHaveLength(2);
+    expect(progress.find(({ step }) => step === 'comparing')?.count).toBe(4);
   });
 
-  it('reports the look first and then compares four estimates', async () => {
+  it('takes the second look when the first look lists something uncertain', async () => {
     mockThinking.level = 'tokenmaxxing';
-    answerByKind();
-    const progress: { step: string; count?: number }[] = [];
+    answerByKind({ uncertain: ['whether the rice is cooked in oil'] });
 
-    await trackMeal(openai, 'a bowl of rice', undefined, (step) => progress.push(step));
+    await trackMeal(openai, 'a bowl of rice');
 
-    const steps = progress.map(({ step }) => step);
-    expect(steps[0]).toBe('reading');
-    expect(steps[1]).toBe('observing');
-    expect(progress.find(({ step }) => step === 'comparing')?.count).toBe(4);
+    expect(callsFor('observeMeal')).toHaveLength(2);
+    expect(callsFor('extractRecipe')).toHaveLength(4);
+  });
+
+  it('takes the second look when a sample needed the plausibility recheck', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    answerByKind({ implausible: true });
+
+    await trackMeal(openai, 'a bowl of rice');
+
+    expect(callsFor('observeMeal')).toHaveLength(2);
+    expect(callsFor('extractRecipe')).toHaveLength(4);
   });
 
   it('carries the look with the photo, which is still sent', async () => {
@@ -173,12 +230,13 @@ describe('meal estimate first looks', () => {
     ).toBe(true);
   });
 
-  it('goes on with one look when the other fails', async () => {
+  it('goes on with the second look when the first fails', async () => {
     mockThinking.level = 'tokenmaxxing';
     answerByKind({ failLooks: 1 });
 
     const result = await trackMeal(openai, 'a bowl of rice');
 
+    expect(callsFor('observeMeal')).toHaveLength(2);
     expect(callsFor('extractRecipe')).toHaveLength(2);
     expect(result?.meals).toHaveLength(1);
   });
@@ -193,5 +251,14 @@ describe('meal estimate first looks', () => {
     expect(recipes).toHaveLength(3);
     expect(recipes.some((call) => userTextOf(call).includes('FIRST LOOK'))).toBe(false);
     expect(result?.meals).toHaveLength(1);
+  });
+
+  it('stops at a cancel during the first look without sampling', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate.mockRejectedValue(new AiCancelledError());
+
+    await expect(trackMeal(openai, 'a bowl of rice')).resolves.toBeNull();
+    expect(callsFor('observeMeal')).toHaveLength(1);
+    expect(callsFor('extractRecipe')).toHaveLength(0);
   });
 });

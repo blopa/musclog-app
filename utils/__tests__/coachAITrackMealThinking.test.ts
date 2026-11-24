@@ -221,6 +221,14 @@ describe('trackMeal (thinking levels above medium)', () => {
     expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['Chicken']);
   });
 
+  it('stops reviewing at tokenmaxxing after a round that changes nothing', async () => {
+    setLevel('tokenmaxxing');
+    script({});
+    await trackMeal({ provider: 'on-device' } as never, 'chicken');
+
+    expect(calls.review).toBe(1);
+  });
+
   it('runs three recipe extractions and up to two reviews at tokenmaxxing', async () => {
     setLevel('tokenmaxxing');
     const progress: string[] = [];

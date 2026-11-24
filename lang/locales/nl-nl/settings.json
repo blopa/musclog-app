@@ -376,7 +376,7 @@
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",
-            "description": "Meerdere onafhankelijke antwoorden worden vergeleken en daarna twee keer nagekeken. Het traagst, het zorgvuldigst."
+            "description": "Meerdere onafhankelijke antwoorden worden vergeleken en daarna tot twee keer nagekeken. Het traagst, het zorgvuldigst."
           }
         },
         "ironNote": {

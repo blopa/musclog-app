@@ -109,6 +109,15 @@ describe('insight fact-check rounds', () => {
     expect(lastUserMessage(2)).toContain('tighten');
   });
 
+  it('stops at tokenmaxxing when the fact-check returns the same text', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate.mockResolvedValue(text('You ate 120 g of protein.'));
+
+    await expect(insights()).resolves.toBe('You ate 120 g of protein.');
+    // The draft and one fact-check; the second round is never asked.
+    expect(mockCreate).toHaveBeenCalledTimes(2);
+  });
+
   it('streams nothing while checking and hands the final text over once', async () => {
     mockThinking.level = 'high';
     mockCreate
@@ -193,12 +202,34 @@ describe('plan critique rounds', () => {
     expect(result?.workoutPlan[0].exercises.map((e) => e.exerciseId)).toEqual(['1', '2']);
   });
 
-  it('reviews twice at tokenmaxxing', async () => {
+  it('reviews twice at tokenmaxxing while the revisions change', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate
+      .mockResolvedValueOnce(text(JSON.stringify(plan(['1', '2']))))
+      .mockResolvedValueOnce(text(JSON.stringify(plan(['1', '3']))))
+      .mockResolvedValueOnce(text(JSON.stringify(plan(['1', '4']))));
+
+    const result = await generateWorkoutPlan(openai, []);
+
+    expect(mockCreate).toHaveBeenCalledTimes(3);
+    expect(result?.workoutPlan[0].exercises.map((e) => e.exerciseId)).toEqual(['1', '4']);
+  });
+
+  it('stops at tokenmaxxing when a revision is the plan it reviewed', async () => {
     mockThinking.level = 'tokenmaxxing';
     mockCreate.mockResolvedValue(text(JSON.stringify(plan(['1', '2']))));
 
     await generateWorkoutPlan(openai, []);
 
-    expect(mockCreate).toHaveBeenCalledTimes(3);
+    expect(mockCreate).toHaveBeenCalledTimes(2);
+  });
+
+  it('reviews once at high even when the revision is the same plan', async () => {
+    mockThinking.level = 'high';
+    mockCreate.mockResolvedValue(text(JSON.stringify(plan(['1', '2']))));
+
+    await generateWorkoutPlan(openai, []);
+
+    expect(mockCreate).toHaveBeenCalledTimes(2);
   });
 });

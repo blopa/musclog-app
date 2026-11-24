@@ -376,7 +376,7 @@
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",
-            "description": "Plusieurs réponses indépendantes sont comparées, puis relues deux fois. Le plus lent, le plus minutieux."
+            "description": "Plusieurs réponses indépendantes sont comparées, puis relues jusqu'à deux fois. Le plus lent, le plus minutieux."
           }
         },
         "ironNote": {

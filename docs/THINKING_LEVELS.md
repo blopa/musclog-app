@@ -54,12 +54,12 @@ looping, and every loop has a fixed upper limit.** A level can make a job slower
 
 ## What each level is
 
-| Level        | Effort per request       | Extra requests                                                                                                                         |
-| ------------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Off          | per job (below)          | none                                                                                                                                   |
-| Medium       | `high`; reading `medium` | meals take the verified path. Nothing else changes                                                                                     |
-| High         | `high`; reading `medium` | Medium, plus 1 review round (meals, insights, plans), and 2 readings for labels and imports                                            |
-| Tokenmaxxing | `max`; reading `high`    | Medium, plus 2 first looks and 4 meal samples, 2 review rounds, 3 readings for labels and imports, and chat replies drafted + reviewed |
+| Level        | Effort per request       | Extra requests                                                                                                                                                                                              |
+| ------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Off          | per job (below)          | none                                                                                                                                                                                                        |
+| Medium       | `high`; reading `medium` | meals take the verified path. Nothing else changes                                                                                                                                                          |
+| High         | `high`; reading `medium` | Medium, plus 1 review round (meals, insights, plans), and 2 readings for labels and imports                                                                                                                 |
+| Tokenmaxxing | `max`; reading `high`    | Medium, plus up to 2 first looks and up to 4 meal samples, up to 2 review rounds, up to 3 readings for labels and imports, and chat replies drafted + reviewed. It stops early when the first answers agree |
 
 Effort per job at **Off** (`AI_TASK_EFFORT`): reading something into fixed fields (a meal, a label,
 an import) `minimal`; a chat reply `low`; an analysis of your data or a plan `medium`. Medium and
@@ -67,17 +67,24 @@ High use `high` for chats, analyses and plans and `medium` for reading; Tokenmax
 
 The pipeline table (`THINKING_PIPELINE`) is exactly this:
 
-| Level        | verifiedMeal | reviewRounds | samples | chatReview | mealLooks                   |
-| ------------ | ------------ | ------------ | ------- | ---------- | --------------------------- |
-| Off          | no           | 0            | 1       | no         | none                        |
-| Medium       | yes          | 0            | 1       | no         | none                        |
-| High         | yes          | 1            | 1       | no         | none                        |
-| Tokenmaxxing | yes          | 2            | 3       | yes        | 2 looks, 2 samples per look |
+| Level        | verifiedMeal | reviewRounds | samples | chatReview | mealLooks                   | earlyExit |
+| ------------ | ------------ | ------------ | ------- | ---------- | --------------------------- | --------- |
+| Off          | no           | 0            | 1       | no         | none                        | no        |
+| Medium       | yes          | 0            | 1       | no         | none                        | no        |
+| High         | yes          | 1            | 1       | no         | none                        | no        |
+| Tokenmaxxing | yes          | 2            | 3       | yes        | 2 looks, 2 samples per look | yes       |
 
 Labels and imports use `extractionSamples`, which is 2 at High (two readings are what show where a
 reading is unsure) and the table's `samples` otherwise. For meals, `mealLooks` replaces `samples`
 when it is set (Tokenmaxxing), so `samples: 3` there is only what labels, imports and the
 no-look fallback use.
+
+`earlyExit` is true only at Tokenmaxxing. There the counts in the table are **upper bounds**, not
+fixed numbers: an extraction reads twice first and takes a third reading only if those two disagree
+(`EXTRACTION_FIRST_READINGS`); a meal stops after its first look and its two samples when they agree
+(`mealStageIsSettled`); and a review round whose revision changes nothing ends the rounds
+(`reviewAndRevise` with `isUnchanged`). Off, Medium and High never stop early and make the requests
+their rows say. Every "up to" count below is the Tokenmaxxing ceiling.
 
 ## Every LLM job, one by one
 
@@ -101,17 +108,22 @@ Used by: the coach's Track meal, My Meals' generator, the camera's AI photo. Cod
 - **High**: the verified path once, then 1 review round per meal: the model sees the estimate next
   to your text or photo and lists what is missing or off, code applies it, +1 to estimate what was
   added (an addition one of your foods matches by name is taken from that food instead), +1 recheck. The review replaces the estimate only if it has no more implausible numbers.
-- **Tokenmaxxing**: first, 2 independent first looks (`observeMeal`, run together on a cloud model).
-  Then the verified path 4 times: 2 samples read each look. The samples are combined by
+- **Tokenmaxxing**: first, one first look (`observeMeal`) and the 2 verified samples that read it.
+  If those two agree with each other, the look lists nothing uncertain and neither sample needed the
+  plausibility recheck (`mealStageIsSettled`, `utils/mealConsensus.ts`), the estimate stops there. The
+  agreement test is a same number of meals, the same ingredient names and each meal's kcal within 15%
+  of the larger (`MEAL_AGREEMENT_KCAL_TOLERANCE`). Otherwise a second look is taken with its own 2
+  samples, so up to 2 looks and up to 4 verified samples. The samples are combined by
   `consensusMeals(samples, groups)` (`utils/mealConsensus.ts`): an ingredient stays when **at least
   half of the answered samples** found it, whichever look they came from (with four samples, two),
   so a cooking oil or a dressing that one look missed is not deleted while a single sample of four
   that found something alone is still dropped (a plain vote with no looks needs strictly more than
   half), and grams and macros are the median of the samples that found it. Then up to 2 review
-  rounds. Roughly 12 to 20 requests for one meal. Each look is a separate request on purpose: one
+  rounds, which stop early when a round changes nothing. Up to about 20 requests for one meal, and
+  fewer when the first answers agree. Each look is a separate request on purpose: one
   shared look would put the same perception mistake into every sample and the vote would hide it.
-  If one look fails or reads as nothing, the other still feeds its 2 samples; if both fail, it falls
-  back to 3 plain samples with no look. The photo is still sent with every sample, so a wrong look
+  If the first look fails or reads as nothing, the second look feeds its 2 samples; if no look reads
+  at all, it falls back to 3 plain samples with no look. The photo is still sent with every sample, so a wrong look
   can be corrected. A typed meal gets a look too: it lists what you said plus the usual hidden parts
   (cooking fat, dressing) as low-confidence assumptions. The on-device model skips the looks. The
   progress line says "Taking a careful first look at your photo…" while they run.
@@ -135,12 +147,15 @@ request, whatever the level.
 - Off, Medium: 1 request.
 - High: 2 readings. `combineExtractions` (`utils/extractionConsensus.ts`) settles each field by
   majority or median; only if some field is disputed, +1 arbiter request.
-- Tokenmaxxing: 3 readings, same combining, same arbiter.
+- Tokenmaxxing: 2 readings first. If they agree on every field, that is the answer (2 requests). If
+  not, one more reading, the same combining, and the arbiter only if a field is still disputed: up to
+  3 readings and the arbiter. A failed third reading is reported and the arbiter still runs on what
+  there is.
 
 ### Import workouts, a food log or a past day written in words
 
 `parsePastWorkouts`, `parsePastNutrition`, `parseRetrospectiveNutrition`: exactly the same as the
-label (1 / 1 / 2 + arbiter / 3 + arbiter).
+label (1 / 1 / 2 + arbiter / up to 3 readings + arbiter).
 
 ### Chat with the coach
 
@@ -173,7 +188,8 @@ and the daily background insights.
   that are not in the data the model was given (`ungroundedFigures`, `utils/numberGrounding.ts`) and
   the model returns a corrected version. It replaces the draft only if it is not empty and has no
   more ungrounded figures. The final text reaches the screen once.
-- Tokenmaxxing: up to 2 fact-check rounds; the second also tightens the wording.
+- Tokenmaxxing: up to 2 fact-check rounds; the second also tightens the wording. A round that
+  changes nothing ends the rounds.
 - **The daily background insights never go above Medium** (`BACKGROUND_THINKING_CEILING`), so they
   are always 1 request.
 
@@ -187,7 +203,7 @@ and the daily background insights.
   meal-plan day more than 10% off the calories or protein asked for, ingredient numbers that do not
   add up). The critique always runs, even when the list says "none". The revision is kept only if it
   has no more problems than the plan it replaces.
-- Tokenmaxxing: up to 2 critique rounds.
+- Tokenmaxxing: up to 2 critique rounds. A round whose revision changes nothing ends them.
 
 `calculateNextWorkoutVolume` is built the same way, but no screen calls it today (checked
 2026-11-24). Same for `getWorkoutInsights` and `getWorkoutVolumeInsights`.
@@ -244,6 +260,9 @@ translates it:
 3. Review prompts quote model output between `--- ANSWER ---` style markers, never angle brackets.
 4. Progress lines (`food.aiProgress.*`) only describe a step the code is really taking, never a
    guess at what the model is thinking.
+5. **Early exit skips requests, it never skips a check that disagreed.** At Tokenmaxxing a stage that
+   the evidence calls stable stops, and the answer kept is the one those requests produced. The thresholds are
+   product choices (see known gaps).
 
 ## Everything else around a request
 
@@ -311,6 +330,19 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   -> `JSON.parse` -> the JSON span inside surrounding text -> `jsonrepair` (trailing commas, single
   quotes, unquoted keys, a reply cut off by the token limit) -> `malformed`. A malformed reply is
   `null` for most callers and a typed result for the setup chat.
+- **A cut-off reply from a provider that enforces its schema is a failure, not a repair.** When the
+  provider's own stop signal says the reply hit its token limit (OpenAI-compatible `finish_reason`
+  `length`, Claude `stop_reason` `max_tokens`, Gemini `finishReason` `MAX_TOKENS`, read by
+  `isTruncatedStop` in `utils/replyTruncation.ts`), a structured reply becomes `malformed` with reason
+  `truncated` (`readStructuredReply` in `utils/coachAI.ts`). It never reaches the ladder above, so no
+  braces are closed into a half-empty object. It is reported once to Sentry (`ai-structured-reply-truncated`)
+  with the provider, the operation and the stop reason only, never the reply, and it is not retried
+  automatically, since the same limit would cut it again. This applies where
+  `ProviderPolicy.rejectsTruncatedStructuredReplies` is set: Musclog Iron, and your own OpenAI, Gemini
+  and Claude keys. The free tier, a local server and the on-device model keep the full ladder and,
+  where their policy says so, the repair request. A complete reply with fences or surrounding text
+  still goes through the ladder. The coach's free-chat reply is not covered: it still reads `msg4User`
+  out of a cut-off object.
 - **A small model's reply is also shape-checked** (`checkStructuredShape` over our own small JSON
   Schema checker, `utils/aiSchemaValidate.ts`: type, nullable, required, enum, items, minimum,
   maximum, minItems, maxItems; an unknown keyword passes). That applies when the provider policy sets
@@ -453,24 +485,33 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 - **Structured prompts get escaping only.** The delimiter wrapper for untrusted text is unused.
 - **A long meal is slow on a phone**: Tokenmaxxing makes its samples one after another on the
   on-device model and a local server.
+- **The early-exit thresholds are unmeasured product choices**: two first readings for labels, the 15%
+  kcal tolerance for two meals to agree, two samples per first stage, and the rule that a review
+  stops when its revision changes nothing. Nothing has checked that they save requests without
+  losing accuracy.
+- **A cut-off reply is reported, not retried.** If a provider's token limit is too small for a long
+  answer, the person sees a failure instead of a repaired answer, and the Sentry event
+  `ai-structured-reply-truncated` is how to find it. A growing meal or plan can start failing this way.
 - `getWorkoutInsights`, `getWorkoutVolumeInsights` and `calculateNextWorkoutVolume` have no caller.
 
 ## Where to change things
 
-| I want to…                                                    | Edit                                                                                                                  |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| make a level think harder or softer                           | `AI_TASK_EFFORT` in `utils/aiEffort.ts`                                                                               |
-| change how many requests a level makes                        | `THINKING_PIPELINE` / `extractionSamples` in `utils/aiThinkingLevel.ts`                                               |
-| change what a level asks for on Iron                          | `thinkingLevelChangeGate` in the same file                                                                            |
-| change which jobs the free tier or background can use         | `providerAllowsThinking`, `BACKGROUND_THINKING_CEILING`, same file                                                    |
-| add a review step to a new job                                | use `runSamples` / `reviewAndRevise` from `utils/aiPasses.ts`, with a code `accept` rule                              |
-| add a new kind of job                                         | name its task (`chat`, `extraction`, `insight`, `planning`) when calling `requestStructured` / `generateText`         |
-| change retries, backoff, jitter, `Retry-After` or the timeout | `utils/llmRetry.ts` (`RETRYABLE_LLM_STATUSES`, `LLM_RETRY_DELAYS_MS`, `MAX_RETRY_AFTER_MS`, `LLM_REQUEST_TIMEOUT_MS`) |
-| give a provider its own rule (headers, penalties)             | its entry in `utils/providerPolicy.ts`, never a `provider === 'x'` branch in `coachAI.ts`                             |
-| change how a broken reply is read or repaired                 | `parseStructuredJson`, `checkStructuredShape`, `jsonRepairPrompt` in `utils/localReplyShape.ts`                       |
-| change what counts as an impossible meal number               | the constants in `utils/mealPlausibility.ts`                                                                          |
-| change the provider order                                     | `AI_PROVIDER_KINDS` in `constants/ai.ts` (and `PROVIDER_PROBES` in `services/AiService.ts`)                           |
+| I want to…                                                    | Edit                                                                                                                                                         |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| make a level think harder or softer                           | `AI_TASK_EFFORT` in `utils/aiEffort.ts`                                                                                                                      |
+| change how many requests a level makes                        | `THINKING_PIPELINE` / `extractionSamples` in `utils/aiThinkingLevel.ts`                                                                                      |
+| change what a level asks for on Iron                          | `thinkingLevelChangeGate` in the same file                                                                                                                   |
+| change which jobs the free tier or background can use         | `providerAllowsThinking`, `BACKGROUND_THINKING_CEILING`, same file                                                                                           |
+| add a review step to a new job                                | use `runSamples` / `reviewAndRevise` from `utils/aiPasses.ts`, with a code `accept` rule                                                                     |
+| add a new kind of job                                         | name its task (`chat`, `extraction`, `insight`, `planning`) when calling `requestStructured` / `generateText`                                                |
+| change retries, backoff, jitter, `Retry-After` or the timeout | `utils/llmRetry.ts` (`RETRYABLE_LLM_STATUSES`, `LLM_RETRY_DELAYS_MS`, `MAX_RETRY_AFTER_MS`, `LLM_REQUEST_TIMEOUT_MS`)                                        |
+| give a provider its own rule (headers, penalties)             | its entry in `utils/providerPolicy.ts`, never a `provider === 'x'` branch in `coachAI.ts`                                                                    |
+| change how a broken reply is read or repaired                 | `parseStructuredJson`, `checkStructuredShape`, `jsonRepairPrompt` in `utils/localReplyShape.ts`                                                              |
+| change what counts as an impossible meal number               | the constants in `utils/mealPlausibility.ts`                                                                                                                 |
+| change when Tokenmaxxing stops early                          | `earlyExit` and `EXTRACTION_FIRST_READINGS` in `utils/aiThinkingLevel.ts`; `mealStageIsSettled`, `MEAL_AGREEMENT_KCAL_TOLERANCE` in `utils/mealConsensus.ts` |
+| change what a cut-off reply does                              | `rejectsTruncatedStructuredReplies` in `utils/providerPolicy.ts`; `isTruncatedStop` in `utils/replyTruncation.ts`                                            |
+| change the provider order                                     | `AI_PROVIDER_KINDS` in `constants/ai.ts` (and `PROVIDER_PROBES` in `services/AiService.ts`)                                                                  |
 
-Tests: `utils/__tests__/{aiThinkingLevel,aiPasses,mealConsensus,mealObservation,coachAIMealLooks,mealReview,extractionConsensus,numberGrounding,planFindings,coachAIExtractionConsensus,coachAIReviewPasses,coachAIStreaming,coachAITrackMealThinking,aiEffort,coachAIEffort,llmRetry,llmRetryOwner,coachAIMatchOwnFoods,localFoodPhoto,chatReviewInstruction}.test.ts`.
+Tests: `utils/__tests__/{coachAITruncatedReplies,replyTruncation,aiThinkingLevel,aiPasses,mealConsensus,mealObservation,coachAIMealLooks,mealReview,extractionConsensus,numberGrounding,planFindings,coachAIExtractionConsensus,coachAIReviewPasses,coachAIStreaming,coachAITrackMealThinking,aiEffort,coachAIEffort,llmRetry,llmRetryOwner,coachAIMatchOwnFoods,localFoodPhoto,chatReviewInstruction}.test.ts`.
 The reasoning behind the choices is in `docs/RESEARCH.md` (Reasoning effort per job). Nobody has
 measured yet whether the extra requests improve the answers; the numbers are product choices.

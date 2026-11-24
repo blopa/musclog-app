@@ -1,5 +1,5 @@
 import { AiCancelledError } from '../aiErrors';
-import { reviewAndRevise, runSamples } from '../aiPasses';
+import { reviewAndRevise, runSamples, sameValue } from '../aiPasses';
 
 describe('runSamples', () => {
   it('returns every answer in order and leaves out empty ones and failures', async () => {
@@ -147,5 +147,74 @@ describe('reviewAndRevise', () => {
         accept: fewerProblems,
       })
     ).rejects.toBeInstanceOf(AiCancelledError);
+  });
+
+  describe('with isUnchanged', () => {
+    type Answer = { kcal: number };
+    const draft: Answer = { kcal: 5 };
+    const acceptAll = () => true;
+
+    it('stops at an identical revision and returns the answer it had', async () => {
+      const critique = jest.fn(async (current: Answer) => ({ ...current }));
+      const result = await reviewAndRevise({
+        draft,
+        rounds: 3,
+        critique,
+        accept: acceptAll,
+        isUnchanged: sameValue,
+      });
+      expect(critique).toHaveBeenCalledTimes(1);
+      expect(result).toBe(draft);
+    });
+
+    it('continues past a changed revision to the next round', async () => {
+      const critique = jest.fn(async (current: Answer) => ({ kcal: current.kcal - 1 }));
+      const result = await reviewAndRevise({
+        draft,
+        rounds: 3,
+        critique,
+        accept: acceptAll,
+        isUnchanged: sameValue,
+      });
+      expect(critique).toHaveBeenCalledTimes(3);
+      expect(result).toEqual({ kcal: 2 });
+    });
+
+    it('without isUnchanged runs every round even when the revision is equal', async () => {
+      const critique = jest.fn(async (current: Answer) => ({ ...current }));
+      await reviewAndRevise({ draft, rounds: 3, critique, accept: acceptAll });
+      expect(critique).toHaveBeenCalledTimes(3);
+    });
+
+    it('still stops at a refused revision', async () => {
+      const critique = jest.fn(async (current: Answer) => ({ kcal: current.kcal + 1 }));
+      const result = await reviewAndRevise({
+        draft,
+        rounds: 3,
+        critique,
+        accept: (current, revised) => revised.kcal < current.kcal,
+        isUnchanged: sameValue,
+      });
+      expect(critique).toHaveBeenCalledTimes(1);
+      expect(result).toBe(draft);
+    });
+  });
+});
+
+describe('sameValue', () => {
+  it('treats structurally equal objects and arrays as the same', () => {
+    expect(sameValue({ a: 1, b: [1, 2] }, { a: 1, b: [1, 2] })).toBe(true);
+    expect(sameValue([1, 'x'], [1, 'x'])).toBe(true);
+    expect(sameValue({ a: 1 }, { a: 2 })).toBe(false);
+    expect(sameValue([1, 2], [2, 1])).toBe(false);
+  });
+
+  it('compares strings and primitives by value and the same reference as equal', () => {
+    expect(sameValue('meal', 'meal')).toBe(true);
+    expect(sameValue('meal', 'Meal')).toBe(false);
+    expect(sameValue(3, 3)).toBe(true);
+    expect(sameValue(3, '3')).toBe(false);
+    const object = { a: 1 };
+    expect(sameValue(object, object)).toBe(true);
   });
 });

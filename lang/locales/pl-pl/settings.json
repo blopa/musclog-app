@@ -376,7 +376,7 @@
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",
-            "description": "Porównuje się kilka niezależnych odpowiedzi, a potem każdą sprawdza się dwukrotnie. Najwolniej, najstaranniej."
+            "description": "Porównuje się kilka niezależnych odpowiedzi, a potem każdą sprawdza się do dwóch razy. Najwolniej, najstaranniej."
           }
         },
         "ironNote": {

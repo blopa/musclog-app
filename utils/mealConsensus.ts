@@ -14,6 +14,7 @@
 import { median } from 'simple-statistics';
 
 import type { TrackedMeal, TrackMealIngredient, TrackMealResponse } from './coachAI';
+import type { MealObservation } from './mealObservation';
 
 /** The key two readings of an ingredient are matched by: no case, accents or extra spaces. */
 export function normalizeIngredientName(name: string): string {
@@ -147,4 +148,82 @@ export function consensusMeals(samples: TrackMealResponse[], groups?: number[]):
       )
     ),
   };
+}
+
+/**
+ * How far apart two estimates of one meal's total energy may be and still count as the same answer,
+ * as a share of the larger one. A product choice, not a measurement: it is loose enough that two
+ * honest readings of one plate agree, and tight enough that a missed oil or a doubled portion does not.
+ */
+export const MEAL_AGREEMENT_KCAL_TOLERANCE = 0.15;
+
+const mealKcal = (meal: TrackedMeal): number =>
+  (meal.ingredients ?? []).reduce((total, ingredient) => total + (ingredient.kcal || 0), 0);
+
+const ingredientKeys = (meal: TrackedMeal): Set<string> =>
+  new Set(
+    (meal.ingredients ?? [])
+      .map((ingredient) => normalizeIngredientName(ingredient.name))
+      .filter(Boolean)
+  );
+
+/**
+ * Whether two estimates read the same meal: the same number of meals, in each the same set of
+ * ingredients (by normalized name; grams and order do not matter) and a total energy within
+ * `tolerance` of the larger one. Two meals of zero energy agree.
+ */
+export function mealsAgree(
+  a: TrackMealResponse,
+  b: TrackMealResponse,
+  tolerance: number = MEAL_AGREEMENT_KCAL_TOLERANCE
+): boolean {
+  const left = a.meals ?? [];
+  const right = b.meals ?? [];
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  return left.every((meal, position) => {
+    const other = right[position];
+    const keys = ingredientKeys(meal);
+    const otherKeys = ingredientKeys(other);
+    if (keys.size !== otherKeys.size || [...keys].some((key) => !otherKeys.has(key))) {
+      return false;
+    }
+
+    const kcal = mealKcal(meal);
+    const otherKcal = mealKcal(other);
+    const larger = Math.max(kcal, otherKcal);
+
+    return larger === 0 || Math.abs(kcal - otherKcal) / larger <= tolerance;
+  });
+}
+
+/** Whether a first look says it could not tell something (`MealObservation.uncertain`). */
+export function observationIsUncertain(observation: Pick<MealObservation, 'uncertain'>): boolean {
+  return observation.uncertain.length > 0;
+}
+
+/**
+ * Whether the first stage of a Tokenmaxxing meal estimate (one look and the samples that read it)
+ * is stable enough to stop there. It needs at least two answered samples that all agree with the
+ * first (`mealsAgree`), a look that lists nothing uncertain, and no sample that needed the
+ * plausibility recheck. A single answered sample proves nothing, so it never settles.
+ */
+export function mealStageIsSettled({
+  samples,
+  look,
+  rechecked,
+}: {
+  samples: TrackMealResponse[];
+  look: Pick<MealObservation, 'uncertain'>;
+  /** One flag per answered sample: it needed the plausibility recheck. */
+  rechecked: boolean[];
+}): boolean {
+  return (
+    samples.length >= 2 &&
+    !observationIsUncertain(look) &&
+    !rechecked.some(Boolean) &&
+    samples.slice(1).every((sample) => mealsAgree(samples[0], sample))
+  );
 }

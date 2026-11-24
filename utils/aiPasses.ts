@@ -74,12 +74,23 @@ export type ReviewAndReviseOptions<T> = {
   accept: (current: T, revised: T) => boolean;
   /** Told about a failed round, which keeps the answer it had; a cancel is rethrown instead. */
   onError?: (error: unknown) => void;
+  /**
+   * Whether a revision is the answer it reviewed, unchanged. Off by default. Given (a level that
+   * exits early passes `sameValue`), a revision that changes nothing adds nothing, so the loop ends
+   * there instead of asking for the remaining rounds.
+   */
+  isUnchanged?: (current: T, revised: T) => boolean;
 };
 
+/** Structural equality for plain JSON-like answers (a meal, a plan, a text): same content, same order. */
+export function sameValue(a: unknown, b: unknown): boolean {
+  return a === b || JSON.stringify(a) === JSON.stringify(b);
+}
+
 /**
- * Up to `rounds` rounds of critique and revision. A round whose revision is refused, empty or
- * failed ends the loop with the answer it had: a reviewer that could not improve it once is not
- * asked again.
+ * Up to `rounds` rounds of critique and revision. A round whose revision is refused, empty,
+ * failed or (with `isUnchanged`) identical to the answer it reviewed ends the loop with the answer
+ * it had: a reviewer that could not improve it once is not asked again.
  */
 export async function reviewAndRevise<T>({
   draft,
@@ -87,6 +98,7 @@ export async function reviewAndRevise<T>({
   critique,
   accept,
   onError,
+  isUnchanged,
 }: ReviewAndReviseOptions<T>): Promise<T> {
   let current = draft;
 
@@ -104,6 +116,10 @@ export async function reviewAndRevise<T>({
     }
 
     if (revised == null || !accept(current, revised)) {
+      return current;
+    }
+
+    if (isUnchanged?.(current, revised)) {
       return current;
     }
 

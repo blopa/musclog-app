@@ -105,7 +105,60 @@ describe('extractions at each thinking level', () => {
     expect(result).toMatchObject({ protein: 13, name: 'Oat bar' });
   });
 
-  it('reads three times at tokenmaxxing and settles a two-to-one split without asking', async () => {
+  it('stops at two readings at tokenmaxxing when they agree', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate.mockResolvedValue(reply(label(10)));
+
+    const result = await extractMacrosFromLabelText(openai, 'Protein 10 g');
+
+    expect(result).toMatchObject({ protein: 10 });
+    expect(mockCreate).toHaveBeenCalledTimes(2);
+  });
+
+  it('takes a third reading and then the arbiter at tokenmaxxing when all three disagree', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate
+      .mockResolvedValueOnce(reply(label(10)))
+      .mockResolvedValueOnce(reply(label(16)))
+      .mockResolvedValueOnce(reply(label(30)))
+      .mockResolvedValueOnce(reply(label(12)));
+
+    const result = await extractMacrosFromLabelText(openai, 'Protein 12 g');
+
+    expect(mockCreate).toHaveBeenCalledTimes(4);
+    // The first two readings carry no arbiter note, the fourth request does.
+    expect(lastUserMessage(2)).not.toContain('Disputed fields');
+    expect(lastUserMessage(3)).toContain('Disputed fields: protein');
+    expect(result).toMatchObject({ protein: 12 });
+  });
+
+  it('still asks the arbiter when the third reading fails', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate
+      .mockResolvedValueOnce(reply(label(10)))
+      .mockResolvedValueOnce(reply(label(16)))
+      .mockRejectedValueOnce(Object.assign(new Error('boom'), { status: 400 }))
+      .mockResolvedValueOnce(reply(label(12)));
+
+    const result = await extractMacrosFromLabelText(openai, 'Protein 12 g');
+
+    expect(mockCreate).toHaveBeenCalledTimes(4);
+    expect(lastUserMessage(3)).toContain('Disputed fields: protein');
+    expect(result).toMatchObject({ protein: 12 });
+  });
+
+  it('stops at a cancel in the third reading', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate
+      .mockResolvedValueOnce(reply(label(10)))
+      .mockResolvedValueOnce(reply(label(16)))
+      .mockRejectedValueOnce(new AiCancelledError());
+
+    await expect(extractMacrosFromLabelText(openai, 'Protein 12 g')).resolves.toBeNull();
+    expect(mockCreate).toHaveBeenCalledTimes(3);
+  });
+
+  it('settles a two-to-one split at tokenmaxxing with a third reading and no arbiter', async () => {
     mockThinking.level = 'tokenmaxxing';
     mockCreate
       .mockResolvedValueOnce(reply({ pastWorkouts: [{ name: 'Bench', sets: [{ reps: 5 }] }] }))

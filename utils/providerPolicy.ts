@@ -64,6 +64,13 @@ export type ProviderPolicy = {
    */
   repairsStructuredReplies?: boolean;
   /**
+   * The provider's server enforces the schema, so a structured reply that stopped at the token limit
+   * is a failure to report, never something to patch with the JSON repair ladder (`jsonrepair` would
+   * close the braces and return a half-empty object as an answer). Absent for the free tier, a local
+   * server and the on-device model, whose schema enforcement cannot be relied on.
+   */
+  rejectsTruncatedStructuredReplies?: boolean;
+  /**
    * This provider's own photo step, in place of the default one every provider gets (the detail the
    * person chose in AI settings, with no provider limit above it).
    */
@@ -111,6 +118,7 @@ const HOSTED_POLICY: ProviderPolicy = {
   onSuccess: () => setHostedSignal('ok'),
   backOff: (wait) => whileHostedBackingOff(wait),
   retriesTransientFailures: false,
+  rejectsTruncatedStructuredReplies: true,
   // The Worker keeps its own ceiling per feature and clamps what is asked, but an older Worker has no
   // such field and answers an unknown one with a 400. So the app sends it only once `/v1/config`
   // (cached for five minutes) says this Worker takes it, and never lets a config problem block a request.
@@ -139,7 +147,12 @@ const HOSTED_POLICY: ProviderPolicy = {
 /** OpenAI itself takes the field on every model it lists (`OPENAI_MODELS`). */
 const OPENAI_POLICY: ProviderPolicy = {
   reasoningEffort: async (effort) => reasoningEffortValue(effort),
+  rejectsTruncatedStructuredReplies: true,
 };
+
+/** Gemini and Claude enforce the schema server-side and say why a reply stopped. */
+const GEMINI_POLICY: ProviderPolicy = { rejectsTruncatedStructuredReplies: true };
+const CLAUDE_POLICY: ProviderPolicy = { rejectsTruncatedStructuredReplies: true };
 
 /**
  * A small model: a custom local server or the downloaded on-device one. Left alone it copies its own
@@ -164,6 +177,8 @@ const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
 const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
   hosted: HOSTED_POLICY,
   openai: OPENAI_POLICY,
+  gemini: GEMINI_POLICY,
+  claude: CLAUDE_POLICY,
   local: SMALL_MODEL_POLICY,
 };
 

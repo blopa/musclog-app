@@ -1,4 +1,10 @@
-import { consensusMeals, normalizeIngredientName } from '../mealConsensus';
+import {
+  consensusMeals,
+  mealsAgree,
+  mealStageIsSettled,
+  normalizeIngredientName,
+  observationIsUncertain,
+} from '../mealConsensus';
 
 const ing = (name: string, grams: number, kcal: number, extra = {}) => ({
   name,
@@ -150,5 +156,106 @@ describe('consensusMeals', () => {
     const one = { meals: [meal([ing('Rice', 100, 130)])] };
     const two = { meals: [meal([ing('Egg', 50, 70)]), meal([ing('Toast', 30, 80)])] };
     expect(consensusMeals([one, two]).meals).toHaveLength(1);
+  });
+});
+
+describe('mealsAgree', () => {
+  const one = (...ingredients: ReturnType<typeof ing>[]) => ({ meals: [meal(ingredients)] });
+
+  it('agrees on the same ingredients and energy, ignoring grams, order and accents', () => {
+    expect(
+      mealsAgree(
+        one(ing('Rice', 100, 130), ing('Crème fraîche', 20, 40)),
+        one(ing('crème  FRAICHE', 35, 40), ing('rice', 90, 120))
+      )
+    ).toBe(true);
+  });
+
+  it('disagrees on a different number of meals', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 130)), { meals: [] })).toBe(false);
+  });
+
+  it('disagrees when an ingredient is missing or extra', () => {
+    expect(
+      mealsAgree(one(ing('Rice', 100, 130)), one(ing('Rice', 100, 130), ing('Oil', 5, 45)))
+    ).toBe(false);
+    expect(
+      mealsAgree(one(ing('Rice', 100, 130), ing('Oil', 5, 45)), one(ing('Rice', 100, 130)))
+    ).toBe(false);
+  });
+
+  it('disagrees when the energy is 20% apart', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 100)), one(ing('Rice', 100, 80)))).toBe(false);
+  });
+
+  it('agrees exactly at the boundary (15% of the larger total)', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 100)), one(ing('Rice', 100, 85)))).toBe(true);
+  });
+
+  it('uses a custom tolerance when given', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 100)), one(ing('Rice', 100, 80)), 0.25)).toBe(true);
+  });
+
+  it('agrees two meals of zero energy', () => {
+    expect(mealsAgree(one(ing('Water', 0, 0)), one(ing('Water', 0, 0)))).toBe(true);
+  });
+});
+
+describe('observationIsUncertain', () => {
+  it('is true only when the look lists something uncertain', () => {
+    expect(observationIsUncertain({ uncertain: [] })).toBe(false);
+    expect(observationIsUncertain({ uncertain: ['the sauce'] })).toBe(true);
+  });
+});
+
+describe('mealStageIsSettled', () => {
+  const clear = { uncertain: [] };
+  const sample = (kcal: number) => ({ meals: [meal([ing('Rice', 100, kcal)])] });
+
+  it('never settles on zero or one sample', () => {
+    expect(mealStageIsSettled({ samples: [], look: clear, rechecked: [] })).toBe(false);
+    expect(mealStageIsSettled({ samples: [sample(130)], look: clear, rechecked: [false] })).toBe(
+      false
+    );
+  });
+
+  it('settles when two or more answered samples agree and the look is clear', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(128), sample(132)],
+        look: clear,
+        rechecked: [false, false, false],
+      })
+    ).toBe(true);
+  });
+
+  it('does not settle when the look is uncertain', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(130)],
+        look: { uncertain: ['oil'] },
+        rechecked: [false, false],
+      })
+    ).toBe(false);
+  });
+
+  it('does not settle when any sample needed the plausibility recheck', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(130)],
+        look: clear,
+        rechecked: [false, true],
+      })
+    ).toBe(false);
+  });
+
+  it('does not settle when a later sample disagrees with the first', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(130), sample(200)],
+        look: clear,
+        rechecked: [false, false, false],
+      })
+    ).toBe(false);
   });
 });

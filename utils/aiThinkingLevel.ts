@@ -85,18 +85,48 @@ export type ThinkingPipeline = {
    * every sample. When set it replaces `samples` for meals; `null` means no first look.
    */
   mealLooks: { looks: number; samplesPerLook: number } | null;
+  /**
+   * The level keeps its ceiling but stops spending once the evidence says the answer is stable: an
+   * extraction takes its third reading only when the first two disagree (`EXTRACTION_FIRST_READINGS`),
+   * a meal's second look and its samples only when the first look's samples disagree or flag doubt,
+   * and a review round whose revision changes nothing ends the rounds. So the counts above are
+   * upper bounds, "up to", never fixed numbers. Off, Medium and High never stop early.
+   */
+  earlyExit: boolean;
 };
 
 export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
-  off: { verifiedMeal: false, reviewRounds: 0, samples: 1, chatReview: false, mealLooks: null },
-  medium: { verifiedMeal: true, reviewRounds: 0, samples: 1, chatReview: false, mealLooks: null },
-  high: { verifiedMeal: true, reviewRounds: 1, samples: 1, chatReview: false, mealLooks: null },
+  off: {
+    verifiedMeal: false,
+    reviewRounds: 0,
+    samples: 1,
+    chatReview: false,
+    mealLooks: null,
+    earlyExit: false,
+  },
+  medium: {
+    verifiedMeal: true,
+    reviewRounds: 0,
+    samples: 1,
+    chatReview: false,
+    mealLooks: null,
+    earlyExit: false,
+  },
+  high: {
+    verifiedMeal: true,
+    reviewRounds: 1,
+    samples: 1,
+    chatReview: false,
+    mealLooks: null,
+    earlyExit: false,
+  },
   tokenmaxxing: {
     verifiedMeal: true,
     reviewRounds: 2,
     samples: 3,
     chatReview: true,
     mealLooks: { looks: 2, samplesPerLook: 2 },
+    earlyExit: true,
   },
 };
 
@@ -105,6 +135,12 @@ export const THINKING_PIPELINE: Record<ThinkingLevel, ThinkingPipeline> = {
  * `high`, since two readings are what shows where a reading is unsure: only the fields they
  * disagree on are asked again.
  */
+/**
+ * Readings an extraction takes first when its level exits early: a third is read only if these
+ * disagree somewhere. Two is the least that can show agreement.
+ */
+export const EXTRACTION_FIRST_READINGS = 2;
+
 export function extractionSamples(level: ThinkingLevel): number {
   return level === 'high' ? 2 : THINKING_PIPELINE[level].samples;
 }

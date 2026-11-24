@@ -376,7 +376,7 @@
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",
-            "description": "Birbirinden bağımsız birkaç yanıt karşılaştırılır, sonra iki kez gözden geçirilir. En yavaş, en titiz."
+            "description": "Birbirinden bağımsız birkaç yanıt karşılaştırılır, sonra en fazla iki kez gözden geçirilir. En yavaş, en titiz."
           }
         },
         "ironNote": {

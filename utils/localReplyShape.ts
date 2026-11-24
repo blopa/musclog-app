@@ -111,7 +111,17 @@ export function jsonRepairMessage(broken: string): string {
 }
 
 export type StructuredResult<T = unknown> =
-  { kind: 'ok'; value: T } | { kind: 'malformed'; raw: string };
+  | { kind: 'ok'; value: T }
+  | {
+      kind: 'malformed';
+      raw: string;
+      /**
+       * Set when the provider cut the reply off at its token limit and the reply was therefore not
+       * repaired. `finishReason` is the provider's own stop signal, never reply content.
+       */
+      reason?: 'truncated';
+      finishReason?: string;
+    };
 
 const MALFORMED_RAW_PREVIEW_CHARS = 500;
 

@@ -376,7 +376,7 @@
           },
           "tokenmaxxing": {
             "name": "Tokenmaxxing",
-            "description": "Several independent answers compared, then reviewed twice. Slowest, most careful."
+            "description": "Several independent answers compared, then reviewed up to twice. Slowest, most careful."
           }
         },
         "ironNote": {

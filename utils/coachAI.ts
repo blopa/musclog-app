@@ -22,9 +22,10 @@ import {
   OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
-import { reviewAndRevise, runSamples } from './aiPasses';
+import { reviewAndRevise, runSamples, sameValue } from './aiPasses';
 import {
   effectiveThinkingLevel,
+  EXTRACTION_FIRST_READINGS,
   extractionSamples,
   THINKING_PIPELINE,
   type ThinkingLevel,
@@ -44,6 +45,7 @@ import { resolveFoundationRefs, resolveFoundationRefsInMeals } from './foundatio
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
+import { captureMessage } from './sentry';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
@@ -72,7 +74,7 @@ import {
   stripTemplateTokens,
   type StructuredResult,
 } from './localReplyShape';
-import { consensusMeals } from './mealConsensus';
+import { consensusMeals, mealStageIsSettled } from './mealConsensus';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { MAX_MEAL_IMAGES, type MealImage, toMealImage, toMealImages } from './mealImages';
 import {
@@ -145,6 +147,7 @@ import {
 } from './prompts';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
 import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
+import { isTruncatedStop, type StopSignal } from './replyTruncation';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -591,6 +594,16 @@ async function runClaude(
   params: ClaudeParams,
   sink?: StreamSink | null
 ): Promise<string> {
+  return (await runClaudeReply(config, operation, params, sink)).text;
+}
+
+/** `runClaude` plus Claude's own stop reason, which a streamed reply does not report. */
+async function runClaudeReply(
+  config: CoachAIConfig,
+  operation: string,
+  params: ClaudeParams,
+  sink?: StreamSink | null
+): Promise<{ text: string; stopReason?: string | null }> {
   const client = buildClaudeClient(config.apiKey, 0);
   await logLlmDebugEvent({
     provider: config.provider,
@@ -601,6 +614,7 @@ async function runClaude(
   });
 
   let text: string;
+  let stopReason: string | null | undefined;
   if (sink) {
     text = await withLlmRetry(
       operation,
@@ -629,7 +643,7 @@ async function runClaude(
       client.messages.create(params, { signal })
     );
     noteUsage(config, operation, extractLlmUsage(message));
-    text = extractClaudeText(message).text;
+    ({ text, stopReason } = extractClaudeText(message));
   }
 
   await logLlmDebugEvent({
@@ -640,7 +654,7 @@ async function runClaude(
     config,
   });
 
-  return text;
+  return { text, stopReason };
 }
 
 /**
@@ -861,6 +875,11 @@ export function truncateHistoryByBudget(
 // --- Helper Functions ---
 
 function extractRawText(response: any): string {
+  return extractGeminiReply(response).text;
+}
+
+/** The answer text of a Gemini response and its `finishReason`, warning when there is no text. */
+function extractGeminiReply(response: any): { text: string; finishReason?: string } {
   const { text, finishReason, blockReason, thoughtOnly } = extractGeminiText(response);
   if (!text.trim()) {
     // An empty answer has several different causes; say which, so "analyzing forever" is debuggable.
@@ -869,7 +888,7 @@ function extractRawText(response: any): string {
     );
   }
 
-  return text;
+  return { text, finishReason };
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
@@ -1769,6 +1788,64 @@ export async function requestStructured<T = unknown>(
   return reviveLocalStructured(config, request.operation, result, schema);
 }
 
+/**
+ * Reports a reply a provider cut off at its token limit: the provider, the operation and the
+ * provider's own stop signal, never a word of the reply. Fire and forget, like the other telemetry.
+ */
+function reportTruncatedReply(
+  config: Pick<CoachAIConfig, 'provider'>,
+  operation: string,
+  stop: StopSignal
+): void {
+  try {
+    void captureMessage('ai-structured-reply-truncated', {
+      level: 'warning',
+      tags: {
+        provider: config.provider,
+        operation,
+        finishReason: stop.reason ?? 'unknown',
+      },
+      fingerprint: ['ai-structured-reply-truncated', config.provider, operation],
+    }).catch(() => {});
+  } catch {
+    // Never throws.
+  }
+}
+
+/**
+ * Reads the text of a structured reply. A provider that enforces the schema
+ * (`rejectsTruncatedStructuredReplies`) and stopped at its token limit gave a half answer: it is a
+ * failure (`malformed`, reason `truncated`), reported once and never sent through the repair ladder,
+ * which would close its braces and return a half-empty object as if it were complete. It is not
+ * retried: the same limit would cut it again. Every other reply, a complete one with fences or
+ * surrounding text included, and every reply of a provider whose schema cannot be trusted (the free
+ * tier, a local server, the on-device model), goes through `parseStructuredJson` as before.
+ */
+function readStructuredReply<T>(
+  config: CoachAIConfig,
+  operation: string,
+  raw: string,
+  stop?: StopSignal
+): StructuredResult<T> {
+  if (
+    stop &&
+    isTruncatedStop(stop) &&
+    providerPolicyFor(config).rejectsTruncatedStructuredReplies
+  ) {
+    reportTruncatedReply(config, operation, stop);
+    console.warn(`[coachAI] ${operation}: ${config.provider} cut the reply off (${stop.reason})`);
+
+    return {
+      kind: 'malformed',
+      raw: '',
+      reason: 'truncated',
+      finishReason: stop.reason ?? undefined,
+    };
+  }
+
+  return parseStructuredJson<T>(raw);
+}
+
 /** One structured request, with the schema already built in `structuredDialect(config)`. */
 async function requestStructuredOnce<T = unknown>(
   config: CoachAIConfig,
@@ -1858,7 +1935,12 @@ async function requestStructuredOnce<T = unknown>(
       config,
     });
 
-    return parseStructuredJson<T>(extractRawText(result));
+    const reply = extractGeminiReply(result);
+
+    return readStructuredReply<T>(config, operation, reply.text, {
+      source: 'gemini',
+      reason: reply.finishReason,
+    });
   }
 
   if (config.provider === 'claude') {
@@ -1868,8 +1950,12 @@ async function requestStructuredOnce<T = unknown>(
       buildClaudeMessages(history, userMessage),
       { task, schema }
     );
+    const reply = await runClaudeReply(config, operation, params);
 
-    return parseStructuredJson<T>(await runClaude(config, operation, params));
+    return readStructuredReply<T>(config, operation, reply.text, {
+      source: 'claude',
+      reason: reply.stopReason,
+    });
   }
 
   const client = buildOpenAIClient(config);
@@ -1910,7 +1996,10 @@ async function requestStructuredOnce<T = unknown>(
     config,
   });
 
-  return parseStructuredJson<T>(completion.choices[0]?.message?.content ?? '');
+  return readStructuredReply<T>(config, operation, completion.choices[0]?.message?.content ?? '', {
+    source: 'openai',
+    reason: completion.choices[0]?.finish_reason,
+  });
 }
 
 async function generateStructured<T>(
@@ -2114,12 +2203,15 @@ async function generateWithImagesStructured<T>(
       config,
     });
 
-    const raw = extractRawText(result);
-    if (!raw?.trim()) {
+    const reply = extractGeminiReply(result);
+    if (!reply.text.trim()) {
       return null;
     }
 
-    const read = parseStructuredJson<T>(raw);
+    const read = readStructuredReply<T>(config, 'generateWithImageStructured', reply.text, {
+      source: 'gemini',
+      reason: reply.finishReason,
+    });
     return read.kind === 'ok' ? read.value : null;
   }
 
@@ -2145,9 +2237,11 @@ async function generateWithImagesStructured<T>(
       ],
       { task, schema }
     );
-    const result = parseStructuredJson<T>(
-      await runClaude(config, 'generateWithImageStructured', params)
-    );
+    const reply = await runClaudeReply(config, 'generateWithImageStructured', params);
+    const result = readStructuredReply<T>(config, 'generateWithImageStructured', reply.text, {
+      source: 'claude',
+      reason: reply.stopReason,
+    });
 
     return result.kind === 'ok' ? result.value : null;
   }
@@ -2213,7 +2307,10 @@ async function generateWithImagesStructured<T>(
   const read = await reviveLocalStructured(
     config,
     'generateWithImageStructured',
-    parseStructuredJson<T>(raw),
+    readStructuredReply<T>(config, 'generateWithImageStructured', raw, {
+      source: 'openai',
+      reason: completion.choices[0]?.finish_reason,
+    }),
     strictSchema
   );
 
@@ -2471,6 +2568,12 @@ function withEstimatedMacros(
 }
 
 /**
+ * What a verified sample tells its caller beyond the meal itself: it set `rechecked` when the
+ * plausibility recheck had ingredients to re-estimate, which is a sign the first reading was unsure.
+ */
+type MealUncertaintySignals = { rechecked: boolean };
+
+/**
  * Re-estimates the ingredients of a meal whose numbers cannot all be true (`mealPlausibility`):
  * energy that the macros do not add up to, macros that weigh more than the ingredient, and so on.
  * Only ingredients without a match in the person's own foods are checked, since a match's numbers
@@ -2484,13 +2587,18 @@ async function recheckImplausibleIngredients(
   config: CoachAIConfig,
   mealName: string,
   ingredients: TrackMealIngredient[],
-  onProgress?: MealEstimateProgressListener
+  onProgress?: MealEstimateProgressListener,
+  signals?: MealUncertaintySignals
 ): Promise<TrackMealIngredient[]> {
   const suspects = ingredients.filter(
     (ingredient) => !ingredient.foodId && ingredientMacroProblems(ingredient).length > 0
   );
   if (suspects.length === 0) {
     return ingredients;
+  }
+
+  if (signals) {
+    signals.rechecked = true;
   }
 
   reportMealProgress(onProgress, { step: 'rechecking', count: suspects.length });
@@ -2619,7 +2727,8 @@ async function trackMealVerified(
   userMessage: string,
   images: readonly MealImage[] = [],
   onProgress?: MealEstimateProgressListener,
-  observation?: MealObservation
+  observation?: MealObservation,
+  signals?: MealUncertaintySignals
 ): Promise<TrackMealResponse | null> {
   const recipeResponse = await extractRecipe(config, userMessage, images, observation);
   if (!recipeResponse?.meals?.length) {
@@ -2701,7 +2810,8 @@ async function trackMealVerified(
       config,
       meal.mealName ?? meal.mealType,
       normalized,
-      onProgress
+      onProgress,
+      signals
     );
   }
 
@@ -2729,47 +2839,106 @@ async function trackMealThinking(
   // Each first look is its own request, so a mistake in one never reaches every sample. A look that
   // fails or reads as nothing is left out; with none left the estimate goes on without looks (an
   // extra request can only help, never fail the estimate), and a cancel stops everything.
-  let looks: MealObservation[] = [];
-  if (mealLooks) {
+  const takeLooks = async (count: number): Promise<MealObservation[]> => {
     reportMealProgress(onProgress, {
       step: 'observing',
       photo: images.length > 0,
       photoCount: images.length,
     });
     try {
-      looks = await runSamples(config, mealLooks.looks, () =>
-        observeMeal(config, userMessage, images)
-      );
+      return await runSamples(config, count, () => observeMeal(config, userMessage, images));
     } catch (error) {
       if (error instanceof AiCancelledError) {
         throw error;
       }
 
       reportAiError(error, 'coachAI.observeMeal');
+      return [];
     }
+  };
+
+  // With looks: `samplesPerLook` samples per look, sample `i` of a stage reading look `floor(i /
+  // perLook)` of that stage. `runSamples` leaves failed samples out, so each answered sample keeps
+  // the look it read and whether it needed the plausibility recheck. Only the first sample of a
+  // stage reports its steps: several at once would interleave their lines.
+  const perLook = mealLooks?.samplesPerLook ?? 1;
+  const samples: TrackMealResponse[] = [];
+  const groups: number[] = [];
+  const takeStage = async (stageLooks: MealObservation[], firstLook: number, count: number) => {
+    const lookOf: number[] = [];
+    const rechecked: boolean[] = [];
+    const answers = await runSamples(config, count, async (index) => {
+      const look = stageLooks.length > 0 ? Math.floor(index / perLook) : -1;
+      const signals: MealUncertaintySignals = { rechecked: false };
+      const answer = await trackMealVerified(
+        config,
+        userMessage,
+        images,
+        index === 0 ? onProgress : undefined,
+        look >= 0 ? stageLooks[look] : undefined,
+        signals
+      );
+      if (answer) {
+        lookOf[index] = look >= 0 ? firstLook + look : -1;
+        rechecked[index] = signals.rechecked;
+      }
+
+      return answer;
+    });
+    samples.push(...answers);
+    // Both arrays are indexed by request, so keep the entries of the samples that answered.
+    groups.push(...lookOf.filter((look) => look !== undefined));
+
+    return { answers, rechecked: rechecked.filter((flag) => flag !== undefined) };
+  };
+
+  const looks: MealObservation[] = [];
+  if (mealLooks && pipeline.earlyExit) {
+    // Stage 1: ONE first look and the samples that read it. When they agree and nothing flags doubt
+    // (the look lists nothing uncertain, no sample needed the plausibility recheck) the estimate is
+    // stable and the remaining looks are never made. Anything else, a first look that failed or read
+    // as nothing, or samples that all failed, goes on to stage 2: the remaining looks and theirs.
+    const [first] = await takeLooks(1);
+    let settled = false;
+    if (first) {
+      looks.push(first);
+      try {
+        const stage = await takeStage([first], 0, perLook);
+        settled = mealStageIsSettled({
+          samples: stage.answers,
+          look: first,
+          rechecked: stage.rechecked,
+        });
+      } catch (error) {
+        if (error instanceof AiCancelledError) {
+          throw error;
+        }
+
+        reportAiError(error, 'coachAI.trackMealFirstStage');
+      }
+    }
+
+    if (!settled && mealLooks.looks > 1) {
+      const more = await takeLooks(mealLooks.looks - 1);
+      const firstLook = looks.length;
+      looks.push(...more);
+      if (more.length > 0) {
+        await takeStage(more, firstLook, more.length * perLook);
+      }
+    }
+
+    if (looks.length === 0) {
+      // No look read anything: the estimate goes on without looks, as it does at every level.
+      await takeStage([], 0, pipeline.samples);
+    }
+  } else {
+    if (mealLooks) {
+      looks.push(...(await takeLooks(mealLooks.looks)));
+    }
+
+    await takeStage(looks, 0, looks.length > 0 ? looks.length * perLook : pipeline.samples);
   }
 
-  // With looks: `samplesPerLook` samples per look, sample `i` reading look `floor(i / perLook)`, and
-  // `lookOf` remembers which look each ANSWERED sample read (`runSamples` leaves failed ones out).
-  const perLook = mealLooks?.samplesPerLook ?? 1;
-  const total = looks.length > 0 ? looks.length * perLook : pipeline.samples;
-  const lookOf: number[] = [];
-  // Only the first sample reports its steps: several samples at once would interleave their lines.
-  const samples = await runSamples(config, total, async (index) => {
-    const look = looks.length > 0 ? Math.floor(index / perLook) : -1;
-    const answer = await trackMealVerified(
-      config,
-      userMessage,
-      images,
-      index === 0 ? onProgress : undefined,
-      look >= 0 ? looks[look] : undefined
-    );
-    if (answer) {
-      lookOf[index] = look;
-    }
-
-    return answer;
-  });
   if (samples.length === 0) {
     return null;
   }
@@ -2777,9 +2946,7 @@ async function trackMealThinking(
   let draft = samples[0];
   if (samples.length > 1) {
     reportMealProgress(onProgress, { step: 'comparing', count: samples.length });
-    // `lookOf` is indexed by request, so keep the entries of the samples that answered, in order.
-    const answeredLooks = lookOf.filter((look) => look !== undefined);
-    draft = consensusMeals(samples, looks.length > 1 ? answeredLooks : undefined);
+    draft = consensusMeals(samples, looks.length > 1 ? groups : undefined);
   }
 
   if (pipeline.reviewRounds === 0) {
@@ -2800,6 +2967,7 @@ async function trackMealThinking(
     },
     accept: (current, revised) => countMealProblems(revised) <= countMealProblems(current),
     onError: (error) => reportAiError(error, 'coachAI.reviewTrackedMeal'),
+    isUnchanged: pipeline.earlyExit ? sameValue : undefined,
   });
 }
 
@@ -3090,7 +3258,8 @@ async function generateInsight(
     recentConversation?.length
       ? generateTextWithHistory(config, systemPrompt, recentConversation, message, target)
       : generateText(config, systemPrompt, message, target);
-  const rounds = THINKING_PIPELINE[await thinkingLevelFor(config)].reviewRounds;
+  const pipeline = THINKING_PIPELINE[await thinkingLevelFor(config)];
+  const rounds = pipeline.reviewRounds;
   if (rounds === 0) {
     return ask(userMessage, stream);
   }
@@ -3122,6 +3291,7 @@ async function generateInsight(
       revised.trim() !== '' &&
       ungroundedFigures(revised, data).length <= ungroundedFigures(current, data).length,
     onError: (error) => reportAiError(error, 'coachAI.factCheckInsight'),
+    isUnchanged: pipeline.earlyExit ? sameValue : undefined,
   });
   stream?.onText(final);
 
@@ -3144,7 +3314,8 @@ async function generatePlan<T>(
     return null;
   }
 
-  const rounds = THINKING_PIPELINE[await thinkingLevelFor(config)].reviewRounds;
+  const pipeline = THINKING_PIPELINE[await thinkingLevelFor(config)];
+  const rounds = pipeline.reviewRounds;
   if (rounds === 0) {
     return draft;
   }
@@ -3155,6 +3326,7 @@ async function generatePlan<T>(
     critique: (current) => request(getPlanReviewMessage(current, findingsOf(current))),
     accept: (current, revised) => findingsOf(revised).length <= findingsOf(current).length,
     onError: (error) => reportAiError(error, 'coachAI.reviewPlan'),
+    isUnchanged: pipeline.earlyExit ? sameValue : undefined,
   });
 }
 
@@ -3774,29 +3946,54 @@ export async function estimateNutritionFromPhoto(
 
 /**
  * One extraction (a label, past workouts, a food log) at the person's thinking level. Off and
- * Medium make the single request they always made; High reads the input twice and Tokenmaxxing
- * three times (`extractionSamples`), and code combines the readings field by field
- * (`combineExtractions`). Only when they disagree is one more request made: the same request with
- * the readings and the disputed fields appended, whose answer is used when it parses. A failed
- * arbiter keeps the combined readings; a cancel stops everything.
+ * Medium make the single request they always made; High reads the input twice, together, and
+ * Tokenmaxxing reads it twice and takes a third reading only when the first two disagree on some
+ * field (`extractionSamples`, `EXTRACTION_FIRST_READINGS`). Code combines the readings field by field
+ * (`combineExtractions`). Only when they still disagree is one more request made: the same request
+ * with the readings and the disputed fields appended, whose answer is used when it parses. A failed
+ * reading is dropped and a failed arbiter keeps the combined readings; a cancel stops everything.
  */
 async function extractWithConsensus<T>(
   config: CoachAIConfig,
   request: (extra?: string) => Promise<T | null | undefined>
 ): Promise<T | null> {
-  const samples = extractionSamples(await thinkingLevelFor(config));
+  const level = await thinkingLevelFor(config);
+  const samples = extractionSamples(level);
   if (samples <= 1) {
     return (await request()) ?? null;
   }
 
-  const readings = await runSamples(config, samples, () => request());
+  // A level that exits early reads `EXTRACTION_FIRST_READINGS` first and takes the rest only when
+  // those disagree; the others read everything at once.
+  const earlyExit = THINKING_PIPELINE[level].earlyExit;
+  const firstReadings = earlyExit ? Math.min(EXTRACTION_FIRST_READINGS, samples) : samples;
+  let readings = await runSamples(config, firstReadings, () => request());
   if (readings.length <= 1) {
     return readings[0] ?? null;
   }
 
-  const { value, disputed } = combineExtractions(readings);
+  let { value, disputed } = combineExtractions(readings);
   if (disputed.length === 0) {
     return value as T;
+  }
+
+  if (samples > firstReadings) {
+    // The first readings disagree: one more reading, which only ever adds evidence. A failed one is
+    // dropped and the arbiter below still runs on what there is; a cancel stops everything.
+    try {
+      const more = await runSamples(config, samples - firstReadings, () => request());
+      readings = [...readings, ...more];
+      ({ value, disputed } = combineExtractions(readings));
+      if (disputed.length === 0) {
+        return value as T;
+      }
+    } catch (error) {
+      if (error instanceof AiCancelledError) {
+        throw error;
+      }
+
+      reportAiError(error, 'coachAI.extractionExtraReading');
+    }
   }
 
   try {

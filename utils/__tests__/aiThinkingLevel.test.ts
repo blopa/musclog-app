@@ -1,4 +1,5 @@
 import {
+  EXTRACTION_FIRST_READINGS,
   effectiveThinkingLevel,
   extractionSamples,
   parseThinkingLevel,
@@ -62,6 +63,7 @@ describe('THINKING_PIPELINE', () => {
       samples: 1,
       chatReview: false,
       mealLooks: null,
+      earlyExit: false,
     });
     expect(THINKING_PIPELINE.medium).toEqual({
       verifiedMeal: true,
@@ -69,7 +71,20 @@ describe('THINKING_PIPELINE', () => {
       samples: 1,
       chatReview: false,
       mealLooks: null,
+      earlyExit: false,
     });
+  });
+
+  it('exits early only at tokenmaxxing', () => {
+    expect(THINKING_PIPELINE.off.earlyExit).toBe(false);
+    expect(THINKING_PIPELINE.medium.earlyExit).toBe(false);
+    expect(THINKING_PIPELINE.high.earlyExit).toBe(false);
+    expect(THINKING_PIPELINE.tokenmaxxing.earlyExit).toBe(true);
+  });
+
+  it('takes first extraction readings below the tokenmaxxing ceiling', () => {
+    expect(EXTRACTION_FIRST_READINGS).toBe(2);
+    expect(EXTRACTION_FIRST_READINGS).toBeLessThan(extractionSamples('tokenmaxxing'));
   });
 
   it('gives only tokenmaxxing first looks at a meal: two looks, two samples each', () => {
