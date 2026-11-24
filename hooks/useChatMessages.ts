@@ -235,6 +235,9 @@ export type UseChatMessagesResult = {
   /** When set, the last send failed and this text should be shown in the input so the user can retry. */
   failedMessageText: string | null;
   clearFailedMessageText: () => void;
+  /** Base64 photo of a Track Meal send that failed; the composer takes it back as an attachment. */
+  failedMessageImage: string | null;
+  clearFailedMessageImage: () => void;
   /** Ephemeral coach error message (not persisted). Shown in UI until user sends again. */
   ephemeralErrorAsMessage: ExtendedIMessage | null;
   /** True when the last error was due to insufficient AI credits/quota. */
@@ -282,6 +285,7 @@ export function useChatMessages(
   const [hasMore, setHasMore] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [failedMessageText, setFailedMessageText] = useState<string | null>(null);
+  const [failedMessageImage, setFailedMessageImage] = useState<string | null>(null);
   const [ephemeralErrorMessage, setEphemeralErrorMessage] = useState<string | null>(null);
   const [ephemeralCreditsError, setEphemeralCreditsError] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<ChatIntention | null>(null);
@@ -483,6 +487,10 @@ export function useChatMessages(
     setFailedMessageText(null);
   }, []);
 
+  const clearFailedMessageImage = useCallback(() => {
+    setFailedMessageImage(null);
+  }, []);
+
   const deleteMessage = useCallback(
     async (messageId: string | number) => {
       const id = String(messageId);
@@ -566,6 +574,7 @@ export function useChatMessages(
       clearFailedMessageText(); // Clear input immediately when user sends; if request fails we set it again
       setIsSending(true);
       let userRecord: ChatMessage | null = null;
+      const draftCleanup = { run: () => {} };
       try {
         // 1. Check for pending chat intention (e.g., GENERATE_MY_WORKOUTS)
         const pendingIntention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
@@ -580,6 +589,34 @@ export function useChatMessages(
         // remains in the composer while this async work runs, and a failed estimate leaves no
         // persisted chat row to clean up.
         const deferredTrackMealMessage = pendingIntention === TRACK_MEAL && !!base64Image;
+
+        // The row is not saved yet, but the bubble is shown at once, in memory only. A failure
+        // removes it and hands the photo back to the composer; a success replaces it with the
+        // saved row.
+        const draftId = deferredTrackMealMessage ? `draft-${randomUUID()}` : null;
+        const discardDraft = () => {
+          if (draftId) {
+            setMessages((prev) => prev.filter((m) => m._id !== draftId));
+            setFailedMessageImage(base64Image ?? null);
+          }
+        };
+
+        draftCleanup.run = discardDraft;
+        if (draftId && base64Image) {
+          setMessages((prev) => [
+            {
+              _id: draftId,
+              text: text.trim() || t('coach.imageSent'),
+              createdAt: new Date(),
+              user: { _id: 1 },
+              image: base64Image.startsWith('data:')
+                ? base64Image
+                : `data:image/jpeg;base64,${base64Image}`,
+            },
+            ...prev,
+          ]);
+        }
+
         // 2. Persist ordinary messages immediately. Track Meal saves its message after success.
         const imagePayload: ImagePayload | undefined = base64Image
           ? { type: 'image', image: base64Image }
@@ -592,7 +629,10 @@ export function useChatMessages(
             payloadJson: imagePayload ? JSON.stringify(imagePayload) : undefined,
           });
           rawMessagesRef.current = [...rawMessagesRef.current, savedRecord];
-          setMessages((prev) => [toGiftedMessage(savedRecord), ...prev]);
+          setMessages((prev) => [
+            toGiftedMessage(savedRecord),
+            ...prev.filter((m) => m._id !== draftId),
+          ]);
           setCurrentOffset((prev) => prev + 1);
 
           return savedRecord;
@@ -614,6 +654,7 @@ export function useChatMessages(
             setMessages((prev) => prev.filter((m) => m._id !== recordId));
           }
 
+          discardDraft();
           setFailedMessageText(text.trim());
           setEphemeralErrorMessage(t('coach.errors.aiNotConfigured'));
           return;
@@ -893,6 +934,7 @@ export function useChatMessages(
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
 
+            discardDraft();
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
               intentionNeedsCloudAi(TRACK_MEAL, aiConfig.provider)
@@ -984,6 +1026,7 @@ export function useChatMessages(
         }
       } catch (error) {
         console.error('[useChatMessages] sendMessage error:', error);
+        draftCleanup.run();
         if (userRecord) {
           // Revert user message and restore text to input so user can retry
           const recordId = userRecord.id;
@@ -1157,6 +1200,8 @@ export function useChatMessages(
     addPendingCoachMessage,
     clearPendingCoachMessage,
     failedMessageText,
+    failedMessageImage,
+    clearFailedMessageImage,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
     isCreditsError: ephemeralCreditsError,

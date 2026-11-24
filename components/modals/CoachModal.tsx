@@ -678,6 +678,8 @@ export function CoachModal({
     addPendingCoachMessage,
     clearPendingCoachMessage,
     failedMessageText,
+    failedMessageImage,
+    clearFailedMessageImage,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
     isCreditsError,
@@ -708,7 +710,10 @@ export function CoachModal({
     ingredients: TrackMealIngredient[];
   } | null>(null);
   const [attachedImage, setAttachedImage] = useState<{ uri: string; base64: string } | null>(null);
-  const photoSendInProgress = isSending && attachedImage !== null;
+  // The photo leaves the composer when a Track Meal send starts (its bubble shows in the chat),
+  // so `photoSent` keeps the controls locked until the estimate finishes.
+  const [photoSent, setPhotoSent] = useState(false);
+  const photoSendInProgress = isSending && (attachedImage !== null || photoSent);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isQuickSettingsVisible, setIsQuickSettingsVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
@@ -744,6 +749,23 @@ export function CoachModal({
       clearImage();
     }
   }, [pendingIntention, attachedImage]);
+
+  // A failed Track Meal send gives the photo back as an attachment, ready to retry.
+  useEffect(() => {
+    if (failedMessageImage) {
+      const restoreImage = () => {
+        setAttachedImage({
+          uri: failedMessageImage.startsWith('data:')
+            ? failedMessageImage
+            : `data:image/jpeg;base64,${failedMessageImage}`,
+          base64: failedMessageImage,
+        });
+        clearFailedMessageImage();
+      };
+
+      restoreImage();
+    }
+  }, [failedMessageImage, clearFailedMessageImage]);
 
   useKeepScreenAwake('coach-chat-sending', visible && isSending);
 
@@ -808,8 +830,10 @@ export function CoachModal({
         // composer would repopulate with the prefill right after sending.
         setPrefillText(null);
         sendMessage(text ?? '', image);
-        // Keep the photo in the composer while Track Meal runs. On success the intention is
-        // disarmed and the existing effect clears it; on failure the image remains retryable.
+        // The photo shows in the chat at once; if the estimate fails the hook hands it back
+        // (failedMessageImage) and it returns to the composer.
+        setPhotoSent(!!image);
+        setAttachedImage(null);
         setComposerResetKey((k) => k + 1);
       }
     },

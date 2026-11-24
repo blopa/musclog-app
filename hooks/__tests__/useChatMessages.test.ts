@@ -436,6 +436,15 @@ describe('useChatMessages with the reply service', () => {
       await waitFor(() => expect(trackMeal).toHaveBeenCalled());
       expect(result.current.isSending).toBe(true);
       expect(mockSaveMessage).not.toHaveBeenCalled();
+      // The message is already in the chat, in memory only, while the estimate runs.
+      expect(result.current.messages).toHaveLength(1);
+      expect(result.current.messages[0]).toEqual(
+        expect.objectContaining({
+          text: 'Lunch',
+          image: 'data:image/jpeg;base64,base64-photo',
+        })
+      );
+      expect(String(result.current.messages[0]._id)).toMatch(/^draft-/);
 
       await act(async () => {
         resolve(estimate);
@@ -465,6 +474,7 @@ describe('useChatMessages with the reply service', () => {
       expect(mockSaveMessage).not.toHaveBeenCalled();
       expect(result.current.messages).toHaveLength(0);
       expect(result.current.failedMessageText).toBe('Dinner');
+      expect(result.current.failedMessageImage).toBe('base64-photo');
       expect(result.current.ephemeralErrorAsMessage?.text).toBe('coach.errors.generalError');
     });
   });
