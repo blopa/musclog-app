@@ -52,6 +52,8 @@ import {
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_RETRY_TEMPERATURE,
   localFoodIdentifyPrompt,
+  localJsonRepairMessage,
+  localJsonRepairPrompt,
   mealTypeForHour,
   parseIdentifiedFoods,
   pickFoodMatch,
@@ -2965,9 +2967,52 @@ async function estimateMealFromPhotoOnDevice(
       temperature: LOCAL_PHOTO_RETRY_TEMPERATURE,
     });
     traceLocalModel('photo-retry', { firstReplyChars: raw.length });
+    const firstRaw = raw;
     raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
     logLocal('photo raw reply (retry)', { chars: raw.length, text: raw });
     parsed = readPhotoReply(raw);
+
+    // Last resort before giving up: one text-only call that is asked to correct the broken reply
+    // (no photo, so the projector stays unloaded), read by the same parser and schema check. It
+    // only ever runs after both photo attempts failed, so a good run never pays for it.
+    const broken = [raw, firstRaw].find((text) => text.trim() !== '');
+    if (parsed.kind !== 'ok' && broken) {
+      logLocal('photo reply still unusable; asking the model to repair it', {
+        brokenChars: broken.length,
+      });
+      traceLocalModel('photo-repair-call', { brokenChars: broken.length });
+      try {
+        const repairedRaw = await withLlmRetry(
+          'estimateNutritionFromPhoto.repair',
+          config,
+          (signal) =>
+            sendLocalStructuredRaw(
+              [{ role: 'user', content: localJsonRepairMessage(broken) }],
+              localJsonRepairPrompt(),
+              LOCAL_FOOD_IDENTIFY_SCHEMA,
+              { signal }
+            )
+        );
+        logLocal('photo repair reply', { chars: repairedRaw.length, text: repairedRaw });
+        const repairedParsed = readPhotoReply(repairedRaw);
+        if (repairedParsed.kind === 'ok') {
+          parsed = repairedParsed;
+          raw = repairedRaw;
+          // Worth knowing in Sentry: the broken reply was recoverable by the model.
+          await reportLocalOutcome('model-repaired', {
+            brokenChars: broken.length,
+            ...diagnoseLocalReply(broken, LOCAL_FOOD_IDENTIFY_SCHEMA),
+          });
+        }
+      } catch (repairError) {
+        // A cancel is the person's; any other failure of the repair call leaves the original failure.
+        if (repairError instanceof AiCancelledError) {
+          throw repairError;
+        }
+
+        logLocal('photo repair call failed', describeLogError(repairError));
+      }
+    }
   }
 
   const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];

@@ -3,7 +3,10 @@ import {
   type FoodCandidate,
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_UNMATCHED_FOOD_ID,
+  localJsonRepairMessage,
+  localJsonRepairPrompt,
   MAX_IDENTIFIED_FOODS,
+  MAX_REPAIR_INPUT_CHARS,
   MAX_IDENTIFIED_NAME_CHARS,
   mealTypeForHour,
   parseIdentifiedFoods,
@@ -153,6 +156,15 @@ describe('LOCAL_FOOD_IDENTIFY_SCHEMA name bound', () => {
   it('asks for names no longer than the parser keeps', () => {
     expect(LOCAL_FOOD_IDENTIFY_SCHEMA.properties.items.items.properties.name.maxLength).toBe(
       MAX_IDENTIFIED_NAME_CHARS
+    );
+  });
+});
+
+describe('repair call prompts', () => {
+  it('names the schema and caps what is sent back', () => {
+    expect(localJsonRepairPrompt()).toContain('"items"');
+    expect(localJsonRepairMessage('x'.repeat(MAX_REPAIR_INPUT_CHARS + 500)).length).toBeLessThan(
+      MAX_REPAIR_INPUT_CHARS + 40
     );
   });
 });

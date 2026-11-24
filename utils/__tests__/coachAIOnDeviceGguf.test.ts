@@ -297,13 +297,48 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
     expect(await estimateNutritionFromPhoto(gguf, 'AAAA')).toBeNull();
   });
 
-  it('returns null when the reply breaks the schema, after one warmer retry', async () => {
+  it('returns null when the reply breaks the schema, after a warmer retry and one repair call', async () => {
     mockSendLocalStructuredRaw.mockResolvedValue('{"foods":["rice"]}');
     expect(await estimateNutritionFromPhoto(gguf, 'AAAA')).toBeNull();
 
-    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(2);
+    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(3);
     expect(mockSendLocalStructuredRaw.mock.calls[0][3].temperature).toBeUndefined();
     expect(mockSendLocalStructuredRaw.mock.calls[1][3].temperature).toBe(0.3);
+  });
+
+  it('asks the model once, text only, to repair the broken reply, and uses the answer', async () => {
+    mockSendLocalStructuredRaw
+      .mockResolvedValueOnce('garbage one')
+      .mockResolvedValueOnce('garbage two')
+      .mockResolvedValueOnce('{"items":[{"name":"white rice","grams":150}]}');
+    mockSearchFoods.mockImplementation(async () => [food('food-rice', 'White rice')]);
+
+    const result = await estimateNutritionFromPhoto(gguf, 'AAAA');
+
+    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(3);
+    const [messages, systemPrompt, , options] = mockSendLocalStructuredRaw.mock.calls[2];
+    expect(messages[0].content).toContain('garbage two');
+    expect(systemPrompt).toMatch(/repair/i);
+    expect(options.image).toBeUndefined();
+    expect(result?.meals[0].ingredients.length).toBeGreaterThan(0);
+  });
+
+  it('survives a failing repair call and reports the original failure as null', async () => {
+    mockSendLocalStructuredRaw
+      .mockResolvedValueOnce('garbage one')
+      .mockResolvedValueOnce('garbage two')
+      .mockRejectedValueOnce(new Error('engine blew up'));
+
+    expect(await estimateNutritionFromPhoto(gguf, 'AAAA')).toBeNull();
+  });
+
+  it('lets a cancel during the repair call through', async () => {
+    mockSendLocalStructuredRaw
+      .mockResolvedValueOnce('garbage one')
+      .mockResolvedValueOnce('garbage two')
+      .mockRejectedValueOnce(new AiCancelledError());
+
+    await expect(estimateNutritionFromPhoto(gguf, 'AAAA')).rejects.toBeInstanceOf(AiCancelledError);
   });
 
   it('uses the retry when the first reply is unusable', async () => {
@@ -322,6 +357,7 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
     mockSendLocalStructuredRaw.mockResolvedValue('{"items":[]}');
     await estimateNutritionFromPhoto(gguf, 'AAAA');
 
+    // A valid answer, even an empty one, never reaches the retry or the repair call.
     expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(1);
   });
 });
