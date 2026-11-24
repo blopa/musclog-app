@@ -7,6 +7,7 @@ import type {
   WorkoutHistoryDays,
 } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
+import type { ThinkingLevel } from '@/utils/aiThinkingLevel';
 
 import { useSettings } from './useSettings';
 
@@ -73,7 +74,7 @@ export function useDebouncedSettings(debounceMs = 200) {
         'useOnDeviceAi',
         'useMusclogFreeTier',
         'sendFoundationFoodsToLlm',
-        'useThinkingMode',
+        'thinkingLevel',
         'units',
         'foodSearchSource',
         'conversationContext',
@@ -298,9 +299,8 @@ export function useDebouncedSettings(debounceMs = 200) {
     'sendFoundationFoodsToLlm',
     SettingsService.setSendFoundationFoodsToLlm
   );
-  const handleUseThinkingModeChange = createSettingHandler(
-    'useThinkingMode',
-    SettingsService.setUseThinkingMode
+  const handleThinkingLevelChange = createSettingHandler('thinkingLevel', (level: ThinkingLevel) =>
+    SettingsService.set(SETTINGS.thinkingLevel, level)
   );
   const handleFoodSearchSourceChange = createSettingHandler(
     'foodSearchSource',
@@ -465,8 +465,8 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'sendFoundationFoodsToLlm':
             await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
             break;
-          case 'useThinkingMode':
-            await SettingsService.setUseThinkingMode(value as boolean);
+          case 'thinkingLevel':
+            await SettingsService.set(SETTINGS.thinkingLevel, value as ThinkingLevel);
             break;
           case 'foodSearchSource':
             await SettingsService.setFoodSearchSource(value as any);
@@ -592,7 +592,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
-    useThinkingMode: (localSettings.useThinkingMode as boolean) ?? actualSettings.useThinkingMode,
+    thinkingLevel: (localSettings.thinkingLevel as ThinkingLevel) ?? actualSettings.thinkingLevel,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
     language: (localSettings.language as string) ?? actualSettings.language,
@@ -665,7 +665,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleUseOnDeviceAiChange,
     handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
-    handleUseThinkingModeChange,
+    handleThinkingLevelChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
     handleChartTooltipPositionChange,

@@ -220,6 +220,8 @@ export type UseChatMessagesResult = {
    * until the first words arrive, and again once the finished reply is among `messages`.
    */
   streamingMessage: ExtendedIMessage | null;
+  /** `reviewing` while a reply that is double-checked before it is shown has no text yet. */
+  replyPhase: 'reviewing' | null;
   pendingIntention: ChatIntention | null;
   isLoading: boolean;
   isLoadingMore: boolean;
@@ -1170,6 +1172,8 @@ export function useChatMessages(
     : null;
   // Sending stays off from the moment the message goes out until the reply is saved.
   const isReplyPending = replyHere !== null;
+  // A Tokenmaxxing reply is drafted unseen and then double-checked: said while nothing shows yet.
+  const replyPhase = replyHere && !replyHere.text ? (replyHere.phase ?? null) : null;
 
   const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {
     if (!ephemeralErrorMessage) {
@@ -1189,6 +1193,7 @@ export function useChatMessages(
     messages,
     pendingCoachMessage,
     streamingMessage,
+    replyPhase,
     isLoading,
     isLoadingMore,
     isSending: isSending || isReplyPending,

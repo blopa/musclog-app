@@ -1,8 +1,8 @@
-import { type CoachAIConfig, requestStructured } from '../coachAI';
+import { type CoachAIConfig, requestStructured, thinkingLevelFor } from '../coachAI';
 
 const mockCreate = jest.fn();
 const mockClaudeCreate = jest.fn();
-const mockThinking = { on: false };
+const mockThinking: { level: 'off' | 'medium' | 'high' | 'tokenmaxxing' } = { level: 'off' };
 const mockFetchPremiumConfig = jest.fn();
 
 jest.mock('openai', () => {
@@ -40,7 +40,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: jest.fn(async () => mockThinking.on),
+    get: jest.fn(async () => mockThinking.level),
     getSendFoundationFoodsToLlm: jest.fn(async () => false),
   },
 }));
@@ -74,7 +74,7 @@ describe('reasoning effort per job', () => {
     mockClaudeCreate.mockReset();
     mockCreate.mockResolvedValue(openAiReply);
     mockClaudeCreate.mockResolvedValue(claudeReply);
-    mockThinking.on = false;
+    mockThinking.level = 'off';
     mockFetchPremiumConfig.mockReset();
   });
 
@@ -92,7 +92,7 @@ describe('reasoning effort per job', () => {
     });
 
     it('sends high effort for an extraction job with thinking on', async () => {
-      mockThinking.on = true;
+      mockThinking.level = 'high';
       await requestStructured(openai, request('extraction'));
       expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'high' });
     });
@@ -122,7 +122,7 @@ describe('reasoning effort per job', () => {
     it.each(configs.map((config) => [config.provider, config] as const))(
       '%s never carries reasoning_effort',
       async (_name, config) => {
-        mockThinking.on = true;
+        mockThinking.level = 'high';
         await requestStructured(config, request('planning'));
         expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('reasoning_effort');
       }
@@ -142,14 +142,14 @@ describe('reasoning effort per job', () => {
       await requestStructured(hosted, request('planning'));
       expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'medium' });
 
-      mockThinking.on = true;
+      mockThinking.level = 'high';
       await requestStructured(hosted, request('extraction'));
       expect(mockCreate.mock.calls[1][0]).toMatchObject({ reasoning_effort: 'high' });
     });
 
     it('sends nothing to a Worker that does not take it (an older deploy would answer 400)', async () => {
       mockFetchPremiumConfig.mockResolvedValue({ ok: true, value: { reasoningEffort: false } });
-      mockThinking.on = true;
+      mockThinking.level = 'high';
       await requestStructured(hosted, request('planning'));
       expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('reasoning_effort');
     });
@@ -162,7 +162,7 @@ describe('reasoning effort per job', () => {
       ],
     ])('still sends the request, without an effort, after %s', async (_name, arrange) => {
       arrange();
-      mockThinking.on = true;
+      mockThinking.level = 'high';
       await requestStructured(hosted, request('planning'));
       expect(mockCreate).toHaveBeenCalledTimes(1);
       expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('reasoning_effort');
@@ -188,8 +188,50 @@ describe('reasoning effort per job', () => {
     });
 
     it('sends high output effort with thinking on', async () => {
-      mockThinking.on = true;
+      mockThinking.level = 'high';
       await requestStructured(claude, request('planning'));
+      expect(mockClaudeCreate.mock.calls[0][0].output_config).toMatchObject({ effort: 'high' });
+    });
+  });
+  describe('tokenmaxxing', () => {
+    it('sends Claude effort max and OpenAI reasoning_effort high', async () => {
+      mockThinking.level = 'tokenmaxxing';
+      await requestStructured(
+        { provider: 'claude', model: 'claude-opus-5-5', apiKey: 'k', language: 'en-US' },
+        request('planning')
+      );
+      expect(mockClaudeCreate.mock.calls[0][0].output_config).toMatchObject({ effort: 'max' });
+
+      await requestStructured(
+        { provider: 'openai', model: 'gpt-test', apiKey: 'k', baseUrl: 'https://api.example/v1' },
+        request('planning')
+      );
+      expect(mockCreate.mock.calls[0][0]).toMatchObject({ reasoning_effort: 'high' });
+    });
+
+    it('treats the free tier exactly like off', async () => {
+      const gateway = {
+        provider: 'gateway',
+        model: 'google/gemma-4-31b-it:free',
+        apiKey: 'k',
+        baseUrl: 'https://openrouter.ai/api/v1',
+      } as CoachAIConfig;
+      mockThinking.level = 'tokenmaxxing';
+      expect(await thinkingLevelFor(gateway)).toBe('off');
+      mockThinking.level = 'off';
+      expect(await thinkingLevelFor(gateway)).toBe('off');
+    });
+
+    it('caps a background task at high', async () => {
+      mockThinking.level = 'tokenmaxxing';
+      const cfg = {
+        provider: 'claude',
+        model: 'claude-opus-5-5',
+        apiKey: 'k',
+        background: true,
+      } as CoachAIConfig;
+      expect(await thinkingLevelFor(cfg)).toBe('high');
+      await requestStructured(cfg, request('planning'));
       expect(mockClaudeCreate.mock.calls[0][0].output_config).toMatchObject({ effort: 'high' });
     });
   });

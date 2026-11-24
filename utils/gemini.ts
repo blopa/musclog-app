@@ -241,7 +241,7 @@ export function geminiModelFamily(model: string | undefined): GeminiModelFamily 
  * The generation config for a JSON call, for the given per-job effort (`utils/aiEffort.ts`).
  * `minimal` asks the model to think as little as its family allows (the family's lowest level or
  * budget, `GEMINI_MODEL_CAPABILITIES.structured`); `low` and `medium` map to the matching
- * `thinkingLevel` on level families; `high` leaves thinking to the model's own default. On budget
+ * `thinkingLevel` on level families; `high` leaves thinking to the model's own default and `max` asks for `thinkingLevel` HIGH explicitly. On budget
  * families (2.5) `minimal` and `low` use the lowest budget and `medium`/`high` leave it to the
  * model. Exactly one of `thinkingLevel` / `thinkingBudget` is ever set, and an unknown model gets
  * neither rather than a field it might reject.
@@ -268,6 +268,9 @@ export function buildGeminiGenerationConfig(
   } else if (capability.kind === 'budget') {
     if (options.effort === 'minimal' || options.effort === 'low') {
       config.thinkingConfig = { thinkingBudget: capability.structured };
+    } else if (options.effort === 'max') {
+      // -1 is the dynamic budget: the model decides how much to think, up to its own ceiling.
+      config.thinkingConfig = { thinkingBudget: -1 };
     }
   }
 
@@ -285,5 +288,7 @@ function levelForEffort(effort: AiEffort, lowest: ThinkingLevel): ThinkingLevel 
       return ThinkingLevel.MEDIUM;
     case 'high':
       return undefined;
+    case 'max':
+      return ThinkingLevel.HIGH;
   }
 }

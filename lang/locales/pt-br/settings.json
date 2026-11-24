@@ -349,9 +349,45 @@
       "promptContextNutrition": "Nutrição",
       "promptContextExercise": "Exercício",
       "memorySettings": "Configurações de memória",
-      "useThinkingMode": "Usar modo de pensamento",
-      "useThinkingModeSubtitle": "Permitir que provedores de IA usem raciocínio mais profundo quando compatível. Isso consome mais tokens e pode aumentar o custo.",
-      "useThinkingModeIronNote": "Com o Musclog Iron, pensar mais a fundo e as verificações extras usam mais da sua cota mensal de IA.",
+      "thinkingLevel": {
+        "label": "Nível de raciocínio",
+        "freeTierNote": "O nível gratuito responde sem raciocínio extra: a cota diária é compartilhada por todos.",
+        "onDeviceNote": "Níveis mais altos fazem mais verificações no seu celular, então as respostas demoram mais.",
+        "levels": {
+          "off": {
+            "name": "Desligado",
+            "description": "Respostas rápidas. Cada tarefa raciocina o quanto precisa."
+          },
+          "medium": {
+            "name": "Médio",
+            "description": "Raciocina com mais cuidado e confere os alimentos de uma refeição no seu banco de dados antes de estimar."
+          },
+          "high": {
+            "name": "Alto",
+            "description": "Médio, mais um segundo pedido que revisa a resposta e corrige o que não bate."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Várias respostas independentes são comparadas e depois revisadas duas vezes. O mais lento, o mais cuidadoso."
+          }
+        },
+        "ironNote": {
+          "medium": "Usa um pouco mais da sua cota mensal do Musclog Iron.",
+          "high": "Usa mais da sua cota mensal do Musclog Iron.",
+          "tokenmaxxing": "Pode usar sua cota mensal do Musclog Iron várias vezes mais rápido."
+        },
+        "confirmHigh": {
+          "title": "Usar o nível Alto?",
+          "message": "O Alto faz um pedido extra de verificação na maioria das respostas, então usa mais da sua cota mensal do Musclog Iron. Você pode voltar a qualquer momento.",
+          "confirm": "Continuar"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Usar o Tokenmaxxing?",
+          "message": "O Tokenmaxxing faz vários pedidos para cada resposta, então pode usar sua cota mensal do Musclog Iron várias vezes mais rápido. Nunca custa mais que sua assinatura: quando a cota deste período acaba, ela é renovada no próximo período.",
+          "confirm": "Continuar",
+          "authPrompt": "Confirme que é você para ativar o Tokenmaxxing"
+        }
+      },
       "localLlmThinkingEnabled": "Modo de raciocínio ativado, já que modelos locais não custam nada a mais. Você pode desativá-lo nas configurações de IA.",
       "maxAiMemories": "Máximo de Memórias de IA",
       "maxAiMemoriesSubtitle": "Número de mensagens anteriores a lembrar nas conversas",

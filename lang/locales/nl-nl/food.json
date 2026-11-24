@@ -499,7 +499,12 @@
       "rechecking_one": "{{count}} ingrediënt nakijken…",
       "rechecking_few": "{{count}} ingrediënten nakijken…",
       "rechecking_many": "{{count}} ingrediënten nakijken…",
-      "rechecking_other": "{{count}} ingrediënten nakijken…"
+      "rechecking_other": "{{count}} ingrediënten nakijken…",
+      "reviewing": "Controleren of er iets is gemist…",
+      "comparing_one": "{{count}} schatting vergelijken…",
+      "comparing_few": "{{count}} schattingen vergelijken…",
+      "comparing_many": "{{count}} schattingen vergelijken…",
+      "comparing_other": "{{count}} schattingen vergelijken…"
     },
     "aiNutritionContext": {
       "title": "Context toevoegen voor AI",

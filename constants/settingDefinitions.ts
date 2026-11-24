@@ -60,6 +60,7 @@ import {
   SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_LOGGY_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
+  USE_THINKING_MODE_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
@@ -67,6 +68,7 @@ import {
   YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
 } from '@/constants/settings';
 import { type AiImageTier, parseAiImageTier } from '@/utils/aiImagePlan';
+import { parseThinkingLevel, type ThinkingLevel } from '@/utils/aiThinkingLevel';
 import {
   type ComebackState,
   parseComebackState,
@@ -120,6 +122,12 @@ export const SETTINGS = {
   claudeModel: textSetting(CLAUDE_MODEL_SETTING_TYPE),
   enableClaude: booleanSetting(ENABLE_CLAUDE_SETTING_TYPE, true),
   useHostedAi: booleanSetting(USE_HOSTED_AI_SETTING_TYPE, false),
+  /**
+   * How hard the AI thinks (`utils/aiThinkingLevel.ts`). Kept under the key of the old "Use thinking
+   * mode" switch, whose `'true'` reads as `medium`; read it for a request through
+   * `effectiveThinkingLevel`, never raw.
+   */
+  thinkingLevel: choiceSetting<ThinkingLevel>(USE_THINKING_MODE_SETTING_TYPE, parseThinkingLevel),
   /** How much detail a photo keeps on its way to any AI provider; unknown values read as the default. */
   aiImageQuality: choiceSetting<AiImageTier>(AI_IMAGE_QUALITY_SETTING_TYPE, parseAiImageTier),
   /** Which engine answers when on-device AI is on; resolve it with `resolveOnDeviceEngine`. */

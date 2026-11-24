@@ -349,9 +349,45 @@
       "promptContextNutrition": "Nutrition",
       "promptContextExercise": "Exercise",
       "memorySettings": "Memory settings",
-      "useThinkingMode": "Use thinking mode",
-      "useThinkingModeSubtitle": "Allow AI providers to use deeper reasoning when supported. This uses more tokens and may increase cost.",
-      "useThinkingModeIronNote": "With Musclog Iron, deeper thinking and extra checks use more of your monthly AI allowance.",
+      "thinkingLevel": {
+        "label": "Thinking level",
+        "freeTierNote": "The free tier answers without extra thinking: its daily allowance is shared by everyone.",
+        "onDeviceNote": "Higher levels run more checks on your phone, so answers take longer.",
+        "levels": {
+          "off": {
+            "name": "Off",
+            "description": "Fast answers. Each job thinks as much as it needs."
+          },
+          "medium": {
+            "name": "Medium",
+            "description": "Thinks harder, and checks a meal's foods against your database before estimating."
+          },
+          "high": {
+            "name": "High",
+            "description": "Medium, plus a second request that reviews the answer and fixes what doesn't add up."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Several independent answers compared, then reviewed twice. Slowest, most careful."
+          }
+        },
+        "ironNote": {
+          "medium": "Uses a little more of your monthly Musclog Iron allowance.",
+          "high": "Uses more of your monthly Musclog Iron allowance.",
+          "tokenmaxxing": "Can use your monthly Musclog Iron allowance several times faster."
+        },
+        "confirmHigh": {
+          "title": "Use High thinking?",
+          "message": "High makes an extra check request for most answers, so it uses more of your monthly Musclog Iron allowance. You can switch back at any time.",
+          "confirm": "Continue"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Use Tokenmaxxing?",
+          "message": "Tokenmaxxing makes several requests for each answer, so it can use your monthly Musclog Iron allowance several times faster. It never costs more than your subscription: once this period's allowance is used up, it renews with the next period.",
+          "confirm": "Continue",
+          "authPrompt": "Confirm it is you to turn on Tokenmaxxing"
+        }
+      },
       "localLlmThinkingEnabled": "Thinking mode turned on, since local models cost nothing extra. You can turn it off in AI settings.",
       "maxAiMemories": "Max AI memories",
       "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",

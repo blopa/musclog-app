@@ -13,7 +13,7 @@ const mockStreamLocalMessage = jest.fn();
 const mockSendLocalStructuredRaw = jest.fn();
 const mockSearchFoods = jest.fn();
 const mockSendAppleStructured = jest.fn();
-const mockGetUseThinkingMode = jest.fn().mockResolvedValue(false);
+const mockGetThinkingLevel = jest.fn().mockResolvedValue('off');
 
 jest.mock('../onDeviceAi', () => ({
   sendOnDeviceMessage: jest.fn(),
@@ -42,7 +42,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: () => mockGetUseThinkingMode(),
+    get: () => mockGetThinkingLevel(),
     getSendFoundationFoodsToLlm: jest.fn().mockResolvedValue(false),
     getNutritionDisplay: jest.fn().mockResolvedValue('11101'),
   },
@@ -94,7 +94,7 @@ beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
   jest.clearAllMocks();
-  mockGetUseThinkingMode.mockResolvedValue(false);
+  mockGetThinkingLevel.mockResolvedValue('off');
 });
 
 afterEach(() => jest.restoreAllMocks());
@@ -264,7 +264,7 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
   });
 
   it('routes Track Meal photos through local identification in thinking mode with context', async () => {
-    mockGetUseThinkingMode.mockResolvedValue(true);
+    mockGetThinkingLevel.mockResolvedValue('medium');
     mockSendLocalStructuredRaw.mockResolvedValue('{"items":[{"name":"rice","grams":150}]}');
     mockSearchFoods.mockResolvedValue([food('food-rice', 'White rice')]);
 
@@ -393,5 +393,71 @@ describe('estimateNutritionFromPhoto on the downloaded engine', () => {
 
     // A valid answer, even an empty one, never reaches the retry or the repair call.
     expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('estimateNutritionFromPhoto on the downloaded engine, by thinking level', () => {
+  const rice = {
+    id: 'food-rice',
+    name: 'White rice',
+    calories: 130,
+    protein: 2.7,
+    carbs: 28,
+    fat: 0.3,
+    fiber: 0.4,
+  };
+  const items = (...list: [string, number][]) =>
+    JSON.stringify({ items: list.map(([name, grams]) => ({ name, grams })) });
+  const stewLabel = (kcal: number) =>
+    JSON.stringify({ foods: [{ name: 'mystery stew', kcal, protein: 10, carbs: 10, fat: 7.5 }] });
+  const photoCalls = () =>
+    mockSendLocalStructuredRaw.mock.calls.filter(([, , , options]) => options?.image).length;
+
+  beforeEach(() => {
+    mockSearchFoods.mockImplementation(async (term: string) =>
+      term === 'rice' || term === 'white' ? [rice] : []
+    );
+  });
+
+  it('reads the photo once at medium', async () => {
+    mockGetThinkingLevel.mockResolvedValue('medium');
+    mockSendLocalStructuredRaw.mockResolvedValue(items(['white rice', 150]));
+
+    await estimateNutritionFromPhoto(gguf, 'data:image/jpeg;base64,AAAA');
+
+    expect(photoCalls()).toBe(1);
+  });
+
+  it('reads the photo and the labels twice at high, one after another, and takes medians', async () => {
+    mockGetThinkingLevel.mockResolvedValue('high');
+    mockSendLocalStructuredRaw
+      .mockResolvedValueOnce(items(['white rice', 150], ['mystery stew', 200]))
+      .mockResolvedValueOnce(items(['White Rice', 170], ['mystery stew', 220]))
+      .mockResolvedValueOnce(stewLabel(150))
+      .mockResolvedValueOnce(stewLabel(170));
+
+    const result = await estimateNutritionFromPhoto(gguf, 'data:image/jpeg;base64,AAAA');
+
+    expect(photoCalls()).toBe(2);
+    expect(mockSendLocalStructuredRaw).toHaveBeenCalledTimes(4);
+    // The second reading is asked warmer, so it can differ from the first.
+    expect(mockSendLocalStructuredRaw.mock.calls[0][3].temperature).toBeUndefined();
+    expect(mockSendLocalStructuredRaw.mock.calls[1][3].temperature).toBeGreaterThan(0);
+    const ingredients = result?.meals[0].ingredients ?? [];
+    expect(ingredients.find((i) => i.name === 'mystery stew')).toMatchObject({ grams: 210 });
+    expect(ingredients.find((i) => i.name === 'mystery stew')?.kcal).toBeCloseTo(336, 0);
+  });
+
+  it('drops a food only one of three readings names at tokenmaxxing', async () => {
+    mockGetThinkingLevel.mockResolvedValue('tokenmaxxing');
+    mockSendLocalStructuredRaw
+      .mockResolvedValueOnce(items(['white rice', 150], ['mystery stew', 200]))
+      .mockResolvedValueOnce(items(['white rice', 150]))
+      .mockResolvedValueOnce(items(['white rice', 160], ['cake', 80]));
+
+    const result = await estimateNutritionFromPhoto(gguf, 'data:image/jpeg;base64,AAAA');
+
+    expect(photoCalls()).toBe(3);
+    expect(result?.meals[0].ingredients.map((i) => i.name)).toEqual(['White rice']);
   });
 });

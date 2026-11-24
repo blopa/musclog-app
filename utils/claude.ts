@@ -15,12 +15,12 @@ export const CLAUDE_MAX_TOKENS = 16_000;
 /** A streamed reply has no timeout pressure, so the model gets room to think and answer. */
 export const CLAUDE_STREAM_MAX_TOKENS = 64_000;
 
-export type ClaudeEffort = 'low' | 'medium' | 'high';
+export type ClaudeEffort = 'low' | 'medium' | 'high' | 'max';
 
 /**
  * Claude 5.5 models always think and there is no way to turn it off, so effort is the only lever.
  * The caller chooses the effort per kind of job (see `utils/aiEffort.ts`); Claude has no level
- * below `low`, so `minimal` maps to `low`.
+ * below `low`, so `minimal` maps to `low`; `max` (Tokenmaxxing) is Claude's own top effort.
  */
 export function claudeEffort(effort: AiEffort): ClaudeEffort {
   switch (effort) {
@@ -31,6 +31,8 @@ export function claudeEffort(effort: AiEffort): ClaudeEffort {
       return 'medium';
     case 'high':
       return 'high';
+    case 'max':
+      return 'max';
   }
 }
 

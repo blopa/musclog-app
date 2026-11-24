@@ -2,6 +2,7 @@ import {
   clampNonNegative,
   fromLabelPer100g,
   isFiberTracked,
+  medianLabel,
   withLabelFiber,
 } from '../onDeviceMacros';
 
@@ -66,6 +67,31 @@ describe('onDeviceMacros', () => {
 
     it('ignores negative fiber', () => {
       expect(withLabelFiber(base, -2)).toMatchObject({ fiber: 0, carbs: 0.5, kcal: 55 });
+    });
+  });
+});
+
+describe('medianLabel', () => {
+  const label = (kcal: number, protein: number) => ({
+    name: 'stew',
+    kcal,
+    protein,
+    carbs: 10,
+    fat: 5,
+  });
+
+  it('returns one label as it is, and nothing for none', () => {
+    expect(medianLabel([label(100, 8)])).toEqual(label(100, 8));
+    expect(medianLabel([])).toBeUndefined();
+  });
+
+  it('takes the median of every figure, ignoring broken ones', () => {
+    expect(medianLabel([label(100, 8), label(160, 4), label(120, Number.NaN)])).toEqual({
+      name: 'stew',
+      kcal: 120,
+      protein: 4,
+      carbs: 10,
+      fat: 5,
     });
   });
 });

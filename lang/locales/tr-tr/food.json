@@ -499,7 +499,12 @@
       "rechecking_one": "{{count}} malzeme yeniden kontrol ediliyor…",
       "rechecking_few": "{{count}} malzeme yeniden kontrol ediliyor…",
       "rechecking_many": "{{count}} malzeme yeniden kontrol ediliyor…",
-      "rechecking_other": "{{count}} malzeme yeniden kontrol ediliyor…"
+      "rechecking_other": "{{count}} malzeme yeniden kontrol ediliyor…",
+      "reviewing": "Gözden kaçan bir şey olup olmadığına bakılıyor…",
+      "comparing_one": "{{count}} tahmin karşılaştırılıyor…",
+      "comparing_few": "{{count}} tahmin karşılaştırılıyor…",
+      "comparing_many": "{{count}} tahmin karşılaştırılıyor…",
+      "comparing_other": "{{count}} tahmin karşılaştırılıyor…"
     },
     "aiNutritionContext": {
       "title": "Yapay zekâ için bağlam ekle",

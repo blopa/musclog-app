@@ -82,7 +82,6 @@ import {
   USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
-  USE_THINKING_MODE_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   type WorkoutHistoryDays,
@@ -122,6 +121,7 @@ const REGISTERED_SETTINGS = [
   'cycleNotificationStyle',
   'cycleVariabilityHintDismissed',
   'workoutAutonomy',
+  'thinkingLevel',
   'autoStartRestTimer',
   'restTimerHaptics',
   'restAlertSound',
@@ -173,7 +173,6 @@ type SettingsState = RegisteredSettings & {
   useOnDeviceAi: boolean;
   useMusclogFreeTier: boolean;
   sendFoundationFoodsToLlm: boolean;
-  useThinkingMode: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -278,7 +277,6 @@ const DEFAULT_STATE: SettingsState = {
   useOnDeviceAi: false,
   useMusclogFreeTier: false,
   sendFoundationFoodsToLlm: true,
-  useThinkingMode: false,
   navSlot1: 'workouts',
   navSlot2: 'food',
   navSlot3: 'coach',
@@ -428,7 +426,6 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     useOnDeviceAi: getBoolean(map, USE_ON_DEVICE_AI_SETTING_TYPE, false),
     useMusclogFreeTier: getBoolean(map, USE_MUSCLOG_FREE_TIER_SETTING_TYPE, false),
     sendFoundationFoodsToLlm: getBoolean(map, SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true),
-    useThinkingMode: getBoolean(map, USE_THINKING_MODE_SETTING_TYPE, false),
     navSlot1: (rawNavSlot1 as NavItemKey) || 'workouts',
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
     navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',

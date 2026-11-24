@@ -6183,6 +6183,9 @@
     <loc>https://musclog.app/en/blog/page/5</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/page/6</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/category/engineering</loc>
   </url>
   <url>
@@ -6402,6 +6405,9 @@
     <loc>https://musclog.app/en/blog/tag/kotlin</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/liquid-ai</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/local-first</loc>
   </url>
   <url>
@@ -6414,7 +6420,7 @@
     <loc>https://musclog.app/en/blog/tag/macros</loc>
   </url>
   <url>
-    <loc>https://musclog.app/en/blog/tag/mozilla</loc>
+    <loc>https://musclog.app/en/blog/tag/mozilla-ai</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/muscle-building</loc>
@@ -6456,10 +6462,16 @@
     <loc>https://musclog.app/en/blog/tag/nutrition-tracking</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/on-device-ai</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/onboarding</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/one-rep-max</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/open-graph</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/open-source</loc>
@@ -6477,6 +6489,9 @@
     <loc>https://musclog.app/en/blog/tag/otari</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/tag/pango</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/tag/performance</loc>
   </url>
   <url>
@@ -6487,6 +6502,9 @@
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/privacy</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/tag/privacy/page/2</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/tag/progressive-overload</loc>
@@ -6765,13 +6783,22 @@
     <loc>https://musclog.app/en/blog/2026/11/move-your-workout-history-from-strong-hevy-or-fitnotes</loc>
   </url>
   <url>
+    <loc>https://musclog.app/en/blog/2026/11/musclogs-ai-now-runs-on-your-phone</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/en/blog/2026/11/my-ai-coach-can-be-dracula-but-it-cannot-change-your-numbers</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/2026/11/my-link-preview-was-a-screenshot-from-june-so-now-the-build-draws-ten-of-them</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/2026/11/my-mascot-was-a-kettlebell-named-loggy-until-i-remembered-what-a-log-is</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/2026/11/net-carbs-vs-total-carbs-us-and-eu-labels</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/en/blog/2026/11/now-you-can-tokenmaxxing-with-musclog</loc>
   </url>
   <url>
     <loc>https://musclog.app/en/blog/2026/11/one-day-after-launching-musclog-iron-i-started-moving-it-to-mozillas-otari</loc>

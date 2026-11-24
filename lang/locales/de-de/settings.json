@@ -349,9 +349,45 @@
       "promptContextNutrition": "Ernährung",
       "promptContextExercise": "Training",
       "memorySettings": "Gedächtniseinstellungen",
-      "useThinkingMode": "Denkmodus verwenden",
-      "useThinkingModeSubtitle": "Erlaubt KI-Anbietern tieferes Nachdenken, wo unterstützt. Das verbraucht mehr Tokens und kann die Kosten erhöhen.",
-      "useThinkingModeIronNote": "Mit Musclog Iron verbrauchen tieferes Nachdenken und zusätzliche Prüfungen mehr von deinem monatlichen KI-Kontingent.",
+      "thinkingLevel": {
+        "label": "Denkstufe",
+        "freeTierNote": "Die kostenlose Stufe antwortet ohne zusätzliches Nachdenken: Das tägliche Kontingent wird von allen geteilt.",
+        "onDeviceNote": "Höhere Stufen führen auf dem Telefon mehr Prüfungen durch, daher dauern Antworten länger.",
+        "levels": {
+          "off": {
+            "name": "Aus",
+            "description": "Schnelle Antworten. Jede Aufgabe denkt so viel nach, wie sie braucht."
+          },
+          "medium": {
+            "name": "Mittel",
+            "description": "Denkt gründlicher und prüft die Lebensmittel einer Mahlzeit gegen die Datenbank, bevor sie geschätzt werden."
+          },
+          "high": {
+            "name": "Hoch",
+            "description": "Mittel, plus eine zweite Anfrage, die die Antwort prüft und korrigiert, was nicht zusammenpasst."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Mehrere unabhängige Antworten werden verglichen und danach zweimal geprüft. Am langsamsten, am gründlichsten."
+          }
+        },
+        "ironNote": {
+          "medium": "Verbraucht etwas mehr vom monatlichen Musclog-Iron-Kontingent.",
+          "high": "Verbraucht mehr vom monatlichen Musclog-Iron-Kontingent.",
+          "tokenmaxxing": "Kann das monatliche Musclog-Iron-Kontingent mehrfach schneller aufbrauchen."
+        },
+        "confirmHigh": {
+          "title": "Stufe Hoch verwenden?",
+          "message": "Hoch stellt für die meisten Antworten eine zusätzliche Prüfanfrage und verbraucht deshalb mehr vom monatlichen Musclog-Iron-Kontingent. Du kannst jederzeit zurückwechseln.",
+          "confirm": "Weiter"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Tokenmaxxing verwenden?",
+          "message": "Tokenmaxxing stellt für jede Antwort mehrere Anfragen und kann das monatliche Musclog-Iron-Kontingent deshalb mehrfach schneller aufbrauchen. Es kostet nie mehr als dein Abo: Ist das Kontingent dieses Zeitraums aufgebraucht, wird es mit dem nächsten Zeitraum erneuert.",
+          "confirm": "Weiter",
+          "authPrompt": "Bestätige, dass du es bist, um Tokenmaxxing einzuschalten"
+        }
+      },
       "localLlmThinkingEnabled": "Denkmodus eingeschaltet, da lokale Modelle nichts extra kosten. Du kannst ihn in den KI-Einstellungen ausschalten.",
       "maxAiMemories": "Maximale KI-Erinnerungen",
       "maxAiMemoriesSubtitle": "Anzahl früherer Nachrichten, die in Gesprächen gemerkt werden",

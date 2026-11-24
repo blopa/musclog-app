@@ -1,33 +1,50 @@
-import { AI_TASK_EFFORT, type AiEffort, type AiTask, effortFor } from '../aiEffort';
+import {
+  AI_TASK_EFFORT,
+  type AiEffort,
+  type AiTask,
+  effortFor,
+  reasoningEffortValue,
+} from '../aiEffort';
+import { THINKING_LEVELS } from '../aiThinkingLevel';
 
-const ORDER: AiEffort[] = ['minimal', 'low', 'medium', 'high'];
+const ORDER: AiEffort[] = ['minimal', 'low', 'medium', 'high', 'max'];
 const TASKS = Object.keys(AI_TASK_EFFORT) as AiTask[];
 
 describe('effortFor', () => {
-  it('returns the normal column when thinking mode is off', () => {
+  it('gives each job its own effort when thinking is off', () => {
+    expect(effortFor('extraction', 'off')).toBe('minimal');
+    expect(effortFor('chat', 'off')).toBe('low');
+    expect(effortFor('insight', 'off')).toBe('medium');
+    expect(effortFor('planning', 'off')).toBe('medium');
+  });
+
+  it('lifts every job to high at medium and high, which differ in requests, not effort', () => {
     for (const task of TASKS) {
-      expect(effortFor(task, false)).toBe(AI_TASK_EFFORT[task].normal);
+      expect(effortFor(task, 'medium')).toBe('high');
+      expect(effortFor(task, 'high')).toBe('high');
     }
   });
 
-  it('returns high for every task when thinking mode is on', () => {
+  it('asks for the most at tokenmaxxing', () => {
     for (const task of TASKS) {
-      expect(effortFor(task, true)).toBe('high');
+      expect(effortFor(task, 'tokenmaxxing')).toBe('max');
     }
   });
 
-  it('gives extraction minimal, chat low, and insight and planning medium by default', () => {
-    expect(effortFor('extraction', false)).toBe('minimal');
-    expect(effortFor('chat', false)).toBe('low');
-    expect(effortFor('insight', false)).toBe('medium');
-    expect(effortFor('planning', false)).toBe('medium');
-  });
-
-  it('never lowers effort when thinking mode is on', () => {
+  it('never lowers effort as the level goes up', () => {
     for (const task of TASKS) {
-      const normal = ORDER.indexOf(effortFor(task, false));
-      const thinking = ORDER.indexOf(effortFor(task, true));
-      expect(thinking).toBeGreaterThanOrEqual(normal);
+      const ranks = THINKING_LEVELS.map((level) => ORDER.indexOf(effortFor(task, level)));
+      expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
     }
+  });
+});
+
+describe('reasoningEffortValue', () => {
+  it('sends only values every OpenAI reasoning model and the Iron Worker accept', () => {
+    expect(reasoningEffortValue('minimal')).toBe('low');
+    expect(reasoningEffortValue('low')).toBe('low');
+    expect(reasoningEffortValue('medium')).toBe('medium');
+    expect(reasoningEffortValue('high')).toBe('high');
+    expect(reasoningEffortValue('max')).toBe('high');
   });
 });

@@ -3,7 +3,6 @@ import {
   Bot,
   ChevronDown,
   ChevronRight,
-  Cpu,
   Dumbbell,
   ScanText,
   Settings2,
@@ -12,6 +11,7 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, Pressable, Text, View } from 'react-native';
 
+import { ThinkingLevelPicker } from '@/components/ai/ThinkingLevelPicker';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
@@ -336,7 +336,7 @@ export function AISettingsModal({
   const premium = usePremium({ load: visible });
   const isMusclogIronActive =
     premium.enabled && premium.view.phase === 'active' && premium.useHostedAi;
-  const { aiImageQuality } = useSettings();
+  const { aiImageQuality, aiProvider } = useSettings();
 
   // Use debounced settings for instant UI updates
   const {
@@ -350,7 +350,7 @@ export function AISettingsModal({
     useOnDeviceAi: debouncedUseOnDeviceAi,
     useMusclogFreeTier: debouncedUseMusclogFreeTier,
     sendFoundationFoodsToLlm: debouncedSendFoundationFoodsToLlm,
-    useThinkingMode: debouncedUseThinkingMode,
+    thinkingLevel: debouncedThinkingLevel,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
     handleEnableClaudeChange,
@@ -361,7 +361,7 @@ export function AISettingsModal({
     handleUseOnDeviceAiChange,
     handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
-    handleUseThinkingModeChange,
+    handleThinkingLevelChange,
     maxAiMemories: debouncedMaxAiMemories,
     handleMaxAiMemoriesChange,
     nutritionLogHistoryDays: debouncedNutritionLogHistoryDays,
@@ -378,8 +378,8 @@ export function AISettingsModal({
     (enabled: boolean) => {
       handleEnableLocalLlmChange(enabled);
 
-      if (enabled && !debouncedEnableLocalLlm && !debouncedUseThinkingMode) {
-        handleUseThinkingModeChange(true);
+      if (enabled && !debouncedEnableLocalLlm && debouncedThinkingLevel === 'off') {
+        handleThinkingLevelChange('medium');
         showSnackbar('success', t('settings.aiSettings.localLlmThinkingEnabled'), {
           duration: 5000,
         });
@@ -387,9 +387,9 @@ export function AISettingsModal({
     },
     [
       debouncedEnableLocalLlm,
-      debouncedUseThinkingMode,
+      debouncedThinkingLevel,
       handleEnableLocalLlmChange,
-      handleUseThinkingModeChange,
+      handleThinkingLevelChange,
       showSnackbar,
       t,
     ]
@@ -812,62 +812,40 @@ export function AISettingsModal({
           <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.memorySettings')}
           </SectionLabel>
-          <View className="mb-3">
-            <ToggleInput
-              items={[
-                {
-                  key: 'use-thinking-mode',
-                  label: t('settings.aiSettings.useThinkingMode'),
-                  subtitle: isMusclogIronActive
-                    ? `${t('settings.aiSettings.useThinkingModeSubtitle')} ${t('settings.aiSettings.useThinkingModeIronNote')}`
-                    : t('settings.aiSettings.useThinkingModeSubtitle'),
-                  value: debouncedUseThinkingMode,
-                  onValueChange: handleUseThinkingModeChange,
-                  icon: (
-                    <View
-                      style={{
-                        width: theme.size['8'],
-                        height: theme.size['8'],
-                        borderRadius: theme.borderRadius.full / 2,
-                        backgroundColor: theme.colors.status.indigo10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Cpu size={theme.iconSize.md} color={theme.colors.status.indigo} />
-                    </View>
-                  ),
-                },
-              ]}
+          <View className="gap-3">
+            <ThinkingLevelPicker
+              value={debouncedThinkingLevel}
+              onChange={handleThinkingLevelChange}
+              provider={aiProvider}
+            />
+            <View
+              className="rounded-card border bg-bg-card p-4"
+              style={{
+                borderColor: theme.colors.border.light,
+                borderWidth: theme.borderWidth.thin,
+              }}
+            >
+              <NewNumericalInput
+                label={t('settings.aiSettings.maxAiMemories')}
+                value={debouncedMaxAiMemories || 50}
+                onChange={handleMaxAiMemoriesChange}
+                min={1}
+              />
+              <Text className="mt-3 text-xs text-text-secondary">
+                {t('settings.aiSettings.maxAiMemoriesSubtitle')}
+              </Text>
+            </View>
+            <HistoryPickerField
+              kind="nutrition"
+              value={debouncedNutritionLogHistoryDays ?? 'none'}
+              onChange={handleNutritionLogHistoryDaysChange}
+            />
+            <HistoryPickerField
+              kind="workout"
+              value={debouncedWorkoutHistoryDays ?? 'none'}
+              onChange={handleWorkoutHistoryDaysChange}
             />
           </View>
-          <View
-            className="rounded-card border bg-bg-card p-4"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <NewNumericalInput
-              label={t('settings.aiSettings.maxAiMemories')}
-              value={debouncedMaxAiMemories || 50}
-              onChange={handleMaxAiMemoriesChange}
-              min={1}
-            />
-            <Text className="mt-3 text-xs text-text-secondary">
-              {t('settings.aiSettings.maxAiMemoriesSubtitle')}
-            </Text>
-          </View>
-          <HistoryPickerField
-            kind="nutrition"
-            value={debouncedNutritionLogHistoryDays ?? 'none'}
-            onChange={handleNutritionLogHistoryDaysChange}
-          />
-          <HistoryPickerField
-            kind="workout"
-            value={debouncedWorkoutHistoryDays ?? 'none'}
-            onChange={handleWorkoutHistoryDaysChange}
-          />
         </View>
 
         {/* Image Processing Section */}

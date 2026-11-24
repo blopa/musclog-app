@@ -10,6 +10,7 @@ import {
   parseIdentifiedFoods,
   photoMealName,
   pickFoodMatch,
+  voteIdentifiedFoods,
   searchTermsFor,
   tokenize,
 } from '../localFoodPhoto';
@@ -187,5 +188,51 @@ describe('photoMealName', () => {
     const meal = buildPhotoMeal([{ name: 'steak', grams: 250 }], new Map(), 'lunch');
 
     expect(meal.meals[0]).toMatchObject({ mealType: 'lunch', mealName: 'Steak' });
+  });
+});
+
+describe('voteIdentifiedFoods', () => {
+  it('returns one reading as it is', () => {
+    const reading = [{ name: 'rice', grams: 150 }];
+    expect(voteIdentifiedFoods([reading])).toBe(reading);
+    expect(voteIdentifiedFoods([])).toEqual([]);
+  });
+
+  it('keeps foods at least half the readings name, with the median grams', () => {
+    expect(
+      voteIdentifiedFoods([
+        [
+          { name: 'Rice', grams: 150 },
+          { name: 'stew', grams: 200 },
+        ],
+        [{ name: 'rice ', grams: 170 }],
+        [
+          { name: 'RICE', grams: 160 },
+          { name: 'cake', grams: 80 },
+        ],
+      ])
+    ).toEqual([{ name: 'Rice', grams: 160 }]);
+  });
+
+  it('keeps a food either of two readings names', () => {
+    expect(
+      voteIdentifiedFoods([[{ name: 'rice', grams: 150 }], [{ name: 'beans', grams: 90 }]])
+    ).toEqual([
+      { name: 'rice', grams: 150 },
+      { name: 'beans', grams: 90 },
+    ]);
+  });
+
+  it('counts a food named twice in one reading once, with its grams added up', () => {
+    expect(
+      voteIdentifiedFoods([
+        [
+          { name: 'rice', grams: 100 },
+          { name: 'rice', grams: 50 },
+        ],
+        [{ name: 'rice', grams: 170 }],
+        [{ name: 'bread', grams: 40 }],
+      ])
+    ).toEqual([{ name: 'rice', grams: 160 }]);
   });
 });

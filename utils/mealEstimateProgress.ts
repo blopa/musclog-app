@@ -13,7 +13,11 @@ export type MealEstimateProgress =
    */
   | { step: 'estimating'; count: number; matched: number }
   /** A follow-up request re-estimates `count` ingredients whose numbers did not add up. */
-  | { step: 'rechecking'; count: number };
+  | { step: 'rechecking'; count: number }
+  /** A review request looks for anything the estimate missed (Thinking: High and up). */
+  | { step: 'reviewing' }
+  /** `count` independent estimates are being combined into one (Tokenmaxxing). */
+  | { step: 'comparing'; count: number };
 
 export type MealEstimateProgressListener = (progress: MealEstimateProgress) => void;
 
@@ -24,6 +28,8 @@ export const MEAL_ESTIMATE_PROGRESS_KEYS = {
   estimating: 'food.aiProgress.estimating',
   estimatingWithMatches: 'food.aiProgress.estimatingWithMatches',
   rechecking: 'food.aiProgress.rechecking',
+  reviewing: 'food.aiProgress.reviewing',
+  comparing: 'food.aiProgress.comparing',
 } as const;
 
 export type MealEstimateProgressLine = {
@@ -49,5 +55,9 @@ export function mealEstimateProgressLine(progress: MealEstimateProgress): MealEs
         : { key: MEAL_ESTIMATE_PROGRESS_KEYS.estimating, options: { count: progress.count } };
     case 'rechecking':
       return { key: MEAL_ESTIMATE_PROGRESS_KEYS.rechecking, options: { count: progress.count } };
+    case 'reviewing':
+      return { key: MEAL_ESTIMATE_PROGRESS_KEYS.reviewing };
+    case 'comparing':
+      return { key: MEAL_ESTIMATE_PROGRESS_KEYS.comparing, options: { count: progress.count } };
   }
 }

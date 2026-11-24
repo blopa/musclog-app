@@ -3,6 +3,7 @@ import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
 import { MUSCLOG_GATEWAY_MAX_TOKENS, MUSCLOG_GATEWAY_PROVIDER } from '@/constants/gateway';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
 import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
@@ -20,6 +21,13 @@ import {
   OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
+import { reviewAndRevise, runSamples } from './aiPasses';
+import {
+  effectiveThinkingLevel,
+  extractionSamples,
+  THINKING_PIPELINE,
+  type ThinkingLevel,
+} from './aiThinkingLevel';
 import {
   buildClaudeClient,
   buildClaudeMessages,
@@ -30,6 +38,7 @@ import {
   extractClaudeText,
 } from './claude';
 import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
+import { combineExtractions } from './extractionConsensus';
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
@@ -47,6 +56,7 @@ import {
   parseIdentifiedFoods,
   pickFoodMatch,
   searchTermsFor,
+  voteIdentifiedFoods,
 } from './localFoodPhoto';
 import {
   checkStructuredShape,
@@ -57,32 +67,42 @@ import {
   stripTemplateTokens,
   type StructuredResult,
 } from './localReplyShape';
+import { consensusMeals } from './mealConsensus';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems, reconcileIngredientMacros } from './mealPlausibility';
+import { applyMealReview, type MealReview } from './mealReview';
+import { ungroundedFigures } from './numberGrounding';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
 import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
 import {
   fromLabelPer100g,
   isFiberTracked,
+  medianLabel,
   type OnDeviceLabel,
   withLabelFiber,
 } from './onDeviceMacros';
+import { mealPlanFindings, workoutPlanFindings, workoutVolumeFindings } from './planFindings';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getChatMessagePromptContent,
+  getChatReviewInstruction,
   getEstimateMacrosFunctions,
   getEstimateMissingIngredientsFunctions,
+  getExtractionArbiterMessage,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
   getGenerateMealPlanFunctions,
   getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
+  getInsightFactCheckMessage,
   getMealAnalysisPrompt,
   getMealCritiquePrompt,
+  getMealReviewFunctions,
+  getMealReviewPrompt,
   getMissingIngredientsMacrosPrompt,
   getNutritionInsightsPrompt,
   getOnDeviceFiberFunctions,
@@ -95,6 +115,7 @@ import {
   getParsePastWorkoutsFunctions,
   getParsePastWorkoutsPrompt,
   getParseRetrospectiveNutritionFunctions,
+  getPlanReviewMessage,
   getRecentWorkoutInsightsPromptByLogId,
   getRecentWorkoutsInsightsPrompt,
   getRecipeExtractionFunctions,
@@ -287,6 +308,8 @@ type CoachAIConfigFields = {
   engine?: OnDeviceEngine;
   /** `on-device` only: the engine can read a food photo (the downloaded model with its projector). */
   vision?: boolean;
+  /** Set by daily background tasks, so their thinking level is capped (`effectiveThinkingLevel`). */
+  background?: boolean;
 };
 
 /**
@@ -304,9 +327,17 @@ export type CoachAIConfig =
       baseUrl?: undefined;
     });
 
-/** The effort a job gets: its row of `AI_TASK_EFFORT`, or `high` when "Use thinking mode" is on. */
-async function resolveEffort(task: AiTask): Promise<AiEffort> {
-  return effortFor(task, await SettingsService.getUseThinkingMode());
+/**
+ * The thinking level a request runs at: the stored setting, lowered by the provider (the free tier
+ * never thinks) and by background tasks (`effectiveThinkingLevel`).
+ */
+export async function thinkingLevelFor(config: CoachAIConfig): Promise<ThinkingLevel> {
+  return effectiveThinkingLevel(await SettingsService.get(SETTINGS.thinkingLevel), config);
+}
+
+/** The effort a job gets: its row of `AI_TASK_EFFORT` for the request's thinking level. */
+async function resolveEffort(config: CoachAIConfig, task: AiTask): Promise<AiEffort> {
+  return effortFor(task, await thinkingLevelFor(config));
 }
 
 /**
@@ -390,7 +421,11 @@ export type CoachResponse = {
  * Pass one to a reply function to see the reply while it is written. `onText` gets the visible text
  * so far (never a fragment), each time it grows. Without it the call is one request, one answer.
  */
-export type CoachStream = { onText: (textSoFar: string) => void };
+export type CoachStream = {
+  onText: (textSoFar: string) => void;
+  /** Said once, before any text, when the reply is first drafted unseen and then double-checked. */
+  onPhase?: (phase: 'reviewing') => void;
+};
 
 type StreamSink = {
   onDelta: (delta: string) => void;
@@ -533,7 +568,7 @@ async function buildClaudeParams(
     system,
     messages,
     output_config: {
-      effort: claudeEffort(await resolveEffort(options.task)),
+      effort: claudeEffort(await resolveEffort(config, options.task)),
       ...(options.schema
         ? { format: { type: 'json_schema', schema: makeSchemaStrict(options.schema) } }
         : {}),
@@ -964,7 +999,7 @@ async function sendViaGemini(
       model: config.model,
       generationConfig: buildGeminiGenerationConfig(config.model, {
         responseSchema,
-        effort: await resolveEffort('chat'),
+        effort: await resolveEffort(config, 'chat'),
       }),
     },
     systemParts
@@ -1059,7 +1094,7 @@ async function sendViaOpenAI(
     model: config.model,
     messages,
     ...providerPolicyFor(config).chatSampling,
-    ...(await openAiReasoning(config, await resolveEffort('chat'))),
+    ...(await openAiReasoning(config, await resolveEffort(config, 'chat'))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -1129,6 +1164,13 @@ async function sendViaOpenAI(
  * coach's answer would sit next to half of the real one); a spent quota is an `AiCreditsError`;
  * anything else becomes a generic apology without the internals.
  */
+/**
+ * The apologies `failedCoachReply` answers with in place of a reply. Kept apart from the type, so a
+ * review round can tell a failed draft or review from a real answer without a field that would be
+ * saved with the message.
+ */
+const FAILED_COACH_REPLIES = new WeakSet<CoachResponse>();
+
 async function failedCoachReply(
   error: unknown,
   config: CoachAIConfig,
@@ -1158,10 +1200,13 @@ async function failedCoachReply(
       : new AiCreditsError(i18n.t('errors.aiCreditsError'));
   }
 
-  return {
+  const apology: CoachResponse = {
     msg4User: i18n.t('errors.aiProcessingError'),
     sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
   };
+  FAILED_COACH_REPLIES.add(apology);
+
+  return apology;
 }
 
 async function sendViaClaude(
@@ -1462,7 +1507,7 @@ async function requestPlainText(
         apiKey: config.apiKey,
         model: config.model,
         generationConfig: buildGeminiGenerationConfig(config.model, {
-          effort: await resolveEffort(task),
+          effort: await resolveEffort(config, task),
           json: false,
         }),
       },
@@ -1533,7 +1578,7 @@ async function requestPlainText(
       ...historyMessages,
       { role: 'user', content: sanitizedFinalUserMessage },
     ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
+    ...(await openAiReasoning(config, await resolveEffort(config, task))),
   };
 
   await logLlmDebugEvent({
@@ -1773,7 +1818,7 @@ async function requestStructuredOnce<T = unknown>(
         // setting is the explicit way to ask for more.
         generationConfig: buildGeminiGenerationConfig(config.model, {
           responseSchema: schema,
-          effort: await resolveEffort(task),
+          effort: await resolveEffort(config, task),
         }),
       },
       [{ text: systemPrompt } as Part]
@@ -1823,7 +1868,7 @@ async function requestStructuredOnce<T = unknown>(
       })),
       { role: 'user', content: userMessage },
     ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
+    ...(await openAiReasoning(config, await resolveEffort(config, task))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -1984,7 +2029,7 @@ async function generateWithImageStructured<T>(
         model: config.model,
         generationConfig: buildGeminiGenerationConfig(config.model, {
           responseSchema: schema,
-          effort: await resolveEffort(task),
+          effort: await resolveEffort(config, task),
         }),
       },
       [{ text: systemPrompt } as Part]
@@ -2066,7 +2111,7 @@ async function generateWithImageStructured<T>(
         ],
       },
     ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
+    ...(await openAiReasoning(config, await resolveEffort(config, task))),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -2198,20 +2243,31 @@ async function estimateMissingIngredientsOnDevice(
   const names = newIngredients.map(({ name }) => name);
   const labelFns = getOnDeviceLabelFunctions();
 
-  const raw = await generateStructured<{ foods: OnDeviceLabel[] }>(
-    config,
-    getOnDeviceLabelPrompt(names),
-    getOnDeviceLabelUserMessage(),
-    getSchemaFromFunctionDeclaration((labelFns as any)[0]),
-    'estimateMissingIngredients'
-  );
-  if (!raw) {
+  const askForLabels = () =>
+    generateStructured<{ foods: OnDeviceLabel[] }>(
+      config,
+      getOnDeviceLabelPrompt(names),
+      getOnDeviceLabelUserMessage(),
+      getSchemaFromFunctionDeclaration((labelFns as any)[0]),
+      'estimateMissingIngredients'
+    );
+  // From High up each label is asked for more than once and every figure is the median.
+  const readings = extractionSamples(await thinkingLevelFor(config));
+  const replies =
+    readings <= 1
+      ? [await askForLabels()].filter((reply) => reply != null)
+      : await runSamples(config, readings, askForLabels);
+  if (replies.length === 0) {
     return null;
   }
 
-  const labels = raw.foods ?? [];
   let computed = newIngredients.flatMap((target, index) => {
-    const label = estimateFor(target, index, newIngredients.length, labels);
+    const label = medianLabel(
+      replies.flatMap((reply) => {
+        const found = estimateFor(target, index, newIngredients.length, reply.foods ?? []);
+        return found ? [found] : [];
+      })
+    );
 
     return label ? [fromLabelPer100g({ ...label, name: target.name }, target.grams)] : [];
   });
@@ -2431,7 +2487,7 @@ async function refineTrackedMeals(
 }
 
 /**
- * The verified meal estimate, used when "Use thinking mode" is on: it separates what the model can
+ * The verified meal estimate, used from the Medium thinking level up: it separates what the model can
  * read (the recipe: meals, ingredients, grams, the foods of the person it recognises) from what it
  * must work out (the numbers of what is left), checking each claimed food id against the database
  * in between. Slower than one request, with more of the work done by code and less left to chance.
@@ -2524,6 +2580,148 @@ async function trackMealVerified(
 }
 
 /**
+ * The meal estimate of High and Tokenmaxxing. Samples of the verified path (Tokenmaxxing runs
+ * several and code keeps what most of them agree on), then rounds of review: the model, shown the
+ * estimate beside the description or photo, names what is missing or off, code applies it and
+ * estimates what was added, and the result replaces the estimate only when it has no more
+ * implausible figures than before. Medium is one sample and no review: the verified path itself.
+ */
+async function trackMealThinking(
+  config: CoachAIConfig,
+  level: ThinkingLevel,
+  userMessage: string,
+  base64Image?: string,
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackMealResponse | null> {
+  const pipeline = THINKING_PIPELINE[level];
+  // Only the first sample reports its steps: several samples at once would interleave their lines.
+  const samples = await runSamples(config, pipeline.samples, (index) =>
+    trackMealVerified(config, userMessage, base64Image, index === 0 ? onProgress : undefined)
+  );
+  if (samples.length === 0) {
+    return null;
+  }
+
+  let draft = samples[0];
+  if (samples.length > 1) {
+    reportMealProgress(onProgress, { step: 'comparing', count: samples.length });
+    draft = consensusMeals(samples);
+  }
+
+  if (pipeline.reviewRounds === 0) {
+    return draft;
+  }
+
+  return reviewAndRevise<TrackMealResponse>({
+    draft,
+    rounds: pipeline.reviewRounds,
+    critique: async (current) => {
+      reportMealProgress(onProgress, { step: 'reviewing' });
+      const meals: TrackedMeal[] = [];
+      for (const meal of current.meals) {
+        meals.push(await reviewTrackedMeal(config, meal, userMessage, base64Image, onProgress));
+      }
+
+      return { ...current, meals };
+    },
+    accept: (current, revised) => countMealProblems(revised) <= countMealProblems(current),
+    onError: (error) => reportAiError(error, 'coachAI.reviewTrackedMeal'),
+  });
+}
+
+function countMealProblems(response: TrackMealResponse): number {
+  return response.meals.reduce(
+    (total, meal) =>
+      total +
+      meal.ingredients
+        .filter((ingredient) => !ingredient.foodId)
+        .reduce((sum, ingredient) => sum + ingredientMacroProblems(ingredient).length, 0),
+    0
+  );
+}
+
+async function requestMealReview(
+  config: CoachAIConfig,
+  meal: TrackedMeal,
+  userMessage: string,
+  base64Image?: string
+): Promise<MealReview | null> {
+  const systemPrompt = getMealReviewPrompt(meal, config.language ?? DEFAULT_LANG);
+  const schema = getSchemaFromFunctionDeclaration((getMealReviewFunctions() as any)[0]);
+
+  if (base64Image && config.provider !== 'on-device') {
+    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+
+    return generateWithImageStructured<MealReview>(
+      config,
+      systemPrompt,
+      base64,
+      mimeType,
+      schema,
+      'reviewMealEstimate',
+      userMessage
+    );
+  }
+
+  return generateStructured<MealReview>(
+    config,
+    systemPrompt,
+    userMessage,
+    schema,
+    'reviewMealEstimate'
+  );
+}
+
+async function reviewTrackedMeal(
+  config: CoachAIConfig,
+  meal: TrackedMeal,
+  userMessage: string,
+  base64Image?: string,
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackedMeal> {
+  const review = await requestMealReview(config, meal, userMessage, base64Image);
+  const { meal: corrected, added } = applyMealReview(meal, review);
+  if (added.length === 0) {
+    return corrected;
+  }
+
+  const mealName = corrected.mealName ?? corrected.mealType;
+  const estimated = await estimateMissingIngredients(
+    config,
+    added,
+    corrected.ingredients.filter((ingredient) => ingredient.foodId),
+    mealName
+  );
+  const estimates = estimated?.ingredients ?? [];
+  const additions = added.flatMap((item, index) => {
+    const estimate = estimateFor(item, index, added.length, estimates);
+
+    return estimate
+      ? [
+          withEstimatedMacros(
+            { name: item.name, grams: item.grams, kcal: 0, protein: 0, carbs: 0, fat: 0 },
+            estimate
+          ),
+        ]
+      : [];
+  });
+  if (additions.length === 0) {
+    return corrected;
+  }
+
+  const normalized = await NutritionService.normalizeAiMealIngredients([
+    ...corrected.ingredients,
+    ...additions,
+  ]);
+
+  return {
+    ...corrected,
+    ingredients: await recheckImplausibleIngredients(config, mealName, normalized, onProgress),
+  };
+}
+
+/**
  * Track a meal from description or base64 image
  */
 export async function trackMeal(
@@ -2543,9 +2741,9 @@ export async function trackMeal(
 
   try {
     reportMealProgress(onProgress, { step: 'reading', photo: Boolean(base64Image) });
-    const useThinkingMode = await SettingsService.getUseThinkingMode();
-    if (useThinkingMode) {
-      return await trackMealVerified(config, userMessage, base64Image, onProgress);
+    const level = await thinkingLevelFor(config);
+    if (THINKING_PIPELINE[level].verifiedMeal) {
+      return await trackMealThinking(config, level, userMessage, base64Image, onProgress);
     }
 
     const lang = config.language ?? DEFAULT_LANG;
@@ -2599,32 +2797,184 @@ export async function sendCoachMessage(
   const text = prepareChatText(userMessage);
 
   // On-device keeps its tight budget and its own date line, so nothing is added there.
-  if (config.provider === 'on-device') {
-    return sendViaOnDevice(config, history, text, context, stream);
+  const onDevice = config.provider === 'on-device';
+  let sendHistory = history;
+  let sendText = text;
+
+  if (!onDevice) {
+    // Every user turn carries the time it was sent, the newest also how long the pause was.
+    const tagged = tagTurnsWithTime(history, text, Date.now());
+    sendHistory = tagged.history;
+    sendText = tagged.userMessage;
   }
 
-  // Every user turn carries the time it was sent, the newest also how long the pause was.
-  const tagged = tagTurnsWithTime(history, text, Date.now());
-  history = tagged.history;
-  const sanitizedMessage = tagged.userMessage;
+  const dispatch = (message: string, target?: CoachStream): Promise<CoachResponse> => {
+    if (onDevice) {
+      return sendViaOnDevice(config, sendHistory, message, context, target);
+    }
 
-  if (config.provider === 'gemini') {
-    return sendViaGemini(config, history, sanitizedMessage, context, stream);
+    if (config.provider === 'gemini') {
+      return sendViaGemini(config, sendHistory, message, context, target);
+    }
+
+    if (config.provider === 'claude') {
+      return sendViaClaude(config, sendHistory, message, context, target);
+    }
+
+    // OpenAI, local (custom base URL), gateway (the free tier, via OpenRouter) and hosted all speak
+    // the OpenAI-compatible protocol.
+    return sendViaOpenAI(config, sendHistory, message, context, target);
+  };
+
+  const level = await thinkingLevelFor(config);
+
+  if (!THINKING_PIPELINE[level].chatReview) {
+    return dispatch(sendText, stream);
   }
 
-  if (config.provider === 'claude') {
-    return sendViaClaude(config, history, sanitizedMessage, context, stream);
+  return draftAndReviewCoachReply(config, sendText, dispatch, stream);
+}
+
+/**
+ * The highest thinking level answers twice: the first reply is drafted unseen, then a review
+ * request, with the same system prompt and history, checks it against the history and the app data
+ * and writes the final reply, which is the one streamed. A failing review (not a cancel) keeps the
+ * draft.
+ */
+async function draftAndReviewCoachReply(
+  config: CoachAIConfig,
+  message: string,
+  dispatch: (message: string, target?: CoachStream) => Promise<CoachResponse>,
+  stream?: CoachStream
+): Promise<CoachResponse> {
+  stream?.onPhase?.('reviewing');
+  const draft = await dispatch(message);
+
+  // A draft that failed is the apology a single request would have given: nothing to review.
+  if (FAILED_COACH_REPLIES.has(draft) || !draft.msg4User.trim()) {
+    return draft;
   }
 
-  // OpenAI, local (custom base URL), gateway (the free tier, via OpenRouter) and hosted all speak
-  // the OpenAI-compatible protocol.
-  return sendViaOpenAI(config, history, sanitizedMessage, context, stream);
+  try {
+    const instruction = getChatReviewInstruction(
+      config.language ?? DEFAULT_LANG,
+      message,
+      draft.msg4User
+    );
+    const reviewed = await dispatch(instruction, stream);
+
+    if (FAILED_COACH_REPLIES.has(reviewed) || !reviewed.msg4User.trim()) {
+      stream?.onText(draft.msg4User);
+
+      return draft;
+    }
+
+    return {
+      ...reviewed,
+      rememberMe: reviewed.rememberMe?.trim() ? reviewed.rememberMe : draft.rememberMe,
+    };
+  } catch (error) {
+    if (error instanceof AiCancelledError) {
+      throw error;
+    }
+
+    reportAiError(error, 'coachAI.reviewCoachReply');
+    stream?.onText(draft.msg4User);
+
+    return draft;
+  }
 }
 
 /**
  * AI FUNCTION DISPATCHERS
  * These delegate to provider-specific implementations
  */
+
+/**
+ * An insight at the person's thinking level. Off and Medium make the single request they always
+ * made. From High up the answer is drafted unseen, then fact-checked for `reviewRounds` rounds with
+ * the same system prompt (so the data and the voice stay): the corrector is told which figures the
+ * data does not hold (`ungroundedFigures`), and a correction is kept only when it has no more of them.
+ * The final text then reaches the stream once, so what was shown is what is saved.
+ */
+async function generateInsight(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  userMessage: string,
+  recentConversation?: ChatHistoryEntry[],
+  stream?: CoachStream
+): Promise<string> {
+  const ask = (message: string, target?: CoachStream) =>
+    recentConversation?.length
+      ? generateTextWithHistory(config, systemPrompt, recentConversation, message, target)
+      : generateText(config, systemPrompt, message, target);
+  const rounds = THINKING_PIPELINE[await thinkingLevelFor(config)].reviewRounds;
+  if (rounds === 0) {
+    return ask(userMessage, stream);
+  }
+
+  stream?.onPhase?.('reviewing');
+  const draft = await ask(userMessage);
+  if (!draft.trim()) {
+    return draft;
+  }
+
+  const data = [
+    systemPrompt,
+    ...(recentConversation ?? []).map((entry) => entry.content),
+    userMessage,
+  ].join('\n');
+  const final = await reviewAndRevise({
+    draft,
+    rounds,
+    critique: (current, round) =>
+      ask(
+        getInsightFactCheckMessage(
+          userMessage,
+          current,
+          ungroundedFigures(current, data),
+          round > 0
+        )
+      ),
+    accept: (current, revised) =>
+      revised.trim() !== '' &&
+      ungroundedFigures(revised, data).length <= ungroundedFigures(current, data).length,
+    onError: (error) => reportAiError(error, 'coachAI.factCheckInsight'),
+  });
+  stream?.onText(final);
+
+  return final;
+}
+
+/**
+ * A plan at the person's thinking level. Off and Medium make the single request they always made.
+ * From High up the answer gets `reviewRounds` critique rounds: the same request again, with the
+ * current answer and the problems code found in it (`planFindings`), and the revision is kept only
+ * when it parses and has no more problems than the answer it revises.
+ */
+async function generatePlan<T>(
+  config: CoachAIConfig,
+  request: (extra?: string) => Promise<T | null | undefined>,
+  findingsOf: (answer: T) => string[]
+): Promise<T | null> {
+  const draft = await request();
+  if (draft == null) {
+    return null;
+  }
+
+  const rounds = THINKING_PIPELINE[await thinkingLevelFor(config)].reviewRounds;
+  if (rounds === 0) {
+    return draft;
+  }
+
+  return reviewAndRevise<T>({
+    draft,
+    rounds,
+    critique: (current) => request(getPlanReviewMessage(current, findingsOf(current))),
+    accept: (current, revised) => findingsOf(revised).length <= findingsOf(current).length,
+    onError: (error) => reportAiError(error, 'coachAI.reviewPlan'),
+  });
+}
 
 /**
  * Get nutrition insights for a date range.
@@ -2651,18 +3001,13 @@ export async function getNutritionInsights(
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;
 
-    if (recentConversation?.length) {
-      const text = await generateTextWithHistory(
-        config,
-        systemPrompt,
-        recentConversation,
-        finalUserMessage,
-        stream
-      );
-      return text || null;
-    }
-
-    const text = await generateText(config, systemPrompt, finalUserMessage, stream);
+    const text = await generateInsight(
+      config,
+      systemPrompt,
+      finalUserMessage,
+      recentConversation,
+      stream
+    );
     return text || null;
   } catch (error) {
     notifyUserFacingAiError(error);
@@ -2700,15 +3045,19 @@ export async function generateMealPlan(
 
     const fns = getGenerateMealPlanFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<GenerateMealPlanResponse>(
+    return await generatePlan<GenerateMealPlanResponse>(
       config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'generateMealPlan',
-      'planning'
+      (extra) =>
+        generateStructured<GenerateMealPlanResponse>(
+          config,
+          systemPrompt,
+          withExtra(userMessage, extra),
+          schema,
+          'generateMealPlan',
+          'planning'
+        ),
+      (plan) => mealPlanFindings(plan, macroTargets)
     );
-    return parsed ?? null;
   } catch (error) {
     notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.generateMealPlan');
@@ -2741,15 +3090,19 @@ export async function generateWorkoutPlan(
 
     const fns = getGenerateWorkoutPlanFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<GenerateWorkoutPlanResponse>(
+    return await generatePlan<GenerateWorkoutPlanResponse>(
       config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'generateWorkoutPlan',
-      'planning'
+      (extra) =>
+        generateStructured<GenerateWorkoutPlanResponse>(
+          config,
+          systemPrompt,
+          withExtra(userMessage, extra),
+          schema,
+          'generateWorkoutPlan',
+          'planning'
+        ),
+      workoutPlanFindings
     );
-    return parsed ?? null;
   } catch (error) {
     notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.generateWorkoutPlan');
@@ -2774,15 +3127,19 @@ export async function calculateNextWorkoutVolume(
         : JSON.stringify(completedWorkoutData ?? {}, null, 2);
     const fns = getCalculateNextWorkoutVolumeFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<CalculateVolumeResponse>(
+    return await generatePlan<CalculateVolumeResponse>(
       config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'calculateNextWorkoutVolume',
-      'planning'
+      (extra) =>
+        generateStructured<CalculateVolumeResponse>(
+          config,
+          systemPrompt,
+          withExtra(userMessage, extra),
+          schema,
+          'calculateNextWorkoutVolume',
+          'planning'
+        ),
+      workoutVolumeFindings
     );
-    return parsed ?? null;
   } catch (error) {
     notifyUserFacingAiError(error);
     console.error('[coachAI] calculateNextWorkoutVolume error:', error);
@@ -2802,7 +3159,7 @@ export async function getWorkoutInsights(
     const systemPrompt = await getWorkoutInsightsPrompt(workoutTitle, lang, {
       provider: config.provider,
     });
-    const text = await generateText(config, systemPrompt);
+    const text = await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE);
     return text || null;
   } catch (error) {
     notifyUserFacingAiError(error);
@@ -2824,7 +3181,13 @@ export async function getRecentWorkoutInsights(
     const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(workoutLogId, lang, {
       provider: config.provider,
     });
-    const text = await generateText(config, systemPrompt, undefined, stream);
+    const text = await generateInsight(
+      config,
+      systemPrompt,
+      INSIGHTS_USER_MESSAGE,
+      undefined,
+      stream
+    );
     return text || null;
   } catch (error) {
     notifyUserFacingAiError(error);
@@ -2858,18 +3221,13 @@ export async function getRecentWorkoutsInsights(
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;
 
-    if (recentConversation?.length) {
-      const text = await generateTextWithHistory(
-        config,
-        systemPrompt,
-        recentConversation,
-        finalUserMessage,
-        stream
-      );
-      return text || null;
-    }
-
-    const text = await generateText(config, systemPrompt, finalUserMessage, stream);
+    const text = await generateInsight(
+      config,
+      systemPrompt,
+      finalUserMessage,
+      recentConversation,
+      stream
+    );
     return text || null;
   } catch (error) {
     notifyUserFacingAiError(error);
@@ -2890,7 +3248,7 @@ export async function getWorkoutVolumeInsights(
     const systemPrompt = await getWorkoutVolumeInsightsPrompt(workoutTitle, lang, {
       provider: config.provider,
     });
-    const text = await generateText(config, systemPrompt);
+    const text = await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE);
     return text || null;
   } catch (error) {
     notifyUserFacingAiError(error);
@@ -2979,33 +3337,51 @@ async function estimateMealFromPhotoOnDevice(
       'estimateNutritionFromPhoto'
     );
 
-  let raw = await askForPhoto();
-  let parsed = readPhotoReply(raw);
-  if (parsed.kind !== 'ok') {
-    // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
-    // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
-    const firstRaw = raw;
-    raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
-    parsed = readPhotoReply(raw);
+  // One reading of the photo. `firstTemperature` lets a further sample differ from the first.
+  const identifyFoods = async (firstTemperature?: number): Promise<IdentifiedFood[]> => {
+    let raw = await askForPhoto(firstTemperature);
+    let parsed = readPhotoReply(raw);
+    if (parsed.kind !== 'ok') {
+      // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
+      // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
+      const firstRaw = raw;
+      raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
+      parsed = readPhotoReply(raw);
 
-    // Last resort before giving up: one text-only call that is asked to correct the broken reply
-    // (no photo, so the projector stays unloaded), read by the same parser and schema check. It
-    // only ever runs after both photo attempts failed, so a good run never pays for it.
-    const broken = [raw, firstRaw].find((text) => text.trim() !== '');
-    if (parsed.kind !== 'ok' && broken) {
-      const repaired = await repairStructuredWithModel<unknown>(
-        config,
-        'estimateNutritionFromPhoto',
-        broken,
-        LOCAL_FOOD_IDENTIFY_SCHEMA
-      );
-      if (repaired?.kind === 'ok') {
-        parsed = repaired;
+      // Last resort before giving up: one text-only call that is asked to correct the broken reply
+      // (no photo, so the projector stays unloaded), read by the same parser and schema check. It
+      // only ever runs after both photo attempts failed, so a good run never pays for it.
+      const broken = [raw, firstRaw].find((text) => text.trim() !== '');
+      if (parsed.kind !== 'ok' && broken) {
+        const repaired = await repairStructuredWithModel<unknown>(
+          config,
+          'estimateNutritionFromPhoto',
+          broken,
+          LOCAL_FOOD_IDENTIFY_SCHEMA
+        );
+        if (repaired?.kind === 'ok') {
+          parsed = repaired;
+        }
       }
     }
-  }
 
-  const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
+    return parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
+  };
+
+  // From High up the photo is read more than once, one reading after another (the phone has one
+  // engine), and a food stays only when at least half the readings name it.
+  const readings = extractionSamples(await thinkingLevelFor(config));
+  const foods =
+    readings <= 1
+      ? await identifyFoods()
+      : voteIdentifiedFoods(
+          await runSamples(config, readings, async (index) => {
+            const found = await identifyFoods(
+              index === 0 ? undefined : LOCAL_PHOTO_RETRY_TEMPERATURE
+            );
+            return found.length > 0 ? found : null;
+          })
+        );
   if (foods.length === 0) {
     return null;
   }
@@ -3049,8 +3425,8 @@ export async function estimateNutritionFromPhoto(
 
   try {
     reportMealProgress(onProgress, { step: 'reading', photo: true });
-    const useThinkingMode = await SettingsService.getUseThinkingMode();
-    if (useThinkingMode) {
+    const level = await thinkingLevelFor(config);
+    if (THINKING_PIPELINE[level].verifiedMeal) {
       let thinkingUserMessage = 'Analyze this meal photo.';
       if (context?.description?.trim()) {
         thinkingUserMessage += `\nUser description: ${context.description.trim()}`;
@@ -3060,7 +3436,7 @@ export async function estimateNutritionFromPhoto(
         thinkingUserMessage += `\nTags: ${context.tags.join(', ')}`;
       }
 
-      return await trackMealVerified(config, thinkingUserMessage, base64Image, onProgress);
+      return await trackMealThinking(config, level, thinkingUserMessage, base64Image, onProgress);
     }
 
     const customPrompts = await getActiveCustomPrompts();
@@ -3116,6 +3492,50 @@ export async function estimateNutritionFromPhoto(
 }
 
 /**
+ * One extraction (a label, past workouts, a food log) at the person's thinking level. Off and
+ * Medium make the single request they always made; High reads the input twice and Tokenmaxxing
+ * three times (`extractionSamples`), and code combines the readings field by field
+ * (`combineExtractions`). Only when they disagree is one more request made: the same request with
+ * the readings and the disputed fields appended, whose answer is used when it parses. A failed
+ * arbiter keeps the combined readings; a cancel stops everything.
+ */
+async function extractWithConsensus<T>(
+  config: CoachAIConfig,
+  request: (extra?: string) => Promise<T | null | undefined>
+): Promise<T | null> {
+  const samples = extractionSamples(await thinkingLevelFor(config));
+  if (samples <= 1) {
+    return (await request()) ?? null;
+  }
+
+  const readings = await runSamples(config, samples, () => request());
+  if (readings.length <= 1) {
+    return readings[0] ?? null;
+  }
+
+  const { value, disputed } = combineExtractions(readings);
+  if (disputed.length === 0) {
+    return value as T;
+  }
+
+  try {
+    return (await request(getExtractionArbiterMessage(readings, disputed))) ?? (value as T);
+  } catch (error) {
+    if (error instanceof AiCancelledError) {
+      throw error;
+    }
+
+    reportAiError(error, 'coachAI.arbitrateExtraction');
+    return value as T;
+  }
+}
+
+/** The user message with an arbiter's note appended, when there is one. */
+function withExtra(message: string, extra?: string): string {
+  return extra ? `${message}\n\n${extra}` : message;
+}
+
+/**
  * Extract macros from a nutrition label photo
  */
 export async function extractMacrosFromLabelPhoto(
@@ -3148,16 +3568,17 @@ export async function extractMacrosFromLabelPhoto(
       userMessageSuffix = parts.join('\n');
     }
 
-    const parsed = await generateWithImageStructured<MacroEstimate>(
-      config,
-      systemPrompt,
-      base64,
-      mimeType,
-      schema,
-      'estimateMacros',
-      userMessageSuffix
+    return await extractWithConsensus<MacroEstimate>(config, (extra) =>
+      generateWithImageStructured<MacroEstimate>(
+        config,
+        systemPrompt,
+        base64,
+        mimeType,
+        schema,
+        'estimateMacros',
+        extra ? withExtra(userMessageSuffix ?? '', extra).trim() : userMessageSuffix
+      )
     );
-    return parsed ?? null;
   } catch (error) {
     notifyUserFacingAiError(error);
     console.error('[coachAI] extractMacrosFromLabelPhoto error:', error);
@@ -3202,15 +3623,15 @@ export async function extractMacrosFromLabelText(
       userMessage += '\n\n' + parts.join('\n');
     }
 
-    const parsed = await generateStructured<MacroEstimate>(
-      config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'estimateMacros'
+    return await extractWithConsensus<MacroEstimate>(config, (extra) =>
+      generateStructured<MacroEstimate>(
+        config,
+        systemPrompt,
+        withExtra(userMessage, extra),
+        schema,
+        'estimateMacros'
+      )
     );
-
-    return parsed ?? null;
   } catch (error) {
     notifyUserFacingAiError(error);
     console.error('[coachAI] extractMacrosFromLabelText error:', error);
@@ -3231,12 +3652,14 @@ export async function parsePastWorkouts(
     const systemPrompt = await getParsePastWorkoutsPrompt(userMessage, exerciseNames, lang);
     const fns = getParsePastWorkoutsFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
-      config,
-      systemPrompt,
-      i18n.t('coach.aiInstructions.parseWorkouts', { lng: lang }),
-      schema,
-      'parsePastWorkouts'
+    const parsed = await extractWithConsensus<{ pastWorkouts: ParsedWorkout[] }>(config, (extra) =>
+      generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
+        config,
+        systemPrompt,
+        withExtra(i18n.t('coach.aiInstructions.parseWorkouts', { lng: lang }), extra),
+        schema,
+        'parsePastWorkouts'
+      )
     );
     return parsed?.pastWorkouts ?? null;
   } catch (error) {
@@ -3258,12 +3681,16 @@ export async function parsePastNutrition(
     const systemPrompt = await getParsePastNutritionPrompt(userMessage, lang);
     const fns = getParsePastNutritionFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<{ pastNutrition: ParsedNutrition[] }>(
+    const parsed = await extractWithConsensus<{ pastNutrition: ParsedNutrition[] }>(
       config,
-      systemPrompt,
-      i18n.t('coach.aiInstructions.parseNutrition', { lng: lang }),
-      schema,
-      'parsePastNutrition'
+      (extra) =>
+        generateStructured<{ pastNutrition: ParsedNutrition[] }>(
+          config,
+          systemPrompt,
+          withExtra(i18n.t('coach.aiInstructions.parseNutrition', { lng: lang }), extra),
+          schema,
+          'parsePastNutrition'
+        )
     );
     return parsed?.pastNutrition ?? null;
   } catch (error) {
@@ -3286,12 +3713,19 @@ export async function parseRetrospectiveNutrition(
     const systemPrompt = await getRetrospectiveNutritionPrompt(targetDate, userMessage, lang);
     const fns = getParseRetrospectiveNutritionFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<{ nutritionEntries: NutritionEntry[] }>(
+    const parsed = await extractWithConsensus<{ nutritionEntries: NutritionEntry[] }>(
       config,
-      systemPrompt,
-      i18n.t('coach.aiInstructions.parseRetrospectiveNutrition', { lng: lang }),
-      schema,
-      'parseRetrospectiveNutrition'
+      (extra) =>
+        generateStructured<{ nutritionEntries: NutritionEntry[] }>(
+          config,
+          systemPrompt,
+          withExtra(
+            i18n.t('coach.aiInstructions.parseRetrospectiveNutrition', { lng: lang }),
+            extra
+          ),
+          schema,
+          'parseRetrospectiveNutrition'
+        )
     );
 
     return parsed?.nutritionEntries ?? null;
@@ -3322,7 +3756,7 @@ export async function getMealCritique(
     const finalUserMessage = userRemarks?.trim()
       ? userRemarks.trim()
       : 'Please critique this meal.';
-    const text = await generateText(config, systemPrompt, finalUserMessage, stream);
+    const text = await generateInsight(config, systemPrompt, finalUserMessage, undefined, stream);
     return text || null;
   } catch (error) {
     notifyUserFacingAiError(error);

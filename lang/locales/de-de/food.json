@@ -499,7 +499,12 @@
       "rechecking_one": "{{count}} Zutat wird nochmals geprüft…",
       "rechecking_few": "{{count}} Zutaten werden nochmals geprüft…",
       "rechecking_many": "{{count}} Zutaten werden nochmals geprüft…",
-      "rechecking_other": "{{count}} Zutaten werden nochmals geprüft…"
+      "rechecking_other": "{{count}} Zutaten werden nochmals geprüft…",
+      "reviewing": "Auf übersehene Angaben prüfen…",
+      "comparing_one": "{{count}} Schätzung wird verglichen…",
+      "comparing_few": "{{count}} Schätzungen werden verglichen…",
+      "comparing_many": "{{count}} Schätzungen werden verglichen…",
+      "comparing_other": "{{count}} Schätzungen werden verglichen…"
     },
     "aiNutritionContext": {
       "title": "Kontext für die KI hinzufügen",

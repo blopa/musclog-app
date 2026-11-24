@@ -499,7 +499,12 @@
       "rechecking_one": "Перепроверяем {{count}} ингредиент…",
       "rechecking_few": "Перепроверяем {{count}} ингредиента…",
       "rechecking_many": "Перепроверяем {{count}} ингредиентов…",
-      "rechecking_other": "Перепроверяем {{count}} ингредиента…"
+      "rechecking_other": "Перепроверяем {{count}} ингредиента…",
+      "reviewing": "Проверяем, не пропущено ли что-нибудь…",
+      "comparing_one": "Сравниваем {{count}} оценку…",
+      "comparing_few": "Сравниваем {{count}} оценки…",
+      "comparing_many": "Сравниваем {{count}} оценок…",
+      "comparing_other": "Сравниваем {{count}} оценки…"
     },
     "aiNutritionContext": {
       "title": "Добавить контекст для ИИ",

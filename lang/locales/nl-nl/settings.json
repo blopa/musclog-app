@@ -349,9 +349,45 @@
       "promptContextNutrition": "Voeding",
       "promptContextExercise": "Oefening",
       "memorySettings": "Geheugeninstellingen",
-      "useThinkingMode": "Denkmodus gebruiken",
-      "useThinkingModeSubtitle": "Laat AI-providers diepere redenering gebruiken wanneer dit wordt ondersteund. Dit verbruikt meer tokens en kan de kosten verhogen.",
-      "useThinkingModeIronNote": "Met Musclog Iron gebruiken dieper nadenken en extra controles meer van je maandelijkse AI-tegoed.",
+      "thinkingLevel": {
+        "label": "Denkniveau",
+        "freeTierNote": "Het gratis niveau antwoordt zonder extra nadenken: het dagelijkse tegoed wordt door iedereen gedeeld.",
+        "onDeviceNote": "Hogere niveaus doen meer controles op je telefoon, dus antwoorden duren langer.",
+        "levels": {
+          "off": {
+            "name": "Uit",
+            "description": "Snelle antwoorden. Elke taak denkt zo lang als nodig is."
+          },
+          "medium": {
+            "name": "Gemiddeld",
+            "description": "Denkt beter na en controleert de voedingsmiddelen van een maaltijd in je database voordat er een schatting komt."
+          },
+          "high": {
+            "name": "Hoog",
+            "description": "Gemiddeld, plus een tweede verzoek dat het antwoord nakijkt en corrigeert wat niet klopt."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Meerdere onafhankelijke antwoorden worden vergeleken en daarna twee keer nagekeken. Het traagst, het zorgvuldigst."
+          }
+        },
+        "ironNote": {
+          "medium": "Gebruikt iets meer van je maandelijkse Musclog Iron-tegoed.",
+          "high": "Gebruikt meer van je maandelijkse Musclog Iron-tegoed.",
+          "tokenmaxxing": "Kan je maandelijkse Musclog Iron-tegoed meerdere keren sneller opmaken."
+        },
+        "confirmHigh": {
+          "title": "Hoog denken gebruiken?",
+          "message": "Hoog doet bij de meeste antwoorden een extra controleverzoek, dus het gebruikt meer van je maandelijkse Musclog Iron-tegoed. Je kunt altijd terugschakelen.",
+          "confirm": "Doorgaan"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Tokenmaxxing gebruiken?",
+          "message": "Tokenmaxxing doet meerdere verzoeken per antwoord, dus het kan je maandelijkse Musclog Iron-tegoed meerdere keren sneller opmaken. Het kost nooit meer dan je abonnement: als het tegoed van deze periode op is, wordt het met de volgende periode vernieuwd.",
+          "confirm": "Doorgaan",
+          "authPrompt": "Bevestig dat jij het bent om Tokenmaxxing aan te zetten"
+        }
+      },
       "localLlmThinkingEnabled": "Denkmodus ingeschakeld, want lokale modellen kosten niets extra. Je kunt het uitzetten in de AI-instellingen.",
       "maxAiMemories": "Max AI-herinneringen",
       "maxAiMemoriesSubtitle": "Aantal vorige berichten om te onthouden in gesprekken",

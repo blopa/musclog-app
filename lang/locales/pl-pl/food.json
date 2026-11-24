@@ -499,7 +499,12 @@
       "rechecking_one": "Sprawdzamy ponownie {{count}} składnik…",
       "rechecking_few": "Sprawdzamy ponownie {{count}} składniki…",
       "rechecking_many": "Sprawdzamy ponownie {{count}} składników…",
-      "rechecking_other": "Sprawdzamy ponownie {{count}} składnika…"
+      "rechecking_other": "Sprawdzamy ponownie {{count}} składnika…",
+      "reviewing": "Sprawdzamy, czy niczego nie pominięto…",
+      "comparing_one": "Porównujemy {{count}} szacunek…",
+      "comparing_few": "Porównujemy {{count}} szacunki…",
+      "comparing_many": "Porównujemy {{count}} szacunków…",
+      "comparing_other": "Porównujemy {{count}} szacunku…"
     },
     "aiNutritionContext": {
       "title": "Dodaj kontekst dla AI",

@@ -349,9 +349,45 @@
       "promptContextNutrition": "Beslenme",
       "promptContextExercise": "Egzersiz",
       "memorySettings": "Bellek ayarları",
-      "useThinkingMode": "Düşünme modunu kullan",
-      "useThinkingModeSubtitle": "Desteklendiğinde yapay zekâ sağlayıcılarının daha derin akıl yürütmesine izin ver. Daha fazla token kullanır ve maliyeti artırabilir.",
-      "useThinkingModeIronNote": "Musclog Iron ile daha derin düşünme ve ek kontroller aylık yapay zekâ kotanızdan daha fazla kullanır.",
+      "thinkingLevel": {
+        "label": "Düşünme seviyesi",
+        "freeTierNote": "Ücretsiz seviye ek düşünme yapmadan yanıtlar: günlük kota herkes tarafından paylaşılır.",
+        "onDeviceNote": "Daha yüksek seviyeler telefonda daha fazla kontrol yapar, bu yüzden yanıtlar daha uzun sürer.",
+        "levels": {
+          "off": {
+            "name": "Kapalı",
+            "description": "Hızlı yanıtlar. Her görev ihtiyacı kadar düşünür."
+          },
+          "medium": {
+            "name": "Orta",
+            "description": "Daha dikkatli düşünür ve tahmin etmeden önce bir öğünün yiyeceklerini veritabanıyla karşılaştırır."
+          },
+          "high": {
+            "name": "Yüksek",
+            "description": "Orta seviye, artı yanıtı gözden geçirip tutarsız olanı düzelten ikinci bir istek."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Birbirinden bağımsız birkaç yanıt karşılaştırılır, sonra iki kez gözden geçirilir. En yavaş, en titiz."
+          }
+        },
+        "ironNote": {
+          "medium": "Aylık Musclog Iron kotasından biraz daha fazla kullanır.",
+          "high": "Aylık Musclog Iron kotasından daha fazla kullanır.",
+          "tokenmaxxing": "Aylık Musclog Iron kotasını birkaç kat daha hızlı tüketebilir."
+        },
+        "confirmHigh": {
+          "title": "Yüksek düşünme kullanılsın mı?",
+          "message": "Yüksek, çoğu yanıt için ek bir kontrol isteği yapar, bu yüzden aylık Musclog Iron kotasından daha fazla kullanır. İstediğiniz zaman geri dönebilirsiniz.",
+          "confirm": "Devam et"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Tokenmaxxing kullanılsın mı?",
+          "message": "Tokenmaxxing her yanıt için birden çok istek yapar, bu yüzden aylık Musclog Iron kotasını birkaç kat daha hızlı tüketebilir. Aboneliğinizden daha fazla maliyeti asla olmaz: bu dönemin kotası bittiğinde bir sonraki dönemle yenilenir.",
+          "confirm": "Devam et",
+          "authPrompt": "Tokenmaxxing'i açmak için kimliğinizi doğrulayın"
+        }
+      },
       "localLlmThinkingEnabled": "Düşünme modu açıldı, çünkü yerel modeller ek maliyet getirmez. Yapay zekâ ayarlarından kapatabilirsin.",
       "maxAiMemories": "En fazla yapay zekâ belleği",
       "maxAiMemoriesSubtitle": "Konuşmalarda hatırlanacak önceki mesaj sayısı",

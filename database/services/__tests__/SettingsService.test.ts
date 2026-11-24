@@ -361,7 +361,7 @@ describe('SettingsService', () => {
       const rows = installSettingsTable();
 
       await SettingsService.setCoachQuickSettings({
-        useThinkingMode: true,
+        thinkingLevel: 'high',
         sendFoundationFoodsToLlm: false,
         nutritionLogHistoryDays: '30',
         workoutHistoryDays: '7',
@@ -370,7 +370,8 @@ describe('SettingsService', () => {
 
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
       expect(rows).toHaveLength(5);
-      expect(await SettingsService.getUseThinkingMode()).toBe(true);
+      expect(await SettingsService.get(SETTINGS.thinkingLevel)).toBe('high');
+      expect(rows.find((row) => row.type === SETTINGS.thinkingLevel.type)?.value).toBe('high');
       expect(await SettingsService.getSendFoundationFoodsToLlm()).toBe(false);
       expect(await SettingsService.getNutritionLogHistoryDays()).toBe('30');
       expect(await SettingsService.getWorkoutHistoryDays()).toBe('7');
@@ -380,7 +381,7 @@ describe('SettingsService', () => {
       const rows = installSettingsTable();
 
       await SettingsService.setCoachQuickSettings({
-        useThinkingMode: false,
+        thinkingLevel: 'off',
         sendFoundationFoodsToLlm: true,
         nutritionLogHistoryDays: 'none',
         workoutHistoryDays: 'none',
@@ -481,7 +482,7 @@ describe('SettingsService', () => {
       const rows = installSettingsTable();
 
       await SettingsService.setCoachQuickSettings({
-        useThinkingMode: true,
+        thinkingLevel: 'medium',
         sendFoundationFoodsToLlm: true,
         nutritionLogHistoryDays: '7',
         workoutHistoryDays: '7',

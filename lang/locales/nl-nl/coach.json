@@ -166,6 +166,7 @@
         "errorUnsafe": "Die tekst kan niet worden gebruikt. Probeer de stem in eenvoudigere woorden te beschrijven.",
         "errorImage": "Die afbeelding kon niet worden geladen."
       }
-    }
+    },
+    "reviewingReply": "Ik controleer mijn antwoord nog eens…"
   }
 }

@@ -499,7 +499,12 @@
       "rechecking_one": "Revisando {{count}} ingrediente…",
       "rechecking_few": "Revisando {{count}} ingredientes…",
       "rechecking_many": "Revisando {{count}} ingredientes…",
-      "rechecking_other": "Revisando {{count}} ingredientes…"
+      "rechecking_other": "Revisando {{count}} ingredientes…",
+      "reviewing": "Conferindo se algo ficou de fora…",
+      "comparing_one": "Comparando {{count}} estimativa…",
+      "comparing_few": "Comparando {{count}} estimativas…",
+      "comparing_many": "Comparando {{count}} estimativas…",
+      "comparing_other": "Comparando {{count}} estimativas…"
     },
     "aiNutritionContext": {
       "title": "Adicionar Contexto para IA",

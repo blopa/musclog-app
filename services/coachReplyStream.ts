@@ -353,6 +353,11 @@ async function run(job: CoachReplyJob, jobId: string, startedAt: number): Promis
         toUi.push(text);
         toJournal.push(text);
       },
+      onPhase: (phase) => {
+        if (getActiveCoachReplyId() === jobId && !received) {
+          setCoachReplySnapshot({ jobId, context: job.context, text: '', startedAt, phase });
+        }
+      },
     });
     toUi.cancel();
     toJournal.cancel();

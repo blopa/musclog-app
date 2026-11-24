@@ -18,7 +18,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: jest.fn().mockResolvedValue(false),
+    get: jest.fn().mockResolvedValue('off'),
     getSendFoundationFoodsToLlm: jest.fn().mockResolvedValue(true),
     getNutritionDisplay: jest.fn().mockResolvedValue('11101'),
   },

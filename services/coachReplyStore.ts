@@ -17,6 +17,11 @@ export type CoachReplySnapshot = {
   /** The visible text so far; empty while the model has not started to answer. */
   text: string;
   startedAt: number;
+  /**
+   * Set while nothing is shown yet because the reply is drafted unseen and then double-checked
+   * (the Tokenmaxxing thinking level). Once text arrives it no longer matters.
+   */
+  phase?: 'reviewing';
 };
 
 export type CoachReplyEvent =

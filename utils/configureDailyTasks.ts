@@ -118,7 +118,11 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
         } else {
           console.log('[configureDailyTasks] Generating workout insights...');
           workoutMessage =
-            (await getRecentWorkoutsInsights(aiConfig, startDateStr, endDateStr)) ?? '';
+            (await getRecentWorkoutsInsights(
+              { ...aiConfig, background: true },
+              startDateStr,
+              endDateStr
+            )) ?? '';
         }
 
         if (workoutMessage) {
@@ -148,7 +152,12 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
           nutritionMessage = i18n.t('coach.insights.noNutritionLogs');
         } else {
           console.log('[configureDailyTasks] Generating nutrition insights...');
-          nutritionMessage = (await getNutritionInsights(aiConfig, startDateStr, endDateStr)) ?? '';
+          nutritionMessage =
+            (await getNutritionInsights(
+              { ...aiConfig, background: true },
+              startDateStr,
+              endDateStr
+            )) ?? '';
         }
 
         if (nutritionMessage) {

@@ -19,7 +19,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: jest.fn(async () => false),
+    get: jest.fn(async () => 'off'),
     getSendFoundationFoodsToLlm: jest.fn(async () => false),
   },
 }));

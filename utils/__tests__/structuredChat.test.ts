@@ -36,7 +36,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
   DebugDumpService: { logJsonEvent: jest.fn() },
 }));
 jest.mock('@/database/services/SettingsService', () => ({
-  SettingsService: { getUseThinkingMode: jest.fn().mockResolvedValue(false) },
+  SettingsService: { get: jest.fn().mockResolvedValue('off') },
 }));
 
 const schema = (dialect: string) => ({

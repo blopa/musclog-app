@@ -51,7 +51,7 @@ describe('AISettingsModal Premium entry', () => {
     );
     expect(SETTINGS).toMatch(/\{isMusclogIronActive \?/);
     expect(SETTINGS).toContain("t('settings.aiSettings.premium.activeNote')");
-    expect(SETTINGS).toContain("t('settings.aiSettings.useThinkingModeIronNote')");
+    expect(SETTINGS).toContain('<ThinkingLevelPicker');
   });
 
   it('renders PremiumModal inside the modal tree', () => {

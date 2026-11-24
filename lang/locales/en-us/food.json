@@ -499,7 +499,12 @@
       "rechecking_one": "Double-checking {{count}} ingredient…",
       "rechecking_few": "Double-checking {{count}} ingredients…",
       "rechecking_many": "Double-checking {{count}} ingredients…",
-      "rechecking_other": "Double-checking {{count}} ingredients…"
+      "rechecking_other": "Double-checking {{count}} ingredients…",
+      "reviewing": "Checking for anything missed…",
+      "comparing_one": "Comparing {{count}} estimate…",
+      "comparing_few": "Comparing {{count}} estimates…",
+      "comparing_many": "Comparing {{count}} estimates…",
+      "comparing_other": "Comparing {{count}} estimates…"
     },
     "aiNutritionContext": {
       "title": "Add context for AI",

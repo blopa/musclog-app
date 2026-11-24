@@ -4,10 +4,10 @@
 
 ## 1. What it would settle
 
-1. **Does effort pay for itself?** For each kind of job (`chat`, `extraction`, `insight`, `planning`), is a higher effort better by more than the noise, and is the gain worth the extra latency and tokens? Today the table says extraction `minimal`, chat `low`, insight and planning `medium`, "Use thinking mode" `high` everywhere. Any row could be wrong.
+1. **Does effort pay for itself?** For each kind of job (`chat`, `extraction`, `insight`, `planning`), is a higher effort better by more than the noise, and is the gain worth the extra latency and tokens? Today the table says extraction `minimal`, chat `low`, insight and planning `medium` at the Off level, `high` everywhere at Medium and High, `max` at Tokenmaxxing. Any row could be wrong.
 2. **Is the meal refinement worth its extra requests?** It re-estimates ingredients with an invented food id or implausible numbers. Does it reduce calorie and macro error, and how often does it fire for nothing (alcohol, oils)?
 3. **Are Iron's token limits right?** `max_tokens_by_effort` (chat 1500/3000/4500, structured 4000/6000/9000, vision 2000/3500/5000) are estimates. The run measures how much a model really spends thinking at each effort, and how often an answer is cut off (`finish_reason: length`).
-4. **Is "Use thinking mode" (`high` plus the verified meal path) worth recommending?** It costs the most and Iron users pay with their allowance.
+4. **Which thinking level is worth recommending?** Medium (`high` plus the verified meal path), High (one review round) and Tokenmaxxing (three samples, two review rounds) each cost more than the last, and Iron users pay with their allowance.
 
 ## 2. What to compare
 
@@ -16,9 +16,9 @@ Run every case under each variant, on the same model, with the same prompts and 
 | Variant        | Effort                                  | Meal path                          | What it stands for                      |
 | -------------- | --------------------------------------- | ---------------------------------- | --------------------------------------- |
 | `flat-low`     | `low` for every job                     | single request, no refinement      | roughly the behavior before 2026-11-23  |
-| `table`        | `AI_TASK_EFFORT[task].normal` (default) | single request plus refinement     | what ships with "Use thinking mode" off |
+| `table`        | `AI_TASK_EFFORT[task].normal` (default) | single request plus refinement     | the Off thinking level                  |
 | `table-no-fix` | the table                               | single request, refinement skipped | isolates the refinement from the effort |
-| `thinking`     | `high` for every job                    | `trackMealVerified`                | "Use thinking mode" on                  |
+| `thinking`     | `high` for every job                    | `trackMealVerified`                | the Medium thinking level               |
 
 Add `flat-medium` if `table` and `thinking` differ a lot and you want to know whether the middle is enough. Run each provider that matters separately (Gemini default model, OpenAI default model, Claude default model, and Iron's `openai/gpt-6-luna` through OpenRouter): a result on one does not transfer.
 
@@ -55,7 +55,7 @@ Score by job, preferring a check in code to a judge:
 There is no harness. Build the smallest thing that runs the **shipped code path**, not a copy of it:
 
 1. A Jest project that is excluded from the default run (for example `evals/`, selected by `--selectProjects eval` and refusing to start unless `MUSCLOG_EVAL=1` and a key are set). It reuses the mock layer the existing AI tests use (`utils/__tests__/coachAIEffort.test.ts` and `coachAITrackMealRefine.test.ts` show it: `SettingsService`, `NutritionService`, debug dump) but a real provider client. Calling `trackMeal`, `estimateNutritionFromPhoto`, `sendCoachMessage` and `requestStructured` tests the real prompts, refinement and effort wiring.
-2. The variants are imposed by mocking `utils/aiEffort` (return one flat effort for `flat-low` and `thinking`) and `getUseThinkingMode`. For `table-no-fix` add a throwaway local patch that skips `refineTrackedMeals`; do not commit it.
+2. The variants are imposed by mocking `utils/aiEffort` (return one flat effort for `flat-low` and `thinking`) and `SettingsService.get(SETTINGS.thinkingLevel)` (add `high` and `tokenmaxxing` variants by returning those levels). For `table-no-fix` add a throwaway local patch that skips `refineTrackedMeals`; do not commit it.
 3. For Iron's token limits, extend the existing OpenRouter bench instead (`spikes/premium-p0/bench`, `bench-models.ts`, which already records latency, tokens and cost and takes `--max-usd`): send the same bodies the Worker would (`provider.zdr`, `reasoning: { effort }`, the feature's `max_tokens`) for `low`, `medium` and `high`, and record `finish_reason` and reasoning tokens. Set each `max_tokens_by_effort` entry to about the p99 of reasoning plus the p99 of the answer, then add 20% headroom.
 4. Write one results row per call to a git-ignored folder (`evals/results/`), then a small script that prints the tables in section 4 per job and variant.
 
@@ -68,7 +68,7 @@ There is no harness. Build the smallest thing that runs the **shipped code path*
 - **Move a table row up** only if the higher effort beats the current one on the code-scored primary metric by more than the noise, on at least two providers, at no more than about 1.5 times the latency. Otherwise leave it.
 - **Move a row down** if the lower effort is within the noise: that saves tokens, time and Iron allowance.
 - **Keep the refinement** if it lowers the median or p90 calorie error or removes the 0 kcal ingredients, and fires for nothing on fewer than about 1 case in 10. If it fires for nothing mostly on one food type (alcohol), narrow `ingredientMacroProblems` for it instead of removing the refinement.
-- **Recommend "Use thinking mode"** only if `thinking` beats `table` on a metric a person would feel. Otherwise say in its subtitle that it is slower and costs more, which it already does for Iron.
+- **Recommend a higher thinking level** only if `thinking` beats `table` on a metric a person would feel. Otherwise say in its subtitle that it is slower and costs more, which it already does for Iron.
 - **Raise or lower `max_tokens_by_effort` and `reasoning_max`** (`services/premium-worker/wrangler.toml`, then the Worker deploy in `docs/PREMIUM_WORKER.md`) from the truncation numbers, not from a feeling.
 
 Record what you ran and decided in `docs/RESEARCH.md` → Reasoning effort per job (variants, models, dates, the numbers that moved a row), and change `AI_TASK_EFFORT` only together with its test (`utils/__tests__/aiEffort.test.ts`).

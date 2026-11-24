@@ -499,7 +499,12 @@
       "rechecking_one": "Ricontrollo {{count}} ingrediente…",
       "rechecking_few": "Ricontrollo {{count}} ingredienti…",
       "rechecking_many": "Ricontrollo {{count}} ingredienti…",
-      "rechecking_other": "Ricontrollo {{count}} ingredienti…"
+      "rechecking_other": "Ricontrollo {{count}} ingredienti…",
+      "reviewing": "Controllo che non sia sfuggito nulla…",
+      "comparing_one": "Confronto {{count}} stima…",
+      "comparing_few": "Confronto {{count}} stime…",
+      "comparing_many": "Confronto {{count}} stime…",
+      "comparing_other": "Confronto {{count}} stime…"
     },
     "aiNutritionContext": {
       "title": "Aggiungi contesto per l'IA",

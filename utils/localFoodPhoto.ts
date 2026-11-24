@@ -7,6 +7,8 @@
  * confident match is estimated afterwards from its name by the same follow-up the cloud path uses.
  * Everything lands in the review screen, where the person edits it before anything is saved.
  */
+import { median } from 'simple-statistics';
+
 import type { TrackedMeal, TrackMealIngredient, TrackMealResponse } from './coachAI';
 
 export const MAX_IDENTIFIED_FOODS = 12;
@@ -28,6 +30,62 @@ export const LOCAL_PHOTO_RETRY_TEMPERATURE = 0.3;
 export const LOCAL_PHOTO_UNMATCHED_FOOD_ID = 'local-photo-unmatched';
 
 export type IdentifiedFood = { name: string; grams: number };
+
+/** A food's name as readings are compared: case, accents and spacing do not count. */
+function foodKey(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Several readings of one photo (the High and Tokenmaxxing thinking levels) made into one: a food
+ * stays when at least half the readings name it, with the median of the grams they gave (a reading
+ * that names a food twice counts its grams together), in the order foods were first named and with
+ * their first spelling. One reading is returned as it is.
+ */
+export function voteIdentifiedFoods(readings: IdentifiedFood[][]): IdentifiedFood[] {
+  if (readings.length <= 1) {
+    return readings[0] ?? [];
+  }
+
+  const order: string[] = [];
+  const spelling = new Map<string, string>();
+  const grams = new Map<string, number[]>();
+  for (const reading of readings) {
+    const totals = new Map<string, number>();
+    for (const food of reading) {
+      const key = foodKey(food.name);
+      if (!key) {
+        continue;
+      }
+
+      if (!spelling.has(key)) {
+        spelling.set(key, food.name);
+        order.push(key);
+      }
+
+      totals.set(key, (totals.get(key) ?? 0) + food.grams);
+    }
+
+    for (const [key, total] of totals) {
+      grams.set(key, [...(grams.get(key) ?? []), total]);
+    }
+  }
+
+  const needed = Math.ceil(readings.length / 2);
+  return order.flatMap((key) => {
+    const seen = grams.get(key) ?? [];
+    if (seen.length < needed) {
+      return [];
+    }
+
+    return [{ name: spelling.get(key) ?? key, grams: Math.round(median(seen)) }];
+  });
+}
 
 /** What the model is asked for: names and grams, nothing else. */
 export const LOCAL_FOOD_IDENTIFY_SCHEMA = {

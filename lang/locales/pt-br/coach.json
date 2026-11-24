@@ -166,6 +166,7 @@
         "errorUnsafe": "Esse texto não pode ser usado. Tente descrever a voz com palavras mais simples.",
         "errorImage": "Não foi possível carregar essa imagem."
       }
-    }
+    },
+    "reviewingReply": "Estou revisando minha resposta…"
   }
 }

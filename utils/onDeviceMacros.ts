@@ -3,6 +3,8 @@
  * contradicts its own macros, so it is asked for a label per 100 g, which is scaled and made
  * consistent here; fiber comes from an optional second text request.
  */
+import { median } from 'simple-statistics';
+
 import { macroEnergyKcal } from './mealPlausibility';
 
 export type OnDeviceMacroIngredient = {
@@ -41,6 +43,27 @@ export type OnDeviceLabel = {
   carbs: number;
   fat: number;
 };
+
+/**
+ * Several per-100 g labels for one food (the High and Tokenmaxxing thinking levels) made into one:
+ * each figure is the median of what the labels said, after `clampNonNegative`, and the name is the
+ * first label's. One label is returned as it is; none gives undefined.
+ */
+export function medianLabel(labels: OnDeviceLabel[]): OnDeviceLabel | undefined {
+  if (labels.length <= 1) {
+    return labels[0];
+  }
+
+  const middle = (values: number[]): number => median(values.map(clampNonNegative));
+
+  return {
+    name: labels[0].name,
+    kcal: middle(labels.map((label) => label.kcal)),
+    protein: middle(labels.map((label) => label.protein)),
+    carbs: middle(labels.map((label) => label.carbs)),
+    fat: middle(labels.map((label) => label.fat)),
+  };
+}
 
 /**
  * Scales a per-100 g label to `grams`. The model's energy wins: its macro ratios split it, so

@@ -69,7 +69,6 @@ import {
   USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
-  USE_THINKING_MODE_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   type WorkoutHistoryDays,
@@ -80,6 +79,7 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { closeSentry } from '@/sentry-init';
+import type { ThinkingLevel } from '@/utils/aiThinkingLevel';
 import {
   type ComebackState,
   parseComebackState,
@@ -100,7 +100,7 @@ type SettingValueUpdate = {
 };
 
 type CoachQuickSettingsUpdate = {
-  useThinkingMode: boolean;
+  thinkingLevel: ThinkingLevel;
   sendFoundationFoodsToLlm: boolean;
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
@@ -461,20 +461,13 @@ export class SettingsService {
   }
 
   /**
-   * Upsert the use thinking mode setting
-   */
-  static async setUseThinkingMode(value: boolean) {
-    await SettingsService.setBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, value);
-  }
-
-  /**
    * Persist the coach quick settings together so the modal cannot leave a partial update.
    */
   static async setCoachQuickSettings(settings: CoachQuickSettingsUpdate) {
     const updates: SettingValueUpdate[] = [
       {
-        type: USE_THINKING_MODE_SETTING_TYPE,
-        value: settings.useThinkingMode.toString(),
+        type: SETTINGS.thinkingLevel.type,
+        value: SETTINGS.thinkingLevel.serialize(settings.thinkingLevel),
       },
       {
         type: SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
@@ -686,10 +679,6 @@ export class SettingsService {
 
   static async setIncludeFiberInCarbs(value: boolean) {
     await SettingsService.setBooleanSetting(INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, value);
-  }
-
-  static async getUseThinkingMode(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, false);
   }
 
   static async getDumpLlmRequests(): Promise<boolean> {
