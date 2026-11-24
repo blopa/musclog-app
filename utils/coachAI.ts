@@ -405,8 +405,10 @@ function createStreamSink(stream: CoachStream, mode: 'plain' | 'coachJson'): Str
   return {
     onDelta: (delta) => {
       raw += delta;
-      const visible =
-        mode === 'plain' ? stripStreamingTemplateTokens(raw) : readJsonStringField(raw, 'msg4User');
+      // Leaked template tokens are held back in both modes; in JSON mode first, or a reply behind
+      // a `<|im_start|>assistant` header reads as non-JSON and streams as raw text.
+      const cleaned = stripStreamingTemplateTokens(raw);
+      const visible = mode === 'plain' ? cleaned : readJsonStringField(cleaned, 'msg4User');
       if (!visible || visible === shown) {
         return;
       }

@@ -9,20 +9,35 @@ import { jsonrepair } from 'jsonrepair';
  * into its reply, and the role word that follows a start token. The Pixel 10 Pro's first real
  * photo replies were `<|im_start|>assistant { "items": [...] }`: valid JSON behind a template header.
  */
-const TEMPLATE_HEADER = /<\|(?:im_start|start_header_id|start_of_turn)\|>\s*(?:assistant|model)?/gi;
+const TEMPLATE_HEADER =
+  /<\|(?:im_start|start_header_id|start_of_turn)\|>\s*(?:(?:assistant|model)\b)?/gi;
 const TEMPLATE_TOKEN = /<\|[A-Za-z0-9_]+\|>/g;
 
 export function stripTemplateTokens(text: string): string {
   return text.replace(TEMPLATE_HEADER, '').replace(TEMPLATE_TOKEN, '').trim();
 }
 
-/** A token still arriving at the end of a stream (`<|im_e`), hidden until it completes or not. */
-const PARTIAL_TEMPLATE_TOKEN = /<\|[A-Za-z0-9_]*\|?$/;
+/**
+ * The end of a stream that may still become a template token: a lone `<`, a half-written `<|im_e`,
+ * or a complete header whose role word is still arriving (`<|im_start|>assi`).
+ */
+const PARTIAL_TEMPLATE_TOKEN = /<(?:\|[A-Za-z0-9_]*\|?)?$/;
+const HEADER_WITH_PARTIAL_ROLE = /<\|(?:im_start|start_header_id|start_of_turn)\|>\s*([A-Za-z]*)$/;
+const ROLE_WORDS = ['assistant', 'model'];
 
-/** `stripTemplateTokens` for text that is still being streamed: also hides a half-written token. */
+/**
+ * `stripTemplateTokens` for text that is still being streamed: whatever may still turn into a
+ * token is held back until the next chunk says, so nothing flickers on screen and off again. Only
+ * the start is trimmed: the trailing space of a word still being written is kept.
+ */
 export function stripStreamingTemplateTokens(text: string): string {
-  // Only the start is trimmed: the trailing space of a word still being written is kept.
-  return text
+  let held = text;
+  const header = HEADER_WITH_PARTIAL_ROLE.exec(held);
+  if (header && ROLE_WORDS.some((role) => role.startsWith(header[1].toLowerCase()))) {
+    held = held.slice(0, header.index);
+  }
+
+  return held
     .replace(PARTIAL_TEMPLATE_TOKEN, '')
     .replace(TEMPLATE_HEADER, '')
     .replace(TEMPLATE_TOKEN, '')

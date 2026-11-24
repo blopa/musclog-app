@@ -1,4 +1,9 @@
-import { jsonSpan, repairReplyJson, stripTemplateTokens } from '../localReplyShape';
+import {
+  jsonSpan,
+  repairReplyJson,
+  stripStreamingTemplateTokens,
+  stripTemplateTokens,
+} from '../localReplyShape';
 
 describe('stripTemplateTokens and jsonSpan', () => {
   const leaked = '<|im_start|>assistant { "items": [ {"name": "rice", "grams": 150} ] }';
@@ -36,5 +41,47 @@ describe('repairReplyJson', () => {
   it('gives up on text with no JSON in it', () => {
     expect(repairReplyJson('nothing here')).toBeUndefined();
     expect(repairReplyJson('')).toBeUndefined();
+  });
+});
+
+describe('stripStreamingTemplateTokens', () => {
+  /** What the bubble shows after each chunk of a stream. */
+  const frames = (chunks: string[]) => {
+    let raw = '';
+
+    return chunks.map((chunk) => {
+      raw += chunk;
+
+      return stripStreamingTemplateTokens(raw);
+    });
+  };
+
+  it('never shows a token or a role word, even split across chunks', () => {
+    const shown = frames([
+      '<',
+      '|im_start|>',
+      'assi',
+      'stant ',
+      'Any',
+      'time! ',
+      'Rest <',
+      '|im_end|>',
+    ]);
+
+    expect(shown).toEqual(['', '', '', '', 'Any', 'Anytime! ', 'Anytime! Rest ', 'Anytime! Rest ']);
+  });
+
+  it('only ever grows the visible text of an ordinary reply', () => {
+    const shown = frames(['Push ', 'pull ', 'legs, ', '5 < 6 ', 'is true.']);
+
+    shown.slice(1).forEach((text, i) => expect(text.startsWith(shown[i])).toBe(true));
+    expect(shown.at(-1)).toBe('Push pull legs, 5 < 6 is true.');
+  });
+
+  it('keeps a real word that only starts like a role', () => {
+    expect(stripStreamingTemplateTokens('<|im_start|>Modeling your week')).toBe(
+      'Modeling your week'
+    );
+    expect(stripTemplateTokens('<|im_start|>Modeling your week')).toBe('Modeling your week');
   });
 });
