@@ -20,7 +20,6 @@ import {
   OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
-import { validateAgainstSchema } from './aiSchemaValidate';
 import {
   buildClaudeClient,
   buildClaudeMessages,
@@ -34,7 +33,6 @@ import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
-import { type ProviderPolicy, providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
@@ -45,20 +43,19 @@ import {
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_RETRY_TEMPERATURE,
   localFoodIdentifyPrompt,
-  localJsonRepairMessage,
-  localJsonRepairPrompt,
   mealTypeForHour,
   parseIdentifiedFoods,
   pickFoodMatch,
   searchTermsFor,
 } from './localFoodPhoto';
 import {
+  checkStructuredShape,
   jsonRepairMessage,
   jsonRepairPrompt,
-  jsonSpan,
-  repairReplyJson,
+  parseStructuredJson,
   stripStreamingTemplateTokens,
   stripTemplateTokens,
+  type StructuredResult,
 } from './localReplyShape';
 import { type MealEstimateProgressListener } from './mealEstimateProgress';
 import { ingredientMacroProblems } from './mealPlausibility';
@@ -97,6 +94,7 @@ import {
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
+import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -309,7 +307,7 @@ async function openAiReasoning(
   config: CoachAIConfig,
   effort: AiEffort
 ): Promise<{ reasoning_effort?: ReasoningEffortValue }> {
-  const reasoning = await providerPolicyFor(config.provider).reasoningEffort?.(effort);
+  const reasoning = await providerPolicyFor(config).reasoningEffort?.(effort);
 
   return reasoning ? { reasoning_effort: reasoning } : {};
 }
@@ -342,7 +340,7 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     // A provider whose retries are `withLlmRetry`'s alone turns the SDK's own off (hosted policy).
     // Per-request headers (the hosted idempotency key) are passed per call through the `options` that
     // `withLlmRetry` hands the request, never as client defaults.
-    maxRetries: providerPolicyFor(config.provider).sdkMaxRetries,
+    maxRetries: providerPolicyFor(config).sdkMaxRetries,
     fetch: pinFetch,
   });
 }
@@ -826,29 +824,30 @@ function parseCoachResponse(raw: string): CoachResponse {
   // The same ladder every structured reply gets (fences and template tokens, the JSON inside text,
   // `jsonrepair`), so almost-JSON from a small model is not shown to the person as raw JSON.
   const parsed = parseStructuredJson<Record<string, unknown>>(raw);
-  if (parsed.kind === 'ok' && typeof parsed.value === 'object' && parsed.value !== null) {
-    const value = parsed.value;
-    const text = (field: string): string | undefined =>
-      typeof value[field] === 'string' ? (value[field] as string) : undefined;
+  const fields =
+    parsed.kind === 'ok' && typeof parsed.value === 'object' ? (parsed.value ?? {}) : {};
+  const text = (field: string): string | undefined =>
+    typeof fields[field] === 'string' ? (fields[field] as string) : undefined;
 
-    return {
-      msg4User: text('msg4User') ?? raw,
-      sumMsg: text('sumMsg'),
-      sumUserMsg: text('sumUserMsg'),
-      rememberMe: text('remember_me'),
-    };
-  }
-
-  // Cut off or too broken to repair: the reply field itself can often still be read.
+  // Cut off, too broken to repair or missing the reply field: the field can often still be read out
+  // of the text (`readJsonStringField` passes text that is not a JSON object through), and otherwise
+  // the text itself is the reply.
   const stripped = stripTemplateTokens(raw);
-  if (stripped.replace(/^```(?:json)?\s*/i, '').startsWith('{')) {
-    const message = readJsonStringField(stripped, 'msg4User');
-    if (message.trim()) {
-      return { msg4User: message };
-    }
-  }
+  const readable = readJsonStringField(stripped, 'msg4User');
 
-  return { msg4User: stripped || raw };
+  return {
+    msg4User: text('msg4User') ?? (readable.trim() ? readable : stripped || raw),
+    sumMsg: text('sumMsg'),
+    sumUserMsg: text('sumUserMsg'),
+    rememberMe: text('remember_me'),
+  };
+}
+
+/** The latest turns a free-chat reply is sent, under the provider's turn cap when it has one. */
+function latestChatTurns(history: ChatHistoryEntry[], config: CoachAIConfig): ChatHistoryEntry[] {
+  const max = providerPolicyFor(config).maxChatHistoryTurns;
+
+  return max === undefined ? history : history.slice(-max);
 }
 
 function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): Content[] {
@@ -1029,10 +1028,10 @@ async function sendViaOpenAI(
 
   const systemPrompt = await chatSystemPrompt(config, history, context);
 
-  const policy = providerPolicyFor(config.provider);
-  const recentHistory =
-    policy.maxChatHistoryTurns === undefined ? history : history.slice(-policy.maxChatHistoryTurns);
-  const truncatedHistory = truncateHistoryByBudget(recentHistory, providerConfig.maxCharBudget);
+  const truncatedHistory = truncateHistoryByBudget(
+    latestChatTurns(history, config),
+    providerConfig.maxCharBudget
+  );
   const normalized = normalizeHistory(truncatedHistory);
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
@@ -1048,7 +1047,7 @@ async function sendViaOpenAI(
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages,
-    ...policy.chatSampling,
+    ...providerPolicyFor(config).chatSampling,
     ...(await openAiReasoning(config, await resolveEffort('chat'))),
     response_format: {
       type: 'json_schema',
@@ -1200,12 +1199,10 @@ async function runOnDeviceText(
   messages: { role: 'user' | 'assistant'; content: string }[],
   systemPrompt: string | undefined,
   sink: StreamSink | null,
-  penalties?: ProviderPolicy['chatSampling']
+  penalties?: ChatPenalties
 ): Promise<string> {
-  // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person, streamed
-  // or not, whichever engine wrote the text.
   if (onDeviceEngineOf(config) === 'gguf') {
-    const text = await withLlmRetry(
+    return withLlmRetry(
       operation,
       config,
       async (signal, touch) => {
@@ -1231,15 +1228,13 @@ async function runOnDeviceText(
       },
       { hasStreamed: () => sink?.hasEmitted() ?? false }
     );
-
-    return stripTemplateTokens(text);
   }
 
   const text = sink
     ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
     : await sendOnDeviceMessage(messages, systemPrompt);
 
-  return stripTemplateTokens(text ?? '');
+  return text ?? '';
 }
 
 async function sendViaOnDevice(
@@ -1260,13 +1255,8 @@ async function sendViaOnDevice(
 
     // The same two rules as a custom local server: only the latest turns, and (on the downloaded
     // model) a repetition penalty, so a one-word follow-up does not get the last answer back.
-    const policy = providerPolicyFor(config.provider);
-    const recentHistory =
-      policy.maxChatHistoryTurns === undefined
-        ? history
-        : history.slice(-policy.maxChatHistoryTurns);
     const truncatedHistory = truncateHistoryByBudget(
-      recentHistory,
+      latestChatTurns(history, config),
       onDeviceBudget(config) - userMessage.length
     );
     const normalized = normalizeHistory(truncatedHistory);
@@ -1287,13 +1277,16 @@ async function sendViaOnDevice(
       config,
     });
 
-    const raw = await runOnDeviceText(
-      config,
-      'sendViaOnDevice',
-      messages,
-      systemPrompt,
-      sink,
-      policy.chatSampling
+    // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person.
+    const raw = stripTemplateTokens(
+      await runOnDeviceText(
+        config,
+        'sendViaOnDevice',
+        messages,
+        systemPrompt,
+        sink,
+        providerPolicyFor(config).chatSampling
+      )
     );
 
     await logLlmDebugEvent({
@@ -1360,7 +1353,7 @@ async function generateTextOnDevice(
     config,
   });
 
-  return (raw ?? '').trim();
+  return raw;
 }
 
 async function generateText(
@@ -1370,146 +1363,17 @@ async function generateText(
   stream?: CoachStream,
   task: AiTask = 'insight'
 ): Promise<string> {
-  // Wrap user message with delimiters to prevent prompt injection
-  const sanitizedUserMessage = wrapUserContent(userMessage);
   const lang = config.language ?? DEFAULT_LANG;
-  const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
-  if (config.provider === 'on-device') {
-    return generateTextOnDevice(config, promptWithLang, [], sanitizedUserMessage, stream);
-  }
 
-  if (config.provider === 'gemini') {
-    const requestPayload = {
-      model: config.model,
-      contents: [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }],
-      config: {
-        systemInstruction: {
-          parts: [{ text: promptWithLang } as Part],
-        },
-      },
-    };
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation: 'generateText',
-      payload: requestPayload,
-      config,
-    });
-
-    const genModel = await configureBasicGenAI(
-      {
-        apiKey: config.apiKey,
-        model: config.model,
-        generationConfig: buildGeminiGenerationConfig(config.model, {
-          effort: await resolveEffort(task),
-          json: false,
-        }),
-      },
-      [{ text: promptWithLang } as Part]
-    );
-
-    const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    if (stream) {
-      const streamedRaw = await streamGeminiText(
-        genModel,
-        contents,
-        'generateText',
-        config,
-        createStreamSink(stream, 'plain')
-      );
-      await logLlmDebugEvent({
-        provider: config.provider,
-        direction: 'response',
-        operation: 'generateText',
-        payload: { text: streamedRaw },
-        config,
-      });
-
-      return stripTemplateTokens(streamedRaw);
-    }
-
-    const result = await withLlmRetry('generateText', config, (signal) =>
-      genModel.generateContent({ contents, abortSignal: signal })
-    );
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'generateText',
-      payload: result,
-      config,
-    });
-
-    const raw = extractRawText(result);
-    return raw?.trim() ?? '';
-  }
-
-  if (config.provider === 'claude') {
-    const params = await buildClaudeParams(
-      config,
-      promptWithLang,
-      [{ role: 'user', content: sanitizedUserMessage }],
-      { task }
-    );
-    const raw = await runClaude(
-      config,
-      'generateText',
-      params,
-      stream ? createStreamSink(stream, 'plain') : null
-    );
-
-    return raw.trim();
-  }
-
-  const client = buildOpenAIClient(config);
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages: [
-      { role: 'system', content: promptWithLang },
-      { role: 'user', content: sanitizedUserMessage },
-    ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
-  };
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation: 'generateText',
-    payload: requestPayload,
+  return generateTextWithHistory(
     config,
-  });
-
-  if (stream) {
-    const streamedRaw = await streamOpenAiText(
-      client,
-      requestPayload,
-      'generateText',
-      config,
-      createStreamSink(stream, 'plain')
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'generateText',
-      payload: { text: streamedRaw },
-      config,
-    });
-
-    return stripTemplateTokens(streamedRaw);
-  }
-
-  const completion = await createOpenAiCompletion(client, 'generateText', config, requestPayload);
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: 'generateText',
-    payload: completion,
-    config,
-  });
-
-  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
+    `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`,
+    [],
+    userMessage,
+    stream,
+    task,
+    'generateText'
+  );
 }
 
 /**
@@ -1522,7 +1386,33 @@ async function generateTextWithHistory(
   recentConversation: ChatHistoryEntry[],
   finalUserMessage: string,
   stream?: CoachStream,
-  task: AiTask = 'insight'
+  task: AiTask = 'insight',
+  operation = 'generateTextWithHistory'
+): Promise<string> {
+  // Chat-template tokens a model leaks (`<|im_start|>assistant …`) are removed here, once, whichever
+  // provider wrote the text.
+  return stripTemplateTokens(
+    await requestPlainText(
+      config,
+      operation,
+      systemPrompt,
+      recentConversation,
+      finalUserMessage,
+      stream,
+      task
+    )
+  );
+}
+
+/** One plain-text reply from the configured provider, as it came back. */
+async function requestPlainText(
+  config: CoachAIConfig,
+  operation: string,
+  systemPrompt: string,
+  recentConversation: ChatHistoryEntry[],
+  finalUserMessage: string,
+  stream: CoachStream | undefined,
+  task: AiTask
 ): Promise<string> {
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedFinalUserMessage = wrapUserContent(finalUserMessage);
@@ -1551,7 +1441,7 @@ async function generateTextWithHistory(
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'request',
-      operation: 'generateTextWithHistory',
+      operation,
       payload: requestPayload,
       config,
     });
@@ -1571,35 +1461,35 @@ async function generateTextWithHistory(
       const streamedRaw = await streamGeminiText(
         genModel,
         contents,
-        'generateTextWithHistory',
+        operation,
         config,
         createStreamSink(stream, 'plain')
       );
       await logLlmDebugEvent({
         provider: config.provider,
         direction: 'response',
-        operation: 'generateTextWithHistory',
+        operation,
         payload: { text: streamedRaw },
         config,
       });
 
-      return stripTemplateTokens(streamedRaw);
+      return streamedRaw;
     }
 
-    const result = await withLlmRetry('generateTextWithHistory', config, (signal) =>
+    const result = await withLlmRetry(operation, config, (signal) =>
       genModel.generateContent({ contents, abortSignal: signal })
     );
 
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
-      operation: 'generateTextWithHistory',
+      operation,
       payload: result,
       config,
     });
 
     const raw = extractRawText(result);
-    return raw?.trim() ?? '';
+    return raw ?? '';
   }
 
   if (config.provider === 'claude') {
@@ -1611,12 +1501,12 @@ async function generateTextWithHistory(
     );
     const raw = await runClaude(
       config,
-      'generateTextWithHistory',
+      operation,
       params,
       stream ? createStreamSink(stream, 'plain') : null
     );
 
-    return raw.trim();
+    return raw;
   }
 
   const client = buildOpenAIClient(config);
@@ -1638,7 +1528,7 @@ async function generateTextWithHistory(
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'request',
-    operation: 'generateTextWithHistory',
+    operation,
     payload: requestPayload,
     config,
   });
@@ -1647,37 +1537,32 @@ async function generateTextWithHistory(
     const streamedRaw = await streamOpenAiText(
       client,
       requestPayload,
-      'generateTextWithHistory',
+      operation,
       config,
       createStreamSink(stream, 'plain')
     );
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
-      operation: 'generateTextWithHistory',
+      operation,
       payload: { text: streamedRaw },
       config,
     });
 
-    return stripTemplateTokens(streamedRaw);
+    return streamedRaw;
   }
 
-  const completion = await createOpenAiCompletion(
-    client,
-    'generateTextWithHistory',
-    config,
-    requestPayload
-  );
+  const completion = await createOpenAiCompletion(client, operation, config, requestPayload);
 
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
-    operation: 'generateTextWithHistory',
+    operation,
     payload: completion,
     config,
   });
 
-  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
+  return completion.choices[0]?.message?.content ?? '';
 }
 
 function getSchemaFromFunctionDeclaration(fn: {
@@ -1712,123 +1597,38 @@ export type StructuredRequest = {
   task?: AiTask;
 };
 
-export type StructuredResult<T = unknown> =
-  { kind: 'ok'; value: T } | { kind: 'malformed'; raw: string };
-
-const MALFORMED_RAW_PREVIEW_CHARS = 500;
-
 /**
- * The shape gate for the downloaded on-device model: a value that parsed but does not match the schema it
- * was asked for is `malformed`, so no feature normalizer ever reads it. Cloud providers enforce the
- * schema server-side and their callers already tolerate a partial answer, so they are not checked.
- */
-function checkStructuredShape<T>(
-  result: StructuredResult<T>,
-  schema: object,
-  operation: string
-): StructuredResult<T> {
-  if (result.kind !== 'ok') {
-    return result;
-  }
-
-  const check = validateAgainstSchema(result.value, schema);
-  if (check.ok) {
-    return result;
-  }
-
-  // The path names a field, never a value, so nothing the person wrote is logged.
-  console.warn(`[coachAI] ${operation}: on-device reply failed the schema at ${check.path}`);
-
-  return {
-    kind: 'malformed',
-    raw: JSON.stringify(result.value).slice(0, MALFORMED_RAW_PREVIEW_CHARS),
-  };
-}
-
-function parseStructuredJson<T>(raw: string): StructuredResult<T> {
-  const clean = stripTemplateTokens(raw.replace(/```json|```/g, ''));
-  if (clean) {
-    try {
-      return { kind: 'ok', value: JSON.parse(clean) as T };
-    } catch {
-      // Not plain JSON: try the JSON inside the text before calling it malformed.
-    }
-
-    const span = jsonSpan(clean);
-    if (span) {
-      try {
-        return { kind: 'ok', value: JSON.parse(span) as T };
-      } catch {
-        // Try the repair below.
-      }
-    }
-
-    // Almost-JSON (trailing commas, single quotes, a reply cut off by the token limit). The schema
-    // check that follows is still the judge of whether the repaired value is usable.
-    const repaired = repairReplyJson(clean);
-    if (repaired !== undefined) {
-      return { kind: 'ok', value: repaired as T };
-    }
-  }
-
-  return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
-}
-
-/** Models whose structured replies may be wrong in ways cloud providers' server-side schemas prevent. */
-function isLocalModel(config: CoachAIConfig): boolean {
-  return (
-    config.provider === 'local' ||
-    (config.provider === 'on-device' && onDeviceEngineOf(config) === 'gguf')
-  );
-}
-
-/**
- * Last resort for a local model's structured reply: one text-only call that is asked to correct the
- * broken reply against the schema, read by the same parser and shape check. It runs only after the
- * parser, `jsonrepair` and the schema check all failed, so a good reply never pays for it. A failure
- * of the repair call leaves the original failure; only a cancel is rethrown.
+ * Last resort for a local model's structured reply: one text-only structured request that is asked to
+ * correct the broken reply against the schema, sent through the same funnel and shape check. It runs
+ * only after the parser, `jsonrepair` and the schema check all failed, so a good reply never pays for
+ * it. A failure of the repair call leaves the original failure; only a cancel is rethrown.
  */
 async function repairStructuredWithModel<T>(
   config: CoachAIConfig,
   operation: string,
   broken: string,
-  schema: object,
-  prompts?: { system: string; message: string }
+  schema: object
 ): Promise<StructuredResult<T> | null> {
   if (!broken.trim()) {
     return null;
   }
 
-  const system = prompts?.system ?? jsonRepairPrompt(schema);
-  const message = prompts?.message ?? jsonRepairMessage(broken);
-
+  const repairOperation = `${operation}.repair`;
   try {
-    let repairedRaw: string;
-    if (config.provider === 'local') {
-      const completion = await createOpenAiCompletion(
-        buildOpenAIClient(config),
-        `${operation}.repair`,
-        config,
-        {
-          model: config.model,
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: message },
-          ],
-          response_format: {
-            type: 'json_schema',
-            json_schema: { name: 'repair', strict: true, schema: makeSchemaStrict(schema) },
-          },
-        }
-      );
-      repairedRaw = completion.choices[0]?.message?.content ?? '';
-    } else {
-      repairedRaw = await withLlmRetry(`${operation}.repair`, config, (signal) =>
-        sendLocalStructuredRaw([{ role: 'user', content: message }], system, schema, { signal })
-      );
-    }
+    const repaired = await requestStructuredOnce<T>(
+      config,
+      {
+        operation: repairOperation,
+        schemaName: 'repair',
+        systemPrompt: jsonRepairPrompt(schema),
+        history: [],
+        userMessage: jsonRepairMessage(broken),
+        buildSchema: () => schema,
+      },
+      schema
+    );
 
-    return checkStructuredShape(parseStructuredJson<T>(repairedRaw), schema, `${operation}.repair`);
+    return checkStructuredShape(repaired, schema, repairOperation);
   } catch (error) {
     if (error instanceof AiCancelledError) {
       throw error;
@@ -1839,47 +1639,45 @@ async function repairStructuredWithModel<T>(
 }
 
 /**
- * The shared finish for a structured reply from a local model (the downloaded one or a custom
- * server): when it is malformed, ask the model once to repair it. For a custom server a reply that
- * parsed but misses part of the schema is kept as it was if the repair does not improve it, because
- * callers of an OpenAI-compatible endpoint have always tolerated a partial answer.
+ * The shared finish for a structured reply from a provider that does not enforce its schema
+ * (`repairsStructuredReplies`): a reply that is malformed or misses the schema gets one repair call.
+ * A reply that parsed but missed part of the schema is kept when the repair does not do better,
+ * because callers of an OpenAI-compatible endpoint have always tolerated a partial answer.
  */
 async function reviveLocalStructured<T>(
   config: CoachAIConfig,
   operation: string,
   result: StructuredResult<T>,
-  schema: object,
-  prompts?: { system: string; message: string }
+  schema: object
 ): Promise<StructuredResult<T>> {
-  if (!isLocalModel(config)) {
+  if (!providerPolicyFor(config).repairsStructuredReplies) {
     return result;
   }
 
-  let current = result;
-  let original: StructuredResult<T> | null = null;
-  if (config.provider === 'local' && result.kind === 'ok') {
-    const checked = checkStructuredShape(result, schema, operation);
-    if (checked.kind === 'ok') {
-      return result;
-    }
-
-    original = result;
-    current = checked;
+  const checked = checkStructuredShape(result, schema, operation);
+  if (checked.kind === 'ok') {
+    return checked;
   }
 
-  if (current.kind === 'ok') {
-    return current;
+  const repaired = await repairStructuredWithModel<T>(config, operation, checked.raw, schema);
+  if (repaired?.kind === 'ok') {
+    return repaired;
   }
 
-  const repaired = await repairStructuredWithModel<T>(
-    config,
-    operation,
-    current.raw,
-    schema,
-    prompts
-  );
+  return result.kind === 'ok' ? result : checked;
+}
 
-  return repaired?.kind === 'ok' ? repaired : (original ?? current);
+/** The schema dialect a structured request to this provider (and on-device, engine) is written in. */
+function structuredDialect(config: CoachAIConfig): StructuredDialect {
+  switch (config.provider) {
+    case 'on-device':
+      return onDeviceEngineOf(config) === 'gguf' ? 'gguf' : 'on-device';
+    case 'gemini':
+    case 'claude':
+      return config.provider;
+    default:
+      return 'openai';
+  }
 }
 
 /**
@@ -1893,29 +1691,18 @@ export async function requestStructured<T = unknown>(
   config: CoachAIConfig,
   request: StructuredRequest
 ): Promise<StructuredResult<T>> {
-  // The schema is built once, in whichever dialect the request used, and the repair step reuses it.
-  let built: { dialect: StructuredDialect; schema: object } | null = null;
-  const buildSchema = (dialect: StructuredDialect) => {
-    if (built?.dialect !== dialect) {
-      built = { dialect, schema: request.buildSchema(dialect) };
-    }
-
-    return built.schema;
-  };
-
-  const result = await requestStructuredOnce<T>(config, { ...request, buildSchema });
-  if (!isLocalModel(config)) {
-    return result;
-  }
-
-  const schema = buildSchema(config.provider === 'local' ? 'openai' : 'gguf');
+  // Built once, in the provider's dialect; a repair call reuses it.
+  const schema = request.buildSchema(structuredDialect(config));
+  const result = await requestStructuredOnce<T>(config, request, schema);
 
   return reviveLocalStructured(config, request.operation, result, schema);
 }
 
+/** One structured request, with the schema already built in `structuredDialect(config)`. */
 async function requestStructuredOnce<T = unknown>(
   config: CoachAIConfig,
-  request: StructuredRequest
+  request: StructuredRequest,
+  schema: object
 ): Promise<StructuredResult<T>> {
   const { operation, schemaName, systemPrompt, history, userMessage } = request;
   const task = request.task ?? 'extraction';
@@ -1929,7 +1716,6 @@ async function requestStructuredOnce<T = unknown>(
       })),
       { role: 'user' as const, content: userMessage },
     ];
-    const schema = request.buildSchema(engine === 'gguf' ? 'gguf' : 'on-device');
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'request',
@@ -1968,7 +1754,6 @@ async function requestStructuredOnce<T = unknown>(
   }
 
   if (config.provider === 'gemini') {
-    const schema = request.buildSchema('gemini');
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -2010,7 +1795,7 @@ async function requestStructuredOnce<T = unknown>(
       config,
       systemPrompt,
       buildClaudeMessages(history, userMessage),
-      { task, schema: request.buildSchema('claude') }
+      { task, schema }
     );
 
     return parseStructuredJson<T>(await runClaude(config, operation, params));
@@ -2033,7 +1818,7 @@ async function requestStructuredOnce<T = unknown>(
       json_schema: {
         name: schemaName,
         strict: true,
-        schema: makeSchemaStrict(request.buildSchema('openai')),
+        schema: makeSchemaStrict(schema),
       },
     },
   };
@@ -2111,7 +1896,7 @@ function claudeImageType(mimeType: string): ClaudeImageType {
 
 /**
  * Loaded inline because the image codec is a native module that text-only requests never need (the
- * pattern of `utils/hostedProviderPolicy.ts` and `services/premium/revenueCat.ts`).
+ * pattern of `utils/providerPolicy.ts` and `services/premium/revenueCat.ts`).
  */
 function prepareOwnKeyImageLazily(
   base64: string,
@@ -2136,7 +1921,7 @@ async function generateWithImageStructured<T>(
   // Every provider gets the photo at the detail the person chose in AI settings. Musclog Iron has
   // its own step: it also holds the photo to the Worker's limits, and refuses it while the Worker
   // has photos off.
-  const prepareImage = providerPolicyFor(config.provider).prepareImage ?? prepareOwnKeyImageLazily;
+  const prepareImage = providerPolicyFor(config).prepareImage ?? prepareOwnKeyImageLazily;
   const { base64: base64Image, mimeType } = await prepareImage(rawBase64Image, rawMimeType);
 
   // Wrap user message suffix with delimiters to prevent prompt injection
@@ -3130,8 +2915,7 @@ async function estimateMealFromPhotoOnDevice(
         config,
         'estimateNutritionFromPhoto',
         broken,
-        LOCAL_FOOD_IDENTIFY_SCHEMA,
-        { system: localJsonRepairPrompt(), message: localJsonRepairMessage(broken) }
+        LOCAL_FOOD_IDENTIFY_SCHEMA
       );
       if (repaired?.kind === 'ok') {
         parsed = repaired;

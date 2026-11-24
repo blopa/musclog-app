@@ -5,8 +5,8 @@ import {
   toUserFacingAiError,
 } from './aiErrors';
 import type { CoachAIConfig, CoachAIProvider } from './coachAI';
-import { providerPolicyFor } from './hostedProviderPolicy';
 import type { LlmRequest, RetryDecision, RetryState } from './llmRetryTypes';
+import { type ProviderPolicy, providerPolicyFor } from './providerPolicy';
 
 const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
 const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
@@ -121,6 +121,7 @@ async function runWithAbort<T>(
 function classifyLlmFailure(
   operation: string,
   provider: CoachAIProvider,
+  policy: ProviderPolicy,
   error: unknown,
   state: RetryState,
   options?: { hasStreamed?: () => boolean }
@@ -129,7 +130,7 @@ function classifyLlmFailure(
   const delayMs = LLM_RETRY_DELAYS_MS[state.attempt];
   const hasAttemptsLeft = state.attempt < LLM_RETRY_DELAYS_MS.length;
 
-  const own = providerPolicyFor(provider).classifyFailure?.(operation, error, state, {
+  const own = policy.classifyFailure?.(operation, error, state, {
     hasStreamed,
     delayMs,
   });
@@ -186,7 +187,7 @@ export async function withLlmRetry<T>(
 ): Promise<T> {
   const provider = config.provider;
   const state: RetryState = { attempt: 0, timeoutRetried: false };
-  const policy = providerPolicyFor(provider);
+  const policy = providerPolicyFor(config);
   const headers = policy.requestHeaders?.();
 
   policy.assertUsable?.(config);
@@ -202,7 +203,7 @@ export async function withLlmRetry<T>(
         throw rawError;
       }
 
-      const decision = classifyLlmFailure(operation, provider, rawError, state, options);
+      const decision = classifyLlmFailure(operation, provider, policy, rawError, state, options);
       if ('error' in decision) {
         throw decision.error;
       }

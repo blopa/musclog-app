@@ -59,22 +59,6 @@ export function localFoodIdentifyPrompt(): string {
   ].join('\n');
 }
 
-/** The most of a broken reply sent back for repair; the real replies are a few hundred characters. */
-export const MAX_REPAIR_INPUT_CHARS = 2000;
-
-/** System prompt of the last-resort repair call: text only, no photo, the same schema. */
-export function localJsonRepairPrompt(): string {
-  return [
-    'You repair one malformed JSON reply. Return only the corrected JSON, with no other text.',
-    `It must match this JSON Schema: ${JSON.stringify(LOCAL_FOOD_IDENTIFY_SCHEMA)}`,
-    'Keep every food name and gram value that can be read. Do not invent foods or change amounts. Drop any item that cannot be read.',
-  ].join('\n');
-}
-
-export function localJsonRepairMessage(broken: string): string {
-  return `Malformed JSON:\n${broken.slice(0, MAX_REPAIR_INPUT_CHARS)}`;
-}
-
 const clampGrams = (value: unknown): number => {
   const grams =
     typeof value === 'number' && Number.isFinite(value) ? value : DEFAULT_IDENTIFIED_GRAMS;

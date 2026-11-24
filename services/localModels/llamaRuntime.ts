@@ -16,6 +16,7 @@ import { AppState, Platform } from 'react-native';
 
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
+import type { ChatPenalties } from '@/utils/providerPolicy';
 import { captureException } from '@/utils/sentry';
 
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
@@ -39,7 +40,7 @@ export type LocalGenerateParams = {
    * Repetition penalties for a free-chat reply (the OpenAI field names, mapped to llama.cpp's). A
    * small model left alone copies its own earlier replies; structured calls never pass them.
    */
-  penalties?: { frequency_penalty?: number; presence_penalty?: number };
+  penalties?: ChatPenalties;
   signal?: AbortSignal;
   /** Each new piece of text as it is written. */
   onDelta?: (delta: string) => void;
@@ -225,12 +226,12 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
           jinja: true,
           n_predict: params.maxTokens ?? 1024,
           temperature: params.temperature ?? 0.2,
-          ...(params.penalties?.frequency_penalty === undefined
-            ? {}
-            : { penalty_freq: params.penalties.frequency_penalty }),
-          ...(params.penalties?.presence_penalty === undefined
-            ? {}
-            : { penalty_present: params.penalties.presence_penalty }),
+          ...(params.penalties
+            ? {
+                penalty_freq: params.penalties.frequency_penalty,
+                penalty_present: params.penalties.presence_penalty,
+              }
+            : {}),
           ...(params.schema
             ? {
                 response_format: {

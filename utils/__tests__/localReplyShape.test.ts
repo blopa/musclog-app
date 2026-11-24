@@ -1,5 +1,10 @@
 import {
+  checkStructuredShape,
+  jsonRepairMessage,
+  jsonRepairPrompt,
   jsonSpan,
+  MAX_JSON_REPAIR_INPUT_CHARS,
+  parseStructuredJson,
   repairReplyJson,
   stripStreamingTemplateTokens,
   stripTemplateTokens,
@@ -83,5 +88,74 @@ describe('stripStreamingTemplateTokens', () => {
       'Modeling your week'
     );
     expect(stripTemplateTokens('<|im_start|>Modeling your week')).toBe('Modeling your week');
+  });
+});
+
+describe('repair call prompt and message', () => {
+  it('names the schema and asks for JSON only', () => {
+    const schema = { type: 'object', properties: { items: { type: 'array' } } };
+    const prompt = jsonRepairPrompt(schema);
+    expect(prompt).toContain(JSON.stringify(schema));
+    expect(prompt).toContain('"items"');
+    expect(prompt).toContain('Return only the corrected JSON');
+  });
+
+  it('prefixes the broken reply and truncates it to the cap', () => {
+    expect(jsonRepairMessage('{"items":[')).toBe('Malformed JSON:\n{"items":[');
+    const long = 'x'.repeat(MAX_JSON_REPAIR_INPUT_CHARS + 500);
+    expect(jsonRepairMessage(long)).toBe(
+      `Malformed JSON:\n${'x'.repeat(MAX_JSON_REPAIR_INPUT_CHARS)}`
+    );
+  });
+});
+
+describe('parseStructuredJson', () => {
+  it('reads plain, fenced and template-wrapped JSON', () => {
+    expect(parseStructuredJson('{"a":1}')).toEqual({ kind: 'ok', value: { a: 1 } });
+    expect(parseStructuredJson('```json\n{"a":1}\n```')).toEqual({ kind: 'ok', value: { a: 1 } });
+    expect(parseStructuredJson('<|im_start|>assistant {"a":1}')).toEqual({
+      kind: 'ok',
+      value: { a: 1 },
+    });
+  });
+
+  it('finds JSON inside prose and repairs almost-JSON', () => {
+    expect(parseStructuredJson('Sure! Here it is: {"a":1} hope it helps')).toEqual({
+      kind: 'ok',
+      value: { a: 1 },
+    });
+    expect(parseStructuredJson('{"a":1,}')).toEqual({ kind: 'ok', value: { a: 1 } });
+  });
+
+  it('is malformed for empty or garbage input, with the raw text cut to 500 characters', () => {
+    expect(parseStructuredJson('')).toEqual({ kind: 'malformed', raw: '' });
+    const garbage = 'x'.repeat(700);
+    const result = parseStructuredJson(garbage);
+    expect(result.kind).toBe('malformed');
+    expect(result.kind === 'malformed' && result.raw).toHaveLength(500);
+  });
+});
+
+describe('checkStructuredShape', () => {
+  const schema = {
+    type: 'object',
+    properties: { n: { type: 'number' } },
+    required: ['n'],
+  };
+
+  it('passes a malformed result through and returns a matching one unchanged', () => {
+    const bad = { kind: 'malformed', raw: 'x' } as const;
+    expect(checkStructuredShape(bad, schema, 'op')).toBe(bad);
+    const ok = { kind: 'ok', value: { n: 1 } } as const;
+    expect(checkStructuredShape(ok, schema, 'op')).toBe(ok);
+  });
+
+  it('turns a mismatch into malformed with the value truncated', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const value = { n: 'x'.repeat(700) };
+    const result = checkStructuredShape({ kind: 'ok', value }, schema, 'op');
+    expect(result).toEqual({ kind: 'malformed', raw: JSON.stringify(value).slice(0, 500) });
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
   });
 });

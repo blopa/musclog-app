@@ -1,5 +1,5 @@
 /**
- * Types shared by the retry loop (`llmRetry.ts`) and the provider policies (`hostedProviderPolicy.ts`).
+ * Types shared by the retry loop (`llmRetry.ts`) and the provider policies (`providerPolicy.ts`).
  * Type declarations only, so neither module needs the other at type level.
  */
 

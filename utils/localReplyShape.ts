@@ -4,6 +4,8 @@
  */
 import { jsonrepair } from 'jsonrepair';
 
+import { validateAgainstSchema } from './aiSchemaValidate';
+
 /**
  * Chat-template control tokens (`<|im_start|>`, `<|im_end|>`, …) that the downloaded model can leak
  * into its reply, and the role word that follows a start token. The Pixel 10 Pro's first real
@@ -106,4 +108,67 @@ export function jsonRepairPrompt(schema: object): string {
 
 export function jsonRepairMessage(broken: string): string {
   return `Malformed JSON:\n${broken.slice(0, MAX_JSON_REPAIR_INPUT_CHARS)}`;
+}
+
+export type StructuredResult<T = unknown> =
+  { kind: 'ok'; value: T } | { kind: 'malformed'; raw: string };
+
+const MALFORMED_RAW_PREVIEW_CHARS = 500;
+
+/**
+ * The shape gate for a small local model (the downloaded one or a custom server): a value that
+ * parsed but does not match the schema it was asked for is `malformed`, so no feature normalizer
+ * reads it unchecked. A result that already passed comes back unchanged. Cloud providers enforce the
+ * schema server-side, so their replies are not checked.
+ */
+export function checkStructuredShape<T>(
+  result: StructuredResult<T>,
+  schema: object,
+  operation: string
+): StructuredResult<T> {
+  if (result.kind !== 'ok') {
+    return result;
+  }
+
+  const check = validateAgainstSchema(result.value, schema);
+  if (check.ok) {
+    return result;
+  }
+
+  // The path names a field, never a value, so nothing the person wrote is logged.
+  console.warn(`[coachAI] ${operation}: local reply failed the schema at ${check.path}`);
+
+  return {
+    kind: 'malformed',
+    raw: JSON.stringify(result.value).slice(0, MALFORMED_RAW_PREVIEW_CHARS),
+  };
+}
+
+export function parseStructuredJson<T>(raw: string): StructuredResult<T> {
+  const clean = stripTemplateTokens(raw.replace(/```json|```/g, ''));
+  if (clean) {
+    try {
+      return { kind: 'ok', value: JSON.parse(clean) as T };
+    } catch {
+      // Not plain JSON: try the JSON inside the text before calling it malformed.
+    }
+
+    const span = jsonSpan(clean);
+    if (span) {
+      try {
+        return { kind: 'ok', value: JSON.parse(span) as T };
+      } catch {
+        // Try the repair below.
+      }
+    }
+
+    // Almost-JSON (trailing commas, single quotes, a reply cut off by the token limit). The schema
+    // check that follows is still the judge of whether the repaired value is usable.
+    const repaired = repairReplyJson(clean);
+    if (repaired !== undefined) {
+      return { kind: 'ok', value: repaired as T };
+    }
+  }
+
+  return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
 }

@@ -11,9 +11,9 @@ import {
   reportAiError,
   requestStructured,
   type StructuredDialect,
-  type StructuredResult,
   truncateHistoryByBudget,
 } from '@/utils/coachAI';
+import { type StructuredResult } from '@/utils/localReplyShape';
 
 export type StructuredTurnRequest = {
   /** Names the call in debug dumps and retry logs. */

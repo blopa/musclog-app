@@ -12,6 +12,9 @@ import type { RetryDecision, RetryState } from './llmRetryTypes';
 import { setHostedSignal } from './premium/hostedSignal';
 import { whileHostedBackingOff } from './premium/hostedWait';
 
+/** Repetition penalties for a free-chat reply, in the OpenAI field names. */
+export type ChatPenalties = { frequency_penalty: number; presence_penalty: number };
+
 /**
  * Everything one provider does differently around a request, so the shared retry loop and the
  * request builders carry no `provider === 'x'` branch. Only providers with their own rules have an
@@ -47,9 +50,14 @@ export type ProviderPolicy = {
    * Sampling fields added to a free-chat reply only (never to structured extraction, where a
    * repetition penalty would fight the repeated keys and numbers of a JSON answer).
    */
-  chatSampling?: { frequency_penalty?: number; presence_penalty?: number };
+  chatSampling?: ChatPenalties;
   /** The most turns of history a free-chat reply is sent, for a model that copies its own replies. */
   maxChatHistoryTurns?: number;
+  /**
+   * Nothing on the provider's side enforces the schema (a small local model), so a structured reply
+   * is shape-checked here and, when it is malformed or misses the schema, gets one repair call.
+   */
+  repairsStructuredReplies?: boolean;
   /**
    * This provider's own photo step, in place of the default one every provider gets (the detail the
    * person chose in AI settings, with no provider limit above it).
@@ -126,36 +134,41 @@ const OPENAI_POLICY: ProviderPolicy = {
 };
 
 /**
- * A local model is usually small. Left alone it copies its own earlier replies, so a one-word
- * follow-up ("ok", "thanks") gets the previous answer back, over and over. Two things break that:
- * a repetition penalty (the servers behind a custom base URL take the standard fields) and a short
- * history, so its own replies are not most of what it reads.
+ * A small model: a custom local server or the downloaded on-device one. Left alone it copies its own
+ * earlier replies, so a one-word follow-up ("ok", "thanks") gets the previous answer back, over and
+ * over. A repetition penalty and a short history break that. Nothing enforces its schema either, so
+ * its structured replies are checked and repaired here.
  */
-export const LOCAL_CHAT_SAMPLING = { frequency_penalty: 0.4, presence_penalty: 0.4 };
-export const LOCAL_MAX_CHAT_HISTORY_TURNS = 6;
-
-const LOCAL_POLICY: ProviderPolicy = {
-  chatSampling: LOCAL_CHAT_SAMPLING,
-  maxChatHistoryTurns: LOCAL_MAX_CHAT_HISTORY_TURNS,
+const SMALL_MODEL_POLICY: ProviderPolicy = {
+  chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
+  maxChatHistoryTurns: 6,
+  repairsStructuredReplies: true,
 };
 
 /**
- * The on-device models (the downloaded one and Apple's) get the same two chat rules. Apple's engine
- * takes no sampling fields, so only the turn cap reaches it.
+ * Apple's on-device model: the same short history, but its engine takes no sampling fields and the
+ * OS enforces its guided generation.
  */
-const ON_DEVICE_POLICY: ProviderPolicy = {
-  chatSampling: LOCAL_CHAT_SAMPLING,
-  maxChatHistoryTurns: LOCAL_MAX_CHAT_HISTORY_TURNS,
+const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
+  maxChatHistoryTurns: SMALL_MODEL_POLICY.maxChatHistoryTurns,
 };
 
 const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
   hosted: HOSTED_POLICY,
   openai: OPENAI_POLICY,
-  local: LOCAL_POLICY,
-  'on-device': ON_DEVICE_POLICY,
+  local: SMALL_MODEL_POLICY,
 };
 
-/** The provider's own rules, or an empty policy when it follows the shared ones. */
-export function providerPolicyFor(provider: CoachAIProvider): ProviderPolicy {
-  return PROVIDER_POLICIES[provider] ?? {};
+/**
+ * The rules of the provider (and, on-device, the engine) behind a config, or an empty policy when
+ * it follows the shared ones.
+ */
+export function providerPolicyFor(
+  config: Pick<CoachAIConfig, 'provider' | 'engine'>
+): ProviderPolicy {
+  if (config.provider === 'on-device') {
+    return config.engine === 'gguf' ? SMALL_MODEL_POLICY : APPLE_ON_DEVICE_POLICY;
+  }
+
+  return PROVIDER_POLICIES[config.provider] ?? {};
 }

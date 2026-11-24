@@ -100,6 +100,14 @@ describe('local replies that are not clean JSON', () => {
 
     expect(result.msg4User).toBe('Anytime, good luck!');
   });
+
+  it('never shows chat-template tokens when the JSON has no message field', async () => {
+    say('<|im_start|>assistant {"remember_me": ""}');
+
+    const result = await sendCoachMessage(config('local'), [], 'thanks');
+
+    expect(result.msg4User).not.toContain('<|im_start|>');
+  });
 });
 
 describe('local structured replies', () => {
