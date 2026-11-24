@@ -7,10 +7,19 @@ name: Build Android AAB
 # android/app/build.gradle signs `release` with the debug key) and for the EAS environment
 # variables of the `production` profile, which is why it needs EXPO_TOKEN.
 #
-# It builds, checks the signature and uploads the .aab as a run artifact. It never uploads to Google
-# Play (that stays `scripts/release-android.sh upload`, on request) and never bumps the version.
+# It builds, checks the signature and uploads the .aab as a run artifact. It never bumps the version.
+#
+# Google Play: only when "Also submit to Play internal testing" is ticked, and only to the INTERNAL
+# track (the track is written in the step, not an input, so this workflow cannot reach production;
+# promoting stays `scripts/release-android.sh promote`, run by hand). It goes through the same
+# scripts/release-android.sh upload as a local release (preflight, versionCode above Play's).
 on:
   workflow_dispatch:
+    inputs:
+      submit_to_internal:
+        description: Also submit to Play internal testing
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -27,11 +36,17 @@ jobs:
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       EAS_BUILD_PROFILE: production
+      SUBMIT_TO_INTERNAL: ${{ inputs.submit_to_internal }}
+      PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
     steps:
       - name: Check the Expo token is set
         run: |
           if [ -z "$EXPO_TOKEN" ]; then
             echo "::error::Add the repository secret EXPO_TOKEN (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          if [ "$SUBMIT_TO_INTERNAL" = "true" ] && [ -z "$PLAY_SERVICE_ACCOUNT_JSON" ]; then
+            echo "::error::Submitting needs the repository secret PLAY_SERVICE_ACCOUNT_JSON (the Play service account key, whole JSON)."
             exit 1
           fi
 
@@ -120,3 +135,36 @@ jobs:
           path: ${{ runner.temp }}/out/${{ steps.version.outputs.file }}
           if-no-files-found: error
           retention-days: 14
+
+      # gplay is pinned to the release the repo's scripts were written against; its installer checks the
+      # release's SHA-256 before installing.
+      - name: Install gplay
+        if: inputs.submit_to_internal
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/gplay-install.sh" \
+            https://raw.githubusercontent.com/tamtom/play-console-cli/v1.0.2/install.sh
+          GPLAY_VERSION=v1.0.2 bash "$RUNNER_TEMP/gplay-install.sh"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Sign in to Google Play
+        if: inputs.submit_to_internal
+        run: |
+          umask 077
+          mkdir -p "$HOME/keys"
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > "$HOME/keys/musclog-play-service-account.json"
+          export PATH="$HOME/.local/bin:$PATH"
+          gplay auth login --service-account "$HOME/keys/musclog-play-service-account.json" \
+            --profile musclog --set-default=false >/dev/null
+
+      - name: Submit to Play internal testing
+        if: inputs.submit_to_internal
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          scripts/release-android.sh upload \
+            --track internal \
+            --skip-build \
+            --file "$RUNNER_TEMP/out/${{ steps.version.outputs.file }}"
+
+      - name: Remove the Play key
+        if: always() && inputs.submit_to_internal
+        run: rm -f "$HOME/keys/musclog-play-service-account.json"
