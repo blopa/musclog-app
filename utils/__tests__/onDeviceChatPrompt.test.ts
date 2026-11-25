@@ -69,21 +69,27 @@ const onDevicePrompt = () =>
   getChatMessagePromptContent('en-US', undefined, 'general', 'on-device');
 
 describe('on-device chat prompt', () => {
-  it('names Loggy as the coach on its first line, even when the stored persona is Dracula', async () => {
+  it('opens with the name, even when the stored persona is Dracula', async () => {
     const prompt = await onDevicePrompt();
-    const firstLine = prompt.split('\n')[0];
 
-    expect(firstLine).toBe(
-      'You are Loggy, the coach inside the Musclog fitness app. You are an AI running on this phone.'
+    // "Loggy" does not read as a name to a small model, so it is said as one before anything else.
+    expect(prompt.split('\n')[0]).toBe(
+      'Your name is Loggy. You are the coach inside the Musclog fitness app, an AI running on this phone.'
     );
     expect(prompt).not.toContain('Dracula');
   });
 
-  it("says the name is the coach's, not the person's, and forbids inventing names", async () => {
+  it('gives the exact answer to "what is your name?" and forbids inventing names', async () => {
     const prompt = await onDevicePrompt();
 
-    expect(prompt).toContain('is your name, not theirs');
-    expect(prompt).toContain('Never make up a name');
+    expect(prompt).toContain('If they ask your name, say: "I\'m Loggy." Never call yourself');
+    expect(prompt).toContain('Never make up a name for them');
+  });
+
+  it('says the name three times and no more: first line, the answer to copy, the last line', async () => {
+    const prompt = await onDevicePrompt();
+
+    expect(prompt.match(/Loggy/g)).toHaveLength(3);
   });
 
   it('repeats the identity reminder as its last line, after the snapshot', async () => {
@@ -133,7 +139,7 @@ describe('on-device chat prompt', () => {
   });
 
   it('stays short for this fixture', async () => {
-    // Measured at 1,120 characters for this fixture (on-device, general, male, hypertrophy,
+    // Measured at 1,167 characters for this fixture (on-device, general, male, hypertrophy,
     // snapshot stubbed). 1,500 leaves headroom for wording changes, and fails if boilerplate returns.
     const prompt = await onDevicePrompt();
 

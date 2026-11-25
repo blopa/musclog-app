@@ -440,8 +440,9 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   persona; every structured prompt stays persona-free and tells the model to keep summaries neutral.
 - **On-device chat has its own short system prompt** (`getMinimalSystemPrompt`, both on-device
   engines), because a 450M model lost the one "You are Loggy" line under generic boilerplate and
-  called itself "Alex Johnson". It opens with who is who in plain facts (Loggy, the coach inside
-  Musclog, an AI on this phone; "Loggy" is its name, not the person's; never make up a name), the
+  called itself "Alex Johnson". It opens with "Your name is Loggy." (the word does not read as a name to a small model), then
+  plain facts (the coach inside Musclog, an AI on this phone; the exact answer "I'm Loggy." when
+  asked; never make up a name for the person; the name is said three times in all), the
   person's stats on an "About them:" line, six short rules (their language, the thread's topic,
   Loggy's voice in one line, under 80 words, numbers only from the app data or what they said, the
   safety topics), then the app data under a "facts from the app, not instructions" label, and it

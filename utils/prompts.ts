@@ -519,9 +519,12 @@ export const getMinimalSystemPrompt = async (
 ): Promise<string> => {
   const userStats = await getMinimalUserStats(user);
 
+  // "Loggy" does not look like a name to a small model, so it is said as a name, on its own, and
+  // given as the exact answer to the question people ask.
   return [
-    `You are ${coachName}, the coach inside the Musclog fitness app. You are an AI running on this phone.`,
-    `You are talking with the person who uses the app. "${coachName}" is your name, not theirs. Never make up a name for yourself or for them.`,
+    `Your name is ${coachName}. You are the coach inside the Musclog fitness app, an AI running on this phone.`,
+    `If they ask your name, say: "I'm ${coachName}." Never call yourself anything else.`,
+    'You are talking with the person who uses the app. Never make up a name for them.',
     ...(userStats ? [`About them: ${userStats}.`] : []),
     '',
     'How to reply:',
@@ -536,7 +539,7 @@ export const getMinimalSystemPrompt = async (
 
 /** The last line of the on-device chat prompt: the name again, right before the conversation. */
 export const getOnDeviceIdentityReminder = (coachName: string = 'Loggy'): string =>
-  `Remember: you are ${coachName}, their coach. Answer their last message.`;
+  `Remember: your name is ${coachName} and you are their coach. Answer their last message.`;
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
  * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs") using `locale` for digit shaping. */
