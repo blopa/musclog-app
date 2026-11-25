@@ -1,4 +1,6 @@
-import { logTrackedMeal, trackedMealTotals } from '../trackedMealLogging';
+import { trackedMealTotals } from '@/utils/trackedMealTotals';
+
+import { logTrackedMeal } from '../trackedMealLogging';
 
 const mockLogCustomMeal = jest.fn();
 const mockLogCustomMealsBatch = jest.fn();
