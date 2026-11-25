@@ -1,5 +1,6 @@
 const mockSetUse = jest.fn();
 const mockSet = jest.fn();
+const mockEnable = jest.fn();
 const mockStart = jest.fn();
 const mockRefresh = jest.fn();
 const mockHandleError = jest.fn();
@@ -8,6 +9,7 @@ jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     setUseOnDeviceAi: (...a: unknown[]) => mockSetUse(...a),
     set: (...a: unknown[]) => mockSet(...a),
+    enableOnDeviceAi: (...a: unknown[]) => mockEnable(...a),
   },
 }));
 jest.mock('@/services/localModels/modelStore', () => ({
@@ -30,8 +32,9 @@ describe('enableOnDeviceAi', () => {
   it('switches the provider on, stores the engine and starts the chosen download', async () => {
     await enableOnDeviceAi('gguf', { download: { withProjector: false } });
 
-    expect(mockSetUse).toHaveBeenCalledWith(true);
-    expect(mockSet).toHaveBeenCalledWith(SETTINGS.onDeviceEngine, 'gguf');
+    expect(mockEnable).toHaveBeenCalledWith('gguf');
+    expect(mockSetUse).not.toHaveBeenCalled();
+    expect(mockSet).not.toHaveBeenCalled();
     expect(mockStart).toHaveBeenCalledWith({ withProjector: false });
     expect(mockRefresh).toHaveBeenCalled();
   });
@@ -39,7 +42,9 @@ describe('enableOnDeviceAi', () => {
   it('starts no download for Apple Intelligence', async () => {
     await enableOnDeviceAi('apple');
 
-    expect(mockSet).toHaveBeenCalledWith(SETTINGS.onDeviceEngine, 'apple');
+    expect(mockEnable).toHaveBeenCalledWith('apple');
+    expect(mockSetUse).not.toHaveBeenCalled();
+    expect(mockSet).not.toHaveBeenCalled();
     expect(mockStart).not.toHaveBeenCalled();
   });
 
@@ -67,7 +72,7 @@ describe('disableOnDeviceAi and setOnDeviceEngine', () => {
 describe('a failed settings write', () => {
   // Every caller is a tap handler or a `void` call: a rejection would be unhandled and unreported.
   it.each([
-    ['enable', () => enableOnDeviceAi('apple'), mockSetUse, 'onDeviceAi.enable'],
+    ['enable', () => enableOnDeviceAi('apple'), mockEnable, 'onDeviceAi.enable'],
     ['disable', () => disableOnDeviceAi(), mockSetUse, 'onDeviceAi.disable'],
     ['engine', () => setOnDeviceEngine('gguf'), mockSet, 'onDeviceAi.engine'],
   ])(
@@ -83,7 +88,7 @@ describe('a failed settings write', () => {
   );
 
   it('starts no download when the choice could not be saved', async () => {
-    mockSetUse.mockRejectedValueOnce(new Error('database locked'));
+    mockEnable.mockRejectedValueOnce(new Error('database locked'));
 
     await enableOnDeviceAi('gguf', { download: { withProjector: true } });
     expect(mockStart).not.toHaveBeenCalled();

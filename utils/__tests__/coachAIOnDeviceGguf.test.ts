@@ -113,6 +113,20 @@ describe('requestStructured on the downloaded engine', () => {
     expect(mockSendLocalStructuredRaw.mock.calls[0][2]).toBe(schema);
   });
 
+  it('hands the downloaded model the photo and the sampling temperature of the request', async () => {
+    mockSendLocalStructuredRaw.mockResolvedValue('{"answer":"ok"}');
+
+    await requestStructured(gguf, {
+      ...request,
+      images: [{ base64: 'AAAA', mimeType: 'image/png' }],
+      temperature: 0.3,
+    });
+
+    expect(mockSendLocalStructuredRaw.mock.calls[0][3]).toEqual(
+      expect.objectContaining({ image: 'data:image/png;base64,AAAA', temperature: 0.3 })
+    );
+  });
+
   it('turns a reply that parses but breaks the schema into malformed', async () => {
     mockSendLocalStructuredRaw.mockResolvedValue('{"other":1}');
     const result = await requestStructured(gguf, request);

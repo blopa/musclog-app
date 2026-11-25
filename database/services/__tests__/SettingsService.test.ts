@@ -10,6 +10,8 @@ import {
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
+  ON_DEVICE_ENGINE_SETTING_TYPE,
+  USE_ON_DEVICE_AI_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
@@ -612,6 +614,26 @@ describe('SettingsService', () => {
         expect(value).toEqual(SETTINGS.coachCustomPersona.defaultValue);
         done();
       });
+    });
+  });
+
+  describe('on-device AI switch', () => {
+    it('enableOnDeviceAi writes the switch and the engine in one write', async () => {
+      const rows = installSettingsTable();
+      const spy = jest.spyOn(SettingsService as any, 'setSettingValues');
+
+      await SettingsService.enableOnDeviceAi('gguf');
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy.mock.calls[0][0]).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ type: USE_ON_DEVICE_AI_SETTING_TYPE, value: 'true' }),
+          expect.objectContaining({ type: ON_DEVICE_ENGINE_SETTING_TYPE, value: 'gguf' }),
+        ])
+      );
+      expect(valuesFor(rows, USE_ON_DEVICE_AI_SETTING_TYPE)).toEqual(['true']);
+      expect(valuesFor(rows, ON_DEVICE_ENGINE_SETTING_TYPE)).toEqual(['gguf']);
+      spy.mockRestore();
     });
   });
 });

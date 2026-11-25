@@ -94,7 +94,7 @@ describe('activeUpstream', () => {
 
   it('a D1 error means openrouter and is not cached', async () => {
     await setToggle('otari');
-    const { ctx } = full();
+    const { ctx, deps } = full();
     const broken = new Proxy(env.DB, {
       get(t, p, r) {
         if (p === 'prepare')
@@ -108,6 +108,16 @@ describe('activeUpstream', () => {
     expect(await activeUpstream({ ...ctx, env: { ...env, OTARI_API_KEY: 'k', DB: broken } })).toBe(
       'openrouter'
     );
+    // A toggle that could not be read is a quiet fallback to OpenRouter: it must leave a trace.
+    expect(deps.logs).toEqual([
+      {
+        route: 'upstream',
+        status: 500,
+        code: 'upstream_toggle_unreadable',
+        severity: 'error',
+        upstream: 'openrouter',
+      },
+    ]);
     expect(await activeUpstream(ctx)).toBe('otari'); // the next read worked
   });
 

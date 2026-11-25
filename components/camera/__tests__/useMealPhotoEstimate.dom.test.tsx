@@ -139,3 +139,46 @@ test('reports a failure it did not expect, with the step it happened in, and reo
   expect(onFailure).toHaveBeenCalledTimes(1);
   expect(setError).toHaveBeenLastCalledWith('food.aiCamera.aiAnalysisFailed');
 });
+
+test('totals carbs the way the diary will show them: estimated carbs are net, matched foods are not', async () => {
+  jest.mocked(AiService.getAiConfig).mockResolvedValue({} as never);
+  jest.mocked(readFileAsStringAsync).mockImplementation(async (uri) => `base64:${uri}`);
+  jest.mocked(estimateNutritionFromPhoto).mockResolvedValue({
+    meals: [
+      {
+        mealName: 'Plate',
+        ingredients: [
+          { name: 'Bar', kcal: 200, protein: 5, carbs: 20, fat: 8, fiber: 5, grams: 50 },
+          {
+            name: 'Rice',
+            kcal: 130,
+            protein: 2.7,
+            carbs: 28,
+            fat: 0.3,
+            fiber: 0.4,
+            grams: 100,
+            foodId: 'food-rice',
+          },
+        ],
+      },
+    ],
+  } as never);
+  const onSuccess = jest.fn();
+  const hook = renderHook(() =>
+    useMealPhotoEstimate({
+      abortRef: { current: null },
+      setProcessing: jest.fn(),
+      setProgress: jest.fn(),
+      setError: jest.fn(),
+      onSuccess,
+    })
+  );
+  await act(async () => hook.result.current({ photos: ['only'] }));
+
+  // 20 net + 5 fiber for the estimated bar, 28 (already total) for the matched rice.
+  expect(onSuccess).toHaveBeenCalledWith(
+    expect.objectContaining({ carbs: 53 }),
+    expect.any(Array),
+    'only'
+  );
+});

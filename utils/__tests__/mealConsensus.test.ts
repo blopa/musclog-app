@@ -5,6 +5,7 @@ import {
   mealStageIsSettled,
   observationIsUncertain,
 } from '../mealConsensus';
+import { ingredientMacroProblems } from '../mealPlausibility';
 
 const ing = (name: string, grams: number, kcal: number, extra = {}) => ({
   name,
@@ -187,6 +188,58 @@ describe('consensusMeals', () => {
     const one = { meals: [meal([ing('Rice', 100, 130)])] };
     const two = { meals: [meal([ing('Egg', 50, 70)]), meal([ing('Toast', 30, 80)])] };
     expect(consensusMeals([one, two]).meals).toHaveLength(1);
+  });
+
+  it('an ingredient merged from consistent samples never contradicts itself', () => {
+    const cream = (kcal: number, protein: number, carbs: number, fat: number) => ({
+      name: 'cream',
+      grams: 100,
+      kcal,
+      protein,
+      carbs,
+      fat,
+    });
+    const s1 = { meals: [meal([cream(100, 25, 0, 0)])] };
+    const s2 = { meals: [meal([cream(270, 0, 0, 30)])] };
+    const s3 = { meals: [meal([cream(160, 0, 40, 0)])] };
+
+    const merged = consensusMeals([s1, s2, s3]);
+    const ingredient = merged.meals[0].ingredients[0];
+    const figures = (item: { kcal: number; protein: number; carbs: number; fat: number }) => ({
+      kcal: item.kcal,
+      protein: item.protein,
+      carbs: item.carbs,
+      fat: item.fat,
+    });
+
+    expect(ingredientMacroProblems(ingredient)).toEqual([]);
+    expect([
+      figures(s1.meals[0].ingredients[0]),
+      figures(s2.meals[0].ingredients[0]),
+      figures(s3.meals[0].ingredients[0]),
+    ]).toContainEqual(figures(ingredient));
+  });
+
+  it('still takes the median when the medians are consistent', () => {
+    const rice = (kcal: number, protein: number, carbs: number, fat: number) => ({
+      name: 'rice',
+      grams: 100,
+      kcal,
+      protein,
+      carbs,
+      fat,
+    });
+    const result = consensusMeals([
+      { meals: [meal([rice(130, 2, 28, 0.2)])] },
+      { meals: [meal([rice(140, 3, 29, 0.3)])] },
+      { meals: [meal([rice(150, 4, 30, 0.4)])] },
+    ]);
+    const merged = result.meals[0].ingredients[0];
+
+    expect(merged.kcal).toBe(140);
+    expect(merged.protein).toBe(3);
+    expect(merged.carbs).toBe(29);
+    expect(merged.fat).toBe(0.3);
   });
 });
 

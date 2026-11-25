@@ -2,6 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 
 import { useMealPhotoLimit } from '@/hooks/useMealPhotoLimit';
 import { AiService } from '@/services/AiService';
+import { handleError } from '@/utils/handleError';
 import { loadHostedMaxImages } from '@/utils/hostedImage';
 import { MAX_MEAL_PHOTOS } from '@/utils/mealPhotoDraft';
 
@@ -12,6 +13,8 @@ jest.mock('@/services/AiService', () => ({
 jest.mock('@/utils/hostedImage', () => ({
   loadHostedMaxImages: jest.fn(),
 }));
+
+jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
 describe('useMealPhotoLimit', () => {
   beforeEach(() => {
@@ -83,5 +86,20 @@ describe('useMealPhotoLimit', () => {
       expect(AiService.getAiConfig).toHaveBeenCalledTimes(1);
     });
     expect(result.current).toBe(MAX_MEAL_PHOTOS);
+  });
+
+  it('reports a failed config read once and still falls back', async () => {
+    const error = new Error('boom');
+    jest.mocked(AiService.getAiConfig).mockRejectedValueOnce(error);
+
+    const { result } = renderHook(() => useMealPhotoLimit(true, 'openai'));
+
+    await waitFor(() => {
+      expect(result.current).toBe(MAX_MEAL_PHOTOS);
+    });
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleError).toHaveBeenCalledWith(error, 'useMealPhotoLimit', {
+      showSnackbar: false,
+    });
   });
 });

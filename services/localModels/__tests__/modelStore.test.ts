@@ -1,3 +1,4 @@
+import { LOCAL_MODEL_DOWNLOAD_STATE } from '@/constants/misc';
 import { reportAiEvent } from '@/utils/aiTelemetry';
 import { DEFAULT_LOCAL_MODEL } from '@/constants/localModels';
 
@@ -131,6 +132,7 @@ import {
   cancelLocalModelDownload,
   deleteLocalModel,
   getInstalledLocalModel,
+  getFreeDiskBytes,
   getLocalModelSpaceCheck,
   pauseLocalModelDownload,
   getLocalModelSnapshot,
@@ -791,5 +793,32 @@ describe('lifecycle operations run one at a time', () => {
 
     expect(getLocalModelSnapshot().state.kind).toBe('failed');
     expect(handleError).not.toHaveBeenCalled();
+  });
+});
+
+describe('failures are reported', () => {
+  beforeEach(() => {
+    (handleError as jest.Mock).mockClear();
+  });
+
+  it('reports a free-space read failure and resolves null', async () => {
+    const fs = jest.requireMock('expo-file-system/legacy');
+    const error = new Error('no statfs');
+    fs.getFreeDiskStorageAsync.mockRejectedValueOnce(error);
+
+    await expect(getFreeDiskBytes()).resolves.toBeNull();
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleError).toHaveBeenCalledWith(error, 'localModels.freeSpace', {
+      showSnackbar: false,
+    });
+  });
+
+  it('reports a corrupt saved download state once and does not reject', async () => {
+    mockStorage.set(LOCAL_MODEL_DOWNLOAD_STATE, 'not json{');
+
+    await expect(refreshLocalModel()).resolves.toBeUndefined();
+    expect(handleError).toHaveBeenCalledWith(expect.any(Error), 'localModels.savedDownload', {
+      showSnackbar: false,
+    });
   });
 });

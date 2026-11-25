@@ -52,6 +52,9 @@ jest.mock('../modelStore', () => ({
 }));
 
 jest.mock('@/utils/sentry', () => ({ captureException: jest.fn() }));
+jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
+
+import { handleError } from '@/utils/handleError';
 
 import {
   generateWithLocalModel,
@@ -269,6 +272,20 @@ describe('generateWithLocalModel', () => {
       generateWithLocalModel({ messages, signal: controller.signal })
     ).rejects.toBeInstanceOf(AiCancelledError);
     expect(mockCalls).toEqual([]);
+  });
+});
+
+describe('unload failures are reported', () => {
+  it('reports a failed release once and still resolves', async () => {
+    await generateWithLocalModel({ messages });
+    jest.mocked(handleError).mockClear();
+    mockContext.release.mockRejectedValueOnce(new Error('release failed'));
+
+    await expect(unloadLocalModel()).resolves.toBeUndefined();
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleError).toHaveBeenCalledWith(expect.any(Error), 'localModels.unload', {
+      showSnackbar: false,
+    });
   });
 });
 

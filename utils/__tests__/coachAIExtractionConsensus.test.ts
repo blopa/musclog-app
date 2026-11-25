@@ -160,6 +160,20 @@ describe('extractions at each thinking level', () => {
     expect(result).toMatchObject({ protein: 12 });
   });
 
+  it('takes another reading when one of the first two fails, so tokenmaxxing never ends on a single reading', async () => {
+    mockThinking.level = 'tokenmaxxing';
+    mockCreate
+      .mockRejectedValueOnce(Object.assign(new Error('boom'), { status: 400 }))
+      .mockResolvedValueOnce(reply(label(12)))
+      .mockResolvedValueOnce(reply(label(12)));
+
+    const result = await extractMacrosFromLabelText(openai, 'Protein 12 g');
+
+    expect(mockCreate).toHaveBeenCalledTimes(3);
+    expect(result).toMatchObject({ protein: 12 });
+    expect(lastUserMessage(2)).not.toContain('Disputed fields');
+  });
+
   it('stops at a cancel in the third reading', async () => {
     mockThinking.level = 'tokenmaxxing';
     mockCreate

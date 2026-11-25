@@ -66,3 +66,58 @@ describe('runsSamplesSequentially', () => {
     expect(providerPolicyFor({ provider: 'hosted' }).runsSamplesSequentially).toBeUndefined();
   });
 });
+
+describe('what a provider does with a structured reply', () => {
+  it('trusts the schema of the cloud providers that enforce it', () => {
+    for (const provider of ['openai', 'gemini', 'claude', 'hosted'] as const) {
+      expect(providerPolicyFor({ provider }).structuredReplies).toBe('enforced');
+    }
+  });
+
+  it('checks and repairs what a small model writes', () => {
+    expect(providerPolicyFor({ provider: 'local' }).structuredReplies).toBe('repaired');
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).structuredReplies).toBe(
+      'repaired'
+    );
+  });
+
+  it('leaves the free tier and Apple’s engine as they are', () => {
+    expect(providerPolicyFor({ provider: 'gateway' }).structuredReplies).toBeUndefined();
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'apple' }).structuredReplies
+    ).toBeUndefined();
+  });
+});
+
+describe('what only the on-device engines and a custom server do differently', () => {
+  const onDevice = [
+    providerPolicyFor({ provider: 'on-device', engine: 'gguf' }),
+    providerPolicyFor({ provider: 'on-device', engine: 'apple' }),
+  ];
+
+  it('skips the first look at a meal, and estimates foods by label, on both on-device engines', () => {
+    for (const policy of onDevice) {
+      expect(policy.skipsMealFirstLook).toBe(true);
+      expect(policy.estimatesFoodsFromLabels).toBe(true);
+      expect(policy.structuredFailureIsNoAnswer).toBe(true);
+    }
+  });
+
+  it('leaves a custom local server and the cloud providers on the full pipeline', () => {
+    for (const provider of ['local', 'openai', 'gemini', 'claude', 'gateway', 'hosted'] as const) {
+      const policy = providerPolicyFor({ provider });
+
+      expect(policy.skipsMealFirstLook).toBeUndefined();
+      expect(policy.estimatesFoodsFromLabels).toBeUndefined();
+      expect(policy.structuredFailureIsNoAnswer).toBeUndefined();
+    }
+  });
+
+  it('keeps a custom server’s partial structured reply and no other provider’s', () => {
+    expect(providerPolicyFor({ provider: 'local' }).keepsPartialStructuredReply).toBe(true);
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).keepsPartialStructuredReply
+    ).toBeUndefined();
+    expect(providerPolicyFor({ provider: 'openai' }).keepsPartialStructuredReply).toBeUndefined();
+  });
+});
