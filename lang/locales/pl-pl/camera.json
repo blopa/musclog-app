@@ -7,6 +7,12 @@
       "processingNutrients": "Przetwarzanie składników odżywczych",
       "analyzingImage": "Analizowanie kodu kreskowego...",
       "processingData": "Przetwarzanie danych"
+    },
+    "unavailable": {
+      "title": "Aparat niedostępny",
+      "body": "Nie udało się uruchomić aparatu w tym telefonie.",
+      "bodyWithGallery": "Nie udało się uruchomić aparatu w tym telefonie. Nadal możesz wybrać zdjęcie z galerii.",
+      "retry": "Spróbuj ponownie"
     }
   }
 }

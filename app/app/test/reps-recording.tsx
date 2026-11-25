@@ -15,11 +15,11 @@ import {
 } from 'react-native';
 import {
   Camera as VisionCamera,
-  useCameraDevice,
   useCameraFormat,
   useCameraPermission,
 } from 'react-native-vision-camera';
 
+import { useUsableCameraDevice } from '@/components/CameraView';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { BleDevicePreviewModal } from '@/components/modals/BleDevicePreviewModal';
@@ -164,7 +164,7 @@ export default function RepsRecordingScreen() {
   // startRecording before the native session is initialized fails; gate START on this.
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
 
-  const cameraDevice = useCameraDevice('back');
+  const cameraDevice = useUsableCameraDevice('back');
   // Mirrors the previous expo-camera videoQuality="720p" — keeps training clips small and
   // consistent across recording sessions.
   const cameraFormat = useCameraFormat(cameraDevice, [

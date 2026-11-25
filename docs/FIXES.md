@@ -3,6 +3,70 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Opening the camera closed the app on a Poco X3, and Sentry received nothing (2026-11-25)
+
+### Symptom
+
+On a Poco X3 NFC (LineageOS, Android 15, Musclog 2.18.4 from Play) the app closed every time the camera
+opened, and after three closes in a row Android stopped reopening it. Sentry had no event for any of
+them, although the "Anonymous bug report" setting was on.
+
+### Cause
+
+Three failures in a row, each turning a small problem into a closed app, plus a reporting gap:
+
+1. **The wrong camera.** The ROM lists six rear cameras: the 64 MP main sensor three times (0, 61, 100),
+   a 13 MP ultra-wide (21), a 2 MP macro (22) and a 2 MP depth sensor (25). It reports the main
+   sensor's physical size about twice too large, so vision-camera's field-of-view sum classed the main
+   camera as "ultra-wide", and `useCameraDevice('back')`, which prefers the first "wide-angle" camera,
+   picked the macro camera. That camera has no video profiles, so vision-camera gives it no formats,
+   and `useCameraFormat` threw `device/invalid-device: The given Camera Device (22) does not have any
+formats!` during render.
+2. **The error boundary crashed.** The error reached `Sentry.ErrorBoundary`, whose `componentDidCatch`
+   assigns `error.cause` (`setCause` in `@sentry/react`). vision-camera's `CameraError` defines `cause`
+   as a getter only, so the boundary threw `TypeError: Cannot assign to property 'cause' which has only
+a getter`. Nothing caught that, and React Native tore the JS instance down (`handleHostException`).
+3. **The teardown killed the process.** During the teardown `WitMotionBleModule`'s `OnDestroy` (the BLE
+   sensor module, loaded on every launch) stopped its scan, which posted an `onStateChanged` event to
+   the main thread. The event ran after the module registry was cleared, and `sendEvent` threw
+   `IllegalArgumentException: Cannot create an event emitter for module ... Available modules: []`
+   on the main thread. That native crash is what the system logged. The same path ran on every
+   `reloadApp()` (after a backup restore) and every fatal JS error.
+4. **No report.** `Sentry.init` ran only inside the first explicit `captureException`/`captureMessage`,
+   so until something had been reported neither Sentry's JS global handler nor its native crash handler
+   was installed.
+
+### Fix
+
+- **Camera choice**: `usableCameraDevices` (`utils/cameraAvailability.ts`) keeps only cameras with a
+  format, drops auxiliary sensors (largest photo under `MIN_PHOTO_PIXEL_SHARE`, a quarter, of the best
+  camera facing that way) and sorts by resolution, so vision-camera's own `getCameraDevice` breaks its
+  ties on the main camera. Every camera surface picks through `useUsableCameraDevice`
+  (`components/CameraView.tsx`); `useHasCamera` counts only cameras that can be opened.
+- **Camera failures stay in the camera area**: `CameraErrorBoundary` around `CameraView` and
+  `OpticalScannerCamera`, with vision-camera's `onError` rethrown into it, reports the error and shows
+  `CameraUnavailable` with Try again.
+- **The app's boundary** is `AppErrorBoundary`, which never writes to the error and never lets reporting
+  throw; `Sentry.ErrorBoundary` is not used anywhere (guarded by
+  `components/__tests__/AppErrorBoundary.dom.test.tsx`).
+- **A fatal JS error no longer closes the app** in a release build: `installGracefulFatalHandler`
+  (`utils/fatalErrorStore.ts`) wraps React Native's handler before Sentry starts; Sentry reports and
+  flushes, then the error goes to `FatalErrorOverlay` (drawn at the root and inside the theme `Modal`),
+  which offers a restart.
+- **Crash reporting runs from launch** when the setting is on: `startCrashReportingAtLaunch`
+  (`utils/crashReporting.ts`) reads the device-local copy of the choice at module load in
+  `app/_layout.tsx`, and `SettingsService.getAnonymousBugReport` applies the stored value
+  (`syncCrashReporting`) once the database is readable. Off still sends nothing. The website keeps
+  starting Sentry on its first report.
+- **The BLE module** sends every event through `emit`, which does nothing once `OnDestroy` has started
+  and logs instead of throwing if a send fails.
+
+### Not covered
+
+A native crash before the JS bundle has started (the first second or so) is still not reported: the
+native SDK starts from JS, after the consent check. Starting it natively would mean reading the consent
+from native code first.
+
 ## The Android download grew by 31 MB in 2.18.0 (2026-11-24)
 
 ### Symptom

@@ -78,14 +78,13 @@ import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { DEFAULT_LANG } from '@/lang/lang';
-import { closeSentry } from '@/sentry-init';
 import type { ThinkingLevel } from '@/utils/aiThinkingLevel';
 import {
   type ComebackState,
   parseComebackState,
   serializeComebackState,
 } from '@/utils/comeback/comebackState';
-import { rememberCrashReportConsent } from '@/utils/crashReportConsent';
+import { syncCrashReporting } from '@/utils/crashReporting';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import {
   type NotificationPreferences,
@@ -242,11 +241,8 @@ export class SettingsService {
    */
   static async setAnonymousBugReport(value: boolean) {
     await SettingsService.setBooleanSetting(ANONYMOUS_BUG_REPORT_SETTING_TYPE, value);
-    await rememberCrashReportConsent(value);
-
-    if (!value) {
-      await closeSentry();
-    }
+    // Turning it on starts reporting now; turning it off stops it, native crash handler included.
+    await syncCrashReporting(value);
   }
 
   /**
@@ -269,7 +265,9 @@ export class SettingsService {
       value = mostRecent.value === 'true';
     }
 
-    void rememberCrashReportConsent(value);
+    // The stored value is the authority: it corrects the launch-time start, which read the
+    // device-local copy (stale after restoring a backup with the setting off, missing before).
+    void syncCrashReporting(value);
 
     return value;
   }

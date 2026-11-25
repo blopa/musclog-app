@@ -7,6 +7,12 @@
       "processingNutrients": "Nährstoffe werden verarbeitet",
       "analyzingImage": "Barcode wird analysiert...",
       "processingData": "Daten werden verarbeitet"
+    },
+    "unavailable": {
+      "title": "Kamera nicht verfügbar",
+      "body": "Die Kamera konnte auf diesem Handy nicht gestartet werden.",
+      "bodyWithGallery": "Die Kamera konnte auf diesem Handy nicht gestartet werden. Du kannst aber weiterhin ein Foto aus deiner Galerie auswählen.",
+      "retry": "Erneut versuchen"
     }
   }
 }

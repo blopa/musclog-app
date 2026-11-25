@@ -7,6 +7,12 @@
       "processingNutrients": "Processando nutrientes",
       "analyzingImage": "Analisando código de barras...",
       "processingData": "Processando dados"
+    },
+    "unavailable": {
+      "title": "Câmera indisponível",
+      "body": "A câmera não conseguiu iniciar neste celular.",
+      "bodyWithGallery": "A câmera não conseguiu iniciar neste celular. Você ainda pode escolher uma foto da galeria.",
+      "retry": "Tentar novamente"
     }
   }
 }

@@ -20,13 +20,12 @@ import {
 } from '@/constants/settings';
 import { database } from '@/database/database-instance';
 import { SettingsService } from '@/database/services/SettingsService';
-import { closeSentry } from '@/sentry-init';
-import { rememberCrashReportConsent } from '@/utils/crashReportConsent';
+import { syncCrashReporting } from '@/utils/crashReporting';
 import { decryptDatabaseValue } from '@/utils/encryption';
 
-jest.mock('@/sentry-init', () => ({ closeSentry: jest.fn(async () => undefined) }));
-jest.mock('@/utils/crashReportConsent', () => ({
-  rememberCrashReportConsent: jest.fn(async () => undefined),
+// What starting and stopping does is pinned in utils/__tests__/crashReporting.test.ts.
+jest.mock('@/utils/crashReporting', () => ({
+  syncCrashReporting: jest.fn(async () => undefined),
 }));
 
 jest.mock('@nozbe/watermelondb', () => ({
@@ -134,29 +133,37 @@ describe('SettingsService', () => {
   });
 
   describe('anonymous bug report', () => {
-    it('turning it off remembers the choice and shuts Sentry down', async () => {
+    it('turning it off stops crash reporting at once', async () => {
       installSettingsTable();
 
       await SettingsService.setAnonymousBugReport(false);
 
-      expect(rememberCrashReportConsent).toHaveBeenCalledWith(false);
-      expect(closeSentry).toHaveBeenCalledTimes(1);
+      expect(syncCrashReporting).toHaveBeenCalledTimes(1);
+      expect(syncCrashReporting).toHaveBeenCalledWith(false);
     });
 
-    it('turning it on remembers the choice and leaves Sentry alone', async () => {
+    it('turning it on starts crash reporting at once', async () => {
       installSettingsTable();
 
       await SettingsService.setAnonymousBugReport(true);
 
-      expect(rememberCrashReportConsent).toHaveBeenCalledWith(true);
-      expect(closeSentry).not.toHaveBeenCalled();
+      expect(syncCrashReporting).toHaveBeenCalledWith(true);
     });
 
-    it('refreshes the remembered copy on every read, defaulting to on', async () => {
+    it('applies the stored value on every read, defaulting to on', async () => {
       installSettingsTable();
 
       expect(await SettingsService.getAnonymousBugReport()).toBe(true);
-      expect(rememberCrashReportConsent).toHaveBeenCalledWith(true);
+      expect(syncCrashReporting).toHaveBeenCalledWith(true);
+    });
+
+    it('applies an off value read back from the database', async () => {
+      installSettingsTable();
+      await SettingsService.setAnonymousBugReport(false);
+      jest.mocked(syncCrashReporting).mockClear();
+
+      expect(await SettingsService.getAnonymousBugReport()).toBe(false);
+      expect(syncCrashReporting).toHaveBeenCalledWith(false);
     });
   });
 

@@ -11,17 +11,25 @@ import {
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import {
   Camera,
+  type CameraDevice,
   type CameraPermissionStatus,
+  type CameraRuntimeError,
   type CodeType,
-  useCameraDevice,
+  getCameraDevice,
+  useCameraDevices,
   useCameraFormat,
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
 
+import {
+  CameraErrorBoundary,
+  CameraUnavailable,
+  reportCameraError,
+} from '@/components/CameraErrorBoundary';
 import { captureWithSnapshotLadder } from '@/components/cameraShutter';
 import { runCameraWarmUp } from '@/components/cameraWarmUp';
-import { readHasCamera } from '@/utils/cameraAvailability';
+import { readHasCamera, usableCameraDevices } from '@/utils/cameraAvailability';
 import { toFileUri } from '@/utils/file';
 
 export type CameraViewRef = {
@@ -99,8 +107,48 @@ type CameraViewProps = {
  *
  * Session-lifecycle concerns live here, next to the session they belong to: the silent warm-up
  * capture (see runCameraWarmUp) and the one-warm-up-per-session guard it needs.
+ *
+ * A camera that cannot run never leaves the camera area: errors from rendering (vision-camera's
+ * hooks throw for a device it cannot use) and from the running session (`onError`) are reported
+ * and replaced by `CameraUnavailable` with Try again, inside `CameraErrorBoundary`.
  */
 export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
+  function CameraView(props, ref) {
+    return (
+      <CameraErrorBoundary
+        onError={reportCameraViewError}
+        fallback={(retry) => (
+          <View style={[StyleSheet.absoluteFill, props.style]}>
+            <CameraUnavailable body="withGallery" onRetry={retry} />
+          </View>
+        )}
+      >
+        <NativeCameraView {...props} ref={ref} />
+      </CameraErrorBoundary>
+    );
+  }
+);
+
+function reportCameraViewError(error: unknown): void {
+  reportCameraError(error, 'CameraView');
+}
+
+/**
+ * The camera to open for `position`: vision-camera's own choice, but only among cameras that can
+ * run and are not auxiliary sensors (`usableCameraDevices`). Every camera surface picks its device
+ * through this; vision-camera's `useCameraDevice` picked a 2 MP macro camera with no formats on a
+ * Poco X3, and `useCameraFormat` then threw (docs/FIXES.md).
+ */
+export function useUsableCameraDevice(position: 'front' | 'back'): CameraDevice | undefined {
+  const devices = useCameraDevices();
+
+  return useMemo(
+    () => getCameraDevice(usableCameraDevices(devices, position), position),
+    [devices, position]
+  );
+}
+
+const NativeCameraView = forwardRef<CameraViewRef, CameraViewProps>(
   (
     {
       children,
@@ -113,10 +161,13 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
     },
     ref
   ) => {
-    const device = useCameraDevice(facing);
+    const device = useUsableCameraDevice(facing);
     const format = useCameraFormat(device, [{ photoResolution: PHOTO_RESOLUTION_TARGET }]);
     const cameraRef = useRef<Camera>(null);
     const hasWarmedUpRef = useRef(false);
+    // A session error is rethrown during render so CameraErrorBoundary reports it and shows the
+    // fallback; Try again remounts this component, which clears it.
+    const [runtimeError, setRuntimeError] = useState<CameraRuntimeError | null>(null);
 
     // Resolves once the preview View has painted its first frame (Android: `onPreviewStarted`,
     // tied to CameraX's `PreviewView.StreamState.STREAMING`; iOS's video pipeline fills up on a
@@ -214,8 +265,17 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
       },
     });
 
+    if (runtimeError) {
+      throw runtimeError;
+    }
+
     if (!device) {
-      return null;
+      // No camera on this phone can be opened; trying again would change nothing.
+      return (
+        <View style={[StyleSheet.absoluteFill, style]}>
+          <CameraUnavailable body="withGallery" />
+        </View>
+      );
     }
 
     return (
@@ -250,6 +310,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           photoQualityBalance="speed"
           onInitialized={handleInitialized}
           onPreviewStarted={handlePreviewStarted}
+          onError={setRuntimeError}
           codeScanner={onBarcodeScanned && codeTypes.length > 0 ? codeScanner : undefined}
         />
         {children}
