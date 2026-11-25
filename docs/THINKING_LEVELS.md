@@ -182,6 +182,12 @@ label (1 / 1 / 2 + arbiter / up to 3 readings + arbiter).
   the advice is narrowed, no optimisation advice that could harm is given and a qualified
   professional is suggested, (4) the reply answers what was asked, in the persona's voice and length
   rules and in your language. A draft that passes all four comes back **unchanged**, word for word.
+  The draft is not quoted in the instruction: it travels as the model's own previous reply (with the
+  message it answers as the turn before), and the instruction is just the checklist, so a small model
+  has no marker lines to copy back into its answer.
+  The draft is not quoted in the instruction: it travels as the model's own previous reply (with the
+  message it answers as the turn before), and the instruction is just the checklist, so a small model
+  has no marker lines to copy back into its answer.
 
 The chat's "armed" intentions reuse the jobs on this page: Track meal is the meal job, Meal plan and
 Workout plan are plans, Analyze progress is a workout insight, Nutrition check is a nutrition insight.

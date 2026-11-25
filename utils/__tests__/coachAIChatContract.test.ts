@@ -40,9 +40,7 @@ jest.mock('../prompts', () => ({
   getNutritionInsightsPrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getMealCritiquePrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getChatMessagePromptContent: jest.fn().mockResolvedValue('SYSTEM'),
-  getChatReviewInstruction: jest.fn(
-    (_language: string, message: string, draft: string) => `REVIEW ${message} :: ${draft}`
-  ),
+  getChatReviewInstruction: jest.fn((_language: string) => 'REVIEW'),
 }));
 jest.mock('../handleError', () => ({ handleError: jest.fn() }));
 jest.mock('@/database/services/DebugDumpService', () => ({
@@ -120,17 +118,6 @@ describe('the chat error contract', () => {
     expect(result.msg4User).toBe('Reviewed.');
     expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(getChatMessagePromptContent).toHaveBeenCalledTimes(1);
-  });
-
-  it("drops the review prompt's fence lines a reviewer copied around the draft", async () => {
-    mockSettingsGet.mockResolvedValue('tokenmaxxing');
-    mockCreate
-      .mockResolvedValueOnce(oneShot(json('Draft.')))
-      .mockResolvedValueOnce(oneShot(json('<<<DRAFT\nDraft.\nDRAFT>>>')));
-
-    const result = await sendCoachMessage(openai, [], 'hello', 'general');
-
-    expect(result.msg4User).toBe('Draft.');
   });
 
   it('gives the apology and makes no review request when the draft fails', async () => {

@@ -99,7 +99,6 @@ import {
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
 import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
 import { isTruncatedStop, type StopSignal } from './replyTruncation';
-import { stripReviewFences } from './reviewFences';
 import { captureMessage } from './sentry';
 
 export class AiCreditsError extends Error {
@@ -1943,17 +1942,29 @@ export async function sendCoachMessage(
       ? await getChatMessagePromptContent(config.language, undefined, context, 'on-device')
       : await chatSystemPrompt(config, sendHistory, context);
 
-    // Per dispatched message: the review instruction is longer than the person's message.
-    const turnsFor = (message: string): ChatHistoryEntry[] =>
-      truncateHistoryByBudget(
-        latestChatTurns(sendHistory, config),
-        isOnDeviceConfig(config)
-          ? onDeviceBudget(config) - message.length
-          : (PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai).maxCharBudget
-      );
+    // Per dispatched message: the review instruction is longer than the person's message, and a
+    // review round also carries the exchange under review (`exchange`), which always stays whole.
+    const turnsFor = (message: string, exchange: ChatHistoryEntry[]): ChatHistoryEntry[] => {
+      const reserved =
+        message.length + exchange.reduce((sum, turn) => sum + turn.content.length, 0);
 
-    const dispatch = (message: string, to?: CoachStream): Promise<CoachResponse> => {
-      const turns = turnsFor(message);
+      return [
+        ...truncateHistoryByBudget(
+          latestChatTurns(sendHistory, config),
+          isOnDeviceConfig(config)
+            ? onDeviceBudget(config) - reserved
+            : (PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai).maxCharBudget
+        ),
+        ...exchange,
+      ];
+    };
+
+    const dispatch = (
+      message: string,
+      to?: CoachStream,
+      exchange: ChatHistoryEntry[] = []
+    ): Promise<CoachResponse> => {
+      const turns = turnsFor(message, exchange);
 
       if (isOnDeviceConfig(config)) {
         return sendViaOnDevice(config, systemPrompt, turns, message, to);
@@ -2026,7 +2037,11 @@ async function failedCoachReply(
 async function draftAndReviewCoachReply(
   config: CoachAIConfig,
   message: string,
-  dispatch: (message: string, target?: CoachStream) => Promise<CoachResponse>,
+  dispatch: (
+    message: string,
+    target?: CoachStream,
+    exchange?: ChatHistoryEntry[]
+  ) => Promise<CoachResponse>,
   stream?: CoachStream
 ): Promise<CoachResponse> {
   stream?.onPhase?.('reviewing');
@@ -2037,15 +2052,16 @@ async function draftAndReviewCoachReply(
   }
 
   try {
-    const instruction = getChatReviewInstruction(
-      config.language ?? DEFAULT_LANG,
-      message,
-      draft.msg4User
+    // The draft is the model's own previous reply (and the person's message the turn before it), so
+    // the instruction quotes nothing: a small model has no markers to copy back into its answer.
+    const reviewed = await dispatch(
+      getChatReviewInstruction(config.language ?? DEFAULT_LANG),
+      stream,
+      [
+        { role: 'user', content: message },
+        { role: 'coach', content: draft.msg4User },
+      ]
     );
-    const raw = await dispatch(instruction, stream);
-    // The review prompt fences the draft with marker lines; a model asked to return it "word for
-    // word" can copy them, and they are never part of an answer.
-    const reviewed = { ...raw, msg4User: stripReviewFences(raw.msg4User) };
 
     if (!reviewed.msg4User.trim()) {
       stream?.onText(draft.msg4User);

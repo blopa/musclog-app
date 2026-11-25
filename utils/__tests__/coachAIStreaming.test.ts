@@ -44,9 +44,7 @@ jest.mock('../prompts', () => ({
   getNutritionInsightsPrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getMealCritiquePrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getChatMessagePromptContent: jest.fn().mockResolvedValue('SYSTEM'),
-  getChatReviewInstruction: jest.fn(
-    (_language: string, message: string, draft: string) => `REVIEW ${message} :: ${draft}`
-  ),
+  getChatReviewInstruction: jest.fn((_language: string) => 'REVIEW'),
 }));
 
 jest.mock('../handleError', () => ({ handleError: jest.fn() }));
@@ -292,9 +290,18 @@ describe('streaming coach replies', () => {
       expect(mockCreate).toHaveBeenCalledTimes(2);
       expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('stream');
       expect(mockCreate.mock.calls[1][0]).toMatchObject({ stream: true });
-      const reviewTurn = mockCreate.mock.calls[1][0].messages.at(-1).content as string;
-      expect(reviewTurn).toContain('REVIEW');
-      expect(reviewTurn).toContain('You ate 90 g of protein.');
+      // The draft is the model's own previous reply, not text quoted in the instruction.
+      const reviewMessages = mockCreate.mock.calls[1][0].messages as {
+        role: string;
+        content: string;
+      }[];
+      expect(reviewMessages.at(-1)).toMatchObject({ role: 'user', content: 'REVIEW' });
+      expect(reviewMessages.at(-2)).toMatchObject({
+        role: 'assistant',
+        content: 'You ate 90 g of protein.',
+      });
+      expect(reviewMessages.at(-3)?.role).toBe('user');
+      expect(reviewMessages.at(-3)?.content).toContain('how much protein?');
       expect(phases).toEqual(['reviewing']);
       for (const text of seen) {
         expect('You ate 120 g of protein today.'.startsWith(text)).toBe(true);
