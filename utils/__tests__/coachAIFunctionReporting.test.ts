@@ -91,14 +91,17 @@ describe('a failing user-facing AI function', () => {
   });
   afterEach(() => jest.restoreAllMocks());
 
-  it.each(FUNCTIONS)('%s answers null, tells the person and reports to Sentry', async (name, run) => {
-    await expect(run()).resolves.toBeNull();
+  it.each(FUNCTIONS)(
+    '%s answers null, tells the person and reports to Sentry',
+    async (name, run) => {
+      await expect(run()).resolves.toBeNull();
 
-    expect(notifyUserFacingAiError).toHaveBeenCalledTimes(1);
-    expect(handleError).toHaveBeenCalledWith(
-      expect.any(Error),
-      `coachAI.${name}`,
-      expect.anything()
-    );
-  });
+      expect(notifyUserFacingAiError).toHaveBeenCalledTimes(1);
+      expect(handleError).toHaveBeenCalledWith(
+        expect.any(Error),
+        `coachAI.${name}`,
+        expect.anything()
+      );
+    }
+  );
 });

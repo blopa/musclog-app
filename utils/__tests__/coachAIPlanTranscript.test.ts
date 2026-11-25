@@ -56,7 +56,7 @@ const conversation = [
   { role: 'coach' as const, content: filler('turn-four') },
   { role: 'user' as const, content: filler('turn-five') },
   { role: 'coach' as const, content: filler('turn-six') },
-  { role: 'user' as const, content: "Make it vegetarian, I can't eat fish. Say \"no\" to dairy." },
+  { role: 'user' as const, content: 'Make it vegetarian, I can\'t eat fish. Say "no" to dairy.' },
 ];
 
 const sentMessage = (): string => mockCreate.mock.calls[0][0].messages.at(-1).content as string;

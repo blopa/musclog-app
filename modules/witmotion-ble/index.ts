@@ -3,8 +3,8 @@ export * from './src/constants';
 export {
   useWitMotion,
   useWitMotionDevice,
-  useWitMotionScanner,
   type UseWitMotionOptions,
+  useWitMotionScanner,
 } from './src/hooks';
 export type {
   WitMotionActionApi,

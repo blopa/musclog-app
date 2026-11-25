@@ -16,7 +16,15 @@ jest.mock('expo-crypto', () => ({ randomUUID: () => 'group-1' }));
 const date = new Date(2026, 10, 25);
 const consumedTime = new Date(2026, 10, 25, 13, 30);
 
-const chicken = { name: 'Chicken', grams: 100, kcal: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0 };
+const chicken = {
+  name: 'Chicken',
+  grams: 100,
+  kcal: 165,
+  protein: 31,
+  carbs: 0,
+  fat: 3.6,
+  fiber: 0,
+};
 const rice = {
   name: 'Rice',
   grams: 100,
@@ -92,7 +100,15 @@ describe('logTrackedMeal', () => {
 
 describe('trackedMealTotals', () => {
   it('adds the fiber of an estimated food to its net carbs, but not of a matched food', () => {
-    const estimated = { name: 'Bar', grams: 50, kcal: 200, protein: 5, carbs: 20, fat: 8, fiber: 5 };
+    const estimated = {
+      name: 'Bar',
+      grams: 50,
+      kcal: 200,
+      protein: 5,
+      carbs: 20,
+      fat: 8,
+      fiber: 5,
+    };
     const totals = trackedMealTotals([estimated, rice]);
 
     // Estimated carbs are NET (fiber excluded): 20 + 5. A matched food's carbs already include it.
