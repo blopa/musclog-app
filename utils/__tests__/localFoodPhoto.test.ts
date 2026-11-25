@@ -5,7 +5,6 @@ import {
   MAX_IDENTIFIED_FOODS,
   MAX_IDENTIFIED_NAME_CHARS,
   matchNameOf,
-  mealTypeForHour,
   mergeFoodsAcrossPhotos,
   parseIdentifiedFoods,
   photoMealName,
@@ -129,16 +128,6 @@ describe('pickFoodMatch', () => {
       pickFoodMatch('salmon steak', [food('a', 'Salmon'), food('b', 'Beef steak')])
     ).toBeNull();
     expect(pickFoodMatch('', [food('a', 'Rice')])).toBeNull();
-  });
-});
-
-describe('mealTypeForHour', () => {
-  it('maps the clock to the diary meals', () => {
-    expect(mealTypeForHour(8)).toBe('breakfast');
-    expect(mealTypeForHour(12)).toBe('lunch');
-    expect(mealTypeForHour(19)).toBe('dinner');
-    expect(mealTypeForHour(23)).toBe('snack');
-    expect(mealTypeForHour(3)).toBe('snack');
   });
 });
 

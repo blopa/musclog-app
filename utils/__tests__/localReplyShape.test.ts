@@ -100,12 +100,10 @@ describe('repair call prompt and message', () => {
     expect(prompt).toContain('Return only the corrected JSON');
   });
 
-  it('prefixes the broken reply and truncates it to the cap', () => {
+  it('prefixes the broken reply and never cuts it (a reply past the cap is not repaired at all)', () => {
     expect(jsonRepairMessage('{"items":[')).toBe('Malformed JSON:\n{"items":[');
     const long = 'x'.repeat(MAX_JSON_REPAIR_INPUT_CHARS + 500);
-    expect(jsonRepairMessage(long)).toBe(
-      `Malformed JSON:\n${'x'.repeat(MAX_JSON_REPAIR_INPUT_CHARS)}`
-    );
+    expect(jsonRepairMessage(long)).toBe(`Malformed JSON:\n${long}`);
   });
 });
 
