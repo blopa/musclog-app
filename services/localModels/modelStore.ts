@@ -57,6 +57,7 @@ import {
   staleInstallFolders,
   totalDownloadBytes,
 } from '@/utils/localModels/install';
+import { createSerialQueue } from '@/utils/serialQueue';
 
 export type { InstalledLocalModel };
 
@@ -109,18 +110,12 @@ type DownloadTask = {
 
 /** The one download in flight (or ended and waiting for its pause/cancel follow-up). */
 let running: DownloadTask | null = null;
-/** Lifecycle operations run one at a time through this chain; it never rejects. */
-let queue: Promise<unknown> = Promise.resolve();
+/** Lifecycle operations run one at a time through this queue (see the module comment). */
+const queue = createSerialQueue();
 let unloader: (() => Promise<void>) | null = null;
 
 function enqueue<T>(operation: () => Promise<T>): Promise<T> {
-  const turn = queue.then(operation);
-  queue = turn.then(
-    () => undefined,
-    () => undefined
-  );
-
-  return turn;
+  return queue.run(operation);
 }
 
 /** A function, so TypeScript does not narrow `stop` across the awaits that change it. */
@@ -168,7 +163,8 @@ async function readSaved(): Promise<SavedDownload | null> {
     }
 
     return value as SavedDownload;
-  } catch {
+  } catch (error) {
+    reportFailure(error, 'savedDownload');
     return null;
   }
 }
@@ -185,17 +181,24 @@ async function writeSaved(value: SavedDownload | null) {
   }
 }
 
+/** The size of a regular file, or null when it is missing, a directory or unreadable. */
+async function fileSizeOf(uri: string): Promise<number | null> {
+  try {
+    const info = await FileSystem.getInfoAsync(uri);
+    return info.exists && !info.isDirectory && typeof info.size === 'number' ? info.size : null;
+  } catch {
+    // Unreadable counts as nothing.
+    return null;
+  }
+}
+
 /** Bytes already on disk for a selection in `.partial/`. */
 async function partialBytes(root: string, selection: LocalModelSelection): Promise<number> {
   let sum = 0;
   for (const file of filesFor(manifest, selection)) {
-    try {
-      const info = await FileSystem.getInfoAsync(`${partialUri(root)}/${file.path}`);
-      if (info.exists && !info.isDirectory) {
-        sum += Math.min(info.size, file.bytes);
-      }
-    } catch {
-      // Unreadable counts as nothing.
+    const size = await fileSizeOf(`${partialUri(root)}/${file.path}`);
+    if (size !== null) {
+      sum += Math.min(size, file.bytes);
     }
   }
 
@@ -355,7 +358,8 @@ export async function getInstalledLocalModel(): Promise<InstalledLocalModel | nu
 export async function getFreeDiskBytes(): Promise<number | null> {
   try {
     return await FileSystem.getFreeDiskStorageAsync();
-  } catch {
+  } catch (error) {
+    reportFailure(error, 'freeSpace');
     return null;
   }
 }
@@ -376,23 +380,20 @@ export async function getLocalModelSpaceCheck(selection: LocalModelSelection) {
     let reusable = 0;
     let reclaimable = 0;
 
+    // An unreadable file (fileSizeOf null) cannot be counted as reusable or reclaimable.
     for (const file of wanted) {
-      try {
-        const info = await FileSystem.getInfoAsync(`${partialDir}/${file.path}`);
-        if (!info.exists || info.isDirectory || typeof info.size !== 'number') {
-          continue;
-        }
+      const size = await fileSizeOf(`${partialDir}/${file.path}`);
+      if (size === null) {
+        continue;
+      }
 
-        const isResumable =
-          info.size === file.bytes ||
-          (saved?.path === file.path && saved.selection.withProjector === selection.withProjector);
-        if (isResumable) {
-          reusable += Math.min(info.size, file.bytes);
-        } else {
-          reclaimable += info.size;
-        }
-      } catch {
-        // An unreadable file cannot be counted as reusable.
+      const isResumable =
+        size === file.bytes ||
+        (saved?.path === file.path && saved.selection.withProjector === selection.withProjector);
+      if (isResumable) {
+        reusable += Math.min(size, file.bytes);
+      } else {
+        reclaimable += size;
       }
     }
 
@@ -401,14 +402,7 @@ export async function getLocalModelSpaceCheck(selection: LocalModelSelection) {
         continue;
       }
 
-      try {
-        const info = await FileSystem.getInfoAsync(`${partialDir}/${name}`);
-        if (info.exists && !info.isDirectory && typeof info.size === 'number') {
-          reclaimable += info.size;
-        }
-      } catch {
-        // Unreadable extra files cannot be counted as reclaimable.
-      }
+      reclaimable += (await fileSizeOf(`${partialDir}/${name}`)) ?? 0;
     }
 
     const result = checkSpace(free + reusable + reclaimable, manifest, selection);
@@ -419,7 +413,8 @@ export async function getLocalModelSpaceCheck(selection: LocalModelSelection) {
           freeBytes: free,
           neededBytes: Math.max(0, result.neededBytes - reusable - reclaimable),
         };
-  } catch {
+  } catch (error) {
+    reportFailure(error, 'spaceCheck');
     return checkSpace(free, manifest, selection);
   }
 }
@@ -433,9 +428,16 @@ function isCancelled(task: DownloadTask): boolean {
 }
 
 /**
- * The one stop check of the download loop: true (and the loop records it has stopped) once a pause
- * or cancel was requested. `cancelledOnly` ignores a pause.
+ * The one stop check of the download loop: throws once a pause or cancel was requested (and records
+ * that the loop has stopped), so `downloadFiles` catches it once instead of at every await.
+ * `cancelledOnly` ignores a pause.
  */
+function checkpoint(task: DownloadTask, cancelledOnly = false): void {
+  if (stopRequested(task, cancelledOnly)) {
+    throw new DownloadStopped();
+  }
+}
+
 function stopRequested(task: DownloadTask, cancelledOnly = false): boolean {
   const requested = cancelledOnly ? isCancelled(task) : stopOf(task) !== null;
   if (requested) {
@@ -445,13 +447,32 @@ function stopRequested(task: DownloadTask, cancelledOnly = false): boolean {
   return requested;
 }
 
+class DownloadStopped extends Error {}
+
 class DownloadHttpError extends Error {
   constructor(readonly status: number) {
     super(`HTTP ${status}`);
   }
 }
 
+/** Runs the download; a pause or cancel resolves 'stopped' instead of throwing. */
 async function downloadFiles(
+  root: string,
+  selection: LocalModelSelection,
+  task: DownloadTask
+): Promise<'done' | 'stopped'> {
+  try {
+    return await downloadFilesUntilStopped(root, selection, task);
+  } catch (error) {
+    if (error instanceof DownloadStopped) {
+      return 'stopped';
+    }
+
+    throw error;
+  }
+}
+
+async function downloadFilesUntilStopped(
   root: string,
   selection: LocalModelSelection,
   task: DownloadTask
@@ -459,9 +480,7 @@ async function downloadFiles(
   const dir = partialUri(root);
   await ensureDirectory(dir);
   await excludeFromBackup(root);
-  if (stopRequested(task)) {
-    return 'stopped';
-  }
+  checkpoint(task);
 
   const wanted = filesFor(manifest, selection);
   const wantedPaths = new Set(wanted.map((file) => file.path));
@@ -471,24 +490,18 @@ async function downloadFiles(
     }
   }
 
-  if (stopRequested(task)) {
-    return 'stopped';
-  }
+  checkpoint(task);
 
   const total = totalDownloadBytes(manifest, selection);
   let completed = 0;
   let lastPublish = 0;
 
   for (const file of wanted) {
-    if (stopRequested(task)) {
-      return 'stopped';
-    }
+    checkpoint(task);
 
     const destination = `${dir}/${file.path}`;
     const existing = await FileSystem.getInfoAsync(destination);
-    if (stopRequested(task)) {
-      return 'stopped';
-    }
+    checkpoint(task);
 
     if (existing.exists && !existing.isDirectory && existing.size === file.bytes) {
       task.completedPaths.add(file.path);
@@ -499,9 +512,7 @@ async function downloadFiles(
     }
 
     const saved = await readSaved();
-    if (stopRequested(task)) {
-      return 'stopped';
-    }
+    checkpoint(task);
 
     const resumeData =
       saved &&
@@ -515,9 +526,7 @@ async function downloadFiles(
       await removeQuietly(destination);
     }
 
-    if (stopRequested(task)) {
-      return 'stopped';
-    }
+    checkpoint(task);
 
     const baseBytes = completed;
     const resumable = FileSystem.createDownloadResumable(
@@ -550,23 +559,16 @@ async function downloadFiles(
       }
     }
 
-    if (stopRequested(task, true)) {
-      return 'stopped';
-    }
+    checkpoint(task, true);
 
     const failed = !result || result.status < 200 || result.status >= 300;
-    if (failed && stopRequested(task)) {
-      return 'stopped';
-    }
-
     if (failed) {
+      checkpoint(task);
       throw new DownloadHttpError(result?.status ?? 0);
     }
 
     await writeSaved(null);
-    if (stopRequested(task, true)) {
-      return 'stopped';
-    }
+    checkpoint(task, true);
 
     task.completedPaths.add(file.path);
     completed += file.bytes;
@@ -963,7 +965,7 @@ export function deleteLocalModel(): Promise<void> {
 /** Test seam: forget module state between tests. */
 export function resetLocalModelStoreForTests() {
   running = null;
-  queue = Promise.resolve();
+  queue.reset();
   unloader = null;
   clearListeners();
   snapshot = {

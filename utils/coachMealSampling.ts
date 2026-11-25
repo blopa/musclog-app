@@ -20,6 +20,7 @@ import { consensusMeals, mealStageIsSettled } from './mealConsensus';
 import type { MealEstimateProgressListener } from './mealEstimateProgress';
 import type { MealImage } from './mealImages';
 import type { MealObservation } from './mealObservation';
+import { providerPolicyFor } from './providerPolicy';
 
 /**
  * The numbers of an ingredient that kept a food id are that food's own, at the grams the readings
@@ -55,8 +56,8 @@ export async function trackMealThinking(
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   const pipeline = THINKING_PIPELINE[level];
-  // The on-device model has no first look: a small model invents detail when asked to describe.
-  const mealLooks = config.provider === 'on-device' ? null : pipeline.mealLooks;
+  // A small model invents detail when asked to describe, so it has no first look.
+  const mealLooks = providerPolicyFor(config).skipsMealFirstLook ? null : pipeline.mealLooks;
   const perLook = mealLooks?.samplesPerLook ?? 1;
   const looks: MealObservation[] = [];
   const samples: Sample[] = [];

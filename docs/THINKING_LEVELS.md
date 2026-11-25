@@ -156,7 +156,8 @@ request, whatever the level.
 - Tokenmaxxing: 2 readings first. If they agree on every field, that is the answer (2 requests). If
   not, one more reading, the same combining, and the arbiter only if a field is still disputed: up to
   3 readings and the arbiter. A failed third reading is reported and the arbiter still runs on what
-  there is.
+  there is. A failed or empty reading among the first two is no evidence either: the level spends
+  what is left of its three requests on another reading, so it never ends on a single one.
 
 ### Import workouts, a food log or a past day written in words
 
@@ -351,7 +352,7 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   braces are closed into a half-empty object. It is reported once to Sentry (`ai-structured-reply-truncated`)
   with the provider, the operation and the stop reason only, never the reply, and it is not retried
   automatically, since the same limit would cut it again. This applies where
-  `ProviderPolicy.rejectsTruncatedStructuredReplies` is set: Musclog Iron, and your own OpenAI, Gemini
+  `ProviderPolicy.structuredReplies` is `'enforced'`: Musclog Iron, and your own OpenAI, Gemini
   and Claude keys. The free tier, a local server and the on-device model keep the full ladder and,
   where their policy says so, the repair request. A complete reply with fences or surrounding text
   still goes through the ladder. The coach's free-chat reply is not covered: it still reads `msg4User`
@@ -359,7 +360,7 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 - **A small model's reply is also shape-checked** (`checkStructuredShape` over our own small JSON
   Schema checker, `utils/aiSchemaValidate.ts`: type, nullable, required, enum, items, minimum,
   maximum, minItems, maxItems; an unknown keyword passes). That applies when the provider policy sets
-  `repairsStructuredReplies`: a custom local server and the downloaded on-device model, in one place
+  `structuredReplies: 'repaired'`: a custom local server and the downloaded on-device model, in one place
   (`reviveLocalStructured`). The
   downloaded model is grammar-constrained by llama.cpp (`response_format: json_schema`, default
   temperature 0.2, `n_predict` 1024) and still checked, because the runtime is not trusted to have
@@ -529,7 +530,7 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
 | change how a broken reply is read or repaired                 | `parseStructuredJson`, `checkStructuredShape`, `jsonRepairPrompt` in `utils/localReplyShape.ts`                                                              |
 | change what counts as an impossible meal number               | the constants in `utils/mealPlausibility.ts`                                                                                                                 |
 | change when Tokenmaxxing stops early                          | `earlyExit` and `EXTRACTION_FIRST_READINGS` in `utils/aiThinkingLevel.ts`; `mealStageIsSettled`, `MEAL_AGREEMENT_KCAL_TOLERANCE` in `utils/mealConsensus.ts` |
-| change what a cut-off reply does                              | `rejectsTruncatedStructuredReplies` in `utils/providerPolicy.ts`; `isTruncatedStop` in `utils/replyTruncation.ts`                                            |
+| change what a cut-off reply does                              | `structuredReplies` in `utils/providerPolicy.ts`; `isTruncatedStop` in `utils/replyTruncation.ts`                                                            |
 | change the provider order                                     | `AI_PROVIDER_KINDS` in `constants/ai.ts` (and `PROVIDER_PROBES` in `services/AiService.ts`)                                                                  |
 
 Tests: `utils/__tests__/{coachAITruncatedReplies,replyTruncation,aiThinkingLevel,aiPasses,mealConsensus,mealObservation,coachAIMealLooks,mealReview,extractionConsensus,numberGrounding,planFindings,coachAIExtractionConsensus,coachAIReviewPasses,coachAIStreaming,coachAITrackMealThinking,aiEffort,coachAIEffort,llmRetry,llmRetryOwner,coachAIMatchOwnFoods,localFoodPhoto,chatReviewInstruction}.test.ts`.

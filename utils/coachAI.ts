@@ -51,6 +51,7 @@ import {
   checkStructuredShape,
   jsonRepairMessage,
   jsonRepairPrompt,
+  MAX_JSON_REPAIR_INPUT_CHARS,
   parseStructuredJson,
   stripStreamingTemplateTokens,
   stripTemplateTokens,
@@ -456,81 +457,6 @@ function createStreamSink(stream: CoachStream, mode: 'plain' | 'coachJson'): Str
   };
 }
 
-type GeminiModel = Awaited<ReturnType<typeof configureBasicGenAI>>;
-
-async function streamGeminiText(
-  genModel: GeminiModel,
-  contents: Content[],
-  operation: string,
-  config: CoachAIConfig,
-  sink: StreamSink
-): Promise<string> {
-  return withLlmRetry(
-    operation,
-    config,
-    async (signal, touch) => {
-      sink.reset();
-      let usage: LlmUsage | null = null;
-      const chunks = await genModel.generateContentStream({ contents, abortSignal: signal });
-      for await (const chunk of chunks) {
-        touch();
-        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
-        const { text } = extractGeminiText(chunk);
-        if (text) {
-          sink.onDelta(text);
-        }
-      }
-
-      noteUsage(config, operation, usage);
-      return sink.raw();
-    },
-    { hasStreamed: sink.hasEmitted }
-  );
-}
-
-/** One non-streaming OpenAI-compatible completion, retried and timed out by `withLlmRetry`. */
-function createOpenAiCompletion(
-  client: OpenAI,
-  operation: string,
-  config: CoachAIConfig,
-  payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming
-) {
-  return withLlmRetry(operation, config, (_signal, _touch, options) =>
-    client.chat.completions.create(payload, options)
-  );
-}
-
-async function streamOpenAiText(
-  client: OpenAI,
-  payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
-  operation: string,
-  config: CoachAIConfig,
-  sink: StreamSink
-): Promise<string> {
-  return withLlmRetry(
-    operation,
-    config,
-    async (_signal, touch, options) => {
-      sink.reset();
-      let usage: LlmUsage | null = null;
-      const chunks = await client.chat.completions.create({ ...payload, stream: true }, options);
-      for await (const chunk of chunks) {
-        touch();
-        // Only present when the provider sends it (OpenRouter does, on the last chunk).
-        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
-        const delta = chunk.choices[0]?.delta?.content;
-        if (delta) {
-          sink.onDelta(delta);
-        }
-      }
-
-      noteUsage(config, operation, usage);
-      return sink.raw();
-    },
-    { hasStreamed: sink.hasEmitted }
-  );
-}
-
 type ClaudeParams = Anthropic.MessageCreateParamsNonStreaming;
 
 /**
@@ -562,78 +488,298 @@ async function buildClaudeParams(
   };
 }
 
+// --- One completion, whatever the cloud provider ---
+
 /**
- * Sends a Claude request and returns the reply text, logging both sides for the debug dump. With a
- * `sink` the reply is streamed into it (and `max_tokens` is raised, since a stream has no HTTP
- * timeout to stay under); without one it is a single request.
+ * What every Gemini, Claude and OpenAI-compatible request needs. The chat reply, a plain-text insight
+ * and a structured job are the same request with a different `schema` and `sink`, so they share this
+ * one funnel: it is the only place the debug dump is written and the token usage recorded.
  */
-async function runClaude(
+type CompletionRequest = {
+  /** Names the call in debug dumps, retry logs and token usage. */
+  operation: string;
+  system: string;
+  /** The conversation before `userMessage`. */
+  turns: readonly ChatHistoryEntry[];
+  userMessage: string;
+  images?: readonly MealImage[];
+  /** What kind of job this is, which decides how hard the model reasons. */
+  task: AiTask;
+  /** A reply that must fit this JSON schema (a structured job, or the chat reply object). */
+  schema?: { name: string; body: object };
+  /** Streams the reply into this sink; without one the call is a single request. */
+  sink?: StreamSink | null;
+  /** Free chat only: the provider's repetition penalties and prompt caching. */
+  chat?: boolean;
+};
+
+type Completion = { text: string; stop?: StopSignal };
+
+/** A request ready to send: what the debug dump shows, and the call itself. */
+type PreparedCall = {
+  payload: unknown;
+  send: () => Promise<Completion & { usage: LlmUsage | null }>;
+};
+
+async function prepareGeminiCall(
   config: CoachAIConfig,
-  operation: string,
-  params: ClaudeParams,
-  sink?: StreamSink | null
-): Promise<string> {
-  return (await runClaudeReply(config, operation, params, sink)).text;
+  request: CompletionRequest
+): Promise<PreparedCall> {
+  const { operation, system, sink, schema } = request;
+  const systemParts: Part[] = [{ text: system }];
+  const genModel = await configureBasicGenAI(
+    {
+      apiKey: config.apiKey,
+      model: config.model,
+      generationConfig: buildGeminiGenerationConfig(config.model, {
+        effort: await resolveEffort(config, request.task),
+        // A reply that must fit a schema is JSON; a plain-text insight is not.
+        ...(schema ? { responseSchema: schema.body } : { json: false }),
+      }),
+    },
+    systemParts
+  );
+  const contents = buildGeminiContents(request.turns, request.userMessage, request.images);
+
+  return {
+    payload: { model: config.model, contents, systemPrompt: system, schema: schema?.body },
+    send: async () => {
+      if (sink) {
+        let usage: LlmUsage | null = null;
+        const text = await withLlmRetry(
+          operation,
+          config,
+          async (signal, touch) => {
+            sink.reset();
+            usage = null;
+            const chunks = await genModel.generateContentStream({
+              contents,
+              abortSignal: signal,
+            });
+            for await (const chunk of chunks) {
+              touch();
+              usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
+              const { text: delta } = extractGeminiText(chunk);
+              if (delta) {
+                sink.onDelta(delta);
+              }
+            }
+
+            return sink.raw();
+          },
+          { hasStreamed: sink.hasEmitted }
+        );
+
+        return { text, usage };
+      }
+
+      const result = await withLlmRetry(operation, config, (signal) =>
+        genModel.generateContent({ contents, abortSignal: signal })
+      );
+      const { text, finishReason } = extractGeminiReply(result);
+
+      return {
+        text,
+        stop: { source: 'gemini', reason: finishReason },
+        usage: extractLlmUsage(result),
+      };
+    },
+  };
 }
 
-/** `runClaude` plus Claude's own stop reason, which a streamed reply does not report. */
-async function runClaudeReply(
+async function prepareOpenAiCall(
   config: CoachAIConfig,
-  operation: string,
-  params: ClaudeParams,
-  sink?: StreamSink | null
-): Promise<{ text: string; stopReason?: string | null }> {
+  request: CompletionRequest
+): Promise<PreparedCall> {
+  const { operation, sink, schema } = request;
+  const client = buildOpenAIClient(config);
+  const images = request.images ?? [];
+  const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+    model: config.model,
+    messages: [
+      { role: 'system', content: request.system },
+      ...normalizeHistory(request.turns).map((entry) => ({
+        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: entry.content,
+      })),
+      {
+        role: 'user',
+        content:
+          images.length > 0
+            ? [
+                { type: 'text', text: request.userMessage },
+                ...images.map((image) => ({
+                  type: 'image_url' as const,
+                  image_url: { url: `data:${image.mimeType};base64,${image.base64}` },
+                })),
+              ]
+            : request.userMessage,
+      },
+    ],
+    ...(request.chat ? providerPolicyFor(config).chatSampling : {}),
+    ...(await openAiReasoning(config, await resolveEffort(config, request.task))),
+    ...(schema
+      ? {
+          response_format: {
+            type: 'json_schema' as const,
+            json_schema: { name: schema.name, strict: true, schema: makeSchemaStrict(schema.body) },
+          },
+        }
+      : {}),
+  };
+
+  return {
+    payload,
+    send: async () => {
+      if (sink) {
+        let usage: LlmUsage | null = null;
+        const text = await withLlmRetry(
+          operation,
+          config,
+          async (_signal, touch, options) => {
+            sink.reset();
+            usage = null;
+            const chunks = await client.chat.completions.create(
+              { ...payload, stream: true },
+              options
+            );
+            for await (const chunk of chunks) {
+              touch();
+              // Only present when the provider sends it (OpenRouter does, on the last chunk).
+              usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
+              const delta = chunk.choices[0]?.delta?.content;
+              if (delta) {
+                sink.onDelta(delta);
+              }
+            }
+
+            return sink.raw();
+          },
+          { hasStreamed: sink.hasEmitted }
+        );
+
+        return { text, usage };
+      }
+
+      const completion = await withLlmRetry(operation, config, (_signal, _touch, options) =>
+        client.chat.completions.create(payload, options)
+      );
+      const choice = completion.choices[0];
+
+      return {
+        text: choice?.message?.content ?? '',
+        stop: { source: 'openai', reason: choice?.finish_reason },
+        usage: extractLlmUsage(completion),
+      };
+    },
+  };
+}
+
+async function prepareClaudeCall(
+  config: CoachAIConfig,
+  request: CompletionRequest
+): Promise<PreparedCall> {
+  const { operation, sink } = request;
   const client = buildClaudeClient(config.apiKey, 0);
+  const images = request.images ?? [];
+  const params = await buildClaudeParams(
+    config,
+    request.system,
+    buildClaudeMessages(
+      [...request.turns],
+      images.length > 0
+        ? [
+            ...images.map((image) => ({
+              type: 'image' as const,
+              source: {
+                type: 'base64' as const,
+                media_type: claudeImageType(image.mimeType),
+                data: image.base64,
+              },
+            })),
+            { type: 'text' as const, text: request.userMessage },
+          ]
+        : request.userMessage
+    ),
+    { task: request.task, schema: request.schema?.body, cache: request.chat }
+  );
+
+  return {
+    payload: params,
+    send: async () => {
+      if (sink) {
+        let usage: LlmUsage | null = null;
+        // A stream has no HTTP timeout to stay under, so it may ask for more tokens.
+        const text = await withLlmRetry(
+          operation,
+          config,
+          async (signal, touch) => {
+            sink.reset();
+            const events = client.messages.stream(
+              { ...params, max_tokens: CLAUDE_STREAM_MAX_TOKENS },
+              { signal }
+            );
+            for await (const event of events) {
+              touch();
+              const delta = claudeStreamDelta(event);
+              if (delta) {
+                sink.onDelta(delta);
+              }
+            }
+
+            usage = await finalClaudeUsage(events);
+
+            return sink.raw();
+          },
+          { hasStreamed: sink.hasEmitted }
+        );
+
+        return { text, usage };
+      }
+
+      const message = await withLlmRetry(operation, config, (signal) =>
+        client.messages.create(params, { signal })
+      );
+      const { text, stopReason } = extractClaudeText(message);
+
+      return {
+        text,
+        stop: { source: 'claude', reason: stopReason },
+        usage: extractLlmUsage(message),
+      };
+    },
+  };
+}
+
+/** One Gemini, Claude or OpenAI-compatible request, retried and timed out by `withLlmRetry`. */
+async function complete(config: CoachAIConfig, request: CompletionRequest): Promise<Completion> {
+  let prepare = prepareOpenAiCall;
+  if (config.provider === 'gemini') {
+    prepare = prepareGeminiCall;
+  } else if (config.provider === 'claude') {
+    prepare = prepareClaudeCall;
+  }
+
+  const call = await prepare(config, request);
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'request',
-    operation,
-    payload: params,
+    operation: request.operation,
+    payload: call.payload,
     config,
   });
 
-  let text: string;
-  let stopReason: string | null | undefined;
-  if (sink) {
-    text = await withLlmRetry(
-      operation,
-      config,
-      async (signal, touch) => {
-        sink.reset();
-        const events = client.messages.stream(
-          { ...params, max_tokens: CLAUDE_STREAM_MAX_TOKENS },
-          { signal }
-        );
-        for await (const event of events) {
-          touch();
-          const delta = claudeStreamDelta(event);
-          if (delta) {
-            sink.onDelta(delta);
-          }
-        }
-
-        noteUsage(config, operation, await finalClaudeUsage(events));
-        return sink.raw();
-      },
-      { hasStreamed: sink.hasEmitted }
-    );
-  } else {
-    const message = await withLlmRetry(operation, config, (signal) =>
-      client.messages.create(params, { signal })
-    );
-    noteUsage(config, operation, extractLlmUsage(message));
-    ({ text, stopReason } = extractClaudeText(message));
-  }
-
+  const { usage, ...completion } = await call.send();
+  noteUsage(config, request.operation, usage);
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
-    operation,
-    payload: { text },
+    operation: request.operation,
+    payload: completion,
     config,
   });
 
-  return { text, stopReason };
+  return completion;
 }
 
 /**
@@ -796,6 +942,8 @@ const rememberMeProperty = {
  * property listed, and a small model fills a required field more reliably than it opts into an
  * optional one.
  */
+const CHAT_PROPERTY_ORDER = ['msg4User', 'remember_me'];
+
 function buildResponseSchema() {
   return {
     type: 'object',
@@ -809,7 +957,7 @@ function buildResponseSchema() {
  * Consecutive same-role messages are merged (content joined with newline).
  * This is required by Gemini (strict alternation) and produces cleaner context for OpenAI too.
  */
-export function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
+export function normalizeHistory(history: readonly ChatHistoryEntry[]): ChatHistoryEntry[] {
   const result: ChatHistoryEntry[] = [];
   for (const entry of history) {
     const prev = result[result.length - 1];
@@ -852,10 +1000,6 @@ export function truncateHistoryByBudget(
 }
 
 // --- Helper Functions ---
-
-function extractRawText(response: any): string {
-  return extractGeminiReply(response).text;
-}
 
 /** The answer text of a Gemini response and its `finishReason`, warning when there is no text. */
 function extractGeminiReply(response: any): { text: string; finishReason?: string } {
@@ -901,7 +1045,7 @@ function latestChatTurns(history: ChatHistoryEntry[], config: CoachAIConfig): Ch
 }
 
 function buildGeminiContents(
-  history: ChatHistoryEntry[],
+  history: readonly ChatHistoryEntry[],
   userMessage: string,
   images: readonly MealImage[] = []
 ): Content[] {
@@ -994,191 +1138,38 @@ function noteUsage(config: CoachAIConfig, operation: string, usage: LlmUsage | n
 // --- Provider Implementations ---
 
 /**
- * The four `sendVia*` senders are transport only: the system prompt and the trimmed turns arrive
- * ready, and any failure is thrown. `sendCoachMessage` turns a failure into the apology once.
+ * The senders are transport only: the system prompt and the trimmed turns arrive ready, and any
+ * failure is thrown. `sendCoachMessage` turns a failure into the apology once.
+ *
+ * A Gemini, Claude or OpenAI-compatible chat reply is one request for the coach's JSON object, of
+ * which only `msg4User` is shown while it is written. Gemini does not promise the schema's property
+ * order, and the reply is shown from the first property while the rest is still being written, so it
+ * is told the order.
  */
-async function sendViaGemini(
+async function sendViaCloud(
   config: CoachAIConfig,
   systemPrompt: string,
   turns: ChatHistoryEntry[],
   userMessage: string,
   stream?: CoachStream
 ): Promise<CoachResponse> {
-  const systemParts: Part[] = [{ text: systemPrompt }];
-
-  // Gemini does not promise the schema's property order, and the reply is shown from the first
-  // property while the rest is still being written.
-  const responseSchema = {
-    ...buildResponseSchema(),
-    propertyOrdering: ['msg4User', 'remember_me'],
-  };
-
-  const genModel = await configureBasicGenAI(
-    {
-      apiKey: config.apiKey,
-      model: config.model,
-      generationConfig: buildGeminiGenerationConfig(config.model, {
-        responseSchema,
-        effort: await resolveEffort(config, 'chat'),
-      }),
+  const body = buildResponseSchema();
+  const reply = await complete(config, {
+    operation: 'sendCoachMessage',
+    system: systemPrompt,
+    turns,
+    userMessage,
+    task: 'chat',
+    schema: {
+      name: 'coach_response',
+      body:
+        config.provider === 'gemini' ? { ...body, propertyOrdering: CHAT_PROPERTY_ORDER } : body,
     },
-    systemParts
-  );
-
-  const contents = buildGeminiContents(turns, userMessage);
-  const requestPayload = {
-    model: config.model,
-    contents,
-    config: {
-      responseMimeType: 'application/json',
-      responseSchema,
-      systemInstruction: {
-        parts: systemParts,
-      },
-    },
-  };
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation: 'sendViaGemini',
-    payload: requestPayload,
-    config,
+    sink: stream ? createStreamSink(stream, 'coachJson') : null,
+    chat: true,
   });
 
-  if (stream) {
-    const streamedRaw = await streamGeminiText(
-      genModel,
-      contents,
-      'sendViaGemini',
-      config,
-      createStreamSink(stream, 'coachJson')
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'sendViaGemini',
-      payload: { text: streamedRaw },
-      config,
-    });
-
-    return parseCoachResponse(streamedRaw);
-  }
-
-  const result = await withLlmRetry('sendViaGemini', config, (signal) =>
-    genModel.generateContent({ contents, abortSignal: signal })
-  );
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: 'sendViaGemini',
-    payload: result,
-    config,
-  });
-
-  noteUsage(config, 'sendViaGemini', extractLlmUsage(result));
-  const raw = extractRawText(result);
-  return parseCoachResponse(raw);
-}
-
-async function sendViaOpenAI(
-  config: CoachAIConfig,
-  systemPrompt: string,
-  turns: ChatHistoryEntry[],
-  userMessage: string,
-  stream?: CoachStream
-): Promise<CoachResponse> {
-  const client = buildOpenAIClient(config);
-  const normalized = normalizeHistory(turns);
-
-  const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-    { role: 'system', content: systemPrompt },
-    ...normalized.map((entry) => ({
-      role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-      content: entry.content,
-    })),
-    { role: 'user', content: userMessage },
-  ];
-
-  const schema = makeSchemaStrict(buildResponseSchema());
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages,
-    ...providerPolicyFor(config).chatSampling,
-    ...(await openAiReasoning(config, await resolveEffort(config, 'chat'))),
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'coach_response',
-        strict: true,
-        schema,
-      },
-    },
-  };
-
-  const sink = stream ? createStreamSink(stream, 'coachJson') : null;
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation: 'sendViaOpenAI',
-    payload: requestPayload,
-    config,
-  });
-
-  if (sink) {
-    const streamedRaw = await streamOpenAiText(
-      client,
-      requestPayload,
-      'sendViaOpenAI',
-      config,
-      sink
-    );
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'sendViaOpenAI',
-      payload: { text: streamedRaw },
-      config,
-    });
-
-    return parseCoachResponse(streamedRaw || '{}');
-  }
-
-  const completion = await createOpenAiCompletion(client, 'sendViaOpenAI', config, requestPayload);
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: 'sendViaOpenAI',
-    payload: completion,
-    config,
-  });
-
-  noteUsage(config, 'sendViaOpenAI', extractLlmUsage(completion));
-  const raw = completion.choices[0]?.message?.content ?? '{}';
-  return parseCoachResponse(raw);
-}
-
-async function sendViaClaude(
-  config: CoachAIConfig,
-  systemPrompt: string,
-  turns: ChatHistoryEntry[],
-  userMessage: string,
-  stream?: CoachStream
-): Promise<CoachResponse> {
-  const params = await buildClaudeParams(
-    config,
-    systemPrompt,
-    buildClaudeMessages(turns, userMessage),
-    { task: 'chat', schema: buildResponseSchema(), cache: true }
-  );
-
-  const sink = stream ? createStreamSink(stream, 'coachJson') : null;
-  const raw = await runClaude(config, 'sendViaClaude', params, sink);
-
-  return parseCoachResponse(raw || '{}');
+  return parseCoachResponse(reply.text);
 }
 
 /** The context budget of the engine behind an `on-device` config. */
@@ -1402,143 +1393,16 @@ async function requestPlainText(
     );
   }
 
-  if (config.provider === 'gemini') {
-    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
-    const requestPayload = {
-      model: config.model,
-      contents,
-      config: {
-        systemInstruction: {
-          parts: [{ text: systemPrompt } as Part],
-        },
-      },
-    };
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
+  return (
+    await complete(config, {
       operation,
-      payload: requestPayload,
-      config,
-    });
-
-    const genModel = await configureBasicGenAI(
-      {
-        apiKey: config.apiKey,
-        model: config.model,
-        generationConfig: buildGeminiGenerationConfig(config.model, {
-          effort: await resolveEffort(config, task),
-          json: false,
-        }),
-      },
-      [{ text: systemPrompt } as Part]
-    );
-    if (stream) {
-      const streamedRaw = await streamGeminiText(
-        genModel,
-        contents,
-        operation,
-        config,
-        createStreamSink(stream, 'plain')
-      );
-      await logLlmDebugEvent({
-        provider: config.provider,
-        direction: 'response',
-        operation,
-        payload: { text: streamedRaw },
-        config,
-      });
-
-      return streamedRaw;
-    }
-
-    const result = await withLlmRetry(operation, config, (signal) =>
-      genModel.generateContent({ contents, abortSignal: signal })
-    );
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation,
-      payload: result,
-      config,
-    });
-
-    const raw = extractRawText(result);
-    return raw ?? '';
-  }
-
-  if (config.provider === 'claude') {
-    const params = await buildClaudeParams(
-      config,
-      systemPrompt,
-      buildClaudeMessages(recentConversation, sanitizedFinalUserMessage),
-      { task }
-    );
-    const raw = await runClaude(
-      config,
-      operation,
-      params,
-      stream ? createStreamSink(stream, 'plain') : null
-    );
-
-    return raw;
-  }
-
-  const client = buildOpenAIClient(config);
-  const historyMessages: OpenAI.Chat.ChatCompletionMessageParam[] = recentConversation.map((e) => ({
-    role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
-    content: e.content,
-  }));
-
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      ...historyMessages,
-      { role: 'user', content: sanitizedFinalUserMessage },
-    ],
-    ...(await openAiReasoning(config, await resolveEffort(config, task))),
-  };
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation,
-    payload: requestPayload,
-    config,
-  });
-
-  if (stream) {
-    const streamedRaw = await streamOpenAiText(
-      client,
-      requestPayload,
-      operation,
-      config,
-      createStreamSink(stream, 'plain')
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation,
-      payload: { text: streamedRaw },
-      config,
-    });
-
-    return streamedRaw;
-  }
-
-  const completion = await createOpenAiCompletion(client, operation, config, requestPayload);
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation,
-    payload: completion,
-    config,
-  });
-
-  return completion.choices[0]?.message?.content ?? '';
+      system: systemPrompt,
+      turns: recentConversation,
+      userMessage: sanitizedFinalUserMessage,
+      task,
+      sink: stream ? createStreamSink(stream, 'plain') : null,
+    })
+  ).text;
 }
 
 /**
@@ -1576,14 +1440,17 @@ export type StructuredRequest = {
   history: ChatHistoryEntry[];
   userMessage: string;
   /**
-   * Photos that go with the user message, already prepared (`prepareMealImages`). The on-device
-   * model takes none here: its photos go through its own path (`estimateMealFromPhotoOnDevice`).
+   * Photos that go with the user message, already prepared (`prepareMealImages`). Apple's on-device
+   * engine takes none. The downloaded model reads ONE photo per request (the first), so a meal of
+   * several photos is read one request at a time (`estimateMealFromPhotoOnDevice`).
    */
   images?: readonly MealImage[];
   /** Each provider takes the schema in a slightly different dialect. */
   buildSchema: (dialect: StructuredDialect) => object;
   /** What kind of job this is, which decides how hard the model reasons. Defaults to extraction. */
   task?: AiTask;
+  /** Sampling temperature, for the downloaded model only (a warmer retry of an unusable reply). */
+  temperature?: number;
 };
 
 /**
@@ -1598,7 +1465,9 @@ export async function repairStructuredWithModel<T>(
   broken: string,
   schema: object
 ): Promise<StructuredResult<T> | null> {
-  if (!broken.trim()) {
+  // A reply longer than a repair request can carry would be cut short, and the model would answer
+  // with the part it saw: a repaired list that silently lost its tail. Better no repair at all.
+  if (!broken.trim() || broken.length > MAX_JSON_REPAIR_INPUT_CHARS) {
     return null;
   }
 
@@ -1623,13 +1492,16 @@ export async function repairStructuredWithModel<T>(
       throw error;
     }
 
+    // The original failure stands, but a repair that itself breaks is worth knowing about.
+    reportAiError(error, 'coachAI.repairStructured');
+
     return null;
   }
 }
 
 /**
  * The one shape check and repair of a structured reply from a provider that does not enforce its
- * schema (`repairsStructuredReplies`): a reply that is malformed or misses the schema gets one repair
+ * schema (`structuredReplies: 'repaired'`): a reply that is malformed or misses the schema gets one repair
  * call. The downloaded model is held to its schema, since its grammar is enforced by a runtime we do
  * not control and nothing may read its answer unchecked. A custom server's reply that parsed but
  * missed part of the schema is kept when the repair does not do better, because callers of an
@@ -1641,7 +1513,8 @@ async function reviveLocalStructured<T>(
   result: StructuredResult<T>,
   schema: object
 ): Promise<StructuredResult<T>> {
-  if (!providerPolicyFor(config).repairsStructuredReplies) {
+  const policy = providerPolicyFor(config);
+  if (policy.structuredReplies !== 'repaired') {
     return result;
   }
 
@@ -1661,7 +1534,7 @@ async function reviveLocalStructured<T>(
   // Still unusable: the reply stays as a tolerant server's partial answer, or fails the request.
   reportAiEvent('ai-structured-reply-unusable', telemetry);
 
-  return config.provider !== 'on-device' && result.kind === 'ok' ? result : checked;
+  return policy.keepsPartialStructuredReply && result.kind === 'ok' ? result : checked;
 }
 
 /** `estimateMissingIngredients.repair` and `estimateMissingIngredients` are one operation to count. */
@@ -1735,7 +1608,7 @@ function reportTruncatedReply(
 
 /**
  * Reads the text of a structured reply. A provider that enforces the schema
- * (`rejectsTruncatedStructuredReplies`) and stopped at its token limit gave a half answer: it is a
+ * (`structuredReplies: 'enforced'`) and stopped at its token limit gave a half answer: it is a
  * failure (`malformed`, reason `truncated`), reported once and never sent through the repair ladder,
  * which would close its braces and return a half-empty object as if it were complete. It is not
  * retried: the same limit would cut it again. Every other reply, a complete one with fences or
@@ -1748,11 +1621,7 @@ function readStructuredReply<T>(
   raw: string,
   stop?: StopSignal
 ): StructuredResult<T> {
-  if (
-    stop &&
-    isTruncatedStop(stop) &&
-    providerPolicyFor(config).rejectsTruncatedStructuredReplies
-  ) {
+  if (stop && isTruncatedStop(stop) && providerPolicyFor(config).structuredReplies === 'enforced') {
     reportTruncatedReply(config, operation, stop);
     console.warn(`[coachAI] ${operation}: ${config.provider} cut the reply off (${stop.reason})`);
 
@@ -1768,7 +1637,7 @@ function readStructuredReply<T>(
 }
 
 /** One structured request, with the schema already built in `structuredDialect(config)`. */
-async function requestStructuredOnce<T = unknown>(
+export async function requestStructuredOnce<T = unknown>(
   config: CoachAIConfig,
   request: StructuredRequest,
   schema: object
@@ -1798,10 +1667,14 @@ async function requestStructuredOnce<T = unknown>(
     if (engine === 'gguf') {
       // Grammar-constrained by the engine, then parsed and checked here: the engine is not trusted
       // to have honoured the schema.
+      const photo = images[0];
       const raw = await withLlmRetry(operation, config, (signal, touch) =>
         sendLocalStructuredRaw(messages, systemPrompt, schema, {
           signal,
+          // Every token resets the timeout, so it limits a stall, not model load plus generation.
           onDelta: () => touch(),
+          ...(photo ? { image: `data:${photo.mimeType};base64,${photo.base64}` } : {}),
+          ...(request.temperature === undefined ? {} : { temperature: request.temperature }),
         })
       );
       result = parseStructuredJson<T>(raw);
@@ -1826,134 +1699,25 @@ async function requestStructuredOnce<T = unknown>(
     return result;
   }
 
-  if (config.provider === 'gemini') {
-    const genModel = await configureBasicGenAI(
-      {
-        apiKey: config.apiKey,
-        model: config.model,
-        // How hard it thinks follows the kind of job (`utils/aiEffort.ts`); the user's thinking-mode
-        // setting is the explicit way to ask for more.
-        generationConfig: buildGeminiGenerationConfig(config.model, {
-          responseSchema: schema,
-          effort: await resolveEffort(config, task),
-        }),
-      },
-      [{ text: systemPrompt } as Part]
-    );
-    const contents = buildGeminiContents(history, userMessage, images);
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation,
-      payload: { model: config.model, contents, systemPrompt, schema },
-      config,
-    });
-
-    const result = await withLlmRetry(operation, config, (signal) =>
-      genModel.generateContent({ contents, abortSignal: signal })
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation,
-      payload: result,
-      config,
-    });
-
-    const reply = extractGeminiReply(result);
-
-    return readStructuredReply<T>(config, operation, reply.text, {
-      source: 'gemini',
-      reason: reply.finishReason,
-    });
-  }
-
-  if (config.provider === 'claude') {
-    const params = await buildClaudeParams(
-      config,
-      systemPrompt,
-      buildClaudeMessages(
-        history,
-        images.length > 0
-          ? [
-              ...images.map((image) => ({
-                type: 'image' as const,
-                source: {
-                  type: 'base64' as const,
-                  media_type: claudeImageType(image.mimeType),
-                  data: image.base64,
-                },
-              })),
-              { type: 'text' as const, text: userMessage },
-            ]
-          : userMessage
-      ),
-      { task, schema }
-    );
-    const reply = await runClaudeReply(config, operation, params);
-
-    return readStructuredReply<T>(config, operation, reply.text, {
-      source: 'claude',
-      reason: reply.stopReason,
-    });
-  }
-
-  const client = buildOpenAIClient(config);
-  const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      ...history.map((entry) => ({
-        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-        content: entry.content,
-      })),
-      {
-        role: 'user',
-        content:
-          images.length > 0
-            ? [
-                { type: 'text', text: userMessage },
-                ...images.map((image) => ({
-                  type: 'image_url' as const,
-                  image_url: { url: `data:${image.mimeType};base64,${image.base64}` },
-                })),
-              ]
-            : userMessage,
-      },
-    ],
-    ...(await openAiReasoning(config, await resolveEffort(config, task))),
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: schemaName,
-        strict: true,
-        schema: makeSchemaStrict(schema),
-      },
-    },
-  };
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
+  const reply = await complete(config, {
     operation,
-    payload,
-    config,
+    system: systemPrompt,
+    turns: history,
+    userMessage,
+    images,
+    task,
+    schema: { name: schemaName, body: schema },
   });
 
-  const completion = await createOpenAiCompletion(client, operation, config, payload);
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation,
-    payload: completion,
-    config,
-  });
-
-  return readStructuredReply<T>(config, operation, completion.choices[0]?.message?.content ?? '', {
-    source: 'openai',
-    reason: completion.choices[0]?.finish_reason,
-  });
+  return readStructuredReply<T>(config, operation, reply.text, reply.stop);
 }
 
+/**
+ * One structured request that is not a conversation turn. `userMessage` is sent as given: text the
+ * person (or a label) wrote goes through `wrapUserContent` or `prepareChatText` at the caller, which
+ * knows which part of the message that is; text written by code (an instruction, a transcript the
+ * app built) must reach the model whole and unescaped.
+ */
 export async function generateStructured<T>(
   config: CoachAIConfig,
   systemPrompt: string,
@@ -1972,8 +1736,7 @@ export async function generateStructured<T>(
       schemaName,
       systemPrompt: `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`,
       history: [],
-      // Wrap user message with delimiters to prevent prompt injection
-      userMessage: wrapUserContent(userMessage),
+      userMessage,
       buildSchema: () => schema,
     };
     const result = await requestStructured<T>(
@@ -1983,9 +1746,9 @@ export async function generateStructured<T>(
 
     return result.kind === 'ok' ? result.value : null;
   } catch (error) {
-    // The on-device model has no retry layer to classify its failures, so a bad run is "no answer".
+    // An on-device engine has no retry layer to classify its failures, so a bad run is "no answer".
     if (
-      config.provider !== 'on-device' ||
+      !providerPolicyFor(config).structuredFailureIsNoAnswer ||
       error instanceof OnDeviceUnavailableError ||
       error instanceof AiCancelledError
     ) {
@@ -2195,17 +1958,9 @@ export async function sendCoachMessage(
         return sendViaOnDevice(config, systemPrompt, turns, message, to);
       }
 
-      if (config.provider === 'gemini') {
-        return sendViaGemini(config, systemPrompt, turns, message, to);
-      }
-
-      if (config.provider === 'claude') {
-        return sendViaClaude(config, systemPrompt, turns, message, to);
-      }
-
-      // OpenAI, local (custom base URL), gateway (the free tier, via OpenRouter) and hosted all
-      // speak the OpenAI-compatible protocol.
-      return sendViaOpenAI(config, systemPrompt, turns, message, to);
+      // Gemini, Claude and every OpenAI-compatible provider (OpenAI, a custom local server, the free
+      // tier through OpenRouter, and Musclog Iron).
+      return sendViaCloud(config, systemPrompt, turns, message, to);
     };
 
     const level = await thinkingLevelFor(config);
@@ -2432,6 +2187,44 @@ async function generatePlan<T>(
 }
 
 /**
+ * The shell every user-facing AI function shares. A failure the person can act on (a rejected key, a
+ * timeout, a spent allowance) is shown to them, and any failure reaches Sentry through
+ * `reportAiError`, which leaves out what the person fixes themselves. The function then answers
+ * null, as every caller expects. `name` is the exported function's name, so an event names its
+ * feature.
+ */
+async function userFacing<T>(name: string, run: () => Promise<T | null>): Promise<T | null> {
+  try {
+    return await run();
+  } catch (error) {
+    notifyUserFacingAiError(error);
+    reportAiError(error, `coachAI.${name}`);
+
+    return null;
+  }
+}
+
+/** What an insight request says when the person added remarks, or the default ask when not. */
+function remarksMessage(userRemarks?: string): string {
+  return userRemarks?.trim()
+    ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
+    : INSIGHTS_USER_MESSAGE;
+}
+
+/**
+ * A conversation as one block of text, for a request that is not a chat turn (a plan built from what
+ * was said): the person's words as typed, the coach's as written. Nothing is cut or escaped as a
+ * whole: only the sanitizer's per-message limit applies to what the person wrote.
+ */
+function conversationTranscript(history: readonly ChatHistoryEntry[]): string {
+  return history
+    .map((entry) =>
+      entry.role === 'user' ? `User: ${prepareChatText(entry.content)}` : `Coach: ${entry.content}`
+    )
+    .join('\n\n');
+}
+
+/**
  * Get nutrition insights for a date range.
  * Optional userRemarks are passed to the model so it can factor them into the analysis.
  * Optional recentConversation (e.g. last 3 messages) gives the model context so it doesn't reply as if starting fresh.
@@ -2445,30 +2238,24 @@ export async function getNutritionInsights(
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition',
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang, {
-      context,
-      provider: config.provider,
-    });
-
-    const finalUserMessage = userRemarks?.trim()
-      ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
-      : INSIGHTS_USER_MESSAGE;
-
-    const text = await generateInsight(
-      config,
-      systemPrompt,
-      finalUserMessage,
-      recentConversation,
-      stream
+  return userFacing('getNutritionInsights', async () => {
+    const systemPrompt = await getNutritionInsightsPrompt(
+      startDate,
+      endDate,
+      config.language ?? DEFAULT_LANG,
+      { context, provider: config.provider }
     );
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getNutritionInsights error:', error);
-    return null;
-  }
+
+    return (
+      (await generateInsight(
+        config,
+        systemPrompt,
+        remarksMessage(userRemarks),
+        recentConversation,
+        stream
+      )) || null
+    );
+  });
 }
 
 /**
@@ -2480,7 +2267,7 @@ export async function generateMealPlan(
   macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
 ): Promise<GenerateMealPlanResponse | null> {
-  try {
+  return userFacing('generateMealPlan', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     // One list for the whole plan: a revision round reads its answer against the list the first one saw.
     const foundation = await foundationFoodsFor(config, 'estimate');
@@ -2491,13 +2278,10 @@ export async function generateMealPlan(
       context,
       foundation
     );
-
-    const userMessage =
-      history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
-      '\n\nGenerate the meal plan.';
-
-    const fns = getGenerateMealPlanFunctions(foundation !== null, mealSchemaDialect(config));
-    const schema = schemaOfFunction(fns);
+    const userMessage = `${conversationTranscript(history)}\n\nGenerate the meal plan.`;
+    const schema = schemaOfFunction(
+      getGenerateMealPlanFunctions(foundation !== null, mealSchemaDialect(config))
+    );
     const plan = await generatePlan<GenerateMealPlanResponse>(
       config,
       (followUp) =>
@@ -2516,11 +2300,7 @@ export async function generateMealPlan(
     // The references stay as the model wrote them while a critique round re-reads the plan, so a
     // revision speaks the same language as the list in the system prompt; the real ids come last.
     return plan ? resolveFoundationRefsInMeals(plan, foundation) : null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    reportAiError(error, 'coachAI.generateMealPlan');
-    return null;
-  }
+  });
 }
 
 /**
@@ -2531,24 +2311,19 @@ export async function generateWorkoutPlan(
   history: ChatHistoryEntry[],
   context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<GenerateWorkoutPlanResponse | null> {
-  try {
+  return userFacing('generateWorkoutPlan', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await createWorkoutPlanPrompt(lang, undefined, context);
-    const instruction =
-      history.length > 0
-        ? i18n.t('coach.aiInstructions.generateWorkoutPlanWithHistory', { lng: lang })
-        : i18n.t('coach.aiInstructions.generateWorkoutPlanDefault', { lng: lang });
-
     const userMessage =
       history.length > 0
-        ? history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
-          '\n\n' +
-          instruction
-        : instruction;
+        ? `${conversationTranscript(history)}\n\n${i18n.t(
+            'coach.aiInstructions.generateWorkoutPlanWithHistory',
+            { lng: lang }
+          )}`
+        : i18n.t('coach.aiInstructions.generateWorkoutPlanDefault', { lng: lang });
+    const schema = schemaOfFunction(getGenerateWorkoutPlanFunctions());
 
-    const fns = getGenerateWorkoutPlanFunctions();
-    const schema = schemaOfFunction(fns);
-    return await generatePlan<GenerateWorkoutPlanResponse>(
+    return generatePlan<GenerateWorkoutPlanResponse>(
       config,
       (followUp) =>
         generateStructured<GenerateWorkoutPlanResponse>(
@@ -2562,11 +2337,7 @@ export async function generateWorkoutPlan(
         ),
       workoutPlanFindings
     );
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    reportAiError(error, 'coachAI.generateWorkoutPlan');
-    return null;
-  }
+  });
 }
 
 /**
@@ -2577,16 +2348,18 @@ export async function calculateNextWorkoutVolume(
   workoutTitle: string,
   completedWorkoutData: any
 ): Promise<CalculateVolumeResponse | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getCalculateNextWorkoutVolumePrompt(workoutTitle, lang);
+  return userFacing('calculateNextWorkoutVolume', async () => {
+    const systemPrompt = await getCalculateNextWorkoutVolumePrompt(
+      workoutTitle,
+      config.language ?? DEFAULT_LANG
+    );
     const userMessage =
       typeof completedWorkoutData === 'string'
         ? completedWorkoutData
         : JSON.stringify(completedWorkoutData ?? {}, null, 2);
-    const fns = getCalculateNextWorkoutVolumeFunctions();
-    const schema = schemaOfFunction(fns);
-    return await generatePlan<CalculateVolumeResponse>(
+    const schema = schemaOfFunction(getCalculateNextWorkoutVolumeFunctions());
+
+    return generatePlan<CalculateVolumeResponse>(
       config,
       (followUp) =>
         generateStructured<CalculateVolumeResponse>(
@@ -2600,11 +2373,7 @@ export async function calculateNextWorkoutVolume(
         ),
       workoutVolumeFindings
     );
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] calculateNextWorkoutVolume error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -2614,18 +2383,15 @@ export async function getWorkoutInsights(
   config: CoachAIConfig,
   workoutTitle: string
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutInsightsPrompt(workoutTitle, lang, {
-      provider: config.provider,
-    });
-    const text = await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getWorkoutInsights error:', error);
-    return null;
-  }
+  return userFacing('getWorkoutInsights', async () => {
+    const systemPrompt = await getWorkoutInsightsPrompt(
+      workoutTitle,
+      config.language ?? DEFAULT_LANG,
+      { provider: config.provider }
+    );
+
+    return (await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE)) || null;
+  });
 }
 
 /**
@@ -2636,24 +2402,18 @@ export async function getRecentWorkoutInsights(
   workoutLogId: string,
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(workoutLogId, lang, {
-      provider: config.provider,
-    });
-    const text = await generateInsight(
-      config,
-      systemPrompt,
-      INSIGHTS_USER_MESSAGE,
-      undefined,
-      stream
+  return userFacing('getRecentWorkoutInsights', async () => {
+    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(
+      workoutLogId,
+      config.language ?? DEFAULT_LANG,
+      { provider: config.provider }
     );
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getRecentWorkoutInsights error:', error);
-    return null;
-  }
+
+    return (
+      (await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE, undefined, stream)) ||
+      null
+    );
+  });
 }
 
 /**
@@ -2670,30 +2430,24 @@ export async function getRecentWorkoutsInsights(
   context: 'nutrition' | 'exercise' | 'general' = 'exercise',
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang, {
-      context,
-      provider: config.provider,
-    });
-
-    const finalUserMessage = userRemarks?.trim()
-      ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
-      : INSIGHTS_USER_MESSAGE;
-
-    const text = await generateInsight(
-      config,
-      systemPrompt,
-      finalUserMessage,
-      recentConversation,
-      stream
+  return userFacing('getRecentWorkoutsInsights', async () => {
+    const systemPrompt = await getRecentWorkoutsInsightsPrompt(
+      startDate,
+      endDate,
+      config.language ?? DEFAULT_LANG,
+      { context, provider: config.provider }
     );
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getRecentWorkoutsInsights error:', error);
-    return null;
-  }
+
+    return (
+      (await generateInsight(
+        config,
+        systemPrompt,
+        remarksMessage(userRemarks),
+        recentConversation,
+        stream
+      )) || null
+    );
+  });
 }
 
 /**
@@ -2703,28 +2457,27 @@ export async function getWorkoutVolumeInsights(
   config: CoachAIConfig,
   workoutTitle: string
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutVolumeInsightsPrompt(workoutTitle, lang, {
-      provider: config.provider,
-    });
-    const text = await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getWorkoutVolumeInsights error:', error);
-    return null;
-  }
+  return userFacing('getWorkoutVolumeInsights', async () => {
+    const systemPrompt = await getWorkoutVolumeInsightsPrompt(
+      workoutTitle,
+      config.language ?? DEFAULT_LANG,
+      { provider: config.provider }
+    );
+
+    return (await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE)) || null;
+  });
 }
 
 /**
  * One extraction (a label, past workouts, a food log) at the person's thinking level. Off and
  * Medium make the single request they always made; High reads the input twice, together, and
  * Tokenmaxxing reads it twice and takes a third reading only when the first two disagree on some
- * field (`extractionSamples`, `EXTRACTION_FIRST_READINGS`). Code combines the readings field by field
- * (`combineExtractions`). Only when they still disagree is one more request made: the same request
- * with the readings and the disputed fields appended, whose answer is used when it parses. A failed
- * reading is dropped and a failed arbiter keeps the combined readings; a cancel stops everything.
+ * field (`extractionSamples`, `EXTRACTION_FIRST_READINGS`). A reading that fails or says nothing is
+ * no evidence, so a level that exits early spends what is left of its budget on another one instead
+ * of ending on a single reading. Code combines the readings field by field (`combineExtractions`).
+ * Only when they still disagree is one more request made: the same request with the readings and
+ * the disputed fields appended, whose answer is used when it parses. A failed arbiter keeps the
+ * combined readings; a cancel stops everything.
  */
 async function extractWithConsensus<T>(
   config: CoachAIConfig,
@@ -2732,17 +2485,41 @@ async function extractWithConsensus<T>(
 ): Promise<T | null> {
   const level = await thinkingLevelFor(config);
   const samples = extractionSamples(level);
-  if (samples <= 1) {
-    return (await request()) ?? null;
-  }
-
   // A level that exits early reads `EXTRACTION_FIRST_READINGS` first and takes the rest only when
   // those disagree; the others read everything at once.
-  const earlyExit = THINKING_PIPELINE[level].earlyExit;
-  const firstReadings = earlyExit ? Math.min(EXTRACTION_FIRST_READINGS, samples) : samples;
+  const firstReadings = THINKING_PIPELINE[level].earlyExit
+    ? Math.min(EXTRACTION_FIRST_READINGS, samples)
+    : samples;
+  let requested = firstReadings;
   let readings = await runSamples(config, firstReadings, () => request(), {
     onDroppedFailure: (error) => reportAiError(error, 'coachAI.extractionReading'),
   });
+
+  // Further readings only ever add evidence: when they all fail, what there is stands (a cancel
+  // stops everything).
+  const takeMoreReadings = async (): Promise<void> => {
+    const count = samples - requested;
+    requested = samples;
+    try {
+      readings = [
+        ...readings,
+        ...(await runSamples(config, count, () => request(), {
+          onDroppedFailure: (error) => reportAiError(error, 'coachAI.extractionReading'),
+        })),
+      ];
+    } catch (error) {
+      if (error instanceof AiCancelledError) {
+        throw error;
+      }
+
+      reportAiError(error, 'coachAI.extractionExtraReading');
+    }
+  };
+
+  if (readings.length < 2 && requested < samples) {
+    await takeMoreReadings();
+  }
+
   if (readings.length <= 1) {
     return readings[0] ?? null;
   }
@@ -2752,24 +2529,12 @@ async function extractWithConsensus<T>(
     return value as T;
   }
 
-  if (samples > firstReadings) {
-    // The first readings disagree: one more reading, which only ever adds evidence. A failed one is
-    // dropped and the arbiter below still runs on what there is; a cancel stops everything.
-    try {
-      const more = await runSamples(config, samples - firstReadings, () => request(), {
-        onDroppedFailure: (error) => reportAiError(error, 'coachAI.extractionReading'),
-      });
-      readings = [...readings, ...more];
-      ({ value, disputed } = combineExtractions(readings));
-      if (disputed.length === 0) {
-        return value as T;
-      }
-    } catch (error) {
-      if (error instanceof AiCancelledError) {
-        throw error;
-      }
-
-      reportAiError(error, 'coachAI.extractionExtraReading');
+  if (requested < samples) {
+    // The first readings disagree: one more reading settles a two-to-one split.
+    await takeMoreReadings();
+    ({ value, disputed } = combineExtractions(readings));
+    if (disputed.length === 0) {
+      return value as T;
     }
   }
 
@@ -2799,16 +2564,14 @@ export async function extractMacrosFromLabelPhoto(
   base64Image: string,
   context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
-  try {
+  return userFacing('extractMacrosFromLabelPhoto', async () => {
     const systemPrompt = await withCustomPrompts(getExtractMacrosFromLabelPrompt());
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-    const fns = getEstimateMacrosFunctions(true);
-    const schema = schemaOfFunction(fns);
-
+    const schema = schemaOfFunction(getEstimateMacrosFunctions(true));
     const userMessageSuffix = formatMealPhotoContext(context);
 
-    return await extractWithConsensus<MacroEstimate>(config, (followUp) =>
+    return extractWithConsensus<MacroEstimate>(config, (followUp) =>
       generateWithImageStructured<MacroEstimate>(
         config,
         systemPrompt,
@@ -2821,11 +2584,7 @@ export async function extractMacrosFromLabelPhoto(
         { followUp }
       )
     );
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] extractMacrosFromLabelPhoto error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -2837,21 +2596,21 @@ export async function extractMacrosFromLabelText(
   ocrText: string,
   context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
-  try {
+  return userFacing('extractMacrosFromLabelText', async () => {
     const contextText = formatMealPhotoContext(context);
     if (!ocrText.trim() && !contextText) {
       return null;
     }
 
     const systemPrompt = await withCustomPrompts(getExtractMacrosFromLabelTextPrompt());
-    const fns = getEstimateMacrosFunctions(true);
-    const schema = schemaOfFunction(fns);
-
-    const userMessage =
+    const schema = schemaOfFunction(getEstimateMacrosFunctions(true));
+    // What was read off a label and what the person wrote are both untrusted text.
+    const userMessage = wrapUserContent(
       (ocrText.trim() || 'No text extracted from the label.') +
-      (contextText ? `\n\n${contextText}` : '');
+        (contextText ? `\n\n${contextText}` : '')
+    );
 
-    return await extractWithConsensus<MacroEstimate>(config, (followUp) =>
+    return extractWithConsensus<MacroEstimate>(config, (followUp) =>
       generateStructured<MacroEstimate>(
         config,
         systemPrompt,
@@ -2862,11 +2621,7 @@ export async function extractMacrosFromLabelText(
         { followUp }
       )
     );
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] extractMacrosFromLabelText error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -2877,11 +2632,10 @@ export async function parsePastWorkouts(
   userMessage: string,
   exerciseNames: string[]
 ): Promise<ParsedWorkout[] | null> {
-  try {
+  return userFacing('parsePastWorkouts', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getParsePastWorkoutsPrompt(userMessage, exerciseNames, lang);
-    const fns = getParsePastWorkoutsFunctions();
-    const schema = schemaOfFunction(fns);
+    const schema = schemaOfFunction(getParsePastWorkoutsFunctions());
     const parsed = await extractWithConsensus<{ pastWorkouts: ParsedWorkout[] }>(
       config,
       (followUp) =>
@@ -2895,12 +2649,9 @@ export async function parsePastWorkouts(
           { followUp }
         )
     );
+
     return parsed?.pastWorkouts ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] parsePastWorkouts error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -2910,11 +2661,10 @@ export async function parsePastNutrition(
   config: CoachAIConfig,
   userMessage: string
 ): Promise<ParsedNutrition[] | null> {
-  try {
+  return userFacing('parsePastNutrition', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getParsePastNutritionPrompt(userMessage, lang);
-    const fns = getParsePastNutritionFunctions();
-    const schema = schemaOfFunction(fns);
+    const schema = schemaOfFunction(getParsePastNutritionFunctions());
     const parsed = await extractWithConsensus<{ pastNutrition: ParsedNutrition[] }>(
       config,
       (followUp) =>
@@ -2928,12 +2678,9 @@ export async function parsePastNutrition(
           { followUp }
         )
     );
+
     return parsed?.pastNutrition ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] parsePastNutrition error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -2944,11 +2691,10 @@ export async function parseRetrospectiveNutrition(
   userMessage: string,
   targetDate: string
 ): Promise<NutritionEntry[] | null> {
-  try {
+  return userFacing('parseRetrospectiveNutrition', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getRetrospectiveNutritionPrompt(targetDate, userMessage, lang);
-    const fns = getParseRetrospectiveNutritionFunctions();
-    const schema = schemaOfFunction(fns);
+    const schema = schemaOfFunction(getParseRetrospectiveNutritionFunctions());
     const parsed = await extractWithConsensus<{ nutritionEntries: NutritionEntry[] }>(
       config,
       (followUp) =>
@@ -2964,11 +2710,7 @@ export async function parseRetrospectiveNutrition(
     );
 
     return parsed?.nutritionEntries ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] parseRetrospectiveNutrition error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -2982,20 +2724,20 @@ export async function getMealCritique(
   userRemarks?: string,
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getMealCritiquePrompt(mealType, foods, totals, lang, {
-      context: 'nutrition',
-      provider: config.provider,
-    });
+  return userFacing('getMealCritique', async () => {
+    const systemPrompt = await getMealCritiquePrompt(
+      mealType,
+      foods,
+      totals,
+      config.language ?? DEFAULT_LANG,
+      { context: 'nutrition', provider: config.provider }
+    );
     const finalUserMessage = userRemarks?.trim()
       ? userRemarks.trim()
       : 'Please critique this meal.';
-    const text = await generateInsight(config, systemPrompt, finalUserMessage, undefined, stream);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getMealCritique error:', error);
-    return null;
-  }
+
+    return (
+      (await generateInsight(config, systemPrompt, finalUserMessage, undefined, stream)) || null
+    );
+  });
 }

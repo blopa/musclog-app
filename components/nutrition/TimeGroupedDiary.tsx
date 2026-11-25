@@ -8,7 +8,7 @@ import { Chip } from '@/components/theme/Chip';
 import DashedButton from '@/components/theme/DashedButton';
 import type { MealType } from '@/database/models/NutritionLog';
 import { useTheme } from '@/hooks/useTheme';
-import { mealTypeForHour } from '@/utils/localFoodPhoto';
+import { mealTypeForHour } from '@/utils/mealTypeForHour';
 
 import { type DiaryCardsProps, DiaryFoodCard, DiaryGroupCard } from './DiaryCards';
 import { buildTimeSections, formatHourLabel, formatItemTime } from './foodDiaryLayout';

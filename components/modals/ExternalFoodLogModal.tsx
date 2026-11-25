@@ -46,7 +46,7 @@ import {
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
-import { mealTypeForHour } from '@/utils/localFoodPhoto';
+import { mealTypeForHour } from '@/utils/mealTypeForHour';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';

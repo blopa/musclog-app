@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { AiProviderKind } from '@/constants/ai';
 import { AiService } from '@/services/AiService';
+import { handleError } from '@/utils/handleError';
 import { MAX_MEAL_PHOTOS, photoLimit } from '@/utils/mealPhotoDraft';
 
 const fallbackLimitForProvider = (aiProvider?: AiProviderKind | null): number =>
@@ -48,7 +49,8 @@ export function useMealPhotoLimit(active: boolean, aiProvider?: AiProviderKind |
         if (!cancelled) {
           setLimit(config ? photoLimit(undefined) : fallbackLimitForProvider(aiProvider));
         }
-      } catch {
+      } catch (error) {
+        void handleError(error, 'useMealPhotoLimit', { showSnackbar: false });
         if (!cancelled) {
           setLimit(fallbackLimitForProvider(aiProvider));
         }

@@ -29,7 +29,6 @@ import ChatMessage, {
   type TrackMealPayload,
 } from '@/database/models/ChatMessage';
 import { ChatService } from '@/database/services/ChatService';
-import { NutritionService } from '@/database/services/NutritionService';
 import {
   type IntentionFailure,
   type IntentionRun,
@@ -51,6 +50,7 @@ import {
   persistCoachReply,
   startCoachReply,
 } from '@/services/coachReplyStream';
+import { logTrackedMeal } from '@/services/trackedMealLogging';
 import { describeAiError } from '@/utils/aiErrors';
 import {
   formatLocalCalendarDayIso,
@@ -67,7 +67,6 @@ import {
 import { HISTORY_WINDOW_TURNS, historyText } from '@/utils/coachHistory';
 import { handleError } from '@/utils/handleError';
 import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
-import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { buildWorkoutCompletedSummaryForLLM } from '@/utils/workoutAI';
 
 export interface ExtendedIMessage extends IMessage {
@@ -910,26 +909,6 @@ export function useChatMessages(
       mealName?: string,
       consumedTime?: Date
     ) => {
-      const baseTotalGrams = ingredients.reduce((sum, i) => sum + i.grams, 0);
-      const safeBase = baseTotalGrams > 0 ? baseTotalGrams : 1;
-      const scale = portionGrams / safeBase;
-
-      const scaledIngredients = ingredients.map((i) => {
-        const scaledGramsRaw = i.grams * scale;
-        const scaledGrams = scaledGramsRaw > 0 ? roundToDecimalPlaces(scaledGramsRaw, 1) : 1;
-
-        return {
-          name: i.name,
-          calories: i.kcal * scale,
-          protein: i.protein * scale,
-          carbs: i.carbs * scale,
-          fat: i.fat * scale,
-          fiber: (i.fiber ?? 0) * scale,
-          grams: scaledGrams,
-          foodId: i.foodId,
-        };
-      });
-
       let savedImageUri: string | undefined;
       const msgRecord = rawMessagesRef.current.find((r) => r.id === messageId);
       if (msgRecord?.payloadJson) {
@@ -941,32 +920,15 @@ export function useChatMessages(
         } catch {}
       }
 
-      if (scaledIngredients.length === 1) {
-        const ing = scaledIngredients[0];
-        await NutritionService.logCustomMeal(
-          {
-            name: ing.name,
-            calories: ing.calories,
-            protein: ing.protein,
-            carbs: ing.carbs,
-            fat: ing.fat,
-            fiber: ing.fiber,
-            foodId: ing.foodId,
-            imageUrl: ing.foodId ? undefined : savedImageUri,
-          },
-          date,
-          logMealType,
-          ing.grams,
-          { consumedTime }
-        );
-      } else {
-        await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
-          groupId: randomUUID(),
-          loggedMealName: mealName,
-          imageUrl: savedImageUri,
-          consumedTime,
-        });
-      }
+      await logTrackedMeal({
+        ingredients,
+        date,
+        mealType: logMealType,
+        portionGrams,
+        mealName,
+        imageUrl: savedImageUri,
+        consumedTime,
+      });
 
       triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
       if (msgRecord?.payloadJson) {

@@ -91,7 +91,11 @@ export function repairReplyJson(text: string): unknown {
   return undefined;
 }
 
-/** The most of a broken reply sent back for repair; real replies are a few hundred characters. */
+/**
+ * The longest broken reply sent back for repair; real replies are a few hundred characters. A longer
+ * one is not repaired at all (`repairStructuredWithModel`): sending part of it would get back a
+ * "repaired" reply that lost the rest.
+ */
 export const MAX_JSON_REPAIR_INPUT_CHARS = 2000;
 
 /**
@@ -107,7 +111,7 @@ export function jsonRepairPrompt(schema: object): string {
 }
 
 export function jsonRepairMessage(broken: string): string {
-  return `Malformed JSON:\n${broken.slice(0, MAX_JSON_REPAIR_INPUT_CHARS)}`;
+  return `Malformed JSON:\n${broken}`;
 }
 
 export type StructuredResult<T = unknown> =

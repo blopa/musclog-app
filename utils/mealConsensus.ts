@@ -16,6 +16,7 @@ import { median } from 'simple-statistics';
 import type { TrackedMeal, TrackMealIngredient, TrackMealResponse } from './coachAI';
 import { normalizeFoodName } from './foodName';
 import type { MealObservation } from './mealObservation';
+import { ingredientMacroProblems } from './mealPlausibility';
 
 /** Rounded to one decimal, the precision every merged figure is shown with. */
 const round1 = (value: number): number => Math.round(value * 10) / 10;
@@ -38,6 +39,43 @@ function mostCommon(counts: number[]): number {
   return best;
 }
 
+/**
+ * The occurrence whose per-gram figures are nearest the per-gram medians, scaled to `grams`. Used
+ * when the field-wise medians contradict each other. Energy is linear in the macros, but a median
+ * taken field by field over three or more samples is not, so the merged figures can break the
+ * kcal/macro relation even though every sample kept it.
+ */
+function nearestOccurrence(
+  occurrences: TrackMealIngredient[],
+  medians: Record<(typeof MACRO_KEYS)[number], number>,
+  grams: number
+): TrackMealIngredient {
+  let best = occurrences[0];
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (const item of occurrences) {
+    let distance = 0;
+    for (const key of MACRO_KEYS) {
+      const value =
+        item.grams > 0 && Number.isFinite(item[key] ?? 0) ? (item[key] ?? 0) / item.grams : 0;
+      distance += Math.abs(value - medians[key]) / (Math.abs(medians[key]) + 0.01);
+    }
+
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = item;
+    }
+  }
+
+  const scaled = {} as Record<(typeof MACRO_KEYS)[number], number>;
+  for (const key of MACRO_KEYS) {
+    const value =
+      best.grams > 0 && Number.isFinite(best[key] ?? 0) ? (best[key] ?? 0) / best.grams : 0;
+    scaled[key] = value * grams;
+  }
+
+  return { ...best, grams, ...scaled };
+}
+
 function mergeIngredient(occurrences: TrackMealIngredient[]): TrackMealIngredient {
   const grams = median(occurrences.map((item) => item.grams));
   const merged: TrackMealIngredient = {
@@ -56,12 +94,33 @@ function mergeIngredient(occurrences: TrackMealIngredient[]): TrackMealIngredien
       )
     );
 
+  const medians = {} as Record<(typeof MACRO_KEYS)[number], number>;
   for (const key of MACRO_KEYS) {
-    if (key === 'fiber' && occurrences.every((item) => item.fiber == null)) {
+    medians[key] = perGram(key);
+  }
+
+  const noFiber = occurrences.every((item) => item.fiber == null);
+  const fromMedians = { ...merged };
+  for (const key of MACRO_KEYS) {
+    if (key === 'fiber' && noFiber) {
       continue;
     }
 
-    merged[key] = round1(perGram(key) * grams);
+    fromMedians[key] = round1(medians[key] * grams);
+  }
+
+  if (ingredientMacroProblems(fromMedians).length === 0) {
+    Object.assign(merged, fromMedians);
+  } else {
+    // The contradiction is in the medians, so the answer is one real reading, not a blend of them.
+    const nearest = nearestOccurrence(occurrences, medians, grams);
+    for (const key of MACRO_KEYS) {
+      if (key === 'fiber' && noFiber) {
+        continue;
+      }
+
+      merged[key] = round1(nearest[key] ?? 0);
+    }
   }
 
   const ids = new Map<string, number>();

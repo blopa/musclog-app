@@ -33,7 +33,7 @@ export function useThinkingLevelChange({
   parentVisible = true,
 }: Options) {
   const [pending, setPending] = useSubModalState<ThinkingLevelPending>(parentVisible, null);
-  const allowed = providerAllowsThinking(provider ?? '');
+  const allowed = providerAllowsThinking(provider);
 
   const request = useCallback(
     (level: ThinkingLevel) => {
@@ -41,7 +41,7 @@ export function useThinkingLevelChange({
         return;
       }
 
-      const gate = thinkingLevelChangeGate(value, level, provider ?? '');
+      const gate = thinkingLevelChangeGate(value, level, provider);
 
       if (gate === 'none') {
         onChange(level);

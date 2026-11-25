@@ -8,8 +8,6 @@ import { median } from 'simple-statistics';
 import { clampNonNegative, macroEnergyKcal } from './mealPlausibility';
 import { roundToDecimalPlaces } from './roundDecimal';
 
-export { clampNonNegative };
-
 export type OnDeviceMacroIngredient = {
   name: string;
   grams: number;

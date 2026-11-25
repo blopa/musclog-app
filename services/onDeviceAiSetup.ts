@@ -37,8 +37,7 @@ export function enableOnDeviceAi(
   options: { download?: LocalModelSelection } = {}
 ): Promise<boolean> {
   return saved('onDeviceAi.enable', async () => {
-    await SettingsService.setUseOnDeviceAi(true);
-    await SettingsService.set(SETTINGS.onDeviceEngine, engine);
+    await SettingsService.enableOnDeviceAi(engine);
     if (options.download) {
       void startLocalModelDownload(options.download);
     }

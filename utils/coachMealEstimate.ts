@@ -1,12 +1,11 @@
 import { DEFAULT_LANG } from '@/lang/lang';
 
 import { OnDeviceUnavailableError, rethrowUserFacingAiError } from './aiErrors';
+import { reportAiEvent } from './aiTelemetry';
 import { THINKING_PIPELINE } from './aiThinkingLevel';
 import {
   type CoachAIConfig,
   foundationFoodsFor,
-  generateStructured,
-  generateWithImagesStructured,
   mealSchemaDialect,
   prepareMealImages,
   reportAiError,
@@ -16,7 +15,7 @@ import {
 } from './coachAI';
 import { estimateMealFromPhotoOnDevice } from './coachMealPhotoOnDevice';
 import { trackMealThinking } from './coachMealSampling';
-import { refineTrackedMeals, reportMealProgress } from './coachMealSteps';
+import { generateMealStructured, refineTrackedMeals, reportMealProgress } from './coachMealSteps';
 import type { MealEstimateProgressListener } from './mealEstimateProgress';
 import { MAX_MEAL_IMAGES, type MealImage, toMealImage, toMealImages } from './mealImages';
 import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
@@ -59,55 +58,64 @@ async function estimateMeal(
     // Prepared once: every look, sample and review below reuses these, never re-encodes them.
     const images = await prepareMealImages(config, photos);
     const level = await thinkingLevelFor(config);
+    let estimate: TrackMealResponse | null;
     if (THINKING_PIPELINE[level].verifiedMeal) {
       const lead = images.length > 1 ? 'Analyze these meal photos.' : 'Analyze this meal photo.';
 
-      return await trackMealThinking(
+      estimate = await trackMealThinking(
         config,
         level,
         images.length > 0 ? [lead, text].filter(Boolean).join('\n') : text,
         images,
         onProgress
       );
+    } else {
+      estimate = await estimateInOneRequest(config, text, images, onProgress);
     }
 
-    const foundation = await foundationFoodsFor(config, 'estimate');
-    const systemPrompt = await withCustomPrompts(
-      await getMealAnalysisPrompt(foundation, config.language ?? DEFAULT_LANG)
-    );
-    const schema = schemaOfFunction(
-      getTrackMealFunctions(foundation !== null, mealSchemaDialect(config))
-    );
+    if (!estimate?.meals?.some((meal) => meal.ingredients?.length > 0)) {
+      // Nothing threw, but the person gets no meal: a quality signal, counted per provider.
+      reportAiEvent('ai-meal-estimate-empty', {
+        provider: config.provider,
+        operation: 'estimateMeal',
+      });
+    }
 
-    // Foundation-food matches arrive with zero macros: the lookup fills the real values in, and an
-    // id the database does not have is estimated in a follow-up request instead of logged at 0 kcal.
-    const parsed =
-      images.length > 0
-        ? await generateWithImagesStructured<TrackMealResponse>(
-            config,
-            systemPrompt,
-            images,
-            schema,
-            'trackMeal',
-            text || undefined,
-            'extraction',
-            { prepared: true }
-          )
-        : await generateStructured<TrackMealResponse>(
-            config,
-            systemPrompt,
-            text,
-            schema,
-            'trackMeal'
-          );
-
-    return parsed ? await refineTrackedMeals(config, parsed, onProgress, foundation) : null;
+    return estimate;
   } catch (error) {
     rethrowUserFacingAiError(error);
     reportAiError(error, 'coachAI.estimateMeal');
 
     return null;
   }
+}
+
+/** The Off level: one request, refined by code. */
+async function estimateInOneRequest(
+  config: CoachAIConfig,
+  text: string,
+  images: readonly MealImage[],
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackMealResponse | null> {
+  const foundation = await foundationFoodsFor(config, 'estimate');
+  const systemPrompt = await withCustomPrompts(
+    await getMealAnalysisPrompt(foundation, config.language ?? DEFAULT_LANG)
+  );
+  const schema = schemaOfFunction(
+    getTrackMealFunctions(foundation !== null, mealSchemaDialect(config))
+  );
+
+  // Foundation-food matches arrive with zero macros: the lookup fills the real values in, and an
+  // id the database does not have is estimated in a follow-up request instead of logged at 0 kcal.
+  const parsed = await generateMealStructured<TrackMealResponse>(config, {
+    systemPrompt,
+    text,
+    images,
+    schema,
+    schemaName: 'trackMeal',
+  });
+
+  return parsed ? await refineTrackedMeals(config, parsed, onProgress, foundation) : null;
 }
 
 /**

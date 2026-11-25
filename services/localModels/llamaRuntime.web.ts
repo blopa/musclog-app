@@ -6,6 +6,7 @@
  */
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
+import { createSerialQueue } from '@/utils/serialQueue';
 
 import { devLocalModelBaseUrl, isDevWebLocalModel } from './devWebBridge';
 import type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult } from './llamaRuntime';
@@ -15,21 +16,13 @@ export type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult };
 export const LOCAL_MODEL_IDLE_MS = 120_000;
 export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
 
-let queue: Promise<unknown> = Promise.resolve();
+const queue = createSerialQueue();
 let loaded = false;
 
 export function unloadLocalModel(): Promise<void> {
-  const turn = queue.then(
-    () => {
-      loaded = false;
-    },
-    () => {
-      loaded = false;
-    }
-  );
-  queue = turn.catch(() => undefined);
-
-  return turn;
+  return queue.run(async () => {
+    loaded = false;
+  });
 }
 
 export function isLocalModelLoaded(): boolean {
@@ -136,11 +129,5 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 }
 
 export function generateWithLocalModel(params: LocalGenerateParams): Promise<LocalGenerateResult> {
-  const turn = queue.then(
-    () => run(params),
-    () => run(params)
-  );
-  queue = turn.catch(() => undefined);
-
-  return turn;
+  return queue.run(() => run(params));
 }

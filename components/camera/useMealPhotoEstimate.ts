@@ -13,6 +13,7 @@ import {
 } from '@/utils/mealEstimateProgress';
 import type { MealPhotoContext } from '@/utils/mealPhotoContext';
 import { showSnackbar } from '@/utils/snackbarService';
+import { trackedMealTotals } from '@/utils/trackedMealTotals';
 
 type Meal = {
   name: string;
@@ -98,6 +99,7 @@ export function useMealPhotoEstimate({
             return t('food.aiCamera.aiAnalysisFailed');
           }
 
+          const totals = trackedMealTotals(ingredients);
           const meal: Meal = {
             name:
               name?.trim() ||
@@ -105,11 +107,12 @@ export function useMealPhotoEstimate({
               result.meals[0]?.mealType ||
               t('meals.customMeal'),
             type: t('meals.customMeal'),
-            calories: ingredients.reduce((sum, item) => sum + item.kcal, 0),
-            protein: ingredients.reduce((sum, item) => sum + item.protein, 0),
-            carbs: ingredients.reduce((sum, item) => sum + item.carbs, 0),
-            fat: ingredients.reduce((sum, item) => sum + item.fat, 0),
-            grams: ingredients.reduce((sum, item) => sum + (item.grams || 0), 0),
+            // Totals as the diary stores them: estimated carbs are net, so fiber is added.
+            calories: totals.calories,
+            protein: totals.protein,
+            carbs: totals.carbs,
+            fat: totals.fat,
+            grams: totals.grams,
           };
 
           showSnackbar(

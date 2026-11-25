@@ -195,6 +195,21 @@ export function totalCarbsForFoodSource(source: FoodSourceForCarbs, input: RawCa
 }
 
 /**
+ * The carbs the diary will show for an ingredient the assistant or the camera estimated, or a
+ * matched food. An estimate's carbs are NET (fiber excluded), so its fiber is added to reach the
+ * stored total; a matched food already holds its own total, so its fiber must not be added again.
+ */
+export function storedMealCarbs(ingredient: {
+  carbs: number;
+  fiber?: number;
+  foodId?: string;
+}): number {
+  return ingredient.foodId
+    ? ingredient.carbs
+    : totalCarbsForFoodSource('ai', { carbs: ingredient.carbs, fiber: ingredient.fiber ?? 0 });
+}
+
+/**
  * Digestible (net) carbs derived from canonical **total** carbs — used for energy inference and for
  * the carbs progress bar (so it compares like-for-like against the net carbs goal). Always
  * non-negative.

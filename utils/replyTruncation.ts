@@ -2,7 +2,7 @@
 // Pure and relative-import-only. A strict-schema reply that stops at the limit is not an answer: the
 // JSON repair step would close its braces and hand back a half-empty object as if it were one, so a
 // provider that enforces the schema reports a truncated reply as a failure instead
-// (`ProviderPolicy.rejectsTruncatedStructuredReplies`, `utils/providerPolicy.ts`).
+// (`ProviderPolicy.structuredReplies`, `utils/providerPolicy.ts`).
 
 /** The three stop-signal vocabularies: OpenAI-compatible, Claude and Gemini. */
 export type StopSignalSource = 'openai' | 'claude' | 'gemini';

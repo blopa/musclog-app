@@ -4,35 +4,32 @@ import { reportAiEvent } from './aiTelemetry';
 import { extractionSamples } from './aiThinkingLevel';
 import {
   type CoachAIConfig,
-  logLlmDebugEvent,
   repairStructuredWithModel,
   reportAiError,
+  requestStructuredOnce,
+  type StructuredRequest,
   thinkingLevelFor,
   type TrackMealResponse,
 } from './coachAI';
-import {
-  completeMealIngredients,
-  recheckImplausibleIngredients,
-  reportMealProgress,
-} from './coachMealSteps';
-import { withLlmRetry } from './llmRetry';
+import { completeAndCheckMealIngredients, reportMealProgress } from './coachMealSteps';
 import {
   type IdentifiedFood,
   LOCAL_FOOD_IDENTIFY_SCHEMA,
   LOCAL_PHOTO_RETRY_TEMPERATURE,
   localFoodIdentifyPrompt,
-  mealTypeForHour,
   mergeFoodsAcrossPhotos,
   parseIdentifiedFoods,
   photoMealName,
   voteIdentifiedFoods,
 } from './localFoodPhoto';
-import { checkStructuredShape, parseStructuredJson } from './localReplyShape';
+import { checkStructuredShape, type StructuredResult } from './localReplyShape';
 import type { MealEstimateProgressListener } from './mealEstimateProgress';
 import type { MealImage } from './mealImages';
 import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
-import { sendLocalStructuredRaw } from './onDeviceLocal';
+import { mealTypeForHour } from './mealTypeForHour';
 import { wrapUserContent } from './promptSanitizer';
+
+const OPERATION = 'estimateNutritionFromPhoto';
 
 /**
  * Reads a meal photo with the downloaded on-device model: it names what it sees and guesses grams
@@ -58,62 +55,56 @@ export async function estimateMealFromPhotoOnDevice(
   const systemPrompt = localFoodIdentifyPrompt();
   const formattedContext = formatMealPhotoContext(context);
   const details = formattedContext ? wrapUserContent(formattedContext) : '';
-  const messages = [
-    {
-      role: 'user' as const,
-      content: details
-        ? `What foods are in this photo?\nMeal notes: ${details}`
-        : 'What foods are in this photo?',
-    },
-  ];
-  await logLlmDebugEvent({
-    provider: 'on-device',
-    direction: 'request',
-    operation: 'estimateNutritionFromPhoto',
-    payload: { systemPrompt, messages, schema: LOCAL_FOOD_IDENTIFY_SCHEMA },
-    config,
-  });
+  const userMessage = details
+    ? `What foods are in this photo?\nMeal notes: ${details}`
+    : 'What foods are in this photo?';
 
-  const askForPhoto = (image: MealImage, temperature?: number) =>
-    withLlmRetry('estimateNutritionFromPhoto', config, (signal, touch) =>
-      sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
-        image: `data:${image.mimeType};base64,${image.base64}`,
-        signal,
-        // Every token resets the timeout, so it limits a stall, not model load plus generation.
-        onDelta: () => touch(),
-        ...(temperature === undefined ? {} : { temperature }),
-      })
-    );
+  // One reading of one photo, through the same funnel every structured request uses (debug dump,
+  // retry and timeout, parsing) and then held to the schema. A warmer `temperature` lets a retry
+  // differ from the first reading.
+  const readPhoto = async (
+    image: MealImage,
+    temperature?: number
+  ): Promise<StructuredResult<unknown>> => {
+    const request: StructuredRequest = {
+      operation: OPERATION,
+      schemaName: 'identifyFoods',
+      systemPrompt,
+      history: [],
+      userMessage,
+      images: [image],
+      buildSchema: () => LOCAL_FOOD_IDENTIFY_SCHEMA,
+      temperature,
+    };
 
-  const readPhotoReply = (text: string) =>
-    checkStructuredShape(
-      parseStructuredJson<unknown>(text),
+    return checkStructuredShape(
+      await requestStructuredOnce<unknown>(config, request, LOCAL_FOOD_IDENTIFY_SCHEMA),
       LOCAL_FOOD_IDENTIFY_SCHEMA,
-      'estimateNutritionFromPhoto'
+      OPERATION
     );
+  };
 
-  // One reading of the photo. `firstTemperature` lets a further sample differ from the first.
   const identifyFoods = async (
     image: MealImage,
     firstTemperature?: number
   ): Promise<IdentifiedFood[]> => {
-    let raw = await askForPhoto(image, firstTemperature);
-    let parsed = readPhotoReply(raw);
+    let parsed = await readPhoto(image, firstTemperature);
     if (parsed.kind !== 'ok') {
       // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
       // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
-      const firstRaw = raw;
-      raw = await askForPhoto(image, LOCAL_PHOTO_RETRY_TEMPERATURE);
-      parsed = readPhotoReply(raw);
+      const first = parsed;
+      parsed = await readPhoto(image, LOCAL_PHOTO_RETRY_TEMPERATURE);
 
       // Last resort before giving up: one text-only call that is asked to correct the broken reply
       // (no photo, so the projector stays unloaded), read by the same parser and schema check. It
       // only ever runs after both photo attempts failed, so a good run never pays for it.
-      const broken = [raw, firstRaw].find((text) => text.trim() !== '');
+      const broken = [parsed, first]
+        .map((attempt) => (attempt.kind === 'malformed' ? attempt.raw : ''))
+        .find((text) => text.trim() !== '');
       if (parsed.kind !== 'ok' && broken) {
         const repaired = await repairStructuredWithModel<unknown>(
           config,
-          'estimateNutritionFromPhoto',
+          OPERATION,
           broken,
           LOCAL_FOOD_IDENTIFY_SCHEMA
         );
@@ -127,7 +118,7 @@ export async function estimateMealFromPhotoOnDevice(
       // A reply no attempt could read is not the same as a photo with no food in it.
       reportAiEvent('ai-structured-reply-unusable', {
         provider: 'on-device',
-        operation: 'estimateNutritionFromPhoto',
+        operation: OPERATION,
         engine: config.engine,
       });
 
@@ -141,22 +132,21 @@ export async function estimateMealFromPhotoOnDevice(
   // engine), and a food stays only when at least half the readings name it.
   const readings = extractionSamples(await thinkingLevelFor(config));
   const identifyPhoto = async (image: MealImage): Promise<IdentifiedFood[]> =>
-    readings <= 1
-      ? identifyFoods(image)
-      : voteIdentifiedFoods(
-          await runSamples(
-            config,
-            readings,
-            async (index) => {
-              const found = await identifyFoods(
-                image,
-                index === 0 ? undefined : LOCAL_PHOTO_RETRY_TEMPERATURE
-              );
-              return found.length > 0 ? found : null;
-            },
-            { onDroppedFailure: (error) => reportAiError(error, 'coachAI.onDevicePhotoReading') }
-          )
-        );
+    voteIdentifiedFoods(
+      await runSamples(
+        config,
+        readings,
+        async (index) => {
+          const found = await identifyFoods(
+            image,
+            index === 0 ? undefined : LOCAL_PHOTO_RETRY_TEMPERATURE
+          );
+
+          return found.length > 0 ? found : null;
+        },
+        { onDroppedFailure: (error) => reportAiError(error, 'coachAI.onDevicePhotoReading') }
+      )
+    );
 
   // Each photo is read on its own, one after another (the phone has one engine), and the lists are
   // merged in code: a food in several photos is one food, at its largest estimated portion. A photo
@@ -201,16 +191,10 @@ export async function estimateMealFromPhotoOnDevice(
   // The same steps every meal estimate takes: foods the phone has are matched by name (the person's
   // own wording is kept), the rest is estimated by name, then the numbers are checked.
   const mealName = photoMealName(foods.map((food) => food.name)) ?? '';
-  const completed = await completeMealIngredients(
+  const checked = await completeAndCheckMealIngredients(
     config,
     mealName,
     foods.map(({ name, grams, englishName }) => ({ name, grams, englishName })),
-    onProgress
-  );
-  const checked = await recheckImplausibleIngredients(
-    config,
-    mealName,
-    completed.ingredients,
     onProgress
   );
 

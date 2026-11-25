@@ -6,6 +6,8 @@
 // through `effectiveThinkingLevel`, which is the one place a provider or a background task can
 // lower it, so no feature decides that on its own.
 
+import type { CoachAIProvider } from './coachAI';
+
 export const THINKING_LEVELS = ['off', 'medium', 'high', 'tokenmaxxing'] as const;
 export type ThinkingLevel = (typeof THINKING_LEVELS)[number];
 
@@ -40,8 +42,8 @@ export const BACKGROUND_THINKING_CEILING: ThinkingLevel = 'medium';
  * key every free user shares, with one daily budget, so extra requests by a few would use up the
  * quota of all; it always runs at `off`.
  */
-export function providerAllowsThinking(provider: string): boolean {
-  return PROVIDER_THINKING[provider]?.allowsThinking ?? true;
+export function providerAllowsThinking(provider: CoachAIProvider | null): boolean {
+  return provider === null ? true : (PROVIDER_THINKING[provider]?.allowsThinking ?? true);
 }
 
 /**
@@ -49,9 +51,8 @@ export function providerAllowsThinking(provider: string): boolean {
  * because this module is pure and relative-import-only (the policy pulls in the retry and hosted
  * stack, and `aiEffort` imports this file).
  */
-const PROVIDER_THINKING: Record<
-  string,
-  { allowsThinking?: boolean; meteredThinkingNotes?: boolean }
+const PROVIDER_THINKING: Partial<
+  Record<CoachAIProvider, { allowsThinking?: boolean; meteredThinkingNotes?: boolean }>
 > = {
   gateway: { allowsThinking: false },
   hosted: { meteredThinkingNotes: true },
@@ -63,7 +64,7 @@ const PROVIDER_THINKING: Record<
  */
 export function effectiveThinkingLevel(
   stored: ThinkingLevel,
-  config: { provider: string; background?: boolean }
+  config: { provider: CoachAIProvider; background?: boolean }
 ): ThinkingLevel {
   if (!providerAllowsThinking(config.provider)) {
     return 'off';
@@ -170,9 +171,10 @@ export type ThinkingLevelChangeGate = 'none' | 'note' | 'noteAndAuth';
 export function thinkingLevelChangeGate(
   from: ThinkingLevel,
   to: ThinkingLevel,
-  provider: string
+  provider: CoachAIProvider | null
 ): ThinkingLevelChangeGate {
   if (
+    provider === null ||
     !PROVIDER_THINKING[provider]?.meteredThinkingNotes ||
     thinkingLevelRank(to) <= thinkingLevelRank(from)
   ) {

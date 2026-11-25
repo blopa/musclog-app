@@ -16,13 +16,19 @@ export type AiTelemetryEvent =
   /** The downloaded model's files did not match their published checksum. */
   | 'local-model-checksum-mismatch'
   /** The photo projector of the downloaded model could not be attached. */
-  | 'local-model-projector-failed';
+  | 'local-model-projector-failed'
+  /** A first look at a meal came back but held nothing the estimate could use. */
+  | 'ai-meal-look-unusable'
+  /** A meal estimate finished with no ingredient at all (no reply, or a reply with nothing in it). */
+  | 'ai-meal-estimate-empty';
 
 const LEVELS: Record<AiTelemetryEvent, 'warning' | 'info' | 'error'> = {
   'ai-structured-reply-unusable': 'warning',
   'ai-structured-reply-repaired': 'info',
   'local-model-checksum-mismatch': 'error',
   'local-model-projector-failed': 'error',
+  'ai-meal-look-unusable': 'warning',
+  'ai-meal-estimate-empty': 'warning',
 };
 
 export type AiTelemetryTags = Record<string, string | number | boolean | undefined>;

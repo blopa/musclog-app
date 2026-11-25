@@ -1,4 +1,3 @@
-import { randomUUID } from 'expo-crypto';
 import { MessageSquareText } from 'lucide-react-native';
 import { type ComponentProps, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +31,7 @@ import { useMealPhotoLimit } from '@/hooks/useMealPhotoLimit';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
+import { logTrackedMeal } from '@/services/trackedMealLogging';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
 import {
   extractMacrosFromLabelPhoto,
@@ -621,33 +621,40 @@ export default function SmartCameraModal({
           return;
         }
 
-        const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
-        const scale = portionGrams / baseGrams;
-        const isSingleFood = !aiIngredients || aiIngredients.length <= 1;
         const persistedImageUri = aiPhotoUri
           ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
           : undefined;
 
-        await NutritionService.logCustomMeal(
-          {
-            name: selectedMealForLogging.name,
-            calories: selectedMealForLogging.calories * scale,
-            protein: selectedMealForLogging.protein * scale,
-            carbs: selectedMealForLogging.carbs * scale,
-            fat: selectedMealForLogging.fat * scale,
+        if (aiIngredients && aiIngredients.length > 0) {
+          // An estimate is logged food by food, through the same logger the coach chat uses.
+          await logTrackedMeal({
+            ingredients: aiIngredients,
+            date,
+            mealType,
+            portionGrams,
+            mealName: selectedMealForLogging.name,
             imageUrl: persistedImageUri,
-          },
-          date,
-          mealType,
-          portionGrams,
-          isSingleFood
-            ? { loggedMealName: selectedMealForLogging.name, consumedTime: time }
-            : {
-                groupId: randomUUID(),
-                loggedMealName: selectedMealForLogging.name,
-                consumedTime: time,
-              }
-        );
+            consumedTime: time,
+          });
+        } else {
+          // A label scan has no ingredients, so its totals are scaled to the portion.
+          const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
+          const scale = portionGrams / baseGrams;
+          await NutritionService.logCustomMeal(
+            {
+              name: selectedMealForLogging.name,
+              calories: selectedMealForLogging.calories * scale,
+              protein: selectedMealForLogging.protein * scale,
+              carbs: selectedMealForLogging.carbs * scale,
+              fat: selectedMealForLogging.fat * scale,
+              imageUrl: persistedImageUri,
+            },
+            date,
+            mealType,
+            portionGrams,
+            { loggedMealName: selectedMealForLogging.name, consumedTime: time }
+          );
+        }
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
         triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);

@@ -64,7 +64,16 @@ async function readToggle(ctx: Ctx): Promise<CachedToggle | null> {
       .prepare("SELECT value FROM meta WHERE key = 'upstream'")
       .first<{ value: string }>();
   } catch {
-    return null; // not cached: the next call tries again
+    // Not cached, so the next call tries again. Logged once per failed read so a broken D1 is
+    // visible; it is not a Sentry code, because serving falls back to OpenRouter anyway.
+    ctx.deps.log.log({
+      route: 'upstream',
+      status: 500,
+      code: 'upstream_toggle_unreadable',
+      severity: 'error',
+      upstream: 'openrouter',
+    });
+    return null;
   }
 
   const entry: CachedToggle = { at: now, raw: row?.value ?? null, misconfigLogged: false };

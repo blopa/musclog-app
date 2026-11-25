@@ -17,9 +17,11 @@ import { AppState, Platform } from 'react-native';
 
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { reportAiEvent } from '@/utils/aiTelemetry';
+import { handleError } from '@/utils/handleError';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
 import type { ChatPenalties } from '@/utils/providerPolicy';
 import { captureException } from '@/utils/sentry';
+import { createSerialQueue } from '@/utils/serialQueue';
 
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
 
@@ -62,7 +64,8 @@ export type LocalGenerateResult = {
 
 let context: LlamaContext | null = null;
 let projectorAttached = false;
-let queue: Promise<unknown> = Promise.resolve();
+/** Every model operation (unload, projector release, generation) runs one at a time. */
+const queue = createSerialQueue();
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 let busy = false;
 let projectorTimer: ReturnType<typeof setTimeout> | null = null;
@@ -99,7 +102,12 @@ async function releaseProjector(): Promise<void> {
   }
 
   projectorAttached = false;
-  await context.releaseMultimodal().catch(() => undefined);
+  try {
+    await context.releaseMultimodal();
+  } catch (error) {
+    // The projector is already detached from our side; the model stays usable.
+    void handleError(error, 'localModels.releaseProjector', { showSnackbar: false });
+  }
 }
 
 function scheduleProjectorRelease() {
@@ -110,8 +118,7 @@ function scheduleProjectorRelease() {
 
   projectorTimer = setTimeout(() => {
     projectorTimer = null;
-    const turn = queue.then(releaseProjector, releaseProjector);
-    queue = turn.catch(() => undefined);
+    void queue.run(releaseProjector);
   }, LOCAL_PROJECTOR_IDLE_MS);
 }
 
@@ -128,8 +135,9 @@ async function performUnload(): Promise<void> {
   try {
     await current.releaseMultimodal().catch(() => undefined);
     await current.release();
-  } catch {
-    // Already released; nothing is held either way.
+  } catch (error) {
+    // Never rejects: an unload that fails is reported, and nothing stays usable either way.
+    void handleError(error, 'localModels.unload', { showSnackbar: false });
   }
 }
 
@@ -141,10 +149,7 @@ export function unloadLocalModel(): Promise<void> {
     void context.stopCompletion().catch(() => undefined);
   }
 
-  const turn = queue.then(performUnload, performUnload);
-  queue = turn.catch(() => undefined);
-
-  return turn;
+  return queue.run(performUnload);
 }
 
 function scheduleIdleUnload() {
@@ -345,13 +350,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 export function generateWithLocalModel(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   clearIdleTimer();
   clearProjectorTimer();
-  const turn = queue.then(
-    () => run(params),
-    () => run(params)
-  );
-  queue = turn.catch(() => undefined);
-
-  return turn;
+  return queue.run(() => run(params));
 }
 
 /** True while a request is generating or the model is loaded; used by the storage screen. */

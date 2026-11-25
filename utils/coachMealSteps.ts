@@ -2,11 +2,14 @@ import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 
+import type { AiTask } from './aiEffort';
 import { AiCancelledError } from './aiErrors';
 import { runSamples } from './aiPasses';
+import { reportAiEvent } from './aiTelemetry';
 import { extractionSamples } from './aiThinkingLevel';
 import {
   type CoachAIConfig,
+  type FollowUp,
   foundationFoodsFor,
   generateStructured,
   generateWithImagesStructured,
@@ -58,10 +61,60 @@ import {
   getRecipeExtractionPrompt,
   withCustomPrompts,
 } from './prompts';
+import { wrapUserContent } from './promptSanitizer';
+import { providerPolicyFor } from './providerPolicy';
 
 // The building blocks of a meal estimate: reading a recipe, a first look, estimating what is left,
 // checking the numbers, reviewing. `coachMealSampling` composes them per thinking level and
 // `coachMealEstimate` is the entry point; nothing here knows about thinking levels.
+
+/**
+ * One structured request about a meal, from a photo or from words alone: the fork every meal request
+ * makes. The person's words are sanitized here (`wrapUserContent`) because they are what `text`
+ * holds; a photo request sanitizes its notes itself. The meal prompts carry their own language.
+ */
+export async function generateMealStructured<T>(
+  config: CoachAIConfig,
+  job: {
+    systemPrompt: string;
+    /** The person's own description or notes. */
+    text: string;
+    /** Photos already prepared (`prepareMealImages`). */
+    images: readonly MealImage[];
+    schema: object;
+    schemaName: string;
+    task?: AiTask;
+    followUp?: FollowUp;
+  }
+): Promise<T | null> {
+  const { systemPrompt, text, images, schema, schemaName, followUp } = job;
+  const task = job.task ?? 'extraction';
+
+  if (images.length > 0) {
+    return generateWithImagesStructured<T>(
+      config,
+      systemPrompt,
+      images,
+      schema,
+      schemaName,
+      text,
+      task,
+      { prepared: true, followUp }
+    );
+  }
+
+  return generateStructured<T>(
+    config,
+    systemPrompt,
+    wrapUserContent(text),
+    schema,
+    schemaName,
+    task,
+    {
+      followUp,
+    }
+  );
+}
 
 export async function extractRecipe(
   config: CoachAIConfig,
@@ -78,33 +131,17 @@ export async function extractRecipe(
   // are code-written, so they ride as a follow-up instead of through the user-message sanitizer.
   const followUp = observation ? { instruction: formatMealObservation(observation) } : undefined;
 
-  if (images.length > 0) {
-    const fromPhoto = await generateWithImagesStructured<RecipeExtractionResponse>(
-      config,
-      systemPrompt,
-      images,
-      schema,
-      'extractRecipe',
-      userMessage,
-      'extraction',
-      { prepared: true, followUp }
-    );
-
-    // A reference number the model returned becomes the real food id here, against the list it saw.
-    return fromPhoto ? resolveFoundationRefsInMeals(fromPhoto, foundation) : null;
-  }
-
-  const fromText = await generateStructured<RecipeExtractionResponse>(
-    config,
+  const recipe = await generateMealStructured<RecipeExtractionResponse>(config, {
     systemPrompt,
-    userMessage,
+    text: userMessage,
+    images,
     schema,
-    'extractRecipe',
-    'extraction',
-    { followUp }
-  );
+    schemaName: 'extractRecipe',
+    followUp,
+  });
 
-  return fromText ? resolveFoundationRefsInMeals(fromText, foundation) : null;
+  // A reference number the model returned becomes the real food id here, against the list it saw.
+  return recipe ? resolveFoundationRefsInMeals(recipe, foundation) : null;
 }
 
 /**
@@ -120,24 +157,20 @@ export async function observeMeal(
   const systemPrompt = getMealObservationPrompt(config.language ?? DEFAULT_LANG);
   const schema = schemaOfFunction(getMealObservationFunctions());
 
-  if (images.length > 0) {
-    const raw = await generateWithImagesStructured<unknown>(
-      config,
-      systemPrompt,
-      images,
-      schema,
-      'observeMeal',
-      userMessage,
-      'extraction',
-      { prepared: true }
-    );
-
-    return parseMealObservation(raw);
+  const raw = await generateMealStructured<unknown>(config, {
+    systemPrompt,
+    text: userMessage,
+    images,
+    schema,
+    schemaName: 'observeMeal',
+  });
+  const look = parseMealObservation(raw);
+  if (raw != null && look === null) {
+    // The model answered, but with nothing a meal estimate can use (a quality signal, not an error).
+    reportAiEvent('ai-meal-look-unusable', { provider: config.provider, operation: 'observeMeal' });
   }
 
-  return parseMealObservation(
-    await generateStructured<unknown>(config, systemPrompt, userMessage, schema, 'observeMeal')
-  );
+  return look;
 }
 
 export async function estimateMissingIngredients(
@@ -146,7 +179,7 @@ export async function estimateMissingIngredients(
   knownIngredients: TrackMealIngredient[],
   mealName: string
 ): Promise<MissingIngredientMacrosResponse | null> {
-  if (config.provider === 'on-device') {
+  if (providerPolicyFor(config).estimatesFoodsFromLabels) {
     return estimateMissingIngredientsOnDevice(config, newIngredients);
   }
 
@@ -189,12 +222,9 @@ async function estimateMissingIngredientsOnDevice(
     );
   // From High up each label is asked for more than once and every figure is the median.
   const readings = extractionSamples(await thinkingLevelFor(config));
-  const replies =
-    readings <= 1
-      ? [await askForLabels()].filter((reply) => reply != null)
-      : await runSamples(config, readings, askForLabels, {
-          onDroppedFailure: (error) => reportAiError(error, 'coachAI.onDeviceLabelReading'),
-        });
+  const replies = await runSamples(config, readings, askForLabels, {
+    onDroppedFailure: (error) => reportAiError(error, 'coachAI.onDeviceLabelReading'),
+  });
   if (replies.length === 0) {
     return null;
   }
@@ -382,7 +412,7 @@ type RecheckedIngredients = {
  * `reconcileIngredientMacros`, so the figures shown never contradict each other; a failed
  * re-estimate is never a reason to fail the estimate.
  */
-export async function recheckImplausibleIngredients(
+async function recheckImplausibleIngredients(
   config: CoachAIConfig,
   mealName: string,
   ingredients: TrackMealIngredient[],
@@ -525,7 +555,7 @@ export async function refineTrackedMeals(
  * the first reading was unsure) and, if that fails too, stays without numbers rather than
  * disappearing from the meal. The foods it returns are final: they were looked up here.
  */
-export async function completeMealIngredients(
+async function completeMealIngredients(
   config: CoachAIConfig,
   mealName: string,
   ingredients: readonly RecipeIngredient[],
@@ -585,6 +615,31 @@ export async function completeMealIngredients(
   };
 }
 
+/**
+ * The ingredients of one meal the model only named, turned into checked numbers: looked up and
+ * estimated (`completeMealIngredients`), then held to the plausibility rules
+ * (`recheckImplausibleIngredients`). Every path that starts from names ends in this one step.
+ */
+export async function completeAndCheckMealIngredients(
+  config: CoachAIConfig,
+  mealName: string,
+  ingredients: readonly RecipeIngredient[],
+  onProgress?: MealEstimateProgressListener
+): Promise<RecheckedIngredients> {
+  const completed = await completeMealIngredients(config, mealName, ingredients, onProgress);
+  const checked = await recheckImplausibleIngredients(
+    config,
+    mealName,
+    completed.ingredients,
+    onProgress
+  );
+
+  return {
+    ingredients: checked.ingredients,
+    rechecked: completed.rechecked || checked.rechecked,
+  };
+}
+
 /** A meal estimated by the verified path, and whether any of it needed a second look. */
 export type VerifiedMeal = { response: TrackMealResponse; rechecked: boolean };
 
@@ -609,24 +664,18 @@ export async function trackMealVerified(
   let rechecked = false;
   const meals: TrackedMeal[] = [];
   for (const meal of recipeResponse.meals) {
-    const completed = await completeMealIngredients(
+    const completed = await completeAndCheckMealIngredients(
       config,
-      meal.mealName,
+      meal.mealName ?? meal.mealType,
       meal.ingredients,
       onProgress
     );
-    const checked = await recheckImplausibleIngredients(
-      config,
-      meal.mealName ?? meal.mealType,
-      completed.ingredients,
-      onProgress
-    );
 
-    rechecked ||= completed.rechecked || checked.rechecked;
+    rechecked ||= completed.rechecked;
     meals.push({
       mealType: meal.mealType,
       mealName: meal.mealName,
-      ingredients: checked.ingredients,
+      ingredients: completed.ingredients,
     });
   }
 
@@ -653,26 +702,13 @@ async function requestMealReview(
   const systemPrompt = getMealReviewPrompt(meal, config.language ?? DEFAULT_LANG);
   const schema = schemaOfFunction(getMealReviewFunctions(mealSchemaDialect(config)));
 
-  if (images.length > 0) {
-    return generateWithImagesStructured<MealReview>(
-      config,
-      systemPrompt,
-      images,
-      schema,
-      'reviewMealEstimate',
-      userMessage,
-      'extraction',
-      { prepared: true }
-    );
-  }
-
-  return generateStructured<MealReview>(
-    config,
+  return generateMealStructured<MealReview>(config, {
     systemPrompt,
-    userMessage,
+    text: userMessage,
+    images,
     schema,
-    'reviewMealEstimate'
-  );
+    schemaName: 'reviewMealEstimate',
+  });
 }
 
 export async function reviewTrackedMeal(

@@ -59,17 +59,37 @@ export type ProviderPolicy = {
   /** The most turns of history a free-chat reply is sent, for a model that copies its own replies. */
   maxChatHistoryTurns?: number;
   /**
-   * Nothing on the provider's side enforces the schema (a small local model), so a structured reply
-   * is shape-checked here and, when it is malformed or misses the schema, gets one repair call.
+   * What happens to a structured reply from this provider. Absent: it is used as it came (the free
+   * tier, whose schema cannot be relied on but whose replies were never repaired, and Apple's engine,
+   * whose guided generation the OS enforces).
+   * - `enforced`: the provider's server enforces the schema, so a reply that stopped at the token
+   *   limit is a failure to report, never something to patch with the JSON repair ladder
+   *   (`jsonrepair` would close the braces and return a half-empty object as an answer).
+   * - `repaired`: nothing on the provider's side enforces the schema (a small local model), so a
+   *   reply is shape-checked here and, when malformed or missing the schema, gets one repair call.
    */
-  repairsStructuredReplies?: boolean;
+  structuredReplies?: 'enforced' | 'repaired';
   /**
-   * The provider's server enforces the schema, so a structured reply that stopped at the token limit
-   * is a failure to report, never something to patch with the JSON repair ladder (`jsonrepair` would
-   * close the braces and return a half-empty object as an answer). Absent for the free tier, a local
-   * server and the on-device model, whose schema enforcement cannot be relied on.
+   * A reply that parsed but missed part of the schema is kept when the repair does not do better,
+   * because callers of an OpenAI-compatible endpoint have always tolerated a partial answer. The
+   * downloaded model is held to its schema instead, so it does not set this.
    */
-  rejectsTruncatedStructuredReplies?: boolean;
+  keepsPartialStructuredReply?: boolean;
+  /**
+   * A small model invents detail when asked to describe a meal before estimating it, so the first
+   * look of the highest thinking level is never made for it.
+   */
+  skipsMealFirstLook?: boolean;
+  /**
+   * Missing ingredients are asked for as a nutrition label per 100 g by name (one request), scaled
+   * and made consistent in code, instead of as a full estimate a tiny model cannot make.
+   */
+  estimatesFoodsFromLabels?: boolean;
+  /**
+   * This engine has no retry layer that classifies its failures, so a structured request that fails
+   * (other than a cancel or "not ready") is reported and read as "no answer" instead of thrown.
+   */
+  structuredFailureIsNoAnswer?: boolean;
   /**
    * One engine answers one request at a time (the on-device model, a local server), so the samples
    * of a job run one after another instead of queueing behind each other or fighting for memory.
@@ -128,7 +148,7 @@ const HOSTED_POLICY: ProviderPolicy = {
   onSuccess: () => setHostedSignal('ok'),
   backOff: (wait) => whileHostedBackingOff(wait),
   retriesTransientFailures: false,
-  rejectsTruncatedStructuredReplies: true,
+  structuredReplies: 'enforced',
   // The Worker keeps its own ceiling per feature and clamps what is asked, but an older Worker has no
   // such field and answers an unknown one with a 400. So the app sends it only once `/v1/config`
   // (cached for five minutes) says this Worker takes it, and never lets a config problem block a request.
@@ -157,12 +177,12 @@ const HOSTED_POLICY: ProviderPolicy = {
 /** OpenAI itself takes the field on every model it lists (`OPENAI_MODELS`). */
 const OPENAI_POLICY: ProviderPolicy = {
   reasoningEffort: async (effort) => reasoningEffortValue(effort),
-  rejectsTruncatedStructuredReplies: true,
+  structuredReplies: 'enforced',
 };
 
 /** Gemini and Claude enforce the schema server-side and say why a reply stopped. */
-const GEMINI_POLICY: ProviderPolicy = { rejectsTruncatedStructuredReplies: true };
-const CLAUDE_POLICY: ProviderPolicy = { rejectsTruncatedStructuredReplies: true };
+const GEMINI_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
+const CLAUDE_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 
 /**
  * A small model: a custom local server or the downloaded on-device one. Left alone it copies its own
@@ -173,8 +193,27 @@ const CLAUDE_POLICY: ProviderPolicy = { rejectsTruncatedStructuredReplies: true 
 const SMALL_MODEL_POLICY: ProviderPolicy = {
   chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
   maxChatHistoryTurns: 6,
-  repairsStructuredReplies: true,
+  structuredReplies: 'repaired',
   runsSamplesSequentially: true,
+};
+
+/** What both on-device engines share beyond being small: the meal pipeline is shorter for them. */
+const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
+  skipsMealFirstLook: true,
+  estimatesFoodsFromLabels: true,
+  structuredFailureIsNoAnswer: true,
+};
+
+/** The downloaded model: the small-model rules, and its schema is a hard requirement. */
+const GGUF_ON_DEVICE_POLICY: ProviderPolicy = { ...SMALL_MODEL_POLICY, ...ON_DEVICE_CAPABILITIES };
+
+/**
+ * A custom local server: the small-model rules, but a partial structured answer has always been
+ * accepted from it.
+ */
+const LOCAL_SERVER_POLICY: ProviderPolicy = {
+  ...SMALL_MODEL_POLICY,
+  keepsPartialStructuredReply: true,
 };
 
 /**
@@ -184,6 +223,7 @@ const SMALL_MODEL_POLICY: ProviderPolicy = {
 const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
   maxChatHistoryTurns: SMALL_MODEL_POLICY.maxChatHistoryTurns,
   runsSamplesSequentially: true,
+  ...ON_DEVICE_CAPABILITIES,
 };
 
 const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
@@ -191,7 +231,7 @@ const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
   openai: OPENAI_POLICY,
   gemini: GEMINI_POLICY,
   claude: CLAUDE_POLICY,
-  local: SMALL_MODEL_POLICY,
+  local: LOCAL_SERVER_POLICY,
 };
 
 /**
@@ -202,7 +242,7 @@ export function providerPolicyFor(
   config: Pick<CoachAIConfig, 'provider' | 'engine'>
 ): ProviderPolicy {
   if (config.provider === 'on-device') {
-    return config.engine === 'gguf' ? SMALL_MODEL_POLICY : APPLE_ON_DEVICE_POLICY;
+    return config.engine === 'gguf' ? GGUF_ON_DEVICE_POLICY : APPLE_ON_DEVICE_POLICY;
   }
 
   return PROVIDER_POLICIES[config.provider] ?? {};

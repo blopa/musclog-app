@@ -1262,6 +1262,17 @@ export class SettingsService {
     await SettingsService.setBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, value);
   }
 
+  /**
+   * Switches on-device AI on with `engine`. Both rows commit in one write so a failure cannot leave
+   * on-device AI on with a stale engine.
+   */
+  static async enableOnDeviceAi(engine: 'apple' | 'gguf'): Promise<void> {
+    await SettingsService.setSettingValues([
+      { type: USE_ON_DEVICE_AI_SETTING_TYPE, value: 'true' },
+      { type: SETTINGS.onDeviceEngine.type, value: SETTINGS.onDeviceEngine.serialize(engine) },
+    ]);
+  }
+
   static async getUseOnDeviceAi(): Promise<boolean> {
     return SettingsService.getBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, false);
   }

@@ -9,7 +9,6 @@
  */
 import { median } from 'simple-statistics';
 
-import type { TrackedMeal } from './coachAI';
 import { normalizeFoodName } from './foodName';
 
 export const MAX_IDENTIFIED_FOODS = 12;
@@ -227,19 +226,6 @@ export function parseIdentifiedFoods(value: unknown): IdentifiedFood[] {
   return [...byName.values()];
 }
 
-/** The meal a photo taken at this hour most likely belongs to; the review screen lets the person change it. */
-export function mealTypeForHour(hour: number): TrackedMeal['mealType'] {
-  if (hour >= 5 && hour < 11) {
-    return 'breakfast';
-  }
-
-  if (hour >= 11 && hour < 15) {
-    return 'lunch';
-  }
-
-  return hour >= 15 && hour < 22 ? 'dinner' : 'snack';
-}
-
 /** A food the phone already has, with its numbers per 100 g. */
 export type FoodCandidate = {
   id: string;
@@ -285,10 +271,7 @@ const STOP_WORDS = new Set([
 
 /** Lowercase, no diacritics, a naive singular, and none of the filler words. */
 export function tokenize(text: string): string[] {
-  return text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
+  return normalizeFoodName(text)
     .split(/[^a-z0-9]+/)
     .filter((word) => word.length >= 3 && !STOP_WORDS.has(word))
     .map((word) =>
