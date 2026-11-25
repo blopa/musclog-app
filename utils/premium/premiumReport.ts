@@ -7,7 +7,10 @@ import type { PremiumActionFailure } from './premiumState';
 export type PremiumStage =
   'purchase' | 'restore' | 'enroll' | 'session' | 'usage' | 'config' | 'price';
 
-export type PremiumReportDetail = { status?: number; storeErrorCode?: string };
+/** What the person did that led to an enroll: bought, restored, or enrolled a device known to be subscribed. */
+export type PremiumFlow = 'purchase' | 'restore' | 'enroll';
+
+export type PremiumReportDetail = { status?: number; storeErrorCode?: string; flow?: PremiumFlow };
 
 export type PremiumFailureReport = {
   message: string;
@@ -38,6 +41,12 @@ export function premiumFailureReport(
     return null;
   }
 
+  // A restore that finds no subscription is the answer to "do I own Iron?", not a fault: anyone can
+  // tap Restore, since there is no account. A purchase that ends here is a real problem and is kept.
+  if (stage === 'enroll' && failure === 'subscription_required' && detail.flow === 'restore') {
+    return null;
+  }
+
   const tags: Record<string, string> = { premium_stage: stage, premium_failure: failure };
 
   if (typeof detail.status === 'number') {
@@ -46,6 +55,10 @@ export function premiumFailureReport(
 
   if (detail.storeErrorCode) {
     tags.store_error_code = detail.storeErrorCode;
+  }
+
+  if (detail.flow) {
+    tags.premium_flow = detail.flow;
   }
 
   return {
