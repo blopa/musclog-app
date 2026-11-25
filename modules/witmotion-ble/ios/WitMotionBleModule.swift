@@ -618,24 +618,50 @@ extension WitMotionBleManager: CBPeripheralDelegate {
 
 public class WitMotionBleModule: Module {
   private var bleManager: WitMotionBleManager?
+  private let managerLock = NSLock()
+
+  /// Expo creates every module at launch, but the sensors are a rarely used feature: the manager
+  /// is built on the first scan or connect, not in `OnCreate`. Stopping, disconnecting, commands
+  /// and `getState` never build it (with no manager nothing is running). See AGENTS.md.
+  private func manager() -> WitMotionBleManager {
+    managerLock.lock()
+    defer { managerLock.unlock() }
+
+    if let mgr = bleManager {
+      return mgr
+    }
+
+    let mgr = WitMotionBleManager()
+    mgr.onStateChanged = { [weak self] p in self?.sendEvent("onStateChanged", p) }
+    mgr.onDataBatch    = { [weak self] p in self?.sendEvent("onDataBatch", p) }
+    mgr.onDeviceFound  = { [weak self] p in self?.sendEvent("onDeviceFound", p) }
+    mgr.onError        = { [weak self] p in self?.sendEvent("onError", p) }
+    bleManager = mgr
+    return mgr
+  }
 
   public func definition() -> ModuleDefinition {
     Name("WitMotionBle")
 
     Events("onStateChanged", "onDataBatch", "onDeviceFound", "onError")
 
-    OnCreate {
-      let mgr = WitMotionBleManager()
-      mgr.onStateChanged = { [weak self] p in self?.sendEvent("onStateChanged", p) }
-      mgr.onDataBatch    = { [weak self] p in self?.sendEvent("onDataBatch", p) }
-      mgr.onDeviceFound  = { [weak self] p in self?.sendEvent("onDeviceFound", p) }
-      mgr.onError        = { [weak self] p in self?.sendEvent("onError", p) }
-      self.bleManager = mgr
-    }
-
     OnDestroy {
-      self.bleManager?.destroy()
+      self.managerLock.lock()
+      let mgr = self.bleManager
       self.bleManager = nil
+      self.managerLock.unlock()
+
+      guard let mgr else {
+        return
+      }
+
+      // Detach first: the cleanup updates state, and an event sent while the JS runtime is
+      // being torn down has nowhere to go (on Android the same send crashed the app).
+      mgr.onStateChanged = nil
+      mgr.onDataBatch = nil
+      mgr.onDeviceFound = nil
+      mgr.onError = nil
+      mgr.destroy()
     }
 
     Function("requestPermissions") {
@@ -645,7 +671,7 @@ public class WitMotionBleModule: Module {
     }
 
     AsyncFunction("startScan") { (options: [String: Any?]?) -> Bool in
-      return self.bleManager?.startScan(options: options) ?? false
+      return self.manager().startScan(options: options)
     }
 
     Function("stopScan") {
@@ -653,11 +679,7 @@ public class WitMotionBleModule: Module {
     }
 
     AsyncFunction("connect") { (deviceId: String) -> [String: Any?] in
-      guard let mgr = self.bleManager else {
-        throw NSError(domain: "WitMotionBle", code: 0,
-                      userInfo: [NSLocalizedDescriptionKey: "Module not initialised"])
-      }
-      return try mgr.connect(deviceId: deviceId)
+      return try self.manager().connect(deviceId: deviceId)
     }
 
     AsyncFunction("disconnect") {
