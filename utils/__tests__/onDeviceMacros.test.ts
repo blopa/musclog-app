@@ -1,10 +1,6 @@
-import {
-  clampNonNegative,
-  fromLabelPer100g,
-  isFiberTracked,
-  medianLabel,
-  withLabelFiber,
-} from '../onDeviceMacros';
+import { fromLabelPer100g, isFiberTracked, medianLabel, withLabelFiber } from '../onDeviceMacros';
+
+import { clampNonNegative } from '../mealPlausibility';
 
 describe('onDeviceMacros', () => {
   it('clamps negative and non-finite numbers to 0', () => {

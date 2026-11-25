@@ -23,8 +23,13 @@ describe('providerPolicyFor', () => {
     const local = providerPolicyFor({ provider: 'local' });
     const gguf = providerPolicyFor({ provider: 'on-device', engine: 'gguf' });
 
-    expect(gguf).toBe(local);
-    expect(local.repairsStructuredReplies).toBe(true);
+    expect(gguf).toMatchObject({
+      chatSampling: local.chatSampling,
+      maxChatHistoryTurns: local.maxChatHistoryTurns,
+      structuredReplies: local.structuredReplies,
+      runsSamplesSequentially: true,
+    });
+    expect(local.structuredReplies).toBe('repaired');
     expect(local.chatSampling?.frequency_penalty).toBeGreaterThan(0);
     expect(local.chatSampling?.presence_penalty).toBeGreaterThan(0);
     expect(local.maxChatHistoryTurns).toBeGreaterThan(0);
@@ -38,7 +43,7 @@ describe('providerPolicyFor', () => {
         providerPolicyFor({ provider: 'local' }).maxChatHistoryTurns
       );
       expect(apple.chatSampling).toBeUndefined();
-      expect(apple.repairsStructuredReplies).toBeUndefined();
+      expect(apple.structuredReplies).toBeUndefined();
     }
   });
 
@@ -46,7 +51,7 @@ describe('providerPolicyFor', () => {
     for (const provider of ['openai', 'gemini', 'claude', 'gateway', 'hosted'] as const) {
       const policy = providerPolicyFor({ provider });
 
-      expect(policy.repairsStructuredReplies).toBeUndefined();
+      expect(policy.structuredReplies).not.toBe('repaired');
       expect(policy.chatSampling).toBeUndefined();
       expect(policy.maxChatHistoryTurns).toBeUndefined();
     }

@@ -12,7 +12,8 @@ describe('SmartCameraModal logs an estimated meal food by food', () => {
     expect(source).toContain('logTrackedMeal(');
   });
 
-  it('no longer logs a plate as one food made of its totals', () => {
-    expect(source).not.toContain('selectedMealForLogging.calories * scale');
+  it('hands the estimate to the shared logger without building groups itself', () => {
+    expect(source).toContain('logTrackedMeal({ ingredients: aiIngredients');
+    expect(source).not.toContain('groupId: randomUUID()');
   });
 });

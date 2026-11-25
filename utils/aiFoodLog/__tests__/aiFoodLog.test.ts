@@ -1,3 +1,4 @@
+import { storedMealCarbs } from '@/utils/carbsConvention';
 import {
   buildOpenHttpsUrl,
   OPEN_LINK_BASE_URL,
@@ -23,7 +24,6 @@ import {
   defaultGrouping,
   partitionResolved,
   resolveGrouping,
-  storedCarbs,
   sumIngredients,
   toBatchIngredients,
   toIngredients,
@@ -393,9 +393,9 @@ describe('planning a log', () => {
       { name: 'Banana', grams: 118, foodId: 'f1', carbs: 27, fiber: 3 },
     ]);
 
-    expect(storedCarbs(own[0])).toBe(54);
+    expect(storedMealCarbs(own[0])).toBe(54);
     // A matched food's carbs come from Musclog already including their fiber.
-    expect(storedCarbs(matched[0])).toBe(27);
+    expect(storedMealCarbs(matched[0])).toBe(27);
     expect(sumIngredients([...own, ...matched])).toMatchObject({ carbs: 81, fiber: 7 });
   });
 
