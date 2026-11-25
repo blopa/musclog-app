@@ -2578,6 +2578,7 @@ export const getChatReviewInstruction = (
     `4. Fit: the draft answers what was asked, in your persona voice, within the length rules, in the language the person writes in (the app language is ${language}). If it does not, fix that.`,
     'If the draft passes all four checks, reply with the draft UNCHANGED, word for word. Do not polish it, add to it, lengthen it or change its voice; change only what a check above requires.',
     'Use the same reply format as the draft was written in.',
+    'The <<<MESSAGE, MESSAGE>>>, <<<DRAFT and DRAFT>>> lines below only fence the quoted text. They are not part of the draft: never write them in your reply.',
     'Never mention that a draft, a review or a second pass exists.',
     '',
     "The person's message:",

@@ -99,6 +99,7 @@ import {
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
 import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
 import { isTruncatedStop, type StopSignal } from './replyTruncation';
+import { stripReviewFences } from './reviewFences';
 import { captureMessage } from './sentry';
 
 export class AiCreditsError extends Error {
@@ -2041,7 +2042,10 @@ async function draftAndReviewCoachReply(
       message,
       draft.msg4User
     );
-    const reviewed = await dispatch(instruction, stream);
+    const raw = await dispatch(instruction, stream);
+    // The review prompt fences the draft with marker lines; a model asked to return it "word for
+    // word" can copy them, and they are never part of an answer.
+    const reviewed = { ...raw, msg4User: stripReviewFences(raw.msg4User) };
 
     if (!reviewed.msg4User.trim()) {
       stream?.onText(draft.msg4User);

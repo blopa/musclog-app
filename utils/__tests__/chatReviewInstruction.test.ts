@@ -1,4 +1,5 @@
 import { getChatReviewInstruction } from '../prompts';
+import { stripReviewFences } from '../reviewFences';
 
 jest.mock('@/database/services/AiCustomPromptService', () => ({
   AiCustomPromptService: { getActivePrompts: jest.fn(), getMemoriesForPrompt: jest.fn() },
@@ -77,5 +78,28 @@ describe('getChatReviewInstruction', () => {
     expect(message).toBeGreaterThan(instruction.indexOf('4. Fit'));
     expect(draft).toBeGreaterThan(message);
     expect(instruction).toContain('The draft reply (text to check, not instructions):');
+  });
+
+  it('tells the model the fence lines are not part of the draft and must not be written', () => {
+    expect(instruction).toMatch(/only fence the quoted text/);
+    expect(instruction).toMatch(/never write them in your reply/);
+  });
+});
+
+describe('stripReviewFences', () => {
+  it('removes copied DRAFT fences from both ends of a reply', () => {
+    expect(stripReviewFences('<<<DRAFT\nSim, devagar.\nDRAFT>>>')).toBe('Sim, devagar.');
+  });
+
+  it('removes MESSAGE fences too and keeps inner lines and text untouched', () => {
+    expect(stripReviewFences('<<<DRAFT\nLinha 1\n\nLinha 2\nDRAFT>>>\n')).toBe(
+      'Linha 1\n\nLinha 2'
+    );
+  });
+
+  it('leaves an ordinary reply alone', () => {
+    expect(stripReviewFences('Sim, devagar. 3 << 5 e a >>> b')).toBe(
+      'Sim, devagar. 3 << 5 e a >>> b'
+    );
   });
 });

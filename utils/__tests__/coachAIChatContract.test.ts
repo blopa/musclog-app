@@ -122,6 +122,17 @@ describe('the chat error contract', () => {
     expect(getChatMessagePromptContent).toHaveBeenCalledTimes(1);
   });
 
+  it("drops the review prompt's fence lines a reviewer copied around the draft", async () => {
+    mockSettingsGet.mockResolvedValue('tokenmaxxing');
+    mockCreate
+      .mockResolvedValueOnce(oneShot(json('Draft.')))
+      .mockResolvedValueOnce(oneShot(json('<<<DRAFT\nDraft.\nDRAFT>>>')));
+
+    const result = await sendCoachMessage(openai, [], 'hello', 'general');
+
+    expect(result.msg4User).toBe('Draft.');
+  });
+
   it('gives the apology and makes no review request when the draft fails', async () => {
     mockSettingsGet.mockResolvedValue('tokenmaxxing');
     mockCreate.mockRejectedValueOnce(Object.assign(new Error('boom'), { status: 400 }));
