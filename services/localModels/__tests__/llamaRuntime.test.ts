@@ -3,7 +3,12 @@ import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 
 const mockInstalled: {
   value: null | {
-    manifest: { id: string; imageMaxTokens: number; contextTokens: number };
+    manifest: {
+      id: string;
+      imageMaxTokens: number;
+      contextTokens: number;
+      textSampling: { temperature: number; minP: number; repeatPenalty: number };
+    };
     modelPath: string;
     projectorPath: string | null;
   };
@@ -65,7 +70,12 @@ import {
 } from '../llamaRuntime';
 
 const INSTALLED = {
-  manifest: { id: 'm', imageMaxTokens: 256, contextTokens: 4096 },
+  manifest: {
+    id: 'm',
+    imageMaxTokens: 256,
+    contextTokens: 4096,
+    textSampling: { temperature: 0.1, minP: 0.15, repeatPenalty: 1.05 },
+  },
   modelPath: 'file:///models/m.gguf',
   projectorPath: 'file:///models/p.gguf',
 };
@@ -122,19 +132,38 @@ describe('generateWithLocalModel', () => {
     });
   });
 
-  it('maps chat repetition penalties to llama.cpp, and sends none by default', async () => {
-    await generateWithLocalModel({
-      messages,
-      penalties: { frequency_penalty: 0.4, presence_penalty: 0.4 },
-    });
+  it('samples a plain-text reply with the vendor settings from the manifest', async () => {
     await generateWithLocalModel({ messages });
 
     expect(mockContext.completion.mock.calls[0][0]).toMatchObject({
-      penalty_freq: 0.4,
-      penalty_present: 0.4,
+      temperature: 0.1,
+      min_p: 0.15,
+      penalty_repeat: 1.05,
     });
-    expect(mockContext.completion.mock.calls[1][0]).not.toHaveProperty('penalty_freq');
-    expect(mockContext.completion.mock.calls[1][0]).not.toHaveProperty('penalty_present');
+    expect(mockContext.completion.mock.calls[0][0]).not.toHaveProperty('penalty_freq');
+    expect(mockContext.completion.mock.calls[0][0]).not.toHaveProperty('penalty_present');
+  });
+
+  it('lets an explicit temperature win over the vendor temperature', async () => {
+    await generateWithLocalModel({ messages, temperature: 0.7 });
+
+    expect(mockContext.completion.mock.calls[0][0]).toMatchObject({
+      temperature: 0.7,
+      min_p: 0.15,
+      penalty_repeat: 1.05,
+    });
+  });
+
+  it('gives a schema or a photo no vendor sampling, only the default temperature', async () => {
+    const schema = { type: 'object', properties: {} };
+    await generateWithLocalModel({ messages, schema });
+    await generateWithLocalModel({ messages, image: 'file:///photo.jpg' });
+
+    for (const call of mockContext.completion.mock.calls) {
+      expect(call[0]).toMatchObject({ temperature: 0.2 });
+      expect(call[0]).not.toHaveProperty('min_p');
+      expect(call[0]).not.toHaveProperty('penalty_repeat');
+    }
   });
 
   it('attaches the projector only for a photo and releases it after a short idle', async () => {
@@ -424,7 +453,7 @@ describe('llamaRuntime.web', () => {
     jest.resetModules();
   });
 
-  it('forwards penalties, strips template tokens and serializes unload', async () => {
+  it('sends vendor sampling for plain text, strips template tokens and serializes unload', async () => {
     let webModule!: typeof import('../llamaRuntime.web');
     let resolveFetch!: (value: Response) => void;
     const fetchMock = jest.fn(
@@ -447,7 +476,6 @@ describe('llamaRuntime.web', () => {
     const deltas: string[] = [];
     const gen = webModule.generateWithLocalModel({
       messages,
-      penalties: { frequency_penalty: 0.4, presence_penalty: 0.4 },
       onDelta: (delta) => deltas.push(delta),
     });
     await Promise.resolve();
@@ -456,9 +484,12 @@ describe('llamaRuntime.web', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
     expect(body).toMatchObject({
-      frequency_penalty: 0.4,
-      presence_penalty: 0.4,
+      temperature: 0.1,
+      min_p: 0.15,
+      repeat_penalty: 1.05,
     });
+    expect(body).not.toHaveProperty('frequency_penalty');
+    expect(body).not.toHaveProperty('presence_penalty');
 
     resolveFetch({
       ok: true,

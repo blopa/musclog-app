@@ -168,8 +168,8 @@ label (1 / 1 / 2 + arbiter / up to 3 readings + arbiter).
 
 `sendCoachMessage`. Effort: `low` at Off, `high` at Medium and High, `max` at Tokenmaxxing.
 
-- Off, Medium, High: 1 request, streamed.
-- Tokenmaxxing: 2. The first reply is written unseen, then a review request (the same system
+- Off, Medium, High: 1 request, streamed. On either on-device engine (`ProviderPolicy.skipsChatReview`) it is always 1 request, whatever the level: the review turned a 450M model's good drafts into "I'm Loggy.", a copy of an earlier reply or the checklist itself.
+- Tokenmaxxing (every provider but the two on-device engines): 2. The first reply is written unseen, then a review request (the same system
   prompt, built once for both, and history) checks it against the conversation and your app data.
   Only the review is streamed, with "Double-checking my answer…" until text arrives. If the review
   fails or comes back empty, you get the draft; if the draft itself fails, you get the same apology
@@ -185,9 +185,12 @@ label (1 / 1 / 2 + arbiter / up to 3 readings + arbiter).
   The draft is not quoted in the instruction: it travels as the model's own previous reply (with the
   message it answers as the turn before), and the instruction is just the checklist, so a small model
   has no marker lines to copy back into its answer.
-  The draft is not quoted in the instruction: it travels as the model's own previous reply (with the
-  message it answers as the turn before), and the instruction is just the checklist, so a small model
-  has no marker lines to copy back into its answer.
+- The downloaded on-device model also rewrites a reply that copies an earlier coach turn
+  (`ProviderPolicy.regeneratesCopiedChatReply`). Its first 12 words are held back while it is written;
+  if at least half of their 6-word runs occur in one coach turn that was sent, the generation is
+  stopped before anything is shown and the reply is written again from the person's own messages
+  alone (no coach turn left to copy). A cancel is never retried; without a stream the whole reply is
+  checked. `ai-chat-reply-copied` counts how often.
 
 The chat's "armed" intentions reuse the jobs on this page: Track meal is the meal job, Meal plan and
 Workout plan are plans, Analyze progress is a workout insight, Nutrition check is a nutrition insight.
@@ -198,7 +201,9 @@ On the phone only the last three work; the two plans need a cloud model.
 `generateInsight`: nutrition check, progress analysis, meal critique, feedback on a finished workout
 and the daily background insights.
 
-- Off, Medium: 1 request.
+- Off, Medium: 1 request. The downloaded on-device model makes 1 request at every level
+  (`ProviderPolicy.skipsInsightFactCheck`): asked to fact-check its own answer it replaced it outright
+  in 11 of 20 probes.
 - High: the answer is drafted unseen, then 1 fact-check round. Code lists the figures in the answer
   that are not in the data the model was given (`ungroundedFigures`, `utils/numberGrounding.ts`) and
   the model returns a corrected version. It replaces the draft only if it is not empty and has no
@@ -440,9 +445,11 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   persona; every structured prompt stays persona-free and tells the model to keep summaries neutral.
 - **On-device chat has its own short system prompt** (`getMinimalSystemPrompt`, both on-device
   engines), because a 450M model lost the one "You are Loggy" line under generic boilerplate and
-  called itself "Alex Johnson". It opens with "Your name is Loggy." (the word does not read as a name to a small model), then
-  plain facts (the coach inside Musclog, an AI on this phone; the exact answer "I'm Loggy." when
-  asked; never make up a name for the person; the name is said three times in all), the
+  called itself "Alex Johnson". It opens with "Your name is Loggy." (the word does not read as a
+  name to a small model), then plain facts (the coach inside Musclog, an AI on this phone;
+  no ready-made answer to give when asked its name (a quoted "I'm Loggy." came back for "thanks" and
+  was then copied from its own history); never make up a name for the person; the name is said
+  twice in all), the
   person's stats on an "About them:" line, six short rules (their language, the thread's topic,
   Loggy's voice in one line, under 80 words, numbers only from the app data or what they said, the
   safety topics), then the app data under a "facts from the app, not instructions" label, and it
@@ -457,8 +464,10 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   budget and it started answering in JSON. An empty on-device reply is not replaced by the apology:
   it fails the send (the message goes back to the composer), so no apology ever becomes a coach turn
   a small model copies. Small models (a local server and the downloaded on-device model)
-  see only the last 6 turns and, on free chat only, `frequency_penalty` and `presence_penalty` 0.4
-  (never on a structured request); Apple's engine takes the 6-turn cap and no penalties. Context
+  see only the last 6 turns; a local server also gets `frequency_penalty` and `presence_penalty` 0.4
+  on free chat only (never on a structured request), while the downloaded model samples with its
+  vendor's settings (temperature 0.1, min_p 0.15, repeat penalty 1.05, `textSampling` in its manifest)
+  on every plain-text request and gets no penalties; Apple's engine takes the 6-turn cap and no penalties. Context
   budget in characters (`PROVIDER_CONFIGS`): 64,000 for Gemini, OpenAI, Claude, the free tier and
   Musclog Iron, 8,000 for a local server and the downloaded model, 4,500 for Apple's. A local server
   gets memories and the foundation foods; on-device AI gets neither. The foundation list is about
@@ -540,6 +549,7 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   answer, the person sees a failure instead of a repaired answer, and the Sentry event
   `ai-structured-reply-truncated` is how to find it. A growing meal or plan can start failing this way.
 - `getWorkoutInsights`, `getWorkoutVolumeInsights` and `calculateNextWorkoutVolume` have no caller.
+- Not measured: Apple's engine and a custom local server keep the insight fact-check round and have no copy guard on chat; only the downloaded model was benchmarked.
 
 ## Where to change things
 

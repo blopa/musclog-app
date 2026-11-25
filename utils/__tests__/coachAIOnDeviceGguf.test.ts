@@ -1,5 +1,10 @@
 import { AiCancelledError, OnDeviceUnavailableError } from '../aiErrors';
-import { type CoachAIConfig, requestStructured, sendCoachMessage } from '../coachAI';
+import {
+  type CoachAIConfig,
+  getNutritionInsights,
+  requestStructured,
+  sendCoachMessage,
+} from '../coachAI';
 import { estimateNutritionFromPhoto, trackMeal } from '../coachMealEstimate';
 
 const mockSendLocalMessage = jest.fn();
@@ -30,6 +35,9 @@ jest.mock('../handleError', () => ({ handleError: jest.fn() }));
 jest.mock('../prompts', () => ({
   ...jest.requireActual('../prompts'),
   getChatMessagePromptContent: jest.fn().mockResolvedValue('SYSTEM'),
+  getNutritionInsightsPrompt: jest
+    .fn()
+    .mockResolvedValue('DATA: protein 120 g, calories 2150 kcal'),
 }));
 jest.mock('@/database/services/DebugDumpService', () => ({
   DebugDumpService: { logJsonEvent: jest.fn() },
@@ -230,7 +238,7 @@ describe('sendCoachMessage on the downloaded engine', () => {
     expect(reply.msg4User).toBe('');
   });
 
-  it('sends only the latest turns, with a repetition penalty', async () => {
+  it('sends only the latest turns, and no penalties of its own (the model carries its vendor sampling)', async () => {
     mockSendLocalMessage.mockResolvedValue('Anytime!');
     const history = Array.from({ length: 10 }, (_, i) => ({
       role: i % 2 === 0 ? ('user' as const) : ('coach' as const),
@@ -240,11 +248,13 @@ describe('sendCoachMessage on the downloaded engine', () => {
 
     await sendCoachMessage(gguf, history, 'thanks');
 
-    const [messages, , , penalties] = mockSendLocalMessage.mock.calls[0];
+    const [messages, , , extra] = mockSendLocalMessage.mock.calls[0];
     // 6 history turns + the new message
     expect(messages).toHaveLength(7);
     expect(messages[0].content).toBe('turn 4');
-    expect(penalties).toEqual({ frequency_penalty: 0.4, presence_penalty: 0.4 });
+    // (messages, system prompt, signal): nothing else is sent, the penalties are gone
+    expect(extra).toBeUndefined();
+    expect(mockSendLocalMessage.mock.calls[0]).toHaveLength(3);
   });
 
   it('answers a chat reply in one request at the Tokenmaxxing level (no review round)', async () => {
@@ -286,6 +296,151 @@ describe('sendCoachMessage on the downloaded engine', () => {
   it('rethrows a cancel', async () => {
     mockSendLocalMessage.mockRejectedValue(new AiCancelledError());
     await expect(sendCoachMessage(gguf, [], 'hi')).rejects.toBeInstanceOf(AiCancelledError);
+  });
+});
+
+describe('an insight on the downloaded engine', () => {
+  it('is one request at every thinking level, never fact-checked in rounds', async () => {
+    for (const level of ['high', 'tokenmaxxing']) {
+      mockGetThinkingLevel.mockResolvedValue(level);
+      mockSendLocalMessage.mockReset();
+      mockSendLocalMessage.mockResolvedValue('You ate 120 g of protein.');
+
+      const insight = await getNutritionInsights(gguf, '2026-11-01', '2026-11-07');
+
+      expect(insight).toBe('You ate 120 g of protein.');
+      expect(mockSendLocalMessage).toHaveBeenCalledTimes(1);
+    }
+  });
+});
+
+describe('a chat reply that copies an earlier coach turn, on the downloaded engine', () => {
+  const pplAnswer =
+    'A push pull legs split trains pushing muscles on one day, pulling muscles on the next and ' +
+    'legs on the third, so every muscle gets two sessions a week when you run it twice.';
+  const history = [
+    { role: 'user' as const, content: 'what is a ppl split?', at: 1_700_000_000_000 },
+    { role: 'coach' as const, content: pplAnswer, at: 1_700_000_001_000 },
+    { role: 'user' as const, content: 'thanks', at: 1_700_000_002_000 },
+    { role: 'coach' as const, content: 'Anytime!', at: 1_700_000_003_000 },
+  ];
+  const chunksOf = (text: string) => text.match(/\S+\s*/g) ?? [];
+
+  /** A mock of the runtime's stream that stops, like llama.rn, once its signal is aborted. */
+  const streaming =
+    (text: string, signals?: AbortSignal[]) =>
+    async (_m: unknown, _s: unknown, onDelta: (d: string) => void, signal?: AbortSignal) => {
+      if (signal) {
+        signals?.push(signal);
+      }
+
+      for (const chunk of chunksOf(text)) {
+        onDelta(chunk);
+        if (signal?.aborted) {
+          throw new AiCancelledError();
+        }
+      }
+
+      return text;
+    };
+
+  it('stops the copy before any of it is shown and writes the reply from the person’s messages alone', async () => {
+    const signals: AbortSignal[] = [];
+    mockStreamLocalMessage
+      .mockImplementationOnce(streaming(pplAnswer, signals))
+      .mockImplementationOnce(streaming('Of course. What do you want to work on next?'));
+    const seen: string[] = [];
+
+    const reply = await sendCoachMessage(gguf, history, 'that is all you can say?', 'general', {
+      onText: (text) => seen.push(text),
+    });
+
+    expect(reply.msg4User).toBe('Of course. What do you want to work on next?');
+    expect(mockStreamLocalMessage).toHaveBeenCalledTimes(2);
+    expect(signals[0].aborted).toBe(true);
+    // Nothing of the copy reached the screen, only the second reply did.
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen.every((text) => !text.includes('pushing muscles'))).toBe(true);
+    expect(seen[seen.length - 1]).toBe('Of course. What do you want to work on next?');
+    // The second request holds the person's messages and no coach turn, run into one message.
+    const [secondMessages] = mockStreamLocalMessage.mock.calls[1];
+    expect(secondMessages).toHaveLength(1);
+    expect(secondMessages[0].role).toBe('user');
+    expect(secondMessages[0].content).toContain('what is a ppl split?');
+    expect(secondMessages[0].content).toContain('that is all you can say?');
+    expect(secondMessages[0].content).not.toContain('pushing muscles');
+  });
+
+  it('shows a reply that is not a copy as it is written, in one request', async () => {
+    mockStreamLocalMessage.mockImplementation(
+      streaming(
+        'Sure. Tell me your goal and how many days you can train, and I will suggest a plan.'
+      )
+    );
+    const seen: string[] = [];
+
+    const reply = await sendCoachMessage(gguf, history, 'what should I do next?', 'general', {
+      onText: (text) => seen.push(text),
+    });
+
+    expect(reply.msg4User).toContain('Tell me your goal');
+    expect(mockStreamLocalMessage).toHaveBeenCalledTimes(1);
+    expect(seen[0].startsWith('Sure.')).toBe(true);
+    expect(seen[seen.length - 1]).toContain('suggest a plan');
+  });
+
+  it('writes a short reply again when it repeats an earlier coach turn word for word', async () => {
+    mockStreamLocalMessage
+      .mockImplementationOnce(streaming('Anytime!'))
+      .mockImplementationOnce(streaming('You are welcome, glad to help.'));
+
+    const reply = await sendCoachMessage(gguf, history, 'nice', 'general', { onText: jest.fn() });
+
+    expect(reply.msg4User).toBe('You are welcome, glad to help.');
+    expect(mockStreamLocalMessage).toHaveBeenCalledTimes(2);
+  });
+
+  it('checks the whole reply when nothing is streamed', async () => {
+    mockSendLocalMessage
+      .mockResolvedValueOnce(pplAnswer)
+      .mockResolvedValueOnce('Happy to help with anything else.');
+
+    const reply = await sendCoachMessage(gguf, history, 'ok');
+
+    expect(reply.msg4User).toBe('Happy to help with anything else.');
+    expect(mockSendLocalMessage).toHaveBeenCalledTimes(2);
+    for (const message of mockSendLocalMessage.mock.calls[1][0]) {
+      expect(message.role).toBe('user');
+    }
+  });
+
+  it('does not touch a conversation with no earlier coach turn', async () => {
+    mockStreamLocalMessage.mockImplementation(streaming('Hello! How can I help you today?'));
+    const onText = jest.fn();
+
+    await sendCoachMessage(gguf, [], 'hi', 'general', { onText });
+
+    expect(mockStreamLocalMessage).toHaveBeenCalledTimes(1);
+    expect(onText).toHaveBeenCalled();
+  });
+
+  it('never turns the person’s own cancel into a second attempt', async () => {
+    const controller = new AbortController();
+    mockStreamLocalMessage.mockImplementation(
+      async (_m: unknown, _s: unknown, onDelta: (d: string) => void) => {
+        onDelta('A push ');
+        controller.abort();
+
+        throw new AiCancelledError();
+      }
+    );
+
+    await expect(
+      sendCoachMessage({ ...gguf, signal: controller.signal }, history, 'what next?', 'general', {
+        onText: jest.fn(),
+      })
+    ).rejects.toBeInstanceOf(AiCancelledError);
+    expect(mockStreamLocalMessage).toHaveBeenCalledTimes(1);
   });
 });
 

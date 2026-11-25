@@ -52,7 +52,6 @@ describe('providerPolicyFor', () => {
     const gguf = providerPolicyFor({ provider: 'on-device', engine: 'gguf' });
 
     expect(gguf).toMatchObject({
-      chatSampling: local.chatSampling,
       maxChatHistoryTurns: local.maxChatHistoryTurns,
       structuredReplies: local.structuredReplies,
       runsSamplesSequentially: true,
@@ -61,6 +60,45 @@ describe('providerPolicyFor', () => {
     expect(local.chatSampling?.frequency_penalty).toBeGreaterThan(0);
     expect(local.chatSampling?.presence_penalty).toBeGreaterThan(0);
     expect(local.maxChatHistoryTurns).toBeGreaterThan(0);
+    // The downloaded model takes its vendor sampling from its manifest, not from penalties.
+    expect(gguf.chatSampling).toBeUndefined();
+  });
+
+  it('rewrites a copied chat reply on the downloaded model only, where it was measured', () => {
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).regeneratesCopiedChatReply
+    ).toBe(true);
+
+    for (const config of [
+      { provider: 'on-device', engine: 'apple' },
+      { provider: 'on-device', engine: undefined },
+      { provider: 'local' },
+      { provider: 'openai' },
+      { provider: 'gemini' },
+      { provider: 'claude' },
+      { provider: 'hosted' },
+      { provider: 'gateway' },
+    ] as const) {
+      expect(providerPolicyFor(config).regeneratesCopiedChatReply).toBeUndefined();
+    }
+  });
+
+  it('skips the insight fact-check rounds on the downloaded model only, where it was measured', () => {
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).skipsInsightFactCheck).toBe(
+      true
+    );
+
+    for (const config of [
+      { provider: 'on-device', engine: 'apple' },
+      { provider: 'local' },
+      { provider: 'openai' },
+      { provider: 'gemini' },
+      { provider: 'claude' },
+      { provider: 'hosted' },
+      { provider: 'gateway' },
+    ] as const) {
+      expect(providerPolicyFor(config).skipsInsightFactCheck).toBeUndefined();
+    }
   });
 
   it("gives Apple's engine only the turn cap (no sampling fields, no repair)", () => {

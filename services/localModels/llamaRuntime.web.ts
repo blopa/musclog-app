@@ -4,6 +4,7 @@
  * Anywhere else it reports the model as unavailable. Same exports as the native file
  * (`platformModuleParity`).
  */
+import { DEFAULT_LOCAL_MODEL } from '@/constants/localModels';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { createSerialQueue } from '@/utils/serialQueue';
@@ -55,16 +56,15 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
     throw new AiCancelledError();
   }
 
+  // The same plain-text rule as the native runtime: a schema or a photo keeps the defaults.
+  const plainSampling = !params.schema && !params.image ? DEFAULT_LOCAL_MODEL.textSampling : null;
   const body = {
     messages: params.image ? withPhoto(params.messages, params.image) : params.messages,
     max_tokens: params.maxTokens ?? 1024,
-    temperature: params.temperature ?? 0.2,
+    temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,
     stream: false,
-    ...(params.penalties
-      ? {
-          frequency_penalty: params.penalties.frequency_penalty,
-          presence_penalty: params.penalties.presence_penalty,
-        }
+    ...(plainSampling
+      ? { min_p: plainSampling.minP, repeat_penalty: plainSampling.repeatPenalty }
       : {}),
     ...(params.schema
       ? {

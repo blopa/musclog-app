@@ -53,7 +53,9 @@ export type ProviderPolicy = {
   reasoningEffort?: (effort: AiEffort) => Promise<ReasoningEffortValue | undefined>;
   /**
    * Sampling fields added to a free-chat reply only (never to structured extraction, where a
-   * repetition penalty would fight the repeated keys and numbers of a JSON answer).
+   * repetition penalty would fight the repeated keys and numbers of a JSON answer). Set for a custom
+   * local server, which takes them as OpenAI fields. The downloaded model sends none: it samples
+   * with its vendor's settings from its manifest.
    */
   chatSampling?: ChatPenalties;
   /** The most turns of history a free-chat reply is sent, for a model that copies its own replies. */
@@ -71,6 +73,22 @@ export type ProviderPolicy = {
    * itself ("1. Facts: ..."), and the review's output is what the person reads.
    */
   skipsChatReview?: boolean;
+  /**
+   * A free-chat reply that copies one of the coach turns it was sent is stopped before any of it is
+   * shown and written again from the person's own messages alone (`runOnDeviceChatReply`). A 450M
+   * model answered "That's all you can say?" with an answer pasted from five messages earlier, and
+   * its sampler cannot prevent it (llama.rn does not feed the prompt into the repetition penalties).
+   * Only the downloaded model, where it was measured.
+   */
+  regeneratesCopiedChatReply?: boolean;
+  /**
+   * An insight is never fact-checked in extra rounds (High and Tokenmaxxing make one request). A
+   * 450M model cannot do the round: asked to return the same answer with its figures checked, it
+   * replaced the answer outright in 11 of 20 probes ("Your previous message is correct...",
+   * "The data does not support any of the claims...", "Here's the corrected version..."), and the
+   * round keeps a revision that has no more ungrounded figures, which such a reply never has.
+   */
+  skipsInsightFactCheck?: boolean;
   /**
    * What happens to a structured reply from this provider. Absent: it is used as it came (the free
    * tier, whose schema cannot be relied on but whose replies were never repaired, and Apple's engine,
@@ -200,11 +218,13 @@ const CLAUDE_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 /**
  * A small model: a custom local server or the downloaded on-device one. Left alone it copies its own
  * earlier replies, so a one-word follow-up ("ok", "thanks") gets the previous answer back, over and
- * over. A repetition penalty and a short history break that. Nothing enforces its schema either, so
- * its structured replies are checked and repaired here.
+ * over. A short history breaks that. Nothing enforces its schema either, so its structured replies
+ * are checked and repaired here. The penalties are not part of this shared policy: a custom local
+ * server takes them as OpenAI fields (`LOCAL_SERVER_POLICY`), and the downloaded model takes its
+ * vendor's sampling from its manifest (`LocalModelManifest.textSampling`, applied by `llamaRuntime`),
+ * because the penalties made it worse in a benchmark.
  */
 const SMALL_MODEL_POLICY: ProviderPolicy = {
-  chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
   maxChatHistoryTurns: 6,
   compactWorkoutCards: true,
   structuredReplies: 'repaired',
@@ -219,8 +239,16 @@ const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
   skipsChatReview: true,
 };
 
-/** The downloaded model: the small-model rules, and its schema is a hard requirement. */
-const GGUF_ON_DEVICE_POLICY: ProviderPolicy = { ...SMALL_MODEL_POLICY, ...ON_DEVICE_CAPABILITIES };
+/**
+ * The downloaded model: the small-model rules, its schema is a hard requirement, a chat reply
+ * that copies its own earlier ones is written again, and an insight is not fact-checked in rounds.
+ */
+const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
+  ...SMALL_MODEL_POLICY,
+  ...ON_DEVICE_CAPABILITIES,
+  regeneratesCopiedChatReply: true,
+  skipsInsightFactCheck: true,
+};
 
 /**
  * A custom local server: the small-model rules, but a partial structured answer has always been
@@ -228,6 +256,7 @@ const GGUF_ON_DEVICE_POLICY: ProviderPolicy = { ...SMALL_MODEL_POLICY, ...ON_DEV
  */
 const LOCAL_SERVER_POLICY: ProviderPolicy = {
   ...SMALL_MODEL_POLICY,
+  chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
   keepsPartialStructuredReply: true,
 };
 

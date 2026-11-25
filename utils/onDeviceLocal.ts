@@ -4,7 +4,6 @@
  * differs. The runtime is required inline: importing this file never loads llama.rn.
  */
 import type { LocalGenerateParams } from '@/services/localModels/llamaRuntime';
-import type { ChatPenalties } from '@/utils/providerPolicy';
 
 export type LocalMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -23,13 +22,11 @@ function toMessages(messages: LocalMessage[], systemPrompt: string | undefined) 
 export async function sendLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
-  signal?: AbortSignal,
-  penalties?: ChatPenalties
+  signal?: AbortSignal
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     signal,
-    penalties,
   });
 
   return result.text;
@@ -39,14 +36,12 @@ export async function streamLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
   onDelta: (delta: string) => void,
-  signal?: AbortSignal,
-  penalties?: ChatPenalties
+  signal?: AbortSignal
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     onDelta,
     signal,
-    penalties,
   });
 
   return result.text;

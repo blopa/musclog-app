@@ -39,6 +39,7 @@ import {
   extractClaudeText,
 } from './claude';
 import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
+import { createCopyGate, isCopiedReply } from './copiedReply';
 import { combineExtractions } from './extractionConsensus';
 import { resolveFoundationRefsInMeals } from './foundationFoodList';
 import { withGatewayProviderPin } from './gatewayRouting';
@@ -97,7 +98,7 @@ import {
   withCustomPrompts,
 } from './prompts';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
-import { type ChatPenalties, providerPolicyFor } from './providerPolicy';
+import { providerPolicyFor } from './providerPolicy';
 import { isTruncatedStop, type StopSignal } from './replyTruncation';
 import { captureMessage } from './sentry';
 
@@ -1187,8 +1188,7 @@ async function runOnDeviceText(
   operation: string,
   messages: { role: 'user' | 'assistant'; content: string }[],
   systemPrompt: string | undefined,
-  sink: StreamSink | null,
-  penalties?: ChatPenalties
+  sink: StreamSink | null
 ): Promise<string> {
   if (config.engine === 'gguf') {
     return withLlmRetry(
@@ -1197,7 +1197,7 @@ async function runOnDeviceText(
       async (signal, touch) => {
         sink?.reset();
         if (!sink) {
-          return sendLocalMessage(messages, systemPrompt, signal, penalties);
+          return sendLocalMessage(messages, systemPrompt, signal);
         }
 
         const streamed = await streamLocalMessage(
@@ -1207,8 +1207,7 @@ async function runOnDeviceText(
             touch();
             sink.onDelta(delta);
           },
-          signal,
-          penalties
+          signal
         );
 
         // The runtime's text is llama.cpp's parsed message, already cleaned; the raw stream is the
@@ -1226,6 +1225,126 @@ async function runOnDeviceText(
   return text ?? '';
 }
 
+/** Words of a reply read before any of it is shown, to tell a copy of an earlier coach turn. */
+const COPY_GATE_WORDS = 12;
+
+type OnDeviceChatMessage = { role: 'user' | 'assistant'; content: string };
+
+function toOnDeviceChatMessage(entry: ChatHistoryEntry): OnDeviceChatMessage {
+  return { role: entry.role === 'coach' ? 'assistant' : 'user', content: entry.content };
+}
+
+function onDeviceChatMessages(
+  entries: readonly ChatHistoryEntry[],
+  userMessage: string
+): OnDeviceChatMessage[] {
+  return [...entries.map(toOnDeviceChatMessage), { role: 'user', content: userMessage }];
+}
+
+/**
+ * One chat reply from the downloaded model that is not a copy of one of its own earlier replies
+ * (`ProviderPolicy.regeneratesCopiedChatReply`). A 450M model answers "That's all you can say?" with
+ * an answer pasted from five messages earlier, and no sampling setting prevents it: llama.rn does not
+ * feed the prompt into the repetition penalties. So the reply is read as it is written. Its first
+ * `COPY_GATE_WORDS` words are held back; when they repeat a coach turn that was sent, the generation
+ * is stopped before anything was shown and the reply is written again from the person's own
+ * messages alone, where there is no coach turn to copy. Without a stream the whole reply is checked
+ * instead. A cancel by the person is never turned into a second attempt, and a reply that was not
+ * a copy is returned as it came.
+ */
+async function runOnDeviceChatReply(
+  config: OnDeviceConfig,
+  systemPrompt: string,
+  history: readonly ChatHistoryEntry[],
+  userMessage: string,
+  sink: StreamSink | null
+): Promise<string> {
+  const messages = onDeviceChatMessages(history, userMessage);
+  const earlierReplies = history.filter((e) => e.role === 'coach').map((e) => e.content);
+  if (!providerPolicyFor(config).regeneratesCopiedChatReply || earlierReplies.length === 0) {
+    return runOnDeviceText(config, 'sendViaOnDevice', messages, systemPrompt, sink);
+  }
+
+  // Two reasons to stop a generation: the person's cancel, and the gate finding a copy.
+  const stop = new AbortController();
+  const stopWithPerson = () => stop.abort();
+  if (config.signal?.aborted) {
+    stop.abort();
+  } else {
+    config.signal?.addEventListener('abort', stopWithPerson);
+  }
+
+  let copied = false;
+  const gate = createCopyGate({
+    earlierReplies,
+    windowWords: COPY_GATE_WORDS,
+    clean: stripStreamingTemplateTokens,
+    release: (delta) => sink?.onDelta(delta),
+    onCopied: () => {
+      copied = true;
+      stop.abort();
+    },
+  });
+  const gatedSink: StreamSink | null = sink && {
+    onDelta: gate.push,
+    reset: () => {
+      sink.reset();
+      gate.reset();
+      copied = false;
+    },
+    hasEmitted: sink.hasEmitted,
+    raw: sink.raw,
+  };
+
+  let first: string | null = null;
+  try {
+    first = await runOnDeviceText(
+      { ...config, signal: stop.signal },
+      'sendViaOnDevice',
+      messages,
+      systemPrompt,
+      gatedSink
+    );
+    if (gatedSink) {
+      gate.finish();
+    } else {
+      copied = isCopiedReply(stripTemplateTokens(first), earlierReplies);
+    }
+  } catch (error) {
+    // Only the gate's own stop is expected here; the person's cancel and every failure go on.
+    if (!(error instanceof AiCancelledError) || !copied || config.signal?.aborted) {
+      throw error;
+    }
+  } finally {
+    config.signal?.removeEventListener('abort', stopWithPerson);
+  }
+
+  if (!copied && first !== null) {
+    return first;
+  }
+
+  reportAiEvent('ai-chat-reply-copied', {
+    provider: config.provider,
+    operation: 'sendCoachMessage',
+  });
+
+  // The person's own messages only, run together the way `normalizeHistory` does, so the model has
+  // no coach turn left to copy. The retry goes through the same cancel and retry rules.
+  const ownMessages = normalizeHistory([
+    ...history.filter((e) => e.role !== 'coach'),
+    { role: 'user', content: userMessage },
+  ]).map(toOnDeviceChatMessage);
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'request',
+    operation: 'sendCoachMessage:withoutCopiedReply',
+    payload: { systemPrompt, messages: ownMessages },
+    config,
+  });
+
+  return runOnDeviceText(config, 'sendViaOnDevice', ownMessages, systemPrompt, sink);
+}
+
 async function sendViaOnDevice(
   config: OnDeviceConfig,
   systemPrompt: string,
@@ -1235,14 +1354,7 @@ async function sendViaOnDevice(
 ): Promise<CoachResponse> {
   const sink = stream ? createStreamSink(stream, 'plain') : null;
   const normalized = normalizeHistory(turns);
-
-  const messages = [
-    ...normalized.map((e) => ({
-      role: (e.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-      content: e.content,
-    })),
-    { role: 'user' as const, content: userMessage },
-  ];
+  const messages = onDeviceChatMessages(normalized, userMessage);
 
   await logLlmDebugEvent({
     provider: 'on-device',
@@ -1254,14 +1366,7 @@ async function sendViaOnDevice(
 
   // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person.
   const raw = stripTemplateTokens(
-    await runOnDeviceText(
-      config,
-      'sendViaOnDevice',
-      messages,
-      systemPrompt,
-      sink,
-      providerPolicyFor(config).chatSampling
-    )
+    await runOnDeviceChatReply(config, systemPrompt, normalized, userMessage, sink)
   );
 
   await logLlmDebugEvent({
@@ -2133,7 +2238,8 @@ async function generateInsight(
     );
   const draftOperation = hasHistory ? 'generateTextWithHistory' : 'generateText';
   const pipeline = THINKING_PIPELINE[await thinkingLevelFor(config)];
-  const rounds = pipeline.reviewRounds;
+  // The downloaded model answers once at every level (`ProviderPolicy.skipsInsightFactCheck`).
+  const rounds = providerPolicyFor(config).skipsInsightFactCheck ? 0 : pipeline.reviewRounds;
   if (rounds === 0) {
     return send(original, draftOperation, stream);
   }

@@ -1,4 +1,4 @@
-import { LOCAL_MODELS } from '@/constants/localModels';
+import { DEFAULT_LOCAL_MODEL, LOCAL_MODELS } from '@/constants/localModels';
 
 describe('local model manifest', () => {
   it.each(LOCAL_MODELS.map((model) => [model.id, model] as const))(
@@ -14,6 +14,22 @@ describe('local model manifest', () => {
 
       expect(model.languages).toContain('en');
       expect(model.licenseName).not.toBe('');
+
+      const { temperature, minP, repeatPenalty } = model.textSampling;
+      expect(temperature).toBeGreaterThan(0);
+      expect(temperature).toBeLessThanOrEqual(1);
+      expect(minP).toBeGreaterThanOrEqual(0);
+      expect(minP).toBeLessThan(1);
+      expect(repeatPenalty).toBeGreaterThanOrEqual(1);
+      expect(repeatPenalty).toBeLessThanOrEqual(2);
     }
   );
+
+  it("uses the model card's recommended text sampling for the default model", () => {
+    expect(DEFAULT_LOCAL_MODEL.textSampling).toEqual({
+      temperature: 0.1,
+      minP: 0.15,
+      repeatPenalty: 1.05,
+    });
+  });
 });

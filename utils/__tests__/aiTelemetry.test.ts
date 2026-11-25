@@ -34,6 +34,16 @@ describe('reportAiEvent', () => {
     });
   });
 
+  it('reports a rewritten copied chat reply as information, grouped by provider and operation', () => {
+    reportAiEvent('ai-chat-reply-copied', { provider: 'on-device', operation: 'sendCoachMessage' });
+
+    expect(captureMessage).toHaveBeenCalledWith('ai-chat-reply-copied', {
+      level: 'info',
+      tags: { provider: 'on-device', operation: 'sendCoachMessage' },
+      fingerprint: ['ai-chat-reply-copied', 'on-device', 'sendCoachMessage'],
+    });
+  });
+
   it('reports a checksum mismatch as an error', () => {
     reportAiEvent('local-model-checksum-mismatch', { model: 'gemma', revision: 'r1' });
 

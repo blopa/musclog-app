@@ -15,11 +15,11 @@
  */
 import { AppState, Platform } from 'react-native';
 
+import type { LocalTextSampling } from '@/constants/localModels';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { reportAiEvent } from '@/utils/aiTelemetry';
 import { handleError } from '@/utils/handleError';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
-import type { ChatPenalties } from '@/utils/providerPolicy';
 import { captureException } from '@/utils/sentry';
 import { createSerialQueue } from '@/utils/serialQueue';
 
@@ -41,11 +41,6 @@ export type LocalGenerateParams = {
   image?: string;
   maxTokens?: number;
   temperature?: number;
-  /**
-   * Repetition penalties for a free-chat reply (the OpenAI field names, mapped to llama.cpp's). A
-   * small model left alone copies its own earlier replies; structured calls never pass them.
-   */
-  penalties?: ChatPenalties;
   signal?: AbortSignal;
   /** Each new piece of text as it is written. */
   onDelta?: (delta: string) => void;
@@ -63,6 +58,8 @@ export type LocalGenerateResult = {
 };
 
 let context: LlamaContext | null = null;
+/** The loaded model's vendor sampling for plain-text replies; set with `context`, cleared with it. */
+let textSampling: LocalTextSampling | null = null;
 let projectorAttached = false;
 /** Every model operation (unload, projector release, generation) runs one at a time. */
 const queue = createSerialQueue();
@@ -127,6 +124,7 @@ async function performUnload(): Promise<void> {
   clearProjectorTimer();
   const current = context;
   context = null;
+  textSampling = null;
   projectorAttached = false;
   if (!current) {
     return;
@@ -203,6 +201,7 @@ async function ensureContext(): Promise<LlamaContext> {
       ctx_shift: false,
     });
     context = next;
+    textSampling = installed.manifest.textSampling;
 
     return next;
   } catch (error) {
@@ -258,6 +257,11 @@ function withPhoto(messages: LocalChatMessage[], image: string) {
   );
 }
 
+/** A plain-text reply (chat, insights): no schema to enforce and no photo. */
+function plainTextSampling(params: LocalGenerateParams): boolean {
+  return !params.schema && !params.image;
+}
+
 async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   if (params.signal?.aborted) {
     throw new AiCancelledError();
@@ -288,17 +292,16 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
         throw new AiCancelledError();
       }
 
+      // A plain-text reply takes the vendor's sampling; a schema or a photo keeps the defaults.
+      const plainSampling = plainTextSampling(params) ? textSampling : null;
       const result = await ctx.completion(
         {
           messages: params.image ? withPhoto(params.messages, params.image) : params.messages,
           jinja: true,
           n_predict: params.maxTokens ?? 1024,
-          temperature: params.temperature ?? 0.2,
-          ...(params.penalties
-            ? {
-                penalty_freq: params.penalties.frequency_penalty,
-                penalty_present: params.penalties.presence_penalty,
-              }
+          temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,
+          ...(plainSampling
+            ? { min_p: plainSampling.minP, penalty_repeat: plainSampling.repeatPenalty }
             : {}),
           ...(params.schema
             ? {
