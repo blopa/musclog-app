@@ -33,6 +33,20 @@ describe('providerPolicyFor', () => {
     }
   });
 
+  it('never runs the chat review on an on-device engine, and only there', () => {
+    for (const config of [
+      { provider: 'on-device', engine: 'gguf' },
+      { provider: 'on-device', engine: 'apple' },
+      { provider: 'on-device', engine: undefined },
+    ] as const) {
+      expect(providerPolicyFor(config).skipsChatReview).toBe(true);
+    }
+
+    for (const provider of ['local', 'openai', 'gemini', 'claude', 'hosted', 'gateway'] as const) {
+      expect(providerPolicyFor({ provider }).skipsChatReview).toBeUndefined();
+    }
+  });
+
   it('gives a custom local server and the downloaded model the same small-model rules', () => {
     const local = providerPolicyFor({ provider: 'local' });
     const gguf = providerPolicyFor({ provider: 'on-device', engine: 'gguf' });

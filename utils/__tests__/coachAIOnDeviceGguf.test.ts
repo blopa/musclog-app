@@ -247,6 +247,30 @@ describe('sendCoachMessage on the downloaded engine', () => {
     expect(penalties).toEqual({ frequency_penalty: 0.4, presence_penalty: 0.4 });
   });
 
+  it('answers a chat reply in one request at the Tokenmaxxing level (no review round)', async () => {
+    mockGetThinkingLevel.mockResolvedValue('tokenmaxxing');
+    mockSendLocalMessage.mockResolvedValue('Anytime!');
+
+    const reply = await sendCoachMessage(gguf, [], 'thanks');
+
+    expect(mockSendLocalMessage).toHaveBeenCalledTimes(1);
+    expect(reply.msg4User).toBe('Anytime!');
+    for (const message of mockSendLocalMessage.mock.calls[0][0]) {
+      expect(String(message.content)).not.toContain('Review round');
+    }
+  });
+
+  it('streams a chat reply in one request at the Tokenmaxxing level (no reviewing phase)', async () => {
+    mockGetThinkingLevel.mockResolvedValue('tokenmaxxing');
+    mockStreamLocalMessage.mockResolvedValue('Anytime!');
+    const onPhase = jest.fn();
+
+    await sendCoachMessage(gguf, [], 'thanks', 'general', { onText: jest.fn(), onPhase });
+
+    expect(mockStreamLocalMessage).toHaveBeenCalledTimes(1);
+    expect(onPhase).not.toHaveBeenCalledWith('reviewing');
+  });
+
   it('never penalises a structured reply', async () => {
     mockSendLocalStructuredRaw.mockResolvedValue('{"answer":"x"}');
     await requestStructured(gguf, request);

@@ -510,6 +510,10 @@ const ON_DEVICE_FOCUS: Record<'nutrition' | 'exercise' | 'general', string> = {
  * follow, and the caller repeats the name last (`getOnDeviceIdentityReminder`), next to the
  * conversation, where a small model looks. `coachName` is the resolved persona's, which is always
  * Loggy on-device (`resolveCoachPersona`), and the voice line is his.
+ *
+ * There is deliberately no ready-made answer to copy ("If they ask your name, say: ..."): a small
+ * model gives a quoted line as the answer to anything, and then copies it from its own history (it
+ * answered "Thank you so much" and "Hahaha yes I know" with "I'm Loggy.").
  */
 export const getMinimalSystemPrompt = async (
   user: User | null,
@@ -519,11 +523,9 @@ export const getMinimalSystemPrompt = async (
 ): Promise<string> => {
   const userStats = await getMinimalUserStats(user);
 
-  // "Loggy" does not look like a name to a small model, so it is said as a name, on its own, and
-  // given as the exact answer to the question people ask.
+  // "Loggy" does not look like a name to a small model, so it is said as a name, on its own.
   return [
     `Your name is ${coachName}. You are the coach inside the Musclog fitness app, an AI running on this phone.`,
-    `If they ask your name, say: "I'm ${coachName}." Never call yourself anything else.`,
     'You are talking with the person who uses the app. Never make up a name for them.',
     ...(userStats ? [`About them: ${userStats}.`] : []),
     '',

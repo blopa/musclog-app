@@ -65,6 +65,13 @@ export type ProviderPolicy = {
    */
   compactWorkoutCards?: boolean;
   /**
+   * The free-chat reply is never drafted and reviewed (the Tokenmaxxing chat review), at any
+   * thinking level: one request answers. A small model cannot follow the review checklist; a 450M
+   * model answered it with "I'm Loggy.", with a copy of an earlier reply, or with the checklist
+   * itself ("1. Facts: ..."), and the review's output is what the person reads.
+   */
+  skipsChatReview?: boolean;
+  /**
    * What happens to a structured reply from this provider. Absent: it is used as it came (the free
    * tier, whose schema cannot be relied on but whose replies were never repaired, and Apple's engine,
    * whose guided generation the OS enforces).
@@ -209,6 +216,7 @@ const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
   skipsMealFirstLook: true,
   estimatesFoodsFromLabels: true,
   structuredFailureIsNoAnswer: true,
+  skipsChatReview: true,
 };
 
 /** The downloaded model: the small-model rules, and its schema is a hard requirement. */

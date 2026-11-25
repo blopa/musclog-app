@@ -1977,7 +1977,8 @@ export async function sendCoachMessage(
 
     const level = await thinkingLevelFor(config);
 
-    if (!THINKING_PIPELINE[level].chatReview) {
+    // The on-device engines answer in one request at every level (`ProviderPolicy.skipsChatReview`).
+    if (!THINKING_PIPELINE[level].chatReview || providerPolicyFor(config).skipsChatReview) {
       return await dispatch(sendText, target);
     }
 

@@ -79,17 +79,20 @@ describe('on-device chat prompt', () => {
     expect(prompt).not.toContain('Dracula');
   });
 
-  it('gives the exact answer to "what is your name?" and forbids inventing names', async () => {
+  it('forbids inventing names and gives no ready-made answer to copy', async () => {
     const prompt = await onDevicePrompt();
 
-    expect(prompt).toContain('If they ask your name, say: "I\'m Loggy." Never call yourself');
     expect(prompt).toContain('Never make up a name for them');
+    // A 450M model gave a quoted "I'm Loggy." as the answer to "Thank you so much", then copied it
+    // from its own history on the next turn.
+    expect(prompt).not.toContain('If they ask your name');
+    expect(prompt).not.toMatch(/say: "/);
   });
 
-  it('says the name three times and no more: first line, the answer to copy, the last line', async () => {
+  it('says the name twice and no more: the first line and the last line', async () => {
     const prompt = await onDevicePrompt();
 
-    expect(prompt.match(/Loggy/g)).toHaveLength(3);
+    expect(prompt.match(/Loggy/g)).toHaveLength(2);
   });
 
   it('repeats the identity reminder as its last line, after the snapshot', async () => {
