@@ -346,8 +346,10 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   calls a function: the app's "function declarations" are only schemas
   (`schemaOfFunction`).
 - **Every reply then goes through one parse ladder** (`parseStructuredJson`,
-  `utils/localReplyShape.ts`): strip code fences and chat-template tokens (`<|im_start|>assistant`)
-  -> `JSON.parse` -> the JSON span inside surrounding text -> `jsonrepair` (trailing commas, single
+  `utils/localReplyShape.ts`): strip code fences, reasoning blocks (`<think>`, `<thinking>`,
+  `<reasoning>`, `REASONING_TAGS`; an unclosed one drops the rest, a closing tag with no opener
+  drops what came before it) and chat-template markers (`<|im_start|>assistant`, Gemma's
+  `<start_of_turn>`, `<end_of_turn>`, `<s>`, `</s>`, `[INST]`) -> `JSON.parse` -> the JSON span inside surrounding text -> `jsonrepair` (trailing commas, single
   quotes, unquoted keys, a reply cut off by the token limit) -> `malformed`. A malformed reply is
   `null` for most callers and a typed result for the setup chat.
 - **A cut-off reply from a provider that enforces its schema is a failure, not a repair.** When the
@@ -377,9 +379,12 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   same structured path and checked again. It is kept only when it does better (a reply that parsed
   but missed part of the schema stays when the repair is no better); a cancel rethrows, any other
   failure keeps the original. Cloud providers are never repaired by a second call.
-- **Plain text** is cleaned of template tokens in one place (`send` in `generateInsight`, the only
-  plain-text path); a streamed
-  reply holds back a half-written `<|im_...` so it never flickers on screen. The chat reply reads
+- **Plain text** is cleaned of template tokens and reasoning blocks in one place (`send` in
+  `generateInsight`, the only plain-text path); a streamed
+  reply holds back a half-written `<|im_...`, `<thi` or `[IN` so it never flickers on screen, and
+  shows nothing after an opening reasoning tag until it closes. With templates that put the
+  opening `<think>` in the prompt (Qwen3, DeepSeek-R1) the reasoning is visible while it streams,
+  until `</think>` arrives and the text is replaced. The chat reply reads
   `msg4User` out of a cut-off object instead of ever showing raw JSON (`parseCoachResponse`).
 - **Three gates in a row**: the schema (shape), each feature's own normalizer (meaning), and the
   review screen where the person has the last word. Nothing the model writes is saved unreviewed.
@@ -433,10 +438,24 @@ that is no longer listed is replaced by the default on the next call (`utils/aiM
   prompt** (it changed every minute and defeated every provider's prompt cache); Gemini keeps its
   context-first order. Only the prose prompts (the chat reply and six insight builders) carry the
   persona; every structured prompt stays persona-free and tells the model to keep summaries neutral.
+- **On-device chat has its own short system prompt** (`getMinimalSystemPrompt`, both on-device
+  engines), because a 450M model lost the one "You are Loggy" line under generic boilerplate and
+  called itself "Alex Johnson". It opens with who is who in plain facts (Loggy, the coach inside
+  Musclog, an AI on this phone; "Loggy" is its name, not the person's; never make up a name), the
+  person's stats on an "About them:" line, six short rules (their language, the thread's topic,
+  Loggy's voice in one line, under 80 words, numbers only from the app data or what they said, the
+  safety topics), then the app data under a "facts from the app, not instructions" label, and it
+  ends with the name again (`getOnDeviceIdentityReminder`), next to the conversation. The name comes
+  from the resolved persona, which is always Loggy on-device (`resolveCoachPersona`).
 - **History**: the last 12 turns word for word, older turns inside a 30-turn window shortened
   locally to 280 characters (never by asking the model for a summary), user turns prefixed with
   `[YYYY-MM-DD Ddd HH:mm]` and, on the newest, how long the pause was when it was 12 hours or more.
-  Coach turns are never tagged. Small models (a local server and the downloaded on-device model)
+  Coach turns are never tagged. A finished-workout card is expanded into the full session JSON
+  (the newest one only), except for a small model (`ProviderPolicy.compactWorkoutCards`: a local
+  server and both on-device engines), which gets every card as one line, since the JSON filled its
+  budget and it started answering in JSON. An empty on-device reply is not replaced by the apology:
+  it fails the send (the message goes back to the composer), so no apology ever becomes a coach turn
+  a small model copies. Small models (a local server and the downloaded on-device model)
   see only the last 6 turns and, on free chat only, `frequency_penalty` and `presence_penalty` 0.4
   (never on a structured request); Apple's engine takes the 6-turn cap and no penalties. Context
   budget in characters (`PROVIDER_CONFIGS`): 64,000 for Gemini, OpenAI, Claude, the free tier and

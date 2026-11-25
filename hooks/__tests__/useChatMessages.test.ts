@@ -19,6 +19,7 @@ import {
   startCoachReply,
 } from '@/services/coachReplyStream';
 import type { TrackMealResponse } from '@/utils/coachAI';
+import { buildWorkoutCompletedSummaryForLLM } from '@/utils/workoutAI';
 
 const mockGetMessagesByContext = jest.fn();
 const mockSaveMessage = jest.fn();
@@ -49,7 +50,7 @@ jest.mock('@/database/models/ChatMessage', () => ({
   isLegacyTrackMealPayload: () => false,
   isMealPlanPayload: () => false,
   isTrackMealPayload: () => false,
-  isWorkoutCompletedPayload: () => false,
+  isWorkoutCompletedPayload: (payload: { type?: string }) => payload?.type === 'workoutCompleted',
   isWorkoutPlanPayload: () => false,
 }));
 jest.mock('@/database/services/ChatService', () => ({
@@ -97,11 +98,12 @@ jest.mock('@/utils/nutritionCalculator', () => ({
   eatingPhaseToWeightGoal: jest.fn(),
 }));
 jest.mock('@/utils/workoutAI', () => ({
-  buildWorkoutCompletedSummaryForLLM: jest.fn(),
+  buildWorkoutCompletedSummaryForLLM: jest.fn().mockResolvedValue('{"session":"full JSON"}'),
   processWorkoutPlanResponse: jest.fn(),
 }));
 
 const mockConsumeRestored = consumeRestoredComposerText as jest.Mock;
+const mockBuildWorkoutSummary = buildWorkoutCompletedSummaryForLLM as jest.Mock;
 const mockStartCoachReply = startCoachReply as jest.Mock;
 
 const record = (id: string, sender: 'user' | 'coach', message: string, createdAt = 1) => ({
@@ -350,6 +352,55 @@ describe('useChatMessages with the reply service', () => {
       // the sent message is on screen at once; the reply arrives through the service
       expect(result.current.messages.map((message) => message._id)).toEqual(['u-new']);
       expect(result.current.isSending).toBe(false);
+    });
+
+    describe('a finished-workout card in the history', () => {
+      const card = {
+        ...record('card', 'user', 'Workout done', 1000),
+        payloadJson: JSON.stringify({
+          type: 'workoutCompleted',
+          workoutLogId: 'w1',
+          workoutName: 'Leg Day',
+          duration: '45m',
+          volume: '5,000 kg',
+          personalRecords: 1,
+        }),
+      };
+
+      const sentHistory = async () => {
+        mockStartCoachReply.mockReturnValue(new Promise(() => {}));
+        mockGetMessagesByContext.mockResolvedValue([card]);
+        const { result } = await loaded();
+
+        await act(async () => {
+          await result.current.sendMessage('how was it?');
+        });
+
+        return mockStartCoachReply.mock.calls[0][0].history as { content: string }[];
+      };
+
+      it('expands the newest card into the full session for a cloud model', async () => {
+        const history = await sentHistory();
+
+        expect(mockBuildWorkoutSummary).toHaveBeenCalledTimes(1);
+        expect(history[0].content).toBe('{"session":"full JSON"}');
+      });
+
+      it('sends every card as one line to a small on-device model', async () => {
+        mockGetAiConfig.mockResolvedValue({
+          provider: 'on-device',
+          engine: 'gguf',
+          vision: false,
+          language: 'en-US',
+        });
+
+        const history = await sentHistory();
+
+        expect(mockBuildWorkoutSummary).not.toHaveBeenCalled();
+        expect(history[0].content).toBe(
+          'I completed the workout "Leg Day" (45m, 5,000 kg, 1 personal records).'
+        );
+      });
     });
 
     it('does not send while another reply is being written, and says so', async () => {

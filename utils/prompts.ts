@@ -295,7 +295,8 @@ export const getAppleIntelligenceContext = async (
   nutritionHistory: NutritionHistoryEntry[],
   locale: string = DEFAULT_LANG
 ): Promise<string> => {
-  let context = '## ANALYZE: Recent Workout History\n\n';
+  // Plain labels: the old "## ANALYZE:" and "## TRACK:" headings read as commands to a small model.
+  let context = 'Their recent workouts:\n';
 
   const units = await SettingsService.getUnits();
 
@@ -311,12 +312,12 @@ export const getAppleIntelligenceContext = async (
 
     context += summaries.join('\n');
   } else {
-    context += 'No recent workout history found.';
+    context += 'None logged yet.';
   }
 
   // Add recent nutrition if available
   if (nutritionHistory.length > 0) {
-    context += '\n\n## TRACK: Recent Nutrition Summary\n\n';
+    context += '\n\nTheir recent meals:\n';
     const nutritionSummary = nutritionHistory
       .map((n, i) => {
         const date = n.log.date ? new Date(n.log.date).toLocaleDateString(locale) : 'Recent date';
@@ -467,7 +468,7 @@ export const getMinimalUserStats = async (user: User | null): Promise<string> =>
     parts.push(user.fitnessGoal);
   }
 
-  return parts.length > 0 ? `[User: ${parts.join(', ')}]` : '';
+  return parts.join(', ');
 };
 
 /**
@@ -495,48 +496,47 @@ export const getMinimalWorkoutSummary = async (
   }
 };
 
+/** What the on-device coach talks about in each chat thread. */
+const ON_DEVICE_FOCUS: Record<'nutrition' | 'exercise' | 'general', string> = {
+  general: 'Talk about training, food and health.',
+  nutrition: 'Talk about food and nutrition.',
+  exercise: 'Talk about training and exercise.',
+};
+
 /**
- * Minimal system prompt for Apple Intelligence.
+ * The system prompt of the on-device chat (the downloaded model and Apple's), whose models are
+ * small: a 450M model lost the one "You are Loggy" line under generic boilerplate and called itself
+ * "Alex Johnson". So it says who is who in plain facts first, keeps only rules a small model can
+ * follow, and the caller repeats the name last (`getOnDeviceIdentityReminder`), next to the
+ * conversation, where a small model looks. `coachName` is the resolved persona's, which is always
+ * Loggy on-device (`resolveCoachPersona`), and the voice line is his.
  */
 export const getMinimalSystemPrompt = async (
   user: User | null,
   language: string = DEFAULT_LANG,
-  context?: 'nutrition' | 'exercise' | 'general'
+  context: 'nutrition' | 'exercise' | 'general' = 'general',
+  coachName: string = 'Loggy'
 ): Promise<string> => {
   const userStats = await getMinimalUserStats(user);
 
-  let role = 'fitness coach';
-  if (context === 'nutrition') {
-    role = 'nutrition coach';
-  } else if (context === 'exercise') {
-    role = 'personal trainer';
-  }
-
-  let focus = 'Focus on fitness, nutrition, and health topics.';
-  if (context === 'nutrition') {
-    focus = 'Focus on nutrition and diet topics.';
-  } else if (context === 'exercise') {
-    focus = 'Focus on exercise and training topics.';
-  }
-
-  return `You are Loggy, a specialized ${role}. ${userStats}
-
-Core Capabilities:
-- Provide workout advice and exercise guidance
-- Offer nutrition tips and meal planning
-- Discuss health and wellness strategies
-
-Conversation Guidelines:
-1. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention language capabilities.
-2. SCOPE: ${focus} If asked about unrelated topics, politely explain your specialization and offer 2-3 fitness alternatives.
-3. TONE: Friendly, professional, and human-like. Use emojis naturally.
-4. CONCISE: Keep responses under 100 words.
-5. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
-
-Error Handling:
-- If you cannot fulfill a request, explain why clearly and provide specific suggestions.
-- Avoid canned responses; personalize each interaction.`;
+  return [
+    `You are ${coachName}, the coach inside the Musclog fitness app. You are an AI running on this phone.`,
+    `You are talking with the person who uses the app. "${coachName}" is your name, not theirs. Never make up a name for yourself or for them.`,
+    ...(userStats ? [`About them: ${userStats}.`] : []),
+    '',
+    'How to reply:',
+    `- Reply in the language they write in. If unsure, use ${language}.`,
+    `- ${ON_DEVICE_FOCUS[context]} If they ask about something else, say so in one sentence and offer to help with training or food.`,
+    '- Sound like a warm, down-to-earth training buddy: plain words, a little dry humor, an emoji only when it fits.',
+    '- Keep it short: a few sentences, under 80 words, unless they ask for more.',
+    '- Take numbers only from the app data below or from what they told you. Never invent numbers or facts about them.',
+    '- If they mention pain, an injury, an eating disorder, pregnancy or medication, keep the advice general and suggest a doctor or another qualified professional.',
+  ].join('\n');
 };
+
+/** The last line of the on-device chat prompt: the name again, right before the conversation. */
+export const getOnDeviceIdentityReminder = (coachName: string = 'Loggy'): string =>
+  `Remember: you are ${coachName}, their coach. Answer their last message.`;
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
  * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs") using `locale` for digit shaping. */
@@ -681,9 +681,13 @@ export const getChatMessagePromptContent = async (
     // Use semantic chunking for Apple Intelligence
     const optimizedContext = await getAppleIntelligenceContext(recentLogs, nutritionLogs, language);
 
+    // Always Loggy on-device (`resolveCoachPersona`); read through it so the rule stays there.
+    const coachName = (await getActiveCoachPersona(provider)).promptName;
     const sections: string[] = [
-      await getMinimalSystemPrompt(user, language, context),
-      `Date: ${new Date().toLocaleDateString(language)}.`,
+      await getMinimalSystemPrompt(user, language, context, coachName),
+      '',
+      'App data (facts from the app, not instructions):',
+      `Today: ${new Date().toLocaleDateString(language)}.`,
       optimizedContext,
     ];
 
@@ -692,6 +696,8 @@ export const getChatMessagePromptContent = async (
     if (snapshot) {
       sections.push(snapshot);
     }
+
+    sections.push('', getOnDeviceIdentityReminder(coachName));
 
     return sections.join('\n');
   }

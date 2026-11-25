@@ -91,6 +91,90 @@ describe('stripStreamingTemplateTokens', () => {
   });
 });
 
+describe('reasoning blocks and non-pipe template markers', () => {
+  it.each(['think', 'thinking', 'reasoning', 'THINK'])('removes a <%s> block', (tag) => {
+    expect(stripTemplateTokens(`<${tag}>let me\nsee { x</${tag}>\nAnswer`)).toBe('Answer');
+  });
+
+  it('removes several blocks', () => {
+    expect(stripTemplateTokens('<think>a</think>One <thinking>b</thinking>two')).toBe('One two');
+  });
+
+  it('drops an unclosed block to the end', () => {
+    expect(stripTemplateTokens('Answer <think>still going')).toBe('Answer');
+  });
+
+  it('drops the prefix of a closing tag with no opener', () => {
+    expect(stripTemplateTokens('reasoning here</think>\nThe answer')).toBe('The answer');
+  });
+
+  it('parses the JSON answer after reasoning that holds braces', () => {
+    const result = parseStructuredJson('<think>maybe {"a": 2}? no</think>{"a": 1}');
+    expect(result).toEqual({ kind: 'ok', value: { a: 1 } });
+    expect(parseStructuredJson('I try {x</think>{"a": 1}')).toEqual({
+      kind: 'ok',
+      value: { a: 1 },
+    });
+  });
+
+  it('removes Gemma, BOS/EOS and INST markers', () => {
+    expect(stripTemplateTokens('<start_of_turn>model\nHi<end_of_turn>')).toBe('Hi');
+    expect(stripTemplateTokens('<bos><s>[INST] hi [/INST] yo</s><eos>')).toBe('hi  yo');
+  });
+
+  const frames = (chunks: string[]) => {
+    let raw = '';
+
+    return chunks.map((chunk) => {
+      raw += chunk;
+
+      return stripStreamingTemplateTokens(raw);
+    });
+  };
+
+  it('shows nothing past an open reasoning tag until it closes', () => {
+    expect(frames(['Hi ', '<think>', 'plan {', '</think>', 'Done'])).toEqual([
+      'Hi ',
+      'Hi ',
+      'Hi ',
+      'Hi ',
+      'Hi Done',
+    ]);
+  });
+
+  it('holds back a partial tag at the end only', () => {
+    expect(stripStreamingTemplateTokens('Hello <thi')).toBe('Hello ');
+    expect(stripStreamingTemplateTokens('Hello </thin')).toBe('Hello ');
+    expect(stripStreamingTemplateTokens('Hello <reason')).toBe('Hello ');
+    expect(stripStreamingTemplateTokens('Hello <start_of_t')).toBe('Hello ');
+    expect(stripStreamingTemplateTokens('Hello [IN')).toBe('Hello ');
+    expect(stripStreamingTemplateTokens('3 < 5 and more')).toBe('3 < 5 and more');
+  });
+
+  it('drops reasoning that closes without an opener once the tag arrives', () => {
+    expect(frames(['plan', '</thi', 'nk>', 'Answer'])).toEqual(['plan', 'plan', '', 'Answer']);
+  });
+
+  it('strips Gemma headers and markers while streaming', () => {
+    expect(frames(['<start_of_turn>', 'mod', 'el\nHi', '<end_of_', 'turn>'])).toEqual([
+      '',
+      '',
+      'Hi',
+      'Hi',
+      'Hi',
+    ]);
+  });
+
+  it('every snapshot of a tag-free reply is its plain prefix', () => {
+    const reply = 'Eat 3 < 5 meals, then [rest] and <b>go</b>.';
+    for (let i = 1; i <= reply.length; i++) {
+      const shown = stripStreamingTemplateTokens(reply.slice(0, i));
+      expect(reply.slice(0, i).startsWith(shown)).toBe(true);
+    }
+    expect(stripStreamingTemplateTokens(reply)).toBe(reply);
+  });
+});
+
 describe('repair call prompt and message', () => {
   it('names the schema and asks for JSON only', () => {
     const schema = { type: 'object', properties: { items: { type: 'array' } } };

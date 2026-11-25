@@ -67,6 +67,7 @@ import {
 import { HISTORY_WINDOW_TURNS, historyText } from '@/utils/coachHistory';
 import { handleError } from '@/utils/handleError';
 import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
+import { providerPolicyFor } from '@/utils/providerPolicy';
 import { buildWorkoutCompletedSummaryForLLM } from '@/utils/workoutAI';
 
 export interface ExtendedIMessage extends IMessage {
@@ -716,16 +717,16 @@ export function useChatMessages(
 
         // A finished-workout card is shown as Loggy in the UI but sent as a user message. Only the
         // newest one is expanded into the full session (it is a lot of tokens, and the older ones
-        // are in the prompt's own workout history); the others are a single line.
-        const newestWorkoutCardIndex = historyWithoutCurrentMessage.reduce(
-          (found, record, index) => {
-            const payload = parsePayload(record);
-            return payload && isWorkoutCompletedPayload(payload) && payload.workoutLogId
-              ? index
-              : found;
-          },
-          -1
-        );
+        // are in the prompt's own workout history); the others are a single line. A small model
+        // gets every card as a single line (`compactWorkoutCards`).
+        const newestWorkoutCardIndex = providerPolicyFor(aiConfig).compactWorkoutCards
+          ? -1
+          : historyWithoutCurrentMessage.reduce((found, record, index) => {
+              const payload = parsePayload(record);
+              return payload && isWorkoutCompletedPayload(payload) && payload.workoutLogId
+                ? index
+                : found;
+            }, -1);
 
         const buildHistoryEntry = async (
           record: ChatMessage,

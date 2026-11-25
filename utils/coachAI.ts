@@ -1272,10 +1272,10 @@ async function sendViaOnDevice(
     config,
   });
 
-  return {
-    msg4User: raw || i18n.t('errors.aiProcessingError'),
-    sumMsg: raw?.slice(0, 120) ?? '',
-  };
+  // An empty reply stays empty: the reply service takes the person's message back and offers a
+  // retry. Saving the apology as the coach's answer put it into the history, and a small model
+  // copies its own earlier replies.
+  return { msg4User: raw, sumMsg: raw.slice(0, 120) };
 }
 
 // --- Helpers for insight/parsing/vision ---

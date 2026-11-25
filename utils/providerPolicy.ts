@@ -59,6 +59,12 @@ export type ProviderPolicy = {
   /** The most turns of history a free-chat reply is sent, for a model that copies its own replies. */
   maxChatHistoryTurns?: number;
   /**
+   * A finished-workout card goes into the chat history as one line, never as the full session JSON.
+   * The JSON took most of a small model's history budget, and a model that copies what it sees
+   * started answering in JSON. The session is still in its own prompt's recent-workouts block.
+   */
+  compactWorkoutCards?: boolean;
+  /**
    * What happens to a structured reply from this provider. Absent: it is used as it came (the free
    * tier, whose schema cannot be relied on but whose replies were never repaired, and Apple's engine,
    * whose guided generation the OS enforces).
@@ -193,6 +199,7 @@ const CLAUDE_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 const SMALL_MODEL_POLICY: ProviderPolicy = {
   chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
   maxChatHistoryTurns: 6,
+  compactWorkoutCards: true,
   structuredReplies: 'repaired',
   runsSamplesSequentially: true,
 };
@@ -222,6 +229,7 @@ const LOCAL_SERVER_POLICY: ProviderPolicy = {
  */
 const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
   maxChatHistoryTurns: SMALL_MODEL_POLICY.maxChatHistoryTurns,
+  compactWorkoutCards: SMALL_MODEL_POLICY.compactWorkoutCards,
   runsSamplesSequentially: true,
   ...ON_DEVICE_CAPABILITIES,
 };

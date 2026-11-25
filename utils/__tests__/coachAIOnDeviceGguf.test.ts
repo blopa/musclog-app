@@ -220,6 +220,16 @@ describe('sendCoachMessage on the downloaded engine', () => {
     expect(seen.every((text) => !text.includes('<|'))).toBe(true);
   });
 
+  it('answers an empty generation with an empty reply, never the apology as the coach’s words', async () => {
+    // The reply service reads an empty reply as a failed send (message taken back, composer
+    // restored). A saved apology would sit in the history, and a small model copies its replies.
+    mockSendLocalMessage.mockResolvedValue('<|im_end|>');
+
+    const reply = await sendCoachMessage(gguf, [], 'hi');
+
+    expect(reply.msg4User).toBe('');
+  });
+
   it('sends only the latest turns, with a repetition penalty', async () => {
     mockSendLocalMessage.mockResolvedValue('Anytime!');
     const history = Array.from({ length: 10 }, (_, i) => ({

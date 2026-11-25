@@ -19,6 +19,20 @@ describe('providerPolicyFor', () => {
     });
   });
 
+  it('sends finished-workout cards as one line to every small model and only to them', () => {
+    for (const config of [
+      { provider: 'local' },
+      { provider: 'on-device', engine: 'gguf' },
+      { provider: 'on-device', engine: 'apple' },
+    ] as const) {
+      expect(providerPolicyFor(config).compactWorkoutCards).toBe(true);
+    }
+
+    for (const provider of ['openai', 'gemini', 'claude', 'hosted', 'gateway'] as const) {
+      expect(providerPolicyFor({ provider }).compactWorkoutCards).toBeUndefined();
+    }
+  });
+
   it('gives a custom local server and the downloaded model the same small-model rules', () => {
     const local = providerPolicyFor({ provider: 'local' });
     const gguf = providerPolicyFor({ provider: 'on-device', engine: 'gguf' });
