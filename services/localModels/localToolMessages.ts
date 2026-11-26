@@ -38,6 +38,27 @@ export function toEngineTools(tools: LocalToolDefinition[]) {
   }));
 }
 
+/**
+ * llama.cpp (b10256, the build inside llama.rn 0.12.9) picks its LFM2.5 tool-call parser only when
+ * the chat template's SOURCE holds the literal `List of tools: [`. LFM2.5-VL-450M's template builds
+ * that line as `"List of tools: " + (tools | tojson)`, so it fell to the generic parser, whose
+ * grammar llama.cpp cannot even parse: every request with tools failed with "Failed to initialize
+ * sampling". Returns the template with the literal in a comment (the rendered prompt is the same),
+ * or undefined when the model's own template needs no help.
+ */
+export function toolTemplateOverride(template: unknown): string | undefined {
+  if (
+    typeof template !== 'string' ||
+    !template.includes('List of tools:') ||
+    template.includes('List of tools: [') ||
+    template.includes('<|tool_list_start|>')
+  ) {
+    return undefined;
+  }
+
+  return `${template}{#- List of tools: [ -#}`;
+}
+
 export function readToolCalls(raw: unknown): LocalToolCall[] {
   if (!Array.isArray(raw)) {
     return [];

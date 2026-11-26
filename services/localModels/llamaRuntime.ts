@@ -23,7 +23,12 @@ import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { captureException } from '@/utils/sentry';
 import { createSerialQueue } from '@/utils/serialQueue';
 
-import { readToolCalls, toEngineMessages, toEngineTools } from './localToolMessages';
+import {
+  readToolCalls,
+  toEngineMessages,
+  toEngineTools,
+  toolTemplateOverride,
+} from './localToolMessages';
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
 
 type LlamaModule = typeof import('llama.rn');
@@ -306,6 +311,14 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
       // A plain-text reply takes the vendor's sampling; a schema or a photo keeps the defaults.
       const plainSampling = plainTextSampling(params) ? textSampling : null;
+      // Only a tool request: llama.cpp needs a hint to read this model's template for tools.
+      const toolTemplate = params.tools
+        ? toolTemplateOverride(
+            (ctx.model?.metadata as Record<string, unknown> | undefined)?.[
+              'tokenizer.chat_template'
+            ]
+          )
+        : undefined;
       const result = await ctx.completion(
         {
           messages: params.image
@@ -321,6 +334,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
             ? {
                 tools: toEngineTools(params.tools),
                 tool_choice: 'auto',
+                ...(toolTemplate ? { chat_template: toolTemplate } : {}),
               }
             : {}),
           ...(params.schema

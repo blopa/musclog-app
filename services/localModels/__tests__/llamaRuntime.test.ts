@@ -17,8 +17,14 @@ const mockInstalled: {
 const mockCalls: string[] = [];
 let mockInitShouldFail = false;
 let mockCompletionImpl: (params: unknown, cb?: (d: { token: string }) => void) => Promise<unknown>;
+let mockChatTemplate: string | undefined;
 
 const mockContext = {
+  model: {
+    get metadata() {
+      return { 'tokenizer.chat_template': mockChatTemplate };
+    },
+  },
   completion: jest.fn((params: unknown, cb?: (d: { token: string }) => void) =>
     mockCompletionImpl(params, cb)
   ),
@@ -86,6 +92,7 @@ beforeEach(async () => {
   jest.useFakeTimers();
   mockCalls.length = 0;
   mockInitShouldFail = false;
+  mockChatTemplate = undefined;
   mockInstalled.value = INSTALLED;
   mockCompletionImpl = async (_params, cb) => {
     cb?.({ token: 'he' });
@@ -249,6 +256,29 @@ describe('generateWithLocalModel', () => {
       expect(first).not.toHaveProperty('min_p');
       expect(first).not.toHaveProperty('penalty_repeat');
       expect(second).toMatchObject({ temperature: 0 });
+    });
+
+    // Without the override llama.cpp b10256 cannot build the grammar for LFM2.5-VL-450M's
+    // template and every request with tools fails ("Failed to initialize sampling").
+    it('overrides a template llama.cpp would not recognise, only for a request with tools', async () => {
+      mockChatTemplate = '{{- "List of tools: " + (tools | tojson) -}}';
+
+      await generateWithLocalModel({ messages, tools });
+      await generateWithLocalModel({ messages });
+
+      const [withTools, without] = mockContext.completion.mock.calls.map((c) => c[0]);
+      expect(withTools).toMatchObject({
+        chat_template: `${mockChatTemplate}{#- List of tools: [ -#}`,
+      });
+      expect(without).not.toHaveProperty('chat_template');
+    });
+
+    it('keeps the model template when llama.cpp already recognises it', async () => {
+      mockChatTemplate = '{{- "List of tools: [" -}}';
+
+      await generateWithLocalModel({ messages, tools });
+
+      expect(mockContext.completion.mock.calls[0][0]).not.toHaveProperty('chat_template');
     });
 
     it('rejects tools together with a schema without calling completion', async () => {
