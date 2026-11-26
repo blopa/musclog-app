@@ -273,23 +273,107 @@
       "v2_18_0": {
         "onDeviceAi": {
           "title": "KI, die auf deinem Telefon läuft",
-          "description": "Der Coach von Musclog kann jetzt komplett auf diesem Telefon laufen. Was du eingibst, verlässt das Gerät nicht, und es funktioniert offline. Es ist kostenlos, ohne Konto oder Schlüssel.",
+          "description": "Der Coach von Musclog kann jetzt komplett auf diesem Telefon laufen. Was du schreibst und die Fotos, die du machst, werden nirgendwohin geschickt. Er funktioniert auch im Flugmodus und kostet nichts.",
           "action": {
             "label": "KI auf diesem Telefon einrichten",
-            "description": "Wähle Apple Intelligence oder ein kleines heruntergeladenes Modell."
+            "description": "Wähle Apple Intelligence oder ein kleines Modell, das du einmal herunterlädst."
           },
           "items": {
             "private": {
               "label": "Bleibt auf deinem Telefon",
-              "description": "Deine Nachrichten werden auf dem Gerät beantwortet, nie auf einem Server."
+              "description": "Deine Nachrichten und Mahlzeitenfotos werden auf dem Gerät beantwortet, nie an einen Server gesendet."
             },
             "offline": {
               "label": "Funktioniert offline",
-              "description": "Nach einem einmaligen Download ist keine Verbindung nötig."
+              "description": "Nach einem einmaligen Download ist keine Verbindung nötig. Auch nicht für Fotos."
             },
+            "free": {
+              "label": "Kostenlos, für immer",
+              "description": "Kein Konto, kein API-Schlüssel und kein Abo. Es läuft auf deinem Telefon, also kostet es niemanden etwas."
+            }
+          }
+        },
+        "photos": {
+          "title": "Richte die Kamera auf deine Mahlzeit",
+          "description": "Wenn du das Erkennen von Fotos im Download einschließt, kann das Modell ein Foto deiner Mahlzeit ansehen, die Lebensmittel benennen, die es erkennt, und schätzen, wie viel von jedem auf dem Teller liegt. Alles auf dem Telefon, auch offline.",
+          "items": {
+            "realNumbers": {
+              "label": "Zuerst deine Lebensmitteldaten",
+              "description": "Das Modell wird nicht nach Kalorien gefragt. Ist ein genanntes Lebensmittel bereits in Musclog, werden diese Zahlen verwendet. Alles andere wird anhand des Namens geschätzt, also prüfe diese zuerst."
+            },
+            "review": {
+              "label": "Nichts wird gespeichert, bevor du bestätigst",
+              "description": "Jedes Lebensmittel und jede Grammangabe öffnet sich in einer Prüfung, die du bearbeiten kannst, bevor sie in dein Tagebuch kommt."
+            },
+            "where": {
+              "label": "In der Kamera und beim Coach",
+              "description": "Nutze KI-Mahlzeit in der Kamera oder hänge ein Foto an Mahlzeit erfassen des Coachs an."
+            }
+          }
+        },
+        "honest": {
+          "title": "Klein, also prüfe seine Arbeit",
+          "description": "Um auf ein Telefon zu passen, ist dieses Modell winzig im Vergleich zur KI hinter Cloud-Chatbots. Es wird Lebensmittel falsch benennen, Portionen falsch einschätzen und manchmal falsche Ratschläge geben. Betrachte es als Begleiter, der dich ans Protokollieren erinnert, nicht als Ernährungsberater: Du prüfst die Ergebnisse und bist für die Zahlen verantwortlich.",
+          "items": {
+            "check": {
+              "label": "Prüfe jedes Ergebnis",
+              "description": "Lies jedes Lebensmittel und jede Menge, bevor du speicherst, und korrigiere, was falsch ist. Es dauert Sekunden und hält dein Tagebuch ehrlich."
+            },
+            "language": {
+              "label": "Am besten auf Englisch",
+              "description": "Es antwortet am besten auf Englisch und einigen anderen Sprachen. In deiner Sprache können die Antworten schwächer sein."
+            },
+            "stronger": {
+              "label": "Brauchst du ein stärkeres Modell?",
+              "description": "Nutze deinen eigenen API-Schlüssel oder Musclog Iron, in Einstellungen → KI. Beide schicken deine Anfrage an ein viel größeres Modell in der Cloud."
+            }
+          }
+        },
+        "mealCamera": {
+          "title": "Mehr zu deinem Mahlzeitenfoto hinzufügen",
+          "description": "Nach dem Foto kannst du jetzt bis zu 5 Fotos derselben Mahlzeit hinzufügen und Musclog vor der Schätzung etwas mehr dazu erzählen. Alles, was du hinzufügst, ist optional.",
+          "flow": {
+            "title": "So funktioniert die KI-Mahlzeitenkamera",
+            "description": "Du kannst das jederzeit unter Einstellungen → KI-Verhalten ändern.",
+            "detailed": {
+              "label": "Ausführlich",
+              "description": "Prüfe deine Fotos und ergänze Details, bevor geschätzt wird."
+            },
+            "quick": {
+              "label": "Schnell",
+              "description": "Schätzen direkt nach dem Foto, wie bisher."
+            }
+          },
+          "items": {
             "photos": {
-              "label": "Mahlzeitenfotos",
-              "description": "Das heruntergeladene Modell kann ein Foto deiner Mahlzeit lesen, wenn du diesen Teil einschließen möchtest."
+              "label": "Bis zu 5 Fotos einer Mahlzeit",
+              "description": "Füge vor der Schätzung einen weiteren Blickwinkel oder eine Nahaufnahme hinzu. Sie werden gemeinsam als eine Mahlzeit gesendet, sodass ein Lebensmittel, das auf zwei Fotos zu sehen ist, nur einmal gezählt wird. Ein Anbieter, der weniger Fotos annimmt, begrenzt die Anzahl."
+            },
+            "details": {
+              "label": "Sag, was ein Foto nicht zeigen kann",
+              "description": "Füge einen Namen hinzu, eine Notiz wie „halb gegessen, ohne Dressing“, ob es selbst gekocht oder aus einem Restaurant war und ob Öl oder Butter dazukam."
+            },
+            "cover": {
+              "label": "Das erste Foto bleibt erhalten",
+              "description": "Nur das erste Foto wird mit der protokollierten Mahlzeit gespeichert. Die anderen werden nur für die Schätzung verwendet."
+            }
+          }
+        },
+        "thinking": {
+          "title": "Die KI länger nachdenken lassen",
+          "description": "Eine neue Einstellung lässt die KI ihre eigene Arbeit prüfen, bevor sie antwortet. Aus ist am schnellsten, Tokenmaxxing am langsamsten und gründlichsten.",
+          "items": {
+            "levels": {
+              "label": "Wähle, wie stark sie nachdenkt",
+              "description": "Aus, Mittel, Hoch oder Tokenmaxxing, in Einstellungen → KI-Verhalten. Jede Stufe macht mehr Anfragen, um die Antwort gegenzuprüfen."
+            },
+            "checks": {
+              "label": "Code prüft die Antworten",
+              "description": "Mahlzeiten werden mehrfach gelesen und verglichen, Pläne und Auswertungen werden mit deinen eigenen Zahlen geprüft."
+            },
+            "cost": {
+              "label": "Langsamer und teurer",
+              "description": "Mit Musclog Iron verbraucht es mehr vom monatlichen Kontingent, und die kostenlose Musclog-KI antwortet immer auf Aus. Wir haben nicht gemessen, wie stark es die Antworten verbessert."
             }
           }
         }

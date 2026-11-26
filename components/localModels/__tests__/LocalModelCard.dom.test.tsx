@@ -20,6 +20,11 @@ jest.mock('@/services/localModels/modelStore', () => ({
   cancelLocalModelDownload: jest.fn(),
   deleteLocalModel: jest.fn(),
   getFreeDiskBytes: () => mockFreeBytes(),
+  getLocalModelSpaceCheck: async (selection: unknown) => {
+    const { checkSpace } = require('@/utils/localModels/install');
+    const { DEFAULT_LOCAL_MODEL } = require('@/constants/localModels');
+    return checkSpace(await mockFreeBytes(), DEFAULT_LOCAL_MODEL, selection);
+  },
   pauseLocalModelDownload: () => mockPause(),
   resumeLocalModelDownload: jest.fn(),
   startLocalModelDownload: (selection: unknown) => mockStart(selection),

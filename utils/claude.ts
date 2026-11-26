@@ -15,12 +15,12 @@ export const CLAUDE_MAX_TOKENS = 16_000;
 /** A streamed reply has no timeout pressure, so the model gets room to think and answer. */
 export const CLAUDE_STREAM_MAX_TOKENS = 64_000;
 
-export type ClaudeEffort = 'low' | 'medium' | 'high';
+export type ClaudeEffort = 'low' | 'medium' | 'high' | 'max';
 
 /**
  * Claude 5.5 models always think and there is no way to turn it off, so effort is the only lever.
  * The caller chooses the effort per kind of job (see `utils/aiEffort.ts`); Claude has no level
- * below `low`, so `minimal` maps to `low`.
+ * below `low`, so `minimal` maps to `low`; `max` (Tokenmaxxing) is Claude's own top effort.
  */
 export function claudeEffort(effort: AiEffort): ClaudeEffort {
   switch (effort) {
@@ -31,18 +31,22 @@ export function claudeEffort(effort: AiEffort): ClaudeEffort {
       return 'medium';
     case 'high':
       return 'high';
+    case 'max':
+      return 'max';
   }
 }
 
 /**
  * `dangerouslyAllowBrowser` is required on web and harmless on native: the key is the user's own,
  * entered in Settings and stored encrypted, so it is never a shared secret shipped in the bundle.
+ * `maxRetries` has no default on purpose: `withLlmRetry` is the one retry loop, so a request passes 0
+ * (the SDK's own two retries would repeat a failure inside each of its attempts).
  */
-export function buildClaudeClient(apiKey: string | undefined, maxRetries?: number): Anthropic {
+export function buildClaudeClient(apiKey: string | undefined, maxRetries: number): Anthropic {
   return new Anthropic({
     apiKey: apiKey ?? 'unused',
     dangerouslyAllowBrowser: true,
-    ...(maxRetries === undefined ? {} : { maxRetries }),
+    maxRetries,
   });
 }
 

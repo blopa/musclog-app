@@ -1,6 +1,7 @@
 // SSE pass-through support (plan 7 "Streaming"): the stream is relayed unchanged while a small
 // tail is kept, from which the final usage chunk (OpenRouter sends it just before [DONE]) is read.
 // Nothing here ever throws on malformed upstream data.
+import { isObj, num, type Json } from '../upstream/http';
 
 export const TAIL_BYTES = 2048;
 
@@ -13,38 +14,31 @@ export interface ParsedUsage {
   error: boolean;
 }
 
-const isObj = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null && !Array.isArray(v);
-const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);
-
 export type UsageRead = Omit<ParsedUsage, 'error'>;
 /** Reads a response's `usage` object; null when it carries no usable cost. One per gateway. */
 export type UsageReader = (usage: unknown) => UsageRead | null;
 
-/** OpenRouter: `usage.cost`, a number of USD. */
-export const openRouterUsage: UsageReader = (u) => {
-  if (!isObj(u)) return null;
-  const cost = num(u.cost);
-  if (cost === null || cost < 0) return null;
-  return {
-    costUsd: cost,
-    promptTokens: num(u.prompt_tokens),
-    completionTokens: num(u.completion_tokens),
+function makeUsageReader(readCost: (u: Json) => number | null): UsageReader {
+  return (u) => {
+    if (!isObj(u)) return null;
+    const cost = readCost(u);
+    if (cost === null || cost < 0) return null;
+    return {
+      costUsd: cost,
+      promptTokens: num(u.prompt_tokens),
+      completionTokens: num(u.completion_tokens),
+    };
   };
-};
+}
+
+/** OpenRouter: `usage.cost`, a number of USD. */
+export const openRouterUsage: UsageReader = makeUsageReader((u) => num(u.cost));
 
 /** Otari: `usage.cost_usd`, a six-decimal USD string (a number is accepted too). */
-export const otariUsage: UsageReader = (u) => {
-  if (!isObj(u)) return null;
+export const otariUsage: UsageReader = makeUsageReader((u) => {
   const raw = u.cost_usd;
-  const cost = typeof raw === 'string' && raw.trim() !== '' ? num(Number(raw)) : num(raw);
-  if (cost === null || cost < 0) return null;
-  return {
-    costUsd: cost,
-    promptTokens: num(u.prompt_tokens),
-    completionTokens: num(u.completion_tokens),
-  };
-};
+  return typeof raw === 'string' && raw.trim() !== '' ? num(Number(raw)) : num(raw);
+});
 
 /** The last usage object with a numeric cost, and whether the tail ends in an error chunk. */
 export function parseTail(text: string, readUsage: UsageReader = openRouterUsage): ParsedUsage {

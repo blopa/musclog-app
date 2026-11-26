@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Podgląd aplikacji Musclog pokazujący prywatne śledzenie treningów, odżywiania i postępów.",
+      "image": {
+        "headline": "Trenuj mądrzej, jedz lepiej",
+        "subline": "Zapis treningów i odżywiania w jednej prywatnej aplikacji open source.",
+        "items": {
+          "workouts": {
+            "title": "Dziennik treningów",
+            "description": "Serie, powtórzenia i ciężary w kilka sekund."
+          },
+          "food": {
+            "title": "Śledzenie posiłków",
+            "description": "Zeskanuj kod kreskowy lub sfotografuj posiłek."
+          },
+          "progress": {
+            "title": "Wykresy postępów",
+            "description": "Trendy wagi, siły i odżywiania w czasie."
+          },
+          "privacy": {
+            "title": "Prywatna z założenia",
+            "description": "Dane zostają na urządzeniu."
+          }
+        }
+      },
       "keywords": "Musclog, tracker treningów, tracker treningowy, tracker odżywiania, tracker makroskładników, aplikacja fitness open source, aplikacja lokalna",
       "routes": {
         "home": {
@@ -153,8 +175,8 @@
       "f1": "Inteligentne śledzenie treningów",
       "f2": "Zapis posiłków ze zdjęcia przez AI",
       "f3": "Szczegółowe wykresy postępów",
-      "f4": "100% prywatne i na urządzeniu",
-      "tagline": "Śledzenie treningów i odżywiania wspierane przez AI – darmowe i open source.",
+      "f4": "Twoje dane zostają na urządzeniu",
+      "tagline": "Śledzenie treningów i odżywiania z opcjonalnym AI – darmowe i open source.",
       "qrcode_title": "Pobierz aplikację",
       "qrcode_text": "Zeskanuj, aby pobrać Musclog"
     },
@@ -288,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Trener AI",
-          "description": "Rozmawiaj z Loggy o treningu i jedzeniu albo oszacuj posiłek ze zdjęcia. Opcjonalne, z Twoim własnym kluczem Gemini, OpenAI lub Claude."
+          "description": "Rozmawiaj z Loggy o treningu i jedzeniu albo oszacuj posiłek ze zdjęcia. Opcjonalne: z Twoim własnym kluczem Gemini, OpenAI lub Claude, z Musclog Iron, z darmową opcją, z lokalnym modelem lub z AI na telefonie."
         },
         "barcode": {
           "title": "Skaner kodów kreskowych",
@@ -582,7 +604,7 @@
     "privacy": {
       "titleStart": "Polityka",
       "titleHighlight": "prywatności",
-      "lastUpdated": "Ostatnia aktualizacja: 23 listopada 2026",
+      "lastUpdated": "Ostatnia aktualizacja: 24 listopada 2026",
       "highlights": {
         "dataProtection": {
           "title": "Ochrona danych",
@@ -681,10 +703,9 @@
             "content2": "Musclog oferuje opcjonalne funkcje AI. Są wyłączone, dopóki nie wybierzesz dostawcy: własnego klucza API OpenAI, Anthropic Claude lub Google Gemini, modelu działającego na urządzeniu, takiego jak Apple Intelligence na iOS, lokalnego lub własnego punktu końcowego LLM darmowej opcji AI Musclog albo Musclog Iron, opcjonalnej miesięcznej subskrypcji.",
             "content3": "Jeśli zdecydujesz się korzystać z funkcji AI, dane, które postanowisz przesłać, zostaną wysłane do dostawcy lub punktu końcowego, który skonfigurowałeś. Jeśli korzystasz z własnego lokalnego modelu, znajdującego się pod Twoją kontrolą, dane mogą pozostać w Twoim własnym środowisku. Jeśli korzystasz z hostowanego przez strony trzecie punktu końcowego, w tym usługi hostującej lokalne modele, dostawca może przetwarzać dane zgodnie z własnymi warunkami i praktykami prywatności. Musclog nie kontroluje tego, jak zewnętrzni dostawcy przetwarzają wysłane do nich dane.",
             "content4": "Jeśli wybierzesz darmową opcję AI Musclog, Twoje zapytania są wysyłane przez OpenRouter, usługę kierowania zapytań AI, do Google AI Studio (model Gemma), z użyciem klucza API zarządzanego przez Musclog. Zapytanie zawiera wyłącznie to, co przesyłasz do funkcji AI, na przykład wiadomości czatu, zdjęcia posiłków lub dane o treningu, odżywianiu i ciele potrzebne tej funkcji. OpenRouter nie przechowuje treści zapytań, poza skanowaniem pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci opisanym poniżej; zachowuje szczegóły zapytania, takie jak rozmiar i czas. Google obsługuje te zapytania na podstawie warunków API Gemini dla bezpłatnego użytku: Google może przechowywać zapytania i odpowiedzi, wykorzystywać je do ulepszania swoich produktów i technologii uczenia maszynowego oraz pozwalać ludziom-recenzentom je czytać. Google usuwa identyfikatory, na przykład Twoje konto, zanim trafią do recenzji przez człowieka, ale nie wpisuj danych osobowych ani wrażliwych w darmowej opcji AI Musclog i nie używaj jej do niczego, czego nie chcesz pokazać Google. Darmowa opcja AI Musclog jest tylko dla dorosłych (18 lat i więcej), ponieważ warunki Google nie zezwalają na tę bezpłatną usługę w aplikacjach, z których mogą korzystać osoby poniżej 18 roku życia. Musclog Iron działa inaczej: korzysta wyłącznie z dostawców z zerowym przechowywaniem danych. Darmowa opcja ma dzienny limit wspólny dla wszystkich jej użytkowników, zależy od darmowych limitów Google i czasem może być niedostępna.",
-            "contentPremium": "Jeśli subskrybujesz Musclog Iron, Twoje żądania AI są wysyłane do własnej usługi Musclog, działającej na Cloudflare Workers, a stamtąd do OpenRouter, który przekazuje je wyłącznie dostawcom AI ustawionym na zerową retencję danych i brak trenowania na Twoich danych. Żądanie zawiera tylko to, co wysyłasz do funkcji AI, na przykład wiadomości czatu lub dane o treningach, odżywianiu i ciele potrzebne tej funkcji, a także zdjęcia posiłków. Usługa Musclog nie przechowuje treści Twoich żądań ani odpowiedzi. Zachowuje jedynie identyfikator wyprowadzony z klucza znajdującego się na Twoim urządzeniu, liczniki użycia oraz krótki odcisk każdego żądania, dzięki któremu ponowione żądanie nie jest liczone dwukrotnie. Jak każde żądanie w internecie, także to ujawnia Twój adres IP przed Cloudflare, która dostarcza i chroni usługę; usługa Musclog go nie przechowuje. OpenRouter otrzymuje z każdym żądaniem pseudonimowy kod Twojej subskrypcji, a nie Twój identyfikator, imię ani adres e-mail, aby można było wykrywać nadużycia. RevenueCat otrzymuje Twój identyfikator, status zakupu w sklepie oraz dane techniczne, które obsługuje usługa subskrypcji aplikacji, na przykład adres IP, aby potwierdzić, że subskrypcja jest aktywna. Musclog nie otrzymuje Twojego imienia, adresu e-mail ani danych płatniczych: płatność obsługują Apple lub Google. OpenRouter sprawdza wszystkie przechodzące przez niego zapytania, również kierowane do dostawców z zerową retencją danych, pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci podczas ich przetwarzania i może zachować zapytanie oznaczone do przeglądu, zgłoszenia lub zabezpieczenia dowodów, jeśli wymaga tego prawo. Musclog Iron jest odrębna od darmowej opcji Musclog AI i włącza się dopiero po wyrażeniu przez Ciebie zgody w aplikacji.",
-            "content5": "Powinieneś zapoznać się z politykami prywatności wybranych przez Ciebie dostawców, w tym:",
+            "contentPremium": "Jeśli subskrybujesz Musclog Iron, Twoje żądania AI są wysyłane do własnej usługi Musclog, działającej na Cloudflare Workers, a stamtąd przez jedną z dwóch bramek AI, OpenRouter lub Otari (prowadzoną przez Mozilla.ai, MZL.AI, PBC), które przekazują je wyłącznie dostawcom AI ustawionym na zerową retencję danych i brak trenowania na Twoich danych. Musclog wybiera, która bramka jest używana, a zgoda w aplikacji obejmuje obie. W Otari każde żądanie wskazuje jednego zatwierdzonego dostawcę i nigdy nie przechodzi na innego. Żądanie zawiera tylko to, co wysyłasz do funkcji AI, na przykład wiadomości czatu lub dane o treningach, odżywianiu i ciele potrzebne tej funkcji, a także zdjęcia posiłków. Usługa Musclog nie przechowuje treści Twoich żądań ani odpowiedzi. Zachowuje jedynie identyfikator wyprowadzony z klucza znajdującego się na Twoim urządzeniu, liczniki użycia oraz krótki odcisk każdego żądania, dzięki któremu ponowione żądanie nie jest liczone dwukrotnie. Jak każde żądanie w internecie, także to ujawnia Twój adres IP przed Cloudflare, która dostarcza i chroni usługę; usługa Musclog go nie przechowuje. Bramka otrzymuje z każdym żądaniem pseudonimowy kod Twojej subskrypcji, a nie Twój identyfikator, imię ani adres e-mail, aby można było wykrywać nadużycia; Otari otrzymuje też etykiety wskazujące aplikację i rodzaj żądania, nigdy osobę ani urządzenie. RevenueCat otrzymuje Twój identyfikator, status zakupu w sklepie oraz dane techniczne, które obsługuje usługa subskrypcji aplikacji, na przykład adres IP, aby potwierdzić, że subskrypcja jest aktywna. Musclog nie otrzymuje Twojego imienia, adresu e-mail ani danych płatniczych: płatność obsługują Apple lub Google. OpenRouter sprawdza wszystkie przechodzące przez niego zapytania, również kierowane do dostawców z zerową retencją danych, pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci podczas ich przetwarzania i może zachować zapytanie oznaczone do przeglądu, zgłoszenia lub zabezpieczenia dowodów, jeśli wymaga tego prawo. Otari deklaruje, że nie otrzymuje ani nie przechowuje treści żądań i odpowiedzi; zachowuje szczegóły żądań, takie jak model, dostawca, liczba tokenów, koszt i status, na serwerach w Stanach Zjednoczonych. Musclog Iron jest odrębna od darmowej opcji Musclog AI i włącza się dopiero po wyrażeniu przez Ciebie zgody w aplikacji.",
+            "content5": "Powinieneś zapoznać się z politykami prywatności i warunkami wybranych przez Ciebie dostawców oraz usług, z których korzysta Musclog, w tym:",
             "cloudflarePrivacyPolicy": "Polityka prywatności Cloudflare",
-            "openrouterPrivacyPolicy": "Polityka prywatności OpenRouter",
             "openaiPrivacyPolicy": "Polityka prywatności OpenAI",
             "anthropicPrivacyPolicy": "Polityka prywatności Anthropic",
             "googlePrivacyPolicy": "Polityka prywatności Google",
@@ -729,7 +750,7 @@
           "items": [
             "Wybranym przez Ciebie dostawcom: wyszukiwania produktów trafiają do wybranej bazy produktów, a zapytania AI do skonfigurowanego dostawcy AI.",
             "Z Hugging Face, jeśli zdecydujesz się pobrać model AI na urządzenie: jak każde pobieranie pliku, żądanie przekazuje Hugging Face adres IP Twojego urządzenia. Model działa następnie na Twoim urządzeniu, a to, o co go pytasz, pozostaje na Twoim urządzeniu.",
-            "Podmiotom przetwarzającym, które obsługują części Usługi w Naszym imieniu: Sentry (raporty o awariach oraz raporty o błędach z usługi Musclog Iron, które nie zawierają treści wiadomości ani identyfikatorów), OpenRouter i Google (darmowa opcja Musclog AI), Cloudflare, OpenRouter i RevenueCat (Musclog Iron), GitHub i Cloudflare (hosting strony internetowej) oraz Google Analytics (strona internetowa, wyłącznie po zaakceptowaniu analityki przez Ciebie).",
+            "Podmiotom przetwarzającym, które obsługują części Usługi w Naszym imieniu: Sentry (raporty o awariach oraz raporty o błędach z usługi Musclog Iron, które nie zawierają treści wiadomości ani identyfikatorów), OpenRouter i Google (darmowa opcja Musclog AI), Cloudflare, OpenRouter lub Otari oraz RevenueCat (Musclog Iron), GitHub i Cloudflare (hosting strony internetowej) oraz Google Analytics (strona internetowa, wyłącznie po zaakceptowaniu analityki przez Ciebie).",
             "Gdy wymaga tego prawo, jak opisano w „Ujawnianie Twoich danych osobowych”.",
             "Za Twoją zgodą, na przykład gdy sam eksportujesz lub udostępniasz dane.",
             "Nie sprzedajemy Twoich danych ani nie udostępniamy ich reklamodawcom ani pośrednikom danych."
@@ -737,11 +758,11 @@
         },
         "retention": {
           "title": "Przechowywanie Twoich danych osobowych",
-          "content": "Dane w aplikacji pozostają na Twoim urządzeniu, dopóki ich nie usuniesz lub nie odinstalujesz aplikacji. Anonimowe raporty o awariach są przechowywane przez Sentry przez ograniczony czas, a potem usuwane. OpenRouter nie przechowuje treści zapytań wysyłanych przez darmową opcję AI Musclog; Google może je przechowywać zgodnie z opisem w „Opcjonalne funkcje AI”. Usługa Musclog Iron przechowuje odcisk każdego zapytania przez 7 dni od udzielenia na nie odpowiedzi, liczniki użycia przez 60 dni od zakończenia okresu rozliczeniowego, do którego należą, oraz identyfikator urządzenia, dopóki nie poprosisz Nas o jego usunięcie (zob. „Usuwanie Twoich danych osobowych” poniżej: skontaktuj się z Nami e-mailowo). Nie przechowuje treści wiadomości ani zdjęć. Dane z analityki strony są przechowywane zgodnie z opisem w „Analityka strony”."
+          "content": "Dane w aplikacji pozostają na Twoim urządzeniu, dopóki ich nie usuniesz lub nie odinstalujesz aplikacji. Anonimowe raporty o awariach są przechowywane przez Sentry przez ograniczony czas, a potem usuwane. OpenRouter nie przechowuje treści zapytań wysyłanych przez darmową opcję AI Musclog; Google może je przechowywać zgodnie z opisem w „Opcjonalne funkcje AI”. W przypadku Musclog Iron ani OpenRouter, ani Otari nie przechowuje treści zapytań, poza skanowaniem OpenRouter opisanym w „Opcjonalne funkcje AI”. Usługa Musclog Iron przechowuje odcisk każdego zapytania przez 7 dni od udzielenia na nie odpowiedzi, liczniki użycia przez 60 dni od zakończenia okresu rozliczeniowego, do którego należą, oraz identyfikator urządzenia, dopóki nie poprosisz Nas o jego usunięcie (zob. „Usuwanie Twoich danych osobowych” poniżej: skontaktuj się z Nami e-mailowo). Nie przechowuje treści wiadomości ani zdjęć. Dane z analityki strony są przechowywane zgodnie z opisem w „Analityka strony”."
         },
         "transfer": {
           "title": "Przekazywanie Twoich danych osobowych",
-          "content": "Raporty o awariach, wyszukiwania produktów, żądania AI, sprawdzanie subskrypcji i analityka strony są przetwarzane przez usługi wymienione w niniejszej Polityce prywatności, które mogą znajdować się poza Twoim krajem i poza Europejskim Obszarem Gospodarczym (na przykład Cloudflare, OpenRouter, RevenueCat i Sentry), gdzie przepisy o ochronie danych mogą się różnić od przepisów obowiązujących w Twojej jurysdykcji. W takim przypadku polegamy na zabezpieczeniach oferowanych przez każdego dostawcę, takich jak Ramy ochrony danych UE–USA (EU-US Data Privacy Framework) lub standardowe klauzule umowne Komisji Europejskiej. Musclog podejmuje rozsądne kroki, aby te dane były przetwarzane bezpiecznie i zgodnie z niniejszą Polityką prywatności."
+          "content": "Raporty o awariach, wyszukiwania produktów, żądania AI, sprawdzanie subskrypcji i analityka strony są przetwarzane przez usługi wymienione w niniejszej Polityce prywatności, które mogą znajdować się poza Twoim krajem i poza Europejskim Obszarem Gospodarczym (na przykład Cloudflare, OpenRouter, Otari, RevenueCat i Sentry), gdzie przepisy o ochronie danych mogą się różnić od przepisów obowiązujących w Twojej jurysdykcji. W takim przypadku polegamy na zabezpieczeniach oferowanych przez każdego dostawcę, takich jak Ramy ochrony danych UE–USA (EU-US Data Privacy Framework) lub standardowe klauzule umowne Komisji Europejskiej. Musclog podejmuje rozsądne kroki, aby te dane były przetwarzane bezpiecznie i zgodnie z niniejszą Polityką prywatności."
         },
         "deletion": {
           "title": "Usuwanie Twoich danych osobowych",
@@ -860,7 +881,7 @@
     "terms": {
       "titleStart": "Warunki",
       "conditions": "korzystania",
-      "lastUpdated": "Ostatnia aktualizacja: 22 listopada 2026",
+      "lastUpdated": "Ostatnia aktualizacja: 24 listopada 2026",
       "highlights": {
         "agreement": {
           "title": "Umowa z użytkownikiem",
@@ -916,7 +937,7 @@
         },
         "subscription": {
           "title": "Subskrypcja Musclog Iron",
-          "content1": "Musclog Iron to opcjonalna miesięczna subskrypcja, która obsługuje zapytania AI przez hostowaną usługę Musclog, dzięki czemu nie potrzebujesz własnego klucza. Wszystko inne w Musclog jest darmowe, a darmowa opcja AI Musclog i Twoje własne klucze działają bez niej.",
+          "content1": "Musclog Iron to opcjonalna miesięczna subskrypcja, która obsługuje zapytania AI przez hostowaną usługę Musclog, dzięki czemu nie potrzebujesz własnego klucza. Wszystko inne w Musclog jest darmowe, a darmowa opcja AI Musclog i Twoje własne klucze działają bez niej. Hostowana usługa Musclog przekazuje Twoje zapytania przez bramkę AI, OpenRouter lub Otari (od Mozilla.ai), do dostawców modeli AI. Sposób, w jaki obsługują Twoje zapytania, opisano w Naszej Polityce prywatności oraz w ich własnych politykach prywatności i warunkach, podlinkowanych poniżej.",
           "content2": "Subskrypcję sprzedaje i rozlicza Apple lub Google, a nie My. Cena jest pokazana w aplikacji, w Twojej walucie, przed zakupem. Płatność jest pobierana z Twojego konta w sklepie po potwierdzeniu, a subskrypcja odnawia się automatycznie co miesiąc, chyba że anulujesz ją co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nią zarządzać lub ją anulować w ustawieniach konta w sklepie, a zwroty obsługuje sklep zgodnie z własnymi zasadami.",
           "content3": "Musclog Iron obejmuje ograniczoną pulę zapytań AI, a aplikacja pokazuje, ile jej zostało. Gdy się wyczerpie, hostowana AI wstrzymuje działanie do odnowienia, a Twoje własne klucze i darmowa opcja nadal działają. Przywrócenie zakupów w aplikacji ponownie włącza Musclog Iron na urządzeniu zalogowanym na konto w sklepie, które dokonało zakupu.",
           "content4": "Możemy zmienić, ograniczyć lub zakończyć działanie Musclog Iron. Jeśli je zakończymy, ogłosimy to w aplikacji i na tej stronie, najpierw wstrzymamy nowe subskrypcje, a Ty możesz w dowolnym momencie anulować subskrypcję w swoim koncie w sklepie. Jeśli zapłaciłeś za okres, którego nie można już wykorzystać, możesz poprosić sklep o zwrot, a My wesprzemy tę prośbę."

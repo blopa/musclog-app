@@ -1,27 +1,15 @@
-import {
-  Apple,
-  Bot,
-  ChevronDown,
-  ChevronRight,
-  Cpu,
-  Dumbbell,
-  ScanText,
-  Settings2,
-} from 'lucide-react-native';
+import { Bot, ChevronDown, Settings2 } from 'lucide-react-native';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform, Pressable, Text, View } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
-import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
 import { OnDeviceAiSection } from '@/components/settings/OnDeviceAiSection';
 import { PremiumCard } from '@/components/settings/PremiumCard';
 import { Button } from '@/components/theme/Button';
-import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import { ListRow } from '@/components/theme/ListRow';
 import { SecretInput } from '@/components/theme/SecretInput';
-import { SectionLabel } from '@/components/theme/SectionLabel';
-import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import {
@@ -38,17 +26,16 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { usePremium } from '@/hooks/usePremium';
 import { useSettings } from '@/hooks/useSettings';
+import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { needsFreeTierConsent } from '@/utils/aiConsent';
-import { AI_IMAGE_TIER_ORDER, type AiImageTier } from '@/utils/aiImagePlan';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
 import {
   effectiveUseMusclogGateway,
   isMusclogGatewayAvailable,
 } from '@/utils/musclogGatewayAvailability';
 
-import { AiCustomPromptsModal } from './AiCustomPromptsModal';
-import { HistoryPickerField } from './aiHistorySettings';
+import { AIBehaviorSettingsModal } from './AIBehaviorSettingsModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PremiumModal } from './PremiumModal';
@@ -58,26 +45,6 @@ const AI_KEY_TEST_MESSAGE_KEYS = {
   rejected: 'errors.aiKeyTestRejected',
   network: 'errors.aiKeyTestNetwork',
 } as const satisfies Record<AiKeyTestResult, string>;
-
-/** One whole key per photo quality tier (label and what it means), so the translation check sees each. */
-export const AI_IMAGE_TIER_KEYS: Record<AiImageTier, { label: string; hint: string }> = {
-  low: {
-    label: 'settings.aiSettings.photoQuality.tier.low.label',
-    hint: 'settings.aiSettings.photoQuality.tier.low.hint',
-  },
-  medium: {
-    label: 'settings.aiSettings.photoQuality.tier.medium.label',
-    hint: 'settings.aiSettings.photoQuality.tier.medium.hint',
-  },
-  high: {
-    label: 'settings.aiSettings.photoQuality.tier.high.label',
-    hint: 'settings.aiSettings.photoQuality.tier.high.hint',
-  },
-  max: {
-    label: 'settings.aiSettings.photoQuality.tier.max.label',
-    hint: 'settings.aiSettings.photoQuality.tier.max.hint',
-  },
-};
 
 type AIIntegrationCardProps = {
   sectionTitle: string;
@@ -301,42 +268,56 @@ type AISettingsModalProps = {
   onLocalLlmBaseUrlChange?: (value: string) => void;
 };
 
+type ModelMenuKey = 'gemini' | 'openai' | 'claude';
+
 export function AISettingsModal({
   visible,
   onClose,
-  googleGeminiApiKey = '',
+  googleGeminiApiKey,
   onGoogleGeminiApiKeyChange,
-  geminiModel = DEFAULT_GEMINI_MODEL,
+  geminiModel,
   onGeminiModelPress,
-  openAiApiKey = '',
+  openAiApiKey,
   onOpenAiApiKeyChange,
   onGetOpenAiKeyPress,
-  openAiModel = DEFAULT_OPENAI_MODEL,
+  openAiModel,
   onOpenAiModelPress,
-  claudeApiKey = '',
+  claudeApiKey,
   onClaudeApiKeyChange,
-  claudeModel = DEFAULT_CLAUDE_MODEL,
+  claudeModel,
   onClaudeModelPress,
-  localLlmApiKey = '',
+  localLlmApiKey,
   onLocalLlmApiKeyChange,
-  localLlmModel = 'llama3',
+  localLlmModel,
   onLocalLlmModelChange,
-  localLlmBaseUrl = 'http://localhost:11434/v1',
+  localLlmBaseUrl,
   onLocalLlmBaseUrlChange,
 }: AISettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
-  const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
-  const [claudeModelMenuVisible, setClaudeModelMenuVisible] = useState(false);
-  const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
+  const settings = useSettings();
+  const [activeModelMenu, setActiveModelMenu] = useSubModalState<ModelMenuKey | null>(
+    visible,
+    null
+  );
+  const [behaviorVisible, setBehaviorVisible] = useState(false);
   const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
   const [premiumVisible, setPremiumVisible] = useState(false);
   // Loads the overview while this screen is open; `PremiumCard` below reads the same store.
   const premium = usePremium({ load: visible });
   const isMusclogIronActive =
     premium.enabled && premium.view.phase === 'active' && premium.useHostedAi;
-  const { aiImageQuality } = useSettings();
+
+  const resolvedGeminiApiKey = googleGeminiApiKey ?? settings.googleGeminiApiKey ?? '';
+  const resolvedGeminiModel = geminiModel ?? settings.googleGeminiModel ?? DEFAULT_GEMINI_MODEL;
+  const resolvedOpenAiApiKey = openAiApiKey ?? settings.openAiApiKey ?? '';
+  const resolvedOpenAiModel = openAiModel ?? settings.openAiModel ?? DEFAULT_OPENAI_MODEL;
+  const resolvedClaudeApiKey = claudeApiKey ?? settings.claudeApiKey ?? '';
+  const resolvedClaudeModel = claudeModel ?? settings.claudeModel ?? DEFAULT_CLAUDE_MODEL;
+  const resolvedLocalLlmApiKey = localLlmApiKey ?? settings.localLlmApiKey ?? '';
+  const resolvedLocalLlmModel = localLlmModel ?? settings.localLlmModel ?? 'llama3';
+  const resolvedLocalLlmBaseUrl =
+    localLlmBaseUrl ?? settings.localLlmBaseUrl ?? 'http://localhost:11434/v1';
 
   // Use debounced settings for instant UI updates
   const {
@@ -344,30 +325,14 @@ export function AISettingsModal({
     enableOpenAi: debouncedEnableOpenAi,
     enableClaude: debouncedEnableClaude,
     enableLocalLlm: debouncedEnableLocalLlm,
-    dailyNutritionInsights: debouncedDailyNutritionInsights,
-    workoutInsights: debouncedWorkoutInsights,
-    useOcrBeforeAi: debouncedUseOcrBeforeAi,
-    useOnDeviceAi: debouncedUseOnDeviceAi,
     useMusclogFreeTier: debouncedUseMusclogFreeTier,
-    sendFoundationFoodsToLlm: debouncedSendFoundationFoodsToLlm,
-    useThinkingMode: debouncedUseThinkingMode,
+    thinkingLevel: debouncedThinkingLevel,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
     handleEnableClaudeChange,
     handleEnableLocalLlmChange,
-    handleDailyNutritionInsightsChange,
-    handleWorkoutInsightsChange,
-    handleUseOcrBeforeAiChange,
-    handleUseOnDeviceAiChange,
     handleUseMusclogFreeTierChange,
-    handleSendFoundationFoodsToLlmChange,
-    handleUseThinkingModeChange,
-    maxAiMemories: debouncedMaxAiMemories,
-    handleMaxAiMemoriesChange,
-    nutritionLogHistoryDays: debouncedNutritionLogHistoryDays,
-    handleNutritionLogHistoryDaysChange,
-    workoutHistoryDays: debouncedWorkoutHistoryDays,
-    handleWorkoutHistoryDaysChange,
+    handleThinkingLevelChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
   const { showSnackbar } = useSnackbar();
@@ -378,8 +343,8 @@ export function AISettingsModal({
     (enabled: boolean) => {
       handleEnableLocalLlmChange(enabled);
 
-      if (enabled && !debouncedEnableLocalLlm && !debouncedUseThinkingMode) {
-        handleUseThinkingModeChange(true);
+      if (enabled && !debouncedEnableLocalLlm && debouncedThinkingLevel === 'off') {
+        handleThinkingLevelChange('medium');
         showSnackbar('success', t('settings.aiSettings.localLlmThinkingEnabled'), {
           duration: 5000,
         });
@@ -387,9 +352,9 @@ export function AISettingsModal({
     },
     [
       debouncedEnableLocalLlm,
-      debouncedUseThinkingMode,
+      debouncedThinkingLevel,
       handleEnableLocalLlmChange,
-      handleUseThinkingModeChange,
+      handleThinkingLevelChange,
       showSnackbar,
       t,
     ]
@@ -409,60 +374,86 @@ export function AISettingsModal({
   }, [visible, flushAllPendingChanges]);
 
   // Local state for API keys & local LLM configs (to avoid saving on every keystroke)
-  const [localGeminiApiKey, setLocalGeminiApiKey] = useState(googleGeminiApiKey);
-  const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(openAiApiKey);
-  const [localClaudeApiKey, setLocalClaudeApiKey] = useState(claudeApiKey);
-  const [localStateLlmApiKey, setLocalStateLlmApiKey] = useState(localLlmApiKey);
-  const [localStateLlmModel, setLocalStateLlmModel] = useState(localLlmModel);
-  const [localStateLlmBaseUrl, setLocalStateLlmBaseUrl] = useState(localLlmBaseUrl);
+  const [localGeminiApiKey, setLocalGeminiApiKey] = useState(resolvedGeminiApiKey);
+  const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(resolvedOpenAiApiKey);
+  const [localClaudeApiKey, setLocalClaudeApiKey] = useState(resolvedClaudeApiKey);
+  const [localStateLlmApiKey, setLocalStateLlmApiKey] = useState(resolvedLocalLlmApiKey);
+  const [localStateLlmModel, setLocalStateLlmModel] = useState(resolvedLocalLlmModel);
+  const [localStateLlmBaseUrl, setLocalStateLlmBaseUrl] = useState(resolvedLocalLlmBaseUrl);
 
   // Track if there are unsaved changes
-  const hasGeminiKeyChanges = localGeminiApiKey !== googleGeminiApiKey;
-  const hasOpenAiKeyChanges = localOpenAiApiKey !== openAiApiKey;
-  const hasClaudeKeyChanges = localClaudeApiKey !== claudeApiKey;
+  const hasGeminiKeyChanges = localGeminiApiKey !== resolvedGeminiApiKey;
+  const hasOpenAiKeyChanges = localOpenAiApiKey !== resolvedOpenAiApiKey;
+  const hasClaudeKeyChanges = localClaudeApiKey !== resolvedClaudeApiKey;
   const hasLocalLlmChanges =
-    localStateLlmApiKey !== localLlmApiKey ||
-    localStateLlmModel !== localLlmModel ||
-    localStateLlmBaseUrl !== localLlmBaseUrl;
+    localStateLlmApiKey !== resolvedLocalLlmApiKey ||
+    localStateLlmModel !== resolvedLocalLlmModel ||
+    localStateLlmBaseUrl !== resolvedLocalLlmBaseUrl;
 
   // Save handlers
   const handleSaveGeminiApiKey = () => {
-    onGoogleGeminiApiKeyChange?.(localGeminiApiKey);
+    if (onGoogleGeminiApiKeyChange) {
+      onGoogleGeminiApiKeyChange(localGeminiApiKey);
+    } else {
+      void SettingsService.setGoogleGeminiApiKey(localGeminiApiKey);
+    }
   };
 
   const handleSaveClaudeApiKey = () => {
-    onClaudeApiKeyChange?.(localClaudeApiKey);
+    if (onClaudeApiKeyChange) {
+      onClaudeApiKeyChange(localClaudeApiKey);
+    } else {
+      void SettingsService.setClaudeApiKey(localClaudeApiKey);
+    }
   };
 
   const handleSaveOpenAiApiKey = () => {
-    onOpenAiApiKeyChange?.(localOpenAiApiKey);
+    if (onOpenAiApiKeyChange) {
+      onOpenAiApiKeyChange(localOpenAiApiKey);
+    } else {
+      void SettingsService.setOpenAiApiKey(localOpenAiApiKey);
+    }
   };
 
   const handleSaveLocalLlmConfig = () => {
-    onLocalLlmApiKeyChange?.(localStateLlmApiKey);
-    onLocalLlmModelChange?.(localStateLlmModel);
-    onLocalLlmBaseUrlChange?.(localStateLlmBaseUrl);
+    if (onLocalLlmApiKeyChange) {
+      onLocalLlmApiKeyChange(localStateLlmApiKey);
+    } else {
+      void SettingsService.setLocalLlmApiKey(localStateLlmApiKey);
+    }
+
+    if (onLocalLlmModelChange) {
+      onLocalLlmModelChange(localStateLlmModel);
+    } else {
+      void SettingsService.setLocalLlmModel(localStateLlmModel);
+    }
+
+    if (onLocalLlmBaseUrlChange) {
+      onLocalLlmBaseUrlChange(localStateLlmBaseUrl);
+    } else {
+      void SettingsService.setLocalLlmBaseUrl(localStateLlmBaseUrl);
+    }
   };
 
-  // Sync local state when props change (e.g., when modal opens with saved values)
+  // Sync local state when props or stored settings change (e.g., when modal opens with saved values)
   useEffect(() => {
     const sync = () => {
-      setLocalGeminiApiKey(googleGeminiApiKey);
-      setLocalOpenAiApiKey(openAiApiKey);
-      setLocalClaudeApiKey(claudeApiKey);
-      setLocalStateLlmApiKey(localLlmApiKey);
-      setLocalStateLlmModel(localLlmModel);
-      setLocalStateLlmBaseUrl(localLlmBaseUrl);
+      setLocalGeminiApiKey(resolvedGeminiApiKey);
+      setLocalOpenAiApiKey(resolvedOpenAiApiKey);
+      setLocalClaudeApiKey(resolvedClaudeApiKey);
+      setLocalStateLlmApiKey(resolvedLocalLlmApiKey);
+      setLocalStateLlmModel(resolvedLocalLlmModel);
+      setLocalStateLlmBaseUrl(resolvedLocalLlmBaseUrl);
     };
 
     sync();
   }, [
-    googleGeminiApiKey,
-    openAiApiKey,
-    claudeApiKey,
-    localLlmApiKey,
-    localLlmModel,
-    localLlmBaseUrl,
+    resolvedGeminiApiKey,
+    resolvedOpenAiApiKey,
+    resolvedClaudeApiKey,
+    resolvedLocalLlmApiKey,
+    resolvedLocalLlmModel,
+    resolvedLocalLlmBaseUrl,
   ]);
 
   const geminiToggleItems = [
@@ -506,51 +497,6 @@ export function AISettingsModal({
           }}
         >
           <Bot size={theme.iconSize.md} color={theme.colors.status.success} />
-        </View>
-      ),
-    },
-  ];
-
-  const insightsItems = [
-    {
-      key: 'nutrition-insights',
-      label: t('settings.aiSettings.dailyNutritionInsights'),
-      subtitle: t('settings.aiSettings.dailyNutritionInsightsSubtitle'),
-      value: debouncedDailyNutritionInsights,
-      onValueChange: handleDailyNutritionInsightsChange,
-      icon: (
-        <View
-          style={{
-            width: theme.size['8'],
-            height: theme.size['8'],
-            borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.accent.primary20,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Apple size={theme.iconSize.md} color={theme.colors.accent.primary} />
-        </View>
-      ),
-    },
-    {
-      key: 'workout-insights',
-      label: t('settings.aiSettings.workoutInsights'),
-      subtitle: t('settings.aiSettings.workoutInsightsSubtitle'),
-      value: debouncedWorkoutInsights,
-      onValueChange: handleWorkoutInsightsChange,
-      icon: (
-        <View
-          style={{
-            width: theme.size['8'],
-            height: theme.size['8'],
-            borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.status.warning10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Dumbbell size={theme.iconSize.md} color={theme.colors.status.warning} />
         </View>
       ),
     },
@@ -604,27 +550,67 @@ export function AISettingsModal({
 
   const geminiModelMenuItems: BottomPopUpMenuItem[] = Object.values(GEMINI_MODELS).map((model) => ({
     icon: Bot,
-    selected: model.model === geminiModel,
+    selected: model.model === resolvedGeminiModel,
     title: model.model,
     description: `Google Gemini ${model.model}`,
-    onPress: () => onGeminiModelPress?.(model.model),
+    onPress: () => {
+      if (onGeminiModelPress) {
+        onGeminiModelPress(model.model);
+      } else {
+        void SettingsService.setGoogleGeminiModel(model.model);
+      }
+    },
   }));
 
   const openAiModelMenuItems: BottomPopUpMenuItem[] = Object.values(OPENAI_MODELS).map((model) => ({
     icon: Bot,
-    selected: model.model === openAiModel,
+    selected: model.model === resolvedOpenAiModel,
     title: model.model,
     description: `OpenAI ${model.model}`,
-    onPress: () => onOpenAiModelPress?.(model.model),
+    onPress: () => {
+      if (onOpenAiModelPress) {
+        onOpenAiModelPress(model.model);
+      } else {
+        void SettingsService.setOpenAiModel(model.model);
+      }
+    },
   }));
 
   const claudeModelMenuItems: BottomPopUpMenuItem[] = Object.values(CLAUDE_MODELS).map((model) => ({
     icon: Bot,
-    selected: model.model === claudeModel,
+    selected: model.model === resolvedClaudeModel,
     title: model.model,
     description: `Anthropic ${model.model}`,
-    onPress: () => onClaudeModelPress?.(model.model),
+    onPress: () => {
+      if (onClaudeModelPress) {
+        onClaudeModelPress(model.model);
+      } else {
+        void SettingsService.set(SETTINGS.claudeModel, model.model);
+      }
+    },
   }));
+
+  const modelMenuConfigs: Record<
+    ModelMenuKey,
+    { title: string; subtitle: string; items: BottomPopUpMenuItem[] }
+  > = {
+    gemini: {
+      title: t('settings.aiSettings.selectGeminiModel'),
+      subtitle: t('settings.aiSettings.selectGeminiModelSubtitle'),
+      items: geminiModelMenuItems,
+    },
+    openai: {
+      title: t('settings.aiSettings.selectOpenAiModel'),
+      subtitle: t('settings.aiSettings.selectOpenAiModelSubtitle'),
+      items: openAiModelMenuItems,
+    },
+    claude: {
+      title: t('settings.aiSettings.selectClaudeModel'),
+      subtitle: t('settings.aiSettings.selectClaudeModelSubtitle'),
+      items: claudeModelMenuItems,
+    },
+  };
+  const currentModelMenu = activeModelMenu ? modelMenuConfigs[activeModelMenu] : null;
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
@@ -693,8 +679,8 @@ export function AISettingsModal({
               onTestKey={() => testApiKey('gemini', localGeminiApiKey)}
               hasUnsavedChanges={hasGeminiKeyChanges}
               modelLabel={t('settings.aiSettings.geminiModel')}
-              modelValue={geminiModel}
-              onModelPress={() => setGeminiModelMenuVisible(true)}
+              modelValue={resolvedGeminiModel}
+              onModelPress={() => setActiveModelMenu('gemini')}
             />
 
             {/* OpenAI Integration Section */}
@@ -722,8 +708,8 @@ export function AISettingsModal({
               onTestKey={() => testApiKey('openai', localOpenAiApiKey)}
               hasUnsavedChanges={hasOpenAiKeyChanges}
               modelLabel={t('settings.aiSettings.openAiModel')}
-              modelValue={openAiModel}
-              onModelPress={() => setOpenAiModelMenuVisible(true)}
+              modelValue={resolvedOpenAiModel}
+              onModelPress={() => setActiveModelMenu('openai')}
               modelFallbackText={t('settings.aiSettings.selectModel')}
             />
 
@@ -741,8 +727,8 @@ export function AISettingsModal({
               onTestKey={() => testApiKey('claude', localClaudeApiKey)}
               hasUnsavedChanges={hasClaudeKeyChanges}
               modelLabel={t('settings.aiSettings.claudeModel')}
-              modelValue={claudeModel}
-              onModelPress={() => setClaudeModelMenuVisible(true)}
+              modelValue={resolvedClaudeModel}
+              onModelPress={() => setActiveModelMenu('claude')}
               modelFallbackText={t('settings.aiSettings.selectModel')}
             />
 
@@ -792,251 +778,42 @@ export function AISettingsModal({
             />
 
             <OnDeviceAiSection
-              enabled={debouncedUseOnDeviceAi}
-              onEnabledChange={handleUseOnDeviceAiChange}
               hostedProviderActive={isMusclogIronActive || debouncedUseMusclogFreeTier}
             />
           </View>
         </View>
 
-        {/* Insights & Alerts Section */}
-        <View>
-          <SectionLabel className="mb-2 px-1">
-            {t('settings.aiSettings.insightsAlerts')}
-          </SectionLabel>
-          <ToggleInput items={insightsItems} />
-        </View>
-
-        {/* Memory Settings Section */}
-        <View>
-          <SectionLabel className="mb-2 px-1">
-            {t('settings.aiSettings.memorySettings')}
-          </SectionLabel>
-          <View className="mb-3">
-            <ToggleInput
-              items={[
-                {
-                  key: 'use-thinking-mode',
-                  label: t('settings.aiSettings.useThinkingMode'),
-                  subtitle: isMusclogIronActive
-                    ? `${t('settings.aiSettings.useThinkingModeSubtitle')} ${t('settings.aiSettings.useThinkingModeIronNote')}`
-                    : t('settings.aiSettings.useThinkingModeSubtitle'),
-                  value: debouncedUseThinkingMode,
-                  onValueChange: handleUseThinkingModeChange,
-                  icon: (
-                    <View
-                      style={{
-                        width: theme.size['8'],
-                        height: theme.size['8'],
-                        borderRadius: theme.borderRadius.full / 2,
-                        backgroundColor: theme.colors.status.indigo10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Cpu size={theme.iconSize.md} color={theme.colors.status.indigo} />
-                    </View>
-                  ),
-                },
-              ]}
-            />
-          </View>
-          <View
-            className="rounded-card border bg-bg-card p-4"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <NewNumericalInput
-              label={t('settings.aiSettings.maxAiMemories')}
-              value={debouncedMaxAiMemories || 50}
-              onChange={handleMaxAiMemoriesChange}
-              min={1}
-            />
-            <Text className="mt-3 text-xs text-text-secondary">
-              {t('settings.aiSettings.maxAiMemoriesSubtitle')}
-            </Text>
-          </View>
-          <HistoryPickerField
-            kind="nutrition"
-            value={debouncedNutritionLogHistoryDays ?? 'none'}
-            onChange={handleNutritionLogHistoryDaysChange}
-          />
-          <HistoryPickerField
-            kind="workout"
-            value={debouncedWorkoutHistoryDays ?? 'none'}
-            onChange={handleWorkoutHistoryDaysChange}
-          />
-        </View>
-
-        {/* Image Processing Section */}
-        <View>
-          <SectionLabel className="mb-2 px-1">
-            {t('settings.aiSettings.imageProcessing')}
-          </SectionLabel>
-          <ToggleInput
-            items={[
-              {
-                key: 'use-ocr-before-ai',
-                label: t('settings.aiSettings.useOcrBeforeAi'),
-                subtitle: debouncedUseOnDeviceAi
-                  ? t('settings.aiSettings.useOcrBeforeAiOnDeviceSubtitle')
-                  : t('settings.aiSettings.useOcrBeforeAiSubtitle'),
-                value: debouncedUseOcrBeforeAi,
-                onValueChange: handleUseOcrBeforeAiChange,
-                disabled: debouncedUseOnDeviceAi,
-                icon: (
-                  <View
-                    style={{
-                      width: theme.size['8'],
-                      height: theme.size['8'],
-                      borderRadius: theme.borderRadius.full / 2,
-                      backgroundColor: theme.colors.status.success20,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <ScanText size={theme.iconSize.md} color={theme.colors.status.success} />
-                  </View>
-                ),
-              },
-              {
-                key: 'send-foundation-foods',
-                label: t('settings.aiSettings.sendFoundationFoodsToLlm'),
-                subtitle: debouncedUseOnDeviceAi
-                  ? t('settings.aiSettings.onDeviceAi.foundationFoodsDisabled')
-                  : t('settings.aiSettings.sendFoundationFoodsToLlmSubtitle'),
-                value: debouncedUseOnDeviceAi ? false : debouncedSendFoundationFoodsToLlm,
-                onValueChange: handleSendFoundationFoodsToLlmChange,
-                disabled: debouncedUseOnDeviceAi,
-                icon: (
-                  <View
-                    style={{
-                      width: theme.size['8'],
-                      height: theme.size['8'],
-                      borderRadius: theme.borderRadius.full / 2,
-                      backgroundColor: theme.colors.accent.primary20,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Apple size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                  </View>
-                ),
-              },
-            ]}
-          />
-          {/* Photos shrink before they leave the device on native; web sends them as they are. */}
-          {Platform.OS !== 'web' ? (
+        {/* Everything around the providers (thinking, memory, photos, persona, prompts) lives on its own screen. */}
+        <ListRow
+          variant="card"
+          title={t('settings.aiBehavior.title')}
+          subtitle={t('settings.aiBehavior.subtitle')}
+          onPress={() => setBehaviorVisible(true)}
+          leading={
             <View
-              className="mt-4 gap-2 px-1"
-              style={{ opacity: debouncedUseOnDeviceAi ? 0.4 : 1 }}
-              pointerEvents={debouncedUseOnDeviceAi ? 'none' : 'auto'}
+              style={{
+                width: theme.size['8'],
+                height: theme.size['8'],
+                borderRadius: theme.borderRadius.full / 2,
+                backgroundColor: theme.colors.accent.primary20,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
-                {t('settings.aiSettings.photoQuality.title')}
-              </Text>
-              <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-                {t('settings.aiSettings.photoQuality.intro')}
-              </Text>
-              <SegmentedControl
-                variant="pill"
-                fullWidth
-                value={aiImageQuality}
-                onValueChange={(value) => {
-                  void SettingsService.set(SETTINGS.aiImageQuality, value as AiImageTier);
-                }}
-                options={AI_IMAGE_TIER_ORDER.map((tier) => ({
-                  value: tier,
-                  label: t(AI_IMAGE_TIER_KEYS[tier].label),
-                }))}
-              />
-              <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-                {t(AI_IMAGE_TIER_KEYS[aiImageQuality].hint)}
-              </Text>
+              <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
-          ) : null}
-        </View>
-
-        {/* Coach personality */}
-        <View>
-          <SectionLabel className="mb-1 px-1">{t('coach.personaPicker.title')}</SectionLabel>
-          <Text className="mb-2 px-1 text-xs text-text-secondary">
-            {t('coach.personaPicker.subtitle')}
-          </Text>
-          <CoachPersonaPicker />
-        </View>
-
-        {/* Custom Prompts Section */}
-        <View>
-          <SectionLabel className="mb-2 px-1">
-            {t('settings.aiSettings.customPrompts')}
-          </SectionLabel>
-          <Pressable
-            onPress={() => setIsCustomPromptsVisible(true)}
-            className="overflow-hidden rounded-control border bg-bg-card active:bg-bg-overlay"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <View className="flex-row items-center justify-between p-4">
-              <View className="min-w-0 flex-1 flex-row items-center gap-3">
-                <View
-                  style={{
-                    width: theme.size['8'],
-                    height: theme.size['8'],
-                    borderRadius: theme.borderRadius.full / 2,
-                    backgroundColor: theme.colors.accent.primary20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                </View>
-                <View className="min-w-0 flex-1">
-                  <Text className="text-sm font-medium text-text-primary">
-                    {t('settings.aiSettings.manageCustomPrompts')}
-                  </Text>
-                  <Text className="text-xs text-text-secondary" style={{ marginTop: 2 }}>
-                    {t('settings.aiSettings.customPromptsSubtitle')}
-                  </Text>
-                </View>
-              </View>
-              <View className="shrink-0 justify-center pl-2">
-                <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-              </View>
-            </View>
-          </Pressable>
-        </View>
+          }
+        />
 
         <LegalLinksCard />
 
-        {/* Model Selection Menus */}
+        {/* Model Selection Menu */}
         <BottomPopUpMenu
-          visible={geminiModelMenuVisible}
-          onClose={() => setGeminiModelMenuVisible(false)}
-          title={t('settings.aiSettings.selectGeminiModel')}
-          subtitle={t('settings.aiSettings.selectGeminiModelSubtitle')}
-          items={geminiModelMenuItems}
-        />
-
-        <BottomPopUpMenu
-          visible={openAiModelMenuVisible}
-          onClose={() => setOpenAiModelMenuVisible(false)}
-          title={t('settings.aiSettings.selectOpenAiModel')}
-          subtitle={t('settings.aiSettings.selectOpenAiModelSubtitle')}
-          items={openAiModelMenuItems}
-        />
-
-        <BottomPopUpMenu
-          visible={claudeModelMenuVisible}
-          onClose={() => setClaudeModelMenuVisible(false)}
-          title={t('settings.aiSettings.selectClaudeModel')}
-          subtitle={t('settings.aiSettings.selectClaudeModelSubtitle')}
-          items={claudeModelMenuItems}
+          visible={currentModelMenu !== null}
+          onClose={() => setActiveModelMenu(null)}
+          title={currentModelMenu?.title ?? ''}
+          subtitle={currentModelMenu?.subtitle ?? ''}
+          items={currentModelMenu?.items ?? []}
         />
 
         {/* Inside this FullScreenModal's tree, and never open together with a menu. */}
@@ -1054,9 +831,10 @@ export function AISettingsModal({
         />
       </View>
 
-      <AiCustomPromptsModal
-        visible={isCustomPromptsVisible}
-        onClose={() => setIsCustomPromptsVisible(false)}
+      {/* Opened only from the AI behavior row, never while a menu or the consent modal is open. */}
+      <AIBehaviorSettingsModal
+        visible={behaviorVisible}
+        onClose={() => setBehaviorVisible(false)}
       />
 
       {/* Opened only from the Premium card at the top, never while a menu or the consent modal is open. */}

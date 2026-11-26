@@ -5,6 +5,8 @@
 // prompt gives the model. Numbers that came from the person's own food database are never checked:
 // they are authoritative.
 
+import { roundToDecimalPlaces } from './roundDecimal';
+
 export type MacroProblem =
   /** A value is negative or not a number, or the grams are not above zero. */
   | 'invalidValue'
@@ -87,4 +89,55 @@ export function ingredientMacroProblems(ingredient: CheckableIngredient): MacroP
   }
 
   return problems;
+}
+
+/** A number the model gave, made safe: negative or non-finite values become 0. */
+export function clampNonNegative(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+/**
+ * The last resort for numbers that still cannot all be true after a re-estimate: a model can
+ * repeat an impossible answer, and the review must never show figures that contradict each other.
+ * Macros that weigh more than the ingredient are scaled down to its grams, then the energy follows
+ * the macros (the more detailed claim); macros that are all zero leave the energy alone, since
+ * nothing can be invented. This makes the figures agree, not true: the person still checks them.
+ * A consistent ingredient is returned as the same object.
+ */
+export function reconcileIngredientMacros<T extends CheckableIngredient>(ingredient: T): T {
+  if (ingredientMacroProblems(ingredient).length === 0) {
+    return ingredient;
+  }
+
+  if (!Number.isFinite(ingredient.grams) || ingredient.grams <= 0) {
+    return ingredient;
+  }
+
+  let protein = clampNonNegative(ingredient.protein);
+  let carbs = clampNonNegative(ingredient.carbs);
+  let fat = clampNonNegative(ingredient.fat);
+  let fiber = clampNonNegative(ingredient.fiber ?? 0);
+  let kcal = clampNonNegative(ingredient.kcal);
+
+  const macroMass = protein + carbs + fat + fiber;
+  if (macroMass > ingredient.grams) {
+    const scale = ingredient.grams / macroMass;
+    protein *= scale;
+    carbs *= scale;
+    fat *= scale;
+    fiber *= scale;
+  }
+
+  if (protein + carbs + fat + fiber >= 0.5) {
+    kcal = Math.round(macroEnergyKcal({ ...ingredient, kcal, protein, carbs, fat, fiber }));
+  }
+
+  return {
+    ...ingredient,
+    kcal,
+    protein: roundToDecimalPlaces(protein, 1),
+    carbs: roundToDecimalPlaces(carbs, 1),
+    fat: roundToDecimalPlaces(fat, 1),
+    fiber: ingredient.fiber === undefined ? undefined : roundToDecimalPlaces(fiber, 1),
+  };
 }

@@ -16,7 +16,7 @@ jest.mock('expo-font', () => ({
 jest.mock('@/utils/webIconFonts', () => jest.requireActual('@/utils/webIconFonts.web'));
 jest.mock('expo-router', () => ({ Slot: () => null }));
 jest.mock('expo-splash-screen', () => ({ setOptions: jest.fn(), hideAsync: jest.fn() }));
-jest.mock('react-native', () => ({ View: 'div' }));
+jest.mock('react-native', () => ({ View: 'div', Platform: { OS: 'web' } }));
 jest.mock('react-native-css-interop', () => ({
   createInteropElement: jest.requireActual('react').createElement,
 }));
@@ -28,6 +28,9 @@ jest.mock(
 jest.mock('@/components/DeferredAppBoot', () => ({ DeferredAppBoot: () => null }));
 jest.mock('@/hooks/useBootColors', () => ({ useBootColors: () => ({ surfaceCard: '#fff' }) }));
 jest.mock('@/utils/bootErrorReporting', () => ({ captureBootException: jest.fn() }));
+// The root layout starts crash handling at module load; on web both calls do nothing.
+jest.mock('@/utils/crashReporting', () => ({ startCrashReportingAtLaunch: jest.fn() }));
+jest.mock('@/utils/fatalErrorStore', () => ({ installGracefulFatalHandler: jest.fn() }));
 
 describe('web icon fonts during static export', () => {
   it('imports the root layout without font loading, then registers fonts for each server render', () => {

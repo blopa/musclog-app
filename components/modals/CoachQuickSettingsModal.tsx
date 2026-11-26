@@ -1,17 +1,19 @@
-import { Apple, Cpu, ScanText } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
+import {
+  AiHistoryPickers,
+  AiOcrAndFoundationToggles,
+} from '@/components/ai/AiContextAndOcrControls';
+import { ThinkingLevelPicker } from '@/components/ai/ThinkingLevelPicker';
 import { Button } from '@/components/theme/Button';
-import { ToggleInput } from '@/components/theme/ToggleInput';
 import { type NutritionLogHistoryDays, type WorkoutHistoryDays } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
-import { useTheme } from '@/hooks/useTheme';
+import type { ThinkingLevel } from '@/utils/aiThinkingLevel';
 import { handleError } from '@/utils/handleError';
 
-import { HistoryPickerField } from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
 
 type CoachQuickSettingsModalProps = {
@@ -29,11 +31,10 @@ type CoachQuickSettingsModalProps = {
  * to the rest of the app.
  */
 export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettingsModalProps) {
-  const theme = useTheme();
   const { t } = useTranslation();
   const settings = useSettings();
 
-  const [useThinkingMode, setUseThinkingMode] = useState(false);
+  const [thinkingLevel, setThinkingLevel] = useState<ThinkingLevel>('off');
   const [useOcrBeforeAi, setUseOcrBeforeAi] = useState(false);
   const [sendFoundationFoodsToLlm, setSendFoundationFoodsToLlm] = useState(true);
   const [nutritionLogHistoryDays, setNutritionLogHistoryDays] =
@@ -42,9 +43,8 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // Apple Intelligence (on-device AI) forces OCR on and disables foundation foods,
-  // mirroring the behavior of the main AI settings screen.
-  const useOnDeviceAi = settings.useOnDeviceAi;
+  // On-device AI forces OCR on and disables foundation foods, mirroring AI behavior settings.
+  const isOnDeviceActive = settings.aiProvider === 'on-device';
 
   // Snapshot the current settings into local state whenever the modal opens, so
   // Cancel reliably discards edits and Save starts from the persisted values.
@@ -53,7 +53,7 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
       // Wrapped in a function (not called directly in the effect body) to satisfy
       // react-hooks/set-state-in-effect — this is a deliberate snapshot-on-open.
       const snapshot = () => {
-        setUseThinkingMode(settings.useThinkingMode);
+        setThinkingLevel(settings.thinkingLevel);
         setUseOcrBeforeAi(settings.useOcrBeforeAi);
         setSendFoundationFoodsToLlm(settings.sendFoundationFoodsToLlm);
         setNutritionLogHistoryDays(settings.nutritionLogHistoryDays);
@@ -66,92 +66,16 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const toggleItems = [
-    {
-      key: 'use-thinking-mode',
-      label: t('settings.aiSettings.useThinkingMode'),
-      subtitle: settings.useHostedAi
-        ? `${t('settings.aiSettings.useThinkingModeSubtitle')} ${t('settings.aiSettings.useThinkingModeIronNote')}`
-        : t('settings.aiSettings.useThinkingModeSubtitle'),
-      value: useThinkingMode,
-      onValueChange: setUseThinkingMode,
-      icon: (
-        <View
-          style={{
-            width: theme.size['8'],
-            height: theme.size['8'],
-            borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.status.indigo10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Cpu size={theme.iconSize.md} color={theme.colors.status.indigo} />
-        </View>
-      ),
-    },
-    // OCR is required (and thus implicit) when Apple Intelligence is active, so hide it then.
-    ...(useOnDeviceAi
-      ? []
-      : [
-          {
-            key: 'use-ocr-before-ai',
-            label: t('settings.aiSettings.useOcrBeforeAi'),
-            subtitle: t('settings.aiSettings.useOcrBeforeAiSubtitle'),
-            value: useOcrBeforeAi,
-            onValueChange: setUseOcrBeforeAi,
-            icon: (
-              <View
-                style={{
-                  width: theme.size['8'],
-                  height: theme.size['8'],
-                  borderRadius: theme.borderRadius.full / 2,
-                  backgroundColor: theme.colors.status.success20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <ScanText size={theme.iconSize.md} color={theme.colors.status.success} />
-              </View>
-            ),
-          },
-        ]),
-    {
-      key: 'send-foundation-foods',
-      label: t('settings.aiSettings.sendFoundationFoodsToLlm'),
-      subtitle: useOnDeviceAi
-        ? t('settings.aiSettings.onDeviceAi.foundationFoodsDisabled')
-        : t('settings.aiSettings.sendFoundationFoodsToLlmSubtitle'),
-      value: useOnDeviceAi ? false : sendFoundationFoodsToLlm,
-      onValueChange: setSendFoundationFoodsToLlm,
-      disabled: useOnDeviceAi,
-      icon: (
-        <View
-          style={{
-            width: theme.size['8'],
-            height: theme.size['8'],
-            borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.accent.primary20,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Apple size={theme.iconSize.md} color={theme.colors.accent.primary} />
-        </View>
-      ),
-    },
-  ];
-
   const handleSave = async () => {
     setIsSaving(true);
     try {
       await SettingsService.setCoachQuickSettings({
-        useThinkingMode,
+        thinkingLevel,
         sendFoundationFoodsToLlm,
         nutritionLogHistoryDays,
         workoutHistoryDays,
-        // OCR is hidden / managed automatically while Apple Intelligence is on.
-        ...(useOnDeviceAi ? {} : { useOcrBeforeAi }),
+        // OCR is hidden / managed automatically while on-device AI is active.
+        ...(isOnDeviceActive ? {} : { useOcrBeforeAi }),
       });
       onClose();
     } catch (err) {
@@ -193,20 +117,29 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
       }
     >
       <View className="gap-6 px-4 py-6">
-        <View>
-          <ToggleInput items={toggleItems} />
+        <View className="gap-3">
+          <ThinkingLevelPicker
+            value={thinkingLevel}
+            onChange={setThinkingLevel}
+            provider={settings.aiProvider}
+            parentVisible={visible}
+          />
+          <AiOcrAndFoundationToggles
+            isOnDevice={isOnDeviceActive}
+            useOcrBeforeAi={useOcrBeforeAi}
+            onUseOcrBeforeAiChange={setUseOcrBeforeAi}
+            sendFoundationFoodsToLlm={sendFoundationFoodsToLlm}
+            onSendFoundationFoodsToLlmChange={setSendFoundationFoodsToLlm}
+            hideOcrWhenOnDevice
+          />
         </View>
 
         <View className="gap-3">
-          <HistoryPickerField
-            kind="nutrition"
-            value={nutritionLogHistoryDays}
-            onChange={(value) => setNutritionLogHistoryDays(value as NutritionLogHistoryDays)}
-          />
-          <HistoryPickerField
-            kind="workout"
-            value={workoutHistoryDays}
-            onChange={(value) => setWorkoutHistoryDays(value as WorkoutHistoryDays)}
+          <AiHistoryPickers
+            nutritionLogHistoryDays={nutritionLogHistoryDays}
+            onNutritionLogHistoryDaysChange={setNutritionLogHistoryDays}
+            workoutHistoryDays={workoutHistoryDays}
+            onWorkoutHistoryDaysChange={setWorkoutHistoryDays}
           />
         </View>
       </View>

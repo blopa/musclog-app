@@ -1,11 +1,11 @@
-import { AiCancelledError, AiInvalidKeyError, AiTimeoutError } from '@/utils/aiErrors';
-import type { AiOnboardingErrorKind } from '@/utils/aiOnboarding/chatState';
 import {
-  AiCreditsError,
-  GatewayRateLimitError,
+  AiCancelledError,
+  AiInvalidKeyError,
+  AiTimeoutError,
   isAiConnectionError,
-  isAiCreditsError,
-} from '@/utils/coachAI';
+} from '@/utils/aiErrors';
+import type { AiOnboardingErrorKind } from '@/utils/aiOnboarding/chatState';
+import { AiCreditsError, GatewayRateLimitError, isAiCreditsError } from '@/utils/coachAI';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 
 const HOSTED_KIND_TO_RECOVERY: Record<
@@ -18,6 +18,7 @@ const HOSTED_KIND_TO_RECOVERY: Record<
   budget: 'hostedBudget',
   dailyLimit: 'hostedBudget',
   subscription: 'hostedSubscription',
+  consentRequired: 'hostedUnavailable',
   removed: 'hostedSubscription',
   unavailable: 'hostedUnavailable',
   dailyFull: 'hostedUnavailable',

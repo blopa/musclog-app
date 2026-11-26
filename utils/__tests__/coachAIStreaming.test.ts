@@ -6,6 +6,7 @@ import {
   getNutritionInsights,
   sendCoachMessage,
 } from '../coachAI';
+import { AiCancelledError } from '../aiErrors';
 import { configureBasicGenAI } from '../gemini';
 
 const mockCreate = jest.fn();
@@ -43,14 +44,16 @@ jest.mock('../prompts', () => ({
   getNutritionInsightsPrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getMealCritiquePrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getChatMessagePromptContent: jest.fn().mockResolvedValue('SYSTEM'),
+  getChatReviewInstruction: jest.fn((_language: string) => 'REVIEW'),
 }));
 
 jest.mock('../handleError', () => ({ handleError: jest.fn() }));
 jest.mock('@/database/services/DebugDumpService', () => ({
   DebugDumpService: { logJsonEvent: jest.fn() },
 }));
+const mockSettingsGet = jest.fn().mockResolvedValue('off');
 jest.mock('@/database/services/SettingsService', () => ({
-  SettingsService: { getUseThinkingMode: jest.fn().mockResolvedValue(false) },
+  SettingsService: { get: (...args: unknown[]) => mockSettingsGet(...args) },
 }));
 
 const openai: CoachAIConfig = { provider: 'openai', model: 'gpt', apiKey: 'k', language: 'en-US' };
@@ -82,6 +85,7 @@ describe('streaming coach replies', () => {
     mockSendOnDeviceMessage.mockReset();
     mockStreamOnDeviceMessage.mockReset();
     (configureBasicGenAI as jest.Mock).mockReset();
+    mockSettingsGet.mockReset().mockResolvedValue('off');
   });
   afterEach(() => jest.restoreAllMocks());
 
@@ -251,6 +255,112 @@ describe('streaming coach replies', () => {
       expect(result.msg4User).toBe('Squats are great — "heavy" ones too.');
       expect(result.rememberMe).toBe('likes squats');
       expect(seen[seen.length - 1]).toBe(result.msg4User);
+    });
+  });
+
+  describe('tokenmaxxing: a chat reply is drafted unseen, then reviewed', () => {
+    const json = (msg4User: string, rememberMe = '') =>
+      JSON.stringify({ msg4User, remember_me: rememberMe });
+    const oneShot = (content: string) => ({ choices: [{ message: { content } }] });
+    const streamed = (content: string) => openAiChunks(...(content.match(/.{1,5}/gs) ?? []));
+
+    it('makes one streamed request at high', async () => {
+      mockSettingsGet.mockResolvedValue('high');
+      mockCreate.mockResolvedValue(streamed(json('Hi there.')));
+
+      const result = await sendCoachMessage(openai, [], 'hello', 'general', { onText: () => {} });
+
+      expect(result.msg4User).toBe('Hi there.');
+      expect(mockCreate).toHaveBeenCalledTimes(1);
+    });
+
+    it('streams only the reviewed reply and says it is double-checking first', async () => {
+      mockSettingsGet.mockResolvedValue('tokenmaxxing');
+      mockCreate
+        .mockResolvedValueOnce(oneShot(json('You ate 90 g of protein.', 'tracks protein')))
+        .mockResolvedValueOnce(streamed(json('You ate 120 g of protein today.')));
+      const seen: string[] = [];
+      const phases: string[] = [];
+
+      const result = await sendCoachMessage(openai, [], 'how much protein?', 'general', {
+        onText: (text) => seen.push(text),
+        onPhase: (phase) => phases.push(phase),
+      });
+
+      expect(mockCreate).toHaveBeenCalledTimes(2);
+      expect(mockCreate.mock.calls[0][0]).not.toHaveProperty('stream');
+      expect(mockCreate.mock.calls[1][0]).toMatchObject({ stream: true });
+      // The draft is the model's own previous reply, not text quoted in the instruction.
+      const reviewMessages = mockCreate.mock.calls[1][0].messages as {
+        role: string;
+        content: string;
+      }[];
+      expect(reviewMessages.at(-1)).toMatchObject({ role: 'user', content: 'REVIEW' });
+      expect(reviewMessages.at(-2)).toMatchObject({
+        role: 'assistant',
+        content: 'You ate 90 g of protein.',
+      });
+      expect(reviewMessages.at(-3)?.role).toBe('user');
+      expect(reviewMessages.at(-3)?.content).toContain('how much protein?');
+      expect(phases).toEqual(['reviewing']);
+      for (const text of seen) {
+        expect('You ate 120 g of protein today.'.startsWith(text)).toBe(true);
+      }
+
+      expect(result.msg4User).toBe('You ate 120 g of protein today.');
+      // The review wrote no memory, so the draft's is kept.
+      expect(result.rememberMe).toBe('tracks protein');
+    });
+
+    it('keeps the draft and shows it once when the review fails', async () => {
+      mockSettingsGet.mockResolvedValue('tokenmaxxing');
+      mockCreate
+        .mockResolvedValueOnce(oneShot(json('Rest day today.')))
+        .mockRejectedValueOnce(Object.assign(new Error('boom'), { status: 500 }));
+      const seen: string[] = [];
+
+      const result = await sendCoachMessage(openai, [], 'train today?', 'general', {
+        onText: (text) => seen.push(text),
+      });
+
+      expect(result.msg4User).toBe('Rest day today.');
+      expect(seen).toEqual(['Rest day today.']);
+    });
+
+    it('does not review a draft that failed', async () => {
+      mockSettingsGet.mockResolvedValue('tokenmaxxing');
+      // A 400 is not retried (a 500 now is, by withLlmRetry), so the draft fails for good.
+      mockCreate.mockRejectedValueOnce(Object.assign(new Error('boom'), { status: 400 }));
+
+      await sendCoachMessage(openai, [], 'hello', 'general', { onText: () => {} });
+
+      expect(mockCreate).toHaveBeenCalledTimes(1);
+    });
+
+    it('propagates a cancel during the review instead of keeping the draft', async () => {
+      mockSettingsGet.mockResolvedValue('tokenmaxxing');
+      mockCreate
+        .mockResolvedValueOnce(oneShot(json('Rest day today.')))
+        .mockRejectedValueOnce(new AiCancelledError());
+
+      await expect(
+        sendCoachMessage(openai, [], 'train today?', 'general', { onText: () => {} })
+      ).rejects.toBeInstanceOf(AiCancelledError);
+    });
+
+    it('makes one request on the free tier', async () => {
+      mockSettingsGet.mockResolvedValue('tokenmaxxing');
+      mockCreate.mockResolvedValue(streamed(json('Hi.')));
+
+      await sendCoachMessage(
+        { ...openai, provider: 'gateway', baseUrl: 'https://openrouter.ai/api/v1' },
+        [],
+        'hello',
+        'general',
+        { onText: () => {} }
+      );
+
+      expect(mockCreate).toHaveBeenCalledTimes(1);
     });
   });
 

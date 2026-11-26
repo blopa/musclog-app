@@ -39,7 +39,7 @@ import {
   mintSession,
   type Signer,
 } from '@/utils/premium/premiumFlows';
-import type { PremiumStage } from '@/utils/premium/premiumReport';
+import type { PremiumFlow, PremiumStage } from '@/utils/premium/premiumReport';
 import {
   derivePremiumStatus,
   failureKindOf,
@@ -236,12 +236,13 @@ export async function getPremiumStatus(): Promise<PremiumStatus> {
 async function enrollAndRemember(
   rcId: string,
   startedIn: number,
+  flow: PremiumFlow,
   enroll: () => Promise<FlowResult<SessionGrant>>
 ): Promise<PremiumResult<SessionGrant>> {
   const result = await enroll();
 
   if (!result.ok) {
-    reportPremiumFailure('enroll', result.failure, { status: result.status });
+    reportPremiumFailure('enroll', result.failure, { status: result.status, flow });
 
     return { ok: false, failure: result.failure };
   }
@@ -257,7 +258,7 @@ export function enrollThisDevice(): Promise<PremiumResult<SessionGrant>> {
     const startedIn = session.begin();
     const key = await getOrCreateDeviceKey();
 
-    return enrollAndRemember(key.rcId, startedIn, () => enrollDevice(flowDeps(baseUrl)));
+    return enrollAndRemember(key.rcId, startedIn, 'enroll', () => enrollDevice(flowDeps(baseUrl)));
   });
 }
 
@@ -319,7 +320,7 @@ function buyOrRestoreThenEnroll(
       return { ok: false, failure: done.failure };
     }
 
-    return enrollAndRemember(done.rcId, startedIn, () =>
+    return enrollAndRemember(done.rcId, startedIn, step, () =>
       enrollWithRetry({ ...flowDeps(baseUrl), sleep, onProgress })
     );
   });

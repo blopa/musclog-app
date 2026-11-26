@@ -488,6 +488,8 @@
     "aiProgress": {
       "reading": "Czytamy twój opis…",
       "readingPhoto": "Oglądamy twoje zdjęcie…",
+      "observing": "Notujemy wszystko z twojego opisu…",
+      "observingPhoto": "Uważnie oglądamy twoje zdjęcie…",
       "estimating_one": "Szacujemy {{count}} składnik…",
       "estimating_few": "Szacujemy {{count}} składniki…",
       "estimating_many": "Szacujemy {{count}} składników…",
@@ -499,7 +501,24 @@
       "rechecking_one": "Sprawdzamy ponownie {{count}} składnik…",
       "rechecking_few": "Sprawdzamy ponownie {{count}} składniki…",
       "rechecking_many": "Sprawdzamy ponownie {{count}} składników…",
-      "rechecking_other": "Sprawdzamy ponownie {{count}} składnika…"
+      "rechecking_other": "Sprawdzamy ponownie {{count}} składnika…",
+      "reviewing": "Sprawdzamy, czy niczego nie pominięto…",
+      "comparing_one": "Porównujemy {{count}} szacunek…",
+      "comparing_few": "Porównujemy {{count}} szacunki…",
+      "comparing_many": "Porównujemy {{count}} szacunków…",
+      "comparing_other": "Porównujemy {{count}} szacunku…",
+      "readingPhotos_one": "Oglądamy twoje zdjęcie…",
+      "readingPhotos_few": "Oglądamy twoje {{count}} zdjęcia…",
+      "readingPhotos_many": "Oglądamy twoje {{count}} zdjęć…",
+      "readingPhotos_other": "Oglądamy twoje {{count}} zdjęcia…",
+      "observingPhotos_one": "Uważnie oglądamy twoje zdjęcie…",
+      "observingPhotos_few": "Uważnie oglądamy twoje {{count}} zdjęcia…",
+      "observingPhotos_many": "Uważnie oglądamy twoje {{count}} zdjęć…",
+      "observingPhotos_other": "Uważnie oglądamy twoje {{count}} zdjęcia…",
+      "identifyingPhoto_one": "Oglądamy zdjęcie {{index}} z {{count}}…",
+      "identifyingPhoto_few": "Oglądamy zdjęcie {{index}} z {{count}}…",
+      "identifyingPhoto_many": "Oglądamy zdjęcie {{index}} z {{count}}…",
+      "identifyingPhoto_other": "Oglądamy zdjęcie {{index}} z {{count}}…"
     },
     "aiNutritionContext": {
       "title": "Dodaj kontekst dla AI",
@@ -709,6 +728,43 @@
         "logError": "Nie udało się zapisać produktu. Spróbuj ponownie."
       },
       "linkError": "Nie udało się odczytać linku od asystenta. {{reason}} Zamiast tego wklej blok JSON z czatu."
+    },
+    "mealPhotos": {
+      "title": "Twój posiłek",
+      "photoCount_one": "{{count}} z {{max}} zdjęć",
+      "photoCount_few": "{{count}} z {{max}} zdjęć",
+      "photoCount_many": "{{count}} z {{max}} zdjęć",
+      "photoCount_other": "{{count}} z {{max}} zdjęć",
+      "addPhoto": "Dodaj zdjęcie",
+      "removePhoto": "Usuń zdjęcie {{index}}",
+      "optionalHint": "Wszystko poniżej jest opcjonalne.",
+      "nameLabel": "Nazwa posiłku",
+      "namePlaceholder": "np. Kurczak z ryżem",
+      "descriptionLabel": "Coś jeszcze, o czym powinniśmy wiedzieć?",
+      "descriptionPlaceholder": "np. Zjadłem połowę, bez sosu",
+      "originLabel": "Skąd pochodzi?",
+      "origin": {
+        "home": "Domowe",
+        "restaurant": "Restauracja",
+        "takeaway": "Na wynos",
+        "packaged": "Gotowe"
+      },
+      "addedFatLabel": "Dodano olej, masło lub sosy?",
+      "addedFat": {
+        "none": "Nie",
+        "some": "Trochę",
+        "lots": "Dużo"
+      },
+      "tagsLabel": "Tagi",
+      "estimate": "Oszacuj",
+      "reviewPhotos_one": "Sprawdź {{count}} zdjęcie",
+      "reviewPhotos_few": "Sprawdź {{count}} zdjęcia",
+      "reviewPhotos_many": "Sprawdź {{count}} zdjęć",
+      "reviewPhotos_other": "Sprawdź {{count}} zdjęcia",
+      "discardTitle": "Odrzucić ten posiłek?",
+      "discardMessage": "Zdjęcia i notatki zostaną utracone.",
+      "discard": "Odrzuć",
+      "keepEditing": "Edytuj dalej"
     }
   }
 }

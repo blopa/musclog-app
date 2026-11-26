@@ -10,6 +10,8 @@ import { AppState, Platform } from 'react-native';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import type { AppleAvailability } from '@/modules/on-device-ai';
+import { createListeners } from '@/utils/createListeners';
+import { handleError } from '@/utils/handleError';
 import { evaluateLocalModelDevice } from '@/utils/localModels/deviceGate';
 import { type OnDeviceEngineChoice, resolveOnDeviceEngine } from '@/utils/onDeviceEngine';
 import { deriveOnDeviceStatus, type OnDeviceStatus } from '@/utils/onDeviceStatus';
@@ -37,10 +39,34 @@ async function readChoice(): Promise<OnDeviceEngineChoice> {
   return SettingsService.get(SETTINGS.onDeviceEngine);
 }
 
-let readings: Readings = { engineChoice: 'auto', appleAvailability: 'unsupportedOs' };
-let current: OnDeviceStatus | null = null;
-const listeners = new Set<() => void>();
-let wired = false;
+/**
+ * Everything one run of the store knows. A probe writes into the session it started in, and the
+ * test reset replaces the session, so a probe still in flight at reset writes into a dead one.
+ */
+type Session = {
+  readings: Readings;
+  initialized: boolean;
+  current: OnDeviceStatus | null;
+  running: Promise<OnDeviceStatus> | null;
+  trailing: Promise<OnDeviceStatus> | null;
+  unsubscribeModel: (() => void) | null;
+  appStateSubscription: { remove: () => void } | null;
+};
+
+function createSession(): Session {
+  return {
+    readings: { engineChoice: 'auto', appleAvailability: 'unsupportedOs' },
+    initialized: false,
+    current: null,
+    running: null,
+    trailing: null,
+    unsubscribeModel: null,
+    appStateSubscription: null,
+  };
+}
+
+let session = createSession();
+const { subscribe, notify, clear: clearListeners } = createListeners();
 
 function deviceOk(): boolean {
   // The dev web bridge runs on the desktop's llama-server, so the phone gate does not apply.
@@ -55,67 +81,104 @@ function deviceOk(): boolean {
   }).ok;
 }
 
-function recompute() {
-  const next = deriveOnDeviceStatus({
-    engine: resolveOnDeviceEngine(readings.engineChoice, Platform.OS),
-    appleAvailability: readings.appleAvailability,
+function recompute(target: Session) {
+  target.current = deriveOnDeviceStatus({
+    initialized: target.initialized,
+    engine: resolveOnDeviceEngine(target.readings.engineChoice, Platform.OS),
+    appleAvailability: target.readings.appleAvailability,
     model: getLocalModelSnapshot(),
     deviceOk: deviceOk(),
   });
-  current = next;
-  listeners.forEach((listener) => listener());
+  notify();
 }
 
-function wire() {
-  if (wired) {
+function wire(target: Session) {
+  if (target.unsubscribeModel) {
     return;
   }
 
-  wired = true;
   // Download progress and installs arrive from the model store.
-  subscribeLocalModel(recompute);
+  target.unsubscribeModel = subscribeLocalModel(() => recompute(target));
   // The person may have switched Apple Intelligence on in iOS Settings while the app was away.
-  AppState.addEventListener('change', (next) => {
+  target.appStateSubscription = AppState.addEventListener('change', (next) => {
     if (next === 'active') {
       void refreshOnDeviceStatus();
     }
   });
 }
 
-export function getOnDeviceStatusSnapshot(): OnDeviceStatus {
-  if (!current) {
-    recompute();
+function snapshotOf(target: Session): OnDeviceStatus {
+  if (!target.current) {
+    recompute(target);
   }
 
-  return current as OnDeviceStatus;
+  return target.current as OnDeviceStatus;
 }
 
-export function subscribeOnDeviceStatus(listener: () => void): () => void {
-  listeners.add(listener);
-
-  return () => {
-    listeners.delete(listener);
-  };
+export function getOnDeviceStatusSnapshot(): OnDeviceStatus {
+  return snapshotOf(session);
 }
 
-/** Re-reads the engine choice, Apple's availability and the installed model, then publishes. */
-export async function refreshOnDeviceStatus(): Promise<OnDeviceStatus> {
-  wire();
-  const [engineChoice, appleAvailability] = await Promise.all([
-    readChoice().catch(() => readings.engineChoice),
-    readAppleAvailability(),
-    refreshLocalModel(),
-  ]);
-  readings = { engineChoice, appleAvailability };
-  recompute();
+export const subscribeOnDeviceStatus = subscribe;
 
-  return getOnDeviceStatusSnapshot();
+/** One probe. Never rejects: a failure is reported once and the last snapshot stays. */
+async function probe(target: Session): Promise<OnDeviceStatus> {
+  try {
+    const [engineChoice, appleAvailability] = await Promise.all([
+      readChoice().catch(() => target.readings.engineChoice),
+      readAppleAvailability(),
+      refreshLocalModel(),
+    ]);
+    target.readings = { engineChoice, appleAvailability };
+    target.initialized = true;
+    recompute(target);
+  } catch (error) {
+    void handleError(error, 'onDeviceStatus.refresh', { showSnackbar: false });
+  }
+
+  return snapshotOf(target);
 }
 
-/** Test seam. */
+function startProbe(target: Session): Promise<OnDeviceStatus> {
+  const run = probe(target);
+  target.running = run;
+  void run.then(() => {
+    // A pending trailing probe keeps the slot until it starts, so nothing slips in between.
+    if (target.running === run && !target.trailing) {
+      target.running = null;
+    }
+  });
+
+  return run;
+}
+
+/**
+ * Re-reads the engine choice, Apple's availability and the installed model, then publishes. At
+ * most one probe runs: calls made while it runs share ONE trailing probe that starts after it (so
+ * a call made after a settings write always sees a fresh read). Never rejects.
+ */
+export function refreshOnDeviceStatus(): Promise<OnDeviceStatus> {
+  const target = session;
+  wire(target);
+  if (!target.running) {
+    return startProbe(target);
+  }
+
+  if (!target.trailing) {
+    target.trailing = target.running.then(() => {
+      target.trailing = null;
+
+      return startProbe(target);
+    });
+  }
+
+  return target.trailing;
+}
+
+/** Test seam: a new session; whatever the old one still runs writes into a dead one. */
 export function resetOnDeviceStatusForTests() {
-  readings = { engineChoice: 'auto', appleAvailability: 'unsupportedOs' };
-  current = null;
-  listeners.clear();
-  wired = false;
+  session.unsubscribeModel?.();
+  session.appStateSubscription?.remove();
+  session = createSession();
+  clearListeners();
 }

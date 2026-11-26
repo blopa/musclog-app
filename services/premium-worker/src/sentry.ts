@@ -19,7 +19,7 @@ export function tracesSampleRateFor(workerEnv: string): number {
   return 0;
 }
 
-const ALLOWED_TAGS = new Set(['route', 'status', 'code', 'severity']);
+export const ALLOWED_TAGS = new Set(['route', 'status', 'code', 'severity', 'upstream']);
 
 interface Scrubbable {
   request?: unknown;

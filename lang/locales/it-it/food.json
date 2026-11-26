@@ -488,6 +488,8 @@
     "aiProgress": {
       "reading": "Leggo la tua descrizione…",
       "readingPhoto": "Guardo la tua foto…",
+      "observing": "Annoto tutto ciò che descrivi…",
+      "observingPhoto": "Guardo con attenzione la tua foto…",
       "estimating_one": "Stimo {{count}} ingrediente…",
       "estimating_few": "Stimo {{count}} ingredienti…",
       "estimating_many": "Stimo {{count}} ingredienti…",
@@ -499,7 +501,24 @@
       "rechecking_one": "Ricontrollo {{count}} ingrediente…",
       "rechecking_few": "Ricontrollo {{count}} ingredienti…",
       "rechecking_many": "Ricontrollo {{count}} ingredienti…",
-      "rechecking_other": "Ricontrollo {{count}} ingredienti…"
+      "rechecking_other": "Ricontrollo {{count}} ingredienti…",
+      "reviewing": "Controllo che non sia sfuggito nulla…",
+      "comparing_one": "Confronto {{count}} stima…",
+      "comparing_few": "Confronto {{count}} stime…",
+      "comparing_many": "Confronto {{count}} stime…",
+      "comparing_other": "Confronto {{count}} stime…",
+      "readingPhotos_one": "Guardo la tua foto…",
+      "readingPhotos_other": "Guardo le tue {{count}} foto…",
+      "observingPhotos_one": "Guardo con attenzione la tua foto…",
+      "observingPhotos_other": "Guardo con attenzione le tue {{count}} foto…",
+      "identifyingPhoto_one": "Guardo la foto {{index}} di {{count}}…",
+      "identifyingPhoto_other": "Guardo la foto {{index}} di {{count}}…",
+      "readingPhotos_few": "Guardo le tue {{count}} foto…",
+      "readingPhotos_many": "Guardo le tue {{count}} foto…",
+      "observingPhotos_few": "Guardo con attenzione le tue {{count}} foto…",
+      "observingPhotos_many": "Guardo con attenzione le tue {{count}} foto…",
+      "identifyingPhoto_few": "Guardo la foto {{index}} di {{count}}…",
+      "identifyingPhoto_many": "Guardo la foto {{index}} di {{count}}…"
     },
     "aiNutritionContext": {
       "title": "Aggiungi contesto per l'IA",
@@ -709,6 +728,43 @@
         "logError": "Impossibile registrare l'alimento. Riprova."
       },
       "linkError": "Non è stato possibile leggere il link dell'assistente. {{reason}} Incolla invece il blocco JSON dalla chat."
+    },
+    "mealPhotos": {
+      "title": "Il tuo pasto",
+      "photoCount_one": "{{count}} di {{max}} foto",
+      "photoCount_other": "{{count}} di {{max}} foto",
+      "addPhoto": "Aggiungi una foto",
+      "removePhoto": "Rimuovi la foto {{index}}",
+      "optionalHint": "Tutto quello qui sotto è facoltativo.",
+      "nameLabel": "Nome del pasto",
+      "namePlaceholder": "es. Pollo e riso",
+      "descriptionLabel": "C'è altro che dovremmo sapere?",
+      "descriptionPlaceholder": "es. Ne ho mangiata metà, senza condimento",
+      "originLabel": "Da dove viene?",
+      "origin": {
+        "home": "Fatto in casa",
+        "restaurant": "Ristorante",
+        "takeaway": "Da asporto",
+        "packaged": "Confezionato"
+      },
+      "addedFatLabel": "Olio, burro o salse aggiunti?",
+      "addedFat": {
+        "none": "Nessuno",
+        "some": "Un po'",
+        "lots": "Molto"
+      },
+      "tagsLabel": "Tag",
+      "estimate": "Calcola",
+      "reviewPhotos_one": "Controlla {{count}} foto",
+      "reviewPhotos_other": "Controlla {{count}} foto",
+      "discardTitle": "Eliminare questo pasto?",
+      "discardMessage": "Foto e note andranno perse.",
+      "discard": "Elimina",
+      "keepEditing": "Continua a modificare",
+      "photoCount_few": "{{count}} di {{max}} foto",
+      "photoCount_many": "{{count}} di {{max}} foto",
+      "reviewPhotos_few": "Controlla {{count}} foto",
+      "reviewPhotos_many": "Controlla {{count}} foto"
     }
   }
 }

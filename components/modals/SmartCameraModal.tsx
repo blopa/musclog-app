@@ -1,9 +1,12 @@
-import { randomUUID } from 'expo-crypto';
 import { MessageSquareText } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type ComponentProps, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { MealDraftButton } from '@/components/camera/MealDraftButton';
+import { MealPhotoDetailsModal } from '@/components/camera/MealPhotoDetailsModal';
+import { useCameraAiProcessing } from '@/components/camera/useCameraAiProcessing';
+import { useMealPhotoEstimate } from '@/components/camera/useMealPhotoEstimate';
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import {
@@ -23,28 +26,28 @@ import {
 } from '@/hooks/useCameraCaptureFlow';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
+import { useMealPhotoLimit } from '@/hooks/useMealPhotoLimit';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import AiService from '@/services/AiService';
 import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
+import { logTrackedMeal } from '@/services/trackedMealLogging';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
-import { describeAiError } from '@/utils/aiErrors';
 import {
-  estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
   extractMacrosFromLabelText,
   type MacroEstimate,
   type TrackMealIngredient,
-  type TrackMealResponse,
 } from '@/utils/coachAI';
 import { copyImageToDocumentDirectory, readFileAsStringAsync } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
+import { mealPhotoContextFromDraft } from '@/utils/mealPhotoContext';
 import {
-  type MealEstimateProgressLine,
-  mealEstimateProgressLine,
-} from '@/utils/mealEstimateProgress';
-import { createPhaseTimer } from '@/utils/phaseTimer';
+  EMPTY_MEAL_PHOTO_DRAFT,
+  mealCameraControls,
+  mealPhotoDraftReducer,
+} from '@/utils/mealPhotoDraft';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { AddFoodModal } from './AddFoodModal';
@@ -114,6 +117,9 @@ type BottomRightControlProps = {
   onContextPress: () => void;
   onTextSearchPress: () => void;
   showTextSearch: boolean;
+  /** The detailed meal flow: the slot reopens the photo sheet instead of the pre-photo context. */
+  mealDraft?: { firstPhotoUri: string; count: number; label: string; onPress: () => void } | null;
+  detailedMealFlow?: boolean;
 };
 
 /**
@@ -128,11 +134,26 @@ function BottomRightControl({
   onContextPress,
   onTextSearchPress,
   showTextSearch,
+  mealDraft,
+  detailedMealFlow,
 }: BottomRightControlProps) {
   const theme = useTheme();
 
   if (showTextSearch) {
     return <SmartCameraTextSearchButton onPress={onTextSearchPress} />;
+  }
+
+  if (isAiEnabled && cameraMode === 'ai-meal-photo' && detailedMealFlow) {
+    return mealDraft ? (
+      <MealDraftButton
+        uri={mealDraft.firstPhotoUri}
+        count={mealDraft.count}
+        accessibilityLabel={mealDraft.label}
+        onPress={mealDraft.onPress}
+      />
+    ) : (
+      <View className="h-12 w-12" />
+    );
   }
 
   if (isAiEnabled && cameraMode !== 'barcode-scan') {
@@ -206,12 +227,16 @@ export default function SmartCameraModal({
 }: CameraModalProps) {
   const { t, i18n } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
-  const { formatRoundedDecimal } = useFormatAppNumber();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
   );
+  const { aiMealCameraFlow, aiProvider } = useSettings();
+  const detailedMealFlow = aiMealCameraFlow === 'detailed';
+  const [mealDraft, dispatchMealDraft] = useReducer(mealPhotoDraftReducer, EMPTY_MEAL_PHOTO_DRAFT);
+  const [isMealDetailsVisible, setIsMealDetailsVisible] = useState(false);
+  const mealPhotoLimit = useMealPhotoLimit(visible && detailedMealFlow, aiProvider);
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
@@ -228,7 +253,9 @@ export default function SmartCameraModal({
     'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
   >('all');
   const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
-  const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
+  const [selectedMealForLogging, setSelectedMealForLogging] = useState<
+    ComponentProps<typeof LogMealModal>['meal'] | null
+  >(null);
   const [aiIngredients, setAiIngredients] = useState<TrackMealIngredient[] | undefined>(undefined);
   const [aiPhotoUri, setAiPhotoUri] = useState<string | undefined>(undefined);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
@@ -254,6 +281,26 @@ export default function SmartCameraModal({
     onClose();
   }, [isSearchingBarcodeRef, onClose]);
 
+  const mealCamera = mealCameraControls({
+    detailedFlow: detailedMealFlow,
+    isMealPhotoMode: cameraMode === 'ai-meal-photo',
+    draft: mealDraft,
+    limit: mealPhotoLimit,
+  });
+
+  // The camera's own close (X and Android back). While it is open only to add photos to a
+  // draft, closing goes back to the details sheet instead of throwing the draft away. A running
+  // estimate keeps the old behaviour (close cancels it), since the sheet cannot start another.
+  const handleShellClose = () => {
+    if (mealCamera.addingToDraft && !isProcessingAi) {
+      setIsMealDetailsVisible(true);
+
+      return;
+    }
+
+    handleClose();
+  };
+
   const opticalOffer = useOpticalStreamOffer({
     detected: barcode.isOpticalStreamDetected,
     hostVisible: visible,
@@ -265,6 +312,7 @@ export default function SmartCameraModal({
   // flag listed here — the camera is active only while none of them covers it. A flag
   // missing from this list leaves the camera feed live behind that modal.
   const isAnyChildModalVisible = [
+    isMealDetailsVisible,
     isContextModalVisible,
     isBarcodeTextSearchModalVisible,
     barcode.isFoodNotFoundModalVisible,
@@ -278,35 +326,6 @@ export default function SmartCameraModal({
 
   const isCameraActive =
     visible && !barcode.isSearchingBarcode && !isProcessingAi && !isAnyChildModalVisible;
-
-  /** Map AI TrackMealResponse to the shape LogMealModal expects (calories from kcal). */
-  const mapTrackMealResponseToMeal = useCallback(
-    (result: TrackMealResponse) => {
-      const allIngredients = result.meals.flatMap((m) => m.ingredients);
-      if (allIngredients.length === 0) {
-        return null;
-      }
-
-      const totalGrams = allIngredients.reduce((sum, ing) => sum + (ing.grams || 0), 0);
-      const totalKcal = allIngredients.reduce((sum, ing) => sum + ing.kcal, 0);
-      const totalProtein = allIngredients.reduce((sum, ing) => sum + ing.protein, 0);
-      const totalCarbs = allIngredients.reduce((sum, ing) => sum + ing.carbs, 0);
-      const totalFat = allIngredients.reduce((sum, ing) => sum + ing.fat, 0);
-      const mealName =
-        result.meals[0]?.mealName || result.meals[0]?.mealType || t('meals.customMeal');
-
-      return {
-        name: mealName,
-        type: t('meals.customMeal'),
-        calories: totalKcal,
-        protein: totalProtein,
-        carbs: totalCarbs,
-        fat: totalFat,
-        grams: totalGrams,
-      };
-    },
-    [t]
-  );
 
   /** Map AI label macro result to synthetic SearchResultProduct for FoodMealTrackingDetailsModal. */
   const macroEstimateToSearchResultProduct = useCallback(
@@ -342,8 +361,12 @@ export default function SmartCameraModal({
 
   useEffect(() => {
     if (!visible) {
+      aiAbortRef.current?.abort();
+      aiAbortRef.current = null;
       const reset = () => {
         setIsContextModalVisible(false);
+        setIsMealDetailsVisible(false);
+        dispatchMealDraft({ type: 'reset' });
         setIsBarcodeTextSearchModalVisible(false);
         setIsAddFoodModalVisible(false);
         setIsNewCustomFoodModalVisible(false);
@@ -358,166 +381,143 @@ export default function SmartCameraModal({
     }
   }, [visible, isSearchingBarcodeRef]);
 
+  useEffect(() => {
+    return () => {
+      aiAbortRef.current?.abort();
+      aiAbortRef.current = null;
+    };
+  }, []);
+
   useKeepScreenAwake(
     'smart-camera-processing',
     visible && (isProcessingAi || barcode.isSearchingBarcode)
   );
 
+  const runCameraAiTask = useCameraAiProcessing({
+    abortRef: aiAbortRef,
+    setProcessing: setIsProcessingAi,
+    setProgress: setMealProgress,
+  });
+
+  const submitMealEstimate = useMealPhotoEstimate({
+    abortRef: aiAbortRef,
+    setProcessing: setIsProcessingAi,
+    setProgress: setMealProgress,
+    setError: setMealPhotoError,
+    onSuccess: (meal, ingredients, photo) => {
+      setAiPhotoUri(photo);
+      setSelectedMealForLogging(meal);
+      setAiIngredients(ingredients);
+      dispatchMealDraft({ type: 'reset' });
+      setIsLogMealModalVisible(true);
+    },
+  });
+
+  const runMealEstimate = () => {
+    if (aiAbortRef.current || mealDraft.photos.length === 0) {
+      return;
+    }
+
+    setIsMealDetailsVisible(false);
+    void submitMealEstimate({
+      photos: mealDraft.photos,
+      context: mealPhotoContextFromDraft(mealDraft),
+      name: mealDraft.name,
+      onFailure: () => setIsMealDetailsVisible(true),
+    });
+  };
+
   const processAiPhoto = useCallback(
     async (fileUri: string) => {
-      setIsProcessingAi(true);
+      if (cameraMode === 'ai-meal-photo' && detailedMealFlow) {
+        // The detailed flow collects photos first; the estimate runs from the sheet.
+        setMealPhotoError(null);
+        dispatchMealDraft({ type: 'addPhoto', uri: fileUri, limit: mealPhotoLimit });
+        setIsMealDetailsVisible(true);
+
+        return;
+      }
+
+      if (cameraMode === 'ai-meal-photo') {
+        await submitMealEstimate({ photos: [fileUri], context: aiContext ?? undefined });
+
+        return;
+      }
+
+      if (cameraMode !== 'ai-label-scan' || aiAbortRef.current) {
+        return;
+      }
+
       setMealPhotoError(null);
-      setMealProgress(null);
       setAiPhotoUri(fileUri);
-      const abortController = new AbortController();
-      aiAbortRef.current = abortController;
-      const timer = createPhaseTimer('SmartCamera.aiPhoto');
-      let outcome = 'done';
-      // The same config, plus the cancel signal. `getAiConfig` returns a fresh object per call.
-      const withCancel = <C extends { signal?: AbortSignal }>(config: C | null): C | null =>
-        config ? { ...config, signal: abortController.signal } : null;
-      try {
-        if (cameraMode === 'ai-label-scan') {
-          const aiConfig = withCancel(await AiService.getAiConfig());
-          if (!aiConfig) {
-            showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
-            return;
-          }
+
+      await runCameraAiTask({
+        timerName: 'SmartCamera.aiPhoto',
+        logLabel: 'Error processing AI photo',
+        onError: (message) => showSnackbar('error', message),
+        task: async ({ signal, config }) => {
+          let result: MacroEstimate | null = null;
 
           // On-device meal vision identifies foods. Label scanning uses OCR and text extraction.
-          if (useOcrBeforeAi || !isAIVisionEnabled || aiConfig.provider === 'on-device') {
+          if (useOcrBeforeAi || !isAIVisionEnabled || config.provider === 'on-device') {
             const ocrLanguage = i18n.resolvedLanguage ?? i18n.language;
             const { text } = await ocrRecognizeText(fileUri, ocrLanguage);
+            if (signal.aborted) {
+              return null;
+            }
+
             if (!text.trim()) {
-              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
-              return;
+              return t('food.aiCamera.aiAnalysisFailed');
             }
 
-            const result = await extractMacrosFromLabelText(aiConfig, text, aiContext ?? undefined);
-            if (abortController.signal.aborted) {
-              return;
-            }
-
-            if (result) {
-              showSnackbar(
-                'success',
-                t('food.aiCamera.analysisSuccess', {
-                  name: result.name,
-                  kcal: formatEnergyWithUnit(result.kcal),
-                  protein: result.protein,
-                  carbs: result.carbs,
-                  fat: result.fat,
-                })
-              );
-              setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
-            } else {
-              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
-            }
+            result = await extractMacrosFromLabelText(config, text, aiContext ?? undefined);
           } else {
             const base64 = await readFileAsStringAsync(fileUri, {
               encoding: 'base64',
             } as { encoding: 'base64' });
-
-            const result = await extractMacrosFromLabelPhoto(
-              aiConfig,
-              base64,
-              aiContext ?? undefined
-            );
-
-            if (abortController.signal.aborted) {
-              return;
+            if (signal.aborted) {
+              return null;
             }
 
-            if (result) {
-              showSnackbar(
-                'success',
-                t('food.aiCamera.analysisSuccess', {
-                  name: result.name,
-                  kcal: formatEnergyWithUnit(result.kcal),
-                  protein: result.protein,
-                  carbs: result.carbs,
-                  fat: result.fat,
-                })
-              );
-              setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
-            } else {
-              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
-            }
-          }
-        } else if (cameraMode === 'ai-meal-photo') {
-          const base64 = await readFileAsStringAsync(fileUri, {
-            encoding: 'base64',
-          } as { encoding: 'base64' });
-          timer.mark('image-read');
-          const aiConfig = withCancel(await AiService.getAiConfig());
-          timer.mark('settings-read');
-          if (!aiConfig) {
-            outcome = 'error';
-            setMealPhotoError(t('food.aiCamera.aiNotConfigured'));
-            return;
+            result = await extractMacrosFromLabelPhoto(config, base64, aiContext ?? undefined);
           }
 
-          const result = await estimateNutritionFromPhoto(
-            aiConfig,
-            base64,
-            aiContext ?? undefined,
-            (progress) => setMealProgress(mealEstimateProgressLine(progress))
-          );
-          timer.mark('request');
-          if (abortController.signal.aborted) {
-            outcome = 'cancelled';
-            return;
+          if (signal.aborted) {
+            return null;
           }
 
-          const mealForLogging = result ? mapTrackMealResponseToMeal(result) : null;
-          if (!result || !mealForLogging) {
-            outcome = 'error';
-            setMealPhotoError(t('food.aiCamera.aiAnalysisFailed'));
-            return;
+          if (!result) {
+            return t('food.aiCamera.aiAnalysisFailed');
           }
 
           showSnackbar(
             'success',
             t('food.aiCamera.analysisSuccess', {
-              name: mealForLogging.name,
-              kcal: formatEnergyWithUnit(mealForLogging.calories),
-              protein: formatRoundedDecimal(mealForLogging.protein, 2),
-              carbs: formatRoundedDecimal(mealForLogging.carbs, 2),
-              fat: formatRoundedDecimal(mealForLogging.fat, 2),
+              name: result.name,
+              kcal: formatEnergyWithUnit(result.kcal),
+              protein: result.protein,
+              carbs: result.carbs,
+              fat: result.fat,
             })
           );
-          setSelectedMealForLogging(mealForLogging);
-          setAiIngredients(result.meals.flatMap((meal) => meal.ingredients));
-          setIsLogMealModalVisible(true);
-        }
-      } catch (error) {
-        outcome = abortController.signal.aborted ? 'cancelled' : 'error';
-        console.error('[SmartCamera] Error processing AI photo:', error);
-        if (!abortController.signal.aborted) {
-          const message = describeAiError(error, t) ?? t('food.aiCamera.aiAnalysisFailed');
-          if (cameraMode === 'ai-meal-photo') {
-            setMealPhotoError(message);
-          } else {
-            showSnackbar('error', message);
-          }
-        }
-      } finally {
-        timer.log(outcome);
-        aiAbortRef.current = null;
-        setIsProcessingAi(false);
-        setMealProgress(null);
-      }
+          setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
+
+          return null;
+        },
+      });
     },
     [
       cameraMode,
+      detailedMealFlow,
+      mealPhotoLimit,
       aiContext,
-      formatRoundedDecimal,
       formatEnergyWithUnit,
       isAIVisionEnabled,
       i18n.language,
       i18n.resolvedLanguage,
       macroEstimateToSearchResultProduct,
-      mapTrackMealResponseToMeal,
+      runCameraAiTask,
+      submitMealEstimate,
       t,
       useOcrBeforeAi,
     ]
@@ -527,11 +527,39 @@ export default function SmartCameraModal({
     cameraRef,
     quality: isBarcodeScanning ? BARCODE_PHOTO_QUALITY : AI_PHOTO_QUALITY,
     process: isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto,
+    gallerySelectionLimit: mealCamera.gallerySelectionLimit,
   });
 
   // Barcode mode reads the live preview, so it offers no shutter at all; omitting the handler is
   // what hides the button (see SmartCameraShell's `onShutterPress`).
-  const shutterPress = isBarcodeScanning ? undefined : takePicture;
+  // A full draft (added to from the details sheet) has no slot left: the shutter and gallery send
+  // the person back to the sheet, where a photo can be removed, instead of taking a photo that
+  // the draft would drop.
+  const isDraftFull = mealCamera.addingToDraft && !mealCamera.canAddPhoto;
+
+  const handleShutterPress = useCallback(() => {
+    if (isDraftFull) {
+      setIsMealDetailsVisible(true);
+
+      return;
+    }
+
+    takePicture();
+  }, [isDraftFull, takePicture]);
+
+  const handleGalleryPress = useCallback(() => {
+    if (isDraftFull) {
+      setIsMealDetailsVisible(true);
+
+      return;
+    }
+
+    pickFromGallery();
+  }, [isDraftFull, pickFromGallery]);
+
+  // Barcode mode reads the live preview, so it offers no shutter at all; omitting the handler is
+  // what hides the button (see SmartCameraShell's `onShutterPress`).
+  const shutterPress = isBarcodeScanning ? undefined : handleShutterPress;
 
   const handleFlashToggle = useCallback(() => {
     setFlashEnabled((prev) => !prev);
@@ -593,35 +621,40 @@ export default function SmartCameraModal({
           return;
         }
 
-        const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
-        const scale = portionGrams / baseGrams;
-        const isSingleFood = !aiIngredients || aiIngredients.length <= 1;
-        const persistedImageUri =
-          !selectedMealForLogging.foodId && aiPhotoUri
-            ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
-            : undefined;
+        const persistedImageUri = aiPhotoUri
+          ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
+          : undefined;
 
-        await NutritionService.logCustomMeal(
-          {
-            name: selectedMealForLogging.name,
-            calories: selectedMealForLogging.calories * scale,
-            protein: selectedMealForLogging.protein * scale,
-            carbs: selectedMealForLogging.carbs * scale,
-            fat: selectedMealForLogging.fat * scale,
-            foodId: selectedMealForLogging.foodId,
+        if (aiIngredients && aiIngredients.length > 0) {
+          // An estimate is logged food by food, through the same logger the coach chat uses.
+          await logTrackedMeal({
+            ingredients: aiIngredients,
+            date,
+            mealType,
+            portionGrams,
+            mealName: selectedMealForLogging.name,
             imageUrl: persistedImageUri,
-          },
-          date,
-          mealType,
-          portionGrams,
-          isSingleFood
-            ? { loggedMealName: selectedMealForLogging.name, consumedTime: time }
-            : {
-                groupId: randomUUID(),
-                loggedMealName: selectedMealForLogging.name,
-                consumedTime: time,
-              }
-        );
+            consumedTime: time,
+          });
+        } else {
+          // A label scan has no ingredients, so its totals are scaled to the portion.
+          const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
+          const scale = portionGrams / baseGrams;
+          await NutritionService.logCustomMeal(
+            {
+              name: selectedMealForLogging.name,
+              calories: selectedMealForLogging.calories * scale,
+              protein: selectedMealForLogging.protein * scale,
+              carbs: selectedMealForLogging.carbs * scale,
+              fat: selectedMealForLogging.fat * scale,
+              imageUrl: persistedImageUri,
+            },
+            date,
+            mealType,
+            portionGrams,
+            { loggedMealName: selectedMealForLogging.name, consumedTime: time }
+          );
+        }
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
         triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
@@ -629,6 +662,7 @@ export default function SmartCameraModal({
         setSelectedMealForLogging(null);
         setAiIngredients(undefined);
         setAiPhotoUri(undefined);
+        dispatchMealDraft({ type: 'reset' });
 
         onClose();
       } catch (error) {
@@ -669,6 +703,17 @@ export default function SmartCameraModal({
       onContextPress={() => setIsContextModalVisible(true)}
       onTextSearchPress={() => setIsBarcodeTextSearchModalVisible(true)}
       showTextSearch={shouldShowBarcodeTextSearch}
+      detailedMealFlow={detailedMealFlow}
+      mealDraft={
+        mealDraft.photos.length > 0
+          ? {
+              firstPhotoUri: mealDraft.photos[0],
+              count: mealDraft.photos.length,
+              label: t('food.mealPhotos.reviewPhotos', { count: mealDraft.photos.length }),
+              onPress: () => setIsMealDetailsVisible(true),
+            }
+          : null
+      }
     />
   );
 
@@ -677,12 +722,14 @@ export default function SmartCameraModal({
   }
 
   const barcodeNotice = isBarcodeScanning ? opticalOffer.notice : null;
+  // Switching modes while adding photos to a meal draft would orphan the draft.
+  const showModePicker = !hideCameraModePicker && !mealCamera.addingToDraft;
 
   return (
     <>
       <SmartCameraShell
         visible={visible}
-        onClose={handleClose}
+        onClose={handleShellClose}
         processingStatus={mealProgress}
         permissionGranted={permissionGranted}
         onRequestPermission={onRequestPermission}
@@ -718,7 +765,7 @@ export default function SmartCameraModal({
         cameraMode={cameraMode}
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}
-        onGalleryPress={pickFromGallery}
+        onGalleryPress={handleGalleryPress}
         onShutterPress={shutterPress}
         bottomRightControl={bottomRightControl}
         // Keep persistent photo errors and barcode notices in the same in-flow slot.
@@ -737,13 +784,31 @@ export default function SmartCameraModal({
             barcodeNotice
           )
         }
-        showModePicker={!hideCameraModePicker}
+        showModePicker={showModePicker}
         isAiEnabled={isAiEnabled}
         isAIVisionEnabled={isAIVisionEnabled}
         onModeChange={handleModeChange}
       >
         {/* Optical transfer offer — the receive screen must live inside this modal's tree. */}
         {opticalOffer.receiver}
+
+        {/* Detailed meal flow: the photos so far and their optional details. */}
+        {isMealDetailsVisible ? (
+          <MealPhotoDetailsModal
+            visible={isMealDetailsVisible}
+            draft={mealDraft}
+            dispatch={dispatchMealDraft}
+            photoLimit={mealPhotoLimit}
+            onAddPhoto={() => setIsMealDetailsVisible(false)}
+            onEstimate={runMealEstimate}
+            onDiscard={() => {
+              setIsMealDetailsVisible(false);
+              dispatchMealDraft({ type: 'reset' });
+              setMealPhotoError(null);
+            }}
+            errorMessage={mealPhotoError}
+          />
+        ) : null}
 
         {/* Context Modal */}
         {isContextModalVisible ? (
@@ -792,7 +857,7 @@ export default function SmartCameraModal({
             onTryAiScan={handleAiCameraPress}
             onSearchAgain={handleScanBarcodePress}
             onCreateCustom={handleCreateCustomFood}
-            isAiEnabled={isAiEnabled}
+            isAiEnabled={isAIVisionEnabled}
           />
         ) : null}
 

@@ -108,23 +108,24 @@ read_config() { # <database-name|has-otari>
   '
 }
 
-DATABASE_NAME="$(read_config database-name)"
-HAS_OTARI="$(read_config has-otari)"
-
 # Preconditions (values are only tested for presence, never printed).
 command -v node > /dev/null || { echo "missing tool: node" >&2; exit 1; }
 command -v npx > /dev/null || { echo "missing tool: npx" >&2; exit 1; }
-precondition() { # <ok: 0|1> <message>
-  [[ "$1" -eq 0 ]] && return 0
+[[ -f "$SOURCE_TOML" ]] || { echo "missing wrangler config: $SOURCE_TOML" >&2; exit 1; }
+
+DATABASE_NAME="$(read_config database-name)"
+HAS_OTARI="$(read_config has-otari)"
+
+precondition_fail() { # <message>
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "[dry-run] a real run would stop: $2"
+    echo "[dry-run] a real run would stop: $1"
   else
-    echo "$2" >&2
+    echo "$1" >&2
     exit 1
   fi
 }
-precondition "$([[ -n "${CLOUDFLARE_API_TOKEN:-}" ]] && echo 0 || echo 1)" "CLOUDFLARE_API_TOKEN is not set"
-precondition "$([[ -f "$GENERATED" ]] && echo 0 || echo 1)" "run scripts/premium-deploy.sh $ENVIRONMENT first (it writes $GENERATED)"
+[[ -n "${CLOUDFLARE_API_TOKEN:-}" ]] || precondition_fail "CLOUDFLARE_API_TOKEN is not set"
+[[ -f "$GENERATED" ]] || precondition_fail "run scripts/premium-deploy.sh $ENVIRONMENT first (it writes $GENERATED)"
 
 wrangler() { run npx --prefix "$WORKER_DIR" wrangler "$@"; }
 
@@ -138,7 +139,8 @@ if [[ "$ACTION" == "status" ]]; then
       --command "SELECT value FROM meta WHERE key = 'upstream'")"
     CURRENT="$(node -e '
       let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => {
-        const rows = JSON.parse(s)[0].results;
+        const parsed = JSON.parse(s);
+        const rows = Array.isArray(parsed) && Array.isArray(parsed[0]?.results) ? parsed[0].results : [];
         console.log(rows.length === 0 ? "openrouter (no row: default)" : rows[0].value);
       });' <<< "$RESULT")"
     echo "upstream: $CURRENT"

@@ -2,7 +2,6 @@ import '@/database';
 import '@/lang/lang';
 import '@/global.css';
 
-import * as Sentry from '@sentry/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Device from 'expo-device';
 import { Stack } from 'expo-router';
@@ -16,9 +15,10 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppDbReadyGate } from '@/components/AppDbReadyGate';
+import { AppErrorBoundary } from '@/components/AppErrorBoundary';
 import { CoachProvider } from '@/components/CoachContext';
 import { DocumentTitle } from '@/components/DocumentTitle';
-import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
+import { FatalErrorOverlay } from '@/components/FatalErrorOverlay';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
@@ -135,17 +135,7 @@ function RootLayout() {
         <WebModalShellProvider>
           <QueryClientProvider client={queryClient}>
             <SafeAreaProvider>
-              <Sentry.ErrorBoundary
-                onError={(error, errorInfo) => {
-                  handleError(error, 'app._layout.errorBoundary');
-                }}
-                fallback={({ error, resetError }) => (
-                  <ErrorFallbackScreen
-                    error={error instanceof Error ? error : new Error(String(error))}
-                    resetError={resetError}
-                  />
-                )}
-              >
+              <AppErrorBoundary>
                 <AppDbReadyGate>
                   <SettingsProvider>
                     <AppLockProvider>
@@ -169,7 +159,8 @@ function RootLayout() {
                     </AppLockProvider>
                   </SettingsProvider>
                 </AppDbReadyGate>
-              </Sentry.ErrorBoundary>
+              </AppErrorBoundary>
+              <FatalErrorOverlay />
             </SafeAreaProvider>
           </QueryClientProvider>
         </WebModalShellProvider>

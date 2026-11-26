@@ -26,15 +26,21 @@ import { useTranslation } from 'react-i18next';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import {
   Camera,
+  type CameraRuntimeError,
   type Code,
   type CodeScannerFrame,
   type CodeType,
-  useCameraDevice,
   useCameraFormat,
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
 
+import {
+  CameraErrorBoundary,
+  CameraUnavailable,
+  reportCameraError,
+} from '@/components/CameraErrorBoundary';
+import { useUsableCameraDevice } from '@/components/CameraView';
 import { SmartCameraFrameOverlay } from '@/components/SmartCameraFrame';
 import { Button } from '@/components/theme/Button';
 
@@ -61,7 +67,26 @@ interface OpticalScannerCameraProps {
   onTorchAvailabilityChange?: (available: boolean) => void;
 }
 
-export function OpticalScannerCamera({
+/**
+ * A camera failure stays in this area: it is reported and replaced by `CameraUnavailable` with Try
+ * again (see `CameraErrorBoundary`), instead of reaching the app's root and closing the screen.
+ */
+export function OpticalScannerCamera(props: OpticalScannerCameraProps) {
+  return (
+    <CameraErrorBoundary
+      onError={reportOpticalCameraError}
+      fallback={(retry) => <CameraUnavailable body="plain" onRetry={retry} />}
+    >
+      <ScannerCamera {...props} />
+    </CameraErrorBoundary>
+  );
+}
+
+function reportOpticalCameraError(error: unknown): void {
+  reportCameraError(error, 'OpticalScannerCamera');
+}
+
+function ScannerCamera({
   active,
   onCodeScanned,
   onError,
@@ -70,8 +95,11 @@ export function OpticalScannerCamera({
   torchEnabled = false,
 }: OpticalScannerCameraProps) {
   const { t } = useTranslation();
-  const device = useCameraDevice('back');
+  const device = useUsableCameraDevice('back');
   const cameraRef = useRef<Camera>(null);
+  // A session error is rethrown during render so CameraErrorBoundary reports it and shows the
+  // fallback; Try again remounts this component, which clears it.
+  const [runtimeError, setRuntimeError] = useState<CameraRuntimeError | null>(null);
 
   // Permission is owned here rather than by the screen: this component is the only thing that
   // needs the camera, and without this the screen rendered a silent black rectangle — <Camera>
@@ -120,6 +148,18 @@ export function OpticalScannerCamera({
       // Devices without focus support reject; nothing to recover.
     });
   }, []);
+
+  const handleRuntimeError = useCallback(
+    (error: CameraRuntimeError) => {
+      onError?.(error);
+      setRuntimeError(error);
+    },
+    [onError]
+  );
+
+  if (runtimeError) {
+    throw runtimeError;
+  }
 
   if (!hasPermission) {
     return (
@@ -176,7 +216,7 @@ export function OpticalScannerCamera({
         format={format}
         fps={30}
         isActive={active}
-        onError={onError}
+        onError={handleRuntimeError}
         onStarted={onStarted}
         photo={false}
         ref={cameraRef}

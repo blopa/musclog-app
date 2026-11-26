@@ -1,32 +1,23 @@
 import { Cpu } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { AppleIntelligenceStatus } from '@/components/localModels/AppleIntelligenceStatus';
 import { LocalModelCard } from '@/components/localModels/LocalModelCard';
-import { Button } from '@/components/theme/Button';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { disableOnDeviceAi, enableOnDeviceAi, setOnDeviceEngine } from '@/services/onDeviceAiSetup';
 import {
   DEFAULT_LOCAL_MODEL_SELECTION,
   type LocalModelSelection,
 } from '@/utils/localModels/install';
-import { isAppleLocaleSupported } from '@/utils/onDeviceAi';
 import { hasLocalAiOption } from '@/utils/onDeviceStatus';
 
-const APPLE_STATUS_KEYS = {
-  ready: 'onDeviceAi.apple.status.ready',
-  appleOff: 'onDeviceAi.apple.status.appleOff',
-  appleNotReady: 'onDeviceAi.apple.status.appleNotReady',
-} as const;
-
 type OnDeviceAiSectionProps = {
-  /** The stored `use_on_device_ai` value (the modal's debounced copy, so the switch is instant). */
-  enabled: boolean;
-  onEnabledChange: (value: boolean) => void;
   /** Musclog Iron or the free tier is on: they outrank AI on the phone. */
   hostedProviderActive: boolean;
 };
@@ -36,32 +27,15 @@ type OnDeviceAiSectionProps = {
  * downloaded model), the model's download card and the notes that go with them. Shown only where
  * this phone has at least one way to run AI locally.
  */
-export function OnDeviceAiSection({
-  enabled,
-  onEnabledChange,
-  hostedProviderActive,
-}: OnDeviceAiSectionProps) {
+export function OnDeviceAiSection({ hostedProviderActive }: OnDeviceAiSectionProps) {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { useOnDeviceAi } = useSettings();
+  const [optimistic, setOptimistic] = useState<{ base: boolean; value: boolean } | null>(null);
   const status = useOnDeviceStatus({ refresh: true });
   const [selection, setSelection] = useState<LocalModelSelection>(DEFAULT_LOCAL_MODEL_SELECTION);
-  const [appleLanguageOk, setAppleLanguageOk] = useState(true);
-  const offersApple = status.options.apple;
-
-  useEffect(() => {
-    let cancelled = false;
-    if (offersApple) {
-      void isAppleLocaleSupported(i18n.language).then((ok) => {
-        if (!cancelled) {
-          setAppleLanguageOk(ok);
-        }
-      });
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [offersApple, i18n.language]);
+  const enabled =
+    optimistic && optimistic.base === useOnDeviceAi ? optimistic.value : useOnDeviceAi;
 
   if (!hasLocalAiOption(status)) {
     return null;
@@ -70,18 +44,17 @@ export function OnDeviceAiSection({
   const bothEngines = status.options.apple && status.options.model;
   const usesApple = status.engine === 'apple';
   const note = { color: theme.colors.text.tertiary, fontSize: theme.typography.fontSize.xs };
-  const appleStatusKey =
-    usesApple && status.state in APPLE_STATUS_KEYS
-      ? APPLE_STATUS_KEYS[status.state as keyof typeof APPLE_STATUS_KEYS]
-      : null;
 
   const handleToggle = (value: boolean) => {
-    onEnabledChange(value);
-    if (value) {
-      void enableOnDeviceAi(usesApple ? 'apple' : 'gguf');
-    } else {
-      void disableOnDeviceAi();
-    }
+    const next = { base: useOnDeviceAi, value };
+    setOptimistic(next);
+    const update = value ? enableOnDeviceAi(usesApple ? 'apple' : 'gguf') : disableOnDeviceAi();
+    // A failed save is reported by the setup service; the switch goes back to the stored value.
+    void update.then((ok) => {
+      if (!ok) {
+        setOptimistic((prev) => (prev === next ? null : prev));
+      }
+    });
   };
 
   return (
@@ -137,18 +110,7 @@ export function OnDeviceAiSection({
       ) : null}
 
       {usesApple ? (
-        <View className="gap-2 px-1">
-          {appleStatusKey ? <Text style={note}>{t(appleStatusKey)}</Text> : null}
-          {!appleLanguageOk ? <Text style={note}>{t('onDeviceAi.apple.languageNote')}</Text> : null}
-          {status.state === 'appleOff' ? (
-            <Button
-              label={t('onDeviceAi.apple.openSettings')}
-              variant="outline"
-              width="full"
-              onPress={() => void Linking.openSettings()}
-            />
-          ) : null}
-        </View>
+        <AppleIntelligenceStatus appleState={status.appleState} tone="note" className="px-1" />
       ) : (
         <LocalModelCard selection={selection} onSelectionChange={setSelection} allowDelete />
       )}

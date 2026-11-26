@@ -7,7 +7,9 @@
  * confident match is estimated afterwards from its name by the same follow-up the cloud path uses.
  * Everything lands in the review screen, where the person edits it before anything is saved.
  */
-import type { TrackedMeal, TrackMealIngredient, TrackMealResponse } from './coachAI';
+import { median } from 'simple-statistics';
+
+import { normalizeFoodName } from './foodName';
 
 export const MAX_IDENTIFIED_FOODS = 12;
 export const MIN_IDENTIFIED_GRAMS = 5;
@@ -21,13 +23,117 @@ export const MAX_IDENTIFIED_NAME_CHARS = 80;
  */
 export const LOCAL_PHOTO_RETRY_TEMPERATURE = 0.3;
 
-/**
- * The food id of an item the database had no match for. It names no row, so the lookup that
- * resolves ids drops it and the estimate follow-up fills the numbers in; it is never stored.
- */
-export const LOCAL_PHOTO_UNMATCHED_FOOD_ID = 'local-photo-unmatched';
+export type IdentifiedFood = {
+  name: string;
+  grams: number;
+  /** The plain English name when `name` is not English; only for matching, never shown. */
+  englishName?: string;
+};
 
-export type IdentifiedFood = { name: string; grams: number };
+/**
+ * The name a food is looked up by: its English name when it has one, else the name it was given.
+ * Stored foods are named in English, so a name in another language finds nothing by its own words.
+ * The wording the person reads is always `name`.
+ */
+export function matchNameOf(food: { name: string; englishName?: string }): string {
+  return food.englishName?.trim() || food.name;
+}
+
+/**
+ * Several readings of one photo (the High and Tokenmaxxing thinking levels) made into one: a food
+ * stays when at least half the readings name it, with the median of the grams they gave (a reading
+ * that names a food twice counts its grams together), in the order foods were first named and with
+ * their first spelling. One reading is returned as it is.
+ */
+export function voteIdentifiedFoods(readings: IdentifiedFood[][]): IdentifiedFood[] {
+  if (readings.length <= 1) {
+    return readings[0] ?? [];
+  }
+
+  const order: string[] = [];
+  const spelling = new Map<string, string>();
+  const english = new Map<string, string>();
+  const grams = new Map<string, number[]>();
+  for (const reading of readings) {
+    const totals = new Map<string, number>();
+    for (const food of reading) {
+      const key = normalizeFoodName(food.name);
+      if (!key) {
+        continue;
+      }
+
+      if (!spelling.has(key)) {
+        spelling.set(key, food.name);
+        order.push(key);
+      }
+
+      if (food.englishName && !english.has(key)) {
+        english.set(key, food.englishName);
+      }
+
+      totals.set(key, (totals.get(key) ?? 0) + food.grams);
+    }
+
+    for (const [key, total] of totals) {
+      grams.set(key, [...(grams.get(key) ?? []), total]);
+    }
+  }
+
+  const needed = Math.ceil(readings.length / 2);
+  return order.flatMap((key) => {
+    const seen = grams.get(key) ?? [];
+    if (seen.length < needed) {
+      return [];
+    }
+
+    const englishName = english.get(key);
+
+    return [
+      {
+        name: spelling.get(key) ?? key,
+        grams: Math.round(median(seen)),
+        ...(englishName ? { englishName } : {}),
+      },
+    ];
+  });
+}
+
+/**
+ * Several photos of the SAME meal (the downloaded model reads one image per request) made into one
+ * list. A food is matched across photos by the same key `voteIdentifiedFoods` uses (case, accents
+ * and spacing; no plural folding). Photos overlap, so a food seen in several of them is counted
+ * ONCE and the entry with the larger `grams` wins: summing would count the same plate again for
+ * every angle. The kept entry brings its own spelling; foods come out in first-seen order, photo 0
+ * first. Empty lists are ignored, and a name that repeats inside one list is deduped the same way.
+ */
+export function mergeFoodsAcrossPhotos(
+  perPhoto: readonly (readonly IdentifiedFood[])[]
+): IdentifiedFood[] {
+  const merged = new Map<string, IdentifiedFood>();
+  for (const photo of perPhoto) {
+    for (const food of photo) {
+      const key = normalizeFoodName(food.name);
+      if (!key) {
+        continue;
+      }
+
+      const existing = merged.get(key);
+      const englishName = food.englishName ?? existing?.englishName;
+      if (!existing || food.grams > existing.grams) {
+        // Map keeps the original insertion position when a key is set again.
+        merged.set(key, {
+          name: food.name,
+          grams: food.grams,
+          ...(englishName ? { englishName } : {}),
+        });
+      } else if (!existing.englishName && englishName) {
+        merged.set(key, { ...existing, englishName });
+      }
+    }
+  }
+
+  return [...merged.values()];
+}
 
 /** What the model is asked for: names and grams, nothing else. */
 export const LOCAL_FOOD_IDENTIFY_SCHEMA = {
@@ -43,6 +149,8 @@ export const LOCAL_FOOD_IDENTIFY_SCHEMA = {
         properties: {
           name: { type: 'string', maxLength: MAX_IDENTIFIED_NAME_CHARS },
           grams: { type: 'number' },
+          // Optional, to keep a 450M model's grammar small: left out, matching falls back to `name`.
+          englishName: { type: 'string', maxLength: MAX_IDENTIFIED_NAME_CHARS },
         },
       },
     },
@@ -52,27 +160,15 @@ export const LOCAL_FOOD_IDENTIFY_SCHEMA = {
 export function localFoodIdentifyPrompt(): string {
   return [
     'You look at one photo of a meal and list each distinct food or drink you can see.',
-    'Name each item with a short, common food name in English, such as "grilled chicken breast", "white rice" or "orange juice". One item per food; do not group a plate into one item.',
+    // No example foods here: a 450M model copies them. With "grilled chicken breast", "white rice"
+    // and "orange juice" as examples it answered with them on 8 of 10 Nutrition5k plates, most of
+    // which held neither (docs/ON_DEVICE_AI_PLAN.md, P7 notes).
+    'Name each item with a short, common food name in English. One item per food; do not group a plate into one item.',
+    'Leave "englishName" out unless "name" is not in English; then give the plain English food name there.',
     `For each item give "grams": your best guess of its weight on the plate, a whole number between ${MIN_IDENTIFIED_GRAMS} and ${MAX_IDENTIFIED_GRAMS}.`,
     'Never give calories or nutrients. If you cannot see any food, return an empty list.',
     'Reply with JSON only.',
   ].join('\n');
-}
-
-/** The most of a broken reply sent back for repair; the real replies are a few hundred characters. */
-export const MAX_REPAIR_INPUT_CHARS = 2000;
-
-/** System prompt of the last-resort repair call: text only, no photo, the same schema. */
-export function localJsonRepairPrompt(): string {
-  return [
-    'You repair one malformed JSON reply. Return only the corrected JSON, with no other text.',
-    `It must match this JSON Schema: ${JSON.stringify(LOCAL_FOOD_IDENTIFY_SCHEMA)}`,
-    'Keep every food name and gram value that can be read. Do not invent foods or change amounts. Drop any item that cannot be read.',
-  ].join('\n');
-}
-
-export function localJsonRepairMessage(broken: string): string {
-  return `Malformed JSON:\n${broken.slice(0, MAX_REPAIR_INPUT_CHARS)}`;
 }
 
 const clampGrams = (value: unknown): number => {
@@ -107,11 +203,20 @@ export function parseIdentifiedFoods(value: unknown): IdentifiedFood[] {
     }
 
     const grams = clampGrams((entry as { grams?: unknown }).grams);
-    const key = name.toLowerCase();
+    const rawEnglish = (entry as { englishName?: unknown }).englishName;
+    const read =
+      typeof rawEnglish === 'string'
+        ? rawEnglish.trim().replace(/\s+/g, ' ').slice(0, MAX_IDENTIFIED_NAME_CHARS)
+        : '';
+    const key = normalizeFoodName(name);
     const existing = byName.get(key);
+    // Said only when it adds something: the same words as `name` change nothing.
+    const englishName =
+      existing?.englishName ?? (read && normalizeFoodName(read) !== key ? read : undefined);
     byName.set(key, {
       name: existing?.name ?? name,
       grams: existing ? Math.min(MAX_IDENTIFIED_GRAMS, existing.grams + grams) : grams,
+      ...(englishName ? { englishName } : {}),
     });
     if (byName.size >= MAX_IDENTIFIED_FOODS) {
       break;
@@ -121,23 +226,12 @@ export function parseIdentifiedFoods(value: unknown): IdentifiedFood[] {
   return [...byName.values()];
 }
 
-/** The meal a photo taken at this hour most likely belongs to; the review screen lets the person change it. */
-export function mealTypeForHour(hour: number): TrackedMeal['mealType'] {
-  if (hour >= 5 && hour < 11) {
-    return 'breakfast';
-  }
-
-  if (hour >= 11 && hour < 15) {
-    return 'lunch';
-  }
-
-  return hour >= 15 && hour < 22 ? 'dinner' : 'snack';
-}
-
 /** A food the phone already has, with its numbers per 100 g. */
 export type FoodCandidate = {
   id: string;
   name: string;
+  /** What the food is, in the words of its source (a foundation food's is its generic English name). */
+  description?: string;
   kcal: number;
   protein: number;
   carbs: number;
@@ -177,10 +271,7 @@ const STOP_WORDS = new Set([
 
 /** Lowercase, no diacritics, a naive singular, and none of the filler words. */
 export function tokenize(text: string): string[] {
-  return text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
+  return normalizeFoodName(text)
     .split(/[^a-z0-9]+/)
     .filter((word) => word.length >= 3 && !STOP_WORDS.has(word))
     .map((word) =>
@@ -191,6 +282,62 @@ export function tokenize(text: string): string[] {
 /** Words worth searching the food table for, most specific (longest) first. */
 export function searchTermsFor(name: string): string[] {
   return [...new Set(tokenize(name))].sort((a, b) => b.length - a.length).slice(0, 3);
+}
+
+/**
+ * The word `searchTermsFor(name)` searches first, in every spelling a stored food may use: folded
+ * (as `tokenize` writes it) and with the accents `name` was written with. One entry when they are
+ * the same, none when the name has no searchable word. The database search does not fold accents,
+ * so both are asked for; a stored name with accents looked up WITHOUT them is still not found.
+ */
+export function searchSpellingsFor(name: string): string[] {
+  const first = searchTermsFor(name)[0];
+  if (first === undefined) {
+    return [];
+  }
+
+  const word = name
+    .toLowerCase()
+    .split(/[^a-z0-9À-ɏ]+/)
+    .find((candidate) => tokenize(candidate)[0] === first);
+  if (word === undefined) {
+    return [first];
+  }
+
+  // The same naive singular `tokenize` applies, kept on the accented spelling.
+  const accented =
+    word.length > 3 && word.endsWith('s') && !word.endsWith('ss') ? word.slice(0, -1) : word;
+
+  return [...new Set([first, accented])];
+}
+
+type CandidateScore = { covered: number; extra: number };
+
+/** How many wanted words a text carries, and how many words it has besides them. */
+function scoreWords(wanted: ReadonlySet<string>, text: string): CandidateScore {
+  const have = new Set(tokenize(text));
+  const covered = [...wanted].filter((word) => have.has(word)).length;
+
+  return { covered, extra: have.size - covered };
+}
+
+/**
+ * A candidate is scored on the words of its name OR of its description, whichever fits the wanted
+ * words better (more covered, then fewer extra words). The two are never pooled: a word from the
+ * name and another from the description do not make a match together.
+ */
+function scoreCandidate(wanted: ReadonlySet<string>, candidate: FoodCandidate): CandidateScore {
+  const byName = scoreWords(wanted, candidate.name);
+  if (!candidate.description) {
+    return byName;
+  }
+
+  const byDescription = scoreWords(wanted, candidate.description);
+  const descriptionFitsBetter =
+    byDescription.covered > byName.covered ||
+    (byDescription.covered === byName.covered && byDescription.extra < byName.extra);
+
+  return descriptionFitsBetter ? byDescription : byName;
 }
 
 /**
@@ -208,12 +355,7 @@ export function pickFoodMatch(
   }
 
   const scored = candidates
-    .map((candidate) => {
-      const have = new Set(tokenize(candidate.name));
-      const covered = [...wanted].filter((word) => have.has(word)).length;
-
-      return { candidate, covered, extra: have.size - covered };
-    })
+    .map((candidate) => ({ candidate, ...scoreCandidate(wanted, candidate) }))
     .filter((entry) => entry.covered === wanted.size)
     .sort((a, b) => a.extra - b.extra);
 
@@ -225,27 +367,21 @@ export function pickFoodMatch(
 }
 
 /**
- * The review payload: matched items carry their food id (the lookup fills the real numbers in at
- * normalization), the rest carry the unmatched id and zeros until the estimate follow-up runs.
+ * What the review calls a photo meal: the foods on it ("Steak, potatoes, cheese"), never the meal
+ * type, which said "breakfast" for any plate photographed before noon. Cut at a word, like a name
+ * the person typed would be, and left out when nothing was found.
  */
-export function buildPhotoMeal(
-  foods: readonly IdentifiedFood[],
-  matches: ReadonlyMap<string, FoodCandidate | null>,
-  mealType: TrackedMeal['mealType']
-): TrackMealResponse {
-  const ingredients: TrackMealIngredient[] = foods.map((food) => {
-    const match = matches.get(food.name) ?? null;
+export function photoMealName(names: readonly string[]): string | undefined {
+  const unique = [...new Set(names.map((name) => name.trim()).filter(Boolean))];
+  if (unique.length === 0) {
+    return undefined;
+  }
 
-    return {
-      name: match?.name ?? food.name,
-      grams: food.grams,
-      foodId: match?.id ?? LOCAL_PHOTO_UNMATCHED_FOOD_ID,
-      kcal: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-    };
-  });
+  const joined = unique.join(', ');
+  const name =
+    joined.length <= MAX_IDENTIFIED_NAME_CHARS
+      ? joined
+      : `${joined.slice(0, MAX_IDENTIFIED_NAME_CHARS).replace(/[,\s]+\S*$/, '')}…`;
 
-  return { meals: [{ mealType, ingredients }] };
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }

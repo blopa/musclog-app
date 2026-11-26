@@ -11,9 +11,10 @@ import {
   reportAiError,
   requestStructured,
   type StructuredDialect,
-  type StructuredResult,
   truncateHistoryByBudget,
 } from '@/utils/coachAI';
+import { type StructuredResult } from '@/utils/localReplyShape';
+import { ON_DEVICE_CONTEXT_CHARS } from '@/utils/onDeviceEngine';
 
 export type StructuredTurnRequest = {
   /** Names the call in debug dumps and retry logs. */
@@ -47,8 +48,11 @@ export async function sendStructuredChatTurn(
   const userMessage = request.userMessage.trim().slice(0, STRUCTURED_TURN_MAX_USER_CHARS);
   const systemPrompt = `${request.systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output must be in this language.`;
 
-  const budget =
-    PROVIDER_CONFIGS[config.provider].maxCharBudget - systemPrompt.length - userMessage.length;
+  const maxCharBudget =
+    config.provider === 'on-device'
+      ? ON_DEVICE_CONTEXT_CHARS[config.engine]
+      : PROVIDER_CONFIGS[config.provider].maxCharBudget;
+  const budget = maxCharBudget - systemPrompt.length - userMessage.length;
   const history = normalizeHistory(
     budget > 0 ? truncateHistoryByBudget(request.history, budget) : []
   );

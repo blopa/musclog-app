@@ -14,7 +14,7 @@
 | Allowance a photo costs                  | about $0.0007 to $0.0009 (0.04% to 0.05% of a $1.75 monthly cap)                           | estimate in the 2026-11-23 session                                   | **No.** Assumes the model bills an image as roughly pixels / 750 input tokens and 1,050 output tokens.         |
 | Consent version                          | 3 (names meal photos)                                                                      | `utils/premium/premiumConsent.ts`                                    | n/a                                                                                                            |
 
-The photo quality picker and the resize step apply to **every** provider, not just Iron (`utils/aiImage.ts`, applied in `generateWithImageStructured`). The benchmark below is about Iron's model, but its resolution findings also decide the default tier for own-key and free-tier photos.
+The photo quality picker and the resize step apply to **every** provider, not just Iron (`utils/aiImage.ts`, applied in `prepareMealImages` before `generateWithImagesStructured`). The benchmark below is about Iron's model, but its resolution findings also decide the default tier for own-key and free-tier photos.
 
 ## 2. What the benchmark would settle
 

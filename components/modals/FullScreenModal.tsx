@@ -13,7 +13,7 @@ import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { footerClearance, scrollCueBottom } from '@/components/modals/footerClearance';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
-import { useScrollFade } from '@/hooks/useScrollFade';
+import { type ScrollCueVariant, useScrollFade } from '@/hooks/useScrollFade';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -40,11 +40,13 @@ type FullScreenModalProps = {
    */
   confettiWithLoggy?: boolean;
   /**
-   * Shows the "more below" cue (a fade into the surface and a chevron that scrolls to the end)
-   * while the body runs past the screen. It sits above the footer. Off by default: most modals
-   * are short, and a cue on all of them would be noise.
+   * The "more below" cue (a fade into the surface and a chevron that scrolls to the end), shown
+   * only while the body runs past the screen and is not yet scrolled to the end. It sits above the
+   * footer. Every scrolling body gets the `subtle` one (a short fade and a small chevron) unless it
+   * asks for `full` (a screen whose point is below the fold, the Iron paywall) or `none`. A body
+   * with `scrollable={false}` scrolls itself, so it draws its own cue (What's new) or none.
    */
-  scrollCue?: boolean;
+  scrollCue?: ScrollCueVariant | 'none';
   /** Drawn over the whole body, footer included (a blocking loader). Taps on it are swallowed. */
   overlay?: ReactNode;
 };
@@ -64,7 +66,7 @@ export function FullScreenModal({
   scrollViewRef,
   showConfetti = false,
   confettiWithLoggy = true,
-  scrollCue = false,
+  scrollCue = 'subtle',
   overlay,
 }: FullScreenModalProps) {
   const { t } = useTranslation();
@@ -73,8 +75,10 @@ export function FullScreenModal({
   const ownScrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const bodyRef = scrollViewRef ?? ownScrollRef;
   const { scrollProps, FadeIndicator } = useScrollFade(
-    bodyRef as unknown as RefObject<ScrollViewInstance | null>
+    bodyRef as unknown as RefObject<ScrollViewInstance | null>,
+    scrollCue === 'full' ? 'full' : 'subtle'
   );
+  const showsScrollCue = scrollable && scrollCue !== 'none';
   // Everything but the ref, which the body already has.
   const { ref: _cueRef, ...scrollHandlers } = scrollProps;
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
@@ -175,7 +179,7 @@ export function FullScreenModal({
             {scrollable ? (
               <KeyboardAwareScrollView
                 ref={bodyRef}
-                {...(scrollCue ? scrollHandlers : {})}
+                {...(showsScrollCue ? scrollHandlers : {})}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
                 style={webScrollViewStyle}
@@ -198,8 +202,18 @@ export function FullScreenModal({
               </View>
             )}
 
-            {/* "more below" cue, above the footer that floats over the body */}
-            {scrollCue ? (
+            {/* optional footer */}
+            {footer ? (
+              <BottomButtonWrapper onHeightChange={setFooterHeight}>
+                {footer}
+                <View style={{ height: theme.spacing.margin.base }} />
+              </BottomButtonWrapper>
+            ) : null}
+
+            {/* "more below" cue, ending where the footer's button begins. Drawn after the footer so the
+                chevron, which reaches into the footer's see-through top padding, stays tappable;
+                the fade itself ignores touches. */}
+            {showsScrollCue ? (
               <View
                 pointerEvents="box-none"
                 style={{
@@ -212,14 +226,6 @@ export function FullScreenModal({
               >
                 {FadeIndicator}
               </View>
-            ) : null}
-
-            {/* optional footer */}
-            {footer ? (
-              <BottomButtonWrapper onHeightChange={setFooterHeight}>
-                {footer}
-                <View style={{ height: theme.spacing.margin.base }} />
-              </BottomButtonWrapper>
             ) : null}
 
             {overlay ? (

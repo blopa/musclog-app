@@ -177,6 +177,31 @@ describe('coachReplyStream', () => {
       expect(events[0]).toMatchObject({ type: 'saved', viewed: true });
     });
 
+    it('says it is double-checking while a reviewed reply has no text yet', async () => {
+      mockSendCoachMessage.mockImplementation(
+        async (_c: unknown, _h: unknown, _t: unknown, _x: unknown, stream: CoachStream) => {
+          stream.onPhase?.('reviewing');
+          stream.onText('Checked.');
+          // A late phase call after text arrived changes nothing.
+          stream.onPhase?.('reviewing');
+          return { msg4User: 'Checked.', sumMsg: 'Checked.' };
+        }
+      );
+      const seen: { text: string; phase?: string }[] = [];
+      const unsubscribeSnapshot = subscribeCoachReply(() => {
+        const snapshot = getCoachReplySnapshot();
+        if (snapshot) {
+          seen.push({ text: snapshot.text, phase: snapshot.phase });
+        }
+      });
+
+      await startCoachReply(chatJob());
+      unsubscribeSnapshot();
+
+      expect(seen).toContainEqual({ text: '', phase: 'reviewing' });
+      expect(seen.filter((entry) => entry.text !== '' && entry.phase)).toEqual([]);
+    });
+
     it('writes one reply at a time', async () => {
       let finish: (value: unknown) => void = () => {};
       mockSendCoachMessage.mockReturnValue(new Promise((resolve) => (finish = resolve)));

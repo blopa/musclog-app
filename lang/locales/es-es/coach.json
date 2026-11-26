@@ -5,6 +5,7 @@
     "you": "Tú",
     "status": "En línea",
     "statusOffline": "Desconectado",
+    "statusOnDevice": "IA en el dispositivo",
     "context": {
       "general": "General",
       "exercise": "Fitness",
@@ -165,6 +166,7 @@
         "errorUnsafe": "Ese texto no se puede usar. Prueba a describir la voz con palabras más sencillas.",
         "errorImage": "No se pudo cargar esa imagen."
       }
-    }
+    },
+    "reviewingReply": "Repaso mi respuesta…"
   }
 }

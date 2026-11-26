@@ -5,6 +5,7 @@
     "you": "Tu",
     "status": "Online",
     "statusOffline": "Offline",
+    "statusOnDevice": "IA sul dispositivo",
     "context": {
       "general": "Generale",
       "exercise": "Allenamento",
@@ -165,6 +166,7 @@
         "errorUnsafe": "Questo testo non può essere usato. Prova a descrivere il modo di parlare con parole più semplici.",
         "errorImage": "Impossibile caricare quell'immagine."
       }
-    }
+    },
+    "reviewingReply": "Ricontrollo la mia risposta…"
   }
 }

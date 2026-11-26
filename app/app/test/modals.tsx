@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MealPhotoDetailsModal } from '@/components/camera/MealPhotoDetailsModal';
 import { useHasCamera } from '@/components/CameraView';
 import { CycleDaySheet } from '@/components/cycle/CycleDaySheet';
 import { AddExerciseModal } from '@/components/modals/AddExerciseModal';
@@ -11,6 +12,7 @@ import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { AddMealModal } from '@/components/modals/AddMealModal';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { AIBehaviorSettingsModal } from '@/components/modals/AIBehaviorSettingsModal';
 import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
 import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
@@ -105,8 +107,34 @@ import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { PremiumFixtureContext } from '@/hooks/usePremium';
 import { localDayStartMs } from '@/utils/calendarDate';
+import {
+  EMPTY_MEAL_PHOTO_DRAFT,
+  MAX_MEAL_PHOTOS,
+  mealPhotoDraftReducer,
+} from '@/utils/mealPhotoDraft';
 
 const TEST_WORKOUT_METADATA_NOW = Date.now();
+
+// Three different bundled images stand in for cropped meal photos.
+const MEAL_PHOTO_FIXTURE_URIS = [
+  require('@/assets/nutrition-tracking.png'),
+  require('@/assets/app-screenshot.png'),
+  require('@/assets/camera-widget.png'),
+].flatMap((asset: unknown) => {
+  // Web bundles an image as a URL (or {uri}); native needs resolveAssetSource.
+  if (typeof asset === 'string') {
+    return [asset];
+  }
+
+  if (asset && typeof asset === 'object' && 'uri' in asset && typeof asset.uri === 'string') {
+    return [asset.uri];
+  }
+
+  const resolved =
+    typeof asset === 'number' ? Image.resolveAssetSource?.(asset as number) : undefined;
+
+  return resolved?.uri ? [resolved.uri] : [];
+});
 
 export default function ModalsTestScreen() {
   // Menstrual cycle data for CycleSettingsModal
@@ -144,6 +172,7 @@ export default function ModalsTestScreen() {
   const [isAppBehaviorSettingsVisible, setIsAppBehaviorSettingsVisible] = useState(false);
   // AI Settings Modal
   const [isAiSettingsVisible, setIsAiSettingsVisible] = useState(false);
+  const [isAiBehaviorVisible, setIsAiBehaviorVisible] = useState(false);
   const [isAiNotConfiguredVisible, setIsAiNotConfiguredVisible] = useState(false);
   // Filter Workouts Modal
   const [isFilterWorkoutsVisible, setIsFilterWorkoutsVisible] = useState(false);
@@ -195,6 +224,13 @@ export default function ModalsTestScreen() {
   const [isExternalWorkoutPlanVisible, setIsExternalWorkoutPlanVisible] = useState(false);
   const [isExternalFoodLogVisible, setIsExternalFoodLogVisible] = useState(false);
   const [isThirdPartyNoticesVisible, setIsThirdPartyNoticesVisible] = useState(false);
+  // Meal Photo Details Modal: three local photos and a name, as after a few crops.
+  const [isMealPhotoDetailsVisible, setIsMealPhotoDetailsVisible] = useState(false);
+  const [mealPhotoDraft, dispatchMealPhotoDraft] = useReducer(mealPhotoDraftReducer, {
+    ...EMPTY_MEAL_PHOTO_DRAFT,
+    photos: MEAL_PHOTO_FIXTURE_URIS,
+    name: 'Chicken and rice',
+  });
   // Premium Modal: the id of the state to render, null while closed.
   const [premiumFixtureId, setPremiumFixtureId] = useState<string | null>(null);
 
@@ -481,6 +517,13 @@ export default function ModalsTestScreen() {
             />
             <View className="h-3" />
             <Button
+              label="Open AI Behavior Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAiBehaviorVisible(true)}
+            />
+            <View className="h-3" />
+            <Button
               label="Open AI Not Configured Modal"
               variant="outline"
               width="full"
@@ -707,6 +750,22 @@ export default function ModalsTestScreen() {
               variant="outline"
               width="full"
               onPress={() => setIsThirdPartyNoticesVisible(true)}
+            />
+          </View>
+
+          {/* Meal Photo Details Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Meal Photo Details Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              The sheet after cropping a meal photo: the photos so far and optional questions.
+            </Text>
+            <Button
+              label="Open Meal Photo Details Modal"
+              variant="outline"
+              width="full"
+              onPress={() => setIsMealPhotoDetailsVisible(true)}
             />
           </View>
 
@@ -2224,6 +2283,11 @@ export default function ModalsTestScreen() {
         onOpenAiModelPress={() => console.log('OpenAI model pressed')}
       />
 
+      <AIBehaviorSettingsModal
+        visible={isAiBehaviorVisible}
+        onClose={() => setIsAiBehaviorVisible(false)}
+      />
+
       <AINotConfiguredModal
         visible={isAiNotConfiguredVisible}
         onClose={() => setIsAiNotConfiguredVisible(false)}
@@ -2521,6 +2585,22 @@ export default function ModalsTestScreen() {
         visible={isRetrospectiveNutritionVisible}
         onClose={() => setIsRetrospectiveNutritionVisible(false)}
         targetDate={new Date()}
+      />
+
+      <MealPhotoDetailsModal
+        visible={isMealPhotoDetailsVisible}
+        draft={mealPhotoDraft}
+        dispatch={dispatchMealPhotoDraft}
+        photoLimit={MAX_MEAL_PHOTOS}
+        onAddPhoto={() =>
+          dispatchMealPhotoDraft({
+            type: 'addPhoto',
+            uri: `${MEAL_PHOTO_FIXTURE_URIS[0]}?extra=${mealPhotoDraft.photos.length}`,
+            limit: MAX_MEAL_PHOTOS,
+          })
+        }
+        onEstimate={() => setIsMealPhotoDetailsVisible(false)}
+        onDiscard={() => setIsMealPhotoDetailsVisible(false)}
       />
 
       <AINutritionTrackingContextModal

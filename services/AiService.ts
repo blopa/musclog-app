@@ -2,12 +2,16 @@ import { AI_PROVIDER_KINDS } from '@/constants/ai';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
-import { refreshOnDeviceStatus } from '@/services/localModels/onDeviceStatusStore';
+import {
+  getOnDeviceStatusSnapshot,
+  refreshOnDeviceStatus,
+} from '@/services/localModels/onDeviceStatusStore';
 import { getSessionGrant, hostedAiBaseUrl } from '@/services/premium/premiumService';
 import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import { PREMIUM_CONSENT_VERSION } from '@/utils/premium/premiumConsent';
 import { isPremiumUiEnabled } from '@/utils/premium/premiumUiFlag';
 
 /**
@@ -116,12 +120,16 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
       const model = 'musclog-hosted';
 
       if (baseUrl && grant?.ok) {
+        const consentVersion = await SettingsService.get(SETTINGS.premiumConsentVersion);
         return {
           provider: 'hosted',
           // The OpenAI SDK appends `/chat/completions` to this, and the Worker serves it under
           // `/v1`: the bare host answered 404 on the first real Premium chat.
           baseUrl: `${baseUrl.replace(/\/+$/, '')}/v1`,
           apiKey: grant.value.sessionToken,
+          ...(consentVersion === PREMIUM_CONSENT_VERSION
+            ? { hostedConsentVersion: consentVersion }
+            : {}),
           model,
           language,
         };
@@ -147,7 +155,8 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
   'on-device': async () =>
     (await SettingsService.getUseOnDeviceAi())
       ? async (language) => {
-          const status = await refreshOnDeviceStatus();
+          const snapshot = getOnDeviceStatusSnapshot();
+          const status = snapshot.initialized ? snapshot : await refreshOnDeviceStatus();
 
           return {
             provider: 'on-device',

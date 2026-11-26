@@ -1,4 +1,5 @@
 import { consoleLogger, type Logger } from './log';
+import { sentryLogger } from './logReport';
 import type { Env } from './env';
 import type { OpenRouterClient, OtariClient, RevenueCatClient } from './upstream/types';
 import { createOpenRouterClient } from './upstream/openrouter';
@@ -38,7 +39,7 @@ export function defaultDeps(env: Env, config: AiConfig): Deps {
     otari: env.OTARI_API_KEY
       ? createOtariClient({ baseUrl: env.OTARI_BASE_URL, apiKey: env.OTARI_API_KEY })
       : null,
-    log: consoleLogger(0.1),
+    log: sentryLogger(consoleLogger(0.1)),
     now: () => Date.now(),
     randomHex: () => randomHex(),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),

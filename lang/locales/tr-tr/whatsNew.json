@@ -272,24 +272,108 @@
       },
       "v2_18_0": {
         "onDeviceAi": {
-          "title": "Telefonunuzda çalışan yapay zeka",
-          "description": "Musclog koçu artık tamamen bu telefonda çalışabilir. Yazdığınız hiçbir şey cihazdan ayrılmaz ve çevrimdışı çalışır. Ücretsizdir, hesap ya da anahtar gerektirmez.",
+          "title": "Musclog'un yapay zekâsı artık telefonunuzda çalışıyor",
+          "description": "Musclog'un yapay zekâsındaki şimdiye kadarki en büyük değişiklik bu. Koç artık tamamen bu telefonda çalışabiliyor: yazdıklarınız ve çektiğiniz fotoğraflar hiçbir yere gönderilmiyor, uçak modunda da çalışmaya devam ediyor ve hiçbir maliyeti yok.",
           "action": {
-            "label": "Bu telefonda yapay zekayı kur",
-            "description": "Apple Intelligence'ı ya da indirilen küçük bir modeli seç."
+            "label": "Bu telefonda yapay zekâyı kur",
+            "description": "Apple Intelligence veya bir kez indireceğiniz küçük bir model seçin."
           },
           "items": {
             "private": {
-              "label": "Telefonunda kalır",
-              "description": "Mesajlarınız cihazda yanıtlanır, asla bir sunucuya gönderilmez."
+              "label": "Telefonunuzda kalır",
+              "description": "Mesajlarınız ve öğün fotoğraflarınız cihazda yanıtlanır, hiçbir sunucuya gönderilmez."
             },
             "offline": {
               "label": "Çevrimdışı çalışır",
-              "description": "Tek seferlik bir indirmeden sonra bağlantı gerekmez."
+              "description": "Tek seferlik indirmeden sonra bağlantı gerekmez. Fotoğraflar için bile."
             },
+            "free": {
+              "label": "Ücretsiz, sonsuza kadar",
+              "description": "Hesap, API anahtarı ya da abonelik yok. Telefonunuzda çalıştığı için kimseye maliyeti olmaz."
+            }
+          }
+        },
+        "photos": {
+          "title": "Kameranızı öğününüze çevirin",
+          "description": "İndirmeye fotoğraf anlamayı da eklerseniz model bir öğün fotoğrafına bakabilir, gördüğü yiyecekleri adlandırabilir ve tabakta her birinden ne kadar olduğunu tahmin edebilir. Hepsi telefonda, çevrimdışıyken bile.",
+          "items": {
+            "realNumbers": {
+              "label": "Önce kendi besin verileriniz",
+              "description": "Modelden kalori istenmiyor. Adını andığı bir yiyecek Musclog'da zaten varsa o değerler kullanılır. Diğer her şey adına göre tahmin edilir, bu yüzden bunları önce kontrol edin."
+            },
+            "review": {
+              "label": "Siz onaylamadan hiçbir şey kaydedilmez",
+              "description": "Her yiyecek ve her gram miktarı, günlüğünüze eklenmeden önce düzenleyebileceğiniz bir incelemede açılır."
+            },
+            "where": {
+              "label": "Kamerada ve koçta",
+              "description": "Kameradan Yapay zekâ öğünü'nü kullanın ya da koçun Öğünü takip et özelliğine bir fotoğraf ekleyin."
+            }
+          }
+        },
+        "honest": {
+          "title": "Küçük, o yüzden işini kontrol edin",
+          "description": "Bir telefona sığması için bu model, bulut sohbet robotlarının arkasındaki yapay zekâya kıyasla çok küçük. Yiyecekleri yanlış adlandırabilir, porsiyonları yanlış tahmin edebilir ve zaman zaman yanlış tavsiye verebilir. Onu bir beslenme uzmanı değil, kayıt tutmanızı hatırlatan bir yoldaş gibi görün: sonuçları siz kontrol edersiniz ve sayılardan siz sorumlusunuz.",
+          "items": {
+            "check": {
+              "label": "Her sonucu kontrol edin",
+              "description": "Kaydetmeden önce her yiyeceği ve miktarı okuyun, yanlış olanları düzeltin. Birkaç saniye sürer ve günlüğünüzü dürüst tutar."
+            },
+            "language": {
+              "label": "En iyi sonuçları İngilizcede verir",
+              "description": "En iyi yanıtları İngilizcede ve birkaç başka dilde verir. Sizin dilinizde yanıtlar daha zayıf olabilir."
+            },
+            "stronger": {
+              "label": "Daha güçlü bir model mi lazım?",
+              "description": "Kendi API anahtarınızı ya da Musclog Iron'u Ayarlar → YZ bölümünden kullanın. İkisi de isteğinizi bulutta çok daha büyük bir modele gönderir."
+            }
+          }
+        },
+        "mealCamera": {
+          "title": "Yemek fotoğrafınıza daha fazlasını ekleyin",
+          "description": "Fotoğraf çektikten sonra aynı yemeğin en fazla 5 fotoğrafını ekleyebilir ve tahmin yapılmadan önce Musclog'a biraz daha bilgi verebilirsiniz. Eklediğiniz her şey isteğe bağlıdır.",
+          "flow": {
+            "title": "Yapay zekâ yemek kamerası nasıl çalışır",
+            "description": "Bunu istediğiniz zaman Ayarlar → Yapay zekâ davranışı bölümünden değiştirebilirsiniz.",
+            "detailed": {
+              "label": "Ayrıntılı",
+              "description": "Tahmin yapmadan önce fotoğraflarınızı gözden geçirin ve ayrıntı ekleyin."
+            },
+            "quick": {
+              "label": "Hızlı",
+              "description": "Eskisi gibi, fotoğraftan hemen sonra tahmin yapın."
+            }
+          },
+          "items": {
             "photos": {
-              "label": "Yemek fotoğrafları",
-              "description": "İndirilen model, bu kısmı dahil etmeyi seçersen yemeğinin fotoğrafını okuyabilir."
+              "label": "Bir yemeğin en fazla 5 fotoğrafı",
+              "description": "Tahmin yapmadan önce başka bir açı veya yakın çekim ekleyin. Hepsi tek bir yemek olarak birlikte gönderilir; bu yüzden iki fotoğrafta görünen bir besin yalnızca bir kez sayılır. Daha az fotoğraf kabul eden bir sağlayıcı bu sayıyı sınırlar."
+            },
+            "details": {
+              "label": "Fotoğrafın gösteremediklerini anlatın",
+              "description": "Bir ad, \"yarısını yedim, sossuz\" gibi bir not, yemeğin evde mi yoksa restoranda mı yapıldığı ve yağ ya da tereyağı eklenip eklenmediği bilgisini ekleyin."
+            },
+            "cover": {
+              "label": "İlk fotoğraf saklanır",
+              "description": "Kaydedilen yemekle yalnızca ilk fotoğraf kaydedilir. Diğerleri yalnızca tahmin için kullanılır."
+            }
+          }
+        },
+        "thinking": {
+          "title": "Yapay zekâ daha çok düşünsün",
+          "description": "Yeni bir ayar, yapay zekânın yanıtlamadan önce kendi işini kontrol etmesini sağlar. Kapalı en hızlısı; Tokenmaxxing en yavaş ve en kapsamlı olanıdır.",
+          "items": {
+            "levels": {
+              "label": "Ne kadar düşüneceğini seçin",
+              "description": "Kapalı, Orta, Yüksek veya Tokenmaxxing, Ayarlar → Yapay zekâ davranışı bölümünde. Her basamak yükseldikçe yanıtı kontrol etmek için daha fazla istek yapılır."
+            },
+            "checks": {
+              "label": "Kod yanıtları denetler",
+              "description": "Öğünler birkaç kez okunup karşılaştırılır; planlar ve analizler kendi sayılarınızla denetlenir."
+            },
+            "cost": {
+              "label": "Daha yavaş ve daha pahalı",
+              "description": "Musclog Iron'da aylık kotanızdan daha fazla harcar; ücretsiz Musclog AI ise her zaman Kapalı düzeyde yanıtlar. Yanıtları ne kadar iyileştirdiğini henüz ölçmedik."
             }
           }
         }

@@ -42,11 +42,6 @@ type WitMotionBleEvents = {
 
 type WitMotionBleModule = WitMotionNativeModule & EventEmitterType<WitMotionBleEvents>;
 
-const nativeModule =
-  Platform.OS === 'web' ? null : requireOptionalNativeModule<WitMotionBleModule>('WitMotionBle');
-
-const emitter = nativeModule;
-
 function cloneDevice(device: WitMotionDevice | null): WitMotionDevice | null {
   if (!device) {
     return null;
@@ -135,9 +130,28 @@ class WitMotionClient implements WitMotionActionApi {
     this.emit();
   }
 
-  constructor() {
-    if (emitter) {
-      emitter.addListener('onStateChanged', (nextState: WitMotionState) => {
+  /** `undefined` until a screen first needs the sensor; `null` where there is no native module. */
+  private native: WitMotionBleModule | null | undefined = undefined;
+
+  /**
+   * Fetches the native module and starts listening to it, the first time a screen needs the
+   * sensor (a subscription or an action). Importing this file touches nothing native: the
+   * sensors are a rarely used feature, and the client used to wake the module at import, from
+   * screens that were only mounted (Settings, every workout session). See AGENTS.md.
+   */
+  private wake(): WitMotionBleModule | null {
+    if (this.native !== undefined) {
+      return this.native;
+    }
+
+    const nativeModule =
+      Platform.OS === 'web'
+        ? null
+        : requireOptionalNativeModule<WitMotionBleModule>('WitMotionBle');
+    this.native = nativeModule;
+
+    if (nativeModule) {
+      nativeModule.addListener('onStateChanged', (nextState: WitMotionState) => {
         this.replaceState({
           ...DEFAULT_STATE,
           ...nextState,
@@ -146,7 +160,7 @@ class WitMotionClient implements WitMotionActionApi {
         });
       });
 
-      emitter.addListener('onDataBatch', (batch: WitMotionDataBatch) => {
+      nativeModule.addListener('onDataBatch', (batch: WitMotionDataBatch) => {
         // Notify per-packet subscribers before merging so they see every sample.
         for (const cb of this.batchCallbacks) {
           cb(batch);
@@ -175,7 +189,12 @@ class WitMotionClient implements WitMotionActionApi {
         discoveredDevices: nextState.discoveredDevices?.map((device) => ({ ...device })) ?? [],
       });
     });
+
+    return nativeModule;
   }
+
+  /** Whether a screen has already woken the native module in this run of the app. */
+  isAwake = (): boolean => this.native !== undefined;
 
   private emit() {
     for (const listener of this.listeners) {
@@ -203,6 +222,7 @@ class WitMotionClient implements WitMotionActionApi {
   }
 
   onBatch = (callback: (batch: WitMotionDataBatch) => void): (() => void) => {
+    this.wake();
     this.batchCallbacks.add(callback);
     return () => {
       this.batchCallbacks.delete(callback);
@@ -210,6 +230,7 @@ class WitMotionClient implements WitMotionActionApi {
   };
 
   subscribe = (listener: () => void) => {
+    this.wake();
     this.listeners.add(listener);
     return () => {
       this.listeners.delete(listener);
@@ -219,6 +240,7 @@ class WitMotionClient implements WitMotionActionApi {
   getSnapshot = () => this.state;
 
   requestPermissions = async () => {
+    const nativeModule = this.wake();
     if (Platform.OS === 'web') {
       return true;
     }
@@ -254,6 +276,7 @@ class WitMotionClient implements WitMotionActionApi {
   };
 
   startScan = async (options: WitMotionScanOptions = {}) => {
+    const nativeModule = this.wake();
     if (nativeModule) {
       return nativeModule.startScan(options);
     }
@@ -262,11 +285,13 @@ class WitMotionClient implements WitMotionActionApi {
     return false;
   };
 
+  // Stopping or disconnecting never wakes the module: if no screen woke it, nothing is running.
   stopScan = () => {
-    nativeModule?.stopScan();
+    this.native?.stopScan();
   };
 
   connect = async (deviceOrId: string | WitMotionDevice) => {
+    const nativeModule = this.wake();
     const deviceId = typeof deviceOrId === 'string' ? deviceOrId : deviceOrId.id;
     const connected = nativeModule ? await nativeModule.connect(deviceId) : null;
 
@@ -285,6 +310,7 @@ class WitMotionClient implements WitMotionActionApi {
   };
 
   disconnect = async () => {
+    const nativeModule = this.native;
     if (nativeModule) {
       const result = nativeModule.disconnect();
       this.setState({
@@ -309,38 +335,47 @@ class WitMotionClient implements WitMotionActionApi {
   };
 
   reset = async () => {
+    const nativeModule = this.wake();
     await nativeModule?.reset();
   };
 
   setOutputRate = async (value: 1 | 5 | 10 | 50 | 100 | 200) => {
+    const nativeModule = this.wake();
     await nativeModule?.setOutputRate(value);
   };
 
   setBandwidth = async (value: 5 | 10 | 20 | 42 | 98 | 188) => {
+    const nativeModule = this.wake();
     await nativeModule?.setBandwidth(value);
   };
 
   setAngleZero = async () => {
+    const nativeModule = this.wake();
     await nativeModule?.setAngleZero();
   };
 
   startMagCalibration = async () => {
+    const nativeModule = this.wake();
     await nativeModule?.startMagCalibration();
   };
 
   stopMagCalibration = async () => {
+    const nativeModule = this.wake();
     await nativeModule?.stopMagCalibration();
   };
 
   requestMagneticField = async () => {
+    const nativeModule = this.wake();
     await nativeModule?.requestMagneticField();
   };
 
   requestBattery = async () => {
+    const nativeModule = this.wake();
     await nativeModule?.requestBattery();
   };
 
   sendRawCommand = async (bytes: number[], persist = false) => {
+    const nativeModule = this.wake();
     await nativeModule?.sendRawCommand(bytes, persist);
   };
 }

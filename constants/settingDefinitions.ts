@@ -9,6 +9,8 @@ import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
   AI_IMAGE_QUALITY_SETTING_TYPE,
+  AI_MEAL_CAMERA_FLOW_SETTING_TYPE,
+  type AiMealCameraFlow,
   ANIMATED_LOGGY_SETTING_TYPE,
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
@@ -37,6 +39,7 @@ import {
   type HomeHeatmaps,
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
   ON_DEVICE_ENGINE_SETTING_TYPE,
+  parseAiMealCameraFlow,
   parseAppLockScopes,
   parseCycleNotificationStyle,
   parseEnergyUnit,
@@ -60,6 +63,7 @@ import {
   SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_LOGGY_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
+  USE_THINKING_MODE_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
@@ -67,6 +71,7 @@ import {
   YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
 } from '@/constants/settings';
 import { type AiImageTier, parseAiImageTier } from '@/utils/aiImagePlan';
+import { parseThinkingLevel, type ThinkingLevel } from '@/utils/aiThinkingLevel';
 import {
   type ComebackState,
   parseComebackState,
@@ -120,6 +125,12 @@ export const SETTINGS = {
   claudeModel: textSetting(CLAUDE_MODEL_SETTING_TYPE),
   enableClaude: booleanSetting(ENABLE_CLAUDE_SETTING_TYPE, true),
   useHostedAi: booleanSetting(USE_HOSTED_AI_SETTING_TYPE, false),
+  /**
+   * How hard the AI thinks (`utils/aiThinkingLevel.ts`). Kept under the key of the old "Use thinking
+   * mode" switch, whose `'true'` reads as `medium`; read it for a request through
+   * `effectiveThinkingLevel`, never raw.
+   */
+  thinkingLevel: choiceSetting<ThinkingLevel>(USE_THINKING_MODE_SETTING_TYPE, parseThinkingLevel),
   /** How much detail a photo keeps on its way to any AI provider; unknown values read as the default. */
   aiImageQuality: choiceSetting<AiImageTier>(AI_IMAGE_QUALITY_SETTING_TYPE, parseAiImageTier),
   /** Which engine answers when on-device AI is on; resolve it with `resolveOnDeviceEngine`. */
@@ -202,6 +213,10 @@ export const SETTINGS = {
   foodDiaryCompact: booleanSetting(FOOD_DIARY_COMPACT_SETTING_TYPE, false),
   animatedLoggy: booleanSetting(ANIMATED_LOGGY_SETTING_TYPE, true),
   showLoggy: booleanSetting(SHOW_LOGGY_SETTING_TYPE, true),
+  aiMealCameraFlow: choiceSetting<AiMealCameraFlow>(
+    AI_MEAL_CAMERA_FLOW_SETTING_TYPE,
+    parseAiMealCameraFlow
+  ),
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping

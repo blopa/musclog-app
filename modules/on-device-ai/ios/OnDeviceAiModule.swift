@@ -40,7 +40,7 @@ public class OnDeviceAiModule: Module {
 
     // Off the shared module queue: hashing hundreds of MB must not hold up other native calls.
     AsyncFunction("sha256File") { (path: String) throws -> String in
-      let url = URL(fileURLWithPath: OnDeviceAiModule.plainPath(path))
+      let url = OnDeviceAiModule.fileURL(path)
       let handle: FileHandle
       do {
         handle = try FileHandle(forReadingFrom: url)
@@ -61,7 +61,7 @@ public class OnDeviceAiModule: Module {
     }.runOnQueue(DispatchQueue.global(qos: .utility))
 
     AsyncFunction("setExcludedFromBackup") { (path: String) throws -> Bool in
-      var url = URL(fileURLWithPath: OnDeviceAiModule.plainPath(path))
+      var url = OnDeviceAiModule.fileURL(path)
       var values = URLResourceValues()
       values.isExcludedFromBackup = true
       try url.setResourceValues(values)
@@ -69,12 +69,19 @@ public class OnDeviceAiModule: Module {
     }.runOnQueue(DispatchQueue.global(qos: .utility))
   }
 
-  /// JS passes `file://` URIs (what expo-file-system uses); the file APIs here want a plain path.
-  private static func plainPath(_ path: String) -> String {
-    if path.hasPrefix("file://"), let url = URL(string: path) {
-      return url.path
+  /// JS usually passes `file://` URIs (what expo-file-system uses), though plain paths also work.
+  private static func fileURL(_ pathOrUri: String) -> URL {
+    if pathOrUri.hasPrefix("file://") {
+      if let url = URL(string: pathOrUri), url.isFileURL {
+        return url
+      }
+      var stripped = String(pathOrUri.dropFirst("file://".count))
+      if stripped.hasPrefix("localhost/") {
+        stripped = String(stripped.dropFirst("localhost".count))
+      }
+      return URL(fileURLWithPath: stripped.removingPercentEncoding ?? stripped)
     }
-    return path
+    return URL(fileURLWithPath: pathOrUri)
   }
 
   private static func availabilityName() -> String {

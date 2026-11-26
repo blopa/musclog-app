@@ -7,6 +7,12 @@
       "processingNutrients": "Elaborazione dei nutrienti",
       "analyzingImage": "Analisi del codice a barre...",
       "processingData": "Elaborazione dei dati"
+    },
+    "unavailable": {
+      "title": "Fotocamera non disponibile",
+      "body": "La fotocamera non è riuscita ad avviarsi su questo telefono.",
+      "bodyWithGallery": "La fotocamera non è riuscita ad avviarsi su questo telefono. Puoi comunque scegliere una foto dalla galleria.",
+      "retry": "Riprova"
     }
   }
 }

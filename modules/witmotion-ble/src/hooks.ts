@@ -3,9 +3,20 @@ import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { witMotionClient } from './client';
 import type { WitMotionHookResult } from './types';
 
-function useWitMotionState(): WitMotionHookResult {
+const subscribeToNothing = () => () => undefined;
+
+export type UseWitMotionOptions = {
+  /**
+   * `false` keeps the native module asleep: the hook returns the idle state and does not
+   * subscribe. A screen that is only mounted (a hidden modal, a workout with no saved sensor)
+   * passes `false`; the actions still work and wake the module when called.
+   */
+  enabled?: boolean;
+};
+
+function useWitMotionState({ enabled = true }: UseWitMotionOptions = {}): WitMotionHookResult {
   const state = useSyncExternalStore(
-    witMotionClient.subscribe,
+    enabled ? witMotionClient.subscribe : subscribeToNothing,
     witMotionClient.getSnapshot,
     witMotionClient.getSnapshot
   );
@@ -32,8 +43,8 @@ function useWitMotionState(): WitMotionHookResult {
   );
 }
 
-export function useWitMotion(): WitMotionHookResult {
-  return useWitMotionState();
+export function useWitMotion(options?: UseWitMotionOptions): WitMotionHookResult {
+  return useWitMotionState(options);
 }
 
 export function useWitMotionScanner() {

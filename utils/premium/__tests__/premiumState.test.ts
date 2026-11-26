@@ -133,7 +133,7 @@ describe('parseHostedConfig', () => {
       acceptingNew: true,
       visionEnabled: false,
       reasoningEffort: false,
-      image: { maxPx: 1024, maxBytes: 500000, quality: 0.8 },
+      image: { maxPx: 1024, maxBytes: 500000, quality: 0.8, maxImages: 1, bodyMaxBytes: null },
       minAppVersion: '2.17.0',
     });
   });
@@ -161,7 +161,31 @@ describe('parseHostedConfig', () => {
   it("reads the Worker's whole-percent JPEG quality as a 0 to 1 fraction", () => {
     expect(
       parseHostedConfig({ ...good, image: { maxPx: 1568, maxBytes: 400000, quality: 85 } })?.image
-    ).toEqual({ maxPx: 1568, maxBytes: 400000, quality: 0.85 });
+    ).toEqual({
+      maxPx: 1568,
+      maxBytes: 400000,
+      quality: 0.85,
+      maxImages: 1,
+      bodyMaxBytes: null,
+    });
+  });
+
+  it('reads maxImages and bodyMaxBytes from the image object', () => {
+    const image = { maxPx: 1, maxBytes: 2, quality: 50, maxImages: 5, bodyMaxBytes: 1048576 };
+
+    expect(parseHostedConfig({ ...good, image })?.image).toMatchObject({
+      maxImages: 5,
+      bodyMaxBytes: 1048576,
+    });
+  });
+
+  it.each([[0], [-2], [2.5], ['5'], [null]])('defaults maxImages for garbage %p', (garbage) => {
+    const image = { maxPx: 1, maxBytes: 2, quality: 50, maxImages: garbage, bodyMaxBytes: garbage };
+
+    expect(parseHostedConfig({ ...good, image })?.image).toMatchObject({
+      maxImages: 1,
+      bodyMaxBytes: null,
+    });
   });
 
   it('maps a null image to null', () => {
@@ -176,7 +200,13 @@ describe('parseHostedConfig', () => {
     });
 
     expect(parsed).not.toHaveProperty('surprise');
-    expect(parsed?.image).toEqual({ maxPx: 1, maxBytes: 2, quality: 0.5 });
+    expect(parsed?.image).toEqual({
+      maxPx: 1,
+      maxBytes: 2,
+      quality: 0.5,
+      maxImages: 1,
+      bodyMaxBytes: null,
+    });
   });
 
   it('treats non-true accepting_new and vision_enabled as false', () => {

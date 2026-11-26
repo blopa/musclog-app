@@ -12,6 +12,43 @@ import { getProductName } from '@/utils/openFoodFactsMapper';
 
 import { FoodPortionService } from './FoodPortionService';
 
+const LIKE_WILDCARD_PATTERN = /[\\%_]/;
+
+function splitSafeLikeChunks(term: string): string[] {
+  return term.split(/[\\%_]+/).filter(Boolean);
+}
+
+function buildFieldLikeCondition(field: 'name' | 'description', chunks: readonly string[]) {
+  if (chunks.length === 1) {
+    return Q.where(field, Q.like(`%${chunks[0]}%`));
+  }
+
+  return Q.and(...chunks.map((chunk) => Q.where(field, Q.like(`%${chunk}%`))));
+}
+
+function buildTermSearchCondition(term: string, includeDescription: boolean) {
+  const chunks = splitSafeLikeChunks(term);
+  if (chunks.length === 0) {
+    return null;
+  }
+
+  const nameCondition = buildFieldLikeCondition('name', chunks);
+  if (!includeDescription) {
+    return nameCondition;
+  }
+
+  return Q.or(nameCondition, buildFieldLikeCondition('description', chunks));
+}
+
+function matchesSearchTerm(food: Food, term: string, includeDescription: boolean): boolean {
+  const needle = term.toLowerCase();
+  if (food.name.toLowerCase().includes(needle)) {
+    return true;
+  }
+
+  return Boolean(includeDescription && food.description?.toLowerCase().includes(needle));
+}
+
 export class FoodService {
   /**
    * Create a new food from V3 product details
@@ -466,17 +503,71 @@ export class FoodService {
   }
 
   /**
-   * Search foods by name
+   * Search foods by name. With `includeDescription` a food also matches on its description: the
+   * bundled USDA foundation foods carry a generic description ("Lettuce, leaf, green, raw") under
+   * a product-like name, which is what an ingredient name should be compared with. Every other
+   * caller keeps the name-only search. Without `limit` every match is returned.
    */
-  static async searchFoods(searchTerm: string): Promise<Food[]> {
+  static async searchFoods(
+    searchTerm: string,
+    options: { includeDescription?: boolean; limit?: number } = {}
+  ): Promise<Food[]> {
+    return FoodService.searchFoodsByTerms([searchTerm], options);
+  }
+
+  /**
+   * Batched food search across multiple terms, escaping SQL LIKE wildcards (`%`, `_`, `\`) safely
+   * across SQLite and LokiJS. One query per unique term, run in parallel, results merged and
+   * de-duplicated by id. `limit` applies PER TERM (name order, so the cut is stable and one term
+   * cannot starve another); without it every match is returned.
+   */
+  static async searchFoodsByTerms(
+    terms: readonly string[],
+    options: { includeDescription?: boolean; limit?: number } = {}
+  ): Promise<Food[]> {
     if (!database) {
       return [];
     }
 
-    return await database
-      .get<Food>('foods')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
-      .fetch();
+    const rawLimit = options.limit;
+    if (rawLimit !== undefined && (!Number.isFinite(rawLimit) || rawLimit <= 0)) {
+      return [];
+    }
+
+    const limit = rawLimit === undefined ? undefined : Math.floor(rawLimit);
+    const includeDescription = Boolean(options.includeDescription);
+    const uniqueTerms = [...new Set(terms.filter((term) => term.length > 0))];
+
+    const perTerm = await Promise.all(
+      uniqueTerms.map(async (term) => {
+        const condition = buildTermSearchCondition(term, includeDescription);
+        if (condition === null) {
+          return [];
+        }
+
+        const rows = await database
+          .get<Food>('foods')
+          .query(
+            Q.where('deleted_at', Q.eq(null)),
+            condition,
+            ...(limit === undefined ? [] : [Q.sortBy('name', Q.asc), Q.take(limit)])
+          )
+          .fetch();
+
+        return LIKE_WILDCARD_PATTERN.test(term)
+          ? rows.filter((food) => matchesSearchTerm(food, term, includeDescription))
+          : rows;
+      })
+    );
+
+    const byId = new Map<string, Food>();
+    for (const food of perTerm.flat()) {
+      if (!byId.has(food.id)) {
+        byId.set(food.id, food);
+      }
+    }
+
+    return [...byId.values()];
   }
 
   /**
@@ -710,6 +801,27 @@ export class FoodService {
     return await database
       .get<Food>('foods')
       .query(Q.where('source', 'foundation'), Q.where('deleted_at', Q.eq(null)), Q.take(limit))
+      .fetch();
+  }
+
+  /**
+   * Foundation foods in name order, up to `limit`: the set a meal estimate offers the model
+   * (`utils/foundationFoodList.ts` sorts again for a result that is the same on every adapter). The
+   * order in the query only makes the cut, if one is ever needed, the same one every time.
+   */
+  static async getFoundationFoodsSorted(limit: number): Promise<Food[]> {
+    if (!database) {
+      return [];
+    }
+
+    return await database
+      .get<Food>('foods')
+      .query(
+        Q.where('source', 'foundation'),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('name', Q.asc),
+        Q.take(limit)
+      )
       .fetch();
   }
 

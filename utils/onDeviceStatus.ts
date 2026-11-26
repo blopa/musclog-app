@@ -42,8 +42,12 @@ export type OnDeviceOptions = {
 };
 
 export type OnDeviceStatus = {
+  /** True once `refreshOnDeviceStatus()` has completed at least one probe. */
+  initialized: boolean;
   engine: OnDeviceEngine;
   state: OnDeviceStatusState;
+  /** Apple Intelligence status even when the active engine is `'gguf'`. */
+  appleState: OnDeviceStatusState;
   /** 0..1 while a download runs or is paused; null otherwise. */
   progress: number | null;
   capabilities: OnDeviceCapabilities;
@@ -52,6 +56,7 @@ export type OnDeviceStatus = {
 };
 
 export type OnDeviceStatusInput = {
+  initialized?: boolean;
   engine: OnDeviceEngine;
   appleAvailability: AppleAvailability;
   model: OnDeviceModelReading;
@@ -104,10 +109,13 @@ function modelProgress(state: LocalModelInstallState): number | null {
 
 export function deriveOnDeviceStatus(input: OnDeviceStatusInput): OnDeviceStatus {
   const isApple = input.engine === 'apple';
+  const resolvedAppleState = appleState(input.appleAvailability);
 
   return {
+    initialized: input.initialized ?? false,
     engine: input.engine,
-    state: isApple ? appleState(input.appleAvailability) : modelState(input.model, input.deviceOk),
+    state: isApple ? resolvedAppleState : modelState(input.model, input.deviceOk),
+    appleState: resolvedAppleState,
     progress: isApple ? null : modelProgress(input.model.state),
     capabilities: onDeviceCapabilities(input.engine, input.model.projectorInstalled),
     updateAvailable: !isApple && input.model.updateAvailable,

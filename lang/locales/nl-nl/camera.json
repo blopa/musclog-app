@@ -7,6 +7,12 @@
       "processingNutrients": "Voedingsstoffen verwerken",
       "analyzingImage": "Barcode analyseren...",
       "processingData": "Gegevens verwerken"
+    },
+    "unavailable": {
+      "title": "Camera niet beschikbaar",
+      "body": "De camera kon niet starten op deze telefoon.",
+      "bodyWithGallery": "De camera kon niet starten op deze telefoon. Je kunt wel nog een foto kiezen uit je galerij.",
+      "retry": "Probeer opnieuw"
     }
   }
 }

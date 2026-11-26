@@ -55,6 +55,8 @@ export interface CallOptions {
   key?: string | null;
   token?: string | null;
   headers?: Record<string, string>;
+  /** Override the default current consent header for Otari requests. */
+  consentVersion?: string | null;
   env?: Record<string, unknown>;
   config?: AiConfig;
   deps?: TestDeps;
@@ -81,7 +83,13 @@ export async function call(o: CallOptions): Promise<CallResult> {
       randomHex: uniqueHold,
     });
   const config = o.config ?? (o.otari ? testConfig({ otari: OTARI_CONFIG }) : undefined);
-  const headers: Record<string, string> = { 'content-type': 'application/json', ...o.headers };
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+    ...(o.otari && o.consentVersion !== null
+      ? { 'x-musclog-consent-version': o.consentVersion ?? '4' }
+      : {}),
+    ...o.headers,
+  };
   const key = o.key === undefined ? IDEM : o.key;
   if (key !== null) {
     headers['idempotency-key'] = key;

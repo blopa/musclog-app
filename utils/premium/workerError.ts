@@ -26,6 +26,7 @@ export const CHAT_ERROR_CODES = [
   'in_progress',
   'already_processed',
   'hosted_disabled',
+  'consent_required',
 ] as const;
 
 /** Every Worker error code the app reacts to. */

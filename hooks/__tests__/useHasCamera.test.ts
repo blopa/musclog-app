@@ -47,6 +47,13 @@ describe('useHasCamera', () => {
     expect(result.current).toBe(true);
   });
 
+  it('is false when every listed camera has no format to open it with', () => {
+    mockDevices = [{ id: '22', formats: [] }];
+    const { result } = renderHook(() => useHasCamera());
+
+    expect(result.current).toBe(false);
+  });
+
   it('follows a camera being attached and stops listening on unmount', () => {
     const { result, unmount } = renderHook(() => useHasCamera());
 

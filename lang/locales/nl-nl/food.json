@@ -488,6 +488,8 @@
     "aiProgress": {
       "reading": "Je beschrijving lezen…",
       "readingPhoto": "Je foto bekijken…",
+      "observing": "Alles in je beschrijving noteren…",
+      "observingPhoto": "Je foto zorgvuldig bekijken…",
       "estimating_one": "{{count}} ingrediënt inschatten…",
       "estimating_few": "{{count}} ingrediënten inschatten…",
       "estimating_many": "{{count}} ingrediënten inschatten…",
@@ -499,7 +501,24 @@
       "rechecking_one": "{{count}} ingrediënt nakijken…",
       "rechecking_few": "{{count}} ingrediënten nakijken…",
       "rechecking_many": "{{count}} ingrediënten nakijken…",
-      "rechecking_other": "{{count}} ingrediënten nakijken…"
+      "rechecking_other": "{{count}} ingrediënten nakijken…",
+      "reviewing": "Controleren of er iets is gemist…",
+      "comparing_one": "{{count}} schatting vergelijken…",
+      "comparing_few": "{{count}} schattingen vergelijken…",
+      "comparing_many": "{{count}} schattingen vergelijken…",
+      "comparing_other": "{{count}} schattingen vergelijken…",
+      "readingPhotos_one": "Je foto bekijken…",
+      "readingPhotos_other": "Je {{count}} foto's bekijken…",
+      "observingPhotos_one": "Je foto zorgvuldig bekijken…",
+      "observingPhotos_other": "Je {{count}} foto's zorgvuldig bekijken…",
+      "identifyingPhoto_one": "Foto {{index}} van {{count}} bekijken…",
+      "identifyingPhoto_other": "Foto {{index}} van {{count}} bekijken…",
+      "readingPhotos_few": "Je {{count}} foto's bekijken…",
+      "readingPhotos_many": "Je {{count}} foto's bekijken…",
+      "observingPhotos_few": "Je {{count}} foto's zorgvuldig bekijken…",
+      "observingPhotos_many": "Je {{count}} foto's zorgvuldig bekijken…",
+      "identifyingPhoto_few": "Foto {{index}} van {{count}} bekijken…",
+      "identifyingPhoto_many": "Foto {{index}} van {{count}} bekijken…"
     },
     "aiNutritionContext": {
       "title": "Context toevoegen voor AI",
@@ -709,6 +728,43 @@
         "logError": "Het loggen is mislukt. Probeer het opnieuw."
       },
       "linkError": "De link van je assistent kon niet worden gelezen. {{reason}} Plak in plaats daarvan het JSON-blok uit de chat."
+    },
+    "mealPhotos": {
+      "title": "Jouw maaltijd",
+      "photoCount_one": "{{count}} van {{max}} foto",
+      "photoCount_other": "{{count}} van {{max}} foto's",
+      "addPhoto": "Een foto toevoegen",
+      "removePhoto": "Foto {{index}} verwijderen",
+      "optionalHint": "Alles hieronder is optioneel.",
+      "nameLabel": "Naam van de maaltijd",
+      "namePlaceholder": "bijv. Kip met rijst",
+      "descriptionLabel": "Nog iets wat we moeten weten?",
+      "descriptionPlaceholder": "bijv. Ik heb de helft gegeten, zonder dressing",
+      "originLabel": "Waar komt het vandaan?",
+      "origin": {
+        "home": "Zelf gekookt",
+        "restaurant": "Restaurant",
+        "takeaway": "Afhaal",
+        "packaged": "Verpakt"
+      },
+      "addedFatLabel": "Olie, boter of sauzen toegevoegd?",
+      "addedFat": {
+        "none": "Geen",
+        "some": "Een beetje",
+        "lots": "Veel"
+      },
+      "tagsLabel": "Tags",
+      "estimate": "Schatten",
+      "reviewPhotos_one": "{{count}} foto controleren",
+      "reviewPhotos_other": "{{count}} foto's controleren",
+      "discardTitle": "Deze maaltijd verwijderen?",
+      "discardMessage": "Je foto's en notities gaan verloren.",
+      "discard": "Verwijderen",
+      "keepEditing": "Doorgaan met bewerken",
+      "photoCount_few": "{{count}} van {{max}} foto's",
+      "photoCount_many": "{{count}} van {{max}} foto's",
+      "reviewPhotos_few": "{{count}} foto's controleren",
+      "reviewPhotos_many": "{{count}} foto's controleren"
     }
   }
 }

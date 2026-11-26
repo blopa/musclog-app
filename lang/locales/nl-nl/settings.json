@@ -265,7 +265,7 @@
       "subtitle": "Bekijk en bewerk je gespreksgeschiedenis"
     },
     "aiSettings": {
-      "title": "AI-instellingen",
+      "title": "AI-aanbieders",
       "save": "Opslaan",
       "saved": "Opgeslagen",
       "googleGeminiIntegration": "Google Gemini integratie",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Selecteer het model dat voor alle AI-functies wordt gebruikt",
       "selectOpenAiModel": "Selecteer OpenAI model",
       "selectOpenAiModelSubtitle": "Selecteer het model dat voor alle AI-functies wordt gebruikt",
-      "subtitle": "Instellingen voor alle AI die in deze app wordt gebruikt",
+      "subtitle": "Welke AI antwoordt: Musclog, je eigen sleutels of je telefoon",
       "imageProcessing": "Beeldverwerking",
       "useOcrBeforeAi": "OCR gebruiken voor AI",
       "useOcrBeforeAiSubtitle": "Verwerk afbeeldingen lokaal met OCR en stuur tekst in plaats daarvan",
@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "AI-maaltijdcamera",
+        "description": "Hoe de camera werkt wanneer je een maaltijd fotografeert.",
+        "detailed": "Uitgebreid",
+        "quick": "Snel",
+        "detailedHint": "Na elke foto bekijk je tot 5 foto's en voeg je optionele details toe (naam, notities, herkomst) voordat er geschat wordt.",
+        "quickHint": "Schat meteen na het maken van de foto. Voeg context toe vóór de opname met de berichtknop."
+      },
       "getOpenAiKey": "Vraag OpenAI sleutel aan",
       "customPrompts": "Aangepaste systeem-prompts",
       "customPromptsSubtitle": "Voeg je eigen instructies toe aan alle AI-functies",
@@ -349,9 +357,45 @@
       "promptContextNutrition": "Voeding",
       "promptContextExercise": "Oefening",
       "memorySettings": "Geheugeninstellingen",
-      "useThinkingMode": "Denkmodus gebruiken",
-      "useThinkingModeSubtitle": "Laat AI-providers diepere redenering gebruiken wanneer dit wordt ondersteund. Dit verbruikt meer tokens en kan de kosten verhogen.",
-      "useThinkingModeIronNote": "Met Musclog Iron gebruiken dieper nadenken en extra controles meer van je maandelijkse AI-tegoed.",
+      "thinkingLevel": {
+        "label": "Denkniveau",
+        "freeTierNote": "Het gratis niveau antwoordt zonder extra nadenken: het dagelijkse tegoed wordt door iedereen gedeeld.",
+        "onDeviceNote": "Hogere niveaus doen meer controles op je telefoon, dus antwoorden duren langer.",
+        "levels": {
+          "off": {
+            "name": "Uit",
+            "description": "Snelle antwoorden. Elke taak denkt zo lang als nodig is."
+          },
+          "medium": {
+            "name": "Gemiddeld",
+            "description": "Denkt beter na en controleert de voedingsmiddelen van een maaltijd in je database voordat er een schatting komt."
+          },
+          "high": {
+            "name": "Hoog",
+            "description": "Gemiddeld, plus een controle van maaltijden, analyses en schema's, en twee keer lezen van etiketten en imports."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Meerdere onafhankelijke antwoorden worden vergeleken en daarna tot twee keer nagekeken. Het traagst, het zorgvuldigst."
+          }
+        },
+        "ironNote": {
+          "medium": "Gebruikt iets meer van je maandelijkse Musclog Iron-tegoed.",
+          "high": "Gebruikt meer van je maandelijkse Musclog Iron-tegoed.",
+          "tokenmaxxing": "Kan je maandelijkse Musclog Iron-tegoed meerdere keren sneller opmaken."
+        },
+        "confirmHigh": {
+          "title": "Hoog denken gebruiken?",
+          "message": "Hoog doet bij de meeste antwoorden een extra controleverzoek, dus het gebruikt meer van je maandelijkse Musclog Iron-tegoed. Je kunt altijd terugschakelen.",
+          "confirm": "Doorgaan"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Tokenmaxxing gebruiken?",
+          "message": "Tokenmaxxing doet meerdere verzoeken per antwoord, dus het kan je maandelijkse Musclog Iron-tegoed meerdere keren sneller opmaken. Het kost nooit meer dan je abonnement: als het tegoed van deze periode op is, wordt het met de volgende periode vernieuwd.",
+          "confirm": "Doorgaan",
+          "authPrompt": "Bevestig dat jij het bent om Tokenmaxxing aan te zetten"
+        }
+      },
       "localLlmThinkingEnabled": "Denkmodus ingeschakeld, want lokale modellen kosten niets extra. Je kunt het uitzetten in de AI-instellingen.",
       "maxAiMemories": "Max AI-herinneringen",
       "maxAiMemoriesSubtitle": "Aantal vorige berichten om te onthouden in gesprekken",
@@ -395,6 +439,10 @@
       "premium": {
         "activeNote": "Musclog Iron beantwoordt je AI-verzoeken. Je eigen sleutels en de gratis versie worden niet gebruikt zolang het aan staat."
       }
+    },
+    "aiBehavior": {
+      "title": "AI-gedrag",
+      "subtitle": "Denken, geheugen, foto's, persoonlijkheid en prompts"
     },
     "visualSettings": {
       "title": "Uiterlijk en start",

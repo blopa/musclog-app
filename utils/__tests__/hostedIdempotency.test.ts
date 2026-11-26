@@ -1,12 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import {
-  type CoachAIConfig,
-  estimateNutritionFromPhoto,
-  getNutritionInsights,
-  sendCoachMessage,
-} from '../coachAI';
+import { type CoachAIConfig, getNutritionInsights, sendCoachMessage } from '../coachAI';
+import { estimateNutritionFromPhoto } from '../coachMealEstimate';
 import { withLlmRetry } from '../llmRetry';
 
 jest.mock('../gemini', () => ({
@@ -25,7 +21,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: jest.fn(async () => false),
+    get: jest.fn(async () => 'off'),
     getSendFoundationFoodsToLlm: jest.fn(async () => false),
   },
 }));

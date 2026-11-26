@@ -69,7 +69,6 @@ import {
   USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
-  USE_THINKING_MODE_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   type WorkoutHistoryDays,
@@ -79,13 +78,13 @@ import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { DEFAULT_LANG } from '@/lang/lang';
-import { closeSentry } from '@/sentry-init';
+import type { ThinkingLevel } from '@/utils/aiThinkingLevel';
 import {
   type ComebackState,
   parseComebackState,
   serializeComebackState,
 } from '@/utils/comeback/comebackState';
-import { rememberCrashReportConsent } from '@/utils/crashReportConsent';
+import { syncCrashReporting } from '@/utils/crashReporting';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import {
   type NotificationPreferences,
@@ -100,7 +99,7 @@ type SettingValueUpdate = {
 };
 
 type CoachQuickSettingsUpdate = {
-  useThinkingMode: boolean;
+  thinkingLevel: ThinkingLevel;
   sendFoundationFoodsToLlm: boolean;
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
@@ -242,11 +241,8 @@ export class SettingsService {
    */
   static async setAnonymousBugReport(value: boolean) {
     await SettingsService.setBooleanSetting(ANONYMOUS_BUG_REPORT_SETTING_TYPE, value);
-    await rememberCrashReportConsent(value);
-
-    if (!value) {
-      await closeSentry();
-    }
+    // Turning it on starts reporting now; turning it off stops it, native crash handler included.
+    await syncCrashReporting(value);
   }
 
   /**
@@ -269,7 +265,9 @@ export class SettingsService {
       value = mostRecent.value === 'true';
     }
 
-    void rememberCrashReportConsent(value);
+    // The stored value is the authority: it corrects the launch-time start, which read the
+    // device-local copy (stale after restoring a backup with the setting off, missing before).
+    void syncCrashReporting(value);
 
     return value;
   }
@@ -461,20 +459,13 @@ export class SettingsService {
   }
 
   /**
-   * Upsert the use thinking mode setting
-   */
-  static async setUseThinkingMode(value: boolean) {
-    await SettingsService.setBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, value);
-  }
-
-  /**
    * Persist the coach quick settings together so the modal cannot leave a partial update.
    */
   static async setCoachQuickSettings(settings: CoachQuickSettingsUpdate) {
     const updates: SettingValueUpdate[] = [
       {
-        type: USE_THINKING_MODE_SETTING_TYPE,
-        value: settings.useThinkingMode.toString(),
+        type: SETTINGS.thinkingLevel.type,
+        value: SETTINGS.thinkingLevel.serialize(settings.thinkingLevel),
       },
       {
         type: SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
@@ -686,10 +677,6 @@ export class SettingsService {
 
   static async setIncludeFiberInCarbs(value: boolean) {
     await SettingsService.setBooleanSetting(INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, value);
-  }
-
-  static async getUseThinkingMode(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, false);
   }
 
   static async getDumpLlmRequests(): Promise<boolean> {
@@ -1271,6 +1258,17 @@ export class SettingsService {
 
   static async setUseOnDeviceAi(value: boolean) {
     await SettingsService.setBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, value);
+  }
+
+  /**
+   * Switches on-device AI on with `engine`. Both rows commit in one write so a failure cannot leave
+   * on-device AI on with a stale engine.
+   */
+  static async enableOnDeviceAi(engine: 'apple' | 'gguf'): Promise<void> {
+    await SettingsService.setSettingValues([
+      { type: USE_ON_DEVICE_AI_SETTING_TYPE, value: 'true' },
+      { type: SETTINGS.onDeviceEngine.type, value: SETTINGS.onDeviceEngine.serialize(engine) },
+    ]);
   }
 
   static async getUseOnDeviceAi(): Promise<boolean> {

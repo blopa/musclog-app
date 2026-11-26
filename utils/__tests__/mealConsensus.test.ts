@@ -1,0 +1,363 @@
+import {
+  consensusMeals,
+  keepsAtHalf,
+  mealsAgree,
+  mealStageIsSettled,
+  observationIsUncertain,
+} from '../mealConsensus';
+import { ingredientMacroProblems } from '../mealPlausibility';
+
+const ing = (name: string, grams: number, kcal: number, extra = {}) => ({
+  name,
+  grams,
+  kcal,
+  protein: kcal / 10,
+  carbs: 0,
+  fat: 0,
+  ...extra,
+});
+const meal = (ingredients: ReturnType<typeof ing>[]) => ({
+  mealType: 'lunch' as const,
+  mealName: 'Lunch',
+  ingredients,
+});
+
+describe('consensusMeals', () => {
+  it('returns a single sample unchanged', () => {
+    const sample = { meals: [meal([ing('Rice', 100, 130)])] };
+    expect(consensusMeals([sample])).toBe(sample);
+  });
+
+  it('keeps ingredients named by a strict majority and drops the rest', () => {
+    const result = consensusMeals([
+      { meals: [meal([ing('Rice', 100, 130), ing('Olive oil', 10, 90)])] },
+      { meals: [meal([ing('rice', 100, 130), ing('Olive Oil', 10, 90), ing('Parsley', 2, 1)])] },
+      { meals: [meal([ing('Rice', 100, 130)])] },
+    ]);
+    expect(result.meals[0].ingredients.map((i) => i.name)).toEqual(['Rice', 'Olive oil']);
+  });
+
+  it('needs both of two samples', () => {
+    const result = consensusMeals([
+      { meals: [meal([ing('Rice', 100, 130), ing('Butter', 5, 36)])] },
+      { meals: [meal([ing('Rice', 100, 130)])] },
+    ]);
+    expect(result.meals[0].ingredients.map((i) => i.name)).toEqual(['Rice']);
+  });
+
+  it('takes the median grams and the median per-gram macros times it', () => {
+    const result = consensusMeals([
+      { meals: [meal([ing('Rice', 100, 100)])] },
+      { meals: [meal([ing('Rice', 200, 400)])] },
+      { meals: [meal([ing('Rice', 150, 150)])] },
+    ]);
+    const rice = result.meals[0].ingredients[0];
+    // per gram: 1, 2, 1 -> 1; grams: 100, 200, 150 -> 150
+    expect(rice.grams).toBe(150);
+    expect(rice.kcal).toBe(150);
+    expect(rice.protein).toBe(15);
+  });
+
+  it('keeps a foodId only when most occurrences agree on it', () => {
+    const agreed = consensusMeals([
+      { meals: [meal([ing('Rice', 100, 130, { foodId: 'a' })])] },
+      { meals: [meal([ing('Rice', 100, 130, { foodId: 'a' })])] },
+      { meals: [meal([ing('Rice', 100, 130)])] },
+    ]);
+    expect(agreed.meals[0].ingredients[0].foodId).toBe('a');
+
+    const split = consensusMeals([
+      { meals: [meal([ing('Rice', 100, 130, { foodId: 'a' })])] },
+      { meals: [meal([ing('Rice', 100, 130, { foodId: 'b' })])] },
+      { meals: [meal([ing('Rice', 100, 130)])] },
+    ]);
+    expect(split.meals[0].ingredients[0].foodId).toBeUndefined();
+  });
+
+  it('uses the most common meal count and ignores samples with another layout', () => {
+    const one = { meals: [meal([ing('Rice', 100, 130)])] };
+    const two = { meals: [meal([ing('Egg', 50, 70)]), meal([ing('Toast', 30, 80)])] };
+    const result = consensusMeals([one, two, two]);
+    expect(result.meals).toHaveLength(2);
+    expect(result.meals[1].ingredients[0].name).toBe('Toast');
+  });
+
+  it('aligns meals by unique meal type when sample order differs', () => {
+    const breakfast = {
+      ...meal([ing('Egg', 50, 70)]),
+      mealType: 'breakfast' as const,
+      mealName: 'Breakfast',
+    };
+    const lunch = {
+      ...meal([ing('Rice', 100, 130)]),
+      mealType: 'lunch' as const,
+      mealName: 'Lunch',
+    };
+    const result = consensusMeals([
+      { meals: [breakfast, lunch] },
+      {
+        meals: [
+          { ...lunch, ingredients: [ing('Rice', 110, 143)] },
+          { ...breakfast, ingredients: [ing('Egg', 60, 84)] },
+        ],
+      },
+    ]);
+
+    expect(result.meals.map((item) => item.mealType)).toEqual(['breakfast', 'lunch']);
+    expect(result.meals.map((item) => item.ingredients[0].name)).toEqual(['Egg', 'Rice']);
+    expect(result.meals.map((item) => item.ingredients[0].grams)).toEqual([55, 105]);
+  });
+
+  it('keeps a complete sample meal when repeated types cannot be aligned by name', () => {
+    const first = { ...meal([ing('Pasta', 100, 150)]), mealName: 'Meal A' };
+    const second = { ...meal([ing('Soup', 200, 80)]), mealName: 'Meal B' };
+    const result = consensusMeals([{ meals: [first, second] }, { meals: [second, first] }]);
+
+    expect(result.meals.map((item) => item.ingredients)).toEqual([
+      first.ingredients,
+      second.ingredients,
+    ]);
+  });
+
+  describe('with groups', () => {
+    const names = (result: ReturnType<typeof consensusMeals>) =>
+      result.meals[0].ingredients.map((i) => i.name);
+    const rice = { meals: [meal([ing('Rice', 100, 130)])] };
+    const riceButter = { meals: [meal([ing('Rice', 100, 130), ing('Butter', 5, 36)])] };
+
+    it('keeps an ingredient that both samples of one look found (an oil the other look missed)', () => {
+      const result = consensusMeals([riceButter, riceButter, rice, rice], [0, 0, 1, 1]);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('drops an ingredient only a single sample of four found', () => {
+      expect(names(consensusMeals([riceButter, rice, rice, rice], [0, 0, 1, 1]))).toEqual(['Rice']);
+      expect(names(consensusMeals([rice, rice, rice, riceButter], [0, 0, 1, 1]))).toEqual(['Rice']);
+    });
+
+    it('keeps an ingredient found once under each look', () => {
+      const result = consensusMeals([riceButter, rice, riceButter, rice], [0, 0, 1, 1]);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('needs at least half of the answered samples: two of three, not one of three', () => {
+      expect(names(consensusMeals([riceButter, rice, rice], [0, 0, 1]))).toEqual(['Rice']);
+      expect(names(consensusMeals([riceButter, riceButter, rice], [0, 1, 1]))).toEqual([
+        'Rice',
+        'Butter',
+      ]);
+    });
+
+    it('still takes the median grams and per-gram numbers of the samples that found it', () => {
+      const withButter = (grams: number) => ({
+        meals: [meal([ing('Rice', 100, 130), ing('Butter', grams, grams * 7.2)])],
+      });
+      const result = consensusMeals(
+        [withButter(10), withButter(20), withButter(40), rice],
+        [0, 0, 1, 1]
+      );
+      const butter = result.meals[0].ingredients.find((item) => item.name === 'Butter');
+
+      expect(butter?.grams).toBe(20);
+      expect(butter?.kcal).toBe(144);
+    });
+
+    it('falls back to the majority when fewer than 2 groups remain', () => {
+      const result = consensusMeals([riceButter, riceButter, rice], [0, 0, 0]);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('filters by layout first and uses the groups that remain', () => {
+      const two = { meals: [meal([ing('Egg', 50, 70)]), meal([ing('Toast', 30, 80)])] };
+      // The only group-1 sample has another layout, so one group remains: majority rule.
+      const result = consensusMeals([riceButter, riceButter, rice, two], [0, 0, 0, 1]);
+      expect(result.meals).toHaveLength(1);
+      expect(names(result)).toEqual(['Rice', 'Butter']);
+    });
+
+    it('matches the ungrouped result when no groups are given, which stays strictly more than half', () => {
+      const samples = [riceButter, rice, riceButter, rice];
+      expect(consensusMeals(samples)).toEqual(consensusMeals(samples, undefined));
+      expect(names(consensusMeals(samples))).toEqual(['Rice']);
+      // The same samples with two looks keep the half that found it.
+      expect(names(consensusMeals(samples, [0, 0, 1, 1]))).toEqual(['Rice', 'Butter']);
+    });
+  });
+
+  it('breaks a tie of counts with the first sample', () => {
+    const one = { meals: [meal([ing('Rice', 100, 130)])] };
+    const two = { meals: [meal([ing('Egg', 50, 70)]), meal([ing('Toast', 30, 80)])] };
+    expect(consensusMeals([one, two]).meals).toHaveLength(1);
+  });
+
+  it('an ingredient merged from consistent samples never contradicts itself', () => {
+    const cream = (kcal: number, protein: number, carbs: number, fat: number) => ({
+      name: 'cream',
+      grams: 100,
+      kcal,
+      protein,
+      carbs,
+      fat,
+    });
+    const s1 = { meals: [meal([cream(100, 25, 0, 0)])] };
+    const s2 = { meals: [meal([cream(270, 0, 0, 30)])] };
+    const s3 = { meals: [meal([cream(160, 0, 40, 0)])] };
+
+    const merged = consensusMeals([s1, s2, s3]);
+    const ingredient = merged.meals[0].ingredients[0];
+    const figures = (item: { kcal: number; protein: number; carbs: number; fat: number }) => ({
+      kcal: item.kcal,
+      protein: item.protein,
+      carbs: item.carbs,
+      fat: item.fat,
+    });
+
+    expect(ingredientMacroProblems(ingredient)).toEqual([]);
+    expect([
+      figures(s1.meals[0].ingredients[0]),
+      figures(s2.meals[0].ingredients[0]),
+      figures(s3.meals[0].ingredients[0]),
+    ]).toContainEqual(figures(ingredient));
+  });
+
+  it('still takes the median when the medians are consistent', () => {
+    const rice = (kcal: number, protein: number, carbs: number, fat: number) => ({
+      name: 'rice',
+      grams: 100,
+      kcal,
+      protein,
+      carbs,
+      fat,
+    });
+    const result = consensusMeals([
+      { meals: [meal([rice(130, 2, 28, 0.2)])] },
+      { meals: [meal([rice(140, 3, 29, 0.3)])] },
+      { meals: [meal([rice(150, 4, 30, 0.4)])] },
+    ]);
+    const merged = result.meals[0].ingredients[0];
+
+    expect(merged.kcal).toBe(140);
+    expect(merged.protein).toBe(3);
+    expect(merged.carbs).toBe(29);
+    expect(merged.fat).toBe(0.3);
+  });
+});
+
+describe('mealsAgree', () => {
+  const one = (...ingredients: ReturnType<typeof ing>[]) => ({ meals: [meal(ingredients)] });
+
+  it('agrees on the same ingredients and energy, ignoring grams, order and accents', () => {
+    expect(
+      mealsAgree(
+        one(ing('Rice', 100, 130), ing('Crème fraîche', 20, 40)),
+        one(ing('crème  FRAICHE', 35, 40), ing('rice', 90, 120))
+      )
+    ).toBe(true);
+  });
+
+  it('disagrees on a different number of meals', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 130)), { meals: [] })).toBe(false);
+  });
+
+  it('disagrees when an ingredient is missing or extra', () => {
+    expect(
+      mealsAgree(one(ing('Rice', 100, 130)), one(ing('Rice', 100, 130), ing('Oil', 5, 45)))
+    ).toBe(false);
+    expect(
+      mealsAgree(one(ing('Rice', 100, 130), ing('Oil', 5, 45)), one(ing('Rice', 100, 130)))
+    ).toBe(false);
+  });
+
+  it('disagrees when the energy is 20% apart', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 100)), one(ing('Rice', 100, 80)))).toBe(false);
+  });
+
+  it('agrees exactly at the boundary (15% of the larger total)', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 100)), one(ing('Rice', 100, 85)))).toBe(true);
+  });
+
+  it('uses a custom tolerance when given', () => {
+    expect(mealsAgree(one(ing('Rice', 100, 100)), one(ing('Rice', 100, 80)), 0.25)).toBe(true);
+  });
+
+  it('agrees two meals of zero energy', () => {
+    expect(mealsAgree(one(ing('Water', 0, 0)), one(ing('Water', 0, 0)))).toBe(true);
+  });
+});
+
+describe('observationIsUncertain', () => {
+  it('is true only when the look lists something uncertain', () => {
+    expect(observationIsUncertain({ uncertain: [] })).toBe(false);
+    expect(observationIsUncertain({ uncertain: ['the sauce'] })).toBe(true);
+  });
+});
+
+describe('mealStageIsSettled', () => {
+  const clear = { uncertain: [] };
+  const sample = (kcal: number) => ({ meals: [meal([ing('Rice', 100, kcal)])] });
+
+  it('never settles on zero or one sample', () => {
+    expect(mealStageIsSettled({ samples: [], look: clear, rechecked: [] })).toBe(false);
+    expect(mealStageIsSettled({ samples: [sample(130)], look: clear, rechecked: [false] })).toBe(
+      false
+    );
+  });
+
+  it('settles when two or more answered samples agree and the look is clear', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(128), sample(132)],
+        look: clear,
+        rechecked: [false, false, false],
+      })
+    ).toBe(true);
+  });
+
+  it('does not settle when the look is uncertain', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(130)],
+        look: { uncertain: ['oil'] },
+        rechecked: [false, false],
+      })
+    ).toBe(false);
+  });
+
+  it('does not settle when any sample needed the plausibility recheck', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(130)],
+        look: clear,
+        rechecked: [false, true],
+      })
+    ).toBe(false);
+  });
+
+  it('does not settle when a later sample disagrees with the first', () => {
+    expect(
+      mealStageIsSettled({
+        samples: [sample(130), sample(130), sample(200)],
+        look: clear,
+        rechecked: [false, false, false],
+      })
+    ).toBe(false);
+  });
+});
+
+describe('keepsAtHalf', () => {
+  it('is false when no looks are given', () => {
+    expect(keepsAtHalf(undefined)).toBe(false);
+  });
+
+  it('is false when every agreeing sample came from one look', () => {
+    expect(keepsAtHalf([0, 0])).toBe(false);
+  });
+
+  it('is true when the agreeing samples come from at least two looks', () => {
+    expect(keepsAtHalf([0, 0, 1, 1])).toBe(true);
+  });
+
+  it('is false for a single look even when it is not the first', () => {
+    expect(keepsAtHalf([-1, -1])).toBe(false);
+  });
+});

@@ -265,7 +265,7 @@
       "subtitle": "Konuşma geçmişini görüntüle ve düzenle"
     },
     "aiSettings": {
-      "title": "Yapay zekâ ayarları",
+      "title": "Yapay zekâ sağlayıcıları",
       "save": "Kaydet",
       "saved": "Kaydedildi",
       "googleGeminiIntegration": "Google Gemini entegrasyonu",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Tüm yapay zekâ özelliklerinin kullanacağı modeli seç",
       "selectOpenAiModel": "OpenAI modelini seç",
       "selectOpenAiModelSubtitle": "Tüm yapay zekâ özelliklerinin kullanacağı modeli seç",
-      "subtitle": "Bu uygulamada kullanılan tüm yapay zekânın ayarları",
+      "subtitle": "Hangi yapay zekâ yanıtlıyor: Musclog, kendi anahtarlarınız ya da telefonunuz",
       "imageProcessing": "Görsel işleme",
       "useOcrBeforeAi": "Yapay zekâya göndermeden önce OCR kullan",
       "useOcrBeforeAiSubtitle": "Görselleri yerelde OCR ile işle ve bunun yerine metin gönder",
@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "Yapay zeka öğün kamerası",
+        "description": "Bir öğünün fotoğrafını çektiğinizde kameranın nasıl çalıştığı.",
+        "detailed": "Ayrıntılı",
+        "quick": "Hızlı",
+        "detailedHint": "Her fotoğraftan sonra en fazla 5 fotoğrafı gözden geçirip tahmin etmeden önce isteğe bağlı ayrıntı (ad, not, nereden geldiği) ekleyebilirsiniz.",
+        "quickHint": "Fotoğrafı çektikten hemen sonra tahmin edin. Çekimden önce bağlamı mesaj düğmesiyle ekleyin."
+      },
       "getOpenAiKey": "OpenAI anahtarı al",
       "customPrompts": "Özel sistem istemleri",
       "customPromptsSubtitle": "Tüm yapay zekâ özelliklerine kendi talimatlarını ekle",
@@ -349,9 +357,45 @@
       "promptContextNutrition": "Beslenme",
       "promptContextExercise": "Egzersiz",
       "memorySettings": "Bellek ayarları",
-      "useThinkingMode": "Düşünme modunu kullan",
-      "useThinkingModeSubtitle": "Desteklendiğinde yapay zekâ sağlayıcılarının daha derin akıl yürütmesine izin ver. Daha fazla token kullanır ve maliyeti artırabilir.",
-      "useThinkingModeIronNote": "Musclog Iron ile daha derin düşünme ve ek kontroller aylık yapay zekâ kotanızdan daha fazla kullanır.",
+      "thinkingLevel": {
+        "label": "Düşünme seviyesi",
+        "freeTierNote": "Ücretsiz seviye ek düşünme yapmadan yanıtlar: günlük kota herkes tarafından paylaşılır.",
+        "onDeviceNote": "Daha yüksek seviyeler telefonda daha fazla kontrol yapar, bu yüzden yanıtlar daha uzun sürer.",
+        "levels": {
+          "off": {
+            "name": "Kapalı",
+            "description": "Hızlı yanıtlar. Her görev ihtiyacı kadar düşünür."
+          },
+          "medium": {
+            "name": "Orta",
+            "description": "Daha dikkatli düşünür ve tahmin etmeden önce bir öğünün yiyeceklerini veritabanıyla karşılaştırır."
+          },
+          "high": {
+            "name": "Yüksek",
+            "description": "Orta seviye, artı öğünlerin, analizlerin ve planların gözden geçirilmesi ile etiketlerin ve içe aktarmaların iki kez okunması."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Birbirinden bağımsız birkaç yanıt karşılaştırılır, sonra en fazla iki kez gözden geçirilir. En yavaş, en titiz."
+          }
+        },
+        "ironNote": {
+          "medium": "Aylık Musclog Iron kotasından biraz daha fazla kullanır.",
+          "high": "Aylık Musclog Iron kotasından daha fazla kullanır.",
+          "tokenmaxxing": "Aylık Musclog Iron kotasını birkaç kat daha hızlı tüketebilir."
+        },
+        "confirmHigh": {
+          "title": "Yüksek düşünme kullanılsın mı?",
+          "message": "Yüksek, çoğu yanıt için ek bir kontrol isteği yapar, bu yüzden aylık Musclog Iron kotasından daha fazla kullanır. İstediğiniz zaman geri dönebilirsiniz.",
+          "confirm": "Devam et"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Tokenmaxxing kullanılsın mı?",
+          "message": "Tokenmaxxing her yanıt için birden çok istek yapar, bu yüzden aylık Musclog Iron kotasını birkaç kat daha hızlı tüketebilir. Aboneliğinizden daha fazla maliyeti asla olmaz: bu dönemin kotası bittiğinde bir sonraki dönemle yenilenir.",
+          "confirm": "Devam et",
+          "authPrompt": "Tokenmaxxing'i açmak için kimliğinizi doğrulayın"
+        }
+      },
       "localLlmThinkingEnabled": "Düşünme modu açıldı, çünkü yerel modeller ek maliyet getirmez. Yapay zekâ ayarlarından kapatabilirsin.",
       "maxAiMemories": "En fazla yapay zekâ belleği",
       "maxAiMemoriesSubtitle": "Konuşmalarda hatırlanacak önceki mesaj sayısı",
@@ -395,6 +439,10 @@
       "premium": {
         "activeNote": "Musclog Iron YZ isteklerinizi yanıtlıyor. Açıkken kendi anahtarlarınız ve ücretsiz katman kullanılmaz."
       }
+    },
+    "aiBehavior": {
+      "title": "Yapay zekâ davranışı",
+      "subtitle": "Düşünme, bellek, fotoğraflar, kişilik ve istemler"
     },
     "visualSettings": {
       "title": "Görünüm ve ana ekran",

@@ -274,11 +274,13 @@ export const UNAUDITED_ROUTES: UnauditedRoute[] = [
  * (unreleased, so never in a store screenshot).
  */
 export const AUDIT_ONLY_MODAL_BUTTONS = [
+  'Open AI Behavior Modal',
   'Open Cycle Settings Modal',
   'Date (default)',
   'Time (default)',
   'Date (compact)',
   'Time (compact)',
+  'Open Meal Photo Details Modal',
   'Open Premium Modal (Loading)',
   'Open Premium Modal (Not Subscribed)',
   'Open Premium Modal (Active)',
@@ -331,13 +333,12 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/AINotConfiguredModal.tsx': { fixture: 'Open AI Not Configured Modal' },
   // One fixture button per state (the first is named here; the other seven are in MODAL_BUTTON_TEXTS).
   'components/modals/PremiumModal.tsx': { fixture: 'Open Premium Modal (Loading)' },
+  'components/camera/MealPhotoDetailsModal.tsx': { fixture: 'Open Meal Photo Details Modal' },
   'components/modals/AINutritionTrackingContextModal.tsx': {
     fixture: 'Open AI Nutrition Context Modal',
   },
   'components/modals/AISettingsModal.tsx': { fixture: 'Open AI Settings Modal' },
-  'components/modals/ConnectedAISettingsModal.tsx': {
-    unaudited: 'a wrapper that hands stored settings to AISettingsModal, which has its own button',
-  },
+  'components/modals/AIBehaviorSettingsModal.tsx': { fixture: 'Open AI Behavior Modal' },
   'components/modals/ThirdPartyNoticesModal.tsx': { fixture: 'Open Third Party Notices Modal' },
   'components/modals/AddExerciseModal.tsx': { fixture: 'Open Add Exercise Modal' },
   'components/modals/AddExerciseToSessionModal.tsx': {

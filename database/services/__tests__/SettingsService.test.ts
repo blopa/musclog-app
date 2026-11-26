@@ -10,6 +10,8 @@ import {
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
+  ON_DEVICE_ENGINE_SETTING_TYPE,
+  USE_ON_DEVICE_AI_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
@@ -18,13 +20,12 @@ import {
 } from '@/constants/settings';
 import { database } from '@/database/database-instance';
 import { SettingsService } from '@/database/services/SettingsService';
-import { closeSentry } from '@/sentry-init';
-import { rememberCrashReportConsent } from '@/utils/crashReportConsent';
+import { syncCrashReporting } from '@/utils/crashReporting';
 import { decryptDatabaseValue } from '@/utils/encryption';
 
-jest.mock('@/sentry-init', () => ({ closeSentry: jest.fn(async () => undefined) }));
-jest.mock('@/utils/crashReportConsent', () => ({
-  rememberCrashReportConsent: jest.fn(async () => undefined),
+// What starting and stopping does is pinned in utils/__tests__/crashReporting.test.ts.
+jest.mock('@/utils/crashReporting', () => ({
+  syncCrashReporting: jest.fn(async () => undefined),
 }));
 
 jest.mock('@nozbe/watermelondb', () => ({
@@ -132,29 +133,37 @@ describe('SettingsService', () => {
   });
 
   describe('anonymous bug report', () => {
-    it('turning it off remembers the choice and shuts Sentry down', async () => {
+    it('turning it off stops crash reporting at once', async () => {
       installSettingsTable();
 
       await SettingsService.setAnonymousBugReport(false);
 
-      expect(rememberCrashReportConsent).toHaveBeenCalledWith(false);
-      expect(closeSentry).toHaveBeenCalledTimes(1);
+      expect(syncCrashReporting).toHaveBeenCalledTimes(1);
+      expect(syncCrashReporting).toHaveBeenCalledWith(false);
     });
 
-    it('turning it on remembers the choice and leaves Sentry alone', async () => {
+    it('turning it on starts crash reporting at once', async () => {
       installSettingsTable();
 
       await SettingsService.setAnonymousBugReport(true);
 
-      expect(rememberCrashReportConsent).toHaveBeenCalledWith(true);
-      expect(closeSentry).not.toHaveBeenCalled();
+      expect(syncCrashReporting).toHaveBeenCalledWith(true);
     });
 
-    it('refreshes the remembered copy on every read, defaulting to on', async () => {
+    it('applies the stored value on every read, defaulting to on', async () => {
       installSettingsTable();
 
       expect(await SettingsService.getAnonymousBugReport()).toBe(true);
-      expect(rememberCrashReportConsent).toHaveBeenCalledWith(true);
+      expect(syncCrashReporting).toHaveBeenCalledWith(true);
+    });
+
+    it('applies an off value read back from the database', async () => {
+      installSettingsTable();
+      await SettingsService.setAnonymousBugReport(false);
+      jest.mocked(syncCrashReporting).mockClear();
+
+      expect(await SettingsService.getAnonymousBugReport()).toBe(false);
+      expect(syncCrashReporting).toHaveBeenCalledWith(false);
     });
   });
 
@@ -361,7 +370,7 @@ describe('SettingsService', () => {
       const rows = installSettingsTable();
 
       await SettingsService.setCoachQuickSettings({
-        useThinkingMode: true,
+        thinkingLevel: 'high',
         sendFoundationFoodsToLlm: false,
         nutritionLogHistoryDays: '30',
         workoutHistoryDays: '7',
@@ -370,7 +379,8 @@ describe('SettingsService', () => {
 
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
       expect(rows).toHaveLength(5);
-      expect(await SettingsService.getUseThinkingMode()).toBe(true);
+      expect(await SettingsService.get(SETTINGS.thinkingLevel)).toBe('high');
+      expect(rows.find((row) => row.type === SETTINGS.thinkingLevel.type)?.value).toBe('high');
       expect(await SettingsService.getSendFoundationFoodsToLlm()).toBe(false);
       expect(await SettingsService.getNutritionLogHistoryDays()).toBe('30');
       expect(await SettingsService.getWorkoutHistoryDays()).toBe('7');
@@ -380,7 +390,7 @@ describe('SettingsService', () => {
       const rows = installSettingsTable();
 
       await SettingsService.setCoachQuickSettings({
-        useThinkingMode: false,
+        thinkingLevel: 'off',
         sendFoundationFoodsToLlm: true,
         nutritionLogHistoryDays: 'none',
         workoutHistoryDays: 'none',
@@ -481,7 +491,7 @@ describe('SettingsService', () => {
       const rows = installSettingsTable();
 
       await SettingsService.setCoachQuickSettings({
-        useThinkingMode: true,
+        thinkingLevel: 'medium',
         sendFoundationFoodsToLlm: true,
         nutritionLogHistoryDays: '7',
         workoutHistoryDays: '7',
@@ -611,6 +621,26 @@ describe('SettingsService', () => {
         expect(value).toEqual(SETTINGS.coachCustomPersona.defaultValue);
         done();
       });
+    });
+  });
+
+  describe('on-device AI switch', () => {
+    it('enableOnDeviceAi writes the switch and the engine in one write', async () => {
+      const rows = installSettingsTable();
+      const spy = jest.spyOn(SettingsService as any, 'setSettingValues');
+
+      await SettingsService.enableOnDeviceAi('gguf');
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy.mock.calls[0][0]).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ type: USE_ON_DEVICE_AI_SETTING_TYPE, value: 'true' }),
+          expect.objectContaining({ type: ON_DEVICE_ENGINE_SETTING_TYPE, value: 'gguf' }),
+        ])
+      );
+      expect(valuesFor(rows, USE_ON_DEVICE_AI_SETTING_TYPE)).toEqual(['true']);
+      expect(valuesFor(rows, ON_DEVICE_ENGINE_SETTING_TYPE)).toEqual(['gguf']);
+      spy.mockRestore();
     });
   });
 });

@@ -273,23 +273,107 @@
       "v2_18_0": {
         "onDeviceAi": {
           "title": "IA che gira sul tuo telefono",
-          "description": "Il coach di Musclog ora può funzionare interamente su questo telefono. Quello che scrivi non lascia il dispositivo, e funziona offline. È gratuito, senza account né chiave.",
+          "description": "Il coach di Musclog ora può funzionare interamente su questo telefono. Quello che scrivi e le foto che scatti non vengono inviate da nessuna parte. Continua a funzionare in modalità aereo e non costa nulla.",
           "action": {
             "label": "Configura l'IA su questo telefono",
-            "description": "Scegli Apple Intelligence o un piccolo modello scaricato."
+            "description": "Scegli Apple Intelligence o un piccolo modello che scarichi una volta."
           },
           "items": {
             "private": {
               "label": "Resta sul tuo telefono",
-              "description": "I tuoi messaggi vengono elaborati sul dispositivo, mai inviati a un server."
+              "description": "I tuoi messaggi e le foto dei pasti vengono elaborati sul dispositivo, mai inviati a un server."
             },
             "offline": {
               "label": "Funziona offline",
-              "description": "Dopo un download una tantum, non serve alcuna connessione."
+              "description": "Dopo un download una tantum non serve alcuna connessione. Nemmeno per le foto."
             },
+            "free": {
+              "label": "Gratis, per sempre",
+              "description": "Nessun account, nessuna chiave API e nessun abbonamento. Gira sul tuo telefono, quindi non costa niente a nessuno."
+            }
+          }
+        },
+        "photos": {
+          "title": "Inquadra il tuo pasto",
+          "description": "Se includi il riconoscimento delle foto nel download, il modello può guardare una foto del pasto, riconoscere gli alimenti che vede e stimare quanto ce n'è di ciascuno nel piatto. Tutto sul telefono, anche offline.",
+          "items": {
+            "realNumbers": {
+              "label": "Prima i tuoi dati alimentari",
+              "description": "Al modello non vengono chieste le calorie. Quando un alimento che nomina è già in Musclog, si usano quei numeri. Tutto il resto viene stimato dal nome, quindi controlla prima quelli."
+            },
+            "review": {
+              "label": "Non salvi nulla finché non confermi",
+              "description": "Ogni alimento e ogni quantità in grammi si apre in una revisione che puoi modificare prima che finisca nel diario."
+            },
+            "where": {
+              "label": "Nella fotocamera e nel coach",
+              "description": "Usa Pasto IA nella fotocamera, oppure allega una foto a Registra pasto del coach."
+            }
+          }
+        },
+        "honest": {
+          "title": "Piccola, quindi controlla il suo lavoro",
+          "description": "Per stare su un telefono, questo modello è minuscolo rispetto all'IA dietro i chatbot nel cloud. Sbaglierà i nomi degli alimenti, valuterà male le porzioni e a volte darà consigli sbagliati. Consideralo un compagno che ti spinge a continuare a registrare, non un nutrizionista: tu controlli i risultati e sei tu a decidere sui numeri.",
+          "items": {
+            "check": {
+              "label": "Controlla ogni risultato",
+              "description": "Leggi ogni alimento e ogni quantità prima di salvare e correggi ciò che è sbagliato. Richiede pochi secondi e mantiene il diario affidabile."
+            },
+            "language": {
+              "label": "Meglio in inglese",
+              "description": "Risponde meglio in inglese e in qualche altra lingua. Nella tua, le risposte possono essere più deboli."
+            },
+            "stronger": {
+              "label": "Serve un modello più potente?",
+              "description": "Usa la tua chiave API o Musclog Iron, in Impostazioni → AI. Entrambi inviano la tua richiesta a un modello nel cloud molto più grande."
+            }
+          }
+        },
+        "mealCamera": {
+          "title": "Aggiungi altro alla foto del pasto",
+          "description": "Dopo aver scattato una foto, ora puoi aggiungere fino a 5 foto dello stesso pasto e raccontare a Musclog qualcosa in più prima che stimi. Tutto ciò che aggiungi è facoltativo.",
+          "flow": {
+            "title": "Come funziona la fotocamera IA per i pasti",
+            "description": "Puoi cambiarlo in qualsiasi momento in Impostazioni → Comportamento AI.",
+            "detailed": {
+              "label": "Dettagliato",
+              "description": "Controlla le foto e aggiungi dettagli prima di stimare."
+            },
+            "quick": {
+              "label": "Rapido",
+              "description": "Stima subito dopo la foto, come prima."
+            }
+          },
+          "items": {
             "photos": {
-              "label": "Foto dei pasti",
-              "description": "Il modello scaricato può leggere una foto del tuo pasto, se scegli di includere questa parte."
+              "label": "Fino a 5 foto di un pasto",
+              "description": "Aggiungi un'altra angolazione o un primo piano prima di stimare. Vengono inviate insieme come un unico pasto, quindi un alimento visibile in due foto viene conteggiato una volta sola. Un fornitore che accetta meno foto limita il numero."
+            },
+            "details": {
+              "label": "Spiega ciò che una foto non può mostrare",
+              "description": "Aggiungi un nome, una nota come «mangiato metà, senza condimento», se era fatto in casa o al ristorante, e se sono stati aggiunti olio o burro."
+            },
+            "cover": {
+              "label": "Si conserva la prima foto",
+              "description": "Solo la prima foto viene salvata con il pasto registrato. Le altre servono solo per la stima."
+            }
+          }
+        },
+        "thinking": {
+          "title": "Fai pensare di più l'IA",
+          "description": "Una nuova impostazione permette all'IA di controllare il proprio lavoro prima di rispondere. Disattivato è il più veloce; Tokenmaxxing è il più lento e il più accurato.",
+          "items": {
+            "levels": {
+              "label": "Scegli quanto pensa",
+              "description": "Disattivato, Medio, Alto o Tokenmaxxing, in Impostazioni → Comportamento AI. Ogni livello superiore fa più richieste per ricontrollare la risposta."
+            },
+            "checks": {
+              "label": "Il codice controlla le risposte",
+              "description": "I pasti vengono letti più volte e confrontati, e piani e approfondimenti vengono verificati con i tuoi numeri."
+            },
+            "cost": {
+              "label": "Più lento e costa di più",
+              "description": "Con Musclog Iron usa più della tua quota mensile, e la Musclog AI gratuita risponde sempre a Disattivato. Non abbiamo misurato quanto migliora le risposte."
             }
           }
         }

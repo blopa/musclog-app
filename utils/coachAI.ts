@@ -3,9 +3,8 @@ import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
 import { MUSCLOG_GATEWAY_MAX_TOKENS, MUSCLOG_GATEWAY_PROVIDER } from '@/constants/gateway';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
-import { FoodService } from '@/database/services/FoodService';
-import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
@@ -17,10 +16,19 @@ import {
   AiCancelledError,
   AiInvalidKeyError,
   AiTimeoutError,
+  isAiConnectionError,
   OnDeviceUnavailableError,
   rethrowUserFacingAiError,
 } from './aiErrors';
-import { validateAgainstSchema } from './aiSchemaValidate';
+import { reviewAndRevise, runSamples, sameValue } from './aiPasses';
+import { reportAiEvent } from './aiTelemetry';
+import {
+  effectiveThinkingLevel,
+  EXTRACTION_FIRST_READINGS,
+  extractionSamples,
+  THINKING_PIPELINE,
+  type ThinkingLevel,
+} from './aiThinkingLevel';
 import {
   buildClaudeClient,
   buildClaudeMessages,
@@ -31,72 +39,68 @@ import {
   extractClaudeText,
 } from './claude';
 import { type HistoryTurn, tagTurnsWithTime } from './coachHistory';
+import { createCopyGate, isCopiedReply } from './copiedReply';
+import { combineExtractions } from './extractionConsensus';
+import { resolveFoundationRefsInMeals } from './foundationFoodList';
 import { withGatewayProviderPin } from './gatewayRouting';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
-import { type ProviderPolicy, providerPolicyFor } from './hostedProviderPolicy';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
 import {
-  buildPhotoMeal,
-  type FoodCandidate,
-  type IdentifiedFood,
-  LOCAL_FOOD_IDENTIFY_SCHEMA,
-  LOCAL_PHOTO_RETRY_TEMPERATURE,
-  localFoodIdentifyPrompt,
-  localJsonRepairMessage,
-  localJsonRepairPrompt,
-  mealTypeForHour,
-  parseIdentifiedFoods,
-  pickFoodMatch,
-  searchTermsFor,
-} from './localFoodPhoto';
-import {
+  checkStructuredShape,
   jsonRepairMessage,
   jsonRepairPrompt,
-  jsonSpan,
-  repairReplyJson,
+  MAX_JSON_REPAIR_INPUT_CHARS,
+  parseStructuredJson,
   stripStreamingTemplateTokens,
   stripTemplateTokens,
+  type StructuredResult,
 } from './localReplyShape';
-import { type MealEstimateProgressListener } from './mealEstimateProgress';
-import { ingredientMacroProblems } from './mealPlausibility';
+import type { MealImage } from './mealImages';
+import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
+import { ungroundedFigures } from './numberGrounding';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
 import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
+import { mealPlanFindings, workoutPlanFindings, workoutVolumeFindings } from './planFindings';
 import {
   createWorkoutPlanPrompt,
-  getActiveCustomPrompts,
+  type FoundationFoodsPrompt,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getChatMessagePromptContent,
+  getChatReviewInstruction,
   getEstimateMacrosFunctions,
-  getEstimateMissingIngredientsFunctions,
+  getExtractionArbiterMessage,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
+  getFoundationFoodsPrompt,
   getGenerateMealPlanFunctions,
   getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
-  getMealAnalysisPrompt,
+  getInsightFactCheckInstruction,
   getMealCritiquePrompt,
-  getMissingIngredientsMacrosPrompt,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
   getParsePastNutritionPrompt,
   getParsePastWorkoutsFunctions,
   getParsePastWorkoutsPrompt,
   getParseRetrospectiveNutritionFunctions,
+  getPlanReviewInstruction,
   getRecentWorkoutInsightsPromptByLogId,
   getRecentWorkoutsInsightsPrompt,
-  getRecipeExtractionFunctions,
-  getRecipeExtractionPrompt,
   getRetrospectiveNutritionPrompt,
-  getTrackMealFunctions,
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
+  type MealSchemaDialect,
+  withCustomPrompts,
 } from './prompts';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
+import { providerPolicyFor } from './providerPolicy';
+import { isTruncatedStop, type StopSignal } from './replyTruncation';
+import { captureMessage } from './sentry';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -151,29 +155,18 @@ export function isAiCreditsError(error: any): boolean {
 }
 
 /**
- * The request never got a response: the device dropped the connection (flaky mobile data, a
- * backgrounded app, `unexpected end of stream` from OkHttp). The OpenAI SDK has already retried
- * these twice (`maxRetries` defaults to 2) by the time one surfaces, so it is the user's network,
- * not a Musclog bug. Covers the OpenAI SDK's wrapper (and its timeout subclass) plus the raw fetch
- * failures the Gemini SDK lets through: expo/fetch's `fetch failed: …` and RN's
- * `Network request failed`.
- */
-export function isAiConnectionError(error: unknown): boolean {
-  if (error instanceof OpenAI.APIConnectionError || error instanceof Anthropic.APIConnectionError) {
-    return true;
-  }
-
-  const message = String((error as any)?.message ?? '').toLowerCase();
-  return message.startsWith('fetch failed:') || message === 'network request failed';
-}
-
-/**
  * Hosted Premium kinds that reach Sentry: `unavailable` (the Worker failed: 5xx, hosted_disabled,
- * an expired session) and `alreadyProcessed` (the app's idempotency key is broken). Every other
+ * an expired session), `alreadyProcessed` (the app's idempotency key is broken) and
+ * `consentRequired` (the consent header the Worker needs never arrived). Every other
  * hosted kind (budget, daily limit, subscription, removed, daily full, busy) is the subscriber's
  * normal state or a retry the app already handles, so it stays out.
  */
-const HOSTED_KINDS_REPORTED = new Set<HostedErrorKind>(['unavailable', 'alreadyProcessed']);
+const HOSTED_KINDS_REPORTED = new Set<HostedErrorKind>([
+  'unavailable',
+  'alreadyProcessed',
+  // The app sent no consent version, or an old one: the app and the Worker disagree on it.
+  'consentRequired',
+]);
 
 /**
  * A rate limit or exhausted quota is the provider refusing the request, not a Musclog bug: it is
@@ -214,7 +207,8 @@ const LARGE_CONTEXT_CHAR_BUDGET = 64000;
 
 export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   'on-device': {
-    maxCharBudget: 4500, // Tight cap per Apple Intelligence optimization spec
+    // The tightest engine's budget; the engine's own is `ON_DEVICE_CONTEXT_CHARS`.
+    maxCharBudget: ON_DEVICE_CONTEXT_CHARS.apple,
     promptComplexity: 'minimal',
     enableContextInjection: true,
     enableFoundationFoods: false,
@@ -245,7 +239,9 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     maxCharBudget: 8000,
     promptComplexity: 'standard',
     enableContextInjection: true,
-    enableFoundationFoods: false,
+    // The whole list (about 11 KB, a few thousand tokens) goes to a custom server too; the person can
+    // still turn "Send foundation foods to AI" off, and the server needs a context window to hold it.
+    enableFoundationFoods: true,
     enableMemories: true,
   },
   gateway: {
@@ -274,30 +270,61 @@ type CoachAIConfigFields = {
   signal?: AbortSignal;
   /** Overrides the default request timeout, in milliseconds. */
   timeoutMs?: number;
-  /** `on-device` only: which engine answers. Absent means Apple's system model. */
-  engine?: OnDeviceEngine;
-  /** `on-device` only: the engine can read a food photo (the downloaded model with its projector). */
-  vision?: boolean;
+  /** Set by daily background tasks, so their thinking level is capped (`effectiveThinkingLevel`). */
+  background?: boolean;
+  /** Iron consent version accepted on this device. */
+  hostedConsentVersion?: number;
 };
+
+/** What only an `on-device` config carries: which engine answers and whether it can read photos. */
+type OnDeviceFields = {
+  engine: OnDeviceEngine;
+  /** The engine can read a food photo (the downloaded model with its projector). */
+  vision: boolean;
+};
+
+/** Every other provider has neither field, so `config.engine` reads the same on all of them. */
+type NoOnDeviceFields = { engine?: undefined; vision?: undefined };
 
 /**
  * A config that can send, or a hosted one whose session token could not be minted (built by
  * `AiService`): the second carries why, and its requests fail with the matching hosted error
  * without being sent, so the data recipient never changes silently. The failure exists only on the
- * hosted variant.
+ * hosted variant, and the engine only on the `on-device` one (`OnDeviceConfig`).
  */
 export type CoachAIConfig =
-  | (CoachAIConfigFields & { hostedGrantFailure?: undefined })
+  | (Omit<CoachAIConfigFields, 'provider'> & {
+      provider: Exclude<CoachAIProvider, 'on-device'>;
+      hostedGrantFailure?: undefined;
+    } & NoOnDeviceFields)
+  | (Omit<CoachAIConfigFields, 'provider'> & {
+      provider: 'on-device';
+      hostedGrantFailure?: undefined;
+    } & OnDeviceFields)
   | (Omit<CoachAIConfigFields, 'provider' | 'apiKey' | 'baseUrl'> & {
       provider: 'hosted';
       hostedGrantFailure: PremiumActionFailure;
       apiKey?: undefined;
       baseUrl?: undefined;
-    });
+    } & NoOnDeviceFields);
 
-/** The effort a job gets: its row of `AI_TASK_EFFORT`, or `high` when "Use thinking mode" is on. */
-async function resolveEffort(task: AiTask): Promise<AiEffort> {
-  return effortFor(task, await SettingsService.getUseThinkingMode());
+export type OnDeviceConfig = Extract<CoachAIConfig, { provider: 'on-device' }>;
+
+export function isOnDeviceConfig(config: CoachAIConfig): config is OnDeviceConfig {
+  return config.provider === 'on-device';
+}
+
+/**
+ * The thinking level a request runs at: the stored setting, lowered by the provider (the free tier
+ * never thinks) and by background tasks (`effectiveThinkingLevel`).
+ */
+export async function thinkingLevelFor(config: CoachAIConfig): Promise<ThinkingLevel> {
+  return effectiveThinkingLevel(await SettingsService.get(SETTINGS.thinkingLevel), config);
+}
+
+/** The effort a job gets: its row of `AI_TASK_EFFORT` for the request's thinking level. */
+async function resolveEffort(config: CoachAIConfig, task: AiTask): Promise<AiEffort> {
+  return effortFor(task, await thinkingLevelFor(config));
 }
 
 /**
@@ -309,7 +336,7 @@ async function openAiReasoning(
   config: CoachAIConfig,
   effort: AiEffort
 ): Promise<{ reasoning_effort?: ReasoningEffortValue }> {
-  const reasoning = await providerPolicyFor(config.provider).reasoningEffort?.(effort);
+  const reasoning = await providerPolicyFor(config).reasoningEffort?.(effort);
 
   return reasoning ? { reasoning_effort: reasoning } : {};
 }
@@ -339,15 +366,16 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     apiKey: config.apiKey ?? 'unused',
     baseURL: config.baseUrl,
     dangerouslyAllowBrowser: true,
-    // A provider whose retries are `withLlmRetry`'s alone turns the SDK's own off (hosted policy).
-    // Per-request headers (the hosted idempotency key) are passed per call through the `options` that
-    // `withLlmRetry` hands the request, never as client defaults.
-    maxRetries: providerPolicyFor(config.provider).sdkMaxRetries,
+    // `withLlmRetry` is the only retry loop: the SDK's own (two retries by default) would repeat a
+    // failure inside every one of its attempts. Per-request headers (the hosted idempotency key) are
+    // passed per call through the `options` that `withLlmRetry` hands the request, never as client
+    // defaults.
+    maxRetries: 0,
     fetch: pinFetch,
   });
 }
 
-async function logLlmDebugEvent(params: {
+export async function logLlmDebugEvent(params: {
   provider: CoachAIProvider;
   direction: 'request' | 'response';
   operation: string;
@@ -381,7 +409,11 @@ export type CoachResponse = {
  * Pass one to a reply function to see the reply while it is written. `onText` gets the visible text
  * so far (never a fragment), each time it grows. Without it the call is one request, one answer.
  */
-export type CoachStream = { onText: (textSoFar: string) => void };
+export type CoachStream = {
+  onText: (textSoFar: string) => void;
+  /** Said once, before any text, when the reply is first drafted unseen and then double-checked. */
+  onPhase?: (phase: 'reviewing') => void;
+};
 
 type StreamSink = {
   onDelta: (delta: string) => void;
@@ -426,81 +458,6 @@ function createStreamSink(stream: CoachStream, mode: 'plain' | 'coachJson'): Str
   };
 }
 
-type GeminiModel = Awaited<ReturnType<typeof configureBasicGenAI>>;
-
-async function streamGeminiText(
-  genModel: GeminiModel,
-  contents: Content[],
-  operation: string,
-  config: CoachAIConfig,
-  sink: StreamSink
-): Promise<string> {
-  return withLlmRetry(
-    operation,
-    config,
-    async (signal, touch) => {
-      sink.reset();
-      let usage: LlmUsage | null = null;
-      const chunks = await genModel.generateContentStream({ contents, abortSignal: signal });
-      for await (const chunk of chunks) {
-        touch();
-        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
-        const { text } = extractGeminiText(chunk);
-        if (text) {
-          sink.onDelta(text);
-        }
-      }
-
-      noteUsage(config, operation, usage);
-      return sink.raw();
-    },
-    { hasStreamed: sink.hasEmitted }
-  );
-}
-
-/** One non-streaming OpenAI-compatible completion, retried and timed out by `withLlmRetry`. */
-function createOpenAiCompletion(
-  client: OpenAI,
-  operation: string,
-  config: CoachAIConfig,
-  payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming
-) {
-  return withLlmRetry(operation, config, (_signal, _touch, options) =>
-    client.chat.completions.create(payload, options)
-  );
-}
-
-async function streamOpenAiText(
-  client: OpenAI,
-  payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming,
-  operation: string,
-  config: CoachAIConfig,
-  sink: StreamSink
-): Promise<string> {
-  return withLlmRetry(
-    operation,
-    config,
-    async (_signal, touch, options) => {
-      sink.reset();
-      let usage: LlmUsage | null = null;
-      const chunks = await client.chat.completions.create({ ...payload, stream: true }, options);
-      for await (const chunk of chunks) {
-        touch();
-        // Only present when the provider sends it (OpenRouter does, on the last chunk).
-        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
-        const delta = chunk.choices[0]?.delta?.content;
-        if (delta) {
-          sink.onDelta(delta);
-        }
-      }
-
-      noteUsage(config, operation, usage);
-      return sink.raw();
-    },
-    { hasStreamed: sink.hasEmitted }
-  );
-}
-
 type ClaudeParams = Anthropic.MessageCreateParamsNonStreaming;
 
 /**
@@ -524,7 +481,7 @@ async function buildClaudeParams(
     system,
     messages,
     output_config: {
-      effort: claudeEffort(await resolveEffort(options.task)),
+      effort: claudeEffort(await resolveEffort(config, options.task)),
       ...(options.schema
         ? { format: { type: 'json_schema', schema: makeSchemaStrict(options.schema) } }
         : {}),
@@ -532,67 +489,298 @@ async function buildClaudeParams(
   };
 }
 
+// --- One completion, whatever the cloud provider ---
+
 /**
- * Sends a Claude request and returns the reply text, logging both sides for the debug dump. With a
- * `sink` the reply is streamed into it (and `max_tokens` is raised, since a stream has no HTTP
- * timeout to stay under); without one it is a single request.
+ * What every Gemini, Claude and OpenAI-compatible request needs. The chat reply, a plain-text insight
+ * and a structured job are the same request with a different `schema` and `sink`, so they share this
+ * one funnel: it is the only place the debug dump is written and the token usage recorded.
  */
-async function runClaude(
+type CompletionRequest = {
+  /** Names the call in debug dumps, retry logs and token usage. */
+  operation: string;
+  system: string;
+  /** The conversation before `userMessage`. */
+  turns: readonly ChatHistoryEntry[];
+  userMessage: string;
+  images?: readonly MealImage[];
+  /** What kind of job this is, which decides how hard the model reasons. */
+  task: AiTask;
+  /** A reply that must fit this JSON schema (a structured job, or the chat reply object). */
+  schema?: { name: string; body: object };
+  /** Streams the reply into this sink; without one the call is a single request. */
+  sink?: StreamSink | null;
+  /** Free chat only: the provider's repetition penalties and prompt caching. */
+  chat?: boolean;
+};
+
+type Completion = { text: string; stop?: StopSignal };
+
+/** A request ready to send: what the debug dump shows, and the call itself. */
+type PreparedCall = {
+  payload: unknown;
+  send: () => Promise<Completion & { usage: LlmUsage | null }>;
+};
+
+async function prepareGeminiCall(
   config: CoachAIConfig,
-  operation: string,
-  params: ClaudeParams,
-  sink?: StreamSink | null
-): Promise<string> {
-  const client = buildClaudeClient(config.apiKey);
+  request: CompletionRequest
+): Promise<PreparedCall> {
+  const { operation, system, sink, schema } = request;
+  const systemParts: Part[] = [{ text: system }];
+  const genModel = await configureBasicGenAI(
+    {
+      apiKey: config.apiKey,
+      model: config.model,
+      generationConfig: buildGeminiGenerationConfig(config.model, {
+        effort: await resolveEffort(config, request.task),
+        // A reply that must fit a schema is JSON; a plain-text insight is not.
+        ...(schema ? { responseSchema: schema.body } : { json: false }),
+      }),
+    },
+    systemParts
+  );
+  const contents = buildGeminiContents(request.turns, request.userMessage, request.images);
+
+  return {
+    payload: { model: config.model, contents, systemPrompt: system, schema: schema?.body },
+    send: async () => {
+      if (sink) {
+        let usage: LlmUsage | null = null;
+        const text = await withLlmRetry(
+          operation,
+          config,
+          async (signal, touch) => {
+            sink.reset();
+            usage = null;
+            const chunks = await genModel.generateContentStream({
+              contents,
+              abortSignal: signal,
+            });
+            for await (const chunk of chunks) {
+              touch();
+              usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
+              const { text: delta } = extractGeminiText(chunk);
+              if (delta) {
+                sink.onDelta(delta);
+              }
+            }
+
+            return sink.raw();
+          },
+          { hasStreamed: sink.hasEmitted }
+        );
+
+        return { text, usage };
+      }
+
+      const result = await withLlmRetry(operation, config, (signal) =>
+        genModel.generateContent({ contents, abortSignal: signal })
+      );
+      const { text, finishReason } = extractGeminiReply(result);
+
+      return {
+        text,
+        stop: { source: 'gemini', reason: finishReason },
+        usage: extractLlmUsage(result),
+      };
+    },
+  };
+}
+
+async function prepareOpenAiCall(
+  config: CoachAIConfig,
+  request: CompletionRequest
+): Promise<PreparedCall> {
+  const { operation, sink, schema } = request;
+  const client = buildOpenAIClient(config);
+  const images = request.images ?? [];
+  const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+    model: config.model,
+    messages: [
+      { role: 'system', content: request.system },
+      ...normalizeHistory(request.turns).map((entry) => ({
+        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: entry.content,
+      })),
+      {
+        role: 'user',
+        content:
+          images.length > 0
+            ? [
+                { type: 'text', text: request.userMessage },
+                ...images.map((image) => ({
+                  type: 'image_url' as const,
+                  image_url: { url: `data:${image.mimeType};base64,${image.base64}` },
+                })),
+              ]
+            : request.userMessage,
+      },
+    ],
+    ...(request.chat ? providerPolicyFor(config).chatSampling : {}),
+    ...(await openAiReasoning(config, await resolveEffort(config, request.task))),
+    ...(schema
+      ? {
+          response_format: {
+            type: 'json_schema' as const,
+            json_schema: { name: schema.name, strict: true, schema: makeSchemaStrict(schema.body) },
+          },
+        }
+      : {}),
+  };
+
+  return {
+    payload,
+    send: async () => {
+      if (sink) {
+        let usage: LlmUsage | null = null;
+        const text = await withLlmRetry(
+          operation,
+          config,
+          async (_signal, touch, options) => {
+            sink.reset();
+            usage = null;
+            const chunks = await client.chat.completions.create(
+              { ...payload, stream: true },
+              options
+            );
+            for await (const chunk of chunks) {
+              touch();
+              // Only present when the provider sends it (OpenRouter does, on the last chunk).
+              usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
+              const delta = chunk.choices[0]?.delta?.content;
+              if (delta) {
+                sink.onDelta(delta);
+              }
+            }
+
+            return sink.raw();
+          },
+          { hasStreamed: sink.hasEmitted }
+        );
+
+        return { text, usage };
+      }
+
+      const completion = await withLlmRetry(operation, config, (_signal, _touch, options) =>
+        client.chat.completions.create(payload, options)
+      );
+      const choice = completion.choices[0];
+
+      return {
+        text: choice?.message?.content ?? '',
+        stop: { source: 'openai', reason: choice?.finish_reason },
+        usage: extractLlmUsage(completion),
+      };
+    },
+  };
+}
+
+async function prepareClaudeCall(
+  config: CoachAIConfig,
+  request: CompletionRequest
+): Promise<PreparedCall> {
+  const { operation, sink } = request;
+  const client = buildClaudeClient(config.apiKey, 0);
+  const images = request.images ?? [];
+  const params = await buildClaudeParams(
+    config,
+    request.system,
+    buildClaudeMessages(
+      [...request.turns],
+      images.length > 0
+        ? [
+            ...images.map((image) => ({
+              type: 'image' as const,
+              source: {
+                type: 'base64' as const,
+                media_type: claudeImageType(image.mimeType),
+                data: image.base64,
+              },
+            })),
+            { type: 'text' as const, text: request.userMessage },
+          ]
+        : request.userMessage
+    ),
+    { task: request.task, schema: request.schema?.body, cache: request.chat }
+  );
+
+  return {
+    payload: params,
+    send: async () => {
+      if (sink) {
+        let usage: LlmUsage | null = null;
+        // A stream has no HTTP timeout to stay under, so it may ask for more tokens.
+        const text = await withLlmRetry(
+          operation,
+          config,
+          async (signal, touch) => {
+            sink.reset();
+            const events = client.messages.stream(
+              { ...params, max_tokens: CLAUDE_STREAM_MAX_TOKENS },
+              { signal }
+            );
+            for await (const event of events) {
+              touch();
+              const delta = claudeStreamDelta(event);
+              if (delta) {
+                sink.onDelta(delta);
+              }
+            }
+
+            usage = await finalClaudeUsage(events);
+
+            return sink.raw();
+          },
+          { hasStreamed: sink.hasEmitted }
+        );
+
+        return { text, usage };
+      }
+
+      const message = await withLlmRetry(operation, config, (signal) =>
+        client.messages.create(params, { signal })
+      );
+      const { text, stopReason } = extractClaudeText(message);
+
+      return {
+        text,
+        stop: { source: 'claude', reason: stopReason },
+        usage: extractLlmUsage(message),
+      };
+    },
+  };
+}
+
+/** One Gemini, Claude or OpenAI-compatible request, retried and timed out by `withLlmRetry`. */
+async function complete(config: CoachAIConfig, request: CompletionRequest): Promise<Completion> {
+  let prepare = prepareOpenAiCall;
+  if (config.provider === 'gemini') {
+    prepare = prepareGeminiCall;
+  } else if (config.provider === 'claude') {
+    prepare = prepareClaudeCall;
+  }
+
+  const call = await prepare(config, request);
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'request',
-    operation,
-    payload: params,
+    operation: request.operation,
+    payload: call.payload,
     config,
   });
 
-  let text: string;
-  if (sink) {
-    text = await withLlmRetry(
-      operation,
-      config,
-      async (signal, touch) => {
-        sink.reset();
-        const events = client.messages.stream(
-          { ...params, max_tokens: CLAUDE_STREAM_MAX_TOKENS },
-          { signal }
-        );
-        for await (const event of events) {
-          touch();
-          const delta = claudeStreamDelta(event);
-          if (delta) {
-            sink.onDelta(delta);
-          }
-        }
-
-        noteUsage(config, operation, await finalClaudeUsage(events));
-        return sink.raw();
-      },
-      { hasStreamed: sink.hasEmitted }
-    );
-  } else {
-    const message = await withLlmRetry(operation, config, (signal) =>
-      client.messages.create(params, { signal })
-    );
-    noteUsage(config, operation, extractLlmUsage(message));
-    text = extractClaudeText(message).text;
-  }
-
+  const { usage, ...completion } = await call.send();
+  noteUsage(config, request.operation, usage);
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
-    operation,
-    payload: { text },
+    operation: request.operation,
+    payload: completion,
     config,
   });
 
-  return text;
+  return completion;
 }
 
 /**
@@ -692,6 +880,8 @@ export type TrackMealResponse = {
 
 export type RecipeIngredient = {
   name: string;
+  /** The food's plain English name, used only to find it among the stored foods; never shown. */
+  englishName?: string;
   grams: number;
   foodId?: string;
 };
@@ -753,6 +943,8 @@ const rememberMeProperty = {
  * property listed, and a small model fills a required field more reliably than it opts into an
  * optional one.
  */
+const CHAT_PROPERTY_ORDER = ['msg4User', 'remember_me'];
+
 function buildResponseSchema() {
   return {
     type: 'object',
@@ -766,7 +958,7 @@ function buildResponseSchema() {
  * Consecutive same-role messages are merged (content joined with newline).
  * This is required by Gemini (strict alternation) and produces cleaner context for OpenAI too.
  */
-export function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
+export function normalizeHistory(history: readonly ChatHistoryEntry[]): ChatHistoryEntry[] {
   const result: ChatHistoryEntry[] = [];
   for (const entry of history) {
     const prev = result[result.length - 1];
@@ -810,7 +1002,8 @@ export function truncateHistoryByBudget(
 
 // --- Helper Functions ---
 
-function extractRawText(response: any): string {
+/** The answer text of a Gemini response and its `finishReason`, warning when there is no text. */
+function extractGeminiReply(response: any): { text: string; finishReason?: string } {
   const { text, finishReason, blockReason, thoughtOnly } = extractGeminiText(response);
   if (!text.trim()) {
     // An empty answer has several different causes; say which, so "analyzing forever" is debuggable.
@@ -819,46 +1012,62 @@ function extractRawText(response: any): string {
     );
   }
 
-  return text;
+  return { text, finishReason };
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
   // The same ladder every structured reply gets (fences and template tokens, the JSON inside text,
   // `jsonrepair`), so almost-JSON from a small model is not shown to the person as raw JSON.
   const parsed = parseStructuredJson<Record<string, unknown>>(raw);
-  if (parsed.kind === 'ok' && typeof parsed.value === 'object' && parsed.value !== null) {
-    const value = parsed.value;
-    const text = (field: string): string | undefined =>
-      typeof value[field] === 'string' ? (value[field] as string) : undefined;
+  const fields =
+    parsed.kind === 'ok' && typeof parsed.value === 'object' ? (parsed.value ?? {}) : {};
+  const text = (field: string): string | undefined =>
+    typeof fields[field] === 'string' ? (fields[field] as string) : undefined;
 
-    return {
-      msg4User: text('msg4User') ?? raw,
-      sumMsg: text('sumMsg'),
-      sumUserMsg: text('sumUserMsg'),
-      rememberMe: text('remember_me'),
-    };
-  }
-
-  // Cut off or too broken to repair: the reply field itself can often still be read.
+  // Cut off, too broken to repair or missing the reply field: the field can often still be read out
+  // of the text (`readJsonStringField` passes text that is not a JSON object through), and otherwise
+  // the text itself is the reply.
   const stripped = stripTemplateTokens(raw);
-  if (stripped.replace(/^```(?:json)?\s*/i, '').startsWith('{')) {
-    const message = readJsonStringField(stripped, 'msg4User');
-    if (message.trim()) {
-      return { msg4User: message };
-    }
-  }
+  const readable = readJsonStringField(stripped, 'msg4User');
 
-  return { msg4User: stripped || raw };
+  return {
+    msg4User: text('msg4User') ?? (readable.trim() ? readable : stripped || raw),
+    sumMsg: text('sumMsg'),
+    sumUserMsg: text('sumUserMsg'),
+    rememberMe: text('remember_me'),
+  };
 }
 
-function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): Content[] {
+/** The latest turns a free-chat reply is sent, under the provider's turn cap when it has one. */
+function latestChatTurns(history: ChatHistoryEntry[], config: CoachAIConfig): ChatHistoryEntry[] {
+  const max = providerPolicyFor(config).maxChatHistoryTurns;
+
+  return max === undefined ? history : history.slice(-max);
+}
+
+function buildGeminiContents(
+  history: readonly ChatHistoryEntry[],
+  userMessage: string,
+  images: readonly MealImage[] = []
+): Content[] {
   const normalized = normalizeHistory(history);
   const historyContents: Content[] = normalized.map((entry) => ({
     parts: [{ text: entry.content } as Part],
     role: entry.role === 'coach' ? 'model' : 'user',
   }));
 
-  return [...historyContents, { parts: [{ text: userMessage } as Part], role: 'user' }];
+  return [
+    ...historyContents,
+    {
+      parts: [
+        { text: userMessage } as Part,
+        ...images.map(
+          (image) => ({ inlineData: { data: image.base64, mimeType: image.mimeType } }) as Part
+        ),
+      ],
+      role: 'user',
+    },
+  ];
 }
 
 /**
@@ -929,264 +1138,44 @@ function noteUsage(config: CoachAIConfig, operation: string, usage: LlmUsage | n
 
 // --- Provider Implementations ---
 
-async function sendViaGemini(
-  config: CoachAIConfig,
-  history: ChatHistoryEntry[],
-  userMessage: string,
-  context?: 'nutrition' | 'exercise' | 'general',
-  stream?: CoachStream
-): Promise<CoachResponse> {
-  const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.gemini;
-  const systemPrompt = await chatSystemPrompt(config, history, context);
-  const systemParts: Part[] = [{ text: systemPrompt }];
-
-  const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
-  // Gemini does not promise the schema's property order, and the reply is shown from the first
-  // property while the rest is still being written.
-  const responseSchema = {
-    ...buildResponseSchema(),
-    propertyOrdering: ['msg4User', 'remember_me'],
-  };
-
-  const genModel = await configureBasicGenAI(
-    {
-      apiKey: config.apiKey,
-      model: config.model,
-      generationConfig: buildGeminiGenerationConfig(config.model, {
-        responseSchema,
-        effort: await resolveEffort('chat'),
-      }),
-    },
-    systemParts
-  );
-
-  const contents = buildGeminiContents(truncatedHistory, userMessage);
-  const requestPayload = {
-    model: config.model,
-    contents,
-    config: {
-      responseMimeType: 'application/json',
-      responseSchema,
-      systemInstruction: {
-        parts: systemParts,
-      },
-    },
-  };
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation: 'sendViaGemini',
-    payload: requestPayload,
-    config,
-  });
-
-  if (stream) {
-    const streamedRaw = await streamGeminiText(
-      genModel,
-      contents,
-      'sendViaGemini',
-      config,
-      createStreamSink(stream, 'coachJson')
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'sendViaGemini',
-      payload: { text: streamedRaw },
-      config,
-    });
-
-    return parseCoachResponse(streamedRaw);
-  }
-
-  const result = await withLlmRetry('sendViaGemini', config, (signal) =>
-    genModel.generateContent({ contents, abortSignal: signal })
-  );
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: 'sendViaGemini',
-    payload: result,
-    config,
-  });
-
-  noteUsage(config, 'sendViaGemini', extractLlmUsage(result));
-  const raw = extractRawText(result);
-  return parseCoachResponse(raw);
-}
-
-async function sendViaOpenAI(
-  config: CoachAIConfig,
-  history: ChatHistoryEntry[],
-  userMessage: string,
-  context?: 'nutrition' | 'exercise' | 'general',
-  stream?: CoachStream
-): Promise<CoachResponse> {
-  const client = buildOpenAIClient(config);
-  const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
-
-  const systemPrompt = await chatSystemPrompt(config, history, context);
-
-  const policy = providerPolicyFor(config.provider);
-  const recentHistory =
-    policy.maxChatHistoryTurns === undefined ? history : history.slice(-policy.maxChatHistoryTurns);
-  const truncatedHistory = truncateHistoryByBudget(recentHistory, providerConfig.maxCharBudget);
-  const normalized = normalizeHistory(truncatedHistory);
-
-  const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-    { role: 'system', content: systemPrompt },
-    ...normalized.map((entry) => ({
-      role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-      content: entry.content,
-    })),
-    { role: 'user', content: userMessage },
-  ];
-
-  const schema = makeSchemaStrict(buildResponseSchema());
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages,
-    ...policy.chatSampling,
-    ...(await openAiReasoning(config, await resolveEffort('chat'))),
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'coach_response',
-        strict: true,
-        schema,
-      },
-    },
-  };
-
-  const sink = stream ? createStreamSink(stream, 'coachJson') : null;
-  try {
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation: 'sendViaOpenAI',
-      payload: requestPayload,
-      config,
-    });
-
-    if (sink) {
-      const streamedRaw = await streamOpenAiText(
-        client,
-        requestPayload,
-        'sendViaOpenAI',
-        config,
-        sink
-      );
-
-      await logLlmDebugEvent({
-        provider: config.provider,
-        direction: 'response',
-        operation: 'sendViaOpenAI',
-        payload: { text: streamedRaw },
-        config,
-      });
-
-      return parseCoachResponse(streamedRaw || '{}');
-    }
-
-    const completion = await createOpenAiCompletion(
-      client,
-      'sendViaOpenAI',
-      config,
-      requestPayload
-    );
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'sendViaOpenAI',
-      payload: completion,
-      config,
-    });
-
-    noteUsage(config, 'sendViaOpenAI', extractLlmUsage(completion));
-    const raw = completion.choices[0]?.message?.content ?? '{}';
-    return parseCoachResponse(raw);
-  } catch (error) {
-    return failedCoachReply(error, config, 'sendViaOpenAI', sink);
-  }
-}
-
 /**
- * What a chat request that threw turns into: a typed, user-actionable error is rethrown; a reply
- * that was already on screen is taken back by the caller (a friendly error message saved as the
- * coach's answer would sit next to half of the real one); a spent quota is an `AiCreditsError`;
- * anything else becomes a generic apology without the internals.
+ * The senders are transport only: the system prompt and the trimmed turns arrive ready, and any
+ * failure is thrown. `sendCoachMessage` turns a failure into the apology once.
+ *
+ * A Gemini, Claude or OpenAI-compatible chat reply is one request for the coach's JSON object, of
+ * which only `msg4User` is shown while it is written. Gemini does not promise the schema's property
+ * order, and the reply is shown from the first property while the rest is still being written, so it
+ * is told the order.
  */
-async function failedCoachReply(
-  error: unknown,
+async function sendViaCloud(
   config: CoachAIConfig,
-  operation: string,
-  sink: StreamSink | null
-): Promise<CoachResponse> {
-  rethrowUserFacingAiError(error);
-  if (sink?.hasEmitted()) {
-    throw error;
-  }
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation,
-    payload: { error },
-    config,
-  });
-  console.error(`[coachAI] ${operation} error:`, error);
-
-  // Log detailed error for debugging but don't expose internals to user
-  reportAiError(error, `coachAI.${operation}`);
-
-  if (isAiCreditsError(error)) {
-    throw config.provider === 'gateway'
-      ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
-      : new AiCreditsError(i18n.t('errors.aiCreditsError'));
-  }
-
-  return {
-    msg4User: i18n.t('errors.aiProcessingError'),
-    sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
-  };
-}
-
-async function sendViaClaude(
-  config: CoachAIConfig,
-  history: ChatHistoryEntry[],
+  systemPrompt: string,
+  turns: ChatHistoryEntry[],
   userMessage: string,
-  context?: 'nutrition' | 'exercise' | 'general',
   stream?: CoachStream
 ): Promise<CoachResponse> {
-  const systemPrompt = await chatSystemPrompt(config, history, context);
-  const truncatedHistory = truncateHistoryByBudget(history, PROVIDER_CONFIGS.claude.maxCharBudget);
-  const params = await buildClaudeParams(
-    config,
-    systemPrompt,
-    buildClaudeMessages(truncatedHistory, userMessage),
-    { task: 'chat', schema: buildResponseSchema(), cache: true }
-  );
+  const body = buildResponseSchema();
+  const reply = await complete(config, {
+    operation: 'sendCoachMessage',
+    system: systemPrompt,
+    turns,
+    userMessage,
+    task: 'chat',
+    schema: {
+      name: 'coach_response',
+      body:
+        config.provider === 'gemini' ? { ...body, propertyOrdering: CHAT_PROPERTY_ORDER } : body,
+    },
+    sink: stream ? createStreamSink(stream, 'coachJson') : null,
+    chat: true,
+  });
 
-  const sink = stream ? createStreamSink(stream, 'coachJson') : null;
-  try {
-    const raw = await runClaude(config, 'sendViaClaude', params, sink);
-    return parseCoachResponse(raw || '{}');
-  } catch (error) {
-    return failedCoachReply(error, config, 'sendViaClaude', sink);
-  }
-}
-
-/** Which engine an `on-device` config runs; Apple's system model unless the config says otherwise. */
-function onDeviceEngineOf(config: CoachAIConfig): OnDeviceEngine {
-  return config.engine ?? 'apple';
+  return parseCoachResponse(reply.text);
 }
 
 /** The context budget of the engine behind an `on-device` config. */
-function onDeviceBudget(config: CoachAIConfig): number {
-  return ON_DEVICE_CONTEXT_CHARS[onDeviceEngineOf(config)];
+function onDeviceBudget(config: OnDeviceConfig): number {
+  return ON_DEVICE_CONTEXT_CHARS[config.engine];
 }
 
 /**
@@ -1195,23 +1184,20 @@ function onDeviceBudget(config: CoachAIConfig): number {
  * model keeps its own path.
  */
 async function runOnDeviceText(
-  config: CoachAIConfig,
+  config: OnDeviceConfig,
   operation: string,
   messages: { role: 'user' | 'assistant'; content: string }[],
   systemPrompt: string | undefined,
-  sink: StreamSink | null,
-  penalties?: ProviderPolicy['chatSampling']
+  sink: StreamSink | null
 ): Promise<string> {
-  // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person, streamed
-  // or not, whichever engine wrote the text.
-  if (onDeviceEngineOf(config) === 'gguf') {
-    const text = await withLlmRetry(
+  if (config.engine === 'gguf') {
+    return withLlmRetry(
       operation,
       config,
       async (signal, touch) => {
         sink?.reset();
         if (!sink) {
-          return sendLocalMessage(messages, systemPrompt, signal, penalties);
+          return sendLocalMessage(messages, systemPrompt, signal);
         }
 
         const streamed = await streamLocalMessage(
@@ -1221,8 +1207,7 @@ async function runOnDeviceText(
             touch();
             sink.onDelta(delta);
           },
-          signal,
-          penalties
+          signal
         );
 
         // The runtime's text is llama.cpp's parsed message, already cleaned; the raw stream is the
@@ -1231,86 +1216,171 @@ async function runOnDeviceText(
       },
       { hasStreamed: () => sink?.hasEmitted() ?? false }
     );
-
-    return stripTemplateTokens(text);
   }
 
   const text = sink
     ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
     : await sendOnDeviceMessage(messages, systemPrompt);
 
-  return stripTemplateTokens(text ?? '');
+  return text ?? '';
 }
 
-async function sendViaOnDevice(
-  config: CoachAIConfig,
-  history: ChatHistoryEntry[],
+/** Words of a reply read before any of it is shown, to tell a copy of an earlier coach turn. */
+const COPY_GATE_WORDS = 12;
+
+type OnDeviceChatMessage = { role: 'user' | 'assistant'; content: string };
+
+function toOnDeviceChatMessage(entry: ChatHistoryEntry): OnDeviceChatMessage {
+  return { role: entry.role === 'coach' ? 'assistant' : 'user', content: entry.content };
+}
+
+function onDeviceChatMessages(
+  entries: readonly ChatHistoryEntry[],
+  userMessage: string
+): OnDeviceChatMessage[] {
+  return [...entries.map(toOnDeviceChatMessage), { role: 'user', content: userMessage }];
+}
+
+/**
+ * One chat reply from the downloaded model that is not a copy of one of its own earlier replies
+ * (`ProviderPolicy.regeneratesCopiedChatReply`). A 450M model answers "That's all you can say?" with
+ * an answer pasted from five messages earlier, and no sampling setting prevents it: llama.rn does not
+ * feed the prompt into the repetition penalties. So the reply is read as it is written. Its first
+ * `COPY_GATE_WORDS` words are held back; when they repeat a coach turn that was sent, the generation
+ * is stopped before anything was shown and the reply is written again from the person's own
+ * messages alone, where there is no coach turn to copy. Without a stream the whole reply is checked
+ * instead. A cancel by the person is never turned into a second attempt, and a reply that was not
+ * a copy is returned as it came.
+ */
+async function runOnDeviceChatReply(
+  config: OnDeviceConfig,
+  systemPrompt: string,
+  history: readonly ChatHistoryEntry[],
   userMessage: string,
-  context?: 'nutrition' | 'exercise' | 'general',
-  stream?: CoachStream
-): Promise<CoachResponse> {
-  const sink = stream ? createStreamSink(stream, 'plain') : null;
+  sink: StreamSink | null
+): Promise<string> {
+  const messages = onDeviceChatMessages(history, userMessage);
+  const earlierReplies = history.filter((e) => e.role === 'coach').map((e) => e.content);
+  if (!providerPolicyFor(config).regeneratesCopiedChatReply || earlierReplies.length === 0) {
+    return runOnDeviceText(config, 'sendViaOnDevice', messages, systemPrompt, sink);
+  }
+
+  // Two reasons to stop a generation: the person's cancel, and the gate finding a copy.
+  const stop = new AbortController();
+  const stopWithPerson = () => stop.abort();
+  if (config.signal?.aborted) {
+    stop.abort();
+  } else {
+    config.signal?.addEventListener('abort', stopWithPerson);
+  }
+
+  let copied = false;
+  const gate = createCopyGate({
+    earlierReplies,
+    windowWords: COPY_GATE_WORDS,
+    clean: stripStreamingTemplateTokens,
+    release: (delta) => sink?.onDelta(delta),
+    onCopied: () => {
+      copied = true;
+      stop.abort();
+    },
+  });
+  const gatedSink: StreamSink | null = sink && {
+    onDelta: gate.push,
+    reset: () => {
+      sink.reset();
+      gate.reset();
+      copied = false;
+    },
+    hasEmitted: sink.hasEmitted,
+    raw: sink.raw,
+  };
+
+  let first: string | null = null;
   try {
-    const systemPrompt = await getChatMessagePromptContent(
-      config.language,
-      undefined,
-      context,
-      'on-device'
-    );
-
-    // The same two rules as a custom local server: only the latest turns, and (on the downloaded
-    // model) a repetition penalty, so a one-word follow-up does not get the last answer back.
-    const policy = providerPolicyFor(config.provider);
-    const recentHistory =
-      policy.maxChatHistoryTurns === undefined
-        ? history
-        : history.slice(-policy.maxChatHistoryTurns);
-    const truncatedHistory = truncateHistoryByBudget(
-      recentHistory,
-      onDeviceBudget(config) - userMessage.length
-    );
-    const normalized = normalizeHistory(truncatedHistory);
-
-    const messages = [
-      ...normalized.map((e) => ({
-        role: (e.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-        content: e.content,
-      })),
-      { role: 'user' as const, content: userMessage },
-    ];
-
-    await logLlmDebugEvent({
-      provider: 'on-device',
-      direction: 'request',
-      operation: 'sendCoachMessage',
-      payload: { systemPrompt, messages },
-      config,
-    });
-
-    const raw = await runOnDeviceText(
-      config,
+    first = await runOnDeviceText(
+      { ...config, signal: stop.signal },
       'sendViaOnDevice',
       messages,
       systemPrompt,
-      sink,
-      policy.chatSampling
+      gatedSink
     );
-
-    await logLlmDebugEvent({
-      provider: 'on-device',
-      direction: 'response',
-      operation: 'sendCoachMessage',
-      payload: { text: raw },
-      config,
-    });
-
-    return {
-      msg4User: raw || i18n.t('errors.aiProcessingError'),
-      sumMsg: raw?.slice(0, 120) ?? '',
-    };
+    if (gatedSink) {
+      gate.finish();
+    } else {
+      copied = isCopiedReply(stripTemplateTokens(first), earlierReplies);
+    }
   } catch (error) {
-    return failedCoachReply(error, config, 'sendViaOnDevice', sink);
+    // Only the gate's own stop is expected here; the person's cancel and every failure go on.
+    if (!(error instanceof AiCancelledError) || !copied || config.signal?.aborted) {
+      throw error;
+    }
+  } finally {
+    config.signal?.removeEventListener('abort', stopWithPerson);
   }
+
+  if (!copied && first !== null) {
+    return first;
+  }
+
+  reportAiEvent('ai-chat-reply-copied', {
+    provider: config.provider,
+    operation: 'sendCoachMessage',
+  });
+
+  // The person's own messages only, run together the way `normalizeHistory` does, so the model has
+  // no coach turn left to copy. The retry goes through the same cancel and retry rules.
+  const ownMessages = normalizeHistory([
+    ...history.filter((e) => e.role !== 'coach'),
+    { role: 'user', content: userMessage },
+  ]).map(toOnDeviceChatMessage);
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'request',
+    operation: 'sendCoachMessage:withoutCopiedReply',
+    payload: { systemPrompt, messages: ownMessages },
+    config,
+  });
+
+  return runOnDeviceText(config, 'sendViaOnDevice', ownMessages, systemPrompt, sink);
+}
+
+async function sendViaOnDevice(
+  config: OnDeviceConfig,
+  systemPrompt: string,
+  turns: ChatHistoryEntry[],
+  userMessage: string,
+  stream?: CoachStream
+): Promise<CoachResponse> {
+  const sink = stream ? createStreamSink(stream, 'plain') : null;
+  const normalized = normalizeHistory(turns);
+  const messages = onDeviceChatMessages(normalized, userMessage);
+
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'request',
+    operation: 'sendCoachMessage',
+    payload: { systemPrompt, messages },
+    config,
+  });
+
+  // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person.
+  const raw = stripTemplateTokens(
+    await runOnDeviceChatReply(config, systemPrompt, normalized, userMessage, sink)
+  );
+
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'response',
+    operation: 'sendCoachMessage',
+    payload: { text: raw },
+    config,
+  });
+
+  // An empty reply stays empty: the reply service takes the person's message back and offers a
+  // retry. Saving the apology as the coach's answer put it into the history, and a small model
+  // copies its own earlier replies.
+  return { msg4User: raw, sumMsg: raw.slice(0, 120) };
 }
 
 // --- Helpers for insight/parsing/vision ---
@@ -1323,7 +1393,7 @@ const INSIGHTS_USER_MESSAGE = 'Based on the data above, provide your analysis an
  * was rejected, and left every insight feature broken on-device.
  */
 async function generateTextOnDevice(
-  config: CoachAIConfig,
+  config: OnDeviceConfig,
   systemPrompt: string,
   history: ChatHistoryEntry[],
   userMessage: string,
@@ -1360,173 +1430,65 @@ async function generateTextOnDevice(
     config,
   });
 
-  return (raw ?? '').trim();
-}
-
-async function generateText(
-  config: CoachAIConfig,
-  systemPrompt: string,
-  userMessage: string = INSIGHTS_USER_MESSAGE,
-  stream?: CoachStream,
-  task: AiTask = 'insight'
-): Promise<string> {
-  // Wrap user message with delimiters to prevent prompt injection
-  const sanitizedUserMessage = wrapUserContent(userMessage);
-  const lang = config.language ?? DEFAULT_LANG;
-  const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
-  if (config.provider === 'on-device') {
-    return generateTextOnDevice(config, promptWithLang, [], sanitizedUserMessage, stream);
-  }
-
-  if (config.provider === 'gemini') {
-    const requestPayload = {
-      model: config.model,
-      contents: [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }],
-      config: {
-        systemInstruction: {
-          parts: [{ text: promptWithLang } as Part],
-        },
-      },
-    };
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation: 'generateText',
-      payload: requestPayload,
-      config,
-    });
-
-    const genModel = await configureBasicGenAI(
-      {
-        apiKey: config.apiKey,
-        model: config.model,
-        generationConfig: buildGeminiGenerationConfig(config.model, {
-          effort: await resolveEffort(task),
-          json: false,
-        }),
-      },
-      [{ text: promptWithLang } as Part]
-    );
-
-    const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    if (stream) {
-      const streamedRaw = await streamGeminiText(
-        genModel,
-        contents,
-        'generateText',
-        config,
-        createStreamSink(stream, 'plain')
-      );
-      await logLlmDebugEvent({
-        provider: config.provider,
-        direction: 'response',
-        operation: 'generateText',
-        payload: { text: streamedRaw },
-        config,
-      });
-
-      return stripTemplateTokens(streamedRaw);
-    }
-
-    const result = await withLlmRetry('generateText', config, (signal) =>
-      genModel.generateContent({ contents, abortSignal: signal })
-    );
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'generateText',
-      payload: result,
-      config,
-    });
-
-    const raw = extractRawText(result);
-    return raw?.trim() ?? '';
-  }
-
-  if (config.provider === 'claude') {
-    const params = await buildClaudeParams(
-      config,
-      promptWithLang,
-      [{ role: 'user', content: sanitizedUserMessage }],
-      { task }
-    );
-    const raw = await runClaude(
-      config,
-      'generateText',
-      params,
-      stream ? createStreamSink(stream, 'plain') : null
-    );
-
-    return raw.trim();
-  }
-
-  const client = buildOpenAIClient(config);
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages: [
-      { role: 'system', content: promptWithLang },
-      { role: 'user', content: sanitizedUserMessage },
-    ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
-  };
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation: 'generateText',
-    payload: requestPayload,
-    config,
-  });
-
-  if (stream) {
-    const streamedRaw = await streamOpenAiText(
-      client,
-      requestPayload,
-      'generateText',
-      config,
-      createStreamSink(stream, 'plain')
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'generateText',
-      payload: { text: streamedRaw },
-      config,
-    });
-
-    return stripTemplateTokens(streamedRaw);
-  }
-
-  const completion = await createOpenAiCompletion(client, 'generateText', config, requestPayload);
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: 'generateText',
-    payload: completion,
-    config,
-  });
-
-  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
+  return raw;
 }
 
 /**
- * Generate text with recent conversation history so the model keeps context.
- * Sends system prompt, then history (last N messages), then final user message.
+ * Text a review round, an arbiter or a first look adds to a request that was already sent. It is
+ * written by code, so it never goes through `wrapUserContent` (which cuts at 2,000 characters and
+ * escapes quotes and newlines); only the person's own words are sanitized, once, in the original.
  */
-async function generateTextWithHistory(
+export type FollowUp = {
+  /** The answer being reviewed. It becomes the model's own turn, whole and word for word. */
+  answer?: string;
+  /** What to do now. It is the last user turn. */
+  instruction: string;
+};
+
+/**
+ * The original request again, plus a follow-up: the same system prompt, history, photos and
+ * (already sanitized) user message. With an answer the turns alternate (original message, the
+ * answer, the instruction), which Gemini requires; without one the instruction joins the same user
+ * turn, since two user turns in a row would break that alternation.
+ */
+export function followUpOf<R extends { history: ChatHistoryEntry[]; userMessage: string }>(
+  request: R,
+  followUp: FollowUp
+): R {
+  if (followUp.answer === undefined) {
+    return { ...request, userMessage: `${request.userMessage}\n\n${followUp.instruction}` };
+  }
+
+  return {
+    ...request,
+    history: [
+      ...request.history,
+      { role: 'user', content: request.userMessage },
+      { role: 'coach', content: followUp.answer },
+    ],
+    userMessage: followUp.instruction,
+  };
+}
+
+/** The language line a plain-text request without conversation history ends its system prompt with. */
+function withLanguageNote(systemPrompt: string, config: CoachAIConfig): string {
+  return `${systemPrompt}\n\nRespond in the following language/locale: ${config.language ?? DEFAULT_LANG}.`;
+}
+
+/**
+ * One plain-text reply from the configured provider, as it came back. The user message arrives
+ * ready to send: the person's words were sanitized by the caller, a follow-up is trusted text.
+ */
+async function requestPlainText(
   config: CoachAIConfig,
+  operation: string,
   systemPrompt: string,
   recentConversation: ChatHistoryEntry[],
-  finalUserMessage: string,
-  stream?: CoachStream,
-  task: AiTask = 'insight'
+  sanitizedFinalUserMessage: string,
+  stream: CoachStream | undefined,
+  task: AiTask
 ): Promise<string> {
-  // Wrap user message with delimiters to prevent prompt injection
-  const sanitizedFinalUserMessage = wrapUserContent(finalUserMessage);
-  if (config.provider === 'on-device') {
+  if (isOnDeviceConfig(config)) {
     return generateTextOnDevice(
       config,
       systemPrompt,
@@ -1536,162 +1498,38 @@ async function generateTextWithHistory(
     );
   }
 
-  if (config.provider === 'gemini') {
-    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
-    const requestPayload = {
-      model: config.model,
-      contents,
-      config: {
-        systemInstruction: {
-          parts: [{ text: systemPrompt } as Part],
-        },
-      },
-    };
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation: 'generateTextWithHistory',
-      payload: requestPayload,
-      config,
-    });
-
-    const genModel = await configureBasicGenAI(
-      {
-        apiKey: config.apiKey,
-        model: config.model,
-        generationConfig: buildGeminiGenerationConfig(config.model, {
-          effort: await resolveEffort(task),
-          json: false,
-        }),
-      },
-      [{ text: systemPrompt } as Part]
-    );
-    if (stream) {
-      const streamedRaw = await streamGeminiText(
-        genModel,
-        contents,
-        'generateTextWithHistory',
-        config,
-        createStreamSink(stream, 'plain')
-      );
-      await logLlmDebugEvent({
-        provider: config.provider,
-        direction: 'response',
-        operation: 'generateTextWithHistory',
-        payload: { text: streamedRaw },
-        config,
-      });
-
-      return stripTemplateTokens(streamedRaw);
-    }
-
-    const result = await withLlmRetry('generateTextWithHistory', config, (signal) =>
-      genModel.generateContent({ contents, abortSignal: signal })
-    );
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'generateTextWithHistory',
-      payload: result,
-      config,
-    });
-
-    const raw = extractRawText(result);
-    return raw?.trim() ?? '';
-  }
-
-  if (config.provider === 'claude') {
-    const params = await buildClaudeParams(
-      config,
-      systemPrompt,
-      buildClaudeMessages(recentConversation, sanitizedFinalUserMessage),
-      { task }
-    );
-    const raw = await runClaude(
-      config,
-      'generateTextWithHistory',
-      params,
-      stream ? createStreamSink(stream, 'plain') : null
-    );
-
-    return raw.trim();
-  }
-
-  const client = buildOpenAIClient(config);
-  const historyMessages: OpenAI.Chat.ChatCompletionMessageParam[] = recentConversation.map((e) => ({
-    role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
-    content: e.content,
-  }));
-
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      ...historyMessages,
-      { role: 'user', content: sanitizedFinalUserMessage },
-    ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
-  };
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation: 'generateTextWithHistory',
-    payload: requestPayload,
-    config,
-  });
-
-  if (stream) {
-    const streamedRaw = await streamOpenAiText(
-      client,
-      requestPayload,
-      'generateTextWithHistory',
-      config,
-      createStreamSink(stream, 'plain')
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'generateTextWithHistory',
-      payload: { text: streamedRaw },
-      config,
-    });
-
-    return stripTemplateTokens(streamedRaw);
-  }
-
-  const completion = await createOpenAiCompletion(
-    client,
-    'generateTextWithHistory',
-    config,
-    requestPayload
-  );
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: 'generateTextWithHistory',
-    payload: completion,
-    config,
-  });
-
-  return stripTemplateTokens(completion.choices[0]?.message?.content ?? '');
+  return (
+    await complete(config, {
+      operation,
+      system: systemPrompt,
+      turns: recentConversation,
+      userMessage: sanitizedFinalUserMessage,
+      task,
+      sink: stream ? createStreamSink(stream, 'plain') : null,
+    })
+  ).text;
 }
 
-function getSchemaFromFunctionDeclaration(fn: {
-  parameters?: { type?: string; properties?: object; required?: string[] };
-}): object {
-  const p = fn.parameters;
-  if (!p || typeof p !== 'object') {
+/**
+ * The JSON Schema of the first function of a `get*Functions()` list. Gemini's declarations and
+ * OpenAI's functions both carry it as `parameters`, so one reader serves every dialect.
+ */
+export function schemaOfFunction(fns: readonly { parameters?: unknown }[]): object {
+  const parameters = fns[0]?.parameters;
+  if (typeof parameters !== 'object' || parameters === null) {
     return { type: 'object', properties: {}, required: [] };
   }
 
+  const { type, properties, required } = parameters as {
+    type?: unknown;
+    properties?: unknown;
+    required?: unknown;
+  };
+
   return {
-    type: p.type ?? 'object',
-    properties: p.properties ?? {},
-    required: p.required ?? [],
+    type: typeof type === 'string' ? type : 'object',
+    properties: typeof properties === 'object' && properties !== null ? properties : {},
+    required: Array.isArray(required) ? required : [],
   };
 }
 
@@ -1706,180 +1544,129 @@ export type StructuredRequest = {
   /** The conversation so far, without the message being sent. */
   history: ChatHistoryEntry[];
   userMessage: string;
+  /**
+   * Photos that go with the user message, already prepared (`prepareMealImages`). Apple's on-device
+   * engine takes none. The downloaded model reads ONE photo per request (the first), so a meal of
+   * several photos is read one request at a time (`estimateMealFromPhotoOnDevice`).
+   */
+  images?: readonly MealImage[];
   /** Each provider takes the schema in a slightly different dialect. */
   buildSchema: (dialect: StructuredDialect) => object;
   /** What kind of job this is, which decides how hard the model reasons. Defaults to extraction. */
   task?: AiTask;
+  /** Sampling temperature, for the downloaded model only (a warmer retry of an unusable reply). */
+  temperature?: number;
 };
 
-export type StructuredResult<T = unknown> =
-  { kind: 'ok'; value: T } | { kind: 'malformed'; raw: string };
-
-const MALFORMED_RAW_PREVIEW_CHARS = 500;
-
 /**
- * The shape gate for the downloaded on-device model: a value that parsed but does not match the schema it
- * was asked for is `malformed`, so no feature normalizer ever reads it. Cloud providers enforce the
- * schema server-side and their callers already tolerate a partial answer, so they are not checked.
+ * Last resort for a local model's structured reply: one text-only structured request that is asked to
+ * correct the broken reply against the schema, sent through the same funnel and shape check. It runs
+ * only after the parser, `jsonrepair` and the schema check all failed, so a good reply never pays for
+ * it. A failure of the repair call leaves the original failure; only a cancel is rethrown.
  */
-function checkStructuredShape<T>(
-  result: StructuredResult<T>,
-  schema: object,
-  operation: string
-): StructuredResult<T> {
-  if (result.kind !== 'ok') {
-    return result;
-  }
-
-  const check = validateAgainstSchema(result.value, schema);
-  if (check.ok) {
-    return result;
-  }
-
-  // The path names a field, never a value, so nothing the person wrote is logged.
-  console.warn(`[coachAI] ${operation}: on-device reply failed the schema at ${check.path}`);
-
-  return {
-    kind: 'malformed',
-    raw: JSON.stringify(result.value).slice(0, MALFORMED_RAW_PREVIEW_CHARS),
-  };
-}
-
-function parseStructuredJson<T>(raw: string): StructuredResult<T> {
-  const clean = stripTemplateTokens(raw.replace(/```json|```/g, ''));
-  if (clean) {
-    try {
-      return { kind: 'ok', value: JSON.parse(clean) as T };
-    } catch {
-      // Not plain JSON: try the JSON inside the text before calling it malformed.
-    }
-
-    const span = jsonSpan(clean);
-    if (span) {
-      try {
-        return { kind: 'ok', value: JSON.parse(span) as T };
-      } catch {
-        // Try the repair below.
-      }
-    }
-
-    // Almost-JSON (trailing commas, single quotes, a reply cut off by the token limit). The schema
-    // check that follows is still the judge of whether the repaired value is usable.
-    const repaired = repairReplyJson(clean);
-    if (repaired !== undefined) {
-      return { kind: 'ok', value: repaired as T };
-    }
-  }
-
-  return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
-}
-
-/** Models whose structured replies may be wrong in ways cloud providers' server-side schemas prevent. */
-function isLocalModel(config: CoachAIConfig): boolean {
-  return (
-    config.provider === 'local' ||
-    (config.provider === 'on-device' && onDeviceEngineOf(config) === 'gguf')
-  );
-}
-
-/**
- * Last resort for a local model's structured reply: one text-only call that is asked to correct the
- * broken reply against the schema, read by the same parser and shape check. It runs only after the
- * parser, `jsonrepair` and the schema check all failed, so a good reply never pays for it. A failure
- * of the repair call leaves the original failure; only a cancel is rethrown.
- */
-async function repairStructuredWithModel<T>(
+export async function repairStructuredWithModel<T>(
   config: CoachAIConfig,
   operation: string,
   broken: string,
-  schema: object,
-  prompts?: { system: string; message: string }
+  schema: object
 ): Promise<StructuredResult<T> | null> {
-  if (!broken.trim()) {
+  // A reply longer than a repair request can carry would be cut short, and the model would answer
+  // with the part it saw: a repaired list that silently lost its tail. Better no repair at all.
+  if (!broken.trim() || broken.length > MAX_JSON_REPAIR_INPUT_CHARS) {
     return null;
   }
 
-  const system = prompts?.system ?? jsonRepairPrompt(schema);
-  const message = prompts?.message ?? jsonRepairMessage(broken);
-
+  const repairOperation = `${operation}.repair`;
   try {
-    let repairedRaw: string;
-    if (config.provider === 'local') {
-      const completion = await createOpenAiCompletion(
-        buildOpenAIClient(config),
-        `${operation}.repair`,
-        config,
-        {
-          model: config.model,
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: message },
-          ],
-          response_format: {
-            type: 'json_schema',
-            json_schema: { name: 'repair', strict: true, schema: makeSchemaStrict(schema) },
-          },
-        }
-      );
-      repairedRaw = completion.choices[0]?.message?.content ?? '';
-    } else {
-      repairedRaw = await withLlmRetry(`${operation}.repair`, config, (signal) =>
-        sendLocalStructuredRaw([{ role: 'user', content: message }], system, schema, { signal })
-      );
-    }
+    const repaired = await requestStructuredOnce<T>(
+      config,
+      {
+        operation: repairOperation,
+        schemaName: 'repair',
+        systemPrompt: jsonRepairPrompt(schema),
+        history: [],
+        userMessage: jsonRepairMessage(broken),
+        buildSchema: () => schema,
+      },
+      schema
+    );
 
-    return checkStructuredShape(parseStructuredJson<T>(repairedRaw), schema, `${operation}.repair`);
+    return checkStructuredShape(repaired, schema, repairOperation);
   } catch (error) {
     if (error instanceof AiCancelledError) {
       throw error;
     }
 
+    // The original failure stands, but a repair that itself breaks is worth knowing about.
+    reportAiError(error, 'coachAI.repairStructured');
+
     return null;
   }
 }
 
 /**
- * The shared finish for a structured reply from a local model (the downloaded one or a custom
- * server): when it is malformed, ask the model once to repair it. For a custom server a reply that
- * parsed but misses part of the schema is kept as it was if the repair does not improve it, because
- * callers of an OpenAI-compatible endpoint have always tolerated a partial answer.
+ * The one shape check and repair of a structured reply from a provider that does not enforce its
+ * schema (`structuredReplies: 'repaired'`): a reply that is malformed or misses the schema gets one repair
+ * call. The downloaded model is held to its schema, since its grammar is enforced by a runtime we do
+ * not control and nothing may read its answer unchecked. A custom server's reply that parsed but
+ * missed part of the schema is kept when the repair does not do better, because callers of an
+ * OpenAI-compatible endpoint have always tolerated a partial answer.
  */
 async function reviveLocalStructured<T>(
   config: CoachAIConfig,
   operation: string,
   result: StructuredResult<T>,
-  schema: object,
-  prompts?: { system: string; message: string }
+  schema: object
 ): Promise<StructuredResult<T>> {
-  if (!isLocalModel(config)) {
+  const policy = providerPolicyFor(config);
+  if (policy.structuredReplies !== 'repaired') {
     return result;
   }
 
-  let current = result;
-  let original: StructuredResult<T> | null = null;
-  if (config.provider === 'local' && result.kind === 'ok') {
-    const checked = checkStructuredShape(result, schema, operation);
-    if (checked.kind === 'ok') {
-      return result;
-    }
-
-    original = result;
-    current = checked;
+  const checked = checkStructuredShape(result, schema, operation);
+  if (checked.kind === 'ok') {
+    return checked;
   }
 
-  if (current.kind === 'ok') {
-    return current;
+  const repaired = await repairStructuredWithModel<T>(config, operation, checked.raw, schema);
+  const telemetry = { provider: config.provider, operation: operationFamily(operation) };
+  if (repaired?.kind === 'ok') {
+    reportAiEvent('ai-structured-reply-repaired', telemetry);
+
+    return repaired;
   }
 
-  const repaired = await repairStructuredWithModel<T>(
-    config,
-    operation,
-    current.raw,
-    schema,
-    prompts
-  );
+  // Still unusable: the reply stays as a tolerant server's partial answer, or fails the request.
+  reportAiEvent('ai-structured-reply-unusable', telemetry);
 
-  return repaired?.kind === 'ok' ? repaired : (original ?? current);
+  return policy.keepsPartialStructuredReply && result.kind === 'ok' ? result : checked;
+}
+
+/** `estimateMissingIngredients.repair` and `estimateMissingIngredients` are one operation to count. */
+function operationFamily(operation: string): string {
+  return operation.split('.')[0];
+}
+
+/** The schema dialect a structured request to this provider (and on-device, engine) is written in. */
+function structuredDialect(config: CoachAIConfig): StructuredDialect {
+  switch (config.provider) {
+    case 'on-device':
+      return config.engine === 'gguf' ? 'gguf' : 'on-device';
+    case 'gemini':
+    case 'claude':
+      return config.provider;
+    default:
+      return 'openai';
+  }
+}
+
+/**
+ * The dialect the meal schemas (recipe, estimate, review, meal plan) are built in: the provider's own,
+ * except a custom local server, which enforces no schema, so none of the lookup fields is required
+ * of it (a missing required field would cost a repair request on every estimate).
+ */
+export function mealSchemaDialect(config: CoachAIConfig): MealSchemaDialect {
+  return config.provider === 'local' ? 'optional' : structuredDialect(config);
 }
 
 /**
@@ -1893,35 +1680,79 @@ export async function requestStructured<T = unknown>(
   config: CoachAIConfig,
   request: StructuredRequest
 ): Promise<StructuredResult<T>> {
-  // The schema is built once, in whichever dialect the request used, and the repair step reuses it.
-  let built: { dialect: StructuredDialect; schema: object } | null = null;
-  const buildSchema = (dialect: StructuredDialect) => {
-    if (built?.dialect !== dialect) {
-      built = { dialect, schema: request.buildSchema(dialect) };
-    }
-
-    return built.schema;
-  };
-
-  const result = await requestStructuredOnce<T>(config, { ...request, buildSchema });
-  if (!isLocalModel(config)) {
-    return result;
-  }
-
-  const schema = buildSchema(config.provider === 'local' ? 'openai' : 'gguf');
+  // Built once, in the provider's dialect; a repair call reuses it.
+  const schema = request.buildSchema(structuredDialect(config));
+  const result = await requestStructuredOnce<T>(config, request, schema);
 
   return reviveLocalStructured(config, request.operation, result, schema);
 }
 
-async function requestStructuredOnce<T = unknown>(
+/**
+ * Reports a reply a provider cut off at its token limit: the provider, the operation and the
+ * provider's own stop signal, never a word of the reply. Fire and forget, like the other telemetry.
+ */
+function reportTruncatedReply(
+  config: Pick<CoachAIConfig, 'provider'>,
+  operation: string,
+  stop: StopSignal
+): void {
+  try {
+    void captureMessage('ai-structured-reply-truncated', {
+      level: 'warning',
+      tags: {
+        provider: config.provider,
+        operation,
+        finishReason: stop.reason ?? 'unknown',
+      },
+      fingerprint: ['ai-structured-reply-truncated', config.provider, operation],
+    }).catch(() => {});
+  } catch {
+    // Never throws.
+  }
+}
+
+/**
+ * Reads the text of a structured reply. A provider that enforces the schema
+ * (`structuredReplies: 'enforced'`) and stopped at its token limit gave a half answer: it is a
+ * failure (`malformed`, reason `truncated`), reported once and never sent through the repair ladder,
+ * which would close its braces and return a half-empty object as if it were complete. It is not
+ * retried: the same limit would cut it again. Every other reply, a complete one with fences or
+ * surrounding text included, and every reply of a provider whose schema cannot be trusted (the free
+ * tier, a local server, the on-device model), goes through `parseStructuredJson` as before.
+ */
+function readStructuredReply<T>(
   config: CoachAIConfig,
-  request: StructuredRequest
+  operation: string,
+  raw: string,
+  stop?: StopSignal
+): StructuredResult<T> {
+  if (stop && isTruncatedStop(stop) && providerPolicyFor(config).structuredReplies === 'enforced') {
+    reportTruncatedReply(config, operation, stop);
+    console.warn(`[coachAI] ${operation}: ${config.provider} cut the reply off (${stop.reason})`);
+
+    return {
+      kind: 'malformed',
+      raw: '',
+      reason: 'truncated',
+      finishReason: stop.reason ?? undefined,
+    };
+  }
+
+  return parseStructuredJson<T>(raw);
+}
+
+/** One structured request, with the schema already built in `structuredDialect(config)`. */
+export async function requestStructuredOnce<T = unknown>(
+  config: CoachAIConfig,
+  request: StructuredRequest,
+  schema: object
 ): Promise<StructuredResult<T>> {
   const { operation, schemaName, systemPrompt, history, userMessage } = request;
+  const images = request.images ?? [];
   const task = request.task ?? 'extraction';
 
   if (config.provider === 'on-device') {
-    const engine = onDeviceEngineOf(config);
+    const engine = config.engine;
     const messages = [
       ...history.map((entry) => ({
         role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
@@ -1929,7 +1760,6 @@ async function requestStructuredOnce<T = unknown>(
       })),
       { role: 'user' as const, content: userMessage },
     ];
-    const schema = request.buildSchema(engine === 'gguf' ? 'gguf' : 'on-device');
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'request',
@@ -1942,8 +1772,15 @@ async function requestStructuredOnce<T = unknown>(
     if (engine === 'gguf') {
       // Grammar-constrained by the engine, then parsed and checked here: the engine is not trusted
       // to have honoured the schema.
-      const raw = await withLlmRetry(operation, config, (signal) =>
-        sendLocalStructuredRaw(messages, systemPrompt, schema, { signal })
+      const photo = images[0];
+      const raw = await withLlmRetry(operation, config, (signal, touch) =>
+        sendLocalStructuredRaw(messages, systemPrompt, schema, {
+          signal,
+          // Every token resets the timeout, so it limits a stall, not model load plus generation.
+          onDelta: () => touch(),
+          ...(photo ? { image: `data:${photo.mimeType};base64,${photo.base64}` } : {}),
+          ...(request.temperature === undefined ? {} : { temperature: request.temperature }),
+        })
       );
       result = parseStructuredJson<T>(raw);
     } else {
@@ -1962,128 +1799,61 @@ async function requestStructuredOnce<T = unknown>(
       config,
     });
 
-    // Apple's guided generation is enforced by the OS; the downloaded model's grammar is enforced
-    // by a runtime we do not control, so its answer is checked before anything reads it.
-    return engine === 'gguf' ? checkStructuredShape(result, schema, operation) : result;
+    // Apple's guided generation is enforced by the OS; the downloaded model's answer is checked
+    // and repaired by `reviveLocalStructured`, the one place that does it.
+    return result;
   }
 
-  if (config.provider === 'gemini') {
-    const schema = request.buildSchema('gemini');
-    const genModel = await configureBasicGenAI(
-      {
-        apiKey: config.apiKey,
-        model: config.model,
-        // How hard it thinks follows the kind of job (`utils/aiEffort.ts`); the user's thinking-mode
-        // setting is the explicit way to ask for more.
-        generationConfig: buildGeminiGenerationConfig(config.model, {
-          responseSchema: schema,
-          effort: await resolveEffort(task),
-        }),
-      },
-      [{ text: systemPrompt } as Part]
-    );
-    const contents = buildGeminiContents(history, userMessage);
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation,
-      payload: { model: config.model, contents, systemPrompt, schema },
-      config,
-    });
-
-    const result = await withLlmRetry(operation, config, (signal) =>
-      genModel.generateContent({ contents, abortSignal: signal })
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation,
-      payload: result,
-      config,
-    });
-
-    return parseStructuredJson<T>(extractRawText(result));
-  }
-
-  if (config.provider === 'claude') {
-    const params = await buildClaudeParams(
-      config,
-      systemPrompt,
-      buildClaudeMessages(history, userMessage),
-      { task, schema: request.buildSchema('claude') }
-    );
-
-    return parseStructuredJson<T>(await runClaude(config, operation, params));
-  }
-
-  const client = buildOpenAIClient(config);
-  const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      ...history.map((entry) => ({
-        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-        content: entry.content,
-      })),
-      { role: 'user', content: userMessage },
-    ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: schemaName,
-        strict: true,
-        schema: makeSchemaStrict(request.buildSchema('openai')),
-      },
-    },
-  };
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
+  const reply = await complete(config, {
     operation,
-    payload,
-    config,
+    system: systemPrompt,
+    turns: history,
+    userMessage,
+    images,
+    task,
+    schema: { name: schemaName, body: schema },
   });
 
-  const completion = await createOpenAiCompletion(client, operation, config, payload);
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation,
-    payload: completion,
-    config,
-  });
-
-  return parseStructuredJson<T>(completion.choices[0]?.message?.content ?? '');
+  return readStructuredReply<T>(config, operation, reply.text, reply.stop);
 }
 
-async function generateStructured<T>(
+/**
+ * One structured request that is not a conversation turn. `userMessage` is sent as given: text the
+ * person (or a label) wrote goes through `wrapUserContent` or `prepareChatText` at the caller, which
+ * knows which part of the message that is; text written by code (an instruction, a transcript the
+ * app built) must reach the model whole and unescaped.
+ */
+export async function generateStructured<T>(
   config: CoachAIConfig,
   systemPrompt: string,
   userMessage: string,
   schema: object,
   schemaName: string = 'response',
-  task: AiTask = 'extraction'
+  task: AiTask = 'extraction',
+  options?: { followUp?: FollowUp }
 ): Promise<T | null> {
   const lang = config.language ?? DEFAULT_LANG;
 
   try {
-    const result = await requestStructured<T>(config, {
+    const original: StructuredRequest = {
       operation: 'generateStructured',
       task,
       schemaName,
       systemPrompt: `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`,
       history: [],
-      // Wrap user message with delimiters to prevent prompt injection
-      userMessage: wrapUserContent(userMessage),
+      userMessage,
       buildSchema: () => schema,
-    });
+    };
+    const result = await requestStructured<T>(
+      config,
+      options?.followUp ? followUpOf(original, options.followUp) : original
+    );
 
     return result.kind === 'ok' ? result.value : null;
   } catch (error) {
-    // The on-device model has no retry layer to classify its failures, so a bad run is "no answer".
+    // An on-device engine has no retry layer to classify its failures, so a bad run is "no answer".
     if (
-      config.provider !== 'on-device' ||
+      !providerPolicyFor(config).structuredFailureIsNoAnswer ||
       error instanceof OnDeviceUnavailableError ||
       error instanceof AiCancelledError
     ) {
@@ -2111,18 +1881,41 @@ function claudeImageType(mimeType: string): ClaudeImageType {
 
 /**
  * Loaded inline because the image codec is a native module that text-only requests never need (the
- * pattern of `utils/hostedProviderPolicy.ts` and `services/premium/revenueCat.ts`).
+ * pattern of `utils/providerPolicy.ts` and `services/premium/revenueCat.ts`).
  */
 function prepareOwnKeyImageLazily(
   base64: string,
-  mimeType: string
+  mimeType: string,
+  count?: number
 ): Promise<{ base64: string; mimeType: string }> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
 
-  return aiImage.prepareOwnKeyImage(base64, mimeType);
+  return aiImage.prepareOwnKeyImage(base64, mimeType, count);
 }
 
+/**
+ * Prepares every photo of one request, once: each at the detail the person chose in AI settings,
+ * holding the photos together to what the request may carry (Musclog Iron's body cap is shared by
+ * all of them). A meal estimate prepares its photos once and reuses the result for every look,
+ * sample and review, instead of re-encoding the same photos in each request.
+ */
+export async function prepareMealImages(
+  config: CoachAIConfig,
+  images: readonly MealImage[]
+): Promise<MealImage[]> {
+  const prepareImage = providerPolicyFor(config).prepareImage ?? prepareOwnKeyImageLazily;
+  const count = images.length;
+  const prepared: MealImage[] = [];
+  // One after another: the codec is a native module and each photo can be several megabytes.
+  for (const image of images) {
+    prepared.push(await prepareImage(image.base64, image.mimeType, count));
+  }
+
+  return prepared;
+}
+
+/** One photo through the funnel below (a nutrition label, one photo of a meal). */
 async function generateWithImageStructured<T>(
   config: CoachAIConfig,
   systemPrompt: string,
@@ -2131,593 +1924,85 @@ async function generateWithImageStructured<T>(
   schema: object,
   schemaName: string = 'response',
   userMessageSuffix?: string,
-  task: AiTask = 'extraction'
+  task: AiTask = 'extraction',
+  options?: { followUp?: FollowUp }
 ): Promise<T | null> {
-  // Every provider gets the photo at the detail the person chose in AI settings. Musclog Iron has
-  // its own step: it also holds the photo to the Worker's limits, and refuses it while the Worker
-  // has photos off.
-  const prepareImage = providerPolicyFor(config.provider).prepareImage ?? prepareOwnKeyImageLazily;
-  const { base64: base64Image, mimeType } = await prepareImage(rawBase64Image, rawMimeType);
+  return generateWithImagesStructured<T>(
+    config,
+    systemPrompt,
+    [{ base64: rawBase64Image, mimeType: rawMimeType }],
+    schema,
+    schemaName,
+    userMessageSuffix,
+    task,
+    options
+  );
+}
+
+/**
+ * The single funnel for every provider's photo request, for one photo or several of the same meal.
+ * Every provider gets the photos at the detail the person chose in AI settings. Musclog Iron has
+ * its own step: it also holds the photos to the Worker's limits, and refuses them while the Worker
+ * has photos off. `options.prepared` says the photos were already prepared by `prepareMealImages`.
+ */
+export async function generateWithImagesStructured<T>(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  rawImages: readonly MealImage[],
+  schema: object,
+  schemaName: string = 'response',
+  userMessageSuffix?: string,
+  task: AiTask = 'extraction',
+  options?: { prepared?: boolean; followUp?: FollowUp }
+): Promise<T | null> {
+  const images = options?.prepared ? [...rawImages] : await prepareMealImages(config, rawImages);
 
   // Wrap user message suffix with delimiters to prevent prompt injection
   const sanitizedSuffix = userMessageSuffix?.trim()
     ? wrapUserContent(userMessageSuffix.trim())
     : '';
-
-  const userText =
-    'Analyze this image and return the structured data.' +
+  const userMessage =
+    (images.length > 1
+      ? 'Analyze these images and return the structured data.'
+      : 'Analyze this image and return the structured data.') +
     (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
 
-  if (config.provider === 'gemini') {
-    const requestPayload = {
-      model: config.model,
-      contents: [
-        {
-          parts: [
-            { text: userText } as Part,
-            {
-              inlineData: {
-                data: base64Image,
-                mimeType: mimeType,
-              },
-            } as Part,
-          ],
-          role: 'user',
-        },
-      ],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: schema,
-        systemInstruction: {
-          parts: [{ text: systemPrompt } as Part],
-        },
-      },
-    };
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation: 'generateWithImageStructured',
-      payload: requestPayload,
-      config,
-    });
-
-    const genModel = await configureBasicGenAI(
-      {
-        apiKey: config.apiKey,
-        model: config.model,
-        generationConfig: buildGeminiGenerationConfig(config.model, {
-          responseSchema: schema,
-          effort: await resolveEffort(task),
-        }),
-      },
-      [{ text: systemPrompt } as Part]
-    );
-
-    const contents: Content[] = [
-      {
-        parts: [
-          { text: userText } as Part,
-          {
-            inlineData: {
-              data: base64Image,
-              mimeType: mimeType,
-            },
-          } as Part,
-        ],
-        role: 'user',
-      },
-    ];
-
-    const result = await withLlmRetry('generateWithImageStructured', config, (signal) =>
-      genModel.generateContent({ contents, abortSignal: signal })
-    );
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'generateWithImageStructured',
-      payload: result,
-      config,
-    });
-
-    const raw = extractRawText(result);
-    if (!raw?.trim()) {
-      return null;
-    }
-
-    const read = parseStructuredJson<T>(raw);
-    return read.kind === 'ok' ? read.value : null;
-  }
-
-  if (config.provider === 'claude') {
-    const params = await buildClaudeParams(
-      config,
-      systemPrompt,
-      [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: claudeImageType(mimeType), data: base64Image },
-            },
-            { type: 'text', text: userText },
-          ],
-        },
-      ],
-      { task, schema }
-    );
-    const result = parseStructuredJson<T>(
-      await runClaude(config, 'generateWithImageStructured', params)
-    );
-
-    return result.kind === 'ok' ? result.value : null;
-  }
-
-  const client = buildOpenAIClient(config);
-  const strictSchema = makeSchemaStrict(schema);
-  const dataUrl = `data:${mimeType};base64,${base64Image}`;
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: config.model,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: userText },
-          { type: 'image_url', image_url: { url: dataUrl } },
-        ],
-      },
-    ],
-    ...(await openAiReasoning(config, await resolveEffort(task))),
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: schemaName,
-        strict: true,
-        schema: strictSchema,
-      },
-    },
-  };
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
+  const original: StructuredRequest = {
     operation: 'generateWithImageStructured',
-    payload: requestPayload,
-    config,
-  });
-
-  const completion = await createOpenAiCompletion(
-    client,
-    'generateWithImageStructured',
-    config,
-    requestPayload
-  );
-
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: 'generateWithImageStructured',
-    payload: completion,
-    config,
-  });
-
-  const raw = completion.choices[0]?.message?.content ?? '';
-  if (!raw?.trim()) {
-    return null;
-  }
-
-  // The same ladder as every structured reply (fences, JSON inside text, `jsonrepair`), and for a
-  // custom local server one repair call by the model.
-  const read = await reviveLocalStructured(
-    config,
-    'generateWithImageStructured',
-    parseStructuredJson<T>(raw),
-    strictSchema
-  );
-
-  return read.kind === 'ok' ? read.value : null;
-}
-
-async function extractRecipe(
-  config: CoachAIConfig,
-  userMessage: string,
-  base64Image?: string
-): Promise<RecipeExtractionResponse | null> {
-  const lang = config.language ?? DEFAULT_LANG;
-  const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
-  const includeFoundationFoods = providerConfig.enableFoundationFoods
-    ? await SettingsService.getSendFoundationFoodsToLlm()
-    : false;
-  const systemPrompt = await getRecipeExtractionPrompt(includeFoundationFoods, lang);
-  const fns = getRecipeExtractionFunctions(includeFoundationFoods);
-  const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-
-  if (base64Image) {
-    if (config.provider === 'on-device') {
-      // Downloaded models identify photos through estimateNutritionFromPhoto.
-      return null;
-    }
-
-    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-    return generateWithImageStructured<RecipeExtractionResponse>(
-      config,
-      systemPrompt,
-      base64,
-      mimeType,
-      schema,
-      'extractRecipe',
-      userMessage
-    );
-  }
-
-  return generateStructured<RecipeExtractionResponse>(
-    config,
+    task,
+    schemaName,
     systemPrompt,
+    history: [],
     userMessage,
-    schema,
-    'extractRecipe'
-  );
-}
-
-async function estimateMissingIngredients(
-  config: CoachAIConfig,
-  newIngredients: RecipeIngredient[],
-  knownIngredients: TrackMealIngredient[],
-  mealName: string
-): Promise<MissingIngredientMacrosResponse | null> {
-  const systemPrompt = getMissingIngredientsMacrosPrompt(
-    mealName,
-    knownIngredients,
-    newIngredients
-  );
-  const fns = getEstimateMissingIngredientsFunctions();
-  const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-
-  return generateStructured<MissingIngredientMacrosResponse>(
-    config,
-    systemPrompt,
-    `Estimate macros for the missing ingredients in "${mealName}".`,
-    schema,
-    'estimateMissingIngredients'
-  );
-}
-
-/** Progress is a courtesy to the screen: a listener that throws must never fail an estimate. */
-function reportMealProgress(
-  listener: MealEstimateProgressListener | undefined,
-  progress: Parameters<MealEstimateProgressListener>[0]
-): void {
-  try {
-    listener?.(progress);
-  } catch {
-    // Ignored on purpose.
-  }
-}
-
-/** An ingredient with no numbers at all: the model named it but gave no energy or macros. */
-function hasNoNumbers(ingredient: TrackMealIngredient): boolean {
-  return !(
-    ingredient.kcal > 0 ||
-    ingredient.protein > 0 ||
-    ingredient.carbs > 0 ||
-    ingredient.fat > 0
-  );
-}
-
-/** The estimate for `target`: the one with its name, else the one in its place when counts agree. */
-function estimateFor(
-  target: { name: string },
-  index: number,
-  count: number,
-  estimates: TrackMealIngredient[]
-): TrackMealIngredient | undefined {
-  const key = target.name.trim().toLowerCase();
-  return (
-    estimates.find((estimate) => estimate.name.trim().toLowerCase() === key) ??
-    (estimates.length === count ? estimates[index] : undefined)
-  );
-}
-
-function withEstimatedMacros(
-  target: TrackMealIngredient,
-  estimate: TrackMealIngredient
-): TrackMealIngredient {
-  return {
-    ...target,
-    kcal: estimate.kcal,
-    protein: estimate.protein,
-    carbs: estimate.carbs,
-    fat: estimate.fat,
-    fiber: estimate.fiber,
+    images,
+    buildSchema: () => schema,
   };
-}
-
-/**
- * Re-estimates the ingredients of a meal whose numbers cannot all be true (`mealPlausibility`):
- * energy that the macros do not add up to, macros that weigh more than the ingredient, and so on.
- * Only ingredients without a match in the person's own foods are checked, since a match's numbers
- * come from the database. It is one extra request, made only when something is off, and an
- * estimate replaces the original only when it has fewer problems. A failed re-estimate leaves the
- * meal as it was: this is a refinement, never a reason to fail the estimate.
- */
-async function recheckImplausibleIngredients(
-  config: CoachAIConfig,
-  mealName: string,
-  ingredients: TrackMealIngredient[],
-  onProgress?: MealEstimateProgressListener
-): Promise<TrackMealIngredient[]> {
-  const suspects = ingredients.filter(
-    (ingredient) => !ingredient.foodId && ingredientMacroProblems(ingredient).length > 0
+  const result = await requestStructured<T>(
+    config,
+    options?.followUp ? followUpOf(original, options.followUp) : original
   );
-  if (suspects.length === 0) {
-    return ingredients;
-  }
 
-  reportMealProgress(onProgress, { step: 'rechecking', count: suspects.length });
-
-  try {
-    const estimated = await estimateMissingIngredients(
-      config,
-      suspects.map(({ name, grams }) => ({ name, grams })),
-      ingredients.filter((ingredient) => ingredient.foodId),
-      mealName
-    );
-    const estimates = estimated?.ingredients ?? [];
-
-    return ingredients.map((ingredient) => {
-      const suspectIndex = suspects.indexOf(ingredient);
-      if (suspectIndex < 0) {
-        return ingredient;
-      }
-
-      const estimate = estimateFor(ingredient, suspectIndex, suspects.length, estimates);
-      if (!estimate) {
-        return ingredient;
-      }
-
-      const better = withEstimatedMacros(ingredient, estimate);
-      return ingredientMacroProblems(better).length < ingredientMacroProblems(ingredient).length
-        ? better
-        : ingredient;
-    });
-  } catch (error) {
-    if (error instanceof AiCancelledError) {
-      throw error;
-    }
-
-    reportAiError(error, 'coachAI.recheckImplausibleIngredients');
-    return ingredients;
-  }
+  return result.kind === 'ok' ? result.value : null;
 }
 
 /**
- * What a one-request estimate gets before it is shown or logged. The model may name a food id
- * this database does not have (it invents ids, or sends the string "null"); the lookup then drops
- * the id and keeps the model's numbers, which for a foundation-food match are zeros, so the
- * ingredient would be logged at 0 kcal. Those ingredients are estimated in a follow-up request, the
- * same step the verified path makes; then every ingredient that is not the person's own food gets
- * the plausibility check. With nothing to fix it makes no request.
+ * The foundation foods this request offers the model, with the map that reads its answer back, or
+ * null when this provider leaves them out (the on-device model has no room) or the person turned
+ * "Send foundation foods to AI" off. Built once per request: the prompt and the reading of the answer
+ * use the same object, so a food's reference number always means the line the model saw.
  */
-async function refineTrackedMeals(
+export async function foundationFoodsFor(
   config: CoachAIConfig,
-  response: TrackMealResponse,
-  onProgress?: MealEstimateProgressListener
-): Promise<TrackMealResponse> {
-  const meals: TrackedMeal[] = [];
-
-  for (const meal of response.meals ?? []) {
-    const original = meal.ingredients ?? [];
-    const claimedFoodId = original.map((ingredient) => Boolean(ingredient.foodId));
-    // Deliberately unguarded: a failed lookup must reject, never leave every id looking unmatched.
-    let ingredients = await NutritionService.normalizeAiMealIngredients(original);
-
-    const unnumbered = ingredients.filter(
-      (ingredient, index) => claimedFoodId[index] && !ingredient.foodId && hasNoNumbers(ingredient)
-    );
-    if (unnumbered.length > 0) {
-      const matched = ingredients.filter((ingredient) => ingredient.foodId);
-      reportMealProgress(onProgress, {
-        step: 'estimating',
-        count: unnumbered.length,
-        matched: matched.length,
-      });
-
-      try {
-        const estimated = await estimateMissingIngredients(
-          config,
-          unnumbered.map(({ name, grams }) => ({ name, grams })),
-          matched,
-          meal.mealName ?? meal.mealType
-        );
-        const estimates = estimated?.ingredients ?? [];
-        ingredients = ingredients.map((ingredient) => {
-          const index = unnumbered.indexOf(ingredient);
-          const estimate =
-            index < 0 ? undefined : estimateFor(ingredient, index, unnumbered.length, estimates);
-          return estimate ? withEstimatedMacros(ingredient, estimate) : ingredient;
-        });
-      } catch (error) {
-        if (error instanceof AiCancelledError) {
-          throw error;
-        }
-
-        reportAiError(error, 'coachAI.refineTrackedMeals');
-      }
-    }
-
-    meals.push({
-      ...meal,
-      ingredients: await recheckImplausibleIngredients(
-        config,
-        meal.mealName ?? meal.mealType,
-        ingredients,
-        onProgress
-      ),
-    });
-  }
-
-  return { ...response, meals };
-}
-
-/**
- * The verified meal estimate, used when "Use thinking mode" is on: it separates what the model can
- * read (the recipe: meals, ingredients, grams, the foods of the person it recognises) from what it
- * must work out (the numbers of what is left), checking each claimed food id against the database
- * in between. Slower than one request, with more of the work done by code and less left to chance.
- */
-async function trackMealVerified(
-  config: CoachAIConfig,
-  userMessage: string,
-  base64Image?: string,
-  onProgress?: MealEstimateProgressListener
-): Promise<TrackMealResponse | null> {
-  const recipeResponse = await extractRecipe(config, userMessage, base64Image);
-  if (!recipeResponse?.meals?.length) {
+  style: 'estimate' | 'recipe'
+): Promise<FoundationFoodsPrompt | null> {
+  const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
+  if (!providerConfig.enableFoundationFoods) {
     return null;
   }
 
-  const resultMeals: TrackedMeal[] = [];
-
-  for (const meal of recipeResponse.meals) {
-    const claimedStubs: TrackMealIngredient[] = meal.ingredients
-      .filter((i) => i.foodId)
-      .map((i) => ({
-        name: i.name,
-        grams: i.grams,
-        foodId: i.foodId,
-        kcal: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        fiber: 0,
-      }));
-
-    // A claimed foodId only counts once the database confirms it: the model sometimes
-    // sends the string "null" or an invented id, and treating those as matches would
-    // skip estimation and log the ingredient at 0 kcal.
-    const normalizedClaimed = await NutritionService.normalizeAiMealIngredients(claimedStubs);
-    const matched = normalizedClaimed.filter((i) => i.foodId);
-    const newIngredients = [
-      ...meal.ingredients.filter((i) => !i.foodId),
-      ...normalizedClaimed.filter((i) => !i.foodId).map((i) => ({ name: i.name, grams: i.grams })),
-    ];
-
-    let fullIngredients: TrackMealIngredient[] = matched;
-
-    if (newIngredients.length > 0) {
-      reportMealProgress(onProgress, {
-        step: 'estimating',
-        count: newIngredients.length,
-        matched: matched.length,
-      });
-      const estimated = await estimateMissingIngredients(
-        config,
-        newIngredients,
-        matched,
-        meal.mealName
-      );
-
-      fullIngredients = [
-        ...matched,
-        ...(estimated?.ingredients ??
-          newIngredients.map((i) => ({
-            name: i.name,
-            grams: i.grams,
-            kcal: 0,
-            protein: 0,
-            carbs: 0,
-            fat: 0,
-            fiber: 0,
-          }))),
-      ];
-    }
-
-    resultMeals.push({
-      mealType: meal.mealType,
-      mealName: meal.mealName,
-      ingredients: fullIngredients,
-    });
-  }
-
-  for (const meal of resultMeals) {
-    const normalized = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
-    meal.ingredients = await recheckImplausibleIngredients(
-      config,
-      meal.mealName ?? meal.mealType,
-      normalized,
-      onProgress
-    );
-  }
-
-  return { meals: resultMeals };
-}
-
-/**
- * Track a meal from description or base64 image
- */
-export async function trackMeal(
-  config: CoachAIConfig,
-  userMessage: string,
-  base64Image?: string,
-  onProgress?: MealEstimateProgressListener
-): Promise<TrackMealResponse | null> {
-  if (config.provider === 'on-device' && base64Image) {
-    return estimateNutritionFromPhoto(
-      config,
-      base64Image,
-      { description: userMessage, tags: [] },
-      onProgress
-    );
-  }
-
-  try {
-    reportMealProgress(onProgress, { step: 'reading', photo: Boolean(base64Image) });
-    const useThinkingMode = await SettingsService.getUseThinkingMode();
-    if (useThinkingMode) {
-      return await trackMealVerified(config, userMessage, base64Image, onProgress);
-    }
-
-    const lang = config.language ?? DEFAULT_LANG;
-    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
-    const includeFoundationFoods = providerConfig.enableFoundationFoods
-      ? await SettingsService.getSendFoundationFoodsToLlm()
-      : false;
-    const systemPrompt = await getMealAnalysisPrompt(includeFoundationFoods, lang);
-    const fns = getTrackMealFunctions(includeFoundationFoods);
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-
-    if (base64Image) {
-      const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-      const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-      const fromPhoto = await generateWithImageStructured<TrackMealResponse>(
-        config,
-        systemPrompt,
-        base64,
-        mimeType,
-        schema,
-        'trackMeal',
-        userMessage
-      );
-      return fromPhoto ? await refineTrackedMeals(config, fromPhoto, onProgress) : null;
-    }
-
-    const parsed = await generateStructured<TrackMealResponse>(
-      config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'trackMeal'
-    );
-    return parsed ? await refineTrackedMeals(config, parsed, onProgress) : null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    reportAiError(error, 'coachAI.trackMeal');
-    return null;
-  }
+  return (await SettingsService.getSendFoundationFoodsToLlm())
+    ? getFoundationFoodsPrompt(style)
+    : null;
 }
 
 export async function sendCoachMessage(
@@ -2732,32 +2017,339 @@ export async function sendCoachMessage(
   const text = prepareChatText(userMessage);
 
   // On-device keeps its tight budget and its own date line, so nothing is added there.
-  if (config.provider === 'on-device') {
-    return sendViaOnDevice(config, history, text, context, stream);
+  let sendHistory = history;
+  let sendText = text;
+
+  if (!isOnDeviceConfig(config)) {
+    // Every user turn carries the time it was sent, the newest also how long the pause was.
+    const tagged = tagTurnsWithTime(history, text, Date.now());
+    sendHistory = tagged.history;
+    sendText = tagged.userMessage;
   }
 
-  // Every user turn carries the time it was sent, the newest also how long the pause was.
-  const tagged = tagTurnsWithTime(history, text, Date.now());
-  history = tagged.history;
-  const sanitizedMessage = tagged.userMessage;
+  // Whether any text reached the person: a reply that fails after that is taken back by the caller,
+  // never replaced by an apology.
+  let shown = false;
+  const target: CoachStream | undefined = stream && {
+    ...stream,
+    onText: (textSoFar) => {
+      if (textSoFar) {
+        shown = true;
+      }
 
-  if (config.provider === 'gemini') {
-    return sendViaGemini(config, history, sanitizedMessage, context, stream);
+      stream.onText(textSoFar);
+    },
+  };
+
+  try {
+    // Built once, from the full history (the excludes), and reused by the draft and the review.
+    const systemPrompt = isOnDeviceConfig(config)
+      ? await getChatMessagePromptContent(config.language, undefined, context, 'on-device')
+      : await chatSystemPrompt(config, sendHistory, context);
+
+    // Per dispatched message: the review instruction is longer than the person's message, and a
+    // review round also carries the exchange under review (`exchange`), which always stays whole.
+    const turnsFor = (message: string, exchange: ChatHistoryEntry[]): ChatHistoryEntry[] => {
+      const reserved =
+        message.length + exchange.reduce((sum, turn) => sum + turn.content.length, 0);
+
+      return [
+        ...truncateHistoryByBudget(
+          latestChatTurns(sendHistory, config),
+          isOnDeviceConfig(config)
+            ? onDeviceBudget(config) - reserved
+            : (PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai).maxCharBudget
+        ),
+        ...exchange,
+      ];
+    };
+
+    const dispatch = (
+      message: string,
+      to?: CoachStream,
+      exchange: ChatHistoryEntry[] = []
+    ): Promise<CoachResponse> => {
+      const turns = turnsFor(message, exchange);
+
+      if (isOnDeviceConfig(config)) {
+        return sendViaOnDevice(config, systemPrompt, turns, message, to);
+      }
+
+      // Gemini, Claude and every OpenAI-compatible provider (OpenAI, a custom local server, the free
+      // tier through OpenRouter, and Musclog Iron).
+      return sendViaCloud(config, systemPrompt, turns, message, to);
+    };
+
+    const level = await thinkingLevelFor(config);
+
+    // The on-device engines answer in one request at every level (`ProviderPolicy.skipsChatReview`).
+    if (!THINKING_PIPELINE[level].chatReview || providerPolicyFor(config).skipsChatReview) {
+      return await dispatch(sendText, target);
+    }
+
+    return await draftAndReviewCoachReply(config, sendText, dispatch, target);
+  } catch (error) {
+    return failedCoachReply(error, config, shown);
+  }
+}
+
+/**
+ * What a chat request that threw turns into: a cancel, a typed user-actionable error and a reply
+ * that was already on screen (taken back by the caller; an apology saved as the coach's answer would
+ * sit next to half of the real one) are rethrown; a spent quota is an `AiCreditsError`; anything else
+ * becomes a generic apology without the internals.
+ */
+async function failedCoachReply(
+  error: unknown,
+  config: CoachAIConfig,
+  shown: boolean
+): Promise<CoachResponse> {
+  if (error instanceof AiCancelledError || shown) {
+    throw error;
   }
 
-  if (config.provider === 'claude') {
-    return sendViaClaude(config, history, sanitizedMessage, context, stream);
+  rethrowUserFacingAiError(error);
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'sendCoachMessage',
+    payload: { error },
+    config,
+  });
+  console.error('[coachAI] sendCoachMessage error:', error);
+
+  // Log detailed error for debugging but don't expose internals to user
+  reportAiError(error, 'coachAI.sendCoachMessage');
+
+  if (isAiCreditsError(error)) {
+    throw config.provider === 'gateway'
+      ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
+      : new AiCreditsError(i18n.t('errors.aiCreditsError'));
   }
 
-  // OpenAI, local (custom base URL), gateway (the free tier, via OpenRouter) and hosted all speak
-  // the OpenAI-compatible protocol.
-  return sendViaOpenAI(config, history, sanitizedMessage, context, stream);
+  return {
+    msg4User: i18n.t('errors.aiProcessingError'),
+    sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
+  };
+}
+
+/**
+ * The highest thinking level answers twice: the first reply is drafted unseen, then a review
+ * request, with the same system prompt and history, checks it against the history and the app data
+ * and writes the final reply, which is the one streamed. A failing draft throws (the caller gives
+ * the apology a single request would); a failing review (not a cancel) keeps the draft.
+ */
+async function draftAndReviewCoachReply(
+  config: CoachAIConfig,
+  message: string,
+  dispatch: (
+    message: string,
+    target?: CoachStream,
+    exchange?: ChatHistoryEntry[]
+  ) => Promise<CoachResponse>,
+  stream?: CoachStream
+): Promise<CoachResponse> {
+  stream?.onPhase?.('reviewing');
+  const draft = await dispatch(message);
+
+  if (!draft.msg4User.trim()) {
+    return draft;
+  }
+
+  try {
+    // The draft is the model's own previous reply (and the person's message the turn before it), so
+    // the instruction quotes nothing: a small model has no markers to copy back into its answer.
+    const reviewed = await dispatch(
+      getChatReviewInstruction(config.language ?? DEFAULT_LANG),
+      stream,
+      [
+        { role: 'user', content: message },
+        { role: 'coach', content: draft.msg4User },
+      ]
+    );
+
+    if (!reviewed.msg4User.trim()) {
+      stream?.onText(draft.msg4User);
+
+      return draft;
+    }
+
+    return {
+      ...reviewed,
+      rememberMe: reviewed.rememberMe?.trim() ? reviewed.rememberMe : draft.rememberMe,
+    };
+  } catch (error) {
+    if (error instanceof AiCancelledError) {
+      throw error;
+    }
+
+    reportAiError(error, 'coachAI.reviewCoachReply');
+    stream?.onText(draft.msg4User);
+
+    return draft;
+  }
 }
 
 /**
  * AI FUNCTION DISPATCHERS
  * These delegate to provider-specific implementations
  */
+
+/**
+ * An insight at the person's thinking level. Off and Medium make the single request they always
+ * made. From High up the answer is drafted unseen, then fact-checked for `reviewRounds` rounds with
+ * the same system prompt (so the data and the voice stay): the corrector is told which figures the
+ * data does not hold (`ungroundedFigures`), and a correction is kept only when it has no more of them.
+ * The final text then reaches the stream once, so what was shown is what is saved.
+ */
+async function generateInsight(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  userMessage: string,
+  recentConversation?: ChatHistoryEntry[],
+  stream?: CoachStream
+): Promise<string> {
+  // The one request every pass sends: the draft as it is, a fact-check round with the draft as the
+  // model's own turn and a trusted instruction after it (`followUpOf`). The person's words are
+  // sanitized once, here; nothing added later goes through `wrapUserContent`.
+  const hasHistory = Boolean(recentConversation?.length);
+  const original = {
+    systemPrompt: hasHistory ? systemPrompt : withLanguageNote(systemPrompt, config),
+    history: recentConversation ?? [],
+    userMessage: wrapUserContent(userMessage),
+  };
+  const send = async (
+    request: typeof original,
+    operation: string,
+    target?: CoachStream
+  ): Promise<string> =>
+    // Leaked chat-template tokens are removed from every pass, as `generateTextWithHistory` does.
+    stripTemplateTokens(
+      await requestPlainText(
+        config,
+        operation,
+        request.systemPrompt,
+        request.history,
+        request.userMessage,
+        target,
+        'insight'
+      )
+    );
+  const draftOperation = hasHistory ? 'generateTextWithHistory' : 'generateText';
+  const pipeline = THINKING_PIPELINE[await thinkingLevelFor(config)];
+  // The downloaded model answers once at every level (`ProviderPolicy.skipsInsightFactCheck`).
+  const rounds = providerPolicyFor(config).skipsInsightFactCheck ? 0 : pipeline.reviewRounds;
+  if (rounds === 0) {
+    return send(original, draftOperation, stream);
+  }
+
+  stream?.onPhase?.('reviewing');
+  const draft = await send(original, draftOperation);
+  if (!draft.trim()) {
+    return draft;
+  }
+
+  const data = [
+    systemPrompt,
+    ...(recentConversation ?? []).map((entry) => entry.content),
+    userMessage,
+  ].join('\n');
+  const final = await reviewAndRevise({
+    draft,
+    rounds,
+    critique: (current, round) =>
+      send(
+        followUpOf(original, {
+          answer: current,
+          instruction: getInsightFactCheckInstruction(ungroundedFigures(current, data), round > 0),
+        }),
+        'generateInsightFactCheck'
+      ),
+    accept: (current, revised) =>
+      revised.trim() !== '' &&
+      ungroundedFigures(revised, data).length <= ungroundedFigures(current, data).length,
+    onError: (error) => reportAiError(error, 'coachAI.factCheckInsight'),
+    isUnchanged: pipeline.earlyExit ? sameValue : undefined,
+  });
+  stream?.onText(final);
+
+  return final;
+}
+
+/**
+ * A plan at the person's thinking level. Off and Medium make the single request they always made.
+ * From High up the answer gets `reviewRounds` critique rounds: the same request again, with the
+ * current answer and the problems code found in it (`planFindings`), and the revision is kept only
+ * when it parses and has no more problems than the answer it revises.
+ */
+async function generatePlan<T>(
+  config: CoachAIConfig,
+  request: (followUp?: FollowUp) => Promise<T | null | undefined>,
+  findingsOf: (answer: T) => string[]
+): Promise<T | null> {
+  const draft = await request();
+  if (draft == null) {
+    return null;
+  }
+
+  const pipeline = THINKING_PIPELINE[await thinkingLevelFor(config)];
+  const rounds = pipeline.reviewRounds;
+  if (rounds === 0) {
+    return draft;
+  }
+
+  return reviewAndRevise<T>({
+    draft,
+    rounds,
+    critique: (current) =>
+      request({
+        answer: JSON.stringify(current),
+        instruction: getPlanReviewInstruction(findingsOf(current)),
+      }),
+    accept: (current, revised) => findingsOf(revised).length <= findingsOf(current).length,
+    onError: (error) => reportAiError(error, 'coachAI.reviewPlan'),
+    isUnchanged: pipeline.earlyExit ? sameValue : undefined,
+  });
+}
+
+/**
+ * The shell every user-facing AI function shares. A failure the person can act on (a rejected key, a
+ * timeout, a spent allowance) is shown to them, and any failure reaches Sentry through
+ * `reportAiError`, which leaves out what the person fixes themselves. The function then answers
+ * null, as every caller expects. `name` is the exported function's name, so an event names its
+ * feature.
+ */
+async function userFacing<T>(name: string, run: () => Promise<T | null>): Promise<T | null> {
+  try {
+    return await run();
+  } catch (error) {
+    notifyUserFacingAiError(error);
+    reportAiError(error, `coachAI.${name}`);
+
+    return null;
+  }
+}
+
+/** What an insight request says when the person added remarks, or the default ask when not. */
+function remarksMessage(userRemarks?: string): string {
+  return userRemarks?.trim()
+    ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
+    : INSIGHTS_USER_MESSAGE;
+}
+
+/**
+ * A conversation as one block of text, for a request that is not a chat turn (a plan built from what
+ * was said): the person's words as typed, the coach's as written. Nothing is cut or escaped as a
+ * whole: only the sanitizer's per-message limit applies to what the person wrote.
+ */
+function conversationTranscript(history: readonly ChatHistoryEntry[]): string {
+  return history
+    .map((entry) =>
+      entry.role === 'user' ? `User: ${prepareChatText(entry.content)}` : `Coach: ${entry.content}`
+    )
+    .join('\n\n');
+}
 
 /**
  * Get nutrition insights for a date range.
@@ -2773,35 +2365,24 @@ export async function getNutritionInsights(
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition',
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang, {
-      context,
-      provider: config.provider,
-    });
+  return userFacing('getNutritionInsights', async () => {
+    const systemPrompt = await getNutritionInsightsPrompt(
+      startDate,
+      endDate,
+      config.language ?? DEFAULT_LANG,
+      { context, provider: config.provider }
+    );
 
-    const finalUserMessage = userRemarks?.trim()
-      ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
-      : INSIGHTS_USER_MESSAGE;
-
-    if (recentConversation?.length) {
-      const text = await generateTextWithHistory(
+    return (
+      (await generateInsight(
         config,
         systemPrompt,
+        remarksMessage(userRemarks),
         recentConversation,
-        finalUserMessage,
         stream
-      );
-      return text || null;
-    }
-
-    const text = await generateText(config, systemPrompt, finalUserMessage, stream);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getNutritionInsights error:', error);
-    return null;
-  }
+      )) || null
+    );
+  });
 }
 
 /**
@@ -2813,40 +2394,40 @@ export async function generateMealPlan(
   macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
 ): Promise<GenerateMealPlanResponse | null> {
-  try {
+  return userFacing('generateMealPlan', async () => {
     const lang = config.language ?? DEFAULT_LANG;
-    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
-    const includeFoundationFoods = providerConfig.enableFoundationFoods
-      ? await SettingsService.getSendFoundationFoodsToLlm()
-      : false;
+    // One list for the whole plan: a revision round reads its answer against the list the first one saw.
+    const foundation = await foundationFoodsFor(config, 'estimate');
     const systemPrompt = await getGenerateMealPlanPrompt(
       lang,
       macroTargets,
       undefined,
       context,
-      includeFoundationFoods
+      foundation
     );
-
-    const userMessage =
-      history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
-      '\n\nGenerate the meal plan.';
-
-    const fns = getGenerateMealPlanFunctions(includeFoundationFoods);
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<GenerateMealPlanResponse>(
+    const userMessage = `${conversationTranscript(history)}\n\nGenerate the meal plan.`;
+    const schema = schemaOfFunction(
+      getGenerateMealPlanFunctions(foundation !== null, mealSchemaDialect(config))
+    );
+    const plan = await generatePlan<GenerateMealPlanResponse>(
       config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'generateMealPlan',
-      'planning'
+      (followUp) =>
+        generateStructured<GenerateMealPlanResponse>(
+          config,
+          systemPrompt,
+          userMessage,
+          schema,
+          'generateMealPlan',
+          'planning',
+          { followUp }
+        ),
+      (plan) => mealPlanFindings(plan, macroTargets)
     );
-    return parsed ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    reportAiError(error, 'coachAI.generateMealPlan');
-    return null;
-  }
+
+    // The references stay as the model wrote them while a critique round re-reads the plan, so a
+    // revision speaks the same language as the list in the system prompt; the real ids come last.
+    return plan ? resolveFoundationRefsInMeals(plan, foundation) : null;
+  });
 }
 
 /**
@@ -2857,37 +2438,33 @@ export async function generateWorkoutPlan(
   history: ChatHistoryEntry[],
   context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<GenerateWorkoutPlanResponse | null> {
-  try {
+  return userFacing('generateWorkoutPlan', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await createWorkoutPlanPrompt(lang, undefined, context);
-    const instruction =
-      history.length > 0
-        ? i18n.t('coach.aiInstructions.generateWorkoutPlanWithHistory', { lng: lang })
-        : i18n.t('coach.aiInstructions.generateWorkoutPlanDefault', { lng: lang });
-
     const userMessage =
       history.length > 0
-        ? history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
-          '\n\n' +
-          instruction
-        : instruction;
+        ? `${conversationTranscript(history)}\n\n${i18n.t(
+            'coach.aiInstructions.generateWorkoutPlanWithHistory',
+            { lng: lang }
+          )}`
+        : i18n.t('coach.aiInstructions.generateWorkoutPlanDefault', { lng: lang });
+    const schema = schemaOfFunction(getGenerateWorkoutPlanFunctions());
 
-    const fns = getGenerateWorkoutPlanFunctions();
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<GenerateWorkoutPlanResponse>(
+    return generatePlan<GenerateWorkoutPlanResponse>(
       config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'generateWorkoutPlan',
-      'planning'
+      (followUp) =>
+        generateStructured<GenerateWorkoutPlanResponse>(
+          config,
+          systemPrompt,
+          userMessage,
+          schema,
+          'generateWorkoutPlan',
+          'planning',
+          { followUp }
+        ),
+      workoutPlanFindings
     );
-    return parsed ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    reportAiError(error, 'coachAI.generateWorkoutPlan');
-    return null;
-  }
+  });
 }
 
 /**
@@ -2898,29 +2475,32 @@ export async function calculateNextWorkoutVolume(
   workoutTitle: string,
   completedWorkoutData: any
 ): Promise<CalculateVolumeResponse | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getCalculateNextWorkoutVolumePrompt(workoutTitle, lang);
+  return userFacing('calculateNextWorkoutVolume', async () => {
+    const systemPrompt = await getCalculateNextWorkoutVolumePrompt(
+      workoutTitle,
+      config.language ?? DEFAULT_LANG
+    );
     const userMessage =
       typeof completedWorkoutData === 'string'
         ? completedWorkoutData
         : JSON.stringify(completedWorkoutData ?? {}, null, 2);
-    const fns = getCalculateNextWorkoutVolumeFunctions();
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<CalculateVolumeResponse>(
+    const schema = schemaOfFunction(getCalculateNextWorkoutVolumeFunctions());
+
+    return generatePlan<CalculateVolumeResponse>(
       config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'calculateNextWorkoutVolume',
-      'planning'
+      (followUp) =>
+        generateStructured<CalculateVolumeResponse>(
+          config,
+          systemPrompt,
+          userMessage,
+          schema,
+          'calculateNextWorkoutVolume',
+          'planning',
+          { followUp }
+        ),
+      workoutVolumeFindings
     );
-    return parsed ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] calculateNextWorkoutVolume error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -2930,18 +2510,15 @@ export async function getWorkoutInsights(
   config: CoachAIConfig,
   workoutTitle: string
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutInsightsPrompt(workoutTitle, lang, {
-      provider: config.provider,
-    });
-    const text = await generateText(config, systemPrompt);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getWorkoutInsights error:', error);
-    return null;
-  }
+  return userFacing('getWorkoutInsights', async () => {
+    const systemPrompt = await getWorkoutInsightsPrompt(
+      workoutTitle,
+      config.language ?? DEFAULT_LANG,
+      { provider: config.provider }
+    );
+
+    return (await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE)) || null;
+  });
 }
 
 /**
@@ -2952,18 +2529,18 @@ export async function getRecentWorkoutInsights(
   workoutLogId: string,
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(workoutLogId, lang, {
-      provider: config.provider,
-    });
-    const text = await generateText(config, systemPrompt, undefined, stream);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getRecentWorkoutInsights error:', error);
-    return null;
-  }
+  return userFacing('getRecentWorkoutInsights', async () => {
+    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(
+      workoutLogId,
+      config.language ?? DEFAULT_LANG,
+      { provider: config.provider }
+    );
+
+    return (
+      (await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE, undefined, stream)) ||
+      null
+    );
+  });
 }
 
 /**
@@ -2980,35 +2557,24 @@ export async function getRecentWorkoutsInsights(
   context: 'nutrition' | 'exercise' | 'general' = 'exercise',
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang, {
-      context,
-      provider: config.provider,
-    });
+  return userFacing('getRecentWorkoutsInsights', async () => {
+    const systemPrompt = await getRecentWorkoutsInsightsPrompt(
+      startDate,
+      endDate,
+      config.language ?? DEFAULT_LANG,
+      { context, provider: config.provider }
+    );
 
-    const finalUserMessage = userRemarks?.trim()
-      ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
-      : INSIGHTS_USER_MESSAGE;
-
-    if (recentConversation?.length) {
-      const text = await generateTextWithHistory(
+    return (
+      (await generateInsight(
         config,
         systemPrompt,
+        remarksMessage(userRemarks),
         recentConversation,
-        finalUserMessage,
         stream
-      );
-      return text || null;
-    }
-
-    const text = await generateText(config, systemPrompt, finalUserMessage, stream);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getRecentWorkoutsInsights error:', error);
-    return null;
-  }
+      )) || null
+    );
+  });
 }
 
 /**
@@ -3018,234 +2584,102 @@ export async function getWorkoutVolumeInsights(
   config: CoachAIConfig,
   workoutTitle: string
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutVolumeInsightsPrompt(workoutTitle, lang, {
-      provider: config.provider,
-    });
-    const text = await generateText(config, systemPrompt);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getWorkoutVolumeInsights error:', error);
-    return null;
-  }
+  return userFacing('getWorkoutVolumeInsights', async () => {
+    const systemPrompt = await getWorkoutVolumeInsightsPrompt(
+      workoutTitle,
+      config.language ?? DEFAULT_LANG,
+      { provider: config.provider }
+    );
+
+    return (await generateInsight(config, systemPrompt, INSIGHTS_USER_MESSAGE)) || null;
+  });
 }
 
 /**
- * Optional context from the user to improve meal photo estimation (e.g. description + tags).
+ * One extraction (a label, past workouts, a food log) at the person's thinking level. Off and
+ * Medium make the single request they always made; High reads the input twice, together, and
+ * Tokenmaxxing reads it twice and takes a third reading only when the first two disagree on some
+ * field (`extractionSamples`, `EXTRACTION_FIRST_READINGS`). A reading that fails or says nothing is
+ * no evidence, so a level that exits early spends what is left of its budget on another one instead
+ * of ending on a single reading. Code combines the readings field by field (`combineExtractions`).
+ * Only when they still disagree is one more request made: the same request with the readings and
+ * the disputed fields appended, whose answer is used when it parses. A failed arbiter keeps the
+ * combined readings; a cancel stops everything.
  */
-export type MealPhotoContext = {
-  description: string;
-  tags: string[];
-};
-
-/** Foods this phone already has whose names share a word with `name`, merged and deduplicated. */
-async function candidateFoodsFor(name: string): Promise<FoodCandidate[]> {
-  const byId = new Map<string, FoodCandidate>();
-  for (const term of searchTermsFor(name)) {
-    for (const food of await FoodService.searchFoods(term)) {
-      byId.set(food.id, {
-        id: food.id,
-        name: food.name,
-        kcal: food.calories ?? 0,
-        protein: food.protein ?? 0,
-        carbs: food.carbs ?? 0,
-        fat: food.fat ?? 0,
-        fiber: food.fiber ?? 0,
-      });
-    }
-  }
-
-  return [...byId.values()];
-}
-
-/**
- * Reads a meal photo with the downloaded on-device model: it names what it sees and guesses grams
- * (grammar-constrained, never asked for calories), the names are matched to foods this phone has,
- * and anything unmatched is estimated by name through the same follow-up the cloud path uses.
- * Returns null when nothing recognisable is in the photo; the review screen takes it from there.
- */
-async function estimateMealFromPhotoOnDevice(
+async function extractWithConsensus<T>(
   config: CoachAIConfig,
-  base64Image: string,
-  context?: MealPhotoContext | null,
-  onProgress?: MealEstimateProgressListener
-): Promise<TrackMealResponse | null> {
-  reportMealProgress(onProgress, { step: 'reading', photo: true });
-  const rawBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-  const rawMime = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const aiImage: typeof import('@/utils/aiImage') = require('@/utils/aiImage');
-  const { base64, mimeType } = await aiImage.prepareOnDeviceImage(rawBase64, rawMime);
-  const systemPrompt = localFoodIdentifyPrompt();
-  const details = wrapUserContent([context?.description, ...(context?.tags ?? [])].join(' '));
-  const messages = [
-    {
-      role: 'user' as const,
-      content: details
-        ? `What foods are in this photo?\nMeal notes: ${details}`
-        : 'What foods are in this photo?',
-    },
-  ];
-  await logLlmDebugEvent({
-    provider: 'on-device',
-    direction: 'request',
-    operation: 'estimateNutritionFromPhoto',
-    payload: { systemPrompt, messages, schema: LOCAL_FOOD_IDENTIFY_SCHEMA },
-    config,
+  request: (followUp?: FollowUp) => Promise<T | null | undefined>
+): Promise<T | null> {
+  const level = await thinkingLevelFor(config);
+  const samples = extractionSamples(level);
+  // A level that exits early reads `EXTRACTION_FIRST_READINGS` first and takes the rest only when
+  // those disagree; the others read everything at once.
+  const firstReadings = THINKING_PIPELINE[level].earlyExit
+    ? Math.min(EXTRACTION_FIRST_READINGS, samples)
+    : samples;
+  let requested = firstReadings;
+  let readings = await runSamples(config, firstReadings, () => request(), {
+    onDroppedFailure: (error) => reportAiError(error, 'coachAI.extractionReading'),
   });
 
-  const askForPhoto = (temperature?: number) =>
-    withLlmRetry('estimateNutritionFromPhoto', config, (signal) =>
-      sendLocalStructuredRaw(messages, systemPrompt, LOCAL_FOOD_IDENTIFY_SCHEMA, {
-        image: `data:${mimeType};base64,${base64}`,
-        signal,
-        ...(temperature === undefined ? {} : { temperature }),
-      })
-    );
-
-  const readPhotoReply = (text: string) =>
-    checkStructuredShape(
-      parseStructuredJson<unknown>(text),
-      LOCAL_FOOD_IDENTIFY_SCHEMA,
-      'estimateNutritionFromPhoto'
-    );
-
-  let raw = await askForPhoto();
-  let parsed = readPhotoReply(raw);
-  if (parsed.kind !== 'ok') {
-    // Syntax is the grammar's job and the schema check is ours; a reply that fails both gets one
-    // warmer second try (temperature 0 would repeat itself) before the person is told it failed.
-    const firstRaw = raw;
-    raw = await askForPhoto(LOCAL_PHOTO_RETRY_TEMPERATURE);
-    parsed = readPhotoReply(raw);
-
-    // Last resort before giving up: one text-only call that is asked to correct the broken reply
-    // (no photo, so the projector stays unloaded), read by the same parser and schema check. It
-    // only ever runs after both photo attempts failed, so a good run never pays for it.
-    const broken = [raw, firstRaw].find((text) => text.trim() !== '');
-    if (parsed.kind !== 'ok' && broken) {
-      const repaired = await repairStructuredWithModel<unknown>(
-        config,
-        'estimateNutritionFromPhoto',
-        broken,
-        LOCAL_FOOD_IDENTIFY_SCHEMA,
-        { system: localJsonRepairPrompt(), message: localJsonRepairMessage(broken) }
-      );
-      if (repaired?.kind === 'ok') {
-        parsed = repaired;
-      }
-    }
-  }
-
-  const foods: IdentifiedFood[] = parsed.kind === 'ok' ? parseIdentifiedFoods(parsed.value) : [];
-  if (foods.length === 0) {
-    return null;
-  }
-
-  const matches = new Map<string, FoodCandidate | null>();
-  for (const food of foods) {
-    matches.set(food.name, pickFoodMatch(food.name, await candidateFoodsFor(food.name)));
-  }
-
-  const hour = new Date().getHours();
-  const meal = buildPhotoMeal(foods, matches, mealTypeForHour(hour));
-  return refineTrackedMeals(config, meal, onProgress);
-}
-
-/**
- * Estimate nutrition from a meal photo.
- * Returns a TrackMealResponse with ingredients breakdown, similar to trackMeal.
- */
-export async function estimateNutritionFromPhoto(
-  config: CoachAIConfig,
-  base64Image: string,
-  context?: MealPhotoContext | null,
-  onProgress?: MealEstimateProgressListener
-): Promise<TrackMealResponse | null> {
-  if (config.provider === 'on-device') {
-    if (onDeviceEngineOf(config) !== 'gguf') {
-      throw new OnDeviceUnavailableError('photosUnsupported');
-    }
-
-    if (!config.vision) {
-      throw new OnDeviceUnavailableError('photosNotInstalled');
-    }
-
+  // Further readings only ever add evidence: when they all fail, what there is stands (a cancel
+  // stops everything).
+  const takeMoreReadings = async (): Promise<void> => {
+    const count = samples - requested;
+    requested = samples;
     try {
-      return await estimateMealFromPhotoOnDevice(config, base64Image, context, onProgress);
+      readings = [
+        ...readings,
+        ...(await runSamples(config, count, () => request(), {
+          onDroppedFailure: (error) => reportAiError(error, 'coachAI.extractionReading'),
+        })),
+      ];
     } catch (error) {
-      reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
-      throw error;
+      if (error instanceof AiCancelledError) {
+        throw error;
+      }
+
+      reportAiError(error, 'coachAI.extractionExtraReading');
+    }
+  };
+
+  if (readings.length < 2 && requested < samples) {
+    await takeMoreReadings();
+  }
+
+  if (readings.length <= 1) {
+    return readings[0] ?? null;
+  }
+
+  let { value, disputed } = combineExtractions(readings);
+  if (disputed.length === 0) {
+    return value as T;
+  }
+
+  if (requested < samples) {
+    // The first readings disagree: one more reading settles a two-to-one split.
+    await takeMoreReadings();
+    ({ value, disputed } = combineExtractions(readings));
+    if (disputed.length === 0) {
+      return value as T;
     }
   }
 
   try {
-    reportMealProgress(onProgress, { step: 'reading', photo: true });
-    const useThinkingMode = await SettingsService.getUseThinkingMode();
-    if (useThinkingMode) {
-      let thinkingUserMessage = 'Analyze this meal photo.';
-      if (context?.description?.trim()) {
-        thinkingUserMessage += `\nUser description: ${context.description.trim()}`;
-      }
+    const arbiter = await request({
+      instruction: getExtractionArbiterMessage(readings, disputed),
+    });
 
-      if (context?.tags?.length) {
-        thinkingUserMessage += `\nTags: ${context.tags.join(', ')}`;
-      }
-
-      return await trackMealVerified(config, thinkingUserMessage, base64Image, onProgress);
-    }
-
-    const customPrompts = await getActiveCustomPrompts();
-    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
-    const includeFoundationFoods = providerConfig.enableFoundationFoods
-      ? await SettingsService.getSendFoundationFoodsToLlm()
-      : false;
-
-    const baseSystemPrompt = await getMealAnalysisPrompt(includeFoundationFoods);
-    const systemPrompt = customPrompts
-      ? `${baseSystemPrompt}\n\n${customPrompts}`
-      : baseSystemPrompt;
-
-    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-
-    // Use getTrackMealFunctions to get an array of meals with ingredients breakdown
-    const fns = getTrackMealFunctions(includeFoundationFoods);
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-
-    let userMessageSuffix: string | undefined;
-    if (context && (context.description.trim() || context.tags.length > 0)) {
-      const parts: string[] = [];
-      if (context.description.trim()) {
-        parts.push(`User description: ${context.description.trim()}`);
-      }
-
-      if (context.tags.length > 0) {
-        parts.push(`Tags: ${context.tags.join(', ')}`);
-      }
-
-      userMessageSuffix = parts.join('\n');
-    }
-
-    const parsed = await generateWithImageStructured<TrackMealResponse>(
-      config,
-      systemPrompt,
-      base64,
-      mimeType,
-      schema,
-      'trackMeal',
-      userMessageSuffix
-    );
-
-    // Foundation-food matches arrive with zero macros: the lookup fills the real values in, and an
-    // id the database does not have is estimated in a follow-up request instead of logged at 0 kcal.
-    return parsed?.meals ? await refineTrackedMeals(config, parsed, onProgress) : (parsed ?? null);
+    // The arbiter settles only the fields the readings disputed (aligned to them the way the
+    // readings were aligned to each other); what they agreed on stays.
+    return arbiter == null ? (value as T) : (combineExtractions(readings, { arbiter }).value as T);
   } catch (error) {
-    notifyUserFacingAiError(error);
-    reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
-    return null;
+    if (error instanceof AiCancelledError) {
+      throw error;
+    }
+
+    reportAiError(error, 'coachAI.arbitrateExtraction');
+    return value as T;
   }
 }
 
@@ -3257,46 +2691,27 @@ export async function extractMacrosFromLabelPhoto(
   base64Image: string,
   context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
-  try {
-    const customPrompts = await getActiveCustomPrompts();
-    const baseSystemPrompt = getExtractMacrosFromLabelPrompt();
-    const systemPrompt = customPrompts
-      ? `${baseSystemPrompt}\n\n${customPrompts}`
-      : baseSystemPrompt;
+  return userFacing('extractMacrosFromLabelPhoto', async () => {
+    const systemPrompt = await withCustomPrompts(getExtractMacrosFromLabelPrompt());
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-    const fns = getEstimateMacrosFunctions(true);
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const schema = schemaOfFunction(getEstimateMacrosFunctions(true));
+    const userMessageSuffix = formatMealPhotoContext(context);
 
-    let userMessageSuffix: string | undefined;
-    if (context && (context.description.trim() || context.tags.length > 0)) {
-      const parts: string[] = [];
-      if (context.description.trim()) {
-        parts.push(`User description: ${context.description.trim()}`);
-      }
-
-      if (context.tags.length > 0) {
-        parts.push(`Tags: ${context.tags.join(', ')}`);
-      }
-
-      userMessageSuffix = parts.join('\n');
-    }
-
-    const parsed = await generateWithImageStructured<MacroEstimate>(
-      config,
-      systemPrompt,
-      base64,
-      mimeType,
-      schema,
-      'estimateMacros',
-      userMessageSuffix
+    return extractWithConsensus<MacroEstimate>(config, (followUp) =>
+      generateWithImageStructured<MacroEstimate>(
+        config,
+        systemPrompt,
+        base64,
+        mimeType,
+        schema,
+        'estimateMacros',
+        userMessageSuffix,
+        'extraction',
+        { followUp }
+      )
     );
-    return parsed ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] extractMacrosFromLabelPhoto error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -3308,48 +2723,32 @@ export async function extractMacrosFromLabelText(
   ocrText: string,
   context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
-  try {
-    const hasContext = context && (context.description.trim() || context.tags.length > 0);
-    if (!ocrText.trim() && !hasContext) {
+  return userFacing('extractMacrosFromLabelText', async () => {
+    const contextText = formatMealPhotoContext(context);
+    if (!ocrText.trim() && !contextText) {
       return null;
     }
 
-    const customPrompts = await getActiveCustomPrompts();
-    const baseSystemPrompt = getExtractMacrosFromLabelTextPrompt();
-    const systemPrompt = customPrompts
-      ? `${baseSystemPrompt}\n\n${customPrompts}`
-      : baseSystemPrompt;
-    const fns = getEstimateMacrosFunctions(true);
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-
-    let userMessage = ocrText.trim() || 'No text extracted from the label.';
-    if (context && (context.description.trim() || context.tags.length > 0)) {
-      const parts: string[] = [];
-      if (context.description.trim()) {
-        parts.push(`User description: ${context.description.trim()}`);
-      }
-
-      if (context.tags.length > 0) {
-        parts.push(`Tags: ${context.tags.join(', ')}`);
-      }
-
-      userMessage += '\n\n' + parts.join('\n');
-    }
-
-    const parsed = await generateStructured<MacroEstimate>(
-      config,
-      systemPrompt,
-      userMessage,
-      schema,
-      'estimateMacros'
+    const systemPrompt = await withCustomPrompts(getExtractMacrosFromLabelTextPrompt());
+    const schema = schemaOfFunction(getEstimateMacrosFunctions(true));
+    // What was read off a label and what the person wrote are both untrusted text.
+    const userMessage = wrapUserContent(
+      (ocrText.trim() || 'No text extracted from the label.') +
+        (contextText ? `\n\n${contextText}` : '')
     );
 
-    return parsed ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] extractMacrosFromLabelText error:', error);
-    return null;
-  }
+    return extractWithConsensus<MacroEstimate>(config, (followUp) =>
+      generateStructured<MacroEstimate>(
+        config,
+        systemPrompt,
+        userMessage,
+        schema,
+        'estimateMacros',
+        'extraction',
+        { followUp }
+      )
+    );
+  });
 }
 
 /**
@@ -3360,24 +2759,26 @@ export async function parsePastWorkouts(
   userMessage: string,
   exerciseNames: string[]
 ): Promise<ParsedWorkout[] | null> {
-  try {
+  return userFacing('parsePastWorkouts', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getParsePastWorkoutsPrompt(userMessage, exerciseNames, lang);
-    const fns = getParsePastWorkoutsFunctions();
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
+    const schema = schemaOfFunction(getParsePastWorkoutsFunctions());
+    const parsed = await extractWithConsensus<{ pastWorkouts: ParsedWorkout[] }>(
       config,
-      systemPrompt,
-      i18n.t('coach.aiInstructions.parseWorkouts', { lng: lang }),
-      schema,
-      'parsePastWorkouts'
+      (followUp) =>
+        generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
+          config,
+          systemPrompt,
+          i18n.t('coach.aiInstructions.parseWorkouts', { lng: lang }),
+          schema,
+          'parsePastWorkouts',
+          'extraction',
+          { followUp }
+        )
     );
+
     return parsed?.pastWorkouts ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] parsePastWorkouts error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -3387,24 +2788,26 @@ export async function parsePastNutrition(
   config: CoachAIConfig,
   userMessage: string
 ): Promise<ParsedNutrition[] | null> {
-  try {
+  return userFacing('parsePastNutrition', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getParsePastNutritionPrompt(userMessage, lang);
-    const fns = getParsePastNutritionFunctions();
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<{ pastNutrition: ParsedNutrition[] }>(
+    const schema = schemaOfFunction(getParsePastNutritionFunctions());
+    const parsed = await extractWithConsensus<{ pastNutrition: ParsedNutrition[] }>(
       config,
-      systemPrompt,
-      i18n.t('coach.aiInstructions.parseNutrition', { lng: lang }),
-      schema,
-      'parsePastNutrition'
+      (followUp) =>
+        generateStructured<{ pastNutrition: ParsedNutrition[] }>(
+          config,
+          systemPrompt,
+          i18n.t('coach.aiInstructions.parseNutrition', { lng: lang }),
+          schema,
+          'parsePastNutrition',
+          'extraction',
+          { followUp }
+        )
     );
+
     return parsed?.pastNutrition ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] parsePastNutrition error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -3415,25 +2818,26 @@ export async function parseRetrospectiveNutrition(
   userMessage: string,
   targetDate: string
 ): Promise<NutritionEntry[] | null> {
-  try {
+  return userFacing('parseRetrospectiveNutrition', async () => {
     const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getRetrospectiveNutritionPrompt(targetDate, userMessage, lang);
-    const fns = getParseRetrospectiveNutritionFunctions();
-    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
-    const parsed = await generateStructured<{ nutritionEntries: NutritionEntry[] }>(
+    const schema = schemaOfFunction(getParseRetrospectiveNutritionFunctions());
+    const parsed = await extractWithConsensus<{ nutritionEntries: NutritionEntry[] }>(
       config,
-      systemPrompt,
-      i18n.t('coach.aiInstructions.parseRetrospectiveNutrition', { lng: lang }),
-      schema,
-      'parseRetrospectiveNutrition'
+      (followUp) =>
+        generateStructured<{ nutritionEntries: NutritionEntry[] }>(
+          config,
+          systemPrompt,
+          i18n.t('coach.aiInstructions.parseRetrospectiveNutrition', { lng: lang }),
+          schema,
+          'parseRetrospectiveNutrition',
+          'extraction',
+          { followUp }
+        )
     );
 
     return parsed?.nutritionEntries ?? null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] parseRetrospectiveNutrition error:', error);
-    return null;
-  }
+  });
 }
 
 /**
@@ -3447,20 +2851,20 @@ export async function getMealCritique(
   userRemarks?: string,
   stream?: CoachStream
 ): Promise<string | null> {
-  try {
-    const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getMealCritiquePrompt(mealType, foods, totals, lang, {
-      context: 'nutrition',
-      provider: config.provider,
-    });
+  return userFacing('getMealCritique', async () => {
+    const systemPrompt = await getMealCritiquePrompt(
+      mealType,
+      foods,
+      totals,
+      config.language ?? DEFAULT_LANG,
+      { context: 'nutrition', provider: config.provider }
+    );
     const finalUserMessage = userRemarks?.trim()
       ? userRemarks.trim()
       : 'Please critique this meal.';
-    const text = await generateText(config, systemPrompt, finalUserMessage, stream);
-    return text || null;
-  } catch (error) {
-    notifyUserFacingAiError(error);
-    console.error('[coachAI] getMealCritique error:', error);
-    return null;
-  }
+
+    return (
+      (await generateInsight(config, systemPrompt, finalUserMessage, undefined, stream)) || null
+    );
+  });
 }

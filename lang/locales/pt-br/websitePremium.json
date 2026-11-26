@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "O que acontece com as suas mensagens",
-      "body": "Com o Musclog Iron ativo, os seus pedidos de IA vão para o serviço próprio do Musclog, que os encaminha ao OpenRouter, que os passa ao modelo de IA. Os pedidos são enviados só para provedores que oferecem retenção zero de dados, e o serviço não guarda o texto das suas mensagens nem as imagens. Ele mantém uma contagem de uso para o período da sua assinatura e um identificador para cada dispositivo em que você usa o Musclog Iron. O OpenRouter também faz a triagem de todas as solicitações em busca de material de abuso sexual infantil e pode manter uma que sinalizar, conforme descreve a própria política dele.",
+      "body": "Com o Musclog Iron ativo, os seus pedidos de IA vão para o serviço próprio do Musclog, que os encaminha por um gateway de IA, o OpenRouter ou o Otari da Mozilla.ai, ao modelo de IA. Os pedidos são enviados só para provedores que oferecem retenção zero de dados, e o serviço não guarda o texto das suas mensagens nem as imagens. O OpenRouter também faz a triagem de todas as solicitações em busca de material de abuso sexual infantil e pode manter uma que sinalizar, conforme descreve a própria política dele; o Otari afirma que não armazena o conteúdo das solicitações. O serviço do Musclog mantém uma contagem de uso para o período da sua assinatura e um identificador para cada dispositivo em que você usa o Musclog Iron.",
       "consent": "O app pede a sua permissão antes de enviar qualquer coisa ao Musclog Iron, e pede de novo se você restaurar um backup em outro dispositivo.",
       "link": "Leia a política de privacidade"
     },

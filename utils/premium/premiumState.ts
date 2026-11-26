@@ -44,7 +44,14 @@ export type HostedConfig = {
   visionEnabled: boolean;
   // The app sends a per-request reasoning effort only when the Worker says it takes one.
   reasoningEffort: boolean;
-  image: { maxPx: number; maxBytes: number; quality: number } | null;
+  image: {
+    maxPx: number;
+    maxBytes: number;
+    quality: number;
+    // Photos one request may carry, and the Worker's body cap in bytes (null: the app's default).
+    maxImages: number;
+    bodyMaxBytes: number | null;
+  } | null;
   minAppVersion: string | null;
 };
 
@@ -171,6 +178,14 @@ export function parseHostedConfig(body: unknown): HostedConfig | null {
           maxBytes: image.maxBytes,
           // The Worker keeps JPEG quality as a whole percent (1 to 100); the app works in 0 to 1.
           quality: image.quality / 100,
+          maxImages:
+            Number.isInteger(image.maxImages) && (image.maxImages as number) >= 1
+              ? (image.maxImages as number)
+              : 1,
+          bodyMaxBytes:
+            Number.isInteger(image.bodyMaxBytes) && (image.bodyMaxBytes as number) > 0
+              ? (image.bodyMaxBytes as number)
+              : null,
         }
       : null;
 

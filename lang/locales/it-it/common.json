@@ -181,7 +181,8 @@
       "filter": "Filtra",
       "clearSearch": "Cancella ricerca",
       "showValue": "Mostra valore",
-      "hideValue": "Nascondi valore"
+      "hideValue": "Nascondi valore",
+      "scrollDown": "Scorri verso il basso"
     },
     "externalAssistant": {
       "copied": "Istruzioni copiate",
@@ -202,6 +203,13 @@
     "energyUnit": {
       "kcal": "kcal",
       "kj": "kJ"
+    },
+    "aiGateways": {
+      "intro": "Musclog Iron inoltra le richieste tramite OpenRouter o Otari:",
+      "openrouterPrivacy": "Informativa sulla privacy di OpenRouter",
+      "openrouterTerms": "Termini di OpenRouter",
+      "otariPrivacy": "Informativa sulla privacy di Otari",
+      "otariTerms": "Termini di Otari"
     }
   }
 }

@@ -1,6 +1,5 @@
 import type { Ctx } from '../context';
 import { jsonResponse } from '../http';
-import { activeUpstream } from '../upstream/select';
 
 /** GET /v1/config: public, no auth. `accepting_new` is the cron's meta flag (plan 13 row 5). */
 export async function handleConfig(_request: Request, ctx: Ctx): Promise<Response> {
@@ -8,14 +7,17 @@ export async function handleConfig(_request: Request, ctx: Ctx): Promise<Respons
     value: string;
   }>();
   const c = ctx.config;
-  const upstream = await activeUpstream(ctx);
-  // Photos need a vision model on the gateway that is serving: OpenRouter's one model, or Otari's pinned vision entry.
-  const visionServable = upstream === 'openrouter' || c.otari?.models.vision !== undefined;
   return jsonResponse({
     enabled: true,
     accepting_new: row?.value !== '0',
-    vision_enabled: c.vision_enabled && visionServable,
-    image: { maxPx: c.image.max_px, maxBytes: c.image.max_bytes, quality: c.image.quality },
+    vision_enabled: c.vision_enabled,
+    image: {
+      maxPx: c.image.max_px,
+      maxBytes: c.image.max_bytes,
+      quality: c.image.quality,
+      maxImages: c.image.max_images,
+      bodyMaxBytes: c.limits.body_max_bytes,
+    },
     // This Worker accepts `reasoning_effort` in a request body. An app sends it only when this is
     // true, so an app that is newer than the deployed Worker never gets a 400 for an unknown field.
     reasoning_effort: true,

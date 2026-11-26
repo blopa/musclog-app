@@ -265,7 +265,7 @@
       "subtitle": "Ver y editar tu historial de conversaciones"
     },
     "aiSettings": {
-      "title": "Ajustes de IA",
+      "title": "Proveedores de IA",
       "save": "Guardar",
       "saved": "Guardado",
       "googleGeminiIntegration": "Integración con Google Gemini",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Selecciona el modelo que usarán todas las funciones de IA",
       "selectOpenAiModel": "Seleccionar modelo de OpenAI",
       "selectOpenAiModelSubtitle": "Selecciona el modelo que usarán todas las funciones de IA",
-      "subtitle": "Ajustes para toda la IA utilizada en esta app",
+      "subtitle": "Qué IA responde: Musclog, tus propias claves o tu teléfono",
       "imageProcessing": "Procesamiento de imágenes",
       "useOcrBeforeAi": "Usar OCR antes de enviar a la IA",
       "useOcrBeforeAiSubtitle": "Procesar imágenes localmente con OCR y enviar texto en su lugar",
@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "Cámara de comidas con IA",
+        "description": "Cómo funciona la cámara al fotografiar una comida.",
+        "detailed": "Detallado",
+        "quick": "Rápido",
+        "detailedHint": "Tras cada foto, revisa hasta 5 fotos y añade detalles opcionales (nombre, notas, procedencia) antes de estimar.",
+        "quickHint": "Estima justo después de hacer la foto. Añade contexto antes de la toma con el botón de mensaje."
+      },
       "getOpenAiKey": "Conseguir Clave de OpenAI",
       "customPrompts": "Prompts de Sistema Personalizados",
       "customPromptsSubtitle": "Añade tus propias instrucciones a todas las funciones de IA",
@@ -349,9 +357,45 @@
       "promptContextNutrition": "Nutrición",
       "promptContextExercise": "Ejercicio",
       "memorySettings": "Ajustes de memoria",
-      "useThinkingMode": "Usar modo de razonamiento",
-      "useThinkingModeSubtitle": "Permitir que los proveedores de IA usen razonamiento más profundo cuando sea compatible. Esto consume más tokens y puede aumentar el costo.",
-      "useThinkingModeIronNote": "Con Musclog Iron, pensar más a fondo y las comprobaciones extra usan más de tu cupo mensual de IA.",
+      "thinkingLevel": {
+        "label": "Nivel de razonamiento",
+        "freeTierNote": "El nivel gratuito responde sin razonamiento extra: su cuota diaria la comparten todos los usuarios.",
+        "onDeviceNote": "Los niveles altos hacen más comprobaciones en tu teléfono, así que las respuestas tardan más.",
+        "levels": {
+          "off": {
+            "name": "Desactivado",
+            "description": "Respuestas rápidas. Cada tarea razona lo que necesita."
+          },
+          "medium": {
+            "name": "Medio",
+            "description": "Razona con más cuidado y comprueba los alimentos de una comida con tu base de datos antes de estimar."
+          },
+          "high": {
+            "name": "Alto",
+            "description": "Medio, más una revisión de comidas, análisis y planes, y dos lecturas de etiquetas e importaciones."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Se comparan varias respuestas independientes y después se revisan hasta dos veces. Lo más lento y lo más cuidadoso."
+          }
+        },
+        "ironNote": {
+          "medium": "Usa un poco más de tu cuota mensual de Musclog Iron.",
+          "high": "Usa más de tu cuota mensual de Musclog Iron.",
+          "tokenmaxxing": "Puede usar tu cuota mensual de Musclog Iron varias veces más rápido."
+        },
+        "confirmHigh": {
+          "title": "¿Usar razonamiento Alto?",
+          "message": "Alto hace una petición extra de comprobación en la mayoría de las respuestas, así que usa más de tu cuota mensual de Musclog Iron. Puedes volver atrás en cualquier momento.",
+          "confirm": "Continuar"
+        },
+        "confirmTokenmaxxing": {
+          "title": "¿Usar Tokenmaxxing?",
+          "message": "Tokenmaxxing hace varias peticiones por cada respuesta, así que puede usar tu cuota mensual de Musclog Iron varias veces más rápido. Nunca cuesta más que tu suscripción: cuando se agota la cuota de este periodo, se renueva con el siguiente.",
+          "confirm": "Continuar",
+          "authPrompt": "Confirma que eres tú para activar Tokenmaxxing"
+        }
+      },
       "localLlmThinkingEnabled": "Modo de pensamiento activado, ya que los modelos locales no cuestan nada extra. Puedes desactivarlo en los ajustes de IA.",
       "maxAiMemories": "Máximo de Memorias de IA",
       "maxAiMemoriesSubtitle": "Número de mensajes anteriores que se recordarán en las conversaciones",
@@ -395,6 +439,10 @@
       "premium": {
         "activeNote": "Musclog Iron está respondiendo a tus solicitudes de IA. Tus propias claves y el nivel gratuito no se usan mientras esté activado."
       }
+    },
+    "aiBehavior": {
+      "title": "Comportamiento de la IA",
+      "subtitle": "Razonamiento, memoria, fotos, personalidad y prompts"
     },
     "visualSettings": {
       "title": "Apariencia e inicio",

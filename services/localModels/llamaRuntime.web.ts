@@ -4,7 +4,10 @@
  * Anywhere else it reports the model as unavailable. Same exports as the native file
  * (`platformModuleParity`).
  */
+import { DEFAULT_LOCAL_MODEL } from '@/constants/localModels';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
+import { stripTemplateTokens } from '@/utils/localReplyShape';
+import { createSerialQueue } from '@/utils/serialQueue';
 
 import { devLocalModelBaseUrl, isDevWebLocalModel } from './devWebBridge';
 import type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult } from './llamaRuntime';
@@ -12,12 +15,15 @@ import type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult } from 
 export type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult };
 
 export const LOCAL_MODEL_IDLE_MS = 120_000;
+export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
 
-let queue: Promise<unknown> = Promise.resolve();
+const queue = createSerialQueue();
 let loaded = false;
 
-export async function unloadLocalModel(): Promise<void> {
-  loaded = false;
+export function unloadLocalModel(): Promise<void> {
+  return queue.run(async () => {
+    loaded = false;
+  });
 }
 
 export function isLocalModelLoaded(): boolean {
@@ -50,11 +56,16 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
     throw new AiCancelledError();
   }
 
+  // The same plain-text rule as the native runtime: a schema or a photo keeps the defaults.
+  const plainSampling = !params.schema && !params.image ? DEFAULT_LOCAL_MODEL.textSampling : null;
   const body = {
     messages: params.image ? withPhoto(params.messages, params.image) : params.messages,
     max_tokens: params.maxTokens ?? 1024,
-    temperature: params.temperature ?? 0.2,
+    temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,
     stream: false,
+    ...(plainSampling
+      ? { min_p: plainSampling.minP, repeat_penalty: plainSampling.repeatPenalty }
+      : {}),
     ...(params.schema
       ? {
           response_format: {
@@ -102,7 +113,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       predicted_per_second?: number;
     };
   };
-  const reply = json.choices?.[0]?.message?.content ?? '';
+  const reply = stripTemplateTokens(json.choices?.[0]?.message?.content ?? '');
   params.onDelta?.(reply);
   console.info('[devLocalModel] reply in', Date.now() - startedAt, 'ms:', reply);
 
@@ -118,11 +129,5 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 }
 
 export function generateWithLocalModel(params: LocalGenerateParams): Promise<LocalGenerateResult> {
-  const turn = queue.then(
-    () => run(params),
-    () => run(params)
-  );
-  queue = turn.catch(() => undefined);
-
-  return turn;
+  return queue.run(() => run(params));
 }

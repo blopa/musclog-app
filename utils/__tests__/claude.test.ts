@@ -111,6 +111,7 @@ describe('claudeEffort', () => {
     ['low', 'low'],
     ['medium', 'medium'],
     ['high', 'high'],
+    ['max', 'max'],
   ] as const)('maps %s to %s', (effort, expected) => {
     expect(claudeEffort(effort)).toBe(expected);
   });

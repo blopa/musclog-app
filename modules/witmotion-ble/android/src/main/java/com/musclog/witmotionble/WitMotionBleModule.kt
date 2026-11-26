@@ -18,6 +18,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.core.content.ContextCompat
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -32,6 +33,7 @@ private const val DEVICE_PREFIX = "WT"
 private const val DEFAULT_SCAN_TIMEOUT_MS = 10_000L
 private const val DEFAULT_POLL_INTERVAL_MS = 500L
 private const val DATA_BATCH_INTERVAL_MS = 250L
+private const val TAG = "WitMotionBle"
 
 private data class WitDeviceInfo(
   val id: String,
@@ -255,6 +257,7 @@ class WitMotionBleModule : Module() {
   private var batchFlushRunnable: Runnable? = null
   private val pendingPackets = ArrayList<WitPacket>()
   private var activeSession: DeviceSession? = null
+  @Volatile private var destroyed = false
 
   private val context: Context
     get() = appContext.reactContext ?: throw IllegalStateException("React context is not available")
@@ -265,9 +268,14 @@ class WitMotionBleModule : Module() {
     Events("onStateChanged", "onDataBatch", "onDeviceFound", "onError")
 
     OnDestroy {
+      // Set first: the cleanup below updates state, and an event posted now would run after the
+      // module registry is gone. sendEvent then throws on the main thread and kills the process
+      // (every JS reload, restore and fatal JS error went through here). See docs/FIXES.md.
+      destroyed = true
       stopScan()
       disconnectInternal()
       clearPendingBatch()
+      mainHandler.removeCallbacksAndMessages(null)
       bluetoothLeScanner = null
       bluetoothAdapter = null
     }
@@ -359,15 +367,36 @@ class WitMotionBleModule : Module() {
     }
   }
 
-  private fun postState(next: WitState) {
-    mainHandler.post {
-      sendEvent("onStateChanged", next.toMap())
+  /**
+   * The one way this module talks to JS. Events go out on the main thread, so one can still be
+   * queued when the React instance is torn down; once destroyed nothing is sent, and a send that
+   * fails anyway is logged instead of crashing the app.
+   */
+  private fun emit(name: String, body: Map<String, Any?>) {
+    if (destroyed) {
+      return
     }
+
+    mainHandler.post {
+      if (destroyed) {
+        return@post
+      }
+
+      try {
+        sendEvent(name, body)
+      } catch (error: Exception) {
+        Log.w(TAG, "Dropped $name: the JS runtime is gone", error)
+      }
+    }
+  }
+
+  private fun postState(next: WitState) {
+    emit("onStateChanged", next.toMap())
   }
 
   private fun postError(message: String) {
     updateState { it.copy(status = "error", error = message) }
-    mainHandler.post { sendEvent("onError", mapOf("message" to message)) }
+    emit("onError", mapOf("message" to message))
   }
 
   private fun clearPendingBatch() {
@@ -421,18 +450,16 @@ class WitMotionBleModule : Module() {
       next
     }
 
-    mainHandler.post {
-      sendEvent(
-        "onDataBatch",
-        mapOf(
-          "packets" to batch.map { it.toMap() },
-          "packetCountDelta" to batch.size,
-          "packetCountTotal" to nextState.packetCount,
-          "liveData" to mergedLiveData.toMap(),
-          "receivedAt" to System.currentTimeMillis()
-        )
+    emit(
+      "onDataBatch",
+      mapOf(
+        "packets" to batch.map { it.toMap() },
+        "packetCountDelta" to batch.size,
+        "packetCountTotal" to nextState.packetCount,
+        "liveData" to mergedLiveData.toMap(),
+        "receivedAt" to System.currentTimeMillis()
       )
-    }
+    )
 
     synchronized(batchLock) {
       if (pendingPackets.isNotEmpty() && batchFlushRunnable == null) {
@@ -560,7 +587,7 @@ class WitMotionBleModule : Module() {
             current.copy(discoveredDevices = current.discoveredDevices + summary)
           }
         }
-        mainHandler.post { sendEvent("onDeviceFound", summary.toMap()) }
+        emit("onDeviceFound", summary.toMap())
 
         if (autoConnect && snapshot().status == "scanning") {
           connectInternal(device.address)
@@ -571,7 +598,7 @@ class WitMotionBleModule : Module() {
         updateState {
           it.copy(status = "error", isScanning = false, error = "Bluetooth scan failed with error code $errorCode")
         }
-        mainHandler.post { sendEvent("onError", mapOf("message" to "Bluetooth scan failed with error code $errorCode")) }
+        emit("onError", mapOf("message" to "Bluetooth scan failed with error code $errorCode"))
       }
     }
 

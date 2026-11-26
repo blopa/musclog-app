@@ -5,6 +5,7 @@
     "you": "Ty",
     "status": "Online",
     "statusOffline": "Offline",
+    "statusOnDevice": "AI na urządzeniu",
     "context": {
       "general": "Ogólne",
       "exercise": "Trening",
@@ -165,6 +166,7 @@
         "errorUnsafe": "Ten tekst nie może zostać użyty. Spróbuj opisać głos prostszymi słowami.",
         "errorImage": "Nie udało się wczytać tego obrazu."
       }
-    }
+    },
+    "reviewingReply": "Sprawdzam jeszcze raz swoją odpowiedź…"
   }
 }

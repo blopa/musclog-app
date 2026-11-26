@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 
 import { type AppleAvailability, onDeviceAiModule } from '@/modules/on-device-ai';
 import { OnDeviceUnavailableError } from '@/utils/aiErrors';
+import { handleError } from '@/utils/handleError';
 
 export type OnDeviceMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -22,14 +23,16 @@ export async function getAppleAvailability(): Promise<AppleAvailability> {
   if (onDeviceAiModule) {
     try {
       return onDeviceAiModule.appleAvailability();
-    } catch {
+    } catch (error) {
+      void handleError(error, 'onDeviceAi.appleAvailability', { showSnackbar: false });
       return 'unknown';
     }
   }
 
   try {
     return apple.isAvailable() ? 'available' : 'unknown';
-  } catch {
+  } catch (error) {
+    void handleError(error, 'onDeviceAi.appleAvailability', { showSnackbar: false });
     return 'unknown';
   }
 }
@@ -42,7 +45,8 @@ export async function isAppleLocaleSupported(languageTag: string): Promise<boole
 
   try {
     return onDeviceAiModule.appleSupportsLocale(languageTag);
-  } catch {
+  } catch (error) {
+    void handleError(error, 'onDeviceAi.appleLocale', { showSnackbar: false });
     return false;
   }
 }

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Modal as RNModal } from 'react-native';
 
+import { FatalErrorOverlay } from '@/components/FatalErrorOverlay';
 import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
 
 export type ShellAwareModalProps = {
@@ -33,6 +34,7 @@ export function Modal({
     >
       {children}
       <AppLockOverlay />
+      <FatalErrorOverlay />
     </RNModal>
   );
 }

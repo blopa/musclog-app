@@ -41,17 +41,24 @@ import { PeriodRuleViolation } from '@/utils/cycle/periodRules';
 
 const D = MS_PER_SOLAR_DAY;
 
+/**
+ * What an encrypted column must hold: CryptoJS's OpenSSL envelope (base64 of "Salted__" followed by
+ * the salt and ciphertext) and nothing else. Plaintext JSON always has `{`, `"` and `:`, which base64
+ * never does, so this can never pass by accident. Searching the ciphertext for a plaintext value
+ * was flaky: a short string like "30" turns up in random base64 now and then.
+ */
+const CIPHERTEXT = /^U2FsdGVkX1[A-Za-z0-9+/]+={0,2}$/;
+
 describe('encrypted storage', () => {
   it('keeps dates, notes and config out of the plaintext columns', async () => {
     const cycleId = await newCycle([{ startDate: day(1), endDate: day(5) }]);
     await CyclePeriodService.update((await livePeriods(cycleId))[0].id, { note: 'secret note' });
     const [raw] = await database.get<CyclePeriod>('cycle_periods').query().fetch();
-    expect(raw.payload).not.toContain('secret note');
-    expect(raw.payload).not.toContain('startDate');
-    expect(raw.payload.length).toBeGreaterThan(20);
+    expect(raw.payload).toMatch(CIPHERTEXT);
+    expect((await readPeriods([raw]))[0].note).toBe('secret note');
 
     const cycle = await database.get<MenstrualCycle>('menstrual_cycles').find(cycleId);
-    expect(cycle.config).not.toContain('30');
+    expect(cycle.config).toMatch(CIPHERTEXT);
     expect(await readCycleConfig(cycle)).toEqual({
       fallbackCycleLength: 30,
       fallbackPeriodDuration: 5,

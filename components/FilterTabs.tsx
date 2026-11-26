@@ -14,9 +14,21 @@ import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import { hidesContentToTheRight } from '@/components/workout/session/scrollOverflow';
 import { useSurfaceColor } from '@/context/SurfaceColorContext';
 import { useTheme } from '@/hooks/useTheme';
+import { addOpacityToHex } from '@/theme';
 
 /** Width of the edge fade that signals more tabs past the right edge. */
-const EDGE_FADE_WIDTH = 32;
+const EDGE_FADE_WIDTH = 40;
+
+/**
+ * How opaque the fade is at each stop, left to right. An eased ramp (slow start, slow finish)
+ * reads as the chips dissolving; a straight two-stop ramp showed a visible edge where it began.
+ */
+const EDGE_FADE_STOPS = [
+  { alpha: 0, location: 0 },
+  { alpha: 0.35, location: 0.35 },
+  { alpha: 0.75, location: 0.7 },
+  { alpha: 1, location: 1 },
+] as const;
 
 // iOS: RNGH ScrollView fights SwipeToReturnWrapper's pan gesture; RN's native UIScrollView is covered by Gesture.Native() and wins correctly.
 const ScrollView = Platform.OS === 'ios' ? RNScrollView : GHScrollView;
@@ -119,7 +131,21 @@ export function FilterTabs({
       {moreToTheRight ? (
         <LinearGradient
           pointerEvents="none"
-          colors={['transparent', surface]}
+          // The surface's own color at zero alpha, never `'transparent'` (which is transparent
+          // BLACK): Android interpolates the channels straight, so that ramp passes through a
+          // dark tint that shows as a band on any surface lighter than black.
+          colors={[
+            addOpacityToHex(surface, EDGE_FADE_STOPS[0].alpha),
+            addOpacityToHex(surface, EDGE_FADE_STOPS[1].alpha),
+            addOpacityToHex(surface, EDGE_FADE_STOPS[2].alpha),
+            addOpacityToHex(surface, EDGE_FADE_STOPS[3].alpha),
+          ]}
+          locations={[
+            EDGE_FADE_STOPS[0].location,
+            EDGE_FADE_STOPS[1].location,
+            EDGE_FADE_STOPS[2].location,
+            EDGE_FADE_STOPS[3].location,
+          ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: EDGE_FADE_WIDTH }}

@@ -63,9 +63,24 @@ describe('deriveOnDeviceStatus: apple', () => {
     ['unknown', 'unsupported'],
   ] as const)('%s -> %s', (availability, expected) => {
     const status = deriveOnDeviceStatus({ ...base, appleAvailability: availability });
+    expect(status.initialized).toBe(false);
     expect(status.state).toBe(expected);
+    expect(status.appleState).toBe(expected);
     expect(status.progress).toBeNull();
     expect(isOnDeviceReady(status)).toBe(expected === 'ready');
+  });
+
+  it('preserves initialized flag and appleState even when gguf is active', () => {
+    const status = deriveOnDeviceStatus({
+      initialized: true,
+      engine: 'gguf',
+      appleAvailability: 'appleIntelligenceNotEnabled',
+      model: model(NOT_INSTALLED),
+      deviceOk: true,
+    });
+    expect(status.initialized).toBe(true);
+    expect(status.state).toBe('needsDownload');
+    expect(status.appleState).toBe('appleOff');
   });
 });
 

@@ -1,21 +1,21 @@
 import { fetchPremiumConfig } from '@/services/premium/premiumService';
 import { loadAiImageTier, type PreparedImage, resizeForAi } from '@/utils/aiImage';
-import { limitsForTier } from '@/utils/aiImagePlan';
+import { type ImageLimits, limitsForTier } from '@/utils/aiImagePlan';
 import { HostedAiError } from '@/utils/hostedAiError';
 import {
   DEFAULT_HOSTED_IMAGE,
+  DEFAULT_HOSTED_MAX_IMAGES,
   effectiveImageLimits,
-  type HostedImageLimits,
 } from '@/utils/premium/hostedImagePlan';
 
-type HostedPhotoConfig = { limits: HostedImageLimits; visionEnabled: boolean | null };
+type HostedPhotoConfig = { limits: ImageLimits; visionEnabled: boolean | null };
 
 /**
  * The limits for this photo: the person's tier, held to the Worker's photo limits (cached by
  * `fetchPremiumConfig`), which also keep the request under its body cap. Defaults when the config
  * cannot be read.
  */
-async function loadPhotoConfig(): Promise<HostedPhotoConfig> {
+async function loadPhotoConfig(count: number): Promise<HostedPhotoConfig> {
   const tier = await loadAiImageTier();
 
   try {
@@ -23,7 +23,13 @@ async function loadPhotoConfig(): Promise<HostedPhotoConfig> {
 
     if (result.ok) {
       return {
-        limits: limitsForTier(tier, effectiveImageLimits(result.value.image)),
+        limits: limitsForTier(
+          tier,
+          effectiveImageLimits(result.value.image, {
+            count,
+            bodyMaxBytes: result.value.image?.bodyMaxBytes,
+          })
+        ),
         visionEnabled: result.value.visionEnabled,
       };
     }
@@ -32,7 +38,7 @@ async function loadPhotoConfig(): Promise<HostedPhotoConfig> {
   }
 
   return {
-    limits: limitsForTier(tier, effectiveImageLimits(DEFAULT_HOSTED_IMAGE)),
+    limits: limitsForTier(tier, effectiveImageLimits(DEFAULT_HOSTED_IMAGE, { count })),
     visionEnabled: null,
   };
 }
@@ -42,8 +48,12 @@ async function loadPhotoConfig(): Promise<HostedPhotoConfig> {
  * request fits its body cap. Throws a hosted `unavailable` error when the Worker has switched
  * photos off. A resize problem never blocks a photo (see `resizeForAi`).
  */
-export async function prepareHostedImage(base64: string, mimeType: string): Promise<PreparedImage> {
-  const { limits, visionEnabled } = await loadPhotoConfig();
+export async function prepareHostedImage(
+  base64: string,
+  mimeType: string,
+  count: number = 1
+): Promise<PreparedImage> {
+  const { limits, visionEnabled } = await loadPhotoConfig(count);
 
   // The Worker says photos are off right now: say so instead of sending a request it will refuse.
   if (visionEnabled === false) {
@@ -51,4 +61,19 @@ export async function prepareHostedImage(base64: string, mimeType: string): Prom
   }
 
   return resizeForAi(base64, mimeType, limits);
+}
+
+/** How many photos one hosted request may carry; 1 when the config cannot be read or photos are off. Never throws. */
+export async function loadHostedMaxImages(): Promise<number> {
+  try {
+    const result = await fetchPremiumConfig();
+
+    if (result.ok && result.value.visionEnabled) {
+      return result.value.image?.maxImages ?? DEFAULT_HOSTED_MAX_IMAGES;
+    }
+  } catch {
+    // Fall through: a config problem means one photo.
+  }
+
+  return DEFAULT_HOSTED_MAX_IMAGES;
 }

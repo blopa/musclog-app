@@ -5,6 +5,7 @@
     "you": "Sen",
     "status": "Çevrimiçi",
     "statusOffline": "Çevrimdışı",
+    "statusOnDevice": "Cihaz üzerinde yapay zekâ",
     "context": {
       "general": "Genel",
       "exercise": "Fitness",
@@ -165,6 +166,7 @@
         "errorUnsafe": "Bu metin kullanılamaz. Sesi daha sade kelimelerle anlatmayı dene.",
         "errorImage": "Bu resim yüklenemedi."
       }
-    }
+    },
+    "reviewingReply": "Yanıtımı yeniden kontrol ediyorum…"
   }
 }

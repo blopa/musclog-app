@@ -57,7 +57,11 @@ export function useSessionBleTracking({
 }: SessionBleTrackingInput) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
-  const wit = useWitMotion();
+  // Most people never pair a sensor, so a workout leaves the sensor module asleep unless one is
+  // saved (or another screen already woke it this run). `null` while the saved list loads.
+  const [savedSensorId, setSavedSensorId] = useState<string | null>(null);
+  const [sensorAlreadyAwake] = useState(witMotionClient.isAwake);
+  const wit = useWitMotion({ enabled: savedSensorId !== null || sensorAlreadyAwake });
   const [isTracking, setIsTracking] = useState(false);
   const [isStopTrackingSaving, setIsStopTrackingSaving] = useState(false);
   const [blinkState, setBlinkState] = useState(true);
@@ -334,24 +338,36 @@ export function useSessionBleTracking({
     }
   };
 
+  // The saved sensors are a plain database read; only a saved one wakes the sensor module.
+  useEffect(() => {
+    let cancelled = false;
+
+    void BleDeviceService.getAll()
+      .then((devices) => {
+        if (!cancelled) {
+          setSavedSensorId(devices[0]?.deviceId ?? null);
+        }
+      })
+      .catch(() => {
+        // No saved sensor can be read: the workout simply runs without one.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Auto-connect to the most recently connected saved device when the workout starts.
   useEffect(() => {
-    if (hasAttemptedAutoConnect.current || wit.isConnected || !workoutLogId) {
+    if (hasAttemptedAutoConnect.current || wit.isConnected || !workoutLogId || !savedSensorId) {
       return;
     }
 
     hasAttemptedAutoConnect.current = true;
-    void BleDeviceService.getAll().then((devices) => {
-      const device = devices[0];
-      if (!device) {
-        return;
-      }
-
-      void witMotionClient.connect(device.deviceId).catch(() => {
-        // Sensor not nearby — silently ignore
-      });
+    void witMotionClient.connect(savedSensorId).catch(() => {
+      // Sensor not nearby — silently ignore
     });
-  }, [workoutLogId, wit.isConnected]);
+  }, [workoutLogId, wit.isConnected, savedSensorId]);
 
   // Watch for connection state changes — show snackbar on connect/disconnect.
   useEffect(() => {

@@ -4,7 +4,6 @@ import {
   buildTimeSections,
   formatHourLabel,
   formatItemTime,
-  inferMealTypeFromHour,
   usableTimeOfDayMs,
 } from '../foodDiaryLayout';
 import type { MealGroup, ResolvedLogEntry } from '../foodTypes';
@@ -227,20 +226,5 @@ describe('formatting', () => {
     expect(
       formatItemTime({ kind: 'log', mealType: 'lunch', entry: none }, 'en-US')
     ).toBeUndefined();
-  });
-});
-
-describe('inferMealTypeFromHour', () => {
-  it.each([
-    [4, 'snack'],
-    [5, 'breakfast'],
-    [10, 'breakfast'],
-    [11, 'lunch'],
-    [14, 'lunch'],
-    [15, 'dinner'],
-    [21, 'dinner'],
-    [22, 'snack'],
-  ])('hour %i -> %s', (hour, expected) => {
-    expect(inferMealTypeFromHour(hour)).toBe(expected);
   });
 });

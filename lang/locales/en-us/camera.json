@@ -7,6 +7,12 @@
       "processingNutrients": "Processing nutrients",
       "analyzingImage": "Analyzing barcode...",
       "processingData": "Processing data"
+    },
+    "unavailable": {
+      "title": "Camera unavailable",
+      "body": "The camera couldn't start on this phone.",
+      "bodyWithGallery": "The camera couldn't start on this phone. You can still choose a photo from your gallery.",
+      "retry": "Try again"
     }
   }
 }

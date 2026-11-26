@@ -384,7 +384,10 @@ describe('purchaseAndEnroll', () => {
     const result = await purchaseAndEnroll();
 
     expect(result).toEqual({ ok: false, failure: 'subscription_required' });
-    expect(report).toHaveBeenCalledWith('enroll', 'subscription_required', { status: 403 });
+    expect(report).toHaveBeenCalledWith('enroll', 'subscription_required', {
+      status: 403,
+      flow: 'purchase',
+    });
   });
 
   it('retries the enroll on subscription lag before succeeding', async () => {
@@ -413,6 +416,19 @@ describe('restoreAndEnroll', () => {
     expect(order.slice(0, 3)).toEqual(['key', 'configure', 'restore']);
     expect(await loadPremiumLocalState()).toMatchObject({ rcId: keys.rcId, removed: false });
     expect(stateOf()).toMatchObject({ rcId: keys.rcId, removed: false });
+  });
+
+  it('tags a refused enroll after a restore so the report can leave it out', async () => {
+    fetchMock = workerFetch({
+      'POST /v1/enroll': () => jsonResponse(403, { error: { code: 'subscription_required' } }),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    expect(await restoreAndEnroll()).toEqual({ ok: false, failure: 'subscription_required' });
+    expect(report).toHaveBeenCalledWith('enroll', 'subscription_required', {
+      status: 403,
+      flow: 'restore',
+    });
   });
 
   it('reports restore_failed when the store restore throws', async () => {

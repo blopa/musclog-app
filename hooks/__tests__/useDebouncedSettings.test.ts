@@ -4,8 +4,9 @@
 
 import { act, renderHook } from '@testing-library/react';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
-import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { DEBOUNCED_SETTING_KEYS, useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSettings } from '@/hooks/useSettings';
 
 jest.mock('@/hooks/useSettings', () => ({
@@ -35,7 +36,8 @@ const baseSettings = {
   showDailyMoodPrompt: false,
   showWeightPrediction: false,
   useOcrBeforeAi: false,
-  useOnDeviceAi: false,
+  aiImageQuality: 'medium',
+  aiMealCameraFlow: 'detailed',
 };
 
 const setSettings = (overrides: Record<string, unknown> = {}) => {
@@ -144,33 +146,6 @@ describe('useDebouncedSettings', () => {
     expect(SettingsService.setShowDailyMoodPrompt).toHaveBeenCalledTimes(1);
   });
 
-  // On-device AI can only work with locally-extracted text, so enabling it force-enables OCR.
-  it('force-enables OCR-before-AI when on-device AI is switched on', async () => {
-    const { result } = renderHook(() => useDebouncedSettings());
-
-    act(() => result.current.handleUseOnDeviceAiChange(true));
-
-    expect(result.current.useOnDeviceAi).toBe(true);
-    expect(result.current.useOcrBeforeAi).toBe(true);
-
-    await runDebounce();
-
-    expect(SettingsService.setUseOnDeviceAi).toHaveBeenCalledWith(true);
-    expect(SettingsService.setUseOcrBeforeAi).toHaveBeenCalledWith(true);
-  });
-
-  it('leaves OCR-before-AI alone when on-device AI is switched off', async () => {
-    setSettings({ useOcrBeforeAi: true, useOnDeviceAi: true });
-    const { result } = renderHook(() => useDebouncedSettings());
-
-    act(() => result.current.handleUseOnDeviceAiChange(false));
-    await runDebounce();
-
-    expect(SettingsService.setUseOnDeviceAi).toHaveBeenCalledWith(false);
-    expect(SettingsService.setUseOcrBeforeAi).not.toHaveBeenCalled();
-    expect(result.current.useOcrBeforeAi).toBe(true);
-  });
-
   it('cancels pending timers on cleanup so no write escapes after teardown', async () => {
     const { result } = renderHook(() => useDebouncedSettings());
 
@@ -198,5 +173,52 @@ describe('useDebouncedSettings', () => {
     // The optimistic value stays on screen until the next DB emission corrects it.
     expect(result.current.showDailyMoodPrompt).toBe(true);
     consoleError.mockRestore();
+  });
+
+  it('debounces and flushes aiImageQuality and aiMealCameraFlow through SettingsService.set', async () => {
+    const { result } = renderHook(() => useDebouncedSettings());
+
+    act(() => {
+      result.current.handleAiImageQualityChange('high');
+      result.current.handleAiMealCameraFlowChange('quick');
+    });
+
+    expect(result.current.aiImageQuality).toBe('high');
+    expect(result.current.aiMealCameraFlow).toBe('quick');
+    expect(SettingsService.set).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await result.current.flushAllPendingChanges();
+    });
+
+    expect(SettingsService.set).toHaveBeenCalledWith(SETTINGS.aiImageQuality, 'high');
+    expect(SettingsService.set).toHaveBeenCalledWith(SETTINGS.aiMealCameraFlow, 'quick');
+    expect(result.current.hasPendingChanges).toBe(false);
+  });
+
+  it('exposes the value and a handle<Key>Change function for every key of the table', () => {
+    const { result } = renderHook(() => useDebouncedSettings());
+    const surface = result.current as unknown as Record<string, unknown>;
+
+    expect(DEBOUNCED_SETTING_KEYS.length).toBeGreaterThan(40);
+
+    for (const key of DEBOUNCED_SETTING_KEYS) {
+      const handler = `handle${key.charAt(0).toUpperCase()}${key.slice(1)}Change`;
+
+      expect(key in surface).toBe(true);
+      expect(typeof surface[handler]).toBe('function');
+    }
+  });
+
+  it('keeps handler identity stable across re-renders', () => {
+    const { rerender, result } = renderHook(() => useDebouncedSettings());
+    const before = result.current.handleUnitsChange;
+    const beforeMood = result.current.handleShowDailyMoodPromptChange;
+
+    setSettings({ units: 'imperial' });
+    act(() => rerender());
+
+    expect(result.current.handleUnitsChange).toBe(before);
+    expect(result.current.handleShowDailyMoodPromptChange).toBe(beforeMood);
   });
 });

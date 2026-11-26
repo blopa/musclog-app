@@ -12,6 +12,7 @@ import {
   MUTED,
 } from '@/components/website/websiteColors';
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
+import { AI_GATEWAY_LINKS } from '@/constants/aiGatewayLinks';
 import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 const DEFINITION_KEYS = [
@@ -29,6 +30,7 @@ export default function Privacy() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.privacy' });
   // The operator line is shared by the privacy, terms and contact pages, so it lives under contact.
   const { t: tWebsite } = useTranslation(undefined, { keyPrefix: 'website.contact' });
+  const { t: tCommon } = useTranslation();
 
   const highlights = [
     {
@@ -361,15 +363,20 @@ export default function Privacy() {
                       {t('sections.collecting.optionalAi.cloudflarePrivacyPolicy')}
                     </a>
                     ,{' '}
-                    <a
-                      href="https://openrouter.ai/privacy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                      style={{ color: BRAND_GREEN_BRIGHT }}
-                    >
-                      {t('sections.collecting.optionalAi.openrouterPrivacyPolicy')}
-                    </a>
+                    {AI_GATEWAY_LINKS.map((link, index) => (
+                      <span key={link.id}>
+                        {index > 0 ? ', ' : null}
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline"
+                          style={{ color: BRAND_GREEN_BRIGHT }}
+                        >
+                          {tCommon(link.labelKey)}
+                        </a>
+                      </span>
+                    ))}
                     ,{' '}
                     <a
                       href="https://openai.com/policies/privacy-policy/"

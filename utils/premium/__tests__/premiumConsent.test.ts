@@ -4,24 +4,18 @@ import { websitePageUrl } from '../../websiteUrl';
 
 describe('needsPremiumConsent', () => {
   it('asks only when turning on without the current version on record', () => {
-    expect(PREMIUM_CONSENT_VERSION).toBe(3);
-    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: false, nextValue: true })).toBe(
-      true
-    );
-    expect(needsPremiumConsent({ storedVersion: 0, currentlyOn: false, nextValue: true })).toBe(
-      true
-    );
+    expect(PREMIUM_CONSENT_VERSION).toBe(4);
+    expect(needsPremiumConsent({ storedVersion: null, nextValue: true })).toBe(true);
+    expect(needsPremiumConsent({ storedVersion: 0, nextValue: true })).toBe(true);
     expect(
       needsPremiumConsent({
         storedVersion: PREMIUM_CONSENT_VERSION - 1,
-        currentlyOn: false,
         nextValue: true,
       })
     ).toBe(true);
     expect(
       needsPremiumConsent({
         storedVersion: PREMIUM_CONSENT_VERSION,
-        currentlyOn: false,
         nextValue: true,
       })
     ).toBe(false);
@@ -29,21 +23,20 @@ describe('needsPremiumConsent', () => {
 
   it('asks again, on the next turn-on, from a consent given before meal photos were named', () => {
     // Version 2 named workouts, meals and body measurements but not photos.
-    expect(needsPremiumConsent({ storedVersion: 2, currentlyOn: false, nextValue: true })).toBe(
-      true
-    );
+    expect(needsPremiumConsent({ storedVersion: 2, nextValue: true })).toBe(true);
   });
 
-  it('never asks when turning off or when already on', () => {
-    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: true, nextValue: false })).toBe(
+  it('asks again, on the next turn-on, from a consent that named only OpenRouter', () => {
+    // Version 3 named one gateway; version 4 names OpenRouter and Otari.
+    expect(needsPremiumConsent({ storedVersion: 3, nextValue: true })).toBe(true);
+  });
+
+  it('never asks when turning off and flags stale consent while already on', () => {
+    expect(needsPremiumConsent({ storedVersion: null, nextValue: false })).toBe(false);
+    expect(needsPremiumConsent({ storedVersion: PREMIUM_CONSENT_VERSION, nextValue: true })).toBe(
       false
     );
-    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: false, nextValue: false })).toBe(
-      false
-    );
-    expect(needsPremiumConsent({ storedVersion: null, currentlyOn: true, nextValue: true })).toBe(
-      false
-    );
+    expect(needsPremiumConsent({ storedVersion: null, nextValue: true })).toBe(true);
   });
 });
 

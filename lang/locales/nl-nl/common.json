@@ -181,7 +181,8 @@
       "filter": "Filteren",
       "clearSearch": "Zoekopdracht wissen",
       "showValue": "Waarde tonen",
-      "hideValue": "Waarde verbergen"
+      "hideValue": "Waarde verbergen",
+      "scrollDown": "Naar beneden scrollen"
     },
     "externalAssistant": {
       "copied": "Instructies gekopieerd",
@@ -202,6 +203,13 @@
     "energyUnit": {
       "kcal": "kcal",
       "kj": "kJ"
+    },
+    "aiGateways": {
+      "intro": "Musclog Iron stuurt verzoeken door via OpenRouter of Otari:",
+      "openrouterPrivacy": "Privacybeleid van OpenRouter",
+      "openrouterTerms": "Voorwaarden van OpenRouter",
+      "otariPrivacy": "Privacyverklaring van Otari",
+      "otariTerms": "Voorwaarden van Otari"
     }
   }
 }

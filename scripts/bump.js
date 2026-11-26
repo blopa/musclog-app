@@ -1,3 +1,4 @@
+/* global __dirname */
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -134,6 +135,7 @@ function releasePaths(projectDir) {
     ios: path.join(projectDir, 'ios/MusclogLiftLogRepeat/Info.plist'),
     lock: path.join(projectDir, 'package-lock.json'),
     package: path.join(projectDir, 'package.json'),
+    widgetInfo: path.join(projectDir, 'ios/ExpoWidgetsTarget/Info.plist'),
   };
 }
 
@@ -144,15 +146,35 @@ function readReleaseVersions(projectDir) {
   const packageLock = fs.existsSync(files.lock) ? readJson(files.lock) : undefined;
   const android = fs.readFileSync(files.android, 'utf8');
   const ios = fs.readFileSync(files.ios, 'utf8');
+  const hasWidget = fs.existsSync(files.widgetInfo);
+  const widget = hasWidget ? fs.readFileSync(files.widgetInfo, 'utf8') : undefined;
+
+  const appVersion = app?.expo?.version;
+  if (typeof appVersion !== 'string' || !VERSION_PATTERN.test(appVersion)) {
+    throw new Error(`Invalid app.json expo.version: ${appVersion}`);
+  }
+
+  const appBuild = Number(app?.expo?.android?.versionCode);
+  if (!Number.isInteger(appBuild) || appBuild < 1) {
+    throw new Error(
+      `Invalid app.json expo.android.versionCode: ${app?.expo?.android?.versionCode}`
+    );
+  }
+
+  const rawAppIosBuild = app?.expo?.ios?.buildNumber;
+  if (rawAppIosBuild == null || String(rawAppIosBuild).trim() === '') {
+    throw new Error('Could not read app.json expo.ios.buildNumber');
+  }
 
   return {
     androidBuild: Number(
       readRequiredMatch(android, /\bversionCode\s+(\d+)/, 'Android versionCode')
     ),
     androidVersion: readRequiredMatch(android, /\bversionName\s+"([^"]+)"/, 'Android versionName'),
-    appBuild: Number(app.expo.android.versionCode),
-    appIosBuild: String(app.expo.ios.buildNumber),
-    appVersion: app.expo.version,
+    appBuild,
+    appIosBuild: String(rawAppIosBuild),
+    appVersion,
+    hasWidget,
     iosBuild: readRequiredMatch(
       ios,
       /<key>CFBundleVersion<\/key>\s*<string>([^<]+)<\/string>/,
@@ -167,6 +189,20 @@ function readReleaseVersions(projectDir) {
     lockRootVersion: packageLock?.packages?.['']?.version,
     lockVersion: packageLock?.version,
     packageVersion: packageJson.version,
+    ...(hasWidget
+      ? {
+          widgetBuild: readRequiredMatch(
+            widget,
+            /<key>CFBundleVersion<\/key>\s*<string>([^<]+)<\/string>/,
+            'widget build number'
+          ),
+          widgetVersion: readRequiredMatch(
+            widget,
+            /<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/,
+            'widget version'
+          ),
+        }
+      : {}),
   };
 }
 
@@ -177,8 +213,14 @@ function assertReleaseVersionsMatch(projectDir) {
     versions.androidVersion,
     versions.iosVersion,
     ...(versions.hasLock ? [versions.lockVersion, versions.lockRootVersion] : []),
+    ...(versions.hasWidget ? [versions.widgetVersion] : []),
   ];
-  const buildValues = [versions.appIosBuild, String(versions.androidBuild), versions.iosBuild];
+  const buildValues = [
+    versions.appIosBuild,
+    String(versions.androidBuild),
+    versions.iosBuild,
+    ...(versions.hasWidget ? [versions.widgetBuild] : []),
+  ];
   if (versionValues.some((version) => version !== versions.appVersion)) {
     throw new Error(`Release version mismatch: ${JSON.stringify(versions)}`);
   }
@@ -253,18 +295,9 @@ function bumpProjectVersions(projectDir, bumpType) {
     'iOS CFBundleVersion'
   );
 
-  fs.writeFileSync(files.package, `${JSON.stringify(packageJson, null, 2)}\n`);
-  fs.writeFileSync(files.app, `${JSON.stringify(app, null, 2)}\n`);
-  formatJsonFiles([files.package, files.app]);
-  if (packageLock) {
-    fs.writeFileSync(files.lock, `${JSON.stringify(packageLock, null, 2)}\n`);
-  }
-
-  fs.writeFileSync(files.android, android);
-  fs.writeFileSync(files.ios, ios);
-  const widgetInfo = path.join(projectDir, 'ios/ExpoWidgetsTarget/Info.plist');
-  if (fs.existsSync(widgetInfo)) {
-    let widget = fs.readFileSync(widgetInfo, 'utf8');
+  let widget;
+  if (fs.existsSync(files.widgetInfo)) {
+    widget = fs.readFileSync(files.widgetInfo, 'utf8');
     widget = replaceRequired(
       widget,
       /(<key>CFBundleShortVersionString<\/key>\s*<string>)[^<]+(<\/string>)/,
@@ -277,7 +310,19 @@ function bumpProjectVersions(projectDir, bumpType) {
       `$1${nextBuild}$2`,
       'widget build number'
     );
-    fs.writeFileSync(widgetInfo, widget);
+  }
+
+  fs.writeFileSync(files.package, `${JSON.stringify(packageJson, null, 2)}\n`);
+  fs.writeFileSync(files.app, `${JSON.stringify(app, null, 2)}\n`);
+  formatJsonFiles([files.package, files.app]);
+  if (packageLock) {
+    fs.writeFileSync(files.lock, `${JSON.stringify(packageLock, null, 2)}\n`);
+  }
+
+  fs.writeFileSync(files.android, android);
+  fs.writeFileSync(files.ios, ios);
+  if (widget !== undefined) {
+    fs.writeFileSync(files.widgetInfo, widget);
   }
 
   renameAppStoreVersionFolder(projectDir, current.appVersion, nextVersion);
@@ -287,7 +332,7 @@ function bumpProjectVersions(projectDir, bumpType) {
 }
 
 if (require.main === module) {
-  const projectDir = path.resolve(process.cwd());
+  const projectDir = path.resolve(__dirname, '..');
   const result = bumpProjectVersions(projectDir, parseBumpRequest(process.argv.slice(2)));
   console.log(`Release: ${result.version} (${result.build})`);
 }
@@ -296,6 +341,7 @@ module.exports = {
   assertReleaseVersionsMatch,
   bumpProjectVersions,
   bumpVersion,
+  compareVersions,
   parseBumpRequest,
   parseBumpType,
   readReleaseVersions,

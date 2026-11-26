@@ -36,7 +36,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
   DebugDumpService: { logJsonEvent: jest.fn() },
 }));
 jest.mock('@/database/services/SettingsService', () => ({
-  SettingsService: { getUseThinkingMode: jest.fn().mockResolvedValue(false) },
+  SettingsService: { get: jest.fn().mockResolvedValue('off') },
 }));
 
 const schema = (dialect: string) => ({
@@ -229,7 +229,18 @@ describe('sendStructuredChatTurn: errors', () => {
     ).APIConnectionError('offline');
     mockCreate.mockRejectedValue(dropped);
 
-    await expect(sendStructuredChatTurn(openai, request())).rejects.toBe(dropped);
+    // A dropped connection is retried by withLlmRetry (the SDK's own retries are off) before it is
+    // let through, so the backoff runs on fake time.
+    jest.useFakeTimers();
+    try {
+      const settled = sendStructuredChatTurn(openai, request()).catch((e) => e);
+      await jest.advanceTimersByTimeAsync(10_000);
+
+      expect(await settled).toBe(dropped);
+      expect(mockCreate).toHaveBeenCalledTimes(4);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('turns an abort into a cancel', async () => {

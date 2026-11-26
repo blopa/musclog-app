@@ -1,14 +1,16 @@
 #!/usr/bin/env node
+/* global __dirname */
 
 const path = require('path');
 const fs = require('fs');
 
-const { assertReleaseVersionsMatch } = require('./bump');
+const { assertReleaseVersionsMatch, compareVersions } = require('./bump');
 
-const versions = assertReleaseVersionsMatch(path.resolve(process.cwd()));
+const ROOT = path.resolve(__dirname, '..');
+const versions = assertReleaseVersionsMatch(ROOT);
 console.log(`Release versions match: ${versions.appVersion} (${versions.appBuild})`);
 
-const widgetInfo = path.resolve('ios/ExpoWidgetsTarget/Info.plist');
+const widgetInfo = path.join(ROOT, 'ios/ExpoWidgetsTarget/Info.plist');
 if (fs.existsSync(widgetInfo)) {
   const source = fs.readFileSync(widgetInfo, 'utf8');
   const version = source.match(
@@ -20,18 +22,20 @@ if (fs.existsSync(widgetInfo)) {
   }
 }
 
-const releaseDir = path.resolve(process.cwd(), 'data/whatsNew');
-const compare = (a, b) => {
-  const left = a.split('.').map(Number);
-  const right = b.split('.').map(Number);
-  for (let i = 0; i < 3; i++) {
-    if (left[i] !== right[i]) {
-      return left[i] - right[i];
+const releaseDir = path.join(ROOT, 'data/whatsNew');
+const compare =
+  compareVersions ||
+  ((a, b) => {
+    const left = a.split('.').map(Number);
+    const right = b.split('.').map(Number);
+    for (let i = 0; i < 3; i++) {
+      if (left[i] !== right[i]) {
+        return left[i] - right[i];
+      }
     }
-  }
 
-  return 0;
-};
+    return 0;
+  });
 
 const newest = fs.existsSync(releaseDir)
   ? fs

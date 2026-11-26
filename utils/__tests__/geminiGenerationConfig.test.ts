@@ -136,6 +136,15 @@ describe('buildGeminiGenerationConfig', () => {
     ).toBeUndefined();
   });
 
+  it('asks for HIGH on a level family and a dynamic budget on a budget family for max effort', () => {
+    expect(buildGeminiGenerationConfig('gemini-4-argon', { effort: 'max' }).thinkingConfig).toEqual(
+      { thinkingLevel: ThinkingLevel.HIGH }
+    );
+    expect(
+      buildGeminiGenerationConfig('gemini-2.5-flash', { effort: 'max' }).thinkingConfig
+    ).toEqual({ thinkingBudget: -1 });
+  });
+
   it('sends no thinking field to a model it does not know', () => {
     expect(
       buildGeminiGenerationConfig('gemini-9-ultra', { effort: 'low' }).thinkingConfig

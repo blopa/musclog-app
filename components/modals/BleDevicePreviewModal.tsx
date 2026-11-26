@@ -27,7 +27,7 @@ interface BleDevicePreviewModalProps {
 export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const wit = useWitMotion();
+  const wit = useWitMotion({ enabled: visible });
   const { liveData, isConnected } = wit;
 
   const [mode, setMode] = useState<DataMode>('angle');

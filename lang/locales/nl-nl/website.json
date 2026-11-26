@@ -3,6 +3,28 @@
     "seo": {
       "siteName": "Musclog",
       "imageAlt": "Voorvertoning van Musclog met private fitness-, voedings- en voortgangstracking.",
+      "image": {
+        "headline": "Train slimmer, eet beter",
+        "subline": "Workouts loggen en voeding bijhouden in één privé, open-source app.",
+        "items": {
+          "workouts": {
+            "title": "Workouts bijhouden",
+            "description": "Sets, reps en gewichten in seconden loggen."
+          },
+          "food": {
+            "title": "Maaltijden bijhouden",
+            "description": "Scan een barcode of fotografeer een maaltijd."
+          },
+          "progress": {
+            "title": "Voortgangsgrafieken",
+            "description": "Trends in gewicht, kracht en voeding."
+          },
+          "privacy": {
+            "title": "Privacy by design",
+            "description": "Je gegevens blijven op je apparaat."
+          }
+        }
+      },
       "keywords": "Musclog, fitness tracker, workout tracker, voeding tracker, macro tracker, open source fitness app, local-first app",
       "routes": {
         "home": {
@@ -153,8 +175,8 @@
       "f1": "Slimme workouttracking",
       "f2": "AI-fotologging voor voeding",
       "f3": "Gedetailleerde voortgangsgrafieken",
-      "f4": "100% privé en op uw apparaat",
-      "tagline": "AI-gestuurde fitness- en voedingsregistratie — gratis en open source.",
+      "f4": "Uw gegevens blijven op uw apparaat",
+      "tagline": "Fitness- en voedingsregistratie met optionele AI — gratis en open source.",
       "qrcode_title": "Download de App",
       "qrcode_text": "Scan om te downloaden Musclog"
     },
@@ -288,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "AI-coach",
-          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel, met je eigen Gemini-, OpenAI- of Claude-sleutel."
+          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel: met je eigen Gemini-, OpenAI- of Claude-sleutel, met Musclog Iron, de gratis optie, een lokaal model of AI op je telefoon."
         },
         "barcode": {
           "title": "Barcodescanner",
@@ -582,7 +604,7 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 23 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 24 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -681,10 +703,9 @@
             "content2": "Musclog biedt optionele AI-functies. Ze blijven uitgeschakeld totdat u een provider kiest: uw eigen OpenAI-, Anthropic Claude- of Google Gemini-API-sleutel, een model op het apparaat zelf zoals Apple Intelligence op iOS, een lokale of zelfgehoste LLM-endpoint, de gratis Musclog AI-optie, of Musclog Iron, een optioneel maandelijks abonnement.",
             "content3": "Als u ervoor kiest een AI-functie te gebruiken, worden de gegevens die u besluit te verzenden doorgestuurd naar de provider of endpoint die u configureert. Als u een zelfgehost lokaal model onder uw eigen controle gebruikt, kunnen die gegevens binnen uw eigen omgeving blijven. Als u een door een derde gehoste endpoint gebruikt, waaronder een gehoste lokale-modeldienst, kan die provider de gegevens verwerken in overeenstemming met zijn eigen voorwaarden en privacypraktijken. Musclog heeft geen controle over de manier waarop externe providers de gegevens verwerken die u naar hen verzendt.",
             "content4": "Als u de gratis Musclog AI-optie kiest, worden uw verzoeken via OpenRouter, een AI-routeringsdienst, naar Google AI Studio (een Gemma-model) gestuurd, met een API-sleutel die door Musclog wordt beheerd. Een verzoek bevat alleen wat u naar de AI-functie verstuurt, zoals chatberichten, maaltijdfoto's of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft. OpenRouter bewaart de inhoud van verzoeken niet, behalve de controle op materiaal van seksueel kindermisbruik die hieronder wordt beschreven; wel verzoekgegevens zoals de omvang en het tijdstip. Google beantwoordt deze verzoeken onder de Gemini API-voorwaarden voor gratis gebruik: Google mag de verzoeken en antwoorden opslaan, ze gebruiken om zijn producten en machine-learningtechnologieën te verbeteren, en menselijke beoordelaars laten meekijken. Google verwijdert identificatiegegevens, zoals uw account, voordat menselijke beoordelaars ze zien, maar voer geen persoonlijke of gevoelige gegevens in bij de gratis Musclog AI-optie en gebruik deze niet voor zaken die u niet door Google gezien wilt hebben. De gratis Musclog AI-optie is alleen voor volwassenen (18 jaar en ouder), omdat de voorwaarden van Google deze gratis dienst niet toestaan in apps die waarschijnlijk door mensen onder de 18 jaar worden gebruikt. Musclog Iron is anders: het gebruikt alleen aanbieders met zero data retention. De gratis optie heeft een daglimiet die alle gebruikers delen, hangt af van de gratis limieten van Google en is soms niet beschikbaar.",
-            "contentPremium": "Als U zich abonneert op Musclog Iron, worden Uw AI-verzoeken naar de eigen dienst van Musclog gestuurd, die draait op Cloudflare Workers, en van daaruit naar OpenRouter, dat ze alleen doorgeeft aan AI-providers die zijn ingesteld op zero data retention (ZDR) en geen training op Uw gegevens. Een verzoek bevat alleen wat U naar de AI-functie stuurt, zoals chatberichten, of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft, en maaltijdfoto's. De dienst van Musclog bewaart de inhoud van Uw verzoeken of antwoorden niet. Zij bewaart alleen een identificatie die is afgeleid van een sleutel die op Uw Apparaat aanwezig is, gebruiksaantallen en een korte vingerafdruk van elk verzoek, zodat een opnieuw verzonden verzoek niet dubbel wordt geteld. Zoals bij elk internetverzoek onthult elk verzoek Uw IP-adres aan Cloudflare, dat de dienst levert en beveiligt; de dienst van Musclog slaat het niet op. OpenRouter ontvangt bij elk verzoek een pseudoniem code voor Uw abonnement, niet Uw identificatie, naam of e-mailadres, zodat misbruik kan worden opgespoord. RevenueCat ontvangt Uw identificatie, de aankoopstatus in de appwinkel en de technische gegevens die een app-abonnementsdienst verwerkt, zoals Uw IP-adres, om te bevestigen dat Uw abonnement actief is. Musclog ontvangt Uw naam, e-mailadres of betaalgegevens niet: betaling wordt afgehandeld door Apple of Google. OpenRouter controleert alle verzoeken die erdoorheen gaan, ook die naar aanbieders met zero data retention, op materiaal van seksueel kindermisbruik terwijl ze worden verwerkt, en kan een verzoek dat het markeert bewaren voor beoordeling, melding en wettelijke bewaring wanneer de wet dat vereist. Musclog Iron staat los van de gratis Musclog AI-optie en wordt pas ingeschakeld nadat U hiermee in de applicatie hebt ingestemd.",
-            "content5": "U dient de privacybeleidsregels te raadplegen van de providers die u kiest, waaronder:",
+            "contentPremium": "Als U zich abonneert op Musclog Iron, worden Uw AI-verzoeken naar de eigen dienst van Musclog gestuurd, die draait op Cloudflare Workers, en van daaruit via een van twee AI-gateways, OpenRouter of Otari (beheerd door Mozilla.ai, MZL.AI, PBC), die ze alleen doorgeven aan AI-providers die zijn ingesteld op zero data retention (ZDR) en geen training op Uw gegevens. Musclog kiest welke gateway wordt gebruikt, en de toestemming in de applicatie geldt voor beide. Bij Otari noemt elk verzoek één goedgekeurde aanbieder en valt het nooit terug op een andere. Een verzoek bevat alleen wat U naar de AI-functie stuurt, zoals chatberichten, of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft, en maaltijdfoto's. De dienst van Musclog bewaart de inhoud van Uw verzoeken of antwoorden niet. Zij bewaart alleen een identificatie die is afgeleid van een sleutel die op Uw Apparaat aanwezig is, gebruiksaantallen en een korte vingerafdruk van elk verzoek, zodat een opnieuw verzonden verzoek niet dubbel wordt geteld. Zoals bij elk internetverzoek onthult elk verzoek Uw IP-adres aan Cloudflare, dat de dienst levert en beveiligt; de dienst van Musclog slaat het niet op. De gateway ontvangt bij elk verzoek een pseudoniem code voor Uw abonnement, niet Uw identificatie, naam of e-mailadres, zodat misbruik kan worden opgespoord; Otari ontvangt ook labels die de applicatie en het soort verzoek benoemen, nooit een persoon of een apparaat. RevenueCat ontvangt Uw identificatie, de aankoopstatus in de appwinkel en de technische gegevens die een app-abonnementsdienst verwerkt, zoals Uw IP-adres, om te bevestigen dat Uw abonnement actief is. Musclog ontvangt Uw naam, e-mailadres of betaalgegevens niet: betaling wordt afgehandeld door Apple of Google. OpenRouter controleert alle verzoeken die erdoorheen gaan, ook die naar aanbieders met zero data retention, op materiaal van seksueel kindermisbruik terwijl ze worden verwerkt, en kan een verzoek dat het markeert bewaren voor beoordeling, melding en wettelijke bewaring wanneer de wet dat vereist. Otari zegt de inhoud van verzoeken of antwoorden niet te ontvangen of op te slaan; het bewaart verzoekgegevens zoals het model, de aanbieder, het aantal tokens, de kosten en de status, op servers in de Verenigde Staten. Musclog Iron staat los van de gratis Musclog AI-optie en wordt pas ingeschakeld nadat U hiermee in de applicatie hebt ingestemd.",
+            "content5": "U dient het privacybeleid en de voorwaarden te raadplegen van de providers die u kiest en van de diensten die Musclog gebruikt, waaronder:",
             "cloudflarePrivacyPolicy": "Privacybeleid van Cloudflare",
-            "openrouterPrivacyPolicy": "Privacybeleid van OpenRouter",
             "openaiPrivacyPolicy": "Privacybeleid van OpenAI",
             "anthropicPrivacyPolicy": "Privacybeleid van Anthropic",
             "googlePrivacyPolicy": "Privacybeleid van Google",
@@ -729,7 +750,7 @@
           "items": [
             "Met de providers die u kiest: zoekopdrachten naar voeding gaan naar de voedingsdatabase die u selecteert en AI-verzoeken gaan naar de AI-provider die u configureert.",
             "Met Hugging Face, als u het AI-model op het apparaat wilt downloaden: net als bij elk bestandsdownload vertelt het verzoek Hugging Face het IP-adres van uw apparaat. Het model draait daarna op uw apparaat, en wat u het vraagt blijft op uw apparaat.",
-            "Met Serviceproviders die delen van de Service voor Ons uitvoeren: Sentry (crashrapporten, en foutrapporten van de dienst van Musclog Iron die geen berichtinhoud of identificaties bevatten), OpenRouter en Google (de gratis Musclog AI-optie), Cloudflare, OpenRouter en RevenueCat (Musclog Iron), GitHub en Cloudflare (hosting van de website) en Google Analytics (de website, alleen nadat U analyse accepteert).",
+            "Met Serviceproviders die delen van de Service voor Ons uitvoeren: Sentry (crashrapporten, en foutrapporten van de dienst van Musclog Iron die geen berichtinhoud of identificaties bevatten), OpenRouter en Google (de gratis Musclog AI-optie), Cloudflare, OpenRouter of Otari, en RevenueCat (Musclog Iron), GitHub en Cloudflare (hosting van de website) en Google Analytics (de website, alleen nadat U analyse accepteert).",
             "Wanneer de wet dit vereist, zoals beschreven onder \"Openbaarmaking van uw Persoonsgegevens\".",
             "Met uw toestemming, bijvoorbeeld wanneer u zelf gegevens exporteert of deelt.",
             "Wij verkopen uw gegevens niet en delen ze niet met adverteerders of datahandelaren."
@@ -737,11 +758,11 @@
         },
         "retention": {
           "title": "Bewaring van uw Persoonsgegevens",
-          "content": "Gegevens in de applicatie blijven op Uw Apparaat totdat u ze verwijdert of de applicatie verwijdert. Anonieme crashrapporten worden door Sentry gedurende een beperkte periode bewaard en daarna verwijderd. OpenRouter bewaart de inhoud van verzoeken die via de gratis Musclog AI-optie worden verzonden niet; Google kan ze bewaren zoals beschreven onder \"Optionele AI-functies\". De dienst van Musclog Iron bewaart de vingerafdruk van elk verzoek 7 dagen nadat erop is geantwoord, de gebruiksaantallen 60 dagen nadat de factureringsperiode waartoe ze behoren is afgelopen, en de apparaatidentificatie totdat U Ons vraagt die te verwijderen (zie \"Uw Persoonsgegevens verwijderen\" hieronder: neem per e-mail contact met Ons op). Er wordt geen berichten- of fotogegevens bewaard. Website-analysegegevens worden bewaard zoals beschreven onder \"Website-analyse\"."
+          "content": "Gegevens in de applicatie blijven op Uw Apparaat totdat u ze verwijdert of de applicatie verwijdert. Anonieme crashrapporten worden door Sentry gedurende een beperkte periode bewaard en daarna verwijderd. OpenRouter bewaart de inhoud van verzoeken die via de gratis Musclog AI-optie worden verzonden niet; Google kan ze bewaren zoals beschreven onder \"Optionele AI-functies\". Bij Musclog Iron slaan noch OpenRouter noch Otari de inhoud van verzoeken op, behalve de controle door OpenRouter die onder \"Optionele AI-functies\" wordt beschreven. De dienst van Musclog Iron bewaart de vingerafdruk van elk verzoek 7 dagen nadat erop is geantwoord, de gebruiksaantallen 60 dagen nadat de factureringsperiode waartoe ze behoren is afgelopen, en de apparaatidentificatie totdat U Ons vraagt die te verwijderen (zie \"Uw Persoonsgegevens verwijderen\" hieronder: neem per e-mail contact met Ons op). Er wordt geen berichten- of fotogegevens bewaard. Website-analysegegevens worden bewaard zoals beschreven onder \"Website-analyse\"."
         },
         "transfer": {
           "title": "Overdracht van uw Persoonsgegevens",
-          "content": "Crashrapporten, zoekopdrachten naar voeding, AI-verzoeken, abonnementscontroles en website-analyses worden verwerkt door de diensten die in dit Privacybeleid worden genoemd. Deze kunnen zich buiten Uw land en buiten de Europese Economische Ruimte bevinden (bijvoorbeeld Cloudflare, OpenRouter, RevenueCat en Sentry), waar de wetgeving inzake gegevensbescherming kan verschillen van die in Uw rechtsgebied. Wanneer dit gebeurt, vertrouwen Wij op de waarborgen die elke aanbieder biedt, zoals het EU-VS Data Privacy Framework of de standaardcontractbepalingen van de Europese Commissie. Musclog neemt redelijke maatregelen om ervoor te zorgen dat deze gegevens veilig en in overeenstemming met dit Privacybeleid worden behandeld."
+          "content": "Crashrapporten, zoekopdrachten naar voeding, AI-verzoeken, abonnementscontroles en website-analyses worden verwerkt door de diensten die in dit Privacybeleid worden genoemd. Deze kunnen zich buiten Uw land en buiten de Europese Economische Ruimte bevinden (bijvoorbeeld Cloudflare, OpenRouter, Otari, RevenueCat en Sentry), waar de wetgeving inzake gegevensbescherming kan verschillen van die in Uw rechtsgebied. Wanneer dit gebeurt, vertrouwen Wij op de waarborgen die elke aanbieder biedt, zoals het EU-VS Data Privacy Framework of de standaardcontractbepalingen van de Europese Commissie. Musclog neemt redelijke maatregelen om ervoor te zorgen dat deze gegevens veilig en in overeenstemming met dit Privacybeleid worden behandeld."
         },
         "deletion": {
           "title": "Uw Persoonsgegevens verwijderen",
@@ -860,7 +881,7 @@
     "terms": {
       "titleStart": "Algemene",
       "conditions": "Voorwaarden",
-      "lastUpdated": "Laatst bijgewerkt: 22 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 24 november 2026",
       "highlights": {
         "agreement": {
           "title": "Gebruikersovereenkomst",
@@ -916,7 +937,7 @@
         },
         "subscription": {
           "title": "Musclog Iron-abonnement",
-          "content1": "Musclog Iron is een optioneel maandelijks abonnement dat AI-verzoeken beantwoordt via de gehoste dienst van Musclog, zodat u uw eigen sleutel niet nodig hebt. Al het andere in Musclog is gratis, en de gratis Musclog AI-optie en uw eigen sleutels blijven zonder dit abonnement werken.",
+          "content1": "Musclog Iron is een optioneel maandelijks abonnement dat AI-verzoeken beantwoordt via de gehoste dienst van Musclog, zodat u uw eigen sleutel niet nodig hebt. Al het andere in Musclog is gratis, en de gratis Musclog AI-optie en uw eigen sleutels blijven zonder dit abonnement werken. De gehoste dienst van Musclog stuurt Uw verzoeken door via een AI-gateway, OpenRouter of Otari (van Mozilla.ai), naar AI-modelaanbieders. Hoe zij Uw verzoeken verwerken, wordt beschreven in Ons Privacybeleid en in hun eigen privacybeleid en voorwaarden, hieronder gelinkt.",
           "content2": "Het abonnement wordt verkocht en gefactureerd door Apple of Google, niet door Ons. De prijs wordt in de applicatie getoond, in uw valuta, voordat u koopt. De betaling wordt bij bevestiging van uw appwinkelaccount in rekening gebracht, en het abonnement wordt elke maand automatisch verlengd, tenzij u het minstens 24 uur voor het einde van de lopende periode opzegt. U kunt het beheren of opzeggen in de instellingen van uw appwinkelaccount, en terugbetalingen worden door de winkel afgehandeld volgens haar eigen beleid.",
           "content3": "Musclog Iron omvat een beperkt tegoed aan AI-verzoeken, en de applicatie toont hoeveel er nog over is. Wanneer het op is, wordt gehoste AI gepauzeerd tot het wordt vernieuwd, en uw eigen sleutels en de gratis optie blijven werken. Aankopen herstellen in de applicatie zet Musclog Iron weer aan voor een apparaat dat is aangemeld met het appwinkelaccount waarmee is gekocht.",
           "content4": "Wij kunnen Musclog Iron wijzigen, beperken of beëindigen. Als Wij het beëindigen, kondigen Wij dat aan in de applicatie en op deze website, stoppen Wij eerst met nieuwe abonnementen, en U kunt op elk moment in Uw account bij de appwinkel opzeggen. Als U voor een periode hebt betaald die niet meer kan worden gebruikt, kunt U de winkel om terugbetaling vragen, en Wij ondersteunen dat verzoek."

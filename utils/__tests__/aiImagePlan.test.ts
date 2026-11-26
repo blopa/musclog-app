@@ -1,10 +1,15 @@
 import {
   AI_IMAGE_TIER_ORDER,
   AI_IMAGE_TIERS,
+  base64DecodedBytes,
   DEFAULT_AI_IMAGE_TIER,
+  limitsForImageCount,
   limitsForTier,
+  MULTI_IMAGE_MIN_SHARE_BYTES,
+  nextQuality,
   OWN_KEY_IMAGE_CEILING,
   parseAiImageTier,
+  planResize,
 } from '@/utils/aiImagePlan';
 import {
   DEFAULT_HOSTED_IMAGE,
@@ -80,5 +85,80 @@ describe('limitsForTier', () => {
     expect(limits.maxPx).toBe(DEFAULT_HOSTED_IMAGE.maxPx);
     expect(limits.quality).toBe(DEFAULT_HOSTED_IMAGE.quality);
     expect(limitsForTier('low', effectiveImageLimits(DEFAULT_HOSTED_IMAGE)).maxPx).toBe(512);
+  });
+});
+
+describe('limitsForImageCount', () => {
+  const base = { maxPx: 1568, maxBytes: 480 * 1024, quality: 0.8 };
+
+  it('returns equal limits for one photo and clamps bad counts to one', () => {
+    expect(limitsForImageCount(base, 1)).toEqual(base);
+    expect(limitsForImageCount(base, 0)).toEqual(base);
+    expect(limitsForImageCount(base, Number.NaN)).toEqual(base);
+  });
+
+  it('splits the byte budget and floors the count', () => {
+    expect(limitsForImageCount(base, 2).maxBytes).toBe(240 * 1024);
+    expect(limitsForImageCount(base, 2.9).maxBytes).toBe(240 * 1024);
+    expect(limitsForImageCount(base, 2).maxPx).toBe(1568);
+  });
+
+  it('caps the pixel size when the share is below 120 KB, never raising it', () => {
+    expect(MULTI_IMAGE_MIN_SHARE_BYTES).toBe(120 * 1024);
+    expect(limitsForImageCount(base, 5).maxPx).toBe(768);
+    expect(limitsForImageCount({ ...base, maxPx: 512 }, 5).maxPx).toBe(512);
+  });
+});
+
+describe('base64DecodedBytes', () => {
+  it('counts decoded bytes, honouring padding', () => {
+    expect(base64DecodedBytes('AAAA')).toBe(3);
+    expect(base64DecodedBytes('AAA=')).toBe(2);
+    expect(base64DecodedBytes('AA==')).toBe(1);
+    expect(base64DecodedBytes('')).toBe(0);
+  });
+});
+
+describe('planResize', () => {
+  const LIMITS = { maxPx: 1024, maxBytes: 300 * 1024, quality: 0.7 };
+
+  it('keeps the aspect ratio and scales the longest side to maxPx', () => {
+    expect(planResize({ width: 4000, height: 3000, bytes: 1000 }, LIMITS)).toEqual({
+      targetWidth: 1024,
+      targetHeight: 768,
+      needsWork: true,
+    });
+    expect(planResize({ width: 3000, height: 4000, bytes: 1000 }, LIMITS)).toEqual({
+      targetWidth: 768,
+      targetHeight: 1024,
+      needsWork: true,
+    });
+  });
+
+  it('never upscales a small image', () => {
+    expect(planResize({ width: 800, height: 600, bytes: 1000 }, LIMITS)).toEqual({
+      targetWidth: 800,
+      targetHeight: 600,
+      needsWork: false,
+    });
+  });
+
+  it('needs work when the bytes are over the limit even if the size fits', () => {
+    expect(
+      planResize({ width: 800, height: 600, bytes: LIMITS.maxBytes + 1 }, LIMITS).needsWork
+    ).toBe(true);
+  });
+
+  it('needs work when the longest side is over maxPx even if the bytes fit', () => {
+    expect(planResize({ width: 1200, height: 900, bytes: 10 }, LIMITS).needsWork).toBe(true);
+  });
+});
+
+describe('nextQuality', () => {
+  it('steps down by 0.1 and stops at the 0.3 floor', () => {
+    expect(nextQuality(0.7)).toBe(0.6);
+    expect(nextQuality(0.4)).toBe(0.3);
+    expect(nextQuality(0.3)).toBeNull();
+    expect(nextQuality(0.2)).toBeNull();
   });
 });

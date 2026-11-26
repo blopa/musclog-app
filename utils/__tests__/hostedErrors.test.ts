@@ -389,15 +389,18 @@ describe('hosted errors', () => {
       expect(handle).toHaveBeenCalledTimes(6);
     });
 
-    it('sends the hosted faults to Sentry: unavailable and alreadyProcessed', () => {
+    it('sends the hosted faults to Sentry: unavailable, alreadyProcessed and consentRequired', () => {
       const handle = handleError as jest.Mock;
       handle.mockClear();
 
       reportAiError(new HostedAiError('unavailable'), 'coachAI.test');
       reportAiError(new HostedAiError('alreadyProcessed'), 'coachAI.test');
+      // The app and the Worker disagree on the consent version: a bug, never the person's state.
+      reportAiError(new HostedAiError('consentRequired'), 'coachAI.test');
 
       expect(handle.mock.calls[0][2]).toEqual({ sendToSentry: true });
       expect(handle.mock.calls[1][2]).toEqual({ sendToSentry: true });
+      expect(handle.mock.calls[2][2]).toEqual({ sendToSentry: true });
     });
 
     it('still reports an ordinary bug', () => {

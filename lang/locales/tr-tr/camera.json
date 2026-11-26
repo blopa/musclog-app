@@ -7,6 +7,12 @@
       "processingNutrients": "Besinler işleniyor",
       "analyzingImage": "Barkod analiz ediliyor...",
       "processingData": "Veri işleniyor"
+    },
+    "unavailable": {
+      "title": "Kamera kullanılamıyor",
+      "body": "Kamera bu telefonda başlatılamadı.",
+      "bodyWithGallery": "Kamera bu telefonda başlatılamadı. Yine de galerinden bir fotoğraf seçebilirsin.",
+      "retry": "Yeniden dene"
     }
   }
 }

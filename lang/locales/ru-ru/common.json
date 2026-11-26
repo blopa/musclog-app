@@ -181,7 +181,8 @@
       "filter": "Фильтр",
       "clearSearch": "Очистить поиск",
       "showValue": "Показать значение",
-      "hideValue": "Скрыть значение"
+      "hideValue": "Скрыть значение",
+      "scrollDown": "Прокрутить вниз"
     },
     "externalAssistant": {
       "copied": "Инструкции скопированы",
@@ -202,6 +203,13 @@
     "energyUnit": {
       "kcal": "ккал",
       "kj": "кДж"
+    },
+    "aiGateways": {
+      "intro": "Musclog Iron передаёт запросы через OpenRouter или Otari:",
+      "openrouterPrivacy": "Политика конфиденциальности OpenRouter",
+      "openrouterTerms": "Условия OpenRouter",
+      "otariPrivacy": "Уведомление о конфиденциальности Otari",
+      "otariTerms": "Условия Otari"
     }
   }
 }

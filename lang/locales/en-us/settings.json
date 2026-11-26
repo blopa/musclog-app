@@ -265,7 +265,7 @@
       "subtitle": "View and edit your conversation history"
     },
     "aiSettings": {
-      "title": "AI settings",
+      "title": "AI providers",
       "save": "Save",
       "saved": "Saved",
       "googleGeminiIntegration": "Google Gemini integration",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Select the model to be used by all AI features",
       "selectOpenAiModel": "Select OpenAI model",
       "selectOpenAiModelSubtitle": "Select the model to be used by all AI features",
-      "subtitle": "Settings for all the AI used on this app",
+      "subtitle": "Which AI answers: Musclog, your own keys or your phone",
       "imageProcessing": "Image processing",
       "useOcrBeforeAi": "Use OCR before sending to AI",
       "useOcrBeforeAiSubtitle": "Process images locally with OCR and send text instead",
@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "AI meal camera",
+        "description": "How the camera works when you photograph a meal.",
+        "detailed": "Detailed",
+        "quick": "Quick",
+        "detailedHint": "After each photo, review up to 5 photos and add optional details (name, notes, where it's from) before estimating.",
+        "quickHint": "Estimate right after you take the photo. Add context before the shot with the message button."
+      },
       "getOpenAiKey": "Get OpenAI key",
       "customPrompts": "Custom system prompts",
       "customPromptsSubtitle": "Add your own instructions to all AI features",
@@ -349,9 +357,45 @@
       "promptContextNutrition": "Nutrition",
       "promptContextExercise": "Exercise",
       "memorySettings": "Memory settings",
-      "useThinkingMode": "Use thinking mode",
-      "useThinkingModeSubtitle": "Allow AI providers to use deeper reasoning when supported. This uses more tokens and may increase cost.",
-      "useThinkingModeIronNote": "With Musclog Iron, deeper thinking and extra checks use more of your monthly AI allowance.",
+      "thinkingLevel": {
+        "label": "Thinking level",
+        "freeTierNote": "The free tier answers without extra thinking: its daily allowance is shared by everyone.",
+        "onDeviceNote": "Higher levels run more checks on your phone, so answers take longer.",
+        "levels": {
+          "off": {
+            "name": "Off",
+            "description": "Fast answers. Each job thinks as much as it needs."
+          },
+          "medium": {
+            "name": "Medium",
+            "description": "Thinks harder, and checks a meal's foods against your database before estimating."
+          },
+          "high": {
+            "name": "High",
+            "description": "Medium, plus a review of meals, insights and plans, and two readings of labels and imports."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Several independent answers compared, then reviewed up to twice. Slowest, most careful."
+          }
+        },
+        "ironNote": {
+          "medium": "Uses a little more of your monthly Musclog Iron allowance.",
+          "high": "Uses more of your monthly Musclog Iron allowance.",
+          "tokenmaxxing": "Can use your monthly Musclog Iron allowance several times faster."
+        },
+        "confirmHigh": {
+          "title": "Use High thinking?",
+          "message": "High makes an extra check request for most answers, so it uses more of your monthly Musclog Iron allowance. You can switch back at any time.",
+          "confirm": "Continue"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Use Tokenmaxxing?",
+          "message": "Tokenmaxxing makes several requests for each answer, so it can use your monthly Musclog Iron allowance several times faster. It never costs more than your subscription: once this period's allowance is used up, it renews with the next period.",
+          "confirm": "Continue",
+          "authPrompt": "Confirm it is you to turn on Tokenmaxxing"
+        }
+      },
       "localLlmThinkingEnabled": "Thinking mode turned on, since local models cost nothing extra. You can turn it off in AI settings.",
       "maxAiMemories": "Max AI memories",
       "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",
@@ -717,6 +761,10 @@
           }
         }
       }
+    },
+    "aiBehavior": {
+      "title": "AI behavior",
+      "subtitle": "Thinking, memory, photos, personality and prompts"
     }
   }
 }

@@ -246,7 +246,7 @@ export default function Root({ children }: PropsWithChildren) {
             <span className="expo-web-landing-name">Musclog</span>
           </a>
           <p className="expo-web-landing-tagline" data-landing-i18n="tagline">
-            AI-powered fitness &amp; nutrition tracking — free &amp; open source.
+            Fitness &amp; nutrition tracking with optional AI — free &amp; open source.
           </p>
           <div className="expo-web-landing-features">
             <div className="expo-web-landing-feature">
@@ -314,7 +314,7 @@ export default function Root({ children }: PropsWithChildren) {
               >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              <span data-landing-i18n="f4">100% private &amp; on-device</span>
+              <span data-landing-i18n="f4">Your data stays on your device</span>
             </div>
           </div>
           <div className="expo-web-landing-cta">

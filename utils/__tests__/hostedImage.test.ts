@@ -7,7 +7,7 @@ import {
   HOSTED_BODY_OVERHEAD_BYTES,
   HOSTED_REQUEST_BODY_CAP_BYTES,
 } from '@/utils/premium/hostedImagePlan';
-import { prepareHostedImage } from '@/utils/hostedImage';
+import { loadHostedMaxImages, prepareHostedImage } from '@/utils/hostedImage';
 
 jest.mock('react-native', () => ({
   Image: { getSize: jest.fn() },
@@ -39,7 +39,7 @@ const CONFIG_OK = {
     acceptingNew: true,
     visionEnabled: true,
     reasoningEffort: true,
-    image: { maxPx: 1568, maxBytes: 900 * 1024, quality: 0.85 },
+    image: { maxPx: 1568, maxBytes: 900 * 1024, quality: 0.85, maxImages: 5, bodyMaxBytes: null },
     minAppVersion: null,
   },
 };
@@ -195,5 +195,71 @@ describe('prepareHostedImage', () => {
       hostedKind: 'unavailable',
     });
     expect(manipulate).not.toHaveBeenCalled();
+  });
+});
+
+describe('prepareHostedImage with several photos', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    fetchConfig.mockResolvedValue(CONFIG_OK);
+    getSetting.mockResolvedValue('max');
+    jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('gives each photo a share of the body, so five photos are squeezed harder than one', async () => {
+    setSize(4000, 3000);
+    // Output is always 200 KB decoded: over the five-photo share (~97 KB), so every quality step runs.
+    manipulate.mockImplementation(encoderAt(1_000_000));
+
+    await prepareHostedImage('A'.repeat(4_000_000), 'image/jpeg', 1);
+    const singleCalls = manipulate.mock.calls.length;
+    manipulate.mockClear();
+
+    await prepareHostedImage('A'.repeat(4_000_000), 'image/jpeg', 5);
+
+    expect(manipulate.mock.calls.length).toBeGreaterThan(singleCalls);
+  });
+
+  it('uses the Worker body cap when it is advertised', async () => {
+    fetchConfig.mockResolvedValue({
+      ok: true,
+      value: {
+        ...CONFIG_OK.value,
+        image: { ...CONFIG_OK.value.image, bodyMaxBytes: 4 * 1024 * 1024 },
+      },
+    });
+    setSize(1000, 800);
+    // 300 KB decoded fits a 4 MiB body shared by five, but not the default 512 KB one.
+    const input = 'A'.repeat(400_000);
+
+    await prepareHostedImage(input, 'image/jpeg', 5);
+
+    expect(manipulate).not.toHaveBeenCalled();
+  });
+});
+
+describe('loadHostedMaxImages', () => {
+  it('reads maxImages when photos are on', async () => {
+    fetchConfig.mockResolvedValue(CONFIG_OK);
+
+    await expect(loadHostedMaxImages()).resolves.toBe(5);
+  });
+
+  it('is 1 when photos are off, the config is unreadable or it throws', async () => {
+    fetchConfig.mockResolvedValue({
+      ok: true,
+      value: { ...CONFIG_OK.value, visionEnabled: false },
+    });
+    await expect(loadHostedMaxImages()).resolves.toBe(1);
+
+    fetchConfig.mockResolvedValue({ ok: false });
+    await expect(loadHostedMaxImages()).resolves.toBe(1);
+
+    fetchConfig.mockRejectedValue(new Error('x'));
+    await expect(loadHostedMaxImages()).resolves.toBe(1);
   });
 });

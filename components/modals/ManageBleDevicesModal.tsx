@@ -28,7 +28,8 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
   const { t } = useTranslation();
   const router = useRouter();
   const theme = useTheme();
-  const wit = useWitMotion();
+  // Mounted with Settings; the sensor module stays asleep until this modal is open.
+  const wit = useWitMotion({ enabled: visible });
   const { bleGenerateChartPayload, handleBleGenerateChartPayloadChange, flushAllPendingChanges } =
     useDebouncedSettings(500);
 

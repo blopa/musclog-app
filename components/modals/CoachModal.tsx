@@ -48,6 +48,7 @@ import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '@/components/cards/ChatWorkoutCompletedCard';
 import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
 import { COACH_INTENTIONS, intentionNeedsCloudAi } from '@/components/coach/coachIntentions';
+import { coachStatusBadge } from '@/components/coach/coachStatusBadge';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
@@ -666,6 +667,7 @@ export function CoachModal({
     messages,
     pendingCoachMessage,
     streamingMessage,
+    replyPhase,
     pendingIntention,
     isSending,
     trackMealProgress,
@@ -729,6 +731,13 @@ export function CoachModal({
       setIsOnline(state.isConnected ?? false);
     });
   }, []);
+
+  const statusBadge = coachStatusBadge(aiProvider, isOnline);
+  const statusColor = {
+    online: theme.colors.accent.primary,
+    offline: theme.colors.status.error,
+    onDevice: theme.colors.status.warning,
+  }[statusBadge.tone];
 
   // Only the mode being read gets marked as read: a message that arrived for another mode keeps
   // its badge on the switcher until the user actually switches to it. Re-running on
@@ -1487,7 +1496,7 @@ export function CoachModal({
             <View
               className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
               style={{
-                backgroundColor: isOnline ? theme.colors.accent.primary : theme.colors.status.error,
+                backgroundColor: statusColor,
                 borderColor: theme.colors.background.primary,
                 borderWidth: theme.borderWidth.medium,
               }}
@@ -1504,18 +1513,16 @@ export function CoachModal({
               <View
                 className="h-1.5 w-1.5 rounded-full"
                 style={{
-                  backgroundColor: isOnline
-                    ? theme.colors.accent.primary
-                    : theme.colors.status.error,
+                  backgroundColor: statusColor,
                 }}
               />
               <Text
                 className="text-xs font-medium"
                 style={{
-                  color: isOnline ? theme.colors.accent.primary : theme.colors.status.error,
+                  color: statusColor,
                 }}
               >
-                {isOnline ? t('coach.status') : t('coach.statusOffline')}
+                {t(statusBadge.labelKey)}
               </Text>
             </View>
           </View>
@@ -1534,6 +1541,19 @@ export function CoachModal({
             variant="elevated"
           />
         </View>
+
+        {replyPhase === 'reviewing' ? (
+          <View
+            className="border-b px-4 py-2"
+            style={{ borderColor: theme.colors.border.light }}
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
+            <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+              {t('coach.reviewingReply')}
+            </Text>
+          </View>
+        ) : null}
 
         {hostedWaitLine ? (
           <View

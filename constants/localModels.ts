@@ -25,6 +25,12 @@ export type LocalModelFile = {
   optional: boolean;
 };
 
+/**
+ * How a plain-text reply (chat, insights) is sampled, in llama.cpp's terms: `temperature`, `min_p`
+ * and the repeat penalty, where 1 means off.
+ */
+export type LocalTextSampling = { temperature: number; minP: number; repeatPenalty: number };
+
 export type LocalModelManifest = {
   id: string;
   displayName: string;
@@ -43,6 +49,12 @@ export type LocalModelManifest = {
   imageMaxTokens: number;
   /** Base language codes the model was trained for. */
   languages: readonly string[];
+  /**
+   * The vendor's sampling for a plain-text reply. The model card recommends
+   * "temperature=0.1, min_p=0.15, repetition_penalty=1.05"; a benchmark of 125 replies each found
+   * those values gave fewer bad replies than adding our own frequency and presence penalties.
+   */
+  textSampling: LocalTextSampling;
   files: readonly LocalModelFile[];
 };
 
@@ -65,6 +77,8 @@ export const LFM_VL_450M: LocalModelManifest = {
   contextTokens: 4096,
   imageMaxTokens: 256,
   languages: ['en', 'ar', 'zh', 'fr', 'de', 'ja', 'ko', 'pt', 'es'],
+  // From the model card (modelCardUrl), the recommended text settings.
+  textSampling: { temperature: 0.1, minP: 0.15, repeatPenalty: 1.05 },
   files: [
     {
       role: 'model',

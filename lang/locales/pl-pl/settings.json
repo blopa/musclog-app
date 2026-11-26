@@ -265,7 +265,7 @@
       "subtitle": "Przeglądaj i edytuj historię rozmów"
     },
     "aiSettings": {
-      "title": "Ustawienia AI",
+      "title": "Dostawcy AI",
       "save": "Zapisz",
       "saved": "Zapisano",
       "googleGeminiIntegration": "Integracja z Google Gemini",
@@ -301,7 +301,7 @@
       "selectGeminiModelSubtitle": "Wybierz model, którego będą używać wszystkie funkcje AI",
       "selectOpenAiModel": "Wybierz model OpenAI",
       "selectOpenAiModelSubtitle": "Wybierz model, którego będą używać wszystkie funkcje AI",
-      "subtitle": "Ustawienia całej AI używanej w tej aplikacji",
+      "subtitle": "Które AI odpowiada: Musclog, twoje własne klucze czy telefon",
       "imageProcessing": "Przetwarzanie obrazów",
       "useOcrBeforeAi": "Użyj OCR przed wysłaniem do AI",
       "useOcrBeforeAiSubtitle": "Przetwarzaj obrazy lokalnie za pomocą OCR i wysyłaj tekst",
@@ -330,6 +330,14 @@
           }
         }
       },
+      "mealCameraFlow": {
+        "title": "Aparat do posiłków z AI",
+        "description": "Jak działa aparat, gdy fotografujesz posiłek.",
+        "detailed": "Szczegółowo",
+        "quick": "Szybko",
+        "detailedHint": "Po każdym zdjęciu przejrzyj do 5 zdjęć i dodaj opcjonalne szczegóły (nazwę, notatki, skąd pochodzi), zanim nastąpi szacowanie.",
+        "quickHint": "Szacuj zaraz po zrobieniu zdjęcia. Dodaj kontekst przed zdjęciem, przyciskiem wiadomości."
+      },
       "getOpenAiKey": "Pobierz klucz OpenAI",
       "customPrompts": "Własne instrukcje systemowe",
       "customPromptsSubtitle": "Dodaj własne wskazówki do wszystkich funkcji AI",
@@ -349,9 +357,45 @@
       "promptContextNutrition": "Odżywianie",
       "promptContextExercise": "Ćwiczenia",
       "memorySettings": "Ustawienia pamięci",
-      "useThinkingMode": "Użyj trybu myślenia",
-      "useThinkingModeSubtitle": "Pozwól dostawcom AI na głębsze rozumowanie, gdy jest ono obsługiwane. Zużywa to więcej tokenów i może zwiększać koszt.",
-      "useThinkingModeIronNote": "W Musclog Iron głębsze myślenie i dodatkowe sprawdzenia zużywają więcej Twojego miesięcznego limitu AI.",
+      "thinkingLevel": {
+        "label": "Poziom myślenia",
+        "freeTierNote": "Darmowy poziom odpowiada bez dodatkowego myślenia: jego dzienny limit dzielą wszyscy użytkownicy.",
+        "onDeviceNote": "Wyższe poziomy wykonują na telefonie więcej sprawdzeń, więc odpowiedzi trwają dłużej.",
+        "levels": {
+          "off": {
+            "name": "Wył.",
+            "description": "Szybkie odpowiedzi. Każde zadanie myśli tyle, ile potrzebuje."
+          },
+          "medium": {
+            "name": "Średni",
+            "description": "Myśli dokładniej i sprawdza produkty posiłku w Twojej bazie, zanim poda oszacowanie."
+          },
+          "high": {
+            "name": "Wysoki",
+            "description": "Średni, plus przegląd posiłków, analiz i planów oraz dwukrotny odczyt etykiet i importów."
+          },
+          "tokenmaxxing": {
+            "name": "Tokenmaxxing",
+            "description": "Porównuje się kilka niezależnych odpowiedzi, a potem każdą sprawdza się do dwóch razy. Najwolniej, najstaranniej."
+          }
+        },
+        "ironNote": {
+          "medium": "Zużywa trochę więcej Twojego miesięcznego limitu Musclog Iron.",
+          "high": "Zużywa więcej Twojego miesięcznego limitu Musclog Iron.",
+          "tokenmaxxing": "Może zużyć Twój miesięczny limit Musclog Iron kilka razy szybciej."
+        },
+        "confirmHigh": {
+          "title": "Użyć poziomu Wysoki?",
+          "message": "Wysoki wykonuje dodatkowe zapytanie sprawdzające przy większości odpowiedzi, więc zużywa więcej Twojego miesięcznego limitu Musclog Iron. Możesz w każdej chwili wrócić.",
+          "confirm": "Kontynuuj"
+        },
+        "confirmTokenmaxxing": {
+          "title": "Użyć Tokenmaxxing?",
+          "message": "Tokenmaxxing wysyła kilka zapytań na każdą odpowiedź, więc może zużyć Twój miesięczny limit Musclog Iron kilka razy szybciej. Nigdy nie kosztuje więcej niż Twoja subskrypcja: gdy limit tego okresu się wyczerpie, odnawia się z następnym okresem.",
+          "confirm": "Kontynuuj",
+          "authPrompt": "Potwierdź, że to Ty, aby włączyć Tokenmaxxing"
+        }
+      },
       "localLlmThinkingEnabled": "Tryb myślenia włączony, bo modele lokalne nic dodatkowo nie kosztują. Możesz go wyłączyć w ustawieniach AI.",
       "maxAiMemories": "Maks. liczba wspomnień AI",
       "maxAiMemoriesSubtitle": "Liczba poprzednich wiadomości pamiętanych w rozmowach",
@@ -395,6 +439,10 @@
       "premium": {
         "activeNote": "Musclog Iron odpowiada na Twoje żądania AI. Dopóki jest włączone, Twoje własne klucze i wersja darmowa nie są używane."
       }
+    },
+    "aiBehavior": {
+      "title": "Zachowanie AI",
+      "subtitle": "Myślenie, pamięć, zdjęcia, osobowość i prompty"
     },
     "visualSettings": {
       "title": "Wygląd i ekran główny",

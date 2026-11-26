@@ -315,8 +315,8 @@ export async function seedDatabaseContents(
   await SettingsService.setMaxAiMemories(50);
   console.log('Set default max AI memories to 50');
 
-  await SettingsService.setUseThinkingMode(false);
-  console.log('Set default AI thinking mode to false');
+  await SettingsService.set(SETTINGS.thinkingLevel, 'off');
+  console.log('Set default AI thinking level to off');
 
   await SettingsService.setEnableGoogleGemini(false);
   await SettingsService.setEnableOpenAi(false);

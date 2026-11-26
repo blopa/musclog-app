@@ -18,6 +18,7 @@ export type HostedErrorKind =
   | 'budget' // the period's allowance is used up (402 budget_exhausted)
   | 'dailyLimit' // this subscription's own daily cap is reached (402 daily_limit)
   | 'subscription' // no active subscription behind this device (403)
+  | 'consentRequired' // the active gateway requires updated consent (403)
   | 'removed' // 401 unknown_device: the app never re-enrolls on its own
   | 'unavailable' // 5xx, Cloudflare 1027, hosted_disabled, an expired session token
   | 'dailyFull' // 503 daily_full: Premium is at capacity today
@@ -58,6 +59,12 @@ export const HOSTED_KINDS: Record<HostedErrorKind, HostedKindSpec> = {
     message: 'Musclog Iron: no active subscription on this device',
     signal: null,
     i18nKey: 'errors.hostedSubscription',
+    retryable: false,
+  },
+  consentRequired: {
+    message: 'Musclog Iron requires updated consent',
+    signal: null,
+    i18nKey: 'errors.hostedConsentRequired',
     retryable: false,
   },
   removed: {
@@ -186,6 +193,10 @@ export function toHostedAiError(error: unknown): HostedAiError | null {
 
   if (is(code, 'daily_full')) {
     return new HostedAiError('dailyFull');
+  }
+
+  if (is(code, 'consent_required')) {
+    return new HostedAiError('consentRequired');
   }
 
   switch (status) {

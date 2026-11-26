@@ -161,20 +161,3 @@ export function formatItemTime(item: DiaryItem, localeTag: string): string | und
 
   return formatTimeInTimezone(log.date, log.timezone, localeTag);
 }
-
-/** The meal category a new entry starts with when added from the time diary (still editable). */
-export function inferMealTypeFromHour(hour: number): MealType {
-  if (hour >= 5 && hour < 11) {
-    return 'breakfast';
-  }
-
-  if (hour >= 11 && hour < 15) {
-    return 'lunch';
-  }
-
-  if (hour >= 15 && hour < 22) {
-    return 'dinner';
-  }
-
-  return 'snack';
-}

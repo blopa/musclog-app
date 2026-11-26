@@ -3,10 +3,38 @@
 // gateway does not know (OpenRouter's `provider`/`reasoning`, Otari's `metadata`/`reasoning_effort`)
 // can never reach the other. Each builder's output is checked by an assert right before sending.
 import type { AiConfig, Feature, OtariConfig } from '../config';
-import type { NeutralBody } from './allowlist';
-import { assertPremiumPrivacy } from './allowlist';
+import { isObj, type Json } from '../upstream/http';
+import { assignDefined, type NeutralBody } from './allowlist';
 
-type Json = Record<string, unknown>;
+const OPTIONAL_AFTER_REASONING = [
+  'response_format',
+  'tools',
+  'tool_choice',
+  'parallel_tool_calls',
+  'stop',
+] as const;
+
+function appendOptionalFields(
+  body: Json,
+  neutral: NeutralBody,
+  reasoningField: [string, unknown] | null
+): Json {
+  if (neutral.temperature !== undefined) body.temperature = neutral.temperature;
+  if (reasoningField) body[reasoningField[0]] = reasoningField[1];
+  return assignDefined(body, neutral as unknown as Json, OPTIONAL_AFTER_REASONING);
+}
+
+/**
+ * Runtime guard for the Premium privacy invariant: account-level ZDR is off at OpenRouter, so this
+ * per-request `provider` object is the only thing keeping a request off providers that retain or
+ * train on data. Throws (never sends) when any of the three fields is missing or different.
+ */
+export function assertPremiumPrivacy(body: Json): void {
+  const p = body.provider;
+  if (!isObj(p) || p.zdr !== true || p.data_collection !== 'deny' || p.allow_fallbacks !== false) {
+    throw new Error('premium_privacy_invariant_violated');
+  }
+}
 
 /**
  * The OpenRouter body. Key order and values are exactly what `allowlistRequest` returned before the
@@ -32,16 +60,15 @@ export function buildOpenRouterBody(neutral: NeutralBody, config: AiConfig): Jso
     stream: neutral.stream,
     max_tokens: neutral.max_tokens,
   };
-  assertPremiumPrivacy(body);
-  if (neutral.temperature !== undefined) body.temperature = neutral.temperature;
-  if (neutral.reasoning !== null) body.reasoning = { effort: neutral.reasoning };
-  if (neutral.response_format) body.response_format = neutral.response_format;
-  if (neutral.tools) body.tools = neutral.tools;
-  if (neutral.tool_choice !== undefined) body.tool_choice = neutral.tool_choice;
-  if (neutral.parallel_tool_calls !== undefined)
-    body.parallel_tool_calls = neutral.parallel_tool_calls;
-  if (neutral.stop !== undefined) body.stop = neutral.stop;
-  return body;
+  const full = appendOptionalFields(
+    body,
+    neutral,
+    neutral.reasoning !== null ? ['reasoning', { effort: neutral.reasoning }] : null
+  );
+  // Checked last, on the body that is sent: nothing added above can have changed `provider`.
+  assertPremiumPrivacy(full);
+
+  return full;
 }
 
 /**
@@ -61,14 +88,11 @@ export function buildOtariBody(
     max_tokens: neutral.max_tokens,
   };
   if (neutral.stream) body.stream_options = { include_usage: true };
-  if (neutral.temperature !== undefined) body.temperature = neutral.temperature;
-  if (neutral.reasoning !== null) body.reasoning_effort = neutral.reasoning;
-  if (neutral.response_format) body.response_format = neutral.response_format;
-  if (neutral.tools) body.tools = neutral.tools;
-  if (neutral.tool_choice !== undefined) body.tool_choice = neutral.tool_choice;
-  if (neutral.parallel_tool_calls !== undefined)
-    body.parallel_tool_calls = neutral.parallel_tool_calls;
-  if (neutral.stop !== undefined) body.stop = neutral.stop;
+  appendOptionalFields(
+    body,
+    neutral,
+    neutral.reasoning !== null ? ['reasoning_effort', neutral.reasoning] : null
+  );
   body.metadata = { app: 'musclog-iron', env: workerEnv, feature };
   return body;
 }

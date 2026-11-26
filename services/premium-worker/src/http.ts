@@ -23,6 +23,7 @@ export type ErrorCode =
   | 'entitlement_unavailable'
   | 'identity_conflict'
   | 'upstream_timeout'
+  | 'consent_required'
   | 'not_found'
   | 'method_not_allowed';
 
@@ -48,6 +49,7 @@ const MESSAGES: Record<ErrorCode, string> = {
   entitlement_unavailable: 'The subscription could not be checked.',
   identity_conflict: 'The subscription could not be matched safely.',
   upstream_timeout: 'The AI provider timed out.',
+  consent_required: 'Review the updated Musclog Iron consent to continue.',
   not_found: 'Not found.',
   method_not_allowed: 'Method not allowed.',
 };

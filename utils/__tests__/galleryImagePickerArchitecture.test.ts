@@ -75,9 +75,9 @@ describe('gallery picker architecture', () => {
     const hookSource = source('hooks/useCameraCaptureFlow.ts');
 
     expect(hookSource).toContain(
-      "import { pickImageFromGallery } from '@/utils/galleryImagePicker';"
+      "import { pickImagesFromGallery } from '@/utils/galleryImagePicker';"
     );
-    expect(hookSource).toMatch(/await pickImageFromGallery\(\)/);
+    expect(hookSource).toMatch(/await pickImagesFromGallery\(/);
     expect(hookSource).toMatch(/await openCropperAsync\(/);
   });
 });

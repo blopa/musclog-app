@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.18.3",
+  "version": "2.18.8",
   "engines": {
     "node": "26.x"
   },
@@ -33,6 +33,7 @@
     "screenshots:google-play-phone:capture": "npm run playwright-runner -- --config playwright.google-play-phone.config.ts",
     "screenshots:google-play-phone:render": "node scripts/google-play-phone-screenshots.js render",
     "screenshots:google-play-phone:studio": "node scripts/google-play-phone-screenshots.js studio",
+    "generate-seo-images": "node scripts/generate-seo-images.js",
     "generate-banners": "node scripts/generate-banners.js",
     "promo-video": "npm --prefix promo-video install --no-audit --no-fund && npm --prefix promo-video run render",
     "promo-video:studio": "npm --prefix promo-video install --no-audit --no-fund && npm --prefix promo-video run studio",
@@ -116,7 +117,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "android-device": "expo run:android --no-build-cache --device",
-    "web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && NODE_OPTIONS=--max-old-space-size=8192 expo start --web",
+    "web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && node scripts/generate-seo-images.js && NODE_OPTIONS=--max-old-space-size=8192 expo start --web",
     "web:app": "MUSCLOG_WEB_TARGET=app npm run web",
     "web:site": "MUSCLOG_WEB_TARGET=website npm run web",
     "web:local-llm": "bash scripts/web-with-local-llm.sh",
@@ -135,7 +136,7 @@
     "build-android-local-cache": "bash scripts/run-eas-local-android-build.sh production",
     "build-android-apk": "eas build -p android --profile production-apk --clear-cache",
     "build-android-apk-local": "bash scripts/run-eas-local-android-build.sh production-apk --clear-cache",
-    "build-android-web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && node scripts/export-web-wrapper.js && node scripts/localize-web-exports.js && node scripts/write-unprefixed-pages.js && node scripts/flatten-web-indexes.js",
+    "build-android-web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && node scripts/generate-seo-images.js && node scripts/export-web-wrapper.js && node scripts/localize-web-exports.js && node scripts/write-unprefixed-pages.js && node scripts/flatten-web-indexes.js",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
     "prebuild:android": "expo prebuild -p android --clean",

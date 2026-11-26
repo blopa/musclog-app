@@ -181,7 +181,8 @@
       "filter": "Filtre",
       "clearSearch": "Aramayı temizle",
       "showValue": "Değeri göster",
-      "hideValue": "Değeri gizle"
+      "hideValue": "Değeri gizle",
+      "scrollDown": "Aşağı kaydır"
     },
     "externalAssistant": {
       "copied": "Talimatlar kopyalandı",
@@ -202,6 +203,13 @@
     "energyUnit": {
       "kcal": "kcal",
       "kj": "kJ"
+    },
+    "aiGateways": {
+      "intro": "Musclog Iron istekleri OpenRouter veya Otari üzerinden iletir:",
+      "openrouterPrivacy": "OpenRouter gizlilik politikası",
+      "openrouterTerms": "OpenRouter şartları",
+      "otariPrivacy": "Otari gizlilik bildirimi",
+      "otariTerms": "Otari şartları"
     }
   }
 }

@@ -395,13 +395,17 @@ describe('runDaily', () => {
       expect(await metaValue('breaker_reason')).toBe('reconciliation');
     });
 
-    it('a failing Otari call counts 0, logs high and cannot open the breaker', async () => {
+    it('a failing Otari call leaves the baseline unchanged so the next successful run checks the full window', async () => {
+      const first = withBoth({ usage: 10 });
+      await runDaily(first.ctx);
       const ot = fakeOtari({ kind: 'throw' });
       ot.summary = new Error('otari_http_500');
-      const later = await twoRuns(withBoth({ usage: 10.6, otari: ot }));
+      const later = withBoth({ usage: 10.6, otari: ot });
+      later.deps.advance(DAY_MS);
       await settleAt(600_000, NOW + 1000);
       await runDaily(later.ctx);
       expect(await isBreakerOpen(db)).toBe(false);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 10_000_000, at: NOW });
       expect(later.deps.logs).toContainEqual({
         route: 'cron',
         status: 500,
@@ -409,16 +413,102 @@ describe('runDaily', () => {
         severity: 'high',
         upstream: 'otari',
       });
+
+      const recoveredOtari = fakeOtari({ kind: 'throw' });
+      recoveredOtari.summary = { costUsd: 1, requests: 1, errors: 0, unpriced: 0 };
+      const recovered = withBoth({ usage: 11.5, otari: recoveredOtari });
+      recovered.deps.advance(2 * DAY_MS);
+      await runDaily(recovered.ctx);
+      expect(recoveredOtari.summaryCalls).toEqual([{ startMs: NOW, endMs: NOW + 2 * DAY_MS }]);
+      expect(await metaValue('breaker_reason')).toBe('reconciliation');
     });
 
-    it('unpriced Otari requests are logged high', async () => {
+    it('unpriced Otari requests are logged high and leave the baseline for a complete later query', async () => {
+      await runDaily(withBoth({ usage: 10 }).ctx);
       const ot = fakeOtari({ kind: 'throw' });
       ot.summary = { costUsd: 0, requests: 2, errors: 0, unpriced: 2 };
-      const later = await twoRuns(withBoth({ usage: 10, otari: ot }));
+      const later = withBoth({ usage: 10, otari: ot });
+      later.deps.advance(DAY_MS);
       await runDaily(later.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 10_000_000, at: NOW });
       expect(later.deps.logs).toContainEqual(
         expect.objectContaining({ code: 'otari_unpriced_requests', severity: 'high' })
       );
+
+      const recoveredOtari = fakeOtari({ kind: 'throw' });
+      recoveredOtari.summary = { costUsd: 0, requests: 0, errors: 0, unpriced: 0 };
+      const recovered = withBoth({ usage: 11.5, otari: recoveredOtari });
+      recovered.deps.advance(2 * DAY_MS);
+      await settleAt(600_000, NOW + 1000);
+      await runDaily(recovered.ctx);
+      expect(recoveredOtari.summaryCalls).toEqual([{ startMs: NOW, endMs: NOW + 2 * DAY_MS }]);
+      expect(await metaValue('breaker_reason')).toBe('reconciliation');
+    });
+
+    it('unpriced Otari requests advance the baseline once the hold window expires so cron never wedges', async () => {
+      await runDaily(withBoth({ usage: 10 }).ctx);
+      const ot = fakeOtari({ kind: 'throw' });
+      ot.summary = { costUsd: 0, requests: 2, errors: 0, unpriced: 2 };
+      // Day 1: holds baseline at NOW
+      const day1 = withBoth({ usage: 10, otari: ot });
+      day1.deps.advance(DAY_MS);
+      await runDaily(day1.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 10_000_000, at: NOW });
+
+      // Day 2: still unpriced -> logs high and advances baseline so Day 3 starts fresh
+      const day2 = withBoth({ usage: 10, otari: ot });
+      day2.deps.advance(2 * DAY_MS);
+      await runDaily(day2.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({
+        usage_u: 10_000_000,
+        at: NOW + 2 * DAY_MS,
+      });
+      expect(day2.deps.logs).toContainEqual(
+        expect.objectContaining({ code: 'otari_unpriced_requests', severity: 'high' })
+      );
+
+      // Day 3: queries only [NOW + 2 * DAY_MS, NOW + 3 * DAY_MS]
+      const day3Otari = fakeOtari({ kind: 'throw' });
+      day3Otari.summary = { costUsd: 0, requests: 0, errors: 0, unpriced: 0 };
+      const day3 = withBoth({ usage: 10, otari: day3Otari });
+      day3.deps.advance(3 * DAY_MS);
+      await runDaily(day3.ctx);
+      expect(day3Otari.summaryCalls).toEqual([
+        { startMs: NOW + 2 * DAY_MS, endMs: NOW + 3 * DAY_MS },
+      ]);
+      expect(await isBreakerOpen(db)).toBe(false);
+    });
+
+    it('negative OpenRouter delta still reconciles Otari spend and preserves prev.at if Otari fails', async () => {
+      await runDaily(withBoth({ usage: 10 }).ctx);
+
+      // Key reset (orDelta < 0) while Otari is unavailable: preserves prev.at, updates usage_u
+      const failingOt = fakeOtari({ kind: 'throw' });
+      failingOt.summary = new Error('otari_http_500');
+      const day1 = withBoth({ usage: 2, otari: failingOt });
+      day1.deps.advance(DAY_MS);
+      await runDaily(day1.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 2_000_000, at: NOW });
+      expect(day1.deps.logs).toContainEqual(
+        expect.objectContaining({ code: 'reconciliation_key_reset', severity: 'high' })
+      );
+      expect(day1.deps.logs).toContainEqual(
+        expect.objectContaining({ code: 'reconciliation_otari_unavailable', severity: 'high' })
+      );
+      expect(await isBreakerOpen(db)).toBe(false);
+
+      // Next run: key reset again (e.g., usage 1 < 2), Otari succeeds with unmetered spend -> catches gap
+      const ot = fakeOtari({ kind: 'throw' });
+      ot.summary = { costUsd: 2, requests: 3, errors: 0, unpriced: 0 };
+      const day2 = withBoth({ usage: 1, otari: ot });
+      day2.deps.advance(2 * DAY_MS);
+      await runDaily(day2.ctx);
+      expect(ot.summaryCalls).toEqual([{ startMs: NOW, endMs: NOW + 2 * DAY_MS }]);
+      expect(await metaValue('breaker_reason')).toBe('reconciliation');
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({
+        usage_u: 1_000_000,
+        at: NOW + 2 * DAY_MS,
+      });
     });
 
     it('no Otari client means the OpenRouter-only logic and no Otari call', async () => {

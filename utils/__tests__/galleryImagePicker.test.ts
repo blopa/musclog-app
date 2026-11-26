@@ -1,6 +1,10 @@
 import * as ImagePicker from 'expo-image-picker';
 
-import { pickAndCropImageFromGallery, pickImageFromGallery } from '@/utils/galleryImagePicker';
+import {
+  pickAndCropImageFromGallery,
+  pickImageFromGallery,
+  pickImagesFromGallery,
+} from '@/utils/galleryImagePicker';
 
 jest.mock('expo-image-picker', () => ({ launchImageLibraryAsync: jest.fn() }));
 
@@ -145,5 +149,92 @@ describe('pickAndCropImageFromGallery', () => {
     mockOpenCropperAsync.mockRejectedValue(error);
 
     await expect(pickAndCropImageFromGallery()).rejects.toBe(error);
+  });
+});
+
+describe('pickImagesFromGallery', () => {
+  beforeEach(() => {
+    mockLaunchImageLibrary.mockReset();
+  });
+
+  it('opens the single-pick picker with exactly the single-pick arguments when limit is 1', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+
+    await expect(pickImagesFromGallery(1)).resolves.toEqual(['file:///picked.jpg']);
+
+    expect(mockLaunchImageLibrary).toHaveBeenCalledWith({
+      mediaTypes: ['images'],
+      quality: 1,
+      base64: false,
+    });
+  });
+
+  it('passes the multi-select arguments exactly when limit is above 1', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///a.jpg' }],
+    });
+
+    await pickImagesFromGallery(3);
+
+    expect(mockLaunchImageLibrary).toHaveBeenCalledWith({
+      mediaTypes: ['images'],
+      quality: 1,
+      base64: false,
+      allowsMultipleSelection: true,
+      selectionLimit: 3,
+      orderedSelection: true,
+    });
+  });
+
+  it('returns the picked uris in order', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///first.jpg' }, { uri: 'file:///second.jpg' }],
+    });
+
+    await expect(pickImagesFromGallery(5)).resolves.toEqual([
+      'file:///first.jpg',
+      'file:///second.jpg',
+    ]);
+  });
+
+  it('cuts extra assets down to the limit', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///1.jpg' }, { uri: 'file:///2.jpg' }, { uri: 'file:///3.jpg' }],
+    });
+
+    await expect(pickImagesFromGallery(2)).resolves.toEqual(['file:///1.jpg', 'file:///2.jpg']);
+  });
+
+  it('returns an empty list when the picker is cancelled', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({ canceled: true, assets: [] });
+
+    await expect(pickImagesFromGallery(3)).resolves.toEqual([]);
+  });
+
+  it('returns an empty list when no asset is returned', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({ canceled: false, assets: [] });
+
+    await expect(pickImagesFromGallery(3)).resolves.toEqual([]);
+  });
+
+  it.each([0, NaN])('treats a limit of %p as 1', async (limit) => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+
+    await expect(pickImagesFromGallery(limit)).resolves.toEqual(['file:///picked.jpg']);
+
+    expect(mockLaunchImageLibrary).toHaveBeenCalledWith({
+      mediaTypes: ['images'],
+      quality: 1,
+      base64: false,
+    });
   });
 });

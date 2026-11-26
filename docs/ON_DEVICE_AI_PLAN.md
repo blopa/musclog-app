@@ -375,6 +375,14 @@ Rejected candidates:
 
 **Published vs ours**: every number in sections 4–6 is a vendor figure. None are on-phone measurements of ours. The doc keeps a two-column table (published / measured) that P7 fills.
 
+**P7 notes, first desktop run (2026-11-24).** The 10 Nutrition5k plates of `spikes/premium-p0/bench/data/manifest.json` through the pinned Q4_0 GGUF and projector in desktop `llama-server` (`scripts/dev-local-model-server.sh`), with the app's identify prompt and schema, 640×480 input, temperature 0. Not a phone measurement.
+
+- The identify prompt used to name three example foods ("grilled chicken breast", "white rice", "orange juice"). The model copied them: "grilled chicken breast" on 7 of 10 plates and at least one example on 8, most of which held neither. The examples were removed (`localFoodIdentifyPrompt`, pinned by `localFoodPhoto.test.ts`); after that, names follow the plate (steak, green beans, salad, blueberries, spinach, corn) with mislabels (cherry tomatoes as red grapes, steak as meatloaf) and duplicates ("almonds" and "nuts").
+- Total grams after the fix: 5 of 10 plates within 15% of the weighed total; the others far off (125 g read as 20 g, 871 g as 45 g).
+- The plain foundation-food seed lacks staples such as almonds, so on a fresh install most photo items fall through to the by-name estimate. That estimate can repeat an impossible answer (almonds 10 g with 9 g fat at 10 kcal) on the recheck, which is why `reconcileIngredientMacros` (`utils/mealPlausibility.ts`) now makes the remaining figures agree after the recheck.
+- How the model is asked for numbers (10 foods against reference values, one or batched): protein, carbs and fat for the stated weight came back near zero (median kcal error 91%); kcal plus macros with the calorie note had the macros copy the note's "4, 4, 9" (62%); a nutrition-facts label per 100 g with kcal, protein, carbs and fat was best by far (43% kcal, 35% protein) and holds batched. So the downloaded model's unmatched foods are asked for ONE batched label per 100 g (`getOnDeviceLabelPrompt`), scaled to the grams with the model's kcal kept and split by its macro ratios (`fromLabelPer100g`, `utils/onDeviceMacros.ts`); when fiber is tracked (`isFiberTracked`, index 3 of `nutrition_display`) one more batched label request asks fiber per 100 g, taken out of the carbs with kcal recomputed (`withLabelFiber`). Other providers keep the old request. The photo meal is named after its foods (`photoMealName`), not the meal type.
+- The coach's Track meal attaches the 300 px chat thumbnail (`CoachModal` `createThumbnail(..., 300)`) and sends that same base64 to every provider, so the photo-quality tier never applies there. At 300 px this model mostly ignores the plate. Smart Camera (AI meal) reads the full cropped file. Open.
+
 **Pass bars, proposed for the maintainer to confirm**:
 
 - ≥ 98% valid structured output

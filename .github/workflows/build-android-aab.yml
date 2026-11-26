@@ -7,10 +7,19 @@ name: Build Android AAB
 # android/app/build.gradle signs `release` with the debug key) and for the EAS environment
 # variables of the `production` profile, which is why it needs EXPO_TOKEN.
 #
-# It builds, checks the signature and uploads the .aab as a run artifact. It never uploads to Google
-# Play (that stays `scripts/release-android.sh upload`, on request) and never bumps the version.
+# It builds, checks the signature and uploads the .aab as a run artifact. It never bumps the version.
+#
+# Google Play: only when "Also submit to Play internal testing" is ticked, and only to the INTERNAL
+# track (the track is written in the step, not an input, so this workflow cannot reach production;
+# promoting stays `scripts/release-android.sh promote`, run by hand). It goes through the same
+# scripts/release-android.sh upload as a local release (preflight, versionCode above Play's).
 on:
   workflow_dispatch:
+    inputs:
+      submit_to_internal:
+        description: Also submit to Play internal testing
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -24,19 +33,25 @@ jobs:
     name: Production AAB
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      EAS_BUILD_PROFILE: production
     steps:
-      - name: Check the Expo token is set
+      - name: Check required secrets
+        env:
+          EXPO_TOKEN_SECRET: ${{ secrets.EXPO_TOKEN }}
+          PLAY_SERVICE_ACCOUNT_JSON_SECRET: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
         run: |
-          if [ -z "$EXPO_TOKEN" ]; then
+          if [ -z "$EXPO_TOKEN_SECRET" ]; then
             echo "::error::Add the repository secret EXPO_TOKEN (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          if [ "${{ inputs.submit_to_internal }}" = "true" ] && [ -z "$PLAY_SERVICE_ACCOUNT_JSON_SECRET" ]; then
+            echo "::error::Submitting needs the repository secret PLAY_SERVICE_ACCOUNT_JSON (the Play service account key, whole JSON)."
             exit 1
           fi
 
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       # A local build compiles three ABIs of the native code and needs several GB of scratch space.
       # The runner's image carries toolchains this job never uses.
@@ -45,10 +60,11 @@ jobs:
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/hostedtoolcache/CodeQL
           df -h /
 
+      # Match eas.json's build.base.node version so local builds behave like EAS cloud builds.
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '26'
+          node-version: '26.10.0'
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -58,6 +74,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+          cache: gradle
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
@@ -65,27 +82,25 @@ jobs:
       - name: Check release versions are in sync
         run: npm run check-version-sync
 
-      # EAS environment variables with visibility "Secret" cannot be read by a local build (plain text
-      # and sensitive ones are loaded from EAS). If the Sentry token is a secret there, add it here as
-      # a repository secret and it is passed on; without it nothing changes.
-      - name: Pass the optional Sentry token
-        env:
-          SENTRY_AUTH_TOKEN_SECRET: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: |
-          if [ -n "$SENTRY_AUTH_TOKEN_SECRET" ]; then
-            echo "::add-mask::$SENTRY_AUTH_TOKEN_SECRET"
-            echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN_SECRET" >> "$GITHUB_ENV"
-          fi
-
       - name: Read the app version
         id: version
         run: |
           name="$(sed -nE 's/^[[:space:]]*versionName[[:space:]]+"([^"]+)".*/\1/p' android/app/build.gradle | head -1)"
           code="$(sed -nE 's/^[[:space:]]*versionCode[[:space:]]+([0-9]+).*/\1/p' android/app/build.gradle | head -1)"
+          if [ -z "$name" ] || [ -z "$code" ]; then
+            echo "::error::Could not read versionName/versionCode from android/app/build.gradle."
+            exit 1
+          fi
           echo "file=musclog-${name}-${code}.aab" >> "$GITHUB_OUTPUT"
           echo "Building ${name} (versionCode ${code})"
 
+      # EAS environment variables with visibility "Secret" cannot be read by a local build (plain text
+      # and sensitive ones are loaded from EAS). Pass SENTRY_AUTH_TOKEN directly to this step only.
       - name: Build the AAB with EAS (local)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_BUILD_PROFILE: production
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           mkdir -p "$RUNNER_TEMP/out"
           npx --no-install eas build \
@@ -120,3 +135,42 @@ jobs:
           path: ${{ runner.temp }}/out/${{ steps.version.outputs.file }}
           if-no-files-found: error
           retention-days: 14
+
+      # gplay is pinned to the release the repo's scripts were written against; its installer checks the
+      # release's SHA-256 before installing.
+      - name: Install gplay
+        if: inputs.submit_to_internal
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/gplay-install.sh" \
+            https://raw.githubusercontent.com/tamtom/play-console-cli/v1.0.2/install.sh
+          GPLAY_VERSION=v1.0.2 bash "$RUNNER_TEMP/gplay-install.sh"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Sign in to Google Play
+        if: inputs.submit_to_internal
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$PLAY_SERVICE_ACCOUNT_JSON" ]; then
+            echo "::error::Submitting needs the repository secret PLAY_SERVICE_ACCOUNT_JSON (the Play service account key, whole JSON)."
+            exit 1
+          fi
+          umask 077
+          mkdir -p "$HOME/keys"
+          printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > "$HOME/keys/musclog-play-service-account.json"
+          export PATH="$HOME/.local/bin:$PATH"
+          gplay auth login --service-account "$HOME/keys/musclog-play-service-account.json" \
+            --profile musclog --set-default=false >/dev/null
+
+      - name: Submit to Play internal testing
+        if: inputs.submit_to_internal
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          scripts/release-android.sh upload \
+            --track internal \
+            --skip-build \
+            --file "$RUNNER_TEMP/out/${{ steps.version.outputs.file }}"
+
+      - name: Remove the Play key
+        if: always() && inputs.submit_to_internal
+        run: rm -rf "$HOME/keys/musclog-play-service-account.json" "$HOME/.gplay"

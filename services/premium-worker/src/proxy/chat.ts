@@ -25,33 +25,24 @@ import {
 import { enforceRateLimit } from '../limiter';
 import { lineagePrefix, type LogEvent } from '../log';
 import { renewedLivePeriod } from '../billing/periods';
-import { activeUpstream } from '../upstream/select';
+import { costToMicro, selectGateway, type Gateway } from '../upstream/select';
 import type { UpstreamName } from '../upstream/types';
 import { allowlistRequest } from './allowlist';
-import { reservationBound } from './bound';
-import {
-  openRouterUsage,
-  otariUsage,
-  parseJsonUsage,
-  parseTail,
-  TailBuffer,
-  type UsageReader,
-} from './sse';
-import {
-  assertOtariPinned,
-  buildOpenRouterBody,
-  buildOtariBody,
-  selectorProvider,
-} from './upstreamBody';
+import { parseJsonUsage, parseTail, TailBuffer } from './sse';
 
 /** Patchable by tests so none of them waits 30 s. */
 export const TIMEOUTS = { overallMs: 55_000, streamIdleMs: 30_000 };
 
 const KEY_RE = /^[A-Za-z0-9_-]{8,128}$/;
-const GENERATION_TRIES = 3;
+/** The Iron consent version Otari needs; a newer app sends a higher one, which is fine. */
+const MIN_CONSENT_VERSION = 4;
 
-/** USD -> whole micro-USD, rounded up. The 1e9 detour removes float noise (0.00123 * 1e6). */
-export const costToMicro = (usd: number): number => Math.ceil(Math.round(usd * 1e9) / 1e3);
+function hasRequiredConsent(request: Request): boolean {
+  const header = request.headers.get('x-musclog-consent-version') ?? '';
+
+  // A canonical integer only ("04", "4.0" and " 4" are not what the app sends).
+  return /^[1-9]\d*$/.test(header) && Number(header) >= MIN_CONSENT_VERSION;
+}
 
 /** Percentage of the cap left after this request's reservation `r`, 0..100. */
 const budgetPct = (p: PeriodRow, r: number, now: number): number => {
@@ -114,14 +105,14 @@ async function run(request: Request, ctx: Ctx, rl: RequestLog, emit: EmitLog): P
     throw new ApiError(400, 'invalid_request', { path: 'body' });
   }
   const req = allowlistRequest(parsed, config);
-  // The gateway is chosen once per request; the body, the bound, the call and the settlement follow it.
-  const upstream = await activeUpstream(ctx);
-  const r = reservationBound(req, config, upstream);
-  rl.upstream = upstream;
-
-  // 5. The caller's live period, diagnosing why there is none.
+  // 5. The caller's live period, diagnosing why there is none, then the gateway and its consent.
   const period = await requirePeriod(ctx, claims.rc, now);
   rl.lineage = lineagePrefix(period.lineage_key);
+  const gateway = await selectGateway(ctx);
+  rl.upstream = gateway.name;
+  if (gateway.requiresConsent && !hasRequiredConsent(request))
+    throw new ApiError(403, 'consent_required');
+  const r = gateway.reservationBound(req);
   const budgetHeader = { 'x-musclog-budget-remaining-pct': String(budgetPct(period, r, now)) };
   const fail = (
     status: number,
@@ -137,14 +128,7 @@ async function run(request: Request, ctx: Ctx, rl: RequestLog, emit: EmitLog): P
   // (plus `user`), so flipping the toggle between a request and its retry is not a mismatch.
   const user = period.lineage_key.slice(0, 16);
   const bh = await sha256HexOfText(JSON.stringify({ ...req.neutral, user }));
-  let upstreamBody: Record<string, unknown>;
-  if (upstream === 'otari') {
-    const otari = config.otari!; // activeUpstream returns 'otari' only with the block present
-    upstreamBody = buildOtariBody(req.neutral, otari, req.feature, env.WORKER_ENV);
-    assertOtariPinned(upstreamBody, otari);
-  } else {
-    upstreamBody = buildOpenRouterBody(req.neutral, config); // asserts the privacy invariant
-  }
+  const upstreamBody = gateway.buildBody(req);
   rl.model = String(upstreamBody.model);
   const bodyText = JSON.stringify({ ...upstreamBody, user });
 
@@ -178,13 +162,11 @@ async function run(request: Request, ctx: Ctx, rl: RequestLog, emit: EmitLog): P
   const relay: Relay = {
     ctx,
     r,
-    upstream,
-    readUsage: upstream === 'otari' ? otariUsage : openRouterUsage,
+    gateway,
     unexpectedProvider: false,
     emit,
     budgetHeader,
     settle: (final, a) => settleCharge(ctx, { pk, id: idemKey, final, a }, r, emit),
-    lookupCost: (id) => lookupGenerationCost(ctx, id),
   };
   const ac = new AbortController();
   let timedOut = false;
@@ -198,10 +180,7 @@ async function run(request: Request, ctx: Ctx, rl: RequestLog, emit: EmitLog): P
 
   let res: Response;
   try {
-    res =
-      upstream === 'otari'
-        ? await deps.otari!.chatCompletions(bodyText, { signal: ac.signal })
-        : await deps.openrouter.chatCompletions(bodyText, { signal: ac.signal });
+    res = await gateway.chatCompletions(bodyText, { signal: ac.signal });
   } catch {
     clearTimeout(timer);
     // Unknown outcome: charged at the reservation.
@@ -213,21 +192,14 @@ async function run(request: Request, ctx: Ctx, rl: RequestLog, emit: EmitLog): P
     return refuseUpstream(relay, db, res);
   }
 
-  if (upstream === 'otari') {
-    // The selector pins one provider and never falls back; this checks Otari kept to it. The response
-    // is relayed and settled either way, then the breaker opens (relayed answers cannot be recalled).
-    const served = res.headers.get('otari-provider');
-    const pinned = selectorProvider(upstreamBody.model);
-    relay.unexpectedProvider =
-      (served !== null && served.toLowerCase() !== pinned) ||
-      res.headers.get('otari-fallback')?.toLowerCase() === 'true';
-    // No header means the provider could not be checked. The pinned selector still never falls back,
-    // so this is not a breach, but it must be visible: the check above silently stops working.
-    if (served === null)
-      emit({ status: res.status, code: 'otari_provider_unverified', severity: 'error' });
+  const check = gateway.verifyResponse(res, upstreamBody);
+  relay.unexpectedProvider = check.unexpectedProvider;
+  // No verification header means the provider could not be checked. The pinned selector still never
+  // falls back, so this is not a breach, but it must be visible: the check above silently stops working.
+  if (check.unverifiedCode) {
+    emit({ status: res.status, code: check.unverifiedCode, severity: 'error' });
   }
-  // OpenRouter's generation lookup has no Otari counterpart: its cost is in the usage object or unknown.
-  const genHeader = upstream === 'otari' ? null : res.headers.get('x-generation-id');
+  const genHeader = gateway.generationHeader(res);
   if (!req.stream) {
     return relayJson(relay, res, genHeader, timer, () => timedOut);
   }
@@ -296,15 +268,12 @@ interface Relay {
   ctx: Ctx;
   /** The reservation bound, in micro-USD: charged when the real cost is unknown. */
   r: number;
-  upstream: UpstreamName;
-  /** Reads the gateway's `usage` object (cost shape differs per gateway). */
-  readUsage: UsageReader;
+  gateway: Gateway;
   /** Otari answered from another provider than the pinned one, or fell back: open the breaker once settled. */
   unexpectedProvider: boolean;
   emit: EmitLog;
   budgetHeader: Record<string, string>;
   settle(final: 'settled' | 'refunded', a: number): Promise<{ overrun: boolean }>;
-  lookupCost(id: string | null): Promise<number | null>;
 }
 
 async function settleCharge(
@@ -329,19 +298,14 @@ async function settleCharge(
   }
 }
 
-/** The generation's real cost from OpenRouter (retried with backoff), or null. */
-async function lookupGenerationCost(ctx: Ctx, id: string | null): Promise<number | null> {
-  if (!id) return null;
-  for (let i = 0; i < GENERATION_TRIES; i++) {
-    try {
-      const g = await ctx.deps.openrouter.getGeneration(id);
-      if (g && Number.isFinite(g.total_cost) && g.total_cost >= 0) return costToMicro(g.total_cost);
-    } catch {
-      /* retry */
-    }
-    if (i < GENERATION_TRIES - 1) await ctx.deps.sleep(1000 * 2 ** i);
+async function maybeOpenUnexpectedProvider(relay: Relay): Promise<void> {
+  if (!relay.unexpectedProvider) return;
+  try {
+    await openBreaker(relay.ctx.env.DB, 'upstream_unexpected_provider');
+  } catch {
+    /* logged below */
   }
-  return null;
+  relay.emit({ status: 503, code: 'upstream_unexpected_provider', severity: 'high' });
 }
 
 /** Settles at the measured cost (the reservation when none is known) and logs the result. */
@@ -353,21 +317,14 @@ async function settleAndLog(
   let a: number | null = cost.costUsd !== null ? costToMicro(cost.costUsd) : null;
   if (a === null) {
     for (const id of cost.generationIds) {
-      a = await relay.lookupCost(id);
+      a = await relay.gateway.lookupCost(id);
       if (a !== null) break;
     }
   }
   const charged = a ?? relay.r;
   const s = await relay.settle('settled', charged);
   relay.emit({ ...log, cost_u: charged, overrun: s.overrun });
-  if (relay.unexpectedProvider) {
-    try {
-      await openBreaker(relay.ctx.env.DB, 'upstream_unexpected_provider');
-    } catch {
-      /* logged below */
-    }
-    relay.emit({ status: 503, code: 'upstream_unexpected_provider', severity: 'high' });
-  }
+  await maybeOpenUnexpectedProvider(relay);
 }
 
 const tokensOf = (u: { promptTokens: number | null; completionTokens: number | null }) =>
@@ -394,6 +351,7 @@ function endWithError(
     relay
       .settle(final, charge)
       .then((s) => relay.emit({ status, code, cost_u: charge, overrun: s.overrun, severity }))
+      .then(() => maybeOpenUnexpectedProvider(relay))
   );
   return errorResponse(status, code, {}, relay.budgetHeader);
 }
@@ -456,13 +414,13 @@ async function relayJson(
     return errorResponse(status, code, {}, relay.budgetHeader);
   }
   clearTimeout(timer);
-  const usage = parseJsonUsage(text, relay.readUsage);
+  const usage = parseJsonUsage(text, relay.gateway.readUsage);
   relay.ctx.exec.waitUntil(
     settleAndLog(
       relay,
       {
         costUsd: usage.costUsd,
-        generationIds: relay.upstream === 'otari' ? [] : [genHeader ?? usage.id],
+        generationIds: [genHeader ?? usage.id],
       },
       { status: 200, tokens: tokensOf(usage) }
     )
@@ -542,12 +500,12 @@ function relayStream(
       await reader.cancel().catch(() => {});
       await writer.abort(new Error('upstream_stream_failed')).catch(() => {});
     }
-    const t = parseTail(tail.text(), relay.readUsage);
+    const t = parseTail(tail.text(), relay.gateway.readUsage);
     await settleAndLog(
       relay,
       {
         costUsd: t.costUsd,
-        generationIds: relay.upstream === 'otari' ? [] : [genHeader ?? tail.generationId()],
+        generationIds: [genHeader ?? tail.generationId()],
       },
       {
         status: 200,

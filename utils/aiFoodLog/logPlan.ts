@@ -1,4 +1,4 @@
-import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
+import { storedMealCarbs } from '@/utils/carbsConvention';
 
 import { type FoodLogFood, MEAL_NAME_MAX } from './contract';
 
@@ -80,18 +80,6 @@ export function partitionResolved(ingredients: readonly FoodLogIngredient[]): {
 }
 
 /**
- * The carbs the diary will show for a food, which is the canonical total (fiber included). An
- * assistant's own numbers carry NET carbs and become that total exactly as `NutritionService`
- * stores them (`FOOD_SOURCE_CARBS_CONVENTION.ai`); a matched foundation food already holds the
- * total, so its fiber must not be added again.
- */
-export function storedCarbs(ingredient: FoodLogIngredient): number {
-  return ingredient.foodId
-    ? ingredient.carbs
-    : totalCarbsForFoodSource('ai', { carbs: ingredient.carbs, fiber: ingredient.fiber });
-}
-
-/**
  * What the review totals: energy and macros as they will appear in the diary once logged, so the
  * figures the person checks are the figures they get.
  */
@@ -100,7 +88,7 @@ export function sumIngredients(ingredients: readonly FoodLogIngredient[]): FoodL
     (totals, ingredient) => ({
       kcal: totals.kcal + ingredient.kcal,
       protein: totals.protein + ingredient.protein,
-      carbs: totals.carbs + storedCarbs(ingredient),
+      carbs: totals.carbs + storedMealCarbs(ingredient),
       fat: totals.fat + ingredient.fat,
       fiber: totals.fiber + ingredient.fiber,
     }),

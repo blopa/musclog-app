@@ -31,7 +31,18 @@ export function absoluteUrl(path: string): string {
     : `${SITE_ORIGIN}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export const SEO_IMAGE_URL = absoluteUrl('/images/seo-image.png');
+/** The link-preview image's size; `scripts/generate-seo-images.js` draws it at exactly this size. */
+export const SEO_IMAGE_WIDTH = 1200;
+export const SEO_IMAGE_HEIGHT = 630;
+
+/**
+ * The link-preview image of a locale (by URL prefix), drawn at build time by
+ * `scripts/generate-seo-images.js` into `public/images/seo/` and never committed.
+ */
+export function seoImageUrl(prefix: string): string {
+  return absoluteUrl(`/images/seo/${prefix}.jpg`);
+}
+
 const translations = {
   'en-us': en.website,
   'es-es': es.website,
@@ -74,6 +85,8 @@ export function metadataForPage(page: PageSeo, language = 'en-us'): Metadata {
   const locale = localeByPrefix(prefix).ogLocale;
   const canonicalUrl = absoluteUrl(localizedPath(page.canonicalPath, prefix));
   const alternates = hreflangAlternatePaths(page.canonicalPath);
+  // The picture follows the language the page is published in, like its canonical.
+  const imageUrl = seoImageUrl(prefix);
   return {
     title: page.title,
     description: page.description,
@@ -100,11 +113,11 @@ export function metadataForPage(page: PageSeo, language = 'en-us'): Metadata {
       url: canonicalUrl,
       images: [
         {
-          url: SEO_IMAGE_URL,
-          secureUrl: SEO_IMAGE_URL,
-          type: 'image/png',
-          width: 1224,
-          height: 741,
+          url: imageUrl,
+          secureUrl: imageUrl,
+          type: 'image/jpeg',
+          width: SEO_IMAGE_WIDTH,
+          height: SEO_IMAGE_HEIGHT,
           alt: copy.imageAlt,
         },
       ],
@@ -116,7 +129,7 @@ export function metadataForPage(page: PageSeo, language = 'en-us'): Metadata {
       card: 'summary_large_image',
       title: page.title,
       description: page.description,
-      images: [{ url: SEO_IMAGE_URL, alt: copy.imageAlt }],
+      images: [{ url: imageUrl, alt: copy.imageAlt }],
     },
   };
 }

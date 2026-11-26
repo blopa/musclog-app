@@ -26,17 +26,16 @@ import ChatMessage, {
   isTrackMealPayload,
   isWorkoutCompletedPayload,
   isWorkoutPlanPayload,
-  type MealPlanPayload,
   type TrackMealPayload,
-  type WorkoutPlanPayload,
 } from '@/database/models/ChatMessage';
 import { ChatService } from '@/database/services/ChatService';
-import { NutritionGoalService } from '@/database/services/NutritionGoalService';
-import { NutritionService } from '@/database/services/NutritionService';
-import { NutritionTargetService } from '@/database/services/NutritionTargetService';
-import { SettingsService } from '@/database/services/SettingsService';
-import { UserMetricService } from '@/database/services/UserMetricService';
-import { UserService } from '@/database/services/UserService';
+import {
+  type IntentionFailure,
+  type IntentionRun,
+  runMealPlanIntention,
+  runTrackMealIntention,
+  runWorkoutPlanIntention,
+} from '@/hooks/chatIntentionRunners';
 import { useCoachReply } from '@/hooks/useCoachReply';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
@@ -51,6 +50,7 @@ import {
   persistCoachReply,
   startCoachReply,
 } from '@/services/coachReplyStream';
+import { logTrackedMeal } from '@/services/trackedMealLogging';
 import { describeAiError } from '@/utils/aiErrors';
 import {
   formatLocalCalendarDayIso,
@@ -60,24 +60,15 @@ import {
 import {
   AiCreditsError,
   type ChatHistoryEntry,
-  type CoachResponse,
-  generateMealPlan,
-  generateWorkoutPlan,
   isAiCreditsError,
-  trackMeal,
+  reportAiError,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
 import { HISTORY_WINDOW_TURNS, historyText } from '@/utils/coachHistory';
-import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
-import {
-  type MealEstimateProgressLine,
-  mealEstimateProgressLine,
-} from '@/utils/mealEstimateProgress';
-import { processMealPlanResponse } from '@/utils/nutritionAI';
-import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
-import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
+import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
+import { providerPolicyFor } from '@/utils/providerPolicy';
+import { buildWorkoutCompletedSummaryForLLM } from '@/utils/workoutAI';
 
 export interface ExtendedIMessage extends IMessage {
   showSettingsButton?: boolean;
@@ -125,6 +116,13 @@ export interface ExtendedIMessage extends IMessage {
     }[];
   };
 }
+
+/** The intention each one-go failure belongs to, to ask whether this AI could ever do it. */
+const INTENTION_OF_FAILURE: Record<IntentionFailure, ChatIntention> = {
+  mealPlan: GENERATE_MEAL_PLAN,
+  workoutPlan: GENERATE_MY_WORKOUTS,
+  trackMeal: TRACK_MEAL,
+};
 
 const INITIAL_LIMIT = 10;
 const BATCH_SIZE = 10;
@@ -220,6 +218,8 @@ export type UseChatMessagesResult = {
    * until the first words arrive, and again once the finished reply is among `messages`.
    */
   streamingMessage: ExtendedIMessage | null;
+  /** `reviewing` while a reply that is double-checked before it is shown has no text yet. */
+  replyPhase: 'reviewing' | null;
   pendingIntention: ChatIntention | null;
   isLoading: boolean;
   isLoadingMore: boolean;
@@ -544,6 +544,50 @@ export function useChatMessages(
     [conversationContext, pendingIntention]
   );
 
+  /** Takes a message the person sent back out of the conversation, as if it had not been sent. */
+  const discardUserMessage = useCallback(async (record: ChatMessage | null) => {
+    if (!record) {
+      return;
+    }
+
+    const recordId = record.id;
+    await ChatService.deleteMessage(recordId).catch(() => {});
+    rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
+    setMessages((prev) => prev.filter((m) => m._id !== recordId));
+  }, []);
+
+  /**
+   * Gives up on a send: the message goes back out of the conversation, its text back to the
+   * composer so the person can retry, and `message` says why.
+   */
+  const abandonSend = useCallback(
+    async (record: ChatMessage | null, text: string, message: string) => {
+      await discardUserMessage(record);
+      setFailedMessageText(text.trim());
+      setEphemeralErrorMessage(message);
+    },
+    [discardUserMessage]
+  );
+
+  /** Why a one-go intention produced nothing: the person's AI cannot do it, or the model failed. */
+  const failureMessage = useCallback(
+    (failure: IntentionFailure, provider: string): string => {
+      if (intentionNeedsCloudAi(INTENTION_OF_FAILURE[failure], provider)) {
+        return t('coach.errors.featureRequiresCloudAi');
+      }
+
+      switch (failure) {
+        case 'mealPlan':
+          return t('coach.errors.mealPlanGenerationFailed');
+        case 'workoutPlan':
+          return t('coach.errors.workoutGenerationFailed');
+        case 'trackMeal':
+          return t('coach.errors.trackMealFailed');
+      }
+    },
+    [t]
+  );
+
   const sendMessage = useCallback(
     async (text: string, base64Image?: string) => {
       if ((!text.trim() && !base64Image) || isSending) {
@@ -574,7 +618,10 @@ export function useChatMessages(
       clearFailedMessageText(); // Clear input immediately when user sends; if request fails we set it again
       setIsSending(true);
       let userRecord: ChatMessage | null = null;
-      const draftCleanup = { run: () => {} };
+      // Track Meal with a photo shows an in-memory draft bubble until the estimate succeeds;
+      // `finally` discards it exactly once unless the send completed.
+      let draftId: string | null = null;
+      let completed = false;
       try {
         // 1. Check for pending chat intention (e.g., GENERATE_MY_WORKOUTS)
         const pendingIntention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
@@ -593,19 +640,12 @@ export function useChatMessages(
         // The row is not saved yet, but the bubble is shown at once, in memory only. A failure
         // removes it and hands the photo back to the composer; a success replaces it with the
         // saved row.
-        const draftId = deferredTrackMealMessage ? `draft-${randomUUID()}` : null;
-        const discardDraft = () => {
-          if (draftId) {
-            setMessages((prev) => prev.filter((m) => m._id !== draftId));
-            setFailedMessageImage(base64Image ?? null);
-          }
-        };
-
-        draftCleanup.run = discardDraft;
-        if (draftId && base64Image) {
+        draftId = deferredTrackMealMessage ? `draft-${randomUUID()}` : null;
+        const shownDraftId = draftId;
+        if (shownDraftId && base64Image) {
           setMessages((prev) => [
             {
-              _id: draftId,
+              _id: shownDraftId,
               text: text.trim() || t('coach.imageSent'),
               createdAt: new Date(),
               user: { _id: 1 },
@@ -631,7 +671,7 @@ export function useChatMessages(
           rawMessagesRef.current = [...rawMessagesRef.current, savedRecord];
           setMessages((prev) => [
             toGiftedMessage(savedRecord),
-            ...prev.filter((m) => m._id !== draftId),
+            ...prev.filter((m) => m._id !== shownDraftId),
           ]);
           setCurrentOffset((prev) => prev + 1);
 
@@ -647,16 +687,7 @@ export function useChatMessages(
 
         if (!aiConfig) {
           console.warn('[useChatMessages] No AI provider configured');
-          if (userRecord) {
-            const recordId = userRecord.id;
-            await ChatService.deleteMessage(recordId);
-            rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
-            setMessages((prev) => prev.filter((m) => m._id !== recordId));
-          }
-
-          discardDraft();
-          setFailedMessageText(text.trim());
-          setEphemeralErrorMessage(t('coach.errors.aiNotConfigured'));
+          await abandonSend(userRecord, text, t('coach.errors.aiNotConfigured'));
           return;
         }
 
@@ -686,16 +717,16 @@ export function useChatMessages(
 
         // A finished-workout card is shown as Loggy in the UI but sent as a user message. Only the
         // newest one is expanded into the full session (it is a lot of tokens, and the older ones
-        // are in the prompt's own workout history); the others are a single line.
-        const newestWorkoutCardIndex = historyWithoutCurrentMessage.reduce(
-          (found, record, index) => {
-            const payload = parsePayload(record);
-            return payload && isWorkoutCompletedPayload(payload) && payload.workoutLogId
-              ? index
-              : found;
-          },
-          -1
-        );
+        // are in the prompt's own workout history); the others are a single line. A small model
+        // gets every card as a single line (`compactWorkoutCards`).
+        const newestWorkoutCardIndex = providerPolicyFor(aiConfig).compactWorkoutCards
+          ? -1
+          : historyWithoutCurrentMessage.reduce((found, record, index) => {
+              const payload = parsePayload(record);
+              return payload && isWorkoutCompletedPayload(payload) && payload.workoutLogId
+                ? index
+                : found;
+            }, -1);
 
         const buildHistoryEntry = async (
           record: ChatMessage,
@@ -742,165 +773,26 @@ export function useChatMessages(
         );
 
         // 5. Route based on pending intention or default to chat
-        let reply: CoachResponse | null = null;
-        let payloadJson: string | undefined = undefined;
+        // The last 6 entries and the message just sent, so the model sees the recent back-and-forth.
+        const recentConversation = [
+          ...historyEntries.slice(-6),
+          { role: 'user' as const, content: text.trim() },
+        ];
+        let run: IntentionRun;
 
         if (pendingIntention === GENERATE_MEAL_PLAN) {
-          // Pass last 6 conversation entries + current message so the model has context
-          const recentConversation = [
-            ...historyEntries.slice(-6),
-            { role: 'user' as const, content: text.trim() },
-          ];
-
-          // Fetch nutrition goal or calculate one
-          let macroTargets;
-          const currentGoal = await NutritionGoalService.getCurrent();
-          if (currentGoal) {
-            const resolved = await NutritionTargetService.resolve(currentGoal, new Date());
-
-            macroTargets = {
-              calories: resolved?.totalCalories ?? currentGoal.totalCalories,
-              protein: resolved?.protein ?? currentGoal.protein,
-              carbs: resolved?.carbs ?? currentGoal.carbs,
-              fat: resolved?.fats ?? currentGoal.fats,
-              fiber: resolved?.fiber ?? currentGoal.fiber,
-            };
-          } else {
-            // Calculate one on the spot
-            const user = await UserService.getCurrentUser();
-            const [latestWeight, latestHeight] = await Promise.all([
-              UserMetricService.getLatest('weight'),
-              UserMetricService.getLatest('height'),
-            ]);
-            if (user && latestWeight) {
-              const disableMinimumCalories = await SettingsService.getDisableMinimumCalories();
-              const { value: weightKg } = await latestWeight.getDecrypted();
-              let heightCm = 170;
-              if (latestHeight) {
-                const heightData = await latestHeight.getDecrypted();
-                heightCm = heightData.value;
-              }
-
-              const plan = calculateNutritionPlan({
-                gender: user.gender,
-                weightKg,
-                heightCm,
-                age: user.getAge(),
-                activityLevel: (user.activityLevel as any) || 2,
-                weightGoal: user.weightGoal || eatingPhaseToWeightGoal(user.fitnessGoal as any),
-                fitnessGoal: user.fitnessGoal,
-                liftingExperience: user.liftingExperience,
-                disableMinimumCalories,
-              });
-              macroTargets = {
-                calories: plan.targetCalories,
-                protein: plan.protein,
-                carbs: plan.carbs,
-                fat: plan.fats,
-                fiber: Math.round((plan.targetCalories / 1000) * 14),
-              };
-            }
-          }
-
-          const mealPlan = await generateMealPlan(
-            aiConfig,
-            recentConversation,
-            macroTargets,
-            conversationContext
-          );
-
-          if (mealPlan) {
-            const processResult = await processMealPlanResponse(mealPlan);
-
-            reply = {
-              msg4User: t('coach.success.mealPlanGenerated', {
-                count: processResult.mealIds.length,
-                description: processResult.description,
-              }),
-              sumMsg: 'Generated meal plan',
-            };
-
-            const mealPlanPayload: MealPlanPayload = {
-              type: 'mealPlan',
-              mealIds: processResult.mealIds,
-              count: processResult.mealIds.length,
-              meals: processResult.meals,
-            };
-            payloadJson = JSON.stringify(mealPlanPayload);
-
-            await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-            setPendingIntention(null);
-          } else {
-            if (userRecord) {
-              const recordId = userRecord.id;
-              await ChatService.deleteMessage(recordId);
-              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
-              setMessages((prev) => prev.filter((m) => m._id !== recordId));
-            }
-
-            setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(
-              intentionNeedsCloudAi(GENERATE_MEAL_PLAN, aiConfig.provider)
-                ? t('coach.errors.featureRequiresCloudAi')
-                : t('coach.errors.mealPlanGenerationFailed')
-            );
-            return;
-          }
+          run = await runMealPlanIntention(aiConfig, recentConversation, conversationContext, t);
         } else if (pendingIntention === GENERATE_MY_WORKOUTS) {
-          // Pass last 6 conversation entries + current message so the model has context and sees recent back-and-forth (same idea as Analyze Progress / Nutrition Check)
-          const recentConversation = [
-            ...historyEntries.slice(-6),
-            { role: 'user' as const, content: text.trim() },
-          ];
-
-          const workoutPlan = await generateWorkoutPlan(
+          run = await runWorkoutPlanIntention(aiConfig, recentConversation, conversationContext, t);
+        } else if (pendingIntention === TRACK_MEAL) {
+          run = await runTrackMealIntention(
             aiConfig,
-            recentConversation,
-            conversationContext
+            text.trim(),
+            base64Image,
+            setTrackMealProgress,
+            formatEnergyWithUnit,
+            t
           );
-
-          if (workoutPlan) {
-            // Process the workout plan and create templates in database
-            const processResult = await processWorkoutPlanResponse(workoutPlan);
-
-            reply = {
-              msg4User: t('coach.success.workoutPlanGeneratedWithName', {
-                count: processResult.templateIds.length,
-                description: processResult.description,
-                planName: processResult.planName,
-              }),
-              sumMsg: 'Generated workout plan',
-            };
-
-            // Store workout plan metadata in payload_json for UI rendering
-            const workoutPlanPayload: WorkoutPlanPayload = {
-              type: 'workoutPlan',
-              templateIds: processResult.templateIds,
-              count: processResult.templateIds.length,
-              planId: processResult.planId ?? undefined,
-              planName: processResult.planName,
-            };
-            payloadJson = JSON.stringify(workoutPlanPayload);
-
-            await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
-            setPendingIntention(null);
-          } else {
-            // Revert user message and restore text to input so user can retry
-            if (userRecord) {
-              const recordId = userRecord.id;
-              await ChatService.deleteMessage(recordId);
-              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
-              setMessages((prev) => prev.filter((m) => m._id !== recordId));
-            }
-
-            setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(
-              intentionNeedsCloudAi(GENERATE_MY_WORKOUTS, aiConfig.provider)
-                ? t('coach.errors.featureRequiresCloudAi')
-                : t('coach.errors.workoutGenerationFailed')
-            );
-            return;
-          }
         } else if (pendingIntention === ANALYZE_PROGRESS || pendingIntention === NUTRITION_CHECK) {
           if (!userRecord) {
             throw new Error('The message was not saved');
@@ -922,71 +814,6 @@ export function useChatMessages(
             recentConversation: historyEntries.slice(-3),
           });
           return;
-        } else if (pendingIntention === TRACK_MEAL) {
-          const result = await trackMeal(aiConfig, text.trim(), base64Image, (progress) =>
-            setTrackMealProgress(mealEstimateProgressLine(progress))
-          );
-          if (!result || result.meals.length === 0) {
-            if (userRecord) {
-              const recordId = userRecord.id;
-              await ChatService.deleteMessage(recordId);
-              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
-              setMessages((prev) => prev.filter((m) => m._id !== recordId));
-            }
-
-            discardDraft();
-            setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(
-              intentionNeedsCloudAi(TRACK_MEAL, aiConfig.provider)
-                ? t('coach.errors.featureRequiresCloudAi')
-                : t('coach.errors.trackMealFailed')
-            );
-
-            return;
-          }
-
-          // Normalize ingredients: replace LLM-estimated macros with actual DB
-          // values for any ingredient that was matched to a local food (foodId).
-          // This keeps the chat preview consistent with what will actually be logged.
-          const normalizedMeals = await Promise.all(
-            result.meals.map(async (m) => ({
-              ...m,
-              ingredients: await NutritionService.normalizeAiMealIngredients(m.ingredients),
-            }))
-          );
-
-          const totalCalories = Math.round(
-            normalizedMeals.flatMap((m) => m.ingredients).reduce((acc, i) => acc + i.kcal, 0)
-          );
-          const mealNames = normalizedMeals.map((m) => m.mealType).join(', ');
-
-          reply = {
-            msg4User: t('coach.success.trackMealReady', {
-              count: normalizedMeals.length,
-              meals: mealNames,
-              calories: formatEnergyWithUnit(totalCalories),
-            }),
-            sumMsg: `Analyzed ${normalizedMeals.length} meal(s) (${totalCalories} kcal total)`,
-          };
-
-          let mealImageUri: string | undefined;
-          if (base64Image) {
-            mealImageUri = await saveBase64ImageToFile(base64Image).catch(() => undefined);
-          }
-
-          const trackMealPayload: TrackMealPayload = {
-            type: 'trackMeal',
-            meals: normalizedMeals.map((m) => ({ ...m, was_tracked: false })),
-            ...(mealImageUri ? { mealImageUri } : {}),
-          };
-          payloadJson = JSON.stringify(trackMealPayload);
-
-          if (deferredTrackMealMessage) {
-            userRecord = await saveUserMessage();
-          } else {
-            await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-            setPendingIntention(null);
-          }
         } else {
           // Default: a regular chat message, written (and saved) by the reply service
           if (!userRecord) {
@@ -1004,55 +831,72 @@ export function useChatMessages(
           return;
         }
 
-        if (!reply) {
-          throw new Error('No response from AI');
+        if (!run.ok) {
+          await abandonSend(userRecord, text, failureMessage(run.failure, aiConfig.provider));
+          return;
         }
+
+        // A Track Meal photo's own message is saved only now that the estimate worked.
+        userRecord ??= await saveUserMessage();
 
         // 6. Persist the coach reply (the streamed replies are saved by the reply service)
         const coachRecord = await persistCoachReply({
           context: conversationContext,
-          reply,
+          reply: run.reply,
           userRecord,
-          payloadJson,
+          payloadJson: run.payloadJson,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
         setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
         setCurrentOffset((prev) => prev + 1);
-        if (deferredTrackMealMessage) {
-          await AsyncStorage.removeItem(CHAT_INTENTION_KEY).catch((error) => {
-            handleError(error, 'useChatMessages.clearTrackMealIntention');
-          });
-          setPendingIntention(null);
-        }
+
+        // The intention is used up once its answer is saved, so a send that fails earlier leaves it
+        // armed for the retry.
+        await AsyncStorage.removeItem(CHAT_INTENTION_KEY).catch((error) => {
+          handleError(error, 'useChatMessages.clearIntention');
+        });
+        setPendingIntention(null);
+
+        completed = true;
       } catch (error) {
         console.error('[useChatMessages] sendMessage error:', error);
-        draftCleanup.run();
-        if (userRecord) {
-          // Revert user message and restore text to input so user can retry
-          const recordId = userRecord.id;
-          await ChatService.deleteMessage(recordId).catch(() => {});
-          rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
-          setMessages((prev) => prev.filter((m) => m._id !== recordId));
-        }
-
-        setFailedMessageText(text.trim());
+        // Typed, user-fixable failures (a rejected key, a spent allowance) are filtered out here.
+        reportAiError(error, 'useChatMessages.sendMessage');
         // A rejected key or a timeout is something the user can act on, so say which. This also
         // covers Track Meal, whose user row is deliberately not saved until analysis succeeds.
         const actionable = describeAiError(error, t);
-        if (error instanceof AiCreditsError || isAiCreditsError(error)) {
+        const creditsExhausted = error instanceof AiCreditsError || isAiCreditsError(error);
+        if (creditsExhausted) {
           setEphemeralCreditsError(true);
-          setEphemeralErrorMessage(t('coach.errors.creditsExhausted'));
-        } else if (actionable) {
-          setEphemeralErrorMessage(actionable);
-        } else {
-          setEphemeralErrorMessage(t('coach.errors.generalError'));
         }
+
+        await abandonSend(
+          userRecord,
+          text,
+          creditsExhausted
+            ? t('coach.errors.creditsExhausted')
+            : (actionable ?? t('coach.errors.generalError'))
+        );
       } finally {
+        if (draftId && !completed) {
+          const failedDraftId = draftId;
+          setMessages((prev) => prev.filter((m) => m._id !== failedDraftId));
+          setFailedMessageImage(base64Image ?? null);
+        }
+
         setIsSending(false);
         setTrackMealProgress(null);
       }
     },
-    [isSending, t, clearFailedMessageText, conversationContext, formatEnergyWithUnit]
+    [
+      isSending,
+      t,
+      clearFailedMessageText,
+      conversationContext,
+      formatEnergyWithUnit,
+      abandonSend,
+      failureMessage,
+    ]
   );
 
   const markMealAsTracked = useCallback(
@@ -1066,26 +910,6 @@ export function useChatMessages(
       mealName?: string,
       consumedTime?: Date
     ) => {
-      const baseTotalGrams = ingredients.reduce((sum, i) => sum + i.grams, 0);
-      const safeBase = baseTotalGrams > 0 ? baseTotalGrams : 1;
-      const scale = portionGrams / safeBase;
-
-      const scaledIngredients = ingredients.map((i) => {
-        const scaledGramsRaw = i.grams * scale;
-        const scaledGrams = scaledGramsRaw > 0 ? roundToDecimalPlaces(scaledGramsRaw, 1) : 1;
-
-        return {
-          name: i.name,
-          calories: i.kcal * scale,
-          protein: i.protein * scale,
-          carbs: i.carbs * scale,
-          fat: i.fat * scale,
-          fiber: (i.fiber ?? 0) * scale,
-          grams: scaledGrams,
-          foodId: i.foodId,
-        };
-      });
-
       let savedImageUri: string | undefined;
       const msgRecord = rawMessagesRef.current.find((r) => r.id === messageId);
       if (msgRecord?.payloadJson) {
@@ -1097,32 +921,15 @@ export function useChatMessages(
         } catch {}
       }
 
-      if (scaledIngredients.length === 1) {
-        const ing = scaledIngredients[0];
-        await NutritionService.logCustomMeal(
-          {
-            name: ing.name,
-            calories: ing.calories,
-            protein: ing.protein,
-            carbs: ing.carbs,
-            fat: ing.fat,
-            fiber: ing.fiber,
-            foodId: ing.foodId,
-            imageUrl: ing.foodId ? undefined : savedImageUri,
-          },
-          date,
-          logMealType,
-          ing.grams,
-          { consumedTime }
-        );
-      } else {
-        await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
-          groupId: randomUUID(),
-          loggedMealName: mealName,
-          imageUrl: savedImageUri,
-          consumedTime,
-        });
-      }
+      await logTrackedMeal({
+        ingredients,
+        date,
+        mealType: logMealType,
+        portionGrams,
+        mealName,
+        imageUrl: savedImageUri,
+        consumedTime,
+      });
 
       triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
       if (msgRecord?.payloadJson) {
@@ -1170,6 +977,8 @@ export function useChatMessages(
     : null;
   // Sending stays off from the moment the message goes out until the reply is saved.
   const isReplyPending = replyHere !== null;
+  // A Tokenmaxxing reply is drafted unseen and then double-checked: said while nothing shows yet.
+  const replyPhase = replyHere && !replyHere.text ? (replyHere.phase ?? null) : null;
 
   const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {
     if (!ephemeralErrorMessage) {
@@ -1189,6 +998,7 @@ export function useChatMessages(
     messages,
     pendingCoachMessage,
     streamingMessage,
+    replyPhase,
     isLoading,
     isLoadingMore,
     isSending: isSending || isReplyPending,

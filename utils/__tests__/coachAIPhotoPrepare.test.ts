@@ -1,4 +1,5 @@
-import { type CoachAIConfig, estimateNutritionFromPhoto } from '../coachAI';
+import { type CoachAIConfig } from '../coachAI';
+import { estimateNutritionFromPhoto } from '../coachMealEstimate';
 
 import { prepareOwnKeyImage } from '@/utils/aiImage';
 import { prepareHostedImage } from '@/utils/hostedImage';
@@ -19,7 +20,7 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: jest.fn(async () => false),
+    get: jest.fn(async () => 'off'),
     getSendFoundationFoodsToLlm: jest.fn(async () => false),
   },
 }));
@@ -90,7 +91,7 @@ describe('photo preparation per provider', () => {
 
     await estimateNutritionFromPhoto(OPENAI, 'AAAA');
 
-    expect(prepareOwnKeyImage).toHaveBeenCalledWith('AAAA', expect.stringMatching(/^image\//));
+    expect(prepareOwnKeyImage).toHaveBeenCalledWith('AAAA', expect.stringMatching(/^image\//), 1);
     expect(prepareHostedImage).not.toHaveBeenCalled();
     expect(bodies).toHaveLength(1);
     expect(bodies[0]).toContain('data:image/jpeg;base64,own-key-prepared');

@@ -56,6 +56,36 @@ describe('premiumFailureReport', () => {
   });
 });
 
+describe('premium flow', () => {
+  it('does not report a restore that found no subscription', () => {
+    expect(
+      premiumFailureReport('enroll', 'subscription_required', { status: 403, flow: 'restore' })
+    ).toBeNull();
+  });
+
+  it('still reports a purchase that ended with no subscription, tagged with its flow', () => {
+    const report = premiumFailureReport('enroll', 'subscription_required', {
+      status: 403,
+      flow: 'purchase',
+    });
+
+    expect(report?.level).toBe('error');
+    expect(report?.tags.premium_flow).toBe('purchase');
+  });
+
+  it('still reports other failures of a restore', () => {
+    expect(
+      premiumFailureReport('enroll', 'entitlement_unavailable', { status: 503, flow: 'restore' })
+    ).not.toBeNull();
+  });
+
+  it('still reports subscription_required from an enroll known to follow a subscription', () => {
+    expect(
+      premiumFailureReport('enroll', 'subscription_required', { status: 403, flow: 'enroll' })
+    ).not.toBeNull();
+  });
+});
+
 describe('price stage network failure', () => {
   it('is not reported', () => {
     expect(premiumFailureReport('price', 'network', { storeErrorCode: '10' })).toBeNull();

@@ -1,9 +1,10 @@
 import { CheckCircle, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { MealContextFields } from '@/components/camera/MealContextFields';
 import { useTheme } from '@/hooks/useTheme';
 
 type AINutritionTrackingContextModalProps = {
@@ -35,14 +36,6 @@ export function AINutritionTrackingContextModal({
   const { t } = useTranslation();
   const [mealDescription, setMealDescription] = useState(initialDescription);
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
-
-  const quickTags = [
-    t('food.aiNutritionContext.quickTagHighProtein'),
-    t('food.aiNutritionContext.quickTagLowCarb'),
-    t('food.aiNutritionContext.quickTagLargeServing'),
-    t('food.aiNutritionContext.quickTagEatingOut'),
-    t('food.aiNutritionContext.quickTagVegan'),
-  ];
 
   const handleToggleTag = (tag: string) => {
     const newTags = selectedTags.includes(tag)
@@ -89,71 +82,20 @@ export function AINutritionTrackingContextModal({
         </View>
       }
     >
-      <View className="pt-2">
-        {/* Describe Your Meal Section */}
-        <View className="mb-6">
-          <Text className="mb-2 ml-1 text-xs font-semibold text-text-secondary">
-            {describeLabel ?? t('food.aiNutritionContext.describeYourMeal')}
-          </Text>
-          <View
-            className="w-full rounded-card border p-4"
-            style={{
-              backgroundColor: theme.colors.background.primary,
-              borderColor: theme.colors.background.ink10,
-            }}
-            collapsable={false}
-          >
-            <RNTextInput
-              className="w-full bg-transparent text-text-primary"
-              style={{
-                minHeight: theme.size['100'],
-                fontSize: theme.typography.fontSize.sm,
-                color: theme.colors.text.primary,
-                textAlignVertical: 'top',
-              }}
-              placeholder={placeholder ?? t('food.aiNutritionContext.placeholder')}
-              placeholderTextColor={theme.colors.background.ink20}
-              value={mealDescription}
-              onChangeText={(text) => {
-                setMealDescription(text);
-                onDraftChange?.({ description: text, tags: selectedTags });
-              }}
-              multiline
-              numberOfLines={4}
-            />
-          </View>
-        </View>
-
-        {/* Quick Tags Section */}
-        <View className="mb-8">
-          <Text className="mb-3 ml-1 text-xs font-semibold text-text-secondary">
-            {t('food.aiNutritionContext.quickTags')}
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {quickTags.map((tag) => {
-              const isSelected = selectedTags.includes(tag);
-              return (
-                <Pressable
-                  key={tag}
-                  onPress={() => handleToggleTag(tag)}
-                  className={`flex-row items-center rounded-full px-4 py-2.5 ${
-                    isSelected ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
-                  }`}
-                  {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
-                >
-                  <Text
-                    className={`text-sm font-medium ${isSelected ? 'font-semibold' : ''}`}
-                    style={{
-                      color: isSelected ? theme.colors.text.onAccent : theme.colors.text.secondary,
-                    }}
-                  >
-                    {tag}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+      <View className="pt-2" style={{ gap: theme.spacing.gap.xl }}>
+        <MealContextFields
+          description={mealDescription}
+          onDescriptionChange={(text) => {
+            setMealDescription(text);
+            onDraftChange?.({ description: text, tags: selectedTags });
+          }}
+          descriptionLabel={describeLabel ?? t('food.aiNutritionContext.describeYourMeal')}
+          descriptionPlaceholder={placeholder ?? t('food.aiNutritionContext.placeholder')}
+          numberOfLines={4}
+          tags={selectedTags}
+          onToggleTag={handleToggleTag}
+          tagsLabel={t('food.aiNutritionContext.quickTags')}
+        />
 
         {/* Action Buttons */}
         <View className="flex-row flex-wrap gap-3">

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
+import { AiGatewayLinks } from '@/components/website/AiGatewayLinks';
 import { localeStaticParams } from '@/components/website/localeStaticParams';
 import { useWebsiteHref } from '@/components/website/useWebsiteHref';
 import {
@@ -102,6 +103,7 @@ export default function Premium() {
             <p className="mb-3 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('privacy.body')}
             </p>
+            <AiGatewayLinks />
             <p className="mb-3 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('privacy.consent')}
             </p>

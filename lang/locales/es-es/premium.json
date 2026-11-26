@@ -23,15 +23,16 @@
     },
     "devices": "Compartido por todos tus dispositivos",
     "useForAi": "Usar Musclog Iron para mi IA",
-    "useForAiHint": "Las solicitudes se envían al servicio Musclog Iron, que las reenvía a OpenRouter.",
+    "useForAiHint": "Las solicitudes se envían al servicio Musclog Iron, que las reenvía a través de un gateway de IA, OpenRouter u Otari.",
     "manage": "Gestionar suscripción",
     "reset": "Restablecer Musclog Iron en este dispositivo",
     "resetTitle": "¿Restablecer Musclog Iron en este dispositivo?",
     "resetBody": "Esto olvida la inscripción de Musclog Iron de este dispositivo y crea una clave nueva. Tu suscripción no se cancela. Restaurar compras vuelve a añadir este dispositivo.",
     "resetConfirm": "Restablecer",
     "consent": {
+      "review": "Revisar el consentimiento actualizado",
       "title": "¿Enviar las solicitudes de IA a Musclog Iron?",
-      "body": "Tus mensajes, las fotos de tus comidas y los datos que una función de IA necesita para responder, como tus entrenamientos, comidas y medidas corporales, se envían al servicio de Musclog Iron. Este los reenvía a OpenRouter, que los envía al proveedor del modelo de IA. Solo se utilizan endpoints de retención cero de datos (ZDR): esos proveedores no guardan tu contenido ni lo usan para entrenar. OpenRouter también somete a control todas las solicitudes para detectar material de abuso sexual infantil y puede conservar una solicitud que marque. Algunos de estos datos están relacionados con la salud, y al aceptar das tu consentimiento explícito para que se procesen de esta manera. El servicio de Musclog nunca almacena tus mensajes; solo guarda un identificador de este dispositivo y los recuentos de uso. Puedes desactivarlo en cualquier momento.",
+      "body": "Tus mensajes, las fotos de tus comidas y los datos que una función de IA necesita para responder, como tus entrenamientos, comidas y medidas corporales, se envían al servicio de Musclog Iron. Este los reenvía a través de un gateway de IA, OpenRouter u Otari (de Mozilla.ai), al proveedor del modelo de IA. Musclog elige qué gateway se usa, y este consentimiento cubre ambos. Solo se utilizan proveedores de retención cero de datos (ZDR): no guardan tu contenido ni lo usan para entrenar. OpenRouter somete a control todas las solicitudes para detectar material de abuso sexual infantil y puede conservar una solicitud que marque; Otari afirma que no almacena el contenido de las solicitudes. Algunos de estos datos están relacionados con la salud, y al aceptar das tu consentimiento explícito para que se procesen de esta manera. El servicio de Musclog nunca almacena tus mensajes; solo guarda un identificador de este dispositivo y los recuentos de uso. Las políticas de privacidad y los términos de OpenRouter y Otari están enlazados al final de la pantalla de Musclog Iron. Puedes desactivarlo en cualquier momento.",
       "confirm": "Usar Musclog Iron",
       "cancel": "Ahora no"
     },
@@ -75,7 +76,7 @@
         },
         "private": {
           "title": "Retención cero de datos",
-          "desc": "Solo se usan proveedores de retención cero de datos: no guardan tus mensajes ni los usan para entrenar, salvo un control contra material de abuso sexual infantil que exige la ley. Musclog tampoco los almacena nunca; solo conserva recuentos de uso y un identificador de dispositivo."
+          "desc": "Solo se usan proveedores de retención cero de datos: no guardan tus mensajes ni los usan para entrenar, salvo el control de OpenRouter contra material de abuso sexual infantil, que exige la ley. Musclog tampoco los almacena nunca; solo conserva recuentos de uso y un identificador de dispositivo."
         },
         "allowance": {
           "title": "Tu propia cuota",

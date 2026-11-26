@@ -7,6 +7,12 @@
       "processingNutrients": "Traitement des nutriments",
       "analyzingImage": "Analyse du code-barres...",
       "processingData": "Traitement des données"
+    },
+    "unavailable": {
+      "title": "Caméra indisponible",
+      "body": "La caméra n'a pas pu démarrer sur ce téléphone.",
+      "bodyWithGallery": "La caméra n'a pas pu démarrer sur ce téléphone. Tu peux quand même choisir une photo dans ta galerie.",
+      "retry": "Réessayer"
     }
   }
 }

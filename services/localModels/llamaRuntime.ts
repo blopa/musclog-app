@@ -3,8 +3,9 @@
  * keeping it from costing the phone more than it must:
  *
  * - Loaded lazily on the first request, never at boot.
- * - The photo projector is attached only for a request that carries a photo and released right
- *   after, so text chat never pays its RAM.
+ * - The photo projector is attached only for a request that carries a photo and kept for
+ *   `LOCAL_PROJECTOR_IDLE_MS` after the last request (a meal reads up to five photos back to back),
+ *   then released, so text chat does not pay its RAM for long.
  * - One request at a time (a second one waits its turn).
  * - Unloaded after `LOCAL_MODEL_IDLE_MS` without a request, when the app goes to the background,
  *   and on an iOS memory warning (the OS kills the app that holds memory it needs).
@@ -14,9 +15,13 @@
  */
 import { AppState, Platform } from 'react-native';
 
+import type { LocalTextSampling } from '@/constants/localModels';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
+import { reportAiEvent } from '@/utils/aiTelemetry';
+import { handleError } from '@/utils/handleError';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { captureException } from '@/utils/sentry';
+import { createSerialQueue } from '@/utils/serialQueue';
 
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
 
@@ -24,6 +29,7 @@ type LlamaModule = typeof import('llama.rn');
 type LlamaContext = import('llama.rn').LlamaContext;
 
 export const LOCAL_MODEL_IDLE_MS = 120_000;
+export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
 
 export type LocalChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
@@ -35,11 +41,6 @@ export type LocalGenerateParams = {
   image?: string;
   maxTokens?: number;
   temperature?: number;
-  /**
-   * Repetition penalties for a free-chat reply (the OpenAI field names, mapped to llama.cpp's). A
-   * small model left alone copies its own earlier replies; structured calls never pass them.
-   */
-  penalties?: { frequency_penalty?: number; presence_penalty?: number };
   signal?: AbortSignal;
   /** Each new piece of text as it is written. */
   onDelta?: (delta: string) => void;
@@ -57,10 +58,16 @@ export type LocalGenerateResult = {
 };
 
 let context: LlamaContext | null = null;
+/** The loaded model's vendor sampling for plain-text replies; set with `context`, cleared with it. */
+let textSampling: LocalTextSampling | null = null;
 let projectorAttached = false;
-let queue: Promise<unknown> = Promise.resolve();
+/** Every model operation (unload, projector release, generation) runs one at a time. */
+const queue = createSerialQueue();
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 let busy = false;
+let projectorTimer: ReturnType<typeof setTimeout> | null = null;
+/** Set when `unloadLocalModel` stopped the running completion: its text is cut short. */
+let stoppedByUnload = false;
 let lifecycleInstalled = false;
 
 function llama(): LlamaModule {
@@ -79,11 +86,45 @@ function clearIdleTimer() {
   }
 }
 
-/** Frees the model and everything attached to it. Safe to call when nothing is loaded. */
-export async function unloadLocalModel(): Promise<void> {
+function clearProjectorTimer() {
+  if (projectorTimer) {
+    clearTimeout(projectorTimer);
+    projectorTimer = null;
+  }
+}
+
+async function releaseProjector(): Promise<void> {
+  if (busy || !context || !projectorAttached) {
+    return;
+  }
+
+  projectorAttached = false;
+  try {
+    await context.releaseMultimodal();
+  } catch (error) {
+    // The projector is already detached from our side; the model stays usable.
+    void handleError(error, 'localModels.releaseProjector', { showSnackbar: false });
+  }
+}
+
+function scheduleProjectorRelease() {
+  clearProjectorTimer();
+  if (!projectorAttached) {
+    return;
+  }
+
+  projectorTimer = setTimeout(() => {
+    projectorTimer = null;
+    void queue.run(releaseProjector);
+  }, LOCAL_PROJECTOR_IDLE_MS);
+}
+
+async function performUnload(): Promise<void> {
   clearIdleTimer();
+  clearProjectorTimer();
   const current = context;
   context = null;
+  textSampling = null;
   projectorAttached = false;
   if (!current) {
     return;
@@ -92,9 +133,21 @@ export async function unloadLocalModel(): Promise<void> {
   try {
     await current.releaseMultimodal().catch(() => undefined);
     await current.release();
-  } catch {
-    // Already released; nothing is held either way.
+  } catch (error) {
+    // Never rejects: an unload that fails is reported, and nothing stays usable either way.
+    void handleError(error, 'localModels.unload', { showSnackbar: false });
   }
+}
+
+/** Frees the model and everything attached to it. Safe to call when nothing is loaded. */
+export function unloadLocalModel(): Promise<void> {
+  clearIdleTimer();
+  if (busy && context) {
+    stoppedByUnload = true;
+    void context.stopCompletion().catch(() => undefined);
+  }
+
+  return queue.run(performUnload);
 }
 
 function scheduleIdleUnload() {
@@ -148,6 +201,7 @@ async function ensureContext(): Promise<LlamaContext> {
       ctx_shift: false,
     });
     context = next;
+    textSampling = installed.manifest.textSampling;
 
     return next;
   } catch (error) {
@@ -164,12 +218,22 @@ async function attachProjector(ctx: LlamaContext, path: string, imageMaxTokens: 
     return;
   }
 
-  const ok = await ctx.initMultimodal({
-    path: plainPath(path),
-    use_gpu: Platform.OS === 'ios',
-    image_max_tokens: imageMaxTokens,
-  });
+  let ok = false;
+  try {
+    ok = await ctx.initMultimodal({
+      path: plainPath(path),
+      use_gpu: Platform.OS === 'ios',
+      image_max_tokens: imageMaxTokens,
+    });
+  } catch (error) {
+    // Tags only: no prompt, path or content.
+    void captureException(error, {
+      captureContext: { tags: { context: 'localModels.projector' } },
+    });
+  }
+
   if (!ok) {
+    reportAiEvent('local-model-projector-failed', { platform: Platform.OS });
     throw new OnDeviceUnavailableError('loadFailed');
   }
 
@@ -193,16 +257,22 @@ function withPhoto(messages: LocalChatMessage[], image: string) {
   );
 }
 
+/** A plain-text reply (chat, insights): no schema to enforce and no photo. */
+function plainTextSampling(params: LocalGenerateParams): boolean {
+  return !params.schema && !params.image;
+}
+
 async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   if (params.signal?.aborted) {
     throw new AiCancelledError();
   }
 
   clearIdleTimer();
+  clearProjectorTimer();
+  stoppedByUnload = false;
   busy = true;
   try {
     const ctx = await ensureContext();
-    let usedProjector = false;
     if (params.image) {
       const installed = await getInstalledLocalModel();
       if (!installed?.projectorPath) {
@@ -210,7 +280,6 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       }
 
       await attachProjector(ctx, installed.projectorPath, installed.manifest.imageMaxTokens);
-      usedProjector = true;
     }
 
     const onAbort = () => {
@@ -219,18 +288,21 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
     params.signal?.addEventListener('abort', onAbort);
     try {
+      if (params.signal?.aborted) {
+        throw new AiCancelledError();
+      }
+
+      // A plain-text reply takes the vendor's sampling; a schema or a photo keeps the defaults.
+      const plainSampling = plainTextSampling(params) ? textSampling : null;
       const result = await ctx.completion(
         {
           messages: params.image ? withPhoto(params.messages, params.image) : params.messages,
           jinja: true,
           n_predict: params.maxTokens ?? 1024,
-          temperature: params.temperature ?? 0.2,
-          ...(params.penalties?.frequency_penalty === undefined
-            ? {}
-            : { penalty_freq: params.penalties.frequency_penalty }),
-          ...(params.penalties?.presence_penalty === undefined
-            ? {}
-            : { penalty_present: params.penalties.presence_penalty }),
+          temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,
+          ...(plainSampling
+            ? { min_p: plainSampling.minP, penalty_repeat: plainSampling.repeatPenalty }
+            : {}),
           ...(params.schema
             ? {
                 response_format: {
@@ -247,7 +319,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
         }
       );
 
-      if (params.signal?.aborted) {
+      if (params.signal?.aborted || stoppedByUnload) {
         throw new AiCancelledError();
       }
 
@@ -268,27 +340,20 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       };
     } finally {
       params.signal?.removeEventListener('abort', onAbort);
-      if (usedProjector) {
-        // Photos are rare; the projector's RAM is not worth keeping for the next text turn.
-        await ctx.releaseMultimodal().catch(() => undefined);
-        projectorAttached = false;
-      }
     }
   } finally {
     busy = false;
+    stoppedByUnload = false;
+    scheduleProjectorRelease();
     scheduleIdleUnload();
   }
 }
 
 /** Runs one generation on the local model. Requests are served one at a time, in order. */
 export function generateWithLocalModel(params: LocalGenerateParams): Promise<LocalGenerateResult> {
-  const turn = queue.then(
-    () => run(params),
-    () => run(params)
-  );
-  queue = turn.catch(() => undefined);
-
-  return turn;
+  clearIdleTimer();
+  clearProjectorTimer();
+  return queue.run(() => run(params));
 }
 
 /** True while a request is generating or the model is loaded; used by the storage screen. */

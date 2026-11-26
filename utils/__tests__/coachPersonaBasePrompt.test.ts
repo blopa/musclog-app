@@ -134,4 +134,12 @@ describe('which prompts carry a persona', () => {
   ])('%s stays neutral: its output is structured data', (name) => {
     expect(bodyOf(name)).not.toMatch(/persona/i);
   });
+
+  it('getMealObservationPrompt stays neutral: its output is structured data', () => {
+    const start = source.indexOf('export const getMealObservationPrompt = (');
+    const next = source.indexOf('\nexport const ', start + 1);
+
+    expect(start).toBeGreaterThan(-1);
+    expect(source.slice(start, next === -1 ? undefined : next)).not.toMatch(/persona/i);
+  });
 });

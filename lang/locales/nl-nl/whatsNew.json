@@ -272,24 +272,108 @@
       },
       "v2_18_0": {
         "onDeviceAi": {
-          "title": "AI die op je telefoon draait",
-          "description": "De coach van Musclog kan nu volledig op deze telefoon draaien. Wat je typt verlaat het toestel niet, en het werkt offline. Het is gratis, zonder account of sleutel.",
+          "title": "De AI van Musclog draait nu op je telefoon",
+          "description": "Dit is de grootste verandering aan de AI van Musclog tot nu toe. De coach kan nu volledig op deze telefoon draaien: wat je typt en de foto's die je maakt, worden nergens naartoe gestuurd. Hij blijft werken in de vliegtuigmodus en hij kost niets.",
           "action": {
             "label": "AI op deze telefoon instellen",
-            "description": "Kies Apple Intelligence of een klein gedownload model."
+            "description": "Kies Apple Intelligence of een klein model dat je één keer downloadt."
           },
           "items": {
             "private": {
               "label": "Blijft op je telefoon",
-              "description": "Je berichten worden op het toestel beantwoord, nooit naar een server gestuurd."
+              "description": "Je berichten en maaltijdfoto's worden op het apparaat beantwoord, nooit op een server."
             },
             "offline": {
               "label": "Werkt offline",
-              "description": "Na een eenmalige download is geen verbinding nodig."
+              "description": "Na een eenmalige download is geen verbinding nodig. Ook niet voor foto's."
             },
+            "free": {
+              "label": "Gratis, voor altijd",
+              "description": "Geen account, geen API-sleutel en geen abonnement. Het draait op je telefoon, dus het kost niemand iets."
+            }
+          }
+        },
+        "photos": {
+          "title": "Richt de camera op je maaltijd",
+          "description": "Neem fotobegrip mee in de download, dan kan het model naar een foto van een maaltijd kijken, de gerechten die het ziet benoemen en schatten hoeveel van elk op het bord ligt. Alles op de telefoon, ook offline.",
+          "items": {
+            "realNumbers": {
+              "label": "Eerst je voedingsdata",
+              "description": "Het model wordt niet om calorieën gevraagd. Als een gerecht dat het noemt al in Musclog staat, worden die cijfers gebruikt. Al het andere wordt geschat op basis van de naam, dus controleer die eerst."
+            },
+            "review": {
+              "label": "Niets wordt opgeslagen voordat je bevestigt",
+              "description": "Elk gerecht en elke hoeveelheid in grammen opent in een controle die je kunt aanpassen voordat het in je dagboek komt."
+            },
+            "where": {
+              "label": "In de camera en de coach",
+              "description": "Gebruik AI-maaltijd in de camera, of voeg een foto toe aan Maaltijd bijhouden van de coach."
+            }
+          }
+        },
+        "honest": {
+          "title": "Klein, dus controleer het werk",
+          "description": "Om op een telefoon te passen, is dit model heel klein vergeleken met de AI achter chatbots in de cloud. Het zal voedsel verkeerd benoemen, porties verkeerd inschatten en soms verkeerd adviseren. Zie het als een metgezel die je aanmoedigt te blijven loggen, niet als een voedingsdeskundige: jij controleert de resultaten en jij bent verantwoordelijk voor de cijfers.",
+          "items": {
+            "check": {
+              "label": "Controleer elk resultaat",
+              "description": "Lees elk gerecht en elke hoeveelheid voordat je opslaat, en corrigeer wat fout is. Dat kost seconden en houdt je dagboek eerlijk."
+            },
+            "language": {
+              "label": "Het best in het Engels",
+              "description": "Het antwoordt het best in het Engels en een paar andere talen. In jouw taal kunnen de antwoorden zwakker zijn."
+            },
+            "stronger": {
+              "label": "Een sterker model nodig?",
+              "description": "Gebruik je eigen API-sleutel of Musclog Iron, via Instellingen → AI. Beide sturen je verzoek naar een veel groter model in de cloud."
+            }
+          }
+        },
+        "mealCamera": {
+          "title": "Voeg meer toe aan je maaltijdfoto",
+          "description": "Na het maken van een foto kun je nu tot 5 foto's van dezelfde maaltijd toevoegen en Musclog iets meer vertellen voordat het schat. Alles wat je toevoegt is optioneel.",
+          "flow": {
+            "title": "Zo werkt de AI-maaltijdcamera",
+            "description": "Je kunt dit altijd wijzigen via Instellingen → AI-gedrag.",
+            "detailed": {
+              "label": "Uitgebreid",
+              "description": "Bekijk je foto's en voeg details toe voordat het schat."
+            },
+            "quick": {
+              "label": "Snel",
+              "description": "Schatten direct na de foto, zoals voorheen."
+            }
+          },
+          "items": {
             "photos": {
-              "label": "Maaltijdfoto's",
-              "description": "Het gedownloade model kan een foto van je maaltijd lezen, als je dat onderdeel wilt meenemen."
+              "label": "Tot 5 foto's van één maaltijd",
+              "description": "Voeg een andere hoek of een close-up toe voordat je schat. Ze worden samen als één maaltijd verstuurd, dus een voedingsmiddel dat op twee foto's te zien is, wordt één keer geteld. Een aanbieder die minder foto's accepteert, beperkt het aantal."
+            },
+            "details": {
+              "label": "Vertel wat een foto niet kan laten zien",
+              "description": "Voeg een naam toe, een notitie zoals „half opgegeten, zonder dressing”, of het thuis gemaakt of uit een restaurant was, en of er olie of boter aan is toegevoegd."
+            },
+            "cover": {
+              "label": "De eerste foto wordt bewaard",
+              "description": "Alleen de eerste foto wordt opgeslagen bij de gelogde maaltijd. De andere worden alleen voor de schatting gebruikt."
+            }
+          }
+        },
+        "thinking": {
+          "title": "Laat de AI harder nadenken",
+          "description": "Een nieuwe instelling laat de AI zijn eigen werk controleren voordat hij antwoordt. Uit is het snelst; Tokenmaxxing is het traagst en grondigst.",
+          "items": {
+            "levels": {
+              "label": "Kies hoe hard het denkt",
+              "description": "Uit, Gemiddeld, Hoog of Tokenmaxxing, via Instellingen → AI-gedrag. Elke stap omhoog doet meer verzoeken om het antwoord na te kijken."
+            },
+            "checks": {
+              "label": "Code controleert de antwoorden",
+              "description": "Maaltijden worden meerdere keren gelezen en vergeleken, en plannen en inzichten worden gecontroleerd tegen je eigen cijfers."
+            },
+            "cost": {
+              "label": "Trager, en het kost meer",
+              "description": "Bij Musclog Iron gebruikt het meer van je maandelijkse tegoed, en de gratis Musclog AI antwoordt altijd op Uit. We hebben niet gemeten hoeveel het antwoorden verbetert."
             }
           }
         }

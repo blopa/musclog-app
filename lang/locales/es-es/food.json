@@ -488,6 +488,8 @@
     "aiProgress": {
       "reading": "Leyendo tu descripción…",
       "readingPhoto": "Mirando tu foto…",
+      "observing": "Anotando todo lo de tu descripción…",
+      "observingPhoto": "Echando un primer vistazo cuidadoso a tu foto…",
       "estimating_one": "Estimando {{count}} ingrediente…",
       "estimating_few": "Estimando {{count}} ingredientes…",
       "estimating_many": "Estimando {{count}} ingredientes…",
@@ -499,7 +501,24 @@
       "rechecking_one": "Revisando {{count}} ingrediente…",
       "rechecking_few": "Revisando {{count}} ingredientes…",
       "rechecking_many": "Revisando {{count}} ingredientes…",
-      "rechecking_other": "Revisando {{count}} ingredientes…"
+      "rechecking_other": "Revisando {{count}} ingredientes…",
+      "reviewing": "Comprobando que no se haya pasado nada…",
+      "comparing_one": "Comparando {{count}} estimación…",
+      "comparing_few": "Comparando {{count}} estimaciones…",
+      "comparing_many": "Comparando {{count}} estimaciones…",
+      "comparing_other": "Comparando {{count}} estimaciones…",
+      "readingPhotos_one": "Mirando tu foto…",
+      "readingPhotos_other": "Mirando tus {{count}} fotos…",
+      "observingPhotos_one": "Echando un primer vistazo cuidadoso a tu foto…",
+      "observingPhotos_other": "Echando un primer vistazo cuidadoso a tus {{count}} fotos…",
+      "identifyingPhoto_one": "Mirando la foto {{index}} de {{count}}…",
+      "identifyingPhoto_other": "Mirando la foto {{index}} de {{count}}…",
+      "readingPhotos_few": "Mirando tus {{count}} fotos…",
+      "readingPhotos_many": "Mirando tus {{count}} fotos…",
+      "observingPhotos_few": "Echando un primer vistazo cuidadoso a tus {{count}} fotos…",
+      "observingPhotos_many": "Echando un primer vistazo cuidadoso a tus {{count}} fotos…",
+      "identifyingPhoto_few": "Mirando la foto {{index}} de {{count}}…",
+      "identifyingPhoto_many": "Mirando la foto {{index}} de {{count}}…"
     },
     "aiNutritionContext": {
       "title": "Añadir Contexto para la IA",
@@ -709,6 +728,43 @@
         "logError": "No se pudo registrar el alimento. Inténtalo de nuevo."
       },
       "linkError": "No se pudo leer el enlace de tu asistente. {{reason}} Pega en su lugar el bloque JSON del chat."
+    },
+    "mealPhotos": {
+      "title": "Tu comida",
+      "photoCount_one": "{{count}} de {{max}} foto",
+      "photoCount_other": "{{count}} de {{max}} fotos",
+      "addPhoto": "Añadir una foto",
+      "removePhoto": "Quitar la foto {{index}}",
+      "optionalHint": "Todo lo de abajo es opcional.",
+      "nameLabel": "Nombre de la comida",
+      "namePlaceholder": "p. ej. Pollo con arroz",
+      "descriptionLabel": "¿Algo más que debamos saber?",
+      "descriptionPlaceholder": "p. ej. Comí la mitad, sin aliño",
+      "originLabel": "¿De dónde viene?",
+      "origin": {
+        "home": "Casera",
+        "restaurant": "Restaurante",
+        "takeaway": "Para llevar",
+        "packaged": "Envasada"
+      },
+      "addedFatLabel": "¿Aceite, mantequilla o salsas añadidos?",
+      "addedFat": {
+        "none": "Ninguno",
+        "some": "Un poco",
+        "lots": "Mucho"
+      },
+      "tagsLabel": "Etiquetas",
+      "estimate": "Estimar",
+      "reviewPhotos_one": "Revisar {{count}} foto",
+      "reviewPhotos_other": "Revisar {{count}} fotos",
+      "discardTitle": "¿Descartar esta comida?",
+      "discardMessage": "Tus fotos y notas se perderán.",
+      "discard": "Descartar",
+      "keepEditing": "Seguir editando",
+      "photoCount_few": "{{count}} de {{max}} fotos",
+      "photoCount_many": "{{count}} de {{max}} fotos",
+      "reviewPhotos_few": "Revisar {{count}} fotos",
+      "reviewPhotos_many": "Revisar {{count}} fotos"
     }
   }
 }

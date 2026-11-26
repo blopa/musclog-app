@@ -5,17 +5,16 @@ import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import {
   type AiImageTier,
+  base64DecodedBytes,
   DEFAULT_AI_IMAGE_TIER,
+  type ImageLimits,
+  limitsForImageCount,
   limitsForTier,
+  nextQuality,
   ON_DEVICE_IMAGE_CEILING,
   OWN_KEY_IMAGE_CEILING,
-} from '@/utils/aiImagePlan';
-import {
-  base64DecodedBytes,
-  type HostedImageLimits,
-  nextQuality,
   planResize,
-} from '@/utils/premium/hostedImagePlan';
+} from '@/utils/aiImagePlan';
 
 export type PreparedImage = { base64: string; mimeType: string };
 
@@ -42,7 +41,7 @@ function readSize(dataUri: string): Promise<{ width: number; height: number }> {
 export async function resizeForAi(
   base64: string,
   mimeType: string,
-  limits: HostedImageLimits
+  limits: ImageLimits
 ): Promise<PreparedImage> {
   const original = { base64, mimeType };
 
@@ -102,10 +101,18 @@ export async function resizeForAi(
  * picked in AI settings, with no provider limit above it. Musclog Iron has its own step
  * (`utils/hostedImage.ts`), which also holds the tier to the Worker's limits.
  */
-export async function prepareOwnKeyImage(base64: string, mimeType: string): Promise<PreparedImage> {
+export async function prepareOwnKeyImage(
+  base64: string,
+  mimeType: string,
+  count: number = 1
+): Promise<PreparedImage> {
   const tier = await loadAiImageTier();
 
-  return resizeForAi(base64, mimeType, limitsForTier(tier, OWN_KEY_IMAGE_CEILING));
+  return resizeForAi(
+    base64,
+    mimeType,
+    limitsForImageCount(limitsForTier(tier, OWN_KEY_IMAGE_CEILING), count)
+  );
 }
 
 /** Prepares a photo for the downloaded on-device model: the person's tier, capped at what it can use. */

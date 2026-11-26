@@ -174,7 +174,13 @@ export function isUpdateAvailable(
   record: InstalledRecord | null,
   manifest: LocalModelManifest
 ): boolean {
-  return !!record && record.id === manifest.id && record.revision !== manifest.revision;
+  return (
+    !!record &&
+    record.id === manifest.id &&
+    record.revision !== manifest.revision &&
+    record.revision.length > 0 &&
+    record.files.some((file) => file.role === 'model' && file.path.length > 0)
+  );
 }
 
 /** Folder names `<id>@<revision>` inside the models folder. */

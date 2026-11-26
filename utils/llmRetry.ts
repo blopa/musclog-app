@@ -2,14 +2,73 @@ import {
   AiCancelledError,
   AiInvalidKeyError,
   AiTimeoutError,
+  isAiConnectionError,
   toUserFacingAiError,
 } from './aiErrors';
 import type { CoachAIConfig, CoachAIProvider } from './coachAI';
-import { providerPolicyFor } from './hostedProviderPolicy';
 import type { LlmRequest, RetryDecision, RetryState } from './llmRetryTypes';
+import { type ProviderPolicy, providerPolicyFor } from './providerPolicy';
 
-const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
+/**
+ * What is worth asking again: a request timeout, a rate limit, and the server-side failures that
+ * pass (an overloaded or restarting server). The provider SDKs' own retries are off, so this list is
+ * all there is; every other 4xx (a wrong key, a bad request) never gets better by repeating it.
+ */
+const RETRYABLE_LLM_STATUSES = new Set([408, 429, 500, 502, 503, 504, 529]);
 const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
+
+/** A provider that asks to wait longer than this is not waited for: the failure is thrown instead. */
+const MAX_RETRY_AFTER_MS = 10_000;
+
+/** Backoff is spread over half to one and a half times its base so retries do not arrive together. */
+const JITTER_MIN = 0.5;
+const JITTER_SPAN = 1;
+
+/** The backoff for one retry with jitter; `random` is injectable so a test can pin it. */
+export function jitteredDelayMs(baseMs: number, random: () => number = Math.random): number {
+  return Math.round(baseMs * (JITTER_MIN + random() * JITTER_SPAN));
+}
+
+function readHeader(headers: unknown, name: string): string | undefined {
+  if (typeof headers !== 'object' || headers === null) {
+    return undefined;
+  }
+
+  const getter = (headers as { get?: unknown }).get;
+  if (typeof getter === 'function') {
+    const value = getter.call(headers, name);
+
+    return typeof value === 'string' ? value : undefined;
+  }
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === name && typeof value === 'string') {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * How long the provider asked to wait (`Retry-After`: whole seconds or an HTTP date) when the failure
+ * carries its response headers (the OpenAI and Anthropic `APIError`s do), or undefined when it did
+ * not ask or the value cannot be read.
+ */
+export function retryAfterMs(error: unknown, now: number = Date.now()): number | undefined {
+  const raw = readHeader((error as { headers?: unknown } | null)?.headers, 'retry-after')?.trim();
+  if (!raw) {
+    return undefined;
+  }
+
+  if (/^\d+(\.\d+)?$/.test(raw)) {
+    return Math.round(Number(raw) * 1000);
+  }
+
+  const date = Date.parse(raw);
+
+  return Number.isNaN(date) ? undefined : Math.max(0, date - now);
+}
 
 function getErrorStatus(error: any): number | undefined {
   return error?.status ?? error?.response?.status;
@@ -42,7 +101,12 @@ function isQuotaStyleError(error: any): boolean {
 
 function shouldRetryLlmError(error: any): boolean {
   const status = getErrorStatus(error);
-  if (status === undefined || !RETRYABLE_LLM_STATUSES.has(status)) {
+  if (status === undefined) {
+    // No response at all: the connection dropped. The SDKs used to repeat these themselves.
+    return isAiConnectionError(error);
+  }
+
+  if (!RETRYABLE_LLM_STATUSES.has(status)) {
     return false;
   }
 
@@ -121,6 +185,7 @@ async function runWithAbort<T>(
 function classifyLlmFailure(
   operation: string,
   provider: CoachAIProvider,
+  policy: ProviderPolicy,
   error: unknown,
   state: RetryState,
   options?: { hasStreamed?: () => boolean }
@@ -129,7 +194,7 @@ function classifyLlmFailure(
   const delayMs = LLM_RETRY_DELAYS_MS[state.attempt];
   const hasAttemptsLeft = state.attempt < LLM_RETRY_DELAYS_MS.length;
 
-  const own = providerPolicyFor(provider).classifyFailure?.(operation, error, state, {
+  const own = policy.classifyFailure?.(operation, error, state, {
     hasStreamed,
     delayMs,
   });
@@ -158,16 +223,27 @@ function classifyLlmFailure(
         };
   }
 
-  if (!hasAttemptsLeft || !shouldRetryLlmError(error)) {
+  if (
+    policy.retriesTransientFailures === false ||
+    !hasAttemptsLeft ||
+    !shouldRetryLlmError(error)
+  ) {
     return { error };
   }
 
+  // The provider said how long to wait: do that, or give up when it is longer than we will wait.
+  const asked = retryAfterMs(error);
+  if (asked !== undefined && asked > MAX_RETRY_AFTER_MS) {
+    return { error };
+  }
+
+  const wait = asked ?? jitteredDelayMs(delayMs);
   const status = getErrorStatus(error);
 
   return {
-    delayMs,
+    delayMs: wait,
     spends: 'attempt',
-    log: `[coachAI] ${operation} transient ${status ?? 'unknown'} from ${provider}; retrying in ${delayMs}ms (attempt ${state.attempt + 2}/${LLM_RETRY_DELAYS_MS.length + 1})`,
+    log: `[coachAI] ${operation} transient ${status ?? 'connection failure'} from ${provider}; retrying in ${wait}ms${asked === undefined ? '' : ' (Retry-After)'} (attempt ${state.attempt + 2}/${LLM_RETRY_DELAYS_MS.length + 1})`,
   };
 }
 
@@ -186,8 +262,8 @@ export async function withLlmRetry<T>(
 ): Promise<T> {
   const provider = config.provider;
   const state: RetryState = { attempt: 0, timeoutRetried: false };
-  const policy = providerPolicyFor(provider);
-  const headers = policy.requestHeaders?.();
+  const policy = providerPolicyFor(config);
+  const headers = policy.requestHeaders?.(config);
 
   policy.assertUsable?.(config);
 
@@ -202,7 +278,7 @@ export async function withLlmRetry<T>(
         throw rawError;
       }
 
-      const decision = classifyLlmFailure(operation, provider, rawError, state, options);
+      const decision = classifyLlmFailure(operation, provider, policy, rawError, state, options);
       if ('error' in decision) {
         throw decision.error;
       }

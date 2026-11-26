@@ -7,7 +7,8 @@ import {
   fixedPageSeo,
   metadataForPage,
   type PageSeo,
-  SEO_IMAGE_URL,
+  SEO_IMAGE_HEIGHT,
+  SEO_IMAGE_WIDTH,
   websiteCopy,
   type WebsiteSeoRouteKey,
 } from './websiteMetadata';
@@ -22,6 +23,7 @@ function PageMetadata({ page }: { page: PageSeo }) {
   const language = i18n.resolvedLanguage ?? i18n.language;
   const metadata = metadataForPage(page, language);
   const og = metadata.openGraph!;
+  const imageUrl = (og.images as { url: string }[])[0].url;
   return (
     <Head>
       <title>{page.title}</title>
@@ -41,16 +43,16 @@ function PageMetadata({ page }: { page: PageSeo }) {
       <meta property="og:title" content={og.title} />
       <meta property="og:description" content={page.description} />
       <meta property="og:url" content={og.url} />
-      <meta property="og:image" content={SEO_IMAGE_URL} />
-      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:image:width" content="1224" />
-      <meta property="og:image:height" content="741" />
+      <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:secure_url" content={imageUrl} />
+      <meta property="og:image:type" content="image/jpeg" />
+      <meta property="og:image:width" content={String(SEO_IMAGE_WIDTH)} />
+      <meta property="og:image:height" content={String(SEO_IMAGE_HEIGHT)} />
       <meta property="og:image:alt" content={websiteCopy(language).seo.imageAlt} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={page.title} />
       <meta name="twitter:description" content={page.description} />
-      <meta name="twitter:image" content={SEO_IMAGE_URL} />
+      <meta name="twitter:image" content={imageUrl} />
       <meta name="twitter:image:alt" content={websiteCopy(language).seo.imageAlt} />
       {page.date ? <meta property="article:published_time" content={og.publishedTime} /> : null}
       {page.date ? <meta property="article:section" content={page.category} /> : null}

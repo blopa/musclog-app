@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 'use strict';
+/* global __dirname */
 // Otari (the gateway Iron's requests run through): read-only export and spend report for the
 // key in OTARI_USAGE_KEY, the only key the hosted API lets us read usage with (usage:read scope).
 //   node scripts/infra/otari.js <export|report> [--json] [--days N] [--env staging|production]
@@ -9,9 +10,21 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { request } = require('./http');
-const { sanitize, stableStringify } = require('./lib');
+const {
+  sanitize,
+  stableStringify,
+  cliError,
+  requireEnv,
+  buildQuery,
+  numberOrNull,
+  formatNumber,
+  isUnavailable,
+  tryRequest,
+  printJson,
+  runCli,
+} = require('./lib');
 
-const ROOT = path.resolve(path.dirname(process.argv[1]), '..', '..');
+const ROOT = path.resolve(__dirname, '..', '..');
 const SNAPSHOT_DIR = path.join(ROOT, 'infra', 'snapshots', 'otari');
 const API = 'https://eu.api.otari.ai/api/v1';
 const FEATURES = ['chat', 'structured', 'vision'];
@@ -19,23 +32,6 @@ const ENVS = ['staging', 'production'];
 const DEFAULT_DAYS = 30;
 const LOW_BUDGET_USD = 2;
 const DAY_MS = 86_400_000;
-
-/** Query string from a params object: arrays become repeated keys, null/undefined are dropped. */
-function buildQuery(params) {
-  const search = new URLSearchParams();
-  for (const [name, value] of Object.entries(params)) {
-    if (value == null) {
-      continue;
-    }
-
-    for (const item of Array.isArray(value) ? value : [value]) {
-      search.append(name, String(item));
-    }
-  }
-
-  const text = search.toString();
-  return text ? `?${text}` : '';
-}
 
 /** Path of one usage summary. `tags` are request-metadata filters (`env:…`, `feature:…`). */
 function summaryPath({ start, end, bucket = 'day', dimensions = [], tags = [] }) {
@@ -54,14 +50,6 @@ function windowFor(days, now = Date.now()) {
     start: new Date(now - days * DAY_MS).toISOString(),
     end: new Date(now).toISOString(),
   };
-}
-
-function numberOrNull(value) {
-  return typeof value === 'number' && Number.isFinite(value) ? value : null;
-}
-
-function isUnavailable(value) {
-  return value == null || typeof value !== 'object' || '_unavailable' in value;
 }
 
 /** Turns one `by_*` row into `{ name, cost_usd, requests, tokens }`, degrading missing fields to null. */
@@ -183,24 +171,20 @@ function buildReport({
   };
 }
 
-function fmt(value, digits = 2) {
-  return value == null ? 'n/a' : Number(value).toFixed(digits);
-}
-
 function formatText(report) {
   const t = report.totals;
   const lines = [
     `Otari usage, last ${report.window.days} day(s)${report.window.env ? `, env:${report.window.env}` : ''}`,
-    `  cost        ${fmt(t.cost_usd, 4)} USD`,
-    `  requests    ${fmt(t.requests, 0)}   errors ${fmt(t.errors, 0)}   error rate ${
+    `  cost        ${formatNumber(t.cost_usd, 4)} USD`,
+    `  requests    ${formatNumber(t.requests, 0)}   errors ${formatNumber(t.errors, 0)}   error rate ${
       t.error_rate == null ? 'n/a' : `${(t.error_rate * 100).toFixed(2)}%`
     }`,
-    `  unpriced    ${fmt(t.unpriced_requests, 0)}   avg latency ${fmt(t.avg_latency_ms, 0)} ms`,
-    `  tokens      ${fmt(t.prompt_tokens, 0)} in / ${fmt(t.completion_tokens, 0)} out`,
+    `  unpriced    ${formatNumber(t.unpriced_requests, 0)}   avg latency ${formatNumber(t.avg_latency_ms, 0)} ms`,
+    `  tokens      ${formatNumber(t.prompt_tokens, 0)} in / ${formatNumber(t.completion_tokens, 0)} out`,
   ];
   if (report.budget) {
     lines.push(
-      `  budget      enforced: ${report.budget.budgets_enforced}, remaining: ${fmt(report.budget.remaining_usd)} USD`
+      `  budget      enforced: ${report.budget.budgets_enforced}, remaining: ${formatNumber(report.budget.remaining_usd)} USD`
     );
   }
 
@@ -208,7 +192,7 @@ function formatText(report) {
     lines.push('', title);
     for (const r of rows) {
       lines.push(
-        `  ${String(r.name ?? r.status_code ?? r.feature).padEnd(32)} ${fmt(r.cost_usd, 4).padStart(12)} USD  ${fmt(r.requests, 0).padStart(8)} req`
+        `  ${String(r.name ?? r.status_code ?? r.feature).padEnd(32)} ${formatNumber(r.cost_usd, 4).padStart(12)} USD  ${formatNumber(r.requests, 0).padStart(8)} req`
       );
     }
   };
@@ -218,7 +202,7 @@ function formatText(report) {
   section('By feature', report.by_feature);
   lines.push('', 'Errors by status code');
   for (const e of report.errors_by_status_code) {
-    lines.push(`  ${String(e.status_code).padEnd(10)} ${fmt(e.requests, 0)}`);
+    lines.push(`  ${String(e.status_code).padEnd(10)} ${formatNumber(e.requests, 0)}`);
   }
 
   for (const w of report.warnings) {
@@ -232,6 +216,27 @@ function formatText(report) {
   return lines.join('\n');
 }
 
+function parseDaysValue(raw) {
+  if (raw == null || !/^\d+$/.test(raw)) {
+    throw cliError('--days takes a whole number from 1 to 366', 2);
+  }
+
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 1 || n > 366) {
+    throw cliError('--days takes a whole number from 1 to 366', 2);
+  }
+
+  return n;
+}
+
+function parseEnvValue(raw) {
+  if (!ENVS.includes(raw)) {
+    throw cliError(`--env takes ${ENVS.join(' or ')}`, 2);
+  }
+
+  return raw;
+}
+
 function parseArgs(args) {
   const opts = { json: false, days: DEFAULT_DAYS, env: null };
   for (let i = 0; i < args.length; i += 1) {
@@ -239,24 +244,25 @@ function parseArgs(args) {
     if (arg === '--json') {
       opts.json = true;
     } else if (arg === '--days') {
-      const n = Number(args[i + 1]);
-      if (!Number.isInteger(n) || n < 1 || n > 366) {
-        throw Object.assign(new Error('--days takes a whole number from 1 to 366'), {
-          exitCode: 2,
-        });
+      if (i + 1 >= args.length) {
+        throw cliError('--days takes a whole number from 1 to 366', 2);
       }
 
-      opts.days = n;
+      opts.days = parseDaysValue(args[i + 1]);
       i += 1;
+    } else if (arg.startsWith('--days=')) {
+      opts.days = parseDaysValue(arg.slice('--days='.length));
     } else if (arg === '--env') {
-      if (!ENVS.includes(args[i + 1])) {
-        throw Object.assign(new Error(`--env takes ${ENVS.join(' or ')}`), { exitCode: 2 });
+      if (i + 1 >= args.length) {
+        throw cliError(`--env takes ${ENVS.join(' or ')}`, 2);
       }
 
-      opts.env = args[i + 1];
+      opts.env = parseEnvValue(args[i + 1]);
       i += 1;
+    } else if (arg.startsWith('--env=')) {
+      opts.env = parseEnvValue(arg.slice('--env='.length));
     } else {
-      throw Object.assign(new Error(`unknown argument: ${arg}`), { exitCode: 2 });
+      throw cliError(`unknown argument: ${arg}`, 2);
     }
   }
 
@@ -276,58 +282,60 @@ function expectedProvidersFromEnv() {
 }
 
 function key() {
-  const k = process.env.OTARI_USAGE_KEY;
-  if (!k) {
-    throw Object.assign(
-      new Error(
-        'Set OTARI_USAGE_KEY (a key with the usage:read scope; see docs/INFRASTRUCTURE.md).'
-      ),
-      { exitCode: 4 }
-    );
-  }
-
-  return k;
+  return requireEnv(
+    process.env.OTARI_USAGE_KEY,
+    'OTARI_USAGE_KEY',
+    'Set OTARI_USAGE_KEY (a key with the usage:read scope; see docs/INFRASTRUCTURE.md).'
+  );
 }
 
-async function tryGet(token, p) {
-  try {
-    return await request(API, token, 'GET', p);
-  } catch (e) {
-    return { _unavailable: e.message };
-  }
+function tryGet(token, p) {
+  return tryRequest(() => request(API, token, 'GET', p));
 }
 
 function envTags(env) {
   return env ? [`env:${env}`] : [];
 }
 
-async function fetchAll(token, opts) {
+async function fetchAll(token, opts, { includeFeatures = true } = {}) {
   const { start, end } = windowFor(opts.days);
   const window = { start, end };
-  const budget = await tryGet(token, '/key/budget');
-  const summary = await tryGet(
+  const tags = envTags(opts.env);
+
+  const budgetPromise = tryGet(token, '/key/budget');
+  const summaryPromise = tryGet(
     token,
     summaryPath({
       ...window,
       dimensions: ['model', 'provider', 'status_code'],
-      tags: envTags(opts.env),
+      tags,
     })
   );
-  const features = {};
-  for (const feature of FEATURES) {
-    features[feature] = await tryGet(
-      token,
-      summaryPath({ ...window, tags: [`feature:${feature}`, ...envTags(opts.env)] })
-    );
+
+  if (!includeFeatures) {
+    const [budget, summary] = await Promise.all([budgetPromise, summaryPromise]);
+    return { budget, summary, features: {} };
   }
 
+  const featuresPromise = Promise.all(
+    FEATURES.map(async (feature) => [
+      feature,
+      await tryGet(token, summaryPath({ ...window, tags: [`feature:${feature}`, ...tags] })),
+    ])
+  ).then(Object.fromEntries);
+
+  const [budget, summary, features] = await Promise.all([
+    budgetPromise,
+    summaryPromise,
+    featuresPromise,
+  ]);
   return { budget, summary, features };
 }
 
 async function cmdExport(args) {
   const opts = parseArgs(args);
   const token = key();
-  const { budget, summary } = await fetchAll(token, opts);
+  const { budget, summary } = await fetchAll(token, opts, { includeFeatures: false });
   const snapshot = {
     budget: sanitize(budget),
     summary_30d: sanitize(summary),
@@ -337,10 +345,13 @@ async function cmdExport(args) {
     fs.writeFileSync(path.join(SNAPSHOT_DIR, `${name}.json`), stableStringify(value));
   }
 
-  print(args, {
-    exported_to: path.relative(ROOT, SNAPSHOT_DIR),
-    unavailable: Object.keys(snapshot).filter((n) => snapshot[n]?._unavailable),
-  });
+  printJson(
+    {
+      exported_to: path.relative(ROOT, SNAPSHOT_DIR),
+      unavailable: Object.keys(snapshot).filter((n) => snapshot[n]?._unavailable),
+    },
+    opts.json
+  );
 }
 
 async function cmdReport(args) {
@@ -353,31 +364,18 @@ async function cmdReport(args) {
     env: opts.env,
     expectedProviders: expectedProvidersFromEnv(),
   });
-  if (args.includes('--json')) {
-    console.log(JSON.stringify(report));
+  if (opts.json) {
+    printJson(report, true);
   } else {
     console.log(formatText(report));
   }
 }
 
-function print(args, data) {
-  console.log(args.includes('--json') ? JSON.stringify(data) : JSON.stringify(data, null, 2));
-}
-
 async function main() {
-  const [cmd, ...args] = process.argv.slice(2);
-  const table = { export: cmdExport, report: cmdReport };
-  if (!table[cmd]) {
-    console.error('usage: otari.js <export|report> [--json] [--days N] [--env staging|production]');
-    process.exit(2);
-  }
-
-  try {
-    await table[cmd](args);
-  } catch (e) {
-    console.error(`error: ${e.message}`);
-    process.exit(e.exitCode ?? 1);
-  }
+  await runCli(
+    { export: cmdExport, report: cmdReport },
+    'usage: otari.js <export|report> [--json] [--days N] [--env staging|production]'
+  );
 }
 
 if (require.main === module) {
@@ -387,6 +385,7 @@ if (require.main === module) {
 module.exports = {
   API,
   FEATURES,
+  ROOT,
   buildQuery,
   summaryPath,
   windowFor,
@@ -394,4 +393,7 @@ module.exports = {
   formatText,
   parseArgs,
   expectedProvidersFromEnv,
+  fetchAll,
+  cmdExport,
+  cmdReport,
 };

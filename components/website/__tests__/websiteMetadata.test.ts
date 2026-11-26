@@ -7,6 +7,9 @@ import {
   fixedPageMetadata,
   fixedPageSeo,
   metadataForPage,
+  SEO_IMAGE_HEIGHT,
+  SEO_IMAGE_WIDTH,
+  seoImageUrl,
   websiteCopy,
 } from '../websiteMetadata';
 import { WEBSITE_LOCALES, localizedPath } from '../localeRoutes';
@@ -23,6 +26,31 @@ describe('SDK 58 website metadata', () => {
     expect(metadata.openGraph?.url).toBe(metadata.alternates?.canonical);
     expect(metadata.twitter?.card).toBe('summary_large_image');
     expect(metadata.robots).toBe('robots' in route ? route.robots : 'index, follow');
+  });
+
+  it.each(WEBSITE_LOCALES.map((locale) => [locale.prefix, locale.language]))(
+    'shares the %s page with its own build-time preview image',
+    (prefix, language) => {
+      const metadata = fixedPageMetadata('home', language);
+      const url = `https://musclog.app/images/seo/${prefix}.jpg`;
+      expect(seoImageUrl(prefix)).toBe(url);
+      expect(metadata.openGraph?.images).toEqual([
+        expect.objectContaining({
+          url,
+          type: 'image/jpeg',
+          width: SEO_IMAGE_WIDTH,
+          height: SEO_IMAGE_HEIGHT,
+        }),
+      ]);
+      expect(metadata.twitter?.images).toEqual([expect.objectContaining({ url })]);
+    }
+  );
+
+  it('shows an English-only page (the blog) the English preview image in any language', () => {
+    const page = { ...fixedPageSeo('home', 'es-es'), canonicalPath: '/blog' };
+    expect(metadataForPage(page, 'es-es').openGraph?.images).toEqual([
+      expect.objectContaining({ url: seoImageUrl('en') }),
+    ]);
   });
 
   it('uses the same translated fixed-page data for client metadata', () => {

@@ -27,6 +27,7 @@
     "hostedBudgetNoDate": "La cuota de Musclog Iron de este periodo se ha agotado. Musclog sigue funcionando, y puedes usar tu propia clave o el nivel gratuito.",
     "hostedSubscription": "Musclog Iron no tiene una suscripción activa en este dispositivo. Restaura tu compra o suscríbete en los ajustes de Musclog Iron.",
     "hostedRemoved": "Este dispositivo se ha eliminado de tu suscripción a Musclog Iron. Restaura las compras en los ajustes de Musclog Iron para volver a añadirlo.",
+    "hostedConsentRequired": "Revisa el consentimiento actualizado en los ajustes de Musclog Iron.",
     "hostedUnavailable": "Musclog Iron no está disponible ahora mismo. Inténtalo de nuevo en un momento.",
     "hostedDailyFull": "Musclog Iron está al límite de capacidad hasta mañana (UTC).",
     "hostedDailyLimit": "Has alcanzado el límite diario de Musclog Iron. Se restablece a medianoche (UTC). Mientras tanto puedes usar tu propia clave o el nivel gratuito.",

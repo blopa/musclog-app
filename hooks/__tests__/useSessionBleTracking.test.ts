@@ -1,5 +1,8 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
+
+import { BleDeviceService } from '@/database/services/BleDeviceService';
 import { useSessionBleTracking } from '@/hooks/useSessionBleTracking';
+import { witMotionClient } from '@/modules/witmotion-ble';
 import { compressRawToDataPoints, saveBleWorkoutFile } from '@/utils/bleWorkoutDataStorage';
 
 let mockBatch: (batch: any) => void;
@@ -8,14 +11,16 @@ const mockWit = {
   connectedDevice: { id: 'sensor', name: 'Sensor' },
   disconnect: jest.fn(),
 };
+const mockUseWitMotion = jest.fn((_options?: { enabled?: boolean }) => mockWit);
 jest.mock('@/modules/witmotion-ble', () => ({
-  useWitMotion: () => mockWit,
+  useWitMotion: (options?: { enabled?: boolean }) => mockUseWitMotion(options),
   witMotionClient: {
     onBatch: jest.fn((callback) => {
       mockBatch = callback;
       return jest.fn();
     }),
-    connect: jest.fn(),
+    connect: jest.fn(async () => undefined),
+    isAwake: jest.fn(() => false),
   },
 }));
 jest.mock('@/lang/lang', () => ({ __esModule: true, default: { t: (key: string) => key } }));
@@ -117,4 +122,53 @@ it('completing another Inline row never changes the recorded movement or reps', 
   );
   expect(compressRawToDataPoints).not.toHaveBeenCalled();
   hook.unmount();
+});
+
+describe('sensor module wake-up', () => {
+  const renderSession = () =>
+    renderHook(() =>
+      useSessionBleTracking({
+        workoutLogId: 'log',
+        workoutLog: { id: 'log' } as any,
+        currentSetData: null,
+        reps: 0,
+        bleGenerateChartPayload: false,
+      })
+    );
+
+  beforeEach(() => {
+    mockWit.isConnected = false;
+  });
+
+  afterEach(() => {
+    mockWit.isConnected = true;
+  });
+
+  it('leaves the sensor module asleep for a workout with no saved sensor', async () => {
+    renderSession();
+
+    await waitFor(() => expect(BleDeviceService.getAll).toHaveBeenCalled());
+
+    expect(mockUseWitMotion.mock.calls.every(([options]) => options?.enabled === false)).toBe(true);
+    expect(witMotionClient.connect).not.toHaveBeenCalled();
+  });
+
+  it('wakes it and connects when a sensor is saved', async () => {
+    jest
+      .mocked(BleDeviceService.getAll)
+      .mockResolvedValueOnce([{ deviceId: 'saved-sensor' }] as any);
+
+    renderSession();
+
+    await waitFor(() => expect(witMotionClient.connect).toHaveBeenCalledWith('saved-sensor'));
+    expect(mockUseWitMotion).toHaveBeenLastCalledWith({ enabled: true });
+  });
+
+  it('stays awake when another screen already woke it in this run', () => {
+    jest.mocked(witMotionClient.isAwake).mockReturnValueOnce(true);
+
+    renderSession();
+
+    expect(mockUseWitMotion).toHaveBeenCalledWith({ enabled: true });
+  });
 });

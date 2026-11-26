@@ -1,4 +1,6 @@
-import { type CoachAIConfig, trackMeal } from '../coachAI';
+import { type CoachAIConfig } from '../coachAI';
+import { trackMeal } from '../coachMealEstimate';
+import { ingredientMacroProblems } from '../mealPlausibility';
 
 const mockSendOnDeviceStructured = jest.fn();
 
@@ -17,8 +19,9 @@ jest.mock('@/database/services/DebugDumpService', () => ({
 
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getUseThinkingMode: jest.fn().mockResolvedValue(false),
+    get: jest.fn().mockResolvedValue('off'),
     getSendFoundationFoodsToLlm: jest.fn().mockResolvedValue(true),
+    getNutritionDisplay: jest.fn().mockResolvedValue('11101'),
   },
 }));
 
@@ -80,7 +83,7 @@ describe('trackMeal (normal path: refinement)', () => {
         ],
       })
       .mockResolvedValueOnce({
-        ingredients: [{ name: 'Chicken', grams: 150, kcal: 248, protein: 46, carbs: 0, fat: 5 }],
+        foods: [{ name: 'Chicken', kcal: 165, protein: 31, carbs: 0, fat: 3.6 }],
       });
 
     const result = await trackMeal(ON_DEVICE, 'chicken and rice');
@@ -97,7 +100,7 @@ describe('trackMeal (normal path: refinement)', () => {
       kcal: 130,
     });
     const chicken = ingredients.find((i) => i.name === 'Chicken');
-    expect(chicken).toMatchObject({ kcal: 248, protein: 46 });
+    expect(chicken).toMatchObject({ kcal: 248 });
     expect(chicken?.foodId).toBeUndefined();
   });
 
@@ -178,7 +181,7 @@ describe('trackMeal (normal path: refinement)', () => {
     });
   });
 
-  it('keeps the original implausible numbers when the recheck returns the same bad numbers', async () => {
+  it('reconciles the numbers when the recheck is just as implausible', async () => {
     mockSendOnDeviceStructured
       .mockResolvedValueOnce({
         meals: [
@@ -200,7 +203,7 @@ describe('trackMeal (normal path: refinement)', () => {
     const result = await trackMeal(ON_DEVICE, 'mystery sauce');
 
     expect(mockSendOnDeviceStructured).toHaveBeenCalledTimes(2);
-    expect(result?.meals[0].ingredients[0]).toMatchObject({ kcal: 900 });
+    expect(ingredientMacroProblems(result!.meals[0].ingredients[0])).toEqual([]);
   });
 
   it('returns the result with the original ingredient when the follow-up request throws', async () => {
@@ -231,6 +234,47 @@ describe('trackMeal (normal path: refinement)', () => {
     expect(result?.meals[0].ingredients).toEqual([
       expect.objectContaining({ name: 'Chicken', kcal: 0, grams: 150 }),
     ]);
+  });
+
+  it('reconciles impossible numbers when the recheck request throws', async () => {
+    mockSendOnDeviceStructured
+      .mockResolvedValueOnce({
+        meals: [
+          {
+            mealType: 'snack',
+            mealName: 'Nuts',
+            ingredients: [
+              { name: 'Almonds', grams: 10, kcal: 10, protein: 4, carbs: 4, fat: 9, fiber: 2 },
+            ],
+          },
+        ],
+      })
+      .mockRejectedValueOnce(new Error('boom'));
+
+    const result = await trackMeal(ON_DEVICE, 'almonds');
+
+    expect(ingredientMacroProblems(result!.meals[0].ingredients[0])).toEqual([]);
+  });
+
+  it('reconciles impossible numbers when the recheck returns the same impossible ones', async () => {
+    const almonds = {
+      name: 'Almonds',
+      grams: 10,
+      kcal: 10,
+      protein: 4,
+      carbs: 4,
+      fat: 9,
+      fiber: 2,
+    };
+    mockSendOnDeviceStructured
+      .mockResolvedValueOnce({
+        meals: [{ mealType: 'snack', mealName: 'Nuts', ingredients: [almonds] }],
+      })
+      .mockResolvedValueOnce({ ingredients: [almonds] });
+
+    const result = await trackMeal(ON_DEVICE, 'almonds');
+
+    expect(ingredientMacroProblems(result!.meals[0].ingredients[0])).toEqual([]);
   });
 
   it('reports progress in order and ignores a listener that throws', async () => {
@@ -264,7 +308,7 @@ describe('trackMeal (normal path: refinement)', () => {
         ],
       })
       .mockResolvedValueOnce({
-        ingredients: [{ name: 'Chicken', grams: 150, kcal: 248, protein: 46, carbs: 0, fat: 5 }],
+        foods: [{ name: 'Chicken', kcal: 165, protein: 31, carbs: 0, fat: 3.6 }],
       });
 
     const onProgress = jest.fn();
