@@ -32,6 +32,7 @@ import { SmartCameraProvider } from '@/context/SmartCameraContext';
 import { SnackbarProvider } from '@/context/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '@/context/ThemeContext';
 import { UnreadChatProvider } from '@/context/UnreadChatContext';
+import { VoiceCommandProvider } from '@/context/VoiceCommandContext';
 import { WebModalShellProvider } from '@/context/WebModalShellContext';
 import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
 import { handleError } from '@/utils/handleError';
@@ -147,7 +148,9 @@ function RootLayout() {
                                 <SmartCameraProvider>
                                   <CoachPersonaProvider>
                                     <CoachProvider>
-                                      <AppContent />
+                                      <VoiceCommandProvider>
+                                        <AppContent />
+                                      </VoiceCommandProvider>
                                     </CoachProvider>
                                   </CoachPersonaProvider>
                                 </SmartCameraProvider>

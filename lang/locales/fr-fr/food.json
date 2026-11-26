@@ -212,7 +212,9 @@
       "scaleMealPortionPreview": "Totaux estimés pour cette portion",
       "sendDayToPhone": "Envoyer la journée vers un téléphone",
       "sendDayToPhoneDesc": "Transférer toute l'alimentation de cette journée avec des QR codes animés",
-      "keepMealTypes": "Garder leurs repas"
+      "keepMealTypes": "Garder leurs repas",
+      "copyMealTitle": "{{meal}} d’un autre jour",
+      "copyMealTargetNote": "La copie va dans : {{meal}}"
     },
     "mealInsights": {
       "title": "Analyse du repas",

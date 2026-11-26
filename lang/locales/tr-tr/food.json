@@ -212,7 +212,9 @@
       "scaleMealPortionPreview": "Bu porsiyonun tahmini toplamları",
       "sendDayToPhone": "Günü telefona gönder",
       "sendDayToPhoneDesc": "Bu günün tüm besinlerini animasyonlu QR kodlarla aktar",
-      "keepMealTypes": "Öğünlerini koru"
+      "keepMealTypes": "Öğünlerini koru",
+      "copyMealTitle": "Başka bir günden {{meal}}",
+      "copyMealTargetNote": "Kopya şuraya eklenecek: {{meal}}"
     },
     "mealInsights": {
       "title": "Öğün analizi",

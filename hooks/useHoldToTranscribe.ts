@@ -65,16 +65,26 @@ type Session = {
   finishTimer: ReturnType<typeof setTimeout> | null;
 };
 
+export type HoldToTranscribeOptions = {
+  /**
+   * Takes a successful transcript instead of the transcript modal. Returning `true` means the
+   * caller handled it (`outcome` stays null); `false` falls back to showing it. Failures and
+   * too-short taps never reach it. Read through a ref, so a new function identity is harmless.
+   */
+  onText?: (text: string) => boolean;
+};
+
 /**
  * Hold-to-talk speech to text, recognized on the device in the app's language.
  *
  * One hold is one recognition session: press-in checks permission and availability, then starts
  * continuous recognition; letting go stops it and the final text (or why there is none) becomes
- * `outcome`. Listeners exist only while this instance's session runs, so the copies of the bottom
- * bar that hidden tabs keep mounted never react to another bar's session. The pure rules (results
- * into one text, error codes into failures, a tap into a hint) are `utils/voiceInput.ts`.
+ * `outcome`, unless `options.onText` takes the text. Listeners exist only while this instance's
+ * session runs, so the copies of the bottom bar that hidden tabs keep mounted never react to
+ * another bar's session. The pure rules (results into one text, error codes into failures, a tap
+ * into a hint) are `utils/voiceInput.ts`.
  */
-export function useHoldToTranscribe(): HoldToTranscribe {
+export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTranscribe {
   const { t, i18n } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -84,6 +94,11 @@ export function useHoldToTranscribe(): HoldToTranscribe {
   const [outcome, setOutcome] = useState<HoldToTranscribeOutcome | null>(null);
   const holdRef = useRef<Hold | null>(null);
   const sessionRef = useRef<Session | null>(null);
+  const onTextRef = useRef<HoldToTranscribeOptions['onText']>(options?.onText);
+
+  useEffect(() => {
+    onTextRef.current = options?.onText;
+  }, [options?.onText]);
 
   const endHold = useCallback(
     (result: VoiceOutcome) => {
@@ -92,7 +107,11 @@ export function useHoldToTranscribe(): HoldToTranscribe {
       setLiveText('');
       if (result.kind === 'tooShort') {
         showSnackbar('success', t('voiceInput.holdHint'));
-      } else {
+        return;
+      }
+
+      const takenByCaller = result.kind === 'text' && onTextRef.current?.(result.text) === true;
+      if (!takenByCaller) {
         setOutcome(result);
       }
     },

@@ -5,7 +5,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { Platform } from 'react-native';
 
-import { useHoldToTranscribe } from '@/hooks/useHoldToTranscribe';
+import { type HoldToTranscribe, useHoldToTranscribe } from '@/hooks/useHoldToTranscribe';
 import { handleError } from '@/utils/handleError';
 import { MIN_VOICE_HOLD_MS, VOICE_FINISH_TIMEOUT_MS } from '@/utils/voiceInput';
 
@@ -341,6 +341,51 @@ describe('useHoldToTranscribe', () => {
     act(() => a.result.current.onPressIn());
     await flush();
     expect(speech.start).toHaveBeenCalledTimes(1);
+  });
+
+  describe('onText', () => {
+    /** Holds, speaks 'bom dia', lets go and ends the recognizer session. */
+    const speakAndRelease = async (result: { current: HoldToTranscribe }) => {
+      act(() => result.current.onPressIn());
+      await flush();
+      act(() => emit('start'));
+      act(() => emit('result', { isFinal: true, results: [{ transcript: 'bom dia' }] }));
+      act(() => {
+        jest.advanceTimersByTime(MIN_VOICE_HOLD_MS + 100);
+        result.current.onPressOut();
+      });
+      act(() => emit('end'));
+    };
+
+    it('takes the transcript when the caller returns true, with no outcome shown', async () => {
+      const onText = jest.fn(() => true);
+      const { result } = renderHook(() => useHoldToTranscribe({ onText }));
+      await speakAndRelease(result);
+
+      expect(onText).toHaveBeenCalledWith('bom dia');
+      expect(result.current.outcome).toBeNull();
+      expect(result.current.phase).toBe('idle');
+    });
+
+    it('shows the transcript when the caller returns false', async () => {
+      const onText = jest.fn(() => false);
+      const { result } = renderHook(() => useHoldToTranscribe({ onText }));
+      await speakAndRelease(result);
+
+      expect(onText).toHaveBeenCalledWith('bom dia');
+      expect(result.current.outcome).toEqual({ kind: 'text', text: 'bom dia' });
+    });
+
+    it('never calls onText for a failure', async () => {
+      speech.getPermissionsAsync.mockResolvedValue({ granted: false, canAskAgain: false });
+      const onText = jest.fn(() => true);
+      const { result } = renderHook(() => useHoldToTranscribe({ onText }));
+      act(() => result.current.onPressIn());
+      await flush();
+
+      expect(onText).not.toHaveBeenCalled();
+      expect(result.current.outcome).toEqual({ kind: 'failure', failure: 'permission' });
+    });
   });
 
   describe('downloadLanguage', () => {

@@ -212,7 +212,9 @@
       "scaleMealPortionPreview": "Geschätzte Werte für diese Portion",
       "sendDayToPhone": "Tag an Handy senden",
       "sendDayToPhoneDesc": "Alle Lebensmittel dieses Tages mit animierten QR-Codes übertragen",
-      "keepMealTypes": "Mahlzeiten beibehalten"
+      "keepMealTypes": "Mahlzeiten beibehalten",
+      "copyMealTitle": "{{meal}} von einem anderen Tag",
+      "copyMealTargetNote": "Die Kopie landet in: {{meal}}"
     },
     "mealInsights": {
       "title": "Mahlzeit-Analyse",

@@ -8,6 +8,9 @@ type FoodSearchTab = 'all' | 'myFoods' | 'openfood' | 'usda' | 'meals';
 export function useFoodScreenModals() {
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<FoodSearchTab>('all');
+  const [foodSearchInitialQuery, setFoodSearchInitialQuery] = useState<string | undefined>(
+    undefined
+  );
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
   const [isExternalFoodLogVisible, setIsExternalFoodLogVisible] = useState(false);
@@ -28,12 +31,18 @@ export function useFoodScreenModals() {
   const [isCopyDayModalVisible, setIsCopyDayModalVisible] = useState(false);
   const [isCopyDayLoading, setIsCopyDayLoading] = useState(false);
 
-  const openFoodSearch = useCallback((tab: FoodSearchTab = 'all') => {
+  // The query is optional: opening without one clears any query left from an earlier open.
+  // Only a non-empty string is kept, so a stray value (such as an event object) is never read.
+  const openFoodSearch = useCallback((tab: FoodSearchTab = 'all', query?: string) => {
     setFoodSearchInitialTab(tab);
+    setFoodSearchInitialQuery(typeof query === 'string' && query.trim() ? query : undefined);
     setIsFoodSearchModalVisible(true);
   }, []);
 
-  const closeFoodSearch = useCallback(() => setIsFoodSearchModalVisible(false), []);
+  const closeFoodSearch = useCallback(() => {
+    setIsFoodSearchModalVisible(false);
+    setFoodSearchInitialQuery(undefined);
+  }, []);
   const openCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(true), []);
   const closeCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
   const openMyMeals = useCallback(() => setIsMyMealsModalVisible(true), []);
@@ -74,6 +83,7 @@ export function useFoodScreenModals() {
   return {
     foodSearch: {
       initialTab: foodSearchInitialTab,
+      initialQuery: foodSearchInitialQuery,
       visible: isFoodSearchModalVisible,
       open: openFoodSearch,
       close: closeFoodSearch,

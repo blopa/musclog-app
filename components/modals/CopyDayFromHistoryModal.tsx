@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { MEAL_TYPES } from '@/components/nutrition/foodTypes';
 import { Button } from '@/components/theme/Button';
+import type { MealType } from '@/database/models/NutritionLog';
 import { type RecentLoggedDay, useCopyDaySource } from '@/hooks/useCopyDaySource';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -37,7 +39,18 @@ type CopyDayFromHistoryModalProps = {
   targetDayItemCount: number;
   onConfirm: (logIds: string[], sourceDate: Date) => Promise<void>;
   isLoading?: boolean;
+  /** Day the source starts on when the modal opens (for example, yesterday from a voice command). */
+  initialSourceDate?: Date | null;
+  /** Copy only this meal of the source day; the title names it. */
+  sourceMealType?: MealType;
+  /** The meal being copied into; shows a one-line note under the target notice. */
+  targetMealType?: MealType;
 };
+
+/** The meal's heading, from the diary's own table. */
+function mealTitleKey(mealType: MealType): string {
+  return MEAL_TYPES.find((meal) => meal.type === mealType)?.titleKey ?? 'food.meals.other';
+}
 
 /** A UTC-normalized day key rendered as a device-local Date for pickers and queries. */
 function localDateFromDayKey(dayKey: number): Date {
@@ -51,6 +64,9 @@ export function CopyDayFromHistoryModal({
   targetDayItemCount,
   onConfirm,
   isLoading = false,
+  initialSourceDate = null,
+  sourceMealType,
+  targetMealType,
 }: CopyDayFromHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -65,7 +81,12 @@ export function CopyDayFromHistoryModal({
   const isBusy = isLoading || isSubmitting;
 
   const { recentDays, isLoadingRecentDays, sections, isLoadingPreview, isSourceEmpty } =
-    useCopyDaySource({ enabled: visible, targetDate, sourceDate });
+    useCopyDaySource({
+      enabled: visible,
+      targetDate,
+      sourceDate,
+      mealType: sourceMealType,
+    });
 
   useEffect(() => {
     const reset = () => {
@@ -76,7 +97,17 @@ export function CopyDayFromHistoryModal({
       }
     };
 
+    // Opening with a preset day starts on it; the preview then loads like a picked day.
+    const preselect = () => {
+      setSourceDate(initialSourceDate ? localCalendarDayDate(initialSourceDate) : null);
+    };
+
     reset();
+    if (visible) {
+      preselect();
+    }
+    // Only the open transition matters; a changed preset while open is not re-applied.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const chooseSourceDate = (date: Date) => {
@@ -268,7 +299,13 @@ export function CopyDayFromHistoryModal({
     <BottomPopUp
       visible={visible}
       onClose={isBusy ? undefined : onClose}
-      title={t('food.actions.copyDayModalTitle')}
+      title={
+        sourceMealType === undefined
+          ? t('food.actions.copyDayModalTitle')
+          : t('food.actions.copyMealTitle', {
+              meal: t(mealTitleKey(sourceMealType)),
+            })
+      }
       footer={
         <View className="gap-3">
           {summary.itemCount > 0 ? (
@@ -330,6 +367,19 @@ export function CopyDayFromHistoryModal({
             </Text>
           </View>
         ) : null}
+
+        {targetMealType === undefined ? null : (
+          <Text
+            style={{
+              color: theme.colors.text.secondary,
+              fontSize: theme.typography.fontSize.xs,
+            }}
+          >
+            {t('food.actions.copyMealTargetNote', {
+              meal: t(mealTitleKey(targetMealType)),
+            })}
+          </Text>
+        )}
 
         {/* Recent days that actually have food — faster than hunting through a calendar. */}
         <View className="gap-2">

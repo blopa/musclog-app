@@ -212,7 +212,9 @@
       "scaleMealPortionPreview": "Geschatte totalen voor deze portie",
       "sendDayToPhone": "Dag naar telefoon sturen",
       "sendDayToPhoneDesc": "Zet het eten van deze hele dag over met bewegende QR-codes",
-      "keepMealTypes": "Eigen maaltijden behouden"
+      "keepMealTypes": "Eigen maaltijden behouden",
+      "copyMealTitle": "{{meal}} van een andere dag",
+      "copyMealTargetNote": "De kopie gaat naar: {{meal}}"
     },
     "mealInsights": {
       "title": "Maaltijdinzichten",

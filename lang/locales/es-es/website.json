@@ -689,7 +689,7 @@
             "content": "Para proporcionar sus funciones, la aplicación puede solicitar los siguientes permisos. Los datos obtenidos mediante ellos permanecen en tu Dispositivo, salvo que esta Política de Privacidad indique lo contrario:",
             "items": [
               "Cámara: para escanear códigos de barras y etiquetas nutricionales de alimentos, hacer fotos de comidas y recibir datos de otro dispositivo mediante códigos QR.",
-              "Micrófono: solo mientras mantienes pulsado el botón del micrófono, para convertir lo que dices en texto. Musclog pide al reconocimiento de voz de tu dispositivo que funcione sin conexión, y no guarda ni envía el audio.",
+              "Micrófono: solo mientras mantienes pulsado el botón del micrófono, para convertir lo que dices en texto. Musclog pide al reconocimiento de voz de tu dispositivo que funcione sin conexión, y no guarda ni envía el audio. Si las funciones de IA están configuradas, el texto resultante (nunca el audio) va a la IA que elegiste, como un mensaje escrito, para averiguar qué hacer. Con la IA en el dispositivo, se queda en tu dispositivo.",
               "Health Connect o Apple Health: consulta \"Health Connect y Apple Health\" más arriba.",
               "Notificaciones, alarmas exactas e inicio completado: para mostrar a tiempo los recordatorios de entrenamiento, temporizador de descanso, nutrición y ciclo, incluso después de que tu dispositivo se reinicie.",
               "Biometría (huella dactilar o rostro): para bloquear la aplicación o partes de ella, si lo activas.",

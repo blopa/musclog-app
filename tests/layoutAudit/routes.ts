@@ -536,6 +536,12 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/UserMenuModal.tsx': { fixture: 'Open User Menu Modal' },
   'components/modals/ViewExerciseModal.tsx': { fixture: 'Open View Exercise Modal' },
   'components/modals/VisualSettingsModal.tsx': { fixture: 'Open Visual Settings Modal' },
+  'components/modals/VoiceCommandModal.tsx': {
+    unaudited: 'not scripted yet: Debug → Voice command (typed), which needs a configured AI',
+  },
+  'components/modals/VoiceTranscriptModal.tsx': {
+    unaudited: 'not scripted yet: holding the mic needs on-device speech recognition (not on web)',
+  },
   'components/modals/WorkoutImportModal.tsx': {
     unaudited: 'not scripted yet: Settings → Backups and data → import a workout file',
   },

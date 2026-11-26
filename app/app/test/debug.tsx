@@ -16,6 +16,7 @@ import { ENCRYPTION_KEY } from '@/constants/database';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { useUnreadChat } from '@/context/UnreadChatContext';
+import { useVoiceCommands } from '@/context/VoiceCommandContext';
 import { database, Exercise, Setting, User, UserMetric } from '@/database';
 import type { MuscleGroup } from '@/database/models';
 import { MigrationService } from '@/database/services/MigrationService';
@@ -125,6 +126,8 @@ export default function DebugTestScreen() {
   const { checkMigrationData, migrationSummary, checkingOldDatabase } = useOldDatabaseMigration();
   const [migrationService] = useState(() => new MigrationService());
   const [unreadInput, setUnreadInput] = useState('');
+  const [voiceInput, setVoiceInput] = useState('');
+  const { submit: submitVoiceCommand } = useVoiceCommands();
   const unreadCount = useUnreadChatMessages();
   const { setUnreadCount, clearUnreadCount, unreadCountsByContext } = useUnreadChat();
 
@@ -732,6 +735,25 @@ export default function DebugTestScreen() {
               ))}
               <Button onPress={clearUnread} label="Clear All" size="sm" variant="secondary" />
             </View>
+          </View>
+
+          {/* Voice commands without a microphone: the same path a spoken sentence takes. */}
+          <View className="gap-3 rounded-control border border-border-accent bg-bg-overlay p-4">
+            <Text className="text-lg font-semibold text-text-primary">Voice command (typed)</Text>
+            <TextInput
+              className="rounded-control border border-border-light bg-bg-primary p-3 text-text-primary"
+              placeholder="same breakfast as yesterday"
+              placeholderTextColor={theme.colors.text.tertiary}
+              value={voiceInput}
+              onChangeText={setVoiceInput}
+            />
+            <Button
+              onPress={() => submitVoiceCommand(voiceInput.trim())}
+              disabled={!voiceInput.trim()}
+              label="Run command"
+              size="sm"
+              variant="accent"
+            />
           </View>
 
           {/* Navigation Links Section */}

@@ -30,6 +30,23 @@
         "title": "Ascolto interrotto",
         "message": "Qualcosa ha interrotto il riconoscimento vocale. Riprova."
       }
+    },
+    "command": {
+      "workingTitle": "Sto capendo cosa fare…",
+      "unmatchedTitle": "La voce non sa ancora farlo",
+      "canSay": "Puoi dire, per esempio:",
+      "askCoach": "Chiedi al coach",
+      "failed": "Il comando vocale non è riuscito. Riprova.",
+      "capability": {
+        "copyMeal": "“Ho fatto la stessa colazione di ieri”",
+        "searchFood": "“Cerca fiocchi d’avena per il pranzo”"
+      },
+      "rejection": {
+        "cantDetermine": "Musclog non ha capito cosa vuoi fare. Prova a dirlo in un altro modo.",
+        "missingFood": "Di’ quale alimento cercare.",
+        "sourceNotEarlier": "Scegli un giorno precedente a quello in cui copi.",
+        "unreadable": "Musclog non è riuscito a leggere la risposta dell'IA. Riprova."
+      }
     }
   }
 }

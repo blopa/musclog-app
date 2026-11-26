@@ -126,6 +126,11 @@ type FoodSearchModalProps = {
   /** Date to use when logging food (e.g. the date currently selected on the food screen). */
   logDate?: Date;
   initialTab?: 'all' | 'myFoods' | 'openfood' | 'usda' | 'meals';
+  /**
+   * Text to search for as soon as the modal opens (e.g. from a voice request). Applied only when
+   * it is a non-empty string; when absent the search box keeps whatever the person had typed.
+   */
+  initialQuery?: string;
   onCreatePress?: () => void;
   /** The barcode icon in the search field renders only while this is supplied. */
   onBarcodeScanPress?: () => void;
@@ -336,6 +341,7 @@ export function FoodSearchModal({
   mealType,
   logDate,
   initialTab = 'all',
+  initialQuery,
   onCreatePress,
   onBarcodeScanPress,
   onFoodSelect,
@@ -886,10 +892,14 @@ export function FoodSearchModal({
 
     const update = () => {
       setActiveFilter(initialTab);
+
+      if (initialQuery) {
+        setSearchQuery(initialQuery);
+      }
     };
 
     update();
-  }, [initialTab, visible]);
+  }, [initialTab, initialQuery, visible]);
 
   // If Open Food Facts or USDA tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {

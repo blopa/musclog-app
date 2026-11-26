@@ -212,7 +212,9 @@
       "scaleMealPortionPreview": "Примерные итоги для этой порции",
       "sendDayToPhone": "Отправить день на телефон",
       "sendDayToPhoneDesc": "Передать всю еду за этот день с помощью анимированных QR-кодов",
-      "keepMealTypes": "Оставить в своих приёмах пищи"
+      "keepMealTypes": "Оставить в своих приёмах пищи",
+      "copyMealTitle": "{{meal}} из другого дня",
+      "copyMealTargetNote": "Копия попадет в: {{meal}}"
     },
     "mealInsights": {
       "title": "Аналитика приёма пищи",

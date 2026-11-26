@@ -5,11 +5,13 @@ import { Text, View } from 'react-native';
 import { VoiceTranscriptModal } from '@/components/modals/VoiceTranscriptModal';
 import { CenterNavButton } from '@/components/navigation/CenterNavButton';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
+import { useVoiceCommands } from '@/context/VoiceCommandContext';
 import { useHoldToTranscribe } from '@/hooks/useHoldToTranscribe';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
- * The bottom bar's centre microphone: hold to speak, let go to see the text in a modal.
+ * The bottom bar's centre microphone: hold to speak, let go to have Musclog act on it
+ * (`VoiceCommandProvider`), or, with no AI ready, to see the text in a modal.
  *
  * It returns a fragment so the caption can be an absolutely positioned child of the bar's
  * `relative flex-row` (it takes no part in the row's layout, so the button keeps its slot) that
@@ -18,8 +20,17 @@ import { useTheme } from '@/hooks/useTheme';
 export function VoiceNavButton() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { ready, submit } = useVoiceCommands();
   const { phase, liveText, outcome, onPressIn, onPressOut, dismissOutcome, downloadLanguage } =
-    useHoldToTranscribe();
+    useHoldToTranscribe({
+      onText: (text) => {
+        if (ready) {
+          submit(text);
+        }
+
+        return ready;
+      },
+    });
   const showCaption = phase === 'listening' || phase === 'finishing';
 
   return (

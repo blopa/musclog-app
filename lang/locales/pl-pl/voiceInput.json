@@ -30,6 +30,23 @@
         "title": "Słuchanie zatrzymane",
         "message": "Coś przerwało rozpoznawanie mowy. Spróbuj ponownie."
       }
+    },
+    "command": {
+      "workingTitle": "Sprawdzam, co zrobić…",
+      "unmatchedTitle": "Głosem tego jeszcze nie da się zrobić",
+      "canSay": "Możesz powiedzieć na przykład:",
+      "askCoach": "Zapytaj coacha",
+      "failed": "Polecenie głosowe się nie powiodło. Spróbuj ponownie.",
+      "capability": {
+        "copyMeal": "„Zjadłem to samo śniadanie co wczoraj”",
+        "searchFood": "„Wyszukaj płatki owsiane na obiad”"
+      },
+      "rejection": {
+        "cantDetermine": "Musclog nie zrozumiał, co chcesz zrobić. Spróbuj powiedzieć to inaczej.",
+        "missingFood": "Powiedz, jakiego produktu szukać.",
+        "sourceNotEarlier": "Wybierz dzień wcześniejszy niż ten, do którego kopiujesz.",
+        "unreadable": "Musclog nie mógł odczytać odpowiedzi AI. Spróbuj ponownie."
+      }
     }
   }
 }

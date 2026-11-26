@@ -30,6 +30,23 @@
         "title": "Dinleme durdu",
         "message": "Bir şey konuşma tanımayı kesti. Tekrar dene."
       }
+    },
+    "command": {
+      "workingTitle": "Ne yapılacağı anlaşılıyor…",
+      "unmatchedTitle": "Sesli komut bunu henüz yapamıyor",
+      "canSay": "Şunları söyleyebilirsin:",
+      "askCoach": "Koça sor",
+      "failed": "Sesli komut başarısız oldu. Tekrar dene.",
+      "capability": {
+        "copyMeal": "“Dünkü kahvaltının aynısını yaptım”",
+        "searchFood": "“Öğle yemeği için yulaf ara”"
+      },
+      "rejection": {
+        "cantDetermine": "Musclog ne yapmak istediğini anlayamadı. Başka bir şekilde söylemeyi dene.",
+        "missingFood": "Hangi yiyeceği arayacağını söyle.",
+        "sourceNotEarlier": "Kopyalayacağın günden önceki bir gün seç.",
+        "unreadable": "Musclog yapay zekânın yanıtını okuyamadı. Tekrar dene."
+      }
     }
   }
 }

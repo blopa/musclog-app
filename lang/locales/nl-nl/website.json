@@ -689,7 +689,7 @@
             "content": "Om haar functies te bieden kan de applicatie om de volgende toestemmingen vragen. Gegevens die via deze toestemmingen worden verkregen, blijven op Uw Apparaat, tenzij dit Privacybeleid anders vermeldt:",
             "items": [
               "Camera: om voedingsbarcodes en voedingslabels te scannen, maaltijdfoto's te maken en gegevens van een ander apparaat te ontvangen via QR-codes.",
-              "Microfoon: alleen terwijl je de microfoonknop ingedrukt houdt, om wat je zegt in tekst om te zetten. Musclog vraagt de spraakherkenning van je apparaat om offline te werken en slaat het geluid niet op en stuurt het niet.",
+              "Microfoon: alleen terwijl je de microfoonknop ingedrukt houdt, om wat je zegt in tekst om te zetten. Musclog vraagt de spraakherkenning van je apparaat om offline te werken en slaat het geluid niet op en stuurt het niet. Als AI-functies zijn ingesteld, gaat de tekst die daaruit komt (nooit het geluid) naar de AI die je hebt gekozen, zoals een getypt bericht, om uit te zoeken wat er moet gebeuren. Met AI op het apparaat blijft hij op je apparaat.",
               "Health Connect of Apple Health: zie \"Health Connect en Apple Health\" hierboven.",
               "Meldingen, exacte alarmen en opstarten voltooid: om trainings-, rusttimer-, voedings- en cyclusherinneringen op tijd te tonen, ook nadat Uw Apparaat opnieuw is opgestart.",
               "Biometrie (vingerafdruk of gezicht): om de applicatie of onderdelen daarvan te vergrendelen, als u dit inschakelt.",

@@ -275,12 +275,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Theme-matched app icon on Android and iOS: picking a named theme switches the home-screen icon to
   that theme's colors (on Android once you leave the app; iOS shows its own confirmation alert).
   The System option and Kinetic Depth use the default icon
-- Voice to text (iOS and Android 13+, first version): Settings → Appearance and home → Navigation
-  bar → Center button can turn the bar's big camera button into a microphone. Hold it and speak;
-  what you say appears live above the bar, and when you let go the text opens in a window with an
-  OK button. Speech is recognized offline on the phone in the app's language and the audio is
-  neither stored nor sent; if that language is not on the phone yet, Android offers to download it
-  and iOS says to turn on dictation for it. The text is only shown for now
+- Voice to text (iOS and Android 13+): hold the Center button in the navigation bar (Settings → Appearance and home → Navigation bar → Center button can turn the big camera button into a microphone). With an AI provider set up, what you say becomes an action: copy a meal or a whole day from another day ("I had the same breakfast as yesterday") opens the copy review on that day and meal, and nothing is saved until you confirm; search for a food ("search oats for lunch") opens the food search already filled in. A question or anything else says what voice can do and offers to ask the coach. Without an AI provider, the text opens in a window as before. Speech is recognized offline on the phone in the app's language; the audio is neither stored nor sent, and only the text goes to the AI provider you chose. If the language is not on the phone yet, Android offers to download it and iOS says to turn on dictation for it.
 - Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary's gradient is chosen
   by the active theme — a flat card surface in Kinetic Light, a contrast-matched colorful sweep in
   the dark themes and in Kinetic Blush
