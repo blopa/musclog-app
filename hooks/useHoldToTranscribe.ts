@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 
 import { useSnackbar } from '@/context/SnackbarContext';
+import { acceptBrowserVoice, browserVoiceBlocker } from '@/utils/browserVoice';
 import { handleError } from '@/utils/handleError';
 import {
   applySpeechResult,
@@ -50,6 +51,8 @@ export type HoldToTranscribe = {
   dismissOutcome: () => void;
   /** Android only: asks the system to download the speech model for the app's language. */
   downloadLanguage: () => Promise<void>;
+  /** Web only: accepts the notice about the browser doing the speech recognition. */
+  allowBrowserRecognition: () => Promise<void>;
 };
 
 type Hold = { pressedAt: number; releasedAt: number | null };
@@ -75,7 +78,8 @@ export type HoldToTranscribeOptions = {
 };
 
 /**
- * Hold-to-talk speech to text, recognized on the device in the app's language.
+ * Hold-to-talk speech to text in the app's language: recognized on the device on a phone, by the
+ * browser on the web.
  *
  * One hold is one recognition session: press-in checks permission and availability, then starts
  * continuous recognition; letting go stops it and the final text (or why there is none) becomes
@@ -232,25 +236,37 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     async (hold: Hold) => {
       try {
         const speech = loadSpeechModule();
-        let permission = await speech.getPermissionsAsync();
-
-        if (!permission.granted) {
-          if (!permission.canAskAgain) {
-            endHold({ kind: 'failure', failure: 'permission' });
-            return;
-          }
-
-          permission = await speech.requestPermissionsAsync();
+        if (Platform.OS === 'web') {
+          const blocker = await browserVoiceBlocker();
           if (holdRef.current !== hold) {
             return;
           }
 
-          // The system dialog took the finger off the button, so this hold is over either way:
-          // allowed, the person is told to hold again.
-          endHold(
-            permission.granted ? { kind: 'tooShort' } : { kind: 'failure', failure: 'permission' }
-          );
-          return;
+          if (blocker) {
+            endHold(blocker);
+            return;
+          }
+        } else {
+          let permission = await speech.getPermissionsAsync();
+
+          if (!permission.granted) {
+            if (!permission.canAskAgain) {
+              endHold({ kind: 'failure', failure: 'permission' });
+              return;
+            }
+
+            permission = await speech.requestPermissionsAsync();
+            if (holdRef.current !== hold) {
+              return;
+            }
+
+            // The system dialog took the finger off the button, so this hold is over either way:
+            // allowed, the person is told to hold again.
+            endHold(
+              permission.granted ? { kind: 'tooShort' } : { kind: 'failure', failure: 'permission' }
+            );
+            return;
+          }
         }
 
         if (
@@ -362,6 +378,16 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     }
   }, [locale, showSnackbar, t]);
 
+  const allowBrowserRecognition = useCallback(async () => {
+    setOutcome(null);
+    try {
+      await acceptBrowserVoice();
+      showSnackbar('success', t('voiceInput.holdHint'));
+    } catch (error) {
+      void handleError(error, 'voiceInput.acceptBrowserNotice');
+    }
+  }, [showSnackbar, t]);
+
   return {
     phase,
     liveText,
@@ -370,5 +396,6 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     onPressOut,
     dismissOutcome,
     downloadLanguage,
+    allowBrowserRecognition,
   };
 }

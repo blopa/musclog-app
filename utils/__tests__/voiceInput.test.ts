@@ -2,7 +2,8 @@ import {
   EMPTY_TRANSCRIPT,
   MIN_VOICE_HOLD_MS,
   applySpeechResult,
-  canRecognizeSpeechOnDevice,
+  browserHasSpeechRecognition,
+  canOfferVoiceInput,
   resolveNavCenterAction,
   transcriptText,
   voiceFailureForError,
@@ -11,22 +12,43 @@ import {
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { parseNavCenterAction } from '@/constants/settings';
 
-describe('canRecognizeSpeechOnDevice', () => {
+describe('canOfferVoiceInput', () => {
   it('allows iOS for any version', () => {
-    expect(canRecognizeSpeechOnDevice({ OS: 'ios', Version: '17.0' })).toBe(true);
-    expect(canRecognizeSpeechOnDevice({ OS: 'ios', Version: 9 })).toBe(true);
+    expect(canOfferVoiceInput({ OS: 'ios', Version: '17.0' })).toBe(true);
+    expect(canOfferVoiceInput({ OS: 'ios', Version: 9 })).toBe(true);
   });
 
   it.each([33, 34, '33'])('allows Android %p (13+)', (Version) => {
-    expect(canRecognizeSpeechOnDevice({ OS: 'android', Version })).toBe(true);
+    expect(canOfferVoiceInput({ OS: 'android', Version })).toBe(true);
   });
 
   it.each([32, 26, '32'])('refuses Android %p (below 13)', (Version) => {
-    expect(canRecognizeSpeechOnDevice({ OS: 'android', Version })).toBe(false);
+    expect(canOfferVoiceInput({ OS: 'android', Version })).toBe(false);
   });
 
-  it.each(['web', 'windows', 'macos'])('refuses %s', (OS) => {
-    expect(canRecognizeSpeechOnDevice({ OS, Version: '1' })).toBe(false);
+  it.each(['windows', 'macos'])('refuses %s', (OS) => {
+    expect(canOfferVoiceInput({ OS, Version: '1' }, { SpeechRecognition: {} })).toBe(false);
+  });
+
+  it.each(['SpeechRecognition', 'webkitSpeechRecognition'])(
+    'offers web when the browser scope has %s',
+    (name) => {
+      expect(canOfferVoiceInput({ OS: 'web', Version: '1' }, { [name]: {} })).toBe(true);
+    }
+  );
+
+  it('refuses web when the browser scope has no speech recognition', () => {
+    expect(canOfferVoiceInput({ OS: 'web', Version: '1' }, {})).toBe(false);
+  });
+});
+
+describe('browserHasSpeechRecognition', () => {
+  it.each(['SpeechRecognition', 'webkitSpeechRecognition'])('is true with %s', (name) => {
+    expect(browserHasSpeechRecognition({ [name]: {} })).toBe(true);
+  });
+
+  it('is false with neither constructor', () => {
+    expect(browserHasSpeechRecognition({})).toBe(false);
   });
 });
 

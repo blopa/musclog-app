@@ -11,16 +11,21 @@
     "failure": {
       "permission": {
         "title": "El acceso al micrófono está desactivado",
-        "message": "Musclog necesita el micrófono para convertir lo que dices en texto. Puedes permitirlo en los ajustes del teléfono."
+        "message": "Musclog necesita el micrófono para convertir lo que dices en texto. Puedes permitirlo en los ajustes del teléfono.",
+        "messageWeb": "Musclog necesita el micrófono para convertir lo que dices en texto. Permítelo para este sitio en los ajustes del navegador."
       },
       "languageMissing": {
         "title": "Idioma no descargado",
         "messageAndroid": "El reconocimiento de voz para el idioma de Musclog todavía no está en este teléfono. Descárgalo una vez y funcionará sin conexión a partir de entonces.",
-        "messageIos": "El reconocimiento de voz para el idioma de Musclog todavía no está en este dispositivo. Activa el dictado para ese idioma en Ajustes, General, Teclado y vuelve a intentarlo."
+        "messageIos": "El reconocimiento de voz para el idioma de Musclog todavía no está en este dispositivo. Activa el dictado para ese idioma en Ajustes, General, Teclado y vuelve a intentarlo.",
+        "titleWeb": "Idioma no compatible",
+        "messageWeb": "Tu navegador no puede reconocer voz en el idioma configurado en Musclog."
       },
       "unavailable": {
         "title": "El reconocimiento de voz sin conexión no está disponible",
-        "message": "Este teléfono no puede convertir la voz en texto sin internet. Musclog solo usa reconocimiento de voz que funciona en tu teléfono."
+        "message": "Este teléfono no puede convertir la voz en texto sin internet. Musclog solo usa reconocimiento de voz que funciona en tu teléfono.",
+        "titleWeb": "El reconocimiento de voz no está disponible",
+        "messageWeb": "Tu navegador no ha podido convertir la voz en texto. Comprueba tu conexión a internet o prueba con Chrome, Edge o Safari."
       },
       "nothingHeard": {
         "title": "No se oyeron palabras",
@@ -29,6 +34,10 @@
       "failed": {
         "title": "Se detuvo la escucha",
         "message": "Algo interrumpió el reconocimiento de voz. Inténtalo de nuevo."
+      },
+      "browserNotice": {
+        "title": "Tu navegador convierte la voz en texto",
+        "message": "En la versión web, tu navegador reconoce lo que dices. Para ello puede enviar el audio a los servidores de su fabricante (Chrome lo envía a Google). Musclog nunca recibe ni guarda el audio. Si las funciones de IA están configuradas, el texto va a la IA que elegiste para averiguar qué hacer."
       }
     },
     "command": {
@@ -47,6 +56,8 @@
         "sourceNotEarlier": "Elige un día anterior al día al que copias.",
         "unreadable": "Musclog no ha podido leer la respuesta de la IA. Inténtalo de nuevo."
       }
-    }
+    },
+    "allow": "Permitir",
+    "notNow": "Ahora no"
   }
 }

@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Voz a texto",
-            "description": "Mantenlo pulsado y habla: lo que digas se convierte en texto, reconocido sin conexión en tu teléfono."
+            "description": "Mantenlo pulsado y habla: lo que digas se convierte en texto, reconocido sin conexión en tu teléfono.",
+            "descriptionWeb": "Mantén pulsado y habla: tu navegador convierte lo que dices en texto."
           }
         }
       }

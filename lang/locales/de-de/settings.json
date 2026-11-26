@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Sprache zu Text",
-            "description": "Gedrückt halten und sprechen: Was du sagst, wird zu Text, offline auf deinem Telefon erkannt."
+            "description": "Gedrückt halten und sprechen: Was du sagst, wird zu Text, offline auf deinem Telefon erkannt.",
+            "descriptionWeb": "Gedrückt halten und sprechen: Dein Browser wandelt das Gesagte in Text um."
           }
         }
       }

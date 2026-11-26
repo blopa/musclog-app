@@ -9,6 +9,9 @@ import { useVoiceCommands } from '@/context/VoiceCommandContext';
 import { useHoldToTranscribe } from '@/hooks/useHoldToTranscribe';
 import { useTheme } from '@/hooks/useTheme';
 
+/** The hold is read from press in and out; see `CenterNavButton`'s `onLongPress`. */
+const keepHolding = () => {};
+
 /**
  * The bottom bar's centre microphone: hold to speak, let go to have Musclog act on it
  * (`VoiceCommandProvider`), or, with no AI ready, to see the text in a modal.
@@ -21,16 +24,24 @@ export function VoiceNavButton() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { ready, submit } = useVoiceCommands();
-  const { phase, liveText, outcome, onPressIn, onPressOut, dismissOutcome, downloadLanguage } =
-    useHoldToTranscribe({
-      onText: (text) => {
-        if (ready) {
-          submit(text);
-        }
+  const {
+    phase,
+    liveText,
+    outcome,
+    onPressIn,
+    onPressOut,
+    dismissOutcome,
+    downloadLanguage,
+    allowBrowserRecognition,
+  } = useHoldToTranscribe({
+    onText: (text) => {
+      if (ready) {
+        submit(text);
+      }
 
-        return ready;
-      },
-    });
+      return ready;
+    },
+  });
   const showCaption = phase === 'listening' || phase === 'finishing';
 
   return (
@@ -61,11 +72,13 @@ export function VoiceNavButton() {
         active={phase !== 'idle'}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
+        onLongPress={keepHolding}
       />
       <VoiceTranscriptModal
         outcome={outcome}
         onClose={dismissOutcome}
         onDownloadLanguage={() => void downloadLanguage()}
+        onAllowBrowser={() => void allowBrowserRecognition()}
       />
     </>
   );

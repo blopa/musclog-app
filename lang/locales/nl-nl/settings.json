@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Spraak naar tekst",
-            "description": "Houd ingedrukt en spreek: wat je zegt wordt tekst, offline herkend op je telefoon."
+            "description": "Houd ingedrukt en spreek: wat je zegt wordt tekst, offline herkend op je telefoon.",
+            "descriptionWeb": "Houd ingedrukt en spreek: je browser zet wat je zegt om in tekst."
           }
         }
       }

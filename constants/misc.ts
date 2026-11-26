@@ -46,6 +46,8 @@ export const COACH_REPLY_JOURNAL = 'coachReplyJournal';
  * this phone's), so it is excluded from backups.
  */
 export const LOCAL_MODEL_DOWNLOAD_STATE = 'localModelDownloadState';
+/** Web only: the person accepted that the browser does the speech recognition (`'true'`). */
+export const VOICE_BROWSER_NOTICE_ACCEPTED = 'voiceBrowserNoticeAccepted';
 
 /**
  * The text of a message whose reply failed while nobody was looking at the chat, kept so the

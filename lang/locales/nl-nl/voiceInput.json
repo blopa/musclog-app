@@ -11,16 +11,21 @@
     "failure": {
       "permission": {
         "title": "Microfoontoegang staat uit",
-        "message": "Musclog heeft de microfoon nodig om wat je zegt in tekst om te zetten. Je kunt dat toestaan in de instellingen van je telefoon."
+        "message": "Musclog heeft de microfoon nodig om wat je zegt in tekst om te zetten. Je kunt dat toestaan in de instellingen van je telefoon.",
+        "messageWeb": "Musclog heeft de microfoon nodig om wat je zegt om te zetten in tekst. Sta hem voor deze site toe in de instellingen van je browser."
       },
       "languageMissing": {
         "title": "Taal niet gedownload",
         "messageAndroid": "Spraakherkenning voor de taal waarop Musclog staat, is nog niet op deze telefoon. Download haar één keer; daarna werkt ze offline.",
-        "messageIos": "Spraakherkenning voor de taal waarop Musclog staat, is nog niet op dit apparaat. Zet dicteren voor die taal aan via Instellingen, Algemeen, Toetsenbord en probeer het opnieuw."
+        "messageIos": "Spraakherkenning voor de taal waarop Musclog staat, is nog niet op dit apparaat. Zet dicteren voor die taal aan via Instellingen, Algemeen, Toetsenbord en probeer het opnieuw.",
+        "titleWeb": "Taal niet ondersteund",
+        "messageWeb": "Je browser kan geen spraak herkennen in de taal waarop Musclog is ingesteld."
       },
       "unavailable": {
         "title": "Offline spraakherkenning is niet beschikbaar",
-        "message": "Deze telefoon kan spraak zonder internet niet in tekst omzetten. Musclog gebruikt alleen spraakherkenning die op je telefoon zelf draait."
+        "message": "Deze telefoon kan spraak zonder internet niet in tekst omzetten. Musclog gebruikt alleen spraakherkenning die op je telefoon zelf draait.",
+        "titleWeb": "Spraakherkenning is niet beschikbaar",
+        "messageWeb": "Je browser kon de spraak niet omzetten in tekst. Controleer je internetverbinding of probeer Chrome, Edge of Safari."
       },
       "nothingHeard": {
         "title": "Geen woorden gehoord",
@@ -29,6 +34,10 @@
       "failed": {
         "title": "Luisteren gestopt",
         "message": "Er is iets tussengekomen bij de spraakherkenning. Probeer het opnieuw."
+      },
+      "browserNotice": {
+        "title": "Je browser zet spraak om in tekst",
+        "message": "In de webversie herkent je browser wat je zegt. Daarvoor kan hij het geluid naar de servers van de maker sturen (Chrome stuurt het naar Google). Musclog ontvangt en bewaart het geluid nooit. Als AI-functies zijn ingesteld, gaat de tekst naar de AI die je hebt gekozen, om uit te zoeken wat er moet gebeuren."
       }
     },
     "command": {
@@ -47,6 +56,8 @@
         "sourceNotEarlier": "Kies een dag die eerder is dan de dag waarnaar je kopieert.",
         "unreadable": "Musclog kon het antwoord van de AI niet lezen. Probeer het opnieuw."
       }
-    }
+    },
+    "allow": "Toestaan",
+    "notNow": "Niet nu"
   }
 }

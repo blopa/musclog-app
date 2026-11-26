@@ -11,16 +11,21 @@
     "failure": {
       "permission": {
         "title": "Microphone access is off",
-        "message": "Musclog needs the microphone to turn what you say into text. You can allow it in your phone's settings."
+        "message": "Musclog needs the microphone to turn what you say into text. You can allow it in your phone's settings.",
+        "messageWeb": "Musclog needs the microphone to turn what you say into text. Allow it for this site in your browser's settings."
       },
       "languageMissing": {
         "title": "Language not downloaded",
         "messageAndroid": "Speech recognition for the language Musclog is set to is not on this phone yet. Download it once and it works offline from then on.",
-        "messageIos": "Speech recognition for the language Musclog is set to is not on this device yet. Turn on dictation for that language in Settings, General, Keyboard, then try again."
+        "messageIos": "Speech recognition for the language Musclog is set to is not on this device yet. Turn on dictation for that language in Settings, General, Keyboard, then try again.",
+        "titleWeb": "Language not supported",
+        "messageWeb": "Your browser cannot recognize speech in the language Musclog is set to."
       },
       "unavailable": {
         "title": "Offline speech recognition is unavailable",
-        "message": "This phone cannot turn speech into text without the internet. Musclog only uses speech recognition that runs on your phone."
+        "message": "This phone cannot turn speech into text without the internet. Musclog only uses speech recognition that runs on your phone.",
+        "titleWeb": "Speech recognition is unavailable",
+        "messageWeb": "Your browser could not turn speech into text. Check your internet connection, or try Chrome, Edge or Safari."
       },
       "nothingHeard": {
         "title": "No words heard",
@@ -29,6 +34,10 @@
       "failed": {
         "title": "Listening stopped",
         "message": "Something interrupted speech recognition. Try again."
+      },
+      "browserNotice": {
+        "title": "Your browser turns speech into text",
+        "message": "In the web version, your browser recognizes what you say. It may send the audio to its maker's servers to do that (Chrome sends it to Google). Musclog never receives or stores the audio. If AI features are set up, the text goes to the AI you chose, to work out what to do."
       }
     },
     "command": {
@@ -47,6 +56,8 @@
         "sourceNotEarlier": "Choose a day earlier than the one you are copying to.",
         "unreadable": "Musclog couldn't read the AI's answer. Try again."
       }
-    }
+    },
+    "allow": "Allow",
+    "notNow": "Not now"
   }
 }

@@ -11,16 +11,21 @@
     "failure": {
       "permission": {
         "title": "L'accès au micro est désactivé",
-        "message": "Musclog a besoin du micro pour transformer ta voix en texte. Tu peux l'autoriser dans les réglages de ton téléphone."
+        "message": "Musclog a besoin du micro pour transformer ta voix en texte. Tu peux l'autoriser dans les réglages de ton téléphone.",
+        "messageWeb": "Musclog a besoin du micro pour transformer ta voix en texte. Autorise-le pour ce site dans les réglages de ton navigateur."
       },
       "languageMissing": {
         "title": "Langue non téléchargée",
         "messageAndroid": "La reconnaissance vocale pour la langue choisie dans Musclog n'est pas encore sur ce téléphone. Télécharge-la une fois : elle fonctionnera ensuite hors connexion.",
-        "messageIos": "La reconnaissance vocale pour la langue choisie dans Musclog n'est pas encore sur cet appareil. Active la dictée pour cette langue dans Réglages, Général, Clavier, puis réessaie."
+        "messageIos": "La reconnaissance vocale pour la langue choisie dans Musclog n'est pas encore sur cet appareil. Active la dictée pour cette langue dans Réglages, Général, Clavier, puis réessaie.",
+        "titleWeb": "Langue non prise en charge",
+        "messageWeb": "Ton navigateur ne peut pas reconnaître la parole dans la langue choisie dans Musclog."
       },
       "unavailable": {
         "title": "La reconnaissance vocale hors connexion n'est pas disponible",
-        "message": "Ce téléphone ne peut pas transformer la voix en texte sans internet. Musclog n'utilise que la reconnaissance vocale qui fonctionne sur ton téléphone."
+        "message": "Ce téléphone ne peut pas transformer la voix en texte sans internet. Musclog n'utilise que la reconnaissance vocale qui fonctionne sur ton téléphone.",
+        "titleWeb": "La reconnaissance vocale n’est pas disponible",
+        "messageWeb": "Ton navigateur n’a pas pu transformer la voix en texte. Vérifie ta connexion internet ou essaie Chrome, Edge ou Safari."
       },
       "nothingHeard": {
         "title": "Aucun mot entendu",
@@ -29,6 +34,10 @@
       "failed": {
         "title": "Écoute interrompue",
         "message": "Quelque chose a interrompu la reconnaissance vocale. Réessaie."
+      },
+      "browserNotice": {
+        "title": "Ton navigateur transforme la voix en texte",
+        "message": "Dans la version web, c’est ton navigateur qui reconnaît ce que tu dis. Pour cela, il peut envoyer l’audio aux serveurs de son éditeur (Chrome l’envoie à Google). Musclog ne reçoit ni ne conserve jamais l’audio. Si les fonctions d’IA sont configurées, le texte est envoyé à l’IA que tu as choisie, pour déterminer quoi faire."
       }
     },
     "command": {
@@ -47,6 +56,8 @@
         "sourceNotEarlier": "Choisis un jour antérieur à celui où tu copies.",
         "unreadable": "Musclog n’a pas pu lire la réponse de l’IA. Réessaie."
       }
-    }
+    },
+    "allow": "Autoriser",
+    "notNow": "Pas maintenant"
   }
 }

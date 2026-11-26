@@ -6,6 +6,7 @@ import { act, renderHook } from '@testing-library/react';
 import { Platform } from 'react-native';
 
 import { type HoldToTranscribe, useHoldToTranscribe } from '@/hooks/useHoldToTranscribe';
+import { acceptBrowserVoice, browserVoiceBlocker } from '@/utils/browserVoice';
 import { handleError } from '@/utils/handleError';
 import { MIN_VOICE_HOLD_MS, VOICE_FINISH_TIMEOUT_MS } from '@/utils/voiceInput';
 
@@ -23,6 +24,11 @@ jest.mock('@/context/SnackbarContext', () => ({
 }));
 
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
+
+jest.mock('@/utils/browserVoice', () => ({
+  acceptBrowserVoice: jest.fn(),
+  browserVoiceBlocker: jest.fn(),
+}));
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -425,5 +431,81 @@ describe('useHoldToTranscribe', () => {
         snackbarMessage: 'voiceInput.downloadFailed',
       });
     });
+  });
+});
+
+describe('useHoldToTranscribe on the web', () => {
+  const browserBlocker = browserVoiceBlocker as jest.Mock;
+  const accept = acceptBrowserVoice as jest.Mock;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.clearAllMocks();
+    speechMock.__resetListeners();
+    setOS('web');
+    speech.isRecognitionAvailable.mockReturnValue(true);
+    speech.supportsOnDeviceRecognition.mockReturnValue(true);
+  });
+  afterEach(() => {
+    setOS('android');
+    jest.useRealTimers();
+  });
+
+  it('ends the hold with the blocker outcome and never starts recognition', async () => {
+    browserBlocker.mockResolvedValue({ kind: 'failure', failure: 'browserNotice' });
+    const { result } = renderHook(() => useHoldToTranscribe());
+
+    act(() => result.current.onPressIn());
+    await flush();
+
+    expect(result.current.outcome).toEqual({ kind: 'failure', failure: 'browserNotice' });
+    expect(result.current.phase).toBe('idle');
+    expect(speech.start).not.toHaveBeenCalled();
+  });
+
+  it('starts recognition without asking the native permission when the blocker is null', async () => {
+    browserBlocker.mockResolvedValue(null);
+    const { result } = renderHook(() => useHoldToTranscribe());
+
+    act(() => result.current.onPressIn());
+    await flush();
+
+    expect(speech.start).toHaveBeenCalledTimes(1);
+    expect(speech.getPermissionsAsync).not.toHaveBeenCalled();
+  });
+
+  it('accepts the browser notice, clears the outcome and shows the hold hint', async () => {
+    browserBlocker.mockResolvedValue({ kind: 'failure', failure: 'browserNotice' });
+    const { result } = renderHook(() => useHoldToTranscribe());
+    act(() => result.current.onPressIn());
+    await flush();
+    expect(result.current.outcome).not.toBeNull();
+
+    await act(async () => {
+      await result.current.allowBrowserRecognition();
+    });
+
+    expect(accept).toHaveBeenCalledTimes(1);
+    expect(result.current.outcome).toBeNull();
+    expect(mockShowSnackbar).toHaveBeenCalledWith('success', 'voiceInput.holdHint');
+  });
+
+  it('does not start a session when let go while the blocker check is pending', async () => {
+    let resolveBlocker: (value: null) => void = () => {};
+    browserBlocker.mockReturnValue(
+      new Promise((resolve) => {
+        resolveBlocker = resolve;
+      })
+    );
+    const { result } = renderHook(() => useHoldToTranscribe());
+
+    act(() => result.current.onPressIn());
+    act(() => result.current.onPressOut());
+
+    resolveBlocker(null);
+    await flush();
+
+    expect(speech.start).not.toHaveBeenCalled();
+    expect(result.current.phase).toBe('idle');
   });
 });

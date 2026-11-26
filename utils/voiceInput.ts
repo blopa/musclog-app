@@ -4,12 +4,15 @@
  * what the person is told when a hold ends. `hooks/useHoldToTranscribe.ts` wires it to
  * `expo-speech-recognition`.
  *
- * Speech is only ever recognized ON the device. Android's on-device recognizer
+ * On a phone speech is only ever recognized ON the device. Android's on-device recognizer
  * (`SpeechRecognizer.createOnDeviceSpeechRecognizer`) exists from Android 13; below it the library
  * can only ask the default recognizer to *prefer* offline, so the audio could leave the phone. On
  * iOS the patched module (`patches/expo-speech-recognition+*.patch`) refuses a language without an
- * on-device model instead of falling back to Apple's servers. Browsers send audio to a server, so
- * the web never offers it.
+ * on-device model instead of falling back to Apple's servers.
+ *
+ * On the web the browser does the recognizing and may send the audio to its maker's servers (Chrome
+ * does), so it is offered where the browser has the Web Speech API, behind a one-time notice the
+ * person accepts (`utils/browserVoice.ts`).
  */
 import type { NavCenterAction } from '@/constants/settings';
 
@@ -29,8 +32,23 @@ export const VOICE_FINISH_TIMEOUT_MS = 6000;
 /** The two fields of React Native's `Platform` this module reads. */
 export type SpeechPlatform = { OS: string; Version: string | number };
 
-/** Whether this platform can turn speech into text without the audio leaving the device. */
-export function canRecognizeSpeechOnDevice({ OS, Version }: SpeechPlatform): boolean {
+/** Whether this browser has the Web Speech API (Chrome, Edge and Safari do; Firefox does not). */
+export function browserHasSpeechRecognition(scope: object = globalThis): boolean {
+  return 'SpeechRecognition' in scope || 'webkitSpeechRecognition' in scope;
+}
+
+/**
+ * Whether voice input is offered: on a phone that can recognize speech without the audio leaving
+ * it, or in a browser that can recognize speech at all.
+ */
+export function canOfferVoiceInput(
+  { OS, Version }: SpeechPlatform,
+  browserScope: object = globalThis
+): boolean {
+  if (OS === 'web') {
+    return browserHasSpeechRecognition(browserScope);
+  }
+
   if (OS === 'ios') {
     return true;
   }
@@ -93,6 +111,8 @@ export const VOICE_FAILURES = [
   'unavailable',
   'nothingHeard',
   'failed',
+  /** Web only, and not a fault: what the browser does with the audio, to accept before a hold. */
+  'browserNotice',
 ] as const;
 export type VoiceFailure = (typeof VOICE_FAILURES)[number];
 
@@ -108,8 +128,8 @@ const BLOCKING_FAILURES: ReadonlySet<VoiceFailure> = new Set([
 
 /**
  * What an `error` event's code means to the person. `aborted` is our own cancel (the button went
- * away mid-hold) and means nothing. `network` can only mean the recognizer wanted the internet,
- * which on-device recognition must not, so it reads as unavailable.
+ * away mid-hold) and means nothing. `network` means the recognizer wanted the internet, which
+ * on-device recognition must not and a browser could not reach, so it reads as unavailable.
  */
 export function voiceFailureForError(code: string): VoiceFailure | null {
   switch (code) {

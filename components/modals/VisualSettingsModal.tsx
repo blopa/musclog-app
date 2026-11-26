@@ -76,7 +76,7 @@ import {
   type NutritionDisplayMacro,
   selectedMacrosToBinary,
 } from '@/utils/nutritionDisplay';
-import { canRecognizeSpeechOnDevice } from '@/utils/voiceInput';
+import { canOfferVoiceInput } from '@/utils/voiceInput';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -127,7 +127,10 @@ const NAV_CENTER_ACTION_CHOICES: Record<
   voice: {
     icon: Mic,
     labelKey: 'settings.visualSettings.centerButton.options.voice.label',
-    descriptionKey: 'settings.visualSettings.centerButton.options.voice.description',
+    descriptionKey:
+      Platform.OS === 'web'
+        ? 'settings.visualSettings.centerButton.options.voice.descriptionWeb'
+        : 'settings.visualSettings.centerButton.options.voice.description',
   },
 };
 
@@ -281,8 +284,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     await SettingsService.set(SETTINGS.navCenterAction, choice);
   };
 
-  // A stored 'voice' on a device that cannot recognize speech on the device is not shown or used.
-  const canChooseVoice = canRecognizeSpeechOnDevice(Platform);
+  // A stored 'voice' on a device or browser that cannot offer voice input is not shown or used.
+  const canChooseVoice = canOfferVoiceInput(Platform);
   const centerAction = NAV_CENTER_ACTION_CHOICES[navCenterAction];
   const CenterIcon = centerAction.icon;
   const foodGrouping = FOOD_DIARY_GROUPING_CHOICES[foodDiaryGrouping];

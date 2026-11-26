@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Voz para texto",
-            "description": "Segure e fale: o que você disser vira texto, reconhecido offline no seu celular."
+            "description": "Segure e fale: o que você disser vira texto, reconhecido offline no seu celular.",
+            "descriptionWeb": "Segure e fale: seu navegador transforma o que você diz em texto."
           }
         }
       }

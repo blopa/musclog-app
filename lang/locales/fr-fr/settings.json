@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Voix vers texte",
-            "description": "Maintiens-le et parle : ce que tu dis devient du texte, reconnu hors connexion sur ton téléphone."
+            "description": "Maintiens-le et parle : ce que tu dis devient du texte, reconnu hors connexion sur ton téléphone.",
+            "descriptionWeb": "Maintiens et parle : ton navigateur transforme ce que tu dis en texte."
           }
         }
       }

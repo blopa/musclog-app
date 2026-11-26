@@ -11,6 +11,8 @@ type CenterNavButtonProps = {
   onPress?: () => void;
   onPressIn?: () => void;
   onPressOut?: () => void;
+  /** On the web, a handler here keeps a long touch from opening the browser's context menu. */
+  onLongPress?: () => void;
 };
 
 /**
@@ -24,6 +26,7 @@ export function CenterNavButton({
   onPress,
   onPressIn,
   onPressOut,
+  onLongPress,
 }: CenterNavButtonProps) {
   const theme = useTheme();
   const { width: screenWidth } = useWindowDimensions();
@@ -33,9 +36,11 @@ export function CenterNavButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      className="z-10 items-center justify-center gap-1"
+      // `select-none`: a held button must not select text on the web.
+      className="z-10 select-none items-center justify-center gap-1"
       style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
       onPress={onPress}
+      onLongPress={onLongPress}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
     >

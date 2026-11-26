@@ -17,7 +17,7 @@ import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationIte
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
-import { canRecognizeSpeechOnDevice, resolveNavCenterAction } from '@/utils/voiceInput';
+import { canOfferVoiceInput, resolveNavCenterAction } from '@/utils/voiceInput';
 
 type NavigationMenuProps = {
   onCoachPress: () => void;
@@ -153,7 +153,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const hasCamera = useHasCamera();
   const { navCenterAction } = useSettings();
   const centerAction = resolveNavCenterAction(navCenterAction, {
-    voiceAvailable: canRecognizeSpeechOnDevice(Platform),
+    voiceAvailable: canOfferVoiceInput(Platform),
     hasCamera,
   });
   const insets = useAppSafeAreaInsets();

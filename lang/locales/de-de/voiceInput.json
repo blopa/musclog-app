@@ -11,16 +11,21 @@
     "failure": {
       "permission": {
         "title": "Mikrofonzugriff ist aus",
-        "message": "Musclog braucht das Mikrofon, um deine Sprache in Text umzuwandeln. Du kannst den Zugriff in den Einstellungen deines Telefons erlauben."
+        "message": "Musclog braucht das Mikrofon, um deine Sprache in Text umzuwandeln. Du kannst den Zugriff in den Einstellungen deines Telefons erlauben.",
+        "messageWeb": "Musclog braucht das Mikrofon, um deine Sprache in Text umzuwandeln. Erlaube es für diese Website in den Einstellungen deines Browsers."
       },
       "languageMissing": {
         "title": "Sprache nicht heruntergeladen",
         "messageAndroid": "Die Spracherkennung für die Sprache, auf die Musclog eingestellt ist, ist auf diesem Telefon noch nicht verfügbar. Lade sie einmal herunter, dann funktioniert sie danach offline.",
-        "messageIos": "Die Spracherkennung für die Sprache, auf die Musclog eingestellt ist, ist auf diesem Gerät noch nicht verfügbar. Aktiviere das Diktat für diese Sprache unter Einstellungen, Allgemein, Tastatur, und versuche es dann erneut."
+        "messageIos": "Die Spracherkennung für die Sprache, auf die Musclog eingestellt ist, ist auf diesem Gerät noch nicht verfügbar. Aktiviere das Diktat für diese Sprache unter Einstellungen, Allgemein, Tastatur, und versuche es dann erneut.",
+        "titleWeb": "Sprache wird nicht unterstützt",
+        "messageWeb": "Dein Browser kann in der Sprache, die in Musclog eingestellt ist, keine Sprache erkennen."
       },
       "unavailable": {
         "title": "Offline-Spracherkennung ist nicht verfügbar",
-        "message": "Dieses Telefon kann Sprache ohne Internet nicht in Text umwandeln. Musclog nutzt nur Spracherkennung, die auf deinem Telefon läuft."
+        "message": "Dieses Telefon kann Sprache ohne Internet nicht in Text umwandeln. Musclog nutzt nur Spracherkennung, die auf deinem Telefon läuft.",
+        "titleWeb": "Spracherkennung ist nicht verfügbar",
+        "messageWeb": "Dein Browser konnte die Sprache nicht in Text umwandeln. Prüfe deine Internetverbindung oder probiere Chrome, Edge oder Safari."
       },
       "nothingHeard": {
         "title": "Keine Worte gehört",
@@ -29,6 +34,10 @@
       "failed": {
         "title": "Zuhören beendet",
         "message": "Die Spracherkennung wurde unterbrochen. Versuche es noch einmal."
+      },
+      "browserNotice": {
+        "title": "Dein Browser wandelt Sprache in Text um",
+        "message": "In der Webversion erkennt dein Browser, was du sagst. Dafür sendet er das Audio möglicherweise an die Server seines Herstellers (Chrome sendet es an Google). Musclog empfängt und speichert das Audio nie. Wenn KI-Funktionen eingerichtet sind, geht der Text an die KI, die du gewählt hast, damit sie herausfindet, was zu tun ist."
       }
     },
     "command": {
@@ -47,6 +56,8 @@
         "sourceNotEarlier": "Wähle einen Tag, der vor dem Tag liegt, auf den du kopierst.",
         "unreadable": "Musclog konnte die Antwort der KI nicht lesen. Versuche es noch einmal."
       }
-    }
+    },
+    "allow": "Erlauben",
+    "notNow": "Nicht jetzt"
   }
 }

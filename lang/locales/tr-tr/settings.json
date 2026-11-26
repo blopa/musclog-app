@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Sesten metne",
-            "description": "Basılı tut ve konuş: söylediklerin metne dönüşür, telefonunda internetsiz tanınır."
+            "description": "Basılı tut ve konuş: söylediklerin metne dönüşür, telefonunda internetsiz tanınır.",
+            "descriptionWeb": "Basılı tut ve konuş: söylediklerini tarayıcın metne çevirir."
           }
         }
       }

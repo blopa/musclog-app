@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Głos na tekst",
-            "description": "Przytrzymaj i mów: to, co powiesz, zamienia się w tekst, rozpoznawany offline na telefonie."
+            "description": "Przytrzymaj i mów: to, co powiesz, zamienia się w tekst, rozpoznawany offline na telefonie.",
+            "descriptionWeb": "Przytrzymaj i mów: przeglądarka zamienia Twoje słowa na tekst."
           }
         }
       }

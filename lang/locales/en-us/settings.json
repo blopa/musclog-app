@@ -472,7 +472,8 @@
           },
           "voice": {
             "label": "Voice to text",
-            "description": "Hold it and speak: what you say becomes text, recognized offline on your phone."
+            "description": "Hold it and speak: what you say becomes text, recognized offline on your phone.",
+            "descriptionWeb": "Hold it and speak: your browser turns what you say into text."
           }
         }
       }

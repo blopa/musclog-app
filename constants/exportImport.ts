@@ -11,6 +11,7 @@ import {
   REVIEW_PROMPT_STATE,
   SETTINGS_MIRROR_STORAGE_KEY,
   TEMP_NUTRITION_PLAN,
+  VOICE_BROWSER_NOTICE_ACCEPTED,
 } from '@/constants/misc';
 import {
   CLAUDE_API_KEY_SETTING_TYPE,
@@ -44,6 +45,8 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   REVIEW_PROMPT_STATE,
   // Resume data of a model download on THIS device; meaningless anywhere else.
   LOCAL_MODEL_DOWNLOAD_STATE,
+  // Consent given in one browser: a restore elsewhere asks again.
+  VOICE_BROWSER_NOTICE_ACCEPTED,
 ]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';

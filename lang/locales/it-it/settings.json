@@ -476,7 +476,8 @@
           },
           "voice": {
             "label": "Voce in testo",
-            "description": "Tienilo premuto e parla: quello che dici diventa testo, riconosciuto offline sul tuo telefono."
+            "description": "Tienilo premuto e parla: quello che dici diventa testo, riconosciuto offline sul tuo telefono.",
+            "descriptionWeb": "Tieni premuto e parla: il tuo browser trasforma in testo quello che dici."
           }
         }
       }

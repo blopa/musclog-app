@@ -11,16 +11,21 @@
     "failure": {
       "permission": {
         "title": "Dostęp do mikrofonu jest wyłączony",
-        "message": "Musclog potrzebuje mikrofonu, żeby zamieniać mowę na tekst. Możesz zezwolić na to w ustawieniach telefonu."
+        "message": "Musclog potrzebuje mikrofonu, żeby zamieniać mowę na tekst. Możesz zezwolić na to w ustawieniach telefonu.",
+        "messageWeb": "Musclog potrzebuje mikrofonu, żeby zamieniać mowę na tekst. Zezwól na to dla tej witryny w ustawieniach przeglądarki."
       },
       "languageMissing": {
         "title": "Język nie został pobrany",
         "messageAndroid": "Rozpoznawanie mowy dla języka ustawionego w Musclog nie jest jeszcze na tym telefonie. Pobierz je raz, a potem będzie działać bez internetu.",
-        "messageIos": "Rozpoznawanie mowy dla języka ustawionego w Musclog nie jest jeszcze na tym urządzeniu. Włącz dyktowanie dla tego języka w Ustawienia, Ogólne, Klawiatura i spróbuj ponownie."
+        "messageIos": "Rozpoznawanie mowy dla języka ustawionego w Musclog nie jest jeszcze na tym urządzeniu. Włącz dyktowanie dla tego języka w Ustawienia, Ogólne, Klawiatura i spróbuj ponownie.",
+        "titleWeb": "Język nieobsługiwany",
+        "messageWeb": "Twoja przeglądarka nie potrafi rozpoznawać mowy w języku ustawionym w Musclog."
       },
       "unavailable": {
         "title": "Rozpoznawanie mowy offline jest niedostępne",
-        "message": "Ten telefon nie może zamienić mowy na tekst bez internetu. Musclog korzysta tylko z rozpoznawania mowy działającego na Twoim telefonie."
+        "message": "Ten telefon nie może zamienić mowy na tekst bez internetu. Musclog korzysta tylko z rozpoznawania mowy działającego na Twoim telefonie.",
+        "titleWeb": "Rozpoznawanie mowy jest niedostępne",
+        "messageWeb": "Przeglądarka nie zdołała zamienić mowy na tekst. Sprawdź połączenie z internetem albo użyj Chrome, Edge lub Safari."
       },
       "nothingHeard": {
         "title": "Nie usłyszano słów",
@@ -29,6 +34,10 @@
       "failed": {
         "title": "Słuchanie zatrzymane",
         "message": "Coś przerwało rozpoznawanie mowy. Spróbuj ponownie."
+      },
+      "browserNotice": {
+        "title": "Przeglądarka zamienia mowę na tekst",
+        "message": "W wersji internetowej to Twoja przeglądarka rozpoznaje to, co mówisz. Może w tym celu wysyłać nagranie na serwery swojego producenta (Chrome wysyła je do Google). Musclog nigdy nie otrzymuje ani nie przechowuje nagrania. Jeśli funkcje AI są skonfigurowane, tekst trafia do wybranej przez Ciebie AI, aby ustalić, co zrobić."
       }
     },
     "command": {
@@ -47,6 +56,8 @@
         "sourceNotEarlier": "Wybierz dzień wcześniejszy niż ten, do którego kopiujesz.",
         "unreadable": "Musclog nie mógł odczytać odpowiedzi AI. Spróbuj ponownie."
       }
-    }
+    },
+    "allow": "Zezwól",
+    "notNow": "Nie teraz"
   }
 }

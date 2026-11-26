@@ -12,6 +12,8 @@ type VoiceTranscriptModalProps = {
   onClose: () => void;
   /** Android only: asks the system to download the speech model. */
   onDownloadLanguage: () => void;
+  /** Web only: accepts that the browser does the speech recognition. */
+  onAllowBrowser: () => void;
 };
 
 const FAILURE_COPY: Record<VoiceFailure, { titleKey: string; messageKey: string }> = {
@@ -36,16 +38,40 @@ const FAILURE_COPY: Record<VoiceFailure, { titleKey: string; messageKey: string 
     titleKey: 'voiceInput.failure.failed.title',
     messageKey: 'voiceInput.failure.failed.message',
   },
+  browserNotice: {
+    titleKey: 'voiceInput.failure.browserNotice.title',
+    messageKey: 'voiceInput.failure.browserNotice.message',
+  },
+};
+
+/** The failures whose phone wording (settings, downloads, offline) is wrong in a browser. */
+const WEB_FAILURE_COPY: Partial<Record<VoiceFailure, { titleKey: string; messageKey: string }>> = {
+  permission: {
+    titleKey: 'voiceInput.failure.permission.title',
+    messageKey: 'voiceInput.failure.permission.messageWeb',
+  },
+  languageMissing: {
+    titleKey: 'voiceInput.failure.languageMissing.titleWeb',
+    messageKey: 'voiceInput.failure.languageMissing.messageWeb',
+  },
+  unavailable: {
+    titleKey: 'voiceInput.failure.unavailable.titleWeb',
+    messageKey: 'voiceInput.failure.unavailable.messageWeb',
+  },
 };
 
 const LANGUAGE_MISSING_ANDROID_MESSAGE_KEY = 'voiceInput.failure.languageMissing.messageAndroid';
 
-function failureMessageKey(failure: VoiceFailure): string {
-  if (failure === 'languageMissing' && Platform.OS === 'android') {
-    return LANGUAGE_MISSING_ANDROID_MESSAGE_KEY;
+function failureCopy(failure: VoiceFailure): { titleKey: string; messageKey: string } {
+  if (Platform.OS === 'web') {
+    return WEB_FAILURE_COPY[failure] ?? FAILURE_COPY[failure];
   }
 
-  return FAILURE_COPY[failure].messageKey;
+  if (failure === 'languageMissing' && Platform.OS === 'android') {
+    return { ...FAILURE_COPY[failure], messageKey: LANGUAGE_MISSING_ANDROID_MESSAGE_KEY };
+  }
+
+  return FAILURE_COPY[failure];
 }
 
 /**
@@ -56,6 +82,7 @@ export function VoiceTranscriptModal({
   outcome,
   onClose,
   onDownloadLanguage,
+  onAllowBrowser,
 }: VoiceTranscriptModalProps) {
   const { t } = useTranslation();
   const failure = outcome?.kind === 'failure' ? outcome.failure : null;
@@ -64,12 +91,12 @@ export function VoiceTranscriptModal({
   if (outcome?.kind === 'text') {
     title = t('voiceInput.resultTitle');
   } else if (failure) {
-    title = t(FAILURE_COPY[failure].titleKey);
+    title = t(failureCopy(failure).titleKey);
   }
 
   const footer = (
     <View className="flex-row flex-wrap gap-3">
-      {failure === 'permission' ? (
+      {failure === 'permission' && Platform.OS !== 'web' ? (
         <View className="grow basis-[140px]">
           <Button
             label={t('voiceInput.openSettings')}
@@ -94,9 +121,38 @@ export function VoiceTranscriptModal({
           />
         </View>
       ) : null}
-      <View className="grow basis-[140px]">
-        <Button label={t('common.ok')} variant="accent" size="md" width="full" onPress={onClose} />
-      </View>
+      {failure === 'browserNotice' ? (
+        <>
+          <View className="grow basis-[140px]">
+            <Button
+              label={t('voiceInput.notNow')}
+              variant="outline"
+              size="md"
+              width="full"
+              onPress={onClose}
+            />
+          </View>
+          <View className="grow basis-[140px]">
+            <Button
+              label={t('voiceInput.allow')}
+              variant="accent"
+              size="md"
+              width="full"
+              onPress={onAllowBrowser}
+            />
+          </View>
+        </>
+      ) : (
+        <View className="grow basis-[140px]">
+          <Button
+            label={t('common.ok')}
+            variant="accent"
+            size="md"
+            width="full"
+            onPress={onClose}
+          />
+        </View>
+      )}
     </View>
   );
 
@@ -114,7 +170,7 @@ export function VoiceTranscriptModal({
         </Text>
       ) : null}
       {failure ? (
-        <Text className="text-base text-text-primary">{t(failureMessageKey(failure))}</Text>
+        <Text className="text-base text-text-primary">{t(failureCopy(failure).messageKey)}</Text>
       ) : null}
     </CenteredModal>
   );

@@ -11,16 +11,21 @@
     "failure": {
       "permission": {
         "title": "Mikrofon erişimi kapalı",
-        "message": "Musclog, söylediklerini metne çevirmek için mikrofona ihtiyaç duyar. Bunu telefonunun ayarlarından izin verebilirsin."
+        "message": "Musclog, söylediklerini metne çevirmek için mikrofona ihtiyaç duyar. Bunu telefonunun ayarlarından izin verebilirsin.",
+        "messageWeb": "Musclog, söylediklerini metne çevirmek için mikrofona ihtiyaç duyuyor. Tarayıcının ayarlarından bu site için izin ver."
       },
       "languageMissing": {
         "title": "Dil indirilmedi",
         "messageAndroid": "Musclog'un ayarlı olduğu dil için konuşma tanıma bu telefonda henüz yok. Bir kez indir, sonrasında internetsiz çalışır.",
-        "messageIos": "Musclog'un ayarlı olduğu dil için konuşma tanıma bu cihazda henüz yok. Ayarlar, Genel, Klavye yolundan o dil için diktayı aç ve tekrar dene."
+        "messageIos": "Musclog'un ayarlı olduğu dil için konuşma tanıma bu cihazda henüz yok. Ayarlar, Genel, Klavye yolundan o dil için diktayı aç ve tekrar dene.",
+        "titleWeb": "Dil desteklenmiyor",
+        "messageWeb": "Tarayıcın, Musclog’da ayarlı dilde konuşma tanıyamıyor."
       },
       "unavailable": {
         "title": "Çevrimdışı konuşma tanıma kullanılamıyor",
-        "message": "Bu telefon internet olmadan sesi metne çeviremiyor. Musclog yalnızca telefonunda çalışan konuşma tanımayı kullanır."
+        "message": "Bu telefon internet olmadan sesi metne çeviremiyor. Musclog yalnızca telefonunda çalışan konuşma tanımayı kullanır.",
+        "titleWeb": "Konuşma tanıma kullanılamıyor",
+        "messageWeb": "Tarayıcın konuşmayı metne çeviremedi. İnternet bağlantını kontrol et ya da Chrome, Edge veya Safari’yi dene."
       },
       "nothingHeard": {
         "title": "Hiç kelime duyulmadı",
@@ -29,6 +34,10 @@
       "failed": {
         "title": "Dinleme durdu",
         "message": "Bir şey konuşma tanımayı kesti. Tekrar dene."
+      },
+      "browserNotice": {
+        "title": "Konuşmayı metne tarayıcın çevirir",
+        "message": "Web sürümünde söylediklerini tarayıcın tanır. Bunun için sesi üreticisinin sunucularına gönderebilir (Chrome, Google’a gönderir). Musclog sesi hiçbir zaman almaz ve saklamaz. Yapay zekâ özellikleri kuruluysa metin, ne yapılacağını anlamak için seçtiğin yapay zekâya gider."
       }
     },
     "command": {
@@ -47,6 +56,8 @@
         "sourceNotEarlier": "Kopyalayacağın günden önceki bir gün seç.",
         "unreadable": "Musclog yapay zekânın yanıtını okuyamadı. Tekrar dene."
       }
-    }
+    },
+    "allow": "İzin ver",
+    "notNow": "Şimdi değil"
   }
 }

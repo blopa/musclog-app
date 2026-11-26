@@ -689,7 +689,7 @@
             "content": "To provide its features, the application may ask for the following permissions. Data obtained through them stays on Your Device unless this Privacy Policy says otherwise:",
             "items": [
               "Camera: to scan food barcodes and nutrition labels, take meal photos and receive data from another device through QR codes.",
-              "Microphone: only while You hold the microphone button, to turn what You say into text. Musclog asks Your Device's own speech recognition to work offline, and does not store or send the audio. If AI features are set up, the resulting text (never the audio) goes to the AI You chose, like a typed message, to work out what to do. With on-device AI it stays on Your Device.",
+              "Microphone: only while You hold the microphone button, to turn what You say into text. Musclog asks Your Device's own speech recognition to work offline, and does not store or send the audio. If AI features are set up, the resulting text (never the audio) goes to the AI You chose, like a typed message, to work out what to do. With on-device AI it stays on Your Device. In the web version, Your browser recognizes the speech instead and may send the audio to its maker's servers (for example Google, for Chrome) to do so. Musclog tells You this before the first use and never receives or stores the audio.",
               "Health Connect or Apple Health: see \"Health Connect and Apple Health\" above.",
               "Notifications, exact alarms and boot completed: to show workout, rest timer, nutrition and cycle reminders on time, including after Your device restarts.",
               "Biometrics (fingerprint or face): to lock the application or parts of it, if You turn this on.",
