@@ -15,7 +15,7 @@ import {
 
 type Slot = { choices?: readonly string[]; description: string };
 
-const SLOTS = {
+export const SLOTS = {
   meal: { choices: VOICE_MEALS, description: 'The meal it goes into.' },
   day: { choices: VOICE_DAYS, description: 'The day it happens on.' },
   from_meal: { choices: VOICE_MEALS, description: 'copy_meal: the meal copied.' },
@@ -23,7 +23,9 @@ const SLOTS = {
   food: { description: 'search_food: the food name only.' },
 } as const satisfies Record<string, Slot>;
 
-const SLOT_KEYS = Object.keys(SLOTS) as (keyof typeof SLOTS)[];
+export type VoiceSlotKey = keyof typeof SLOTS;
+
+const SLOT_KEYS = Object.keys(SLOTS) as VoiceSlotKey[];
 
 /** A slot nobody spoke about: required-but-null for strict OpenAI, nullable for Gemini, else absent. */
 function slotProperty(slot: Slot, dialect: StructuredDialect): Record<string, unknown> {

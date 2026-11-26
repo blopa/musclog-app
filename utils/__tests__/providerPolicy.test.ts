@@ -33,6 +33,22 @@ describe('providerPolicyFor', () => {
     }
   });
 
+  it('asks for voice commands in a native tool-call format only on the downloaded model', () => {
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).nativeToolCalls).toBe(true);
+
+    for (const config of [
+      { provider: 'on-device', engine: 'apple' },
+      { provider: 'local' },
+      { provider: 'openai' },
+      { provider: 'gemini' },
+      { provider: 'claude' },
+      { provider: 'hosted' },
+      { provider: 'gateway' },
+    ] as const) {
+      expect(providerPolicyFor(config).nativeToolCalls).toBeUndefined();
+    }
+  });
+
   it('never runs the chat review on an on-device engine, and only there', () => {
     for (const config of [
       { provider: 'on-device', engine: 'gguf' },

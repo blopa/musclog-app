@@ -19,15 +19,20 @@ function oneOf<T extends string>(value: unknown, choices: readonly T[]): T | nul
   return choices.find((choice) => choice === normalized) ?? null;
 }
 
-function foodText(value: unknown): string | null {
-  if (typeof value !== 'string') {
-    return null;
-  }
+const ABSENT = Symbol('absent');
 
-  const text = value.trim().slice(0, MAX_VOICE_FOOD_CHARS).trim();
+/** A slot nobody filled: missing, null, blank, or the word "null" a small model writes for none. */
+function isAbsent(value: unknown): boolean {
+  return (
+    value === undefined ||
+    value === null ||
+    (typeof value === 'string' && (!value.trim() || value.trim().toLowerCase() === 'null'))
+  );
+}
 
-  // A small model sometimes writes the word where it means no value.
-  return !text || text.toLowerCase() === 'null' ? null : text;
+/** `ABSENT` for an unfilled slot, the choice for a valid one, `null` for any other value. */
+function slot<T extends string>(value: unknown, choices: readonly T[]): T | typeof ABSENT | null {
+  return isAbsent(value) ? ABSENT : oneOf(value, choices);
 }
 
 function parseCommand(value: unknown): VoiceCommand | null {
@@ -40,18 +45,38 @@ function parseCommand(value: unknown): VoiceCommand | null {
     return null;
   }
 
+  const meal = slot(value.meal, VOICE_MEALS);
+  const day = slot(value.day, VOICE_DAYS);
+  const fromMeal = slot(value.from_meal, VOICE_MEALS);
+  const fromDay = slot(value.from_day, VOICE_SOURCE_DAYS);
+  // A value that is present but outside its choices makes the command unusable.
+  if (meal === null || day === null || fromMeal === null || fromDay === null) {
+    return null;
+  }
+
+  let food: string | null = null;
+  if (!isAbsent(value.food)) {
+    if (typeof value.food !== 'string') {
+      return null;
+    }
+
+    food = value.food.trim().slice(0, MAX_VOICE_FOOD_CHARS).trim() || null;
+  }
+
   return {
     tool,
-    meal: oneOf(value.meal, VOICE_MEALS),
-    day: oneOf(value.day, VOICE_DAYS),
-    fromMeal: oneOf(value.from_meal, VOICE_MEALS),
-    fromDay: oneOf(value.from_day, VOICE_SOURCE_DAYS),
-    food: foodText(value.food),
+    meal: meal === ABSENT ? null : meal,
+    day: day === ABSENT ? null : day,
+    fromMeal: fromMeal === ABSENT ? null : fromMeal,
+    fromDay: fromDay === ABSENT ? null : fromDay,
+    food,
   };
 }
 
 /**
- * Reads a model's reply leniently: an unknown tool is dropped and a bad slot becomes `null`.
+ * Reads a model's reply: an unknown tool is dropped, and so is a command with a slot value outside
+ * its choices (a small model writes filler such as `from_day: "tomorrow"` when it has nothing to
+ * put there, and reading it as "not said" turned it into an action). An unfilled slot is `null`.
  * Returns `null` when the reply has no command list at all, and an empty list when none is usable.
  */
 export function parseVoiceCommands(raw: unknown): VoiceCommand[] | null {

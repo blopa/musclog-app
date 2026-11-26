@@ -1,10 +1,12 @@
 import { localCalendarDayDate, localCalendarDayPlusDays } from '@/utils/calendarDate';
 import { mealTypeForHour } from '@/utils/mealTypeForHour';
+import { isFoodSaid } from '@/utils/voiceCommand/grounding';
 import {
   VOICE_WEEKDAYS,
   type VoiceCommand,
   type VoiceDay,
   type VoiceResolution,
+  type VoiceResolveContext,
   type VoiceSourceDay,
   type VoiceWeekday,
 } from '@/utils/voiceCommand/types';
@@ -44,7 +46,10 @@ function sourceDay(day: VoiceSourceDay, now: Date, targetDay: Date): Date {
   return localCalendarDayPlusDays(localCalendarDayDate(now), offset);
 }
 
-export function resolveCopyMeal(command: VoiceCommand, now: Date): VoiceResolution {
+export function resolveCopyMeal(
+  command: VoiceCommand,
+  { now }: VoiceResolveContext
+): VoiceResolution {
   const targetDay = relativeDay(command.day, now);
   // Nothing said means nothing picked: the review asks for the day instead of the app guessing.
   const from = command.fromDay ? sourceDay(command.fromDay, now, targetDay) : null;
@@ -67,10 +72,18 @@ export function resolveCopyMeal(command: VoiceCommand, now: Date): VoiceResoluti
   };
 }
 
-export function resolveSearchFood(command: VoiceCommand, now: Date): VoiceResolution {
+export function resolveSearchFood(
+  command: VoiceCommand,
+  { now, transcript }: VoiceResolveContext
+): VoiceResolution {
   const query = command.food?.trim();
   if (!query) {
     return { ok: false, reason: 'missingFood' };
+  }
+
+  // A model fills the slot from its examples; a food the person never said is not a request.
+  if (!isFoodSaid(query, transcript)) {
+    return { ok: false, reason: 'cantDetermine' };
   }
 
   return {

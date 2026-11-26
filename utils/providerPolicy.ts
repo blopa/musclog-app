@@ -90,6 +90,16 @@ export type ProviderPolicy = {
    */
   skipsInsightFactCheck?: boolean;
   /**
+   * A voice command is routed through the model's own tool-call format (the chat template's tool
+   * list, with the engine parsing the calls; `requestNativeToolCall`) instead of a JSON schema. Given
+   * the schema prompt, a 450M model copied its first example for nearly every sentence ("Hello my
+   * name is Pablo" became "copy yesterday's breakfast"; 7 of 24 held-out sentences right); in the
+   * format it was trained on, with the tools in a measured order and a few example turns, it got
+   * 27 of 37 right (measured 2026-11-26, `docs/RESEARCH.md` → Voice commands on the downloaded
+   * model). Only the downloaded model: Apple's engine has no such format.
+   */
+  nativeToolCalls?: boolean;
+  /**
    * What happens to a structured reply from this provider. Absent: it is used as it came (the free
    * tier, whose schema cannot be relied on but whose replies were never repaired, and Apple's engine,
    * whose guided generation the OS enforces).
@@ -241,13 +251,15 @@ const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
 
 /**
  * The downloaded model: the small-model rules, its schema is a hard requirement, a chat reply
- * that copies its own earlier ones is written again, and an insight is not fact-checked in rounds.
+ * that copies its own earlier ones is written again, an insight is not fact-checked in rounds, and
+ * a voice command uses its own tool-call format.
  */
 const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
   ...SMALL_MODEL_POLICY,
   ...ON_DEVICE_CAPABILITIES,
   regeneratesCopiedChatReply: true,
   skipsInsightFactCheck: true,
+  nativeToolCalls: true,
 };
 
 /**

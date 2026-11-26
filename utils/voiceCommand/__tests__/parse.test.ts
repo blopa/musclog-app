@@ -43,15 +43,40 @@ describe('parseVoiceCommands', () => {
     expect(command.fromDay).toBe('monday');
   });
 
-  it('turns a bad enum value into a null slot, not a rejected command', () => {
+  it('drops a command with a value outside its choices, in any of the four slots', () => {
+    const bad = [
+      { meal: 'brunch' },
+      { day: 'last_week' },
+      { from_meal: 'elevenses' },
+      { from_day: 'tomorrow' },
+      { meal: 5 },
+    ];
+
+    for (const slots of bad) {
+      expect(parseVoiceCommands({ commands: [{ tool: 'copy_meal', ...slots }] })).toEqual([]);
+    }
+  });
+
+  it('drops a search_food whose food is not a string', () => {
+    expect(parseVoiceCommands({ commands: [{ tool: 'search_food', food: 3 }] })).toEqual([]);
+  });
+
+  it('reads missing, null, blank and "null" slots as not said', () => {
     const [command] =
       parseVoiceCommands({
-        commands: [{ tool: 'copy_meal', meal: 'brunch', from_day: 'last_week' }],
+        commands: [
+          { tool: 'copy_meal', meal: null, day: ' ', from_meal: 'NULL', from_day: undefined },
+        ],
       }) ?? [];
 
-    expect(command.tool).toBe('copy_meal');
-    expect(command.meal).toBeNull();
-    expect(command.fromDay).toBeNull();
+    expect(command).toEqual({
+      tool: 'copy_meal',
+      meal: null,
+      day: null,
+      fromMeal: null,
+      fromDay: null,
+      food: null,
+    });
   });
 
   it('trims food, caps it at 80 characters and reads "null" or blank as no food', () => {

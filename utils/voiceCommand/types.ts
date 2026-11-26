@@ -94,3 +94,6 @@ export type VoiceRejection =
 
 export type VoiceResolution =
   { ok: true; action: VoiceAction } | { ok: false; reason: VoiceRejection };
+
+/** What a command is resolved against: the moment of speaking and what the person said. */
+export type VoiceResolveContext = { now: Date; transcript: string };

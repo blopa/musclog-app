@@ -166,6 +166,99 @@ describe('generateWithLocalModel', () => {
     }
   });
 
+  describe('tool calls', () => {
+    const tools = [
+      { name: 'copy_meal', description: 'Copy a meal', parameters: { type: 'object' } },
+    ];
+
+    it('sends tools in the wrapped shape with tool_choice auto and no response_format', async () => {
+      await generateWithLocalModel({ messages, tools });
+
+      const params = mockContext.completion.mock.calls[0][0] as Record<string, unknown>;
+      expect(params).toMatchObject({
+        tools: [
+          {
+            type: 'function',
+            function: {
+              name: 'copy_meal',
+              description: 'Copy a meal',
+              parameters: { type: 'object' },
+            },
+          },
+        ],
+        tool_choice: 'auto',
+      });
+      expect(params).not.toHaveProperty('response_format');
+    });
+
+    it('returns the calls: string arguments kept, object ones stringified, nameless dropped', async () => {
+      mockCompletionImpl = async () => ({
+        text: '',
+        tool_calls: [
+          { id: 'a', function: { name: 'copy_meal', arguments: '{"x":1}' } },
+          { function: { name: 'search_food', arguments: { q: 'rice' } } },
+          { id: 'c', function: { arguments: '{}' } },
+        ],
+      });
+      const result = await generateWithLocalModel({ messages, tools });
+
+      expect(result.toolCalls).toEqual([
+        { id: 'a', name: 'copy_meal', arguments: '{"x":1}' },
+        { name: 'search_food', arguments: '{"q":"rice"}' },
+      ]);
+    });
+
+    it('has an empty list when the model answered in text, and none without tools', async () => {
+      const withTools = await generateWithLocalModel({ messages, tools });
+      const without = await generateWithLocalModel({ messages });
+
+      expect(withTools.toolCalls).toEqual([]);
+      expect(without).not.toHaveProperty('toolCalls');
+    });
+
+    it('maps assistant tool calls and tool messages to the OpenAI snake_case shape', async () => {
+      await generateWithLocalModel({
+        messages: [
+          { role: 'user', content: 'hi' },
+          { role: 'assistant', content: '', toolCalls: [{ name: 'copy_meal', arguments: '{}' }] },
+          { role: 'tool', content: 'done', toolCallId: 'call_0' },
+        ],
+        tools,
+      });
+
+      const sent = (mockContext.completion.mock.calls[0][0] as { messages: unknown[] }).messages;
+      expect(sent).toEqual([
+        { role: 'user', content: 'hi' },
+        {
+          role: 'assistant',
+          content: '',
+          tool_calls: [
+            { id: 'call_0', type: 'function', function: { name: 'copy_meal', arguments: '{}' } },
+          ],
+        },
+        { role: 'tool', content: 'done', tool_call_id: 'call_0' },
+      ]);
+    });
+
+    it('takes no vendor sampling, and an explicit temperature wins', async () => {
+      await generateWithLocalModel({ messages, tools });
+      await generateWithLocalModel({ messages, tools, temperature: 0 });
+
+      const [first, second] = mockContext.completion.mock.calls.map((c) => c[0]);
+      expect(first).toMatchObject({ temperature: 0.2 });
+      expect(first).not.toHaveProperty('min_p');
+      expect(first).not.toHaveProperty('penalty_repeat');
+      expect(second).toMatchObject({ temperature: 0 });
+    });
+
+    it('rejects tools together with a schema without calling completion', async () => {
+      await expect(generateWithLocalModel({ messages, tools, schema: {} })).rejects.toThrow(
+        'tools or a schema'
+      );
+      expect(mockContext.completion).not.toHaveBeenCalled();
+    });
+  });
+
   it('attaches the projector only for a photo and releases it after a short idle', async () => {
     await generateWithLocalModel({ messages, image: 'file:///photo.jpg' });
 
@@ -504,5 +597,51 @@ describe('llamaRuntime.web', () => {
     expect(result.text).toBe('hello');
     expect(deltas).toEqual(['hello']);
     expect(webModule.isLocalModelLoaded()).toBe(false);
+  });
+
+  it('sends tools and reads tool_calls from the dev server', async () => {
+    let webModule!: typeof import('../llamaRuntime.web');
+    const fetchMock = jest.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: '',
+                tool_calls: [{ id: 't1', function: { name: 'copy_meal', arguments: { a: 1 } } }],
+              },
+            },
+          ],
+        }),
+    }));
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    jest.isolateModules(() => {
+      jest.doMock('../devWebBridge', () => ({
+        isDevWebLocalModel: () => true,
+        devLocalModelBaseUrl: () => 'http://localhost:8080',
+      }));
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      webModule = require('../llamaRuntime.web');
+    });
+
+    const tools = [{ name: 'copy_meal', description: 'd', parameters: { type: 'object' } }];
+    const result = await webModule.generateWithLocalModel({ messages, tools });
+    const body = JSON.parse(
+      (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].body as string
+    );
+
+    expect(body.tool_choice).toBe('auto');
+    expect(body.tools[0]).toEqual({
+      type: 'function',
+      function: { name: 'copy_meal', description: 'd', parameters: { type: 'object' } },
+    });
+    expect(body).not.toHaveProperty('min_p');
+    expect(result.toolCalls).toEqual([{ id: 't1', name: 'copy_meal', arguments: '{"a":1}' }]);
+    await expect(
+      webModule.generateWithLocalModel({ messages, tools, schema: {} })
+    ).rejects.toThrow();
   });
 });

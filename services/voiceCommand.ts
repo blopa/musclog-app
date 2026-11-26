@@ -4,12 +4,20 @@ import { rethrowUserFacingAiError } from '@/utils/aiErrors';
 import { reportAiEvent } from '@/utils/aiTelemetry';
 import {
   AiCreditsError,
+  type CoachAIConfig,
   GatewayRateLimitError,
   isAiCreditsError,
   reportAiError,
+  requestNativeToolCall,
   requestStructured,
 } from '@/utils/coachAI';
-import { wrapUserContent } from '@/utils/promptSanitizer';
+import { prepareChatText, wrapUserContent } from '@/utils/promptSanitizer';
+import { providerPolicyFor } from '@/utils/providerPolicy';
+import {
+  buildNativeVoiceTools,
+  NATIVE_VOICE_EXAMPLES,
+  nativeVoiceReply,
+} from '@/utils/voiceCommand/nativeTools';
 import { parseVoiceCommands } from '@/utils/voiceCommand/parse';
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
 import { buildVoiceCommandSchema } from '@/utils/voiceCommand/schema';
@@ -23,6 +31,37 @@ export type VoiceCommandOutcome =
   | { kind: 'unavailable' };
 
 const OPERATION = 'voiceCommand';
+
+/**
+ * Asks the model which command the sentence is, and returns its answer in the shape
+ * `parseVoiceCommands` reads, or null for an answer that cannot be read. No custom prompts,
+ * memories or persona on either path: they must not change which action runs.
+ */
+async function requestCommands(config: CoachAIConfig, transcript: string): Promise<unknown> {
+  if (providerPolicyFor(config).nativeToolCalls) {
+    // The model's own format: the example turns, then the sentence as a plain user turn (it is a
+    // turn of a conversation, not text spliced into a prompt, so nothing is escaped).
+    const reply = await requestNativeToolCall(config, {
+      operation: OPERATION,
+      messages: [...NATIVE_VOICE_EXAMPLES, { role: 'user', content: prepareChatText(transcript) }],
+      tools: buildNativeVoiceTools(),
+    });
+
+    return nativeVoiceReply(reply);
+  }
+
+  const result = await requestStructured(config, {
+    operation: OPERATION,
+    schemaName: 'voice_command',
+    systemPrompt: getVoiceCommandSystemPrompt(),
+    history: [],
+    userMessage: wrapUserContent(transcript),
+    buildSchema: buildVoiceCommandSchema,
+    task: 'extraction',
+  });
+
+  return result.kind === 'ok' ? result.value : null;
+}
 
 /**
  * Works out what a spoken sentence asks the app to do. It only decides: nothing is read from or
@@ -40,20 +79,7 @@ export async function interpretVoiceCommand(
   }
 
   try {
-    const result = await requestStructured(
-      { ...config, signal },
-      {
-        operation: OPERATION,
-        schemaName: 'voice_command',
-        // No custom prompts, memories or persona: they must not change which action runs.
-        systemPrompt: getVoiceCommandSystemPrompt(),
-        history: [],
-        userMessage: wrapUserContent(transcript),
-        buildSchema: buildVoiceCommandSchema,
-        task: 'extraction',
-      }
-    );
-    const commands = result.kind === 'ok' ? parseVoiceCommands(result.value) : null;
+    const commands = parseVoiceCommands(await requestCommands({ ...config, signal }, transcript));
     if (!commands) {
       reportAiEvent('voice-command-unusable', { provider: config.provider, operation: OPERATION });
 
@@ -65,7 +91,7 @@ export async function interpretVoiceCommand(
       return { kind: 'rejected', reason: 'cantDetermine' };
     }
 
-    const resolution = resolveVoiceCommand(command, now);
+    const resolution = resolveVoiceCommand(command, { now, transcript });
 
     return resolution.ok
       ? { kind: 'action', action: resolution.action }

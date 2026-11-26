@@ -23,6 +23,7 @@ import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { captureException } from '@/utils/sentry';
 import { createSerialQueue } from '@/utils/serialQueue';
 
+import { readToolCalls, toEngineMessages, toEngineTools } from './localToolMessages';
 import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
 
 type LlamaModule = typeof import('llama.rn');
@@ -31,12 +32,21 @@ type LlamaContext = import('llama.rn').LlamaContext;
 export const LOCAL_MODEL_IDLE_MS = 120_000;
 export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
 
-export type LocalChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
+/** One tool the model may call, in the model's own tool-call format. */
+export type LocalToolDefinition = { name: string; description: string; parameters: object };
+/** A call the model made; `arguments` is JSON text, as llama.cpp's parser returns it. */
+export type LocalToolCall = { id?: string; name: string; arguments: string };
+export type LocalChatMessage =
+  | { role: 'system' | 'user'; content: string }
+  | { role: 'assistant'; content: string; toolCalls?: LocalToolCall[] }
+  | { role: 'tool'; content: string; toolCallId: string };
 
 export type LocalGenerateParams = {
   messages: LocalChatMessage[];
-  /** A JSON schema the reply must match: the engine compiles it to a grammar. */
+  /** A JSON schema the reply must match: the engine compiles it to a grammar. Not with `tools`. */
   schema?: object;
+  /** Tools the model may call; the engine's chat template and parser turn them into `toolCalls`. */
+  tools?: LocalToolDefinition[];
   /** A photo (a `file://` path or a `data:` URL) attached to the last user message. Needs the projector. */
   image?: string;
   maxTokens?: number;
@@ -48,6 +58,8 @@ export type LocalGenerateParams = {
 
 export type LocalGenerateResult = {
   text: string;
+  /** Present (possibly empty) exactly when the request carried tools. */
+  toolCalls?: LocalToolCall[];
   /** Milliseconds, from the engine's own timers; used by the benchmark screen. */
   timings?: {
     promptMs?: number;
@@ -240,7 +252,7 @@ async function attachProjector(ctx: LlamaContext, path: string, imageMaxTokens: 
   projectorAttached = true;
 }
 
-function withPhoto(messages: LocalChatMessage[], image: string) {
+function withPhoto(messages: ReturnType<typeof toEngineMessages>, image: string) {
   const lastUser = [...messages].reverse().findIndex((m) => m.role === 'user');
   const index = lastUser === -1 ? -1 : messages.length - 1 - lastUser;
 
@@ -257,9 +269,9 @@ function withPhoto(messages: LocalChatMessage[], image: string) {
   );
 }
 
-/** A plain-text reply (chat, insights): no schema to enforce and no photo. */
+/** A plain-text reply (chat, insights): no schema to enforce, no photo, no tool call. */
 function plainTextSampling(params: LocalGenerateParams): boolean {
-  return !params.schema && !params.image;
+  return !params.schema && !params.image && !params.tools;
 }
 
 async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
@@ -296,12 +308,20 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       const plainSampling = plainTextSampling(params) ? textSampling : null;
       const result = await ctx.completion(
         {
-          messages: params.image ? withPhoto(params.messages, params.image) : params.messages,
+          messages: params.image
+            ? withPhoto(toEngineMessages(params.messages), params.image)
+            : toEngineMessages(params.messages),
           jinja: true,
           n_predict: params.maxTokens ?? 1024,
           temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,
           ...(plainSampling
             ? { min_p: plainSampling.minP, penalty_repeat: plainSampling.repeatPenalty }
+            : {}),
+          ...(params.tools
+            ? {
+                tools: toEngineTools(params.tools),
+                tool_choice: 'auto',
+              }
             : {}),
           ...(params.schema
             ? {
@@ -331,6 +351,9 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
       return {
         text: replyText,
+        ...(params.tools
+          ? { toolCalls: readToolCalls((result as { tool_calls?: unknown }).tool_calls) }
+          : {}),
         timings: {
           promptMs: result.timings?.prompt_ms,
           predictedMs: result.timings?.predicted_ms,
@@ -351,6 +374,10 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
 /** Runs one generation on the local model. Requests are served one at a time, in order. */
 export function generateWithLocalModel(params: LocalGenerateParams): Promise<LocalGenerateResult> {
+  if (params.tools && params.schema) {
+    return Promise.reject(new Error('A local request takes tools or a schema, never both.'));
+  }
+
   clearIdleTimer();
   clearProjectorTimer();
   return queue.run(() => run(params));

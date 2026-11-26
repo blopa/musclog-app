@@ -2,8 +2,14 @@ import { AiService } from '@/services/AiService';
 import { interpretVoiceCommand } from '@/services/voiceCommand';
 import { AiCancelledError } from '@/utils/aiErrors';
 import { reportAiEvent } from '@/utils/aiTelemetry';
-import { AiCreditsError, reportAiError, requestStructured } from '@/utils/coachAI';
-import { wrapUserContent } from '@/utils/promptSanitizer';
+import {
+  AiCreditsError,
+  reportAiError,
+  requestNativeToolCall,
+  requestStructured,
+} from '@/utils/coachAI';
+import { prepareChatText, wrapUserContent } from '@/utils/promptSanitizer';
+import { buildNativeVoiceTools, NATIVE_VOICE_EXAMPLES } from '@/utils/voiceCommand/nativeTools';
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
 
 jest.mock('@/lang/lang', () => ({ __esModule: true, default: { t: (key: string) => key } }));
@@ -17,12 +23,14 @@ jest.mock('@/utils/coachAI', () => {
     GatewayRateLimitError: GatewayRateLimitErrorMock,
     isAiCreditsError: jest.fn(() => false),
     reportAiError: jest.fn(),
+    requestNativeToolCall: jest.fn(),
     requestStructured: jest.fn(),
   };
 });
 
 const mockGetAiConfig = AiService.getAiConfig as jest.Mock;
 const mockRequest = requestStructured as jest.Mock;
+const mockNativeRequest = requestNativeToolCall as jest.Mock;
 const mockReportAiError = reportAiError as jest.Mock;
 const mockReportAiEvent = reportAiEvent as jest.Mock;
 
@@ -126,6 +134,29 @@ describe('interpretVoiceCommand', () => {
     );
   });
 
+  it('rejects a search for a food that was never said, whichever tool picked it', async () => {
+    mockRequest.mockResolvedValue({
+      kind: 'ok',
+      value: { commands: [{ tool: 'search_food', food: 'banana' }] },
+    });
+
+    await expect(interpretVoiceCommand('What did I eat yesterday?', { now: NOW })).resolves.toEqual(
+      { kind: 'rejected', reason: 'cantDetermine' }
+    );
+  });
+
+  it('rejects a command whose argument is not an allowed value', async () => {
+    mockRequest.mockResolvedValue({
+      kind: 'ok',
+      value: { commands: [{ tool: 'copy_meal', meal: 'breakfast', from_day: 'tomorrow' }] },
+    });
+
+    await expect(interpretVoiceCommand(TRANSCRIPT, { now: NOW })).resolves.toEqual({
+      kind: 'rejected',
+      reason: 'cantDetermine',
+    });
+  });
+
   it('rethrows a generic error and reports it through reportAiError', async () => {
     const error = new Error('boom');
     mockRequest.mockRejectedValue(error);
@@ -154,5 +185,85 @@ describe('interpretVoiceCommand', () => {
       AiCreditsError
     );
     expect(mockReportAiError).toHaveBeenCalledWith(error, 'voiceCommand.interpret');
+  });
+});
+
+describe('interpretVoiceCommand on the downloaded model', () => {
+  const GGUF = { provider: 'on-device', engine: 'gguf', vision: true };
+
+  beforeEach(() => {
+    mockGetAiConfig.mockResolvedValue(GGUF);
+  });
+
+  it("asks in the model's own tool-call format: the example turns, then the sentence", async () => {
+    mockNativeRequest.mockResolvedValue({ text: 'Hello Pablo!', toolCalls: [] });
+    const controller = new AbortController();
+
+    await interpretVoiceCommand('Hello my name is Pablo', { now: NOW, signal: controller.signal });
+
+    expect(mockRequest).not.toHaveBeenCalled();
+    expect(mockNativeRequest).toHaveBeenCalledTimes(1);
+    expect(mockNativeRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ ...GGUF, signal: controller.signal }),
+      {
+        operation: 'voiceCommand',
+        messages: [
+          ...NATIVE_VOICE_EXAMPLES,
+          { role: 'user', content: prepareChatText('Hello my name is Pablo') },
+        ],
+        tools: buildNativeVoiceTools(),
+      }
+    );
+  });
+
+  it('reads a reply with no tool call as not a request', async () => {
+    mockNativeRequest.mockResolvedValue({ text: 'Hello Pablo!', toolCalls: [] });
+
+    await expect(interpretVoiceCommand('Hello my name is Pablo', { now: NOW })).resolves.toEqual({
+      kind: 'rejected',
+      reason: 'noAction',
+    });
+  });
+
+  it('turns a tool call into an action', async () => {
+    mockNativeRequest.mockResolvedValue({
+      text: '',
+      toolCalls: [{ name: 'search_food', arguments: '{"food":"eggs","meal":"breakfast"}' }],
+    });
+
+    await expect(
+      interpretVoiceCommand('I had two eggs for breakfast', { now: NOW })
+    ).resolves.toEqual({
+      kind: 'action',
+      action: expect.objectContaining({ kind: 'searchFood', query: 'eggs', mealType: 'breakfast' }),
+    });
+  });
+
+  it('rejects the filler arguments the model writes when it has nothing to copy', async () => {
+    mockNativeRequest.mockResolvedValue({
+      text: '',
+      toolCalls: [{ name: 'copy_meal', arguments: '{"meal":"lunch","from_day":"tomorrow"}' }],
+    });
+
+    await expect(interpretVoiceCommand('I went to the gym', { now: NOW })).resolves.toEqual({
+      kind: 'rejected',
+      reason: 'cantDetermine',
+    });
+  });
+
+  it('reports arguments that are not JSON as an unreadable reply', async () => {
+    mockNativeRequest.mockResolvedValue({
+      text: '',
+      toolCalls: [{ name: 'search_food', arguments: 'food=eggs' }],
+    });
+
+    await expect(interpretVoiceCommand('I had eggs', { now: NOW })).resolves.toEqual({
+      kind: 'rejected',
+      reason: 'unreadable',
+    });
+    expect(mockReportAiEvent).toHaveBeenCalledWith(
+      'voice-command-unusable',
+      expect.objectContaining({ provider: 'on-device', operation: 'voiceCommand' })
+    );
   });
 });

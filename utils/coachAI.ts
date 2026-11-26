@@ -7,6 +7,11 @@ import { SETTINGS } from '@/constants/settingDefinitions';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
+import type {
+  LocalChatMessage,
+  LocalToolCall,
+  LocalToolDefinition,
+} from '@/services/localModels/llamaRuntime';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
@@ -63,7 +68,12 @@ import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContex
 import { ungroundedFigures } from './numberGrounding';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
 import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
-import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
+import {
+  sendLocalMessage,
+  sendLocalStructuredRaw,
+  sendLocalToolCall,
+  streamLocalMessage,
+} from './onDeviceLocal';
 import { mealPlanFindings, workoutPlanFindings, workoutVolumeFindings } from './planFindings';
 import {
   createWorkoutPlanPrompt,
@@ -1815,6 +1825,54 @@ export async function requestStructuredOnce<T = unknown>(
   });
 
   return readStructuredReply<T>(config, operation, reply.text, reply.stop);
+}
+
+export type NativeToolCallRequest = {
+  operation: string;
+  /** The whole conversation the model sees, example turns included; no system prompt is added. */
+  messages: LocalChatMessage[];
+  tools: LocalToolDefinition[];
+};
+
+export type NativeToolCallReply = { text: string; toolCalls: LocalToolCall[] };
+
+/**
+ * One request in the model's own tool-call format, for a provider whose policy sets
+ * `nativeToolCalls` (the downloaded model): the engine renders the tools through the chat template
+ * and parses the calls, and a reply with no call is plain text. Logged and retried like every other
+ * request; the caller reads the reply.
+ */
+export async function requestNativeToolCall(
+  config: CoachAIConfig,
+  request: NativeToolCallRequest
+): Promise<NativeToolCallReply> {
+  if (!isOnDeviceConfig(config) || config.engine !== 'gguf') {
+    // Only the downloaded model has a tool-call format of its own; the policy decides who calls this.
+    throw new Error(`[coachAI] ${request.operation}: ${config.provider} has no native tool calls`);
+  }
+
+  const { operation, messages, tools } = request;
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'request',
+    operation,
+    payload: { messages, tools },
+    config,
+  });
+
+  const reply = await withLlmRetry(operation, config, (signal, touch) =>
+    sendLocalToolCall(messages, tools, { signal, onDelta: () => touch() })
+  );
+
+  await logLlmDebugEvent({
+    provider: 'on-device',
+    direction: 'response',
+    operation,
+    payload: reply,
+    config,
+  });
+
+  return reply;
 }
 
 /**
