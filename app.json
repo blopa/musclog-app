@@ -206,7 +206,8 @@
           "photosPermission": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-speech-recognition"
     ],
     "orientation": "default",
     "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
