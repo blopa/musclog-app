@@ -275,6 +275,12 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Theme-matched app icon on Android and iOS: picking a named theme switches the home-screen icon to
   that theme's colors (on Android once you leave the app; iOS shows its own confirmation alert).
   The System option and Kinetic Depth use the default icon
+- Voice to text (iOS and Android 13+, first version): Settings → Appearance and home → Navigation
+  bar → Center button can turn the bar's big camera button into a microphone. Hold it and speak;
+  what you say appears live above the bar, and when you let go the text opens in a window with an
+  OK button. Speech is recognized offline on the phone in the app's language and the audio is
+  neither stored nor sent; if that language is not on the phone yet, Android offers to download it
+  and iOS says to turn on dictation for it. The text is only shown for now
 - Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary's gradient is chosen
   by the active theme — a flat card surface in Kinetic Light, a contrast-matched colorful sweep in
   the dark themes and in Kinetic Blush

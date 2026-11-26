@@ -1,0 +1,35 @@
+{
+  "voiceInput": {
+    "listening": "Słucham…",
+    "holdHint": "Przytrzymaj przycisk mikrofonu, gdy mówisz, a potem go puść.",
+    "resultTitle": "Co powiedziałeś",
+    "openSettings": "Otwórz ustawienia",
+    "downloadLanguage": "Pobierz język",
+    "downloadDone": "Pobrano. Przytrzymaj przycisk mikrofonu, aby mówić.",
+    "downloadScheduled": "Pobieranie jest w kolejce i zakończy się później, na przykład przy Wi-Fi.",
+    "downloadFailed": "Nie udało się pobrać języka. Spróbuj ponownie później.",
+    "failure": {
+      "permission": {
+        "title": "Dostęp do mikrofonu jest wyłączony",
+        "message": "Musclog potrzebuje mikrofonu, żeby zamieniać mowę na tekst. Możesz zezwolić na to w ustawieniach telefonu."
+      },
+      "languageMissing": {
+        "title": "Język nie został pobrany",
+        "messageAndroid": "Rozpoznawanie mowy dla języka ustawionego w Musclog nie jest jeszcze na tym telefonie. Pobierz je raz, a potem będzie działać bez internetu.",
+        "messageIos": "Rozpoznawanie mowy dla języka ustawionego w Musclog nie jest jeszcze na tym urządzeniu. Włącz dyktowanie dla tego języka w Ustawienia, Ogólne, Klawiatura i spróbuj ponownie."
+      },
+      "unavailable": {
+        "title": "Rozpoznawanie mowy offline jest niedostępne",
+        "message": "Ten telefon nie może zamienić mowy na tekst bez internetu. Musclog korzysta tylko z rozpoznawania mowy działającego na Twoim telefonie."
+      },
+      "nothingHeard": {
+        "title": "Nie usłyszano słów",
+        "message": "Musclog niczego nie wychwycił. Przytrzymaj przycisk, mów i puść."
+      },
+      "failed": {
+        "title": "Słuchanie zatrzymane",
+        "message": "Coś przerwało rozpoznawanie mowy. Spróbuj ponownie."
+      }
+    }
+  }
+}

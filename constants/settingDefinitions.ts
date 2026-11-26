@@ -37,6 +37,8 @@ import {
   HOME_HEATMAPS_SETTING_TYPE,
   type HomeHeatmapLayout,
   type HomeHeatmaps,
+  NAV_CENTER_ACTION_SETTING_TYPE,
+  type NavCenterAction,
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
   ON_DEVICE_ENGINE_SETTING_TYPE,
   parseAiMealCameraFlow,
@@ -46,6 +48,7 @@ import {
   parseFoodDiaryGrouping,
   parseHomeHeatmapLayout,
   parseHomeHeatmaps,
+  parseNavCenterAction,
   parseRestAlertSound,
   parseRestHapticStrength,
   parseRestHeadsUpSeconds,
@@ -220,6 +223,11 @@ export const SETTINGS = {
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping
+  ),
+  /** What the bottom bar's centre button does; resolve it with `resolveNavCenterAction`. */
+  navCenterAction: choiceSetting<NavCenterAction>(
+    NAV_CENTER_ACTION_SETTING_TYPE,
+    parseNavCenterAction
   ),
   workoutView: choiceSetting<WorkoutView>(WORKOUT_VIEW_SETTING_TYPE, (raw) =>
     raw === 'inline' ? 'inline' : 'guided'

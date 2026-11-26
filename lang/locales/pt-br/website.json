@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidade",
-      "lastUpdated": "Última atualização: 24 de novembro de 2026",
+      "lastUpdated": "Última atualização: 26 de novembro de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Proteção de dados",
@@ -689,6 +689,7 @@
             "content": "Para fornecer seus recursos, o aplicativo pode solicitar as permissões a seguir. Os dados obtidos por meio delas permanecem no seu Dispositivo, salvo indicação em contrário nesta Política de Privacidade:",
             "items": [
               "Câmera: para escanear códigos de barras e rótulos nutricionais, tirar fotos de refeições e receber dados de outro dispositivo por meio de códigos QR.",
+              "Microfone: somente enquanto você segura o botão do microfone, para transformar o que você fala em texto. O Musclog pede ao reconhecimento de voz do seu dispositivo que funcione offline e não armazena nem envia o áudio.",
               "Health Connect ou Apple Health: consulte \"Health Connect e Apple Health\" acima.",
               "Notificações, alarmes exatos e inicialização concluída: para exibir pontualmente lembretes de treino, de descanso, de nutrição e do ciclo, inclusive após a reinicialização do seu Dispositivo.",
               "Biometria (impressão digital ou reconhecimento facial): para bloquear o aplicativo ou partes dele, se você ativar essa opção.",

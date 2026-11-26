@@ -448,9 +448,9 @@
       "title": "Aspetto e home",
       "subtitle": "Personalizza l'interfaccia dell'app",
       "sectionTitle": "Barra di navigazione",
-      "sectionSubtitle": "Scegli quali scorciatoie compaiono nella barra in basso. Home e Fotocamera sono sempre fisse.",
-      "slot1Label": "Posto 1 (a sinistra della fotocamera)",
-      "slot2Label": "Posto 2 (a destra della fotocamera)",
+      "sectionSubtitle": "Scegli quali scorciatoie compaiono nella barra in basso. Home e il pulsante centrale restano sempre al loro posto.",
+      "slot1Label": "Posto 1 (a sinistra del pulsante centrale)",
+      "slot2Label": "Posto 2 (a destra del pulsante centrale)",
       "slot3Label": "Posto 3 (il più a destra)",
       "selectItem": "Scegli una scorciatoia per questo posto",
       "currentlyInSlot": "Attualmente nel posto {{slot}} (verrà scambiata)",
@@ -464,6 +464,21 @@
         "progress": "Progressi",
         "checkin": "Check-in",
         "notes": "Note"
+      },
+      "centerButton": {
+        "label": "Pulsante centrale",
+        "popupTitle": "Pulsante centrale",
+        "popupSubtitle": "Scegli cosa fa il grande pulsante al centro della barra.",
+        "options": {
+          "camera": {
+            "label": "Fotocamera",
+            "description": "Apre la fotocamera intelligente per codici a barre, etichette e foto dei pasti."
+          },
+          "voice": {
+            "label": "Voce in testo",
+            "description": "Tienilo premuto e parla: quello che dici diventa testo, riconosciuto offline sul tuo telefono."
+          }
+        }
       }
     },
     "nutritionDisplay": {

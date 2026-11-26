@@ -1,0 +1,35 @@
+{
+  "voiceInput": {
+    "listening": "Listening…",
+    "holdHint": "Hold the microphone button while you speak, then let go.",
+    "resultTitle": "What you said",
+    "openSettings": "Open settings",
+    "downloadLanguage": "Download language",
+    "downloadDone": "Downloaded. Hold the microphone button to speak.",
+    "downloadScheduled": "The download is queued and will finish later, for example on Wi-Fi.",
+    "downloadFailed": "The language could not be downloaded. Try again later.",
+    "failure": {
+      "permission": {
+        "title": "Microphone access is off",
+        "message": "Musclog needs the microphone to turn what you say into text. You can allow it in your phone's settings."
+      },
+      "languageMissing": {
+        "title": "Language not downloaded",
+        "messageAndroid": "Speech recognition for the language Musclog is set to is not on this phone yet. Download it once and it works offline from then on.",
+        "messageIos": "Speech recognition for the language Musclog is set to is not on this device yet. Turn on dictation for that language in Settings, General, Keyboard, then try again."
+      },
+      "unavailable": {
+        "title": "Offline speech recognition is unavailable",
+        "message": "This phone cannot turn speech into text without the internet. Musclog only uses speech recognition that runs on your phone."
+      },
+      "nothingHeard": {
+        "title": "No words heard",
+        "message": "Musclog did not catch anything. Hold the button, speak, then let go."
+      },
+      "failed": {
+        "title": "Listening stopped",
+        "message": "Something interrupted speech recognition. Try again."
+      }
+    }
+  }
+}

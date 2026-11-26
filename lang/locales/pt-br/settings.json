@@ -448,9 +448,9 @@
       "title": "Aparência e início",
       "subtitle": "Personalizar interface do app",
       "sectionTitle": "Barra de Navegação",
-      "sectionSubtitle": "Escolha quais atalhos aparecem na barra inferior. Início e Câmera são sempre fixos.",
-      "slot1Label": "Slot 1 (esquerda da câmera)",
-      "slot2Label": "Slot 2 (direita da câmera)",
+      "sectionSubtitle": "Escolha quais atalhos aparecem na barra inferior. Início e o botão central ficam sempre fixos.",
+      "slot1Label": "Slot 1 (à esquerda do botão central)",
+      "slot2Label": "Slot 2 (à direita do botão central)",
       "slot3Label": "Slot 3 (extrema direita)",
       "selectItem": "Escolha um atalho para este slot",
       "currentlyInSlot": "Atualmente no slot {{slot}} (será trocado)",
@@ -464,6 +464,21 @@
         "progress": "Progresso",
         "checkin": "Verificação",
         "notes": "Notas"
+      },
+      "centerButton": {
+        "label": "Botão central",
+        "popupTitle": "Botão central",
+        "popupSubtitle": "Escolha o que o botão grande do meio da barra faz.",
+        "options": {
+          "camera": {
+            "label": "Câmera",
+            "description": "Abre a câmera inteligente para códigos de barras, rótulos e fotos de refeições."
+          },
+          "voice": {
+            "label": "Voz para texto",
+            "description": "Segure e fale: o que você disser vira texto, reconhecido offline no seu celular."
+          }
+        }
       }
     },
     "nutritionDisplay": {

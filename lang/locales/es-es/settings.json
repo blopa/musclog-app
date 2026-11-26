@@ -448,9 +448,9 @@
       "title": "Apariencia e inicio",
       "subtitle": "Personalizar la interfaz de la app",
       "sectionTitle": "Barra de Navegación",
-      "sectionSubtitle": "Elige qué accesos directos aparecen en la barra inferior. Inicio y Cámara son siempre fijos.",
-      "slot1Label": "Espacio 1 (izquierda de cámara)",
-      "slot2Label": "Espacio 2 (derecha de cámara)",
+      "sectionSubtitle": "Elige qué accesos directos aparecen en la barra inferior. Inicio y el botón central siempre se mantienen en su sitio.",
+      "slot1Label": "Espacio 1 (a la izquierda del botón central)",
+      "slot2Label": "Espacio 2 (a la derecha del botón central)",
       "slot3Label": "Espacio 3 (extremo derecho)",
       "selectItem": "Elige un acceso directo para este espacio",
       "currentlyInSlot": "Actualmente en el espacio {{slot}} (se intercambiará)",
@@ -464,6 +464,21 @@
         "progress": "Progreso",
         "checkin": "Revisión",
         "notes": "Notas"
+      },
+      "centerButton": {
+        "label": "Botón central",
+        "popupTitle": "Botón central",
+        "popupSubtitle": "Elige qué hace el botón grande del centro de la barra.",
+        "options": {
+          "camera": {
+            "label": "Cámara",
+            "description": "Abre la cámara inteligente para códigos de barras, etiquetas y fotos de comidas."
+          },
+          "voice": {
+            "label": "Voz a texto",
+            "description": "Mantenlo pulsado y habla: lo que digas se convierte en texto, reconocido sin conexión en tu teléfono."
+          }
+        }
       }
     },
     "nutritionDisplay": {

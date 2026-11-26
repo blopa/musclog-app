@@ -1,0 +1,35 @@
+{
+  "voiceInput": {
+    "listening": "Écoute en cours…",
+    "holdHint": "Maintiens le bouton micro pendant que tu parles, puis relâche-le.",
+    "resultTitle": "Ce que tu as dit",
+    "openSettings": "Ouvrir les réglages",
+    "downloadLanguage": "Télécharger la langue",
+    "downloadDone": "Téléchargé. Maintiens le bouton micro pour parler.",
+    "downloadScheduled": "Le téléchargement est en file d'attente et se terminera plus tard, par exemple en Wi-Fi.",
+    "downloadFailed": "La langue n'a pas pu être téléchargée. Réessaie plus tard.",
+    "failure": {
+      "permission": {
+        "title": "L'accès au micro est désactivé",
+        "message": "Musclog a besoin du micro pour transformer ta voix en texte. Tu peux l'autoriser dans les réglages de ton téléphone."
+      },
+      "languageMissing": {
+        "title": "Langue non téléchargée",
+        "messageAndroid": "La reconnaissance vocale pour la langue choisie dans Musclog n'est pas encore sur ce téléphone. Télécharge-la une fois : elle fonctionnera ensuite hors connexion.",
+        "messageIos": "La reconnaissance vocale pour la langue choisie dans Musclog n'est pas encore sur cet appareil. Active la dictée pour cette langue dans Réglages, Général, Clavier, puis réessaie."
+      },
+      "unavailable": {
+        "title": "La reconnaissance vocale hors connexion n'est pas disponible",
+        "message": "Ce téléphone ne peut pas transformer la voix en texte sans internet. Musclog n'utilise que la reconnaissance vocale qui fonctionne sur ton téléphone."
+      },
+      "nothingHeard": {
+        "title": "Aucun mot entendu",
+        "message": "Musclog n'a rien capté. Maintiens le bouton, parle, puis relâche."
+      },
+      "failed": {
+        "title": "Écoute interrompue",
+        "message": "Quelque chose a interrompu la reconnaissance vocale. Réessaie."
+      }
+    }
+  }
+}

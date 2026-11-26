@@ -444,9 +444,9 @@
       "title": "Appearance and home",
       "subtitle": "Customize app interface",
       "sectionTitle": "Navigation bar",
-      "sectionSubtitle": "Choose which shortcuts appear in the bottom bar. Home and Camera are always fixed.",
-      "slot1Label": "Slot 1 (left of camera)",
-      "slot2Label": "Slot 2 (right of camera)",
+      "sectionSubtitle": "Choose which shortcuts appear in the bottom bar. Home and the center button always stay in place.",
+      "slot1Label": "Slot 1 (left of the center button)",
+      "slot2Label": "Slot 2 (right of the center button)",
       "slot3Label": "Slot 3 (rightmost)",
       "selectItem": "Choose a shortcut for this slot",
       "currentlyInSlot": "Currently in slot {{slot}} (will swap)",
@@ -460,6 +460,21 @@
         "progress": "Progress",
         "checkin": "Check-in",
         "notes": "Notes"
+      },
+      "centerButton": {
+        "label": "Center button",
+        "popupTitle": "Center button",
+        "popupSubtitle": "Choose what the big button in the middle of the bar does.",
+        "options": {
+          "camera": {
+            "label": "Camera",
+            "description": "Opens the smart camera for barcodes, labels and meal photos."
+          },
+          "voice": {
+            "label": "Voice to text",
+            "description": "Hold it and speak: what you say becomes text, recognized offline on your phone."
+          }
+        }
       }
     },
     "nutritionDisplay": {

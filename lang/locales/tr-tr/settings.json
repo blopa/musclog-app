@@ -448,9 +448,9 @@
       "title": "Görünüm ve ana ekran",
       "subtitle": "Uygulama arayüzünü özelleştir",
       "sectionTitle": "Gezinme çubuğu",
-      "sectionSubtitle": "Alt çubukta hangi kısayolların görüneceğini seç. Ana ekran ve Kamera her zaman sabittir.",
-      "slot1Label": "1. yuva (kameranın solu)",
-      "slot2Label": "2. yuva (kameranın sağı)",
+      "sectionSubtitle": "Alt çubukta hangi kısayolların görüneceğini seç. Ana ekran ve orta düğme her zaman sabittir.",
+      "slot1Label": "1. yuva (orta düğmenin solu)",
+      "slot2Label": "2. yuva (orta düğmenin sağı)",
       "slot3Label": "3. yuva (en sağda)",
       "selectItem": "Bu yuva için bir kısayol seç",
       "currentlyInSlot": "Şu an yuva {{slot}} içinde (yer değiştirecek)",
@@ -464,6 +464,21 @@
         "progress": "İlerleme",
         "checkin": "Kontrol",
         "notes": "Notlar"
+      },
+      "centerButton": {
+        "label": "Orta düğme",
+        "popupTitle": "Orta düğme",
+        "popupSubtitle": "Çubuğun ortasındaki büyük düğmenin ne yapacağını seç.",
+        "options": {
+          "camera": {
+            "label": "Kamera",
+            "description": "Barkodlar, etiketler ve öğün fotoğrafları için akıllı kamerayı açar."
+          },
+          "voice": {
+            "label": "Sesten metne",
+            "description": "Basılı tut ve konuş: söylediklerin metne dönüşür, telefonunda internetsiz tanınır."
+          }
+        }
       }
     },
     "nutritionDisplay": {

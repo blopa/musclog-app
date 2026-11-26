@@ -182,7 +182,8 @@
       "clearSearch": "Zoekopdracht wissen",
       "showValue": "Waarde tonen",
       "hideValue": "Waarde verbergen",
-      "scrollDown": "Naar beneden scrollen"
+      "scrollDown": "Naar beneden scrollen",
+      "holdToSpeak": "Houd ingedrukt om te spreken"
     },
     "externalAssistant": {
       "copied": "Instructies gekopieerd",

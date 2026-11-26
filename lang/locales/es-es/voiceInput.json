@@ -1,0 +1,35 @@
+{
+  "voiceInput": {
+    "listening": "Escuchando…",
+    "holdHint": "Mantén pulsado el botón del micrófono mientras hablas y suéltalo después.",
+    "resultTitle": "Lo que dijiste",
+    "openSettings": "Abrir ajustes",
+    "downloadLanguage": "Descargar idioma",
+    "downloadDone": "Descargado. Mantén pulsado el botón del micrófono para hablar.",
+    "downloadScheduled": "La descarga está en cola y terminará más tarde, por ejemplo con Wi-Fi.",
+    "downloadFailed": "No se pudo descargar el idioma. Inténtalo más tarde.",
+    "failure": {
+      "permission": {
+        "title": "El acceso al micrófono está desactivado",
+        "message": "Musclog necesita el micrófono para convertir lo que dices en texto. Puedes permitirlo en los ajustes del teléfono."
+      },
+      "languageMissing": {
+        "title": "Idioma no descargado",
+        "messageAndroid": "El reconocimiento de voz para el idioma de Musclog todavía no está en este teléfono. Descárgalo una vez y funcionará sin conexión a partir de entonces.",
+        "messageIos": "El reconocimiento de voz para el idioma de Musclog todavía no está en este dispositivo. Activa el dictado para ese idioma en Ajustes, General, Teclado y vuelve a intentarlo."
+      },
+      "unavailable": {
+        "title": "El reconocimiento de voz sin conexión no está disponible",
+        "message": "Este teléfono no puede convertir la voz en texto sin internet. Musclog solo usa reconocimiento de voz que funciona en tu teléfono."
+      },
+      "nothingHeard": {
+        "title": "No se oyeron palabras",
+        "message": "Musclog no captó nada. Mantén pulsado el botón, habla y suéltalo."
+      },
+      "failed": {
+        "title": "Se detuvo la escucha",
+        "message": "Algo interrumpió el reconocimiento de voz. Inténtalo de nuevo."
+      }
+    }
+  }
+}

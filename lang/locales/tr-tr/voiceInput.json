@@ -1,0 +1,35 @@
+{
+  "voiceInput": {
+    "listening": "Dinliyorum…",
+    "holdHint": "Konuşurken mikrofon düğmesini basılı tut, sonra bırak.",
+    "resultTitle": "Söylediklerin",
+    "openSettings": "Ayarları aç",
+    "downloadLanguage": "Dili indir",
+    "downloadDone": "İndirildi. Konuşmak için mikrofon düğmesini basılı tut.",
+    "downloadScheduled": "İndirme sıraya alındı ve daha sonra, örneğin Wi-Fi'de tamamlanacak.",
+    "downloadFailed": "Dil indirilemedi. Daha sonra tekrar dene.",
+    "failure": {
+      "permission": {
+        "title": "Mikrofon erişimi kapalı",
+        "message": "Musclog, söylediklerini metne çevirmek için mikrofona ihtiyaç duyar. Bunu telefonunun ayarlarından izin verebilirsin."
+      },
+      "languageMissing": {
+        "title": "Dil indirilmedi",
+        "messageAndroid": "Musclog'un ayarlı olduğu dil için konuşma tanıma bu telefonda henüz yok. Bir kez indir, sonrasında internetsiz çalışır.",
+        "messageIos": "Musclog'un ayarlı olduğu dil için konuşma tanıma bu cihazda henüz yok. Ayarlar, Genel, Klavye yolundan o dil için diktayı aç ve tekrar dene."
+      },
+      "unavailable": {
+        "title": "Çevrimdışı konuşma tanıma kullanılamıyor",
+        "message": "Bu telefon internet olmadan sesi metne çeviremiyor. Musclog yalnızca telefonunda çalışan konuşma tanımayı kullanır."
+      },
+      "nothingHeard": {
+        "title": "Hiç kelime duyulmadı",
+        "message": "Musclog bir şey yakalayamadı. Düğmeyi basılı tut, konuş ve bırak."
+      },
+      "failed": {
+        "title": "Dinleme durdu",
+        "message": "Bir şey konuşma tanımayı kesti. Tekrar dene."
+      }
+    }
+  }
+}

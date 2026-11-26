@@ -448,9 +448,9 @@
       "title": "Uiterlijk en start",
       "subtitle": "Pas de app-interface aan",
       "sectionTitle": "Navigatiebalk",
-      "sectionSubtitle": "Kies welke snelkoppelingen in de onderste balk verschijnen. Home en Camera staan altijd vast.",
-      "slot1Label": "Slot 1 (links van camera)",
-      "slot2Label": "Slot 2 (rechts van camera)",
+      "sectionSubtitle": "Kies welke snelkoppelingen in de onderste balk verschijnen. Home en de middelste knop blijven altijd op hun plek.",
+      "slot1Label": "Plek 1 (links van de middelste knop)",
+      "slot2Label": "Plek 2 (rechts van de middelste knop)",
       "slot3Label": "Slot 3 (uiterst rechts)",
       "selectItem": "Kies een snelkoppeling voor dit slot",
       "currentlyInSlot": "Momenteel in slot {{slot}} (zal wisselen)",
@@ -464,6 +464,21 @@
         "progress": "Voortgang",
         "checkin": "Controle",
         "notes": "Notities"
+      },
+      "centerButton": {
+        "label": "Middelste knop",
+        "popupTitle": "Middelste knop",
+        "popupSubtitle": "Kies wat de grote knop in het midden van de balk doet.",
+        "options": {
+          "camera": {
+            "label": "Camera",
+            "description": "Opent de slimme camera voor barcodes, etiketten en maaltijdfoto's."
+          },
+          "voice": {
+            "label": "Spraak naar tekst",
+            "description": "Houd ingedrukt en spreek: wat je zegt wordt tekst, offline herkend op je telefoon."
+          }
+        }
       }
     },
     "nutritionDisplay": {

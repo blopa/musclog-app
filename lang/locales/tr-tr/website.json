@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Gizlilik",
       "titleHighlight": "Politikası",
-      "lastUpdated": "Son güncelleme: 24 Kasım 2026",
+      "lastUpdated": "Son güncelleme: 26 Kasım 2026",
       "highlights": {
         "dataProtection": {
           "title": "Veri koruma",
@@ -689,6 +689,7 @@
             "content": "Uygulama özelliklerini sunabilmek için aşağıdaki izinleri isteyebilir. Bunlar aracılığıyla elde edilen veriler, bu Gizlilik Politikasında aksi belirtilmedikçe cihazında kalır:",
             "items": [
               "Kamera: besin barkodlarını ve besin etiketlerini taramak, öğün fotoğrafları çekmek ve QR kodlar aracılığıyla başka bir cihazdan veri almak için.",
+              "Mikrofon: yalnızca sesini metne çevirmek için mikrofon düğmesini basılı tuttuğunda. Musclog, cihazının konuşma tanımasından çevrimdışı çalışmasını ister; ses kaydını saklamaz ve göndermez.",
               "Health Connect veya Apple Health: yukarıdaki \"Health Connect ve Apple Health\" bölümüne bak.",
               "Bildirimler, tam zamanlı alarmlar ve önyükleme tamamlandı: antrenman, dinlenme zamanlayıcısı, beslenme ve döngü hatırlatıcılarını cihazın yeniden başlatılsa bile zamanında göstermek için.",
               "Biyometri (parmak izi veya yüz): uygulamayı veya bir kısmını kilitlemek için, bunu açarsan.",

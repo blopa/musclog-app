@@ -114,6 +114,7 @@ import deDeStrengthLevels from './locales/de-de/strengthLevels.json';
 import deDeTimePicker from './locales/de-de/timePicker.json';
 import deDeTokenType from './locales/de-de/token_type.json';
 import deDeUserMenu from './locales/de-de/userMenu.json';
+import deDeVoiceInput from './locales/de-de/voiceInput.json';
 import deDeWebsite from './locales/de-de/website.json';
 import deDeWebsiteAlternativesPages from './locales/de-de/websiteAlternativesPages.json';
 import deDeWebsitePremium from './locales/de-de/websitePremium.json';
@@ -223,6 +224,7 @@ import enUsStrengthLevels from './locales/en-us/strengthLevels.json';
 import enUsTimePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
+import enUsVoiceInput from './locales/en-us/voiceInput.json';
 import enUsWebsite from './locales/en-us/website.json';
 import enUsWebsiteAlternativesPages from './locales/en-us/websiteAlternativesPages.json';
 import enUsWebsitePremium from './locales/en-us/websitePremium.json';
@@ -332,6 +334,7 @@ import esEsStrengthLevels from './locales/es-es/strengthLevels.json';
 import esEsTimePicker from './locales/es-es/timePicker.json';
 import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
+import esEsVoiceInput from './locales/es-es/voiceInput.json';
 import esEsWebsite from './locales/es-es/website.json';
 import esEsWebsiteAlternativesPages from './locales/es-es/websiteAlternativesPages.json';
 import esEsWebsitePremium from './locales/es-es/websitePremium.json';
@@ -441,6 +444,7 @@ import frFrStrengthLevels from './locales/fr-fr/strengthLevels.json';
 import frFrTimePicker from './locales/fr-fr/timePicker.json';
 import frFrTokenType from './locales/fr-fr/token_type.json';
 import frFrUserMenu from './locales/fr-fr/userMenu.json';
+import frFrVoiceInput from './locales/fr-fr/voiceInput.json';
 import frFrWebsite from './locales/fr-fr/website.json';
 import frFrWebsiteAlternativesPages from './locales/fr-fr/websiteAlternativesPages.json';
 import frFrWebsitePremium from './locales/fr-fr/websitePremium.json';
@@ -550,6 +554,7 @@ import itItStrengthLevels from './locales/it-it/strengthLevels.json';
 import itItTimePicker from './locales/it-it/timePicker.json';
 import itItTokenType from './locales/it-it/token_type.json';
 import itItUserMenu from './locales/it-it/userMenu.json';
+import itItVoiceInput from './locales/it-it/voiceInput.json';
 import itItWebsite from './locales/it-it/website.json';
 import itItWebsiteAlternativesPages from './locales/it-it/websiteAlternativesPages.json';
 import itItWebsitePremium from './locales/it-it/websitePremium.json';
@@ -659,6 +664,7 @@ import nlNlStrengthLevels from './locales/nl-nl/strengthLevels.json';
 import nlNlTimePicker from './locales/nl-nl/timePicker.json';
 import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
+import nlNlVoiceInput from './locales/nl-nl/voiceInput.json';
 import nlNlWebsite from './locales/nl-nl/website.json';
 import nlNlWebsiteAlternativesPages from './locales/nl-nl/websiteAlternativesPages.json';
 import nlNlWebsitePremium from './locales/nl-nl/websitePremium.json';
@@ -768,6 +774,7 @@ import plPlStrengthLevels from './locales/pl-pl/strengthLevels.json';
 import plPlTimePicker from './locales/pl-pl/timePicker.json';
 import plPlTokenType from './locales/pl-pl/token_type.json';
 import plPlUserMenu from './locales/pl-pl/userMenu.json';
+import plPlVoiceInput from './locales/pl-pl/voiceInput.json';
 import plPlWebsite from './locales/pl-pl/website.json';
 import plPlWebsiteAlternativesPages from './locales/pl-pl/websiteAlternativesPages.json';
 import plPlWebsitePremium from './locales/pl-pl/websitePremium.json';
@@ -877,6 +884,7 @@ import ptBrStrengthLevels from './locales/pt-br/strengthLevels.json';
 import ptBrTimePicker from './locales/pt-br/timePicker.json';
 import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
+import ptBrVoiceInput from './locales/pt-br/voiceInput.json';
 import ptBrWebsite from './locales/pt-br/website.json';
 import ptBrWebsiteAlternativesPages from './locales/pt-br/websiteAlternativesPages.json';
 import ptBrWebsitePremium from './locales/pt-br/websitePremium.json';
@@ -986,6 +994,7 @@ import ruRuStrengthLevels from './locales/ru-ru/strengthLevels.json';
 import ruRuTimePicker from './locales/ru-ru/timePicker.json';
 import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
+import ruRuVoiceInput from './locales/ru-ru/voiceInput.json';
 import ruRuWebsite from './locales/ru-ru/website.json';
 import ruRuWebsiteAlternativesPages from './locales/ru-ru/websiteAlternativesPages.json';
 import ruRuWebsitePremium from './locales/ru-ru/websitePremium.json';
@@ -1095,6 +1104,7 @@ import trTrStrengthLevels from './locales/tr-tr/strengthLevels.json';
 import trTrTimePicker from './locales/tr-tr/timePicker.json';
 import trTrTokenType from './locales/tr-tr/token_type.json';
 import trTrUserMenu from './locales/tr-tr/userMenu.json';
+import trTrVoiceInput from './locales/tr-tr/voiceInput.json';
 import trTrWebsite from './locales/tr-tr/website.json';
 import trTrWebsiteAlternativesPages from './locales/tr-tr/websiteAlternativesPages.json';
 import trTrWebsitePremium from './locales/tr-tr/websitePremium.json';
@@ -1250,6 +1260,7 @@ const resources = {
       ...deDeTimePicker,
       ...deDeTokenType,
       ...deDeUserMenu,
+      ...deDeVoiceInput,
       ...deDeWebsite,
       ...deDeWebsiteAlternativesPages,
       ...deDeWebsitePremium,
@@ -1363,6 +1374,7 @@ const resources = {
       ...enUsTimePicker,
       ...enUsTokenType,
       ...enUsUserMenu,
+      ...enUsVoiceInput,
       ...enUsWebsite,
       ...enUsWebsiteAlternativesPages,
       ...enUsWebsitePremium,
@@ -1476,6 +1488,7 @@ const resources = {
       ...esEsTimePicker,
       ...esEsTokenType,
       ...esEsUserMenu,
+      ...esEsVoiceInput,
       ...esEsWebsite,
       ...esEsWebsiteAlternativesPages,
       ...esEsWebsitePremium,
@@ -1589,6 +1602,7 @@ const resources = {
       ...frFrTimePicker,
       ...frFrTokenType,
       ...frFrUserMenu,
+      ...frFrVoiceInput,
       ...frFrWebsite,
       ...frFrWebsiteAlternativesPages,
       ...frFrWebsitePremium,
@@ -1702,6 +1716,7 @@ const resources = {
       ...itItTimePicker,
       ...itItTokenType,
       ...itItUserMenu,
+      ...itItVoiceInput,
       ...itItWebsite,
       ...itItWebsiteAlternativesPages,
       ...itItWebsitePremium,
@@ -1815,6 +1830,7 @@ const resources = {
       ...nlNlTimePicker,
       ...nlNlTokenType,
       ...nlNlUserMenu,
+      ...nlNlVoiceInput,
       ...nlNlWebsite,
       ...nlNlWebsiteAlternativesPages,
       ...nlNlWebsitePremium,
@@ -1928,6 +1944,7 @@ const resources = {
       ...plPlTimePicker,
       ...plPlTokenType,
       ...plPlUserMenu,
+      ...plPlVoiceInput,
       ...plPlWebsite,
       ...plPlWebsiteAlternativesPages,
       ...plPlWebsitePremium,
@@ -2041,6 +2058,7 @@ const resources = {
       ...ptBrTimePicker,
       ...ptBrTokenType,
       ...ptBrUserMenu,
+      ...ptBrVoiceInput,
       ...ptBrWebsite,
       ...ptBrWebsiteAlternativesPages,
       ...ptBrWebsitePremium,
@@ -2154,6 +2172,7 @@ const resources = {
       ...ruRuTimePicker,
       ...ruRuTokenType,
       ...ruRuUserMenu,
+      ...ruRuVoiceInput,
       ...ruRuWebsite,
       ...ruRuWebsiteAlternativesPages,
       ...ruRuWebsitePremium,
@@ -2267,6 +2286,7 @@ const resources = {
       ...trTrTimePicker,
       ...trTrTokenType,
       ...trTrUserMenu,
+      ...trTrVoiceInput,
       ...trTrWebsite,
       ...trTrWebsiteAlternativesPages,
       ...trTrWebsitePremium,

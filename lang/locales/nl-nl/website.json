@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 24 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 26 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -689,6 +689,7 @@
             "content": "Om haar functies te bieden kan de applicatie om de volgende toestemmingen vragen. Gegevens die via deze toestemmingen worden verkregen, blijven op Uw Apparaat, tenzij dit Privacybeleid anders vermeldt:",
             "items": [
               "Camera: om voedingsbarcodes en voedingslabels te scannen, maaltijdfoto's te maken en gegevens van een ander apparaat te ontvangen via QR-codes.",
+              "Microfoon: alleen terwijl je de microfoonknop ingedrukt houdt, om wat je zegt in tekst om te zetten. Musclog vraagt de spraakherkenning van je apparaat om offline te werken en slaat het geluid niet op en stuurt het niet.",
               "Health Connect of Apple Health: zie \"Health Connect en Apple Health\" hierboven.",
               "Meldingen, exacte alarmen en opstarten voltooid: om trainings-, rusttimer-, voedings- en cyclusherinneringen op tijd te tonen, ook nadat Uw Apparaat opnieuw is opgestart.",
               "Biometrie (vingerafdruk of gezicht): om de applicatie of onderdelen daarvan te vergrendelen, als u dit inschakelt.",

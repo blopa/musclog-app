@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Datenschutz",
       "titleHighlight": "erklärung",
-      "lastUpdated": "Zuletzt aktualisiert: 24. November 2026",
+      "lastUpdated": "Zuletzt aktualisiert: 26. November 2026",
       "highlights": {
         "dataProtection": {
           "title": "Datenschutz",
@@ -689,6 +689,7 @@
             "content": "Um ihre Funktionen bereitzustellen, kann die App die folgenden Berechtigungen anfragen. Daten, die dadurch erlangt werden, bleiben auf deinem Gerät, sofern diese Datenschutzerklärung nichts anderes sagt:",
             "items": [
               "Kamera: um Lebensmittel-Barcodes und Nährwertetiketten zu scannen, Mahlzeitenfotos aufzunehmen und Daten von einem anderen Gerät über QR-Codes zu empfangen.",
+              "Mikrofon: nur solange du die Mikrofon-Taste gedrückt hältst, um deine Sprache in Text umzuwandeln. Musclog bittet die Spracherkennung deines Geräts, offline zu arbeiten, und speichert oder sendet das Audio nicht.",
               "Health Connect oder Apple Health: siehe „Health Connect und Apple Health“ oben.",
               "Benachrichtigungen, exakte Alarme und Start nach dem Neustart: um Erinnerungen an Training, Pausentimer, Ernährung und Zyklus pünktlich anzuzeigen, auch nach einem Neustart deines Geräts.",
               "Biometrie (Fingerabdruck oder Gesicht): um die App oder Teile davon zu sperren, falls du das einschaltest.",

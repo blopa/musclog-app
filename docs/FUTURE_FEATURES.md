@@ -157,7 +157,11 @@ and the existing 1RM/consistency behavior intact.
   against frozen cases (meal text and photos with known macros, the coach replay scenarios, plans):
   `docs/AI_EFFORT_EVALUATION.md`. Not built yet; the document says what to build and how to read it.
 - Inline voice input for Loggy that uses the same send path as typed messages and preserves image
-  attachments and armed intentions.
+  attachments and armed intentions. The recognizer exists now (`hooks/useHoldToTranscribe.ts`, the
+  bottom bar's hold-to-talk button, which only shows its transcript in a modal); next steps are
+  actions on that transcript (send to the coach, log it as food through the AI meal estimate, save
+  as a note), a screen-reader way to start and stop a hold, and a short-tap "start/stop" mode for
+  people who cannot hold.
 - Ordered AI-provider failover on top of the shared error classification, bounded retry and
   credential guidance that now exist (`utils/aiErrors.ts`). Do not fail over malformed requests as
   if they were transient outages, and never fail over an invalid-key error to another provider

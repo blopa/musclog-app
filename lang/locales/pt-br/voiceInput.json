@@ -1,0 +1,35 @@
+{
+  "voiceInput": {
+    "listening": "Ouvindo…",
+    "holdHint": "Segure o botão do microfone enquanto fala e depois solte.",
+    "resultTitle": "O que você disse",
+    "openSettings": "Abrir configurações",
+    "downloadLanguage": "Baixar idioma",
+    "downloadDone": "Baixado. Segure o botão do microfone para falar.",
+    "downloadScheduled": "O download está na fila e terminará depois, por exemplo no Wi-Fi.",
+    "downloadFailed": "Não foi possível baixar o idioma. Tente novamente mais tarde.",
+    "failure": {
+      "permission": {
+        "title": "Acesso ao microfone desativado",
+        "message": "O Musclog precisa do microfone para transformar o que você fala em texto. Você pode permitir isso nas configurações do seu celular."
+      },
+      "languageMissing": {
+        "title": "Idioma não baixado",
+        "messageAndroid": "O reconhecimento de voz para o idioma configurado no Musclog ainda não está neste celular. Baixe-o uma vez e ele funcionará offline a partir daí.",
+        "messageIos": "O reconhecimento de voz para o idioma configurado no Musclog ainda não está neste aparelho. Ative o ditado para esse idioma em Ajustes, Geral, Teclado e tente novamente."
+      },
+      "unavailable": {
+        "title": "Reconhecimento de voz offline indisponível",
+        "message": "Este celular não consegue transformar voz em texto sem internet. O Musclog usa apenas reconhecimento de voz que funciona no próprio celular."
+      },
+      "nothingHeard": {
+        "title": "Nenhuma palavra ouvida",
+        "message": "O Musclog não captou nada. Segure o botão, fale e solte."
+      },
+      "failed": {
+        "title": "Escuta interrompida",
+        "message": "Algo interrompeu o reconhecimento de voz. Tente de novo."
+      }
+    }
+  }
+}

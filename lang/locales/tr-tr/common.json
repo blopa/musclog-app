@@ -182,7 +182,8 @@
       "clearSearch": "Aramayı temizle",
       "showValue": "Değeri göster",
       "hideValue": "Değeri gizle",
-      "scrollDown": "Aşağı kaydır"
+      "scrollDown": "Aşağı kaydır",
+      "holdToSpeak": "Konuşmak için basılı tut"
     },
     "externalAssistant": {
       "copied": "Talimatlar kopyalandı",

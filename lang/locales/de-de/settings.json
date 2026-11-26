@@ -448,9 +448,9 @@
       "title": "Darstellung und Startseite",
       "subtitle": "Oberfläche der App anpassen",
       "sectionTitle": "Navigationsleiste",
-      "sectionSubtitle": "Wähle, welche Verknüpfungen in der unteren Leiste erscheinen. Start und Kamera sind immer fest.",
-      "slot1Label": "Platz 1 (links neben der Kamera)",
-      "slot2Label": "Platz 2 (rechts neben der Kamera)",
+      "sectionSubtitle": "Wähle, welche Verknüpfungen in der unteren Leiste erscheinen. Start und die mittlere Taste bleiben immer an ihrem Platz.",
+      "slot1Label": "Platz 1 (links neben der mittleren Taste)",
+      "slot2Label": "Platz 2 (rechts neben der mittleren Taste)",
       "slot3Label": "Platz 3 (ganz rechts)",
       "selectItem": "Wähle eine Verknüpfung für diesen Platz",
       "currentlyInSlot": "Aktuell auf Platz {{slot}} (wird getauscht)",
@@ -464,6 +464,21 @@
         "progress": "Fortschritt",
         "checkin": "Check-in",
         "notes": "Notizen"
+      },
+      "centerButton": {
+        "label": "Mittlere Taste",
+        "popupTitle": "Mittlere Taste",
+        "popupSubtitle": "Wähle, was die große Taste in der Mitte der Leiste macht.",
+        "options": {
+          "camera": {
+            "label": "Kamera",
+            "description": "Öffnet die smarte Kamera für Barcodes, Etiketten und Mahlzeitenfotos."
+          },
+          "voice": {
+            "label": "Sprache zu Text",
+            "description": "Gedrückt halten und sprechen: Was du sagst, wird zu Text, offline auf deinem Telefon erkannt."
+          }
+        }
       }
     },
     "nutritionDisplay": {

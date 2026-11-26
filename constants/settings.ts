@@ -674,6 +674,22 @@ export function parseFoodDiaryGrouping(raw: string | null | undefined): FoodDiar
   return FOOD_DIARY_GROUPING_OPTIONS.find((option) => option === raw) ?? 'categories';
 }
 
+/**
+ * Setting type for what the bottom bar's centre button does. value: 'camera' | 'voice'.
+ * Default: 'camera'. 'voice' is a hold-to-talk microphone that turns speech into text on the
+ * device; where that cannot run (web, Android below 13) the bar shows the camera instead
+ * (`resolveNavCenterAction`, `utils/voiceInput.ts`). A display preference, backed up.
+ */
+export const NAV_CENTER_ACTION_SETTING_TYPE = 'nav_center_action';
+
+export const NAV_CENTER_ACTIONS = ['camera', 'voice'] as const;
+export type NavCenterAction = (typeof NAV_CENTER_ACTIONS)[number];
+
+/** Anything unrecognized (a newer build, a hand-edited backup) keeps the camera. */
+export function parseNavCenterAction(raw: string | null | undefined): NavCenterAction {
+  return NAV_CENTER_ACTIONS.find((option) => option === raw) ?? 'camera';
+}
+
 export const AI_MEAL_CAMERA_FLOWS = ['detailed', 'quick'] as const;
 export type AiMealCameraFlow = (typeof AI_MEAL_CAMERA_FLOWS)[number];
 

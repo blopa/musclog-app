@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Beef,
+  Camera,
   Clock,
   Columns2,
   Crosshair,
@@ -11,6 +12,7 @@ import {
   Heart,
   LayoutGrid,
   Leaf,
+  Mic,
   Monitor,
   Moon,
   Palette,
@@ -25,7 +27,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
@@ -54,7 +56,9 @@ import {
   type HomeHeatmapLayout,
   type HomeHeatmaps,
   type HomeSummaryCard,
+  NAV_CENTER_ACTIONS,
   NAV_ITEM_KEYS,
+  type NavCenterAction,
   type NavItemKey,
   THEME_IDS,
   type ThemeOption,
@@ -72,6 +76,7 @@ import {
   type NutritionDisplayMacro,
   selectedMacrosToBinary,
 } from '@/utils/nutritionDisplay';
+import { canRecognizeSpeechOnDevice } from '@/utils/voiceInput';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -107,6 +112,23 @@ const HOME_HEATMAPS_ICON: Record<HomeHeatmaps, typeof LayoutGrid> = {
   workouts: Dumbbell,
   nutrition: Utensils,
   both: LayoutGrid,
+};
+
+/** Centre button choices: icon and whole translation keys. Exhaustive by type. */
+const NAV_CENTER_ACTION_CHOICES: Record<
+  NavCenterAction,
+  { icon: typeof Camera; labelKey: string; descriptionKey: string }
+> = {
+  camera: {
+    icon: Camera,
+    labelKey: 'settings.visualSettings.centerButton.options.camera.label',
+    descriptionKey: 'settings.visualSettings.centerButton.options.camera.description',
+  },
+  voice: {
+    icon: Mic,
+    labelKey: 'settings.visualSettings.centerButton.options.voice.label',
+    descriptionKey: 'settings.visualSettings.centerButton.options.voice.description',
+  },
 };
 
 /** Food diary grouping choices: icon and whole translation keys. Exhaustive by type. */
@@ -162,10 +184,12 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     homeHeatmapLayout,
     foodDiaryCompact,
     foodDiaryGrouping,
+    navCenterAction,
     animatedLoggy,
     showLoggy,
   } = useSettings();
 
+  const [centerActionPopupVisible, setCenterActionPopupVisible] = useState(false);
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
   const [macrosPopupVisible, setMacrosPopupVisible] = useState(false);
@@ -252,6 +276,15 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     await SettingsService.set(SETTINGS.foodDiaryGrouping, grouping);
   };
 
+  const handleCenterActionChange = async (choice: NavCenterAction) => {
+    setCenterActionPopupVisible(false);
+    await SettingsService.set(SETTINGS.navCenterAction, choice);
+  };
+
+  // A stored 'voice' on a device that cannot recognize speech on the device is not shown or used.
+  const canChooseVoice = canRecognizeSpeechOnDevice(Platform);
+  const centerAction = NAV_CENTER_ACTION_CHOICES[navCenterAction];
+  const CenterIcon = centerAction.icon;
   const foodGrouping = FOOD_DIARY_GROUPING_CHOICES[foodDiaryGrouping];
   const ThemeIcon = THEME_ICON[themePreference];
 
@@ -396,6 +429,21 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             {t('settings.visualSettings.sectionSubtitle')}
           </Text>
 
+          {canChooseVoice ? (
+            <View className="mb-4">
+              <Text
+                className="mb-1.5 ml-1 text-sm font-medium"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                {t('settings.visualSettings.centerButton.label')}
+              </Text>
+              <PickerButton
+                label={t(centerAction.labelKey)}
+                icon={<CenterIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+                onPress={() => setCenterActionPopupVisible(true)}
+              />
+            </View>
+          ) : null}
           {renderPickerButton(1)}
           {renderPickerButton(2)}
           {renderPickerButton(3)}
@@ -584,6 +632,19 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         title={activeSlot !== null ? slotLabels[activeSlot] : ''}
         subtitle={t('settings.visualSettings.selectItem')}
         items={menuItems}
+      />
+      <BottomPopUpMenu
+        visible={centerActionPopupVisible}
+        onClose={() => setCenterActionPopupVisible(false)}
+        title={t('settings.visualSettings.centerButton.popupTitle')}
+        subtitle={t('settings.visualSettings.centerButton.popupSubtitle')}
+        items={NAV_CENTER_ACTIONS.map((choice) => ({
+          icon: NAV_CENTER_ACTION_CHOICES[choice].icon,
+          selected: choice === navCenterAction,
+          title: t(NAV_CENTER_ACTION_CHOICES[choice].labelKey),
+          description: t(NAV_CENTER_ACTION_CHOICES[choice].descriptionKey),
+          onPress: () => handleCenterActionChange(choice),
+        }))}
       />
       <BottomPopUpMenu
         visible={themePopupVisible}

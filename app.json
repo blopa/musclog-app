@@ -204,10 +204,16 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
-          "microphonePermission": false
+          "microphonePermission": "Musclog uses the microphone only while you hold the microphone button, to turn what you say into text on your device."
         }
       ],
-      "expo-speech-recognition"
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Musclog uses the microphone only while you hold the microphone button, to turn what you say into text on your device.",
+          "speechRecognitionPermission": "Musclog turns what you say into text on your device while you hold the microphone button. The audio is not stored or sent anywhere."
+        }
+      ]
     ],
     "orientation": "default",
     "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
@@ -381,8 +387,7 @@
         "android.permission.WRITE_CALENDAR",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.SYSTEM_ALERT_WINDOW",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.SYSTEM_ALERT_WINDOW"
       ]
     },
     "extra": {

@@ -1,0 +1,35 @@
+{
+  "voiceInput": {
+    "listening": "Ich höre zu…",
+    "holdHint": "Halte die Mikrofon-Taste gedrückt, während du sprichst, und lass sie dann los.",
+    "resultTitle": "Was du gesagt hast",
+    "openSettings": "Einstellungen öffnen",
+    "downloadLanguage": "Sprache herunterladen",
+    "downloadDone": "Heruntergeladen. Halte die Mikrofon-Taste gedrückt, um zu sprechen.",
+    "downloadScheduled": "Der Download ist vorgemerkt und wird später abgeschlossen, zum Beispiel im WLAN.",
+    "downloadFailed": "Die Sprache konnte nicht heruntergeladen werden. Versuche es später erneut.",
+    "failure": {
+      "permission": {
+        "title": "Mikrofonzugriff ist aus",
+        "message": "Musclog braucht das Mikrofon, um deine Sprache in Text umzuwandeln. Du kannst den Zugriff in den Einstellungen deines Telefons erlauben."
+      },
+      "languageMissing": {
+        "title": "Sprache nicht heruntergeladen",
+        "messageAndroid": "Die Spracherkennung für die Sprache, auf die Musclog eingestellt ist, ist auf diesem Telefon noch nicht verfügbar. Lade sie einmal herunter, dann funktioniert sie danach offline.",
+        "messageIos": "Die Spracherkennung für die Sprache, auf die Musclog eingestellt ist, ist auf diesem Gerät noch nicht verfügbar. Aktiviere das Diktat für diese Sprache unter Einstellungen, Allgemein, Tastatur, und versuche es dann erneut."
+      },
+      "unavailable": {
+        "title": "Offline-Spracherkennung ist nicht verfügbar",
+        "message": "Dieses Telefon kann Sprache ohne Internet nicht in Text umwandeln. Musclog nutzt nur Spracherkennung, die auf deinem Telefon läuft."
+      },
+      "nothingHeard": {
+        "title": "Keine Worte gehört",
+        "message": "Musclog hat nichts aufgefangen. Halte die Taste gedrückt, sprich und lass los."
+      },
+      "failed": {
+        "title": "Zuhören beendet",
+        "message": "Die Spracherkennung wurde unterbrochen. Versuche es noch einmal."
+      }
+    }
+  }
+}

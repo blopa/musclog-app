@@ -182,7 +182,8 @@
       "clearSearch": "Clear search",
       "showValue": "Show value",
       "hideValue": "Hide value",
-      "scrollDown": "Scroll down"
+      "scrollDown": "Scroll down",
+      "holdToSpeak": "Hold to speak"
     },
     "externalAssistant": {
       "copied": "Instructions copied",

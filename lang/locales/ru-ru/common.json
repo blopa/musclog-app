@@ -182,7 +182,8 @@
       "clearSearch": "Очистить поиск",
       "showValue": "Показать значение",
       "hideValue": "Скрыть значение",
-      "scrollDown": "Прокрутить вниз"
+      "scrollDown": "Прокрутить вниз",
+      "holdToSpeak": "Удерживайте, чтобы говорить"
     },
     "externalAssistant": {
       "copied": "Инструкции скопированы",

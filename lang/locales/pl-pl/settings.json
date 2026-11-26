@@ -448,9 +448,9 @@
       "title": "Wygląd i ekran główny",
       "subtitle": "Dostosuj interfejs aplikacji",
       "sectionTitle": "Pasek nawigacji",
-      "sectionSubtitle": "Wybierz skróty widoczne na dolnym pasku. Ekran główny i aparat są zawsze na miejscu.",
-      "slot1Label": "Miejsce 1 (po lewej od aparatu)",
-      "slot2Label": "Miejsce 2 (po prawej od aparatu)",
+      "sectionSubtitle": "Wybierz skróty widoczne na dolnym pasku. Ekran główny i środkowy przycisk zawsze zostają na miejscu.",
+      "slot1Label": "Miejsce 1 (po lewej od środkowego przycisku)",
+      "slot2Label": "Miejsce 2 (po prawej od środkowego przycisku)",
       "slot3Label": "Miejsce 3 (najbardziej z prawej)",
       "selectItem": "Wybierz skrót dla tego miejsca",
       "currentlyInSlot": "Obecnie w miejscu {{slot}} (zostanie zamieniony)",
@@ -464,6 +464,21 @@
         "progress": "Postępy",
         "checkin": "Kontrola",
         "notes": "Notatki"
+      },
+      "centerButton": {
+        "label": "Środkowy przycisk",
+        "popupTitle": "Środkowy przycisk",
+        "popupSubtitle": "Wybierz, co robi duży przycisk na środku paska.",
+        "options": {
+          "camera": {
+            "label": "Aparat",
+            "description": "Otwiera inteligentny aparat do kodów kreskowych, etykiet i zdjęć posiłków."
+          },
+          "voice": {
+            "label": "Głos na tekst",
+            "description": "Przytrzymaj i mów: to, co powiesz, zamienia się w tekst, rozpoznawany offline na telefonie."
+          }
+        }
       }
     },
     "nutritionDisplay": {

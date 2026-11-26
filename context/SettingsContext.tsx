@@ -137,6 +137,7 @@ const REGISTERED_SETTINGS = [
   'animatedLoggy',
   'showLoggy',
   'foodDiaryGrouping',
+  'navCenterAction',
   'energyUnit',
 ] as const satisfies readonly SettingName[];
 

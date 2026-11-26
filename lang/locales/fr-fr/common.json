@@ -182,7 +182,8 @@
       "clearSearch": "Effacer la recherche",
       "showValue": "Afficher la valeur",
       "hideValue": "Masquer la valeur",
-      "scrollDown": "Faire défiler vers le bas"
+      "scrollDown": "Faire défiler vers le bas",
+      "holdToSpeak": "Maintenir pour parler"
     },
     "externalAssistant": {
       "copied": "Instructions copiées",

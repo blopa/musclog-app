@@ -10,7 +10,6 @@ const UNUSED_PERMISSIONS = [
   'android.permission.READ_EXTERNAL_STORAGE',
   'android.permission.WRITE_EXTERNAL_STORAGE',
   'android.permission.SYSTEM_ALERT_WINDOW',
-  'android.permission.RECORD_AUDIO',
 ];
 
 const appJson = JSON.parse(read('app.json')).expo;
@@ -29,6 +28,18 @@ describe('unused permissions stay undeclared', () => {
     lines.forEach((line) => expect(line).toContain('tools:node="remove"'));
   });
 
+  it('declares RECORD_AUDIO for speech recognition and the recognition service query', () => {
+    const manifest = read('android/app/src/main/AndroidManifest.xml');
+    const lines = manifest
+      .split('\n')
+      .filter((line) => line.includes('"android.permission.RECORD_AUDIO"'));
+
+    expect(appJson.android.blockedPermissions).not.toContain('android.permission.RECORD_AUDIO');
+    expect(lines.length).toBeGreaterThan(0);
+    lines.forEach((line) => expect(line).not.toContain('tools:node="remove"'));
+    expect(manifest).toContain('android.speech.RecognitionService');
+  });
+
   it('vision-camera does not request the microphone', () => {
     const plugin = appJson.plugins.find(
       (entry: unknown) => Array.isArray(entry) && entry[0] === 'react-native-vision-camera'
@@ -44,10 +55,10 @@ describe('unused permissions stay undeclared', () => {
     expect({ ...pkg.dependencies, ...pkg.devDependencies }).not.toHaveProperty('expo-calendar');
   });
 
-  it('declares no calendar, reminders or microphone usage on iOS', () => {
+  it('declares no calendar or reminders usage on iOS', () => {
     const plist = read('ios/MusclogLiftLogRepeat/Info.plist');
 
-    expect(plist).not.toMatch(/NSCalendars|NSReminders|NSMicrophoneUsageDescription/);
+    expect(plist).not.toMatch(/NSCalendars|NSReminders/);
   });
 
   it('records the reps video silently', () => {

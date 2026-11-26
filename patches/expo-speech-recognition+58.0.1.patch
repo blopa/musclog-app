@@ -1,0 +1,25 @@
+diff --git a/node_modules/expo-speech-recognition/ios/ExpoSpeechRecognitionModule.swift b/node_modules/expo-speech-recognition/ios/ExpoSpeechRecognitionModule.swift
+index 9dc9082..66268f7 100644
+--- a/node_modules/expo-speech-recognition/ios/ExpoSpeechRecognitionModule.swift
++++ b/node_modules/expo-speech-recognition/ios/ExpoSpeechRecognitionModule.swift
+@@ -204,6 +204,20 @@ public class ExpoSpeechRecognitionModule: Module {
+             )
+           }
+ 
++          // Musclog patch: a request that requires on-device recognition must never fall back to
++          // Apple's servers, which the recognizer does when the locale has no on-device model.
++          if options.requiresOnDeviceRecognition {
++            let onDeviceRecognizer = resolveLocale(localeIdentifier: options.lang)
++              .flatMap { SFSpeechRecognizer(locale: $0) }
++            if onDeviceRecognizer?.supportsOnDeviceRecognition != true {
++              sendErrorAndStop(
++                error: "language-not-supported",
++                message: "On-device recognition is not available for \(options.lang)"
++              )
++              return
++            }
++          }
++
+           if !options.requiresOnDeviceRecognition {
+             guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
+               sendErrorAndStop(
