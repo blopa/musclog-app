@@ -45,6 +45,8 @@
       "unmatchedTitle": "Sesli komut bunu henüz yapamıyor",
       "canSay": "Şunları söyleyebilirsin:",
       "askCoach": "Koça sor",
+      "wrongTask": "Yanlış işlem mi? Daha iyi bir model deneyin.",
+      "openAiSettings": "Yapay zekâ ayarları",
       "failed": "Sesli komut başarısız oldu. Tekrar dene.",
       "capability": {
         "copyMeal": "“Dünkü kahvaltının aynısını yaptım”",

@@ -842,3 +842,14 @@ The model card lists function calling for text input (BFCLv4 21.08, vendor figur
 | Same, tools renamed `log_food`/`repeat_meal`                    | 22 to 26 | 4 to 9       | 6 to 7 |
 
 Per class, the shipped setup gets 15 of 16 non-requests, 8 or 9 of 11 foods and only 3 of 10 copies right. It leans to the first tool it is offered (with `copy_meal` first it called `copy_meal` for most foods), and it fills slots it has nothing for with filler, mostly `from_day: "tomorrow"` (not an allowed value, so the command is dropped and the person sees "couldn't tell"). The wrong actions left are mild: a search for "breakfast" or "gisteren", a copy with the wrong meal shown on the review screen, a search with no meal. The app's replay of its own payload (`buildNativeVoiceTools`, `NATIVE_VOICE_EXAMPLES` through `toEngineMessages`) reproduced the 26 of 37 exactly. Copies remain weak because the model does not map "last night", "Friday", "lunes" or "gisteren" to the day values; a LoRA fine-tune on synthetic Musclog commands, or the 1.2B model above, are the levers left. Cloud providers keep the schema path and were not measured here.
+
+**Meal-name searches and copy sentences (2026-11-27).** "Today, I had the same breakfast as yesterday." opened a food search for "breakfast". Measured on llama.cpp b10256 over 100 sentences (the 37 above, the same 37 with punctuation, and 26 new copy, "today" and control sentences), counting a right action with right arguments (a copy review that asks for the day is counted apart):
+
+| Step, cumulative                                   | Right | Asks the day | Missed | Wrong |
+| -------------------------------------------------- | ----- | ------------ | ------ | ----- |
+| Before                                             | 61    | 0            | 20     | 19    |
+| Meal name as food opens the copy review            | 61    | 4            | 20     | 15    |
+| Repeated keys read, first valid value              | 62    | 4            | 16     | 18    |
+| Second copy example with "today", last valid value | 72    | 2            | 11     | 15    |
+
+Copy sentences went from 10 to 17 right of 38, foods from 21 to 26 of 27, non-requests from 30 to 29 of 35 ("Don't repeat yesterday's breakfast" now opens a review: the old reading dropped it only because of the repeated key). Stripping punctuation did not help (68 right and 17 wrong against 70 and 15 with the chosen examples), so the transcript is sent as heard. The example set is the best of nine tried, each with and without stripping, on these same sentences, so expect less on new wording. "I had the same breakfast as yesterday." is still missed, and non-English copies remain mostly wrong or missed. Measured on a desktop, not on a phone.

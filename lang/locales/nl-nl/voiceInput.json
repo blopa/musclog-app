@@ -45,6 +45,8 @@
       "unmatchedTitle": "Spraak kan dat nog niet",
       "canSay": "Je kunt bijvoorbeeld zeggen:",
       "askCoach": "Vraag het aan de coach",
+      "wrongTask": "Verkeerde taak? Probeer een beter model.",
+      "openAiSettings": "AI-instellingen",
       "failed": "De spraakopdracht is mislukt. Probeer het opnieuw.",
       "capability": {
         "copyMeal": "„Ik had hetzelfde ontbijt als gisteren“",

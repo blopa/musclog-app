@@ -14,6 +14,9 @@ import type {
  * the "what you can say" list from `labelKey`, and `resolve` turns the model's slots into an action.
  */
 
+/** One example sentence and the call it should produce. */
+export type VoiceExample = { say: string; arguments: string };
+
 export type VoiceToolDefinition = {
   /** For the system prompt: what the tool does and which fields it reads. */
   promptLine: string;
@@ -21,14 +24,14 @@ export type VoiceToolDefinition = {
   labelKey: string;
   /**
    * The model's own tool-call format (the downloaded model). Measured as a set: `order` is the
-   * place the tool is offered in, `example` the turn it is shown by (`order` among the examples).
+   * place the tool is offered in, `examples` the turns it is shown by (`order` among the tools).
    * Slots are in the order the model is shown them.
    */
   native: {
     description: string;
     slots: Partial<Record<VoiceSlotKey, string>>;
     order: number;
-    example: { order: number; say: string; arguments: string };
+    examples: { order: number; turns: readonly VoiceExample[] };
   };
   resolve: (command: VoiceCommand, context: VoiceResolveContext) => VoiceResolution;
 };
@@ -48,10 +51,18 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
         from_day: 'The day copied from.',
       },
       order: 1,
-      example: {
+      examples: {
         order: 0,
-        say: 'Same breakfast as yesterday',
-        arguments: '{"meal":"breakfast","from_day":"yesterday"}',
+        turns: [
+          {
+            say: 'Same breakfast as yesterday',
+            arguments: '{"meal":"breakfast","from_day":"yesterday"}',
+          },
+          {
+            say: 'Today I had the same lunch as yesterday',
+            arguments: '{"meal":"lunch","day":"today","from_day":"yesterday"}',
+          },
+        ],
       },
     },
     resolve: resolveCopyMeal,
@@ -68,7 +79,7 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
         day: 'The day it is eaten.',
       },
       order: 0,
-      example: { order: 1, say: 'I had a banana', arguments: '{"food":"banana"}' },
+      examples: { order: 1, turns: [{ say: 'I had a banana', arguments: '{"food":"banana"}' }] },
     },
     resolve: resolveSearchFood,
   },

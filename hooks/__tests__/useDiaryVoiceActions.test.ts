@@ -15,9 +15,17 @@ import type { VoiceAction } from '@/utils/voiceCommand/types';
 // one runs only for the focused screen.
 const mockFocused = { current: true };
 jest.mock('expo-router', () => ({
+  useRouter: () => ({ navigate: (...args: unknown[]) => mockNavigate(...args) }),
   useFocusEffect: (callback: () => void | (() => void)) => {
     require('react').useEffect(() => (mockFocused.current ? callback() : undefined), [callback]);
   },
+}));
+
+const mockNavigate = jest.fn();
+const mockShowSnackbar = jest.fn();
+jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+jest.mock('@/context/SnackbarContext', () => ({
+  useSnackbar: () => ({ showSnackbar: mockShowSnackbar }),
 }));
 
 const targetDay = new Date(2026, 10, 26);
@@ -47,10 +55,12 @@ function makeHandlers() {
     selectMealType: jest.fn(),
     openCopyDay: jest.fn(),
     openFoodSearch: jest.fn(),
+    isTaskOpen: false,
   };
 }
 
 beforeEach(() => {
+  jest.clearAllMocks();
   mockFocused.current = true;
   setPendingVoiceAction(null);
 });
@@ -125,5 +135,55 @@ describe('useDiaryVoiceActions', () => {
 
     expect(handlers.openFoodSearch).not.toHaveBeenCalled();
     expect(takePendingVoiceAction()).toEqual(searchFoodAction());
+  });
+});
+
+describe('useDiaryVoiceActions wrong-task prompt', () => {
+  function renderTask() {
+    const handlers = makeHandlers();
+    const hook = renderHook(
+      (isTaskOpen: boolean) => useDiaryVoiceActions({ ...handlers, isTaskOpen }),
+      { initialProps: false }
+    );
+
+    return { handlers, ...hook };
+  }
+
+  it('offers the AI settings once a voice task closes, and goes there when tapped', () => {
+    const { rerender } = renderTask();
+    act(() => setPendingVoiceAction(searchFoodAction()));
+    rerender(true);
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
+
+    rerender(false);
+
+    expect(mockShowSnackbar).toHaveBeenCalledTimes(1);
+    const [type, message, options] = mockShowSnackbar.mock.calls[0];
+    expect([type, message, options.action]).toEqual([
+      'success',
+      'voiceInput.command.wrongTask',
+      'voiceInput.command.openAiSettings',
+    ]);
+    expect(options.onPress).toBe(options.onAction);
+
+    options.onAction();
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: '/app/settings',
+      params: { openAi: expect.any(String) },
+    });
+
+    rerender(true);
+    rerender(false);
+    expect(mockShowSnackbar).toHaveBeenCalledTimes(1);
+  });
+
+  it('says nothing when a sheet the person opened closes', () => {
+    const { result, rerender } = renderTask();
+    act(() => result.current.openWholeCopyDay());
+    rerender(true);
+    rerender(false);
+
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
   });
 });

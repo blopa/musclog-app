@@ -45,6 +45,8 @@
       "unmatchedTitle": "La voce non sa ancora farlo",
       "canSay": "Puoi dire, per esempio:",
       "askCoach": "Chiedi al coach",
+      "wrongTask": "Azione sbagliata? Prova un modello migliore.",
+      "openAiSettings": "Impostazioni IA",
       "failed": "Il comando vocale non è riuscito. Riprova.",
       "capability": {
         "copyMeal": "“Ho fatto la stessa colazione di ieri”",

@@ -213,3 +213,39 @@ describe('resolveVoiceCommand', () => {
     expect(result.ok && result.action.kind).toBe('searchFood');
   });
 });
+
+describe('a meal name in the food slot', () => {
+  const now = new Date(2026, 10, 25, 12, 0);
+  const command = {
+    tool: 'search_food',
+    meal: null,
+    day: 'today',
+    fromMeal: null,
+    fromDay: null,
+    food: 'breakfast',
+  } as const;
+
+  it('opens the copy review with no source day instead of searching', () => {
+    const resolution = resolveVoiceCommand(command, {
+      now,
+      transcript: 'Today, I had the same breakfast as yesterday.',
+    });
+
+    expect(resolution).toEqual({
+      ok: true,
+      action: {
+        kind: 'copyMeal',
+        targetDay: new Date(2026, 10, 25),
+        sourceDay: null,
+        meals: { source: 'breakfast', target: 'breakfast' },
+      },
+    });
+  });
+
+  it('still needs the meal to have been said', () => {
+    expect(resolveVoiceCommand(command, { now, transcript: 'Add some oats' })).toEqual({
+      ok: false,
+      reason: 'cantDetermine',
+    });
+  });
+});

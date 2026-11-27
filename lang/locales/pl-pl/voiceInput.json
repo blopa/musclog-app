@@ -45,6 +45,8 @@
       "unmatchedTitle": "Głosem tego jeszcze nie da się zrobić",
       "canSay": "Możesz powiedzieć na przykład:",
       "askCoach": "Zapytaj coacha",
+      "wrongTask": "Nie to zadanie? Wypróbuj lepszy model.",
+      "openAiSettings": "Ustawienia AI",
       "failed": "Polecenie głosowe się nie powiodło. Spróbuj ponownie.",
       "capability": {
         "copyMeal": "„Zjadłem to samo śniadanie co wczoraj”",

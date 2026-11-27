@@ -257,6 +257,11 @@ export default function FoodScreen() {
     selectMealType,
     openCopyDay: screenModals.copyDay.open,
     openFoodSearch: screenModals.foodSearch.open,
+    // Creating a custom food is where a search that found nothing continues.
+    isTaskOpen:
+      screenModals.copyDay.visible ||
+      screenModals.foodSearch.visible ||
+      screenModals.createCustomFood.visible,
   });
 
   // The optical send target is captured before each share handler clears its menu selection, so the

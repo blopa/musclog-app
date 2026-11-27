@@ -5,6 +5,8 @@ export type SnackbarOptions = {
   secondaryAction?: string;
   onSecondaryAction?: () => void;
   duration?: number;
+  /** Makes the text itself tappable; it dismisses the snackbar like an action does. */
+  onPress?: () => void;
 };
 
 type ShowSnackbarFunction = (

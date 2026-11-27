@@ -12,7 +12,11 @@ import { prepareChatText, wrapUserContent } from '@/utils/promptSanitizer';
 import { buildNativeVoiceTools, NATIVE_VOICE_EXAMPLES } from '@/utils/voiceCommand/nativeTools';
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
 
-jest.mock('@/lang/lang', () => ({ __esModule: true, default: { t: (key: string) => key } }));
+jest.mock('@/lang/lang', () => ({
+  __esModule: true,
+  AVAILABLE_LANGUAGES: [],
+  default: { t: (key: string) => key },
+}));
 jest.mock('@/services/AiService', () => ({ AiService: { getAiConfig: jest.fn() } }));
 jest.mock('@/utils/aiTelemetry', () => ({ reportAiEvent: jest.fn() }));
 jest.mock('@/utils/coachAI', () => {

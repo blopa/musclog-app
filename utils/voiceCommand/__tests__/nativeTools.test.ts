@@ -83,6 +83,16 @@ describe('NATIVE_VOICE_EXAMPLES', () => {
       ],
       [
         {
+          tool: 'copy_meal',
+          meal: 'lunch',
+          day: 'today',
+          fromMeal: null,
+          fromDay: 'yesterday',
+          food: null,
+        },
+      ],
+      [
+        {
           tool: 'search_food',
           meal: null,
           day: null,
@@ -97,6 +107,15 @@ describe('NATIVE_VOICE_EXAMPLES', () => {
 
 describe('nativeVoiceReply', () => {
   const call = (args: string, name = 'search_food') => ({ id: 'c', name, arguments: args });
+
+  it('reads "other" on a food search as no meal, and keeps it on a copy', () => {
+    expect(
+      nativeVoiceReply({ text: '', toolCalls: [call('{"food":"egg","meal":"other"}')] })
+    ).toEqual({ commands: [{ food: 'egg', tool: 'search_food' }] });
+    expect(
+      nativeVoiceReply({ text: '', toolCalls: [call('{"meal":"other"}', 'copy_meal')] })
+    ).toEqual({ commands: [{ meal: 'other', tool: 'copy_meal' }] });
+  });
 
   it('reads plain text as not a request', () => {
     expect(nativeVoiceReply({ text: 'Hi Pablo!', toolCalls: [] })).toEqual({
@@ -126,6 +145,29 @@ describe('nativeVoiceReply', () => {
     expect(
       nativeVoiceReply({ text: '', toolCalls: [call('{"tool":"none","food":"egg"}')] })
     ).toEqual({ commands: [{ tool: 'search_food', food: 'egg' }] });
+  });
+});
+
+describe('nativeVoiceReply with a repeated key', () => {
+  const fromDay = (...values: string[]) => {
+    const pairs = values.map((value) => `"from_day":"${value}"`).join(',');
+    const reply = nativeVoiceReply({
+      text: '',
+      toolCalls: [{ id: 'c', name: 'copy_meal', arguments: `{"meal":"lunch",${pairs}}` }],
+    });
+
+    return reply?.commands[0].from_day;
+  };
+
+  it.each([
+    [['yesterday', 'tomorrow'], 'yesterday'],
+    [['yesterday', 'monday'], 'monday'],
+    [['yesterday', 'today'], 'yesterday'],
+    [['today'], 'today'],
+    [['yesterday', 'heute'], 'yesterday'],
+    [['tomorrow'], 'tomorrow'],
+  ])('reads %j as %s', (values, expected) => {
+    expect(fromDay(...values)).toBe(expected);
   });
 });
 
@@ -220,13 +262,27 @@ describe('frozen native voice output', () => {
       },
       { role: 'tool', toolCallId: 'call_1', content: 'ok' },
       { role: 'assistant', content: 'Done.' },
+      { role: 'user', content: 'Today I had the same lunch as yesterday' },
+      {
+        role: 'assistant',
+        content: '',
+        toolCalls: [
+          {
+            id: 'call_2',
+            name: 'copy_meal',
+            arguments: '{"meal":"lunch","day":"today","from_day":"yesterday"}',
+          },
+        ],
+      },
+      { role: 'tool', toolCallId: 'call_2', content: 'ok' },
+      { role: 'assistant', content: 'Done.' },
       { role: 'user', content: 'I had a banana' },
       {
         role: 'assistant',
         content: '',
-        toolCalls: [{ id: 'call_2', name: 'search_food', arguments: '{"food":"banana"}' }],
+        toolCalls: [{ id: 'call_3', name: 'search_food', arguments: '{"food":"banana"}' }],
       },
-      { role: 'tool', toolCallId: 'call_2', content: 'ok' },
+      { role: 'tool', toolCallId: 'call_3', content: 'ok' },
       { role: 'assistant', content: 'Done.' },
     ]);
   });
@@ -239,7 +295,7 @@ describe('frozen native voice output', () => {
 describe('native placement guarantees', () => {
   it('places every action tool once in the offer order and once in the example order', () => {
     const offered = VOICE_ACTION_TOOLS.map((name) => VOICE_TOOLS[name].native.order).sort();
-    const shown = VOICE_ACTION_TOOLS.map((name) => VOICE_TOOLS[name].native.example.order).sort();
+    const shown = VOICE_ACTION_TOOLS.map((name) => VOICE_TOOLS[name].native.examples.order).sort();
 
     expect(offered).toEqual(VOICE_ACTION_TOOLS.map((_, index) => index));
     expect(shown).toEqual(VOICE_ACTION_TOOLS.map((_, index) => index));

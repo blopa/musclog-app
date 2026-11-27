@@ -45,6 +45,8 @@
       "unmatchedTitle": "Sprachbefehle können das noch nicht",
       "canSay": "So kannst du es sagen:",
       "askCoach": "Den Coach fragen",
+      "wrongTask": "Falsche Aktion? Probier ein besseres Modell.",
+      "openAiSettings": "KI-Einstellungen",
       "failed": "Der Sprachbefehl ist fehlgeschlagen. Versuche es noch einmal.",
       "capability": {
         "copyMeal": "„Ich hatte dasselbe Frühstück wie gestern“",

@@ -45,6 +45,8 @@
       "unmatchedTitle": "Voice can't do that yet",
       "canSay": "Here is what you can say:",
       "askCoach": "Ask the coach",
+      "wrongTask": "Incorrect task? Try using a better model.",
+      "openAiSettings": "AI settings",
       "failed": "The voice command failed. Try again.",
       "capability": {
         "copyMeal": "\"I had the same breakfast as yesterday\"",

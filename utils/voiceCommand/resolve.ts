@@ -1,6 +1,7 @@
 import { localCalendarDayDate, localCalendarDayPlusDays } from '@/utils/calendarDate';
 import { mealTypeForHour } from '@/utils/mealTypeForHour';
 import { isFoodSaid } from '@/utils/voiceCommand/grounding';
+import { mealOfWord } from '@/utils/voiceCommand/mealWords';
 import {
   VOICE_WEEKDAYS,
   type VoiceCommand,
@@ -74,8 +75,9 @@ export function resolveCopyMeal(
 
 export function resolveSearchFood(
   command: VoiceCommand,
-  { now, transcript }: VoiceResolveContext
+  context: VoiceResolveContext
 ): VoiceResolution {
+  const { now, transcript } = context;
   const query = command.food?.trim();
   if (!query) {
     return { ok: false, reason: 'missingFood' };
@@ -84,6 +86,23 @@ export function resolveSearchFood(
   // A model fills the slot from its examples; a food the person never said is not a request.
   if (!isFoodSaid(query, transcript)) {
     return { ok: false, reason: 'cantDetermine' };
+  }
+
+  // A meal's name is not a food: "the same breakfast as yesterday" read as a search for
+  // "breakfast". It opens the copy review instead, which asks which day to copy and writes nothing
+  // until confirmed. The model's `day` is not trusted as the source: it may mean either side.
+  const meal = mealOfWord(query);
+  if (meal) {
+    return resolveCopyMeal(
+      {
+        ...command,
+        meal: command.meal ?? meal,
+        fromMeal: meal,
+        fromDay: null,
+        day: command.day === 'tomorrow' ? 'tomorrow' : null,
+      },
+      context
+    );
   }
 
   return {
