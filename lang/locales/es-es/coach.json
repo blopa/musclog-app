@@ -167,6 +167,7 @@
         "errorImage": "No se pudo cargar esa imagen."
       }
     },
-    "reviewingReply": "Repaso mi respuesta…"
+    "reviewingReply": "Repaso mi respuesta…",
+    "onDevicePainReply": "Desde aquí no puedo saber qué pasa, y prefiero no adivinar cuando algo duele. De momento, deja el ejercicio que provoca el dolor y entrena lo que no duele. Si el dolor es agudo, hay hinchazón o no se calma tras unos días, acude a un médico o a un fisioterapeuta. Me encantaría ayudarte a planificar tu entrenamiento alrededor de ello."
   }
 }

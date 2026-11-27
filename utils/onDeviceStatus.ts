@@ -62,6 +62,8 @@ export type OnDeviceStatusInput = {
   model: OnDeviceModelReading;
   /** The phone passes `evaluateLocalModelDevice`. */
   deviceOk: boolean;
+  /** The downloaded model's optional text model is installed. */
+  textModelReady?: boolean;
 };
 
 function appleState(availability: AppleAvailability): OnDeviceStatusState {
@@ -117,7 +119,11 @@ export function deriveOnDeviceStatus(input: OnDeviceStatusInput): OnDeviceStatus
     state: isApple ? resolvedAppleState : modelState(input.model, input.deviceOk),
     appleState: resolvedAppleState,
     progress: isApple ? null : modelProgress(input.model.state),
-    capabilities: onDeviceCapabilities(input.engine, input.model.projectorInstalled),
+    capabilities: onDeviceCapabilities(
+      input.engine,
+      input.model.projectorInstalled,
+      input.textModelReady ?? false
+    ),
     updateAvailable: !isApple && input.model.updateAvailable,
     options: {
       apple:

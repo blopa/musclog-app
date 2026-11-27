@@ -2,6 +2,7 @@ const mockHandleError = jest.fn(async () => {});
 const mockGetApple = jest.fn();
 const mockRefreshModel = jest.fn(async () => {});
 const mockGet = jest.fn(async () => 'auto');
+const mockTextModelKind = jest.fn(() => 'none');
 
 jest.mock('@/utils/handleError', () => ({
   handleError: (...args: unknown[]) => mockHandleError(...args),
@@ -18,6 +19,11 @@ jest.mock('@/services/localModels/modelStore', () => ({
     updateAvailable: false,
   }),
   refreshLocalModel: () => mockRefreshModel(),
+  localTextModelStore: {
+    refresh: () => mockRefreshModel(),
+    getSnapshot: () => ({ state: { kind: mockTextModelKind() } }),
+    subscribe: () => () => {},
+  },
   subscribeLocalModel: () => () => {},
 }));
 jest.mock('@/services/localModels/devWebBridge', () => ({ isDevWebLocalModel: () => false }));
@@ -49,6 +55,17 @@ describe('onDeviceStatusStore', () => {
     resetOnDeviceStatusForTests();
     jest.clearAllMocks();
     mockGetApple.mockResolvedValue('available');
+  });
+
+  it('reports the optional text model in the capabilities', async () => {
+    mockGet.mockResolvedValue('gguf' as never);
+    mockTextModelKind.mockReturnValue('ready');
+
+    expect((await refreshOnDeviceStatus()).capabilities.textModel).toBe(true);
+
+    mockTextModelKind.mockReturnValue('none');
+    expect((await refreshOnDeviceStatus()).capabilities.textModel).toBe(false);
+    mockGet.mockResolvedValue('auto' as never);
   });
 
   it('never rejects when a probe fails, reports it once and keeps the last snapshot', async () => {

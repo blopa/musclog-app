@@ -167,6 +167,7 @@
         "errorImage": "Nie udało się wczytać tego obrazu."
       }
     },
-    "reviewingReply": "Sprawdzam jeszcze raz swoją odpowiedź…"
+    "reviewingReply": "Sprawdzam jeszcze raz swoją odpowiedź…",
+    "onDevicePainReply": "Stąd nie widzę, co się dzieje, i nie chcę zgadywać, gdy coś boli. Na razie przerwij ćwiczenie, które powoduje ból, i trenuj to, co nie boli. Jeśli ból jest ostry, pojawia się obrzęk albo nie ustępuje po kilku dniach, idź do lekarza lub fizjoterapeuty. Chętnie pomogę zaplanować trening z uwzględnieniem tego."
   }
 }

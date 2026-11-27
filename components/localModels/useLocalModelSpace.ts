@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 
-import { DEFAULT_LOCAL_MODEL } from '@/constants/localModels';
-import { getFreeDiskBytes, getLocalModelSpaceCheck } from '@/services/localModels/modelStore';
+import { getFreeDiskBytes, type LocalModelStore } from '@/services/localModels/modelStore';
 import { checkSpace, type LocalModelSelection } from '@/utils/localModels/install';
 
 /**
  * Reads free disk bytes and checks whether the selected local model files fit.
  * Shared by `LocalModelCard` and the on-device AI onboarding options screen.
  */
-export function useLocalModelSpace(selection: LocalModelSelection, refreshKey?: unknown) {
+export function useLocalModelSpace(
+  store: LocalModelStore,
+  selection: LocalModelSelection,
+  refreshKey?: unknown
+) {
   const [freeBytes, setFreeBytes] = useState<number | null>(null);
-  const [space, setSpace] = useState(() => checkSpace(null, DEFAULT_LOCAL_MODEL, selection));
+  const [space, setSpace] = useState(() => checkSpace(null, store.manifest, selection));
 
   useEffect(() => {
     let cancelled = false;
@@ -27,7 +30,7 @@ export function useLocalModelSpace(selection: LocalModelSelection, refreshKey?: 
 
   useEffect(() => {
     let cancelled = false;
-    void getLocalModelSpaceCheck(selection).then((result) => {
+    void store.getSpaceCheck(selection).then((result) => {
       if (!cancelled) {
         setSpace(result);
       }
@@ -36,7 +39,7 @@ export function useLocalModelSpace(selection: LocalModelSelection, refreshKey?: 
     return () => {
       cancelled = true;
     };
-  }, [selection, refreshKey]);
+  }, [store, selection, refreshKey]);
 
   return { freeBytes, space };
 }

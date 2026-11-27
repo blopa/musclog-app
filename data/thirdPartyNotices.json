@@ -31,5 +31,12 @@
     "license": "LFM Open License v1.0",
     "licenseUrl": "https://www.liquid.ai/lfm-license",
     "projectUrl": "https://huggingface.co/LiquidAI/LFM2.5-VL-450M-GGUF"
+  },
+  {
+    "id": "lfm2.5-1.2b-instruct",
+    "name": "LFM2.5 1.2B (Liquid AI)",
+    "license": "LFM Open License v1.0",
+    "licenseUrl": "https://www.liquid.ai/lfm-license",
+    "projectUrl": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF"
   }
 ]

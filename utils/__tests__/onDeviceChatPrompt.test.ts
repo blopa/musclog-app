@@ -105,6 +105,19 @@ describe('on-device chat prompt', () => {
     expect(prompt.indexOf('SNAPSHOT-LINE')).toBeLessThan(prompt.lastIndexOf(lastLine));
   });
 
+  it('ends with the safety reminder when the message mentions pain', async () => {
+    const prompt = await getChatMessagePromptContent('en-US', undefined, 'general', 'on-device', {
+      painMentioned: true,
+    });
+    const lines = prompt.split('\n').filter((line) => line.trim() !== '');
+
+    expect(lines[lines.length - 1]).toBe(
+      getOnDeviceIdentityReminder('Loggy', { painMentioned: true })
+    );
+    expect(lines[lines.length - 1]).toContain('Do not tell them to keep doing the movement');
+    expect(getOnDeviceIdentityReminder('Loggy')).not.toContain('pain');
+  });
+
   it('puts the stats on an "About them:" line', async () => {
     const prompt = await onDevicePrompt();
 

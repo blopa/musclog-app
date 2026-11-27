@@ -45,16 +45,20 @@ export type OnDeviceCapabilities = {
   engine: OnDeviceEngine;
   /** Can read a food photo: the downloaded model with its projector installed. */
   vision: boolean;
+  /** The downloaded model's optional text model is installed: requests without a photo go to it. */
+  textModel: boolean;
   contextChars: number;
 };
 
 export function onDeviceCapabilities(
   engine: OnDeviceEngine,
-  projectorInstalled: boolean
+  projectorInstalled: boolean,
+  textModelInstalled: boolean = false
 ): OnDeviceCapabilities {
   return {
     engine,
     vision: engine === 'gguf' && projectorInstalled,
+    textModel: engine === 'gguf' && textModelInstalled,
     contextChars: ON_DEVICE_CONTEXT_CHARS[engine],
   };
 }

@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "Excluir o modelo?",
-        "message": "A IA no dispositivo deixa de funcionar até você baixar o modelo novamente. Seus dados não são afetados."
+        "message": "A IA no dispositivo deixa de funcionar até você baixar o modelo novamente. Seus dados não são afetados.",
+        "messageWithTextModel": "A IA no dispositivo deixa de funcionar até você baixar o modelo novamente. O modelo de chat opcional também é excluído. Seus dados não são afetados."
+      }
+    },
+    "textModel": {
+      "heading": "Opcional: um modelo maior para o chat",
+      "description": "Depois de baixado, o chat, os comandos de voz e tudo o mais sem foto usam este modelo. As respostas são melhores, mas demoram mais. Fotos de refeições continuam usando {{name}}.",
+      "state": {
+        "ready": "Pronto. O chat, a voz e outros textos usam este modelo; as fotos usam {{name}}."
+      },
+      "actions": {
+        "delete": "Excluir o modelo de chat"
+      },
+      "delete": {
+        "title": "Excluir o modelo de chat?",
+        "message": "O chat e a voz voltam a usar {{name}}. Seus dados não são afetados."
       }
     },
     "apple": {

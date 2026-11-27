@@ -167,6 +167,7 @@
         "errorImage": "Dieses Bild konnte nicht geladen werden."
       }
     },
-    "reviewingReply": "Ich prüfe meine Antwort noch einmal…"
+    "reviewingReply": "Ich prüfe meine Antwort noch einmal…",
+    "onDevicePainReply": "Von hier aus kann ich nicht erkennen, was los ist, und ich möchte nicht raten, wenn etwas schmerzt. Hör vorerst mit der Übung auf, die die Schmerzen verursacht, und trainiere, was nicht wehtut. Wenn der Schmerz stechend ist, eine Schwellung auftritt oder er nach ein paar Tagen nicht nachlässt, geh zu einem Arzt oder Physiotherapeuten. Ich helfe dir gern, dein Training darauf abzustimmen."
   }
 }

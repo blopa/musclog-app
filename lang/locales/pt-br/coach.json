@@ -167,6 +167,7 @@
         "errorImage": "Não foi possível carregar essa imagem."
       }
     },
-    "reviewingReply": "Estou revisando minha resposta…"
+    "reviewingReply": "Estou revisando minha resposta…",
+    "onDevicePainReply": "Daqui não consigo saber o que está acontecendo, e prefiro não chutar quando algo dói. Por enquanto, pare o exercício que causa a dor e treine o que não dói. Se a dor for aguda, houver inchaço ou ela não melhorar depois de alguns dias, procure um médico ou um fisioterapeuta. Posso ajudar a planejar seus treinos em volta disso."
   }
 }

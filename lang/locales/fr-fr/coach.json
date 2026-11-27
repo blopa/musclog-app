@@ -167,6 +167,7 @@
         "errorImage": "Impossible de charger cette image."
       }
     },
-    "reviewingReply": "Je revérifie ma réponse…"
+    "reviewingReply": "Je revérifie ma réponse…",
+    "onDevicePainReply": "Je ne peux pas savoir ce qui se passe d'ici, et je préfère ne pas deviner quand quelque chose fait mal. Pour l'instant, arrête l'exercice qui provoque la douleur et entraîne ce qui ne fait pas mal. Si la douleur est aiguë, s'il y a un gonflement ou si elle ne s'est pas calmée après quelques jours, consulte un médecin ou un kinésithérapeute. Je peux t'aider à organiser tes séances en conséquence."
   }
 }

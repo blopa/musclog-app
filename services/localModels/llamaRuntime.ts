@@ -1,6 +1,10 @@
 /**
  * The only file that talks to `llama.rn`. It owns one loaded model at a time and the rules for
- * keeping it from costing the phone more than it must:
+ * keeping it from costing the phone more than it must. Which model is chosen per request: a request
+ * with a photo goes to the main (vision) model, every other request to the optional text model when
+ * it is installed, else to the main model. Never two contexts: a request for the other model
+ * unloads the loaded one completely (projector included) and then loads the other, so a switch
+ * costs one unload and one load, and consecutive requests for the same model reuse its context.
  *
  * - Loaded lazily on the first request, never at boot.
  * - The photo projector is attached only for a request that carries a photo and kept for
@@ -29,7 +33,8 @@ import {
   toEngineTools,
   toolTemplateOverride,
 } from './localToolMessages';
-import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
+import type { InstalledLocalModel } from './modelFolders';
+import { localModelStore, localTextModelStore, registerLocalModelUnloader } from './modelStore';
 
 type LlamaModule = typeof import('llama.rn');
 type LlamaContext = import('llama.rn').LlamaContext;
@@ -78,6 +83,8 @@ let context: LlamaContext | null = null;
 /** The loaded model's vendor sampling for plain-text replies; set with `context`, cleared with it. */
 let textSampling: LocalTextSampling | null = null;
 let projectorAttached = false;
+/** The `modelPath` of the model `context` was loaded from; set with `context`, cleared with it. */
+let loadedModelPath: string | null = null;
 /** Every model operation (unload, projector release, generation) runs one at a time. */
 const queue = createSerialQueue();
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
@@ -142,6 +149,7 @@ async function performUnload(): Promise<void> {
   const current = context;
   context = null;
   textSampling = null;
+  loadedModelPath = null;
   projectorAttached = false;
   if (!current) {
     return;
@@ -196,14 +204,34 @@ function installLifecycle() {
   }
 }
 
-async function ensureContext(): Promise<LlamaContext> {
-  if (context) {
+/** A photo needs the main model with its projector; everything else prefers the text model. */
+async function chooseModel(params: LocalGenerateParams): Promise<InstalledLocalModel> {
+  if (params.image) {
+    const main = await localModelStore.getInstalled();
+    if (!main?.projectorPath) {
+      throw new OnDeviceUnavailableError('notReady');
+    }
+
+    return main;
+  }
+
+  const text = await localTextModelStore.getInstalled();
+  const chosen = text ?? (await localModelStore.getInstalled());
+  if (!chosen) {
+    throw new OnDeviceUnavailableError('notReady');
+  }
+
+  return chosen;
+}
+
+async function ensureContext(installed: InstalledLocalModel): Promise<LlamaContext> {
+  if (context && loadedModelPath === installed.modelPath) {
     return context;
   }
 
-  const installed = await getInstalledLocalModel();
-  if (!installed) {
-    throw new OnDeviceUnavailableError('notReady');
+  if (context) {
+    // The other model is wanted: never two contexts, so the loaded one goes first.
+    await performUnload();
   }
 
   installLifecycle();
@@ -218,6 +246,7 @@ async function ensureContext(): Promise<LlamaContext> {
       ctx_shift: false,
     });
     context = next;
+    loadedModelPath = installed.modelPath;
     textSampling = installed.manifest.textSampling;
 
     return next;
@@ -289,13 +318,9 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   stoppedByUnload = false;
   busy = true;
   try {
-    const ctx = await ensureContext();
-    if (params.image) {
-      const installed = await getInstalledLocalModel();
-      if (!installed?.projectorPath) {
-        throw new OnDeviceUnavailableError('notReady');
-      }
-
+    const installed = await chooseModel(params);
+    const ctx = await ensureContext(installed);
+    if (params.image && installed.projectorPath) {
       await attachProjector(ctx, installed.projectorPath, installed.manifest.imageMaxTokens);
     }
 

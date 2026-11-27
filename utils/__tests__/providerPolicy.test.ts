@@ -140,6 +140,28 @@ describe('providerPolicyFor', () => {
   });
 });
 
+describe('answersPainWithFixedReply', () => {
+  it('is set only on the downloaded model without its text model', () => {
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).answersPainWithFixedReply
+    ).toBe(true);
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf', textModel: false })
+        .answersPainWithFixedReply
+    ).toBe(true);
+
+    for (const config of [
+      { provider: 'on-device', engine: 'gguf', textModel: true },
+      { provider: 'on-device', engine: 'apple' },
+      { provider: 'local' },
+      { provider: 'openai' },
+      { provider: 'hosted' },
+    ] as const) {
+      expect(providerPolicyFor(config).answersPainWithFixedReply).toBeUndefined();
+    }
+  });
+});
+
 describe('runsSamplesSequentially', () => {
   it('is set for the small model and both on-device engines only', () => {
     expect(providerPolicyFor({ provider: 'local' }).runsSamplesSequentially).toBe(true);

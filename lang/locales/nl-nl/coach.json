@@ -167,6 +167,7 @@
         "errorImage": "Die afbeelding kon niet worden geladen."
       }
     },
-    "reviewingReply": "Ik controleer mijn antwoord nog eens…"
+    "reviewingReply": "Ik controleer mijn antwoord nog eens…",
+    "onDevicePainReply": "Ik kan vanaf hier niet zien wat er aan de hand is, en ik wil niet gokken als iets pijn doet. Stop voorlopig de oefening die de pijn veroorzaakt en train wat geen pijn doet. Als de pijn scherp is, er zwelling is, of het na een paar dagen niet is weggetrokken, ga dan naar een arts of fysiotherapeut. Ik help je graag om je training daaromheen te plannen."
   }
 }

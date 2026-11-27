@@ -164,6 +164,7 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
             language,
             engine: status.engine,
             vision: status.capabilities.vision,
+            textModel: status.capabilities.textModel,
           };
         }
       : null,

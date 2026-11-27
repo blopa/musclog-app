@@ -539,9 +539,20 @@ export const getMinimalSystemPrompt = async (
   ].join('\n');
 };
 
-/** The last line of the on-device chat prompt: the name again, right before the conversation. */
-export const getOnDeviceIdentityReminder = (coachName: string = 'Loggy'): string =>
-  `Remember: your name is ${coachName} and you are their coach. Answer their last message.`;
+/**
+ * The last line of the on-device chat prompt: the name again, right before the conversation. When
+ * the person's message mentions pain or an injury it also carries the safety rule, because a small
+ * model told people to train through pain (8 of 35 questions on the 450M model, 0 of 35 on the 1.2B
+ * one); the line is last, next to the conversation, where a small model looks. The wording was
+ * measured, so do not reword it.
+ */
+export const getOnDeviceIdentityReminder = (
+  coachName: string = 'Loggy',
+  options: { painMentioned?: boolean } = {}
+): string =>
+  options.painMentioned
+    ? `Remember: your name is ${coachName} and you are their coach. They mention pain or an injury. Do not tell them to keep doing the movement that hurts, to push through the pain or to try a lighter version of it. Tell them to stop that movement for now, offer training that does not use the painful area, and suggest a doctor or physiotherapist if the pain is sharp or does not go away. Answer their last message.`
+    : `Remember: your name is ${coachName} and you are their coach. Answer their last message.`;
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
  * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs") using `locale` for digit shaping. */
@@ -668,7 +679,7 @@ export const getChatMessagePromptContent = async (
   eatingPhase?: string,
   context: 'nutrition' | 'exercise' | 'general' = 'general',
   provider?: AiProviderKind,
-  options: { excludeWorkoutLogIds?: readonly string[] } = {}
+  options: { excludeWorkoutLogIds?: readonly string[]; painMentioned?: boolean } = {}
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
 
@@ -702,7 +713,10 @@ export const getChatMessagePromptContent = async (
       sections.push(snapshot);
     }
 
-    sections.push('', getOnDeviceIdentityReminder(coachName));
+    sections.push(
+      '',
+      getOnDeviceIdentityReminder(coachName, { painMentioned: options.painMentioned })
+    );
 
     return sections.join('\n');
   }

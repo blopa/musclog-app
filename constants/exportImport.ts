@@ -6,6 +6,7 @@ import {
   COACH_RESTORED_COMPOSER,
   CRASH_REPORT_CONSENT_KEY,
   LOCAL_MODEL_DOWNLOAD_STATE,
+  LOCAL_TEXT_MODEL_DOWNLOAD_STATE,
   PERSONALIZED_BODY_DRAFT,
   PREMIUM_DEVICE_STATE,
   REVIEW_PROMPT_STATE,
@@ -45,6 +46,8 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   REVIEW_PROMPT_STATE,
   // Resume data of a model download on THIS device; meaningless anywhere else.
   LOCAL_MODEL_DOWNLOAD_STATE,
+  // Same for the optional text model's download.
+  LOCAL_TEXT_MODEL_DOWNLOAD_STATE,
   // Consent given in one browser: a restore elsewhere asks again.
   VOICE_BROWSER_NOTICE_ACCEPTED,
 ]);

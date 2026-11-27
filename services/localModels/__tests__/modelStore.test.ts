@@ -82,8 +82,10 @@ jest.mock('expo-file-system/legacy', () => ({
         return { status: mockStatus, uri: dest };
       }
 
-      const { DEFAULT_LOCAL_MODEL: model } = jest.requireActual('@/constants/localModels');
-      const file = model.files.find((f: { path: string }) => url.endsWith(f.path));
+      const { LOCAL_MODELS } = jest.requireActual('@/constants/localModels');
+      const file = LOCAL_MODELS.flatMap((m: { files: { path: string }[] }) => m.files).find(
+        (f: { path: string }) => url.endsWith(f.path)
+      );
       mockFs.set(dest, { dir: false, size: file?.bytes ?? 1 });
 
       return { status: 200, uri: dest };
@@ -111,8 +113,10 @@ jest.mock('@/modules/on-device-ai', () => ({
   onDeviceAiModule: {
     storageDirectory: jest.fn(() => 'file:///no-backup/local-ai'),
     sha256File: jest.fn(async (path: string) => {
-      const { DEFAULT_LOCAL_MODEL: model } = jest.requireActual('@/constants/localModels');
-      const file = model.files.find((f: { path: string }) => path.endsWith(f.path));
+      const { LOCAL_MODELS } = jest.requireActual('@/constants/localModels');
+      const file = LOCAL_MODELS.flatMap((m: { files: { path: string }[] }) => m.files).find(
+        (f: { path: string }) => path.endsWith(f.path)
+      );
       if (mockBadHash && path.endsWith(mockBadHash)) {
         return 'f'.repeat(64);
       }

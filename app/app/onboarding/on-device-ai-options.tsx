@@ -11,6 +11,7 @@ import { OnboardingChoiceScaffold } from '@/components/onboarding/OnboardingChoi
 import { Button } from '@/components/theme/Button';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useTheme } from '@/hooks/useTheme';
+import { localModelStore } from '@/services/localModels/modelStore';
 import { enableOnDeviceAi } from '@/services/onDeviceAiSetup';
 import {
   DEFAULT_LOCAL_MODEL_SELECTION,
@@ -61,7 +62,7 @@ export default function OnDeviceAiOptionsScreen() {
   const offersModel = status.options.model;
   const selected: Option = choice ?? defaultOptionFor(offersApple, offersModel);
 
-  const { freeBytes, space } = useLocalModelSpace(selection);
+  const { freeBytes, space } = useLocalModelSpace(localModelStore, selection);
   const blockedBySpace = selected === 'model' && freeBytes !== null && !space.enough;
 
   const handleContinue = async () => {

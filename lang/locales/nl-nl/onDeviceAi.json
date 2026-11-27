@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "Het model verwijderen?",
-        "message": "AI op het apparaat stopt met werken totdat je het model opnieuw downloadt. Je gegevens blijven ongewijzigd."
+        "message": "AI op het apparaat stopt met werken totdat je het model opnieuw downloadt. Je gegevens blijven ongewijzigd.",
+        "messageWithTextModel": "AI op het apparaat stopt met werken totdat je het model opnieuw downloadt. Het optionele chatmodel wordt ook verwijderd. Je gegevens blijven ongewijzigd."
+      }
+    },
+    "textModel": {
+      "heading": "Optioneel: een groter model voor chat",
+      "description": "Na het downloaden gebruiken chat, spraakopdrachten en alles wat geen foto is dit model. De antwoorden zijn beter, maar het duurt langer. Maaltijdfoto's gebruiken nog steeds {{name}}.",
+      "state": {
+        "ready": "Klaar. Chat, spraak en andere tekst gebruiken dit model; foto's gebruiken {{name}}."
+      },
+      "actions": {
+        "delete": "Het chatmodel verwijderen"
+      },
+      "delete": {
+        "title": "Het chatmodel verwijderen?",
+        "message": "Chat en spraak gaan terug naar {{name}}. Je gegevens blijven ongewijzigd."
       }
     },
     "apple": {

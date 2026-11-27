@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "Model silinsin mi?",
-        "message": "Modeli yeniden indirene kadar cihaz üzerindeki yapay zekâ çalışmaz. Verileriniz etkilenmez."
+        "message": "Modeli yeniden indirene kadar cihaz üzerindeki yapay zekâ çalışmaz. Verileriniz etkilenmez.",
+        "messageWithTextModel": "Modeli yeniden indirene kadar cihaz üzerindeki yapay zekâ çalışmaz. İsteğe bağlı sohbet modeli de silinir. Verileriniz etkilenmez."
+      }
+    },
+    "textModel": {
+      "heading": "İsteğe bağlı: sohbet için daha büyük bir model",
+      "description": "İndirildikten sonra sohbet, sesli komutlar ve fotoğrafsız diğer her şey bu modeli kullanır. Yanıtları daha iyidir, ama daha uzun sürer. Yemek fotoğrafları hâlâ {{name}} modelini kullanır.",
+      "state": {
+        "ready": "Hazır. Sohbet, ses ve diğer metinler bu modeli kullanır; fotoğraflar {{name}} modelini kullanır."
+      },
+      "actions": {
+        "delete": "Sohbet modelini sil"
+      },
+      "delete": {
+        "title": "Sohbet modeli silinsin mi?",
+        "message": "Sohbet ve ses yeniden {{name}} modeline geçer. Verileriniz etkilenmez."
       }
     },
     "apple": {

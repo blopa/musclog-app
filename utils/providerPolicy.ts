@@ -100,6 +100,15 @@ export type ProviderPolicy = {
    */
   nativeToolCalls?: boolean;
   /**
+   * A chat message that mentions pain or an injury (`mentionsPainOrInjury`) is answered with a fixed,
+   * translated reply (`coach.onDevicePainReply`) without asking the model. The downloaded 450M model
+   * told people to train through pain 8 of 35 times (and 10 of 35 with a safety line in its prompt;
+   * about a hurt knee it encouraged squats 4 times in 5), and in other languages it mostly writes
+   * nonsense. Set only on the downloaded model while the optional 1.2B text model is not installed;
+   * that one never did (0 of 35) and gets the safety line instead (`getOnDeviceIdentityReminder`).
+   */
+  answersPainWithFixedReply?: boolean;
+  /**
    * What happens to a structured reply from this provider. Absent: it is used as it came (the free
    * tier, whose schema cannot be relied on but whose replies were never repaired, and Apple's engine,
    * whose guided generation the OS enforces).
@@ -263,6 +272,18 @@ const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
 };
 
 /**
+ * The downloaded 450M model with no text model installed. Asked about a hurt knee it encouraged
+ * squats 4 times in 5, and told people to train through pain 8 of 35 times (10 of 35 with a safety
+ * line in the prompt, which cannot fix it; in other languages it mostly writes nonsense), so a
+ * message about pain gets a fixed, translated reply instead. The optional 1.2B text model never
+ * did (0 of 35), so with it installed the model answers, with the safety line.
+ */
+const GGUF_BASE_MODEL_POLICY: ProviderPolicy = {
+  ...GGUF_ON_DEVICE_POLICY,
+  answersPainWithFixedReply: true,
+};
+
+/**
  * A custom local server: the small-model rules, but a partial structured answer has always been
  * accepted from it.
  */
@@ -296,10 +317,14 @@ const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
  * it follows the shared ones.
  */
 export function providerPolicyFor(
-  config: Pick<CoachAIConfig, 'provider' | 'engine'>
+  config: Pick<CoachAIConfig, 'provider' | 'engine' | 'textModel'>
 ): ProviderPolicy {
   if (config.provider === 'on-device') {
-    return config.engine === 'gguf' ? GGUF_ON_DEVICE_POLICY : APPLE_ON_DEVICE_POLICY;
+    if (config.engine !== 'gguf') {
+      return APPLE_ON_DEVICE_POLICY;
+    }
+
+    return config.textModel ? GGUF_ON_DEVICE_POLICY : GGUF_BASE_MODEL_POLICY;
   }
 
   return PROVIDER_POLICIES[config.provider] ?? {};

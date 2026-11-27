@@ -14,6 +14,8 @@ const mockInstalled: {
   };
 } = { value: null };
 
+const mockTextInstalled: { value: typeof mockInstalled.value } = { value: null };
+
 const mockCalls: string[] = [];
 let mockInitShouldFail = false;
 let mockCompletionImpl: (params: unknown, cb?: (d: { token: string }) => void) => Promise<unknown>;
@@ -58,7 +60,8 @@ jest.mock('llama.rn', () => ({
 }));
 
 jest.mock('../modelStore', () => ({
-  getInstalledLocalModel: jest.fn(async () => mockInstalled.value),
+  localModelStore: { getInstalled: jest.fn(async () => mockInstalled.value) },
+  localTextModelStore: { getInstalled: jest.fn(async () => mockTextInstalled.value) },
   registerLocalModelUnloader: jest.fn(),
 }));
 
@@ -94,6 +97,7 @@ beforeEach(async () => {
   mockInitShouldFail = false;
   mockChatTemplate = undefined;
   mockInstalled.value = INSTALLED;
+  mockTextInstalled.value = null;
   mockCompletionImpl = async (_params, cb) => {
     cb?.({ token: 'he' });
     cb?.({ token: 'llo' });
@@ -107,6 +111,85 @@ beforeEach(async () => {
 
 afterEach(() => {
   jest.useRealTimers();
+});
+
+describe('two models', () => {
+  const TEXT = {
+    manifest: {
+      id: 't',
+      imageMaxTokens: 0,
+      contextTokens: 4096,
+      textSampling: { temperature: 0.33, minP: 0.2, repeatPenalty: 1.2 },
+    },
+    modelPath: 'file:///models/t.gguf',
+    projectorPath: null,
+  };
+  const photo = { messages, image: 'file:///photo.jpg' };
+  const { initLlama } = jest.requireMock('llama.rn') as { initLlama: jest.Mock };
+
+  beforeEach(() => {
+    mockTextInstalled.value = TEXT;
+  });
+
+  it('sends a text request to the text model without a projector', async () => {
+    await generateWithLocalModel({ messages });
+
+    expect(initLlama.mock.calls[0][0]).toMatchObject({ model: '/models/t.gguf' });
+    expect(mockContext.initMultimodal).not.toHaveBeenCalled();
+  });
+
+  it('sends a photo request to the main model with its projector', async () => {
+    await generateWithLocalModel(photo);
+
+    expect(initLlama.mock.calls[0][0]).toMatchObject({ model: '/models/m.gguf' });
+    expect(mockContext.initMultimodal).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the text context before loading the main one, and the reverse', async () => {
+    await generateWithLocalModel({ messages });
+    await generateWithLocalModel(photo);
+
+    expect(mockCalls.indexOf('release')).toBeGreaterThan(-1);
+    expect(mockCalls.indexOf('release')).toBeLessThan(mockCalls.lastIndexOf('init'));
+    expect(initLlama).toHaveBeenCalledTimes(2);
+
+    mockCalls.length = 0;
+    await generateWithLocalModel({ messages });
+    expect(mockCalls.indexOf('release')).toBeLessThan(mockCalls.indexOf('init'));
+    expect(initLlama).toHaveBeenCalledTimes(3);
+  });
+
+  it('reuses the context for two text requests in a row', async () => {
+    await generateWithLocalModel({ messages });
+    await generateWithLocalModel({ messages });
+
+    expect(initLlama).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the main model for text when no text model is installed', async () => {
+    mockTextInstalled.value = null;
+    await generateWithLocalModel({ messages });
+
+    expect(initLlama.mock.calls[0][0]).toMatchObject({ model: '/models/m.gguf' });
+  });
+
+  it('samples plain text with the loaded model manifest', async () => {
+    await generateWithLocalModel({ messages });
+
+    expect(mockContext.completion.mock.calls[0][0]).toMatchObject({
+      temperature: 0.33,
+      min_p: 0.2,
+      penalty_repeat: 1.2,
+    });
+  });
+
+  it('loads again after an unload', async () => {
+    await generateWithLocalModel({ messages });
+    await unloadLocalModel();
+    await generateWithLocalModel({ messages });
+
+    expect(initLlama).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('generateWithLocalModel', () => {

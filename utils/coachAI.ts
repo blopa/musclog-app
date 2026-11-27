@@ -74,6 +74,7 @@ import {
   sendLocalToolCall,
   streamLocalMessage,
 } from './onDeviceLocal';
+import { mentionsPainOrInjury } from './painMention';
 import { mealPlanFindings, workoutPlanFindings, workoutVolumeFindings } from './planFindings';
 import {
   createWorkoutPlanPrompt,
@@ -291,10 +292,12 @@ type OnDeviceFields = {
   engine: OnDeviceEngine;
   /** The engine can read a food photo (the downloaded model with its projector). */
   vision: boolean;
+  /** The downloaded model's optional text model is installed (undefined: it is not). */
+  textModel?: boolean;
 };
 
 /** Every other provider has neither field, so `config.engine` reads the same on all of them. */
-type NoOnDeviceFields = { engine?: undefined; vision?: undefined };
+type NoOnDeviceFields = { engine?: undefined; vision?: undefined; textModel?: undefined };
 
 /**
  * A config that can send, or a hosted one whose session token could not be minted (built by
@@ -2099,10 +2102,29 @@ export async function sendCoachMessage(
     },
   };
 
+  // The on-device coach's safeguard: a message about pain or an injury (`utils/painMention.ts`).
+  const painMentioned = isOnDeviceConfig(config) && mentionsPainOrInjury(text);
+
   try {
+    if (painMentioned && providerPolicyFor(config).answersPainWithFixedReply) {
+      const reply = i18n.t('coach.onDevicePainReply', { lng: config.language });
+
+      await logLlmDebugEvent({
+        provider: 'on-device',
+        direction: 'response',
+        operation: 'sendCoachMessage:painFixedReply',
+        payload: { text: reply },
+        config,
+      });
+
+      return { msg4User: reply, sumMsg: reply.slice(0, 120) };
+    }
+
     // Built once, from the full history (the excludes), and reused by the draft and the review.
     const systemPrompt = isOnDeviceConfig(config)
-      ? await getChatMessagePromptContent(config.language, undefined, context, 'on-device')
+      ? await getChatMessagePromptContent(config.language, undefined, context, 'on-device', {
+          painMentioned,
+        })
       : await chatSystemPrompt(config, sendHistory, context);
 
     // Per dispatched message: the review instruction is longer than the person's message, and a

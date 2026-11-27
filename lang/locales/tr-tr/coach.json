@@ -167,6 +167,7 @@
         "errorImage": "Bu resim yüklenemedi."
       }
     },
-    "reviewingReply": "Yanıtımı yeniden kontrol ediyorum…"
+    "reviewingReply": "Yanıtımı yeniden kontrol ediyorum…",
+    "onDevicePainReply": "Buradan ne olduğunu anlayamıyorum ve bir şey acıdığında tahmin yürütmek istemem. Şimdilik ağrıya neden olan egzersizi bırak ve ağrı yapmayan egzersizleri yap. Ağrı keskinse, şişlik varsa ya da birkaç gün içinde geçmediyse bir doktora ya da fizyoterapiste başvur. Antrenmanını buna göre planlamakta memnuniyetle yardımcı olurum."
   }
 }

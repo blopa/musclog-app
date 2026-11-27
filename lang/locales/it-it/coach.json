@@ -167,6 +167,7 @@
         "errorImage": "Impossibile caricare quell'immagine."
       }
     },
-    "reviewingReply": "Ricontrollo la mia risposta…"
+    "reviewingReply": "Ricontrollo la mia risposta…",
+    "onDevicePainReply": "Da qui non riesco a capire cosa sta succedendo, e preferisco non tirare a indovinare quando qualcosa fa male. Per ora, smetti l'esercizio che causa il dolore e allena ciò che non fa male. Se il dolore è acuto, c'è gonfiore o non si è attenuato dopo qualche giorno, rivolgiti a un medico o a un fisioterapista. Sono felice di aiutarti a pianificare l'allenamento tenendone conto."
   }
 }

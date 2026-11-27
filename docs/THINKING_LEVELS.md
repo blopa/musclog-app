@@ -185,6 +185,14 @@ label (1 / 1 / 2 + arbiter / up to 3 readings + arbiter).
   The draft is not quoted in the instruction: it travels as the model's own previous reply (with the
   message it answers as the turn before), and the instruction is just the checklist, so a small model
   has no marker lines to copy back into its answer.
+- **Pain and injuries, on-device.** When the person's message mentions pain or an injury
+  (`utils/painMention.ts`, a word list in the ten app languages), the downloaded 450M is not asked:
+  the coach answers with a fixed, translated reply (`coach.onDevicePainReply`,
+  `ProviderPolicy.answersPainWithFixedReply`, set only while the 1.2B is not installed). With the
+  1.2B, or Apple's engine, the model answers with a safety line in its closing reminder
+  (`getOnDeviceIdentityReminder`). Measured: the 450M told people to train through pain 8 of 35 times
+  (10 with the safety line); the 1.2B never did, and the line took its "stop / see a professional"
+  answers from 9 to 17 of 35. Cloud providers are unchanged.
 - The downloaded on-device model also rewrites a reply that copies an earlier coach turn
   (`ProviderPolicy.regeneratesCopiedChatReply`). Its first 12 words are held back while it is written;
   if at least half of their 6-word runs occur in one coach turn that was sent, the generation is
@@ -304,6 +312,13 @@ downloaded) and the request throws a typed error, because falling back would cha
 the person's data. The setup chat asks for one named provider instead
 (`getAiConfigForProvider`). Gemini, OpenAI and Claude model lists are the allowlist: a stored model
 that is no longer listed is replaced by the default on the next call (`utils/aiModels.ts`).
+
+**Which model on the phone answers.** On-device AI with the downloaded engine can have two models:
+LFM2.5-VL 450M (always; it reads photos) and the optional LFM2.5 1.2B (AI settings only). The runtime
+picks per request (`services/localModels/llamaRuntime.ts`): a request with a photo goes to the 450M,
+every other request (chat, voice, insights, the text steps of a meal estimate) to the 1.2B when it is
+installed, else to the 450M. One model is loaded at a time, so a switch costs an unload and a load.
+Every thinking-level rule above is per engine, not per model file: the 1.2B gets the same policies.
 
 ### 2. One logical request: timeout, cancel, retry (`withLlmRetry`, `utils/llmRetry.ts`)
 

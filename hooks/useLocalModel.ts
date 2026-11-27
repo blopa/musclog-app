@@ -1,12 +1,12 @@
 import { useSyncExternalStore } from 'react';
 
 import {
-  getLocalModelSnapshot,
   type LocalModelSnapshot,
-  subscribeLocalModel,
+  type LocalModelStore,
+  localModelStore,
 } from '@/services/localModels/modelStore';
 
-/** The downloaded on-device model's install state; updates as a download progresses. */
-export function useLocalModel(): LocalModelSnapshot {
-  return useSyncExternalStore(subscribeLocalModel, getLocalModelSnapshot, getLocalModelSnapshot);
+/** A downloaded on-device model's install state (the main one by default); updates as a download progresses. */
+export function useLocalModel(store: LocalModelStore = localModelStore): LocalModelSnapshot {
+  return useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
 }
