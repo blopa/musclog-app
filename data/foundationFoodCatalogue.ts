@@ -13,7 +13,8 @@
 
 import commonFoundationFoods from '@/data/common_foundation_foods.json';
 import usdaFoundationFoods from '@/data/usda_foundation_foods.json';
-import i18n, { FOUNDATION_FOOD_COPIES_BY_LOCALE } from '@/lang/lang';
+import i18n, { EN_US, FOUNDATION_FOOD_COPIES_BY_LOCALE } from '@/lang/lang';
+import { type BundledText, type StoredBundledText, swapBundledText } from '@/utils/bundledText';
 
 export interface FoundationFoodCopy {
   externalId: string;
@@ -22,14 +23,7 @@ export interface FoundationFoodCopy {
 }
 
 /** What this module reads off a stored food (a `Food` model satisfies it). */
-export interface StoredFoodText {
-  name: string;
-  description?: string;
-  externalId?: string;
-  source?: string;
-  createdAt?: number;
-  updatedAt?: number;
-}
+export type StoredFoodText = StoredBundledText & { externalId?: string; source?: string };
 
 type CopyLocale = keyof typeof FOUNDATION_FOOD_COPIES_BY_LOCALE;
 
@@ -87,34 +81,31 @@ export function localizeFoundationFood<
 }
 
 /**
- * The English name and description of a stored food. Only a foundation food's own bundled words are
- * swapped: a field the person rewrote is returned as they wrote it. A food never touched since it
- * was created is bundled text whatever it says (so a later translation fix cannot orphan it); a
- * touched one has to match the copy of some bundled language.
+ * A stored food's name and description in `locale` (English when there is no copy for it). Only a
+ * foundation food's own bundled words are swapped: see `swapBundledText`.
  */
-export function getEnglishFoundationFoodText(food: StoredFoodText): {
-  name: string;
-  description?: string;
-} {
-  const stored = { name: food.name, description: food.description };
+export function getFoundationFoodText(
+  food: StoredFoodText,
+  locale: string | undefined
+): BundledText {
   const original =
     food.source === 'foundation' && food.externalId ? english().get(food.externalId) : undefined;
   if (!original) {
-    return stored;
+    return { name: food.name, description: food.description };
   }
 
-  const untouched = food.createdAt !== undefined && food.createdAt === food.updatedAt;
-  const isBundled = (field: 'name' | 'description') =>
-    untouched ||
-    stored[field] === original[field] ||
-    Object.keys(FOUNDATION_FOOD_COPIES_BY_LOCALE).some(
-      (locale) => localized(locale)?.get(original.externalId)?.[field] === stored[field]
-    );
+  const copies = Object.keys(FOUNDATION_FOOD_COPIES_BY_LOCALE).map((language) =>
+    localized(language)?.get(original.externalId)
+  );
 
-  return {
-    name: isBundled('name') ? original.name : stored.name,
-    description: isBundled('description') ? original.description : stored.description,
-  };
+  return swapBundledText(food, localized(locale)?.get(original.externalId) ?? original, [
+    original,
+    ...copies,
+  ]);
+}
+
+export function getEnglishFoundationFoodText(food: StoredFoodText): BundledText {
+  return getFoundationFoodText(food, EN_US);
 }
 
 /** Lowercase without diacritics. SQLite's `LIKE` only ignores case for ASCII. */

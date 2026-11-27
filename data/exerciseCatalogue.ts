@@ -1,6 +1,7 @@
 import exercisesData from '@/data/exercisesData.json';
 import type { EquipmentType, MechanicType, MuscleGroup } from '@/database/models/Exercise';
 import i18n, { EN_US, EXERCISES_JSON } from '@/lang/lang';
+import { type BundledText, type StoredBundledText, swapBundledText } from '@/utils/bundledText';
 
 export interface ExerciseCatalogueCopy {
   exerciseSlug: string;
@@ -91,6 +92,41 @@ export function getEnglishExerciseNamesBySlug(): Map<string, string> {
       name,
     ])
   );
+}
+
+const cachedCopies = new Map<ExerciseCopyLocale, Map<string, ExerciseCatalogueCopy>>();
+
+function cachedCopyMap(locale: ExerciseCopyLocale): Map<string, ExerciseCatalogueCopy> {
+  let copies = cachedCopies.get(locale);
+  if (!copies) {
+    copies = copyMap(locale);
+    cachedCopies.set(locale, copies);
+  }
+
+  return copies;
+}
+
+/**
+ * A stored catalogue exercise's name and description in `locale` (English when there is no copy for
+ * it); a field the person rewrote stays theirs (`swapBundledText`). An unknown slug is returned as
+ * stored.
+ */
+export function getExerciseText(
+  exerciseSlug: string,
+  stored: StoredBundledText,
+  locale: string | undefined
+): BundledText {
+  const english = cachedCopyMap(EN_US).get(exerciseSlug);
+  if (!english) {
+    return { name: stored.name, description: stored.description };
+  }
+
+  const target = cachedCopyMap(resolveExerciseCopyLocale(locale)).get(exerciseSlug) ?? english;
+  const copies = (Object.keys(EXERCISES_JSON) as ExerciseCopyLocale[]).map((language) =>
+    cachedCopyMap(language).get(exerciseSlug)
+  );
+
+  return swapBundledText(stored, target, copies);
 }
 
 let allLocaleNamesBySlug: Map<string, string[]> | null = null;

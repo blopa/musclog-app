@@ -5,6 +5,7 @@ import {
   Heart,
   Languages,
   Leaf,
+  RefreshCcwDot,
   RefreshCw,
   Ruler,
   Scale,
@@ -23,13 +24,17 @@ import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { type EnergyUnit, type FoodSearchSource } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { CatalogueTranslationService } from '@/database/services/CatalogueTranslationService';
 import SettingsService from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
 import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '@/lang/lang';
+import { handleError } from '@/utils/handleError';
 
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type BasicSettingsModalProps = {
@@ -66,6 +71,9 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
 
   const [foodSearchMenuVisible, setFoodSearchMenuVisible] = useState(false);
   const [languageMenuVisible, setLanguageMenuVisible] = useState(false);
+  const [translateConfirmVisible, setTranslateConfirmVisible] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -148,6 +156,24 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
       i18n.changeLanguage(lang);
     },
   }));
+
+  const handleTranslateCatalogue = async () => {
+    setIsTranslating(true);
+    try {
+      const { foods, exercises } = await CatalogueTranslationService.translate(language ?? EN_US);
+      showSnackbar(
+        'success',
+        foods + exercises > 0
+          ? t('settings.basicSettings.translateCatalogueDone', { foods, exercises })
+          : t('settings.basicSettings.translateCatalogueNothing')
+      );
+    } catch (error) {
+      handleError(error, 'BasicSettingsModal.translateCatalogue', { showSnackbar: false });
+      showSnackbar('error', t('settings.basicSettings.translateCatalogueFailed'));
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const unitsOptions = [
     {
@@ -291,6 +317,14 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                 </View>
               }
             />
+            <SettingsCard
+              title={t('settings.basicSettings.translateCatalogue')}
+              subtitle={t('settings.basicSettings.translateCatalogueSubtitle', {
+                language: currentLanguageLabel,
+              })}
+              onPress={() => setTranslateConfirmVisible(true)}
+              icon={<RefreshCcwDot size={theme.iconSize.xl} color={theme.colors.text.primary} />}
+            />
           </ListGroup>
         </View>
 
@@ -374,6 +408,18 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
         onClose={() => setLanguageMenuVisible(false)}
         title={t('settings.basicSettings.language')}
         items={languageMenuItems}
+      />
+      <ConfirmationModal
+        visible={translateConfirmVisible}
+        onClose={() => setTranslateConfirmVisible(false)}
+        onConfirm={handleTranslateCatalogue}
+        title={t('settings.basicSettings.translateCatalogue')}
+        message={t('settings.basicSettings.translateCatalogueMessage', {
+          language: currentLanguageLabel,
+        })}
+        confirmLabel={t('settings.basicSettings.translateCatalogueConfirm')}
+        isLoading={isTranslating}
+        scrollable
       />
     </FullScreenModal>
   );
