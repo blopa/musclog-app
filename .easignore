@@ -169,5 +169,8 @@ ios/appstore
 
 .presence/
 
+# Sentry issue dumps (scripts/fetch_sentry_issues.py); they can hold user data.
+sentry-issues
+
 # Loggy gallery (local tool, generated)
 assets/avatars/index.html
