@@ -1,6 +1,10 @@
 {
   "voiceInput": {
     "listening": "Listening…",
+    "overlay": {
+      "releaseHint": "Let go when you're done",
+      "finishing": "Finishing…"
+    },
     "holdHint": "Hold the microphone button while you speak, then let go.",
     "resultTitle": "What you said",
     "openSettings": "Open settings",

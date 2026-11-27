@@ -1,6 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import type {
   ExpoSpeechRecognitionErrorEvent,
+  ExpoSpeechRecognitionNativeEventMap,
   ExpoSpeechRecognitionResultEvent,
 } from 'expo-speech-recognition';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -21,6 +22,13 @@ import {
   type VoiceOutcome,
   voiceOutcome,
 } from '@/utils/voiceInput';
+import {
+  createVoiceLevelMeter,
+  normalizeVoiceVolume,
+  speechBurstLevel,
+  VOICE_LEVEL_INTERVAL_MS,
+  type VoiceLevelMeter,
+} from '@/utils/voiceLevel';
 
 type SpeechModule = (typeof import('expo-speech-recognition'))['ExpoSpeechRecognitionModule'];
 
@@ -44,6 +52,12 @@ export type HoldToTranscribe = {
   phase: HoldToTranscribePhase;
   /** What this hold has heard so far, for a live caption; empty outside a hold. */
   liveText: string;
+  /**
+   * The microphone level of the running hold, for a waveform: measured on a phone, one burst per
+   * recognized result on the web (`utils/voiceLevel.ts`). Stable for the hook's lifetime and reset
+   * at every session start; reading it never re-renders.
+   */
+  level: VoiceLevelMeter;
   /** The last hold's text or failure, until `dismissOutcome`. */
   outcome: HoldToTranscribeOutcome | null;
   onPressIn: () => void;
@@ -100,6 +114,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
   /** The whole of a hold's mutable state; `phase` only mirrors it for rendering. */
   const holdRef = useRef<Hold | null>(null);
   const onTextRef = useRef<HoldToTranscribeOptions['onText']>(options?.onText);
+  const [level] = useState(createVoiceLevelMeter);
 
   useEffect(() => {
     onTextRef.current = options?.onText;
@@ -205,6 +220,9 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
 
       // A listener of a session that was closed, or of a hold that is over, does nothing.
       const isLive = () => holdRef.current?.session === session;
+      // A browser reports no level: there the waveform shows recognized speech arriving instead.
+      const measuresLevel = Platform.OS !== 'web';
+      level.reset();
 
       session.subscriptions = [
         speech.addListener('start', () => {
@@ -225,11 +243,17 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
             return;
           }
 
+          const heard = transcriptText(session.transcript);
           session.transcript = applySpeechResult(session.transcript, {
             text: event.results[0]?.transcript ?? '',
             isFinal: event.isFinal,
           });
-          setLiveText(transcriptText(session.transcript));
+          const text = transcriptText(session.transcript);
+          if (!measuresLevel) {
+            level.push(speechBurstLevel(heard, text));
+          }
+
+          setLiveText(text);
         }),
         speech.addListener('error', (event: ExpoSpeechRecognitionErrorEvent) => {
           if (!isLive()) {
@@ -244,6 +268,19 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
         }),
         speech.addListener('end', () => finishSession(session)),
       ];
+      if (measuresLevel) {
+        session.subscriptions.push(
+          speech.addListener(
+            'volumechange',
+            (event: ExpoSpeechRecognitionNativeEventMap['volumechange']) => {
+              if (isLive()) {
+                level.push(normalizeVoiceVolume(event.value));
+              }
+            }
+          )
+        );
+      }
+
       hold.session = session;
 
       speech.start({
@@ -255,10 +292,15 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
         addsPunctuation: true,
         maxAlternatives: 1,
         iosTaskHint: 'dictation',
+        // Drives the overlay's waveform; the level is read on the device and goes nowhere else.
+        volumeChangeEventOptions: {
+          enabled: measuresLevel,
+          intervalMillis: VOICE_LEVEL_INTERVAL_MS,
+        },
       });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     },
-    [finishSession, locale]
+    [finishSession, level, locale]
   );
 
   const prepare = useCallback(
@@ -416,6 +458,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
   return {
     phase,
     liveText,
+    level,
     outcome,
     onPressIn,
     onPressOut,

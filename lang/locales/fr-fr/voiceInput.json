@@ -1,6 +1,10 @@
 {
   "voiceInput": {
     "listening": "Écoute en cours…",
+    "overlay": {
+      "releaseHint": "Relâche quand tu as fini",
+      "finishing": "Finalisation…"
+    },
     "holdHint": "Maintiens le bouton micro pendant que tu parles, puis relâche-le.",
     "resultTitle": "Ce que tu as dit",
     "openSettings": "Ouvrir les réglages",

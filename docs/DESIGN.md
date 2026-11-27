@@ -45,7 +45,10 @@ sits on the preview therefore uses fixed tokens (`text.alwaysWhite`, `overlay.al
 `background.scrim*`), never `text.primary`, `background.primary`, `neutralWash` or `ink*`, which flip with
 the palette. A surface that truly must pin a palette wraps in `ThemeScope` from
 `context/ThemeContext.tsx`, which changes the context value and NativeWind variables together; do not
-add a second forced-theme context or hand-pick a parallel set of tokens.
+add a second forced-theme context or hand-pick a parallel set of tokens. The hold-to-talk overlay
+(`VoiceListeningOverlay`) is the same kind of surface: the fixed `background.scrim90` with
+`text.alwaysWhite` ink in every theme, with the theme's accent only on the waveform and the
+microphone it leaves lit.
 
 Loggy is the other such surface, in part. His outline, cream, tan, coral, sky and gold are fixed,
 like a photo, but his three greens follow the theme (`constants/loggyTheme.js`: a pink theme draws a
@@ -594,7 +597,10 @@ subtitle.
 - Decorative loops are not allowed. An infinite animation is a progress indicator (a spinner, a
   skeleton) and runs on the native driver; a pulsing glow, a floating trophy or a pulsing "live"
   dot is removed rather than moved to another thread. `TextInput`'s border colour is the one
-  JS-driven animation, because colour cannot use the native driver.
+  JS-driven animation, because colour cannot use the native driver. The hold-to-talk overlay's
+  waveform (`VoiceWaveform`) is a level meter, not a loop: every bar is a measured microphone level
+  (on the web, a recognized burst of speech), the bars lie flat in silence and stop moving when the
+  hold ends.
   `deslopGuards.test.ts` holds the loop allowlist, `useNativeDriver: false` and blur.
 
 ### Inputs

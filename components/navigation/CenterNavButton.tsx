@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react-native';
-import { Pressable, useWindowDimensions, View } from 'react-native';
+import { type LayoutChangeEvent, Pressable, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
@@ -13,6 +13,8 @@ type CenterNavButtonProps = {
   onPressOut?: () => void;
   /** On the web, a handler here keeps a long touch from opening the browser's context menu. */
   onLongPress?: () => void;
+  /** Where the button sits in the bar's row; the voice overlay places its hint above it. */
+  onLayout?: (event: LayoutChangeEvent) => void;
 };
 
 /**
@@ -27,6 +29,7 @@ export function CenterNavButton({
   onPressIn,
   onPressOut,
   onLongPress,
+  onLayout,
 }: CenterNavButtonProps) {
   const theme = useTheme();
   const { width: screenWidth } = useWindowDimensions();
@@ -43,6 +46,7 @@ export function CenterNavButton({
       onLongPress={onLongPress}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
+      onLayout={onLayout}
     >
       <View
         className="items-center justify-center rounded-full"

@@ -1,6 +1,10 @@
 {
   "voiceInput": {
     "listening": "Luisteren…",
+    "overlay": {
+      "releaseHint": "Laat los als je klaar bent",
+      "finishing": "Afronden…"
+    },
     "holdHint": "Houd de microfoonknop ingedrukt terwijl je spreekt en laat dan los.",
     "resultTitle": "Wat je zei",
     "openSettings": "Instellingen openen",

@@ -9,6 +9,7 @@ import { type HoldToTranscribe, useHoldToTranscribe } from '@/hooks/useHoldToTra
 import { acceptBrowserVoice, browserVoiceBlocker } from '@/utils/browserVoice';
 import { handleError } from '@/utils/handleError';
 import { MIN_VOICE_HOLD_MS, VOICE_FINISH_TIMEOUT_MS } from '@/utils/voiceInput';
+import { VOICE_LEVEL_INTERVAL_MS } from '@/utils/voiceLevel';
 
 const mockShowSnackbar = jest.fn();
 
@@ -367,6 +368,54 @@ describe('useHoldToTranscribe', () => {
     expect(speech.start).toHaveBeenCalledTimes(1);
   });
 
+  describe('level', () => {
+    it('starts recognition asking for volume events on Android', async () => {
+      await pressAndStart();
+      expect(speech.start).toHaveBeenCalledWith(
+        expect.objectContaining({
+          volumeChangeEventOptions: { enabled: true, intervalMillis: VOICE_LEVEL_INTERVAL_MS },
+        })
+      );
+    });
+
+    it('turns volumechange into a level, and silence into zero', async () => {
+      const { result } = await pressAndStart();
+      act(() => emit('start'));
+
+      act(() => emit('volumechange', { value: 10 }));
+      expect(result.current.level.sample()).toBe(1);
+
+      act(() => emit('volumechange', { value: -2 }));
+      expect(result.current.level.sample()).toBe(0);
+    });
+
+    it('ignores a volume event once the hold is over', async () => {
+      const { result } = await pressAndStart();
+      act(() => emit('start'));
+      act(() => {
+        jest.advanceTimersByTime(MIN_VOICE_HOLD_MS + 100);
+        result.current.onPressOut();
+      });
+      act(() => emit('end'));
+      result.current.level.reset();
+
+      act(() => emit('volumechange', { value: 10 }));
+      expect(result.current.level.sample()).toBe(0);
+    });
+
+    it('keeps one meter across renders and resets it when a new hold starts', async () => {
+      const hook = renderHook(() => useHoldToTranscribe());
+      const first = hook.result.current.level;
+      hook.rerender();
+      expect(hook.result.current.level).toBe(first);
+
+      first.push(0.9);
+      await pressAndStart(hook);
+      expect(hook.result.current.level).toBe(first);
+      expect(first.sample()).toBe(0);
+    });
+  });
+
   describe('onText', () => {
     /** Holds, speaks 'bom dia', lets go and ends the recognizer session. */
     const speakAndRelease = async (result: { current: HoldToTranscribe }) => {
@@ -506,6 +555,28 @@ describe('useHoldToTranscribe on the web', () => {
     expect(accept).toHaveBeenCalledTimes(1);
     expect(result.current.outcome).toBeNull();
     expect(mockShowSnackbar).toHaveBeenCalledWith('success', 'voiceInput.holdHint');
+  });
+
+  it('has no volume events on the web and shows recognized words as bursts', async () => {
+    browserBlocker.mockResolvedValue(null);
+    const { result } = renderHook(() => useHoldToTranscribe());
+    act(() => result.current.onPressIn());
+    await flush();
+
+    expect(speech.start).toHaveBeenCalledWith(
+      expect.objectContaining({
+        volumeChangeEventOptions: { enabled: false, intervalMillis: VOICE_LEVEL_INTERVAL_MS },
+      })
+    );
+    expect(speech.addListener.mock.calls.map(([name]) => name)).not.toContain('volumechange');
+
+    act(() => emit('start'));
+    act(() => emit('result', { isFinal: false, results: [{ transcript: 'two eggs' }] }));
+    const burst = result.current.level.sample();
+    expect(burst).toBeGreaterThan(0);
+
+    act(() => emit('result', { isFinal: false, results: [{ transcript: 'two eggs' }] }));
+    expect(result.current.level.sample()).toBeLessThan(burst);
   });
 
   it('does not start a session when let go while the blocker check is pending', async () => {

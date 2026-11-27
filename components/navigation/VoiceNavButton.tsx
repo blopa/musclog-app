@@ -1,32 +1,44 @@
 import { Mic } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { type LayoutChangeEvent, useWindowDimensions } from 'react-native';
 
 import { VoiceTranscriptModal } from '@/components/modals/VoiceTranscriptModal';
 import { CenterNavButton } from '@/components/navigation/CenterNavButton';
-import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
+import { VoiceListeningOverlay } from '@/components/navigation/VoiceListeningOverlay';
 import { useVoiceCommands } from '@/context/VoiceCommandContext';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useHoldToTranscribe } from '@/hooks/useHoldToTranscribe';
-import { useTheme } from '@/hooks/useTheme';
 
 /** The hold is read from press in and out; see `CenterNavButton`'s `onLongPress`. */
 const keepHolding = () => {};
+
+/** The button's box in the bar's row before its first layout: the bar's padding and an 80pt circle. */
+const ESTIMATED_BUTTON_BOX = { y: 8, height: 80 };
+
+type VoiceNavButtonProps = {
+  /** The height of the screen the bar sits on; 0 until `MasterLayout` has measured it. */
+  frameHeight: number;
+};
 
 /**
  * The bottom bar's centre microphone: hold to speak, let go to have Musclog act on it
  * (`VoiceCommandProvider`), or, with no AI ready, to see the text in a modal.
  *
- * It returns a fragment so the caption can be an absolutely positioned child of the bar's
- * `relative flex-row` (it takes no part in the row's layout, so the button keeps its slot) that
- * floats just above the bar across its width.
+ * While a hold runs, `VoiceListeningOverlay` dims the whole screen under the button. It returns a
+ * fragment so the overlay is an absolutely positioned child of the bar's `relative flex-row`
+ * (it takes no part in the row's layout, so the button keeps its slot).
  */
-export function VoiceNavButton() {
-  const theme = useTheme();
+export function VoiceNavButton({ frameHeight }: VoiceNavButtonProps) {
   const { t } = useTranslation();
   const { ready, submit } = useVoiceCommands();
+  const insets = useAppSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
+  const [buttonBox, setButtonBox] = useState(ESTIMATED_BUTTON_BOX);
   const {
     phase,
     liveText,
+    level,
     outcome,
     onPressIn,
     onPressOut,
@@ -42,30 +54,30 @@ export function VoiceNavButton() {
       return ready;
     },
   });
-  const showCaption = phase === 'listening' || phase === 'finishing';
+
+  const onButtonLayout = (event: LayoutChangeEvent) => {
+    const { y, height } = event.nativeEvent.layout;
+    setButtonBox((current) =>
+      current.y === y && current.height === height ? current : { y, height }
+    );
+  };
+
+  // The row's padding is even, so the space under the button is its offset from the row's top;
+  // the bar then pads the screen's bottom inset (`NavigationMenu`).
+  const buttonTop = insets.bottom + buttonBox.y + buttonBox.height;
 
   return (
     <>
-      {showCaption ? (
-        <View
-          pointerEvents="none"
-          className="absolute left-4 right-4 rounded-card border border-border-dark px-4 py-3"
-          style={{
-            bottom: '100%',
-            marginBottom: theme.spacing.padding.base,
-            backgroundColor: theme.colors.background.card,
-          }}
-        >
-          <Text
-            accessibilityLiveRegion="polite"
-            maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
-            numberOfLines={4}
-            className="text-base text-text-primary"
-          >
-            {liveText || t('voiceInput.listening')}
-          </Text>
-        </View>
-      ) : null}
+      {phase === 'idle' ? null : (
+        <VoiceListeningOverlay
+          phase={phase}
+          liveText={liveText}
+          level={level}
+          frameHeight={frameHeight > 0 ? frameHeight : windowHeight}
+          bottomOffset={insets.bottom}
+          buttonTop={buttonTop}
+        />
+      )}
       <CenterNavButton
         icon={Mic}
         accessibilityLabel={t('common.a11y.holdToSpeak')}
@@ -73,6 +85,7 @@ export function VoiceNavButton() {
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onLongPress={keepHolding}
+        onLayout={onButtonLayout}
       />
       <VoiceTranscriptModal
         outcome={outcome}

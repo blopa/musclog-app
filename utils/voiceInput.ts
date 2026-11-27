@@ -182,3 +182,39 @@ export function voiceOutcome(hold: {
 
   return { kind: 'failure', failure: hold.failure ?? 'nothingHeard' };
 }
+
+/** The most of a hold's text the listening overlay shows at once. */
+export const VOICE_CAPTION_MAX_CHARS = 220;
+
+/**
+ * The overlay's live caption. Long dictation keeps its NEWEST words (what the person is checking
+ * as they speak), cut at a word and led by an ellipsis, instead of the opening that a line clamp
+ * would keep.
+ */
+export function voiceCaption(text: string, maxChars: number = VOICE_CAPTION_MAX_CHARS): string {
+  const trimmed = text.trim();
+  if (trimmed.length <= maxChars) {
+    return trimmed;
+  }
+
+  const tail = trimmed.slice(trimmed.length - maxChars);
+  const space = tail.indexOf(' ');
+  const fromWord = space >= 0 && space < tail.length - 1 ? tail.slice(space + 1) : tail;
+
+  return `…${fromWord.trimStart()}`;
+}
+
+export type VoiceCaptionSize = 'large' | 'medium' | 'small';
+
+/** A short command reads big; longer dictation steps down so the newest words still fit. */
+export function voiceCaptionSize(caption: string): VoiceCaptionSize {
+  if (caption.length <= 60) {
+    return 'large';
+  }
+
+  if (caption.length <= 140) {
+    return 'medium';
+  }
+
+  return 'small';
+}

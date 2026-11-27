@@ -22,6 +22,8 @@ import { canOfferVoiceInput, resolveNavCenterAction } from '@/utils/voiceInput';
 type NavigationMenuProps = {
   onCoachPress: () => void;
   onCameraPress: () => void;
+  /** The height of the screen the bar sits on, which the voice overlay covers; 0 until measured. */
+  frameHeight: number;
 };
 
 type NavSlotButtonProps = {
@@ -142,6 +144,7 @@ const NAV_SLOTS: Record<Exclude<NavItemKey, 'coach'>, NavSlotConfig> = {
 export const NavigationMenu = memo(function NavigationMenu({
   onCoachPress,
   onCameraPress,
+  frameHeight,
 }: NavigationMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -276,7 +279,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         {centerAction === 'camera' ? (
           <CameraNavButton active={cameraFabActive} onPress={onCameraPress} />
         ) : null}
-        {centerAction === 'voice' ? <VoiceNavButton /> : null}
+        {centerAction === 'voice' ? <VoiceNavButton frameHeight={frameHeight} /> : null}
 
         {/* Slot 2 - customizable */}
         {renderNavSlot(navSlot2)}

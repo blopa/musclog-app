@@ -6,6 +6,9 @@ import {
   canOfferVoiceInput,
   resolveNavCenterAction,
   transcriptText,
+  VOICE_CAPTION_MAX_CHARS,
+  voiceCaption,
+  voiceCaptionSize,
   voiceFailureForError,
   voiceOutcome,
 } from '@/utils/voiceInput';
@@ -226,5 +229,44 @@ describe('parseNavCenterAction and SETTINGS.navCenterAction', () => {
   it('round-trips voice through serialize and parse', () => {
     const raw = SETTINGS.navCenterAction.serialize('voice');
     expect(SETTINGS.navCenterAction.parse(raw)).toBe('voice');
+  });
+});
+
+describe('voiceCaption', () => {
+  it('returns short text trimmed', () => {
+    expect(voiceCaption('  two eggs  ')).toBe('two eggs');
+  });
+
+  it('keeps the end of long text, from a word boundary, led by an ellipsis', () => {
+    const words = Array.from({ length: 80 }, (_, i) => `word${i}`).join(' ');
+    const caption = voiceCaption(words);
+
+    expect(caption.startsWith('…')).toBe(true);
+    expect(caption.length - 1).toBeLessThanOrEqual(VOICE_CAPTION_MAX_CHARS);
+    expect(caption.endsWith('word79')).toBe(true);
+    // The first kept word is whole.
+    expect(words).toContain(` ${caption.slice(1).split(' ')[0]} `);
+  });
+
+  it('keeps the raw tail of a long single word', () => {
+    const word = 'a'.repeat(50) + 'b'.repeat(50);
+    expect(voiceCaption(word, 60)).toBe(`…${word.slice(-60)}`);
+  });
+
+  it('honours a custom maximum', () => {
+    const caption = voiceCaption('one two three four five six', 12);
+
+    expect(caption.startsWith('…')).toBe(true);
+    expect(caption.slice(1).length).toBeLessThanOrEqual(12);
+    expect(caption.endsWith('six')).toBe(true);
+  });
+});
+
+describe('voiceCaptionSize', () => {
+  it('steps down as the caption grows', () => {
+    expect(voiceCaptionSize('a'.repeat(60))).toBe('large');
+    expect(voiceCaptionSize('a'.repeat(61))).toBe('medium');
+    expect(voiceCaptionSize('a'.repeat(140))).toBe('medium');
+    expect(voiceCaptionSize('a'.repeat(141))).toBe('small');
   });
 });

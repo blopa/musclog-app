@@ -1,6 +1,10 @@
 {
   "voiceInput": {
     "listening": "Dinliyorum…",
+    "overlay": {
+      "releaseHint": "Bittiğinde bırak",
+      "finishing": "Bitiriyorum…"
+    },
     "holdHint": "Konuşurken mikrofon düğmesini basılı tut, sonra bırak.",
     "resultTitle": "Söylediklerin",
     "openSettings": "Ayarları aç",

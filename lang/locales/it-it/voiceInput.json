@@ -1,6 +1,10 @@
 {
   "voiceInput": {
     "listening": "Ascolto…",
+    "overlay": {
+      "releaseHint": "Rilascia quando hai finito",
+      "finishing": "Completamento…"
+    },
     "holdHint": "Tieni premuto il pulsante del microfono mentre parli, poi rilascialo.",
     "resultTitle": "Quello che hai detto",
     "openSettings": "Apri impostazioni",
