@@ -7,6 +7,7 @@ import {
   AiHistoryPickers,
   AiOcrAndFoundationToggles,
 } from '@/components/ai/AiContextAndOcrControls';
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { ThinkingLevelPicker } from '@/components/ai/ThinkingLevelPicker';
 import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
@@ -165,6 +166,9 @@ export function AIBehaviorSettingsModal({ visible, onClose }: AIBehaviorSettings
             {t('settings.aiSettings.insightsAlerts')}
           </SectionLabel>
           <ToggleInput items={insightsItems} />
+          <View className="mt-2">
+            <AiOutputNotice kind="insight" />
+          </View>
         </View>
 
         {/* Memory Settings Section */}

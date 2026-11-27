@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -110,6 +111,7 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
           multiline
           numberOfLines={8}
         />
+        <AiOutputNotice kind="plan" />
       </View>
     </FullScreenModal>
   );

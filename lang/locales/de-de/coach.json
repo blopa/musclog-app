@@ -108,7 +108,6 @@
       "failed": "Der Chatverlauf konnte nicht geteilt werden. Bitte versuche es erneut.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "KI kann Fehler machen. Bitte prüfe wichtige Informationen.",
     "message": {
       "menuTitle": "Nachrichtenaktionen",
       "copy": "Kopieren",

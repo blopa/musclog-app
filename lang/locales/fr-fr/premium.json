@@ -112,7 +112,8 @@
         }
       },
       "cta": "S'abonner pour {{price}} par mois",
-      "reassurance": "Renouvellement mensuel. Résilie à tout moment depuis ton compte sur la boutique."
+      "reassurance": "Renouvellement mensuel. Résilie à tout moment depuis ton compte sur la boutique.",
+      "accuracy": "Musclog Iron fait tourner l'IA pour toi. Cela ne rend pas ses réponses justes : elles peuvent être fausses, alors vérifie-les avant de t'y fier."
     }
   }
 }

@@ -58,6 +58,10 @@
           "a": "No. Puedes usar tu propia clave de API, la opción gratuita Musclog AI o modelos en el dispositivo y locales. Musclog Iron es la opción en la que no hay nada que configurar."
         },
         {
+          "q": "¿Hace Musclog Iron más precisa la IA?",
+          "a": "Ninguna suscripción hace fiable a la IA. Musclog Iron ejecuta las mismas funciones que las demás opciones de IA, y sus respuestas también pueden ser erróneas, así que compruébalas antes de confiar en las estimaciones y los planes. Las respuestas de la IA no son consejo médico, nutricional ni de entrenamiento."
+        },
+        {
           "q": "¿Puedo usarlo en más de un dispositivo?",
           "a": "Sí. Una suscripción cubre tus dispositivos de la misma cuenta de la tienda, y comparten una cuota. Restaurar compras añade un dispositivo."
         },

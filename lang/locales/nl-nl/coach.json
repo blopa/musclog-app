@@ -108,7 +108,6 @@
       "failed": "Delen van chatgeschiedenis mislukt. Probeer het opnieuw.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "AI kan fouten maken. Controleer belangrijke informatie.",
     "message": {
       "menuTitle": "Berichtacties",
       "copy": "Kopiëren",

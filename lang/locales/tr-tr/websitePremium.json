@@ -58,6 +58,10 @@
           "a": "Hayır. Kendi API anahtarını, ücretsiz Musclog AI seçeneğini ya da cihaz üzerindeki ve yerel modelleri kullanabilirsin. Musclog Iron, kurulacak hiçbir şeyin olmadığı seçenektir."
         },
         {
+          "q": "Musclog Iron yapay zekâyı daha doğru yapar mı?",
+          "a": "Hiçbir abonelik yapay zekâyı güvenilir kılmaz. Musclog Iron, diğer yapay zekâ seçenekleriyle aynı özellikleri çalıştırır ve yanıtları da hatalı olabilir; bu yüzden bunlara güvenmeden önce tahminleri ve planları kontrol et. Yapay zekâ yanıtları tıbbi, beslenme veya antrenman tavsiyesi değildir."
+        },
+        {
           "q": "Birden fazla cihazda kullanabilir miyim?",
           "a": "Evet. Tek bir abonelik, aynı mağaza hesabındaki cihazlarını kapsar ve hepsi tek bir kotayı paylaşır. Satın alımları geri yüklemek bir cihaz ekler."
         },

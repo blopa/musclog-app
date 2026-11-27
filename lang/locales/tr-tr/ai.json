@@ -27,6 +27,31 @@
     "chat": {
       "message": "Mesaj",
       "typeYourMessage": "Mesajını yaz..."
+    },
+    "outputNotice": {
+      "chat": "Koç bir insan değil, bir yapay zekâdır ve sık sık hata yapar. Yanıtları tıbbi tavsiye değildir.",
+      "estimate": "Yapay zekâ tahmini: çok uzak olabilir. Kaydetmeden önce yiyecekleri ve miktarları kontrol et.",
+      "plan": "Yapay zekâ tarafından yazıldı: bununla antrenman yapmadan önce sana uygun olup olmadığını kontrol et.",
+      "insight": "Yapay zekâ tarafından yazıldı ve hatalı olabilir. Tıbbi, beslenme veya antrenman tavsiyesi değildir.",
+      "import": "Yapay zekâ tarafından okundu: kaydetmeden önce her değeri kontrol et.",
+      "settings": "Yapay zekâ isteğe bağlıdır ve sık sık hata yapar. Sana söylediklerini kontrol et."
+    },
+    "disclaimer": {
+      "title": "Yapay zekâ yanılabilir",
+      "subtitle": "Yapay zekânın söylediği herhangi bir şeye güvenmeden önce bunu aklında tut",
+      "openHint": "Yapay zekâ yanıtları hakkında akılda tutulacakları açar",
+      "points": {
+        "optional": "Yapay zekâ isteğe bağlıdır. Musclog onsuz tam olarak çalışır ve sen bir yapay zekâ seçeneğini açana kadar hiçbir şey gönderilmez.",
+        "mistakes": "Yapay zekâ yanıtlarını bir insan değil bir model yazar ve kimse bunları önceden kontrol etmez. Sık sık hata içerirler: gerçek değerden çok uzak kalori ve makrolar, yanlış okunmuş yiyecekler veya porsiyonlar, sana uymayan egzersizler ve kulağa emin gelip yanlış olan iddialar. Bu, Musclog Iron dahil her seçenek için geçerlidir.",
+        "notAdvice": "Loggy ve diğer koçlar yapay zekâ karakterleridir. Doktor, diyetisyen veya sertifikalı koç değildirler ve söyledikleri hiçbir şey tıbbi, beslenme veya antrenman tavsiyesi değildir.",
+        "health": "Ağrın, yaralanman, hastalığın veya yeme bozukluğun varsa, hamileysen ya da ilaç kullanıyorsan, bir yapay zekâ yanıtına göre hareket etmeden önce yetkin bir uzmana danış. Bir yerin acıyorsa egzersizi bırak.",
+        "check": "Her tahmini, planı ve öneriyi kaydetmeden, uygulamadan veya paylaşmadan önce kontrol et; yanlış olanı düzelt ya da sil. Sakladığın şey senin kendi kaydındır.",
+        "edits": "Sohbet geçmişindeki her iletiyi, yapay zekânınkiler dahil, düzenleyebilir, ekleyebilir veya silebilirsin. Bir sohbet geçmişi, dışa aktarım veya ekran görüntüsü yapay zekânın ne yazdığını göstermeyebilir ve Musclog bunu karşılaştıracak bir kopya tutmaz.",
+        "liability": "Yasanın izin verdiği ölçüde Musclog, yapay zekânın söylediklerinden ya da bunlarla ne yaptığından sorumlu değildir. Koşullar bunu tam olarak açıklar."
+      },
+      "readTerms": "Koşulları oku",
+      "editHint": "Bu, geçmişini yalnızca bu cihazda değiştirir. Düzenlenmiş veya eklenmiş bir koç iletisi artık yapay zekânın yazdığını göstermez.",
+      "consent": "Yapay zekâ yanıtları sık sık hatalıdır. Tıbbi, beslenme veya antrenman tavsiyesi değildirler ve Musclog yapay zekânın söylediklerinden sorumlu değildir. Önemli bir şeye dayanarak harekete geçmeden önce kontrol et. Onaylayarak bunu ve koşullarımızdaki yapay zekâ bölümünü kabul etmiş olursun."
     }
   }
 }

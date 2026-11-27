@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
@@ -122,6 +123,8 @@ export function ImportWorkoutsModal({
             </Text>
             <Text className="text-xs text-text-secondary">{t('workout.import.formatInfo')}</Text>
           </View>
+
+          <AiOutputNotice kind="import" />
 
           {/* Character Count */}
           <Text className="mb-4 text-xs text-text-tertiary">

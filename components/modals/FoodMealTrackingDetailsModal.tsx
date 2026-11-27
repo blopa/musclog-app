@@ -16,6 +16,8 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
+import { type AiOutputKind } from '@/components/ai/aiOutputNoticeCopy';
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
 import {
@@ -158,6 +160,8 @@ type FoodDetailsModalProps = {
   isAiEnabled?: boolean;
   /** When true, show an edit control so the user can correct name, barcode, and macros (e.g. for AI-sourced data). */
   canEdit?: boolean;
+  /** Set only when the food shown was produced by AI (a label scan, a meal estimate): shows the shared "AI can be wrong" line. */
+  aiOutputKind?: AiOutputKind;
 };
 
 export function FoodMealTrackingDetailsModal({
@@ -179,6 +183,7 @@ export function FoodMealTrackingDetailsModal({
   onNutritionLogTracked,
   isAiEnabled = true,
   canEdit = false,
+  aiOutputKind,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -1731,6 +1736,7 @@ export function FoodMealTrackingDetailsModal({
         }
       >
         <View className="flex-1 px-4 pb-6">
+          {aiOutputKind ? <AiOutputNotice kind={aiOutputKind} /> : null}
           <FoodNutritionSectionCard
             nutritionQuality={nutritionQuality}
             food={scaledFood}

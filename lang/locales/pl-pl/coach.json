@@ -108,7 +108,6 @@
       "failed": "Nie udało się udostępnić historii czatu. Spróbuj ponownie.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "AI może się mylić. Sprawdzaj ważne informacje.",
     "message": {
       "menuTitle": "Działania na wiadomości",
       "copy": "Kopiuj",

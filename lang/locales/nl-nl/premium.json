@@ -112,7 +112,8 @@
         }
       },
       "cta": "Abonneer je voor {{price}} per maand",
-      "reassurance": "Wordt maandelijks verlengd. Zeg op wanneer je wilt in je accountinstellingen van de winkel."
+      "reassurance": "Wordt maandelijks verlengd. Zeg op wanneer je wilt in je accountinstellingen van de winkel.",
+      "accuracy": "Musclog Iron draait de AI voor je. Het maakt AI-antwoorden niet juist: ze kunnen onjuist zijn, dus controleer ze voordat je erop vertrouwt."
     }
   }
 }

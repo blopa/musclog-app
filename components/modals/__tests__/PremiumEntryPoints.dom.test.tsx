@@ -11,6 +11,7 @@ const mockForcePremium = { on: false };
 const mockGo = jest.fn();
 const mockDraftUpdate = jest.fn(async () => undefined);
 
+jest.mock('@/components/ai/AiOutputNotice', () => ({ AiOutputNotice: () => null }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en-US' } }),

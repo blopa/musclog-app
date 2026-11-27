@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { PROVIDER_NAME_KEYS } from '@/components/aiOnboarding/providerNames';
 import { MasterLayout } from '@/components/MasterLayout';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
@@ -21,6 +22,7 @@ import { usePremium } from '@/hooks/usePremium';
 import { useTheme } from '@/hooks/useTheme';
 import { enableFreeTier, testAndSaveApiKey } from '@/services/aiProviderSetup';
 import { AiService } from '@/services/AiService';
+import { AI_ACCURACY_CONSENT_KEY, withAiAccuracyConsent } from '@/utils/aiConsent';
 import type { AiKeyTestResult } from '@/utils/aiKeyTest';
 import type { CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
@@ -169,6 +171,8 @@ export default function AiProviderScreen() {
           >
             {t('aiOnboarding.provider.intro')}
           </Text>
+
+          <AiOutputNotice kind="settings" />
 
           <ListGroup>
             {isMusclogGatewayAvailable() ? (
@@ -337,7 +341,11 @@ export default function AiProviderScreen() {
           });
         }}
         title={t('settings.aiSettings.musclogFreeTier.consentTitle')}
-        message={t('settings.aiSettings.musclogFreeTier.consentBody')}
+        message={withAiAccuracyConsent(
+          t('settings.aiSettings.musclogFreeTier.consentBody'),
+          t(AI_ACCURACY_CONSENT_KEY)
+        )}
+        scrollable
         confirmLabel={t('settings.aiSettings.musclogFreeTier.consentConfirm')}
       />
     </MasterLayout>

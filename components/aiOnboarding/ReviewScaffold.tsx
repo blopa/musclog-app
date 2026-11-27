@@ -3,6 +3,7 @@ import { type ComponentProps, type ReactNode, useCallback, useMemo, useState } f
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { type AnswerFormatters, REVIEW_SECTIONS } from '@/components/aiOnboarding/fieldChoices';
 import { ReviewFieldRow } from '@/components/aiOnboarding/ReviewFieldRow';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -149,6 +150,8 @@ export function ReviewScaffold({
           >
             {t(introKey)}
           </Text>
+
+          <AiOutputNotice kind="import" />
 
           {loading ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
 

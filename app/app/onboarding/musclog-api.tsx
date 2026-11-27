@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
@@ -20,6 +21,7 @@ import { usePremium } from '@/hooks/usePremium';
 import { useScrollFade } from '@/hooks/useScrollFade';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { AI_ACCURACY_CONSENT_KEY } from '@/utils/aiConsent';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { type AiChoice, availableAiChoices, defaultAiChoice } from '@/utils/onboardingAiChoice';
 import { websitePageUrl } from '@/utils/websiteUrl';
@@ -199,6 +201,7 @@ export default function MusclogApiScreen() {
               >
                 {t('onboarding.musclogApi.intro')}
               </Text>
+              <AiOutputNotice kind="settings" />
             </View>
 
             <View
@@ -254,6 +257,16 @@ export default function MusclogApiScreen() {
                   }}
                 >
                   {t('onboarding.musclogApi.dataSharingBody')}
+                </Text>
+                <Text
+                  className="mt-2"
+                  style={{
+                    color: theme.colors.text.secondary,
+                    fontSize: theme.typography.fontSize.xs,
+                    lineHeight: 18,
+                  }}
+                >
+                  {t(AI_ACCURACY_CONSENT_KEY)}
                 </Text>
                 <Text
                   accessibilityRole="link"

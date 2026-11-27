@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
@@ -221,6 +222,8 @@ export function LogMealModal({
           intuitiveMode={intuitiveEatingMode}
           ingredients={scaledIngredients}
         />
+
+        <AiOutputNotice kind="estimate" />
 
         <ServingSizeSelector value={portionGrams} onChange={handlePortionGramsChange} />
 

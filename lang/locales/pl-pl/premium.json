@@ -112,7 +112,8 @@
         }
       },
       "cta": "Subskrybuj za {{price}} miesięcznie",
-      "reassurance": "Odnawia się co miesiąc. Anulujesz w dowolnym momencie na koncie w sklepie."
+      "reassurance": "Odnawia się co miesiąc. Anulujesz w dowolnym momencie na koncie w sklepie.",
+      "accuracy": "Musclog Iron uruchamia AI za Ciebie. Nie sprawia jednak, że odpowiedzi AI są poprawne: mogą być błędne, więc sprawdzaj je, zanim na nich polegasz."
     }
   }
 }

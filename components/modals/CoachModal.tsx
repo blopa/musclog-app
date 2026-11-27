@@ -42,6 +42,7 @@ import {
   SendProps,
 } from 'react-native-gifted-chat';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { ChatMealCard } from '@/components/cards/ChatMealCard';
 import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
@@ -1642,12 +1643,7 @@ export function CoachModal({
 
         {/* AI Disclaimer */}
         <View className="px-4 py-2" style={{ backgroundColor: theme.colors.background.primary }}>
-          <Text
-            className="text-center text-xs"
-            style={{ color: theme.colors.text.tertiary, fontStyle: 'italic' }}
-          >
-            {t('coach.disclaimer')}
-          </Text>
+          <AiOutputNotice kind="chat" align="center" />
         </View>
       </View>
 

@@ -53,10 +53,11 @@ jest.mock('@/components/modals/FullScreenModal', () => ({
     ) : null,
 }));
 jest.mock('@/components/modals/ConfirmationModal', () => ({
-  ConfirmationModal: ({ visible, onConfirm, confirmLabel, title, scrollable }: any) =>
+  ConfirmationModal: ({ visible, onConfirm, confirmLabel, title, message, scrollable }: any) =>
     visible ? (
       <div data-scrollable={scrollable ? 'true' : 'false'}>
         <span>{title}</span>
+        <p>{message}</p>
         <button onClick={() => onConfirm()}>{confirmLabel}</button>
       </div>
     ) : null,
@@ -256,6 +257,8 @@ describe('PremiumModal', () => {
       fireEvent.click(screen.getByRole('switch'));
 
       expect(screen.getByText('premium.consent.title')).toBeTruthy();
+      // The consent ends with the AI-accuracy acknowledgement, after the body.
+      expect(screen.getByText(/premium\.consent\.body\s+ai\.disclaimer\.consent/)).toBeTruthy();
       // The consent text is long (and longer in other languages): its body must scroll on a small
       // screen so the buttons never fall below the fold.
       expect(screen.getByText('premium.consent.title').parentElement?.dataset.scrollable).toBe(

@@ -24,6 +24,7 @@ import { usePremium } from '@/hooks/usePremium';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import { AI_ACCURACY_CONSENT_KEY, withAiAccuracyConsent } from '@/utils/aiConsent';
 import {
   busyLineFor,
   dismissPremiumActionFailure,
@@ -373,6 +374,13 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           <View className="gap-8">
             <PremiumBenefitList />
             <PremiumComparison priceString={premium.priceString} />
+            {/* In the scroll, not the pinned footer: at large text the footer would leave the
+                paywall almost no room. The consent asks for the same acceptance before Iron is on. */}
+            <Text
+              style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}
+            >
+              {t('premium.paywall.accuracy')}
+            </Text>
           </View>
         );
       case 'active':
@@ -394,7 +402,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     dialog === 'consent'
       ? {
           title: t('premium.consent.title'),
-          message: t('premium.consent.body'),
+          message: withAiAccuracyConsent(t('premium.consent.body'), t(AI_ACCURACY_CONSENT_KEY)),
           confirm: t('premium.consent.confirm'),
           cancel: t('premium.consent.cancel'),
           onConfirm: confirmConsent,

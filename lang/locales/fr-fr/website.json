@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Coach IA",
-          "description": "Discute avec Loggy de l'entraînement et de l'alimentation, ou estime un repas à partir d'une photo. Facultatif : avec ta propre clé Gemini, OpenAI ou Claude, avec Musclog Iron, l'option gratuite, un modèle local ou l'IA de ton téléphone."
+          "description": "Discute avec Loggy de l'entraînement et de l'alimentation, ou estime un repas à partir d'une photo. Facultatif : avec ta propre clé Gemini, OpenAI ou Claude, avec Musclog Iron, l'option gratuite, un modèle local ou l'IA de ton téléphone. Les réponses de l'IA peuvent être fausses, alors vérifie-les avant de t'y fier."
         },
         "barcode": {
           "title": "Scanner de codes-barres",
@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Politique de",
       "titleHighlight": "confidentialité",
-      "lastUpdated": "Dernière mise à jour : 26 novembre 2026",
+      "lastUpdated": "Dernière mise à jour : 27 novembre 2026",
       "highlights": {
         "dataProtection": {
           "title": "Protection des données",
@@ -705,6 +705,7 @@
             "content3": "Si tu choisis d'utiliser une fonction d'IA, les données que tu décides d'envoyer seront transmises au fournisseur ou au point d'accès que tu configures. Si tu utilises un modèle local auto-hébergé sous ton propre contrôle, ces données peuvent rester dans ton propre environnement. Si tu utilises un point d'accès hébergé par un tiers, y compris un service hébergé de modèle local, ce fournisseur peut traiter les données selon ses propres conditions et pratiques de confidentialité. Musclog ne contrôle pas la façon dont les fournisseurs externes traitent les données que tu leur envoies.",
             "content4": "Si tu choisis l'option gratuite Musclog AI, tes requêtes passent par OpenRouter, un service de routage d'IA, vers Google AI Studio (un modèle Gemma), avec une clé API gérée par Musclog. Une requête ne contient que ce que tu envoies à la fonction d'IA, comme les messages du chat, les photos de repas, ou les détails de séance, de nutrition et de corps dont cette fonction a besoin. OpenRouter ne conserve pas le contenu des requêtes, hormis le contrôle des contenus d'abus sexuels sur mineurs décrit ci-dessous ; il garde des détails de requête comme leur taille et leur horodatage. Google traite ces requêtes selon les conditions de l'API Gemini pour un usage gratuit : Google peut conserver les requêtes et les réponses, les utiliser pour améliorer ses produits et ses technologies d'apprentissage automatique, et faire lire ces contenus par des relecteurs humains. Google supprime les identifiants, comme ton compte, avant la relecture humaine, mais n'indique pas d'informations personnelles ou sensibles dans l'option gratuite Musclog AI et ne l'utilise pas pour quoi que ce soit que tu ne veux pas que Google voie. L'option gratuite Musclog AI est réservée aux adultes (18 ans et plus), car les conditions de Google n'autorisent pas ce service gratuit dans les applications susceptibles d'être utilisées par des personnes de moins de 18 ans. Musclog Iron est différent : il n'utilise que des fournisseurs configurés en rétention zéro des données. L'option gratuite a une limite quotidienne partagée par tous ses utilisateurs, dépend des limites gratuites de Google et peut être indisponible à certains moments.",
             "contentPremium": "Si tu souscris à Musclog Iron, tes requêtes d'IA sont envoyées au service propre de Musclog, qui fonctionne sur Cloudflare Workers, puis, via l'une de deux passerelles d'IA, OpenRouter ou Otari (exploitée par Mozilla.ai, MZL.AI, PBC), qui ne les transmettent qu'à des fournisseurs d'IA configurés avec une conservation zéro des données (ZDR) et sans entraînement sur tes données. Musclog choisit la passerelle utilisée, et le consentement donné dans l'application couvre les deux. Sur Otari, chaque requête désigne un seul fournisseur approuvé et ne bascule jamais vers un autre. Une requête ne contient que ce que tu envoies à la fonction d'IA, comme les messages du chat, les détails de séance, de nutrition et de corps dont cette fonction a besoin, ainsi que les photos de repas. Le service de Musclog ne conserve ni le contenu de tes requêtes ni les réponses. Il ne garde qu'un identifiant dérivé d'une clé présente sur ton appareil, des compteurs d'utilisation et une courte empreinte de chaque requête, afin qu'une requête relancée ne soit pas comptée deux fois. Comme toute requête Internet, chaque requête révèle ton adresse IP à Cloudflare, qui livre et protège le service ; le service de Musclog ne la conserve pas. La passerelle reçoit avec chaque requête un code pseudonyme pour ton abonnement, et non ton identifiant, ton nom ou ton adresse e-mail, afin de pouvoir détecter les abus ; Otari reçoit aussi des étiquettes nommant l'application et le type de requête, jamais une personne ni un appareil. RevenueCat reçoit ton identifiant, l'état de ton achat dans le store et les données techniques qu'un service d'abonnement d'application traite, comme ton adresse IP, pour confirmer que ton abonnement est actif. Musclog ne reçoit ni ton nom, ni ton adresse e-mail, ni tes coordonnées de paiement : le paiement est géré par Apple ou Google. OpenRouter contrôle toutes les requêtes qui transitent par lui, y compris celles destinées à des fournisseurs à rétention zéro, à la recherche d'abus sexuels sur mineurs pendant leur traitement, et peut conserver une requête signalée pour examen, signalement et conservation à des fins juridiques lorsque la loi l'exige. Otari indique ne recevoir ni stocker le contenu des requêtes ou des réponses ; il conserve des détails de requête tels que le modèle, le fournisseur, le nombre de jetons, le coût et l'état, sur des serveurs aux États-Unis. Musclog Iron est distinct de l'option gratuite Musclog AI et n'est activé qu'après ton accord dans l'application.",
+            "accuracy": "Les fonctions d'IA peuvent commettre des erreurs, et leurs réponses ne constituent pas des conseils médicaux, nutritionnels ou d'entraînement. Les Conditions générales, sous « Fonctions d'IA et contenu généré par l'IA », expliquent ce que tu peux en attendre et ce dont Musclog est responsable.",
             "content5": "Tu devrais consulter les politiques de confidentialité et les conditions des fournisseurs que tu choisis et des services que Musclog utilise, notamment :",
             "cloudflarePrivacyPolicy": "Politique de confidentialité de Cloudflare",
             "openaiPrivacyPolicy": "Politique de confidentialité d'OpenAI",
@@ -882,7 +883,7 @@
     "terms": {
       "titleStart": "Conditions",
       "conditions": "générales d'utilisation",
-      "lastUpdated": "Dernière mise à jour : 24 novembre 2026",
+      "lastUpdated": "Dernière mise à jour : 27 novembre 2026",
       "highlights": {
         "agreement": {
           "title": "Accord d'utilisation",
@@ -890,7 +891,7 @@
         },
         "liability": {
           "title": "Responsabilité limitée",
-          "description": "Nous ne sommes pas responsables des décisions de santé prises à l'aide de cette application."
+          "description": "Nous ne sommes pas responsables des décisions de santé prises à l'aide de cette application ou de ses fonctions d'IA."
         },
         "warranty": {
           "title": "Aucune garantie",
@@ -950,12 +951,14 @@
         "liability": {
           "title": "Limitation de responsabilité",
           "content1": "Dans la mesure maximale permise par la loi applicable, la Société ne pourra en aucun cas être tenue responsable de dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, notamment la perte de bénéfices, de données, d'usage, de clientèle ou d'autres pertes immatérielles.",
-          "content2": "Cette application n'est pas un dispositif médical. Consulte toujours un professionnel de santé qualifié avant de prendre une décision de santé ou de fitness fondée sur les données de cette application."
+          "content2": "Cette application, y compris ses fonctions d'IA, n'est pas un dispositif médical et ne donne pas de conseil médical. Consulte toujours un professionnel de santé qualifié avant de prendre une décision de santé ou de remise en forme fondée sur les données de cette application ou sur le contenu généré par l'IA.",
+          "content3": "Rien dans les présentes Conditions n'exclut ni ne limite une responsabilité qui ne peut être exclue ou limitée en vertu du droit applicable, y compris la responsabilité en cas de décès ou de dommage corporel causé par une négligence, pour faute intentionnelle ou faute lourde, ou en vertu des règles impératives de responsabilité du fait des produits."
         },
         "disclaimer": {
           "title": "Avertissement",
           "content1": "Le Service t'est fourni « EN L'ÉTAT » et « SELON DISPONIBILITÉ », avec tous ses défauts, sans garantie d'aucune sorte.",
-          "content2": "Sans limiter ce qui précède, la Société ne donne aucune garantie ni engagement, et ne fait aucune déclaration de quelque nature que ce soit selon laquelle le Service répondra à tes besoins, atteindra les résultats escomptés, ou sera compatible avec d'autres logiciels, applications, systèmes ou services, ou fonctionnera avec eux."
+          "content2": "Sans limiter ce qui précède, la Société ne donne aucune garantie ni engagement, et ne fait aucune déclaration de quelque nature que ce soit selon laquelle le Service répondra à tes besoins, atteindra les résultats escomptés, ou sera compatible avec d'autres logiciels, applications, systèmes ou services, ou fonctionnera avec eux.",
+          "content3": "En particulier, le contenu généré par l'IA est fourni sans aucune garantie qu'il est exact, complet, fiable, à jour ou adapté à un usage particulier (voir « Fonctions d'IA et contenu généré par l'IA »)."
         },
         "governingLaw": {
           "title": "Droit applicable",
@@ -967,8 +970,21 @@
           "content": "Nous nous réservons le droit, à Notre seule discrétion, de modifier ou de remplacer ces conditions à tout moment. Nous essaierons de te prévenir au moins 30 jours avant l'entrée en vigueur de nouvelles conditions. En continuant d'accéder à Notre Service ou de l'utiliser après l'entrée en vigueur de ces modifications, tu acceptes d'être lié par les conditions révisées."
         },
         "aiOutput": {
-          "title": "Fonctions d'IA",
-          "content": "Les fonctions d'IA de Musclog, y compris Musclog Iron, l'option gratuite Musclog AI et tout fournisseur que tu choisis, peuvent commettre des erreurs. Les estimations de calories et de nutriments, les suggestions d'entraînement et les réponses du chat ne constituent pas des conseils médicaux, nutritionnels ou sportifs. Vérifie ce qui compte avant d'agir, et consulte un professionnel qualifié pour toute affection de santé ou blessure."
+          "title": "Fonctions d'IA et contenu généré par l'IA",
+          "content1": "Les fonctions d'IA de Musclog sont facultatives. L'application fonctionne entièrement sans elles, et aucune ne transmet ni ne produit quoi que ce soit tant que tu n'as pas choisi une option d'IA et ne l'as pas activée. Cette section s'applique à chaque option d'IA : Musclog Iron, l'option gratuite Musclog AI, l'IA sur ton appareil, un modèle local ou auto-hébergé, et ta propre clé OpenAI, Anthropic Claude ou Google Gemini. Elle s'applique aussi au contenu rédigé par un assistant d'IA externe, comme ChatGPT ou Claude, que tu importes dans l'application.",
+          "content2": "« Contenu généré par l'IA » désigne tout ce qu'une fonction d'IA produit ou aide à produire, y compris les réponses du coach (Loggy ou tout autre personnage de coach), les estimations de calories, de macronutriments et d'autres nutriments à partir de photos, de descriptions ou d'étiquettes, les suggestions de repas et les plans alimentaires, les plans d'entraînement et les suggestions d'exercices, les analyses et résumés, les commandes vocales, ainsi que les données qu'une IA lit dans un fichier, une photo ou un texte collé.",
+          "items": [
+            "Le contenu généré par l'IA est produit automatiquement par des modèles d'IA que des tiers conçoivent et exploitent. Personne chez Musclog ne le rédige, ne le vérifie ni ne l'approuve avant que tu ne le voies, et Nous ne contrôlons pas ce qu'un modèle affirme.",
+            "Le contenu généré par l'IA est souvent faux. Il peut être incomplet, périmé ou inexact : calories et macronutriments très éloignés de la réalité, aliments ou portions mal identifiés, exercices ou charges qui ne te conviennent pas, et affirmations qui semblent sûres mais sont fausses. Aucune option d'IA, aucun abonnement et aucun niveau de réflexion ne le rend fiable.",
+            "Loggy et les autres personnages de coach sont des personnages d'IA, pas des personnes. Ce ne sont pas des médecins, diététiciens, kinésithérapeutes, psychologues ou coachs certifiés. Le contenu généré par l'IA est une information générale. Ce n'est ni un conseil médical, nutritionnel, diététique, psychologique ou professionnel d'entraînement, ni un diagnostic ni un traitement, et cela ne remplace pas l'avis d'un professionnel qualifié.",
+            "Ne te fie pas au contenu généré par l'IA pour des décisions concernant ta santé ou ta sécurité. Consulte un professionnel qualifié avant d'agir si tu as une douleur, une blessure, une maladie, un trouble du comportement alimentaire ou un état sur lequel l'alimentation ou l'exercice ont une incidence, si tu es enceinte ou allaites, ou si tu prends un médicament. Arrête de t'entraîner et demande de l'aide si tu ressens une douleur, des vertiges, une douleur thoracique ou un essoufflement. En cas d'urgence, appelle le numéro d'urgence de ton pays.",
+            "Tu décides si et comment utiliser le contenu généré par l'IA. Vérifie chaque chiffre, aliment, exercice et plan avant de les enregistrer, de les suivre ou de les partager, et corrige ou supprime-les lorsqu'ils sont faux. Cela vaut aussi pour les résultats qu'une fonction d'IA enregistre pour toi, comme un plan d'entraînement créé par le coach ou un élément que le coach retient à ton sujet. Les entrées que tu conserves dans l'application sont tes propres relevés.",
+            "Ton historique de discussion n'est stocké que sur ton appareil, et l'application te permet de modifier ou de supprimer n'importe quel message, y compris ceux écrits par l'IA, ainsi que d'ajouter des messages qui semblent venir du coach. Un message affiché dans l'application, dans un export ou dans une capture d'écran peut donc ne pas être ce que l'IA a écrit. Ni Musclog Iron ni l'option gratuite Musclog AI ne conservent une copie de tes messages à laquelle Nous pourrions accéder, Nous ne pouvons donc pas confirmer ce qu'un message disait à l'origine. Nous ne sommes pas responsables d'un message modifié ou ajouté, ni du contenu d'un message tel qu'il apparaît en dehors de l'application.",
+            "Lorsque tu utilises ta propre clé, l'IA sur ton appareil ou un modèle local, le contenu généré par l'IA provient de ce fournisseur ou de ce modèle, selon ses propres conditions. Musclog transmet ta demande et affiche sa réponse.",
+            "Musclog Iron et l'option gratuite Musclog AI te donnent accès au traitement par IA dans leurs limites. Ils ne garantissent en aucun cas que le contenu généré par l'IA est exact, complet, à jour ou adapté à toi, et une réponse fausse ou inutile n'est pas un défaut de Musclog Iron ni du Service. L'application te demande d'accepter cela avant d'activer Musclog Iron ou l'option gratuite Musclog AI.",
+            "Dans la mesure maximale permise par le droit applicable, et sous réserve du dernier paragraphe de « Limitation de responsabilité », la Société n'est pas responsable de toute perte ou de tout dommage résultant du contenu généré par l'IA, d'un message modifié ou ajouté, ou de ton utilisation du contenu généré par l'IA ou de la confiance que tu lui accordes, y compris toute blessure, maladie, variation de poids ou de composition corporelle, ou autre perte causée par le fait d'agir sur une estimation, un plan ou une réponse.",
+            "Si le contenu généré par l'IA te paraît nuisible, arrête de l'utiliser et informe-Nous à l'adresse indiquée à la fin de ces Conditions."
+          ]
         }
       },
       "contact": {
@@ -1143,6 +1159,10 @@
             {
               "question": "Musclog a-t-il un abonnement ?",
               "answer": "Musclog est gratuit. La saisie, les programmes, l'historique, les graphiques, l'import, l'export et les options d'IA gratuites ne coûtent rien. Musclog Iron est un abonnement mensuel facultatif qui ajoute un quota d'IA hébergée, pour que tu n'aies pas besoin de ta propre clé. Tu n'en as jamais besoin pour le reste de l'application."
+            },
+            {
+              "question": "Puis-je faire confiance à ce que l'IA me dit ?",
+              "answer": "Vérifie d'abord. Les fonctions d'IA sont facultatives et elles font souvent des erreurs : une estimation de calories à partir d'une photo peut être très éloignée, un plan d'entraînement peut ne pas te convenir, et le coach peut sembler sûr de lui tout en se trompant. Considère chaque réponse de l'IA comme un point de départ, et non comme un conseil médical, nutritionnel ou d'entraînement, et demande à un professionnel qualifié pour tout ce qui touche à ta santé. Tu peux corriger ou supprimer tout ce que l'IA a produit, y compris les messages du coach, donc un historique de discussion peut ne pas montrer ce que l'IA a réellement écrit."
             }
           ]
         },

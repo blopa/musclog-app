@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Yapay zekâ koçu",
-          "description": "Antrenman ve yiyecekler hakkında Loggy ile sohbet et ya da bir öğünü fotoğraftan tahmin ettir. İsteğe bağlı: kendi Gemini, OpenAI veya Claude anahtarınla, Musclog Iron ile, ücretsiz seçenekle, yerel bir modelle ya da telefonundaki yapay zekâyla."
+          "description": "Antrenman ve yiyecekler hakkında Loggy ile sohbet et ya da bir öğünü fotoğraftan tahmin ettir. İsteğe bağlı: kendi Gemini, OpenAI veya Claude anahtarınla, Musclog Iron ile, ücretsiz seçenekle, yerel bir modelle ya da telefonundaki yapay zekâyla. Yapay zekâ yanıtları hatalı olabilir, bu yüzden onlara güvenmeden önce kontrol et."
         },
         "barcode": {
           "title": "Barkod tarayıcı",
@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Gizlilik",
       "titleHighlight": "Politikası",
-      "lastUpdated": "Son güncelleme: 26 Kasım 2026",
+      "lastUpdated": "Son güncelleme: 27 Kasım 2026",
       "highlights": {
         "dataProtection": {
           "title": "Veri koruma",
@@ -705,6 +705,7 @@
             "content3": "Bir yapay zekâ özelliğini kullanmayı seçersen, göndermeye karar verdiğin veriler yapılandırdığın sağlayıcıya veya uç noktaya gönderilir. Tamamen kendi kontrolündeki kendi barındırdığın yerel bir modeli kullanırsan, bu veriler kendi ortamında kalabilir. Barındırılan bir üçüncü taraf uç noktası kullanırsan (barındırılan yerel model hizmetleri dahil), o sağlayıcı verileri kendi koşullarına ve gizlilik uygulamalarına göre işleyebilir. Musclog, dış sağlayıcıların kendilerine gönderdiğin verileri nasıl işlediğini kontrol etmez.",
             "content4": "Ücretsiz Musclog yapay zekâ seçeneğini seçersen, istekler OpenRouter, bir yapay zekâ yönlendirme hizmeti üzerinden, Musclog tarafından yönetilen bir API anahtarı kullanılarak Google AI Studio'ya (bir Gemma modeli) gönderilir. Bir istek yalnızca yapay zekâ özelliğine gönderdiğin şeyleri içerir: sohbet mesajları, öğün fotoğrafları veya o özelliğin ihtiyaç duyduğu antrenman, beslenme ve vücut bilgileri. OpenRouter istek içeriklerini, aşağıda anlatılan çocuk cinsel istismarı içeren materyal taraması dışında saklamaz; boyut ve zaman gibi istek ayrıntılarını tutar. Google bu istekleri ücretsiz kullanım için Gemini API koşulları altında yanıtlar: Google istekleri ve yanıtları saklayabilir, ürünlerini ve makine öğrenimi teknolojilerini geliştirmek için kullanabilir ve insan incelemecilerin okumasını sağlayabilir. Google, insan incelemesinden önce hesabın gibi tanımlayıcıları kaldırır; ancak ücretsiz Musclog yapay zekâ seçeneğine kişisel veya hassas bilgi girme ve Google'ın görmesini istemediğin hiçbir şey için kullanma. Ücretsiz Musclog yapay zekâ seçeneği yalnızca yetişkinler içindir (18 yaş ve üzeri), çünkü Google'ın koşulları bu ücretsiz hizmetin 18 yaşın altındakilerin muhtemelen kullanacağı uygulamalarda kullanılmasına izin vermez. Musclog Iron farklıdır: yalnızca veri saklamayı sıfıra ayarlanmış sağlayıcıları kullanır. Ücretsiz seçeneğin tüm kullanıcılarının paylaştığı günlük bir sınırı vardır, Google'ın ücretsiz sınırlarına bağlıdır ve zaman zaman kullanılamayabilir.",
             "contentPremium": "Musclog Iron’a abone olursan, yapay zekâ isteklerin Cloudflare Workers üzerinde çalışan Musclog’un kendi servisine, oradan da iki yapay zekâ ağ geçidinden biri, OpenRouter veya Otari (Mozilla.ai, MZL.AI, PBC tarafından işletilir) üzerinden gönderilir; bunlar istekleri yalnızca veri saklamama (zero data retention) ayarlı ve verilerini eğitimde kullanmayan yapay zekâ sağlayıcılarına iletir. Hangi ağ geçidinin kullanılacağını Musclog seçer ve uygulamadaki rıza her ikisini de kapsar. Otari’de her istek onaylı tek bir sağlayıcıyı belirtir ve asla bir başkasına yönlenmez. Bir istek yalnızca yapay zekâ özelliğine gönderdiklerini içerir; örneğin sohbet mesajlarını ya da o özelliğin ihtiyaç duyduğu antrenman, beslenme ve vücut bilgilerini, ayrıca yemek fotoğraflarını. Musclog’un servisi isteklerinin ve yanıtların içeriğini saklamaz. Yalnızca cihazındaki bir anahtardan türetilmiş bir tanımlayıcı, kullanım sayıları ve tekrarlanan bir isteğin iki kez sayılmaması için her isteğin kısa bir parmak izini tutar. Her internet isteği gibi, her istek de servisi ileten ve koruyan Cloudflare’e IP adresini açıklar; Musclog’un servisi bunu saklamaz. Ağ geçidi, kötüye kullanımın tespit edilebilmesi için her istekle birlikte aboneliğine ait takma bir kod alır; tanımlayıcını, adını ya da e-posta adresini almaz; Otari ayrıca uygulamayı ve isteğin türünü belirten etiketler alır, hiçbir zaman bir kişiyi ya da cihazı değil. RevenueCat, aboneliğinin aktif olduğunu doğrulamak için tanımlayıcını, mağaza satın alma durumunu ve bir uygulama abonelik servisinin işlediği IP adresi gibi teknik verileri alır. Musclog adını, e-posta adresini ya da ödeme bilgilerini almaz: ödemeyi Apple veya Google yönetir. OpenRouter, sıfır veri saklamalı sağlayıcılara giden istekler dahil, geçen tüm istekleri işlenirken çocuk cinsel istismarı içeren materyal açısından tarar ve yasanın gerektirdiği hâllerde işaretlediği bir isteği inceleme, bildirim ve yasal saklama için tutabilir. Otari, isteklerin ve yanıtların içeriğini almadığını ve saklamadığını belirtir; model, sağlayıcı, belirteç sayıları, maliyet ve durum gibi istek ayrıntılarını Amerika Birleşik Devletleri’ndeki sunucularda tutar. Musclog Iron, ücretsiz Musclog AI seçeneğinden ayrıdır ve yalnızca uygulamada bunu kabul ettikten sonra açılır.",
+            "accuracy": "Yapay zekâ özellikleri hata yapabilir ve yanıtları tıbbi, beslenme veya antrenman tavsiyesi değildir. Koşulların “Yapay Zekâ Özellikleri ve Yapay Zekâ Çıktısı” başlıklı bölümü, bunlardan ne bekleyebileceğini ve Musclog’un neden sorumlu olduğunu açıklar.",
             "content5": "Seçtiğin sağlayıcıların gizlilik politikalarını ve şartlarını, ayrıca Musclog’un kullandığı hizmetlerinkini incelemelisin, bunlar arasında:",
             "cloudflarePrivacyPolicy": "Cloudflare Gizlilik Politikası",
             "openaiPrivacyPolicy": "OpenAI Gizlilik Politikası",
@@ -882,7 +883,7 @@
     "terms": {
       "titleStart": "Kullanım ve",
       "conditions": "Koşullar",
-      "lastUpdated": "Son güncelleme: 24 Kasım 2026",
+      "lastUpdated": "Son güncelleme: 27 Kasım 2026",
       "highlights": {
         "agreement": {
           "title": "Kullanıcı sözleşmesi",
@@ -890,7 +891,7 @@
         },
         "liability": {
           "title": "Sınırlı sorumluluk",
-          "description": "Bu uygulama kullanılarak alınan sağlık kararlarından sorumlu değiliz."
+          "description": "Bu uygulama ve yapay zekâ özellikleri kullanılarak alınan sağlık kararlarından sorumlu değiliz."
         },
         "warranty": {
           "title": "Garanti yok",
@@ -950,12 +951,14 @@
         "liability": {
           "title": "Sorumluluğun sınırlandırılması",
           "content1": "Uygulanabilir yasaların izin verdiği azami ölçüde, Şirket, kâr, veri, kullanım, itibar kaybı veya diğer maddi olmayan kayıplar dahil olmak üzere, hiçbir durumda dolaylı, arızi, özel, sonuçsal veya cezai zararlardan sorumlu olmayacaktır.",
-          "content2": "Bu uygulama tıbbi bir cihaz değildir. Bu uygulamadaki verilere dayanarak sağlık veya fitness kararları vermeden önce her zaman yetkin bir sağlık uzmanına danış."
+          "content2": "Yapay zekâ özellikleri dahil bu uygulama tıbbi bir cihaz değildir ve tıbbi tavsiye vermez. Bu uygulamadaki verilere veya Yapay Zekâ Çıktısına dayanarak sağlık ya da fitness kararları vermeden önce her zaman yetkin bir sağlık uzmanına danış.",
+          "content3": "Bu Koşullardaki hiçbir şey, uygulanabilir yasa uyarınca dışlanamayan veya sınırlandırılamayan sorumluluğu dışlamaz ya da sınırlandırmaz; bu, ihmal sonucu ölüm veya kişisel yaralanma, kasıt veya ağır ihmal ya da zorunlu ürün sorumluluğu kurallarına dayanan sorumluluk dahildir."
         },
         "disclaimer": {
           "title": "Feragat",
           "content1": "Hizmet sana \"OLDUĞU GİBİ\" ve \"MEVCUT OLDUĞU ÖLÇÜDE\" ve her türlü kusur ve hatayla birlikte, herhangi bir garanti verilmeksizin sunulur.",
-          "content2": "Yukarıdakileri sınırlandırmaksızın, Şirket, Hizmetin gereksinimlerini karşılayacağına, amaçlanan sonuçları elde edeceğine veya başka herhangi bir yazılım, uygulama, sistem ya da hizmetle uyumlu olacağına ya da çalışacağına dair hiçbir garanti, taahhüt veya beyanda bulunmaz."
+          "content2": "Yukarıdakileri sınırlandırmaksızın, Şirket, Hizmetin gereksinimlerini karşılayacağına, amaçlanan sonuçları elde edeceğine veya başka herhangi bir yazılım, uygulama, sistem ya da hizmetle uyumlu olacağına ya da çalışacağına dair hiçbir garanti, taahhüt veya beyanda bulunmaz.",
+          "content3": "Özellikle, Yapay Zekâ Çıktısı doğru, eksiksiz, güvenilir, güncel veya herhangi bir amaca uygun olduğuna dair hiçbir garanti verilmeden sunulur (bkz. “Yapay Zekâ Özellikleri ve Yapay Zekâ Çıktısı”)."
         },
         "governingLaw": {
           "title": "Uygulanacak hukuk",
@@ -967,8 +970,21 @@
           "content": "Bu Koşulları tamamen kendi takdirimizle istediğimiz zaman değiştirme veya yenileme hakkını saklı tutarız. Yeni koşulların yürürlüğe girmesinden önce en az 30 gün önceden bildirim yapmaya çalışacağız. Bu değişikliklerin yürürlüğe girmesinden sonra Hizmetimize erişmeye ya da onu kullanmaya devam edersen, güncellenmiş koşullara bağlı olmayı kabul etmiş olursun."
         },
         "aiOutput": {
-          "title": "Yapay zekâ özellikleri",
-          "content": "Musclog Iron, ücretsiz Musclog AI seçeneği ve seçtiğin herhangi bir sağlayıcı dahil olmak üzere Musclog’un yapay zekâ özellikleri hata yapabilir. Kalori ve besin tahminleri, antrenman önerileri ve sohbet yanıtları tıbbi, beslenme veya antrenman tavsiyesi değildir. Bir eyleme geçmeden önce önemli olanları kontrol et ve herhangi bir sağlık durumu ya da sakatlık için yetkili bir uzmanla konuş."
+          "title": "Yapay Zekâ Özellikleri ve Yapay Zekâ Çıktısı",
+          "content1": "Musclog’daki yapay zekâ özellikleri isteğe bağlıdır. Uygulama bunlar olmadan tam olarak çalışır ve sen bir yapay zekâ seçeneğini seçip açana kadar bunlardan hiçbiri bir şey göndermez ya da üretmez. Bu bölüm her yapay zekâ seçeneğini kapsar: Musclog Iron, ücretsiz Musclog AI seçeneği, cihazındaki yapay zekâ, yerel veya kendi barındırdığın bir model ve kendi OpenAI, Anthropic Claude veya Google Gemini anahtarın. Ayrıca ChatGPT veya Claude gibi dışarıdaki bir yapay zekâ asistanının yazdığı ve uygulamaya aktardığın içerik için de geçerlidir.",
+          "content2": "“Yapay Zekâ Çıktısı”, bir yapay zekâ özelliğinin ürettiği veya üretmeye yardımcı olduğu her şeyi ifade eder; buna koçun yanıtları (Loggy veya başka bir koç kişiliği), fotoğraflardan, açıklamalardan veya etiketlerden yapılan kalori, makro ve diğer besin tahminleri, öğün önerileri ve yemek planları, antrenman planları ve egzersiz önerileri, içgörüler ve özetler, sesli komutlar ve bir yapay zekânın bir dosyadan, fotoğraftan veya yapıştırılan metinden okuduğu veriler dahildir.",
+          "items": [
+            "Yapay Zekâ Çıktısı, üçüncü tarafların geliştirip çalıştırdığı yapay zekâ modelleri tarafından otomatik olarak üretilir. Sen görmeden önce Musclog’da kimse bunu yazmaz, incelemez veya onaylamaz ve bir modelin ne söylediğini kontrol etmeyiz.",
+            "Yapay Zekâ Çıktısı çoğu zaman hatalıdır. Eksik, güncel olmayan veya yanlış olabilir: kalori ve makrolar gerçek değerden çok uzak olabilir, yiyecekler veya porsiyon büyüklükleri yanlış okunmuş olabilir, egzersizler veya yükler sana uygun olmayabilir ve kulağa emin gelen ama yanlış ifadeler olabilir. Hiçbir yapay zekâ seçeneği, abonelik veya düşünme düzeyi onu güvenilir kılmaz.",
+            "Loggy ve diğer koç kişilikleri insan değil, yapay zekâ karakterleridir. Doktor, diyetisyen, fizyoterapist, psikolog veya sertifikalı koç değildirler. Yapay Zekâ Çıktısı genel bilgidir. Tıbbi, beslenme, diyet, psikolojik veya mesleki antrenman tavsiyesi, teşhis veya tedavi değildir ve yetkin bir uzmanın tavsiyesinin yerini tutmaz.",
+            "Sağlığın veya güvenliğin hakkında karar verirken Yapay Zekâ Çıktısına güvenme. Ağrın, yaralanman, hastalığın, yeme bozukluğun veya yiyecek ya da egzersizden etkilenen bir durumun varsa, hamileysen veya emziriyorsan ya da ilaç kullanıyorsan, harekete geçmeden önce yetkin bir uzmana danış. Ağrı, baş dönmesi, göğüs ağrısı veya nefes darlığı hissedersen egzersizi bırak ve yardım al. Acil bir durumda yerel acil numaranı ara.",
+            "Yapay Zekâ Çıktısını kullanıp kullanmayacağına ve nasıl kullanacağına sen karar verirsin. Kaydetmeden, uygulamadan veya paylaşmadan önce her rakamı, yiyeceği, egzersizi ve planı kontrol et; yanlış olanı düzelt veya sil. Buna, bir yapay zekâ özelliğinin senin için kaydettiği sonuçlar da dahildir; örneğin koçun oluşturduğu bir antrenman planı ya da koçun senin hakkında hatırladığı bir şey. Uygulamada tuttuğun kayıtlar senin kendi kayıtlarındır.",
+            "Sohbet geçmişin yalnızca cihazında saklanır ve uygulama, yapay zekânın yazdıkları dahil bu geçmişteki her iletiyi düzenlemene veya silmene ve koçtan gelmiş gibi görünen iletiler eklemene izin verir. Bu nedenle uygulamada, dışa aktarımda veya ekran görüntüsünde gösterilen bir ileti, yapay zekânın yazdığı şey olmayabilir. Ne Musclog Iron ne de ücretsiz Musclog AI seçeneği, erişebildiğimiz bir mesaj kopyasını tutar; bu yüzden bir iletinin ilk halinde ne yazdığını doğrulayamayız. Düzenlenmiş veya eklenmiş bir ileti ya da uygulama dışında görünen bir iletinin içeriği için sorumlu değiliz.",
+            "Kendi anahtarını, cihazındaki yapay zekâyı veya yerel bir modeli kullandığında Yapay Zekâ Çıktısı o sağlayıcıdan veya modelden gelir ve onun kendi koşullarına tabidir. Musclog isteğini iletir ve yanıtını gösterir.",
+            "Musclog Iron ve ücretsiz Musclog AI seçeneği, sınırları dahilinde sana yapay zekâ işlemeye erişim sağlar. Yapay Zekâ Çıktısının doğru, eksiksiz, güncel veya sana uygun olduğuna dair hiçbir vaat içermezler ve hatalı veya işe yaramayan bir yanıt, Musclog Iron’ın ya da Hizmetin bir kusuru değildir. Uygulama, Musclog Iron veya ücretsiz Musclog AI seçeneği açılmadan önce bunu kabul etmeni ister.",
+            "Uygulanabilir yasaların izin verdiği en geniş ölçüde ve “Sorumluluğun sınırlandırılması” başlığının son paragrafına tabi olarak Şirket, Yapay Zekâ Çıktısından, düzenlenmiş veya eklenmiş bir iletiden ya da Yapay Zekâ Çıktısını kullanmandan veya ona güvenmenden doğan hiçbir kayıp veya zarardan sorumlu değildir; bu, bir tahmin, plan veya yanıta göre hareket etmekten kaynaklanan yaralanma, hastalık, kilo veya vücut kompozisyonu değişikliği ya da diğer kayıpları da içerir.",
+            "Yapay Zekâ Çıktısı zararlı görünürse kullanmayı bırak ve bunu bu Koşulların sonundaki adresten bize bildir."
+          ]
         }
       },
       "contact": {
@@ -1143,6 +1159,10 @@
             {
               "question": "Musclog'un aboneliği var mı?",
               "answer": "Musclog kullanımı ücretsizdir. Kayıt, planlar, geçmiş, grafikler, içe ve dışa aktarma ile ücretsiz yapay zekâ seçenekleri hiçbir ücrete tabi değildir. Musclog Iron, barındırılan yapay zekâ kotası ekleyen isteğe bağlı aylık bir aboneliktir; bu yüzden kendi anahtarına ihtiyacın olmaz. Uygulamanın geri kalanı için hiçbir zaman gerekmez."
+            },
+            {
+              "question": "Yapay zekânın bana söylediklerine güvenebilir miyim?",
+              "answer": "Önce kontrol et. Yapay zekâ özellikleri isteğe bağlıdır ve sık sık hata yapar: fotoğraftan yapılan bir kalori tahmini gerçek değerden çok uzak olabilir, bir antrenman planı sana uymayabilir ve koç emin görünüp yine de yanılabilir. Yapay zekânın ürettiği her yanıtı bir başlangıç noktası olarak gör, tıbbi, beslenme veya antrenman tavsiyesi olarak değil, ve sağlığını etkileyen konularda yetkin bir uzmana danış. Koçun iletileri dahil, yapay zekânın ürettiği her şeyi düzeltebilir veya silebilirsin; bu yüzden sohbet geçmişi yapay zekânın gerçekte ne yazdığını göstermeyebilir."
             }
           ]
         },

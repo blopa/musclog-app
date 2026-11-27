@@ -108,7 +108,6 @@
       "failed": "Impossibile condividere la cronologia della chat. Riprova.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "L'IA può commettere errori. Verifica le informazioni importanti.",
     "message": {
       "menuTitle": "Azioni messaggio",
       "copy": "Copia",

@@ -108,7 +108,6 @@
       "failed": "Sohbet geçmişi paylaşılamadı. Lütfen tekrar dene.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "Yapay zeka hata yapabilir. Lütfen önemli bilgileri doğrula.",
     "message": {
       "menuTitle": "Mesaj işlemleri",
       "copy": "Kopyala",

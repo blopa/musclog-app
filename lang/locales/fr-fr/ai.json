@@ -27,6 +27,31 @@
     "chat": {
       "message": "Message",
       "typeYourMessage": "Écris ton message..."
+    },
+    "outputNotice": {
+      "chat": "Le coach est une IA, pas une personne, et il fait souvent des erreurs. Ses réponses ne sont pas des conseils médicaux.",
+      "estimate": "Estimation de l'IA : elle peut être très éloignée. Vérifie les aliments et les quantités avant de l'enregistrer.",
+      "plan": "Rédigé par l'IA : vérifie qu'il te convient avant de t'entraîner avec.",
+      "insight": "Rédigé par l'IA, et il peut être faux. Ce ne sont pas des conseils médicaux, nutritionnels ou d'entraînement.",
+      "import": "Lu par l'IA : vérifie chaque valeur avant de l'enregistrer.",
+      "settings": "L'IA est facultative et fait souvent des erreurs. Vérifie ce qu'elle te dit."
+    },
+    "disclaimer": {
+      "title": "L'IA peut se tromper",
+      "subtitle": "Garde cela en tête avant de te fier à ce que dit l'IA",
+      "openHint": "Ouvre ce qu'il faut savoir sur les réponses de l'IA",
+      "points": {
+        "optional": "L'IA est facultative. Musclog fonctionne entièrement sans elle, et rien n'est envoyé tant que tu n'actives pas une option d'IA.",
+        "mistakes": "Les réponses de l'IA sont produites par un modèle, pas par une personne, et personne ne les vérifie au préalable. Elles contiennent souvent des erreurs : calories et macronutriments très éloignés, aliments ou portions mal identifiés, exercices qui ne te conviennent pas, et affirmations qui semblent sûres mais sont fausses. C'est vrai de toutes les options, Musclog Iron compris.",
+        "notAdvice": "Loggy et les autres coachs sont des personnages d'IA. Ce ne sont ni des médecins, ni des diététiciens, ni des coachs certifiés, et rien de ce qu'ils disent n'est un conseil médical, nutritionnel ou d'entraînement.",
+        "health": "Si tu as une douleur, une blessure, une maladie ou un trouble du comportement alimentaire, si tu es enceinte ou si tu prends un médicament, demande à un professionnel qualifié avant d'agir selon une réponse de l'IA. Arrête de t'entraîner si quelque chose te fait mal.",
+        "check": "Vérifie chaque estimation, chaque plan et chaque suggestion avant de les enregistrer, de les suivre ou de les partager, et corrige ou supprime ce qui est faux. Ce que tu gardes est ton propre relevé.",
+        "edits": "Tu peux modifier, ajouter ou supprimer n'importe quel message de ton historique de discussion, y compris ceux de l'IA. Un historique, un export ou une capture d'écran peut ne pas montrer ce que l'IA a écrit, et Musclog ne conserve aucune copie pour le comparer.",
+        "liability": "Dans la mesure permise par la loi, Musclog n'est pas responsable de ce que dit l'IA ni de ce que tu en fais. Les Conditions l'expliquent en détail."
+      },
+      "readTerms": "Lire les conditions",
+      "editHint": "Cela ne modifie ton historique que sur cet appareil. Un message du coach modifié ou ajouté ne montre plus ce que l'IA a écrit.",
+      "consent": "Les réponses de l'IA sont souvent fausses. Ce ne sont pas des conseils médicaux, nutritionnels ou d'entraînement, et Musclog n'est pas responsable de ce que dit l'IA. Vérifie tout ce qui est important avant d'agir. En acceptant, tu acceptes ceci et la partie IA de nos conditions."
     }
   }
 }

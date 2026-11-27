@@ -112,7 +112,8 @@
         }
       },
       "cta": "Subscribe for {{price}} a month",
-      "reassurance": "Renews monthly. Cancel any time in your store account."
+      "reassurance": "Renews monthly. Cancel any time in your store account.",
+      "accuracy": "Musclog Iron runs the AI for you. It does not make AI answers right: they can be wrong, so check them before you rely on them."
     }
   }
 }

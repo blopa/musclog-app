@@ -58,6 +58,10 @@
           "a": "Nein. Du kannst deinen eigenen API-Schlüssel nutzen, die kostenlose Option Musclog AI oder On-Device- und lokale Modelle. Musclog Iron ist die Option, bei der du nichts einrichten musst."
         },
         {
+          "q": "Macht Musclog Iron die KI genauer?",
+          "a": "Kein Abo macht KI zuverlässig. Musclog Iron nutzt dieselben Funktionen wie die anderen KI-Optionen, und auch dessen Antworten können falsch sein. Prüf Schätzungen und Pläne, bevor du dich darauf verlässt. KI-Antworten sind keine medizinische, ernährungsbezogene oder trainingsbezogene Beratung."
+        },
+        {
           "q": "Kann ich es auf mehreren Geräten nutzen?",
           "a": "Ja. Ein Abo deckt deine Geräte im selben Store-Konto ab, und sie teilen sich ein Kontingent. Mit „Käufe wiederherstellen“ kommt ein Gerät hinzu."
         },

@@ -1548,6 +1548,7 @@ export function DataLogModal({
         onSave={handleSaveEdit}
         isLoading={isLoadingEdit}
         loadError={editError ?? undefined}
+        hint={variant === 'chatMessage' ? t('ai.disclaimer.editHint') : undefined}
       />
       {pastWorkoutDetailId ? (
         <PastWorkoutDetailModal
@@ -1618,6 +1619,7 @@ export function DataLogModal({
           title={getCreateModalTitle(variant, t)}
           fields={getCreateFields(variant, units)}
           initialValues={getCreateInitialValues(variant, units)}
+          hint={variant === 'chatMessage' ? t('ai.disclaimer.editHint') : undefined}
           onSave={async (values) => {
             await createRecord(variant, values, { units });
             await refresh();

@@ -112,7 +112,8 @@
         }
       },
       "cta": "Assine por {{price}} por mês",
-      "reassurance": "Renova todo mês. Cancele quando quiser na sua conta da loja."
+      "reassurance": "Renova todo mês. Cancele quando quiser na sua conta da loja.",
+      "accuracy": "O Musclog Iron executa a IA por você. Ele não torna as respostas da IA corretas: elas podem estar erradas, então confira antes de confiar nelas."
     }
   }
 }

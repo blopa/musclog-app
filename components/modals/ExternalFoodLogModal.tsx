@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { PasteJsonSheet } from '@/components/aiOnboarding/PasteJsonSheet';
 import { FoodInfoCard } from '@/components/cards/FoodInfoCard';
 import { ExternalAssistantHandoff } from '@/components/externalAssistant/ExternalAssistantHandoff';
@@ -260,6 +261,8 @@ export function ExternalFoodLogModal({
         <Text style={textStyle(theme.colors.text.secondary, theme.typography.fontSize.base)}>
           {t('food.externalLog.review.intro')}
         </Text>
+
+        <AiOutputNotice kind="estimate" />
 
         <FoodInfoCard
           food={{

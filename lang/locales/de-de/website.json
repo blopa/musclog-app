@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "KI-Coach",
-          "description": "Chatte mit Loggy über Training und Essen oder schätze eine Mahlzeit anhand eines Fotos. Optional: mit deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel, mit Musclog Iron, der kostenlosen Option, einem lokalen Modell oder KI auf deinem Handy."
+          "description": "Chatte mit Loggy über Training und Essen oder schätze eine Mahlzeit anhand eines Fotos. Optional: mit deinem eigenen Gemini-, OpenAI- oder Claude-Schlüssel, mit Musclog Iron, der kostenlosen Option, einem lokalen Modell oder KI auf deinem Handy. KI-Antworten können falsch sein, prüf sie also, bevor du dich darauf verlässt."
         },
         "barcode": {
           "title": "Barcode-Scanner",
@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Datenschutz",
       "titleHighlight": "erklärung",
-      "lastUpdated": "Zuletzt aktualisiert: 26. November 2026",
+      "lastUpdated": "Zuletzt aktualisiert: 27. November 2026",
       "highlights": {
         "dataProtection": {
           "title": "Datenschutz",
@@ -705,6 +705,7 @@
             "content3": "Wenn du eine KI-Funktion nutzt, werden die Daten, die du absenden möchtest, an den Anbieter oder Endpunkt gesendet, den du konfigurierst. Wenn du ein selbst gehostetes lokales Modell unter eigener Kontrolle nutzt, können diese Daten in deiner eigenen Umgebung bleiben. Wenn du einen gehosteten Drittanbieter-Endpunkt nutzt, einschließlich eines gehosteten Dienstes für lokale Modelle, kann dieser Anbieter die Daten nach seinen eigenen Bedingungen und Datenschutzpraktiken verarbeiten. Musclog kontrolliert nicht, wie externe Anbieter die Daten verarbeiten, die du ihnen sendest.",
             "content4": "Wenn du den kostenlosen Musclog-KI-Zugang wählst, werden deine Anfragen über OpenRouter, einen KI-Routing-Dienst, an Google AI Studio (ein Gemma-Modell) gesendet, mit einem von Musclog verwalteten API-Schlüssel. Eine Anfrage enthält nur das, was du an die KI-Funktion sendest, etwa Chatnachrichten, Mahlzeitenfotos oder die Trainings-, Ernährungs- und Körperdaten, die diese Funktion braucht. OpenRouter speichert den Inhalt der Anfragen nicht, abgesehen von der unten beschriebenen Prüfung auf Darstellungen sexuellen Kindesmissbrauchs; es behält Anfragedetails wie Größe und Zeitpunkt. Google beantwortet diese Anfragen nach den Gemini-API-Bedingungen für die kostenlose Nutzung: Google darf die Anfragen und Antworten speichern, sie zur Verbesserung seiner Produkte und Machine-Learning-Technologien verwenden und menschliche Prüfer sie lesen lassen. Google entfernt Kennungen wie dein Konto vor der Prüfung durch Menschen, aber gib in der kostenlosen Musclog-KI-Option keine persönlichen oder sensiblen Informationen ein und nutze sie nicht für Dinge, die Google nicht sehen soll. Die kostenlose Musclog-KI-Option ist nur für Erwachsene (18 Jahre und älter) gedacht, weil die Bedingungen von Google diesen kostenlosen Dienst nicht in Apps erlauben, die wahrscheinlich von Minderjährigen unter 18 Jahren genutzt werden. Musclog Iron ist anders: Es nutzt nur Anbieter, bei denen Zero Data Retention eingestellt ist. Die kostenlose Option hat ein Tageslimit, das alle ihre Nutzer teilen, hängt von Googles kostenlosen Limits ab und kann zeitweise nicht verfügbar sein.",
             "contentPremium": "Wenn du Musclog Iron abonnierst, werden deine KI-Anfragen an den eigenen Dienst von Musclog gesendet, der auf Cloudflare Workers läuft, und von dort über eines von zwei KI-Gateways, OpenRouter oder Otari (betrieben von Mozilla.ai, MZL.AI, PBC), die sie nur an KI-Anbieter weitergeben, die auf null Datenspeicherung (ZDR) und kein Training mit deinen Daten eingestellt sind. Musclog wählt, welches Gateway genutzt wird, und die Einwilligung in der App gilt für beide. Bei Otari nennt jede Anfrage genau einen freigegebenen Anbieter und weicht nie auf einen anderen aus. Eine Anfrage enthält nur das, was du an die KI-Funktion sendest, etwa Chatnachrichten sowie die Trainings-, Ernährungs- und Körperdaten, die diese Funktion braucht, und Mahlzeitenfotos. Der Dienst von Musclog speichert weder den Inhalt deiner Anfragen noch die Antworten. Er behält nur eine Kennung, die aus einem Schlüssel auf deinem Gerät abgeleitet ist, Nutzungszähler und einen kurzen Fingerabdruck jeder Anfrage, damit eine wiederholte Anfrage nicht doppelt gezählt wird. Wie jede Internetanfrage verrät jede Anfrage Cloudflare deine IP-Adresse, damit der Dienst ausgeliefert und geschützt werden kann; der Dienst von Musclog speichert sie nicht. Das Gateway erhält mit jeder Anfrage einen pseudonymen Code für dein Abo, nicht deine Kennung, deinen Namen oder deine E-Mail-Adresse, damit Missbrauch erkannt werden kann; Otari erhält außerdem Bezeichnungen, die die Anwendung und die Art der Anfrage nennen, nie eine Person oder ein Gerät. RevenueCat erhält deine Kennung, deinen Kaufstatus im Store und die technischen Daten, die ein App-Abo-Dienst verarbeitet, etwa deine IP-Adresse, um zu bestätigen, dass dein Abo aktiv ist. Musclog erhält weder deinen Namen, deine E-Mail-Adresse noch Zahlungsdaten: Die Zahlung wird von Apple oder Google abgewickelt. OpenRouter prüft alle Anfragen, die über ihn laufen, auch an Anbieter mit Zero Data Retention, während ihrer Verarbeitung auf sexuellen Kindesmissbrauch, und kann eine markierte Anfrage zur Prüfung, Meldung und Beweissicherung behalten, wo das Gesetz es verlangt. Otari gibt an, den Inhalt von Anfragen oder Antworten weder zu empfangen noch zu speichern; es behält Angaben zur Anfrage wie Modell, Anbieter, Token-Zahlen, Kosten und Status, auf Servern in den Vereinigten Staaten. Musclog Iron ist von der kostenlosen Option Musclog AI getrennt und wird erst eingeschaltet, nachdem du dem in der App zugestimmt hast.",
+            "accuracy": "KI-Funktionen können Fehler machen, und ihre Antworten sind keine medizinische, ernährungsbezogene oder trainingsbezogene Beratung. Die Nutzungsbedingungen erläutern unter „KI-Funktionen und KI-Ausgaben“, was du davon erwarten kannst und wofür Musclog verantwortlich ist.",
             "content5": "Du solltest die Datenschutzerklärungen und Bedingungen der von dir gewählten Anbieter und der von Musclog genutzten Dienste prüfen, darunter:",
             "cloudflarePrivacyPolicy": "Datenschutzerklärung von Cloudflare",
             "openaiPrivacyPolicy": "Datenschutzerklärung von OpenAI",
@@ -882,7 +883,7 @@
     "terms": {
       "titleStart": "Nutzungs-",
       "conditions": "bedingungen",
-      "lastUpdated": "Zuletzt aktualisiert: 24. November 2026",
+      "lastUpdated": "Zuletzt aktualisiert: 27. November 2026",
       "highlights": {
         "agreement": {
           "title": "Nutzungsvereinbarung",
@@ -890,7 +891,7 @@
         },
         "liability": {
           "title": "Begrenzte Haftung",
-          "description": "Wir haften nicht für Gesundheitsentscheidungen, die mithilfe dieser App getroffen werden."
+          "description": "Wir haften nicht für Gesundheitsentscheidungen, die mit dieser App oder ihren KI-Funktionen getroffen werden."
         },
         "warranty": {
           "title": "Keine Gewährleistung",
@@ -950,12 +951,14 @@
         "liability": {
           "title": "Haftungsbeschränkung",
           "content1": "Soweit es das anwendbare Recht zulässt, haftet das Unternehmen in keinem Fall für indirekte, zufällige, besondere, Folge- oder Strafschäden, einschließlich, aber nicht beschränkt auf entgangenen Gewinn, Datenverlust, Nutzungsausfall, Firmenwert oder andere immaterielle Verluste.",
-          "content2": "Diese App ist kein Medizinprodukt. Konsultiere immer eine qualifizierte Fachperson im Gesundheitswesen, bevor du Gesundheits- oder Fitnessentscheidungen auf Basis der Daten dieser App triffst."
+          "content2": "Diese App einschließlich ihrer KI-Funktionen ist kein Medizinprodukt und gibt keine medizinische Beratung. Konsultiere immer eine qualifizierte Fachperson im Gesundheitswesen, bevor du Gesundheits- oder Fitnessentscheidungen auf Grundlage der Daten dieser App oder von KI-Ausgaben triffst.",
+          "content3": "Nichts in diesen Bedingungen schließt eine Haftung aus oder beschränkt sie, die nach geltendem Recht nicht ausgeschlossen oder beschränkt werden kann, einschließlich der Haftung für Tod oder Personenschäden durch Fahrlässigkeit, für Vorsatz oder grobe Fahrlässigkeit oder nach zwingenden produkthaftungsrechtlichen Vorschriften."
         },
         "disclaimer": {
           "title": "Haftungsausschluss",
           "content1": "Der Dienst wird dir „WIE BESEHEN“ und „WIE VERFÜGBAR“ sowie mit allen Fehlern und Mängeln ohne jegliche Gewährleistung bereitgestellt.",
-          "content2": "Unbeschadet des Vorstehenden gibt das Unternehmen keine Garantie oder Zusicherung und keine Erklärung jeglicher Art dafür ab, dass der Dienst deine Anforderungen erfüllt, bestimmte Ergebnisse erzielt oder mit anderer Software, Anwendungen, Systemen oder Diensten kompatibel ist oder funktioniert."
+          "content2": "Unbeschadet des Vorstehenden gibt das Unternehmen keine Garantie oder Zusicherung und keine Erklärung jeglicher Art dafür ab, dass der Dienst deine Anforderungen erfüllt, bestimmte Ergebnisse erzielt oder mit anderer Software, Anwendungen, Systemen oder Diensten kompatibel ist oder funktioniert.",
+          "content3": "Insbesondere wird KI-Ausgabe ohne jede Gewähr dafür bereitgestellt, dass sie richtig, vollständig, zuverlässig, aktuell oder für einen bestimmten Zweck geeignet ist (siehe „KI-Funktionen und KI-Ausgaben“)."
         },
         "governingLaw": {
           "title": "Anwendbares Recht",
@@ -967,8 +970,21 @@
           "content": "Wir behalten uns vor, diese Bedingungen jederzeit nach eigenem Ermessen zu ändern oder zu ersetzen. Wir werden versuchen, mindestens 30 Tage vorher auf neue Bedingungen hinzuweisen, bevor sie in Kraft treten. Wenn du nach Inkrafttreten der Änderungen weiterhin auf unseren Dienst zugreifst oder ihn nutzt, stimmst du den geänderten Bedingungen zu."
         },
         "aiOutput": {
-          "title": "KI-Funktionen",
-          "content": "Die KI-Funktionen von Musclog, einschließlich Musclog Iron, der kostenlosen Option Musclog AI und jedes von dir gewählten Anbieters, können Fehler machen. Schätzungen von Kalorien und Nährstoffen, Trainingsvorschläge und Chatantworten sind keine medizinische, ernährungs- oder trainingsbezogene Beratung. Prüfe, was wichtig ist, bevor du danach handelst, und sprich bei gesundheitlichen Beschwerden oder Verletzungen mit einer qualifizierten Fachperson."
+          "title": "KI-Funktionen und KI-Ausgaben",
+          "content1": "Die KI-Funktionen in Musclog sind optional. Die App funktioniert vollständig ohne sie, und keine von ihnen sendet oder erzeugt etwas, bevor du eine KI-Option wählst und einschaltest. Dieser Abschnitt gilt für jede KI-Option: Musclog Iron, die kostenlose Option Musclog AI, KI auf deinem Gerät, ein lokales oder selbst gehostetes Modell sowie deinen eigenen Schlüssel für OpenAI, Anthropic Claude oder Google Gemini. Er gilt auch für Inhalte, die ein externer KI-Assistent wie ChatGPT oder Claude schreibt und die du in die App importierst.",
+          "content2": "„KI-Ausgaben“ bezeichnet alles, was eine KI-Funktion erzeugt oder dabei hilft, es zu erzeugen, einschließlich Antworten des Coaches (Loggy oder einer anderen Coach-Persona), Schätzungen von Kalorien, Makronährstoffen und anderen Nährstoffen aus Fotos, Beschreibungen oder Etiketten, Mahlzeitenvorschlägen und Essensplänen, Trainingsplänen und Übungsvorschlägen, Erkenntnissen und Zusammenfassungen, Sprachbefehlen sowie Daten, die eine KI aus einer Datei, einem Foto oder eingefügtem Text liest.",
+          "items": [
+            "KI-Ausgaben werden automatisch von KI-Modellen erzeugt, die Dritte entwickeln und betreiben. Niemand bei Musclog schreibt, prüft oder genehmigt sie, bevor du sie siehst, und wir kontrollieren nicht, was ein Modell sagt.",
+            "KI-Ausgaben sind oft falsch. Sie können unvollständig, veraltet oder ungenau sein: Kalorien und Makronährstoffe, die weit danebenliegen, falsch erkannte Lebensmittel oder Portionsgrößen, Übungen oder Lasten, die nicht zu dir passen, und Aussagen, die selbstsicher klingen, aber falsch sind. Keine KI-Option, kein Abo und keine Denkstufe macht sie zuverlässig.",
+            "Loggy und die anderen Coach-Personas sind KI-Figuren, keine Menschen. Sie sind keine Ärzte, Ernährungsberater, Physiotherapeuten, Psychologen oder zertifizierte Coaches. KI-Ausgaben sind allgemeine Informationen. Sie sind keine medizinische, ernährungsbezogene, diätetische, psychologische oder berufliche Trainingsberatung, keine Diagnose und keine Behandlung, und sie ersetzen nicht den Rat einer qualifizierten Fachperson.",
+            "Verlass dich bei Entscheidungen über deine Gesundheit oder Sicherheit nicht auf KI-Ausgaben. Frag eine qualifizierte Fachperson, bevor du danach handelst, wenn du Schmerzen, eine Verletzung, eine Krankheit, eine Essstörung oder einen Zustand hast, den Essen oder Training beeinflussen, wenn du schwanger bist oder stillst oder wenn du Medikamente nimmst. Hör mit dem Training auf und hol dir Hilfe, wenn du Schmerzen, Schwindel, Brustschmerzen oder Atemnot verspürst. Ruf in einem Notfall deine lokale Notrufnummer an.",
+            "Du entscheidest, ob und wie du KI-Ausgaben nutzt. Prüfe jede Zahl, jedes Lebensmittel, jede Übung und jeden Plan, bevor du sie protokollierst, befolgst oder teilst, und korrigiere oder lösche sie, wenn sie falsch sind. Das gilt auch für Ergebnisse, die eine KI-Funktion für dich speichert, etwa einen Trainingsplan, den der Coach erstellt, oder etwas, das sich der Coach über dich merkt. Die Einträge, die du in der App behältst, sind deine eigenen Aufzeichnungen.",
+            "Dein Chatverlauf wird nur auf deinem Gerät gespeichert. Die App erlaubt dir, jede Nachricht darin zu bearbeiten oder zu löschen, auch Nachrichten der KI, und Nachrichten hinzuzufügen, die so aussehen, als kämen sie vom Coach. Eine Nachricht, die in der App, in einem Export oder auf einem Screenshot angezeigt wird, ist daher womöglich nicht das, was die KI geschrieben hat. Weder Musclog Iron noch die kostenlose Option Musclog AI bewahrt eine Kopie deiner Nachrichten auf, auf die wir zugreifen können, deshalb können wir nicht bestätigen, was eine Nachricht ursprünglich sagte. Wir sind nicht verantwortlich für eine Nachricht, die bearbeitet oder hinzugefügt wurde, oder für den Inhalt einer Nachricht, wie sie außerhalb der App erscheint.",
+            "Bei eigenem Schlüssel, KI auf deinem Gerät oder einem lokalen Modell stammt die KI-Ausgabe von diesem Anbieter oder Modell und unterliegt dessen eigenen Bedingungen. Musclog leitet deine Anfrage weiter und zeigt die Antwort an.",
+            "Musclog Iron und die kostenlose Option Musclog AI ermöglichen dir KI-Verarbeitung innerhalb ihrer Grenzen. Sie enthalten kein Versprechen, dass KI-Ausgaben genau, vollständig, aktuell oder für dich geeignet sind. Eine falsche oder nutzlose Antwort ist kein Mangel von Musclog Iron oder des Dienstes. Die App bittet dich, dies zu akzeptieren, bevor Musclog Iron oder die kostenlose Option Musclog AI eingeschaltet wird.",
+            "Soweit das anwendbare Recht es zulässt und vorbehaltlich des letzten Absatzes von „Haftungsbeschränkung“, haftet das Unternehmen nicht für Verluste oder Schäden, die aus KI-Ausgaben, aus einer bearbeiteten oder hinzugefügten Nachricht oder aus deiner Nutzung von KI-Ausgaben oder deinem Vertrauen darauf entstehen. Dazu gehören Verletzungen, Krankheiten, Gewichts- oder Körperzusammensetzungsänderungen oder andere Verluste, die durch das Handeln auf Grundlage einer Schätzung, eines Plans oder einer Antwort entstehen.",
+            "Wenn KI-Ausgaben schädlich erscheinen, hör auf, sie zu nutzen, und teile es uns an der Adresse am Ende dieser Bedingungen mit."
+          ]
         }
       },
       "contact": {
@@ -1143,6 +1159,10 @@
             {
               "question": "Hat Musclog ein Abo?",
               "answer": "Musclog ist kostenlos. Protokollieren, Pläne, Verlauf, Diagramme, Import, Export und die kostenlosen KI-Optionen kosten nichts. Musclog Iron ist ein optionales monatliches Abo, das ein gehostetes KI-Kontingent hinzufügt, sodass du keinen eigenen Schlüssel brauchst. Für den Rest der App brauchst du es nie."
+            },
+            {
+              "question": "Kann ich der KI trauen, was sie mir sagt?",
+              "answer": "Prüf es zuerst. Die KI-Funktionen sind optional, und sie machen oft Fehler: Eine Kalorienschätzung anhand eines Fotos kann stark danebenliegen, ein Trainingsplan passt womöglich nicht zu dir, und der Coach kann selbstsicher klingen und trotzdem falschliegen. Betrachte jede KI-Antwort als Ausgangspunkt, nicht als medizinische, ernährungsbezogene oder trainingsbezogene Beratung, und frag eine qualifizierte Fachperson, bevor du etwas tust, das deine Gesundheit betrifft. Du kannst alles korrigieren oder löschen, was die KI erzeugt hat, auch die Nachrichten des Coaches. Ein Chatverlauf zeigt deshalb womöglich nicht, was die KI tatsächlich geschrieben hat."
             }
           ]
         },

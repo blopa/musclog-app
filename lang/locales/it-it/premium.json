@@ -112,7 +112,8 @@
         }
       },
       "cta": "Abbonati a {{price}} al mese",
-      "reassurance": "Si rinnova ogni mese. Annulla in qualsiasi momento dal tuo account dello store."
+      "reassurance": "Si rinnova ogni mese. Annulla in qualsiasi momento dal tuo account dello store.",
+      "accuracy": "Musclog Iron fa funzionare l'IA per te. Questo non rende corrette le sue risposte: possono essere sbagliate, quindi controllale prima di fidarti."
     }
   }
 }

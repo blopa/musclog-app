@@ -112,7 +112,8 @@
         }
       },
       "cta": "Für {{price}} im Monat abonnieren",
-      "reassurance": "Verlängert sich monatlich. Kündige jederzeit in deinem Store-Konto."
+      "reassurance": "Verlängert sich monatlich. Kündige jederzeit in deinem Store-Konto.",
+      "accuracy": "Musclog Iron führt die KI für dich aus. Das macht KI-Antworten nicht richtig: Sie können falsch sein, also prüfe sie, bevor du dich darauf verlässt."
     }
   }
 }

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { MealContextFields } from '@/components/camera/MealContextFields';
 import { useTheme } from '@/hooks/useTheme';
@@ -96,6 +97,8 @@ export function AINutritionTrackingContextModal({
           onToggleTag={handleToggleTag}
           tagsLabel={t('food.aiNutritionContext.quickTags')}
         />
+
+        <AiOutputNotice kind="estimate" />
 
         {/* Action Buttons */}
         <View className="flex-row flex-wrap gap-3">

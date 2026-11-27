@@ -844,6 +844,7 @@ export default function SmartCameraModal({
             onFoodTracked={handleClose}
             isAiEnabled={isAiEnabled}
             canEdit={!!productFromAiLabel}
+            aiOutputKind={productFromAiLabel ? 'import' : undefined}
             initialDate={logDate}
             initialMealType={mealTypeForLog}
           />

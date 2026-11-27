@@ -41,6 +41,7 @@ export function GenericEditModal({
   isLoading = false,
   loadError,
   submitLabel,
+  hint,
 }: GenericEditModalProps) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
@@ -499,7 +500,14 @@ export function GenericEditModal({
           }}
           bottomOffset={16}
         >
-          <View className="gap-6">{fields.map((field) => renderField(field))}</View>
+          <View className="gap-6">
+            {hint ? (
+              <Text className="text-xs" style={{ color: theme.colors.text.tertiary }}>
+                {hint}
+              </Text>
+            ) : null}
+            {fields.map((field) => renderField(field))}
+          </View>
         </KeyboardAwareScrollView>
       )}
     </FullScreenModal>

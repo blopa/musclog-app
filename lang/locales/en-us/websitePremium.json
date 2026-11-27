@@ -58,6 +58,10 @@
           "a": "No. You can use your own API key, the free Musclog AI option, or on-device and local models. Musclog Iron is the option with nothing to set up."
         },
         {
+          "q": "Does Musclog Iron make the AI more accurate?",
+          "a": "No subscription makes AI reliable. Musclog Iron runs the same features as the other AI options, and its answers can be wrong too, so check estimates and plans before you rely on them. AI answers are not medical, nutrition or training advice."
+        },
+        {
           "q": "Can I use it on more than one device?",
           "a": "Yes. One subscription covers your devices on the same store account, and they share one allowance. Restore purchases adds a device."
         },

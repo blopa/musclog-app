@@ -351,6 +351,9 @@ export default function Privacy() {
                   <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
                     {t('sections.collecting.optionalAi.contentPremium')}
                   </p>
+                  <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                    {t('sections.collecting.optionalAi.accuracy')}
+                  </p>
                   <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
                     {t('sections.collecting.optionalAi.content5')}{' '}
                     <a

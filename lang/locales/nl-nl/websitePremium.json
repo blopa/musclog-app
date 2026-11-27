@@ -58,6 +58,10 @@
           "a": "Nee. Je kunt je eigen API-sleutel gebruiken, de gratis Musclog AI-optie, of modellen op het apparaat en lokale modellen. Musclog Iron is de optie waarbij niets hoeft te worden ingesteld."
         },
         {
+          "q": "Maakt Musclog Iron de AI nauwkeuriger?",
+          "a": "Geen enkel abonnement maakt AI betrouwbaar. Musclog Iron draait dezelfde functies als de andere AI-opties, en de antwoorden ervan kunnen ook onjuist zijn, dus controleer schattingen en plannen voordat je erop vertrouwt. AI-antwoorden zijn geen medisch, voedings- of trainingsadvies."
+        },
+        {
           "q": "Kan ik het op meer dan één apparaat gebruiken?",
           "a": "Ja. Eén abonnement dekt je apparaten op hetzelfde storeaccount, en ze delen één tegoed. Aankopen herstellen voegt een apparaat toe."
         },

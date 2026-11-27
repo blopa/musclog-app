@@ -108,7 +108,6 @@
       "failed": "Impossible de partager l'historique du chat. Réessaie.",
       "historyLine": "{{timestamp}} - {{sender}} : {{message}}"
     },
-    "disclaimer": "L'IA peut se tromper. Vérifie les informations importantes.",
     "message": {
       "menuTitle": "Actions sur le message",
       "copy": "Copier",

@@ -2,6 +2,7 @@ import { Bot, Download, KeyRound, Settings2, Sparkles, Wand2 } from 'lucide-reac
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { Button } from '@/components/theme/Button';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
@@ -248,6 +249,10 @@ export function AINotConfiguredModal({
               </Text>
             </View>
           </View>
+        </View>
+
+        <View className="mt-4">
+          <AiOutputNotice kind="settings" align="center" />
         </View>
       </View>
       <PremiumModal visible={premiumVisible} onClose={() => setPremiumVisible(false)} />

@@ -3,6 +3,7 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { OnDeviceAiSection } from '@/components/settings/OnDeviceAiSection';
@@ -28,7 +29,11 @@ import { usePremium } from '@/hooks/usePremium';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
-import { needsFreeTierConsent } from '@/utils/aiConsent';
+import {
+  AI_ACCURACY_CONSENT_KEY,
+  needsFreeTierConsent,
+  withAiAccuracyConsent,
+} from '@/utils/aiConsent';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
 import {
   effectiveUseMusclogGateway,
@@ -615,6 +620,8 @@ export function AISettingsModal({
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
+        <AiOutputNotice kind="settings" />
+
         {/* Musclog Iron: renders nothing while Premium is switched off in this build. */}
         <PremiumCard onPress={() => setPremiumVisible(true)} />
 
@@ -826,7 +833,11 @@ export function AISettingsModal({
             handleUseMusclogFreeTierChange(true);
           }}
           title={t('settings.aiSettings.musclogFreeTier.consentTitle')}
-          message={t('settings.aiSettings.musclogFreeTier.consentBody')}
+          message={withAiAccuracyConsent(
+            t('settings.aiSettings.musclogFreeTier.consentBody'),
+            t(AI_ACCURACY_CONSENT_KEY)
+          )}
+          scrollable
           confirmLabel={t('settings.aiSettings.musclogFreeTier.consentConfirm')}
         />
       </View>

@@ -27,6 +27,31 @@
     "chat": {
       "message": "Mensagem",
       "typeYourMessage": "Digite sua mensagem..."
+    },
+    "outputNotice": {
+      "chat": "O treinador é uma IA, não uma pessoa, e costuma errar. Suas respostas não são consultoria médica.",
+      "estimate": "Estimativa da IA: pode estar muito fora do real. Confira os alimentos e as quantidades antes de registrar.",
+      "plan": "Escrito pela IA: confira se é adequado para você antes de treinar com ele.",
+      "insight": "Escrito pela IA e pode estar errado. Não é consultoria médica, nutricional ou de treinamento.",
+      "import": "Lido pela IA: confira cada valor antes de salvar.",
+      "settings": "A IA é opcional e costuma cometer erros. Confira o que ela diz."
+    },
+    "disclaimer": {
+      "title": "A IA pode errar",
+      "subtitle": "Tenha isto em mente antes de confiar em qualquer coisa que a IA diga",
+      "openHint": "Abre o que lembrar sobre as respostas da IA",
+      "points": {
+        "optional": "A IA é opcional. O Musclog funciona por completo sem ela, e nada é enviado até você ativar uma opção de IA.",
+        "mistakes": "As respostas da IA são escritas por um modelo, não por uma pessoa, e ninguém as confere antes. Elas costumam conter erros: calorias e macros muito fora do real, alimentos ou porções interpretados de forma errada, exercícios que não servem para você e afirmações que soam seguras, mas são falsas. Isso vale para todas as opções, inclusive o Musclog Iron.",
+        "notAdvice": "O Loggy e os demais treinadores são personagens de IA. Não são médicos, nutricionistas nem treinadores certificados, e nada do que dizem é consultoria médica, nutricional ou de treinamento.",
+        "health": "Se você tem dor, lesão, doença ou transtorno alimentar, está grávida ou toma medicamentos, consulte um profissional qualificado antes de agir com base em uma resposta da IA. Pare de treinar se algo doer.",
+        "check": "Confira cada estimativa, plano e sugestão antes de registrar, seguir ou compartilhar, e corrija ou apague o que estiver errado. O que você guarda é o seu próprio registro.",
+        "edits": "Você pode editar, adicionar ou apagar qualquer mensagem do seu histórico de chat, inclusive as da IA. Um histórico de chat, uma exportação ou uma captura de tela pode não mostrar o que a IA escreveu, e o Musclog não guarda nenhuma cópia para comparar.",
+        "liability": "Na medida permitida pela lei, o Musclog não é responsável pelo que a IA diz nem pelo que você faz com isso. Os termos explicam tudo em detalhes."
+      },
+      "readTerms": "Leia os termos",
+      "editHint": "Isso altera seu histórico somente neste dispositivo. Uma mensagem do treinador editada ou adicionada não mostra mais o que a IA escreveu.",
+      "consent": "As respostas da IA costumam estar erradas. Elas não são consultoria médica, nutricional ou de treinamento, e o Musclog não é responsável pelo que a IA diz. Confira o que for importante antes de agir com base nisso. Ao concordar, você aceita isso e a seção de IA dos nossos termos."
     }
   }
 }

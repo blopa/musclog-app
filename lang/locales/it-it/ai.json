@@ -27,6 +27,31 @@
     "chat": {
       "message": "Messaggio",
       "typeYourMessage": "Scrivi il tuo messaggio..."
+    },
+    "outputNotice": {
+      "chat": "Il coach è un'AI, non una persona, e spesso sbaglia. Le sue risposte non sono consigli medici.",
+      "estimate": "Stima dell'AI: può essere molto lontana. Controlla alimenti e quantità prima di registrarla.",
+      "plan": "Scritto dall'AI: verifica che ti vada bene prima di allenarti.",
+      "insight": "Scritto dall'AI e può essere sbagliato. Non è un consiglio medico, nutrizionale o di allenamento.",
+      "import": "Letto dall'AI: controlla ogni valore prima di salvarlo.",
+      "settings": "L'AI è facoltativa e spesso sbaglia. Verifica quello che ti dice."
+    },
+    "disclaimer": {
+      "title": "L'AI può sbagliare",
+      "subtitle": "Tienilo a mente prima di fare affidamento su quello che dice l'AI",
+      "openHint": "Apre cosa tenere a mente sulle risposte dell'AI",
+      "points": {
+        "optional": "L'AI è facoltativa. Musclog funziona completamente senza, e non viene inviato nulla finché non attivi un'opzione AI.",
+        "mistakes": "Le risposte dell'AI sono scritte da un modello, non da una persona, e nessuno le controlla prima. Spesso contengono errori: calorie e macronutrienti molto lontani, alimenti o porzioni letti male, esercizi non adatti a te e affermazioni che suonano sicure ma sono false. Vale per ogni opzione, anche per Musclog Iron.",
+        "notAdvice": "Loggy e gli altri coach sono personaggi AI. Non sono medici, dietisti o allenatori certificati, e nulla di ciò che dicono è un consiglio medico, nutrizionale o di allenamento.",
+        "health": "Se hai dolore, un infortunio, una malattia o un disturbo alimentare, sei in gravidanza o assumi farmaci, chiedi a un professionista qualificato prima di agire in base a una risposta dell'AI. Smetti di allenarti se qualcosa fa male.",
+        "check": "Controlla ogni stima, piano e suggerimento prima di registrarlo, seguirlo o condividerlo, e correggi o elimina ciò che è sbagliato. Ciò che conservi è il tuo registro personale.",
+        "edits": "Puoi modificare, aggiungere o eliminare qualsiasi messaggio della tua cronologia chat, anche quelli dell'AI. Una cronologia, un'esportazione o uno screenshot potrebbero non mostrare ciò che l'AI ha scritto, e Musclog non conserva una copia per confrontarli.",
+        "liability": "Nei limiti consentiti dalla legge, Musclog non è responsabile di ciò che dice l'AI né di ciò che ne fai. I termini lo spiegano per intero."
+      },
+      "readTerms": "Leggi i termini",
+      "editHint": "Questo modifica la tua cronologia solo su questo dispositivo. Un messaggio del coach modificato o aggiunto non mostra più ciò che ha scritto l'AI.",
+      "consent": "Le risposte dell'AI spesso sbagliano. Non sono consigli medici, nutrizionali o di allenamento, e Musclog non è responsabile di ciò che dice l'AI. Verifica tutto ciò che è importante prima di agire. Accettando, accetti questo e la sezione AI dei nostri termini."
     }
   }
 }

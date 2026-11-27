@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "AI-coach",
-          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel: met je eigen Gemini-, OpenAI- of Claude-sleutel, met Musclog Iron, de gratis optie, een lokaal model of AI op je telefoon."
+          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel: met je eigen Gemini-, OpenAI- of Claude-sleutel, met Musclog Iron, de gratis optie, een lokaal model of AI op je telefoon. AI-antwoorden kunnen onjuist zijn, dus controleer ze voordat je erop vertrouwt."
         },
         "barcode": {
           "title": "Barcodescanner",
@@ -604,7 +604,7 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 26 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 27 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -705,6 +705,7 @@
             "content3": "Als u ervoor kiest een AI-functie te gebruiken, worden de gegevens die u besluit te verzenden doorgestuurd naar de provider of endpoint die u configureert. Als u een zelfgehost lokaal model onder uw eigen controle gebruikt, kunnen die gegevens binnen uw eigen omgeving blijven. Als u een door een derde gehoste endpoint gebruikt, waaronder een gehoste lokale-modeldienst, kan die provider de gegevens verwerken in overeenstemming met zijn eigen voorwaarden en privacypraktijken. Musclog heeft geen controle over de manier waarop externe providers de gegevens verwerken die u naar hen verzendt.",
             "content4": "Als u de gratis Musclog AI-optie kiest, worden uw verzoeken via OpenRouter, een AI-routeringsdienst, naar Google AI Studio (een Gemma-model) gestuurd, met een API-sleutel die door Musclog wordt beheerd. Een verzoek bevat alleen wat u naar de AI-functie verstuurt, zoals chatberichten, maaltijdfoto's of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft. OpenRouter bewaart de inhoud van verzoeken niet, behalve de controle op materiaal van seksueel kindermisbruik die hieronder wordt beschreven; wel verzoekgegevens zoals de omvang en het tijdstip. Google beantwoordt deze verzoeken onder de Gemini API-voorwaarden voor gratis gebruik: Google mag de verzoeken en antwoorden opslaan, ze gebruiken om zijn producten en machine-learningtechnologieën te verbeteren, en menselijke beoordelaars laten meekijken. Google verwijdert identificatiegegevens, zoals uw account, voordat menselijke beoordelaars ze zien, maar voer geen persoonlijke of gevoelige gegevens in bij de gratis Musclog AI-optie en gebruik deze niet voor zaken die u niet door Google gezien wilt hebben. De gratis Musclog AI-optie is alleen voor volwassenen (18 jaar en ouder), omdat de voorwaarden van Google deze gratis dienst niet toestaan in apps die waarschijnlijk door mensen onder de 18 jaar worden gebruikt. Musclog Iron is anders: het gebruikt alleen aanbieders met zero data retention. De gratis optie heeft een daglimiet die alle gebruikers delen, hangt af van de gratis limieten van Google en is soms niet beschikbaar.",
             "contentPremium": "Als U zich abonneert op Musclog Iron, worden Uw AI-verzoeken naar de eigen dienst van Musclog gestuurd, die draait op Cloudflare Workers, en van daaruit via een van twee AI-gateways, OpenRouter of Otari (beheerd door Mozilla.ai, MZL.AI, PBC), die ze alleen doorgeven aan AI-providers die zijn ingesteld op zero data retention (ZDR) en geen training op Uw gegevens. Musclog kiest welke gateway wordt gebruikt, en de toestemming in de applicatie geldt voor beide. Bij Otari noemt elk verzoek één goedgekeurde aanbieder en valt het nooit terug op een andere. Een verzoek bevat alleen wat U naar de AI-functie stuurt, zoals chatberichten, of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft, en maaltijdfoto's. De dienst van Musclog bewaart de inhoud van Uw verzoeken of antwoorden niet. Zij bewaart alleen een identificatie die is afgeleid van een sleutel die op Uw Apparaat aanwezig is, gebruiksaantallen en een korte vingerafdruk van elk verzoek, zodat een opnieuw verzonden verzoek niet dubbel wordt geteld. Zoals bij elk internetverzoek onthult elk verzoek Uw IP-adres aan Cloudflare, dat de dienst levert en beveiligt; de dienst van Musclog slaat het niet op. De gateway ontvangt bij elk verzoek een pseudoniem code voor Uw abonnement, niet Uw identificatie, naam of e-mailadres, zodat misbruik kan worden opgespoord; Otari ontvangt ook labels die de applicatie en het soort verzoek benoemen, nooit een persoon of een apparaat. RevenueCat ontvangt Uw identificatie, de aankoopstatus in de appwinkel en de technische gegevens die een app-abonnementsdienst verwerkt, zoals Uw IP-adres, om te bevestigen dat Uw abonnement actief is. Musclog ontvangt Uw naam, e-mailadres of betaalgegevens niet: betaling wordt afgehandeld door Apple of Google. OpenRouter controleert alle verzoeken die erdoorheen gaan, ook die naar aanbieders met zero data retention, op materiaal van seksueel kindermisbruik terwijl ze worden verwerkt, en kan een verzoek dat het markeert bewaren voor beoordeling, melding en wettelijke bewaring wanneer de wet dat vereist. Otari zegt de inhoud van verzoeken of antwoorden niet te ontvangen of op te slaan; het bewaart verzoekgegevens zoals het model, de aanbieder, het aantal tokens, de kosten en de status, op servers in de Verenigde Staten. Musclog Iron staat los van de gratis Musclog AI-optie en wordt pas ingeschakeld nadat U hiermee in de applicatie hebt ingestemd.",
+            "accuracy": "AI-functies kunnen fouten maken, en hun antwoorden zijn geen medisch, voedings- of trainingsadvies. De Voorwaarden leggen onder \"AI-functies en AI-uitvoer\" uit wat u ervan kunt verwachten en waarvoor Musclog verantwoordelijk is.",
             "content5": "U dient het privacybeleid en de voorwaarden te raadplegen van de providers die u kiest en van de diensten die Musclog gebruikt, waaronder:",
             "cloudflarePrivacyPolicy": "Privacybeleid van Cloudflare",
             "openaiPrivacyPolicy": "Privacybeleid van OpenAI",
@@ -882,7 +883,7 @@
     "terms": {
       "titleStart": "Algemene",
       "conditions": "Voorwaarden",
-      "lastUpdated": "Laatst bijgewerkt: 24 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 27 november 2026",
       "highlights": {
         "agreement": {
           "title": "Gebruikersovereenkomst",
@@ -890,7 +891,7 @@
         },
         "liability": {
           "title": "Beperkte aansprakelijkheid",
-          "description": "Wij zijn niet aansprakelijk voor gezondheidsbeslissingen op basis van deze app."
+          "description": "Wij zijn niet aansprakelijk voor gezondheidsbeslissingen die met deze app of met de AI-functies ervan worden genomen."
         },
         "warranty": {
           "title": "Geen garantie",
@@ -950,12 +951,14 @@
         "liability": {
           "title": "Beperking van aansprakelijkheid",
           "content1": "Voor zover maximaal toegestaan door toepasselijk recht, is het Bedrijf in geen geval aansprakelijk voor indirecte, incidentele, speciale, gevolgschade of punitieve schade, inclusief maar niet beperkt tot verlies van winst, gegevens, gebruik, goodwill of andere immateriële verliezen.",
-          "content2": "Deze applicatie is geen medisch hulpmiddel. Raadpleeg altijd een gekwalificeerde zorgverlener voordat je gezondheids- of fitnessbeslissingen neemt op basis van gegevens uit deze app."
+          "content2": "Deze applicatie, inclusief de AI-functies, is geen medisch hulpmiddel en geeft geen medisch advies. Raadpleeg altijd een gekwalificeerde zorgverlener voordat U gezondheids- of fitnessbeslissingen neemt op basis van gegevens uit deze app of op basis van AI-uitvoer.",
+          "content3": "Niets in deze Voorwaarden sluit enige aansprakelijkheid uit of beperkt die die niet op grond van het toepasselijke recht kan worden uitgesloten of beperkt, waaronder aansprakelijkheid voor overlijden of lichamelijk letsel veroorzaakt door nalatigheid, voor opzet of grove schuld, of op grond van dwingende regels inzake productaansprakelijkheid."
         },
         "disclaimer": {
           "title": "Disclaimer",
           "content1": "De Service wordt aan jou geleverd \"ZOALS ZIJ IS\" en \"ZOALS BESCHIKBAAR\", met alle fouten en gebreken en zonder enige garantie.",
-          "content2": "Zonder het voorgaande te beperken, biedt het Bedrijf geen garantie dat de Service aan je vereisten voldoet, beoogde resultaten bereikt of compatibel is met andere software, applicaties, systemen of diensten."
+          "content2": "Zonder het voorgaande te beperken, biedt het Bedrijf geen garantie dat de Service aan je vereisten voldoet, beoogde resultaten bereikt of compatibel is met andere software, applicaties, systemen of diensten.",
+          "content3": "In het bijzonder wordt AI-uitvoer geleverd zonder enige garantie dat zij nauwkeurig, volledig, betrouwbaar, actueel of geschikt voor enig doel is (zie \"AI-functies en AI-uitvoer\")."
         },
         "governingLaw": {
           "title": "Toepasselijk recht",
@@ -967,8 +970,21 @@
           "content": "Wij behouden ons het recht voor om deze Voorwaarden naar eigen goeddunken op elk moment te wijzigen of te vervangen. Wij zullen proberen minimaal 30 dagen van tevoren kennis te geven voordat nieuwe voorwaarden van kracht worden. Door de Service te blijven gebruiken na de inwerkingtreding van de wijzigingen, ga je akkoord met de herziene voorwaarden."
         },
         "aiOutput": {
-          "title": "AI-functies",
-          "content": "De AI-functies van Musclog, waaronder Musclog Iron, de gratis Musclog AI-optie en elke aanbieder die U kiest, kunnen fouten maken. Schattingen van calorieën en voedingsstoffen, trainingsadviezen en chatantwoorden zijn geen medisch, voedings- of trainingsadvies. Controleer wat voor U belangrijk is voordat U erop handelt, en raadpleeg een gekwalificeerde professional over elke gezondheidsaandoening of blessure."
+          "title": "AI-functies en AI-uitvoer",
+          "content1": "De AI-functies in Musclog zijn optioneel. De applicatie werkt volledig zonder deze functies, en geen enkele ervan verzendt of produceert iets totdat U een AI-optie kiest en die inschakelt. Deze sectie geldt voor elke AI-optie: Musclog Iron, de gratis Musclog AI-optie, AI op Uw apparaat, een lokaal of zelf gehost model, en Uw eigen sleutel van OpenAI, Anthropic Claude of Google Gemini. Ze geldt ook voor inhoud die is geschreven door een externe AI-assistent, zoals ChatGPT of Claude, die U in de applicatie importeert.",
+          "content2": "\"AI-uitvoer\" betekent alles wat een AI-functie produceert of helpt produceren, inclusief antwoorden van de coach (Loggy of een andere coachpersona), schattingen van calorieën, macro's en andere voedingsstoffen op basis van foto's, beschrijvingen of etiketten, maaltijdsuggesties en maaltijdplannen, trainingsplannen en oefeningsuggesties, inzichten en samenvattingen, spraakopdrachten, en gegevens die een AI leest uit een bestand, een foto of geplakte tekst.",
+          "items": [
+            "AI-uitvoer wordt automatisch geproduceerd door AI-modellen die derden bouwen en draaien. Niemand bij Musclog schrijft, controleert of keurt die uitvoer goed voordat U haar ziet, en Wij hebben geen controle over wat een model zegt.",
+            "AI-uitvoer is vaak onjuist. Ze kan onvolledig, verouderd of onnauwkeurig zijn: calorieën en macro's die ver naast de werkelijkheid zitten, voedingsmiddelen of porties die verkeerd zijn afgelezen, oefeningen of belastingen die niet bij U passen, en uitspraken die zeker klinken maar onwaar zijn. Geen enkele AI-optie, abonnement of denkniveau maakt haar betrouwbaar.",
+            "Loggy en de andere coachpersona's zijn AI-personages, geen mensen. Het zijn geen artsen, diëtisten, fysiotherapeuten, psychologen of gecertificeerde coaches. AI-uitvoer is algemene informatie. Ze is geen medisch, voedings-, dieet-, psychologisch of professioneel trainingsadvies, geen diagnose of behandeling, en ze vervangt geen advies van een gekwalificeerde professional.",
+            "Vertrouw op AI-uitvoer niet voor beslissingen over Uw gezondheid of veiligheid. Raadpleeg een gekwalificeerde professional voordat U ernaar handelt als U pijn, een blessure, een ziekte, een eetstoornis of een aandoening heeft die door voeding of beweging wordt beïnvloed, als U zwanger bent of borstvoeding geeft, of als U medicijnen gebruikt. Stop met sporten en zoek hulp als U pijn, duizeligheid, pijn op de borst of kortademigheid voelt. Bel bij een noodgeval het plaatselijke alarmnummer.",
+            "U beslist of en hoe U AI-uitvoer gebruikt. Controleer elke waarde, elk voedingsmiddel, elke oefening en elk plan voordat U het registreert, volgt of deelt, en corrigeer of verwijder het wanneer het fout is. Dit geldt ook voor resultaten die een AI-functie voor U opslaat, zoals een trainingsplan dat de coach maakt of iets dat de coach over U onthoudt. De items die U in de applicatie bewaart, zijn Uw eigen gegevens.",
+            "Uw chatgeschiedenis wordt alleen op Uw apparaat opgeslagen, en de applicatie laat U elk bericht bewerken of verwijderen, ook berichten die door de AI zijn geschreven, en berichten toevoegen die lijken van de coach te komen. Een bericht dat in de applicatie, in een export of in een screenshot wordt getoond, is daarom mogelijk niet wat de AI oorspronkelijk schreef. Noch Musclog Iron noch de gratis Musclog AI-optie bewaart een kopie van Uw berichten waar Wij bij kunnen, dus Wij kunnen niet bevestigen wat een bericht oorspronkelijk zei. Wij zijn niet verantwoordelijk voor een bericht dat is bewerkt of toegevoegd, of voor de inhoud van een bericht zoals het buiten de applicatie verschijnt.",
+            "Wanneer U Uw eigen sleutel, AI op Uw apparaat of een lokaal model gebruikt, komt de AI-uitvoer van die aanbieder of dat model, onder hun eigen voorwaarden. Musclog geeft Uw verzoek door en toont het antwoord.",
+            "Musclog Iron en de gratis Musclog AI-optie geven U toegang tot AI-verwerking binnen hun grenzen. Ze bevatten geen belofte dat AI-uitvoer nauwkeurig, volledig, actueel of geschikt voor U is, en een fout of onbruikbaar antwoord is geen gebrek van Musclog Iron of van de Service. De applicatie vraagt U dit te accepteren voordat Musclog Iron of de gratis Musclog AI-optie wordt ingeschakeld.",
+            "Voor zover maximaal toegestaan op grond van het toepasselijke recht, en behoudens de laatste alinea van \"Beperking van aansprakelijkheid\", is het Bedrijf niet aansprakelijk voor enig verlies of enige schade die voortvloeit uit AI-uitvoer, uit een bewerkt of toegevoegd bericht, of uit Uw gebruik van of vertrouwen op AI-uitvoer, waaronder letsel, ziekte, gewichts- of lichaamssamenstellingsverandering, of ander verlies veroorzaakt door handelen op basis van een schatting, een plan of een antwoord.",
+            "Als AI-uitvoer schadelijk lijkt, stop dan met het gebruik ervan en laat het Ons weten op het adres aan het einde van deze Voorwaarden."
+          ]
         }
       },
       "contact": {
@@ -1143,6 +1159,10 @@
             {
               "question": "Heeft Musclog een abonnement?",
               "answer": "Musclog is gratis te gebruiken. Loggen, plannen, geschiedenis, grafieken, importeren, exporteren en de gratis AI-opties kosten niets. Musclog Iron is een optioneel maandelijks abonnement dat een gehoste AI-quota toevoegt, zodat u geen eigen sleutel nodig hebt. U hebt het nooit nodig om de rest van de app te gebruiken."
+            },
+            {
+              "question": "Kan ik de AI vertrouwen?",
+              "answer": "Controleer het eerst. De AI-functies zijn optioneel en maken vaak fouten: een calorieschatting op basis van een foto kan ver naast de werkelijkheid zitten, een trainingsplan past misschien niet bij je, en de coach kan zeker klinken en toch ongelijk hebben. Zie elk AI-antwoord als een startpunt, niet als medisch, voedings- of trainingsadvies, en raadpleeg een gekwalificeerde professional over alles wat je gezondheid raakt. Je kunt alles wat de AI heeft gemaakt corrigeren of verwijderen, ook de berichten van de coach, dus een chatgeschiedenis toont misschien niet wat de AI werkelijk schreef."
             }
           ]
         },

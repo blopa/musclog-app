@@ -112,7 +112,8 @@
         }
       },
       "cta": "Ayda {{price}} karşılığında abone ol",
-      "reassurance": "Her ay yenilenir. Mağaza hesabınızdan istediğiniz zaman iptal edin."
+      "reassurance": "Her ay yenilenir. Mağaza hesabınızdan istediğiniz zaman iptal edin.",
+      "accuracy": "Musclog Iron yapay zekâyı senin yerine çalıştırır. Ancak yapay zekâ yanıtlarını doğru yapmaz: yanlış olabilirler, bu yüzden onlara güvenmeden önce kontrol et."
     }
   }
 }

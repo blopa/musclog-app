@@ -108,7 +108,6 @@
       "failed": "Error al compartir el historial de chat. Por favor, inténtalo de nuevo.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "La IA puede cometer errores. Por favor, verifica la información importante.",
     "message": {
       "menuTitle": "Acciones de mensaje",
       "copy": "Copiar",

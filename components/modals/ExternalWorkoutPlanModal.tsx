@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { PasteJsonSheet } from '@/components/aiOnboarding/PasteJsonSheet';
 import { ExternalAssistantHandoff } from '@/components/externalAssistant/ExternalAssistantHandoff';
 import { Button } from '@/components/theme/Button';
@@ -196,6 +197,8 @@ export function ExternalWorkoutPlanModal({
         <Text style={textStyle(theme.colors.text.secondary, theme.typography.fontSize.base)}>
           {t('workouts.externalPlan.review.intro')}
         </Text>
+
+        <AiOutputNotice kind="plan" />
 
         <View className="gap-1">
           <Text

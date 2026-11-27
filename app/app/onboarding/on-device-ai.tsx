@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { AiChoiceCard } from '@/components/onboarding/AiChoiceCard';
 import { OnboardingChoiceScaffold } from '@/components/onboarding/OnboardingChoiceScaffold';
 import { Button } from '@/components/theme/Button';
@@ -84,6 +85,7 @@ export default function OnDeviceAiScreen() {
         />
       }
     >
+      <AiOutputNotice kind="settings" />
       <AiChoiceCard
         testID="on-device-ai-yes"
         title={t('onDeviceAi.onboarding.ask.yes.title')}
