@@ -25,6 +25,7 @@ import { Button } from '@/components/theme/Button';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { localizeFoundationFood } from '@/data/foundationFoodCatalogue';
 import { restoreDatabase } from '@/database/importDb';
 import {
   importShareEnvelope,
@@ -119,7 +120,7 @@ export function OpticalReceiveModal({
     }
 
     try {
-      return { envelope: parseIncomingShareJson(json) };
+      return { envelope: parseIncomingShareJson(json, localizeFoundationFood) };
     } catch (error) {
       return { code: error instanceof MusclogShareError ? error.code : 'malformed' };
     }

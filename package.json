@@ -78,6 +78,7 @@
     "generate-lang": "node scripts/generateLangFile.js",
     "generate-exercises-data": "node scripts/generate-exercises-data.js",
     "generate-exercise-locales": "node scripts/generate-exercise-locales.js",
+    "generate-foundation-food-locales": "node scripts/generate-foundation-food-locales.js",
     "generate-exercise-images": "node scripts/generate-exercise-images.js",
     "generate-loggy": "node scripts/generate-loggy-svgs.js && node scripts/generate-loggy-animated.js && node scripts/sync-website-loggy.js && node scripts/generate-loggy-gallery.js",
     "generate-loggy-svgs": "node scripts/generate-loggy-svgs.js",

@@ -16,7 +16,7 @@
  */
 
 /**
- * The most foods ever offered. About 530 foundation foods are seeded; the cap is a safety net so a
+ * The most foods ever offered. About 220 foundation foods are seeded; the cap is a safety net so a
  * future import cannot grow every request without anyone noticing.
  */
 export const FOUNDATION_FOODS_PROMPT_CAP = 1000;

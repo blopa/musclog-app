@@ -1,0 +1,2429 @@
+[
+  {
+    "externalId": "1703909",
+    "name": "Lentemix een mengeling van babysla en groen",
+    "description": "Sla, blad, groen, rauw"
+  },
+  {
+    "externalId": "2122593",
+    "name": "Maïs",
+    "description": "Maïs, zoete, gele en witte korrels, vers, rauw"
+  },
+  {
+    "externalId": "2679290",
+    "name": "Snelle haver",
+    "description": "Haver, volkoren, staal gesneden"
+  },
+  {
+    "externalId": "2543214",
+    "name": "Tomaten",
+    "description": "Tomaten, ingeblikt, rood, rijp, in blokjes gesneden"
+  },
+  {
+    "externalId": "2447532",
+    "name": "Bananenijsjes, banaan",
+    "description": "Bananen, overrijp, rauw"
+  },
+  {
+    "externalId": "2448098",
+    "name": "Wild gevangen Mahi Mahi-filets zonder vel en zonder been",
+    "description": "Mahi mahi, bevroren, wild gevangen"
+  },
+  {
+    "externalId": "2447559",
+    "name": "Druivensap, druif",
+    "description": "Druivensap, wit, met toegevoegde vitamine C, uit concentraat, houdbaar"
+  },
+  {
+    "externalId": "2406586",
+    "name": "Sinaasappelsap, sinaasappel",
+    "description": "Sinaasappelen, rauw, navels"
+  },
+  { "externalId": "2410361", "name": "Radijzen", "description": "Radijzen, rood, rauw" },
+  {
+    "externalId": "2445907",
+    "name": "Kleine zoete aardappelen",
+    "description": "Zoete aardappelen, oranje vruchtvlees, zonder schil, rauw"
+  },
+  {
+    "externalId": "2134133",
+    "name": "Eikelpompoen",
+    "description": "Pompoen, winter, eikel, rauw"
+  },
+  {
+    "externalId": "2062204",
+    "name": "Melk",
+    "description": "Melk, mager, vloeibaar, 1% melkvet, met toegevoegde vitamine A en vitamine D"
+  },
+  { "externalId": "2062212", "name": "Karnemelk", "description": "Karnemelk, mager" },
+  {
+    "externalId": "2071280",
+    "name": "Bhakri-meel",
+    "description": "Meel, tarwe, universeel, verrijkt, gebleekt"
+  },
+  {
+    "externalId": "2667585",
+    "name": "Kip",
+    "description": "Kip, borst, zonder bot, zonder vel, rauw"
+  },
+  {
+    "externalId": "2495161",
+    "name": "Champignonpastasaus, Champignon",
+    "description": "Paddestoel, koningsoester"
+  },
+  {
+    "externalId": "2406124",
+    "name": "In blokjes gesneden kool en wortelen Zuidelijke slaw, in blokjes gesneden kool en wortelen",
+    "description": "Kool, rood, rauw"
+  },
+  {
+    "externalId": "2406125",
+    "name": "Koolblokjes, paprika en uien Zuidelijke slaw, koolblokjes, paprika en uien",
+    "description": "Kool, groen, rauw"
+  },
+  {
+    "externalId": "2476441",
+    "name": "Paddestoelstengels en -stukken, Paddestoel",
+    "description": "Paddestoel, oester"
+  },
+  {
+    "externalId": "1899988",
+    "name": "Gemengde noten",
+    "description": "Noten, pijnboompitten, rauw"
+  },
+  {
+    "externalId": "1633846",
+    "name": "Gesausde Broccoli En Pittige Kaassaus, Gesausd",
+    "description": "Saus, pasta, spaghetti/marinara, klaar om te serveren"
+  },
+  {
+    "externalId": "1919968",
+    "name": "Kikkererwten",
+    "description": "Erwten, groen, zoet, ingeblikt, natrium toegevoegd, suiker toegevoegd, uitgelekt en gespoeld"
+  },
+  {
+    "externalId": "2675810",
+    "name": "Wilde kabeljauwfilets uit Alaska, wilde kabeljauw uit Alaska",
+    "description": "Kabeljauw, Pacifisch of Alaska, bevroren, wild gevangen"
+  },
+  {
+    "externalId": "2135417",
+    "name": "Champignonpastasaus, Champignon",
+    "description": "Paddestoel, leeuwenmanen"
+  },
+  { "externalId": "2064619", "name": "Spinazie", "description": "Spinazie, rijp" },
+  {
+    "externalId": "2192156",
+    "name": "Pijnboompitten",
+    "description": "Noten, walnoten, Engels, gehalveerd, rauw"
+  },
+  {
+    "externalId": "2594852",
+    "name": "Gerookte vis Nova zalmvis",
+    "description": "Vis, zalm, sockeye, wild gevangen, rauw"
+  },
+  { "externalId": "2120877", "name": "Zout", "description": "Zout, tafel, gejodeerd" },
+  {
+    "externalId": "1996978",
+    "name": "Rundvleesburgers, Rundvlees",
+    "description": "Rundvlees, gemalen, 80% mager vlees / 20% vet, rauw"
+  },
+  {
+    "externalId": "2618005",
+    "name": "Amandelmelk, vanille",
+    "description": "Amandelmelk, ongezoet, naturel, houdbaar"
+  },
+  {
+    "externalId": "2039105",
+    "name": "Originele sojamelk, origineel",
+    "description": "Sojamelk, gezoet, naturel, gekoeld"
+  },
+  { "externalId": "2083628", "name": "Schelpdiersap", "description": "Sap, pruim, houdbaar" },
+  {
+    "externalId": "2423124",
+    "name": "Kip Chorizo, Kip",
+    "description": "Kip, kippenpoot, vlees en vel, rauw"
+  },
+  {
+    "externalId": "2433643",
+    "name": "Geen zout toegevoegd. Tomatenblokjes in tomatensap, geen zout toegevoegd in tomatensap",
+    "description": "Tomatensap, met toegevoegde ingrediënten, uit concentraat, houdbaar"
+  },
+  {
+    "externalId": "2390768",
+    "name": "Tomatenpuree, Tomaat",
+    "description": "Tomaat, pasta, ingeblikt, zonder toegevoegd zout"
+  },
+  {
+    "externalId": "2092649",
+    "name": "Melk",
+    "description": "Melk, geheel, 3,25% melkvet, met toegevoegde vitamine D"
+  },
+  {
+    "externalId": "2477312",
+    "name": "Biologische boerenkool en collards",
+    "description": "Boerenkool, rauw"
+  },
+  {
+    "externalId": "2518353",
+    "name": "Egg Beaters vloeibare eieren",
+    "description": "Eieren, klasse A, groot, eiwit"
+  },
+  { "externalId": "2388443", "name": "Druiven", "description": "Druiven, groen, pitloos, rauw" },
+  { "externalId": "1934154", "name": "Verse Bieten", "description": "Bieten, rauw" },
+  {
+    "externalId": "2121377",
+    "name": "Kwark",
+    "description": "Kwark, volvette, grote of kleine wrongel"
+  },
+  {
+    "externalId": "2071650",
+    "name": "Appels",
+    "description": "Appels, Granny Smith, met schil, rauw"
+  },
+  {
+    "externalId": "522090",
+    "name": "Aardappelen",
+    "description": "Aardappelen, roodbruin, zonder schil, rauw"
+  },
+  {
+    "externalId": "1859625",
+    "name": "Arborio-rijst",
+    "description": "Rijst, wit, langkorrelig, onverrijkt, rauw"
+  },
+  { "externalId": "2062594", "name": "Pinda's", "description": "Pinda's, rauw" },
+  {
+    "externalId": "2467894",
+    "name": "Gemengde noten",
+    "description": "Noten, amandelen, droog geroosterd, met zout toegevoegd"
+  },
+  {
+    "externalId": "2054492",
+    "name": "Bakkerij Brood",
+    "description": "Brood, volkoren, commercieel bereid"
+  },
+  {
+    "externalId": "2185701",
+    "name": "Magere yoghurt, magere yoghurt",
+    "description": "Yoghurt, naturel, mager"
+  },
+  {
+    "externalId": "2139087",
+    "name": "Ham",
+    "description": "Ham, gesneden, voorverpakt, deli vlees (96% vetvrij, water toegevoegd)"
+  },
+  {
+    "externalId": "2430401",
+    "name": "Versnipperd en gekruid varkensvlees Carnitas, varkensvlees",
+    "description": "Varkensvlees, karbonade, in het midden gesneden, rauw"
+  },
+  {
+    "externalId": "2425912",
+    "name": "Blackeye Peas met hamkruiden",
+    "description": "Zwartoogerwt, droog"
+  },
+  {
+    "externalId": "2081296",
+    "name": "Rundvleesbouillon in een doos, rundvlees",
+    "description": "Rundvleesbouillon, rauw"
+  },
+  { "externalId": "2632582", "name": "Bakmeel", "description": "Meel, rijst, kleverig" },
+  { "externalId": "2667706", "name": "Gerstmeel", "description": "Meel, aardappel" },
+  {
+    "externalId": "2404942",
+    "name": "Volkoren steengemalen Kamutmeel, volkoren",
+    "description": "Khorasan, graan, droog, rauw"
+  },
+  { "externalId": "2397511", "name": "Bruine rijstmeel, bloem", "description": "Meel, gerst" },
+  {
+    "externalId": "2161852",
+    "name": "Zonnebloemolie en avocado-olie",
+    "description": "Olie, olijf, extra licht"
+  },
+  { "externalId": "2596170", "name": "Klassieke Hummus", "description": "Humus, commercieel" },
+  {
+    "externalId": "2008895",
+    "name": "Tomatenpuree, Tomaat",
+    "description": "Tomaat, saus, ingeblikt, met toegevoegd zout"
+  },
+  {
+    "externalId": "2619273",
+    "name": "Tomatenpuree, Tomaat",
+    "description": "Tomaat, puree, ingeblikt"
+  },
+  {
+    "externalId": "2009491",
+    "name": "Ongezoete appelmoes",
+    "description": "Appelmoes, ongezoet, met toegevoegde vitamine C"
+  },
+  { "externalId": "2575996", "name": "Wortelen", "description": "Wortelen, volwassen, rauw" },
+  {
+    "externalId": "2601209",
+    "name": "Cranberry 100% Sap, Cranberry",
+    "description": "Cranberrysap, niet verrijkt, uit concentraat, houdbaar"
+  },
+  { "externalId": "2621245", "name": "Broccolisla, Broccoli", "description": "Broccoli, rauw" },
+  { "externalId": "2621263", "name": "Raapgroenten", "description": "Rapen, rauw" },
+  {
+    "externalId": "2576392",
+    "name": "Kalkoenworst & Boerenkoolsoep, Kalkoenworst & Boerenkool",
+    "description": "Boerenkool, bevroren, gekookt, gekookt, uitgelekt, zonder zout"
+  },
+  {
+    "externalId": "2596270",
+    "name": "Appelsap, appel",
+    "description": "Appels, honingcrisp, met schil, rauw"
+  },
+  { "externalId": "2431290", "name": "Linzen", "description": "Linzen, droog" },
+  {
+    "externalId": "1869031",
+    "name": "Instant maïs-masameel",
+    "description": "Maïsmeel, masa harina, wit of geel, droog, rauw"
+  },
+  {
+    "externalId": "2629570",
+    "name": "Gebakken Rijpe Plantains",
+    "description": "Plantains, onrijp, rauw"
+  },
+  {
+    "externalId": "2467328",
+    "name": "Zwaardvissteaks",
+    "description": "Zwaardvis, bevroren, wild gevangen"
+  },
+  {
+    "externalId": "1901707",
+    "name": "Zwartoogerwten, gekruid",
+    "description": "Blackeye-erwt, ingeblikt, natrium toegevoegd, uitgelekt en gespoeld"
+  },
+  { "externalId": "2021609", "name": "Suiker", "description": "Suikers, gegranuleerd" },
+  { "externalId": "2021632", "name": "Mango", "description": "Mango, Ataulfo, geschild, rauw" },
+  {
+    "externalId": "2475001",
+    "name": "Melk",
+    "description": "Melk, vetarm, vloeibaar, 2% melkvet, met toegevoegde vitamine A en vitamine D"
+  },
+  { "externalId": "2023830", "name": "Broodmeel", "description": "Meel, griesmeel, fijn" },
+  {
+    "externalId": "578455",
+    "name": "Eieren",
+    "description": "Ei, heel, rauw, bevroren, gepasteuriseerd"
+  },
+  {
+    "externalId": "2387087",
+    "name": "Mix van babysla en groente Biologische lentemix, mix van babysla en groente",
+    "description": "Radicchio, rauw"
+  },
+  {
+    "externalId": "2275517",
+    "name": "Druivensap, druif",
+    "description": "Druivensap, paars, met toegevoegde vitamine C, uit concentraat, houdbaar"
+  },
+  {
+    "externalId": "2672968",
+    "name": "Zwarte bonen Gebakken bonen, zwarte bonen",
+    "description": "Bonen, pinto, ingeblikt, natrium toegevoegd, uitgelekt en gespoeld"
+  },
+  {
+    "externalId": "2577482",
+    "name": "Hatch-chili met chia en lijnzaad, Hatch-chili",
+    "description": "Lijnzaad, gemalen"
+  },
+  {
+    "externalId": "569064",
+    "name": "Sap",
+    "description": "Sap, zure kers, uit concentraat, houdbaar"
+  },
+  {
+    "externalId": "2105045",
+    "name": "Bulgur & Quinoa Graanmix",
+    "description": "Bulgur, droog, rauw"
+  },
+  {
+    "externalId": "2158186",
+    "name": "Asperges Roerbak, Asperges",
+    "description": "Asperges, groen, rauw"
+  },
+  { "externalId": "2633820", "name": "Cantaloupe-meloen", "description": "Meloenen, meloen, rauw" },
+  {
+    "externalId": "2678631",
+    "name": "Koningin Olijven",
+    "description": "Olijven, groen, Manzanilla, gevuld met pimiento"
+  },
+  {
+    "externalId": "2487241",
+    "name": "Paddestoelen Heet Ingelegd, Paddestoelen",
+    "description": "Paddestoelen, witte knop"
+  },
+  { "externalId": "2056092", "name": "Rundvlees", "description": "Rundvlees, top entrecote, rauw" },
+  {
+    "externalId": "1728651",
+    "name": "Italiaanse Champignonsaus, Champignon",
+    "description": "Paddestoel, beuk"
+  },
+  {
+    "externalId": "2375018",
+    "name": "Paprika & Uienmix Rode en Groene Paprika's met Uien, Paprika & Uienmix",
+    "description": "Groene ui, (lente-ui), bol en groen, wortel verwijderd, rauw"
+  },
+  {
+    "externalId": "2428441",
+    "name": "Bevroren Kreeftvlees",
+    "description": "Kreeft, alleen staart, bevroren, wild gevangen"
+  },
+  { "externalId": "2502452", "name": "Frambozen", "description": "Frambozen, rauw" },
+  {
+    "externalId": "2567726",
+    "name": "Knoflook- en uiensaus, knoflook en uien",
+    "description": "Uien, rood, rauw"
+  },
+  {
+    "externalId": "2253421",
+    "name": "Bananenpuddingbekers, Banaan",
+    "description": "Bananen, rijp en licht rijp, rauw"
+  },
+  {
+    "externalId": "2180044",
+    "name": "Zwarte Bonensoep, Zwarte Bonen",
+    "description": "Bonen, grote noordelijke, ingeblikt, natrium toegevoegd, uitgelekt en gespoeld"
+  },
+  {
+    "externalId": "1891048",
+    "name": "Sorgho Quinoa & Bruine Rijst",
+    "description": "Sorghummeel, wit, gepareld, onverrijkt, droog, rauw"
+  },
+  {
+    "externalId": "2679700",
+    "name": "Sorgho Quinoa & Bruine Rijst",
+    "description": "Sorghum, volkoren, wit, droog, rauw"
+  },
+  { "externalId": "2083070", "name": "Lichte room", "description": "Room, zuur, vol vet" },
+  { "externalId": "2010041", "name": "Saus", "description": "Saus, salsa, klaar om te serveren" },
+  {
+    "externalId": "1909135",
+    "name": "Melk",
+    "description": "Melk, mager, vloeibaar, met toegevoegde vitamine A en vitamine D (vetvrij of magere)"
+  },
+  {
+    "externalId": "2066269",
+    "name": "Tomatenpuree, Tomaat",
+    "description": "Tomaten, druif, rauw"
+  },
+  {
+    "externalId": "2063073",
+    "name": "Geroosterde Amandelboter",
+    "description": "Amandelboter, romig"
+  },
+  { "externalId": "2063079", "name": "Pindakaas", "description": "Pindakaas, romig" },
+  {
+    "externalId": "1943184",
+    "name": "Gefilte Fish met Wortelen",
+    "description": "Vis, kabeljauw, Atlantische Oceaan, wild gevangen, rauw"
+  },
+  { "externalId": "2016892", "name": "Kaas", "description": "Kaas, cheddar" },
+  {
+    "externalId": "2623495",
+    "name": "Biologische wilde rijst",
+    "description": "Wilde rijst, droog, rauw"
+  },
+  {
+    "externalId": "2125901",
+    "name": "Biologische Gouden Rijst Bruine Rijst",
+    "description": "Rijst, bruin, langkorrelig, onverrijkt, rauw"
+  },
+  {
+    "externalId": "2398274",
+    "name": "Cool Beans Ingelegde groene bonen, Cool Beans",
+    "description": "Bonen, snap, groen, ingeblikt, gewone verpakking, uitgelekte vaste stoffen"
+  },
+  {
+    "externalId": "1460133",
+    "name": "Snapperfilet",
+    "description": "Snapper, bevroren, wild gevangen"
+  },
+  {
+    "externalId": "1457743",
+    "name": "Sneeuwkrabbeenvlees",
+    "description": "Sneeuwkrab, alleen poten, bevroren"
+  },
+  {
+    "externalId": "2072221",
+    "name": "Arborio-rijst",
+    "description": "Rijst, rood, onverrijkt, droog, rauw"
+  },
+  {
+    "externalId": "2603491",
+    "name": "Kikkererwten Orzo, Kikkererwten",
+    "description": "Kikkererwten, (kekerbonen, Bengaalse gram), gedroogd"
+  },
+  {
+    "externalId": "1900839",
+    "name": "Gemengde noten",
+    "description": "Noten, amandelen, heel, rauw"
+  },
+  {
+    "externalId": "2616830",
+    "name": "Thumann's Frankfurters, 3 pond",
+    "description": "Frankfurter, rundvlees, onverwarmd"
+  },
+  {
+    "externalId": "2676314",
+    "name": "Zomerse Worst",
+    "description": "Worst, Italiaans, varkensvlees, mild, gekookt, gebakken"
+  },
+  {
+    "externalId": "1938429",
+    "name": "Italiaanse Worst",
+    "description": "Worst, varkensvlees, chorizo, link of gemalen, gekookt, gebakken"
+  },
+  {
+    "externalId": "2146840",
+    "name": "Romaine Sla, Geraspte Wortelen & Rode Kool Salade, Romaine Sla, Geraspte Wortelen & Rode Kool",
+    "description": "Kool, paksoi, rauw"
+  },
+  {
+    "externalId": "1888254",
+    "name": "Mandarijnen",
+    "description": "Mandarijn, pitloos, geschild, rauw"
+  },
+  { "externalId": "2152206", "name": "Bartlett-peren", "description": "Peren, rauw, Bartlett" },
+  { "externalId": "2042179", "name": "Gemengde noten", "description": "Noten, paranoten, rauw" },
+  {
+    "externalId": "2096464",
+    "name": "Gedroogd eiproduct Hele eieren",
+    "description": "Ei, heel, gedroogd"
+  },
+  {
+    "externalId": "2549919",
+    "name": "Ananaslekkernijen in ananassap, ananassap",
+    "description": "Ananas, rauw"
+  },
+  {
+    "externalId": "2401594",
+    "name": "Hele Tomaten in Tomatensap, Tomaat",
+    "description": "Tomaten, heel, ingeblikt, vaste en vloeibare stoffen, met toegevoegd zout"
+  },
+  {
+    "externalId": "2634454",
+    "name": "Wild gevangen Chileense zeebaarsfilets",
+    "description": "Zeebaars, Chileens, bevroren, wild gevangen"
+  },
+  {
+    "externalId": "2634455",
+    "name": "In het wild gevangen Pacifische heilbotfilets",
+    "description": "Heilbot, bevroren, wild gevangen"
+  },
+  { "externalId": "2505655", "name": "Boerenkool", "description": "Boerenkool, rauw" },
+  {
+    "externalId": "2660646",
+    "name": "Kippentrommelstokken, Kip",
+    "description": "Kip, vleugel, vlees en vel, rauw"
+  },
+  {
+    "externalId": "2661756",
+    "name": "Kipburgers, Kip",
+    "description": "Kip, borst, vlees en vel, rauw"
+  },
+  {
+    "externalId": "2178032",
+    "name": "Wortelstokken, Wortel",
+    "description": "Wortelen, baby, rauw"
+  },
+  { "externalId": "2115066", "name": "Geroosterde Boekweit", "description": "Boekweit, volkoren" },
+  {
+    "externalId": "2060308",
+    "name": "Paprika's",
+    "description": "Paprika's, serrano, zonder zaadjes, rauw"
+  },
+  {
+    "externalId": "2060309",
+    "name": "Verse gele pompoen",
+    "description": "Pompoen, zomer, geel, inclusief schil, rauw"
+  },
+  { "externalId": "2626300", "name": "Aubergines", "description": "Aubergine, rauw" },
+  {
+    "externalId": "2396166",
+    "name": "Slagroomkaas, Room",
+    "description": "Roomkaas, volvet, blok"
+  },
+  {
+    "externalId": "2422848",
+    "name": "Ontbijtvarkensworst, Ontbijtvarkensvlees",
+    "description": "Varkensvlees, gemalen, rauw"
+  },
+  {
+    "externalId": "2423541",
+    "name": "Blackberry-water doordrenkt met Blackberry-essentie, Blackberry",
+    "description": "Bramen, rauw"
+  },
+  { "externalId": "2641766", "name": "Ongezouten ham", "description": "Ham, gesneden, restaurant" },
+  {
+    "externalId": "2129494",
+    "name": "Superfood Amandelboter met Chiazaden, Hennepzaden en Goji, Chiazaden, Hennepzaden en Goji",
+    "description": "Zaden, zonnebloempitten, pit, rauw"
+  },
+  {
+    "externalId": "2102195",
+    "name": "Hele uienringen",
+    "description": "Uienringen, gepaneerd, voorgebakken, bevroren, bereid, verwarmd in de oven"
+  },
+  {
+    "externalId": "2094460",
+    "name": "Calamari-ringen",
+    "description": "Inktvis (calamares), bevroren, alleen tubes"
+  },
+  {
+    "externalId": "2423382",
+    "name": "Geplette Avocado",
+    "description": "Avocado, Hass, geschild, rauw"
+  },
+  { "externalId": "2194474", "name": "Chia-zaden", "description": "Chiazaden, droog, rauw" },
+  {
+    "externalId": "1133958",
+    "name": "Kersensap, kers",
+    "description": "Kersen, zoet, donkerrood, rauw"
+  },
+  {
+    "externalId": "576920",
+    "name": "Aardappelen",
+    "description": "Aardappelen, rood, zonder schil, rauw"
+  },
+  {
+    "externalId": "2642169",
+    "name": "Juni-pruim met gemberfruitnectar, juni-pruim",
+    "description": "Pruim, zwart, met schil, rauw"
+  },
+  {
+    "externalId": "2455279",
+    "name": "Ontbijtworst",
+    "description": "Worst, ontbijtworst, rundvlees, voorgekookt, onbereid"
+  },
+  {
+    "externalId": "2475934",
+    "name": "Griekse Yoghurt",
+    "description": "Yoghurt, Grieks, naturel, mager"
+  },
+  {
+    "externalId": "2181695",
+    "name": "Kipburgers, Kip",
+    "description": "Kip, dij, zonder bot, zonder vel, rauw"
+  },
+  { "externalId": "2430237", "name": "Bosbessen", "description": "Bosbessen, rauw" },
+  {
+    "externalId": "2430317",
+    "name": "100% sojaolie, plantaardige olie",
+    "description": "Olie, kokosnoot"
+  },
+  {
+    "externalId": "1925845",
+    "name": "Robijnrood biologisch grapefruitsap",
+    "description": "Grapefruitsap, rood, niet verrijkt, niet uit concentraat, gekoeld"
+  },
+  {
+    "externalId": "2637169",
+    "name": "Potatoes O'Brien Aardappelblokjes met paprika en uien, Potatoes O'Brien",
+    "description": "Aardappelen, goud, zonder schil, rauw"
+  },
+  { "externalId": "1905344", "name": "Spruitjes", "description": "Spruitjes, rauw" },
+  { "externalId": "2665752", "name": "Rode Bieten", "description": "Bietengroen, rauw" },
+  {
+    "externalId": "2507462",
+    "name": "Tomatenpuree, Tomaat",
+    "description": "Tomaten, geplet, ingeblikt"
+  },
+  {
+    "externalId": "2489170",
+    "name": "Echt ei",
+    "description": "Ei, wit, rauw, bevroren, gepasteuriseerd"
+  },
+  {
+    "externalId": "2096008",
+    "name": "Sint-jakobsschelpen uit de Noord-Atlantische Zee",
+    "description": "Sint-jakobsschelpen, zee, bevroren, wild gevangen"
+  },
+  { "externalId": "1664271", "name": "Vijgen", "description": "Vijgen, gedroogd, ongekookt" },
+  {
+    "externalId": "2089873",
+    "name": "Pickle O'Pete verwerkte hete augurken",
+    "description": "Augurken, komkommer, dille of koosjere dille"
+  },
+  {
+    "externalId": "2642882",
+    "name": "Pacifische ijsbergsla, 2 stuks",
+    "description": "Sla, cos of romaine, rauw"
+  },
+  {
+    "externalId": "2525374",
+    "name": "Drinkbare yoghurt",
+    "description": "Yoghurt, gewone, volle melk"
+  },
+  {
+    "externalId": "2666557",
+    "name": "Zoals Cous-Cous Fonio, zoals Cous-Cous",
+    "description": "Fonio, graan, droog, rauw"
+  },
+  { "externalId": "579494", "name": "Biologische Pastinaak", "description": "Pastinaak, rauw" },
+  {
+    "externalId": "1970280",
+    "name": "Paddestoelen Hartig Ingelegd, Champignons",
+    "description": "Paddestoel, crimini"
+  },
+  {
+    "externalId": "2384535",
+    "name": "Salvadoraanse zuurkool, Salvadoraans",
+    "description": "Kool, napa, blad, ontsteeld, rauw"
+  },
+  {
+    "externalId": "1960704",
+    "name": "Koekjespop, koekje",
+    "description": "Koekjes, havermout, zacht, met rozijnen"
+  },
+  { "externalId": "2009472", "name": "Kaas", "description": "Kaas, queso fresco, stevig" },
+  {
+    "externalId": "2151413",
+    "name": "Turkije Oktoberfest Pasteitjes, Turkije",
+    "description": "Kalkoen, gemalen, 93% mager/ 7% vet, rauw"
+  },
+  {
+    "externalId": "2105474",
+    "name": "Gemengde Meloen",
+    "description": "Meloenen, honingdauw, rauw"
+  },
+  {
+    "externalId": "1935836",
+    "name": "Amandelmelk, origineel",
+    "description": "Amandelmelk, ongezoet, naturel, gekoeld"
+  },
+  {
+    "externalId": "2508901",
+    "name": "Volkoren Farro, volkoren",
+    "description": "Farro, gepareld, droog, rauw"
+  },
+  {
+    "externalId": "2135930",
+    "name": "Varkensvlees",
+    "description": "Varkensvlees, lendenen, ossenhaas, zonder bot, rauw"
+  },
+  {
+    "externalId": "2167314",
+    "name": "Pecannoten",
+    "description": "Noten, pecannoten, helften, rauw"
+  },
+  { "externalId": "1548924", "name": "Perziken", "description": "Perziken, geel, rauw" },
+  {
+    "externalId": "2460077",
+    "name": "Tomatillo Cilantro Truffel Hete Saus, Tomatillo Cilantro",
+    "description": "Tomatillos, gepeld, rauw"
+  },
+  {
+    "externalId": "2369392",
+    "name": "Watermeloenstukjes, Watermeloen",
+    "description": "Watermeloen, pitloos, alleen vruchtvlees, rauw"
+  },
+  {
+    "externalId": "2604043",
+    "name": "Wortel-ananassap, wortel; Ananas",
+    "description": "Wortelen, bevroren, onbereid"
+  },
+  { "externalId": "2593092", "name": "Swai vissteak", "description": "Vis, koolvis, rauw" },
+  {
+    "externalId": "1917372",
+    "name": "Sinaasappelsap",
+    "description": "Sinaasappelsap, geen pulp, niet verrijkt, uit concentraat, gekoeld"
+  },
+  {
+    "externalId": "2642990",
+    "name": "Gekwarteerde pompoenmix",
+    "description": "Pompoen, zomer, groen, courgette, inclusief schil, rauw"
+  },
+  {
+    "externalId": "2664361",
+    "name": "Haver Barista Blend, Haver",
+    "description": "Havermelk, ongezoet, naturel, gekoeld"
+  },
+  { "externalId": "2554236", "name": "Ketchup", "description": "Ketchup, restaurant" },
+  {
+    "externalId": "2095090",
+    "name": "Kaas",
+    "description": "Kaas, Parmezaanse kaas, geraspt, gekoeld"
+  },
+  {
+    "externalId": "2608614",
+    "name": "Eenkoren Biologische Oude Graan Pasta, Volkoren Fusilli",
+    "description": "Eenkoren, graan, droog, rauw"
+  },
+  {
+    "externalId": "2631071",
+    "name": "Jumbo Sint-jakobsschelpen",
+    "description": "Sint-jakobsschelpen, laurier, Patagonisch, bevroren, wild gevangen"
+  },
+  { "externalId": "2403289", "name": "Bloemkoolroosjes", "description": "Bloemkool, rauw" },
+  {
+    "externalId": "2274736",
+    "name": "Butternutpompoen, Butternut",
+    "description": "Pompoen, taartpompoen, geschild, zonder zaadjes, rauw"
+  },
+  {
+    "externalId": "2423081",
+    "name": "Paprika Tri-Blend, Paprika",
+    "description": "Paprika, bel, groen, rauw"
+  },
+  {
+    "externalId": "2159863",
+    "name": "Peer Premium Nectar, Peer",
+    "description": "Peer, Anjou, groen, met schil, rauw"
+  },
+  {
+    "externalId": "2466144",
+    "name": "Rundvlees",
+    "description": "Rundvlees, gemalen, 90% mager vlees / 10% vet, rauw"
+  },
+  {
+    "externalId": "2466495",
+    "name": "Selderij Koudgeperst groente- en vruchtensap, Selderij",
+    "description": "Selderij, rauw"
+  },
+  {
+    "externalId": "2452675",
+    "name": "Koningsjalot Zwarte Knoflook, Zwart",
+    "description": "Sjalotten, bol, geschild, wortel verwijderd, rauw"
+  },
+  {
+    "externalId": "2369909",
+    "name": "Appelsap, appel",
+    "description": "Appelsap, met toegevoegde vitamine C, uit concentraat, houdbaar"
+  },
+  { "externalId": "2652552", "name": "Aardbeien", "description": "Aardbeien, rauw" },
+  {
+    "externalId": "2291370",
+    "name": "In blokjes gesneden koolraap",
+    "description": "Koolraap, geschild, rauw"
+  },
+  {
+    "externalId": "2464657",
+    "name": "Havermeel",
+    "description": "Haver, volkoren, gerold, ouderwets"
+  },
+  {
+    "externalId": "2640507",
+    "name": "Tomatenvenkelsoep, Tomatenvenkel",
+    "description": "Venkel, bol, rauw"
+  },
+  { "externalId": "2665288", "name": "Gierstmeel", "description": "Gierst, volkoren" },
+  {
+    "externalId": "2545121",
+    "name": "Lumi, Morning Sunrise Juice, Grapefruit, Limoen, Grapefruit, Limoen",
+    "description": "Grapefruitsap, wit, ingeblikt of gebotteld, ongezoet"
+  },
+  {
+    "externalId": "464109",
+    "name": "Griekse Yoghurt",
+    "description": "Yoghurt, Grieks, aardbei, mager"
+  },
+  {
+    "externalId": "1882390",
+    "name": "Blauwdruk, koudgeperst sap, rucola boerenkool appel romaine selderij komkommer citroen gember, rucola boerenkool appel romaine selderij komkommer citroen gember",
+    "description": "Blauwdruk, koudgeperst sap, rucola boerenkool"
+  },
+  { "externalId": "2061880", "name": "Kaas", "description": "Kaas, Zwitsers" },
+  {
+    "externalId": "2484651",
+    "name": "Medium gekookte garnalen",
+    "description": "Schaaldieren, garnalen, gekweekt, rauw"
+  },
+  {
+    "externalId": "1983090",
+    "name": "Druivensorbatto, druif",
+    "description": "Druiven, rood, pitloos, rauw"
+  },
+  {
+    "externalId": "2652057",
+    "name": "Zwarte bonen chili, zwarte bonen",
+    "description": "Bonen, snap, zwart, rauw"
+  },
+  { "externalId": "1903929", "name": "Gesneden nectarines", "description": "Nectarines, rauw" },
+  {
+    "externalId": "1889459",
+    "name": "Zilveren vis",
+    "description": "Vis, tilapia, gekweekt, rauw"
+  },
+  {
+    "externalId": "2069211",
+    "name": "Kippenworst",
+    "description": "Worst, kalkoen, ontbijtlinks, mild, rauw"
+  },
+  {
+    "externalId": "2474515",
+    "name": "Bakbanaantortilla's",
+    "description": "Bakbananen, rijp, rauw"
+  },
+  {
+    "externalId": "1897135",
+    "name": "Pompoenmeel, Biologisch Pompoenmeel",
+    "description": "Meel, spelt, volkoren, pompoen"
+  },
+  {
+    "externalId": "2402948",
+    "name": "Mango's",
+    "description": "Mango, Tommy Atkins, geschild, rauw"
+  },
+  {
+    "externalId": "2421200",
+    "name": "Tonijn Wild Gevangen Premium Zeevruchten, Tonijn",
+    "description": "Tonijn, ahi of geelvintonijn, bevroren, wild gevangen"
+  },
+  { "externalId": "2396424", "name": "Gemalen Bizon", "description": "Bizon, gemalen, rauw" },
+  {
+    "externalId": "1759691",
+    "name": "Pepperoncini-paprika's, Pepperoncini-paprika's",
+    "description": "Paprika, bel, geel, rauw"
+  },
+  {
+    "externalId": "2062044",
+    "name": "Gastronomische abrikozen",
+    "description": "Abrikoos, met schil, rauw"
+  },
+  {
+    "externalId": "1889936",
+    "name": "Miga-brood",
+    "description": "Brood, wit, commercieel bereid"
+  },
+  {
+    "externalId": "1915143",
+    "name": "Wild gevangen Maine-kreeftvlees",
+    "description": "Schaaldieren, krab, blauwzwemmen, brokjes, gepasteuriseerd, gekoeld"
+  },
+  {
+    "externalId": "475535",
+    "name": "Kiwi's",
+    "description": "Kiwifruit (kiwi), groen, geschild, rauw"
+  },
+  { "externalId": "2671029", "name": "Knoflookpasta, Knoflook", "description": "Knoflook, rauw" },
+  {
+    "externalId": "578159",
+    "name": "Volledig natuurlijk gemalen lamsvlees",
+    "description": "Lamsvlees, gemalen, rauw"
+  },
+  { "externalId": "2089626", "name": "Kaas", "description": "Kaas, Monterey Jack, stevig" },
+  {
+    "externalId": "2640901",
+    "name": "Natuurlijke sojabonenmelk",
+    "description": "Sojamelk, ongezoet, naturel, houdbaar"
+  },
+  {
+    "externalId": "2183065",
+    "name": "Marazul Ansjovisfilets in Zonnebloemolie 78g",
+    "description": "Ansjovis, ingeblikt in olijfolie, met zout, uitgelekt"
+  },
+  {
+    "externalId": "common:pizza-margherita",
+    "name": "Pizza Margherita",
+    "description": "Italiaanse pizza met tomatensaus, mozzarella en basilicum"
+  },
+  {
+    "externalId": "common:pizza-quattro-formaggi",
+    "name": "Pizza Quattro Formaggi",
+    "description": "Italiaanse pizza met vier kazen"
+  },
+  {
+    "externalId": "common:pepperoni-pizza",
+    "name": "Pepperoni-pizza",
+    "description": "Amerikaanse pizza met tomatensaus, mozzarella en pepperoni"
+  },
+  {
+    "externalId": "common:hawaiian-pizza",
+    "name": "Hawaiiaanse pizza",
+    "description": "Pizza met ham, ananas, tomatensaus en kaas"
+  },
+  {
+    "externalId": "common:bbq-chicken-pizza",
+    "name": "BBQ-kippizza",
+    "description": "Pizza met barbecuesaus, kip, ui en kaas"
+  },
+  {
+    "externalId": "common:vegetarian-pizza",
+    "name": "Vegetarische Pizza",
+    "description": "Pizza met gemengde groenten, tomatensaus en kaas"
+  },
+  {
+    "externalId": "common:mushroom-pizza",
+    "name": "Champignonpizza",
+    "description": "Pizza met champignons, tomatensaus en mozzarella"
+  },
+  {
+    "externalId": "common:prosciutto-pizza",
+    "name": "Prosciutto-pizza",
+    "description": "Italiaanse pizza met prosciutto, mozzarella en tomatensaus"
+  },
+  {
+    "externalId": "common:calzone",
+    "name": "Calzone",
+    "description": "Gevouwen Italiaanse pizza gevuld met kaas en vulling"
+  },
+  {
+    "externalId": "common:garlic-bread",
+    "name": "Knoflook Brood",
+    "description": "Geroosterd brood met kruidenboter"
+  },
+  {
+    "externalId": "common:cheeseburger",
+    "name": "Cheeseburger",
+    "description": "Rundvleesburger met kaas, broodje en toppings"
+  },
+  {
+    "externalId": "common:hamburger",
+    "name": "Hamburger",
+    "description": "Rundvleespasteitje in een broodje met klassieke toppings"
+  },
+  {
+    "externalId": "common:double-cheeseburger",
+    "name": "Dubbele Cheeseburger",
+    "description": "Burger met twee runderpasteitjes en kaas"
+  },
+  {
+    "externalId": "common:bacon-cheeseburger",
+    "name": "Bacon Cheeseburger",
+    "description": "Rundvleesburger met bacon, kaas en toppings"
+  },
+  {
+    "externalId": "common:chicken-burger",
+    "name": "Kipburger",
+    "description": "Burger met kippasteitje of gegrilde kip"
+  },
+  {
+    "externalId": "common:crispy-chicken-sandwich",
+    "name": "Krokante Kipsandwich",
+    "description": "Broodje gebakken kip met broodje en saus"
+  },
+  {
+    "externalId": "common:veggie-burger",
+    "name": "Vegetarische Burger",
+    "description": "Plantaardige burger met broodje en toppings"
+  },
+  {
+    "externalId": "common:fish-burger",
+    "name": "Visburger",
+    "description": "Burger met gepaneerde visfilet en saus"
+  },
+  {
+    "externalId": "common:hot-dog",
+    "name": "Hotdog",
+    "description": "Worst in een broodje met specerijen"
+  },
+  {
+    "externalId": "common:corn-dog",
+    "name": "Corndog",
+    "description": "Gehavende worst op een stokje"
+  },
+  {
+    "externalId": "common:french-fries",
+    "name": "Frietjes",
+    "description": "Gefrituurde aardappelsticks"
+  },
+  {
+    "externalId": "common:sweet-potato-fries",
+    "name": "Zoete Aardappel Frietjes",
+    "description": "Gebakken zoete aardappelsticks"
+  },
+  {
+    "externalId": "common:onion-rings",
+    "name": "Uienringen",
+    "description": "Gehavende en gebakken uienringen"
+  },
+  {
+    "externalId": "common:chicken-nuggets",
+    "name": "Kipnuggets",
+    "description": "Gepaneerde gebakken stukjes kip"
+  },
+  {
+    "externalId": "common:chicken-wings",
+    "name": "Kippenvleugels",
+    "description": "Gebakken of gebakken kippenvleugels met saus"
+  },
+  {
+    "externalId": "common:buffalo-wings",
+    "name": "Buffelvleugels",
+    "description": "Kippenvleugels in pittige buffelsaus"
+  },
+  {
+    "externalId": "common:mozzarella-sticks",
+    "name": "Mozzarella-sticks",
+    "description": "Gepaneerde gebakken mozzarella-kaassticks"
+  },
+  {
+    "externalId": "common:mac-and-cheese",
+    "name": "Mac en Kaas",
+    "description": "Macaroni pasta met romige kaassaus"
+  },
+  {
+    "externalId": "common:grilled-cheese-sandwich",
+    "name": "Broodje Gegrilde Kaas",
+    "description": "Tosti met gesmolten kaas"
+  },
+  {
+    "externalId": "common:club-sandwich",
+    "name": "Clubsandwich",
+    "description": "Gelaagde sandwich met kalkoen, spek, sla en tomaat"
+  },
+  {
+    "externalId": "common:blt-sandwich",
+    "name": "BLT-sandwich",
+    "description": "Sandwich met spek, sla en tomaat"
+  },
+  {
+    "externalId": "common:ham-and-cheese-sandwich",
+    "name": "Ham- en Kaassandwich",
+    "description": "Sandwich met ham, kaas en brood"
+  },
+  {
+    "externalId": "common:tuna-salad-sandwich",
+    "name": "Broodje Tonijnsalade",
+    "description": "Sandwich met tonijnsalade vulling"
+  },
+  {
+    "externalId": "common:egg-salad-sandwich",
+    "name": "Broodje eiersalade",
+    "description": "Sandwich met eiersalade vulling"
+  },
+  {
+    "externalId": "common:chicken-salad-sandwich",
+    "name": "Broodje Kipsalade",
+    "description": "Sandwich met kipsalade vulling"
+  },
+  {
+    "externalId": "common:philly-cheesesteak",
+    "name": "Philly Cheesesteak",
+    "description": "Sandwich met gesneden rundvlees, kaas en uien"
+  },
+  {
+    "externalId": "common:meatball-sub",
+    "name": "Gehaktbal Sub",
+    "description": "Subsandwich met gehaktballetjes, tomatensaus en kaas"
+  },
+  {
+    "externalId": "common:falafel-wrap",
+    "name": "Falafel-wikkel",
+    "description": "Wrap met falafel, groenten en tahinisaus"
+  },
+  {
+    "externalId": "common:chicken-caesar-wrap",
+    "name": "Caesar-wrap met kip",
+    "description": "Wrap met kip, romaine, parmezaanse kaas en Caesardressing"
+  },
+  {
+    "externalId": "common:shawarma-wrap",
+    "name": "Shoarma wrap",
+    "description": "Midden-Oosterse wrap met gekruid vlees en knoflooksaus"
+  },
+  {
+    "externalId": "common:gyro",
+    "name": "Gyro",
+    "description": "Griekse pita met gesneden vlees, groenten en tzatziki"
+  },
+  {
+    "externalId": "common:doner-kebab",
+    "name": "Döner Kebab",
+    "description": "Platbrood of pitabroodje op Turkse wijze met geschaafd vlees en salade"
+  },
+  {
+    "externalId": "common:burrito",
+    "name": "Burrito",
+    "description": "Mexicaanse tortilla gevuld met rijst, bonen, vlees en toppings"
+  },
+  {
+    "externalId": "common:chicken-burrito",
+    "name": "Kipburrito",
+    "description": "Burrito met kip, rijst, bonen en salsa"
+  },
+  {
+    "externalId": "common:burrito-bowl",
+    "name": "Burrito-kom",
+    "description": "Rijstkom met bonen, vlees of groenten, salsa en toppings"
+  },
+  {
+    "externalId": "common:beef-taco",
+    "name": "Rundvlees Taco",
+    "description": "Taco met gekruid rundvlees, sla, kaas en salsa"
+  },
+  {
+    "externalId": "common:chicken-taco",
+    "name": "Kip Taco",
+    "description": "Taco met kip, salsa en groenten"
+  },
+  {
+    "externalId": "common:fish-taco",
+    "name": "Vis Taco",
+    "description": "Taco met vis, koolsla en saus"
+  },
+  {
+    "externalId": "common:carnitas-taco",
+    "name": "Carnitas Taco",
+    "description": "Taco met langzaam gegaard varkensvlees en toppings"
+  },
+  {
+    "externalId": "common:quesadilla",
+    "name": "Quesadilla",
+    "description": "Gegrilde tortilla gevuld met gesmolten kaas"
+  },
+  {
+    "externalId": "common:nachos",
+    "name": "Nacho's",
+    "description": "Tortillachips gegarneerd met kaas, salsa en toppings"
+  },
+  {
+    "externalId": "common:loaded-nachos",
+    "name": "Geladen nacho's",
+    "description": "Nacho's met vlees, bonen, kaas, salsa en zure room"
+  },
+  {
+    "externalId": "common:enchiladas",
+    "name": "Enchiladas",
+    "description": "Opgerolde tortilla's gebakken met saus en kaas"
+  },
+  {
+    "externalId": "common:chicken-enchiladas",
+    "name": "Enchiladas met kip",
+    "description": "Enchiladas gevuld met kip en overgoten met saus"
+  },
+  {
+    "externalId": "common:fajitas",
+    "name": "Fajita's",
+    "description": "Sissend vlees of groenten geserveerd met tortilla's"
+  },
+  {
+    "externalId": "common:chicken-fajitas",
+    "name": "Fajitas met kip",
+    "description": "Kip met paprika en uien geserveerd met tortilla's"
+  },
+  {
+    "externalId": "common:chili-con-carne",
+    "name": "Chili con Carne",
+    "description": "Gekruide rundvlees- en bonenchili"
+  },
+  {
+    "externalId": "common:guacamole",
+    "name": "Guacamole",
+    "description": "Gepureerde avocadodip met limoen en kruiden"
+  },
+  {
+    "externalId": "common:salsa-and-chips",
+    "name": "Salsa en chips",
+    "description": "Tortillachips geserveerd met tomatensalsa"
+  },
+  {
+    "externalId": "common:tacos-al-pastor",
+    "name": "Taco's al Pastor",
+    "description": "Mexicaanse taco's met gemarineerd varkensvlees, ananas, ui en koriander"
+  },
+  {
+    "externalId": "common:carne-asada-tacos",
+    "name": "Carne Asada-taco's",
+    "description": "Mexicaanse taco's met gegrilde biefstuk, ui, koriander en salsa"
+  },
+  {
+    "externalId": "common:chiles-rellenos",
+    "name": "Chiles Rellenos",
+    "description": "Mexicaanse gevulde paprika's met kaas of vlees en saus"
+  },
+  {
+    "externalId": "common:pozole",
+    "name": "Pozole",
+    "description": "Mexicaanse hominysoep met varkensvlees of kip en toppings"
+  },
+  {
+    "externalId": "common:tamales",
+    "name": "Tamales",
+    "description": "Mexicaanse gestoomde maïsmasa gevuld met vlees, kaas of groenten"
+  },
+  {
+    "externalId": "common:sopes",
+    "name": "Sopes",
+    "description": "Dikke Mexicaanse maïscakejes gegarneerd met bonen, vlees, salsa en kaas"
+  },
+  {
+    "externalId": "common:tostadas",
+    "name": "Tostadas",
+    "description": "Krokante tortilla's belegd met bonen, vlees, groenten en salsa"
+  },
+  {
+    "externalId": "common:mole-poblano",
+    "name": "Mole Poblano",
+    "description": "Mexicaanse kip of kalkoen met rijke chilisaus en chocolademolesaus"
+  },
+  {
+    "externalId": "common:poke-bowl-chicken",
+    "name": "Poke Bowl Kip",
+    "description": "Rijstkom in Hawaïaanse stijl met kip, groenten en saus"
+  },
+  {
+    "externalId": "common:poke-bowl-salmon",
+    "name": "Poke Bowl Zalm",
+    "description": "Rijstkom in Hawaïaanse stijl met zalm, groenten en saus"
+  },
+  {
+    "externalId": "common:poke-bowl-tuna",
+    "name": "Poke Bowl Tonijn",
+    "description": "Rijstkom in Hawaïaanse stijl met tonijn, groenten en saus"
+  },
+  {
+    "externalId": "common:poke-bowl-tofu",
+    "name": "Poke Bowl Tofu",
+    "description": "Rijstkom in Hawaïaanse stijl met tofu, groenten en saus"
+  },
+  {
+    "externalId": "common:sushi-salmon-nigiri",
+    "name": "Sushi Zalm Nigiri",
+    "description": "Japanse sushirijst gegarneerd met zalm"
+  },
+  {
+    "externalId": "common:california-roll",
+    "name": "California Roll",
+    "description": "Sushirol met krab of surimi, avocado en komkommer"
+  },
+  {
+    "externalId": "common:spicy-tuna-roll",
+    "name": "Pikant tonijnrolletje",
+    "description": "Sushirol met pikante tonijn en rijst"
+  },
+  {
+    "externalId": "common:salmon-avocado-roll",
+    "name": "Zalm Avocado Rol",
+    "description": "Sushirol met zalm en avocado"
+  },
+  {
+    "externalId": "common:vegetable-sushi-roll",
+    "name": "Plantaardige sushirol",
+    "description": "Sushirol met komkommer, avocado en groenten"
+  },
+  {
+    "externalId": "common:salmon-sashimi",
+    "name": "Zalmsashimi",
+    "description": "Japanse gesneden rauwe zalm"
+  },
+  {
+    "externalId": "common:tuna-sashimi",
+    "name": "Tonijn Sashimi",
+    "description": "Japanse gesneden rauwe tonijn"
+  },
+  {
+    "externalId": "common:chicken-teriyaki",
+    "name": "Kip Teriyaki",
+    "description": "Japanse kip met zoete soja-teriyakisaus"
+  },
+  {
+    "externalId": "common:beef-teriyaki",
+    "name": "Rundvlees Teriyaki",
+    "description": "Japans rundvlees met teriyakisaus"
+  },
+  {
+    "externalId": "common:teriyaki-salmon",
+    "name": "Teriyaki-zalm",
+    "description": "Zalm geglazuurd met teriyakisaus"
+  },
+  {
+    "externalId": "common:chicken-katsu",
+    "name": "Kip Katsu",
+    "description": "Japanse gepaneerde gebakken kipkotelet"
+  },
+  {
+    "externalId": "common:pork-tonkatsu",
+    "name": "Varkensvlees Tonkatsu",
+    "description": "Japanse gepaneerde varkenskotelet"
+  },
+  {
+    "externalId": "common:ramen",
+    "name": "Ramen",
+    "description": "Japanse noedelsoep met bouillon en toppings"
+  },
+  {
+    "externalId": "common:miso-ramen",
+    "name": "Miso Ramen",
+    "description": "Japanse ramen met misobouillon"
+  },
+  {
+    "externalId": "common:shoyu-ramen",
+    "name": "Shoyu Ramen",
+    "description": "Japanse ramen met sojasausbouillon"
+  },
+  {
+    "externalId": "common:udon-noodle-soup",
+    "name": "Udon-noedelsoep",
+    "description": "Japanse dikke tarwenoedels in bouillon"
+  },
+  {
+    "externalId": "common:yakisoba",
+    "name": "Yakisoba",
+    "description": "Japanse roergebakken noedels met groenten en saus"
+  },
+  {
+    "externalId": "common:fried-rice",
+    "name": "Gebakken Rijst",
+    "description": "Gewokte rijst met ei, groenten en kruiden"
+  },
+  {
+    "externalId": "common:chicken-fried-rice",
+    "name": "Kip Gebakken Rijst",
+    "description": "Gebakken rijst met kip, ei en groenten"
+  },
+  {
+    "externalId": "common:shrimp-fried-rice",
+    "name": "Garnalen Gebakken Rijst",
+    "description": "Gebakken rijst met garnalen, ei en groenten"
+  },
+  {
+    "externalId": "common:chow-mein",
+    "name": "Chow Mein",
+    "description": "Chinese roergebakken noedels met groenten"
+  },
+  {
+    "externalId": "common:chicken-chow-mein",
+    "name": "Kip Chow Mein",
+    "description": "Chinese roergebakken noedels met kip en groenten"
+  },
+  {
+    "externalId": "common:lo-mein",
+    "name": "Lo Mein",
+    "description": "Chinese noedels met saus en groenten"
+  },
+  {
+    "externalId": "common:orange-chicken",
+    "name": "Oranje Kip",
+    "description": "Chinees-Amerikaanse gebakken kip in sinaasappelsaus"
+  },
+  {
+    "externalId": "common:general-tso-chicken",
+    "name": "Generaal Tso Kip",
+    "description": "Chinees-Amerikaanse gebakken kip in zoetpikante saus"
+  },
+  {
+    "externalId": "common:sweet-and-sour-chicken",
+    "name": "Zoetzure kip",
+    "description": "Chinese gebakken kip met zoetzure saus"
+  },
+  {
+    "externalId": "common:kung-pao-chicken",
+    "name": "Kung Pao-kip",
+    "description": "Chinese roerbakkip met pinda's en chili"
+  },
+  {
+    "externalId": "common:beef-and-broccoli",
+    "name": "Rundvlees en Broccoli",
+    "description": "Chinees roerbakgerecht met rundvlees, broccoli en saus"
+  },
+  {
+    "externalId": "common:mapo-tofu",
+    "name": "Mapo Tofu",
+    "description": "Sichuan tofu gerecht met pikante saus"
+  },
+  {
+    "externalId": "common:spring-rolls",
+    "name": "Loempia's",
+    "description": "Gebakken of verse broodjes met groenten en vulling"
+  },
+  {
+    "externalId": "common:egg-rolls",
+    "name": "Loempia's",
+    "description": "Gebakken Chinese broodjes met kool en vulling"
+  },
+  {
+    "externalId": "common:dumplings",
+    "name": "Dumplings",
+    "description": "Gevulde dumplings, gestoomd of gebakken"
+  },
+  {
+    "externalId": "common:pork-dumplings",
+    "name": "Varkensvleesknoedels",
+    "description": "Dumplings gevuld met gekruid varkensvlees"
+  },
+  {
+    "externalId": "common:chicken-dumplings",
+    "name": "Kippenknoedels",
+    "description": "Dumplings gevuld met gekruide kip"
+  },
+  {
+    "externalId": "common:pad-thai",
+    "name": "Pad Thai",
+    "description": "Thaise roergebakken rijstnoedels met ei, pinda's en saus"
+  },
+  {
+    "externalId": "common:chicken-pad-thai",
+    "name": "Kip Pad Thai",
+    "description": "Thaise roergebakken noedels met kip en pinda's"
+  },
+  {
+    "externalId": "common:pad-see-ew",
+    "name": "Pad See Ew",
+    "description": "Thaise roergebakken brede noedels met sojasaus"
+  },
+  {
+    "externalId": "common:thai-red-curry",
+    "name": "Thaise Rode Curry",
+    "description": "Thaise kokoscurry met rode currypasta"
+  },
+  {
+    "externalId": "common:tom-yum-soup",
+    "name": "Tom Yum-soep",
+    "description": "Thaise hete en zure soep met kruiden"
+  },
+  {
+    "externalId": "common:tom-kha-gai",
+    "name": "Tom Kha Gai",
+    "description": "Thaise kokoskippensoep"
+  },
+  {
+    "externalId": "common:chicken-satay",
+    "name": "Kip saté",
+    "description": "Gegrilde kipspiesjes met pindasaus"
+  },
+  {
+    "externalId": "common:pho-bo",
+    "name": "Pho Bo",
+    "description": "Vietnamese rundvleesnoedelsoep"
+  },
+  { "externalId": "common:pho-ga", "name": "Pho Ga", "description": "Vietnamese kippennoedelsoep" },
+  {
+    "externalId": "common:banh-mi",
+    "name": "Banh Mi",
+    "description": "Vietnamese stokbroodsandwich met vlees en ingemaakte groenten"
+  },
+  {
+    "externalId": "common:bun-cha",
+    "name": "Bun Cha",
+    "description": "Vietnamees gegrild varkensvlees met noedels en kruiden"
+  },
+  {
+    "externalId": "common:vietnamese-spring-rolls",
+    "name": "Vietnamese loempia's",
+    "description": "Verse rijstpapierrollen met kruiden, noedels en vulling"
+  },
+  {
+    "externalId": "common:bibimbap",
+    "name": "Bibimbap",
+    "description": "Koreaanse rijstkom met groenten, ei en saus"
+  },
+  {
+    "externalId": "common:korean-fried-chicken",
+    "name": "Koreaanse gebakken kip",
+    "description": "Krokant gebakken kip met Koreaanse saus"
+  },
+  {
+    "externalId": "common:kimchi-fried-rice",
+    "name": "Kimchi-gebakken rijst",
+    "description": "Koreaanse gebakken rijst met kimchi en ei"
+  },
+  {
+    "externalId": "common:tteokbokki",
+    "name": "Tteokbokki",
+    "description": "Koreaanse pittige rijstwafels"
+  },
+  {
+    "externalId": "common:kimbap",
+    "name": "Kimbap",
+    "description": "Koreaanse zeewierrijstrol met vulling"
+  },
+  {
+    "externalId": "common:butter-chicken",
+    "name": "Butter Chicken",
+    "description": "Indiase kipcurry in romige tomatensaus"
+  },
+  {
+    "externalId": "common:chicken-tikka-masala",
+    "name": "Kip Tikka Masala",
+    "description": "Kipcurry op Indiase wijze in gekruide tomatenroomsaus"
+  },
+  {
+    "externalId": "common:chicken-curry",
+    "name": "Kip Kerrie",
+    "description": "Kip gekookt in gekruide currysaus"
+  },
+  {
+    "externalId": "common:vegetable-curry",
+    "name": "Plantaardige Curry",
+    "description": "Gemengde groenten gekookt in currysaus"
+  },
+  {
+    "externalId": "common:chana-masala",
+    "name": "Chana Masala",
+    "description": "Indiase kikkererwtencurry"
+  },
+  {
+    "externalId": "common:dal-tadka",
+    "name": "Dal Tadka",
+    "description": "Indiase linzenschotel met gekruide temperering"
+  },
+  {
+    "externalId": "common:palak-paneer",
+    "name": "Palak Paneer",
+    "description": "Indiase spinaziecurry met paneerkaas"
+  },
+  {
+    "externalId": "common:biryani",
+    "name": "Biryani",
+    "description": "Gekruide rijstschotel met vlees of groenten"
+  },
+  {
+    "externalId": "common:vegetable-biryani",
+    "name": "Plantaardige Biryani",
+    "description": "Indiase gekruide rijst met gemengde groenten"
+  },
+  {
+    "externalId": "common:naan",
+    "name": "Naan",
+    "description": "Indiaas platbrood gebakken in de tandoor"
+  },
+  {
+    "externalId": "common:garlic-naan",
+    "name": "Knoflook Naan",
+    "description": "Indiaas platbrood belegd met kruidenboter"
+  },
+  {
+    "externalId": "common:samosa",
+    "name": "Samosa",
+    "description": "Gebakken bladerdeeg gevuld met gekruide aardappelen of vlees"
+  },
+  {
+    "externalId": "common:tandoori-chicken",
+    "name": "Tandoori Kip",
+    "description": "Indiaas gekruide kip geroosterd in de tandoor"
+  },
+  {
+    "externalId": "common:spaghetti-bolognese",
+    "name": "Spaghetti Bolognese",
+    "description": "Italiaanse pasta met vlees-tomatensaus"
+  },
+  {
+    "externalId": "common:spaghetti-carbonara",
+    "name": "Spaghetti Carbonara",
+    "description": "Italiaanse pasta met ei, kaas, pancetta en peper"
+  },
+  {
+    "externalId": "common:pasta-alfredo",
+    "name": "Pasta Alfredo",
+    "description": "Pasta met romige Parmezaanse saus"
+  },
+  {
+    "externalId": "common:penne-arrabbiata",
+    "name": "Penne Arrabbiata",
+    "description": "Italiaanse pasta met pikante tomatensaus"
+  },
+  {
+    "externalId": "common:pasta-pesto",
+    "name": "Pastapesto",
+    "description": "Pasta met basilicumpestosaus"
+  },
+  {
+    "externalId": "common:lasagna",
+    "name": "Lasagne",
+    "description": "Gelaagde pasta met vleessaus, kaas en bechamelsaus"
+  },
+  {
+    "externalId": "common:vegetable-lasagna",
+    "name": "Plantaardige lasagne",
+    "description": "Gelaagde pasta met groenten, saus en kaas"
+  },
+  {
+    "externalId": "common:ravioli",
+    "name": "Ravioli",
+    "description": "Gevulde Italiaanse pasta met saus"
+  },
+  {
+    "externalId": "common:gnocchi",
+    "name": "Gnocchi",
+    "description": "Italiaanse aardappelknoedels met saus"
+  },
+  {
+    "externalId": "common:risotto",
+    "name": "Risotto",
+    "description": "Italiaans romig rijstgerecht"
+  },
+  {
+    "externalId": "common:mushroom-risotto",
+    "name": "Champignonrisotto",
+    "description": "Italiaanse romige rijst met champignons"
+  },
+  {
+    "externalId": "common:chicken-parmesan",
+    "name": "Kip Parmezaanse kaas",
+    "description": "Gepaneerde kip met tomatensaus en gesmolten kaas"
+  },
+  {
+    "externalId": "common:eggplant-parmesan",
+    "name": "Aubergine Parmezaanse kaas",
+    "description": "Gepaneerde aubergine met tomatensaus en kaas"
+  },
+  {
+    "externalId": "common:caprese-salad",
+    "name": "Caprese-salade",
+    "description": "Italiaanse salade met tomaat, mozzarella en basilicum"
+  },
+  {
+    "externalId": "common:focaccia",
+    "name": "Focaccia",
+    "description": "Italiaans platbrood met olijfolie, kruiden en zout"
+  },
+  {
+    "externalId": "common:pasta-amatriciana",
+    "name": "Pasta Amatriciana",
+    "description": "Italiaanse pasta met tomatensaus, gezouten varkensvlees en pecorino"
+  },
+  {
+    "externalId": "common:pasta-cacio-e-pepe",
+    "name": "Pasta Cacio en Pepe",
+    "description": "Italiaanse pasta met pecorinokaas en zwarte peper"
+  },
+  {
+    "externalId": "common:osso-buco",
+    "name": "Osso Buco",
+    "description": "Italiaanse gestoofde kalfsschenkel met groenten en wijn"
+  },
+  {
+    "externalId": "common:saltimbocca",
+    "name": "Saltimbocca",
+    "description": "Italiaans kalfs- of kipvlees met prosciutto, salie en wijnsaus"
+  },
+  {
+    "externalId": "common:arancini",
+    "name": "Arancini",
+    "description": "Italiaanse gebakken rijstballetjes gevuld met kaas, vlees of saus"
+  },
+  {
+    "externalId": "common:panna-cotta",
+    "name": "Pannacotta",
+    "description": "Italiaans dessert met gekoelde room, vaak geserveerd met fruitsaus"
+  },
+  {
+    "externalId": "common:chicken-caesar-salad",
+    "name": "Caesarsalade met kip",
+    "description": "Caesarsalade met kip erop"
+  },
+  {
+    "externalId": "common:greek-salad",
+    "name": "Griekse Salade",
+    "description": "Salade met komkommer, tomaat, olijven, feta en dressing"
+  },
+  {
+    "externalId": "common:chef-salad",
+    "name": "Chef-kok salade",
+    "description": "Gemengde salade met vlees, kaas, ei en groenten"
+  },
+  {
+    "externalId": "common:tuna-salad",
+    "name": "Tonijn Salade",
+    "description": "Salade met tonijn, groenten en dressing"
+  },
+  {
+    "externalId": "common:quinoa-salad",
+    "name": "Quinoa-salade",
+    "description": "Salade met quinoa, groenten en dressing"
+  },
+  {
+    "externalId": "common:pasta-salad",
+    "name": "Pastasalade",
+    "description": "Koude pastasalade met groenten en dressing"
+  },
+  {
+    "externalId": "common:coleslaw",
+    "name": "Koolsalade",
+    "description": "Koolsalade met romige of azijndressing"
+  },
+  {
+    "externalId": "common:potato-salad",
+    "name": "Aardappelsalade",
+    "description": "Koude aardappelsalade met mayonaise of vinaigrette"
+  },
+  {
+    "externalId": "common:roast-chicken",
+    "name": "Gebraden kip",
+    "description": "In de oven geroosterde hele of gesneden kip"
+  },
+  {
+    "externalId": "common:grilled-chicken-breast",
+    "name": "Gegrilde Kipfilet",
+    "description": "Gegrilde magere kipfilet"
+  },
+  {
+    "externalId": "common:chicken-schnitzel",
+    "name": "Kipschnitzel",
+    "description": "Gepaneerde gebakken kipkotelet"
+  },
+  {
+    "externalId": "common:pork-schnitzel",
+    "name": "Varkensschnitzel",
+    "description": "Gepaneerde gebakken varkenskotelet"
+  },
+  {
+    "externalId": "common:steak",
+    "name": "Biefstuk",
+    "description": "Gegrilde of in de pan aangebraden biefstuk"
+  },
+  {
+    "externalId": "common:ribeye-steak",
+    "name": "Ribeye-steak",
+    "description": "Gegrilde ribeye biefstuk"
+  },
+  {
+    "externalId": "common:roast-beef",
+    "name": "Rosbief",
+    "description": "Ovengeroosterd rundvlees geserveerd in plakjes"
+  },
+  {
+    "externalId": "common:pork-chop",
+    "name": "Varkenskotelet",
+    "description": "Gegrilde of gebakken karbonade"
+  },
+  {
+    "externalId": "common:bbq-ribs",
+    "name": "BBQ-ribben",
+    "description": "Varkens- of rundvleesribben met barbecuesaus"
+  },
+  {
+    "externalId": "common:pulled-pork",
+    "name": "Getrokken varkensvlees",
+    "description": "Langzaam gegaard varkensvlees met saus"
+  },
+  {
+    "externalId": "common:grilled-salmon",
+    "name": "Gegrilde Zalm",
+    "description": "Zalmfilet gegrild of aangebraden"
+  },
+  {
+    "externalId": "common:baked-salmon",
+    "name": "Gebakken Zalm",
+    "description": "Ovengebakken zalmfilet"
+  },
+  {
+    "externalId": "common:fish-and-chips",
+    "name": "Vis en chips",
+    "description": "Gepaneerde gebakken vis geserveerd met friet"
+  },
+  {
+    "externalId": "common:fish-sticks",
+    "name": "Vissticks",
+    "description": "Gepaneerde gebakken visstukjes"
+  },
+  {
+    "externalId": "common:shrimp-scampi",
+    "name": "Garnalen Scampi",
+    "description": "Garnalen gekookt met knoflook, boter en citroen"
+  },
+  {
+    "externalId": "common:grilled-shrimp",
+    "name": "Gegrilde garnalen",
+    "description": "Gekruide garnalen gegrild op spiesjes of in de pan"
+  },
+  {
+    "externalId": "common:paella",
+    "name": "Paëlla",
+    "description": "Spaans rijstgerecht met zeevruchten, vlees of groenten"
+  },
+  {
+    "externalId": "common:seafood-paella",
+    "name": "Paella met zeevruchten",
+    "description": "Spaans rijstgerecht met zeevruchten en saffraan"
+  },
+  {
+    "externalId": "common:patatas-bravas",
+    "name": "Patatas Bravas",
+    "description": "Spaanse gebakken aardappelen met pikante saus"
+  },
+  {
+    "externalId": "common:gazpacho",
+    "name": "Gazpacho",
+    "description": "Spaanse gekoelde tomaten- en groentesoep"
+  },
+  {
+    "externalId": "common:croquetas",
+    "name": "Croquetas",
+    "description": "Spaanse gebakken bechamelkroketten met ham, kip of vis"
+  },
+  {
+    "externalId": "common:pan-con-tomate",
+    "name": "Pan con Tomaat",
+    "description": "Spaans geroosterd brood ingesmeerd met tomaat, olijfolie en zout"
+  },
+  {
+    "externalId": "common:gambas-al-ajillo",
+    "name": "Gambas al Ajillo",
+    "description": "Spaanse garnalen gekookt met knoflook, olijfolie en chili"
+  },
+  {
+    "externalId": "common:pulpo-a-la-gallega",
+    "name": "Pulpo a la Gallega",
+    "description": "Spaanse octopus met aardappelen, olijfolie en paprika"
+  },
+  {
+    "externalId": "common:fabada-asturiana",
+    "name": "Fabada Asturiana",
+    "description": "Spaanse witte bonenstoofpot met varkensvlees, worst en paprika"
+  },
+  {
+    "externalId": "common:pisto",
+    "name": "Pisto",
+    "description": "Spaanse groentestoofpot met tomaat, paprika, courgette en ei"
+  },
+  {
+    "externalId": "common:churros",
+    "name": "Churros",
+    "description": "Spaanse gefrituurde deeggebakjes, vaak geserveerd met chocolade"
+  },
+  {
+    "externalId": "common:empanadas",
+    "name": "Empanadas",
+    "description": "Gevuld bladerdeeg met vlees, kaas of groenten"
+  },
+  {
+    "externalId": "common:arepa",
+    "name": "Arepa",
+    "description": "Maïsmeelcake gevuld of belegd met hartige ingrediënten"
+  },
+  {
+    "externalId": "common:ceviche",
+    "name": "Ceviche",
+    "description": "Latijns-Amerikaanse, in citrus gemarineerde zeevruchten"
+  },
+  {
+    "externalId": "common:feijoada",
+    "name": "Feijoada",
+    "description": "Braziliaanse stoofpot van zwarte bonen met varkensvlees of rundvlees"
+  },
+  {
+    "externalId": "common:moqueca",
+    "name": "Moqueca",
+    "description": "Braziliaanse visstoofpot met kokosmelk"
+  },
+  {
+    "externalId": "common:picanha",
+    "name": "Picanha",
+    "description": "Braziliaanse biefstuk van gegrild rundvlees"
+  },
+  {
+    "externalId": "common:coxinha",
+    "name": "Coxinha",
+    "description": "Braziliaans gebakken deeg gevuld met geraspte kip"
+  },
+  {
+    "externalId": "common:pao-de-queijo",
+    "name": "Pao de Queijo",
+    "description": "Braziliaans kaasbrood gemaakt met tapiocameel"
+  },
+  {
+    "externalId": "common:farofa",
+    "name": "Farofa",
+    "description": "Bijgerecht van Braziliaans geroosterd cassavemeel"
+  },
+  {
+    "externalId": "common:baiao-de-dois",
+    "name": "Baiao de Dois",
+    "description": "Braziliaanse rijst- en bonenschotel met kaas, kruiden en gedroogd vlees"
+  },
+  {
+    "externalId": "common:pastel",
+    "name": "Pastei",
+    "description": "Braziliaans gebakken bladerdeeg gevuld met vlees, kaas of groenten"
+  },
+  {
+    "externalId": "common:brigadeiro",
+    "name": "Brigadeiro",
+    "description": "Gecondenseerde melktruffel van Braziliaanse chocolade"
+  },
+  {
+    "externalId": "common:romeu-e-julieta",
+    "name": "Romeu en Julieta",
+    "description": "Braziliaanse dessertcombinatie van guavepasta met kaas"
+  },
+  {
+    "externalId": "common:hummus",
+    "name": "Hummus",
+    "description": "Dip van kikkererwten en tahini uit het Midden-Oosten"
+  },
+  {
+    "externalId": "common:tabbouleh",
+    "name": "Tabouleh",
+    "description": "Salade van peterselie en bulgur uit het Midden-Oosten"
+  },
+  {
+    "externalId": "common:baba-ganoush",
+    "name": "Baba Ganoush",
+    "description": "Dip van geroosterde aubergines uit het Midden-Oosten"
+  },
+  {
+    "externalId": "common:shakshuka",
+    "name": "Shakshuka",
+    "description": "Eieren gepocheerd in gekruide tomatensaus"
+  },
+  {
+    "externalId": "common:kofta",
+    "name": "Kofta",
+    "description": "Gekruide gehaktkebabs of pasteitjes"
+  },
+  {
+    "externalId": "common:lamb-kebab",
+    "name": "Lamskebab",
+    "description": "Gegrild gekruid lamsvlees op spiesjes"
+  },
+  {
+    "externalId": "common:couscous",
+    "name": "Couscous",
+    "description": "Gestoomde griesmeelkorrels met groenten of vlees"
+  },
+  {
+    "externalId": "common:chicken-tagine",
+    "name": "Kip Tajine",
+    "description": "Marokkaanse kipstoofpot met kruiden"
+  },
+  {
+    "externalId": "common:moussaka",
+    "name": "Moussaka",
+    "description": "Grieks gebakken ovenschotel met aubergine en vlees"
+  },
+  {
+    "externalId": "common:spanakopita",
+    "name": "Spanakopita",
+    "description": "Grieks bladerdeeg met spinazie en feta"
+  },
+  {
+    "externalId": "common:souvlaki",
+    "name": "Souvlaki",
+    "description": "Griekse gegrilde vleesspiesjes met pitabroodje of salade"
+  },
+  {
+    "externalId": "common:full-english-breakfast",
+    "name": "Volledig Engels ontbijt",
+    "description": "Ontbijt met eieren, worst, spek, bonen en toast"
+  },
+  {
+    "externalId": "common:stamppot",
+    "name": "Stamppot",
+    "description": "Hollandse aardappelpuree met groenten en rookworst"
+  },
+  {
+    "externalId": "common:hutspot",
+    "name": "Hutspot",
+    "description": "Hollandse aardappelpuree met wortelen, uien en vlees"
+  },
+  {
+    "externalId": "common:erwtensoep",
+    "name": "Erwtensoep",
+    "description": "Hollandse spliterwtensoep met varkensvlees en rookworst"
+  },
+  {
+    "externalId": "common:bitterballen",
+    "name": "Bitterballen",
+    "description": "Hollandse gebakken runderragoutballetjes geserveerd met mosterd"
+  },
+  {
+    "externalId": "common:kroket",
+    "name": "Kroket",
+    "description": "Hollandse gebakken kroket gevuld met vleesragout"
+  },
+  {
+    "externalId": "common:kibbeling",
+    "name": "Kibbeling",
+    "description": "Hollandse gehavende gebakken visstukjes geserveerd met saus"
+  },
+  {
+    "externalId": "common:poffertjes",
+    "name": "Poffertjes",
+    "description": "Kleine Hollandse pannenkoekjes geserveerd met boter en poedersuiker"
+  },
+  {
+    "externalId": "common:pancakes",
+    "name": "Pannenkoeken",
+    "description": "Gegrilde ontbijtkoekjes geserveerd met siroop of toppings"
+  },
+  {
+    "externalId": "common:waffles",
+    "name": "Wafels",
+    "description": "Ontbijtkoekjes in rasterpatroon geserveerd met toppings"
+  },
+  {
+    "externalId": "common:french-toast",
+    "name": "Franse Toast",
+    "description": "Brood gedrenkt in eimengsel en gebakken"
+  },
+  {
+    "externalId": "common:omelette",
+    "name": "Omelet",
+    "description": "Geklopte eieren gekookt met vulling"
+  },
+  {
+    "externalId": "common:cheese-omelette",
+    "name": "Kaas omelet",
+    "description": "Omelet gevuld met kaas"
+  },
+  {
+    "externalId": "common:vegetable-omelette",
+    "name": "Plantaardige omelet",
+    "description": "Omelet met gemengde groenten"
+  },
+  {
+    "externalId": "common:scrambled-eggs",
+    "name": "Roerei",
+    "description": "Geklopte eieren gekookt tot ze zacht of stevig zijn"
+  },
+  {
+    "externalId": "common:fried-eggs",
+    "name": "Gebakken eieren",
+    "description": "Eieren gekookt in een pan"
+  },
+  {
+    "externalId": "common:boiled-eggs",
+    "name": "Gekookte eieren",
+    "description": "Eieren gekookt in de schaal in kokend water"
+  },
+  {
+    "externalId": "common:eggs-benedict",
+    "name": "Eieren Benedictus",
+    "description": "Gepocheerde eieren met ham, Engelse muffin en hollandaise"
+  },
+  {
+    "externalId": "common:breakfast-burrito",
+    "name": "Ontbijtburrito",
+    "description": "Tortilla gevuld met eieren, kaas, vlees en aardappelen"
+  },
+  {
+    "externalId": "common:avocado-toast",
+    "name": "Avocado-toast",
+    "description": "Toast belegd met gepureerde avocado"
+  },
+  {
+    "externalId": "common:bagel-with-cream-cheese",
+    "name": "Bagel Met Roomkaas",
+    "description": "Bagelbeleg met roomkaas"
+  },
+  {
+    "externalId": "common:lox-bagel",
+    "name": "Lox bagel",
+    "description": "Bagel met gerookte zalm, roomkaas en toppings"
+  },
+  {
+    "externalId": "common:oatmeal",
+    "name": "Havermout",
+    "description": "Gekookte haver diende als pap"
+  },
+  {
+    "externalId": "common:overnight-oats",
+    "name": "Nachtelijke haver",
+    "description": "Haver een nacht geweekt met melk of yoghurt"
+  },
+  {
+    "externalId": "common:granola-bowl",
+    "name": "Mueslikom",
+    "description": "Granola geserveerd met yoghurt of melk en fruit"
+  },
+  {
+    "externalId": "common:smoothie-bowl",
+    "name": "Smoothiebowl",
+    "description": "Dikke gemengde fruitschaal met toppings"
+  },
+  {
+    "externalId": "common:protein-smoothie",
+    "name": "Eiwit-smoothie",
+    "description": "Gemengde drank met eiwitpoeder en fruit of melk"
+  },
+  {
+    "externalId": "common:fruit-smoothie",
+    "name": "Fruitsmoothie",
+    "description": "Gemengde fruitdrank met sap, melk of yoghurt"
+  },
+  {
+    "externalId": "common:green-smoothie",
+    "name": "Groene Smoothie",
+    "description": "Gemengde drank met bladgroenten en fruit"
+  },
+  {
+    "externalId": "common:chicken-rice-bowl",
+    "name": "Kip Rijstkom",
+    "description": "Rijstkom met kip, groenten en saus"
+  },
+  {
+    "externalId": "common:beef-rice-bowl",
+    "name": "Rijstkom met rundvlees",
+    "description": "Rijstkom met rundvlees, groenten en saus"
+  },
+  {
+    "externalId": "common:salmon-rice-bowl",
+    "name": "Zalm Rijstkom",
+    "description": "Rijstkom met zalm, groenten en saus"
+  },
+  {
+    "externalId": "common:tofu-rice-bowl",
+    "name": "Tofu Rijstkom",
+    "description": "Rijstkom met tofu, groenten en saus"
+  },
+  {
+    "externalId": "common:mediterranean-bowl",
+    "name": "Mediterrane schaal",
+    "description": "Kom met granen, groenten, hummus, feta en eiwitten"
+  },
+  {
+    "externalId": "common:buddha-bowl",
+    "name": "Boeddha schaal",
+    "description": "Plantaardige bowl met granen, groenten en saus"
+  },
+  {
+    "externalId": "common:chicken-noodle-soup",
+    "name": "Kippennoedelsoep",
+    "description": "Soep met kip, noedels, groenten en bouillon"
+  },
+  {
+    "externalId": "common:tomato-soup",
+    "name": "Tomatensoep",
+    "description": "Soep gemaakt van tomaten en kruiden"
+  },
+  {
+    "externalId": "common:minestrone-soup",
+    "name": "Minestronesoep",
+    "description": "Italiaanse groentesoep met bonen of pasta"
+  },
+  {
+    "externalId": "common:split-pea-soup",
+    "name": "Gespleten Erwtensoep",
+    "description": "Dikke soep gemaakt van spliterwten"
+  },
+  {
+    "externalId": "common:clam-chowder",
+    "name": "Clam Chowder",
+    "description": "Romige soep met mosselen en aardappelen"
+  },
+  {
+    "externalId": "common:french-onion-soup",
+    "name": "Franse Uiensoep",
+    "description": "Uiensoep belegd met brood en gesmolten kaas"
+  },
+  {
+    "externalId": "common:beef-stew",
+    "name": "Rundvlees Stoofpot",
+    "description": "Langzaam gegaard rundvlees met groenten en jus"
+  },
+  {
+    "externalId": "common:chicken-pot-pie",
+    "name": "Kippottaart",
+    "description": "Hartige taart met kip, groenten en romige saus"
+  },
+  {
+    "externalId": "common:shepherds-pie",
+    "name": "Herders taart",
+    "description": "Vlees- en groenteschotel met daarop aardappelpuree"
+  },
+  {
+    "externalId": "common:cottage-pie",
+    "name": "Cottage taart",
+    "description": "Rundergehaktschotel belegd met aardappelpuree"
+  },
+  {
+    "externalId": "common:baked-potato",
+    "name": "Gebakken Aardappel",
+    "description": "Hele gebakken aardappel met toppings"
+  },
+  {
+    "externalId": "common:roasted-potatoes",
+    "name": "Geroosterde Aardappelen",
+    "description": "Aardappelen geroosterd met olie en kruiden"
+  },
+  {
+    "externalId": "common:hash-browns",
+    "name": "Hash Browns",
+    "description": "Gebakken geraspte of in blokjes gesneden aardappelen"
+  },
+  {
+    "externalId": "common:macaroni-salad",
+    "name": "Macaroni-salade",
+    "description": "Koude macaronisalade met romige dressing"
+  },
+  {
+    "externalId": "common:baked-beans",
+    "name": "Gebakken Bonen",
+    "description": "Bonen gebakken of gestoofd in zoete hartige saus"
+  },
+  {
+    "externalId": "common:rice-and-beans",
+    "name": "Rijst en bonen",
+    "description": "Eenvoudig rijstgerecht geserveerd met bonen"
+  },
+  {
+    "externalId": "common:jambalaya",
+    "name": "Jambalaya",
+    "description": "Cajun-rijstgerecht met vlees, zeevruchten en groenten"
+  },
+  {
+    "externalId": "common:gumbo",
+    "name": "Gumbo",
+    "description": "Louisiana-stoofpot met roux, groenten en vlees of zeevruchten"
+  },
+  {
+    "externalId": "common:chicken-and-waffles",
+    "name": "Kip en Wafels",
+    "description": "Gebakken kip geserveerd met wafels"
+  },
+  {
+    "externalId": "common:fried-chicken",
+    "name": "Gebakken Kip",
+    "description": "Stukjes kip gecoat en gefrituurd"
+  },
+  {
+    "externalId": "common:chicken-tenders",
+    "name": "Kipreepjes",
+    "description": "Gepaneerde gebakken reepjes kip"
+  },
+  {
+    "externalId": "common:cornbread",
+    "name": "Maïsbrood",
+    "description": "Gebakken brood gemaakt met maïsmeel"
+  },
+  {
+    "externalId": "common:sloppy-joe",
+    "name": "Sloppy Joe",
+    "description": "American sandwich met pittig rundergehakt op een broodje"
+  },
+  {
+    "externalId": "common:reuben-sandwich",
+    "name": "Ruben Sandwich",
+    "description": "Amerikaanse sandwich met corned beef, zuurkool, Zwitserse kaas en dressing"
+  },
+  {
+    "externalId": "common:lobster-roll",
+    "name": "Kreeft rol",
+    "description": "New England sandwich met kreeftvlees in een splittopbroodje"
+  },
+  {
+    "externalId": "common:biscuits-and-gravy",
+    "name": "Biscuits en jus",
+    "description": "Amerikaanse koekjes gegarneerd met worstjus"
+  },
+  {
+    "externalId": "common:chili-cheese-dog",
+    "name": "Chili Kaas Hond",
+    "description": "Hotdog gegarneerd met chili, kaas en uien"
+  },
+  {
+    "externalId": "common:chicken-fried-steak",
+    "name": "Gepaneerde biefstuk",
+    "description": "Amerikaanse gepaneerde runderkotelet geserveerd met jus"
+  },
+  {
+    "externalId": "common:hush-puppies",
+    "name": "Hush Puppies",
+    "description": "Zuiderse gebakken maïsmeelballetjes"
+  },
+  {
+    "externalId": "common:peach-cobbler",
+    "name": "Perzikcobbler",
+    "description": "Amerikaans gebakken perzikdessert met een topping van koekjes of beslag"
+  },
+  {
+    "externalId": "common:tuna-pasta-bake",
+    "name": "Tonijnpasta uit de oven",
+    "description": "Gebakken pastaschotel met tonijn en saus"
+  },
+  {
+    "externalId": "common:casserole",
+    "name": "Ovenschotel",
+    "description": "Gebakken gemengd gerecht met eiwitten, zetmeel en saus"
+  },
+  {
+    "externalId": "common:quiche-lorraine",
+    "name": "Quiche Lotharingen",
+    "description": "Hartige taart met eieren, room, spek en kaas"
+  },
+  {
+    "externalId": "common:vegetable-quiche",
+    "name": "Groentenquiche",
+    "description": "Hartige eiertaart met groenten en kaas"
+  },
+  {
+    "externalId": "common:croissant",
+    "name": "Croissant",
+    "description": "Boterachtig Frans halvemaangebakje"
+  },
+  {
+    "externalId": "common:pain-au-chocolat",
+    "name": "Pain au Chocolat",
+    "description": "Frans gebakje met chocoladevulling"
+  },
+  {
+    "externalId": "common:muffin",
+    "name": "Muffin",
+    "description": "Klein zoet gebakken snel broodje"
+  },
+  {
+    "externalId": "common:blueberry-muffin",
+    "name": "Bosbessenmuffin",
+    "description": "Muffins met bosbessen"
+  },
+  {
+    "externalId": "common:banana-bread",
+    "name": "Bananenbrood",
+    "description": "Zoet brood gemaakt met bananen"
+  },
+  {
+    "externalId": "common:chocolate-chip-cookie",
+    "name": "Chocoladeschilferkoekje",
+    "description": "Koekje met chocoladestukjes"
+  },
+  {
+    "externalId": "common:brownie",
+    "name": "Brownie",
+    "description": "Dicht chocoladegebakken dessert"
+  },
+  {
+    "externalId": "common:cheesecake",
+    "name": "Kaastaart",
+    "description": "Roomkaasdessert met korst"
+  },
+  {
+    "externalId": "common:apple-pie",
+    "name": "Appeltaart",
+    "description": "Taart gevuld met appels en kruiden"
+  },
+  {
+    "externalId": "common:pumpkin-pie",
+    "name": "Pompoentaart",
+    "description": "Taart met gekruide pompoenvlavulling"
+  },
+  {
+    "externalId": "common:tiramisu",
+    "name": "Tiramisu",
+    "description": "Italiaans dessert met in koffie gedrenkte lange vingers en mascarpone"
+  },
+  {
+    "externalId": "common:creme-brulee",
+    "name": "Crème Brulee",
+    "description": "Vladessert met gekarameliseerde suikertop"
+  },
+  { "externalId": "common:ice-cream", "name": "IJs", "description": "Bevroren zuiveldessert" },
+  {
+    "externalId": "common:chocolate-ice-cream",
+    "name": "Chocolade-ijs",
+    "description": "Bevroren zuiveldessert op smaak gebracht met chocolade"
+  },
+  {
+    "externalId": "common:vanilla-ice-cream",
+    "name": "Vanille-ijs",
+    "description": "Bevroren zuiveldessert op smaak gebracht met vanille"
+  },
+  {
+    "externalId": "common:frozen-yogurt",
+    "name": "Bevroren Yoghurt",
+    "description": "Bevroren dessert gemaakt met yoghurt"
+  },
+  {
+    "externalId": "common:gelato",
+    "name": "Gelato",
+    "description": "Italiaans bevroren zuiveldessert"
+  },
+  {
+    "externalId": "common:sorbet",
+    "name": "Sorbet",
+    "description": "Bevroren fruitdessert zonder zuivel"
+  },
+  {
+    "externalId": "common:bubble-tea",
+    "name": "Bubbelthee",
+    "description": "Theedrank met melk- of fruitsmaak en tapiocaparels"
+  },
+  {
+    "externalId": "common:cappuccino",
+    "name": "Cappuccino",
+    "description": "Espressodrank met gestoomde melk en schuim"
+  }
+]

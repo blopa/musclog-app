@@ -1,11 +1,13 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
+import { findFoundationFoodExternalIds } from '@/data/foundationFoodCatalogue';
 import { database } from '@/database/database-instance';
 import Food, { type FoodLabels, type MicrosData } from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
 import MealFood from '@/database/models/MealFood';
+import { fetchByIds } from '@/database/queryByIds';
 import { ProductV3 } from '@/types/openFoodFacts';
 import { getMusclogQualityScores, type MusclogProduct } from '@/utils/musclogProduct';
 import { getProductName } from '@/utils/openFoodFactsMapper';
@@ -516,6 +518,23 @@ export class FoodService {
   }
 
   /**
+   * Foundation foods matched on their bundled copy (English and the app language) rather than the
+   * stored words, which are in the first boot's language.
+   */
+  private static async searchFoundationFoodCopy(
+    term: string,
+    includeDescription: boolean
+  ): Promise<Food[]> {
+    return fetchByIds<Food>(
+      'foods',
+      'external_id',
+      findFoundationFoodExternalIds(term, { includeDescription }),
+      Q.where('source', 'foundation'),
+      Q.where('deleted_at', Q.eq(null))
+    );
+  }
+
+  /**
    * Batched food search across multiple terms, escaping SQL LIKE wildcards (`%`, `_`, `\`) safely
    * across SQLite and LokiJS. One query per unique term, run in parallel, results merged and
    * de-duplicated by id. `limit` applies PER TERM (name order, so the cut is stable and one term
@@ -554,9 +573,21 @@ export class FoodService {
           )
           .fetch();
 
-        return LIKE_WILDCARD_PATTERN.test(term)
+        const stored = LIKE_WILDCARD_PATTERN.test(term)
           ? rows.filter((food) => matchesSearchTerm(food, term, includeDescription))
           : rows;
+        const bundled = await FoodService.searchFoundationFoodCopy(term, includeDescription);
+        const storedIds = new Set(stored.map((food) => food.id));
+        const added = bundled.filter((food) => !storedIds.has(food.id));
+        if (added.length === 0) {
+          return stored;
+        }
+
+        const merged = [...stored, ...added];
+
+        return limit === undefined
+          ? merged
+          : merged.sort((a, b) => a.name.localeCompare(b.name)).slice(0, limit);
       })
     );
 

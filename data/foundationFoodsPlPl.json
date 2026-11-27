@@ -1,0 +1,2465 @@
+[
+  {
+    "externalId": "1703909",
+    "name": "Wiosenna mieszanka młodych sałat i zielonych warzyw",
+    "description": "Sałata, liść, zielona, surowa"
+  },
+  {
+    "externalId": "2122593",
+    "name": "Kukurydza",
+    "description": "Kukurydza, słodkie, żółte i białe ziarna, świeże, surowe"
+  },
+  {
+    "externalId": "2679290",
+    "name": "Szybki owies",
+    "description": "Owies pełnoziarnisty, cięty stalą"
+  },
+  {
+    "externalId": "2543214",
+    "name": "Pomidory",
+    "description": "Pomidory konserwowe, czerwone, dojrzałe, pokrojone w kostkę"
+  },
+  {
+    "externalId": "2447532",
+    "name": "Lody bananowe na patyku, banan",
+    "description": "Banany przejrzałe, surowe"
+  },
+  {
+    "externalId": "2448098",
+    "name": "Dzikie filety Mahi Mahi, złowione bez skóry i kości",
+    "description": "Mahi Mahi, zamrożone, złowione na wolności"
+  },
+  {
+    "externalId": "2447559",
+    "name": "Sok winogronowy, winogrono",
+    "description": "Sok winogronowy biały z dodatkiem witaminy C, z koncentratu, trwały"
+  },
+  {
+    "externalId": "2406586",
+    "name": "Sok pomarańczowy, pomarańcza",
+    "description": "Pomarańcze, surowe, pępki"
+  },
+  { "externalId": "2410361", "name": "Rzodkiewki", "description": "Rzodkiewki, czerwone, surowe" },
+  {
+    "externalId": "2445907",
+    "name": "Drobne słodkie ziemniaki",
+    "description": "Ziemniaki słodkie, miąższ pomarańczowy, bez skórki, surowe"
+  },
+  {
+    "externalId": "2134133",
+    "name": "Dynia żołędziowa",
+    "description": "Dynia zimowa, żołędziowa, surowa"
+  },
+  {
+    "externalId": "2062204",
+    "name": "Mleko",
+    "description": "Mleko niskotłuszczowe, płynne, 1% tłuszczu mlecznego, z dodatkiem witaminy A i witaminy D"
+  },
+  {
+    "externalId": "2062212",
+    "name": "Maślanka",
+    "description": "Maślanka, o niskiej zawartości tłuszczu"
+  },
+  {
+    "externalId": "2071280",
+    "name": "Mąka Bhakri",
+    "description": "Mąka pszenna uniwersalna, wzbogacana, bielona"
+  },
+  {
+    "externalId": "2667585",
+    "name": "Kurczak",
+    "description": "Kurczak, pierś, bez kości, bez skóry, surowy"
+  },
+  {
+    "externalId": "2495161",
+    "name": "Sos Pieczarkowy Do Makaronu, Pieczarkowy",
+    "description": "Grzyb, boczniak królewski"
+  },
+  {
+    "externalId": "2406124",
+    "name": "Surówka południowa z kapusty i marchewki w kostkę",
+    "description": "Kapusta czerwona, surowa"
+  },
+  {
+    "externalId": "2406125",
+    "name": "Surówka południowa z kapusty, papryki i cebuli",
+    "description": "Kapusta zielona, surowa"
+  },
+  {
+    "externalId": "2476441",
+    "name": "Łodygi i kawałki grzybów, Grzyb",
+    "description": "Grzyb, ostryga"
+  },
+  {
+    "externalId": "1899988",
+    "name": "Mieszane orzechy",
+    "description": "Orzechy, orzeszki piniowe, surowe"
+  },
+  {
+    "externalId": "1633846",
+    "name": "Brokuły w pikantnym sosie serowym",
+    "description": "Sos, makaron, spaghetti/marinara, gotowe do podania"
+  },
+  {
+    "externalId": "1919968",
+    "name": "Ciecierzyca",
+    "description": "Groszek zielony, słodki, puszkowy, z dodatkiem sodu, z dodatkiem cukru, odsączony i opłukany"
+  },
+  {
+    "externalId": "2675810",
+    "name": "Filety z dzikiego dorsza z Alaski, Dziki dorsz z Alaski",
+    "description": "Dorsz z Pacyfiku lub Alaski, mrożony, złowiony na wolności"
+  },
+  {
+    "externalId": "2135417",
+    "name": "Sos Pieczarkowy Do Makaronu, Pieczarkowy",
+    "description": "Grzyb, lwia grzywa"
+  },
+  { "externalId": "2064619", "name": "Szpinak", "description": "Szpinak, dojrzały" },
+  {
+    "externalId": "2192156",
+    "name": "Orzechy sosnowe",
+    "description": "Orzechy włoskie, włoskie, angielskie, połówki, surowe"
+  },
+  {
+    "externalId": "2594852",
+    "name": "Wędzona ryba Nova Łosoś",
+    "description": "Ryby, łosoś, sockeye, dziko złowione, surowe"
+  },
+  { "externalId": "2120877", "name": "Sól", "description": "Sól stołowa jodowana" },
+  {
+    "externalId": "1996978",
+    "name": "Burgery Wołowe, Wołowina",
+    "description": "Wołowina mielona, 80% chudego mięsa / 20% tłuszczu, surowa"
+  },
+  {
+    "externalId": "2618005",
+    "name": "Mleko Migdałowe, Wanilia",
+    "description": "Mleko migdałowe, niesłodzone, gładkie, trwałe"
+  },
+  {
+    "externalId": "2039105",
+    "name": "Oryginalne mleko sojowe",
+    "description": "Mleko sojowe, słodzone, zwykłe, chłodzone"
+  },
+  { "externalId": "2083628", "name": "Sok z małży", "description": "Sok, suszone śliwki, trwały" },
+  {
+    "externalId": "2423124",
+    "name": "Kurczak Chorizo, Kurczak",
+    "description": "Kurczak, podudzie, mięso i skóra, surowe"
+  },
+  {
+    "externalId": "2433643",
+    "name": "Pomidory w kostkę bez dodatku soli w soku pomidorowym",
+    "description": "Sok pomidorowy z dodatkami, z koncentratu, trwały"
+  },
+  {
+    "externalId": "2390768",
+    "name": "Przecier Pomidorowy, Pomidor",
+    "description": "Pasta pomidorowa z puszki, bez dodatku soli"
+  },
+  {
+    "externalId": "2092649",
+    "name": "Mleko",
+    "description": "Mleko pełne, 3,25% tłuszczu mlecznego, z dodatkiem witaminy D"
+  },
+  {
+    "externalId": "2477312",
+    "name": "Organiczny jarmuż i kapusta liściasta",
+    "description": "Jarmuż, surowy"
+  },
+  {
+    "externalId": "2518353",
+    "name": "Płynne jajka Egg Beaters",
+    "description": "Jajka, klasa A, duże, białko jaja"
+  },
+  {
+    "externalId": "2388443",
+    "name": "Winogrona",
+    "description": "Winogrona zielone, bezpestkowe, surowe"
+  },
+  { "externalId": "1934154", "name": "Świeże Buraki", "description": "Buraki, surowy" },
+  {
+    "externalId": "2121377",
+    "name": "Twarożek",
+    "description": "Twarożek pełnotłusty, twaróg duży lub mały"
+  },
+  {
+    "externalId": "2071650",
+    "name": "Jabłka",
+    "description": "Jabłka, Granny Smith, ze skórką, surowe"
+  },
+  {
+    "externalId": "522090",
+    "name": "Ziemniaki",
+    "description": "Ziemniaki rdzawe, bez skórki, surowe"
+  },
+  {
+    "externalId": "1859625",
+    "name": "Ryż Arborio",
+    "description": "Ryż biały, długoziarnisty, niewzbogacany, surowy"
+  },
+  { "externalId": "2062594", "name": "Orzeszki ziemne", "description": "Orzeszki ziemne, surowy" },
+  {
+    "externalId": "2467894",
+    "name": "Mieszane orzechy",
+    "description": "Orzechy, migdały prażone na sucho, z dodatkiem soli"
+  },
+  {
+    "externalId": "2054492",
+    "name": "Chleb Piekarniczy",
+    "description": "Chleb pełnoziarnisty, przygotowany komercyjnie"
+  },
+  {
+    "externalId": "2185701",
+    "name": "Jogurt beztłuszczowy",
+    "description": "Jogurt zwykły, odtłuszczony"
+  },
+  {
+    "externalId": "2139087",
+    "name": "Szynka",
+    "description": "Szynka w plasterkach, pakowana, wędliny (96% bez tłuszczu, z dodatkiem wody)"
+  },
+  {
+    "externalId": "2430401",
+    "name": "Rozdrobniona i doprawiona wieprzowina carnitas",
+    "description": "Wieprzowina, kotlet, środek, surowy"
+  },
+  {
+    "externalId": "2425912",
+    "name": "Groszek Blackeye z przyprawą do szynki",
+    "description": "Groszek czarnooki, suszony"
+  },
+  {
+    "externalId": "2081296",
+    "name": "Bulion Wołowy w Pudełku, Wołowina",
+    "description": "Rosół wołowy, surowy"
+  },
+  { "externalId": "2632582", "name": "Mąka do pieczenia", "description": "Mąka, ryż, kleisty" },
+  { "externalId": "2667706", "name": "Mąka jęczmienna", "description": "Mąka, ziemniak" },
+  {
+    "externalId": "2404942",
+    "name": "Pełnoziarnista mąka mielona Kamut, całe ziarno",
+    "description": "Khorasan, ziarno, suszone, surowe"
+  },
+  {
+    "externalId": "2397511",
+    "name": "Mąka z brązowego ryżu, mąka",
+    "description": "Mąka, jęczmień"
+  },
+  {
+    "externalId": "2161852",
+    "name": "Olej słonecznikowy i olej z awokado",
+    "description": "Olej, oliwka, ekstra lekkie"
+  },
+  { "externalId": "2596170", "name": "Klasyczny Hummus", "description": "Hummus, sklepowy" },
+  {
+    "externalId": "2008895",
+    "name": "Przecier pomidorowy, pomidor",
+    "description": "Pomidorowy, sos, konserwowy, z dodatkiem soli"
+  },
+  {
+    "externalId": "2619273",
+    "name": "Przecier pomidorowy, pomidor",
+    "description": "Pomidory, przeciery, konserwy"
+  },
+  {
+    "externalId": "2009491",
+    "name": "Niesłodzony mus jabłkowy",
+    "description": "Mus jabłkowy, niesłodzony, z dodatkiem witaminy C"
+  },
+  { "externalId": "2575996", "name": "Marchew", "description": "Marchew, dojrzała, surowa" },
+  {
+    "externalId": "2601209",
+    "name": "Sok Żurawinowy 100%, Żurawina",
+    "description": "Sok żurawinowy, niewzmacniany, z koncentratu, trwały"
+  },
+  {
+    "externalId": "2621245",
+    "name": "Surówka Brokułowa, Brokuły",
+    "description": "Brokuły, surowy"
+  },
+  { "externalId": "2621263", "name": "Liście rzepy", "description": "Rzepa, surowy" },
+  {
+    "externalId": "2576392",
+    "name": "Zupa z kiełbasą z indyka i jarmużem, Kiełbasa z indyka i jarmużem",
+    "description": "Jarmuż mrożony, gotowany, odsączony, bez soli"
+  },
+  {
+    "externalId": "2596270",
+    "name": "Sok jabłkowy, jabłko",
+    "description": "Jabłka, chrupiące, ze skórką, surowe"
+  },
+  { "externalId": "2431290", "name": "Soczewica", "description": "Soczewica, suszona" },
+  {
+    "externalId": "1869031",
+    "name": "Błyskawiczna mąka kukurydziana Masa",
+    "description": "Mąka kukurydziana, masa harina, biała lub żółta, suszona, surowa"
+  },
+  {
+    "externalId": "2629570",
+    "name": "Pieczone Dojrzałe Plantany",
+    "description": "Plantany, niedojrzałe, surowe"
+  },
+  {
+    "externalId": "2467328",
+    "name": "Steki z miecznika",
+    "description": "Miecznik, mrożony, złowiony na wolności"
+  },
+  {
+    "externalId": "1901707",
+    "name": "Groszek czarnooki, przyprawiony",
+    "description": "Groch czarnooki, puszkowany, z dodatkiem sodu, odsączony i opłukany"
+  },
+  { "externalId": "2021609", "name": "Cukier", "description": "Cukry granulowane" },
+  { "externalId": "2021632", "name": "Mango", "description": "Mango, Ataulfo, obrane, surowe" },
+  {
+    "externalId": "2475001",
+    "name": "Mleko",
+    "description": "Mleko o obniżonej zawartości tłuszczu, płynne, 2% tłuszczu mlecznego, z dodatkiem witaminy A i witaminy D"
+  },
+  { "externalId": "2023830", "name": "Mąka Chlebowa", "description": "Mąka, semolina, drobna" },
+  {
+    "externalId": "578455",
+    "name": "Jajka",
+    "description": "Jajko całe, surowe, mrożone, pasteryzowane"
+  },
+  {
+    "externalId": "2387087",
+    "name": "Organiczna mieszanka wiosenna młodych sałat i zielonych warzyw",
+    "description": "Radicchio, surowy"
+  },
+  {
+    "externalId": "2275517",
+    "name": "Sok winogronowy, winogrono",
+    "description": "Sok winogronowy, fioletowy, z dodatkiem witaminy C, z koncentratu, trwały"
+  },
+  {
+    "externalId": "2672968",
+    "name": "Smażona czarna fasola",
+    "description": "Fasola pinto z puszki, z dodatkiem sodu, odsączona i opłukana"
+  },
+  {
+    "externalId": "2577482",
+    "name": "Hatch Chile z Chia i siemieniem lnianym, Hatch Chile",
+    "description": "Siemię lniane, mielone"
+  },
+  {
+    "externalId": "569064",
+    "name": "Sok",
+    "description": "Sok cierpki wiśniowy z koncentratu, trwały"
+  },
+  {
+    "externalId": "2105045",
+    "name": "Mieszanka ziaren bulguru i komosy ryżowej",
+    "description": "Bulgur, suszony, surowy"
+  },
+  {
+    "externalId": "2158186",
+    "name": "Smażone szparagi",
+    "description": "Szparagi, zielone, surowe"
+  },
+  {
+    "externalId": "2633820",
+    "name": "Melon Kantalupa",
+    "description": "Melony, kantalupa, surowe"
+  },
+  {
+    "externalId": "2678631",
+    "name": "Królowa Oliwkowa",
+    "description": "Oliwki zielone, Manzanilla, faszerowane pimiento"
+  },
+  {
+    "externalId": "2487241",
+    "name": "Grzyby Marynowane Na Gorąco, Pieczarki",
+    "description": "Grzyby, pieczarki białe"
+  },
+  {
+    "externalId": "2056092",
+    "name": "Wołowina",
+    "description": "Wołowina, stek z polędwicy, surowy"
+  },
+  {
+    "externalId": "1728651",
+    "name": "Sos Włoski Grzybowy, Pieczarkowy",
+    "description": "Grzyb, buczniak"
+  },
+  {
+    "externalId": "2375018",
+    "name": "Mieszanka papryki i cebuli",
+    "description": "Zielona cebula (szczypiorek), cebula i warzywa, usunięty korzeń, surowy"
+  },
+  {
+    "externalId": "2428441",
+    "name": "Zamrożone mięso homara",
+    "description": "Homar, sam ogon, mrożony, złowiony na wolności"
+  },
+  { "externalId": "2502452", "name": "Maliny", "description": "Maliny, surowy" },
+  {
+    "externalId": "2567726",
+    "name": "Sos Czosnkowo-Cebulowy, Czosnek i Cebula",
+    "description": "Cebula czerwona, surowa"
+  },
+  {
+    "externalId": "2253421",
+    "name": "Kubeczki z budyniem bananowym, banan",
+    "description": "Banany dojrzałe i lekko dojrzałe, surowe"
+  },
+  {
+    "externalId": "2180044",
+    "name": "Zupa z Czarnej Fasoli, Czarna Fasola",
+    "description": "Fasola wielka północna, konserwowa, z dodatkiem sodu, odsączona i opłukana"
+  },
+  {
+    "externalId": "1891048",
+    "name": "Komosa sorgo i brązowy ryż",
+    "description": "Mąka z sorgo biała, perłowa, niewzbogacona, suszona, surowa"
+  },
+  {
+    "externalId": "2679700",
+    "name": "Komosa sorgo i brązowy ryż",
+    "description": "Sorgo, pełnoziarniste, białe, suszone, surowe"
+  },
+  {
+    "externalId": "2083070",
+    "name": "Lekki krem",
+    "description": "Śmietanka, kwaśna, pełnotłusta"
+  },
+  { "externalId": "2010041", "name": "Sos", "description": "Sos, salsa, gotowe do podania" },
+  {
+    "externalId": "1909135",
+    "name": "Mleko",
+    "description": "Mleko odtłuszczone, płynne, z dodatkiem witaminy A i witaminy D (beztłuszczowe lub odtłuszczone)"
+  },
+  {
+    "externalId": "2066269",
+    "name": "Przecier pomidorowy, pomidor",
+    "description": "Pomidory winogronowe, surowe"
+  },
+  {
+    "externalId": "2063073",
+    "name": "Prażone Masło Migdałowe",
+    "description": "Masło migdałowe, kremowe"
+  },
+  { "externalId": "2063079", "name": "Masło Orzechowe", "description": "Masło orzechowe, kremowe" },
+  {
+    "externalId": "1943184",
+    "name": "Gefilte Ryba Z Marchewką",
+    "description": "Ryby, dorsz, atlantycki, dziko złowiony, surowy"
+  },
+  { "externalId": "2016892", "name": "Ser", "description": "Ser, Cheddar" },
+  {
+    "externalId": "2623495",
+    "name": "Organiczny dziki ryż",
+    "description": "Ryż dziki, suszony, surowy"
+  },
+  {
+    "externalId": "2125901",
+    "name": "Organiczny ryż brązowy ze złotym ryżem",
+    "description": "Ryż brązowy, długoziarnisty, niewzbogacany, surowy"
+  },
+  {
+    "externalId": "2398274",
+    "name": "Marynowana fasola szparagowa Cool Beans",
+    "description": "Fasola, snap, zielona, ​​z puszki, zwykłe opakowanie, odsączona substancja stała"
+  },
+  {
+    "externalId": "1460133",
+    "name": "Filet z Snappera",
+    "description": "Snapper, zamrożony, złowiony na wolności"
+  },
+  {
+    "externalId": "1457743",
+    "name": "Mięso z udka kraba śnieżnego",
+    "description": "Krab śnieżny, tylko nogi, mrożony"
+  },
+  {
+    "externalId": "2072221",
+    "name": "Ryż Arborio",
+    "description": "Ryż czerwony, niewzbogacany, suszony, surowy"
+  },
+  {
+    "externalId": "2603491",
+    "name": "Ciecierzyca Orzo, Ciecierzyca",
+    "description": "Ciecierzyca (fasola garbanzo, gram bengalski), suszona"
+  },
+  {
+    "externalId": "1900839",
+    "name": "Mieszane orzechy",
+    "description": "Orzechy, migdały całe, surowe"
+  },
+  {
+    "externalId": "2616830",
+    "name": "Frankfurterki Thumanna, 3 funty",
+    "description": "Frankfurterka, wołowina, niepodgrzewana"
+  },
+  {
+    "externalId": "2676314",
+    "name": "Letnia Kiełbasa",
+    "description": "Kiełbasa włoska, wieprzowa, łagodna, gotowana, smażona na patelni"
+  },
+  {
+    "externalId": "1938429",
+    "name": "Włoska kiełbasa",
+    "description": "Kiełbasa, wieprzowina, chorizo, linka lub mielona, gotowana, smażona na patelni"
+  },
+  {
+    "externalId": "2146840",
+    "name": "Sałata rzymska, szatkowana marchewka i czerwona kapusta",
+    "description": "Kapusta, bok choy, surowa"
+  },
+  {
+    "externalId": "1888254",
+    "name": "Mandarynki",
+    "description": "Mandarynka bez pestek, obrana, surowa"
+  },
+  {
+    "externalId": "2152206",
+    "name": "Gruszki Bartletta",
+    "description": "Gruszki, surowe, bartlett"
+  },
+  {
+    "externalId": "2042179",
+    "name": "Mieszane orzechy",
+    "description": "Orzechy brazylijskie, surowe"
+  },
+  {
+    "externalId": "2096464",
+    "name": "Suszony produkt jajeczny Całe jaja",
+    "description": "Jajko całe, suszone"
+  },
+  {
+    "externalId": "2549919",
+    "name": "Ananasowe smakołyki w soku ananasowym, Sok ananasowy",
+    "description": "Ananas, surowy"
+  },
+  {
+    "externalId": "2401594",
+    "name": "Całe Pomidory W Soku Pomidorowym, Pomidor",
+    "description": "Pomidory całe, konserwowe, w formie stałej i płynnej, z dodatkiem soli"
+  },
+  {
+    "externalId": "2634454",
+    "name": "Filety z dzikiego chilijskiego okonia morskiego",
+    "description": "Okoń morski, chilijski, mrożony, złowiony na wolności"
+  },
+  {
+    "externalId": "2634455",
+    "name": "Dzikie filety z halibuta pacyficznego złowionego",
+    "description": "Halibut, mrożony, złowiony na wolności"
+  },
+  { "externalId": "2505655", "name": "Jarmuż", "description": "Jarmuż, surowy" },
+  {
+    "externalId": "2660646",
+    "name": "Udka Z Kurczaka, Kurczak",
+    "description": "Kurczak, skrzydełka, mięso i skóra, surowe"
+  },
+  {
+    "externalId": "2661756",
+    "name": "Burgery Z Kurczaka, Kurczak",
+    "description": "Kurczak, pierś, mięso i skóra, surowe"
+  },
+  {
+    "externalId": "2178032",
+    "name": "Paluszki marchewkowe, marchewka",
+    "description": "Marchewka baby, surowa"
+  },
+  {
+    "externalId": "2115066",
+    "name": "Pieczona Gryka",
+    "description": "Kasza gryczana, całe ziarno"
+  },
+  {
+    "externalId": "2060308",
+    "name": "Papryka",
+    "description": "Papryka serrano, pozbawiona pestek, surowa"
+  },
+  {
+    "externalId": "2060309",
+    "name": "Świeży żółty kabaczek",
+    "description": "Kabaczek, letni, żółty, zawiera skórkę, surowy"
+  },
+  { "externalId": "2626300", "name": "Bakłażany", "description": "Bakłażan, surowy" },
+  {
+    "externalId": "2396166",
+    "name": "Ubity serek śmietankowy",
+    "description": "Serek śmietankowy pełnotłusty, blok"
+  },
+  {
+    "externalId": "2422848",
+    "name": "Kiełbasa Wieprzowa Śniadaniowa, Wieprzowina Śniadaniowa",
+    "description": "Wieprzowina mielona, surowa"
+  },
+  {
+    "externalId": "2423541",
+    "name": "Woda jeżynowa wzbogacona esencją jeżynową, jeżyna",
+    "description": "Jeżyny, surowe"
+  },
+  {
+    "externalId": "2641766",
+    "name": "Niepeklowana szynka",
+    "description": "Szynka w plasterkach, restauracja"
+  },
+  {
+    "externalId": "2129494",
+    "name": "Superfood masło migdałowe z nasionami chia, konopi i goji",
+    "description": "Nasiona, nasiona słonecznika, jądra, surowe"
+  },
+  {
+    "externalId": "2102195",
+    "name": "Całe krążki cebuli",
+    "description": "Krążki cebuli panierowane, podsmażane, mrożone, przygotowane, podgrzewane w piekarniku"
+  },
+  {
+    "externalId": "2094460",
+    "name": "Pierścienie kalmarów",
+    "description": "Kalmary (kalmary), mrożone, tylko rurki"
+  },
+  {
+    "externalId": "2423382",
+    "name": "Rozgniecione Awokado",
+    "description": "Awokado, Hass, obrane, surowe"
+  },
+  {
+    "externalId": "2194474",
+    "name": "Nasiona Chia",
+    "description": "Nasiona Chia, suszone, surowe"
+  },
+  {
+    "externalId": "1133958",
+    "name": "Sok Wiśniowy, Wiśnia",
+    "description": "Wiśnie, słodkie, ciemnoczerwone, surowe"
+  },
+  {
+    "externalId": "576920",
+    "name": "Ziemniaki",
+    "description": "Ziemniaki czerwone, bez skórki, surowe"
+  },
+  {
+    "externalId": "2642169",
+    "name": "Śliwka czerwcowa z nektarem z owoców imbiru, Śliwka czerwcowa",
+    "description": "Śliwka czarna, ze skórką, surowa"
+  },
+  {
+    "externalId": "2455279",
+    "name": "Kiełbasa śniadaniowa",
+    "description": "Kiełbasa, kiełbasa śniadaniowa, wołowa, wstępnie obgotowana, nieprzygotowana"
+  },
+  {
+    "externalId": "2475934",
+    "name": "Jogurt Grecki",
+    "description": "Jogurt grecki, zwykły, odtłuszczony"
+  },
+  {
+    "externalId": "2181695",
+    "name": "Burgery Z Kurczaka, Kurczak",
+    "description": "Kurczak, udo, bez kości, bez skóry, surowe"
+  },
+  { "externalId": "2430237", "name": "Jagody", "description": "Borówki, surowe" },
+  {
+    "externalId": "2430317",
+    "name": "100% olej sojowy. Olej roślinny",
+    "description": "Olej kokosowy"
+  },
+  {
+    "externalId": "1925845",
+    "name": "Organiczny sok grejpfrutowy o kolorze rubinowo-czerwonym",
+    "description": "Sok grejpfrutowy czerwony, niewzmacniany, nie z koncentratu, przechowywany w lodówce"
+  },
+  {
+    "externalId": "2637169",
+    "name": "Ziemniaki O'Brien Krojone Ziemniaki z Papryką i Cebulą, Ziemniaki O'Brien",
+    "description": "Ziemniaki złote, bez skórki, surowe"
+  },
+  { "externalId": "1905344", "name": "Brukselka", "description": "Brukselka, surowa" },
+  { "externalId": "2665752", "name": "Czerwone Buraki", "description": "Buraki zielone, surowe" },
+  {
+    "externalId": "2507462",
+    "name": "Przecier pomidorowy, pomidor",
+    "description": "Pomidory kruszone, konserwowe"
+  },
+  {
+    "externalId": "2489170",
+    "name": "Prawdziwe jajko",
+    "description": "Jajko białe, surowe, mrożone, pasteryzowane"
+  },
+  {
+    "externalId": "2096008",
+    "name": "Przegrzebki z Morza Północnoatlantyckiego",
+    "description": "Przegrzebki morskie, mrożone, złowione na wolności"
+  },
+  { "externalId": "1664271", "name": "Figi", "description": "Figi suszone, niegotowane" },
+  {
+    "externalId": "2089873",
+    "name": "Ogórki O'Pete, przetworzone, pikantne",
+    "description": "Pikle, ogórek, koperek lub koperek koszerny"
+  },
+  {
+    "externalId": "2642882",
+    "name": "Sałata lodowa z Pacyfiku, 2 szt",
+    "description": "Sałata, cos lub rzymska, surowa"
+  },
+  {
+    "externalId": "2525374",
+    "name": "Jogurt do picia",
+    "description": "Jogurt, zwykły, pełne mleko"
+  },
+  {
+    "externalId": "2666557",
+    "name": "Jak kus-kus Fonio, jak kuskus",
+    "description": "Fonio, zbożowe, suszone, surowe"
+  },
+  { "externalId": "579494", "name": "Organiczny pasternak", "description": "Pasternak, surowy" },
+  {
+    "externalId": "1970280",
+    "name": "Pieczarki Pikantne Marynowane, Pieczarki",
+    "description": "Grzyb, pieczarka brązowa"
+  },
+  {
+    "externalId": "2384535",
+    "name": "Salwadorska Kapusta Kiszona, Salwadorska",
+    "description": "Kapusta pekińska, liść, pozbawiona łodyg, surowa"
+  },
+  {
+    "externalId": "1960704",
+    "name": "Ciastko Pop, Ciastko",
+    "description": "Ciasteczka owsiane, miękkie, z rodzynkami"
+  },
+  { "externalId": "2009472", "name": "Ser", "description": "Ser, queso fresco, solidny" },
+  {
+    "externalId": "2151413",
+    "name": "Indyk Oktoberfest Paszteciki, Indyk",
+    "description": "Indyk, mielony, 93% chudego mięsa / 7% tłuszczu, surowy"
+  },
+  { "externalId": "2105474", "name": "Mieszany Melon", "description": "Melony miodowe, surowe" },
+  {
+    "externalId": "1935836",
+    "name": "Mleko Migdałowe, Oryginał",
+    "description": "Mleko migdałowe, niesłodzone, zwykłe, schłodzone"
+  },
+  {
+    "externalId": "2508901",
+    "name": "Całe ziarno Farro, Całe ziarno",
+    "description": "Farro, perłowe, wytrawne, surowe"
+  },
+  {
+    "externalId": "2135930",
+    "name": "Wieprzowina",
+    "description": "Wieprzowina, polędwica, polędwica, bez kości, surowa"
+  },
+  {
+    "externalId": "2167314",
+    "name": "Orzechy Pekan",
+    "description": "Orzechy, orzechy pekan, połówki, surowe"
+  },
+  { "externalId": "1548924", "name": "Brzoskwinie", "description": "Brzoskwinie, żółte, surowe" },
+  {
+    "externalId": "2460077",
+    "name": "Ostry sos truflowy z pomidorami i kolendrą, kolendrą z pomidorów",
+    "description": "Miechunki, łuskane, surowe"
+  },
+  {
+    "externalId": "2369392",
+    "name": "Kawałki Arbuza, Arbuz",
+    "description": "Arbuz bez pestek, sam miąższ, surowy"
+  },
+  {
+    "externalId": "2604043",
+    "name": "Sok Marchewkowo-Ananasowy, Marchew; Ananas",
+    "description": "Marchew, mrożona, nieprzygotowana"
+  },
+  { "externalId": "2593092", "name": "Stek z ryby swai", "description": "Ryba, mintaj, surowa" },
+  {
+    "externalId": "1917372",
+    "name": "Sok pomarańczowy",
+    "description": "Sok pomarańczowy bez miąższu, niewzmacniany, z koncentratu, przechowywany w lodówce"
+  },
+  {
+    "externalId": "2642990",
+    "name": "Mieszanka ćwiartowanego kabaczka",
+    "description": "Kabaczek, letni, zielony, cukinia, zawiera skórkę, surowy"
+  },
+  {
+    "externalId": "2664361",
+    "name": "Mieszanka owsiana Barista, owies",
+    "description": "Mleko owsiane, niesłodzone, zwykłe, schłodzone"
+  },
+  { "externalId": "2554236", "name": "Keczup", "description": "Keczup, restauracja" },
+  { "externalId": "2095090", "name": "Ser", "description": "Ser, parmezan, tarty, chłodzony" },
+  {
+    "externalId": "2608614",
+    "name": "Einkorn Organiczny makaron ze starożytnych ziaren, Fusilli pełnoziarniste",
+    "description": "Samopsza, zbożowa, suszona, surowa"
+  },
+  {
+    "externalId": "2631071",
+    "name": "Jumbo przegrzebki",
+    "description": "Przegrzebki, zatoka, patagońska, mrożone, złowione na wolności"
+  },
+  { "externalId": "2403289", "name": "Różyczki Kalafiora", "description": "Kalafior, surowy" },
+  {
+    "externalId": "2274736",
+    "name": "Dynia Piżmowa, Piżmowa",
+    "description": "Dynia, dynia pie, obrana, pozbawiona nasion, surowa"
+  },
+  {
+    "externalId": "2423081",
+    "name": "Mieszanka pieprzowa, pieprz",
+    "description": "Papryka, dzwonek, zielona, surowa"
+  },
+  {
+    "externalId": "2159863",
+    "name": "Nektar Premium Gruszka, Gruszka",
+    "description": "Gruszka, Anjou, zielona, ze skórką, surowa"
+  },
+  {
+    "externalId": "2466144",
+    "name": "Wołowina",
+    "description": "Wołowina mielona, 90% chudego mięsa / 10% tłuszczu, surowa"
+  },
+  {
+    "externalId": "2466495",
+    "name": "Tłoczony na zimno sok warzywno-owocowy z selera, Seler",
+    "description": "Seler, surowy"
+  },
+  {
+    "externalId": "2452675",
+    "name": "Szalotka królewska Czarny czosnek, czarny",
+    "description": "Szalotka, cebula, obrana, z usuniętym korzeniem, surowa"
+  },
+  {
+    "externalId": "2369909",
+    "name": "Sok jabłkowy, jabłko",
+    "description": "Sok jabłkowy z dodatkiem witaminy C, z koncentratu, trwały"
+  },
+  { "externalId": "2652552", "name": "Truskawki", "description": "Truskawki, surowy" },
+  {
+    "externalId": "2291370",
+    "name": "Rutabaga pokrojona w kostkę",
+    "description": "Rutabaga, obrana, surowa"
+  },
+  {
+    "externalId": "2464657",
+    "name": "Mąka owsiana",
+    "description": "Płatki owsiane pełnoziarniste, walcowane, staromodne"
+  },
+  {
+    "externalId": "2640507",
+    "name": "Zupa z pomidorów i kopru włoskiego",
+    "description": "Koper włoski, bulwa, surowy"
+  },
+  { "externalId": "2665288", "name": "Mąka Jaglana", "description": "Proso, całe ziarno" },
+  {
+    "externalId": "2545121",
+    "name": "Lumi, Sok Morning Sunrise, Grejpfrut, Limonka, Grejpfrut, Limonka",
+    "description": "Sok grejpfrutowy biały, puszkowany lub butelkowany, niesłodzony"
+  },
+  {
+    "externalId": "464109",
+    "name": "Jogurt Grecki",
+    "description": "Jogurt, grecki, truskawkowy, odtłuszczony"
+  },
+  {
+    "externalId": "1882390",
+    "name": "Blue Print, sok tłoczony na zimno, rukola, jarmuż, jabłko, sałata rzymska, seler, ogórek, cytryna, imbir",
+    "description": "Blue Print, sok tłoczony na zimno, rukola, jarmuż"
+  },
+  { "externalId": "2061880", "name": "Ser", "description": "Ser, szwajcarski" },
+  {
+    "externalId": "2484651",
+    "name": "Średnio ugotowane krewetki",
+    "description": "Skorupiaki, krewetki, hodowlane, surowe"
+  },
+  {
+    "externalId": "1983090",
+    "name": "Sorbatto winogronowe, winogrono",
+    "description": "Winogrona czerwone, bezpestkowe, surowe"
+  },
+  {
+    "externalId": "2652057",
+    "name": "Chili z czarnej fasoli, czarna fasola",
+    "description": "Fasola snapczasta, czarna, surowa"
+  },
+  { "externalId": "1903929", "name": "Pokrojone nektarynki", "description": "Nektarynki, surowe" },
+  {
+    "externalId": "1889459",
+    "name": "Srebrna Rybka",
+    "description": "Ryba, tilapia, hodowlana, surowa"
+  },
+  {
+    "externalId": "2069211",
+    "name": "Kiełbasa Z Kurczaka",
+    "description": "Kiełbasa, indyk, linki śniadaniowe, łagodne, surowe"
+  },
+  {
+    "externalId": "2474515",
+    "name": "Tortille z plantanów",
+    "description": "Plantany, dojrzałe, surowe"
+  },
+  {
+    "externalId": "1897135",
+    "name": "Mąka Dyniowa, Ekologiczna Mąka Dyniowa",
+    "description": "Mąka orkiszowa, pełnoziarnista, dynia"
+  },
+  {
+    "externalId": "2402948",
+    "name": "Mango",
+    "description": "Mango, Tommy Atkins, obrane, surowe"
+  },
+  {
+    "externalId": "2421200",
+    "name": "Tuńczyk Dziki Złapany Premium Owoce Morza, Tuńczyk",
+    "description": "Tuńczyk, ahi lub żółtopłetwy, mrożony, złowiony na wolności"
+  },
+  { "externalId": "2396424", "name": "Zmielony Bizon", "description": "Bizon, mielony, surowy" },
+  {
+    "externalId": "1759691",
+    "name": "Papryka pepperoncini",
+    "description": "Papryka, dzwonek, żółta, surowa"
+  },
+  {
+    "externalId": "2062044",
+    "name": "Wyśmienite morele",
+    "description": "Morela ze skórką, surowa"
+  },
+  {
+    "externalId": "1889936",
+    "name": "Chleb Migi",
+    "description": "Chleb biały, przygotowany komercyjnie"
+  },
+  {
+    "externalId": "1915143",
+    "name": "Dzikie mięso homara z Maine",
+    "description": "Skorupiaki, krab pływak (blue swimming), kawałki mięsa, pasteryzowane, chłodzone"
+  },
+  { "externalId": "475535", "name": "Kiwi", "description": "Kiwi (kiwi), zielone, obrane, surowe" },
+  { "externalId": "2671029", "name": "Pasta Czosnkowa, Czosnek", "description": "Czosnek, surowy" },
+  {
+    "externalId": "578159",
+    "name": "Całkowicie naturalna mielona jagnięcina",
+    "description": "Jagnięcina, mielona, surowa"
+  },
+  { "externalId": "2089626", "name": "Ser", "description": "Ser, jack monterey, solidny" },
+  {
+    "externalId": "2640901",
+    "name": "Naturalne mleko sojowe",
+    "description": "Mleko sojowe, niesłodzone, gładkie, trwałe"
+  },
+  {
+    "externalId": "2183065",
+    "name": "Marazul Filety z sardeli w oleju słonecznikowym 78g",
+    "description": "Anchois z puszki w oliwie z oliwek, z solą, odsączone"
+  },
+  {
+    "externalId": "common:pizza-margherita",
+    "name": "Pizza Margherita",
+    "description": "Włoska pizza z sosem pomidorowym, mozzarellą i bazylią"
+  },
+  {
+    "externalId": "common:pizza-quattro-formaggi",
+    "name": "Pizza Quattro Formaggi",
+    "description": "Włoska pizza z czterema serami"
+  },
+  {
+    "externalId": "common:pepperoni-pizza",
+    "name": "Pizza Pepperoni",
+    "description": "Pizza amerykańska z sosem pomidorowym, mozzarellą i pepperoni"
+  },
+  {
+    "externalId": "common:hawaiian-pizza",
+    "name": "Pizza Hawajska",
+    "description": "Pizza z szynką, ananasem, sosem pomidorowym i serem"
+  },
+  {
+    "externalId": "common:bbq-chicken-pizza",
+    "name": "Pizza z Kurczakiem BBQ",
+    "description": "Pizza z sosem barbecue, kurczakiem, cebulą i serem"
+  },
+  {
+    "externalId": "common:vegetarian-pizza",
+    "name": "Wegetariańska pizza",
+    "description": "Pizza z mieszanką warzyw, sosem pomidorowym i serem"
+  },
+  {
+    "externalId": "common:mushroom-pizza",
+    "name": "Pizza Grzybowa",
+    "description": "Pizza z pieczarkami, sosem pomidorowym i mozzarellą"
+  },
+  {
+    "externalId": "common:prosciutto-pizza",
+    "name": "Pizza Prosciutto",
+    "description": "Włoska pizza z prosciutto, mozzarellą i sosem pomidorowym"
+  },
+  {
+    "externalId": "common:calzone",
+    "name": "Calzone",
+    "description": "Złożona włoska pizza nadziewana serem i nadzieniami"
+  },
+  {
+    "externalId": "common:garlic-bread",
+    "name": "Chleb Czosnkowy",
+    "description": "Chleb tostowy z masłem czosnkowym"
+  },
+  {
+    "externalId": "common:cheeseburger",
+    "name": "Cheeseburger",
+    "description": "Burger wołowy z serem, bułką i dodatkami"
+  },
+  {
+    "externalId": "common:hamburger",
+    "name": "Hamburger",
+    "description": "Kotlet wołowy w bułce z klasycznymi dodatkami"
+  },
+  {
+    "externalId": "common:double-cheeseburger",
+    "name": "Podwójny Cheeseburger",
+    "description": "Burger z dwoma kotletami wołowymi i serem"
+  },
+  {
+    "externalId": "common:bacon-cheeseburger",
+    "name": "Cheeseburger z bekonem",
+    "description": "Burger wołowy z boczkiem, serem i dodatkami"
+  },
+  {
+    "externalId": "common:chicken-burger",
+    "name": "Burger z Kurczakiem",
+    "description": "Burger z kotletem z kurczaka lub grillowanym kurczakiem"
+  },
+  {
+    "externalId": "common:crispy-chicken-sandwich",
+    "name": "Chrupiąca kanapka z kurczakiem",
+    "description": "Smażona kanapka z kurczakiem z bułką i sosem"
+  },
+  {
+    "externalId": "common:veggie-burger",
+    "name": "Burgery wegetariańskie",
+    "description": "Roślinny burger z bułką i dodatkami"
+  },
+  {
+    "externalId": "common:fish-burger",
+    "name": "Burger rybny",
+    "description": "Burger z panierowanym filetem rybnym i sosem"
+  },
+  {
+    "externalId": "common:hot-dog",
+    "name": "Hot Dog",
+    "description": "Kiełbasa w bułce z przyprawami"
+  },
+  {
+    "externalId": "common:corn-dog",
+    "name": "Corn dog",
+    "description": "Panierowana kiełbasa na patyku"
+  },
+  {
+    "externalId": "common:french-fries",
+    "name": "Frytki",
+    "description": "Paluszki ziemniaczane smażone w głębokim tłuszczu"
+  },
+  {
+    "externalId": "common:sweet-potato-fries",
+    "name": "Frytki ze słodkich ziemniaków",
+    "description": "Smażone paluszki ze słodkich ziemniaków"
+  },
+  {
+    "externalId": "common:onion-rings",
+    "name": "Krążki Cebuli",
+    "description": "Panierowane i smażone krążki cebuli"
+  },
+  {
+    "externalId": "common:chicken-nuggets",
+    "name": "Nuggetsy z kurczaka",
+    "description": "Panierowane smażone kawałki kurczaka"
+  },
+  {
+    "externalId": "common:chicken-wings",
+    "name": "Skrzydełka Z Kurczaka",
+    "description": "Smażone lub pieczone skrzydełka z kurczaka z sosem"
+  },
+  {
+    "externalId": "common:buffalo-wings",
+    "name": "Skrzydła Buffalo",
+    "description": "Skrzydełka z kurczaka w pikantnym sosie bawolym"
+  },
+  {
+    "externalId": "common:mozzarella-sticks",
+    "name": "Paluszki Mozzarelli",
+    "description": "Panierowane smażone paluszki sera mozzarella"
+  },
+  {
+    "externalId": "common:mac-and-cheese",
+    "name": "Mac i ser",
+    "description": "Makaron makaronowy z kremowym sosem serowym"
+  },
+  {
+    "externalId": "common:grilled-cheese-sandwich",
+    "name": "Grillowana kanapka z serem",
+    "description": "Zapiekana kanapka z topionym serem"
+  },
+  {
+    "externalId": "common:club-sandwich",
+    "name": "Kanapka klubowa",
+    "description": "Kanapka warstwowa z indykiem, boczkiem, sałatą i pomidorem"
+  },
+  {
+    "externalId": "common:blt-sandwich",
+    "name": "Kanapka BLT",
+    "description": "Kanapka z bekonem, sałatą i pomidorem"
+  },
+  {
+    "externalId": "common:ham-and-cheese-sandwich",
+    "name": "Kanapka z szynką i serem",
+    "description": "Kanapka z szynką, serem i pieczywem"
+  },
+  {
+    "externalId": "common:tuna-salad-sandwich",
+    "name": "Kanapka z sałatką z tuńczyka",
+    "description": "Kanapka z nadzieniem z sałatki z tuńczyka"
+  },
+  {
+    "externalId": "common:egg-salad-sandwich",
+    "name": "Kanapka z sałatką jajeczną",
+    "description": "Kanapka z nadzieniem z sałatki jajecznej"
+  },
+  {
+    "externalId": "common:chicken-salad-sandwich",
+    "name": "Kanapka z sałatką z kurczakiem",
+    "description": "Kanapka z nadzieniem sałatkowym z kurczakiem"
+  },
+  {
+    "externalId": "common:philly-cheesesteak",
+    "name": "Kanapka Philly cheesesteak",
+    "description": "Kanapka z plastrami wołowiny, serem i cebulą"
+  },
+  {
+    "externalId": "common:meatball-sub",
+    "name": "Sub z klopsikami",
+    "description": "Kanapka sub z klopsikami, sosem pomidorowym i serem"
+  },
+  {
+    "externalId": "common:falafel-wrap",
+    "name": "Wrap z falafelem",
+    "description": "Wrap z falafelem, warzywami i sosem tahini"
+  },
+  {
+    "externalId": "common:chicken-caesar-wrap",
+    "name": "Wrap z kurczakiem Cezar",
+    "description": "Wrap z kurczakiem, sałatą rzymską, parmezanem i dressingiem Cezar"
+  },
+  {
+    "externalId": "common:shawarma-wrap",
+    "name": "Wrap shawarma",
+    "description": "Wrap bliskowschodni z sezonowanym mięsem i sosem czosnkowym"
+  },
+  {
+    "externalId": "common:gyro",
+    "name": "Gyros",
+    "description": "Grecka pita z pokrojonym mięsem, warzywami i tzatziki"
+  },
+  {
+    "externalId": "common:doner-kebab",
+    "name": "Doner Kebab",
+    "description": "Podpłomyk lub pita po turecku z krojonym mięsem i surówką"
+  },
+  {
+    "externalId": "common:burrito",
+    "name": "Burrito",
+    "description": "Meksykańska tortilla wypełniona ryżem, fasolą, mięsem i dodatkami"
+  },
+  {
+    "externalId": "common:chicken-burrito",
+    "name": "Burrito z Kurczakiem",
+    "description": "Burrito z kurczakiem, ryżem, fasolą i salsą"
+  },
+  {
+    "externalId": "common:burrito-bowl",
+    "name": "Miska Burrito",
+    "description": "Miska ryżowa z fasolą, mięsem lub warzywami, salsą i dodatkami"
+  },
+  {
+    "externalId": "common:beef-taco",
+    "name": "Wołowina Taco",
+    "description": "Taco z sezonowaną wołowiną, sałatą, serem i salsą"
+  },
+  {
+    "externalId": "common:chicken-taco",
+    "name": "Kurczak Taco",
+    "description": "Taco z kurczakiem, salsą i warzywami"
+  },
+  {
+    "externalId": "common:fish-taco",
+    "name": "Rybne Taco",
+    "description": "Taco z rybą, surówką i sosem"
+  },
+  {
+    "externalId": "common:carnitas-taco",
+    "name": "Carnitas Taco",
+    "description": "Taco z wolno gotowaną wieprzowiną i dodatkami"
+  },
+  {
+    "externalId": "common:quesadilla",
+    "name": "Quesadilla",
+    "description": "Grillowana tortilla wypełniona topionym serem"
+  },
+  {
+    "externalId": "common:nachos",
+    "name": "Nachos",
+    "description": "Chipsy tortilla z serem, salsą i dodatkami"
+  },
+  {
+    "externalId": "common:loaded-nachos",
+    "name": "Załadowane Nachos",
+    "description": "Nachosy z mięsem, fasolą, serem, salsą i kwaśną śmietaną"
+  },
+  {
+    "externalId": "common:enchiladas",
+    "name": "Enchilady",
+    "description": "Roladki tortilli zapiekane z sosem i serem"
+  },
+  {
+    "externalId": "common:chicken-enchiladas",
+    "name": "Enchilady z kurczakiem",
+    "description": "Enchiladas nadziewane kurczakiem i polane sosem"
+  },
+  {
+    "externalId": "common:fajitas",
+    "name": "Fajitas",
+    "description": "Skwierczące mięso lub warzywa podawane z tortillami"
+  },
+  {
+    "externalId": "common:chicken-fajitas",
+    "name": "Kurczak Fajitas",
+    "description": "Kurczak z papryką i cebulą podawany z tortillami"
+  },
+  {
+    "externalId": "common:chili-con-carne",
+    "name": "Chili con carne",
+    "description": "Przyprawione chili z wołowiną i fasolą"
+  },
+  {
+    "externalId": "common:guacamole",
+    "name": "Guacamole",
+    "description": "Dip z puree z awokado z limonką i przyprawami"
+  },
+  {
+    "externalId": "common:salsa-and-chips",
+    "name": "Salsa i chipsy",
+    "description": "Chipsy tortilla podawane z salsą pomidorową"
+  },
+  {
+    "externalId": "common:tacos-al-pastor",
+    "name": "Tacos al Pastor",
+    "description": "Meksykańskie tacos z marynowaną wieprzowiną, ananasem, cebulą i kolendrą"
+  },
+  {
+    "externalId": "common:carne-asada-tacos",
+    "name": "Tacos Carne Asada",
+    "description": "Meksykańskie tacos z grillowanym stekiem, cebulą, kolendrą i salsą"
+  },
+  {
+    "externalId": "common:chiles-rellenos",
+    "name": "Chiles Rellenos",
+    "description": "Meksykańska papryka faszerowana serem lub mięsem i sosem"
+  },
+  {
+    "externalId": "common:pozole",
+    "name": "Pozole",
+    "description": "Meksykańska zupa hominy z wieprzowiną lub kurczakiem i dodatkami"
+  },
+  {
+    "externalId": "common:tamales",
+    "name": "Tamale",
+    "description": "Meksykańska masa kukurydziana gotowana na parze nadziewana mięsem, serem lub warzywami"
+  },
+  {
+    "externalId": "common:sopes",
+    "name": "Sopes",
+    "description": "Grube meksykańskie wafle kukurydziane z fasolą, mięsem, salsą i serem"
+  },
+  {
+    "externalId": "common:tostadas",
+    "name": "Tostady",
+    "description": "Chrupiące tortille z fasolą, mięsem, warzywami i salsą"
+  },
+  {
+    "externalId": "common:mole-poblano",
+    "name": "Mole Poblano",
+    "description": "Meksykański kurczak lub indyk z bogatym sosem chili i czekoladą mole"
+  },
+  {
+    "externalId": "common:poke-bowl-chicken",
+    "name": "Poke Bowl z kurczaka",
+    "description": "Miska ryżowa w stylu hawajskim z kurczakiem, warzywami i sosem"
+  },
+  {
+    "externalId": "common:poke-bowl-salmon",
+    "name": "Poke Bowl z łososiem",
+    "description": "Miska ryżowa w stylu hawajskim z łososiem, warzywami i sosem"
+  },
+  {
+    "externalId": "common:poke-bowl-tuna",
+    "name": "Tuńczyk Poke Bowl",
+    "description": "Miska ryżowa w stylu hawajskim z tuńczykiem, warzywami i sosem"
+  },
+  {
+    "externalId": "common:poke-bowl-tofu",
+    "name": "Poke Bowl Tofu",
+    "description": "Miska ryżowa w stylu hawajskim z tofu, warzywami i sosem"
+  },
+  {
+    "externalId": "common:sushi-salmon-nigiri",
+    "name": "Sushi Łosoś Nigiri",
+    "description": "Japoński ryż sushi z dodatkiem łososia"
+  },
+  {
+    "externalId": "common:california-roll",
+    "name": "Rolada kalifornijska",
+    "description": "Rolada sushi z krabem lub surimi, awokado i ogórkiem"
+  },
+  {
+    "externalId": "common:spicy-tuna-roll",
+    "name": "Pikantna Rolada z Tuńczyka",
+    "description": "Rolada sushi z pikantnym tuńczykiem i ryżem"
+  },
+  {
+    "externalId": "common:salmon-avocado-roll",
+    "name": "Rolada z łososiem i awokado",
+    "description": "Rolada sushi z łososiem i awokado"
+  },
+  {
+    "externalId": "common:vegetable-sushi-roll",
+    "name": "Rolada sushi warzywna",
+    "description": "Rolada sushi z ogórkiem, awokado i warzywami"
+  },
+  {
+    "externalId": "common:salmon-sashimi",
+    "name": "Łososiowe Sashimi",
+    "description": "Japoński surowy łosoś w plasterkach"
+  },
+  {
+    "externalId": "common:tuna-sashimi",
+    "name": "Sashimi z Tuńczyka",
+    "description": "Japoński surowy tuńczyk w plasterkach"
+  },
+  {
+    "externalId": "common:chicken-teriyaki",
+    "name": "Kurczak Teriyaki",
+    "description": "Japoński kurczak ze słodkim sosem sojowym teriyaki"
+  },
+  {
+    "externalId": "common:beef-teriyaki",
+    "name": "Wołowina Teriyaki",
+    "description": "Japońska wołowina z sosem teriyaki"
+  },
+  {
+    "externalId": "common:teriyaki-salmon",
+    "name": "Łosoś Teriyaki",
+    "description": "Łosoś glazurowany sosem teriyaki"
+  },
+  {
+    "externalId": "common:chicken-katsu",
+    "name": "Kurczak Katsu",
+    "description": "Japoński smażony kotlet z kurczaka panierowany"
+  },
+  {
+    "externalId": "common:pork-tonkatsu",
+    "name": "Wieprzowina Tonkatsu",
+    "description": "Japoński smażony kotlet schabowy panierowany"
+  },
+  {
+    "externalId": "common:ramen",
+    "name": "Ramen",
+    "description": "Japońska zupa makaronowa z bulionem i dodatkami"
+  },
+  {
+    "externalId": "common:miso-ramen",
+    "name": "Miso Ramen",
+    "description": "Japoński ramen z bulionem miso"
+  },
+  {
+    "externalId": "common:shoyu-ramen",
+    "name": "Shoyu Ramen",
+    "description": "Japoński ramen z bulionem z sosu sojowego"
+  },
+  {
+    "externalId": "common:udon-noodle-soup",
+    "name": "Zupa Z Makaronem Udon",
+    "description": "Japoński gęsty makaron pszenny w bulionie"
+  },
+  {
+    "externalId": "common:yakisoba",
+    "name": "Yakisoba",
+    "description": "Japoński makaron smażony z warzywami i sosem"
+  },
+  {
+    "externalId": "common:fried-rice",
+    "name": "Smażony Ryż",
+    "description": "Ryż smażony z jajkiem, warzywami i przyprawami"
+  },
+  {
+    "externalId": "common:chicken-fried-rice",
+    "name": "Ryż Smażony Kurczak",
+    "description": "Smażony ryż z kurczakiem, jajkiem i warzywami"
+  },
+  {
+    "externalId": "common:shrimp-fried-rice",
+    "name": "Krewetki Smażony Ryż",
+    "description": "Smażony ryż z krewetkami, jajkiem i warzywami"
+  },
+  {
+    "externalId": "common:chow-mein",
+    "name": "Chow Mein",
+    "description": "Makaron chiński smażony z warzywami"
+  },
+  {
+    "externalId": "common:chicken-chow-mein",
+    "name": "Kurczak Chow Mein",
+    "description": "Makaron chiński smażony z kurczakiem i warzywami"
+  },
+  {
+    "externalId": "common:lo-mein",
+    "name": "Lo Mein",
+    "description": "Makaron chiński polany sosem i warzywami"
+  },
+  {
+    "externalId": "common:orange-chicken",
+    "name": "Kurczak Pomarańczowy",
+    "description": "Chińsko-amerykański smażony kurczak w sosie pomarańczowym"
+  },
+  {
+    "externalId": "common:general-tso-chicken",
+    "name": "Kurczak generała Tso",
+    "description": "Chińsko-amerykański smażony kurczak w słodko-ostrym sosie"
+  },
+  {
+    "externalId": "common:sweet-and-sour-chicken",
+    "name": "Kurczak słodko-kwaśny",
+    "description": "Chiński smażony kurczak z sosem słodko-kwaśnym"
+  },
+  {
+    "externalId": "common:kung-pao-chicken",
+    "name": "Kurczak Kung Pao",
+    "description": "Chiński smażony kurczak z orzeszkami ziemnymi i chili"
+  },
+  {
+    "externalId": "common:beef-and-broccoli",
+    "name": "Wołowina i brokuły",
+    "description": "Chińska smażona potrawa z wołowiną, brokułami i sosem"
+  },
+  {
+    "externalId": "common:mapo-tofu",
+    "name": "Mapo Tofu",
+    "description": "Danie z tofu po syczuańsku z pikantnym sosem"
+  },
+  {
+    "externalId": "common:spring-rolls",
+    "name": "Sajgonki",
+    "description": "Smażone lub świeże bułeczki z warzywami i nadzieniem"
+  },
+  {
+    "externalId": "common:egg-rolls",
+    "name": "Roladki Jajeczne",
+    "description": "Smażone bułeczki chińskie z kapustą i nadzieniem"
+  },
+  {
+    "externalId": "common:dumplings",
+    "name": "Pierożki",
+    "description": "Kluski nadziewane, gotowane na parze lub smażone"
+  },
+  {
+    "externalId": "common:pork-dumplings",
+    "name": "Pierożki wieprzowe",
+    "description": "Pierożki z sezonowaną wieprzowiną"
+  },
+  {
+    "externalId": "common:chicken-dumplings",
+    "name": "Pierożki Z Kurczakiem",
+    "description": "Pierożki z nadzieniem sezonowanego kurczaka"
+  },
+  {
+    "externalId": "common:pad-thai",
+    "name": "Pad Thai",
+    "description": "Tajski smażony makaron ryżowy z jajkiem, orzeszkami ziemnymi i sosem"
+  },
+  {
+    "externalId": "common:chicken-pad-thai",
+    "name": "Pad Thai z kurczakiem",
+    "description": "Tajski makaron smażony z kurczakiem i orzeszkami ziemnymi"
+  },
+  {
+    "externalId": "common:pad-see-ew",
+    "name": "Pad See Ew",
+    "description": "Tajski smażony szeroki makaron z sosem sojowym"
+  },
+  {
+    "externalId": "common:thai-red-curry",
+    "name": "Tajskie Czerwone Curry",
+    "description": "Tajskie curry kokosowe z czerwoną pastą curry"
+  },
+  {
+    "externalId": "common:tom-yum-soup",
+    "name": "Zupa Tom Yum",
+    "description": "Tajska zupa ostro-kwaśna z ziołami"
+  },
+  {
+    "externalId": "common:tom-kha-gai",
+    "name": "Tom Kha Gai",
+    "description": "Tajska kokosowa zupa z kurczakiem"
+  },
+  {
+    "externalId": "common:chicken-satay",
+    "name": "Kurczak Satay",
+    "description": "Grillowane szaszłyki z kurczaka z sosem orzechowym"
+  },
+  {
+    "externalId": "common:pho-bo",
+    "name": "Pho Bo",
+    "description": "Wietnamska zupa z makaronem wołowym"
+  },
+  {
+    "externalId": "common:pho-ga",
+    "name": "Pho Ga",
+    "description": "Wietnamska zupa z makaronem i kurczakiem"
+  },
+  {
+    "externalId": "common:banh-mi",
+    "name": "Banh Mi",
+    "description": "Wietnamska kanapka z bagietką z mięsem i marynowanymi warzywami"
+  },
+  {
+    "externalId": "common:bun-cha",
+    "name": "Bun Cha",
+    "description": "Wietnamska grillowana wieprzowina z makaronem i ziołami"
+  },
+  {
+    "externalId": "common:vietnamese-spring-rolls",
+    "name": "Wietnamskie Sajgonki",
+    "description": "Świeże bułeczki z papieru ryżowego z ziołami, makaronem i nadzieniem"
+  },
+  {
+    "externalId": "common:bibimbap",
+    "name": "Bibimbap",
+    "description": "Koreańska miska ryżowa z warzywami, jajkiem i sosem"
+  },
+  {
+    "externalId": "common:korean-fried-chicken",
+    "name": "Koreański Smażony Kurczak",
+    "description": "Chrupiący smażony kurczak z sosem koreańskim"
+  },
+  {
+    "externalId": "common:kimchi-fried-rice",
+    "name": "Kimchi Smażony Ryż",
+    "description": "Koreański smażony ryż z kimchi i jajkiem"
+  },
+  {
+    "externalId": "common:tteokbokki",
+    "name": "Tteokbokki",
+    "description": "Koreańskie pikantne wafle ryżowe"
+  },
+  {
+    "externalId": "common:kimbap",
+    "name": "Kimbapa",
+    "description": "Koreańska bułka ryżowa z wodorostami z nadzieniem"
+  },
+  {
+    "externalId": "common:butter-chicken",
+    "name": "Butter Chicken",
+    "description": "Indyjskie curry z kurczakiem w kremowym sosie pomidorowym"
+  },
+  {
+    "externalId": "common:chicken-tikka-masala",
+    "name": "Kurczak Tikka Masala",
+    "description": "Curry z kurczaka po indyjsku w pikantnym sosie pomidorowym"
+  },
+  {
+    "externalId": "common:chicken-curry",
+    "name": "Curry z kurczaka",
+    "description": "Kurczak gotowany w pikantnym sosie curry"
+  },
+  {
+    "externalId": "common:vegetable-curry",
+    "name": "Curry warzywne",
+    "description": "Mieszanka warzyw gotowana w sosie curry"
+  },
+  {
+    "externalId": "common:chana-masala",
+    "name": "Chana Masala",
+    "description": "Indyjskie curry z ciecierzycy"
+  },
+  {
+    "externalId": "common:dal-tadka",
+    "name": "Dal Tadka",
+    "description": "Indyjskie danie z soczewicy z pikantnym temperowaniem"
+  },
+  {
+    "externalId": "common:palak-paneer",
+    "name": "Palak paneer",
+    "description": "Indyjskie curry ze szpinakiem i serem paneer"
+  },
+  {
+    "externalId": "common:biryani",
+    "name": "Biryani",
+    "description": "Przyprawione danie ryżowe z mięsem lub warzywami"
+  },
+  {
+    "externalId": "common:vegetable-biryani",
+    "name": "Warzywne Biryani",
+    "description": "Indyjski przyprawiony ryż z mieszanką warzyw"
+  },
+  {
+    "externalId": "common:naan",
+    "name": "Naan",
+    "description": "Indyjski placek pieczony w piecu tandoor"
+  },
+  {
+    "externalId": "common:garlic-naan",
+    "name": "Naan czosnkowy",
+    "description": "Indyjski placek z masłem czosnkowym"
+  },
+  {
+    "externalId": "common:samosa",
+    "name": "Samosa",
+    "description": "Smażone ciasto nadziewane przyprawionymi ziemniakami lub mięsem"
+  },
+  {
+    "externalId": "common:tandoori-chicken",
+    "name": "Kurczak Tandoori",
+    "description": "Kurczak w indyjskich przyprawach pieczony w piecu tandoor"
+  },
+  {
+    "externalId": "common:spaghetti-bolognese",
+    "name": "Spaghetti po bolońsku",
+    "description": "Włoski makaron z mięsnym sosem pomidorowym"
+  },
+  {
+    "externalId": "common:spaghetti-carbonara",
+    "name": "Spaghetti Carbonara",
+    "description": "Włoski makaron z jajkiem, serem, pancettą i papryką"
+  },
+  {
+    "externalId": "common:pasta-alfredo",
+    "name": "Makaron Alfredo",
+    "description": "Makaron z kremowym sosem parmezanowym"
+  },
+  {
+    "externalId": "common:penne-arrabbiata",
+    "name": "Penne Arrabbiata",
+    "description": "Włoski makaron z pikantnym sosem pomidorowym"
+  },
+  {
+    "externalId": "common:pasta-pesto",
+    "name": "Makaron Pesto",
+    "description": "Makaron z sosem pesto bazyliowym"
+  },
+  {
+    "externalId": "common:lasagna",
+    "name": "Lasagne",
+    "description": "Makaron warstwowy z sosem mięsnym, serem i beszamelem"
+  },
+  {
+    "externalId": "common:vegetable-lasagna",
+    "name": "Lasagne warzywne",
+    "description": "Makaron warstwowy z warzywami, sosem i serem"
+  },
+  {
+    "externalId": "common:ravioli",
+    "name": "Ravioli",
+    "description": "Nadziewany włoski makaron z sosem"
+  },
+  {
+    "externalId": "common:gnocchi",
+    "name": "Gnocchi",
+    "description": "Włoskie kluski ziemniaczane z sosem"
+  },
+  {
+    "externalId": "common:risotto",
+    "name": "Risotto",
+    "description": "Włoskie kremowe danie z ryżu"
+  },
+  {
+    "externalId": "common:mushroom-risotto",
+    "name": "Risotto z grzybami",
+    "description": "Włoski kremowy ryż z grzybami"
+  },
+  {
+    "externalId": "common:chicken-parmesan",
+    "name": "Kurczak z parmezanem",
+    "description": "Panierowany kurczak z sosem pomidorowym i topionym serem"
+  },
+  {
+    "externalId": "common:eggplant-parmesan",
+    "name": "Bakłażan Parmezan",
+    "description": "Panierowany bakłażan z sosem pomidorowym i serem"
+  },
+  {
+    "externalId": "common:caprese-salad",
+    "name": "Sałatka Caprese",
+    "description": "Sałatka włoska z pomidorem, mozzarellą i bazylią"
+  },
+  {
+    "externalId": "common:focaccia",
+    "name": "Focaccia",
+    "description": "Włoski placek z oliwą, ziołami i solą"
+  },
+  {
+    "externalId": "common:pasta-amatriciana",
+    "name": "Makaron Amatriciana",
+    "description": "Włoski makaron z sosem pomidorowym, wędliną wieprzową i pecorino"
+  },
+  {
+    "externalId": "common:pasta-cacio-e-pepe",
+    "name": "Makaron Cacio e Pepe",
+    "description": "Włoski makaron z serem pecorino i czarnym pieprzem"
+  },
+  {
+    "externalId": "common:osso-buco",
+    "name": "Osso Buco",
+    "description": "Włoska duszona gicz cielęca z warzywami i winem"
+  },
+  {
+    "externalId": "common:saltimbocca",
+    "name": "Saltimbocca",
+    "description": "Włoska cielęcina lub kurczak z prosciutto, szałwią i sosem winnym"
+  },
+  {
+    "externalId": "common:arancini",
+    "name": "Arancini",
+    "description": "Włoskie smażone kulki ryżowe nadziewane serem, mięsem lub sosem"
+  },
+  {
+    "externalId": "common:panna-cotta",
+    "name": "Panna Cotta",
+    "description": "Włoski deser śmietankowy na zimno, często podawany z sosem owocowym"
+  },
+  {
+    "externalId": "common:chicken-caesar-salad",
+    "name": "Sałatka Cezar z Kurczakiem",
+    "description": "Sałatka Cezar z kurczakiem"
+  },
+  {
+    "externalId": "common:greek-salad",
+    "name": "Sałatka Grecka",
+    "description": "Sałatka z ogórkiem, pomidorem, oliwkami, fetą i dressingiem"
+  },
+  {
+    "externalId": "common:chef-salad",
+    "name": "Sałatka Szefa Kuchni",
+    "description": "Mieszanka sałat z mięsem, serem, jajkiem i warzywami"
+  },
+  {
+    "externalId": "common:tuna-salad",
+    "name": "Sałatka z Tuńczyka",
+    "description": "Sałatka z tuńczykiem, warzywami i dressingiem"
+  },
+  {
+    "externalId": "common:quinoa-salad",
+    "name": "Sałatka z komosy ryżowej",
+    "description": "Sałatka z komosą ryżową, warzywami i dressingiem"
+  },
+  {
+    "externalId": "common:pasta-salad",
+    "name": "Sałatka Makaronowa",
+    "description": "Sałatka makaronowa na zimno z warzywami i dressingiem"
+  },
+  {
+    "externalId": "common:coleslaw",
+    "name": "Colesław",
+    "description": "Sałatka z kapusty z dressingiem kremowym lub octowym"
+  },
+  {
+    "externalId": "common:potato-salad",
+    "name": "Sałatka Ziemniaczana",
+    "description": "Sałatka ziemniaczana na zimno z majonezem lub winegretem"
+  },
+  {
+    "externalId": "common:roast-chicken",
+    "name": "Pieczony Kurczak",
+    "description": "Kurczak pieczony w piekarniku w całości lub w kawałkach"
+  },
+  {
+    "externalId": "common:grilled-chicken-breast",
+    "name": "Grillowana Pierś Z Kurczaka",
+    "description": "Grillowana chuda pierś z kurczaka"
+  },
+  {
+    "externalId": "common:chicken-schnitzel",
+    "name": "Sznycel Z Kurczaka",
+    "description": "Panierowany smażony kotlet z kurczaka"
+  },
+  {
+    "externalId": "common:pork-schnitzel",
+    "name": "Sznycel Wieprzowy",
+    "description": "Panierowany smażony kotlet schabowy"
+  },
+  {
+    "externalId": "common:steak",
+    "name": "Stek",
+    "description": "Stek wołowy grillowany lub smażony na patelni"
+  },
+  {
+    "externalId": "common:ribeye-steak",
+    "name": "Stek Ribey",
+    "description": "Grillowany stek z wołowiny ribeye"
+  },
+  {
+    "externalId": "common:roast-beef",
+    "name": "Pieczona Wołowina",
+    "description": "Wołowina pieczona w piekarniku podawana w plasterkach"
+  },
+  {
+    "externalId": "common:pork-chop",
+    "name": "Kotlet Schabowy",
+    "description": "Kotlet schabowy grillowany lub smażony na patelni"
+  },
+  {
+    "externalId": "common:bbq-ribs",
+    "name": "Żeberka BBQ",
+    "description": "Żeberka wieprzowe lub wołowe z sosem barbecue"
+  },
+  {
+    "externalId": "common:pulled-pork",
+    "name": "Szarpana Wieprzowina",
+    "description": "Wolno gotowana szatkowana wieprzowina z sosem"
+  },
+  {
+    "externalId": "common:grilled-salmon",
+    "name": "Grillowany łosoś",
+    "description": "Filet z łososia grillowany lub smażony na patelni"
+  },
+  {
+    "externalId": "common:baked-salmon",
+    "name": "Pieczony łosoś",
+    "description": "Filet z łososia pieczony w piekarniku"
+  },
+  {
+    "externalId": "common:fish-and-chips",
+    "name": "Ryba z frytkami",
+    "description": "Panierowana smażona ryba podawana z frytkami"
+  },
+  {
+    "externalId": "common:fish-sticks",
+    "name": "Paluszki Rybne",
+    "description": "Panierowane smażone kawałki ryby"
+  },
+  {
+    "externalId": "common:shrimp-scampi",
+    "name": "Krewetki Scampi",
+    "description": "Krewetki gotowane z czosnkiem, masłem i cytryną"
+  },
+  {
+    "externalId": "common:grilled-shrimp",
+    "name": "Grillowane Krewetki",
+    "description": "Przyprawione krewetki grillowane na szaszłykach lub patelni"
+  },
+  {
+    "externalId": "common:paella",
+    "name": "Paella",
+    "description": "Hiszpańskie danie z ryżu z owocami morza, mięsem lub warzywami"
+  },
+  {
+    "externalId": "common:seafood-paella",
+    "name": "Paella z owocami morza",
+    "description": "Hiszpańskie danie z ryżu z owocami morza i szafranem"
+  },
+  {
+    "externalId": "common:patatas-bravas",
+    "name": "Patatas Bravas",
+    "description": "Hiszpańskie smażone ziemniaki z pikantnym sosem"
+  },
+  {
+    "externalId": "common:gazpacho",
+    "name": "Gazpacho",
+    "description": "Hiszpańska chłodzona zupa pomidorowo-warzywna"
+  },
+  {
+    "externalId": "common:croquetas",
+    "name": "Krokiety",
+    "description": "Hiszpańskie smażone krokiety beszamelowe z szynką, kurczakiem lub rybą"
+  },
+  {
+    "externalId": "common:pan-con-tomate",
+    "name": "Pan con Tomate",
+    "description": "Hiszpański chleb tostowy natarty pomidorami, oliwą i solą"
+  },
+  {
+    "externalId": "common:gambas-al-ajillo",
+    "name": "Gambas al Ajillo",
+    "description": "Hiszpańskie krewetki gotowane z czosnkiem, oliwą z oliwek i chili"
+  },
+  {
+    "externalId": "common:pulpo-a-la-gallega",
+    "name": "Pulpo a la Gallega",
+    "description": "Hiszpańska ośmiornica z ziemniakami, oliwą i papryką"
+  },
+  {
+    "externalId": "common:fabada-asturiana",
+    "name": "Fabada Asturiana",
+    "description": "Hiszpański gulasz z białej fasoli z wieprzowiną, kiełbasą i papryką"
+  },
+  {
+    "externalId": "common:pisto",
+    "name": "Pisto",
+    "description": "Hiszpański gulasz warzywny z pomidorem, papryką, cukinią i jajkiem"
+  },
+  {
+    "externalId": "common:churros",
+    "name": "Churros",
+    "description": "Hiszpańskie smażone ciasta z ciasta często podawane z czekoladą"
+  },
+  {
+    "externalId": "common:empanadas",
+    "name": "Empanady",
+    "description": "Ciasto nadziewane mięsem, serem lub warzywami"
+  },
+  {
+    "externalId": "common:arepa",
+    "name": "Arepa",
+    "description": "Ciasto kukurydziane z nadzieniem lub posypane pikantnymi składnikami"
+  },
+  {
+    "externalId": "common:ceviche",
+    "name": "Ceviche",
+    "description": "Owoce morza z Ameryki Łacińskiej marynowane w cytrusach"
+  },
+  {
+    "externalId": "common:feijoada",
+    "name": "Feijoada",
+    "description": "Brazylijski gulasz z czarnej fasoli z wieprzowiną lub wołowiną"
+  },
+  {
+    "externalId": "common:moqueca",
+    "name": "Moqueca",
+    "description": "Brazylijski gulasz rybny z mlekiem kokosowym"
+  },
+  {
+    "externalId": "common:picanha",
+    "name": "Picanha",
+    "description": "Brazylijska czapka z grillowanej wołowiny"
+  },
+  {
+    "externalId": "common:coxinha",
+    "name": "Coxinha",
+    "description": "Brazylijskie smażone ciasto wypełnione kawałkami kurczaka"
+  },
+  {
+    "externalId": "common:pao-de-queijo",
+    "name": "Pao de Queijo",
+    "description": "Brazylijski chleb serowy z mąki z tapioki"
+  },
+  {
+    "externalId": "common:farofa",
+    "name": "Farofa",
+    "description": "Przystawka z brazylijskiej prażonej mąki maniokowej"
+  },
+  {
+    "externalId": "common:baiao-de-dois",
+    "name": "Baiao de Dois",
+    "description": "Brazylijskie danie z ryżu i fasoli z serem, ziołami i suszonym mięsem"
+  },
+  {
+    "externalId": "common:pastel",
+    "name": "Pastel",
+    "description": "Brazylijskie smażone ciasto nadziewane mięsem, serem lub warzywami"
+  },
+  {
+    "externalId": "common:brigadeiro",
+    "name": "Brigadeiro",
+    "description": "Trufla z brazylijskiego mleka skondensowanego w czekoladzie"
+  },
+  {
+    "externalId": "common:romeu-e-julieta",
+    "name": "Romeu i Julia",
+    "description": "Brazylijski deser łączący pastę z gujawy z serem"
+  },
+  {
+    "externalId": "common:hummus",
+    "name": "Hummus",
+    "description": "Bliskowschodni dip z ciecierzycy i tahini"
+  },
+  {
+    "externalId": "common:tabbouleh",
+    "name": "Tabbouleh",
+    "description": "Sałatka z bliskowschodniej pietruszki i kaszy bulgur"
+  },
+  {
+    "externalId": "common:baba-ganoush",
+    "name": "Baba Ganousz",
+    "description": "Bliskowschodni dip z pieczonego bakłażana"
+  },
+  {
+    "externalId": "common:shakshuka",
+    "name": "Shakshuka",
+    "description": "Jajka sadzone w pikantnym sosie pomidorowym"
+  },
+  {
+    "externalId": "common:kofta",
+    "name": "Kofta",
+    "description": "Przyprawione kebaby lub paszteciki z mięsa mielonego"
+  },
+  {
+    "externalId": "common:lamb-kebab",
+    "name": "Kebab Jagnięcy",
+    "description": "Grillowana sezonowana jagnięcina na szaszłykach"
+  },
+  {
+    "externalId": "common:couscous",
+    "name": "Kuskus",
+    "description": "Ziarna semoliny gotowane na parze z warzywami lub mięsem"
+  },
+  {
+    "externalId": "common:chicken-tagine",
+    "name": "Tagine z kurczaka",
+    "description": "Marokański gulasz z kurczaka z przyprawami"
+  },
+  {
+    "externalId": "common:moussaka",
+    "name": "Musaka",
+    "description": "Grecka zapiekanka z bakłażana i mięsa"
+  },
+  {
+    "externalId": "common:spanakopita",
+    "name": "Spanakopita",
+    "description": "Grecki szpinak i ciasto feta"
+  },
+  {
+    "externalId": "common:souvlaki",
+    "name": "Souvlaki",
+    "description": "Greckie szaszłyki mięsne z grilla z pitą lub sałatką"
+  },
+  {
+    "externalId": "common:full-english-breakfast",
+    "name": "Pełne śniadanie angielskie",
+    "description": "Śniadanie z jajkami, kiełbasą, bekonem, fasolą i tostami"
+  },
+  {
+    "externalId": "common:stamppot",
+    "name": "Stamppot",
+    "description": "Holenderskie puree ziemniaczane z warzywami i wędzoną kiełbasą"
+  },
+  {
+    "externalId": "common:hutspot",
+    "name": "Hutspot",
+    "description": "Holenderskie puree ziemniaczane z marchewką, cebulą i mięsem"
+  },
+  {
+    "externalId": "common:erwtensoep",
+    "name": "Erwtensoep",
+    "description": "Holenderska zupa grochowa z wieprzowiną i wędzoną kiełbasą"
+  },
+  {
+    "externalId": "common:bitterballen",
+    "name": "Bitterballen",
+    "description": "Holenderskie smażone kulki ragout wołowe podawane z musztardą"
+  },
+  {
+    "externalId": "common:kroket",
+    "name": "Kroket",
+    "description": "Holenderski smażony krokiet wypełniony ragout mięsnym"
+  },
+  {
+    "externalId": "common:kibbeling",
+    "name": "Kibbeling",
+    "description": "Holenderskie panierowane kawałki ryby smażone podawane z sosem"
+  },
+  {
+    "externalId": "common:poffertjes",
+    "name": "Poffertjes",
+    "description": "Małe naleśniki holenderskie podawane z masłem i cukrem pudrem"
+  },
+  {
+    "externalId": "common:pancakes",
+    "name": "Naleśniki",
+    "description": "Grillowane placki śniadaniowe podawane z syropem lub dodatkami"
+  },
+  {
+    "externalId": "common:waffles",
+    "name": "Gofry",
+    "description": "Torty śniadaniowe w kratkę podawane z dodatkami"
+  },
+  {
+    "externalId": "common:french-toast",
+    "name": "Tosty Francuskie",
+    "description": "Chleb namoczony w mieszance jajecznej i smażony"
+  },
+  {
+    "externalId": "common:omelette",
+    "name": "Omlet",
+    "description": "Ubite jajka gotowane z nadzieniem"
+  },
+  {
+    "externalId": "common:cheese-omelette",
+    "name": "Omlet Serowy",
+    "description": "Omlet wypełniony serem"
+  },
+  {
+    "externalId": "common:vegetable-omelette",
+    "name": "Omlet Warzywny",
+    "description": "Omlet z mieszanką warzyw"
+  },
+  {
+    "externalId": "common:scrambled-eggs",
+    "name": "Jajecznica",
+    "description": "Ubite jajka gotowane do miękkości lub twardości"
+  },
+  {
+    "externalId": "common:fried-eggs",
+    "name": "Smażone Jajka",
+    "description": "Jajka smażone na patelni"
+  },
+  {
+    "externalId": "common:boiled-eggs",
+    "name": "Gotowane Jajka",
+    "description": "Jajka gotowane w skorupce we wrzącej wodzie"
+  },
+  {
+    "externalId": "common:eggs-benedict",
+    "name": "Jajka Benedykta",
+    "description": "Jajka w koszulce z szynką, muffinem angielskim i sosem holenderskim"
+  },
+  {
+    "externalId": "common:breakfast-burrito",
+    "name": "Burito na śniadanie",
+    "description": "Tortilla wypełniona jajami, serem, mięsem i ziemniakami"
+  },
+  {
+    "externalId": "common:avocado-toast",
+    "name": "Tost z awokado",
+    "description": "Tost posypany puree z awokado"
+  },
+  {
+    "externalId": "common:bagel-with-cream-cheese",
+    "name": "Bajgiel z serkiem śmietankowym",
+    "description": "Bajgiel smarowany serkiem śmietankowym"
+  },
+  {
+    "externalId": "common:lox-bagel",
+    "name": "Lox Bajgiel",
+    "description": "Bajgiel z wędzonym łososiem, serkiem śmietankowym i dodatkami"
+  },
+  {
+    "externalId": "common:oatmeal",
+    "name": "Płatki owsiane",
+    "description": "Gotowane płatki owsiane podawane były jako owsianka"
+  },
+  {
+    "externalId": "common:overnight-oats",
+    "name": "Nocne płatki owsiane",
+    "description": "Płatki owsiane namoczone przez noc w mleku lub jogurcie"
+  },
+  {
+    "externalId": "common:granola-bowl",
+    "name": "Miska z granolą",
+    "description": "Granola podawana z jogurtem lub mlekiem i owocami"
+  },
+  {
+    "externalId": "common:smoothie-bowl",
+    "name": "Miska na smoothie",
+    "description": "Gruba miska na zmiksowane owoce z dodatkami"
+  },
+  {
+    "externalId": "common:protein-smoothie",
+    "name": "Koktajl białkowy",
+    "description": "Napój mieszany na bazie proszku białkowego i owoców lub mleka"
+  },
+  {
+    "externalId": "common:fruit-smoothie",
+    "name": "Koktajl owocowy",
+    "description": "Mieszany napój owocowy z sokiem, mlekiem lub jogurtem"
+  },
+  {
+    "externalId": "common:green-smoothie",
+    "name": "Zielone smoothie",
+    "description": "Napój mieszany z warzywami liściastymi i owocami"
+  },
+  {
+    "externalId": "common:chicken-rice-bowl",
+    "name": "Miska z ryżem i kurczakiem",
+    "description": "Miska ryżowa z kurczakiem, warzywami i sosem"
+  },
+  {
+    "externalId": "common:beef-rice-bowl",
+    "name": "Miska na ryż z wołowiną",
+    "description": "Miska ryżowa z wołowiną, warzywami i sosem"
+  },
+  {
+    "externalId": "common:salmon-rice-bowl",
+    "name": "Miska z łososiem i ryżem",
+    "description": "Miska ryżowa z łososiem, warzywami i sosem"
+  },
+  {
+    "externalId": "common:tofu-rice-bowl",
+    "name": "Miska na ryż z tofu",
+    "description": "Miska ryżowa z tofu, warzywami i sosem"
+  },
+  {
+    "externalId": "common:mediterranean-bowl",
+    "name": "Miska Śródziemnomorska",
+    "description": "Miska z ziarnami, warzywami, hummusem, fetą i białkiem"
+  },
+  {
+    "externalId": "common:buddha-bowl",
+    "name": "Miska Buddy",
+    "description": "Roślinna miska ze zbożami, warzywami i sosem"
+  },
+  {
+    "externalId": "common:chicken-noodle-soup",
+    "name": "Zupa Z Kurczaka Makaronem",
+    "description": "Zupa z kurczakiem, makaronem, warzywami i rosołem"
+  },
+  {
+    "externalId": "common:tomato-soup",
+    "name": "Zupa Pomidorowa",
+    "description": "Zupa z pomidorów i przypraw"
+  },
+  {
+    "externalId": "common:minestrone-soup",
+    "name": "Zupa Minestrone",
+    "description": "Włoska zupa jarzynowa z fasolą lub makaronem"
+  },
+  {
+    "externalId": "common:split-pea-soup",
+    "name": "Zupa Groszkowa",
+    "description": "Gęsta zupa z łuskanego groszku"
+  },
+  {
+    "externalId": "common:clam-chowder",
+    "name": "Zupa z małży",
+    "description": "Zupa kremowa z małżami i ziemniakami"
+  },
+  {
+    "externalId": "common:french-onion-soup",
+    "name": "Francuska zupa cebulowa",
+    "description": "Zupa cebulowa zapiekana z pieczywem i topionym serem"
+  },
+  {
+    "externalId": "common:beef-stew",
+    "name": "Gulasz Wołowy",
+    "description": "Wolno gotowana wołowina z warzywami i sosem"
+  },
+  {
+    "externalId": "common:chicken-pot-pie",
+    "name": "Ciasto Z Kurczaka",
+    "description": "Ciasto na słono z kurczakiem, warzywami i sosem śmietanowym"
+  },
+  {
+    "externalId": "common:shepherds-pie",
+    "name": "Ciasto Pasterskie",
+    "description": "Zapiekanka mięsno-warzywna z puree ziemniaczanym"
+  },
+  {
+    "externalId": "common:cottage-pie",
+    "name": "Ciasto wiejskie",
+    "description": "Zapiekanka z mielonej wołowiny z puree ziemniaczanym"
+  },
+  {
+    "externalId": "common:baked-potato",
+    "name": "Pieczony Ziemniak",
+    "description": "Całe pieczone ziemniaki z dodatkami"
+  },
+  {
+    "externalId": "common:roasted-potatoes",
+    "name": "Pieczone Ziemniaki",
+    "description": "Ziemniaki pieczone z oliwą i przyprawami"
+  },
+  {
+    "externalId": "common:hash-browns",
+    "name": "Hash Browns",
+    "description": "Smażone, starte lub pokrojone w kostkę ziemniaki"
+  },
+  {
+    "externalId": "common:macaroni-salad",
+    "name": "Sałatka Makaronowa",
+    "description": "Sałatka makaronowa na zimno z kremowym dressingiem"
+  },
+  {
+    "externalId": "common:baked-beans",
+    "name": "Pieczona Fasola",
+    "description": "Fasola pieczona lub gotowana na wolnym ogniu w słodko-pikantnym sosie"
+  },
+  {
+    "externalId": "common:rice-and-beans",
+    "name": "Ryż i Fasola",
+    "description": "Proste danie z ryżu podawane z fasolą"
+  },
+  {
+    "externalId": "common:jambalaya",
+    "name": "Jambalaya",
+    "description": "Danie z ryżu Cajun z mięsem, owocami morza i warzywami"
+  },
+  {
+    "externalId": "common:gumbo",
+    "name": "Gumbo",
+    "description": "Gulasz z Luizjany z zasmażką, warzywami i mięsem lub owocami morza"
+  },
+  {
+    "externalId": "common:chicken-and-waffles",
+    "name": "Kurczak i Gofry",
+    "description": "Smażony kurczak podawany z goframi"
+  },
+  {
+    "externalId": "common:fried-chicken",
+    "name": "Smażony Kurczak",
+    "description": "Kawałki kurczaka panierowane i smażone w głębokim tłuszczu"
+  },
+  {
+    "externalId": "common:chicken-tenders",
+    "name": "Paski z kurczaka",
+    "description": "Panierowane smażone paski kurczaka"
+  },
+  {
+    "externalId": "common:cornbread",
+    "name": "Chleb kukurydziany",
+    "description": "Pieczony chleb z mąki kukurydzianej"
+  },
+  {
+    "externalId": "common:sloppy-joe",
+    "name": "Sloppy Joe",
+    "description": "Amerykańska kanapka z mieloną wołowiną w bułce"
+  },
+  {
+    "externalId": "common:reuben-sandwich",
+    "name": "Kanapka Rubena",
+    "description": "Amerykańska kanapka z peklowaną wołowiną, kapustą kiszoną, serem szwajcarskim i dressingiem"
+  },
+  {
+    "externalId": "common:lobster-roll",
+    "name": "Lobster roll",
+    "description": "Kanapka z Nowej Anglii z mięsem homara w bułce z rozciętym wierzchołkiem"
+  },
+  {
+    "externalId": "common:biscuits-and-gravy",
+    "name": "Biscuits and gravy",
+    "description": "Amerykańskie ciasteczka polane sosem kiełbasianym"
+  },
+  {
+    "externalId": "common:chili-cheese-dog",
+    "name": "Hot dog z serem i chili",
+    "description": "Hot dog z chilli, serem i cebulą"
+  },
+  {
+    "externalId": "common:chicken-fried-steak",
+    "name": "Chicken fried steak",
+    "description": "Kotlet wołowy panierowany po amerykańsku, podawany z sosem"
+  },
+  {
+    "externalId": "common:hush-puppies",
+    "name": "Hush puppies",
+    "description": "Południowe smażone kulki kukurydziane"
+  },
+  {
+    "externalId": "common:peach-cobbler",
+    "name": "Peach cobbler",
+    "description": "Amerykański deser brzoskwiniowy z polewą biszkoptową lub ciastem"
+  },
+  {
+    "externalId": "common:tuna-pasta-bake",
+    "name": "Zapiekanka Makaronowa z Tuńczykiem",
+    "description": "Zapiekana zapiekanka makaronowa z tuńczykiem i sosem"
+  },
+  {
+    "externalId": "common:casserole",
+    "name": "Zapiekanka",
+    "description": "Pieczone danie mieszane z białkiem, skrobią i sosem"
+  },
+  {
+    "externalId": "common:quiche-lorraine",
+    "name": "Quiche Lorraine",
+    "description": "Wytrawna tarta z jajkami, śmietaną, boczkiem i serem"
+  },
+  {
+    "externalId": "common:vegetable-quiche",
+    "name": "Quiche warzywne",
+    "description": "Pikantna tarta jajeczna z warzywami i serem"
+  },
+  {
+    "externalId": "common:croissant",
+    "name": "Rogalik",
+    "description": "Maślane ciasto francuskie w kształcie półksiężyca"
+  },
+  {
+    "externalId": "common:pain-au-chocolat",
+    "name": "Pain au chocolat",
+    "description": "Ciasto francuskie z nadzieniem czekoladowym"
+  },
+  {
+    "externalId": "common:muffin",
+    "name": "Muffin",
+    "description": "Mały słodki pieczony szybki chleb"
+  },
+  {
+    "externalId": "common:blueberry-muffin",
+    "name": "Muffinka Jagodowa",
+    "description": "Muffinka z jagodami"
+  },
+  {
+    "externalId": "common:banana-bread",
+    "name": "Chleb Bananowy",
+    "description": "Słodki bochenek z bananami"
+  },
+  {
+    "externalId": "common:chocolate-chip-cookie",
+    "name": "Ciastko Czekoladowe",
+    "description": "Ciastko z kawałkami czekolady"
+  },
+  {
+    "externalId": "common:brownie",
+    "name": "Brownie",
+    "description": "Deser zapiekany w gęstej czekoladzie"
+  },
+  {
+    "externalId": "common:cheesecake",
+    "name": "Sernik",
+    "description": "Deser z serka śmietankowego ze skórką"
+  },
+  {
+    "externalId": "common:apple-pie",
+    "name": "Ciasto Jabłkowe",
+    "description": "Ciasto wypełnione jabłkami i przyprawami"
+  },
+  {
+    "externalId": "common:pumpkin-pie",
+    "name": "Ciasto Dyniowe",
+    "description": "Ciasto z nadzieniem z pikantnego kremu dyniowego"
+  },
+  {
+    "externalId": "common:tiramisu",
+    "name": "Tiramisu",
+    "description": "Włoski deser z biszkoptami nasączonymi kawą i mascarpone"
+  },
+  {
+    "externalId": "common:creme-brulee",
+    "name": "Krem brulee",
+    "description": "Deser kremowy z wierzchem karmelizowanym cukrem"
+  },
+  { "externalId": "common:ice-cream", "name": "Lody", "description": "Mrożony deser mleczny" },
+  {
+    "externalId": "common:chocolate-ice-cream",
+    "name": "Lody Czekoladowe",
+    "description": "Mrożony deser mleczny o smaku czekoladowym"
+  },
+  {
+    "externalId": "common:vanilla-ice-cream",
+    "name": "Lody Waniliowe",
+    "description": "Mrożony deser mleczny o smaku waniliowym"
+  },
+  {
+    "externalId": "common:frozen-yogurt",
+    "name": "Mrożony Jogurt",
+    "description": "Mrożony deser na bazie jogurtu"
+  },
+  { "externalId": "common:gelato", "name": "Lody", "description": "Włoski mrożony deser mleczny" },
+  {
+    "externalId": "common:sorbet",
+    "name": "Sorbet",
+    "description": "Mrożony deser owocowy bez nabiału"
+  },
+  {
+    "externalId": "common:bubble-tea",
+    "name": "Herbata bąbelkowa",
+    "description": "Napój herbaciany o smaku mlecznym lub owocowym z perełkami tapioki"
+  },
+  {
+    "externalId": "common:cappuccino",
+    "name": "Cappuccino",
+    "description": "Napój espresso ze spienionym mlekiem i pianką"
+  }
+]

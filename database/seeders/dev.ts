@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { subDays } from 'date-fns';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
+import { getEnglishFoundationFoodText } from '@/data/foundationFoodCatalogue';
 import { database } from '@/database/database-instance';
 import { waitForBootMigrations, waitForDbReady } from '@/database/dbReady';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
@@ -1883,6 +1884,13 @@ async function seedMeals(): Promise<{ created: number }> {
 
     // Create a map for easy food lookup by name
     const foodByName = new Map<string, Food>(foods.map((f) => [(f.name ?? '').toLowerCase(), f]));
+    // Foundation foods are stored in the app's language; the lookups below are in English.
+    for (const food of foods) {
+      const english = getEnglishFoundationFoodText(food).name?.toLowerCase();
+      if (english && !foodByName.has(english)) {
+        foodByName.set(english, food);
+      }
+    }
 
     // Helper to get food by name
     const getFood = (name: string): Food | undefined => {

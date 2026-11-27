@@ -15,13 +15,17 @@ import {
   parseGameBoyDayShare,
 } from '@/utils/optical/gameBoyDayShare';
 import { GameBoyExportError } from '@/utils/optical/gameBoyExport';
+import type { LocalizeFoundationFood } from '@/utils/optical/gameBoyFoodMapping';
 import {
   type MusclogShareEnvelope,
   MusclogShareError,
   validateShareEnvelope,
 } from '@/utils/share/shareEnvelope';
 
-export function parseIncomingShareJson(json: string): MusclogShareEnvelope {
+export function parseIncomingShareJson(
+  json: string,
+  localizeFood?: LocalizeFoundationFood
+): MusclogShareEnvelope {
   let parsed: unknown;
   try {
     parsed = JSON.parse(json);
@@ -34,7 +38,9 @@ export function parseIncomingShareJson(json: string): MusclogShareEnvelope {
   }
 
   try {
-    return validateShareEnvelope(gameBoyDayShareToEnvelope(parseGameBoyDayShare(parsed)));
+    const compact = parseGameBoyDayShare(parsed);
+
+    return validateShareEnvelope(gameBoyDayShareToEnvelope(compact, Date.now(), localizeFood));
   } catch (error) {
     // A cartridge whose schema version this build does not know is the same situation as an
     // envelope from a newer app: the phone is behind, and the receive screen says so. Anything else

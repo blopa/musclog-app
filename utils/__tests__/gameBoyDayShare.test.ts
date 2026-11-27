@@ -207,3 +207,45 @@ describe('parseIncomingShareJson', () => {
     expect(isGameBoyDayShareJson({ _musclogShare: 1, kind: 'meal' })).toBe(false);
   });
 });
+
+describe('gameBoyDayShareToEnvelope with a localized foundation food', () => {
+  const LOCALIZED_NAME = 'Lokalisierter Salat';
+  const LOCALIZED_DESCRIPTION = 'Lokalisierte Beschreibung';
+
+  it('puts the localized name on the bundled food row, the entry and the diary log', () => {
+    const localizeFood = jest.fn((seed: Record<string, string>) => ({
+      ...seed,
+      name: LOCALIZED_NAME,
+      description: LOCALIZED_DESCRIPTION,
+    }));
+
+    const envelope = gameBoyDayShareToEnvelope(
+      parseGameBoyDayShare(compactFixture()),
+      NOW,
+      localizeFood as never
+    );
+
+    const food = envelope.records.foods.find((row) => row.external_id === BUNDLED_SEED.external_id);
+    expect(food?.name).toBe(LOCALIZED_NAME);
+    expect(envelope.summary.entries.map((entry) => entry.name)).toContain(LOCALIZED_NAME);
+    const log = envelope.records.nutrition_logs.find((row) => row.food_id === food?.id);
+    expect(log?.logged_food_name).toBe(LOCALIZED_NAME);
+  });
+
+  it('never passes a cartridge custom food to localizeFood', () => {
+    const localizeFood = jest.fn((seed: Record<string, string>) => seed);
+
+    gameBoyDayShareToEnvelope(parseGameBoyDayShare(compactFixture()), NOW, localizeFood as never);
+
+    expect(localizeFood).toHaveBeenCalledTimes(1);
+    expect(localizeFood.mock.calls[0][0].externalId).toBe(BUNDLED_SEED.external_id);
+  });
+
+  it('keeps the English name when no localizer is given', () => {
+    const envelope = gameBoyDayShareToEnvelope(parseGameBoyDayShare(compactFixture()), NOW);
+
+    const food = envelope.records.foods.find((row) => row.external_id === BUNDLED_SEED.external_id);
+    expect(food?.name).toBe(BUNDLED_SEED.name);
+    expect(envelope.summary.entries.map((entry) => entry.name)).toContain(BUNDLED_SEED.name);
+  });
+});

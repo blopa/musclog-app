@@ -75,3 +75,34 @@ describe('matchIngredientsToOwnFoods candidate search', () => {
     expect(result.matched.map((item) => item.foodId)).toEqual(['acai-1']);
   });
 });
+
+describe('matchIngredientsToOwnFoods with a localized foundation food', () => {
+  it('matches a bundled food stored in German by its English name', async () => {
+    const stored = {
+      id: 'found-1',
+      name: 'Frühlingsmischung aus Babysalat und Gemüse',
+      description: 'Salat, Blatt, grün, roh',
+      externalId: '1703909',
+      source: 'foundation',
+      createdAt: 1000,
+      updatedAt: 1000,
+      nutritionBasis: 'per_100g',
+      calories: 20,
+      protein: 1,
+      carbs: 4,
+      fat: 0,
+      fiber: 1,
+    };
+    mockSearchFoodsByTerms.mockResolvedValue([stored]);
+    const { NutritionService } = jest.requireMock('@/database/services/NutritionService');
+    NutritionService.normalizeAiMealIngredients.mockImplementation(
+      async (stubs: { foodId?: string }[]) => stubs
+    );
+
+    const result = await matchIngredientsToOwnFoods([
+      { name: 'Spring Mix a Medley of Baby Lettuces & Greens', grams: 80 },
+    ]);
+
+    expect(result.matched.map((item) => item.foodId)).toEqual(['found-1']);
+  });
+});

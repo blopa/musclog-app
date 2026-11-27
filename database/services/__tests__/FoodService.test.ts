@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { findFoundationFoodExternalIds } from '@/data/foundationFoodCatalogue';
 import { database } from '@/database/database-instance';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { FoodService } from '@/database/services/FoodService';
@@ -12,6 +13,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     lt: jest.fn((value: unknown) => ({ kind: 'lt', value })),
     like: jest.fn((value: unknown) => ({ kind: 'like', value })),
     and: jest.fn((...conditions: unknown[]) => ({ kind: 'and', conditions })),
+    oneOf: jest.fn((values: unknown[]) => ({ kind: 'oneOf', values })),
     or: jest.fn((...conditions: unknown[]) => ({ kind: 'or', conditions })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
@@ -38,12 +40,17 @@ jest.mock('@/database/services/FoodPortionService', () => ({
   },
 }));
 
+jest.mock('@/data/foundationFoodCatalogue', () => ({
+  findFoundationFoodExternalIds: jest.fn(() => []),
+}));
+
 jest.mock('@/utils/openFoodFactsMapper', () => ({
   getProductName: jest.fn(() => 'Resolved product name'),
 }));
 
 const mockDatabase = database as jest.Mocked<typeof database>;
 const mockPortions = FoodPortionService as jest.Mocked<typeof FoodPortionService>;
+const mockFindFoundationIds = findFoundationFoodExternalIds as jest.Mock;
 
 const IS_NULL = { kind: 'eq', value: null };
 
@@ -119,6 +126,7 @@ const BASE_MACROS = { calories: 100, protein: 10, carbs: 5, fat: 2 };
 describe('FoodService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFindFoundationIds.mockReturnValue([]);
     mockPortions.createFoodPortion.mockResolvedValue({ id: 'portion-created' } as any);
     mockPortions.getPortionById.mockResolvedValue(null as any);
   });
@@ -563,6 +571,57 @@ describe('FoodService', () => {
 
       expect(map.foods.queryClauses).toHaveLength(2);
       expect(results.map((f) => f.id)).toEqual(['a1', 'shared', 'b1']);
+    });
+
+    describe('foundation foods matched by their bundled copy', () => {
+      /** Name matches come back for every query except one filtered by `external_id`. */
+      function wireByClause(nameRows: unknown[], foundationRows: unknown[]) {
+        const queries: unknown[][] = [];
+        const query = jest.fn((...clauses: unknown[]) => {
+          queries.push(clauses);
+          const isFoundation = JSON.stringify(clauses).includes('"oneOf"');
+          return { fetch: jest.fn().mockResolvedValue(isFoundation ? foundationRows : nameRows) };
+        });
+        mockDatabase.get.mockImplementation((() => ({ query })) as any);
+        return queries;
+      }
+
+      it('merges the matching foundation rows into the name matches without duplicates', async () => {
+        const stored = stubFood({ id: 'stored-1', name: 'Lettuce salad', source: 'openfood' });
+        const bundled = stubFood({
+          id: 'found-1',
+          name: 'Spring Mix',
+          source: 'foundation',
+          externalId: '1703909',
+        });
+        const queries = wireByClause([stored], [stored, bundled]);
+        mockFindFoundationIds.mockReturnValue(['1703909']);
+
+        const results = await FoodService.searchFoodsByTerms(['lettuce']);
+
+        expect(mockFindFoundationIds).toHaveBeenCalledWith('lettuce', {
+          includeDescription: false,
+        });
+        expect(results.map((food) => food.id)).toEqual(['stored-1', 'found-1']);
+        expect(queries[1]).toEqual([
+          { field: 'external_id', condition: { kind: 'oneOf', values: ['1703909'] } },
+          { field: 'source', condition: 'foundation' },
+          { field: 'deleted_at', condition: IS_NULL },
+        ]);
+      });
+
+      it('cuts the merged result to the limit in name order', async () => {
+        const zucchini = stubFood({ id: 'z', name: 'Zucchini', source: 'openfood' });
+        const spring = stubFood({ id: 'found-1', name: 'Spring Mix', source: 'foundation' });
+        const apple = stubFood({ id: 'found-2', name: 'Apple', source: 'foundation' });
+        const queries = wireByClause([zucchini], [spring, apple]);
+        mockFindFoundationIds.mockReturnValue(['1703909', '2']);
+
+        const results = await FoodService.searchFoodsByTerms(['a'], { limit: 2 });
+
+        expect(results.map((food) => food.id)).toEqual(['found-2', 'found-1']);
+        expect(queries[0]).toContainEqual({ kind: 'take', count: 2 });
+      });
     });
 
     it('returns nothing for a non-finite or non-positive limit in searchFoodsByTerms', async () => {

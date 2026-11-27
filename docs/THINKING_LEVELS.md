@@ -535,9 +535,9 @@ Every thinking-level rule above is per engine, not per model file: the 1.2B gets
   it is empty or failed. Its instruction is a four-point checklist that returns a passing draft
   unchanged, which narrows how much it can change, but nothing checks that the model obeyed it.
 - **Matching a meal's ingredients to your foods by name goes through an English name.** The bundled
-  foundation foods (529: 225 USDA, 304 common) are stored under their English names whatever the
-  app language, and the model names ingredients in the app language, so every meal schema also asks
-  for an `englishName` (matching only, never shown) and the match compares that, falling back to
+  foundation foods (223 seeded from the USDA file) are stored in the language of the first boot but
+  compared by their English text (`getEnglishFoundationFoodText`), and the model names ingredients
+  in the app language, so every meal schema also asks for an `englishName` (matching only, never shown) and the match compares that, falling back to
   `name`. The food table is searched without folding accents, so the search asks for the name's
   longest word both folded and as written (`searchSpellingsFor`): a stored "Açaí bowl" is found for
   "açaí bowl", and for "acai bowl" only when it is stored without accents. A stored name with

@@ -5,6 +5,7 @@ import OpenAI from 'openai';
 import type { AiProviderKind } from '@/constants/ai';
 import type { ResolvedCoachPersona } from '@/constants/coachPersonas';
 import type { Units } from '@/constants/settings';
+import { getEnglishFoundationFoodText } from '@/data/foundationFoodCatalogue';
 import { User } from '@/database/models';
 import Food from '@/database/models/Food';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -1359,7 +1360,10 @@ export const getFoundationFoodsPrompt = async (
 ): Promise<FoundationFoodsPrompt | null> => {
   try {
     const foods = await FoodService.getFoundationFoodsSorted(FOUNDATION_FOODS_PROMPT_CAP);
-    const list = buildFoundationFoodList(foods);
+    // Stored names are in the first boot's language; the model is always shown English.
+    const list = buildFoundationFoodList(
+      foods.map((food) => ({ id: food.id, name: getEnglishFoundationFoodText(food).name }))
+    );
     if (!list) {
       return null;
     }

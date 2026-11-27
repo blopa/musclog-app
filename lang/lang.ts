@@ -30,6 +30,16 @@ import exercisesPlPl from '@/data/exercisesPlPl.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
 import exercisesRuRu from '@/data/exercisesRuRu.json';
 import exercisesTrTr from '@/data/exercisesTrTr.json';
+// Foundation food copies
+import foundationFoodsDeDe from '@/data/foundationFoodsDeDe.json';
+import foundationFoodsEsEs from '@/data/foundationFoodsEsEs.json';
+import foundationFoodsFrFr from '@/data/foundationFoodsFrFr.json';
+import foundationFoodsItIt from '@/data/foundationFoodsItIt.json';
+import foundationFoodsNlNl from '@/data/foundationFoodsNlNl.json';
+import foundationFoodsPlPl from '@/data/foundationFoodsPlPl.json';
+import foundationFoodsPtBr from '@/data/foundationFoodsPtBr.json';
+import foundationFoodsRuRu from '@/data/foundationFoodsRuRu.json';
+import foundationFoodsTrTr from '@/data/foundationFoodsTrTr.json';
 // Workout template copies
 import workoutTemplatesDeDe from '@/data/workoutTemplatesDeDe.json';
 import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
@@ -1183,6 +1193,19 @@ export const WORKOUT_TEMPLATE_COPIES_BY_LOCALE = {
   [PT_BR]: workoutTemplatesPtBr,
   [RU_RU]: workoutTemplatesRuRu,
   [TR_TR]: workoutTemplatesTrTr,
+};
+
+// Foundation food copy exports
+export const FOUNDATION_FOOD_COPIES_BY_LOCALE = {
+  [DE_DE]: foundationFoodsDeDe,
+  [ES_ES]: foundationFoodsEsEs,
+  [FR_FR]: foundationFoodsFrFr,
+  [IT_IT]: foundationFoodsItIt,
+  [NL_NL]: foundationFoodsNlNl,
+  [PL_PL]: foundationFoodsPlPl,
+  [PT_BR]: foundationFoodsPtBr,
+  [RU_RU]: foundationFoodsRuRu,
+  [TR_TR]: foundationFoodsTrTr,
 };
 
 const resources = {

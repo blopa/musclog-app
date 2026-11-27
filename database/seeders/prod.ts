@@ -9,6 +9,7 @@ import {
   ALL_CONFETTI_ACTIVITIES,
   CONFETTI_INTERACTIONS_KEY,
 } from '@/context/ConfettiInteractionsContext';
+import { localizeFoundationFood } from '@/data/foundationFoodCatalogue';
 import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
 import { clearAppAsyncStorage } from '@/database/asyncStorageReset';
 import { database } from '@/database/database-instance';
@@ -120,7 +121,8 @@ async function seedUSDAFoundationFoods(): Promise<void> {
             // One definition of what a seed row means, shared with the Game Boy day-share
             // receiver, which rebuilds this same record for a food a cartridge referenced by
             // index. Carbs arrive already total (fiber included) — see utils/foundationFoodSeed.ts.
-            const seed = parseFoundationFoodSeed(row);
+            // Name and description are written in the language of this first boot, like exercises.
+            const seed = localizeFoundationFood(parseFoundationFoodSeed(row));
 
             // Create food directly in the write transaction (avoid nested writes)
             const food = await database.get<Food>('foods').create((food) => {
