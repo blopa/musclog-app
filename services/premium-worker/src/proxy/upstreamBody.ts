@@ -21,7 +21,7 @@ function appendOptionalFields(
 ): Json {
   if (neutral.temperature !== undefined) body.temperature = neutral.temperature;
   if (reasoningField) body[reasoningField[0]] = reasoningField[1];
-  return assignDefined(body, neutral as unknown as Json, OPTIONAL_AFTER_REASONING);
+  return assignDefined(body, neutral, OPTIONAL_AFTER_REASONING);
 }
 
 /**

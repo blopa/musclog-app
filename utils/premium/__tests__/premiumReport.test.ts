@@ -56,6 +56,24 @@ describe('premiumFailureReport', () => {
   });
 });
 
+describe('a device that cannot buy', () => {
+  // RevenueCat code 3 (PURCHASE_NOT_ALLOWED): Play billing unavailable, e.g. an emulator with no
+  // account. Nothing in the app can fix it.
+  it.each([
+    ['restore', 'restore_failed'],
+    ['purchase', 'purchase_failed'],
+    ['price', 'unknown'],
+  ] as const)('does not report a %s the store does not allow', (stage, failure) => {
+    expect(premiumFailureReport(stage, failure, { storeErrorCode: '3' })).toBeNull();
+  });
+
+  it('still reports the other store errors of a restore', () => {
+    expect(
+      premiumFailureReport('restore', 'restore_failed', { storeErrorCode: '2' })
+    ).not.toBeNull();
+  });
+});
+
 describe('premium flow', () => {
   it('does not report a restore that found no subscription', () => {
     expect(

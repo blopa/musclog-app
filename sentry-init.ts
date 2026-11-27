@@ -19,6 +19,10 @@ export function initializeSentry() {
   Sentry.init({
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? undefined,
     environment: isProduction() ? 'production' : 'development',
+    // A development build sends nothing: a hot reload alone files crashes that no person can meet
+    // (a re-evaluated React context, WatermelonDB's record cache), and they bury the real ones.
+    // Set EXPO_PUBLIC_SENTRY_IN_DEV=1 to try the reporting itself.
+    enabled: isProduction() || process.env.EXPO_PUBLIC_SENTRY_IN_DEV === '1',
     // Keep payloads intentionally minimal for privacy.
     sendDefaultPii: false,
     enableAutoSessionTracking: false,

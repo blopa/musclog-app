@@ -479,16 +479,51 @@ describe('runDaily', () => {
       expect(await isBreakerOpen(db)).toBe(false);
     });
 
-    it('negative OpenRouter delta still reconciles Otari spend and preserves prev.at if Otari fails', async () => {
+    it('an Otari outage holds the baseline for one hold window, then advances so it cannot wedge', async () => {
+      await runDaily(withBoth({ usage: 10 }).ctx);
+      const down = fakeOtari({ kind: 'throw' });
+      down.summary = new Error('otari_http_500');
+      const day1 = withBoth({ usage: 10, otari: down });
+      day1.deps.advance(DAY_MS);
+      await runDaily(day1.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 10_000_000, at: NOW });
+
+      const day2 = withBoth({ usage: 10, otari: down });
+      day2.deps.advance(2 * DAY_MS);
+      await runDaily(day2.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({
+        usage_u: 10_000_000,
+        at: NOW + 2 * DAY_MS,
+      });
+      expect(await isBreakerOpen(db)).toBe(false);
+    });
+
+    it('a key reset while Otari is held stores the new usage under the new time, not the old one', async () => {
+      await runDaily(withBoth({ usage: 10 }).ctx);
+      const ot = fakeOtari({ kind: 'throw' });
+      ot.summary = { costUsd: 0, requests: 1, errors: 0, unpriced: 1 };
+      const later = withBoth({ usage: 2, otari: ot });
+      later.deps.advance(DAY_MS);
+      await runDaily(later.ctx);
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({
+        usage_u: 2_000_000,
+        at: NOW + DAY_MS,
+      });
+    });
+
+    it('negative OpenRouter delta still reconciles Otari spend and moves the baseline to now', async () => {
       await runDaily(withBoth({ usage: 10 }).ctx);
 
-      // Key reset (orDelta < 0) while Otari is unavailable: preserves prev.at, updates usage_u
+      // Key reset (orDelta < 0) while Otari is unavailable: usage_u and at both move to now
       const failingOt = fakeOtari({ kind: 'throw' });
       failingOt.summary = new Error('otari_http_500');
       const day1 = withBoth({ usage: 2, otari: failingOt });
       day1.deps.advance(DAY_MS);
       await runDaily(day1.ctx);
-      expect(JSON.parse((await metaValue('recon'))!)).toEqual({ usage_u: 2_000_000, at: NOW });
+      expect(JSON.parse((await metaValue('recon'))!)).toEqual({
+        usage_u: 2_000_000,
+        at: NOW + DAY_MS,
+      });
       expect(day1.deps.logs).toContainEqual(
         expect.objectContaining({ code: 'reconciliation_key_reset', severity: 'high' })
       );
@@ -503,7 +538,7 @@ describe('runDaily', () => {
       const day2 = withBoth({ usage: 1, otari: ot });
       day2.deps.advance(2 * DAY_MS);
       await runDaily(day2.ctx);
-      expect(ot.summaryCalls).toEqual([{ startMs: NOW, endMs: NOW + 2 * DAY_MS }]);
+      expect(ot.summaryCalls).toEqual([{ startMs: NOW + DAY_MS, endMs: NOW + 2 * DAY_MS }]);
       expect(await metaValue('breaker_reason')).toBe('reconciliation');
       expect(JSON.parse((await metaValue('recon'))!)).toEqual({
         usage_u: 1_000_000,

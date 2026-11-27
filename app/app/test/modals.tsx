@@ -2279,8 +2279,6 @@ export default function ModalsTestScreen() {
       <AISettingsModal
         visible={isAiSettingsVisible}
         onClose={() => setIsAiSettingsVisible(false)}
-        onGetOpenAiKeyPress={() => console.log('Get OpenAI Key pressed')}
-        onOpenAiModelPress={() => console.log('OpenAI model pressed')}
       />
 
       <AIBehaviorSettingsModal

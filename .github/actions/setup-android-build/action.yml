@@ -1,0 +1,40 @@
+name: Set up the Android build
+description: Free disk space, Node, Java, npm ci and the release version check shared by the Android build workflows. Run it after actions/checkout.
+
+# Shared by build-android-aab.yml and release-android-apk.yml. The checkout stays in each workflow.
+# utils/__tests__/androidWorkflowPins.test.ts pins every `uses:` line here to a commit SHA.
+runs:
+  using: composite
+  steps:
+    # A local build compiles three ABIs of the native code and needs several GB of scratch space.
+    # The runner's image carries toolchains this job never uses.
+    - name: Free disk space
+      shell: bash
+      run: |
+        sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+        df -h /
+
+    # Match eas.json's build.base.node version so local builds behave like EAS cloud builds.
+    # utils/__tests__/easNodeVersion.test.ts checks this pin against the other Node pins.
+    - name: Setup Node.js
+      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      with:
+        node-version: '26.10.0'
+        cache: npm
+        cache-dependency-path: package-lock.json
+
+    # Gradle 9.4.1 (SDK 58) supports Java 17 through 26.
+    - name: Setup Java
+      uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+      with:
+        distribution: temurin
+        java-version: '21'
+        cache: gradle
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci --no-audit --no-fund
+
+    - name: Check release versions are in sync
+      shell: bash
+      run: npm run check-version-sync

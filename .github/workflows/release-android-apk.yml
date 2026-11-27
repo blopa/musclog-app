@@ -38,7 +38,7 @@ jobs:
           exit 1
 
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Read the app version
         id: version
@@ -97,38 +97,13 @@ jobs:
           fi
 
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      # A local build compiles three ABIs of the native code and needs several GB of scratch space.
-      # The runner's image carries toolchains this job never uses.
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/hostedtoolcache/CodeQL
-          df -h /
-
-      # Match eas.json's build.base.node version so local builds behave like EAS cloud builds.
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '26.10.0'
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      # Gradle 9.4.1 (SDK 58) supports Java 17 through 26.
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: gradle
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Check release versions are in sync
-        run: npm run check-version-sync
+      # Free disk space, Node, Java, `npm ci` and the version check: .github/actions/setup-android-build.
+      - name: Set up the build
+        uses: ./.github/actions/setup-android-build
 
       # EAS environment variables with visibility "Secret" cannot be read by a local build (plain text
       # and sensitive ones are loaded from EAS). Pass SENTRY_AUTH_TOKEN directly to this step only.
@@ -167,7 +142,7 @@ jobs:
 
       # Kept on the run too, so "Re-run failed jobs" can publish without building again.
       - name: Upload the APK
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ env.APK }}
           path: ${{ runner.temp }}/out/${{ env.APK }}
@@ -188,7 +163,7 @@ jobs:
       APK: musclog-${{ needs.version.outputs.version }}-${{ needs.version.outputs.code }}.apk
     steps:
       - name: Download the APK
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ${{ env.APK }}
 

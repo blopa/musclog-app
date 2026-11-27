@@ -15,11 +15,14 @@ import {
   VOICE_BROWSER_NOTICE_ACCEPTED,
 } from '@/constants/misc';
 import {
+  AI_CONSENT_RECORDS_SETTING_TYPE,
   CLAUDE_API_KEY_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   PREMIUM_CONSENT_VERSION_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
+  USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
 } from '@/constants/settings';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
@@ -158,13 +161,23 @@ export const SETTINGS_EXCLUDED_TYPES = [
   CLAUDE_API_KEY_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
   PREMIUM_CONSENT_VERSION_SETTING_TYPE,
+  // The proof that the person agreed, never something to copy from another device.
+  AI_CONSENT_RECORDS_SETTING_TYPE,
 ];
 
 /**
- * Settings a restore never takes from the file, whatever value the file carries. A hand-made or
- * foreign backup could otherwise turn hosted AI on for a device that never enrolled.
+ * Settings a restore never takes from the file, whatever value the file carries. Each one either
+ * sends data off the phone or is the record that the person agreed to that. A hand-made or foreign
+ * backup could otherwise switch one on with no consent behind it, so the restored device starts
+ * with the default (off, or no record) and the person is asked again.
  */
-export const SETTINGS_FORCED_OFF_ON_RESTORE_TYPES: readonly string[] = [USE_HOSTED_AI_SETTING_TYPE];
+export const SETTINGS_FORCED_OFF_ON_RESTORE_TYPES: readonly string[] = [
+  USE_HOSTED_AI_SETTING_TYPE,
+  USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
+  AI_CONSENT_RECORDS_SETTING_TYPE,
+  PREMIUM_CONSENT_VERSION_SETTING_TYPE,
+];
 
 export function isRestoreForcedOffSetting(type: string): boolean {
   return SETTINGS_FORCED_OFF_ON_RESTORE_TYPES.includes(type);

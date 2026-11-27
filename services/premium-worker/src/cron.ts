@@ -10,10 +10,11 @@ import type { UpstreamName, ZdrEndpoint } from './upstream/types';
 
 const ZDR_ATTEMPTS = 3;
 /**
- * Maximum age to hold an incomplete baseline for unpriced Otari requests before advancing:
- * gives a delayed pricing pass one full daily cycle to settle without wedging reconciliation forever.
+ * Maximum age to hold an incomplete baseline before advancing. A baseline is incomplete when the
+ * Otari usage call failed or reported unpriced requests: holding it gives a delayed pricing pass
+ * one full daily cycle to settle, and an outage a bounded window, so reconciliation never wedges.
  */
-const MAX_UNPRICED_HOLD_MS = 2 * DAY_MS;
+const MAX_BASELINE_HOLD_MS = 2 * DAY_MS;
 
 async function step(ctx: Ctx, name: string, fn: () => Promise<void>): Promise<void> {
   try {
@@ -158,8 +159,8 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
   }
   const orDelta = keyReset ? 0 : rawOrDelta;
 
-  // Spend through Otari and ledger since the baseline in parallel. Hold the baseline for one
-  // extra day on unpriced requests so delayed pricing can settle, then advance to avoid wedging.
+  // Spend through Otari and ledger since the baseline in parallel. An incomplete Otari window
+  // (outage or unpriced requests) holds the baseline for at most MAX_BASELINE_HOLD_MS.
   let otari_u = 0;
   let otariAvailable = true;
   let unpriced = false;
@@ -207,12 +208,12 @@ async function reconcile(ctx: Ctx, now: number): Promise<void> {
     await open(ctx, 'reconciliation', 'reconciliation_gap');
   }
 
-  const advanceAt = otariAvailable && (!unpriced || now - prev.at >= MAX_UNPRICED_HOLD_MS);
-  if (advanceAt) {
+  // A key reset stores the new usage under now too: the old baseline time would make the next
+  // run compare a shorter OpenRouter window with a longer ledger window.
+  const incomplete = !otariAvailable || unpriced;
+  const holdExpired = now - prev.at >= MAX_BASELINE_HOLD_MS;
+  if (keyReset || !incomplete || holdExpired) {
     await store(now);
-  } else if (keyReset) {
-    // Record the new OpenRouter key usage immediately while preserving prev.at for Otari retry.
-    await store(prev.at);
   }
 }
 

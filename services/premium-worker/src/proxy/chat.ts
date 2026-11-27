@@ -34,7 +34,11 @@ import { parseJsonUsage, parseTail, TailBuffer } from './sse';
 export const TIMEOUTS = { overallMs: 55_000, streamIdleMs: 30_000 };
 
 const KEY_RE = /^[A-Za-z0-9_-]{8,128}$/;
-/** The Iron consent version Otari needs; a newer app sends a higher one, which is fine. */
+/**
+ * The Iron consent version Otari needs; a newer app sends a higher one, which is fine.
+ * The header only says which consent wording the sending build showed. A modified client can send
+ * any value and the Worker keeps no consent record, so this check is not proof of consent.
+ */
 const MIN_CONSENT_VERSION = 4;
 
 function hasRequiredConsent(request: Request): boolean {

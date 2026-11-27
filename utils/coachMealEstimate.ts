@@ -18,13 +18,9 @@ import { trackMealThinking } from './coachMealSampling';
 import { generateMealStructured, refineTrackedMeals, reportMealProgress } from './coachMealSteps';
 import type { MealEstimateProgressListener } from './mealEstimateProgress';
 import { MAX_MEAL_IMAGES, type MealImage, toMealImage, toMealImages } from './mealImages';
+import { getMultiPhotoMealNote } from './mealPassPrompts';
 import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
-import {
-  getMealAnalysisPrompt,
-  getMultiPhotoMealNote,
-  getTrackMealFunctions,
-  withCustomPrompts,
-} from './prompts';
+import { getMealAnalysisPrompt, getTrackMealFunctions, withCustomPrompts } from './prompts';
 
 /**
  * What a meal estimate is asked: the person's words and extras (a description, the notes of the

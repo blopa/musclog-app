@@ -1,4 +1,4 @@
-import { getMultiPhotoMealNote } from '../prompts';
+import { getMultiPhotoMealNote } from '../mealPassPrompts';
 
 describe('getMultiPhotoMealNote', () => {
   it('is empty for no photo or one photo', () => {

@@ -316,6 +316,24 @@ describe('useHoldToTranscribe', () => {
     expect(result.current.phase).toBe('idle');
   });
 
+  it('ignores a result that arrives after the finish timeout', async () => {
+    const { result } = await pressAndStart();
+    act(() => emit('start'));
+    act(() => emit('result', { isFinal: true, results: [{ transcript: 'ola' }] }));
+    act(() => {
+      jest.advanceTimersByTime(MIN_VOICE_HOLD_MS + 100);
+      result.current.onPressOut();
+    });
+    act(() => {
+      jest.advanceTimersByTime(VOICE_FINISH_TIMEOUT_MS);
+    });
+    act(() => emit('result', { isFinal: true, results: [{ transcript: 'tarde demais' }] }));
+    act(() => emit('end'));
+
+    expect(result.current.outcome).toEqual({ kind: 'text', text: 'ola' });
+    expect(result.current.liveText).toBe('');
+  });
+
   it('aborts on unmount and ignores later events', async () => {
     const { result, unmount } = await pressAndStart();
     act(() => emit('start'));

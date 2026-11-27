@@ -10,7 +10,7 @@ import {
   HOSTED_BODY_OVERHEAD_BYTES,
   HOSTED_CUSTOM_PROMPT_ALLOWANCE_BYTES,
 } from '@/utils/premium/hostedImagePlan';
-import { getMultiPhotoMealNote } from '@/utils/prompts';
+import { getMultiPhotoMealNote } from '@/utils/mealPassPrompts';
 
 const mockCreate = jest.fn();
 

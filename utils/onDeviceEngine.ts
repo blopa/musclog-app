@@ -33,7 +33,7 @@ export function resolveOnDeviceEngine(
   return platform === 'ios' ? 'apple' : 'gguf';
 }
 
-/** Characters of context each engine is given (the prompt budget, `PROVIDER_CONFIGS`). */
+/** Characters of context each engine is given (`ProviderPolicy.contextChars`). */
 export const ON_DEVICE_CONTEXT_CHARS: Record<OnDeviceEngine, number> = {
   // Apple's system model has a small window; the tight cap is its optimisation spec.
   apple: 4500,

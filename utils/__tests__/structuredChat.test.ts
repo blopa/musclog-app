@@ -1,12 +1,8 @@
 import OpenAI from 'openai';
 
 import { AiCancelledError, AiInvalidKeyError } from '../aiErrors';
-import {
-  AiCreditsError,
-  type CoachAIConfig,
-  GatewayRateLimitError,
-  PROVIDER_CONFIGS,
-} from '../coachAI';
+import { AiCreditsError, type CoachAIConfig, GatewayRateLimitError } from '../coachAI';
+import { contextCharsFor } from '../providerPolicy';
 import { sendStructuredChatTurn, type StructuredTurnRequest } from '../structuredChat';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from '../gemini';
 import { handleError } from '../handleError';
@@ -123,7 +119,7 @@ describe('sendStructuredChatTurn: OpenAI-compatible providers', () => {
 
   it('drops a leading assistant turn, merges repeated roles and keeps the history in budget', async () => {
     mockCreate.mockResolvedValue(completion('{}'));
-    const big = 'y'.repeat(PROVIDER_CONFIGS.openai.maxCharBudget);
+    const big = 'y'.repeat(contextCharsFor({ provider: 'openai' }));
 
     await sendStructuredChatTurn(
       openai,
@@ -356,7 +352,7 @@ describe('sendStructuredChatTurn: on-device', () => {
     await sendStructuredChatTurn(
       onDevice,
       request({
-        systemPrompt: 's'.repeat(PROVIDER_CONFIGS['on-device'].maxCharBudget),
+        systemPrompt: 's'.repeat(contextCharsFor({ provider: 'on-device', engine: 'apple' })),
         history: [{ role: 'user', content: 'earlier' }],
       })
     );

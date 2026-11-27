@@ -22,7 +22,7 @@ import { parseVoiceCommands } from '@/utils/voiceCommand/parse';
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
 import { buildVoiceCommandSchema } from '@/utils/voiceCommand/schema';
 import { resolveVoiceCommand } from '@/utils/voiceCommand/tools';
-import type { VoiceAction, VoiceRejection } from '@/utils/voiceCommand/types';
+import type { VoiceAction, VoiceCommand, VoiceRejection } from '@/utils/voiceCommand/types';
 
 export type VoiceCommandOutcome =
   | { kind: 'action'; action: VoiceAction }
@@ -33,11 +33,14 @@ export type VoiceCommandOutcome =
 const OPERATION = 'voiceCommand';
 
 /**
- * Asks the model which command the sentence is, and returns its answer in the shape
- * `parseVoiceCommands` reads, or null for an answer that cannot be read. No custom prompts,
- * memories or persona on either path: they must not change which action runs.
+ * Asks the model which command the sentence is and reads its answer: the commands, or null for an
+ * answer that cannot be read. No custom prompts, memories or persona on either path: they must not
+ * change which action runs.
  */
-async function requestCommands(config: CoachAIConfig, transcript: string): Promise<unknown> {
+async function requestCommands(
+  config: CoachAIConfig,
+  transcript: string
+): Promise<VoiceCommand[] | null> {
   if (providerPolicyFor(config).nativeToolCalls) {
     // The model's own format: the example turns, then the sentence as a plain user turn (it is a
     // turn of a conversation, not text spliced into a prompt, so nothing is escaped).
@@ -45,9 +48,11 @@ async function requestCommands(config: CoachAIConfig, transcript: string): Promi
       operation: OPERATION,
       messages: [...NATIVE_VOICE_EXAMPLES, { role: 'user', content: prepareChatText(transcript) }],
       tools: buildNativeVoiceTools(),
+      // The transcript is what the person said: it stays out of the debug dump.
+      redactDump: true,
     });
 
-    return nativeVoiceReply(reply);
+    return parseVoiceCommands(nativeVoiceReply(reply));
   }
 
   const result = await requestStructured(config, {
@@ -58,9 +63,10 @@ async function requestCommands(config: CoachAIConfig, transcript: string): Promi
     userMessage: wrapUserContent(transcript),
     buildSchema: buildVoiceCommandSchema,
     task: 'extraction',
+    redactDump: true,
   });
 
-  return result.kind === 'ok' ? result.value : null;
+  return result.kind === 'ok' ? parseVoiceCommands(result.value) : null;
 }
 
 /**
@@ -79,7 +85,7 @@ export async function interpretVoiceCommand(
   }
 
   try {
-    const commands = parseVoiceCommands(await requestCommands({ ...config, signal }, transcript));
+    const commands = await requestCommands({ ...config, signal }, transcript);
     if (!commands) {
       reportAiEvent('voice-command-unusable', { provider: config.provider, operation: OPERATION });
 

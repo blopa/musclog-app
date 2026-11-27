@@ -207,6 +207,7 @@ describe('interpretVoiceCommand on the downloaded model', () => {
       expect.objectContaining({ ...GGUF, signal: controller.signal }),
       {
         operation: 'voiceCommand',
+        redactDump: true,
         messages: [
           ...NATIVE_VOICE_EXAMPLES,
           { role: 'user', content: prepareChatText('Hello my name is Pablo') },

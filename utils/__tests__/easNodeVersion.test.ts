@@ -14,6 +14,16 @@ function resolveNode(profiles: Record<string, BuildProfile>, name: string): stri
   return profile.node ?? (profile.extends ? resolveNode(profiles, profile.extends) : undefined);
 }
 
+/** Every file under a directory, recursively, as paths relative to the project root. */
+function listFiles(dir: string): string[] {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    const relative = path.relative(PROJECT_ROOT, full);
+
+    return entry.isDirectory() ? listFiles(full) : [relative];
+  });
+}
+
 function major(version: string): string {
   return version.replace(/^v/, '').split('.')[0];
 }
@@ -46,9 +56,15 @@ describe('Node version pin', () => {
       engineMajor
     );
 
-    const workflowsDir = path.join(PROJECT_ROOT, '.github/workflows');
-    for (const file of fs.readdirSync(workflowsDir)) {
-      const source = fs.readFileSync(path.join(workflowsDir, file), 'utf8');
+    // Workflows, plus every composite action (.github/actions/**/action.yml) they run steps from.
+    const githubFiles = [
+      ...listFiles(path.join(PROJECT_ROOT, '.github/workflows')),
+      ...listFiles(path.join(PROJECT_ROOT, '.github/actions')).filter((file) =>
+        file.endsWith('/action.yml')
+      ),
+    ];
+    for (const file of githubFiles) {
+      const source = fs.readFileSync(path.join(PROJECT_ROOT, file), 'utf8');
       for (const [, version] of source.matchAll(/node-version:\s*['"]?([\w.]+)/g)) {
         expect({ file, major: major(version) }).toEqual({ file, major: engineMajor });
       }

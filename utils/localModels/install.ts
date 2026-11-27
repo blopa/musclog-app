@@ -106,6 +106,19 @@ export function buildInstalledRecord(
   };
 }
 
+/**
+ * A file path from `installed.json` is joined onto the model folder (services/localModels/
+ * modelFolders.ts), so anything that could leave that folder or name another location is refused:
+ * an absolute path, a backslash, a URL scheme, or a `..` segment.
+ */
+export function isSafeInstallPath(path: string): boolean {
+  if (!path || path.startsWith('/') || path.includes('\\') || path.includes('://')) {
+    return false;
+  }
+
+  return !path.split('/').includes('..');
+}
+
 /** Tolerant parse: anything that is not a record of ours reads as "not installed". */
 export function parseInstalledRecord(text: string | null | undefined): InstalledRecord | null {
   if (!text) {
@@ -129,6 +142,7 @@ export function parseInstalledRecord(text: string | null | undefined): Installed
         !!file &&
         (file.role === 'model' || file.role === 'projector') &&
         typeof file.path === 'string' &&
+        isSafeInstallPath(file.path) &&
         typeof file.bytes === 'number' &&
         typeof file.sha256 === 'string'
     );

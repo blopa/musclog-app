@@ -339,7 +339,6 @@
         "detailedHint": "Nach jedem Foto kannst du bis zu 5 Fotos prüfen und optionale Details (Name, Notizen, Herkunft) hinzufügen, bevor geschätzt wird.",
         "quickHint": "Schätze direkt nach dem Foto. Ergänze den Kontext vor der Aufnahme mit der Nachrichten-Taste."
       },
-      "getOpenAiKey": "OpenAI-Schlüssel holen",
       "customPrompts": "Eigene Systemanweisungen",
       "customPromptsSubtitle": "Füge deine eigenen Anweisungen zu allen KI-Funktionen hinzu",
       "manageCustomPrompts": "Eigene Anweisungen verwalten",

@@ -339,7 +339,6 @@
         "detailedHint": "Dopo ogni foto, controlla fino a 5 foto e aggiungi dettagli facoltativi (nome, note, provenienza) prima della stima.",
         "quickHint": "Stima subito dopo la foto. Aggiungi il contesto prima dello scatto con il pulsante messaggio."
       },
-      "getOpenAiKey": "Ottieni chiave OpenAI",
       "customPrompts": "Istruzioni di sistema personalizzate",
       "customPromptsSubtitle": "Aggiungi le tue istruzioni a tutte le funzioni AI",
       "manageCustomPrompts": "Gestisci istruzioni personalizzate",

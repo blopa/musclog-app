@@ -20,10 +20,16 @@ export type VoiceToolDefinition = {
   /** Whole translation key of an example of what to say. */
   labelKey: string;
   /**
-   * The model's own tool-call format (the downloaded model): what the tool does and the slots it
-   * reads, each with its description, in the order the model is shown them.
+   * The model's own tool-call format (the downloaded model). Measured as a set: `order` is the
+   * place the tool is offered in, `example` the turn it is shown by (`order` among the examples).
+   * Slots are in the order the model is shown them.
    */
-  native: { description: string; slots: Partial<Record<VoiceSlotKey, string>> };
+  native: {
+    description: string;
+    slots: Partial<Record<VoiceSlotKey, string>>;
+    order: number;
+    example: { order: number; say: string; arguments: string };
+  };
   resolve: (command: VoiceCommand, context: VoiceResolveContext) => VoiceResolution;
 };
 
@@ -41,6 +47,12 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
         from_meal: 'The meal copied, only if different from meal.',
         from_day: 'The day copied from.',
       },
+      order: 1,
+      example: {
+        order: 0,
+        say: 'Same breakfast as yesterday',
+        arguments: '{"meal":"breakfast","from_day":"yesterday"}',
+      },
     },
     resolve: resolveCopyMeal,
   },
@@ -55,6 +67,8 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
         meal: 'The meal it is eaten in.',
         day: 'The day it is eaten.',
       },
+      order: 0,
+      example: { order: 1, say: 'I had a banana', arguments: '{"food":"banana"}' },
     },
     resolve: resolveSearchFood,
   },

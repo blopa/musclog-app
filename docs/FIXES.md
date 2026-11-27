@@ -3,6 +3,29 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## The Smart Camera widget artwork was never copied on Android release builds (2026-11-27)
+
+### Symptom
+
+Sentry reported an unhandled `FileSystemFile.copy` rejection, `URI is not absolute`, from 2.18.8, after the
+2.17.2 fix that turned a bare path into a `file://` URI.
+
+### Cause
+
+Two things. A release Android build reports a bundled image as a bare drawable resource name
+(`assets_camerawidget`), already marked as downloaded, which is neither a path nor a URI, so
+`absoluteFileUri` left it alone. And `File.copy` is asynchronous and was not awaited, so the failure was an
+unhandled rejection that the widget's own `catch` never saw.
+
+### Fix
+
+`widgets/cameraArtwork.ts` asks the asset module to open a resource name (a fresh `Asset` with the same
+hash writes it to the cache) and awaits the copy.
+
+### Not covered
+
+Not yet checked on a release build on a device.
+
 ## Opening the camera closed the app on a Poco X3, and Sentry received nothing (2026-11-25)
 
 ### Symptom

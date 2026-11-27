@@ -1,4 +1,4 @@
-import { getChatReviewInstruction } from '../prompts';
+import { getChatReviewInstruction } from '../aiReviewPrompts';
 
 jest.mock('@/database/services/AiCustomPromptService', () => ({
   AiCustomPromptService: { getActivePrompts: jest.fn(), getMemoriesForPrompt: jest.fn() },

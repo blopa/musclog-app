@@ -1,71 +1,53 @@
-import { type RefObject, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCameraAiProcessing } from '@/components/camera/useCameraAiProcessing';
+import type { CameraAiProcessing } from '@/components/camera/useCameraAiProcessing';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import type { TrackMealIngredient } from '@/utils/coachAI';
 import { estimateNutritionFromPhoto } from '@/utils/coachMealEstimate';
 import { readFileAsStringAsync } from '@/utils/file';
-import {
-  type MealEstimateProgressLine,
-  mealEstimateProgressLine,
-} from '@/utils/mealEstimateProgress';
+import { mealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 import type { MealPhotoContext } from '@/utils/mealPhotoContext';
 import { showSnackbar } from '@/utils/snackbarService';
 import { trackedMealTotals } from '@/utils/trackedMealTotals';
 
-type Meal = {
-  name: string;
-  type: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  grams: number;
-};
-
-type Options = {
-  abortRef: RefObject<AbortController | null>;
-  setProcessing: (value: boolean) => void;
-  setProgress: (value: MealEstimateProgressLine | null) => void;
-  setError: (value: string | null) => void;
-  onSuccess: (meal: Meal, ingredients: TrackMealIngredient[], photo: string) => void;
+/** An estimated meal waiting for the person to confirm it. */
+export type MealReview = {
+  /** Totals as the diary will store them. */
+  meal: ReturnType<typeof trackedMealTotals> & { name: string; type: string };
+  ingredients: TrackMealIngredient[];
+  /** The first photo of the meal, saved with it. */
+  photoUri: string;
 };
 
 type Submission = {
   photos: string[];
   context?: MealPhotoContext;
   name?: string;
+  onEstimate: (review: MealReview) => void;
+  /** The reason an estimate failed, in the person's language. */
+  onError: (message: string) => void;
+  /** The estimate ended without a meal: it failed or was cancelled. */
   onFailure?: () => void;
 };
 
-export function useMealPhotoEstimate({
-  abortRef,
-  setProcessing,
-  setProgress,
-  setError,
-  onSuccess,
-}: Options) {
+/** Estimates one meal from its photos, as one camera AI request. */
+export function useMealPhotoEstimate({ run, setProgress }: CameraAiProcessing) {
   const { t } = useTranslation();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const { formatRoundedDecimal } = useFormatAppNumber();
-  const runCameraAiTask = useCameraAiProcessing({
-    abortRef,
-    setProcessing,
-    setProgress,
-    setError,
-  });
 
   return useCallback(
-    async ({ photos, context, name, onFailure }: Submission) => {
+    async ({ photos, context, name, onEstimate, onError, onFailure }: Submission) => {
       if (photos.length === 0) {
         return;
       }
 
-      await runCameraAiTask({
+      await run({
         timerName: 'SmartCamera.aiMealPhotos',
         logLabel: 'Error estimating meal photos',
+        onError,
         onFinish: (outcome) => {
           if (outcome !== 'done') {
             onFailure?.();
@@ -99,20 +81,14 @@ export function useMealPhotoEstimate({
             return t('food.aiCamera.aiAnalysisFailed');
           }
 
-          const totals = trackedMealTotals(ingredients);
-          const meal: Meal = {
+          const meal: MealReview['meal'] = {
+            ...trackedMealTotals(ingredients),
             name:
               name?.trim() ||
               result.meals[0]?.mealName ||
               result.meals[0]?.mealType ||
               t('meals.customMeal'),
             type: t('meals.customMeal'),
-            // Totals as the diary stores them: estimated carbs are net, so fiber is added.
-            calories: totals.calories,
-            protein: totals.protein,
-            carbs: totals.carbs,
-            fat: totals.fat,
-            grams: totals.grams,
           };
 
           showSnackbar(
@@ -126,12 +102,12 @@ export function useMealPhotoEstimate({
             })
           );
 
-          onSuccess(meal, ingredients, photos[0]);
+          onEstimate({ meal, ingredients, photoUri: photos[0] });
 
           return null;
         },
       });
     },
-    [runCameraAiTask, setProgress, onSuccess, t, formatEnergyWithUnit, formatRoundedDecimal]
+    [run, setProgress, t, formatEnergyWithUnit, formatRoundedDecimal]
   );
 }

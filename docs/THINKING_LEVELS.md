@@ -176,7 +176,7 @@ label (1 / 1 / 2 + arbiter / up to 3 readings + arbiter).
   a single request would give. Every provider's sender only sends and throws; `sendCoachMessage`
   turns a failure into the apology (or a typed error) once, for all four. This is the only job where the second answer is not judged by a code rule: it is kept
   unless it is empty or failed. So the review is a **checklist**, not an open "improve this"
-  (`getChatReviewInstruction`, `utils/prompts.ts`): (1) a number or fact that contradicts the app
+  (`getChatReviewInstruction`, `utils/aiReviewPrompts.ts`): (1) a number or fact that contradicts the app
   data or the conversation is fixed, (2) a claim about you that nothing supports is removed, (3) for
   pain or injury symptoms, signs of an eating disorder, an extreme deficit, pregnancy or medication
   the advice is narrowed, no optimisation advice that could harm is given and a qualified
@@ -483,7 +483,7 @@ Every thinking-level rule above is per engine, not per model file: the 1.2B gets
   on free chat only (never on a structured request), while the downloaded model samples with its
   vendor's settings (temperature 0.1, min_p 0.15, repeat penalty 1.05, `textSampling` in its manifest)
   on every plain-text request and gets no penalties; Apple's engine takes the 6-turn cap and no penalties. Context
-  budget in characters (`PROVIDER_CONFIGS`): 64,000 for Gemini, OpenAI, Claude, the free tier and
+  budget in characters (`ProviderPolicy.contextChars`, `contextCharsFor`): 64,000 for Gemini, OpenAI, Claude, the free tier and
   Musclog Iron, 8,000 for a local server and the downloaded model, 4,500 for Apple's. A local server
   gets memories and the foundation foods; on-device AI gets neither. The foundation list is about
   11,500 characters (roughly 3,000 to 3,500 tokens) on top of the prompt, so **a local server needs a

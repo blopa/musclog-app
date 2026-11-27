@@ -77,6 +77,11 @@ APK. It never bumps the version and never touches Google Play. The APK is signed
 key Play App Signing signs store installs with (compare in Play Console → App signing): where they differ, one cannot
 update the other.
 
+Both workflows share their setup (disk space, Node, Java, `npm ci`, version check) in
+`.github/actions/setup-android-build`, pin every third-party action by commit SHA, and the AAB one installs `gplay`
+as a single release binary checked against a SHA-256 written in the workflow (a `gplay` upgrade changes both). The
+AAB workflow has deliberately no branch guard.
+
 `upload` defaults to the internal track; production refuses without `--rollout`. Before uploading it runs
 the offline `gplay preflight` and refuses unless the local versionCode is above every code on Play
 (Play spends a code even on a rejected upload). Preflight blocks on errors only: its warnings (exact alarms, bundle

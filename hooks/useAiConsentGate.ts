@@ -49,16 +49,24 @@ export function useAiConsentGate() {
     [showSnackbar, t]
   );
 
-  const confirm = useCallback(() => {
+  // The consent is written before the action runs, so an action never starts without a record.
+  // If the record cannot be written, the action does not run and the person is told.
+  const confirm = useCallback(async () => {
     if (!pending) {
       return;
     }
 
+    const { provider, run } = pending;
     setPending(null);
-    recordAiConsent(pending.provider).catch((error) =>
-      handleError(error, 'useAiConsentGate.record', { showSnackbar: false })
-    );
-    pending.run();
+
+    try {
+      await recordAiConsent(provider);
+    } catch (error) {
+      await handleError(error, 'useAiConsentGate.record');
+      return;
+    }
+
+    run();
   }, [pending]);
 
   const cancel = useCallback(() => setPending(null), []);

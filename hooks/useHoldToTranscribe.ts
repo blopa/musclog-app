@@ -55,7 +55,8 @@ export type HoldToTranscribe = {
   allowBrowserRecognition: () => Promise<void>;
 };
 
-type Hold = { pressedAt: number; releasedAt: number | null };
+/** One press of the button: when it happened and the recognition session it started, if any. */
+type Hold = { pressedAt: number; releasedAt: number | null; session: Session | null };
 
 type Session = {
   speech: SpeechModule;
@@ -96,13 +97,19 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
   const [phase, setPhase] = useState<HoldToTranscribePhase>('idle');
   const [liveText, setLiveText] = useState('');
   const [outcome, setOutcome] = useState<HoldToTranscribeOutcome | null>(null);
+  /** The whole of a hold's mutable state; `phase` only mirrors it for rendering. */
   const holdRef = useRef<Hold | null>(null);
-  const sessionRef = useRef<Session | null>(null);
   const onTextRef = useRef<HoldToTranscribeOptions['onText']>(options?.onText);
 
   useEffect(() => {
     onTextRef.current = options?.onText;
   }, [options?.onText]);
+
+  /**
+   * A hold that is no longer the current one (unmounted, or replaced) must not touch state after an
+   * await. Read it after EVERY await in `prepare`.
+   */
+  const isStale = useCallback((hold: Hold) => holdRef.current !== hold, []);
 
   const endHold = useCallback(
     (result: VoiceOutcome) => {
@@ -122,8 +129,16 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     [showSnackbar, t]
   );
 
-  /** Drops the session's listeners and timer; the caller decides what the hold became. */
-  const closeSession = useCallback((session: Session) => {
+  /**
+   * Drops the session's listeners and timer and returns it; the caller decides what the hold
+   * became.
+   */
+  const closeSession = useCallback((hold: Hold): Session | null => {
+    const { session } = hold;
+    if (!session) {
+      return null;
+    }
+
     session.subscriptions.forEach((subscription) => subscription.remove());
     session.subscriptions = [];
     if (session.finishTimer) {
@@ -131,24 +146,23 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
       session.finishTimer = null;
     }
 
-    if (sessionRef.current === session) {
-      sessionRef.current = null;
-    }
+    hold.session = null;
+
+    return session;
   }, []);
 
   const finishSession = useCallback(
     (session: Session) => {
-      if (sessionRef.current !== session) {
+      const hold = holdRef.current;
+      if (hold?.session !== session) {
         return;
       }
 
-      closeSession(session);
-      const hold = holdRef.current;
-      const now = Date.now();
+      closeSession(hold);
       const result = voiceOutcome({
         text: transcriptText(session.transcript),
         failure: session.failure,
-        heldMs: (hold?.releasedAt ?? now) - (hold?.pressedAt ?? now),
+        heldMs: (hold.releasedAt ?? Date.now()) - hold.pressedAt,
       });
 
       if (result.kind === 'failure' && result.failure === 'failed') {
@@ -165,8 +179,20 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     [closeSession, endHold]
   );
 
+  /**
+   * The recognizer did not end in time: the hold closes with what was heard. A result that arrives
+   * after this is deliberately ignored, because the session's listeners are removed first.
+   */
+  const abandonSession = useCallback(
+    (session: Session) => {
+      finishSession(session);
+      session.speech.abort();
+    },
+    [finishSession]
+  );
+
   const startSession = useCallback(
-    (speech: SpeechModule) => {
+    (hold: Hold, speech: SpeechModule) => {
       const session: Session = {
         speech,
         transcript: EMPTY_TRANSCRIPT,
@@ -177,22 +203,25 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
         finishTimer: null,
       };
 
+      // A listener of a session that was closed, or of a hold that is over, does nothing.
+      const isLive = () => holdRef.current?.session === session;
+
       session.subscriptions = [
         speech.addListener('start', () => {
-          if (sessionRef.current !== session) {
+          if (!isLive()) {
             return;
           }
 
           session.started = true;
           // Let go before the recognizer was ready: stop now that it can be stopped.
-          if (holdRef.current?.releasedAt != null) {
+          if (hold.releasedAt !== null) {
             speech.stop();
           } else {
             setPhase('listening');
           }
         }),
         speech.addListener('result', (event: ExpoSpeechRecognitionResultEvent) => {
-          if (sessionRef.current !== session) {
+          if (!isLive()) {
             return;
           }
 
@@ -203,7 +232,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
           setLiveText(transcriptText(session.transcript));
         }),
         speech.addListener('error', (event: ExpoSpeechRecognitionErrorEvent) => {
-          if (sessionRef.current !== session) {
+          if (!isLive()) {
             return;
           }
 
@@ -215,7 +244,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
         }),
         speech.addListener('end', () => finishSession(session)),
       ];
-      sessionRef.current = session;
+      hold.session = session;
 
       speech.start({
         lang: locale,
@@ -238,7 +267,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
         const speech = loadSpeechModule();
         if (Platform.OS === 'web') {
           const blocker = await browserVoiceBlocker();
-          if (holdRef.current !== hold) {
+          if (isStale(hold)) {
             return;
           }
 
@@ -248,6 +277,9 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
           }
         } else {
           let permission = await speech.getPermissionsAsync();
+          if (isStale(hold)) {
+            return;
+          }
 
           if (!permission.granted) {
             if (!permission.canAskAgain) {
@@ -256,7 +288,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
             }
 
             permission = await speech.requestPermissionsAsync();
-            if (holdRef.current !== hold) {
+            if (isStale(hold)) {
               return;
             }
 
@@ -281,7 +313,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
         }
 
         // Unmounted, or another hold took over, while the checks ran.
-        if (holdRef.current !== hold) {
+        if (isStale(hold)) {
           return;
         }
 
@@ -290,29 +322,26 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
           return;
         }
 
-        startSession(speech);
+        startSession(hold, speech);
       } catch (error) {
-        const session = sessionRef.current;
-        if (session) {
-          closeSession(session);
-        }
+        closeSession(hold);
 
         void handleError(error, 'voiceInput.start', { showSnackbar: false });
-        if (holdRef.current === hold) {
+        if (!isStale(hold)) {
           endHold({ kind: 'failure', failure: 'failed' });
         }
       }
     },
-    [closeSession, endHold, startSession]
+    [closeSession, endHold, isStale, startSession]
   );
 
   const onPressIn = useCallback(() => {
     // One hold at a time: a press while the last one is still finishing is ignored.
-    if (holdRef.current || sessionRef.current) {
+    if (holdRef.current) {
       return;
     }
 
-    const hold: Hold = { pressedAt: Date.now(), releasedAt: null };
+    const hold: Hold = { pressedAt: Date.now(), releasedAt: null, session: null };
     holdRef.current = hold;
     setOutcome(null);
     setPhase('preparing');
@@ -326,7 +355,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     }
 
     hold.releasedAt = Date.now();
-    const session = sessionRef.current;
+    const { session } = hold;
     if (!session) {
       // Still preparing: `prepare` sees the release and ends the hold.
       return;
@@ -338,22 +367,18 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     }
 
     session.finishTimer = setTimeout(() => {
-      if (sessionRef.current !== session) {
-        return;
+      if (holdRef.current?.session === session) {
+        abandonSession(session);
       }
-
-      finishSession(session);
-      session.speech.abort();
     }, VOICE_FINISH_TIMEOUT_MS);
-  }, [finishSession]);
+  }, [abandonSession]);
 
   useEffect(
     () => () => {
-      const session = sessionRef.current;
+      const hold = holdRef.current;
       holdRef.current = null;
-      if (session) {
-        closeSession(session);
-        session.speech.abort();
+      if (hold) {
+        closeSession(hold)?.speech.abort();
       }
     },
     [closeSession]

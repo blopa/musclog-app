@@ -11,9 +11,10 @@ import {
 } from '@/utils/localModels/install';
 
 import { isDevWebLocalModel } from './devWebBridge';
-import type { InstalledLocalModel, LocalModelSnapshot, LocalModelStore } from './modelStore';
+import type { InstalledLocalModel } from './modelFolders';
+import type { LocalModelSnapshot, LocalModelStore } from './modelStore';
 
-export type { InstalledLocalModel, LocalModelSnapshot, LocalModelStore };
+export type { LocalModelSnapshot, LocalModelStore };
 
 // Under the dev server the model "is installed": `llamaRuntime.web.ts` forwards to a desktop
 // llama-server (`devWebBridge.ts`). Production web stays unsupported, and so does the text model.
@@ -61,43 +62,15 @@ export const localModelStore: LocalModelStore = inertStore(DEFAULT_LOCAL_MODEL, 
 
 export const localTextModelStore: LocalModelStore = inertStore(LOCAL_TEXT_MODEL, textSnapshot);
 
-export function getLocalModelSnapshot(): LocalModelSnapshot {
-  return snapshot;
-}
-
-export function subscribeLocalModel(_listener: () => void): () => void {
-  return () => undefined;
-}
-
 export function registerLocalModelUnloader(_fn: () => Promise<void>) {}
 
 export function getLocalModelRoot(): string | null {
   return null;
 }
 
-export async function refreshLocalModel(): Promise<void> {}
-
-export async function getInstalledLocalModel(): Promise<InstalledLocalModel | null> {
-  return null;
-}
-
 export async function getFreeDiskBytes(): Promise<number | null> {
   return null;
 }
-
-export async function getLocalModelSpaceCheck(
-  _selection: LocalModelSelection
-): Promise<SpaceCheck> {
-  return ENOUGH;
-}
-
-export async function startLocalModelDownload(_selection?: LocalModelSelection): Promise<void> {}
-
-export async function pauseLocalModelDownload(): Promise<void> {}
-
-export async function resumeLocalModelDownload(): Promise<void> {}
-
-export async function cancelLocalModelDownload(): Promise<void> {}
 
 export async function deleteLocalModel(): Promise<void> {}
 

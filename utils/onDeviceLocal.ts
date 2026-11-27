@@ -24,14 +24,18 @@ function toMessages(messages: LocalMessage[], systemPrompt: string | undefined) 
   ];
 }
 
+type OnUsage = LocalGenerateParams['onUsage'];
+
 export async function sendLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onUsage?: OnUsage
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     signal,
+    onUsage,
   });
 
   return result.text;
@@ -41,12 +45,14 @@ export async function streamLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
   onDelta: (delta: string) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onUsage?: OnUsage
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     onDelta,
     signal,
+    onUsage,
   });
 
   return result.text;
@@ -62,7 +68,7 @@ export async function sendLocalStructuredRaw(
   schema: object,
   options: Pick<
     LocalGenerateParams,
-    'image' | 'signal' | 'maxTokens' | 'temperature' | 'onDelta'
+    'image' | 'signal' | 'maxTokens' | 'temperature' | 'onDelta' | 'onUsage'
   > = {}
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
@@ -82,7 +88,7 @@ export async function sendLocalStructuredRaw(
 export async function sendLocalToolCall(
   messages: LocalChatMessage[],
   tools: LocalToolDefinition[],
-  options: Pick<LocalGenerateParams, 'signal' | 'onDelta'> = {}
+  options: Pick<LocalGenerateParams, 'signal' | 'onDelta' | 'onUsage'> = {}
 ): Promise<{ text: string; toolCalls: LocalToolCall[] }> {
   const result = await runtime().generateWithLocalModel({
     messages,

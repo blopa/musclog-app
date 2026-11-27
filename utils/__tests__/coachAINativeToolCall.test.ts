@@ -1,5 +1,6 @@
 import { AiCancelledError } from '../aiErrors';
 import { type CoachAIConfig, requestNativeToolCall } from '../coachAI';
+import { clearLlmUsage, getRecentLlmUsage } from '../llmUsage';
 
 const mockSendLocalToolCall = jest.fn();
 const mockLogJsonEvent = jest.fn();
@@ -33,6 +34,7 @@ const REQUEST = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  clearLlmUsage();
 });
 
 describe('requestNativeToolCall', () => {
@@ -71,6 +73,35 @@ describe('requestNativeToolCall', () => {
         payload: { text: 'Hi!', toolCalls: [] },
       })
     );
+  });
+
+  it('keeps what was said and answered out of the dump when asked to', async () => {
+    mockSendLocalToolCall.mockResolvedValue({ text: 'Hi!', toolCalls: [] });
+
+    await requestNativeToolCall(GGUF, { ...REQUEST, redactDump: true });
+
+    expect(mockLogJsonEvent).toHaveBeenCalledTimes(2);
+    expect(JSON.stringify(mockLogJsonEvent.mock.calls)).not.toContain('banana');
+    expect(JSON.stringify(mockLogJsonEvent.mock.calls)).not.toContain('Hi!');
+    for (const [event] of mockLogJsonEvent.mock.calls) {
+      expect(event.payload).toEqual({ redacted: true });
+    }
+  });
+
+  it('records what the call cost', async () => {
+    mockSendLocalToolCall.mockImplementation(async (_messages, _tools, options) => {
+      options.onUsage({ inputTokens: 200, cachedInputTokens: 150, outputTokens: 12 });
+
+      return { text: '', toolCalls: [] };
+    });
+
+    await requestNativeToolCall(GGUF, REQUEST);
+
+    expect(getRecentLlmUsage().at(-1)).toMatchObject({
+      operation: 'voiceCommand',
+      provider: 'on-device',
+      usage: { inputTokens: 200, cachedInputTokens: 150, outputTokens: 12 },
+    });
   });
 
   it('refuses a provider with no tool-call format of its own before sending anything', async () => {

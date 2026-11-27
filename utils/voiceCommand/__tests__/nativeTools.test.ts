@@ -128,3 +128,125 @@ describe('nativeVoiceReply', () => {
     ).toEqual({ commands: [{ tool: 'search_food', food: 'egg' }] });
   });
 });
+
+/**
+ * Frozen literal output. The downloaded model's tools, order and example turns were measured as a
+ * set: a refactor must reproduce these exact values, not the registry it is derived from.
+ */
+describe('frozen native voice output', () => {
+  const meals = ['breakfast', 'lunch', 'dinner', 'snack', 'other'];
+  const sourceDays = [
+    'today',
+    'yesterday',
+    'two_days_ago',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
+  ];
+
+  it('offers search_food then copy_meal, with these descriptions and slots', () => {
+    expect(buildNativeVoiceTools()).toEqual([
+      {
+        name: 'search_food',
+        description: 'Log one food the person names, such as banana, eggs or a protein shake.',
+        parameters: {
+          type: 'object',
+          properties: {
+            food: {
+              type: 'string',
+              description: "Only the food name, in the person's own words.",
+            },
+            meal: { type: 'string', enum: meals, description: 'The meal it is eaten in.' },
+            day: {
+              type: 'string',
+              enum: ['today', 'yesterday', 'tomorrow'],
+              description: 'The day it is eaten.',
+            },
+          },
+          required: [],
+        },
+      },
+      {
+        name: 'copy_meal',
+        description:
+          'Copy food that was ALREADY logged on an EARLIER day. Only when the person says same, again, repeat or copy and names a day.',
+        parameters: {
+          type: 'object',
+          properties: {
+            meal: { type: 'string', enum: meals, description: 'The meal it goes into.' },
+            day: {
+              type: 'string',
+              enum: ['today', 'yesterday', 'tomorrow'],
+              description: 'The day it goes into.',
+            },
+            from_meal: {
+              type: 'string',
+              enum: meals,
+              description: 'The meal copied, only if different from meal.',
+            },
+            from_day: {
+              type: 'string',
+              enum: sourceDays,
+              description: 'The day copied from.',
+            },
+          },
+          required: [],
+        },
+      },
+    ]);
+  });
+
+  it('shows these example turns in this order', () => {
+    expect(NATIVE_VOICE_EXAMPLES).toEqual([
+      { role: 'user', content: 'Hi, my name is Anna' },
+      { role: 'assistant', content: 'Hi Anna!' },
+      { role: 'user', content: 'What did I eat on Monday?' },
+      { role: 'assistant', content: 'I can only log food.' },
+      { role: 'user', content: 'Same breakfast as yesterday' },
+      {
+        role: 'assistant',
+        content: '',
+        toolCalls: [
+          {
+            id: 'call_1',
+            name: 'copy_meal',
+            arguments: '{"meal":"breakfast","from_day":"yesterday"}',
+          },
+        ],
+      },
+      { role: 'tool', toolCallId: 'call_1', content: 'ok' },
+      { role: 'assistant', content: 'Done.' },
+      { role: 'user', content: 'I had a banana' },
+      {
+        role: 'assistant',
+        content: '',
+        toolCalls: [{ id: 'call_2', name: 'search_food', arguments: '{"food":"banana"}' }],
+      },
+      { role: 'tool', toolCallId: 'call_2', content: 'ok' },
+      { role: 'assistant', content: 'Done.' },
+    ]);
+  });
+
+  it('keeps the measured tool order', () => {
+    expect(NATIVE_VOICE_TOOL_ORDER).toEqual(['search_food', 'copy_meal']);
+  });
+});
+
+describe('native placement guarantees', () => {
+  it('places every action tool once in the offer order and once in the example order', () => {
+    const offered = VOICE_ACTION_TOOLS.map((name) => VOICE_TOOLS[name].native.order).sort();
+    const shown = VOICE_ACTION_TOOLS.map((name) => VOICE_TOOLS[name].native.example.order).sort();
+
+    expect(offered).toEqual(VOICE_ACTION_TOOLS.map((_, index) => index));
+    expect(shown).toEqual(VOICE_ACTION_TOOLS.map((_, index) => index));
+  });
+
+  it('offers no non-action tool: none and cant_determine_tool answer in plain text by design', () => {
+    expect(NATIVE_VOICE_TOOL_ORDER).not.toContain('none');
+    expect(NATIVE_VOICE_TOOL_ORDER).not.toContain('cant_determine_tool');
+  });
+});

@@ -9,6 +9,7 @@ import {
   toHostedAiError,
 } from './hostedAiError';
 import type { RetryDecision, RetryState } from './llmRetryTypes';
+import { ON_DEVICE_CONTEXT_CHARS } from './onDeviceEngine';
 import { setHostedSignal } from './premium/hostedSignal';
 import { whileHostedBackingOff } from './premium/hostedWait';
 
@@ -21,6 +22,16 @@ export type ChatPenalties = { frequency_penalty: number; presence_penalty: numbe
  * entry in `PROVIDER_POLICIES`; every other provider gets none and follows the shared rules.
  */
 export type ProviderPolicy = {
+  /**
+   * Characters of context a request is given (`contextCharsFor`). Absent: the large window every
+   * cloud provider has.
+   */
+  contextChars?: number;
+  /**
+   * The foundation food list is never offered to this provider: the on-device engines have no room
+   * for it. Every other provider gets it while "Send foundation foods to AI" is on.
+   */
+  omitsFoundationFoods?: boolean;
   /** Headers of one logical request, built once and sent on every attempt (an idempotency key). */
   requestHeaders?: (config: CoachAIConfig) => Record<string, string>;
   /** Throws before anything is sent when the config can never answer. */
@@ -252,6 +263,7 @@ const SMALL_MODEL_POLICY: ProviderPolicy = {
 
 /** What both on-device engines share beyond being small: the meal pipeline is shorter for them. */
 const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
+  omitsFoundationFoods: true,
   skipsMealFirstLook: true,
   estimatesFoodsFromLabels: true,
   structuredFailureIsNoAnswer: true,
@@ -266,6 +278,7 @@ const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
 const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
   ...SMALL_MODEL_POLICY,
   ...ON_DEVICE_CAPABILITIES,
+  contextChars: ON_DEVICE_CONTEXT_CHARS.gguf,
   regeneratesCopiedChatReply: true,
   skipsInsightFactCheck: true,
   nativeToolCalls: true,
@@ -289,6 +302,7 @@ const GGUF_BASE_MODEL_POLICY: ProviderPolicy = {
  */
 const LOCAL_SERVER_POLICY: ProviderPolicy = {
   ...SMALL_MODEL_POLICY,
+  contextChars: 8000,
   chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
   keepsPartialStructuredReply: true,
 };
@@ -298,6 +312,7 @@ const LOCAL_SERVER_POLICY: ProviderPolicy = {
  * OS enforces its guided generation.
  */
 const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
+  contextChars: ON_DEVICE_CONTEXT_CHARS.apple,
   maxChatHistoryTurns: SMALL_MODEL_POLICY.maxChatHistoryTurns,
   compactWorkoutCards: SMALL_MODEL_POLICY.compactWorkoutCards,
   runsSamplesSequentially: true,
@@ -328,4 +343,14 @@ export function providerPolicyFor(
   }
 
   return PROVIDER_POLICIES[config.provider] ?? {};
+}
+
+/** The context budget of every provider with a large context window. */
+const LARGE_CONTEXT_CHARS = 64000;
+
+/** Characters of context the provider (and, on-device, the engine) behind a config is given. */
+export function contextCharsFor(
+  config: Pick<CoachAIConfig, 'provider' | 'engine' | 'textModel'>
+): number {
+  return providerPolicyFor(config).contextChars ?? LARGE_CONTEXT_CHARS;
 }

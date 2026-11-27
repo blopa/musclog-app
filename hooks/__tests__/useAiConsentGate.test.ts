@@ -5,6 +5,7 @@ import { useAiConsentGate } from '@/hooks/useAiConsentGate';
 import { isCloudAiBlockedForAge } from '@/services/aiAccess';
 import { recordAiConsent } from '@/services/aiConsentRecord';
 import { AI_CONSENT_VERSION } from '@/utils/aiConsent';
+import { handleError } from '@/utils/handleError';
 
 const mockShowSnackbar = jest.fn();
 jest.mock('@/context/SnackbarContext', () => ({
@@ -37,7 +38,7 @@ describe('useAiConsentGate', () => {
     expect(result.current.provider).toBe('openai');
     expect(run).not.toHaveBeenCalled();
 
-    act(() => result.current.confirm());
+    await act(() => result.current.confirm());
 
     expect(run).toHaveBeenCalled();
     expect(recordAiConsent).toHaveBeenCalledWith('openai');
@@ -76,5 +77,40 @@ describe('useAiConsentGate', () => {
     expect(result.current.provider).toBeNull();
     expect(run).not.toHaveBeenCalled();
     expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'common.ageGate.cloudAi');
+  });
+});
+
+describe('useAiConsentGate confirm order', () => {
+  it('runs the action only after the consent is recorded', async () => {
+    let finishRecording: () => void = () => {};
+    (recordAiConsent as jest.Mock).mockImplementationOnce(
+      () => new Promise<void>((resolve) => (finishRecording = resolve))
+    );
+    const run = jest.fn();
+    const { result } = renderHook(() => useAiConsentGate());
+
+    await act(() => result.current.request('openai', run));
+    await act(async () => {
+      void result.current.confirm();
+    });
+
+    expect(result.current.provider).toBeNull();
+    expect(run).not.toHaveBeenCalled();
+
+    await act(async () => finishRecording());
+
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not run the action when the consent could not be recorded', async () => {
+    (recordAiConsent as jest.Mock).mockRejectedValueOnce(new Error('disk full'));
+    const run = jest.fn();
+    const { result } = renderHook(() => useAiConsentGate());
+
+    await act(() => result.current.request('openai', run));
+    await act(() => result.current.confirm());
+
+    expect(run).not.toHaveBeenCalled();
+    expect(handleError).toHaveBeenCalledWith(expect.any(Error), 'useAiConsentGate.record');
   });
 });

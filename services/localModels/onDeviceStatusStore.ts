@@ -17,12 +17,7 @@ import { type OnDeviceEngineChoice, resolveOnDeviceEngine } from '@/utils/onDevi
 import { deriveOnDeviceStatus, type OnDeviceStatus } from '@/utils/onDeviceStatus';
 
 import { isDevWebLocalModel } from './devWebBridge';
-import {
-  getLocalModelSnapshot,
-  localTextModelStore,
-  refreshLocalModel,
-  subscribeLocalModel,
-} from './modelStore';
+import { localModelStore, localTextModelStore } from './modelStore';
 
 /**
  * Apple's availability is read through an inline require: `utils/onDeviceAi.ios` imports the
@@ -93,7 +88,7 @@ function recompute(target: Session) {
     initialized: target.initialized,
     engine: resolveOnDeviceEngine(target.readings.engineChoice, Platform.OS),
     appleAvailability: target.readings.appleAvailability,
-    model: getLocalModelSnapshot(),
+    model: localModelStore.getSnapshot(),
     textModelReady: localTextModelStore.getSnapshot().state.kind === 'ready',
     deviceOk: deviceOk(),
   });
@@ -106,7 +101,7 @@ function wire(target: Session) {
   }
 
   // Download progress and installs arrive from the model store.
-  target.unsubscribeModel = subscribeLocalModel(() => recompute(target));
+  target.unsubscribeModel = localModelStore.subscribe(() => recompute(target));
   // The optional text model decides who answers a message about pain (`ProviderPolicy`).
   target.unsubscribeTextModel = localTextModelStore.subscribe(() => recompute(target));
   // The person may have switched Apple Intelligence on in iOS Settings while the app was away.
@@ -137,7 +132,7 @@ async function probe(target: Session): Promise<OnDeviceStatus> {
     const [engineChoice, appleAvailability] = await Promise.all([
       readChoice().catch(() => target.readings.engineChoice),
       readAppleAvailability(),
-      refreshLocalModel(),
+      localModelStore.refresh(),
       localTextModelStore.refresh(),
     ]);
     target.readings = { engineChoice, appleAvailability };

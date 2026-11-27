@@ -32,7 +32,6 @@ import {
   MS_PER_SOLAR_DAY,
   parseLocalCalendarDate,
 } from './calendarDate';
-import type { StructuredDialect } from './coachAI';
 import { formatMemoriesForPrompt } from './coachMemories';
 import { buildCoachPersonaBlock } from './coachPersonaPrompt';
 import {
@@ -50,6 +49,7 @@ import {
 import { describePromptBlocks } from './llmUsage';
 import { wrapUserContent } from './promptSanitizer';
 import { roundToDecimalPlaces } from './roundDecimal';
+import type { MealSchemaDialect } from './structuredDialect';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
 import { buildWorkoutPlanExerciseSection } from './workoutPlanPrompt';
@@ -1453,267 +1453,6 @@ export const getMissingIngredientsMacrosPrompt = (
 };
 
 /**
- * The second look at a meal estimate (Thinking: High and up). Structured output, so persona-free.
- * The model sees the estimate and the person's description or photo and names only what the
- * evidence shows is missing or off; empty lists are a complete answer.
- */
-export const getMealReviewPrompt = (
-  meal: {
-    mealName?: string;
-    ingredients: {
-      name: string;
-      grams: number;
-      kcal: number;
-      protein: number;
-      carbs: number;
-      fat: number;
-    }[];
-  },
-  language?: string
-): string => {
-  const sections = [
-    'You are an expert nutritionist reviewing a meal estimate.',
-    `The meal is "${meal.mealName ?? 'a meal'}". Its estimated ingredients are:`,
-    '```json',
-    JSON.stringify(
-      meal.ingredients.map(({ name, grams, kcal, protein, carbs, fat }) => ({
-        name,
-        grams,
-        kcal,
-        protein,
-        carbs,
-        fat,
-      })),
-      null,
-      2
-    ),
-    '```',
-    '',
-    "Compare it with the person's description and/or the photo and answer two things:",
-    '1. missingIngredients: things that were eaten but are not listed (cooking oil, butter, sauce, dressing, a drink). Only list one when the description or photo gives evidence for it; never invent ingredients. Give each one its "englishName" too: its plain English food name, used only to look the food up in a database and never shown (repeat "name" when that is already English).',
-    '2. corrections: listed ingredients whose gram amount looks clearly wrong, with the corrected grams. Use the exact listed name.',
-    'Empty lists are a valid, often correct answer. Do not return macros.',
-  ];
-
-  if (language) {
-    sections.push(`Ingredient names must be in ${language}.`);
-  }
-
-  return sections.join('\n');
-};
-
-export const getMealReviewFunctions = (
-  dialect: MealSchemaDialect = 'gemini'
-): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
-  const added = foodLookupProperties(dialect, { foodId: false, englishName: true });
-
-  return [
-    {
-      name: 'reviewMealEstimate',
-      description:
-        'Name the ingredients missing from a meal estimate and the portions that look wrong.',
-      parameters: {
-        type: 'object',
-        properties: {
-          missingIngredients: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string', description: 'Name of the ingredient that was eaten' },
-                grams: { type: 'number', description: 'Estimated weight in grams' },
-                ...added.properties,
-              },
-              required: ['name', 'grams', ...added.required],
-            },
-          },
-          corrections: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string', description: 'The listed ingredient name, exactly' },
-                grams: { type: 'number', description: 'The corrected weight in grams' },
-              },
-              required: ['name', 'grams'],
-            },
-          },
-        },
-        required: ['missingIngredients', 'corrections'],
-      },
-    },
-  ];
-};
-
-/**
- * The first look at a meal (Thinking: Tokenmaxxing). Structured output, so persona-free.
- * Seeing is kept apart from estimating: the answer holds no calories and no weight of any food, and
- * is handed to the recipe extraction as notes. The scene comes first because portion weights are
- * only as good as the sense of scale behind them: the container, how big it is, how it is held and
- * where it was served say more about a portion than the food names do.
- */
-export const getMealObservationPrompt = (language?: string): string => {
-  const sections = [
-    'You are looking at a meal, from a photo and/or a written description, before anyone estimates it.',
-    'Describe the scene first, then what is in it. Do NOT return calories, macros or the weight in grams of any food.',
-    '1. scene: one or two plain sentences, as a person would describe the picture: how the food is held or served, the container, where it was taken and from what angle. For example: "A hand holding a regular-size dinner plate with rice and curry, taken at a restaurant, from above." With no photo, one sentence restating how the meal was described.',
-    '2. setting: where the meal was served (restaurant, canteen, home, takeaway, packaged, street food and so on) or "unknown". Restaurant and takeaway portions are often larger than home ones.',
-    '3. container: what holds the food (plate, bowl, takeaway box, cup, wrapper, hand) or "unknown".',
-    '4. containerSize: how big the container is, judged from the picture, in words or centimetres (the container, never the food). For example "regular dinner plate, about 26 cm across" or "small bowl, about 12 cm". Use things of known size to judge it: a standard dinner plate is about 25 to 28 cm, a fork about 19 cm, an adult hand about 18 cm long, a soda can about 12 cm tall. "unknown" when you cannot tell.',
-    '5. scaleCues: the things in the picture you used to judge size (cutlery, a hand, a can, packaging, the table).',
-    '6. items: everything visible or stated. For each give the name, the portion in VISUAL words including how much of the container it fills (for example "a third of the plate", "heaped, about 3 cm deep", "two slices"), how it was prepared if you can tell, and your confidence (high, medium or low).',
-    '7. addedFats: visible added fats, sauces, dressings, toppings and drinks.',
-    '8. extras: other things that are visibly or explicitly part of the meal and do not fit above.',
-    '9. uncertain: things that might be present but you cannot tell.',
-    'For a written description with no photo, also add the usual hidden parts (cooking oil, butter, dressing) as items with low confidence.',
-    'Never invent foods that neither the photo nor the description supports.',
-    'If the input shows several separate meals, set mealCount to how many.',
-  ];
-
-  if (language) {
-    sections.push(`Your response must be in ${language}.`);
-  }
-
-  return sections.join('\n');
-};
-
-export const getMealObservationFunctions = ():
-  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
-  {
-    name: 'observeMeal',
-    description: 'Describe the scene and contents of a meal in detail, without calories or grams.',
-    parameters: {
-      type: 'object',
-      properties: {
-        mealCount: { type: 'number', description: 'How many separate meals the input shows' },
-        scene: {
-          type: 'string',
-          description:
-            'One or two plain sentences describing the picture: how the food is held or served, the container, the place, the angle',
-        },
-        setting: {
-          type: 'string',
-          description: 'Where the meal was served (restaurant, home, takeaway, ...) or "unknown"',
-        },
-        container: {
-          type: 'string',
-          description: 'What holds the food (plate, bowl, box, cup, hand, ...) or "unknown"',
-        },
-        containerSize: {
-          type: 'string',
-          description:
-            'How big the container is, in words or centimetres, never the food: for example "regular dinner plate, about 26 cm across", or "unknown"',
-        },
-        scaleCues: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'The things in the picture used to judge size',
-        },
-        items: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              name: { type: 'string', description: 'Name of the food' },
-              portion: {
-                type: 'string',
-                description:
-                  'The portion in visual words, including how much of the container it fills, never grams',
-              },
-              preparation: {
-                type: 'string',
-                description: 'How it was prepared, or an empty string when unknown',
-              },
-              confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
-            },
-            required: ['name', 'portion', 'preparation', 'confidence'],
-          },
-        },
-        addedFats: { type: 'array', items: { type: 'string' } },
-        extras: { type: 'array', items: { type: 'string' } },
-        uncertain: { type: 'array', items: { type: 'string' } },
-      },
-      required: [
-        'mealCount',
-        'scene',
-        'setting',
-        'container',
-        'containerSize',
-        'scaleCues',
-        'items',
-        'addedFats',
-        'extras',
-        'uncertain',
-      ],
-    },
-  },
-];
-
-/** On-device prompts: a tiny model is best at a nutrition-facts label per 100 g, by name only. */
-export const getOnDeviceLabelPrompt = (names: string[]): string =>
-  `Nutrition facts labels, per 100 g, for each food in this list:\n${JSON.stringify(names)}`;
-
-export const getOnDeviceLabelUserMessage = (): string => 'Answer in JSON.';
-
-export const getOnDeviceLabelFunctions = ():
-  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
-  {
-    name: 'estimateLabels',
-    description: 'Nutrition facts label per 100 g for each food.',
-    parameters: {
-      type: 'object',
-      properties: {
-        foods: {
-          type: 'array',
-          minItems: 1,
-          items: {
-            type: 'object',
-            properties: {
-              name: { type: 'string', description: 'Name of the food' },
-              kcal: { type: 'number', description: 'Kilocalories per 100 g' },
-              protein: { type: 'number', description: 'Protein in grams per 100 g' },
-              carbs: { type: 'number', description: 'Carbohydrates in grams per 100 g' },
-              fat: { type: 'number', description: 'Fat in grams per 100 g' },
-            },
-            required: ['name', 'kcal', 'protein', 'carbs', 'fat'],
-          },
-        },
-      },
-      required: ['foods'],
-    },
-  },
-];
-
-export const getOnDeviceFiberPrompt = (names: string[]): string =>
-  `Dietary fiber on the nutrition facts label, grams per 100 g, for each food in this list:\n${JSON.stringify(names)}`;
-
-export const getOnDeviceFiberFunctions = ():
-  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
-  {
-    name: 'estimateFiber',
-    description: 'Dietary fiber in grams per 100 g for each food.',
-    parameters: {
-      type: 'object',
-      properties: {
-        foods: {
-          type: 'array',
-          minItems: 1,
-          items: {
-            type: 'object',
-            properties: {
-              name: { type: 'string', description: 'Name of the food' },
-              fiber: { type: 'number', description: 'Dietary fiber in grams per 100 g' },
-            },
-            required: ['name', 'fiber'],
-          },
-        },
-      },
-      required: ['foods'],
-    },
-  },
-];
-
-/**
  * System prompt for meal plan generation
  */
 export const getGenerateMealPlanPrompt = async (
@@ -1746,23 +1485,6 @@ export const getGenerateMealPlanPrompt = async (
     .filter(Boolean)
     .join('\n');
 };
-
-/**
- * The note every request of a multi-photo meal estimate carries in its user message, so the system
- * prompts can keep saying "the photo": several photos are one meal seen more than once, and a food
- * that shows up in two of them is still one food. Empty for a single photo.
- */
-export function getMultiPhotoMealNote(photoCount: number): string {
-  if (photoCount <= 1) {
-    return '';
-  }
-
-  return [
-    `These ${photoCount} photos show ONE meal: different angles, parts or close-ups of the same food.`,
-    'A photo may show a menu, a label or a receipt instead of the food; use it as information about the meal.',
-    'Count each food once, even when it appears in several photos, and judge its amount from the photo that shows it best.',
-  ].join(' ');
-}
 
 /**
  * System prompt for meal analysis (text or photo).
@@ -2221,13 +1943,6 @@ export const getParseRetrospectiveNutritionFunctions = ():
 };
 
 /**
- * The dialect a meal schema is written in: a provider's own, or `optional` for a custom local server,
- * which enforces no schema on its side. A required field it leaves out fails our own shape check and
- * costs a repair request, so for it (and for the small on-device models) nothing here is required.
- */
-export type MealSchemaDialect = StructuredDialect | 'optional';
-
-/**
  * What the ingredient schemas of a meal estimate carry to let code find the person's food: the
  * `foodId` (the reference number of a foundation food line, only when that list was sent) and the
  * `englishName` (the food's plain English name, used only for matching and never shown, while `name`
@@ -2236,7 +1951,7 @@ export type MealSchemaDialect = StructuredDialect | 'optional';
  * keep `foodId` optional and require `englishName`; the small on-device models (`on-device`,
  * `gguf`) and a custom local server (`optional`) are left to omit both, to keep their grammar small.
  */
-function foodLookupProperties(
+export function foodLookupProperties(
   dialect: MealSchemaDialect,
   options: { foodId: boolean; englishName: boolean }
 ): { properties: Record<string, object>; required: string[] } {
@@ -2580,80 +2295,3 @@ export const getEstimateMacrosFunctions = (
     },
   ];
 };
-
-/**
- * The last turn of a coach reply's review round (highest thinking level). The system prompt and the
- * history are the chat's own, and the conversation already ends with the person's message and the
- * draft written for it as the model's own previous reply, so nothing is quoted here and there are
- * no markers for a small model to copy back into its answer.
- *
- * It is the one second pass no code judges, so it is a checklist, not an open "improve this": four
- * named checks, and a draft that passes all of them comes back UNCHANGED. An open review can make a
- * correct answer worse (longer, more hedged, a different voice), and nothing downstream would notice.
- */
-export const getChatReviewInstruction = (language: string): string =>
-  [
-    "Review round. Your previous reply above is a draft of the answer to the person's last message; it has not been sent.",
-    'Run the draft through these four checks, against the conversation so far and against the app data in your instructions (profile, snapshot, workouts, meals):',
-    '1. Facts: a number or fact in the draft that contradicts the app data or the conversation. Fix it.',
-    '2. Unsupported claims: a claim about the person that nothing in the conversation or the app data supports. Remove it.',
-    '3. Safety: if the message or the data involves pain or injury symptoms, signs of an eating disorder, an extreme calorie deficit, pregnancy or medication, narrow the advice, give no optimisation advice that could cause harm, and suggest a qualified professional.',
-    `4. Fit: the draft answers what was asked, in your persona voice, within the length rules, in the language the person writes in (the app language is ${language}). If it does not, fix that.`,
-    'If the draft passes all four checks, reply with the draft UNCHANGED, word for word. Do not polish it, add to it, lengthen it or change its voice; change only what a check above requires.',
-    'Use the same reply format as the draft.',
-    'Write only the reply the person will read. Never mention that a draft, a review or a second pass exists.',
-  ].join('\n');
-
-/**
- * Added to an extraction's own user message (a label, past workouts, a food log) when
- * independent readings of the same input disagreed (High and Tokenmaxxing thinking levels). The
- * readings are quoted as data, so whatever they say is checked, never followed.
- */
-export const getExtractionArbiterMessage = (readings: unknown[], disputed: string[]): string =>
-  [
-    'Independent readings of this same input disagree on some fields.',
-    'Read the input again and return the complete, corrected answer in the same format.',
-    'Decide each disputed field from the input itself; a reading is not evidence.',
-    '',
-    `Disputed fields: ${disputed.slice(0, 40).join(', ')}`,
-    '',
-    ...readings.flatMap((reading, index) => [
-      `--- READING ${index + 1} ---`,
-      JSON.stringify(reading),
-      `--- END OF READING ${index + 1} ---`,
-    ]),
-  ].join('\n');
-
-/**
- * The last user turn of a plan's critique round (High and Tokenmaxxing thinking levels). The
- * original request and the answer under review are already in the conversation (the answer as the
- * model's own previous message), so this carries only what code found in it.
- */
-export const getPlanReviewInstruction = (findings: string[]): string =>
-  [
-    'Review round. Your previous message is an answer already written for the request above.',
-    'Check it against the request and the rules above, then return the complete, corrected answer in the same format.',
-    'Keep what is right; fix what breaks the request, the rules or the numbers. Do not change it just to change it.',
-    '',
-    'Problems found by code:',
-    ...(findings.length > 0 ? findings.slice(0, 40).map((finding) => `- ${finding}`) : ['- none']),
-  ].join('\n');
-
-/**
- * The last user turn of an insight's fact-check round (High and Tokenmaxxing thinking levels). The
- * system prompt, the request and the draft (the model's own previous message) are the ones it just
- * answered, so the data and the voice stay the same. On a later round the text may also be tightened.
- */
-export const getInsightFactCheckInstruction = (ungrounded: string[], tighten: boolean): string =>
-  [
-    'Fact-check round. Your previous message is a draft answer written for the request above from the data above.',
-    'Return the same answer with every figure and claim checked against the data: fix what the data does not support, and remove what you cannot check. A sum, average or difference worked out correctly from the data may stay.',
-    tighten
-      ? 'Also tighten the wording: say the same things in fewer words, with the same facts.'
-      : 'Change nothing else: same language, same voice, same length.',
-    'Reply with the answer only, never mentioning a draft or a check.',
-    '',
-    ungrounded.length > 0
-      ? `Figures not found in the data: ${ungrounded.slice(0, 30).join(', ')}`
-      : 'Every figure was found in the data; check the claims around them.',
-  ].join('\n');

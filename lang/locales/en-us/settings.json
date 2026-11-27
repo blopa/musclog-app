@@ -339,7 +339,6 @@
         "detailedHint": "After each photo, review up to 5 photos and add optional details (name, notes, where it's from) before estimating.",
         "quickHint": "Estimate right after you take the photo. Add context before the shot with the message button."
       },
-      "getOpenAiKey": "Get OpenAI key",
       "customPrompts": "Custom system prompts",
       "customPromptsSubtitle": "Add your own instructions to all AI features",
       "manageCustomPrompts": "Manage custom prompts",

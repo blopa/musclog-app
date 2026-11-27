@@ -7,6 +7,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 
 import type { LocalModelManifest } from '@/constants/localModels';
 import { onDeviceAiModule } from '@/modules/on-device-ai';
+import { handleError } from '@/utils/handleError';
 import {
   type InstalledRecord,
   installFolderName,
@@ -34,6 +35,15 @@ export function modelsUri(root: string) {
 
 export function partialUri(root: string, manifest: LocalModelManifest) {
   return `${root}/.partial/${installFolderName(manifest)}`;
+}
+
+/** A failure of the on-device model's files or downloads, reported without a snackbar. */
+export function reportModelFailure(error: unknown, operation: string) {
+  void handleError(error, `localModels.${operation}`, { showSnackbar: false });
+}
+
+export async function excludeFromBackup(root: string): Promise<void> {
+  await onDeviceAiModule?.setExcludedFromBackup(root).catch(() => false);
 }
 
 export async function ensureDirectory(uri: string) {

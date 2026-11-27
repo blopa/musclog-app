@@ -1,4 +1,4 @@
-import { getMealObservationFunctions } from '../prompts';
+import { getMealObservationFunctions } from '../mealPassPrompts';
 import { formatMealObservation, parseMealObservation } from '../mealObservation';
 
 jest.mock('@/database/services/AiCustomPromptService', () => ({

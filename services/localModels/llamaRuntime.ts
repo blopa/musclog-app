@@ -23,6 +23,7 @@ import type { LocalTextSampling } from '@/constants/localModels';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { reportAiEvent } from '@/utils/aiTelemetry';
 import { handleError } from '@/utils/handleError';
+import { extractLocalUsage, type LlmUsage } from '@/utils/llmUsage';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { captureException } from '@/utils/sentry';
 import { createSerialQueue } from '@/utils/serialQueue';
@@ -64,6 +65,8 @@ export type LocalGenerateParams = {
   signal?: AbortSignal;
   /** Each new piece of text as it is written. */
   onDelta?: (delta: string) => void;
+  /** What the finished generation cost, from the engine's own counters. */
+  onUsage?: (usage: LlmUsage) => void;
 };
 
 export type LocalGenerateResult = {
@@ -387,6 +390,11 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
       const replyText = stripTemplateTokens(
         result.content?.trim() ? result.content : (result.text ?? '')
       );
+
+      const usage = extractLocalUsage(result);
+      if (usage) {
+        params.onUsage?.(usage);
+      }
 
       return {
         text: replyText,

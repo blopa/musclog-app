@@ -12,7 +12,6 @@ import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 import { isLegacyV1Dump } from '@/utils/legacyV1Backup';
-import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { parseDatabaseExportJson } from '@/utils/optical/gameBoyExport';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
@@ -42,7 +41,6 @@ import { AppExerciseCatalogueService } from './services/AppExerciseCatalogueServ
 import { ExerciseService } from './services/ExerciseService';
 import { FoodPortionService } from './services/FoodPortionService';
 import { MuscleService } from './services/MuscleService';
-import { SettingsService } from './services/SettingsService';
 import { normalizeWorkoutSetCompletionForImport } from './workoutSetImportNormalization';
 
 export type ExportDump = {
@@ -259,8 +257,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
-      // Musclog Iron (plan musclog-premium section 11 item 8): a restore never turns hosted AI
-      // on. Skipping the row leaves the setting at its default (off).
+      // A restore never takes the options that send data off the phone, nor the consent records
+      // that would vouch for them (SETTINGS_FORCED_OFF_ON_RESTORE_TYPES). Skipping the row leaves
+      // the setting at its default, so the person is asked again.
       if (tableName === 'settings' && isRestoreForcedOffSetting(String(raw.type))) {
         continue;
       }
@@ -518,12 +517,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // backup; re-anchor it to the restored row count so the next boot's loss
   // detector doesn't fire a false "nutrition logs lost" report.
   await updateNutritionLogCountBaseline();
-
-  // Musclog Free Tier is not offered in every runtime; force it off when the
-  // imported backup came from a runtime where the gateway was available.
-  if (!isMusclogGatewayAvailable()) {
-    await SettingsService.setUseMusclogFreeTier(false);
-  }
 
   // Reload the app after importing is complete
   await resetWidgets();

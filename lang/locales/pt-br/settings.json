@@ -339,7 +339,6 @@
         "detailedHint": "Depois de cada foto, revise até 5 fotos e adicione detalhes opcionais (nome, observações, de onde vem) antes de estimar.",
         "quickHint": "Estime logo depois de tirar a foto. Adicione contexto antes do clique com o botão de mensagem."
       },
-      "getOpenAiKey": "Obter Chave OpenAI",
       "customPrompts": "Prompts de Sistema Personalizados",
       "customPromptsSubtitle": "Adicione suas próprias instruções a todos os recursos de IA",
       "manageCustomPrompts": "Gerenciar Prompts Personalizados",

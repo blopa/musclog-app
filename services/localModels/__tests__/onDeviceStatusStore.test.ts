@@ -12,19 +12,21 @@ jest.mock('@/database/services/SettingsService', () => ({
 }));
 jest.mock('@/utils/onDeviceAi', () => ({ getAppleAvailability: () => mockGetApple() }));
 jest.mock('@/services/localModels/modelStore', () => ({
-  getLocalModelSnapshot: () => ({
-    supported: true,
-    state: { kind: 'none' },
-    projectorInstalled: false,
-    updateAvailable: false,
-  }),
-  refreshLocalModel: () => mockRefreshModel(),
+  localModelStore: {
+    refresh: () => mockRefreshModel(),
+    getSnapshot: () => ({
+      supported: true,
+      state: { kind: 'none' },
+      projectorInstalled: false,
+      updateAvailable: false,
+    }),
+    subscribe: () => () => {},
+  },
   localTextModelStore: {
     refresh: () => mockRefreshModel(),
     getSnapshot: () => ({ state: { kind: mockTextModelKind() } }),
     subscribe: () => () => {},
   },
-  subscribeLocalModel: () => () => {},
 }));
 jest.mock('@/services/localModels/devWebBridge', () => ({ isDevWebLocalModel: () => false }));
 jest.mock('expo-device', () => ({ totalMemory: 8e9, supportedCpuArchitectures: ['arm64-v8a'] }));

@@ -1,6 +1,6 @@
 import { buildVoiceCommandSchema } from '@/utils/voiceCommand/schema';
 import { VOICE_TOOL_NAMES } from '@/utils/voiceCommand/types';
-import type { StructuredDialect } from '@/utils/coachAI';
+import type { StructuredDialect } from '@/utils/structuredDialect';
 
 const DIALECTS: StructuredDialect[] = ['openai', 'gemini', 'claude', 'on-device', 'gguf'];
 const SLOT_KEYS = ['meal', 'day', 'from_meal', 'from_day', 'food'];

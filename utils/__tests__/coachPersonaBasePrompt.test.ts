@@ -136,10 +136,11 @@ describe('which prompts carry a persona', () => {
   });
 
   it('getMealObservationPrompt stays neutral: its output is structured data', () => {
-    const start = source.indexOf('export const getMealObservationPrompt = (');
-    const next = source.indexOf('\nexport const ', start + 1);
+    const passSource = fs.readFileSync(path.join(__dirname, '../mealPassPrompts.ts'), 'utf8');
+    const start = passSource.indexOf('export const getMealObservationPrompt = (');
+    const next = passSource.indexOf('\nexport const ', start + 1);
 
     expect(start).toBeGreaterThan(-1);
-    expect(source.slice(start, next === -1 ? undefined : next)).not.toMatch(/persona/i);
+    expect(passSource.slice(start, next === -1 ? undefined : next)).not.toMatch(/persona/i);
   });
 });

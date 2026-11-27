@@ -49,38 +49,13 @@ jobs:
           fi
 
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      # A local build compiles three ABIs of the native code and needs several GB of scratch space.
-      # The runner's image carries toolchains this job never uses.
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/hostedtoolcache/CodeQL
-          df -h /
-
-      # Match eas.json's build.base.node version so local builds behave like EAS cloud builds.
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '26.10.0'
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      # Gradle 9.4.1 (SDK 58) supports Java 17 through 26.
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: gradle
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Check release versions are in sync
-        run: npm run check-version-sync
+      # Free disk space, Node, Java, `npm ci` and the version check: .github/actions/setup-android-build.
+      - name: Set up the build
+        uses: ./.github/actions/setup-android-build
 
       - name: Read the app version
         id: version
@@ -129,21 +104,26 @@ jobs:
           ls -lh "$aab"
 
       - name: Upload the AAB
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ steps.version.outputs.file }}
           path: ${{ runner.temp }}/out/${{ steps.version.outputs.file }}
           if-no-files-found: error
           retention-days: 14
 
-      # gplay is pinned to the release the repo's scripts were written against; its installer checks the
-      # release's SHA-256 before installing.
+      # gplay (tamtom/play-console-cli) is downloaded as one release binary and checked against the SHA-256
+      # below before it is installed. Upgrading gplay changes both the version in the URL and this checksum:
+      # take the new checksum from the release's published digest, never from this run's download.
       - name: Install gplay
         if: inputs.submit_to_internal
         run: |
-          curl -fsSL -o "$RUNNER_TEMP/gplay-install.sh" \
-            https://raw.githubusercontent.com/tamtom/play-console-cli/v1.0.2/install.sh
-          GPLAY_VERSION=v1.0.2 bash "$RUNNER_TEMP/gplay-install.sh"
+          gplay_sha256=e951a13d8a35bdab43e8b4ba25ab22e45bb1487a7d27ae5b97faf2f9bb66c72e
+          gplay_file="$RUNNER_TEMP/gplay-linux-amd64"
+          curl -fsSL -o "$gplay_file" \
+            https://github.com/tamtom/play-console-cli/releases/download/v1.0.2/gplay-linux-amd64
+          echo "$gplay_sha256  $gplay_file" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          install -m 755 "$gplay_file" "$HOME/.local/bin/gplay"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Sign in to Google Play

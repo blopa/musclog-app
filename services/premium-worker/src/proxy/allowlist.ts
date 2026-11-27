@@ -200,14 +200,25 @@ function parseResponseFormat(v: unknown, config: AiConfig): Json {
   return out;
 }
 
-/** Copies keys from `source` to `target` when their value is not `undefined`, preserving key order. */
-export function assignDefined(target: Json, source: Json, keys: readonly string[]): Json {
-  for (const k of keys) if (source[k] !== undefined) target[k] = source[k];
+/**
+ * Copies the listed keys from `source` to `target` when their value is not `undefined`, in the
+ * order listed. Keys are checked against both types, so a typo fails the build.
+ */
+export function assignDefined<T extends object, S extends object, K extends keyof S & keyof T>(
+  target: T,
+  source: S,
+  keys: readonly K[]
+): T {
+  for (const k of keys) {
+    const v: unknown = source[k];
+    if (v !== undefined) Object.assign(target, { [k]: v });
+  }
   return target;
 }
 
 function pick(o: Json, keys: readonly string[]): Json {
-  return assignDefined({}, o, keys);
+  const out: Json = {};
+  return assignDefined(out, o, keys);
 }
 
 function parseTools(v: unknown, config: AiConfig): Json[] {
@@ -338,7 +349,7 @@ export function allowlistRequest(input: unknown, config: AiConfig): AllowlistedR
       Math.max(0, input.temperature as number)
     );
   assignDefined(
-    neutral as unknown as Json,
+    neutral,
     {
       response_format: responseFormat,
       tools,

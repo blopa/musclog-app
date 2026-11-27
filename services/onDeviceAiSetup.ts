@@ -7,7 +7,7 @@
  */
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
-import { startLocalModelDownload } from '@/services/localModels/modelStore';
+import { localModelStore } from '@/services/localModels/modelStore';
 import { refreshOnDeviceStatus } from '@/services/localModels/onDeviceStatusStore';
 import { handleError } from '@/utils/handleError';
 import type { LocalModelSelection } from '@/utils/localModels/install';
@@ -39,7 +39,7 @@ export function enableOnDeviceAi(
   return saved('onDeviceAi.enable', async () => {
     await SettingsService.enableOnDeviceAi(engine);
     if (options.download) {
-      void startLocalModelDownload(options.download);
+      void localModelStore.start(options.download);
     }
 
     await refreshOnDeviceStatus();

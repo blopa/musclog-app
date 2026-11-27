@@ -1,4 +1,4 @@
-import type { StructuredDialect } from '@/utils/coachAI';
+import type { StructuredDialect } from '@/utils/structuredDialect';
 import {
   MAX_VOICE_COMMANDS,
   VOICE_DAYS,
