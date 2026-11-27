@@ -3,7 +3,11 @@
     "listening": "Luisteren…",
     "overlay": {
       "releaseHint": "Laat los als je klaar bent",
-      "finishing": "Afronden…"
+      "finishing": "Afronden…",
+      "slideUpToLock": "Veeg omhoog om te vergrendelen",
+      "slideDownToCancel": "Veeg omlaag om te annuleren",
+      "lockedHint": "Tik op verzenden als je klaar bent",
+      "send": "Verzend wat je zei"
     },
     "holdHint": "Houd de microfoonknop ingedrukt terwijl je spreekt en laat dan los.",
     "resultTitle": "Wat je zei",

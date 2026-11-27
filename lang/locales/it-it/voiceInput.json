@@ -3,7 +3,11 @@
     "listening": "Ascolto…",
     "overlay": {
       "releaseHint": "Rilascia quando hai finito",
-      "finishing": "Completamento…"
+      "finishing": "Completamento…",
+      "slideUpToLock": "Scorri in alto per bloccare",
+      "slideDownToCancel": "Scorri in basso per annullare",
+      "lockedHint": "Tocca invia quando hai finito",
+      "send": "Invia quello che hai detto"
     },
     "holdHint": "Tieni premuto il pulsante del microfono mentre parli, poi rilascialo.",
     "resultTitle": "Quello che hai detto",

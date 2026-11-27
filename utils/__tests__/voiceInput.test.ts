@@ -1,14 +1,21 @@
 import {
-  EMPTY_TRANSCRIPT,
-  MIN_VOICE_HOLD_MS,
   applySpeechResult,
   browserHasSpeechRecognition,
   canOfferVoiceInput,
+  commitInterim,
+  EMPTY_TRANSCRIPT,
+  MAX_LOCKED_SILENT_RESTARTS,
+  MIN_VOICE_HOLD_MS,
+  NO_VOICE_DRAG,
   resolveNavCenterAction,
+  shouldResumeLockedHold,
   transcriptText,
+  VOICE_CANCEL_DISTANCE,
   VOICE_CAPTION_MAX_CHARS,
+  VOICE_LOCK_DISTANCE,
   voiceCaption,
   voiceCaptionSize,
+  voiceDrag,
   voiceFailureForError,
   voiceOutcome,
 } from '@/utils/voiceInput';
@@ -268,5 +275,33 @@ describe('voiceCaptionSize', () => {
     expect(voiceCaptionSize('a'.repeat(61))).toBe('medium');
     expect(voiceCaptionSize('a'.repeat(140))).toBe('medium');
     expect(voiceCaptionSize('a'.repeat(141))).toBe('small');
+  });
+});
+
+describe('voiceDrag', () => {
+  it('locks after a slide up and cancels after a slide down', () => {
+    expect(voiceDrag(0)).toEqual(NO_VOICE_DRAG);
+    expect(voiceDrag(-VOICE_LOCK_DISTANCE / 2)).toEqual({ lock: 0.5, cancel: 0, action: null });
+    expect(voiceDrag(-VOICE_LOCK_DISTANCE).action).toBe('lock');
+    expect(voiceDrag(VOICE_CANCEL_DISTANCE - 1).action).toBeNull();
+    expect(voiceDrag(VOICE_CANCEL_DISTANCE).action).toBe('cancel');
+  });
+});
+
+describe('a locked hold', () => {
+  it('keeps the words being spoken across a restart', () => {
+    expect(commitInterim({ finals: ['a'], interim: 'b' })).toEqual({
+      finals: ['a', 'b'],
+      interim: '',
+    });
+  });
+
+  it('resumes only after silence, and not forever', () => {
+    expect(shouldResumeLockedHold({ failure: null, silentRestarts: 0 })).toBe(true);
+    expect(shouldResumeLockedHold({ failure: 'nothingHeard', silentRestarts: 1 })).toBe(true);
+    expect(shouldResumeLockedHold({ failure: 'permission', silentRestarts: 0 })).toBe(false);
+    expect(
+      shouldResumeLockedHold({ failure: null, silentRestarts: MAX_LOCKED_SILENT_RESTARTS })
+    ).toBe(false);
   });
 });

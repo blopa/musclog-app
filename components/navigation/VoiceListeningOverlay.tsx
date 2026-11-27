@@ -1,13 +1,20 @@
+import { ChevronDown, ChevronUp, Lock, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { VoiceWaveform } from '@/components/navigation/VoiceWaveform';
+import { IconButton } from '@/components/theme/IconButton';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import type { HoldToTranscribePhase } from '@/hooks/useHoldToTranscribe';
 import { useTheme } from '@/hooks/useTheme';
-import { voiceCaption, type VoiceCaptionSize, voiceCaptionSize } from '@/utils/voiceInput';
+import {
+  voiceCaption,
+  type VoiceCaptionSize,
+  voiceCaptionSize,
+  type VoiceDrag,
+} from '@/utils/voiceInput';
 import type { VoiceLevelMeter } from '@/utils/voiceLevel';
 
 const FADE_MS = 160;
@@ -26,6 +33,11 @@ const CAPTION_FONT_SIZE = {
 
 type VoiceListeningOverlayProps = {
   phase: Exclude<HoldToTranscribePhase, 'idle'>;
+  /** The hold goes on without a finger: a cancel button replaces the slide hints. */
+  locked: boolean;
+  /** How far the held finger has slid towards locking or cancelling. */
+  drag: VoiceDrag;
+  onCancel: () => void;
   liveText: string;
   level: VoiceLevelMeter;
   /** The height of the screen the bar sits on (`MasterLayout`'s frame). */
@@ -46,9 +58,16 @@ type VoiceListeningOverlayProps = {
  * buttons and the microphone (`VOICE_OVERLAY_Z_INDEX`). The scrim is the fixed dark one with fixed
  * white ink (docs/DESIGN.md → surfaces that do not follow the theme); the bars take the theme's
  * accent, like the microphone. It blocks taps on the screen under it until the hold is over.
+ *
+ * Above the button it says where to slide: up to the lock, down to cancel, each lighting up as the
+ * finger gets there. A locked hold shows a cancel button instead, and the microphone below it has
+ * become the send button.
  */
 export function VoiceListeningOverlay({
   phase,
+  locked,
+  drag,
+  onCancel,
   liveText,
   level,
   frameHeight,
@@ -62,6 +81,15 @@ export function VoiceListeningOverlay({
   const fontSize = theme.typography.fontSize[CAPTION_FONT_SIZE[voiceCaptionSize(caption)]];
   const finishing = phase === 'finishing';
   const hintGap = theme.spacing.padding.base;
+  const hint = (text: string, color: string = theme.colors.overlay.alwaysWhite70) => (
+    <Text
+      maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+      className="text-center text-sm font-medium"
+      style={{ color }}
+    >
+      {text}
+    </Text>
+  );
 
   return (
     <Animated.View
@@ -79,7 +107,7 @@ export function VoiceListeningOverlay({
     >
       <View
         className="flex-1 items-center justify-center gap-8 px-6"
-        style={{ paddingTop: insets.top + hintGap, paddingBottom: buttonTop + hintGap * 4 }}
+        style={{ paddingTop: insets.top + hintGap }}
       >
         <View className="w-full items-center" style={{ opacity: finishing ? 0.35 : 1 }}>
           <VoiceWaveform level={level} running={!finishing} color={theme.colors.accent.primary} />
@@ -98,20 +126,61 @@ export function VoiceListeningOverlay({
         </Text>
       </View>
       <View
-        pointerEvents="none"
-        className="absolute left-0 right-0 flex-row items-center justify-center gap-2 px-6"
-        style={{ bottom: buttonTop + hintGap }}
+        className="items-center gap-4 px-6"
+        style={{ paddingTop: hintGap, paddingBottom: buttonTop + hintGap }}
       >
         {finishing ? (
-          <ActivityIndicator size="small" color={theme.colors.overlay.alwaysWhite70} />
+          <View className="flex-row items-center justify-center gap-2">
+            <ActivityIndicator size="small" color={theme.colors.overlay.alwaysWhite70} />
+            {hint(t('voiceInput.overlay.finishing'))}
+          </View>
         ) : null}
-        <Text
-          maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
-          className="text-center text-sm font-medium"
-          style={{ color: theme.colors.overlay.alwaysWhite70 }}
-        >
-          {t(finishing ? 'voiceInput.overlay.finishing' : 'voiceInput.overlay.releaseHint')}
-        </Text>
+        {!finishing && locked ? (
+          <>
+            <View className="items-center gap-2">
+              <IconButton
+                icon={Trash2}
+                size="lg"
+                variant="media"
+                accessibilityLabel={t('common.cancel')}
+                onPress={onCancel}
+              />
+              {hint(t('common.cancel'))}
+            </View>
+            {hint(t('voiceInput.overlay.lockedHint'))}
+          </>
+        ) : null}
+        {!finishing && !locked ? (
+          <View pointerEvents="none" className="items-center gap-4">
+            <View className="items-center gap-2" style={{ opacity: 1 - drag.cancel }}>
+              <View
+                className="h-14 w-14 items-center justify-center rounded-full"
+                style={{
+                  backgroundColor:
+                    drag.lock >= 0.5 ? theme.colors.accent.primary : theme.colors.overlay.scrim60,
+                  transform: [{ scale: 1 + drag.lock * 0.3 }],
+                }}
+              >
+                <Lock size={theme.iconSize.lg} color={theme.colors.text.alwaysWhite} />
+              </View>
+              <ChevronUp size={theme.iconSize.md} color={theme.colors.overlay.alwaysWhite70} />
+              {hint(t('voiceInput.overlay.slideUpToLock'))}
+            </View>
+            {hint(t('voiceInput.overlay.releaseHint'))}
+            <View className="flex-row items-center justify-center gap-2">
+              <ChevronDown
+                size={theme.iconSize.sm}
+                color={
+                  drag.cancel > 0 ? theme.colors.status.error : theme.colors.overlay.alwaysWhite70
+                }
+              />
+              {hint(
+                t('voiceInput.overlay.slideDownToCancel'),
+                drag.cancel > 0 ? theme.colors.status.error : undefined
+              )}
+            </View>
+          </View>
+        ) : null}
       </View>
     </Animated.View>
   );

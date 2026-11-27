@@ -95,10 +95,17 @@ async function createAlias(exerciseId: string, alias: string) {
   );
 }
 
+async function translateBoth(locale: string) {
+  return {
+    foods: await CatalogueTranslationService.translateFoods(locale),
+    exercises: await CatalogueTranslationService.translateExercises(locale),
+  };
+}
+
 const reload = <T extends { id: string }>(model: T, table: string) =>
   database.get<T>(table).find(model.id);
 
-describe('CatalogueTranslationService.translate', () => {
+describe('CatalogueTranslationService', () => {
   beforeEach(async () => {
     await database.write(() => database.unsafeResetDatabase());
   });
@@ -110,7 +117,7 @@ describe('CatalogueTranslationService.translate', () => {
       description: englishSitUp.description,
     });
 
-    const result = await CatalogueTranslationService.translate('pt-BR');
+    const result = await translateBoth('pt-BR');
 
     expect(result).toEqual({ foods: 1, exercises: 1 });
 
@@ -132,8 +139,8 @@ describe('CatalogueTranslationService.translate', () => {
       description: englishSitUp.description,
     });
 
-    await CatalogueTranslationService.translate('pt-BR');
-    const result = await CatalogueTranslationService.translate('en-US');
+    await translateBoth('pt-BR');
+    const result = await translateBoth('en-US');
 
     expect(result).toEqual({ foods: 1, exercises: 1 });
 
@@ -155,7 +162,7 @@ describe('CatalogueTranslationService.translate', () => {
       updatedAt: 2_000,
     });
 
-    await CatalogueTranslationService.translate('pt-BR');
+    await translateBoth('pt-BR');
 
     const translatedFood = await reload(food, 'foods');
     expect(translatedFood.name).toBe(EXPECTED_PT_CORN.name);
@@ -174,7 +181,7 @@ describe('CatalogueTranslationService.translate', () => {
       updatedAt: 2_000,
     });
 
-    const result = await CatalogueTranslationService.translate('pt-BR');
+    const result = await translateBoth('pt-BR');
 
     expect(result.foods).toBe(1);
     const translatedFood = await reload(food, 'foods');
@@ -208,7 +215,7 @@ describe('CatalogueTranslationService.translate', () => {
       })
     );
 
-    const result = await CatalogueTranslationService.translate('pt-BR');
+    const result = await translateBoth('pt-BR');
 
     expect(result).toEqual({ foods: 0, exercises: 0 });
     expect((await reload(userFood, 'foods')).name).toBe(englishCorn.name);
@@ -225,7 +232,7 @@ describe('CatalogueTranslationService.translate', () => {
     });
     await createAlias(exercise.id, 'Crunch Deluxe');
 
-    await CatalogueTranslationService.translate('pt-BR');
+    await translateBoth('pt-BR');
 
     const translated = await reload(exercise, 'exercises');
     const words = (translated.searchText ?? '').split(/\s+/);
@@ -240,13 +247,29 @@ describe('CatalogueTranslationService.translate', () => {
       description: englishSitUp.description,
     });
 
-    await expect(CatalogueTranslationService.translate('pt-BR')).resolves.toEqual({
+    await expect(translateBoth('pt-BR')).resolves.toEqual({
       foods: 1,
       exercises: 1,
     });
-    await expect(CatalogueTranslationService.translate('pt-BR')).resolves.toEqual({
+    await expect(translateBoth('pt-BR')).resolves.toEqual({
       foods: 0,
       exercises: 0,
     });
+  });
+
+  it.each([
+    ['translateFoods', ptCorn.name, englishSitUp.name],
+    ['translateExercises', englishCorn.name, ptSitUp.name],
+  ] as const)('%s leaves the other catalogue alone', async (method, foodName, exerciseName) => {
+    const food = await createFood();
+    const exercise = await createExercise(SIT_UP_ID, {
+      name: englishSitUp.name,
+      description: englishSitUp.description,
+    });
+
+    await expect(CatalogueTranslationService[method]('pt-BR')).resolves.toBe(1);
+
+    expect((await reload(food, 'foods')).name).toBe(foodName);
+    expect((await reload(exercise, 'exercises')).name).toBe(exerciseName);
   });
 });

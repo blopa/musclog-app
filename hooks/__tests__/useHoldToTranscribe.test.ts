@@ -8,7 +8,11 @@ import { Platform } from 'react-native';
 import { type HoldToTranscribe, useHoldToTranscribe } from '@/hooks/useHoldToTranscribe';
 import { acceptBrowserVoice, browserVoiceBlocker } from '@/utils/browserVoice';
 import { handleError } from '@/utils/handleError';
-import { MIN_VOICE_HOLD_MS, VOICE_FINISH_TIMEOUT_MS } from '@/utils/voiceInput';
+import {
+  MAX_LOCKED_SILENT_RESTARTS,
+  MIN_VOICE_HOLD_MS,
+  VOICE_FINISH_TIMEOUT_MS,
+} from '@/utils/voiceInput';
 import { VOICE_LEVEL_INTERVAL_MS } from '@/utils/voiceLevel';
 
 const mockShowSnackbar = jest.fn();
@@ -17,7 +21,7 @@ jest.mock('react-native', () => ({ Platform: { OS: 'android', Version: 34 } }));
 
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn().mockResolvedValue(undefined),
-  ImpactFeedbackStyle: { Light: 'light' },
+  ImpactFeedbackStyle: { Light: 'light', Medium: 'medium' },
 }));
 
 jest.mock('@/context/SnackbarContext', () => ({
@@ -366,6 +370,107 @@ describe('useHoldToTranscribe', () => {
     act(() => a.result.current.onPressIn());
     await flush();
     expect(speech.start).toHaveBeenCalledTimes(1);
+  });
+
+  describe('lock', () => {
+    const lockedHold = async () => {
+      const hook = await pressAndStart();
+      act(() => emit('start'));
+      act(() => hook.result.current.lock());
+      return hook;
+    };
+
+    it('keeps listening after the finger leaves, until the next press', async () => {
+      const { result } = await lockedHold();
+      act(() => result.current.onPressOut());
+      expect(result.current.locked).toBe(true);
+      expect(result.current.phase).toBe('listening');
+      expect(speech.stop).not.toHaveBeenCalled();
+
+      act(() => emit('result', { isFinal: true, results: [{ transcript: 'ola' }] }));
+      act(() => result.current.onPressIn());
+      expect(speech.stop).toHaveBeenCalledTimes(1);
+      expect(result.current.phase).toBe('finishing');
+
+      act(() => result.current.onPressOut());
+      act(() => emit('end'));
+      expect(result.current.outcome).toEqual({ kind: 'text', text: 'ola' });
+      expect(result.current.locked).toBe(false);
+    });
+
+    it('starts a recognizer that ends by itself again, keeping the words', async () => {
+      const { result } = await lockedHold();
+      act(() => emit('result', { isFinal: false, results: [{ transcript: 'um' }] }));
+      act(() => emit('end'));
+      expect(speech.start).toHaveBeenCalledTimes(2);
+      expect(result.current.phase).toBe('listening');
+
+      act(() => emit('start'));
+      act(() => emit('result', { isFinal: true, results: [{ transcript: 'dois' }] }));
+      expect(result.current.liveText).toBe('um dois');
+    });
+
+    it('gives up after restarts that hear nothing', async () => {
+      const { result } = await lockedHold();
+      act(() => {
+        jest.advanceTimersByTime(MIN_VOICE_HOLD_MS + 100);
+      });
+      for (let i = 0; i < MAX_LOCKED_SILENT_RESTARTS; i += 1) {
+        act(() => emit('error', { error: 'no-speech' }));
+        act(() => emit('end'));
+      }
+
+      expect(speech.start).toHaveBeenCalledTimes(MAX_LOCKED_SILENT_RESTARTS);
+      expect(result.current.phase).toBe('idle');
+      expect(result.current.outcome).toEqual({ kind: 'failure', failure: 'nothingHeard' });
+    });
+
+    it('does not restart after a real failure', async () => {
+      const { result } = await lockedHold();
+      act(() => emit('error', { error: 'not-allowed' }));
+      act(() => emit('end'));
+      expect(speech.start).toHaveBeenCalledTimes(1);
+      expect(result.current.outcome).toEqual({ kind: 'failure', failure: 'permission' });
+    });
+
+    it('can be locked before the recognizer started', async () => {
+      const { result } = renderHook(() => useHoldToTranscribe());
+      act(() => result.current.onPressIn());
+      act(() => result.current.lock());
+      act(() => result.current.onPressOut());
+      await flush();
+      act(() => emit('start'));
+      expect(result.current.phase).toBe('listening');
+      expect(speech.stop).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('cancel', () => {
+    it('throws the words away without an outcome or a hint', async () => {
+      const onText = jest.fn(() => true);
+      const hook = await pressAndStart(renderHook(() => useHoldToTranscribe({ onText })));
+      act(() => emit('start'));
+      act(() => emit('result', { isFinal: true, results: [{ transcript: 'ola' }] }));
+      act(() => hook.result.current.cancel());
+      act(() => hook.result.current.onPressOut());
+
+      expect(speech.abort).toHaveBeenCalled();
+      expect(speechMock.__activeListenerCount()).toBe(0);
+      expect(hook.result.current.phase).toBe('idle');
+      expect(hook.result.current.liveText).toBe('');
+      expect(hook.result.current.outcome).toBeNull();
+      expect(onText).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+    });
+
+    it('never starts a hold cancelled while it was preparing', async () => {
+      const { result } = renderHook(() => useHoldToTranscribe());
+      act(() => result.current.onPressIn());
+      act(() => result.current.cancel());
+      await flush();
+      expect(speech.start).not.toHaveBeenCalled();
+      expect(result.current.phase).toBe('idle');
+    });
   });
 
   describe('level', () => {

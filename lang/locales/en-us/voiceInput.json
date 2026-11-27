@@ -3,7 +3,11 @@
     "listening": "Listening…",
     "overlay": {
       "releaseHint": "Let go when you're done",
-      "finishing": "Finishing…"
+      "finishing": "Finishing…",
+      "slideUpToLock": "Swipe up to lock",
+      "slideDownToCancel": "Swipe down to cancel",
+      "lockedHint": "Tap send when you're done",
+      "send": "Send what you said"
     },
     "holdHint": "Hold the microphone button while you speak, then let go.",
     "resultTitle": "What you said",

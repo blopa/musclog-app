@@ -3,7 +3,11 @@
     "listening": "Ich höre zu…",
     "overlay": {
       "releaseHint": "Lass los, wenn du fertig bist",
-      "finishing": "Wird abgeschlossen…"
+      "finishing": "Wird abgeschlossen…",
+      "slideUpToLock": "Zum Sperren nach oben wischen",
+      "slideDownToCancel": "Zum Abbrechen nach unten wischen",
+      "lockedHint": "Tippe auf Senden, wenn du fertig bist",
+      "send": "Gesagtes senden"
     },
     "holdHint": "Halte die Mikrofon-Taste gedrückt, während du sprichst, und lass sie dann los.",
     "resultTitle": "Was du gesagt hast",

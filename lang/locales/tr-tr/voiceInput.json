@@ -3,7 +3,11 @@
     "listening": "Dinliyorum…",
     "overlay": {
       "releaseHint": "Bittiğinde bırak",
-      "finishing": "Bitiriyorum…"
+      "finishing": "Bitiriyorum…",
+      "slideUpToLock": "Kilitlemek için yukarı kaydır",
+      "slideDownToCancel": "İptal etmek için aşağı kaydır",
+      "lockedHint": "Bitirince gönder düğmesine dokun",
+      "send": "Söylediklerini gönder"
     },
     "holdHint": "Konuşurken mikrofon düğmesini basılı tut, sonra bırak.",
     "resultTitle": "Söylediklerin",

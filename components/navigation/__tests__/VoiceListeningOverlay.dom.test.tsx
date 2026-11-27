@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import { VoiceListeningOverlay } from '@/components/navigation/VoiceListeningOverlay';
 import { VoiceWaveform } from '@/components/navigation/VoiceWaveform';
@@ -6,6 +6,12 @@ import { VOICE_CAPTION_MAX_CHARS, voiceCaption } from '@/utils/voiceInput';
 import { createVoiceLevelMeter, WAVEFORM_TICK_MS } from '@/utils/voiceLevel';
 
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
+jest.mock('lucide-react-native', () => ({
+  ChevronDown: () => null,
+  ChevronUp: () => null,
+  Lock: () => null,
+  Trash2: () => null,
+}));
 jest.mock('@/hooks/useAppSafeAreaInsets', () => ({
   useAppSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
@@ -29,6 +35,9 @@ const baseProps = {
   frameHeight: 800,
   bottomOffset: 0,
   buttonTop: 100,
+  locked: false,
+  drag: { lock: 0, cancel: 0, action: null },
+  onCancel: jest.fn(),
 };
 
 describe('VoiceListeningOverlay', () => {
@@ -50,6 +59,32 @@ describe('VoiceListeningOverlay', () => {
 
     expect(screen.getByText('I want to track a banana.')).toBeTruthy();
     expect(screen.queryByText('voiceInput.listening')).toBeNull();
+  });
+
+  it('says where to slide while held', () => {
+    render(<VoiceListeningOverlay {...baseProps} phase="listening" liveText="" />);
+
+    expect(screen.getByText('voiceInput.overlay.slideUpToLock')).toBeTruthy();
+    expect(screen.getByText('voiceInput.overlay.slideDownToCancel')).toBeTruthy();
+    expect(screen.queryByLabelText('common.cancel')).toBeNull();
+  });
+
+  it('offers a cancel button once locked', () => {
+    const onCancel = jest.fn();
+    render(
+      <VoiceListeningOverlay
+        {...baseProps}
+        phase="listening"
+        liveText=""
+        locked
+        onCancel={onCancel}
+      />
+    );
+
+    expect(screen.queryByText('voiceInput.overlay.slideUpToLock')).toBeNull();
+    expect(screen.getByText('voiceInput.overlay.lockedHint')).toBeTruthy();
+    fireEvent.click(screen.getByLabelText('common.cancel'));
+    expect(onCancel).toHaveBeenCalled();
   });
 
   it('says it is finishing once let go', () => {

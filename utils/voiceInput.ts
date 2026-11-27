@@ -29,6 +29,47 @@ export const MIN_VOICE_HOLD_MS = 400;
  */
 export const VOICE_FINISH_TIMEOUT_MS = 6000;
 
+/** How far up a held finger slides to lock the hold, so it goes on hands-free. */
+export const VOICE_LOCK_DISTANCE = 80;
+
+/**
+ * How far down it slides to throw the hold away. Shorter than the lock distance because there is
+ * little screen under the bottom bar's button.
+ */
+export const VOICE_CANCEL_DISTANCE = 36;
+
+/**
+ * A locked hold goes on when the recognizer ends by itself. This many restarts in a row that hear
+ * nothing new end it instead, so a forgotten microphone does not stay on.
+ */
+export const MAX_LOCKED_SILENT_RESTARTS = 3;
+
+/**
+ * A held finger's vertical travel (screen coordinates, negative is up): how far it is towards
+ * locking and towards cancelling, each 0..1, and which of the two it has reached.
+ */
+export type VoiceDrag = { lock: number; cancel: number; action: 'lock' | 'cancel' | null };
+
+export const NO_VOICE_DRAG: VoiceDrag = { lock: 0, cancel: 0, action: null };
+
+/** Progress moves in tenths, so a moving finger re-renders a few times and not on every event. */
+const dragProgress = (distance: number, full: number) =>
+  Math.floor(Math.min(Math.max(distance / full, 0), 1) * 10) / 10;
+
+export function voiceDrag(dy: number): VoiceDrag {
+  const lock = dragProgress(-dy, VOICE_LOCK_DISTANCE);
+  const cancel = dragProgress(dy, VOICE_CANCEL_DISTANCE);
+  let action: VoiceDrag['action'] = null;
+
+  if (lock === 1) {
+    action = 'lock';
+  } else if (cancel === 1) {
+    action = 'cancel';
+  }
+
+  return { lock, cancel, action };
+}
+
 /** The two fields of React Native's `Platform` this module reads. */
 export type SpeechPlatform = { OS: string; Version: string | number };
 
@@ -98,6 +139,26 @@ export function applySpeechResult(
   // An empty final closes the segment without adding to it; the interim it replaced goes too,
   // since the recognizer decided it was not speech.
   return { finals: text ? [...transcript.finals, text] : transcript.finals, interim: '' };
+}
+
+/** Closes the segment being spoken, for a recognizer that is started again mid-hold. */
+export function commitInterim(transcript: Transcript): Transcript {
+  return transcript.interim
+    ? applySpeechResult(transcript, { text: transcript.interim, isFinal: true })
+    : transcript;
+}
+
+/**
+ * Whether a locked hold starts the recognizer again after it ended by itself: nothing but silence
+ * went wrong, and it has not been silent for too many restarts in a row.
+ */
+export function shouldResumeLockedHold(session: {
+  failure: VoiceFailure | null;
+  silentRestarts: number;
+}): boolean {
+  const onlySilence = session.failure === null || session.failure === 'nothingHeard';
+
+  return onlySilence && session.silentRestarts < MAX_LOCKED_SILENT_RESTARTS;
 }
 
 /** The text heard so far, segments joined by a space. */

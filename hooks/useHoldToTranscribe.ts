@@ -13,7 +13,9 @@ import { acceptBrowserVoice, browserVoiceBlocker } from '@/utils/browserVoice';
 import { handleError } from '@/utils/handleError';
 import {
   applySpeechResult,
+  commitInterim,
   EMPTY_TRANSCRIPT,
+  shouldResumeLockedHold,
   type Transcript,
   transcriptText,
   VOICE_FINISH_TIMEOUT_MS,
@@ -50,6 +52,8 @@ export type HoldToTranscribeOutcome = Exclude<VoiceOutcome, { kind: 'tooShort' }
 export type HoldToTranscribe = {
   /** `preparing` covers permission and availability checks, `finishing` the wait for the last result. */
   phase: HoldToTranscribePhase;
+  /** The hold goes on without a finger on the button, until a press on it or `cancel`. */
+  locked: boolean;
   /** What this hold has heard so far, for a live caption; empty outside a hold. */
   liveText: string;
   /**
@@ -60,8 +64,14 @@ export type HoldToTranscribe = {
   level: VoiceLevelMeter;
   /** The last hold's text or failure, until `dismissOutcome`. */
   outcome: HoldToTranscribeOutcome | null;
+  /** Starts a hold; on a locked one, finishes it. */
   onPressIn: () => void;
+  /** Finishes the hold, unless it is locked. */
   onPressOut: () => void;
+  /** Keeps the running hold going after the finger leaves. */
+  lock: () => void;
+  /** Throws the running hold away: no text, no outcome. */
+  cancel: () => void;
   dismissOutcome: () => void;
   /** Android only: asks the system to download the speech model for the app's language. */
   downloadLanguage: () => Promise<void>;
@@ -70,7 +80,12 @@ export type HoldToTranscribe = {
 };
 
 /** One press of the button: when it happened and the recognition session it started, if any. */
-type Hold = { pressedAt: number; releasedAt: number | null; session: Session | null };
+type Hold = {
+  pressedAt: number;
+  releasedAt: number | null;
+  locked: boolean;
+  session: Session | null;
+};
 
 type Session = {
   speech: SpeechModule;
@@ -79,6 +94,9 @@ type Session = {
   /** The last error code, kept only to report an unexpected failure (never any speech). */
   errorCode: string | null;
   started: boolean;
+  /** For a locked hold's restarts: what was heard when the recognizer last started. */
+  textAtStart: string;
+  silentRestarts: number;
   subscriptions: { remove: () => void }[];
   finishTimer: ReturnType<typeof setTimeout> | null;
 };
@@ -98,7 +116,9 @@ export type HoldToTranscribeOptions = {
  *
  * One hold is one recognition session: press-in checks permission and availability, then starts
  * continuous recognition; letting go stops it and the final text (or why there is none) becomes
- * `outcome`, unless `options.onText` takes the text. Listeners exist only while this instance's
+ * `outcome`, unless `options.onText` takes the text. A hold can also be locked, which keeps it
+ * listening (restarting a recognizer that ends by itself) until the next press, or cancelled.
+ * Listeners exist only while this instance's
  * session runs, so the copies of the bottom bar that hidden tabs keep mounted never react to
  * another bar's session. The pure rules (results into one text, error codes into failures, a tap
  * into a hint) are `utils/voiceInput.ts`.
@@ -110,6 +130,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
 
   const [phase, setPhase] = useState<HoldToTranscribePhase>('idle');
   const [liveText, setLiveText] = useState('');
+  const [locked, setLocked] = useState(false);
   const [outcome, setOutcome] = useState<HoldToTranscribeOutcome | null>(null);
   /** The whole of a hold's mutable state; `phase` only mirrors it for rendering. */
   const holdRef = useRef<Hold | null>(null);
@@ -131,6 +152,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
       holdRef.current = null;
       setPhase('idle');
       setLiveText('');
+      setLocked(false);
       if (result.kind === 'tooShort') {
         showSnackbar('success', t('voiceInput.holdHint'));
         return;
@@ -214,6 +236,8 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
         failure: null,
         errorCode: null,
         started: false,
+        textAtStart: '',
+        silentRestarts: 0,
         subscriptions: [],
         finishTimer: null,
       };
@@ -223,6 +247,50 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
       // A browser reports no level: there the waveform shows recognized speech arriving instead.
       const measuresLevel = Platform.OS !== 'web';
       level.reset();
+
+      const recognize = () =>
+        speech.start({
+          lang: locale,
+          interimResults: true,
+          // Keeps listening through pauses until the person lets go (Android 13+, iOS).
+          continuous: true,
+          requiresOnDeviceRecognition: true,
+          addsPunctuation: true,
+          maxAlternatives: 1,
+          iosTaskHint: 'dictation',
+          // Drives the overlay's waveform; the level is read on the device and goes nowhere else.
+          volumeChangeEventOptions: {
+            enabled: measuresLevel,
+            intervalMillis: VOICE_LEVEL_INTERVAL_MS,
+          },
+        });
+
+      // A recognizer ends by itself after a silence or a time limit. A locked hold goes on.
+      const resume = (): boolean => {
+        if (!hold.locked || hold.releasedAt !== null) {
+          return false;
+        }
+
+        session.transcript = commitInterim(session.transcript);
+        const heard = transcriptText(session.transcript);
+        session.silentRestarts = heard === session.textAtStart ? session.silentRestarts + 1 : 0;
+        if (!shouldResumeLockedHold(session)) {
+          return false;
+        }
+
+        session.textAtStart = heard;
+        session.failure = null;
+        session.errorCode = null;
+        session.started = false;
+        try {
+          recognize();
+        } catch (error) {
+          void handleError(error, 'voiceInput.resume', { showSnackbar: false });
+          return false;
+        }
+
+        return true;
+      };
 
       session.subscriptions = [
         speech.addListener('start', () => {
@@ -266,7 +334,11 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
             session.errorCode = event.error;
           }
         }),
-        speech.addListener('end', () => finishSession(session)),
+        speech.addListener('end', () => {
+          if (isLive() && !resume()) {
+            finishSession(session);
+          }
+        }),
       ];
       if (measuresLevel) {
         session.subscriptions.push(
@@ -283,21 +355,7 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
 
       hold.session = session;
 
-      speech.start({
-        lang: locale,
-        interimResults: true,
-        // Keeps listening through pauses until the person lets go (Android 13+, iOS).
-        continuous: true,
-        requiresOnDeviceRecognition: true,
-        addsPunctuation: true,
-        maxAlternatives: 1,
-        iosTaskHint: 'dictation',
-        // Drives the overlay's waveform; the level is read on the device and goes nowhere else.
-        volumeChangeEventOptions: {
-          enabled: measuresLevel,
-          intervalMillis: VOICE_LEVEL_INTERVAL_MS,
-        },
-      });
+      recognize();
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     },
     [finishSession, level, locale]
@@ -377,43 +435,83 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
     [closeSession, endHold, isStale, startSession]
   );
 
+  /** The end of a hold's speaking: the recognizer is stopped and asked for its last result. */
+  const release = useCallback(
+    (hold: Hold) => {
+      hold.releasedAt = Date.now();
+      const { session } = hold;
+      if (!session) {
+        // Still preparing: `prepare` sees the release and ends the hold.
+        return;
+      }
+
+      setPhase('finishing');
+      if (session.started) {
+        session.speech.stop();
+      }
+
+      session.finishTimer = setTimeout(() => {
+        if (holdRef.current?.session === session) {
+          abandonSession(session);
+        }
+      }, VOICE_FINISH_TIMEOUT_MS);
+    },
+    [abandonSession]
+  );
+
   const onPressIn = useCallback(() => {
-    // One hold at a time: a press while the last one is still finishing is ignored.
-    if (holdRef.current) {
+    const current = holdRef.current;
+    if (current) {
+      // A press on a locked hold finishes it. Otherwise one hold at a time: a press while the last
+      // one is still finishing is ignored.
+      if (current.locked && current.releasedAt === null) {
+        release(current);
+      }
+
       return;
     }
 
-    const hold: Hold = { pressedAt: Date.now(), releasedAt: null, session: null };
+    const hold: Hold = { pressedAt: Date.now(), releasedAt: null, locked: false, session: null };
     holdRef.current = hold;
     setOutcome(null);
+    setLocked(false);
     setPhase('preparing');
     void prepare(hold);
-  }, [prepare]);
+  }, [prepare, release]);
 
   const onPressOut = useCallback(() => {
     const hold = holdRef.current;
-    if (!hold || hold.releasedAt !== null) {
+    if (!hold || hold.locked || hold.releasedAt !== null) {
       return;
     }
 
-    hold.releasedAt = Date.now();
-    const { session } = hold;
-    if (!session) {
-      // Still preparing: `prepare` sees the release and ends the hold.
+    release(hold);
+  }, [release]);
+
+  const lock = useCallback(() => {
+    const hold = holdRef.current;
+    if (!hold || hold.locked || hold.releasedAt !== null) {
       return;
     }
 
-    setPhase('finishing');
-    if (session.started) {
-      session.speech.stop();
+    hold.locked = true;
+    setLocked(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+  }, []);
+
+  const cancel = useCallback(() => {
+    const hold = holdRef.current;
+    if (!hold) {
+      return;
     }
 
-    session.finishTimer = setTimeout(() => {
-      if (holdRef.current?.session === session) {
-        abandonSession(session);
-      }
-    }, VOICE_FINISH_TIMEOUT_MS);
-  }, [abandonSession]);
+    holdRef.current = null;
+    closeSession(hold)?.speech.abort();
+    setPhase('idle');
+    setLiveText('');
+    setLocked(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+  }, [closeSession]);
 
   useEffect(
     () => () => {
@@ -457,11 +555,14 @@ export function useHoldToTranscribe(options?: HoldToTranscribeOptions): HoldToTr
 
   return {
     phase,
+    locked,
     liveText,
     level,
     outcome,
     onPressIn,
     onPressOut,
+    lock,
+    cancel,
     dismissOutcome,
     downloadLanguage,
     allowBrowserRecognition,

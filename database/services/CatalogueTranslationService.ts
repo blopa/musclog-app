@@ -1,4 +1,4 @@
-import { type Model, Q } from '@nozbe/watermelondb';
+import { Q } from '@nozbe/watermelondb';
 
 import { getExerciseText } from '@/data/exerciseCatalogue';
 import { getFoundationFoodText } from '@/data/foundationFoodCatalogue';
@@ -16,22 +16,50 @@ function changed(stored: StoredBundledText, next: BundledText): boolean {
 }
 
 /**
- * Renames the built-in foods and exercises into another language, only when the person asks
+ * Renames the built-in foods or exercises into another language, only when the person asks
  * (Settings → Profile and units). Nothing calls it on a language change.
+ *
+ * Both methods return how many rows changed. Only bundled words are replaced: custom rows are not
+ * read, and a name or description the person rewrote is kept. An untouched row keeps `updatedAt`
+ * equal to `createdAt`, so it still reads as bundled text after a later translation fix. Each runs
+ * in one batch: a half-translated catalogue is never saved.
  */
 export class CatalogueTranslationService {
-  /**
-   * Returns how many rows changed. Only bundled words are replaced: custom rows are not read, and
-   * a name or description the person rewrote is kept. An untouched row keeps `updatedAt` equal to
-   * `createdAt`, so it still reads as bundled text after a later translation fix.
-   */
-  static async translate(locale: string): Promise<{ foods: number; exercises: number }> {
+  static async translateFoods(locale: string): Promise<number> {
     return database.write(async () => {
-      const [foods, exercises, aliases] = await Promise.all([
-        database
-          .get<Food>('foods')
-          .query(Q.where('source', 'foundation'), Q.where('deleted_at', Q.eq(null)))
-          .fetch(),
+      const foods = await database
+        .get<Food>('foods')
+        .query(Q.where('source', 'foundation'), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      const changes = foods
+        .map((food) => ({ food, text: getFoundationFoodText(food, locale) }))
+        .filter(({ food, text }) => changed(food, text));
+
+      const now = Date.now();
+      await commitPrepared(
+        database,
+        changes.map(({ food }) => food),
+        () =>
+          changes.map(({ food, text }) => {
+            const untouched = isUntouched(food);
+
+            return food.prepareUpdate((record) => {
+              record.name = text.name;
+              record.description = text.description;
+              // `prepareUpdate` stamps `updated_at` itself, so an untouched row has to be put back.
+              record.updatedAt = untouched ? record.createdAt : now;
+            });
+          })
+      );
+
+      return changes.length;
+    });
+  }
+
+  static async translateExercises(locale: string): Promise<number> {
+    return database.write(async () => {
+      const [exercises, aliases] = await Promise.all([
         database
           .get<Exercise>('exercises')
           .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
@@ -42,10 +70,7 @@ export class CatalogueTranslationService {
           .fetch(),
       ]);
 
-      const foodChanges = foods
-        .map((food) => ({ food, text: getFoundationFoodText(food, locale) }))
-        .filter(({ food, text }) => changed(food, text));
-      const exerciseChanges = exercises.flatMap((exercise) => {
+      const changes = exercises.flatMap((exercise) => {
         const slug = exerciseSlugFromId(exercise.id);
         if (!slug) {
           return [];
@@ -57,43 +82,30 @@ export class CatalogueTranslationService {
       });
 
       const now = Date.now();
-      const records: Model[] = [
-        ...foodChanges.map(({ food }) => food),
-        ...exerciseChanges.map(({ exercise }) => exercise),
-      ];
+      await commitPrepared(
+        database,
+        changes.map(({ exercise }) => exercise),
+        () =>
+          changes.map(({ exercise, text }) => {
+            const untouched = isUntouched(exercise);
+            const aliasTexts = aliases
+              .filter((alias) => alias.exerciseId === exercise.id)
+              .map((alias) => alias.alias);
 
-      // One batch: a half-translated catalogue is never saved.
-      await commitPrepared(database, records, () => [
-        ...foodChanges.map(({ food, text }) => {
-          const untouched = isUntouched(food);
+            return exercise.prepareUpdate((record) => {
+              record.name = text.name;
+              record.description = text.description ?? '';
+              record.searchText = computeExerciseSearchText(
+                { id: exercise.id, name: text.name },
+                aliasTexts
+              );
+              // `prepareUpdate` stamps `updated_at` itself, so an untouched row has to be put back.
+              record.updatedAt = untouched ? record.createdAt : now;
+            });
+          })
+      );
 
-          return food.prepareUpdate((record) => {
-            record.name = text.name;
-            record.description = text.description;
-            // `prepareUpdate` stamps `updated_at` itself, so an untouched row has to be put back.
-            record.updatedAt = untouched ? record.createdAt : now;
-          });
-        }),
-        ...exerciseChanges.map(({ exercise, text }) => {
-          const untouched = isUntouched(exercise);
-          const aliasTexts = aliases
-            .filter((alias) => alias.exerciseId === exercise.id)
-            .map((alias) => alias.alias);
-
-          return exercise.prepareUpdate((record) => {
-            record.name = text.name;
-            record.description = text.description ?? '';
-            record.searchText = computeExerciseSearchText(
-              { id: exercise.id, name: text.name },
-              aliasTexts
-            );
-            // `prepareUpdate` stamps `updated_at` itself, so an untouched row has to be put back.
-            record.updatedAt = untouched ? record.createdAt : now;
-          });
-        }),
-      ]);
-
-      return { foods: foodChanges.length, exercises: exerciseChanges.length };
+      return changes.length;
     });
   }
 }

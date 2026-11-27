@@ -48,7 +48,8 @@ the palette. A surface that truly must pin a palette wraps in `ThemeScope` from
 add a second forced-theme context or hand-pick a parallel set of tokens. The hold-to-talk overlay
 (`VoiceListeningOverlay`) is the same kind of surface: the fixed `background.scrim90` with
 `text.alwaysWhite` ink in every theme, with the theme's accent only on the waveform and the
-microphone it leaves lit.
+microphone it leaves lit, plus the lock target once the sliding finger is halfway there (and the
+error color on the cancel hint as it slides down).
 
 Loggy is the other such surface, in part. His outline, cream, tan, coral, sky and gold are fixed,
 like a photo, but his three greens follow the theme (`constants/loggyTheme.js`: a pink theme draws a
