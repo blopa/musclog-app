@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import type { MealShareSummary } from '@/utils/share/shareEnvelope';
 
@@ -12,6 +13,7 @@ interface OpticalMealSharePreviewProps {
 export function OpticalMealSharePreview({ summary }: OpticalMealSharePreviewProps) {
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatMass } = useFoodMass();
   const { formatEnergyWithUnit } = useEnergyUnit();
 
   return (
@@ -38,7 +40,7 @@ export function OpticalMealSharePreview({ summary }: OpticalMealSharePreviewProp
           const line =
             ingredient.unit === 'g'
               ? t('opticalTransfer.share.ingredientGrams', {
-                  amount,
+                  amount: formatMass(ingredient.amount),
                   name: ingredient.name,
                 })
               : ingredient.unit === 'serving'

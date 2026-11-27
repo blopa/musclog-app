@@ -85,8 +85,7 @@
       "duplicatePortion": "Portie dupliceren",
       "duplicatePortionDesc": "Maak een kopie om te wijzigen",
       "deletePortion": "Portie verwijderen",
-      "deletePortionDesc": "Verwijder deze portie uit je lijst",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Verwijder deze portie uit je lijst"
     },
     "createPortion": {
       "title": "Portiegrootte maken",
@@ -236,7 +235,7 @@
         "shareMealAsRecipeDesc": "Deel ingrediënten en instructies als tekst",
         "sendToPhone": "Naar een andere telefoon sturen",
         "sendToPhoneDesc": "Zet deze maaltijd over met bewegende QR-codes",
-        "shareRecipeIngredientLine": "{{grams}}g {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} {{name}}",
         "shareRecipeNoIngredients": "Deze maaltijd heeft geen ingrediënten om te delen",
         "duplicateMeal": "Maaltijd dupliceren",
         "duplicateMealDesc": "Maak een kopie van deze maaltijd",
@@ -704,7 +703,7 @@
         "foodCount_few": "{{count}} voedingsmiddelen",
         "foodCount_many": "{{count}} voedingsmiddelen",
         "foodCount_other": "{{count}} voedingsmiddelen",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "{{name}} verwijderen",
         "groupTitle": "Als één maaltijd loggen",
         "groupSubtitle": "Verschijnt als één item in je dagboek",

@@ -54,16 +54,44 @@
       "pickHint": "Birini seç, Musclog yeniden denesin.",
       "tool": {
         "copyMeal": "Öğün veya gün kopyala",
-        "searchFood": "Yiyecek ara"
+        "searchFood": "Yiyecek ara",
+        "logWeight": "Kilomu kaydet",
+        "logMeal": "Öğün kaydet",
+        "addNote": "Not al",
+        "goTo": "Bir ekran aç"
       },
       "askCoach": "Koça sor",
       "wrongTask": "Yanlış işlem mi? Daha iyi bir model deneyin.",
       "openAiSettings": "Yapay zekâ ayarları",
       "failed": "Sesli komut başarısız oldu. Tekrar dene.",
+      "mealTitle": "Öğünün",
+      "mealLogged": "Öğün kaydedildi",
+      "weight": {
+        "title": "Kilonu kaydet",
+        "field": "Kilo",
+        "saved": "Kilo kaydedildi",
+        "saveError": "Kilon kaydedilemedi"
+      },
       "capability": {
         "copyMeal": "“Dünkü kahvaltının aynısını yaptım”",
-        "searchFood": "“Öğle yemeği için yulaf ara”"
+        "searchFood": "“Öğle yemeği için yulaf ara”",
+        "logWeight": "“Kilom 82,4”",
+        "logMeal": "“İki yumurta ve tost yedim”",
+        "addNote": "“Not: daha fazla yulaf al”",
+        "goTo": "“Haftalık özetimi göster”"
       }
+    },
+    "tools": {
+      "sectionTitle": "Sesli komutlar",
+      "rowTitle": "Sesli araçlar",
+      "rowDescription": "Mikrofon düğmesini basılı tutmanın ne yapabileceğini seç",
+      "sheetTitle": "Sesli araçlar",
+      "sheetSubtitle": "Yapay zekâ, söylediklerine göre bunlardan birini seçer. Önce seçtiklerin önce kullanılır.",
+      "limitNote_one": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "limitNote_few": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "limitNote_many": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "limitNote_other": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "notUsed": "Bu yapay zekâyla kullanılmaz"
     },
     "allow": "İzin ver",
     "notNow": "Şimdi değil"

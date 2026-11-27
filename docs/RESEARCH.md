@@ -855,3 +855,20 @@ Per class, the shipped setup gets 15 of 16 non-requests, 8 or 9 of 11 foods and 
 Copy sentences went from 10 to 17 right of 38, foods from 21 to 26 of 27, non-requests from 30 to 29 of 35 ("Don't repeat yesterday's breakfast" now opens a review: the old reading dropped it only because of the repeated key). Stripping punctuation did not help (68 right and 17 wrong against 70 and 15 with the chosen examples), so the transcript is sent as heard. The example set is the best of nine tried, each with and without stripping, on these same sentences, so expect less on new wording. "I had the same breakfast as yesterday." is still missed, and non-English copies remain mostly wrong or missed. Measured on a desktop, not on a phone.
 
 **Retry with the tool the person picked.** Offering only that tool, with the same example turns: 38 of 38 copy sentences call `copy_meal`, 30 name the right meal, 36 the right source day and 28 both (17 right when the model also had to choose). Foods: 24 of 27 call `search_food`, 20 with the right food; the other cases open an empty search. `tool_choice: 'required'` gave the same replies as `auto`, so the runtime was not changed. Without the example turns the source day fell from 33 or more to 11 of 38.
+
+### Voice commands with more tools (2026-11-28)
+
+Four tools were added (`log_weight`, `log_meal`, `add_note`, `go_to`), so the downloaded models were measured again, on llama.cpp b10256 (the build inside llama.rn 0.12.9), through the app's own payload builder, parser and resolver, on a desktop CPU (no phone). 83 sentences: the 37 above, plus 46 new ones (weigh-ins, meals, notes, screens, and sentences that mention weight or notes without asking for anything), in seven languages. A tool that is not offered counts as right when nothing runs. Harness, cases and raw replies: `musclog-benchmarks/2026-11-27-voice-tools/`. Apple's model, custom local servers and cloud providers were not measured.
+
+| Model | Tools offered                    | Old 37 | Food searches | Copies | Weigh-ins | All 83 | Wrong actions |
+| ----- | -------------------------------- | ------ | ------------- | ------ | --------- | ------ | ------------- |
+| 450M  | search, copy                     | 29     | 11/11         | 4/10   | none      | 58     | 22            |
+| 450M  | search, copy, weigh-in (shipped) | 27     | 9/11          | 5/10   | 10/10     | 61     | 18            |
+| 1.2B  | search, copy                     | 25     | 8/11          | 1/10   | none      | 65     | 6             |
+| 1.2B  | search, copy, weigh-in (shipped) | 24     | 7/11          | 1/10   | 2/10      | 57     | 5             |
+
+- **More tools cost accuracy fast.** With five tools (search, copy, weigh-in, meal, note) the 450M got 36 of 83 (food searches 3/11, notes 0/8, most of them sent to `log_meal`) and the 1.2B 40 of 83, with food searches and copies both at 0: it answers in text instead of calling. Hence both downloaded models are offered three.
+- **The order of the example turns matters.** With the weigh-in turn last the 450M got 7 of 11 food searches with 4 wrong actions and 8 of 10 weigh-ins; with it first, 9 of 11 with none wrong and 10 of 10. Leaving out the preamble, the closing "Done." turns or all but one turn per tool, reversing the order and adding a second search turn all dropped food searches to 3 of 11 or fewer.
+- **A JSON schema instead of the tool-call format was worse on the 1.2B** with two or three tools: 8 to 10 of 10 copies and 10 of 10 weigh-ins, but 2 of 11 food searches and 20 to 28 wrong actions, mostly the first example copied for a greeting (the 2026-11-26 failure).
+- **A weigh-in needs weight words.** The 450M routed "I'm Maria and I'm 30" to the weigh-in, so code requires a unit next to the number or a word for weighing.
+- The three-tool figures hold for the default tools only. A person who picks other tools gets an unmeasured set.

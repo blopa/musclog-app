@@ -1,12 +1,15 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { VoiceCommandProvider, useVoiceCommands } from '@/context/VoiceCommandContext';
+import { logTrackedMeal } from '@/services/trackedMealLogging';
 import { interpretVoiceCommand } from '@/services/voiceCommand';
 import { takePendingVoiceAction } from '@/utils/voiceCommand/voiceActionInbox';
 
 const mockNavigate = jest.fn();
 const mockShowSnackbar = jest.fn();
 const mockOpenCoach = jest.fn();
+const mockEstimateMeal = jest.fn();
+const mockCycle = { isActive: true };
 
 jest.mock('@/lang/lang', () => ({ __esModule: true, default: { t: (key: string) => key } }));
 jest.mock('@/utils/coachAI', () => ({
@@ -26,9 +29,33 @@ jest.mock('@/hooks/useSettings', () => ({
   useSettings: () => ({ isAiConfigured: true, aiProvider: 'gemini' }),
 }));
 jest.mock('@/hooks/useOnDeviceStatus', () => ({ useOnDeviceStatus: () => ({ state: 'ready' }) }));
-jest.mock('@/components/navigation/navDestinations', () => ({
-  NAV_DESTINATIONS: { food: { route: '/app/nutrition/food' } },
+jest.mock('@/hooks/useMenstrualCycle', () => ({ useMenstrualCycle: () => mockCycle }));
+jest.mock('@/hooks/useNavigationItems', () => ({
+  isNavItemAvailable: (item: string, isCycleActive: boolean) => item !== 'cycle' || isCycleActive,
 }));
+jest.mock('@/components/navigation/navDestinations', () => ({
+  HOME_ROUTE: '/app',
+  NAV_DESTINATIONS: {
+    food: { route: '/app/nutrition/food' },
+    notes: { route: '/app/notes' },
+    progress: { route: '/app/progress' },
+    cycle: { route: '/app/cycle' },
+  },
+}));
+// Stable across renders, as the real hook's abandon is.
+const mockAi = {
+  progress: null,
+  abandon: jest.fn(),
+  run: jest.fn(),
+  setProgress: jest.fn(),
+};
+jest.mock('@/components/camera/useCameraAiProcessing', () => ({
+  useCameraAiProcessing: () => mockAi,
+}));
+jest.mock('@/components/camera/useMealTextEstimate', () => ({
+  useMealTextEstimate: () => mockEstimateMeal,
+}));
+jest.mock('@/services/trackedMealLogging', () => ({ logTrackedMeal: jest.fn() }));
 jest.mock('@/services/voiceCommand', () => ({ interpretVoiceCommand: jest.fn() }));
 // The modal is covered by its own test: here it only shows which state the provider holds.
 jest.mock('@/components/modals/VoiceCommandModal', () => ({
@@ -36,10 +63,16 @@ jest.mock('@/components/modals/VoiceCommandModal', () => ({
     state,
     onCancel,
     onPickTool,
+    onWeighInClose,
+    onLogMeal,
+    onMealReviewClose,
   }: {
     state: { kind: string; transcript: string } | null;
     onCancel: () => void;
     onPickTool: (transcript: string, tool: string) => void;
+    onWeighInClose: (saved: boolean) => void;
+    onLogMeal: (data: unknown) => Promise<void>;
+    onMealReviewClose: () => void;
   }) => (
     <div>
       <span data-testid="modal-state">{state?.kind ?? 'closed'}</span>
@@ -47,11 +80,38 @@ jest.mock('@/components/modals/VoiceCommandModal', () => ({
       {state?.kind === 'pick' ? (
         <button onClick={() => onPickTool(state.transcript, 'copy_meal')}>modal-pick</button>
       ) : null}
+      {state?.kind === 'weight' ? (
+        <button onClick={() => onWeighInClose(true)}>modal-weigh-saved</button>
+      ) : null}
+      {state?.kind === 'mealReview' ? (
+        <>
+          <button
+            onClick={() =>
+              void onLogMeal({
+                date: new Date(2026, 10, 26),
+                time: null,
+                mealType: 'lunch',
+                portionGrams: 150,
+              })
+            }
+          >
+            modal-log-meal
+          </button>
+          <button onClick={onMealReviewClose}>modal-meal-close</button>
+        </>
+      ) : null}
     </div>
   ),
 }));
 
 const mockInterpret = interpretVoiceCommand as jest.Mock;
+const mockLogTrackedMeal = logTrackedMeal as jest.Mock;
+
+const DAY = new Date(2026, 10, 26);
+const REVIEW = {
+  meal: { name: 'Oats', type: 'Breakfast', kcal: 300 },
+  ingredients: [{ name: 'oats', grams: 80 }],
+};
 
 function Probe() {
   const { submit } = useVoiceCommands();
@@ -71,23 +131,216 @@ const SNACKBAR_OPTIONS = { duration: 4000 };
 
 beforeEach(() => {
   jest.clearAllMocks();
-  takePendingVoiceAction();
+  mockCycle.isActive = true;
+  mockEstimateMeal.mockReset();
+  takePendingVoiceAction(['addNote', 'copyMeal', 'searchFood', 'logWeight']);
 });
 
 describe('VoiceCommandProvider', () => {
   it('stores the action, opens the food diary and closes the modal on an action outcome', async () => {
     mockInterpret.mockResolvedValue({
       kind: 'action',
-      action: { kind: 'searchFood', day: new Date(2026, 10, 26), mealType: 'lunch', query: 'egg' },
+      offered: ['search_food'],
+      action: { kind: 'searchFood', day: DAY, mealType: 'lunch', query: 'egg' },
     });
     renderProvider();
 
     fireEvent.click(screen.getByText('submit'));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/app/nutrition/food'));
-    expect(takePendingVoiceAction()).toEqual(
+    expect(takePendingVoiceAction(['searchFood'])).toEqual(
       expect.objectContaining({ kind: 'searchFood', query: 'egg' })
     );
+    expect(screen.getByTestId('modal-state').textContent).toBe('closed');
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
+  });
+
+  it('leaves a note pending for the notes screen and navigates there', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['add_note'],
+      action: { kind: 'addNote', body: 'bought oats' },
+    });
+    renderProvider();
+
+    fireEvent.click(screen.getByText('submit'));
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/app/notes'));
+    expect(takePendingVoiceAction(['addNote'])).toEqual({
+      kind: 'addNote',
+      body: 'bought oats',
+    });
+    expect(takePendingVoiceAction(['searchFood'])).toBeNull();
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
+  });
+
+  it('navigates to a screen at once and shows the wrong-task snackbar', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['go_to'],
+      action: { kind: 'goTo', screen: 'progress' },
+    });
+    renderProvider();
+
+    fireEvent.click(screen.getByText('submit'));
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/app/progress'));
+    expect(screen.getByTestId('modal-state').textContent).toBe('closed');
+    expect(mockShowSnackbar).toHaveBeenCalledWith(
+      'success',
+      'voiceInput.command.wrongTask',
+      expect.objectContaining({ action: 'voiceInput.command.openAiSettings' })
+    );
+  });
+
+  it('goes home through the home route', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['go_to'],
+      action: { kind: 'goTo', screen: 'home' },
+    });
+    renderProvider();
+
+    fireEvent.click(screen.getByText('submit'));
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/app'));
+  });
+
+  it('opens the picker, and navigates nowhere, for cycle while cycle tracking is off', async () => {
+    mockCycle.isActive = false;
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['go_to'],
+      action: { kind: 'goTo', screen: 'cycle' },
+    });
+    renderProvider();
+
+    fireEvent.click(screen.getByText('submit'));
+
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('pick'));
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
+  });
+
+  it('shows the weigh-in state for a logWeight action and writes nothing itself', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['log_weight'],
+      action: { kind: 'logWeight', day: DAY, weightKg: 81.5 },
+    });
+    renderProvider();
+
+    fireEvent.click(screen.getByText('submit'));
+
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('weight'));
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockLogTrackedMeal).not.toHaveBeenCalled();
+  });
+
+  it('starts the meal estimate for logMeal and then shows the review', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['log_meal'],
+      action: { kind: 'logMeal', day: DAY, mealType: 'lunch', description: 'chicken and rice' },
+    });
+    mockEstimateMeal.mockImplementation(async ({ onEstimate }) => {
+      onEstimate(REVIEW);
+    });
+    renderProvider();
+
+    fireEvent.click(screen.getByText('submit'));
+
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('mealReview'));
+    expect(mockEstimateMeal).toHaveBeenCalledWith(
+      expect.objectContaining({ transcript: 'chicken and rice' })
+    );
+    expect(mockLogTrackedMeal).not.toHaveBeenCalled();
+  });
+
+  it('closes the meal review without logging when the estimate fails', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['log_meal'],
+      action: { kind: 'logMeal', day: DAY, mealType: 'lunch', description: 'soup' },
+    });
+    mockEstimateMeal.mockImplementation(async ({ onFailure }) => {
+      onFailure();
+    });
+    renderProvider();
+
+    fireEvent.click(screen.getByText('submit'));
+
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('closed'));
+    expect(mockLogTrackedMeal).not.toHaveBeenCalled();
+  });
+
+  it('logs the reviewed meal through logTrackedMeal and opens the diary on its day', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['log_meal'],
+      action: { kind: 'logMeal', day: DAY, mealType: 'lunch', description: 'oats' },
+    });
+    mockEstimateMeal.mockImplementation(async ({ onEstimate }) => {
+      onEstimate(REVIEW);
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('mealReview'));
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('modal-log-meal'));
+    });
+
+    expect(mockLogTrackedMeal).toHaveBeenCalledTimes(1);
+    expect(mockLogTrackedMeal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ingredients: REVIEW.ingredients,
+        mealType: 'lunch',
+        portionGrams: 150,
+        mealName: 'Oats',
+      })
+    );
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: '/app/nutrition/food',
+      params: { date: '2026-11-26' },
+    });
+  });
+
+  it('closes a meal review without logging and shows the wrong-task snackbar', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['log_meal'],
+      action: { kind: 'logMeal', day: DAY, mealType: 'lunch', description: 'oats' },
+    });
+    mockEstimateMeal.mockImplementation(async ({ onEstimate }) => {
+      onEstimate(REVIEW);
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('mealReview'));
+
+    fireEvent.click(screen.getByText('modal-meal-close'));
+
+    expect(mockLogTrackedMeal).not.toHaveBeenCalled();
+    expect(mockShowSnackbar).toHaveBeenCalledWith(
+      'success',
+      'voiceInput.command.wrongTask',
+      expect.anything()
+    );
+  });
+
+  it('closes the weigh-in with saved and shows no wrong-task notice', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['log_weight'],
+      action: { kind: 'logWeight', day: DAY, weightKg: 80 },
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('weight'));
+
+    fireEvent.click(screen.getByText('modal-weigh-saved'));
+
     expect(screen.getByTestId('modal-state').textContent).toBe('closed');
     expect(mockShowSnackbar).not.toHaveBeenCalled();
   });
@@ -95,7 +348,7 @@ describe('VoiceCommandProvider', () => {
   it.each(['noAction', 'cantDetermine', 'missingFood', 'sourceNotEarlier', 'unreadable'])(
     'asks which tool was meant for %s',
     async (reason) => {
-      mockInterpret.mockResolvedValue({ kind: 'rejected', reason });
+      mockInterpret.mockResolvedValue({ kind: 'rejected', reason, offered: ['copy_meal'] });
       renderProvider();
 
       fireEvent.click(screen.getByText('submit'));
@@ -103,15 +356,20 @@ describe('VoiceCommandProvider', () => {
       await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('pick'));
       expect(mockShowSnackbar).not.toHaveBeenCalled();
       expect(mockNavigate).not.toHaveBeenCalled();
-      expect(takePendingVoiceAction()).toBeNull();
+      expect(takePendingVoiceAction(['copyMeal'])).toBeNull();
     }
   );
 
   it('sends the same sentence again with the picked tool', async () => {
-    mockInterpret.mockResolvedValueOnce({ kind: 'rejected', reason: 'cantDetermine' });
+    mockInterpret.mockResolvedValueOnce({
+      kind: 'rejected',
+      reason: 'cantDetermine',
+      offered: ['copy_meal'],
+    });
     mockInterpret.mockResolvedValueOnce({
       kind: 'action',
-      action: { kind: 'copyMeal', targetDay: new Date(2026, 10, 26), sourceDay: null, meals: null },
+      offered: ['copy_meal'],
+      action: { kind: 'copyMeal', targetDay: DAY, sourceDay: null, meals: null },
     });
     renderProvider();
     fireEvent.click(screen.getByText('submit'));
@@ -176,9 +434,10 @@ describe('VoiceCommandProvider', () => {
     await act(async () => {
       resolveRequest({
         kind: 'action',
+        offered: ['search_food'],
         action: {
           kind: 'searchFood',
-          day: new Date(2026, 10, 26),
+          day: DAY,
           mealType: 'lunch',
           query: 'egg',
         },
@@ -187,6 +446,6 @@ describe('VoiceCommandProvider', () => {
 
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(mockShowSnackbar).not.toHaveBeenCalled();
-    expect(takePendingVoiceAction()).toBeNull();
+    expect(takePendingVoiceAction(['searchFood'])).toBeNull();
   });
 });

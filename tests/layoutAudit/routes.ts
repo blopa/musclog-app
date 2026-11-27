@@ -543,6 +543,9 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/VoiceCommandModal.tsx': {
     unaudited: 'not scripted yet: Debug → Voice command (typed), which needs a configured AI',
   },
+  'components/modals/VoiceWeightSheet.tsx': {
+    unaudited: 'not scripted yet: a voice weigh-in, which needs a configured AI',
+  },
   'components/modals/VoiceTranscriptModal.tsx': {
     unaudited: 'not scripted yet: holding the mic needs on-device speech recognition (not on web)',
   },
@@ -561,6 +564,9 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/WorkoutSettingsModal.tsx': { flow: 'whats-new (workout settings)' },
   'components/modals/useBarcodeCameraModal.tsx': {
     unaudited: 'a hook that renders BarcodeCameraModal, which the fixture opens',
+  },
+  'components/settings/VoiceToolsSheet.tsx': {
+    unaudited: 'not scripted yet: AI behavior → Voice tools, which needs a configured AI',
   },
   'components/theme/Modal.tsx': {
     unaudited: 'the primitive every modal renders through; audited through each of them',

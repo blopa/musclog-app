@@ -222,6 +222,8 @@ type CoachAIConfigFields = {
   background?: boolean;
   /** Iron consent version accepted on this device. */
   hostedConsentVersion?: number;
+  /** Every request of this config keeps what it carries out of the debug dump (spoken words). */
+  redactDump?: boolean;
 };
 
 /** What only an `on-device` config carries: which engine answers and whether it can read photos. */
@@ -339,7 +341,7 @@ export async function logLlmDebugEvent(params: {
       provider: params.provider,
       direction: params.direction,
       operation: params.operation,
-      payload: params.redact ? { redacted: true } : params.payload,
+      payload: params.redact || params.config?.redactDump ? { redacted: true } : params.payload,
       secrets: params.config?.apiKey ? [params.config.apiKey] : [],
     });
   } catch (error) {
@@ -705,6 +707,7 @@ function prepareOnDeviceCall(config: OnDeviceConfig, request: CompletionRequest)
         const onUsage = (next: LlmUsage) => {
           usage = next;
         };
+
         // Grammar-constrained by the engine, then parsed and checked by the caller: the engine is
         // not trusted to have honoured the schema.
         const text = schema
@@ -1737,6 +1740,7 @@ export async function requestNativeToolCall(
 
     return { ...reply, usage };
   };
+
   const { text, toolCalls } = await runPrepared(
     config,
     {

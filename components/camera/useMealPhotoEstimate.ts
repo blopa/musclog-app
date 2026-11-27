@@ -1,22 +1,21 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import {
+  type MealEstimateReview,
+  mealEstimateReview,
+} from '@/components/camera/mealEstimateReview';
 import type { CameraAiProcessing } from '@/components/camera/useCameraAiProcessing';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import type { TrackMealIngredient } from '@/utils/coachAI';
 import { estimateNutritionFromPhoto } from '@/utils/coachMealEstimate';
 import { readFileAsStringAsync } from '@/utils/file';
 import { mealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 import type { MealPhotoContext } from '@/utils/mealPhotoContext';
 import { showSnackbar } from '@/utils/snackbarService';
-import { trackedMealTotals } from '@/utils/trackedMealTotals';
 
-/** An estimated meal waiting for the person to confirm it. */
-export type MealReview = {
-  /** Totals as the diary will store them. */
-  meal: ReturnType<typeof trackedMealTotals> & { name: string; type: string };
-  ingredients: TrackMealIngredient[];
+/** A photographed meal waiting for the person to confirm it. */
+export type MealReview = MealEstimateReview & {
   /** The first photo of the meal, saved with it. */
   photoUri: string;
 };
@@ -76,20 +75,12 @@ export function useMealPhotoEstimate({ run, setProgress }: CameraAiProcessing) {
             return null;
           }
 
-          const ingredients = result?.meals.flatMap((meal) => meal.ingredients) ?? [];
-          if (!result || ingredients.length === 0) {
+          const review = mealEstimateReview(result, { name, fallback: t('meals.customMeal') });
+          if (!review) {
             return t('food.aiCamera.aiAnalysisFailed');
           }
 
-          const meal: MealReview['meal'] = {
-            ...trackedMealTotals(ingredients),
-            name:
-              name?.trim() ||
-              result.meals[0]?.mealName ||
-              result.meals[0]?.mealType ||
-              t('meals.customMeal'),
-            type: t('meals.customMeal'),
-          };
+          const { meal } = review;
 
           showSnackbar(
             'success',
@@ -102,7 +93,7 @@ export function useMealPhotoEstimate({ run, setProgress }: CameraAiProcessing) {
             })
           );
 
-          onEstimate({ meal, ingredients, photoUri: photos[0] });
+          onEstimate({ ...review, photoUri: photos[0] });
 
           return null;
         },

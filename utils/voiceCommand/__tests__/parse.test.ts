@@ -1,4 +1,4 @@
-import { parseVoiceCommands } from '@/utils/voiceCommand/parse';
+import { parseChosenCommand, parseVoiceCommands } from '@/utils/voiceCommand/parse';
 
 describe('parseVoiceCommands', () => {
   it('returns null for a reply that is not an object', () => {
@@ -21,6 +21,9 @@ describe('parseVoiceCommands', () => {
         fromMeal: null,
         fromDay: null,
         food: 'egg',
+        weight: null,
+        text: null,
+        screen: null,
       },
     ]);
   });
@@ -76,6 +79,9 @@ describe('parseVoiceCommands', () => {
       fromMeal: null,
       fromDay: null,
       food: null,
+      weight: null,
+      text: null,
+      screen: null,
     });
   });
 
@@ -102,5 +108,83 @@ describe('parseVoiceCommands', () => {
 
     expect(commands).toHaveLength(1);
     expect(commands?.[0].tool).toBe('search_food');
+  });
+
+  it('reads a weight given as a JSON number as its digits', () => {
+    const [command] =
+      parseVoiceCommands({ commands: [{ tool: 'log_weight', weight: 82.4 }] }) ?? [];
+
+    expect(command.weight).toBe('82.4');
+  });
+
+  it('reads a weight given as a string', () => {
+    const [command] =
+      parseVoiceCommands({ commands: [{ tool: 'log_weight', weight: '82,4' }] }) ?? [];
+
+    expect(command.weight).toBe('82,4');
+  });
+
+  it('reads note text and a screen as their slots', () => {
+    const [note] = parseVoiceCommands({ commands: [{ tool: 'add_note', text: 'buy oats' }] }) ?? [];
+    const [go] = parseVoiceCommands({ commands: [{ tool: 'go_to', screen: 'Progress' }] }) ?? [];
+
+    expect(note.text).toBe('buy oats');
+    expect(go.screen).toBe('progress');
+  });
+
+  it('turns a tool that was not offered into cant_determine_tool with every slot empty', () => {
+    const commands = parseVoiceCommands({ commands: [{ tool: 'log_weight', weight: '80' }] }, [
+      'search_food',
+      'copy_meal',
+    ]);
+
+    expect(commands).toEqual([
+      {
+        tool: 'cant_determine_tool',
+        meal: null,
+        day: null,
+        fromMeal: null,
+        fromDay: null,
+        food: null,
+        weight: null,
+        text: null,
+        screen: null,
+      },
+    ]);
+  });
+
+  it('keeps an offered tool and the two non-actions whatever is offered', () => {
+    const [offered] =
+      parseVoiceCommands({ commands: [{ tool: 'search_food', food: 'egg' }] }, ['search_food']) ??
+      [];
+    const [none] = parseVoiceCommands({ commands: [{ tool: 'none' }] }, ['search_food']) ?? [];
+
+    expect(offered.tool).toBe('search_food');
+    expect(none.tool).toBe('none');
+  });
+});
+
+describe('parseChosenCommand', () => {
+  it('always answers with the picked tool, leaving unusable slots empty', () => {
+    const command = parseChosenCommand(
+      { commands: [{ tool: 'none', from_day: 'tomorrow', meal: 'breakfast' }] },
+      'copy_meal'
+    );
+
+    expect(command).toEqual({
+      tool: 'copy_meal',
+      meal: 'breakfast',
+      day: null,
+      fromMeal: null,
+      fromDay: null,
+      food: null,
+      weight: null,
+      text: null,
+      screen: null,
+    });
+  });
+
+  it('answers the picked tool with nothing filled for an unreadable reply', () => {
+    expect(parseChosenCommand(null, 'go_to')).toMatchObject({ tool: 'go_to', screen: null });
   });
 });

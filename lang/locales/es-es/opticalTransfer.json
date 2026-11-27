@@ -54,7 +54,7 @@
       "photoLinked": "La foto se envía como enlace, así que apenas añade peso a la transferencia. El otro teléfono necesita internet para cargarla.",
       "photoUnavailable": "No se pudo leer el archivo de esta foto, así que no se enviará ninguna foto.",
       "receiveTitle": "Recibir de otro teléfono",
-      "ingredientGrams": "{{amount}} g de {{name}}",
+      "ingredientGrams": "{{amount}} de {{name}}",
       "ingredientServings": "{{amount}} porciones de {{name}}",
       "ingredientPortions": "{{amount}} × {{portion}} de {{name}}",
       "portionWithWeight": "{{name}} · {{amount}} {{unit}}",

@@ -28,6 +28,7 @@ jest.mock('@/context/SnackbarContext', () => ({
   useSnackbar: () => ({ showSnackbar: mockShowSnackbar }),
 }));
 
+const DIARY_KINDS = ['copyMeal', 'searchFood'] as const;
 const targetDay = new Date(2026, 10, 26);
 const sourceDay = new Date(2026, 10, 25);
 
@@ -77,7 +78,7 @@ describe('useDiaryVoiceActions', () => {
       sourceDay,
       meals: { source: 'breakfast', target: 'lunch' },
     });
-    expect(takePendingVoiceAction()).toBeNull();
+    expect(takePendingVoiceAction(DIARY_KINDS)).toBeNull();
   });
 
   it('performs a searchFood action pending before mount without opening the copy review', () => {
@@ -89,7 +90,7 @@ describe('useDiaryVoiceActions', () => {
     expect(handlers.selectMealType).toHaveBeenCalledWith('dinner');
     expect(handlers.openFoodSearch).toHaveBeenCalledWith('all', 'oats');
     expect(handlers.openCopyDay).not.toHaveBeenCalled();
-    expect(takePendingVoiceAction()).toBeNull();
+    expect(takePendingVoiceAction(DIARY_KINDS)).toBeNull();
   });
 
   it('performs an action set while focused', () => {
@@ -100,7 +101,7 @@ describe('useDiaryVoiceActions', () => {
     act(() => setPendingVoiceAction(searchFoodAction()));
 
     expect(handlers.openFoodSearch).toHaveBeenCalledWith('all', 'oats');
-    expect(takePendingVoiceAction()).toBeNull();
+    expect(takePendingVoiceAction(DIARY_KINDS)).toBeNull();
   });
 
   it('leaves the action pending when the screen is not focused', () => {
@@ -111,7 +112,7 @@ describe('useDiaryVoiceActions', () => {
 
     expect(handlers.openCopyDay).not.toHaveBeenCalled();
     expect(handlers.setSelectedDate).not.toHaveBeenCalled();
-    expect(takePendingVoiceAction()).toEqual(copyMealAction());
+    expect(takePendingVoiceAction(DIARY_KINDS)).toEqual(copyMealAction());
   });
 
   it('clears copyScope and opens the copy day for the whole-day entry', () => {
@@ -134,7 +135,7 @@ describe('useDiaryVoiceActions', () => {
     setPendingVoiceAction(searchFoodAction());
 
     expect(handlers.openFoodSearch).not.toHaveBeenCalled();
-    expect(takePendingVoiceAction()).toEqual(searchFoodAction());
+    expect(takePendingVoiceAction(DIARY_KINDS)).toEqual(searchFoodAction());
   });
 });
 
@@ -185,5 +186,17 @@ describe('useDiaryVoiceActions wrong-task prompt', () => {
     rerender(false);
 
     expect(mockShowSnackbar).not.toHaveBeenCalled();
+  });
+});
+
+describe('useDiaryVoiceActions kinds', () => {
+  it('does not take a pending addNote action, which belongs to the notes screen', () => {
+    const handlers = makeHandlers();
+    setPendingVoiceAction({ kind: 'addNote', body: 'bought oats' });
+    renderHook(() => useDiaryVoiceActions(handlers));
+
+    expect(handlers.openFoodSearch).not.toHaveBeenCalled();
+    expect(handlers.openCopyDay).not.toHaveBeenCalled();
+    expect(takePendingVoiceAction(['addNote'])).toEqual({ kind: 'addNote', body: 'bought oats' });
   });
 });

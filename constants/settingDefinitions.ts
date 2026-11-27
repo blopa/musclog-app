@@ -68,6 +68,7 @@ import {
   SHOW_LOGGY_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
+  VOICE_COMMAND_TOOLS_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
@@ -233,6 +234,8 @@ export const SETTINGS = {
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping
   ),
+  /** Raw list of chosen voice tools; read it through `parseVoiceToolSelection`. */
+  voiceCommandTools: textSetting(VOICE_COMMAND_TOOLS_SETTING_TYPE),
   /** What the bottom bar's centre button does; resolve it with `resolveNavCenterAction`. */
   navCenterAction: choiceSetting<NavCenterAction>(
     NAV_CENTER_ACTION_SETTING_TYPE,

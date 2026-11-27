@@ -54,16 +54,44 @@
       "pickHint": "Kies er een en Musclog probeert het opnieuw.",
       "tool": {
         "copyMeal": "Een maaltijd of dag kopiëren",
-        "searchFood": "Een voedingsmiddel zoeken"
+        "searchFood": "Een voedingsmiddel zoeken",
+        "logWeight": "Mijn gewicht noteren",
+        "logMeal": "Een maaltijd noteren",
+        "addNote": "Een notitie maken",
+        "goTo": "Een scherm openen"
       },
       "askCoach": "Vraag het aan de coach",
       "wrongTask": "Verkeerde taak? Probeer een beter model.",
       "openAiSettings": "AI-instellingen",
       "failed": "De spraakopdracht is mislukt. Probeer het opnieuw.",
+      "mealTitle": "Je maaltijd",
+      "mealLogged": "Maaltijd toegevoegd",
+      "weight": {
+        "title": "Je gewicht noteren",
+        "field": "Gewicht",
+        "saved": "Gewicht opgeslagen",
+        "saveError": "Je gewicht kon niet worden opgeslagen"
+      },
       "capability": {
         "copyMeal": "„Ik had hetzelfde ontbijt als gisteren“",
-        "searchFood": "„Zoek havermout voor de lunch“"
+        "searchFood": "„Zoek havermout voor de lunch“",
+        "logWeight": "„Ik weeg 82,4“",
+        "logMeal": "„Ik had twee eieren en toast“",
+        "addNote": "„Notitie: havermout kopen“",
+        "goTo": "„Toon mijn weekoverzicht“"
       }
+    },
+    "tools": {
+      "sectionTitle": "Spraakopdrachten",
+      "rowTitle": "Spraakhulpmiddelen",
+      "rowDescription": "Kies wat de microfoonknop ingedrukt houden kan doen",
+      "sheetTitle": "Spraakhulpmiddelen",
+      "sheetSubtitle": "De AI kiest er een op basis van wat je zegt. De opties die je eerst hebt gekozen, worden eerst gebruikt.",
+      "limitNote_one": "Deze AI kiest per keer uit {{count}} hulpmiddel.",
+      "limitNote_few": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
+      "limitNote_many": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
+      "limitNote_other": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
+      "notUsed": "Niet gebruikt met deze AI"
     },
     "allow": "Toestaan",
     "notNow": "Niet nu"

@@ -12,16 +12,38 @@ const ACTION: VoiceAction = {
   query: 'rice',
 };
 
+const NOTE: VoiceAction = { kind: 'addNote', body: 'bought oats' };
+
+const DIARY = ['copyMeal', 'searchFood'] as const;
+
 describe('voiceActionInbox', () => {
   beforeEach(() => {
     setPendingVoiceAction(null);
   });
 
-  it('gives the pending action once, then nothing', () => {
+  it('gives the pending action once, to a caller that performs its kind, then nothing', () => {
     setPendingVoiceAction(ACTION);
 
-    expect(takePendingVoiceAction()).toBe(ACTION);
-    expect(takePendingVoiceAction()).toBeNull();
+    expect(takePendingVoiceAction(DIARY)).toBe(ACTION);
+    expect(takePendingVoiceAction(DIARY)).toBeNull();
+  });
+
+  it('keeps a pending action whose kind the caller does not perform', () => {
+    setPendingVoiceAction(NOTE);
+
+    expect(takePendingVoiceAction(DIARY)).toBeNull();
+    expect(takePendingVoiceAction(['addNote'])).toBe(NOTE);
+  });
+
+  it('keeps the action pending after a refused take, so the right screen still gets it', () => {
+    setPendingVoiceAction(ACTION);
+
+    expect(takePendingVoiceAction(['addNote'])).toBeNull();
+    expect(takePendingVoiceAction(['addNote', 'searchFood'])).toBe(ACTION);
+  });
+
+  it('returns null when nothing is pending, whatever the kinds', () => {
+    expect(takePendingVoiceAction(DIARY)).toBeNull();
   });
 
   it('notifies subscribers when an action is set', () => {

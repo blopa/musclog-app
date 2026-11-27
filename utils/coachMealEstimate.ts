@@ -2,7 +2,7 @@ import { DEFAULT_LANG } from '@/lang/lang';
 
 import { OnDeviceUnavailableError, rethrowUserFacingAiError } from './aiErrors';
 import { reportAiEvent } from './aiTelemetry';
-import { THINKING_PIPELINE } from './aiThinkingLevel';
+import { THINKING_PIPELINE, type ThinkingLevel, thinkingLevelRank } from './aiThinkingLevel';
 import {
   type CoachAIConfig,
   foundationFoodsFor,
@@ -29,6 +29,8 @@ import { getMealAnalysisPrompt, getTrackMealFunctions, withCustomPrompts } from 
 type MealEstimateRequest = {
   text: string;
   photos: readonly MealImage[];
+  /** The least thinking level whose steps the estimate takes, whatever the person's level is. */
+  minLevel?: ThinkingLevel;
 };
 
 /**
@@ -41,7 +43,7 @@ type MealEstimateRequest = {
  */
 async function estimateMeal(
   config: CoachAIConfig,
-  { text, photos }: MealEstimateRequest,
+  { text, photos, minLevel }: MealEstimateRequest,
   onProgress?: MealEstimateProgressListener
 ): Promise<TrackMealResponse | null> {
   try {
@@ -53,7 +55,10 @@ async function estimateMeal(
     );
     // Prepared once: every look, sample and review below reuses these, never re-encodes them.
     const images = await prepareMealImages(config, photos);
-    const level = await thinkingLevelFor(config);
+    const stored = await thinkingLevelFor(config);
+    // Only the steps of the estimate are raised: each request still reasons as hard as `stored` says.
+    const level =
+      minLevel && thinkingLevelRank(minLevel) > thinkingLevelRank(stored) ? minLevel : stored;
     let estimate: TrackMealResponse | null;
     if (THINKING_PIPELINE[level].verifiedMeal) {
       const lead = images.length > 1 ? 'Analyze these meal photos.' : 'Analyze this meal photo.';
@@ -137,6 +142,19 @@ export async function trackMeal(
     { text: userMessage, photos: base64Image ? [toMealImage(base64Image)] : [] },
     onProgress
   );
+}
+
+/**
+ * A spoken meal: always the verified steps, on every provider and level (the free tier included):
+ * the foods are listed, matched by name against the person's own and the foundation foods, and only
+ * the missing ones are estimated. Higher levels still add their extra passes.
+ */
+export async function trackMealFromVoice(
+  config: CoachAIConfig,
+  transcript: string,
+  onProgress?: MealEstimateProgressListener
+): Promise<TrackMealResponse | null> {
+  return estimateMeal(config, { text: transcript, photos: [], minLevel: 'medium' }, onProgress);
 }
 
 /**

@@ -54,7 +54,7 @@
       "photoLinked": "Das Foto wird als Link gesendet, deshalb erhöht es die Übertragung kaum. Das andere Handy braucht Internet, um es zu laden.",
       "photoUnavailable": "Die Datei dieses Fotos konnte nicht gelesen werden, deshalb wird kein Foto gesendet.",
       "receiveTitle": "Von einem anderen Handy empfangen",
-      "ingredientGrams": "{{amount}} g {{name}}",
+      "ingredientGrams": "{{amount}} {{name}}",
       "ingredientServings": "{{amount}} Portionen {{name}}",
       "ingredientPortions": "{{amount}} × {{portion}} {{name}}",
       "portionWithWeight": "{{name}} · {{amount}} {{unit}}",

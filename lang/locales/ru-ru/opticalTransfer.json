@@ -54,7 +54,7 @@
       "photoLinked": "Фото передаётся ссылкой, поэтому почти не увеличивает объём. Другому телефону нужен интернет, чтобы его загрузить.",
       "photoUnavailable": "Не удалось прочитать файл этого фото, поэтому фото не будет отправлено.",
       "receiveTitle": "Приём с другого телефона",
-      "ingredientGrams": "{{amount}} г — {{name}}",
+      "ingredientGrams": "{{amount}} — {{name}}",
       "ingredientServings": "{{amount}} порц. — {{name}}",
       "ingredientPortions": "{{amount}} × {{portion}} — {{name}}",
       "portionWithWeight": "{{name}} · {{amount}} {{unit}}",

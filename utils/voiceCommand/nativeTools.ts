@@ -4,7 +4,7 @@ import type {
   LocalToolDefinition,
 } from '@/services/localModels/llamaRuntime';
 import { isRecord } from '@/utils/isRecord';
-import { SLOTS, type VoiceSlotKey } from '@/utils/voiceCommand/schema';
+import { slotChoices, SLOTS, type VoiceSlotKey } from '@/utils/voiceCommand/schema';
 import { VOICE_TOOLS, type VoiceExample } from '@/utils/voiceCommand/tools';
 import { VOICE_ACTION_TOOLS, type VoiceActionTool } from '@/utils/voiceCommand/types';
 
@@ -20,17 +20,22 @@ export const NATIVE_VOICE_TOOL_ORDER: readonly VoiceActionTool[] = [...VOICE_ACT
 );
 
 /**
- * The tools offered. `only` is the tool the person picked: offering it alone, with the same example
- * turns, is what makes the model call it (`tool_choice: 'required'` measured no different).
+ * The tools of a request: the offered ones, or the one the person picked (`chosen`). Offering that
+ * one alone, with the same example turns, is what makes the model call it (`tool_choice:
+ * 'required'` measured no different).
  */
-export function buildNativeVoiceTools(only?: VoiceActionTool): LocalToolDefinition[] {
-  return NATIVE_VOICE_TOOL_ORDER.filter((name) => !only || name === only).map((name) => {
+export function buildNativeVoiceTools(
+  offered: readonly VoiceActionTool[] = VOICE_ACTION_TOOLS,
+  chosen?: VoiceActionTool
+): LocalToolDefinition[] {
+  return NATIVE_VOICE_TOOL_ORDER.filter((name) =>
+    chosen ? name === chosen : offered.includes(name)
+  ).map((name) => {
     const { description, slots } = VOICE_TOOLS[name].native;
     const properties: Record<string, object> = {};
     // The registry's own order: the model was measured with food first for search_food.
     for (const [key, slotDescription] of Object.entries(slots) as [VoiceSlotKey, string][]) {
-      const slot = SLOTS[key];
-      const choices: readonly string[] | undefined = 'choices' in slot ? slot.choices : undefined;
+      const choices = slotChoices(key);
       properties[key] = {
         type: 'string',
         ...(choices ? { enum: [...choices] } : {}),
@@ -42,13 +47,22 @@ export function buildNativeVoiceTools(only?: VoiceActionTool): LocalToolDefiniti
   });
 }
 
+/** What the model "says" to a question: true of the set of tools it is offered. */
+function refusal(offered: readonly VoiceActionTool[]): string {
+  return offered.every((name) => VOICE_TOOLS[name].native.logsFood)
+    ? 'I can only log food.'
+    : 'I can only do things in the app.';
+}
+
 /** The turns before the tool examples: a greeting, a question the model must not answer with a tool. */
-const EXAMPLE_PREAMBLE: readonly LocalChatMessage[] = [
-  { role: 'user', content: 'Hi, my name is Anna' },
-  { role: 'assistant', content: 'Hi Anna!' },
-  { role: 'user', content: 'What did I eat on Monday?' },
-  { role: 'assistant', content: 'I can only log food.' },
-];
+function examplePreamble(offered: readonly VoiceActionTool[]): LocalChatMessage[] {
+  return [
+    { role: 'user', content: 'Hi, my name is Anna' },
+    { role: 'assistant', content: 'Hi Anna!' },
+    { role: 'user', content: 'What did I eat on Monday?' },
+    { role: 'assistant', content: refusal(offered) },
+  ];
+}
 
 function exampleTurns(
   name: VoiceActionTool,
@@ -67,14 +81,21 @@ function exampleTurns(
   ];
 }
 
-// These turns were measured as a set: do not reorder them or add one without measuring again.
-export const NATIVE_VOICE_EXAMPLES: readonly LocalChatMessage[] = [
-  ...EXAMPLE_PREAMBLE,
-  ...[...VOICE_ACTION_TOOLS]
-    .sort((a, b) => VOICE_TOOLS[a].native.examples.order - VOICE_TOOLS[b].native.examples.order)
-    .flatMap((name) => VOICE_TOOLS[name].native.examples.turns.map((turn) => ({ name, turn })))
-    .flatMap(({ name, turn }, index) => exampleTurns(name, turn, `call_${index + 1}`)),
-];
+/**
+ * The example turns of the offered tools only. The turns of the default sets were measured as a
+ * whole: do not reorder them or add one without measuring again.
+ */
+export function nativeVoiceExamples(
+  offered: readonly VoiceActionTool[] = VOICE_ACTION_TOOLS
+): LocalChatMessage[] {
+  return [
+    ...examplePreamble(offered),
+    ...VOICE_ACTION_TOOLS.filter((name) => offered.includes(name))
+      .sort((a, b) => VOICE_TOOLS[a].native.examples.order - VOICE_TOOLS[b].native.examples.order)
+      .flatMap((name) => VOICE_TOOLS[name].native.examples.turns.map((turn) => ({ name, turn })))
+      .flatMap(({ name, turn }, index) => exampleTurns(name, turn, `call_${index + 1}`)),
+  ];
+}
 
 /** One command of the model's answer: its `tool` and the slots it filled. */
 export type NativeVoiceCommand = Record<string, unknown> & { tool: string };
@@ -82,16 +103,28 @@ export type NativeVoiceCommand = Record<string, unknown> & { tool: string };
 /** The raw value `parseVoiceCommands` reads for the downloaded model's tool calls. */
 export type NativeVoiceReply = { commands: NativeVoiceCommand[] };
 
-/** One `"key": "text"` pair of a flat JSON object, or any other quoted string (skipped whole). */
-const STRING_PAIR = /("(?:[^"\\]|\\.)*")(?:\s*:\s*("(?:[^"\\]|\\.)*"))?/g;
+/**
+ * One `"key": value` pair of a flat JSON object with a text or number value, or any other quoted
+ * string (skipped whole).
+ */
+const SLOT_PAIR = /("(?:[^"\\]|\\.)*")(?:\s*:\s*("(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?))?/g;
 
-function isValidSlot(key: string, value: unknown): boolean {
-  const slot = (SLOTS as Record<string, { choices?: readonly string[] }>)[key];
+function isSlot(key: string): key is VoiceSlotKey {
+  return key in SLOTS;
+}
+
+function isValidSlot(key: VoiceSlotKey, value: unknown): boolean {
+  if (SLOTS[key].kind === 'number' && typeof value === 'number') {
+    return true;
+  }
+
   if (typeof value !== 'string') {
     return false;
   }
 
-  return slot?.choices ? slot.choices.includes(value.trim().toLowerCase()) : value.trim() !== '';
+  const choices = slotChoices(key);
+
+  return choices ? choices.includes(value.trim().toLowerCase()) : value.trim() !== '';
 }
 
 /**
@@ -102,17 +135,17 @@ function isValidSlot(key: string, value: unknown): boolean {
  */
 function bestSlots(source: string, parsed: Record<string, unknown>): Record<string, unknown> {
   const result = { ...parsed };
-  const picked = new Map<string, string>();
-  for (const [, rawKey, rawValue] of source.matchAll(STRING_PAIR)) {
+  const picked = new Set<string>();
+  for (const [, rawKey, rawValue] of source.matchAll(SLOT_PAIR)) {
     if (rawValue === undefined) {
       continue;
     }
 
     const key = JSON.parse(rawKey) as string;
-    const value = JSON.parse(rawValue) as string;
+    const value = JSON.parse(rawValue) as unknown;
     const replacesRealSource = key === 'from_day' && value === 'today' && picked.has(key);
-    if (key in SLOTS && isValidSlot(key, value) && !replacesRealSource) {
-      picked.set(key, value);
+    if (isSlot(key) && isValidSlot(key, value) && !replacesRealSource) {
+      picked.add(key);
       result[key] = value;
     }
   }
@@ -146,8 +179,9 @@ export function nativeVoiceReply(reply: {
     }
 
     const command: NativeVoiceCommand = { ...bestSlots(call.arguments, args), tool: call.name };
-    // Filler: the model writes "other" when no meal was said, and a search then follows the clock.
-    if (command.tool === 'search_food' && command.meal === 'other') {
+    // Filler: the model writes "other" when no meal was said, and the meal then follows the clock.
+    const native = Object.entries(VOICE_TOOLS).find(([name]) => name === command.tool)?.[1].native;
+    if (native?.dropsOtherMeal && command.meal === 'other') {
       delete command.meal;
     }
 

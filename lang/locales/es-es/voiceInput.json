@@ -54,16 +54,44 @@
       "pickHint": "Elige una y Musclog lo intenta de nuevo.",
       "tool": {
         "copyMeal": "Copiar una comida o un día",
-        "searchFood": "Buscar un alimento"
+        "searchFood": "Buscar un alimento",
+        "logWeight": "Registrar mi peso",
+        "logMeal": "Registrar una comida",
+        "addNote": "Tomar una nota",
+        "goTo": "Abrir una pantalla"
       },
       "askCoach": "Preguntar al coach",
       "wrongTask": "¿Tarea incorrecta? Prueba con un modelo mejor.",
       "openAiSettings": "Ajustes de IA",
       "failed": "El comando de voz ha fallado. Inténtalo de nuevo.",
+      "mealTitle": "Tu comida",
+      "mealLogged": "Comida registrada",
+      "weight": {
+        "title": "Registra tu peso",
+        "field": "Peso",
+        "saved": "Peso guardado",
+        "saveError": "No se pudo guardar tu peso"
+      },
       "capability": {
         "copyMeal": "“He tomado el mismo desayuno que ayer”",
-        "searchFood": "“Busca avena para el almuerzo”"
+        "searchFood": "“Busca avena para el almuerzo”",
+        "logWeight": "“Peso 82,4”",
+        "logMeal": "“Comí dos huevos y tostadas”",
+        "addNote": "“Nota: comprar más avena”",
+        "goTo": "“Muéstrame mi revisión semanal”"
       }
+    },
+    "tools": {
+      "sectionTitle": "Comandos de voz",
+      "rowTitle": "Herramientas de voz",
+      "rowDescription": "Elige lo que puede hacer mantener pulsado el micrófono",
+      "sheetTitle": "Herramientas de voz",
+      "sheetSubtitle": "La IA elige una de estas a partir de lo que dices. Las que elegiste primero se usan primero.",
+      "limitNote_one": "Esta IA elige entre {{count}} herramienta a la vez.",
+      "limitNote_few": "Esta IA elige entre {{count}} herramientas a la vez.",
+      "limitNote_many": "Esta IA elige entre {{count}} herramientas a la vez.",
+      "limitNote_other": "Esta IA elige entre {{count}} herramientas a la vez.",
+      "notUsed": "No se usa con esta IA"
     },
     "allow": "Permitir",
     "notNow": "Ahora no"

@@ -111,6 +111,11 @@ export type ProviderPolicy = {
    */
   nativeToolCalls?: boolean;
   /**
+   * How many voice tools one request may offer (undefined: all of them). A small model routes worse
+   * the more tools it chooses between, so the person's picks are cut to this many, in their order.
+   */
+  maxVoiceTools?: number;
+  /**
    * A chat message that mentions pain or an injury (`mentionsPainOrInjury`) is answered with a fixed,
    * translated reply (`coach.onDevicePainReply`) without asking the model. The downloaded 450M model
    * told people to train through pain 8 of 35 times (and 10 of 35 with a safety line in its prompt;
@@ -246,6 +251,15 @@ const GEMINI_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 const CLAUDE_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 
 /**
+ * Voice tools offered at once. The downloaded models (450M and the 1.2B alike) route much worse
+ * with five tools than with three: the 1.2B stopped recognizing food searches and copies at five
+ * (`docs/RESEARCH.md` → Voice commands on the downloaded model). A custom local server and Apple's
+ * model are not measured and take the larger small-model limit.
+ */
+const DOWNLOADED_MODEL_VOICE_TOOLS = 3;
+const SMALL_MODEL_VOICE_TOOLS = 5;
+
+/**
  * A small model: a custom local server or the downloaded on-device one. Left alone it copies its own
  * earlier replies, so a one-word follow-up ("ok", "thanks") gets the previous answer back, over and
  * over. A short history breaks that. Nothing enforces its schema either, so its structured replies
@@ -259,6 +273,7 @@ const SMALL_MODEL_POLICY: ProviderPolicy = {
   compactWorkoutCards: true,
   structuredReplies: 'repaired',
   runsSamplesSequentially: true,
+  maxVoiceTools: SMALL_MODEL_VOICE_TOOLS,
 };
 
 /** What both on-device engines share beyond being small: the meal pipeline is shorter for them. */
@@ -282,6 +297,7 @@ const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
   regeneratesCopiedChatReply: true,
   skipsInsightFactCheck: true,
   nativeToolCalls: true,
+  maxVoiceTools: DOWNLOADED_MODEL_VOICE_TOOLS,
 };
 
 /**
@@ -316,6 +332,7 @@ const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
   maxChatHistoryTurns: SMALL_MODEL_POLICY.maxChatHistoryTurns,
   compactWorkoutCards: SMALL_MODEL_POLICY.compactWorkoutCards,
   runsSamplesSequentially: true,
+  maxVoiceTools: SMALL_MODEL_VOICE_TOOLS,
   ...ON_DEVICE_CAPABILITIES,
 };
 

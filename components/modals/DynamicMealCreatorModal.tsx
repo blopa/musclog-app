@@ -14,6 +14,7 @@ import Food from '@/database/models/Food';
 import { MealService } from '@/database/services/MealService';
 import { syncMealPortionFromForm } from '@/database/services/syncMealPortionFromForm';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -106,6 +107,7 @@ export default function DynamicMealCreatorModal({
   const theme = useTheme();
   const { showSnackbar } = useSnackbar();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatMass } = useFoodMass();
   const { formatEnergy, unitLabel } = useEnergyUnit();
   const { units } = useSettings();
 
@@ -279,7 +281,7 @@ export default function DynamicMealCreatorModal({
       return `${formatRoundedDecimal(amount, 2)} ${t('food.foodDetails.serving')}`;
     }
 
-    return `${formatRoundedDecimal(amount, 0)} g`;
+    return formatMass(amount);
   };
 
   const ingredientCalories = (food: Food, amount: number) => {

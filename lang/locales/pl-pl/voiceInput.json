@@ -54,16 +54,44 @@
       "pickHint": "Wybierz opcję, a Musclog spróbuje ponownie.",
       "tool": {
         "copyMeal": "Skopiuj posiłek lub dzień",
-        "searchFood": "Wyszukaj produkt"
+        "searchFood": "Wyszukaj produkt",
+        "logWeight": "Zapisz moją wagę",
+        "logMeal": "Zapisz posiłek",
+        "addNote": "Zrób notatkę",
+        "goTo": "Otwórz ekran"
       },
       "askCoach": "Zapytaj coacha",
       "wrongTask": "Nie to zadanie? Wypróbuj lepszy model.",
       "openAiSettings": "Ustawienia AI",
       "failed": "Polecenie głosowe się nie powiodło. Spróbuj ponownie.",
+      "mealTitle": "Twój posiłek",
+      "mealLogged": "Posiłek zapisany",
+      "weight": {
+        "title": "Zapisz swoją wagę",
+        "field": "Waga",
+        "saved": "Waga zapisana",
+        "saveError": "Nie udało się zapisać wagi"
+      },
       "capability": {
         "copyMeal": "„Zjadłem to samo śniadanie co wczoraj”",
-        "searchFood": "„Wyszukaj płatki owsiane na obiad”"
+        "searchFood": "„Wyszukaj płatki owsiane na obiad”",
+        "logWeight": "„Ważę 82,4”",
+        "logMeal": "„Zjadłem dwa jajka i tost”",
+        "addNote": "„Notatka: kup więcej płatków owsianych”",
+        "goTo": "„Pokaż mój przegląd tygodnia”"
       }
+    },
+    "tools": {
+      "sectionTitle": "Polecenia głosowe",
+      "rowTitle": "Narzędzia głosowe",
+      "rowDescription": "Wybierz, co może zrobić przytrzymanie mikrofonu",
+      "sheetTitle": "Narzędzia głosowe",
+      "sheetSubtitle": "AI wybiera jedno z nich na podstawie tego, co mówisz. Te, które wybrałeś jako pierwsze, są używane najpierw.",
+      "limitNote_one": "Ta AI wybiera naraz między {{count}} narzędziem.",
+      "limitNote_few": "Ta AI wybiera naraz między {{count}} narzędziami.",
+      "limitNote_many": "Ta AI wybiera naraz między {{count}} narzędziami.",
+      "limitNote_other": "Ta AI wybiera naraz między {{count}} narzędziami.",
+      "notUsed": "Nie używane przez tę AI"
     },
     "allow": "Zezwól",
     "notNow": "Nie teraz"

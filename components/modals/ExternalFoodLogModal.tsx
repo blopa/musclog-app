@@ -22,6 +22,7 @@ import {
   SHARED_HANDOFF_COPY,
   useExternalAssistantImport,
 } from '@/hooks/useExternalAssistantImport';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import type { IncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
@@ -150,6 +151,7 @@ export function ExternalFoodLogModal({
   const { showSnackbar } = useSnackbar();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
+  const { formatMass } = useFoodMass();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
@@ -302,7 +304,7 @@ export function ExternalFoodLogModal({
                   }}
                 >
                   {t('food.externalLog.review.item', {
-                    grams: formatRoundedDecimal(ingredient.grams, 1),
+                    amount: formatMass(ingredient.grams),
                     kcal: formatEnergyWithUnit(ingredient.kcal),
                   })}
                 </Text>

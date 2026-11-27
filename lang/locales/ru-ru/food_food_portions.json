@@ -4,7 +4,7 @@
   "createFoodPortion": "Создать порцию продукта",
   "portionName": "Название порции",
   "portionNamePlaceholder": "например, Чашка, Ломтик, Штука",
-  "weightGrams": "Вес (граммы)",
+  "weightInUnit": "Вес ({{unit}})",
   "selectIcon": "Выбрать иконку",
   "chooseIcon": "Выбрать иконку"
 }

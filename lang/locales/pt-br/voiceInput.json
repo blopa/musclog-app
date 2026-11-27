@@ -54,16 +54,44 @@
       "pickHint": "Escolha uma opção e o Musclog tenta de novo.",
       "tool": {
         "copyMeal": "Copiar uma refeição ou um dia",
-        "searchFood": "Buscar um alimento"
+        "searchFood": "Buscar um alimento",
+        "logWeight": "Registrar meu peso",
+        "logMeal": "Registrar uma refeição",
+        "addNote": "Fazer uma anotação",
+        "goTo": "Abrir uma tela"
       },
       "askCoach": "Perguntar ao coach",
       "wrongTask": "Tarefa errada? Tente usar um modelo melhor.",
       "openAiSettings": "Ajustes de IA",
       "failed": "O comando de voz falhou. Tente de novo.",
+      "mealTitle": "Sua refeição",
+      "mealLogged": "Refeição registrada",
+      "weight": {
+        "title": "Registre seu peso",
+        "field": "Peso",
+        "saved": "Peso salvo",
+        "saveError": "Não foi possível salvar seu peso"
+      },
       "capability": {
         "copyMeal": "“Comi o mesmo café da manhã de ontem”",
-        "searchFood": "“Pesquise aveia para o almoço”"
+        "searchFood": "“Pesquise aveia para o almoço”",
+        "logWeight": "“Peso 82,4”",
+        "logMeal": "“Comi dois ovos e torrada”",
+        "addNote": "“Nota: comprar mais aveia”",
+        "goTo": "“Mostre minha revisão semanal”"
       }
+    },
+    "tools": {
+      "sectionTitle": "Comandos de voz",
+      "rowTitle": "Ferramentas de voz",
+      "rowDescription": "Escolha o que segurar o microfone pode fazer",
+      "sheetTitle": "Ferramentas de voz",
+      "sheetSubtitle": "A IA escolhe uma destas com base no que você diz. As que você escolheu primeiro são usadas primeiro.",
+      "limitNote_one": "Esta IA escolhe entre {{count}} ferramenta por vez.",
+      "limitNote_few": "Esta IA escolhe entre {{count}} ferramentas por vez.",
+      "limitNote_many": "Esta IA escolhe entre {{count}} ferramentas por vez.",
+      "limitNote_other": "Esta IA escolhe entre {{count}} ferramentas por vez.",
+      "notUsed": "Não usada com esta IA"
     },
     "allow": "Permitir",
     "notNow": "Agora não"

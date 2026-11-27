@@ -1,17 +1,24 @@
 import {
   buildNativeVoiceTools,
-  NATIVE_VOICE_EXAMPLES,
   NATIVE_VOICE_TOOL_ORDER,
+  nativeVoiceExamples,
   nativeVoiceReply,
 } from '@/utils/voiceCommand/nativeTools';
 import { parseVoiceCommands } from '@/utils/voiceCommand/parse';
 import { SLOTS } from '@/utils/voiceCommand/schema';
 import { VOICE_TOOLS } from '@/utils/voiceCommand/tools';
-import { VOICE_ACTION_TOOLS } from '@/utils/voiceCommand/types';
+import { activeVoiceTools, DEFAULT_VOICE_TOOL_SELECTION } from '@/utils/voiceCommand/toolSelection';
+import { VOICE_ACTION_TOOLS, type VoiceActionTool } from '@/utils/voiceCommand/types';
+
+/** The two tools the downloaded model's frozen literals were measured with. */
+const TWO: readonly VoiceActionTool[] = ['search_food', 'copy_meal'];
 
 describe('buildNativeVoiceTools', () => {
   it('offers search_food first, then copy_meal', () => {
-    expect(buildNativeVoiceTools().map((tool) => tool.name)).toEqual(['search_food', 'copy_meal']);
+    expect(buildNativeVoiceTools(TWO).map((tool) => tool.name)).toEqual([
+      'search_food',
+      'copy_meal',
+    ]);
   });
 
   it('lists every action tool exactly once', () => {
@@ -19,7 +26,7 @@ describe('buildNativeVoiceTools', () => {
   });
 
   it('describes each tool and its slots from the registry, with enums from the slot choices', () => {
-    for (const tool of buildNativeVoiceTools()) {
+    for (const tool of buildNativeVoiceTools(VOICE_ACTION_TOOLS)) {
       const { native } = VOICE_TOOLS[tool.name as keyof typeof VOICE_TOOLS];
       const parameters = tool.parameters as {
         type: string;
@@ -45,18 +52,20 @@ describe('buildNativeVoiceTools', () => {
 });
 
 it('offers the food search first, with the food as its first slot', () => {
-  const [first, second] = buildNativeVoiceTools();
+  const [first, second] = buildNativeVoiceTools(TWO);
   const properties = (first.parameters as { properties: Record<string, unknown> }).properties;
 
   expect([first.name, second.name]).toEqual(['search_food', 'copy_meal']);
   expect(Object.keys(properties)).toEqual(['food', 'meal', 'day']);
 });
 
-describe('NATIVE_VOICE_EXAMPLES', () => {
+describe('nativeVoiceExamples', () => {
   it('follows every tool call with a tool message of the same id', () => {
-    NATIVE_VOICE_EXAMPLES.forEach((message, index) => {
+    const examples = nativeVoiceExamples(TWO);
+
+    examples.forEach((message, index) => {
       for (const call of message.toolCalls ?? []) {
-        const next = NATIVE_VOICE_EXAMPLES[index + 1];
+        const next = examples[index + 1];
 
         expect(next.role).toBe('tool');
         expect(next.toolCallId).toBe(call.id);
@@ -65,7 +74,7 @@ describe('NATIVE_VOICE_EXAMPLES', () => {
   });
 
   it('calls real tools that parse to the intended commands', () => {
-    const calls = NATIVE_VOICE_EXAMPLES.flatMap((message) => message.toolCalls ?? []);
+    const calls = nativeVoiceExamples(TWO).flatMap((message) => message.toolCalls ?? []);
     const parsed = calls.map((call) =>
       parseVoiceCommands(nativeVoiceReply({ text: '', toolCalls: [call] }))
     );
@@ -79,6 +88,9 @@ describe('NATIVE_VOICE_EXAMPLES', () => {
           fromMeal: null,
           fromDay: 'yesterday',
           food: null,
+          weight: null,
+          text: null,
+          screen: null,
         },
       ],
       [
@@ -89,6 +101,9 @@ describe('NATIVE_VOICE_EXAMPLES', () => {
           fromMeal: null,
           fromDay: 'yesterday',
           food: null,
+          weight: null,
+          text: null,
+          screen: null,
         },
       ],
       [
@@ -99,6 +114,9 @@ describe('NATIVE_VOICE_EXAMPLES', () => {
           fromMeal: null,
           fromDay: null,
           food: 'banana',
+          weight: null,
+          text: null,
+          screen: null,
         },
       ],
     ]);
@@ -191,7 +209,7 @@ describe('frozen native voice output', () => {
   ];
 
   it('offers search_food then copy_meal, with these descriptions and slots', () => {
-    expect(buildNativeVoiceTools()).toEqual([
+    expect(buildNativeVoiceTools(TWO)).toEqual([
       {
         name: 'search_food',
         description: 'Log one food the person names, such as banana, eggs or a protein shake.',
@@ -243,7 +261,7 @@ describe('frozen native voice output', () => {
   });
 
   it('shows these example turns in this order', () => {
-    expect(NATIVE_VOICE_EXAMPLES).toEqual([
+    expect(nativeVoiceExamples(TWO)).toEqual([
       { role: 'user', content: 'Hi, my name is Anna' },
       { role: 'assistant', content: 'Hi Anna!' },
       { role: 'user', content: 'What did I eat on Monday?' },
@@ -287,8 +305,63 @@ describe('frozen native voice output', () => {
     ]);
   });
 
-  it('keeps the measured tool order', () => {
-    expect(NATIVE_VOICE_TOOL_ORDER).toEqual(['search_food', 'copy_meal']);
+  it('keeps the measured tool order, with the tools added since in their own places', () => {
+    expect(NATIVE_VOICE_TOOL_ORDER).toEqual([
+      'search_food',
+      'copy_meal',
+      'log_weight',
+      'log_meal',
+      'add_note',
+      'go_to',
+    ]);
+  });
+});
+
+describe('nativeVoiceExamples for a set with a non-food tool', () => {
+  const OFFERED: readonly VoiceActionTool[] = ['search_food', 'log_weight'];
+
+  it('answers the out-of-scope question with the app refusal, not the food one', () => {
+    const preamble = nativeVoiceExamples(OFFERED).slice(0, 4);
+
+    expect(preamble[3]).toEqual({ role: 'assistant', content: 'I can only do things in the app.' });
+  });
+
+  it('renumbers the call ids over only the offered tools, in example order', () => {
+    const calls = nativeVoiceExamples(OFFERED).flatMap((message) => message.toolCalls ?? []);
+
+    expect(calls.map((call) => call.id)).toEqual(['call_1', 'call_2']);
+    expect(calls.map((call) => call.name)).toEqual(['log_weight', 'search_food']);
+  });
+
+  it('keeps the food refusal when every offered tool logs food', () => {
+    expect(nativeVoiceExamples(['copy_meal']).slice(0, 4)[3]).toEqual({
+      role: 'assistant',
+      content: 'I can only log food.',
+    });
+  });
+});
+
+describe("the downloaded models' default set", () => {
+  const offered = activeVoiceTools(DEFAULT_VOICE_TOOL_SELECTION, 3);
+
+  it('is offered search first, with the weigh-in example shown first (measured as a set)', () => {
+    expect(buildNativeVoiceTools(offered).map((tool) => tool.name)).toEqual([
+      'search_food',
+      'copy_meal',
+      'log_weight',
+    ]);
+    expect(
+      nativeVoiceExamples(offered)
+        .filter((message) => message.role === 'user')
+        .map((message) => message.content)
+    ).toEqual([
+      'Hi, my name is Anna',
+      'What did I eat on Monday?',
+      'My weight is 81.5',
+      'Same breakfast as yesterday',
+      'Today I had the same lunch as yesterday',
+      'I had a banana',
+    ]);
   });
 });
 

@@ -3,6 +3,7 @@ import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { CenteredModal } from '@/components/modals/CenteredModal';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -32,6 +33,7 @@ export function IngredientListModal({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatMass } = useFoodMass();
   const { toDisplay, unitLabel } = useEnergyUnit();
   const { height: windowHeight } = useWindowDimensions();
   const maxHeight = Math.min(360, Math.round(windowHeight * 0.5));
@@ -65,7 +67,7 @@ export function IngredientListModal({
                 {ingredient.name}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                {formatRoundedDecimal(ingredient.grams, 2)}g
+                {formatMass(ingredient.grams)}
               </Text>
             </View>
             <View className="flex-row items-center gap-3">

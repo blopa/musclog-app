@@ -678,6 +678,13 @@ export function parseFoodDiaryGrouping(raw: string | null | undefined): FoodDiar
 }
 
 /**
+ * Setting type for the voice tools the person chose. value: tool names, comma-separated, in pick
+ * order; read it through `parseVoiceToolSelection` (`utils/voiceCommand/toolSelection.ts`). Unset
+ * means the default list, so a new tool reaches everyone who never chose. Backed up.
+ */
+export const VOICE_COMMAND_TOOLS_SETTING_TYPE = 'voice_command_tools';
+
+/**
  * Setting type for what the bottom bar's centre button does. value: 'camera' | 'voice'.
  * Default: 'camera'. 'voice' is a hold-to-talk microphone that turns speech into text on the
  * device; where that cannot run (web, Android below 13) the bar shows the camera instead

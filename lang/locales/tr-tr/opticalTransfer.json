@@ -54,7 +54,7 @@
       "photoLinked": "Fotoğraf bir bağlantı olarak gönderiliyor, bu yüzden aktarıma neredeyse hiç eklemez. Diğer telefonun fotoğrafı yüklemek için internete ihtiyacı var.",
       "photoUnavailable": "Bu fotoğrafın dosyası okunamadı, bu yüzden fotoğraf gönderilmeyecek.",
       "receiveTitle": "Başka bir telefondan al",
-      "ingredientGrams": "{{name}} için {{amount}} g",
+      "ingredientGrams": "{{name}} için {{amount}}",
       "ingredientServings": "{{name}} için {{amount}} porsiyon",
       "ingredientPortions": "{{name}} için {{amount}} × {{portion}}",
       "portionWithWeight": "{{name}} · {{amount}} {{unit}}",

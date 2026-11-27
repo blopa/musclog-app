@@ -1,41 +1,79 @@
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import type { MealEstimateReview } from '@/components/camera/mealEstimateReview';
 import { CenteredModal } from '@/components/modals/CenteredModal';
+import { type LogMealData, LogMealModal } from '@/components/modals/LogMealModal';
+import { type VoiceWeighIn, VoiceWeightSheet } from '@/components/modals/VoiceWeightSheet';
 import { Button } from '@/components/theme/Button';
 import { ListRow } from '@/components/theme/ListRow';
+import type { MealType } from '@/database/models/NutritionLog';
 import { useTheme } from '@/hooks/useTheme';
+import type { MealEstimateProgressLine } from '@/utils/mealEstimateProgress';
 import { VOICE_TOOLS } from '@/utils/voiceCommand/tools';
-import { VOICE_ACTION_TOOLS, type VoiceActionTool } from '@/utils/voiceCommand/types';
+import type { VoiceActionTool } from '@/utils/voiceCommand/types';
 
 export type VoiceCommandModalState =
   /** The model is working out what the sentence asks for. */
   | { kind: 'working'; transcript: string }
   /** No tool could be run from what was said: the person says which one they meant. */
-  | { kind: 'pick'; transcript: string };
+  | { kind: 'pick'; transcript: string; offered: VoiceActionTool[] }
+  /** A weigh-in waits to be confirmed. */
+  | { kind: 'weight'; transcript: string; weighIn: VoiceWeighIn }
+  /** The spoken meal is being estimated. */
+  | { kind: 'estimating'; transcript: string }
+  /** The estimated meal waits to be reviewed and logged. */
+  | {
+      kind: 'mealReview';
+      transcript: string;
+      review: MealEstimateReview;
+      day: Date;
+      mealType: MealType;
+    };
+
+const TITLE_KEYS: Record<VoiceCommandModalState['kind'], string> = {
+  working: 'voiceInput.command.workingTitle',
+  pick: 'voiceInput.command.pickTitle',
+  weight: 'voiceInput.command.weight.title',
+  estimating: 'voiceInput.command.mealTitle',
+  mealReview: 'voiceInput.command.mealTitle',
+};
 
 type VoiceCommandModalProps = {
   /** The modal is open exactly while this is set. */
   state: VoiceCommandModalState | null;
-  /** Abandons the request while working, and closes the picker. */
+  /** The step a meal estimate is on. */
+  progress?: MealEstimateProgressLine | null;
+  /** Abandons the request while working, and closes the modal. */
   onCancel: () => void;
   onAskCoach: (transcript: string) => void;
   onPickTool: (transcript: string, tool: VoiceActionTool) => void;
+  /** The weigh-in sheet closed; `saved` says whether the weight was written. */
+  onWeighInClose: (saved: boolean) => void;
+  onLogMeal: (data: LogMealData) => Promise<void>;
+  /** The meal review closed, after logging or without it. */
+  onMealReviewClose: () => void;
 };
 
 /**
- * Both stages of a voice command that need the person's attention, in one modal: waiting for the
- * answer (cancellable), and picking the tool they meant when no command could be run.
+ * Every stage of a voice command that needs the person's attention, in one modal: waiting for the
+ * answer (cancellable), picking the tool they meant when no command could be run, and the sheets a
+ * command opens here (the weigh-in and the meal review). Those are its children, never siblings:
+ * iOS drops a second modal presented beside the first.
  */
 export function VoiceCommandModal({
   state,
+  progress,
   onCancel,
   onAskCoach,
   onPickTool,
+  onWeighInClose,
+  onLogMeal,
+  onMealReviewClose,
 }: VoiceCommandModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const isWorking = state?.kind === 'working';
+  const isPicking = state?.kind === 'pick';
 
   const cancelButton = (
     <Button
@@ -47,9 +85,7 @@ export function VoiceCommandModal({
     />
   );
 
-  const footer = isWorking ? (
-    cancelButton
-  ) : (
+  const footer = isPicking ? (
     <View className="flex-row flex-wrap gap-3">
       <View className="grow basis-[140px]">{cancelButton}</View>
       <View className="grow basis-[140px]">
@@ -62,13 +98,15 @@ export function VoiceCommandModal({
         />
       </View>
     </View>
+  ) : (
+    cancelButton
   );
 
   return (
     <CenteredModal
       visible={state !== null}
       onClose={onCancel}
-      title={t(isWorking ? 'voiceInput.command.workingTitle' : 'voiceInput.command.pickTitle')}
+      title={t(TITLE_KEYS[state?.kind ?? 'working'])}
       footer={footer}
       scrollable
     >
@@ -76,23 +114,46 @@ export function VoiceCommandModal({
         <Text selectable className="text-base text-text-primary">
           {state?.transcript}
         </Text>
-        {isWorking ? (
+        {state?.kind === 'working' || state?.kind === 'estimating' ? (
           <ActivityIndicator color={theme.colors.accent.primary} />
-        ) : (
+        ) : null}
+        {state?.kind === 'estimating' && progress ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            className="text-center text-sm text-text-secondary"
+          >
+            {t(progress.key, progress.options)}
+          </Text>
+        ) : null}
+        {state?.kind === 'pick' ? (
           <View className="gap-2">
             <Text className="text-sm text-text-secondary">{t('voiceInput.command.pickHint')}</Text>
-            {VOICE_ACTION_TOOLS.map((name) => (
+            {state.offered.map((name) => (
               <ListRow
                 key={name}
                 variant="filled"
                 title={t(VOICE_TOOLS[name].titleKey)}
                 subtitle={t(VOICE_TOOLS[name].labelKey)}
-                onPress={() => (state ? onPickTool(state.transcript, name) : undefined)}
+                onPress={() => onPickTool(state.transcript, name)}
               />
             ))}
           </View>
-        )}
+        ) : null}
       </View>
+      {state?.kind === 'weight' ? (
+        <VoiceWeightSheet weighIn={state.weighIn} onClose={onWeighInClose} />
+      ) : null}
+      {state?.kind === 'mealReview' ? (
+        <LogMealModal
+          visible
+          onClose={onMealReviewClose}
+          meal={state.review.meal}
+          ingredients={state.review.ingredients}
+          initialDate={state.day}
+          initialMealType={state.mealType}
+          onLogMeal={onLogMeal}
+        />
+      ) : null}
     </CenteredModal>
   );
 }

@@ -230,3 +230,23 @@ describe('what only the on-device engines and a custom server do differently', (
     expect(providerPolicyFor({ provider: 'openai' }).keepsPartialStructuredReply).toBeUndefined();
   });
 });
+
+describe('maxVoiceTools', () => {
+  it('limits the downloaded models to three tools, with or without the text model', () => {
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).maxVoiceTools).toBe(3);
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf', textModel: true }).maxVoiceTools
+    ).toBe(3);
+  });
+
+  it('limits Apple and a custom local server to five tools', () => {
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'apple' }).maxVoiceTools).toBe(5);
+    expect(providerPolicyFor({ provider: 'local' }).maxVoiceTools).toBe(5);
+  });
+
+  it('leaves cloud providers unlimited', () => {
+    for (const provider of ['hosted', 'gateway', 'gemini', 'openai', 'claude'] as const) {
+      expect(providerPolicyFor({ provider }).maxVoiceTools).toBeUndefined();
+    }
+  });
+});

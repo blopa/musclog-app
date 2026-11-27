@@ -1,3 +1,4 @@
+import type { NavItemKey } from '@/constants/settings';
 import type { MealType } from '@/database/models/NutritionLog';
 
 /**
@@ -9,7 +10,14 @@ import type { MealType } from '@/database/models/NutritionLog';
  */
 
 /** The actions voice can run. Adding one is a name here and an entry in `VOICE_TOOLS`. */
-export const VOICE_ACTION_TOOLS = ['copy_meal', 'search_food'] as const;
+export const VOICE_ACTION_TOOLS = [
+  'copy_meal',
+  'search_food',
+  'log_weight',
+  'log_meal',
+  'add_note',
+  'go_to',
+] as const;
 export type VoiceActionTool = (typeof VOICE_ACTION_TOOLS)[number];
 
 /**
@@ -51,9 +59,34 @@ export type VoiceWeekday = (typeof VOICE_WEEKDAYS)[number];
 export const VOICE_SOURCE_DAYS = ['today', 'yesterday', 'two_days_ago', ...VOICE_WEEKDAYS] as const;
 export type VoiceSourceDay = (typeof VOICE_SOURCE_DAYS)[number];
 
+/** The unit a spoken weight was said in. */
+export type VoiceWeightUnit = 'kg' | 'lb';
+
+/**
+ * Where `go_to` can take a person: Home and every navigation destination. `cycle` is always offered
+ * to the model, so the choices never say whether this person tracks a cycle; the app checks that
+ * the screen is available after the answer.
+ */
+export const VOICE_SCREENS = [
+  'home',
+  'food',
+  'workouts',
+  'profile',
+  'progress',
+  'cycle',
+  'checkin',
+  'notes',
+  'settings',
+  'coach',
+] as const satisfies readonly (NavItemKey | 'home')[];
+export type VoiceScreen = (typeof VOICE_SCREENS)[number];
+
 /** One command per hold. The reply is a list so that raising this needs no new schema shape. */
 export const MAX_VOICE_COMMANDS = 1;
 export const MAX_VOICE_FOOD_CHARS = 80;
+export const MAX_VOICE_NOTE_CHARS = 2000;
+/** A weight is digits, perhaps with a unit the model repeated. */
+export const MAX_VOICE_WEIGHT_CHARS = 20;
 
 /** One parsed command. A slot nobody spoke about is `null`; no slot is ever invented. */
 export type VoiceCommand = {
@@ -65,6 +98,11 @@ export type VoiceCommand = {
   fromDay: VoiceSourceDay | null;
   /** In the speaker's own words and language. */
   food: string | null;
+  /** The body weight as the model wrote it; code checks it against what was said. */
+  weight: string | null;
+  /** The words of a note. */
+  text: string | null;
+  screen: VoiceScreen | null;
 };
 
 export type VoiceAction =
@@ -83,7 +121,29 @@ export type VoiceAction =
       day: Date;
       mealType: MealType;
       query: string;
-    };
+    }
+  | {
+      kind: 'logWeight';
+      /** Local midnight of the day of the weigh-in. */
+      day: Date;
+      /**
+       * In kilograms, as the database stores it; the sheet shows it in the person's own unit. Null
+       * when no weight could be read (the person picked the tool): the sheet starts empty.
+       */
+      weightKg: number | null;
+    }
+  | {
+      kind: 'logMeal';
+      /** Local midnight of the day the meal would be logged on. */
+      day: Date;
+      mealType: MealType;
+      /** What was said: the meal estimate reads the foods and amounts from it. */
+      description: string;
+    }
+  | { kind: 'addNote'; body: string }
+  | { kind: 'goTo'; screen: VoiceScreen };
+
+export type VoiceActionKind = VoiceAction['kind'];
 
 /** Why a sentence ran nothing. Each is answered by asking the person which tool they meant. */
 export type VoiceRejection =
@@ -96,6 +156,8 @@ export type VoiceResolution =
 export type VoiceResolveContext = {
   now: Date;
   transcript: string;
+  /** The account's weight unit, used when none was said. */
+  weightUnit: VoiceWeightUnit;
   /** The person picked the tool: resolve to an action, leaving out whatever cannot be used. */
   chosen?: boolean;
 };

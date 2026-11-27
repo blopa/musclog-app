@@ -1,3 +1,4 @@
+import { SettingsService } from '@/database/services/SettingsService';
 import { AiService } from '@/services/AiService';
 import { interpretVoiceCommand } from '@/services/voiceCommand';
 import { AiCancelledError } from '@/utils/aiErrors';
@@ -9,8 +10,19 @@ import {
   requestStructured,
 } from '@/utils/coachAI';
 import { prepareChatText, wrapUserContent } from '@/utils/promptSanitizer';
-import { buildNativeVoiceTools, NATIVE_VOICE_EXAMPLES } from '@/utils/voiceCommand/nativeTools';
+import { buildNativeVoiceTools, nativeVoiceExamples } from '@/utils/voiceCommand/nativeTools';
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
+import type { VoiceActionTool } from '@/utils/voiceCommand/types';
+
+jest.mock('@/database/services/SettingsService', () => {
+  const { settingsGetMock } = jest.requireActual('@/database/services/__tests__/settingsGetMock');
+  return {
+    SettingsService: {
+      get: settingsGetMock(),
+      getUnits: jest.fn().mockResolvedValue('metric'),
+    },
+  };
+});
 
 jest.mock('@/lang/lang', () => ({
   __esModule: true,
@@ -33,6 +45,19 @@ jest.mock('@/utils/coachAI', () => {
 });
 
 const mockGetAiConfig = AiService.getAiConfig as jest.Mock;
+const mockGetSetting = SettingsService.get as jest.Mock;
+
+/** The downloaded model without the 1.2B text model: three tools, in native order. */
+const GGUF_OFFERED: VoiceActionTool[] = ['search_food', 'copy_meal', 'log_weight'];
+/** Every action tool in native order: what a cloud provider is offered by default. */
+const ALL_OFFERED: VoiceActionTool[] = [
+  'search_food',
+  'copy_meal',
+  'log_weight',
+  'log_meal',
+  'add_note',
+  'go_to',
+];
 const mockRequest = requestStructured as jest.Mock;
 const mockNativeRequest = requestNativeToolCall as jest.Mock;
 const mockReportAiError = reportAiError as jest.Mock;
@@ -68,6 +93,7 @@ describe('interpretVoiceCommand', () => {
 
     expect(outcome).toEqual({
       kind: 'action',
+      offered: expect.any(Array),
       action: expect.objectContaining({
         kind: 'copyMeal',
         meals: { source: 'breakfast', target: 'breakfast' },
@@ -84,6 +110,7 @@ describe('interpretVoiceCommand', () => {
     await expect(interpretVoiceCommand(TRANSCRIPT, { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'cantDetermine',
+      offered: expect.any(Array),
     });
   });
 
@@ -93,6 +120,7 @@ describe('interpretVoiceCommand', () => {
     await expect(interpretVoiceCommand(TRANSCRIPT, { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'noAction',
+      offered: expect.any(Array),
     });
   });
 
@@ -102,6 +130,7 @@ describe('interpretVoiceCommand', () => {
     await expect(interpretVoiceCommand(TRANSCRIPT, { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'cantDetermine',
+      offered: expect.any(Array),
     });
   });
 
@@ -111,6 +140,7 @@ describe('interpretVoiceCommand', () => {
     await expect(interpretVoiceCommand(TRANSCRIPT, { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'unreadable',
+      offered: expect.any(Array),
     });
     expect(mockReportAiEvent).toHaveBeenCalledWith(
       'voice-command-unusable',
@@ -145,7 +175,7 @@ describe('interpretVoiceCommand', () => {
     });
 
     await expect(interpretVoiceCommand('What did I eat yesterday?', { now: NOW })).resolves.toEqual(
-      { kind: 'rejected', reason: 'cantDetermine' }
+      { kind: 'rejected', reason: 'cantDetermine', offered: expect.any(Array) }
     );
   });
 
@@ -158,6 +188,7 @@ describe('interpretVoiceCommand', () => {
     await expect(interpretVoiceCommand(TRANSCRIPT, { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'cantDetermine',
+      offered: expect.any(Array),
     });
   });
 
@@ -213,10 +244,10 @@ describe('interpretVoiceCommand on the downloaded model', () => {
         operation: 'voiceCommand',
         redactDump: true,
         messages: [
-          ...NATIVE_VOICE_EXAMPLES,
+          ...nativeVoiceExamples(GGUF_OFFERED),
           { role: 'user', content: prepareChatText('Hello my name is Pablo') },
         ],
-        tools: buildNativeVoiceTools(),
+        tools: buildNativeVoiceTools(GGUF_OFFERED),
       }
     );
   });
@@ -227,6 +258,7 @@ describe('interpretVoiceCommand on the downloaded model', () => {
     await expect(interpretVoiceCommand('Hello my name is Pablo', { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'noAction',
+      offered: expect.any(Array),
     });
   });
 
@@ -240,6 +272,7 @@ describe('interpretVoiceCommand on the downloaded model', () => {
       interpretVoiceCommand('I had two eggs for breakfast', { now: NOW })
     ).resolves.toEqual({
       kind: 'action',
+      offered: expect.any(Array),
       action: expect.objectContaining({ kind: 'searchFood', query: 'eggs', mealType: 'breakfast' }),
     });
   });
@@ -253,6 +286,7 @@ describe('interpretVoiceCommand on the downloaded model', () => {
     await expect(interpretVoiceCommand('I went to the gym', { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'cantDetermine',
+      offered: expect.any(Array),
     });
   });
 
@@ -265,6 +299,7 @@ describe('interpretVoiceCommand on the downloaded model', () => {
     await expect(interpretVoiceCommand('I had eggs', { now: NOW })).resolves.toEqual({
       kind: 'rejected',
       reason: 'unreadable',
+      offered: expect.any(Array),
     });
     expect(mockReportAiEvent).toHaveBeenCalledWith(
       'voice-command-unusable',
@@ -299,6 +334,7 @@ describe('interpretVoiceCommand with the tool the person picked', () => {
     ).toEqual(['copy_meal']);
     expect(outcome).toEqual({
       kind: 'action',
+      offered: expect.any(Array),
       action: expect.objectContaining({
         kind: 'copyMeal',
         meals: { source: 'breakfast', target: 'breakfast' },
@@ -317,7 +353,51 @@ describe('interpretVoiceCommand with the tool the person picked', () => {
 
     expect(outcome).toEqual({
       kind: 'action',
+      offered: expect.any(Array),
       action: expect.objectContaining({ kind: 'searchFood', query: '' }),
     });
+  });
+});
+
+describe('interpretVoiceCommand: how many tools a request offers', () => {
+  const NONE = { kind: 'ok', value: { commands: [{ tool: 'none' }] } };
+
+  beforeEach(() => {
+    mockRequest.mockResolvedValue(NONE);
+    mockNativeRequest.mockResolvedValue({ text: 'Hi', toolCalls: [] });
+  });
+
+  async function offeredFor(config: object): Promise<VoiceActionTool[]> {
+    mockGetAiConfig.mockResolvedValue(config);
+    const outcome = await interpretVoiceCommand(TRANSCRIPT, { now: NOW });
+
+    return outcome.kind === 'rejected' || outcome.kind === 'action' ? outcome.offered : [];
+  }
+
+  it('offers all six tools to a cloud provider by default', async () => {
+    expect(await offeredFor({ provider: 'gemini', apiKey: 'key' })).toEqual(ALL_OFFERED);
+  });
+
+  it('offers three tools to the downloaded model without its text model', async () => {
+    expect(await offeredFor({ provider: 'on-device', engine: 'gguf' })).toEqual(GGUF_OFFERED);
+  });
+
+  it('offers three tools to the downloaded model with its text model too', async () => {
+    expect(await offeredFor({ provider: 'on-device', engine: 'gguf', textModel: true })).toEqual(
+      GGUF_OFFERED
+    );
+  });
+
+  it('offers five tools to a custom local server', async () => {
+    expect(await offeredFor({ provider: 'local' })).toEqual(ALL_OFFERED.slice(0, 5));
+  });
+
+  it('offers the first picks in the order the person chose them, then in native order', async () => {
+    mockGetSetting.mockResolvedValueOnce('go_to,log_weight');
+
+    expect(await offeredFor({ provider: 'gemini', apiKey: 'key' })).toEqual([
+      'log_weight',
+      'go_to',
+    ]);
   });
 });

@@ -31,6 +31,7 @@ import { useChatMessageDataLogs } from '@/hooks/useChatMessageDataLogs';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useExerciseDataLogs } from '@/hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '@/hooks/useFoodDataLogs';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFoodPortionDataLogs } from '@/hooks/useFoodPortionDataLogs';
 import { useFoodsDataLogs } from '@/hooks/useFoodsDataLogs';
 import { useIsCramped } from '@/hooks/useIsCramped';
@@ -111,6 +112,8 @@ export function getDataLogModalTranslations(
     units: Units;
     /** Kilocalories in, the person's energy unit with its label out. */
     formatEnergyWithUnit: (kcal: number) => string;
+    /** Grams in, the person's food mass unit with its label out. */
+    formatMass: (grams: number) => string;
   }
 ): DataLogModalTranslations {
   const units = options.units;
@@ -330,10 +333,7 @@ export function getDataLogModalTranslations(
       deleteTitle: t('food.managePortionData.deletePortion'),
       deleteDesc: t('food.managePortionData.deletePortionDesc'),
       formatCaloriesMacros: () => '',
-      formatItemSubtitle: (item) =>
-        t('food.managePortionData.gramWeightFormat', {
-          grams: Number((item.portionGramWeight ?? 0).toFixed(1)),
-        }),
+      formatItemSubtitle: (item) => options.formatMass(item.portionGramWeight ?? 0),
     };
   }
 
@@ -588,6 +588,7 @@ export function DataLogModal({
   const { t } = useTranslation();
   const { isAiConfigured, units } = useSettings();
   const { formatEnergyWithUnit } = useEnergyUnit();
+  const { formatMass } = useFoodMass();
   const { showSnackbar } = useSnackbar();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -630,7 +631,11 @@ export function DataLogModal({
     }
   }, [visible]);
 
-  const translations = getDataLogModalTranslations(variant, t, { units, formatEnergyWithUnit });
+  const translations = getDataLogModalTranslations(variant, t, {
+    units,
+    formatEnergyWithUnit,
+    formatMass,
+  });
 
   // Edit modal integration
   const {

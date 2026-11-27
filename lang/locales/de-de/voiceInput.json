@@ -54,16 +54,44 @@
       "pickHint": "Wähle eine Option, dann versucht Musclog es noch einmal.",
       "tool": {
         "copyMeal": "Mahlzeit oder Tag kopieren",
-        "searchFood": "Lebensmittel suchen"
+        "searchFood": "Lebensmittel suchen",
+        "logWeight": "Mein Gewicht eintragen",
+        "logMeal": "Eine Mahlzeit eintragen",
+        "addNote": "Eine Notiz schreiben",
+        "goTo": "Einen Bildschirm öffnen"
       },
       "askCoach": "Den Coach fragen",
       "wrongTask": "Falsche Aktion? Probier ein besseres Modell.",
       "openAiSettings": "KI-Einstellungen",
       "failed": "Der Sprachbefehl ist fehlgeschlagen. Versuche es noch einmal.",
+      "mealTitle": "Deine Mahlzeit",
+      "mealLogged": "Mahlzeit eingetragen",
+      "weight": {
+        "title": "Dein Gewicht eintragen",
+        "field": "Gewicht",
+        "saved": "Gewicht gespeichert",
+        "saveError": "Dein Gewicht konnte nicht gespeichert werden"
+      },
       "capability": {
         "copyMeal": "„Ich hatte dasselbe Frühstück wie gestern“",
-        "searchFood": "„Suche Haferflocken fürs Mittagessen“"
+        "searchFood": "„Suche Haferflocken fürs Mittagessen“",
+        "logWeight": "„Ich wiege 82,4“",
+        "logMeal": "„Ich hatte zwei Eier und Toast“",
+        "addNote": "„Notiz: Haferflocken kaufen“",
+        "goTo": "„Zeig mir meinen Wochenrückblick“"
       }
+    },
+    "tools": {
+      "sectionTitle": "Sprachbefehle",
+      "rowTitle": "Sprachwerkzeuge",
+      "rowDescription": "Wähle, was das Halten des Mikrofons tun kann",
+      "sheetTitle": "Sprachwerkzeuge",
+      "sheetSubtitle": "Die KI wählt anhand dessen, was du sagst, eines davon aus. Die zuerst gewählten werden zuerst genutzt.",
+      "limitNote_one": "Diese KI wählt jeweils zwischen {{count}} Werkzeug.",
+      "limitNote_few": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
+      "limitNote_many": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
+      "limitNote_other": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
+      "notUsed": "Mit dieser KI nicht genutzt"
     },
     "allow": "Erlauben",
     "notNow": "Nicht jetzt"

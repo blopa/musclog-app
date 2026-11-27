@@ -85,8 +85,7 @@
       "duplicatePortion": "Porsiyonu çoğalt",
       "duplicatePortionDesc": "Değiştirmek için bir kopya oluştur",
       "deletePortion": "Porsiyonu sil",
-      "deletePortionDesc": "Bu porsiyonu listenden kaldır",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Bu porsiyonu listenden kaldır"
     },
     "createPortion": {
       "title": "Porsiyon boyutu oluştur",
@@ -236,7 +235,7 @@
         "shareMealAsRecipeDesc": "Malzemeleri ve hazırlanışı metin olarak paylaş",
         "sendToPhone": "Başka bir telefona gönder",
         "sendToPhoneDesc": "Bu öğünü animasyonlu QR kodlarla aktar",
-        "shareRecipeIngredientLine": "{{grams}}g {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} {{name}}",
         "shareRecipeNoIngredients": "Bu öğünün paylaşılacak malzemesi yok",
         "duplicateMeal": "Öğünü çoğalt",
         "duplicateMealDesc": "Bu öğünün bir kopyasını oluştur",
@@ -704,7 +703,7 @@
         "foodCount_few": "{{count}} besin",
         "foodCount_many": "{{count}} besin",
         "foodCount_other": "{{count}} besin",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "{{name}} kaldır",
         "groupTitle": "Tek öğün olarak kaydet",
         "groupSubtitle": "Günlüğünde tek bir kayıt olarak görünür",

@@ -54,16 +54,44 @@
       "pickHint": "Choisis une option et Musclog réessaie.",
       "tool": {
         "copyMeal": "Copier un repas ou une journée",
-        "searchFood": "Rechercher un aliment"
+        "searchFood": "Rechercher un aliment",
+        "logWeight": "Noter mon poids",
+        "logMeal": "Noter un repas",
+        "addNote": "Prendre une note",
+        "goTo": "Ouvrir un écran"
       },
       "askCoach": "Demander au coach",
       "wrongTask": "Mauvaise action ? Essayez un meilleur modèle.",
       "openAiSettings": "Réglages IA",
       "failed": "La commande vocale a échoué. Réessaie.",
+      "mealTitle": "Ton repas",
+      "mealLogged": "Repas enregistré",
+      "weight": {
+        "title": "Noter ton poids",
+        "field": "Poids",
+        "saved": "Poids enregistré",
+        "saveError": "Ton poids n’a pas pu être enregistré"
+      },
       "capability": {
-        "copyMeal": "« J’ai pris le même petit-déjeuner qu’hier »",
-        "searchFood": "« Cherche de l’avoine pour le déjeuner »"
+        "copyMeal": "« J’ai pris le même petit-déjeuner qu’hier »",
+        "searchFood": "« Cherche de l’avoine pour le déjeuner »",
+        "logWeight": "« Je pèse 82,4 »",
+        "logMeal": "« J’ai mangé deux œufs et des tartines »",
+        "addNote": "« Note : acheter plus d’avoine »",
+        "goTo": "« Montre-moi mon bilan hebdomadaire »"
       }
+    },
+    "tools": {
+      "sectionTitle": "Commandes vocales",
+      "rowTitle": "Outils vocaux",
+      "rowDescription": "Choisis ce que peut faire le maintien du micro",
+      "sheetTitle": "Outils vocaux",
+      "sheetSubtitle": "L’IA choisit l’un de ces outils d’après ce que tu dis. Ceux que tu as choisis en premier sont utilisés en premier.",
+      "limitNote_one": "Cette IA choisit entre {{count}} outil à la fois.",
+      "limitNote_few": "Cette IA choisit entre {{count}} outils à la fois.",
+      "limitNote_many": "Cette IA choisit entre {{count}} outils à la fois.",
+      "limitNote_other": "Cette IA choisit entre {{count}} outils à la fois.",
+      "notUsed": "Non utilisé avec cette IA"
     },
     "allow": "Autoriser",
     "notNow": "Pas maintenant"

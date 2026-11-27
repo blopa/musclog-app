@@ -9,6 +9,7 @@ import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import Food from '@/database/models/Food';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -39,6 +40,7 @@ function FoodResultCard({
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
   const { toDisplay, unitLabel } = useEnergyUnit();
+  const mass = useFoodMass();
   const isPerServing = food.resolvedNutritionBasis === 'per_serving';
   const calories = formatRoundedDecimal(
     toDisplay(isPerServing ? food.calories * amount : (food.calories * amount) / 100),
@@ -221,14 +223,18 @@ function FoodResultCard({
         >
           <StepperInput
             label={t('food.addFoodItemToMeal.amount')}
-            value={amount}
-            maxFractionDigits={isPerServing ? 2 : 0}
-            onChangeValue={onAmountChange}
-            onIncrement={() => onAmountChange(amount + (isPerServing ? 0.5 : 1))}
-            onDecrement={() =>
-              onAmountChange(Math.max(isPerServing ? 0.5 : 0, amount - (isPerServing ? 0.5 : 1)))
+            value={isPerServing ? amount : mass.toDisplay(amount)}
+            maxFractionDigits={isPerServing ? 2 : mass.fractionDigits}
+            onChangeValue={(entered) =>
+              onAmountChange(isPerServing ? entered : mass.gramsAfterEdit(amount, entered))
             }
-            unit={isPerServing ? t('food.foodDetails.serving') : 'g'}
+            onIncrement={() => onAmountChange(amount + (isPerServing ? 0.5 : mass.stepGrams()))}
+            onDecrement={() =>
+              onAmountChange(
+                isPerServing ? Math.max(0.5, amount - 0.5) : Math.max(0, amount - mass.stepGrams())
+              )
+            }
+            unit={isPerServing ? t('food.foodDetails.serving') : mass.unitLabel}
           />
         </View>
       ) : null}

@@ -1,7 +1,8 @@
 import { localCalendarDayDate, localCalendarDayPlusDays } from '@/utils/calendarDate';
 import { mealTypeForHour } from '@/utils/mealTypeForHour';
-import { isFoodSaid } from '@/utils/voiceCommand/grounding';
+import { isFoodSaid, isMostlySaid } from '@/utils/voiceCommand/grounding';
 import { mealOfWord } from '@/utils/voiceCommand/mealWords';
+import { mentionsBodyWeight, readSpokenWeight } from '@/utils/voiceCommand/spokenWeight';
 import {
   VOICE_WEEKDAYS,
   type VoiceCommand,
@@ -10,7 +11,9 @@ import {
   type VoiceResolveContext,
   type VoiceSourceDay,
   type VoiceWeekday,
+  type VoiceWeightUnit,
 } from '@/utils/voiceCommand/types';
+import { LB_TO_KG } from '@/utils/workoutImport/parseNumber';
 
 /**
  * Turns the relative words a model answered with into calendar days. This is the only place a
@@ -19,6 +22,10 @@ import {
  */
 
 const DAY_OFFSET: Record<VoiceDay, number> = { today: 0, yesterday: -1, tomorrow: 1 };
+
+/** A body weight outside this range is a misheard number, not a weigh-in. */
+const MIN_BODY_WEIGHT_KG = 20;
+const MAX_BODY_WEIGHT_KG = 400;
 
 function isWeekday(day: VoiceSourceDay): day is VoiceWeekday {
   return (VOICE_WEEKDAYS as readonly string[]).includes(day);
@@ -126,4 +133,80 @@ export function resolveSearchFood(
       query,
     },
   };
+}
+
+/** The weight in kilograms, or null for a number no person weighs. */
+function bodyWeightKg(value: number, unit: VoiceWeightUnit): number | null {
+  const kilograms = unit === 'lb' ? value * LB_TO_KG : value;
+
+  return kilograms >= MIN_BODY_WEIGHT_KG && kilograms <= MAX_BODY_WEIGHT_KG ? kilograms : null;
+}
+
+/**
+ * The weight is the one number in the transcript: the model only has to agree with it, so it can
+ * neither invent a weight nor read it wrongly. It is in the unit said next to the number, else the
+ * person's own, and comes out in kilograms. The sentence must be about weight (a unit or a word for
+ * weighing). Nobody weighs themselves tomorrow.
+ */
+export function resolveLogWeight(
+  command: VoiceCommand,
+  { now, transcript, weightUnit, chosen }: VoiceResolveContext
+): VoiceResolution {
+  const spoken = readSpokenWeight(transcript);
+  const weightKg = spoken ? bodyWeightKg(spoken.value, spoken.unit ?? weightUnit) : null;
+  if (!chosen) {
+    const named = command.weight ? readSpokenWeight(command.weight) : null;
+    const agrees =
+      spoken !== null &&
+      weightKg !== null &&
+      named !== null &&
+      Math.abs(named.value - spoken.value) < 0.01;
+    if (!agrees || command.day === 'tomorrow' || !mentionsBodyWeight(transcript)) {
+      return { ok: false, reason: 'cantDetermine' };
+    }
+  }
+
+  const day = command.day === 'tomorrow' ? null : command.day;
+
+  return {
+    ok: true,
+    action: { kind: 'logWeight', day: relativeDay(day, now), weightKg },
+  };
+}
+
+/** The whole sentence is the meal's description: the estimate reads foods and amounts from it. */
+export function resolveLogMeal(
+  command: VoiceCommand,
+  { now, transcript }: VoiceResolveContext
+): VoiceResolution {
+  return {
+    ok: true,
+    action: {
+      kind: 'logMeal',
+      day: relativeDay(command.day, now),
+      mealType: command.meal ?? mealTypeForHour(now.getHours()),
+      description: transcript.trim(),
+    },
+  };
+}
+
+/** The model's wording of the note when it was said, else everything that was said. */
+export function resolveAddNote(
+  command: VoiceCommand,
+  { transcript }: VoiceResolveContext
+): VoiceResolution {
+  const said = command.text && isMostlySaid(command.text, transcript) ? command.text : null;
+
+  return { ok: true, action: { kind: 'addNote', body: said ?? transcript.trim() } };
+}
+
+export function resolveGoTo(
+  command: VoiceCommand,
+  { chosen }: VoiceResolveContext
+): VoiceResolution {
+  if (!command.screen && !chosen) {
+    return { ok: false, reason: 'cantDetermine' };
+  }
+
+  return { ok: true, action: { kind: 'goTo', screen: command.screen ?? 'home' } };
 }

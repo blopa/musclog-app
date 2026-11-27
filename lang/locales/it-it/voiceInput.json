@@ -54,16 +54,44 @@
       "pickHint": "Scegli un'opzione e Musclog riprova.",
       "tool": {
         "copyMeal": "Copia un pasto o un giorno",
-        "searchFood": "Cerca un alimento"
+        "searchFood": "Cerca un alimento",
+        "logWeight": "Registra il mio peso",
+        "logMeal": "Registra un pasto",
+        "addNote": "Prendi una nota",
+        "goTo": "Apri una schermata"
       },
       "askCoach": "Chiedi al coach",
       "wrongTask": "Azione sbagliata? Prova un modello migliore.",
       "openAiSettings": "Impostazioni IA",
       "failed": "Il comando vocale non è riuscito. Riprova.",
+      "mealTitle": "Il tuo pasto",
+      "mealLogged": "Pasto registrato",
+      "weight": {
+        "title": "Registra il tuo peso",
+        "field": "Peso",
+        "saved": "Peso salvato",
+        "saveError": "Impossibile salvare il tuo peso"
+      },
       "capability": {
         "copyMeal": "“Ho fatto la stessa colazione di ieri”",
-        "searchFood": "“Cerca fiocchi d’avena per il pranzo”"
+        "searchFood": "“Cerca fiocchi d’avena per il pranzo”",
+        "logWeight": "“Peso 82,4”",
+        "logMeal": "“Ho mangiato due uova e pane tostato”",
+        "addNote": "“Nota: comprare altra avena”",
+        "goTo": "“Mostrami la mia revisione settimanale”"
       }
+    },
+    "tools": {
+      "sectionTitle": "Comandi vocali",
+      "rowTitle": "Strumenti vocali",
+      "rowDescription": "Scegli cosa può fare tenere premuto il microfono",
+      "sheetTitle": "Strumenti vocali",
+      "sheetSubtitle": "L’IA sceglie uno di questi in base a quello che dici. Quelli scelti per primi vengono usati per primi.",
+      "limitNote_one": "Questa IA sceglie tra {{count}} strumento alla volta.",
+      "limitNote_few": "Questa IA sceglie tra {{count}} strumenti alla volta.",
+      "limitNote_many": "Questa IA sceglie tra {{count}} strumenti alla volta.",
+      "limitNote_other": "Questa IA sceglie tra {{count}} strumenti alla volta.",
+      "notUsed": "Non usato con questa IA"
     },
     "allow": "Consenti",
     "notNow": "Non ora"

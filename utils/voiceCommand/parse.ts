@@ -1,13 +1,11 @@
 import { isRecord } from '@/utils/isRecord';
+import { SLOT_KEYS, slotChoices, SLOTS, type VoiceSlotKey } from '@/utils/voiceCommand/schema';
 import {
   MAX_VOICE_COMMANDS,
-  MAX_VOICE_FOOD_CHARS,
-  VOICE_DAYS,
-  VOICE_MEALS,
-  VOICE_SOURCE_DAYS,
   VOICE_TOOL_NAMES,
   type VoiceActionTool,
   type VoiceCommand,
+  type VoiceToolName,
 } from '@/utils/voiceCommand/types';
 
 function oneOf<T extends string>(value: unknown, choices: readonly T[]): T | null {
@@ -20,8 +18,6 @@ function oneOf<T extends string>(value: unknown, choices: readonly T[]): T | nul
   return choices.find((choice) => choice === normalized) ?? null;
 }
 
-const ABSENT = Symbol('absent');
-
 /** A slot nobody filled: missing, null, blank, or the word "null" a small model writes for none. */
 function isAbsent(value: unknown): boolean {
   return (
@@ -31,9 +27,61 @@ function isAbsent(value: unknown): boolean {
   );
 }
 
-/** `ABSENT` for an unfilled slot, the choice for a valid one, `null` for any other value. */
-function slot<T extends string>(value: unknown, choices: readonly T[]): T | typeof ABSENT | null {
-  return isAbsent(value) ? ABSENT : oneOf(value, choices);
+/** A filled slot's value as its kind reads it, or null for a value it cannot take. */
+function slotValue(key: VoiceSlotKey, value: unknown): string | null {
+  const slot = SLOTS[key];
+  if (slot.kind === 'choice') {
+    return oneOf(value, slotChoices(key) ?? []);
+  }
+
+  if (slot.kind === 'number' && typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  return value.trim().slice(0, slot.maxChars).trim() || null;
+}
+
+/** Every slot unfilled. */
+function emptyCommand(tool: VoiceToolName): VoiceCommand {
+  return {
+    tool,
+    meal: null,
+    day: null,
+    fromMeal: null,
+    fromDay: null,
+    food: null,
+    weight: null,
+    text: null,
+    screen: null,
+  };
+}
+
+/** A command with the slots that can be read; `strict` drops it for any value that cannot. */
+function readSlots(
+  tool: VoiceToolName,
+  value: Record<string, unknown>,
+  strict: boolean
+): VoiceCommand | null {
+  const filled: Record<string, string> = {};
+  for (const key of SLOT_KEYS) {
+    if (isAbsent(value[key])) {
+      continue;
+    }
+
+    const read = slotValue(key, value[key]);
+    if (read !== null) {
+      filled[SLOTS[key].field] = read;
+    } else if (strict) {
+      return null;
+    }
+  }
+
+  // Each field was read by its own slot, so its value is one the field takes.
+  return { ...emptyCommand(tool), ...(filled as Partial<VoiceCommand>) };
 }
 
 function parseCommand(value: unknown): VoiceCommand | null {
@@ -42,45 +90,25 @@ function parseCommand(value: unknown): VoiceCommand | null {
   }
 
   const tool = oneOf(value.tool, VOICE_TOOL_NAMES);
-  if (!tool) {
-    return null;
-  }
 
-  const meal = slot(value.meal, VOICE_MEALS);
-  const day = slot(value.day, VOICE_DAYS);
-  const fromMeal = slot(value.from_meal, VOICE_MEALS);
-  const fromDay = slot(value.from_day, VOICE_SOURCE_DAYS);
-  // A value that is present but outside its choices makes the command unusable.
-  if (meal === null || day === null || fromMeal === null || fromDay === null) {
-    return null;
-  }
+  return tool ? readSlots(tool, value, true) : null;
+}
 
-  let food: string | null = null;
-  if (!isAbsent(value.food)) {
-    if (typeof value.food !== 'string') {
-      return null;
-    }
-
-    food = value.food.trim().slice(0, MAX_VOICE_FOOD_CHARS).trim() || null;
-  }
-
-  return {
-    tool,
-    meal: meal === ABSENT ? null : meal,
-    day: day === ABSENT ? null : day,
-    fromMeal: fromMeal === ABSENT ? null : fromMeal,
-    fromDay: fromDay === ABSENT ? null : fromDay,
-    food,
-  };
+function isOffered(tool: VoiceToolName, offered: readonly VoiceActionTool[]): boolean {
+  return tool === 'none' || tool === 'cant_determine_tool' || offered.some((name) => name === tool);
 }
 
 /**
  * Reads a model's reply: an unknown tool is dropped, and so is a command with a slot value outside
  * its choices (a small model writes filler such as `from_day: "tomorrow"` when it has nothing to
  * put there, and reading it as "not said" turned it into an action). An unfilled slot is `null`.
+ * A tool that was not in `offered` runs nothing: the person is asked which one they meant.
  * Returns `null` when the reply has no command list at all, and an empty list when none is usable.
  */
-export function parseVoiceCommands(raw: unknown): VoiceCommand[] | null {
+export function parseVoiceCommands(
+  raw: unknown,
+  offered?: readonly VoiceActionTool[]
+): VoiceCommand[] | null {
   if (!isRecord(raw)) {
     return null;
   }
@@ -95,6 +123,9 @@ export function parseVoiceCommands(raw: unknown): VoiceCommand[] | null {
   return list
     .map(parseCommand)
     .filter((command): command is VoiceCommand => command !== null)
+    .map((command) =>
+      !offered || isOffered(command.tool, offered) ? command : emptyCommand('cant_determine_tool')
+    )
     .slice(0, MAX_VOICE_COMMANDS);
 }
 
@@ -106,17 +137,6 @@ export function parseVoiceCommands(raw: unknown): VoiceCommand[] | null {
 export function parseChosenCommand(raw: unknown, tool: VoiceActionTool): VoiceCommand {
   const list = isRecord(raw) && Array.isArray(raw.commands) ? raw.commands : [raw];
   const value: Record<string, unknown> = isRecord(list[0]) ? list[0] : {};
-  const { food } = value;
 
-  return {
-    tool,
-    meal: oneOf(value.meal, VOICE_MEALS),
-    day: oneOf(value.day, VOICE_DAYS),
-    fromMeal: oneOf(value.from_meal, VOICE_MEALS),
-    fromDay: oneOf(value.from_day, VOICE_SOURCE_DAYS),
-    food:
-      typeof food === 'string' && !isAbsent(food)
-        ? food.trim().slice(0, MAX_VOICE_FOOD_CHARS).trim()
-        : null,
-  };
+  return readSlots(tool, value, false) ?? emptyCommand(tool);
 }

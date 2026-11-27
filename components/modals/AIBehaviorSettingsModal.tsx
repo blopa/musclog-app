@@ -1,4 +1,4 @@
-import { Apple, ChevronRight, Dumbbell, Settings2 } from 'lucide-react-native';
+import { Apple, ChevronRight, Dumbbell, Mic, Settings2 } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
@@ -10,6 +10,7 @@ import {
 import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { ThinkingLevelPicker } from '@/components/ai/ThinkingLevelPicker';
 import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
+import { VoiceToolsSheet } from '@/components/settings/VoiceToolsSheet';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SectionLabel } from '@/components/theme/SectionLabel';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
@@ -20,6 +21,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { AI_IMAGE_TIER_ORDER, type AiImageTier } from '@/utils/aiImagePlan';
+import { canOfferVoiceInput } from '@/utils/voiceInput';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -70,7 +72,9 @@ export function AIBehaviorSettingsModal({ visible, onClose }: AIBehaviorSettings
   const theme = useTheme();
   const { t } = useTranslation();
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useSubModalVisibility(visible);
-  const { aiProvider } = useSettings();
+  const [isVoiceToolsVisible, setIsVoiceToolsVisible] = useSubModalVisibility(visible);
+  const { aiProvider, isAiConfigured } = useSettings();
+  const showVoiceTools = isAiConfigured && canOfferVoiceInput(Platform);
   const isOnDeviceActive = aiProvider === 'on-device';
 
   const {
@@ -275,6 +279,50 @@ export function AIBehaviorSettingsModal({ visible, onClose }: AIBehaviorSettings
           <CoachPersonaPicker />
         </View>
 
+        {showVoiceTools ? (
+          <View>
+            <SectionLabel className="mb-2 px-1">{t('voiceInput.tools.sectionTitle')}</SectionLabel>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setIsVoiceToolsVisible(true)}
+              className="overflow-hidden rounded-control border bg-bg-card active:bg-bg-overlay"
+              style={{
+                borderColor: theme.colors.border.light,
+                borderWidth: theme.borderWidth.thin,
+              }}
+            >
+              <View className="flex-row items-center justify-between p-4">
+                <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                  <View
+                    style={{
+                      width: theme.size['8'],
+                      height: theme.size['8'],
+                      borderRadius: theme.borderRadius.full / 2,
+                      backgroundColor: theme.colors.accent.primary20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Mic size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                  </View>
+                  <View className="min-w-0 flex-1">
+                    <Text className="text-sm font-medium text-text-primary">
+                      {t('voiceInput.tools.rowTitle')}
+                    </Text>
+                    <Text className="text-xs text-text-secondary" style={{ marginTop: 2 }}>
+                      {t('voiceInput.tools.rowDescription')}
+                    </Text>
+                  </View>
+                </View>
+                <View className="shrink-0 justify-center pl-2">
+                  <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+                </View>
+              </View>
+            </Pressable>
+          </View>
+        ) : null}
+
         {/* Custom Prompts Section */}
         <View>
           <SectionLabel className="mb-2 px-1">
@@ -323,6 +371,10 @@ export function AIBehaviorSettingsModal({ visible, onClose }: AIBehaviorSettings
       <AiCustomPromptsModal
         visible={isCustomPromptsVisible}
         onClose={() => setIsCustomPromptsVisible(false)}
+      />
+      <VoiceToolsSheet
+        visible={isVoiceToolsVisible}
+        onClose={() => setIsVoiceToolsVisible(false)}
       />
     </FullScreenModal>
   );

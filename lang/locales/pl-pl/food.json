@@ -85,8 +85,7 @@
       "duplicatePortion": "Powiel porcję",
       "duplicatePortionDesc": "Utwórz kopię do edycji",
       "deletePortion": "Usuń porcję",
-      "deletePortionDesc": "Usuń tę porcję z listy",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Usuń tę porcję z listy"
     },
     "createPortion": {
       "title": "Utwórz wielkość porcji",
@@ -236,7 +235,7 @@
         "shareMealAsRecipeDesc": "Udostępnij składniki i sposób przygotowania jako tekst",
         "sendToPhone": "Wyślij na inny telefon",
         "sendToPhoneDesc": "Przenieś ten posiłek za pomocą animowanych kodów QR",
-        "shareRecipeIngredientLine": "{{grams}} g: {{name}}",
+        "shareRecipeIngredientLine": "{{amount}}: {{name}}",
         "shareRecipeNoIngredients": "Ten posiłek nie ma składników do udostępnienia",
         "duplicateMeal": "Powiel posiłek",
         "duplicateMealDesc": "Utwórz kopię tego posiłku",
@@ -704,7 +703,7 @@
         "foodCount_few": "{{count}} produkty",
         "foodCount_many": "{{count}} produktów",
         "foodCount_other": "{{count}} produktu",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "Usuń: {{name}}",
         "groupTitle": "Zapisz jako jeden posiłek",
         "groupSubtitle": "Pojawi się jako jedna pozycja w dzienniku",
