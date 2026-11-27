@@ -18,8 +18,8 @@ import { TextInput } from '@/components/theme/TextInput';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
 import { commitOnboardingProfile } from '@/services/onboardingAnswersApply';
+import { birthdayPickerDate, isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
 import type { CompleteOnboardingAnswers } from '@/utils/aiOnboarding/contract';
 import {
   formatLocalCalendarDayIso,
@@ -50,7 +50,7 @@ export default function PersonalizedBodyStatsScreen() {
   const [setupData, setSetupData] = useState<PersonalizedSetupData>({});
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
-  const [birthday, setBirthday] = useState<Date>(localCalendarDayDate(new Date(1990, 0, 1)));
+  const [birthday, setBirthday] = useState<Date | null>(null);
   const [birthdayEstimated, setBirthdayEstimated] = useState(false);
   const [isBirthdayPickerVisible, setIsBirthdayPickerVisible] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
@@ -105,7 +105,7 @@ export default function PersonalizedBodyStatsScreen() {
       const weightValue = parseFloat(weight);
       const heightValue = parseFloat(height);
 
-      if (!weightValue || !heightValue) {
+      if (!weightValue || !heightValue || !birthday) {
         return;
       }
 
@@ -147,8 +147,9 @@ export default function PersonalizedBodyStatsScreen() {
     useBfForCalculations,
   ]);
 
-  const isUnderAge = isUnderMinimumAppAge(birthday);
-  const isValid = parseFloat(weight) > 0 && parseFloat(height) > 0 && !isUnderAge;
+  const isUnderAge = birthday !== null && isUnderMinimumAppAge(birthday);
+  const isValid =
+    parseFloat(weight) > 0 && parseFloat(height) > 0 && birthday !== null && !isUnderAge;
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -241,7 +242,9 @@ export default function PersonalizedBodyStatsScreen() {
               </Text>
               <DatePickerInput
                 hideLabel
-                selectedDate={birthday}
+                selectedDate={birthdayPickerDate(birthday)}
+                unset={birthday === null}
+                unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
                 onPress={() => setIsBirthdayPickerVisible(true)}
               />
               <Text
@@ -345,7 +348,7 @@ export default function PersonalizedBodyStatsScreen() {
         <DatePickerModal
           visible={isBirthdayPickerVisible}
           onClose={() => setIsBirthdayPickerVisible(false)}
-          selectedDate={birthday}
+          selectedDate={birthdayPickerDate(birthday)}
           onDateSelect={(date) => {
             setBirthday(localCalendarDayDate(date));
             setBirthdayEstimated(false);

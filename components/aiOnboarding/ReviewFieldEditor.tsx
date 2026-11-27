@@ -15,6 +15,7 @@ import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
 import { useTheme } from '@/hooks/useTheme';
+import { birthdayPickerDate } from '@/utils/ageGate';
 import {
   AGE_MAX,
   AGE_MIN,
@@ -173,13 +174,20 @@ export function ReviewFieldEditor({
       </View>
     );
   } else if (field === 'birthDate') {
-    const selected = draft.birthDate
+    const answered = draft.birthDate
       ? localCalendarDayDate(parseLocalCalendarDate(draft.birthDate))
-      : localCalendarDayDate(new Date(1990, 0, 1));
+      : null;
+    const selected = birthdayPickerDate(answered);
     const thisYear = new Date().getFullYear();
     body = (
       <>
-        <DatePickerInput hideLabel selectedDate={selected} onPress={() => setPickerOpen(true)} />
+        <DatePickerInput
+          hideLabel
+          selectedDate={selected}
+          unset={answered === null}
+          unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
+          onPress={() => setPickerOpen(true)}
+        />
         <DatePickerModal
           visible={pickerOpen}
           onClose={() => setPickerOpen(false)}

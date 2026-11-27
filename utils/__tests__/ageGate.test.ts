@@ -1,5 +1,6 @@
 import {
   ageInYears,
+  birthdayPickerDate,
   isUnderCloudAiAge,
   isUnderMinimumAppAge,
   MINIMUM_APP_AGE,
@@ -24,6 +25,19 @@ describe('ageGate', () => {
   it('lets a person in on their sixteenth birthday and not the day before', () => {
     expect(isUnderMinimumAppAge(born(16), NOW)).toBe(false);
     expect(isUnderMinimumAppAge(born(16, 1), NOW)).toBe(true);
+  });
+
+  it('opens an unanswered birthday calendar on a day that fails the age check', () => {
+    const opened = birthdayPickerDate(null, new Date(2026, 10, 27, 15, 30));
+
+    expect(opened).toEqual(NOW);
+    expect(isUnderMinimumAppAge(opened, NOW)).toBe(true);
+  });
+
+  it('opens an answered birthday calendar on that answer', () => {
+    const answer = new Date(born(30));
+
+    expect(birthdayPickerDate(answer, NOW)).toBe(answer);
   });
 
   it('keeps cloud AI to adults', () => {

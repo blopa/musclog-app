@@ -3,7 +3,7 @@
 // The Terms and the privacy policy state both ages, so a change here is a change to them too
 // (`website.terms.sections.eligibility`, `website.privacy.sections.childrenPrivacy`, ten locales).
 
-import { differenceInYears } from 'date-fns';
+import { differenceInYears, startOfDay } from 'date-fns';
 
 /** The youngest person Musclog is for: the age at which the GDPR lets a person consent alone in the Netherlands. */
 export const MINIMUM_APP_AGE = 16;
@@ -18,6 +18,14 @@ export function ageInYears(birthDate: Date | number, now: Date = new Date()): nu
 
 export function isUnderMinimumAppAge(birthDate: Date | number, now: Date = new Date()): boolean {
   return ageInYears(birthDate, now) < MINIMUM_APP_AGE;
+}
+
+/**
+ * The day a birthday calendar opens on. With no answer yet that is today, so confirming it untouched
+ * fails the age check instead of answering for the person.
+ */
+export function birthdayPickerDate(birthday: Date | null, now: Date = new Date()): Date {
+  return birthday ?? startOfDay(now);
 }
 
 /**
