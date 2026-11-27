@@ -1,5 +1,5 @@
 import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
-import { ENCRYPTION_KEY } from '@/constants/database';
+import { ENCRYPTION_KEY, ENCRYPTION_KEY_SEEN } from '@/constants/database';
 import {
   AI_ONBOARDING_DRAFT,
   COACH_REPLY_JOURNAL,
@@ -25,6 +25,7 @@ import {
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
 export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   ENCRYPTION_KEY,
+  ENCRYPTION_KEY_SEEN,
   TEMP_NUTRITION_PLAN,
   CYCLE_BACKUP_STATUS_KEY,
   // Rebuilt from the restored settings table; a carried-over copy could claim no lock is on.

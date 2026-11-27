@@ -262,7 +262,10 @@
       "generateButton": "Plan oluştur",
       "successMessageWithPlan": "{{planName}}, {{count}} antrenmanla hazır.",
       "errorMessage": "Plan oluşturulamadı. Lütfen tekrar dene.",
-      "aiNotConfigured": "Yapay zekâ özellikleri ayarlanmadı. Ayarlar'a bir Gemini ya da OpenAI API anahtarı ekle."
+      "aiNotConfigured": "Yapay zekâ özellikleri ayarlanmadı. Ayarlar'a bir Gemini ya da OpenAI API anahtarı ekle.",
+      "reviewIntro": "Planı oku ve sana uygun olup olmadığını kontrol et. “Planı kaydet”e dokunana kadar hiçbir şey kaydedilmez.",
+      "saveButton": "Planı kaydet",
+      "discardButton": "Vazgeç"
     },
     "interruptedSession": {
       "description": "Devam eden bir antrenmanın var.",

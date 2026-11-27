@@ -4,7 +4,7 @@
       "title": "App-Sperre",
       "subtitle": "Fingerabdruck, Gesicht oder Geräte-PIN abfragen",
       "hint": "Bevor die Bereiche angezeigt werden, die du auswählst, wird nach deinem Fingerabdruck, Gesicht oder der Geräte-PIN gefragt. Sie sperren sich wieder, wenn die App 30 Sekunden im Hintergrund war.",
-      "note": "Dies ist eine Bildschirmsperre. Deine Daten bleiben verschlüsselt und auf diesem Handy; exportierte Backups sind separate Dateien, über die du selbst bestimmst.",
+      "note": "Dies ist eine Bildschirmsperre. Deine Daten bleiben auf diesem Handy; exportierte Backups sind separate Dateien, die du selbst kontrollierst.",
       "noCredential": "Richte zuerst eine Bildschirmsperre oder Biometrie auf deinem Gerät ein.",
       "coveredByApp": "Durch die Sperre der ganzen App abgedeckt"
     },

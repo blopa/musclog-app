@@ -38,5 +38,37 @@
     "license": "LFM Open License v1.0",
     "licenseUrl": "https://www.liquid.ai/lfm-license",
     "projectUrl": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF"
+  },
+  {
+    "id": "open-food-facts",
+    "name": "Open Food Facts",
+    "license": "Open Database License (ODbL) 1.0; images CC BY-SA 3.0",
+    "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "projectUrl": "https://world.openfoodfacts.org",
+    "copyright": "© Open Food Facts contributors"
+  },
+  {
+    "id": "usda-fooddata-central",
+    "name": "USDA FoodData Central",
+    "license": "Public domain (CC0 1.0)",
+    "licenseUrl": "https://fdc.nal.usda.gov/",
+    "projectUrl": "https://fdc.nal.usda.gov/",
+    "copyright": "U.S. Department of Agriculture, Agricultural Research Service"
+  },
+  {
+    "id": "free-exercise-db",
+    "name": "free-exercise-db",
+    "license": "Public domain (Unlicense)",
+    "licenseUrl": "https://github.com/yuhonas/free-exercise-db/blob/main/LICENSE.md",
+    "projectUrl": "https://github.com/yuhonas/free-exercise-db"
+  },
+  {
+    "id": "decimen-optical-transfer",
+    "name": "decimen-optical-transfer",
+    "license": "MIT",
+    "licenseUrl": "https://github.com/bashalarmistalt/decimen-optical-transfer",
+    "projectUrl": "https://github.com/bashalarmistalt/decimen-optical-transfer",
+    "copyright": "Copyright (c) 2026 Evan Crawley",
+    "text": "Permission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
   }
 ]

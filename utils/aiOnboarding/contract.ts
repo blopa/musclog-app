@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type { Units, WorkoutAutonomy } from '@/constants/settings';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models/User';
+import { MINIMUM_APP_AGE } from '@/utils/ageGate';
 import { formatLocalCalendarDayIso, parseLocalCalendarDate } from '@/utils/calendarDate';
 import { BREAK_LENGTHS, type BreakLength } from '@/utils/comeback/comebackState';
 import { isRecord } from '@/utils/isRecord';
@@ -23,7 +24,7 @@ export const CONTRACT_SCHEMA_ID = 'musclog-onboarding';
 export const CONTRACT_MAJOR = 1;
 export const MAX_CONTRACT_BYTES = 64 * 1024;
 
-export const AGE_MIN = 13;
+export const AGE_MIN = MINIMUM_APP_AGE;
 export const AGE_MAX = 100;
 export const HEIGHT_CM_RANGE = [100, 250] as const;
 export const WEIGHT_KG_RANGE = [30, 300] as const;

@@ -117,6 +117,16 @@ describe('restoreDatabase AsyncStorage ordering', () => {
     expect(await AsyncStorage.getItem('seeding_complete')).toBe('true');
   });
 
+  // No copy of the current data, no wipe.
+  it('wipes nothing when the pre-restore backup cannot be made', async () => {
+    jest.mocked(createPreRestoreBackup).mockRejectedValueOnce(new Error('disk full'));
+
+    await expect(restoreDatabase(DUMP)).rejects.toThrow('disk full');
+
+    expect(mockUnsafeResetDatabase).not.toHaveBeenCalled();
+    expect(await AsyncStorage.getItem('currentUserSyncId')).toBe('local-user');
+  });
+
   it('swaps the snapshot in and prunes keys the backup does not carry', async () => {
     await restoreDatabase(DUMP);
 

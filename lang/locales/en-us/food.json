@@ -16,7 +16,7 @@
       "unmarkButton": "Unmark fasting day",
       "unmarkShort": "Unmark",
       "confirmTitle": "Mark as fasting day?",
-      "confirmMessage": "This marks the day as one you fasted, so it counts as a real 0-calorie day in your averages, TDEE and streaks.",
+      "confirmMessage": "This marks the day as one you fasted, so it counts as a real 0-calorie day in your averages, TDEE and streaks. Fasting is not safe for everyone: ask a doctor first if you are pregnant or breastfeeding, take medication, have diabetes or have had an eating disorder.",
       "confirmButton": "Mark as fasting day"
     },
     "logDetails": {

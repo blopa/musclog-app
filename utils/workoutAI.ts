@@ -61,12 +61,20 @@ export async function processCalculateVolumeResponse(
   }
 }
 
-export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanResponse): Promise<{
-  templateIds: string[];
-  description: string;
-  planId: string | null;
+/** A generated plan as it would be saved: what a review screen shows and what saving writes. */
+export type PreparedWorkoutPlan = {
   planName: string;
-}> {
+  description: string;
+  templates: PlanTemplateInput[];
+};
+
+/**
+ * Turns the model's reply into the workouts that would be created, writing nothing. Restricted
+ * exercises are already swapped or dropped here, so a preview shows what the person will get.
+ */
+export async function prepareWorkoutPlan(
+  response: GenerateWorkoutPlanResponse
+): Promise<PreparedWorkoutPlan> {
   try {
     const planTemplates: PlanTemplateInput[] = [];
 
@@ -170,29 +178,41 @@ export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanRe
     }
 
     const planName = response.planTitle?.trim() || i18n.t('workouts.plans.defaultAiPlanName');
-    const created =
-      planTemplates.length > 0
-        ? await WorkoutTemplateService.createPlanWithTemplates(
-            {
-              name: planName,
-              description: response.description,
-              cycleType: 'weekly',
-            },
-            planTemplates
-          )
-        : null;
 
-    // reply that combines "I've created N workouts for you!" with response.description
-    return {
-      templateIds: created?.templates.map((template) => template.id) ?? [],
-      description: response.description,
-      planId: created?.plan.id ?? null,
-      planName,
-    };
+    return { planName, description: response.description, templates: planTemplates };
   } catch (error) {
     console.error('[workoutAI] Error processing workout plan:', error);
     throw error;
   }
+}
+
+/** Creates the workouts and their plan. */
+export async function saveWorkoutPlan(prepared: PreparedWorkoutPlan): Promise<{
+  templateIds: string[];
+  description: string;
+  planId: string | null;
+  planName: string;
+}> {
+  const { planName, description, templates } = prepared;
+  const created =
+    templates.length > 0
+      ? await WorkoutTemplateService.createPlanWithTemplates(
+          { name: planName, description, cycleType: 'weekly' },
+          templates
+        )
+      : null;
+
+  return {
+    templateIds: created?.templates.map((template) => template.id) ?? [],
+    description,
+    planId: created?.plan.id ?? null,
+    planName,
+  };
+}
+
+/** Prepares and saves in one step, for the coach chat, whose reply reports what was created. */
+export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanResponse) {
+  return saveWorkoutPlan(await prepareWorkoutPlan(response));
 }
 
 export type WorkoutCompletedSummaryFormat = 'linguistic' | 'json';

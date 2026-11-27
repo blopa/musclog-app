@@ -275,6 +275,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
           <SectionLabel className="mb-2 px-1">
             {t('settings.advancedSettings.dataPortability')}
           </SectionLabel>
+          {/* There is no account and no server copy: an export is the only backup there is. */}
+          <Text className="mb-3 px-1 text-sm text-text-secondary">
+            {t('settings.advancedSettings.backupReminder')}
+          </Text>
           <ListGroup>
             <SettingsCard
               icon={<Upload size={theme.iconSize.xl} color={theme.colors.accent.primary} />}

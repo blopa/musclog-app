@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Informacje o podmiotach trzecich",
-      "intro": "Musclog opiera się na oprogramowaniu open source i otwartym modelu. Oto licencje, które mają zastosowanie.",
+      "intro": "Musclog opiera się na oprogramowaniu open source, otwartych danych i otwartych modelach. Oto licencje, które mają zastosowanie.",
       "link": "Informacje o podmiotach trzecich",
       "linkSubtitle": "Oprogramowanie open source i model na urządzeniu",
-      "openLink": "Otwórz pełny tekst"
+      "openLink": "Otwórz pełny tekst",
+      "packagesTitle": "Pakiety open source"
     }
   }
 }

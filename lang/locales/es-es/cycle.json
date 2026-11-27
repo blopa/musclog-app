@@ -620,7 +620,8 @@
       "backup": {
         "title": "Copia del ciclo",
         "body": "Considera guardar una copia cifrada de tus registros."
-      }
+      },
+      "renewReminders": "Abre Musclog para seguir recibiendo estos recordatorios."
     },
     "reminders": {
       "time": "Hora del recordatorio",
@@ -670,7 +671,7 @@
         "pattern24": "24 días + 4 de descanso",
         "continuous": "Todos los días",
         "packStart": "Primera píldora del envase actual",
-        "hint": "Los días sin píldora no tienen recordatorio. Es un recordatorio, no un consejo médico: si olvidas una, sigue las instrucciones de tu píldora.",
+        "hint": "Los días sin píldora no tienen recordatorio. Es un recordatorio, no consejo médico: si olvidas una, sigue las instrucciones de tu píldora. Los teléfonos pueden retrasar o silenciar las notificaciones, así que no lo uses como único recordatorio. En los envases con días sin píldora, abre Musclog al menos cada cuatro semanas para seguir recibiendo los recordatorios.",
         "notPaused": "sigue activo durante una pausa"
       },
       "pause": {

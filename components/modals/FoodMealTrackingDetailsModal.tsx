@@ -24,6 +24,7 @@ import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
 } from '@/components/cards/FoodNutritionSectionCard';
+import { FoodSourceCredit } from '@/components/FoodSourceCredit';
 import { MealIngredient } from '@/components/cards/MealNutritionHighlightCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
@@ -1763,6 +1764,13 @@ export function FoodMealTrackingDetailsModal({
             }
             intuitiveMode={intuitiveEatingMode}
             ingredients={mode === 'meal' ? mealIngredientLabels : undefined}
+          />
+          <FoodSourceCredit
+            source={
+              (food ?? localFood)?.source ??
+              productFromSearch?.source ??
+              inferBarcodeNutritionSource(refetchedProductDetails ?? productDetails, null)
+            }
           />
 
           {/* Form Sections */}

@@ -156,10 +156,10 @@
     },
     "landing": {
       "getStarted": "Aan de slag",
-      "termsAndPrivacy": "Door door te gaan, ga je akkoord met onze Voorwaarden & Privacybeleid.",
+      "termsAndPrivacy": "Door verder te gaan bevestig je dat je 16 of ouder bent en akkoord gaat met onze Voorwaarden. Ons Privacybeleid legt uit hoe je gegevens worden verwerkt.",
       "appName": "Musclog",
       "tagline": "Gratis, 100% van jou",
-      "description": "Houd je trainingen en voeding bij met volledige privacy. Geen accounts, geen cloud. Alles is gratis behalve het optionele AI-tegoed van Musclog Iron.",
+      "description": "Houd je trainingen en voeding bij. Je hebt geen account nodig. Alles is gratis, behalve het optionele tegoed van Musclog Iron.",
       "viewTerms": "Voorwaarden bekijken",
       "preparingApp": "De app voorbereiden...",
       "migratingPreamble": "Upgraden van de vorige Musclog. We zetten je gegevens over.",
@@ -184,7 +184,7 @@
       },
       "importData": "Gegevens importeren",
       "importOptically": "Gegevens importeren vanaf een andere telefoon",
-      "storedLocally": "Alle gegevens lokaal opgeslagen op uw apparaat",
+      "storedLocally": "Je gegevens worden op je apparaat opgeslagen",
       "personalizedSetup": "Gepersonaliseerde Installatie",
       "personalizedSetupSteps": "11 stappen",
       "personalizedSetupSubtitle": "Krijg nauwkeurige TDEE, macro's en gepersonaliseerde aanbevelingen",
@@ -192,7 +192,8 @@
       "quickSetupSteps": "7 stappen",
       "quickSetupSubtitle": "Basisinstallatie, u kunt later aanpassen",
       "aiSetup": "Instellen met AI",
-      "aiSetupSubtitle": "Chat met een AI, of laat ChatGPT of Claude je interviewen"
+      "aiSetupSubtitle": "Chat met een AI, of laat ChatGPT of Claude je interviewen",
+      "viewPrivacy": "Privacybeleid bekijken"
     },
     "quickPreferences": {
       "title": "Laten we beginnen",
@@ -267,7 +268,7 @@
         }
       },
       "dataSharingTitle": "Melding over Gegevensdeling",
-      "dataSharingBody": "Wanneer je een AI-functie gebruikt, wordt wat ze nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmaten of chatberichten) via OpenRouter naar het gratis niveau van Google AI Studio gestuurd om het antwoord te schrijven. Google mag wat er wordt verstuurd bewaren, gebruiken om zijn producten te verbeteren en door mensen (zonder identificatiegegevens) laten beoordelen, dus het gratis niveau is niet privé: voer geen persoonlijke of gevoelige informatie in. Het gratis niveau is alleen voor volwassenen (18+). Als dat niet oké voor je is, laat het uit. Er wordt niets verstuurd totdat je een AI-functie gebruikt. Er is een dagelijkse limiet die iedereen die het gratis niveau gebruikt deelt, dus die kan vroeg op de dag al op zijn, en het gratis niveau kan soms niet beschikbaar zijn.",
+      "dataSharingBody": "Wanneer je een AI-functie gebruikt, wordt wat die nodig heeft (bijvoorbeeld je workouts, maaltijden en lichaamsmaten, ook die die zijn geïmporteerd uit Health Connect of Apple Health, of chatberichten) via OpenRouter naar de gratis laag van Google AI Studio gestuurd om het antwoord te schrijven. Google mag bewaren wat wordt gestuurd, het gebruiken om zijn producten te verbeteren en het (zonder identificatoren) door mensen laten beoordelen, dus de gratis laag is niet privé: voer geen persoonlijke of gevoelige informatie in. De gratis laag is voor volwassenen: door akkoord te gaan bevestig je dat je 18 of ouder bent. Als dat niet oké voor je is, laat het uit. Er wordt niets verstuurd totdat je een AI-functie gebruikt, wat ook de dagelijkse inzichten omvat als je die aanzet. Er is een dagelijkse limiet die iedereen die de gratis laag gebruikt deelt, dus die kan vroeg op de dag opraken, en de gratis laag kan soms niet beschikbaar zijn.",
       "readPrivacyPolicy": "Lees ons Privacybeleid",
       "cta": {
         "premium": "Doorgaan met Musclog Iron",

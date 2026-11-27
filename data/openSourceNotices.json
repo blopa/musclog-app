@@ -1,0 +1,5881 @@
+{
+  "packages": [
+    {
+      "name": "2g",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Phil Pluckthun,"
+    },
+    {
+      "name": "@ai-sdk/gateway",
+      "version": "3.0.238",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2023 Vercel, Inc."
+    },
+    {
+      "name": "@ai-sdk/provider",
+      "version": "3.0.19",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2023 Vercel, Inc."
+    },
+    {
+      "name": "@ai-sdk/provider-utils",
+      "version": "4.0.67",
+      "license": "Apache-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "@antfu/install-pkg",
+      "version": "2.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Anthony Fu <https://github.com/antfu>"
+    },
+    {
+      "name": "@anthropic-ai/sdk",
+      "version": "1.10.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2023 Anthropic, PBC."
+    },
+    {
+      "name": "@babel/code-frame",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/compat-data",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/core",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/generator",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-annotate-as-pure",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-compilation-targets",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-create-class-features-plugin",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-create-regexp-features-plugin",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-define-polyfill-provider",
+      "version": "0.6.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Nicolò Ribaudo and other contributors"
+    },
+    {
+      "name": "@babel/helper-globals",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-member-expression-to-functions",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-module-imports",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-module-transforms",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-optimise-call-expression",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-plugin-utils",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-remap-async-to-generator",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-replace-supers",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-skip-transparent-expression-wrappers",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-string-parser",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-validator-identifier",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-validator-option",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helper-wrap-function",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/helpers",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/parser",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2012-2014 by various contributors (see AUTHORS)"
+    },
+    {
+      "name": "@babel/plugin-proposal-decorators",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-proposal-export-default-from",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-decorators",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-dynamic-import",
+      "version": "7.8.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-export-default-from",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-flow",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-jsx",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-nullish-coalescing-operator",
+      "version": "7.8.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-optional-chaining",
+      "version": "7.8.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-syntax-typescript",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-arrow-functions",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-async-generator-functions",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-async-to-generator",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-block-scoping",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-class-properties",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-class-static-block",
+      "version": "7.29.14",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-classes",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-destructuring",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-export-namespace-from",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-flow-strip-types",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-for-of",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-logical-assignment-operators",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-modules-commonjs",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-named-capturing-groups-regex",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-nullish-coalescing-operator",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-object-rest-spread",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-optional-catch-binding",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-optional-chaining",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-parameters",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-private-methods",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-private-property-in-object",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-react-display-name",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-react-jsx",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-react-jsx-development",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-react-pure-annotations",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-runtime",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-shorthand-properties",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-template-literals",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-typescript",
+      "version": "7.29.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/plugin-transform-unicode-regex",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/preset-typescript",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/runtime",
+      "version": "7.26.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/runtime",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/template",
+      "version": "7.29.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/traverse",
+      "version": "7.29.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@babel/types",
+      "version": "7.29.11",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Sebastian McKenzie and other contributors"
+    },
+    {
+      "name": "@braintree/sanitize-url",
+      "version": "7.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Braintree"
+    },
+    {
+      "name": "@bsky.app/expo-image-crop-tool",
+      "version": "0.5.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024-25 Bluesky PBC"
+    },
+    {
+      "name": "@chevrotain/cst-dts-gen",
+      "version": "13.2.0",
+      "license": "Apache-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "@chevrotain/gast",
+      "version": "13.2.0",
+      "license": "Apache-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "@chevrotain/regexp-to-ast",
+      "version": "13.2.0",
+      "license": "Apache-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "@chevrotain/types",
+      "version": "13.2.0",
+      "license": "Apache-2.0",
+      "copyright": "Shahar Soel"
+    },
+    {
+      "name": "@chevrotain/utils",
+      "version": "13.2.0",
+      "license": "Apache-2.0",
+      "copyright": "Shahar Soel"
+    },
+    {
+      "name": "@ericblade/quagga2",
+      "version": "1.13.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Christoph Oberhofer, (c) 2019 Eric Blade and all other contributors"
+    },
+    {
+      "name": "@expo/cli",
+      "version": "58.1.22",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/code-signing-certificates",
+      "version": "0.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/config",
+      "version": "58.0.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/config-plugins",
+      "version": "58.0.14",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/config-types",
+      "version": "58.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/devcert",
+      "version": "1.2.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Dave Wasmer"
+    },
+    {
+      "name": "@expo/devtools",
+      "version": "58.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/dom-webview",
+      "version": "58.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/env",
+      "version": "2.6.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/fingerprint",
+      "version": "0.22.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/image-utils",
+      "version": "0.12.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/inline-modules",
+      "version": "0.2.11",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/json-file",
+      "version": "11.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/local-build-cache-provider",
+      "version": "58.0.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/log-box",
+      "version": "58.0.15",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/log-box-utils",
+      "version": "58.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/metro",
+      "version": "58.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "@expo/metro-config",
+      "version": "58.0.24",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/metro-file-map",
+      "version": "58.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/metro-runtime",
+      "version": "58.0.17",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/osascript",
+      "version": "2.8.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/package-manager",
+      "version": "1.14.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/platforms",
+      "version": "58.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/plist",
+      "version": "0.10.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/prebuild-config",
+      "version": "58.0.21",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/react-native-action-sheet",
+      "version": "4.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Expo"
+    },
+    {
+      "name": "@expo/require-utils",
+      "version": "58.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/router-server",
+      "version": "58.0.24",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/schema-utils",
+      "version": "58.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/sdk-runtime-versions",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/spawn-async",
+      "version": "1.8.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 650 Industries"
+    },
+    {
+      "name": "@expo/sudo-prompt",
+      "version": "9.3.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Joran Dirk Greef"
+    },
+    {
+      "name": "@expo/ui",
+      "version": "58.0.30",
+      "license": "MIT",
+      "copyright": "650 Industries, Inc."
+    },
+    {
+      "name": "@expo/ws-tunnel",
+      "version": "2.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "@expo/xcpretty",
+      "version": "4.4.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-2016 Marin Usalj"
+    },
+    {
+      "name": "@google/genai",
+      "version": "2.32.0",
+      "license": "Apache-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "@gutenye/ocr-react-native",
+      "version": "1.4.9",
+      "license": "MIT",
+      "copyright": "Guten Ye"
+    },
+    {
+      "name": "@iconify/types",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 - 2022 Vjacheslav Trushkin / Iconify OÜ"
+    },
+    {
+      "name": "@iconify/utils",
+      "version": "3.1.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021-PRESENT Vjacheslav Trushkin"
+    },
+    {
+      "name": "@isaacs/ttlcache",
+      "version": "1.4.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2022-2023 - Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "@jest/schemas",
+      "version": "29.6.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "@jest/types",
+      "version": "29.6.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "@jridgewell/gen-mapping",
+      "version": "0.3.13",
+      "license": "MIT",
+      "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
+    },
+    {
+      "name": "@jridgewell/remapping",
+      "version": "2.3.5",
+      "license": "MIT",
+      "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
+    },
+    {
+      "name": "@jridgewell/resolve-uri",
+      "version": "3.1.2",
+      "license": "MIT",
+      "copyright": "Copyright 2019 Justin Ridgewell <jridgewell@google.com>"
+    },
+    {
+      "name": "@jridgewell/source-map",
+      "version": "0.3.11",
+      "license": "MIT",
+      "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
+    },
+    {
+      "name": "@jridgewell/sourcemap-codec",
+      "version": "1.5.5",
+      "license": "MIT",
+      "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
+    },
+    {
+      "name": "@jridgewell/trace-mapping",
+      "version": "0.3.31",
+      "license": "MIT",
+      "copyright": "Copyright 2024 Justin Ridgewell <justin@ridgewell.name>"
+    },
+    {
+      "name": "@kingstinct/react-native-healthkit",
+      "version": "14.1.0",
+      "license": "MIT",
+      "copyright": "Robert Herber"
+    },
+    {
+      "name": "@mermaid-js/parser",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Yokozuna59"
+    },
+    {
+      "name": "@mjcdev/react-body-highlighter",
+      "version": "0.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 ELABBASSI Hicham"
+    },
+    {
+      "name": "@musclog/witmotion-ble",
+      "version": "0.1.0",
+      "license": "see package",
+      "copyright": ""
+    },
+    {
+      "name": "@noble/curves",
+      "version": "2.4.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Paul Miller (https://paulmillr.com)"
+    },
+    {
+      "name": "@noble/hashes",
+      "version": "2.4.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Paul Miller (https://paulmillr.com)"
+    },
+    {
+      "name": "@nozbe/lokijs",
+      "version": "1.5.12-wmelon6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 TechFort <joe.minichino@gmail.com>"
+    },
+    {
+      "name": "@nozbe/simdjson",
+      "version": "3.9.4",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2018-2019 The simdjson authors"
+    },
+    {
+      "name": "@nozbe/sqlite",
+      "version": "3.46.0",
+      "license": "see package",
+      "copyright": ""
+    },
+    {
+      "name": "@nozbe/watermelondb",
+      "version": "0.28.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Nozbe"
+    },
+    {
+      "name": "@openfoodfacts/openfoodfacts-nodejs",
+      "version": "2.0.0-alpha.36",
+      "license": "Apache-2.0",
+      "copyright": "openfoodfacts"
+    },
+    {
+      "name": "@opentelemetry/api",
+      "version": "1.9.1",
+      "license": "Apache-2.0",
+      "copyright": "OpenTelemetry Authors"
+    },
+    {
+      "name": "@oxc-project/types",
+      "version": "0.154.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024-present VoidZero Inc. & Contributors"
+    },
+    {
+      "name": "@protobufjs/aspromise",
+      "version": "1.1.2",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/base64",
+      "version": "1.1.2",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/codegen",
+      "version": "2.0.5",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/eventemitter",
+      "version": "1.1.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/fetch",
+      "version": "1.1.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/float",
+      "version": "1.0.2",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/path",
+      "version": "1.1.2",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/pool",
+      "version": "1.1.0",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@protobufjs/utf8",
+      "version": "1.1.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "@radix-ui/primitive",
+      "version": "1.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-collection",
+      "version": "1.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-compose-refs",
+      "version": "1.1.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-context",
+      "version": "1.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-direction",
+      "version": "1.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-id",
+      "version": "1.1.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-presence",
+      "version": "1.1.11",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-primitive",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-roving-focus",
+      "version": "1.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-slot",
+      "version": "1.5.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-tabs",
+      "version": "1.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-use-callback-ref",
+      "version": "1.1.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-use-controllable-state",
+      "version": "1.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-use-effect-event",
+      "version": "0.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-use-is-hydrated",
+      "version": "0.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@radix-ui/react-use-layout-effect",
+      "version": "1.1.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 WorkOS"
+    },
+    {
+      "name": "@react-native-ai/apple",
+      "version": "0.12.0",
+      "license": "MIT",
+      "copyright": "Mike Grabowski"
+    },
+    {
+      "name": "@react-native-async-storage/async-storage",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present, Facebook, Inc."
+    },
+    {
+      "name": "@react-native-community/netinfo",
+      "version": "12.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present, Facebook, Inc."
+    },
+    {
+      "name": "@react-native-community/slider",
+      "version": "5.2.1",
+      "license": "MIT",
+      "copyright": "react-native-community"
+    },
+    {
+      "name": "@react-native-masked-view/masked-view",
+      "version": "0.3.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present, Facebook, Inc."
+    },
+    {
+      "name": "@react-native-ml-kit/barcode-scanning",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "JT Wright"
+    },
+    {
+      "name": "@react-native-vector-icons/common",
+      "version": "13.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Joel Arvidsson"
+    },
+    {
+      "name": "@react-native-vector-icons/material-icons",
+      "version": "13.1.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Joel Arvidsson"
+    },
+    {
+      "name": "@react-native/asset-utils",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/babel-plugin-codegen",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/codegen",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/community-cli-plugin",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/debugger-frontend",
+      "version": "0.88.1",
+      "license": "BSD-3-Clause",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/debugger-shell",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/dev-middleware",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/gradle-plugin",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/js-polyfills",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/normalize-colors",
+      "version": "0.74.89",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/normalize-colors",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-native/virtualized-lists",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "@react-spring/animated",
+      "version": "10.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018-present Paul Henschel, react-spring, all contributors"
+    },
+    {
+      "name": "@react-spring/core",
+      "version": "10.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018-present Paul Henschel, react-spring, all contributors"
+    },
+    {
+      "name": "@react-spring/rafz",
+      "version": "10.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018-present Paul Henschel, react-spring, all contributors"
+    },
+    {
+      "name": "@react-spring/shared",
+      "version": "10.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018-present Paul Henschel, react-spring, all contributors"
+    },
+    {
+      "name": "@react-spring/types",
+      "version": "10.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018-present Paul Henschel, react-spring, all contributors"
+    },
+    {
+      "name": "@react-spring/web",
+      "version": "10.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018-present Paul Henschel, react-spring, all contributors"
+    },
+    {
+      "name": "@revenuecat/purchases-js",
+      "version": "1.75.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 RevenueCat"
+    },
+    {
+      "name": "@revenuecat/purchases-js-hybrid-mappings",
+      "version": "20.10.0",
+      "license": "MIT",
+      "copyright": "RevenueCat, Inc."
+    },
+    {
+      "name": "@revenuecat/purchases-typescript-internal",
+      "version": "20.10.0",
+      "license": "MIT",
+      "copyright": "RevenueCat, Inc."
+    },
+    {
+      "name": "@sentry/browser",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/browser-utils",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/bundler-plugins",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022-2026, Sentry"
+    },
+    {
+      "name": "@sentry/cli",
+      "version": "2.58.6",
+      "license": "FSL-1.1-MIT",
+      "copyright": "Copyright 2008-2025 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/cli",
+      "version": "3.8.0",
+      "license": "FSL-1.1-MIT",
+      "copyright": "Copyright 2008-2025 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/conventions",
+      "version": "0.16.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023-2025 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/core",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/expo-upload-sourcemaps",
+      "version": "8.28.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-2026 Sentry"
+    },
+    {
+      "name": "@sentry/feedback",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/react",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/react-native",
+      "version": "8.28.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-2024 Sentry"
+    },
+    {
+      "name": "@sentry/replay",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@sentry/replay-canvas",
+      "version": "10.75.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Functional Software, Inc. dba Sentry"
+    },
+    {
+      "name": "@shopify/react-native-skia",
+      "version": "2.14.0",
+      "license": "MIT",
+      "copyright": "Copyright 2026-present, William Candillon"
+    },
+    {
+      "name": "@sinclair/typebox",
+      "version": "0.27.10",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-2023 Haydn Paterson (sinclair) <haydn.developer@gmail.com>"
+    },
+    {
+      "name": "@stablelib/base64",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2016 Dmitry Chestnykh"
+    },
+    {
+      "name": "@standard-schema/spec",
+      "version": "1.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Colin McDonnell"
+    },
+    {
+      "name": "@tanstack/query-core",
+      "version": "5.108.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021-present Tanner Linsley"
+    },
+    {
+      "name": "@tanstack/react-query",
+      "version": "5.108.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021-present Tanner Linsley"
+    },
+    {
+      "name": "@types/d3",
+      "version": "7.4.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-array",
+      "version": "3.2.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-axis",
+      "version": "3.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-brush",
+      "version": "3.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-chord",
+      "version": "3.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-color",
+      "version": "3.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-contour",
+      "version": "3.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-delaunay",
+      "version": "6.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-dispatch",
+      "version": "3.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-drag",
+      "version": "3.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-dsv",
+      "version": "3.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-ease",
+      "version": "3.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-fetch",
+      "version": "3.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-force",
+      "version": "3.0.10",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-format",
+      "version": "3.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-geo",
+      "version": "3.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-hierarchy",
+      "version": "3.1.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-interpolate",
+      "version": "3.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-path",
+      "version": "3.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-polygon",
+      "version": "3.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-quadtree",
+      "version": "3.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-random",
+      "version": "3.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-scale",
+      "version": "4.0.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-scale-chromatic",
+      "version": "3.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-selection",
+      "version": "3.0.12",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-shape",
+      "version": "3.1.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-time",
+      "version": "3.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-time-format",
+      "version": "4.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-timer",
+      "version": "3.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-transition",
+      "version": "3.0.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/d3-zoom",
+      "version": "3.0.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/emscripten",
+      "version": "1.41.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/geojson",
+      "version": "7946.0.16",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/hoist-non-react-statics",
+      "version": "3.3.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/istanbul-lib-coverage",
+      "version": "2.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/istanbul-lib-report",
+      "version": "3.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/istanbul-reports",
+      "version": "3.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/lodash",
+      "version": "4.17.24",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/lodash.isequal",
+      "version": "4.5.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/node",
+      "version": "26.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/react",
+      "version": "19.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/react-reconciler",
+      "version": "0.28.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/react-test-renderer",
+      "version": "19.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/retry",
+      "version": "0.12.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation. All rights reserved."
+    },
+    {
+      "name": "@types/yargs",
+      "version": "17.0.35",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@types/yargs-parser",
+      "version": "21.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "@ungap/structured-clone",
+      "version": "1.3.2",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2021, Andrea Giammarchi, @WebReflection"
+    },
+    {
+      "name": "@upsetjs/venn.js",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Ben Frederickson"
+    },
+    {
+      "name": "@vercel/oidc",
+      "version": "3.2.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2017 Vercel, Inc."
+    },
+    {
+      "name": "@webgpu/types",
+      "version": "0.1.21",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2022 WebGPU Developers"
+    },
+    {
+      "name": "@xmldom/xmldom",
+      "version": "0.8.15",
+      "license": "MIT",
+      "copyright": "Copyright 2019 - present Christopher J. Brody and other contributors, as listed in: https://github.com/xmldom/xmldom/graphs/contributors"
+    },
+    {
+      "name": "@xmldom/xmldom",
+      "version": "0.9.12",
+      "license": "MIT",
+      "copyright": "Copyright 2019 - present Christopher J. Brody and other contributors, as listed in: https://github.com/xmldom/xmldom/graphs/contributors"
+    },
+    {
+      "name": "@zxing/library",
+      "version": "0.23.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (c) 2005 Sun Microsystems, Inc."
+    },
+    {
+      "name": "abort-controller",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Toru Nagashima"
+    },
+    {
+      "name": "accepts",
+      "version": "1.3.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "accepts",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "acorn",
+      "version": "8.17.0",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2012-2022 by various contributors (see AUTHORS)"
+    },
+    {
+      "name": "adler-32",
+      "version": "1.3.1",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2014-present   SheetJS LLC"
+    },
+    {
+      "name": "agent-base",
+      "version": "6.0.2",
+      "license": "MIT",
+      "copyright": "Nathan Rajlich"
+    },
+    {
+      "name": "agent-base",
+      "version": "7.1.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>"
+    },
+    {
+      "name": "agent-cli-detector",
+      "version": "0.1.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 David Mokos"
+    },
+    {
+      "name": "ahrs",
+      "version": "1.3.3",
+      "license": "APSL-2.0",
+      "copyright": "Copyright 2016 Simon M. Werner"
+    },
+    {
+      "name": "ai",
+      "version": "6.0.333",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2023 Vercel, Inc."
+    },
+    {
+      "name": "anser",
+      "version": "1.4.10",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-20 Ionică Bizău <bizauionica@gmail.com> (https://ionicabizau.net)"
+    },
+    {
+      "name": "ansi-escapes",
+      "version": "4.3.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "ansi-regex",
+      "version": "4.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "ansi-regex",
+      "version": "5.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "ansi-styles",
+      "version": "3.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "ansi-styles",
+      "version": "4.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "ansi-styles",
+      "version": "5.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "arg",
+      "version": "4.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-2019 Zeit, Inc."
+    },
+    {
+      "name": "arg",
+      "version": "5.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Vercel, Inc."
+    },
+    {
+      "name": "argparse",
+      "version": "1.0.10",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2012 by Vitaly Puzrin"
+    },
+    {
+      "name": "argparse",
+      "version": "2.0.1",
+      "license": "Python-2.0",
+      "copyright": "i.e., \"Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,"
+    },
+    {
+      "name": "argparse",
+      "version": "3.0.3",
+      "license": "PSF-2.0",
+      "copyright": "i.e., \"Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,"
+    },
+    {
+      "name": "array-timsort",
+      "version": "1.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Marco Ziccardi"
+    },
+    {
+      "name": "asap",
+      "version": "2.0.6",
+      "license": "MIT",
+      "copyright": "Copyright 2009–2014 Contributors. All rights reserved."
+    },
+    {
+      "name": "audiobuffer-to-wav",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Jam3"
+    },
+    {
+      "name": "await-lock",
+      "version": "2.2.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present James Ide"
+    },
+    {
+      "name": "babel-plugin-polyfill-corejs2",
+      "version": "0.4.17",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Nicolò Ribaudo and other contributors"
+    },
+    {
+      "name": "babel-plugin-polyfill-corejs3",
+      "version": "0.13.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Nicolò Ribaudo and other contributors"
+    },
+    {
+      "name": "babel-plugin-polyfill-regenerator",
+      "version": "0.6.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present Nicolò Ribaudo and other contributors"
+    },
+    {
+      "name": "babel-plugin-react-compiler",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "babel-plugin-react-native-web",
+      "version": "0.21.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Nicolas Gallagher."
+    },
+    {
+      "name": "babel-plugin-syntax-hermes-parser",
+      "version": "0.36.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "babel-plugin-transform-flow-enums",
+      "version": "0.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Facebook, Inc. and its affiliates."
+    },
+    {
+      "name": "babel-preset-expo",
+      "version": "58.0.27",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "badgin",
+      "version": "1.2.3",
+      "license": "MIT",
+      "copyright": "Julian Hundeloh"
+    },
+    {
+      "name": "balanced-match",
+      "version": "4.0.4",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "barcode-detector",
+      "version": "3.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Ze-Zheng Wu"
+    },
+    {
+      "name": "base64-js",
+      "version": "1.5.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jameson Little"
+    },
+    {
+      "name": "baseline-browser-mapping",
+      "version": "2.11.20",
+      "license": "Apache-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "big-integer",
+      "version": "1.6.52",
+      "license": "Unlicense",
+      "copyright": "Peter Olson"
+    },
+    {
+      "name": "bignumber.js",
+      "version": "9.3.1",
+      "license": "MIT",
+      "copyright": "Copyright © `<2025>` `Michael Mclaughlin`"
+    },
+    {
+      "name": "bmp-js",
+      "version": "0.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 @丝刀口"
+    },
+    {
+      "name": "boolbase",
+      "version": "1.0.0",
+      "license": "ISC",
+      "copyright": "Felix Boehm"
+    },
+    {
+      "name": "bplist-creator",
+      "version": "0.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012 Near Infinity Corporation"
+    },
+    {
+      "name": "bplist-parser",
+      "version": "0.3.1",
+      "license": "MIT",
+      "copyright": "Joe Ferner"
+    },
+    {
+      "name": "bplist-parser",
+      "version": "0.3.2",
+      "license": "MIT",
+      "copyright": "Joe Ferner"
+    },
+    {
+      "name": "brace-expansion",
+      "version": "5.0.12",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "brace-expansion",
+      "version": "5.1.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "braces",
+      "version": "3.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present, Jon Schlinkert."
+    },
+    {
+      "name": "browserslist",
+      "version": "4.28.8",
+      "license": "MIT",
+      "copyright": "Copyright 2014 Andrey Sitnik <andrey@sitnik.es> and other contributors"
+    },
+    {
+      "name": "bser",
+      "version": "2.1.1",
+      "license": "Apache-2.0",
+      "copyright": "Wez Furlong"
+    },
+    {
+      "name": "buffer",
+      "version": "6.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Feross Aboukhadijeh, and other contributors."
+    },
+    {
+      "name": "buffer-equal-constant-time",
+      "version": "1.0.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2013, GoInstant Inc., a salesforce.com company"
+    },
+    {
+      "name": "buffer-from",
+      "version": "1.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016, 2018 Linus Unnebäck"
+    },
+    {
+      "name": "bytes",
+      "version": "3.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2014 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "camelcase",
+      "version": "6.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "camelize",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "James Halliday"
+    },
+    {
+      "name": "caniuse-lite",
+      "version": "1.0.30001810",
+      "license": "CC-BY-4.0",
+      "copyright": "Ben Briggs"
+    },
+    {
+      "name": "canvas-confetti",
+      "version": "1.9.4",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2020, Kiril Vatev"
+    },
+    {
+      "name": "canvaskit-wasm",
+      "version": "0.41.0",
+      "license": "BSD-3-Clause",
+      "copyright": "// Copyright (c) 2011 Google Inc. All rights reserved."
+    },
+    {
+      "name": "cfb",
+      "version": "1.2.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2013-present   SheetJS LLC"
+    },
+    {
+      "name": "chalk",
+      "version": "2.4.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "chalk",
+      "version": "4.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "chevrotain",
+      "version": "13.2.0",
+      "license": "Apache-2.0",
+      "copyright": "Shahar Soel"
+    },
+    {
+      "name": "ci-info",
+      "version": "3.9.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Thomas Watson Steen"
+    },
+    {
+      "name": "classnames",
+      "version": "2.5.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Jed Watson"
+    },
+    {
+      "name": "cli-cursor",
+      "version": "2.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "cli-spinners",
+      "version": "2.9.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "client-only",
+      "version": "0.0.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "cliui",
+      "version": "8.0.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2015, Contributors"
+    },
+    {
+      "name": "clone",
+      "version": "1.0.4",
+      "license": "MIT",
+      "copyright": "Copyright © 2011-2015 Paul Vorbach <paul@vorba.ch>"
+    },
+    {
+      "name": "codepage",
+      "version": "1.15.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2013-present   SheetJS LLC"
+    },
+    {
+      "name": "color",
+      "version": "4.2.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012 Heather Arthur"
+    },
+    {
+      "name": "color-convert",
+      "version": "1.9.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011-2016 Heather Arthur <fayearthur@gmail.com>"
+    },
+    {
+      "name": "color-convert",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011-2016 Heather Arthur <fayearthur@gmail.com>"
+    },
+    {
+      "name": "color-name",
+      "version": "1.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Dmitry Ivanov"
+    },
+    {
+      "name": "color-name",
+      "version": "1.1.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Dmitry Ivanov"
+    },
+    {
+      "name": "color-string",
+      "version": "1.9.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 Heather Arthur <fayearthur@gmail.com>"
+    },
+    {
+      "name": "commander",
+      "version": "12.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "commander",
+      "version": "15.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "commander",
+      "version": "2.20.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "commander",
+      "version": "7.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "comment-json",
+      "version": "4.6.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 kaelzhang <>, contributors"
+    },
+    {
+      "name": "compressible",
+      "version": "2.0.18",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "compression",
+      "version": "1.8.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "connect",
+      "version": "3.7.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2010 Sencha Inc."
+    },
+    {
+      "name": "convert",
+      "version": "7.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Jonah Snider"
+    },
+    {
+      "name": "convert-source-map",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright 2013 Thorsten Lorenz."
+    },
+    {
+      "name": "core-js-compat",
+      "version": "3.49.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013–2025 Denis Pushkarev (zloirock.ru)"
+    },
+    {
+      "name": "cose-base",
+      "version": "1.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 - present, iVis@Bilkent."
+    },
+    {
+      "name": "cose-base",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 - present, iVis@Bilkent."
+    },
+    {
+      "name": "crc-32",
+      "version": "1.2.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2014-present   SheetJS LLC"
+    },
+    {
+      "name": "cross-fetch",
+      "version": "3.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Leonardo Quixadá"
+    },
+    {
+      "name": "cross-spawn",
+      "version": "7.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Made With MOXY Lda <hello@moxy.studio>"
+    },
+    {
+      "name": "crypto-js",
+      "version": "4.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2009-2013 Jeff Mott"
+    },
+    {
+      "name": "css-color-keywords",
+      "version": "1.0.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2017, Jakob Krigovsky"
+    },
+    {
+      "name": "css-in-js-utils",
+      "version": "3.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Robin Frischmann"
+    },
+    {
+      "name": "css-select",
+      "version": "5.2.2",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "css-to-react-native",
+      "version": "3.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Jacob Parker and Maximilian Stoiber"
+    },
+    {
+      "name": "css-tree",
+      "version": "1.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2016-2019 by Roman Dvornov"
+    },
+    {
+      "name": "css-what",
+      "version": "6.2.2",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "csstype",
+      "version": "3.2.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-2018 Fredrik Nicol"
+    },
+    {
+      "name": "cytoscape",
+      "version": "3.34.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016-2026, The Cytoscape Consortium."
+    },
+    {
+      "name": "cytoscape-cose-bilkent",
+      "version": "4.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016-2018, The Cytoscape Consortium."
+    },
+    {
+      "name": "cytoscape-fcose",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 - present, iVis-at-Bilkent."
+    },
+    {
+      "name": "d3",
+      "version": "7.9.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2023 Mike Bostock"
+    },
+    {
+      "name": "d3-array",
+      "version": "2.12.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2010-2020 Mike Bostock"
+    },
+    {
+      "name": "d3-array",
+      "version": "3.2.4",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2023 Mike Bostock"
+    },
+    {
+      "name": "d3-axis",
+      "version": "3.0.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-brush",
+      "version": "3.0.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-chord",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-color",
+      "version": "3.1.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2022 Mike Bostock"
+    },
+    {
+      "name": "d3-contour",
+      "version": "4.0.2",
+      "license": "ISC",
+      "copyright": "Copyright 2012-2023 Mike Bostock"
+    },
+    {
+      "name": "d3-delaunay",
+      "version": "6.0.4",
+      "license": "ISC",
+      "copyright": "Copyright 2018-2021 Observable, Inc."
+    },
+    {
+      "name": "d3-dispatch",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-drag",
+      "version": "3.0.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-dsv",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2013-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-ease",
+      "version": "3.0.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-fetch",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2016-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-force",
+      "version": "3.0.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-format",
+      "version": "3.1.2",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2026 Mike Bostock"
+    },
+    {
+      "name": "d3-geo",
+      "version": "3.1.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2024 Mike Bostock"
+    },
+    {
+      "name": "d3-hierarchy",
+      "version": "3.1.2",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-interpolate",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-path",
+      "version": "1.0.9",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2015-2016 Mike Bostock"
+    },
+    {
+      "name": "d3-path",
+      "version": "3.1.0",
+      "license": "ISC",
+      "copyright": "Copyright 2015-2022 Mike Bostock"
+    },
+    {
+      "name": "d3-polygon",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-quadtree",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-random",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-sankey",
+      "version": "0.12.3",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2015, Mike Bostock"
+    },
+    {
+      "name": "d3-scale",
+      "version": "4.0.2",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-scale-chromatic",
+      "version": "3.1.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2024 Mike Bostock"
+    },
+    {
+      "name": "d3-selection",
+      "version": "3.0.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-shape",
+      "version": "1.3.7",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2010-2015 Mike Bostock"
+    },
+    {
+      "name": "d3-shape",
+      "version": "3.2.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2022 Mike Bostock"
+    },
+    {
+      "name": "d3-time",
+      "version": "3.1.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2022 Mike Bostock"
+    },
+    {
+      "name": "d3-time-format",
+      "version": "4.1.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-timer",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-transition",
+      "version": "3.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "d3-voronoi",
+      "version": "1.1.4",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2010-2016 Mike Bostock"
+    },
+    {
+      "name": "d3-zoom",
+      "version": "3.0.0",
+      "license": "ISC",
+      "copyright": "Copyright 2010-2021 Mike Bostock"
+    },
+    {
+      "name": "dagre-d3-es",
+      "version": "7.0.14",
+      "license": "MIT",
+      "copyright": "Original dagre-d3 copyright: Copyright (c) 2013 Chris Pettitt"
+    },
+    {
+      "name": "data-uri-to-buffer",
+      "version": "4.0.1",
+      "license": "MIT",
+      "copyright": "Nathan Rajlich"
+    },
+    {
+      "name": "date-fns",
+      "version": "4.4.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Sasha Koss and Lesha Koss https://kossnocorp.mit-license.org"
+    },
+    {
+      "name": "dayjs",
+      "version": "1.11.23",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018-present, iamkun"
+    },
+    {
+      "name": "debug",
+      "version": "2.6.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "debug",
+      "version": "3.2.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "debug",
+      "version": "4.4.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2017 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "defaults",
+      "version": "1.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Sindre Sorhus"
+    },
+    {
+      "name": "define-lazy-prop",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "delaunator",
+      "version": "4.0.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2017, Mapbox"
+    },
+    {
+      "name": "delaunator",
+      "version": "5.1.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2026, Mapbox"
+    },
+    {
+      "name": "delaunay-find",
+      "version": "0.0.6",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2019 Formidable Labs"
+    },
+    {
+      "name": "depd",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2018 Douglas Christopher Wilson"
+    },
+    {
+      "name": "destroy",
+      "version": "1.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong me@jongleberry.com"
+    },
+    {
+      "name": "detect-libc",
+      "version": "1.0.3",
+      "license": "Apache-2.0",
+      "copyright": "Lovell Fuller"
+    },
+    {
+      "name": "detect-libc",
+      "version": "2.1.2",
+      "license": "Apache-2.0",
+      "copyright": "Lovell Fuller"
+    },
+    {
+      "name": "dnssd-advertise",
+      "version": "1.1.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Phil Pluckthun,"
+    },
+    {
+      "name": "dom-serializer",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 The cheeriojs contributors"
+    },
+    {
+      "name": "domelementtype",
+      "version": "2.3.0",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "domhandler",
+      "version": "5.0.3",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "dompurify",
+      "version": "3.4.17",
+      "license": "(MPL-2.0 OR Apache-2.0)",
+      "copyright": "Dr.-Ing. Mario Heiderich, Cure53"
+    },
+    {
+      "name": "domutils",
+      "version": "3.2.2",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "dotenv",
+      "version": "17.4.2",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) 2015, Scott Motte"
+    },
+    {
+      "name": "ecdsa-sig-formatter",
+      "version": "1.0.11",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2015 D2L Corporation"
+    },
+    {
+      "name": "ee-first",
+      "version": "1.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong me@jongleberry.com"
+    },
+    {
+      "name": "electron-to-chromium",
+      "version": "1.5.420",
+      "license": "ISC",
+      "copyright": "Copyright 2018 Kilian Valkhof"
+    },
+    {
+      "name": "elkjs",
+      "version": "0.12.1",
+      "license": "EPL-2.0 OR GPL-3.0-or-later",
+      "copyright": "Ulf Rüegg"
+    },
+    {
+      "name": "embla-carousel",
+      "version": "8.6.0",
+      "license": "MIT",
+      "copyright": "David Jerleke"
+    },
+    {
+      "name": "embla-carousel-react",
+      "version": "8.6.0",
+      "license": "MIT",
+      "copyright": "David Jerleke"
+    },
+    {
+      "name": "embla-carousel-reactive-utils",
+      "version": "8.6.0",
+      "license": "MIT",
+      "copyright": "David Jerleke"
+    },
+    {
+      "name": "emoji-regex",
+      "version": "8.0.0",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "encodeurl",
+      "version": "1.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Douglas Christopher Wilson"
+    },
+    {
+      "name": "encodeurl",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Douglas Christopher Wilson"
+    },
+    {
+      "name": "entities",
+      "version": "2.0.3",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "entities",
+      "version": "4.5.0",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "entities",
+      "version": "8.1.0",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "error-stack-parser",
+      "version": "2.1.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Eric Wendelin and other contributors"
+    },
+    {
+      "name": "es-errors",
+      "version": "1.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Jordan Harband"
+    },
+    {
+      "name": "es-toolkit",
+      "version": "1.53.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Viva Republica, Inc."
+    },
+    {
+      "name": "escalade",
+      "version": "3.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)"
+    },
+    {
+      "name": "escape-html",
+      "version": "1.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2013 TJ Holowaychuk"
+    },
+    {
+      "name": "escape-string-regexp",
+      "version": "1.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "esprima",
+      "version": "4.0.1",
+      "license": "BSD-2-Clause",
+      "copyright": "Ariya Hidayat"
+    },
+    {
+      "name": "etag",
+      "version": "1.8.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2016 Douglas Christopher Wilson"
+    },
+    {
+      "name": "event-target-shim",
+      "version": "5.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Toru Nagashima"
+    },
+    {
+      "name": "eventsource-parser",
+      "version": "3.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Espen Hovlandsdal <espen@hovlandsdal.com>"
+    },
+    {
+      "name": "expo",
+      "version": "58.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-application",
+      "version": "58.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-asset",
+      "version": "58.0.21",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-auth-session",
+      "version": "58.0.20",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-background-task",
+      "version": "58.0.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-blur",
+      "version": "58.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-build-properties",
+      "version": "58.0.12",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-clipboard",
+      "version": "58.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-constants",
+      "version": "58.0.16",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-crypto",
+      "version": "58.0.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-dev-client",
+      "version": "58.0.22",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-dev-launcher",
+      "version": "58.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-dev-menu",
+      "version": "58.0.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-dev-menu-interface",
+      "version": "58.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-device",
+      "version": "58.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-document-picker",
+      "version": "58.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-eas-client",
+      "version": "58.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-file-system",
+      "version": "58.0.15",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-font",
+      "version": "58.0.12",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-glass-effect",
+      "version": "58.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-haptics",
+      "version": "58.0.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-image-loader",
+      "version": "58.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-image-manipulator",
+      "version": "58.0.16",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-image-picker",
+      "version": "58.0.10",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-intent-launcher",
+      "version": "58.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-json-utils",
+      "version": "58.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-keep-awake",
+      "version": "58.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-linear-gradient",
+      "version": "58.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-linking",
+      "version": "58.0.17",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-local-authentication",
+      "version": "58.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-localization",
+      "version": "58.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-manifests",
+      "version": "58.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-modules-autolinking",
+      "version": "58.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-modules-cli",
+      "version": "0.5.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-modules-core",
+      "version": "58.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-modules-jsi",
+      "version": "58.0.24",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-modules-macros",
+      "version": "0.33.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-notifications",
+      "version": "58.1.10",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-print",
+      "version": "58.0.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-router",
+      "version": "58.0.33",
+      "license": "MIT",
+      "copyright": "650 Industries, Inc."
+    },
+    {
+      "name": "expo-screen-orientation",
+      "version": "58.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-secure-store",
+      "version": "58.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-server",
+      "version": "58.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-sharing",
+      "version": "58.0.24",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-speech-recognition",
+      "version": "58.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 jamsch"
+    },
+    {
+      "name": "expo-splash-screen",
+      "version": "58.0.15",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-sqlite",
+      "version": "58.0.18",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-status-bar",
+      "version": "58.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-store-review",
+      "version": "58.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-structured-headers",
+      "version": "58.0.1",
+      "license": "MIT",
+      "copyright": "650 Industries, Inc."
+    },
+    {
+      "name": "expo-system-ui",
+      "version": "58.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-task-manager",
+      "version": "58.0.14",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-updates",
+      "version": "58.0.23",
+      "license": "MIT",
+      "copyright": "650 Industries, Inc."
+    },
+    {
+      "name": "expo-updates-interface",
+      "version": "58.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-web-browser",
+      "version": "58.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "expo-widgets",
+      "version": "58.0.30",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "exponential-backoff",
+      "version": "3.1.3",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2019 Coveo Solutions Inc."
+    },
+    {
+      "name": "extend",
+      "version": "3.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Stefan Thomas"
+    },
+    {
+      "name": "extend-shallow",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2015, Jon Schlinkert."
+    },
+    {
+      "name": "fast-base64-decode",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "fast-sha256",
+      "version": "1.3.0",
+      "license": "Unlicense",
+      "copyright": "Dmitry Chestnykh"
+    },
+    {
+      "name": "fb-dotslash",
+      "version": "0.5.8",
+      "license": "(MIT OR Apache-2.0)",
+      "copyright": ""
+    },
+    {
+      "name": "fb-watchman",
+      "version": "2.0.2",
+      "license": "Apache-2.0",
+      "copyright": "Wez Furlong"
+    },
+    {
+      "name": "fbjs",
+      "version": "3.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-present, Facebook, Inc."
+    },
+    {
+      "name": "fbjs-css-vars",
+      "version": "1.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-present, Facebook, Inc."
+    },
+    {
+      "name": "fdir",
+      "version": "6.5.0",
+      "license": "MIT",
+      "copyright": "Copyright 2023 Abdullah Atta"
+    },
+    {
+      "name": "fetch-blob",
+      "version": "3.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 David Frank"
+    },
+    {
+      "name": "fetch-nodeshim",
+      "version": "0.4.11",
+      "license": "MIT",
+      "copyright": "Copyright (c) Phil Pluckthun,"
+    },
+    {
+      "name": "fflate",
+      "version": "0.8.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Arjun Barrett"
+    },
+    {
+      "name": "fill-range",
+      "version": "7.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present, Jon Schlinkert."
+    },
+    {
+      "name": "finalhandler",
+      "version": "1.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2017 Douglas Christopher Wilson <doug@somethingdoug.com>"
+    },
+    {
+      "name": "find-up",
+      "version": "5.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "find-up",
+      "version": "8.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "flow-enums-runtime",
+      "version": "0.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) Facebook, Inc. and its affiliates."
+    },
+    {
+      "name": "flow-estree",
+      "version": "0.327.0",
+      "license": "MIT",
+      "copyright": "Flow Team"
+    },
+    {
+      "name": "flow-estree",
+      "version": "0.331.0",
+      "license": "MIT",
+      "copyright": "Flow Team"
+    },
+    {
+      "name": "flow-parser",
+      "version": "0.327.0",
+      "license": "MIT",
+      "copyright": "Flow Team"
+    },
+    {
+      "name": "flow-parser",
+      "version": "0.331.0",
+      "license": "MIT",
+      "copyright": "Flow Team"
+    },
+    {
+      "name": "formdata-polyfill",
+      "version": "4.0.10",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Jimmy Karl Roland Wärting"
+    },
+    {
+      "name": "frac",
+      "version": "1.1.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2012-present   SheetJS"
+    },
+    {
+      "name": "fresh",
+      "version": "0.5.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "function-bind",
+      "version": "1.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Raynos."
+    },
+    {
+      "name": "gaxios",
+      "version": "7.1.5",
+      "license": "Apache-2.0",
+      "copyright": "Google, LLC"
+    },
+    {
+      "name": "gcp-metadata",
+      "version": "8.1.2",
+      "license": "Apache-2.0",
+      "copyright": "Google LLC"
+    },
+    {
+      "name": "gensync",
+      "version": "1.0.0-beta.2",
+      "license": "MIT",
+      "copyright": "Copyright 2018 Logan Smyth <loganfsmyth@gmail.com>"
+    },
+    {
+      "name": "get-caller-file",
+      "version": "2.0.5",
+      "license": "ISC",
+      "copyright": "Copyright 2018 Stefan Penner"
+    },
+    {
+      "name": "gl-matrix",
+      "version": "3.4.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2025, Brandon Jones, Colin MacKenzie IV."
+    },
+    {
+      "name": "glob",
+      "version": "13.0.7",
+      "license": "BlueOak-1.0.0",
+      "copyright": "Isaac Z. Schlueter"
+    },
+    {
+      "name": "google-auth-library",
+      "version": "10.9.0",
+      "license": "Apache-2.0",
+      "copyright": "Google Inc."
+    },
+    {
+      "name": "google-logging-utils",
+      "version": "1.1.3",
+      "license": "Apache-2.0",
+      "copyright": "Google API Authors"
+    },
+    {
+      "name": "graceful-fs",
+      "version": "4.2.11",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2011-2022 Isaac Z. Schlueter, Ben Noordhuis, and Contributors"
+    },
+    {
+      "name": "gray-matter",
+      "version": "4.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2018, Jon Schlinkert."
+    },
+    {
+      "name": "hachure-fill",
+      "version": "0.5.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Preet Shihn"
+    },
+    {
+      "name": "has-flag",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "has-flag",
+      "version": "4.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "hasown",
+      "version": "2.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Jordan Harband and contributors"
+    },
+    {
+      "name": "hermes-compiler",
+      "version": "260318099.0.5",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "hermes-estree",
+      "version": "0.36.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "hermes-parser",
+      "version": "0.36.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "highlight.js",
+      "version": "11.12.0",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2006, Ivan Sagalaev."
+    },
+    {
+      "name": "hoist-non-react-statics",
+      "version": "3.3.2",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2015, Yahoo! Inc. All rights reserved."
+    },
+    {
+      "name": "hosted-git-info",
+      "version": "7.0.2",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2015, Rebecca Turner"
+    },
+    {
+      "name": "html-parse-stringify",
+      "version": "4.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025 Henrik Joreteg <henrik@joreteg.com>"
+    },
+    {
+      "name": "html-to-image",
+      "version": "1.11.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-2025 W.Y."
+    },
+    {
+      "name": "http-errors",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong me@jongleberry.com"
+    },
+    {
+      "name": "https-proxy-agent",
+      "version": "5.0.1",
+      "license": "MIT",
+      "copyright": "Nathan Rajlich"
+    },
+    {
+      "name": "https-proxy-agent",
+      "version": "7.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>"
+    },
+    {
+      "name": "hyphenate-style-name",
+      "version": "1.1.0",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2015, Espen Hovlandsdal"
+    },
+    {
+      "name": "i18next",
+      "version": "26.7.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011-present i18next"
+    },
+    {
+      "name": "iconv-lite",
+      "version": "0.6.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 Alexander Shtuchkin"
+    },
+    {
+      "name": "ics",
+      "version": "3.12.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2016, Adam Gibbons <adam.d.gibbons@gmail.com>"
+    },
+    {
+      "name": "idb",
+      "version": "2.1.3",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2016, Jake Archibald <jaffathecake@gmail.com>"
+    },
+    {
+      "name": "idb-keyval",
+      "version": "6.2.6",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2016, Jake Archibald"
+    },
+    {
+      "name": "ieee754",
+      "version": "1.2.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2008 Fair Oaks Labs, Inc."
+    },
+    {
+      "name": "ignore",
+      "version": "5.3.2",
+      "license": "MIT",
+      "copyright": "kael"
+    },
+    {
+      "name": "import-meta-resolve",
+      "version": "4.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com>"
+    },
+    {
+      "name": "inherits",
+      "version": "2.0.4",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter"
+    },
+    {
+      "name": "inline-style-prefixer",
+      "version": "7.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Robin Frischmann"
+    },
+    {
+      "name": "internmap",
+      "version": "1.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2021 Mike Bostock"
+    },
+    {
+      "name": "internmap",
+      "version": "2.0.3",
+      "license": "ISC",
+      "copyright": "Copyright 2021 Mike Bostock"
+    },
+    {
+      "name": "intl-pluralrules",
+      "version": "2.0.1",
+      "license": "ISC",
+      "copyright": "Copyright 2015-2018 by Eemeli Aro <eemeli@gmail.com>"
+    },
+    {
+      "name": "invariant",
+      "version": "2.2.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-present, Facebook, Inc."
+    },
+    {
+      "name": "is-any-array",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 cheminfo"
+    },
+    {
+      "name": "is-arrayish",
+      "version": "0.3.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 JD Ballard"
+    },
+    {
+      "name": "is-core-module",
+      "version": "2.16.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Dave Justice"
+    },
+    {
+      "name": "is-docker",
+      "version": "2.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "is-extendable",
+      "version": "0.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015, Jon Schlinkert."
+    },
+    {
+      "name": "is-fullwidth-code-point",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "is-number",
+      "version": "7.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present, Jon Schlinkert."
+    },
+    {
+      "name": "is-plain-obj",
+      "version": "2.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "is-url",
+      "version": "1.2.4",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "is-wsl",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "isexe",
+      "version": "2.0.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "its-fine",
+      "version": "1.2.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Poimandres"
+    },
+    {
+      "name": "jest-get-type",
+      "version": "29.6.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "jest-util",
+      "version": "29.7.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "jest-validate",
+      "version": "29.7.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "jest-worker",
+      "version": "29.7.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "jimp-compact",
+      "version": "0.16.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "js-tokens",
+      "version": "4.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014, 2015, 2016, 2017, 2018 Simon Lydell"
+    },
+    {
+      "name": "js-yaml",
+      "version": "3.15.2",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2011-2015 by Vitaly Puzrin"
+    },
+    {
+      "name": "js-yaml",
+      "version": "4.3.2",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2011-2015 by Vitaly Puzrin"
+    },
+    {
+      "name": "jsc-safe-url",
+      "version": "0.2.4",
+      "license": "0BSD",
+      "copyright": "Rob Hogan"
+    },
+    {
+      "name": "jsesc",
+      "version": "3.1.0",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "json-bigint",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Andrey Sidorov"
+    },
+    {
+      "name": "json-schema",
+      "version": "0.4.0",
+      "license": "(AFL-2.1 OR BSD-3-Clause)",
+      "copyright": "Copyright (c) 2005-2015, The Dojo Foundation"
+    },
+    {
+      "name": "json-schema-to-ts",
+      "version": "3.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Thomas Aribart"
+    },
+    {
+      "name": "json-stringify-safe",
+      "version": "5.0.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "json5",
+      "version": "2.2.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2018 Aseem Kishore, and [others]."
+    },
+    {
+      "name": "jsonp",
+      "version": "0.2.1",
+      "license": "see package",
+      "copyright": ""
+    },
+    {
+      "name": "jsonrepair",
+      "version": "3.15.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2020-2026 by Jos de Jong"
+    },
+    {
+      "name": "jwa",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Brian J. Brennan"
+    },
+    {
+      "name": "jws",
+      "version": "4.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Brian J. Brennan"
+    },
+    {
+      "name": "jwt-decode",
+      "version": "4.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Auth0, Inc. <support@auth0.com> (http://auth0.com)"
+    },
+    {
+      "name": "katex",
+      "version": "0.18.10",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-2020 Khan Academy and other contributors"
+    },
+    {
+      "name": "khroma",
+      "version": "2.1.0",
+      "license": "see package",
+      "copyright": "Copyright (c) 2019-present Fabio Spampinato, Andrew Maney"
+    },
+    {
+      "name": "kind-of",
+      "version": "6.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2017, Jon Schlinkert."
+    },
+    {
+      "name": "kleur",
+      "version": "3.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)"
+    },
+    {
+      "name": "lan-network",
+      "version": "0.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Phil Pluckthun,"
+    },
+    {
+      "name": "layout-base",
+      "version": "1.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 iVis@Bilkent"
+    },
+    {
+      "name": "layout-base",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 iVis@Bilkent"
+    },
+    {
+      "name": "leven",
+      "version": "3.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "lightningcss",
+      "version": "1.27.0",
+      "license": "MPL-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "lightningcss",
+      "version": "1.33.0",
+      "license": "MPL-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "linkify-it",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Vitaly Puzrin."
+    },
+    {
+      "name": "linkify-it",
+      "version": "6.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Vitaly Puzrin."
+    },
+    {
+      "name": "llama.rn",
+      "version": "0.12.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Jhen-Jie Hong"
+    },
+    {
+      "name": "locate-path",
+      "version": "6.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "locate-path",
+      "version": "8.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "lodash",
+      "version": "4.18.1",
+      "license": "MIT",
+      "copyright": "John-David Dalton"
+    },
+    {
+      "name": "lodash-es",
+      "version": "4.18.1",
+      "license": "MIT",
+      "copyright": "John-David Dalton"
+    },
+    {
+      "name": "lodash.debounce",
+      "version": "4.0.8",
+      "license": "MIT",
+      "copyright": "John-David Dalton"
+    },
+    {
+      "name": "lodash.isequal",
+      "version": "4.5.0",
+      "license": "MIT",
+      "copyright": "John-David Dalton"
+    },
+    {
+      "name": "lodash.throttle",
+      "version": "4.1.1",
+      "license": "MIT",
+      "copyright": "John-David Dalton"
+    },
+    {
+      "name": "log-symbols",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "long",
+      "version": "5.3.2",
+      "license": "Apache-2.0",
+      "copyright": "Daniel Wirtz"
+    },
+    {
+      "name": "loose-envify",
+      "version": "1.4.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Andres Suarez <zertosh@gmail.com>"
+    },
+    {
+      "name": "lru-cache",
+      "version": "10.4.3",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2010-2023 Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "lru-cache",
+      "version": "11.5.1",
+      "license": "BlueOak-1.0.0",
+      "copyright": "Isaac Z. Schlueter"
+    },
+    {
+      "name": "lru-cache",
+      "version": "5.1.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "lucide-react-native",
+      "version": "1.76.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2026 Lucide Icons and Contributors"
+    },
+    {
+      "name": "magic-string",
+      "version": "0.30.21",
+      "license": "MIT",
+      "copyright": "Copyright 2018 Rich Harris"
+    },
+    {
+      "name": "markdown-it",
+      "version": "10.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Vitaly Puzrin, Alex Kocharin."
+    },
+    {
+      "name": "markdown-it",
+      "version": "15.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Vitaly Puzrin, Alex Kocharin."
+    },
+    {
+      "name": "marked",
+      "version": "16.4.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018+, MarkedJS (https://github.com/markedjs/)"
+    },
+    {
+      "name": "mdn-data",
+      "version": "2.0.14",
+      "license": "CC0-1.0",
+      "copyright": "Mozilla Developer Network"
+    },
+    {
+      "name": "mdurl",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Vitaly Puzrin, Alex Kocharin."
+    },
+    {
+      "name": "mdurl",
+      "version": "2.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Vitaly Puzrin, Alex Kocharin."
+    },
+    {
+      "name": "memoize-one",
+      "version": "5.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Alexander Reardon"
+    },
+    {
+      "name": "memoize-one",
+      "version": "6.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Alexander Reardon"
+    },
+    {
+      "name": "merge-options",
+      "version": "3.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Michael Mayer <michael@schnittstabil.de>"
+    },
+    {
+      "name": "merge-stream",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Stephen Sugden <me@stephensugden.com> (stephensugden.com)"
+    },
+    {
+      "name": "mermaid",
+      "version": "12.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 - 2022 Knut Sveidqvist"
+    },
+    {
+      "name": "metro",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-babel-transformer",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-cache",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-cache-key",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-config",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-core",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-file-map",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-minify-terser",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-resolver",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-runtime",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-source-map",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-symbolicate",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-transform-plugins",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "metro-transform-worker",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "micromatch",
+      "version": "4.0.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present, Jon Schlinkert."
+    },
+    {
+      "name": "mime",
+      "version": "1.6.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2010 Benjamin Thomas, Robert Kieffer"
+    },
+    {
+      "name": "mime-db",
+      "version": "1.52.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "mime-db",
+      "version": "1.54.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "mime-types",
+      "version": "2.1.35",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "mime-types",
+      "version": "3.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "mimic-fn",
+      "version": "1.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "minimatch",
+      "version": "10.2.6",
+      "license": "BlueOak-1.0.0",
+      "copyright": "Isaac Z. Schlueter"
+    },
+    {
+      "name": "minipass",
+      "version": "7.1.3",
+      "license": "BlueOak-1.0.0",
+      "copyright": "Isaac Z. Schlueter"
+    },
+    {
+      "name": "ml-array-max",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 ml.js"
+    },
+    {
+      "name": "ml-array-min",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 mljs"
+    },
+    {
+      "name": "ml-array-rescale",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 mljs"
+    },
+    {
+      "name": "ml-fft",
+      "version": "1.3.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 ml.js"
+    },
+    {
+      "name": "ml-matrix",
+      "version": "6.13.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Michaël Zasso"
+    },
+    {
+      "name": "ml-pad-array",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 ml.js"
+    },
+    {
+      "name": "ml-pca",
+      "version": "4.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 ml.js"
+    },
+    {
+      "name": "ml-savitzky-golay",
+      "version": "5.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 ml.js"
+    },
+    {
+      "name": "ms",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Zeit, Inc."
+    },
+    {
+      "name": "ms",
+      "version": "2.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Vercel, Inc."
+    },
+    {
+      "name": "multitars",
+      "version": "1.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Phil Pluckthun,"
+    },
+    {
+      "name": "nanoid",
+      "version": "3.3.18",
+      "license": "MIT",
+      "copyright": "Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>"
+    },
+    {
+      "name": "nanoid",
+      "version": "3.3.20",
+      "license": "MIT",
+      "copyright": "Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>"
+    },
+    {
+      "name": "nanoid",
+      "version": "3.3.8",
+      "license": "MIT",
+      "copyright": "Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>"
+    },
+    {
+      "name": "nativewind",
+      "version": "4.2.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Mark Lawlor"
+    },
+    {
+      "name": "negotiator",
+      "version": "0.6.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2014 Federico Romero"
+    },
+    {
+      "name": "negotiator",
+      "version": "0.6.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2014 Federico Romero"
+    },
+    {
+      "name": "negotiator",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2014 Federico Romero"
+    },
+    {
+      "name": "nitro-core",
+      "version": "0.37.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Marc Rousavy"
+    },
+    {
+      "name": "node-domexception",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Jimmy Wärting"
+    },
+    {
+      "name": "node-fetch",
+      "version": "2.7.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 David Frank"
+    },
+    {
+      "name": "node-fetch",
+      "version": "3.3.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 - 2020 Node Fetch Team"
+    },
+    {
+      "name": "node-forge",
+      "version": "1.4.0",
+      "license": "(BSD-3-Clause OR GPL-2.0)",
+      "copyright": "Copyright (c) 2010, Digital Bazaar, Inc."
+    },
+    {
+      "name": "node-int64",
+      "version": "0.4.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Robert Kieffer"
+    },
+    {
+      "name": "node-releases",
+      "version": "2.0.54",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Sergey Rubanov (https://github.com/chicoxyzzy)"
+    },
+    {
+      "name": "noxcturnal",
+      "version": "0.1.14",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "npm-package-arg",
+      "version": "11.0.3",
+      "license": "ISC",
+      "copyright": "Copyright (c) npm, Inc."
+    },
+    {
+      "name": "nth-check",
+      "version": "2.1.1",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Felix Böhm"
+    },
+    {
+      "name": "nullthrows",
+      "version": "1.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Andres Suarez"
+    },
+    {
+      "name": "ob1",
+      "version": "0.87.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "object-assign",
+      "version": "4.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "on-finished",
+      "version": "2.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "on-finished",
+      "version": "2.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "on-headers",
+      "version": "1.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Douglas Christopher Wilson"
+    },
+    {
+      "name": "onetime",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "open",
+      "version": "8.4.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "openai",
+      "version": "7.60.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2026 OpenAI"
+    },
+    {
+      "name": "openapi-fetch",
+      "version": "0.17.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Drew Powers"
+    },
+    {
+      "name": "openapi-typescript-helpers",
+      "version": "0.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Drew Powers"
+    },
+    {
+      "name": "opencollective-postinstall",
+      "version": "2.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Open Collective"
+    },
+    {
+      "name": "ora",
+      "version": "3.4.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "otsu",
+      "version": "0.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Alexander Thomas"
+    },
+    {
+      "name": "p-limit",
+      "version": "3.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "p-limit",
+      "version": "4.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "p-locate",
+      "version": "5.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "p-locate",
+      "version": "6.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "p-retry",
+      "version": "4.6.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "package-manager-detector",
+      "version": "1.9.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020-PRESENT Anthony Fu <https://github.com/antfu>"
+    },
+    {
+      "name": "parse-png",
+      "version": "2.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Kevin Mårtensson <kevinmartensson@gmail.com> (github.com/kevva)"
+    },
+    {
+      "name": "parseurl",
+      "version": "1.3.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "path-data-parser",
+      "version": "0.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Preet Shihn"
+    },
+    {
+      "name": "path-exists",
+      "version": "4.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "path-key",
+      "version": "3.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "path-parse",
+      "version": "1.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Javier Blanco"
+    },
+    {
+      "name": "path-scurry",
+      "version": "2.0.2",
+      "license": "BlueOak-1.0.0",
+      "copyright": "Isaac Z. Schlueter"
+    },
+    {
+      "name": "performance-now",
+      "version": "2.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Braveg1rl"
+    },
+    {
+      "name": "picocolors",
+      "version": "1.1.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2021-2024 Oleksii Raspopov, Kostiantyn Denysov, Anton Verinov"
+    },
+    {
+      "name": "picomatch",
+      "version": "2.3.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-present, Jon Schlinkert."
+    },
+    {
+      "name": "picomatch",
+      "version": "4.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017-present, Jon Schlinkert."
+    },
+    {
+      "name": "plist",
+      "version": "3.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2010-2017 Nathan Rajlich <nathan@tootallnate.net>"
+    },
+    {
+      "name": "pngjs",
+      "version": "3.4.0",
+      "license": "MIT",
+      "copyright": "pngjs2 original work Copyright (c) 2015 Luke Page & Original Contributors"
+    },
+    {
+      "name": "points-on-curve",
+      "version": "0.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Preet Shihn"
+    },
+    {
+      "name": "points-on-path",
+      "version": "0.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Preet"
+    },
+    {
+      "name": "postcss",
+      "version": "8.5.26",
+      "license": "MIT",
+      "copyright": "Copyright 2013 Andrey Sitnik <andrey@sitnik.es>"
+    },
+    {
+      "name": "postcss-value-parser",
+      "version": "4.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Bogdan Chadkin <trysound@yandex.ru>"
+    },
+    {
+      "name": "pretty-format",
+      "version": "29.7.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "proc-log",
+      "version": "4.2.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) GitHub, Inc."
+    },
+    {
+      "name": "progress",
+      "version": "2.0.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "promise",
+      "version": "7.3.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Forbes Lindesay"
+    },
+    {
+      "name": "promise",
+      "version": "8.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Forbes Lindesay"
+    },
+    {
+      "name": "prompts",
+      "version": "2.4.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Terkel Gjervig Nielsen"
+    },
+    {
+      "name": "prop-types",
+      "version": "15.8.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-present, Facebook, Inc."
+    },
+    {
+      "name": "property-expr",
+      "version": "2.0.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jason Quense"
+    },
+    {
+      "name": "protobufjs",
+      "version": "7.6.5",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2016, Daniel Wirtz  All rights reserved."
+    },
+    {
+      "name": "proxy-from-env",
+      "version": "1.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2016-2018 Rob Wu <rob@robwu.nl>"
+    },
+    {
+      "name": "punycode.js",
+      "version": "2.3.1",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "raf",
+      "version": "3.4.1",
+      "license": "MIT",
+      "copyright": "Copyright 2013 Chris Dickinson <chris@neversaw.us>"
+    },
+    {
+      "name": "ramda",
+      "version": "0.30.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-2024 Scott Sauyet and Michael Hurley"
+    },
+    {
+      "name": "range-parser",
+      "version": "1.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2014 TJ Holowaychuk <tj@vision-media.ca>"
+    },
+    {
+      "name": "react",
+      "version": "19.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "react-devtools-core",
+      "version": "6.1.5",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "react-dom",
+      "version": "19.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "react-fast-compare",
+      "version": "3.2.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Formidable Labs"
+    },
+    {
+      "name": "react-freeze",
+      "version": "1.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Software Mansion"
+    },
+    {
+      "name": "react-i18next",
+      "version": "17.1.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present i18next"
+    },
+    {
+      "name": "react-is",
+      "version": "16.13.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Facebook, Inc. and its affiliates."
+    },
+    {
+      "name": "react-is",
+      "version": "18.3.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Facebook, Inc. and its affiliates."
+    },
+    {
+      "name": "react-is",
+      "version": "19.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "react-native",
+      "version": "0.88.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "react-native-barcodes-detector",
+      "version": "0.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Diego Pasquali"
+    },
+    {
+      "name": "react-native-ble-plx",
+      "version": "3.5.1",
+      "license": "MIT",
+      "copyright": "Copyright 2016 Polidea"
+    },
+    {
+      "name": "react-native-body-highlighter",
+      "version": "3.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 ELABBASSI Hicham"
+    },
+    {
+      "name": "react-native-css-interop",
+      "version": "0.2.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Mark Lawlor"
+    },
+    {
+      "name": "react-native-device-info",
+      "version": "15.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Rebecca Hughes"
+    },
+    {
+      "name": "react-native-drawer-layout",
+      "version": "4.2.12",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 React Native Community"
+    },
+    {
+      "name": "react-native-edge-to-edge",
+      "version": "1.8.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Mathieu Acthernoene"
+    },
+    {
+      "name": "react-native-fast-confetti",
+      "version": "2.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Alireza Hadjar"
+    },
+    {
+      "name": "react-native-fit-image",
+      "version": "1.5.5",
+      "license": "Beerware",
+      "copyright": "Jitae Kim"
+    },
+    {
+      "name": "react-native-gesture-handler",
+      "version": "3.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Software Mansion <swmansion.com>"
+    },
+    {
+      "name": "react-native-get-random-values",
+      "version": "1.11.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018, 2020 Linus Unnebäck"
+    },
+    {
+      "name": "react-native-gifted-chat",
+      "version": "3.5.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Farid from Safi"
+    },
+    {
+      "name": "react-native-health-connect",
+      "version": "4.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Matin Zadeh Dolatabad"
+    },
+    {
+      "name": "react-native-is-edge-to-edge",
+      "version": "1.3.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Mathieu Acthernoene"
+    },
+    {
+      "name": "react-native-keyboard-controller",
+      "version": "1.22.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Kiryl Ziusko"
+    },
+    {
+      "name": "react-native-markdown-display",
+      "version": "7.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 - 2019 Mient-jan Stelling and Tom Pickard"
+    },
+    {
+      "name": "react-native-nitro-modules",
+      "version": "0.37.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Marc Rousavy"
+    },
+    {
+      "name": "react-native-pager-view",
+      "version": "9.0.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 Callstack"
+    },
+    {
+      "name": "react-native-purchases",
+      "version": "11.0.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 RevenueCat"
+    },
+    {
+      "name": "react-native-reanimated",
+      "version": "4.7.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Software Mansion <swmansion.com>"
+    },
+    {
+      "name": "react-native-safe-area-context",
+      "version": "5.11.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Th3rd Wave"
+    },
+    {
+      "name": "react-native-screens",
+      "version": "4.30.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Software Mansion <swmansion.com>"
+    },
+    {
+      "name": "react-native-skia-android",
+      "version": "154.0.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "react-native-skia-apple-ios",
+      "version": "154.0.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "react-native-skia-apple-macos",
+      "version": "154.0.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "react-native-skia-apple-tvos",
+      "version": "154.0.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "react-native-svg",
+      "version": "15.16.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) [2015-2016] [Horcrux]"
+    },
+    {
+      "name": "react-native-url-polyfill",
+      "version": "4.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Nicolas Charpentier"
+    },
+    {
+      "name": "react-native-vision-camera",
+      "version": "4.7.3",
+      "license": "MIT",
+      "copyright": "Marc Rousavy"
+    },
+    {
+      "name": "react-native-web",
+      "version": "0.21.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) Nicolas Gallagher."
+    },
+    {
+      "name": "react-native-worklets",
+      "version": "0.13.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 nobody"
+    },
+    {
+      "name": "react-native-zip-archive",
+      "version": "9.5.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 MockingBot"
+    },
+    {
+      "name": "react-native-zoom-reanimated",
+      "version": "1.6.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Kesha Antonov"
+    },
+    {
+      "name": "react-reconciler",
+      "version": "0.31.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "react-refresh",
+      "version": "0.14.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Facebook, Inc. and its affiliates."
+    },
+    {
+      "name": "react-share",
+      "version": "5.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Klaus Nygård"
+    },
+    {
+      "name": "react-zxing",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Adam Alfredsson"
+    },
+    {
+      "name": "regenerate",
+      "version": "1.4.2",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "regenerate-unicode-properties",
+      "version": "10.2.2",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "regenerator-runtime",
+      "version": "0.13.11",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present, Facebook, Inc."
+    },
+    {
+      "name": "regenerator-runtime",
+      "version": "0.14.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-present, Facebook, Inc."
+    },
+    {
+      "name": "regexpu-core",
+      "version": "6.4.0",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "regjsgen",
+      "version": "0.8.0",
+      "license": "MIT",
+      "copyright": "Benjamin Tan"
+    },
+    {
+      "name": "regjsparser",
+      "version": "0.13.2",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) Julian Viereck and Contributors, All Rights Reserved."
+    },
+    {
+      "name": "require-directory",
+      "version": "2.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 Troy Goode <troygoode@gmail.com>"
+    },
+    {
+      "name": "resolve",
+      "version": "1.22.12",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012 James Halliday"
+    },
+    {
+      "name": "resolve-from",
+      "version": "5.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "resolve-workspace-root",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024-present Cedric van Putten <me@cedric.dev>"
+    },
+    {
+      "name": "responsive-gamepad",
+      "version": "1.1.0",
+      "license": "Apache-2.0",
+      "copyright": "Aaron Turner"
+    },
+    {
+      "name": "restore-cursor",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "retry",
+      "version": "0.13.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011:"
+    },
+    {
+      "name": "rn-mlkit-ocr",
+      "version": "0.3.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025 ahmeterenodaci"
+    },
+    {
+      "name": "robust-predicates",
+      "version": "3.0.3",
+      "license": "Unlicense",
+      "copyright": "Vladimir Agafonkin"
+    },
+    {
+      "name": "roughjs",
+      "version": "4.6.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Preet Shihn"
+    },
+    {
+      "name": "rtl-detect",
+      "version": "1.1.2",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2015 Yahoo Inc."
+    },
+    {
+      "name": "runes2",
+      "version": "1.1.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Justin Sippel, Vitaly Domnikov"
+    },
+    {
+      "name": "rw",
+      "version": "1.3.3",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2014-2016, Michael Bostock"
+    },
+    {
+      "name": "rxjs",
+      "version": "7.8.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (c) 2015-2018 Google, Inc., Netflix, Inc., Microsoft Corp. and contributors"
+    },
+    {
+      "name": "safe-buffer",
+      "version": "5.2.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Feross Aboukhadijeh"
+    },
+    {
+      "name": "safer-buffer",
+      "version": "2.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Nikita Skovoroda <chalkerx@gmail.com>"
+    },
+    {
+      "name": "sandbox-cli-detector",
+      "version": "0.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 David Mokos"
+    },
+    {
+      "name": "sax",
+      "version": "1.6.0",
+      "license": "BlueOak-1.0.0",
+      "copyright": "Isaac Z. Schlueter"
+    },
+    {
+      "name": "scheduler",
+      "version": "0.25.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "scheduler",
+      "version": "0.28.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "section-matter",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017, Jon Schlinkert."
+    },
+    {
+      "name": "semver",
+      "version": "6.3.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "semver",
+      "version": "7.8.5",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "semver",
+      "version": "7.8.6",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "send",
+      "version": "0.19.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012 TJ Holowaychuk"
+    },
+    {
+      "name": "serialize-error",
+      "version": "2.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "serve-static",
+      "version": "1.16.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2010 Sencha Inc."
+    },
+    {
+      "name": "server-only",
+      "version": "0.0.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "setimmediate",
+      "version": "1.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012 Barnesandnoble.com, llc, Donavon West, and Domenic Denicola"
+    },
+    {
+      "name": "setprototypeof",
+      "version": "1.2.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2015, Wes Todd"
+    },
+    {
+      "name": "sf-symbols-typescript",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Fernando Rojo"
+    },
+    {
+      "name": "shebang-command",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Kevin Mårtensson <kevinmartensson@gmail.com> (github.com/kevva)"
+    },
+    {
+      "name": "shebang-regex",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "shell-quote",
+      "version": "1.12.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 James Halliday (mail@substack.net)"
+    },
+    {
+      "name": "signal-exit",
+      "version": "3.0.7",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2015, Contributors"
+    },
+    {
+      "name": "simple-plist",
+      "version": "1.3.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Joe Wollard"
+    },
+    {
+      "name": "simple-statistics",
+      "version": "7.12.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2014, Tom MacWright"
+    },
+    {
+      "name": "simple-swizzle",
+      "version": "0.2.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Josh Junon"
+    },
+    {
+      "name": "sisteransi",
+      "version": "1.0.5",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Terkel Gjervig Nielsen"
+    },
+    {
+      "name": "slugify",
+      "version": "1.6.9",
+      "license": "MIT",
+      "copyright": "Copyright (c) Simeon Velichkov <simeonvelichkov@gmail.com>"
+    },
+    {
+      "name": "source-map",
+      "version": "0.5.7",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2009-2011, Mozilla Foundation and contributors"
+    },
+    {
+      "name": "source-map",
+      "version": "0.6.1",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2009-2011, Mozilla Foundation and contributors"
+    },
+    {
+      "name": "source-map-js",
+      "version": "1.2.2",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2009-2011, Mozilla Foundation and contributors"
+    },
+    {
+      "name": "source-map-support",
+      "version": "0.5.21",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Evan Wallace"
+    },
+    {
+      "name": "sprintf-js",
+      "version": "1.0.3",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2007-2014, Alexandru Marasteanu <hello [at) alexei (dot] ro>"
+    },
+    {
+      "name": "sql-escape-string",
+      "version": "1.1.0",
+      "license": "MIT",
+      "copyright": "Copyright 2017 Thorsten Lorenz."
+    },
+    {
+      "name": "ssf",
+      "version": "0.11.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2013-present   SheetJS LLC"
+    },
+    {
+      "name": "stackframe",
+      "version": "1.3.4",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 Eric Wendelin and other contributors"
+    },
+    {
+      "name": "stacktrace-parser",
+      "version": "0.1.11",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2019 Georg Tavonius"
+    },
+    {
+      "name": "standard-navigation",
+      "version": "0.0.5",
+      "license": "MIT",
+      "copyright": "Satyajit Sahoo"
+    },
+    {
+      "name": "standardwebhooks",
+      "version": "1.1.1",
+      "license": "MIT",
+      "copyright": "Standard Webhooks"
+    },
+    {
+      "name": "statuses",
+      "version": "1.5.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "statuses",
+      "version": "2.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>"
+    },
+    {
+      "name": "stream-buffers",
+      "version": "2.2.0",
+      "license": "Unlicense",
+      "copyright": "Sam Day"
+    },
+    {
+      "name": "string-width",
+      "version": "4.2.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "strip-ansi",
+      "version": "5.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "strip-ansi",
+      "version": "6.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "strip-bom-string",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015, 2017, Jon Schlinkert"
+    },
+    {
+      "name": "structured-headers",
+      "version": "0.4.1",
+      "license": "MIT",
+      "copyright": "Evert Pot"
+    },
+    {
+      "name": "styleq",
+      "version": "0.1.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) Nicolas Gallagher"
+    },
+    {
+      "name": "stylis",
+      "version": "4.4.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016-present Sultan Tarimo"
+    },
+    {
+      "name": "supports-color",
+      "version": "5.5.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "supports-color",
+      "version": "7.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "supports-color",
+      "version": "8.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "supports-hyperlinks",
+      "version": "2.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) James Talmage <james@talmage.io> (github.com/jamestalmage)"
+    },
+    {
+      "name": "supports-preserve-symlinks-flag",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Inspect JS"
+    },
+    {
+      "name": "tagged-tag",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "terminal-link",
+      "version": "2.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "terser",
+      "version": "5.51.2",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright 2012-2018 (c) Mihai Bazon <mihai.bazon@gmail.com>"
+    },
+    {
+      "name": "tesseract.js",
+      "version": "7.0.0",
+      "license": "Apache-2.0",
+      "copyright": ""
+    },
+    {
+      "name": "tesseract.js-core",
+      "version": "7.0.0",
+      "license": "Apache-2.0",
+      "copyright": "antimatter15"
+    },
+    {
+      "name": "throat",
+      "version": "5.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Forbes Lindesay"
+    },
+    {
+      "name": "tiny-case",
+      "version": "1.0.3",
+      "license": "MIT",
+      "copyright": "Jason Quense"
+    },
+    {
+      "name": "tinyexec",
+      "version": "1.3.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Tinylibs"
+    },
+    {
+      "name": "tinyglobby",
+      "version": "0.2.17",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Madeline Gurriarán"
+    },
+    {
+      "name": "to-regex-range",
+      "version": "5.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present, Jon Schlinkert."
+    },
+    {
+      "name": "toidentifier",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2016 Douglas Christopher Wilson <doug@somethingdoug.com>"
+    },
+    {
+      "name": "toposort",
+      "version": "2.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012 by Marcel Klehr <mklehr@gmx.net>"
+    },
+    {
+      "name": "toqr",
+      "version": "0.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Phil Pluckthun,"
+    },
+    {
+      "name": "tr46",
+      "version": "0.0.3",
+      "license": "MIT",
+      "copyright": "Sebastian Mayr"
+    },
+    {
+      "name": "ts-algebra",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2020 Thomas Aribart"
+    },
+    {
+      "name": "ts-custom-error",
+      "version": "3.3.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2019 Adrien Gibrat https://github.com/adriengibrat"
+    },
+    {
+      "name": "ts-dedent",
+      "version": "2.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2018 Tamino Martinius"
+    },
+    {
+      "name": "tslib",
+      "version": "2.6.2",
+      "license": "0BSD",
+      "copyright": "Copyright (c) Microsoft Corporation."
+    },
+    {
+      "name": "type-fest",
+      "version": "0.21.3",
+      "license": "(MIT OR CC0-1.0)",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https:/sindresorhus.com)"
+    },
+    {
+      "name": "type-fest",
+      "version": "0.7.1",
+      "license": "(MIT OR CC0-1.0)",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)"
+    },
+    {
+      "name": "type-fest",
+      "version": "2.19.0",
+      "license": "(MIT OR CC0-1.0)",
+      "copyright": "Sindre Sorhus"
+    },
+    {
+      "name": "type-fest",
+      "version": "5.10.0",
+      "license": "(MIT OR CC0-1.0)",
+      "copyright": "Sindre Sorhus"
+    },
+    {
+      "name": "type-fest",
+      "version": "5.8.0",
+      "license": "(MIT OR CC0-1.0)",
+      "copyright": "Sindre Sorhus"
+    },
+    {
+      "name": "ua-parser-js",
+      "version": "0.7.41",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2025 Faisal Salman <<f@faisalman.com>>"
+    },
+    {
+      "name": "ua-parser-js",
+      "version": "1.0.41",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2012-2025 Faisal Salman <<f@faisalman.com>>"
+    },
+    {
+      "name": "uc.micro",
+      "version": "1.0.6",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "uc.micro",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "undici",
+      "version": "6.29.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) Matteo Collina and Undici contributors"
+    },
+    {
+      "name": "undici-types",
+      "version": "8.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Matteo Collina and Undici contributors"
+    },
+    {
+      "name": "unicode-canonical-property-names-ecmascript",
+      "version": "2.0.1",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "unicode-match-property-ecmascript",
+      "version": "2.0.0",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "unicode-match-property-value-ecmascript",
+      "version": "2.2.1",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "unicode-property-aliases-ecmascript",
+      "version": "2.2.0",
+      "license": "MIT",
+      "copyright": "Mathias Bynens"
+    },
+    {
+      "name": "unicorn-magic",
+      "version": "0.3.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "unimodules-app-loader",
+      "version": "58.0.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+    },
+    {
+      "name": "unpipe",
+      "version": "1.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015 Douglas Christopher Wilson <doug@somethingdoug.com>"
+    },
+    {
+      "name": "update-browserslist-db",
+      "version": "1.3.2",
+      "license": "MIT",
+      "copyright": "Copyright 2022 Andrey Sitnik <andrey@sitnik.es> and other contributors"
+    },
+    {
+      "name": "use-latest-callback",
+      "version": "0.2.6",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Satyajit Sahoo"
+    },
+    {
+      "name": "use-sync-external-store",
+      "version": "1.6.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Meta Platforms, Inc. and affiliates."
+    },
+    {
+      "name": "utils-merge",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-2017 Jared Hanson"
+    },
+    {
+      "name": "validate-npm-package-name",
+      "version": "5.0.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2015, npm, Inc"
+    },
+    {
+      "name": "vary",
+      "version": "1.1.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2017 Douglas Christopher Wilson"
+    },
+    {
+      "name": "victory",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-area",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-axis",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-bar",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-box-plot",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-brush-container",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-brush-line",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-candlestick",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-canvas",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-chart",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-core",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-create-container",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-cursor-container",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-errorbar",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-group",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-histogram",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-legend",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-line",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-native",
+      "version": "42.0.1",
+      "license": "MIT",
+      "copyright": ""
+    },
+    {
+      "name": "victory-pie",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-polar-axis",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-scatter",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-selection-container",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-shared-events",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-stack",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-tooltip",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-vendor",
+      "version": "37.4.1",
+      "license": "MIT AND ISC AND BSD-3-Clause",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-voronoi",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-voronoi-container",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "victory-zoom-container",
+      "version": "37.4.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015-2026 Nearform."
+    },
+    {
+      "name": "vlq",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2017 [these people](https://github.com/Rich-Harris/vlq/graphs/contributors)"
+    },
+    {
+      "name": "warn-once",
+      "version": "0.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2022 Satyajit Sahoo"
+    },
+    {
+      "name": "wasm-feature-detect",
+      "version": "1.8.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2017 Google Inc."
+    },
+    {
+      "name": "wasmboy",
+      "version": "0.7.1",
+      "license": "GPL-3.0-or-later",
+      "copyright": "Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>"
+    },
+    {
+      "name": "wcwidth",
+      "version": "1.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (C) 2012 by Jun Woong."
+    },
+    {
+      "name": "web-streams-polyfill",
+      "version": "3.3.3",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2024 Mattias Buelens"
+    },
+    {
+      "name": "webidl-conversions",
+      "version": "3.0.1",
+      "license": "BSD-2-Clause",
+      "copyright": "Copyright (c) 2014, Domenic Denicola"
+    },
+    {
+      "name": "whatwg-fetch",
+      "version": "3.6.20",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014-2023 GitHub, Inc."
+    },
+    {
+      "name": "whatwg-url",
+      "version": "5.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2015–2016 Sebastian Mayr"
+    },
+    {
+      "name": "whatwg-url-minimum",
+      "version": "0.2.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Phil Pluckthun,"
+    },
+    {
+      "name": "which",
+      "version": "2.0.2",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "wmf",
+      "version": "1.0.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2020-present   SheetJS LLC"
+    },
+    {
+      "name": "word",
+      "version": "0.3.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2020-present   SheetJS LLC"
+    },
+    {
+      "name": "wrap-ansi",
+      "version": "7.0.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "ws",
+      "version": "7.5.11",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>"
+    },
+    {
+      "name": "ws",
+      "version": "7.5.13",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>"
+    },
+    {
+      "name": "ws",
+      "version": "8.21.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>"
+    },
+    {
+      "name": "xcode",
+      "version": "4.0.0",
+      "license": "Apache-2.0",
+      "copyright": "Apache Software Foundation",
+      "notice": "Apache Cordova\nCopyright 2012-2020 The Apache Software Foundation\n\nThis product includes software developed at\nThe Apache Software Foundation (http://www.apache.org/)."
+    },
+    {
+      "name": "xlsx",
+      "version": "0.18.5",
+      "license": "Apache-2.0",
+      "copyright": "Copyright (C) 2012-present   SheetJS LLC"
+    },
+    {
+      "name": "xml2js",
+      "version": "0.6.0",
+      "license": "MIT",
+      "copyright": "Copyright 2010, 2011, 2012, 2013. All rights reserved."
+    },
+    {
+      "name": "xmlbuilder",
+      "version": "11.0.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Ozgur Ozcitak"
+    },
+    {
+      "name": "xmlbuilder",
+      "version": "15.1.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013 Ozgur Ozcitak"
+    },
+    {
+      "name": "y18n",
+      "version": "5.0.8",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2015, Contributors"
+    },
+    {
+      "name": "yallist",
+      "version": "3.1.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors"
+    },
+    {
+      "name": "yargs",
+      "version": "17.7.3",
+      "license": "MIT",
+      "copyright": "Copyright 2010 James Halliday (mail@substack.net); Modified work Copyright 2014 Contributors (ben@npmjs.com)"
+    },
+    {
+      "name": "yargs-parser",
+      "version": "21.1.1",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2016, Contributors"
+    },
+    {
+      "name": "yocto-queue",
+      "version": "0.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "yocto-queue",
+      "version": "1.2.2",
+      "license": "MIT",
+      "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)"
+    },
+    {
+      "name": "yup",
+      "version": "1.7.1",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2014 Jason Quense"
+    },
+    {
+      "name": "zlibjs",
+      "version": "0.3.1",
+      "license": "MIT",
+      "copyright": "* Copyright (c) 2012 imaya"
+    },
+    {
+      "name": "zod",
+      "version": "4.6.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2025 Colin McDonnell"
+    },
+    {
+      "name": "zxing-wasm",
+      "version": "3.1.0",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Ze-Zheng Wu"
+    },
+    {
+      "name": "zxing-wasm",
+      "version": "3.1.7",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2023 Ze-Zheng Wu"
+    }
+  ],
+  "texts": {
+    "MIT": "MIT License\n\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
+    "ISC": "The ISC License\n\n\nPermission to use, copy, modify, and/or distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\nWITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\nMERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\nANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\nWHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\nACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR\nIN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.",
+    "BSD-2-Clause": "All rights reserved.\n\nRedistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\nRedistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\nRedistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\nTHIS IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS,\nEVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
+    "BSD-3-Clause": "Redistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n* Redistributions of source code must retain the above copyright\n  notice, this list of conditions and the following disclaimer.\n* Redistributions in binary form must reproduce the above copyright\n  notice, this list of conditions and the following disclaimer in the\n  documentation and/or other materials provided with the distribution.\n* Neither the name of its author, nor the names of its contributors\n  may be used to endorse or promote products derived from this software\n  without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
+    "Apache-2.0": "Licensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.",
+    "MPL-2.0": "Mozilla Public License Version 2.0\n==================================\n\n1. Definitions\n--------------\n\n1.1. \"Contributor\"\nmeans each individual or legal entity that creates, contributes to\nthe creation of, or owns Covered Software.\n\n1.2. \"Contributor Version\"\nmeans the combination of the Contributions of others (if any) used\nby a Contributor and that particular Contributor's Contribution.\n\n1.3. \"Contribution\"\nmeans Covered Software of a particular Contributor.\n\n1.4. \"Covered Software\"\nmeans Source Code Form to which the initial Contributor has attached\nthe notice in Exhibit A, the Executable Form of such Source Code\nForm, and Modifications of such Source Code Form, in each case\nincluding portions thereof.\n\n1.5. \"Incompatible With Secondary Licenses\"\nmeans\n\n(a) that the initial Contributor has attached the notice described\nin Exhibit B to the Covered Software; or\n\n(b) that the Covered Software was made available under the terms of\nversion 1.1 or earlier of the License, but not also under the\nterms of a Secondary License.\n\n1.6. \"Executable Form\"\nmeans any form of the work other than Source Code Form.\n\n1.7. \"Larger Work\"\nmeans a work that combines Covered Software with other material, in\na separate file or files, that is not Covered Software.\n\n1.8. \"License\"\nmeans this document.\n\n1.9. \"Licensable\"\nmeans having the right to grant, to the maximum extent possible,\nwhether at the time of the initial grant or subsequently, any and\nall of the rights conveyed by this License.\n\n1.10. \"Modifications\"\nmeans any of the following:\n\n(a) any file in Source Code Form that results from an addition to,\ndeletion from, or modification of the contents of Covered\nSoftware; or\n\n(b) any new file in Source Code Form that contains any Covered\nSoftware.\n\n1.11. \"Patent Claims\" of a Contributor\nmeans any patent claim(s), including without limitation, method,\nprocess, and apparatus claims, in any patent Licensable by such\nContributor that would be infringed, but for the grant of the\nLicense, by the making, using, selling, offering for sale, having\nmade, import, or transfer of either its Contributions or its\nContributor Version.\n\n1.12. \"Secondary License\"\nmeans either the GNU General Public License, Version 2.0, the GNU\nLesser General Public License, Version 2.1, the GNU Affero General\nPublic License, Version 3.0, or any later versions of those\nlicenses.\n\n1.13. \"Source Code Form\"\nmeans the form of the work preferred for making modifications.\n\n1.14. \"You\" (or \"Your\")\nmeans an individual or a legal entity exercising rights under this\nLicense. For legal entities, \"You\" includes any entity that\ncontrols, is controlled by, or is under common control with You. For\npurposes of this definition, \"control\" means (a) the power, direct\nor indirect, to cause the direction or management of such entity,\nwhether by contract or otherwise, or (b) ownership of more than\nfifty percent (50%) of the outstanding shares or beneficial\nownership of such entity.\n\n2. License Grants and Conditions\n--------------------------------\n\n2.1. Grants\n\nEach Contributor hereby grants You a world-wide, royalty-free,\nnon-exclusive license:\n\n(a) under intellectual property rights (other than patent or trademark)\nLicensable by such Contributor to use, reproduce, make available,\nmodify, display, perform, distribute, and otherwise exploit its\nContributions, either on an unmodified basis, with Modifications, or\nas part of a Larger Work; and\n\n(b) under Patent Claims of such Contributor to make, use, sell, offer\nfor sale, have made, import, and otherwise transfer either its\nContributions or its Contributor Version.\n\n2.2. Effective Date\n\nThe licenses granted in Section 2.1 with respect to any Contribution\nbecome effective for each Contribution on the date the Contributor first\ndistributes such Contribution.\n\n2.3. Limitations on Grant Scope\n\nThe licenses granted in this Section 2 are the only rights granted under\nthis License. No additional rights or licenses will be implied from the\ndistribution or licensing of Covered Software under this License.\nNotwithstanding Section 2.1(b) above, no patent license is granted by a\nContributor:\n\n(a) for any code that a Contributor has removed from Covered Software;\nor\n\n(b) for infringements caused by: (i) Your and any other third party's\nmodifications of Covered Software, or (ii) the combination of its\nContributions with other software (except as part of its Contributor\nVersion); or\n\nits Contributions.\n\nThis License does not grant any rights in the trademarks, service marks,\nor logos of any Contributor (except as may be necessary to comply with\nthe notice requirements in Section 3.4).\n\n2.4. Subsequent Licenses\n\nNo Contributor makes additional grants as a result of Your choice to\ndistribute the Covered Software under a subsequent version of this\nLicense (see Section 10.2) or under the terms of a Secondary License (if\npermitted under the terms of Section 3.3).\n\n2.5. Representation\n\nEach Contributor represents that the Contributor believes its\nContributions are its original creation(s) or it has sufficient rights\nto grant the rights to its Contributions conveyed by this License.\n\n2.6. Fair Use\n\nThis License is not intended to limit any rights You have under\napplicable copyright doctrines of fair use, fair dealing, or other\nequivalents.\n\n2.7. Conditions\n\nSections 3.1, 3.2, 3.3, and 3.4 are conditions of the licenses granted\nin Section 2.1.\n\n3. Responsibilities\n-------------------\n\n3.1. Distribution of Source Form\n\nAll distribution of Covered Software in Source Code Form, including any\nModifications that You create or to which You contribute, must be under\nthe terms of this License. You must inform recipients that the Source\nCode Form of the Covered Software is governed by the terms of this\nLicense, and how they can obtain a copy of this License. You may not\nattempt to alter or restrict the recipients' rights in the Source Code\nForm.\n\n3.2. Distribution of Executable Form\n\nIf You distribute Covered Software in Executable Form then:\n\n(a) such Covered Software must also be made available in Source Code\nForm, as described in Section 3.1, and You must inform recipients of\nthe Executable Form how they can obtain a copy of such Source Code\nForm by reasonable means in a timely manner, at a charge no more\nthan the cost of distribution to the recipient; and\n\n(b) You may distribute such Executable Form under the terms of this\nLicense, or sublicense it under different terms, provided that the\nlicense for the Executable Form does not attempt to limit or alter\nthe recipients' rights in the Source Code Form under this License.\n\n3.3. Distribution of a Larger Work\n\nYou may create and distribute a Larger Work under terms of Your choice,\nprovided that You also comply with the requirements of this License for\nthe Covered Software. If the Larger Work is a combination of Covered\nSoftware with a work governed by one or more Secondary Licenses, and the\nCovered Software is not Incompatible With Secondary Licenses, this\nLicense permits You to additionally distribute such Covered Software\nunder the terms of such Secondary License(s), so that the recipient of\nthe Larger Work may, at their option, further distribute the Covered\nSoftware under the terms of either this License or such Secondary\nLicense(s).\n\n3.4. Notices\n\nYou may not remove or alter the substance of any license notices\n(including copyright notices, patent notices, disclaimers of warranty,\nor limitations of liability) contained within the Source Code Form of\nthe Covered Software, except that You may alter any license notices to\nthe extent required to remedy known factual inaccuracies.\n\n3.5. Application of Additional Terms\n\nYou may choose to offer, and to charge a fee for, warranty, support,\nindemnity or liability obligations to one or more recipients of Covered\nSoftware. However, You may do so only on Your own behalf, and not on\nbehalf of any Contributor. You must make it absolutely clear that any\nsuch warranty, support, indemnity, or liability obligation is offered by\nYou alone, and You hereby agree to indemnify every Contributor for any\nliability incurred by such Contributor as a result of warranty, support,\nindemnity or liability terms You offer. You may include additional\ndisclaimers of warranty and limitations of liability specific to any\njurisdiction.\n\n4. Inability to Comply Due to Statute or Regulation\n---------------------------------------------------\n\nIf it is impossible for You to comply with any of the terms of this\nLicense with respect to some or all of the Covered Software due to\nstatute, judicial order, or regulation then You must: (a) comply with\nthe terms of this License to the maximum extent possible; and (b)\ndescribe the limitations and the code they affect. Such description must\nbe placed in a text file included with all distributions of the Covered\nSoftware under this License. Except to the extent prohibited by statute\nor regulation, such description must be sufficiently detailed for a\nrecipient of ordinary skill to be able to understand it.\n\n5. Termination\n--------------\n\n5.1. The rights granted under this License will terminate automatically\nif You fail to comply with any of its terms. However, if You become\ncompliant, then the rights granted under this License from a particular\nContributor are reinstated (a) provisionally, unless and until such\nContributor explicitly and finally terminates Your grants, and (b) on an\nongoing basis, if such Contributor fails to notify You of the\nnon-compliance by some reasonable means prior to 60 days after You have\ncome back into compliance. Moreover, Your grants from a particular\nContributor are reinstated on an ongoing basis if such Contributor\nnotifies You of the non-compliance by some reasonable means, this is the\nfirst time You have received notice of non-compliance with this License\nfrom such Contributor, and You become compliant prior to 30 days after\nYour receipt of the notice.\n\n5.2. If You initiate litigation against any entity by asserting a patent\ninfringement claim (excluding declaratory judgment actions,\ncounter-claims, and cross-claims) alleging that a Contributor Version\ndirectly or indirectly infringes any patent, then the rights granted to\nYou by any and all Contributors for the Covered Software under Section\n2.1 of this License shall terminate.\n\n5.3. In the event of termination under Sections 5.1 or 5.2 above, all\nend user license agreements (excluding distributors and resellers) which\nhave been validly granted by You or Your distributors under this License\nprior to termination shall survive termination.\n\n************************************************************************\n* *\n* 6. Disclaimer of Warranty *\n* ------------------------- *\n* *\n* Covered Software is provided under this License on an \"as is\" *\n* basis, without warranty of any kind, either expressed, implied, or *\n* statutory, including, without limitation, warranties that the *\n* Covered Software is free of defects, merchantable, fit for a *\n* particular purpose or non-infringing. The entire risk as to the *\n* quality and performance of the Covered Software is with You. *\n* Should any Covered Software prove defective in any respect, You *\n* (not any Contributor) assume the cost of any necessary servicing, *\n* repair, or correction. This disclaimer of warranty constitutes an *\n* essential part of this License. No use of any Covered Software is *\n* authorized under this License except under this disclaimer. *\n* *\n************************************************************************\n\n************************************************************************\n* *\n* 7. Limitation of Liability *\n* -------------------------- *\n* *\n* Under no circumstances and under no legal theory, whether tort *\n* (including negligence), contract, or otherwise, shall any *\n* Contributor, or anyone who distributes Covered Software as *\n* permitted above, be liable to You for any direct, indirect, *\n* special, incidental, or consequential damages of any character *\n* including, without limitation, damages for lost profits, loss of *\n* goodwill, work stoppage, computer failure or malfunction, or any *\n* and all other commercial damages or losses, even if such party *\n* shall have been informed of the possibility of such damages. This *\n* limitation of liability shall not apply to liability for death or *\n* personal injury resulting from such party's negligence to the *\n* extent applicable law prohibits such limitation. Some *\n* jurisdictions do not allow the exclusion or limitation of *\n* incidental or consequential damages, so this exclusion and *\n* limitation may not apply to You. *\n* *\n************************************************************************\n\n8. Litigation\n-------------\n\nAny litigation relating to this License may be brought only in the\ncourts of a jurisdiction where the defendant maintains its principal\nplace of business and such litigation shall be governed by laws of that\njurisdiction, without reference to its conflict-of-law provisions.\nNothing in this Section shall prevent a party's ability to bring\ncross-claims or counter-claims.\n\n9. Miscellaneous\n----------------\n\nThis License represents the complete agreement concerning the subject\nmatter hereof. If any provision of this License is held to be\nunenforceable, such provision shall be reformed only to the extent\nnecessary to make it enforceable. Any law or regulation which provides\nthat the language of a contract shall be construed against the drafter\nshall not be used to construe this License against a Contributor.\n\n10. Versions of the License\n---------------------------\n\n10.1. New Versions\n\nMozilla Foundation is the license steward. Except as provided in Section\n10.3, no one other than the license steward has the right to modify or\npublish new versions of this License. Each version will be given a\ndistinguishing version number.\n\n10.2. Effect of New Versions\n\nYou may distribute the Covered Software under the terms of the version\nof the License under which You originally received the Covered Software,\nor under the terms of any subsequent version published by the license\nsteward.\n\n10.3. Modified Versions\n\nIf you create software not governed by this License, and you want to\ncreate a new license for such software, you may create and use a\nmodified version of this License if you rename the license and remove\nany references to the name of the license steward (except to note that\nsuch modified license differs from this License).\n\n10.4. Distributing Source Code Form that is Incompatible With Secondary\nLicenses\n\nIf You choose to distribute Source Code Form that is Incompatible With\nSecondary Licenses under the terms of this version of the License, the\nnotice described in Exhibit B of this License must be attached.\n\nExhibit A - Source Code Form License Notice\n-------------------------------------------\n\nThis Source Code Form is subject to the terms of the Mozilla Public\nLicense, v. 2.0. If a copy of the MPL was not distributed with this\nfile, You can obtain one at https://mozilla.org/MPL/2.0/.\n\nIf it is not possible or desirable to put the notice in a particular\nfile, then You may include the notice in a location (such as a LICENSE\nfile in a relevant directory) where a recipient would be likely to look\nfor such a notice.\n\nYou may add additional accurate notices of copyright ownership.\n\nExhibit B - \"Incompatible With Secondary Licenses\" Notice\n---------------------------------------------------------\n\nThis Source Code Form is \"Incompatible With Secondary Licenses\", as\ndefined by the Mozilla Public License, v. 2.0."
+  }
+}

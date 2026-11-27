@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Avvisi di terze parti",
-      "intro": "Musclog è basata su software open source e su un modello aperto. Queste sono le licenze che si applicano.",
+      "intro": "Musclog è costruito su software open source, dati aperti e modelli aperti. Ecco le licenze che si applicano.",
       "link": "Avvisi di terze parti",
       "linkSubtitle": "Software open source e il modello sul dispositivo",
-      "openLink": "Apri il testo completo"
+      "openLink": "Apri il testo completo",
+      "packagesTitle": "Pacchetti open source"
     }
   }
 }

@@ -59,6 +59,11 @@ export interface CycleReminder {
   repeatsDaily?: boolean;
   /** For the wording: the estimated range or day the reminder is about. */
   range?: { from: number; to: number };
+  /**
+   * The last one-shot planned ahead: nothing more is scheduled until the app is opened, and the
+   * reminder says so instead of the series ending in silence.
+   */
+  renewalDue?: boolean;
 }
 
 export const DEFAULT_CYCLE_REMINDERS: CycleReminderPreferences = {
@@ -230,12 +235,20 @@ export function planCycleReminders(
     if (pill.breakDays === 0 && pill.packStart <= nowMs) {
       reminders.push({ kind: 'pill', date: nextAt(pill.hour, pill.minute), repeatsDaily: true });
     } else {
+      const oneShots: CycleReminder[] = [];
       for (let i = 0; i <= PILL_HORIZON_DAYS; i++) {
         const day = addCalendarDays(new Date(nowMs).setHours(0, 0, 0, 0), i);
         if (isPillDay(pill, day)) {
-          reminders.push({ kind: 'pill', date: atTime(day, pill.hour, pill.minute) });
+          oneShots.push({ kind: 'pill', date: atTime(day, pill.hour, pill.minute) });
         }
       }
+
+      const last = oneShots[oneShots.length - 1];
+      if (last) {
+        last.renewalDue = true;
+      }
+
+      reminders.push(...oneShots);
     }
   }
 

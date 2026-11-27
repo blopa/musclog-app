@@ -211,6 +211,11 @@
       "openrouterTerms": "OpenRouter şartları",
       "otariPrivacy": "Otari gizlilik bildirimi",
       "otariTerms": "Otari şartları"
-    }
+    },
+    "ageGate": {
+      "minimumApp": "Musclog, {{age}} yaş ve üzeri insanlar içindir.",
+      "cloudAi": "Musclog Iron ve ücretsiz yapay zekâ seçeneği {{age}} yaş ve üzeri insanlar içindir."
+    },
+    "healthDisclaimer": "Kalori hedefleri, kilolar ve planlar tahmindir, tıbbi tavsiye değildir. Hamileysen veya emziriyorsan, yeme bozukluğun varsa veya geçmişte olduysa, bir yaralanman ya da tıbbi bir durumun varsa, bunları takip etmeden önce bir doktora veya başka bir uzmana danış."
   }
 }

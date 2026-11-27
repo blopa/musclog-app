@@ -91,6 +91,14 @@ export default function Terms() {
       ),
     },
     {
+      title: t('sections.eligibility.title'),
+      content: (
+        <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+          {t('sections.eligibility.content')}
+        </p>
+      ),
+    },
+    {
       title: t('sections.links.title'),
       content: (
         <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
@@ -112,8 +120,11 @@ export default function Terms() {
           <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.subscription.content3')}
           </p>
-          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.subscription.content4')}
+          </p>
+          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content5')}
           </p>
         </>
       ),

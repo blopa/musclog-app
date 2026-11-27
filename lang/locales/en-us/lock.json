@@ -4,7 +4,7 @@
       "title": "App lock",
       "subtitle": "Ask for fingerprint, face or device PIN",
       "hint": "Ask for your fingerprint, face or device PIN before showing the areas you choose. They lock again after the app has been in the background for 30 seconds.",
-      "note": "This is a screen lock. Your data stays encrypted and on this phone; exported backups are separate files that you control.",
+      "note": "This is a screen lock. Your data stays on this phone; exported backups are separate files that you control.",
       "noCredential": "Set up a screen lock or biometrics on your device first.",
       "coveredByApp": "Covered by locking the whole app"
     },

@@ -53,9 +53,9 @@
     },
     "goToSettings": "Aller aux réglages",
     "success": {
-      "workoutPlanGenerated": "J'ai créé {{count}} séances pour toi ! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "J'ai créé {{planName}} avec {{count}} séances pour toi ! 💪 {{description}}",
-      "mealPlanGenerated": "J'ai créé un plan de repas de 3 jours avec {{count}} repas pour toi ! 🥗 {{description}}",
+      "workoutPlanGenerated": "J'ai créé {{count}} séances pour toi ! 💪 {{description}} Vérifie-les avant de t'entraîner.",
+      "workoutPlanGeneratedWithName": "J'ai créé {{planName}} avec {{count}} séances pour toi ! 💪 {{description}} Vérifie-les avant de t'entraîner.",
+      "mealPlanGenerated": "J'ai créé un plan de repas de 3 jours avec {{count}} repas pour toi ! 🥗 {{description}} Vérifie les aliments et les quantités avant de t'y fier.",
       "trackMealSuccess": "J'ai enregistré {{count}} ingrédients pour ton repas : {{ingredients}}. Total : {{calories}}.",
       "trackMealReady": "J'ai analysé {{count}} repas : {{meals}} ({{calories}} au total). Touche un repas pour le vérifier et l'enregistrer.",
       "historyCleared": "Historique de discussion effacé."
@@ -119,9 +119,12 @@
       "copied": "Message copié dans le presse-papiers",
       "deleted": "Message supprimé",
       "report": "Signaler un problème",
-      "reportDesc": "Signaler par e-mail un problème avec cette réponse",
+      "reportDesc": "Envoyer cette réponse à Musclog pour que nous puissions l'examiner",
       "reportSubject": "Problème avec une réponse de l'IA de Musclog",
-      "reportIntro": "Qu'est-ce qui n'allait pas dans cette réponse ? (Tu peux modifier ou supprimer le texte ci-dessous avant l'envoi.)"
+      "reportIntro": "Qu'est-ce qui n'allait pas dans cette réponse ? (Tu peux modifier ou supprimer le texte ci-dessous avant l'envoi.)",
+      "reportConfirm": "Ceci envoie la réponse, la version de l'application, ta plateforme et ta langue à Musclog, via Sentry, notre service de suivi des erreurs. Rien d'autre de la conversation n'est envoyé.",
+      "reportSend": "Envoyer le rapport",
+      "reportSent": "Rapport envoyé. Merci."
     },
     "sendViaOpenAI": "Envoyer via OpenAI",
     "personas": {

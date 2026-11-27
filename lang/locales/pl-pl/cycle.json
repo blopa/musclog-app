@@ -620,7 +620,8 @@
       "backup": {
         "title": "Kopia cyklu",
         "body": "Rozważ zapisanie zaszyfrowanej kopii swoich zapisów."
-      }
+      },
+      "renewReminders": "Otwórz Musclog, żeby przypomnienia dalej przychodziły."
     },
     "reminders": {
       "time": "Godzina przypomnienia",
@@ -670,7 +671,7 @@
         "pattern24": "24 dni + 4 przerwy",
         "continuous": "Codziennie",
         "packStart": "Pierwsza tabletka z bieżącego opakowania",
-        "hint": "W dni bez tabletki nie ma przypomnienia. To przypomnienie, nie porada medyczna: jeśli opuścisz tabletkę, postępuj zgodnie z ulotką.",
+        "hint": "W dni bez tabletek nie ma przypomnienia. To przypomnienie, a nie porada medyczna: jeśli opuścisz tabletkę, postępuj zgodnie z ulotką. Telefony mogą opóźniać lub wyciszać powiadomienia, więc nie polegaj na tym jako na jedynym przypomnieniu. Przy opakowaniach z dniami bez tabletek otwieraj Musclog co najmniej raz na cztery tygodnie, żeby przypomnienia dalej przychodziły.",
         "notPaused": "działa dalej podczas wstrzymania"
       },
       "pause": {

@@ -138,6 +138,11 @@
     "dynamicBadge": "Dinamico",
     "dynamicRequiredFields": "Peso obiettivo e data obiettivo sono obbligatori per gli obiettivi dinamici.",
     "keepCurrentTargets": "Mantieni i miei target attuali",
-    "perGram": "{{energy}}/g"
+    "perGram": "{{energy}}/g",
+    "safety": {
+      "belowMinimum": "Questo valore è sotto il minimo che Musclog consiglia per te. Chiedi a un medico o a un dietista prima di mangiare così poco.",
+      "underweightCut": "Il tuo peso attuale rientra nella fascia di sottopeso (IMC sotto 18,5). Musclog non consiglia di perdere peso. Parla con un medico.",
+      "goalUnderweight": "Questo peso obiettivo rientra nella fascia di sottopeso (IMC sotto 18,5). Scegli un obiettivo più alto o parla con un medico."
+    }
   }
 }

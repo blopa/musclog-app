@@ -16,7 +16,7 @@
       "unmarkButton": "Desmarcar dia de jejum",
       "unmarkShort": "Desmarcar",
       "confirmTitle": "Marcar como dia de jejum?",
-      "confirmMessage": "Isso marca o dia como um em que você jejuou, então conta como um dia real de 0 calorias nas suas médias, TDEE e sequências.",
+      "confirmMessage": "Isto marca o dia como um dia de jejum, então ele conta como um dia real de 0 calorias nas suas médias, no TDEE e nas sequências. O jejum não é seguro para todo mundo: pergunte antes a um médico se você está grávida ou amamentando, toma medicamentos, tem diabetes ou já teve um transtorno alimentar.",
       "confirmButton": "Marcar como dia de jejum"
     },
     "logDetails": {

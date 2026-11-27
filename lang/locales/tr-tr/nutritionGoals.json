@@ -138,6 +138,11 @@
     "dynamicBadge": "Dinamik",
     "dynamicRequiredFields": "Dinamik hedefler için hedef kilo ve hedef tarih gerekli.",
     "keepCurrentTargets": "Mevcut hedeflerimi koru",
-    "perGram": "{{energy}}/g"
+    "perGram": "{{energy}}/g",
+    "safety": {
+      "belowMinimum": "Bu, Musclog'un senin için önerdiği minimumun altında. Bu kadar az yemeden önce bir doktora ya da diyetisyene danış.",
+      "underweightCut": "Mevcut kilon zayıflık aralığında (VKİ 18.5'in altında). Musclog kilo vermeni önermez. Bir doktorla konuş.",
+      "goalUnderweight": "Bu hedef kilo zayıflık aralığında (VKİ 18.5'in altında). Daha yüksek bir hedef seç ya da bir doktorla konuş."
+    }
   }
 }

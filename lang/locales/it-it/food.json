@@ -16,7 +16,7 @@
       "unmarkButton": "Rimuovi giorno di digiuno",
       "unmarkShort": "Rimuovi",
       "confirmTitle": "Segnare come giorno di digiuno?",
-      "confirmMessage": "Questo segna il giorno come digiuno, quindi conta come un vero giorno da 0 calorie nelle tue medie, nel TDEE e nelle serie consecutive.",
+      "confirmMessage": "Questo segna il giorno come giorno di digiuno: conta come un vero giorno a 0 calorie nelle tue medie, nel TDEE e nelle serie. Il digiuno non è sicuro per tutti: chiedi prima a un medico se sei in gravidanza o stai allattando, assumi farmaci, hai il diabete o hai avuto un disturbo alimentare.",
       "confirmButton": "Segna come giorno di digiuno"
     },
     "logDetails": {

@@ -4,6 +4,7 @@ import { Linking } from 'react-native';
 import { PREMIUM_BUSY_KEYS, PremiumModal } from '@/components/modals/PremiumModal';
 import { PREMIUM_NOTICES } from '@/components/premium/premiumNotices';
 import { PREMIUM_BENEFITS } from '@/components/premium/PremiumPaywall';
+import { useCloudAiBlockedForAge } from '@/hooks/useCloudAiAge';
 import { usePremium } from '@/hooks/usePremium';
 import {
   beginPremiumActivity,
@@ -21,6 +22,7 @@ import {
 } from '@/utils/premium/premiumUiState';
 
 jest.mock('@/hooks/usePremium', () => ({ usePremium: jest.fn() }));
+jest.mock('@/hooks/useCloudAiAge', () => ({ useCloudAiBlockedForAge: jest.fn(() => false) }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
 jest.mock('@/hooks/useFormatAppNumber', () => ({
   useFormatAppNumber: () => ({ formatInteger: (n: number) => String(n) }),
@@ -435,6 +437,23 @@ describe('PremiumModal', () => {
       expect(screen.getByText('premium.benefit')).toBeTruthy();
       expect(screen.queryByText('premium.paywall.headline')).toBeNull();
     });
+  });
+
+  it('offers someone under 18 no way to subscribe or restore, and says why', () => {
+    const blocked = useCloudAiBlockedForAge as jest.Mock;
+    blocked.mockReturnValue(true);
+    mockUsePremium.mockReturnValue(
+      premiumWith(
+        buildPremiumViewModel(input({ status: 'not_subscribed' as never, config: CONFIG_ON }))
+      )
+    );
+
+    renderModal();
+
+    expect(screen.getByText('common.ageGate.cloudAi:{"age":18}')).toBeTruthy();
+    expect(screen.queryByText('premium.subscribe')).toBeNull();
+    expect(screen.queryByText('premium.restore')).toBeNull();
+    blocked.mockReturnValue(false);
   });
 
   it('shows the loading text while the status is unknown', () => {

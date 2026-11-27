@@ -2,7 +2,7 @@
   "advertising": false,
   "ageAssurance": false,
   "ageRatingOverride": "NONE",
-  "ageRatingOverrideV2": "NONE",
+  "ageRatingOverrideV2": "SIXTEEN_PLUS",
   "alcoholTobaccoOrDrugUseOrReferences": "NONE",
   "contests": "NONE",
   "gambling": false,

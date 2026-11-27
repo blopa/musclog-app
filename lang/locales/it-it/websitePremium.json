@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Cosa succede ai tuoi messaggi",
-      "body": "Con Musclog Iron attivo, le richieste IA vanno al servizio di Musclog, che le inoltra tramite un gateway AI, OpenRouter o Otari di Mozilla.ai, al modello IA. Le richieste vengono inviate solo a fornitori che offrono zero conservazione dei dati (ZDR), e il servizio non conserva il testo dei tuoi messaggi né le immagini. Tiene un conteggio dell'utilizzo per il periodo del tuo abbonamento e un identificativo per ogni dispositivo su cui usi Musclog Iron. OpenRouter verifica inoltre tutte le richieste per materiale di abuso sessuale su minori e può conservare una richiesta segnalata, come descrive la propria politica; Otari dichiara di non memorizzare il contenuto delle richieste.",
+      "body": "Quando Musclog Iron è attivo, le tue richieste AI vanno al servizio di Musclog, che le inoltra tramite un gateway AI, OpenRouter o Otari di Mozilla.ai, al modello AI. Le richieste vengono inviate solo a provider che offrono zero conservazione dei dati, e il servizio non memorizza il testo dei tuoi messaggi né le tue immagini. OpenRouter verifica anche tutte le richieste per materiale di abuso sessuale su minori e può conservare quelle che segnala, come descritto nella sua politica; Otari dichiara di non memorizzare il contenuto delle richieste. Il servizio di Musclog conserva un conteggio dell'utilizzo per il tuo periodo di abbonamento, un identificativo per ogni dispositivo su cui usi Musclog Iron e, per 7 giorni, una breve impronta di ogni richiesta.",
       "consent": "L'app ti chiede il consenso prima di inviare qualsiasi cosa a Musclog Iron, e lo chiede di nuovo se ripristini un backup su un altro dispositivo.",
       "link": "Leggi l'informativa sulla privacy"
     },
@@ -42,7 +42,8 @@
         "Viene addebitato mensilmente da App Store o Google Play, al prezzo mostrato dallo store.",
         "Si rinnova automaticamente finché non lo annulli dal tuo account store. Annullare blocca il rinnovo successivo.",
         "Gli abbonamenti iOS e Android sono separati, quindi un abbonamento acquistato su uno dei due non passa all'altro.",
-        "Non serve un account Musclog. Il tuo abbonamento viene verificato tramite lo store."
+        "Non serve un account Musclog. Il tuo abbonamento viene verificato tramite lo store.",
+        "Musclog Iron è per persone di 18 anni o più."
       ],
       "terms": "Termini d'uso"
     },

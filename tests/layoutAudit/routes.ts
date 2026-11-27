@@ -340,6 +340,10 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/AISettingsModal.tsx': { fixture: 'Open AI Settings Modal' },
   'components/modals/AIBehaviorSettingsModal.tsx': { fixture: 'Open AI Behavior Modal' },
   'components/modals/ThirdPartyNoticesModal.tsx': { fixture: 'Open Third Party Notices Modal' },
+  'components/modals/AiProviderConsentModal.tsx': {
+    unaudited:
+      'a ConfirmationModal with consent copy and no layout of its own; ConfirmationModal is audited by its fixture',
+  },
   'components/modals/AddExerciseModal.tsx': { fixture: 'Open Add Exercise Modal' },
   'components/modals/AddExerciseToSessionModal.tsx': {
     fixture: 'Open Add Exercise To Session Modal',

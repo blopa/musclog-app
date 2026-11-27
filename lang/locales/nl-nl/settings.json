@@ -22,7 +22,7 @@
       "writeHealthData": "Gezondheidsgegevens schrijven",
       "healthData": "Gezondheidsgegevens",
       "healthDataSubtitle": "Synchroniseer je workouts en lichaamsgegevens",
-      "healthDataPrivacy": "Je gezondheidsgegevens worden alleen lokaal opgeslagen.",
+      "healthDataPrivacy": "Je gezondheidsgegevens worden op dit apparaat opgeslagen. Ze worden alleen naar elders gestuurd als je een AI-optie aanzet.",
       "syncNow": "Nu synchroniseren",
       "syncing": "Synchroniseren...",
       "foodSearchSource": "Voedingszoekbron",
@@ -33,7 +33,7 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "Database van het Amerikaanse Ministerie van Landbouw",
       "foodSearchMusclog": "Musclog",
-      "foodSearchMusclogDescription": "Musclog barcode-database (alleen barcode scannen)",
+      "foodSearchMusclogDescription": "Barcodedatabase met productinformatie van supermarkten in Nederland (alleen barcodescan)",
       "foodSearchNone": "Geen",
       "foodSearchNoneDescription": "Zoek alleen in je lokale database",
       "energyUnit": "Energie-eenheid",
@@ -258,7 +258,8 @@
         "unavailable": "Opslag kon nu niet worden gelezen.",
         "retry": "Opnieuw proberen"
       },
-      "storageSubtitle": "Bekijk wat Musclog op dit apparaat bewaart en maak ruimte vrij"
+      "storageSubtitle": "Bekijk wat Musclog op dit apparaat bewaart en maak ruimte vrij",
+      "backupReminder": "Je gegevens bestaan alleen op dit apparaat. Als je het apparaat verliest of Musclog verwijdert, zijn ze weg. Exporteer af en toe een back-up."
     },
     "chatMessages": {
       "title": "Chatberichten",
@@ -283,9 +284,9 @@
       "insightsAlerts": "Inzichten & meldingen",
       "enableGoogleGemini": "Google Gemini inschakelen",
       "dailyNutritionInsights": "Dagelijkse voedingsinzichten",
-      "dailyNutritionInsightsSubtitle": "Ochtendsamenvatting op basis van logboeken",
+      "dailyNutritionInsightsSubtitle": "Eén keer per dag worden je laatste 7 dagen aan maaltijden naar je AI gestuurd",
       "workoutInsights": "Workout-inzichten",
-      "workoutInsightsSubtitle": "Analyse na de workout",
+      "workoutInsightsSubtitle": "Eén keer per dag worden je laatste 7 dagen aan workouts naar je AI gestuurd",
       "enableOpenAi": "OpenAI inschakelen",
       "localLlmIntegration": "Lokale LLM integratie",
       "enableLocalLlm": "Lokale LLM inschakelen",
@@ -431,13 +432,19 @@
         "toggleSubtitle": "Draait op het gratis niveau van Google, dat kan gebruiken wat je verstuurt. De dagelijkse limiet wordt door alle gebruikers gedeeld.",
         "activeNote": "Gratis niveau is actief. Je eigen API-sleutels worden niet gebruikt.",
         "consentTitle": "Gegevens delen met Google?",
-        "consentBody": "Wanneer je een AI-functie gebruikt, wordt wat ze nodig heeft (bijvoorbeeld je trainingen, maaltijden, lichaamsmaten of chatberichten) via OpenRouter naar het gratis niveau van Google AI Studio gestuurd om het antwoord te schrijven. Google mag wat er wordt verstuurd bewaren, gebruiken om zijn producten te verbeteren en door mensen (zonder identificatiegegevens) laten beoordelen, dus het gratis niveau is niet privé: voer geen persoonlijke of gevoelige informatie in. Het gratis niveau is alleen voor volwassenen (18+). Als dat niet oké voor je is, laat het uit. Er wordt niets verstuurd totdat je een AI-functie gebruikt. Er is een dagelijkse limiet die iedereen die het gratis niveau gebruikt deelt, dus die kan vroeg op de dag al op zijn, en het gratis niveau kan soms niet beschikbaar zijn.",
+        "consentBody": "Wanneer je een AI-functie gebruikt, wordt wat die nodig heeft (bijvoorbeeld je workouts, maaltijden en lichaamsmaten, ook die die zijn geïmporteerd uit Health Connect of Apple Health, of chatberichten) via OpenRouter naar de gratis laag van Google AI Studio gestuurd om het antwoord te schrijven. Google mag bewaren wat wordt gestuurd, het gebruiken om zijn producten te verbeteren en het (zonder identificatoren) door mensen laten beoordelen, dus de gratis laag is niet privé: voer geen persoonlijke of gevoelige informatie in. De gratis laag is voor volwassenen: door akkoord te gaan bevestig je dat je 18 of ouder bent. Als dat niet oké voor je is, laat het uit. Er wordt niets verstuurd totdat je een AI-functie gebruikt, wat ook de dagelijkse inzichten omvat als je die aanzet. Er is een dagelijkse limiet die iedereen die de gratis laag gebruikt deelt, dus die kan vroeg op de dag opraken, en de gratis laag kan soms niet beschikbaar zijn.",
         "consentConfirm": "Akkoord en inschakelen"
       },
       "testKey": "Sleutel testen",
       "testingKey": "Testen…",
       "premium": {
         "activeNote": "Musclog Iron beantwoordt je AI-verzoeken. Je eigen sleutels en de gratis versie worden niet gebruikt zolang het aan staat."
+      },
+      "providerConsent": {
+        "title": "Gegevens naar {{provider}} sturen?",
+        "body": "Wanneer je een AI-functie gebruikt, wordt wat die nodig heeft naar {{provider}} gestuurd onder je eigen API-sleutel: je berichten en maaltijdfoto's, en gegevens zoals je leeftijd, geslacht, gewicht, lichaamsvet, workouts en maaltijden, ook die die zijn geïmporteerd uit Health Connect of Apple Health. {{provider}} verwerkt ze volgens de eigen voorwaarden en het eigen privacybeleid, en de eigen leeftijdsregels gelden.",
+        "localBody": "Wanneer je een AI-functie gebruikt, wordt wat die nodig heeft naar het serveradres dat je hebt ingesteld gestuurd: je berichten en maaltijdfoto's, en gegevens zoals je leeftijd, geslacht, gewicht, lichaamsvet, workouts en maaltijden, ook die die zijn geïmporteerd uit Health Connect of Apple Health. Wie die server beheert, kan het zien. Een adres dat begint met http:// stuurt het zonder versleuteling.",
+        "confirm": "Akkoord en gebruiken"
       }
     },
     "aiBehavior": {

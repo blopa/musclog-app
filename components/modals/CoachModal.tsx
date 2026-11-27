@@ -73,6 +73,7 @@ import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { sendAiReplyReport } from '@/services/aiReplyReport';
 import type { Theme } from '@/theme';
 import { getAppBuildInfo } from '@/utils/appBuildInfo';
 import { formatTimeInTimezone } from '@/utils/calendarDate';
@@ -724,6 +725,8 @@ export function CoachModal({
   const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
   const [isDeleteMessageModalVisible, setIsDeleteMessageModalVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<ExtendedIMessage | null>(null);
+  const [messageToReport, setMessageToReport] = useState<ExtendedIMessage | null>(null);
+  const [isSendingReport, setIsSendingReport] = useState(false);
   const [isDeletingMessage, setIsDeletingMessage] = useState(false);
   const [composerResetKey, setComposerResetKey] = useState(0);
 
@@ -1049,16 +1052,7 @@ export function CoachModal({
                     description: t('coach.message.reportDesc'),
                     onPress: () => {
                       setSelectedMessage(null);
-                      Linking.openURL(
-                        buildAiReplyReportMailto(
-                          { ...getAppBuildInfo(), locale },
-                          {
-                            subject: t('coach.message.reportSubject'),
-                            intro: t('coach.message.reportIntro'),
-                            reply: selectedMessage.text ?? '',
-                          }
-                        )
-                      ).catch(() => {});
+                      setMessageToReport(selectedMessage);
                     },
                   },
                 ]
@@ -1078,7 +1072,6 @@ export function CoachModal({
           ]
         : [],
     [
-      locale,
       selectedMessage,
       shareText,
       showSnackbar,
@@ -1209,6 +1202,37 @@ export function CoachModal({
       setIsDeletingMessage(false);
     }
   }, [messageToDelete, deleteMessage, showSnackbar, t]);
+
+  // Reports leave from inside the app; the mail draft is only for when that cannot be delivered.
+  const handleConfirmReport = useCallback(async () => {
+    if (!messageToReport) {
+      return;
+    }
+
+    const reply = messageToReport.text ?? '';
+    const env = { ...getAppBuildInfo(), locale };
+    setIsSendingReport(true);
+    try {
+      if (await sendAiReplyReport(reply, env)) {
+        showSnackbar('success', t('coach.message.reportSent'));
+        return;
+      }
+
+      await Linking.openURL(
+        buildAiReplyReportMailto(env, {
+          subject: t('coach.message.reportSubject'),
+          intro: t('coach.message.reportIntro'),
+          reply,
+        })
+      );
+    } catch (error) {
+      handleError(error, 'CoachModal.handleConfirmReport', {
+        snackbarMessage: t('coach.errors.generalError'),
+      });
+    } finally {
+      setIsSendingReport(false);
+    }
+  }, [messageToReport, locale, showSnackbar, t]);
 
   const headerMenuItems: BottomPopUpMenuItem[] = useMemo(
     () => [
@@ -1690,18 +1714,20 @@ export function CoachModal({
         isLoading={isClearingHistory}
       />
 
+      {/* One dialog for the two message actions, so they can never be two modals at once. */}
       <ConfirmationModal
-        visible={isDeleteMessageModalVisible}
+        visible={isDeleteMessageModalVisible || messageToReport !== null}
         onClose={() => {
           setIsDeleteMessageModalVisible(false);
           setMessageToDelete(null);
+          setMessageToReport(null);
         }}
-        onConfirm={handleConfirmDeleteMessage}
-        title={t('coach.message.delete')}
-        message={t('coach.message.deleteDesc')}
-        confirmLabel={t('common.delete')}
-        variant="destructive"
-        isLoading={isDeletingMessage}
+        onConfirm={messageToReport ? handleConfirmReport : handleConfirmDeleteMessage}
+        title={messageToReport ? t('coach.message.report') : t('coach.message.delete')}
+        message={messageToReport ? t('coach.message.reportConfirm') : t('coach.message.deleteDesc')}
+        confirmLabel={messageToReport ? t('coach.message.reportSend') : t('common.delete')}
+        variant={messageToReport ? 'primary' : 'destructive'}
+        isLoading={isDeletingMessage || isSendingReport}
       />
 
       {selectedMealForTracking && mealForLogMealModal ? (

@@ -204,7 +204,10 @@ async function executeLiveBackup(reason: BackupFileMeta['reason']): Promise<stri
   return hash;
 }
 
-/** Create a best-effort backup before restoring a database dump on Web. */
+/**
+ * Create a backup before restoring a database dump on Web. A browser with no storage for one has
+ * nothing to keep it in; a backup that could have been made and failed stops the restore.
+ */
 export async function createPreRestoreBackup(): Promise<void> {
   if (!canCreateWebBackup()) {
     return;
@@ -216,6 +219,7 @@ export async function createPreRestoreBackup(): Promise<void> {
   } catch (error) {
     console.error('[WebBackup] Failed to create pre-restore backup:', error);
     handleError(error, 'preMigrationBackup.web.preRestore');
+    throw error;
   }
 }
 

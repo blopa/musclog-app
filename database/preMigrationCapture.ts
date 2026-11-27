@@ -1,5 +1,5 @@
 import type { SchemaMigrations } from '@nozbe/watermelondb/Schema/migrations';
-import { cacheDirectory } from 'expo-file-system/legacy';
+import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { DATABASE_NAME } from '@/constants/database';
@@ -33,19 +33,19 @@ import { registerPreMigrationDbBackup } from './preMigrationBackup';
 const sqlQuote = (value: string): string => `'${value.replace(/'/g, "''")}'`;
 
 /**
- * Writes a consistent `.db` snapshot of the open database into the cache
- * directory via `VACUUM INTO`, then registers it in the backup index.
- * Synchronous copy so it finishes before the adapter opens.
+ * Writes a consistent `.db` snapshot of the open database into the documents
+ * directory (the system may empty the cache) via `VACUUM INTO`, then registers it in the backup
+ * index. Synchronous copy so it finishes before the adapter opens.
  */
 function captureDbSnapshotSync(db: SQLiteDatabase, fromVersion: number, toVersion: number): void {
-  if (!cacheDirectory) {
+  if (!documentDirectory) {
     console.warn(
-      '[PreMigrationBackup] Cache directory unavailable — skipping pre-migration snapshot'
+      '[PreMigrationBackup] Documents directory unavailable — skipping pre-migration snapshot'
     );
     return;
   }
 
-  const backupUri = `${cacheDirectory}${timestampSlug()}-pre-migration-v${fromVersion}-to-v${toVersion}.db`;
+  const backupUri = `${documentDirectory}${timestampSlug()}-pre-migration-v${fromVersion}-to-v${toVersion}.db`;
   const backupPath = backupUri.replace(/^file:\/\//, '');
   db.execSync(`VACUUM INTO ${sqlQuote(backupPath)}`);
   registerPreMigrationDbBackup(backupUri, fromVersion, toVersion);

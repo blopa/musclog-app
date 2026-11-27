@@ -6,6 +6,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { type Gender } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
+import { isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
 import { AvatarColor } from '@/types/AvatarColor';
 import { AvatarIcon } from '@/types/AvatarIcon';
 import { getAvatarIcon } from '@/utils/avatarUtils';
@@ -79,12 +80,17 @@ export function EditPersonalInfoBody({
   );
   const [trackCycle, setTrackCycle] = useState(initialData?.trackCycle ?? false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [rejectedBirthday, setRejectedBirthday] = useState(false);
 
   const currentDate = parseDobDisplayStringToPickerDate(dob);
 
   // Handle date selection from picker
   const handleDateSelect = (date: Date) => {
-    setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    const tooYoung = isUnderMinimumAppAge(localCalendarDayDate(date));
+    setRejectedBirthday(tooYoung);
+    if (!tooYoung) {
+      setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    }
   };
 
   // Call onFormChange whenever form data changes
@@ -164,6 +170,11 @@ export function EditPersonalInfoBody({
               selectedDate={currentDate}
               onPress={() => setIsDatePickerVisible(true)}
             />
+            {rejectedBirthday ? (
+              <Text accessibilityRole="alert" className="ml-1 text-sm text-status-error">
+                {t('common.ageGate.minimumApp', { age: MINIMUM_APP_AGE })}
+              </Text>
+            ) : null}
           </View>
         ) : null}
 

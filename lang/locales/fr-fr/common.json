@@ -211,6 +211,11 @@
       "openrouterTerms": "Conditions d'OpenRouter",
       "otariPrivacy": "Avis de confidentialité d'Otari",
       "otariTerms": "Conditions d'Otari"
-    }
+    },
+    "ageGate": {
+      "minimumApp": "Musclog est réservé aux personnes âgées de {{age}} ans et plus.",
+      "cloudAi": "Musclog Iron et l'option d'IA gratuite sont réservés aux personnes âgées de {{age}} ans et plus."
+    },
+    "healthDisclaimer": "Les objectifs caloriques, les poids et les programmes sont des estimations, pas des avis médicaux. Si tu es enceinte ou allaites, si tu as ou as eu un trouble du comportement alimentaire, ou si tu as une blessure ou un problème de santé, parle à un médecin ou à un autre professionnel avant de les suivre."
   }
 }

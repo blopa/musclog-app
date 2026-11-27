@@ -16,7 +16,7 @@
       "unmarkButton": "Vastendag verwijderen",
       "unmarkShort": "Ongedaan maken",
       "confirmTitle": "Markeren als vastendag?",
-      "confirmMessage": "Hiermee markeer je de dag als een dag waarop je hebt gevast, zodat deze telt als een echte dag van 0 calorieën in je gemiddelden, TDEE en reeksen.",
+      "confirmMessage": "Hiermee wordt de dag gemarkeerd als een dag waarop je vastte, dus hij telt als een echte dag van 0 calorieën in je gemiddelden, TDEE en reeksen. Vasten is niet voor iedereen veilig: vraag eerst een arts als je zwanger bent of borstvoeding geeft, medicijnen gebruikt, diabetes hebt of een eetstoornis hebt gehad.",
       "confirmButton": "Markeren als vastendag"
     },
     "logDetails": {

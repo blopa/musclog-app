@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "O que acontece com as suas mensagens",
-      "body": "Com o Musclog Iron ativo, os seus pedidos de IA vão para o serviço próprio do Musclog, que os encaminha por um gateway de IA, o OpenRouter ou o Otari da Mozilla.ai, ao modelo de IA. Os pedidos são enviados só para provedores que oferecem retenção zero de dados, e o serviço não guarda o texto das suas mensagens nem as imagens. O OpenRouter também faz a triagem de todas as solicitações em busca de material de abuso sexual infantil e pode manter uma que sinalizar, conforme descreve a própria política dele; o Otari afirma que não armazena o conteúdo das solicitações. O serviço do Musclog mantém uma contagem de uso para o período da sua assinatura e um identificador para cada dispositivo em que você usa o Musclog Iron.",
+      "body": "Com o Musclog Iron ativado, suas solicitações de IA vão para o serviço próprio do Musclog, que as encaminha por um gateway de IA, a OpenRouter ou a Otari da Mozilla.ai, até o modelo de IA. As solicitações são enviadas apenas a provedores que oferecem retenção zero de dados, e o serviço não armazena o texto das suas mensagens nem as suas imagens. A OpenRouter também examina todas as solicitações em busca de material de abuso sexual infantil e pode manter uma que marque, conforme descreve a própria política; a Otari afirma que não armazena o conteúdo das solicitações. O serviço do Musclog mantém uma contagem de uso do seu período de assinatura, um identificador de cada dispositivo em que você usa o Musclog Iron e, por 7 dias, uma impressão digital curta de cada solicitação.",
       "consent": "O app pede a sua permissão antes de enviar qualquer coisa ao Musclog Iron, e pede de novo se você restaurar um backup em outro dispositivo.",
       "link": "Leia a política de privacidade"
     },
@@ -42,7 +42,8 @@
         "É cobrada mensalmente pela App Store ou pelo Google Play, no preço que a loja mostra.",
         "Renova automaticamente até você cancelar na sua conta da loja. Cancelar interrompe a próxima renovação.",
         "As assinaturas de iOS e Android são separadas, então uma assinatura comprada em uma não passa para a outra.",
-        "Não é preciso ter conta no Musclog. A sua assinatura é verificada pela loja."
+        "Não é preciso ter conta no Musclog. A sua assinatura é verificada pela loja.",
+        "O Musclog Iron é para pessoas com 18 anos ou mais."
       ],
       "terms": "Termos de uso"
     },

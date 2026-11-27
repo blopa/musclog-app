@@ -22,7 +22,7 @@
       "writeHealthData": "Gesundheitsdaten schreiben",
       "healthData": "Gesundheitsdaten",
       "healthDataSubtitle": "Trainings und Körperwerte synchronisieren",
-      "healthDataPrivacy": "Deine Gesundheitsdaten werden nur lokal gespeichert.",
+      "healthDataPrivacy": "Deine Gesundheitsdaten werden auf diesem Gerät gespeichert. Sie werden nur an andere Stellen gesendet, wenn du eine KI-Option aktivierst.",
       "syncNow": "Jetzt synchronisieren",
       "syncing": "Synchronisiere...",
       "foodSearchSource": "Quelle für die Lebensmittelsuche",
@@ -33,7 +33,7 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "Datenbank des US-Landwirtschaftsministeriums",
       "foodSearchMusclog": "Musclog",
-      "foodSearchMusclogDescription": "Musclog-Barcode-Datenbank (nur Barcode-Scan)",
+      "foodSearchMusclogDescription": "Barcode-Datenbank mit Produktinformationen aus Supermärkten in den Niederlanden (nur Barcode-Scan)",
       "foodSearchNone": "Keine",
       "foodSearchNoneDescription": "Nur in deiner lokalen Datenbank suchen",
       "energyUnit": "Energieeinheit",
@@ -258,7 +258,8 @@
         "unavailable": "Speicher kann gerade nicht gelesen werden.",
         "retry": "Erneut versuchen"
       },
-      "storageSubtitle": "Sieh nach, was Musclog auf diesem Gerät speichert, und gib Platz frei"
+      "storageSubtitle": "Sieh nach, was Musclog auf diesem Gerät speichert, und gib Platz frei",
+      "backupReminder": "Deine Daten existieren nur auf diesem Gerät. Wenn du das Gerät verlierst oder Musclog deinstallierst, sind sie weg. Exportiere ab und zu ein Backup."
     },
     "chatMessages": {
       "title": "Chatnachrichten",
@@ -283,9 +284,9 @@
       "insightsAlerts": "Einblicke und Hinweise",
       "enableGoogleGemini": "Google Gemini aktivieren",
       "dailyNutritionInsights": "Tägliche Ernährungseinblicke",
-      "dailyNutritionInsightsSubtitle": "Morgendliche Zusammenfassung auf Basis der Einträge",
+      "dailyNutritionInsightsSubtitle": "Einmal am Tag werden deine letzten 7 Tage an Mahlzeiten an deine KI gesendet",
       "workoutInsights": "Trainingseinblicke",
-      "workoutInsightsSubtitle": "Analyse nach dem Training",
+      "workoutInsightsSubtitle": "Einmal am Tag werden deine letzten 7 Tage an Trainings an deine KI gesendet",
       "enableOpenAi": "OpenAI aktivieren",
       "localLlmIntegration": "Integration eines lokalen LLM",
       "enableLocalLlm": "Lokales LLM aktivieren",
@@ -431,13 +432,19 @@
         "toggleSubtitle": "Läuft im kostenlosen Tarif von Google, der verwenden kann, was du sendest. Das Tageslimit teilen sich alle Nutzer.",
         "activeNote": "Der Gratistarif ist aktiv. Deine eigenen API-Schlüssel werden nicht verwendet.",
         "consentTitle": "Daten mit Google teilen?",
-        "consentBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu erstellen. Google darf das Gesendete speichern, zur Verbesserung seiner Produkte verwenden und von Menschen (ohne Kennungen) prüfen lassen, daher ist der kostenlose Tarif nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene ab 18 Jahren. Wenn dir das nicht passt, lass die Option aus. Es wird nichts gesendet, bis du eine KI-Funktion nutzt. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, sodass es früh am Tag aufgebraucht sein kann, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
+        "consentBody": "Wenn du eine KI-Funktion nutzt, wird das, was sie braucht (zum Beispiel deine Trainings, Mahlzeiten und Körpermaße, auch solche, die aus Health Connect oder Apple Health importiert wurden, oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu schreiben. Google darf speichern, was gesendet wird, es zur Verbesserung seiner Produkte nutzen und es (ohne Kennungen) von Menschen prüfen lassen. Der kostenlose Tarif ist deshalb nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene: Wenn du zustimmst, bestätigst du, dass du 18 oder älter bist. Wenn das nicht in Ordnung für dich ist, lass es ausgeschaltet. Es wird nichts gesendet, bevor du eine KI-Funktion nutzt, dazu gehören die täglichen Auswertungen, wenn du sie einschaltest. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, daher kann es früh am Tag aufgebraucht sein, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
         "consentConfirm": "Zustimmen und aktivieren"
       },
       "testKey": "Schlüssel testen",
       "testingKey": "Wird getestet…",
       "premium": {
         "activeNote": "Musclog Iron beantwortet deine KI-Anfragen. Solange es eingeschaltet ist, werden deine eigenen Schlüssel und die kostenlose Stufe nicht verwendet."
+      },
+      "providerConsent": {
+        "title": "Daten an {{provider}} senden?",
+        "body": "Wenn du eine KI-Funktion nutzt, wird das, was sie braucht, an {{provider}} unter deinem eigenen API-Schlüssel gesendet: deine Nachrichten und Mahlzeitenfotos sowie Angaben wie dein Alter, dein Geschlecht, Gewicht, Körperfett, deine Trainings und Mahlzeiten, auch solche, die aus Health Connect oder Apple Health importiert wurden. {{provider}} verarbeitet sie nach den eigenen Bedingungen und der eigenen Datenschutzerklärung, und dessen eigene Altersregeln gelten.",
+        "localBody": "Wenn du eine KI-Funktion nutzt, wird das, was sie braucht, an die Serveradresse gesendet, die du eingestellt hast: deine Nachrichten und Mahlzeitenfotos sowie Angaben wie dein Alter, dein Geschlecht, Gewicht, Körperfett, deine Trainings und Mahlzeiten, auch solche, die aus Health Connect oder Apple Health importiert wurden. Wer diesen Server betreibt, kann das sehen. Eine Adresse, die mit http:// beginnt, sendet es unverschlüsselt.",
+        "confirm": "Zustimmen und verwenden"
       }
     },
     "aiBehavior": {

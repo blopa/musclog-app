@@ -620,7 +620,8 @@
       "backup": {
         "title": "Cyclusback-up",
         "body": "Overweeg een versleutelde back-up van je gegevens te maken."
-      }
+      },
+      "renewReminders": "Open Musclog om deze herinneringen te blijven ontvangen."
     },
     "reminders": {
       "time": "Tijdstip van herinneringen",
@@ -670,7 +671,7 @@
         "pattern24": "24 dagen + 4 stop",
         "continuous": "Elke dag",
         "packStart": "Eerste pil van de huidige strip",
-        "hint": "Pilvrije dagen krijgen geen herinnering. Dit is een herinnering, geen medisch advies: volg de bijsluiter als je er een vergeet.",
+        "hint": "Dagen zonder pil krijgen geen herinnering. Dit is een herinnering, geen medisch advies: volg de instructies van je pil als je er een vergeet. Telefoons kunnen meldingen vertragen of stilzetten, vertrouw er dus niet alleen op. Open voor verpakkingen met pilvrije dagen Musclog minstens elke vier weken om de herinneringen te blijven ontvangen.",
         "notPaused": "gaat door tijdens een pauze"
       },
       "pause": {

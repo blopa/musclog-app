@@ -10,6 +10,7 @@ import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-nativ
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart } from '@/components/charts/LineChart';
+import { HealthDisclaimer } from '@/components/HealthDisclaimer';
 import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
@@ -535,6 +536,7 @@ export default function NutritionGoalsResults() {
                 ? t('nutritionGoals.results.aiDescription')
                 : t('nutritionGoals.results.manualDescription')}
             </Text>
+            <HealthDisclaimer className="mt-3 max-w-[300px] text-center" />
           </View>
 
           {/* Daily Calorie Target Card */}

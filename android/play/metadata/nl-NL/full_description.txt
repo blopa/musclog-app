@@ -1,9 +1,8 @@
 <b>Log je trainingen en je eten in één app: geen account en geen advertenties.</b>
-Musclog is een gratis, open source fitnesslogboek en calorieënteller. De app stelt je volgende gewicht en herhalingen voor, scant barcodes en werkt offline. Je gegevens blijven op je telefoon.
+Musclog is een gratis, open source fitnesslogboek en calorieënteller. De app stelt je volgende gewicht en herhalingen voor, scant barcodes en werkt offline. Je logs worden op je telefoon opgeslagen.
 
 <b>Niets op slot</b>
 • Onbeperkt trainingsschema's en -routines, en je volledige geschiedenis.
-• De barcodescanner, het scannen van voedingsetiketten en het zoeken naar voedingsmiddelen zitten voor iedereen in de app.
 • Alle grafieken, exports en back-ups zijn inbegrepen en gratis.
 
 <b>Trainingslogboek en gym tracker</b>
@@ -24,7 +23,7 @@ Musclog is een gratis, open source fitnesslogboek en calorieënteller. De app st
 
 <b>Calorieënteller en macrotracker</b>
 • Voedingsdagboek met barcode- en etiketscanner.
-• Zoek in Open Food Facts en de USDA-voedingsdatabase, of maak je eigen producten en maaltijden.
+• Zoek in Open Food Facts (ODbL) en de USDA-voedingsdatabase, of maak je eigen producten en maaltijden.
 • Doelen voor calorieën, eiwit, koolhydraten, vet en vezels om af te vallen, op gewicht te blijven of spiermassa op te bouwen.
 • Doelen die meebewegen met je werkelijke gewichtstrend, in kcal of kJ, metrisch of imperiaal.
 
@@ -34,8 +33,7 @@ Musclog is een gratis, open source fitnesslogboek en calorieënteller. De app st
 • Health Connect-synchronisatie voor gewicht, voeding en trainingen.
 
 <b>AI, alleen als je wilt</b>
-• Chat met een coach, schat een maaltijd op basis van een foto in en laat schema's maken met je eigen Gemini-, OpenAI- of Claude-sleutel, een lokaal model of de gratis optie in de app.
-• Of maak een schema of beschrijf een maaltijd in ChatGPT of Claude en breng het over naar Musclog.
+• Chat met een coach, schat een maaltijd op basis van een foto in en laat schema's maken met je eigen Gemini-, OpenAI- of Claude-sleutel, een lokaal model of de gratis optie in de app (18+).
 • Kies hoe de coach tegen je praat. Niets in Musclog vereist AI.
 
 <b>Musclog Iron (optioneel)</b>
@@ -48,4 +46,4 @@ Musclog Iron is een maandelijks abonnement dat AI-verzoeken beantwoordt zonder j
 • Anonieme crashrapporten helpen fouten op te lossen en kun je in de instellingen uitzetten.
 • Widgets, kleurthema's en talen: English, Español, Nederlands, Português (Brasil), Русский, Deutsch, Français, Italiano, Polski en Türkçe.
 
-Lift, Log, Repeat.
+Musclog is geen medisch hulpmiddel: het stelt geen diagnoses en behandelt, geneest of voorkomt geen medische aandoeningen. Raadpleeg een zorgverlener voor medisch advies, diagnose of behandeling.

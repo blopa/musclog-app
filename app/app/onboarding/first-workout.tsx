@@ -7,6 +7,7 @@ import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { HealthDisclaimer } from '@/components/HealthDisclaimer';
 import { LoggyPose } from '@/components/LoggyPose';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
@@ -256,6 +257,8 @@ export default function FirstWorkoutScreen() {
               </View>
               <LoggyPose pose="lifting" height={FIRST_WORKOUT_POSE_HEIGHT} />
             </View>
+
+            <HealthDisclaimer />
 
             {template ? (
               <View

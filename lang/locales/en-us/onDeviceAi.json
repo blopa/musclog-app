@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Third-party notices",
-      "intro": "Musclog is built on open source software and an open model. These are the licenses that apply.",
+      "intro": "Musclog is built on open source software, open data and open models. These are the licenses that apply.",
       "link": "Third-party notices",
       "linkSubtitle": "Open source software and the on-device model",
-      "openLink": "Open the full text"
+      "openLink": "Open the full text",
+      "packagesTitle": "Open source packages"
     }
   }
 }

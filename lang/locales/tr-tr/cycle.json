@@ -620,7 +620,8 @@
       "backup": {
         "title": "Döngü yedeği",
         "body": "Kayıtlarının şifreli bir yedeğini kaydetmeyi düşün."
-      }
+      },
+      "renewReminders": "Bu hatırlatıcıların gelmeye devam etmesi için Musclog'u aç."
     },
     "reminders": {
       "time": "Hatırlatıcı saati",
@@ -670,7 +671,7 @@
         "pattern24": "24 gün + 4 gün ara",
         "continuous": "Her gün",
         "packStart": "Mevcut paketin ilk hapı",
-        "hint": "Hapsiz günlerde hatırlatıcı gelmez. Bu bir hatırlatıcıdır, tıbbi tavsiye değildir: bir dozu kaçırırsan hapın talimatlarını izle.",
+        "hint": "Hapsiz günlerde hatırlatıcı gelmez. Bu bir hatırlatıcıdır, tıbbi tavsiye değildir: bir dozu kaçırırsan hapın talimatlarını izle. Telefonlar bildirimleri geciktirebilir ya da sessize alabilir, bu yüzden bunu tek hatırlatıcın olarak görme. Hapsiz günleri olan paketler için Musclog'u en az dört haftada bir aç ki hatırlatıcılar gelmeye devam etsin.",
         "notPaused": "duraklatma sırasında da devam eder"
       },
       "pause": {

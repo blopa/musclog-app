@@ -211,6 +211,11 @@
       "openrouterTerms": "Voorwaarden van OpenRouter",
       "otariPrivacy": "Privacyverklaring van Otari",
       "otariTerms": "Voorwaarden van Otari"
-    }
+    },
+    "ageGate": {
+      "minimumApp": "Musclog is bedoeld voor mensen van {{age}} jaar en ouder.",
+      "cloudAi": "Musclog Iron en de gratis AI-optie zijn bedoeld voor mensen van {{age}} jaar en ouder."
+    },
+    "healthDisclaimer": "Caloriedoelen, gewichten en plannen zijn schattingen, geen medisch advies. Als je zwanger bent of borstvoeding geeft, een eetstoornis hebt of hebt gehad, of een blessure of medische aandoening hebt, praat dan met een arts of een andere professional voordat je ze volgt."
   }
 }

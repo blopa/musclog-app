@@ -16,7 +16,7 @@
       "unmarkButton": "Fastentag entfernen",
       "unmarkShort": "Entfernen",
       "confirmTitle": "Als Fastentag markieren?",
-      "confirmMessage": "Dieser Tag wird als Fastentag markiert und zählt in deinen Durchschnittswerten, deinem Gesamtumsatz und deinen Serien als echter Tag mit 0 kcal.",
+      "confirmMessage": "Damit wird der Tag als Fastentag markiert und zählt in deinen Durchschnittswerten, deinem Gesamtumsatz und deinen Serien als echter Tag mit 0 Kalorien. Fasten ist nicht für jeden sicher: Frag vorher einen Arzt, wenn du schwanger bist oder stillst, Medikamente nimmst, Diabetes hast oder eine Essstörung hattest.",
       "confirmButton": "Als Fastentag markieren"
     },
     "logDetails": {

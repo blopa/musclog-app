@@ -32,7 +32,7 @@
     "consent": {
       "review": "Review updated consent",
       "title": "Send AI requests to Musclog Iron?",
-      "body": "Your messages and meal photos, and the details an AI feature needs to answer, such as your workouts, meals and body measurements, go to the Musclog Iron service. It forwards them through an AI gateway, OpenRouter or Otari (from Mozilla.ai), to the AI model provider. Musclog chooses which gateway is used, and this consent covers both. Only zero data retention (ZDR) providers are used: they do not keep your content or use it for training. OpenRouter screens every request for child sexual abuse material and may keep a request it flags; Otari says it does not store the contents of requests. Some of these details are health-related, and by agreeing you give your explicit consent to them being processed this way. Musclog's service never stores your messages; it keeps only an identifier for this device and usage counts. The privacy policies and terms of OpenRouter and Otari are linked at the bottom of the Musclog Iron screen. You can switch this off at any time.",
+      "body": "Your messages and meal photos, and the details an AI feature needs to answer, such as your workouts, meals and body measurements, including ones imported from Health Connect or Apple Health, go to the Musclog Iron service. It forwards them through an AI gateway, OpenRouter or Otari (from Mozilla.ai), to the AI model provider. Musclog chooses which gateway is used, and this consent covers both. Only zero data retention (ZDR) providers are used: they do not keep your content or use it for training. OpenRouter screens every request for child sexual abuse material and may keep a request it flags; Otari says it does not store the contents of requests. Some of these details are health-related, and by agreeing you give your explicit consent to them being processed this way. Musclog's service never stores your messages; it keeps only an identifier for this device, usage counts and a short fingerprint of each request. Musclog Iron is for adults: by agreeing you confirm that you are 18 or older. The privacy policies and terms of OpenRouter and Otari are linked at the bottom of the Musclog Iron screen. You can switch this off at any time.",
       "confirm": "Use Musclog Iron",
       "cancel": "Not now"
     },
@@ -76,7 +76,7 @@
         },
         "private": {
           "title": "Zero data retention",
-          "desc": "Only zero data retention providers are used: they don't keep your messages or train on them, apart from OpenRouter's screening for child abuse material, which the law requires. Musclog never stores them either; it keeps only usage counts and a device identifier."
+          "desc": "Only zero data retention providers are used: they don't keep your messages or train on them, apart from OpenRouter's screening for child abuse material. Musclog never stores your messages either; it keeps usage counts, a device identifier and a short fingerprint of each request for 7 days."
         },
         "allowance": {
           "title": "Your own allowance",

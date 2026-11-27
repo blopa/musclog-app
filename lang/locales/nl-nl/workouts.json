@@ -262,7 +262,10 @@
       "generateButton": "Plan genereren",
       "successMessageWithPlan": "{{planName}} is klaar met {{count}} workouts.",
       "errorMessage": "Kon geen plan genereren. Probeer het opnieuw.",
-      "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen."
+      "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen.",
+      "reviewIntro": "Lees het plan en controleer of het bij je past. Er wordt niets opgeslagen totdat je op Plan opslaan tikt.",
+      "saveButton": "Plan opslaan",
+      "discardButton": "Verwerpen"
     },
     "interruptedSession": {
       "description": "Je hebt een workout in uitvoering.",

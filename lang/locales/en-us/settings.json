@@ -22,7 +22,7 @@
       "writeHealthData": "Write health data",
       "healthData": "Health data",
       "healthDataSubtitle": "Sync your workouts and body metrics",
-      "healthDataPrivacy": "Your health data is only stored locally.",
+      "healthDataPrivacy": "Your health data is stored on this device. It is sent elsewhere only if you turn on an AI option.",
       "syncNow": "Sync now",
       "syncing": "Syncing...",
       "foodSearchSource": "Food search source",
@@ -33,7 +33,7 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "US Department of Agriculture database",
       "foodSearchMusclog": "Musclog",
-      "foodSearchMusclogDescription": "Musclog barcode database (barcode scanning only)",
+      "foodSearchMusclogDescription": "Barcode database built from supermarket product information in the Netherlands (barcode scanning only)",
       "foodSearchNone": "None",
       "foodSearchNoneDescription": "Search only in your local database",
       "energyUnit": "Energy unit",
@@ -258,7 +258,8 @@
         "unavailable": "Couldn't read storage right now.",
         "retry": "Try again"
       },
-      "storageSubtitle": "See what Musclog keeps on this device and free up space"
+      "storageSubtitle": "See what Musclog keeps on this device and free up space",
+      "backupReminder": "Your data exists only on this device. If you lose the device or uninstall Musclog, it is gone. Export a backup now and then."
     },
     "chatMessages": {
       "title": "Chat messages",
@@ -283,9 +284,9 @@
       "insightsAlerts": "Insights & alerts",
       "enableGoogleGemini": "Enable Google Gemini",
       "dailyNutritionInsights": "Daily nutrition insights",
-      "dailyNutritionInsightsSubtitle": "Morning summary based on logs",
+      "dailyNutritionInsightsSubtitle": "Once a day, sends your last 7 days of meals to your AI",
       "workoutInsights": "Workout insights",
-      "workoutInsightsSubtitle": "Post-workout analysis",
+      "workoutInsightsSubtitle": "Once a day, sends your last 7 days of workouts to your AI",
       "enableOpenAi": "Enable OpenAI",
       "localLlmIntegration": "Local LLM integration",
       "enableLocalLlm": "Enable local LLM",
@@ -431,13 +432,19 @@
         "toggleSubtitle": "Runs on Google's free tier, which may use what you send. The daily limit is shared by all users.",
         "activeNote": "Free tier is active. Your own API keys are not used.",
         "consentTitle": "Share data with Google?",
-        "consentBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults (18+). If that is not OK for you, leave it off. Nothing is sent until you use an AI feature. There is a daily limit shared by everyone who uses the free tier, so it can run out early in the day, and the free tier may sometimes be unavailable.",
+        "consentBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements, including ones imported from Health Connect or Apple Health, or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults: by agreeing you confirm that you are 18 or older. If that is not OK for you, leave it off. Nothing is sent until you use an AI feature, which includes daily insights if you turn them on. There is a daily limit shared by everyone who uses the free tier, so it can run out early in the day, and the free tier may sometimes be unavailable.",
         "consentConfirm": "Agree and enable"
       },
       "testKey": "Test key",
       "testingKey": "Testing…",
       "premium": {
         "activeNote": "Musclog Iron is answering your AI requests. Your own keys and the free tier are not used while it is on."
+      },
+      "providerConsent": {
+        "title": "Send data to {{provider}}?",
+        "body": "When you use an AI feature, what it needs is sent to {{provider}} under your own API key: your messages and meal photos, and details such as your age, sex, weight, body fat, workouts and meals, including ones imported from Health Connect or Apple Health. {{provider}} handles it under its own terms and privacy policy, and its own age rules apply.",
+        "localBody": "When you use an AI feature, what it needs is sent to the server address you set: your messages and meal photos, and details such as your age, sex, weight, body fat, workouts and meals, including ones imported from Health Connect or Apple Health. Whoever runs that server can see it. An address that starts with http:// sends it without encryption.",
+        "confirm": "Agree and use it"
       }
     },
     "visualSettings": {

@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Mentions des tiers",
-      "intro": "Musclog repose sur des logiciels open source et un modèle ouvert. Voici les licences qui s’appliquent.",
+      "intro": "Musclog repose sur des logiciels open source, des données ouvertes et des modèles ouverts. Voici les licences qui s’appliquent.",
       "link": "Mentions des tiers",
       "linkSubtitle": "Logiciels open source et le modèle sur l’appareil",
-      "openLink": "Ouvrir le texte intégral"
+      "openLink": "Ouvrir le texte intégral",
+      "packagesTitle": "Paquets open source"
     }
   }
 }

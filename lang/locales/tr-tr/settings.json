@@ -22,7 +22,7 @@
       "writeHealthData": "Sağlık verilerine yaz",
       "healthData": "Sağlık verileri",
       "healthDataSubtitle": "Antrenmanlarını ve vücut ölçülerini senkronize et",
-      "healthDataPrivacy": "Sağlık verilerin yalnızca cihazında saklanır.",
+      "healthDataPrivacy": "Sağlık verilerin yalnızca bu cihazda saklanır. Yalnızca bir yapay zekâ seçeneğini açarsan başka bir yere gönderilir.",
       "syncNow": "Şimdi senkronize et",
       "syncing": "Senkronize ediliyor...",
       "foodSearchSource": "Besin arama kaynağı",
@@ -33,7 +33,7 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "ABD Tarım Bakanlığı veritabanı",
       "foodSearchMusclog": "Musclog",
-      "foodSearchMusclogDescription": "Musclog barkod veritabanı (yalnızca barkod taraması)",
+      "foodSearchMusclogDescription": "Hollanda'daki süpermarketlerin ürün bilgilerinden oluşturulmuş barkod veritabanı (yalnızca barkod taraması)",
       "foodSearchNone": "Hiçbiri",
       "foodSearchNoneDescription": "Yalnızca yerel veritabanında ara",
       "energyUnit": "Enerji birimi",
@@ -258,7 +258,8 @@
         "unavailable": "Depolama şu an okunamıyor.",
         "retry": "Tekrar dene"
       },
-      "storageSubtitle": "Musclog'un bu cihazda neleri sakladığını gör ve yer aç"
+      "storageSubtitle": "Musclog'un bu cihazda neleri sakladığını gör ve yer aç",
+      "backupReminder": "Verilerin yalnızca bu cihazda bulunur. Cihazını kaybedersen ya da Musclog'u kaldırırsan, veriler kaybolur. Arada bir bir yedek dışa aktar."
     },
     "chatMessages": {
       "title": "Sohbet mesajları",
@@ -283,9 +284,9 @@
       "insightsAlerts": "Öneriler ve uyarılar",
       "enableGoogleGemini": "Google Gemini'yi etkinleştir",
       "dailyNutritionInsights": "Günlük beslenme önerileri",
-      "dailyNutritionInsightsSubtitle": "Kayıtlara dayalı sabah özeti",
+      "dailyNutritionInsightsSubtitle": "Günde bir kez, son 7 günün öğünlerini yapay zekâna gönderir",
       "workoutInsights": "Antrenman önerileri",
-      "workoutInsightsSubtitle": "Antrenman sonrası analiz",
+      "workoutInsightsSubtitle": "Günde bir kez, son 7 günün antrenmanlarını yapay zekâna gönderir",
       "enableOpenAi": "OpenAI'yi etkinleştir",
       "localLlmIntegration": "Yerel LLM entegrasyonu",
       "enableLocalLlm": "Yerel LLM'yi etkinleştir",
@@ -431,13 +432,19 @@
         "toggleSubtitle": "Gönderdiklerini kullanabilen Google'ın ücretsiz katmanında çalışır. Günlük sınır tüm kullanıcılar arasında paylaşılır.",
         "activeNote": "Ücretsiz katman etkin. Kendi API anahtarların kullanılmıyor.",
         "consentTitle": "Veriler Google ile paylaşılsın mı?",
-        "consentBody": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler (ör. antrenmanların, öğünlerin, vücut ölçülerin veya sohbet mesajların) yanıtı yazmak için OpenRouter üzerinden Google AI Studio'nun ücretsiz katmanına gönderilir. Google gönderilenleri (kimlik bilgileri çıkarılmış olarak) saklayabilir, ürünlerini geliştirmek için kullanabilir ve insanların incelemesini sağlayabilir; bu yüzden ücretsiz katman gizli değildir: kişisel veya hassas bilgi girme. Ücretsiz katman yalnızca yetişkinler (18+) içindir. Bu sana uygun değilse kapalı bırakabilirsin. Bir yapay zekâ özelliğini kullanana kadar hiçbir şey gönderilmez. Ücretsiz katmanı kullanan herkesin paylaştığı günlük bir sınır vardır; bu yüzden gün içinde erken bitebilir ve ücretsiz katman bazen kullanılamayabilir.",
+        "consentBody": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler (ör. antrenmanların, öğünlerin, vücut ölçülerin, Health Connect veya Apple Health'ten içe aktarılanlar dahil, ya da sohbet mesajların) yanıtı yazmak için OpenRouter üzerinden Google AI Studio'nun ücretsiz katmanına gönderilir. Google gönderilenleri saklayabilir, ürünlerini geliştirmek için kullanabilir ve insanların (kimlik bilgileri çıkarılmış olarak) incelemesini sağlayabilir; bu yüzden ücretsiz katman gizli değildir: kişisel veya hassas bilgi girme. Ücretsiz katman yalnızca yetişkinler içindir: kabul ederek 18 yaşında veya daha büyük olduğunu onaylarsın. Bu sana uygun değilse kapalı bırak. Bir yapay zekâ özelliğini kullanana kadar hiçbir şey gönderilmez; bu, açarsan günlük özetleri de kapsar. Ücretsiz katmanı kullanan herkesin paylaştığı günlük bir sınır vardır; bu yüzden gün içinde erken bitebilir ve ücretsiz katman bazen kullanılamayabilir.",
         "consentConfirm": "Kabul et ve etkinleştir"
       },
       "testKey": "Anahtarı test et",
       "testingKey": "Test ediliyor…",
       "premium": {
         "activeNote": "Musclog Iron YZ isteklerinizi yanıtlıyor. Açıkken kendi anahtarlarınız ve ücretsiz katman kullanılmaz."
+      },
+      "providerConsent": {
+        "title": "Veriler {{provider}} ile paylaşılsın mı?",
+        "body": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler kendi API anahtarın üzerinden {{provider}} hizmetine gönderilir: mesajların ve öğün fotoğrafların ile yaş, cinsiyet, kilo, vücut yağı, antrenmanlar ve öğünler gibi ayrıntılar; Health Connect veya Apple Health'ten içe aktarılanlar dahil. {{provider}}, bunları kendi koşulları ve gizlilik politikası kapsamında işler; kendi yaş kuralları da geçerlidir.",
+        "localBody": "Bir yapay zekâ özelliğini kullandığında, ihtiyaç duyduğu veriler senin belirlediğin sunucu adresine gönderilir: mesajların ve öğün fotoğrafların ile yaş, cinsiyet, kilo, vücut yağı, antrenmanlar ve öğünler gibi ayrıntılar; Health Connect veya Apple Health'ten içe aktarılanlar dahil. Bu sunucuyu işleten herkes bunları görebilir. http:// ile başlayan bir adres, verileri şifrelemeden gönderir.",
+        "confirm": "Kabul et ve kullan"
       }
     },
     "aiBehavior": {

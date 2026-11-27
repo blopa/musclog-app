@@ -4,6 +4,7 @@ import * as Device from 'expo-device';
 
 import { isStaticExport } from '@/constants/platform';
 import { isProduction } from '@/utils/app';
+import { scrubErrorText } from '@/utils/scrubErrorText';
 
 let isInitialized = false;
 
@@ -36,6 +37,17 @@ export function initializeSentry() {
           model: phoneModel,
         },
       };
+
+      // A message can quote the value that broke: take out what could be the person's.
+      if (event.message) {
+        event.message = scrubErrorText(event.message);
+      }
+
+      for (const exception of event.exception?.values ?? []) {
+        if (exception.value) {
+          exception.value = scrubErrorText(exception.value);
+        }
+      }
 
       // Remove optional data we do not want to send.
       delete event.user; // User identity context (id/email/username/ip when present)

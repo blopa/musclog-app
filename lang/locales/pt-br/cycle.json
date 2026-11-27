@@ -620,7 +620,8 @@
       "backup": {
         "title": "Backup do ciclo",
         "body": "Considere salvar um backup criptografado dos seus registros."
-      }
+      },
+      "renewReminders": "Abra o Musclog para continuar recebendo estes lembretes."
     },
     "reminders": {
       "time": "Horário dos lembretes",
@@ -670,7 +671,7 @@
         "pattern24": "24 dias + 4 de pausa",
         "continuous": "Todos os dias",
         "packStart": "Primeira pílula da cartela atual",
-        "hint": "Dias sem pílula não têm lembrete. Isto é um lembrete, não um conselho médico: se esquecer uma, siga as instruções da sua pílula.",
+        "hint": "Dias sem pílula não recebem lembrete. Isto é um lembrete, não conselho médico: se você esquecer uma pílula, siga as instruções da sua. Os celulares podem atrasar ou silenciar notificações, então não conte só com isto como seu único lembrete. Para cartelas com dias sem pílula, abra o Musclog pelo menos a cada quatro semanas para continuar recebendo os lembretes.",
         "notPaused": "continua durante uma pausa"
       },
       "pause": {

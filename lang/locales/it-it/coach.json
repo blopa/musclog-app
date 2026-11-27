@@ -53,9 +53,9 @@
     },
     "goToSettings": "Vai alle impostazioni",
     "success": {
-      "workoutPlanGenerated": "Ho creato {{count}} allenamenti per te! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Ho creato {{planName}} con {{count}} allenamenti per te! 💪 {{description}}",
-      "mealPlanGenerated": "Ho creato un piano pasti di 3 giorni con {{count}} pasti per te! 🥗 {{description}}",
+      "workoutPlanGenerated": "Ho creato {{count}} allenamenti per te! 💪 {{description}} Controllali prima di allenarti.",
+      "workoutPlanGeneratedWithName": "Ho creato {{planName}} con {{count}} allenamenti per te! 💪 {{description}} Controllali prima di allenarti.",
+      "mealPlanGenerated": "Ho creato un piano pasti di 3 giorni con {{count}} pasti per te! 🥗 {{description}} Controlla gli alimenti e le quantità prima di fidarti.",
       "trackMealSuccess": "Ho registrato {{count}} ingredienti per il tuo pasto: {{ingredients}}. Totale: {{calories}}.",
       "trackMealReady": "Ho analizzato {{count}} pasto/i: {{meals}} ({{calories}} in totale). Tocca un pasto per controllarlo e registrarlo.",
       "historyCleared": "Cronologia della chat cancellata."
@@ -119,9 +119,12 @@
       "copied": "Messaggio copiato negli appunti",
       "deleted": "Messaggio eliminato",
       "report": "Segnala un problema",
-      "reportDesc": "Segnala via email un problema con questa risposta",
+      "reportDesc": "Invia questa risposta a Musclog perché possiamo esaminarla",
       "reportSubject": "Problema con una risposta dell'IA di Musclog",
-      "reportIntro": "Cosa non andava in questa risposta? (Puoi modificare o eliminare il testo qui sotto prima di inviare.)"
+      "reportIntro": "Cosa non andava in questa risposta? (Puoi modificare o eliminare il testo qui sotto prima di inviare.)",
+      "reportConfirm": "Questo invia la risposta, la versione dell'app, la tua piattaforma e la lingua a Musclog, tramite Sentry, il nostro servizio di monitoraggio degli errori. Nient'altro della chat viene inviato.",
+      "reportSend": "Invia segnalazione",
+      "reportSent": "Segnalazione inviata. Grazie."
     },
     "sendViaOpenAI": "Invia tramite OpenAI",
     "personas": {

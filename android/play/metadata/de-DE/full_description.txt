@@ -1,11 +1,10 @@
 <b>Erfasse Training und Essen in einer App: ohne Konto und ohne Werbung.</b>
-Musclog ist ein kostenloses Open-Source-Trainingstagebuch mit Kalorienzähler. Es schlägt Gewicht und Wiederholungen fürs nächste Training vor, scannt Barcodes und funktioniert offline. Deine Daten bleiben auf dem Handy.
+Musclog ist ein kostenloses Open-Source-Trainingstagebuch mit Kalorienzähler. Es schlägt Gewicht und Wiederholungen fürs nächste Training vor, scannt Barcodes und funktioniert offline. Deine Protokolle werden auf dem Handy gespeichert.
 
 Die App ist auf Englisch, Spanisch, Niederländisch, Portugiesisch (Brasilien), Russisch, Deutsch, Französisch, Italienisch, Polnisch und Türkisch.
 
 <b>Nichts ist weggesperrt</b>
 • Unbegrenzt viele Routinen und Pläne sowie dein kompletter Verlauf.
-• Barcode-Scanner, Nährwerttabellen-Scan und Lebensmittelsuche für alle.
 • Alle Diagramme, Exporte und Backups: inklusive und kostenlos.
 
 <b>Trainingsprotokoll und Gym-Tracker</b>
@@ -26,7 +25,7 @@ Die App ist auf Englisch, Spanisch, Niederländisch, Portugiesisch (Brasilien), 
 
 <b>Kalorienzähler und Makro-Tracker</b>
 • Ernährungstagebuch mit Barcode- und Nährwerttabellen-Scan.
-• Durchsuche Open Food Facts und die USDA-Datenbank oder erstelle eigene Lebensmittel und Mahlzeiten.
+• Durchsuche Open Food Facts (ODbL) und die USDA-Datenbank oder erstelle eigene Lebensmittel und Mahlzeiten.
 • Ziele für Kalorien, Protein, Kohlenhydrate, Fett und Ballaststoffe: Fettabbau, Erhalt oder Muskelaufbau.
 • Ziele, die sich deinem Gewichtstrend anpassen, in kcal oder kJ, metrisch oder imperial.
 
@@ -36,8 +35,7 @@ Die App ist auf Englisch, Spanisch, Niederländisch, Portugiesisch (Brasilien), 
 • Health-Connect-Sync: Gewicht, Ernährung, Workouts und Körperwerte.
 
 <b>KI, nur wenn du willst</b>
-• Chatte mit einem Fitness-Coach, schätze Mahlzeiten per Foto und erstelle Pläne mit deinem Gemini-, OpenAI- oder Claude-Schlüssel, einem lokalen Modell oder der kostenlosen Option.
-• Oder erstelle einen Plan oder beschreibe eine Mahlzeit in ChatGPT oder Claude und übernimm ihn in Musclog.
+• Chatte mit einem Fitness-Coach, schätze Mahlzeiten per Foto und erstelle Pläne mit deinem Gemini-, OpenAI- oder Claude-Schlüssel, einem lokalen Modell oder der kostenlosen Option (18+).
 • Bestimme den Stil des Coachs. Nichts in Musclog setzt KI voraus.
 
 <b>Musclog Iron (optional)</b>
@@ -50,4 +48,4 @@ Musclog Iron ist ein monatliches Abo, das KI-Anfragen ohne eigenen Schlüssel be
 • Anonyme Absturzberichte helfen bei Fehlern; abschaltbar.
 • Widgets für den Startbildschirm und mehrere Farbthemen.
 
-Lift, Log, Repeat.
+Musclog ist kein Medizinprodukt und diagnostiziert, behandelt, heilt oder verhindert keine Erkrankungen. Für medizinischen Rat, Diagnose oder Behandlung wende dich an Fachpersonal.

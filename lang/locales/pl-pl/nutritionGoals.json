@@ -138,6 +138,11 @@
     "dynamicBadge": "Dynamiczny",
     "dynamicRequiredFields": "Dla celów dynamicznych wymagana jest waga docelowa i data docelowa.",
     "keepCurrentTargets": "Zostaw obecne cele",
-    "perGram": "{{energy}}/g"
+    "perGram": "{{energy}}/g",
+    "safety": {
+      "belowMinimum": "To jest poniżej minimum, które Musclog zaleca w Twoim przypadku. Zanim zjesz tak mało, zapytaj lekarza lub dietetyka.",
+      "underweightCut": "Twoja aktualna waga mieści się w zakresie niedowagi (BMI poniżej 18,5). Musclog nie zaleca chudnięcia. Porozmawiaj z lekarzem.",
+      "goalUnderweight": "Ta docelowa waga mieści się w zakresie niedowagi (BMI poniżej 18,5). Wybierz wyższy cel lub porozmawiaj z lekarzem."
+    }
   }
 }

@@ -384,6 +384,9 @@ export default function GameBoy() {
               {t('downloadManual')}
             </a>
           </div>
+          <p className="mt-6 max-w-md text-center text-xs leading-5 text-text-tertiary">
+            {t('notAffiliated')}
+          </p>
         </div>
       </main>
     </>

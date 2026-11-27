@@ -3,7 +3,11 @@ import { NutritionTargetService } from '@/database/services/NutritionTargetServi
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
-import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
+import {
+  calculateNutritionPlan,
+  eatingPhaseToWeightGoal,
+  getMinCalories,
+} from '@/utils/nutritionCalculator';
 
 export type MealPlanMacroTargets = {
   calories: number;
@@ -17,6 +21,35 @@ export type MealPlanMacroTargets = {
 const FALLBACK_HEIGHT_CM = 170;
 
 /**
+ * A generated meal plan never aims below the minimum Musclog recommends, even when a goal typed by
+ * hand does, unless the person turned that minimum off in Advanced settings. Protein, carbs and fat
+ * grow with the calories.
+ */
+async function atLeastMinimumCalories(
+  targets: MealPlanMacroTargets
+): Promise<MealPlanMacroTargets> {
+  if (await SettingsService.getDisableMinimumCalories()) {
+    return targets;
+  }
+
+  const user = await UserService.getCurrentUser();
+  const minimum = getMinCalories(user?.gender ?? 'other');
+  if (targets.calories >= minimum || targets.calories <= 0) {
+    return targets;
+  }
+
+  const scale = minimum / targets.calories;
+
+  return {
+    calories: minimum,
+    protein: Math.round(targets.protein * scale),
+    carbs: Math.round(targets.carbs * scale),
+    fat: Math.round(targets.fat * scale),
+    fiber: targets.fiber,
+  };
+}
+
+/**
  * The daily targets a generated meal plan aims for: the person's current goal as it resolves
  * today, else a plan calculated on the spot from their profile and latest weight. Undefined when
  * there is neither (no goal and no weigh-in), so the plan is generated without targets.
@@ -26,13 +59,13 @@ export async function resolveMealPlanMacroTargets(): Promise<MealPlanMacroTarget
   if (currentGoal) {
     const resolved = await NutritionTargetService.resolve(currentGoal, new Date());
 
-    return {
+    return atLeastMinimumCalories({
       calories: resolved?.totalCalories ?? currentGoal.totalCalories,
       protein: resolved?.protein ?? currentGoal.protein,
       carbs: resolved?.carbs ?? currentGoal.carbs,
       fat: resolved?.fats ?? currentGoal.fats,
       fiber: resolved?.fiber ?? currentGoal.fiber,
-    };
+    });
   }
 
   const user = await UserService.getCurrentUser();

@@ -22,7 +22,7 @@
       "writeHealthData": "Escribir Datos de Salud",
       "healthData": "Datos de Salud",
       "healthDataSubtitle": "Sincroniza tus entrenamientos y métricas corporales",
-      "healthDataPrivacy": "Tus datos de salud solo se almacenan localmente.",
+      "healthDataPrivacy": "Tus datos de salud se guardan en este dispositivo. Solo se envían a otro sitio si activas una opción de IA.",
       "syncNow": "Sincronizar Ahora",
       "syncing": "Sincronizando...",
       "foodSearchSource": "Fuente de Búsqueda de Alimentos",
@@ -33,7 +33,7 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "Base de datos del Departamento de Agricultura de EE. UU.",
       "foodSearchMusclog": "Musclog",
-      "foodSearchMusclogDescription": "Base de datos de códigos de barras de Musclog (solo escaneo)",
+      "foodSearchMusclogDescription": "Base de datos de códigos de barras creada con información de productos de supermercados de los Países Bajos (solo escaneo de códigos de barras)",
       "foodSearchNone": "Ninguna",
       "foodSearchNoneDescription": "Buscar solo en tu base de datos local",
       "energyUnit": "Unidad de energía",
@@ -258,7 +258,8 @@
         "unavailable": "No se pudo leer el almacenamiento ahora.",
         "retry": "Reintentar"
       },
-      "storageSubtitle": "Mira qué guarda Musclog en este dispositivo y libera espacio"
+      "storageSubtitle": "Mira qué guarda Musclog en este dispositivo y libera espacio",
+      "backupReminder": "Tus datos existen solo en este dispositivo. Si pierdes el dispositivo o desinstalas Musclog, se pierden. Exporta una copia de seguridad de vez en cuando."
     },
     "chatMessages": {
       "title": "Mensajes del Chat",
@@ -283,9 +284,9 @@
       "insightsAlerts": "Información y alertas",
       "enableGoogleGemini": "Habilitar Google Gemini",
       "dailyNutritionInsights": "Información Diaria de Nutrición",
-      "dailyNutritionInsightsSubtitle": "Resumen matutino basado en los registros",
+      "dailyNutritionInsightsSubtitle": "Una vez al día, envía tus últimos 7 días de comidas a tu IA",
       "workoutInsights": "Información de Entrenamiento",
-      "workoutInsightsSubtitle": "Análisis post-entrenamiento",
+      "workoutInsightsSubtitle": "Una vez al día, envía tus últimos 7 días de entrenamientos a tu IA",
       "enableOpenAi": "Habilitar OpenAI",
       "localLlmIntegration": "Integración con LLM local",
       "enableLocalLlm": "Habilitar LLM Local",
@@ -431,13 +432,19 @@
         "toggleSubtitle": "Funciona en el nivel gratuito de Google, que puede usar lo que envías. El límite diario lo comparten todos los usuarios.",
         "activeNote": "El nivel gratuito está activo. No se usarán tus propias claves API.",
         "consentTitle": "¿Compartir datos con Google?",
-        "consentBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales o mensajes de chat) se envía a través de OpenRouter al nivel gratuito de Google AI Studio para redactar la respuesta. Google puede conservar lo enviado, usarlo para mejorar sus productos y hacer que personas (sin identificadores) lo revisen, así que el nivel gratuito no es privado: no introduzcas información personal ni sensible. El nivel gratuito es solo para adultos (18+). Si no te parece bien, déjalo desactivado. No se envía nada hasta que uses una función de IA. Hay un límite diario que comparten todos los que usan el nivel gratuito, así que puede agotarse pronto en el día, y el nivel gratuito a veces puede no estar disponible.",
+        "consentBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales, incluidos los importados de Health Connect o Apple Health, o mensajes de chat) se envía a través de OpenRouter al nivel gratuito de Google AI Studio para redactar la respuesta. Google puede conservar lo enviado, usarlo para mejorar sus productos y hacer que personas lo revisen (sin identificadores), así que el nivel gratuito no es privado: no introduzcas información personal ni sensible. El nivel gratuito es solo para adultos: al aceptar confirmas que tienes 18 años o más. Si no te parece bien, déjalo desactivado. No se envía nada hasta que uses una función de IA, lo que incluye los análisis diarios si los activas. Hay un límite diario que comparten todos los que usan el nivel gratuito, así que puede agotarse pronto en el día, y a veces el nivel gratuito puede no estar disponible.",
         "consentConfirm": "Aceptar y activar"
       },
       "testKey": "Probar clave",
       "testingKey": "Probando…",
       "premium": {
         "activeNote": "Musclog Iron está respondiendo a tus solicitudes de IA. Tus propias claves y el nivel gratuito no se usan mientras esté activado."
+      },
+      "providerConsent": {
+        "title": "¿Enviar datos a {{provider}}?",
+        "body": "Cuando usas una función de IA, lo que necesita se envía a {{provider}} con tu propia clave de API: tus mensajes y fotos de comidas, y datos como tu edad, sexo, peso, grasa corporal, entrenamientos y comidas, incluidos los importados de Health Connect o Apple Health. {{provider}} lo gestiona según sus propias condiciones y su política de privacidad, y se aplican sus propias normas de edad.",
+        "localBody": "Cuando usas una función de IA, lo que necesita se envía a la dirección del servidor que configuraste: tus mensajes y fotos de comidas, y datos como tu edad, sexo, peso, grasa corporal, entrenamientos y comidas, incluidos los importados de Health Connect o Apple Health. Quien administre ese servidor puede verlo. Una dirección que empieza por http:// lo envía sin cifrar.",
+        "confirm": "Aceptar y usar"
       }
     },
     "aiBehavior": {

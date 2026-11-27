@@ -143,8 +143,9 @@ describe('normalizeAnswers', () => {
 
   describe('birthday and age', () => {
     it.each([
-      ['2013-10-30', null],
-      ['2013-10-31', 'outOfRange'],
+      // Musclog is for people aged 16 and over (`MINIMUM_APP_AGE`).
+      ['2010-10-30', null],
+      ['2010-10-31', 'outOfRange'],
       ['1925-10-31', null],
       ['1925-10-30', 'outOfRange'],
       ['2030-01-01', 'outOfRange'],

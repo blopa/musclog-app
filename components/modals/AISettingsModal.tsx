@@ -25,15 +25,12 @@ import { SETTINGS } from '@/constants/settingDefinitions';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useAiConsentGate } from '@/hooks/useAiConsentGate';
 import { usePremium } from '@/hooks/usePremium';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
-import {
-  AI_ACCURACY_CONSENT_KEY,
-  needsFreeTierConsent,
-  withAiAccuracyConsent,
-} from '@/utils/aiConsent';
+import { needsFreeTierConsent } from '@/utils/aiConsent';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
 import {
   effectiveUseMusclogGateway,
@@ -41,7 +38,7 @@ import {
 } from '@/utils/musclogGatewayAvailability';
 
 import { AIBehaviorSettingsModal } from './AIBehaviorSettingsModal';
-import { ConfirmationModal } from './ConfirmationModal';
+import { AiProviderConsentModal } from './AiProviderConsentModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PremiumModal } from './PremiumModal';
 
@@ -306,7 +303,8 @@ export function AISettingsModal({
     null
   );
   const [behaviorVisible, setBehaviorVisible] = useState(false);
-  const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
+  // Asked before any option starts receiving data: a switch turned on, or a key saved.
+  const consent = useAiConsentGate();
   const [premiumVisible, setPremiumVisible] = useState(false);
   // Loads the overview while this screen is open; `PremiumCard` below reads the same store.
   const premium = usePremium({ load: visible });
@@ -396,31 +394,47 @@ export function AISettingsModal({
     localStateLlmBaseUrl !== resolvedLocalLlmBaseUrl;
 
   // Save handlers
-  const handleSaveGeminiApiKey = () => {
-    if (onGoogleGeminiApiKeyChange) {
-      onGoogleGeminiApiKeyChange(localGeminiApiKey);
+  // The own-provider switches start on, so saving a key is often what turns the provider on.
+  const saveAfterConsent = (
+    provider: 'gemini' | 'openai' | 'claude',
+    key: string,
+    save: () => void
+  ) => {
+    if (key.trim()) {
+      consent.request(provider, save);
     } else {
-      void SettingsService.setGoogleGeminiApiKey(localGeminiApiKey);
+      save();
     }
   };
 
-  const handleSaveClaudeApiKey = () => {
-    if (onClaudeApiKeyChange) {
-      onClaudeApiKeyChange(localClaudeApiKey);
-    } else {
-      void SettingsService.setClaudeApiKey(localClaudeApiKey);
-    }
-  };
+  const handleSaveGeminiApiKey = () =>
+    saveAfterConsent('gemini', localGeminiApiKey, () => {
+      if (onGoogleGeminiApiKeyChange) {
+        onGoogleGeminiApiKeyChange(localGeminiApiKey);
+      } else {
+        void SettingsService.setGoogleGeminiApiKey(localGeminiApiKey);
+      }
+    });
 
-  const handleSaveOpenAiApiKey = () => {
-    if (onOpenAiApiKeyChange) {
-      onOpenAiApiKeyChange(localOpenAiApiKey);
-    } else {
-      void SettingsService.setOpenAiApiKey(localOpenAiApiKey);
-    }
-  };
+  const handleSaveClaudeApiKey = () =>
+    saveAfterConsent('claude', localClaudeApiKey, () => {
+      if (onClaudeApiKeyChange) {
+        onClaudeApiKeyChange(localClaudeApiKey);
+      } else {
+        void SettingsService.setClaudeApiKey(localClaudeApiKey);
+      }
+    });
 
-  const handleSaveLocalLlmConfig = () => {
+  const handleSaveOpenAiApiKey = () =>
+    saveAfterConsent('openai', localOpenAiApiKey, () => {
+      if (onOpenAiApiKeyChange) {
+        onOpenAiApiKeyChange(localOpenAiApiKey);
+      } else {
+        void SettingsService.setOpenAiApiKey(localOpenAiApiKey);
+      }
+    });
+
+  const saveLocalLlmConfig = () => {
     if (onLocalLlmApiKeyChange) {
       onLocalLlmApiKeyChange(localStateLlmApiKey);
     } else {
@@ -437,6 +451,15 @@ export function AISettingsModal({
       onLocalLlmBaseUrlChange(localStateLlmBaseUrl);
     } else {
       void SettingsService.setLocalLlmBaseUrl(localStateLlmBaseUrl);
+    }
+  };
+
+  const handleSaveLocalLlmConfig = () => {
+    if (debouncedEnableLocalLlm) {
+      consent.request('local', saveLocalLlmConfig);
+    } else {
+      // Nothing is sent while the local server is off; turning it on asks.
+      saveLocalLlmConfig();
     }
   };
 
@@ -466,7 +489,13 @@ export function AISettingsModal({
       key: 'enable-gemini',
       label: t('settings.aiSettings.enableGoogleGemini'),
       value: debouncedEnableGoogleGemini,
-      onValueChange: handleEnableGoogleGeminiChange,
+      onValueChange: (value: boolean) => {
+        if (value) {
+          consent.request('gemini', () => handleEnableGoogleGeminiChange(true));
+        } else {
+          handleEnableGoogleGeminiChange(false);
+        }
+      },
       icon: (
         <View
           style={{
@@ -489,7 +518,13 @@ export function AISettingsModal({
       key: 'enable-local-llm',
       label: t('settings.aiSettings.enableLocalLlm'),
       value: debouncedEnableLocalLlm,
-      onValueChange: handleEnableLocalLlmWithThinking,
+      onValueChange: (value: boolean) => {
+        if (value) {
+          consent.request('local', () => handleEnableLocalLlmWithThinking(true));
+        } else {
+          handleEnableLocalLlmWithThinking(false);
+        }
+      },
       icon: (
         <View
           style={{
@@ -512,7 +547,13 @@ export function AISettingsModal({
       key: 'enable-openai',
       label: t('settings.aiSettings.enableOpenAi'),
       value: debouncedEnableOpenAi,
-      onValueChange: handleEnableOpenAiChange,
+      onValueChange: (value: boolean) => {
+        if (value) {
+          consent.request('openai', () => handleEnableOpenAiChange(true));
+        } else {
+          handleEnableOpenAiChange(false);
+        }
+      },
       icon: (
         <View
           style={{
@@ -535,7 +576,13 @@ export function AISettingsModal({
       key: 'enable-claude',
       label: t('settings.aiSettings.enableClaude'),
       value: debouncedEnableClaude,
-      onValueChange: handleEnableClaudeChange,
+      onValueChange: (value: boolean) => {
+        if (value) {
+          consent.request('claude', () => handleEnableClaudeChange(true));
+        } else {
+          handleEnableClaudeChange(false);
+        }
+      },
       icon: (
         <View
           style={{
@@ -643,7 +690,7 @@ export function AISettingsModal({
                   value: debouncedUseMusclogFreeTier,
                   onValueChange: (value: boolean) => {
                     if (needsFreeTierConsent(debouncedUseMusclogFreeTier, value)) {
-                      setFreeTierConsentVisible(true);
+                      consent.request('gateway', () => handleUseMusclogFreeTierChange(true));
                     } else {
                       handleUseMusclogFreeTierChange(value);
                     }
@@ -825,20 +872,10 @@ export function AISettingsModal({
 
         {/* Inside this FullScreenModal's tree, and never open together with a menu. */}
         {/* eslint-disable-next-line local/no-sibling-modals */}
-        <ConfirmationModal
-          visible={freeTierConsentVisible}
-          onClose={() => setFreeTierConsentVisible(false)}
-          onConfirm={() => {
-            setFreeTierConsentVisible(false);
-            handleUseMusclogFreeTierChange(true);
-          }}
-          title={t('settings.aiSettings.musclogFreeTier.consentTitle')}
-          message={withAiAccuracyConsent(
-            t('settings.aiSettings.musclogFreeTier.consentBody'),
-            t(AI_ACCURACY_CONSENT_KEY)
-          )}
-          scrollable
-          confirmLabel={t('settings.aiSettings.musclogFreeTier.consentConfirm')}
+        <AiProviderConsentModal
+          provider={consent.provider}
+          onClose={consent.cancel}
+          onConfirm={consent.confirm}
         />
       </View>
 

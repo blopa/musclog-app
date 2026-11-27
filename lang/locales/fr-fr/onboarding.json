@@ -156,11 +156,11 @@
     },
     "landing": {
       "getStarted": "Commencer",
-      "termsAndPrivacy": "En continuant, tu acceptes nos Conditions et notre Politique de confidentialité.",
+      "termsAndPrivacy": "En continuant, tu confirmes avoir 16 ans ou plus et tu acceptes nos Conditions. Notre Politique de confidentialité explique comment tes données sont traitées.",
       "appName": "Musclog",
       "tagline": "Gratuit, 100 % à toi",
-      "description": "Suis tes séances et ta nutrition en toute confidentialité. Pas de compte, pas de cloud. Tout est gratuit, sauf le forfait IA Musclog Iron facultatif.",
-      "storedLocally": "Toutes les données sont stockées localement sur ton appareil",
+      "description": "Suis tes séances et ta nutrition. Aucun compte requis. Tout est gratuit, sauf le forfait facultatif de Musclog Iron.",
+      "storedLocally": "Tes données sont enregistrées sur ton appareil",
       "viewTerms": "Voir les conditions",
       "preparingApp": "Préparation de l'application...",
       "migratingPreamble": "Mise à niveau depuis la version précédente de Musclog. Nous transférons tes données.",
@@ -192,7 +192,8 @@
       "quickSetupSteps": "7 étapes",
       "quickSetupSubtitle": "Configuration de base, tu pourras personnaliser plus tard",
       "aiSetup": "Configurer avec l'IA",
-      "aiSetupSubtitle": "Discute avec une IA, ou laisse ChatGPT ou Claude te poser des questions"
+      "aiSetupSubtitle": "Discute avec une IA, ou laisse ChatGPT ou Claude te poser des questions",
+      "viewPrivacy": "Voir la Politique de confidentialité"
     },
     "quickPreferences": {
       "title": "Commençons",
@@ -304,7 +305,7 @@
         }
       },
       "dataSharingTitle": "Avis sur le partage des données",
-      "dataSharingBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations ou tes messages de chat) est envoyé via OpenRouter à l'offre gratuite de Google AI Studio pour rédiger la réponse. Google peut conserver ce qui est envoyé, l'utiliser pour améliorer ses produits et le faire relire par des personnes (sans identifiants), donc l'offre gratuite n'est pas privée : n'y saisis aucune information personnelle ou sensible. L'offre gratuite est réservée aux adultes (18+). Si cela ne te convient pas, laisse-la désactivée. Rien n'est envoyé tant que tu n'utilises pas une fonction d'IA. Il existe une limite quotidienne partagée par tous les utilisateurs de l'offre gratuite, qui peut donc être atteinte tôt dans la journée, et l'offre gratuite peut parfois être indisponible.",
+      "dataSharingBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations, y compris ceux importés depuis Health Connect ou Apple Health, ou tes messages de chat) est envoyé via OpenRouter à l'offre gratuite de Google AI Studio pour rédiger la réponse. Google peut conserver ce qui est envoyé, l'utiliser pour améliorer ses produits et le faire relire par des personnes (sans identifiants), donc l'offre gratuite n'est pas privée : n'y saisis aucune information personnelle ou sensible. L'offre gratuite est réservée aux adultes : en acceptant, tu confirmes avoir 18 ans ou plus. Si cela ne te convient pas, laisse-la désactivée. Rien n'est envoyé tant que tu n'utilises pas une fonction d'IA, ce qui inclut les analyses quotidiennes si tu les actives. Il existe une limite quotidienne partagée par tous les utilisateurs de l'offre gratuite, qui peut donc être atteinte tôt dans la journée, et l'offre gratuite peut parfois être indisponible.",
       "readPrivacyPolicy": "Lire notre Politique de confidentialité",
       "cta": {
         "premium": "Continuer avec Musclog Iron",

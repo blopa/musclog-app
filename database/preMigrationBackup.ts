@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   cacheDirectory,
   deleteAsync,
+  documentDirectory,
   readAsStringAsync,
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
@@ -131,14 +132,16 @@ async function executeBackup(
   toVersion: number | null = null,
   jsonString?: string
 ): Promise<string> {
-  if (!cacheDirectory) {
-    throw new Error('Cache directory is not available');
+  // The documents directory, never the cache: the system empties the cache when space runs low,
+  // and a safety copy that can vanish is not one.
+  if (!documentDirectory) {
+    throw new Error('Documents directory is not available');
   }
 
   const backupJson = jsonString ?? (await createLiveBackupJson());
   const createdAtDate = new Date();
   const createdAt = createdAtDate.toISOString();
-  const uri = `${cacheDirectory}${timestampSlug(createdAtDate)}-${nameInfix}.json`;
+  const uri = `${documentDirectory}${timestampSlug(createdAtDate)}-${nameInfix}.json`;
   await writePortableBackup(
     { uri, createdAt, fromVersion, toVersion, format: 'json', reason },
     backupJson
@@ -163,6 +166,8 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {}
 /**
  * Explicitly create a backup before restoring a database dump.
  * This ensures the user can undo a restore if they accidentally imported the wrong file.
+ * Failure is propagated: a restore must not wipe the data when there is no copy of it. The
+ * workout-history import, which only adds, catches it and carries on.
  */
 export async function createPreRestoreBackup(): Promise<void> {
   try {
@@ -171,6 +176,7 @@ export async function createPreRestoreBackup(): Promise<void> {
   } catch (error) {
     console.error('[PreRestoreBackup] Failed to create backup:', error);
     await reportBackupError(error, 'database.preRestoreBackup');
+    throw error;
   }
 }
 

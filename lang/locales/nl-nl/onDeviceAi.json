@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Kennisgevingen van derden",
-      "intro": "Musclog is gebouwd op open-sourcesoftware en een open model. Dit zijn de licenties die van toepassing zijn.",
+      "intro": "Musclog is gebouwd op open-sourcesoftware, open data en open modellen. Dit zijn de licenties die van toepassing zijn.",
       "link": "Kennisgevingen van derden",
       "linkSubtitle": "Open-sourcesoftware en het model op het apparaat",
-      "openLink": "De volledige tekst openen"
+      "openLink": "De volledige tekst openen",
+      "packagesTitle": "Open-sourcepakketten"
     }
   }
 }

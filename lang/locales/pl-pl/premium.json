@@ -32,7 +32,7 @@
     "consent": {
       "review": "Sprawdź zaktualizowaną zgodę",
       "title": "Wysyłać żądania AI do Musclog Iron?",
-      "body": "Twoje wiadomości, zdjęcia posiłków oraz szczegóły potrzebne funkcjom AI do odpowiedzi, takie jak treningi, posiłki i pomiary ciała, trafiają do usługi Musclog Iron. Ta przekazuje je przez bramkę AI, OpenRouter lub Otari (od Mozilla.ai), do dostawcy modelu AI. Musclog wybiera, która bramka jest używana, a ta zgoda obejmuje obie. Używani są wyłącznie dostawcy z zerową retencją danych (ZDR): nie przechowują Twoich treści ani nie wykorzystują ich do uczenia. OpenRouter sprawdza każde zapytanie pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci i może zachować zapytanie, które oznaczy; Otari deklaruje, że nie przechowuje treści zapytań. Część tych danych dotyczy zdrowia, dlatego zgadzając się, wyrażasz wyraźną zgodę na ich przetwarzanie w ten sposób. Usługa Musclog nigdy nie przechowuje Twoich wiadomości; zachowuje tylko identyfikator tego urządzenia i liczniki użycia. Polityki prywatności i warunki OpenRouter i Otari są podlinkowane na dole ekranu Musclog Iron. Możesz to wyłączyć w dowolnym momencie.",
+      "body": "Twoje wiadomości, zdjęcia posiłków oraz szczegóły potrzebne funkcji AI do odpowiedzi, takie jak treningi, posiłki i pomiary ciała, w tym te zaimportowane z Health Connect lub Apple Health, trafiają do usługi Musclog Iron. Usługa przekazuje je przez bramkę AI, OpenRouter lub Otari (od Mozilla.ai), do dostawcy modelu AI. Musclog wybiera, z której bramki się korzysta, a ta zgoda obejmuje obie. Używani są wyłącznie dostawcy z zerową retencją danych (ZDR): nie przechowują Twoich treści i nie wykorzystują ich do trenowania. OpenRouter sprawdza każde żądanie pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci i może zachować zażądanie, które oznaczy; Otari twierdzi, że nie przechowuje treści żądań. Niektóre z tych danych dotyczą zdrowia, a wyrażając zgodę, wyraźnie zgadzasz się na ich przetwarzanie w ten sposób. Usługa Musclog nigdy nie przechowuje Twoich wiadomości; zachowuje tylko identyfikator tego urządzenia, liczniki użycia i krótki odcisk każdego żądania. Musclog Iron jest dla dorosłych: zgadzając się, potwierdzasz, że masz 18 lat lub więcej. Polityki prywatności i warunki OpenRouter oraz Otari są podlinkowane na dole ekranu Musclog Iron. Możesz to wyłączyć w każdej chwili.",
       "confirm": "Używaj AI w Musclog Iron",
       "cancel": "Nie teraz"
     },
@@ -76,7 +76,7 @@
         },
         "private": {
           "title": "Zerowa retencja danych",
-          "desc": "Używani są wyłącznie dostawcy z zerową retencją danych: nie przechowują Twoich wiadomości i nie trenują na nich, poza skanowaniem OpenRouter pod kątem materiałów przedstawiających wykorzystywanie dzieci, którego wymaga prawo. Musclog także ich nie przechowuje; zachowuje tylko liczniki użycia i identyfikator urządzenia."
+          "desc": "Używani są wyłącznie dostawcy z zerową retencją danych: nie przechowują Twoich wiadomości i nie trenują na nich, poza skanowaniem OpenRouter pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci. Musclog także nigdy nie przechowuje Twoich wiadomości; zachowuje liczniki użycia, identyfikator urządzenia i krótki odcisk każdego żądania przez 7 dni."
         },
         "allowance": {
           "title": "Twój własny limit",

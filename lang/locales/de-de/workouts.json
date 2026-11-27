@@ -262,7 +262,10 @@
       "generateButton": "Plan erstellen",
       "successMessageWithPlan": "{{planName}} ist mit {{count}} Trainings fertig.",
       "errorMessage": "Der Plan konnte nicht erstellt werden. Bitte versuche es erneut.",
-      "aiNotConfigured": "KI-Funktionen sind nicht eingerichtet. Füge in den Einstellungen einen Gemini- oder OpenAI-Schlüssel hinzu."
+      "aiNotConfigured": "KI-Funktionen sind nicht eingerichtet. Füge in den Einstellungen einen Gemini- oder OpenAI-Schlüssel hinzu.",
+      "reviewIntro": "Lies den Plan und prüfe, ob er zu dir passt. Nichts wird gespeichert, bis du auf „Plan speichern“ tippst.",
+      "saveButton": "Plan speichern",
+      "discardButton": "Verwerfen"
     },
     "interruptedSession": {
       "description": "Du hast ein Training laufen.",

@@ -16,7 +16,7 @@
       "unmarkButton": "Retirer le jour de jeûne",
       "unmarkShort": "Retirer",
       "confirmTitle": "Marquer comme jour de jeûne ?",
-      "confirmMessage": "Ce jour sera marqué comme jour de jeûne : il compte comme un vrai jour à 0 calorie dans tes moyennes, ta TDEE et tes séries consécutives.",
+      "confirmMessage": "Ce jour sera marqué comme jour de jeûne : il compte comme un vrai jour à 0 calorie dans tes moyennes, ta TDEE et tes séries consécutives. Le jeûne n'est pas sans risque pour tout le monde : demande d'abord l'avis d'un médecin si tu es enceinte ou allaites, si tu prends un traitement, si tu as un diabète ou si tu as eu un trouble du comportement alimentaire.",
       "confirmButton": "Marquer comme jour de jeûne"
     },
     "logDetails": {

@@ -16,7 +16,7 @@
       "unmarkButton": "Usuń oznaczenie dnia postu",
       "unmarkShort": "Usuń",
       "confirmTitle": "Oznaczyć jako dzień postu?",
-      "confirmMessage": "Ten dzień zostanie oznaczony jako dzień postu, więc liczy się jako prawdziwy dzień z 0 kcal w średnich, TDEE i passach.",
+      "confirmMessage": "To oznacza dzień jako dzień postu, więc liczy się jako prawdziwy dzień z 0 kcal w Twoich średnich, TDEE i seriach. Post nie jest bezpieczny dla każdego: zapytaj najpierw lekarza, jeśli jesteś w ciąży lub karmisz piersią, bierzesz leki, masz cukrzycę albo miałeś/miałaś zaburzenie odżywiania.",
       "confirmButton": "Oznacz jako dzień postu"
     },
     "logDetails": {

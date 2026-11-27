@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Avisos de terceros",
-      "intro": "Musclog se basa en software de código abierto y en un modelo abierto. Estas son las licencias que se aplican.",
+      "intro": "Musclog se basa en software de código abierto, datos abiertos y modelos abiertos. Estas son las licencias que se aplican.",
       "link": "Avisos de terceros",
       "linkSubtitle": "Software de código abierto y el modelo del dispositivo",
-      "openLink": "Abrir el texto completo"
+      "openLink": "Abrir el texto completo",
+      "packagesTitle": "Paquetes de código abierto"
     }
   }
 }

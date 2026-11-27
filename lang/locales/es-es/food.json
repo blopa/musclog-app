@@ -16,7 +16,7 @@
       "unmarkButton": "Desmarcar día de ayuno",
       "unmarkShort": "Desmarcar",
       "confirmTitle": "¿Marcar como día de ayuno?",
-      "confirmMessage": "Esto marca el día como uno en que ayunaste, por lo que cuenta como un día real de 0 calorías en tus promedios, TDEE y rachas.",
+      "confirmMessage": "Esto marca el día como uno en que ayunaste, así que cuenta como un día real de 0 calorías en tus promedios, TDEE y rachas. El ayuno no es seguro para todo el mundo: pregunta primero a un médico si estás embarazada o en periodo de lactancia, tomas medicación, tienes diabetes o has tenido un trastorno de la conducta alimentaria.",
       "confirmButton": "Marcar como día de ayuno"
     },
     "logDetails": {

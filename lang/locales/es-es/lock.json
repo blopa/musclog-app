@@ -4,7 +4,7 @@
       "title": "Bloqueo de la app",
       "subtitle": "Pide huella, rostro o PIN del dispositivo",
       "hint": "Pide tu huella, rostro o PIN del dispositivo antes de mostrar las áreas que elijas. Se vuelven a bloquear cuando la app lleva 30 segundos en segundo plano.",
-      "note": "Es un bloqueo de pantalla. Tus datos siguen cifrados y en este teléfono; las copias de seguridad exportadas son archivos aparte que tú controlas.",
+      "note": "Es un bloqueo de pantalla. Tus datos se quedan en este teléfono; las copias de seguridad exportadas son archivos aparte que tú controlas.",
       "noCredential": "Configura primero un bloqueo de pantalla o biometría en tu dispositivo.",
       "coveredByApp": "Cubierto al bloquear toda la app"
     },

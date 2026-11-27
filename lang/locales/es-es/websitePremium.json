@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Qué pasa con tus mensajes",
-      "body": "Con Musclog Iron activado, tus solicitudes de IA van al servicio propio de Musclog, que las reenvía a través de un gateway de IA, OpenRouter u Otari de Mozilla.ai, al modelo de IA. Las solicitudes solo se envían a proveedores que ofrecen retención cero de datos, y el servicio no guarda el texto de tus mensajes ni tus imágenes. OpenRouter también somete a control todas las solicitudes para detectar material de abuso sexual infantil y puede conservar una que marque, según describe su propia política; Otari afirma que no almacena el contenido de las solicitudes. El servicio de Musclog lleva un recuento de uso de tu periodo de suscripción y un identificador de cada dispositivo en el que uses Musclog Iron.",
+      "body": "Con Musclog Iron activado, tus solicitudes de IA van al servicio propio de Musclog, que las reenvía a través de un gateway de IA, OpenRouter u Otari de Mozilla.ai, al modelo de IA. Las solicitudes solo se envían a proveedores que ofrecen retención cero de datos, y el servicio no almacena el texto de tus mensajes ni tus imágenes. OpenRouter también revisa todas las solicitudes en busca de material de abuso sexual infantil y puede conservar una que marque, según describe su propia política; Otari afirma que no almacena el contenido de las solicitudes. El servicio de Musclog lleva un recuento de uso de tu periodo de suscripción, un identificador de cada dispositivo en el que uses Musclog Iron y, durante 7 días, una huella corta de cada solicitud.",
       "consent": "La app te pide consentimiento antes de enviar nada a Musclog Iron, y vuelve a pedirlo si restauras una copia de seguridad en otro dispositivo.",
       "link": "Leer la política de privacidad"
     },
@@ -42,7 +42,8 @@
         "Se factura mensualmente a través de App Store o Google Play, al precio que muestre tu tienda.",
         "Se renueva automáticamente hasta que la canceles en tu cuenta de la tienda. Cancelar detiene la siguiente renovación.",
         "Las suscripciones de iOS y Android son independientes, así que una comprada en una no se traslada a la otra.",
-        "No necesitas una cuenta de Musclog. Tu suscripción se comprueba a través de tu tienda."
+        "No necesitas una cuenta de Musclog. Tu suscripción se comprueba a través de tu tienda.",
+        "Musclog Iron es para personas de 18 años o más."
       ],
       "terms": "Condiciones de uso"
     },

@@ -899,8 +899,9 @@ export class WorkoutTemplateService {
         experienceFactor = 1.0;
         break;
       case 'advanced':
-        // Advanced lifts ~140% of intermediate capacity (1.75/1.25 = 1.4)
-        experienceFactor = 1.4;
+        // Self-declared and unproven: with no logged set to go on, an advanced lifter starts at
+        // the intermediate load and works up, rather than at 1.4 times it.
+        experienceFactor = 1.0;
         break;
       default:
         // Unknown experience level, default to intermediate

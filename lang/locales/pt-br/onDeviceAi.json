@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Avisos de terceiros",
-      "intro": "O Musclog é feito com software de código aberto e um modelo aberto. Estas são as licenças que se aplicam.",
+      "intro": "O Musclog é construído com software de código aberto, dados abertos e modelos abertos. Estas são as licenças que se aplicam.",
       "link": "Avisos de terceiros",
       "linkSubtitle": "Software de código aberto e o modelo do dispositivo",
-      "openLink": "Abrir o texto completo"
+      "openLink": "Abrir o texto completo",
+      "packagesTitle": "Pacotes de código aberto"
     }
   }
 }

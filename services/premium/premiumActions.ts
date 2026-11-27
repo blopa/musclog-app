@@ -4,6 +4,7 @@
 // otherwise the screen asks and turns it on after the answer.
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
+import { recordAiConsent } from '@/services/aiConsentRecord';
 import { getOrCreateDeviceKey } from '@/services/premium/deviceKeyStore';
 import {
   fetchPremiumConfig,
@@ -104,6 +105,7 @@ export function restorePremiumAccess(
 
 export async function recordPremiumConsent(): Promise<void> {
   await SettingsService.set(SETTINGS.premiumConsentVersion, PREMIUM_CONSENT_VERSION);
+  await recordAiConsent('hosted', PREMIUM_CONSENT_VERSION);
 }
 
 /** Forgets the enrollment on this device and switches hosted AI off with it. */

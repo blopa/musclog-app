@@ -620,7 +620,8 @@
       "backup": {
         "title": "Cycle backup",
         "body": "Consider saving an encrypted backup of your records."
-      }
+      },
+      "renewReminders": "Open Musclog to keep these reminders coming."
     },
     "reminders": {
       "time": "Reminder time",
@@ -670,7 +671,7 @@
         "pattern24": "24 days + 4 off",
         "continuous": "Every day",
         "packStart": "First pill of the current pack",
-        "hint": "Pill-free days get no reminder. This is a reminder, not medical advice: follow your pill's instructions if you miss one.",
+        "hint": "Pill-free days get no reminder. This is a reminder, not medical advice: follow your pill's instructions if you miss one. Phones can delay or silence notifications, so do not rely on this as your only reminder. For packs with pill-free days, open Musclog at least every four weeks to keep the reminders coming.",
         "notPaused": "keeps going during a pause"
       },
       "pause": {

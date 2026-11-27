@@ -481,6 +481,9 @@ export const USE_HOSTED_AI_SETTING_TYPE = 'use_hosted_ai';
  */
 export const AI_IMAGE_QUALITY_SETTING_TYPE = 'ai_image_quality';
 
+/** Which AI consents were given, their wording version and when (`utils/aiConsent.ts`). */
+export const AI_CONSENT_RECORDS_SETTING_TYPE = 'ai_consent_records';
+
 /** Version of the Premium consent the person last gave on this device (device-local, never backed up). */
 export const PREMIUM_CONSENT_VERSION_SETTING_TYPE = 'premium_consent_version';
 

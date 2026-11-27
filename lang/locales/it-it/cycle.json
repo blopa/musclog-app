@@ -620,7 +620,8 @@
       "backup": {
         "title": "Backup del ciclo",
         "body": "Considera di salvare un backup cifrato dei tuoi registri."
-      }
+      },
+      "renewReminders": "Apri Musclog per continuare a ricevere questi promemoria."
     },
     "reminders": {
       "time": "Orario del promemoria",
@@ -670,7 +671,7 @@
         "pattern24": "24 giorni + 4 di pausa",
         "continuous": "Ogni giorno",
         "packStart": "Prima pillola della confezione attuale",
-        "hint": "Nei giorni senza pillola non arriva alcun promemoria. È un promemoria, non un consiglio medico: segui le istruzioni della tua pillola se ne dimentichi una.",
+        "hint": "I giorni senza pillola non ricevono promemoria. Questo è un promemoria, non un consiglio medico: segui le istruzioni della tua pillola se ne dimentichi una. I telefoni possono ritardare o silenziare le notifiche, quindi non affidarti solo a questo come promemoria. Per le confezioni con giorni senza pillola, apri Musclog almeno ogni quattro settimane per continuare a ricevere i promemoria.",
         "notPaused": "continua durante una pausa"
       },
       "pause": {

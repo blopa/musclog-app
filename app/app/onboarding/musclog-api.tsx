@@ -16,11 +16,15 @@ import { AiChoiceFixtureContext } from '@/components/onboarding/aiChoiceFixture'
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
+import { useSnackbar } from '@/context/SnackbarContext';
 import { SettingsService } from '@/database/services/SettingsService';
 import { usePremium } from '@/hooks/usePremium';
 import { useScrollFade } from '@/hooks/useScrollFade';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { isCloudAiBlockedForAge } from '@/services/aiAccess';
+import { recordAiConsent } from '@/services/aiConsentRecord';
+import { MINIMUM_CLOUD_AI_AGE } from '@/utils/ageGate';
 import { AI_ACCURACY_CONSENT_KEY } from '@/utils/aiConsent';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { type AiChoice, availableAiChoices, defaultAiChoice } from '@/utils/onboardingAiChoice';
@@ -45,6 +49,7 @@ const CTA_KEYS: Record<AiChoice, string> = {
 export default function MusclogApiScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const premium = usePremium({ load: true });
   const fixture = useContext(AiChoiceFixtureContext);
@@ -83,6 +88,15 @@ export default function MusclogApiScreen() {
     async (enableFreeTier: boolean) => {
       setIsSaving(true);
       try {
+        if (enableFreeTier) {
+          if (await isCloudAiBlockedForAge()) {
+            showSnackbar('error', t('common.ageGate.cloudAi', { age: MINIMUM_CLOUD_AI_AGE }));
+            return;
+          }
+
+          await recordAiConsent('gateway');
+        }
+
         await SettingsService.setUseMusclogFreeTier(enableFreeTier);
         router.navigate(resolvedNextRoute as never);
       } catch (e) {
@@ -91,7 +105,7 @@ export default function MusclogApiScreen() {
         setIsSaving(false);
       }
     },
-    [resolvedNextRoute, router]
+    [resolvedNextRoute, router, showSnackbar, t]
   );
 
   // Once Premium is on, the setup carries on by itself (once: a later focus must not navigate again).

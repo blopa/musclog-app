@@ -75,6 +75,17 @@ jest.mock('@/hooks/useAiSetupSession', () => ({
     isDraftLoaded: true,
   }),
 }));
+jest.mock('@/hooks/useAiConsentGate', () => ({
+  useAiConsentGate: () => ({
+    provider: null,
+    request: jest.fn(),
+    confirm: jest.fn(),
+    cancel: jest.fn(),
+  }),
+}));
+jest.mock('@/components/modals/AiProviderConsentModal', () => ({
+  AiProviderConsentModal: () => null,
+}));
 jest.mock('@/services/aiProviderSetup', () => ({
   enableFreeTier: jest.fn(async () => undefined),
   testAndSaveApiKey: jest.fn(async () => 'ok'),

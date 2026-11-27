@@ -157,10 +157,11 @@
     },
     "notices": {
       "title": "Hinweise von Drittanbietern",
-      "intro": "Musclog basiert auf Open-Source-Software und einem offenen Modell. Dies sind die jeweils geltenden Lizenzen.",
+      "intro": "Musclog basiert auf quelloffener Software, offenen Daten und offenen Modellen. Dies sind die Lizenzen, die gelten.",
       "link": "Hinweise von Drittanbietern",
       "linkSubtitle": "Open-Source-Software und das Modell auf dem Gerät",
-      "openLink": "Vollständigen Text öffnen"
+      "openLink": "Vollständigen Text öffnen",
+      "packagesTitle": "Quelloffene Pakete"
     }
   }
 }

@@ -18,6 +18,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
 import { commitOnboardingProfile } from '@/services/onboardingAnswersApply';
 import type { CompleteOnboardingAnswers } from '@/utils/aiOnboarding/contract';
 import {
@@ -146,7 +147,8 @@ export default function PersonalizedBodyStatsScreen() {
     useBfForCalculations,
   ]);
 
-  const isValid = parseFloat(weight) > 0 && parseFloat(height) > 0;
+  const isUnderAge = isUnderMinimumAppAge(birthday);
+  const isValid = parseFloat(weight) > 0 && parseFloat(height) > 0 && !isUnderAge;
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -252,6 +254,17 @@ export default function PersonalizedBodyStatsScreen() {
                   ? t('onboarding.quickBodyStats.birthdayEstimated')
                   : t('onboarding.quickBodyStats.birthdayHelper')}
               </Text>
+              {isUnderAge ? (
+                <Text
+                  accessibilityRole="alert"
+                  style={{
+                    color: theme.colors.status.error,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
+                >
+                  {t('common.ageGate.minimumApp', { age: MINIMUM_APP_AGE })}
+                </Text>
+              ) : null}
             </View>
 
             {/* Body Fat % */}

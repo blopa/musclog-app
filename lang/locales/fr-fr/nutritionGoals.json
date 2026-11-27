@@ -138,6 +138,11 @@
     "dynamicBadge": "Dynamique",
     "dynamicRequiredFields": "Le poids cible et la date cible sont requis pour les objectifs dynamiques.",
     "keepCurrentTargets": "Garder mes cibles actuelles",
-    "perGram": "{{energy}}/g"
+    "perGram": "{{energy}}/g",
+    "safety": {
+      "belowMinimum": "Ceci est en dessous du minimum que Musclog te recommande. Demande l'avis d'un médecin ou d'un diététicien avant de manger aussi peu.",
+      "underweightCut": "Ton poids actuel se situe dans la zone d'insuffisance pondérale (IMC inférieur à 18,5). Musclog ne recommande pas de perdre du poids. Parle-en à un médecin.",
+      "goalUnderweight": "Ce poids cible se situe dans la zone d'insuffisance pondérale (IMC inférieur à 18,5). Choisis un poids cible plus élevé ou parle à un médecin."
+    }
   }
 }

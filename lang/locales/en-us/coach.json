@@ -53,9 +53,9 @@
     },
     "goToSettings": "Go to settings",
     "success": {
-      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "I've created {{planName}} with {{count}} workouts for you! 💪 {{description}}",
-      "mealPlanGenerated": "I've created a 3-day meal plan with {{count}} meals for you! 🥗 {{description}}",
+      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}} Check them before you train.",
+      "workoutPlanGeneratedWithName": "I've created {{planName}} with {{count}} workouts for you! 💪 {{description}} Check them before you train.",
+      "mealPlanGenerated": "I've created a 3-day meal plan with {{count}} meals for you! 🥗 {{description}} Check the foods and amounts before you rely on them.",
       "trackMealSuccess": "I've tracked {{count}} ingredients for your meal: {{ingredients}}. Total: {{calories}}.",
       "trackMealReady": "I've analyzed {{count}} meal(s): {{meals}} ({{calories}} total). Tap a meal to review and log it.",
       "historyCleared": "Chat history cleared."
@@ -119,9 +119,12 @@
       "copied": "Message copied to clipboard",
       "deleted": "Message deleted",
       "report": "Report a problem",
-      "reportDesc": "Email a problem with this reply",
+      "reportDesc": "Send this reply to Musclog so we can look at it",
       "reportSubject": "Problem with a Musclog AI reply",
-      "reportIntro": "What was wrong with this reply? (You can edit or delete the text below before sending.)"
+      "reportIntro": "What was wrong with this reply? (You can edit or delete the text below before sending.)",
+      "reportConfirm": "This sends the reply, the app version, your platform and language to Musclog, through Sentry, our error-tracking service. Nothing else from the chat is sent.",
+      "reportSend": "Send report",
+      "reportSent": "Report sent. Thank you."
     },
     "sendViaOpenAI": "Send via OpenAI",
     "personas": {

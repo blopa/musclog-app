@@ -58,6 +58,7 @@ import {
   getEffectiveKcalPerKgGoalChange,
 } from '@/utils/nutritionCalculator';
 import { isDynamicNutritionGoalValid } from '@/utils/nutritionGoalHelpers';
+import { type GoalSafetyWarning, goalSafetyWarnings } from '@/utils/nutritionSafety';
 import {
   displayToKg,
   kgToDisplay,
@@ -65,6 +66,7 @@ import {
   storedWeightToKg,
 } from '@/utils/unitConversion';
 
+import { HealthDisclaimer } from './HealthDisclaimer';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { PastTdeeWindowNote } from './nutrition/PastTdeeWindowNote';
@@ -75,6 +77,13 @@ import { SegmentedControl } from './theme/SegmentedControl';
 import { StepperInlineInput } from './theme/StepperInlineInput';
 
 const CALORIES_STEP = 12;
+
+/** Whole keys, so the translation check sees each one. */
+const GOAL_SAFETY_WARNING_KEYS: Record<GoalSafetyWarning, string> = {
+  belowMinimum: 'nutritionGoals.safety.belowMinimum',
+  underweightCut: 'nutritionGoals.safety.underweightCut',
+  goalUnderweight: 'nutritionGoals.safety.goalUnderweight',
+};
 
 export type NutritionGoals = {
   targetMode?: import('@/database/models/NutritionGoal').NutritionTargetMode;
@@ -1632,6 +1641,27 @@ export function NutritionGoalsBody({
             }}
           />
         ) : null}
+
+        {/* Said before saving, whichever button saves it. */}
+        <View className="mt-6 gap-2">
+          {goalSafetyWarnings({
+            calories: effectiveCalories,
+            gender: user?.gender ?? 'other',
+            isCut: eatingPhase === 'cut',
+            weightKg: latestWeightKg,
+            heightM: userHeightM,
+            targetWeightKg: targetWeight != null ? displayToKg(targetWeight, units) : null,
+          }).map((warning) => (
+            <Text
+              key={warning}
+              accessibilityRole="alert"
+              style={{ color: theme.colors.status.error, fontSize: theme.typography.fontSize.sm }}
+            >
+              {t(GOAL_SAFETY_WARNING_KEYS[warning])}
+            </Text>
+          ))}
+          <HealthDisclaimer />
+        </View>
 
         {/* Save Button */}
         {showSaveButton ? (

@@ -138,6 +138,11 @@
     "dynamicBadge": "Dynamic",
     "dynamicRequiredFields": "Target weight and target date are required for dynamic goals.",
     "keepCurrentTargets": "Keep my current targets",
-    "perGram": "{{energy}}/g"
+    "perGram": "{{energy}}/g",
+    "safety": {
+      "belowMinimum": "This is below the minimum Musclog recommends for you. Ask a doctor or dietitian before eating this little.",
+      "underweightCut": "Your current weight is in the underweight range (BMI under 18.5). Musclog does not recommend losing weight. Talk to a doctor.",
+      "goalUnderweight": "This target weight is in the underweight range (BMI under 18.5). Choose a higher target or talk to a doctor."
+    }
   }
 }

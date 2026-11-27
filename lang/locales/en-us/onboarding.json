@@ -156,11 +156,11 @@
     },
     "landing": {
       "getStarted": "Get started",
-      "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
+      "termsAndPrivacy": "By continuing, you confirm that you are 16 or older and agree to our Terms. Our Privacy Policy explains how your data is handled.",
       "appName": "Musclog",
       "tagline": "Free to use, 100% yours",
-      "description": "Track your workouts and nutrition with complete privacy. No accounts, no cloud. Everything is free except the optional Musclog Iron allowance.",
-      "storedLocally": "All data stored locally on your device",
+      "description": "Track your workouts and nutrition. No account needed. Everything is free except the optional Musclog Iron allowance.",
+      "storedLocally": "Your logs are stored on your device",
       "viewTerms": "View terms",
       "preparingApp": "Preparing the app for you...",
       "migratingPreamble": "Upgrading from the previous Musclog. We're bringing your data over.",
@@ -192,7 +192,8 @@
       "quickSetupSteps": "7 steps",
       "quickSetupSubtitle": "Basic setup, you can personalize later",
       "aiSetup": "Set up with AI",
-      "aiSetupSubtitle": "Chat with an AI, or let ChatGPT or Claude interview you"
+      "aiSetupSubtitle": "Chat with an AI, or let ChatGPT or Claude interview you",
+      "viewPrivacy": "View privacy policy"
     },
     "quickPreferences": {
       "title": "Let's get started",
@@ -304,7 +305,7 @@
         }
       },
       "dataSharingTitle": "Data sharing notice",
-      "dataSharingBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults (18+). If that is not OK for you, leave it off. Nothing is sent until you use an AI feature. There is a daily limit shared by everyone who uses the free tier, so it can run out early in the day, and the free tier may sometimes be unavailable.",
+      "dataSharingBody": "When you use an AI feature, what it needs (for example your workouts, meals, body measurements, including ones imported from Health Connect or Apple Health, or chat messages) is sent through OpenRouter to Google AI Studio's free tier to write the reply. Google may keep what is sent, use it to improve its products and have people (with identifiers removed) review it, so the free tier is not private: do not enter personal or sensitive information. The free tier is for adults: by agreeing you confirm that you are 18 or older. If that is not OK for you, leave it off. Nothing is sent until you use an AI feature, which includes daily insights if you turn them on. There is a daily limit shared by everyone who uses the free tier, so it can run out early in the day, and the free tier may sometimes be unavailable.",
       "readPrivacyPolicy": "Read our Privacy Policy",
       "cta": {
         "premium": "Continue with Musclog Iron",

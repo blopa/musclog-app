@@ -7,6 +7,7 @@ import { Pressable, Text, View } from 'react-native';
 import { type Gender } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
 import {
   formatLocalCalendarDayIso,
   getLocalCalendarYear,
@@ -59,6 +60,7 @@ export function EditPhysicalStatsBody({
     initialData?.fatPercentage ?? null
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [rejectedBirthday, setRejectedBirthday] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
   const prevUnitsRef = useRef<'imperial' | 'metric'>(units);
 
@@ -80,7 +82,11 @@ export function EditPhysicalStatsBody({
   }, [units]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDateSelect = useCallback((date: Date) => {
-    setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    const tooYoung = isUnderMinimumAppAge(localCalendarDayDate(date));
+    setRejectedBirthday(tooYoung);
+    if (!tooYoung) {
+      setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    }
   }, []);
 
   useEffect(() => {
@@ -142,6 +148,11 @@ export function EditPhysicalStatsBody({
             selectedDate={parseDobDisplayStringToPickerDate(dob)}
             onPress={() => setIsDatePickerVisible(true)}
           />
+          {rejectedBirthday ? (
+            <Text accessibilityRole="alert" className="ml-1 text-sm text-status-error">
+              {t('common.ageGate.minimumApp', { age: MINIMUM_APP_AGE })}
+            </Text>
+          ) : null}
         </View>
 
         {/* Gender */}

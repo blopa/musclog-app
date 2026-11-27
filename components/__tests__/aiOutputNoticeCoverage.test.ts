@@ -32,8 +32,16 @@ const NOTICE_SURFACES: readonly [file: string, kind: string][] = [
 /** Consents for an AI option Musclog runs: each message ends with the accuracy paragraph. */
 const CONSENTS: readonly [file: string, bodyKey: string][] = [
   ['components/modals/PremiumModal.tsx', 'premium.consent.body'],
-  ['components/modals/AISettingsModal.tsx', 'settings.aiSettings.musclogFreeTier.consentBody'],
-  ['app/app/onboarding/ai-provider.tsx', 'settings.aiSettings.musclogFreeTier.consentBody'],
+  [
+    'components/modals/AiProviderConsentModal.tsx',
+    'settings.aiSettings.musclogFreeTier.consentBody',
+  ],
+];
+
+/** Screens that turn an AI option on through the shared consent question. */
+const CONSENT_SCREENS = [
+  'components/modals/AISettingsModal.tsx',
+  'app/app/onboarding/ai-provider.tsx',
 ];
 
 describe('AI output notice coverage', () => {
@@ -74,6 +82,16 @@ describe('AI output notice coverage', () => {
     const compact = read(file).replace(/\s/g, '');
 
     expect(compact).toContain(`withAiAccuracyConsent(t('${bodyKey}'),t(AI_ACCURACY_CONSENT_KEY))`);
+  });
+
+  it.each(CONSENT_SCREENS)('%s asks through the shared consent question', (file) => {
+    expect(read(file)).toContain('<AiProviderConsentModal');
+  });
+
+  it('own-provider consents end with the accuracy paragraph too', () => {
+    expect(read('components/modals/AiProviderConsentModal.tsx').replace(/\s/g, '')).toContain(
+      'withAiAccuracyConsent(ownBody,t(AI_ACCURACY_CONSENT_KEY))'
+    );
   });
 
   it('the onboarding free-tier notice carries the accuracy paragraph', () => {

@@ -16,7 +16,7 @@
       "unmarkButton": "Oruç gününü kaldır",
       "unmarkShort": "Kaldır",
       "confirmTitle": "Oruç günü olarak işaretlensin mi?",
-      "confirmMessage": "Bu gün oruç tuttuğun bir gün olarak işaretlenir ve ortalamalarında, TDEE'de ve serilerinde gerçek bir 0 kalorili gün sayılır.",
+      "confirmMessage": "Bu, günü oruç tuttuğun bir gün olarak işaretler; böylece ortalamalarında, TDEE'de ve serilerinde gerçek bir 0 kalorili gün sayılır. Oruç herkes için güvenli değildir: hamileysen veya emziriyorsan, ilaç kullanıyorsan, diyabetin varsa ya da geçmişte yeme bozukluğun olduysa önce bir doktora sor.",
       "confirmButton": "Oruç günü olarak işaretle"
     },
     "logDetails": {

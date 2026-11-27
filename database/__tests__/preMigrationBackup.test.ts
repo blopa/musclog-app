@@ -1,7 +1,14 @@
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 
-import { type BackupFileMeta, writePortableBackup } from '@/database/preMigrationBackup';
+import {
+  type BackupFileMeta,
+  createPreRestoreBackup,
+  writePortableBackup,
+} from '@/database/preMigrationBackup';
 
 const mockStorageValues = new Map<string, string>();
 
@@ -17,9 +24,15 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 
 jest.mock('expo-file-system/legacy', () => ({
   cacheDirectory: 'file:///cache/',
+  get documentDirectory() {
+    return mockDocumentDirectory;
+  },
   deleteAsync: jest.fn().mockResolvedValue(undefined),
   writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
 }));
+
+let mockDocumentDirectory: string | null = 'file:///documents/';
+jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
 const INDEX_KEY = 'pre_migration_backups_v1';
 const NEW_URI = 'file:///cache/2026-08-12T12-00-00-pre-exercise-catalogue.json';
@@ -63,6 +76,26 @@ describe('native pre-migration backup index commits', () => {
     expect(deleteAsync).toHaveBeenCalledWith(NEW_URI, { idempotent: true });
     for (const entry of existing) {
       expect(deleteAsync).not.toHaveBeenCalledWith(entry.uri, expect.anything());
+    }
+  });
+});
+
+describe('native safety backups', () => {
+  it('reject when no copy can be made, so a restore can stop before it wipes', async () => {
+    mockDocumentDirectory = null;
+
+    await expect(createPreRestoreBackup()).rejects.toThrow('Documents directory is not available');
+
+    mockDocumentDirectory = 'file:///documents/';
+  });
+
+  // Source level: the writers load the exporter with a dynamic import Jest cannot run.
+  it('are written to the documents directory, never the cache the system may empty', () => {
+    for (const file of ['preMigrationBackup.ts', 'preMigrationCapture.ts']) {
+      const source = readFileSync(join(__dirname, '..', file), 'utf8');
+
+      expect(source).toContain('`${documentDirectory}${timestampSlug');
+      expect(source).not.toContain('`${cacheDirectory}${timestampSlug');
     }
   });
 });

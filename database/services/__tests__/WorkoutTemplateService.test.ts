@@ -3176,3 +3176,20 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     expect(suggestion.weightKg).toBe(102.5);
   });
 });
+
+describe('WorkoutTemplateService starting weight with no history', () => {
+  const suggest = (experience: string) =>
+    (WorkoutTemplateService as any).calculateSuggestedWeight(
+      100,
+      1.8,
+      experience,
+      30,
+      false,
+      'metric'
+    );
+
+  it('never starts an advanced lifter above an intermediate one', () => {
+    expect(suggest('advanced')).toBe(suggest('intermediate'));
+    expect(suggest('beginner')).toBeLessThan(suggest('intermediate'));
+  });
+});

@@ -53,9 +53,9 @@
     },
     "goToSettings": "Ga naar Instellingen",
     "success": {
-      "workoutPlanGenerated": "Ik heb {{count}} workouts voor je gemaakt! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Ik heb {{planName}} met {{count}} workouts voor je gemaakt! 💪 {{description}}",
-      "mealPlanGenerated": "Ik heb een maaltijdplan van 3 dagen met {{count}} maaltijden voor je gemaakt! 🥗 {{description}}",
+      "workoutPlanGenerated": "Ik heb {{count}} workouts voor je gemaakt! 💪 {{description}} Controleer ze voordat je traint.",
+      "workoutPlanGeneratedWithName": "Ik heb {{planName}} met {{count}} workouts voor je gemaakt! 💪 {{description}} Controleer ze voordat je traint.",
+      "mealPlanGenerated": "Ik heb een maaltijdplan voor 3 dagen met {{count}} maaltijden voor je gemaakt! 🥗 {{description}} Controleer de voedingsmiddelen en hoeveelheden voordat je erop vertrouwt.",
       "trackMealSuccess": "Ik heb {{count}} ingrediënten bijgehouden voor je maaltijd: {{ingredients}}. Totaal: {{calories}}.",
       "trackMealReady": "Ik heb {{count}} maaltijd(en) geanalyseerd: {{meals}} (totaal {{calories}}). Tik op een maaltijd om deze te bekijken en te loggen.",
       "historyCleared": "Chatgeschiedenis gewist."
@@ -119,9 +119,12 @@
       "copied": "Bericht gekopieerd naar klembord",
       "deleted": "Bericht verwijderd",
       "report": "Een probleem melden",
-      "reportDesc": "Mail een probleem met dit antwoord",
+      "reportDesc": "Stuur dit antwoord naar Musclog, zodat we ernaar kunnen kijken",
       "reportSubject": "Probleem met een AI-antwoord van Musclog",
-      "reportIntro": "Wat klopte er niet aan dit antwoord? (Je kunt de tekst hieronder bewerken of verwijderen voordat je verzendt.)"
+      "reportIntro": "Wat klopte er niet aan dit antwoord? (Je kunt de tekst hieronder bewerken of verwijderen voordat je verzendt.)",
+      "reportConfirm": "Dit stuurt het antwoord, de app-versie, je platform en taal naar Musclog, via Sentry, onze dienst voor foutopsporing. Verder wordt niets uit de chat verstuurd.",
+      "reportSend": "Rapport versturen",
+      "reportSent": "Rapport verstuurd. Bedankt."
     },
     "sendViaOpenAI": "Verzenden via OpenAI",
     "personas": {

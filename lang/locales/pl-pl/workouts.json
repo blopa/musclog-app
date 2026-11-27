@@ -262,7 +262,10 @@
       "generateButton": "Generuj plan",
       "successMessageWithPlan": "{{planName}} jest gotowy, z treningami: {{count}}.",
       "errorMessage": "Nie udało się wygenerować planu. Spróbuj ponownie.",
-      "aiNotConfigured": "Funkcje AI nie są skonfigurowane. Dodaj klucz API Gemini lub OpenAI w Ustawieniach."
+      "aiNotConfigured": "Funkcje AI nie są skonfigurowane. Dodaj klucz API Gemini lub OpenAI w Ustawieniach.",
+      "reviewIntro": "Przeczytaj plan i sprawdź, czy Ci odpowiada. Nic nie zostanie zapisane, dopóki nie dotkniesz „Zapisz plan”.",
+      "saveButton": "Zapisz plan",
+      "discardButton": "Odrzuć"
     },
     "interruptedSession": {
       "description": "Masz trening w toku.",

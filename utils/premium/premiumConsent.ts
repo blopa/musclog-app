@@ -21,8 +21,12 @@
  * answers are often wrong, are not medical, nutrition or training advice, and that Musclog is not
  * responsible for what the AI says; agreeing accepts that and the Terms' "AI Features and AI
  * Output" section. The Worker accepts any version from 4 up (`MIN_CONSENT_VERSION`).
+ *
+ * 6 (2026-11-27): the consent says Musclog Iron is for adults (18+), that agreeing confirms it, and
+ * that the details sent can include weight, body fat and nutrition imported from Health Connect or
+ * Apple Health.
  */
-export const PREMIUM_CONSENT_VERSION = 5;
+export const PREMIUM_CONSENT_VERSION = 6;
 
 /** True when hosted AI is on (or is being turned on) without consent to the current version. */
 export function needsPremiumConsent({

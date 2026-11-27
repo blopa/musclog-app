@@ -1,11 +1,10 @@
 <b>Antrenmanlarını ve yediklerini tek uygulamada kaydet: hesap yok, reklam yok.</b>
-Musclog, ücretsiz ve açık kaynaklı bir antrenman takibi ve kalori sayacıdır. Son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir, yiyecek barkodlarını tarar ve internetsiz çalışır. Verilerin telefonunda kalır.
+Musclog, ücretsiz ve açık kaynaklı bir antrenman takibi ve kalori sayacıdır. Son antrenmanına göre bir sonraki ağırlığı ve tekrarı önerir, yiyecek barkodlarını tarar ve internetsiz çalışır. Kayıtların telefonunda saklanır.
 
 Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Portekizce (Brezilya), Rusça, Almanca, Fransızca, İtalyanca, Lehçe ve Türkçe.
 
 <b>Hiçbir şey kilitli değil</b>
 • Sınırsız antrenman rutini ve programı, tüm geçmişinle birlikte.
-• Barkod tarayıcı, etiket tarama ve yiyecek arama herkes için.
 • Tüm grafikler, dışa aktarma ve yedekleme dahil ve ücretsiz.
 
 <b>Antrenman günlüğü ve spor salonu takibi</b>
@@ -26,7 +25,7 @@ Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Port
 
 <b>Kalori sayacı ve makro takibi</b>
 • Barkod tarayıcı ve besin etiketi taramalı yemek günlüğü.
-• Open Food Facts ve USDA besin veritabanında ara ya da kendi yiyeceklerini ve öğünlerini oluştur.
+• Open Food Facts (ODbL) ve USDA besin veritabanında ara ya da kendi yiyeceklerini ve öğünlerini oluştur.
 • Yağ kaybı, kilo koruma veya kas kazanımı için kalori, protein, karbonhidrat, yağ ve lif hedefleri.
 • Gerçek kilo eğilimine uyum sağlayan hedefler; kcal veya kJ, metrik veya imperial birimlerle.
 
@@ -36,8 +35,7 @@ Uygulama şu dillerde sunulmaktadır: İngilizce, İspanyolca, Felemenkçe, Port
 • Health Connect senkronizasyonu: kilo, beslenme, antrenman ve vücut ölçüleri.
 
 <b>Yapay zekâ, yalnızca istersen</b>
-• Gemini, OpenAI veya Claude anahtarınla, yerel bir modelle ya da uygulamadaki ücretsiz seçenekle koçla sohbet et, fotoğraftan öğün tahmin et ve antrenman programı oluştur.
-• Ya da ChatGPT veya Claude'da bir program hazırla ya da bir öğünü tarif et ve Musclog'a aktar.
+• Gemini, OpenAI veya Claude anahtarınla, yerel bir modelle ya da uygulamadaki ücretsiz seçenekle (18+) koçla sohbet et, fotoğraftan öğün tahmin et ve antrenman programı oluştur.
 • Koçun seninle nasıl konuşacağını seç. Musclog'da hiçbir şey yapay zekâ gerektirmez.
 
 <b>Musclog Iron (isteğe bağlı)</b>
@@ -50,4 +48,4 @@ Musclog Iron, kendi anahtarın olmadan yapay zekâ isteklerini yanıtlayan aylı
 • Anonim çökme raporları hataların düzeltilmesine yardımcı olur ve ayarlardan kapatılabilir.
 • Ana ekran widget'ları ve birkaç renk teması.
 
-Lift, Log, Repeat.
+Musclog tıbbi bir cihaz değildir; herhangi bir tıbbi durumu teşhis etmez, tedavi etmez, iyileştirmez veya önlemez. Tıbbi tavsiye, teşhis veya tedavi için bir sağlık uzmanına danış.

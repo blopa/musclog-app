@@ -22,7 +22,7 @@
       "writeHealthData": "Écrire les données de santé",
       "healthData": "Données de santé",
       "healthDataSubtitle": "Synchronise tes séances et tes mesures corporelles",
-      "healthDataPrivacy": "Tes données de santé ne sont stockées que sur l'appareil.",
+      "healthDataPrivacy": "Tes données de santé sont stockées sur cet appareil. Elles ne sont envoyées ailleurs que si tu actives une option IA.",
       "syncNow": "Synchroniser maintenant",
       "syncing": "Synchronisation...",
       "foodSearchSource": "Source de recherche d'aliments",
@@ -33,7 +33,7 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "Base du ministère américain de l'Agriculture",
       "foodSearchMusclog": "Musclog",
-      "foodSearchMusclogDescription": "Base de codes-barres Musclog (scan uniquement)",
+      "foodSearchMusclogDescription": "Base de codes-barres créée à partir des informations produits des supermarchés aux Pays-Bas (scan de codes-barres uniquement)",
       "foodSearchNone": "Aucune",
       "foodSearchNoneDescription": "Recherche uniquement dans ta base locale",
       "energyUnit": "Unité d'énergie",
@@ -258,7 +258,8 @@
         "unavailable": "Impossible de lire le stockage pour le moment.",
         "retry": "Réessayer"
       },
-      "storageSubtitle": "Vois ce que Musclog garde sur cet appareil et libère de la place"
+      "storageSubtitle": "Vois ce que Musclog garde sur cet appareil et libère de la place",
+      "backupReminder": "Tes données n'existent que sur cet appareil. Si tu perds l'appareil ou désinstalles Musclog, elles sont perdues. Exporte une sauvegarde de temps en temps."
     },
     "chatMessages": {
       "title": "Messages du coach",
@@ -283,9 +284,9 @@
       "insightsAlerts": "Analyses et alertes",
       "enableGoogleGemini": "Activer Google Gemini",
       "dailyNutritionInsights": "Analyses nutritionnelles quotidiennes",
-      "dailyNutritionInsightsSubtitle": "Résumé du matin basé sur tes journaux",
+      "dailyNutritionInsightsSubtitle": "Une fois par jour, envoie tes repas des 7 derniers jours à ton IA",
       "workoutInsights": "Analyses des séances",
-      "workoutInsightsSubtitle": "Analyse après la séance",
+      "workoutInsightsSubtitle": "Une fois par jour, envoie tes séances des 7 derniers jours à ton IA",
       "enableOpenAi": "Activer OpenAI",
       "localLlmIntegration": "Intégration d'un LLM local",
       "enableLocalLlm": "Activer le LLM local",
@@ -431,13 +432,19 @@
         "toggleSubtitle": "Fonctionne avec l'offre gratuite de Google, qui peut utiliser ce que tu envoies. La limite quotidienne est partagée par tous les utilisateurs.",
         "activeNote": "L'offre gratuite est active. Tes propres clés API ne sont pas utilisées.",
         "consentTitle": "Partager les données avec Google ?",
-        "consentBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations ou tes messages de chat) est envoyé via OpenRouter à l'offre gratuite de Google AI Studio pour rédiger la réponse. Google peut conserver ce qui est envoyé, l'utiliser pour améliorer ses produits et le faire relire par des personnes (sans identifiants), donc l'offre gratuite n'est pas privée : n'y saisis aucune information personnelle ou sensible. L'offre gratuite est réservée aux adultes (18+). Si cela ne te convient pas, laisse-la désactivée. Rien n'est envoyé tant que tu n'utilises pas une fonction d'IA. Il existe une limite quotidienne partagée par tous les utilisateurs de l'offre gratuite, qui peut donc être atteinte tôt dans la journée, et l'offre gratuite peut parfois être indisponible.",
+        "consentBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin (par exemple tes séances, tes repas, tes mensurations, y compris ceux importés depuis Health Connect ou Apple Health, ou tes messages de chat) est envoyé via OpenRouter à l'offre gratuite de Google AI Studio pour rédiger la réponse. Google peut conserver ce qui est envoyé, l'utiliser pour améliorer ses produits et le faire relire par des personnes (sans identifiants), donc l'offre gratuite n'est pas privée : n'y saisis aucune information personnelle ou sensible. L'offre gratuite est réservée aux adultes : en acceptant, tu confirmes avoir 18 ans ou plus. Si cela ne te convient pas, laisse-la désactivée. Rien n'est envoyé tant que tu n'utilises pas une fonction d'IA, ce qui inclut les analyses quotidiennes si tu les actives. Il existe une limite quotidienne partagée par tous les utilisateurs de l'offre gratuite, qui peut donc être atteinte tôt dans la journée, et l'offre gratuite peut parfois être indisponible.",
         "consentConfirm": "J'accepte et j'active"
       },
       "testKey": "Tester la clé",
       "testingKey": "Test en cours…",
       "premium": {
         "activeNote": "Musclog Iron répond à vos requêtes d'IA. Vos propres clés et l'offre gratuite ne sont pas utilisées tant qu'il est activé."
+      },
+      "providerConsent": {
+        "title": "Envoyer des données à {{provider}} ?",
+        "body": "Quand tu utilises une fonction d'IA, ce dont elle a besoin est envoyé à {{provider}} avec ta propre clé API : tes messages et tes photos de repas, ainsi que des informations comme ton âge, ton sexe, ton poids, ta masse grasse, tes séances et tes repas, y compris ceux importés depuis Health Connect ou Apple Health. {{provider}} les traite selon ses propres conditions et sa politique de confidentialité, et ses propres règles d'âge s'appliquent.",
+        "localBody": "Quand tu utilises une fonction d'IA, ce dont elle a besoin est envoyé à l'adresse du serveur que tu as configurée : tes messages et tes photos de repas, ainsi que des informations comme ton âge, ton sexe, ton poids, ta masse grasse, tes séances et tes repas, y compris ceux importés depuis Health Connect ou Apple Health. La personne qui gère ce serveur peut les voir. Une adresse qui commence par http:// les envoie sans chiffrement.",
+        "confirm": "Accepter et utiliser"
       }
     },
     "aiBehavior": {

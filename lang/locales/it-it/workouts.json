@@ -262,7 +262,10 @@
       "generateButton": "Genera piano",
       "successMessageWithPlan": "{{planName}} è pronto con {{count}} allenamenti.",
       "errorMessage": "Impossibile generare un piano. Riprova.",
-      "aiNotConfigured": "Le funzioni IA non sono configurate. Aggiungi una chiave API di Gemini o OpenAI nelle impostazioni."
+      "aiNotConfigured": "Le funzioni IA non sono configurate. Aggiungi una chiave API di Gemini o OpenAI nelle impostazioni.",
+      "reviewIntro": "Leggi la scheda e verifica che ti vada bene. Non viene salvato nulla finché non tocchi Salva scheda.",
+      "saveButton": "Salva scheda",
+      "discardButton": "Scarta"
     },
     "interruptedSession": {
       "description": "Hai un allenamento in corso.",

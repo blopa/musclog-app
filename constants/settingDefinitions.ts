@@ -8,6 +8,7 @@ import {
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
+  AI_CONSENT_RECORDS_SETTING_TYPE,
   AI_IMAGE_QUALITY_SETTING_TYPE,
   AI_MEAL_CAMERA_FLOW_SETTING_TYPE,
   type AiMealCameraFlow,
@@ -73,6 +74,7 @@ import {
   type WorkoutAutonomy,
   YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
 } from '@/constants/settings';
+import { type AiConsentRecords, parseAiConsentRecords } from '@/utils/aiConsent';
 import { type AiImageTier, parseAiImageTier } from '@/utils/aiImagePlan';
 import { parseThinkingLevel, type ThinkingLevel } from '@/utils/aiThinkingLevel';
 import {
@@ -141,6 +143,13 @@ export const SETTINGS = {
     ON_DEVICE_ENGINE_SETTING_TYPE,
     parseOnDeviceEngineChoice
   ),
+  /** Which AI consents were given, which wording and when (`utils/aiConsent.ts`). */
+  aiConsentRecords: {
+    type: AI_CONSENT_RECORDS_SETTING_TYPE,
+    defaultValue: {},
+    parse: parseAiConsentRecords,
+    serialize: (records) => JSON.stringify(records),
+  } satisfies SettingDefinition<AiConsentRecords>,
   /** Consent version for hosted AI (`utils/premium/premiumConsent.ts`); null until given. */
   premiumConsentVersion: {
     type: PREMIUM_CONSENT_VERSION_SETTING_TYPE,
