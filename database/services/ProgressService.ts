@@ -11,10 +11,10 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { withFastedZeroDays } from '@/database/nutritionDayCoverage';
 import { CycleRepository, readPeriods } from '@/database/repositories/CycleRepository';
+import { ageForCalculations } from '@/utils/ageGate';
 import {
   dayKeyRange,
   localDayKeyPlusCalendarDays,
-  localDayStartMs,
   MS_PER_SOLAR_DAY,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
@@ -796,8 +796,7 @@ export class ProgressService {
         ? (convert(initialWeight || 70, 'lb').to('kg') as number)
         : initialWeight || 70) ||
       70;
-    const dob = user?.dateOfBirth || localDayStartMs(new Date(1990, 0, 1));
-    const age = Math.floor((new Date().getTime() - dob) / (365.25 * MS_PER_SOLAR_DAY));
+    const age = ageForCalculations(user?.dateOfBirth);
 
     const bmr = isValidBodyFat(finalFat)
       ? calculateBMRKatchMcArdle(weightKg, finalFat)

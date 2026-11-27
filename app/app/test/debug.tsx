@@ -957,10 +957,13 @@ export default function DebugTestScreen() {
                   ) : null}
                   <Text className="text-text-primary">
                     <Text className="font-bold">DOB:</Text>{' '}
-                    {new Date(user.dateOfBirth).toLocaleDateString()}
+                    {user.dateOfBirth != null
+                      ? new Date(user.dateOfBirth).toLocaleDateString()
+                      : '—'}
                   </Text>
                   <Text className="text-text-primary">
                     <Text className="font-bold">Age:</Text> {user.getAge()} years
+                    {user.dateOfBirth == null ? ' (assumed)' : ''}
                   </Text>
                   <Text className="text-text-primary">
                     <Text className="font-bold">Gender:</Text> {user.gender}

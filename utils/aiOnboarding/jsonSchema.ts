@@ -26,7 +26,5 @@ export function buildContractJsonSchema(): Record<string, unknown> {
     $id: `https://musclog.app/schemas/onboarding/v${CONTRACT_MAJOR}.json`,
     title: 'Musclog onboarding',
     properties,
-    // The birthday may be given as a date or, when the person only knows their age, as an age.
-    anyOf: [{ required: ['birthDate'] }, { required: ['ageYears'] }],
   };
 }

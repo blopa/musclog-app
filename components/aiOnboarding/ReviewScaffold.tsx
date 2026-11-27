@@ -16,6 +16,7 @@ import type { LoadedAiDraftApi } from '@/hooks/useAiOnboardingDraft';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { MINIMUM_APP_AGE } from '@/utils/ageGate';
 import {
   type AnswerWarning,
   crossFieldWarnings,
@@ -28,6 +29,7 @@ import { handleError } from '@/utils/handleError';
 const WARNING_KEYS: Record<AnswerWarning['code'], string> = {
   weightGoalConflictsFocus: 'aiOnboarding.review.warnings.weightGoalConflictsFocus',
   dobAgeMismatch: 'aiOnboarding.review.warnings.dobAgeMismatch',
+  underMinimumAge: 'common.ageGate.minimumApp',
   comebackStartsAtMaintenance: 'aiOnboarding.review.warnings.comebackStartsAtMaintenance',
   unusualBodyMeasurements: 'aiOnboarding.review.warnings.unusualBodyMeasurements',
 };
@@ -185,7 +187,7 @@ export function ReviewScaffold({
               key={warning.code}
               style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}
             >
-              {t(WARNING_KEYS[warning.code])}
+              {t(WARNING_KEYS[warning.code], { age: MINIMUM_APP_AGE })}
             </Text>
           ))}
 

@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BirthdayNotes } from '@/components/BirthdayNotes';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerInput } from '@/components/modals/DatePickerInput';
@@ -19,7 +20,7 @@ import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { commitOnboardingProfile } from '@/services/onboardingAnswersApply';
-import { birthdayPickerDate, isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
+import { asBirthday, ASSUMED_AGE, birthdayPickerDate } from '@/utils/ageGate';
 import type { CompleteOnboardingAnswers } from '@/utils/aiOnboarding/contract';
 import {
   formatLocalCalendarDayIso,
@@ -105,7 +106,7 @@ export default function PersonalizedBodyStatsScreen() {
       const weightValue = parseFloat(weight);
       const heightValue = parseFloat(height);
 
-      if (!weightValue || !heightValue || !birthday) {
+      if (!weightValue || !heightValue) {
         return;
       }
 
@@ -113,8 +114,8 @@ export default function PersonalizedBodyStatsScreen() {
         ...(setupData.fullName?.trim() ? { fullName: setupData.fullName.trim() } : {}),
         units,
         gender: setupData.gender ?? 'other',
-        birthDate: formatLocalCalendarDayIso(birthday),
-        ...(birthdayEstimated ? { dobEstimated: true } : {}),
+        ...(birthday ? { birthDate: formatLocalCalendarDayIso(birthday) } : {}),
+        ...(birthday && birthdayEstimated ? { dobEstimated: true } : {}),
         heightCm: displayToCm(heightValue, units),
         weightKg: displayToKg(weightValue, units),
         ...(bodyFat !== null ? { bodyFatPercent: bodyFat } : {}),
@@ -147,9 +148,7 @@ export default function PersonalizedBodyStatsScreen() {
     useBfForCalculations,
   ]);
 
-  const isUnderAge = birthday !== null && isUnderMinimumAppAge(birthday);
-  const isValid =
-    parseFloat(weight) > 0 && parseFloat(height) > 0 && birthday !== null && !isUnderAge;
+  const isValid = parseFloat(weight) > 0 && parseFloat(height) > 0;
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -255,19 +254,15 @@ export default function PersonalizedBodyStatsScreen() {
               >
                 {birthdayEstimated
                   ? t('onboarding.quickBodyStats.birthdayEstimated')
-                  : t('onboarding.quickBodyStats.birthdayHelper')}
+                  : t('onboarding.quickBodyStats.birthdayHelper', { age: ASSUMED_AGE })}
               </Text>
-              {isUnderAge ? (
-                <Text
-                  accessibilityRole="alert"
-                  style={{
-                    color: theme.colors.status.error,
-                    fontSize: theme.typography.fontSize.sm,
-                  }}
-                >
-                  {t('common.ageGate.minimumApp', { age: MINIMUM_APP_AGE })}
-                </Text>
-              ) : null}
+              <BirthdayNotes
+                birthday={birthday}
+                onClear={() => {
+                  setBirthday(null);
+                  setBirthdayEstimated(false);
+                }}
+              />
             </View>
 
             {/* Body Fat % */}
@@ -350,8 +345,12 @@ export default function PersonalizedBodyStatsScreen() {
           onClose={() => setIsBirthdayPickerVisible(false)}
           selectedDate={birthdayPickerDate(birthday)}
           onDateSelect={(date) => {
-            setBirthday(localCalendarDayDate(date));
-            setBirthdayEstimated(false);
+            const answer = asBirthday(localCalendarDayDate(date));
+            if (answer) {
+              setBirthday(answer);
+              setBirthdayEstimated(false);
+            }
+
             setIsBirthdayPickerVisible(false);
           }}
           minYear={1920}

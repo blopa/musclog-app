@@ -1,3 +1,4 @@
+import { ASSUMED_AGE } from '@/utils/ageGate';
 import {
   ageFromBirthDate,
   type CompleteOnboardingAnswers,
@@ -78,7 +79,7 @@ export function toPlanInput(
     gender: answers.gender,
     weightKg: answers.weightKg,
     heightCm: answers.heightCm,
-    age: Math.max(1, ageFromBirthDate(answers.birthDate, today)),
+    age: answers.birthDate ? Math.max(1, ageFromBirthDate(answers.birthDate, today)) : ASSUMED_AGE,
     activityLevel: answers.activityLevel,
     weightGoal: planWeightGoal(training, answers.weightGoal),
     fitnessGoal: answers.fitnessGoal,

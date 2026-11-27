@@ -3,8 +3,6 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import type { FitnessDetails } from '@/types/fitnessDetails';
 import {
-  defaultAdultDobDisplayString,
-  defaultAdultDobLocalDayStartMs,
   formatDateOfBirthFromTimestamp,
   loadFitnessDetailsInitialData,
   parseDobDisplayStringToPickerDate,
@@ -113,25 +111,6 @@ describe('date-of-birth parsing and formatting', () => {
       expect(parseDobDisplayStringToPickerDate('nonsense').getTime()).toBe(todayStart.getTime());
     });
   });
-
-  describe('default adult DOB', () => {
-    it('defaults to local midnight 25 years ago', () => {
-      const parsed = new Date(defaultAdultDobLocalDayStartMs());
-      const now = new Date();
-
-      expect(parsed.getFullYear()).toBe(now.getFullYear() - 25);
-      expect(parsed.getHours()).toBe(0);
-    });
-
-    it('honours an explicit age and renders it through the same formatter', () => {
-      expect(defaultAdultDobDisplayString(30, 'en-US')).toBe(
-        formatDateOfBirthFromTimestamp(defaultAdultDobLocalDayStartMs(30), 'en-US')
-      );
-      expect(new Date(defaultAdultDobLocalDayStartMs(30)).getFullYear()).toBe(
-        new Date().getFullYear() - 30
-      );
-    });
-  });
 });
 
 describe('loadFitnessDetailsInitialData', () => {
@@ -216,8 +195,8 @@ describe('loadFitnessDetailsInitialData', () => {
   // A user record with no real DOB reports age 0; showing "1/1/1970" would look like real data.
   it('leaves the DOB blank when the user has no usable date of birth', async () => {
     mockGetCurrentUser.mockResolvedValue({
-      dateOfBirth: 0,
-      getAge: () => 0,
+      dateOfBirth: null,
+      getAge: () => 30,
       gender: 'other',
       fitnessGoal: 'general',
     });
@@ -269,20 +248,17 @@ describe('persistFitnessDetails', () => {
     });
   });
 
-  // Omitting the key (rather than sending undefined) is what stops an empty DOB field from
-  // wiping a date of birth the user already has.
-  it('omits dateOfBirth entirely when the DOB field is blank', async () => {
+  // The form holds the whole answer, so a blank DOB field clears a stored birthday.
+  it('clears dateOfBirth to null when the DOB field is blank', async () => {
     const updateProfile = jest.fn();
     mockGetCurrentUser.mockResolvedValue({ updateProfile });
 
     await persistFitnessDetails(details({ dob: '   ' }));
 
-    expect(updateProfile).toHaveBeenCalledWith(
-      expect.not.objectContaining({ dateOfBirth: expect.anything() })
-    );
+    expect(updateProfile).toHaveBeenCalledWith(expect.objectContaining({ dateOfBirth: null }));
   });
 
-  it('creates a user with a generated name and a default adult DOB when none exists', async () => {
+  it('creates a user with a generated name and no birthday when none exists', async () => {
     mockGetCurrentUser.mockResolvedValue(null);
 
     await persistFitnessDetails(details({ dob: '' }));
@@ -291,7 +267,7 @@ describe('persistFitnessDetails', () => {
     const arg = mockInitializeUser.mock.calls[0][0];
     expect(arg.fullName).toEqual(expect.any(String));
     expect(arg.fullName.length).toBeGreaterThan(0);
-    expect(new Date(arg.dateOfBirth).getFullYear()).toBe(new Date().getFullYear() - 25);
+    expect(arg.dateOfBirth).toBeNull();
     expect(arg.gender).toBe('male');
   });
 
@@ -468,6 +444,25 @@ describe('persistFitnessProfile', () => {
 
     const arg = mockInitializeUser.mock.calls[0][0];
     expect(arg.fullName.length).toBeGreaterThan(0);
-    expect(new Date(arg.dateOfBirth).getFullYear()).toBe(new Date().getFullYear() - 25);
+    expect(arg.dateOfBirth).toBeNull();
+  });
+
+  it('keeps a stored birthday when none is given for an existing user', async () => {
+    const updateProfile = jest.fn();
+    mockGetCurrentUser.mockResolvedValue({ updateProfile });
+
+    await persistFitnessProfile({ ...full, dateOfBirthMs: undefined });
+
+    expect(updateProfile).toHaveBeenCalledTimes(1);
+    expect(updateProfile.mock.calls[0][0]).not.toHaveProperty('dateOfBirth');
+  });
+
+  it('clears a stored birthday when null is given for an existing user', async () => {
+    const updateProfile = jest.fn();
+    mockGetCurrentUser.mockResolvedValue({ updateProfile });
+
+    await persistFitnessProfile({ ...full, dateOfBirthMs: null });
+
+    expect(updateProfile).toHaveBeenCalledWith(expect.objectContaining({ dateOfBirth: null }));
   });
 });

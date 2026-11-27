@@ -46,13 +46,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useUserMetrics } from '@/hooks/useUserMetrics';
 import { useWeightPrediction } from '@/hooks/useWeightPrediction';
+import { asBirthday } from '@/utils/ageGate';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { calculateBMIWithStatus } from '@/utils/bmiHelper';
+import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { resolveTrackingToggle } from '@/utils/cycle/trackingToggle';
-import {
-  formatDateOfBirthFromTimestamp,
-  persistFitnessDetails,
-} from '@/utils/fitnessProfilePersistence';
+import { persistFitnessDetails } from '@/utils/fitnessProfilePersistence';
 import { handleError } from '@/utils/handleError';
 import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { kgToDisplay } from '@/utils/unitConversion';
@@ -110,7 +109,7 @@ const getBodyFatTrendColor = (
 
 export default function ProfileScreen() {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const {
     isActive: isCycleActive,
@@ -251,8 +250,8 @@ export default function ProfileScreen() {
     });
   }
 
-  // Age stat (from user)
-  if (dbUser) {
+  // Age stat, only for a person who gave a birthday
+  if (dbUser && asBirthday(dbUser.dateOfBirth) !== null) {
     stats.push({
       id: 'age',
       titleKey: 'profile.stats.age',
@@ -561,7 +560,11 @@ export default function ProfileScreen() {
         initialData={
           dbUser && metrics
             ? {
-                dob: formatDateOfBirthFromTimestamp(dbUser.dateOfBirth, i18n.language),
+                // ISO, the one shape the form and the save both read in every language.
+                dob:
+                  asBirthday(dbUser.dateOfBirth) !== null
+                    ? formatLocalCalendarDayIso(new Date(dbUser.dateOfBirth as number))
+                    : '',
                 gender: dbUser.gender,
                 units,
                 weight: metrics.weight?.toString() || '',

@@ -229,7 +229,7 @@
       "height": "Lengte",
       "weight": "Gewicht",
       "birthday": "Geboortedatum",
-      "birthdayHelper": "Gebruikt om uw leeftijd te berekenen voor nauwkeurige calorieschattingen",
+      "birthdayHelper": "Optioneel. Het maakt de calorieschattingen nauwkeuriger. Zonder deze gegevens gaat Musclog ervan uit dat u {{age}} jaar oud bent.",
       "bodyFat": "Lichaamsvetpercentage",
       "bodyFatHelper": "Als u het weet, helpt dit bij caloriebebrekeningen",
       "continue": "Doorgaan",

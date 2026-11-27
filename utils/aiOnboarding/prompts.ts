@@ -41,7 +41,6 @@ const ISSUE_TEXT: Record<FieldIssue['code'], string> = {
 const REQUIRED_NOTES: Record<(typeof REQUIRED_FIELDS)[number], string> = {
   units: 'units (metric or imperial)',
   gender: 'gender',
-  birthDate: 'birth date, or age in whole years',
   heightCm: 'height',
   weightKg: 'weight',
   liftingExperience: 'lifting experience',
@@ -76,7 +75,7 @@ export function buildChatSystemPrompt(input: ChatPromptInput): string {
   }
 
   lines.push(
-    '- Optional: first name, body fat percentage (only if known), where they train, days per week, whether the app may adjust loads itself, and whether they are coming back after a break.'
+    '- Optional: birth date or age in whole years (ask once; it improves calorie estimates), first name, body fat percentage (only if known), where they train, days per week, whether the app may adjust loads itself, and whether they are coming back after a break.'
   );
 
   if (!compact) {

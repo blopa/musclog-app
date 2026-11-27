@@ -5,11 +5,11 @@ import QuickBodyStatsScreen from '@/app/app/onboarding/quick-body-stats';
 import { ReviewFieldEditor } from '@/components/aiOnboarding/ReviewFieldEditor';
 import { localDayStartMs } from '@/utils/calendarDate';
 
-// The birthday is the person's own answer: a pre-filled adult date would pass the age check for
-// anyone who never touched it.
+// The birthday is the person's own answer and it is optional. A calendar confirmed untouched
+// answers nothing, and a birthday under 16 is told about but never blocks Continue.
 
-const mockInitializeUser = jest.fn(async (_data: { dateOfBirth: number }) => undefined);
-const mockCommitProfile = jest.fn(async (_answers: { birthDate: string }) => undefined);
+const mockInitializeUser = jest.fn(async (_data: { dateOfBirth: number | null }) => undefined);
+const mockCommitProfile = jest.fn(async (_answers: Record<string, unknown>) => undefined);
 const mockReadBodyStatsDraft = jest.fn(async (): Promise<{ birthDate?: string }> => ({}));
 
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
@@ -54,7 +54,12 @@ jest.mock('@/components/theme/Button', () => ({
     </button>
   ),
 }));
-jest.mock('@/components/theme/TextButton', () => ({ TextButton: () => null }));
+// Rendered as a button so the Clear action of BirthdayNotes can be pressed.
+jest.mock('@/components/theme/TextButton', () => ({
+  TextButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
+    <button onClick={onPress}>{label}</button>
+  ),
+}));
 jest.mock('@/components/theme/Chip', () => ({ Chip: () => null }));
 jest.mock('@/components/theme/TextInput', () => ({ TextInput: () => null }));
 jest.mock('@/components/theme/StepperInlineInput', () => ({ StepperInlineInput: () => null }));
@@ -76,6 +81,7 @@ jest.mock('@/components/modals/DatePickerModal', () => ({
       <div>
         <button onClick={() => onDateSelect(selectedDate)}>confirm untouched</button>
         <button onClick={() => onDateSelect(new Date(1995, 4, 5))}>pick adult</button>
+        <button onClick={() => onDateSelect(new Date(2014, 4, 5))}>pick minor</button>
       </div>
     ) : null,
 }));
@@ -83,7 +89,7 @@ jest.mock('@/components/modals/DatePickerModal', () => ({
 jest.mock('@/database/services/UserService', () => ({
   UserService: {
     getCurrentUser: jest.fn(async () => null),
-    initializeUser: (data: { dateOfBirth: number }) => mockInitializeUser(data),
+    initializeUser: (data: { dateOfBirth: number | null }) => mockInitializeUser(data),
     updateUserProfile: jest.fn(),
   },
 }));
@@ -94,7 +100,7 @@ jest.mock('@/hooks/useHealthBodyMetricsPrefill', () => ({
   getHealthBodyMetricsPrefill: jest.fn(async () => ({ weight: '80', height: '180' })),
 }));
 jest.mock('@/services/onboardingAnswersApply', () => ({
-  commitOnboardingProfile: (answers: { birthDate: string }) => mockCommitProfile(answers),
+  commitOnboardingProfile: (answers: Record<string, unknown>) => mockCommitProfile(answers),
 }));
 jest.mock('@/utils/onboardingService', () => ({ setCurrentOnboardingStep: jest.fn() }));
 jest.mock('@/utils/onboardingDraft', () => ({
@@ -106,6 +112,7 @@ jest.mock('@/utils/onboardingDraft', () => ({
 
 const PLACEHOLDER = 'editPersonalInfo.dateOfBirthPlaceholder';
 const UNDER_AGE = 'common.ageGate.minimumApp';
+const CLEAR = 'common.clear';
 const CONTINUE = 'onboarding.quickBodyStats.continue';
 
 const continueButton = () => screen.getByText(CONTINUE) as HTMLButtonElement;
@@ -129,22 +136,24 @@ describe.each([
 ])('%s body stats: the birthday', (_name, Screen) => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('starts empty and holds Continue back, even with weight and height filled in', async () => {
+  it('starts empty, and Continue needs only weight and height', async () => {
     await renderLoaded(<Screen />);
 
     expect(screen.getByText(PLACEHOLDER)).toBeTruthy();
     expect(screen.queryByText(UNDER_AGE)).toBeNull();
-    expect(continueButton().disabled).toBe(true);
+    expect(screen.queryByText(CLEAR)).toBeNull();
+    expect(continueButton().disabled).toBe(false);
   });
 
-  it('does not pass the age check when the calendar is confirmed untouched', async () => {
+  it('records nothing when the calendar is confirmed untouched', async () => {
     await renderLoaded(<Screen />);
 
     await press(PLACEHOLDER);
     await press('confirm untouched');
 
-    expect(screen.getByText(UNDER_AGE)).toBeTruthy();
-    expect(continueButton().disabled).toBe(true);
+    expect(screen.getByText(PLACEHOLDER)).toBeTruthy();
+    expect(screen.queryByText(UNDER_AGE)).toBeNull();
+    expect(continueButton().disabled).toBe(false);
   });
 
   it('continues once an adult birthday is chosen', async () => {
@@ -154,6 +163,28 @@ describe.each([
     await press('pick adult');
 
     expect(screen.queryByText(PLACEHOLDER)).toBeNull();
+    expect(continueButton().disabled).toBe(false);
+  });
+
+  it('tells a person under 16 and still lets them continue', async () => {
+    await renderLoaded(<Screen />);
+
+    await press(PLACEHOLDER);
+    await press('pick minor');
+
+    expect(screen.getByText(UNDER_AGE)).toBeTruthy();
+    expect(continueButton().disabled).toBe(false);
+  });
+
+  it('removes a chosen birthday with Clear, and the placeholder comes back', async () => {
+    await renderLoaded(<Screen />);
+
+    await press(PLACEHOLDER);
+    await press('pick adult');
+    await press(CLEAR);
+
+    expect(screen.getByText(PLACEHOLDER)).toBeTruthy();
+    expect(screen.queryByText(CLEAR)).toBeNull();
     expect(continueButton().disabled).toBe(false);
   });
 });
@@ -173,16 +204,33 @@ describe('what is saved', () => {
     );
   });
 
-  it('is the chosen birthday in the personalized setup', async () => {
+  it('is null in the quick setup when no birthday was given', async () => {
+    await renderLoaded(<QuickBodyStatsScreen />);
+
+    await press(CONTINUE);
+
+    expect(mockInitializeUser).toHaveBeenCalledWith(expect.objectContaining({ dateOfBirth: null }));
+  });
+
+  it('is the chosen birthday in the personalized setup, even under 16', async () => {
     await renderLoaded(<PersonalizedBodyStatsScreen />);
 
     await press(PLACEHOLDER);
-    await press('pick adult');
+    await press('pick minor');
     await press(CONTINUE);
 
     expect(mockCommitProfile).toHaveBeenCalledWith(
-      expect.objectContaining({ birthDate: '1995-05-05' })
+      expect.objectContaining({ birthDate: '2014-05-05' })
     );
+  });
+
+  it('has no birthDate at all in the personalized setup when none was given', async () => {
+    await renderLoaded(<PersonalizedBodyStatsScreen />);
+
+    await press(CONTINUE);
+
+    expect(mockCommitProfile).toHaveBeenCalledTimes(1);
+    expect(mockCommitProfile.mock.calls[0][0]).not.toHaveProperty('birthDate');
   });
 
   it('restores a birthday the person already gave', async () => {

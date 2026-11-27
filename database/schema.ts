@@ -589,7 +589,7 @@ export const schema = appSchema({
       columns: [
         { name: 'full_name', type: 'string' },
         { name: 'email', type: 'string', isOptional: true },
-        { name: 'date_of_birth', type: 'number' },
+        { name: 'date_of_birth', type: 'number', isOptional: true },
         { name: 'gender', type: 'string' }, // 'male', 'female', 'other'
         { name: 'fitness_goal', type: 'string' }, // 'weight_loss'
         { name: 'weight_goal', type: 'string' }, // 'lose' | 'gain' | 'maintain'

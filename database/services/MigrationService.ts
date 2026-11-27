@@ -36,6 +36,7 @@ import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds
 import { loadWorkoutEnergyProfile } from '@/database/services/workoutEnergyProfile';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
+import { asBirthday } from '@/utils/ageGate';
 import { isProduction } from '@/utils/app';
 import { legacyConsumedDateTime, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
@@ -519,7 +520,8 @@ export class MigrationService {
           await database.get<User>('users').create((newUser) => {
             newUser.fullName = oldUser.name || '';
             newUser.email = undefined; // Old schema doesn't have email, set to undefined as it's optional
-            newUser.dateOfBirth = this.convertTimestamp(oldUser.birthday);
+            // A missing or unreadable 1.x birthday converts to "now": that is no birthday.
+            newUser.dateOfBirth = asBirthday(this.convertTimestamp(oldUser.birthday));
             newUser.gender = this.mapGender(oldUser.gender);
             newUser.fitnessGoal = this.mapFitnessGoal(oldUser.fitnessGoals);
             newUser.weightGoal = this.mapFitnessGoalToWeightGoal(oldUser.fitnessGoals);

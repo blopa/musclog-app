@@ -117,6 +117,15 @@ describe('validateExportDump — rows', () => {
     expect(validateExportDump({ ...minimalDump(), notes: [withoutId] }).success).toBe(false);
   });
 
+  it('accepts a user with no birthday (date_of_birth null)', () => {
+    const result = validateExportDump({
+      ...minimalDump(),
+      users: [makeRow('users', { date_of_birth: null })],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it('passes unknown columns through instead of dropping them', () => {
     // `.passthrough()` matters: a dump written by a newer app version must not silently
     // lose columns this build has not heard of.

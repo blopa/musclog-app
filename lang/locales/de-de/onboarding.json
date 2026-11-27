@@ -229,7 +229,7 @@
       "height": "Größe",
       "weight": "Gewicht",
       "birthday": "Geburtstag",
-      "birthdayHelper": "Dient zur Berechnung deines Alters für genaue Kalorienschätzungen",
+      "birthdayHelper": "Optional. Dadurch werden Kalorienschätzungen genauer. Ohne Angabe geht Musclog davon aus, dass du {{age}} Jahre alt bist.",
       "bodyFat": "Körperfettanteil",
       "bodyFatHelper": "Wenn du ihn kennst, hilft das bei der Kalorienberechnung",
       "continue": "Weiter",

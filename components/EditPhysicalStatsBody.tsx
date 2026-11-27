@@ -7,7 +7,7 @@ import { Pressable, Text, View } from 'react-native';
 import { type Gender } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
+import { asBirthday } from '@/utils/ageGate';
 import {
   formatLocalCalendarDayIso,
   getLocalCalendarYear,
@@ -17,6 +17,7 @@ import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersist
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnit } from '@/utils/units';
 
+import { BirthdayNotes } from './BirthdayNotes';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { HeightPickerInput } from './modals/HeightPickerInput';
@@ -60,7 +61,6 @@ export function EditPhysicalStatsBody({
     initialData?.fatPercentage ?? null
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-  const [rejectedBirthday, setRejectedBirthday] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
   const prevUnitsRef = useRef<'imperial' | 'metric'>(units);
 
@@ -82,10 +82,9 @@ export function EditPhysicalStatsBody({
   }, [units]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDateSelect = useCallback((date: Date) => {
-    const tooYoung = isUnderMinimumAppAge(localCalendarDayDate(date));
-    setRejectedBirthday(tooYoung);
-    if (!tooYoung) {
-      setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    const answer = asBirthday(localCalendarDayDate(date));
+    if (answer) {
+      setDob(formatLocalCalendarDayIso(answer));
     }
   }, []);
 
@@ -148,11 +147,10 @@ export function EditPhysicalStatsBody({
             selectedDate={parseDobDisplayStringToPickerDate(dob)}
             onPress={() => setIsDatePickerVisible(true)}
           />
-          {rejectedBirthday ? (
-            <Text accessibilityRole="alert" className="ml-1 text-sm text-status-error">
-              {t('common.ageGate.minimumApp', { age: MINIMUM_APP_AGE })}
-            </Text>
-          ) : null}
+          <BirthdayNotes
+            birthday={dob ? parseDobDisplayStringToPickerDate(dob) : null}
+            onClear={() => setDob('')}
+          />
         </View>
 
         {/* Gender */}

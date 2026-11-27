@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type { Units, WorkoutAutonomy } from '@/constants/settings';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models/User';
-import { MINIMUM_APP_AGE } from '@/utils/ageGate';
+import { MINIMUM_APP_AGE, MINIMUM_PLAUSIBLE_AGE } from '@/utils/ageGate';
 import { formatLocalCalendarDayIso, parseLocalCalendarDate } from '@/utils/calendarDate';
 import { BREAK_LENGTHS, type BreakLength } from '@/utils/comeback/comebackState';
 import { isRecord } from '@/utils/isRecord';
@@ -24,7 +24,8 @@ export const CONTRACT_SCHEMA_ID = 'musclog-onboarding';
 export const CONTRACT_MAJOR = 1;
 export const MAX_CONTRACT_BYTES = 64 * 1024;
 
-export const AGE_MIN = MINIMUM_APP_AGE;
+/** A sanity bound, not an age rule: someone under the app's age is told, not refused. */
+export const AGE_MIN = MINIMUM_PLAUSIBLE_AGE;
 export const AGE_MAX = 100;
 export const HEIGHT_CM_RANGE = [100, 250] as const;
 export const WEIGHT_KG_RANGE = [30, 300] as const;
@@ -91,7 +92,6 @@ export type FieldKey = (typeof FIELD_KEYS)[number];
 export const REQUIRED_FIELDS = [
   'units',
   'gender',
-  'birthDate',
   'heightCm',
   'weightKg',
   'liftingExperience',
@@ -137,6 +137,7 @@ export type AnswerWarning = {
   code:
     | 'weightGoalConflictsFocus'
     | 'dobAgeMismatch'
+    | 'underMinimumAge'
     | 'comebackStartsAtMaintenance'
     | 'unusualBodyMeasurements';
 };
@@ -423,13 +424,20 @@ export function normalizeAnswers(
     fail('trainingLocation', 'invalid');
   }
 
-  warnings.push(...crossFieldWarnings(draft));
+  warnings.push(...crossFieldWarnings(draft, today));
   return { draft, issues, warnings };
 }
 
 /** Consistency checks over the answers as a whole; these warn, they never block. */
-export function crossFieldWarnings(draft: OnboardingAnswersDraft): AnswerWarning[] {
+export function crossFieldWarnings(
+  draft: OnboardingAnswersDraft,
+  today: Date = new Date()
+): AnswerWarning[] {
   const warnings: AnswerWarning[] = [];
+  if (draft.birthDate && ageFromBirthDate(draft.birthDate, today) < MINIMUM_APP_AGE) {
+    warnings.push({ code: 'underMinimumAge' });
+  }
+
   if (draft.fitnessGoal === 'weight_loss' && draft.weightGoal && draft.weightGoal !== 'lose') {
     warnings.push({ code: 'weightGoalConflictsFocus' });
   }

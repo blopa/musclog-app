@@ -178,6 +178,28 @@ describe('MigrationService over a 1.x JSON backup', () => {
     expect(decryptDatabaseValue).toHaveBeenCalledWith('U2FsdGVkX1...');
     expect(mockCreated.map(({ record }) => record.valueRaw)).toEqual(['70']);
   });
+
+  // The 1.x timestamp conversion answers "now" for what it cannot read, which is nobody's birthday.
+  it('migrates a missing or unreadable birthday as no birthday', async () => {
+    const service = new MigrationService({
+      database: loadLegacyDump({
+        User: [
+          { birthday: '1990-06-15T12:00:00.000Z', deletedAt: null, id: 1 },
+          { birthday: null, deletedAt: null, id: 2 },
+          { birthday: 'unknown', deletedAt: null, id: 3 },
+        ],
+      }),
+      valuesEncrypted: false,
+    });
+
+    await (service as unknown as { migrateUsers: () => Promise<number> }).migrateUsers();
+
+    expect(mockCreated.map(({ record }) => record.dateOfBirth)).toEqual([
+      Date.parse('1990-06-15T12:00:00.000Z'),
+      null,
+      null,
+    ]);
+  });
 });
 
 type SessionSteps = {

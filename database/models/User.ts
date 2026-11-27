@@ -1,9 +1,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
-import { differenceInYears } from 'date-fns';
 
 import { AvatarColor } from '@/types/AvatarColor';
 import { AvatarIcon } from '@/types/AvatarIcon';
+import { ageForCalculations } from '@/utils/ageGate';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
@@ -14,7 +14,8 @@ export type WeightGoal = 'lose' | 'gain' | 'maintain';
 export interface UserProfileUpdate {
   fullName?: string;
   email?: string | null;
-  dateOfBirth?: number;
+  /** `null` removes the birthday. */
+  dateOfBirth?: number | null;
   gender?: Gender;
   fitnessGoal?: FitnessGoal;
   weightGoal?: WeightGoal;
@@ -31,7 +32,7 @@ export default class User extends Model {
 
   @field('full_name') declare fullName: string;
   @field('email') email?: string;
-  @field('date_of_birth') declare dateOfBirth: number;
+  @field('date_of_birth') dateOfBirth?: number | null; // optional: a person need not say
   @field('gender') declare gender: Gender;
   @field('fitness_goal') declare fitnessGoal: FitnessGoal;
   @field('weight_goal') weightGoal?: WeightGoal; // optional for backward compatibility
@@ -47,10 +48,11 @@ export default class User extends Model {
   @field('deleted_at') deletedAt?: number;
 
   /**
-   * Calculate age from date of birth
+   * The age to calculate with. Without a birthday it is an assumed one, so check `dateOfBirth`
+   * (through `asBirthday`) before showing it as the person's own.
    */
   getAge(): number {
-    return differenceInYears(new Date(), new Date(this.dateOfBirth));
+    return ageForCalculations(this.dateOfBirth);
   }
 
   /**

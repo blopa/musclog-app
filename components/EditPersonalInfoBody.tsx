@@ -6,9 +6,9 @@ import { Pressable, Text, View } from 'react-native';
 
 import { type Gender } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
-import { isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
 import { AvatarColor } from '@/types/AvatarColor';
 import { AvatarIcon } from '@/types/AvatarIcon';
+import { asBirthday } from '@/utils/ageGate';
 import { getAvatarIcon } from '@/utils/avatarUtils';
 import {
   formatLocalCalendarDayIso,
@@ -18,6 +18,7 @@ import {
 import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
 
 import { AvatarSelector } from './AvatarSelector';
+import { BirthdayNotes } from './BirthdayNotes';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
@@ -80,16 +81,14 @@ export function EditPersonalInfoBody({
   );
   const [trackCycle, setTrackCycle] = useState(initialData?.trackCycle ?? false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-  const [rejectedBirthday, setRejectedBirthday] = useState(false);
 
   const currentDate = parseDobDisplayStringToPickerDate(dob);
 
   // Handle date selection from picker
   const handleDateSelect = (date: Date) => {
-    const tooYoung = isUnderMinimumAppAge(localCalendarDayDate(date));
-    setRejectedBirthday(tooYoung);
-    if (!tooYoung) {
-      setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    const answer = asBirthday(localCalendarDayDate(date));
+    if (answer) {
+      setDob(formatLocalCalendarDayIso(answer));
     }
   };
 
@@ -156,12 +155,9 @@ export function EditPersonalInfoBody({
         {!hideDob ? (
           <View className="flex-col gap-2">
             <Text className="ml-1 text-sm font-medium text-text-secondary">
-              <View className="flex-row items-center gap-1">
-                <Text className="text-lg font-semibold text-text-primary">
-                  {t('editPersonalInfo.dateOfBirth')}
-                </Text>
-                <Text style={{ color: theme.colors.status.error }}>*</Text>
-              </View>
+              <Text className="text-lg font-semibold text-text-primary">
+                {t('editPersonalInfo.dateOfBirth')}
+              </Text>
             </Text>
             <DatePickerInput
               hideLabel
@@ -170,11 +166,10 @@ export function EditPersonalInfoBody({
               selectedDate={currentDate}
               onPress={() => setIsDatePickerVisible(true)}
             />
-            {rejectedBirthday ? (
-              <Text accessibilityRole="alert" className="ml-1 text-sm text-status-error">
-                {t('common.ageGate.minimumApp', { age: MINIMUM_APP_AGE })}
-              </Text>
-            ) : null}
+            <BirthdayNotes
+              birthday={dob ? parseDobDisplayStringToPickerDate(dob) : null}
+              onClear={() => setDob('')}
+            />
           </View>
         ) : null}
 

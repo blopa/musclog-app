@@ -70,7 +70,7 @@ describe('editField', () => {
     );
 
     expect(result).toEqual({ ok: true, draft: { birthDate: '1991-02-03' } });
-    expect(editField({}, { field: 'birthDate', isoDate: '2020-01-01' }, today)).toEqual({
+    expect(editField({}, { field: 'birthDate', isoDate: '2024-01-01' }, today)).toEqual({
       ok: false,
       code: 'outOfRange',
     });

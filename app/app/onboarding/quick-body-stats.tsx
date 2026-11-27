@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BirthdayNotes } from '@/components/BirthdayNotes';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerInput } from '@/components/modals/DatePickerInput';
@@ -28,7 +29,7 @@ import { UserService } from '@/database/services/UserService';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { birthdayPickerDate, isUnderMinimumAppAge, MINIMUM_APP_AGE } from '@/utils/ageGate';
+import { ageForCalculations, asBirthday, ASSUMED_AGE, birthdayPickerDate } from '@/utils/ageGate';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
 import { aiStepRoute, ON_DEVICE_AI_ROUTE } from '@/utils/onboardingRoutes';
@@ -112,7 +113,7 @@ export default function QuickBodyStatsScreen() {
       const weightValue = parseFloat(weight);
       const heightValue = parseFloat(height);
 
-      if (!weightValue || !heightValue || !birthday) {
+      if (!weightValue || !heightValue) {
         return;
       }
 
@@ -148,10 +149,7 @@ export default function QuickBodyStatsScreen() {
           : Promise.resolve(),
       ]);
 
-      // Compute age from birthday
-      const todayYear = new Date().getFullYear();
-      const birthYear = birthday.getFullYear();
-      const age = Math.max(1, todayYear - birthYear);
+      const age = ageForCalculations(birthday);
 
       const gender = setupData.gender ?? 'other';
       const fitnessGoal = setupData.fitnessGoal ?? 'general';
@@ -161,7 +159,7 @@ export default function QuickBodyStatsScreen() {
       // Create or update user profile
       const existingUser = await UserService.getCurrentUser();
       const randomName = getDefaultUsernameForGender(gender);
-      const dob = localDayStartMs(birthday);
+      const dob = birthday ? localDayStartMs(birthday) : null;
 
       if (existingUser) {
         await UserService.updateUserProfile({
@@ -212,9 +210,7 @@ export default function QuickBodyStatsScreen() {
     }
   }, [weight, height, units, bodyFat, birthday, setupData, router, useBfForCalculations]);
 
-  const isUnderAge = birthday !== null && isUnderMinimumAppAge(birthday);
-  const isValid =
-    parseFloat(weight) > 0 && parseFloat(height) > 0 && birthday !== null && !isUnderAge;
+  const isValid = parseFloat(weight) > 0 && parseFloat(height) > 0;
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -316,19 +312,9 @@ export default function QuickBodyStatsScreen() {
                   fontSize: theme.typography.fontSize.xs,
                 }}
               >
-                {t('onboarding.quickBodyStats.birthdayHelper')}
+                {t('onboarding.quickBodyStats.birthdayHelper', { age: ASSUMED_AGE })}
               </Text>
-              {isUnderAge ? (
-                <Text
-                  accessibilityRole="alert"
-                  style={{
-                    color: theme.colors.status.error,
-                    fontSize: theme.typography.fontSize.sm,
-                  }}
-                >
-                  {t('common.ageGate.minimumApp', { age: MINIMUM_APP_AGE })}
-                </Text>
-              ) : null}
+              <BirthdayNotes birthday={birthday} onClear={() => setBirthday(null)} />
             </View>
 
             {/* Body Fat % */}
@@ -411,7 +397,11 @@ export default function QuickBodyStatsScreen() {
           onClose={() => setIsBirthdayPickerVisible(false)}
           selectedDate={birthdayPickerDate(birthday)}
           onDateSelect={(date) => {
-            setBirthday(localCalendarDayDate(date));
+            const answer = asBirthday(localCalendarDayDate(date));
+            if (answer) {
+              setBirthday(answer);
+            }
+
             setIsBirthdayPickerVisible(false);
           }}
           minYear={1920}

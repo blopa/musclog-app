@@ -229,7 +229,7 @@
       "height": "Boy",
       "weight": "Kilo",
       "birthday": "Doğum tarihi",
-      "birthdayHelper": "Doğru kalori tahminleri için yaşını hesaplamakta kullanılır",
+      "birthdayHelper": "İsteğe bağlı. Kalori tahminlerini daha doğru yapar. Girilmezse Musclog yaşının {{age}} olduğunu varsayar.",
       "bodyFat": "Vücut yağı yüzdesi",
       "bodyFatHelper": "Biliyorsan kalori hesaplamalarına yardımcı olur",
       "continue": "Devam et",
