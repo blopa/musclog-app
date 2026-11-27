@@ -42,8 +42,12 @@
     },
     "command": {
       "workingTitle": "Sprawdzam, co zrobić…",
-      "unmatchedTitle": "Głosem tego jeszcze nie da się zrobić",
-      "canSay": "Możesz powiedzieć na przykład:",
+      "pickTitle": "Co masz na myśli?",
+      "pickHint": "Wybierz opcję, a Musclog spróbuje ponownie.",
+      "tool": {
+        "copyMeal": "Skopiuj posiłek lub dzień",
+        "searchFood": "Wyszukaj produkt"
+      },
       "askCoach": "Zapytaj coacha",
       "wrongTask": "Nie to zadanie? Wypróbuj lepszy model.",
       "openAiSettings": "Ustawienia AI",
@@ -51,12 +55,6 @@
       "capability": {
         "copyMeal": "„Zjadłem to samo śniadanie co wczoraj”",
         "searchFood": "„Wyszukaj płatki owsiane na obiad”"
-      },
-      "rejection": {
-        "cantDetermine": "Musclog nie zrozumiał, co chcesz zrobić. Spróbuj powiedzieć to inaczej.",
-        "missingFood": "Powiedz, jakiego produktu szukać.",
-        "sourceNotEarlier": "Wybierz dzień wcześniejszy niż ten, do którego kopiujesz.",
-        "unreadable": "Musclog nie mógł odczytać odpowiedzi AI. Spróbuj ponownie."
       }
     },
     "allow": "Zezwól",

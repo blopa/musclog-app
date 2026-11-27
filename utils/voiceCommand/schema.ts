@@ -5,6 +5,7 @@ import {
   VOICE_MEALS,
   VOICE_SOURCE_DAYS,
   VOICE_TOOL_NAMES,
+  type VoiceToolName,
 } from '@/utils/voiceCommand/types';
 
 /**
@@ -51,10 +52,15 @@ function slotProperty(slot: Slot, dialect: StructuredDialect): Record<string, un
   }
 }
 
-export function buildVoiceCommandSchema(dialect: StructuredDialect): object {
+/** `only`: the person picked the tool, so it is the one choice the schema allows. */
+export function buildVoiceCommandSchema(dialect: StructuredDialect, only?: VoiceToolName): object {
   const strict = dialect === 'openai';
   const properties = {
-    tool: { type: 'string', enum: [...VOICE_TOOL_NAMES], description: 'The tool to run.' },
+    tool: {
+      type: 'string',
+      enum: only ? [only] : [...VOICE_TOOL_NAMES],
+      description: 'The tool to run.',
+    },
     ...Object.fromEntries(SLOT_KEYS.map((key) => [key, slotProperty(SLOTS[key], dialect)])),
   };
   // OpenAI strict mode and Claude reject array length limits; the parser caps the list anyway.

@@ -6,6 +6,7 @@ import {
   VOICE_MEALS,
   VOICE_SOURCE_DAYS,
   VOICE_TOOL_NAMES,
+  type VoiceActionTool,
   type VoiceCommand,
 } from '@/utils/voiceCommand/types';
 
@@ -95,4 +96,27 @@ export function parseVoiceCommands(raw: unknown): VoiceCommand[] | null {
     .map(parseCommand)
     .filter((command): command is VoiceCommand => command !== null)
     .slice(0, MAX_VOICE_COMMANDS);
+}
+
+/**
+ * The reply to a request whose tool the person picked. Never fails: whatever tool the model names,
+ * it is the picked one, and each slot it cannot read is simply unfilled. The person confirms on the
+ * screen that opens, so a filler value must not cost them the whole command here.
+ */
+export function parseChosenCommand(raw: unknown, tool: VoiceActionTool): VoiceCommand {
+  const list = isRecord(raw) && Array.isArray(raw.commands) ? raw.commands : [raw];
+  const value: Record<string, unknown> = isRecord(list[0]) ? list[0] : {};
+  const { food } = value;
+
+  return {
+    tool,
+    meal: oneOf(value.meal, VOICE_MEALS),
+    day: oneOf(value.day, VOICE_DAYS),
+    fromMeal: oneOf(value.from_meal, VOICE_MEALS),
+    fromDay: oneOf(value.from_day, VOICE_SOURCE_DAYS),
+    food:
+      typeof food === 'string' && !isAbsent(food)
+        ? food.trim().slice(0, MAX_VOICE_FOOD_CHARS).trim()
+        : null,
+  };
 }

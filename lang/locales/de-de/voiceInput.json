@@ -42,8 +42,12 @@
     },
     "command": {
       "workingTitle": "Ich finde heraus, was zu tun ist…",
-      "unmatchedTitle": "Sprachbefehle können das noch nicht",
-      "canSay": "So kannst du es sagen:",
+      "pickTitle": "Was hast du gemeint?",
+      "pickHint": "Wähle eine Option, dann versucht Musclog es noch einmal.",
+      "tool": {
+        "copyMeal": "Mahlzeit oder Tag kopieren",
+        "searchFood": "Lebensmittel suchen"
+      },
       "askCoach": "Den Coach fragen",
       "wrongTask": "Falsche Aktion? Probier ein besseres Modell.",
       "openAiSettings": "KI-Einstellungen",
@@ -51,12 +55,6 @@
       "capability": {
         "copyMeal": "„Ich hatte dasselbe Frühstück wie gestern“",
         "searchFood": "„Suche Haferflocken fürs Mittagessen“"
-      },
-      "rejection": {
-        "cantDetermine": "Musclog konnte nicht erkennen, was du möchtest. Sag es doch anders.",
-        "missingFood": "Sag, nach welchem Lebensmittel gesucht werden soll.",
-        "sourceNotEarlier": "Wähle einen Tag, der vor dem Tag liegt, auf den du kopierst.",
-        "unreadable": "Musclog konnte die Antwort der KI nicht lesen. Versuche es noch einmal."
       }
     },
     "allow": "Erlauben",

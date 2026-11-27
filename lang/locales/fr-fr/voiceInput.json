@@ -42,8 +42,12 @@
     },
     "command": {
       "workingTitle": "Je cherche ce qu’il faut faire…",
-      "unmatchedTitle": "La voix ne peut pas encore faire ça",
-      "canSay": "Tu peux dire, par exemple :",
+      "pickTitle": "Que voulais-tu dire ?",
+      "pickHint": "Choisis une option et Musclog réessaie.",
+      "tool": {
+        "copyMeal": "Copier un repas ou une journée",
+        "searchFood": "Rechercher un aliment"
+      },
       "askCoach": "Demander au coach",
       "wrongTask": "Mauvaise action ? Essayez un meilleur modèle.",
       "openAiSettings": "Réglages IA",
@@ -51,12 +55,6 @@
       "capability": {
         "copyMeal": "« J’ai pris le même petit-déjeuner qu’hier »",
         "searchFood": "« Cherche de l’avoine pour le déjeuner »"
-      },
-      "rejection": {
-        "cantDetermine": "Musclog n’a pas pu comprendre ce que tu veux faire. Essaie de le dire autrement.",
-        "missingFood": "Dis quel aliment chercher.",
-        "sourceNotEarlier": "Choisis un jour antérieur à celui où tu copies.",
-        "unreadable": "Musclog n’a pas pu lire la réponse de l’IA. Réessaie."
       }
     },
     "allow": "Autoriser",

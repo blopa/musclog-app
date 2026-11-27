@@ -19,8 +19,12 @@ export const NATIVE_VOICE_TOOL_ORDER: readonly VoiceActionTool[] = [...VOICE_ACT
   (a, b) => VOICE_TOOLS[a].native.order - VOICE_TOOLS[b].native.order
 );
 
-export function buildNativeVoiceTools(): LocalToolDefinition[] {
-  return NATIVE_VOICE_TOOL_ORDER.map((name) => {
+/**
+ * The tools offered. `only` is the tool the person picked: offering it alone, with the same example
+ * turns, is what makes the model call it (`tool_choice: 'required'` measured no different).
+ */
+export function buildNativeVoiceTools(only?: VoiceActionTool): LocalToolDefinition[] {
+  return NATIVE_VOICE_TOOL_ORDER.filter((name) => !only || name === only).map((name) => {
     const { description, slots } = VOICE_TOOLS[name].native;
     const properties: Record<string, object> = {};
     // The registry's own order: the model was measured with food first for search_food.

@@ -272,3 +272,52 @@ describe('interpretVoiceCommand on the downloaded model', () => {
     );
   });
 });
+
+describe('interpretVoiceCommand with the tool the person picked', () => {
+  const config = { provider: 'on-device', engine: 'gguf' };
+  const call = (name: string, args: string) => ({
+    text: '',
+    toolCalls: [{ id: 'c', name, arguments: args }],
+  });
+
+  beforeEach(() => {
+    mockGetAiConfig.mockResolvedValue(config);
+  });
+
+  it('offers only that tool and ignores the values it cannot use', async () => {
+    mockNativeRequest.mockResolvedValue(
+      call('copy_meal', '{"meal":"breakfast","from_meal":"tomorrow","from_day":"yesterday"}')
+    );
+
+    const outcome = await interpretVoiceCommand('I had the same breakfast as yesterday.', {
+      now: NOW,
+      tool: 'copy_meal',
+    });
+
+    expect(
+      mockNativeRequest.mock.calls[0][1].tools.map((tool: { name: string }) => tool.name)
+    ).toEqual(['copy_meal']);
+    expect(outcome).toEqual({
+      kind: 'action',
+      action: expect.objectContaining({
+        kind: 'copyMeal',
+        meals: { source: 'breakfast', target: 'breakfast' },
+      }),
+    });
+  });
+
+  it.each([
+    ['a plain-text answer', { text: 'Done.', toolCalls: [] }],
+    ['unreadable arguments', call('search_food', '{oops')],
+    ['a food nobody said', call('search_food', '{"food":"banana"}')],
+  ])('still opens an empty food search for %s', async (_label, reply) => {
+    mockNativeRequest.mockResolvedValue(reply);
+
+    const outcome = await interpretVoiceCommand('the usual', { now: NOW, tool: 'search_food' });
+
+    expect(outcome).toEqual({
+      kind: 'action',
+      action: expect.objectContaining({ kind: 'searchFood', query: '' }),
+    });
+  });
+});

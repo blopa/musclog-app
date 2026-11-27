@@ -42,8 +42,12 @@
     },
     "command": {
       "workingTitle": "Ik kijk wat er moet gebeuren…",
-      "unmatchedTitle": "Spraak kan dat nog niet",
-      "canSay": "Je kunt bijvoorbeeld zeggen:",
+      "pickTitle": "Wat bedoelde je?",
+      "pickHint": "Kies er een en Musclog probeert het opnieuw.",
+      "tool": {
+        "copyMeal": "Een maaltijd of dag kopiëren",
+        "searchFood": "Een voedingsmiddel zoeken"
+      },
       "askCoach": "Vraag het aan de coach",
       "wrongTask": "Verkeerde taak? Probeer een beter model.",
       "openAiSettings": "AI-instellingen",
@@ -51,12 +55,6 @@
       "capability": {
         "copyMeal": "„Ik had hetzelfde ontbijt als gisteren“",
         "searchFood": "„Zoek havermout voor de lunch“"
-      },
-      "rejection": {
-        "cantDetermine": "Musclog kon niet zien wat je wilt doen. Probeer het anders te zeggen.",
-        "missingFood": "Zeg welk voedingsmiddel je wilt zoeken.",
-        "sourceNotEarlier": "Kies een dag die eerder is dan de dag waarnaar je kopieert.",
-        "unreadable": "Musclog kon het antwoord van de AI niet lezen. Probeer het opnieuw."
       }
     },
     "allow": "Toestaan",

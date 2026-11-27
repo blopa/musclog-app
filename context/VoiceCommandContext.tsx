@@ -24,7 +24,7 @@ import { interpretVoiceCommand } from '@/services/voiceCommand';
 import { AiCancelledError, describeAiError } from '@/utils/aiErrors';
 import { aiReadiness } from '@/utils/aiReadiness';
 import { AiCreditsError } from '@/utils/coachAI';
-import type { VoiceRejection } from '@/utils/voiceCommand/types';
+import type { VoiceActionTool } from '@/utils/voiceCommand/types';
 import { setPendingVoiceAction } from '@/utils/voiceCommand/voiceActionInbox';
 
 type VoiceCommandContextType = {
@@ -41,17 +41,6 @@ const VoiceCommandContext = createContext<VoiceCommandContextType>({
 
 const ERROR_SNACKBAR_MS = 4000;
 const FAILED_MESSAGE = { messageKey: 'voiceInput.command.failed' };
-
-/** Every rejection but `noAction`, which is answered in the modal. */
-const VOICE_REJECTION_MESSAGES: Record<
-  Exclude<VoiceRejection, 'noAction'>,
-  { messageKey: string }
-> = {
-  cantDetermine: { messageKey: 'voiceInput.command.rejection.cantDetermine' },
-  missingFood: { messageKey: 'voiceInput.command.rejection.missingFood' },
-  sourceNotEarlier: { messageKey: 'voiceInput.command.rejection.sourceNotEarlier' },
-  unreadable: { messageKey: 'voiceInput.command.rejection.unreadable' },
-};
 
 /**
  * The one owner of a voice command, mounted once: each tab keeps its own copy of the bottom bar,
@@ -93,7 +82,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
   );
 
   const submit = useCallback(
-    (transcript: string) => {
+    (transcript: string, tool?: VoiceActionTool) => {
       abandon();
       const generation = generationRef.current;
       const controller = new AbortController();
@@ -102,13 +91,17 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
 
       const run = async () => {
         try {
-          const outcome = await interpretVoiceCommand(transcript, { signal: controller.signal });
+          const outcome = await interpretVoiceCommand(transcript, {
+            signal: controller.signal,
+            tool,
+          });
           if (generation !== generationRef.current) {
             return;
           }
 
-          if (outcome.kind === 'rejected' && outcome.reason === 'noAction') {
-            setState({ kind: 'unmatched', transcript });
+          // Whatever the reason, the person says what they meant and it is tried again.
+          if (outcome.kind === 'rejected') {
+            setState({ kind: 'pick', transcript });
             return;
           }
 
@@ -119,11 +112,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
             return;
           }
 
-          const { messageKey } =
-            outcome.kind === 'rejected' && outcome.reason !== 'noAction'
-              ? VOICE_REJECTION_MESSAGES[outcome.reason]
-              : FAILED_MESSAGE;
-          showError(t(messageKey));
+          showError(t(FAILED_MESSAGE.messageKey));
         } catch (error) {
           if (generation !== generationRef.current) {
             return;
@@ -159,7 +148,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
   return (
     <VoiceCommandContext.Provider value={value}>
       {children}
-      <VoiceCommandModal state={state} onCancel={close} onClose={close} onAskCoach={askCoach} />
+      <VoiceCommandModal state={state} onCancel={close} onAskCoach={askCoach} onPickTool={submit} />
     </VoiceCommandContext.Provider>
   );
 }

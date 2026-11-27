@@ -27,6 +27,22 @@ jest.mock('@/components/modals/CenteredModal', () => ({
       </div>
     ) : null,
 }));
+jest.mock('@/components/theme/ListRow', () => ({
+  ListRow: ({
+    title,
+    subtitle,
+    onPress,
+  }: {
+    title: string;
+    subtitle: string;
+    onPress: () => void;
+  }) => (
+    <button onClick={onPress}>
+      <span>{title}</span>
+      <span>{subtitle}</span>
+    </button>
+  ),
+}));
 jest.mock('@/components/theme/Button', () => ({
   Button: ({ label, onPress }: { label: string; onPress: () => void }) => (
     <button onClick={onPress}>{label}</button>
@@ -37,18 +53,18 @@ const TRANSCRIPT = 'copy my breakfast from yesterday';
 
 function renderModal(state: Parameters<typeof VoiceCommandModal>[0]['state']) {
   const onCancel = jest.fn();
-  const onClose = jest.fn();
+  const onPickTool = jest.fn();
   const onAskCoach = jest.fn();
   const utils = render(
     <VoiceCommandModal
       state={state}
       onCancel={onCancel}
-      onClose={onClose}
       onAskCoach={onAskCoach}
+      onPickTool={onPickTool}
     />
   );
 
-  return { ...utils, onCancel, onClose, onAskCoach };
+  return { ...utils, onCancel, onAskCoach, onPickTool };
 }
 
 describe('VoiceCommandModal', () => {
@@ -59,41 +75,34 @@ describe('VoiceCommandModal', () => {
   });
 
   it('shows the transcript while working and cancels through onCancel', () => {
-    const { onCancel, onClose } = renderModal({ kind: 'working', transcript: TRANSCRIPT });
+    const { onCancel } = renderModal({ kind: 'working', transcript: TRANSCRIPT });
 
     expect(screen.getByText(TRANSCRIPT)).toBeTruthy();
     expect(screen.getByText('voiceInput.command.workingTitle')).toBeTruthy();
     fireEvent.click(screen.getByText('common.cancel'));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
-    expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('shows the transcript and what voice can do when the sentence matched nothing', () => {
-    renderModal({ kind: 'unmatched', transcript: TRANSCRIPT });
+  it('lists every tool and reports the picked one with the transcript', () => {
+    const { onPickTool } = renderModal({ kind: 'pick', transcript: TRANSCRIPT });
 
     expect(screen.getByText(TRANSCRIPT)).toBeTruthy();
-    expect(screen.getByText('voiceInput.command.unmatchedTitle')).toBeTruthy();
-    expect(screen.getByText('voiceInput.command.canSay')).toBeTruthy();
-    expect(screen.getByText('voiceInput.command.capability.copyMeal')).toBeTruthy();
-    expect(screen.getByText('voiceInput.command.capability.searchFood')).toBeTruthy();
+    expect(screen.getByText('voiceInput.command.pickTitle')).toBeTruthy();
+    expect(screen.getByText('voiceInput.command.tool.searchFood')).toBeTruthy();
+    fireEvent.click(screen.getByText('voiceInput.command.tool.copyMeal'));
+
+    expect(onPickTool).toHaveBeenCalledWith(TRANSCRIPT, 'copy_meal');
   });
 
-  it('hands the transcript to the coach on Ask coach', () => {
-    const { onAskCoach, onClose } = renderModal({ kind: 'unmatched', transcript: TRANSCRIPT });
+  it('hands the transcript to the coach on Ask coach, and closes on Cancel', () => {
+    const { onAskCoach, onCancel } = renderModal({ kind: 'pick', transcript: TRANSCRIPT });
 
     fireEvent.click(screen.getByText('voiceInput.command.askCoach'));
-
     expect(onAskCoach).toHaveBeenCalledWith(TRANSCRIPT);
-    expect(onClose).not.toHaveBeenCalled();
-  });
-
-  it('closes through onClose on OK', () => {
-    const { onClose, onCancel } = renderModal({ kind: 'unmatched', transcript: TRANSCRIPT });
-
-    fireEvent.click(screen.getByText('common.ok'));
-
-    expect(onClose).toHaveBeenCalledTimes(1);
     expect(onCancel).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('common.cancel'));
+    expect(onCancel).toHaveBeenCalledTimes(1);
   });
 });

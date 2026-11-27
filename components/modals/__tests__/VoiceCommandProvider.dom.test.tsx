@@ -35,13 +35,18 @@ jest.mock('@/components/modals/VoiceCommandModal', () => ({
   VoiceCommandModal: ({
     state,
     onCancel,
+    onPickTool,
   }: {
-    state: { kind: string } | null;
+    state: { kind: string; transcript: string } | null;
     onCancel: () => void;
+    onPickTool: (transcript: string, tool: string) => void;
   }) => (
     <div>
       <span data-testid="modal-state">{state?.kind ?? 'closed'}</span>
       {state ? <button onClick={onCancel}>modal-cancel</button> : null}
+      {state?.kind === 'pick' ? (
+        <button onClick={() => onPickTool(state.transcript, 'copy_meal')}>modal-pick</button>
+      ) : null}
     </div>
   ),
 }));
@@ -87,22 +92,38 @@ describe('VoiceCommandProvider', () => {
     expect(mockShowSnackbar).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ['cantDetermine', 'voiceInput.command.rejection.cantDetermine'],
-    ['missingFood', 'voiceInput.command.rejection.missingFood'],
-    ['sourceNotEarlier', 'voiceInput.command.rejection.sourceNotEarlier'],
-    ['unreadable', 'voiceInput.command.rejection.unreadable'],
-  ])('shows an error snackbar and does not navigate for %s', async (reason, key) => {
-    mockInterpret.mockResolvedValue({ kind: 'rejected', reason });
+  it.each(['noAction', 'cantDetermine', 'missingFood', 'sourceNotEarlier', 'unreadable'])(
+    'asks which tool was meant for %s',
+    async (reason) => {
+      mockInterpret.mockResolvedValue({ kind: 'rejected', reason });
+      renderProvider();
+
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('pick'));
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(takePendingVoiceAction()).toBeNull();
+    }
+  );
+
+  it('sends the same sentence again with the picked tool', async () => {
+    mockInterpret.mockResolvedValueOnce({ kind: 'rejected', reason: 'cantDetermine' });
+    mockInterpret.mockResolvedValueOnce({
+      kind: 'action',
+      action: { kind: 'copyMeal', targetDay: new Date(2026, 10, 26), sourceDay: null, meals: null },
+    });
     renderProvider();
-
     fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(screen.getByText('modal-pick')).toBeTruthy());
 
-    await waitFor(() =>
-      expect(mockShowSnackbar).toHaveBeenCalledWith('error', key, SNACKBAR_OPTIONS)
+    fireEvent.click(screen.getByText('modal-pick'));
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
+    expect(mockInterpret).toHaveBeenLastCalledWith(
+      'same breakfast as yesterday',
+      expect.objectContaining({ tool: 'copy_meal' })
     );
-    expect(mockNavigate).not.toHaveBeenCalled();
-    expect(takePendingVoiceAction()).toBeNull();
   });
 
   it('shows the generic failure snackbar when no provider can answer', async () => {
@@ -118,17 +139,6 @@ describe('VoiceCommandProvider', () => {
         SNACKBAR_OPTIONS
       )
     );
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it('opens the unmatched modal for noAction without a snackbar', async () => {
-    mockInterpret.mockResolvedValue({ kind: 'rejected', reason: 'noAction' });
-    renderProvider();
-
-    fireEvent.click(screen.getByText('submit'));
-
-    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('unmatched'));
-    expect(mockShowSnackbar).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 

@@ -3,38 +3,41 @@ import { ActivityIndicator, Text, View } from 'react-native';
 
 import { CenteredModal } from '@/components/modals/CenteredModal';
 import { Button } from '@/components/theme/Button';
+import { ListRow } from '@/components/theme/ListRow';
 import { useTheme } from '@/hooks/useTheme';
 import { VOICE_TOOLS } from '@/utils/voiceCommand/tools';
+import { VOICE_ACTION_TOOLS, type VoiceActionTool } from '@/utils/voiceCommand/types';
 
 export type VoiceCommandModalState =
   /** The model is working out what the sentence asks for. */
   | { kind: 'working'; transcript: string }
-  /** What was said is not something voice can do. */
-  | { kind: 'unmatched'; transcript: string };
+  /** No tool could be run from what was said: the person says which one they meant. */
+  | { kind: 'pick'; transcript: string };
 
 type VoiceCommandModalProps = {
   /** The modal is open exactly while this is set. */
   state: VoiceCommandModalState | null;
+  /** Abandons the request while working, and closes the picker. */
   onCancel: () => void;
-  onClose: () => void;
   onAskCoach: (transcript: string) => void;
+  onPickTool: (transcript: string, tool: VoiceActionTool) => void;
 };
 
 /**
  * Both stages of a voice command that need the person's attention, in one modal: waiting for the
- * answer (cancellable), and saying what voice can do when the sentence was not a command.
+ * answer (cancellable), and picking the tool they meant when no command could be run.
  */
 export function VoiceCommandModal({
   state,
   onCancel,
-  onClose,
   onAskCoach,
+  onPickTool,
 }: VoiceCommandModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const isWorking = state?.kind === 'working';
 
-  const footer = isWorking ? (
+  const cancelButton = (
     <Button
       label={t('common.cancel')}
       variant="outline"
@@ -42,8 +45,13 @@ export function VoiceCommandModal({
       width="full"
       onPress={onCancel}
     />
+  );
+
+  const footer = isWorking ? (
+    cancelButton
   ) : (
     <View className="flex-row flex-wrap gap-3">
+      <View className="grow basis-[140px]">{cancelButton}</View>
       <View className="grow basis-[140px]">
         <Button
           label={t('voiceInput.command.askCoach')}
@@ -53,19 +61,14 @@ export function VoiceCommandModal({
           onPress={() => (state ? onAskCoach(state.transcript) : undefined)}
         />
       </View>
-      <View className="grow basis-[140px]">
-        <Button label={t('common.ok')} variant="accent" size="md" width="full" onPress={onClose} />
-      </View>
     </View>
   );
 
   return (
     <CenteredModal
       visible={state !== null}
-      onClose={isWorking ? onCancel : onClose}
-      title={
-        isWorking ? t('voiceInput.command.workingTitle') : t('voiceInput.command.unmatchedTitle')
-      }
+      onClose={onCancel}
+      title={t(isWorking ? 'voiceInput.command.workingTitle' : 'voiceInput.command.pickTitle')}
       footer={footer}
       scrollable
     >
@@ -77,11 +80,15 @@ export function VoiceCommandModal({
           <ActivityIndicator color={theme.colors.accent.primary} />
         ) : (
           <View className="gap-2">
-            <Text className="text-sm text-text-secondary">{t('voiceInput.command.canSay')}</Text>
-            {Object.entries(VOICE_TOOLS).map(([name, tool]) => (
-              <Text key={name} className="text-sm text-text-primary">
-                {t(tool.labelKey)}
-              </Text>
+            <Text className="text-sm text-text-secondary">{t('voiceInput.command.pickHint')}</Text>
+            {VOICE_ACTION_TOOLS.map((name) => (
+              <ListRow
+                key={name}
+                variant="filled"
+                title={t(VOICE_TOOLS[name].titleKey)}
+                subtitle={t(VOICE_TOOLS[name].labelKey)}
+                onPress={() => (state ? onPickTool(state.transcript, name) : undefined)}
+              />
             ))}
           </View>
         )}

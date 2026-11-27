@@ -42,8 +42,12 @@
     },
     "command": {
       "workingTitle": "Ne yapılacağı anlaşılıyor…",
-      "unmatchedTitle": "Sesli komut bunu henüz yapamıyor",
-      "canSay": "Şunları söyleyebilirsin:",
+      "pickTitle": "Ne demek istedin?",
+      "pickHint": "Birini seç, Musclog yeniden denesin.",
+      "tool": {
+        "copyMeal": "Öğün veya gün kopyala",
+        "searchFood": "Yiyecek ara"
+      },
       "askCoach": "Koça sor",
       "wrongTask": "Yanlış işlem mi? Daha iyi bir model deneyin.",
       "openAiSettings": "Yapay zekâ ayarları",
@@ -51,12 +55,6 @@
       "capability": {
         "copyMeal": "“Dünkü kahvaltının aynısını yaptım”",
         "searchFood": "“Öğle yemeği için yulaf ara”"
-      },
-      "rejection": {
-        "cantDetermine": "Musclog ne yapmak istediğini anlayamadı. Başka bir şekilde söylemeyi dene.",
-        "missingFood": "Hangi yiyeceği arayacağını söyle.",
-        "sourceNotEarlier": "Kopyalayacağın günden önceki bir gün seç.",
-        "unreadable": "Musclog yapay zekânın yanıtını okuyamadı. Tekrar dene."
       }
     },
     "allow": "İzin ver",

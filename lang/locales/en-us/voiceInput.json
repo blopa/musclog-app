@@ -42,8 +42,12 @@
     },
     "command": {
       "workingTitle": "Working out what to do…",
-      "unmatchedTitle": "Voice can't do that yet",
-      "canSay": "Here is what you can say:",
+      "pickTitle": "What did you mean?",
+      "pickHint": "Pick one and Musclog tries again.",
+      "tool": {
+        "copyMeal": "Copy a meal or a day",
+        "searchFood": "Search for a food"
+      },
       "askCoach": "Ask the coach",
       "wrongTask": "Incorrect task? Try using a better model.",
       "openAiSettings": "AI settings",
@@ -51,12 +55,6 @@
       "capability": {
         "copyMeal": "\"I had the same breakfast as yesterday\"",
         "searchFood": "\"Search for oats for lunch\""
-      },
-      "rejection": {
-        "cantDetermine": "Musclog couldn't tell what you want to do. Try saying it another way.",
-        "missingFood": "Say which food to search for.",
-        "sourceNotEarlier": "Choose a day earlier than the one you are copying to.",
-        "unreadable": "Musclog couldn't read the AI's answer. Try again."
       }
     },
     "allow": "Allow",

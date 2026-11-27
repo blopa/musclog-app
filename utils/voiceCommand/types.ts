@@ -85,10 +85,7 @@ export type VoiceAction =
       query: string;
     };
 
-/**
- * Why a sentence ran nothing. Only `noAction` is answered in a modal; the others are an error
- * snackbar.
- */
+/** Why a sentence ran nothing. Each is answered by asking the person which tool they meant. */
 export type VoiceRejection =
   'noAction' | 'cantDetermine' | 'missingFood' | 'sourceNotEarlier' | 'unreadable';
 
@@ -96,4 +93,9 @@ export type VoiceResolution =
   { ok: true; action: VoiceAction } | { ok: false; reason: VoiceRejection };
 
 /** What a command is resolved against: the moment of speaking and what the person said. */
-export type VoiceResolveContext = { now: Date; transcript: string };
+export type VoiceResolveContext = {
+  now: Date;
+  transcript: string;
+  /** The person picked the tool: resolve to an action, leaving out whatever cannot be used. */
+  chosen?: boolean;
+};

@@ -11,7 +11,7 @@ import type {
 
 /**
  * The tool registry: the one place a voice tool is described. The prompt is built from `promptLine`,
- * the "what you can say" list from `labelKey`, and `resolve` turns the model's slots into an action.
+ * the tool picker from `titleKey` and `labelKey`, and `resolve` turns the model's slots into an action.
  */
 
 /** One example sentence and the call it should produce. */
@@ -20,6 +20,8 @@ export type VoiceExample = { say: string; arguments: string };
 export type VoiceToolDefinition = {
   /** For the system prompt: what the tool does and which fields it reads. */
   promptLine: string;
+  /** Whole translation key of the tool's name, where the person picks what they meant. */
+  titleKey: string;
   /** Whole translation key of an example of what to say. */
   labelKey: string;
   /**
@@ -40,6 +42,7 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
   copy_meal: {
     promptLine:
       'copy_meal: log again food eaten on another day ("same as yesterday", "repeat Monday\'s lunch"). meal = the meal it goes into, day = the day it goes into, from_meal = the meal copied (only if different from meal), from_day = the day copied from. No meal means the whole day.',
+    titleKey: 'voiceInput.command.tool.copyMeal',
     labelKey: 'voiceInput.command.capability.copyMeal',
     native: {
       description:
@@ -70,6 +73,7 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
   search_food: {
     promptLine:
       'search_food: find a specific food to log. food = only the food name, meal = the meal, day = the day it is eaten.',
+    titleKey: 'voiceInput.command.tool.searchFood',
     labelKey: 'voiceInput.command.capability.searchFood',
     native: {
       description: 'Log one food the person names, such as banana, eggs or a protein shake.',
