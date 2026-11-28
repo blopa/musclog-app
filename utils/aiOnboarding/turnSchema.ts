@@ -9,7 +9,7 @@ import {
   normalizeAnswers,
   type OnboardingAnswersDraft,
 } from '@/utils/aiOnboarding/contract';
-import type { StructuredDialect } from '@/utils/coachAI';
+import type { StructuredDialect } from '@/utils/structuredDialect';
 import { isRecord } from '@/utils/isRecord';
 
 /**

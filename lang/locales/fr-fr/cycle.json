@@ -620,7 +620,8 @@
       "backup": {
         "title": "Sauvegarde du cycle",
         "body": "Pense à enregistrer une sauvegarde chiffrée de tes relevés."
-      }
+      },
+      "renewReminders": "Ouvre Musclog pour que ces rappels continuent d'arriver."
     },
     "reminders": {
       "time": "Heure du rappel",
@@ -670,7 +671,7 @@
         "pattern24": "24 jours + 4 sans",
         "continuous": "Tous les jours",
         "packStart": "Première pilule de la plaquette en cours",
-        "hint": "Les jours sans pilule ne donnent pas de rappel. C'est un rappel, pas un conseil médical : suis les consignes de ta pilule si tu en oublies une.",
+        "hint": "Les jours sans pilule ne donnent pas de rappel. C'est un rappel, pas un conseil médical : suis les consignes de ta pilule si tu en oublies une. Les téléphones peuvent retarder ou couper les notifications, ne compte donc pas uniquement sur celui-ci. Pour les plaquettes avec des jours sans pilule, ouvre Musclog au moins toutes les quatre semaines pour que les rappels continuent d'arriver.",
         "notPaused": "continue pendant une pause"
       },
       "pause": {

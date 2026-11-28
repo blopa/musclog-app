@@ -27,6 +27,31 @@
     "chat": {
       "message": "Bericht",
       "typeYourMessage": "Typ je bericht..."
+    },
+    "outputNotice": {
+      "chat": "De coach is een AI, geen mens, en maakt vaak fouten. De antwoorden zijn geen medisch advies.",
+      "estimate": "AI-schatting: kan ver naast de werkelijkheid zitten. Controleer de voedingsmiddelen en hoeveelheden voordat je het registreert.",
+      "plan": "Geschreven door AI: controleer of het bij je past voordat je ermee traint.",
+      "insight": "Geschreven door AI en kan onjuist zijn. Geen medisch, voedings- of trainingsadvies.",
+      "import": "Gelezen door AI: controleer elke waarde voordat je opslaat.",
+      "settings": "AI is optioneel en maakt vaak fouten. Controleer wat het je vertelt."
+    },
+    "disclaimer": {
+      "title": "AI kan fouten maken",
+      "subtitle": "Houd dit in gedachten voordat je iets vertrouwt wat de AI zegt",
+      "openHint": "Opent wat je moet weten over AI-antwoorden",
+      "points": {
+        "optional": "AI is optioneel. Musclog werkt volledig zonder AI, en er wordt niets verstuurd tot je een AI-optie inschakelt.",
+        "mistakes": "AI-antwoorden worden geschreven door een model, niet door een mens, en niemand controleert ze vooraf. Ze bevatten vaak fouten: calorieën en macro's die ver naast de werkelijkheid zitten, verkeerd afgelezen voedingsmiddelen of porties, oefeningen die niet bij je passen en beweringen die zeker klinken maar onwaar zijn. Dit geldt voor alle opties, ook voor Musclog Iron.",
+        "notAdvice": "Loggy en de andere coaches zijn AI-personages. Het zijn geen artsen, diëtisten of gecertificeerde coaches, en niets wat ze zeggen is medisch, voedings- of trainingsadvies.",
+        "health": "Als je pijn, een blessure, een ziekte of een eetstoornis hebt, zwanger bent of medicijnen gebruikt, raadpleeg dan een gekwalificeerde professional voordat je handelt naar een AI-antwoord. Stop met trainen als iets pijn doet.",
+        "check": "Controleer elke schatting, elk plan en elke suggestie voordat je ze registreert, volgt of deelt, en repareer of verwijder wat fout is. Wat je bewaart is je eigen registratie.",
+        "edits": "Je kunt elk bericht in je chatgeschiedenis bewerken, toevoegen of verwijderen, ook dat van de AI. Een chatgeschiedenis, een export of een screenshot toont misschien niet wat de AI schreef, en Musclog bewaart geen kopie om het mee te vergelijken.",
+        "liability": "Voor zover de wet toestaat is Musclog niet verantwoordelijk voor wat de AI zegt of wat je ermee doet. De voorwaarden leggen dit volledig uit."
+      },
+      "readTerms": "Lees de voorwaarden",
+      "editHint": "Dit wijzigt je geschiedenis alleen op dit apparaat. Een bewerkt of toegevoegd coachbericht toont niet meer wat de AI schreef.",
+      "consent": "AI-antwoorden zijn vaak onjuist. Het zijn geen medisch, voedings- of trainingsadviezen, en Musclog is niet verantwoordelijk voor wat de AI zegt. Controleer belangrijke zaken voordat je ernaar handelt. Door in te stemmen, accepteer je dit en het AI-gedeelte van onze voorwaarden."
     }
   }
 }

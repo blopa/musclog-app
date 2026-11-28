@@ -16,7 +16,7 @@
       "unmarkButton": "Usuń oznaczenie dnia postu",
       "unmarkShort": "Usuń",
       "confirmTitle": "Oznaczyć jako dzień postu?",
-      "confirmMessage": "Ten dzień zostanie oznaczony jako dzień postu, więc liczy się jako prawdziwy dzień z 0 kcal w średnich, TDEE i passach.",
+      "confirmMessage": "To oznacza dzień jako dzień postu, więc liczy się jako prawdziwy dzień z 0 kcal w Twoich średnich, TDEE i seriach. Post nie jest bezpieczny dla każdego: zapytaj najpierw lekarza, jeśli jesteś w ciąży lub karmisz piersią, bierzesz leki, masz cukrzycę albo miałeś/miałaś zaburzenie odżywiania.",
       "confirmButton": "Oznacz jako dzień postu"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Powiel porcję",
       "duplicatePortionDesc": "Utwórz kopię do edycji",
       "deletePortion": "Usuń porcję",
-      "deletePortionDesc": "Usuń tę porcję z listy",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Usuń tę porcję z listy"
     },
     "createPortion": {
       "title": "Utwórz wielkość porcji",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Szacunkowe wartości dla tej porcji",
       "sendDayToPhone": "Wyślij dzień na telefon",
       "sendDayToPhoneDesc": "Przenieś całe jedzenie z tego dnia za pomocą animowanych kodów QR",
-      "keepMealTypes": "Zachowaj ich posiłki"
+      "keepMealTypes": "Zachowaj ich posiłki",
+      "copyMealTitle": "{{meal}} z innego dnia",
+      "copyMealTargetNote": "Kopia trafi do: {{meal}}"
     },
     "mealInsights": {
       "title": "Analiza posiłku",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Udostępnij składniki i sposób przygotowania jako tekst",
         "sendToPhone": "Wyślij na inny telefon",
         "sendToPhoneDesc": "Przenieś ten posiłek za pomocą animowanych kodów QR",
-        "shareRecipeIngredientLine": "{{grams}} g: {{name}}",
+        "shareRecipeIngredientLine": "{{amount}}: {{name}}",
         "shareRecipeNoIngredients": "Ten posiłek nie ma składników do udostępnienia",
         "duplicateMeal": "Powiel posiłek",
         "duplicateMealDesc": "Utwórz kopię tego posiłku",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} produkty",
         "foodCount_many": "{{count}} produktów",
         "foodCount_other": "{{count}} produktu",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "Usuń: {{name}}",
         "groupTitle": "Zapisz jako jeden posiłek",
         "groupSubtitle": "Pojawi się jako jedna pozycja w dzienniku",

@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Co dzieje się z Twoimi wiadomościami",
-      "body": "Gdy Musclog Iron jest włączony, Twoje żądania AI trafiają do usługi Musclog, która przekazuje je przez bramkę AI, OpenRouter lub Otari od Mozilla.ai, do modelu AI. Żądania są wysyłane wyłącznie do dostawców oferujących zerową retencję danych (ZDR), a usługa nie przechowuje treści Twoich wiadomości ani zdjęć. Usługa Musclog prowadzi licznik użycia za okres Twojej subskrypcji oraz identyfikator każdego urządzenia, na którym używasz Musclog Iron. OpenRouter sprawdza też wszystkie zapytania pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci i może zachować zapytanie, które oznaczy, zgodnie z własną polityką; Otari deklaruje, że nie przechowuje treści zapytań.",
+      "body": "Gdy Musclog Iron jest włączony, Twoje żądania AI trafiają do własnej usługi Musclog, która przekazuje je przez bramkę AI, OpenRouter lub Otari od Mozilla.ai, do modelu AI. Żądania wysyłane są wyłącznie do dostawców oferujących zerową retencję danych, a usługa nie przechowuje treści Twoich wiadomości ani obrazów. OpenRouter sprawdza też wszystkie żądania pod kątem materiałów przedstawiających seksualne wykorzystywanie dzieci i może zachować oznaczone żądanie, zgodnie ze swoją polityką; Otari twierdzi, że nie przechowuje treści żądań. Usługa Musclog prowadzi licznik użycia za okres Twojej subskrypcji, identyfikator każdego urządzenia, na którym korzystasz z Musclog Iron, oraz na 7 dni krótki odcisk każdego żądania.",
       "consent": "Aplikacja prosi o zgodę, zanim cokolwiek wyśle do Musclog Iron, i pyta ponownie, jeśli przywrócisz kopię zapasową na innym urządzeniu.",
       "link": "Przeczytaj politykę prywatności"
     },
@@ -42,7 +42,8 @@
         "Jest rozliczana miesięcznie przez App Store lub Google Play, według ceny pokazanej w sklepie.",
         "Odnawia się automatycznie, dopóki jej nie anulujesz na swoim koncie w sklepie. Anulowanie zatrzymuje kolejne odnowienie.",
         "Subskrypcje na iOS i Androida są oddzielne, więc subskrypcja kupiona na jednej nie przechodzi na drugą.",
-        "Konto Musclog nie jest potrzebne. Subskrypcja jest sprawdzana przez sklep."
+        "Konto Musclog nie jest potrzebne. Subskrypcja jest sprawdzana przez sklep.",
+        "Musclog Iron jest dla osób w wieku 18 lat i więcej."
       ],
       "terms": "Warunki korzystania"
     },
@@ -56,6 +57,10 @@
         {
           "q": "Czy potrzebuję Musclog Iron, żeby korzystać z funkcji AI?",
           "a": "Nie. Możesz użyć własnego klucza API, darmowej opcji Musclog AI albo modeli na urządzeniu i lokalnych. Musclog Iron to opcja, w której nic nie trzeba konfigurować."
+        },
+        {
+          "q": "Czy Musclog Iron sprawia, że AI jest dokładniejsze?",
+          "a": "Żadna subskrypcja nie czyni AI niezawodnym. Musclog Iron działa tymi samymi funkcjami co pozostałe opcje AI, a jego odpowiedzi też mogą być błędne, więc sprawdzaj szacunki i plany, zanim na nich polegasz. Odpowiedzi AI nie są poradą medyczną, dietetyczną ani treningową."
         },
         {
           "q": "Czy mogę używać tego na kilku urządzeniach?",

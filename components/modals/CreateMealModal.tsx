@@ -27,6 +27,7 @@ import {
   useEditMealIngredients,
 } from '@/hooks/useEditMealIngredients';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -133,6 +134,7 @@ export function CreateMealModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatMass } = useFoodMass();
   const { units, intuitiveEatingMode } = useSettings();
   const { toDisplay, unitLabel } = useEnergyUnit();
   const massUnit = getMassUnitLabel(units);
@@ -963,7 +965,7 @@ export function CreateMealModal({
                       >
                         {item.isPerServing
                           ? `${formatRoundedDecimal(item.amount, 2)} ${t('food.foodDetails.serving')}`
-                          : `${formatInteger(Math.round(item.amount))}g`}
+                          : formatMass(item.amount)}
                       </Text>
                       <View
                         style={{

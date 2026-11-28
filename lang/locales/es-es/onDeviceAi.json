@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "¿Eliminar el modelo?",
-        "message": "La IA en el dispositivo dejará de funcionar hasta que vuelvas a descargar el modelo. Tus datos no se ven afectados."
+        "message": "La IA en el dispositivo dejará de funcionar hasta que vuelvas a descargar el modelo. Tus datos no se ven afectados.",
+        "messageWithTextModel": "La IA en el dispositivo dejará de funcionar hasta que vuelvas a descargar el modelo. El modelo de chat opcional también se elimina. Tus datos no se ven afectados."
+      }
+    },
+    "textModel": {
+      "heading": "Opcional: un modelo más grande para el chat",
+      "description": "Una vez descargado, el chat, los comandos de voz y todo lo demás sin foto usan este modelo. Sus respuestas son mejores, pero tardan más. Las fotos de comidas siguen usando {{name}}.",
+      "state": {
+        "ready": "Listo. El chat, la voz y otros textos usan este modelo; las fotos usan {{name}}."
+      },
+      "actions": {
+        "delete": "Eliminar el modelo de chat"
+      },
+      "delete": {
+        "title": "¿Eliminar el modelo de chat?",
+        "message": "El chat y la voz vuelven a {{name}}. Tus datos no se ven afectados."
       }
     },
     "apple": {
@@ -142,10 +157,11 @@
     },
     "notices": {
       "title": "Avisos de terceros",
-      "intro": "Musclog se basa en software de código abierto y en un modelo abierto. Estas son las licencias que se aplican.",
+      "intro": "Musclog se basa en software de código abierto, datos abiertos y modelos abiertos. Estas son las licencias que se aplican.",
       "link": "Avisos de terceros",
       "linkSubtitle": "Software de código abierto y el modelo del dispositivo",
-      "openLink": "Abrir el texto completo"
+      "openLink": "Abrir el texto completo",
+      "packagesTitle": "Paquetes de código abierto"
     }
   }
 }

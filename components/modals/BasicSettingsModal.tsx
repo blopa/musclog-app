@@ -1,4 +1,5 @@
 import {
+  Apple,
   ChevronRight,
   Dumbbell,
   Globe,
@@ -23,14 +24,41 @@ import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { type EnergyUnit, type FoodSearchSource } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { CatalogueTranslationService } from '@/database/services/CatalogueTranslationService';
 import SettingsService from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
 import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '@/lang/lang';
+import { handleError } from '@/utils/handleError';
 
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
+
+type CatalogueKind = 'foods' | 'exercises';
+
+const CATALOGUE_TRANSLATIONS = {
+  foods: {
+    translate: (locale: string) => CatalogueTranslationService.translateFoods(locale),
+    titleKey: 'settings.basicSettings.translateFoods',
+    subtitleKey: 'settings.basicSettings.translateFoodsSubtitle',
+    messageKey: 'settings.basicSettings.translateFoodsMessage',
+    doneKey: 'settings.basicSettings.translateFoodsDone',
+    nothingKey: 'settings.basicSettings.translateFoodsNothing',
+    failedKey: 'settings.basicSettings.translateFoodsFailed',
+  },
+  exercises: {
+    translate: (locale: string) => CatalogueTranslationService.translateExercises(locale),
+    titleKey: 'settings.basicSettings.translateExercises',
+    subtitleKey: 'settings.basicSettings.translateExercisesSubtitle',
+    messageKey: 'settings.basicSettings.translateExercisesMessage',
+    doneKey: 'settings.basicSettings.translateExercisesDone',
+    nothingKey: 'settings.basicSettings.translateExercisesNothing',
+    failedKey: 'settings.basicSettings.translateExercisesFailed',
+  },
+} as const;
 
 type BasicSettingsModalProps = {
   visible: boolean;
@@ -66,6 +94,11 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
 
   const [foodSearchMenuVisible, setFoodSearchMenuVisible] = useState(false);
   const [languageMenuVisible, setLanguageMenuVisible] = useState(false);
+  const [translateConfirmVisible, setTranslateConfirmVisible] = useState(false);
+  // Kept after the dialog closes, so its text does not change while it animates out.
+  const [translateKind, setTranslateKind] = useState<CatalogueKind>('foods');
+  const [isTranslating, setIsTranslating] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -148,6 +181,26 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
       i18n.changeLanguage(lang);
     },
   }));
+
+  const askToTranslate = (kind: CatalogueKind) => {
+    setTranslateKind(kind);
+    setTranslateConfirmVisible(true);
+  };
+
+  const handleTranslateCatalogue = async () => {
+    const { translate, doneKey, nothingKey, failedKey } = CATALOGUE_TRANSLATIONS[translateKind];
+
+    setIsTranslating(true);
+    try {
+      const total = await translate(language ?? EN_US);
+      showSnackbar('success', total > 0 ? t(doneKey, { total }) : t(nothingKey));
+    } catch (error) {
+      handleError(error, `BasicSettingsModal.translate.${translateKind}`, { showSnackbar: false });
+      showSnackbar('error', t(failedKey));
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const unitsOptions = [
     {
@@ -291,6 +344,22 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                 </View>
               }
             />
+            <SettingsCard
+              title={t(CATALOGUE_TRANSLATIONS.foods.titleKey)}
+              subtitle={t(CATALOGUE_TRANSLATIONS.foods.subtitleKey, {
+                language: currentLanguageLabel,
+              })}
+              onPress={() => askToTranslate('foods')}
+              icon={<Apple size={theme.iconSize.xl} color={theme.colors.text.primary} />}
+            />
+            <SettingsCard
+              title={t(CATALOGUE_TRANSLATIONS.exercises.titleKey)}
+              subtitle={t(CATALOGUE_TRANSLATIONS.exercises.subtitleKey, {
+                language: currentLanguageLabel,
+              })}
+              onPress={() => askToTranslate('exercises')}
+              icon={<Dumbbell size={theme.iconSize.xl} color={theme.colors.text.primary} />}
+            />
           </ListGroup>
         </View>
 
@@ -374,6 +443,18 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
         onClose={() => setLanguageMenuVisible(false)}
         title={t('settings.basicSettings.language')}
         items={languageMenuItems}
+      />
+      <ConfirmationModal
+        visible={translateConfirmVisible}
+        onClose={() => setTranslateConfirmVisible(false)}
+        onConfirm={handleTranslateCatalogue}
+        title={t(CATALOGUE_TRANSLATIONS[translateKind].titleKey)}
+        message={t(CATALOGUE_TRANSLATIONS[translateKind].messageKey, {
+          language: currentLanguageLabel,
+        })}
+        confirmLabel={t('settings.basicSettings.translateCatalogueConfirm')}
+        isLoading={isTranslating}
+        scrollable
       />
     </FullScreenModal>
   );

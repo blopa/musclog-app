@@ -4,7 +4,7 @@
       "title": "Blokada aplikacji",
       "subtitle": "Pytaj o odcisk palca, twarz lub kod PIN urządzenia",
       "hint": "Przed pokazaniem wybranych obszarów poproś o odcisk palca, twarz lub kod PIN urządzenia. Po 30 sekundach w tle blokada włącza się ponownie.",
-      "note": "To blokada ekranu. Twoje dane pozostają zaszyfrowane i na tym telefonie; eksportowane kopie zapasowe to osobne pliki, którymi zarządzasz ty.",
+      "note": "To blokada ekranu. Twoje dane pozostają na tym telefonie; wyeksportowane kopie zapasowe to osobne pliki, którymi zarządzasz ty.",
       "noCredential": "Najpierw ustaw blokadę ekranu lub biometrię na urządzeniu.",
       "coveredByApp": "Objęte blokadą całej aplikacji"
     },

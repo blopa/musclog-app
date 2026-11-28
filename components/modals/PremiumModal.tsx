@@ -19,11 +19,14 @@ import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { AI_GATEWAY_LINKS } from '@/constants/aiGatewayLinks';
+import { useCloudAiBlockedForAge } from '@/hooks/useCloudAiAge';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { usePremium } from '@/hooks/usePremium';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
+import { MINIMUM_CLOUD_AI_AGE } from '@/utils/ageGate';
 import type { Theme } from '@/theme';
+import { AI_ACCURACY_CONSENT_KEY, withAiAccuracyConsent } from '@/utils/aiConsent';
 import {
   busyLineFor,
   dismissPremiumActionFailure,
@@ -72,6 +75,8 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
   const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const premium = usePremium({ load: visible });
+  // Musclog Iron is for adults: someone whose birthday says otherwise gets no way to buy or switch on.
+  const underAge = useCloudAiBlockedForAge(visible);
   const { view, busy, activity, consentNeeded } = premium;
   const busyLine = busyLineFor(activity);
   const consentPending = useSyncExternalStore(
@@ -116,7 +121,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
         return;
       }
 
-      if (consentNeeded(true)) {
+      if (!underAge && consentNeeded(true)) {
         setDialog('consent');
         setDialogOpen(true);
       }
@@ -125,7 +130,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     return () => {
       cancelled = true;
     };
-  }, [visible, consentPending, busy, consentNeeded, setDialogOpen]);
+  }, [visible, consentPending, busy, underAge, consentNeeded, setDialogOpen]);
 
   const isActing = (kind: 'subscribe' | 'restore') => activity?.kind === kind;
 
@@ -236,6 +241,16 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     />
   );
 
+  const renderUnderAge = () => (
+    <Text
+      accessibilityRole="alert"
+      className="text-center"
+      style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}
+    >
+      {t('common.ageGate.cloudAi', { age: MINIMUM_CLOUD_AI_AGE })}
+    </Text>
+  );
+
   /**
    * The paywall's pinned footer: the store's price, the one filled button and a quiet Restore.
    * The button names the price, so what a tap costs is never only in the small print (3.1.2(c)).
@@ -243,6 +258,10 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
   const renderPaywallFooter = () => {
     if (!view.canSubscribe && !view.canRestore) {
       return null;
+    }
+
+    if (underAge) {
+      return renderUnderAge();
     }
 
     // Beside Subscribe, Restore is a quiet link; on its own it is the screen's one button.
@@ -319,13 +338,14 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
             subtitle: t('premium.useForAiHint'),
             value: premium.useHostedAi,
             // Switching it off stays possible when the period has run out; only switching on needs an active one.
-            disabled: !(view.canUseHosted || premium.useHostedAi) || busy,
+            disabled: !((view.canUseHosted && !underAge) || premium.useHostedAi) || busy,
             onValueChange: (on: boolean) => {
               handleToggle(on);
             },
           },
         ]}
       />
+      {underAge ? renderUnderAge() : null}
       {premium.useHostedAi && consentNeeded(true) ? (
         <Button
           label={t('premium.consent.review')}
@@ -373,6 +393,13 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
           <View className="gap-8">
             <PremiumBenefitList />
             <PremiumComparison priceString={premium.priceString} />
+            {/* In the scroll, not the pinned footer: at large text the footer would leave the
+                paywall almost no room. The consent asks for the same acceptance before Iron is on. */}
+            <Text
+              style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}
+            >
+              {t('premium.paywall.accuracy')}
+            </Text>
           </View>
         );
       case 'active':
@@ -382,7 +409,8 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
         return (
           <View className="gap-4">
             {renderBusyLine()}
-            {view.canRestore ? renderRestore('accent') : null}
+            {view.canRestore && !underAge ? renderRestore('accent') : null}
+            {underAge ? renderUnderAge() : null}
           </View>
         );
       default:
@@ -394,7 +422,7 @@ export function PremiumModal({ visible, onClose }: PremiumModalProps) {
     dialog === 'consent'
       ? {
           title: t('premium.consent.title'),
-          message: t('premium.consent.body'),
+          message: withAiAccuracyConsent(t('premium.consent.body'), t(AI_ACCURACY_CONSENT_KEY)),
           confirm: t('premium.consent.confirm'),
           cancel: t('premium.consent.cancel'),
           onConfirm: confirmConsent,

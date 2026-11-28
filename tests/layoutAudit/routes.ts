@@ -340,6 +340,10 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/AISettingsModal.tsx': { fixture: 'Open AI Settings Modal' },
   'components/modals/AIBehaviorSettingsModal.tsx': { fixture: 'Open AI Behavior Modal' },
   'components/modals/ThirdPartyNoticesModal.tsx': { fixture: 'Open Third Party Notices Modal' },
+  'components/modals/AiProviderConsentModal.tsx': {
+    unaudited:
+      'a ConfirmationModal with consent copy and no layout of its own; ConfirmationModal is audited by its fixture',
+  },
   'components/modals/AddExerciseModal.tsx': { fixture: 'Open Add Exercise Modal' },
   'components/modals/AddExerciseToSessionModal.tsx': {
     fixture: 'Open Add Exercise To Session Modal',
@@ -536,6 +540,15 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/UserMenuModal.tsx': { fixture: 'Open User Menu Modal' },
   'components/modals/ViewExerciseModal.tsx': { fixture: 'Open View Exercise Modal' },
   'components/modals/VisualSettingsModal.tsx': { fixture: 'Open Visual Settings Modal' },
+  'components/modals/VoiceCommandModal.tsx': {
+    unaudited: 'not scripted yet: Debug → Voice command (typed), which needs a configured AI',
+  },
+  'components/modals/VoiceWeightSheet.tsx': {
+    unaudited: 'not scripted yet: a voice weigh-in, which needs a configured AI',
+  },
+  'components/modals/VoiceTranscriptModal.tsx': {
+    unaudited: 'not scripted yet: holding the mic needs on-device speech recognition (not on web)',
+  },
   'components/modals/WorkoutImportModal.tsx': {
     unaudited: 'not scripted yet: Settings → Backups and data → import a workout file',
   },
@@ -551,6 +564,9 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/WorkoutSettingsModal.tsx': { flow: 'whats-new (workout settings)' },
   'components/modals/useBarcodeCameraModal.tsx': {
     unaudited: 'a hook that renders BarcodeCameraModal, which the fixture opens',
+  },
+  'components/settings/VoiceToolsSheet.tsx': {
+    unaudited: 'not scripted yet: AI behavior → Voice tools, which needs a configured AI',
   },
   'components/theme/Modal.tsx': {
     unaudited: 'the primitive every modal renders through; audited through each of them',

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Linking, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
@@ -15,11 +16,16 @@ import { AiChoiceFixtureContext } from '@/components/onboarding/aiChoiceFixture'
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
+import { useSnackbar } from '@/context/SnackbarContext';
 import { SettingsService } from '@/database/services/SettingsService';
 import { usePremium } from '@/hooks/usePremium';
 import { useScrollFade } from '@/hooks/useScrollFade';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { isCloudAiBlockedForAge } from '@/services/aiAccess';
+import { recordAiConsent } from '@/services/aiConsentRecord';
+import { MINIMUM_CLOUD_AI_AGE } from '@/utils/ageGate';
+import { AI_ACCURACY_CONSENT_KEY } from '@/utils/aiConsent';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { type AiChoice, availableAiChoices, defaultAiChoice } from '@/utils/onboardingAiChoice';
 import { websitePageUrl } from '@/utils/websiteUrl';
@@ -43,6 +49,7 @@ const CTA_KEYS: Record<AiChoice, string> = {
 export default function MusclogApiScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const premium = usePremium({ load: true });
   const fixture = useContext(AiChoiceFixtureContext);
@@ -81,6 +88,15 @@ export default function MusclogApiScreen() {
     async (enableFreeTier: boolean) => {
       setIsSaving(true);
       try {
+        if (enableFreeTier) {
+          if (await isCloudAiBlockedForAge()) {
+            showSnackbar('error', t('common.ageGate.cloudAi', { age: MINIMUM_CLOUD_AI_AGE }));
+            return;
+          }
+
+          await recordAiConsent('gateway');
+        }
+
         await SettingsService.setUseMusclogFreeTier(enableFreeTier);
         router.navigate(resolvedNextRoute as never);
       } catch (e) {
@@ -89,7 +105,7 @@ export default function MusclogApiScreen() {
         setIsSaving(false);
       }
     },
-    [resolvedNextRoute, router]
+    [resolvedNextRoute, router, showSnackbar, t]
   );
 
   // Once Premium is on, the setup carries on by itself (once: a later focus must not navigate again).
@@ -199,6 +215,7 @@ export default function MusclogApiScreen() {
               >
                 {t('onboarding.musclogApi.intro')}
               </Text>
+              <AiOutputNotice kind="settings" />
             </View>
 
             <View
@@ -254,6 +271,16 @@ export default function MusclogApiScreen() {
                   }}
                 >
                   {t('onboarding.musclogApi.dataSharingBody')}
+                </Text>
+                <Text
+                  className="mt-2"
+                  style={{
+                    color: theme.colors.text.secondary,
+                    fontSize: theme.typography.fontSize.xs,
+                    lineHeight: 18,
+                  }}
+                >
+                  {t(AI_ACCURACY_CONSENT_KEY)}
                 </Text>
                 <Text
                   accessibilityRole="link"

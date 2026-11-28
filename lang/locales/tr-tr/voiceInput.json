@@ -1,0 +1,110 @@
+{
+  "voiceInput": {
+    "listening": "Dinliyorum…",
+    "overlay": {
+      "releaseHint": "Bittiğinde bırak",
+      "finishing": "Bitiriyorum…",
+      "slideUpToLock": "Kilitlemek için yukarı kaydır",
+      "slideDownToCancel": "İptal etmek için aşağı kaydır",
+      "lockedHint": "Bitirince gönder düğmesine dokun",
+      "send": "Söylediklerini gönder"
+    },
+    "holdHint": "Konuşurken mikrofon düğmesini basılı tut, sonra bırak.",
+    "resultTitle": "Söylediklerin",
+    "openSettings": "Ayarları aç",
+    "downloadLanguage": "Dili indir",
+    "downloadDone": "İndirildi. Konuşmak için mikrofon düğmesini basılı tut.",
+    "downloadScheduled": "İndirme sıraya alındı ve daha sonra, örneğin Wi-Fi'de tamamlanacak.",
+    "downloadFailed": "Dil indirilemedi. Daha sonra tekrar dene.",
+    "failure": {
+      "permission": {
+        "title": "Mikrofon erişimi kapalı",
+        "message": "Musclog, söylediklerini metne çevirmek için mikrofona ihtiyaç duyar. Bunu telefonunun ayarlarından izin verebilirsin.",
+        "messageWeb": "Musclog, söylediklerini metne çevirmek için mikrofona ihtiyaç duyuyor. Tarayıcının ayarlarından bu site için izin ver."
+      },
+      "languageMissing": {
+        "title": "Dil indirilmedi",
+        "messageAndroid": "Musclog'un ayarlı olduğu dil için konuşma tanıma bu telefonda henüz yok. Bir kez indir, sonrasında internetsiz çalışır.",
+        "messageIos": "Musclog'un ayarlı olduğu dil için konuşma tanıma bu cihazda henüz yok. Ayarlar, Genel, Klavye yolundan o dil için diktayı aç ve tekrar dene.",
+        "titleWeb": "Dil desteklenmiyor",
+        "messageWeb": "Tarayıcın, Musclog’da ayarlı dilde konuşma tanıyamıyor."
+      },
+      "unavailable": {
+        "title": "Çevrimdışı konuşma tanıma kullanılamıyor",
+        "message": "Bu telefon internet olmadan sesi metne çeviremiyor. Musclog yalnızca telefonunda çalışan konuşma tanımayı kullanır.",
+        "titleWeb": "Konuşma tanıma kullanılamıyor",
+        "messageWeb": "Tarayıcın konuşmayı metne çeviremedi. İnternet bağlantını kontrol et ya da Chrome, Edge veya Safari’yi dene."
+      },
+      "nothingHeard": {
+        "title": "Hiç kelime duyulmadı",
+        "message": "Musclog bir şey yakalayamadı. Düğmeyi basılı tut, konuş ve bırak."
+      },
+      "failed": {
+        "title": "Dinleme durdu",
+        "message": "Bir şey konuşma tanımayı kesti. Tekrar dene."
+      },
+      "browserNotice": {
+        "title": "Konuşmayı metne tarayıcın çevirir",
+        "message": "Web sürümünde söylediklerini tarayıcın tanır. Bunun için sesi üreticisinin sunucularına gönderebilir (Chrome, Google’a gönderir). Musclog sesi hiçbir zaman almaz ve saklamaz. Yapay zekâ özellikleri kuruluysa metin, ne yapılacağını anlamak için seçtiğin yapay zekâya gider."
+      }
+    },
+    "command": {
+      "workingTitle": "Ne yapılacağı anlaşılıyor…",
+      "pickTitle": "Ne demek istedin?",
+      "pickHint": "Birini seç, Musclog yeniden denesin.",
+      "tool": {
+        "copyMeal": "Öğün veya gün kopyala",
+        "searchFood": "Yiyecek ara",
+        "logWeight": "Kilomu kaydet",
+        "logMeal": "Öğün kaydet",
+        "addNote": "Not al",
+        "goTo": "Bir ekran aç",
+        "askCoach": "Koça sor",
+        "startWorkout": "Bir antrenman başlat",
+        "logCardio": "Yürüyüş veya koşu kaydet",
+        "openCamera": "Kamerayı aç"
+      },
+      "askCoach": "Koça sor",
+      "wrongTask": "Yanlış işlem mi? Daha iyi bir model deneyin.",
+      "openAiSettings": "Yapay zekâ ayarları",
+      "failed": "Sesli komut başarısız oldu. Tekrar dene.",
+      "mealTitle": "Öğünün",
+      "mealLogged": "Öğün kaydedildi",
+      "workoutTitle": "Hangi antrenman?",
+      "workoutActive": "Zaten devam eden bir antrenman var.",
+      "weight": {
+        "title": "Kilonu kaydet",
+        "field": "Kilo",
+        "saved": "Kilo kaydedildi",
+        "saveError": "Kilon kaydedilemedi"
+      },
+      "capability": {
+        "copyMeal": "“Dünkü kahvaltının aynısını yaptım”",
+        "searchFood": "“Öğle yemeği için yulaf ara”",
+        "logWeight": "“Kilom 82,4”",
+        "logMeal": "“İki yumurta ve tost yedim”",
+        "addNote": "“Not: daha fazla yulaf al”",
+        "goTo": "“Haftalık özetimi göster”",
+        "askCoach": "“Ne kadar proteine ihtiyacım var?”",
+        "startWorkout": "“Bacak günümü başlat”",
+        "logCardio": "“30 dakikada 5 km koştum”",
+        "openCamera": "“Bir barkod tara”"
+      }
+    },
+    "tools": {
+      "sectionTitle": "Sesli komutlar",
+      "rowTitle": "Sesli araçlar",
+      "rowDescription": "Mikrofon düğmesini basılı tutmanın ne yapabileceğini seç",
+      "sheetTitle": "Sesli araçlar",
+      "sheetSubtitle": "Yapay zekâ, söylediklerine göre bunlardan birini seçer. Önce seçtiklerin önce kullanılır.",
+      "limitNote_one": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "limitNote_few": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "limitNote_many": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "limitNote_other": "Bu yapay zekâ bir seferde {{count}} araç arasında seçim yapar.",
+      "notUsed": "Bu yapay zekâyla kullanılmaz",
+      "useRecommended": "Önerilen sırayı kullan"
+    },
+    "allow": "İzin ver",
+    "notNow": "Şimdi değil"
+  }
+}

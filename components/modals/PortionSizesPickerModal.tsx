@@ -9,6 +9,7 @@ import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/uti
 import { TextInput } from '@/components/theme/TextInput';
 import FoodPortion from '@/database/models/FoodPortion';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFoodPortions } from '@/hooks/useFoodPortions';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -88,6 +89,7 @@ export function PortionSizesPickerModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
+  const { formatMass } = useFoodMass();
   const [searchQuery, setSearchQuery] = useState('');
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
@@ -139,9 +141,7 @@ export function PortionSizesPickerModal({
         id: portion.id,
         label: portion.name,
         description: isBasic
-          ? t('common.weightFormatG', {
-              value: formatInteger(Math.round(portion.gramWeight ?? 0)),
-            })
+          ? formatMass(portion.gramWeight ?? 0)
           : usage || t('food.foodDetails.privateServing'),
         icon: IconComponent || (() => null as any),
         iconBgColor: theme.colors.accent.primary,
@@ -153,6 +153,7 @@ export function PortionSizesPickerModal({
     usageSummaries,
     t,
     formatInteger,
+    formatMass,
     theme.colors.accent.primary,
     theme.colors.text.onAccent,
   ]);

@@ -2,6 +2,7 @@ const mockHandleError = jest.fn(async () => {});
 const mockGetApple = jest.fn();
 const mockRefreshModel = jest.fn(async () => {});
 const mockGet = jest.fn(async () => 'auto');
+const mockTextModelKind = jest.fn(() => 'none');
 
 jest.mock('@/utils/handleError', () => ({
   handleError: (...args: unknown[]) => mockHandleError(...args),
@@ -11,14 +12,21 @@ jest.mock('@/database/services/SettingsService', () => ({
 }));
 jest.mock('@/utils/onDeviceAi', () => ({ getAppleAvailability: () => mockGetApple() }));
 jest.mock('@/services/localModels/modelStore', () => ({
-  getLocalModelSnapshot: () => ({
-    supported: true,
-    state: { kind: 'none' },
-    projectorInstalled: false,
-    updateAvailable: false,
-  }),
-  refreshLocalModel: () => mockRefreshModel(),
-  subscribeLocalModel: () => () => {},
+  localModelStore: {
+    refresh: () => mockRefreshModel(),
+    getSnapshot: () => ({
+      supported: true,
+      state: { kind: 'none' },
+      projectorInstalled: false,
+      updateAvailable: false,
+    }),
+    subscribe: () => () => {},
+  },
+  localTextModelStore: {
+    refresh: () => mockRefreshModel(),
+    getSnapshot: () => ({ state: { kind: mockTextModelKind() } }),
+    subscribe: () => () => {},
+  },
 }));
 jest.mock('@/services/localModels/devWebBridge', () => ({ isDevWebLocalModel: () => false }));
 jest.mock('expo-device', () => ({ totalMemory: 8e9, supportedCpuArchitectures: ['arm64-v8a'] }));
@@ -49,6 +57,17 @@ describe('onDeviceStatusStore', () => {
     resetOnDeviceStatusForTests();
     jest.clearAllMocks();
     mockGetApple.mockResolvedValue('available');
+  });
+
+  it('reports the optional text model in the capabilities', async () => {
+    mockGet.mockResolvedValue('gguf' as never);
+    mockTextModelKind.mockReturnValue('ready');
+
+    expect((await refreshOnDeviceStatus()).capabilities.textModel).toBe(true);
+
+    mockTextModelKind.mockReturnValue('none');
+    expect((await refreshOnDeviceStatus()).capabilities.textModel).toBe(false);
+    mockGet.mockResolvedValue('auto' as never);
   });
 
   it('never rejects when a probe fails, reports it once and keeps the last snapshot', async () => {

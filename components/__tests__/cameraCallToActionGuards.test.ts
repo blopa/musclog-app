@@ -50,6 +50,8 @@ const SCREEN_OWNERS = [
 ];
 
 const OTHER_OWNERS = [
+  'context/VoiceCommandContext.tsx',
+  'components/settings/VoiceToolsSheet.tsx',
   'components/NavigationMenu.tsx',
   'components/modals/MyMealsModal.tsx',
   'components/modals/OpticalTransferModal.tsx',

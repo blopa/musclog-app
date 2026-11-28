@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "Modell löschen?",
-        "message": "KI auf diesem Gerät funktioniert erst wieder, wenn du das Modell erneut herunterlädst. Deine Daten bleiben unverändert."
+        "message": "KI auf diesem Gerät funktioniert erst wieder, wenn du das Modell erneut herunterlädst. Deine Daten bleiben unverändert.",
+        "messageWithTextModel": "KI auf diesem Gerät funktioniert erst wieder, wenn du das Modell erneut herunterlädst. Das optionale Chatmodell wird ebenfalls gelöscht. Deine Daten bleiben unverändert."
+      }
+    },
+    "textModel": {
+      "heading": "Optional: ein größeres Modell für den Chat",
+      "description": "Nach dem Herunterladen nutzen Chat, Sprachbefehle und alles andere ohne Foto dieses Modell. Die Antworten sind besser, dauern aber länger. Mahlzeitenfotos verwenden weiterhin {{name}}.",
+      "state": {
+        "ready": "Bereit. Chat, Sprache und anderer Text nutzen dieses Modell; Fotos nutzen {{name}}."
+      },
+      "actions": {
+        "delete": "Chatmodell löschen"
+      },
+      "delete": {
+        "title": "Chatmodell löschen?",
+        "message": "Chat und Sprache wechseln zurück zu {{name}}. Deine Daten bleiben unverändert."
       }
     },
     "apple": {
@@ -142,10 +157,11 @@
     },
     "notices": {
       "title": "Hinweise von Drittanbietern",
-      "intro": "Musclog basiert auf Open-Source-Software und einem offenen Modell. Dies sind die jeweils geltenden Lizenzen.",
+      "intro": "Musclog basiert auf quelloffener Software, offenen Daten und offenen Modellen. Dies sind die Lizenzen, die gelten.",
       "link": "Hinweise von Drittanbietern",
       "linkSubtitle": "Open-Source-Software und das Modell auf dem Gerät",
-      "openLink": "Vollständigen Text öffnen"
+      "openLink": "Vollständigen Text öffnen",
+      "packagesTitle": "Quelloffene Pakete"
     }
   }
 }

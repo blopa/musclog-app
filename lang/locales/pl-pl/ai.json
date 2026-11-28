@@ -27,6 +27,31 @@
     "chat": {
       "message": "Wiadomość",
       "typeYourMessage": "Napisz wiadomość..."
+    },
+    "outputNotice": {
+      "chat": "Trener to AI, a nie człowiek, i często popełnia błędy. Jego odpowiedzi nie są poradą medyczną.",
+      "estimate": "Szacunek AI: może znacznie odbiegać od prawdy. Sprawdź produkty i ilości, zanim go zapiszesz.",
+      "plan": "Napisane przez AI: sprawdź, czy pasuje do Ciebie, zanim zaczniesz według niego trenować.",
+      "insight": "Napisane przez AI i może być błędne. Nie jest poradą medyczną, dietetyczną ani treningową.",
+      "import": "Odczytane przez AI: sprawdź każdą wartość, zanim ją zapiszesz.",
+      "settings": "AI jest opcjonalne i często popełnia błędy. Sprawdź, co ci mówi."
+    },
+    "disclaimer": {
+      "title": "AI może się mylić",
+      "subtitle": "Pamiętaj o tym, zanim zaufasz czemukolwiek, co mówi AI",
+      "openHint": "Otwiera, o czym warto pamiętać przy odpowiedziach AI",
+      "points": {
+        "optional": "AI jest opcjonalne. Musclog działa w pełni bez niego, a nic nie jest wysyłane, dopóki nie włączysz opcji AI.",
+        "mistakes": "Odpowiedzi AI tworzy model, a nie człowiek, i nikt ich wcześniej nie sprawdza. Często zawierają błędy: kalorie i makroskładniki znacznie odbiegające od prawdy, błędnie odczytane produkty lub porcje, ćwiczenia, które ci nie odpowiadają, oraz twierdzenia brzmiące pewnie, a fałszywe. Dotyczy to każdej opcji, także Musclog Iron.",
+        "notAdvice": "Loggy i pozostali trenerzy to postacie AI. Nie są lekarzami, dietetykami ani certyfikowanymi trenerami, a nic, co mówią, nie jest poradą medyczną, dietetyczną ani treningową.",
+        "health": "Jeśli masz ból, kontuzję, chorobę lub zaburzenie odżywiania, jesteś w ciąży albo przyjmujesz leki, zapytaj wykwalifikowanego specjalistę, zanim zastosujesz odpowiedź AI. Przerwij ćwiczenia, jeśli coś boli.",
+        "check": "Sprawdź każdy szacunek, plan i sugestię, zanim je zapiszesz, wykonasz lub udostępnisz, i popraw albo usuń to, co jest błędne. To, co zachowujesz, jest Twoim własnym zapisem.",
+        "edits": "Możesz edytować, dodawać i usuwać każdą wiadomość w historii czatu, także wiadomości AI. Historia czatu, eksport lub zrzut ekranu mogą nie pokazywać tego, co napisała AI, a Musclog nie zachowuje kopii, z którą można by to porównać.",
+        "liability": "W zakresie dozwolonym przez prawo Musclog nie odpowiada za to, co mówi AI, ani za to, co z tym zrobisz. Warunki wyjaśniają to w pełni."
+      },
+      "readTerms": "Przeczytaj warunki",
+      "editHint": "To zmienia Twoją historię tylko na tym urządzeniu. Edytowana lub dodana wiadomość trenera nie pokazuje już tego, co napisała AI.",
+      "consent": "Odpowiedzi AI są często błędne. Nie są poradą medyczną, dietetyczną ani treningową, a Musclog nie odpowiada za to, co mówi AI. Sprawdź wszystko, co ważne, zanim na tym oprzesz decyzję. Wyrażając zgodę, akceptujesz to oraz część o AI w naszych warunkach."
     }
   }
 }

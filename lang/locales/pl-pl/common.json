@@ -182,7 +182,8 @@
       "clearSearch": "Wyczyść wyszukiwanie",
       "showValue": "Pokaż wartość",
       "hideValue": "Ukryj wartość",
-      "scrollDown": "Przewiń w dół"
+      "scrollDown": "Przewiń w dół",
+      "holdToSpeak": "Przytrzymaj, aby mówić"
     },
     "externalAssistant": {
       "copied": "Instrukcje skopiowane",
@@ -210,6 +211,11 @@
       "openrouterTerms": "Warunki OpenRouter",
       "otariPrivacy": "Informacja o prywatności Otari",
       "otariTerms": "Warunki Otari"
-    }
+    },
+    "ageGate": {
+      "minimumApp": "Musclog jest dla osób w wieku {{age}} lat i więcej.",
+      "cloudAi": "Musclog Iron i darmowa opcja AI są dla osób w wieku {{age}} lat i więcej."
+    },
+    "healthDisclaimer": "Cele kaloryczne, wagi i plany są szacunkami, a nie poradą medyczną. Jeśli jesteś w ciąży lub karmisz piersią, masz lub miałeś/miałaś zaburzenie odżywiania, kontuzję lub schorzenie, porozmawiaj z lekarzem lub innym specjalistą, zanim zaczniesz się do nich stosować."
   }
 }

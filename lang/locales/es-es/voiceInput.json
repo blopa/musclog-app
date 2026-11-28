@@ -1,0 +1,110 @@
+{
+  "voiceInput": {
+    "listening": "Escuchando…",
+    "overlay": {
+      "releaseHint": "Suelta cuando termines",
+      "finishing": "Terminando…",
+      "slideUpToLock": "Desliza hacia arriba para bloquear",
+      "slideDownToCancel": "Desliza hacia abajo para cancelar",
+      "lockedHint": "Toca enviar cuando termines",
+      "send": "Enviar lo que has dicho"
+    },
+    "holdHint": "Mantén pulsado el botón del micrófono mientras hablas y suéltalo después.",
+    "resultTitle": "Lo que dijiste",
+    "openSettings": "Abrir ajustes",
+    "downloadLanguage": "Descargar idioma",
+    "downloadDone": "Descargado. Mantén pulsado el botón del micrófono para hablar.",
+    "downloadScheduled": "La descarga está en cola y terminará más tarde, por ejemplo con Wi-Fi.",
+    "downloadFailed": "No se pudo descargar el idioma. Inténtalo más tarde.",
+    "failure": {
+      "permission": {
+        "title": "El acceso al micrófono está desactivado",
+        "message": "Musclog necesita el micrófono para convertir lo que dices en texto. Puedes permitirlo en los ajustes del teléfono.",
+        "messageWeb": "Musclog necesita el micrófono para convertir lo que dices en texto. Permítelo para este sitio en los ajustes del navegador."
+      },
+      "languageMissing": {
+        "title": "Idioma no descargado",
+        "messageAndroid": "El reconocimiento de voz para el idioma de Musclog todavía no está en este teléfono. Descárgalo una vez y funcionará sin conexión a partir de entonces.",
+        "messageIos": "El reconocimiento de voz para el idioma de Musclog todavía no está en este dispositivo. Activa el dictado para ese idioma en Ajustes, General, Teclado y vuelve a intentarlo.",
+        "titleWeb": "Idioma no compatible",
+        "messageWeb": "Tu navegador no puede reconocer voz en el idioma configurado en Musclog."
+      },
+      "unavailable": {
+        "title": "El reconocimiento de voz sin conexión no está disponible",
+        "message": "Este teléfono no puede convertir la voz en texto sin internet. Musclog solo usa reconocimiento de voz que funciona en tu teléfono.",
+        "titleWeb": "El reconocimiento de voz no está disponible",
+        "messageWeb": "Tu navegador no ha podido convertir la voz en texto. Comprueba tu conexión a internet o prueba con Chrome, Edge o Safari."
+      },
+      "nothingHeard": {
+        "title": "No se oyeron palabras",
+        "message": "Musclog no captó nada. Mantén pulsado el botón, habla y suéltalo."
+      },
+      "failed": {
+        "title": "Se detuvo la escucha",
+        "message": "Algo interrumpió el reconocimiento de voz. Inténtalo de nuevo."
+      },
+      "browserNotice": {
+        "title": "Tu navegador convierte la voz en texto",
+        "message": "En la versión web, tu navegador reconoce lo que dices. Para ello puede enviar el audio a los servidores de su fabricante (Chrome lo envía a Google). Musclog nunca recibe ni guarda el audio. Si las funciones de IA están configuradas, el texto va a la IA que elegiste para averiguar qué hacer."
+      }
+    },
+    "command": {
+      "workingTitle": "Averiguando qué hacer…",
+      "pickTitle": "¿Qué querías hacer?",
+      "pickHint": "Elige una y Musclog lo intenta de nuevo.",
+      "tool": {
+        "copyMeal": "Copiar una comida o un día",
+        "searchFood": "Buscar un alimento",
+        "logWeight": "Registrar mi peso",
+        "logMeal": "Registrar una comida",
+        "addNote": "Tomar una nota",
+        "goTo": "Abrir una pantalla",
+        "askCoach": "Preguntar al coach",
+        "startWorkout": "Empezar un entrenamiento",
+        "logCardio": "Registrar un paseo o una carrera",
+        "openCamera": "Abrir la cámara"
+      },
+      "askCoach": "Preguntar al coach",
+      "wrongTask": "¿Tarea incorrecta? Prueba con un modelo mejor.",
+      "openAiSettings": "Ajustes de IA",
+      "failed": "El comando de voz ha fallado. Inténtalo de nuevo.",
+      "mealTitle": "Tu comida",
+      "mealLogged": "Comida registrada",
+      "workoutTitle": "¿Qué entrenamiento?",
+      "workoutActive": "Ya hay un entrenamiento en curso.",
+      "weight": {
+        "title": "Registra tu peso",
+        "field": "Peso",
+        "saved": "Peso guardado",
+        "saveError": "No se pudo guardar tu peso"
+      },
+      "capability": {
+        "copyMeal": "“He tomado el mismo desayuno que ayer”",
+        "searchFood": "“Busca avena para el almuerzo”",
+        "logWeight": "“Peso 82,4”",
+        "logMeal": "“Comí dos huevos y tostadas”",
+        "addNote": "“Nota: comprar más avena”",
+        "goTo": "“Muéstrame mi revisión semanal”",
+        "askCoach": "“¿Cuánta proteína necesito?”",
+        "startWorkout": "“Empieza mi día de pierna”",
+        "logCardio": "“Corrí 5 km en 30 minutos”",
+        "openCamera": "“Escanea un código de barras”"
+      }
+    },
+    "tools": {
+      "sectionTitle": "Comandos de voz",
+      "rowTitle": "Herramientas de voz",
+      "rowDescription": "Elige lo que puede hacer mantener pulsado el micrófono",
+      "sheetTitle": "Herramientas de voz",
+      "sheetSubtitle": "La IA elige una de estas a partir de lo que dices. Las que elegiste primero se usan primero.",
+      "limitNote_one": "Esta IA elige entre {{count}} herramienta a la vez.",
+      "limitNote_few": "Esta IA elige entre {{count}} herramientas a la vez.",
+      "limitNote_many": "Esta IA elige entre {{count}} herramientas a la vez.",
+      "limitNote_other": "Esta IA elige entre {{count}} herramientas a la vez.",
+      "notUsed": "No se usa con esta IA",
+      "useRecommended": "Usar el orden recomendado"
+    },
+    "allow": "Permitir",
+    "notNow": "Ahora no"
+  }
+}

@@ -19,6 +19,7 @@ import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
 } from '@/components/cards/FoodNutritionSectionCard';
+import { FoodSourceCredit } from '@/components/FoodSourceCredit';
 import { MacroInput } from '@/components/MacroInput';
 import {
   micronutrientFormStringsFromMicros,
@@ -616,6 +617,7 @@ export function ScannedFoodDetailsModal({
           }
           intuitiveMode={intuitiveEatingMode}
         />
+        <FoodSourceCredit source={currentSource} />
 
         <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
 

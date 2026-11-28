@@ -1,0 +1,201 @@
+name: Release Android APK
+
+# Manual only: Actions -> "Release Android APK" -> Run workflow, on the main branch.
+#
+# Reads the version from package.json. When a tag with that name already exists the run ends there,
+# successfully, and nothing is built. Otherwise it builds a release-signed APK with `eas build --local`
+# (profile `production-apk`, the same secrets as "Build Android AAB") and publishes a GitHub release
+# for the new tag with the APK attached.
+#
+# The tag is created by publishing that release, after the build: a failed build leaves no tag behind,
+# so running the workflow again simply retries. Only the last job can write to the repository.
+# utils/__tests__/androidApkReleaseWorkflow.test.ts pins these rules.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-android-apk
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Check the version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      code: ${{ steps.version.outputs.code }}
+      build_number: ${{ steps.version.outputs.build_number }}
+      tag_exists: ${{ steps.tag.outputs.tag_exists }}
+    steps:
+      - name: Refuse any branch but main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Run this workflow on the main branch (it was started on $GITHUB_REF)."
+          exit 1
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Read the app version
+        id: version
+        run: |
+          version="$(jq -r '.version' package.json)"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::package.json has no x.y.z version (got '$version')."
+            exit 1
+          fi
+          {
+            echo "version=$version"
+            echo "code=$(jq -r '.expo.android.versionCode' app.json)"
+            echo "build_number=$(jq -r '.expo.ios.buildNumber' app.json)"
+          } >> "$GITHUB_OUTPUT"
+
+      # Tags are the bare version ("2.18.8"). ls-remote exits 2 when nothing matches; any other
+      # failure stops the run, so a network error is never read as "not released yet".
+      - name: Look for the version's tag
+        id: tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          status=0
+          git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null || status=$?
+          case "$status" in
+            0)
+              echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::Tag $VERSION already exists. Nothing to release."
+              ;;
+            2)
+              echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+              echo "No tag $VERSION yet: building it."
+              ;;
+            *)
+              echo "::error::Could not list the repository's tags (git exit $status)."
+              exit 1
+              ;;
+          esac
+
+  build:
+    name: Production APK
+    needs: version
+    if: needs.version.outputs.tag_exists == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      APK: musclog-${{ needs.version.outputs.version }}-${{ needs.version.outputs.code }}.apk
+    steps:
+      - name: Check required secrets
+        env:
+          EXPO_TOKEN_SECRET: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN_SECRET" ]; then
+            echo "::error::Add the repository secret EXPO_TOKEN (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Free disk space, Node, Java, `npm ci` and the version check: .github/actions/setup-android-build.
+      - name: Set up the build
+        uses: ./.github/actions/setup-android-build
+
+      # EAS environment variables with visibility "Secret" cannot be read by a local build (plain text
+      # and sensitive ones are loaded from EAS). Pass SENTRY_AUTH_TOKEN directly to this step only.
+      - name: Build the APK with EAS (local)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/out"
+          npx --no-install eas build \
+            --platform android \
+            --profile production-apk \
+            --local \
+            --non-interactive \
+            --output "$RUNNER_TEMP/out/$APK"
+
+      # android/app/build.gradle signs `release` with the debug key; EAS replaces it with the upload
+      # key. `keytool -jarfile` cannot read an APK signature, so this asks apksigner. Its signer line
+      # is worded differently between build-tools versions; both say "certificate DN:".
+      - name: Check the APK is release-signed
+        run: |
+          apk="$RUNNER_TEMP/out/$APK"
+          build_tools="$(printf '%s\n' "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
+          certs="$("$build_tools/apksigner" verify --print-certs "$apk")"
+          owner="$(grep -m1 'certificate DN:' <<<"$certs" || true)"
+          if [ -z "$owner" ]; then
+            echo "::error::$apk has no signing certificate."
+            exit 1
+          fi
+          if grep -qiE 'CN=Android Debug|O=Android' <<<"$owner"; then
+            echo "::error::$apk is signed with the Android DEBUG key."
+            exit 1
+          fi
+          echo "$owner"
+          ls -lh "$apk"
+
+      # Kept on the run too, so "Re-run failed jobs" can publish without building again.
+      - name: Upload the APK
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ env.APK }}
+          path: ${{ runner.temp }}/out/${{ env.APK }}
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Tag and release
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      VERSION_CODE: ${{ needs.version.outputs.code }}
+      BUILD_NUMBER: ${{ needs.version.outputs.build_number }}
+      APK: musclog-${{ needs.version.outputs.version }}-${{ needs.version.outputs.code }}.apk
+    steps:
+      - name: Download the APK
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ env.APK }}
+
+      # `gh release create` uploads the file to a draft and publishes it after, which is what creates
+      # the tag, on the commit that was built. A failed upload leaves neither behind.
+      #
+      # The footer is the one append-build-version.yml writes (same marker): a release published with
+      # the workflow token does not start other workflows, so it is added here.
+      - name: Create the tag and the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # The tag may have been created while the APK was building.
+          found="$(gh api "repos/$GH_REPO/git/matching-refs/tags/$VERSION" \
+            --jq "map(select(.ref == \"refs/tags/$VERSION\")) | length")"
+          if [ "$found" != "0" ]; then
+            echo "::error::Tag $VERSION was created while this run was building; not publishing over it."
+            exit 1
+          fi
+
+          notes="$(gh api "repos/$GH_REPO/releases/generate-notes" \
+            -f tag_name="$VERSION" -f target_commitish="$GITHUB_SHA" --jq .body)"
+          {
+            printf '%s\n' "$notes"
+            printf '\n<!-- musclog-build-version -->\n---\n'
+            printf '📦 **App version `%s` (build %s)**\n\n' "$VERSION" "$VERSION_CODE"
+            printf -- '- Android `versionCode`: %s\n' "$VERSION_CODE"
+            printf -- '- iOS `buildNumber`: %s\n' "$BUILD_NUMBER"
+          } > release-notes.md
+
+          gh release create "$VERSION" "$APK" \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --notes-file release-notes.md

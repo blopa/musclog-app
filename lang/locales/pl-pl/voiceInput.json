@@ -1,0 +1,110 @@
+{
+  "voiceInput": {
+    "listening": "Słucham…",
+    "overlay": {
+      "releaseHint": "Puść, gdy skończysz",
+      "finishing": "Kończę…",
+      "slideUpToLock": "Przesuń w górę, aby zablokować",
+      "slideDownToCancel": "Przesuń w dół, aby anulować",
+      "lockedHint": "Gdy skończysz, naciśnij wyślij",
+      "send": "Wyślij to, co powiedziano"
+    },
+    "holdHint": "Przytrzymaj przycisk mikrofonu, gdy mówisz, a potem go puść.",
+    "resultTitle": "Co powiedziałeś",
+    "openSettings": "Otwórz ustawienia",
+    "downloadLanguage": "Pobierz język",
+    "downloadDone": "Pobrano. Przytrzymaj przycisk mikrofonu, aby mówić.",
+    "downloadScheduled": "Pobieranie jest w kolejce i zakończy się później, na przykład przy Wi-Fi.",
+    "downloadFailed": "Nie udało się pobrać języka. Spróbuj ponownie później.",
+    "failure": {
+      "permission": {
+        "title": "Dostęp do mikrofonu jest wyłączony",
+        "message": "Musclog potrzebuje mikrofonu, żeby zamieniać mowę na tekst. Możesz zezwolić na to w ustawieniach telefonu.",
+        "messageWeb": "Musclog potrzebuje mikrofonu, żeby zamieniać mowę na tekst. Zezwól na to dla tej witryny w ustawieniach przeglądarki."
+      },
+      "languageMissing": {
+        "title": "Język nie został pobrany",
+        "messageAndroid": "Rozpoznawanie mowy dla języka ustawionego w Musclog nie jest jeszcze na tym telefonie. Pobierz je raz, a potem będzie działać bez internetu.",
+        "messageIos": "Rozpoznawanie mowy dla języka ustawionego w Musclog nie jest jeszcze na tym urządzeniu. Włącz dyktowanie dla tego języka w Ustawienia, Ogólne, Klawiatura i spróbuj ponownie.",
+        "titleWeb": "Język nieobsługiwany",
+        "messageWeb": "Twoja przeglądarka nie potrafi rozpoznawać mowy w języku ustawionym w Musclog."
+      },
+      "unavailable": {
+        "title": "Rozpoznawanie mowy offline jest niedostępne",
+        "message": "Ten telefon nie może zamienić mowy na tekst bez internetu. Musclog korzysta tylko z rozpoznawania mowy działającego na Twoim telefonie.",
+        "titleWeb": "Rozpoznawanie mowy jest niedostępne",
+        "messageWeb": "Przeglądarka nie zdołała zamienić mowy na tekst. Sprawdź połączenie z internetem albo użyj Chrome, Edge lub Safari."
+      },
+      "nothingHeard": {
+        "title": "Nie usłyszano słów",
+        "message": "Musclog niczego nie wychwycił. Przytrzymaj przycisk, mów i puść."
+      },
+      "failed": {
+        "title": "Słuchanie zatrzymane",
+        "message": "Coś przerwało rozpoznawanie mowy. Spróbuj ponownie."
+      },
+      "browserNotice": {
+        "title": "Przeglądarka zamienia mowę na tekst",
+        "message": "W wersji internetowej to Twoja przeglądarka rozpoznaje to, co mówisz. Może w tym celu wysyłać nagranie na serwery swojego producenta (Chrome wysyła je do Google). Musclog nigdy nie otrzymuje ani nie przechowuje nagrania. Jeśli funkcje AI są skonfigurowane, tekst trafia do wybranej przez Ciebie AI, aby ustalić, co zrobić."
+      }
+    },
+    "command": {
+      "workingTitle": "Sprawdzam, co zrobić…",
+      "pickTitle": "Co masz na myśli?",
+      "pickHint": "Wybierz opcję, a Musclog spróbuje ponownie.",
+      "tool": {
+        "copyMeal": "Skopiuj posiłek lub dzień",
+        "searchFood": "Wyszukaj produkt",
+        "logWeight": "Zapisz moją wagę",
+        "logMeal": "Zapisz posiłek",
+        "addNote": "Zrób notatkę",
+        "goTo": "Otwórz ekran",
+        "askCoach": "Zapytaj trenera",
+        "startWorkout": "Rozpocznij trening",
+        "logCardio": "Zapisz spacer lub bieg",
+        "openCamera": "Otwórz aparat"
+      },
+      "askCoach": "Zapytaj coacha",
+      "wrongTask": "Nie to zadanie? Wypróbuj lepszy model.",
+      "openAiSettings": "Ustawienia AI",
+      "failed": "Polecenie głosowe się nie powiodło. Spróbuj ponownie.",
+      "mealTitle": "Twój posiłek",
+      "mealLogged": "Posiłek zapisany",
+      "workoutTitle": "Który trening?",
+      "workoutActive": "Trening jest już w toku.",
+      "weight": {
+        "title": "Zapisz swoją wagę",
+        "field": "Waga",
+        "saved": "Waga zapisana",
+        "saveError": "Nie udało się zapisać wagi"
+      },
+      "capability": {
+        "copyMeal": "„Zjadłem to samo śniadanie co wczoraj”",
+        "searchFood": "„Wyszukaj płatki owsiane na obiad”",
+        "logWeight": "„Ważę 82,4”",
+        "logMeal": "„Zjadłem dwa jajka i tost”",
+        "addNote": "„Notatka: kup więcej płatków owsianych”",
+        "goTo": "„Pokaż mój przegląd tygodnia”",
+        "askCoach": "„Ile białka potrzebuję?”",
+        "startWorkout": "„Zacznij mój trening nóg”",
+        "logCardio": "„Przebiegłem 5 km w 30 minut”",
+        "openCamera": "„Zeskanuj kod kreskowy”"
+      }
+    },
+    "tools": {
+      "sectionTitle": "Polecenia głosowe",
+      "rowTitle": "Narzędzia głosowe",
+      "rowDescription": "Wybierz, co może zrobić przytrzymanie mikrofonu",
+      "sheetTitle": "Narzędzia głosowe",
+      "sheetSubtitle": "AI wybiera jedno z nich na podstawie tego, co mówisz. Te, które wybrałeś jako pierwsze, są używane najpierw.",
+      "limitNote_one": "Ta AI wybiera naraz między {{count}} narzędziem.",
+      "limitNote_few": "Ta AI wybiera naraz między {{count}} narzędziami.",
+      "limitNote_many": "Ta AI wybiera naraz między {{count}} narzędziami.",
+      "limitNote_other": "Ta AI wybiera naraz między {{count}} narzędziami.",
+      "notUsed": "Nie używane przez tę AI",
+      "useRecommended": "Użyj zalecanej kolejności"
+    },
+    "allow": "Zezwól",
+    "notNow": "Nie teraz"
+  }
+}

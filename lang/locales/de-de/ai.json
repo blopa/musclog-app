@@ -27,6 +27,31 @@
     "chat": {
       "message": "Nachricht",
       "typeYourMessage": "Schreibe deine Nachricht..."
+    },
+    "outputNotice": {
+      "chat": "Der Coach ist eine KI, keine Person, und er macht oft Fehler. Seine Antworten sind keine medizinische Beratung.",
+      "estimate": "KI-Schätzung: Sie kann stark danebenliegen. Prüfe Lebensmittel und Mengen, bevor du sie protokollierst.",
+      "plan": "Von KI erstellt: Prüfe, ob er zu dir passt, bevor du danach trainierst.",
+      "insight": "Von KI geschrieben, und sie kann falsch sein. Keine medizinische, ernährungsbezogene oder trainingsbezogene Beratung.",
+      "import": "Von KI gelesen: Prüfe jeden Wert, bevor du ihn speicherst.",
+      "settings": "KI ist optional und macht oft Fehler. Prüfe, was sie dir sagt."
+    },
+    "disclaimer": {
+      "title": "KI kann sich irren",
+      "subtitle": "Behalte das im Hinterkopf, bevor du dich auf etwas verlässt, das die KI sagt",
+      "openHint": "Öffnet, was du über KI-Antworten wissen solltest",
+      "points": {
+        "optional": "KI ist optional. Musclog funktioniert vollständig ohne sie, und es wird nichts gesendet, bevor du eine KI-Option einschaltest.",
+        "mistakes": "KI-Antworten werden von einem Modell geschrieben, nicht von einer Person, und niemand prüft sie vorher. Sie enthalten oft Fehler: Kalorien und Makros, die weit danebenliegen, falsch erkannte Lebensmittel oder Portionen, Übungen, die nicht zu dir passen, und Behauptungen, die sicher klingen, aber falsch sind. Das gilt für jede Option, auch für Musclog Iron.",
+        "notAdvice": "Loggy und die anderen Coaches sind KI-Figuren. Sie sind keine Ärzte, Ernährungsberater oder zertifizierten Coaches, und nichts, was sie sagen, ist medizinische, ernährungsbezogene oder trainingsbezogene Beratung.",
+        "health": "Wenn du Schmerzen, eine Verletzung, eine Krankheit oder eine Essstörung hast, schwanger bist oder Medikamente nimmst, frag eine qualifizierte Fachperson, bevor du nach einer KI-Antwort handelst. Hör mit dem Training auf, wenn etwas wehtut.",
+        "check": "Prüfe jede Schätzung, jeden Plan und jeden Vorschlag, bevor du ihn protokollierst, befolgst oder teilst, und korrigiere oder lösche, was falsch ist. Was du behältst, ist dein eigenes Protokoll.",
+        "edits": "Du kannst jede Nachricht in deinem Chatverlauf bearbeiten, hinzufügen oder löschen, auch die der KI. Ein Chatverlauf, ein Export oder ein Screenshot zeigt womöglich nicht, was die KI geschrieben hat, und Musclog bewahrt keine Kopie zum Vergleich auf.",
+        "liability": "Soweit das Gesetz es zulässt, ist Musclog nicht verantwortlich für das, was die KI sagt, oder für das, was du damit tust. Die Bedingungen erklären das vollständig."
+      },
+      "readTerms": "Bedingungen lesen",
+      "editHint": "Das ändert deinen Verlauf nur auf diesem Gerät. Eine bearbeitete oder hinzugefügte Coach-Nachricht zeigt nicht mehr, was die KI geschrieben hat.",
+      "consent": "KI-Antworten sind oft falsch. Sie sind keine medizinische, ernährungsbezogene oder trainingsbezogene Beratung, und Musclog ist nicht verantwortlich für das, was die KI sagt. Prüfe alles Wichtige, bevor du danach handelst. Mit deiner Zustimmung akzeptierst du dies und den KI-Abschnitt unserer Bedingungen."
     }
   }
 }

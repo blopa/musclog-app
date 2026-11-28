@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "Coach con IA",
-          "description": "Habla con Loggy sobre entrenamiento y comida, o estima una comida a partir de una foto. Opcional: con tu propia clave de Gemini, OpenAI o Claude, con Musclog Iron, la opción gratuita, un modelo local o IA en tu teléfono."
+          "description": "Habla con Loggy sobre entrenamiento y comida, o estima una comida a partir de una foto. Opcional: con tu propia clave de Gemini, OpenAI o Claude, con Musclog Iron, la opción gratuita, un modelo local o IA en tu teléfono. Las respuestas de la IA pueden ser erróneas, así que compruébalas antes de confiar en ellas."
         },
         "barcode": {
           "title": "Escáner de códigos de barras",
@@ -456,7 +456,8 @@
       "start": "Start",
       "select": "Select",
       "downloadRom": "Descargar ROM",
-      "downloadManual": "Descargar manual"
+      "downloadManual": "Descargar manual",
+      "notAffiliated": "Game Boy y Game Boy Color son marcas registradas de Nintendo. Musclog no está afiliada a Nintendo ni cuenta con su respaldo."
     },
     "progress": {
       "metaTitle": "Importación de progreso de Musclog",
@@ -604,11 +605,11 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidad",
-      "lastUpdated": "Última actualización: 24 de noviembre de 2026",
+      "lastUpdated": "Última actualización: 27 de noviembre de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Protección de datos",
-          "description": "Los registros sensibles se cifran en tu dispositivo y las solicitudes de red usan HTTPS."
+          "description": "El peso, la grasa corporal, los registros de alimentos y los registros del ciclo se cifran en tu dispositivo, y las solicitudes a los servicios de Musclog y a los proveedores de IA usan HTTPS."
         },
         "localFirst": {
           "title": "Almacenamiento local",
@@ -616,7 +617,7 @@
         },
         "security": {
           "title": "Tú tienes el control",
-          "description": "Solo la búsqueda de alimentos, la IA opcional, las comprobaciones de la suscripción a Musclog Iron y los informes de fallos usan Internet, y puedes desactivar cada uno de ellos."
+          "description": "Tus registros se quedan en tu dispositivo. La aplicación usa Internet para la búsqueda de alimentos, las imágenes de ejercicios, la IA opcional, las comprobaciones de Musclog Iron, las descargas de modelos y los informes de fallos."
         }
       },
       "intro": "Esta Política de Privacidad describe nuestras políticas y procedimientos relativos a la recopilación, el uso, el almacenamiento y la divulgación de tu información cuando utilizas Musclog. Se aplica tanto a la aplicación Musclog como al sitio web de Musclog, aunque las categorías de datos tratadas en cada contexto son diferentes. Esta Política de Privacidad también explica tus derechos de privacidad y cómo la ley te protege.",
@@ -677,7 +678,9 @@
               "Búsquedas de alimentos y códigos de barras escaneados, enviados a la base de datos de alimentos que elijas (consulta \"Bases de datos de alimentos\" más abajo).",
               "Solicitudes que envíes a una función de IA opcional, enviadas al proveedor que elijas, a la opción gratuita Musclog AI o a Musclog Iron (consulta \"Funciones de IA opcionales\" más abajo).",
               "Datos que exportes, copies, compartas o traspases tú mismo a otro dispositivo.",
-              "Datos de Uso de las visitas al sitio web (consulta \"Analítica del sitio web\" más abajo)."
+              "Datos de Uso de las visitas al sitio web (consulta \"Analítica del sitio web\" más abajo).",
+              "Solicitudes de imágenes de ejercicios, que la aplicación carga desde musclog.app cuando las muestra. Como cualquier solicitud web, revelan tu dirección IP al servidor web.",
+              "Un informe que eliges enviar sobre una respuesta de la IA (consulta \"Informes de fallos anónimos\" más abajo)."
             ]
           },
           "usageData": {
@@ -689,6 +692,7 @@
             "content": "Para proporcionar sus funciones, la aplicación puede solicitar los siguientes permisos. Los datos obtenidos mediante ellos permanecen en tu Dispositivo, salvo que esta Política de Privacidad indique lo contrario:",
             "items": [
               "Cámara: para escanear códigos de barras y etiquetas nutricionales de alimentos, hacer fotos de comidas y recibir datos de otro dispositivo mediante códigos QR.",
+              "Micrófono: solo mientras mantienes pulsado el botón del micrófono, para convertir lo que dices en texto. Musclog pide al reconocimiento de voz de tu dispositivo que funcione sin conexión, y no guarda ni envía el audio. Si las funciones de IA están configuradas, el texto resultante (nunca el audio) va a la IA que elegiste, como un mensaje escrito, para averiguar qué hacer. Con la IA en el dispositivo, se queda en tu dispositivo. En la versión web, es tu navegador el que reconoce la voz y puede enviar el audio a los servidores de su fabricante (por ejemplo, Google en el caso de Chrome). Musclog te lo indica antes del primer uso y nunca recibe ni guarda el audio.",
               "Health Connect o Apple Health: consulta \"Health Connect y Apple Health\" más arriba.",
               "Notificaciones, alarmas exactas e inicio completado: para mostrar a tiempo los recordatorios de entrenamiento, temporizador de descanso, nutrición y ciclo, incluso después de que tu dispositivo se reinicie.",
               "Biometría (huella dactilar o rostro): para bloquear la aplicación o partes de ella, si lo activas.",
@@ -699,11 +703,12 @@
           },
           "optionalAi": {
             "title": "Funciones de IA opcionales",
-            "content1": "La aplicación Musclog puede utilizarse completamente sin conexión, excepto para las búsquedas de alimentos, las funciones de IA opcionales y los informes de fallos. Musclog no envía tus datos de entrenamiento, nutrición, salud o perfil a Nuestros servidores, salvo cuando utilizas la opción gratuita Musclog AI o Musclog Iron, descritas más abajo.",
+            "content1": "La aplicación Musclog puede usarse sin conexión, excepto para las búsquedas de alimentos, las imágenes de ejercicios, las funciones de IA opcionales, las descargas de modelos y los informes de fallos. Musclog no envía tus datos de entrenamiento, nutrición, salud o perfil a Nuestros servidores, salvo cuando usas la opción gratuita Musclog AI o Musclog Iron, descritas más abajo.",
             "content2": "Musclog ofrece funciones de IA opcionales. Permanecen desactivadas hasta que elijas un proveedor: tu propia clave API de OpenAI, Anthropic Claude o Google Gemini, un modelo en el dispositivo como Apple Intelligence en iOS, un endpoint LLM local o autohospedado, la opción gratuita Musclog AI, o Musclog Iron, una suscripción mensual opcional.",
             "content3": "Si decides usar una función de IA, los datos que decidas enviar se enviarán al proveedor o endpoint que configures. Si utilizas un modelo local autohospedado bajo tu propio control, esos datos pueden permanecer dentro de tu propio entorno. Si utilizas un endpoint alojado por un tercero, incluido un servicio alojado de modelos locales, ese proveedor podrá tratar los datos de acuerdo con sus propios términos y prácticas de privacidad. Musclog no controla cómo los proveedores externos tratan los datos que les envías.",
-            "content4": "Si eliges la opción gratuita Musclog AI, tus solicitudes se envían a través de OpenRouter, un servicio de enrutamiento de IA, a Google AI Studio (un modelo Gemma), usando una clave API gestionada por Musclog. Una solicitud contiene únicamente lo que envías a la función de IA, como mensajes de chat, fotos de comidas o los datos de entrenamiento, nutrición y cuerpo que esa función necesita. OpenRouter no almacena el contenido de las solicitudes, salvo el control de material de abuso sexual infantil descrito más abajo; guarda datos de la solicitud como su tamaño y su hora. Google responde a estas solicitudes según las condiciones de la API de Gemini para uso gratuito: Google puede almacenar las solicitudes y las respuestas, usarlas para mejorar sus productos y tecnologías de aprendizaje automático, y hacer que revisores humanos las lean. Google elimina los identificadores, como tu cuenta, antes de la revisión humana, pero no introduzcas información personal o sensible en la opción gratuita Musclog AI y no la uses para nada que no quieras que Google vea. La opción gratuita Musclog AI es solo para adultos (18 años o más), porque las condiciones de Google no permiten este servicio gratuito en aplicaciones que probablemente usen menores de 18 años. Musclog Iron es diferente: solo usa proveedores con retención cero de datos. La opción gratuita tiene un límite diario compartido por todos sus usuarios, depende de los límites gratuitos de Google y puede no estar disponible a veces.",
+            "content4": "Si eliges la opción gratuita Musclog AI, tus solicitudes se envían a través de OpenRouter, un servicio de enrutamiento de IA, a Google AI Studio (un modelo Gemma), usando una clave de API gestionada por Musclog. Una solicitud contiene solo lo que envías a la función de IA, como mensajes de chat, fotos de comidas, o los datos de entrenamiento, nutrición y cuerpo que esa función necesita, que pueden incluir registros importados de Health Connect o Apple Health, y los análisis diarios si los activas. OpenRouter no almacena el contenido de las solicitudes, salvo la revisión de material de abuso sexual infantil descrita más abajo; sí guarda datos de la solicitud, como su tamaño y su hora. Google responde a estas solicitudes según las condiciones de la API de Gemini para uso gratuito: Google puede almacenar las solicitudes y las respuestas, usarlas para mejorar sus productos y tecnologías de aprendizaje automático, y hacer que revisores humanos las lean. Google elimina identificadores, como tu cuenta, antes de la revisión humana, pero no introduzcas información personal o sensible en la opción gratuita Musclog AI y no la uses para nada que no quieras que Google vea. La opción gratuita Musclog AI es solo para adultos (18 años o más), porque OpenRouter, que transmite estas solicitudes, exige que su servicio lo usen adultos. Musclog Iron es distinto: solo usa proveedores con retención cero de datos. La opción gratuita tiene un límite diario compartido por todos sus usuarios, depende de los límites gratuitos de Google y a veces puede no estar disponible.",
             "contentPremium": "Si te suscribes a Musclog Iron, tus solicitudes de IA se envían al propio servicio de Musclog, que funciona sobre Cloudflare Workers, y desde allí a través de uno de dos gateways de IA, OpenRouter u Otari (gestionado por Mozilla.ai, MZL.AI, PBC), que solo las transmiten a proveedores de IA con retención cero de datos (ZDR) y sin entrenamiento con tus datos. Musclog elige qué gateway se usa, y el consentimiento en la aplicación cubre ambos. En Otari, cada solicitud nombra a un proveedor aprobado y nunca recurre a otro. Una solicitud contiene solo lo que envías a la función de IA, como mensajes del chat, los datos de entrenamiento, nutrición y corporales que esa función necesita, y fotos de comidas. El servicio de Musclog no almacena el contenido de tus solicitudes ni de las respuestas. Solo conserva un identificador derivado de una clave que existe en tu Dispositivo, los recuentos de uso y una huella corta de cada solicitud para que una solicitud reintentada no se cuente dos veces. Como cualquier solicitud de Internet, cada una revela tu dirección IP a Cloudflare, que entrega y protege el servicio; el servicio de Musclog no la almacena. El gateway recibe con cada solicitud un código seudónimo de tu suscripción, no tu identificador, nombre ni correo electrónico, para poder detectar abusos; Otari también recibe etiquetas que nombran la aplicación y el tipo de solicitud, nunca a una persona ni un dispositivo. RevenueCat recibe tu identificador, el estado de compra en la tienda y los datos técnicos que maneja un servicio de suscripciones de aplicaciones, como tu dirección IP, para confirmar que tu suscripción está activa. Musclog no recibe tu nombre, correo electrónico ni datos de pago: el pago lo gestionan Apple o Google. OpenRouter somete a control todas las solicitudes que pasan por él, incluidas las dirigidas a proveedores con retención cero, para detectar material de abuso sexual infantil mientras se procesan, y puede conservar una solicitud que marque para revisión, denuncia y conservación legal cuando la ley lo exija. Otari afirma que no recibe ni almacena el contenido de las solicitudes ni de las respuestas; conserva datos de las solicitudes como el modelo, el proveedor, el número de tokens, el coste y el estado, en servidores de Estados Unidos. Musclog Iron es independiente de la opción gratuita Musclog AI y solo se activa después de que aceptes esto en la aplicación.",
+            "accuracy": "Las funciones de IA pueden cometer errores, y sus respuestas no son consejo médico, nutricional ni de entrenamiento. Las Condiciones, en \"Funciones de IA y Resultados de la IA\", explican qué puedes esperar de ellas y de qué es responsable Musclog.",
             "content5": "Debes revisar las políticas de privacidad y los términos de los proveedores que elijas y de los servicios que usa Musclog, incluidos:",
             "cloudflarePrivacyPolicy": "Política de Privacidad de Cloudflare",
             "openaiPrivacyPolicy": "Política de Privacidad de OpenAI",
@@ -718,14 +723,14 @@
             "items": [
               "Puede leer peso, altura, grasa corporal, masa corporal magra, nutrición, pasos, calorías quemadas y tasa metabólica basal y, si usas el seguimiento del ciclo y decides importar, datos del ciclo menstrual.",
               "Puede escribir peso, altura, grasa corporal, masa corporal magra, nutrición, entrenamientos y distancia caminada o corrida y, si lo decides, datos del ciclo menstrual.",
-              "Los datos de salud leídos de Health Connect o Apple Health permanecen en tu Dispositivo. Musclog no los envía a Nuestros servidores, no los vende ni los utiliza con fines publicitarios.",
+              "Los datos de salud leídos de Health Connect o Apple Health se guardan en tu dispositivo. Musclog no los vende ni los usa para publicidad. Si activas una opción de IA, el peso, la grasa corporal y los registros de nutrición que importaste pueden formar parte de lo que se envía a esa IA, como se describe en \"Funciones de IA opcionales\".",
               "Los datos de salud se utilizan únicamente para proporcionar las funciones de seguimiento de actividad física, nutrición y cuerpo de la aplicación.",
               "Puedes revocar estos permisos en cualquier momento en Health Connect o en la app Salud."
             ]
           },
           "foodData": {
             "title": "Bases de datos de alimentos",
-            "content": "Cuando buscas un alimento o escaneas un código de barras, el texto de búsqueda o el código de barras se envía a la base de datos de alimentos seleccionada en los ajustes de la aplicación: Open Food Facts, la base de datos USDA FoodData Central o la base de datos de alimentos propia de Musclog. A estas solicitudes no se adjunta ninguna cuenta, nombre ni otra información personal, aunque, como cualquier solicitud de Internet, revelan tu dirección IP al servicio que las recibe. También puedes elegir buscar solo entre los alimentos almacenados en tu Dispositivo."
+            "content": "Cuando buscas un alimento o escaneas un código de barras, el texto de búsqueda o el código de barras se envía a la base de datos de alimentos seleccionada en los ajustes de la aplicación: Open Food Facts, la base de datos USDA FoodData Central o la base de datos de alimentos propia de Musclog, que contiene información de productos de supermercados de los Países Bajos. A estas solicitudes no se adjunta ninguna cuenta, nombre ni otra información personal, aunque, como cualquier solicitud de Internet, revelan tu dirección IP al servicio que las recibe. También puedes elegir buscar solo entre los alimentos guardados en tu dispositivo."
           }
         },
         "trainingData": {
@@ -750,7 +755,7 @@
           "items": [
             "Con los proveedores que elijas: las búsquedas de alimentos van a la base de datos de alimentos que selecciones y las solicitudes de IA van al proveedor de IA que configures.",
             "Con Hugging Face, si decides descargar el modelo de IA en el dispositivo: como cualquier descarga de archivos, la solicitud comunica a Hugging Face la dirección IP de tu dispositivo. Luego el modelo se ejecuta en tu dispositivo, y lo que le preguntas se queda en tu dispositivo.",
-            "Con Proveedores de Servicios que ejecutan partes del Servicio por Nuestra cuenta: Sentry (informes de fallos, y errores del servicio de Musclog Iron que no contienen contenido de mensajes ni identificadores), OpenRouter y Google (la opción gratuita Musclog AI), Cloudflare, OpenRouter u Otari, y RevenueCat (Musclog Iron), GitHub y Cloudflare (alojamiento del sitio web) y Google Analytics (el sitio web, solo después de que aceptes la analítica).",
+            "Con Proveedores de Servicios que ejecutan partes del Servicio por Nuestra cuenta: Sentry (informes de fallos, informes que envías sobre respuestas de la IA, y errores del servicio de Musclog Iron que no contienen contenido de mensajes ni identificadores), OpenRouter y Google (la opción gratuita Musclog AI), Cloudflare, OpenRouter u Otari, y RevenueCat (Musclog Iron), GitHub y Cloudflare (alojamiento del sitio web) y Google Analytics (el sitio web, solo después de que aceptes la analítica).",
             "Cuando lo exija la ley, como se describe en \"Divulgación de tus Datos Personales\".",
             "Con tu consentimiento, por ejemplo cuando exportas o compartes datos tú mismo.",
             "No vendemos tus datos ni los compartimos con anunciantes ni intermediarios de datos."
@@ -781,11 +786,11 @@
         },
         "security": {
           "title": "Seguridad de tus Datos Personales",
-          "content": "Musclog cifra los registros sensibles en tu dispositivo, como el peso, la grasa corporal, los registros de alimentos y los registros del ciclo menstrual, y sus solicitudes de red usan HTTPS. También puedes bloquear la aplicación o partes de ella con la biometría o el PIN de tu dispositivo. Ningún método de almacenamiento electrónico o transmisión por Internet es 100% seguro, por lo que no podemos garantizar una seguridad absoluta."
+          "content": "Musclog cifra los registros más sensibles en tu dispositivo: el peso, la grasa corporal, los registros de alimentos y los registros del ciclo menstrual. Otros registros, como entrenamientos, notas e historial de chat, no los cifra la aplicación. Las solicitudes a los servicios de Musclog y a los proveedores de IA usan HTTPS; un servidor local que configures tú mismo puede usar HTTP sin cifrar. También puedes bloquear la aplicación o partes de ella con la biometría o el PIN de tu dispositivo. Ningún método de almacenamiento electrónico o de transmisión por Internet es 100 % seguro, así que no podemos garantizar una seguridad absoluta."
         },
         "childrenPrivacy": {
           "title": "Privacidad de los menores",
-          "content": "Nuestro Servicio no está dirigido a menores de 13 años y no recopilamos a sabiendas Datos Personales de ellos. Las funciones de IA opcionales, incluida Musclog Iron, dependen de tu consentimiento: si eres menor de 16 años, pide a un padre, madre o tutor que lo autorice antes de activar alguna. La opción gratuita Musclog AI es solo para adultos (18 años o más). Si crees que un menor nos ha enviado Datos Personales, por ejemplo por correo electrónico, contáctanos y los eliminaremos."
+          "content": "Musclog es para personas de 16 años o más, y no recopilamos a sabiendas Datos Personales de nadie menor. Musclog Iron y la opción gratuita Musclog AI son solo para adultos (18 años o más). Si crees que alguien menor de estas edades nos ha enviado Datos Personales, por ejemplo por correo electrónico, contáctanos y lo eliminaremos."
         },
         "links": {
           "title": "Enlaces a otros sitios web",
@@ -801,7 +806,7 @@
         },
         "crashReports": {
           "title": "Informes de fallos anónimos",
-          "content": "La aplicación puede enviar informes de fallos anónimos a Sentry, un servicio de seguimiento de errores, para que podamos encontrar y corregir errores. Esta opción está activada de forma predeterminada y puede desactivarse en cualquier momento con el interruptor \"Informe de Errores Anónimo\" en Ajustes → Copias y datos. Mientras esté desactivada, la aplicación no envía ningún informe de fallos, incluidos los informes sobre fallos de la base de datos. Un informe contiene el error y dónde se produjo, la versión de la aplicación y el modelo del dispositivo. No contiene nombre, cuenta ni dirección de correo electrónico, ni ninguno de los datos de entrenamientos, alimentos o cuerpo que registras. Los informes sobre fallos nativos pueden incluir un identificador aleatorio que Sentry crea para la instalación, que no está vinculado a ti. Como cualquier solicitud de Internet, un informe revela tu dirección IP a Sentry; no la utilizamos para identificarte."
+          "content": "La aplicación puede enviar informes de fallos anónimos a Sentry, un servicio de seguimiento de errores, para que podamos encontrar y corregir errores. Esta opción está activada de forma predeterminada y puede desactivarse en cualquier momento con el interruptor \"Informe de Errores Anónimo\" en Ajustes → Copias y datos. Mientras esté desactivada, la aplicación no envía ningún informe de fallos, incluidos los de fallos de la base de datos. Un informe contiene el error y dónde se produjo, la versión de la aplicación y el modelo del dispositivo. No contiene nombre, cuenta ni dirección de correo electrónico, y no está pensado para contener los entrenamientos, alimentos o datos corporales que registras; la aplicación elimina claves, direcciones de correo electrónico y texto citado de los mensajes de error antes de enviarlos, aunque un mensaje puede contener aún un fragmento de lo que se estaba procesando. Los informes sobre fallos nativos pueden incluir un identificador aleatorio que Sentry crea para la instalación, que no está vinculado a ti. Como cualquier solicitud de Internet, un informe revela tu dirección IP a Sentry; no la usamos para identificarte. Por separado, si eliges informar de una respuesta de la IA en el chat, la aplicación envía esa respuesta, con la versión de la app, la plataforma y el idioma, a Sentry después de que lo confirmes, tengas o no activados los informes de fallos."
         },
         "analytics": {
           "title": "Analítica del sitio web",
@@ -824,7 +829,7 @@
         },
         "controller": {
           "title": "Quién es responsable de tus datos",
-          "content": "Musclog es publicado por Jubinganga Supply, una empresa unipersonal registrada en los Países Bajos (KVK 72255145). Es el responsable del tratamiento de los Datos Personales descritos en esta Política de Privacidad. Contacto: support@musclog.app, Apartado de correos 69307, 1060 CJ Ámsterdam, Países Bajos, +31 6 5882 8627."
+          "content": "Musclog es publicado por Jubinganga Supply, una empresa unipersonal registrada en los Países Bajos (KVK 72255145, IVA NL005078897B86). Es el responsable del tratamiento de los Datos Personales descritos en esta Política de Privacidad. Contacto: support@musclog.app, Apartado de correos 69307, 1060 CJ Ámsterdam, Países Bajos, +31 6 5882 8627."
         },
         "legalBasis": {
           "title": "Por qué tratamos datos (bases jurídicas)",
@@ -858,7 +863,7 @@
             "Todos los datos que introduces en la aplicación se almacenan localmente en tu dispositivo.",
             "La aplicación no requiere una cuenta ni ofrece sincronización en la nube.",
             "No tenemos acceso a tus datos de entrenamiento, nutrición, salud o ciclo, salvo lo que decidas enviar mediante la opción gratuita Musclog AI o Musclog Iron.",
-            "Los datos sensibles almacenados por la aplicación, incluidos los registros del ciclo menstrual, se cifran en reposo mediante AES."
+            "El peso, la grasa corporal, los registros de alimentos y los registros del ciclo menstrual se cifran en reposo con AES. Las notas y el historial de chat no."
           ]
         },
         "website": {
@@ -881,19 +886,19 @@
     "terms": {
       "titleStart": "Términos y",
       "conditions": "Condiciones",
-      "lastUpdated": "Última actualización: 24 de noviembre de 2026",
+      "lastUpdated": "Última actualización: 27 de noviembre de 2026",
       "highlights": {
         "agreement": {
           "title": "Acuerdo de uso",
-          "description": "Al usar esta aplicación, aceptas estos términos."
+          "description": "Estos términos se aplican cuando usas Musclog."
         },
         "liability": {
           "title": "Responsabilidad limitada",
-          "description": "No somos responsables de decisiones de salud tomadas con esta app."
+          "description": "No somos responsables de las decisiones de salud tomadas con esta app ni con sus funciones de IA."
         },
         "warranty": {
-          "title": "Sin garantía",
-          "description": "La aplicación se proporciona tal como está, sin garantías."
+          "title": "Tus derechos",
+          "description": "La aplicación se proporciona tal cual, y tus derechos como consumidor se mantienen."
         }
       },
       "intro": "Por favor, lee estos Términos y Condiciones con cuidado antes de usar la aplicación Musclog. Al acceder o usar nuestro servicio, aceptas estar sujeto a estos términos.",
@@ -929,7 +934,7 @@
           "title": "Reconocimiento",
           "content1": "Estos son los Términos y Condiciones que rigen el uso de este Servicio y el acuerdo que opera entre tú y la Compañía. Al acceder o usar el Servicio, aceptas estar sujeto a estos Términos y Condiciones.",
           "content2": "Tu acceso y uso del Servicio también está condicionado a tu aceptación y cumplimiento de la Política de Privacidad de la Compañía.",
-          "content3": "Musclog es un rastreador de fitness local-first y de código abierto. No se requiere cuenta. Tus datos permanecen en tu dispositivo, y solo las funciones de IA que elijas usar envían lo que necesitan al proveedor que elijas."
+          "content3": "Musclog es un rastreador de fitness local-first y de código abierto. No se requiere cuenta. Tus registros se guardan en tu dispositivo; la aplicación usa Internet solo para los fines indicados en Nuestra Política de Privacidad."
         },
         "links": {
           "title": "Enlaces a otros sitios web",
@@ -940,7 +945,8 @@
           "content1": "Musclog Iron es una suscripción mensual opcional que responde a las solicitudes de IA a través del servicio alojado de Musclog, de modo que no necesitas tu propia clave. Todo lo demás en Musclog es gratuito, y la opción gratuita Musclog AI y tus propias claves siguen funcionando sin ella. El servicio alojado de Musclog reenvía tus solicitudes a través de un gateway de IA, OpenRouter u Otari (de Mozilla.ai), a proveedores de modelos de IA. Cómo tratan tus solicitudes se describe en Nuestra Política de Privacidad y en sus propias políticas de privacidad y términos, enlazados más abajo.",
           "content2": "La suscripción la vende y factura Apple o Google, no Nosotros. El precio se muestra en la aplicación, en tu moneda, antes de que compres. El pago se carga a tu cuenta de la tienda al confirmar, y la suscripción se renueva automáticamente cada mes salvo que la canceles al menos 24 horas antes de que termine el período actual. Puedes gestionarla o cancelarla en los ajustes de tu cuenta de la tienda, y los reembolsos los gestiona la tienda según su propia política.",
           "content3": "Musclog Iron incluye una cuota limitada de solicitudes de IA, y la aplicación muestra cuánto queda. Cuando se agota, la IA alojada se pausa hasta que se renueve, y tus propias claves y la opción gratuita siguen funcionando. Restaurar compras en la aplicación vuelve a activar Musclog Iron para un dispositivo con la cuenta de la tienda que realizó la compra.",
-          "content4": "Podemos cambiar, limitar o poner fin a Musclog Iron. Si lo hacemos, lo anunciaremos en la aplicación y en este sitio web, dejaremos primero de aceptar nuevas suscripciones, y puedes cancelar en tu cuenta de la tienda en cualquier momento. Si has pagado por un periodo que ya no se puede utilizar, puedes pedir a la tienda un reembolso y lo apoyaremos."
+          "content4": "Podemos cambiar Musclog Iron por un motivo válido, como un cambio en la ley o en los proveedores de los que depende. Si un cambio lo empeora de forma notable para ti, te avisaremos con antelación y podrás cancelar sin coste antes de que entre en vigor. Si lo damos por terminado, lo anunciaremos en la aplicación y en este sitio web, y dejaremos primero de aceptar nuevas suscripciones. Por cualquier periodo que hayas pagado y no puedas usar, puedes pedir a la tienda un reembolso y lo apoyaremos.",
+          "content5": "Si vives en la Unión Europea o en el Espacio Económico Europeo, tienes 14 días desde el día en que te suscribes para desistir de la suscripción sin dar un motivo. Para desistir, díselo claramente a Nosotros en support@musclog.app o en la dirección postal indicada abajo, o pide un reembolso a través de la tienda en la que te suscribiste, y cancela también la suscripción allí para que no se renueve. Si pediste que el servicio empezara durante esos 14 días, es posible que tengas que pagar la parte ya prestada. Puedes usar estas palabras: “Desisto de mi suscripción a Musclog Iron. Fecha en que me suscribí: … Tienda: … Nombre: …”."
         },
         "termination": {
           "title": "Terminación",
@@ -948,13 +954,15 @@
         },
         "liability": {
           "title": "Limitación de responsabilidad",
-          "content1": "En la medida máxima permitida por la ley aplicable, en ningún caso la Compañía será responsable de daños indirectos, incidentales, especiales, consecuentes o punitivos, incluyendo sin limitación, pérdida de beneficios, datos, uso, fondo de comercio u otras pérdidas intangibles.",
-          "content2": "Esta aplicación no es un dispositivo médico. Siempre consulta a un profesional de la salud calificado antes de tomar decisiones de salud o fitness basadas en los datos de esta aplicación."
+          "content1": "En la medida máxima permitida por la ley aplicable, la Compañía no es responsable de daños indirectos, especiales, consecuentes o punitivos, ni de pérdida de beneficios, negocio o reputación. Si eres consumidor, esto no quita ningún derecho que la ley te reconozca, incluido el de pérdida o daño causado a tus datos por un defecto.",
+          "content2": "Esta aplicación, incluidas sus funciones de IA, no es un producto sanitario y no ofrece consejo médico. Consulta siempre a un profesional sanitario cualificado antes de tomar decisiones de salud o de fitness basadas en los datos de esta aplicación o en los Resultados de la IA.",
+          "content3": "Nada en estas Condiciones excluye ni limita cualquier responsabilidad que no pueda excluirse ni limitarse según la ley aplicable, incluida la responsabilidad por muerte o lesión personal causada por negligencia, por dolo o negligencia grave, o según las normas obligatorias de responsabilidad por productos."
         },
         "disclaimer": {
           "title": "Descargo de responsabilidad",
-          "content1": "El Servicio se proporciona \"TAL COMO ESTÁ\" y \"SEGÚN DISPONIBILIDAD\" con todos los defectos y sin garantía de ningún tipo.",
-          "content2": "Sin limitar lo anterior, la Compañía no garantiza que el Servicio satisfaga tus requisitos, logre los resultados previstos, o sea compatible o funcione con otro software, aplicaciones, sistemas o servicios."
+          "content1": "Salvo lo que exija la ley, el Servicio se proporciona \"TAL COMO ESTÁ\" y \"SEGÚN DISPONIBILIDAD\". Si eres consumidor, sigue vigente la garantía legal de que el contenido digital y los servicios digitales cumplen lo acordado, y nada de lo aquí dicho la limita.",
+          "content2": "Sin limitar lo anterior, la Compañía no garantiza que el Servicio satisfaga tus requisitos, logre los resultados previstos, o sea compatible o funcione con otro software, aplicaciones, sistemas o servicios.",
+          "content3": "En particular, los Resultados de la IA se proporcionan sin ninguna garantía de que sean exactos, completos, fiables, actuales ni adecuados para ningún fin (véase \"Funciones de IA y Resultados de la IA\")."
         },
         "governingLaw": {
           "title": "Ley aplicable",
@@ -963,11 +971,28 @@
         },
         "changes": {
           "title": "Cambios en estos términos",
-          "content": "Nos reservamos el derecho, a nuestra sola discreción, de modificar o reemplazar estos Términos en cualquier momento. Intentaremos proporcionar al menos 30 días de aviso previo antes de que los nuevos términos entren en vigor. Al continuar accediendo o usando nuestro Servicio después de que esas revisiones sean efectivas, aceptas estar sujeto a los términos revisados."
+          "content": "Podemos modificar estos Términos por un motivo válido, como un cambio en la ley, en el Servicio o en los proveedores de los que depende. Avisaremos con al menos 30 días de antelación de cualquier cambio que no te favorezca, y podrás dejar de usar el Servicio, o cancelar Musclog Iron sin coste, antes de que entre en vigor."
         },
         "aiOutput": {
-          "title": "Funciones de IA",
-          "content": "Las funciones de IA de Musclog, incluida Musclog Iron, la opción gratuita Musclog AI y cualquier proveedor que elijas, pueden cometer errores. Las estimaciones de calorías y nutrientes, las sugerencias de entrenamiento y las respuestas del chat no son consejo médico, nutricional ni de entrenamiento. Comprueba lo que te importe antes de actuar según ello, y consulta a un profesional cualificado sobre cualquier afección de salud o lesión."
+          "title": "Funciones de IA y Resultados de la IA",
+          "content1": "Las funciones de IA de Musclog son opcionales. La aplicación funciona por completo sin ellas, y ninguna envía ni produce nada hasta que tú eliges una opción de IA y la activas. Esta sección se aplica a todas las opciones de IA: Musclog Iron, la opción gratuita Musclog AI, la IA en tu dispositivo, un modelo local o autohospedado, y tu propia clave de OpenAI, Anthropic Claude o Google Gemini. También se aplica al contenido escrito por un asistente de IA externo, como ChatGPT o Claude, que importes en la aplicación.",
+          "content2": "\"Resultados de la IA\" significa cualquier cosa que produzca o ayude a producir una función de IA, incluidas las respuestas del entrenador (Loggy o cualquier otro personaje de entrenador), las estimaciones de calorías, macronutrientes y otros nutrientes a partir de fotos, descripciones o etiquetas, las sugerencias de comidas y los planes de comidas, los planes de entrenamiento y las sugerencias de ejercicios, los análisis y resúmenes, los comandos de voz, y los datos que una IA lee de un archivo, una foto o un texto pegado.",
+          "items": [
+            "Los Resultados de la IA los produce automáticamente modelos de IA que terceros desarrollan y ejecutan. Nadie en Musclog los escribe, revisa ni aprueba antes de que los veas, y no controlamos lo que dice un modelo.",
+            "Los Resultados de la IA suelen ser erróneos. Pueden estar incompletos, desactualizados o ser inexactos: calorías y macronutrientes muy alejados de la realidad, alimentos o porciones mal interpretados, ejercicios o cargas que no te convienen y afirmaciones que suenan seguras pero son falsas. Ninguna opción de IA, suscripción o nivel de razonamiento los hace fiables.",
+            "Loggy y los demás personajes de entrenador son personajes de IA, no personas. No son médicos, dietistas, fisioterapeutas, psicólogos ni entrenadores certificados. Los Resultados de la IA son información general. No son consejo médico, nutricional, dietético, psicológico ni profesional de entrenamiento, ni diagnóstico ni tratamiento, y no sustituyen el consejo de un profesional cualificado.",
+            "No te bases en los Resultados de la IA para decisiones sobre tu salud o tu seguridad. Consulta a un profesional cualificado antes de actuar según ellos si tienes dolor, una lesión, una enfermedad, un trastorno de la conducta alimentaria o una condición que la comida o el ejercicio afecten, si estás embarazada o amamantando, o si tomas medicación. Deja de entrenar y busca ayuda si sientes dolor, mareo, dolor en el pecho o falta de aire. En una emergencia, llama al número de emergencias de tu país.",
+            "Tú decides si usas los Resultados de la IA y cómo. Revisa cada cifra, alimento, ejercicio y plan antes de registrarlo, seguirlo o compartirlo, y corrígelo o elimínalo cuando sea incorrecto. Esto incluye los resultados que una función de IA guarda por ti, como un plan de entrenamiento que crea el entrenador o algo que el entrenador recuerda de ti. Las entradas que conservas en la aplicación son tus propios registros.",
+            "Tu historial de chat se guarda solo en tu dispositivo, y la aplicación te permite editar o eliminar cualquier mensaje, incluidos los escritos por la IA, y añadir mensajes que parezcan del entrenador. Un mensaje mostrado en la aplicación, en una exportación o en una captura de pantalla puede, por tanto, no ser lo que escribió la IA. Ni Musclog Iron ni la opción gratuita Musclog AI guardan una copia de tus mensajes a la que podamos acceder, así que no podemos confirmar lo que decía originalmente un mensaje. No somos responsables de un mensaje que se haya editado o añadido, ni del contenido de un mensaje tal como aparece fuera de la aplicación.",
+            "Cuando usas tu propia clave, la IA en tu dispositivo o un modelo local, los Resultados de la IA proceden de ese proveedor o modelo, según sus propias condiciones. Musclog transmite tu solicitud y muestra su respuesta. Con cualquier opción de IA que uses, también aceptas cumplir las normas de uso del proveedor y del modelo que te responde, y no usar las funciones de IA para infringir la ley ni para producir contenido dañino.",
+            "Musclog Iron y la opción gratuita Musclog AI te dan acceso al procesamiento de IA dentro de sus límites. No incluyen ninguna promesa de que los Resultados de la IA sean exactos, completos, actuales o adecuados para ti, y una respuesta errónea o poco útil no es un defecto de Musclog Iron ni del Servicio. La aplicación te pide que lo aceptes antes de activar Musclog Iron o la opción gratuita Musclog AI.",
+            "En la máxima medida permitida por la ley aplicable, y con sujeción al último párrafo de \"Limitación de responsabilidad\", la Compañía no es responsable de ninguna pérdida o daño que resulte de los Resultados de la IA, de un mensaje editado o añadido, o de tu uso o confianza en los Resultados de la IA, incluidos cualquier lesión, enfermedad, cambio de peso o de composición corporal, u otra pérdida causada por actuar según una estimación, un plan o una respuesta.",
+            "Si un Resultado de la IA te parece perjudicial, deja de usarlo y comunícanoslo en la dirección que figura al final de estas Condiciones."
+          ]
+        },
+        "eligibility": {
+          "title": "Edad",
+          "content": "Debes tener al menos 16 años para usar Musclog. Musclog Iron y la opción gratuita Musclog AI son solo para personas de 18 años o más. Los proveedores de las opciones de IA que conectes con tu propia clave tienen sus propias normas de edad."
         }
       },
       "contact": {
@@ -1014,16 +1039,16 @@
       },
       "privacy": {
         "title": "Privacidad primero",
-        "description": "No almacenamos nada de lo que envíes aquí. Tu mensaje va directamente a nuestro correo — sin servidores, sin registros."
+        "description": "Este formulario no envía nada a nuestros servidores: abre tu aplicación de correo. Recibimos tu mensaje como un correo normal y lo guardamos para poder responderte."
       },
       "pageTitle": "Contacto | Musclog",
-      "operator": "Musclog es publicado por Jubinganga Supply, una empresa unipersonal registrada en los Países Bajos (KVK 72255145). Dirección: Apartado de correos 69307, 1060 CJ Ámsterdam, Países Bajos. Teléfono: +31 6 5882 8627."
+      "operator": "Musclog es publicado por Jubinganga Supply, una empresa unipersonal registrada en los Países Bajos (KVK 72255145, IVA NL005078897B86). Dirección: Apartado de correos 69307, 1060 CJ Ámsterdam, Países Bajos. Teléfono: +31 6 5882 8627."
     },
     "calculator": {
       "pageTitle": "Calculadora TDEE | Musclog",
       "titleStart": "TDEE",
       "titleHighlight": "CALCULADORA",
-      "subtitle": "Datos de precisión para el atleta de alto rendimiento. Calcula tu metabolismo basal y optimiza tu trayectoria.",
+      "subtitle": "Estima tu gasto energético en reposo y diario, y fija objetivos de calorías y macronutrientes.",
       "form": {
         "title": "PERFIL FITNESS",
         "age": "EDAD",
@@ -1085,7 +1110,9 @@
         "maintenance": "MANTENIMIENTO",
         "calorieSurplus": "SUPERÁVIT CALÓRICO",
         "calorieDeficit": "DÉFICIT CALÓRICO"
-      }
+      },
+      "disclaimer": "Son estimaciones, no consejo médico. Si estás embarazada o en periodo de lactancia, tienes o has tenido un trastorno de la conducta alimentaria, o tienes una afección médica, habla con un médico antes de cambiar lo que comes.",
+      "underAge": "Esta calculadora es para personas de {{age}} años o más."
     },
     "exercises": {
       "eyebrow": "BIBLIOTECA DE EJERCICIOS",
@@ -1125,7 +1152,7 @@
           "items": [
             {
               "question": "¿Qué es Musclog?",
-              "answer": "Musclog es una aplicación de fitness centrada en la privacidad para el seguimiento de entrenamientos, nutrición y composición corporal. Todos tus datos se almacenan localmente en tu dispositivo; nada se envía a ningún servidor a menos que habilites explícitamente las funciones opcionales de IA."
+              "answer": "Musclog es una aplicación de fitness para registrar entrenamientos, nutrición y composición corporal. Tus registros se guardan en tu dispositivo. La app usa internet para la búsqueda de alimentos, las imágenes de ejercicios, las funciones opcionales de IA, las comprobaciones de Musclog Iron, las descargas de modelos y los informes de fallos, que están activados por defecto y se pueden desactivar."
             },
             {
               "question": "¿Funciona la aplicación sin conexión a Internet?",
@@ -1142,6 +1169,10 @@
             {
               "question": "¿Tiene Musclog suscripción?",
               "answer": "Musclog es gratis de usar. Registrar, planes, historial, gráficos, importar, exportar y las opciones gratuitas de IA no cuestan nada. Musclog Iron es una suscripción mensual opcional que añade una cuota de IA alojada, así que no necesitas tu propia clave. Nunca la necesitas para usar el resto de la aplicación."
+            },
+            {
+              "question": "¿Puedo fiarme de lo que me dice la IA?",
+              "answer": "Compruébalo primero. Las funciones de IA son opcionales y a menudo cometen errores: una estimación de calorías a partir de una foto puede ir muy desviada, un plan de entrenamiento puede no convenirte y el entrenador puede sonar seguro y equivocarse igualmente. Trata cada respuesta de la IA como un punto de partida, no como consejo médico, nutricional o de entrenamiento, y consulta a un profesional cualificado sobre cualquier cosa que afecte a tu salud. Puedes corregir o eliminar cualquier cosa que haya producido la IA, incluidos los mensajes del entrenador, así que un historial de chat puede no mostrar lo que la IA escribió realmente."
             }
           ]
         },

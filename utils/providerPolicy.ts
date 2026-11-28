@@ -9,8 +9,10 @@ import {
   toHostedAiError,
 } from './hostedAiError';
 import type { RetryDecision, RetryState } from './llmRetryTypes';
+import { ON_DEVICE_CONTEXT_CHARS } from './onDeviceEngine';
 import { setHostedSignal } from './premium/hostedSignal';
 import { whileHostedBackingOff } from './premium/hostedWait';
+import type { NativeVoiceModel } from './voiceCommand/types';
 
 /** Repetition penalties for a free-chat reply, in the OpenAI field names. */
 export type ChatPenalties = { frequency_penalty: number; presence_penalty: number };
@@ -21,6 +23,16 @@ export type ChatPenalties = { frequency_penalty: number; presence_penalty: numbe
  * entry in `PROVIDER_POLICIES`; every other provider gets none and follows the shared rules.
  */
 export type ProviderPolicy = {
+  /**
+   * Characters of context a request is given (`contextCharsFor`). Absent: the large window every
+   * cloud provider has.
+   */
+  contextChars?: number;
+  /**
+   * The foundation food list is never offered to this provider: the on-device engines have no room
+   * for it. Every other provider gets it while "Send foundation foods to AI" is on.
+   */
+  omitsFoundationFoods?: boolean;
   /** Headers of one logical request, built once and sent on every attempt (an idempotency key). */
   requestHeaders?: (config: CoachAIConfig) => Record<string, string>;
   /** Throws before anything is sent when the config can never answer. */
@@ -89,6 +101,36 @@ export type ProviderPolicy = {
    * round keeps a revision that has no more ungrounded figures, which such a reply never has.
    */
   skipsInsightFactCheck?: boolean;
+  /**
+   * A voice command is routed through the model's own tool-call format (the chat template's tool
+   * list, with the engine parsing the calls; `requestNativeToolCall`) instead of a JSON schema. Given
+   * the schema prompt, a 450M model copied its first example for nearly every sentence ("Hello my
+   * name is Pablo" became "copy yesterday's breakfast"; 7 of 24 held-out sentences right); in the
+   * format it was trained on, with the tools in a measured order and a few example turns, it got
+   * 27 of 37 right (measured 2026-11-26, `docs/RESEARCH.md` → Voice commands on the downloaded
+   * model). Only the downloaded model: Apple's engine has no such format.
+   */
+  nativeToolCalls?: boolean;
+  /**
+   * Which downloaded model's voice payload a native tool-call request carries (`nativeVoiceMessages`,
+   * `buildNativeVoiceTools`). Absent: the 450M's. The two read the same example turns differently, so
+   * each was measured with its own.
+   */
+  nativeVoiceModel?: NativeVoiceModel;
+  /**
+   * How many voice tools one request may offer (undefined: all of them). A small model routes worse
+   * the more tools it chooses between, so the person's picks are cut to this many, in their order.
+   */
+  maxVoiceTools?: number;
+  /**
+   * A chat message that mentions pain or an injury (`mentionsPainOrInjury`) is answered with a fixed,
+   * translated reply (`coach.onDevicePainReply`) without asking the model. The downloaded 450M model
+   * told people to train through pain 8 of 35 times (and 10 of 35 with a safety line in its prompt;
+   * about a hurt knee it encouraged squats 4 times in 5), and in other languages it mostly writes
+   * nonsense. Set only on the downloaded model while the optional 1.2B text model is not installed;
+   * that one never did (0 of 35) and gets the safety line instead (`getOnDeviceIdentityReminder`).
+   */
+  answersPainWithFixedReply?: boolean;
   /**
    * What happens to a structured reply from this provider. Absent: it is used as it came (the free
    * tier, whose schema cannot be relied on but whose replies were never repaired, and Apple's engine,
@@ -216,6 +258,15 @@ const GEMINI_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 const CLAUDE_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 
 /**
+ * Voice tools offered at once. The downloaded 450M routes much worse with five tools than with
+ * three. The optional 1.2B holds up at five with its own payload (`docs/RESEARCH.md` → Voice
+ * commands on the downloaded model), which is the small-model limit. A custom local server and
+ * Apple's model are not measured and take it too.
+ */
+const BASE_MODEL_VOICE_TOOLS = 3;
+const SMALL_MODEL_VOICE_TOOLS = 5;
+
+/**
  * A small model: a custom local server or the downloaded on-device one. Left alone it copies its own
  * earlier replies, so a one-word follow-up ("ok", "thanks") gets the previous answer back, over and
  * over. A short history breaks that. Nothing enforces its schema either, so its structured replies
@@ -229,10 +280,12 @@ const SMALL_MODEL_POLICY: ProviderPolicy = {
   compactWorkoutCards: true,
   structuredReplies: 'repaired',
   runsSamplesSequentially: true,
+  maxVoiceTools: SMALL_MODEL_VOICE_TOOLS,
 };
 
 /** What both on-device engines share beyond being small: the meal pipeline is shorter for them. */
 const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
+  omitsFoundationFoods: true,
   skipsMealFirstLook: true,
   estimatesFoodsFromLabels: true,
   structuredFailureIsNoAnswer: true,
@@ -241,13 +294,35 @@ const ON_DEVICE_CAPABILITIES: ProviderPolicy = {
 
 /**
  * The downloaded model: the small-model rules, its schema is a hard requirement, a chat reply
- * that copies its own earlier ones is written again, and an insight is not fact-checked in rounds.
+ * that copies its own earlier ones is written again, an insight is not fact-checked in rounds, and
+ * a voice command uses its own tool-call format.
  */
 const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
   ...SMALL_MODEL_POLICY,
   ...ON_DEVICE_CAPABILITIES,
+  contextChars: ON_DEVICE_CONTEXT_CHARS.gguf,
   regeneratesCopiedChatReply: true,
   skipsInsightFactCheck: true,
+  nativeToolCalls: true,
+};
+
+/**
+ * The downloaded 450M model with no text model installed. Asked about a hurt knee it encouraged
+ * squats 4 times in 5, and told people to train through pain 8 of 35 times (10 of 35 with a safety
+ * line in the prompt, which cannot fix it; in other languages it mostly writes nonsense), so a
+ * message about pain gets a fixed, translated reply instead. The optional 1.2B text model never
+ * did (0 of 35), so with it installed the model answers, with the safety line.
+ */
+const GGUF_BASE_MODEL_POLICY: ProviderPolicy = {
+  ...GGUF_ON_DEVICE_POLICY,
+  answersPainWithFixedReply: true,
+  maxVoiceTools: BASE_MODEL_VOICE_TOOLS,
+};
+
+/** The downloaded model with the optional 1.2B installed, which answers every text request. */
+const GGUF_TEXT_MODEL_POLICY: ProviderPolicy = {
+  ...GGUF_ON_DEVICE_POLICY,
+  nativeVoiceModel: 'text',
 };
 
 /**
@@ -256,6 +331,7 @@ const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
  */
 const LOCAL_SERVER_POLICY: ProviderPolicy = {
   ...SMALL_MODEL_POLICY,
+  contextChars: 8000,
   chatSampling: { frequency_penalty: 0.4, presence_penalty: 0.4 },
   keepsPartialStructuredReply: true,
 };
@@ -265,9 +341,11 @@ const LOCAL_SERVER_POLICY: ProviderPolicy = {
  * OS enforces its guided generation.
  */
 const APPLE_ON_DEVICE_POLICY: ProviderPolicy = {
+  contextChars: ON_DEVICE_CONTEXT_CHARS.apple,
   maxChatHistoryTurns: SMALL_MODEL_POLICY.maxChatHistoryTurns,
   compactWorkoutCards: SMALL_MODEL_POLICY.compactWorkoutCards,
   runsSamplesSequentially: true,
+  maxVoiceTools: SMALL_MODEL_VOICE_TOOLS,
   ...ON_DEVICE_CAPABILITIES,
 };
 
@@ -284,11 +362,25 @@ const PROVIDER_POLICIES: Partial<Record<CoachAIProvider, ProviderPolicy>> = {
  * it follows the shared ones.
  */
 export function providerPolicyFor(
-  config: Pick<CoachAIConfig, 'provider' | 'engine'>
+  config: Pick<CoachAIConfig, 'provider' | 'engine' | 'textModel'>
 ): ProviderPolicy {
   if (config.provider === 'on-device') {
-    return config.engine === 'gguf' ? GGUF_ON_DEVICE_POLICY : APPLE_ON_DEVICE_POLICY;
+    if (config.engine !== 'gguf') {
+      return APPLE_ON_DEVICE_POLICY;
+    }
+
+    return config.textModel ? GGUF_TEXT_MODEL_POLICY : GGUF_BASE_MODEL_POLICY;
   }
 
   return PROVIDER_POLICIES[config.provider] ?? {};
+}
+
+/** The context budget of every provider with a large context window. */
+const LARGE_CONTEXT_CHARS = 64000;
+
+/** Characters of context the provider (and, on-device, the engine) behind a config is given. */
+export function contextCharsFor(
+  config: Pick<CoachAIConfig, 'provider' | 'engine' | 'textModel'>
+): number {
+  return providerPolicyFor(config).contextChars ?? LARGE_CONTEXT_CHARS;
 }

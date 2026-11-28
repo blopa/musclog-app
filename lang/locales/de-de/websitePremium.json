@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Was mit deinen Nachrichten passiert",
-      "body": "Wenn Musclog Iron aktiv ist, gehen deine KI-Anfragen an den eigenen Dienst von Musclog, der sie über ein KI-Gateway, OpenRouter oder Otari von Mozilla.ai, an das KI-Modell weiterleitet. Anfragen gehen nur an Anbieter mit Zero Data Retention, und der Dienst speichert weder deinen Nachrichtentext noch deine Bilder. Der Dienst von Musclog zählt die Nutzung für deinen Abozeitraum und speichert eine Kennung für jedes Gerät, auf dem du Musclog Iron nutzt. OpenRouter prüft außerdem alle Anfragen auf Darstellungen sexuellen Kindesmissbrauchs und kann eine markierte Anfrage behalten, wie es seine eigenen Richtlinien beschreiben; Otari gibt an, den Inhalt von Anfragen nicht zu speichern.",
+      "body": "Wenn Musclog Iron eingeschaltet ist, gehen deine KI-Anfragen an den eigenen Dienst von Musclog, der sie über ein KI-Gateway, OpenRouter oder Otari von Mozilla.ai, an das KI-Modell weiterleitet. Anfragen werden nur an Anbieter gesendet, die Zero Data Retention anbieten, und der Dienst speichert deinen Nachrichtentext und deine Bilder nicht. OpenRouter prüft außerdem alle Anfragen auf Material mit sexuellem Kindesmissbrauch und kann eine markierte Anfrage behalten, wie es seine eigene Richtlinie beschreibt; Otari sagt, es speichert den Inhalt von Anfragen nicht. Der Dienst von Musclog führt eine Zählung der Nutzung für deinen Abozeitraum, eine Kennung für jedes Gerät, auf dem du Musclog Iron nutzt, und 7 Tage lang einen kurzen Fingerabdruck jeder Anfrage.",
       "consent": "Die App fragt dich um Zustimmung, bevor sie etwas an Musclog Iron sendet, und fragt erneut, wenn du ein Backup auf einem anderen Gerät wiederherstellst.",
       "link": "Datenschutzerklärung lesen"
     },
@@ -42,7 +42,8 @@
         "Es wird monatlich von App Store oder Google Play abgerechnet, zu dem Preis, den dein Store anzeigt.",
         "Es verlängert sich automatisch, bis du es in deinem Store-Konto kündigst. Eine Kündigung stoppt die nächste Verlängerung.",
         "iOS- und Android-Abos sind getrennt, ein auf einem Gerät gekauftes Abo wechselt nicht auf das andere.",
-        "Du brauchst kein Musclog-Konto. Dein Abo wird über deinen Store geprüft."
+        "Du brauchst kein Musclog-Konto. Dein Abo wird über deinen Store geprüft.",
+        "Musclog Iron ist für Menschen ab 18 Jahren gedacht."
       ],
       "terms": "Nutzungsbedingungen"
     },
@@ -56,6 +57,10 @@
         {
           "q": "Brauche ich Musclog Iron, um die KI-Funktionen zu nutzen?",
           "a": "Nein. Du kannst deinen eigenen API-Schlüssel nutzen, die kostenlose Option Musclog AI oder On-Device- und lokale Modelle. Musclog Iron ist die Option, bei der du nichts einrichten musst."
+        },
+        {
+          "q": "Macht Musclog Iron die KI genauer?",
+          "a": "Kein Abo macht KI zuverlässig. Musclog Iron nutzt dieselben Funktionen wie die anderen KI-Optionen, und auch dessen Antworten können falsch sein. Prüf Schätzungen und Pläne, bevor du dich darauf verlässt. KI-Antworten sind keine medizinische, ernährungsbezogene oder trainingsbezogene Beratung."
         },
         {
           "q": "Kann ich es auf mehreren Geräten nutzen?",

@@ -82,6 +82,20 @@ export const CYCLE_REMINDER_COPY: Record<CycleReminderKind, KindCopy> = {
  * so the preview can never promise wording the lock screen does not use.
  */
 export function cycleReminderContent(
+  reminder: Pick<CycleReminder, 'kind' | 'range' | 'renewalDue'>,
+  style: CycleNotificationStyle,
+  t: TFunction,
+  locale: string
+): { title: string; body: string } {
+  const content = baseReminderContent(reminder, style, t, locale);
+
+  // Names no topic, so it is safe on a lock screen at every privacy level.
+  return reminder.renewalDue
+    ? { ...content, body: `${content.body} ${t('cycle.notifications.renewReminders')}` }
+    : content;
+}
+
+function baseReminderContent(
   reminder: Pick<CycleReminder, 'kind' | 'range'>,
   style: CycleNotificationStyle,
   t: TFunction,

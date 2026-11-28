@@ -36,7 +36,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.18.8</string>
+    <string>2.18.13</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -56,7 +56,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>356</string>
+    <string>361</string>
     <key>ExpoWidgetsAppGroupIdentifier</key>
     <string>group.com.werules.logger</string>
     <key>ExpoWidgets_EnablePushNotifications</key>
@@ -92,8 +92,12 @@
     <string>Musclog uses the local network only to reach an AI model you run on your own computer or home server, if you set one up in AI settings.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Musclog never asks for your location. iOS requires this text because a bundled library contains location code that Musclog does not call.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Musclog uses the microphone only while you hold the microphone button, to turn what you say into text on your device.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Allow Musclog to access your photos to select food images and exercise demonstrations.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Musclog turns what you say into text on your device while you hold the microphone button. The audio is not stored or sent anywhere.</string>
     <key>NSSupportsLiveActivities</key>
     <true/>
     <key>NSSupportsLiveActivitiesFrequentUpdates</key>

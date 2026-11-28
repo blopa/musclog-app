@@ -3,6 +3,29 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## The Smart Camera widget artwork was never copied on Android release builds (2026-11-27)
+
+### Symptom
+
+Sentry reported an unhandled `FileSystemFile.copy` rejection, `URI is not absolute`, from 2.18.8, after the
+2.17.2 fix that turned a bare path into a `file://` URI.
+
+### Cause
+
+Two things. A release Android build reports a bundled image as a bare drawable resource name
+(`assets_camerawidget`), already marked as downloaded, which is neither a path nor a URI, so
+`absoluteFileUri` left it alone. And `File.copy` is asynchronous and was not awaited, so the failure was an
+unhandled rejection that the widget's own `catch` never saw.
+
+### Fix
+
+`widgets/cameraArtwork.ts` asks the asset module to open a resource name (a fresh `Asset` with the same
+hash writes it to the cache) and awaits the copy.
+
+### Not covered
+
+Not yet checked on a release build on a device.
+
 ## Opening the camera closed the app on a Poco X3, and Sentry received nothing (2026-11-25)
 
 ### Symptom
@@ -1704,3 +1727,25 @@ still cope with a device that lacks the hardware. The camera half is done: every
 `npm run prebuild:android`; note that `--clean` also deletes `android/play/` (the Play listing,
 which prebuild does not generate), so restore it with `git checkout -- android/play` afterwards.
 Pinned by `plugins/__tests__/withOptionalHardwareFeatures.test.ts`.
+
+## On-device voice commands failed on every sentence (LFM2.5-VL-450M, llama.cpp b10256)
+
+Found 2026-11-27 on a desktop llama-server of build b10256, the one llama.rn 0.12.9 bundles, with
+the exact model file the app downloads (same SHA-256) and the app's own tool payload: all 37 test
+sentences failed with `failed to parse grammar`, which llama.rn throws as `Failed to initialize
+sampling`. Not reproduced on a phone; llama.rn compiles the same `common/chat.cpp` detection and
+its local patch does not touch it.
+
+llama.cpp chooses its LFM2.5 tool-call parser only when the chat template's source contains the
+literal `List of tools: [`. The 450M's template builds that line as
+`"List of tools: " + (tools | tojson)`, so b10256 fell back to its generic template analyser, which
+produced a grammar full of its own placeholder markers and empty rules. LFM2.5-1.2B-Instruct and
+LFM2.5-VL-1.6B write the literal and were never affected. Nothing caught it because the Jest suites
+mock llama.rn, and the routing benchmark (and web development) used a newer llama.cpp.
+
+`toolTemplateOverride` (`services/localModels/localToolMessages.ts`) returns the model's template
+with `{#- List of tools: [ -#}` appended, and `llamaRuntime` sends it as `chat_template` on tool
+requests only. The rendered prompt is byte for byte the same; only the parser llama.cpp picks
+changes (27 of 37 sentences right on b10256). When llama.rn or the pinned model changes, replay a
+tool request with the real model file on the bundled llama.cpp build, and drop the override once the
+template is recognised without it.

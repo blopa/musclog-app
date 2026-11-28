@@ -8,6 +8,7 @@ import { type Gender } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
 import { AvatarColor } from '@/types/AvatarColor';
 import { AvatarIcon } from '@/types/AvatarIcon';
+import { asBirthday } from '@/utils/ageGate';
 import { getAvatarIcon } from '@/utils/avatarUtils';
 import {
   formatLocalCalendarDayIso,
@@ -17,6 +18,7 @@ import {
 import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
 
 import { AvatarSelector } from './AvatarSelector';
+import { BirthdayNotes } from './BirthdayNotes';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
@@ -84,7 +86,10 @@ export function EditPersonalInfoBody({
 
   // Handle date selection from picker
   const handleDateSelect = (date: Date) => {
-    setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    const answer = asBirthday(localCalendarDayDate(date));
+    if (answer) {
+      setDob(formatLocalCalendarDayIso(answer));
+    }
   };
 
   // Call onFormChange whenever form data changes
@@ -150,12 +155,9 @@ export function EditPersonalInfoBody({
         {!hideDob ? (
           <View className="flex-col gap-2">
             <Text className="ml-1 text-sm font-medium text-text-secondary">
-              <View className="flex-row items-center gap-1">
-                <Text className="text-lg font-semibold text-text-primary">
-                  {t('editPersonalInfo.dateOfBirth')}
-                </Text>
-                <Text style={{ color: theme.colors.status.error }}>*</Text>
-              </View>
+              <Text className="text-lg font-semibold text-text-primary">
+                {t('editPersonalInfo.dateOfBirth')}
+              </Text>
             </Text>
             <DatePickerInput
               hideLabel
@@ -163,6 +165,10 @@ export function EditPersonalInfoBody({
               unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
               selectedDate={currentDate}
               onPress={() => setIsDatePickerVisible(true)}
+            />
+            <BirthdayNotes
+              birthday={dob ? parseDobDisplayStringToPickerDate(dob) : null}
+              onClear={() => setDob('')}
             />
           </View>
         ) : null}

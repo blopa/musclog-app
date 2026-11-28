@@ -17,6 +17,7 @@ import { FoodService } from '@/database/services/FoodService';
 import { MealService } from '@/database/services/MealService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
@@ -139,6 +140,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatMass } = useFoodMass();
   const { shareText } = useNativeShareText();
   const { isAiConfigured } = useSettings();
   const [activeFilter, setActiveFilter] = useState('all');
@@ -443,10 +445,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
           const grams = await mealFood.getReferenceGramWeight();
           const food = await mealFood.food;
           const name = food?.name?.trim() || t('food.unknownFood');
-          const gramsStr = formatRoundedDecimal(grams, 2);
           ingredientLines.push(
             t('food.meals.manageMealData.shareRecipeIngredientLine', {
-              grams: gramsStr,
+              amount: formatMass(grams),
               name,
             })
           );

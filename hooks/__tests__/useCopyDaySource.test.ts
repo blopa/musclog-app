@@ -9,9 +9,12 @@ import { useCopyDaySource } from '@/hooks/useCopyDaySource';
 import { utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
+import type { MealType } from '@/database/models/NutritionLog';
+
 jest.mock('@/database/services/NutritionService', () => ({
   NutritionService: {
     getNutritionLogsForDate: jest.fn(),
+    getNutritionLogsForMeal: jest.fn(),
     getRecentLoggedDays: jest.fn(),
   },
 }));
@@ -22,6 +25,7 @@ jest.mock('@/utils/handleError', () => ({
 
 const mockGetRecentLoggedDays = NutritionService.getRecentLoggedDays as jest.Mock;
 const mockGetLogsForDate = NutritionService.getNutritionLogsForDate as jest.Mock;
+const mockGetLogsForMeal = NutritionService.getNutritionLogsForMeal as jest.Mock;
 const mockHandleError = handleError as jest.Mock;
 
 const TARGET_DATE = new Date(2026, 5, 15, 10, 0);
@@ -64,13 +68,14 @@ const makeLog = ({
 
 const render = ({
   enabled = true,
+  mealType = undefined as MealType | undefined,
   sourceDate = null as Date | null,
   targetDate = TARGET_DATE,
 } = {}) =>
   renderHook(
-    (props: { enabled: boolean; sourceDate: Date | null; targetDate: Date }) =>
+    (props: { enabled: boolean; mealType?: MealType; sourceDate: Date | null; targetDate: Date }) =>
       useCopyDaySource(props),
-    { initialProps: { enabled, sourceDate, targetDate } }
+    { initialProps: { enabled, mealType, sourceDate, targetDate } }
   );
 
 describe('useCopyDaySource', () => {
@@ -78,6 +83,7 @@ describe('useCopyDaySource', () => {
     jest.clearAllMocks();
     mockGetRecentLoggedDays.mockResolvedValue([{ calories: 1800, dayKey: 1, itemCount: 5 }]);
     mockGetLogsForDate.mockResolvedValue([]);
+    mockGetLogsForMeal.mockResolvedValue([]);
   });
 
   it('reads nothing while the modal is closed', async () => {
@@ -201,5 +207,20 @@ describe('useCopyDaySource', () => {
       showSnackbar: false,
     });
     expect(result.current.recentDays).toEqual([]);
+  });
+
+  it('scopes the candidate days and the preview to one meal when mealType is given', async () => {
+    mockGetLogsForMeal.mockResolvedValue([makeLog({ calories: 400, id: 'l1', type: 'breakfast' })]);
+
+    const { result } = render({ sourceDate: SOURCE_DATE, mealType: 'breakfast' });
+
+    await waitFor(() => expect(result.current.isLoadingPreview).toBe(false));
+    expect(mockGetRecentLoggedDays).toHaveBeenCalledWith(14, 60, {
+      excludeDayKey: utcDayKeyFromLocalDate(TARGET_DATE),
+      mealType: 'breakfast',
+    });
+    expect(mockGetLogsForMeal).toHaveBeenCalledWith(SOURCE_DATE, 'breakfast');
+    expect(mockGetLogsForDate).not.toHaveBeenCalled();
+    expect(result.current.sections.map((section) => section.mealType)).toEqual(['breakfast']);
   });
 });

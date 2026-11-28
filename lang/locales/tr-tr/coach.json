@@ -53,9 +53,9 @@
     },
     "goToSettings": "Ayarlara git",
     "success": {
-      "workoutPlanGenerated": "Senin için {{count}} antrenman oluşturdum! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Senin için {{count}} antrenmanlık {{planName}} oluşturdum! 💪 {{description}}",
-      "mealPlanGenerated": "Senin için {{count}} öğünlük 3 günlük bir öğün planı oluşturdum! 🥗 {{description}}",
+      "workoutPlanGenerated": "Senin için {{count}} antrenman oluşturdum! 💪 {{description}} Antrenmandan önce kontrol et.",
+      "workoutPlanGeneratedWithName": "Senin için {{count}} antrenmanlık {{planName}} oluşturdum! 💪 {{description}} Antrenmandan önce kontrol et.",
+      "mealPlanGenerated": "Senin için {{count}} öğünlük 3 günlük bir öğün planı oluşturdum! 🥗 {{description}} Yiyecekleri ve miktarları, onlara güvenmeden önce kontrol et.",
       "trackMealSuccess": "Öğünün için {{count}} malzeme takip ettim: {{ingredients}}. Toplam: {{calories}}.",
       "trackMealReady": "{{count}} öğünü analiz ettim: {{meals}} (toplam {{calories}}). İncelemek ve kaydetmek için bir öğüne dokun.",
       "historyCleared": "Sohbet geçmişi temizlendi."
@@ -108,7 +108,6 @@
       "failed": "Sohbet geçmişi paylaşılamadı. Lütfen tekrar dene.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "Yapay zeka hata yapabilir. Lütfen önemli bilgileri doğrula.",
     "message": {
       "menuTitle": "Mesaj işlemleri",
       "copy": "Kopyala",
@@ -120,9 +119,12 @@
       "copied": "Mesaj panoya kopyalandı",
       "deleted": "Mesaj silindi",
       "report": "Sorun bildir",
-      "reportDesc": "Bu yanıtla ilgili sorunu e-posta ile bildir",
+      "reportDesc": "Bu yanıtı Musclog'a gönder, böylece inceleyebilelim",
       "reportSubject": "Musclog yapay zekâ yanıtıyla ilgili sorun",
-      "reportIntro": "Bu yanıtta ne yanlıştı? (Göndermeden önce aşağıdaki metni düzenleyebilir veya silebilirsin.)"
+      "reportIntro": "Bu yanıtta ne yanlıştı? (Göndermeden önce aşağıdaki metni düzenleyebilir veya silebilirsin.)",
+      "reportConfirm": "Bu, yanıtı, uygulama sürümünü, platformunu ve dilini hata takip hizmetimiz Sentry üzerinden Musclog'a gönderir. Sohbetin başka hiçbir şeyi gönderilmez.",
+      "reportSend": "Raporu gönder",
+      "reportSent": "Rapor gönderildi. Teşekkürler."
     },
     "sendViaOpenAI": "OpenAI ile gönder",
     "personas": {
@@ -167,6 +169,7 @@
         "errorImage": "Bu resim yüklenemedi."
       }
     },
-    "reviewingReply": "Yanıtımı yeniden kontrol ediyorum…"
+    "reviewingReply": "Yanıtımı yeniden kontrol ediyorum…",
+    "onDevicePainReply": "Buradan ne olduğunu anlayamıyorum ve bir şey acıdığında tahmin yürütmek istemem. Şimdilik ağrıya neden olan egzersizi bırak ve ağrı yapmayan egzersizleri yap. Ağrı keskinse, şişlik varsa ya da birkaç gün içinde geçmediyse bir doktora ya da fizyoterapiste başvur. Antrenmanını buna göre planlamakta memnuniyetle yardımcı olurum."
   }
 }

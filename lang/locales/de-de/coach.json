@@ -53,9 +53,9 @@
     },
     "goToSettings": "Zu den Einstellungen",
     "success": {
-      "workoutPlanGenerated": "Ich habe {{count}} Trainings für dich erstellt! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Ich habe {{planName}} mit {{count}} Trainings für dich erstellt! 💪 {{description}}",
-      "mealPlanGenerated": "Ich habe einen 3-Tage-Essensplan mit {{count}} Mahlzeiten für dich erstellt! 🥗 {{description}}",
+      "workoutPlanGenerated": "Ich habe {{count}} Trainings für dich erstellt! 💪 {{description}} Prüfe sie, bevor du trainierst.",
+      "workoutPlanGeneratedWithName": "Ich habe {{planName}} mit {{count}} Trainings für dich erstellt! 💪 {{description}} Prüfe sie, bevor du trainierst.",
+      "mealPlanGenerated": "Ich habe einen 3-Tage-Essensplan mit {{count}} Mahlzeiten für dich erstellt! 🥗 {{description}} Prüfe die Lebensmittel und Mengen, bevor du dich darauf verlässt.",
       "trackMealSuccess": "Ich habe {{count}} Zutaten für deine Mahlzeit erfasst: {{ingredients}}. Gesamt: {{calories}}.",
       "trackMealReady": "Ich habe {{count}} Mahlzeit(en) analysiert: {{meals}} ({{calories}} insgesamt). Tippe auf eine Mahlzeit, um sie zu prüfen und zu erfassen.",
       "historyCleared": "Chatverlauf gelöscht."
@@ -108,7 +108,6 @@
       "failed": "Der Chatverlauf konnte nicht geteilt werden. Bitte versuche es erneut.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "KI kann Fehler machen. Bitte prüfe wichtige Informationen.",
     "message": {
       "menuTitle": "Nachrichtenaktionen",
       "copy": "Kopieren",
@@ -120,9 +119,12 @@
       "copied": "Nachricht in die Zwischenablage kopiert",
       "deleted": "Nachricht gelöscht",
       "report": "Problem melden",
-      "reportDesc": "Ein Problem mit dieser Antwort per E-Mail melden",
+      "reportDesc": "Diese Antwort an Musclog senden, damit wir sie prüfen können",
       "reportSubject": "Problem mit einer KI-Antwort von Musclog",
-      "reportIntro": "Was war an dieser Antwort falsch? (Du kannst den Text unten vor dem Senden ändern oder löschen.)"
+      "reportIntro": "Was war an dieser Antwort falsch? (Du kannst den Text unten vor dem Senden ändern oder löschen.)",
+      "reportConfirm": "Dabei werden die Antwort, die App-Version, deine Plattform und Sprache über Sentry, unseren Dienst zur Fehlerverfolgung, an Musclog gesendet. Nichts anderes aus dem Chat wird gesendet.",
+      "reportSend": "Bericht senden",
+      "reportSent": "Bericht gesendet. Danke."
     },
     "sendViaOpenAI": "Über OpenAI senden",
     "personas": {
@@ -167,6 +169,7 @@
         "errorImage": "Dieses Bild konnte nicht geladen werden."
       }
     },
-    "reviewingReply": "Ich prüfe meine Antwort noch einmal…"
+    "reviewingReply": "Ich prüfe meine Antwort noch einmal…",
+    "onDevicePainReply": "Von hier aus kann ich nicht erkennen, was los ist, und ich möchte nicht raten, wenn etwas schmerzt. Hör vorerst mit der Übung auf, die die Schmerzen verursacht, und trainiere, was nicht wehtut. Wenn der Schmerz stechend ist, eine Schwellung auftritt oder er nach ein paar Tagen nicht nachlässt, geh zu einem Arzt oder Physiotherapeuten. Ich helfe dir gern, dein Training darauf abzustimmen."
   }
 }

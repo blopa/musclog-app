@@ -1,9 +1,8 @@
 <b>Log your workouts and your food in one app: no account and no ads.</b>
-Musclog is a free, open source workout tracker and calorie counter. It suggests your next weight and reps from your last session, scans food barcodes, and works offline. Your data stays on your phone.
+Musclog is a free, open source workout tracker and calorie counter. It suggests your next weight and reps from your last session, scans food barcodes, and works offline. Your logs are stored on your phone.
 
 <b>Nothing locked away</b>
 • Unlimited workout routines and plans, and your full history.
-• The barcode scanner, nutrition label scanning and food search are in the app for everyone.
 • Every chart, export and backup is included and free.
 
 <b>Workout log and gym tracker</b>
@@ -24,7 +23,7 @@ Musclog is a free, open source workout tracker and calorie counter. It suggests 
 
 <b>Calorie counter and macro tracker</b>
 • Food diary with a barcode scanner and nutrition label scanning.
-• Search Open Food Facts and the USDA food database, or create your own foods and meals.
+• Search Open Food Facts (ODbL) and the USDA food database, or create your own foods and meals.
 • Calorie, protein, carb, fat and fiber targets for fat loss, maintenance or muscle gain.
 • Targets that adapt to your real weight trend, in kcal or kJ, metric or imperial.
 
@@ -34,8 +33,7 @@ Musclog is a free, open source workout tracker and calorie counter. It suggests 
 • Health Connect sync for weight, nutrition, workouts and body metrics.
 
 <b>AI, only if you want it</b>
-• Chat with a fitness coach, estimate a meal from a photo and generate workout plans using your own Gemini, OpenAI or Claude key, a local model, or the free option built into the app.
-• Or build a plan or describe a meal in ChatGPT or Claude and bring it into Musclog.
+• Chat with a fitness coach, estimate a meal from a photo and generate workout plans using your own Gemini, OpenAI or Claude key, a local model, or the free option built into the app (18+).
 • Choose how the coach talks to you. Nothing in Musclog requires AI.
 
 <b>Musclog Iron (optional)</b>
@@ -48,4 +46,4 @@ Musclog Iron is a monthly subscription that answers AI requests without your own
 • Anonymous crash reports help fix bugs and can be turned off in settings.
 • Home screen widgets, several color themes, and English, Español, Nederlands, Português (Brasil), Русский, Deutsch, Français, Italiano, Polski and Türkçe.
 
-Lift, Log, Repeat.
+Musclog is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. Consult a healthcare professional for medical advice, diagnosis or treatment.

@@ -199,3 +199,14 @@ describe('options', () => {
     expect(hasLocalAiOption({ options: { apple: false, model: true } })).toBe(true);
   });
 });
+
+describe('the text model capability', () => {
+  it('is true only for the downloaded model with its text model installed', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { onDeviceCapabilities } = require('../onDeviceEngine');
+
+    expect(onDeviceCapabilities('gguf', false, true).textModel).toBe(true);
+    expect(onDeviceCapabilities('gguf', false).textModel).toBe(false);
+    expect(onDeviceCapabilities('apple', false, true).textModel).toBe(false);
+  });
+});

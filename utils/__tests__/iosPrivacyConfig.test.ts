@@ -131,10 +131,21 @@ describe('iOS privacy configuration', () => {
     expect(strings.NSFaceIDUsageDescription).toBe(expo.ios.infoPlist.NSFaceIDUsageDescription);
   });
 
-  it('asks for no microphone: the picker picks images and recordings carry no audio', () => {
-    expect(pluginOptions('expo-image-picker')?.microphonePermission).toBe(false);
+  it('words the microphone and speech recognition permissions for the hold-to-talk button', () => {
+    const speech = pluginOptions('expo-speech-recognition');
+    const strings = plistStrings(read(INFO_PLIST));
+
+    expect(strings.NSMicrophoneUsageDescription).toBe(speech?.microphonePermission);
+    expect(strings.NSMicrophoneUsageDescription).toBe(
+      pluginOptions('expo-image-picker')?.microphonePermission
+    );
+    expect(strings.NSSpeechRecognitionUsageDescription).toBe(speech?.speechRecognitionPermission);
+    expect(strings.NSMicrophoneUsageDescription).toMatch(/^Musclog /);
+    expect(strings.NSSpeechRecognitionUsageDescription).toMatch(/^Musclog /);
+  });
+
+  it('keeps recordings silent: vision-camera asks for no microphone', () => {
     expect(pluginOptions('react-native-vision-camera')?.enableMicrophonePermission).toBe(false);
-    expect(plistStrings(read(INFO_PLIST)).NSMicrophoneUsageDescription).toBeUndefined();
   });
 
   it('words the local-network permission for the local AI model, never for the dev launcher', () => {

@@ -32,7 +32,7 @@
     "consent": {
       "review": "Bekijk de bijgewerkte toestemming",
       "title": "AI-verzoeken naar Musclog Iron sturen?",
-      "body": "Uw berichten, maaltijdfoto's en de gegevens die een AI-functie nodig heeft om te antwoorden, zoals Uw trainingen, maaltijden en lichaamsmaten, gaan naar de dienst van Musclog Iron. Die stuurt ze door via een AI-gateway, OpenRouter of Otari (van Mozilla.ai), naar de AI-modelaanbieder. Musclog kiest welke gateway wordt gebruikt, en deze toestemming geldt voor beide. Er worden alleen aanbieders met zero data retention (ZDR) gebruikt: zij bewaren Uw inhoud niet en gebruiken ze niet voor training. OpenRouter controleert elk verzoek op materiaal van seksueel kindermisbruik en kan een verzoek dat het markeert bewaren; Otari zegt de inhoud van verzoeken niet op te slaan. Sommige van deze gegevens hebben betrekking op de gezondheid, en door in te stemmen geeft U uitdrukkelijk toestemming om ze zo te laten verwerken. De dienst van Musclog bewaart Uw berichten nooit; zij bewaart alleen een identificatie voor dit apparaat en gebruiksaantallen. Het privacybeleid en de voorwaarden van OpenRouter en Otari zijn onderaan het Musclog Iron-scherm gelinkt. U kunt dit op elk moment uitschakelen.",
+      "body": "Je berichten en maaltijdfoto's, en de gegevens die een AI-functie nodig heeft om te antwoorden, zoals je workouts, maaltijden en lichaamsmaten, ook die die zijn geïmporteerd uit Health Connect of Apple Health, gaan naar de dienst Musclog Iron. Die stuurt ze via een AI-gateway, OpenRouter of Otari (van Mozilla.ai), door naar de AI-modelaanbieder. Musclog kiest welke gateway wordt gebruikt, en deze toestemming dekt beide. Er worden alleen zero data retention (ZDR)-aanbieders gebruikt: zij bewaren je inhoud niet en gebruiken die niet voor training. OpenRouter controleert elk verzoek op materiaal met seksueel kindermisbruik en mag een gemarkeerd verzoek bewaren; Otari zegt dat het de inhoud van verzoeken niet opslaat. Sommige van deze gegevens hebben met gezondheid te maken, en door akkoord te gaan geef je uitdrukkelijk toestemming dat ze op deze manier worden verwerkt. De dienst van Musclog bewaart je berichten nooit; hij bewaart alleen een identificatie voor dit apparaat, gebruiksaantallen en een korte vingerafdruk van elk verzoek. Musclog Iron is voor volwassenen: door akkoord te gaan bevestig je dat je 18 of ouder bent. De privacybeleidsregels en voorwaarden van OpenRouter en Otari staan onderaan het scherm van Musclog Iron. Je kunt dit altijd uitzetten.",
       "confirm": "Musclog Iron gebruiken",
       "cancel": "Niet nu"
     },
@@ -76,7 +76,7 @@
         },
         "private": {
           "title": "Zero data retention",
-          "desc": "Er worden alleen aanbieders met zero data retention gebruikt: zij bewaren Uw berichten niet en trainen er niet op, behalve de controle van OpenRouter op materiaal van seksueel kindermisbruik, die de wet vereist. Musclog bewaart ze ook nooit; alleen gebruiksaantallen en een apparaatidentificatie."
+          "desc": "Er worden alleen zero data retention-aanbieders gebruikt: zij bewaren je berichten niet en trainen er niet op, behalve OpenRouters controle op materiaal met kindermisbruik. Musclog bewaart je berichten ook nooit; het houdt gebruiksaantallen, een apparaatidentificatie en een korte vingerafdruk van elk verzoek 7 dagen bij."
         },
         "allowance": {
           "title": "Je eigen tegoed",
@@ -112,7 +112,8 @@
         }
       },
       "cta": "Abonneer je voor {{price}} per maand",
-      "reassurance": "Wordt maandelijks verlengd. Zeg op wanneer je wilt in je accountinstellingen van de winkel."
+      "reassurance": "Wordt maandelijks verlengd. Zeg op wanneer je wilt in je accountinstellingen van de winkel.",
+      "accuracy": "Musclog Iron draait de AI voor je. Het maakt AI-antwoorden niet juist: ze kunnen onjuist zijn, dus controleer ze voordat je erop vertrouwt."
     }
   }
 }

@@ -40,6 +40,8 @@ jest.mock('../prompts', () => ({
   getNutritionInsightsPrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getMealCritiquePrompt: jest.fn().mockResolvedValue('SYSTEM'),
   getChatMessagePromptContent: jest.fn().mockResolvedValue('SYSTEM'),
+}));
+jest.mock('../aiReviewPrompts', () => ({
   getChatReviewInstruction: jest.fn((_language: string) => 'REVIEW'),
 }));
 jest.mock('../handleError', () => ({ handleError: jest.fn() }));

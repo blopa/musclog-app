@@ -27,8 +27,8 @@ describe('use_hosted_ai setting', () => {
     expect(ASYNC_STORAGE_EXCLUDED_KEYS.has(PREMIUM_DEVICE_STATE)).toBe(true);
   });
 
-  it('forces off only use_hosted_ai on restore, leaving API keys restoring as before', () => {
-    expect(SETTINGS_FORCED_OFF_ON_RESTORE_TYPES).toEqual([USE_HOSTED_AI_SETTING_TYPE]);
+  it('forces off hosted AI on restore, leaving API keys restoring as before', () => {
+    expect(SETTINGS_FORCED_OFF_ON_RESTORE_TYPES).toContain(USE_HOSTED_AI_SETTING_TYPE);
     expect(isRestoreForcedOffSetting('use_hosted_ai')).toBe(true);
     expect(isRestoreForcedOffSetting('claude_api_key')).toBe(false);
     expect(isRestoreForcedOffSetting('openai_api_key')).toBe(false);

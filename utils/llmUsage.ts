@@ -40,6 +40,24 @@ const readCount = (value: unknown): number | null =>
 const countOr0 = (value: unknown): number => readCount(value) ?? 0;
 
 /**
+ * The usage of a llama.rn completion: `tokens_evaluated` is the whole prompt, of which
+ * `timings.cache_n` came from the engine's cache. Null when the engine counted nothing.
+ */
+export function extractLocalUsage(result: unknown): LlmUsage | null {
+  if (!isRecord(result) || readCount(result.tokens_evaluated) === null) {
+    return null;
+  }
+
+  const timings = isRecord(result.timings) ? result.timings : null;
+
+  return {
+    inputTokens: countOr0(result.tokens_evaluated),
+    cachedInputTokens: countOr0(timings?.cache_n),
+    outputTokens: countOr0(result.tokens_predicted),
+  };
+}
+
+/**
  * Reads usage from a raw provider response or stream chunk. Returns null when
  * the shape is unknown or carries no numeric token counts.
  *

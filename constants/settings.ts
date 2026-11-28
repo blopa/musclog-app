@@ -481,6 +481,9 @@ export const USE_HOSTED_AI_SETTING_TYPE = 'use_hosted_ai';
  */
 export const AI_IMAGE_QUALITY_SETTING_TYPE = 'ai_image_quality';
 
+/** Which AI consents were given, their wording version and when (`utils/aiConsent.ts`). */
+export const AI_CONSENT_RECORDS_SETTING_TYPE = 'ai_consent_records';
+
 /** Version of the Premium consent the person last gave on this device (device-local, never backed up). */
 export const PREMIUM_CONSENT_VERSION_SETTING_TYPE = 'premium_consent_version';
 
@@ -672,6 +675,29 @@ export type FoodDiaryGrouping = (typeof FOOD_DIARY_GROUPING_OPTIONS)[number];
 /** Anything unrecognized (a newer build, a hand-edited backup) keeps today's category layout. */
 export function parseFoodDiaryGrouping(raw: string | null | undefined): FoodDiaryGrouping {
   return FOOD_DIARY_GROUPING_OPTIONS.find((option) => option === raw) ?? 'categories';
+}
+
+/**
+ * Setting type for the voice tools the person chose. value: tool names, comma-separated, in pick
+ * order; read it through `parseVoiceToolSelection` (`utils/voiceCommand/toolSelection.ts`). Unset
+ * means the default list, so a new tool reaches everyone who never chose. Backed up.
+ */
+export const VOICE_COMMAND_TOOLS_SETTING_TYPE = 'voice_command_tools';
+
+/**
+ * Setting type for what the bottom bar's centre button does. value: 'camera' | 'voice'.
+ * Default: 'camera'. 'voice' is a hold-to-talk microphone that turns speech into text on the
+ * device; where that cannot run (web, Android below 13) the bar shows the camera instead
+ * (`resolveNavCenterAction`, `utils/voiceInput.ts`). A display preference, backed up.
+ */
+export const NAV_CENTER_ACTION_SETTING_TYPE = 'nav_center_action';
+
+export const NAV_CENTER_ACTIONS = ['camera', 'voice'] as const;
+export type NavCenterAction = (typeof NAV_CENTER_ACTIONS)[number];
+
+/** Anything unrecognized (a newer build, a hand-edited backup) keeps the camera. */
+export function parseNavCenterAction(raw: string | null | undefined): NavCenterAction {
+  return NAV_CENTER_ACTIONS.find((option) => option === raw) ?? 'camera';
 }
 
 export const AI_MEAL_CAMERA_FLOWS = ['detailed', 'quick'] as const;

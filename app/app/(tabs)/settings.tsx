@@ -1,5 +1,5 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
@@ -25,6 +25,7 @@ import { ListGroup } from '@/components/theme/ListGroup';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
 import { YEAR_IN_REVIEW_ROUTE } from '@/constants/yearInReviewRoute';
+import { useOnChange } from '@/hooks/useOnChange';
 import { useTheme } from '@/hooks/useTheme';
 import { isAppLockSupported } from '@/utils/appLock';
 import { yearReviewSeason } from '@/utils/yearInReview/season';
@@ -35,7 +36,20 @@ export default function SettingsScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
-  const [isAISettingsVisible, setAISettingsVisible] = useState(false);
+  // `openAi` (see `aiSettingsHref`) opens the AI providers sheet, on a fresh or a mounted tab.
+  const { openAi } = useLocalSearchParams<{ openAi?: string }>();
+  const [isAISettingsVisible, setAISettingsVisible] = useState(() => Boolean(openAi));
+  useOnChange(openAi, (_previous, next) => {
+    if (next) {
+      setAISettingsVisible(true);
+    }
+  });
+  const closeAISettings = () => {
+    setAISettingsVisible(false);
+    if (openAi) {
+      router.setParams({ openAi: undefined });
+    }
+  };
   const [isAIBehaviorVisible, setAIBehaviorVisible] = useState(false);
   const [isCycleSettingsVisible, setCycleSettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
@@ -178,7 +192,7 @@ export default function SettingsScreen() {
         </AnimatedContent>
       </ScrollView>
 
-      <AISettingsModal visible={isAISettingsVisible} onClose={() => setAISettingsVisible(false)} />
+      <AISettingsModal visible={isAISettingsVisible} onClose={closeAISettings} />
       <AIBehaviorSettingsModal
         visible={isAIBehaviorVisible}
         onClose={() => setAIBehaviorVisible(false)}

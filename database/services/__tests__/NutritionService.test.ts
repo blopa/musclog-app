@@ -2,6 +2,7 @@ import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
 import { KEEP_MEAL_TYPES } from '@/database/models/mealTypeTarget';
 import type NutritionLog from '@/database/models/NutritionLog';
+import type { MealType } from '@/database/models/NutritionLog';
 import {
   NutritionService,
   scaleMealNutritionLogsToTotalGrams,
@@ -348,7 +349,12 @@ describe('NutritionService.getRecentLoggedDays', () => {
   }
 
   /** A log placed at local noon `daysAgo` days back, so day bucketing is unambiguous. */
-  function logDaysAgo(daysAgo: number, id: string, calories = 100): NutritionLog {
+  function logDaysAgo(
+    daysAgo: number,
+    id: string,
+    calories = 100,
+    type: MealType = 'breakfast'
+  ): NutritionLog {
     const day = new Date();
     day.setDate(day.getDate() - daysAgo);
     day.setHours(12, 0, 0, 0);
@@ -357,7 +363,7 @@ describe('NutritionService.getRecentLoggedDays', () => {
     const abs = Math.abs(offsetMinutes);
     const timezone = `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
 
-    return mockLog({ id, date: day.getTime(), timezone, calories });
+    return mockLog({ id, date: day.getTime(), timezone, calories, type });
   }
 
   it('buckets logs by day, newest first, with per-day totals', async () => {
@@ -429,6 +435,26 @@ describe('NutritionService.getRecentLoggedDays', () => {
     withLogs([]);
 
     expect(await NutritionService.getRecentLoggedDays()).toEqual([]);
+  });
+
+  it('counts only the chosen meal type when one is given', async () => {
+    withLogs([
+      logDaysAgo(1, 'breakfast-a', 100),
+      logDaysAgo(1, 'lunch-a', 900, 'lunch'),
+      logDaysAgo(2, 'lunch-b', 700, 'lunch'),
+      logDaysAgo(3, 'dinner-a', 500, 'dinner'),
+    ]);
+
+    const days = await NutritionService.getRecentLoggedDays(14, 60, { mealType: 'lunch' });
+
+    expect(days.map((d) => d.itemCount)).toEqual([1, 1]);
+    expect(days.map((d) => d.calories)).toEqual([900, 700]);
+  });
+
+  it('drops a day that has only other meal types when filtering', async () => {
+    withLogs([logDaysAgo(1, 'breakfast-a'), logDaysAgo(2, 'dinner-a', 100, 'dinner')]);
+
+    expect(await NutritionService.getRecentLoggedDays(14, 60, { mealType: 'snack' })).toEqual([]);
   });
 });
 

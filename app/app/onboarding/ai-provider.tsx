@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { PROVIDER_NAME_KEYS } from '@/components/aiOnboarding/providerNames';
 import { MasterLayout } from '@/components/MasterLayout';
-import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { AiProviderConsentModal } from '@/components/modals/AiProviderConsentModal';
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { Button } from '@/components/theme/Button';
 import { ListGroup } from '@/components/theme/ListGroup';
@@ -16,6 +17,7 @@ import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { TextButton } from '@/components/theme/TextButton';
 import { DEFAULT_CLAUDE_MODEL, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
+import { useAiConsentGate } from '@/hooks/useAiConsentGate';
 import { useAiSetupSession } from '@/hooks/useAiSetupSession';
 import { usePremium } from '@/hooks/usePremium';
 import { useTheme } from '@/hooks/useTheme';
@@ -84,8 +86,8 @@ export default function AiProviderScreen() {
   const [checking, setChecking] = useState(false);
   const [failure, setFailure] = useState<Exclude<AiKeyTestResult, 'ok'> | null>(null);
   const [problem, setProblem] = useState(false);
-  // Choosing the free tier sends the setup chat to Google Gemini, so it is confirmed first.
-  const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
+  // Choosing any provider but the phone's own sends the setup chat to it, so it is confirmed first.
+  const consent = useAiConsentGate();
   // Premium is an option only in builds where it is switched on. Choosing it opens the Premium
   // screen; it never selects a provider by itself (no skipMusclogApi, no draft change).
   const premium = usePremium();
@@ -127,7 +129,7 @@ export default function AiProviderScreen() {
     }
   }, []);
 
-  const checkKey = () =>
+  const testAndUseKey = () =>
     attempt(async () => {
       if (!entry) {
         return;
@@ -147,6 +149,12 @@ export default function AiProviderScreen() {
         setChecking(false);
       }
     });
+
+  const checkKey = () => {
+    if (entry) {
+      consent.request(entry, testAndUseKey);
+    }
+  };
 
   const openKeyPage = (provider: KeyProvider) => {
     Linking.openURL(KEY_PAGES[provider]).catch(() => {});
@@ -170,6 +178,8 @@ export default function AiProviderScreen() {
             {t('aiOnboarding.provider.intro')}
           </Text>
 
+          <AiOutputNotice kind="settings" />
+
           <ListGroup>
             {isMusclogGatewayAvailable() ? (
               <ListRow
@@ -177,7 +187,14 @@ export default function AiProviderScreen() {
                 icon={Cloud}
                 title={t(PROVIDER_NAME_KEYS.gateway)}
                 subtitle={t('aiOnboarding.provider.gatewayHint')}
-                onPress={() => setFreeTierConsentVisible(true)}
+                onPress={() =>
+                  consent.request('gateway', () => {
+                    attempt(async () => {
+                      await enableFreeTier();
+                      await choose('gateway');
+                    });
+                  })
+                }
               />
             ) : null}
             {premium.enabled ? (
@@ -222,7 +239,7 @@ export default function AiProviderScreen() {
                 icon={Server}
                 title={t(PROVIDER_NAME_KEYS.local)}
                 subtitle={t('aiOnboarding.provider.simpleHint')}
-                onPress={() => attempt(() => choose('local'))}
+                onPress={() => consent.request('local', () => attempt(() => choose('local')))}
               />
             ) : null}
           </ListGroup>
@@ -241,7 +258,7 @@ export default function AiProviderScreen() {
                   label={t('aiOnboarding.provider.useSaved')}
                   variant="accent"
                   width="full"
-                  onPress={() => attempt(() => choose(entry))}
+                  onPress={() => consent.request(entry, () => attempt(() => choose(entry)))}
                 />
               ) : null}
 
@@ -326,19 +343,10 @@ export default function AiProviderScreen() {
       {/* Opened only from the list above, never while the consent modal is open. */}
       <PremiumModal visible={premiumVisible} onClose={() => setPremiumVisible(false)} />
       {/* eslint-disable-next-line local/no-sibling-modals */}
-      <ConfirmationModal
-        visible={freeTierConsentVisible}
-        onClose={() => setFreeTierConsentVisible(false)}
-        onConfirm={() => {
-          setFreeTierConsentVisible(false);
-          attempt(async () => {
-            await enableFreeTier();
-            await choose('gateway');
-          });
-        }}
-        title={t('settings.aiSettings.musclogFreeTier.consentTitle')}
-        message={t('settings.aiSettings.musclogFreeTier.consentBody')}
-        confirmLabel={t('settings.aiSettings.musclogFreeTier.consentConfirm')}
+      <AiProviderConsentModal
+        provider={consent.provider}
+        onClose={consent.cancel}
+        onConfirm={consent.confirm}
       />
     </MasterLayout>
   );

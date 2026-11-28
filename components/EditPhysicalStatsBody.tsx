@@ -7,6 +7,7 @@ import { Pressable, Text, View } from 'react-native';
 import { type Gender } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { asBirthday } from '@/utils/ageGate';
 import {
   formatLocalCalendarDayIso,
   getLocalCalendarYear,
@@ -16,6 +17,7 @@ import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersist
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnit } from '@/utils/units';
 
+import { BirthdayNotes } from './BirthdayNotes';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { HeightPickerInput } from './modals/HeightPickerInput';
@@ -80,7 +82,10 @@ export function EditPhysicalStatsBody({
   }, [units]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDateSelect = useCallback((date: Date) => {
-    setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
+    const answer = asBirthday(localCalendarDayDate(date));
+    if (answer) {
+      setDob(formatLocalCalendarDayIso(answer));
+    }
   }, []);
 
   useEffect(() => {
@@ -141,6 +146,10 @@ export function EditPhysicalStatsBody({
             unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
             selectedDate={parseDobDisplayStringToPickerDate(dob)}
             onPress={() => setIsDatePickerVisible(true)}
+          />
+          <BirthdayNotes
+            birthday={dob ? parseDobDisplayStringToPickerDate(dob) : null}
+            onClear={() => setDob('')}
           />
         </View>
 

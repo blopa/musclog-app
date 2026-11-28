@@ -25,7 +25,9 @@ describe('buildChatSystemPrompt', () => {
 
     expect(prompt).toContain('"gender":"female"');
     expect(prompt).toContain('"value":168');
-    expect(prompt).toMatch(/Still needed: .*birthDate/);
+    // The birthday is optional, so it is never listed as still needed.
+    expect(prompt).toMatch(/Still needed: .*weightKg/);
+    expect(prompt).not.toMatch(/Still needed: .*birthDate/);
     expect(prompt).not.toMatch(/Still needed: .*gender/);
   });
 

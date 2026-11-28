@@ -16,7 +16,7 @@
       "unmarkButton": "Vastendag verwijderen",
       "unmarkShort": "Ongedaan maken",
       "confirmTitle": "Markeren als vastendag?",
-      "confirmMessage": "Hiermee markeer je de dag als een dag waarop je hebt gevast, zodat deze telt als een echte dag van 0 calorieën in je gemiddelden, TDEE en reeksen.",
+      "confirmMessage": "Hiermee wordt de dag gemarkeerd als een dag waarop je vastte, dus hij telt als een echte dag van 0 calorieën in je gemiddelden, TDEE en reeksen. Vasten is niet voor iedereen veilig: vraag eerst een arts als je zwanger bent of borstvoeding geeft, medicijnen gebruikt, diabetes hebt of een eetstoornis hebt gehad.",
       "confirmButton": "Markeren als vastendag"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Portie dupliceren",
       "duplicatePortionDesc": "Maak een kopie om te wijzigen",
       "deletePortion": "Portie verwijderen",
-      "deletePortionDesc": "Verwijder deze portie uit je lijst",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Verwijder deze portie uit je lijst"
     },
     "createPortion": {
       "title": "Portiegrootte maken",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Geschatte totalen voor deze portie",
       "sendDayToPhone": "Dag naar telefoon sturen",
       "sendDayToPhoneDesc": "Zet het eten van deze hele dag over met bewegende QR-codes",
-      "keepMealTypes": "Eigen maaltijden behouden"
+      "keepMealTypes": "Eigen maaltijden behouden",
+      "copyMealTitle": "{{meal}} van een andere dag",
+      "copyMealTargetNote": "De kopie gaat naar: {{meal}}"
     },
     "mealInsights": {
       "title": "Maaltijdinzichten",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Deel ingrediënten en instructies als tekst",
         "sendToPhone": "Naar een andere telefoon sturen",
         "sendToPhoneDesc": "Zet deze maaltijd over met bewegende QR-codes",
-        "shareRecipeIngredientLine": "{{grams}}g {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} {{name}}",
         "shareRecipeNoIngredients": "Deze maaltijd heeft geen ingrediënten om te delen",
         "duplicateMeal": "Maaltijd dupliceren",
         "duplicateMealDesc": "Maak een kopie van deze maaltijd",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} voedingsmiddelen",
         "foodCount_many": "{{count}} voedingsmiddelen",
         "foodCount_other": "{{count}} voedingsmiddelen",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "{{name}} verwijderen",
         "groupTitle": "Als één maaltijd loggen",
         "groupSubtitle": "Verschijnt als één item in je dagboek",

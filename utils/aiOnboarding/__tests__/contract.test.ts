@@ -143,8 +143,11 @@ describe('normalizeAnswers', () => {
 
   describe('birthday and age', () => {
     it.each([
-      ['2013-10-30', null],
-      ['2013-10-31', 'outOfRange'],
+      // Any age from 5 to 100 is accepted; under 16 is told about, never refused.
+      ['2010-10-30', null],
+      ['2010-10-31', null],
+      ['2021-10-30', null],
+      ['2021-10-31', 'outOfRange'],
       ['1925-10-31', null],
       ['1925-10-30', 'outOfRange'],
       ['2030-01-01', 'outOfRange'],
@@ -167,12 +170,26 @@ describe('normalizeAnswers', () => {
     });
 
     it.each([
-      [12, 'outOfRange'],
+      [4, 'outOfRange'],
       [101, 'outOfRange'],
       [30.5, 'invalid'],
       ['thirty', 'invalid'],
     ])('rejects age %s', (ageYears, code) => {
       expect(normalizeAnswers({ ageYears }, today).issues).toEqual([{ field: 'birthDate', code }]);
+    });
+
+    it.each([5, 12, 16])('accepts age %s', (ageYears) => {
+      expect(normalizeAnswers({ ageYears }, today).issues).toEqual([]);
+    });
+
+    it('warns, without refusing, a birthday that makes the person under 16', () => {
+      const under = normalizeAnswers({ birthDate: '2010-10-31' }, today);
+      const atSixteen = normalizeAnswers({ birthDate: '2010-10-30' }, today);
+
+      expect(under.issues).toEqual([]);
+      expect(under.draft.birthDate).toBe('2010-10-31');
+      expect(under.warnings).toContainEqual({ code: 'underMinimumAge' });
+      expect(atSixteen.warnings).not.toContainEqual({ code: 'underMinimumAge' });
     });
 
     it('prefers a real date over an age and flags a mismatch', () => {

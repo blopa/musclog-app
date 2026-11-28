@@ -13,7 +13,7 @@ jest.mock('@/database/services/SettingsService', () => ({
   },
 }));
 jest.mock('@/services/localModels/modelStore', () => ({
-  startLocalModelDownload: (...a: unknown[]) => mockStart(...a),
+  localModelStore: { start: (...a: unknown[]) => mockStart(...a) },
 }));
 jest.mock('@/services/localModels/onDeviceStatusStore', () => ({
   refreshOnDeviceStatus: (...a: unknown[]) => mockRefresh(...a),

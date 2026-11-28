@@ -16,13 +16,26 @@
       "localization": "Localizzazione",
       "language": "Lingua",
       "languageSubtitle": "Scegli la lingua preferita",
+      "translateFoods": "Traduci alimenti",
+      "translateFoodsSubtitle": "Rinomina quelli integrati in {{language}}",
+      "translateFoodsMessage": "Gli alimenti integrati su questo dispositivo verranno rinominati in {{language}}. I nomi e le descrizioni che hai modificato restano, così come i tuoi alimenti. Le vecchie voci del diario mantengono il nome con cui sono state registrate.",
+      "translateFoodsDone": "Alimenti tradotti: {{total}}",
+      "translateFoodsNothing": "Gli alimenti sono già in questa lingua",
+      "translateFoodsFailed": "Impossibile tradurre gli alimenti",
+      "translateExercises": "Traduci esercizi",
+      "translateExercisesSubtitle": "Rinomina quelli integrati in {{language}}",
+      "translateExercisesMessage": "Gli esercizi integrati su questo dispositivo verranno rinominati in {{language}}. I nomi e le descrizioni che hai modificato restano, così come i tuoi esercizi.",
+      "translateExercisesDone": "Esercizi tradotti: {{total}}",
+      "translateExercisesNothing": "Gli esercizi sono già in questa lingua",
+      "translateExercisesFailed": "Impossibile tradurre gli esercizi",
+      "translateCatalogueConfirm": "Traduci",
       "integrations": "Integrazioni",
       "connectHealthData": "Collega dati della salute",
       "readHealthData": "Leggi dati della salute",
       "writeHealthData": "Scrivi dati della salute",
       "healthData": "Dati della salute",
       "healthDataSubtitle": "Sincronizza allenamenti e misure corporee",
-      "healthDataPrivacy": "I tuoi dati della salute sono salvati solo sul dispositivo.",
+      "healthDataPrivacy": "I tuoi dati sulla salute sono salvati solo su questo dispositivo. Vengono inviati altrove solo se attivi un'opzione IA.",
       "syncNow": "Sincronizza ora",
       "syncing": "Sincronizzazione...",
       "foodSearchSource": "Fonte di ricerca alimenti",
@@ -33,7 +46,7 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "Database del Dipartimento dell'Agricoltura degli USA",
       "foodSearchMusclog": "Musclog",
-      "foodSearchMusclogDescription": "Database di codici a barre di Musclog (solo scansione)",
+      "foodSearchMusclogDescription": "Database di codici a barre creato dalle informazioni sui prodotti dei supermercati nei Paesi Bassi (solo scansione dei codici a barre)",
       "foodSearchNone": "Nessuna",
       "foodSearchNoneDescription": "Cerca solo nel tuo database locale",
       "energyUnit": "Unità di energia",
@@ -258,7 +271,8 @@
         "unavailable": "Al momento non è possibile leggere lo spazio di archiviazione.",
         "retry": "Riprova"
       },
-      "storageSubtitle": "Scopri cosa conserva Musclog su questo dispositivo e libera spazio"
+      "storageSubtitle": "Scopri cosa conserva Musclog su questo dispositivo e libera spazio",
+      "backupReminder": "I tuoi dati esistono solo su questo dispositivo. Se perdi il dispositivo o disinstalli Musclog, vanno persi. Esporta un backup ogni tanto."
     },
     "chatMessages": {
       "title": "Messaggi della chat",
@@ -283,9 +297,9 @@
       "insightsAlerts": "Approfondimenti e avvisi",
       "enableGoogleGemini": "Attiva Google Gemini",
       "dailyNutritionInsights": "Approfondimenti alimentari giornalieri",
-      "dailyNutritionInsightsSubtitle": "Riepilogo del mattino basato sui registri",
+      "dailyNutritionInsightsSubtitle": "Una volta al giorno, invia all'AI i tuoi pasti degli ultimi 7 giorni",
       "workoutInsights": "Approfondimenti sugli allenamenti",
-      "workoutInsightsSubtitle": "Analisi dopo l'allenamento",
+      "workoutInsightsSubtitle": "Una volta al giorno, invia all'AI i tuoi allenamenti degli ultimi 7 giorni",
       "enableOpenAi": "Attiva OpenAI",
       "localLlmIntegration": "Integrazione LLM locale",
       "enableLocalLlm": "Attiva LLM locale",
@@ -338,7 +352,6 @@
         "detailedHint": "Dopo ogni foto, controlla fino a 5 foto e aggiungi dettagli facoltativi (nome, note, provenienza) prima della stima.",
         "quickHint": "Stima subito dopo la foto. Aggiungi il contesto prima dello scatto con il pulsante messaggio."
       },
-      "getOpenAiKey": "Ottieni chiave OpenAI",
       "customPrompts": "Istruzioni di sistema personalizzate",
       "customPromptsSubtitle": "Aggiungi le tue istruzioni a tutte le funzioni AI",
       "manageCustomPrompts": "Gestisci istruzioni personalizzate",
@@ -431,13 +444,19 @@
         "toggleSubtitle": "Funziona con il piano gratuito di Google, che può usare ciò che invii. Il limite giornaliero è condiviso da tutti gli utenti.",
         "activeNote": "Il piano gratuito è attivo. Le tue chiavi API non vengono usate.",
         "consentTitle": "Condividere i dati con Google?",
-        "consentBody": "Quando usi una funzione AI, ciò di cui ha bisogno (ad esempio i tuoi allenamenti, pasti, misure corporee o messaggi della chat) viene inviato tramite OpenRouter al piano gratuito di Google AI Studio per scrivere la risposta. Google può conservare ciò che viene inviato, usarlo per migliorare i propri prodotti e farlo esaminare da persone (senza identificativi), quindi il piano gratuito non è privato: non inserire informazioni personali o sensibili. Il piano gratuito è riservato agli adulti (18+). Se non ti va bene, lascialo disattivato. Non viene inviato nulla finché non usi una funzione AI. C'è un limite giornaliero condiviso da tutti quelli che usano il piano gratuito, quindi può esaurirsi presto nella giornata, e il piano gratuito a volte può non essere disponibile.",
+        "consentBody": "Quando usi una funzione AI, ciò di cui ha bisogno (ad esempio i tuoi allenamenti, pasti, misure corporee, inclusi quelli importati da Health Connect o Apple Health, oppure i messaggi della chat) viene inviato tramite OpenRouter al piano gratuito di Google AI Studio per scrivere la risposta. Google può conservare ciò che viene inviato, usarlo per migliorare i propri prodotti e farlo esaminare da persone (senza identificativi), quindi il piano gratuito non è privato: non inserire informazioni personali o sensibili. Il piano gratuito è riservato agli adulti: accettando confermi di avere 18 anni o più. Se non ti va bene, lascialo disattivato. Non viene inviato nulla finché non usi una funzione AI, che include anche gli approfondimenti giornalieri se li attivi. C'è un limite giornaliero condiviso da tutti quelli che usano il piano gratuito, quindi può esaurirsi presto nella giornata, e il piano gratuito a volte può non essere disponibile.",
         "consentConfirm": "Accetto e attivo"
       },
       "testKey": "Prova chiave",
       "testingKey": "Verifica in corso…",
       "premium": {
         "activeNote": "Musclog Iron sta rispondendo alle tue richieste IA. Le tue chiavi e il piano gratuito non vengono usati mentre è attivo."
+      },
+      "providerConsent": {
+        "title": "Inviare dati a {{provider}}?",
+        "body": "Quando usi una funzione AI, ciò di cui ha bisogno viene inviato a {{provider}} con la tua chiave API: i tuoi messaggi e le foto dei pasti, oltre a dettagli come età, sesso, peso, massa grassa, allenamenti e pasti, inclusi quelli importati da Health Connect o Apple Health. {{provider}} lo tratta secondo i propri termini e la propria informativa sulla privacy, e si applicano le sue regole sull'età.",
+        "localBody": "Quando usi una funzione AI, ciò di cui ha bisogno viene inviato all'indirizzo del server che hai impostato: i tuoi messaggi e le foto dei pasti, oltre a dettagli come età, sesso, peso, massa grassa, allenamenti e pasti, inclusi quelli importati da Health Connect o Apple Health. Chi gestisce quel server può vederli. Un indirizzo che inizia con http:// li invia senza crittografia.",
+        "confirm": "Accetta e usa"
       }
     },
     "aiBehavior": {
@@ -448,9 +467,9 @@
       "title": "Aspetto e home",
       "subtitle": "Personalizza l'interfaccia dell'app",
       "sectionTitle": "Barra di navigazione",
-      "sectionSubtitle": "Scegli quali scorciatoie compaiono nella barra in basso. Home e Fotocamera sono sempre fisse.",
-      "slot1Label": "Posto 1 (a sinistra della fotocamera)",
-      "slot2Label": "Posto 2 (a destra della fotocamera)",
+      "sectionSubtitle": "Scegli quali scorciatoie compaiono nella barra in basso. Home e il pulsante centrale restano sempre al loro posto.",
+      "slot1Label": "Posto 1 (a sinistra del pulsante centrale)",
+      "slot2Label": "Posto 2 (a destra del pulsante centrale)",
       "slot3Label": "Posto 3 (il più a destra)",
       "selectItem": "Scegli una scorciatoia per questo posto",
       "currentlyInSlot": "Attualmente nel posto {{slot}} (verrà scambiata)",
@@ -464,6 +483,22 @@
         "progress": "Progressi",
         "checkin": "Check-in",
         "notes": "Note"
+      },
+      "centerButton": {
+        "label": "Pulsante centrale",
+        "popupTitle": "Pulsante centrale",
+        "popupSubtitle": "Scegli cosa fa il grande pulsante al centro della barra.",
+        "options": {
+          "camera": {
+            "label": "Fotocamera",
+            "description": "Apre la fotocamera intelligente per codici a barre, etichette e foto dei pasti."
+          },
+          "voice": {
+            "label": "Voce in testo",
+            "description": "Tienilo premuto e parla: quello che dici diventa testo, riconosciuto offline sul tuo telefono.",
+            "descriptionWeb": "Tieni premuto e parla: il tuo browser trasforma in testo quello che dici."
+          }
+        }
       }
     },
     "nutritionDisplay": {

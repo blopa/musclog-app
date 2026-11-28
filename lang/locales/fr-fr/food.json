@@ -16,7 +16,7 @@
       "unmarkButton": "Retirer le jour de jeûne",
       "unmarkShort": "Retirer",
       "confirmTitle": "Marquer comme jour de jeûne ?",
-      "confirmMessage": "Ce jour sera marqué comme jour de jeûne : il compte comme un vrai jour à 0 calorie dans tes moyennes, ta TDEE et tes séries consécutives.",
+      "confirmMessage": "Ce jour sera marqué comme jour de jeûne : il compte comme un vrai jour à 0 calorie dans tes moyennes, ta TDEE et tes séries consécutives. Le jeûne n'est pas sans risque pour tout le monde : demande d'abord l'avis d'un médecin si tu es enceinte ou allaites, si tu prends un traitement, si tu as un diabète ou si tu as eu un trouble du comportement alimentaire.",
       "confirmButton": "Marquer comme jour de jeûne"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Dupliquer la portion",
       "duplicatePortionDesc": "Créer une copie à modifier",
       "deletePortion": "Supprimer la portion",
-      "deletePortionDesc": "Retirer cette portion de ta liste",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Retirer cette portion de ta liste"
     },
     "createPortion": {
       "title": "Créer une portion",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Totaux estimés pour cette portion",
       "sendDayToPhone": "Envoyer la journée vers un téléphone",
       "sendDayToPhoneDesc": "Transférer toute l'alimentation de cette journée avec des QR codes animés",
-      "keepMealTypes": "Garder leurs repas"
+      "keepMealTypes": "Garder leurs repas",
+      "copyMealTitle": "{{meal}} d’un autre jour",
+      "copyMealTargetNote": "La copie va dans : {{meal}}"
     },
     "mealInsights": {
       "title": "Analyse du repas",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Partager les ingrédients et les instructions en texte",
         "sendToPhone": "Envoyer vers un autre téléphone",
         "sendToPhoneDesc": "Transférer ce repas avec des QR codes animés",
-        "shareRecipeIngredientLine": "{{grams}} g de {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} de {{name}}",
         "shareRecipeNoIngredients": "Ce repas n'a aucun ingrédient à partager",
         "duplicateMeal": "Dupliquer le repas",
         "duplicateMealDesc": "Créer une copie de ce repas",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} aliments",
         "foodCount_many": "{{count}} aliments",
         "foodCount_other": "{{count}} aliments",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "Retirer {{name}}",
         "groupTitle": "Saisir comme un seul repas",
         "groupSubtitle": "Apparaît comme une seule entrée dans ton journal",

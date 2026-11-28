@@ -156,11 +156,11 @@
     },
     "landing": {
       "getStarted": "Loslegen",
-      "termsAndPrivacy": "Wenn du fortfährst, stimmst du unseren Nutzungsbedingungen & Datenschutzbestimmungen zu.",
+      "termsAndPrivacy": "Wenn du fortfährst, bestätigst du, dass du 16 oder älter bist und unseren Nutzungsbedingungen zustimmst. Unsere Datenschutzerklärung erklärt, wie deine Daten verarbeitet werden.",
       "appName": "Musclog",
       "tagline": "Kostenlos, 100 % deins",
-      "description": "Erfasse deine Trainings und deine Ernährung mit vollem Datenschutz. Keine Konten, keine Cloud. Alles ist kostenlos außer dem optionalen KI-Kontingent von Musclog Iron.",
-      "storedLocally": "Alle Daten werden lokal auf deinem Gerät gespeichert",
+      "description": "Erfasse deine Trainings und deine Ernährung. Du brauchst kein Konto. Alles ist kostenlos außer dem optionalen Kontingent von Musclog Iron.",
+      "storedLocally": "Deine Einträge werden auf deinem Gerät gespeichert",
       "viewTerms": "Nutzungsbedingungen ansehen",
       "preparingApp": "Die App wird für dich vorbereitet …",
       "migratingPreamble": "Aktualisierung von der vorherigen Musclog-Version. Wir übernehmen deine Daten.",
@@ -192,7 +192,8 @@
       "quickSetupSteps": "7 Schritte",
       "quickSetupSubtitle": "Grundeinrichtung, du kannst später alles personalisieren",
       "aiSetup": "Mit KI einrichten",
-      "aiSetupSubtitle": "Chatte mit einer KI oder lass dich von ChatGPT oder Claude befragen"
+      "aiSetupSubtitle": "Chatte mit einer KI oder lass dich von ChatGPT oder Claude befragen",
+      "viewPrivacy": "Datenschutzerklärung ansehen"
     },
     "quickPreferences": {
       "title": "Los geht's",
@@ -228,7 +229,7 @@
       "height": "Größe",
       "weight": "Gewicht",
       "birthday": "Geburtstag",
-      "birthdayHelper": "Dient zur Berechnung deines Alters für genaue Kalorienschätzungen",
+      "birthdayHelper": "Optional. Dadurch werden Kalorienschätzungen genauer. Ohne Angabe geht Musclog davon aus, dass du {{age}} Jahre alt bist.",
       "bodyFat": "Körperfettanteil",
       "bodyFatHelper": "Wenn du ihn kennst, hilft das bei der Kalorienberechnung",
       "continue": "Weiter",
@@ -304,7 +305,7 @@
         }
       },
       "dataSharingTitle": "Hinweis zur Datenweitergabe",
-      "dataSharingBody": "Wenn du eine KI-Funktion nutzt, werden die Daten, die sie braucht (zum Beispiel deine Trainings, Mahlzeiten, Körpermaße oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu erstellen. Google darf das Gesendete speichern, zur Verbesserung seiner Produkte verwenden und von Menschen (ohne Kennungen) prüfen lassen, daher ist der kostenlose Tarif nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene ab 18 Jahren. Wenn dir das nicht passt, lass die Option aus. Es wird nichts gesendet, bis du eine KI-Funktion nutzt. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, sodass es früh am Tag aufgebraucht sein kann, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
+      "dataSharingBody": "Wenn du eine KI-Funktion nutzt, wird das, was sie braucht (zum Beispiel deine Trainings, Mahlzeiten und Körpermaße, auch solche, die aus Health Connect oder Apple Health importiert wurden, oder Chatnachrichten), über OpenRouter an den kostenlosen Tarif von Google AI Studio gesendet, um die Antwort zu schreiben. Google darf speichern, was gesendet wird, es zur Verbesserung seiner Produkte nutzen und es (ohne Kennungen) von Menschen prüfen lassen. Der kostenlose Tarif ist deshalb nicht privat: Gib keine persönlichen oder sensiblen Informationen ein. Der kostenlose Tarif ist für Erwachsene: Wenn du zustimmst, bestätigst du, dass du 18 oder älter bist. Wenn das nicht in Ordnung für dich ist, lass es ausgeschaltet. Es wird nichts gesendet, bevor du eine KI-Funktion nutzt, dazu gehören die täglichen Auswertungen, wenn du sie einschaltest. Es gibt ein Tageslimit, das alle Nutzer des kostenlosen Tarifs teilen, daher kann es früh am Tag aufgebraucht sein, und der kostenlose Tarif kann manchmal nicht verfügbar sein.",
       "readPrivacyPolicy": "Datenschutzerklärung lesen",
       "cta": {
         "premium": "Mit Musclog Iron fortfahren",

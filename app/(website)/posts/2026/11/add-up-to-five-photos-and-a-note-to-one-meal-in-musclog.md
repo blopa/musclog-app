@@ -27,7 +27,7 @@ So the order changes. **Take the photo first, add context after.**
 4. Add anything you want to tell the AI. All of it is optional.
 5. Tap **Estimate**.
 
-![The meal details sheet in Musclog with three photos in a sideways strip, a filled-in meal name and empty note field](/images/blog/2026/11/meal-photos-sheet.webp 'Three photos of one meal. The dashed tile at the edge is the + to add another.')
+![The meal details sheet in Musclog with three photos of a plate of chicken and rice in a sideways strip, a filled-in meal name and empty note field](/images/blog/2026/11/meal-photos-sheet.webp 'Three photos of one meal. The dashed tile at the edge is the + to add another.')
 ![The same sheet scrolled down to the origin, added fat and tag chips, with a few chips selected](/images/blog/2026/11/meal-photos-sheet-fields.webp 'Everything below the photos is optional.')
 
 What you can add:
@@ -74,3 +74,5 @@ The same choice is a page of the What's new tour, so you can pick without huntin
 ![The What's new page for the meal camera, with Detailed and Quick options](/images/blog/2026/11/meal-camera-whats-new.webp 'You can choose right in the tour.')
 
 Musclog is open source. The AI meal camera needs an AI provider set up in Settings, and the on-device model needs the photo-understanding part of its download.
+
+_Meal photos in the screenshots: [Nutrition5k](https://github.com/google-research-datasets/Nutrition5k) by Google Research, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), cropped and rotated._

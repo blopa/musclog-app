@@ -1,21 +1,28 @@
+import * as Device from 'expo-device';
 import { Cpu } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 import { AppleIntelligenceStatus } from '@/components/localModels/AppleIntelligenceStatus';
 import { LocalModelCard } from '@/components/localModels/LocalModelCard';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import { LOCAL_TEXT_MODEL } from '@/constants/localModels';
+import { useLocalModel } from '@/hooks/useLocalModel';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { localTextModelStore } from '@/services/localModels/modelStore';
 import { disableOnDeviceAi, enableOnDeviceAi, setOnDeviceEngine } from '@/services/onDeviceAiSetup';
+import { evaluateLocalModelDevice } from '@/utils/localModels/deviceGate';
 import {
   DEFAULT_LOCAL_MODEL_SELECTION,
   type LocalModelSelection,
 } from '@/utils/localModels/install';
 import { hasLocalAiOption } from '@/utils/onDeviceStatus';
+
+const TEXT_MODEL_SELECTION: LocalModelSelection = { withProjector: false };
 
 type OnDeviceAiSectionProps = {
   /** Musclog Iron or the free tier is on: they outrank AI on the phone. */
@@ -34,6 +41,8 @@ export function OnDeviceAiSection({ hostedProviderActive }: OnDeviceAiSectionPro
   const [optimistic, setOptimistic] = useState<{ base: boolean; value: boolean } | null>(null);
   const status = useOnDeviceStatus({ refresh: true });
   const [selection, setSelection] = useState<LocalModelSelection>(DEFAULT_LOCAL_MODEL_SELECTION);
+  const mainModel = useLocalModel();
+  const textModel = useLocalModel(localTextModelStore);
   const enabled =
     optimistic && optimistic.base === useOnDeviceAi ? optimistic.value : useOnDeviceAi;
 
@@ -43,6 +52,18 @@ export function OnDeviceAiSection({ hostedProviderActive }: OnDeviceAiSectionPro
 
   const bothEngines = status.options.apple && status.options.model;
   const usesApple = status.engine === 'apple';
+  const textModelInstalled = textModel.state.kind !== 'notInstalled';
+  const showTextModel =
+    !usesApple &&
+    mainModel.state.kind === 'ready' &&
+    textModel.supported &&
+    (textModelInstalled ||
+      evaluateLocalModelDevice({
+        platform: Platform.OS,
+        totalMemoryBytes: Device.totalMemory,
+        cpuArchitectures: Device.supportedCpuArchitectures,
+        minRamBytes: LOCAL_TEXT_MODEL.minRamBytes,
+      }).ok);
   const note = { color: theme.colors.text.tertiary, fontSize: theme.typography.fontSize.xs };
 
   const handleToggle = (value: boolean) => {
@@ -114,6 +135,15 @@ export function OnDeviceAiSection({ hostedProviderActive }: OnDeviceAiSectionPro
       ) : (
         <LocalModelCard selection={selection} onSelectionChange={setSelection} allowDelete />
       )}
+
+      {showTextModel ? (
+        <LocalModelCard
+          store={localTextModelStore}
+          variant="text"
+          selection={TEXT_MODEL_SELECTION}
+          allowDelete
+        />
+      ) : null}
 
       {enabled && hostedProviderActive ? (
         <Text className="px-5" style={note}>

@@ -53,9 +53,9 @@
     },
     "goToSettings": "Przejdź do ustawień",
     "success": {
-      "workoutPlanGenerated": "Dla ciebie utworzono treningi: {{count}}! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Dla ciebie utworzono plan {{planName}} z treningami: {{count}}! 💪 {{description}}",
-      "mealPlanGenerated": "Dla ciebie utworzono 3-dniowy plan posiłków z posiłkami: {{count}}! 🥗 {{description}}",
+      "workoutPlanGenerated": "Utworzyłem dla Ciebie treningi: {{count}}! 💪 {{description}} Sprawdź je, zanim zaczniesz trenować.",
+      "workoutPlanGeneratedWithName": "Utworzyłem dla Ciebie plan {{planName}} z treningami: {{count}}! 💪 {{description}} Sprawdź je, zanim zaczniesz trenować.",
+      "mealPlanGenerated": "Utworzyłem dla Ciebie 3-dniowy plan posiłków z posiłkami: {{count}}! 🥗 {{description}} Sprawdź produkty i porcje, zanim na nich polegasz.",
       "trackMealSuccess": "Zapisano składniki twojego posiłku: {{count}}. Składniki: {{ingredients}}. Razem: {{calories}}.",
       "trackMealReady": "Przeanalizowano posiłki: {{count}}: {{meals}} (razem {{calories}}). Stuknij posiłek, aby go przejrzeć i zapisać.",
       "historyCleared": "Historia czatu wyczyszczona."
@@ -108,7 +108,6 @@
       "failed": "Nie udało się udostępnić historii czatu. Spróbuj ponownie.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "AI może się mylić. Sprawdzaj ważne informacje.",
     "message": {
       "menuTitle": "Działania na wiadomości",
       "copy": "Kopiuj",
@@ -120,9 +119,12 @@
       "copied": "Skopiowano wiadomość do schowka",
       "deleted": "Wiadomość usunięta",
       "report": "Zgłoś problem",
-      "reportDesc": "Zgłoś e-mailem problem z tą odpowiedzią",
+      "reportDesc": "Wyślij tę odpowiedź do Musclog, żebyśmy mogli ją sprawdzić",
       "reportSubject": "Problem z odpowiedzią AI w Musclog",
-      "reportIntro": "Co było nie tak z tą odpowiedzią? (Przed wysłaniem możesz edytować lub usunąć poniższy tekst.)"
+      "reportIntro": "Co było nie tak z tą odpowiedzią? (Przed wysłaniem możesz edytować lub usunąć poniższy tekst.)",
+      "reportConfirm": "To wysyła odpowiedź, wersję aplikacji, Twoją platformę i język do Musclog, przez Sentry, nasz serwis śledzenia błędów. Nic innego z czatu nie jest wysyłane.",
+      "reportSend": "Wyślij zgłoszenie",
+      "reportSent": "Zgłoszenie wysłane. Dziękujemy."
     },
     "sendViaOpenAI": "Wyślij przez OpenAI",
     "personas": {
@@ -167,6 +169,7 @@
         "errorImage": "Nie udało się wczytać tego obrazu."
       }
     },
-    "reviewingReply": "Sprawdzam jeszcze raz swoją odpowiedź…"
+    "reviewingReply": "Sprawdzam jeszcze raz swoją odpowiedź…",
+    "onDevicePainReply": "Stąd nie widzę, co się dzieje, i nie chcę zgadywać, gdy coś boli. Na razie przerwij ćwiczenie, które powoduje ból, i trenuj to, co nie boli. Jeśli ból jest ostry, pojawia się obrzęk albo nie ustępuje po kilku dniach, idź do lekarza lub fizjoterapeuty. Chętnie pomogę zaplanować trening z uwzględnieniem tego."
   }
 }

@@ -310,7 +310,7 @@
       "items": {
         "aiCoach": {
           "title": "AI-coach",
-          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel: met je eigen Gemini-, OpenAI- of Claude-sleutel, met Musclog Iron, de gratis optie, een lokaal model of AI op je telefoon."
+          "description": "Praat met Loggy over training en eten, of laat een maaltijd inschatten op basis van een foto. Optioneel: met je eigen Gemini-, OpenAI- of Claude-sleutel, met Musclog Iron, de gratis optie, een lokaal model of AI op je telefoon. AI-antwoorden kunnen onjuist zijn, dus controleer ze voordat je erop vertrouwt."
         },
         "barcode": {
           "title": "Barcodescanner",
@@ -456,7 +456,8 @@
       "start": "Start",
       "select": "Select",
       "downloadRom": "ROM downloaden",
-      "downloadManual": "Handleiding downloaden"
+      "downloadManual": "Handleiding downloaden",
+      "notAffiliated": "Game Boy en Game Boy Color zijn handelsmerken van Nintendo. Musclog is niet gelieerd aan of goedgekeurd door Nintendo."
     },
     "progress": {
       "metaTitle": "Musclog voortgangsimport",
@@ -604,11 +605,11 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 24 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 27 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
-          "description": "Gevoelige gegevens worden versleuteld op uw apparaat en netwerkverzoeken gebruiken HTTPS."
+          "description": "Gewicht, lichaamsvet, voedingslogboeken en cyclusgegevens zijn op je apparaat versleuteld, en verzoeken aan de diensten van Musclog en aan AI-aanbieders gebruiken HTTPS."
         },
         "localFirst": {
           "title": "Lokale opslag",
@@ -616,7 +617,7 @@
         },
         "security": {
           "title": "U houdt de controle",
-          "description": "Alleen het zoeken naar voeding, optionele AI, de controles van het Musclog Iron-abonnement en crashrapporten gebruiken internet, en u kunt elk daarvan uitschakelen."
+          "description": "Je gegevens blijven op je apparaat. De app gebruikt internet voor het zoeken naar voeding, oefenfoto's, optionele AI, controles van Musclog Iron, modeldownloads en crashrapporten."
         }
       },
       "intro": "Dit Privacybeleid beschrijft Ons beleid en onze procedures met betrekking tot het verzamelen, gebruiken, opslaan en openbaar maken van Uw informatie wanneer U Musclog gebruikt. Het is van toepassing op zowel de Musclog-applicatie als de Musclog-website, hoewel de categorieën gegevens die in elke context worden verwerkt verschillen. Dit Privacybeleid legt ook Uw privacyrechten uit en hoe de wet U beschermt.",
@@ -677,7 +678,9 @@
               "Zoekopdrachten naar voeding en gescande barcodes, verzonden naar de voedingsdatabase die u kiest (zie \"Voedingsdatabases\" hieronder).",
               "Verzoeken die u verstuurt naar een optionele AI-functie, verzonden naar de provider die u kiest, naar de gratis Musclog AI-optie of naar Musclog Iron (zie \"Optionele AI-functies\" hieronder).",
               "Gegevens die u zelf exporteert, back-upt, deelt of naar een ander apparaat verplaatst.",
-              "Gebruiksgegevens van bezoeken aan de website (zie \"Website-analyse\" hieronder)."
+              "Gebruiksgegevens van bezoeken aan de website (zie \"Website-analyse\" hieronder).",
+              "Verzoeken voor oefenfoto's, die de applicatie van musclog.app laadt wanneer ze worden getoond. Zoals elk webverzoek onthullen ze Uw IP-adres aan de webserver.",
+              "Een rapport dat U kiest te versturen over een AI-antwoord (zie “Anonieme crashrapporten” hieronder)."
             ]
           },
           "usageData": {
@@ -689,6 +692,7 @@
             "content": "Om haar functies te bieden kan de applicatie om de volgende toestemmingen vragen. Gegevens die via deze toestemmingen worden verkregen, blijven op Uw Apparaat, tenzij dit Privacybeleid anders vermeldt:",
             "items": [
               "Camera: om voedingsbarcodes en voedingslabels te scannen, maaltijdfoto's te maken en gegevens van een ander apparaat te ontvangen via QR-codes.",
+              "Microfoon: alleen terwijl je de microfoonknop ingedrukt houdt, om wat je zegt in tekst om te zetten. Musclog vraagt de spraakherkenning van je apparaat om offline te werken en slaat het geluid niet op en stuurt het niet. Als AI-functies zijn ingesteld, gaat de tekst die daaruit komt (nooit het geluid) naar de AI die je hebt gekozen, zoals een getypt bericht, om uit te zoeken wat er moet gebeuren. Met AI op het apparaat blijft hij op je apparaat. In de webversie herkent in plaats daarvan je browser de spraak en kan hij het geluid daarvoor naar de servers van de maker sturen (bij Chrome bijvoorbeeld naar Google). Musclog meldt je dit vóór het eerste gebruik en ontvangt en bewaart het geluid nooit.",
               "Health Connect of Apple Health: zie \"Health Connect en Apple Health\" hierboven.",
               "Meldingen, exacte alarmen en opstarten voltooid: om trainings-, rusttimer-, voedings- en cyclusherinneringen op tijd te tonen, ook nadat Uw Apparaat opnieuw is opgestart.",
               "Biometrie (vingerafdruk of gezicht): om de applicatie of onderdelen daarvan te vergrendelen, als u dit inschakelt.",
@@ -699,11 +703,12 @@
           },
           "optionalAi": {
             "title": "Optionele AI-functies",
-            "content1": "De Musclog-applicatie kan volledig offline worden gebruikt, met uitzondering van het zoeken naar voeding, optionele AI-functies en crashrapporten. Musclog verzendt uw trainings-, voedings-, gezondheids- of profielgegevens niet naar Onze servers, behalve wanneer u de hieronder beschreven gratis Musclog AI-optie of Musclog Iron gebruikt.",
+            "content1": "De Musclog-applicatie kan offline worden gebruikt, met uitzondering van het zoeken naar voeding, oefenfoto's, optionele AI-functies, modeldownloads en crashrapporten. Musclog stuurt Uw trainings-, voedings-, gezondheids- of profielgegevens niet naar Onze servers, behalve wanneer U de hieronder beschreven gratis Musclog AI-optie of Musclog Iron gebruikt.",
             "content2": "Musclog biedt optionele AI-functies. Ze blijven uitgeschakeld totdat u een provider kiest: uw eigen OpenAI-, Anthropic Claude- of Google Gemini-API-sleutel, een model op het apparaat zelf zoals Apple Intelligence op iOS, een lokale of zelfgehoste LLM-endpoint, de gratis Musclog AI-optie, of Musclog Iron, een optioneel maandelijks abonnement.",
             "content3": "Als u ervoor kiest een AI-functie te gebruiken, worden de gegevens die u besluit te verzenden doorgestuurd naar de provider of endpoint die u configureert. Als u een zelfgehost lokaal model onder uw eigen controle gebruikt, kunnen die gegevens binnen uw eigen omgeving blijven. Als u een door een derde gehoste endpoint gebruikt, waaronder een gehoste lokale-modeldienst, kan die provider de gegevens verwerken in overeenstemming met zijn eigen voorwaarden en privacypraktijken. Musclog heeft geen controle over de manier waarop externe providers de gegevens verwerken die u naar hen verzendt.",
-            "content4": "Als u de gratis Musclog AI-optie kiest, worden uw verzoeken via OpenRouter, een AI-routeringsdienst, naar Google AI Studio (een Gemma-model) gestuurd, met een API-sleutel die door Musclog wordt beheerd. Een verzoek bevat alleen wat u naar de AI-functie verstuurt, zoals chatberichten, maaltijdfoto's of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft. OpenRouter bewaart de inhoud van verzoeken niet, behalve de controle op materiaal van seksueel kindermisbruik die hieronder wordt beschreven; wel verzoekgegevens zoals de omvang en het tijdstip. Google beantwoordt deze verzoeken onder de Gemini API-voorwaarden voor gratis gebruik: Google mag de verzoeken en antwoorden opslaan, ze gebruiken om zijn producten en machine-learningtechnologieën te verbeteren, en menselijke beoordelaars laten meekijken. Google verwijdert identificatiegegevens, zoals uw account, voordat menselijke beoordelaars ze zien, maar voer geen persoonlijke of gevoelige gegevens in bij de gratis Musclog AI-optie en gebruik deze niet voor zaken die u niet door Google gezien wilt hebben. De gratis Musclog AI-optie is alleen voor volwassenen (18 jaar en ouder), omdat de voorwaarden van Google deze gratis dienst niet toestaan in apps die waarschijnlijk door mensen onder de 18 jaar worden gebruikt. Musclog Iron is anders: het gebruikt alleen aanbieders met zero data retention. De gratis optie heeft een daglimiet die alle gebruikers delen, hangt af van de gratis limieten van Google en is soms niet beschikbaar.",
+            "content4": "Als U de gratis Musclog AI-optie kiest, worden Uw verzoeken via OpenRouter, een AI-routingdienst, naar Google AI Studio (een Gemma-model) gestuurd, met een API-sleutel die door Musclog wordt beheerd. Een verzoek bevat alleen wat U naar de AI-functie stuurt, zoals chatberichten, maaltijdfoto's, of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft, wat items kan omvatten die uit Health Connect of Apple Health zijn geïmporteerd, en dagelijkse inzichten als U die inschakelt. OpenRouter bewaart de inhoud van verzoeken niet, behalve de controle op materiaal met seksueel kindermisbruik die hieronder wordt beschreven; het bewaart verzoekgegevens zoals grootte en tijdstip. Google beantwoordt deze verzoeken volgens de Gemini API-voorwaarden voor gratis gebruik: Google mag de verzoeken en antwoorden bewaren, ze gebruiken om zijn producten en machine-learningtechnologieën te verbeteren, en menselijke beoordelaars laten meelezen. Google verwijdert identificaties zoals Uw account voordat menselijke beoordeling plaatsvindt, maar voer geen persoonlijke of gevoelige informatie in de gratis Musclog AI-optie in en gebruik die niet voor dingen die U niet aan Google wilt laten zien. De gratis Musclog AI-optie is alleen voor volwassenen (18 en ouder), omdat OpenRouter, dat deze verzoeken doorgeeft, vereist dat zijn dienst alleen door volwassenen wordt gebruikt. Musclog Iron is anders: het gebruikt alleen aanbieders die zero data retention hanteren. De gratis optie heeft een dagelijkse limiet die door alle gebruikers wordt gedeeld, is afhankelijk van de gratis limieten van Google en is soms niet beschikbaar.",
             "contentPremium": "Als U zich abonneert op Musclog Iron, worden Uw AI-verzoeken naar de eigen dienst van Musclog gestuurd, die draait op Cloudflare Workers, en van daaruit via een van twee AI-gateways, OpenRouter of Otari (beheerd door Mozilla.ai, MZL.AI, PBC), die ze alleen doorgeven aan AI-providers die zijn ingesteld op zero data retention (ZDR) en geen training op Uw gegevens. Musclog kiest welke gateway wordt gebruikt, en de toestemming in de applicatie geldt voor beide. Bij Otari noemt elk verzoek één goedgekeurde aanbieder en valt het nooit terug op een andere. Een verzoek bevat alleen wat U naar de AI-functie stuurt, zoals chatberichten, of de trainings-, voedings- en lichaamsgegevens die die functie nodig heeft, en maaltijdfoto's. De dienst van Musclog bewaart de inhoud van Uw verzoeken of antwoorden niet. Zij bewaart alleen een identificatie die is afgeleid van een sleutel die op Uw Apparaat aanwezig is, gebruiksaantallen en een korte vingerafdruk van elk verzoek, zodat een opnieuw verzonden verzoek niet dubbel wordt geteld. Zoals bij elk internetverzoek onthult elk verzoek Uw IP-adres aan Cloudflare, dat de dienst levert en beveiligt; de dienst van Musclog slaat het niet op. De gateway ontvangt bij elk verzoek een pseudoniem code voor Uw abonnement, niet Uw identificatie, naam of e-mailadres, zodat misbruik kan worden opgespoord; Otari ontvangt ook labels die de applicatie en het soort verzoek benoemen, nooit een persoon of een apparaat. RevenueCat ontvangt Uw identificatie, de aankoopstatus in de appwinkel en de technische gegevens die een app-abonnementsdienst verwerkt, zoals Uw IP-adres, om te bevestigen dat Uw abonnement actief is. Musclog ontvangt Uw naam, e-mailadres of betaalgegevens niet: betaling wordt afgehandeld door Apple of Google. OpenRouter controleert alle verzoeken die erdoorheen gaan, ook die naar aanbieders met zero data retention, op materiaal van seksueel kindermisbruik terwijl ze worden verwerkt, en kan een verzoek dat het markeert bewaren voor beoordeling, melding en wettelijke bewaring wanneer de wet dat vereist. Otari zegt de inhoud van verzoeken of antwoorden niet te ontvangen of op te slaan; het bewaart verzoekgegevens zoals het model, de aanbieder, het aantal tokens, de kosten en de status, op servers in de Verenigde Staten. Musclog Iron staat los van de gratis Musclog AI-optie en wordt pas ingeschakeld nadat U hiermee in de applicatie hebt ingestemd.",
+            "accuracy": "AI-functies kunnen fouten maken, en hun antwoorden zijn geen medisch, voedings- of trainingsadvies. De Voorwaarden leggen onder \"AI-functies en AI-uitvoer\" uit wat u ervan kunt verwachten en waarvoor Musclog verantwoordelijk is.",
             "content5": "U dient het privacybeleid en de voorwaarden te raadplegen van de providers die u kiest en van de diensten die Musclog gebruikt, waaronder:",
             "cloudflarePrivacyPolicy": "Privacybeleid van Cloudflare",
             "openaiPrivacyPolicy": "Privacybeleid van OpenAI",
@@ -718,14 +723,14 @@
             "items": [
               "Ze kan gewicht, lengte, lichaamsvet, vetvrije massa, voeding, stappen, verbrande calorieën en basaal metabolisme lezen en, als u cyclustracking gebruikt en ervoor kiest om te importeren, gegevens over de menstruatiecyclus.",
               "Ze kan gewicht, lengte, lichaamsvet, vetvrije massa, voeding, trainingen en loop- of hardloopafstand schrijven en, als u dat kiest, gegevens over de menstruatiecyclus.",
-              "Gezondheidsgegevens die uit Health Connect of Apple Health worden gelezen, blijven op Uw Apparaat. Musclog verzendt ze niet naar Onze servers, verkoopt ze niet en gebruikt ze niet voor reclame.",
+              "Gezondheidsgegevens die uit Health Connect of Apple Health worden gelezen, worden op Uw Apparaat opgeslagen. Musclog verkoopt ze niet en gebruikt ze niet voor advertenties. Als U een AI-optie inschakelt, kunnen de gewicht-, lichaamsvet- en voedingsgegevens die U hebt geïmporteerd deel uitmaken van wat naar die AI wordt gestuurd, zoals beschreven onder “Optionele AI-functies”.",
               "Gezondheidsgegevens worden uitsluitend gebruikt om de fitness-, voedings- en lichaamstrackingfuncties van de applicatie te bieden.",
               "U kunt deze toestemmingen op elk moment intrekken in Health Connect of de Gezondheid-app."
             ]
           },
           "foodData": {
             "title": "Voedingsdatabases",
-            "content": "Wanneer u naar een voedingsmiddel zoekt of een barcode scant, wordt de zoektekst of barcode verzonden naar de voedingsdatabase die in de instellingen van de applicatie is geselecteerd: Open Food Facts, de USDA FoodData Central-database of de eigen voedingsdatabase van Musclog. Aan deze verzoeken zijn geen account, naam of andere persoonlijke informatie gekoppeld, maar zoals elk internetverzoek maken ze uw IP-adres bekend aan de dienst die ze ontvangt. U kunt er ook voor kiezen alleen te zoeken in de voedingsmiddelen die op Uw Apparaat zijn opgeslagen."
+            "content": "Wanneer U naar een voedingsmiddel zoekt of een barcode scant, wordt de zoektekst of barcode gestuurd naar de voedingsdatabase die in de instellingen van de applicatie is gekozen: Open Food Facts, de USDA FoodData Central-database of de eigen voedingsdatabase van Musclog, die productinformatie van supermarkten in Nederland bevat. Er wordt geen account, naam of andere persoonlijke informatie aan deze verzoeken gekoppeld, hoewel ze, zoals elk internetverzoek, Uw IP-adres onthullen aan de dienst die ze ontvangt. U kunt ook kiezen alleen te zoeken in de voedingsmiddelen die op Uw Apparaat zijn opgeslagen."
           }
         },
         "trainingData": {
@@ -750,7 +755,7 @@
           "items": [
             "Met de providers die u kiest: zoekopdrachten naar voeding gaan naar de voedingsdatabase die u selecteert en AI-verzoeken gaan naar de AI-provider die u configureert.",
             "Met Hugging Face, als u het AI-model op het apparaat wilt downloaden: net als bij elk bestandsdownload vertelt het verzoek Hugging Face het IP-adres van uw apparaat. Het model draait daarna op uw apparaat, en wat u het vraagt blijft op uw apparaat.",
-            "Met Serviceproviders die delen van de Service voor Ons uitvoeren: Sentry (crashrapporten, en foutrapporten van de dienst van Musclog Iron die geen berichtinhoud of identificaties bevatten), OpenRouter en Google (de gratis Musclog AI-optie), Cloudflare, OpenRouter of Otari, en RevenueCat (Musclog Iron), GitHub en Cloudflare (hosting van de website) en Google Analytics (de website, alleen nadat U analyse accepteert).",
+            "Met Dienstverleners die delen van de Dienst voor Ons uitvoeren: Sentry (crashrapporten, rapporten die U over AI-antwoorden verstuurt, en foutrapporten van de dienst van Musclog Iron die geen berichtinhoud of identificaties bevatten), OpenRouter en Google (de gratis Musclog AI-optie), Cloudflare, OpenRouter of Otari, en RevenueCat (Musclog Iron), GitHub en Cloudflare (hosting van de website) en Google Analytics (de website, alleen nadat U analyse heeft geaccepteerd).",
             "Wanneer de wet dit vereist, zoals beschreven onder \"Openbaarmaking van uw Persoonsgegevens\".",
             "Met uw toestemming, bijvoorbeeld wanneer u zelf gegevens exporteert of deelt.",
             "Wij verkopen uw gegevens niet en delen ze niet met adverteerders of datahandelaren."
@@ -781,11 +786,11 @@
         },
         "security": {
           "title": "Beveiliging van uw Persoonsgegevens",
-          "content": "Musclog versleutelt gevoelige gegevens op Uw Apparaat, zoals gewicht, lichaamsvet, voedingslogboeken en gegevens over de menstruatiecyclus, en de netwerkverzoeken gebruiken HTTPS. U kunt de applicatie of onderdelen daarvan ook vergrendelen met de biometrie of pincode van uw apparaat. Geen enkele methode van elektronische opslag of overdracht via internet is 100% veilig, dus Wij kunnen geen absolute beveiliging garanderen."
+          "content": "Musclog versleutelt de meest gevoelige gegevens op Uw Apparaat: gewicht, lichaamsvet, voedingslogboeken en menstruatiecyclusgegevens. Andere gegevens, zoals workouts, notities en chatgeschiedenis, worden door de applicatie niet versleuteld. Verzoeken aan de diensten van Musclog en aan AI-aanbieders gebruiken HTTPS; een lokale server die U zelf instelt, mag gewoon HTTP gebruiken. U kunt de applicatie of onderdelen ervan ook vergrendelen met de biometrie of pincode van Uw apparaat. Geen enkele methode van elektronische opslag of overdracht via internet is 100% veilig, dus Wij kunnen geen absolute beveiliging garanderen."
         },
         "childrenPrivacy": {
           "title": "Privacy van kinderen",
-          "content": "Onze Service is niet gericht op kinderen jonger dan 13 jaar en Wij verzamelen niet bewust Persoonsgegevens van hen. De optionele AI-functies, waaronder Musclog Iron, berusten op Uw toestemming: bent U jonger dan 16 jaar, vraag dan een ouder of voogd om toestemming voordat U er een inschakelt. De gratis Musclog AI-optie is alleen voor volwassenen (18 jaar en ouder). Als u denkt dat een kind Ons Persoonsgegevens heeft gestuurd, bijvoorbeeld per e-mail, neem dan contact met Ons op en Wij verwijderen deze."
+          "content": "Musclog is bedoeld voor mensen van 16 jaar en ouder, en Wij verzamelen niet bewust Persoonsgegevens van iemand die jonger is. Musclog Iron en de gratis Musclog AI-optie zijn alleen voor volwassenen (18 en ouder). Als U gelooft dat iemand onder deze leeftijden Ons Persoonsgegevens heeft gestuurd, bijvoorbeeld per e-mail, neem dan contact met Ons op en Wij zullen ze verwijderen."
         },
         "links": {
           "title": "Links naar andere websites",
@@ -801,7 +806,7 @@
         },
         "crashReports": {
           "title": "Anonieme crashrapporten",
-          "content": "De applicatie kan anonieme crashrapporten naar Sentry sturen, een foutopsporingsservice, zodat Wij bugs kunnen vinden en oplossen. Dit staat standaard aan en kan op elk moment worden uitgeschakeld met de schakelaar \"Anoniem foutrapport\" in Instellingen → Back-ups en gegevens. Zolang deze uit staat, verstuurt de applicatie helemaal geen crashrapporten, ook niet over databasefouten. Een rapport bevat de fout en waar die optrad, de app-versie en het apparaatmodel. Het bevat geen naam, account of e-mailadres, en niets van de trainingen, voeding of lichaamsgegevens die u bijhoudt. Rapporten over native crashes kunnen een willekeurige identificatiecode bevatten die Sentry voor de installatie aanmaakt en die niet aan u is gekoppeld. Zoals elk internetverzoek maakt een rapport uw IP-adres bekend aan Sentry; Wij gebruiken dit niet om u te identificeren."
+          "content": "De applicatie kan anonieme crashrapporten naar Sentry sturen, een dienst voor foutopsporing, zodat Wij bugs kunnen vinden en oplossen. Dit staat standaard aan en kan op elk moment worden uitgeschakeld met de schakelaar “Anoniem foutrapport” onder Instellingen → Back-ups en gegevens. Zolang deze uit staat, stuurt de applicatie helemaal geen crashrapporten, ook niet over databasefouten. Een rapport bevat de fout en waar die optrad, de appversie en het apparaatmodel. Het bevat geen naam, account of e-mailadres. Het is niet bedoeld om de trainings-, voedings- of lichaamsgegevens te bevatten die U invoert, en de applicatie verwijdert sleutels, e-mailadressen en geciteerde tekst uit foutmeldingen voordat ze worden verstuurd, al kan een melding nog steeds een fragment bevatten van wat er werd verwerkt. Rapporten over native crashes kunnen een willekeurige identificatie bevatten die Sentry voor de installatie aanmaakt, die niet aan U is gekoppeld. Net als elk internetverzoek onthult een rapport Uw IP-adres aan Sentry; Wij gebruiken dat niet om U te identificeren. Als U ervoor kiest een AI-antwoord in de chat te melden, stuurt de applicatie dat antwoord, samen met de appversie, het platform en de taal, na Uw bevestiging naar Sentry, ongeacht of crashrapporten aan staan."
         },
         "analytics": {
           "title": "Website-analyse",
@@ -824,7 +829,7 @@
         },
         "controller": {
           "title": "Wie verantwoordelijk is voor Uw gegevens",
-          "content": "Musclog wordt uitgegeven door Jubinganga Supply, een eenmanszaak die in Nederland is ingeschreven (KVK 72255145). Het is de verwerkingsverantwoordelijke voor de Persoonsgegevens die in dit Privacybeleid worden beschreven. Contact: support@musclog.app, Postbus 69307, 1060 CJ Amsterdam, Nederland, +31 6 5882 8627."
+          "content": "Musclog wordt uitgegeven door Jubinganga Supply, een eenmanszaak die in Nederland is ingeschreven (KVK 72255145, BTW NL005078897B86). Zij is de verwerkingsverantwoordelijke voor de Persoonsgegevens die in dit Privacybeleid worden beschreven. Contact: support@musclog.app, Postbus 69307, 1060 CJ Amsterdam, Nederland, +31 6 5882 8627."
         },
         "legalBasis": {
           "title": "Waarom wij gegevens verwerken (grondslagen)",
@@ -858,7 +863,7 @@
             "Alle gegevens die u in de applicatie invoert, worden lokaal op uw apparaat opgeslagen.",
             "De applicatie vereist geen account en biedt geen cloudsynchronisatie.",
             "Wij hebben geen toegang tot uw trainings-, voedings-, gezondheids- of cyclusgegevens, behalve wat u zelf verstuurt via de gratis Musclog AI-optie of Musclog Iron.",
-            "Gevoelige gegevens die door de applicatie worden opgeslagen, waaronder gegevens over de menstruatiecyclus, worden versleuteld in rust met AES."
+            "Gewicht, lichaamsvet, voedingslogboeken en menstruatiecyclusgegevens worden met AES versleuteld opgeslagen. Notities en chatgeschiedenis worden dat niet."
           ]
         },
         "website": {
@@ -881,19 +886,19 @@
     "terms": {
       "titleStart": "Algemene",
       "conditions": "Voorwaarden",
-      "lastUpdated": "Laatst bijgewerkt: 24 november 2026",
+      "lastUpdated": "Laatst bijgewerkt: 27 november 2026",
       "highlights": {
         "agreement": {
           "title": "Gebruikersovereenkomst",
-          "description": "Door deze app te gebruiken, ga je akkoord met deze voorwaarden."
+          "description": "Deze voorwaarden gelden wanneer U Musclog gebruikt."
         },
         "liability": {
           "title": "Beperkte aansprakelijkheid",
-          "description": "Wij zijn niet aansprakelijk voor gezondheidsbeslissingen op basis van deze app."
+          "description": "Wij zijn niet aansprakelijk voor gezondheidsbeslissingen die met deze app of met de AI-functies ervan worden genomen."
         },
         "warranty": {
-          "title": "Geen garantie",
-          "description": "De app wordt aangeboden zoals hij is, zonder enige garantie."
+          "title": "Uw rechten",
+          "description": "De app wordt aangeboden zoals ze is, en Uw rechten als consument blijven gelden."
         }
       },
       "intro": "Lees deze Algemene Voorwaarden zorgvuldig door voordat je de Musclog-applicatie gebruikt. Door onze service te openen of te gebruiken, ga je akkoord met deze voorwaarden.",
@@ -929,7 +934,7 @@
           "title": "Erkenning",
           "content1": "Dit zijn de Algemene Voorwaarden die het gebruik van deze Service regelen en de overeenkomst die van kracht is tussen jou en het Bedrijf. Door de Service te gebruiken, ga je akkoord met deze Algemene Voorwaarden.",
           "content2": "Je toegang tot en gebruik van de Service is ook afhankelijk van je aanvaarding van en naleving van het Privacybeleid van het Bedrijf.",
-          "content3": "Musclog is een local-first, open-source fitnesstracker. Er is geen account vereist. Je gegevens blijven op je apparaat, en alleen de AI-functies die je kiest te gebruiken, sturen wat ze nodig hebben naar de provider die je kiest."
+          "content3": "Musclog is een lokaal-eerst, open-source fitnesstracker. Er is geen account nodig. Uw gegevens worden op Uw apparaat opgeslagen; de applicatie gebruikt internet alleen voor de doeleinden die in Ons Privacybeleid worden genoemd."
         },
         "links": {
           "title": "Links naar andere websites",
@@ -940,7 +945,8 @@
           "content1": "Musclog Iron is een optioneel maandelijks abonnement dat AI-verzoeken beantwoordt via de gehoste dienst van Musclog, zodat u uw eigen sleutel niet nodig hebt. Al het andere in Musclog is gratis, en de gratis Musclog AI-optie en uw eigen sleutels blijven zonder dit abonnement werken. De gehoste dienst van Musclog stuurt Uw verzoeken door via een AI-gateway, OpenRouter of Otari (van Mozilla.ai), naar AI-modelaanbieders. Hoe zij Uw verzoeken verwerken, wordt beschreven in Ons Privacybeleid en in hun eigen privacybeleid en voorwaarden, hieronder gelinkt.",
           "content2": "Het abonnement wordt verkocht en gefactureerd door Apple of Google, niet door Ons. De prijs wordt in de applicatie getoond, in uw valuta, voordat u koopt. De betaling wordt bij bevestiging van uw appwinkelaccount in rekening gebracht, en het abonnement wordt elke maand automatisch verlengd, tenzij u het minstens 24 uur voor het einde van de lopende periode opzegt. U kunt het beheren of opzeggen in de instellingen van uw appwinkelaccount, en terugbetalingen worden door de winkel afgehandeld volgens haar eigen beleid.",
           "content3": "Musclog Iron omvat een beperkt tegoed aan AI-verzoeken, en de applicatie toont hoeveel er nog over is. Wanneer het op is, wordt gehoste AI gepauzeerd tot het wordt vernieuwd, en uw eigen sleutels en de gratis optie blijven werken. Aankopen herstellen in de applicatie zet Musclog Iron weer aan voor een apparaat dat is aangemeld met het appwinkelaccount waarmee is gekocht.",
-          "content4": "Wij kunnen Musclog Iron wijzigen, beperken of beëindigen. Als Wij het beëindigen, kondigen Wij dat aan in de applicatie en op deze website, stoppen Wij eerst met nieuwe abonnementen, en U kunt op elk moment in Uw account bij de appwinkel opzeggen. Als U voor een periode hebt betaald die niet meer kan worden gebruikt, kunt U de winkel om terugbetaling vragen, en Wij ondersteunen dat verzoek."
+          "content4": "Wij kunnen Musclog Iron wijzigen om een geldige reden, zoals een wetswijziging of een wijziging bij de aanbieders waarop het steunt. Als een wijziging het voor U merkbaar slechter maakt, laten Wij het U vooraf weten en kunt U kosteloos opzeggen voordat ze ingaat. Als Wij het stopzetten, kondigen Wij dat aan in de applicatie en op deze website en stoppen Wij eerst met nieuwe abonnementen. Voor elke periode die U hebt betaald en niet kunt gebruiken, kunt U bij de winkel om terugbetaling vragen, en Wij ondersteunen dat verzoek.",
+          "content5": "Als U in de Europese Unie of de Europese Economische Ruimte woont, hebt U 14 dagen vanaf de dag waarop U zich abonneert om zonder opgave van reden van het abonnement af te zien. Om af te zien, laat U Ons dat duidelijk weten via support@musclog.app of via het postadres hieronder, of vraag U een terugbetaling aan via de winkel waarin U zich hebt geabonneerd, en zeg het abonnement daar ook op, zodat het niet wordt verlengd. Als U hebt gevraagd dat de dienst binnen die 14 dagen start, kan het zijn dat U betaalt voor het deel dat al is geleverd. U kunt deze woorden gebruiken: “Ik zie af van mijn Musclog Iron-abonnement. Datum waarop ik me heb geabonneerd: … Winkel: … Naam: …”."
         },
         "termination": {
           "title": "Beëindiging",
@@ -948,13 +954,15 @@
         },
         "liability": {
           "title": "Beperking van aansprakelijkheid",
-          "content1": "Voor zover maximaal toegestaan door toepasselijk recht, is het Bedrijf in geen geval aansprakelijk voor indirecte, incidentele, speciale, gevolgschade of punitieve schade, inclusief maar niet beperkt tot verlies van winst, gegevens, gebruik, goodwill of andere immateriële verliezen.",
-          "content2": "Deze applicatie is geen medisch hulpmiddel. Raadpleeg altijd een gekwalificeerde zorgverlener voordat je gezondheids- of fitnessbeslissingen neemt op basis van gegevens uit deze app."
+          "content1": "Voor zover het toepasselijke recht dit toestaat, is het Bedrijf niet aansprakelijk voor indirecte, bijzondere, gevolg- of strafrechtelijke schade, of voor verlies van winst, bedrijf of goodwill. Als U een consument bent, neemt dit geen enkel recht weg dat de wet U geeft, ook niet voor verlies of schade aan Uw gegevens door een gebrek.",
+          "content2": "Deze applicatie, inclusief de AI-functies, is geen medisch hulpmiddel en geeft geen medisch advies. Raadpleeg altijd een gekwalificeerde zorgverlener voordat U gezondheids- of fitnessbeslissingen neemt op basis van gegevens uit deze app of op basis van AI-uitvoer.",
+          "content3": "Niets in deze Voorwaarden sluit enige aansprakelijkheid uit of beperkt die die niet op grond van het toepasselijke recht kan worden uitgesloten of beperkt, waaronder aansprakelijkheid voor overlijden of lichamelijk letsel veroorzaakt door nalatigheid, voor opzet of grove schuld, of op grond van dwingende regels inzake productaansprakelijkheid."
         },
         "disclaimer": {
           "title": "Disclaimer",
-          "content1": "De Service wordt aan jou geleverd \"ZOALS ZIJ IS\" en \"ZOALS BESCHIKBAAR\", met alle fouten en gebreken en zonder enige garantie.",
-          "content2": "Zonder het voorgaande te beperken, biedt het Bedrijf geen garantie dat de Service aan je vereisten voldoet, beoogde resultaten bereikt of compatibel is met andere software, applicaties, systemen of diensten."
+          "content1": "Behalve wat de wet vereist, wordt de Dienst geleverd “AS IS” en “AS AVAILABLE”. Als U een consument bent, blijft de wettelijke garantie gelden dat digitale inhoud en digitale diensten voldoen aan wat is overeengekomen, en niets hierin beperkt die.",
+          "content2": "Zonder het voorgaande te beperken, biedt het Bedrijf geen garantie dat de Service aan je vereisten voldoet, beoogde resultaten bereikt of compatibel is met andere software, applicaties, systemen of diensten.",
+          "content3": "In het bijzonder wordt AI-uitvoer geleverd zonder enige garantie dat zij nauwkeurig, volledig, betrouwbaar, actueel of geschikt voor enig doel is (zie \"AI-functies en AI-uitvoer\")."
         },
         "governingLaw": {
           "title": "Toepasselijk recht",
@@ -963,11 +971,28 @@
         },
         "changes": {
           "title": "Wijzigingen in deze voorwaarden",
-          "content": "Wij behouden ons het recht voor om deze Voorwaarden naar eigen goeddunken op elk moment te wijzigen of te vervangen. Wij zullen proberen minimaal 30 dagen van tevoren kennis te geven voordat nieuwe voorwaarden van kracht worden. Door de Service te blijven gebruiken na de inwerkingtreding van de wijzigingen, ga je akkoord met de herziene voorwaarden."
+          "content": "Wij kunnen deze Voorwaarden wijzigen om een geldige reden, zoals een wetswijziging, een wijziging in de Dienst of in de aanbieders waarop die steunt. Wij geven minstens 30 dagen van tevoren kennis van een wijziging die niet in Uw voordeel is, en U kunt de Dienst stoppen met gebruiken, of Musclog Iron kosteloos opzeggen, voordat zij ingaat."
         },
         "aiOutput": {
-          "title": "AI-functies",
-          "content": "De AI-functies van Musclog, waaronder Musclog Iron, de gratis Musclog AI-optie en elke aanbieder die U kiest, kunnen fouten maken. Schattingen van calorieën en voedingsstoffen, trainingsadviezen en chatantwoorden zijn geen medisch, voedings- of trainingsadvies. Controleer wat voor U belangrijk is voordat U erop handelt, en raadpleeg een gekwalificeerde professional over elke gezondheidsaandoening of blessure."
+          "title": "AI-functies en AI-uitvoer",
+          "content1": "De AI-functies in Musclog zijn optioneel. De applicatie werkt volledig zonder deze functies, en geen enkele ervan verzendt of produceert iets totdat U een AI-optie kiest en die inschakelt. Deze sectie geldt voor elke AI-optie: Musclog Iron, de gratis Musclog AI-optie, AI op Uw apparaat, een lokaal of zelf gehost model, en Uw eigen sleutel van OpenAI, Anthropic Claude of Google Gemini. Ze geldt ook voor inhoud die is geschreven door een externe AI-assistent, zoals ChatGPT of Claude, die U in de applicatie importeert.",
+          "content2": "\"AI-uitvoer\" betekent alles wat een AI-functie produceert of helpt produceren, inclusief antwoorden van de coach (Loggy of een andere coachpersona), schattingen van calorieën, macro's en andere voedingsstoffen op basis van foto's, beschrijvingen of etiketten, maaltijdsuggesties en maaltijdplannen, trainingsplannen en oefeningsuggesties, inzichten en samenvattingen, spraakopdrachten, en gegevens die een AI leest uit een bestand, een foto of geplakte tekst.",
+          "items": [
+            "AI-uitvoer wordt automatisch geproduceerd door AI-modellen die derden bouwen en draaien. Niemand bij Musclog schrijft, controleert of keurt die uitvoer goed voordat U haar ziet, en Wij hebben geen controle over wat een model zegt.",
+            "AI-uitvoer is vaak onjuist. Ze kan onvolledig, verouderd of onnauwkeurig zijn: calorieën en macro's die ver naast de werkelijkheid zitten, voedingsmiddelen of porties die verkeerd zijn afgelezen, oefeningen of belastingen die niet bij U passen, en uitspraken die zeker klinken maar onwaar zijn. Geen enkele AI-optie, abonnement of denkniveau maakt haar betrouwbaar.",
+            "Loggy en de andere coachpersona's zijn AI-personages, geen mensen. Het zijn geen artsen, diëtisten, fysiotherapeuten, psychologen of gecertificeerde coaches. AI-uitvoer is algemene informatie. Ze is geen medisch, voedings-, dieet-, psychologisch of professioneel trainingsadvies, geen diagnose of behandeling, en ze vervangt geen advies van een gekwalificeerde professional.",
+            "Vertrouw op AI-uitvoer niet voor beslissingen over Uw gezondheid of veiligheid. Raadpleeg een gekwalificeerde professional voordat U ernaar handelt als U pijn, een blessure, een ziekte, een eetstoornis of een aandoening heeft die door voeding of beweging wordt beïnvloed, als U zwanger bent of borstvoeding geeft, of als U medicijnen gebruikt. Stop met sporten en zoek hulp als U pijn, duizeligheid, pijn op de borst of kortademigheid voelt. Bel bij een noodgeval het plaatselijke alarmnummer.",
+            "U beslist of en hoe U AI-uitvoer gebruikt. Controleer elke waarde, elk voedingsmiddel, elke oefening en elk plan voordat U het registreert, volgt of deelt, en corrigeer of verwijder het wanneer het fout is. Dit geldt ook voor resultaten die een AI-functie voor U opslaat, zoals een trainingsplan dat de coach maakt of iets dat de coach over U onthoudt. De items die U in de applicatie bewaart, zijn Uw eigen gegevens.",
+            "Uw chatgeschiedenis wordt alleen op Uw apparaat opgeslagen, en de applicatie laat U elk bericht bewerken of verwijderen, ook berichten die door de AI zijn geschreven, en berichten toevoegen die lijken van de coach te komen. Een bericht dat in de applicatie, in een export of in een screenshot wordt getoond, is daarom mogelijk niet wat de AI oorspronkelijk schreef. Noch Musclog Iron noch de gratis Musclog AI-optie bewaart een kopie van Uw berichten waar Wij bij kunnen, dus Wij kunnen niet bevestigen wat een bericht oorspronkelijk zei. Wij zijn niet verantwoordelijk voor een bericht dat is bewerkt of toegevoegd, of voor de inhoud van een bericht zoals het buiten de applicatie verschijnt.",
+            "Wanneer U Uw eigen sleutel, AI op Uw Apparaat of een lokaal model gebruikt, komt de AI-output van die aanbieder of dat model, onder de eigen voorwaarden daarvan. Musclog geeft Uw verzoek door en toont het antwoord. Welke AI-optie U ook gebruikt, U stemt er ook mee in de gebruiksregels van de aanbieder en het model dat U antwoordt, na te leven, en AI-functies niet te gebruiken om de wet te overtreden of schadelijke inhoud te maken.",
+            "Musclog Iron en de gratis Musclog AI-optie geven U toegang tot AI-verwerking binnen hun grenzen. Ze bevatten geen belofte dat AI-uitvoer nauwkeurig, volledig, actueel of geschikt voor U is, en een fout of onbruikbaar antwoord is geen gebrek van Musclog Iron of van de Service. De applicatie vraagt U dit te accepteren voordat Musclog Iron of de gratis Musclog AI-optie wordt ingeschakeld.",
+            "Voor zover maximaal toegestaan op grond van het toepasselijke recht, en behoudens de laatste alinea van \"Beperking van aansprakelijkheid\", is het Bedrijf niet aansprakelijk voor enig verlies of enige schade die voortvloeit uit AI-uitvoer, uit een bewerkt of toegevoegd bericht, of uit Uw gebruik van of vertrouwen op AI-uitvoer, waaronder letsel, ziekte, gewichts- of lichaamssamenstellingsverandering, of ander verlies veroorzaakt door handelen op basis van een schatting, een plan of een antwoord.",
+            "Als AI-uitvoer schadelijk lijkt, stop dan met het gebruik ervan en laat het Ons weten op het adres aan het einde van deze Voorwaarden."
+          ]
+        },
+        "eligibility": {
+          "title": "Leeftijd",
+          "content": "U moet minstens 16 jaar oud zijn om Musclog te gebruiken. Musclog Iron en de gratis Musclog AI-optie zijn alleen voor mensen van 18 jaar en ouder. Aanbieders van AI-opties die U met Uw eigen sleutel verbindt, hebben hun eigen leeftijdsregels."
         }
       },
       "contact": {
@@ -1014,16 +1039,16 @@
       },
       "privacy": {
         "title": "Privacy eerst",
-        "description": "We slaan niets op van wat je hier verstuurt. Je bericht gaat rechtstreeks naar ons e-mailadres — geen servers, geen logs."
+        "description": "Dit formulier stuurt niets naar onze servers: het opent je mailapp. We ontvangen je bericht als gewone e-mail en bewaren het zodat we je kunnen antwoorden."
       },
       "pageTitle": "Contact | Musclog",
-      "operator": "Musclog wordt uitgegeven door Jubinganga Supply, een eenmanszaak die in Nederland is ingeschreven (KVK 72255145). Adres: Postbus 69307, 1060 CJ Amsterdam, Nederland. Telefoon: +31 6 5882 8627."
+      "operator": "Musclog wordt uitgegeven door Jubinganga Supply, een eenmanszaak die in Nederland is ingeschreven (KVK 72255145, BTW NL005078897B86). Adres: Postbus 69307, 1060 CJ Amsterdam, Nederland. Telefoon: +31 6 5882 8627."
     },
     "calculator": {
       "pageTitle": "TDEE Calculator | Musclog",
       "titleStart": "TDEE",
       "titleHighlight": "CALCULATOR",
-      "subtitle": "Precisiedata voor de hoog-presterende atleet. Bereken je biologische basislijn en optimaliseer je traject.",
+      "subtitle": "Schat je rust- en dagelijkse energieverbruik en stel calorie- en macrodoelen in.",
       "form": {
         "title": "FITNESSPROFIEL",
         "age": "LEEFTIJD",
@@ -1085,7 +1110,9 @@
         "maintenance": "ONDERHOUD",
         "calorieSurplus": "CALORIE-OVERSCHOT",
         "calorieDeficit": "CALORIETEKORT"
-      }
+      },
+      "disclaimer": "Dit zijn schattingen, geen medisch advies. Als je zwanger bent of borstvoeding geeft, een eetstoornis hebt of hebt gehad, of een medische aandoening hebt, praat dan met een arts voordat je iets aan je eetpatroon verandert.",
+      "underAge": "Deze calculator is bedoeld voor mensen van {{age}} jaar en ouder."
     },
     "exercises": {
       "eyebrow": "OEFENINGEN BIBLIOTHEEK",
@@ -1125,7 +1152,7 @@
           "items": [
             {
               "question": "Wat is Musclog?",
-              "answer": "Musclog is een privacy-first fitness-app voor het bijhouden van trainingen, voeding en lichaamssamenstelling. Al uw gegevens worden lokaal op uw apparaat opgeslagen — er wordt niets naar een server verzonden tenzij u optionele AI-functies expliciet inschakelt."
+              "answer": "Musclog is een fitness-app voor het bijhouden van trainingen, voeding en lichaamssamenstelling. Je gegevens worden lokaal op je apparaat opgeslagen. De app gebruikt het internet voor voedselzoeken, oefenfoto's, optionele AI-functies, controles van Musclog Iron, modeldownloads en crashrapporten. Die staan standaard aan en kunnen worden uitgezet."
             },
             {
               "question": "Werkt de app zonder internetverbinding?",
@@ -1142,6 +1169,10 @@
             {
               "question": "Heeft Musclog een abonnement?",
               "answer": "Musclog is gratis te gebruiken. Loggen, plannen, geschiedenis, grafieken, importeren, exporteren en de gratis AI-opties kosten niets. Musclog Iron is een optioneel maandelijks abonnement dat een gehoste AI-quota toevoegt, zodat u geen eigen sleutel nodig hebt. U hebt het nooit nodig om de rest van de app te gebruiken."
+            },
+            {
+              "question": "Kan ik de AI vertrouwen?",
+              "answer": "Controleer het eerst. De AI-functies zijn optioneel en maken vaak fouten: een calorieschatting op basis van een foto kan ver naast de werkelijkheid zitten, een trainingsplan past misschien niet bij je, en de coach kan zeker klinken en toch ongelijk hebben. Zie elk AI-antwoord als een startpunt, niet als medisch, voedings- of trainingsadvies, en raadpleeg een gekwalificeerde professional over alles wat je gezondheid raakt. Je kunt alles wat de AI heeft gemaakt corrigeren of verwijderen, ook de berichten van de coach, dus een chatgeschiedenis toont misschien niet wat de AI werkelijk schreef."
             }
           ]
         },

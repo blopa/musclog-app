@@ -1,5 +1,6 @@
 import { randomUUID } from 'expo-crypto';
 
+import { getEnglishFoundationFoodText } from '@/data/foundationFoodCatalogue';
 import type { MealType } from '@/database/models/NutritionLog';
 import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
@@ -37,7 +38,10 @@ export async function loadFoodLogInstructions(language: string): Promise<string>
   try {
     if (await SettingsService.getSendFoundationFoodsToLlm()) {
       const foods = await FoodService.getFoundationFoods(FOUNDATION_FOODS_LIMIT);
-      foundationFoods = foods.map((food) => ({ id: food.id, name: food.name }));
+      foundationFoods = foods.map((food) => ({
+        id: food.id,
+        name: getEnglishFoundationFoodText(food).name,
+      }));
     }
   } catch (error) {
     handleError(error, 'externalFoodLog.loadFoundationFoods');

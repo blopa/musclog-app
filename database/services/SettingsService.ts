@@ -688,7 +688,7 @@ export class SettingsService {
   }
 
   static async getDailyNutritionInsights(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, true);
+    return SettingsService.getBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, false);
   }
 
   static async getWorkoutInsights(): Promise<boolean> {

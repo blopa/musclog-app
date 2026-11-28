@@ -3,6 +3,7 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { OnDeviceAiSection } from '@/components/settings/OnDeviceAiSection';
@@ -23,6 +24,7 @@ import {
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { SettingsService } from '@/database/services/SettingsService';
+import { useAiConsentGate } from '@/hooks/useAiConsentGate';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { usePremium } from '@/hooks/usePremium';
 import { useSettings } from '@/hooks/useSettings';
@@ -36,7 +38,7 @@ import {
 } from '@/utils/musclogGatewayAvailability';
 
 import { AIBehaviorSettingsModal } from './AIBehaviorSettingsModal';
-import { ConfirmationModal } from './ConfirmationModal';
+import { AiProviderConsentModal } from './AiProviderConsentModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PremiumModal } from './PremiumModal';
 
@@ -243,81 +245,95 @@ function AIIntegrationCard({
 type AISettingsModalProps = {
   visible: boolean;
   onClose: () => void;
-  // Google Gemini
-  googleGeminiApiKey?: string;
-  onGoogleGeminiApiKeyChange?: (value: string) => void;
-  geminiModel?: string;
-  onGeminiModelPress?: (model: string) => void;
-  // OpenAI
-  openAiApiKey?: string;
-  onOpenAiApiKeyChange?: (value: string) => void;
-  onGetOpenAiKeyPress?: () => void;
-  openAiModel?: string;
-  onOpenAiModelPress?: (model: string) => void;
-  // Anthropic Claude
-  claudeApiKey?: string;
-  onClaudeApiKeyChange?: (value: string) => void;
-  claudeModel?: string;
-  onClaudeModelPress?: (model: string) => void;
-  // Local LLM
-  localLlmApiKey?: string;
-  onLocalLlmApiKeyChange?: (value: string) => void;
-  localLlmModel?: string;
-  onLocalLlmModelChange?: (value: string) => void;
-  localLlmBaseUrl?: string;
-  onLocalLlmBaseUrlChange?: (value: string) => void;
 };
 
-type ModelMenuKey = 'gemini' | 'openai' | 'claude';
+type OwnKeyProvider = 'gemini' | 'openai' | 'claude';
 
-export function AISettingsModal({
-  visible,
-  onClose,
-  googleGeminiApiKey,
-  onGoogleGeminiApiKeyChange,
-  geminiModel,
-  onGeminiModelPress,
-  openAiApiKey,
-  onOpenAiApiKeyChange,
-  onGetOpenAiKeyPress,
-  openAiModel,
-  onOpenAiModelPress,
-  claudeApiKey,
-  onClaudeApiKeyChange,
-  claudeModel,
-  onClaudeModelPress,
-  localLlmApiKey,
-  onLocalLlmApiKeyChange,
-  localLlmModel,
-  onLocalLlmModelChange,
-  localLlmBaseUrl,
-  onLocalLlmBaseUrlChange,
-}: AISettingsModalProps) {
+// Everything that differs between the three own-key providers. Translation keys are whole
+// literals so scripts/check-translations.js can see them.
+const OWN_KEY_PROVIDERS = {
+  gemini: {
+    sectionTitle: 'settings.aiSettings.googleGeminiIntegration',
+    apiKeyLabel: 'settings.aiSettings.googleGeminiApiKey',
+    apiKeyHelper: 'settings.aiSettings.apiKeyHelper',
+    toggleLabel: 'settings.aiSettings.enableGoogleGemini',
+    modelLabel: 'settings.aiSettings.geminiModel',
+    modelFallbackText: undefined,
+    menuTitle: 'settings.aiSettings.selectGeminiModel',
+    menuSubtitle: 'settings.aiSettings.selectGeminiModelSubtitle',
+    modelDescriptionPrefix: 'Google Gemini',
+    models: GEMINI_MODELS,
+    iconTint: 'info',
+    iconSize: 'lg',
+    saveKey: (key: string) => SettingsService.setGoogleGeminiApiKey(key),
+    selectModel: (model: string) => SettingsService.setGoogleGeminiModel(model),
+  },
+  openai: {
+    sectionTitle: 'settings.aiSettings.openAiIntegration',
+    apiKeyLabel: 'settings.aiSettings.openAiApiKey',
+    apiKeyHelper: undefined,
+    toggleLabel: 'settings.aiSettings.enableOpenAi',
+    modelLabel: 'settings.aiSettings.openAiModel',
+    modelFallbackText: 'settings.aiSettings.selectModel',
+    menuTitle: 'settings.aiSettings.selectOpenAiModel',
+    menuSubtitle: 'settings.aiSettings.selectOpenAiModelSubtitle',
+    modelDescriptionPrefix: 'OpenAI',
+    models: OPENAI_MODELS,
+    iconTint: 'indigo',
+    iconSize: 'md',
+    saveKey: (key: string) => SettingsService.setOpenAiApiKey(key),
+    selectModel: (model: string) => SettingsService.setOpenAiModel(model),
+  },
+  claude: {
+    sectionTitle: 'settings.aiSettings.claudeIntegration',
+    apiKeyLabel: 'settings.aiSettings.claudeApiKey',
+    apiKeyHelper: undefined,
+    toggleLabel: 'settings.aiSettings.enableClaude',
+    modelLabel: 'settings.aiSettings.claudeModel',
+    modelFallbackText: 'settings.aiSettings.selectModel',
+    menuTitle: 'settings.aiSettings.selectClaudeModel',
+    menuSubtitle: 'settings.aiSettings.selectClaudeModelSubtitle',
+    modelDescriptionPrefix: 'Anthropic',
+    models: CLAUDE_MODELS,
+    iconTint: 'indigo',
+    iconSize: 'md',
+    saveKey: (key: string) => SettingsService.setClaudeApiKey(key),
+    selectModel: (model: string) => SettingsService.set(SETTINGS.claudeModel, model),
+  },
+} as const;
+
+const OWN_KEY_PROVIDER_ORDER: readonly OwnKeyProvider[] = ['gemini', 'openai', 'claude'];
+
+export function AISettingsModal({ visible, onClose }: AISettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const settings = useSettings();
-  const [activeModelMenu, setActiveModelMenu] = useSubModalState<ModelMenuKey | null>(
+  const [activeModelMenu, setActiveModelMenu] = useSubModalState<OwnKeyProvider | null>(
     visible,
     null
   );
   const [behaviorVisible, setBehaviorVisible] = useState(false);
-  const [freeTierConsentVisible, setFreeTierConsentVisible] = useState(false);
+  // Asked before any option starts receiving data: a switch turned on, or a key saved.
+  const consent = useAiConsentGate();
   const [premiumVisible, setPremiumVisible] = useState(false);
   // Loads the overview while this screen is open; `PremiumCard` below reads the same store.
   const premium = usePremium({ load: visible });
   const isMusclogIronActive =
     premium.enabled && premium.view.phase === 'active' && premium.useHostedAi;
 
-  const resolvedGeminiApiKey = googleGeminiApiKey ?? settings.googleGeminiApiKey ?? '';
-  const resolvedGeminiModel = geminiModel ?? settings.googleGeminiModel ?? DEFAULT_GEMINI_MODEL;
-  const resolvedOpenAiApiKey = openAiApiKey ?? settings.openAiApiKey ?? '';
-  const resolvedOpenAiModel = openAiModel ?? settings.openAiModel ?? DEFAULT_OPENAI_MODEL;
-  const resolvedClaudeApiKey = claudeApiKey ?? settings.claudeApiKey ?? '';
-  const resolvedClaudeModel = claudeModel ?? settings.claudeModel ?? DEFAULT_CLAUDE_MODEL;
-  const resolvedLocalLlmApiKey = localLlmApiKey ?? settings.localLlmApiKey ?? '';
-  const resolvedLocalLlmModel = localLlmModel ?? settings.localLlmModel ?? 'llama3';
-  const resolvedLocalLlmBaseUrl =
-    localLlmBaseUrl ?? settings.localLlmBaseUrl ?? 'http://localhost:11434/v1';
+  const savedKeys: Record<OwnKeyProvider, string> = {
+    gemini: settings.googleGeminiApiKey ?? '',
+    openai: settings.openAiApiKey ?? '',
+    claude: settings.claudeApiKey ?? '',
+  };
+  const savedModels: Record<OwnKeyProvider, string> = {
+    gemini: settings.googleGeminiModel ?? DEFAULT_GEMINI_MODEL,
+    openai: settings.openAiModel ?? DEFAULT_OPENAI_MODEL,
+    claude: settings.claudeModel ?? DEFAULT_CLAUDE_MODEL,
+  };
+  const resolvedLocalLlmApiKey = settings.localLlmApiKey ?? '';
+  const resolvedLocalLlmModel = settings.localLlmModel ?? 'llama3';
+  const resolvedLocalLlmBaseUrl = settings.localLlmBaseUrl ?? 'http://localhost:11434/v1';
 
   // Use debounced settings for instant UI updates
   const {
@@ -374,73 +390,59 @@ export function AISettingsModal({
   }, [visible, flushAllPendingChanges]);
 
   // Local state for API keys & local LLM configs (to avoid saving on every keystroke)
-  const [localGeminiApiKey, setLocalGeminiApiKey] = useState(resolvedGeminiApiKey);
-  const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(resolvedOpenAiApiKey);
-  const [localClaudeApiKey, setLocalClaudeApiKey] = useState(resolvedClaudeApiKey);
+  const [localKeys, setLocalKeys] = useState<Record<OwnKeyProvider, string>>(savedKeys);
   const [localStateLlmApiKey, setLocalStateLlmApiKey] = useState(resolvedLocalLlmApiKey);
   const [localStateLlmModel, setLocalStateLlmModel] = useState(resolvedLocalLlmModel);
   const [localStateLlmBaseUrl, setLocalStateLlmBaseUrl] = useState(resolvedLocalLlmBaseUrl);
 
+  const setLocalKey = (provider: OwnKeyProvider, value: string) => {
+    setLocalKeys((previous) => ({ ...previous, [provider]: value }));
+  };
+
   // Track if there are unsaved changes
-  const hasGeminiKeyChanges = localGeminiApiKey !== resolvedGeminiApiKey;
-  const hasOpenAiKeyChanges = localOpenAiApiKey !== resolvedOpenAiApiKey;
-  const hasClaudeKeyChanges = localClaudeApiKey !== resolvedClaudeApiKey;
   const hasLocalLlmChanges =
     localStateLlmApiKey !== resolvedLocalLlmApiKey ||
     localStateLlmModel !== resolvedLocalLlmModel ||
     localStateLlmBaseUrl !== resolvedLocalLlmBaseUrl;
 
   // Save handlers
-  const handleSaveGeminiApiKey = () => {
-    if (onGoogleGeminiApiKeyChange) {
-      onGoogleGeminiApiKeyChange(localGeminiApiKey);
+  // The own-provider switches start on, so saving a key is often what turns the provider on.
+  const saveOwnKey = (provider: OwnKeyProvider) => {
+    const key = localKeys[provider];
+    const save = () => {
+      void OWN_KEY_PROVIDERS[provider].saveKey(key);
+    };
+
+    if (key.trim()) {
+      consent.request(provider, save);
     } else {
-      void SettingsService.setGoogleGeminiApiKey(localGeminiApiKey);
+      save();
     }
   };
 
-  const handleSaveClaudeApiKey = () => {
-    if (onClaudeApiKeyChange) {
-      onClaudeApiKeyChange(localClaudeApiKey);
-    } else {
-      void SettingsService.setClaudeApiKey(localClaudeApiKey);
-    }
-  };
-
-  const handleSaveOpenAiApiKey = () => {
-    if (onOpenAiApiKeyChange) {
-      onOpenAiApiKeyChange(localOpenAiApiKey);
-    } else {
-      void SettingsService.setOpenAiApiKey(localOpenAiApiKey);
-    }
+  const saveLocalLlmConfig = () => {
+    void SettingsService.setLocalLlmApiKey(localStateLlmApiKey);
+    void SettingsService.setLocalLlmModel(localStateLlmModel);
+    void SettingsService.setLocalLlmBaseUrl(localStateLlmBaseUrl);
   };
 
   const handleSaveLocalLlmConfig = () => {
-    if (onLocalLlmApiKeyChange) {
-      onLocalLlmApiKeyChange(localStateLlmApiKey);
+    if (debouncedEnableLocalLlm) {
+      consent.request('local', saveLocalLlmConfig);
     } else {
-      void SettingsService.setLocalLlmApiKey(localStateLlmApiKey);
-    }
-
-    if (onLocalLlmModelChange) {
-      onLocalLlmModelChange(localStateLlmModel);
-    } else {
-      void SettingsService.setLocalLlmModel(localStateLlmModel);
-    }
-
-    if (onLocalLlmBaseUrlChange) {
-      onLocalLlmBaseUrlChange(localStateLlmBaseUrl);
-    } else {
-      void SettingsService.setLocalLlmBaseUrl(localStateLlmBaseUrl);
+      // Nothing is sent while the local server is off; turning it on asks.
+      saveLocalLlmConfig();
     }
   };
 
-  // Sync local state when props or stored settings change (e.g., when modal opens with saved values)
+  // Sync local state when stored settings change (e.g., when modal opens with saved values)
   useEffect(() => {
     const sync = () => {
-      setLocalGeminiApiKey(resolvedGeminiApiKey);
-      setLocalOpenAiApiKey(resolvedOpenAiApiKey);
-      setLocalClaudeApiKey(resolvedClaudeApiKey);
+      setLocalKeys({
+        gemini: savedKeys.gemini,
+        openai: savedKeys.openai,
+        claude: savedKeys.claude,
+      });
       setLocalStateLlmApiKey(resolvedLocalLlmApiKey);
       setLocalStateLlmModel(resolvedLocalLlmModel);
       setLocalStateLlmBaseUrl(resolvedLocalLlmBaseUrl);
@@ -448,43 +450,75 @@ export function AISettingsModal({
 
     sync();
   }, [
-    resolvedGeminiApiKey,
-    resolvedOpenAiApiKey,
-    resolvedClaudeApiKey,
+    savedKeys.gemini,
+    savedKeys.openai,
+    savedKeys.claude,
     resolvedLocalLlmApiKey,
     resolvedLocalLlmModel,
     resolvedLocalLlmBaseUrl,
   ]);
 
-  const geminiToggleItems = [
-    {
-      key: 'enable-gemini',
-      label: t('settings.aiSettings.enableGoogleGemini'),
-      value: debouncedEnableGoogleGemini,
-      onValueChange: handleEnableGoogleGeminiChange,
+  const ownKeyEnabled: Record<OwnKeyProvider, boolean> = {
+    gemini: debouncedEnableGoogleGemini,
+    openai: debouncedEnableOpenAi,
+    claude: debouncedEnableClaude,
+  };
+  const ownKeyEnableHandlers: Record<OwnKeyProvider, (enabled: boolean) => void> = {
+    gemini: handleEnableGoogleGeminiChange,
+    openai: handleEnableOpenAiChange,
+    claude: handleEnableClaudeChange,
+  };
+
+  const ownKeyToggleItem = (provider: OwnKeyProvider) => {
+    const config = OWN_KEY_PROVIDERS[provider];
+    const tint =
+      config.iconTint === 'info'
+        ? { background: theme.colors.status.info10, foreground: theme.colors.status.info }
+        : { background: theme.colors.status.indigo10, foreground: theme.colors.status.indigo };
+
+    return {
+      key: `enable-${provider}`,
+      label: t(config.toggleLabel),
+      value: ownKeyEnabled[provider],
+      onValueChange: (value: boolean) => {
+        if (value) {
+          consent.request(provider, () => ownKeyEnableHandlers[provider](true));
+        } else {
+          ownKeyEnableHandlers[provider](false);
+        }
+      },
       icon: (
         <View
           style={{
             width: theme.size['8'],
             height: theme.size['8'],
             borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.status.info10,
+            backgroundColor: tint.background,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Bot size={theme.iconSize.lg} color={theme.colors.status.info} />
+          <Bot
+            size={config.iconSize === 'lg' ? theme.iconSize.lg : theme.iconSize.md}
+            color={tint.foreground}
+          />
         </View>
       ),
-    },
-  ];
+    };
+  };
 
   const localLlmToggleItems = [
     {
       key: 'enable-local-llm',
       label: t('settings.aiSettings.enableLocalLlm'),
       value: debouncedEnableLocalLlm,
-      onValueChange: handleEnableLocalLlmWithThinking,
+      onValueChange: (value: boolean) => {
+        if (value) {
+          consent.request('local', () => handleEnableLocalLlmWithThinking(true));
+        } else {
+          handleEnableLocalLlmWithThinking(false);
+        }
+      },
       icon: (
         <View
           style={{
@@ -502,119 +536,60 @@ export function AISettingsModal({
     },
   ];
 
-  const openAiToggleItems = [
-    {
-      key: 'enable-openai',
-      label: t('settings.aiSettings.enableOpenAi'),
-      value: debouncedEnableOpenAi,
-      onValueChange: handleEnableOpenAiChange,
-      icon: (
-        <View
-          style={{
-            width: theme.size['8'],
-            height: theme.size['8'],
-            borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.status.indigo10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Bot size={theme.iconSize.md} color={theme.colors.status.indigo} />
-        </View>
-      ),
-    },
-  ];
+  const ownKeyModelMenuItems = (provider: OwnKeyProvider): BottomPopUpMenuItem[] => {
+    const config = OWN_KEY_PROVIDERS[provider];
+    const models: readonly { model: string }[] = Object.values(config.models);
 
-  const claudeToggleItems = [
-    {
-      key: 'enable-claude',
-      label: t('settings.aiSettings.enableClaude'),
-      value: debouncedEnableClaude,
-      onValueChange: handleEnableClaudeChange,
-      icon: (
-        <View
-          style={{
-            width: theme.size['8'],
-            height: theme.size['8'],
-            borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.status.indigo10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Bot size={theme.iconSize.md} color={theme.colors.status.indigo} />
-        </View>
-      ),
-    },
-  ];
-
-  const geminiModelMenuItems: BottomPopUpMenuItem[] = Object.values(GEMINI_MODELS).map((model) => ({
-    icon: Bot,
-    selected: model.model === resolvedGeminiModel,
-    title: model.model,
-    description: `Google Gemini ${model.model}`,
-    onPress: () => {
-      if (onGeminiModelPress) {
-        onGeminiModelPress(model.model);
-      } else {
-        void SettingsService.setGoogleGeminiModel(model.model);
-      }
-    },
-  }));
-
-  const openAiModelMenuItems: BottomPopUpMenuItem[] = Object.values(OPENAI_MODELS).map((model) => ({
-    icon: Bot,
-    selected: model.model === resolvedOpenAiModel,
-    title: model.model,
-    description: `OpenAI ${model.model}`,
-    onPress: () => {
-      if (onOpenAiModelPress) {
-        onOpenAiModelPress(model.model);
-      } else {
-        void SettingsService.setOpenAiModel(model.model);
-      }
-    },
-  }));
-
-  const claudeModelMenuItems: BottomPopUpMenuItem[] = Object.values(CLAUDE_MODELS).map((model) => ({
-    icon: Bot,
-    selected: model.model === resolvedClaudeModel,
-    title: model.model,
-    description: `Anthropic ${model.model}`,
-    onPress: () => {
-      if (onClaudeModelPress) {
-        onClaudeModelPress(model.model);
-      } else {
-        void SettingsService.set(SETTINGS.claudeModel, model.model);
-      }
-    },
-  }));
-
-  const modelMenuConfigs: Record<
-    ModelMenuKey,
-    { title: string; subtitle: string; items: BottomPopUpMenuItem[] }
-  > = {
-    gemini: {
-      title: t('settings.aiSettings.selectGeminiModel'),
-      subtitle: t('settings.aiSettings.selectGeminiModelSubtitle'),
-      items: geminiModelMenuItems,
-    },
-    openai: {
-      title: t('settings.aiSettings.selectOpenAiModel'),
-      subtitle: t('settings.aiSettings.selectOpenAiModelSubtitle'),
-      items: openAiModelMenuItems,
-    },
-    claude: {
-      title: t('settings.aiSettings.selectClaudeModel'),
-      subtitle: t('settings.aiSettings.selectClaudeModelSubtitle'),
-      items: claudeModelMenuItems,
-    },
+    return models.map((model) => ({
+      icon: Bot,
+      selected: model.model === savedModels[provider],
+      title: model.model,
+      description: `${config.modelDescriptionPrefix} ${model.model}`,
+      onPress: () => {
+        void config.selectModel(model.model);
+      },
+    }));
   };
-  const currentModelMenu = activeModelMenu ? modelMenuConfigs[activeModelMenu] : null;
+
+  const currentModelMenu = activeModelMenu
+    ? {
+        title: t(OWN_KEY_PROVIDERS[activeModelMenu].menuTitle),
+        subtitle: t(OWN_KEY_PROVIDERS[activeModelMenu].menuSubtitle),
+        items: ownKeyModelMenuItems(activeModelMenu),
+      }
+    : null;
+
+  const ownKeyCard = (provider: OwnKeyProvider) => {
+    const config = OWN_KEY_PROVIDERS[provider];
+
+    return (
+      <AIIntegrationCard
+        key={provider}
+        sectionTitle={t(config.sectionTitle)}
+        sectionTitleColor={theme.colors.accent.primary}
+        toggleItems={[ownKeyToggleItem(provider)]}
+        enabled={ownKeyEnabled[provider]}
+        apiKeyLabel={t(config.apiKeyLabel)}
+        apiKeyValue={localKeys[provider]}
+        onApiKeyChange={(value) => setLocalKey(provider, value)}
+        apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+        apiKeyHelper={config.apiKeyHelper ? t(config.apiKeyHelper) : undefined}
+        onSaveApiKey={() => saveOwnKey(provider)}
+        onTestKey={() => testApiKey(provider, localKeys[provider])}
+        hasUnsavedChanges={localKeys[provider] !== savedKeys[provider]}
+        modelLabel={t(config.modelLabel)}
+        modelValue={savedModels[provider]}
+        onModelPress={() => setActiveModelMenu(provider)}
+        modelFallbackText={config.modelFallbackText ? t(config.modelFallbackText) : undefined}
+      />
+    );
+  };
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
+        <AiOutputNotice kind="settings" />
+
         {/* Musclog Iron: renders nothing while Premium is switched off in this build. */}
         <PremiumCard onPress={() => setPremiumVisible(true)} />
 
@@ -636,7 +611,7 @@ export function AISettingsModal({
                   value: debouncedUseMusclogFreeTier,
                   onValueChange: (value: boolean) => {
                     if (needsFreeTierConsent(debouncedUseMusclogFreeTier, value)) {
-                      setFreeTierConsentVisible(true);
+                      consent.request('gateway', () => handleUseMusclogFreeTierChange(true));
                     } else {
                       handleUseMusclogFreeTierChange(value);
                     }
@@ -664,73 +639,7 @@ export function AISettingsModal({
           pointerEvents={useMusclogGateway ? 'none' : 'auto'}
         >
           <View className="gap-6">
-            {/* Google Gemini Integration Section */}
-            <AIIntegrationCard
-              sectionTitle={t('settings.aiSettings.googleGeminiIntegration')}
-              sectionTitleColor={theme.colors.accent.primary}
-              toggleItems={geminiToggleItems}
-              enabled={debouncedEnableGoogleGemini}
-              apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
-              apiKeyValue={localGeminiApiKey}
-              onApiKeyChange={setLocalGeminiApiKey}
-              apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
-              apiKeyHelper={t('settings.aiSettings.apiKeyHelper')}
-              onSaveApiKey={handleSaveGeminiApiKey}
-              onTestKey={() => testApiKey('gemini', localGeminiApiKey)}
-              hasUnsavedChanges={hasGeminiKeyChanges}
-              modelLabel={t('settings.aiSettings.geminiModel')}
-              modelValue={resolvedGeminiModel}
-              onModelPress={() => setActiveModelMenu('gemini')}
-            />
-
-            {/* OpenAI Integration Section */}
-            <AIIntegrationCard
-              sectionTitle={t('settings.aiSettings.openAiIntegration')}
-              sectionTitleColor={theme.colors.accent.primary}
-              toggleItems={openAiToggleItems}
-              enabled={debouncedEnableOpenAi}
-              headerContent={
-                onGetOpenAiKeyPress ? (
-                  <Button
-                    label={t('settings.aiSettings.getOpenAiKey')}
-                    onPress={onGetOpenAiKeyPress}
-                    size="sm"
-                    width="full"
-                    variant="outline"
-                  />
-                ) : undefined
-              }
-              apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
-              apiKeyValue={localOpenAiApiKey}
-              onApiKeyChange={setLocalOpenAiApiKey}
-              apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
-              onSaveApiKey={handleSaveOpenAiApiKey}
-              onTestKey={() => testApiKey('openai', localOpenAiApiKey)}
-              hasUnsavedChanges={hasOpenAiKeyChanges}
-              modelLabel={t('settings.aiSettings.openAiModel')}
-              modelValue={resolvedOpenAiModel}
-              onModelPress={() => setActiveModelMenu('openai')}
-              modelFallbackText={t('settings.aiSettings.selectModel')}
-            />
-
-            {/* Anthropic Claude Integration Section */}
-            <AIIntegrationCard
-              sectionTitle={t('settings.aiSettings.claudeIntegration')}
-              sectionTitleColor={theme.colors.accent.primary}
-              toggleItems={claudeToggleItems}
-              enabled={debouncedEnableClaude}
-              apiKeyLabel={t('settings.aiSettings.claudeApiKey')}
-              apiKeyValue={localClaudeApiKey}
-              onApiKeyChange={setLocalClaudeApiKey}
-              apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
-              onSaveApiKey={handleSaveClaudeApiKey}
-              onTestKey={() => testApiKey('claude', localClaudeApiKey)}
-              hasUnsavedChanges={hasClaudeKeyChanges}
-              modelLabel={t('settings.aiSettings.claudeModel')}
-              modelValue={resolvedClaudeModel}
-              onModelPress={() => setActiveModelMenu('claude')}
-              modelFallbackText={t('settings.aiSettings.selectModel')}
-            />
+            {OWN_KEY_PROVIDER_ORDER.map(ownKeyCard)}
 
             {/* Local LLM Integration Section */}
             <AIIntegrationCard
@@ -818,16 +727,10 @@ export function AISettingsModal({
 
         {/* Inside this FullScreenModal's tree, and never open together with a menu. */}
         {/* eslint-disable-next-line local/no-sibling-modals */}
-        <ConfirmationModal
-          visible={freeTierConsentVisible}
-          onClose={() => setFreeTierConsentVisible(false)}
-          onConfirm={() => {
-            setFreeTierConsentVisible(false);
-            handleUseMusclogFreeTierChange(true);
-          }}
-          title={t('settings.aiSettings.musclogFreeTier.consentTitle')}
-          message={t('settings.aiSettings.musclogFreeTier.consentBody')}
-          confirmLabel={t('settings.aiSettings.musclogFreeTier.consentConfirm')}
+        <AiProviderConsentModal
+          provider={consent.provider}
+          onClose={consent.cancel}
+          onConfirm={consent.confirm}
         />
       </View>
 

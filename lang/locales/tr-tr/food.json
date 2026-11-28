@@ -16,7 +16,7 @@
       "unmarkButton": "Oruç gününü kaldır",
       "unmarkShort": "Kaldır",
       "confirmTitle": "Oruç günü olarak işaretlensin mi?",
-      "confirmMessage": "Bu gün oruç tuttuğun bir gün olarak işaretlenir ve ortalamalarında, TDEE'de ve serilerinde gerçek bir 0 kalorili gün sayılır.",
+      "confirmMessage": "Bu, günü oruç tuttuğun bir gün olarak işaretler; böylece ortalamalarında, TDEE'de ve serilerinde gerçek bir 0 kalorili gün sayılır. Oruç herkes için güvenli değildir: hamileysen veya emziriyorsan, ilaç kullanıyorsan, diyabetin varsa ya da geçmişte yeme bozukluğun olduysa önce bir doktora sor.",
       "confirmButton": "Oruç günü olarak işaretle"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Porsiyonu çoğalt",
       "duplicatePortionDesc": "Değiştirmek için bir kopya oluştur",
       "deletePortion": "Porsiyonu sil",
-      "deletePortionDesc": "Bu porsiyonu listenden kaldır",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Bu porsiyonu listenden kaldır"
     },
     "createPortion": {
       "title": "Porsiyon boyutu oluştur",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Bu porsiyonun tahmini toplamları",
       "sendDayToPhone": "Günü telefona gönder",
       "sendDayToPhoneDesc": "Bu günün tüm besinlerini animasyonlu QR kodlarla aktar",
-      "keepMealTypes": "Öğünlerini koru"
+      "keepMealTypes": "Öğünlerini koru",
+      "copyMealTitle": "Başka bir günden {{meal}}",
+      "copyMealTargetNote": "Kopya şuraya eklenecek: {{meal}}"
     },
     "mealInsights": {
       "title": "Öğün analizi",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Malzemeleri ve hazırlanışı metin olarak paylaş",
         "sendToPhone": "Başka bir telefona gönder",
         "sendToPhoneDesc": "Bu öğünü animasyonlu QR kodlarla aktar",
-        "shareRecipeIngredientLine": "{{grams}}g {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} {{name}}",
         "shareRecipeNoIngredients": "Bu öğünün paylaşılacak malzemesi yok",
         "duplicateMeal": "Öğünü çoğalt",
         "duplicateMealDesc": "Bu öğünün bir kopyasını oluştur",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} besin",
         "foodCount_many": "{{count}} besin",
         "foodCount_other": "{{count}} besin",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "{{name}} kaldır",
         "groupTitle": "Tek öğün olarak kaydet",
         "groupSubtitle": "Günlüğünde tek bir kayıt olarak görünür",

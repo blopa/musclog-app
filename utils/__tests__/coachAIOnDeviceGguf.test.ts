@@ -252,9 +252,10 @@ describe('sendCoachMessage on the downloaded engine', () => {
     // 6 history turns + the new message
     expect(messages).toHaveLength(7);
     expect(messages[0].content).toBe('turn 4');
-    // (messages, system prompt, signal): nothing else is sent, the penalties are gone
-    expect(extra).toBeUndefined();
-    expect(mockSendLocalMessage.mock.calls[0]).toHaveLength(3);
+    // (messages, system prompt, signal, usage callback): nothing is sampled differently, the
+    // penalties are gone
+    expect(extra).toEqual(expect.any(Function));
+    expect(mockSendLocalMessage.mock.calls[0]).toHaveLength(4);
   });
 
   it('answers a chat reply in one request at the Tokenmaxxing level (no review round)', async () => {

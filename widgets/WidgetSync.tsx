@@ -1,5 +1,3 @@
-import { Asset } from 'expo-asset';
-import { File } from 'expo-file-system';
 import { widgetsDirectory } from 'expo-widgets';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,13 +14,13 @@ import { localNextDayStartMsFromDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { widgetEvents } from '@/utils/widgetEvents';
 
-import { absoluteFileUri } from './absoluteFileUri';
 import ActivityHeatmapWidget from './ActivityHeatmapWidget';
 import { loadActivityWidgetDays, subscribeToActivityChanges } from './activityWidgetData';
 import {
   buildActivityWidgetSnapshot,
   expiredActivityWidgetSnapshot,
 } from './activityWidgetSnapshot';
+import { copyCameraArtwork } from './cameraArtwork';
 import CycleWidget from './CycleWidget';
 import { loadCycleWidgetInputs, subscribeToCycleChanges } from './cycleWidgetData';
 import {
@@ -81,32 +79,11 @@ function publishDaily<T>(
 
 let cameraImage: Promise<string> | undefined;
 
-async function copyCameraImage(): Promise<string> {
-  if (!widgetsDirectory) {
-    return '';
-  }
-
-  const asset = await Asset.fromModule(require('../assets/camera-widget.png')).downloadAsync();
-  // Replaced once per launch rather than only when missing, so a changed artwork reaches
-  // installs that already hold the old file (a 1024px copy once broke the iOS tile for good).
-  const destination = new File(widgetsDirectory, 'smart-camera.png');
-  if (asset.localUri) {
-    if (destination.exists) {
-      destination.delete();
-    }
-
-    new File(absoluteFileUri(asset.localUri)).copy(destination);
-  }
-
-  // A fresh handle: the one above still reports the state from before delete() and copy().
-  const copied = new File(widgetsDirectory, 'smart-camera.png');
-
-  return copied.exists ? copied.uri : '';
-}
-
 /** The artwork's file URI, or `''` when there is none: a snapshot never carries a null. */
 function sharedCameraImage(): Promise<string> {
-  cameraImage ??= copyCameraImage().catch((error) => {
+  cameraImage ??= (
+    widgetsDirectory ? copyCameraArtwork(widgetsDirectory) : Promise.resolve('')
+  ).catch((error) => {
     cameraImage = undefined;
     void handleError(error, 'widgets.cameraArtwork', { showSnackbar: false });
     return '';

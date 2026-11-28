@@ -47,6 +47,9 @@ export default function Terms() {
     { term: t('sections.definitions.you.term'), def: t('sections.definitions.you.def') },
   ];
 
+  // A list in the locale file: every language carries the same clauses, in the same order.
+  const aiOutputItems = t('sections.aiOutput.items', { returnObjects: true }) as string[];
+
   const sections = [
     {
       title: t('sections.interpretation.title'),
@@ -88,6 +91,14 @@ export default function Terms() {
       ),
     },
     {
+      title: t('sections.eligibility.title'),
+      content: (
+        <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+          {t('sections.eligibility.content')}
+        </p>
+      ),
+    },
+    {
       title: t('sections.links.title'),
       content: (
         <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
@@ -109,8 +120,11 @@ export default function Terms() {
           <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.subscription.content3')}
           </p>
-          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.subscription.content4')}
+          </p>
+          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.subscription.content5')}
           </p>
         </>
       ),
@@ -118,9 +132,21 @@ export default function Terms() {
     {
       title: t('sections.aiOutput.title'),
       content: (
-        <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-          {t('sections.aiOutput.content')}
-        </p>
+        <>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.aiOutput.content1')}
+          </p>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.aiOutput.content2')}
+          </p>
+          <ol className="list-decimal space-y-3 pl-6" style={{ color: BODY_TEXT_SOFT }}>
+            {aiOutputItems.map((item) => (
+              <li key={item} className="leading-relaxed">
+                {item}
+              </li>
+            ))}
+          </ol>
+        </>
       ),
     },
     {
@@ -138,8 +164,11 @@ export default function Terms() {
           <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.liability.content1')}
           </p>
-          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.liability.content2')}
+          </p>
+          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.liability.content3')}
           </p>
         </>
       ),
@@ -151,8 +180,11 @@ export default function Terms() {
           <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.disclaimer.content1')}
           </p>
-          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+          <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {t('sections.disclaimer.content2')}
+          </p>
+          <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('sections.disclaimer.content3')}
           </p>
         </>
       ),

@@ -23,6 +23,7 @@ import {
 import { fixedMetadataFor } from '@/components/website/websiteMetadata';
 import { CALORIES_FOR_CARBS, CALORIES_FOR_FAT, CALORIES_FOR_PROTEIN } from '@/constants/nutrition';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models';
+import { MINIMUM_APP_AGE } from '@/utils/ageGate';
 import {
   bmiFromWeightAndHeightM,
   calculateNutritionPlan,
@@ -187,7 +188,8 @@ export default function Calculator() {
   const set = (patch: Partial<FormState>) => setForm((prev) => ({ ...prev, ...patch }));
 
   const plan = useMemo(() => {
-    if (!form.age || !form.weightKg || !form.heightCm) {
+    // No calorie plan for anyone under the age Musclog is for.
+    if (!form.age || form.age < MINIMUM_APP_AGE || !form.weightKg || !form.heightCm) {
       return null;
     }
 
@@ -301,7 +303,7 @@ export default function Calculator() {
                   </label>
                   <input
                     type="number"
-                    min="10"
+                    min={MINIMUM_APP_AGE}
                     max="100"
                     value={form.age || ''}
                     onChange={(e) =>
@@ -524,6 +526,15 @@ export default function Calculator() {
 
             {/* ── Results ──────────────────────────────────────────────── */}
             <div className="flex flex-col gap-4">
+              <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('disclaimer')}
+              </p>
+              {form.age > 0 && form.age < MINIMUM_APP_AGE ? (
+                <p role="alert" className="text-sm font-semibold text-text-primary">
+                  {t('underAge', { age: MINIMUM_APP_AGE })}
+                </p>
+              ) : null}
+
               {/* BMR + TDEE */}
               <div className="grid grid-cols-2 gap-3">
                 <div

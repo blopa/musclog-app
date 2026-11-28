@@ -91,6 +91,7 @@ import { nutritionDayShareKey } from '@/database/share/buildNutritionDayShare';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { useDiaryVoiceActions } from '@/hooks/useDiaryVoiceActions';
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFastingDay } from '@/hooks/useFastingDay';
 import { useFoodDiarySelection } from '@/hooks/useFoodDiarySelection';
@@ -249,6 +250,18 @@ export default function FoodScreen() {
     if (next) {
       setSelectedDate(next);
     }
+  });
+  // A voice command that landed here: the copy review or the food search, on the day it named.
+  const { copyScope, openWholeCopyDay } = useDiaryVoiceActions({
+    setSelectedDate,
+    selectMealType,
+    openCopyDay: screenModals.copyDay.open,
+    openFoodSearch: screenModals.foodSearch.open,
+    // Creating a custom food is where a search that found nothing continues.
+    isTaskOpen:
+      screenModals.copyDay.visible ||
+      screenModals.foodSearch.visible ||
+      screenModals.createCustomFood.visible,
   });
 
   // The optical send target is captured before each share handler clears its menu selection, so the
@@ -980,14 +993,17 @@ export default function FoodScreen() {
     try {
       // Re-read the source day at confirm time so the write works off fresh records
       // rather than the model instances the preview captured.
-      const sourceLogs = await NutritionService.getNutritionLogsForDate(sourceDate);
+      const meals = copyScope?.meals;
+      const sourceLogs = meals
+        ? await NutritionService.getNutritionLogsForMeal(sourceDate, meals.source)
+        : await NutritionService.getNutritionLogsForDate(sourceDate);
       const selectedIds = new Set(logIds);
       const logsToCopy = sourceLogs.filter((log) => selectedIds.has(log.id));
       const count = await NutritionService.transferNutritionLogs(
         logsToCopy,
         'copy',
         selectedDate,
-        KEEP_MEAL_TYPES
+        meals?.target ?? KEEP_MEAL_TYPES
       );
       showSnackbar('success', t('food.actions.copyDaySuccess', { count }));
       await refresh();
@@ -1417,9 +1433,7 @@ export default function FoodScreen() {
                     {showReviewCard ? <WeeklyReviewCard compact /> : null}
 
                     {/* Copy-day prompt: an empty day is usually a repeat of a previous one */}
-                    {showCopyDayPrompt ? (
-                      <CopyDayPromptCard onPress={screenModals.copyDay.open} />
-                    ) : null}
+                    {showCopyDayPrompt ? <CopyDayPromptCard onPress={openWholeCopyDay} /> : null}
 
                     {/* Fasting-day prompt: offer to mark an empty day as a fast */}
                     {showFastingMarkPrompt ? (
@@ -1600,6 +1614,7 @@ export default function FoodScreen() {
           mealType={selectedMealType}
           logDate={selectedDate}
           initialTab={screenModals.foodSearch.initialTab}
+          initialQuery={screenModals.foodSearch.initialQuery}
           onFoodTracked={refresh}
           onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
           onCreatePress={() => {
@@ -1646,7 +1661,7 @@ export default function FoodScreen() {
           onEditCurrentGoalPress={screenModals.editCurrentGoal.open}
           onGoalsManagementPress={screenModals.goalsManagement.open}
           showEditCurrentGoal={currentNutritionGoal != null}
-          onCopyDayFromHistoryPress={screenModals.copyDay.open}
+          onCopyDayFromHistoryPress={openWholeCopyDay}
           onSendDayToPhonePress={logs.length > 0 ? handleSendDayToPhone : undefined}
           weeklyReview={
             resolvedMacros
@@ -1668,6 +1683,9 @@ export default function FoodScreen() {
           onClose={screenModals.copyDay.close}
           targetDate={selectedDate}
           targetDayItemCount={logs.length}
+          initialSourceDate={copyScope?.sourceDay}
+          sourceMealType={copyScope?.meals?.source}
+          targetMealType={copyScope?.meals?.target}
           onConfirm={handleConfirmCopyDay}
           isLoading={screenModals.copyDay.isLoading}
         />

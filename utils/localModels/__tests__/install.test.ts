@@ -156,3 +156,28 @@ describe('modelSupportsLanguage', () => {
     expect(modelSupportsLanguage(LFM_VL_450M, '')).toBe(true);
   });
 });
+
+describe('parseInstalledRecord path safety', () => {
+  const record = (path: string) =>
+    JSON.stringify({
+      id: LFM_VL_450M.id,
+      revision: LFM_VL_450M.revision,
+      installedAt: 1,
+      files: [{ role: 'model', path, bytes: 1, sha256: 'x' }],
+    });
+
+  it.each([
+    '',
+    '/etc/passwd',
+    'models\\model.gguf',
+    'https://evil.example/m.gguf',
+    '../x.gguf',
+    'a/../../x',
+  ])('drops the unsafe path %j', (path) => {
+    expect(parseInstalledRecord(record(path))?.files).toEqual([]);
+  });
+
+  it('keeps an ordinary relative file name', () => {
+    expect(parseInstalledRecord(record('lfm/model.gguf'))?.files).toHaveLength(1);
+  });
+});

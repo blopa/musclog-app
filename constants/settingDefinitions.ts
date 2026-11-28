@@ -8,6 +8,7 @@ import {
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
+  AI_CONSENT_RECORDS_SETTING_TYPE,
   AI_IMAGE_QUALITY_SETTING_TYPE,
   AI_MEAL_CAMERA_FLOW_SETTING_TYPE,
   type AiMealCameraFlow,
@@ -37,6 +38,8 @@ import {
   HOME_HEATMAPS_SETTING_TYPE,
   type HomeHeatmapLayout,
   type HomeHeatmaps,
+  NAV_CENTER_ACTION_SETTING_TYPE,
+  type NavCenterAction,
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
   ON_DEVICE_ENGINE_SETTING_TYPE,
   parseAiMealCameraFlow,
@@ -46,6 +49,7 @@ import {
   parseFoodDiaryGrouping,
   parseHomeHeatmapLayout,
   parseHomeHeatmaps,
+  parseNavCenterAction,
   parseRestAlertSound,
   parseRestHapticStrength,
   parseRestHeadsUpSeconds,
@@ -64,12 +68,14 @@ import {
   SHOW_LOGGY_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
+  VOICE_COMMAND_TOOLS_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
   type WorkoutAutonomy,
   YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
 } from '@/constants/settings';
+import { type AiConsentRecords, parseAiConsentRecords } from '@/utils/aiConsent';
 import { type AiImageTier, parseAiImageTier } from '@/utils/aiImagePlan';
 import { parseThinkingLevel, type ThinkingLevel } from '@/utils/aiThinkingLevel';
 import {
@@ -138,6 +144,13 @@ export const SETTINGS = {
     ON_DEVICE_ENGINE_SETTING_TYPE,
     parseOnDeviceEngineChoice
   ),
+  /** Which AI consents were given, which wording and when (`utils/aiConsent.ts`). */
+  aiConsentRecords: {
+    type: AI_CONSENT_RECORDS_SETTING_TYPE,
+    defaultValue: {},
+    parse: parseAiConsentRecords,
+    serialize: (records) => JSON.stringify(records),
+  } satisfies SettingDefinition<AiConsentRecords>,
   /** Consent version for hosted AI (`utils/premium/premiumConsent.ts`); null until given. */
   premiumConsentVersion: {
     type: PREMIUM_CONSENT_VERSION_SETTING_TYPE,
@@ -220,6 +233,13 @@ export const SETTINGS = {
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping
+  ),
+  /** Raw list of chosen voice tools; read it through `parseVoiceToolSelection`. */
+  voiceCommandTools: textSetting(VOICE_COMMAND_TOOLS_SETTING_TYPE),
+  /** What the bottom bar's centre button does; resolve it with `resolveNavCenterAction`. */
+  navCenterAction: choiceSetting<NavCenterAction>(
+    NAV_CENTER_ACTION_SETTING_TYPE,
+    parseNavCenterAction
   ),
   workoutView: choiceSetting<WorkoutView>(WORKOUT_VIEW_SETTING_TYPE, (raw) =>
     raw === 'inline' ? 'inline' : 'guided'

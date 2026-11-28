@@ -1,3 +1,4 @@
+import { getEnglishFoundationFoodText } from '@/data/foundationFoodCatalogue';
 import type Food from '@/database/models/Food';
 import { FoodService } from '@/database/services/FoodService';
 import { NutritionService } from '@/database/services/NutritionService';
@@ -16,10 +17,13 @@ function toFoodCandidate(food: Food): FoodCandidate | null {
     return null;
   }
 
+  // A foundation food is stored in the first boot's language and compared in English.
+  const { name, description } = getEnglishFoundationFoodText(food);
+
   return {
     id: food.id,
-    name: food.name,
-    ...(food.description ? { description: food.description } : {}),
+    name,
+    ...(description ? { description } : {}),
     kcal: food.calories ?? 0,
     protein: food.protein ?? 0,
     carbs: food.carbs ?? 0,

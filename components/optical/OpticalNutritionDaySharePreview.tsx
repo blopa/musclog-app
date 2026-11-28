@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useEnergyUnit } from '@/hooks/useEnergyUnit';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatLocalCalendarDayNumericIntl, parseLocalCalendarDate } from '@/utils/calendarDate';
 import type { NutritionDayShareSummary } from '@/utils/share/shareEnvelope';
@@ -20,6 +21,7 @@ interface OpticalNutritionDaySharePreviewProps {
 export function OpticalNutritionDaySharePreview({ summary }: OpticalNutritionDaySharePreviewProps) {
   const { i18n, t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatMass } = useFoodMass();
   const { formatEnergyWithUnit } = useEnergyUnit();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
@@ -48,7 +50,10 @@ export function OpticalNutritionDaySharePreview({ summary }: OpticalNutritionDay
           const amount = formatRoundedDecimal(entry.amount, 2);
           const line =
             entry.unit === 'g'
-              ? t('opticalTransfer.share.ingredientGrams', { amount, name: entry.name })
+              ? t('opticalTransfer.share.ingredientGrams', {
+                  amount: formatMass(entry.amount),
+                  name: entry.name,
+                })
               : entry.unit === 'serving'
                 ? t('opticalTransfer.share.ingredientServings', { amount, name: entry.name })
                 : t('opticalTransfer.share.ingredientPortions', {

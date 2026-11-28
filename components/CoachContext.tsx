@@ -4,6 +4,7 @@ import { createContext, ReactNode, useCallback, useContext, useMemo, useState } 
 import type { ChatIntention } from '@/constants/chat';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { useSettings } from '@/hooks/useSettings';
+import { aiReadiness } from '@/utils/aiReadiness';
 
 import { AINotConfiguredModal } from './modals/AINotConfiguredModal';
 import { CoachModal } from './modals/CoachModal';
@@ -41,18 +42,15 @@ export function CoachProvider({ children }: { children: ReactNode }) {
 
   const openCoach = useCallback(
     (options?: OpenCoachOptions) => {
-      if (!isAiConfigured) {
+      const readiness = aiReadiness({
+        isAiConfigured,
+        aiProvider,
+        onDeviceState: onDeviceStatus.state,
+      });
+      if (readiness !== 'ready') {
         // CoachModal never mounts here, so the options would have nothing to apply to — don't
         // stash them, or they'd outlive the request that carried them.
-        setNotConfiguredVariant('notConfigured');
-        setIsNotConfiguredVisible(true);
-        return;
-      }
-
-      // On-device AI is the provider that would answer but cannot yet: say why instead of a chat
-      // that fails on its first message.
-      if (aiProvider === 'on-device' && onDeviceStatus.state !== 'ready') {
-        setNotConfiguredVariant('localNotReady');
+        setNotConfiguredVariant(readiness);
         setIsNotConfiguredVisible(true);
         return;
       }

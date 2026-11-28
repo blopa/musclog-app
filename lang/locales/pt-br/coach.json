@@ -53,9 +53,9 @@
     },
     "goToSettings": "Ir para Configurações",
     "success": {
-      "workoutPlanGenerated": "Criei {{count}} treinos para você! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Criei {{planName}} com {{count}} treinos para você! 💪 {{description}}",
-      "mealPlanGenerated": "Criei um plano alimentar de 3 dias com {{count}} refeições para você! 🥗 {{description}}",
+      "workoutPlanGenerated": "Criei {{count}} treinos para você! 💪 {{description}} Confira antes de treinar.",
+      "workoutPlanGeneratedWithName": "Criei {{planName}} com {{count}} treinos para você! 💪 {{description}} Confira antes de treinar.",
+      "mealPlanGenerated": "Criei um plano de refeições de 3 dias com {{count}} refeições para você! 🥗 {{description}} Confira os alimentos e as quantidades antes de confiar neles.",
       "trackMealSuccess": "Registrei {{count}} ingredientes para sua refeição: {{ingredients}}. Total: {{calories}}.",
       "trackMealReady": "Analisei {{count}} refeição(ões): {{meals}} ({{calories}} no total). Toque em uma refeição para revisar e registrá-la.",
       "historyCleared": "Histórico do chat limpo."
@@ -108,7 +108,6 @@
       "failed": "Falha ao compartilhar histórico do chat. Por favor, tente novamente.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "IA pode cometer erros. Por favor, verifique informações importantes.",
     "message": {
       "menuTitle": "Ações da mensagem",
       "copy": "Copiar",
@@ -120,9 +119,12 @@
       "copied": "Mensagem copiada para a área de transferência",
       "deleted": "Mensagem excluída",
       "report": "Relatar um problema",
-      "reportDesc": "Envie por e-mail um problema com esta resposta",
+      "reportDesc": "Enviar esta resposta ao Musclog para que a gente possa analisá-la",
       "reportSubject": "Problema com uma resposta da IA do Musclog",
-      "reportIntro": "O que havia de errado nesta resposta? (Você pode editar ou apagar o texto abaixo antes de enviar.)"
+      "reportIntro": "O que havia de errado nesta resposta? (Você pode editar ou apagar o texto abaixo antes de enviar.)",
+      "reportConfirm": "Isto envia a resposta, a versão do app, sua plataforma e seu idioma ao Musclog, pelo Sentry, nosso serviço de rastreamento de erros. Nada mais do chat é enviado.",
+      "reportSend": "Enviar relatório",
+      "reportSent": "Relatório enviado. Obrigado."
     },
     "sendViaOpenAI": "Enviar via OpenAI",
     "personas": {
@@ -167,6 +169,7 @@
         "errorImage": "Não foi possível carregar essa imagem."
       }
     },
-    "reviewingReply": "Estou revisando minha resposta…"
+    "reviewingReply": "Estou revisando minha resposta…",
+    "onDevicePainReply": "Daqui não consigo saber o que está acontecendo, e prefiro não chutar quando algo dói. Por enquanto, pare o exercício que causa a dor e treine o que não dói. Se a dor for aguda, houver inchaço ou ela não melhorar depois de alguns dias, procure um médico ou um fisioterapeuta. Posso ajudar a planejar seus treinos em volta disso."
   }
 }

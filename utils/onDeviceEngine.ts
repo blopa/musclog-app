@@ -33,7 +33,7 @@ export function resolveOnDeviceEngine(
   return platform === 'ios' ? 'apple' : 'gguf';
 }
 
-/** Characters of context each engine is given (the prompt budget, `PROVIDER_CONFIGS`). */
+/** Characters of context each engine is given (`ProviderPolicy.contextChars`). */
 export const ON_DEVICE_CONTEXT_CHARS: Record<OnDeviceEngine, number> = {
   // Apple's system model has a small window; the tight cap is its optimisation spec.
   apple: 4500,
@@ -45,16 +45,20 @@ export type OnDeviceCapabilities = {
   engine: OnDeviceEngine;
   /** Can read a food photo: the downloaded model with its projector installed. */
   vision: boolean;
+  /** The downloaded model's optional text model is installed: requests without a photo go to it. */
+  textModel: boolean;
   contextChars: number;
 };
 
 export function onDeviceCapabilities(
   engine: OnDeviceEngine,
-  projectorInstalled: boolean
+  projectorInstalled: boolean,
+  textModelInstalled: boolean = false
 ): OnDeviceCapabilities {
   return {
     engine,
     vision: engine === 'gguf' && projectorInstalled,
+    textModel: engine === 'gguf' && textModelInstalled,
     contextChars: ON_DEVICE_CONTEXT_CHARS[engine],
   };
 }

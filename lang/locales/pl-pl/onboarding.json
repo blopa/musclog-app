@@ -156,11 +156,11 @@
     },
     "landing": {
       "getStarted": "Zacznij",
-      "termsAndPrivacy": "Kontynuując, akceptujesz nasz Regulamin i Politykę prywatności.",
+      "termsAndPrivacy": "Kontynuując, potwierdzasz, że masz 16 lat lub więcej, i akceptujesz nasz Regulamin. Nasza Polityka prywatności wyjaśnia, jak przetwarzamy Twoje dane.",
       "appName": "Musclog",
       "tagline": "Za darmo, 100% twoje",
-      "description": "Śledź treningi i odżywianie z pełną prywatnością. Bez kont i chmury. Wszystko jest za darmo oprócz opcjonalnego pakietu AI Musclog Iron.",
-      "storedLocally": "Wszystkie dane są przechowywane lokalnie na twoim urządzeniu",
+      "description": "Śledź treningi i odżywianie. Nie potrzebujesz konta. Wszystko jest za darmo, poza opcjonalnym pakietem Musclog Iron.",
+      "storedLocally": "Twoje dane są zapisywane na urządzeniu",
       "viewTerms": "Zobacz regulamin",
       "preparingApp": "Przygotowywanie aplikacji...",
       "migratingPreamble": "Aktualizacja z poprzedniej wersji Musclog. Przenosimy twoje dane.",
@@ -192,7 +192,8 @@
       "quickSetupSteps": "7 kroków",
       "quickSetupSubtitle": "Podstawowa konfiguracja, resztę możesz ustawić później",
       "aiSetup": "Konfiguracja z AI",
-      "aiSetupSubtitle": "Porozmawiaj z AI albo pozwól, by przeprowadził cię wywiad ChatGPT lub Claude"
+      "aiSetupSubtitle": "Porozmawiaj z AI albo pozwól, by przeprowadził cię wywiad ChatGPT lub Claude",
+      "viewPrivacy": "Zobacz Politykę prywatności"
     },
     "quickPreferences": {
       "title": "Zaczynamy",
@@ -228,7 +229,7 @@
       "height": "Wzrost",
       "weight": "Waga",
       "birthday": "Data urodzenia",
-      "birthdayHelper": "Służy do obliczenia wieku dla dokładniejszych szacunków kalorii",
+      "birthdayHelper": "Opcjonalne. Dzięki temu szacunki kalorii są dokładniejsze. Bez tego Musclog zakłada, że twój wiek to {{age}}.",
       "bodyFat": "Procent tkanki tłuszczowej",
       "bodyFatHelper": "Jeśli go znasz, pomoże to w obliczeniach kalorii",
       "continue": "Dalej",
@@ -304,7 +305,7 @@
         }
       },
       "dataSharingTitle": "Informacja o udostępnianiu danych",
-      "dataSharingBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (na przykład Twoje treningi, posiłki, pomiary ciała lub wiadomości czatu), jest wysyłane przez OpenRouter do darmowego poziomu Google AI Studio, żeby napisać odpowiedź. Google może przechowywać wysłane dane, wykorzystywać je do ulepszania swoich produktów i zlecać ich przegląd ludziom (bez identyfikatorów), dlatego darmowy poziom nie jest prywatny: nie wpisuj danych osobowych ani wrażliwych. Darmowy poziom jest tylko dla dorosłych (18+). Jeśli Ci to nie odpowiada, zostaw go wyłączonego. Nic nie jest wysyłane, dopóki nie skorzystasz z funkcji AI. Obowiązuje dzienny limit wspólny dla wszystkich korzystających z darmowego poziomu, więc może się wyczerpać już wcześnie w ciągu dnia, a darmowy poziom może czasem być niedostępny.",
+      "dataSharingBody": "Gdy korzystasz z funkcji AI, to, czego ona potrzebuje (na przykład Twoje treningi, posiłki, pomiary ciała, w tym te zaimportowane z Health Connect lub Apple Health, albo wiadomości czatu), jest wysyłane przez OpenRouter do darmowego poziomu Google AI Studio, żeby napisać odpowiedź. Google może przechowywać wysłane dane, wykorzystywać je do ulepszania swoich produktów i zlecać ich przegląd ludziom (bez identyfikatorów), dlatego darmowy poziom nie jest prywatny: nie wpisuj danych osobowych ani wrażliwych. Darmowy poziom jest tylko dla dorosłych: zgadzając się, potwierdzasz, że masz 18 lat lub więcej. Jeśli to Ci nie odpowiada, zostaw go wyłączonego. Nic nie jest wysyłane, dopóki nie skorzystasz z funkcji AI, a dotyczy to także dziennych podsumowań, jeśli je włączysz. Obowiązuje dzienny limit wspólny dla wszystkich korzystających z darmowego poziomu, więc może się wyczerpać już wcześnie w ciągu dnia, a darmowy poziom bywa czasem niedostępny.",
       "readPrivacyPolicy": "Przeczytaj naszą Politykę prywatności",
       "cta": {
         "premium": "Kontynuuj z Musclog Iron",

@@ -33,6 +33,11 @@ describe('tables', () => {
     }
   });
 
+  it('leave the birthday out of the required answers, and optional', () => {
+    expect(REQUIRED_FIELDS).not.toContain('birthDate');
+    expect(OPTIONAL_FIELDS.has('birthDate')).toBe(true);
+  });
+
   it('offer exactly the values the contract accepts for each choice field', () => {
     const contractValues: Record<string, readonly (string | number)[]> = {
       ...CONTRACT_ENUMS,

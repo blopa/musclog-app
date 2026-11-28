@@ -1,4 +1,4 @@
-import { type RefObject, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AiService } from '@/services/AiService';
@@ -17,13 +17,6 @@ export type CameraAiTaskContext = {
   timer: ReturnType<typeof createPhaseTimer>;
 };
 
-export type CameraAiProcessingOptions = {
-  abortRef: RefObject<AbortController | null>;
-  setProcessing: (value: boolean) => void;
-  setProgress: (value: MealEstimateProgressLine | null) => void;
-  setError?: (value: string | null) => void;
-};
-
 export type RunCameraAiTaskParams = {
   timerName: string;
   logLabel: string;
@@ -33,19 +26,39 @@ export type RunCameraAiTaskParams = {
   onFinish?: (outcome: 'done' | 'cancelled' | 'error') => void;
 };
 
-/**
- * Shared execution lifecycle for SmartCamera AI requests: manages the AbortController ref,
- * processing and progress state, phase timing, cancellation checks, and error translation.
- */
-export function useCameraAiProcessing({
-  abortRef,
-  setProcessing,
-  setProgress,
-  setError,
-}: CameraAiProcessingOptions) {
-  const { t } = useTranslation();
+export type CameraAiProcessing = {
+  /** Runs one request; does nothing while another is in flight. */
+  run: (params: RunCameraAiTaskParams) => Promise<void>;
+  processing: boolean;
+  progress: MealEstimateProgressLine | null;
+  setProgress: (progress: MealEstimateProgressLine | null) => void;
+  isBusy: () => boolean;
+  /** Cancels the running request (the Cancel button). */
+  cancel: () => void;
+  /** Cancels it and forgets it, so the next request can start at once (the camera closed). */
+  abandon: () => void;
+};
 
-  return useCallback(
+/**
+ * Shared execution lifecycle for SmartCamera AI requests: one request at a time, its processing and
+ * progress state, phase timing, cancellation checks, and error translation. Unmounting cancels it.
+ */
+export function useCameraAiProcessing(): CameraAiProcessing {
+  const { t } = useTranslation();
+  const abortRef = useRef<AbortController | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [progress, setProgress] = useState<MealEstimateProgressLine | null>(null);
+
+  const isBusy = useCallback(() => abortRef.current !== null, []);
+  const cancel = useCallback(() => abortRef.current?.abort(), []);
+  const abandon = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+  }, []);
+
+  useEffect(() => abandon, [abandon]);
+
+  const run = useCallback(
     async ({ timerName, logLabel, task, onError, onFinish }: RunCameraAiTaskParams) => {
       if (abortRef.current) {
         return;
@@ -54,7 +67,6 @@ export function useCameraAiProcessing({
       const controller = new AbortController();
       abortRef.current = controller;
       setProcessing(true);
-      setError?.(null);
       setProgress(null);
       const timer = createPhaseTimer(timerName);
       let outcome: 'done' | 'cancelled' | 'error' = 'done';
@@ -108,17 +120,15 @@ export function useCameraAiProcessing({
 
         setProcessing(false);
         setProgress(null);
-        if (outcome !== 'done') {
-          if (errorMessage) {
-            onError?.(errorMessage);
-          }
-
-          setError?.(errorMessage);
+        if (outcome !== 'done' && errorMessage) {
+          onError?.(errorMessage);
         }
 
         onFinish?.(outcome);
       }
     },
-    [abortRef, setProcessing, setProgress, setError, t]
+    [t]
   );
+
+  return { run, processing, progress, setProgress, isBusy, cancel, abandon };
 }

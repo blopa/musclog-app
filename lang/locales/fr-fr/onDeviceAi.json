@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "Supprimer le modèle ?",
-        "message": "L’IA sur l’appareil cessera de fonctionner jusqu’à ce que tu télécharges à nouveau le modèle. Tes données ne sont pas touchées."
+        "message": "L’IA sur l’appareil cessera de fonctionner jusqu’à ce que tu télécharges à nouveau le modèle. Tes données ne sont pas touchées.",
+        "messageWithTextModel": "L’IA sur l’appareil cessera de fonctionner jusqu’à ce que tu télécharges à nouveau le modèle. Le modèle de chat facultatif est supprimé aussi. Tes données ne sont pas touchées."
+      }
+    },
+    "textModel": {
+      "heading": "Facultatif : un modèle plus grand pour le chat",
+      "description": "Une fois téléchargé, le chat, les commandes vocales et tout le reste sans photo utilisent ce modèle. Ses réponses sont meilleures, mais plus longues à venir. Les photos de repas utilisent toujours {{name}}.",
+      "state": {
+        "ready": "Prêt. Le chat, la voix et les autres textes utilisent ce modèle ; les photos utilisent {{name}}."
+      },
+      "actions": {
+        "delete": "Supprimer le modèle de chat"
+      },
+      "delete": {
+        "title": "Supprimer le modèle de chat ?",
+        "message": "Le chat et la voix repassent sur {{name}}. Tes données ne sont pas touchées."
       }
     },
     "apple": {
@@ -142,10 +157,11 @@
     },
     "notices": {
       "title": "Mentions des tiers",
-      "intro": "Musclog repose sur des logiciels open source et un modèle ouvert. Voici les licences qui s’appliquent.",
+      "intro": "Musclog repose sur des logiciels open source, des données ouvertes et des modèles ouverts. Voici les licences qui s’appliquent.",
       "link": "Mentions des tiers",
       "linkSubtitle": "Logiciels open source et le modèle sur l’appareil",
-      "openLink": "Ouvrir le texte intégral"
+      "openLink": "Ouvrir le texte intégral",
+      "packagesTitle": "Paquets open source"
     }
   }
 }

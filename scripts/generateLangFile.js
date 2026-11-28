@@ -98,6 +98,17 @@ function getWorkoutTemplateFiles() {
   }
 }
 
+function getFoundationFoodFiles() {
+  try {
+    return fs
+      .readdirSync(dataDir)
+      .filter((f) => /^foundationFoods[A-Z][a-z]+[A-Z][A-Za-z]*\.json$/.test(f))
+      .sort();
+  } catch {
+    return [];
+  }
+}
+
 function localizedDataFileNames(file, prefix) {
   const localeSuffix = path.basename(file, '.json').slice(prefix.length);
   const match = localeSuffix.match(/^([A-Z][a-z]+)([A-Z][A-Za-z]*)$/);
@@ -208,6 +219,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
     // Get exercise files
     const exerciseFiles = getExerciseFiles();
     const workoutTemplateFiles = getWorkoutTemplateFiles();
+    const foundationFoodFiles = getFoundationFoodFiles();
 
     // For each language, collect its JSON files
     const languages = langDirs.map((dir) => {
@@ -318,6 +330,22 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
     });
     workoutTemplateExports.push('};');
 
+    const foundationFoodImports = foundationFoodFiles.map((file) => {
+      const { variableName } = localizedDataFileNames(file, 'foundationFoods');
+      return `import ${variableName} from '../data/${file}';`;
+    });
+
+    // English is not among them: it is the text of the two seed files.
+    const foundationFoodExports = ['export const FOUNDATION_FOOD_COPIES_BY_LOCALE = {'];
+    foundationFoodFiles.forEach((file) => {
+      const { constantName: languageConstant, variableName } = localizedDataFileNames(
+        file,
+        'foundationFoods'
+      );
+      foundationFoodExports.push(`  [${languageConstant}]: ${variableName},`);
+    });
+    foundationFoodExports.push('};');
+
     // Language constants
     const constantLines = languages.map(
       (lang) => `export const ${constantName(lang)} = '${dirToLanguageTag(lang.dir)}';`
@@ -365,6 +393,9 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '// Exercise data',
       ...exerciseImports,
       '',
+      '// Foundation food copies',
+      ...foundationFoodImports,
+      '',
       '// Workout template copies',
       ...workoutTemplateImports,
       '',
@@ -376,6 +407,9 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '',
       '// Workout template copy exports',
       ...workoutTemplateExports,
+      '',
+      '// Foundation food copy exports',
+      ...foundationFoodExports,
       '',
       'const resources = {',
       resourceEntries.join('\n'),

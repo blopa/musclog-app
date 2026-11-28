@@ -1,5 +1,3 @@
-import { subYears } from 'date-fns';
-
 import type { Units } from '@/constants/settings';
 import type User from '@/database/models/User';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models/User';
@@ -9,6 +7,7 @@ import { UserService } from '@/database/services/UserService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import type { FitnessDetails } from '@/types/fitnessDetails';
 
+import { asBirthday } from './ageGate';
 import {
   formatLocalCalendarDayNumericIntl,
   localCalendarDayDate,
@@ -37,16 +36,6 @@ export function formatDateOfBirthFromTimestamp(
   localeTag: string = DEFAULT_LANG
 ): string {
   return formatLocalCalendarDayNumericIntl(timestamp, localeTag);
-}
-
-/** Default adult DOB when none is provided: start of local calendar day N years ago. */
-export function defaultAdultDobLocalDayStartMs(ageYears = 25): number {
-  return localDayStartMs(subYears(new Date(), ageYears));
-}
-
-/** Same as {@link defaultAdultDobLocalDayStartMs} but formatted for display fields. */
-export function defaultAdultDobDisplayString(ageYears = 25, localeTag = DEFAULT_LANG): string {
-  return formatDateOfBirthFromTimestamp(defaultAdultDobLocalDayStartMs(ageYears), localeTag);
 }
 
 export function parseMmDdYyyyDateOfBirthToLocalDayStartMs(dob: string): number {
@@ -128,7 +117,10 @@ export async function loadFitnessDetailsInitialData(
 
   if (user) {
     return {
-      dob: user.getAge() > 0 ? formatDateOfBirthFromTimestamp(user.dateOfBirth, localeTag) : '',
+      dob:
+        asBirthday(user.dateOfBirth) !== null
+          ? formatDateOfBirthFromTimestamp(user.dateOfBirth as number, localeTag)
+          : '',
       units,
       weight: String(weightDisplay),
       height: String(heightDisplay),
@@ -162,7 +154,8 @@ export async function loadFitnessDetailsInitialData(
  */
 export type FitnessProfileWrite = {
   fullName?: string;
-  dateOfBirthMs?: number;
+  /** `null` removes the birthday; leaving it out keeps what is stored. */
+  dateOfBirthMs?: number | null;
   gender?: Gender;
   fitnessGoal?: FitnessGoal;
   weightGoal?: WeightGoal;
@@ -219,7 +212,7 @@ export async function persistFitnessProfile(data: FitnessProfileWrite): Promise<
 
     user = await UserService.initializeUser({
       fullName: fullName ?? getDefaultUsernameForGender(data.gender),
-      dateOfBirth: data.dateOfBirthMs ?? defaultAdultDobLocalDayStartMs(),
+      dateOfBirth: data.dateOfBirthMs ?? null,
       gender: data.gender,
       fitnessGoal: data.fitnessGoal,
       weightGoal: data.weightGoal,
@@ -267,7 +260,8 @@ export async function persistFitnessDetails(data: FitnessDetails): Promise<void>
   const heightDisplay = parseFloat(data.height);
 
   await persistFitnessProfile({
-    dateOfBirthMs: data.dob?.trim() ? parseDobStringToLocalDayStartMs(data.dob) : undefined,
+    // The form holds the whole answer, so an empty birthday means the person has none.
+    dateOfBirthMs: data.dob?.trim() ? parseDobStringToLocalDayStartMs(data.dob) : null,
     gender: data.gender,
     fitnessGoal: data.fitnessGoal,
     weightGoal: data.weightGoal,

@@ -25,6 +25,7 @@ describe('EAS archive exclusions', () => {
       '**/android/build',
       'public',
       'app/(website)/posts',
+      'sentry-issues',
     ];
 
     for (const pattern of requiredPatterns) {

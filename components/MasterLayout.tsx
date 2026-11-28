@@ -1,5 +1,5 @@
-import { ReactNode, useCallback } from 'react';
-import { View } from 'react-native';
+import { ReactNode, useCallback, useState } from 'react';
+import { type LayoutChangeEvent, View } from 'react-native';
 
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
@@ -18,6 +18,12 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const insets = useAppSafeAreaInsets();
+  // The voice overlay covers this frame, which is not the window on the web's desktop phone frame.
+  const [frameHeight, setFrameHeight] = useState(0);
+  const handleLayout = useCallback(
+    (event: LayoutChangeEvent) => setFrameHeight(event.nativeEvent.layout.height),
+    []
+  );
 
   // Stable reference so NavigationMenu (wrapped in memo) does not re-render
   // when this layout re-renders due to screen state changes.
@@ -33,6 +39,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   return (
     <View
       className="flex-1 bg-bg-primary"
+      onLayout={showNavigationMenu ? handleLayout : undefined}
       style={{
         paddingTop: insets.top,
         // Full-height screens (no app nav) still render edge-to-edge; pad the system nav / home indicator.
@@ -42,7 +49,11 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
         <>
-          <NavigationMenu onCoachPress={handleCoachPress} onCameraPress={handleCameraPress} />
+          <NavigationMenu
+            onCoachPress={handleCoachPress}
+            onCameraPress={handleCameraPress}
+            frameHeight={frameHeight}
+          />
           <View pointerEvents="none" style={{ height: theme.spacing.padding['4xl'] }} />
         </>
       ) : null}

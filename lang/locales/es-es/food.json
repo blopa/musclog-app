@@ -16,7 +16,7 @@
       "unmarkButton": "Desmarcar día de ayuno",
       "unmarkShort": "Desmarcar",
       "confirmTitle": "¿Marcar como día de ayuno?",
-      "confirmMessage": "Esto marca el día como uno en que ayunaste, por lo que cuenta como un día real de 0 calorías en tus promedios, TDEE y rachas.",
+      "confirmMessage": "Esto marca el día como uno en que ayunaste, así que cuenta como un día real de 0 calorías en tus promedios, TDEE y rachas. El ayuno no es seguro para todo el mundo: pregunta primero a un médico si estás embarazada o en periodo de lactancia, tomas medicación, tienes diabetes o has tenido un trastorno de la conducta alimentaria.",
       "confirmButton": "Marcar como día de ayuno"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Duplicar porción",
       "duplicatePortionDesc": "Crear una copia para modificar",
       "deletePortion": "Eliminar porción",
-      "deletePortionDesc": "Quitar esta porción de tu lista",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Quitar esta porción de tu lista"
     },
     "createPortion": {
       "title": "Crear Tamaño de Porción",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Totales estimados para esta porción",
       "sendDayToPhone": "Enviar el día a otro teléfono",
       "sendDayToPhoneDesc": "Transfiere toda la comida de este día con códigos QR animados",
-      "keepMealTypes": "Mantener sus comidas"
+      "keepMealTypes": "Mantener sus comidas",
+      "copyMealTitle": "{{meal}} de otro día",
+      "copyMealTargetNote": "La copia va a: {{meal}}"
     },
     "mealInsights": {
       "title": "Información de la Comida",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Compartir ingredientes e instrucciones como texto",
         "sendToPhone": "Enviar a otro teléfono",
         "sendToPhoneDesc": "Transfiere esta comida con códigos QR animados",
-        "shareRecipeIngredientLine": "{{grams}}g de {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} de {{name}}",
         "shareRecipeNoIngredients": "Esta comida no tiene ingredientes para compartir",
         "duplicateMeal": "Duplicar Comida",
         "duplicateMealDesc": "Crear una copia de esta comida",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} alimentos",
         "foodCount_many": "{{count}} alimentos",
         "foodCount_other": "{{count}} alimentos",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "Quitar {{name}}",
         "groupTitle": "Registrar como una sola comida",
         "groupSubtitle": "Aparece como una única entrada en tu diario",

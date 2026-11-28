@@ -14,11 +14,10 @@ import { useLocalModel } from '@/hooks/useLocalModel';
 import { useStorageSizeFormatter } from '@/hooks/useStorageSizeFormatter';
 import { useTheme } from '@/hooks/useTheme';
 import {
-  cancelLocalModelDownload,
   deleteLocalModel,
-  pauseLocalModelDownload,
-  resumeLocalModelDownload,
-  startLocalModelDownload,
+  type LocalModelStore,
+  localModelStore,
+  localTextModelStore,
 } from '@/services/localModels/modelStore';
 import {
   downloadFraction,
@@ -27,8 +26,6 @@ import {
   modelSupportsLanguage,
   totalDownloadBytes,
 } from '@/utils/localModels/install';
-
-const manifest = DEFAULT_LOCAL_MODEL;
 
 /** One whole key per failure, so the translation check sees every sentence. */
 const FAILURE_KEYS: Record<LocalModelFailure, string> = {
@@ -40,7 +37,37 @@ const FAILURE_KEYS: Record<LocalModelFailure, string> = {
   storage: 'onDeviceAi.model.failure.storage',
 };
 
+type CardVariant = 'main' | 'text';
+
+/** Whole keys per variant, so the translation check sees every sentence. */
+const VARIANT_KEYS: Record<
+  CardVariant,
+  {
+    deleteAction: string;
+    deleteTitle: string;
+    deleteMessage: string;
+    ready: string | null;
+  }
+> = {
+  main: {
+    deleteAction: 'onDeviceAi.model.actions.delete',
+    deleteTitle: 'onDeviceAi.model.delete.title',
+    deleteMessage: 'onDeviceAi.model.delete.message',
+    ready: null,
+  },
+  text: {
+    deleteAction: 'onDeviceAi.textModel.actions.delete',
+    deleteTitle: 'onDeviceAi.textModel.delete.title',
+    deleteMessage: 'onDeviceAi.textModel.delete.message',
+    ready: 'onDeviceAi.textModel.state.ready',
+  },
+};
+
 type LocalModelCardProps = {
+  /** Which model this card drives; the default is the main on-device model. */
+  store?: LocalModelStore;
+  /** `text` is the optional chat-only model: its own heading, copy and delete. */
+  variant?: CardVariant;
   selection: LocalModelSelection;
   /** When given, the person can leave the photo projector out (onboarding and settings). */
   onSelectionChange?: (selection: LocalModelSelection) => void;
@@ -56,6 +83,8 @@ type LocalModelCardProps = {
  * started in one is the same one the other shows.
  */
 export function LocalModelCard({
+  store = localModelStore,
+  variant = 'main',
   selection,
   onSelectionChange,
   allowDelete = false,
@@ -63,7 +92,12 @@ export function LocalModelCard({
 }: LocalModelCardProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
-  const model = useLocalModel();
+  const manifest = store.manifest;
+  const keys = VARIANT_KEYS[variant];
+  const isText = variant === 'text';
+  const model = useLocalModel(store);
+  const textModel = useLocalModel(localTextModelStore);
+  const textModelInstalled = !isText && textModel.state.kind !== 'notInstalled';
   const formatSize = useStorageSizeFormatter();
   const [onCellular, setOnCellular] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -85,9 +119,9 @@ export function LocalModelCard({
 
   const state = model.state;
   const total = totalDownloadBytes(manifest, selection);
-  const { freeBytes, space } = useLocalModelSpace(selection, state.kind);
+  const { freeBytes, space } = useLocalModelSpace(store, selection, state.kind);
   const idle = state.kind === 'notInstalled' || state.kind === 'failed';
-  const showToggle = Boolean(onSelectionChange) && idle;
+  const showToggle = Boolean(onSelectionChange) && idle && !isText;
   const textSecondary = {
     color: theme.colors.text.secondary,
     fontSize: theme.typography.fontSize.sm,
@@ -117,6 +151,17 @@ export function LocalModelCard({
     <GenericCard>
       <View className="gap-3 p-4" testID="local-model-card">
         <View className="gap-1">
+          {isText ? (
+            <Text
+              style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.typography.fontSize.base,
+                fontWeight: theme.typography.fontWeight.semibold,
+              }}
+            >
+              {t('onDeviceAi.textModel.heading')}
+            </Text>
+          ) : null}
           <Text
             style={{
               color: theme.colors.text.primary,
@@ -135,6 +180,11 @@ export function LocalModelCard({
               ),
             })}
           </Text>
+          {isText ? (
+            <Text style={textSecondary}>
+              {t('onDeviceAi.textModel.description', { name: DEFAULT_LOCAL_MODEL.displayName })}
+            </Text>
+          ) : null}
         </View>
 
         {showToggle ? (
@@ -153,11 +203,13 @@ export function LocalModelCard({
 
         {state.kind === 'ready' ? (
           <Text style={textSecondary}>
-            {t(
-              model.projectorInstalled
-                ? 'onDeviceAi.model.state.readyWithPhotos'
-                : 'onDeviceAi.model.state.readyText'
-            )}
+            {keys.ready
+              ? t(keys.ready, { name: DEFAULT_LOCAL_MODEL.displayName })
+              : t(
+                  model.projectorInstalled
+                    ? 'onDeviceAi.model.state.readyWithPhotos'
+                    : 'onDeviceAi.model.state.readyText'
+                )}
           </Text>
         ) : null}
 
@@ -235,7 +287,7 @@ export function LocalModelCard({
                 label={t('onDeviceAi.model.actions.pause')}
                 variant="outline"
                 width="full"
-                onPress={() => void pauseLocalModelDownload()}
+                onPress={() => void store.pause()}
               />
             </View>
             <View className="grow basis-[140px]">
@@ -243,7 +295,7 @@ export function LocalModelCard({
                 label={t('onDeviceAi.model.actions.cancel')}
                 variant="outline"
                 width="full"
-                onPress={() => void cancelLocalModelDownload()}
+                onPress={() => void store.cancel()}
               />
             </View>
           </View>
@@ -256,7 +308,7 @@ export function LocalModelCard({
                 label={t('onDeviceAi.model.actions.resume')}
                 variant="accent"
                 width="full"
-                onPress={() => void resumeLocalModelDownload()}
+                onPress={() => void store.resume()}
               />
             </View>
             <View className="grow basis-[140px]">
@@ -264,7 +316,7 @@ export function LocalModelCard({
                 label={t('onDeviceAi.model.actions.cancel')}
                 variant="outline"
                 width="full"
-                onPress={() => void cancelLocalModelDownload()}
+                onPress={() => void store.cancel()}
               />
             </View>
           </View>
@@ -282,7 +334,7 @@ export function LocalModelCard({
             variant="accent"
             width="full"
             disabled={!space.enough}
-            onPress={() => void startLocalModelDownload(selection)}
+            onPress={() => void store.start(selection)}
           />
         ) : null}
 
@@ -291,15 +343,13 @@ export function LocalModelCard({
             label={t('onDeviceAi.model.actions.update')}
             variant="accent"
             width="full"
-            onPress={() =>
-              void startLocalModelDownload({ withProjector: model.projectorInstalled })
-            }
+            onPress={() => void store.start({ withProjector: model.projectorInstalled })}
           />
         ) : null}
 
         {state.kind === 'ready' && allowDelete ? (
           <TextButton
-            label={t('onDeviceAi.model.actions.delete')}
+            label={t(keys.deleteAction)}
             tone="danger"
             onPress={() => setConfirmDelete(true)}
           />
@@ -322,11 +372,15 @@ export function LocalModelCard({
           onClose={() => setConfirmDelete(false)}
           onConfirm={async () => {
             setConfirmDelete(false);
-            await deleteLocalModel();
+            await (isText ? store.remove() : deleteLocalModel());
           }}
-          title={t('onDeviceAi.model.delete.title')}
-          message={t('onDeviceAi.model.delete.message')}
-          confirmLabel={t('onDeviceAi.model.actions.delete')}
+          title={t(keys.deleteTitle)}
+          message={
+            textModelInstalled
+              ? t('onDeviceAi.model.delete.messageWithTextModel')
+              : t(keys.deleteMessage, { name: DEFAULT_LOCAL_MODEL.displayName })
+          }
+          confirmLabel={t(keys.deleteAction)}
           variant="destructive"
         />
       </View>

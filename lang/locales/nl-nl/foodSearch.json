@@ -54,6 +54,11 @@
     "macroProtein": "E: {{value}}g",
     "macroCarbs": "K: {{value}}g",
     "macroFat": "V: {{value}}g",
-    "totalWithKcal": "Totaal: {{calories}} {{kcal}}"
+    "totalWithKcal": "Totaal: {{calories}} {{kcal}}",
+    "credit": {
+      "openFoodFacts": "Productgegevens: © bijdragers aan Open Food Facts, Open Database License.",
+      "usda": "Voedingsgegevens: USDA FoodData Central.",
+      "musclog": "Productgegevens: Musclog-voedingsdatabase, van supermarkten in Nederland. Musclog is niet aan hen gelieerd."
+    }
   }
 }

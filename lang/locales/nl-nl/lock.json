@@ -4,7 +4,7 @@
       "title": "Appvergrendeling",
       "subtitle": "Vraag om vingerafdruk, gezicht of pincode van het apparaat",
       "hint": "Vraag om je vingerafdruk, gezicht of pincode van het apparaat voordat de gekozen onderdelen worden getoond. Ze worden opnieuw vergrendeld nadat de app 30 seconden op de achtergrond is geweest.",
-      "note": "Dit is een schermvergrendeling. Je gegevens blijven versleuteld en op deze telefoon; geëxporteerde back-ups zijn aparte bestanden die jij beheert.",
+      "note": "Dit is een schermvergrendeling. Je gegevens blijven op deze telefoon; geëxporteerde back-ups zijn aparte bestanden die jij beheert.",
       "noCredential": "Stel eerst een schermvergrendeling of biometrie in op je apparaat.",
       "coveredByApp": "Gedekt door het vergrendelen van de hele app"
     },

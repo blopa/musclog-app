@@ -6,6 +6,7 @@ import { AvatarSelector } from '@/components/AvatarSelector';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { useFoodMass } from '@/hooks/useFoodMass';
 import { AvatarIcon } from '@/types/AvatarIcon';
 import { getAvatarIcon } from '@/utils/avatarUtils';
 
@@ -43,6 +44,7 @@ export function CreateFoodPortionModal({
   const [weight, setWeight] = useState(100);
   const [selectedIcon, setSelectedIcon] = useState<FoodIcon>('ramen-dining');
   const { t } = useTranslation();
+  const mass = useFoodMass();
 
   const handleCreatePortion = () => {
     if (portionName.trim() && weight && selectedIcon) {
@@ -68,13 +70,11 @@ export function CreateFoodPortionModal({
   };
 
   const incrementWeight = () => {
-    setWeight(weight + 10);
+    setWeight(weight + mass.stepGrams(10));
   };
 
   const decrementWeight = () => {
-    if (weight > 0) {
-      setWeight(weight - 10);
-    }
+    setWeight(Math.max(0, weight - mass.stepGrams(10)));
   };
 
   const footer = (
@@ -112,13 +112,13 @@ export function CreateFoodPortionModal({
 
           {/* Weight Input */}
           <StepperInput
-            label={t('weightGrams')}
-            value={weight}
-            maxFractionDigits={0}
+            label={t('weightInUnit', { unit: mass.unitLabel })}
+            value={mass.toDisplay(weight)}
+            maxFractionDigits={mass.fractionDigits}
             onIncrement={incrementWeight}
             onDecrement={decrementWeight}
-            onChangeValue={setWeight}
-            unit="g"
+            onChangeValue={(entered) => setWeight(mass.gramsAfterEdit(weight, entered))}
+            unit={mass.unitLabel}
           />
 
           {/* Icon Selection */}

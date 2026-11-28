@@ -1,3 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { ENCRYPTION_KEY, ENCRYPTION_KEY_SEEN } from '@/constants/database';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getStoredEncryptionKey, storeEncryptionKey } from '@/utils/encryptionKeyStorage';
 
@@ -62,6 +65,18 @@ describe('getEncryptionKey', () => {
     await expect(getEncryptionKey(32, 'test-key-a')).resolves.toBe('test-key-a-value');
 
     expect(mockGetStoredEncryptionKey).toHaveBeenCalledTimes(2);
+  });
+
+  // A new key would leave every encrypted row unreadable.
+  it('asks again before replacing a key this install has had', async () => {
+    await AsyncStorage.setItem(ENCRYPTION_KEY_SEEN, 'true');
+    mockGetStoredEncryptionKey.mockResolvedValueOnce(null).mockResolvedValueOnce('the-old-key');
+
+    await expect(getEncryptionKey(32, ENCRYPTION_KEY)).resolves.toBe('the-old-key');
+
+    expect(mockGetStoredEncryptionKey).toHaveBeenCalledTimes(2);
+    expect(mockStoreEncryptionKey).not.toHaveBeenCalled();
+    await AsyncStorage.removeItem(ENCRYPTION_KEY_SEEN);
   });
 
   it('allows a failed load to be retried', async () => {

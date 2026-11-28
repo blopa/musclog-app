@@ -16,7 +16,7 @@
       "unmarkButton": "Desmarcar dia de jejum",
       "unmarkShort": "Desmarcar",
       "confirmTitle": "Marcar como dia de jejum?",
-      "confirmMessage": "Isso marca o dia como um em que você jejuou, então conta como um dia real de 0 calorias nas suas médias, TDEE e sequências.",
+      "confirmMessage": "Isto marca o dia como um dia de jejum, então ele conta como um dia real de 0 calorias nas suas médias, no TDEE e nas sequências. O jejum não é seguro para todo mundo: pergunte antes a um médico se você está grávida ou amamentando, toma medicamentos, tem diabetes ou já teve um transtorno alimentar.",
       "confirmButton": "Marcar como dia de jejum"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Duplicar porção",
       "duplicatePortionDesc": "Criar uma cópia para modificar",
       "deletePortion": "Excluir porção",
-      "deletePortionDesc": "Remover esta porção da sua lista",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Remover esta porção da sua lista"
     },
     "createPortion": {
       "title": "Criar Tamanho de Porção",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Totais estimados para esta porção",
       "sendDayToPhone": "Enviar o dia para outro celular",
       "sendDayToPhoneDesc": "Transfira toda a comida deste dia com códigos QR animados",
-      "keepMealTypes": "Manter as refeições de cada um"
+      "keepMealTypes": "Manter as refeições de cada um",
+      "copyMealTitle": "{{meal}} de outro dia",
+      "copyMealTargetNote": "A cópia vai para: {{meal}}"
     },
     "mealInsights": {
       "title": "Insights da Refeição",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Compartilhar ingredientes e instruções como texto",
         "sendToPhone": "Enviar para outro celular",
         "sendToPhoneDesc": "Transfira esta refeição com códigos QR animados",
-        "shareRecipeIngredientLine": "{{grams}}g de {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} de {{name}}",
         "shareRecipeNoIngredients": "Esta refeição não tem ingredientes para compartilhar",
         "duplicateMeal": "Duplicar Refeição",
         "duplicateMealDesc": "Criar uma cópia desta refeição",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} alimentos",
         "foodCount_many": "{{count}} alimentos",
         "foodCount_other": "{{count}} alimentos",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "Remover {{name}}",
         "groupTitle": "Registrar como uma refeição",
         "groupSubtitle": "Aparece como uma única entrada no seu diário",

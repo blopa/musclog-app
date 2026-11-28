@@ -16,7 +16,7 @@
       "unmarkButton": "Unmark fasting day",
       "unmarkShort": "Unmark",
       "confirmTitle": "Mark as fasting day?",
-      "confirmMessage": "This marks the day as one you fasted, so it counts as a real 0-calorie day in your averages, TDEE and streaks.",
+      "confirmMessage": "This marks the day as one you fasted, so it counts as a real 0-calorie day in your averages, TDEE and streaks. Fasting is not safe for everyone: ask a doctor first if you are pregnant or breastfeeding, take medication, have diabetes or have had an eating disorder.",
       "confirmButton": "Mark as fasting day"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Duplicate portion",
       "duplicatePortionDesc": "Create a copy to modify",
       "deletePortion": "Delete portion",
-      "deletePortionDesc": "Remove this portion from your list",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Remove this portion from your list"
     },
     "createPortion": {
       "title": "Create portion size",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Estimated totals for this portion",
       "sendDayToPhone": "Send day to phone",
       "sendDayToPhoneDesc": "Transfer this whole day's food with animated QR codes",
-      "keepMealTypes": "Keep their meals"
+      "keepMealTypes": "Keep their meals",
+      "copyMealTitle": "{{meal}} from another day",
+      "copyMealTargetNote": "The copy goes into: {{meal}}"
     },
     "mealInsights": {
       "title": "Meal insights",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Share ingredients and instructions as text",
         "sendToPhone": "Send to another phone",
         "sendToPhoneDesc": "Transfer this meal with animated QR codes",
-        "shareRecipeIngredientLine": "{{grams}}g of {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} of {{name}}",
         "shareRecipeNoIngredients": "This meal has no ingredients to share",
         "duplicateMeal": "Duplicate meal",
         "duplicateMealDesc": "Create a copy of this meal",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} foods",
         "foodCount_many": "{{count}} foods",
         "foodCount_other": "{{count}} foods",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "Remove {{name}}",
         "groupTitle": "Log as one meal",
         "groupSubtitle": "Shows as a single entry in your diary",

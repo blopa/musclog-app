@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { LocalModelCard } from '@/components/localModels/LocalModelCard';
+import { localTextModelStore } from '@/services/localModels/modelStore';
 
 let mockModel: Record<string, unknown> = {};
 const mockStart = jest.fn();
@@ -12,24 +13,57 @@ jest.mock('@react-native-community/netinfo', () => ({
   __esModule: true,
   default: { fetch: () => Promise.resolve({ type: 'wifi' }) },
 }));
-jest.mock('@/hooks/useLocalModel', () => ({ useLocalModel: () => mockModel }));
+let mockTextModel: Record<string, unknown> = {};
+const mockRemove = jest.fn();
+const mockDeleteBoth = jest.fn();
+jest.mock('@/hooks/useLocalModel', () => ({
+  useLocalModel: (store?: { isText?: boolean }) => (store?.isText ? mockTextModel : mockModel),
+}));
 jest.mock('@/hooks/useStorageSizeFormatter', () => ({
   useStorageSizeFormatter: () => (bytes: number) => `${bytes}B`,
 }));
-jest.mock('@/services/localModels/modelStore', () => ({
-  cancelLocalModelDownload: jest.fn(),
-  deleteLocalModel: jest.fn(),
-  getFreeDiskBytes: () => mockFreeBytes(),
-  getLocalModelSpaceCheck: async (selection: unknown) => {
-    const { checkSpace } = require('@/utils/localModels/install');
-    const { DEFAULT_LOCAL_MODEL } = require('@/constants/localModels');
-    return checkSpace(await mockFreeBytes(), DEFAULT_LOCAL_MODEL, selection);
-  },
-  pauseLocalModelDownload: () => mockPause(),
-  resumeLocalModelDownload: jest.fn(),
-  startLocalModelDownload: (selection: unknown) => mockStart(selection),
+jest.mock('@/services/localModels/modelStore', () => {
+  const { DEFAULT_LOCAL_MODEL, LOCAL_TEXT_MODEL } = require('@/constants/localModels');
+  const { checkSpace } = require('@/utils/localModels/install');
+  const makeStore = (manifest: unknown, isText: boolean) => ({
+    isText,
+    manifest,
+    getSpaceCheck: async (selection: unknown) =>
+      checkSpace(await mockFreeBytes(), manifest, selection),
+    start: (selection: unknown) => mockStart(selection),
+    pause: () => mockPause(),
+    resume: jest.fn(),
+    cancel: jest.fn(),
+    remove: () => mockRemove(),
+  });
+
+  return {
+    getFreeDiskBytes: () => mockFreeBytes(),
+    deleteLocalModel: () => mockDeleteBoth(),
+    localModelStore: makeStore(DEFAULT_LOCAL_MODEL, false),
+    localTextModelStore: makeStore(LOCAL_TEXT_MODEL, true),
+  };
+});
+jest.mock('@/components/modals/ConfirmationModal', () => ({
+  ConfirmationModal: ({
+    visible,
+    message,
+    title,
+    onConfirm,
+  }: {
+    visible: boolean;
+    message: string;
+    title: string;
+    onConfirm: () => void;
+  }) =>
+    visible ? (
+      <div>
+        <span>{title}</span>
+        <span>{message}</span>
+        <button onClick={onConfirm}>confirm-delete</button>
+      </div>
+    ) : null,
 }));
-jest.mock('@/components/modals/ConfirmationModal', () => ({ ConfirmationModal: () => null }));
 jest.mock('@/components/theme/ToggleInput', () => ({ ToggleInput: () => null }));
 jest.mock('@/components/theme/TextButton', () => ({
   TextButton: ({ label, onPress }: { label: string; onPress: () => void }) => (
@@ -63,6 +97,11 @@ describe('LocalModelCard', () => {
     jest.clearAllMocks();
     mockFreeBytes.mockResolvedValue(50 * 1024 ** 3);
     mockModel = {
+      state: { kind: 'notInstalled' },
+      projectorInstalled: false,
+      updateAvailable: false,
+    };
+    mockTextModel = {
       state: { kind: 'notInstalled' },
       projectorInstalled: false,
       updateAvailable: false,
@@ -121,5 +160,59 @@ describe('LocalModelCard', () => {
     rerender(<LocalModelCard selection={selection} allowDelete />);
     expect(screen.getByText('onDeviceAi.model.actions.delete')).toBeTruthy();
     expect(screen.getByText('onDeviceAi.model.state.readyWithPhotos')).toBeTruthy();
+  });
+
+  it('shows the text variant with its heading, description and no photos toggle', async () => {
+    mockTextModel = {
+      state: { kind: 'ready' },
+      projectorInstalled: false,
+      updateAvailable: false,
+    };
+    render(
+      <LocalModelCard
+        store={localTextModelStore}
+        variant="text"
+        selection={{ withProjector: false }}
+        onSelectionChange={jest.fn()}
+        allowDelete
+      />
+    );
+    expect(screen.getByText('onDeviceAi.textModel.heading')).toBeTruthy();
+    expect(screen.getByText('onDeviceAi.textModel.description')).toBeTruthy();
+    expect(screen.getByText('onDeviceAi.textModel.state.ready')).toBeTruthy();
+    expect(screen.queryByText('onDeviceAi.model.state.readyText')).toBeNull();
+    fireEvent.click(screen.getByText('onDeviceAi.textModel.actions.delete'));
+    expect(screen.getByText('onDeviceAi.textModel.delete.title')).toBeTruthy();
+    expect(screen.getByText('onDeviceAi.textModel.delete.message')).toBeTruthy();
+    fireEvent.click(screen.getByText('confirm-delete'));
+    await waitFor(() => expect(mockRemove).toHaveBeenCalled());
+    expect(mockDeleteBoth).not.toHaveBeenCalled();
+  });
+
+  it('downloads the text model through its own store', async () => {
+    render(
+      <LocalModelCard
+        store={localTextModelStore}
+        variant="text"
+        selection={{ withProjector: false }}
+      />
+    );
+    fireEvent.click(await screen.findByText('onDeviceAi.model.actions.download'));
+    expect(mockStart).toHaveBeenCalledWith({ withProjector: false });
+  });
+
+  it('warns that the chat model goes too when the main model is deleted', () => {
+    mockModel = { state: { kind: 'ready' }, projectorInstalled: true, updateAvailable: false };
+    mockTextModel = { state: { kind: 'ready' }, projectorInstalled: false, updateAvailable: false };
+    render(<LocalModelCard selection={selection} allowDelete />);
+    fireEvent.click(screen.getByText('onDeviceAi.model.actions.delete'));
+    expect(screen.getByText('onDeviceAi.model.delete.messageWithTextModel')).toBeTruthy();
+  });
+
+  it('keeps the plain delete message without the text model', () => {
+    mockModel = { state: { kind: 'ready' }, projectorInstalled: true, updateAvailable: false };
+    render(<LocalModelCard selection={selection} allowDelete />);
+    fireEvent.click(screen.getByText('onDeviceAi.model.actions.delete'));
+    expect(screen.getByText('onDeviceAi.model.delete.message')).toBeTruthy();
   });
 });

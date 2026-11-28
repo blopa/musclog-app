@@ -1,28 +1,34 @@
 import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
-import { ENCRYPTION_KEY } from '@/constants/database';
+import { ENCRYPTION_KEY, ENCRYPTION_KEY_SEEN } from '@/constants/database';
 import {
   AI_ONBOARDING_DRAFT,
   COACH_REPLY_JOURNAL,
   COACH_RESTORED_COMPOSER,
   CRASH_REPORT_CONSENT_KEY,
   LOCAL_MODEL_DOWNLOAD_STATE,
+  LOCAL_TEXT_MODEL_DOWNLOAD_STATE,
   PERSONALIZED_BODY_DRAFT,
   PREMIUM_DEVICE_STATE,
   REVIEW_PROMPT_STATE,
   SETTINGS_MIRROR_STORAGE_KEY,
   TEMP_NUTRITION_PLAN,
+  VOICE_BROWSER_NOTICE_ACCEPTED,
 } from '@/constants/misc';
 import {
+  AI_CONSENT_RECORDS_SETTING_TYPE,
   CLAUDE_API_KEY_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   PREMIUM_CONSENT_VERSION_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
+  USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
 } from '@/constants/settings';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
 export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   ENCRYPTION_KEY,
+  ENCRYPTION_KEY_SEEN,
   TEMP_NUTRITION_PLAN,
   CYCLE_BACKUP_STATUS_KEY,
   // Rebuilt from the restored settings table; a carried-over copy could claim no lock is on.
@@ -44,6 +50,10 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   REVIEW_PROMPT_STATE,
   // Resume data of a model download on THIS device; meaningless anywhere else.
   LOCAL_MODEL_DOWNLOAD_STATE,
+  // Same for the optional text model's download.
+  LOCAL_TEXT_MODEL_DOWNLOAD_STATE,
+  // Consent given in one browser: a restore elsewhere asks again.
+  VOICE_BROWSER_NOTICE_ACCEPTED,
 ]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
@@ -151,13 +161,23 @@ export const SETTINGS_EXCLUDED_TYPES = [
   CLAUDE_API_KEY_SETTING_TYPE,
   USE_HOSTED_AI_SETTING_TYPE,
   PREMIUM_CONSENT_VERSION_SETTING_TYPE,
+  // The proof that the person agreed, never something to copy from another device.
+  AI_CONSENT_RECORDS_SETTING_TYPE,
 ];
 
 /**
- * Settings a restore never takes from the file, whatever value the file carries. A hand-made or
- * foreign backup could otherwise turn hosted AI on for a device that never enrolled.
+ * Settings a restore never takes from the file, whatever value the file carries. Each one either
+ * sends data off the phone or is the record that the person agreed to that. A hand-made or foreign
+ * backup could otherwise switch one on with no consent behind it, so the restored device starts
+ * with the default (off, or no record) and the person is asked again.
  */
-export const SETTINGS_FORCED_OFF_ON_RESTORE_TYPES: readonly string[] = [USE_HOSTED_AI_SETTING_TYPE];
+export const SETTINGS_FORCED_OFF_ON_RESTORE_TYPES: readonly string[] = [
+  USE_HOSTED_AI_SETTING_TYPE,
+  USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
+  AI_CONSENT_RECORDS_SETTING_TYPE,
+  PREMIUM_CONSENT_VERSION_SETTING_TYPE,
+];
 
 export function isRestoreForcedOffSetting(type: string): boolean {
   return SETTINGS_FORCED_OFF_ON_RESTORE_TYPES.includes(type);

@@ -37,6 +37,7 @@ import {
   catalogueFoodForCartridgeIndex,
   externalIdForCartridgeFoodIndex,
   isCartridgeCustomFoodIndex,
+  type LocalizeFoundationFood,
 } from '@/utils/optical/gameBoyFoodMapping';
 import {
   MUSCLOG_SHARE_ENVELOPE_VERSION,
@@ -104,12 +105,17 @@ interface WireFood {
   name: string;
 }
 
-function wireFood(tuple: CompactGameBoyDayShare['foods'][number], nowMs: number): WireFood {
+function wireFood(
+  tuple: CompactGameBoyDayShare['foods'][number],
+  nowMs: number,
+  localizeFood: LocalizeFoundationFood
+): WireFood {
   const [index, cartridgeName, kcal, proteinDg, fatDg, carbsDg, fiberDg] = tuple;
 
-  const catalogue = isCartridgeCustomFoodIndex(index)
+  const seed = isCartridgeCustomFoodIndex(index)
     ? undefined
     : catalogueFoodForCartridgeIndex(index);
+  const catalogue = seed && localizeFood(seed);
 
   // The receiver's own copy of a bundled food wins over the cartridge's, which carries only 16
   // characters of the name and no micros. A custom food has no catalogue entry, so the tuple is
@@ -163,10 +169,13 @@ function wireFood(tuple: CompactGameBoyDayShare['foods'][number], nowMs: number)
 /** Expand the compact cartridge schema into the `nutritionDay` envelope the importer consumes. */
 export function gameBoyDayShareToEnvelope(
   compact: CompactGameBoyDayShare,
-  nowMs = Date.now()
+  nowMs = Date.now(),
+  localizeFood: LocalizeFoundationFood = (food) => food
 ): NutritionDayShareEnvelope {
   const day = cartridgeDay(compact.day);
-  const foods = new Map(compact.foods.map((tuple) => [tuple[0], wireFood(tuple, nowMs)] as const));
+  const foods = new Map(
+    compact.foods.map((tuple) => [tuple[0], wireFood(tuple, nowMs, localizeFood)] as const)
+  );
 
   // Each log is resolved once, into the three things a log contributes: its diary row, its preview
   // entry, and its share of the day's totals. Pairing the log with its food up front is what

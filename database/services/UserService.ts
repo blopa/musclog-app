@@ -79,7 +79,7 @@ export class UserService {
    */
   static async initializeUser(initialData: {
     fullName: string;
-    dateOfBirth: number;
+    dateOfBirth?: number | null;
     gender: Gender;
     fitnessGoal: FitnessGoal;
     weightGoal?: WeightGoal;

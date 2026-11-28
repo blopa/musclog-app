@@ -2,11 +2,25 @@ import {
   describePromptBlocks,
   clearLlmUsage,
   extractLlmUsage,
+  extractLocalUsage,
   getRecentLlmUsage,
   mergeLlmUsage,
   recordLlmUsage,
   summarizeLlmUsage,
 } from '@/utils/llmUsage';
+
+describe('extractLocalUsage', () => {
+  it("reads llama.rn's counters, the cached part from its timings", () => {
+    expect(
+      extractLocalUsage({ tokens_evaluated: 300, tokens_predicted: 40, timings: { cache_n: 250 } })
+    ).toEqual({ inputTokens: 300, cachedInputTokens: 250, outputTokens: 40 });
+  });
+
+  it('reads nothing from a result without counts', () => {
+    expect(extractLocalUsage({ text: 'hi' })).toBeNull();
+    expect(extractLocalUsage(null)).toBeNull();
+  });
+});
 
 describe('extractLlmUsage', () => {
   it('reads the OpenAI-compatible shape with cached tokens', () => {

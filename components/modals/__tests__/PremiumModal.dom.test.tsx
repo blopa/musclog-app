@@ -4,6 +4,7 @@ import { Linking } from 'react-native';
 import { PREMIUM_BUSY_KEYS, PremiumModal } from '@/components/modals/PremiumModal';
 import { PREMIUM_NOTICES } from '@/components/premium/premiumNotices';
 import { PREMIUM_BENEFITS } from '@/components/premium/PremiumPaywall';
+import { useCloudAiBlockedForAge } from '@/hooks/useCloudAiAge';
 import { usePremium } from '@/hooks/usePremium';
 import {
   beginPremiumActivity,
@@ -21,6 +22,7 @@ import {
 } from '@/utils/premium/premiumUiState';
 
 jest.mock('@/hooks/usePremium', () => ({ usePremium: jest.fn() }));
+jest.mock('@/hooks/useCloudAiAge', () => ({ useCloudAiBlockedForAge: jest.fn(() => false) }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
 jest.mock('@/hooks/useFormatAppNumber', () => ({
   useFormatAppNumber: () => ({ formatInteger: (n: number) => String(n) }),
@@ -53,10 +55,11 @@ jest.mock('@/components/modals/FullScreenModal', () => ({
     ) : null,
 }));
 jest.mock('@/components/modals/ConfirmationModal', () => ({
-  ConfirmationModal: ({ visible, onConfirm, confirmLabel, title, scrollable }: any) =>
+  ConfirmationModal: ({ visible, onConfirm, confirmLabel, title, message, scrollable }: any) =>
     visible ? (
       <div data-scrollable={scrollable ? 'true' : 'false'}>
         <span>{title}</span>
+        <p>{message}</p>
         <button onClick={() => onConfirm()}>{confirmLabel}</button>
       </div>
     ) : null,
@@ -256,6 +259,8 @@ describe('PremiumModal', () => {
       fireEvent.click(screen.getByRole('switch'));
 
       expect(screen.getByText('premium.consent.title')).toBeTruthy();
+      // The consent ends with the AI-accuracy acknowledgement, after the body.
+      expect(screen.getByText(/premium\.consent\.body\s+ai\.disclaimer\.consent/)).toBeTruthy();
       // The consent text is long (and longer in other languages): its body must scroll on a small
       // screen so the buttons never fall below the fold.
       expect(screen.getByText('premium.consent.title').parentElement?.dataset.scrollable).toBe(
@@ -432,6 +437,23 @@ describe('PremiumModal', () => {
       expect(screen.getByText('premium.benefit')).toBeTruthy();
       expect(screen.queryByText('premium.paywall.headline')).toBeNull();
     });
+  });
+
+  it('offers someone under 18 no way to subscribe or restore, and says why', () => {
+    const blocked = useCloudAiBlockedForAge as jest.Mock;
+    blocked.mockReturnValue(true);
+    mockUsePremium.mockReturnValue(
+      premiumWith(
+        buildPremiumViewModel(input({ status: 'not_subscribed' as never, config: CONFIG_ON }))
+      )
+    );
+
+    renderModal();
+
+    expect(screen.getByText('common.ageGate.cloudAi:{"age":18}')).toBeTruthy();
+    expect(screen.queryByText('premium.subscribe')).toBeNull();
+    expect(screen.queryByText('premium.restore')).toBeNull();
+    blocked.mockReturnValue(false);
   });
 
   it('shows the loading text while the status is unknown', () => {

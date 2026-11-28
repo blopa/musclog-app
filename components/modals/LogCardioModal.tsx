@@ -20,7 +20,7 @@ import { buildCardioDraft } from '@/utils/cardioDraft';
 import { type CardioActivity, estimateCardioKcal } from '@/utils/cardioEnergy';
 import { formatPace } from '@/utils/cardioFormat';
 import { handleError } from '@/utils/handleError';
-import { getDistanceUnitLabel } from '@/utils/unitConversion';
+import { getDistanceUnitLabel, metersToDisplayDistance } from '@/utils/unitConversion';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
@@ -33,6 +33,19 @@ type LogCardioModalProps = {
   onClose: () => void;
   /** Called after the log is saved, so the host can refresh whatever lists workouts. */
   onLogged?: () => void;
+  /** Starting values for a log a voice command already understood. Omitted: the defaults. */
+  initial?: LogCardioInitial;
+};
+
+/**
+ * Starting values for the form. Unsaid values are zero, so Save refuses until they are filled.
+ */
+export type LogCardioInitial = {
+  activity: CardioActivity;
+  /** Null: not said, the field starts at zero. */
+  distanceM: number | null;
+  durationS: number | null;
+  endedAt: Date;
 };
 
 const DEFAULT_DISTANCE = 5;
@@ -46,9 +59,9 @@ const MAX_WATCH_CALORIES = 20000;
  * (km or mi); `buildCardioDraft` turns them into the metres and seconds the service stores, and the
  * pace and calorie preview are computed from that same draft, so what the user sees is what is saved.
  *
- * The host mounts this only while it is open, so every open starts from the defaults.
+ * The host mounts this only while it is open, so each open starts from the defaults or from `initial`.
  */
-export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalProps) {
+export function LogCardioModal({ visible, onClose, onLogged, initial }: LogCardioModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -56,16 +69,34 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
   const { formatEnergyWithUnit } = useEnergyUnit();
   const { showSnackbar } = useSnackbar();
 
-  const [activity, setActivity] = useState<CardioActivity>('run');
+  // Lazy initialisers: render must be pure, so "now" and the split are read once, not per render.
+  const [activity, setActivity] = useState<CardioActivity>(() =>
+    initial ? initial.activity : 'run'
+  );
   const [treadmill, setTreadmill] = useState(false);
-  const [distance, setDistance] = useState(DEFAULT_DISTANCE);
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(DEFAULT_MINUTES);
-  const [seconds, setSeconds] = useState(0);
+  const [distance, setDistance] = useState(() => {
+    if (!initial) {
+      return DEFAULT_DISTANCE;
+    }
+
+    return initial.distanceM === null ? 0 : metersToDisplayDistance(initial.distanceM, units);
+  });
+  const [hours, setHours] = useState(() =>
+    initial && initial.durationS !== null ? Math.floor(initial.durationS / 3600) : 0
+  );
+  const [minutes, setMinutes] = useState(() => {
+    if (!initial) {
+      return DEFAULT_MINUTES;
+    }
+
+    return initial.durationS === null ? 0 : Math.floor((initial.durationS % 3600) / 60);
+  });
+  const [seconds, setSeconds] = useState(() =>
+    initial && initial.durationS !== null ? initial.durationS % 60 : 0
+  );
   const [watchCalories, setWatchCalories] = useState(0);
-  // Lazy initialisers: render must be pure, so "now" is read once, not on every render.
-  const [endedDate, setEndedDate] = useState(() => new Date());
-  const [endedTime, setEndedTime] = useState(() => new Date());
+  const [endedDate, setEndedDate] = useState(() => (initial ? initial.endedAt : new Date()));
+  const [endedTime, setEndedTime] = useState(() => (initial ? initial.endedAt : new Date()));
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [bodyMassKg, setBodyMassKg] = useState(0);
@@ -92,6 +123,7 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
     () => buildCardioDraft({ distance, hours, minutes, seconds, units }),
     [distance, hours, minutes, seconds, units]
   );
+  const missingVoiceValues = Boolean(initial) && !draft.isValid;
   const pace = draft.isValid ? formatPace(locale, draft.distanceM, draft.durationS, units) : null;
   const estimatedKcal = useMemo(
     () =>
@@ -146,6 +178,7 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
 
   const unitLabel = getDistanceUnitLabel(units);
 
+  // Both manually entered and voice-prefilled drafts need a distance and duration before saving.
   const footer = (
     <Button
       label={t('cardio.save')}
@@ -170,6 +203,9 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
       closable={!isSaving}
     >
       <View className="mb-6 mt-6 gap-6 px-4" testID="log-cardio-form">
+        {missingVoiceValues ? (
+          <Text className="text-sm text-text-secondary">{t('cardio.needsDistanceAndTime')}</Text>
+        ) : null}
         <View>
           <Text
             className="mb-3 text-xs font-semibold"

@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "Delete the model?",
-        "message": "On-device AI stops working until you download the model again. Your data is not affected."
+        "message": "On-device AI stops working until you download the model again. Your data is not affected.",
+        "messageWithTextModel": "On-device AI stops working until you download the model again. The optional chat model is deleted too. Your data is not affected."
+      }
+    },
+    "textModel": {
+      "heading": "Optional: a bigger model for chat",
+      "description": "Once downloaded, chat, voice commands and everything else without a photo use this model. Its answers are better, but they take longer. Meal photos still use {{name}}.",
+      "state": {
+        "ready": "Ready. Chat, voice and other text use this model; photos use {{name}}."
+      },
+      "actions": {
+        "delete": "Delete the chat model"
+      },
+      "delete": {
+        "title": "Delete the chat model?",
+        "message": "Chat and voice go back to {{name}}. Your data is not affected."
       }
     },
     "apple": {
@@ -142,10 +157,11 @@
     },
     "notices": {
       "title": "Third-party notices",
-      "intro": "Musclog is built on open source software and an open model. These are the licenses that apply.",
+      "intro": "Musclog is built on open source software, open data and open models. These are the licenses that apply.",
       "link": "Third-party notices",
       "linkSubtitle": "Open source software and the on-device model",
-      "openLink": "Open the full text"
+      "openLink": "Open the full text",
+      "packagesTitle": "Open source packages"
     }
   }
 }

@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 
+import { useCameraAiProcessing } from '../useCameraAiProcessing';
 import { useMealPhotoEstimate } from '../useMealPhotoEstimate';
 import { AiService } from '@/services/AiService';
 import { reportAiError } from '@/utils/coachAI';
@@ -21,7 +22,18 @@ jest.mock('@/utils/coachMealEstimate', () => ({ estimateNutritionFromPhoto: jest
 jest.mock('@/utils/file', () => ({ readFileAsStringAsync: jest.fn() }));
 jest.mock('@/utils/snackbarService', () => ({ showSnackbar: jest.fn() }));
 
-test('submits all photos and hands the first photo and named meal to logging', async () => {
+/** The estimate over the real camera request lifecycle, as the camera wires it. */
+function renderEstimate() {
+  return renderHook(() => {
+    const ai = useCameraAiProcessing();
+
+    return { ai, submit: useMealPhotoEstimate(ai) };
+  });
+}
+
+const callbacks = () => ({ onEstimate: jest.fn(), onError: jest.fn(), onFailure: jest.fn() });
+
+test('submits all photos and hands the first photo and named meal to review', async () => {
   jest.mocked(AiService.getAiConfig).mockResolvedValue({} as never);
   jest.mocked(readFileAsStringAsync).mockImplementation(async (uri) => `base64:${uri}`);
   jest.mocked(estimateNutritionFromPhoto).mockResolvedValue({
@@ -32,19 +44,10 @@ test('submits all photos and hands the first photo and named meal to logging', a
       },
     ],
   } as never);
-  const onSuccess = jest.fn();
-  const onFailure = jest.fn();
-  const hook = renderHook(() =>
-    useMealPhotoEstimate({
-      abortRef: { current: null },
-      setProcessing: jest.fn(),
-      setProgress: jest.fn(),
-      setError: jest.fn(),
-      onSuccess,
-    })
-  );
+  const on = callbacks();
+  const hook = renderEstimate();
   await act(async () =>
-    hook.result.current({ photos: ['first', 'second'], name: ' Dinner ', onFailure })
+    hook.result.current.submit({ photos: ['first', 'second'], name: ' Dinner ', ...on })
   );
   expect(estimateNutritionFromPhoto).toHaveBeenCalledWith(
     expect.objectContaining({ signal: expect.any(AbortSignal) }),
@@ -52,33 +55,24 @@ test('submits all photos and hands the first photo and named meal to logging', a
     undefined,
     expect.any(Function)
   );
-  expect(onSuccess).toHaveBeenCalledWith(
-    expect.objectContaining({ name: 'Dinner', calories: 100 }),
-    expect.any(Array),
-    'first'
-  );
-  expect(onFailure).not.toHaveBeenCalled();
+  expect(on.onEstimate).toHaveBeenCalledWith({
+    meal: expect.objectContaining({ name: 'Dinner', calories: 100 }),
+    ingredients: expect.any(Array),
+    photoUri: 'first',
+  });
+  expect(on.onFailure).not.toHaveBeenCalled();
+  expect(hook.result.current.ai.processing).toBe(false);
 });
 
-test('reopens the detailed draft on failure or cancellation', async () => {
+test('reopens the detailed draft on a failed estimate and says why', async () => {
   jest.mocked(AiService.getAiConfig).mockResolvedValue({} as never);
   jest.mocked(estimateNutritionFromPhoto).mockResolvedValue(null);
-  const onSuccess = jest.fn();
-  const onFailure = jest.fn();
-  const setError = jest.fn();
-  const hook = renderHook(() =>
-    useMealPhotoEstimate({
-      abortRef: { current: null },
-      setProcessing: jest.fn(),
-      setProgress: jest.fn(),
-      setError,
-      onSuccess,
-    })
-  );
-  await act(async () => hook.result.current({ photos: ['first'], onFailure }));
-  expect(onFailure).toHaveBeenCalledTimes(1);
-  expect(setError).toHaveBeenLastCalledWith('food.aiCamera.aiAnalysisFailed');
-  expect(onSuccess).not.toHaveBeenCalled();
+  const on = callbacks();
+  const hook = renderEstimate();
+  await act(async () => hook.result.current.submit({ photos: ['first'], ...on }));
+  expect(on.onFailure).toHaveBeenCalledTimes(1);
+  expect(on.onError).toHaveBeenCalledWith('food.aiCamera.aiAnalysisFailed');
+  expect(on.onEstimate).not.toHaveBeenCalled();
 });
 
 test('cancelling an estimate returns to the preserved draft without handing off a meal', async () => {
@@ -90,28 +84,19 @@ test('cancelling an estimate returns to the preserved draft without handing off 
         finishRequest = resolve;
       })
   );
-  const abortRef: { current: AbortController | null } = { current: null };
-  const onSuccess = jest.fn();
-  const onFailure = jest.fn();
-  const hook = renderHook(() =>
-    useMealPhotoEstimate({
-      abortRef,
-      setProcessing: jest.fn(),
-      setProgress: jest.fn(),
-      setError: jest.fn(),
-      onSuccess,
-    })
-  );
+  const on = callbacks();
+  const hook = renderEstimate();
   await act(async () => {
-    const pending = hook.result.current({ photos: ['first'], onFailure });
+    const pending = hook.result.current.submit({ photos: ['first'], ...on });
     await Promise.resolve();
     await Promise.resolve();
-    abortRef.current?.abort();
+    hook.result.current.ai.cancel();
     finishRequest(null as never);
     await pending;
   });
-  expect(onFailure).toHaveBeenCalledTimes(1);
-  expect(onSuccess).not.toHaveBeenCalled();
+  expect(on.onFailure).toHaveBeenCalledTimes(1);
+  expect(on.onError).not.toHaveBeenCalled();
+  expect(on.onEstimate).not.toHaveBeenCalled();
 });
 
 test('reports a failure it did not expect, with the step it happened in, and reopens the draft', async () => {
@@ -119,25 +104,16 @@ test('reports a failure it did not expect, with the step it happened in, and reo
   jest.mocked(readFileAsStringAsync).mockResolvedValue('base64');
   const failure = new Error('disk full');
   jest.mocked(estimateNutritionFromPhoto).mockRejectedValue(failure);
-  const onFailure = jest.fn();
-  const setError = jest.fn();
-  const hook = renderHook(() =>
-    useMealPhotoEstimate({
-      abortRef: { current: null },
-      setProcessing: jest.fn(),
-      setProgress: jest.fn(),
-      setError,
-      onSuccess: jest.fn(),
-    })
-  );
+  const on = callbacks();
+  const hook = renderEstimate();
 
   await act(async () => {
-    await hook.result.current({ photos: ['first'], onFailure });
+    await hook.result.current.submit({ photos: ['first'], ...on });
   });
 
   expect(reportAiError).toHaveBeenCalledWith(failure, 'SmartCamera.aiMealPhotos');
-  expect(onFailure).toHaveBeenCalledTimes(1);
-  expect(setError).toHaveBeenLastCalledWith('food.aiCamera.aiAnalysisFailed');
+  expect(on.onFailure).toHaveBeenCalledTimes(1);
+  expect(on.onError).toHaveBeenLastCalledWith('food.aiCamera.aiAnalysisFailed');
 });
 
 test('totals carbs the way the diary will show them: estimated carbs are net, matched foods are not', async () => {
@@ -163,22 +139,15 @@ test('totals carbs the way the diary will show them: estimated carbs are net, ma
       },
     ],
   } as never);
-  const onSuccess = jest.fn();
-  const hook = renderHook(() =>
-    useMealPhotoEstimate({
-      abortRef: { current: null },
-      setProcessing: jest.fn(),
-      setProgress: jest.fn(),
-      setError: jest.fn(),
-      onSuccess,
-    })
-  );
-  await act(async () => hook.result.current({ photos: ['only'] }));
+  const on = callbacks();
+  const hook = renderEstimate();
+  await act(async () => hook.result.current.submit({ photos: ['only'], ...on }));
 
   // 20 net + 5 fiber for the estimated bar, 28 (already total) for the matched rice.
-  expect(onSuccess).toHaveBeenCalledWith(
-    expect.objectContaining({ carbs: 53 }),
-    expect.any(Array),
-    'only'
+  expect(on.onEstimate).toHaveBeenCalledWith(
+    expect.objectContaining({
+      meal: expect.objectContaining({ carbs: 53 }),
+      photoUri: 'only',
+    })
   );
 });

@@ -3,7 +3,12 @@
  * Apple engine (`utils/onDeviceAi*.ts`) so `coachAI` picks one by `config.engine` and nothing else
  * differs. The runtime is required inline: importing this file never loads llama.rn.
  */
-import type { LocalGenerateParams } from '@/services/localModels/llamaRuntime';
+import type {
+  LocalChatMessage,
+  LocalGenerateParams,
+  LocalToolCall,
+  LocalToolDefinition,
+} from '@/services/localModels/llamaRuntime';
 
 export type LocalMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -19,14 +24,18 @@ function toMessages(messages: LocalMessage[], systemPrompt: string | undefined) 
   ];
 }
 
+type OnUsage = LocalGenerateParams['onUsage'];
+
 export async function sendLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onUsage?: OnUsage
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     signal,
+    onUsage,
   });
 
   return result.text;
@@ -36,12 +45,14 @@ export async function streamLocalMessage(
   messages: LocalMessage[],
   systemPrompt: string | undefined,
   onDelta: (delta: string) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onUsage?: OnUsage
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
     messages: toMessages(messages, systemPrompt),
     onDelta,
     signal,
+    onUsage,
   });
 
   return result.text;
@@ -57,7 +68,7 @@ export async function sendLocalStructuredRaw(
   schema: object,
   options: Pick<
     LocalGenerateParams,
-    'image' | 'signal' | 'maxTokens' | 'temperature' | 'onDelta'
+    'image' | 'signal' | 'maxTokens' | 'temperature' | 'onDelta' | 'onUsage'
   > = {}
 ): Promise<string> {
   const result = await runtime().generateWithLocalModel({
@@ -68,4 +79,23 @@ export async function sendLocalStructuredRaw(
   });
 
   return result.text;
+}
+
+/**
+ * One request in the model's own tool-call format: the reply is either calls (parsed by the engine)
+ * or plain text when no tool applies. Greedy (temperature 0), like a structured request.
+ */
+export async function sendLocalToolCall(
+  messages: LocalChatMessage[],
+  tools: LocalToolDefinition[],
+  options: Pick<LocalGenerateParams, 'signal' | 'onDelta' | 'onUsage'> = {}
+): Promise<{ text: string; toolCalls: LocalToolCall[] }> {
+  const result = await runtime().generateWithLocalModel({
+    messages,
+    tools,
+    temperature: 0,
+    ...options,
+  });
+
+  return { text: result.text, toolCalls: result.toolCalls ?? [] };
 }

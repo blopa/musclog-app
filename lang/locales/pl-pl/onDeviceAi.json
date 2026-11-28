@@ -41,7 +41,22 @@
       },
       "delete": {
         "title": "Usunąć model?",
-        "message": "AI na urządzeniu przestanie działać, dopóki ponownie nie pobierzesz modelu. Twoje dane nie zostaną zmienione."
+        "message": "AI na urządzeniu przestanie działać, dopóki ponownie nie pobierzesz modelu. Twoje dane nie zostaną zmienione.",
+        "messageWithTextModel": "AI na urządzeniu przestanie działać, dopóki ponownie nie pobierzesz modelu. Opcjonalny model do czatu również zostanie usunięty. Twoje dane nie zostaną zmienione."
+      }
+    },
+    "textModel": {
+      "heading": "Opcjonalnie: większy model do czatu",
+      "description": "Po pobraniu z tego modelu korzystają czat, polecenia głosowe i wszystko inne bez zdjęcia. Odpowiedzi są lepsze, ale pojawiają się wolniej. Zdjęcia posiłków nadal używają {{name}}.",
+      "state": {
+        "ready": "Gotowe. Czat, głos i inny tekst używają tego modelu; zdjęcia używają {{name}}."
+      },
+      "actions": {
+        "delete": "Usuń model do czatu"
+      },
+      "delete": {
+        "title": "Usunąć model do czatu?",
+        "message": "Czat i głos wrócą do {{name}}. Twoje dane nie zostaną zmienione."
       }
     },
     "apple": {
@@ -142,10 +157,11 @@
     },
     "notices": {
       "title": "Informacje o podmiotach trzecich",
-      "intro": "Musclog opiera się na oprogramowaniu open source i otwartym modelu. Oto licencje, które mają zastosowanie.",
+      "intro": "Musclog opiera się na oprogramowaniu open source, otwartych danych i otwartych modelach. Oto licencje, które mają zastosowanie.",
       "link": "Informacje o podmiotach trzecich",
       "linkSubtitle": "Oprogramowanie open source i model na urządzeniu",
-      "openLink": "Otwórz pełny tekst"
+      "openLink": "Otwórz pełny tekst",
+      "packagesTitle": "Pakiety open source"
     }
   }
 }

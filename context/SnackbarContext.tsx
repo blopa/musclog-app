@@ -48,6 +48,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         onAction: options?.onAction,
         secondaryAction: options?.secondaryAction,
         onSecondaryAction: options?.onSecondaryAction,
+        onPress: options?.onPress,
       };
 
       setSnackbars((prev) => [...prev, newSnackbar]);

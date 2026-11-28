@@ -4,7 +4,7 @@
       "title": "Uygulama kilidi",
       "subtitle": "Parmak izi, yüz ya da cihaz PIN'i iste",
       "hint": "Seçtiğin alanları göstermeden önce parmak izini, yüzünü ya da cihaz PIN'ini iste. Uygulama arka planda 30 saniye kaldıktan sonra yeniden kilitlenirler.",
-      "note": "Bu bir ekran kilididir. Verilerin şifreli ve bu telefonda kalır; dışa aktarılan yedekler senin kontrol ettiğin ayrı dosyalardır.",
+      "note": "Bu bir ekran kilididir. Verilerin bu telefonda kalır; dışa aktarılan yedekler senin kontrol ettiğin ayrı dosyalardır.",
       "noCredential": "Önce cihazında bir ekran kilidi ya da biyometrik doğrulama kur.",
       "coveredByApp": "Tüm uygulamayı kilitlemeyle korunuyor"
     },

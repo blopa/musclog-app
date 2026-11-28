@@ -53,9 +53,9 @@
     },
     "goToSettings": "Vai alle impostazioni",
     "success": {
-      "workoutPlanGenerated": "Ho creato {{count}} allenamenti per te! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Ho creato {{planName}} con {{count}} allenamenti per te! 💪 {{description}}",
-      "mealPlanGenerated": "Ho creato un piano pasti di 3 giorni con {{count}} pasti per te! 🥗 {{description}}",
+      "workoutPlanGenerated": "Ho creato {{count}} allenamenti per te! 💪 {{description}} Controllali prima di allenarti.",
+      "workoutPlanGeneratedWithName": "Ho creato {{planName}} con {{count}} allenamenti per te! 💪 {{description}} Controllali prima di allenarti.",
+      "mealPlanGenerated": "Ho creato un piano pasti di 3 giorni con {{count}} pasti per te! 🥗 {{description}} Controlla gli alimenti e le quantità prima di fidarti.",
       "trackMealSuccess": "Ho registrato {{count}} ingredienti per il tuo pasto: {{ingredients}}. Totale: {{calories}}.",
       "trackMealReady": "Ho analizzato {{count}} pasto/i: {{meals}} ({{calories}} in totale). Tocca un pasto per controllarlo e registrarlo.",
       "historyCleared": "Cronologia della chat cancellata."
@@ -108,7 +108,6 @@
       "failed": "Impossibile condividere la cronologia della chat. Riprova.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "L'IA può commettere errori. Verifica le informazioni importanti.",
     "message": {
       "menuTitle": "Azioni messaggio",
       "copy": "Copia",
@@ -120,9 +119,12 @@
       "copied": "Messaggio copiato negli appunti",
       "deleted": "Messaggio eliminato",
       "report": "Segnala un problema",
-      "reportDesc": "Segnala via email un problema con questa risposta",
+      "reportDesc": "Invia questa risposta a Musclog perché possiamo esaminarla",
       "reportSubject": "Problema con una risposta dell'IA di Musclog",
-      "reportIntro": "Cosa non andava in questa risposta? (Puoi modificare o eliminare il testo qui sotto prima di inviare.)"
+      "reportIntro": "Cosa non andava in questa risposta? (Puoi modificare o eliminare il testo qui sotto prima di inviare.)",
+      "reportConfirm": "Questo invia la risposta, la versione dell'app, la tua piattaforma e la lingua a Musclog, tramite Sentry, il nostro servizio di monitoraggio degli errori. Nient'altro della chat viene inviato.",
+      "reportSend": "Invia segnalazione",
+      "reportSent": "Segnalazione inviata. Grazie."
     },
     "sendViaOpenAI": "Invia tramite OpenAI",
     "personas": {
@@ -167,6 +169,7 @@
         "errorImage": "Impossibile caricare quell'immagine."
       }
     },
-    "reviewingReply": "Ricontrollo la mia risposta…"
+    "reviewingReply": "Ricontrollo la mia risposta…",
+    "onDevicePainReply": "Da qui non riesco a capire cosa sta succedendo, e preferisco non tirare a indovinare quando qualcosa fa male. Per ora, smetti l'esercizio che causa il dolore e allena ciò che non fa male. Se il dolore è acuto, c'è gonfiore o non si è attenuato dopo qualche giorno, rivolgiti a un medico o a un fisioterapista. Sono felice di aiutarti a pianificare l'allenamento tenendone conto."
   }
 }

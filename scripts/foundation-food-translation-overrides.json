@@ -1,0 +1,1360 @@
+{
+  "de": {
+    "1943184": {
+      "name": "Gefilte Fisch mit Karotten"
+    },
+    "2083070": {
+      "name": "Leichte Sahne"
+    },
+    "2151413": {
+      "name": "Truthahn-Oktoberfest-Pastetchen, Truthahn"
+    },
+    "2375018": {
+      "description": "Frühlingszwiebel (Lauchzwiebel), Zwiebel und Grün, Wurzel entfernt, roh"
+    },
+    "2396166": {
+      "name": "Aufgeschlagener Frischkäse, Sahne"
+    },
+    "2398274": {
+      "description": "Bohnen, grün, in Dosen, normale Packung, abgetropfte Feststoffe"
+    },
+    "2495161": {
+      "description": "Pilz, Kräuterseitling"
+    },
+    "2508901": {
+      "description": "Farro, geperlt, trocken, roh"
+    },
+    "2518353": {
+      "name": "Egg Beaters flüssige Eier"
+    },
+    "2576392": {
+      "description": "Grünkohl, gefroren, gekocht, abgetropft, ohne Salz"
+    },
+    "2641766": {
+      "name": "Ungepökelter Schinken"
+    },
+    "2642990": {
+      "name": "Geviertelte Kürbismischung"
+    },
+    "common:biscuits-and-gravy": {
+      "name": "Biscuits mit Bratensoße"
+    },
+    "common:butter-chicken": {
+      "name": "Butter Chicken"
+    },
+    "common:chicken-caesar-wrap": {
+      "description": "Wrap mit Hühnchen, Römersalat, Parmesan und Caesar-Dressing"
+    },
+    "common:corn-dog": {
+      "name": "Corn Dog"
+    },
+    "common:egg-rolls": {
+      "name": "Eierrollen"
+    },
+    "common:falafel-wrap": {
+      "description": "Wrap mit Falafel, Gemüse und Tahinisoße"
+    },
+    "common:gyro": {
+      "name": "Gyros"
+    },
+    "common:hush-puppies": {
+      "name": "Hush Puppies"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pastel": {
+      "name": "Pastete"
+    },
+    "common:peach-cobbler": {
+      "name": "Pfirsich-Cobbler"
+    },
+    "common:pisto": {
+      "name": "Pisto"
+    },
+    "common:shawarma-wrap": {
+      "name": "Shawarma-Wrap"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    }
+  },
+  "es": {
+    "2105474": {
+      "description": "Melones, melón de miel, crudos"
+    },
+    "2151413": {
+      "name": "Hamburguesas de pavo estilo Oktoberfest, Pavo"
+    },
+    "2274736": {
+      "name": "Calabaza butternut"
+    },
+    "2396424": {
+      "name": "Bisonte molido"
+    },
+    "2406586": {
+      "description": "Naranjas, crudas, variedad navel"
+    },
+    "2423081": {
+      "name": "Mezcla triple de pimientos, pimiento"
+    },
+    "2518353": {
+      "name": "Huevos líquidos Egg Beaters"
+    },
+    "2633820": {
+      "name": "Melón cantalupo"
+    },
+    "common:baiao-de-dois": {
+      "name": "Baião de dois"
+    },
+    "common:chicken-burger": {
+      "description": "Hamburguesa con filete de pollo o pollo a la parrilla"
+    },
+    "common:chicken-pad-thai": {
+      "name": "Pad Thai de pollo"
+    },
+    "common:chicken-tenders": {
+      "name": "Tiras de pollo"
+    },
+    "common:corn-dog": {
+      "name": "Corn dog"
+    },
+    "common:gelato": {
+      "name": "Gelato"
+    },
+    "common:gyro": {
+      "name": "Gyro"
+    },
+    "common:hamburger": {
+      "description": "Hamburguesa de ternera en pan con aderezos clásicos"
+    },
+    "common:hush-puppies": {
+      "name": "Hush puppies"
+    },
+    "common:meatball-sub": {
+      "name": "Sándwich de albóndigas"
+    },
+    "common:mole-poblano": {
+      "description": "Pollo o pavo con salsa de chile y mole de chocolate, a la mexicana"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pad-thai": {
+      "name": "Pad Thai"
+    },
+    "common:pain-au-chocolat": {
+      "name": "Pain au chocolat"
+    },
+    "common:pao-de-queijo": {
+      "name": "Pan de queso"
+    },
+    "common:peach-cobbler": {
+      "name": "Cobbler de melocotón"
+    },
+    "common:philly-cheesesteak": {
+      "name": "Cheesesteak de Filadelfia"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    },
+    "common:stamppot": {
+      "name": "Stamppot"
+    },
+    "common:sushi-salmon-nigiri": {
+      "name": "Nigiri de salmón"
+    },
+    "common:sweet-potato-fries": {
+      "name": "Patatas fritas de boniato"
+    }
+  },
+  "fr": {
+    "1943184": {
+      "name": "Poisson gefilte aux carottes"
+    },
+    "2105474": {
+      "description": "Melons, melon miel, crus"
+    },
+    "2129494": {
+      "name": "Beurre d'amande superalimentaire avec graines de chia, de chanvre et goji"
+    },
+    "2146840": {
+      "name": "Salade de laitue romaine, carottes râpées et chou rouge"
+    },
+    "2151413": {
+      "name": "Galettes d'Oktoberfest à la dinde, dinde"
+    },
+    "2192156": {
+      "description": "Noix, noix anglaises, moitiés, crues"
+    },
+    "2375018": {
+      "name": "Mélange de poivrons et d'oignons",
+      "description": "Oignon vert, bulbe et légumes verts, racine enlevée, cru"
+    },
+    "2387087": {
+      "name": "Mélange printanier biologique de jeunes laitues et de légumes verts"
+    },
+    "2406125": {
+      "name": "Chou en dés, poivrons et oignons"
+    },
+    "2518353": {
+      "name": "Egg Beaters, œufs liquides"
+    },
+    "common:bitterballen": {
+      "name": "Bitterballen"
+    },
+    "common:carne-asada-tacos": {
+      "name": "Carne Asada Tacos"
+    },
+    "common:chicken-fried-steak": {
+      "name": "Chicken fried steak"
+    },
+    "common:chicken-pad-thai": {
+      "name": "Pad Thai au poulet"
+    },
+    "common:chiles-rellenos": {
+      "name": "Chiles Rellenos"
+    },
+    "common:corn-dog": {
+      "name": "Corn dog"
+    },
+    "common:cottage-pie": {
+      "name": "Hachis Parmentier"
+    },
+    "common:gyro": {
+      "name": "Gyro"
+    },
+    "common:hush-puppies": {
+      "name": "Hush Puppies"
+    },
+    "common:hutspot": {
+      "name": "Hutspot"
+    },
+    "common:kibbeling": {
+      "name": "Kibbeling"
+    },
+    "common:meatball-sub": {
+      "name": "Sandwich aux boulettes de viande"
+    },
+    "common:mole-poblano": {
+      "name": "Mole Poblano"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pad-thai": {
+      "name": "Pad Thai"
+    },
+    "common:peach-cobbler": {
+      "name": "Peach cobbler"
+    },
+    "common:philly-cheesesteak": {
+      "name": "Philly Cheesesteak"
+    },
+    "common:pisto": {
+      "name": "Pisto"
+    },
+    "common:pizza-margherita": {
+      "name": "Pizza Margherita"
+    },
+    "common:salsa-and-chips": {
+      "name": "Salsa et chips"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    },
+    "common:stamppot": {
+      "name": "Stamppot"
+    },
+    "common:tacos-al-pastor": {
+      "name": "Tacos al Pastor"
+    }
+  },
+  "it": {
+    "1703909": {
+      "name": "Mix primaverile, miscuglio di lattughe e verdure"
+    },
+    "1759691": {
+      "name": "Peperoncini"
+    },
+    "1943184": {
+      "name": "Gefilte fish con carote"
+    },
+    "2023830": {
+      "name": "Farina per pane"
+    },
+    "2121377": {
+      "name": "Fiocchi di latte",
+      "description": "Fiocchi di latte, interi, cagliata grande o piccola"
+    },
+    "2146840": {
+      "name": "Insalata di lattuga romana, carote e cavolo rosso"
+    },
+    "2151413": {
+      "name": "Tortini dell'Oktoberfest al tacchino, tacchino"
+    },
+    "2178032": {
+      "description": "Carote baby, crude"
+    },
+    "2185701": {
+      "name": "Yogurt magro"
+    },
+    "2192156": {
+      "description": "Noci, noci inglesi, metà, crude"
+    },
+    "2375018": {
+      "name": "Mix di peperoni e cipolle",
+      "description": "Cipolla verde, bulbo e verdure, radice rimossa, cruda"
+    },
+    "2387087": {
+      "name": "Mix primaverile biologico di lattughe e verdure fresche"
+    },
+    "2406124": {
+      "name": "Cavolo e carote a dadini, slaw del sud"
+    },
+    "2406125": {
+      "name": "Cavolo cappuccio, peperoni e cipolle a dadini"
+    },
+    "2430401": {
+      "name": "Carnitas di maiale sfilacciate e condite, maiale"
+    },
+    "2433643": {
+      "name": "Pomodori a cubetti senza sale aggiunto nel succo di pomodoro"
+    },
+    "2477312": {
+      "name": "Cavolo riccio e cavolo verde biologici"
+    },
+    "2518353": {
+      "name": "Egg Beaters, uova liquide"
+    },
+    "2678631": {
+      "name": "Olive regina"
+    },
+    "common:bacon-cheeseburger": {
+      "name": "Cheeseburger alla pancetta"
+    },
+    "common:bitterballen": {
+      "name": "Bitterballen"
+    },
+    "common:chicken-caesar-wrap": {
+      "description": "Involtino con pollo, lattuga romana, parmigiano e salsa Caesar"
+    },
+    "common:chicken-dumplings": {
+      "name": "Ravioli cinesi di pollo",
+      "description": "Ravioli cinesi ripieni di pollo condito"
+    },
+    "common:chicken-fried-steak": {
+      "name": "Chicken fried steak"
+    },
+    "common:chicken-noodle-soup": {
+      "name": "Zuppa di pollo e tagliatelle"
+    },
+    "common:chicken-pad-thai": {
+      "name": "Pad Thai al pollo"
+    },
+    "common:chicken-tenders": {
+      "name": "Straccetti di pollo"
+    },
+    "common:chiles-rellenos": {
+      "name": "Chiles rellenos"
+    },
+    "common:corn-dog": {
+      "name": "Corn dog"
+    },
+    "common:dumplings": {
+      "name": "Ravioli cinesi",
+      "description": "Ravioli cinesi ripieni, al vapore o fritti"
+    },
+    "common:enchiladas": {
+      "name": "Enchiladas"
+    },
+    "common:falafel-wrap": {
+      "description": "Involtino con falafel, verdure e salsa tahini"
+    },
+    "common:focaccia": {
+      "name": "Focaccia"
+    },
+    "common:garlic-bread": {
+      "name": "Pane all'aglio"
+    },
+    "common:gyro": {
+      "name": "Gyro"
+    },
+    "common:hush-puppies": {
+      "name": "Hush Puppies"
+    },
+    "common:meatball-sub": {
+      "name": "Sub con polpette"
+    },
+    "common:minestrone-soup": {
+      "name": "Minestrone"
+    },
+    "common:mole-poblano": {
+      "name": "Mole Poblano"
+    },
+    "common:muffin": {
+      "name": "Muffin"
+    },
+    "common:oatmeal": {
+      "name": "Porridge d'avena"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pain-au-chocolat": {
+      "name": "Pain au chocolat"
+    },
+    "common:pasta-alfredo": {
+      "name": "Pasta Alfredo"
+    },
+    "common:pastel": {
+      "name": "Pastel"
+    },
+    "common:picanha": {
+      "name": "Picanha"
+    },
+    "common:pizza-margherita": {
+      "name": "Pizza Margherita"
+    },
+    "common:pork-dumplings": {
+      "name": "Ravioli cinesi di maiale",
+      "description": "Ravioli cinesi ripieni di maiale stagionato"
+    },
+    "common:pulled-pork": {
+      "name": "Pulled pork"
+    },
+    "common:salsa-and-chips": {
+      "name": "Salsa e tortilla chips"
+    },
+    "common:shawarma-wrap": {
+      "name": "Involtino shawarma"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    },
+    "common:tacos-al-pastor": {
+      "name": "Tacos al Pastor"
+    }
+  },
+  "nl": {
+    "1943184": {
+      "name": "Gefilte Fish met Wortelen"
+    },
+    "2083070": {
+      "name": "Lichte room"
+    },
+    "2083628": {
+      "name": "Schelpdiersap"
+    },
+    "2274736": {
+      "name": "Butternutpompoen, Butternut"
+    },
+    "2423081": {
+      "name": "Paprika Tri-Blend, Paprika"
+    },
+    "2423124": {
+      "description": "Kip, kippenpoot, vlees en vel, rauw"
+    },
+    "2474515": {
+      "name": "Bakbanaantortilla's"
+    },
+    "2475001": {
+      "description": "Melk, vetarm, vloeibaar, 2% melkvet, met toegevoegde vitamine A en vitamine D"
+    },
+    "2477312": {
+      "name": "Biologische boerenkool en collards"
+    },
+    "2518353": {
+      "name": "Egg Beaters vloeibare eieren"
+    },
+    "2577482": {
+      "name": "Hatch-chili met chia en lijnzaad, Hatch-chili"
+    },
+    "2633820": {
+      "name": "Cantaloupe-meloen"
+    },
+    "2665752": {
+      "description": "Bietengroen, rauw"
+    },
+    "common:bagel-with-cream-cheese": {
+      "description": "Bagelbeleg met roomkaas"
+    },
+    "common:banh-mi": {
+      "name": "Banh Mi"
+    },
+    "common:biscuits-and-gravy": {
+      "name": "Biscuits en jus"
+    },
+    "common:butter-chicken": {
+      "name": "Butter Chicken"
+    },
+    "common:california-roll": {
+      "name": "California Roll"
+    },
+    "common:casserole": {
+      "name": "Ovenschotel"
+    },
+    "common:chicken-fried-steak": {
+      "name": "Gepaneerde biefstuk"
+    },
+    "common:chicken-tenders": {
+      "name": "Kipreepjes"
+    },
+    "common:corn-dog": {
+      "name": "Corndog"
+    },
+    "common:hush-puppies": {
+      "name": "Hush Puppies"
+    },
+    "common:mole-poblano": {
+      "name": "Mole Poblano"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pastel": {
+      "name": "Pastei"
+    },
+    "common:peach-cobbler": {
+      "name": "Perzikcobbler"
+    },
+    "common:pozole": {
+      "name": "Pozole"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    },
+    "common:stamppot": {
+      "name": "Stamppot"
+    },
+    "common:tacos-al-pastor": {
+      "name": "Taco's al Pastor"
+    },
+    "common:tuna-pasta-bake": {
+      "name": "Tonijnpasta uit de oven"
+    },
+    "common:vegetable-sushi-roll": {
+      "name": "Plantaardige sushirol"
+    }
+  },
+  "pl": {
+    "1633846": {
+      "name": "Brokuły w pikantnym sosie serowym",
+      "description": "Sos, makaron, spaghetti/marinara, gotowe do podania"
+    },
+    "1664271": {
+      "name": "Figi"
+    },
+    "1703909": {
+      "name": "Wiosenna mieszanka młodych sałat i zielonych warzyw"
+    },
+    "1728651": {
+      "description": "Grzyb, buczniak"
+    },
+    "1759691": {
+      "name": "Papryka pepperoncini"
+    },
+    "1882390": {
+      "name": "Blue Print, sok tłoczony na zimno, rukola, jarmuż, jabłko, sałata rzymska, seler, ogórek, cytryna, imbir",
+      "description": "Blue Print, sok tłoczony na zimno, rukola, jarmuż"
+    },
+    "1915143": {
+      "description": "Skorupiaki, krab pływak (blue swimming), kawałki mięsa, pasteryzowane, chłodzone"
+    },
+    "1970280": {
+      "description": "Grzyb, pieczarka brązowa"
+    },
+    "2023830": {
+      "description": "Mąka, semolina, drobna"
+    },
+    "2039105": {
+      "name": "Oryginalne mleko sojowe"
+    },
+    "2060309": {
+      "name": "Świeży żółty kabaczek"
+    },
+    "2066269": {
+      "description": "Pomidory winogronowe, surowe"
+    },
+    "2071650": {
+      "description": "Jabłka, Granny Smith, ze skórką, surowe"
+    },
+    "2083070": {
+      "name": "Lekki krem"
+    },
+    "2089873": {
+      "name": "Ogórki O'Pete, przetworzone, pikantne"
+    },
+    "2105474": {
+      "description": "Melony miodowe, surowe"
+    },
+    "2129494": {
+      "name": "Superfood masło migdałowe z nasionami chia, konopi i goji"
+    },
+    "2134133": {
+      "name": "Dynia żołędziowa",
+      "description": "Dynia zimowa, żołędziowa, surowa"
+    },
+    "2146840": {
+      "name": "Sałata rzymska, szatkowana marchewka i czerwona kapusta"
+    },
+    "2151413": {
+      "name": "Indyk Oktoberfest Paszteciki, Indyk"
+    },
+    "2158186": {
+      "name": "Smażone szparagi"
+    },
+    "2178032": {
+      "description": "Marchewka baby, surowa"
+    },
+    "2185701": {
+      "name": "Jogurt beztłuszczowy"
+    },
+    "2375018": {
+      "name": "Mieszanka papryki i cebuli"
+    },
+    "2384535": {
+      "description": "Kapusta pekińska, liść, pozbawiona łodyg, surowa"
+    },
+    "2387087": {
+      "name": "Organiczna mieszanka wiosenna młodych sałat i zielonych warzyw"
+    },
+    "2396166": {
+      "name": "Ubity serek śmietankowy"
+    },
+    "2398274": {
+      "name": "Marynowana fasola szparagowa Cool Beans"
+    },
+    "2406124": {
+      "name": "Surówka południowa z kapusty i marchewki w kostkę"
+    },
+    "2406125": {
+      "name": "Surówka południowa z kapusty, papryki i cebuli"
+    },
+    "2430317": {
+      "description": "Olej kokosowy"
+    },
+    "2430401": {
+      "name": "Rozdrobniona i doprawiona wieprzowina carnitas"
+    },
+    "2433643": {
+      "name": "Pomidory w kostkę bez dodatku soli w soku pomidorowym"
+    },
+    "2447532": {
+      "name": "Lody bananowe na patyku, banan"
+    },
+    "2460077": {
+      "description": "Miechunki, łuskane, surowe"
+    },
+    "2474515": {
+      "name": "Tortille z plantanów"
+    },
+    "2477312": {
+      "name": "Organiczny jarmuż i kapusta liściasta",
+      "description": "Jarmuż, surowy"
+    },
+    "2487241": {
+      "description": "Grzyby, pieczarki białe"
+    },
+    "2495161": {
+      "description": "Grzyb, boczniak królewski"
+    },
+    "2505655": {
+      "name": "Jarmuż"
+    },
+    "2518353": {
+      "name": "Płynne jajka Egg Beaters"
+    },
+    "2576392": {
+      "description": "Jarmuż mrożony, gotowany, odsączony, bez soli"
+    },
+    "2596170": {
+      "description": "Hummus, sklepowy"
+    },
+    "2621263": {
+      "name": "Liście rzepy"
+    },
+    "2640507": {
+      "name": "Zupa z pomidorów i kopru włoskiego"
+    },
+    "2642990": {
+      "name": "Mieszanka ćwiartowanego kabaczka"
+    },
+    "2672968": {
+      "name": "Smażona czarna fasola"
+    },
+    "2679290": {
+      "name": "Szybki owies"
+    },
+    "common:biscuits-and-gravy": {
+      "name": "Biscuits and gravy"
+    },
+    "common:bitterballen": {
+      "name": "Bitterballen"
+    },
+    "common:butter-chicken": {
+      "name": "Butter Chicken"
+    },
+    "common:chicken-burger": {
+      "description": "Burger z kotletem z kurczaka lub grillowanym kurczakiem"
+    },
+    "common:chicken-dumplings": {
+      "description": "Pierożki z nadzieniem sezonowanego kurczaka"
+    },
+    "common:chicken-enchiladas": {
+      "name": "Enchilady z kurczakiem"
+    },
+    "common:chicken-fried-steak": {
+      "name": "Chicken fried steak"
+    },
+    "common:chicken-pad-thai": {
+      "name": "Pad Thai z kurczakiem"
+    },
+    "common:chicken-tenders": {
+      "name": "Paski z kurczaka"
+    },
+    "common:chili-cheese-dog": {
+      "name": "Hot dog z serem i chili"
+    },
+    "common:corn-dog": {
+      "name": "Corn dog"
+    },
+    "common:doner-kebab": {
+      "description": "Podpłomyk lub pita po turecku z krojonym mięsem i surówką"
+    },
+    "common:double-cheeseburger": {
+      "description": "Burger z dwoma kotletami wołowymi i serem"
+    },
+    "common:dumplings": {
+      "name": "Pierożki"
+    },
+    "common:falafel-wrap": {
+      "name": "Wrap z falafelem"
+    },
+    "common:fish-burger": {
+      "name": "Burger rybny"
+    },
+    "common:garlic-naan": {
+      "name": "Naan czosnkowy"
+    },
+    "common:gyro": {
+      "name": "Gyros"
+    },
+    "common:hamburger": {
+      "description": "Kotlet wołowy w bułce z klasycznymi dodatkami"
+    },
+    "common:hush-puppies": {
+      "name": "Hush puppies"
+    },
+    "common:kibbeling": {
+      "name": "Kibbeling"
+    },
+    "common:lobster-roll": {
+      "name": "Lobster roll"
+    },
+    "common:meatball-sub": {
+      "name": "Sub z klopsikami",
+      "description": "Kanapka sub z klopsikami, sosem pomidorowym i serem"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pain-au-chocolat": {
+      "name": "Pain au chocolat"
+    },
+    "common:palak-paneer": {
+      "name": "Palak paneer"
+    },
+    "common:pastel": {
+      "name": "Pastel"
+    },
+    "common:peach-cobbler": {
+      "name": "Peach cobbler"
+    },
+    "common:philly-cheesesteak": {
+      "name": "Kanapka Philly cheesesteak"
+    },
+    "common:pizza-margherita": {
+      "name": "Pizza Margherita"
+    },
+    "common:poke-bowl-salmon": {
+      "name": "Poke Bowl z łososiem"
+    },
+    "common:pork-dumplings": {
+      "name": "Pierożki wieprzowe",
+      "description": "Pierożki z sezonowaną wieprzowiną"
+    },
+    "common:shawarma-wrap": {
+      "name": "Wrap shawarma"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    },
+    "common:sopes": {
+      "name": "Sopes"
+    },
+    "common:stamppot": {
+      "name": "Stamppot"
+    },
+    "common:vegetable-biryani": {
+      "name": "Warzywne Biryani"
+    },
+    "common:vegetable-lasagna": {
+      "name": "Lasagne warzywne"
+    }
+  },
+  "pt": {
+    "1703909": {
+      "name": "Mistura primavera de alfaces e verduras"
+    },
+    "2151413": {
+      "name": "Hambúrgueres de peru estilo Oktoberfest, Peru"
+    },
+    "2396166": {
+      "name": "Cream cheese batido, creme"
+    },
+    "2396424": {
+      "name": "Bisão moído"
+    },
+    "2406586": {
+      "description": "Laranjas, cruas, variedade navel"
+    },
+    "2474515": {
+      "name": "Tortilhas de banana-da-terra",
+      "description": "Banana-da-terra, madura, crua"
+    },
+    "2518353": {
+      "name": "Ovos líquidos Egg Beaters"
+    },
+    "2633820": {
+      "name": "Melão cantalupo"
+    },
+    "2652057": {
+      "name": "Chili de feijão preto"
+    },
+    "2665288": {
+      "name": "Farinha de painço"
+    },
+    "2678631": {
+      "name": "Azeitonas rainha"
+    },
+    "common:bun-cha": {
+      "name": "Bun Cha"
+    },
+    "common:chicken-burger": {
+      "description": "Hambúrguer com carne de frango ou frango grelhado"
+    },
+    "common:chicken-pad-thai": {
+      "name": "Pad Thai de frango"
+    },
+    "common:chicken-tenders": {
+      "name": "Tiras de frango"
+    },
+    "common:corn-dog": {
+      "name": "Corn dog"
+    },
+    "common:garlic-naan": {
+      "name": "Naan de alho"
+    },
+    "common:gyro": {
+      "name": "Gyro"
+    },
+    "common:hush-puppies": {
+      "name": "Hush puppies"
+    },
+    "common:hutspot": {
+      "name": "Hutspot"
+    },
+    "common:meatball-sub": {
+      "name": "Sanduíche de almôndega"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pad-thai": {
+      "name": "Pad Thai"
+    },
+    "common:paella": {
+      "name": "Paella"
+    },
+    "common:pain-au-chocolat": {
+      "name": "Pain au chocolat"
+    },
+    "common:philly-cheesesteak": {
+      "name": "Cheesesteak de Filadélfia"
+    },
+    "common:pork-tonkatsu": {
+      "description": "Costeleta de porco frita empanada japonesa"
+    },
+    "common:pozole": {
+      "name": "Pozole"
+    },
+    "common:shrimp-scampi": {
+      "name": "Camarão ao alho"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    },
+    "common:sorbet": {
+      "name": "Sorbet"
+    },
+    "common:spring-rolls": {
+      "description": "Rolinhos fritos ou frescos com legumes e recheio"
+    },
+    "common:stamppot": {
+      "name": "Stamppot"
+    }
+  },
+  "ru": {
+    "1460133": {
+      "name": "Филе люциана"
+    },
+    "1759691": {
+      "name": "Перец пепперончини"
+    },
+    "1859625": {
+      "name": "Рис арборио"
+    },
+    "1869031": {
+      "name": "Кукурузная мука масса харина, быстрого приготовления"
+    },
+    "1882390": {
+      "name": "Сок холодного отжима Blue Print, руккола и кале"
+    },
+    "1889459": {
+      "name": "Тилапия"
+    },
+    "1897135": {
+      "name": "Органическая тыквенная мука"
+    },
+    "1909135": {
+      "description": "Молоко обезжиренное, жидкое, с добавлением витамина А и витамина D (обезжиренное)"
+    },
+    "2023830": {
+      "name": "Мука для хлеба"
+    },
+    "2039105": {
+      "name": "Соевое молоко оригинальное"
+    },
+    "2054492": {
+      "name": "Хлеб из пекарни"
+    },
+    "2060309": {
+      "name": "Желтый кабачок"
+    },
+    "2071280": {
+      "name": "Мука бхакри"
+    },
+    "2083070": {
+      "name": "Лёгкие сливки, лёгкие сливки"
+    },
+    "2094460": {
+      "description": "Кальмар, замороженный, только трубочки"
+    },
+    "2096464": {
+      "name": "Сушеные цельные яйца"
+    },
+    "2105474": {
+      "description": "Дыни медовые, сырые"
+    },
+    "2129494": {
+      "name": "Миндальное масло с семенами чиа, конопли и годжи"
+    },
+    "2134133": {
+      "name": "Желудевая тыква"
+    },
+    "2146840": {
+      "name": "Салат ромэн с тертой морковью и красной капустой"
+    },
+    "2152206": {
+      "name": "Груша Бартлетт"
+    },
+    "2159863": {
+      "name": "Грушевый премиум-нектар"
+    },
+    "2185701": {
+      "name": "Обезжиренный йогурт"
+    },
+    "2274736": {
+      "name": "Тыква баттернат"
+    },
+    "2291370": {
+      "description": "Брюква, очищенная, сырая"
+    },
+    "2375018": {
+      "description": "Зеленый лук, луковица и зелень, корень удален, сырой"
+    },
+    "2387087": {
+      "name": "Органическая весенняя смесь"
+    },
+    "2396424": {
+      "name": "Фарш из бизона",
+      "description": "Бизон, молотый, сырой"
+    },
+    "2398274": {
+      "name": "Маринованная зеленая фасоль"
+    },
+    "2404942": {
+      "name": "Мука камут цельнозерновая"
+    },
+    "2406124": {
+      "name": "Южный салат из капусты и моркови, нарезанных кубиками"
+    },
+    "2406125": {
+      "name": "Южный салат из капусты, перца и лука, нарезанных кубиками"
+    },
+    "2423081": {
+      "name": "Смесь перцев"
+    },
+    "2423382": {
+      "name": "Пюре из авокадо"
+    },
+    "2430401": {
+      "name": "Свинина карнитас"
+    },
+    "2445907": {
+      "name": "Батат мини"
+    },
+    "2466495": {
+      "name": "Сок сельдерея холодного отжима"
+    },
+    "2474515": {
+      "name": "Лепешки из платана"
+    },
+    "2477312": {
+      "name": "Органические кале и листовая капуста"
+    },
+    "2487241": {
+      "name": "Грибы маринованные острые"
+    },
+    "2505655": {
+      "name": "Капуста кале"
+    },
+    "2508901": {
+      "name": "Фарро цельнозерновое"
+    },
+    "2518353": {
+      "name": "Жидкие яйца Egg Beaters"
+    },
+    "2545121": {
+      "name": "Lumi, сок грейпфрута и лайма"
+    },
+    "2549919": {
+      "name": "Кусочки ананаса в ананасовом соке"
+    },
+    "2594852": {
+      "name": "Копченый лосось нова"
+    },
+    "2603491": {
+      "name": "Орзо из нута"
+    },
+    "2608614": {
+      "name": "Фузилли из эйнкорна"
+    },
+    "2629570": {
+      "description": "Платаны, недозрелые, сырые"
+    },
+    "2631071": {
+      "name": "Гребешки джамбо",
+      "description": "Гребешки морские, патагонские, замороженные, выловленные в дикой природе"
+    },
+    "2633820": {
+      "name": "Дыня канталупа"
+    },
+    "2637169": {
+      "name": "Картофель О'Брайен с перцем и луком"
+    },
+    "2642990": {
+      "name": "Смесь из кабачков, нарезанных четвертями"
+    },
+    "2664361": {
+      "name": "Овсяное молоко Barista"
+    },
+    "2672968": {
+      "name": "Жареная черная фасоль"
+    },
+    "2678631": {
+      "name": "Оливки королевские"
+    },
+    "475535": {
+      "description": "Киви, зеленый, очищенный, сырой"
+    },
+    "578159": {
+      "name": "Натуральный фарш из баранины"
+    },
+    "common:biscuits-and-gravy": {
+      "name": "Бисквиты с подливой"
+    },
+    "common:brownie": {
+      "name": "Брауни"
+    },
+    "common:buffalo-wings": {
+      "name": "Крылышки баффало"
+    },
+    "common:burrito": {
+      "description": "Мексиканская лепешка с начинкой из риса, фасоли, мяса и добавок"
+    },
+    "common:burrito-bowl": {
+      "name": "Буррито-боул"
+    },
+    "common:butter-chicken": {
+      "name": "Баттер чикен"
+    },
+    "common:calzone": {
+      "description": "Сложенная итальянская пицца с сыром и начинкой"
+    },
+    "common:chana-masala": {
+      "name": "Чана масала"
+    },
+    "common:chicken-enchiladas": {
+      "name": "Энчиладас с курицей"
+    },
+    "common:chicken-fajitas": {
+      "name": "Фахитас с курицей"
+    },
+    "common:chicken-fried-rice": {
+      "name": "Жареный рис с курицей"
+    },
+    "common:chicken-fried-steak": {
+      "name": "Жареный стейк в панировке"
+    },
+    "common:chicken-katsu": {
+      "name": "Катсу с курицей"
+    },
+    "common:chicken-pad-thai": {
+      "name": "Пад Тай с курицей"
+    },
+    "common:chicken-satay": {
+      "name": "Сатай с курицей"
+    },
+    "common:chili-cheese-dog": {
+      "name": "Хот-дог с чили и сыром"
+    },
+    "common:egg-rolls": {
+      "name": "Яичные роллы"
+    },
+    "common:fajitas": {
+      "description": "Шипящее мясо или овощи с лепешками"
+    },
+    "common:garlic-naan": {
+      "name": "Наан с чесноком"
+    },
+    "common:general-tso-chicken": {
+      "name": "Курица генерала Цо"
+    },
+    "common:granola-bowl": {
+      "name": "Миска с гранолой"
+    },
+    "common:gyro": {
+      "name": "Гирос"
+    },
+    "common:hush-puppies": {
+      "name": "Хаш паппис"
+    },
+    "common:kimchi-fried-rice": {
+      "name": "Жареный рис с кимчи"
+    },
+    "common:kung-pao-chicken": {
+      "name": "Кунг-пао с курицей"
+    },
+    "common:loaded-nachos": {
+      "name": "Начос со всем"
+    },
+    "common:meatball-sub": {
+      "name": "Суб с фрикадельками"
+    },
+    "common:pad-see-ew": {
+      "name": "Пад си ю"
+    },
+    "common:pancakes": {
+      "description": "Оладьи на завтрак, с сиропом или начинкой"
+    },
+    "common:pao-de-queijo": {
+      "name": "Пао-де-кейжу"
+    },
+    "common:poke-bowl-chicken": {
+      "name": "Поке-боул с курицей"
+    },
+    "common:poke-bowl-salmon": {
+      "name": "Поке-боул с лососем"
+    },
+    "common:poke-bowl-tofu": {
+      "name": "Поке-боул с тофу"
+    },
+    "common:poke-bowl-tuna": {
+      "name": "Поке-боул с тунцом"
+    },
+    "common:pork-tonkatsu": {
+      "name": "Тонкацу из свинины"
+    },
+    "common:prosciutto-pizza": {
+      "name": "Пицца с прошутто"
+    },
+    "common:pulpo-a-la-gallega": {
+      "name": "Пульпо а ла гальега"
+    },
+    "common:shawarma-wrap": {
+      "name": "Шаурма в обертке"
+    },
+    "common:sloppy-joe": {
+      "name": "Слоппи Джо"
+    },
+    "common:sushi-salmon-nigiri": {
+      "name": "Нигири с лососем"
+    },
+    "common:tuna-sashimi": {
+      "name": "Сашими из тунца"
+    },
+    "common:vegetable-quiche": {
+      "name": "Овощной киш"
+    },
+    "common:vietnamese-spring-rolls": {
+      "name": "Вьетнамские свежие роллы"
+    },
+    "common:waffles": {
+      "description": "Вафли с ромбовидным рисунком, подаются с начинкой"
+    }
+  },
+  "tr": {
+    "1633846": {
+      "name": "Soslu brokoli ve baharatlı peynir sosu"
+    },
+    "2083070": {
+      "name": "Açık krem"
+    },
+    "2105474": {
+      "description": "Bal kavunu, çiğ"
+    },
+    "2151413": {
+      "name": "Hindi Oktoberfest köftesi, Hindi"
+    },
+    "2178032": {
+      "description": "Bebek havuç, çiğ"
+    },
+    "2185701": {
+      "name": "Yağsız yoğurt"
+    },
+    "2375018": {
+      "name": "Biber ve soğan karışımı"
+    },
+    "2387087": {
+      "name": "Organik bahar karışımı (bebek marul ve yeşillik)"
+    },
+    "2396166": {
+      "name": "Çırpılmış krem peynir, krema"
+    },
+    "2396424": {
+      "name": "Kıyma bizon",
+      "description": "Bizon, kıyma, çiğ"
+    },
+    "2477312": {
+      "description": "Karalahana, çiğ"
+    },
+    "2505655": {
+      "name": "Kıvırcık lahana"
+    },
+    "2518353": {
+      "name": "Egg Beaters sıvı yumurta"
+    },
+    "2549919": {
+      "name": "Ananas suyunda ananas parçaları"
+    },
+    "2631071": {
+      "description": "Deniz tarağı, körfez, Patagonya, dondurulmuş, vahşi yakalanmış"
+    },
+    "2633820": {
+      "name": "Kavun"
+    },
+    "2642990": {
+      "name": "Dörtlere bölünmüş kabak karışımı"
+    },
+    "common:banh-mi": {
+      "name": "Banh Mi"
+    },
+    "common:bitterballen": {
+      "name": "Bitterballen"
+    },
+    "common:brigadeiro": {
+      "name": "Brigadeiro"
+    },
+    "common:brownie": {
+      "name": "Brownie"
+    },
+    "common:burrito-bowl": {
+      "name": "Burrito kasesi"
+    },
+    "common:chicken-burrito": {
+      "description": "Tavuk, pilav, fasulye ve salsa ile sarılmış tortilla"
+    },
+    "common:chicken-dumplings": {
+      "name": "Tavuklu mantı",
+      "description": "Baharatlı tavukla doldurulmuş mantı"
+    },
+    "common:chicken-fried-steak": {
+      "name": "Chicken fried steak"
+    },
+    "common:chicken-tenders": {
+      "name": "Tavuk şeritleri"
+    },
+    "common:chili-cheese-dog": {
+      "name": "Acı soslu ve peynirli sosisli"
+    },
+    "common:dumplings": {
+      "name": "Mantı",
+      "description": "Doldurulmuş mantı, buharda pişirilmiş veya kızartılmış"
+    },
+    "common:fish-and-chips": {
+      "name": "Balık ve patates kızartması"
+    },
+    "common:gumbo": {
+      "name": "Gumbo"
+    },
+    "common:gyro": {
+      "name": "Gyros"
+    },
+    "common:mac-and-cheese": {
+      "description": "Kremalı peynir soslu makarna"
+    },
+    "common:meatball-sub": {
+      "name": "Köfteli sub",
+      "description": "Köfteli sub sandviç, domates sosu ve peynirli"
+    },
+    "common:mole-poblano": {
+      "name": "Mole Poblano"
+    },
+    "common:pad-see-ew": {
+      "name": "Pad See Ew"
+    },
+    "common:pancakes": {
+      "name": "Pankek"
+    },
+    "common:peach-cobbler": {
+      "name": "Peach cobbler"
+    },
+    "common:pisto": {
+      "name": "Pisto"
+    },
+    "common:pork-dumplings": {
+      "name": "Domuz etli mantı",
+      "description": "Baharatlı domuz eti ile doldurulmuş mantı"
+    },
+    "common:ravioli": {
+      "name": "Ravioli"
+    },
+    "common:sloppy-joe": {
+      "name": "Sloppy Joe"
+    },
+    "common:sopes": {
+      "name": "Sopes"
+    },
+    "common:spring-rolls": {
+      "name": "Bahar rulosu"
+    },
+    "common:stamppot": {
+      "name": "Stamppot"
+    },
+    "common:vietnamese-spring-rolls": {
+      "name": "Vietnam bahar rulosu"
+    }
+  }
+}

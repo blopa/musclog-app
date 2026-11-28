@@ -262,7 +262,10 @@
       "generateButton": "Générer le plan",
       "successMessageWithPlan": "{{planName}} est prêt avec {{count}} séances.",
       "errorMessage": "Impossible de générer un plan. Réessaie.",
-      "aiNotConfigured": "Les fonctions IA ne sont pas configurées. Ajoute une clé API Gemini ou OpenAI dans les réglages."
+      "aiNotConfigured": "Les fonctions IA ne sont pas configurées. Ajoute une clé API Gemini ou OpenAI dans les réglages.",
+      "reviewIntro": "Lis le programme et vérifie qu'il te convient. Rien n'est enregistré tant que tu n'appuies pas sur Enregistrer le programme.",
+      "saveButton": "Enregistrer le programme",
+      "discardButton": "Ignorer"
     },
     "interruptedSession": {
       "description": "Tu as une séance en cours.",

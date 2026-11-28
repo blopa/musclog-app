@@ -67,6 +67,21 @@ internal testing" adds a step that runs that same script against the internal tr
 workflow, so it cannot reach production) and needs the repository secret `PLAY_SERVICE_ACCOUNT_JSON` (the whole
 service-account key). The AAB is uploaded as an artifact before that step, so a failed submission never loses the build.
 
+**APK on GitHub Releases:** `.github/workflows/release-android-apk.yml` ("Release Android APK", manual only, `main` only)
+reads the version from `package.json`. If the tag with that name (bare, e.g. `2.18.10`) exists, the run ends without
+building. Otherwise it builds the `production-apk` profile with `eas build --local` (same secrets as above), refuses a
+debug-signed APK and publishes a release for the new tag with `musclog-<version>-<code>.apk` attached, with generated
+notes and the build-version footer. The tag is created only when the release is published, so a failed build leaves
+nothing behind and running it again retries; if only the publishing job failed, "Re-run failed jobs" reuses the built
+APK. It never bumps the version and never touches Google Play. The APK is signed with the EAS upload key, not whatever
+key Play App Signing signs store installs with (compare in Play Console → App signing): where they differ, one cannot
+update the other.
+
+Both workflows share their setup (disk space, Node, Java, `npm ci`, version check) in
+`.github/actions/setup-android-build`, pin every third-party action by commit SHA, and the AAB one installs `gplay`
+as a single release binary checked against a SHA-256 written in the workflow (a `gplay` upgrade changes both). The
+AAB workflow has deliberately no branch guard.
+
 `upload` defaults to the internal track; production refuses without `--rollout`. Before uploading it runs
 the offline `gplay preflight` and refuses unless the local versionCode is above every code on Play
 (Play spends a code even on a rejected upload). Preflight blocks on errors only: its warnings (exact alarms, bundle

@@ -10,7 +10,10 @@ export type SnackbarType = {
   type: 'success' | 'error';
   message: string;
   action: string;
-} & Pick<SnackbarOptions, 'subtitle' | 'onAction' | 'secondaryAction' | 'onSecondaryAction'>;
+} & Pick<
+  SnackbarOptions,
+  'subtitle' | 'onAction' | 'secondaryAction' | 'onSecondaryAction' | 'onPress'
+>;
 
 type SnackbarProps = {
   snackbar: SnackbarType;
@@ -103,7 +106,12 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
         </View>
 
         {/* Content */}
-        <View className="min-w-0 flex-1">
+        <Pressable
+          className="min-w-0 flex-1"
+          accessibilityRole={snackbar.onPress ? 'button' : undefined}
+          disabled={!snackbar.onPress}
+          onPress={() => handleActionPress(snackbar.onPress)}
+        >
           <Text className="font-semibold" style={{ color: theme.colors.text.primary }}>
             {snackbar.message}
           </Text>
@@ -112,7 +120,7 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
               {snackbar.subtitle}
             </Text>
           ) : null}
-        </View>
+        </Pressable>
 
         {/* Action Button */}
         <View className="flex-shrink-0 flex-row flex-wrap items-center justify-end gap-2">

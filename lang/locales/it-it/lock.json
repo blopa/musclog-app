@@ -4,7 +4,7 @@
       "title": "Blocco app",
       "subtitle": "Chiedi impronta, volto o PIN del dispositivo",
       "hint": "Chiedi la tua impronta, il volto o il PIN del dispositivo prima di mostrare le aree che scegli. Si bloccano di nuovo dopo 30 secondi in background.",
-      "note": "Questo è un blocco dello schermo. I tuoi dati restano cifrati e su questo telefono; i backup esportati sono file separati che gestisci tu.",
+      "note": "Questo è un blocco dello schermo. I tuoi dati restano su questo telefono; i backup esportati sono file separati che gestisci tu.",
       "noCredential": "Prima imposta un blocco dello schermo o la biometria sul tuo dispositivo.",
       "coveredByApp": "Coperto dal blocco dell'intera app"
     },

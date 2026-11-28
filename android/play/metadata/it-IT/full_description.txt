@@ -1,11 +1,10 @@
 <b>Registra allenamenti e pasti in un'unica app: senza account e senza pubblicità.</b>
-Musclog è un diario di allenamento e un contacalorie gratuito e open source. Suggerisce il carico della prossima sessione in base all'ultima, scansiona i codici a barre e funziona offline. I tuoi dati restano sul telefono.
+Musclog è un diario di allenamento e un contacalorie gratuito e open source. Suggerisce il carico della prossima sessione in base all'ultima, scansiona i codici a barre e funziona offline. I tuoi registri sono salvati sul telefono.
 
 L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile), russo, tedesco, francese, italiano, polacco e turco.
 
 <b>Niente è bloccato</b>
 • Routine e programmi di allenamento illimitati, e tutta la tua cronologia.
-• Scanner di codici a barre, scansione delle etichette e ricerca alimenti per tutti.
 • Ogni grafico, esportazione e backup è incluso e gratuito.
 
 <b>Diario di allenamento e tracker per la palestra</b>
@@ -26,7 +25,7 @@ L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile), russo
 
 <b>Contacalorie e tracker dei macronutrienti</b>
 • Diario alimentare con scanner di codici a barre e scansione delle etichette.
-• Cerca in Open Food Facts e nel database USDA, oppure crea i tuoi alimenti e pasti.
+• Cerca in Open Food Facts (ODbL) e nel database USDA, oppure crea i tuoi alimenti e pasti.
 • Obiettivi di calorie, proteine, carboidrati, grassi e fibre per dimagrire, mantenere il peso o mettere massa.
 • Obiettivi che si adattano al tuo reale andamento del peso, in kcal o kJ, metrico o imperiale.
 
@@ -36,8 +35,7 @@ L'app è disponibile in inglese, spagnolo, olandese, portoghese (Brasile), russo
 • Health Connect: peso, alimentazione, allenamenti e misure corporee.
 
 <b>IA, solo se vuoi</b>
-• Chatta con un coach di fitness, stima un pasto da foto e genera schede con la tua chiave Gemini, OpenAI o Claude, un modello locale o l'opzione gratuita nell'app.
-• Oppure crea una scheda o descrivi un pasto in ChatGPT o Claude e portalo in Musclog.
+• Chatta con un coach di fitness, stima un pasto da foto e genera schede con la tua chiave Gemini, OpenAI o Claude, un modello locale o l'opzione gratuita nell'app (18+).
 • Scegli come ti parla il coach. Niente in Musclog richiede l'IA.
 
 <b>Musclog Iron (facoltativo)</b>
@@ -50,4 +48,4 @@ Musclog Iron è un abbonamento mensile che risponde alle richieste di IA senza u
 • Report anonimi sugli arresti per correggere i bug, disattivabili.
 • Widget per la schermata Home e diversi temi di colore.
 
-Lift, Log, Repeat.
+Musclog non è un dispositivo medico e non diagnostica, cura, guarisce né previene alcuna condizione medica. Consulta un medico o un altro operatore sanitario per consigli, diagnosi o trattamenti medici.

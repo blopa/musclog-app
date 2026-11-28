@@ -1,0 +1,110 @@
+{
+  "voiceInput": {
+    "listening": "Luisteren…",
+    "overlay": {
+      "releaseHint": "Laat los als je klaar bent",
+      "finishing": "Afronden…",
+      "slideUpToLock": "Veeg omhoog om te vergrendelen",
+      "slideDownToCancel": "Veeg omlaag om te annuleren",
+      "lockedHint": "Tik op verzenden als je klaar bent",
+      "send": "Verzend wat je zei"
+    },
+    "holdHint": "Houd de microfoonknop ingedrukt terwijl je spreekt en laat dan los.",
+    "resultTitle": "Wat je zei",
+    "openSettings": "Instellingen openen",
+    "downloadLanguage": "Taal downloaden",
+    "downloadDone": "Gedownload. Houd de microfoonknop ingedrukt om te spreken.",
+    "downloadScheduled": "Het downloaden staat in de wachtrij en wordt later afgerond, bijvoorbeeld op wifi.",
+    "downloadFailed": "De taal kon niet worden gedownload. Probeer het later opnieuw.",
+    "failure": {
+      "permission": {
+        "title": "Microfoontoegang staat uit",
+        "message": "Musclog heeft de microfoon nodig om wat je zegt in tekst om te zetten. Je kunt dat toestaan in de instellingen van je telefoon.",
+        "messageWeb": "Musclog heeft de microfoon nodig om wat je zegt om te zetten in tekst. Sta hem voor deze site toe in de instellingen van je browser."
+      },
+      "languageMissing": {
+        "title": "Taal niet gedownload",
+        "messageAndroid": "Spraakherkenning voor de taal waarop Musclog staat, is nog niet op deze telefoon. Download haar één keer; daarna werkt ze offline.",
+        "messageIos": "Spraakherkenning voor de taal waarop Musclog staat, is nog niet op dit apparaat. Zet dicteren voor die taal aan via Instellingen, Algemeen, Toetsenbord en probeer het opnieuw.",
+        "titleWeb": "Taal niet ondersteund",
+        "messageWeb": "Je browser kan geen spraak herkennen in de taal waarop Musclog is ingesteld."
+      },
+      "unavailable": {
+        "title": "Offline spraakherkenning is niet beschikbaar",
+        "message": "Deze telefoon kan spraak zonder internet niet in tekst omzetten. Musclog gebruikt alleen spraakherkenning die op je telefoon zelf draait.",
+        "titleWeb": "Spraakherkenning is niet beschikbaar",
+        "messageWeb": "Je browser kon de spraak niet omzetten in tekst. Controleer je internetverbinding of probeer Chrome, Edge of Safari."
+      },
+      "nothingHeard": {
+        "title": "Geen woorden gehoord",
+        "message": "Musclog heeft niets opgevangen. Houd de knop ingedrukt, spreek en laat los."
+      },
+      "failed": {
+        "title": "Luisteren gestopt",
+        "message": "Er is iets tussengekomen bij de spraakherkenning. Probeer het opnieuw."
+      },
+      "browserNotice": {
+        "title": "Je browser zet spraak om in tekst",
+        "message": "In de webversie herkent je browser wat je zegt. Daarvoor kan hij het geluid naar de servers van de maker sturen (Chrome stuurt het naar Google). Musclog ontvangt en bewaart het geluid nooit. Als AI-functies zijn ingesteld, gaat de tekst naar de AI die je hebt gekozen, om uit te zoeken wat er moet gebeuren."
+      }
+    },
+    "command": {
+      "workingTitle": "Ik kijk wat er moet gebeuren…",
+      "pickTitle": "Wat bedoelde je?",
+      "pickHint": "Kies er een en Musclog probeert het opnieuw.",
+      "tool": {
+        "copyMeal": "Een maaltijd of dag kopiëren",
+        "searchFood": "Een voedingsmiddel zoeken",
+        "logWeight": "Mijn gewicht noteren",
+        "logMeal": "Een maaltijd noteren",
+        "addNote": "Een notitie maken",
+        "goTo": "Een scherm openen",
+        "askCoach": "Vraag de coach",
+        "startWorkout": "Een training starten",
+        "logCardio": "Een wandeling of run loggen",
+        "openCamera": "De camera openen"
+      },
+      "askCoach": "Vraag het aan de coach",
+      "wrongTask": "Verkeerde taak? Probeer een beter model.",
+      "openAiSettings": "AI-instellingen",
+      "failed": "De spraakopdracht is mislukt. Probeer het opnieuw.",
+      "mealTitle": "Je maaltijd",
+      "mealLogged": "Maaltijd toegevoegd",
+      "workoutTitle": "Welke training?",
+      "workoutActive": "Er is al een training bezig.",
+      "weight": {
+        "title": "Je gewicht noteren",
+        "field": "Gewicht",
+        "saved": "Gewicht opgeslagen",
+        "saveError": "Je gewicht kon niet worden opgeslagen"
+      },
+      "capability": {
+        "copyMeal": "„Ik had hetzelfde ontbijt als gisteren“",
+        "searchFood": "„Zoek havermout voor de lunch“",
+        "logWeight": "„Ik weeg 82,4“",
+        "logMeal": "„Ik had twee eieren en toast“",
+        "addNote": "„Notitie: havermout kopen“",
+        "goTo": "„Toon mijn weekoverzicht“",
+        "askCoach": "„Hoeveel eiwit heb ik nodig?“",
+        "startWorkout": "„Start mijn beentraining“",
+        "logCardio": "„Ik heb 5 km in 30 minuten gerend“",
+        "openCamera": "„Scan een barcode“"
+      }
+    },
+    "tools": {
+      "sectionTitle": "Spraakopdrachten",
+      "rowTitle": "Spraakhulpmiddelen",
+      "rowDescription": "Kies wat de microfoonknop ingedrukt houden kan doen",
+      "sheetTitle": "Spraakhulpmiddelen",
+      "sheetSubtitle": "De AI kiest er een op basis van wat je zegt. De opties die je eerst hebt gekozen, worden eerst gebruikt.",
+      "limitNote_one": "Deze AI kiest per keer uit {{count}} hulpmiddel.",
+      "limitNote_few": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
+      "limitNote_many": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
+      "limitNote_other": "Deze AI kiest per keer uit {{count}} hulpmiddelen.",
+      "notUsed": "Niet gebruikt met deze AI",
+      "useRecommended": "Gebruik de aanbevolen volgorde"
+    },
+    "allow": "Toestaan",
+    "notNow": "Niet nu"
+  }
+}

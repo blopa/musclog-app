@@ -1,0 +1,2437 @@
+[
+  {
+    "externalId": "1703909",
+    "name": "Mélange printanier, un mélange de jeunes laitues et de légumes verts",
+    "description": "Laitue, feuille, verte, crue"
+  },
+  {
+    "externalId": "2122593",
+    "name": "Maïs",
+    "description": "Maïs, grains sucrés, jaunes et blancs, frais, cru"
+  },
+  {
+    "externalId": "2679290",
+    "name": "Avoine rapide",
+    "description": "Avoine, grains entiers, coupe en acier"
+  },
+  {
+    "externalId": "2543214",
+    "name": "Tomates",
+    "description": "Tomates, en conserve, rouges, mûres, coupées en dés"
+  },
+  {
+    "externalId": "2447532",
+    "name": "Sucettes glacées à la banane, banane",
+    "description": "Bananes, trop mûres, crues"
+  },
+  {
+    "externalId": "2448098",
+    "name": "Filets de Mahi Mahi sauvages, sans peau et sans os",
+    "description": "Mahi mahi, congelé, capturé à l'état sauvage"
+  },
+  {
+    "externalId": "2447559",
+    "name": "Jus de Raisin, Raisin",
+    "description": "Jus de raisin, blanc, additionné de vitamine C, à partir de concentré, de longue conservation"
+  },
+  {
+    "externalId": "2406586",
+    "name": "Jus d'Orange, Orange",
+    "description": "Oranges, crues, nombrils"
+  },
+  { "externalId": "2410361", "name": "Radis", "description": "Radis, rouges, crus" },
+  {
+    "externalId": "2445907",
+    "name": "Petites patates douces",
+    "description": "Patates douces, chair orange, sans peau, crues"
+  },
+  {
+    "externalId": "2134133",
+    "name": "Courge poivrée",
+    "description": "Courge, hiver, gland, crue"
+  },
+  {
+    "externalId": "2062204",
+    "name": "Lait",
+    "description": "Lait, faible en gras, fluide, 1% de matière grasse laitière, additionné de vitamine A et de vitamine D"
+  },
+  { "externalId": "2062212", "name": "Babeurre", "description": "Babeurre, faible en gras" },
+  {
+    "externalId": "2071280",
+    "name": "Farine de Bhakri",
+    "description": "Farine de blé, tout usage, enrichie, blanchie"
+  },
+  {
+    "externalId": "2667585",
+    "name": "Poulet",
+    "description": "Poulet, poitrine, désossé, sans peau, cru"
+  },
+  {
+    "externalId": "2495161",
+    "name": "Sauce pour pâtes aux champignons, champignons",
+    "description": "Champignon, huître royale"
+  },
+  { "externalId": "2406124", "name": "Chou et carottes en dés", "description": "Chou, rouge, cru" },
+  {
+    "externalId": "2406125",
+    "name": "Chou en dés, poivrons et oignons",
+    "description": "Chou, vert, cru"
+  },
+  {
+    "externalId": "2476441",
+    "name": "Tiges et morceaux de champignons, Champignons",
+    "description": "Champignon, huître"
+  },
+  {
+    "externalId": "1899988",
+    "name": "Noix mélangées",
+    "description": "Noix, pignons de pin, crus"
+  },
+  {
+    "externalId": "1633846",
+    "name": "Sauce au brocoli et au fromage piquant, en sauce",
+    "description": "Sauce, pâtes, spaghetti/marinara, prêtes à servir"
+  },
+  {
+    "externalId": "1919968",
+    "name": "Pois chiches",
+    "description": "Pois, verts, sucrés, en conserve, sodium ajouté, sucre ajouté, égouttés et rincés"
+  },
+  {
+    "externalId": "2675810",
+    "name": "Filets de morue sauvage d'Alaska, morue sauvage d'Alaska",
+    "description": "Morue du Pacifique ou d'Alaska, congelée, capturée dans la nature"
+  },
+  {
+    "externalId": "2135417",
+    "name": "Sauce pour pâtes aux champignons, champignons",
+    "description": "Champignon, crinière de lion"
+  },
+  { "externalId": "2064619", "name": "Épinards", "description": "Épinards, mûrs" },
+  {
+    "externalId": "2192156",
+    "name": "Pignons De Pin",
+    "description": "Noix, noix anglaises, moitiés, crues"
+  },
+  {
+    "externalId": "2594852",
+    "name": "Poisson Fumé Nova Saumon Poisson",
+    "description": "Poisson, saumon, saumon rouge, pêché dans la nature, cru"
+  },
+  { "externalId": "2120877", "name": "Sel", "description": "Sel de table iodé" },
+  {
+    "externalId": "1996978",
+    "name": "Burgers de boeuf, boeuf",
+    "description": "Boeuf, haché, 80% viande maigre / 20% matière grasse, cru"
+  },
+  {
+    "externalId": "2618005",
+    "name": "Lait d'amande, vanille",
+    "description": "Lait d'amande, non sucré, nature, de longue conservation"
+  },
+  {
+    "externalId": "2039105",
+    "name": "Lait de soja original, original",
+    "description": "Lait de soja, sucré, nature, réfrigéré"
+  },
+  {
+    "externalId": "2083628",
+    "name": "Jus de palourde",
+    "description": "Jus de pruneau, de longue conservation"
+  },
+  {
+    "externalId": "2423124",
+    "name": "Chorizo De Poulet, Poulet",
+    "description": "Poulet, pilon, viande et peau, crus"
+  },
+  {
+    "externalId": "2433643",
+    "name": "Tomates en dés sans sel ajouté dans le jus de tomate, sans sel ajouté dans le jus de tomate",
+    "description": "Jus de tomate, avec ingrédients ajoutés, à partir de concentré, de longue conservation"
+  },
+  {
+    "externalId": "2390768",
+    "name": "Pâte De Tomate, Tomate",
+    "description": "Tomate, pâte, en conserve, sans sel ajouté"
+  },
+  {
+    "externalId": "2092649",
+    "name": "Lait",
+    "description": "Lait entier, 3,25% de matière grasse laitière, enrichi en vitamine D"
+  },
+  {
+    "externalId": "2477312",
+    "name": "Chou frisé et chou vert biologique",
+    "description": "Chou, cru"
+  },
+  {
+    "externalId": "2518353",
+    "name": "Egg Beaters, œufs liquides",
+    "description": "Oeufs, catégorie A, gros, blanc d'oeuf"
+  },
+  {
+    "externalId": "2388443",
+    "name": "Raisins",
+    "description": "Raisins, verts, sans pépins, crus"
+  },
+  { "externalId": "1934154", "name": "Betteraves fraîches", "description": "Betteraves, crues" },
+  {
+    "externalId": "2121377",
+    "name": "Fromage cottage",
+    "description": "Fromage cottage, entier, gros ou petit caillé"
+  },
+  {
+    "externalId": "2071650",
+    "name": "Pommes",
+    "description": "Pommes, Granny Smith, avec peau, crues"
+  },
+  {
+    "externalId": "522090",
+    "name": "Pommes de terre",
+    "description": "Pommes de terre rousses, sans peau, crues"
+  },
+  {
+    "externalId": "1859625",
+    "name": "Riz arborio",
+    "description": "Riz, blanc, grain long, non enrichi, cru"
+  },
+  { "externalId": "2062594", "name": "Cacahuètes", "description": "Cacahuètes, crues" },
+  {
+    "externalId": "2467894",
+    "name": "Noix mélangées",
+    "description": "Noix, amandes, grillées à sec, avec sel ajouté"
+  },
+  {
+    "externalId": "2054492",
+    "name": "Pain De Boulangerie",
+    "description": "Pain de blé entier, préparé commercialement"
+  },
+  {
+    "externalId": "2185701",
+    "name": "Yaourt sans gras, yaourt sans gras",
+    "description": "Yaourt, nature, sans gras"
+  },
+  {
+    "externalId": "2139087",
+    "name": "Jambon",
+    "description": "Jambon, tranché, préemballé, charcuterie (96 % sans gras, eau ajoutée)"
+  },
+  {
+    "externalId": "2430401",
+    "name": "Carnitas de porc râpées et assaisonnées, porc",
+    "description": "Porc, côtelette, coupe centrale, cru"
+  },
+  {
+    "externalId": "2425912",
+    "name": "Pois noirs avec assaisonnement au jambon",
+    "description": "Pois noir, sec"
+  },
+  {
+    "externalId": "2081296",
+    "name": "Bouillon de Bœuf en Boîte, Bœuf",
+    "description": "Bouillon de boeuf, cru"
+  },
+  { "externalId": "2632582", "name": "Farine à pâtisserie", "description": "Farine, riz, gluant" },
+  { "externalId": "2667706", "name": "Farine d'orge", "description": "Farine, pomme de terre" },
+  {
+    "externalId": "2404942",
+    "name": "Farine de Kamut moulue sur pierre à grains entiers, grains entiers",
+    "description": "Khorasan, grain, sec, cru"
+  },
+  { "externalId": "2397511", "name": "Farine De Riz Brun, Farine", "description": "Farine, orge" },
+  {
+    "externalId": "2161852",
+    "name": "Huile de tournesol et huile d'avocat",
+    "description": "Huile, olive, extra légère"
+  },
+  { "externalId": "2596170", "name": "Houmous classique", "description": "Houmous, commercial" },
+  {
+    "externalId": "2008895",
+    "name": "Purée de Tomate, Tomate",
+    "description": "Tomate, sauce, en conserve, avec sel ajouté"
+  },
+  {
+    "externalId": "2619273",
+    "name": "Purée de Tomate, Tomate",
+    "description": "Tomate, purée, en conserve"
+  },
+  {
+    "externalId": "2009491",
+    "name": "Compote de pommes non sucrée",
+    "description": "Compote de pommes, non sucrée, avec vitamine C ajoutée"
+  },
+  { "externalId": "2575996", "name": "Carottes", "description": "Carottes, mûres, crues" },
+  {
+    "externalId": "2601209",
+    "name": "Jus 100 % de canneberge, canneberge",
+    "description": "Jus de canneberge, non enrichi, à partir de concentré, de longue conservation"
+  },
+  { "externalId": "2621245", "name": "Salade de Brocoli, Brocoli", "description": "Brocoli, cru" },
+  { "externalId": "2621263", "name": "Feuilles de navet", "description": "Navets, crus" },
+  {
+    "externalId": "2576392",
+    "name": "Soupe aux saucisses de dinde et au chou frisé, Saucisses de dinde et chou frisé",
+    "description": "Chou frisé, congelé, cuit, bouilli, égoutté, sans sel"
+  },
+  {
+    "externalId": "2596270",
+    "name": "Jus de pomme, pomme",
+    "description": "Pommes, Honeycrisp, avec la peau, crues"
+  },
+  { "externalId": "2431290", "name": "Lentilles", "description": "Lentilles, sèches" },
+  {
+    "externalId": "1869031",
+    "name": "Farine de masa de maïs instantanée",
+    "description": "Farine de maïs, masa harina, blanche ou jaune, sèche, crue"
+  },
+  {
+    "externalId": "2629570",
+    "name": "Plantains mûrs au four",
+    "description": "Plantains, pas mûrs, crus"
+  },
+  {
+    "externalId": "2467328",
+    "name": "Steaks d'espadon",
+    "description": "Espadon, congelé, capturé dans la nature"
+  },
+  {
+    "externalId": "1901707",
+    "name": "Pois noirs, assaisonnés",
+    "description": "Pois Blackeye, en conserve, sodium ajouté, égoutté et rincé"
+  },
+  { "externalId": "2021609", "name": "Sucre", "description": "Sucres granulés" },
+  { "externalId": "2021632", "name": "Mangue", "description": "Mangue, Ataulfo, pelée, crue" },
+  {
+    "externalId": "2475001",
+    "name": "Lait",
+    "description": "Lait, faible en gras, liquide, 2% de matière grasse laitière, additionné de vitamine A et de vitamine D"
+  },
+  { "externalId": "2023830", "name": "Farine de pain", "description": "Farine, semoule, fine" },
+  {
+    "externalId": "578455",
+    "name": "Oeufs",
+    "description": "Oeuf, entier, cru, congelé, pasteurisé"
+  },
+  {
+    "externalId": "2387087",
+    "name": "Mélange printanier biologique de jeunes laitues et de légumes verts",
+    "description": "Radicchio, cru"
+  },
+  {
+    "externalId": "2275517",
+    "name": "Jus de Raisin, Raisin",
+    "description": "Jus de raisin, violet, additionné de vitamine C, à partir de concentré, de longue conservation"
+  },
+  {
+    "externalId": "2672968",
+    "name": "Haricots Noirs Haricots Frits, Haricots Noirs",
+    "description": "Haricots pinto, en conserve, sodium ajouté, égouttés et rincés"
+  },
+  {
+    "externalId": "2577482",
+    "name": "Hatch Chile avec chia et graines de lin, Hatch Chile",
+    "description": "Graines de lin, moulues"
+  },
+  {
+    "externalId": "569064",
+    "name": "Jus",
+    "description": "Jus de cerise acidulée, à base de concentré, de longue conservation"
+  },
+  {
+    "externalId": "2105045",
+    "name": "Mélange de céréales boulgour et quinoa",
+    "description": "Boulgour, sec, cru"
+  },
+  {
+    "externalId": "2158186",
+    "name": "Sauté d'asperges, Asperges",
+    "description": "Asperges, vertes, crues"
+  },
+  { "externalId": "2633820", "name": "Melon Cantaloup", "description": "Melons, cantaloup, crus" },
+  {
+    "externalId": "2678631",
+    "name": "Reine des olives",
+    "description": "Olives vertes, Manzanilla, farcies au piment"
+  },
+  {
+    "externalId": "2487241",
+    "name": "Champignons marinés à chaud, Champignons",
+    "description": "Champignons, bouton blanc"
+  },
+  { "externalId": "2056092", "name": "Bœuf", "description": "Bœuf, haut de surlonge, cru" },
+  {
+    "externalId": "1728651",
+    "name": "Sauce italienne aux champignons, champignons",
+    "description": "Champignon, hêtre"
+  },
+  {
+    "externalId": "2375018",
+    "name": "Mélange de poivrons et d'oignons",
+    "description": "Oignon vert, bulbe et légumes verts, racine enlevée, cru"
+  },
+  {
+    "externalId": "2428441",
+    "name": "Chair de homard congelée",
+    "description": "Homard, queue seulement, congelé, pêché dans la nature"
+  },
+  { "externalId": "2502452", "name": "Framboises", "description": "Framboises, crues" },
+  {
+    "externalId": "2567726",
+    "name": "Sauce à l'ail et à l'oignon, Ail et oignon",
+    "description": "Oignons, rouges, crus"
+  },
+  {
+    "externalId": "2253421",
+    "name": "Coupes de pudding à la banane, banane",
+    "description": "Bananes, mûres et légèrement mûres, crues"
+  },
+  {
+    "externalId": "2180044",
+    "name": "Soupe aux haricots noirs, haricots noirs",
+    "description": "Haricots, Great Northern, en conserve, sodium ajouté, égouttés et rincés"
+  },
+  {
+    "externalId": "1891048",
+    "name": "Sorgho, Quinoa et Riz Brun",
+    "description": "Farine de sorgho, blanche, perlée, non enrichie, sèche, crue"
+  },
+  {
+    "externalId": "2679700",
+    "name": "Sorgho, Quinoa et Riz Brun",
+    "description": "Sorgho, grains entiers, blanc, sec, cru"
+  },
+  {
+    "externalId": "2083070",
+    "name": "Crème Légère, Crème Légère",
+    "description": "Crème, aigre, entière"
+  },
+  { "externalId": "2010041", "name": "Sauce", "description": "Sauce, salsa, prête à servir" },
+  {
+    "externalId": "1909135",
+    "name": "Lait",
+    "description": "Lait, écrémé, liquide, additionné de vitamine A et de vitamine D (sans gras ou écrémé)"
+  },
+  {
+    "externalId": "2066269",
+    "name": "Purée de Tomate, Tomate",
+    "description": "Tomates, raisins, crues"
+  },
+  {
+    "externalId": "2063073",
+    "name": "Beurre d'amandes grillées",
+    "description": "Beurre d'amande, crémeux"
+  },
+  {
+    "externalId": "2063079",
+    "name": "Beurre de cacahuète",
+    "description": "Beurre de cacahuète, crémeux"
+  },
+  {
+    "externalId": "1943184",
+    "name": "Poisson gefilte aux carottes",
+    "description": "Poisson, morue, atlantique, pêché dans la nature, cru"
+  },
+  { "externalId": "2016892", "name": "Fromage", "description": "Fromage, cheddar" },
+  {
+    "externalId": "2623495",
+    "name": "Riz sauvage biologique",
+    "description": "Riz sauvage, sec, cru"
+  },
+  {
+    "externalId": "2125901",
+    "name": "Riz doré biologique Riz brun",
+    "description": "Riz, brun, grain long, non enrichi, cru"
+  },
+  {
+    "externalId": "2398274",
+    "name": "Haricots verts marinés Cool Beans, haricots frais",
+    "description": "Haricots mange-tout, verts, en conserve, emballage régulier, solides égouttés"
+  },
+  {
+    "externalId": "1460133",
+    "name": "Filet de vivaneau",
+    "description": "Vivaneau, congelé, capturé dans la nature"
+  },
+  {
+    "externalId": "1457743",
+    "name": "Chair de patte de crabe des neiges",
+    "description": "Crabe des neiges, pattes seulement, congelé"
+  },
+  {
+    "externalId": "2072221",
+    "name": "Riz arborio",
+    "description": "Riz, rouge, non enrichi, sec, cru"
+  },
+  {
+    "externalId": "2603491",
+    "name": "Orzo aux pois chiches, pois chiches",
+    "description": "Pois chiches (haricots chiches, gramme de Bengale), secs"
+  },
+  {
+    "externalId": "1900839",
+    "name": "Noix mélangées",
+    "description": "Noix, amandes, entières, crues"
+  },
+  {
+    "externalId": "2616830",
+    "name": "Frankfurters de Thumann, 3 lb",
+    "description": "Francfort, bœuf, non chauffé"
+  },
+  {
+    "externalId": "2676314",
+    "name": "Saucisse d'été",
+    "description": "Saucisse, italienne, porc, douce, cuite, poêlée"
+  },
+  {
+    "externalId": "1938429",
+    "name": "Saucisse italienne",
+    "description": "Saucisse, porc, chorizo, lien ou haché, cuit, poêlé"
+  },
+  {
+    "externalId": "2146840",
+    "name": "Salade de laitue romaine, carottes râpées et chou rouge",
+    "description": "Chou, bok choy, cru"
+  },
+  {
+    "externalId": "1888254",
+    "name": "Mandarines",
+    "description": "Mandarine, sans pépins, pelée, crue"
+  },
+  { "externalId": "2152206", "name": "Poires Bartlett", "description": "Poires, crues, Bartlett" },
+  {
+    "externalId": "2042179",
+    "name": "Noix mélangées",
+    "description": "Noix, noix du Brésil, crues"
+  },
+  {
+    "externalId": "2096464",
+    "name": "Produit à base d'œufs séchés, œufs entiers",
+    "description": "Oeuf, entier, séché"
+  },
+  {
+    "externalId": "2549919",
+    "name": "Bouchées d'ananas dans du jus d'ananas, jus d'ananas",
+    "description": "Ananas, cru"
+  },
+  {
+    "externalId": "2401594",
+    "name": "Tomates entières au jus de tomate, Tomate",
+    "description": "Tomates, entières, en conserve, solides et liquides, avec sel ajouté"
+  },
+  {
+    "externalId": "2634454",
+    "name": "Filets de bar chilien capturés à l'état sauvage",
+    "description": "Bar, chilien, congelé, pêché dans la nature"
+  },
+  {
+    "externalId": "2634455",
+    "name": "Filets de flétan du Pacifique capturés à l'état sauvage",
+    "description": "Flétan, congelé, capturé dans la nature"
+  },
+  { "externalId": "2505655", "name": "Chou frisé", "description": "Chou frisé, cru" },
+  {
+    "externalId": "2660646",
+    "name": "Pilons De Poulet, Poulet",
+    "description": "Poulet, aile, viande et peau, crus"
+  },
+  {
+    "externalId": "2661756",
+    "name": "Burgers de poulet, poulet",
+    "description": "Poulet, poitrine, viande et peau, crus"
+  },
+  {
+    "externalId": "2178032",
+    "name": "Bâtonnets de Carottes, Carotte",
+    "description": "Carottes, bébé, crues"
+  },
+  { "externalId": "2115066", "name": "Sarrasin rôti", "description": "Sarrasin, grains entiers" },
+  {
+    "externalId": "2060308",
+    "name": "Poivrons",
+    "description": "Poivrons, serrano, épépinés, crus"
+  },
+  {
+    "externalId": "2060309",
+    "name": "Courge jaune fraîche",
+    "description": "Courge, été, jaune, avec peau, crue"
+  },
+  { "externalId": "2626300", "name": "Aubergines", "description": "Aubergine, crue" },
+  {
+    "externalId": "2396166",
+    "name": "Fromage à la crème fouettée, crème",
+    "description": "Fromage à la crème, entier, bloc"
+  },
+  {
+    "externalId": "2422848",
+    "name": "Saucisse de porc pour le petit-déjeuner, porc pour le petit-déjeuner",
+    "description": "Porc, haché, cru"
+  },
+  {
+    "externalId": "2423541",
+    "name": "Eau de Mûre Infusée à l'Essence de Mûre, Mûre",
+    "description": "Mûres, crues"
+  },
+  { "externalId": "2641766", "name": "Jambon cru", "description": "Jambon, tranché, restaurant" },
+  {
+    "externalId": "2129494",
+    "name": "Beurre d'amande superalimentaire avec graines de chia, de chanvre et goji",
+    "description": "Graines, graines de tournesol, noyau, crues"
+  },
+  {
+    "externalId": "2102195",
+    "name": "Rondelles d'oignon entières",
+    "description": "Rondelles d'oignon, panées, partiellement frites, congelées, préparées, chauffées au four"
+  },
+  {
+    "externalId": "2094460",
+    "name": "Anneaux de calamars",
+    "description": "Calamars (calamars), congelés, en tubes uniquement"
+  },
+  { "externalId": "2423382", "name": "Avocat écrasé", "description": "Avocat, Hass, pelé, cru" },
+  {
+    "externalId": "2194474",
+    "name": "Graines de Chia",
+    "description": "Graines de chia, sèches, crues"
+  },
+  {
+    "externalId": "1133958",
+    "name": "Jus de Cerise, Cerise",
+    "description": "Cerises, sucrées, rouge foncé, crues"
+  },
+  {
+    "externalId": "576920",
+    "name": "Pommes de terre",
+    "description": "Pommes de terre, rouges, sans peau, crues"
+  },
+  {
+    "externalId": "2642169",
+    "name": "Prune de juin au nectar de fruit de gingembre, prune de juin",
+    "description": "Prune, noire, avec peau, crue"
+  },
+  {
+    "externalId": "2455279",
+    "name": "Saucisse du petit-déjeuner",
+    "description": "Saucisse, saucisse de petit-déjeuner, bœuf, précuite, non préparée"
+  },
+  {
+    "externalId": "2475934",
+    "name": "Yaourt grec",
+    "description": "Yaourt, grec, nature, sans gras"
+  },
+  {
+    "externalId": "2181695",
+    "name": "Burgers de poulet, poulet",
+    "description": "Poulet, cuisse, désossé, sans peau, cru"
+  },
+  { "externalId": "2430237", "name": "Bleuets", "description": "Bleuets, crus" },
+  {
+    "externalId": "2430317",
+    "name": "Huile végétale 100 % huile de soja",
+    "description": "Huile, noix de coco"
+  },
+  {
+    "externalId": "1925845",
+    "name": "Jus de pamplemousse biologique Ruby Red",
+    "description": "Jus de pamplemousse, rouge, non enrichi, non concentré, réfrigéré"
+  },
+  {
+    "externalId": "2637169",
+    "name": "Pommes de terre O'Brien Pommes de terre en dés avec poivrons et oignons, Pommes de terre O'Brien",
+    "description": "Pommes de terre, dorées, sans peau, crues"
+  },
+  {
+    "externalId": "1905344",
+    "name": "Choux de Bruxelles",
+    "description": "Choux de Bruxelles, crus"
+  },
+  {
+    "externalId": "2665752",
+    "name": "Betteraves rouges",
+    "description": "Feuilles de betterave, crues"
+  },
+  {
+    "externalId": "2507462",
+    "name": "Purée de Tomate, Tomate",
+    "description": "Tomates concassées, en conserve"
+  },
+  {
+    "externalId": "2489170",
+    "name": "Vrai oeuf",
+    "description": "Oeuf, blanc, cru, congelé, pasteurisé"
+  },
+  {
+    "externalId": "2096008",
+    "name": "Pétoncles géants de l'Atlantique Nord",
+    "description": "Pétoncles, mer, congelés, pêchés dans la nature"
+  },
+  { "externalId": "1664271", "name": "Figues", "description": "Figues, séchées, non cuites" },
+  {
+    "externalId": "2089873",
+    "name": "Pickle O'Pete Cornichons chauds transformés",
+    "description": "Cornichons, concombre, aneth ou aneth casher"
+  },
+  {
+    "externalId": "2642882",
+    "name": "Laitue iceberg du Pacifique, 2 unités",
+    "description": "Laitue cos ou romaine, crue"
+  },
+  {
+    "externalId": "2525374",
+    "name": "Yaourt à boire",
+    "description": "Yaourt nature, lait entier"
+  },
+  {
+    "externalId": "2666557",
+    "name": "Comme le Cous-Cous Fonio, Comme le Cous-Cous",
+    "description": "Fonio, grain, sec, cru"
+  },
+  { "externalId": "579494", "name": "Panais Bio", "description": "Panais, crus" },
+  {
+    "externalId": "1970280",
+    "name": "Champignons Salés Marinés, Champignons",
+    "description": "Champignon, crimini"
+  },
+  {
+    "externalId": "2384535",
+    "name": "Chou mariné salvadorien, salvadorien",
+    "description": "Chou, napa, feuille, égrappé, cru"
+  },
+  {
+    "externalId": "1960704",
+    "name": "Cookie Pop, Biscuit",
+    "description": "Biscuits à l'avoine, moelleux, aux raisins secs"
+  },
+  { "externalId": "2009472", "name": "Fromage", "description": "Fromage, queso fresco, solide" },
+  {
+    "externalId": "2151413",
+    "name": "Galettes d'Oktoberfest à la dinde, dinde",
+    "description": "Dinde, hachée, 93 % maigre/ 7 % gras, crue"
+  },
+  { "externalId": "2105474", "name": "Melon mélangé", "description": "Melons, melon miel, crus" },
+  {
+    "externalId": "1935836",
+    "name": "Lait d'amande, original",
+    "description": "Lait d'amande, non sucré, nature, réfrigéré"
+  },
+  {
+    "externalId": "2508901",
+    "name": "Farro à grains entiers, grains entiers",
+    "description": "Farro, perlé, sec, brut"
+  },
+  { "externalId": "2135930", "name": "Porc", "description": "Porc, longe, filet, désossé, cru" },
+  {
+    "externalId": "2167314",
+    "name": "Noix de pécan",
+    "description": "Noix, pacanes, moitiés, crues"
+  },
+  { "externalId": "1548924", "name": "Pêches", "description": "Pêches, jaunes, crues" },
+  {
+    "externalId": "2460077",
+    "name": "Sauce piquante aux truffes Tomatillo Coriandre, Tomatillo Coriandre",
+    "description": "Tomatilles, décortiquées, crues"
+  },
+  {
+    "externalId": "2369392",
+    "name": "Morceaux de pastèque, pastèque",
+    "description": "Pastèque, sans pépins, chair seulement, crue"
+  },
+  {
+    "externalId": "2604043",
+    "name": "Jus de Carotte Ananas, Carotte ; Ananas",
+    "description": "Carottes, congelées, non préparées"
+  },
+  {
+    "externalId": "2593092",
+    "name": "Steak de poisson Swai",
+    "description": "Poisson, goberge, cru"
+  },
+  {
+    "externalId": "1917372",
+    "name": "Jus d'Orange",
+    "description": "Jus d'orange, sans pulpe, non enrichi, à base de concentré, réfrigéré"
+  },
+  {
+    "externalId": "2642990",
+    "name": "Mélange de courges en quartiers",
+    "description": "Courge, été, verte, courgette, comprend la peau, crue"
+  },
+  {
+    "externalId": "2664361",
+    "name": "Mélange Barista à l'Avoine, Avoine",
+    "description": "Lait d'avoine, non sucré, nature, réfrigéré"
+  },
+  { "externalId": "2554236", "name": "Ketchup", "description": "Ketchup, restaurant" },
+  {
+    "externalId": "2095090",
+    "name": "Fromage",
+    "description": "Fromage, parmesan, râpé, réfrigéré"
+  },
+  {
+    "externalId": "2608614",
+    "name": "Pâtes aux grains anciens biologiques d'engrain, fusilli de blé entier",
+    "description": "Engrain, grain, sec, cru"
+  },
+  {
+    "externalId": "2631071",
+    "name": "Pétoncles géants",
+    "description": "Pétoncles, laurier, de Patagonie, congelés, capturés dans la nature"
+  },
+  { "externalId": "2403289", "name": "Fleurons de chou-fleur", "description": "Chou-fleur, cru" },
+  {
+    "externalId": "2274736",
+    "name": "Courge Butternut, Butternut",
+    "description": "Courge, tarte à la citrouille, pelée, épépinée, crue"
+  },
+  {
+    "externalId": "2423081",
+    "name": "Tri-mélange de poivre, poivre",
+    "description": "Poivrons, cloches, verts, crus"
+  },
+  {
+    "externalId": "2159863",
+    "name": "Nectar Premium de Poire, Poire",
+    "description": "Poire d'Anjou, verte, avec peau, crue"
+  },
+  {
+    "externalId": "2466144",
+    "name": "Bœuf",
+    "description": "Boeuf, haché, 90% viande maigre / 10% matière grasse, cru"
+  },
+  {
+    "externalId": "2466495",
+    "name": "Céleri Jus de Légumes et de Fruits Pressés à Froid, Céleri",
+    "description": "Céleri, cru"
+  },
+  {
+    "externalId": "2452675",
+    "name": "Échalote royale Ail noir, noir",
+    "description": "Échalotes, bulbes, pelées, racines enlevées, crues"
+  },
+  {
+    "externalId": "2369909",
+    "name": "Jus de pomme, pomme",
+    "description": "Jus de pomme, enrichi en vitamine C, à partir de concentré, de longue conservation"
+  },
+  { "externalId": "2652552", "name": "Fraises", "description": "Fraises, crues" },
+  { "externalId": "2291370", "name": "Rutabaga en dés", "description": "Rutabaga, pelé, cru" },
+  {
+    "externalId": "2464657",
+    "name": "Farine d'Avoine",
+    "description": "Avoine, grains entiers, roulés, à l'ancienne"
+  },
+  {
+    "externalId": "2640507",
+    "name": "Soupe Tomate Fenouil, Tomate Fenouil",
+    "description": "Fenouil, bulbe, cru"
+  },
+  { "externalId": "2665288", "name": "Farine de millet", "description": "Millet, grains entiers" },
+  {
+    "externalId": "2545121",
+    "name": "Lumi, Jus Morning Sunrise, Pamplemousse, Citron Vert, Pamplemousse, Citron Vert",
+    "description": "Jus de pamplemousse, blanc, en conserve ou en bouteille, non sucré"
+  },
+  {
+    "externalId": "464109",
+    "name": "Yaourt grec",
+    "description": "Yaourt, grec, fraise, sans gras"
+  },
+  {
+    "externalId": "1882390",
+    "name": "Blue Print, jus pressé à froid, roquette chou frisé pomme romaine céleri concombre citron gingembre, roquette chou frisé pomme romaine céleri concombre citron gingembre",
+    "description": "Blue Print, jus pressé à froid, roquette et chou frisé"
+  },
+  { "externalId": "2061880", "name": "Fromage", "description": "Fromage, suisse" },
+  {
+    "externalId": "2484651",
+    "name": "Crevettes moyennement cuites",
+    "description": "Crustacés, crevettes, d'élevage, crus"
+  },
+  {
+    "externalId": "1983090",
+    "name": "Raisin Sorbatto, Raisin",
+    "description": "Raisins, rouges, sans pépins, crus"
+  },
+  {
+    "externalId": "2652057",
+    "name": "Chili aux haricots noirs, haricots noirs",
+    "description": "Haricots mange-tout, noirs, crus"
+  },
+  { "externalId": "1903929", "name": "Nectarines tranchées", "description": "Nectarines, crues" },
+  {
+    "externalId": "1889459",
+    "name": "Poisson d'argent",
+    "description": "Poisson, tilapia, élevé à la ferme, cru"
+  },
+  {
+    "externalId": "2069211",
+    "name": "Saucisse de poulet",
+    "description": "Saucisse, dinde, petits déjeuners, doux, cru"
+  },
+  {
+    "externalId": "2474515",
+    "name": "Tortillas à la plantain",
+    "description": "Plantains, mûrs, crus"
+  },
+  {
+    "externalId": "1897135",
+    "name": "Farine de citrouille, farine de citrouille biologique",
+    "description": "Farine, épeautre, céréales complètes, potiron"
+  },
+  {
+    "externalId": "2402948",
+    "name": "Mangues",
+    "description": "Mangue, Tommy Atkins, pelée, crue"
+  },
+  {
+    "externalId": "2421200",
+    "name": "Thon Wild Caught Premium Fruits de mer, Thon",
+    "description": "Thon, ahi ou albacore, congelé, pêché dans la nature"
+  },
+  { "externalId": "2396424", "name": "Bison moulu", "description": "Bison, haché, cru" },
+  {
+    "externalId": "1759691",
+    "name": "Piments Pepperoncini, Piments Pepperoncini",
+    "description": "Poivrons, cloches, jaunes, crus"
+  },
+  {
+    "externalId": "2062044",
+    "name": "Abricots gourmands",
+    "description": "Abricot, avec peau, cru"
+  },
+  {
+    "externalId": "1889936",
+    "name": "Pain Miga",
+    "description": "Pain, blanc, préparé commercialement"
+  },
+  {
+    "externalId": "1915143",
+    "name": "Chair de homard sauvage du Maine",
+    "description": "Crustacés, crabe, nage bleue, en morceaux, pasteurisés, réfrigérés"
+  },
+  { "externalId": "475535", "name": "Kiwi", "description": "Kiwi (kiwi), vert, pelé, cru" },
+  { "externalId": "2671029", "name": "Pâte d'ail, Ail", "description": "Ail, cru" },
+  {
+    "externalId": "578159",
+    "name": "Agneau haché entièrement naturel",
+    "description": "Agneau, haché, cru"
+  },
+  { "externalId": "2089626", "name": "Fromage", "description": "Fromage, monterey jack, solide" },
+  {
+    "externalId": "2640901",
+    "name": "Lait de soja naturel",
+    "description": "Lait de soja, non sucré, nature, de longue conservation"
+  },
+  {
+    "externalId": "2183065",
+    "name": "Marazul Filets d'Anchois à l'Huile de Tournesol 78g",
+    "description": "Anchois, en conserve dans l'huile d'olive, avec du sel, égouttés"
+  },
+  {
+    "externalId": "common:pizza-margherita",
+    "name": "Pizza Margherita",
+    "description": "Pizza italienne avec sauce tomate, mozzarella et basilic"
+  },
+  {
+    "externalId": "common:pizza-quattro-formaggi",
+    "name": "Pizza Quattro Formaggi",
+    "description": "Pizza italienne aux quatre fromages"
+  },
+  {
+    "externalId": "common:pepperoni-pizza",
+    "name": "Pizza au pepperoni",
+    "description": "Pizza américaine avec sauce tomate, mozzarella et pepperoni"
+  },
+  {
+    "externalId": "common:hawaiian-pizza",
+    "name": "Pizza Hawaïenne",
+    "description": "Pizza au jambon, ananas, sauce tomate et fromage"
+  },
+  {
+    "externalId": "common:bbq-chicken-pizza",
+    "name": "Pizza au poulet barbecue",
+    "description": "Pizza avec sauce barbecue, poulet, oignon et fromage"
+  },
+  {
+    "externalId": "common:vegetarian-pizza",
+    "name": "Pizza végétarienne",
+    "description": "Pizza aux légumes mélangés, sauce tomate et fromage"
+  },
+  {
+    "externalId": "common:mushroom-pizza",
+    "name": "Pizza aux champignons",
+    "description": "Pizza aux champignons, sauce tomate et mozzarella"
+  },
+  {
+    "externalId": "common:prosciutto-pizza",
+    "name": "Pizza au prosciutto",
+    "description": "Pizza italienne au prosciutto, mozzarella et sauce tomate"
+  },
+  {
+    "externalId": "common:calzone",
+    "name": "Calzone",
+    "description": "Pizza italienne pliée farcie de fromage et de garnitures"
+  },
+  {
+    "externalId": "common:garlic-bread",
+    "name": "Pain à l'ail",
+    "description": "Pain grillé au beurre à l'ail"
+  },
+  {
+    "externalId": "common:cheeseburger",
+    "name": "Hamburger au fromage",
+    "description": "Burger de bœuf avec fromage, pain et garnitures"
+  },
+  {
+    "externalId": "common:hamburger",
+    "name": "Hamburger",
+    "description": "Galette de bœuf dans un petit pain avec garnitures classiques"
+  },
+  {
+    "externalId": "common:double-cheeseburger",
+    "name": "Double cheeseburger",
+    "description": "Burger avec deux galettes de bœuf et fromage"
+  },
+  {
+    "externalId": "common:bacon-cheeseburger",
+    "name": "Cheeseburger au bacon",
+    "description": "Burger de bœuf avec bacon, fromage et garnitures"
+  },
+  {
+    "externalId": "common:chicken-burger",
+    "name": "Burger au poulet",
+    "description": "Burger avec galette de poulet ou poulet grillé"
+  },
+  {
+    "externalId": "common:crispy-chicken-sandwich",
+    "name": "Sandwich au poulet croustillant",
+    "description": "Sandwich au poulet frit avec petit pain et sauce"
+  },
+  {
+    "externalId": "common:veggie-burger",
+    "name": "Burger végétarien",
+    "description": "Burger végétal avec pain et garnitures"
+  },
+  {
+    "externalId": "common:fish-burger",
+    "name": "Burger de poisson",
+    "description": "Burger avec filet de poisson pané et sauce"
+  },
+  {
+    "externalId": "common:hot-dog",
+    "name": "Hot-Dog",
+    "description": "Saucisse en petit pain avec condiments"
+  },
+  {
+    "externalId": "common:corn-dog",
+    "name": "Corn dog",
+    "description": "Saucisse panée sur un bâton"
+  },
+  {
+    "externalId": "common:french-fries",
+    "name": "Frites",
+    "description": "Bâtonnets de pommes de terre frits"
+  },
+  {
+    "externalId": "common:sweet-potato-fries",
+    "name": "Frites de patates douces",
+    "description": "Bâtonnets de patates douces frits"
+  },
+  {
+    "externalId": "common:onion-rings",
+    "name": "Rondelles d'oignon",
+    "description": "Rondelles d'oignon panées et frites"
+  },
+  {
+    "externalId": "common:chicken-nuggets",
+    "name": "Nuggets de poulet",
+    "description": "Morceaux de poulet frits panés"
+  },
+  {
+    "externalId": "common:chicken-wings",
+    "name": "Ailes de poulet",
+    "description": "Ailes de poulet frites ou cuites au four avec sauce"
+  },
+  {
+    "externalId": "common:buffalo-wings",
+    "name": "Ailes de buffle",
+    "description": "Ailes de poulet nappées d'une sauce Buffalo épicée"
+  },
+  {
+    "externalId": "common:mozzarella-sticks",
+    "name": "Bâtonnets de mozzarella",
+    "description": "Bâtonnets de fromage mozzarella frits et panés"
+  },
+  {
+    "externalId": "common:mac-and-cheese",
+    "name": "Macaroni au fromage",
+    "description": "Pâtes macaronis à la sauce crémeuse au fromage"
+  },
+  {
+    "externalId": "common:grilled-cheese-sandwich",
+    "name": "Sandwich au fromage grillé",
+    "description": "Sandwich grillé au fromage fondu"
+  },
+  {
+    "externalId": "common:club-sandwich",
+    "name": "Club-sandwich",
+    "description": "Sandwich étagé avec dinde, bacon, laitue et tomate"
+  },
+  {
+    "externalId": "common:blt-sandwich",
+    "name": "Sandwich BLT",
+    "description": "Sandwich au bacon, laitue et tomate"
+  },
+  {
+    "externalId": "common:ham-and-cheese-sandwich",
+    "name": "Sandwich au jambon et au fromage",
+    "description": "Sandwich au jambon, fromage et pain"
+  },
+  {
+    "externalId": "common:tuna-salad-sandwich",
+    "name": "Sandwich à la salade de thon",
+    "description": "Sandwich fourré à la salade de thon"
+  },
+  {
+    "externalId": "common:egg-salad-sandwich",
+    "name": "Sandwich à la salade aux œufs",
+    "description": "Sandwich fourré à la salade aux œufs"
+  },
+  {
+    "externalId": "common:chicken-salad-sandwich",
+    "name": "Sandwich à la salade de poulet",
+    "description": "Sandwich fourré à la salade de poulet"
+  },
+  {
+    "externalId": "common:philly-cheesesteak",
+    "name": "Philly Cheesesteak",
+    "description": "Sandwich avec tranches de bœuf, fromage et oignons"
+  },
+  {
+    "externalId": "common:meatball-sub",
+    "name": "Sandwich aux boulettes de viande",
+    "description": "Sous-sandwich aux boulettes de viande, sauce tomate et fromage"
+  },
+  {
+    "externalId": "common:falafel-wrap",
+    "name": "Wrap aux falafels",
+    "description": "Wrap avec falafel, légumes et sauce tahini"
+  },
+  {
+    "externalId": "common:chicken-caesar-wrap",
+    "name": "Wrap César au Poulet",
+    "description": "Wrap au poulet, romaine, parmesan et vinaigrette César"
+  },
+  {
+    "externalId": "common:shawarma-wrap",
+    "name": "Enveloppement Shawarma",
+    "description": "Wrap du Moyen-Orient avec viande assaisonnée et sauce à l'ail"
+  },
+  {
+    "externalId": "common:gyro",
+    "name": "Gyro",
+    "description": "Pita grecque avec tranches de viande, légumes et tzatziki"
+  },
+  {
+    "externalId": "common:doner-kebab",
+    "name": "Döner Kebab",
+    "description": "Pain plat ou pita à la turque avec viande hachée et salade"
+  },
+  {
+    "externalId": "common:burrito",
+    "name": "Burritos",
+    "description": "Tortilla mexicaine remplie de riz, haricots, viande et garnitures"
+  },
+  {
+    "externalId": "common:chicken-burrito",
+    "name": "Burrito au poulet",
+    "description": "Burrito au poulet, riz, haricots et salsa"
+  },
+  {
+    "externalId": "common:burrito-bowl",
+    "name": "Bol à burritos",
+    "description": "Bol de riz avec haricots, viande ou légumes, salsa et garnitures"
+  },
+  {
+    "externalId": "common:beef-taco",
+    "name": "Tacos au bœuf",
+    "description": "Taco au bœuf assaisonné, laitue, fromage et salsa"
+  },
+  {
+    "externalId": "common:chicken-taco",
+    "name": "Tacos au poulet",
+    "description": "Taco au poulet, salsa et légumes"
+  },
+  {
+    "externalId": "common:fish-taco",
+    "name": "Tacos au poisson",
+    "description": "Taco au poisson, salade de chou et sauce"
+  },
+  {
+    "externalId": "common:carnitas-taco",
+    "name": "Tacos Carnitas",
+    "description": "Taco au porc mijoté et garnitures"
+  },
+  {
+    "externalId": "common:quesadilla",
+    "name": "Quesadilla",
+    "description": "Tortilla grillée fourrée au fromage fondu"
+  },
+  {
+    "externalId": "common:nachos",
+    "name": "Nachos",
+    "description": "Chips tortilla garnies de fromage, de salsa et de garnitures"
+  },
+  {
+    "externalId": "common:loaded-nachos",
+    "name": "Nachos chargés",
+    "description": "Nachos avec viande, haricots, fromage, salsa et crème sure"
+  },
+  {
+    "externalId": "common:enchiladas",
+    "name": "Enchiladas",
+    "description": "Tortillas roulées cuites avec sauce et fromage"
+  },
+  {
+    "externalId": "common:chicken-enchiladas",
+    "name": "Enchiladas au poulet",
+    "description": "Enchiladas farcies au poulet et nappées de sauce"
+  },
+  {
+    "externalId": "common:fajitas",
+    "name": "Fajitas",
+    "description": "Viande ou légumes grésillants servis avec des tortillas"
+  },
+  {
+    "externalId": "common:chicken-fajitas",
+    "name": "Fajitas au poulet",
+    "description": "Poulet aux poivrons et oignons servi avec tortillas"
+  },
+  {
+    "externalId": "common:chili-con-carne",
+    "name": "Chili con Carne",
+    "description": "Chili de bœuf épicé et haricots"
+  },
+  {
+    "externalId": "common:guacamole",
+    "name": "Guacamole",
+    "description": "Trempette à la purée d'avocat avec citron vert et assaisonnement"
+  },
+  {
+    "externalId": "common:salsa-and-chips",
+    "name": "Salsa et chips",
+    "description": "Chips de tortilla servies avec salsa de tomates"
+  },
+  {
+    "externalId": "common:tacos-al-pastor",
+    "name": "Tacos al Pastor",
+    "description": "Tacos mexicains au porc mariné, ananas, oignon et coriandre"
+  },
+  {
+    "externalId": "common:carne-asada-tacos",
+    "name": "Carne Asada Tacos",
+    "description": "Tacos mexicains avec steak grillé, oignon, coriandre et salsa"
+  },
+  {
+    "externalId": "common:chiles-rellenos",
+    "name": "Chiles Rellenos",
+    "description": "Poivrons farcis mexicains au fromage ou à la viande et sauce"
+  },
+  {
+    "externalId": "common:pozole",
+    "name": "Pozole",
+    "description": "Soupe maison mexicaine avec porc ou poulet et garnitures"
+  },
+  {
+    "externalId": "common:tamales",
+    "name": "Tamales",
+    "description": "Masa de maïs mexicain cuit à la vapeur, rempli de viande, de fromage ou de légumes"
+  },
+  {
+    "externalId": "common:sopes",
+    "name": "Sopes",
+    "description": "Galettes de maïs mexicaines épaisses garnies de haricots, de viande, de salsa et de fromage"
+  },
+  {
+    "externalId": "common:tostadas",
+    "name": "Tostadas",
+    "description": "Tortillas croustillantes garnies de haricots, de viande, de légumes et de salsa"
+  },
+  {
+    "externalId": "common:mole-poblano",
+    "name": "Mole Poblano",
+    "description": "Poulet ou dinde mexicain avec une riche sauce chili et mole au chocolat"
+  },
+  {
+    "externalId": "common:poke-bowl-chicken",
+    "name": "Poulet Poke Bowl",
+    "description": "Bol de riz hawaïen avec poulet, légumes et sauce"
+  },
+  {
+    "externalId": "common:poke-bowl-salmon",
+    "name": "Poke Bowl Saumon",
+    "description": "Bol de riz hawaïen avec saumon, légumes et sauce"
+  },
+  {
+    "externalId": "common:poke-bowl-tuna",
+    "name": "Poke Bowl Thon",
+    "description": "Bol de riz hawaïen avec thon, légumes et sauce"
+  },
+  {
+    "externalId": "common:poke-bowl-tofu",
+    "name": "Tofu Poké Bowl",
+    "description": "Bol de riz hawaïen avec tofu, légumes et sauce"
+  },
+  {
+    "externalId": "common:sushi-salmon-nigiri",
+    "name": "Sushi Saumon Nigiri",
+    "description": "Riz à sushi japonais garni de saumon"
+  },
+  {
+    "externalId": "common:california-roll",
+    "name": "Rouleau californien",
+    "description": "Rouleau de sushi au crabe ou surimi, avocat et concombre"
+  },
+  {
+    "externalId": "common:spicy-tuna-roll",
+    "name": "Rouleau de thon épicé",
+    "description": "Rouleau de sushi au thon épicé et riz"
+  },
+  {
+    "externalId": "common:salmon-avocado-roll",
+    "name": "Rouleau Saumon-Avocat",
+    "description": "Rouleau de sushi au saumon et à l'avocat"
+  },
+  {
+    "externalId": "common:vegetable-sushi-roll",
+    "name": "Rouleau de sushi aux légumes",
+    "description": "Rouleau de sushi au concombre, avocat et légumes"
+  },
+  {
+    "externalId": "common:salmon-sashimi",
+    "name": "Sashimi de saumon",
+    "description": "Saumon cru tranché à la japonaise"
+  },
+  {
+    "externalId": "common:tuna-sashimi",
+    "name": "Sashimi de thon",
+    "description": "Thon cru tranché japonais"
+  },
+  {
+    "externalId": "common:chicken-teriyaki",
+    "name": "Poulet Teriyaki",
+    "description": "Poulet japonais à la sauce soja teriyaki sucrée"
+  },
+  {
+    "externalId": "common:beef-teriyaki",
+    "name": "Bœuf Teriyaki",
+    "description": "Bœuf japonais à la sauce teriyaki"
+  },
+  {
+    "externalId": "common:teriyaki-salmon",
+    "name": "Saumon teriyaki",
+    "description": "Saumon glacé à la sauce teriyaki"
+  },
+  {
+    "externalId": "common:chicken-katsu",
+    "name": "Poulet Katsu",
+    "description": "Escalope de poulet frite panée à la japonaise"
+  },
+  {
+    "externalId": "common:pork-tonkatsu",
+    "name": "Tonkatsu au porc",
+    "description": "Escalope de porc frite panée à la japonaise"
+  },
+  {
+    "externalId": "common:ramen",
+    "name": "Ramens",
+    "description": "Soupe de nouilles japonaises avec bouillon et garnitures"
+  },
+  {
+    "externalId": "common:miso-ramen",
+    "name": "Miso Ramen",
+    "description": "Ramen japonais avec bouillon miso"
+  },
+  {
+    "externalId": "common:shoyu-ramen",
+    "name": "Shoyu Ramen",
+    "description": "Ramen japonais avec bouillon de sauce soja"
+  },
+  {
+    "externalId": "common:udon-noodle-soup",
+    "name": "Soupe de nouilles Udon",
+    "description": "Nouilles japonaises épaisses de blé dans un bouillon"
+  },
+  {
+    "externalId": "common:yakisoba",
+    "name": "Yakisoba",
+    "description": "Nouilles japonaises sautées aux légumes et sauce"
+  },
+  {
+    "externalId": "common:fried-rice",
+    "name": "Riz Frit",
+    "description": "Riz sauté avec œuf, légumes et assaisonnement"
+  },
+  {
+    "externalId": "common:chicken-fried-rice",
+    "name": "Riz Frit Au Poulet",
+    "description": "Riz sauté au poulet, œuf et légumes"
+  },
+  {
+    "externalId": "common:shrimp-fried-rice",
+    "name": "Riz Frit Aux Crevettes",
+    "description": "Riz sauté aux crevettes, œuf et légumes"
+  },
+  {
+    "externalId": "common:chow-mein",
+    "name": "Chow Mein",
+    "description": "Nouilles chinoises sautées aux légumes"
+  },
+  {
+    "externalId": "common:chicken-chow-mein",
+    "name": "Chow Mein au poulet",
+    "description": "Nouilles chinoises sautées au poulet et légumes"
+  },
+  {
+    "externalId": "common:lo-mein",
+    "name": "Lo Mein",
+    "description": "Nouilles chinoises arrosées de sauce et de légumes"
+  },
+  {
+    "externalId": "common:orange-chicken",
+    "name": "Poulet à l'orange",
+    "description": "Poulet frit sino-américain à la sauce à l'orange"
+  },
+  {
+    "externalId": "common:general-tso-chicken",
+    "name": "Poulet Général Tso",
+    "description": "Poulet frit sino-américain dans une sauce sucrée et épicée"
+  },
+  {
+    "externalId": "common:sweet-and-sour-chicken",
+    "name": "Poulet aigre-doux",
+    "description": "Poulet frit chinois à la sauce aigre-douce"
+  },
+  {
+    "externalId": "common:kung-pao-chicken",
+    "name": "Poulet Kung Pao",
+    "description": "Sauté de poulet chinois aux cacahuètes et piment"
+  },
+  {
+    "externalId": "common:beef-and-broccoli",
+    "name": "Boeuf et Brocoli",
+    "description": "Sauté chinois avec bœuf, brocoli et sauce"
+  },
+  {
+    "externalId": "common:mapo-tofu",
+    "name": "Tofu mapo",
+    "description": "Plat de tofu du Sichuan avec sauce épicée"
+  },
+  {
+    "externalId": "common:spring-rolls",
+    "name": "Rouleaux de printemps",
+    "description": "Petits pains frits ou frais avec légumes et garniture"
+  },
+  {
+    "externalId": "common:egg-rolls",
+    "name": "Rouleaux aux œufs",
+    "description": "Rouleaux chinois frits avec chou et garniture"
+  },
+  {
+    "externalId": "common:dumplings",
+    "name": "Boulettes",
+    "description": "Raviolis farcis, cuits à la vapeur ou frits"
+  },
+  {
+    "externalId": "common:pork-dumplings",
+    "name": "Raviolis au Porc",
+    "description": "Dumplings fourrés au porc assaisonné"
+  },
+  {
+    "externalId": "common:chicken-dumplings",
+    "name": "Raviolis Au Poulet",
+    "description": "Dumplings fourrés au poulet assaisonné"
+  },
+  {
+    "externalId": "common:pad-thai",
+    "name": "Pad Thai",
+    "description": "Nouilles de riz sautées thaïlandaises avec œuf, cacahuètes et sauce"
+  },
+  {
+    "externalId": "common:chicken-pad-thai",
+    "name": "Pad Thai au poulet",
+    "description": "Nouilles sautées thaïlandaises au poulet et cacahuètes"
+  },
+  {
+    "externalId": "common:pad-see-ew",
+    "name": "Pad See Ew",
+    "description": "Nouilles larges sautées thaïlandaises à la sauce soja"
+  },
+  {
+    "externalId": "common:thai-red-curry",
+    "name": "Curry rouge thaï",
+    "description": "Curry thaï à la noix de coco et pâte de curry rouge"
+  },
+  {
+    "externalId": "common:tom-yum-soup",
+    "name": "Soupe Tom Yum",
+    "description": "Soupe thaïlandaise aigre-douce aux herbes"
+  },
+  {
+    "externalId": "common:tom-kha-gai",
+    "name": "Tom Kha Gai",
+    "description": "Soupe thaïlandaise au poulet et à la noix de coco"
+  },
+  {
+    "externalId": "common:chicken-satay",
+    "name": "Poulet Satay",
+    "description": "Brochettes de poulet grillées à la sauce aux cacahuètes"
+  },
+  {
+    "externalId": "common:pho-bo",
+    "name": "Pho Bo",
+    "description": "Soupe vietnamienne de nouilles au bœuf"
+  },
+  {
+    "externalId": "common:pho-ga",
+    "name": "Pho Ga",
+    "description": "Soupe vietnamienne au poulet et aux nouilles"
+  },
+  {
+    "externalId": "common:banh-mi",
+    "name": "Banh Mi",
+    "description": "Sandwich baguette vietnamien avec viande et légumes marinés"
+  },
+  {
+    "externalId": "common:bun-cha",
+    "name": "Bun Cha",
+    "description": "Porc grillé vietnamien avec nouilles et herbes"
+  },
+  {
+    "externalId": "common:vietnamese-spring-rolls",
+    "name": "Rouleaux de printemps vietnamiens",
+    "description": "Rouleaux de papier de riz frais avec herbes, nouilles et garniture"
+  },
+  {
+    "externalId": "common:bibimbap",
+    "name": "Bibimbap",
+    "description": "Bol de riz coréen avec légumes, œuf et sauce"
+  },
+  {
+    "externalId": "common:korean-fried-chicken",
+    "name": "Poulet frit coréen",
+    "description": "Poulet frit croustillant à la sauce coréenne"
+  },
+  {
+    "externalId": "common:kimchi-fried-rice",
+    "name": "Riz Frit Au Kimchi",
+    "description": "Riz frit coréen avec kimchi et œuf"
+  },
+  {
+    "externalId": "common:tteokbokki",
+    "name": "Tteokbokki",
+    "description": "Gâteaux de riz épicés coréens"
+  },
+  {
+    "externalId": "common:kimbap",
+    "name": "Kimbap",
+    "description": "Rouleau de riz coréen aux algues et fourré"
+  },
+  {
+    "externalId": "common:butter-chicken",
+    "name": "Poulet au beurre",
+    "description": "Curry de poulet indien à la sauce tomate crémeuse"
+  },
+  {
+    "externalId": "common:chicken-tikka-masala",
+    "name": "Poulet Tikka Masala",
+    "description": "Curry de poulet à l'indienne dans une sauce à la crème de tomates épicée"
+  },
+  {
+    "externalId": "common:chicken-curry",
+    "name": "Curry De Poulet",
+    "description": "Poulet cuit dans une sauce curry épicée"
+  },
+  {
+    "externalId": "common:vegetable-curry",
+    "name": "Curry De Légumes",
+    "description": "Mélange de légumes cuits dans une sauce au curry"
+  },
+  {
+    "externalId": "common:chana-masala",
+    "name": "Chana Masala",
+    "description": "Curry indien de pois chiches"
+  },
+  {
+    "externalId": "common:dal-tadka",
+    "name": "Dal Tadka",
+    "description": "Plat indien de lentilles tempérées aux épices"
+  },
+  {
+    "externalId": "common:palak-paneer",
+    "name": "Palak Paneer",
+    "description": "Curry indien d'épinards au paneer"
+  },
+  {
+    "externalId": "common:biryani",
+    "name": "Biryani",
+    "description": "Plat de riz épicé avec de la viande ou des légumes"
+  },
+  {
+    "externalId": "common:vegetable-biryani",
+    "name": "Biryani aux légumes",
+    "description": "Riz épicé indien aux légumes mélangés"
+  },
+  {
+    "externalId": "common:naan",
+    "name": "Naan",
+    "description": "Pain plat indien cuit au tandoor"
+  },
+  {
+    "externalId": "common:garlic-naan",
+    "name": "Naan à l'ail",
+    "description": "Pain plat indien garni de beurre à l'ail"
+  },
+  {
+    "externalId": "common:samosa",
+    "name": "Samoussas",
+    "description": "Pâtisserie frite fourrée de pommes de terre épicées ou de viande"
+  },
+  {
+    "externalId": "common:tandoori-chicken",
+    "name": "Poulet Tandoori",
+    "description": "Poulet aux épices indiennes rôti au tandoor"
+  },
+  {
+    "externalId": "common:spaghetti-bolognese",
+    "name": "Spaghettis à la Bolognaise",
+    "description": "Pâtes italiennes à la viande sauce tomate"
+  },
+  {
+    "externalId": "common:spaghetti-carbonara",
+    "name": "Spaghettis à la Carbonara",
+    "description": "Pâtes italiennes avec œuf, fromage, pancetta et poivre"
+  },
+  {
+    "externalId": "common:pasta-alfredo",
+    "name": "Pâtes Alfredo",
+    "description": "Pâtes à la sauce crémeuse au parmesan"
+  },
+  {
+    "externalId": "common:penne-arrabbiata",
+    "name": "Penne Arrabbiata",
+    "description": "Pâtes italiennes à la sauce tomate épicée"
+  },
+  {
+    "externalId": "common:pasta-pesto",
+    "name": "Pâtes au pesto",
+    "description": "Pâtes à la sauce pesto de basilic"
+  },
+  {
+    "externalId": "common:lasagna",
+    "name": "Lasagne",
+    "description": "Pâtes étagées avec sauce à la viande, fromage et béchamel"
+  },
+  {
+    "externalId": "common:vegetable-lasagna",
+    "name": "Lasagne aux légumes",
+    "description": "Pâtes étagées avec légumes, sauce et fromage"
+  },
+  {
+    "externalId": "common:ravioli",
+    "name": "Raviolis",
+    "description": "Pâtes italiennes farcies à la sauce"
+  },
+  {
+    "externalId": "common:gnocchi",
+    "name": "Gnocchis",
+    "description": "Boulettes de pommes de terre italiennes avec sauce"
+  },
+  {
+    "externalId": "common:risotto",
+    "name": "Risotto",
+    "description": "Plat de riz italien crémeux"
+  },
+  {
+    "externalId": "common:mushroom-risotto",
+    "name": "Risotto aux champignons",
+    "description": "Riz italien crémeux aux champignons"
+  },
+  {
+    "externalId": "common:chicken-parmesan",
+    "name": "Poulet Parmesan",
+    "description": "Poulet pané à la sauce tomate et fromage fondu"
+  },
+  {
+    "externalId": "common:eggplant-parmesan",
+    "name": "Aubergines Parmesan",
+    "description": "Aubergines panées à la sauce tomate et au fromage"
+  },
+  {
+    "externalId": "common:caprese-salad",
+    "name": "Salade Caprese",
+    "description": "Salade italienne aux tomates, mozzarella et basilic"
+  },
+  {
+    "externalId": "common:focaccia",
+    "name": "Focaccia",
+    "description": "Pain plat italien avec huile d'olive, herbes et sel"
+  },
+  {
+    "externalId": "common:pasta-amatriciana",
+    "name": "Pâtes Amatriciana",
+    "description": "Pâtes italiennes à la sauce tomate, au porc séché et au pecorino"
+  },
+  {
+    "externalId": "common:pasta-cacio-e-pepe",
+    "name": "Pâtes Cacio et Pepe",
+    "description": "Pâtes italiennes au pecorino et poivre noir"
+  },
+  {
+    "externalId": "common:osso-buco",
+    "name": "Osso Buco",
+    "description": "Jarret de veau braisé à l'italienne avec légumes et vin"
+  },
+  {
+    "externalId": "common:saltimbocca",
+    "name": "Saltimboca",
+    "description": "Veau ou poulet italien avec prosciutto, sauge et sauce au vin"
+  },
+  {
+    "externalId": "common:arancini",
+    "name": "Arancini",
+    "description": "Boulettes de riz frites italiennes fourrées au fromage, à la viande ou à la sauce"
+  },
+  {
+    "externalId": "common:panna-cotta",
+    "name": "Panna Cotta",
+    "description": "Dessert italien à la crème glacée, souvent servi avec une sauce aux fruits"
+  },
+  {
+    "externalId": "common:chicken-caesar-salad",
+    "name": "Salade César au Poulet",
+    "description": "Salade César garnie de poulet"
+  },
+  {
+    "externalId": "common:greek-salad",
+    "name": "Salade grecque",
+    "description": "Salade de concombre, tomate, olives, feta et vinaigrette"
+  },
+  {
+    "externalId": "common:chef-salad",
+    "name": "Salade du chef",
+    "description": "Salade composée de viande, fromage, œuf et légumes"
+  },
+  {
+    "externalId": "common:tuna-salad",
+    "name": "Salade de thon",
+    "description": "Salade de thon, légumes et vinaigrette"
+  },
+  {
+    "externalId": "common:quinoa-salad",
+    "name": "Salade de quinoa",
+    "description": "Salade de quinoa, légumes et vinaigrette"
+  },
+  {
+    "externalId": "common:pasta-salad",
+    "name": "Salade de pâtes",
+    "description": "Salade de pâtes froides aux légumes et vinaigrette"
+  },
+  {
+    "externalId": "common:coleslaw",
+    "name": "Salade de chou",
+    "description": "Salade de chou avec vinaigrette crémeuse ou vinaigrée"
+  },
+  {
+    "externalId": "common:potato-salad",
+    "name": "Salade de pommes de terre",
+    "description": "Salade froide de pommes de terre avec mayonnaise ou vinaigrette"
+  },
+  {
+    "externalId": "common:roast-chicken",
+    "name": "Poulet Rôti",
+    "description": "Poulet entier ou coupé rôti au four"
+  },
+  {
+    "externalId": "common:grilled-chicken-breast",
+    "name": "Poitrine de poulet grillée",
+    "description": "Poitrine de poulet maigre grillée"
+  },
+  {
+    "externalId": "common:chicken-schnitzel",
+    "name": "Escalope de poulet",
+    "description": "Escalope de poulet frite panée"
+  },
+  {
+    "externalId": "common:pork-schnitzel",
+    "name": "Escalope de porc",
+    "description": "Escalope de porc frite panée"
+  },
+  {
+    "externalId": "common:steak",
+    "name": "Bifteck",
+    "description": "Steak de bœuf grillé ou poêlé"
+  },
+  {
+    "externalId": "common:ribeye-steak",
+    "name": "Steak de faux-filet",
+    "description": "Steak de faux-filet grillé"
+  },
+  {
+    "externalId": "common:roast-beef",
+    "name": "Rôti de Bœuf",
+    "description": "Bœuf rôti au four servi tranché"
+  },
+  {
+    "externalId": "common:pork-chop",
+    "name": "Côtelette De Porc",
+    "description": "Côtelette de porc grillée ou poêlée"
+  },
+  {
+    "externalId": "common:bbq-ribs",
+    "name": "Côtes levées au barbecue",
+    "description": "Côtes de porc ou de bœuf sauce barbecue"
+  },
+  {
+    "externalId": "common:pulled-pork",
+    "name": "Porc effiloché",
+    "description": "Effiloché de porc mijoté avec sauce"
+  },
+  {
+    "externalId": "common:grilled-salmon",
+    "name": "Saumon Grillé",
+    "description": "Filet de saumon grillé ou poêlé"
+  },
+  {
+    "externalId": "common:baked-salmon",
+    "name": "Saumon au four",
+    "description": "Filet de saumon au four"
+  },
+  {
+    "externalId": "common:fish-and-chips",
+    "name": "Fish and Chips",
+    "description": "Poisson frit pané servi avec frites"
+  },
+  {
+    "externalId": "common:fish-sticks",
+    "name": "Bâtonnets de poisson",
+    "description": "Morceaux de poisson frits panés"
+  },
+  {
+    "externalId": "common:shrimp-scampi",
+    "name": "Langoustines aux crevettes",
+    "description": "Crevettes cuites avec de l'ail, du beurre et du citron"
+  },
+  {
+    "externalId": "common:grilled-shrimp",
+    "name": "Crevettes Grillées",
+    "description": "Crevettes assaisonnées grillées en brochettes ou à la poêle"
+  },
+  {
+    "externalId": "common:paella",
+    "name": "Paëlla",
+    "description": "Plat de riz espagnol avec fruits de mer, viande ou légumes"
+  },
+  {
+    "externalId": "common:seafood-paella",
+    "name": "Paella aux fruits de mer",
+    "description": "Plat de riz espagnol aux fruits de mer et au safran"
+  },
+  {
+    "externalId": "common:patatas-bravas",
+    "name": "Patatas bravas",
+    "description": "Pommes de terre sautées à l'espagnole avec sauce épicée"
+  },
+  {
+    "externalId": "common:gazpacho",
+    "name": "Gaspacho",
+    "description": "Soupe espagnole réfrigérée aux tomates et aux légumes"
+  },
+  {
+    "externalId": "common:croquetas",
+    "name": "Croquetas",
+    "description": "Croquettes de béchamel frites espagnoles avec jambon, poulet ou poisson"
+  },
+  {
+    "externalId": "common:pan-con-tomate",
+    "name": "Pan con Tomate",
+    "description": "Pain grillé espagnol frotté de tomate, d'huile d'olive et de sel"
+  },
+  {
+    "externalId": "common:gambas-al-ajillo",
+    "name": "Gambas al Ajillo",
+    "description": "Crevettes espagnoles cuites avec de l'ail, de l'huile d'olive et du piment"
+  },
+  {
+    "externalId": "common:pulpo-a-la-gallega",
+    "name": "Pulpo à la Gallega",
+    "description": "Poulpe espagnol avec pommes de terre, huile d'olive et paprika"
+  },
+  {
+    "externalId": "common:fabada-asturiana",
+    "name": "Fabada asturienne",
+    "description": "Ragoût espagnol de haricots blancs avec porc, saucisses et paprika"
+  },
+  {
+    "externalId": "common:pisto",
+    "name": "Pisto",
+    "description": "Ragoût de légumes espagnol avec tomates, poivrons, courgettes et œuf"
+  },
+  {
+    "externalId": "common:churros",
+    "name": "Churros",
+    "description": "Pâtisseries espagnoles frites souvent servies avec du chocolat"
+  },
+  {
+    "externalId": "common:empanadas",
+    "name": "Empanadas",
+    "description": "Pâtisserie fourrée à la viande, au fromage ou aux légumes"
+  },
+  {
+    "externalId": "common:arepa",
+    "name": "Arepa",
+    "description": "Gâteau à la semoule de maïs fourré ou garni d'ingrédients salés"
+  },
+  {
+    "externalId": "common:ceviche",
+    "name": "Ceviche",
+    "description": "Fruits de mer marinés aux agrumes d'Amérique latine"
+  },
+  {
+    "externalId": "common:feijoada",
+    "name": "Feijoada",
+    "description": "Ragoût brésilien de haricots noirs au porc ou au bœuf"
+  },
+  {
+    "externalId": "common:moqueca",
+    "name": "Moqueca",
+    "description": "Ragoût de poisson brésilien au lait de coco"
+  },
+  {
+    "externalId": "common:picanha",
+    "name": "Picanha",
+    "description": "Casquette de croupe de bœuf grillée à la brésilienne"
+  },
+  {
+    "externalId": "common:coxinha",
+    "name": "Coxinha",
+    "description": "Pâte frite brésilienne fourrée au poulet émincé"
+  },
+  {
+    "externalId": "common:pao-de-queijo",
+    "name": "Pao de Queijo",
+    "description": "Pain au fromage brésilien à base de farine de tapioca"
+  },
+  {
+    "externalId": "common:farofa",
+    "name": "Farofa",
+    "description": "Accompagnement brésilien à la farine de manioc grillé"
+  },
+  {
+    "externalId": "common:baiao-de-dois",
+    "name": "Baiao de Dois",
+    "description": "Plat brésilien de riz et de haricots avec du fromage, des herbes et de la viande séchée"
+  },
+  {
+    "externalId": "common:pastel",
+    "name": "Pastels",
+    "description": "Pâtisserie frite brésilienne fourrée à la viande, au fromage ou aux légumes"
+  },
+  {
+    "externalId": "common:brigadeiro",
+    "name": "Brigadeiro",
+    "description": "Truffe au lait concentré au chocolat brésilien"
+  },
+  {
+    "externalId": "common:romeu-e-julieta",
+    "name": "Romeu et Juliette",
+    "description": "Dessert brésilien associant pâte de goyave et fromage"
+  },
+  {
+    "externalId": "common:hummus",
+    "name": "Houmous",
+    "description": "Trempette aux pois chiches du Moyen-Orient et au tahini"
+  },
+  {
+    "externalId": "common:tabbouleh",
+    "name": "Taboulé",
+    "description": "Salade de persil et boulgour du Moyen-Orient"
+  },
+  {
+    "externalId": "common:baba-ganoush",
+    "name": "Baba Ganoush",
+    "description": "Trempette d'aubergines rôties du Moyen-Orient"
+  },
+  {
+    "externalId": "common:shakshuka",
+    "name": "Shakchouka",
+    "description": "Oeufs pochés à la sauce tomate épicée"
+  },
+  {
+    "externalId": "common:kofta",
+    "name": "Kofta",
+    "description": "Brochettes ou galettes de viande hachée assaisonnées"
+  },
+  {
+    "externalId": "common:lamb-kebab",
+    "name": "Brochette d'agneau",
+    "description": "Agneau assaisonné grillé en brochettes"
+  },
+  {
+    "externalId": "common:couscous",
+    "name": "Couscous",
+    "description": "Grains de semoule cuits à la vapeur avec des légumes ou de la viande"
+  },
+  {
+    "externalId": "common:chicken-tagine",
+    "name": "Tajine de poulet",
+    "description": "Ragoût de poulet marocain aux épices"
+  },
+  {
+    "externalId": "common:moussaka",
+    "name": "Moussaka",
+    "description": "Casserole d'aubergines et de viande cuites à la grecque"
+  },
+  {
+    "externalId": "common:spanakopita",
+    "name": "Spanakopita",
+    "description": "Pâtisserie grecque aux épinards et feta"
+  },
+  {
+    "externalId": "common:souvlaki",
+    "name": "Souvlaki",
+    "description": "Brochettes de viande grillée à la grecque avec pita ou salade"
+  },
+  {
+    "externalId": "common:full-english-breakfast",
+    "name": "Petit-déjeuner anglais complet",
+    "description": "Petit-déjeuner avec œufs, saucisses, bacon, haricots et pain grillé"
+  },
+  {
+    "externalId": "common:stamppot",
+    "name": "Stamppot",
+    "description": "Purée de pommes de terre hollandaise aux légumes et saucisse fumée"
+  },
+  {
+    "externalId": "common:hutspot",
+    "name": "Hutspot",
+    "description": "Purée de pommes de terre hollandaise avec carottes, oignons et viande"
+  },
+  {
+    "externalId": "common:erwtensoep",
+    "name": "Erwtensoep",
+    "description": "Soupe hollandaise aux pois cassés avec porc et saucisse fumée"
+  },
+  {
+    "externalId": "common:bitterballen",
+    "name": "Bitterballen",
+    "description": "Boulettes de ragoût de bœuf frit hollandais servies avec de la moutarde"
+  },
+  {
+    "externalId": "common:kroket",
+    "name": "Kroket",
+    "description": "Croquette frite hollandaise fourrée au ragoût de viande"
+  },
+  {
+    "externalId": "common:kibbeling",
+    "name": "Kibbeling",
+    "description": "Morceaux de poisson frits panés à la hollandaise servis avec une sauce"
+  },
+  {
+    "externalId": "common:poffertjes",
+    "name": "Poffertjes",
+    "description": "Petites crêpes hollandaises servies avec du beurre et du sucre en poudre"
+  },
+  {
+    "externalId": "common:pancakes",
+    "name": "Crêpes",
+    "description": "Gâteaux grillés pour le petit-déjeuner servis avec du sirop ou des garnitures"
+  },
+  {
+    "externalId": "common:waffles",
+    "name": "Gaufres",
+    "description": "Gâteaux de petit-déjeuner en forme de grille servis avec des garnitures"
+  },
+  {
+    "externalId": "common:french-toast",
+    "name": "Pain perdu",
+    "description": "Pain trempé dans le mélange aux œufs et frit"
+  },
+  {
+    "externalId": "common:omelette",
+    "name": "Omelette",
+    "description": "Oeufs battus cuits avec garnitures"
+  },
+  {
+    "externalId": "common:cheese-omelette",
+    "name": "Omelette Au Fromage",
+    "description": "Omelette fourrée au fromage"
+  },
+  {
+    "externalId": "common:vegetable-omelette",
+    "name": "Omelette Aux Légumes",
+    "description": "Omelette aux légumes mélangés"
+  },
+  {
+    "externalId": "common:scrambled-eggs",
+    "name": "Oeufs brouillés",
+    "description": "Oeufs battus cuits jusqu'à ce qu'ils soient tendres ou fermes"
+  },
+  {
+    "externalId": "common:fried-eggs",
+    "name": "Oeufs au plat",
+    "description": "Oeufs cuits à la poêle"
+  },
+  {
+    "externalId": "common:boiled-eggs",
+    "name": "Oeufs à la coque",
+    "description": "Oeufs cuits dans leur coquille dans de l'eau bouillante"
+  },
+  {
+    "externalId": "common:eggs-benedict",
+    "name": "Oeufs Bénédicte",
+    "description": "Oeufs pochés au jambon, muffin anglais et hollandaise"
+  },
+  {
+    "externalId": "common:breakfast-burrito",
+    "name": "Burrito du petit-déjeuner",
+    "description": "Tortilla remplie d'œufs, de fromage, de viande et de pommes de terre"
+  },
+  {
+    "externalId": "common:avocado-toast",
+    "name": "Toast à l'avocat",
+    "description": "Toast garni de purée d'avocat"
+  },
+  {
+    "externalId": "common:bagel-with-cream-cheese",
+    "name": "Bagel au fromage à la crème",
+    "description": "Bagel à tartiner au fromage à la crème"
+  },
+  {
+    "externalId": "common:lox-bagel",
+    "name": "Bagel Lox",
+    "description": "Bagel au saumon fumé, fromage à la crème et garnitures"
+  },
+  {
+    "externalId": "common:oatmeal",
+    "name": "Gruau",
+    "description": "Avoine cuite servie en bouillie"
+  },
+  {
+    "externalId": "common:overnight-oats",
+    "name": "Gruau du jour au lendemain",
+    "description": "Avoine trempée toute la nuit dans du lait ou du yaourt"
+  },
+  {
+    "externalId": "common:granola-bowl",
+    "name": "Bol de Granola",
+    "description": "Granola servi avec yaourt ou lait et fruits"
+  },
+  {
+    "externalId": "common:smoothie-bowl",
+    "name": "Bol à smoothies",
+    "description": "Bol de fruits mélangés épais avec garnitures"
+  },
+  {
+    "externalId": "common:protein-smoothie",
+    "name": "Smoothie protéiné",
+    "description": "Boisson mélangée avec de la poudre de protéines et des fruits ou du lait"
+  },
+  {
+    "externalId": "common:fruit-smoothie",
+    "name": "Smoothie aux fruits",
+    "description": "Boisson aux fruits mélangée avec du jus, du lait ou du yaourt"
+  },
+  {
+    "externalId": "common:green-smoothie",
+    "name": "Smoothie vert",
+    "description": "Boisson composée de légumes-feuilles et de fruits"
+  },
+  {
+    "externalId": "common:chicken-rice-bowl",
+    "name": "Bol de riz au poulet",
+    "description": "Bol de riz avec poulet, légumes et sauce"
+  },
+  {
+    "externalId": "common:beef-rice-bowl",
+    "name": "Bol de riz au bœuf",
+    "description": "Bol de riz au bœuf, légumes et sauce"
+  },
+  {
+    "externalId": "common:salmon-rice-bowl",
+    "name": "Bol de riz au saumon",
+    "description": "Bol de riz au saumon, légumes et sauce"
+  },
+  {
+    "externalId": "common:tofu-rice-bowl",
+    "name": "Bol de riz au tofu",
+    "description": "Bol de riz avec tofu, légumes et sauce"
+  },
+  {
+    "externalId": "common:mediterranean-bowl",
+    "name": "Bol Méditerranéen",
+    "description": "Bol avec céréales, légumes, houmous, feta et protéines"
+  },
+  {
+    "externalId": "common:buddha-bowl",
+    "name": "Bol Bouddha",
+    "description": "Bol à base de plantes avec céréales, légumes et sauce"
+  },
+  {
+    "externalId": "common:chicken-noodle-soup",
+    "name": "Soupe Poulet Et Nouilles",
+    "description": "Soupe au poulet, nouilles, légumes et bouillon"
+  },
+  {
+    "externalId": "common:tomato-soup",
+    "name": "Soupe aux tomates",
+    "description": "Soupe à base de tomates et assaisonnement"
+  },
+  {
+    "externalId": "common:minestrone-soup",
+    "name": "Soupe Minestrone",
+    "description": "Soupe de légumes italienne avec haricots ou pâtes"
+  },
+  {
+    "externalId": "common:split-pea-soup",
+    "name": "Soupe aux pois cassés",
+    "description": "Soupe épaisse à base de pois cassés"
+  },
+  {
+    "externalId": "common:clam-chowder",
+    "name": "Chaudrée de palourdes",
+    "description": "Soupe crémeuse aux palourdes et pommes de terre"
+  },
+  {
+    "externalId": "common:french-onion-soup",
+    "name": "Soupe à l'oignon française",
+    "description": "Soupe à l'oignon garnie de pain et de fromage fondu"
+  },
+  {
+    "externalId": "common:beef-stew",
+    "name": "Ragoût de boeuf",
+    "description": "Bœuf mijoté avec légumes et sauce"
+  },
+  {
+    "externalId": "common:chicken-pot-pie",
+    "name": "Pâté au poulet",
+    "description": "Tarte salée au poulet, légumes et sauce crémeuse"
+  },
+  {
+    "externalId": "common:shepherds-pie",
+    "name": "Pâté chinois",
+    "description": "Casserole de viande et de légumes garnie de purée de pommes de terre"
+  },
+  {
+    "externalId": "common:cottage-pie",
+    "name": "Hachis Parmentier",
+    "description": "Casserole de bœuf haché garnie de purée de pommes de terre"
+  },
+  {
+    "externalId": "common:baked-potato",
+    "name": "Pomme de terre au four",
+    "description": "Pomme de terre entière au four avec garniture"
+  },
+  {
+    "externalId": "common:roasted-potatoes",
+    "name": "Pommes de terre rôties",
+    "description": "Pommes de terre rôties à l'huile et assaisonnement"
+  },
+  {
+    "externalId": "common:hash-browns",
+    "name": "Pommes de terre rissolées",
+    "description": "Pommes de terre frites, râpées ou coupées en dés"
+  },
+  {
+    "externalId": "common:macaroni-salad",
+    "name": "Salade de macaronis",
+    "description": "Salade froide de macaronis avec vinaigrette crémeuse"
+  },
+  {
+    "externalId": "common:baked-beans",
+    "name": "Fèves au lard",
+    "description": "Haricots cuits au four ou mijotés dans une sauce sucrée-salée"
+  },
+  {
+    "externalId": "common:rice-and-beans",
+    "name": "Riz et haricots",
+    "description": "Plat simple de riz servi avec des haricots"
+  },
+  {
+    "externalId": "common:jambalaya",
+    "name": "Jambalaya",
+    "description": "Plat de riz cajun avec viande, fruits de mer et légumes"
+  },
+  {
+    "externalId": "common:gumbo",
+    "name": "Gombo",
+    "description": "Ragoût de Louisiane avec roux, légumes et viande ou fruits de mer"
+  },
+  {
+    "externalId": "common:chicken-and-waffles",
+    "name": "Poulet et gaufres",
+    "description": "Poulet frit servi avec des gaufres"
+  },
+  {
+    "externalId": "common:fried-chicken",
+    "name": "Poulet Frit",
+    "description": "Morceaux de poulet enrobés et frits"
+  },
+  {
+    "externalId": "common:chicken-tenders",
+    "name": "Filets de poulet",
+    "description": "Lanières de poulet frites panées"
+  },
+  {
+    "externalId": "common:cornbread",
+    "name": "Pain de maïs",
+    "description": "Pain cuit au four à base de semoule de maïs"
+  },
+  {
+    "externalId": "common:sloppy-joe",
+    "name": "Sloppy Joe",
+    "description": "Sandwich américain avec du bœuf haché en sauce sur un petit pain"
+  },
+  {
+    "externalId": "common:reuben-sandwich",
+    "name": "Sandwich Ruben",
+    "description": "Sandwich américain avec corned-beef, choucroute, fromage suisse et vinaigrette"
+  },
+  {
+    "externalId": "common:lobster-roll",
+    "name": "Rouleau de homard",
+    "description": "Sandwich de la Nouvelle-Angleterre avec de la chair de homard dans un petit pain fendu"
+  },
+  {
+    "externalId": "common:biscuits-and-gravy",
+    "name": "Biscuits et sauce",
+    "description": "Biscuits américains garnis de sauce aux saucisses"
+  },
+  {
+    "externalId": "common:chili-cheese-dog",
+    "name": "Chien au chili et au fromage",
+    "description": "Hot dog garni de chili, fromage et oignons"
+  },
+  {
+    "externalId": "common:chicken-fried-steak",
+    "name": "Chicken fried steak",
+    "description": "Escalope de bœuf panée américaine servie avec sauce"
+  },
+  {
+    "externalId": "common:hush-puppies",
+    "name": "Hush Puppies",
+    "description": "Boulettes de semoule de maïs frites du sud"
+  },
+  {
+    "externalId": "common:peach-cobbler",
+    "name": "Peach cobbler",
+    "description": "Dessert américain aux pêches cuit au four avec garniture de biscuit ou de pâte"
+  },
+  {
+    "externalId": "common:tuna-pasta-bake",
+    "name": "Pâtes au thon",
+    "description": "Casserole de pâtes au four avec thon et sauce"
+  },
+  {
+    "externalId": "common:casserole",
+    "name": "Casserole",
+    "description": "Plat mixte cuit au four avec protéines, fécule et sauce"
+  },
+  {
+    "externalId": "common:quiche-lorraine",
+    "name": "Quiche Lorraine",
+    "description": "Tarte salée aux œufs, crème, bacon et fromage"
+  },
+  {
+    "externalId": "common:vegetable-quiche",
+    "name": "Quiche aux légumes",
+    "description": "Tarte salée aux œufs, légumes et fromage"
+  },
+  {
+    "externalId": "common:croissant",
+    "name": "Croissants",
+    "description": "Croissant français au beurre"
+  },
+  {
+    "externalId": "common:pain-au-chocolat",
+    "name": "Pain au Chocolat",
+    "description": "Pâtisserie française fourrée au chocolat"
+  },
+  { "externalId": "common:muffin", "name": "Muffin", "description": "Petit pain rapide sucré" },
+  {
+    "externalId": "common:blueberry-muffin",
+    "name": "Muffin aux bleuets",
+    "description": "Muffin aux myrtilles"
+  },
+  {
+    "externalId": "common:banana-bread",
+    "name": "Pain aux bananes",
+    "description": "Pain sucré à base de bananes"
+  },
+  {
+    "externalId": "common:chocolate-chip-cookie",
+    "name": "Biscuit aux pépites de chocolat",
+    "description": "Cookie aux pépites de chocolat"
+  },
+  { "externalId": "common:brownie", "name": "Brownie", "description": "Dessert dense au chocolat" },
+  {
+    "externalId": "common:cheesecake",
+    "name": "Gâteau au fromage",
+    "description": "Dessert au fromage à la crème avec croûte"
+  },
+  {
+    "externalId": "common:apple-pie",
+    "name": "Tarte aux pommes",
+    "description": "Tarte fourrée aux pommes et aux épices"
+  },
+  {
+    "externalId": "common:pumpkin-pie",
+    "name": "Tarte à la citrouille",
+    "description": "Tarte fourrée à la crème de citrouille épicée"
+  },
+  {
+    "externalId": "common:tiramisu",
+    "name": "Tiramisu",
+    "description": "Dessert italien avec boudoirs imbibés de café et mascarpone"
+  },
+  {
+    "externalId": "common:creme-brulee",
+    "name": "Crème brûlée",
+    "description": "Dessert à la crème avec dessus de sucre caramélisé"
+  },
+  { "externalId": "common:ice-cream", "name": "Glace", "description": "Dessert lacté glacé" },
+  {
+    "externalId": "common:chocolate-ice-cream",
+    "name": "Glace Au Chocolat",
+    "description": "Dessert lacté glacé parfumé au chocolat"
+  },
+  {
+    "externalId": "common:vanilla-ice-cream",
+    "name": "Glace Vanille",
+    "description": "Dessert lacté glacé parfumé à la vanille"
+  },
+  {
+    "externalId": "common:frozen-yogurt",
+    "name": "Yaourt glacé",
+    "description": "Dessert glacé à base de yaourt"
+  },
+  {
+    "externalId": "common:gelato",
+    "name": "Gelato",
+    "description": "Dessert laitier glacé italien"
+  },
+  {
+    "externalId": "common:sorbet",
+    "name": "Sorbets",
+    "description": "Dessert glacé aux fruits sans produits laitiers"
+  },
+  {
+    "externalId": "common:bubble-tea",
+    "name": "Thé aux bulles",
+    "description": "Boisson au thé au goût de lait ou de fruit et perles de tapioca"
+  },
+  {
+    "externalId": "common:cappuccino",
+    "name": "Cappuccino",
+    "description": "Boisson expresso avec lait cuit à la vapeur et mousse"
+  }
+]

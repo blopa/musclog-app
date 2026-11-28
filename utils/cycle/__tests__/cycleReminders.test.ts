@@ -137,6 +137,8 @@ describe('planCycleReminders: opt-in reminders, pause and pill', () => {
     expect(pillDays).not.toContain(22);
     expect(pillDays).toContain(21);
     expect(pills.every((r) => r.date.getHours() === 21 && !r.repeatsDaily)).toBe(true);
+    // Only the last one planned says the app must be opened for more.
+    expect(pills.filter((r) => r.renewalDue)).toEqual([pills[pills.length - 1]]);
   });
 
   it('reports the soonest reminder for the settings line', () => {
@@ -149,6 +151,18 @@ describe('planCycleReminders: opt-in reminders, pause and pill', () => {
 });
 
 describe('cycleReminderContent', () => {
+  it('says to open the app on the last planned pill reminder, at every privacy level', () => {
+    const t = ((key: string) => key) as never;
+
+    for (const style of ['discreet', 'subtle', 'detailed'] as const) {
+      const body = cycleReminderContent({ kind: 'pill', renewalDue: true }, style, t, 'en-US').body;
+      expect(body).toContain('cycle.notifications.renewReminders');
+    }
+    expect(cycleReminderContent({ kind: 'pill' }, 'detailed', t, 'en-US').body).not.toContain(
+      'renewReminders'
+    );
+  });
+
   const t = ((key: string, params?: Record<string, string>) =>
     params ? `${key}|${params.from}|${params.to}` : key) as never;
 

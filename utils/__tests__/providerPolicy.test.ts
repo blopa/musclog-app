@@ -33,6 +33,22 @@ describe('providerPolicyFor', () => {
     }
   });
 
+  it('asks for voice commands in a native tool-call format only on the downloaded model', () => {
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).nativeToolCalls).toBe(true);
+
+    for (const config of [
+      { provider: 'on-device', engine: 'apple' },
+      { provider: 'local' },
+      { provider: 'openai' },
+      { provider: 'gemini' },
+      { provider: 'claude' },
+      { provider: 'hosted' },
+      { provider: 'gateway' },
+    ] as const) {
+      expect(providerPolicyFor(config).nativeToolCalls).toBeUndefined();
+    }
+  });
+
   it('never runs the chat review on an on-device engine, and only there', () => {
     for (const config of [
       { provider: 'on-device', engine: 'gguf' },
@@ -124,6 +140,28 @@ describe('providerPolicyFor', () => {
   });
 });
 
+describe('answersPainWithFixedReply', () => {
+  it('is set only on the downloaded model without its text model', () => {
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).answersPainWithFixedReply
+    ).toBe(true);
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf', textModel: false })
+        .answersPainWithFixedReply
+    ).toBe(true);
+
+    for (const config of [
+      { provider: 'on-device', engine: 'gguf', textModel: true },
+      { provider: 'on-device', engine: 'apple' },
+      { provider: 'local' },
+      { provider: 'openai' },
+      { provider: 'hosted' },
+    ] as const) {
+      expect(providerPolicyFor(config).answersPainWithFixedReply).toBeUndefined();
+    }
+  });
+});
+
 describe('runsSamplesSequentially', () => {
   it('is set for the small model and both on-device engines only', () => {
     expect(providerPolicyFor({ provider: 'local' }).runsSamplesSequentially).toBe(true);
@@ -190,5 +228,41 @@ describe('what only the on-device engines and a custom server do differently', (
       providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).keepsPartialStructuredReply
     ).toBeUndefined();
     expect(providerPolicyFor({ provider: 'openai' }).keepsPartialStructuredReply).toBeUndefined();
+  });
+});
+
+describe('maxVoiceTools', () => {
+  it('limits the 450M to three tools and the 450M with its text model to five', () => {
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).maxVoiceTools).toBe(3);
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf', textModel: true }).maxVoiceTools
+    ).toBe(5);
+  });
+
+  it('names the text model as the native voice payload only with the text model installed', () => {
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf', textModel: true }).nativeVoiceModel
+    ).toBe('text');
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).nativeVoiceModel
+    ).toBeUndefined();
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'apple' }).nativeVoiceModel
+    ).toBeUndefined();
+    expect(providerPolicyFor({ provider: 'local' }).nativeVoiceModel).toBeUndefined();
+    for (const provider of ['hosted', 'gateway', 'gemini', 'openai', 'claude'] as const) {
+      expect(providerPolicyFor({ provider }).nativeVoiceModel).toBeUndefined();
+    }
+  });
+
+  it('limits Apple and a custom local server to five tools', () => {
+    expect(providerPolicyFor({ provider: 'on-device', engine: 'apple' }).maxVoiceTools).toBe(5);
+    expect(providerPolicyFor({ provider: 'local' }).maxVoiceTools).toBe(5);
+  });
+
+  it('leaves cloud providers unlimited', () => {
+    for (const provider of ['hosted', 'gateway', 'gemini', 'openai', 'claude'] as const) {
+      expect(providerPolicyFor({ provider }).maxVoiceTools).toBeUndefined();
+    }
   });
 });

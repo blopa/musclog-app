@@ -424,6 +424,26 @@ export default function LandingScreen() {
                     >
                       {t('onboarding.landing.viewTerms')}
                     </Text>
+
+                    <Text
+                      accessibilityRole="link"
+                      onPress={async () => {
+                        const url = websitePageUrl('/privacy', i18n.language);
+                        try {
+                          await Linking.openURL(url);
+                        } catch (e) {
+                          console.error('Failed to open privacy link', e);
+                        }
+                      }}
+                      className="mt-2 text-center"
+                      style={{
+                        color: theme.colors.accent.primary,
+                        fontSize: theme.typography.fontSize.xs,
+                        textDecorationLine: 'underline',
+                      }}
+                    >
+                      {t('onboarding.landing.viewPrivacy')}
+                    </Text>
                   </View>
                 </>
               )}

@@ -5,6 +5,7 @@ import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
+import { asBirthday } from '@/utils/ageGate';
 import {
   fromGuidedDrafts,
   toPersonalizedSetup,
@@ -108,7 +109,9 @@ export async function commitOnboardingProfile(
   answers: CompleteOnboardingAnswers,
   { useBodyFat }: { useBodyFat: boolean }
 ): Promise<NutritionPlan> {
-  await persistFitnessProfile(toProfileWrite(answers));
+  const write = toProfileWrite(answers);
+  // These are all the answers, so no birthday among them means the profile has none.
+  await persistFitnessProfile({ ...write, dateOfBirthMs: write.dateOfBirthMs ?? null });
 
   const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
   const plan = calculateNutritionPlan(
@@ -199,8 +202,8 @@ export async function loadProfileSnapshot(): Promise<ProfileSnapshot> {
           liftingExperience: user.liftingExperience,
           ...(user.weightGoal ? { weightGoal: user.weightGoal } : {}),
           ...(isActivityLevel(user.activityLevel) ? { activityLevel: user.activityLevel } : {}),
-          ...(user.getAge() > 0
-            ? { birthDate: formatLocalCalendarDayIso(new Date(user.dateOfBirth)) }
+          ...(asBirthday(user.dateOfBirth) !== null
+            ? { birthDate: formatLocalCalendarDayIso(new Date(user.dateOfBirth as number)) }
             : {}),
         }
       : {}),

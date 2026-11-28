@@ -3,22 +3,27 @@ import { usePathname, useRouter } from 'expo-router';
 import { Camera, Home } from 'lucide-react-native';
 import { memo, type ReactNode, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 import { useHasCamera } from '@/components/CameraView';
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
+import { CenterNavButton } from '@/components/navigation/CenterNavButton';
 import { HOME_ROUTE, isHomePath, NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
+import { VoiceNavButton } from '@/components/navigation/VoiceNavButton';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import type { NavItemKey } from '@/constants/settings';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
-import { addOpacityToHex } from '@/theme';
+import { canOfferVoiceInput, resolveNavCenterAction } from '@/utils/voiceInput';
 
 type NavigationMenuProps = {
   onCoachPress: () => void;
   onCameraPress: () => void;
+  /** The height of the screen the bar sits on, which the voice overlay covers; 0 until measured. */
+  frameHeight: number;
 };
 
 type NavSlotButtonProps = {
@@ -86,39 +91,15 @@ type CameraNavButtonProps = {
  * The bottom bar's centre camera button. The bar renders it only while the device has a camera.
  */
 function CameraNavButton({ active, onPress }: CameraNavButtonProps) {
-  const theme = useTheme();
   const { t } = useTranslation();
-  const { width: screenWidth } = useWindowDimensions();
-  const isSmallScreen = screenWidth < 350;
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <CenterNavButton
+      icon={Camera}
       accessibilityLabel={t('common.a11y.openCamera')}
-      className="z-10 items-center justify-center gap-1"
-      style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
+      active={active}
       onPress={onPress}
-    >
-      <View
-        className="items-center justify-center rounded-full"
-        style={[
-          isSmallScreen
-            ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
-            : { width: 80, height: 80 },
-          {
-            backgroundColor: active
-              ? theme.colors.accent.primary
-              : addOpacityToHex(theme.colors.accent.primary, 0.8),
-          },
-        ]}
-      >
-        <Camera
-          size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
-          color={theme.colors.background.secondaryDark}
-          strokeWidth={theme.strokeWidth.medium}
-        />
-      </View>
-    </Pressable>
+    />
   );
 }
 
@@ -163,6 +144,7 @@ const NAV_SLOTS: Record<Exclude<NavItemKey, 'coach'>, NavSlotConfig> = {
 export const NavigationMenu = memo(function NavigationMenu({
   onCoachPress,
   onCameraPress,
+  frameHeight,
 }: NavigationMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -172,6 +154,11 @@ export const NavigationMenu = memo(function NavigationMenu({
   const weeklyReview = useWeeklyReviewStatus();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const hasCamera = useHasCamera();
+  const { navCenterAction } = useSettings();
+  const centerAction = resolveNavCenterAction(navCenterAction, {
+    voiceAvailable: canOfferVoiceInput(Platform),
+    hasCamera,
+  });
   const insets = useAppSafeAreaInsets();
 
   const isPathActive = useCallback(
@@ -287,8 +274,12 @@ export const NavigationMenu = memo(function NavigationMenu({
         {/* Slot 1 - customizable */}
         {renderNavSlot(navSlot1)}
 
-        {/* Camera - fixed, unless the device has no camera to open */}
-        {hasCamera ? <CameraNavButton active={cameraFabActive} onPress={onCameraPress} /> : null}
+        {/* Centre button - the camera or the hold-to-speak microphone (a setting); nothing when the
+            chosen action is unavailable on this device (no camera). */}
+        {centerAction === 'camera' ? (
+          <CameraNavButton active={cameraFabActive} onPress={onCameraPress} />
+        ) : null}
+        {centerAction === 'voice' ? <VoiceNavButton frameHeight={frameHeight} /> : null}
 
         {/* Slot 2 - customizable */}
         {renderNavSlot(navSlot2)}

@@ -831,7 +831,7 @@ export class NutritionService {
   static async getRecentLoggedDays(
     limit: number = 14,
     lookbackDays: number = 60,
-    options?: { excludeDayKey?: number }
+    options?: { excludeDayKey?: number; mealType?: MealType }
   ): Promise<{ dayKey: number; itemCount: number; calories: number }[]> {
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - lookbackDays * MS_PER_SOLAR_DAY);
@@ -839,6 +839,11 @@ export class NutritionService {
 
     const byDayKey = new Map<number, NutritionLog[]>();
     for (const log of logs) {
+      // Filter before grouping so a day with only other meals drops out of the list.
+      if (options?.mealType !== undefined && log.type !== options.mealType) {
+        continue;
+      }
+
       const dayKey = utcNormalizedDayKey(log.date, log.timezone);
       if (options?.excludeDayKey !== undefined && dayKey === options.excludeDayKey) {
         continue;

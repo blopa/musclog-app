@@ -5,6 +5,8 @@ into `AGENTS.md`, `docs/CURRENT_FEATURES.md` and `docs/RESEARCH.md`, then delete
 line in `AGENTS.md`.
 
 **Status, 2026-11-23.** Implemented in code (sessions 1 and 2, see the status table and "Implementation status"); not yet run on any device.
+
+**2026-11-27.** After the model-tier benchmark (`musclog-benchmarks/2026-11-27-model-tiers/`): no tiers. The 450M stays the one model onboarding offers; LFM2.5 1.2B is an optional text model in AI settings (`LOCAL_TEXT_MODEL`, its own store `localTextModelStore` under `<root>/text`, chosen per request by `llamaRuntime.ts`: a photo to the 450M, everything else to the 1.2B when installed). A pain or injury message gets a fixed reply on the 450M and a safety line on the 1.2B and Apple (`ProviderPolicy.answersPainWithFixedReply`, `utils/painMention.ts`). Neither has run on a phone.
 The model sizes, speeds and benchmarks below are vendor figures from model cards and docs read on
 that date, not measurements of ours; P0 and P7 replace them with measurements.
 

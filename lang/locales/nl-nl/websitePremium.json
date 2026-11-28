@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Wat er met je berichten gebeurt",
-      "body": "Als Musclog Iron aan staat, gaan je AI-verzoeken naar de eigen dienst van Musclog, die ze doorstuurt via een AI-gateway, OpenRouter of Otari van Mozilla.ai, naar het AI-model. Verzoeken worden alleen naar aanbieders gestuurd die zero data retention (ZDR) bieden, en de dienst slaat de tekst van je berichten en afbeeldingen niet op. OpenRouter controleert ook alle verzoeken op materiaal van seksueel kindermisbruik en kan een verzoek dat het markeert bewaren, zoals het eigen beleid beschrijft; Otari zegt de inhoud van verzoeken niet op te slaan. De dienst van Musclog houdt een teller van het gebruik bij voor je abonnementsperiode, en een identificatie per apparaat waarop je Musclog Iron gebruikt.",
+      "body": "Wanneer Musclog Iron aan staat, gaan je AI-verzoeken naar de eigen dienst van Musclog, die ze via een AI-gateway, OpenRouter of Otari van Mozilla.ai, doorstuurt naar het AI-model. Verzoeken worden alleen naar aanbieders gestuurd die zero data retention aanbieden, en de dienst slaat de tekst van je berichten en je afbeeldingen niet op. OpenRouter controleert bovendien alle verzoeken op materiaal met seksueel kindermisbruik en mag een gemarkeerd verzoek bewaren, zoals het eigen beleid beschrijft; Otari zegt dat het de inhoud van verzoeken niet opslaat. De dienst van Musclog houdt een telling van het gebruik bij voor je abonnementsperiode, een identificatie voor elk apparaat waarop je Musclog Iron gebruikt, en 7 dagen lang een korte vingerafdruk van elk verzoek.",
       "consent": "De app vraagt om je toestemming voordat er iets naar Musclog Iron wordt gestuurd, en vraagt dat opnieuw als je een back-up op een ander apparaat herstelt.",
       "link": "Lees het privacybeleid"
     },
@@ -42,7 +42,8 @@
         "Het wordt maandelijks gefactureerd door de App Store of Google Play, tegen de prijs die je store toont.",
         "Het verlengt zich automatisch tot je het opzegt in je storeaccount. Opzeggen stopt de volgende verlenging.",
         "iOS- en Android-abonnementen staan los van elkaar, dus een abonnement dat je op de ene kocht, gaat niet naar de andere.",
-        "Er is geen Musclog-account nodig. Je abonnement wordt via je store gecontroleerd."
+        "Er is geen Musclog-account nodig. Je abonnement wordt via je store gecontroleerd.",
+        "Musclog Iron is bedoeld voor mensen van 18 jaar en ouder."
       ],
       "terms": "Gebruiksvoorwaarden"
     },
@@ -56,6 +57,10 @@
         {
           "q": "Heb ik Musclog Iron nodig om de AI-functies te gebruiken?",
           "a": "Nee. Je kunt je eigen API-sleutel gebruiken, de gratis Musclog AI-optie, of modellen op het apparaat en lokale modellen. Musclog Iron is de optie waarbij niets hoeft te worden ingesteld."
+        },
+        {
+          "q": "Maakt Musclog Iron de AI nauwkeuriger?",
+          "a": "Geen enkel abonnement maakt AI betrouwbaar. Musclog Iron draait dezelfde functies als de andere AI-opties, en de antwoorden ervan kunnen ook onjuist zijn, dus controleer schattingen en plannen voordat je erop vertrouwt. AI-antwoorden zijn geen medisch, voedings- of trainingsadvies."
         },
         {
           "q": "Kan ik het op meer dan één apparaat gebruiken?",

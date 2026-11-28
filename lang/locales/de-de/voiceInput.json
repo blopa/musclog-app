@@ -1,0 +1,110 @@
+{
+  "voiceInput": {
+    "listening": "Ich höre zu…",
+    "overlay": {
+      "releaseHint": "Lass los, wenn du fertig bist",
+      "finishing": "Wird abgeschlossen…",
+      "slideUpToLock": "Zum Sperren nach oben wischen",
+      "slideDownToCancel": "Zum Abbrechen nach unten wischen",
+      "lockedHint": "Tippe auf Senden, wenn du fertig bist",
+      "send": "Gesagtes senden"
+    },
+    "holdHint": "Halte die Mikrofon-Taste gedrückt, während du sprichst, und lass sie dann los.",
+    "resultTitle": "Was du gesagt hast",
+    "openSettings": "Einstellungen öffnen",
+    "downloadLanguage": "Sprache herunterladen",
+    "downloadDone": "Heruntergeladen. Halte die Mikrofon-Taste gedrückt, um zu sprechen.",
+    "downloadScheduled": "Der Download ist vorgemerkt und wird später abgeschlossen, zum Beispiel im WLAN.",
+    "downloadFailed": "Die Sprache konnte nicht heruntergeladen werden. Versuche es später erneut.",
+    "failure": {
+      "permission": {
+        "title": "Mikrofonzugriff ist aus",
+        "message": "Musclog braucht das Mikrofon, um deine Sprache in Text umzuwandeln. Du kannst den Zugriff in den Einstellungen deines Telefons erlauben.",
+        "messageWeb": "Musclog braucht das Mikrofon, um deine Sprache in Text umzuwandeln. Erlaube es für diese Website in den Einstellungen deines Browsers."
+      },
+      "languageMissing": {
+        "title": "Sprache nicht heruntergeladen",
+        "messageAndroid": "Die Spracherkennung für die Sprache, auf die Musclog eingestellt ist, ist auf diesem Telefon noch nicht verfügbar. Lade sie einmal herunter, dann funktioniert sie danach offline.",
+        "messageIos": "Die Spracherkennung für die Sprache, auf die Musclog eingestellt ist, ist auf diesem Gerät noch nicht verfügbar. Aktiviere das Diktat für diese Sprache unter Einstellungen, Allgemein, Tastatur, und versuche es dann erneut.",
+        "titleWeb": "Sprache wird nicht unterstützt",
+        "messageWeb": "Dein Browser kann in der Sprache, die in Musclog eingestellt ist, keine Sprache erkennen."
+      },
+      "unavailable": {
+        "title": "Offline-Spracherkennung ist nicht verfügbar",
+        "message": "Dieses Telefon kann Sprache ohne Internet nicht in Text umwandeln. Musclog nutzt nur Spracherkennung, die auf deinem Telefon läuft.",
+        "titleWeb": "Spracherkennung ist nicht verfügbar",
+        "messageWeb": "Dein Browser konnte die Sprache nicht in Text umwandeln. Prüfe deine Internetverbindung oder probiere Chrome, Edge oder Safari."
+      },
+      "nothingHeard": {
+        "title": "Keine Worte gehört",
+        "message": "Musclog hat nichts aufgefangen. Halte die Taste gedrückt, sprich und lass los."
+      },
+      "failed": {
+        "title": "Zuhören beendet",
+        "message": "Die Spracherkennung wurde unterbrochen. Versuche es noch einmal."
+      },
+      "browserNotice": {
+        "title": "Dein Browser wandelt Sprache in Text um",
+        "message": "In der Webversion erkennt dein Browser, was du sagst. Dafür sendet er das Audio möglicherweise an die Server seines Herstellers (Chrome sendet es an Google). Musclog empfängt und speichert das Audio nie. Wenn KI-Funktionen eingerichtet sind, geht der Text an die KI, die du gewählt hast, damit sie herausfindet, was zu tun ist."
+      }
+    },
+    "command": {
+      "workingTitle": "Ich finde heraus, was zu tun ist…",
+      "pickTitle": "Was hast du gemeint?",
+      "pickHint": "Wähle eine Option, dann versucht Musclog es noch einmal.",
+      "tool": {
+        "copyMeal": "Mahlzeit oder Tag kopieren",
+        "searchFood": "Lebensmittel suchen",
+        "logWeight": "Mein Gewicht eintragen",
+        "logMeal": "Eine Mahlzeit eintragen",
+        "addNote": "Eine Notiz schreiben",
+        "goTo": "Einen Bildschirm öffnen",
+        "askCoach": "Den Coach fragen",
+        "startWorkout": "Ein Training starten",
+        "logCardio": "Einen Spaziergang oder Lauf eintragen",
+        "openCamera": "Die Kamera öffnen"
+      },
+      "askCoach": "Den Coach fragen",
+      "wrongTask": "Falsche Aktion? Probier ein besseres Modell.",
+      "openAiSettings": "KI-Einstellungen",
+      "failed": "Der Sprachbefehl ist fehlgeschlagen. Versuche es noch einmal.",
+      "mealTitle": "Deine Mahlzeit",
+      "mealLogged": "Mahlzeit eingetragen",
+      "workoutTitle": "Welches Training?",
+      "workoutActive": "Ein Training läuft bereits.",
+      "weight": {
+        "title": "Dein Gewicht eintragen",
+        "field": "Gewicht",
+        "saved": "Gewicht gespeichert",
+        "saveError": "Dein Gewicht konnte nicht gespeichert werden"
+      },
+      "capability": {
+        "copyMeal": "„Ich hatte dasselbe Frühstück wie gestern“",
+        "searchFood": "„Suche Haferflocken fürs Mittagessen“",
+        "logWeight": "„Ich wiege 82,4“",
+        "logMeal": "„Ich hatte zwei Eier und Toast“",
+        "addNote": "„Notiz: Haferflocken kaufen“",
+        "goTo": "„Zeig mir meinen Wochenrückblick“",
+        "askCoach": "„Wie viel Eiweiß brauche ich?“",
+        "startWorkout": "„Starte mein Beintraining“",
+        "logCardio": "„Ich bin 5 km in 30 Minuten gelaufen“",
+        "openCamera": "„Scan einen Barcode“"
+      }
+    },
+    "tools": {
+      "sectionTitle": "Sprachbefehle",
+      "rowTitle": "Sprachwerkzeuge",
+      "rowDescription": "Wähle, was das Halten des Mikrofons tun kann",
+      "sheetTitle": "Sprachwerkzeuge",
+      "sheetSubtitle": "Die KI wählt anhand dessen, was du sagst, eines davon aus. Die zuerst gewählten werden zuerst genutzt.",
+      "limitNote_one": "Diese KI wählt jeweils zwischen {{count}} Werkzeug.",
+      "limitNote_few": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
+      "limitNote_many": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
+      "limitNote_other": "Diese KI wählt jeweils zwischen {{count}} Werkzeugen.",
+      "notUsed": "Mit dieser KI nicht genutzt",
+      "useRecommended": "Die empfohlene Reihenfolge verwenden"
+    },
+    "allow": "Erlauben",
+    "notNow": "Nicht jetzt"
+  }
+}

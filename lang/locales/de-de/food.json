@@ -16,7 +16,7 @@
       "unmarkButton": "Fastentag entfernen",
       "unmarkShort": "Entfernen",
       "confirmTitle": "Als Fastentag markieren?",
-      "confirmMessage": "Dieser Tag wird als Fastentag markiert und zählt in deinen Durchschnittswerten, deinem Gesamtumsatz und deinen Serien als echter Tag mit 0 kcal.",
+      "confirmMessage": "Damit wird der Tag als Fastentag markiert und zählt in deinen Durchschnittswerten, deinem Gesamtumsatz und deinen Serien als echter Tag mit 0 Kalorien. Fasten ist nicht für jeden sicher: Frag vorher einen Arzt, wenn du schwanger bist oder stillst, Medikamente nimmst, Diabetes hast oder eine Essstörung hattest.",
       "confirmButton": "Als Fastentag markieren"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Portion duplizieren",
       "duplicatePortionDesc": "Kopie zum Ändern erstellen",
       "deletePortion": "Portion löschen",
-      "deletePortionDesc": "Diese Portion aus deiner Liste entfernen",
-      "gramWeightFormat": "{{grams}} g"
+      "deletePortionDesc": "Diese Portion aus deiner Liste entfernen"
     },
     "createPortion": {
       "title": "Portionsgröße erstellen",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Geschätzte Werte für diese Portion",
       "sendDayToPhone": "Tag an Handy senden",
       "sendDayToPhoneDesc": "Alle Lebensmittel dieses Tages mit animierten QR-Codes übertragen",
-      "keepMealTypes": "Mahlzeiten beibehalten"
+      "keepMealTypes": "Mahlzeiten beibehalten",
+      "copyMealTitle": "{{meal}} von einem anderen Tag",
+      "copyMealTargetNote": "Die Kopie landet in: {{meal}}"
     },
     "mealInsights": {
       "title": "Mahlzeit-Analyse",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Zutaten und Zubereitung als Text teilen",
         "sendToPhone": "An anderes Handy senden",
         "sendToPhoneDesc": "Diese Mahlzeit mit animierten QR-Codes übertragen",
-        "shareRecipeIngredientLine": "{{grams}} g {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} {{name}}",
         "shareRecipeNoIngredients": "Diese Mahlzeit hat keine Zutaten zum Teilen",
         "duplicateMeal": "Mahlzeit duplizieren",
         "duplicateMealDesc": "Eine Kopie dieser Mahlzeit erstellen",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} Lebensmittel",
         "foodCount_many": "{{count}} Lebensmittel",
         "foodCount_other": "{{count}} Lebensmittel",
-        "item": "{{grams}} g · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "{{name}} entfernen",
         "groupTitle": "Als eine Mahlzeit erfassen",
         "groupSubtitle": "Erscheint als ein Eintrag in deinem Tagebuch",

@@ -1,12 +1,13 @@
 /**
- * The on-disk layout of the downloaded on-device model: where its folders are and what a scan of
+ * The on-disk layout of a downloaded on-device model: where its folders are and what a scan of
  * them finds. Pure file-system helpers, no download state (that lives in `modelStore.ts`, which
  * imports this file and never the other way round).
  */
 import * as FileSystem from 'expo-file-system/legacy';
 
-import { DEFAULT_LOCAL_MODEL, type LocalModelManifest } from '@/constants/localModels';
+import type { LocalModelManifest } from '@/constants/localModels';
 import { onDeviceAiModule } from '@/modules/on-device-ai';
+import { handleError } from '@/utils/handleError';
 import {
   type InstalledRecord,
   installFolderName,
@@ -24,8 +25,6 @@ export type InstalledLocalModel = {
 
 export const INSTALLED_FILE = 'installed.json';
 
-const manifest = DEFAULT_LOCAL_MODEL;
-
 export function rootUri(): string | null {
   return onDeviceAiModule ? onDeviceAiModule.storageDirectory() : null;
 }
@@ -34,8 +33,17 @@ export function modelsUri(root: string) {
   return `${root}/models`;
 }
 
-export function partialUri(root: string) {
+export function partialUri(root: string, manifest: LocalModelManifest) {
   return `${root}/.partial/${installFolderName(manifest)}`;
+}
+
+/** A failure of the on-device model's files or downloads, reported without a snackbar. */
+export function reportModelFailure(error: unknown, operation: string) {
+  void handleError(error, `localModels.${operation}`, { showSnackbar: false });
+}
+
+export async function excludeFromBackup(root: string): Promise<void> {
+  await onDeviceAiModule?.setExcludedFromBackup(root).catch(() => false);
 }
 
 export async function ensureDirectory(uri: string) {
@@ -70,7 +78,8 @@ export async function listFolders(modelsDir: string): Promise<string[]> {
 
 export function modelPathsFromRecord(
   folderUri: string,
-  record: InstalledRecord | null
+  record: InstalledRecord | null,
+  manifest: LocalModelManifest
 ): InstalledLocalModel | null {
   if (!record) {
     return null;
@@ -103,7 +112,10 @@ export type ModelsScan = {
 };
 
 /** Reads every folder's `installed.json` once and sorts them into current, older and incomplete. */
-export async function scanModels(modelsDir: string): Promise<ModelsScan> {
+export async function scanModels(
+  modelsDir: string,
+  manifest: LocalModelManifest
+): Promise<ModelsScan> {
   const folders = await listFolders(modelsDir);
   let current: InstalledRecord | null = null;
   let older: InstalledRecord | null = null;

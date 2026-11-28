@@ -11,6 +11,7 @@ const mockForcePremium = { on: false };
 const mockGo = jest.fn();
 const mockDraftUpdate = jest.fn(async () => undefined);
 
+jest.mock('@/components/ai/AiOutputNotice', () => ({ AiOutputNotice: () => null }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en-US' } }),
@@ -73,6 +74,17 @@ jest.mock('@/hooks/useAiSetupSession', () => ({
     go: mockGo,
     isDraftLoaded: true,
   }),
+}));
+jest.mock('@/hooks/useAiConsentGate', () => ({
+  useAiConsentGate: () => ({
+    provider: null,
+    request: jest.fn(),
+    confirm: jest.fn(),
+    cancel: jest.fn(),
+  }),
+}));
+jest.mock('@/components/modals/AiProviderConsentModal', () => ({
+  AiProviderConsentModal: () => null,
 }));
 jest.mock('@/services/aiProviderSetup', () => ({
   enableFreeTier: jest.fn(async () => undefined),

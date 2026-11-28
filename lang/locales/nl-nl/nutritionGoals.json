@@ -138,6 +138,11 @@
     "dynamicBadge": "Dynamisch",
     "dynamicRequiredFields": "Doelgewicht en doeldatum zijn verplicht voor dynamische doelen.",
     "keepCurrentTargets": "Mijn huidige doelen behouden",
-    "perGram": "{{energy}}/g"
+    "perGram": "{{energy}}/g",
+    "safety": {
+      "belowMinimum": "Dit ligt onder het minimum dat Musclog voor jou aanbeveelt. Vraag een arts of diëtist voordat je zo weinig eet.",
+      "underweightCut": "Je huidige gewicht valt in het ondergewichtbereik (BMI onder 18,5). Musclog raadt af om gewicht te verliezen. Praat met een arts.",
+      "goalUnderweight": "Dit streefgewicht valt in het ondergewichtbereik (BMI onder 18,5). Kies een hoger streefgewicht of praat met een arts."
+    }
   }
 }

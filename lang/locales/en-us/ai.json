@@ -27,6 +27,31 @@
     "chat": {
       "message": "Message",
       "typeYourMessage": "Type your message..."
+    },
+    "outputNotice": {
+      "chat": "The coach is an AI, not a person, and it often makes mistakes. Its replies are not medical advice.",
+      "estimate": "AI estimate: it can be far off. Check the foods and amounts before you log it.",
+      "plan": "Written by AI: check that it suits you before you train with it.",
+      "insight": "Written by AI and it can be wrong. Not medical, nutrition or training advice.",
+      "import": "Read by AI: check every value before you save it.",
+      "settings": "AI is optional, and it often makes mistakes. Check what it tells you."
+    },
+    "disclaimer": {
+      "title": "AI can be wrong",
+      "subtitle": "Keep this in mind before you rely on anything the AI says",
+      "openHint": "Opens what to keep in mind about AI answers",
+      "points": {
+        "optional": "AI is optional. Musclog works fully without it, and nothing is sent until you turn an AI option on.",
+        "mistakes": "AI answers are written by a model, not a person, and nobody checks them first. They often contain mistakes: calories and macros that are far off, misread foods or portions, exercises that don't suit you, and claims that sound sure but are false. This is true of every option, Musclog Iron included.",
+        "notAdvice": "Loggy and the other coaches are AI characters. They are not doctors, dietitians or certified coaches, and nothing they say is medical, nutrition or training advice.",
+        "health": "If you have pain, an injury, an illness or an eating disorder, are pregnant or take medication, ask a qualified professional before you act on an AI answer. Stop exercising if something hurts.",
+        "check": "Check every estimate, plan and suggestion before you log, follow or share it, and fix or delete what is wrong. What you keep is your own record.",
+        "edits": "You can edit, add or delete any message in your chat history, including the AI's. A chat history, an export or a screenshot may not show what the AI wrote, and Musclog keeps no copy to compare it with.",
+        "liability": "As far as the law allows, Musclog is not responsible for what the AI says or for what you do with it. The terms explain this in full."
+      },
+      "readTerms": "Read the terms",
+      "editHint": "This changes your history on this device only. An edited or added coach message no longer shows what the AI wrote.",
+      "consent": "AI answers are often wrong. They are not medical, nutrition or training advice, and Musclog is not responsible for what the AI says. Check anything important before you act on it. By agreeing, you accept this and the AI section of our terms."
     }
   }
 }

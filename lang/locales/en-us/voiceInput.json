@@ -1,0 +1,110 @@
+{
+  "voiceInput": {
+    "listening": "Listening…",
+    "overlay": {
+      "releaseHint": "Let go when you're done",
+      "finishing": "Finishing…",
+      "slideUpToLock": "Swipe up to lock",
+      "slideDownToCancel": "Swipe down to cancel",
+      "lockedHint": "Tap send when you're done",
+      "send": "Send what you said"
+    },
+    "holdHint": "Hold the microphone button while you speak, then let go.",
+    "resultTitle": "What you said",
+    "openSettings": "Open settings",
+    "downloadLanguage": "Download language",
+    "downloadDone": "Downloaded. Hold the microphone button to speak.",
+    "downloadScheduled": "The download is queued and will finish later, for example on Wi-Fi.",
+    "downloadFailed": "The language could not be downloaded. Try again later.",
+    "failure": {
+      "permission": {
+        "title": "Microphone access is off",
+        "message": "Musclog needs the microphone to turn what you say into text. You can allow it in your phone's settings.",
+        "messageWeb": "Musclog needs the microphone to turn what you say into text. Allow it for this site in your browser's settings."
+      },
+      "languageMissing": {
+        "title": "Language not downloaded",
+        "messageAndroid": "Speech recognition for the language Musclog is set to is not on this phone yet. Download it once and it works offline from then on.",
+        "messageIos": "Speech recognition for the language Musclog is set to is not on this device yet. Turn on dictation for that language in Settings, General, Keyboard, then try again.",
+        "titleWeb": "Language not supported",
+        "messageWeb": "Your browser cannot recognize speech in the language Musclog is set to."
+      },
+      "unavailable": {
+        "title": "Offline speech recognition is unavailable",
+        "message": "This phone cannot turn speech into text without the internet. Musclog only uses speech recognition that runs on your phone.",
+        "titleWeb": "Speech recognition is unavailable",
+        "messageWeb": "Your browser could not turn speech into text. Check your internet connection, or try Chrome, Edge or Safari."
+      },
+      "nothingHeard": {
+        "title": "No words heard",
+        "message": "Musclog did not catch anything. Hold the button, speak, then let go."
+      },
+      "failed": {
+        "title": "Listening stopped",
+        "message": "Something interrupted speech recognition. Try again."
+      },
+      "browserNotice": {
+        "title": "Your browser turns speech into text",
+        "message": "In the web version, your browser recognizes what you say. It may send the audio to its maker's servers to do that (Chrome sends it to Google). Musclog never receives or stores the audio. If AI features are set up, the text goes to the AI you chose, to work out what to do."
+      }
+    },
+    "command": {
+      "workingTitle": "Working out what to do…",
+      "pickTitle": "What did you mean?",
+      "pickHint": "Pick one and Musclog tries again.",
+      "tool": {
+        "copyMeal": "Copy a meal or a day",
+        "searchFood": "Search for a food",
+        "logWeight": "Log my weight",
+        "logMeal": "Log a meal",
+        "addNote": "Take a note",
+        "goTo": "Open a screen",
+        "askCoach": "Ask the coach",
+        "startWorkout": "Start a workout",
+        "logCardio": "Log a walk or run",
+        "openCamera": "Open the camera"
+      },
+      "askCoach": "Ask the coach",
+      "wrongTask": "Incorrect task? Try using a better model.",
+      "openAiSettings": "AI settings",
+      "failed": "The voice command failed. Try again.",
+      "mealTitle": "Your meal",
+      "mealLogged": "Meal logged",
+      "workoutTitle": "Which workout?",
+      "workoutActive": "A workout is already in progress.",
+      "weight": {
+        "title": "Log your weight",
+        "field": "Weight",
+        "saved": "Weight saved",
+        "saveError": "Could not save your weight"
+      },
+      "capability": {
+        "copyMeal": "\"I had the same breakfast as yesterday\"",
+        "searchFood": "\"Search for oats for lunch\"",
+        "logWeight": "\"I weigh 82.4\"",
+        "logMeal": "\"I had two eggs and toast\"",
+        "addNote": "\"Note: buy more oats\"",
+        "goTo": "\"Show my weekly review\"",
+        "askCoach": "\"How much protein do I need?\"",
+        "startWorkout": "\"Start my leg day\"",
+        "logCardio": "\"I ran 5 km in 30 minutes\"",
+        "openCamera": "\"Scan a barcode\""
+      }
+    },
+    "tools": {
+      "sectionTitle": "Voice commands",
+      "rowTitle": "Voice tools",
+      "rowDescription": "Choose what holding the microphone can do",
+      "sheetTitle": "Voice tools",
+      "sheetSubtitle": "The AI picks one of these from what you say. The ones you picked first are used first.",
+      "limitNote_one": "This AI chooses between {{count}} tool at a time.",
+      "limitNote_few": "This AI chooses between {{count}} tools at a time.",
+      "limitNote_many": "This AI chooses between {{count}} tools at a time.",
+      "limitNote_other": "This AI chooses between {{count}} tools at a time.",
+      "notUsed": "Not used with this AI",
+      "useRecommended": "Use the recommended order"
+    },
+    "allow": "Allow",
+    "notNow": "Not now"
+  }
+}

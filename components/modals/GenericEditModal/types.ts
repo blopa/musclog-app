@@ -83,4 +83,6 @@ export type GenericEditModalProps = {
   isLoading?: boolean;
   loadError?: string;
   submitLabel?: string;
+  /** Optional translated note shown above the fields (a form-level hint). */
+  hint?: string;
 };

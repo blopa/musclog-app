@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "Mesajlarına ne olur",
-      "body": "Musclog Iron açıkken YZ isteklerin Musclog’un kendi hizmetine gider; hizmet bunları bir yapay zekâ ağ geçidi, OpenRouter veya Otari (Mozilla.ai’den) üzerinden YZ modeline iletir. İstekler yalnızca sıfır veri saklama sunan sağlayıcılara gönderilir ve hizmet mesaj metnini ya da görselleri saklamaz. Musclog’un hizmeti abonelik dönemin için bir kullanım sayısı ve Musclog Iron kullandığın her cihaz için bir tanımlayıcı tutar. OpenRouter ayrıca tüm istekleri çocuk cinsel istismarı içeren materyal açısından tarar ve kendi politikasında belirttiği gibi işaretlediği bir isteği saklayabilir; Otari ise isteklerin içeriğini saklamadığını belirtir.",
+      "body": "Musclog Iron açıkken yapay zekâ isteklerin Musclog'un kendi hizmetine gider; hizmet bunları bir yapay zekâ ağ geçidi olan OpenRouter veya Mozilla.ai'den Otari üzerinden yapay zekâ modeline iletir. İstekler yalnızca sıfır veri saklama sunan sağlayıcılara gönderilir ve hizmet mesaj metnini ya da görselleri saklamaz. OpenRouter ayrıca tüm istekleri çocukların cinsel istismarı içeren materyal açısından tarar ve kendi politikasında anlatıldığı gibi işaretlediği bir isteği saklayabilir; Otari ise istek içeriklerini saklamadığını belirtir. Musclog hizmeti, abonelik döneminin kullanım sayısını, Musclog Iron kullandığın her cihaz için bir tanımlayıcıyı ve 7 gün boyunca her isteğin kısa bir parmak izini tutar.",
       "consent": "Uygulama, Musclog Iron’a hiçbir şey göndermeden önce onayını ister ve bir yedeği başka bir cihazda geri yüklersen yeniden sorar.",
       "link": "Gizlilik politikasını oku"
     },
@@ -42,7 +42,8 @@
         "App Store ya da Google Play tarafından aylık olarak, mağazanın gösterdiği fiyatla tahsil edilir.",
         "Mağaza hesabındaki aboneliğini iptal edene kadar otomatik yenilenir. İptal etmek bir sonraki yenilemeyi durdurur.",
         "iOS ve Android abonelikleri ayrıdır; birinde satın alınan abonelik diğerine geçmez.",
-        "Musclog’da hesap gerekmez. Aboneliğin mağazan üzerinden doğrulanır."
+        "Musclog’da hesap gerekmez. Aboneliğin mağazan üzerinden doğrulanır.",
+        "Musclog Iron, 18 yaş ve üzeri insanlar içindir."
       ],
       "terms": "Kullanım koşulları"
     },
@@ -56,6 +57,10 @@
         {
           "q": "YZ özelliklerini kullanmak için Musclog Iron gerekli mi?",
           "a": "Hayır. Kendi API anahtarını, ücretsiz Musclog AI seçeneğini ya da cihaz üzerindeki ve yerel modelleri kullanabilirsin. Musclog Iron, kurulacak hiçbir şeyin olmadığı seçenektir."
+        },
+        {
+          "q": "Musclog Iron yapay zekâyı daha doğru yapar mı?",
+          "a": "Hiçbir abonelik yapay zekâyı güvenilir kılmaz. Musclog Iron, diğer yapay zekâ seçenekleriyle aynı özellikleri çalıştırır ve yanıtları da hatalı olabilir; bu yüzden bunlara güvenmeden önce tahminleri ve planları kontrol et. Yapay zekâ yanıtları tıbbi, beslenme veya antrenman tavsiyesi değildir."
         },
         {
           "q": "Birden fazla cihazda kullanabilir miyim?",

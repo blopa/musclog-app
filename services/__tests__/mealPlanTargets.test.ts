@@ -164,3 +164,39 @@ describe('resolveMealPlanMacroTargets without a goal', () => {
     await expect(resolveMealPlanMacroTargets()).resolves.toBeUndefined();
   });
 });
+
+describe('resolveMealPlanMacroTargets and the minimum calories', () => {
+  it('raises a goal below the minimum, with its macros', async () => {
+    mockGetCurrent.mockResolvedValue({
+      totalCalories: 600,
+      protein: 50,
+      carbs: 60,
+      fats: 18,
+      fiber: 10,
+    });
+    mockResolve.mockResolvedValue(null);
+    mockGetCurrentUser.mockResolvedValue({ ...user, gender: 'female' });
+
+    await expect(resolveMealPlanMacroTargets()).resolves.toEqual({
+      calories: 1200,
+      protein: 100,
+      carbs: 120,
+      fat: 36,
+      fiber: 10,
+    });
+  });
+
+  it('leaves it alone for someone who turned the minimum off', async () => {
+    mockDisableMinimum.mockResolvedValue(true);
+    mockGetCurrent.mockResolvedValue({
+      totalCalories: 600,
+      protein: 50,
+      carbs: 60,
+      fats: 18,
+      fiber: 10,
+    });
+    mockResolve.mockResolvedValue(null);
+
+    await expect(resolveMealPlanMacroTargets()).resolves.toMatchObject({ calories: 600 });
+  });
+});

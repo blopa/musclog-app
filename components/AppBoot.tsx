@@ -22,6 +22,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import { recoverInterruptedCoachReply } from '@/services/coachReplyStream';
+import { enforceCloudAiAge } from '@/services/aiAccess';
 import { healthDataSyncService } from '@/services/healthDataSync';
 import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
@@ -132,6 +133,9 @@ export function AppBoot() {
       waitForDbReady()
         .then(() => recoverInterruptedCoachReply())
         .catch((err) => captureBootException(err, 'recoverInterruptedCoachReply'))
+        // Before the daily insights too, so nothing is sent for someone under 18.
+        .then(() => enforceCloudAiAge())
+        .catch((err) => captureBootException(err, 'enforceCloudAiAge'))
         .then(() => configureDailyTasks())
         .catch((err) => captureBootException(err, 'configureDailyTasks.bootStartup')),
       notificationInit,

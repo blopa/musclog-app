@@ -4,7 +4,7 @@
   "createFoodPortion": "Crear Porción de Alimento",
   "portionName": "Nombre de la Porción",
   "portionNamePlaceholder": "ej., Taza, Rebanada, Pieza",
-  "weightGrams": "Peso (gramos)",
+  "weightInUnit": "Peso ({{unit}})",
   "selectIcon": "Seleccionar Icono",
   "chooseIcon": "Elegir Icono"
 }

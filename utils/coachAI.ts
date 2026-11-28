@@ -7,6 +7,11 @@ import { SETTINGS } from '@/constants/settingDefinitions';
 import { DebugDumpService } from '@/database/services/DebugDumpService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
+import type {
+  LocalChatMessage,
+  LocalToolCall,
+  LocalToolDefinition,
+} from '@/services/localModels/llamaRuntime';
 import { type HostedErrorKind, hostedErrorKindOf } from '@/utils/hostedAiError';
 import type { PremiumActionFailure } from '@/utils/premium/premiumState';
 
@@ -21,6 +26,12 @@ import {
   rethrowUserFacingAiError,
 } from './aiErrors';
 import { reviewAndRevise, runSamples, sameValue } from './aiPasses';
+import {
+  getChatReviewInstruction,
+  getExtractionArbiterMessage,
+  getInsightFactCheckInstruction,
+  getPlanReviewInstruction,
+} from './aiReviewPrompts';
 import { reportAiEvent } from './aiTelemetry';
 import {
   effectiveThinkingLevel,
@@ -47,6 +58,7 @@ import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } f
 import { handleError } from './handleError';
 import { readJsonStringField } from './jsonStringFieldStream';
 import { withLlmRetry } from './llmRetry';
+import type { LlmRequest } from './llmRetryTypes';
 import { extractLlmUsage, type LlmUsage, mergeLlmUsage, recordLlmUsage } from './llmUsage';
 import {
   checkStructuredShape,
@@ -62,8 +74,14 @@ import type { MealImage } from './mealImages';
 import { formatMealPhotoContext, type MealPhotoContext } from './mealPhotoContext';
 import { ungroundedFigures } from './numberGrounding';
 import { sendOnDeviceMessage, sendOnDeviceStructured, streamOnDeviceMessage } from './onDeviceAi';
-import { ON_DEVICE_CONTEXT_CHARS, type OnDeviceEngine } from './onDeviceEngine';
-import { sendLocalMessage, sendLocalStructuredRaw, streamLocalMessage } from './onDeviceLocal';
+import type { OnDeviceEngine } from './onDeviceEngine';
+import {
+  sendLocalMessage,
+  sendLocalStructuredRaw,
+  sendLocalToolCall,
+  streamLocalMessage,
+} from './onDeviceLocal';
+import { mentionsPainOrInjury } from './painMention';
 import { mealPlanFindings, workoutPlanFindings, workoutVolumeFindings } from './planFindings';
 import {
   createWorkoutPlanPrompt,
@@ -71,16 +89,13 @@ import {
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getChatMessagePromptContent,
-  getChatReviewInstruction,
   getEstimateMacrosFunctions,
-  getExtractionArbiterMessage,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
   getFoundationFoodsPrompt,
   getGenerateMealPlanFunctions,
   getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
-  getInsightFactCheckInstruction,
   getMealCritiquePrompt,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
@@ -88,19 +103,18 @@ import {
   getParsePastWorkoutsFunctions,
   getParsePastWorkoutsPrompt,
   getParseRetrospectiveNutritionFunctions,
-  getPlanReviewInstruction,
   getRecentWorkoutInsightsPromptByLogId,
   getRecentWorkoutsInsightsPrompt,
   getRetrospectiveNutritionPrompt,
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
-  type MealSchemaDialect,
   withCustomPrompts,
 } from './prompts';
 import { prepareChatText, wrapUserContent } from './promptSanitizer';
-import { providerPolicyFor } from './providerPolicy';
+import { contextCharsFor, providerPolicyFor } from './providerPolicy';
 import { isTruncatedStop, type StopSignal } from './replyTruncation';
 import { captureMessage } from './sentry';
+import type { MealSchemaDialect, StructuredDialect } from './structuredDialect';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -194,72 +208,6 @@ export function reportAiError(error: unknown, context: string): void {
 export type CoachAIProvider =
   'gemini' | 'openai' | 'claude' | 'on-device' | 'local' | 'gateway' | 'hosted';
 
-export interface ProviderConfig {
-  maxCharBudget: number; // Maximum character budget for the total request context
-  promptComplexity: 'minimal' | 'standard';
-  enableContextInjection: boolean;
-  enableFoundationFoods: boolean;
-  enableMemories: boolean;
-}
-
-/** The context budget of every provider with a large context window. */
-const LARGE_CONTEXT_CHAR_BUDGET = 64000;
-
-export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
-  'on-device': {
-    // The tightest engine's budget; the engine's own is `ON_DEVICE_CONTEXT_CHARS`.
-    maxCharBudget: ON_DEVICE_CONTEXT_CHARS.apple,
-    promptComplexity: 'minimal',
-    enableContextInjection: true,
-    enableFoundationFoods: false,
-    enableMemories: false,
-  },
-  gemini: {
-    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
-    promptComplexity: 'standard',
-    enableContextInjection: true,
-    enableFoundationFoods: true,
-    enableMemories: true,
-  },
-  openai: {
-    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
-    promptComplexity: 'standard',
-    enableContextInjection: true,
-    enableFoundationFoods: true,
-    enableMemories: true,
-  },
-  claude: {
-    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
-    promptComplexity: 'standard',
-    enableContextInjection: true,
-    enableFoundationFoods: true,
-    enableMemories: true,
-  },
-  local: {
-    maxCharBudget: 8000,
-    promptComplexity: 'standard',
-    enableContextInjection: true,
-    // The whole list (about 11 KB, a few thousand tokens) goes to a custom server too; the person can
-    // still turn "Send foundation foods to AI" off, and the server needs a context window to hold it.
-    enableFoundationFoods: true,
-    enableMemories: true,
-  },
-  gateway: {
-    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
-    promptComplexity: 'standard',
-    enableContextInjection: true,
-    enableFoundationFoods: true,
-    enableMemories: true,
-  },
-  hosted: {
-    maxCharBudget: LARGE_CONTEXT_CHAR_BUDGET,
-    promptComplexity: 'standard',
-    enableContextInjection: true,
-    enableFoundationFoods: true,
-    enableMemories: true,
-  },
-};
-
 type CoachAIConfigFields = {
   provider: CoachAIProvider;
   apiKey?: string;
@@ -274,6 +222,8 @@ type CoachAIConfigFields = {
   background?: boolean;
   /** Iron consent version accepted on this device. */
   hostedConsentVersion?: number;
+  /** Every request of this config keeps what it carries out of the debug dump (spoken words). */
+  redactDump?: boolean;
 };
 
 /** What only an `on-device` config carries: which engine answers and whether it can read photos. */
@@ -281,10 +231,12 @@ type OnDeviceFields = {
   engine: OnDeviceEngine;
   /** The engine can read a food photo (the downloaded model with its projector). */
   vision: boolean;
+  /** The downloaded model's optional text model is installed (undefined: it is not). */
+  textModel?: boolean;
 };
 
 /** Every other provider has neither field, so `config.engine` reads the same on all of them. */
-type NoOnDeviceFields = { engine?: undefined; vision?: undefined };
+type NoOnDeviceFields = { engine?: undefined; vision?: undefined; textModel?: undefined };
 
 /**
  * A config that can send, or a hosted one whose session token could not be minted (built by
@@ -381,13 +333,15 @@ export async function logLlmDebugEvent(params: {
   operation: string;
   payload: unknown;
   config?: CoachAIConfig;
+  /** The dump records that the call happened and nothing it carried (a voice transcript). */
+  redact?: boolean;
 }): Promise<void> {
   try {
     await DebugDumpService.logJsonEvent({
       provider: params.provider,
       direction: params.direction,
       operation: params.operation,
-      payload: params.payload,
+      payload: params.redact || params.config?.redactDump ? { redacted: true } : params.payload,
       secrets: params.config?.apiKey ? [params.config.apiKey] : [],
     });
   } catch (error) {
@@ -489,12 +443,12 @@ async function buildClaudeParams(
   };
 }
 
-// --- One completion, whatever the cloud provider ---
+// --- One completion, whatever the provider ---
 
 /**
- * What every Gemini, Claude and OpenAI-compatible request needs. The chat reply, a plain-text insight
- * and a structured job are the same request with a different `schema` and `sink`, so they share this
- * one funnel: it is the only place the debug dump is written and the token usage recorded.
+ * What every request needs, on-device ones included. The chat reply, a plain-text insight and a
+ * structured job are the same request with a different `schema` and `sink`, so they share this one
+ * funnel (`runPrepared`): it is the only place the debug dump is written and the usage recorded.
  */
 type CompletionRequest = {
   /** Names the call in debug dumps, retry logs and token usage. */
@@ -512,21 +466,48 @@ type CompletionRequest = {
   sink?: StreamSink | null;
   /** Free chat only: the provider's repetition penalties and prompt caching. */
   chat?: boolean;
+  /** Sampling temperature, for the downloaded model only (a warmer retry of an unusable reply). */
+  temperature?: number;
+  /** Keeps what the request and reply say out of the debug dump. */
+  redactDump?: boolean;
 };
 
-type Completion = { text: string; stop?: StopSignal };
+type Completion = {
+  text: string;
+  stop?: StopSignal;
+  /** A structured reply the engine already parsed (Apple's guided generation). */
+  value?: unknown;
+};
 
-/** A request ready to send: what the debug dump shows, and the call itself. */
-type PreparedCall = {
+/** What one attempt answers: the completion and what it cost. */
+type Sent<C extends Completion> = C & { usage: LlmUsage | null };
+
+/**
+ * A request ready to send: what the debug dump shows, and one attempt of each shape. The retry loop,
+ * the stream's bookkeeping, the dump and the usage are `runPrepared`'s, never a provider's.
+ */
+type PreparedCall<C extends Completion = Completion> = {
   payload: unknown;
-  send: () => Promise<Completion & { usage: LlmUsage | null }>;
+  /** One attempt that answers at once. */
+  once: LlmRequest<Sent<C>>;
+  /** One attempt that feeds the sink as the reply is written. */
+  stream: (sink: StreamSink) => LlmRequest<Sent<C>>;
+  /** Apple's system model keeps its own path: no retry, timeout or abort race. */
+  unmanaged?: boolean;
 };
+
+type RoleMessage = { role: 'user' | 'assistant'; content: string };
+
+/** A turn as the providers that speak in `user` / `assistant` roles take it. */
+function toRoleMessage(entry: ChatHistoryEntry): RoleMessage {
+  return { role: entry.role === 'coach' ? 'assistant' : 'user', content: entry.content };
+}
 
 async function prepareGeminiCall(
   config: CoachAIConfig,
   request: CompletionRequest
 ): Promise<PreparedCall> {
-  const { operation, system, sink, schema } = request;
+  const { system, schema } = request;
   const systemParts: Part[] = [{ text: system }];
   const genModel = await configureBasicGenAI(
     {
@@ -544,39 +525,8 @@ async function prepareGeminiCall(
 
   return {
     payload: { model: config.model, contents, systemPrompt: system, schema: schema?.body },
-    send: async () => {
-      if (sink) {
-        let usage: LlmUsage | null = null;
-        const text = await withLlmRetry(
-          operation,
-          config,
-          async (signal, touch) => {
-            sink.reset();
-            usage = null;
-            const chunks = await genModel.generateContentStream({
-              contents,
-              abortSignal: signal,
-            });
-            for await (const chunk of chunks) {
-              touch();
-              usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
-              const { text: delta } = extractGeminiText(chunk);
-              if (delta) {
-                sink.onDelta(delta);
-              }
-            }
-
-            return sink.raw();
-          },
-          { hasStreamed: sink.hasEmitted }
-        );
-
-        return { text, usage };
-      }
-
-      const result = await withLlmRetry(operation, config, (signal) =>
-        genModel.generateContent({ contents, abortSignal: signal })
-      );
+    once: async (signal) => {
+      const result = await genModel.generateContent({ contents, abortSignal: signal });
       const { text, finishReason } = extractGeminiReply(result);
 
       return {
@@ -585,6 +535,20 @@ async function prepareGeminiCall(
         usage: extractLlmUsage(result),
       };
     },
+    stream: (sink) => async (signal, touch) => {
+      let usage: LlmUsage | null = null;
+      const chunks = await genModel.generateContentStream({ contents, abortSignal: signal });
+      for await (const chunk of chunks) {
+        touch();
+        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
+        const { text: delta } = extractGeminiText(chunk);
+        if (delta) {
+          sink.onDelta(delta);
+        }
+      }
+
+      return { text: sink.raw(), usage };
+    },
   };
 }
 
@@ -592,17 +556,14 @@ async function prepareOpenAiCall(
   config: CoachAIConfig,
   request: CompletionRequest
 ): Promise<PreparedCall> {
-  const { operation, sink, schema } = request;
+  const { schema } = request;
   const client = buildOpenAIClient(config);
   const images = request.images ?? [];
   const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: request.system },
-      ...normalizeHistory(request.turns).map((entry) => ({
-        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-        content: entry.content,
-      })),
+      ...normalizeHistory(request.turns).map(toRoleMessage),
       {
         role: 'user',
         content:
@@ -631,40 +592,8 @@ async function prepareOpenAiCall(
 
   return {
     payload,
-    send: async () => {
-      if (sink) {
-        let usage: LlmUsage | null = null;
-        const text = await withLlmRetry(
-          operation,
-          config,
-          async (_signal, touch, options) => {
-            sink.reset();
-            usage = null;
-            const chunks = await client.chat.completions.create(
-              { ...payload, stream: true },
-              options
-            );
-            for await (const chunk of chunks) {
-              touch();
-              // Only present when the provider sends it (OpenRouter does, on the last chunk).
-              usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
-              const delta = chunk.choices[0]?.delta?.content;
-              if (delta) {
-                sink.onDelta(delta);
-              }
-            }
-
-            return sink.raw();
-          },
-          { hasStreamed: sink.hasEmitted }
-        );
-
-        return { text, usage };
-      }
-
-      const completion = await withLlmRetry(operation, config, (_signal, _touch, options) =>
-        client.chat.completions.create(payload, options)
-      );
+    once: async (_signal, _touch, options) => {
+      const completion = await client.chat.completions.create(payload, options);
       const choice = completion.choices[0];
 
       return {
@@ -673,6 +602,21 @@ async function prepareOpenAiCall(
         usage: extractLlmUsage(completion),
       };
     },
+    stream: (sink) => async (_signal, touch, options) => {
+      let usage: LlmUsage | null = null;
+      const chunks = await client.chat.completions.create({ ...payload, stream: true }, options);
+      for await (const chunk of chunks) {
+        touch();
+        // Only present when the provider sends it (OpenRouter does, on the last chunk).
+        usage = mergeLlmUsage(usage, extractLlmUsage(chunk));
+        const delta = chunk.choices[0]?.delta?.content;
+        if (delta) {
+          sink.onDelta(delta);
+        }
+      }
+
+      return { text: sink.raw(), usage };
+    },
   };
 }
 
@@ -680,7 +624,6 @@ async function prepareClaudeCall(
   config: CoachAIConfig,
   request: CompletionRequest
 ): Promise<PreparedCall> {
-  const { operation, sink } = request;
   const client = buildClaudeClient(config.apiKey, 0);
   const images = request.images ?? [];
   const params = await buildClaudeParams(
@@ -707,40 +650,8 @@ async function prepareClaudeCall(
 
   return {
     payload: params,
-    send: async () => {
-      if (sink) {
-        let usage: LlmUsage | null = null;
-        // A stream has no HTTP timeout to stay under, so it may ask for more tokens.
-        const text = await withLlmRetry(
-          operation,
-          config,
-          async (signal, touch) => {
-            sink.reset();
-            const events = client.messages.stream(
-              { ...params, max_tokens: CLAUDE_STREAM_MAX_TOKENS },
-              { signal }
-            );
-            for await (const event of events) {
-              touch();
-              const delta = claudeStreamDelta(event);
-              if (delta) {
-                sink.onDelta(delta);
-              }
-            }
-
-            usage = await finalClaudeUsage(events);
-
-            return sink.raw();
-          },
-          { hasStreamed: sink.hasEmitted }
-        );
-
-        return { text, usage };
-      }
-
-      const message = await withLlmRetry(operation, config, (signal) =>
-        client.messages.create(params, { signal })
-      );
+    once: async (signal) => {
+      const message = await client.messages.create(params, { signal });
       const { text, stopReason } = extractClaudeText(message);
 
       return {
@@ -749,38 +660,171 @@ async function prepareClaudeCall(
         usage: extractLlmUsage(message),
       };
     },
+    // A stream has no HTTP timeout to stay under, so it may ask for more tokens.
+    stream: (sink) => async (signal, touch) => {
+      const events = client.messages.stream(
+        { ...params, max_tokens: CLAUDE_STREAM_MAX_TOKENS },
+        { signal }
+      );
+      for await (const event of events) {
+        touch();
+        const delta = claudeStreamDelta(event);
+        if (delta) {
+          sink.onDelta(delta);
+        }
+      }
+
+      return { text: sink.raw(), usage: await finalClaudeUsage(events) };
+    },
   };
 }
 
-/** One Gemini, Claude or OpenAI-compatible request, retried and timed out by `withLlmRetry`. */
-async function complete(config: CoachAIConfig, request: CompletionRequest): Promise<Completion> {
-  let prepare = prepareOpenAiCall;
-  if (config.provider === 'gemini') {
-    prepare = prepareGeminiCall;
-  } else if (config.provider === 'claude') {
-    prepare = prepareClaudeCall;
+/**
+ * The downloaded model or Apple's system model, picked by the engine. Both take the conversation in
+ * roles; only the downloaded model reads a photo (the first: a meal of several is read one request
+ * at a time) and a temperature, and its schema becomes a grammar whose text the caller still checks.
+ * Apple's guided generation answers with the value itself.
+ */
+function prepareOnDeviceCall(config: OnDeviceConfig, request: CompletionRequest): PreparedCall {
+  const { system, schema, temperature } = request;
+  const messages: RoleMessage[] = [
+    ...request.turns.map(toRoleMessage),
+    { role: 'user', content: request.userMessage },
+  ];
+  const payload = {
+    systemPrompt: system,
+    messages,
+    ...(schema ? { schema: schema.body } : {}),
+  };
+
+  if (config.engine === 'gguf') {
+    const photo = request.images?.[0];
+
+    return {
+      payload,
+      once: async (signal, touch) => {
+        let usage: LlmUsage | null = null;
+        const onUsage = (next: LlmUsage) => {
+          usage = next;
+        };
+
+        // Grammar-constrained by the engine, then parsed and checked by the caller: the engine is
+        // not trusted to have honoured the schema.
+        const text = schema
+          ? await sendLocalStructuredRaw(messages, system, schema.body, {
+              signal,
+              // Every token resets the timeout, so it limits a stall, not model load plus generation.
+              onDelta: () => touch(),
+              onUsage,
+              ...(photo ? { image: `data:${photo.mimeType};base64,${photo.base64}` } : {}),
+              ...(temperature === undefined ? {} : { temperature }),
+            })
+          : await sendLocalMessage(messages, system, signal, onUsage);
+
+        return { text, usage };
+      },
+      stream: (sink) => async (signal, touch) => {
+        let usage: LlmUsage | null = null;
+        const streamed = await streamLocalMessage(
+          messages,
+          system,
+          (delta) => {
+            touch();
+            sink.onDelta(delta);
+          },
+          signal,
+          (next) => {
+            usage = next;
+          }
+        );
+
+        // The runtime's text is llama.cpp's parsed message, already cleaned; the raw stream is the
+        // fallback when it parsed to nothing.
+        return { text: streamed || sink.raw(), usage };
+      },
+    };
   }
 
-  const call = await prepare(config, request);
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'request',
-    operation: request.operation,
-    payload: call.payload,
-    config,
-  });
+  return {
+    payload,
+    unmanaged: true,
+    once: async () => {
+      if (schema) {
+        const value = await sendOnDeviceStructured<unknown>(messages, system, schema.body);
 
-  const { usage, ...completion } = await call.send();
-  noteUsage(config, request.operation, usage);
-  await logLlmDebugEvent({
-    provider: config.provider,
-    direction: 'response',
-    operation: request.operation,
-    payload: completion,
-    config,
-  });
+        return { text: '', value: value ?? undefined, usage: null };
+      }
+
+      const text = await sendOnDeviceMessage(messages, system);
+
+      return { text: text ?? '', usage: null };
+    },
+    stream: (sink) => async () => {
+      const text = await streamOnDeviceMessage(messages, system, sink.onDelta, config.signal);
+
+      return { text: text ?? '', usage: null };
+    },
+  };
+}
+
+/**
+ * Sends a prepared request: retried and timed out by `withLlmRetry` (a stream is retried only until
+ * its first text shows), written to the debug dump on both sides, and its cost recorded.
+ */
+async function runPrepared<C extends Completion>(
+  config: CoachAIConfig,
+  call: PreparedCall<C>,
+  { operation, sink, redactDump }: Pick<CompletionRequest, 'operation' | 'sink' | 'redactDump'>
+) {
+  const dump = (direction: 'request' | 'response', payload: unknown) =>
+    logLlmDebugEvent({
+      provider: config.provider,
+      direction,
+      operation,
+      payload,
+      config,
+      redact: redactDump,
+    });
+  await dump('request', call.payload);
+
+  const attempt: LlmRequest<Sent<C>> = sink
+    ? (signal, touch, options) => {
+        sink.reset();
+
+        return call.stream(sink)(signal, touch, options);
+      }
+    : call.once;
+  // An unmanaged call reads the person's cancel itself and has no timeout to keep alive.
+  const signal = config.signal ?? new AbortController().signal;
+  const { usage, ...completion } = call.unmanaged
+    ? await attempt(signal, () => {}, { signal })
+    : await withLlmRetry(
+        operation,
+        config,
+        attempt,
+        sink ? { hasStreamed: sink.hasEmitted } : undefined
+      );
+
+  noteUsage(config, operation, usage);
+  await dump('response', completion);
 
   return completion;
+}
+
+/** One request to whatever answers for this config, on the phone or off it. */
+async function complete(config: CoachAIConfig, request: CompletionRequest): Promise<Completion> {
+  let call: PreparedCall;
+  if (isOnDeviceConfig(config)) {
+    call = prepareOnDeviceCall(config, request);
+  } else if (config.provider === 'gemini') {
+    call = await prepareGeminiCall(config, request);
+  } else if (config.provider === 'claude') {
+    call = await prepareClaudeCall(config, request);
+  } else {
+    call = await prepareOpenAiCall(config, request);
+  }
+
+  return runPrepared(config, call, request);
 }
 
 /**
@@ -1173,73 +1217,8 @@ async function sendViaCloud(
   return parseCoachResponse(reply.text);
 }
 
-/** The context budget of the engine behind an `on-device` config. */
-function onDeviceBudget(config: OnDeviceConfig): number {
-  return ON_DEVICE_CONTEXT_CHARS[config.engine];
-}
-
-/**
- * One plain-text generation on the on-device engine. The downloaded model goes through
- * `withLlmRetry` (idle timeout, cancel, never retried once text is on screen); Apple's system
- * model keeps its own path.
- */
-async function runOnDeviceText(
-  config: OnDeviceConfig,
-  operation: string,
-  messages: { role: 'user' | 'assistant'; content: string }[],
-  systemPrompt: string | undefined,
-  sink: StreamSink | null
-): Promise<string> {
-  if (config.engine === 'gguf') {
-    return withLlmRetry(
-      operation,
-      config,
-      async (signal, touch) => {
-        sink?.reset();
-        if (!sink) {
-          return sendLocalMessage(messages, systemPrompt, signal);
-        }
-
-        const streamed = await streamLocalMessage(
-          messages,
-          systemPrompt,
-          (delta) => {
-            touch();
-            sink.onDelta(delta);
-          },
-          signal
-        );
-
-        // The runtime's text is llama.cpp's parsed message, already cleaned; the raw stream is the
-        // fallback when it parsed to nothing.
-        return streamed || sink.raw();
-      },
-      { hasStreamed: () => sink?.hasEmitted() ?? false }
-    );
-  }
-
-  const text = sink
-    ? await streamOnDeviceMessage(messages, systemPrompt, sink.onDelta, config.signal)
-    : await sendOnDeviceMessage(messages, systemPrompt);
-
-  return text ?? '';
-}
-
 /** Words of a reply read before any of it is shown, to tell a copy of an earlier coach turn. */
 const COPY_GATE_WORDS = 12;
-
-type OnDeviceChatMessage = { role: 'user' | 'assistant'; content: string };
-
-function toOnDeviceChatMessage(entry: ChatHistoryEntry): OnDeviceChatMessage {
-  return { role: entry.role === 'coach' ? 'assistant' : 'user', content: entry.content };
-}
-
-function onDeviceChatMessages(
-  entries: readonly ChatHistoryEntry[],
-  userMessage: string
-): OnDeviceChatMessage[] {
-  return [...entries.map(toOnDeviceChatMessage), { role: 'user', content: userMessage }];
-}
 
 /**
  * One chat reply from the downloaded model that is not a copy of one of its own earlier replies
@@ -1259,10 +1238,27 @@ async function runOnDeviceChatReply(
   userMessage: string,
   sink: StreamSink | null
 ): Promise<string> {
-  const messages = onDeviceChatMessages(history, userMessage);
+  const ask = async (
+    asking: OnDeviceConfig,
+    operation: string,
+    turns: readonly ChatHistoryEntry[],
+    message: string,
+    to: StreamSink | null
+  ): Promise<string> =>
+    (
+      await complete(asking, {
+        operation,
+        system: systemPrompt,
+        turns,
+        userMessage: message,
+        task: 'chat',
+        sink: to,
+      })
+    ).text;
+
   const earlierReplies = history.filter((e) => e.role === 'coach').map((e) => e.content);
   if (!providerPolicyFor(config).regeneratesCopiedChatReply || earlierReplies.length === 0) {
-    return runOnDeviceText(config, 'sendViaOnDevice', messages, systemPrompt, sink);
+    return ask(config, 'sendCoachMessage', history, userMessage, sink);
   }
 
   // Two reasons to stop a generation: the person's cancel, and the gate finding a copy.
@@ -1298,11 +1294,11 @@ async function runOnDeviceChatReply(
 
   let first: string | null = null;
   try {
-    first = await runOnDeviceText(
+    first = await ask(
       { ...config, signal: stop.signal },
-      'sendViaOnDevice',
-      messages,
-      systemPrompt,
+      'sendCoachMessage',
+      history,
+      userMessage,
       gatedSink
     );
     if (gatedSink) {
@@ -1328,21 +1324,14 @@ async function runOnDeviceChatReply(
     operation: 'sendCoachMessage',
   });
 
-  // The person's own messages only, run together the way `normalizeHistory` does, so the model has
-  // no coach turn left to copy. The retry goes through the same cancel and retry rules.
-  const ownMessages = normalizeHistory([
+  // The person's own messages only, run together into one the way `normalizeHistory` does, so the
+  // model has no coach turn left to copy. The retry goes through the same cancel and retry rules.
+  const [own] = normalizeHistory([
     ...history.filter((e) => e.role !== 'coach'),
     { role: 'user', content: userMessage },
-  ]).map(toOnDeviceChatMessage);
-  await logLlmDebugEvent({
-    provider: 'on-device',
-    direction: 'request',
-    operation: 'sendCoachMessage:withoutCopiedReply',
-    payload: { systemPrompt, messages: ownMessages },
-    config,
-  });
+  ]);
 
-  return runOnDeviceText(config, 'sendViaOnDevice', ownMessages, systemPrompt, sink);
+  return ask(config, 'sendCoachMessage:withoutCopiedReply', [], own.content, sink);
 }
 
 async function sendViaOnDevice(
@@ -1352,30 +1341,16 @@ async function sendViaOnDevice(
   userMessage: string,
   stream?: CoachStream
 ): Promise<CoachResponse> {
-  const sink = stream ? createStreamSink(stream, 'plain') : null;
-  const normalized = normalizeHistory(turns);
-  const messages = onDeviceChatMessages(normalized, userMessage);
-
-  await logLlmDebugEvent({
-    provider: 'on-device',
-    direction: 'request',
-    operation: 'sendCoachMessage',
-    payload: { systemPrompt, messages },
-    config,
-  });
-
   // Chat-template tokens a model leaks (`<|im_start|>assistant …`) never reach the person.
   const raw = stripTemplateTokens(
-    await runOnDeviceChatReply(config, systemPrompt, normalized, userMessage, sink)
+    await runOnDeviceChatReply(
+      config,
+      systemPrompt,
+      normalizeHistory(turns),
+      userMessage,
+      stream ? createStreamSink(stream, 'plain') : null
+    )
   );
-
-  await logLlmDebugEvent({
-    provider: 'on-device',
-    direction: 'response',
-    operation: 'sendCoachMessage',
-    payload: { text: raw },
-    config,
-  });
 
   // An empty reply stays empty: the reply service takes the person's message back and offers a
   // retry. Saving the apology as the coach's answer put it into the history, and a small model
@@ -1386,52 +1361,6 @@ async function sendViaOnDevice(
 // --- Helpers for insight/parsing/vision ---
 
 const INSIGHTS_USER_MESSAGE = 'Based on the data above, provide your analysis and insights.';
-
-/**
- * The plain-text path for Apple's on-device model. It used to fall through to the OpenAI client
- * (no base URL, key "unused"), which sent the prompt — workout and nutrition data — to OpenAI,
- * was rejected, and left every insight feature broken on-device.
- */
-async function generateTextOnDevice(
-  config: OnDeviceConfig,
-  systemPrompt: string,
-  history: ChatHistoryEntry[],
-  userMessage: string,
-  stream?: CoachStream
-): Promise<string> {
-  const truncatedHistory = truncateHistoryByBudget(
-    history,
-    onDeviceBudget(config) - userMessage.length
-  );
-  const messages = [
-    ...normalizeHistory(truncatedHistory).map((entry) => ({
-      role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-      content: entry.content,
-    })),
-    { role: 'user' as const, content: userMessage },
-  ];
-
-  await logLlmDebugEvent({
-    provider: 'on-device',
-    direction: 'request',
-    operation: 'generateText',
-    payload: { systemPrompt, messages },
-    config,
-  });
-
-  const sink = stream ? createStreamSink(stream, 'plain') : null;
-  const raw = await runOnDeviceText(config, 'generateText', messages, systemPrompt, sink);
-
-  await logLlmDebugEvent({
-    provider: 'on-device',
-    direction: 'response',
-    operation: 'generateText',
-    payload: { text: raw },
-    config,
-  });
-
-  return raw;
-}
 
 /**
  * Text a review round, an arbiter or a first look adds to a request that was already sent. It is
@@ -1488,21 +1417,21 @@ async function requestPlainText(
   stream: CoachStream | undefined,
   task: AiTask
 ): Promise<string> {
-  if (isOnDeviceConfig(config)) {
-    return generateTextOnDevice(
-      config,
-      systemPrompt,
-      recentConversation,
-      sanitizedFinalUserMessage,
-      stream
-    );
-  }
+  // The on-device engines have a small window and take alternating roles.
+  const turns = isOnDeviceConfig(config)
+    ? normalizeHistory(
+        truncateHistoryByBudget(
+          recentConversation,
+          contextCharsFor(config) - sanitizedFinalUserMessage.length
+        )
+      )
+    : recentConversation;
 
   return (
     await complete(config, {
       operation,
       system: systemPrompt,
-      turns: recentConversation,
+      turns,
       userMessage: sanitizedFinalUserMessage,
       task,
       sink: stream ? createStreamSink(stream, 'plain') : null,
@@ -1533,8 +1462,6 @@ export function schemaOfFunction(fns: readonly { parameters?: unknown }[]): obje
   };
 }
 
-export type StructuredDialect = 'openai' | 'gemini' | 'claude' | 'on-device' | 'gguf';
-
 export type StructuredRequest = {
   /** Names the call in debug dumps and retry logs. */
   operation: string;
@@ -1556,6 +1483,8 @@ export type StructuredRequest = {
   task?: AiTask;
   /** Sampling temperature, for the downloaded model only (a warmer retry of an unusable reply). */
   temperature?: number;
+  /** Keeps what the request and reply say out of the debug dump. */
+  redactDump?: boolean;
 };
 
 /**
@@ -1568,7 +1497,8 @@ export async function repairStructuredWithModel<T>(
   config: CoachAIConfig,
   operation: string,
   broken: string,
-  schema: object
+  schema: object,
+  options: Pick<StructuredRequest, 'redactDump'> = {}
 ): Promise<StructuredResult<T> | null> {
   // A reply longer than a repair request can carry would be cut short, and the model would answer
   // with the part it saw: a repaired list that silently lost its tail. Better no repair at all.
@@ -1587,6 +1517,7 @@ export async function repairStructuredWithModel<T>(
         history: [],
         userMessage: jsonRepairMessage(broken),
         buildSchema: () => schema,
+        ...options,
       },
       schema
     );
@@ -1614,7 +1545,7 @@ export async function repairStructuredWithModel<T>(
  */
 async function reviveLocalStructured<T>(
   config: CoachAIConfig,
-  operation: string,
+  { operation, redactDump }: Pick<StructuredRequest, 'operation' | 'redactDump'>,
   result: StructuredResult<T>,
   schema: object
 ): Promise<StructuredResult<T>> {
@@ -1628,7 +1559,9 @@ async function reviveLocalStructured<T>(
     return checked;
   }
 
-  const repaired = await repairStructuredWithModel<T>(config, operation, checked.raw, schema);
+  const repaired = await repairStructuredWithModel<T>(config, operation, checked.raw, schema, {
+    redactDump,
+  });
   const telemetry = { provider: config.provider, operation: operationFamily(operation) };
   if (repaired?.kind === 'ok') {
     reportAiEvent('ai-structured-reply-repaired', telemetry);
@@ -1684,7 +1617,7 @@ export async function requestStructured<T = unknown>(
   const schema = request.buildSchema(structuredDialect(config));
   const result = await requestStructuredOnce<T>(config, request, schema);
 
-  return reviveLocalStructured(config, request.operation, result, schema);
+  return reviveLocalStructured(config, request, result, schema);
 }
 
 /**
@@ -1723,9 +1656,12 @@ function reportTruncatedReply(
 function readStructuredReply<T>(
   config: CoachAIConfig,
   operation: string,
-  raw: string,
-  stop?: StopSignal
+  { text, stop, value }: Completion
 ): StructuredResult<T> {
+  if (value !== undefined) {
+    return { kind: 'ok', value: value as T };
+  }
+
   if (stop && isTruncatedStop(stop) && providerPolicyFor(config).structuredReplies === 'enforced') {
     reportTruncatedReply(config, operation, stop);
     console.warn(`[coachAI] ${operation}: ${config.provider} cut the reply off (${stop.reason})`);
@@ -1738,7 +1674,7 @@ function readStructuredReply<T>(
     };
   }
 
-  return parseStructuredJson<T>(raw);
+  return parseStructuredJson<T>(text);
 }
 
 /** One structured request, with the schema already built in `structuredDialect(config)`. */
@@ -1748,74 +1684,88 @@ export async function requestStructuredOnce<T = unknown>(
   schema: object
 ): Promise<StructuredResult<T>> {
   const { operation, schemaName, systemPrompt, history, userMessage } = request;
-  const images = request.images ?? [];
-  const task = request.task ?? 'extraction';
-
-  if (config.provider === 'on-device') {
-    const engine = config.engine;
-    const messages = [
-      ...history.map((entry) => ({
-        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-        content: entry.content,
-      })),
-      { role: 'user' as const, content: userMessage },
-    ];
-    await logLlmDebugEvent({
-      provider: 'on-device',
-      direction: 'request',
-      operation,
-      payload: { systemPrompt, messages, schema },
-      config,
-    });
-
-    let result: StructuredResult<T>;
-    if (engine === 'gguf') {
-      // Grammar-constrained by the engine, then parsed and checked here: the engine is not trusted
-      // to have honoured the schema.
-      const photo = images[0];
-      const raw = await withLlmRetry(operation, config, (signal, touch) =>
-        sendLocalStructuredRaw(messages, systemPrompt, schema, {
-          signal,
-          // Every token resets the timeout, so it limits a stall, not model load plus generation.
-          onDelta: () => touch(),
-          ...(photo ? { image: `data:${photo.mimeType};base64,${photo.base64}` } : {}),
-          ...(request.temperature === undefined ? {} : { temperature: request.temperature }),
-        })
-      );
-      result = parseStructuredJson<T>(raw);
-    } else {
-      const value = await sendOnDeviceStructured<T>(messages, systemPrompt, schema);
-      result =
-        value === null || value === undefined
-          ? { kind: 'malformed', raw: '' }
-          : { kind: 'ok', value };
-    }
-
-    await logLlmDebugEvent({
-      provider: 'on-device',
-      direction: 'response',
-      operation,
-      payload: result,
-      config,
-    });
-
-    // Apple's guided generation is enforced by the OS; the downloaded model's answer is checked
-    // and repaired by `reviveLocalStructured`, the one place that does it.
-    return result;
-  }
-
   const reply = await complete(config, {
     operation,
     system: systemPrompt,
     turns: history,
     userMessage,
-    images,
-    task,
+    images: request.images,
+    task: request.task ?? 'extraction',
     schema: { name: schemaName, body: schema },
+    temperature: request.temperature,
+    redactDump: request.redactDump,
   });
 
-  return readStructuredReply<T>(config, operation, reply.text, reply.stop);
+  // Apple's guided generation is enforced by the OS; the downloaded model's answer is checked and
+  // repaired by `reviveLocalStructured`, the one place that does it.
+  return readStructuredReply<T>(config, operation, reply);
 }
+
+export type NativeToolCallRequest = {
+  operation: string;
+  /** The whole conversation the model sees, example turns included; no system prompt is added. */
+  messages: LocalChatMessage[];
+  tools: LocalToolDefinition[];
+  /** Keeps what the request and reply say out of the debug dump. */
+  redactDump?: boolean;
+};
+
+export type NativeToolCallReply = { text: string; toolCalls: LocalToolCall[] };
+
+/**
+ * One request in the model's own tool-call format, for a provider whose policy sets
+ * `nativeToolCalls` (the downloaded model): the engine renders the tools through the chat template
+ * and parses the calls, and a reply with no call is plain text. Logged and retried like every other
+ * request; the caller reads the reply.
+ */
+export async function requestNativeToolCall(
+  config: CoachAIConfig,
+  request: NativeToolCallRequest
+): Promise<NativeToolCallReply> {
+  if (!isOnDeviceConfig(config) || config.engine !== 'gguf') {
+    // Only the downloaded model has a tool-call format of its own; the policy decides who calls this.
+    throw new Error(`[coachAI] ${request.operation}: ${config.provider} has no native tool calls`);
+  }
+
+  const { operation, messages, tools, redactDump } = request;
+  const once: LlmRequest<Sent<NativeToolCallReply>> = async (signal, touch) => {
+    let usage: LlmUsage | null = null;
+    const reply = await sendLocalToolCall(messages, tools, {
+      signal,
+      onDelta: () => touch(),
+      onUsage: (next) => {
+        usage = next;
+      },
+    });
+
+    return { ...reply, usage };
+  };
+
+  const { text, toolCalls } = await runPrepared(
+    config,
+    {
+      payload: { messages, tools },
+      once,
+      // A tool call is read whole: nothing is shown while it is written.
+      stream: () => once,
+    },
+    { operation, redactDump }
+  );
+
+  return { text, toolCalls };
+}
+
+/** One structured job that is not a conversation turn: what is asked and what must come back. */
+export type StructuredJob = {
+  systemPrompt: string;
+  schema: object;
+  /** Names the schema for the provider and the reports. */
+  schemaName?: string;
+  /** Decides how hard the model reasons. Extraction unless said otherwise. */
+  task?: AiTask;
+  /** A review round, an arbiter or a first look added to the original request. */
+  followUp?: FollowUp;
+};
 
 /**
  * One structured request that is not a conversation turn. `userMessage` is sent as given: text the
@@ -1825,12 +1775,14 @@ export async function requestStructuredOnce<T = unknown>(
  */
 export async function generateStructured<T>(
   config: CoachAIConfig,
-  systemPrompt: string,
-  userMessage: string,
-  schema: object,
-  schemaName: string = 'response',
-  task: AiTask = 'extraction',
-  options?: { followUp?: FollowUp }
+  {
+    systemPrompt,
+    userMessage,
+    schema,
+    schemaName = 'response',
+    task = 'extraction',
+    followUp,
+  }: StructuredJob & { userMessage: string }
 ): Promise<T | null> {
   const lang = config.language ?? DEFAULT_LANG;
 
@@ -1846,7 +1798,7 @@ export async function generateStructured<T>(
     };
     const result = await requestStructured<T>(
       config,
-      options?.followUp ? followUpOf(original, options.followUp) : original
+      followUp ? followUpOf(original, followUp) : original
     );
 
     return result.kind === 'ok' ? result.value : null;
@@ -1915,47 +1867,31 @@ export async function prepareMealImages(
   return prepared;
 }
 
-/** One photo through the funnel below (a nutrition label, one photo of a meal). */
-async function generateWithImageStructured<T>(
-  config: CoachAIConfig,
-  systemPrompt: string,
-  rawBase64Image: string,
-  rawMimeType: string,
-  schema: object,
-  schemaName: string = 'response',
-  userMessageSuffix?: string,
-  task: AiTask = 'extraction',
-  options?: { followUp?: FollowUp }
-): Promise<T | null> {
-  return generateWithImagesStructured<T>(
-    config,
-    systemPrompt,
-    [{ base64: rawBase64Image, mimeType: rawMimeType }],
-    schema,
-    schemaName,
-    userMessageSuffix,
-    task,
-    options
-  );
-}
-
 /**
  * The single funnel for every provider's photo request, for one photo or several of the same meal.
  * Every provider gets the photos at the detail the person chose in AI settings. Musclog Iron has
  * its own step: it also holds the photos to the Worker's limits, and refuses them while the Worker
- * has photos off. `options.prepared` says the photos were already prepared by `prepareMealImages`.
+ * has photos off. `prepared` says the photos were already prepared by `prepareMealImages`.
  */
 export async function generateWithImagesStructured<T>(
   config: CoachAIConfig,
-  systemPrompt: string,
-  rawImages: readonly MealImage[],
-  schema: object,
-  schemaName: string = 'response',
-  userMessageSuffix?: string,
-  task: AiTask = 'extraction',
-  options?: { prepared?: boolean; followUp?: FollowUp }
+  {
+    systemPrompt,
+    images: rawImages,
+    schema,
+    schemaName = 'response',
+    userMessageSuffix,
+    task = 'extraction',
+    prepared,
+    followUp,
+  }: StructuredJob & {
+    images: readonly MealImage[];
+    /** The person's own notes about the photos. */
+    userMessageSuffix?: string;
+    prepared?: boolean;
+  }
 ): Promise<T | null> {
-  const images = options?.prepared ? [...rawImages] : await prepareMealImages(config, rawImages);
+  const images = prepared ? [...rawImages] : await prepareMealImages(config, rawImages);
 
   // Wrap user message suffix with delimiters to prevent prompt injection
   const sanitizedSuffix = userMessageSuffix?.trim()
@@ -1979,7 +1915,7 @@ export async function generateWithImagesStructured<T>(
   };
   const result = await requestStructured<T>(
     config,
-    options?.followUp ? followUpOf(original, options.followUp) : original
+    followUp ? followUpOf(original, followUp) : original
   );
 
   return result.kind === 'ok' ? result.value : null;
@@ -1995,14 +1931,85 @@ export async function foundationFoodsFor(
   config: CoachAIConfig,
   style: 'estimate' | 'recipe'
 ): Promise<FoundationFoodsPrompt | null> {
-  const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
-  if (!providerConfig.enableFoundationFoods) {
+  if (providerPolicyFor(config).omitsFoundationFoods) {
     return null;
   }
 
   return (await SettingsService.getSendFoundationFoodsToLlm())
     ? getFoundationFoodsPrompt(style)
     : null;
+}
+
+/**
+ * How a chat request is put together and sent for one config: decided once, so the flow around it
+ * (the draft, the review, a failure) never asks which provider it is talking to.
+ */
+type ChatTransport = {
+  /** The history and the person's message as this provider is sent them. */
+  history: ChatHistoryEntry[];
+  message: string;
+  /** A reply given without asking the model, or null. */
+  cannedReply: string | null;
+  systemPrompt: () => Promise<string>;
+  /** Characters the earlier turns may take, given what the message and a review exchange take. */
+  historyBudget: (reservedChars: number) => number;
+  send: (
+    systemPrompt: string,
+    turns: ChatHistoryEntry[],
+    message: string,
+    stream?: CoachStream
+  ) => Promise<CoachResponse>;
+};
+
+/**
+ * The on-device engines keep their tight budget and their own date line, so no time tags are added,
+ * and a message about pain or an injury is handled by their safeguard (`utils/painMention.ts`).
+ */
+function onDeviceChatTransport(
+  config: OnDeviceConfig,
+  history: ChatHistoryEntry[],
+  message: string,
+  context?: 'nutrition' | 'exercise' | 'general'
+): ChatTransport {
+  const painMentioned = mentionsPainOrInjury(message);
+
+  return {
+    history,
+    message,
+    cannedReply:
+      painMentioned && providerPolicyFor(config).answersPainWithFixedReply
+        ? i18n.t('coach.onDevicePainReply', { lng: config.language })
+        : null,
+    systemPrompt: () =>
+      getChatMessagePromptContent(config.language, undefined, context, 'on-device', {
+        painMentioned,
+      }),
+    historyBudget: (reservedChars) => contextCharsFor(config) - reservedChars,
+    send: (...request) => sendViaOnDevice(config, ...request),
+  };
+}
+
+/**
+ * Gemini, Claude and every OpenAI-compatible provider (OpenAI, a custom local server, the free tier
+ * through OpenRouter, and Musclog Iron). Every user turn carries the time it was sent, the newest
+ * also how long the pause was.
+ */
+function cloudChatTransport(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  message: string,
+  context?: 'nutrition' | 'exercise' | 'general'
+): ChatTransport {
+  const tagged = tagTurnsWithTime(history, message, Date.now());
+
+  return {
+    history: tagged.history,
+    message: tagged.userMessage,
+    cannedReply: null,
+    systemPrompt: () => chatSystemPrompt(config, tagged.history, context),
+    historyBudget: () => contextCharsFor(config),
+    send: (...request) => sendViaCloud(config, ...request),
+  };
 }
 
 export async function sendCoachMessage(
@@ -2015,17 +2022,9 @@ export async function sendCoachMessage(
   // The person's own message goes through as typed (see `prepareChatText`); it used to be escaped
   // as if it were text spliced into a template, so the model read "I\'m" and "\n".
   const text = prepareChatText(userMessage);
-
-  // On-device keeps its tight budget and its own date line, so nothing is added there.
-  let sendHistory = history;
-  let sendText = text;
-
-  if (!isOnDeviceConfig(config)) {
-    // Every user turn carries the time it was sent, the newest also how long the pause was.
-    const tagged = tagTurnsWithTime(history, text, Date.now());
-    sendHistory = tagged.history;
-    sendText = tagged.userMessage;
-  }
+  const transport = isOnDeviceConfig(config)
+    ? onDeviceChatTransport(config, history, text, context)
+    : cloudChatTransport(config, history, text, context);
 
   // Whether any text reached the person: a reply that fails after that is taken back by the caller,
   // never replaced by an apology.
@@ -2042,52 +2041,50 @@ export async function sendCoachMessage(
   };
 
   try {
+    const { cannedReply } = transport;
+    if (cannedReply !== null) {
+      await logLlmDebugEvent({
+        provider: config.provider,
+        direction: 'response',
+        operation: 'sendCoachMessage:painFixedReply',
+        payload: { text: cannedReply },
+        config,
+      });
+
+      return { msg4User: cannedReply, sumMsg: cannedReply.slice(0, 120) };
+    }
+
     // Built once, from the full history (the excludes), and reused by the draft and the review.
-    const systemPrompt = isOnDeviceConfig(config)
-      ? await getChatMessagePromptContent(config.language, undefined, context, 'on-device')
-      : await chatSystemPrompt(config, sendHistory, context);
+    const systemPrompt = await transport.systemPrompt();
 
     // Per dispatched message: the review instruction is longer than the person's message, and a
     // review round also carries the exchange under review (`exchange`), which always stays whole.
-    const turnsFor = (message: string, exchange: ChatHistoryEntry[]): ChatHistoryEntry[] => {
-      const reserved =
-        message.length + exchange.reduce((sum, turn) => sum + turn.content.length, 0);
-
-      return [
-        ...truncateHistoryByBudget(
-          latestChatTurns(sendHistory, config),
-          isOnDeviceConfig(config)
-            ? onDeviceBudget(config) - reserved
-            : (PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai).maxCharBudget
-        ),
-        ...exchange,
-      ];
-    };
-
     const dispatch = (
       message: string,
       to?: CoachStream,
       exchange: ChatHistoryEntry[] = []
     ): Promise<CoachResponse> => {
-      const turns = turnsFor(message, exchange);
+      const reserved =
+        message.length + exchange.reduce((sum, turn) => sum + turn.content.length, 0);
+      const turns = [
+        ...truncateHistoryByBudget(
+          latestChatTurns(transport.history, config),
+          transport.historyBudget(reserved)
+        ),
+        ...exchange,
+      ];
 
-      if (isOnDeviceConfig(config)) {
-        return sendViaOnDevice(config, systemPrompt, turns, message, to);
-      }
-
-      // Gemini, Claude and every OpenAI-compatible provider (OpenAI, a custom local server, the free
-      // tier through OpenRouter, and Musclog Iron).
-      return sendViaCloud(config, systemPrompt, turns, message, to);
+      return transport.send(systemPrompt, turns, message, to);
     };
 
     const level = await thinkingLevelFor(config);
 
     // The on-device engines answer in one request at every level (`ProviderPolicy.skipsChatReview`).
     if (!THINKING_PIPELINE[level].chatReview || providerPolicyFor(config).skipsChatReview) {
-      return await dispatch(sendText, target);
+      return await dispatch(transport.message, target);
     }
 
-    return await draftAndReviewCoachReply(config, sendText, dispatch, target);
+    return await draftAndReviewCoachReply(config, transport.message, dispatch, target);
   } catch (error) {
     return failedCoachReply(error, config, shown);
   }
@@ -2412,15 +2409,14 @@ export async function generateMealPlan(
     const plan = await generatePlan<GenerateMealPlanResponse>(
       config,
       (followUp) =>
-        generateStructured<GenerateMealPlanResponse>(
-          config,
+        generateStructured<GenerateMealPlanResponse>(config, {
           systemPrompt,
           userMessage,
           schema,
-          'generateMealPlan',
-          'planning',
-          { followUp }
-        ),
+          schemaName: 'generateMealPlan',
+          task: 'planning',
+          followUp,
+        }),
       (plan) => mealPlanFindings(plan, macroTargets)
     );
 
@@ -2453,15 +2449,14 @@ export async function generateWorkoutPlan(
     return generatePlan<GenerateWorkoutPlanResponse>(
       config,
       (followUp) =>
-        generateStructured<GenerateWorkoutPlanResponse>(
-          config,
+        generateStructured<GenerateWorkoutPlanResponse>(config, {
           systemPrompt,
           userMessage,
           schema,
-          'generateWorkoutPlan',
-          'planning',
-          { followUp }
-        ),
+          schemaName: 'generateWorkoutPlan',
+          task: 'planning',
+          followUp,
+        }),
       workoutPlanFindings
     );
   });
@@ -2489,15 +2484,14 @@ export async function calculateNextWorkoutVolume(
     return generatePlan<CalculateVolumeResponse>(
       config,
       (followUp) =>
-        generateStructured<CalculateVolumeResponse>(
-          config,
+        generateStructured<CalculateVolumeResponse>(config, {
           systemPrompt,
           userMessage,
           schema,
-          'calculateNextWorkoutVolume',
-          'planning',
-          { followUp }
-        ),
+          schemaName: 'calculateNextWorkoutVolume',
+          task: 'planning',
+          followUp,
+        }),
       workoutVolumeFindings
     );
   });
@@ -2699,17 +2693,14 @@ export async function extractMacrosFromLabelPhoto(
     const userMessageSuffix = formatMealPhotoContext(context);
 
     return extractWithConsensus<MacroEstimate>(config, (followUp) =>
-      generateWithImageStructured<MacroEstimate>(
-        config,
+      generateWithImagesStructured<MacroEstimate>(config, {
         systemPrompt,
-        base64,
-        mimeType,
+        images: [{ base64, mimeType }],
         schema,
-        'estimateMacros',
+        schemaName: 'estimateMacros',
         userMessageSuffix,
-        'extraction',
-        { followUp }
-      )
+        followUp,
+      })
     );
   });
 }
@@ -2738,15 +2729,13 @@ export async function extractMacrosFromLabelText(
     );
 
     return extractWithConsensus<MacroEstimate>(config, (followUp) =>
-      generateStructured<MacroEstimate>(
-        config,
+      generateStructured<MacroEstimate>(config, {
         systemPrompt,
         userMessage,
         schema,
-        'estimateMacros',
-        'extraction',
-        { followUp }
-      )
+        schemaName: 'estimateMacros',
+        followUp,
+      })
     );
   });
 }
@@ -2766,15 +2755,13 @@ export async function parsePastWorkouts(
     const parsed = await extractWithConsensus<{ pastWorkouts: ParsedWorkout[] }>(
       config,
       (followUp) =>
-        generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
-          config,
+        generateStructured<{ pastWorkouts: ParsedWorkout[] }>(config, {
           systemPrompt,
-          i18n.t('coach.aiInstructions.parseWorkouts', { lng: lang }),
+          userMessage: i18n.t('coach.aiInstructions.parseWorkouts', { lng: lang }),
           schema,
-          'parsePastWorkouts',
-          'extraction',
-          { followUp }
-        )
+          schemaName: 'parsePastWorkouts',
+          followUp,
+        })
     );
 
     return parsed?.pastWorkouts ?? null;
@@ -2795,15 +2782,13 @@ export async function parsePastNutrition(
     const parsed = await extractWithConsensus<{ pastNutrition: ParsedNutrition[] }>(
       config,
       (followUp) =>
-        generateStructured<{ pastNutrition: ParsedNutrition[] }>(
-          config,
+        generateStructured<{ pastNutrition: ParsedNutrition[] }>(config, {
           systemPrompt,
-          i18n.t('coach.aiInstructions.parseNutrition', { lng: lang }),
+          userMessage: i18n.t('coach.aiInstructions.parseNutrition', { lng: lang }),
           schema,
-          'parsePastNutrition',
-          'extraction',
-          { followUp }
-        )
+          schemaName: 'parsePastNutrition',
+          followUp,
+        })
     );
 
     return parsed?.pastNutrition ?? null;
@@ -2825,15 +2810,13 @@ export async function parseRetrospectiveNutrition(
     const parsed = await extractWithConsensus<{ nutritionEntries: NutritionEntry[] }>(
       config,
       (followUp) =>
-        generateStructured<{ nutritionEntries: NutritionEntry[] }>(
-          config,
+        generateStructured<{ nutritionEntries: NutritionEntry[] }>(config, {
           systemPrompt,
-          i18n.t('coach.aiInstructions.parseRetrospectiveNutrition', { lng: lang }),
+          userMessage: i18n.t('coach.aiInstructions.parseRetrospectiveNutrition', { lng: lang }),
           schema,
-          'parseRetrospectiveNutrition',
-          'extraction',
-          { followUp }
-        )
+          schemaName: 'parseRetrospectiveNutrition',
+          followUp,
+        })
     );
 
     return parsed?.nutritionEntries ?? null;

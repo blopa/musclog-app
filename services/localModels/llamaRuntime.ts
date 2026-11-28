@@ -1,6 +1,10 @@
 /**
  * The only file that talks to `llama.rn`. It owns one loaded model at a time and the rules for
- * keeping it from costing the phone more than it must:
+ * keeping it from costing the phone more than it must. Which model is chosen per request: a request
+ * with a photo goes to the main (vision) model, every other request to the optional text model when
+ * it is installed, else to the main model. Never two contexts: a request for the other model
+ * unloads the loaded one completely (projector included) and then loads the other, so a switch
+ * costs one unload and one load, and consecutive requests for the same model reuse its context.
  *
  * - Loaded lazily on the first request, never at boot.
  * - The photo projector is attached only for a request that carries a photo and kept for
@@ -19,11 +23,19 @@ import type { LocalTextSampling } from '@/constants/localModels';
 import { AiCancelledError, OnDeviceUnavailableError } from '@/utils/aiErrors';
 import { reportAiEvent } from '@/utils/aiTelemetry';
 import { handleError } from '@/utils/handleError';
+import { extractLocalUsage, type LlmUsage } from '@/utils/llmUsage';
 import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { captureException } from '@/utils/sentry';
 import { createSerialQueue } from '@/utils/serialQueue';
 
-import { getInstalledLocalModel, registerLocalModelUnloader } from './modelStore';
+import {
+  readToolCalls,
+  toEngineMessages,
+  toEngineTools,
+  toolTemplateOverride,
+} from './localToolMessages';
+import type { InstalledLocalModel } from './modelFolders';
+import { localModelStore, localTextModelStore, registerLocalModelUnloader } from './modelStore';
 
 type LlamaModule = typeof import('llama.rn');
 type LlamaContext = import('llama.rn').LlamaContext;
@@ -31,12 +43,21 @@ type LlamaContext = import('llama.rn').LlamaContext;
 export const LOCAL_MODEL_IDLE_MS = 120_000;
 export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
 
-export type LocalChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
+/** One tool the model may call, in the model's own tool-call format. */
+export type LocalToolDefinition = { name: string; description: string; parameters: object };
+/** A call the model made; `arguments` is JSON text, as llama.cpp's parser returns it. */
+export type LocalToolCall = { id?: string; name: string; arguments: string };
+export type LocalChatMessage =
+  | { role: 'system' | 'user'; content: string }
+  | { role: 'assistant'; content: string; toolCalls?: LocalToolCall[] }
+  | { role: 'tool'; content: string; toolCallId: string };
 
 export type LocalGenerateParams = {
   messages: LocalChatMessage[];
-  /** A JSON schema the reply must match: the engine compiles it to a grammar. */
+  /** A JSON schema the reply must match: the engine compiles it to a grammar. Not with `tools`. */
   schema?: object;
+  /** Tools the model may call; the engine's chat template and parser turn them into `toolCalls`. */
+  tools?: LocalToolDefinition[];
   /** A photo (a `file://` path or a `data:` URL) attached to the last user message. Needs the projector. */
   image?: string;
   maxTokens?: number;
@@ -44,10 +65,14 @@ export type LocalGenerateParams = {
   signal?: AbortSignal;
   /** Each new piece of text as it is written. */
   onDelta?: (delta: string) => void;
+  /** What the finished generation cost, from the engine's own counters. */
+  onUsage?: (usage: LlmUsage) => void;
 };
 
 export type LocalGenerateResult = {
   text: string;
+  /** Present (possibly empty) exactly when the request carried tools. */
+  toolCalls?: LocalToolCall[];
   /** Milliseconds, from the engine's own timers; used by the benchmark screen. */
   timings?: {
     promptMs?: number;
@@ -61,6 +86,8 @@ let context: LlamaContext | null = null;
 /** The loaded model's vendor sampling for plain-text replies; set with `context`, cleared with it. */
 let textSampling: LocalTextSampling | null = null;
 let projectorAttached = false;
+/** The `modelPath` of the model `context` was loaded from; set with `context`, cleared with it. */
+let loadedModelPath: string | null = null;
 /** Every model operation (unload, projector release, generation) runs one at a time. */
 const queue = createSerialQueue();
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
@@ -125,6 +152,7 @@ async function performUnload(): Promise<void> {
   const current = context;
   context = null;
   textSampling = null;
+  loadedModelPath = null;
   projectorAttached = false;
   if (!current) {
     return;
@@ -179,14 +207,34 @@ function installLifecycle() {
   }
 }
 
-async function ensureContext(): Promise<LlamaContext> {
-  if (context) {
+/** A photo needs the main model with its projector; everything else prefers the text model. */
+async function chooseModel(params: LocalGenerateParams): Promise<InstalledLocalModel> {
+  if (params.image) {
+    const main = await localModelStore.getInstalled();
+    if (!main?.projectorPath) {
+      throw new OnDeviceUnavailableError('notReady');
+    }
+
+    return main;
+  }
+
+  const text = await localTextModelStore.getInstalled();
+  const chosen = text ?? (await localModelStore.getInstalled());
+  if (!chosen) {
+    throw new OnDeviceUnavailableError('notReady');
+  }
+
+  return chosen;
+}
+
+async function ensureContext(installed: InstalledLocalModel): Promise<LlamaContext> {
+  if (context && loadedModelPath === installed.modelPath) {
     return context;
   }
 
-  const installed = await getInstalledLocalModel();
-  if (!installed) {
-    throw new OnDeviceUnavailableError('notReady');
+  if (context) {
+    // The other model is wanted: never two contexts, so the loaded one goes first.
+    await performUnload();
   }
 
   installLifecycle();
@@ -201,6 +249,7 @@ async function ensureContext(): Promise<LlamaContext> {
       ctx_shift: false,
     });
     context = next;
+    loadedModelPath = installed.modelPath;
     textSampling = installed.manifest.textSampling;
 
     return next;
@@ -240,7 +289,7 @@ async function attachProjector(ctx: LlamaContext, path: string, imageMaxTokens: 
   projectorAttached = true;
 }
 
-function withPhoto(messages: LocalChatMessage[], image: string) {
+function withPhoto(messages: ReturnType<typeof toEngineMessages>, image: string) {
   const lastUser = [...messages].reverse().findIndex((m) => m.role === 'user');
   const index = lastUser === -1 ? -1 : messages.length - 1 - lastUser;
 
@@ -257,9 +306,9 @@ function withPhoto(messages: LocalChatMessage[], image: string) {
   );
 }
 
-/** A plain-text reply (chat, insights): no schema to enforce and no photo. */
+/** A plain-text reply (chat, insights): no schema to enforce, no photo, no tool call. */
 function plainTextSampling(params: LocalGenerateParams): boolean {
-  return !params.schema && !params.image;
+  return !params.schema && !params.image && !params.tools;
 }
 
 async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
@@ -272,13 +321,9 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   stoppedByUnload = false;
   busy = true;
   try {
-    const ctx = await ensureContext();
-    if (params.image) {
-      const installed = await getInstalledLocalModel();
-      if (!installed?.projectorPath) {
-        throw new OnDeviceUnavailableError('notReady');
-      }
-
+    const installed = await chooseModel(params);
+    const ctx = await ensureContext(installed);
+    if (params.image && installed.projectorPath) {
       await attachProjector(ctx, installed.projectorPath, installed.manifest.imageMaxTokens);
     }
 
@@ -294,14 +339,28 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
       // A plain-text reply takes the vendor's sampling; a schema or a photo keeps the defaults.
       const plainSampling = plainTextSampling(params) ? textSampling : null;
+      const chatTemplate = (ctx.model?.metadata as Record<string, unknown> | undefined)?.[
+        'tokenizer.chat_template'
+      ];
+      // Only a tool request: llama.cpp needs a hint to read this model's template for tools.
+      const toolTemplate = params.tools ? toolTemplateOverride(chatTemplate) : undefined;
       const result = await ctx.completion(
         {
-          messages: params.image ? withPhoto(params.messages, params.image) : params.messages,
+          messages: params.image
+            ? withPhoto(toEngineMessages(params.messages, chatTemplate), params.image)
+            : toEngineMessages(params.messages, chatTemplate),
           jinja: true,
           n_predict: params.maxTokens ?? 1024,
           temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,
           ...(plainSampling
             ? { min_p: plainSampling.minP, penalty_repeat: plainSampling.repeatPenalty }
+            : {}),
+          ...(params.tools
+            ? {
+                tools: toEngineTools(params.tools),
+                tool_choice: 'auto',
+                ...(toolTemplate ? { chat_template: toolTemplate } : {}),
+              }
             : {}),
           ...(params.schema
             ? {
@@ -329,8 +388,16 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
         result.content?.trim() ? result.content : (result.text ?? '')
       );
 
+      const usage = extractLocalUsage(result);
+      if (usage) {
+        params.onUsage?.(usage);
+      }
+
       return {
         text: replyText,
+        ...(params.tools
+          ? { toolCalls: readToolCalls((result as { tool_calls?: unknown }).tool_calls) }
+          : {}),
         timings: {
           promptMs: result.timings?.prompt_ms,
           predictedMs: result.timings?.predicted_ms,
@@ -351,6 +418,10 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
 /** Runs one generation on the local model. Requests are served one at a time, in order. */
 export function generateWithLocalModel(params: LocalGenerateParams): Promise<LocalGenerateResult> {
+  if (params.tools && params.schema) {
+    return Promise.reject(new Error('A local request takes tools or a schema, never both.'));
+  }
+
   clearIdleTimer();
   clearProjectorTimer();
   return queue.run(() => run(params));

@@ -22,7 +22,9 @@ export type AiTelemetryEvent =
   /** A meal estimate finished with no ingredient at all (no reply, or a reply with nothing in it). */
   | 'ai-meal-estimate-empty'
   /** The downloaded model's chat reply copied one of its own earlier ones and was written again. */
-  | 'ai-chat-reply-copied';
+  | 'ai-chat-reply-copied'
+  /** A voice command's reply could not be read as a command. */
+  | 'voice-command-unusable';
 
 const LEVELS: Record<AiTelemetryEvent, 'warning' | 'info' | 'error'> = {
   'ai-structured-reply-unusable': 'warning',
@@ -32,6 +34,7 @@ const LEVELS: Record<AiTelemetryEvent, 'warning' | 'info' | 'error'> = {
   'ai-meal-look-unusable': 'warning',
   'ai-meal-estimate-empty': 'warning',
   'ai-chat-reply-copied': 'info',
+  'voice-command-unusable': 'warning',
 };
 
 export type AiTelemetryTags = Record<string, string | number | boolean | undefined>;

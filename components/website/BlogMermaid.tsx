@@ -17,6 +17,20 @@ function cssColor(name: string, fallback: string): string {
   return triple ? `rgb(${triple.split(/\s+/).join(', ')})` : fallback;
 }
 
+/** `#rrggbb` of a custom property: a chart's palette is one comma-separated string, so no `rgb()`. */
+function cssHex(name: string, fallback: string): string {
+  const parts = getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim()
+    .split(/\s+/)
+    .map(Number);
+  if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) {
+    return fallback;
+  }
+
+  return `#${parts.map((part) => Math.round(part).toString(16).padStart(2, '0')).join('')}`;
+}
+
 function themeVariables(fontFamily: string) {
   const ink = cssColor('--c-text-primary', '#e5e7eb');
   const surface = cssColor('--c-bg-card', '#1f2937');
@@ -24,6 +38,15 @@ function themeVariables(fontFamily: string) {
   const accent = cssColor('--c-accent-primary', '#22c55e');
 
   return {
+    // `xychart-beta` posts: the bars in the accent, a second series (a line) in the muted ink.
+    xyChart: {
+      backgroundColor: 'transparent',
+      plotColorPalette: `${cssHex('--c-accent-primary', '#22c55e')},${cssHex('--c-text-tertiary', '#9ca3af')}`,
+      xAxisLineColor: line,
+      xAxisTickColor: line,
+      yAxisLineColor: line,
+      yAxisTickColor: line,
+    },
     background: 'transparent',
     edgeLabelBackground: surface,
     fontFamily,
@@ -57,6 +80,10 @@ export function BlogMermaid({ containerId }: { containerId: string }) {
         securityLevel: 'strict',
         startOnLoad: false,
         theme: 'base',
+        // Charts print each bar's value beside it, on the page colour, so it reads in every theme. They
+        // are drawn about as wide as a phone's text column (Mermaid's default is 700), so the labels
+        // are not shrunk to a few pixels there; on a wide screen the chart stops at this width.
+        xyChart: { showDataLabel: true, showDataLabelOutsideBar: true, width: 420, height: 320 },
         // Mermaid measures labels in this exact font and the SVG must be drawn in the same one, or
         // the boxes clip their text. `pre.mermaid` resets to the body font once processed.
         themeVariables: themeVariables(getComputedStyle(container).fontFamily),

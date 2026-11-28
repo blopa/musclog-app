@@ -25,6 +25,13 @@ const NOT_REPORTED: ReadonlySet<PremiumActionFailure> = new Set([
   'not_enrolled',
 ]);
 
+/**
+ * RevenueCat's PURCHASE_NOT_ALLOWED_ERROR: this device or account cannot buy at all (Google Play
+ * billing unavailable, as on an emulator with no account, or purchases restricted). Nothing in
+ * Musclog can fix it, whatever stage hit it.
+ */
+const STORE_PURCHASE_NOT_ALLOWED = '3';
+
 const WARNING_FAILURES: ReadonlySet<PremiumActionFailure> = new Set([
   'stale_nonce',
   'unknown_device',
@@ -37,7 +44,7 @@ export function premiumFailureReport(
   failure: PremiumActionFailure,
   detail: PremiumReportDetail = {}
 ): PremiumFailureReport | null {
-  if (NOT_REPORTED.has(failure)) {
+  if (NOT_REPORTED.has(failure) || detail.storeErrorCode === STORE_PURCHASE_NOT_ALLOWED) {
     return null;
   }
 

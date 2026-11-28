@@ -9,6 +9,7 @@ import {
   buildWorkoutCompletedSummaryForLLM,
   prepareWorkoutDataForAI,
   processParsedWorkouts,
+  prepareWorkoutPlan,
   processWorkoutPlanResponse,
 } from '@/utils/workoutAI';
 
@@ -94,6 +95,25 @@ describe('processWorkoutPlanResponse', () => {
       plan: { id: 'plan-1' },
       templates: [{ id: 'template-1' }],
     } as any);
+  });
+
+  // The review screen reads this: nothing may be stored before the person saves.
+  it('prepares a plan for review without writing anything', async () => {
+    const prepared = await prepareWorkoutPlan({
+      planTitle: 'Push days',
+      description: 'One day',
+      workoutPlan: [
+        {
+          title: 'Push',
+          recurringOnWeekDay: 'Monday',
+          exercises: [{ exerciseId: 'bench', sets: 3, reps: 8, oneRepMaxPercentage: 0 }],
+        },
+      ],
+    } as any);
+
+    expect(prepared.planName).toBe('Push days');
+    expect(prepared.templates[0].template.exercises[0]).toMatchObject({ sets: 3, reps: 8 });
+    expect(mockWorkoutTemplateService.createPlanWithTemplates).not.toHaveBeenCalled();
   });
 
   it('creates one weekly plan, keeps weekdays on memberships, and falls back for legacy AI output', async () => {

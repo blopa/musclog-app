@@ -34,6 +34,12 @@ export const GAME_BOY_CUSTOM_FOOD_BASE = 0x8000;
 
 const FOOD_EXTERNAL_IDS: readonly string[] = gameBoyOpticalProtocol.foodExternalIds;
 
+/**
+ * Puts a bundled food's name and description in the receiver's language. Injected by the caller
+ * (`localizeFoundationFood`) so this folder stays free of the app's i18n.
+ */
+export type LocalizeFoundationFood = (food: FoundationFoodSeed) => FoundationFoodSeed;
+
 let seedsByExternalId: Map<string, FoundationFoodSeed> | undefined;
 
 /**

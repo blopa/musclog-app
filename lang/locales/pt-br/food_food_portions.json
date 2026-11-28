@@ -4,7 +4,7 @@
   "createFoodPortion": "Criar Porção de Alimento",
   "portionName": "Nome da Porção",
   "portionNamePlaceholder": "ex., Xícara, Fatia, Peça",
-  "weightGrams": "Peso (gramas)",
+  "weightInUnit": "Peso ({{unit}})",
   "selectIcon": "Selecionar Ícone",
   "chooseIcon": "Escolher Ícone"
 }

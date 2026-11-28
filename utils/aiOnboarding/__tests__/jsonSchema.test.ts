@@ -38,9 +38,9 @@ describe('buildContractJsonSchema', () => {
         'weightGoal',
       ])
     );
-    // birthDate and ageYears are an either/or, expressed as anyOf rather than two requireds.
+    // The birthday is optional, so neither it nor ageYears is required or forced by anyOf.
     expect(schema.required).not.toContain('birthDate');
-    expect(schema.anyOf).toEqual([{ required: ['birthDate'] }, { required: ['ageYears'] }]);
+    expect(schema.anyOf).toBeUndefined();
   });
 
   it('forbids stray keys in the document an assistant writes', () => {

@@ -5,13 +5,12 @@ import {
   getFoundationFoodsPrompt,
   getGenerateMealPlanFunctions,
   getMealAnalysisPrompt,
-  getMealReviewFunctions,
-  getMealReviewPrompt,
   getRecipeExtractionFunctions,
   getRecipeExtractionPrompt,
   getTrackMealFunctions,
-  type MealSchemaDialect,
 } from '../prompts';
+import { getMealReviewFunctions, getMealReviewPrompt } from '../mealPassPrompts';
+import type { MealSchemaDialect } from '../structuredDialect';
 
 jest.mock('@/database/services/AiCustomPromptService', () => ({
   AiCustomPromptService: { getActivePrompts: jest.fn(), getMemoriesForPrompt: jest.fn() },

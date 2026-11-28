@@ -198,6 +198,16 @@ describe('commitOnboardingProfile', () => {
     expect(mockCalc).toHaveBeenCalledWith(expect.objectContaining({ weightGoal: 'maintain' }));
   });
 
+  it('writes a null birthday when none is given, clearing an earlier one', async () => {
+    const { birthDate: _birthDate, ...withoutBirthday } = answers;
+
+    await commitOnboardingProfile(withoutBirthday as CompleteOnboardingAnswers, {
+      useBodyFat: false,
+    });
+
+    expect(mockPersist).toHaveBeenCalledWith(expect.objectContaining({ dateOfBirthMs: null }));
+  });
+
   it('uses body fat only when the setting allows it', async () => {
     await commitOnboardingProfile({ ...answers, bodyFatPercent: 20 }, { useBodyFat: true });
     await commitOnboardingProfile({ ...answers, bodyFatPercent: 20 }, { useBodyFat: false });
@@ -290,8 +300,8 @@ describe('loadProfileSnapshot', () => {
       gender: 'male',
       fitnessGoal: 'general',
       liftingExperience: 'beginner',
-      dateOfBirth: 0,
-      getAge: () => 0,
+      dateOfBirth: null,
+      getAge: () => 30,
     });
 
     expect(await loadProfileSnapshot()).not.toHaveProperty('birthDate');
@@ -321,6 +331,19 @@ describe('applyProfileUpdate', () => {
     expect(mockSetStep).not.toHaveBeenCalled();
     expect(await AsyncStorage.getItem(TEMP_NUTRITION_PLAN)).toBeNull();
     expect(await AsyncStorage.getItem(AI_ONBOARDING_DRAFT)).toBeNull();
+  });
+
+  it('leaves the stored birthday alone when no birthday is kept', async () => {
+    await writeAiDraft({ ...newDraft('profile'), draftId: 'profile-draft' });
+    const { birthDate: _birthDate, ...withoutBirthday } = answers;
+
+    await applyProfileUpdate(withoutBirthday as CompleteOnboardingAnswers, {
+      ...base,
+      kept: new Set(['weightKg']),
+    });
+
+    expect(mockPersist).toHaveBeenCalledWith(expect.objectContaining({ weightKg: 62 }));
+    expect(mockPersist.mock.calls[0][0].dateOfBirthMs).toBeUndefined();
   });
 
   it('applies the coaching style, never starts a comeback, and reports what it left alone', async () => {

@@ -1691,7 +1691,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     heightCm,
     age,
     activityLevel,
-    weightGoal,
+    weightGoal: requestedWeightGoal,
     fitnessGoal,
     bodyFatPercent,
     // Empirical tracking fields
@@ -1704,6 +1704,14 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     historicalFinalFatPercent,
     disableMinimumCalories,
   } = input;
+
+  // No deficit is ever planned for someone already underweight (BMI under 18.5).
+  const weightGoal =
+    requestedWeightGoal === 'lose' &&
+    heightCm > 0 &&
+    bmiFromWeightAndHeightM(weightKg, heightCm / 100) < 18.5
+      ? 'maintain'
+      : requestedWeightGoal;
 
   const useBodyFat = isValidBodyFat(bodyFatPercent);
 

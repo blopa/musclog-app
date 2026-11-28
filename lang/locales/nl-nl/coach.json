@@ -53,9 +53,9 @@
     },
     "goToSettings": "Ga naar Instellingen",
     "success": {
-      "workoutPlanGenerated": "Ik heb {{count}} workouts voor je gemaakt! 💪 {{description}}",
-      "workoutPlanGeneratedWithName": "Ik heb {{planName}} met {{count}} workouts voor je gemaakt! 💪 {{description}}",
-      "mealPlanGenerated": "Ik heb een maaltijdplan van 3 dagen met {{count}} maaltijden voor je gemaakt! 🥗 {{description}}",
+      "workoutPlanGenerated": "Ik heb {{count}} workouts voor je gemaakt! 💪 {{description}} Controleer ze voordat je traint.",
+      "workoutPlanGeneratedWithName": "Ik heb {{planName}} met {{count}} workouts voor je gemaakt! 💪 {{description}} Controleer ze voordat je traint.",
+      "mealPlanGenerated": "Ik heb een maaltijdplan voor 3 dagen met {{count}} maaltijden voor je gemaakt! 🥗 {{description}} Controleer de voedingsmiddelen en hoeveelheden voordat je erop vertrouwt.",
       "trackMealSuccess": "Ik heb {{count}} ingrediënten bijgehouden voor je maaltijd: {{ingredients}}. Totaal: {{calories}}.",
       "trackMealReady": "Ik heb {{count}} maaltijd(en) geanalyseerd: {{meals}} (totaal {{calories}}). Tik op een maaltijd om deze te bekijken en te loggen.",
       "historyCleared": "Chatgeschiedenis gewist."
@@ -108,7 +108,6 @@
       "failed": "Delen van chatgeschiedenis mislukt. Probeer het opnieuw.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "AI kan fouten maken. Controleer belangrijke informatie.",
     "message": {
       "menuTitle": "Berichtacties",
       "copy": "Kopiëren",
@@ -120,9 +119,12 @@
       "copied": "Bericht gekopieerd naar klembord",
       "deleted": "Bericht verwijderd",
       "report": "Een probleem melden",
-      "reportDesc": "Mail een probleem met dit antwoord",
+      "reportDesc": "Stuur dit antwoord naar Musclog, zodat we ernaar kunnen kijken",
       "reportSubject": "Probleem met een AI-antwoord van Musclog",
-      "reportIntro": "Wat klopte er niet aan dit antwoord? (Je kunt de tekst hieronder bewerken of verwijderen voordat je verzendt.)"
+      "reportIntro": "Wat klopte er niet aan dit antwoord? (Je kunt de tekst hieronder bewerken of verwijderen voordat je verzendt.)",
+      "reportConfirm": "Dit stuurt het antwoord, de app-versie, je platform en taal naar Musclog, via Sentry, onze dienst voor foutopsporing. Verder wordt niets uit de chat verstuurd.",
+      "reportSend": "Rapport versturen",
+      "reportSent": "Rapport verstuurd. Bedankt."
     },
     "sendViaOpenAI": "Verzenden via OpenAI",
     "personas": {
@@ -167,6 +169,7 @@
         "errorImage": "Die afbeelding kon niet worden geladen."
       }
     },
-    "reviewingReply": "Ik controleer mijn antwoord nog eens…"
+    "reviewingReply": "Ik controleer mijn antwoord nog eens…",
+    "onDevicePainReply": "Ik kan vanaf hier niet zien wat er aan de hand is, en ik wil niet gokken als iets pijn doet. Stop voorlopig de oefening die de pijn veroorzaakt en train wat geen pijn doet. Als de pijn scherp is, er zwelling is, of het na een paar dagen niet is weggetrokken, ga dan naar een arts of fysiotherapeut. Ik help je graag om je training daaromheen te plannen."
   }
 }

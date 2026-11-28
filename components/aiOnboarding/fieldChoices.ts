@@ -63,6 +63,7 @@ export const REVIEW_SECTIONS: readonly ReviewSection[] = [
 /** Answers that may be left out. Everything else must be present before setup can be applied. */
 export const OPTIONAL_FIELDS: ReadonlySet<FieldKey> = new Set<FieldKey>([
   'fullName',
+  'birthDate',
   'bodyFatPercent',
   'trainingLocation',
   'trainingDaysPerWeek',

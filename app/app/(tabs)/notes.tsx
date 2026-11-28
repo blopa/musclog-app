@@ -32,9 +32,12 @@ import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { LATEST_NOTE_COUNT, useNotes } from '@/hooks/useNotes';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { useVoiceActions, useVoiceTask } from '@/hooks/useVoiceActions';
 import { formatRelativeTime } from '@/utils/formatRelativeTime';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
+
+const NOTE_VOICE_KINDS = ['addNote'] as const;
 
 const NOTE_FIELDS: EditFieldConfig[] = [
   {
@@ -68,6 +71,16 @@ export default function NotesScreen() {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [isCreateVisible, setIsCreateVisible] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+  // The body a voice command filled the new note with.
+  const [voiceDraft, setVoiceDraft] = useState('');
+  const isEditorOpen = isCreateVisible || editingNote != null;
+  const voiceTask = useVoiceTask(isEditorOpen);
+  useVoiceActions(NOTE_VOICE_KINDS, ({ body }) => {
+    voiceTask.begin();
+    setEditingNote(null);
+    setVoiceDraft(body);
+    setIsCreateVisible(true);
+  });
 
   const latest = notes.slice(0, LATEST_NOTE_COUNT);
   const earlier = notes.slice(LATEST_NOTE_COUNT);
@@ -136,6 +149,7 @@ export default function NotesScreen() {
 
         setEditingNote(null);
         setIsCreateVisible(false);
+        setVoiceDraft('');
       } catch (error) {
         await handleError(error, 'NotesScreen.handleSaveNote', {
           snackbarMessage: editingNote ? t('notes.updateError') : t('notes.createError'),
@@ -148,13 +162,14 @@ export default function NotesScreen() {
   const closeEditModal = useCallback(() => {
     setEditingNote(null);
     setIsCreateVisible(false);
+    setVoiceDraft('');
   }, []);
 
   // Memoized: GenericEditModal resets its form from initialValues in a [visible, initialValues]
   // effect, so an inline literal would wipe the form on every parent render.
   const editInitialValues = useMemo<EditFormValues>(
-    () => ({ title: editingNote?.title ?? '', body: editingNote?.body ?? '' }),
-    [editingNote]
+    () => ({ title: editingNote?.title ?? '', body: editingNote?.body ?? voiceDraft }),
+    [editingNote, voiceDraft]
   );
 
   const noteMenuItems = useMemo<BottomPopUpMenuItem[]>(() => {
@@ -321,7 +336,7 @@ export default function NotesScreen() {
       />
 
       <GenericEditModal
-        visible={isCreateVisible || editingNote != null}
+        visible={isEditorOpen}
         onClose={closeEditModal}
         title={editingNote ? t('notes.form.editTitle') : t('notes.form.createTitle')}
         fields={NOTE_FIELDS}

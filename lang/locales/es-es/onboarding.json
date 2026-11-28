@@ -156,10 +156,10 @@
     },
     "landing": {
       "getStarted": "Empezar",
-      "termsAndPrivacy": "Al continuar, aceptas nuestros Términos y Política de Privacidad.",
+      "termsAndPrivacy": "Al continuar, confirmas que tienes 16 años o más y aceptas nuestros Términos. Nuestra Política de Privacidad explica cómo se tratan tus datos.",
       "appName": "Musclog",
       "tagline": "Gratis, 100% tuyo",
-      "description": "Registra tus entrenamientos y tu nutrición con total privacidad. Sin cuentas, sin nube. Todo es gratis excepto la cuota opcional de Musclog Iron.",
+      "description": "Registra tus entrenamientos y tu nutrición. No necesitas cuenta. Todo es gratis excepto la cuota opcional de Musclog Iron.",
       "viewTerms": "Ver Términos",
       "preparingApp": "Preparando la app para ti...",
       "migratingPreamble": "Actualizando desde el Musclog anterior. Estamos trayendo tus datos.",
@@ -184,7 +184,7 @@
       },
       "importData": "Importar Datos",
       "importOptically": "Importar datos desde otro móvil",
-      "storedLocally": "Todos los datos almacenados localmente en tu dispositivo",
+      "storedLocally": "Tus registros se guardan en tu dispositivo",
       "personalizedSetup": "Configuración Personalizada",
       "personalizedSetupSteps": "11 pasos",
       "personalizedSetupSubtitle": "Obtén TDEE preciso, macros y recomendaciones personalizadas",
@@ -192,7 +192,8 @@
       "quickSetupSteps": "7 pasos",
       "quickSetupSubtitle": "Configuración básica, puedes personalizar más tarde",
       "aiSetup": "Configurar con IA",
-      "aiSetupSubtitle": "Chatea con una IA o deja que ChatGPT o Claude te entrevisten"
+      "aiSetupSubtitle": "Chatea con una IA o deja que ChatGPT o Claude te entrevisten",
+      "viewPrivacy": "Ver Política de Privacidad"
     },
     "quickPreferences": {
       "title": "Empecemos",
@@ -228,7 +229,7 @@
       "height": "Altura",
       "weight": "Peso",
       "birthday": "Fecha de nacimiento",
-      "birthdayHelper": "Usada para calcular tu edad y estimar calorías con precisión",
+      "birthdayHelper": "Opcional. Hace que las estimaciones de calorías sean más precisas. Sin ella, Musclog supone que tienes {{age}} años.",
       "bodyFat": "Porcentaje de grasa corporal",
       "bodyFatHelper": "Si lo conoces, ayuda con los cálculos de calorías",
       "continue": "Continuar",
@@ -267,7 +268,7 @@
         }
       },
       "dataSharingTitle": "Aviso de Compartición de Datos",
-      "dataSharingBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales o mensajes de chat) se envía a través de OpenRouter al nivel gratuito de Google AI Studio para redactar la respuesta. Google puede conservar lo enviado, usarlo para mejorar sus productos y hacer que personas (sin identificadores) lo revisen, así que el nivel gratuito no es privado: no introduzcas información personal ni sensible. El nivel gratuito es solo para adultos (18+). Si no te parece bien, déjalo desactivado. No se envía nada hasta que uses una función de IA. Hay un límite diario que comparten todos los que usan el nivel gratuito, así que puede agotarse pronto en el día, y el nivel gratuito a veces puede no estar disponible.",
+      "dataSharingBody": "Cuando usas una función de IA, lo que necesita (por ejemplo tus entrenamientos, comidas, medidas corporales, incluidos los importados de Health Connect o Apple Health, o mensajes de chat) se envía a través de OpenRouter al nivel gratuito de Google AI Studio para redactar la respuesta. Google puede conservar lo enviado, usarlo para mejorar sus productos y hacer que personas lo revisen (sin identificadores), así que el nivel gratuito no es privado: no introduzcas información personal ni sensible. El nivel gratuito es solo para adultos: al aceptar confirmas que tienes 18 años o más. Si no te parece bien, déjalo desactivado. No se envía nada hasta que uses una función de IA, lo que incluye los análisis diarios si los activas. Hay un límite diario que comparten todos los que usan el nivel gratuito, así que puede agotarse pronto en el día, y a veces el nivel gratuito puede no estar disponible.",
       "readPrivacyPolicy": "Leer nuestra Política de Privacidad",
       "cta": {
         "premium": "Continuar con Musclog Iron",

@@ -77,3 +77,9 @@ export const REPAIR_DESCRIPTORS = {
     children: [{ table: 'food_food_portions', fkColumn: 'food_id' }],
   },
 } satisfies Record<string, TableGroupDescriptor>;
+
+/**
+ * AsyncStorage note that this install has had an encryption key, so a later "no key" is seen as
+ * the fault it is. Device-local: never part of a backup.
+ */
+export const ENCRYPTION_KEY_SEEN = 'encryption_key_seen';

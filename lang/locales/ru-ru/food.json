@@ -16,7 +16,7 @@
       "unmarkButton": "Убрать день голодания",
       "unmarkShort": "Убрать",
       "confirmTitle": "Отметить как день голодания?",
-      "confirmMessage": "Это отметит день как день голодания, поэтому он будет засчитан как реальный день с 0 калориями в ваших средних значениях, TDEE и сериях.",
+      "confirmMessage": "Это отмечает день как день голодания, поэтому он засчитывается как настоящий день с 0 калориями в ваших средних значениях, TDEE и сериях. Голодание не безопасно для всех: если вы беременны или кормите грудью, принимаете лекарства, есть диабет или были расстройства пищевого поведения, сначала спросите врача.",
       "confirmButton": "Отметить как день голодания"
     },
     "logDetails": {
@@ -85,8 +85,7 @@
       "duplicatePortion": "Дублировать порцию",
       "duplicatePortionDesc": "Создать копию для изменения",
       "deletePortion": "Удалить порцию",
-      "deletePortionDesc": "Удалить эту порцию из списка",
-      "gramWeightFormat": "{{grams}} г"
+      "deletePortionDesc": "Удалить эту порцию из списка"
     },
     "createPortion": {
       "title": "Создать размер порции",
@@ -212,7 +211,9 @@
       "scaleMealPortionPreview": "Примерные итоги для этой порции",
       "sendDayToPhone": "Отправить день на телефон",
       "sendDayToPhoneDesc": "Передать всю еду за этот день с помощью анимированных QR-кодов",
-      "keepMealTypes": "Оставить в своих приёмах пищи"
+      "keepMealTypes": "Оставить в своих приёмах пищи",
+      "copyMealTitle": "{{meal}} из другого дня",
+      "copyMealTargetNote": "Копия попадет в: {{meal}}"
     },
     "mealInsights": {
       "title": "Аналитика приёма пищи",
@@ -234,7 +235,7 @@
         "shareMealAsRecipeDesc": "Поделиться ингредиентами и инструкциями текстом",
         "sendToPhone": "Отправить на другой телефон",
         "sendToPhoneDesc": "Передать это блюдо с помощью анимированных QR-кодов",
-        "shareRecipeIngredientLine": "{{grams}} г {{name}}",
+        "shareRecipeIngredientLine": "{{amount}} {{name}}",
         "shareRecipeNoIngredients": "В этом приёме пищи нет ингредиентов для отправки",
         "duplicateMeal": "Дублировать приём пищи",
         "duplicateMealDesc": "Создать копию этого приёма пищи",
@@ -702,7 +703,7 @@
         "foodCount_few": "{{count}} продукта",
         "foodCount_many": "{{count}} продуктов",
         "foodCount_other": "{{count}} продукта",
-        "item": "{{grams}} г · {{kcal}}",
+        "item": "{{amount}} · {{kcal}}",
         "remove": "Убрать: {{name}}",
         "groupTitle": "Записать как один приём пищи",
         "groupSubtitle": "Отобразится одной записью в дневнике",

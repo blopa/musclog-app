@@ -165,9 +165,11 @@ export async function measureStorage(): Promise<StorageReport | null> {
       protectedBackupUris(),
     ]);
 
-  const recoveryPoints = cacheEntries
-    .filter((entry) => protectedUris.has(entry.uri))
-    .reduce((sum, entry) => sum + entry.bytes, 0);
+  // By URI, wherever they sit: new ones are in the documents directory, older ones in the cache.
+  const recoveryPoints = (await Promise.all([...protectedUris].map(sizeOf))).reduce(
+    (sum, size) => sum + size,
+    0
+  );
   const temporary = cacheEntries
     .filter((entry) => isTemporaryEntry(entry, protectedUris))
     .reduce((sum, entry) => sum + entry.bytes, 0);

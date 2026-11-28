@@ -2,13 +2,14 @@ import { Bot, Download, KeyRound, Settings2, Sparkles, Wand2 } from 'lucide-reac
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 
+import { AiOutputNotice } from '@/components/ai/AiOutputNotice';
 import { PremiumModal } from '@/components/modals/PremiumModal';
 import { Button } from '@/components/theme/Button';
 import { useOnDeviceStatus } from '@/hooks/useOnDeviceStatus';
 import { usePremium } from '@/hooks/usePremium';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
-import { startLocalModelDownload } from '@/services/localModels/modelStore';
+import { localModelStore } from '@/services/localModels/modelStore';
 import { disableOnDeviceAi } from '@/services/onDeviceAiSetup';
 import { DEFAULT_LOCAL_MODEL_SELECTION } from '@/utils/localModels/install';
 import type { OnDeviceStatusState } from '@/utils/onDeviceStatus';
@@ -94,7 +95,7 @@ export function AINotConfiguredModal({
           width="full"
           icon={Download}
           onPress={() => {
-            void startLocalModelDownload(DEFAULT_LOCAL_MODEL_SELECTION);
+            void localModelStore.start(DEFAULT_LOCAL_MODEL_SELECTION);
             onClose();
           }}
         />
@@ -248,6 +249,10 @@ export function AINotConfiguredModal({
               </Text>
             </View>
           </View>
+        </View>
+
+        <View className="mt-4">
+          <AiOutputNotice kind="settings" align="center" />
         </View>
       </View>
       <PremiumModal visible={premiumVisible} onClose={() => setPremiumVisible(false)} />

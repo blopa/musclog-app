@@ -17,7 +17,7 @@ import { type OnDeviceEngineChoice, resolveOnDeviceEngine } from '@/utils/onDevi
 import { deriveOnDeviceStatus, type OnDeviceStatus } from '@/utils/onDeviceStatus';
 
 import { isDevWebLocalModel } from './devWebBridge';
-import { getLocalModelSnapshot, refreshLocalModel, subscribeLocalModel } from './modelStore';
+import { localModelStore, localTextModelStore } from './modelStore';
 
 /**
  * Apple's availability is read through an inline require: `utils/onDeviceAi.ios` imports the
@@ -50,6 +50,7 @@ type Session = {
   running: Promise<OnDeviceStatus> | null;
   trailing: Promise<OnDeviceStatus> | null;
   unsubscribeModel: (() => void) | null;
+  unsubscribeTextModel: (() => void) | null;
   appStateSubscription: { remove: () => void } | null;
 };
 
@@ -61,6 +62,7 @@ function createSession(): Session {
     running: null,
     trailing: null,
     unsubscribeModel: null,
+    unsubscribeTextModel: null,
     appStateSubscription: null,
   };
 }
@@ -86,7 +88,8 @@ function recompute(target: Session) {
     initialized: target.initialized,
     engine: resolveOnDeviceEngine(target.readings.engineChoice, Platform.OS),
     appleAvailability: target.readings.appleAvailability,
-    model: getLocalModelSnapshot(),
+    model: localModelStore.getSnapshot(),
+    textModelReady: localTextModelStore.getSnapshot().state.kind === 'ready',
     deviceOk: deviceOk(),
   });
   notify();
@@ -98,7 +101,9 @@ function wire(target: Session) {
   }
 
   // Download progress and installs arrive from the model store.
-  target.unsubscribeModel = subscribeLocalModel(() => recompute(target));
+  target.unsubscribeModel = localModelStore.subscribe(() => recompute(target));
+  // The optional text model decides who answers a message about pain (`ProviderPolicy`).
+  target.unsubscribeTextModel = localTextModelStore.subscribe(() => recompute(target));
   // The person may have switched Apple Intelligence on in iOS Settings while the app was away.
   target.appStateSubscription = AppState.addEventListener('change', (next) => {
     if (next === 'active') {
@@ -127,7 +132,8 @@ async function probe(target: Session): Promise<OnDeviceStatus> {
     const [engineChoice, appleAvailability] = await Promise.all([
       readChoice().catch(() => target.readings.engineChoice),
       readAppleAvailability(),
-      refreshLocalModel(),
+      localModelStore.refresh(),
+      localTextModelStore.refresh(),
     ]);
     target.readings = { engineChoice, appleAvailability };
     target.initialized = true;
@@ -178,6 +184,7 @@ export function refreshOnDeviceStatus(): Promise<OnDeviceStatus> {
 /** Test seam: a new session; whatever the old one still runs writes into a dead one. */
 export function resetOnDeviceStatusForTests() {
   session.unsubscribeModel?.();
+  session.unsubscribeTextModel?.();
   session.appStateSubscription?.remove();
   session = createSession();
   clearListeners();

@@ -4,6 +4,7 @@ import * as Device from 'expo-device';
 
 import { isStaticExport } from '@/constants/platform';
 import { isProduction } from '@/utils/app';
+import { scrubErrorText } from '@/utils/scrubErrorText';
 
 let isInitialized = false;
 
@@ -18,6 +19,10 @@ export function initializeSentry() {
   Sentry.init({
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? undefined,
     environment: isProduction() ? 'production' : 'development',
+    // A development build sends nothing: a hot reload alone files crashes that no person can meet
+    // (a re-evaluated React context, WatermelonDB's record cache), and they bury the real ones.
+    // Set EXPO_PUBLIC_SENTRY_IN_DEV=1 to try the reporting itself.
+    enabled: isProduction() || process.env.EXPO_PUBLIC_SENTRY_IN_DEV === '1',
     // Keep payloads intentionally minimal for privacy.
     sendDefaultPii: false,
     enableAutoSessionTracking: false,
@@ -36,6 +41,17 @@ export function initializeSentry() {
           model: phoneModel,
         },
       };
+
+      // A message can quote the value that broke: take out what could be the person's.
+      if (event.message) {
+        event.message = scrubErrorText(event.message);
+      }
+
+      for (const exception of event.exception?.values ?? []) {
+        if (exception.value) {
+          exception.value = scrubErrorText(exception.value);
+        }
+      }
 
       // Remove optional data we do not want to send.
       delete event.user; // User identity context (id/email/username/ip when present)

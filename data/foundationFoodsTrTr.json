@@ -1,0 +1,2405 @@
+[
+  {
+    "externalId": "1703909",
+    "name": "Bahar Karışımı Bebek Marul ve Yeşillik Karışımı",
+    "description": "Marul, yaprak, yeşil, çiğ"
+  },
+  {
+    "externalId": "2122593",
+    "name": "Mısır",
+    "description": "Mısır, tatlı, sarı ve beyaz taneler, taze, çiğ"
+  },
+  {
+    "externalId": "2679290",
+    "name": "Hızlı Yulaf",
+    "description": "Yulaf, tam tahıllı, çelik kesilmiş"
+  },
+  {
+    "externalId": "2543214",
+    "name": "Domates",
+    "description": "Domates, konserve, kırmızı, olgun, doğranmış"
+  },
+  {
+    "externalId": "2447532",
+    "name": "Muzlu Buz Pops, Muz",
+    "description": "Muz, olgunlaşmış, çiğ"
+  },
+  {
+    "externalId": "2448098",
+    "name": "Vahşi Yakalanmış Derisiz, Kemiksiz Mahi Mahi Filetosu",
+    "description": "Mahi mahi, dondurulmuş, vahşi yakalanmış"
+  },
+  {
+    "externalId": "2447559",
+    "name": "Üzüm Suyu, Üzüm",
+    "description": "Üzüm suyu, beyaz, C vitamini ilaveli, konsantreden, uzun raf ömrüne sahip"
+  },
+  {
+    "externalId": "2406586",
+    "name": "Portakal Suyu, Portakal",
+    "description": "Portakal, çiğ, göbekli"
+  },
+  { "externalId": "2410361", "name": "Turp", "description": "Turp, kırmızı, çiğ" },
+  {
+    "externalId": "2445907",
+    "name": "Minik Tatlı Patates",
+    "description": "Tatlı patates, portakal eti, kabuksuz, çiğ"
+  },
+  {
+    "externalId": "2134133",
+    "name": "Meşe palamudu kabak",
+    "description": "Kabak, kış, meşe palamudu, çiğ"
+  },
+  {
+    "externalId": "2062204",
+    "name": "Süt",
+    "description": "Süt, az yağlı, sıvı, %1 süt yağı, ilave A vitamini ve D vitamini ile"
+  },
+  { "externalId": "2062212", "name": "Ayran", "description": "Ayran, az yağlı" },
+  {
+    "externalId": "2071280",
+    "name": "Bhakri Unu",
+    "description": "Un, buğday, çok amaçlı, zenginleştirilmiş, ağartılmış"
+  },
+  {
+    "externalId": "2667585",
+    "name": "Tavuk",
+    "description": "Tavuk, göğüs, kemiksiz, derisiz, çiğ"
+  },
+  {
+    "externalId": "2495161",
+    "name": "Mantarlı Makarna Sosu, Mantarlı",
+    "description": "Mantar, kral istiridye"
+  },
+  {
+    "externalId": "2406124",
+    "name": "Kıyılmış Lahana ve Havuç Güney Lahana Salatası, Kıyılmış Lahana ve Havuç",
+    "description": "Lahana, kırmızı, çiğ"
+  },
+  {
+    "externalId": "2406125",
+    "name": "Kıyılmış Lahana, Biber ve Soğan Güney Lahana Salatası, Kıyılmış Lahana, Biber ve Soğan",
+    "description": "Lahana, yeşil, çiğ"
+  },
+  {
+    "externalId": "2476441",
+    "name": "Mantar Sapları ve Parçaları, Mantar",
+    "description": "Mantar, istiridye"
+  },
+  {
+    "externalId": "1899988",
+    "name": "Karışık Kuruyemiş",
+    "description": "Fındık, çam fıstığı, çiğ"
+  },
+  {
+    "externalId": "1633846",
+    "name": "Soslu brokoli ve baharatlı peynir sosu",
+    "description": "Sos, makarna, spagetti/marinara, servise hazır"
+  },
+  {
+    "externalId": "1919968",
+    "name": "Nohut",
+    "description": "Bezelye, yeşil, tatlı, konserve, sodyum ilaveli, şeker ilaveli, süzülmüş ve durulanmış"
+  },
+  {
+    "externalId": "2675810",
+    "name": "Yabani Alaska Morina Filetosu, Yabani Alaska Morina Balığı",
+    "description": "Morina, Pasifik veya Alaska, dondurulmuş, vahşi yakalanmış"
+  },
+  {
+    "externalId": "2135417",
+    "name": "Mantarlı Makarna Sosu, Mantarlı",
+    "description": "Mantar, aslan yelesi"
+  },
+  { "externalId": "2064619", "name": "Ispanak", "description": "Ispanak, olgun" },
+  {
+    "externalId": "2192156",
+    "name": "Çam Fıstığı",
+    "description": "Fındık, ceviz, İngilizce, yarım, çiğ"
+  },
+  {
+    "externalId": "2594852",
+    "name": "Füme Balık Nova Somon Balığı",
+    "description": "Balık, somon, somon balığı, vahşi yakalanmış, çiğ"
+  },
+  { "externalId": "2120877", "name": "Tuz", "description": "Tuz, sofra tuzu, iyotlu" },
+  {
+    "externalId": "1996978",
+    "name": "Sığır Burgerleri, Sığır Eti",
+    "description": "Sığır eti, kıyma, %80 yağsız et / %20 yağ, çiğ"
+  },
+  {
+    "externalId": "2618005",
+    "name": "Badem Sütü, Vanilya",
+    "description": "Badem sütü, şekersiz, sade, rafa dayanıklı"
+  },
+  {
+    "externalId": "2039105",
+    "name": "Orijinal Soya Sütü, Orijinal",
+    "description": "Soya sütü, şekerli, sade, soğutulmuş"
+  },
+  {
+    "externalId": "2083628",
+    "name": "Deniz tarağı suyu",
+    "description": "Meyve suyu, kuru erik, rafa dayanıklı"
+  },
+  {
+    "externalId": "2423124",
+    "name": "Tavuk Chorizo, Tavuk",
+    "description": "Tavuk, baget, et ve deri, çiğ"
+  },
+  {
+    "externalId": "2433643",
+    "name": "Domates Suyuna Tuz Eklenmemiş Doğranmış Domates, Domates Suyuna Tuz Eklenmemiş",
+    "description": "Domates suyu, ilave bileşenlerle, konsantreden, uzun raf ömrüne sahip"
+  },
+  {
+    "externalId": "2390768",
+    "name": "Domates Salçası, Domates",
+    "description": "Domates, salça, konserve, tuz ilavesiz"
+  },
+  {
+    "externalId": "2092649",
+    "name": "Süt",
+    "description": "Süt, tam yağlı, %3,25 süt yağı, ilave D vitamini ile"
+  },
+  {
+    "externalId": "2477312",
+    "name": "Organik Kale ve Karalahana Yeşilliği",
+    "description": "Karalahana, çiğ"
+  },
+  {
+    "externalId": "2518353",
+    "name": "Egg Beaters sıvı yumurta",
+    "description": "Yumurtalar, A Sınıfı, Büyük, yumurta akı"
+  },
+  { "externalId": "2388443", "name": "Üzüm", "description": "Üzüm, yeşil, çekirdeksiz, çiğ" },
+  { "externalId": "1934154", "name": "Taze Pancar", "description": "Pancar, çiğ" },
+  {
+    "externalId": "2121377",
+    "name": "Süzme Peynir",
+    "description": "Süzme peynir, tam yağlı, büyük veya küçük lor"
+  },
+  {
+    "externalId": "2071650",
+    "name": "Elmalar",
+    "description": "Elmalar, Granny Smith, kabuklu, çiğ"
+  },
+  {
+    "externalId": "522090",
+    "name": "Patates",
+    "description": "Patates, kızıl kahverengi, kabuksuz, çiğ"
+  },
+  {
+    "externalId": "1859625",
+    "name": "Arborio Pilavı",
+    "description": "Pirinç, beyaz, uzun taneli, zenginleştirilmemiş, çiğ"
+  },
+  { "externalId": "2062594", "name": "Fıstık", "description": "Yer fıstığı, çiğ" },
+  {
+    "externalId": "2467894",
+    "name": "Karışık Kuruyemiş",
+    "description": "Fındık, badem, kuru kavrulmuş, tuz ilave edilmiş"
+  },
+  {
+    "externalId": "2054492",
+    "name": "Fırın ekmeği",
+    "description": "Ekmek, tam buğday, ticari olarak hazırlanmış"
+  },
+  { "externalId": "2185701", "name": "Yağsız yoğurt", "description": "Yoğurt, sade, yağsız" },
+  {
+    "externalId": "2139087",
+    "name": "Jambon",
+    "description": "Jambon, dilimlenmiş, önceden paketlenmiş, şarküteri eti (%96 yağsız, su ilaveli)"
+  },
+  {
+    "externalId": "2430401",
+    "name": "Kıyılmış ve Baharatlı Domuz Karnitaları, Domuz Eti",
+    "description": "Domuz eti, pirzola, ortadan kesilmiş, çiğ"
+  },
+  {
+    "externalId": "2425912",
+    "name": "Jambon Baharatlı Blackeye Bezelye",
+    "description": "Karagöz bezelyesi, kuru"
+  },
+  {
+    "externalId": "2081296",
+    "name": "Kutuda Et Suyu, Sığır Eti",
+    "description": "Sığır eti suyu, çiğ"
+  },
+  { "externalId": "2632582", "name": "Pişirme Unu", "description": "Un, pirinç, yapışkan" },
+  { "externalId": "2667706", "name": "Arpa Unu", "description": "Un, patates" },
+  {
+    "externalId": "2404942",
+    "name": "Tam Tahıl Taş Öğütülmüş Kamut Unu, Tam Tahıl",
+    "description": "Horasan, tahıl, kuru, çiğ"
+  },
+  { "externalId": "2397511", "name": "Kahverengi Pirinç Unu, Un", "description": "Un, arpa" },
+  {
+    "externalId": "2161852",
+    "name": "Ayçiçek Yağı ve Avokado Yağı",
+    "description": "Yağ, zeytin, ekstra hafif"
+  },
+  { "externalId": "2596170", "name": "Klasik Humus", "description": "Humus, ticari" },
+  {
+    "externalId": "2008895",
+    "name": "Domates Püresi, Domates",
+    "description": "Domates, sos, konserve, tuz ilaveli"
+  },
+  {
+    "externalId": "2619273",
+    "name": "Domates Püresi, Domates",
+    "description": "Domates, püre, konserve"
+  },
+  {
+    "externalId": "2009491",
+    "name": "Şekersiz Elma Sosu",
+    "description": "C vitamini ilaveli, şekersiz elma püresi"
+  },
+  { "externalId": "2575996", "name": "Havuç", "description": "Havuç, olgun, çiğ" },
+  {
+    "externalId": "2601209",
+    "name": "Kızılcık %100 Suyu, Kızılcık",
+    "description": "Kızılcık suyu, zenginleştirilmemiş, konsantreden, uzun raf ömrüne sahip"
+  },
+  {
+    "externalId": "2621245",
+    "name": "Brokoli Lahana Salatası, Brokoli",
+    "description": "Brokoli, çiğ"
+  },
+  { "externalId": "2621263", "name": "Şalgam Yeşilleri", "description": "Şalgam, çiğ" },
+  {
+    "externalId": "2576392",
+    "name": "Hindi Sosis ve Kale Çorbası, Hindi Sosis ve Kale",
+    "description": "Karalahana, dondurulmuş, pişirilmiş, haşlanmış, süzülmüş, tuzsuz"
+  },
+  {
+    "externalId": "2596270",
+    "name": "Elma Suyu, Elma",
+    "description": "Elmalar, bal gevrek, kabuklu, çiğ"
+  },
+  { "externalId": "2431290", "name": "Mercimek", "description": "Mercimek, kuru" },
+  {
+    "externalId": "1869031",
+    "name": "Hazır Mısır Masa Unu",
+    "description": "Mısır unu, masa harina, beyaz veya sarı, kuru, çiğ"
+  },
+  {
+    "externalId": "2629570",
+    "name": "Fırında Olgun Plantainler",
+    "description": "Plantainler, olgunlaşmamış, çiğ"
+  },
+  {
+    "externalId": "2467328",
+    "name": "Kılıçbalığı Biftekleri",
+    "description": "Kılıçbalığı, dondurulmuş, vahşi yakalanmış"
+  },
+  {
+    "externalId": "1901707",
+    "name": "Blackeye Bezelye, Baharatlı",
+    "description": "Siyah göz bezelye, konserve, sodyum ilave edilmiş, süzülmüş ve durulanmış"
+  },
+  { "externalId": "2021609", "name": "Şeker", "description": "Şekerler, granüle" },
+  { "externalId": "2021632", "name": "Mango", "description": "Mango, Ataulfo, soyulmuş, çiğ" },
+  {
+    "externalId": "2475001",
+    "name": "Süt",
+    "description": "Süt, yağı azaltılmış sıvı, %2 süt yağı, ilave A vitamini ve D vitamini ile"
+  },
+  { "externalId": "2023830", "name": "Ekmeklik Un", "description": "Un, irmik, ince" },
+  {
+    "externalId": "578455",
+    "name": "Yumurtalar",
+    "description": "Yumurta, bütün, çiğ, dondurulmuş, pastörize"
+  },
+  {
+    "externalId": "2387087",
+    "name": "Organik bahar karışımı (bebek marul ve yeşillik)",
+    "description": "Radikyo, çiğ"
+  },
+  {
+    "externalId": "2275517",
+    "name": "Üzüm Suyu, Üzüm",
+    "description": "Üzüm suyu, mor, C vitamini ilaveli, konsantreden, uzun raf ömrüne sahip"
+  },
+  {
+    "externalId": "2672968",
+    "name": "Siyah Fasulye Kızartılmış Fasulye, Siyah Fasulye",
+    "description": "Fasulye, pinto, konserve, sodyum ilave edilmiş, süzülmüş ve durulanmış"
+  },
+  {
+    "externalId": "2577482",
+    "name": "Chia ve Keten Tohumlu Hatch Şili, Hatch Şili",
+    "description": "Keten tohumu, öğütülmüş"
+  },
+  {
+    "externalId": "569064",
+    "name": "Meyve suyu",
+    "description": "Meyve suyu, vişne, konsantreden, rafa dayanıklı"
+  },
+  {
+    "externalId": "2105045",
+    "name": "Bulgur & Kinoa Tahıl Karışımı",
+    "description": "Bulgur, kuru, çiğ"
+  },
+  {
+    "externalId": "2158186",
+    "name": "Kuşkonmaz Tavada Kızartma, Kuşkonmaz",
+    "description": "Kuşkonmaz, yeşil, çiğ"
+  },
+  { "externalId": "2633820", "name": "Kavun", "description": "Kavun, kavun, çiğ" },
+  {
+    "externalId": "2678631",
+    "name": "Kraliçe Zeytin",
+    "description": "Zeytin, yeşil, Manzanilla, biberle doldurulmuş"
+  },
+  {
+    "externalId": "2487241",
+    "name": "Mantarlar Sıcak Turşu, Mantarlar",
+    "description": "Mantarlar, beyaz düğme"
+  },
+  {
+    "externalId": "2056092",
+    "name": "Sığır eti",
+    "description": "Sığır eti, üst sığır filetosu biftek, çiğ"
+  },
+  {
+    "externalId": "1728651",
+    "name": "Mantarlı İtalyan Sosu, Mantar",
+    "description": "Mantar, kayın"
+  },
+  {
+    "externalId": "2375018",
+    "name": "Biber ve soğan karışımı",
+    "description": "Yeşil soğan, (yeşil soğan), soğanı ve yeşillikleri, kökü alınmış, çiğ"
+  },
+  {
+    "externalId": "2428441",
+    "name": "Dondurulmuş Istakoz Eti",
+    "description": "Istakoz, yalnızca kuyruk, dondurulmuş, vahşi yakalanmış"
+  },
+  { "externalId": "2502452", "name": "Ahududu", "description": "Ahududu, çiğ" },
+  {
+    "externalId": "2567726",
+    "name": "Sarımsak ve Soğan Sosu, Sarımsak ve Soğan",
+    "description": "Soğan, kırmızı, çiğ"
+  },
+  {
+    "externalId": "2253421",
+    "name": "Muzlu Puding Bardakları, Muz",
+    "description": "Muz, olgun ve hafif olgun, çiğ"
+  },
+  {
+    "externalId": "2180044",
+    "name": "Siyah Fasulye Çorbası, Siyah Fasulye",
+    "description": "Fasulye, büyük kuzey, konserve, sodyum ilave edilmiş, süzülmüş ve durulanmış"
+  },
+  {
+    "externalId": "1891048",
+    "name": "Sorgum Kinoa ve Kahverengi Pirinç",
+    "description": "Sorgum unu, beyaz, incili, zenginleştirilmemiş, kuru, ham"
+  },
+  {
+    "externalId": "2679700",
+    "name": "Sorgum Kinoa ve Kahverengi Pirinç",
+    "description": "Sorgum, tam tahıllı, beyaz, kuru, çiğ"
+  },
+  { "externalId": "2083070", "name": "Açık krem", "description": "Krema, ekşi, tam yağlı" },
+  { "externalId": "2010041", "name": "Sos", "description": "Sos, salsa, servise hazır" },
+  {
+    "externalId": "1909135",
+    "name": "Süt",
+    "description": "Süt, yağsız, sıvı, A vitamini ve D vitamini ilaveli (yağsız veya yağsız)"
+  },
+  {
+    "externalId": "2066269",
+    "name": "Domates Püresi, Domates",
+    "description": "Domates, üzüm, çiğ"
+  },
+  {
+    "externalId": "2063073",
+    "name": "Kavrulmuş Badem Ezmesi",
+    "description": "Badem ezmesi, kremalı"
+  },
+  { "externalId": "2063079", "name": "Fıstık Ezmesi", "description": "Fıstık ezmesi, kremalı" },
+  {
+    "externalId": "1943184",
+    "name": "Havuçlu Gefilte Balık",
+    "description": "Balık, morina, Atlantik, vahşi yakalanmış, çiğ"
+  },
+  { "externalId": "2016892", "name": "Peynir", "description": "Peynir, kaşar" },
+  {
+    "externalId": "2623495",
+    "name": "Organik Yabani Pirinç",
+    "description": "Yabani pirinç, kuru, çiğ"
+  },
+  {
+    "externalId": "2125901",
+    "name": "Organik Altın Pirinç Kahverengi Pirinç",
+    "description": "Pirinç, kahverengi, uzun taneli, zenginleştirilmemiş, çiğ"
+  },
+  {
+    "externalId": "2398274",
+    "name": "Soğuk Fasulye Turşusu Yeşil Fasulye, Soğuk Fasulye",
+    "description": "Fasulye, çıtır, yeşil, konserve, normal paket, süzülmüş katılar"
+  },
+  {
+    "externalId": "1460133",
+    "name": "Snapper Fileto",
+    "description": "Snapper, dondurulmuş, vahşi yakalanmış"
+  },
+  {
+    "externalId": "1457743",
+    "name": "Kar Yengeç Bacak Eti",
+    "description": "Kar yengeci, yalnızca bacaklar, dondurulmuş"
+  },
+  {
+    "externalId": "2072221",
+    "name": "Arborio Pilavı",
+    "description": "Pirinç, kırmızı, zenginleştirilmemiş, kuru, çiğ"
+  },
+  {
+    "externalId": "2603491",
+    "name": "Nohut Orzo, Nohut",
+    "description": "Nohut, (garbanzo fasulyesi, bengal gramı), kuru"
+  },
+  {
+    "externalId": "1900839",
+    "name": "Karışık Kuruyemiş",
+    "description": "Fındık, badem, bütün, çiğ"
+  },
+  {
+    "externalId": "2616830",
+    "name": "Thumann'ın Frankfurters'ı, 3 Lbs",
+    "description": "Frankfurter, sığır eti, ısıtılmamış"
+  },
+  {
+    "externalId": "2676314",
+    "name": "Yaz Sosis",
+    "description": "Sosis, İtalyan, domuz eti, hafif, pişmiş, tavada kızartılmış"
+  },
+  {
+    "externalId": "1938429",
+    "name": "İtalyan Sosis",
+    "description": "Sosis, domuz eti, chorizo, link veya öğütülmüş, pişmiş, tavada kızartılmış"
+  },
+  {
+    "externalId": "2146840",
+    "name": "Marul, Rendelenmiş Havuç ve Kırmızı Lahana Salatası, Marul, Rendelenmiş Havuç ve Kırmızı Lahana",
+    "description": "Lahana, Çin lahanası, çiğ"
+  },
+  {
+    "externalId": "1888254",
+    "name": "Mandalina Portakalları",
+    "description": "Mandalina, çekirdeksiz, soyulmuş, çiğ"
+  },
+  { "externalId": "2152206", "name": "Bartlett Armutları", "description": "Armut, çiğ, bartlett" },
+  {
+    "externalId": "2042179",
+    "name": "Karışık Kuruyemiş",
+    "description": "Fındık, Brezilya fıstığı, çiğ"
+  },
+  {
+    "externalId": "2096464",
+    "name": "Kurutulmuş Yumurta Ürünü Bütün Yumurta",
+    "description": "Yumurta, bütün, kurutulmuş"
+  },
+  {
+    "externalId": "2549919",
+    "name": "Ananas suyunda ananas parçaları",
+    "description": "Ananas, çiğ"
+  },
+  {
+    "externalId": "2401594",
+    "name": "Domates Suyunda Bütün Domates, Domates",
+    "description": "Domates, bütün, konserve, katı ve sıvı, tuz ilave edilmiş"
+  },
+  {
+    "externalId": "2634454",
+    "name": "Yabani Avlanmış Şili Levreği Filetosu",
+    "description": "Deniz levreği, Şili, dondurulmuş, vahşi yakalanmış"
+  },
+  {
+    "externalId": "2634455",
+    "name": "Vahşi Yakalanan Pasifik Halibut Filetosu",
+    "description": "Halibut, dondurulmuş, vahşi yakalanmış"
+  },
+  { "externalId": "2505655", "name": "Kıvırcık lahana", "description": "Lahana, çiğ" },
+  {
+    "externalId": "2660646",
+    "name": "Tavuk Bagetleri, Tavuk",
+    "description": "Tavuk, kanat, et ve deri, çiğ"
+  },
+  {
+    "externalId": "2661756",
+    "name": "Tavuk Burger, Tavuk",
+    "description": "Tavuk, göğüs, et ve deri, çiğ"
+  },
+  { "externalId": "2178032", "name": "Havuç Çubukları, Havuç", "description": "Bebek havuç, çiğ" },
+  {
+    "externalId": "2115066",
+    "name": "Kavrulmuş Karabuğday",
+    "description": "Karabuğday, tam tahıl"
+  },
+  { "externalId": "2060308", "name": "Biber", "description": "Biber, serrano, tohumlanmış, çiğ" },
+  {
+    "externalId": "2060309",
+    "name": "Taze Sarı Kabak",
+    "description": "Kabak, yaz, sarı, kabuğu dahil, ham"
+  },
+  { "externalId": "2626300", "name": "Patlıcan", "description": "Patlıcan, çiğ" },
+  {
+    "externalId": "2396166",
+    "name": "Çırpılmış krem peynir, krema",
+    "description": "Krem peynir, tam yağlı, blok"
+  },
+  {
+    "externalId": "2422848",
+    "name": "Kahvaltı Domuz Sosis, Kahvaltı Domuz Sosis",
+    "description": "Domuz eti, öğütülmüş, çiğ"
+  },
+  {
+    "externalId": "2423541",
+    "name": "Böğürtlen Özü ile aşılanmış Böğürtlen Suyu, Böğürtlen",
+    "description": "Böğürtlen, çiğ"
+  },
+  {
+    "externalId": "2641766",
+    "name": "Kürlenmemiş Jambon",
+    "description": "Jambon, dilimlenmiş, restoran"
+  },
+  {
+    "externalId": "2129494",
+    "name": "Chia Tohumları, Kenevir Tohumları ve Goji, Chia Tohumları, Kenevir Tohumları ve Goji ile Superfood Badem Ezmesi",
+    "description": "Tohumlar, ayçiçeği çekirdeği, çekirdek, ham"
+  },
+  {
+    "externalId": "2102195",
+    "name": "Bütün Soğan Halkaları",
+    "description": "Soğan halkaları, panelenmiş, kısmen kızartılmış, dondurulmuş, hazırlanmış, fırında ısıtılmış"
+  },
+  {
+    "externalId": "2094460",
+    "name": "Kalamar Yüzükleri",
+    "description": "Kalamar (kalamar), dondurulmuş, yalnızca tüpler"
+  },
+  {
+    "externalId": "2423382",
+    "name": "Ezilmiş Avokado",
+    "description": "Avokado, Hass, soyulmuş, çiğ"
+  },
+  { "externalId": "2194474", "name": "Chia Tohumları", "description": "Chia tohumları, kuru, çiğ" },
+  {
+    "externalId": "1133958",
+    "name": "Vişne Suyu, Vişne",
+    "description": "Kirazlar, tatlı, koyu kırmızı, çiğ"
+  },
+  { "externalId": "576920", "name": "Patates", "description": "Patates, kırmızı, kabuksuz, çiğ" },
+  {
+    "externalId": "2642169",
+    "name": "Zencefil Meyve Nektarı ile Haziran Eriği, Haziran Eriği",
+    "description": "Erik, siyah, kabuklu, ham"
+  },
+  {
+    "externalId": "2455279",
+    "name": "Kahvaltı Sosis",
+    "description": "Sosis, kahvaltı sosisi, sığır eti, önceden pişirilmiş, hazırlıksız"
+  },
+  { "externalId": "2475934", "name": "Yunan Yoğurt", "description": "Yoğurt, Yunan, Sade, Yağsız" },
+  {
+    "externalId": "2181695",
+    "name": "Tavuk Burger, Tavuk",
+    "description": "Tavuk, but, kemiksiz, derisiz, çiğ"
+  },
+  { "externalId": "2430237", "name": "Yaban mersini", "description": "Yaban mersini, çiğ" },
+  {
+    "externalId": "2430317",
+    "name": "%100 Soya Yağı Bitkisel Yağ",
+    "description": "Yağ, Hindistan cevizi"
+  },
+  {
+    "externalId": "1925845",
+    "name": "Yakut Kırmızı Organik Greyfurt Suyu",
+    "description": "Greyfurt suyu, kırmızı, takviye edilmemiş, konsantre edilmemiş, soğutulmuş"
+  },
+  {
+    "externalId": "2637169",
+    "name": "Patates O'Brien Biber ve Soğan ile Doğranmış Patates, Patates O'Brien",
+    "description": "Patates, altın, kabuksuz, çiğ"
+  },
+  { "externalId": "1905344", "name": "Brüksel Lahanası", "description": "Brüksel lahanası, çiğ" },
+  { "externalId": "2665752", "name": "Kırmızı Pancar", "description": "Pancar yeşillikleri, çiğ" },
+  {
+    "externalId": "2507462",
+    "name": "Domates Püresi, Domates",
+    "description": "Domates, ezilmiş, konserve"
+  },
+  {
+    "externalId": "2489170",
+    "name": "Gerçek Yumurta",
+    "description": "Yumurta, beyaz, çiğ, dondurulmuş, pastörize"
+  },
+  {
+    "externalId": "2096008",
+    "name": "Kuzey Atlantik Denizi Tarağı",
+    "description": "Deniz tarakları, deniz, dondurulmuş, yabani olarak yakalanmış"
+  },
+  { "externalId": "1664271", "name": "İncir", "description": "İncir, kurutulmuş, pişmemiş" },
+  {
+    "externalId": "2089873",
+    "name": "Turşu O'Pete İşlenmiş Sıcak Turşu",
+    "description": "Turşu, salatalık, dereotu veya koşer dereotu"
+  },
+  {
+    "externalId": "2642882",
+    "name": "Pasifik Buzdağı Marulu, 2 Sayısı",
+    "description": "Marul, cos veya marul, çiğ"
+  },
+  {
+    "externalId": "2525374",
+    "name": "İçilebilir Yoğurt",
+    "description": "Yoğurt, sade, tam yağlı süt"
+  },
+  {
+    "externalId": "2666557",
+    "name": "Kuskus Fonio gibi, Kuskus gibi",
+    "description": "Fonio, tahıl, kuru, ham"
+  },
+  { "externalId": "579494", "name": "Organik Yaban Havuçları", "description": "Yaban havucu, çiğ" },
+  {
+    "externalId": "1970280",
+    "name": "Mantar Tuzlu Turşu, Mantarlar",
+    "description": "Mantar, crimini"
+  },
+  {
+    "externalId": "2384535",
+    "name": "Salvador Lahana Turşusu, Salvador",
+    "description": "Lahana, napa, yaprak, sapları alınmış, çiğ"
+  },
+  {
+    "externalId": "1960704",
+    "name": "Kurabiye Pop, Kurabiye",
+    "description": "Kurabiye, yulaf ezmeli, yumuşak, kuru üzümlü"
+  },
+  { "externalId": "2009472", "name": "Peynir", "description": "Peynir, queso fresk, katı" },
+  {
+    "externalId": "2151413",
+    "name": "Hindi Oktoberfest köftesi, Hindi",
+    "description": "Hindi, öğütülmüş, %93 yağsız/ %7 yağlı, çiğ"
+  },
+  { "externalId": "2105474", "name": "Karışık Kavun", "description": "Bal kavunu, çiğ" },
+  {
+    "externalId": "1935836",
+    "name": "Badem Sütü, Orijinal",
+    "description": "Badem sütü, şekersiz, sade, soğutulmuş"
+  },
+  {
+    "externalId": "2508901",
+    "name": "Tam Tahıl Farro, Tam Tahıl",
+    "description": "Farro, incili, kuru, ham"
+  },
+  {
+    "externalId": "2135930",
+    "name": "Domuz eti",
+    "description": "Domuz eti, fileto, bonfile, kemiksiz, çiğ"
+  },
+  { "externalId": "2167314", "name": "Cevizli Fındık", "description": "Fındık, ceviz, yarım, çiğ" },
+  { "externalId": "1548924", "name": "Şeftali", "description": "Şeftali, sarı, çiğ" },
+  {
+    "externalId": "2460077",
+    "name": "Tomatillo Kişniş Trüf Acı Sos, Tomatillo Kişniş",
+    "description": "Tomatillos, kabuğu alınmış, çiğ"
+  },
+  {
+    "externalId": "2369392",
+    "name": "Karpuz Parçaları, Karpuz",
+    "description": "Karpuz, çekirdeksiz, sadece etli, çiğ"
+  },
+  {
+    "externalId": "2604043",
+    "name": "Havuç Ananas Suyu, Havuç; Ananas",
+    "description": "Havuç, dondurulmuş, hazırlıksız"
+  },
+  { "externalId": "2593092", "name": "Swai Balık Bifteği", "description": "Balık, pollock, çiğ" },
+  {
+    "externalId": "1917372",
+    "name": "Portakal Suyu",
+    "description": "Portakal suyu, posasız, zenginleştirilmemiş, konsantreden, soğutulmuş"
+  },
+  {
+    "externalId": "2642990",
+    "name": "Dörtlere bölünmüş kabak karışımı",
+    "description": "Kabak, yaz, yeşil, kabak, kabuğu dahil, çiğ"
+  },
+  {
+    "externalId": "2664361",
+    "name": "Yulaf Barista Karışımı, Yulaf",
+    "description": "Yulaf sütü, şekersiz, sade, soğutulmuş"
+  },
+  { "externalId": "2554236", "name": "Ketçap", "description": "Ketçap, restoran" },
+  {
+    "externalId": "2095090",
+    "name": "Peynir",
+    "description": "Peynir, parmesan, rendelenmiş, buzdolabında"
+  },
+  {
+    "externalId": "2608614",
+    "name": "Einkorn Organik Antik Tahıllı Makarna, Tam Buğday Düdük",
+    "description": "Einkorn, tahıl, kuru, ham"
+  },
+  {
+    "externalId": "2631071",
+    "name": "Jumbo Deniz Tarağı",
+    "description": "Deniz tarağı, körfez, Patagonya, dondurulmuş, vahşi yakalanmış"
+  },
+  { "externalId": "2403289", "name": "Karnabahar Çiçekleri", "description": "Karnabahar, çiğ" },
+  {
+    "externalId": "2274736",
+    "name": "Balkabağı, Balkabağı",
+    "description": "Kabak, turta balkabağı, soyulmuş, çekirdekleri çıkarılmış, çiğ"
+  },
+  {
+    "externalId": "2423081",
+    "name": "Biber Üçlü Karışım, Biber",
+    "description": "Biber, çan, yeşil, çiğ"
+  },
+  {
+    "externalId": "2159863",
+    "name": "Armut Premium Nektarı, Armut",
+    "description": "Armut, Anjou, yeşil, kabuklu, çiğ"
+  },
+  {
+    "externalId": "2466144",
+    "name": "Sığır eti",
+    "description": "Sığır eti, kıyma, %90 yağsız et / %10 yağ, çiğ"
+  },
+  {
+    "externalId": "2466495",
+    "name": "Kereviz Soğuk Sıkım Sebze & Meyve Suyu, Kereviz",
+    "description": "Kereviz, çiğ"
+  },
+  {
+    "externalId": "2452675",
+    "name": "King Arpacık Siyah Sarımsak, Siyah",
+    "description": "Arpacık soğanı, soyulmuş, kökü alınmış, çiğ"
+  },
+  {
+    "externalId": "2369909",
+    "name": "Elma Suyu, Elma",
+    "description": "Elma suyu, C vitamini ilaveli, konsantreden, uzun raf ömrüne sahip"
+  },
+  { "externalId": "2652552", "name": "Çilek", "description": "Çilek, çiğ" },
+  {
+    "externalId": "2291370",
+    "name": "Rutabaga doğranmış",
+    "description": "Rutabaga, soyulmuş, çiğ"
+  },
+  {
+    "externalId": "2464657",
+    "name": "Yulaf Unu",
+    "description": "Yulaf, tam tahıllı, haddelenmiş, eski moda"
+  },
+  {
+    "externalId": "2640507",
+    "name": "Domates Rezene Çorbası, Domates Rezene",
+    "description": "Rezene, soğan, çiğ"
+  },
+  { "externalId": "2665288", "name": "Darı Unu", "description": "Darı, tam tahıl" },
+  {
+    "externalId": "2545121",
+    "name": "Lumi, Sabah Gündoğumu Suyu, Greyfurt, Limon, Greyfurt, Limon",
+    "description": "Greyfurt suyu, beyaz, konserve veya şişelenmiş, şekersiz"
+  },
+  { "externalId": "464109", "name": "Yunan Yoğurt", "description": "Yoğurt, Yunan, çilek, yağsız" },
+  {
+    "externalId": "1882390",
+    "name": "Blue Print, Soğuk Sıkım Meyve Suyu, Roka Kale Elma Marul Kereviz Salatalık Limon Zencefil, Roka Kale Elma Romaine Kereviz Salatalık Limon Zencefil",
+    "description": "Blue Print, Soğuk Sıkım Meyve Suyu, Roka Kale"
+  },
+  { "externalId": "2061880", "name": "Peynir", "description": "Peynir, İsviçre" },
+  {
+    "externalId": "2484651",
+    "name": "Orta Pişmiş Karides",
+    "description": "Kabuklular, karides, çiftlikte yetiştirilen, çiğ"
+  },
+  {
+    "externalId": "1983090",
+    "name": "Üzüm Sorbatto, Üzüm",
+    "description": "Üzüm, kırmızı, çekirdeksiz, çiğ"
+  },
+  {
+    "externalId": "2652057",
+    "name": "Siyah Fasulye Biber, Siyah Fasulye",
+    "description": "Fasulye, snap, siyah, çiğ"
+  },
+  { "externalId": "1903929", "name": "Dilimlenmiş Nektarin", "description": "Nektarin, çiğ" },
+  {
+    "externalId": "1889459",
+    "name": "Gümüş Balık",
+    "description": "Balık, tilapia, çiftlikte yetiştirilen, çiğ"
+  },
+  {
+    "externalId": "2069211",
+    "name": "Tavuk Sosis",
+    "description": "Sosis, hindi, kahvaltı bağlantıları, hafif, çiğ"
+  },
+  { "externalId": "2474515", "name": "Muz ekmeği", "description": "Plantain, olgun, çiğ" },
+  {
+    "externalId": "1897135",
+    "name": "Kabak Unu, Organik Kabak Unu",
+    "description": "Un, kavuzlu buğday, tam tahıl, kabak"
+  },
+  { "externalId": "2402948", "name": "Mango", "description": "Mango, Tommy Atkins, soyulmuş, çiğ" },
+  {
+    "externalId": "2421200",
+    "name": "Orkinos Yabani Yakalanmış Premium Deniz Ürünleri, Ton Balığı",
+    "description": "Ton balığı, ahi veya sarı yüzgeçli, dondurulmuş, vahşi yakalanmış"
+  },
+  { "externalId": "2396424", "name": "Kıyma bizon", "description": "Bizon, kıyma, çiğ" },
+  {
+    "externalId": "1759691",
+    "name": "Pepperoncini Biberleri, Pepperoncini Biberleri",
+    "description": "Biber, çan, sarı, çiğ"
+  },
+  { "externalId": "2062044", "name": "Gurme Kayısı", "description": "Kayısı, kabuklu, çiğ" },
+  {
+    "externalId": "1889936",
+    "name": "Miga Ekmeği",
+    "description": "Ekmek, beyaz, ticari olarak hazırlanmış"
+  },
+  {
+    "externalId": "1915143",
+    "name": "Vahşi Yakalanan Maine Istakoz Eti",
+    "description": "Kabuklular, yengeç, mavi yüzme, parça, pastörize, soğutulmuş"
+  },
+  { "externalId": "475535", "name": "Kivi", "description": "Kivi (kivi), yeşil, soyulmuş, çiğ" },
+  { "externalId": "2671029", "name": "Sarımsak Ezmesi, Sarımsak", "description": "Sarımsak, çiğ" },
+  {
+    "externalId": "578159",
+    "name": "Tamamen Doğal Kıyma Kuzu",
+    "description": "Kuzu, öğütülmüş, çiğ"
+  },
+  { "externalId": "2089626", "name": "Peynir", "description": "Peynir, monterey krikosu, katı" },
+  {
+    "externalId": "2640901",
+    "name": "Doğal Soya Fasulyesi Sütü",
+    "description": "Soya sütü, şekersiz, sade, rafa dayanıklı"
+  },
+  {
+    "externalId": "2183065",
+    "name": "Ayçiçek Yağlı Marazul Hamsi Filetosu 78gr",
+    "description": "Hamsi, zeytinyağında konservelenmiş, tuzlanmış, süzülmüş"
+  },
+  {
+    "externalId": "common:pizza-margherita",
+    "name": "Pizza Margherita",
+    "description": "Domates soslu, mozarellalı ve fesleğenli İtalyan pizzası"
+  },
+  {
+    "externalId": "common:pizza-quattro-formaggi",
+    "name": "Pizza Quattro Formaggi",
+    "description": "İtalyan dört peynirli pizza"
+  },
+  {
+    "externalId": "common:pepperoni-pizza",
+    "name": "Biberli Pizza",
+    "description": "Amerikan pizzası, domates soslu, mozarellalı ve pepperonili"
+  },
+  {
+    "externalId": "common:hawaiian-pizza",
+    "name": "Hawaii Pizzası",
+    "description": "Jambon, ananas, domates sosu ve peynirli pizza"
+  },
+  {
+    "externalId": "common:bbq-chicken-pizza",
+    "name": "Barbekü Tavuklu Pizza",
+    "description": "Barbekü soslu pizza, tavuk, soğan ve peynir"
+  },
+  {
+    "externalId": "common:vegetarian-pizza",
+    "name": "Vejetaryen Pizza",
+    "description": "Karışık sebzeli, domates soslu ve peynirli pizza"
+  },
+  {
+    "externalId": "common:mushroom-pizza",
+    "name": "Mantarlı Pizza",
+    "description": "Mantarlı, domates soslu ve mozarellalı pizza"
+  },
+  {
+    "externalId": "common:prosciutto-pizza",
+    "name": "Prosciutto Pizza",
+    "description": "Prosciutto, mozzarella ve domates soslu İtalyan pizzası"
+  },
+  {
+    "externalId": "common:calzone",
+    "name": "Calzon",
+    "description": "Peynir ve dolgularla doldurulmuş katlanmış İtalyan pizzası"
+  },
+  {
+    "externalId": "common:garlic-bread",
+    "name": "Sarımsaklı Ekmek",
+    "description": "Sarımsaklı tereyağlı kızarmış ekmek"
+  },
+  {
+    "externalId": "common:cheeseburger",
+    "name": "Çizburger",
+    "description": "Peynirli, çörekli ve soslu dana burger"
+  },
+  {
+    "externalId": "common:hamburger",
+    "name": "Hamburger",
+    "description": "Klasik soslarla çörek içinde dana köftesi"
+  },
+  {
+    "externalId": "common:double-cheeseburger",
+    "name": "Duble Cheeseburger",
+    "description": "İki dana köftesi ve peynirli burger"
+  },
+  {
+    "externalId": "common:bacon-cheeseburger",
+    "name": "Pastırmalı çizburger",
+    "description": "Pastırma, peynir ve soslar ile sığır eti burger"
+  },
+  {
+    "externalId": "common:chicken-burger",
+    "name": "Tavuk Burger",
+    "description": "Tavuk köftesi veya ızgara tavuklu burger"
+  },
+  {
+    "externalId": "common:crispy-chicken-sandwich",
+    "name": "Çıtır Tavuklu Sandviç",
+    "description": "Çörek ve soslu kızarmış tavuklu sandviç"
+  },
+  {
+    "externalId": "common:veggie-burger",
+    "name": "Sebzeli burger",
+    "description": "Çörek ve soslu bitki bazlı burger"
+  },
+  {
+    "externalId": "common:fish-burger",
+    "name": "Balık Burger",
+    "description": "Panelenmiş balık filetosu ve soslu burger"
+  },
+  {
+    "externalId": "common:hot-dog",
+    "name": "Sosisli sandviç",
+    "description": "Baharatlı çörek içinde sosis"
+  },
+  {
+    "externalId": "common:corn-dog",
+    "name": "Mısır Köpeği",
+    "description": "Bir çubuk üzerinde dövülmüş sosis"
+  },
+  {
+    "externalId": "common:french-fries",
+    "name": "Patates kızartması",
+    "description": "Derin yağda kızartılmış patates çubukları"
+  },
+  {
+    "externalId": "common:sweet-potato-fries",
+    "name": "Tatlı Patates Kızartması",
+    "description": "Kızarmış tatlı patates çubukları"
+  },
+  {
+    "externalId": "common:onion-rings",
+    "name": "Soğan Halkaları",
+    "description": "Hırpalanmış ve kızartılmış soğan halkaları"
+  },
+  {
+    "externalId": "common:chicken-nuggets",
+    "name": "Tavuk Nuggets",
+    "description": "Ekmekli kızarmış tavuk parçaları"
+  },
+  {
+    "externalId": "common:chicken-wings",
+    "name": "Tavuk Kanatları",
+    "description": "Soslu kızarmış veya fırında tavuk kanadı"
+  },
+  {
+    "externalId": "common:buffalo-wings",
+    "name": "Bufalo Kanatları",
+    "description": "Baharatlı buffalo sosunda kızartılmış tavuk kanatları"
+  },
+  {
+    "externalId": "common:mozzarella-sticks",
+    "name": "Mozarella Çubukları",
+    "description": "Ekmekli kızarmış mozzarella peyniri çubukları"
+  },
+  {
+    "externalId": "common:mac-and-cheese",
+    "name": "Mac ve Peynir",
+    "description": "Kremalı peynir soslu makarna"
+  },
+  {
+    "externalId": "common:grilled-cheese-sandwich",
+    "name": "Izgara Peynirli Sandviç",
+    "description": "Eritilmiş peynirli kızarmış sandviç"
+  },
+  {
+    "externalId": "common:club-sandwich",
+    "name": "Kulüp Sandviç",
+    "description": "Hindi, pastırma, marul ve domatesli katmanlı sandviç"
+  },
+  {
+    "externalId": "common:blt-sandwich",
+    "name": "BLT Sandviç",
+    "description": "Pastırma, marul ve domatesli sandviç"
+  },
+  {
+    "externalId": "common:ham-and-cheese-sandwich",
+    "name": "Jambonlu ve Peynirli Sandviç",
+    "description": "Jambonlu, peynirli ve ekmekli sandviç"
+  },
+  {
+    "externalId": "common:tuna-salad-sandwich",
+    "name": "Ton Balıklı Salata Sandviç",
+    "description": "Ton balıklı salata dolgulu sandviç"
+  },
+  {
+    "externalId": "common:egg-salad-sandwich",
+    "name": "Yumurta Salatalı Sandviç",
+    "description": "Yumurta salatası dolgulu sandviç"
+  },
+  {
+    "externalId": "common:chicken-salad-sandwich",
+    "name": "Tavuk Salatası Sandviç",
+    "description": "Tavuklu salata dolgulu sandviç"
+  },
+  {
+    "externalId": "common:philly-cheesesteak",
+    "name": "Philadelphia Peynirli Bifteği",
+    "description": "Dilimlenmiş sığır eti, peynir ve soğanlı sandviç"
+  },
+  {
+    "externalId": "common:meatball-sub",
+    "name": "Köfteli sub",
+    "description": "Köfteli sub sandviç, domates sosu ve peynirli"
+  },
+  {
+    "externalId": "common:falafel-wrap",
+    "name": "Falafel Dürüm",
+    "description": "Falafel, sebze ve tahin sosla sarma"
+  },
+  {
+    "externalId": "common:chicken-caesar-wrap",
+    "name": "Tavuklu Sezar Dürüm",
+    "description": "Tavuk, marul, parmesan ve Sezar sosuyla sarın"
+  },
+  {
+    "externalId": "common:shawarma-wrap",
+    "name": "Şavurma Sarması",
+    "description": "Baharatlı et ve sarımsak soslu Ortadoğu dürümü"
+  },
+  {
+    "externalId": "common:gyro",
+    "name": "Gyros",
+    "description": "Dilimlenmiş et, sebze ve cacık ile Yunan pidesi"
+  },
+  {
+    "externalId": "common:doner-kebab",
+    "name": "Döner Kebap",
+    "description": "Türk usulü gözleme veya traşlanmış et ve salata ile pide"
+  },
+  {
+    "externalId": "common:burrito",
+    "name": "Burrito",
+    "description": "Pirinç, fasulye, et ve soslarla doldurulmuş Meksika tortillası"
+  },
+  {
+    "externalId": "common:chicken-burrito",
+    "name": "Tavuklu Burrito",
+    "description": "Tavuk, pilav, fasulye ve salsa ile sarılmış tortilla"
+  },
+  {
+    "externalId": "common:burrito-bowl",
+    "name": "Burrito kasesi",
+    "description": "Fasulye, et veya sebze, salsa ve soslu pirinç kasesi"
+  },
+  {
+    "externalId": "common:beef-taco",
+    "name": "Sığır eti tako",
+    "description": "Baharatlı dana eti, marul, peynir ve salsa ile taco"
+  },
+  {
+    "externalId": "common:chicken-taco",
+    "name": "Tavuk Taco",
+    "description": "Tavuk, salsa ve sebzeli taco"
+  },
+  {
+    "externalId": "common:fish-taco",
+    "name": "Balık Taco",
+    "description": "Balık, lahana salatası ve soslu taco"
+  },
+  {
+    "externalId": "common:carnitas-taco",
+    "name": "Carnitas Taco",
+    "description": "Yavaş pişirilmiş domuz eti ve soslarla taco"
+  },
+  {
+    "externalId": "common:quesadilla",
+    "name": "Quesadilla",
+    "description": "Eritilmiş peynirle doldurulmuş ızgara tortilla"
+  },
+  {
+    "externalId": "common:nachos",
+    "name": "Nacho",
+    "description": "Peynir, salsa ve soslarla süslenmiş tortilla cipsleri"
+  },
+  {
+    "externalId": "common:loaded-nachos",
+    "name": "Yüklü Nacholar",
+    "description": "Etli, fasulyeli, peynirli, salsalı ve ekşi kremalı nachos"
+  },
+  {
+    "externalId": "common:enchiladas",
+    "name": "Enchiladas",
+    "description": "Sos ve peynirle pişirilmiş rulo tortilla"
+  },
+  {
+    "externalId": "common:chicken-enchiladas",
+    "name": "Tavuk Enchiladas",
+    "description": "Tavukla doldurulmuş ve sosla doldurulmuş Enchiladas"
+  },
+  {
+    "externalId": "common:fajitas",
+    "name": "Fajita",
+    "description": "Tortilla ile servis edilen cızırtılı et veya sebzeler"
+  },
+  {
+    "externalId": "common:chicken-fajitas",
+    "name": "Tavuk Fajita",
+    "description": "Tortilla ile servis edilen biber ve soğanlı tavuk"
+  },
+  {
+    "externalId": "common:chili-con-carne",
+    "name": "Chili con Carne",
+    "description": "Baharatlı sığır eti ve fasulye biberi"
+  },
+  {
+    "externalId": "common:guacamole",
+    "name": "Guacamole",
+    "description": "Misket limonu ve baharatlarla ezilmiş avokado sosu"
+  },
+  {
+    "externalId": "common:salsa-and-chips",
+    "name": "Salsa ve Cips",
+    "description": "Tortilla cipsi, domates salsa ile servis edilir"
+  },
+  {
+    "externalId": "common:tacos-al-pastor",
+    "name": "Tacos al Pastor",
+    "description": "Marine edilmiş domuz eti, ananas, soğan ve kişniş ile Meksika tacos"
+  },
+  {
+    "externalId": "common:carne-asada-tacos",
+    "name": "Carne Asada Tacos",
+    "description": "Izgara biftek, soğan, kişniş ve salsa ile Meksika tacos"
+  },
+  {
+    "externalId": "common:chiles-rellenos",
+    "name": "Şili Rellenos",
+    "description": "Peynir veya et ve soslu Meksika biber dolması"
+  },
+  {
+    "externalId": "common:pozole",
+    "name": "Pozol",
+    "description": "Domuz eti veya tavuk ve soslu Meksika usulü homin çorbası"
+  },
+  {
+    "externalId": "common:tamales",
+    "name": "Tamales",
+    "description": "Et, peynir veya sebzeyle doldurulmuş Meksika buharda pişirilmiş mısır masası"
+  },
+  {
+    "externalId": "common:sopes",
+    "name": "Sopes",
+    "description": "Fasulye, et, salsa ve peynirle doldurulmuş kalın Meksika mısır kekleri"
+  },
+  {
+    "externalId": "common:tostadas",
+    "name": "Tostada'lar",
+    "description": "Fasulye, et, sebze ve salsa ile süslenmiş çıtır tortillalar"
+  },
+  {
+    "externalId": "common:mole-poblano",
+    "name": "Mole Poblano",
+    "description": "Zengin şili ve çikolatalı köstebek soslu Meksika tavuğu veya hindi"
+  },
+  {
+    "externalId": "common:poke-bowl-chicken",
+    "name": "Poke Kase Tavuk",
+    "description": "Tavuk, sebze ve soslu Hawaii tarzı pirinç kasesi"
+  },
+  {
+    "externalId": "common:poke-bowl-salmon",
+    "name": "Poke Kase Somon",
+    "description": "Somon, sebze ve soslu Hawaii tarzı pirinç kasesi"
+  },
+  {
+    "externalId": "common:poke-bowl-tuna",
+    "name": "Poke Kase Ton Balığı",
+    "description": "Ton balığı, sebze ve soslu Hawaii tarzı pirinç kasesi"
+  },
+  {
+    "externalId": "common:poke-bowl-tofu",
+    "name": "Poke Kasesi Tofu",
+    "description": "Tofu, sebze ve soslu Hawaii tarzı pirinç kasesi"
+  },
+  {
+    "externalId": "common:sushi-salmon-nigiri",
+    "name": "Suşi Somon Nigiri",
+    "description": "Somonla kaplanmış Japon suşi pirinci"
+  },
+  {
+    "externalId": "common:california-roll",
+    "name": "Kaliforniya Rulosu",
+    "description": "Yengeç veya surimi, avokado ve salatalıklı suşi rulosu"
+  },
+  {
+    "externalId": "common:spicy-tuna-roll",
+    "name": "Baharatlı Ton Balığı Rulo",
+    "description": "Baharatlı ton balığı ve pilavlı suşi rulosu"
+  },
+  {
+    "externalId": "common:salmon-avocado-roll",
+    "name": "Somon Avokado Rulo",
+    "description": "Somon ve avokadolu suşi rulosu"
+  },
+  {
+    "externalId": "common:vegetable-sushi-roll",
+    "name": "Sebze Suşi Rulo",
+    "description": "Salatalık, avokado ve sebzeli suşi rulosu"
+  },
+  {
+    "externalId": "common:salmon-sashimi",
+    "name": "Somon Sashimi",
+    "description": "Japon dilimlenmiş çiğ somon"
+  },
+  {
+    "externalId": "common:tuna-sashimi",
+    "name": "Ton Balıklı Saşimi",
+    "description": "Japon dilimlenmiş çiğ ton balığı"
+  },
+  {
+    "externalId": "common:chicken-teriyaki",
+    "name": "Tavuk Teriyaki",
+    "description": "Tatlı soya teriyaki soslu Japon tavuğu"
+  },
+  {
+    "externalId": "common:beef-teriyaki",
+    "name": "Dana Teriyaki",
+    "description": "Teriyaki soslu Japon bifteği"
+  },
+  {
+    "externalId": "common:teriyaki-salmon",
+    "name": "Teriyaki Somonu",
+    "description": "Teriyaki soslu somon balığı"
+  },
+  {
+    "externalId": "common:chicken-katsu",
+    "name": "Tavuk Katsu",
+    "description": "Japon usulü panelenmiş kızarmış tavuk pirzola"
+  },
+  {
+    "externalId": "common:pork-tonkatsu",
+    "name": "Domuz eti Tonkatsu",
+    "description": "Japon ekmekli kızarmış domuz pirzolası"
+  },
+  {
+    "externalId": "common:ramen",
+    "name": "Ramen",
+    "description": "Et suyu ve soslar ile Japon şehriye çorbası"
+  },
+  {
+    "externalId": "common:miso-ramen",
+    "name": "Miso Ramen",
+    "description": "Miso et suyu ile Japon ramen"
+  },
+  {
+    "externalId": "common:shoyu-ramen",
+    "name": "Shoyu Ramen",
+    "description": "Soya soslu et suyu ile Japon ramen"
+  },
+  {
+    "externalId": "common:udon-noodle-soup",
+    "name": "Udon Erişte Çorbası",
+    "description": "Et suyunda Japon kalın buğday eriştesi"
+  },
+  {
+    "externalId": "common:yakisoba",
+    "name": "Yakişoba",
+    "description": "Sebzeli ve soslu, tavada kızartılmış Japon eriştesi"
+  },
+  {
+    "externalId": "common:fried-rice",
+    "name": "Kızarmış Pilav",
+    "description": "Yumurta, sebze ve baharatlarla tavada kızartılmış pirinç"
+  },
+  {
+    "externalId": "common:chicken-fried-rice",
+    "name": "Tavuklu Kızarmış Pilav",
+    "description": "Tavuk, yumurta ve sebzeli kızarmış pilav"
+  },
+  {
+    "externalId": "common:shrimp-fried-rice",
+    "name": "Karidesli Kızarmış Pilav",
+    "description": "Karides, yumurta ve sebzeli kızarmış pilav"
+  },
+  {
+    "externalId": "common:chow-mein",
+    "name": "Chow Mein",
+    "description": "Çin usulü kızartılmış sebzeli erişte"
+  },
+  {
+    "externalId": "common:chicken-chow-mein",
+    "name": "Tavuk Chow Mein",
+    "description": "Tavada kızartılmış Çin eriştesi, tavuk ve sebze ile"
+  },
+  {
+    "externalId": "common:lo-mein",
+    "name": "Lo Mein",
+    "description": "Sos ve sebze ile karıştırılmış Çin eriştesi"
+  },
+  {
+    "externalId": "common:orange-chicken",
+    "name": "Portakallı Tavuk",
+    "description": "Portakal soslu Çin-Amerikan kızarmış tavuk"
+  },
+  {
+    "externalId": "common:general-tso-chicken",
+    "name": "Genel Tso Tavuk",
+    "description": "Tatlı baharatlı soslu Çin-Amerikan kızarmış tavuk"
+  },
+  {
+    "externalId": "common:sweet-and-sour-chicken",
+    "name": "Tatlı ve Ekşi Tavuk",
+    "description": "Tatlı ve ekşi soslu Çin usulü kızarmış tavuk"
+  },
+  {
+    "externalId": "common:kung-pao-chicken",
+    "name": "Kung Pao Tavuğu",
+    "description": "Yer fıstığı ve kırmızı biber ile Çin usulü tavuk kızartması"
+  },
+  {
+    "externalId": "common:beef-and-broccoli",
+    "name": "Sığır eti ve brokoli",
+    "description": "Sığır eti, brokoli ve soslu Çin kızartması"
+  },
+  {
+    "externalId": "common:mapo-tofu",
+    "name": "Mapo Tofu",
+    "description": "Baharatlı soslu Sichuan tofu yemeği"
+  },
+  {
+    "externalId": "common:spring-rolls",
+    "name": "Bahar rulosu",
+    "description": "Kızartılmış veya taze sebzeli ve dolgulu rulolar"
+  },
+  {
+    "externalId": "common:egg-rolls",
+    "name": "Yumurta Ruloları",
+    "description": "Lahana ve dolgulu kızarmış Çin ruloları"
+  },
+  {
+    "externalId": "common:dumplings",
+    "name": "Mantı",
+    "description": "Doldurulmuş mantı, buharda pişirilmiş veya kızartılmış"
+  },
+  {
+    "externalId": "common:pork-dumplings",
+    "name": "Domuz etli mantı",
+    "description": "Baharatlı domuz eti ile doldurulmuş mantı"
+  },
+  {
+    "externalId": "common:chicken-dumplings",
+    "name": "Tavuklu mantı",
+    "description": "Baharatlı tavukla doldurulmuş mantı"
+  },
+  {
+    "externalId": "common:pad-thai",
+    "name": "Pad Thai",
+    "description": "Tayland tavada kızartılmış pirinç eriştesi, yumurta, fıstık ve sos ile"
+  },
+  {
+    "externalId": "common:chicken-pad-thai",
+    "name": "Tavuk Pad Thai",
+    "description": "Tay tavuk ve fıstık ile kızartılmış erişte"
+  },
+  {
+    "externalId": "common:pad-see-ew",
+    "name": "Pad See Ew",
+    "description": "Tay soya soslu, tavada kızartılmış geniş erişte"
+  },
+  {
+    "externalId": "common:thai-red-curry",
+    "name": "Tay Kırmızı Köri",
+    "description": "Kırmızı köri ezmesi ile Tay Hindistan cevizi köri"
+  },
+  {
+    "externalId": "common:tom-yum-soup",
+    "name": "Tom Yam Çorbası",
+    "description": "Tay sıcak ve ekşi çorba otlar ile"
+  },
+  {
+    "externalId": "common:tom-kha-gai",
+    "name": "Tom Kha Gai",
+    "description": "Tayland hindistan cevizi tavuk çorbası"
+  },
+  {
+    "externalId": "common:chicken-satay",
+    "name": "Tavuk Satay",
+    "description": "Fıstık soslu ızgara tavuk şiş"
+  },
+  {
+    "externalId": "common:pho-bo",
+    "name": "Pho Bo",
+    "description": "Vietnamca sığır şehriye çorbası"
+  },
+  {
+    "externalId": "common:pho-ga",
+    "name": "Pho Ga",
+    "description": "Vietnamca tavuk şehriye çorbası"
+  },
+  {
+    "externalId": "common:banh-mi",
+    "name": "Banh Mi",
+    "description": "Et ve salamura sebzeli Vietnam baget sandviçi"
+  },
+  {
+    "externalId": "common:bun-cha",
+    "name": "Bun Cha",
+    "description": "Erişte ve otlar ile Vietnamca ızgara domuz eti"
+  },
+  {
+    "externalId": "common:vietnamese-spring-rolls",
+    "name": "Vietnam bahar rulosu",
+    "description": "Otlar, erişte ve dolgulu taze pirinç kağıdı ruloları"
+  },
+  {
+    "externalId": "common:bibimbap",
+    "name": "Bibimbap",
+    "description": "Sebze, yumurta ve soslu Kore pirinç kasesi"
+  },
+  {
+    "externalId": "common:korean-fried-chicken",
+    "name": "Kore Kızarmış Tavuk",
+    "description": "Kore soslu çıtır kızarmış tavuk"
+  },
+  {
+    "externalId": "common:kimchi-fried-rice",
+    "name": "Kimchi Kızarmış Pilav",
+    "description": "Kimchi ve yumurta ile Kore kızarmış pilavı"
+  },
+  {
+    "externalId": "common:tteokbokki",
+    "name": "Tteokbokki",
+    "description": "Kore baharatlı pirinç kekleri"
+  },
+  {
+    "externalId": "common:kimbap",
+    "name": "Kimbap",
+    "description": "Kore deniz yosunu dolgulu pirinç rulosu"
+  },
+  {
+    "externalId": "common:butter-chicken",
+    "name": "Tereyağlı Tavuk",
+    "description": "Kremalı domates soslu Hint körili tavuk"
+  },
+  {
+    "externalId": "common:chicken-tikka-masala",
+    "name": "Tavuk Tikka Masala",
+    "description": "Baharatlı domates krema soslu Hint usulü körili tavuk"
+  },
+  {
+    "externalId": "common:chicken-curry",
+    "name": "Tavuk Köri",
+    "description": "Baharatlı köri sosunda pişirilmiş tavuk"
+  },
+  {
+    "externalId": "common:vegetable-curry",
+    "name": "Sebzeli Köri",
+    "description": "Köri sosunda pişirilmiş karışık sebzeler"
+  },
+  { "externalId": "common:chana-masala", "name": "Chana Masala", "description": "Hint nohut köri" },
+  {
+    "externalId": "common:dal-tadka",
+    "name": "Dal Tadka",
+    "description": "Baharatlı tavlama ile Hint mercimek yemeği"
+  },
+  {
+    "externalId": "common:palak-paneer",
+    "name": "Palak Paneer",
+    "description": "Paneer peynirli Hint ıspanaklı köri"
+  },
+  {
+    "externalId": "common:biryani",
+    "name": "Biryani",
+    "description": "Etli veya sebzeli baharatlı pilav yemeği"
+  },
+  {
+    "externalId": "common:vegetable-biryani",
+    "name": "Sebze Biryanisi",
+    "description": "Karışık sebzeli Hint baharatlı pilavı"
+  },
+  { "externalId": "common:naan", "name": "Naan", "description": "Tandırda pişmiş Hint gözleme" },
+  {
+    "externalId": "common:garlic-naan",
+    "name": "Sarımsak Naan",
+    "description": "Sarımsaklı tereyağlı Hint gözleme"
+  },
+  {
+    "externalId": "common:samosa",
+    "name": "Samosa",
+    "description": "Baharatlı patates veya etle doldurulmuş kızarmış hamur işi"
+  },
+  {
+    "externalId": "common:tandoori-chicken",
+    "name": "Tandır Tavuğu",
+    "description": "Tandırda kavrulmuş Hint baharatlı tavuk"
+  },
+  {
+    "externalId": "common:spaghetti-bolognese",
+    "name": "Spagetti Bolonez",
+    "description": "Etli domates soslu İtalyan makarnası"
+  },
+  {
+    "externalId": "common:spaghetti-carbonara",
+    "name": "Spagetti Carbonara",
+    "description": "Yumurta, peynir, pancetta ve biberli İtalyan makarnası"
+  },
+  {
+    "externalId": "common:pasta-alfredo",
+    "name": "Makarna Alfredo",
+    "description": "Kremalı parmesan soslu makarna"
+  },
+  {
+    "externalId": "common:penne-arrabbiata",
+    "name": "Penne Arrabbiata",
+    "description": "Baharatlı domates soslu İtalyan makarnası"
+  },
+  {
+    "externalId": "common:pasta-pesto",
+    "name": "Makarna Pesto",
+    "description": "Fesleğen pesto soslu makarna"
+  },
+  {
+    "externalId": "common:lasagna",
+    "name": "Lazanya",
+    "description": "Et sosu, peynir ve beşamel ile katmanlı makarna"
+  },
+  {
+    "externalId": "common:vegetable-lasagna",
+    "name": "Sebzeli Lazanya",
+    "description": "Sebzeli, soslu ve peynirli katmanlı makarna"
+  },
+  {
+    "externalId": "common:ravioli",
+    "name": "Ravioli",
+    "description": "Soslu İtalyan makarna dolması"
+  },
+  {
+    "externalId": "common:gnocchi",
+    "name": "Gnocchi",
+    "description": "Soslu İtalyan patates köftesi"
+  },
+  {
+    "externalId": "common:risotto",
+    "name": "Risotto",
+    "description": "İtalyan kremalı pirinç yemeği"
+  },
+  {
+    "externalId": "common:mushroom-risotto",
+    "name": "Mantarlı Risotto",
+    "description": "İtalyan kremalı mantarlı pilav"
+  },
+  {
+    "externalId": "common:chicken-parmesan",
+    "name": "Tavuk Parmesan",
+    "description": "Domates soslu ve eritilmiş peynirli panelenmiş tavuk"
+  },
+  {
+    "externalId": "common:eggplant-parmesan",
+    "name": "Patlıcan Parmesan",
+    "description": "Domates soslu ve peynirli patlıcan"
+  },
+  {
+    "externalId": "common:caprese-salad",
+    "name": "Caprese Salatası",
+    "description": "Domates, mozzarella ve fesleğenli İtalyan salatası"
+  },
+  {
+    "externalId": "common:focaccia",
+    "name": "Focaccia",
+    "description": "Zeytinyağı, otlar ve tuz ile İtalyan gözleme"
+  },
+  {
+    "externalId": "common:pasta-amatriciana",
+    "name": "Makarna Amatriciana",
+    "description": "Domates soslu İtalyan makarnası, kurutulmuş domuz eti ve pecorino"
+  },
+  {
+    "externalId": "common:pasta-cacio-e-pepe",
+    "name": "Makarna Cacio e Pepe",
+    "description": "Pecorino peyniri ve karabiberli İtalyan makarnası"
+  },
+  {
+    "externalId": "common:osso-buco",
+    "name": "Osso Buco",
+    "description": "İtalyan usulü kızarmış dana incik, sebze ve şarapla"
+  },
+  {
+    "externalId": "common:saltimbocca",
+    "name": "Saltimbocca",
+    "description": "Prosciutto, adaçayı ve şarap soslu İtalyan dana eti veya tavuk"
+  },
+  {
+    "externalId": "common:arancini",
+    "name": "Arancini",
+    "description": "Peynir, et veya sosla doldurulmuş İtalyan kızarmış pirinç topları"
+  },
+  {
+    "externalId": "common:panna-cotta",
+    "name": "Panna Cotta",
+    "description": "İtalyan soğutulmuş kremalı tatlısı genellikle meyve sosuyla servis edilir"
+  },
+  {
+    "externalId": "common:chicken-caesar-salad",
+    "name": "Tavuklu Sezar Salatası",
+    "description": "Tavuklu Sezar salatası"
+  },
+  {
+    "externalId": "common:greek-salad",
+    "name": "Yunan Salatası",
+    "description": "Salatalık, domates, zeytin, beyaz peynir ve soslu salata"
+  },
+  {
+    "externalId": "common:chef-salad",
+    "name": "Şef Salatası",
+    "description": "Et, peynir, yumurta ve sebzeden oluşan karışık salata"
+  },
+  {
+    "externalId": "common:tuna-salad",
+    "name": "Ton Balıklı Salata",
+    "description": "Ton balıklı, sebzeli ve soslu salata"
+  },
+  {
+    "externalId": "common:quinoa-salad",
+    "name": "Kinoa Salatası",
+    "description": "Kinoa, sebze ve soslu salata"
+  },
+  {
+    "externalId": "common:pasta-salad",
+    "name": "Makarna Salatası",
+    "description": "Sebzeli ve soslu soğuk makarna salatası"
+  },
+  {
+    "externalId": "common:coleslaw",
+    "name": "Lahana salatası",
+    "description": "Kremalı veya sirke soslu lahana salatası"
+  },
+  {
+    "externalId": "common:potato-salad",
+    "name": "Patates Salatası",
+    "description": "Mayonezli veya soslu soğuk patates salatası"
+  },
+  {
+    "externalId": "common:roast-chicken",
+    "name": "Kızarmış Tavuk",
+    "description": "Fırında kavrulmuş bütün veya kesilmiş tavuk"
+  },
+  {
+    "externalId": "common:grilled-chicken-breast",
+    "name": "Izgara Tavuk Göğsü",
+    "description": "Izgara yağsız tavuk göğsü"
+  },
+  {
+    "externalId": "common:chicken-schnitzel",
+    "name": "Tavuk Şinitzel",
+    "description": "Ekmekli kızarmış tavuk pirzola"
+  },
+  {
+    "externalId": "common:pork-schnitzel",
+    "name": "Domuz eti şinitzel",
+    "description": "Ekmekli kızarmış domuz pirzolası"
+  },
+  {
+    "externalId": "common:steak",
+    "name": "Biftek",
+    "description": "Izgara veya tavada kızartılmış dana biftek"
+  },
+  {
+    "externalId": "common:ribeye-steak",
+    "name": "Antrikot biftek",
+    "description": "Izgara antrikot dana biftek"
+  },
+  {
+    "externalId": "common:roast-beef",
+    "name": "Rosto Dana Eti",
+    "description": "Fırında kavrulmuş sığır eti dilimlenmiş olarak servis edilir"
+  },
+  {
+    "externalId": "common:pork-chop",
+    "name": "Domuz pirzolası",
+    "description": "Izgara veya tavada kızartılmış domuz pirzolası"
+  },
+  {
+    "externalId": "common:bbq-ribs",
+    "name": "Barbekü Kaburga",
+    "description": "Barbekü soslu domuz eti veya dana kaburga"
+  },
+  {
+    "externalId": "common:pulled-pork",
+    "name": "Çekilmiş domuz eti",
+    "description": "Yavaş pişirilmiş soslu kıyılmış domuz eti"
+  },
+  {
+    "externalId": "common:grilled-salmon",
+    "name": "Izgara Somon",
+    "description": "Izgara veya tavada kızartılmış somon fileto"
+  },
+  {
+    "externalId": "common:baked-salmon",
+    "name": "Fırında Somon",
+    "description": "Fırında somon fileto"
+  },
+  {
+    "externalId": "common:fish-and-chips",
+    "name": "Balık ve patates kızartması",
+    "description": "Hırpalanmış kızarmış balık, patates kızartmasıyla servis edilir"
+  },
+  {
+    "externalId": "common:fish-sticks",
+    "name": "Balık Çubukları",
+    "description": "Ekmekli kızarmış balık parçaları"
+  },
+  {
+    "externalId": "common:shrimp-scampi",
+    "name": "Karides Scampi",
+    "description": "Sarımsak, tereyağı ve limonla pişirilmiş karides"
+  },
+  {
+    "externalId": "common:grilled-shrimp",
+    "name": "Izgara Karides",
+    "description": "Şiş veya tavada ızgarada pişirilmiş baharatlı karides"
+  },
+  {
+    "externalId": "common:paella",
+    "name": "Paella",
+    "description": "Deniz ürünleri, et veya sebzeli İspanyol pilav yemeği"
+  },
+  {
+    "externalId": "common:seafood-paella",
+    "name": "Deniz Mahsüllü Paella",
+    "description": "Deniz ürünleri ve safranlı İspanyol pilav yemeği"
+  },
+  {
+    "externalId": "common:patatas-bravas",
+    "name": "Patatas Bravas",
+    "description": "Baharatlı soslu İspanyol patates kızartması"
+  },
+  {
+    "externalId": "common:gazpacho",
+    "name": "Gazpaço",
+    "description": "İspanyol usulü soğutulmuş domates ve sebze çorbası"
+  },
+  {
+    "externalId": "common:croquetas",
+    "name": "Kroketler",
+    "description": "Jambon, tavuk veya balıkla kızartılmış İspanyol beşamel kroketleri"
+  },
+  {
+    "externalId": "common:pan-con-tomate",
+    "name": "Pan con Tomate",
+    "description": "İspanyol usulü kızarmış ekmek, domates, zeytinyağı ve tuzla ovuşturuldu"
+  },
+  {
+    "externalId": "common:gambas-al-ajillo",
+    "name": "Gambas al Ajillo",
+    "description": "Sarımsak, zeytinyağı ve kırmızı biberle pişirilmiş İspanyol karidesi"
+  },
+  {
+    "externalId": "common:pulpo-a-la-gallega",
+    "name": "Pulpo a la Gallega",
+    "description": "Patates, zeytinyağı ve kırmızı biber ile İspanyol ahtapotu"
+  },
+  {
+    "externalId": "common:fabada-asturiana",
+    "name": "Fabada Asturiana",
+    "description": "Domuz eti, sosis ve kırmızı biber ile İspanyol beyaz fasulye güveci"
+  },
+  {
+    "externalId": "common:pisto",
+    "name": "Pisto",
+    "description": "Domates, biber, kabak ve yumurta ile İspanyol sebze güveci"
+  },
+  {
+    "externalId": "common:churros",
+    "name": "Churros",
+    "description": "İspanyol usulü kızarmış hamur hamur işleri genellikle çikolatayla servis edilir"
+  },
+  {
+    "externalId": "common:empanadas",
+    "name": "Empanada'lar",
+    "description": "Et, peynir veya sebze ile doldurulmuş hamur işi"
+  },
+  {
+    "externalId": "common:arepa",
+    "name": "Arepa",
+    "description": "Tuzlu malzemelerle doldurulmuş veya doldurulmuş mısır unu keki"
+  },
+  {
+    "externalId": "common:ceviche",
+    "name": "Ceviche",
+    "description": "Latin Amerika turunçgillerle marine edilmiş deniz ürünleri"
+  },
+  {
+    "externalId": "common:feijoada",
+    "name": "Feijoada",
+    "description": "Domuz eti veya sığır eti ile Brezilya siyah fasulye güveci"
+  },
+  {
+    "externalId": "common:moqueca",
+    "name": "Moqueca",
+    "description": "Hindistan cevizi sütü ile Brezilya balık güveç"
+  },
+  {
+    "externalId": "common:picanha",
+    "name": "Picanha",
+    "description": "Brezilya ızgara dana but kapağı"
+  },
+  {
+    "externalId": "common:coxinha",
+    "name": "Coxinha",
+    "description": "Kıyılmış tavukla doldurulmuş Brezilya usulü kızarmış hamur"
+  },
+  {
+    "externalId": "common:pao-de-queijo",
+    "name": "Pao de Queijo",
+    "description": "Tapyoka unuyla yapılan Brezilya peynirli ekmek"
+  },
+  {
+    "externalId": "common:farofa",
+    "name": "Farofa",
+    "description": "Brezilya usulü kızartılmış manyok unu garnitürü"
+  },
+  {
+    "externalId": "common:baiao-de-dois",
+    "name": "Baiao de Dois",
+    "description": "Peynir, otlar ve kurutulmuş et ile Brezilya pirinç ve fasulye yemeği"
+  },
+  {
+    "externalId": "common:pastel",
+    "name": "Pastel",
+    "description": "Et, peynir veya sebze ile doldurulmuş Brezilya usulü kızarmış hamur işi"
+  },
+  {
+    "externalId": "common:brigadeiro",
+    "name": "Brigadeiro",
+    "description": "Brezilya çikolatalı yoğunlaştırılmış süt mantarı"
+  },
+  {
+    "externalId": "common:romeu-e-julieta",
+    "name": "Romeu ve Julieta",
+    "description": "Guava ezmesini peynirle eşleştiren Brezilya tatlısı"
+  },
+  {
+    "externalId": "common:hummus",
+    "name": "Humus",
+    "description": "Orta Doğu nohut ve tahin sosu"
+  },
+  {
+    "externalId": "common:tabbouleh",
+    "name": "Tabbouleh",
+    "description": "Orta Doğu maydanozu ve bulgur salatası"
+  },
+  {
+    "externalId": "common:baba-ganoush",
+    "name": "Baba Ganuş",
+    "description": "Orta Doğu közlenmiş patlıcan sosu"
+  },
+  {
+    "externalId": "common:shakshuka",
+    "name": "Şakşuka",
+    "description": "Baharatlı domates sosunda haşlanmış yumurta"
+  },
+  {
+    "externalId": "common:kofta",
+    "name": "Köfte",
+    "description": "Baharatlı kıyma kebapları veya köfteleri"
+  },
+  {
+    "externalId": "common:lamb-kebab",
+    "name": "Kuzu Kebabı",
+    "description": "Şiş üzerinde ızgara baharatlı kuzu eti"
+  },
+  {
+    "externalId": "common:couscous",
+    "name": "Kuskus",
+    "description": "Sebze veya etli buharda pişirilmiş irmik taneleri"
+  },
+  {
+    "externalId": "common:chicken-tagine",
+    "name": "Tavuk Tagini",
+    "description": "Baharatlı Fas tavuk güveç"
+  },
+  {
+    "externalId": "common:moussaka",
+    "name": "Musakka",
+    "description": "Yunan fırında patlıcan ve et güveç"
+  },
+  {
+    "externalId": "common:spanakopita",
+    "name": "Spanakopita",
+    "description": "Yunan ıspanaklı ve beyaz peynirli börek"
+  },
+  {
+    "externalId": "common:souvlaki",
+    "name": "Souvlaki",
+    "description": "Pide veya salata ile Yunan ızgara et şişleri"
+  },
+  {
+    "externalId": "common:full-english-breakfast",
+    "name": "Tam İngiliz Kahvaltısı",
+    "description": "Yumurta, sosis, pastırma, fasulye ve kızarmış ekmekten oluşan kahvaltı"
+  },
+  {
+    "externalId": "common:stamppot",
+    "name": "Stamppot",
+    "description": "Hollandalı patates püresi, sebze ve tütsülenmiş sosis ile"
+  },
+  {
+    "externalId": "common:hutspot",
+    "name": "Hutspot",
+    "description": "Havuç, soğan ve etli Hollanda patates püresi"
+  },
+  {
+    "externalId": "common:erwtensoep",
+    "name": "Erwtensoep",
+    "description": "Domuz eti ve tütsülenmiş sosisli Hollandalı bezelye çorbası"
+  },
+  {
+    "externalId": "common:bitterballen",
+    "name": "Bitterballen",
+    "description": "Hardalla servis edilen Hollandalı kızarmış dana yahni topları"
+  },
+  {
+    "externalId": "common:kroket",
+    "name": "Kroket",
+    "description": "Et yahnisi ile doldurulmuş Hollandalı kızarmış kroket"
+  },
+  {
+    "externalId": "common:kibbeling",
+    "name": "Kibbeling",
+    "description": "Hollanda usulü dövülmüş kızarmış balık parçaları sosla servis edilir"
+  },
+  {
+    "externalId": "common:poffertjes",
+    "name": "Poffertjes",
+    "description": "Tereyağı ve pudra şekeri ile servis edilen küçük Hollanda krepleri"
+  },
+  {
+    "externalId": "common:pancakes",
+    "name": "Pankek",
+    "description": "Şurup veya soslarla servis edilen ızgarada kızartılmış kahvaltı kekleri"
+  },
+  {
+    "externalId": "common:waffles",
+    "name": "Waffle",
+    "description": "Üst malzemelerle servis edilen ızgara desenli kahvaltı kekleri"
+  },
+  {
+    "externalId": "common:french-toast",
+    "name": "Fransız Tostu",
+    "description": "Ekmek yumurta karışımına batırılıp kızartılır"
+  },
+  {
+    "externalId": "common:omelette",
+    "name": "Omlet",
+    "description": "Dolgularla pişirilmiş çırpılmış yumurta"
+  },
+  {
+    "externalId": "common:cheese-omelette",
+    "name": "Peynirli Omlet",
+    "description": "Peynirle doldurulmuş omlet"
+  },
+  {
+    "externalId": "common:vegetable-omelette",
+    "name": "Sebzeli Omlet",
+    "description": "Karışık sebzeli omlet"
+  },
+  {
+    "externalId": "common:scrambled-eggs",
+    "name": "Çırpılmış Yumurta",
+    "description": "Yumuşak veya sert oluncaya kadar pişirilmiş çırpılmış yumurtalar"
+  },
+  {
+    "externalId": "common:fried-eggs",
+    "name": "Sahanda Yumurta",
+    "description": "Yumurtalar tavada pişirilir"
+  },
+  {
+    "externalId": "common:boiled-eggs",
+    "name": "Haşlanmış Yumurta",
+    "description": "Kabuğu içinde kaynar suda pişirilen yumurtalar"
+  },
+  {
+    "externalId": "common:eggs-benedict",
+    "name": "Yumurta Benedict",
+    "description": "Jambon, İngiliz çöreği ve Hollandaise ile haşlanmış yumurta"
+  },
+  {
+    "externalId": "common:breakfast-burrito",
+    "name": "Kahvaltı Burritosu",
+    "description": "Yumurta, peynir, et ve patatesle doldurulmuş tortilla"
+  },
+  {
+    "externalId": "common:avocado-toast",
+    "name": "Avokado Tostu",
+    "description": "Üzerine avokado püresi eklenmiş tost"
+  },
+  {
+    "externalId": "common:bagel-with-cream-cheese",
+    "name": "Krem Peynirli Simit",
+    "description": "Krem peynirli simit sürülmesi"
+  },
+  {
+    "externalId": "common:lox-bagel",
+    "name": "Lox simit",
+    "description": "Füme somonlu simit, krem peynir ve soslar"
+  },
+  {
+    "externalId": "common:oatmeal",
+    "name": "Yulaf ezmesi",
+    "description": "Pişmiş yulaf lapası olarak servis edilir"
+  },
+  {
+    "externalId": "common:overnight-oats",
+    "name": "Gecelik Yulaf",
+    "description": "Gece boyunca süt veya yoğurtla ıslatılmış yulaf"
+  },
+  {
+    "externalId": "common:granola-bowl",
+    "name": "Granola Kasesi",
+    "description": "Granola yoğurt veya süt ve meyve ile servis edilir"
+  },
+  {
+    "externalId": "common:smoothie-bowl",
+    "name": "Smoothie Kasesi",
+    "description": "Üst malzemelerle kalın harmanlanmış meyve kasesi"
+  },
+  {
+    "externalId": "common:protein-smoothie",
+    "name": "Proteinli Smoothie",
+    "description": "Protein tozu ve meyve veya sütle harmanlanmış içecek"
+  },
+  {
+    "externalId": "common:fruit-smoothie",
+    "name": "Meyveli Smoothie",
+    "description": "Meyve suyu, süt veya yoğurtla harmanlanmış meyve içeceği"
+  },
+  {
+    "externalId": "common:green-smoothie",
+    "name": "Yeşil Smoothie",
+    "description": "Yeşil yapraklı sebzeler ve meyvelerle harmanlanmış içecek"
+  },
+  {
+    "externalId": "common:chicken-rice-bowl",
+    "name": "Tavuklu Pilav Kasesi",
+    "description": "Tavuk, sebze ve soslu pirinç kasesi"
+  },
+  {
+    "externalId": "common:beef-rice-bowl",
+    "name": "Etli Pilav Kasesi",
+    "description": "Sığır eti, sebze ve soslu pirinç kasesi"
+  },
+  {
+    "externalId": "common:salmon-rice-bowl",
+    "name": "Somonlu Pirinç Kasesi",
+    "description": "Somon, sebze ve soslu pirinç kasesi"
+  },
+  {
+    "externalId": "common:tofu-rice-bowl",
+    "name": "Tofu Pirinç Kasesi",
+    "description": "Tofu, sebze ve soslu pirinç kasesi"
+  },
+  {
+    "externalId": "common:mediterranean-bowl",
+    "name": "Akdeniz Kasesi",
+    "description": "Tahıllar, sebzeler, humus, beyaz peynir ve protein içeren kase"
+  },
+  {
+    "externalId": "common:buddha-bowl",
+    "name": "Buda Kase",
+    "description": "Tahıllar, sebzeler ve sos içeren bitki bazlı kase"
+  },
+  {
+    "externalId": "common:chicken-noodle-soup",
+    "name": "Tavuk Şehriye Çorbası",
+    "description": "Tavuk, erişte, sebze ve et suyu çorbası"
+  },
+  {
+    "externalId": "common:tomato-soup",
+    "name": "Domates Çorbası",
+    "description": "Domates ve baharatlardan yapılan çorba"
+  },
+  {
+    "externalId": "common:minestrone-soup",
+    "name": "Sebzeli Çorba",
+    "description": "Fasulye veya makarna ile İtalyan sebze çorbası"
+  },
+  {
+    "externalId": "common:split-pea-soup",
+    "name": "Bezelye Çorbası",
+    "description": "Bölünmüş bezelyeden yapılan kalın çorba"
+  },
+  {
+    "externalId": "common:clam-chowder",
+    "name": "Deniz tarağı çorbası",
+    "description": "İstiridye ve patates ile kremalı çorba"
+  },
+  {
+    "externalId": "common:french-onion-soup",
+    "name": "Fransız Soğan Çorbası",
+    "description": "Ekmek ve eritilmiş peynirle süslenmiş soğan çorbası"
+  },
+  {
+    "externalId": "common:beef-stew",
+    "name": "Dana Yahnisi",
+    "description": "Yavaş pişirilmiş sığır eti, sebze ve sos ile"
+  },
+  {
+    "externalId": "common:chicken-pot-pie",
+    "name": "Tavuklu Turta",
+    "description": "Tavuk, sebze ve krema soslu lezzetli pasta"
+  },
+  {
+    "externalId": "common:shepherds-pie",
+    "name": "Çoban Pastası",
+    "description": "Patates püresi ile doldurulmuş et ve sebze güveç"
+  },
+  {
+    "externalId": "common:cottage-pie",
+    "name": "Kır Evi Pastası",
+    "description": "Kıymalı güveç, üstüne patates püresi konularak"
+  },
+  {
+    "externalId": "common:baked-potato",
+    "name": "Fırında Patates",
+    "description": "Bütün fırında patates ve soslar"
+  },
+  {
+    "externalId": "common:roasted-potatoes",
+    "name": "Kavrulmuş Patates",
+    "description": "Yağ ve baharatlarla kavrulmuş patatesler"
+  },
+  {
+    "externalId": "common:hash-browns",
+    "name": "Hash Browns",
+    "description": "Kızartılmış rendelenmiş veya doğranmış patates"
+  },
+  {
+    "externalId": "common:macaroni-salad",
+    "name": "Makarna Salatası",
+    "description": "Kremalı soslu soğuk makarna salatası"
+  },
+  {
+    "externalId": "common:baked-beans",
+    "name": "Fırında Fasulye",
+    "description": "Tatlı tuzlu sosla pişirilmiş veya kaynatılmış fasulye"
+  },
+  {
+    "externalId": "common:rice-and-beans",
+    "name": "Pirinç ve Fasulye",
+    "description": "Fasulyeyle servis edilen basit bir pilav yemeği"
+  },
+  {
+    "externalId": "common:jambalaya",
+    "name": "Jambalaya",
+    "description": "Et, deniz ürünleri ve sebzeli Cajun pilavı yemeği"
+  },
+  {
+    "externalId": "common:gumbo",
+    "name": "Gumbo",
+    "description": "Roux, sebze ve et veya deniz ürünleri ile Louisiana güveç"
+  },
+  {
+    "externalId": "common:chicken-and-waffles",
+    "name": "Tavuk ve Waffle",
+    "description": "Waffle ile servis edilen kızarmış tavuk"
+  },
+  {
+    "externalId": "common:fried-chicken",
+    "name": "Kızarmış Tavuk",
+    "description": "Tavuk parçaları kaplanıp derin yağda kızartılır"
+  },
+  {
+    "externalId": "common:chicken-tenders",
+    "name": "Tavuk şeritleri",
+    "description": "Ekmekli kızarmış tavuk şeritleri"
+  },
+  {
+    "externalId": "common:cornbread",
+    "name": "Mısır ekmeği",
+    "description": "Mısır unu ile yapılan fırında ekmek"
+  },
+  {
+    "externalId": "common:sloppy-joe",
+    "name": "Sloppy Joe",
+    "description": "Çörek üzerinde soslu kıymalı Amerikan sandviçi"
+  },
+  {
+    "externalId": "common:reuben-sandwich",
+    "name": "Reuben Sandviç",
+    "description": "Konserve sığır eti, lahana turşusu, İsviçre peyniri ve soslu Amerikan sandviçi"
+  },
+  {
+    "externalId": "common:lobster-roll",
+    "name": "Istakoz Rulo",
+    "description": "Üstü bölünmüş çörek içinde ıstakoz etli New England sandviçi"
+  },
+  {
+    "externalId": "common:biscuits-and-gravy",
+    "name": "Bisküvi ve Sos",
+    "description": "Üzerinde sosis sos bulunan Amerikan bisküvileri"
+  },
+  {
+    "externalId": "common:chili-cheese-dog",
+    "name": "Acı soslu ve peynirli sosisli",
+    "description": "Üzerinde kırmızı biber, peynir ve soğan bulunan sosisli sandviç"
+  },
+  {
+    "externalId": "common:chicken-fried-steak",
+    "name": "Chicken fried steak",
+    "description": "Amerikan usulü panelenmiş dana pirzola, sosla servis edilir"
+  },
+  {
+    "externalId": "common:hush-puppies",
+    "name": "Hush Puppies",
+    "description": "Güney kızarmış mısır unu topları"
+  },
+  {
+    "externalId": "common:peach-cobbler",
+    "name": "Peach cobbler",
+    "description": "Bisküvi veya meyilli tepesi ile Amerikan fırında şeftali tatlısı"
+  },
+  {
+    "externalId": "common:tuna-pasta-bake",
+    "name": "Ton Balıklı Makarna Fırında",
+    "description": "Ton balıklı ve soslu fırında makarna güveç"
+  },
+  {
+    "externalId": "common:casserole",
+    "name": "Güveç",
+    "description": "Protein, nişasta ve sosla pişmiş karışık yemek"
+  },
+  {
+    "externalId": "common:quiche-lorraine",
+    "name": "Kiş Lorraine",
+    "description": "Yumurta, krema, pastırma ve peynirden oluşan lezzetli tart"
+  },
+  {
+    "externalId": "common:vegetable-quiche",
+    "name": "Sebzeli Kiş",
+    "description": "Sebze ve peynirli lezzetli yumurtalı tart"
+  },
+  {
+    "externalId": "common:croissant",
+    "name": "Kruvasan",
+    "description": "Tereyağlı Fransız hilal böreği"
+  },
+  {
+    "externalId": "common:pain-au-chocolat",
+    "name": "Pain au Çikolata",
+    "description": "Çikolata dolgulu Fransız pastası"
+  },
+  {
+    "externalId": "common:muffin",
+    "name": "Çörek",
+    "description": "Küçük tatlı pişmiş hızlı ekmek"
+  },
+  {
+    "externalId": "common:blueberry-muffin",
+    "name": "Yaban mersinli çörek",
+    "description": "Yaban mersini ile çörek"
+  },
+  {
+    "externalId": "common:banana-bread",
+    "name": "Muzlu Ekmek",
+    "description": "Muzla yapılan tatlı somun"
+  },
+  {
+    "externalId": "common:chocolate-chip-cookie",
+    "name": "Çikolatalı Kurabiye",
+    "description": "Çikolata parçacıklı kurabiye"
+  },
+  {
+    "externalId": "common:brownie",
+    "name": "Brownie",
+    "description": "Yoğun çikolatalı fırında tatlı"
+  },
+  {
+    "externalId": "common:cheesecake",
+    "name": "Peynirli kek",
+    "description": "Kabuklu krem peynir tatlısı"
+  },
+  {
+    "externalId": "common:apple-pie",
+    "name": "Elmalı Turta",
+    "description": "Elma ve baharatlarla dolu pasta"
+  },
+  {
+    "externalId": "common:pumpkin-pie",
+    "name": "Balkabağı Turtası",
+    "description": "Baharatlı kabak muhallebi dolgulu pasta"
+  },
+  {
+    "externalId": "common:tiramisu",
+    "name": "Tiramisu",
+    "description": "Kahveye batırılmış kedi dili ve mascarpone ile İtalyan tatlısı"
+  },
+  {
+    "externalId": "common:creme-brulee",
+    "name": "Krem Brule",
+    "description": "Karamelize şekerli muhallebi tatlısı"
+  },
+  {
+    "externalId": "common:ice-cream",
+    "name": "Dondurma",
+    "description": "Dondurulmuş sütlü tatlı"
+  },
+  {
+    "externalId": "common:chocolate-ice-cream",
+    "name": "Çikolatalı Dondurma",
+    "description": "Çikolata aromalı dondurulmuş sütlü tatlı"
+  },
+  {
+    "externalId": "common:vanilla-ice-cream",
+    "name": "Vanilyalı Dondurma",
+    "description": "Vanilya aromalı dondurulmuş sütlü tatlı"
+  },
+  {
+    "externalId": "common:frozen-yogurt",
+    "name": "Dondurulmuş Yoğurt",
+    "description": "Yoğurtla yapılan dondurulmuş tatlı"
+  },
+  {
+    "externalId": "common:gelato",
+    "name": "Gelato",
+    "description": "İtalyan dondurulmuş süt tatlısı"
+  },
+  {
+    "externalId": "common:sorbet",
+    "name": "Şerbet",
+    "description": "Süt içermeyen dondurulmuş meyve tatlısı"
+  },
+  {
+    "externalId": "common:bubble-tea",
+    "name": "Kabarcık Çayı",
+    "description": "Süt veya meyve aromalı ve tapyoka incili çay içeceği"
+  },
+  {
+    "externalId": "common:cappuccino",
+    "name": "Kapuçino",
+    "description": "Buğulanmış süt ve köpüklü espresso içeceği"
+  }
+]

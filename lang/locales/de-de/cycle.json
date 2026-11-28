@@ -620,7 +620,8 @@
       "backup": {
         "title": "Zyklus-Sicherung",
         "body": "Erwäge, eine verschlüsselte Sicherung deiner Aufzeichnungen zu speichern."
-      }
+      },
+      "renewReminders": "Öffne Musclog, damit diese Erinnerungen weiterhin kommen."
     },
     "reminders": {
       "time": "Erinnerungszeit",
@@ -670,7 +671,7 @@
         "pattern24": "24 Tage + 4 frei",
         "continuous": "Jeden Tag",
         "packStart": "Erste Pille der aktuellen Packung",
-        "hint": "Pillenfreie Tage erhalten keine Erinnerung. Dies ist eine Erinnerung, keine medizinische Beratung: Befolge bei einer vergessenen Pille die Anweisungen auf deiner Packung.",
+        "hint": "Tage ohne Pille bekommen keine Erinnerung. Das ist eine Erinnerung, keine medizinische Beratung: Befolge die Anweisungen deiner Pille, wenn du eine vergisst. Handys können Benachrichtigungen verzögern oder stummschalten, verlass dich deshalb nicht allein darauf. Bei Packungen mit Tagen ohne Pille öffne Musclog mindestens alle vier Wochen, damit die Erinnerungen weiterhin kommen.",
         "notPaused": "läuft während einer Pause weiter"
       },
       "pause": {

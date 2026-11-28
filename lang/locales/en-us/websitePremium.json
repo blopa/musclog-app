@@ -32,7 +32,7 @@
     },
     "privacy": {
       "title": "What happens to your messages",
-      "body": "When Musclog Iron is on, your AI requests go to Musclog's own service, which forwards them through an AI gateway, OpenRouter or Otari from Mozilla.ai, to the AI model. Requests are sent only to providers that offer zero data retention, and the service does not store your message text or images. OpenRouter also screens all requests for child sexual abuse material and may keep one it flags, as its own policy describes; Otari says it does not store the contents of requests. Musclog's service keeps a count of usage for your subscription period, and an identifier for each device you use Musclog Iron on.",
+      "body": "When Musclog Iron is on, your AI requests go to Musclog's own service, which forwards them through an AI gateway, OpenRouter or Otari from Mozilla.ai, to the AI model. Requests are sent only to providers that offer zero data retention, and the service does not store your message text or images. OpenRouter also screens all requests for child sexual abuse material and may keep one it flags, as its own policy describes; Otari says it does not store the contents of requests. Musclog's service keeps a count of usage for your subscription period, an identifier for each device you use Musclog Iron on, and for 7 days a short fingerprint of each request.",
       "consent": "The app asks for your consent before it sends anything to Musclog Iron, and asks again if you restore a backup on another device.",
       "link": "Read the privacy policy"
     },
@@ -42,7 +42,8 @@
         "It is billed monthly by the App Store or Google Play, at the price your store shows.",
         "It renews automatically until you cancel it in your store account. Cancelling stops the next renewal.",
         "iOS and Android subscriptions are separate, so a subscription bought on one does not move to the other.",
-        "No account with Musclog is needed. Your subscription is checked through your store."
+        "No account with Musclog is needed. Your subscription is checked through your store.",
+        "Musclog Iron is for people aged 18 and over."
       ],
       "terms": "Terms of use"
     },
@@ -56,6 +57,10 @@
         {
           "q": "Do I need Musclog Iron to use the AI features?",
           "a": "No. You can use your own API key, the free Musclog AI option, or on-device and local models. Musclog Iron is the option with nothing to set up."
+        },
+        {
+          "q": "Does Musclog Iron make the AI more accurate?",
+          "a": "No subscription makes AI reliable. Musclog Iron runs the same features as the other AI options, and its answers can be wrong too, so check estimates and plans before you rely on them. AI answers are not medical, nutrition or training advice."
         },
         {
           "q": "Can I use it on more than one device?",

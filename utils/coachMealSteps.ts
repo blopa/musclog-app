@@ -34,8 +34,21 @@ import {
   type MealObservation,
   parseMealObservation,
 } from './mealObservation';
+import {
+  getMealObservationFunctions,
+  getMealObservationPrompt,
+  getMealReviewFunctions,
+  getMealReviewPrompt,
+} from './mealPassPrompts';
 import { ingredientMacroProblems, reconcileIngredientMacros } from './mealPlausibility';
 import { applyMealReview, type MealReview } from './mealReview';
+import {
+  getOnDeviceFiberFunctions,
+  getOnDeviceFiberPrompt,
+  getOnDeviceLabelFunctions,
+  getOnDeviceLabelPrompt,
+  getOnDeviceLabelUserMessage,
+} from './onDeviceLabelPrompts';
 import {
   fromLabelPer100g,
   isFiberTracked,
@@ -47,16 +60,7 @@ import {
 import {
   type FoundationFoodsPrompt,
   getEstimateMissingIngredientsFunctions,
-  getMealObservationFunctions,
-  getMealObservationPrompt,
-  getMealReviewFunctions,
-  getMealReviewPrompt,
   getMissingIngredientsMacrosPrompt,
-  getOnDeviceFiberFunctions,
-  getOnDeviceFiberPrompt,
-  getOnDeviceLabelFunctions,
-  getOnDeviceLabelPrompt,
-  getOnDeviceLabelUserMessage,
   getRecipeExtractionFunctions,
   getRecipeExtractionPrompt,
   withCustomPrompts,
@@ -91,29 +95,26 @@ export async function generateMealStructured<T>(
   const task = job.task ?? 'extraction';
 
   if (images.length > 0) {
-    return generateWithImagesStructured<T>(
-      config,
+    return generateWithImagesStructured<T>(config, {
       systemPrompt,
       images,
       schema,
       schemaName,
-      text,
+      userMessageSuffix: text,
       task,
-      { prepared: true, followUp }
-    );
+      prepared: true,
+      followUp,
+    });
   }
 
-  return generateStructured<T>(
-    config,
+  return generateStructured<T>(config, {
     systemPrompt,
-    wrapUserContent(text),
+    userMessage: wrapUserContent(text),
     schema,
     schemaName,
     task,
-    {
-      followUp,
-    }
-  );
+    followUp,
+  });
 }
 
 export async function extractRecipe(
@@ -191,13 +192,12 @@ export async function estimateMissingIngredients(
   const fns = getEstimateMissingIngredientsFunctions();
   const schema = schemaOfFunction(fns);
 
-  return generateStructured<MissingIngredientMacrosResponse>(
-    config,
+  return generateStructured<MissingIngredientMacrosResponse>(config, {
     systemPrompt,
-    `Estimate macros for the missing ingredients in "${mealName}".`,
+    userMessage: `Estimate macros for the missing ingredients in "${mealName}".`,
     schema,
-    'estimateMissingIngredients'
-  );
+    schemaName: 'estimateMissingIngredients',
+  });
 }
 
 /**
@@ -213,13 +213,12 @@ async function estimateMissingIngredientsOnDevice(
   const labelFns = getOnDeviceLabelFunctions();
 
   const askForLabels = () =>
-    generateStructured<{ foods: OnDeviceLabel[] }>(
-      config,
-      getOnDeviceLabelPrompt(names),
-      getOnDeviceLabelUserMessage(),
-      schemaOfFunction(labelFns),
-      'estimateMissingIngredients'
-    );
+    generateStructured<{ foods: OnDeviceLabel[] }>(config, {
+      systemPrompt: getOnDeviceLabelPrompt(names),
+      userMessage: getOnDeviceLabelUserMessage(),
+      schema: schemaOfFunction(labelFns),
+      schemaName: 'estimateMissingIngredients',
+    });
   // From High up each label is asked for more than once and every figure is the median.
   const readings = extractionSamples(await thinkingLevelFor(config));
   const replies = await runSamples(config, readings, askForLabels, {
@@ -256,13 +255,12 @@ async function addOnDeviceFiber(
   computed: OnDeviceEstimatedIngredient[]
 ): Promise<OnDeviceEstimatedIngredient[]> {
   const fiberFns = getOnDeviceFiberFunctions();
-  const reply = await generateStructured<{ foods: { name: string; fiber: number }[] }>(
-    config,
-    getOnDeviceFiberPrompt(computed.map(({ name }) => name)),
-    getOnDeviceLabelUserMessage(),
-    schemaOfFunction(fiberFns),
-    'estimateFiber'
-  );
+  const reply = await generateStructured<{ foods: { name: string; fiber: number }[] }>(config, {
+    systemPrompt: getOnDeviceFiberPrompt(computed.map(({ name }) => name)),
+    userMessage: getOnDeviceLabelUserMessage(),
+    schema: schemaOfFunction(fiberFns),
+    schemaName: 'estimateFiber',
+  });
   const answers = alignEstimates(computed, reply?.foods ?? []);
 
   return computed.map((ingredient, index) => {

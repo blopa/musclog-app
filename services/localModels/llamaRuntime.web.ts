@@ -10,9 +10,22 @@ import { stripTemplateTokens } from '@/utils/localReplyShape';
 import { createSerialQueue } from '@/utils/serialQueue';
 
 import { devLocalModelBaseUrl, isDevWebLocalModel } from './devWebBridge';
-import type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult } from './llamaRuntime';
+import type {
+  LocalChatMessage,
+  LocalGenerateParams,
+  LocalGenerateResult,
+  LocalToolCall,
+  LocalToolDefinition,
+} from './llamaRuntime';
+import { readToolCalls, toEngineMessages, toEngineTools } from './localToolMessages';
 
-export type { LocalChatMessage, LocalGenerateParams, LocalGenerateResult };
+export type {
+  LocalChatMessage,
+  LocalGenerateParams,
+  LocalGenerateResult,
+  LocalToolCall,
+  LocalToolDefinition,
+};
 
 export const LOCAL_MODEL_IDLE_MS = 120_000;
 export const LOCAL_PROJECTOR_IDLE_MS = 15_000;
@@ -30,7 +43,7 @@ export function isLocalModelLoaded(): boolean {
   return loaded;
 }
 
-function withPhoto(messages: LocalChatMessage[], image: string) {
+function withPhoto(messages: ReturnType<typeof toEngineMessages>, image: string) {
   const lastUser = [...messages].reverse().findIndex((m) => m.role === 'user');
   const index = lastUser === -1 ? -1 : messages.length - 1 - lastUser;
 
@@ -48,6 +61,10 @@ function withPhoto(messages: LocalChatMessage[], image: string) {
 }
 
 async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
+  if (params.tools && params.schema) {
+    throw new Error('A local request takes tools or a schema, never both.');
+  }
+
   if (!isDevWebLocalModel()) {
     throw new OnDeviceUnavailableError('notReady');
   }
@@ -57,14 +74,23 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
   }
 
   // The same plain-text rule as the native runtime: a schema or a photo keeps the defaults.
-  const plainSampling = !params.schema && !params.image ? DEFAULT_LOCAL_MODEL.textSampling : null;
+  const plainSampling =
+    !params.schema && !params.image && !params.tools ? DEFAULT_LOCAL_MODEL.textSampling : null;
   const body = {
-    messages: params.image ? withPhoto(params.messages, params.image) : params.messages,
+    messages: params.image
+      ? withPhoto(toEngineMessages(params.messages), params.image)
+      : toEngineMessages(params.messages),
     max_tokens: params.maxTokens ?? 1024,
     temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,
     stream: false,
     ...(plainSampling
       ? { min_p: plainSampling.minP, repeat_penalty: plainSampling.repeatPenalty }
+      : {}),
+    ...(params.tools
+      ? {
+          tools: toEngineTools(params.tools),
+          tool_choice: 'auto',
+        }
       : {}),
     ...(params.schema
       ? {
@@ -105,7 +131,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
   loaded = true;
   const json = JSON.parse(text) as {
-    choices?: { message?: { content?: string } }[];
+    choices?: { message?: { content?: string; tool_calls?: unknown } }[];
     timings?: {
       prompt_ms?: number;
       predicted_ms?: number;
@@ -119,6 +145,7 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
   return {
     text: reply,
+    ...(params.tools ? { toolCalls: readToolCalls(json.choices?.[0]?.message?.tool_calls) } : {}),
     timings: {
       promptMs: json.timings?.prompt_ms,
       predictedMs: json.timings?.predicted_ms,

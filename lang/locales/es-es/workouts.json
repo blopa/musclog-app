@@ -262,7 +262,10 @@
       "generateButton": "Generar Plan",
       "successMessageWithPlan": "{{planName}} está listo con {{count}} entrenamientos.",
       "errorMessage": "No se pudo generar un plan. Por favor, inténtalo de nuevo.",
-      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes."
+      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
+      "reviewIntro": "Lee el plan y comprueba que te conviene. No se guarda nada hasta que pulses Guardar plan.",
+      "saveButton": "Guardar plan",
+      "discardButton": "Descartar"
     },
     "interruptedSession": {
       "description": "Tienes un entrenamiento en curso.",

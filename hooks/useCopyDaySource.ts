@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import type Food from '@/database/models/Food';
+import type { MealType } from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services/NutritionService';
 import { utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { buildCopyDaySections, type CopyDaySection } from '@/utils/copyDaySelection';
@@ -19,6 +20,8 @@ type UseCopyDaySourceParams = {
   targetDate: Date;
   /** Chosen source day, or null before the user picks one. */
   sourceDate: Date | null;
+  /** Limit both the candidate days and the preview to one meal of the source day. */
+  mealType?: MealType;
 };
 
 type UseCopyDaySourceResult = {
@@ -45,6 +48,7 @@ export function useCopyDaySource({
   enabled,
   targetDate,
   sourceDate,
+  mealType,
 }: UseCopyDaySourceParams): UseCopyDaySourceResult {
   const [recentDays, setRecentDays] = useState<RecentLoggedDay[]>([]);
   const [isLoadingRecentDays, setIsLoadingRecentDays] = useState(false);
@@ -72,6 +76,7 @@ export function useCopyDaySource({
 
     NutritionService.getRecentLoggedDays(RECENT_DAY_LIMIT, RECENT_DAY_LOOKBACK_DAYS, {
       excludeDayKey: targetDayKey,
+      mealType,
     })
       .then((days) => {
         if (!cancelled) {
@@ -94,7 +99,7 @@ export function useCopyDaySource({
     return () => {
       cancelled = true;
     };
-  }, [enabled, targetDayKey]);
+  }, [enabled, targetDayKey, mealType]);
 
   const sourceDayKey = sourceDate ? utcDayKeyFromLocalDate(sourceDate) : null;
 
@@ -121,7 +126,10 @@ export function useCopyDaySource({
 
     const load = async () => {
       try {
-        const logs = await NutritionService.getNutritionLogsForDate(dayToLoad);
+        const logs =
+          mealType === undefined
+            ? await NutritionService.getNutritionLogsForDate(dayToLoad)
+            : await NutritionService.getNutritionLogsForMeal(dayToLoad, mealType);
         // Same relation resolution the diary does, so labels and calories match what
         // the user saw on that day.
         const resolved = await Promise.all(
@@ -167,7 +175,7 @@ export function useCopyDaySource({
     // `sourceDayKey` (not the Date identity) is the real dependency — a new Date object
     // for the same calendar day must not retrigger the read.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, sourceDayKey]);
+  }, [enabled, sourceDayKey, mealType]);
 
   return {
     recentDays,

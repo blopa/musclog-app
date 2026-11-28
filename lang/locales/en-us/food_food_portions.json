@@ -4,7 +4,7 @@
   "createFoodPortion": "Create food portion",
   "portionName": "Portion name",
   "portionNamePlaceholder": "e.g., Cup, Slice, Piece",
-  "weightGrams": "Weight (grams)",
+  "weightInUnit": "Weight ({{unit}})",
   "selectIcon": "Select icon",
   "chooseIcon": "Choose icon"
 }

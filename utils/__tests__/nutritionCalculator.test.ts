@@ -1880,7 +1880,8 @@ describe('calculateNutritionPlan', () => {
   it('allows nutrition plans below the default floor when the safeguard is disabled', () => {
     const plan = calculateNutritionPlan({
       ...baseInput,
-      weightKg: 40,
+      // BMI 18.7: just above underweight, where no deficit is planned at all.
+      weightKg: 42,
       heightCm: 150,
       age: 60,
       activityLevel: 1,

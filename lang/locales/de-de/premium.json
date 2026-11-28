@@ -32,7 +32,7 @@
     "consent": {
       "review": "Aktualisierte Einwilligung prüfen",
       "title": "KI-Anfragen an Musclog Iron senden?",
-      "body": "Deine Nachrichten, Mahlzeitenfotos sowie die Angaben, die eine KI-Funktion zum Antworten braucht, etwa deine Trainings- und Mahlzeitendaten sowie Körpermaße, gehen an den Dienst Musclog Iron. Er leitet sie über ein KI-Gateway, OpenRouter oder Otari (von Mozilla.ai), an den KI-Modellanbieter weiter. Musclog wählt, welches Gateway genutzt wird, und diese Einwilligung gilt für beide. Es werden nur Anbieter mit Zero Data Retention (ZDR) genutzt: Sie bewahren deine Inhalte nicht auf und verwenden sie nicht zum Training. OpenRouter prüft jede Anfrage auf Darstellungen sexuellen Kindesmissbrauchs und kann eine markierte Anfrage behalten; Otari gibt an, den Inhalt von Anfragen nicht zu speichern. Einige dieser Angaben betreffen die Gesundheit; mit deiner Zustimmung willigst du ausdrücklich ein, dass sie auf diese Weise verarbeitet werden. Der Dienst von Musclog speichert deine Nachrichten nie; er behält nur eine Kennung für dieses Gerät und Nutzungszähler. Die Datenschutzerklärungen und Bedingungen von OpenRouter und Otari sind unten im Bildschirm von Musclog Iron verlinkt. Du kannst dies jederzeit ausschalten.",
+      "body": "Deine Nachrichten und Mahlzeitenfotos sowie die Angaben, die eine KI-Funktion zum Antworten braucht, etwa deine Trainings, Mahlzeiten und Körpermaße, auch solche, die aus Health Connect oder Apple Health importiert wurden, gehen an den Dienst Musclog Iron. Er leitet sie über ein KI-Gateway, OpenRouter oder Otari (von Mozilla.ai), an den KI-Modellanbieter weiter. Musclog wählt aus, welches Gateway genutzt wird, und diese Zustimmung gilt für beide. Es werden nur Anbieter mit Zero Data Retention (ZDR) genutzt: Sie bewahren deine Inhalte nicht auf und nutzen sie nicht zum Training. OpenRouter prüft jede Anfrage auf Material mit sexuellem Kindesmissbrauch und kann eine markierte Anfrage aufbewahren; Otari sagt, es speichert den Inhalt von Anfragen nicht. Einige dieser Angaben beziehen sich auf die Gesundheit, und mit deiner Zustimmung erteilst du dein ausdrückliches Einverständnis, dass sie so verarbeitet werden. Der Dienst von Musclog speichert deine Nachrichten nie; er behält nur eine Kennung für dieses Gerät, Nutzungszähler und einen kurzen Fingerabdruck jeder Anfrage. Musclog Iron ist für Erwachsene: Wenn du zustimmst, bestätigst du, dass du 18 oder älter bist. Die Datenschutzerklärungen und Nutzungsbedingungen von OpenRouter und Otari sind unten auf dem Bildschirm von Musclog Iron verlinkt. Du kannst dies jederzeit ausschalten.",
       "confirm": "Musclog Iron verwenden",
       "cancel": "Nicht jetzt"
     },
@@ -76,7 +76,7 @@
         },
         "private": {
           "title": "Zero Data Retention",
-          "desc": "Es werden nur Anbieter mit Zero Data Retention genutzt: Sie bewahren deine Nachrichten nicht auf und trainieren nicht damit, außer bei der gesetzlich vorgeschriebenen Prüfung von OpenRouter auf Darstellungen sexuellen Kindesmissbrauchs. Musclog speichert sie ebenfalls nie; es behält nur Nutzungszähler und eine Gerätekennung."
+          "desc": "Es werden nur Anbieter mit Zero Data Retention genutzt: Sie bewahren deine Nachrichten nicht auf und trainieren nicht damit, abgesehen von OpenRouters Prüfung auf Material mit Kindesmissbrauch. Auch Musclog speichert deine Nachrichten nie; es behält Nutzungszähler, eine Gerätekennung und einen kurzen Fingerabdruck jeder Anfrage für 7 Tage."
         },
         "allowance": {
           "title": "Dein eigenes Kontingent",
@@ -112,7 +112,8 @@
         }
       },
       "cta": "Für {{price}} im Monat abonnieren",
-      "reassurance": "Verlängert sich monatlich. Kündige jederzeit in deinem Store-Konto."
+      "reassurance": "Verlängert sich monatlich. Kündige jederzeit in deinem Store-Konto.",
+      "accuracy": "Musclog Iron führt die KI für dich aus. Das macht KI-Antworten nicht richtig: Sie können falsch sein, also prüfe sie, bevor du dich darauf verlässt."
     }
   }
 }

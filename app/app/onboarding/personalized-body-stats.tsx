@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BirthdayNotes } from '@/components/BirthdayNotes';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerInput } from '@/components/modals/DatePickerInput';
@@ -19,6 +20,7 @@ import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { commitOnboardingProfile } from '@/services/onboardingAnswersApply';
+import { asBirthday, ASSUMED_AGE, birthdayPickerDate } from '@/utils/ageGate';
 import type { CompleteOnboardingAnswers } from '@/utils/aiOnboarding/contract';
 import {
   formatLocalCalendarDayIso,
@@ -49,7 +51,7 @@ export default function PersonalizedBodyStatsScreen() {
   const [setupData, setSetupData] = useState<PersonalizedSetupData>({});
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
-  const [birthday, setBirthday] = useState<Date>(localCalendarDayDate(new Date(1990, 0, 1)));
+  const [birthday, setBirthday] = useState<Date | null>(null);
   const [birthdayEstimated, setBirthdayEstimated] = useState(false);
   const [isBirthdayPickerVisible, setIsBirthdayPickerVisible] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
@@ -112,8 +114,8 @@ export default function PersonalizedBodyStatsScreen() {
         ...(setupData.fullName?.trim() ? { fullName: setupData.fullName.trim() } : {}),
         units,
         gender: setupData.gender ?? 'other',
-        birthDate: formatLocalCalendarDayIso(birthday),
-        ...(birthdayEstimated ? { dobEstimated: true } : {}),
+        ...(birthday ? { birthDate: formatLocalCalendarDayIso(birthday) } : {}),
+        ...(birthday && birthdayEstimated ? { dobEstimated: true } : {}),
         heightCm: displayToCm(heightValue, units),
         weightKg: displayToKg(weightValue, units),
         ...(bodyFat !== null ? { bodyFatPercent: bodyFat } : {}),
@@ -239,7 +241,9 @@ export default function PersonalizedBodyStatsScreen() {
               </Text>
               <DatePickerInput
                 hideLabel
-                selectedDate={birthday}
+                selectedDate={birthdayPickerDate(birthday)}
+                unset={birthday === null}
+                unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
                 onPress={() => setIsBirthdayPickerVisible(true)}
               />
               <Text
@@ -250,8 +254,15 @@ export default function PersonalizedBodyStatsScreen() {
               >
                 {birthdayEstimated
                   ? t('onboarding.quickBodyStats.birthdayEstimated')
-                  : t('onboarding.quickBodyStats.birthdayHelper')}
+                  : t('onboarding.quickBodyStats.birthdayHelper', { age: ASSUMED_AGE })}
               </Text>
+              <BirthdayNotes
+                birthday={birthday}
+                onClear={() => {
+                  setBirthday(null);
+                  setBirthdayEstimated(false);
+                }}
+              />
             </View>
 
             {/* Body Fat % */}
@@ -332,10 +343,14 @@ export default function PersonalizedBodyStatsScreen() {
         <DatePickerModal
           visible={isBirthdayPickerVisible}
           onClose={() => setIsBirthdayPickerVisible(false)}
-          selectedDate={birthday}
+          selectedDate={birthdayPickerDate(birthday)}
           onDateSelect={(date) => {
-            setBirthday(localCalendarDayDate(date));
-            setBirthdayEstimated(false);
+            const answer = asBirthday(localCalendarDayDate(date));
+            if (answer) {
+              setBirthday(answer);
+              setBirthdayEstimated(false);
+            }
+
             setIsBirthdayPickerVisible(false);
           }}
           minYear={1920}
