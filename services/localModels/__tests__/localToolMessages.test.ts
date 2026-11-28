@@ -114,6 +114,17 @@ describe('toEngineMessages with a template that drops tool_calls', () => {
     ]);
   });
 
+  it('writes a no-slot ask_coach call with empty arguments', () => {
+    expect(
+      toEngineMessages(
+        [{ role: 'assistant', content: '', toolCalls: [{ name: 'ask_coach', arguments: '{}' }] }],
+        dropsCalls
+      )
+    ).toEqual([
+      { role: 'assistant', content: '<|tool_call_start|>[ask_coach()]<|tool_call_end|>' },
+    ]);
+  });
+
   it('keeps today output for a template that reads tool_calls, has no list, or is missing', () => {
     const structured = toEngineMessages([callsMessage]);
 

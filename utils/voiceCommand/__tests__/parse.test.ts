@@ -24,6 +24,8 @@ describe('parseVoiceCommands', () => {
         weight: null,
         text: null,
         screen: null,
+        cameraMode: null,
+        activity: null,
       },
     ]);
   });
@@ -82,6 +84,8 @@ describe('parseVoiceCommands', () => {
       weight: null,
       text: null,
       screen: null,
+      cameraMode: null,
+      activity: null,
     });
   });
 
@@ -132,6 +136,25 @@ describe('parseVoiceCommands', () => {
     expect(go.screen).toBe('progress');
   });
 
+  it('reads camera_mode and activity choices', () => {
+    const [camera] =
+      parseVoiceCommands({ commands: [{ tool: 'open_camera', camera_mode: ' LABEL ' }] }) ?? [];
+    const [cardio] =
+      parseVoiceCommands({ commands: [{ tool: 'log_cardio', activity: 'WALK' }] }) ?? [];
+
+    expect(camera.cameraMode).toBe('label');
+    expect(cardio.activity).toBe('walk');
+  });
+
+  it('drops a new-tool command with a value outside its choices', () => {
+    expect(
+      parseVoiceCommands({ commands: [{ tool: 'open_camera', camera_mode: 'portrait' }] })
+    ).toEqual([]);
+    expect(parseVoiceCommands({ commands: [{ tool: 'log_cardio', activity: 'cycle' }] })).toEqual(
+      []
+    );
+  });
+
   it('turns a tool that was not offered into cant_determine_tool with every slot empty', () => {
     const commands = parseVoiceCommands({ commands: [{ tool: 'log_weight', weight: '80' }] }, [
       'search_food',
@@ -149,6 +172,8 @@ describe('parseVoiceCommands', () => {
         weight: null,
         text: null,
         screen: null,
+        cameraMode: null,
+        activity: null,
       },
     ]);
   });
@@ -181,6 +206,8 @@ describe('parseChosenCommand', () => {
       weight: null,
       text: null,
       screen: null,
+      cameraMode: null,
+      activity: null,
     });
   });
 

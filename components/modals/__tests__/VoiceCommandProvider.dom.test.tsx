@@ -3,12 +3,16 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { VoiceCommandProvider, useVoiceCommands } from '@/context/VoiceCommandContext';
 import { logTrackedMeal } from '@/services/trackedMealLogging';
 import { interpretVoiceCommand } from '@/services/voiceCommand';
+import { findSpokenWorkout } from '@/services/voiceWorkout';
 import { takePendingVoiceAction } from '@/utils/voiceCommand/voiceActionInbox';
 
 const mockNavigate = jest.fn();
 const mockShowSnackbar = jest.fn();
 const mockOpenCoach = jest.fn();
 const mockEstimateMeal = jest.fn();
+const mockOpenCamera = jest.fn();
+const mockSettings = { isAiConfigured: true, aiProvider: 'gemini', isAiMealPhotoEnabled: true };
+const mockLock = { locked: false };
 const mockCycle = { isActive: true };
 
 jest.mock('@/lang/lang', () => ({ __esModule: true, default: { t: (key: string) => key } }));
@@ -26,8 +30,21 @@ jest.mock('@/context/SnackbarContext', () => ({
 }));
 jest.mock('@/components/CoachContext', () => ({ useCoach: () => ({ openCoach: mockOpenCoach }) }));
 jest.mock('@/hooks/useSettings', () => ({
-  useSettings: () => ({ isAiConfigured: true, aiProvider: 'gemini' }),
+  useSettings: () => mockSettings,
 }));
+jest.mock('@/components/CameraView', () => ({ useHasCamera: () => true }));
+jest.mock('@/context/SmartCameraContext', () => ({
+  useSmartCamera: () => ({ openCamera: mockOpenCamera }),
+}));
+jest.mock('@/context/AppLockContext', () => ({
+  useAppLock: () => {
+    const locked = mockLock.locked;
+
+    return { isLocked: () => locked };
+  },
+}));
+jest.mock('@/services/voiceWorkout', () => ({ findSpokenWorkout: jest.fn() }));
+jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 jest.mock('@/hooks/useOnDeviceStatus', () => ({ useOnDeviceStatus: () => ({ state: 'ready' }) }));
 jest.mock('@/hooks/useMenstrualCycle', () => ({ useMenstrualCycle: () => mockCycle }));
 jest.mock('@/hooks/useNavigationItems', () => ({
@@ -40,6 +57,7 @@ jest.mock('@/components/navigation/navDestinations', () => ({
     notes: { route: '/app/notes' },
     progress: { route: '/app/progress' },
     cycle: { route: '/app/cycle' },
+    workouts: { route: '/app/workout/workouts' },
   },
 }));
 // Stable across renders, as the real hook's abandon is.
@@ -66,17 +84,42 @@ jest.mock('@/components/modals/VoiceCommandModal', () => ({
     onWeighInClose,
     onLogMeal,
     onMealReviewClose,
+    onPickWorkout,
+    onCardioLogged,
+    onCardioClose,
   }: {
-    state: { kind: string; transcript: string } | null;
+    state: {
+      kind: string;
+      transcript: string;
+      workouts?: { templateId: string; name: string; planId?: string }[];
+      initial?: unknown;
+    } | null;
     onCancel: () => void;
     onPickTool: (transcript: string, tool: string) => void;
     onWeighInClose: (saved: boolean) => void;
     onLogMeal: (data: unknown) => Promise<void>;
     onMealReviewClose: () => void;
+    onPickWorkout: (workout: { templateId: string; name: string; planId?: string }) => void;
+    onCardioLogged: () => void;
+    onCardioClose: () => void;
   }) => (
     <div>
       <span data-testid="modal-state">{state?.kind ?? 'closed'}</span>
       {state ? <button onClick={onCancel}>modal-cancel</button> : null}
+      {state?.kind === 'workoutChoice'
+        ? state.workouts?.map((workout) => (
+            <button key={workout.templateId} onClick={() => onPickWorkout(workout)}>
+              {workout.name}
+            </button>
+          ))
+        : null}
+      {state?.kind === 'cardio' ? (
+        <>
+          <span data-testid="cardio-initial">{JSON.stringify(state.initial)}</span>
+          <button onClick={onCardioLogged}>cardio-logged</button>
+          <button onClick={onCardioClose}>cardio-close</button>
+        </>
+      ) : null}
       {state?.kind === 'pick' ? (
         <button onClick={() => onPickTool(state.transcript, 'copy_meal')}>modal-pick</button>
       ) : null}
@@ -106,6 +149,7 @@ jest.mock('@/components/modals/VoiceCommandModal', () => ({
 
 const mockInterpret = interpretVoiceCommand as jest.Mock;
 const mockLogTrackedMeal = logTrackedMeal as jest.Mock;
+const mockFindWorkout = findSpokenWorkout as jest.Mock;
 
 const DAY = new Date(2026, 10, 26);
 const REVIEW = {
@@ -132,11 +176,237 @@ const SNACKBAR_OPTIONS = { duration: 4000 };
 beforeEach(() => {
   jest.clearAllMocks();
   mockCycle.isActive = true;
+  mockSettings.isAiMealPhotoEnabled = true;
+  mockLock.locked = false;
   mockEstimateMeal.mockReset();
-  takePendingVoiceAction(['addNote', 'copyMeal', 'searchFood', 'logWeight']);
+  takePendingVoiceAction(['addNote', 'copyMeal', 'searchFood', 'logWeight', 'previewWorkout']);
 });
 
 describe('VoiceCommandProvider', () => {
+  it('opens the coach with the spoken text in its composer', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['ask_coach'],
+      action: { kind: 'askCoach', text: 'How much protein?' },
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() =>
+      expect(mockOpenCoach).toHaveBeenCalledWith({ composerText: 'How much protein?' })
+    );
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['barcode-scan', false, { mode: 'barcode-scan', showBarcodeTextSearch: true }],
+    ['ai-meal-photo', true, { mode: 'ai-meal-photo', showBarcodeTextSearch: true }],
+    ['ai-meal-photo', false, { showBarcodeTextSearch: true }],
+  ])('opens camera mode %s with photo availability %s', async (mode, enabled, options) => {
+    mockSettings.isAiMealPhotoEnabled = enabled;
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['open_camera'],
+      action: { kind: 'openCamera', mode },
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(mockOpenCamera).toHaveBeenCalledWith(options));
+    expect(mockInterpret).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ hasCamera: true })
+    );
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
+  });
+
+  it('opens the named workout preview through the inbox', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['start_workout'],
+      action: { kind: 'startWorkout', said: 'start push' },
+    });
+    mockFindWorkout.mockResolvedValue({
+      kind: 'found',
+      workout: { templateId: 'w', name: 'Push', planId: 'p' },
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/app/workout/workouts'));
+    expect(takePendingVoiceAction(['previewWorkout'])).toEqual({
+      kind: 'previewWorkout',
+      templateId: 'w',
+      planId: 'p',
+    });
+  });
+
+  it('resumes an active workout and explains that it is running', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['start_workout'],
+      action: { kind: 'startWorkout', said: 'start workout' },
+    });
+    mockFindWorkout.mockResolvedValue({ kind: 'active', workoutLogId: 'log1' });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledWith('/app/workout/workout-session?workoutLogId=log1')
+    );
+    expect(mockShowSnackbar).toHaveBeenCalledWith('success', 'voiceInput.command.workoutActive');
+  });
+
+  it.each([false, true])('handles workout choices with locked area %s', async (locked) => {
+    mockLock.locked = locked;
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['start_workout'],
+      action: { kind: 'startWorkout', said: 'start' },
+    });
+    mockFindWorkout.mockResolvedValue({
+      kind: 'choose',
+      workouts: [{ templateId: 'w', name: 'Push' }],
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    if (locked) {
+      await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/app/workout/workouts'));
+      expect(screen.queryByText('Push')).toBeNull();
+    } else {
+      await waitFor(() => expect(screen.getByText('Push')).toBeTruthy());
+      fireEvent.click(screen.getByText('Push'));
+      expect(takePendingVoiceAction(['previewWorkout'])).toEqual({
+        kind: 'previewWorkout',
+        templateId: 'w',
+        planId: undefined,
+      });
+    }
+  });
+
+  it('shows a wrong-task notice when a workout list is cancelled', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['start_workout'],
+      action: { kind: 'startWorkout', said: 'start' },
+    });
+    mockFindWorkout.mockResolvedValue({
+      kind: 'choose',
+      workouts: [{ templateId: 'w', name: 'Push' }],
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(screen.getByText('Push')).toBeTruthy());
+    fireEvent.click(screen.getByText('modal-cancel'));
+    expect(mockShowSnackbar).toHaveBeenCalledWith(
+      'success',
+      'voiceInput.command.wrongTask',
+      expect.anything()
+    );
+  });
+
+  it('does not expose a workout list when the area locks during lookup', async () => {
+    let finish: (value: unknown) => void = () => {};
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['start_workout'],
+      action: { kind: 'startWorkout', said: 'start' },
+    });
+    mockFindWorkout.mockReturnValue(
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+    );
+    const { rerender } = renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(mockFindWorkout).toHaveBeenCalled());
+    mockLock.locked = true;
+    rerender(
+      <VoiceCommandProvider>
+        <Probe />
+      </VoiceCommandProvider>
+    );
+    await act(async () =>
+      finish({ kind: 'choose', workouts: [{ templateId: 'w', name: 'Push' }] })
+    );
+    expect(screen.queryByText('Push')).toBeNull();
+    expect(mockNavigate).toHaveBeenCalledWith('/app/workout/workouts');
+  });
+
+  it('closes a workout list and navigates when the area locks', async () => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['start_workout'],
+      action: { kind: 'startWorkout', said: 'start' },
+    });
+    mockFindWorkout.mockResolvedValue({
+      kind: 'choose',
+      workouts: [{ templateId: 'w', name: 'Push' }],
+    });
+    const { rerender } = renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(screen.getByText('Push')).toBeTruthy());
+    mockLock.locked = true;
+    rerender(
+      <VoiceCommandProvider>
+        <Probe />
+      </VoiceCommandProvider>
+    );
+    expect(screen.queryByText('Push')).toBeNull();
+    expect(mockNavigate).toHaveBeenCalledWith('/app/workout/workouts');
+  });
+
+  it('ignores a workout lookup that finishes after cancellation', async () => {
+    let finish: (value: unknown) => void = () => {};
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['start_workout'],
+      action: { kind: 'startWorkout', said: 'start' },
+    });
+    mockFindWorkout.mockReturnValue(
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+    );
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(mockFindWorkout).toHaveBeenCalled());
+    fireEvent.click(screen.getByText('modal-cancel'));
+    await act(async () => finish({ kind: 'found', workout: { templateId: 'w', name: 'Push' } }));
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockShowSnackbar).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])('prefills cardio and handles close with saved %s', async (saved) => {
+    mockInterpret.mockResolvedValue({
+      kind: 'action',
+      offered: ['log_cardio'],
+      action: { kind: 'logCardio', day: DAY, activity: 'walk', distanceM: 5000, durationS: null },
+    });
+    renderProvider();
+    fireEvent.click(screen.getByText('submit'));
+    await waitFor(() => expect(screen.getByTestId('modal-state').textContent).toBe('cardio'));
+    const initial = JSON.parse(screen.getByTestId('cardio-initial').textContent ?? '{}');
+    expect(initial).toEqual(
+      expect.objectContaining({
+        activity: 'walk',
+        distanceM: 5000,
+        durationS: null,
+        endedAt: expect.any(String),
+      })
+    );
+    const endedAt = new Date(initial.endedAt);
+    expect([endedAt.getFullYear(), endedAt.getMonth(), endedAt.getDate()]).toEqual([
+      DAY.getFullYear(),
+      DAY.getMonth(),
+      DAY.getDate(),
+    ]);
+    if (saved) fireEvent.click(screen.getByText('cardio-logged'));
+    fireEvent.click(screen.getByText('cardio-close'));
+    if (saved) expect(mockShowSnackbar).not.toHaveBeenCalled();
+    else
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        'success',
+        'voiceInput.command.wrongTask',
+        expect.anything()
+      );
+  });
   it('stores the action, opens the food diary and closes the modal on an action outcome', async () => {
     mockInterpret.mockResolvedValue({
       kind: 'action',

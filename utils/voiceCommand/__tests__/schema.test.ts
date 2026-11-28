@@ -64,6 +64,17 @@ describe('buildVoiceCommandSchema', () => {
     expect(items.required).toEqual(['tool', ...SLOT_KEYS, 'screen']);
   });
 
+  it('adds the new choice slots only when their tools are offered', () => {
+    const items = schemaFor('openai', ['log_cardio', 'open_camera']).properties.commands.items;
+
+    expect(items.properties.activity.enum).toEqual(['walk', 'run', null]);
+    expect(items.properties.camera_mode.enum).toEqual(['barcode', 'food_photo', 'label', null]);
+    expect(items.required).toEqual(['tool', 'day', 'activity', 'camera_mode']);
+    expect(
+      schemaFor('gguf', ['search_food']).properties.commands.items.properties
+    ).not.toHaveProperty('activity');
+  });
+
   it('names only the chosen tool when one is picked', () => {
     const items = schemaFor('gemini', TWO, 'copy_meal').properties.commands.items;
 

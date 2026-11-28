@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import type { MealEstimateReview } from '@/components/camera/mealEstimateReview';
+import type { LogCardioInitial } from '@/components/modals/LogCardioModal';
 import {
   VoiceCommandModal,
   type VoiceCommandModalState,
@@ -64,6 +65,23 @@ jest.mock('@/components/modals/VoiceWeightSheet', () => ({
     </div>
   ),
 }));
+jest.mock('@/components/modals/LogCardioModal', () => ({
+  LogCardioModal: ({
+    initial,
+    onLogged,
+    onClose,
+  }: {
+    initial: LogCardioInitial;
+    onLogged: () => void;
+    onClose: () => void;
+  }) => (
+    <div>
+      <span>{JSON.stringify(initial)}</span>
+      <button onClick={onLogged}>cardio-logged</button>
+      <button onClick={onClose}>cardio-close</button>
+    </div>
+  ),
+}));
 const mockLogMealOnClose = jest.fn();
 jest.mock('@/components/modals/LogMealModal', () => ({
   LogMealModal: ({
@@ -111,6 +129,9 @@ function renderModal(
     onWeighInClose: jest.fn(),
     onLogMeal: jest.fn(async () => {}),
     onMealReviewClose: jest.fn(),
+    onPickWorkout: jest.fn(),
+    onCardioLogged: jest.fn(),
+    onCardioClose: jest.fn(),
     ...extra,
   };
   render(<VoiceCommandModal {...props} />);
@@ -133,6 +154,9 @@ describe('VoiceCommandModal', () => {
         onWeighInClose={jest.fn()}
         onLogMeal={jest.fn()}
         onMealReviewClose={jest.fn()}
+        onPickWorkout={jest.fn()}
+        onCardioLogged={jest.fn()}
+        onCardioClose={jest.fn()}
       />
     );
 
@@ -180,6 +204,43 @@ describe('VoiceCommandModal', () => {
 
     fireEvent.click(screen.getByText('common.cancel'));
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers the coach only in the footer when ask_coach is offered', () => {
+    renderModal({ kind: 'pick', transcript: TRANSCRIPT, offered: ['ask_coach'] });
+    expect(screen.queryByText('voiceInput.command.tool.askCoach')).toBeNull();
+    expect(screen.getAllByText('voiceInput.command.askCoach')).toHaveLength(1);
+  });
+
+  it('lists workouts with their plans and passes the selected workout', () => {
+    const workout = { templateId: 'w', name: 'Push', planId: 'p', planName: 'PPL' };
+    const { onPickWorkout } = renderModal({
+      kind: 'workoutChoice',
+      transcript: TRANSCRIPT,
+      workouts: [workout],
+    });
+    expect(screen.getByText('PPL')).toBeTruthy();
+    fireEvent.click(screen.getByText('Push'));
+    expect(onPickWorkout).toHaveBeenCalledWith(workout);
+  });
+
+  it('passes cardio initial values and callbacks to its sheet', () => {
+    const initial = {
+      activity: 'run' as const,
+      distanceM: 5000,
+      durationS: null,
+      endedAt: new Date(2026, 10, 26),
+    };
+    const { onCardioLogged, onCardioClose } = renderModal({
+      kind: 'cardio',
+      transcript: TRANSCRIPT,
+      initial,
+    });
+    expect(screen.getByText(JSON.stringify(initial))).toBeTruthy();
+    fireEvent.click(screen.getByText('cardio-logged'));
+    fireEvent.click(screen.getByText('cardio-close'));
+    expect(onCardioLogged).toHaveBeenCalledTimes(1);
+    expect(onCardioClose).toHaveBeenCalledTimes(1);
   });
 
   it('shows the step of a meal estimate from its progress line', () => {

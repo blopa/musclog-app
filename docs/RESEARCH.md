@@ -901,3 +901,7 @@ Of the 83, by tool (own payload): at three tools 10 of 11 food searches, 9 of 10
 - **What did not help:** more example turns of any arrangement with the calls visible, negative examples, a question in the preamble that is answered with a refusal (food searches fell to 0 of 11), and an example sentence inside a tool description (the model copied it).
 - **Picking the tool after a miss** keeps the example turns: with five tools offered, all 101 sentences for a tool called it and 87 got the right arguments (instruction line: 92 and 85; nothing: 83 and 83).
 - The figures are for the default tool order, one seed, temperature 0, tuned on these sentences (the held-out set was not used to choose wording). No phone was measured.
+
+### Voice commands with ten tools (2026-11-28)
+
+The four added tools (`ask_coach`, `start_workout`, `log_cardio`, `open_camera`) follow the six existing tools in the default selection. The 450M still uses three by default and the 1.2B uses five. The protocol and cases are in `musclog-benchmarks/2026-11-28-voice-tools-10`. Both templates rendered the empty-argument coach example. With the tool-call opener forced for the parser check, b10256 returned empty arguments for `ask_coach` and `start_workout` on both models. This checks parsing only. Eligibility awaits the full paired run. The desktop b10256 results will not measure Apple, cloud, local-server or phone inference.

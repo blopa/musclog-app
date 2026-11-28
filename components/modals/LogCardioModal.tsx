@@ -123,6 +123,7 @@ export function LogCardioModal({ visible, onClose, onLogged, initial }: LogCardi
     () => buildCardioDraft({ distance, hours, minutes, seconds, units }),
     [distance, hours, minutes, seconds, units]
   );
+  const missingVoiceValues = Boolean(initial) && !draft.isValid;
   const pace = draft.isValid ? formatPace(locale, draft.distanceM, draft.durationS, units) : null;
   const estimatedKcal = useMemo(
     () =>
@@ -177,7 +178,7 @@ export function LogCardioModal({ visible, onClose, onLogged, initial }: LogCardi
 
   const unitLabel = getDistanceUnitLabel(units);
 
-  // With `initial` Save stays enabled on an invalid draft, so pressing it names the missing field.
+  // Both manually entered and voice-prefilled drafts need a distance and duration before saving.
   const footer = (
     <Button
       label={t('cardio.save')}
@@ -187,7 +188,7 @@ export function LogCardioModal({ visible, onClose, onLogged, initial }: LogCardi
       icon={Check}
       onPress={handleSave}
       loading={isSaving}
-      disabled={isSaving || (!initial && !draft.isValid)}
+      disabled={isSaving || !draft.isValid}
     />
   );
 
@@ -202,6 +203,9 @@ export function LogCardioModal({ visible, onClose, onLogged, initial }: LogCardi
       closable={!isSaving}
     >
       <View className="mb-6 mt-6 gap-6 px-4" testID="log-cardio-form">
+        {missingVoiceValues ? (
+          <Text className="text-sm text-text-secondary">{t('cardio.needsDistanceAndTime')}</Text>
+        ) : null}
         <View>
           <Text
             className="mb-3 text-xs font-semibold"

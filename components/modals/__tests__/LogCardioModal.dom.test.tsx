@@ -47,8 +47,21 @@ jest.mock('@/components/modals/FullScreenModal', () => ({
     ) : null,
 }));
 jest.mock('@/components/theme/StepperInput', () => ({
-  StepperInput: ({ label, value }: { label: string; value: number }) => (
-    <div data-testid={label}>{value}</div>
+  StepperInput: ({
+    label,
+    value,
+    onChangeValue,
+  }: {
+    label: string;
+    value: number;
+    onChangeValue?: (value: number) => void;
+  }) => (
+    <div>
+      <div data-testid={label}>{value}</div>
+      {onChangeValue ? (
+        <button aria-label={`increase ${label}`} onClick={() => onChangeValue(value + 1)} />
+      ) : null}
+    </div>
   ),
 }));
 jest.mock('@/components/FilterTabs', () => ({ FilterTabs: () => null }));
@@ -111,20 +124,37 @@ describe('LogCardioModal', () => {
     expect(screen.getByTestId('cardio.seconds').textContent).toBe('0');
   });
 
-  it('starts unsaid values at zero and still lets Save be pressed', async () => {
-    renderModal({ activity: 'run', distanceM: null, durationS: null, endedAt: PAST_END });
+  it.each([
+    ['distance', null, 1800],
+    ['duration', 5000, null],
+    ['both', null, null],
+  ] as const)(
+    'shows the missing distance and time when %s was not said',
+    (missing, distanceM, durationS) => {
+      renderModal({ activity: 'run', distanceM, durationS, endedAt: PAST_END });
 
-    expect(screen.getByTestId('cardio.distanceInput').textContent).toBe('0');
-    expect(screen.getByTestId('cardio.hours').textContent).toBe('0');
-    expect(screen.getByTestId('cardio.minutes').textContent).toBe('0');
+      if (distanceM === null) {
+        expect(screen.getByTestId('cardio.distanceInput').textContent).toBe('0');
+      }
+      if (durationS === null) {
+        expect(screen.getByTestId('cardio.minutes').textContent).toBe('0');
+      }
 
-    const save = screen.getByText('cardio.save');
-    expect((save as HTMLButtonElement).disabled).toBe(false);
+      const save = screen.getByText('cardio.save');
+      expect((save as HTMLButtonElement).disabled).toBe(true);
+      expect(screen.getByText('cardio.needsDistanceAndTime')).toBeTruthy();
+      expect(logCardioSession).not.toHaveBeenCalled();
+    }
+  );
 
-    fireEvent.click(save);
+  it('clears the missing-values message as soon as the draft becomes valid', () => {
+    renderModal({ activity: 'run', distanceM: 5000, durationS: null, endedAt: PAST_END });
+    expect(screen.getByText('cardio.needsDistanceAndTime')).toBeTruthy();
 
-    expect(await screen.findByText('cardio.needsDistanceAndTime')).toBeTruthy();
-    expect(logCardioSession).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'increase cardio.minutes' }));
+
+    expect(screen.queryByText('cardio.needsDistanceAndTime')).toBeNull();
+    expect((screen.getByText('cardio.save') as HTMLButtonElement).disabled).toBe(false);
   });
 
   it('saves a valid initial log with its exact distance, duration, activity and end time', async () => {
@@ -150,5 +180,6 @@ describe('LogCardioModal', () => {
     expect(screen.getByTestId('cardio.minutes').textContent).toBe('30');
     expect(screen.getByTestId('cardio.hours').textContent).toBe('0');
     expect(screen.getByTestId('cardio.seconds').textContent).toBe('0');
+    expect(screen.queryByText('cardio.needsDistanceAndTime')).toBeNull();
   });
 });

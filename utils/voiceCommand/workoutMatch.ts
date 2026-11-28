@@ -3,7 +3,8 @@
  * said, and at least one of them must be more than a word of asking ("workout", "day"). The names
  * stay on the phone; no model sees them. Pure: no React Native, no database.
  */
-import { tokenizeExerciseText } from '@/utils/exerciseSearch';
+import { normalizeExerciseText, stemToken, tokenizeExerciseText } from '@/utils/exerciseSearch';
+import { numberWordValue, toAsciiDigits } from '@/utils/voiceCommand/spokenNumbers';
 import { GENERIC_WORKOUT_WORDS } from '@/utils/voiceCommand/workoutWords';
 
 export type MatchableWorkout = {
@@ -40,12 +41,33 @@ function longest(matches: Match[]): Match[] {
 }
 
 /** How the sentence names this workout: through its plans where one was said, else by its name. */
-function matchesOf(workout: MatchableWorkout, said: ReadonlySet<string>): Match[] {
-  const name = tokenizeExerciseText(workout.name);
+function workoutTokens(text: string): string[] {
+  return normalizeExerciseText(toAsciiDigits(text)).split(' ').filter(Boolean);
+}
+
+function matchesOf(workout: MatchableWorkout, said: readonly string[]): Match[] {
+  const name = workoutTokens(workout.name).map(stemToken);
   const match = (words: string[], choice: WorkoutChoice): Match[] => {
     const named =
-      words.every((word) => said.has(word)) &&
-      words.some((word) => !GENERIC_WORKOUT_WORDS.has(word));
+      words.every((word, index) => {
+        if (word.length === 1 || /^\d+$/.test(word)) {
+          return (
+            index > 0 &&
+            said.some((spoken, position) => {
+              const sameWord =
+                stemToken(spoken) === word ||
+                (/^\d+$/.test(word) && numberWordValue(spoken) === Number(word));
+
+              return sameWord && position > 0 && stemToken(said[position - 1]) === words[index - 1];
+            })
+          );
+        }
+
+        return said.some((spoken) => stemToken(spoken) === word);
+      }) &&
+      words.some(
+        (word, index) => !GENERIC_WORKOUT_WORDS.has(word) || (index > 0 && word.length === 1)
+      );
 
     return named ? [{ choice, length: new Set(words).size }] : [];
   };
@@ -56,7 +78,7 @@ function matchesOf(workout: MatchableWorkout, said: ReadonlySet<string>): Match[
 
   const { templateId } = workout;
   const throughPlans = workout.plans.flatMap((plan) =>
-    match([...tokenizeExerciseText(plan.planName), ...name], {
+    match([...workoutTokens(plan.planName).map(stemToken), ...name], {
       templateId,
       name: workout.name,
       ...plan,
@@ -74,7 +96,7 @@ export function matchWorkoutsBySpeech(
   workouts: readonly MatchableWorkout[],
   transcript: string
 ): WorkoutChoice[] {
-  const said = new Set(tokenizeExerciseText(transcript));
+  const said = workoutTokens(transcript);
 
   return longest(workouts.flatMap((workout) => matchesOf(workout, said))).map(
     (match) => match.choice

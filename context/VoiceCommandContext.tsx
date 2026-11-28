@@ -71,6 +71,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
   const { openCamera } = useSmartCamera();
   const hasCamera = useHasCamera();
   const { isLocked } = useAppLock();
+  const workoutLocked = isLocked('workout');
   const onDeviceStatus = useOnDeviceStatus();
   const { isActive: isCycleActive } = useMenstrualCycle();
   const showWrongTaskNotice = useWrongTaskNotice();
@@ -102,6 +103,16 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
     abandon();
     setState(null);
   }, [abandon]);
+
+  // A lock may engage while the lookup runs or while its list is already visible.
+  useEffect(() => {
+    if (workoutLocked && state?.kind === 'workoutChoice') {
+      // Clear the hidden list when navigating away so it cannot reappear after unlock.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState(null);
+      router.navigate(NAV_DESTINATIONS.workouts.route);
+    }
+  }, [router, state?.kind, workoutLocked]);
 
   const showError = useCallback(
     (message: string) => showSnackbar('error', message, { duration: ERROR_SNACKBAR_MS }),
@@ -151,8 +162,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        // The list would show saved workouts, which a locked area never does.
-        if (lookup.kind === 'choose' && !isLocked('workout')) {
+        if (lookup.kind === 'choose') {
           setState({ kind: 'workoutChoice', transcript, workouts: lookup.workouts });
 
           return;
@@ -177,7 +187,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
         showError(t(FAILED_MESSAGE.messageKey));
       }
     },
-    [isLocked, openWorkoutPreview, router, showError, showSnackbar, t]
+    [openWorkoutPreview, router, showError, showSnackbar, t]
   );
 
   const startMealEstimate = useCallback(
@@ -436,7 +446,7 @@ export function VoiceCommandProvider({ children }: { children: ReactNode }) {
     <VoiceCommandContext.Provider value={value}>
       {children}
       <VoiceCommandModal
-        state={state}
+        state={workoutLocked && state?.kind === 'workoutChoice' ? null : state}
         progress={ai.progress}
         onCancel={cancel}
         onAskCoach={askCoach}

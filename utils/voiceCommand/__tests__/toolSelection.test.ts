@@ -1,5 +1,6 @@
 import {
   activeVoiceTools,
+  canOfferVoiceTool,
   DEFAULT_VOICE_TOOL_SELECTION,
   parseVoiceToolSelection,
   serializeVoiceToolSelection,
@@ -62,6 +63,25 @@ describe('activeVoiceTools', () => {
       'search_food',
       'log_weight',
       'add_note',
+    ]);
+  });
+
+  it('filters unavailable tools before applying the limit', () => {
+    const available = (tool: VoiceActionTool) =>
+      canOfferVoiceTool(tool, { hasCamera: false, nativeModel: true });
+
+    expect(
+      activeVoiceTools(['open_camera', 'go_to', 'log_weight', 'copy_meal'], 3, available)
+    ).toEqual(['copy_meal', 'log_weight', 'go_to']);
+  });
+
+  it('uses the filtered default when no selected tool is available', () => {
+    const available = (tool: VoiceActionTool) => tool !== 'open_camera';
+
+    expect(activeVoiceTools(['open_camera'], 3, available)).toEqual([
+      'search_food',
+      'copy_meal',
+      'log_weight',
     ]);
   });
 

@@ -61,6 +61,10 @@ const ALL_OFFERED: VoiceActionTool[] = [
   'log_meal',
   'add_note',
   'go_to',
+  'ask_coach',
+  'start_workout',
+  'log_cardio',
+  'open_camera',
 ];
 const mockRequest = requestStructured as jest.Mock;
 const mockNativeRequest = requestNativeToolCall as jest.Mock;
@@ -360,6 +364,26 @@ describe('interpretVoiceCommand with the tool the person picked', () => {
     mockGetAiConfig.mockResolvedValue(config);
   });
 
+  it.each([
+    ['start_workout', 'Start my workout', { kind: 'startWorkout', said: 'Start my workout' }],
+    ['ask_coach', 'How much protein?', { kind: 'askCoach', text: 'How much protein?' }],
+  ] as const)('resolves a picked %s without a model request', async (tool, transcript, action) => {
+    await expect(interpretVoiceCommand(transcript, { now: NOW, tool })).resolves.toEqual({
+      kind: 'action',
+      offered: GGUF_OFFERED,
+      action,
+    });
+    expect(mockNativeRequest).not.toHaveBeenCalled();
+    expect(mockRequest).not.toHaveBeenCalled();
+  });
+
+  it('refuses a picked camera tool on a device without a camera', async () => {
+    await expect(
+      interpretVoiceCommand('open the camera', { now: NOW, tool: 'open_camera', hasCamera: false })
+    ).resolves.toEqual({ kind: 'rejected', reason: 'cantDetermine', offered: GGUF_OFFERED });
+    expect(mockNativeRequest).not.toHaveBeenCalled();
+  });
+
   it('offers only that tool and ignores the values it cannot use', async () => {
     mockNativeRequest.mockResolvedValue(
       call('copy_meal', '{"meal":"breakfast","from_meal":"tomorrow","from_day":"yesterday"}')
@@ -415,7 +439,7 @@ describe('interpretVoiceCommand: how many tools a request offers', () => {
     return outcome.kind === 'rejected' || outcome.kind === 'action' ? outcome.offered : [];
   }
 
-  it('offers all six tools to a cloud provider by default', async () => {
+  it('offers all ten tools to a cloud provider by default', async () => {
     expect(await offeredFor({ provider: 'gemini', apiKey: 'key' })).toEqual(ALL_OFFERED);
   });
 
@@ -431,6 +455,19 @@ describe('interpretVoiceCommand: how many tools a request offers', () => {
 
   it('offers five tools to a custom local server', async () => {
     expect(await offeredFor({ provider: 'local' })).toEqual(ALL_OFFERED.slice(0, 5));
+  });
+
+  it('filters a missing camera before applying the model limit', async () => {
+    mockGetSetting.mockResolvedValueOnce('open_camera,go_to,log_weight,add_note,copy_meal');
+    mockGetAiConfig.mockResolvedValue({ provider: 'on-device', engine: 'gguf' });
+
+    const outcome = await interpretVoiceCommand(TRANSCRIPT, { now: NOW, hasCamera: false });
+
+    expect(outcome).toEqual({
+      kind: 'rejected',
+      reason: 'noAction',
+      offered: ['log_weight', 'add_note', 'go_to'],
+    });
   });
 
   it('offers the first picks in the order the person chose them, then in native order', async () => {

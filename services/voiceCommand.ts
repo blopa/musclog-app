@@ -23,7 +23,7 @@ import {
 import { parseChosenCommand, parseVoiceCommands } from '@/utils/voiceCommand/parse';
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
 import { buildVoiceCommandSchema } from '@/utils/voiceCommand/schema';
-import { resolveVoiceCommand } from '@/utils/voiceCommand/tools';
+import { resolveVoiceCommand, VOICE_TOOLS } from '@/utils/voiceCommand/tools';
 import {
   activeVoiceTools,
   canOfferVoiceTool,
@@ -135,7 +135,10 @@ export async function interpretVoiceCommand(
 
     // A picked tool was offered a moment ago; it stays usable if the choice changed since.
     const usable = tool && !offered.includes(tool) ? [...offered, tool] : offered;
-    const commands = await requestCommands({ ...config, signal }, transcript, usable, tool);
+    const commands =
+      tool && Object.keys(VOICE_TOOLS[tool].native.slots).length === 0
+        ? [parseChosenCommand(null, tool)]
+        : await requestCommands({ ...config, signal }, transcript, usable, tool);
     if (!commands) {
       reportAiEvent('voice-command-unusable', { provider: config.provider, operation: OPERATION });
 

@@ -116,11 +116,33 @@ const TEXT_MODEL_INSTRUCTION =
   'Call a tool only when the sentence asks the app to log, copy, open or write something. ' +
   'Otherwise reply "Okay." and call no tool. A greeting, thanks or a question is not a request.';
 
-/** The same, while the coach is offered: a question is then a request. */
-const TEXT_MODEL_INSTRUCTION_WITH_COACH =
-  'Call a tool only when the sentence asks the app to log, copy, open or write something, or asks ' +
-  'a question. Otherwise reply "Okay." and call no tool. A greeting, thanks or a statement is not ' +
-  'a request.';
+/** The measured legacy sets keep their exact instruction. New sets describe the offered actions. */
+function textInstruction(offered: readonly VoiceActionTool[]): string {
+  const has = (tool: VoiceActionTool) => offered.includes(tool);
+  const coach = has('ask_coach');
+  if (!coach && !has('start_workout') && !has('log_cardio') && !has('open_camera')) {
+    return TEXT_MODEL_INSTRUCTION;
+  }
+
+  const verbs = [
+    (has('log_weight') || has('log_meal') || has('log_cardio')) && 'log',
+    has('copy_meal') && 'copy',
+    (has('search_food') || has('go_to') || has('open_camera')) && 'open',
+    has('add_note') && 'write',
+    has('start_workout') && 'start',
+  ].filter(Boolean);
+  const last = verbs.pop();
+  const actions = verbs.length ? `${verbs.join(', ')} or ${last}` : last;
+  const requests = [
+    actions && `asks the app to ${actions} something`,
+    coach && 'asks a question or asks for advice',
+  ].filter(Boolean);
+
+  return (
+    `Call a tool only when the sentence ${requests.join(', or ')}. Otherwise reply "Okay." and call no tool. ` +
+    `A greeting, thanks or a ${coach ? 'statement' : 'question'} is not a request.`
+  );
+}
 
 /**
  * What a downloaded model is given before the sentence. The 1.2B gets the instruction on a first
@@ -136,11 +158,7 @@ export function nativeVoiceMessages(
     return nativeVoiceExamples(offered);
   }
 
-  const content = offered.includes('ask_coach')
-    ? TEXT_MODEL_INSTRUCTION_WITH_COACH
-    : TEXT_MODEL_INSTRUCTION;
-
-  return [{ role: 'system', content }];
+  return [{ role: 'system', content: textInstruction(offered) }];
 }
 
 /** One command of the model's answer: its `tool` and the slots it filled. */

@@ -92,6 +92,8 @@ describe('nativeVoiceExamples', () => {
           weight: null,
           text: null,
           screen: null,
+          cameraMode: null,
+          activity: null,
         },
       ],
       [
@@ -105,6 +107,8 @@ describe('nativeVoiceExamples', () => {
           weight: null,
           text: null,
           screen: null,
+          cameraMode: null,
+          activity: null,
         },
       ],
       [
@@ -118,6 +122,8 @@ describe('nativeVoiceExamples', () => {
           weight: null,
           text: null,
           screen: null,
+          cameraMode: null,
+          activity: null,
         },
       ],
     ]);
@@ -380,6 +386,10 @@ describe('frozen native voice output', () => {
       'log_meal',
       'add_note',
       'go_to',
+      'ask_coach',
+      'start_workout',
+      'log_cardio',
+      'open_camera',
     ]);
   });
 });
@@ -444,5 +454,21 @@ describe('native placement guarantees', () => {
   it('offers no non-action tool: none and cant_determine_tool answer in plain text by design', () => {
     expect(NATIVE_VOICE_TOOL_ORDER).not.toContain('none');
     expect(NATIVE_VOICE_TOOL_ORDER).not.toContain('cant_determine_tool');
+  });
+});
+
+describe('first requests with the new native voice tools', () => {
+  it('instructs the text model to start a workout when it is offered', () => {
+    expect(
+      nativeVoiceMessages(['log_cardio', 'start_workout'], undefined, 'text')[0].content
+    ).toContain('log or start something');
+  });
+
+  it('makes a question actionable only while the coach is offered', () => {
+    expect(nativeVoiceExamples(['ask_coach'])[2].content).toBe('I slept badly last night');
+    expect(nativeVoiceExamples(['start_workout'])[2].content).toBe('What did I eat on Monday?');
+    const instruction = nativeVoiceMessages(['ask_coach'], undefined, 'text')[0].content;
+    expect(instruction).toContain('asks a question');
+    expect(instruction).not.toContain('log, copy');
   });
 });

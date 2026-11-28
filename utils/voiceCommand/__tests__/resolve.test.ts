@@ -5,13 +5,22 @@ import {
   resolveGoTo,
   resolveLogMeal,
   resolveLogWeight,
+  resolveLogCardio,
+  resolveOpenCamera,
+  resolveStartWorkout,
+  resolveAskCoach,
   resolveSearchFood,
 } from '@/utils/voiceCommand/resolve';
 import type { VoiceCommand } from '@/utils/voiceCommand/types';
 
 // Thursday, 26 November 2026, 13:00 local.
 const NOW = new Date(2026, 10, 26, 13, 0);
-const ctx = (now: Date = NOW, transcript = 'x') => ({ now, transcript, weightUnit: 'kg' as const });
+const ctx = (now: Date = NOW, transcript = 'x') => ({
+  now,
+  transcript,
+  weightUnit: 'kg' as const,
+  units: 'metric' as const,
+});
 
 function command(overrides: Partial<VoiceCommand> = {}): VoiceCommand {
   return {
@@ -24,6 +33,8 @@ function command(overrides: Partial<VoiceCommand> = {}): VoiceCommand {
     weight: null,
     text: null,
     screen: null,
+    cameraMode: null,
+    activity: null,
     ...overrides,
   };
 }
@@ -224,6 +235,75 @@ describe('resolveVoiceCommand', () => {
   });
 });
 
+describe('new voice tool resolvers', () => {
+  it('keeps the full spoken question for the coach', () => {
+    expect(
+      resolveAskCoach(command({ tool: 'ask_coach' }), ctx(NOW, '  Is pasta healthy?  '))
+    ).toEqual({
+      ok: true,
+      action: { kind: 'askCoach', text: 'Is pasta healthy?' },
+    });
+    expect(
+      resolveVoiceCommand(command({ tool: 'ask_coach' }), {
+        ...ctx(NOW, 'How much protein do I need?'),
+        chosen: true,
+      })
+    ).toEqual({ ok: true, action: { kind: 'askCoach', text: 'How much protein do I need?' } });
+  });
+
+  it('resolves an optional camera mode for both normal and picked commands', () => {
+    expect(resolveOpenCamera(command({ tool: 'open_camera', cameraMode: 'food_photo' }))).toEqual({
+      ok: true,
+      action: { kind: 'openCamera', mode: 'ai-meal-photo' },
+    });
+    expect(resolveVoiceCommand(command({ tool: 'open_camera' }), ctx(NOW))).toEqual({
+      ok: true,
+      action: { kind: 'openCamera', mode: null },
+    });
+  });
+
+  it('passes the spoken workout request through for local lookup', () => {
+    expect(
+      resolveStartWorkout(command({ tool: 'start_workout' }), ctx(NOW, ' Start leg day '))
+    ).toEqual({
+      ok: true,
+      action: { kind: 'startWorkout', said: 'Start leg day' },
+    });
+    expect(
+      resolveVoiceCommand(command({ tool: 'start_workout' }), {
+        ...ctx(NOW, 'Start a workout'),
+        chosen: true,
+      })
+    ).toEqual({ ok: true, action: { kind: 'startWorkout', said: 'Start a workout' } });
+  });
+
+  it('reads cardio values from speech for normal and picked commands', () => {
+    expect(
+      resolveLogCardio(command({ tool: 'log_cardio', activity: 'walk' }), {
+        ...ctx(NOW, 'I walked 2 km in 30 minutes'),
+      })
+    ).toEqual({
+      ok: true,
+      action: {
+        kind: 'logCardio',
+        day: localMidnight(2026, 10, 26),
+        activity: 'walk',
+        distanceM: 2000,
+        durationS: 1800,
+      },
+    });
+    expect(
+      resolveVoiceCommand(command({ tool: 'log_cardio' }), {
+        ...ctx(NOW, 'I walked 2 km'),
+        chosen: true,
+      })
+    ).toEqual({
+      ok: true,
+      action: expect.objectContaining({ kind: 'logCardio', distanceM: 2000, durationS: null }),
+    });
+  });
+});
+
 describe('a meal name in the food slot', () => {
   const now = new Date(2026, 10, 25, 12, 0);
   const command = {
@@ -243,6 +323,7 @@ describe('a meal name in the food slot', () => {
       now,
       transcript: 'Today, I had the same breakfast as yesterday.',
       weightUnit: 'kg',
+      units: 'metric',
     });
 
     expect(resolution).toEqual({
@@ -276,6 +357,7 @@ describe('resolveLogWeight', () => {
       now: NOW,
       transcript,
       weightUnit: 'kg',
+      units: 'metric',
       ...extra,
     });
 
@@ -415,6 +497,7 @@ describe('resolveLogMeal', () => {
         now: NOW,
         transcript: '  two eggs and toast  ',
         weightUnit: 'kg',
+        units: 'metric',
       })
     ).toEqual({
       ok: true,
@@ -433,11 +516,13 @@ describe('resolveLogMeal', () => {
       now: morning,
       transcript: 'dinner',
       weightUnit: 'kg',
+      units: 'metric',
     });
     const byHour = resolveLogMeal(command({ tool: 'log_meal' }), {
       now: morning,
       transcript: 'eggs',
       weightUnit: 'kg',
+      units: 'metric',
     });
 
     expect(named.ok && named.action.kind === 'logMeal' && named.action.mealType).toBe('dinner');
@@ -454,6 +539,7 @@ describe('resolveAddNote', () => {
         now: NOW,
         transcript: 'Note that my knee hurt today',
         weightUnit: 'kg',
+        units: 'metric',
       })
     ).toEqual({ ok: true, action: { kind: 'addNote', body: 'my knee hurt today' } });
   });
@@ -464,6 +550,7 @@ describe('resolveAddNote', () => {
         now: NOW,
         transcript: 'Remember the gym key',
         weightUnit: 'kg',
+        units: 'metric',
       })
     ).toEqual({ ok: true, action: { kind: 'addNote', body: 'Remember the gym key' } });
   });
@@ -474,6 +561,7 @@ describe('resolveAddNote', () => {
         now: NOW,
         transcript: '  buy oats  ',
         weightUnit: 'kg',
+        units: 'metric',
       })
     ).toEqual({ ok: true, action: { kind: 'addNote', body: 'buy oats' } });
   });
@@ -486,6 +574,7 @@ describe('resolveGoTo', () => {
         now: NOW,
         transcript: 'show my progress',
         weightUnit: 'kg',
+        units: 'metric',
       })
     ).toEqual({ ok: true, action: { kind: 'goTo', screen: 'progress' } });
   });
