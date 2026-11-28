@@ -319,6 +319,8 @@ picks per request (`services/localModels/llamaRuntime.ts`): a request with a pho
 every other request (chat, voice, insights, the text steps of a meal estimate) to the 1.2B when it is
 installed, else to the 450M. One model is loaded at a time, so a switch costs an unload and a load.
 Every thinking-level rule above is per engine, not per model file: the 1.2B gets the same policies.
+Voice commands are the exception: the two models are shown the tools differently
+(`ProviderPolicy.nativeVoiceModel`) and offered a different number of them (`maxVoiceTools`).
 
 ### 2. One logical request: timeout, cancel, retry (`withLlmRetry`, `utils/llmRetry.ts`)
 

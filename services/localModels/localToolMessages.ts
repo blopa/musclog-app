@@ -6,12 +6,45 @@
 import type { LocalChatMessage, LocalToolCall, LocalToolDefinition } from './llamaRuntime';
 
 /**
+ * An LFM-style template (it lists tools) that never reads `tool_calls` renders only `content`, so an
+ * example call sent as `tool_calls` reached the model as an empty assistant turn.
+ */
+function templateDropsToolCalls(template: unknown): boolean {
+  return (
+    typeof template === 'string' &&
+    template.includes('List of tools:') &&
+    !template.includes('tool_calls')
+  );
+}
+
+function callsAsText(calls: LocalToolCall[]): string {
+  const rendered = calls.map((call) => {
+    const args = JSON.parse(call.arguments || '{}') as Record<string, unknown>;
+    const pairs = Object.entries(args).map(([key, value]) => `${key}=${JSON.stringify(value)}`);
+
+    return `${call.name}(${pairs.join(', ')})`;
+  });
+
+  return `<|tool_call_start|>[${rendered.join(', ')}]<|tool_call_end|>`;
+}
+
+/**
  * llama.rn JSON-stringifies the messages it is given, so the OpenAI-shaped `tool_calls` and
  * `tool_call_id` reach llama.cpp even though its TypeScript message type declares only role and content.
+ * For a template that drops `tool_calls` (see `templateDropsToolCalls`) the calls are written as text.
  */
-export function toEngineMessages(messages: LocalChatMessage[]) {
+export function toEngineMessages(messages: LocalChatMessage[], template?: unknown) {
+  const asText = templateDropsToolCalls(template);
+
   return messages.map((message) => {
     if (message.role === 'assistant' && message.toolCalls?.length) {
+      if (asText) {
+        return {
+          role: 'assistant' as const,
+          content: callsAsText(message.toolCalls) + message.content,
+        };
+      }
+
       return {
         role: 'assistant' as const,
         content: message.content,

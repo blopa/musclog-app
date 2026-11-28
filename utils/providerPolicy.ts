@@ -12,6 +12,7 @@ import type { RetryDecision, RetryState } from './llmRetryTypes';
 import { ON_DEVICE_CONTEXT_CHARS } from './onDeviceEngine';
 import { setHostedSignal } from './premium/hostedSignal';
 import { whileHostedBackingOff } from './premium/hostedWait';
+import type { NativeVoiceModel } from './voiceCommand/types';
 
 /** Repetition penalties for a free-chat reply, in the OpenAI field names. */
 export type ChatPenalties = { frequency_penalty: number; presence_penalty: number };
@@ -110,6 +111,12 @@ export type ProviderPolicy = {
    * model). Only the downloaded model: Apple's engine has no such format.
    */
   nativeToolCalls?: boolean;
+  /**
+   * Which downloaded model's voice payload a native tool-call request carries (`nativeVoiceMessages`,
+   * `buildNativeVoiceTools`). Absent: the 450M's. The two read the same example turns differently, so
+   * each was measured with its own.
+   */
+  nativeVoiceModel?: NativeVoiceModel;
   /**
    * How many voice tools one request may offer (undefined: all of them). A small model routes worse
    * the more tools it chooses between, so the person's picks are cut to this many, in their order.
@@ -251,12 +258,12 @@ const GEMINI_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 const CLAUDE_POLICY: ProviderPolicy = { structuredReplies: 'enforced' };
 
 /**
- * Voice tools offered at once. The downloaded models (450M and the 1.2B alike) route much worse
- * with five tools than with three: the 1.2B stopped recognizing food searches and copies at five
- * (`docs/RESEARCH.md` → Voice commands on the downloaded model). A custom local server and Apple's
- * model are not measured and take the larger small-model limit.
+ * Voice tools offered at once. The downloaded 450M routes much worse with five tools than with
+ * three. The optional 1.2B holds up at five with its own payload (`docs/RESEARCH.md` → Voice
+ * commands on the downloaded model), which is the small-model limit. A custom local server and
+ * Apple's model are not measured and take it too.
  */
-const DOWNLOADED_MODEL_VOICE_TOOLS = 3;
+const BASE_MODEL_VOICE_TOOLS = 3;
 const SMALL_MODEL_VOICE_TOOLS = 5;
 
 /**
@@ -297,7 +304,6 @@ const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
   regeneratesCopiedChatReply: true,
   skipsInsightFactCheck: true,
   nativeToolCalls: true,
-  maxVoiceTools: DOWNLOADED_MODEL_VOICE_TOOLS,
 };
 
 /**
@@ -310,6 +316,13 @@ const GGUF_ON_DEVICE_POLICY: ProviderPolicy = {
 const GGUF_BASE_MODEL_POLICY: ProviderPolicy = {
   ...GGUF_ON_DEVICE_POLICY,
   answersPainWithFixedReply: true,
+  maxVoiceTools: BASE_MODEL_VOICE_TOOLS,
+};
+
+/** The downloaded model with the optional 1.2B installed, which answers every text request. */
+const GGUF_TEXT_MODEL_POLICY: ProviderPolicy = {
+  ...GGUF_ON_DEVICE_POLICY,
+  nativeVoiceModel: 'text',
 };
 
 /**
@@ -356,7 +369,7 @@ export function providerPolicyFor(
       return APPLE_ON_DEVICE_POLICY;
     }
 
-    return config.textModel ? GGUF_ON_DEVICE_POLICY : GGUF_BASE_MODEL_POLICY;
+    return config.textModel ? GGUF_TEXT_MODEL_POLICY : GGUF_BASE_MODEL_POLICY;
   }
 
   return PROVIDER_POLICIES[config.provider] ?? {};

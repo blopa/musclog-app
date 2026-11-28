@@ -17,7 +17,7 @@ import { prepareChatText, wrapUserContent } from '@/utils/promptSanitizer';
 import { providerPolicyFor } from '@/utils/providerPolicy';
 import {
   buildNativeVoiceTools,
-  nativeVoiceExamples,
+  nativeVoiceMessages,
   nativeVoiceReply,
 } from '@/utils/voiceCommand/nativeTools';
 import { parseChosenCommand, parseVoiceCommands } from '@/utils/voiceCommand/parse';
@@ -56,16 +56,18 @@ async function requestCommands(
   const read = (raw: unknown) =>
     chosen ? [parseChosenCommand(raw, chosen)] : parseVoiceCommands(raw, offered);
 
-  if (providerPolicyFor(config).nativeToolCalls) {
-    // The model's own format: the example turns, then the sentence as a plain user turn (it is a
-    // turn of a conversation, not text spliced into a prompt, so nothing is escaped).
+  const { nativeToolCalls, nativeVoiceModel } = providerPolicyFor(config);
+  if (nativeToolCalls) {
+    // The model's own format: what this model is given first (example turns or an instruction), then
+    // the sentence as a plain user turn (it is a turn of a conversation, not text spliced into a
+    // prompt, so nothing is escaped).
     const reply = await requestNativeToolCall(config, {
       operation: OPERATION,
       messages: [
-        ...nativeVoiceExamples(offered),
+        ...nativeVoiceMessages(offered, chosen, nativeVoiceModel),
         { role: 'user', content: prepareChatText(transcript) },
       ],
-      tools: buildNativeVoiceTools(offered, chosen),
+      tools: buildNativeVoiceTools(offered, chosen, nativeVoiceModel),
       // The transcript is what the person said: it stays out of the debug dump.
       redactDump: true,
     });

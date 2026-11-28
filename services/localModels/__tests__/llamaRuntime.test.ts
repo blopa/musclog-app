@@ -356,6 +356,26 @@ describe('generateWithLocalModel', () => {
       expect(without).not.toHaveProperty('chat_template');
     });
 
+    it('writes calls into content for a template that drops tool_calls', async () => {
+      mockChatTemplate = '{%- set x = "List of tools: " -%}{{ message["content"] }}';
+      const history = [
+        { role: 'user' as const, content: 'hi' },
+        {
+          role: 'assistant' as const,
+          content: '',
+          toolCalls: [{ name: 'copy_meal', arguments: '{"source":"yesterday"}' }],
+        },
+      ];
+
+      await generateWithLocalModel({ messages: history, tools });
+
+      const sent = mockContext.completion.mock.calls[0][0] as { messages: unknown[] };
+      expect(sent.messages[1]).toEqual({
+        role: 'assistant',
+        content: '<|tool_call_start|>[copy_meal(source="yesterday")]<|tool_call_end|>',
+      });
+    });
+
     it('keeps the model template when llama.cpp already recognises it', async () => {
       mockChatTemplate = '{{- "List of tools: [" -}}';
 

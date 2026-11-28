@@ -55,6 +55,8 @@ export type VoiceToolDefinition = {
     dropsOtherMeal?: boolean;
     /** Only about food, so the example turns may say that food is all the model does. */
     logsFood?: boolean;
+    /** What the 1.2B text model is shown instead, where its own wording measured better. */
+    textModel?: { description: string; slots: Partial<Record<VoiceSlotKey, string>> };
   };
   resolve: (command: VoiceCommand, context: VoiceResolveContext) => VoiceResolution;
 };
@@ -87,6 +89,17 @@ export const VOICE_TOOLS: Record<VoiceActionTool, VoiceToolDefinition> = {
       },
       order: 1,
       logsFood: true,
+      // The 1.2B put the day said into `day` (the target) with the wording above.
+      textModel: {
+        description:
+          'Log the same meal as on an earlier day, such as "same as yesterday" or "repeat Friday\'s lunch". from_day is the day named.',
+        slots: {
+          meal: 'The meal.',
+          from_day: 'The day named, such as yesterday or monday.',
+          from_meal: 'Only for "as": the meal eaten before.',
+          day: 'Only for tomorrow.',
+        },
+      },
       examples: {
         order: 1,
         turns: [

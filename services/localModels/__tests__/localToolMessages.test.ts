@@ -74,3 +74,54 @@ describe('toolTemplateOverride', () => {
     expect(toolTemplateOverride(42)).toBeUndefined();
   });
 });
+
+describe('toEngineMessages with a template that drops tool_calls', () => {
+  // LFM2.5-1.2B's template renders only `content`: its tool list line is present, tool_calls is not read.
+  const dropsCalls = String.raw`{%- set x = "List of tools: " -%}{{ message["content"] }}`;
+  const callsMessage = {
+    role: 'assistant' as const,
+    content: 'Done.',
+    toolCalls: [
+      { name: 'copy_meal', arguments: '{"source":"yesterday","meal":"lunch"}' },
+      { name: 'add_note', arguments: '{}' },
+    ],
+  };
+
+  it('writes the calls into content as text, with no tool_calls field', () => {
+    expect(toEngineMessages([callsMessage], dropsCalls)).toEqual([
+      {
+        role: 'assistant',
+        content:
+          '<|tool_call_start|>[copy_meal(source="yesterday", meal="lunch"), add_note()]<|tool_call_end|>Done.',
+      },
+    ]);
+  });
+
+  it('writes one call with arguments and leaves other messages unchanged', () => {
+    expect(
+      toEngineMessages(
+        [
+          { role: 'user', content: 'hi' },
+          { role: 'assistant', content: '', toolCalls: [{ name: 'a', arguments: '{"x":1}' }] },
+          { role: 'tool', content: 'ok', toolCallId: 'call_0' },
+        ],
+        dropsCalls
+      )
+    ).toEqual([
+      { role: 'user', content: 'hi' },
+      { role: 'assistant', content: '<|tool_call_start|>[a(x=1)]<|tool_call_end|>' },
+      { role: 'tool', content: 'ok', tool_call_id: 'call_0' },
+    ]);
+  });
+
+  it('keeps today output for a template that reads tool_calls, has no list, or is missing', () => {
+    const structured = toEngineMessages([callsMessage]);
+
+    expect(
+      toEngineMessages([callsMessage], '{% if tool_calls %}{% endif %}List of tools: ')
+    ).toEqual(structured);
+    expect(toEngineMessages([callsMessage], '{{ message["content"] }}')).toEqual(structured);
+    expect(toEngineMessages([callsMessage], undefined)).toEqual(structured);
+    expect(structured[0]).toHaveProperty('tool_calls');
+  });
+});

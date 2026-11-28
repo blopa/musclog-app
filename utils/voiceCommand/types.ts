@@ -63,6 +63,13 @@ export type VoiceSourceDay = (typeof VOICE_SOURCE_DAYS)[number];
 export type VoiceWeightUnit = 'kg' | 'lb';
 
 /**
+ * Which downloaded model a native tool-call payload is written for; each was measured with its own.
+ * `main`: the 450M, shown example turns. `text`: the optional 1.2B, told what to do in one line and
+ * shown its own wording of some tools.
+ */
+export type NativeVoiceModel = 'main' | 'text';
+
+/**
  * Where `go_to` can take a person: Home and every navigation destination. `cycle` is always offered
  * to the model, so the choices never say whether this person tracks a cycle; the app checks that
  * the screen is available after the answer.

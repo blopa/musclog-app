@@ -6,7 +6,11 @@ import type {
 import { isRecord } from '@/utils/isRecord';
 import { slotChoices, SLOTS, type VoiceSlotKey } from '@/utils/voiceCommand/schema';
 import { VOICE_TOOLS, type VoiceExample } from '@/utils/voiceCommand/tools';
-import { VOICE_ACTION_TOOLS, type VoiceActionTool } from '@/utils/voiceCommand/types';
+import {
+  type NativeVoiceModel,
+  VOICE_ACTION_TOOLS,
+  type VoiceActionTool,
+} from '@/utils/voiceCommand/types';
 
 /**
  * The downloaded model's own tool-call format: tool definitions, few-shot turns and the
@@ -21,17 +25,18 @@ export const NATIVE_VOICE_TOOL_ORDER: readonly VoiceActionTool[] = [...VOICE_ACT
 
 /**
  * The tools of a request: the offered ones, or the one the person picked (`chosen`). Offering that
- * one alone, with the same example turns, is what makes the model call it (`tool_choice:
- * 'required'` measured no different).
+ * one alone is what makes the model call it (`tool_choice: 'required'` measured no different).
  */
 export function buildNativeVoiceTools(
   offered: readonly VoiceActionTool[] = VOICE_ACTION_TOOLS,
-  chosen?: VoiceActionTool
+  chosen?: VoiceActionTool,
+  model: NativeVoiceModel = 'main'
 ): LocalToolDefinition[] {
   return NATIVE_VOICE_TOOL_ORDER.filter((name) =>
     chosen ? name === chosen : offered.includes(name)
   ).map((name) => {
-    const { description, slots } = VOICE_TOOLS[name].native;
+    const { native } = VOICE_TOOLS[name];
+    const { description, slots } = (model === 'text' && native.textModel) || native;
     const properties: Record<string, object> = {};
     // The registry's own order: the model was measured with food first for search_food.
     for (const [key, slotDescription] of Object.entries(slots) as [VoiceSlotKey, string][]) {
@@ -95,6 +100,29 @@ export function nativeVoiceExamples(
       .flatMap((name) => VOICE_TOOLS[name].native.examples.turns.map((turn) => ({ name, turn })))
       .flatMap(({ name, turn }, index) => exampleTurns(name, turn, `call_${index + 1}`)),
   ];
+}
+
+/**
+ * The 1.2B is told what to do instead of being shown example turns: shown its own example calls it
+ * acted on 21 of 83 sentences wrongly, and told in these words on far fewer. Measured as written.
+ */
+const TEXT_MODEL_INSTRUCTION =
+  'Call a tool only when the sentence asks the app to log, copy, open or write something. ' +
+  'Otherwise reply "Okay." and call no tool. A greeting, thanks or a question is not a request.';
+
+/**
+ * What a downloaded model is given before the sentence. The 1.2B gets the instruction on a first
+ * try, and the example turns once the person picked the tool (`chosen`): with them it called the
+ * tool for all 101 sentences tried (92 with the instruction) and filled more slots right.
+ */
+export function nativeVoiceMessages(
+  offered: readonly VoiceActionTool[] = VOICE_ACTION_TOOLS,
+  chosen?: VoiceActionTool,
+  model: NativeVoiceModel = 'main'
+): LocalChatMessage[] {
+  return model === 'text' && !chosen
+    ? [{ role: 'system', content: TEXT_MODEL_INSTRUCTION }]
+    : nativeVoiceExamples(offered);
 }
 
 /** One command of the model's answer: its `tool` and the slots it filled. */

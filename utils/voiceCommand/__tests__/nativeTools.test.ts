@@ -2,6 +2,7 @@ import {
   buildNativeVoiceTools,
   NATIVE_VOICE_TOOL_ORDER,
   nativeVoiceExamples,
+  nativeVoiceMessages,
   nativeVoiceReply,
 } from '@/utils/voiceCommand/nativeTools';
 import { parseVoiceCommands } from '@/utils/voiceCommand/parse';
@@ -258,6 +259,72 @@ describe('frozen native voice output', () => {
         },
       },
     ]);
+  });
+
+  it('gives the 1.2B text model one instruction instead of example turns on a first try', () => {
+    expect(nativeVoiceMessages(TWO, undefined, 'text')).toEqual([
+      {
+        role: 'system',
+        content:
+          'Call a tool only when the sentence asks the app to log, copy, open or write something. Otherwise reply "Okay." and call no tool. A greeting, thanks or a question is not a request.',
+      },
+    ]);
+  });
+
+  it('gives the example turns to the 450M, and to the text model once a tool is picked', () => {
+    expect(nativeVoiceMessages(TWO)).toEqual(nativeVoiceExamples(TWO));
+    expect(nativeVoiceMessages(TWO, 'copy_meal', 'text')).toEqual(nativeVoiceExamples(TWO));
+  });
+
+  it('gives the text model its own copy_meal wording, with the same search_food and slot order', () => {
+    const tools = buildNativeVoiceTools(TWO, undefined, 'text');
+    const [search, copy] = tools as unknown as {
+      name: string;
+      description: string;
+      parameters: { type: string; properties: Record<string, object>; required: string[] };
+    }[];
+
+    expect(search).toEqual(buildNativeVoiceTools(TWO)[0]);
+    expect(copy.name).toBe('copy_meal');
+    expect(copy.description).toBe(
+      'Log the same meal as on an earlier day, such as "same as yesterday" or "repeat Friday\'s lunch". from_day is the day named.'
+    );
+    expect(copy.parameters.type).toBe('object');
+    expect(copy.parameters.required).toEqual([]);
+    expect(copy.parameters.properties).toEqual({
+      meal: { type: 'string', enum: meals, description: 'The meal.' },
+      from_day: {
+        type: 'string',
+        enum: sourceDays,
+        description: 'The day named, such as yesterday or monday.',
+      },
+      from_meal: {
+        type: 'string',
+        enum: meals,
+        description: 'Only for "as": the meal eaten before.',
+      },
+      day: {
+        type: 'string',
+        enum: ['today', 'yesterday', 'tomorrow'],
+        description: 'Only for tomorrow.',
+      },
+    });
+    expect(Object.keys(copy.parameters.properties)).toEqual([
+      'meal',
+      'from_day',
+      'from_meal',
+      'day',
+    ]);
+  });
+
+  it('offers only the picked tool to the text model, with its own wording', () => {
+    const tools = buildNativeVoiceTools(TWO, 'copy_meal', 'text');
+
+    expect(tools).toHaveLength(1);
+    expect(tools[0].name).toBe('copy_meal');
+    expect(tools[0].description).toBe(
+      'Log the same meal as on an earlier day, such as "same as yesterday" or "repeat Friday\'s lunch". from_day is the day named.'
+    );
   });
 
   it('shows these example turns in this order', () => {

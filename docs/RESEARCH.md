@@ -867,8 +867,37 @@ Four tools were added (`log_weight`, `log_meal`, `add_note`, `go_to`), so the do
 | 1.2B  | search, copy                     | 25     | 8/11          | 1/10   | none      | 65     | 6             |
 | 1.2B  | search, copy, weigh-in (shipped) | 24     | 7/11          | 1/10   | 2/10      | 57     | 5             |
 
-- **More tools cost accuracy fast.** With five tools (search, copy, weigh-in, meal, note) the 450M got 36 of 83 (food searches 3/11, notes 0/8, most of them sent to `log_meal`) and the 1.2B 40 of 83, with food searches and copies both at 0: it answers in text instead of calling. Hence both downloaded models are offered three.
+- **More tools cost accuracy fast.** With five tools (search, copy, weigh-in, meal, note) the 450M got 36 of 83 (food searches 3/11, notes 0/8, most of them sent to `log_meal`). Hence the 450M is offered three.
+- **The 1.2B rows above are wrong.** Its template dropped the example calls, so it was shown empty replies. See the next section.
 - **The order of the example turns matters.** With the weigh-in turn last the 450M got 7 of 11 food searches with 4 wrong actions and 8 of 10 weigh-ins; with it first, 9 of 11 with none wrong and 10 of 10. Leaving out the preamble, the closing "Done." turns or all but one turn per tool, reversing the order and adding a second search turn all dropped food searches to 3 of 11 or fewer.
 - **A JSON schema instead of the tool-call format was worse on the 1.2B** with two or three tools: 8 to 10 of 10 copies and 10 of 10 weigh-ins, but 2 of 11 food searches and 20 to 28 wrong actions, mostly the first example copied for a greeting (the 2026-11-26 failure).
 - **A weigh-in needs weight words.** The 450M routed "I'm Maria and I'm 30" to the weigh-in, so code requires a unit next to the number or a word for weighing.
 - The three-tool figures hold for the default tools only. A person who picks other tools gets an unmeasured set.
+
+### The 1.2B's own voice payload (2026-11-28)
+
+**The bug.** LFM2.5-1.2B-Instruct's chat template renders a message's `content` and never reads `tool_calls`, so every example call the app sent reached it as an empty assistant turn followed by "Done.": it learned to answer a command with nothing. The 450M's template renders the calls, so only the 1.2B was affected. It was seen with llama-server's `/apply-template`; the LFM2.5-VL-1.6B template saved on 2026-11-27 does not mention `tool_calls` either. `toEngineMessages` now writes the calls into `content` for such a template (llama.rn tokenizes with special tokens parsed, so they are the same tokens the model writes).
+
+**The fix alone is not enough.** Shown its calls, the model got 10 of 10 weigh-ins but acted on sentences that were no request (21 wrong of 83 at three tools). So it was tuned separately, on llama.cpp b10256, desktop CPU: 83 sentences from above, 10 new copies naming two meals or a target day, and 67 held-out sentences written before any tuning. About 40 payloads were tried. Harness, cases, variants and replies: `musclog-benchmarks/2026-11-27-voice-tools/`.
+
+| 1.2B, right (wrong actions)      | Tools | 83 sentences | 67 held out | 10 two-meal copies |
+| -------------------------------- | ----- | ------------ | ----------- | ------------------ |
+| Before (calls dropped)           | 2     | 65 (6)       | 45 (6)      | 0 (1)              |
+| Calls in `content`, nothing else | 2     | 55 (21)      | 45 (17)     | 1 (4)              |
+| Own payload (shipped)            | 2     | 69 (10)      | 54 (11)     | 5 (5)              |
+| Before (calls dropped)           | 3     | 56 (6)       | 40 (5)      | 1 (2)              |
+| Calls in `content`, nothing else | 3     | 54 (21)      | 47 (15)     | 1 (5)              |
+| Own payload (shipped)            | 3     | 72 (8)       | 51 (10)     | 4 (6)              |
+| Before (calls dropped)           | 5     | 38 (6)       | 30 (2)      | 1 (1)              |
+| Calls in `content`, nothing else | 5     | 57 (21)      | 47 (13)     | 1 (7)              |
+| Own payload (shipped)            | 5     | 66 (10)      | 48 (11)     | 3 (7)              |
+
+Of the 83, by tool (own payload): at three tools 10 of 11 food searches, 9 of 10 copies and 9 of 10 weigh-ins (before: 7, 1 and 2); at five, 7 of 11 searches, 8 of 10 copies, 8 of 10 weigh-ins, 7 of 10 meals and 7 of 8 notes.
+
+- **What is sent.** No example turns on a first try: one system line ("Call a tool only when the sentence asks the app to log, copy, open or write something. Otherwise reply "Okay." and call no tool. A greeting, thanks or a question is not a request.") and the tools. `copy_meal` has its own description and slot wording: with the 450M's the model put the day named into `day`, where the copy goes, so most copies were refused.
+- **Five tools.** The 1.2B is offered five: 66 of 83 with 10 wrong, against the 450M's shipped 61 with 18 at three. Over all 160 sentences five tools cost something: 117 right and 28 wrong against 127 and 24 at three, with 8 of 44 non-requests acted on against 4 (a greeting opening a meal review or a note).
+- **It acts more than before.** Broken, it mostly did nothing: at three tools it carried out 17 of the 69 commands it was offered and none of 44 non-requests; now 54 of 69 and 4 of 44. Many wrong actions at three tools are sentences for a tool it is not offered (a spoken meal opening a food search). Nothing is written without a tap.
+- **Copies naming two meals are still poor** ("Monday's lunch as dinner": about half right, the rest swap the meals), shown on the review screen before anything is copied. Rewording the two slots to fix it lost plain copies.
+- **What did not help:** more example turns of any arrangement with the calls visible, negative examples, a question in the preamble that is answered with a refusal (food searches fell to 0 of 11), and an example sentence inside a tool description (the model copied it).
+- **Picking the tool after a miss** keeps the example turns: with five tools offered, all 101 sentences for a tool called it and 87 got the right arguments (instruction line: 92 and 85; nothing: 83 and 83).
+- The figures are for the default tool order, one seed, temperature 0, tuned on these sentences (the held-out set was not used to choose wording). No phone was measured.

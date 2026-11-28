@@ -232,11 +232,27 @@ describe('what only the on-device engines and a custom server do differently', (
 });
 
 describe('maxVoiceTools', () => {
-  it('limits the downloaded models to three tools, with or without the text model', () => {
+  it('limits the 450M to three tools and the 450M with its text model to five', () => {
     expect(providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).maxVoiceTools).toBe(3);
     expect(
       providerPolicyFor({ provider: 'on-device', engine: 'gguf', textModel: true }).maxVoiceTools
-    ).toBe(3);
+    ).toBe(5);
+  });
+
+  it('names the text model as the native voice payload only with the text model installed', () => {
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf', textModel: true }).nativeVoiceModel
+    ).toBe('text');
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'gguf' }).nativeVoiceModel
+    ).toBeUndefined();
+    expect(
+      providerPolicyFor({ provider: 'on-device', engine: 'apple' }).nativeVoiceModel
+    ).toBeUndefined();
+    expect(providerPolicyFor({ provider: 'local' }).nativeVoiceModel).toBeUndefined();
+    for (const provider of ['hosted', 'gateway', 'gemini', 'openai', 'claude'] as const) {
+      expect(providerPolicyFor({ provider }).nativeVoiceModel).toBeUndefined();
+    }
   });
 
   it('limits Apple and a custom local server to five tools', () => {

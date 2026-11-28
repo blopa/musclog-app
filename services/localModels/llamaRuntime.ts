@@ -339,19 +339,16 @@ async function run(params: LocalGenerateParams): Promise<LocalGenerateResult> {
 
       // A plain-text reply takes the vendor's sampling; a schema or a photo keeps the defaults.
       const plainSampling = plainTextSampling(params) ? textSampling : null;
+      const chatTemplate = (ctx.model?.metadata as Record<string, unknown> | undefined)?.[
+        'tokenizer.chat_template'
+      ];
       // Only a tool request: llama.cpp needs a hint to read this model's template for tools.
-      const toolTemplate = params.tools
-        ? toolTemplateOverride(
-            (ctx.model?.metadata as Record<string, unknown> | undefined)?.[
-              'tokenizer.chat_template'
-            ]
-          )
-        : undefined;
+      const toolTemplate = params.tools ? toolTemplateOverride(chatTemplate) : undefined;
       const result = await ctx.completion(
         {
           messages: params.image
-            ? withPhoto(toEngineMessages(params.messages), params.image)
-            : toEngineMessages(params.messages),
+            ? withPhoto(toEngineMessages(params.messages, chatTemplate), params.image)
+            : toEngineMessages(params.messages, chatTemplate),
           jinja: true,
           n_predict: params.maxTokens ?? 1024,
           temperature: params.temperature ?? plainSampling?.temperature ?? 0.2,

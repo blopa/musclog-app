@@ -10,7 +10,11 @@ import {
   requestStructured,
 } from '@/utils/coachAI';
 import { prepareChatText, wrapUserContent } from '@/utils/promptSanitizer';
-import { buildNativeVoiceTools, nativeVoiceExamples } from '@/utils/voiceCommand/nativeTools';
+import {
+  buildNativeVoiceTools,
+  nativeVoiceExamples,
+  nativeVoiceMessages,
+} from '@/utils/voiceCommand/nativeTools';
 import { getVoiceCommandSystemPrompt } from '@/utils/voiceCommand/prompt';
 import type { VoiceActionTool } from '@/utils/voiceCommand/types';
 
@@ -252,6 +256,43 @@ describe('interpretVoiceCommand on the downloaded model', () => {
     );
   });
 
+  it('gives the text model its instruction and its own tool wording on a first try', async () => {
+    mockGetAiConfig.mockResolvedValue({ ...GGUF, textModel: true });
+    mockNativeRequest.mockResolvedValue({ text: 'Okay.', toolCalls: [] });
+
+    await interpretVoiceCommand('Hello my name is Pablo', { now: NOW });
+
+    expect(mockNativeRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ ...GGUF, textModel: true }),
+      {
+        operation: 'voiceCommand',
+        redactDump: true,
+        messages: [
+          ...nativeVoiceMessages(ALL_OFFERED.slice(0, 5), undefined, 'text'),
+          { role: 'user', content: prepareChatText('Hello my name is Pablo') },
+        ],
+        tools: buildNativeVoiceTools(ALL_OFFERED.slice(0, 5), undefined, 'text'),
+      }
+    );
+  });
+
+  it('sends the example turns once the person picked a tool, with the text model wording', async () => {
+    mockGetAiConfig.mockResolvedValue({ ...GGUF, textModel: true });
+    mockNativeRequest.mockResolvedValue({ text: '', toolCalls: [] });
+
+    await interpretVoiceCommand('I had the same breakfast as yesterday.', {
+      now: NOW,
+      tool: 'copy_meal',
+    });
+
+    const [, request] = mockNativeRequest.mock.calls[mockNativeRequest.mock.calls.length - 1];
+
+    expect(request.messages.slice(0, -1)).toEqual(nativeVoiceExamples(ALL_OFFERED.slice(0, 5)));
+    expect(request.tools).toEqual(
+      buildNativeVoiceTools(ALL_OFFERED.slice(0, 5), 'copy_meal', 'text')
+    );
+  });
+
   it('reads a reply with no tool call as not a request', async () => {
     mockNativeRequest.mockResolvedValue({ text: 'Hello Pablo!', toolCalls: [] });
 
@@ -382,9 +423,9 @@ describe('interpretVoiceCommand: how many tools a request offers', () => {
     expect(await offeredFor({ provider: 'on-device', engine: 'gguf' })).toEqual(GGUF_OFFERED);
   });
 
-  it('offers three tools to the downloaded model with its text model too', async () => {
+  it('offers five tools to the downloaded model with its text model', async () => {
     expect(await offeredFor({ provider: 'on-device', engine: 'gguf', textModel: true })).toEqual(
-      GGUF_OFFERED
+      ALL_OFFERED.slice(0, 5)
     );
   });
 
