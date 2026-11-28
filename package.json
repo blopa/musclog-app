@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.18.12",
+  "version": "2.18.13",
   "engines": {
     "node": "26.x"
   },
